@@ -38,11 +38,11 @@
  * |                                |
  * |                                |
  * +--------------------------------+ 0xa8400
- * | SMM Entry Node 0 (+ stack)     | 
+ * | SMM Entry Node 0 (+ stack)     |
  * +--------------------------------+ 0xa8000
- * | SMM Entry Node 1 (+ stack)     | 
- * | SMM Entry Node 2 (+ stack)     | 
- * | SMM Entry Node 3 (+ stack)     | 
+ * | SMM Entry Node 1 (+ stack)     |
+ * | SMM Entry Node 2 (+ stack)     |
+ * | SMM Entry Node 3 (+ stack)     |
  * | ...                            |
  * +--------------------------------+ 0xa7400
  * |                                |
@@ -56,7 +56,7 @@
 
 /* SMM_HANDLER_OFFSET is the 16bit offset within the ASEG
  * at which smm_handler_start lives. At the moment the handler
- * lives right at 0xa0000, so the offset is 0. 
+ * lives right at 0xa0000, so the offset is 0.
  */
 
 #define SMM_HANDLER_OFFSET 0x0000
@@ -101,15 +101,15 @@ smm_handler_start:
 	movl $LAPIC_ID, %esi
 	movl (%esi), %ecx
 	shr  $24, %ecx
-	
+
 	/* calculate stack offset by multiplying the APIC ID
 	 * by 1024 (0x400), and save that offset in ebp.
 	 */
 	shl $10, %ecx
 	movl %ecx, %ebp
 
-	/* We put the stack for each core right above 
-	 * its SMM entry point. Core 0 starts at 0xa8000, 
+	/* We put the stack for each core right above
+	 * its SMM entry point. Core 0 starts at 0xa8000,
 	 * we spare 0x10 bytes for the jump to be sure.
 	 */
 	movl $0xa8010, %eax
@@ -155,11 +155,11 @@ smm_gdt:
 	.long	0x00000000, 0x00000000
 
 	/* gdt selector 0x08, flat code segment */
-	.word	0xffff, 0x0000		
-	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, 4GB limit */	
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, 4GB limit */
 
 	/* gdt selector 0x10, flat data segment */
-	.word	0xffff, 0x0000		
+	.word	0xffff, 0x0000
 	.byte	0x00, 0x93, 0xcf, 0x00
 
 smm_gdt_end:
@@ -168,7 +168,7 @@ smm_gdt_end:
 .section ".jumptable", "a", @progbits
 
 /* This is the SMM jump table. All cores use the same SMM handler
- * for simplicity. But SMM Entry needs to be different due to the 
+ * for simplicity. But SMM Entry needs to be different due to the
  * save state area. The jump table makes sure all CPUs jump into the
  * real handler on SMM entry.
  */
@@ -185,13 +185,13 @@ smm_gdt_end:
 .code16
 jumptable:
 	/* core 3 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET 
+	ljmp $0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 2 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET 
+	ljmp $0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 1 */
-	ljmp $0xa000, $SMM_HANDLER_OFFSET 
+	ljmp $0xa000, $SMM_HANDLER_OFFSET
 .align 1024, 0x00
 	/* core 0 */
 	ljmp $0xa000, $SMM_HANDLER_OFFSET

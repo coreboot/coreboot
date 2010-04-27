@@ -10,20 +10,20 @@ static void acpi_init(struct device *dev)
 
 	// Set ACPI base address to IO 0x4000
 	pci_write_config32(dev, 0x48, 0x4001);
-	
+
 	// Enable ACPI access (and setup like award)
 	pci_write_config8(dev, 0x41, 0x84);
-	
+
 	// Set hardware monitor base address to IO 0x6000
 	pci_write_config32(dev, 0x70, 0x6001);
-	
+
 	// Enable hardware monitor (and setup like award)
 	pci_write_config8(dev, 0x74, 0x01);
-	
+
 	// set IO base address to 0x5000
 	pci_write_config32(dev, 0x90, 0x5001);
-	
-	// Enable SMBus 
+
+	// Enable SMBus
 	pci_write_config8(dev, 0xd2, 0x01);
 }
 

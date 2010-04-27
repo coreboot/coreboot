@@ -57,7 +57,7 @@ static int via_vt8623_int15_handler(struct eregs *regs)
 	case 0x5f02:
 		regs->eax=0x5f;
 		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
 		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
 		res=0;
 		break;
@@ -65,7 +65,7 @@ static int via_vt8623_int15_handler(struct eregs *regs)
 		regs->eax=0x860f;
 		break;
         default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				regs->eax & 0xffff);
 		break;
 	}
@@ -122,11 +122,11 @@ static void vga_init(device_t dev)
 	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
 	// this is how it looks:
 	vga_enable_console();
-	
+
 #ifdef MEASURE_VGA_INIT_TIME
 	clocks2 = rdmsr(0x10);
 	instructions = rdmsr(0xc2);
-	
+
 	printk(BIOS_DEBUG, "Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
 	printk(BIOS_DEBUG, "Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
 	printk(BIOS_DEBUG, "Instructions = %08x:%08x\n",instructions.hi,instructions.lo);

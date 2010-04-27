@@ -9,13 +9,13 @@ static void mch_reset(void)
 
 static void mainboard_set_e7520_pll(unsigned bits)
 {
-	return; 
+	return;
 }
 
 
 static void mainboard_set_e7520_leds(void)
 {
-	return; 
+	return;
 }
 
 static void mainboard_set_ich5(void)
@@ -28,8 +28,8 @@ static void mainboard_set_ich5(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xe3, 0xc0);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xf0, 0x0);
 	/* disable certain devices -- see data sheet -- this is from
-	 * dell settings via lspci 
-	 * Note that they leave SMBUS disabled -- 8f6f. 
+	 * dell settings via lspci
+	 * Note that they leave SMBUS disabled -- 8f6f.
 	 * we leave it enabled and visible in config space -- 8f66
 	 */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0xf2, 0x8f66);
@@ -38,7 +38,7 @@ static void mainboard_set_ich5(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x5c, 0x10);
 
 	/* now the fun begins ... enable the GPIOs as done on factory */
-	/* factory config from IO ports 
+	/* factory config from IO ports
 	 * It has a few more things enabled than default!
 	 */
 	outl(0x1ae0f183, 0x880);

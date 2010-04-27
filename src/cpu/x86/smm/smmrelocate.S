@@ -22,7 +22,7 @@
 // Make sure no stage 2 code is included:
 #define __PRE_RAM__
 
-// FIXME: Is this piece of code southbridge specific, or 
+// FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our PM_BASE from
 // here.
@@ -73,7 +73,7 @@
  * 0xa0000-0xa0400 and the stub plus stack would need to go
  * at 0xa8000-0xa8100 (example for core 0). That is not enough.
  *
- * This means we're basically limited to 16 cpu cores before 
+ * This means we're basically limited to 16 cpu cores before
  * we need to use the TSEG/HSEG for the actual SMM handler plus stack.
  * When we exceed 32 cores, we also need to put SMBASE to TSEG/HSEG.
  *
@@ -101,7 +101,7 @@ smm_relocation_start:
 	addr32 mov (%ebx), %al
 	cmp $0x64, %al
 	je 1f
- 
+
 	mov $0x38000 + 0x7ef8, %ebx
 	jmp smm_relocate
 1:
@@ -112,8 +112,8 @@ smm_relocate:
 	movl $LAPIC_ID, %esi
 	addr32 movl (%esi), %ecx
 	shr  $24, %ecx
-	
-	/* calculate offset by multiplying the 
+
+	/* calculate offset by multiplying the
 	 * apic ID by 1024 (0x400)
 	 */
 	movl %ecx, %edx
@@ -158,7 +158,7 @@ smm_relocate:
 	outb %al, %dx
 	/* calculate ascii of cpu number. More than 9 cores? -> FIXME */
 	movb %cl, %al
-	addb $'0', %al 
+	addb $'0', %al
 	outb %al, %dx
 	mov $']', %al
 	outb %al, %dx

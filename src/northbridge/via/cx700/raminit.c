@@ -452,7 +452,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	/* To store DDRII frequence */
 	pci_write_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_FREQ, val);
 
-	/* Manual reset and adjust DLL when DRAM change frequency 
+	/* Manual reset and adjust DLL when DRAM change frequency
 	 * This is a necessary sequence.
 	 */
 	udelay(2000);
@@ -1623,7 +1623,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 		u8 mask;
 		u8 val;
 	} b0d1f0[] = {
-		{ 0x40, 0x00, 0x8b}, 
+		{ 0x40, 0x00, 0x8b},
 		{ 0x41, 0x80, 0x43},
 		{ 0x42, 0x00, 0x62},
 		{ 0x43, 0x00, 0x44},

@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_ABIT
-	
+
 source "src/mainboard/abit/be6-ii_v2_0/Kconfig"
 
 endchoice

@@ -20,7 +20,7 @@ public:
   void UpdateUInt32(UInt32 v);
   void UpdateUInt64(UInt64 v);
   void Update(const void *data, size_t size);
-  UInt32 GetDigest() const { return _value ^ 0xFFFFFFFF; } 
+  UInt32 GetDigest() const { return _value ^ 0xFFFFFFFF; }
   static UInt32 CalculateDigest(const void *data, size_t size)
   {
     CCRC crc;

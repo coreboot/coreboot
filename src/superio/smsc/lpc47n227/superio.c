@@ -76,9 +76,9 @@ static struct pnp_info pnp_dev_info[] = {
 
 //----------------------------------------------------------------------------------
 // Function:            enable_dev
-// Parameters:          dev - pointer to structure describing a Super I/O device 
+// Parameters:          dev - pointer to structure describing a Super I/O device
 // Return Value:        None
-// Description:         Create device structures and allocate resources to devices 
+// Description:         Create device structures and allocate resources to devices
 //                      specified in the pnp_dev_info array (above).
 //
 static void enable_dev(device_t dev)
@@ -89,7 +89,7 @@ static void enable_dev(device_t dev)
 
 //----------------------------------------------------------------------------------
 // Function:            lpc47n227_pnp_set_resources
-// Parameters:          dev - pointer to structure describing a Super I/O device 
+// Parameters:          dev - pointer to structure describing a Super I/O device
 // Return Value:        None
 // Description:         Configure the specified Super I/O device with the resources
 //                      (I/O space, etc.) that have been allocate for it.
@@ -137,11 +137,11 @@ void lpc47n227_pnp_enable(device_t dev)
 
 //----------------------------------------------------------------------------------
 // Function:            lpc47n227_init
-// Parameters:          dev - pointer to structure describing a Super I/O device 
+// Parameters:          dev - pointer to structure describing a Super I/O device
 // Return Value:        None
 // Description:         Initialize the specified Super I/O device.
 //                      Devices other than COM ports and keyboard controller are ignored.
-//                      For COM ports, we configure the baud rate. 
+//                      For COM ports, we configure the baud rate.
 //
 static void lpc47n227_init(device_t dev)
 {
@@ -236,7 +236,7 @@ void lpc47n227_pnp_set_drq(device_t dev, unsigned drq)
 		    pnp_read_config(dev, PP_DMA_SELECTION_REGISTER);
 		uint8_t new_config;
 
-		ASSERT(!(drq & ~PP_DMA_MASK));	// DRQ out of range??           
+		ASSERT(!(drq & ~PP_DMA_MASK));	// DRQ out of range??
 		new_config = (current_config & ~PP_DMA_MASK) | drq;
 		pnp_write_config(dev, PP_DMA_SELECTION_REGISTER, new_config);
 	} else {
@@ -330,7 +330,7 @@ void lpc47n227_pnp_set_enable(device_t dev, int enable)
 
 //----------------------------------------------------------------------------------
 // Function:            pnp_enter_conf_state
-// Parameters:          dev - pointer to structure describing a Super I/O device 
+// Parameters:          dev - pointer to structure describing a Super I/O device
 // Return Value:        None
 // Description:         Enable access to the LPC47N227's configuration registers.
 //
@@ -341,7 +341,7 @@ static void pnp_enter_conf_state(device_t dev)
 
 //----------------------------------------------------------------------------------
 // Function:            pnp_exit_conf_state
-// Parameters:          dev - pointer to structure describing a Super I/O device 
+// Parameters:          dev - pointer to structure describing a Super I/O device
 // Return Value:        None
 // Description:         Disable access to the LPC47N227's configuration registers.
 //

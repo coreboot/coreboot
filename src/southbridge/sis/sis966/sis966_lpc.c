@@ -281,7 +281,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC,
 };
 
-#ifdef SLAVE_INIT // No device? 
+#ifdef SLAVE_INIT // No device?
 static struct device_operations lpc_slave_ops  = {
 	.read_resources	= sis966_lpc_read_resources,
 	.set_resources	= pci_dev_set_resources,

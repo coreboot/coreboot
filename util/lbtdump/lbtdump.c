@@ -48,8 +48,8 @@ unsigned long compute_checksum(void *addr, unsigned long length)
 		(((char *)rec) < (((char *)head) + sizeof(*head) + head->table_bytes))  && \
 		(rec->size >= 1) && \
 		((((char *)rec) + rec->size) <= (((char *)head) + sizeof(*head) + head->table_bytes)); \
-		rec = (struct lb_record *)(((char *)rec) + rec->size)) 
-		
+		rec = (struct lb_record *)(((char *)rec) + rec->size))
+
 
 static int  count_lb_records(struct lb_header *head)
 {
@@ -72,7 +72,7 @@ struct lb_header *find_lb_table(void *base, unsigned long start, unsigned long e
 		struct lb_record *recs = (struct lb_record *)(((char*)base) + addr + sizeof(*head));
 		if (memcmp(head->signature, "LBIO", 4) != 0)
 			continue;
-		fprintf(stdout, "Found candidate at: %08lx-%08lx\n", 
+		fprintf(stdout, "Found candidate at: %08lx-%08lx\n",
 			addr, addr + head->table_bytes);
 		if (head->header_bytes != sizeof(*head)) {
 			fprintf(stderr, "Header bytes of %d are incorrect\n",
@@ -162,7 +162,7 @@ void print_memory(struct lb_record *ptr, unsigned long addr)
 			(unsigned long long)start, (unsigned long long)end, mem_type);
 		pretty_print_number(stdout, start);
 		printf(" - ");
-		pretty_print_number(stdout, end);		
+		pretty_print_number(stdout, end);
 		printf(")\n");
 	}
 }
@@ -174,7 +174,7 @@ void print_mainboard(struct lb_record *ptr, unsigned long addr)
 	rec = (struct lb_mainboard *)ptr;
 	max_size = rec->size - sizeof(*rec);
 	printf("vendor: %.*s part number: %.*s\n",
-		max_size - rec->vendor_idx,      rec->strings + rec->vendor_idx, 
+		max_size - rec->vendor_idx,      rec->strings + rec->vendor_idx,
 		max_size - rec->part_number_idx, rec->strings + rec->part_number_idx);
 }
 
@@ -235,7 +235,7 @@ void print_option_checksum(struct lb_record *ptr, unsigned long addr)
 	struct cmos_checksum *rec;
 	rec = (struct cmos_checksum *)ptr;
 	printf("checksum %d, rec len %d, range %d-%d location %d type %d\n",
-		rec->tag, rec->size, 
+		rec->tag, rec->size,
 		rec->range_start, rec->range_end, rec->location, rec->type);
 }
 
@@ -271,7 +271,7 @@ static struct lb_record *next_record(struct lb_record *rec)
 	return (struct lb_record *)(((char *)rec) + rec->size);
 }
 
-void print_lb_records(struct lb_record *rec, struct lb_record *last, 
+void print_lb_records(struct lb_record *rec, struct lb_record *last,
 	unsigned long addr)
 {
 	struct lb_record *next;
@@ -279,8 +279,8 @@ void print_lb_records(struct lb_record *rec, struct lb_record *last,
 	int count;
 	count = 0;
 
-	for(next = next_record(rec); (rec < last) && (next <= last); 
-		rec = next, addr += rec->size) { 
+	for(next = next_record(rec); (rec < last) && (next <= last);
+		rec = next, addr += rec->size) {
 		next = next_record(rec);
 		count++;
 		for(i = 0; lb_types[i].print != 0; i++) {
@@ -309,7 +309,7 @@ void print_lb_table(struct lb_header *head, unsigned long addr)
 	print_lb_records(rec, last, addr + head->header_bytes);
 }
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
 	unsigned char *low_1MB;
 	struct lb_header *lb_table;

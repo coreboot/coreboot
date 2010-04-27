@@ -1,9 +1,9 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008-2010 by coresystems GmbH 
- *  written by Stefan Reinauer <stepan@coresystems.de> 
- * 
+ * Copyright (C) 2008-2010 by coresystems GmbH
+ *  written by Stefan Reinauer <stepan@coresystems.de>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -69,7 +69,7 @@ void *map_physical(unsigned long phys_addr, size_t len)
 
 	virt_addr = mmap(0, len, PROT_WRITE | PROT_READ, MAP_SHARED,
 		    fd_mem, (off_t) phys_addr);
-	
+
 	if (virt_addr == MAP_FAILED) {
 		printf("Error mapping physical memory 0x%08lx[0x%x]\n", phys_addr, len);
 		return NULL;
@@ -214,11 +214,11 @@ int main(int argc, char *argv[])
 	pci_scan_bus(pacc);
 
 	/* Find the required devices */
-	for (dev = pacc->devices; dev; dev = dev->next) {	
+	for (dev = pacc->devices; dev; dev = dev->next) {
 		pci_fill_info(dev, PCI_FILL_CLASS);
 		/* The ISA/LPC bridge can be 0x1f, 0x07, or 0x04 so we probe. */
 		if (dev->device_class == 0x0601) { /* ISA/LPC bridge */
-			if (sb == NULL) 
+			if (sb == NULL)
 				sb = dev;
 			else
 				fprintf(stderr, "Multiple devices with class ID"
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
 	}
 
 	id = cpuid(1);
-	printf("Intel CPU: Family %x, Model %x\n", 
+	printf("Intel CPU: Family %x, Model %x\n",
 			(id >> 8) & 0xf, (id >> 4) & 0xf);
 
 	/* Determine names */
@@ -265,10 +265,10 @@ int main(int argc, char *argv[])
 		if (sb->device_id == supported_chips_list[i].device_id)
 			sbname = supported_chips_list[i].name;
 
-	printf("Intel Northbridge: %04x:%04x (%s)\n", 
+	printf("Intel Northbridge: %04x:%04x (%s)\n",
 		nb->vendor_id, nb->device_id, nbname);
 
-	printf("Intel Southbridge: %04x:%04x (%s)\n", 
+	printf("Intel Southbridge: %04x:%04x (%s)\n",
 		sb->vendor_id, sb->device_id, sbname);
 
 	/* Now do the deed */

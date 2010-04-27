@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_SOYO
-	
+
 source "src/mainboard/soyo/sy-6ba-plus-iii/Kconfig"
 
 endchoice

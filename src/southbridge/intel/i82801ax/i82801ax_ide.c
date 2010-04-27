@@ -32,7 +32,7 @@ typedef struct southbridge_intel_i82801ax_config config_t;
 static void ide_init(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info; 
+	config_t *config = dev->chip_info;
 
 	/* TODO: Needs to be tested for compatibility with ICH5(R). */
 	/* Enable IDE devices so the Linux IDE driver will work. */

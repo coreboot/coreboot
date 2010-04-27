@@ -14,7 +14,7 @@
   handled tds get reactivated as a ring structure
     - added as child of the oldest td
     - queue header already dropped the td, so no issue there
-  
+
   this setup ensures that:
   - the max latency of the device is honored
   - the client knows the right order of the data

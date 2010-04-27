@@ -2,12 +2,12 @@
  * Minimalist ACPI DSDT table for EPIA-M / MII
  * (C) Copyright 2004 Nick Barker <Nick.Barker9@btinternet.com>
  *
- * 
+ *
  */
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 {
-	/*  
+	/*
 	 * Define the main processor
 	 */
 	Scope (\_PR)
@@ -26,7 +26,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
     	{
-		/* Define how interrupt Link A is plumbed in */ 
+		/* Define how interrupt Link A is plumbed in */
 		Device (LNKA)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -36,7 +36,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			{
 				Return (0x0B)
  			}
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
@@ -47,7 +47,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -59,16 +59,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
-		} // End of LNKA 
 
-		/* Define how interrupt Link B is plumbed in */ 
+		} // End of LNKA
+
+		/* Define how interrupt Link B is plumbed in */
 		Device (LNKB)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -78,7 +78,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			{
 				Return (0x0B)
  			}
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
@@ -89,7 +89,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -101,16 +101,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
+
 		} // End of LNKB
 
-		/* Define how interrupt Link C is plumbed in */ 
+		/* Define how interrupt Link C is plumbed in */
 		Device (LNKC)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -120,7 +120,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			{
 				Return (0x0B)
  			}
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
@@ -131,7 +131,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -143,16 +143,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
+
 		} // End of LNKC
 
-		/* Define how interrupt Link D is plumbed in */ 
+		/* Define how interrupt Link D is plumbed in */
 		Device (LNKD)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -162,7 +162,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			{
 				Return (0x0B)
  			}
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
@@ -173,7 +173,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -185,16 +185,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
                 	}
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
-		} // End of LNKD 
 
- 
+		} // End of LNKD
+
+
 		/* top PCI device */
 		Device (PCI0)
 		{
@@ -226,12 +226,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				Package () {0x0011FFFF, 0x02, LNKC, 0x00}, // vt8623 Link C
 				Package () {0x0011FFFF, 0x03, LNKD, 0x00}, // vt8623 Link D
 
-				Package () {0x0012FFFF, 0x00, LNKA, 0x00}, // LAN Link A 
+				Package () {0x0012FFFF, 0x00, LNKA, 0x00}, // LAN Link A
 				Package () {0x0012FFFF, 0x01, LNKB, 0x00}, // LAN Link B
 				Package () {0x0012FFFF, 0x02, LNKC, 0x00}, // LAN Link C
 				Package () {0x0012FFFF, 0x03, LNKD, 0x00}, // LAN Link D
 
-				Package () {0x0013FFFF, 0x00, LNKA, 0x00}, // Riser slot LinkA 
+				Package () {0x0013FFFF, 0x00, LNKA, 0x00}, // Riser slot LinkA
 				Package () {0x0013FFFF, 0x01, LNKB, 0x00}, // Riser slot LinkB
 				Package () {0x0013FFFF, 0x02, LNKC, 0x00}, // Riser slot LinkC
 				Package () {0x0013FFFF, 0x03, LNKD, 0x00}, // Riser slot LinkD
@@ -240,7 +240,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				Package () {0x0014FFFF, 0x01, LNKC, 0x00}, // Slot 1, Link C
 				Package () {0x0014FFFF, 0x02, LNKD, 0x00}, // Slot 1, Link D
 				Package () {0x0014FFFF, 0x03, LNKA, 0x00}, // Slot 1, Link A
-                
+
 				Package () {0x0001FFFF, 0x00, LNKA, 0x00}, // VGA Link A
 				Package () {0x0001FFFF, 0x01, LNKB, 0x00}, // VGA Link B
 				Package () {0x0001FFFF, 0x02, LNKC, 0x00}, // VGA Link C

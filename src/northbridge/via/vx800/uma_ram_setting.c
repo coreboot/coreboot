@@ -139,7 +139,7 @@ void SetUMARam(void)
 
 //      vga_dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VGA, 0);
 
-	//RxB2 may be for S.L. and RxB1 may be for L. L. 
+	//RxB2 may be for S.L. and RxB1 may be for L. L.
 	// It is different from Spec.
 	ByteVal = SLD1F0Val;
 	pci_write_config8(vga_dev, 0xb2, ByteVal);
@@ -256,7 +256,7 @@ void SetUMARam(void)
 	}
 	outb(ByteVal, 0x03d5);
 
-	// Set frame buffer size 
+	// Set frame buffer size
 	outb(0x39, 0x03c4);
 	outb(1 << SLD0F3Val, 0x03c5);
 
@@ -295,7 +295,7 @@ void SetUMARam(void)
 	SLBase = (RamSize << 26) - (UmaSize << 20);
 
 	outb(0x6D, 0x03c4);
-	//SL Base[28:21] 
+	//SL Base[28:21]
 	outb((u8) ((SLBase >> 21) & 0xFF), 0x03c5);
 
 	outb(0x6e, 0x03c4);

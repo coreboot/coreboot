@@ -30,8 +30,8 @@ CB_STATUS VerifyChc(void);
 
 /*===================================================================
 Function   : DRAMRegInitValue()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
@@ -68,7 +68,7 @@ static const u8 DramRegTbl[][3] = {
 	// {0x79, 0x00, 0x8F },
 	{0x85, 0x00, 0x00},
 	// {0x90, 0x87, 0x78 },
-	// {0x91, 0x00, 0x46 }, 
+	// {0x91, 0x00, 0x46 },
 	{0x40, 0x00, 0x00},
 
 	{0, 0, 0}
@@ -155,8 +155,8 @@ void DRAMRegInitValue(DRAM_SYS_ATTR *DramAttr)
 
 /*===================================================================
 Function   : DRAMInitializeProc()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
@@ -176,7 +176,7 @@ static BOOLEAN ChkForExistLowBank(void)
 	Address = (u32 *) 4;
 	*Address = EXIST_TEST_PATTERN;
 
-	// _asm {WBINVD}   
+	// _asm {WBINVD}
 	WaitMicroSec(100);
 	Address = (u32 *) 8;
 	data32 = *Address;
@@ -223,7 +223,7 @@ void DRAMInitializeProc(DRAM_SYS_ATTR *DramAttr)
 			SetEndingAddr(DramAttr, idx, 0x10); /* Assume 1G size */
 			if (idx < 4) /* CHA init */
 				InitDDR2CHA(DramAttr);	// temp wjb 2007/1 only for compiling
-			// in the function InitDDR2,the parameter is no need   
+			// in the function InitDDR2,the parameter is no need
 			Status = ChkForExistLowBank();
 			if (Status == TRUE) {
 				PRINT_DEBUG_MEM(" S\r");
@@ -247,8 +247,8 @@ void DRAMInitializeProc(DRAM_SYS_ATTR *DramAttr)
 
 /*===================================================================
 Function   : DRAMSetVRNUM()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 		  PhyRank:   Physical Rank number
@@ -285,14 +285,14 @@ void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
 
 /*===================================================================
 Function   : SetEndingAddr()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 		  VirRank:    Virtual Rank number
-		  Value:       (value) add or subtract value to this and after banks 
+		  Value:       (value) add or subtract value to this and after banks
 Output     : Void
-Purpose   : Set ending address of virtual rank specified by VirRank 
+Purpose   : Set ending address of virtual rank specified by VirRank
 ===================================================================*/
 
 void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* ending address
@@ -312,8 +312,8 @@ void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* ending address
 
 /*===================================================================
 Function   : InitDDR2()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
@@ -522,13 +522,13 @@ void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr)
 
 /*===================================================================
 Function   : InitDDR2_CHB()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
 Purpose   : Initialize DDR2 of CHB by standard sequence
-Reference  : 
+Reference  :
 ===================================================================*/
 /*//		                 DLL:	      Enable				  Reset
 static const  u32 CHB_MRS_DLL_150[2] =	{ 0x00020200 | (1 << 20), 0x00000800 };	// with 150 ohm (A17=1, A9=1), (A11=1)(cpu address)
@@ -569,7 +569,7 @@ void InitDDR2CHB(
 
     Data = 0x80;
     pci_write_config8(MEMCTRL, 0x54, Data);
-	
+
     // step3.
     //disable bank paging and multi page
     Data=pci_read_config8(MEMCTRL, 0x69);
@@ -579,18 +579,18 @@ void InitDDR2CHB(
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data |= 0x80;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
     //step 4. Initialize CHB begin
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data |= 0x40;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
     //Step 5. NOP command enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
     Data  |= 0x08;
     pci_write_config8(MEMCTRL, 0xd7, Data);
-   
+
     //Step 6.  issue a nop cycle,RegD3[7]  0 -> 1
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data &= 0x7F;
@@ -604,7 +604,7 @@ void InitDDR2CHB(
     // Loop 200us
     for (Idx = 0; Idx < 0x10; Idx++)
         WaitMicroSec(10);
-	
+
     // Step 8.
     // all banks precharge command enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
@@ -618,7 +618,7 @@ void InitDDR2CHB(
     pci_write_config8(MEMCTRL, 0xd3, Data);
     Data |=  0x80;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
    //step10. EMRS enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
@@ -661,7 +661,7 @@ void InitDDR2CHB(
     Data |= 0x00;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-    //step 14. MSR DLL Reset 
+    //step 14. MSR DLL Reset
     AccessAddr = CHB_MRS_DLL_150[1] >> 3;
     Data =(u8) (AccessAddr & 0xff);
     pci_write_config8(MEMCTRL, 0xd9, Data);
@@ -691,7 +691,7 @@ void InitDDR2CHB(
     Data |= 0x10;
     pci_write_config8(MEMCTRL, 0xd7, Data);
 
-   
+
    // step17. issue precharge all cycle
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data &= 0x7F;
@@ -718,7 +718,7 @@ void InitDDR2CHB(
 
     WaitMicroSec(200);
     }
-	
+
     //step22. MSR enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
@@ -730,7 +730,7 @@ void InitDDR2CHB(
     Data |= 0x00;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-  
+
     //the SDRAM parameters.(Burst Length, CAS# Latency , Write recovery etc.)
     //-------------------------------------------------------------
     //Burst Length : really offset Rx6c[1]
@@ -773,7 +773,7 @@ void InitDDR2CHB(
     pci_write_config8(MEMCTRL, 0xd3, Data);
     Data |=  0x80;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
     //step 25. EMRS enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
@@ -784,7 +784,7 @@ void InitDDR2CHB(
     Data &= 0xC7;
     Data |= 0x08;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
 
     //step 26. OCD default
      AccessAddr = (CHB_OCD_Default_150ohm) >> 3;
@@ -805,7 +805,7 @@ void InitDDR2CHB(
     pci_write_config8(MEMCTRL, 0xd3, Data);
     Data |=  0x80;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-	
+
      //step 25. EMRS enable
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
@@ -859,12 +859,12 @@ void InitDDR2CHB(
     Data |= 0x00;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-    //step 31.  exit the initialization mode 
+    //step 31.  exit the initialization mode
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data &= 0xBF;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-	
+
     //step 32. Enable bank paging and multi page
     Data=pci_read_config8(MEMCTRL, 0x69);
     Data |= 0x03;
@@ -874,13 +874,13 @@ void InitDDR2CHB(
 
 /*===================================================================
 Function   : InitDDR2CHC()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
 Purpose   : Initialize DDR2 of CHC by standard sequence
-Reference  : 
+Reference  :
 ===================================================================*/
 //                      DDR2                 CL=2          CL=3 CL=4   CL=5     (Burst type=interleave)(WR fine tune in code)
 static const u16 CHC_MRS_table[4] = { 0x22B, 0x23B, 0x24B, 0x25B };	// Use 1X-bandwidth MA table to init DRAM
@@ -1102,7 +1102,7 @@ void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr)
 	Status = VerifyChc();
 	if (Status != CB_SUCCESS)
 		PRINT_DEBUG_MEM("Error!!!!CHC init error!\r");
-	//step 31.  exit the initialization mode 
+	//step 31.  exit the initialization mode
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0x9F;
 	pci_write_config8(MEMCTRL, 0xdb, Data);

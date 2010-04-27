@@ -38,7 +38,7 @@ static u8 ldtreg[3] = {0x86, 0xa6, 0xc6};
 
 /* This functions sets KT890 link frequency and width to same values as
  * it has been setup on K8 side, by AMD NB init.
- */ 
+ */
 
 u8 k8t890_early_setup_ht(void)
 {
@@ -115,7 +115,7 @@ u8 k8t890_early_setup_ht(void)
 
 static int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {
-	
+
 	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
 	switch (size) {
 	case 1:

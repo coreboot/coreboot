@@ -37,7 +37,7 @@ static void model_f2x_init(device_t cpu)
 	x86_enable_cache();
 	x86_setup_mtrrs(36);
 	x86_mtrr_check();
-	
+
 	/* Update the microcode */
 	intel_update_microcode(microcode_updates);
 

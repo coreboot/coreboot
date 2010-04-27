@@ -1,5 +1,5 @@
 /*
- * Bootstrap code for the INTEL 
+ * Bootstrap code for the INTEL
  */
 
 #include <console/console.h>
@@ -18,7 +18,7 @@ void console_init(void)
 	struct console_driver *driver;
 	if(get_option(&console_loglevel, "debug_level"))
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-	
+
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
 			continue;
@@ -38,7 +38,7 @@ void console_tx_flush(void)
 {
 	struct console_driver *driver;
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		if (!driver->tx_flush) 
+		if (!driver->tx_flush)
 			continue;
 		driver->tx_flush();
 	}
@@ -99,7 +99,7 @@ void __attribute__((noreturn)) die(const char *msg)
 
 void console_init(void)
 {
-	static const char console_test[] = 
+	static const char console_test[] =
 		"\n\ncoreboot-"
 		COREBOOT_VERSION
 		COREBOOT_EXTRA_VERSION

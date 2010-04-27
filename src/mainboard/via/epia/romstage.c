@@ -27,13 +27,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
   #include "lib/generic_sdram.c"
 */
 
-static void enable_mainboard_devices(void) 
+static void enable_mainboard_devices(void)
 {
 	device_t dev;
 	/* dev 0 for southbridge */
-  
+
 	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
-  
+
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
 	}
@@ -41,7 +41,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x50, 7);
 	pci_write_config8(dev, 0x51, 0xff);
 #if 0
-	// This early setup switches IDE into compatibility mode before PCI gets 
+	// This early setup switches IDE into compatibility mode before PCI gets
 	// a chance to assign I/Os
 	//   movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
 	//   movb    $0x09, %dl
@@ -49,7 +49,7 @@ static void enable_mainboard_devices(void)
 	//   PCI_WRITE_CONFIG_BYTE
 	//
 #endif
-	/* we do this here as in V2, we can not yet do raw operations 
+	/* we do this here as in V2, we can not yet do raw operations
 	 * to pci!
 	 */
 	/* changed this to work correctly on later revisions of LB.
@@ -64,7 +64,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x42, 0);
 }
 
-static void enable_shadow_ram(void) 
+static void enable_shadow_ram(void)
 {
 	device_t dev = 0;
 	unsigned char shadowreg;
@@ -86,7 +86,7 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-	
+
 	enable_mainboard_devices();
 	enable_smbus();
 	enable_shadow_ram();
@@ -98,7 +98,7 @@ static void main(unsigned long bist)
 	sdram_set_registers((const struct mem_controller *) 0);
 	sdram_set_spd_registers((const struct mem_controller *) 0);
 	sdram_enable(0, (const struct mem_controller *) 0);
-	
+
 	/* Check all of memory */
 #if 0
 	ram_check(0x00000000, msr.lo);

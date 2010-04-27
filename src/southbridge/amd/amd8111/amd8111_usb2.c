@@ -11,7 +11,7 @@
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x70, 
+	pci_write_config32(dev, 0x70,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
@@ -23,7 +23,7 @@ static struct pci_operations lops_pci = {
 
 static void amd8111_usb2_enable(device_t dev)
 {
-	// Due to buggy USB2 we force it to disable. 
+	// Due to buggy USB2 we force it to disable.
 	dev->enabled = 0;
 	amd8111_enable(dev);
 	printk(BIOS_DEBUG, "USB2 disabled.\n");

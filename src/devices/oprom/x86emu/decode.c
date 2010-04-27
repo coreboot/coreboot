@@ -732,7 +732,7 @@ RETURNS:
 Value of scale * index
 
 REMARKS:
-Decodes scale/index of SIB byte and returns relevant offset part of 
+Decodes scale/index of SIB byte and returns relevant offset part of
 effective address.
 ****************************************************************************/
 static unsigned decode_sib_si(

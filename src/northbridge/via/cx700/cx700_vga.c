@@ -120,7 +120,7 @@ static int via_cx700_int15_handler(struct eregs *regs)
 		break;
 
         default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				regs->eax & 0xffff);
 		break;
 	}
@@ -170,7 +170,7 @@ static void vga_init(device_t dev)
 	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
 	// this is how it looks:
 	vga_enable_console();
-	
+
 	/* It's not clear if these need to be programmed before or after
 	 * the VGA bios runs. Try both, clean up later */
 	/* Set memory rate to 200MHz */

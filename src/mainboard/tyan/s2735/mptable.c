@@ -48,18 +48,18 @@ static void *smp_write_config_table(void *v)
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
                                 smp_write_ioapic(mc, 0x09, 0x20, res->base);
-                        }		
+                        }
 		}
 		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));
 		if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
                                 smp_write_ioapic(mc, 0x0a, 0x20, res->base);
-                        }		
+                        }
 		}
 	}
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
-*/	
+*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x0, 0x8, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x1, 0x8, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x0, 0x8, 0x2);
@@ -149,7 +149,7 @@ Compatibility Bus Address
  predefined range: 0x00000000--
 Compatibility Bus Address
  bus ID: 0 address modifier: add
- predefined range: 0x00000001	// There is no extension information... 
+ predefined range: 0x00000001	// There is no extension information...
 */
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);

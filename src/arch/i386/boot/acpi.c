@@ -7,7 +7,7 @@
  * Copyright (C) 2004 SUSE LINUX AG
  * Copyright (C) 2005-2009 coresystems GmbH
  *
- * ACPI FADT, FACS, and DSDT table support added by 
+ * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
  * Copyright (C) 2004 Nick Barker
  *
@@ -15,12 +15,12 @@
  * 2005.9 yhlu add SRAT table generation
  */
 
-/* 
+/*
  * Each system port implementing ACPI has to provide two functions:
- * 
+ *
  *   write_acpi_tables()
  *   acpi_dump_apics()
- *   
+ *
  * See Kontron 986LCD-M port for a good example of an ACPI implementation
  * in coreboot.
  */
@@ -59,10 +59,10 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	if (rsdp->xsdt_address) {
 		xsdt = (acpi_xsdt_t *)((u32)rsdp->xsdt_address);
 	}
-	
+
 	/* This should always be MAX_ACPI_TABLES */
 	entries_num = ARRAY_SIZE(rsdt->entry);
-	
+
 	for (i = 0; i < entries_num; i++) {
 		if(rsdt->entry[i] == 0)
 			break;
@@ -120,10 +120,10 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 	lapic->type=0;
 	lapic->length=sizeof(acpi_madt_lapic_t);
 	lapic->flags=1;
-	
+
 	lapic->processor_id=cpu;
 	lapic->apic_id=apic;
-	
+
 	return(lapic->length);
 }
 
@@ -146,16 +146,16 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 	return current;
 }
 
-int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base) 
+int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base)
 {
 	ioapic->type=1;
 	ioapic->length=sizeof(acpi_madt_ioapic_t);
 	ioapic->reserved=0x00;
 	ioapic->gsi_base=gsi_base;
-	
+
 	ioapic->ioapic_id=id;
 	ioapic->ioapic_addr=addr;
-	
+
 	return(ioapic->length);
 }
 
@@ -168,7 +168,7 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 	irqoverride->source=source;
 	irqoverride->gsirq=gsirq;
 	irqoverride->flags=flags;
-	
+
 	return(irqoverride->length);
 }
 
@@ -177,29 +177,29 @@ int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 {
 	lapic_nmi->type=4;
 	lapic_nmi->length=sizeof(acpi_madt_lapic_nmi_t);
-	
+
 	lapic_nmi->flags=flags;
 	lapic_nmi->processor_id=cpu;
 	lapic_nmi->lint=lint;
-	
+
 	return(lapic_nmi->length);
 }
 
 void acpi_create_madt(acpi_madt_t *madt)
 {
 #define LOCAL_APIC_ADDR	0xfee00000ULL
-	
+
 	acpi_header_t *header=&(madt->header);
 	unsigned long current=(unsigned long)madt+sizeof(acpi_madt_t);
-	
+
 	memset((void *)madt, 0, sizeof(acpi_madt_t));
-	
+
 	/* fill out header fields */
 	memcpy(header->signature, "APIC", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	
+
 	header->length = sizeof(acpi_madt_t);
 	header->revision = 1;
 
@@ -207,10 +207,10 @@ void acpi_create_madt(acpi_madt_t *madt)
 	madt->flags	= 0x1; /* PCAT_COMPAT */
 
 	current = acpi_fill_madt(current);
-	
+
 	/* recalculate length */
 	header->length= current - (unsigned long)madt;
-	
+
 	header->checksum	= acpi_checksum((void *)madt, header->length);
 }
 
@@ -219,23 +219,23 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 
 	acpi_header_t *header=&(mcfg->header);
 	unsigned long current=(unsigned long)mcfg+sizeof(acpi_mcfg_t);
-	
+
 	memset((void *)mcfg, 0, sizeof(acpi_mcfg_t));
-	
+
 	/* fill out header fields */
 	memcpy(header->signature, "MCFG", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	
+
 	header->length = sizeof(acpi_mcfg_t);
 	header->revision = 1;
 
 	current = acpi_fill_mcfg(current);
-	
+
 	/* recalculate length */
 	header->length= current - (unsigned long)mcfg;
-	
+
 	header->checksum	= acpi_checksum((void *)mcfg, header->length);
 }
 
@@ -294,7 +294,7 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek, u32
 
         mem->proximity_domain = node;
 
-	mem->flags = flags; 
+	mem->flags = flags;
 
         return(mem->length);
 }
@@ -356,15 +356,15 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header=&(hpet->header);
 	acpi_addr_t *addr=&(hpet->addr);
-	
+
 	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
-	
+
 	/* fill out header fields */
 	memcpy(header->signature, "HPET", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	
+
 	header->length = sizeof(acpi_hpet_t);
 	header->revision = 1;
 
@@ -378,12 +378,12 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	hpet->id	= 0x102282a0; /* AMD ? */
 	hpet->number	= 0;
 	hpet->min_tick  = 4096;
-	
+
 	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 void acpi_create_facs(acpi_facs_t *facs)
 {
-	
+
 	memset( (void *)facs,0, sizeof(acpi_facs_t));
 
 	memcpy(facs->signature, "FACS", 4);
@@ -398,46 +398,46 @@ void acpi_create_facs(acpi_facs_t *facs)
 }
 
 void acpi_write_rsdt(acpi_rsdt_t *rsdt)
-{ 
+{
 	acpi_header_t *header=&(rsdt->header);
-	
+
 	/* fill out header fields */
 	memcpy(header->signature, "RSDT", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	
+
 	header->length = sizeof(acpi_rsdt_t);
 	header->revision = 1;
-	
+
 	/* fill out entries */
 
 	// entries are filled in later, we come with an empty set.
-	
+
 	/* fix checksum */
-	
+
 	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
 }
 
 void acpi_write_xsdt(acpi_xsdt_t *xsdt)
-{ 
+{
 	acpi_header_t *header=&(xsdt->header);
-	
+
 	/* fill out header fields */
 	memcpy(header->signature, "XSDT", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	
+
 	header->length = sizeof(acpi_xsdt_t);
 	header->revision = 1;
-	
+
 	/* fill out entries */
 
 	// entries are filled in later, we come with an empty set.
-	
+
 	/* fix checksum */
-	
+
 	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));
 }
 
@@ -448,7 +448,7 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
 	memcpy(rsdp->oem_id, OEM_ID, 6);
 	rsdp->length		= sizeof(acpi_rsdp_t);
 	rsdp->rsdt_address	= (u32)rsdt;
-	/* Some OSes expect an XSDT to be present for RSD PTR 
+	/* Some OSes expect an XSDT to be present for RSD PTR
 	 * revisions >= 2. If we don't have an ACPI XSDT, force
 	 * ACPI 1.0 (and thus RSD PTR revision 0)
 	 */
@@ -547,7 +547,7 @@ void *acpi_find_wakeup_vector(void)
 
 	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
 	rsdt = (acpi_rsdt_t *) rsdp->rsdt_address;
-	
+
 	end = (char *) rsdt + rsdt->header.length;
 	printk(BIOS_DEBUG, "RSDT found at %p ends at %p\n", rsdt, end);
 

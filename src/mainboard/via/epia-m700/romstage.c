@@ -547,7 +547,7 @@ void main(unsigned long bist)
 	/*
 	 * For coreboot most time of S3 resume is the same as normal boot,
 	 * so some memory area under 1M become dirty, so before this happen,
-	 * I need to backup the content of mem to top-mem. 
+	 * I need to backup the content of mem to top-mem.
 	 *
 	 * I will reserve the 1M top-men in LBIO table in coreboot_table.c
 	 * and recovery the content of 1M-mem in wakeup.c.
@@ -628,7 +628,7 @@ void main(unsigned long bist)
 		);
 #endif
 
-		/* 
+		/*
 		 * WAKE_MEM_INFO is inited in get_set_top_available_mem()
 		 * in tables.c these two memcpy() not not be enabled if set
 		 * the MTRR around this two lines.

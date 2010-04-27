@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Written by Stefan Reinauer <stepan@openbios.org>.
- * ACPI FADT, FACS, and DSDT table support added by 
+ * ACPI FADT, FACS, and DSDT table support added by
  *
  * Copyright (C) 2004 Stefan Reinauer <stepan@openbios.org>
  * Copyright (C) 2005 Nick Barker <nick.barker9@btinternet.com>
@@ -73,7 +73,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* IRQ0 -> APIC IRQ2. */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 0, 2, 0x0);	
+						current, 0, 0, 2, 0x0);
 
 	/* Create all subtables for processors. */
 	current = acpi_create_madt_lapic_nmis(current,

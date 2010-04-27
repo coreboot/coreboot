@@ -48,7 +48,7 @@ uint64_t uma_memory_base, uma_memory_size;
 
 /***************************************************
 * This board, the TIM-8690 has two Marvel 88e5056 PCI-E
-* 10/100/1000 chips on board. 
+* 10/100/1000 chips on board.
 * Both of their pin PERSTn pins are connected to GPIO 5 of the
 * SB600 southbridge.
 ****************************************************/

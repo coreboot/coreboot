@@ -28,7 +28,7 @@ static int lsmbus_recv_byte(device_t dev)
 
 	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
-	
+
 	return do_smbus_recv_byte(res->base, device);
 }
 
@@ -51,7 +51,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 
 	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
-	
+
 	return do_smbus_read_byte(res->base, device, address);
 }
 
@@ -62,7 +62,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 
 	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
-	
+
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
@@ -109,7 +109,7 @@ static void acpi_init(struct device *dev)
 	 */
 	byte = pci_read_config8(dev, 0x41);
 	pci_write_config8(dev, 0x41, byte | (1<<6)|(1<<5));
-	
+
 	/* power on after power fail */
 	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
@@ -126,7 +126,7 @@ static void acpi_init(struct device *dev)
 	 */
 	byte = pci_read_config8(dev, 0x4a);
 	pci_write_config8(dev, 0x4a, byte | (1<<6));
-	
+
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
@@ -177,12 +177,12 @@ static void acpi_enable_resources(device_t dev)
 
 	/* Set the class code */
 	pci_write_config32(dev, 0x60, 0x06800000);
-	
+
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x7c, 
+	pci_write_config32(dev, 0x7c,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
@@ -204,7 +204,7 @@ static struct device_operations acpi_ops  = {
 	.init             = acpi_init,
 	.scan_bus         = scan_static_bus,
 	/*  We don't need amd8111_enable, chip ops takes care of it.
-	 *  It could be useful if these devices were not 
+	 *  It could be useful if these devices were not
 	 *  enabled by default.
 	 */
 //	.enable           = amd8111_enable,

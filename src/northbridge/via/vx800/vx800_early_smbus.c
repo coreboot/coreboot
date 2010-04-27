@@ -171,10 +171,10 @@ static void enable_smbus(void)
 }
 
 /**
- * A fixup for some systems that need time for the SMBus to "warm up". This is 
- * needed on some VT823x based systems, where the SMBus spurts out bad data for 
- * a short time after power on. This has been seen on the VIA Epia series and 
- * Jetway J7F2-series. It reads the ID byte from SMBus, looking for 
+ * A fixup for some systems that need time for the SMBus to "warm up". This is
+ * needed on some VT823x based systems, where the SMBus spurts out bad data for
+ * a short time after power on. This has been seen on the VIA Epia series and
+ * Jetway J7F2-series. It reads the ID byte from SMBus, looking for
  * known-good data from a slot/address. Exits on either good data or a timeout.
  *
  * TODO: This should probably go into some global file, but one would need to

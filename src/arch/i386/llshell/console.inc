@@ -149,7 +149,7 @@ jmp	console0
 	jz	11f		; \
 	__CONSOLE_INLINE_TX_AL	; \
 	jmp	10b		; \
-11:	
+11:
 
 
 #define CONSOLE_EMERG_TX_CHAR(byte)            __CONSOLE_TX_CHAR(byte)
@@ -234,7 +234,7 @@ jmp	console0
 #define CONSOLE_SPEW_INLINE_TX_STRING(string) __CONSOLE_INLINE_TX_STRING(string)
 
 	/* uses:	esp, ax, dx */
-console_tx_al:	
+console_tx_al:
 	__CONSOLE_INLINE_TX_AL
 	RETSP
 
@@ -333,7 +333,7 @@ console_tx_string:
 	cmp	$0, %al
 	jne	9f
 	RETSP
-9:	
+9:
 	__CONSOLE_INLINE_TX_AL
 	jmp	console_tx_string
 

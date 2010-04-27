@@ -1,6 +1,6 @@
 #
 # Makefile for k8redump utility
-# 
+#
 # Original from Stefan Reinauer <stepan@openbios.org>
 #
 
@@ -14,9 +14,9 @@ PREFIX  = /usr/local
 CFLAGS  = -Os -Wall -Werror
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), SunOS)
-LDFLAGS = -lpci 
+LDFLAGS = -lpci
 else
-LDFLAGS = -lpci -lz -static 
+LDFLAGS = -lpci -lz -static
 STRIP_ARGS = -s
 endif
 
@@ -33,7 +33,7 @@ clean:
 
 distclean: clean
 	rm -f $(PROGRAM) .dependencies
-	
+
 dep:
 	@$(CC) -MM *.c > .dependencies
 

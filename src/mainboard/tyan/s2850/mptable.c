@@ -29,7 +29,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
                 dst_node = (config_map >> 4) & 7;
                 dst_link = (config_map >> 8) & 3;
                 bus_base = (config_map >> 16) & 0xff;
-#if 0                           
+#if 0
                 printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
                         dst_node, dst_link, bus_base,
                         reg, config_map);
@@ -90,8 +90,8 @@ static void *smp_write_config_table(void *v)
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
-                }     
-                else {  
+                }
+                else {
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:01.0, using defaults\n");
 
                         bus_8111_1 = 2;
@@ -110,12 +110,12 @@ static void *smp_write_config_table(void *v)
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(1);
 #else
-        apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+        apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
-        apicid_8111 = apicid_base+0; 
+        apicid_8111 = apicid_base+0;
 
 	smp_write_ioapic(mc, apicid_8111, 0x11, 0xfec00000);
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 
         smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_8111, 0x0);
@@ -133,7 +133,7 @@ static void *smp_write_config_table(void *v)
 
 
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chain_0, (2<<2)|3, apicid_8111, 0x13);
-	
+
 //On Board AMD USB
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, apicid_8111, 0x13);
 

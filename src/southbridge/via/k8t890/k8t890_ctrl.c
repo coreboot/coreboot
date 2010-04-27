@@ -23,7 +23,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
-/* We support here K8M890/K8T890 and VT8237R PCI1/Vlink which setup is not in separate 
+/* We support here K8M890/K8T890 and VT8237R PCI1/Vlink which setup is not in separate
  * PCI device 0:11.7, but it is mapped to PCI 0:0.7 (0x70-0x7c for PCI1)
  */
 

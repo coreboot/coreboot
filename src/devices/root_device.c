@@ -27,7 +27,7 @@
 #include <device/pci.h>
 #include <reset.h>
 
-/** 
+/**
  * Read the resources for the root device,
  * that encompass the resources for the entire system.
  * @param root Pointer to the device structure for the system root device
@@ -54,9 +54,9 @@ void root_dev_set_resources(device_t root)
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
- * and is specified in the config file. Typical examples are the 'PNP' 
- * devices on a legacy ISA/LPC bus. There is no need of probing of any kind, 
- * the only thing we have to do is to walk through the bus and 
+ * and is specified in the config file. Typical examples are the 'PNP'
+ * devices on a legacy ISA/LPC bus. There is no need of probing of any kind,
+ * the only thing we have to do is to walk through the bus and
  * enable or disable devices as indicated in the config file.
  *
  * On the other hand, some devices are virtual and their existence is
@@ -93,7 +93,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 				child->ops->enable(child);
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk(BIOS_DEBUG, "smbus: %s[%d]->",  
+ 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
 					dev_path(child->bus->dev), child->bus->link );
 			}
 			printk(BIOS_DEBUG, "%s %s\n",

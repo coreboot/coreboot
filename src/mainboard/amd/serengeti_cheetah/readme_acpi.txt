@@ -6,7 +6,7 @@ At this time, For acpi support We got
 
 The developers need to change for different MB
 
-Change dsdt.asl, according to MB layout 
+Change dsdt.asl, according to MB layout
 	pci1, pci2, pci3, pci4, ...., pci8
 	if there is HT-IO board, may use pci2.asl.... to create ssdt2.c, and ssdt3,c and ssdt4.c, ....ssdt8.c
 
@@ -17,7 +17,7 @@ Change acpi_tables.c
 Regarding pci bridge apic and pic
 	need to modify entries amd8111.asl and amd8131.asl and amd8151.asl.... acording to your MB laybout, it is like that in mptable.c
 
-About other chipsets, need to develop their special asl such as 
+About other chipsets, need to develop their special asl such as
 	ck804.asl  --- NB ck804
 	bcm5785.asl or bcm5780.asl ---- Serverworks HT1000/HT2000
 
@@ -27,4 +27,4 @@ use c to delele hex file
 yhlu
 
 09/18/2005
-	
+

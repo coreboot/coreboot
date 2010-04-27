@@ -2,7 +2,7 @@ chip northbridge/via/vt8623
 
 	device apic_cluster 0 on
 		chip cpu/via/model_c3
-			device apic 0 on  end 
+			device apic 0 on  end
 		end
 	end
 
@@ -44,7 +44,7 @@ chip northbridge/via/vt8623
 
 				end
 			end
-			
+
 			device pci 11.1 on  end # IDE
 			# 2-4 non existant?
 			device pci 11.5 on  end # AC97 Audio
@@ -55,7 +55,7 @@ chip northbridge/via/vt8623
 		chip southbridge/ricoh/rl5c476
 			register "enable_cf" = "1"
 			device pci 0a.0 on end
-			device pci 0a.1 on end	
+			device pci 0a.1 on end
 		end
 	end
 end

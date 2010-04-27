@@ -16,8 +16,8 @@ static void print_debug_pci_dev(unsigned dev)
 static inline void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0xff, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -35,7 +35,7 @@ static void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
-	
+
 	for(i = 0; i < 256; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
@@ -61,8 +61,8 @@ static void dump_pci_device(unsigned dev)
 static inline void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0xff, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0xff, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -104,8 +104,8 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 #if CONFIG_USE_PRINTK_IN_CAR
 			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 #else
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 #endif
@@ -141,8 +141,8 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 #if CONFIG_USE_PRINTK_IN_CAR
                         printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 #else
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".1: ");
 			print_debug_hex8(device);
 #endif
@@ -188,7 +188,7 @@ static inline void dump_smbus_registers(void)
                 print_debug_hex8(device);
 #endif
                 for(j = 0; j < 256; j++) {
-                	int status; 
+                	int status;
                         unsigned char byte;
                         status = smbus_read_byte(device, j);
                         if (status < 0) {
@@ -212,10 +212,10 @@ static inline void dump_smbus_registers(void)
 #endif
                 }
                 print_debug("\n");
-	}	
+	}
 }
 
-static inline void dump_io_resources(unsigned port) 
+static inline void dump_io_resources(unsigned port)
 {
 
 	int i;
@@ -257,13 +257,13 @@ static inline void dump_mem(unsigned start, unsigned end)
 		if((i & 0xf)==0) {
 #if CONFIG_USE_PRINTK_IN_CAR
 			printk(BIOS_DEBUG, "\n%08x:", i);
-#else	
+#else
 			print_debug("\n");
 			print_debug_hex32(i);
 			print_debug(":");
 #endif
 		}
-#if CONFIG_USE_PRINTK_IN_CAR	
+#if CONFIG_USE_PRINTK_IN_CAR
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
 #else
 		print_debug(" ");

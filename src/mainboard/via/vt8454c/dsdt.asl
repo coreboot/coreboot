@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2004 Nick Barker <Nick.Barker9@btinternet.com>
  * Copyright (C) 2007-2009 coresystems GmbH
  *
@@ -22,7 +22,7 @@
 
 DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 {
-	/*  
+	/*
 	 * Define the main processor
 	 */
 	Scope (\_PR)
@@ -38,18 +38,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 	Name (\_S0, Package () {0x00, 0x00, 0x00, 0x00 })
 	Name (\_S5, Package () {0x02, 0x02, 0x00, 0x00 })
 
-	Scope (\) {     
-		Name (PICF , 0)		// Global flag indicating whether to use PIC or APIC mode  
+	Scope (\) {
+		Name (PICF , 0)		// Global flag indicating whether to use PIC or APIC mode
 		Method ( _PIC,1)	// The OS is calling this
 		{
 			Store( Arg0 , PICF)
 		}
-	} // end of \ scope 
+	} // end of \ scope
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
     	{
-		/* Define how interrupt Link A is plumbed in */ 
+		/* Define how interrupt Link A is plumbed in */
 		Device (LNKA)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -61,7 +61,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				Return (0x0B)
  			}
 
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (CRSP, ResourceTemplate () {
@@ -79,7 +79,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
                 	}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -99,16 +99,16 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
                 	}
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
-		} // End of LNKA 
 
-		/* Define how interrupt Link B is plumbed in */ 
+		} // End of LNKA
+
+		/* Define how interrupt Link B is plumbed in */
 		Device (LNKB)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -120,7 +120,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				Return (0x0B)
  			}
 
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (CRSP, ResourceTemplate () {
@@ -138,7 +138,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
                 	}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -159,16 +159,16 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
+
 		} // End of LNKB
 
-		/* Define how interrupt Link C is plumbed in */ 
+		/* Define how interrupt Link C is plumbed in */
 		Device (LNKC)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -180,7 +180,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				Return (0x0B)
  			}
 
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (CRSP, ResourceTemplate () {
@@ -198,7 +198,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
                 	}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -219,16 +219,16 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
+
 		} // End of LNKC
 
-		/* Define how interrupt Link D is plumbed in */ 
+		/* Define how interrupt Link D is plumbed in */
 		Device (LNKD)
 		{
 			Name (_HID, EisaId ("PNP0C0F"))
@@ -240,7 +240,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				Return (0x0B)
  			}
 
-			/* Current Resources - return irq set up in BIOS */  
+			/* Current Resources - return irq set up in BIOS */
 			Method (_CRS, 0, NotSerialized)
 			{
 				Name (CRSP, ResourceTemplate () {
@@ -258,7 +258,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
                 	}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
-			 * happy 
+			 * happy
 			 */
 			Method (_PRS, 0, NotSerialized)
 			{
@@ -279,14 +279,14 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
                          * Linux is more than happy not to tinker with irq
-			 * assignments as long as the CRS and STA functions 
+			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
 			Method (_SRS, 1, NotSerialized ) {}
 			/* Disable - dummy function to keep Linux ACPI happy */
 			Method (_DIS, 0, NotSerialized ) {}
- 
-		} // End of LNKD 
+
+		} // End of LNKD
 
 		/* PCI Root Bridge */
 		Device (PCI0)

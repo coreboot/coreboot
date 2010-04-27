@@ -35,7 +35,7 @@ static void enable_smbus(void)
 	// set IO base address to SMBUS_IO_BASE
 	pci_write_config32(dev, 0x90, SMBUS_IO_BASE | 1);
 
-	// Enable SMBus 
+	// Enable SMBus
 	c = pci_read_config8(dev, 0xd2);
 	c |= 5;
 	pci_write_config8(dev, 0xd2, c);
@@ -244,7 +244,7 @@ static unsigned char smbus_read_byte(unsigned char devAdr, unsigned char bIndex)
 
 }
 #endif
-/* for reference, here is the fancier version which we will use at some 
+/* for reference, here is the fancier version which we will use at some
  * point
  */
 # if 0

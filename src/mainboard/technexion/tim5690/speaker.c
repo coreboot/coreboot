@@ -54,7 +54,7 @@ void speaker_init(uint8_t time) {
     * CounterSelect, bit[7:6]=10b, Select counter 2.
     */
    outb(0xb6, 0x43);
-   
+
 
    /* SB600 RRG.
     * TimerCh2- RW - 8 bits - [IO_Reg: 42h].

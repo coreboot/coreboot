@@ -98,7 +98,7 @@ config USBDEBUG_DIRECT
 
 	  It also requires a USB2 controller which supports the EHCI
 	  Debug Port capability. Controllers which are known to work:
-	
+
 	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
 	    * 8086:24cd Intel ICH4/ICH4-M
 	    * 8086:24dd Intel ICH5

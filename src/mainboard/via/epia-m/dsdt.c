@@ -1,12 +1,12 @@
 /*
- * 
+ *
  * Intel ACPI Component Architecture
  * ASL Optimizing Compiler version 20060127 [Apr 23 2006]
  * Copyright (C) 2000 - 2006 Intel Corporation
  * Supports ACPI Specification Revision 3.0a
- * 
+ *
  * Compilation of "dsdt.asl" - Wed Sep  6 11:36:08 2006
- * 
+ *
  * C source code output
  *
  */

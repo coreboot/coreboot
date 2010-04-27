@@ -11,7 +11,7 @@ static void main(void)
 	if (!(dcl & (1 << 8))) {
 		if (dimms == 4) {
 			async_lat = 9;
-		} 
+		}
 		else {
 			async_lat = 8;
 		}

@@ -7,7 +7,7 @@
 #ifndef CPU_AMD_VR_H
 #define CPU_AMD_VR_H
 
-#define VRC_INDEX				0xAC1C	// Index register 
+#define VRC_INDEX				0xAC1C	// Index register
 #define VRC_DATA				0xAC1E	// Data register
 #define VR_UNLOCK				0xFC53	// Virtual register unlock code
 #define NO_VR					-1		// No virtual registers
@@ -24,7 +24,7 @@
        #define GET_ERROR        0x05
        #define SET_VSM_TYPE     0x06
 	#define SIGNATURE			0x03
-       #define VSA2_SIGNATURE	0x56534132	// 'VSA2' returned in EAX 
+       #define VSA2_SIGNATURE	0x56534132	// 'VSA2' returned in EAX
 
     #define GET_HW_INFO			0x04
     #define VSM_VERSION			0x05
@@ -32,7 +32,7 @@
     #define MSR_ACCESS          0x07
     #define GET_DESCR_INFO		0x08
     #define PCI_INT_AB			0x09	// GPIO pins for INTA# and INTB#
-    #define PCI_INT_CD			0x0A	// GPIO pins for INTC# and INTD#	
+    #define PCI_INT_CD			0x0A	// GPIO pins for INTC# and INTD#
     #define WATCHDOG			0x0B	// Watchdog timer
 
     #define MAX_MISC           	WATCHDOG
@@ -48,7 +48,7 @@
 	#define CODEC_TYPE      	0x05
 	#define STATE_INDEX     	0x06
 	#define STATE_DATA      	0x07
-	#define AUDIO_IRQ	      	0x08	// For use by native audio drivers 
+	#define AUDIO_IRQ	      	0x08	// For use by native audio drivers
 	#define STATUS_PTR			0x09	// For use by native audio drivers
 	#define MAX_AUDIO           STATUS_PTR
 
@@ -86,7 +86,7 @@
 			#define VG_CFG_DPMS_V		0x0080	// VSYNC mask bit
 		#define VG_VESA_SV_RST		0x0020	// VESA Save/Restore state flag
 			#define VG_VESA_RST			0x0000	// VESA Restore state
-			#define VG_VESA_SV			0x0020	// VESA Save state 
+			#define VG_VESA_SV			0x0020	// VESA Save state
 		#define VG_FRSH_MODE		0x0002	// Mode refresh flag
 		#define VG_FRSH_TIMINGS		0x0001	// Timings only refresh flag
 
@@ -183,7 +183,7 @@
 			#define VG_TV_PAL			0x0010	// PAL output format
 			#define VG_TV_HDTV			0x0020	// HDTV output format
 
-		// The meaning of the VG_TV_RES field is dependent on the selected  
+		// The meaning of the VG_TV_RES field is dependent on the selected
 		// encoder and output format.  The translations are:
 		//		ADV7171 - Not Used
 		//		SAA7127 - Not Used
@@ -191,7 +191,7 @@
 		//			LO  -> 720x480p
 		//	   		MED -> 1280x720p
 		//			HI  -> 1920x1080i
-		// 		FS454   - Both SD and HD resolutions	
+		// 		FS454   - Both SD and HD resolutions
 		// 			SD Resolutions - NTSC and PAL
 		//				LO  -> 640x480
 		//	   			MED -> 800x600
@@ -331,8 +331,8 @@
 	#define RW_PIRQ				0x06	// read/write PCI IRQ router regs in SB Func0 cfg space
 	#define SLPB_CLEAR			0x07	// clear sleep button GPIO status's
 	#define PIRQ_ROUTING		0x08	// read the PCI IRQ routing based on BIOS setup
-	#define ACPI_UNUSED2		0x09	
-	#define ACPI_UNUSED3		0x0A	
+	#define ACPI_UNUSED2		0x09
+	#define ACPI_UNUSED3		0x0A
 	#define PIC_INTERRUPT		0x0B
 	#define ACPI_PRESENT		0x0C
 	#define	ACPI_GEN_COMMAND	0x0D
@@ -380,7 +380,7 @@
 
 #define VRC_DEBUGGER			0x0E
 	#define MAX_DEBUGGER        NO_VR
-						   
+
 
 #define	VRC_STR					0x0F		// Virtual Register class
 	#define RESTORE_ADDR		0x00		// Physical address of MSR restore table
@@ -404,7 +404,7 @@
 
 #define	VRC_SYSINFO				0x12		// Virtual Register class
 	#define	VRC_SI_VERSION				0x00		// Sysinfo VSM version
-	#define	VRC_SI_CPU_MHZ				0x01	// CPU speed in MHZ 
+	#define	VRC_SI_CPU_MHZ				0x01	// CPU speed in MHZ
 	#define	VRC_SI_CHIPSET_BASE_LOW		0x02
 	#define	VRC_SI_CHIPSET_BASE_HI		0x03
 	#define	VRC_SI_CHIPSET_ID			0x04

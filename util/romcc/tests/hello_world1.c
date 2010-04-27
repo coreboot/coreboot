@@ -66,7 +66,7 @@ void uart_wait_to_tx_byte(void)
 
 void uart_wait_until_sent(void)
 {
-	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40)) 
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
 		;
 }
 
@@ -96,7 +96,7 @@ void uart_init(void)
 void __console_tx_char(unsigned char byte)
 {
 	uart_tx_byte(byte);
-		
+
 }
 
 void __console_tx_string(char *str)

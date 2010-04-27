@@ -14,7 +14,7 @@ config BOARD_PCENGINES_ALIX1C
 
 config MAINBOARD_DIR
 	string
-	default pcengines/alix1c 
+	default pcengines/alix1c
 	depends on BOARD_PCENGINES_ALIX1C
 
 config MAINBOARD_PART_NUMBER

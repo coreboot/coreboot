@@ -316,7 +316,7 @@ static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 
 	return carry_over;
 }
-#endif 
+#endif
 #endif // CONFIG_AMDMCT
 
 

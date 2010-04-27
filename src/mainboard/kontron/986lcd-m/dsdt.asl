@@ -34,7 +34,7 @@ DefinitionBlock(
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
-	
+
 	//#include "acpi/thermal.asl"
 
 	Scope (\_SB) {

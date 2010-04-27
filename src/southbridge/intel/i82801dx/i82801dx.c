@@ -38,7 +38,7 @@ void i82801dx_enable(device_t dev)
 
 	// Calculate disable bit position for specified device:function
 	// NOTE: For ICH-4, only the following devices can be disabled:
-	//               D31: F0, F1, F3, F5, F6, 
+	//               D31: F0, F1, F3, F5, F6,
 	//               D29: F0, F1, F2, F7
 
 	if (PCI_SLOT(dev->path.pci.devfn) == 31) {

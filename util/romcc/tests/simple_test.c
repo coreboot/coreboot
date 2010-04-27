@@ -78,7 +78,7 @@ void uart_wait_to_tx_byte(void)
 
 void uart_wait_until_sent(void)
 {
-	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40)) 
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
 		;
 }
 
@@ -170,7 +170,7 @@ static void and(void)
 	i = 1;
 	j = 2;
 	k = i && j;
-	
+
 }
 static void and_test(void)
 {
@@ -236,9 +236,9 @@ static void fun(void)
 static void func(void)
 {
 	int bar, baz;
- 	int i; 
-  
-	baz = add(1, 2); 
+ 	int i;
+
+	baz = add(1, 2);
 	baz = add(1, 2);
 	bar = 1;
 	baz = 2;

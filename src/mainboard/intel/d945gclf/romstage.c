@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2008 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -105,7 +105,7 @@ static void ich7_enable_lpc(void)
 static void early_superio_config_lpc47m15x(void)
 {
 	device_t dev;
-	
+
 	dev=PNP_DEV(0x2e, LPC47M15X_SP1);
 	pnp_enter_conf_state(dev);
 
@@ -276,7 +276,7 @@ void main(unsigned long bist)
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
-	
+
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
@@ -286,8 +286,8 @@ void main(unsigned long bist)
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();
 
-	/* This should probably go away. Until now it is required 
-	 * and mainboard specific 
+	/* This should probably go away. Until now it is required
+	 * and mainboard specific
 	 */
 	rcba_config();
 
@@ -331,7 +331,7 @@ void main(unsigned long bist)
 		 * memory completely, but that's a wonderful clean up task for another
 		 * day.
 		 */
-		if (resume_backup_memory) 
+		if (resume_backup_memory)
 			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */

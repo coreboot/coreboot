@@ -12,13 +12,13 @@
 	{linkc, AVAILABLE_IRQS}, {linkd, AVAILABLE_IRQS}}, slot, 0}
 
 /*  Each IRQ_SLOT entry consists of:
- *  bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  
+ *  bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu
  */
 
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,		/* u16 version   */
-	32+16*CONFIG_IRQ_SLOT_COUNT,	/* there can be total CONFIG_IRQ_SLOT_COUNT 
+	32+16*CONFIG_IRQ_SLOT_COUNT,	/* there can be total CONFIG_IRQ_SLOT_COUNT
 				 * devices on the bus */
 	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
 	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */
@@ -28,7 +28,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x00,			/* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	/* u8 rfu[11] */
 	0x00,			/*  u8 checksum , mod 256 checksum must give
-				 *  zero, will be corrected later 
+				 *  zero, will be corrected later
 				 */
 	{
 

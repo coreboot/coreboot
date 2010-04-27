@@ -256,12 +256,12 @@ set_address (hci_t *controller, int speed)
 	}
 	mdelay (50);
 	dev->address = adr;
-	dev->descriptor = get_descriptor (dev, gen_bmRequestType 
+	dev->descriptor = get_descriptor (dev, gen_bmRequestType
 		(device_to_host, standard_type, dev_recp), 1, 0, 0);
 	dd = (device_descriptor_t *) dev->descriptor;
 
 	printf ("device 0x%04x:0x%04x is USB %x.%x ",
-		 dd->idVendor, dd->idProduct,	
+		 dd->idVendor, dd->idProduct,
 		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
 	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
 

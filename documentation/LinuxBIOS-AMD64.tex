@@ -1,7 +1,7 @@
 %
 % This document is released under the GPL
 % Initially written by Stefan Reinauer, <stepan@coresystems.de>
-% 
+%
 
 \documentclass[titlepage,12pt]{article}
 \usepackage{a4}
@@ -38,7 +38,7 @@
 
 \maketitle
 
-\thispagestyle{empty}                                                           
+\thispagestyle{empty}
 
 \tableofcontents
 
@@ -67,7 +67,7 @@ find errors in the following descriptions, contact
  \item 2009/04/19 replace LinuxBIOS with coreboot
  \item 2004/06/02 url and language fixes from Ken Fuchs $<$kfuchs@winternet.com$>$
  \item 2004/02/10 acpi and option rom updates
- \item 2003/11/18 initial release 
+ \item 2003/11/18 initial release
  \end{itemize}
 
 
@@ -78,7 +78,7 @@ find errors in the following descriptions, contact
 
 \section{What is coreboot?}
 
-coreboot aims to replace the normal BIOS found on x86, AMD64, PPC, 
+coreboot aims to replace the normal BIOS found on x86, AMD64, PPC,
 Alpha, and other machines with a Linux kernel that can boot Linux from a cold
 start. The startup code of an average coreboot port is about 500 lines of
 assembly and 5000 lines of C. It executes 16 instructions to get into 32bit
@@ -131,7 +131,7 @@ $ cd coreboot
 
 You can get the entire source tree via SVN:
 
-{ \small 
+{ \small
 \begin{verbatim}
 $ svn co svn://coreboot.org/repos/trunk/coreboot-v2
 \end{verbatim}
@@ -151,7 +151,7 @@ is available at \url{http://qa.coreboot.org/}.
 Due to major structural enhancements to \hbox{coreboot}, AMD64 support
 is only available in the \texttt{coreboot-v2} tree. This tree reflects (as
 of November 2003) coreboot version 1.1.5 and will lead to coreboot 2.0
-when finished.  Most x86 hardware is currently only supported by the 
+when finished.  Most x86 hardware is currently only supported by the
 coreboot 1.0 tree.
 
 %
@@ -163,7 +163,7 @@ To support a large variety of existing hardware coreboot allows for a
 lot of configuration options that can be tweaked in several ways:
 
 \begin{itemize}
-\item 
+\item
 Firmware image specific configuration options can be set in the image
 configuration file which is usually found in
 \texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$/}.  Such
@@ -217,7 +217,7 @@ instance for the AMD Solo Athlon64 mainboard enter:
 This will create a directory containing a Makefile and other software
 components needed for this build. The directory name is defined in the
 firmware image specific configuration file. In the case of AMD's Solo
-mainboard the default directory resides in 
+mainboard the default directory resides in
 \texttt{coreboot-v2/targets/amd/solo/solo}. To build the coreboot image, do
 
 \begin{verbatim}
@@ -257,7 +257,7 @@ configuration files share some basic rules
 \begin{itemize}
 \item
 The default configuration file name in coreboot is \texttt{Config.lb}.
-\item 
+\item
 All variables used in a configuration file have to be declared in this
 file with \texttt{uses VARNAME} before usage.
 \item
@@ -267,13 +267,13 @@ Comments can be added on a new line by using the comment identifier
 coreboot distinguishes between statements and options. Statements cause
 the coreboot configuration mechanism to act, whereas options set
 variables that are used by the build scripts or source code.
-\item 
+\item
 Default configuration values can be set in the mainboard configuration
 files (keyword default)
-\item 
+\item
 Option overrides to the default configuration can only be specified in
 the build target configuration file
-\texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$/Config.lb} 
+\texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$/Config.lb}
 (keyword option)
 \end{itemize}
 
@@ -290,7 +290,7 @@ used. Example:
 \end{verbatim}
 
 \textbf{NOTE:} Only configuration variables known to the configuration
-system can be used in configuration files. coreboot checks 
+system can be used in configuration files. coreboot checks
 \texttt{coreboot-v2/src/config/Options.lb} to see whether a configuration
 variable is known.
 
@@ -298,7 +298,7 @@ variable is known.
 
 The \texttt{default} statement is used to set a configuration variable
 with an overridable default value. It is commonly used in mainboard
-configuration files.  
+configuration files.
 
 Example:
 
@@ -320,7 +320,7 @@ Also, simple expressions are allowed:
 \end{verbatim}
 
 If an option contains a string, this string has to be protected with
-quotation marks: 
+quotation marks:
 
 \begin{verbatim}
         default CC="gcc -m32"
@@ -400,7 +400,7 @@ option on how to set them.
 \item \begin{verbatim}CC\end{verbatim}
 
 Target C Compiler. Default is \texttt{\$(CROSS\_COMPILE)gcc}. Set to
-\texttt{gcc -m32} for compiling AMD64 coreboot images on an AMD64 
+\texttt{gcc -m32} for compiling AMD64 coreboot images on an AMD64
 machine.
 
 \item \begin{verbatim}CONFIG_CHIP_CONFIGURE \end{verbatim}
@@ -415,7 +415,7 @@ Errors or log messages up to this level can be printed. Default is
 
 \item \begin{verbatim}CONFIG_DEFAULT_CONSOLE_LOGLEVEL\end{verbatim}
 
-Console will log at this level unless changed. Default is \texttt{7}, 
+Console will log at this level unless changed. Default is \texttt{7},
 minimum is \texttt{0}, maximum is \texttt{10}.
 
 \item \begin{verbatim}CONFIG_CONSOLE_SERIAL8250\end{verbatim}
@@ -430,7 +430,7 @@ Size of final ROM image. This option has no default value.
 
 \item \begin{verbatim}CONFIG_FALLBACK_SIZE\end{verbatim}
 
-Fallback image size. Defaults to \texttt{65536} bytes. \textbf{NOTE:} 
+Fallback image size. Defaults to \texttt{65536} bytes. \textbf{NOTE:}
 This does not include the fallback payload.
 
 \item \begin{verbatim}CONFIG_HAVE_OPTION_TABLE\end{verbatim}
@@ -482,9 +482,9 @@ using romcc and/or the GNU assembler.  This code enables caches and
 registers, early mtrr settings, fallback mechanisms, dram init and
 possibly more.
 
-\textbf{NOTE:} The \texttt{option} keyword can not be used in mainboard 
-specific configuration files.  Options shall instead be set using the 
-\texttt{default} keyword so that they can be overridden by the image 
+\textbf{NOTE:} The \texttt{option} keyword can not be used in mainboard
+specific configuration files.  Options shall instead be set using the
+\texttt{default} keyword so that they can be overridden by the image
 specific configuration files if needed.
 
 \subsubsection{Mainboard specific keywords}
@@ -539,7 +539,7 @@ during the build process. This is useful if external utilities have to
 be used for the build. coreboot on AMD64 uses romcc for it's early
 startup code placed in auto.c.
 
-To tell the configuration mechanism how to build \texttt{romcc} files, 
+To tell the configuration mechanism how to build \texttt{romcc} files,
 do:
 
 \begin{verbatim}
@@ -556,7 +556,7 @@ end
 \end{verbatim}
 
 Each \texttt{makerule} section contains file dependencies (using the
-texttt{depends} keyword) and an action that is taken when the dependencies 
+texttt{depends} keyword) and an action that is taken when the dependencies
 are satisfied (using the \texttt{action} keyword).
 
 \item \begin{verbatim}mainboardinit\end{verbatim}
@@ -668,7 +668,7 @@ couple of \texttt{pci} keywords.
 The first occurrence of the \texttt{pci} keyword tells coreboot where
 the bridge devices start, relative to the PCI configuration space used
 by the bridge. The following occurences of the \texttt{pci} keyword
-describe the provided devices. 
+describe the provided devices.
 
 Adding the option \texttt{on} or \texttt{off} to a PCI device will
 enable or disable this device. This feature can be used if some bridge
@@ -820,7 +820,7 @@ decompression is needed).
 
 %
 % 10. Tweaking the source code
-% 
+%
 
 \section{Tweaking the source code}
 Besides configuring the existing code it is sometimes necessary or
@@ -1083,7 +1083,7 @@ This will make coreboot look for the file \\
 \texttt{coreboot-v2/src/mainboard/<vendor>/<mainboard>/irq\_tables.c} which
 contains the source code definition of the IRQ table. coreboot corrects
 small inconsistencies in the IRQ table during startup (checksum and
-number of entries), but it is not yet writing IRQ tables in a completely 
+number of entries), but it is not yet writing IRQ tables in a completely
 dynamic way.
 
 \textbf{NOTE:} To get Linux to understand and actually use the IRQ
@@ -1125,7 +1125,7 @@ revisions.
 
 There is initial ACPI support in coreboot now. Currently the only gain with
 this is the ability to use HPET timers in Linux. To achieve this, there is a
-framework that can generate the following tables: 
+framework that can generate the following tables:
 \begin{itemize}
 \item RSDP
 \item RSDT
@@ -1143,7 +1143,7 @@ option CONFIG_HAVE_ACPI_TABLES=1
 
 To keep Linux doing it's pci ressource allocation based on IRQ tables and MP
 tables, you have to specify the kernel parameter \texttt{pci=noacpi} otherwise
-your PCI devices won't get interrupts. 
+your PCI devices won't get interrupts.
 It's likely that more ACPI support will follow, when there is need for certain
 features.
 
@@ -1162,7 +1162,7 @@ port 80 POST output, you need a POST expansion card for ISA or PCI. Port
 80 POST allows simple debugging without any other output method
 available (serial interface or VGA display)
 \item
-\emph{Serial POST}. 
+\emph{Serial POST}.
 This option allows to push POST messages to the serial interface instead
 of using IO ports. \textbf{NOTE:} The serial interface has to be
 initialized before serial POST can work. To use serial POST, set the
@@ -1244,7 +1244,7 @@ reset code in your mainboard specific configuration file
 \end{verbatim}
 
 The C source file \texttt{reset.c} (resulting in \texttt{reset.o}
-during compilation) shall define the following function to take care 
+during compilation) shall define the following function to take care
 of the system reset:
 
 \begin{verbatim}
@@ -1337,7 +1337,7 @@ position within the CMOS memory. The layout file looks as follows:
     [..]
            392      3      e        5    baud_rate
     [..]
-    
+
     # configid value human readable description
       5        0     115200
       5        1      57600
@@ -1347,7 +1347,7 @@ position within the CMOS memory. The layout file looks as follows:
       5        5       4800
       5        6       2400
       5        7       1200
-    
+
 \end{verbatim}
 
 To change CMOS values from a running Linux system, use the
@@ -1388,9 +1388,9 @@ network):
             range 192.168.1.0 192.168.1.31;
             option broadcastaddress 192.168.1.255;
     }
-    
+
     ddnsupdatestyle adhoc;
-    
+
     host hammer12 {
             hardware ethernet 00:04:76:EA:64:31;
             fixedaddress 192.168.1.24;
@@ -1522,11 +1522,11 @@ CONs:
 %
 
 \section{Image types}
-There used to be one image type for coreboot, as described above. Since this paper was written (2004) there have been many changes. First, the name 
+There used to be one image type for coreboot, as described above. Since this paper was written (2004) there have been many changes. First, the name
 was changed to coreboot, for many reasons. Second, Cache As Ram support (CAR)
-was added for many AMD CPUs, which both simplified and complicated things. Simplification came with the removal of romcc; complication came with the addition of new ways to build. 
+was added for many AMD CPUs, which both simplified and complicated things. Simplification came with the removal of romcc; complication came with the addition of new ways to build.
 
-There are two big additions to the build process and, furthermore, more than two new CONFIG variables to control them. 
+There are two big additions to the build process and, furthermore, more than two new CONFIG variables to control them.
 
 \begin{itemize}
 \item \begin{verbatim}CONFIG_USE_DCACHE_RAM\end{verbatim}
@@ -1544,19 +1544,19 @@ Set to \texttt{1} to use printk, instead of the primitive print functions, in CA
 \end{itemize}
 
 Before going over the new image types, derived from v3, we will quickly review the standard v2 image types. We are hoping this review will
-aid comprehension. 
+aid comprehension.
 
-A coreboot rom file consists of one or more \textit{images}. All images consist of a part that runs in ROM, and a part that runs in RAM. The RAM can be in  compressed form and is decompressed when needed by the ROM code. The main function of the ROM code is to get memory working. Both ROM and RAM consist of a very small amount of assembly code and mostly C code. 
+A coreboot rom file consists of one or more \textit{images}. All images consist of a part that runs in ROM, and a part that runs in RAM. The RAM can be in  compressed form and is decompressed when needed by the ROM code. The main function of the ROM code is to get memory working. Both ROM and RAM consist of a very small amount of assembly code and mostly C code.
 
 \subsection{romcc images (from emulation/qemu)}
-ROMCC images are so-called because C code for the ROM part is compiled with romcc. romcc is an optimizing C compiler which compiles one, and only 
-one file; to get more than one file, one must include the C code via include statements. The main ROM code .c file is usually called auto.c. 
+ROMCC images are so-called because C code for the ROM part is compiled with romcc. romcc is an optimizing C compiler which compiles one, and only
+one file; to get more than one file, one must include the C code via include statements. The main ROM code .c file is usually called auto.c.
 \subsubsection{How it is built}
-Romcc compiles auto.c to produce auto.inc. auto.inc is included in the main crt0.S, which is then preprocessed to produce crt0.s. The inclusion of files into crt0.S is controlled by the CONFIG\_CRT0\_INCLUDES variable. crt0.s is then assembled. 
+Romcc compiles auto.c to produce auto.inc. auto.inc is included in the main crt0.S, which is then preprocessed to produce crt0.s. The inclusion of files into crt0.S is controlled by the CONFIG\_CRT0\_INCLUDES variable. crt0.s is then assembled.
 
-File for the ram part are compiled in a conventional manner. 
+File for the ram part are compiled in a conventional manner.
 
-The final step is linking. The use of named sections is used very heavily in coreboot to control where different bits of code go. The reset vector must go in the top 16 bytes. The start portion of the ROM code must go in the top 64K bytes, since most chipsets only enable this much ROM at startup time. Here is a quick look at a typical image: 
+The final step is linking. The use of named sections is used very heavily in coreboot to control where different bits of code go. The reset vector must go in the top 16 bytes. The start portion of the ROM code must go in the top 64K bytes, since most chipsets only enable this much ROM at startup time. Here is a quick look at a typical image:
 \begin{verbatim}
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
@@ -1569,30 +1569,30 @@ The final step is linking. The use of named sections is used very heavily in cor
   [ 7] .strtab           STRTAB          00000000 007da0 000bfd 00      0   0  1
 \end{verbatim}
 
-The only sections that get loaded into a ROM are the Allocated ones. We can see the .ram, .rom, .reset and .id sections. 
+The only sections that get loaded into a ROM are the Allocated ones. We can see the .ram, .rom, .reset and .id sections.
 \subsubsection{layout}
-As we mentioned, the ROM file consists of multiple images. In the basic file, there are two full coreboot rom images. The build sequence for each is the same, and in fact the ldscript.ld files are almost identical. The only difference is in a few makefile variables, generated by the config tool. 
+As we mentioned, the ROM file consists of multiple images. In the basic file, there are two full coreboot rom images. The build sequence for each is the same, and in fact the ldscript.ld files are almost identical. The only difference is in a few makefile variables, generated by the config tool.
 
 \begin{itemize}
-\item CONFIG\_PAYLOAD\_SIZE. Each image may have a different payload size. 
-\item CONFIG\_ROMBASE Each image must have a different base in rom. 
-\item CONFIG\_RESET Unclear what this is used for. 
+\item CONFIG\_PAYLOAD\_SIZE. Each image may have a different payload size.
+\item CONFIG\_ROMBASE Each image must have a different base in rom.
+\item CONFIG\_RESET Unclear what this is used for.
 \item CONFIG\_EXCEPTION\_VECTORS where an optional IDT might go.
-\item CONFIG\_USE\_OPTION\_TABLE if set, an option table section will be linked in. 
-\item CONFIG\_ROM\_PAYLOAD\_START This is the soon-to-be-deprecated way of locating a payload. cbfs eliminates this. 
+\item CONFIG\_USE\_OPTION\_TABLE if set, an option table section will be linked in.
+\item CONFIG\_ROM\_PAYLOAD\_START This is the soon-to-be-deprecated way of locating a payload. cbfs eliminates this.
 \item CONFIG\_USE\_FALLBACK\_IMAGE Whether this is a fallback or normal image
-\item CONFIG\_ROM\_SECTION\_SIZE Essentially, the payload size. Soon to be deprecated. 
+\item CONFIG\_ROM\_SECTION\_SIZE Essentially, the payload size. Soon to be deprecated.
 \item CONFIG\_ROM\_IMAGE\_SIZE Size of this image (i.e. fallback or normal image)
 \item CONFIG\_ROM\_SIZE Total size of the ROM
-\item CONFIG\_XIP\_RAM\_BASE The start of eXecute In Place code. XIP allows for not copying code to ram, but just running it from ROM. 
+\item CONFIG\_XIP\_RAM\_BASE The start of eXecute In Place code. XIP allows for not copying code to ram, but just running it from ROM.
 \end{itemize}
 
-Each image (normal or fallback) is built completely independently and does not get linked to the other. They are assembled into one ROM image by the (soon to be deprecated) buildrom tool, or by the cbfs tool. 
+Each image (normal or fallback) is built completely independently and does not get linked to the other. They are assembled into one ROM image by the (soon to be deprecated) buildrom tool, or by the cbfs tool.
 
 \subsubsection{boot sequence}
-We boot and start at fffffff0. We then jump to the entry point at \_start.  \_start does some machine init and an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. The code does a bit more machine setup and then starts executing the romcc code. 
+We boot and start at fffffff0. We then jump to the entry point at \_start.  \_start does some machine init and an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. The code does a bit more machine setup and then starts executing the romcc code.
 
-If fallback has been built in, some setup needs to be done. On some machines, it is extensive. Full rom decoding must be enabled. This may in turn require additional PCI setup to enable decoding to be enabled (!). To decided which image to use, hardware registers (cold boot on the Opteron) or CMOS are checked. Finally, once the image to use has been decided, a jmp is performed, viz: 
+If fallback has been built in, some setup needs to be done. On some machines, it is extensive. Full rom decoding must be enabled. This may in turn require additional PCI setup to enable decoding to be enabled (!). To decided which image to use, hardware registers (cold boot on the Opteron) or CMOS are checked. Finally, once the image to use has been decided, a jmp is performed, viz:
 \begin{verbatim}
         /* This is the primary cpu how should I boot? */
         else if (do_normal_boot()) {
@@ -1616,8 +1616,8 @@ If fallback has been built in, some setup needs to be done. On some machines, it
 #endif
         ;
 \end{verbatim}
-How does the fallback image get the symbol for normal entry? Via magic in the ldscript.ld -- remember, the images are not linked to each other. 
-Finally, we can see this in the Config.lb for most mainboards: 
+How does the fallback image get the symbol for normal entry? Via magic in the ldscript.ld -- remember, the images are not linked to each other.
+Finally, we can see this in the Config.lb for most mainboards:
 \begin{verbatim}
 if CONFIG_USE_FALLBACK_IMAGE
         mainboardinit cpu/x86/16bit/reset16.inc
@@ -1627,27 +1627,27 @@ else
         ldscript /cpu/x86/32bit/reset32.lds
 end
 \end{verbatim}
-What does this mean? the non-fallback image has a 32-bit entry point; fallback has a 16-bit entry point. The reason for this is that some code from fallback always runs, so as to pick fallback or normal; but the normal is always called from 32-bit code. 
+What does this mean? the non-fallback image has a 32-bit entry point; fallback has a 16-bit entry point. The reason for this is that some code from fallback always runs, so as to pick fallback or normal; but the normal is always called from 32-bit code.
 \subsection{car images (from lippert/roadrunner-lx)}
-CAR images in their simplest form are modified romcc images. The file is usually cache\_as\_ram\_auto.c. C inclusion is still used. The main difference is in the build sequence. The compiler command line is a very slight changed: instead of using romcc to generate an auto.inc include file, gcc us used. Then, two perl scripts are used to rename the .text and .data sections to .rom.text and .rom.data respectively. 
+CAR images in their simplest form are modified romcc images. The file is usually cache\_as\_ram\_auto.c. C inclusion is still used. The main difference is in the build sequence. The compiler command line is a very slight changed: instead of using romcc to generate an auto.inc include file, gcc us used. Then, two perl scripts are used to rename the .text and .data sections to .rom.text and .rom.data respectively.
 \subsubsection{How it is built}
-The build is almost identical to the romcc build. Since the auto.inc file exists, it can be included as before. The crt0\_includes.h file has one addition: a file that enables CAR, in this case it is \textit{src/cpu/amd/model\_lx/cache\_as\_ram.inc}. 
+The build is almost identical to the romcc build. Since the auto.inc file exists, it can be included as before. The crt0\_includes.h file has one addition: a file that enables CAR, in this case it is \textit{src/cpu/amd/model\_lx/cache\_as\_ram.inc}.
 \subsubsection{layout}
-No significant change from romcc code. 
+No significant change from romcc code.
 \subsubsection{boot sequence}
-No significant change from romcc code, except that the CAR code has to set up a stack. 
+No significant change from romcc code, except that the CAR code has to set up a stack.
 
 \subsection{car + CONFIG\_USE\_INIT images (new emulation/qemu}
-This type of image makes more use of the C compiler. In this type of image, in fact, 
-seperate compilation is possible but is not always used. Oddly enough, this option is only used in PPC boards. That said, we need to move to this way of building. Including C code is poor style. 
+This type of image makes more use of the C compiler. In this type of image, in fact,
+seperate compilation is possible but is not always used. Oddly enough, this option is only used in PPC boards. That said, we need to move to this way of building. Including C code is poor style.
 \subsubsection{How it is built}
 There is a make variable, INIT-OBJECTS, that for all our other targets is empty. In this type of build, INIT-OBJECTS is a list of C files that are created from the config tool initobject command. Again, with INIT-OBJECTS we can finally stop including .c files and go with seperate compilation.
 \subsubsection{layout}
-No significant change from romcc code. 
+No significant change from romcc code.
 \subsubsection{boot sequence}
-No significant change from romcc code, except that the CAR code has to set up a stack. 
+No significant change from romcc code, except that the CAR code has to set up a stack.
 \subsection{car + CONFIG\_USE\_PRINTK\_IN\_CAR images}
-When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. This config variable is used in one of two ways. If CONFIG\_USE\_INIT is 0, then different .c files just include other .c files, as in console.c: 
+When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. This config variable is used in one of two ways. If CONFIG\_USE\_INIT is 0, then different .c files just include other .c files, as in console.c:
 \begin{verbatim}
 #if CONFIG_USE_PRINTK_IN_CAR == 0
 static void __console_tx_byte(unsigned char byte)
@@ -1670,9 +1670,9 @@ static void __console_tx_byte(unsigned char byte)
 
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
 
-\end{verbatim}\footnote{yuck!} 
+\end{verbatim}\footnote{yuck!}
 
-If CONFIG\_USE\_INIT is 1, then the Config.lb is configured differently: 
+If CONFIG\_USE\_INIT is 1, then the Config.lb is configured differently:
 \begin{verbatim}
 if CONFIG_USE_INIT
         if CONFIG_USE_PRINTK_IN_CAR
@@ -1680,14 +1680,14 @@ if CONFIG_USE_INIT
         end
 end
 
-\end{verbatim}\footnote{see previous footnote} 
+\end{verbatim}\footnote{see previous footnote}
 
 \subsubsection{layout}
-No significant change from romcc code. 
+No significant change from romcc code.
 \subsubsection{boot sequence}
-No significant change from romcc code, except that the CAR code has to set up a stack. 
+No significant change from romcc code, except that the CAR code has to set up a stack.
 \subsection{failover}
-Failover is the newest way to lay out a ROM. The choice of which image to run is removed from the fallback image and moved into a small, standalone piece of code. The code is simple enough to show here: 
+Failover is the newest way to lay out a ROM. The choice of which image to run is removed from the fallback image and moved into a small, standalone piece of code. The code is simple enough to show here:
 \begin{verbatim}
 static unsigned long main(unsigned long bist)
 {
@@ -1707,7 +1707,7 @@ fallback_image:
 }
 
 \end{verbatim}
-Some motherboards have a more complex bus structure (e.g. Opteron). In those cases, the failover can be more complex, as it requires some hardware initialization to work correctly. As of this writing (April 2009), these boards have their own failover: 
+Some motherboards have a more complex bus structure (e.g. Opteron). In those cases, the failover can be more complex, as it requires some hardware initialization to work correctly. As of this writing (April 2009), these boards have their own failover:
 \begin{quote}
 ./src/mainboard/iei/nova4899r/failover.c
 ./src/mainboard/emulation/qemu-x86/failover.c
@@ -1723,7 +1723,7 @@ Some motherboards have a more complex bus structure (e.g. Opteron). In those cas
 ./src/mainboard/olpc/rev\_a/failover.c
 ./src/mainboard/via/epia-m/failover.c
 \end{quote}
-Here is one of the more complicated ones: 
+Here is one of the more complicated ones:
 \begin{verbatim}
 static unsigned long main(unsigned long bist)
 {
@@ -1760,15 +1760,15 @@ static unsigned long main(unsigned long bist)
 }
 
 \end{verbatim}
-They're not that different, in fact. So why are there different copies all over the tree? Simple: code inclusion. Most of the failover.c are different because they include different bits of code. Here is a key reason for killing C code inclusion in the tree. 
+They're not that different, in fact. So why are there different copies all over the tree? Simple: code inclusion. Most of the failover.c are different because they include different bits of code. Here is a key reason for killing C code inclusion in the tree.
 \subsubsection{How it is built}
-There two additional config variables: 
+There two additional config variables:
 \begin{itemize}
-\item HAVE\_FAILOVER\_IMAGE Has to be defined when certain files are included. 
+\item HAVE\_FAILOVER\_IMAGE Has to be defined when certain files are included.
 \item USE\_FAILOVER\_IMAGE Enables the use of the failover image
 \end{itemize}
-Confusingly enough, almost all the uses of these two variables are either nested or both required to be set, e.g. 
-The fallback and normal builds are the same. The target config has a new clause that looks like this: 
+Confusingly enough, almost all the uses of these two variables are either nested or both required to be set, e.g.
+The fallback and normal builds are the same. The target config has a new clause that looks like this:
 \begin{verbatim}
 romimage "failover"
         option CONFIG_USE_FAILOVER_IMAGE=1
@@ -1778,36 +1778,36 @@ romimage "failover"
         option COREBOOT_EXTRA_VERSION="\$(shell cat ../../VERSION)\_Failover"
 end
 \end{verbatim}
-This new section uses some constructs not yet discussed in detail. XIP\_ROM\_SIZE just refers to the 
-fact that the failover code is eXecute In Place, i.e. not copied to RAM. Of course, the ROM part of normal/fallback is as well, so the usage of XIP here is somewhat confusing. Finally, the USE\_FAILOVER\_IMAGE variable is set, which changes code compilation in a few places. If we just consider non-mainbard files, there are: 
+This new section uses some constructs not yet discussed in detail. XIP\_ROM\_SIZE just refers to the
+fact that the failover code is eXecute In Place, i.e. not copied to RAM. Of course, the ROM part of normal/fallback is as well, so the usage of XIP here is somewhat confusing. Finally, the USE\_FAILOVER\_IMAGE variable is set, which changes code compilation in a few places. If we just consider non-mainbard files, there are:
 \begin{verbatim}
 src/cpu/amd/car/cache_as_ram.inc
 src/arch/i386/Config.lb
 \end{verbatim}
 For the cache\_as\_ram.inc file, the changes relate to the fact that failover code sets up CAR, so that fallback code need not.
 
-For the Config.lb, several aspects of build change. 
-When USE\_FAILOVER\_IMAGE, entry into both normal and fallback bios images is via a 32-bit entry point (when not defined, entry into fallback is a 16-entry point at the power-on reset vector). 
+For the Config.lb, several aspects of build change.
+When USE\_FAILOVER\_IMAGE, entry into both normal and fallback bios images is via a 32-bit entry point (when not defined, entry into fallback is a 16-entry point at the power-on reset vector).
 \subsubsection{layout}
-Failover.c becomes the new bootblock at the top of memory. It calls either normal or fallback. The address of normal and fallback is determined by ldscript magic. 
+Failover.c becomes the new bootblock at the top of memory. It calls either normal or fallback. The address of normal and fallback is determined by ldscript magic.
 \subsubsection{boot sequence}
-failover.c tests a few variables and the calls the normal or fallback payload depending on those variables; usually they are CMOS settings. 
+failover.c tests a few variables and the calls the normal or fallback payload depending on those variables; usually they are CMOS settings.
 \subsection{Proposed new image forat}
-The new image format will use seperate compilation -- no C code included! -- on all files. 
+The new image format will use seperate compilation -- no C code included! -- on all files.
 
-The new design has a few key goals: 
+The new design has a few key goals:
 \begin{itemize}
-\item Always use a bootblock (currently called failover). 
-The name failover.c, being utterly obscure, will not be used; instead, we will name the file bootblock.c. Instead of having a different copy for each mainboard, we can have just one copy. 
+\item Always use a bootblock (currently called failover).
+The name failover.c, being utterly obscure, will not be used; instead, we will name the file bootblock.c. Instead of having a different copy for each mainboard, we can have just one copy.
 \item Always use seperate compilation
 \item Always use printk etc. in the ROM code
-\item (longer term) from the bootblock, always use cbfs to locate the normal/fallback etc. code. This code will be XIP. 
+\item (longer term) from the bootblock, always use cbfs to locate the normal/fallback etc. code. This code will be XIP.
 \end{itemize}
 
 \subsubsection{How it is built}
-For now, since we are still using the config tool, we'll need a new command: bootblockobject, which creates a list of files to be included in the bootblock.   Not a lot else will have to change. We are going to move to using the v3 CAR code assembly code (one or two files at most, instead of many) and, instead of the thicket of little ldscript files, one ldscript file. This strategy is subject to modification as events dictate. 
+For now, since we are still using the config tool, we'll need a new command: bootblockobject, which creates a list of files to be included in the bootblock.   Not a lot else will have to change. We are going to move to using the v3 CAR code assembly code (one or two files at most, instead of many) and, instead of the thicket of little ldscript files, one ldscript file. This strategy is subject to modification as events dictate.
 \subsubsection{layout}
-Almost the same, for now, as the current failover code. 
+Almost the same, for now, as the current failover code.
 \subsubsection{boot sequence}
 %
 % 14 Glossary
@@ -1839,11 +1839,11 @@ ROMs they can be electronically erased and reprogrammed.
 \subsection{Additional Papers on coreboot}
 
 \begin{itemize}
- \item 
+ \item
  \textit{\url{http://www.coreboot.org/Documentation}}
- \item 
+ \item
  \textit{\url{http://www.lysator.liu.se/upplysning/fa/linuxbios.pdf}}
- \item 
+ \item
  \textit{\url{http://portal.acm.org/citation.cfm?id=512627}}
 \end{itemize}
 

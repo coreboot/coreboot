@@ -56,7 +56,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 
 		printk(BIOS_DEBUG, "before resume errata #%d\n",
 			     (is_post_rev_g) ? 270 : 125);
-		/* 
+		/*
 		   1. Restore memory controller registers as normal.
 		   2. Set the DisAutoRefresh bit (Dev:2x8C[18]). (270 only)
 		   3. Set the EnDramInit bit (Dev:2x7C[31]), clear all other bits in the same register).

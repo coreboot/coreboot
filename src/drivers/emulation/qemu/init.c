@@ -57,7 +57,7 @@ static void qemu_init(void)
     int width=640, height=480, depth=8;
 
     printk(BIOS_DEBUG, "Initializing VGA!\n");
-    
+
     vbe_outw(VBE_DISPI_INDEX_XRES, width);
     vbe_outw(VBE_DISPI_INDEX_YRES, height);
     vbe_outw(VBE_DISPI_INDEX_BPP, depth);

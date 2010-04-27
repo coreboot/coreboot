@@ -79,12 +79,12 @@ struct cbfs_payload {
 
 /* The deleted type is chosen to be a value
  * that can be written in a FLASH from all other
- * values. 
+ * values.
  */
 #define CBFS_COMPONENT_DELETED 0
 
-/* for all known FLASH, this value can be changed 
- * to all other values. This allows NULL files to be 
+/* for all known FLASH, this value can be changed
+ * to all other values. This allows NULL files to be
  * changed without a block erase
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF

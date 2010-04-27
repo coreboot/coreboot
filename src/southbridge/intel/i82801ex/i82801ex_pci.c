@@ -21,8 +21,8 @@ static void pci_init(struct device *dev)
 	dword |= (1<<8); /* SERR# Enable */
 	dword |= (1<<6); /* Parity Error Response */
 	pci_write_config32(dev, 0x04, dword);
-#endif				
-	
+#endif
+
 	word = pci_read_config16(dev, 0x1e);
 	word |= 0xf800; /* Clear possible errors */
 	pci_write_config16(dev, 0x1e, word);

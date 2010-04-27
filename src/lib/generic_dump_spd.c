@@ -12,8 +12,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -38,8 +38,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel1[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".1: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {

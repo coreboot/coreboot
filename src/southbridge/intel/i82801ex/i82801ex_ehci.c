@@ -11,7 +11,7 @@ static void ehci_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, 
+	pci_write_config32(dev, PCI_COMMAND,
 		cmd | PCI_COMMAND_MASTER);
 
 	printk(BIOS_DEBUG, "done.\n");
@@ -24,7 +24,7 @@ static void ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	/* Enable writes to protected registers */
 	pci_write_config8(dev, 0x80, access_cntl | 1);
 	/* Write the subsystem vendor and device id */
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 	/* Restore protection */
 	pci_write_config8(dev, 0x80, access_cntl);

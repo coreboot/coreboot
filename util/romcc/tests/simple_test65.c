@@ -6,5 +6,5 @@ static void main(void)
 {
 	enum tag foo;
 	foo = Y;
-	
+
 }

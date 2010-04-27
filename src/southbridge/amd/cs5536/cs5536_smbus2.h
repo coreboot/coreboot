@@ -309,7 +309,7 @@ static inline int do_smbus_write_byte(unsigned smbus_io_base,
 			(unsigned char *)&data, 1);
 }
 
-static inline int do_smbus_write_word(unsigned smbus_io_base, 
+static inline int do_smbus_write_word(unsigned smbus_io_base,
 		unsigned char device, unsigned char address, unsigned short data)
 {
 	return _dowrite(smbus_io_base, device, address, (unsigned char *)&data,

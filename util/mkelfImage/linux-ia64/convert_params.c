@@ -58,7 +58,7 @@ static void printf(const char *fmt, ...)
 			continue;
 		}
 		if (*++fmt == 's') {
-			for(p = va_arg(args, char *); *p != '\0'; p++) 
+			for(p = va_arg(args, char *); *p != '\0'; p++)
 				putchar(*p);
 		}
 		else {	/* Length of item is bounded */
@@ -76,7 +76,7 @@ static void printf(const char *fmt, ...)
 					fmt++;
 				}
 			}
-			
+
 			/*
 			 * Before each format q points to tmp buffer
 			 * After each format q points past end of item
@@ -150,7 +150,7 @@ int memcmp(void *vs1, void *vs2, size_t size)
 			return *s1 - *s2;
 	}
 	return 0;
-	
+
 }
 
 void strappend(char *dest, const char *src, size_t max)
@@ -229,7 +229,7 @@ static void convert_bhdr_params(Elf_Bhdr *bhdr)
 {
 	unsigned char *note, *end;
 	char *ldr_name, *ldr_version, *firmware;
-	
+
 	ldr_name = ldr_version = firmware = 0;
 
 	note = ((char *)bhdr) + sizeof(*bhdr);
@@ -241,10 +241,10 @@ static void convert_bhdr_params(Elf_Bhdr *bhdr)
 		n_name = note + sizeof(*hdr);
 		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
 		next = n_desc + ((hdr->n_descsz + 3) & ~3);
-		if (next > end) 
+		if (next > end)
 			break;
 #if 0
-		printf("n_type: %x n_name(%d): n_desc(%d): \n", 
+		printf("n_type: %x n_name(%d): n_desc(%d): \n",
 			hdr->n_type, hdr->n_namesz, hdr->n_descsz);
 #endif
 
@@ -302,7 +302,7 @@ static void convert_bhdr_params(Elf_Bhdr *bhdr)
 		note = next;
 	}
 	if (ldr_name && ldr_version) {
-		printf("Loader: %s version: %s\n", 
+		printf("Loader: %s version: %s\n",
 			ldr_name, ldr_version);
 	}
 	if (firmware) {
@@ -311,12 +311,12 @@ static void convert_bhdr_params(Elf_Bhdr *bhdr)
 	}
 }
 
-void *convert_params(unsigned long arg1, unsigned long r28, 
+void *convert_params(unsigned long arg1, unsigned long r28,
 	struct image_parameters *params)
 {
 	struct ia64_boot_param *orig_bp;
 	Elf_Bhdr *bhdr = (Elf_Bhdr*)arg1;
-	
+
 	/* handle the options I can easily deal with */
 	bp.command_line = (unsigned long)&params->cmdline;
 	bp.initrd_start = params->initrd_start;

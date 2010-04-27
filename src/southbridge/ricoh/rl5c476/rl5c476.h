@@ -93,5 +93,5 @@ typedef struct pc16reg  {
 	u8 smpga0;
 } __attribute__ ((packed)) pc16reg_t;
 
-	
+
 

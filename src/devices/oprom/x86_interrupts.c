@@ -202,7 +202,7 @@ int int15_handler(struct eregs *regs)
 		res = 0;
 		break;
 	default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				regs->eax & 0xffff);
 	}
 

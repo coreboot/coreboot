@@ -53,8 +53,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void main(unsigned long bist)
 {
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	static const struct mem_controller mch[] = {
 		{
@@ -117,7 +117,7 @@ static void main(unsigned long bist)
 #endif
 	disable_watchdogs();
 //	dump_ipmi_registers();
-//	mainboard_set_e7520_leds();	
+//	mainboard_set_e7520_leds();
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 #if 0
 	dump_pci_devices();
@@ -127,7 +127,7 @@ static void main(unsigned long bist)
 	//dump_bar14(PCI_DEV(0, 0x00, 0));
 #endif
 
-#if 0 // temporarily disabled 
+#if 0 // temporarily disabled
 	/* Check the first 1M */
 //	ram_check(0x00000000, 0x000100000);
 //	ram_check(0x00000000, 0x000a0000);
@@ -138,8 +138,8 @@ static void main(unsigned long bist)
 #if 0
 	ram_check(0x00000000, 0x02000000);
 #endif
-	
-#if 0	
+
+#if 0
 	while(1) {
 		hlt();
 	}

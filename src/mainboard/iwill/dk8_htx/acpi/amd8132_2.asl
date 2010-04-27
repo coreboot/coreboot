@@ -1,7 +1,7 @@
 /*
  * Copyright 2005 AMD
  */
-		
+
             Device (PG0A)
             {
                 /*  8132 pcix bridge*/
@@ -19,18 +19,18 @@
                 Name (APIC, Package (0x04)
                 {
 		    // Slot A - PIRQ BCDA
-                    Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x0018 }, //Slot 2 
-                    Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x0019 }, 
-                    Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x001A }, 
+                    Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x0018 }, //Slot 2
+                    Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x0019 },
+                    Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x001A },
                     Package (0x04) { 0x0000FFFF, 0x03, 0x00, 0x001B },
- 
+
                 })
                 Name (PICM, Package (0x04)
                 {
-                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },//Slot 2 
-                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 }, 
+                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },//Slot 2
+                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 },
+                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 },
+                    Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 },
                 })
 
 		Name (DNCG, Ones)
@@ -40,7 +40,7 @@
                     If (LEqual (^DNCG, Ones)) {
 			    Multiply (HCIN, 0x000e, Local2) // GSI for 8132 is 7 so we get 14
 		            Store (0x00, Local1)
-            		    While (LLess (Local1, 0x04)) 
+            		    While (LLess (Local1, 0x04))
             		    {
                         	// Update the GSI according to HCIN
 	                        Store(DeRefOf(Index (DeRefOf (Index (APIC, Local1)), 3)), Local0)
@@ -76,15 +76,15 @@
                 {
 		    // Slot A - PIRQ ABCD
                     Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x001F },// Slot 1
-                    Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x0020 }, 
-                    Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x0021 }, 
+                    Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x0020 },
+                    Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x0021 },
                     Package (0x04) { 0x0000FFFF, 0x03, 0x00, 0x0022 }
                 })
                 Name (PICM, Package (0x04)
                 {
-                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },//Slot 1 
-                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },//Slot 1
+                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 },
+                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 },
                     Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 }
                 })
 

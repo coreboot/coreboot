@@ -55,7 +55,7 @@ sub parse_file {
         next if (!(/^([a-f0-9]{2}): ([[a-f0-9 ]+)$/i));
         # Line format
         # 00: 22 10 02 11 00 00 00 00 00 00 00 06 00 00 80 00
-#print STDERR hex($1) . " ($1): $2\n"; 
+#print STDERR hex($1) . " ($1): $2\n";
         my $regoffset = hex($1);
         my @values = split(/ /,$2);
         for (my $i=0;$i<=$#values;$i++) {
@@ -93,7 +93,7 @@ sub parse_file_old {
         if ($tmp[1] eq '98.l') {
             $register = ($tmp[2] =~ /(..)$/)[0]; # last 2 digits are (hex) of what we wrote to the register, if second field is 98.l
             $devreg = "$device $register";
-            if ("$binrep" =~ /^1/) {  
+            if ("$binrep" =~ /^1/) {
                 # bit 31 *must* be 1 if readout is to be correct
                 print "$tmp[0] - $register<br>\n" if ($DEBUG);
             } else {
@@ -107,7 +107,7 @@ sub parse_file_old {
             $data{$devreg}{$filename} = $packed;
         }
     }
-    return %data;   
+    return %data;
 }
 
 sub interpret_differences {

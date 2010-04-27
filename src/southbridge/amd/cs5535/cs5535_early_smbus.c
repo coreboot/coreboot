@@ -18,7 +18,7 @@ static int cs5535_enable_smbus(void)
 	/* Setup SMBus host controller address to 0xEF */
 	val = inb(SMBUS_IO_BASE + SMB_ADD);
 	val |= (0xEF | SMB_ADD_SAEN);
-	outb(val, SMBUS_IO_BASE + SMB_ADD); 
+	outb(val, SMBUS_IO_BASE + SMB_ADD);
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)

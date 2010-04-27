@@ -12,7 +12,7 @@
 #define SMBTRNSADD 0x9
 #define SMBSLVDATA 0xa
 #define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf 
+#define SMBUS_PIN_CTL  0xf
 
 /* Define register settings */
 #define HOST_RESET 0xff
@@ -34,17 +34,17 @@ static void enable_smbus(void)
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_8235), 0);
-	
+
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\n");
-	}		
+	}
 
 	// set IO base address to SMBUS_IO_BASE
 	pci_write_config16(dev, 0xd0, SMBUS_IO_BASE | 1);
-	
-	// Enable SMBus 
+
+	// Enable SMBus
 	pci_write_config8(dev, 0xd2, (0x4 << 1) | 1);
-	
+
 	/* make it work for I/O ...
 	 */
 	pci_write_config16(dev, 4, 1);
@@ -55,13 +55,13 @@ static void enable_smbus(void)
 	for(i = 0 ; i < 5000 ; i++)
 		outb(0x80,0x80);
 
-	/* 
+	/*
 	 * The VT1211 serial port needs 48 mhz clock, on power up it is getting
 	 *  only 24 mhz, there is some mysterious device on the smbus that can
 	 *  fix this...this code below does it.
 	 *  */
-	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT); 
-	outb(0x7f, SMBUS_IO_BASE+SMBHSTDAT0); 
+	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT);
+	outb(0x7f, SMBUS_IO_BASE+SMBHSTDAT0);
 	outb(0x83, SMBUS_IO_BASE+SMBHSTCMD);
 	outb(CLOCK_SLAVE_ADDRESS<<1 , SMBUS_IO_BASE+SMBXMITADD);
 	outb(8 | I2C_TRANS_CMD, SMBUS_IO_BASE+SMBHSTCTL);
@@ -92,7 +92,7 @@ static int smbus_wait_until_ready(void)
 			print_debug_hex8(c);
 			print_debug("\n");
 			c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-			/* nop */ 
+			/* nop */
 		}
 
 	} while(--loops);
@@ -105,13 +105,13 @@ void smbus_reset(void)
 	outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
 	outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
 	outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
-	
+
 	smbus_wait_until_ready();
 	print_debug("After reset status ");
 	print_debug_hex8( inb(SMBUS_IO_BASE + SMBHSTSTAT));
 	print_debug("\n");
 }
-  
+
 
 
 static int smbus_wait_until_done(void)
@@ -121,11 +121,11 @@ static int smbus_wait_until_done(void)
 	loops = SMBUS_TIMEOUT;
 	do {
 		smbus_delay();
-		
+
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 		if (byte & 1)
 			break;
-		
+
 	} while(--loops);
 	return loops?0:-1;
 }
@@ -156,46 +156,46 @@ static void smbus_print_error(unsigned char host_status_register)
 
 /* SMBus routines borrowed from VIA's Trident Driver */
 /* this works, so I am not going to touch it for now -- rgm */
-static unsigned char smbus_read_byte(unsigned char devAdr, 
-				unsigned char bIndex) 
+static unsigned char smbus_read_byte(unsigned char devAdr,
+				unsigned char bIndex)
 {
 	unsigned short i;
 	unsigned char  bData;
 	unsigned char  sts = 0;
-	
+
 	/* clear host status */
 	outb(0xff, SMBUS_IO_BASE);
-	
+
 	/* check SMBUS ready */
 	for ( i = 0; i < 0xFFFF; i++ )
 		if ( (inb(SMBUS_IO_BASE) & 0x01) == 0 )
 			break;
-	
+
 	/* set host command */
 	outb(bIndex, SMBUS_IO_BASE+3);
-	
+
 	/* set slave address */
 	outb(devAdr | 0x01, SMBUS_IO_BASE+4);
-	
+
 	/* start */
 	outb(0x48, SMBUS_IO_BASE+2);
-	
+
 	/* SMBUS Wait Ready */
 	for ( i = 0; i < 0xFFFF; i++ )
 		if ( ((sts = (inb(SMBUS_IO_BASE) & 0x1f)) & 0x01) == 0 )
 			break;
-	
+
 	if ((sts & ~3) != 0) {
 		smbus_print_error(sts);
 		return 0;
 	}
 	bData=inb(SMBUS_IO_BASE+5);
-	
+
 	return bData;
-	
+
 }
 
-/* for reference, here is the fancier version which we will use at some 
+/* for reference, here is the fancier version which we will use at some
  * point
  */
 # if 0
@@ -203,11 +203,11 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 {
 	unsigned char host_status_register;
 	unsigned char byte;
-	
+
 	reset();
-	
+
 	smbus_wait_until_ready();
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & (~1), SMBUS_IO_BASE + SMBHSTCTL);
@@ -218,29 +218,29 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 	/* set up for a byte data read */
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x2 << 2),
 		SMBUS_IO_BASE + SMBHSTCTL);
-	
+
 	/* clear any lingering errors, so the transaction will run */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	
+
 	/* clear the data byte...*/
 	outb(0, SMBUS_IO_BASE + SMBHSTDAT0);
-	
+
 	/* start the command */
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40),
 		SMBUS_IO_BASE + SMBHSTCTL);
-	
+
 	/* poll for transaction completion */
 	smbus_wait_until_done();
-	
+
 	host_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-	
+
 	/* Ignore the In Use Status... */
 	host_status_register &= ~(1 << 6);
-	
+
 	/* read results of transaction */
 	byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
 	smbus_print_error(byte);
-	
+
 	*result = byte;
 	return host_status_register != 0x02;
 }

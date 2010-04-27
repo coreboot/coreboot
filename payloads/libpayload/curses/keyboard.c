@@ -197,7 +197,7 @@ int wgetch(WINDOW *win)
 
 	if (_halfdelay)
 		delay = _halfdelay;
-	else 
+	else
 		delay = win->_delay;
 
 	return curses_getchar(delay);

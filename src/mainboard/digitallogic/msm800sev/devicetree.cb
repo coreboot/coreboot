@@ -1,5 +1,5 @@
 chip northbridge/amd/lx
-  	device pci_domain 0 on 
+  	device pci_domain 0 on
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536
@@ -57,7 +57,7 @@ chip northbridge/amd/lx
 						io 0x60 = 0x220
 						io 0x62 = 0x300
 						irq 0x70 = 9
-					end						
+					end
 					device pnp 2e.8 off end #  GPIO2
 					device pnp 2e.9 off end #  GPIO3
 					device pnp 2e.a off end #  ACPI

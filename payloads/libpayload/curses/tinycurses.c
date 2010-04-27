@@ -499,7 +499,7 @@ int waddch(WINDOW *win, const chtype ch)
 	// NCURSES_CH_T wch;
 	// SetChar2(wch, ch);
 
-	if (win->_line[win->_cury].firstchar == _NOCHANGE || 
+	if (win->_line[win->_cury].firstchar == _NOCHANGE ||
 			win->_line[win->_cury].firstchar > win->_curx)
 		win->_line[win->_cury].firstchar = win->_curx;
 
@@ -510,7 +510,7 @@ int waddch(WINDOW *win, const chtype ch)
 	win->_line[win->_cury].text[win->_curx].attr |=
 		((ch) & (chtype)A_ATTRIBUTES);
 
-	if (win->_line[win->_cury].lastchar == _NOCHANGE || 
+	if (win->_line[win->_cury].lastchar == _NOCHANGE ||
 			win->_line[win->_cury].lastchar < win->_curx)
 		win->_line[win->_cury].lastchar = win->_curx;
 
@@ -535,7 +535,7 @@ int waddnstr(WINDOW *win, const char *astr, int n)
 	if (n < 0)
 		n = strlen(astr);
 
-	if (win->_line[win->_cury].firstchar == _NOCHANGE || 
+	if (win->_line[win->_cury].firstchar == _NOCHANGE ||
 			win->_line[win->_cury].firstchar > win->_curx)
 		win->_line[win->_cury].firstchar = win->_curx;
 
@@ -554,7 +554,7 @@ int waddnstr(WINDOW *win, const char *astr, int n)
 		// }
 	}
 
-	if (win->_line[win->_cury].lastchar == _NOCHANGE || 
+	if (win->_line[win->_cury].lastchar == _NOCHANGE ||
 			win->_line[win->_cury].lastchar < win->_curx)
 		win->_line[win->_cury].lastchar = win->_curx;
 
@@ -924,7 +924,7 @@ int wscrl(WINDOW *win, int n)
 		win->_line[y].firstchar = win->_line[y + n].firstchar;
 		win->_line[y].lastchar = win->_line[y + n].lastchar;
 		for (x = 0; x <= win->_maxx; x++) {
-			if ((win->_line[y].text[x].chars[0] != win->_line[y + n].text[x].chars[0]) || 
+			if ((win->_line[y].text[x].chars[0] != win->_line[y + n].text[x].chars[0]) ||
 					(win->_line[y].text[x].attr != win->_line[y + n].text[x].attr)) {
 				if (win->_line[y].firstchar == _NOCHANGE)
 					win->_line[y].firstchar = x;
@@ -939,7 +939,7 @@ int wscrl(WINDOW *win, int n)
 
 	for (y = (win->_maxy+1 - n); y <= win->_maxy; y++) {
 		for (x = 0; x <= win->_maxx; x++) {
-			if ((win->_line[y].text[x].chars[0] != ' ') || 
+			if ((win->_line[y].text[x].chars[0] != ' ') ||
 					(win->_line[y].text[x].attr != A_NORMAL)) {
 				if (win->_line[y].firstchar == _NOCHANGE)
 					win->_line[y].firstchar = x;

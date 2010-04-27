@@ -1,7 +1,7 @@
-dnl 
+dnl
 dnl configure.ac for mkelfImage
-dnl 
-dnl 
+dnl
+dnl
 
 dnl ---Required
 AC_INIT(Makefile.conf.in)
@@ -16,11 +16,11 @@ AC_CANONICAL_HOST
 
 
 dnl Compute target cpu
-case $host_cpu in 
-	i?86 )	
+case $host_cpu in
+	i?86 )
 		target_cpu="i386"
 		;;
-	* ) 
+	* )
 		target_cpu="$host_cpu"
 		;;
 esac
@@ -111,7 +111,7 @@ if test "$with_i386" != "no" ; then
 	fi
 	AC_CHECK_PROG([I386_CC], [$cc], [$cc], [""], [$PATH])
 	if test "$I386_CC" = no; then
-	   
+
 		AC_MSG_ERROR([$cc not found])
 	fi
 	AC_CHECK_PROG([I386_CPP], [$cpp], [$cpp], [""], [$PATH])
@@ -148,7 +148,7 @@ if test "$with_ia64" != "no" ; then
 	fi
 	AC_CHECK_PROG([IA64_CC], [$cc], [$cc], [""], [$PATH])
 	if test "$IA64_CC" = no; then
-	   
+
 		AC_MSG_ERROR([$cc not found])
 	fi
 	AC_CHECK_PROG([IA64_CPP], [$cpp], [$cpp], [""], [$PATH])

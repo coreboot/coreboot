@@ -27,12 +27,12 @@ static int get_max_siblings(int nodes)
 	for(nodeid=0; nodeid<nodes; nodeid++){
 		int j;
 		dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 3));
-		j = (pci_read_config32(dev, 0xe8) >> 12) & 3; 
+		j = (pci_read_config32(dev, 0xe8) >> 12) & 3;
 		if(siblings < j) {
 			siblings = j;
 		}
 	}
-	
+
 	return siblings;
 }
 
@@ -47,7 +47,7 @@ static void enable_apic_ext_id(int nodes)
                 dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 0));
                 val = pci_read_config32(dev, 0x68);
 		val |= (1<<17)|(1<<18);
-		pci_write_config32(dev, 0x68, val); 
+		pci_write_config32(dev, 0x68, val);
         }
 }
 
@@ -70,9 +70,9 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	siblings = get_max_siblings(nodes);
 
 	if(bsp_apic_id > 0) { // io apic could start from 0
-		return 0;  
+		return 0;
 	} else if(pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
-		return 1; 
+		return 1;
 	}
 
 	nb_cfg_54 = read_nb_cfg_54();
@@ -100,7 +100,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	        //4:10 for two way  8:12 for four way 16:16 for eight way
 		//Use CONFIG_MAX_PHYSICAL_CPUS instead of nodes for better consistency?
-	        apicid_base = nb_cfg_54 ? (siblings+1) * nodes :  8 * siblings + nodes; 
+	        apicid_base = nb_cfg_54 ? (siblings+1) * nodes :  8 * siblings + nodes;
 
 	}
 	else {
@@ -112,7 +112,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 		printk(BIOS_INFO, "if the IO APIC device doesn't support 256 apic id, \n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for ioapic\n");
 		enable_apic_ext_id(nodes);
 	}
-	
+
 	return apicid_base;
 }
 
@@ -145,7 +145,7 @@ void amd_sibling_init(device_t cpu)
 		siblings);
 #endif
 
-	nb_cfg_54 = read_nb_cfg_54(); 
+	nb_cfg_54 = read_nb_cfg_54();
 #if 1
 	id = get_node_core_id(nb_cfg_54); // pre e0 nb_cfg_54 can not be set
 
@@ -159,7 +159,7 @@ void amd_sibling_init(device_t cpu)
                 return;
 	}
 #endif
-		
+
 	/* I am the primary cpu start up my siblings */
 
 	for(i = 1; i <= siblings; i++) {
@@ -191,7 +191,7 @@ void amd_sibling_init(device_t cpu)
                 new->path.apic.core_id = i;
 
 #if 1
-		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n", 
+		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n",
 			cpu->path.apic.apic_id,
 			new->path.apic.apic_id);
 #endif

@@ -112,8 +112,8 @@ static int populate_kernel_phdrs(struct kernel_info *info, struct memelfphdr *ph
 			if (paddr > le64_to_cpu(info->phdr[j].p_paddr)) {
 				continue;
 			}
-			if (hdr && 
-				le64_to_cpu(hdr->p_paddr) < 
+			if (hdr &&
+				le64_to_cpu(hdr->p_paddr) <
 				le64_to_cpu(info->phdr[j].p_paddr)) {
 				continue;
 			}
@@ -131,7 +131,7 @@ static int populate_kernel_phdrs(struct kernel_info *info, struct memelfphdr *ph
 	}
 	return i;
 }
-	
+
 
 void linux_ia64_usage(void)
 {
@@ -192,7 +192,7 @@ int linux_ia64_mkelf(int argc, char **argv,
 	ehdr->ei_data   = ELFDATA2LSB;
 	ehdr->e_type    = ET_EXEC;
 	ehdr->e_machine = EM_IA_64;
-	
+
 	/* locate the payload buffer */
 	payload_buf = payload;
 	payload_size = sizeof(payload);
@@ -221,10 +221,10 @@ int linux_ia64_mkelf(int argc, char **argv,
 
 	/* Fill in the program headers*/
 	phdr[0].p_type = PT_NOTE;
-	
+
 	/* Fill in the kernel program headers */
-	index = 1 + populate_kernel_phdrs(&kinfo, phdr + 1); 
-	
+	index = 1 + populate_kernel_phdrs(&kinfo, phdr + 1);
+
 	/* Fill in the converter program header */
 	phdr[index].p_paddr  = roundup(phdr[index -1].p_paddr + phdr[index -1].p_memsz, 16);
 	phdr[index].p_vaddr  = phdr[index].p_paddr;

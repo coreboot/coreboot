@@ -1,7 +1,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_LIPPERT
-        
+
 source "src/mainboard/lippert/frontrunner/Kconfig"
 source "src/mainboard/lippert/roadrunner-lx/Kconfig"
 source "src/mainboard/lippert/spacerunner-lx/Kconfig"

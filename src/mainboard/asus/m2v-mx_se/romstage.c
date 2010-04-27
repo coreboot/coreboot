@@ -5,7 +5,7 @@
  * (Written by Yinghai Lu <yinghailu@amd.com> for AMD)
  * Copyright (C) 2006 MSI
  * (Written by Bingxun Shi <bingxunshi@gmail.com> for MSI)
- * Copyright (C) 2008 Rudolf Marek <r.marek@assembler.cz> 
+ * Copyright (C) 2008 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

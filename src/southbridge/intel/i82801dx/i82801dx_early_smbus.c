@@ -32,7 +32,7 @@
 #define SMLINK_PIN_CTL 0xe
 #define SMBUS_PIN_CTL  0xf
 
-/* Between 1-10 seconds, We should never timeout normally 
+/* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
 //#define SMBUS_TIMEOUT (100*1000*10)

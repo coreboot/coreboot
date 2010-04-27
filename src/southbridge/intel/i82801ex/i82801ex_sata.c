@@ -11,7 +11,7 @@ static void sata_init(struct device *dev)
 	/* SATA configuration */
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x09, 0x8f);
-	
+
 	/* Set timmings */
 	pci_write_config16(dev, 0x40, 0x0a307);
 	pci_write_config16(dev, 0x42, 0x0a307);
@@ -25,10 +25,10 @@ static void sata_init(struct device *dev)
 
 	/* Combine ide - sata configuration */
 	pci_write_config8(dev, 0x90, 0x0);
-	
+
 	/* port 0 & 1 enable */
 	pci_write_config8(dev, 0x92, 0x33);
-	
+
 	/* initialize SATA  */
 	pci_write_config16(dev, 0xa0, 0x0018);
 	pci_write_config32(dev, 0xa4, 0x00000264);

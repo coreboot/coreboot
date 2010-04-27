@@ -46,8 +46,8 @@ static void pciexp_tune_dev(device_t dev)
 #endif
 }
 
-unsigned int pciexp_scan_bus(struct bus *bus, 
-	unsigned min_devfn, unsigned max_devfn, 
+unsigned int pciexp_scan_bus(struct bus *bus,
+	unsigned min_devfn, unsigned max_devfn,
 	unsigned int max)
 {
 	device_t child;

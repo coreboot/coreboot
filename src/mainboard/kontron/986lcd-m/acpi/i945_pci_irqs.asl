@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* This is board specific information: IRQ routing for the 
+/* This is board specific information: IRQ routing for the
  * i945
  */
 

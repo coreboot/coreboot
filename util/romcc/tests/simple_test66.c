@@ -1,8 +1,8 @@
 typedef unsigned char uint8_t;
 static unsigned int generate_row(uint8_t row, uint8_t maxnodes)
 {
-	 
-	unsigned int ret=0x00010101;  
+
+	unsigned int ret=0x00010101;
 	static const unsigned int rows_2p[2][2] = {
 		{ 0x00050101, 0x00010404 },
 		{ 0x00010404, 0x00050101 }

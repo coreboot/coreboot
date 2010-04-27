@@ -16,18 +16,18 @@ static void spd_set_memclk(void)
 	for(index = 0; index < 3; index++, latency++) {
 		unsigned long loops;
 		unsigned address = index;
-		
+
 		loops = 1000000;
 		do {
 		} while(--loops);
 		if (loops) {
 			continue;
 		}
-		
+
 		__builtin_outb(device, 0x10e4);
-		
+
 		__builtin_outb(address & 0xFF, 0x10e8);
-		
+
 		loops = 1000000;
 		while(--loops)
 			;

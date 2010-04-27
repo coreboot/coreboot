@@ -72,7 +72,7 @@ void DRAMTimingSetting(DRAM_SYS_ATTR * DramAttr)
 
 /*
 Set DRAM Timing: CAS Latency for DDR1
-D0F3RX62 bit[0:2] for CAS Latency; 
+D0F3RX62 bit[0:2] for CAS Latency;
 */
 void SetCL(DRAM_SYS_ATTR * DramAttr)
 {

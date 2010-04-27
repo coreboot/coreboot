@@ -1,6 +1,6 @@
 ##
 ## This file is part of the coreboot project.
-## 
+##
 ## Copyright (C) 2007-2009 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ chip northbridge/intel/i945
                 end
         end
 
-        device pci_domain 0 on 
+        device pci_domain 0 on
                 device pci 00.0 on end # host bridge
 		# auto detection:
 		#device pci 01.0 off end # i945 PCIe root port
@@ -79,7 +79,7 @@ chip northbridge/intel/i945
 					device pci 3.3 off end  # smartcard
 				end
 			end # PCI bridge
-			#device pci 1e.2 off end # AC'97 Audio 
+			#device pci 1e.2 off end # AC'97 Audio
 			#device pci 1e.3 off end # AC'97 Modem
                         device pci 1f.0 on # LPC bridge
                                 chip superio/smsc/lpc47n227

@@ -68,7 +68,7 @@ static void vga_init(device_t dev)
 #define PIPE_A_TV	(1 << 3)
 #define PIPE_B_CRT	(1 << 8)
 #define PIPE_B_TV	(1 << 10)
-	printk(BIOS_DEBUG, "Enabling TV-Out\n"); 
+	printk(BIOS_DEBUG, "Enabling TV-Out\n");
 	void runInt10(void);
 	M.x86.R_AX = 0x5f64;
 	M.x86.R_BX = 0x0001; // Set Display Device, force execution

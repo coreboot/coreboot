@@ -90,7 +90,7 @@ static void *smp_write_config_table(void *v)
 
 	/* Legacy Interrupts */
 
-	/* I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */	
+	/* I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x1, ioapic_id, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x2);
@@ -158,11 +158,11 @@ static void *smp_write_config_table(void *v)
 	return smp_next_mpe_entry(mc);
 }
 
-/* MP table generation in coreboot is not very well designed; 
- * One of the issues is that it knows nothing about Virtual 
+/* MP table generation in coreboot is not very well designed;
+ * One of the issues is that it knows nothing about Virtual
  * Wire mode, which everyone uses since a decade or so. This
  * function fixes up our floating table. This spares us doing
- * a half-baked fix of adding a new parameter to 200+ calls 
+ * a half-baked fix of adding a new parameter to 200+ calls
  * to smp_write_floating_table()
  */
 static void fixup_virtual_wire(void *v)

@@ -18,9 +18,9 @@ struct e820entry {
 } __attribute__((packed));
 
 /* FIXME expand on drive_info_struct... */
-struct drive_info_struct { 
-	uint8_t dummy[32]; 
-}; 
+struct drive_info_struct {
+	uint8_t dummy[32];
+};
 struct sys_desc_table {
 	uint16_t length;
 	uint8_t  table[318];
@@ -90,7 +90,7 @@ struct x86_linux_param_header {
 	uint16_t ramdisk_flags;			/* 0x1f8 */
 #define RAMDISK_IMAGE_START_MASK  	0x07FF
 #define RAMDISK_PROMPT_FLAG		0x8000
-#define RAMDISK_LOAD_FLAG		0x4000	
+#define RAMDISK_LOAD_FLAG		0x4000
 	uint16_t vid_mode;			/* 0x1fa */
 	uint16_t root_dev;			/* 0x1fc */
 	uint8_t  reserved9[1];			/* 0x1fe */

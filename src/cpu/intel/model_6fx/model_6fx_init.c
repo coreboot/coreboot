@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ static const uint32_t microcode_updates[] = {
         0x0, 0x0, 0x0, 0x0,
 };
 
-static inline void strcpy(char *dst, char *src) 
+static inline void strcpy(char *dst, char *src)
 {
 	while (*src) *dst++ = *src++;
 }
@@ -83,7 +83,7 @@ static void fill_processor_name(char *processor_name)
 
 	/* Skip leading spaces */
 	processor_name_start = temp_processor_name;
-	while (*processor_name_start == ' ') 
+	while (*processor_name_start == ' ')
 		processor_name_start++;
 
 	memset(processor_name, 0, 49);
@@ -214,7 +214,7 @@ static void configure_pic_thermal_sensors(void)
 #if CONFIG_USBDEBUG_DIRECT
 static unsigned ehci_debug_addr;
 #endif
-		
+
 static void model_6fx_init(device_t cpu)
 {
 	char processor_name[49];
@@ -231,7 +231,7 @@ static void model_6fx_init(device_t cpu)
 
 #if CONFIG_USBDEBUG_DIRECT
 	// Is this caution really needed?
-	if(!ehci_debug_addr) 
+	if(!ehci_debug_addr)
 		ehci_debug_addr = get_ehci_debug();
 	set_ehci_debug(0);
 #endif

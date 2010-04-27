@@ -362,7 +362,7 @@ g)      Rx73h = 32h
 	/* decide if this is a s3 wakeup or a normal boot */
 	boot_mode = acpi_is_wakeup_early_via_vx800();
 	/*add this, to transfer "cpu restart" to "cold boot"
-	   When this boot is not a S3 resume, and PCI registers had been written, 
+	   When this boot is not a S3 resume, and PCI registers had been written,
 	   then this must be a cpu restart(result of os reboot cmd). so we need a real "cold boot". */
 	if ((boot_mode != 3)
 	    && (pci_read_config8(PCI_DEV(0, 0, 3), 0x80) != 0)) {
@@ -371,7 +371,7 @@ g)      Rx73h = 32h
 
 	/*x86 cold boot I/O cmd */
 	enable_smbus();
-	//smbus_fixup(&ctrl);// this fix does help vx800!, but vx855 no need this 
+	//smbus_fixup(&ctrl);// this fix does help vx800!, but vx855 no need this
 
 	if (bist == 0) {
 		// CAR need mtrr untill mem is ok, so i disable this early_mtrr_init();
@@ -441,7 +441,7 @@ g)      Rx73h = 32h
 
 	/*
 	   For coreboot most time of S3 resume is the same as normal boot, so some memory area under 1M become dirty,
-	   so before this happen, I need to backup the content of mem to top-mem. 
+	   so before this happen, I need to backup the content of mem to top-mem.
 	   I will reserve the 1M top-men in LBIO table in coreboot_table.c and recovery the content of 1M-mem in wakeup.c
 	 */
 #if PAYLOAD_IS_SEABIOS==1	//
@@ -449,7 +449,7 @@ g)      Rx73h = 32h
 		/*   some idea of Libo.Feng at amd.com in  http://www.coreboot.org/pipermail/coreboot/2008-December/043111.html
 		   I want move the 1M data, I have to set some MTRRs myself. */
 		/* seting mtrr before back memoy save s3 resume time about 0.14 seconds */
-		/*because CAR stack use cache, and here to use cache , must be careful, 
+		/*because CAR stack use cache, and here to use cache , must be careful,
 		   1 during these mtrr code, must no function call, (after this mtrr, I think it should be ok to use function)
 		   2 before stack switch, no use variable that have value set before this
 		   3 due to 2, take care of "cpu_reset", I directlly set it to ZERO.
@@ -462,7 +462,7 @@ g)      Rx73h = 32h
 		u32 memtop4 =
 		    *(u32 *) WAKE_MEM_INFO - 64 * 1024 - 0x100000 +
 		    0xe0000;
-		/*      __asm__ volatile (              
+		/*      __asm__ volatile (
 		   "movl    $0x204, %%ecx\n\t"
 		   "xorl    %%edx, %%edx\n\t"
 		   "movl     %0,%%eax\n\t"
@@ -478,7 +478,7 @@ g)      Rx73h = 32h
 		   "wrmsr\n\t"
 		   ::"g"(memtop2)
 		   );
-		   __asm__ volatile (           
+		   __asm__ volatile (
 		   "movl    $0x206, %%ecx\n\t"
 		   "xorl    %%edx, %%edx\n\t"
 		   "movl     %0,%%eax\n\t"
@@ -494,7 +494,7 @@ g)      Rx73h = 32h
 		   "wrmsr\n\t"
 		   ::"g"(memtop1)
 		   );
-		   __asm__ volatile (       
+		   __asm__ volatile (
 		   "movl    $0x208, %ecx\n\t"
 		   "xorl    %edx, %edx\n\t"
 		   "movl    $0,%eax\n\t"
@@ -512,21 +512,21 @@ g)      Rx73h = 32h
 		 */
 		// WAKE_MEM_INFO is  inited in get_set_top_available_mem in tables.c
 		// these two memcpy not not be enabled if set the MTRR around this two lines.
-		/*__asm__ volatile (		
+		/*__asm__ volatile (
 	 			"movl    $0, %%esi\n\t"
         "movl    %0, %%edi\n\t"
        	"movl    $0xa0000, %%ecx\n\t"
        	"shrl    $2, %%ecx\n\t"
-        "rep movsd\n\t"    
-        ::"g"(memtop3)        
+        "rep movsd\n\t"
+        ::"g"(memtop3)
    	);
-	__asm__ volatile (		
+	__asm__ volatile (
 	 			"movl    $0xe0000, %%esi\n\t"
         "movl    %0, %%edi\n\t"
        	"movl    $0x20000, %%ecx\n\t"
        	"shrl    $2, %%ecx\n\t"
-        "rep movsd\n\t"    
-        ::"g"(memtop4)        
+        "rep movsd\n\t"
+        ::"g"(memtop4)
    	);*/
 		print_debug("copy memory to high memory to protect s3 wakeup vector code \n");	//this can have function call, because no variable used before this
 		memcpy((unsigned char *) ((*(u32 *) WAKE_MEM_INFO) -
@@ -537,22 +537,22 @@ g)      Rx73h = 32h
 		       (unsigned char *) 0xe0000, 0x20000);
 
 		/* restore the MTRR previously modified. */
-/*		__asm__ volatile (	
-        "wbinvd\n\t"     			
+/*		__asm__ volatile (
+        "wbinvd\n\t"
         "xorl    %edx, %edx\n\t"
        	"xorl    %eax, %eax\n\t"
        	"movl    $0x204, %ecx\n\t"
         "wrmsr\n\t"
-	 			"movl    $0x205, %ecx\n\t"                                      
-        "wrmsr\n\t"        
+	 			"movl    $0x205, %ecx\n\t"
+        "wrmsr\n\t"
 	 			"movl    $0x206, %ecx\n\t"
         "wrmsr\n\t"
-	 			"movl    $0x207, %ecx\n\t"                     
-        "wrmsr\n\t"        
-	 			"movl    $0x208, %ecx\n\t"                     
-        "wrmsr\n\t"        
-	 			"movl    $0x209, %ecx\n\t"                     
-        "wrmsr\n\t"        
+	 			"movl    $0x207, %ecx\n\t"
+        "wrmsr\n\t"
+	 			"movl    $0x208, %ecx\n\t"
+        "wrmsr\n\t"
+	 			"movl    $0x209, %ecx\n\t"
+        "wrmsr\n\t"
 		);*/
 	}
 #endif

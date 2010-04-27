@@ -284,20 +284,20 @@
 #define		SMM_INST_EN_SET					(1<<3)
 #define		INTL_SMI_EN_SET					(1<<4)
 #define		EXTL_SMI_EN_SET					(1<<5)
-	
+
 #define	CPU_FPU_MSR_MODE					0x1A00
 #define		FPU_IE_SET						(1<<0)
-	
+
 #define	CPU_FP_UROM_BIST					0x1A03
-	
+
 #define	CPU_BC_CONF_0						0x1900
 #define		TSC_SUSP_SET				 (1<<5)
 #define		SUSP_EN_SET				 (1<<12)
-	
+
 	/**/
 	/*	VG GLIU0 port4*/
 	/**/
-	
+
 #define	VG_GLD_MSR_CAP				(MSR_VG + 0x2000)
 #define	VG_GLD_MSR_CONFIG			(MSR_VG + 0x2001)
 #define	VG_GLD_MSR_PM				(MSR_VG + 0x2004)
@@ -332,7 +332,7 @@
 #define		RSTPLL_UPPER_MDIV_SHIFT				9
 #define		RSTPLL_UPPER_VDIV_SHIFT				6
 #define		RSTPLL_UPPER_FBDIV_SHIFT			0
-	
+
 #define		RSTPLL_LOWER_SWFLAGS_SHIFT			26
 #define		RSTPLL_LOWER_SWFLAGS_MASK			(0x3F<<RSTPLL_LOWER_SWFLAGS_SHIFT)
 

@@ -33,7 +33,7 @@ static inline void uart8250_wait_to_tx_byte(unsigned base_port)
 
 static inline void uart8250_wait_until_sent(unsigned base_port)
 {
-	while(!(inb(base_port + UART_LSR) & 0x40)) 
+	while(!(inb(base_port + UART_LSR) & 0x40))
 		;
 }
 

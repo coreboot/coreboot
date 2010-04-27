@@ -18,7 +18,7 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 1.0 on
 						chip superio/nsc/pc87366
-							device	pnp 2e.0 off  # Floppy 
+							device	pnp 2e.0 off  # Floppy
 								 io 0x60 = 0x3f0
 								irq 0x70 = 6
 								drq 0x74 = 2
@@ -45,7 +45,7 @@ chip northbridge/amd/amdk8/root_complex
 							device pnp 2e.7 off end # GPIO
 							device pnp 2e.8 off end # ACB
 							device pnp 2e.9 off end # FSCM
-							device pnp 2e.a off end # WDT  
+							device pnp 2e.a off end # WDT
 						end
 					end
 					device pci 1.1 on end
@@ -54,7 +54,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 1.5 off end
 					device pci 1.6 off end
 				end
-			end #  device pci 18.0 
+			end #  device pci 18.0
 			device pci 18.0 on end # LDT2
 			device pci 18.1 on end
 			device pci 18.2 on end
@@ -68,7 +68,7 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.2 on end
 			device pci 19.3 on end
 		end
-	end 
+	end
 	device apic_cluster 0 on
 		chip cpu/amd/socket_940
 			device apic 0 on end

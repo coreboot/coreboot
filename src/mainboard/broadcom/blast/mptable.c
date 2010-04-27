@@ -72,12 +72,12 @@ static void *smp_write_config_table(void *v)
 				}
         	        }
 		}
-		
+
 	}
-	
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_bcm5785[0], 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_bcm5785[0], 0x1); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_bcm5785[0], 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid_bcm5785[0], 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid_bcm5785[0], 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid_bcm5785[0], 0x4);
@@ -89,7 +89,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xc, apicid_bcm5785[0], 0xc);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xd, apicid_bcm5785[0], 0xd);
 
-//IDE	
+//IDE
 	outb(0x02, 0xc00); outb(0x0e, 0xc01);
 
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, apicid_bcm5785[0], 0xe); // IDE
@@ -97,14 +97,14 @@ static void *smp_write_config_table(void *v)
 //SATA
 	outb(0x07, 0xc00); outb(0x0f, 0xc01);
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_1, (0x0e<<2)|0, apicid_bcm5785[0], 0xf);
-	
+
 //USB
 	outb(0x01, 0xc00); outb(0x0a, 0xc01);
         for(i=0;i<3;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_0, ((2+sysconf.sbdn)<<2)|i, apicid_bcm5785[0], 0xa); //
         }
 
-	
+
 
         /* enable int */
         /* why here? must get the BAR and PCI command bit 1 set before enable it ....*/
@@ -127,13 +127,13 @@ static void *smp_write_config_table(void *v)
         }
 
 
-//pci slot (on bcm5785)  
+//pci slot (on bcm5785)
         for(i=0;i<4;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_0, (4<<2)|i, apicid_bcm5785[1], i%2); //
         }
 
 
-//onboard ati 
+//onboard ati
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_0, (5<<2)|0, apicid_bcm5785[1], 0x1);
 
 //PCI-X on bcm5780
@@ -157,7 +157,7 @@ static void *smp_write_config_table(void *v)
         }
 
 
-// Second PCI-E x8 
+// Second PCI-E x8
         for(i=0;i<4;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5780[3], (0<<2)|i, apicid_bcm5785[1], 0xc); //
         }

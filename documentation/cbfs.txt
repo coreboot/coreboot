@@ -4,71 +4,71 @@ Received: from www.crouse-house.com ([199.45.160.146]
 From: Jordan Crouse <jordan@cosmicpenguin.net>
 
 
-Greetings.  I apologize for the incompleteness of what I am about to 
-discuss.  I was planning on working on it leisurely, but my employment 
-circumstances changed and I've been trying to get it completed in a 
+Greetings.  I apologize for the incompleteness of what I am about to
+discuss.  I was planning on working on it leisurely, but my employment
+circumstances changed and I've been trying to get it completed in a
 hurry before I had to leave it behind.
 
-I've been thinking a lot about LAR lately, and ways to make it more 
-extensible and robust.  Marc and I have been trading ideas back and 
-forth for a number of months, and over time a clear idea of what I 
+I've been thinking a lot about LAR lately, and ways to make it more
+extensible and robust.  Marc and I have been trading ideas back and
+forth for a number of months, and over time a clear idea of what I
 wanted to do started to take shape.
 
-My goal was to add small things to LAR while retaining the overall 
-scheme.  Over time, the scheme evolved slightly, but I think you'll find 
-that it remains true to the original idea.  Below is the beginnings of 
-an architecture document - I did it in text form, but if met with 
-aclaim, it should be wikified.  This presents what I call CBFS - the 
-next generation LAR for next generation Coreboot.  Its easier to 
+My goal was to add small things to LAR while retaining the overall
+scheme.  Over time, the scheme evolved slightly, but I think you'll find
+that it remains true to the original idea.  Below is the beginnings of
+an architecture document - I did it in text form, but if met with
+aclaim, it should be wikified.  This presents what I call CBFS - the
+next generation LAR for next generation Coreboot.  Its easier to
 describe what it is by describing what changed:
 
-A header has been added somewhere in the bootblock similar to Carl 
-Daniel's scheme.  In addition to the coreboot information, the header 
-reports the size of the ROM, the alignment of the blocks, and the offset 
-of the first component in the CBFS.   The master header provides all 
+A header has been added somewhere in the bootblock similar to Carl
+Daniel's scheme.  In addition to the coreboot information, the header
+reports the size of the ROM, the alignment of the blocks, and the offset
+of the first component in the CBFS.   The master header provides all
 the information LAR needs plus the magic number information flashrom needs.
 
-Each "file" (or component, as I style them) now has a type associated 
-with it. The type is used by coreboot to identify the type of file that 
-it is loading, and it can also be used by payloads to group items in the 
+Each "file" (or component, as I style them) now has a type associated
+with it. The type is used by coreboot to identify the type of file that
+it is loading, and it can also be used by payloads to group items in the
 CBFS by type (i.e - bayou can ask for all components that are payloads).
 
-The header on each "file" (or component, as I like to style them) has 
-been simplified - We now only store the length, the type, the checksum, 
-and the offset to the data.  The name scheme remains the same.  The 
-addtional information, which is component specific, has been moved to 
+The header on each "file" (or component, as I like to style them) has
+been simplified - We now only store the length, the type, the checksum,
+and the offset to the data.  The name scheme remains the same.  The
+addtional information, which is component specific, has been moved to
 the component itself (see below).
 
-The components are arranged in the ROM aligned along the specified 
+The components are arranged in the ROM aligned along the specified
 alignment from the master header - this is to facilitate partial re-write.
 
 Other then that, the LAR ideas remain pretty much the same.
 
-The plan for moving the metadata to the components is to allow many 
-different kinds of components, not all of which are groked by coreboot. 
-  However, there are three essential component types that are groked by 
+The plan for moving the metadata to the components is to allow many
+different kinds of components, not all of which are groked by coreboot.
+  However, there are three essential component types that are groked by
 coreboot, and they are defined:
 
-stage - the stage is being parsed from the original ELF, and stored in 
-the ROM as a single blob of binary data.  The load address, start 
+stage - the stage is being parsed from the original ELF, and stored in
+the ROM as a single blob of binary data.  The load address, start
 address, compression type and length are stored in the component sub-header.
 
-payload - this is essentially SELF in different clothing - same idea as 
+payload - this is essentially SELF in different clothing - same idea as
 SELF, with the sub-header as above.
 
-optionrom - This is in flux - right now, the optionrom is stored 
+optionrom - This is in flux - right now, the optionrom is stored
 unadulterated and uncompressed, but that is likely to be changed.
 
-Following this email are two replies containing the v3 code and a new 
-ROM tool to implement this respectively.  I told you that I was trying 
-to get this out before I disappear, and I'm not kidding - the code is 
-compile tested and not run-tested.  I hope that somebody will embrace 
-this code and take it the rest of the way, otherwise it will die a 
+Following this email are two replies containing the v3 code and a new
+ROM tool to implement this respectively.  I told you that I was trying
+to get this out before I disappear, and I'm not kidding - the code is
+compile tested and not run-tested.  I hope that somebody will embrace
+this code and take it the rest of the way, otherwise it will die a
 pretty short death.
 
-I realize that this will start an awesome flamewar, and I'm looking 
-forward to it.  Thanks for listening to me over the years - and good 
-luck with coreboot.  When you all make a million dollars, send me a few 
+I realize that this will start an awesome flamewar, and I'm looking
+forward to it.  Thanks for listening to me over the years - and good
+luck with coreboot.  When you all make a million dollars, send me a few
 bucks, will you?
 
 Jordan
@@ -152,7 +152,7 @@ struct cbfs_header {
 
 The meaning of each member is as follows:
 
-'magic' is a 32 bit number that identifies the ROM as a CBFS type.  The 
+'magic' is a 32 bit number that identifies the ROM as a CBFS type.  The
 magic
 number is 0x4F524243, which is 'ORBC' in ASCII.
 
@@ -160,7 +160,7 @@ number is 0x4F524243, which is 'ORBC' in ASCII.
 0xFFFFFFFF to locate the beginning of the ROM in memory.
 
 'align' is the number of bytes that each component is aligned to within the
-ROM.  This is used to make sure that each component is aligned correctly 
+ROM.  This is used to make sure that each component is aligned correctly
 with
 regards to the erase block sizes on the ROM - allowing one to replace a
 component at runtime without disturbing the others.
@@ -170,7 +170,7 @@ the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
 
 = Bootblock =
-The bootblock is a mandatory component in the ROM.  It is located in the 
+The bootblock is a mandatory component in the ROM.  It is located in the
 last
 20k of the ROM space, and contains, among other things, the location of the
 master header and the entry point for the loader firmware.  The bootblock
@@ -179,11 +179,11 @@ does not have a component header attached to it.
 = Components =
 
 CBFS components are placed in the ROM starting at 'offset' specified in
-the master header and ending at the bootblock.  Thus the total size 
+the master header and ending at the bootblock.  Thus the total size
 available
 for components in the ROM is (ROM size - 20k - 'offset').  Each CBFS
 component is to be aligned according to the 'align' value in the header.
-Thus, if a component of size 1052 is located at offset 0 with an 'align' 
+Thus, if a component of size 1052 is located at offset 0 with an 'align'
 value
 of 1024, the next component will be located at offset 2048.
 
@@ -214,12 +214,12 @@ below.
 'checksum' is a 32bit checksum of the entire component, including the
 header and name.
 
-'offset' is the start of the component data, based off the start of the 
+'offset' is the start of the component data, based off the start of the
 header.
 The difference between the size of the header and offset is the size of the
 component name.
 
-Immediately following the header will be the name of the component, 
+Immediately following the header will be the name of the component,
 which will
 null terminated and 16 byte aligned.   The following picture shows the
 structure of the header:
@@ -248,7 +248,7 @@ component was found.
 Upon recognizing a component, the software then has to search for the
 specific name of the component.  This is accomplished by comparing the
 desired name with the string on the component located at
-offset + sizeof(struct cbfs_file).  If the string matches, then the 
+offset + sizeof(struct cbfs_file).  If the string matches, then the
 component
 has been located, otherwise the software should add 'offset' + 'len' to
 the offset and resume the search for the magic value.

@@ -68,11 +68,11 @@ __wakeup:
 	 * protected mode is turned off.
 	 */
 	mov	$0x30, %ax
-	mov	%ax, %ds       
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
-	mov	%ax, %ss       
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
 
 	/* Turn off protection */
 	movl	%cr0, %eax

@@ -99,7 +99,7 @@ static void test_for_entry_overlaps(void *entry_start, void *entry_end)
 					ce->name);
 				exit(1);
 			}
-			/* test if entries 8 or more in length are even bytes */ 
+			/* test if entries 8 or more in length are even bytes */
 			if(ce->length%8){
                                 printf("Error - Entry %s length over 8 must be a multiple of 8\n",
                                         ce->name);
@@ -164,7 +164,7 @@ static unsigned long get_number(char *line, char **ptr, int base)
 	char *ptr2;
 	value = strtoul(*ptr, &ptr2, base);
 	if (ptr2 == *ptr) {
-		printf("Error missing digits at: \n%s\n in line:\n%s\n", 
+		printf("Error missing digits at: \n%s\n in line:\n%s\n",
 			*ptr, line);
 		exit(1);
 	}
@@ -237,15 +237,15 @@ static int is_ident(char *str)
  *
  * The input comes from the configuration file which contains two parts
  * entries and enumerations.  Each section is started with the key words
- * entries and enumerations.  Records then follow in their respective 
+ * entries and enumerations.  Records then follow in their respective
  * formats.
  *
  * The output of this program is the cmos definitions table.  It is stored
- * in the cmos_table array. If this module is called, and the global 
+ * in the cmos_table array. If this module is called, and the global
  * table_file has been implimented by the user, the table is also written
  * to the specified file.
  *
- * This program exits with a return code of 1 on error.  It returns 0 on 
+ * This program exits with a return code of 1 on error.  It returns 0 on
  * successful completion
  */
 int main(int argc, char **argv)
@@ -336,7 +336,7 @@ int main(int argc, char **argv)
 	ce=(struct cmos_entries*)(cmos_table+(ct->header_length));
 	cptr = (char*)ce;
 	for(;;){  /* this section loops through the entry records */
-		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
+		if(fgets(line,INPUT_LINE_MAX,fp)==NULL)
 			break; /* end if no more input */
 		// FIXME mode should be a single enum.
 		if(!entry_mode) {  /* skip input until the entries key word */
@@ -378,8 +378,8 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		if (!is_ident((char *)ce->name)) {
-			fprintf(stderr, 
-				"Error - Name %s is an invalid identifier in line\n %s\n", 
+			fprintf(stderr,
+				"Error - Name %s is an invalid identifier in line\n %s\n",
 				ce->name, line);
 			exit(1);
 		}
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
 
 	for(;enum_mode;){ /* loop to build the enumerations section */
 		long ptr;
-		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
+		if(fgets(line,INPUT_LINE_MAX,fp)==NULL)
 			break; /* go till end of input */
 
 		if (strstr(line, "checksums") != 0) {
@@ -432,7 +432,7 @@ int main(int argc, char **argv)
 		for(cnt=0;(line[ptr]!='\n')&&(cnt<31);ptr++,cnt++)
 			c_enums->text[cnt]=line[ptr];
 		c_enums->text[cnt]=0;
-	
+
 		/* make the record int aligned */
 		cnt++;
 		if(cnt%4)
@@ -473,7 +473,7 @@ int main(int argc, char **argv)
 
 		skip_spaces(line, &ptr);
 		cs->location = get_number(line, &ptr, 10);
-		
+
 		/* Make certain there are spaces until the end of the line */
 		skip_spaces(line, &ptr);
 
@@ -498,7 +498,7 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		if ((cs->location >= (CMOS_IMAGE_BUFFER_SIZE*8)) ||
-			((cs->location + 16) > (CMOS_IMAGE_BUFFER_SIZE*8))) 
+			((cs->location + 16) > (CMOS_IMAGE_BUFFER_SIZE*8)))
 		{
 			fprintf(stderr, "Error - location is to big in line\n%s\n", line);
 			exit(1);

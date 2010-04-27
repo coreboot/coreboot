@@ -110,7 +110,7 @@ static int do_smbus_read_byte(unsigned device, unsigned address)
 	return byte;
 }
 
-/* This function is neither used nor tested by me (Corey Osgood), the author 
+/* This function is neither used nor tested by me (Corey Osgood), the author
 (Yinghai) probably tested/used it on i82801er */
 static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 				unsigned data1, unsigned data2)

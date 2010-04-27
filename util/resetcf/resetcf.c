@@ -23,7 +23,7 @@ main(int argc, char *argv[])
     {
       v = mmap(0, length, PROT_READ | PROT_WRITE, MAP_SHARED,fd,nvram);
       fprintf(stderr, "mmap returns %p\n", v);
-      
+
       if ( v == (void *) -1)
 	{
 	  perror("mmap");
@@ -33,10 +33,10 @@ main(int argc, char *argv[])
       perror("open /dev/mem");
       exit(1);
     }
-  
+
     for( i = 0x836 ; i < 0x840 ; i++){
 	*(unsigned char *)(v+i) = 0;
     }
-   
-  
+
+
 }

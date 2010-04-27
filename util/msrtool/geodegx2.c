@@ -187,7 +187,7 @@ const struct msrdef geodegx2_msrs[] = {
 			{ MSR1(0), "Enable" },
 			{ MSR1(1), "Disable" },
 			{ BITVAL_EOT }
-		}},		
+		}},
 		{ 37, 4, RESERVED },
 		{ 33, 1, "HOI_LOI", "High / Low Order Interleave Select", PRESENT_BIN, {
 			{ MSR1(0), "Low Order Interleave" },

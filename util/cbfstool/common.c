@@ -183,10 +183,10 @@ void print_cbfs_directory(const char *filename)
 		    (struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
 		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
-		if (strlen(fname) == 0) 
+		if (strlen(fname) == 0)
 			fname = "(empty)";
 
-		printf("%-30s 0x%-8x %-12s %d\n", fname, 
+		printf("%-30s 0x%-8x %-12s %d\n", fname,
 		       current - phys_start, strfiletype(ntohl(thisfile->type)),
 		       length);
 		current =

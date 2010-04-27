@@ -54,7 +54,7 @@ static u8 variables[] = {
 	0x1e, 0xff, 0x87,  // FuncKey Task = c5 Command Data (funcTsk)
 	0x1f, 0xff, 0x9f,  // Delayed Task = c5 Command Data (dlyTsk1)
 	0x20, 0xff, 0x9f,  // Wake-Up Task = c5 Command Data (wakeTsk)
-	// 
+	//
 	0x21, 0xff, 0x08,  // WigglePin Pulse Width * 2.4ms (tmPulse)
 	0x24, 0xff, 0x30,  // Keyboard State Flags (kState7)
 	//
@@ -121,7 +121,7 @@ static int send_kbd_command(u8 command)
 			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n", 
+		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n",
 				command);
 		// return -1;
 	}
@@ -249,7 +249,7 @@ void m3885_configure_multikey(void)
 		m3885_set_proc_ram(i + 0x80, matrix[i]);
 	}
 
-	
+
 	/* ram bank 2 */
 	m3885_set_variable(0x0c, (kstate5_flags & (~(7 << 4))) | (2 << 4));
 
@@ -303,7 +303,7 @@ void m3885_configure_multikey(void)
 
 	/* Critical Task */
 	m3885_set_proc_ram(0xf3, 0x5d);
-	
+
 	/* Thermal Polling Period */
 	m3885_set_proc_ram(0xf9, 0x0a);
 
@@ -316,21 +316,21 @@ void m3885_configure_multikey(void)
 	else
 		reg8 = 0x9a;
 	m3885_set_proc_ram(0xd0, reg8); // P60SPEC
-	
+
 	/* SENSE1# */
 	if (m3885_read_port() & (1 << 2))
 		reg8 = 0x8a;
 	else
 		reg8 = 0x9a;
 	m3885_set_proc_ram(0xd2, reg8); // P62SPEC
-	
+
 	/* SENSE2# */
 	if (m3885_read_port() & (1 << 3))
 		reg8 = 0x8a;
 	else
 		reg8 = 0x9a;
 	m3885_set_proc_ram(0xd3, reg8); // P63SPEC
-	
+
 	/* Low Active Port */
 	m3885_set_proc_ram(0xd1, 0x88); // P61SPEC
 	m3885_set_proc_ram(0xd6, 0x88); // P66SPEC

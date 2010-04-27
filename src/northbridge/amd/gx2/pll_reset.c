@@ -125,7 +125,7 @@ static unsigned int get_memory_speed(void)
 
 #define DEFAULT_MDIV	3
 #define DEFAULT_VDIV	2
-#define DEFAULT_FBDIV	22	// 366/244 ; 24 400/266 018 ;300/200 
+#define DEFAULT_FBDIV	22	// 366/244 ; 24 400/266 018 ;300/200
 
 static void pll_reset(void)
 {
@@ -134,10 +134,10 @@ static void pll_reset(void)
 	unsigned SyncBits;			// store the sync bits in up ebx
 
 	// clear the Bypass bit
-	
+
 	// If the straps say we are in bypass and the syspll is not AND there are no software
 	// bits set then FS2 or something set up the PLL and we should not change it.
-	
+
 	msrGlcpSysRstpll = rdmsr(GLCP_SYS_RSTPLL);
 	msrGlcpSysRstpll.lo &= ~RSTPPL_LOWER_BYPASS_SET;
 	wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
@@ -145,15 +145,15 @@ static void pll_reset(void)
 	// If the "we've already been here" flag is set, don't reconfigure the pll
 	if ( !(msrGlcpSysRstpll.lo & PLLCHECK_COMPLETED ) )
 	{ // we haven't configured the PLL; do it now
-	
+
 		// Store PCI33(0)/66(1), SDR(0)/DDR(1), and CRT(0)/TFT(1) in upper esi to get to the
 		// correct Strap Table.
 		post_code(POST_PLL_INIT);
-		
+
 		// configure for DDR
 		msrGlcpSysRstpll.lo &= ~(1 << RSTPPL_LOWER_SDRMODE_SHIFT);
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
-		
+
 		// Use Manual settings
 		//	UseManual:
 		post_code(POST_PLL_MANUAL);
@@ -161,7 +161,7 @@ static void pll_reset(void)
 		// DIV settings manually entered.
 		// ax = VDIV, upper eax = MDIV, upper ecx = FbDIV
 		// use gs and fs since we don't need them.
-		
+
 		//	ProgramClocks:
 		// ax = VDIV, upper eax = MDIV, upper ecx = FbDIV
 		// move everything into ebx
@@ -174,7 +174,7 @@ static void pll_reset(void)
 		// FbDIV
 		MDIV_VDIV_FBDIV |= (plldiv2fbdiv[DEFAULT_FBDIV] << RSTPLL_UPPER_FBDIV_SHIFT);
 
-		// write GLCP_SYS_RSTPPL (GLCP reg 0x14) with clock values  
+		// write GLCP_SYS_RSTPPL (GLCP reg 0x14) with clock values
 		msrGlcpSysRstpll.lo &= ~(1 << RSTPPL_LOWER_SDRMODE_SHIFT);
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
 
@@ -192,15 +192,15 @@ static void pll_reset(void)
 		// Check for Bypass mode.
 		if (msrGlcpSysRstpll.lo & RSTPPL_LOWER_BYPASS_SET)
 		{
-			// If we are in BYPASS PCI may or may not be sync'd but CPU and GeodeLink will.	
+			// If we are in BYPASS PCI may or may not be sync'd but CPU and GeodeLink will.
 			SyncBits |= RSTPPL_LOWER_CPU_SEMI_SYNC_SET;
 		}
 		else
 		{
-			//	CheckPCIsync:	
+			//	CheckPCIsync:
 			// If FBdiv/Mdiv is evenly divisible then set the PCI semi-sync. FB is always greater
 			// look up the real divider... if we get a 0 we have serious problems
-			if ( !(fbdiv2plldiv[((msrGlcpSysRstpll.hi >> RSTPLL_UPPER_FBDIV_SHIFT) & 0x3f)] % 
+			if ( !(fbdiv2plldiv[((msrGlcpSysRstpll.hi >> RSTPLL_UPPER_FBDIV_SHIFT) & 0x3f)] %
 				(((msrGlcpSysRstpll.hi >> RSTPLL_UPPER_MDIV_SHIFT) & 0x0F) + 2)) )
 			{
 				SyncBits |= RSTPPL_LOWER_PCI_SEMI_SYNC_SET;
@@ -234,13 +234,13 @@ static void pll_reset(void)
 		msrGlcpSysRstpll.lo |= (RSTPPL_LOWER_PLL_RESET_SET + RSTPPL_LOWER_PD_SET);
 		msrGlcpSysRstpll.lo |= RSTPPL_LOWER_CHIP_RESET_SET;
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
-		
+
 		// You should never get here..... The chip has reset.
 		post_code(POST_PLL_RESET_FAIL);
 		while (1);
 
 	} // we haven't configured the PLL; do it now
-	
+
 }
 // End of Goodrich version of pll_reset
 ///////////////////////////////////////////////////////////////////////////////

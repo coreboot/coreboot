@@ -49,7 +49,7 @@ static void pnp_exit_conf_state(device_t dev)
 
 //----------------------------------------------------------------------------------
 // Function:            lpc47n227_pnp_set_iobase
-// Parameters:          dev - high 8 bits = Super I/O port, 
+// Parameters:          dev - high 8 bits = Super I/O port,
 //                            low 8 bits = logical device number (per lpc47n227.h)
 //                      iobase - base I/O port for the logical device
 // Return Value:        None
@@ -80,7 +80,7 @@ void lpc47n227_pnp_set_iobase(device_t dev, unsigned iobase)
 
 //----------------------------------------------------------------------------------
 // Function:            lpc47n227_pnp_set_enable
-// Parameters:          dev - high 8 bits = Super I/O port, 
+// Parameters:          dev - high 8 bits = Super I/O port,
 //                      low 8 bits = logical device number (per lpc47n227.h)
 //                      enable - 0 to disable, anythig else to enable
 // Return Value:        None
@@ -130,7 +130,7 @@ void lpc47n227_pnp_set_enable(device_t dev, int enable)
 
 //----------------------------------------------------------------------------------
 // Function:            lpc47n227_enable_serial
-// Parameters:          dev - high 8 bits = Super I/O port, 
+// Parameters:          dev - high 8 bits = Super I/O port,
 //                            low 8 bits = logical device number (per lpc47n227.h)
 //                      iobase - processor I/O port address to assign to this serial device
 // Return Value:        bool

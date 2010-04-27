@@ -19,8 +19,8 @@
 #include "device.h"
 
 /* this struct is used to remember which PMM spaces
- * have been assigned. MAX_PMM_AREAS defines how many 
- * PMM areas we can assign. 
+ * have been assigned. MAX_PMM_AREAS defines how many
+ * PMM areas we can assign.
  * All areas are assigned in PMM_CONV_SEGMENT
  */
 typedef struct {
@@ -37,7 +37,7 @@ static pmm_allocation_t pmm_allocation_array[MAX_PMM_AREAS];
 /* index into pmm_allocation_array */
 static u32 curr_pmm_allocation_index = 0;
 
-/* This function is used to setup the PMM struct in virtual memory 
+/* This function is used to setup the PMM struct in virtual memory
  * at a certain offset, the length of the PMM struct is returned */
 u8 pmm_setup(u16 segment, u16 offset)
 {
@@ -79,7 +79,7 @@ u8 pmm_setup(u16 segment, u16 offset)
 	return sizeof(pmm_information_t);
 }
 
-/* handle the selfdefined interrupt, this is executed, when the PMM Entry Point 
+/* handle the selfdefined interrupt, this is executed, when the PMM Entry Point
  * is executed, it must handle all PMM requests
  */
 void pmm_handleInt()
@@ -136,7 +136,7 @@ void pmm_handleInt()
 					 __func__, next_offset);
 			if (length == 0) {
 				/* largest possible block size requested, we have on segment
-				 * to allocate, so largest possible is segment size (0xFFFF) 
+				 * to allocate, so largest possible is segment size (0xFFFF)
 				 * minus next_offset
 				 */
 				rval = 0xFFFF - next_offset;
@@ -151,7 +151,7 @@ void pmm_handleInt()
 				}
 				align = 1 << lsb;
 			}
-			/* always align at least to paragraph (16byte) boundary 
+			/* always align at least to paragraph (16byte) boundary
 			 * hm... since the length is always in paragraphs, we cannot
 			 * align outside of paragraphs anyway... so this check might
 			 * be unnecessary...*/

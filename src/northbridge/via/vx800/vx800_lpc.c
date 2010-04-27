@@ -42,9 +42,9 @@ static const unsigned char sd_ms_ctrl_Pins[4] = { 'B', 'C', 'D', 'A' };	//only I
 static const unsigned char ce_ata_nf_ctrl_Pins[4] = { 'C', 'C', 'D', 'A' };	//only INTA
 static const unsigned char idePins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
 
-static const unsigned char usbPins[4] = { 'A', 'B', 'C', 'D' };	//all 4 
+static const unsigned char usbPins[4] = { 'A', 'B', 'C', 'D' };	//all 4
 
-static const unsigned char hdacaudioPins[4] = { 'B', 'C', 'D', 'A' };	//only INTA 
+static const unsigned char hdacaudioPins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
 
 static unsigned char *pin_to_irq(const unsigned char *pin)
 {
@@ -218,7 +218,7 @@ static void S3_ps2_kb_ms_wakeup(struct device *dev)
 	pci_write_config8(dev, 0x51, enables);
 
 	outb(inb(VX800_ACPI_IO_BASE + 0x02) | 0x20, VX800_ACPI_IO_BASE + 0x02);	//ACPI golabe enable for sci smi trigger
-	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x204, VX800_ACPI_IO_BASE + 0x22);	//ACPI SCI on Internal KBC PME and mouse PME  
+	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x204, VX800_ACPI_IO_BASE + 0x22);	//ACPI SCI on Internal KBC PME and mouse PME
 
 }
 
@@ -354,17 +354,17 @@ static void southbridge_init(struct device *dev)
 		fadt->pm2_cnt_len = 1;//to support cpu-c3
 	#2
 		ssdt? ->every cpu has a P_BLK address. set it to 0x10 (so that "Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state"---VIA vx800 P SPEC )
-       #3    write 0x17 in to PMIO=VX800_ACPI_IO_BASE + 0x26, following the describtion in the P-spec. 
+       #3    write 0x17 in to PMIO=VX800_ACPI_IO_BASE + 0x26, following the describtion in the P-spec.
 	       1  enable SLP# asserts in C3 state  PMIORx26<1> =1
 		2    enable CPUSTP# asserts in C3 state;  PMIORx26<2> =1
 		3  CLKRUN# is always asserted  PMIORx26<3> =0
-		4    Disable PCISTP# When CLKRUN# is asserted 
-		1: PCISTP# will not assert When CLKRUN# is asserted 
+		4    Disable PCISTP# When CLKRUN# is asserted
+		1: PCISTP# will not assert When CLKRUN# is asserted
 		PMIORx26<4> =1
-		5  This bit controls whether the CPU voltage is lowered when in C3/S1 state.     
-		VRDSLP will be active in either this bit set in C3 or LVL4 register read 
+		5  This bit controls whether the CPU voltage is lowered when in C3/S1 state.
+		VRDSLP will be active in either this bit set in C3 or LVL4 register read
 		PMIORx26<0> =0
-		6  Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state  PMIORx15 
+		6  Read Processor Level3 register(PMIORx15<7:0>) to enter C3 state  PMIORx15
 	*/
 	outb(0x17, VX800_ACPI_IO_BASE + 0x26);
 

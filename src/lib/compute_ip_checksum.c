@@ -39,7 +39,7 @@ unsigned long add_ip_checksums(unsigned long offset, unsigned long sum, unsigned
 	sum = ~sum & 0xFFFF;
 	new = ~new & 0xFFFF;
 	if (offset & 1) {
-		/* byte swap the sum if it came from an odd offset 
+		/* byte swap the sum if it came from an odd offset
 		 * since the computation is endian independant this
 		 * works.
 		 */

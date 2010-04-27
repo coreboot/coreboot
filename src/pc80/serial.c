@@ -53,14 +53,14 @@ static int uart_can_tx_byte(void)
 
 static void uart_wait_to_tx_byte(void)
 {
-	while(!uart_can_tx_byte()) 
+	while(!uart_can_tx_byte())
 	;
 }
 
 static void uart_wait_until_sent(void)
 {
 	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
-	; 
+	;
 }
 
 static void uart_tx_byte(unsigned char data)
@@ -109,6 +109,6 @@ void uart_init(void)
 	uart8250_init(CONFIG_TTYS0_BASE, ttys0_div, UART_LCS);
 #else
 	uart8250_init(CONFIG_TTYS0_BASE, CONFIG_TTYS0_DIV, UART_LCS);
-#endif	
+#endif
 }
 #endif

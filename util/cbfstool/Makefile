@@ -41,7 +41,7 @@ all: $(BINARY)
 clean:
 	rm -f $(COMMON) $(BINARY)
 
-tags: 
+tags:
 	ctags *.[ch]
 
 CXXFLAGS=-DCOMPACT -g

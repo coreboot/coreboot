@@ -30,7 +30,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	// 3=Workstation,4=Enterprise Server, 7=Performance Server
 	fadt->preferred_pm_profile=0x03;
 	fadt->sci_int=9;
-	// disable system management mode by setting to 0: 
+	// disable system management mode by setting to 0:
 	fadt->smi_cmd = 0;//pm_base+0x2f;
 	fadt->acpi_enable = 0xf0;
 	fadt->acpi_disable = 0xf1;
@@ -53,7 +53,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->gpe0_blk_len =  4;
 	fadt->gpe1_blk_len =  8;
 	fadt->gpe1_base    = 16;
-	
+
 	fadt->cst_cnt    = 0xe3;
 	fadt->p_lvl2_lat =  101;
 	fadt->p_lvl3_lat = 1001;
@@ -66,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->century =  0; // 0x7f to make rtc alrm work
 	fadt->iapc_boot_arch = 0x3; // See table 5-11
 	fadt->flags = 0x25;
-	
+
 	fadt->res2 = 0;
 
 	fadt->reset_reg.space_id = 1;

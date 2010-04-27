@@ -12,7 +12,7 @@ static void keyboard_on(struct device *dev)
 	u8 regval;
 
 	regval = pci_read_config8(dev, 0x51);
-	regval |= 0x05; 
+	regval |= 0x05;
 	regval &= 0xfd;
 	pci_write_config8(dev, 0x51, regval);
 
@@ -23,7 +23,7 @@ static void keyboard_on(struct device *dev)
 void dump_south(device_t dev0)
 {
 	int i,j;
-	
+
 	for(i = 0; i < 256; i += 16) {
 		printk(BIOS_DEBUG, "0x%x: ", i);
 		for(j = 0; j < 16; j++) {
@@ -51,10 +51,10 @@ static void vt8235_enable(struct device *dev)
 	model = pci_read_config16(dev,0x2);
 
 	printk(BIOS_DEBUG, "In vt8235_enable %04x %04x.\n",vendor,model);
-	
+
 	/* If this is not the southbridge itself just return.
 	 * This is necessary because USB devices are slot 10, whereas this
-	 * device is slot 11 therefore usb devices get called first during 
+	 * device is slot 11 therefore usb devices get called first during
 	 * the bus scan. We don't want to wait until we could do dev->init
 	 * because that's too late.
 	 */
@@ -69,13 +69,13 @@ static void vt8235_enable(struct device *dev)
 
 	/* enable RTC and ethernet */
 	regval = pci_read_config8(dev, 0x51);
-	regval |= 0x18; 
+	regval |= 0x18;
 	pci_write_config8(dev, 0x51, regval);
 
 	/* turn on keyboard */
 	keyboard_on(dev);
 
-	/* enable USB 1.1 & USB 2.0 - redundant really since we've 
+	/* enable USB 1.1 & USB 2.0 - redundant really since we've
 	 * already been there - see note above
 	 */
    	regval = pci_read_config8(dev, 0x50);

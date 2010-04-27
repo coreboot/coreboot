@@ -34,7 +34,7 @@ public:
 
   void FlushData()
   {
-    // Low += 1; 
+    // Low += 1;
     for(int i = 0; i < 5; i++)
       ShiftLow();
   }
@@ -56,7 +56,7 @@ public:
 
   void ShiftLow()
   {
-    if ((UInt32)Low < (UInt32)0xFF000000 || (int)(Low >> 32) != 0) 
+    if ((UInt32)Low < (UInt32)0xFF000000 || (int)(Low >> 32) != 0)
     {
       Byte temp = _cache;
       do
@@ -65,12 +65,12 @@ public:
         temp = 0xFF;
       }
       while(--_cacheSize != 0);
-      _cache = (Byte)((UInt32)Low >> 24);                      
-    } 
-    _cacheSize++;                               
-    Low = (UInt32)Low << 8;                           
+      _cache = (Byte)((UInt32)Low >> 24);
+    }
+    _cacheSize++;
+    Low = (UInt32)Low << 8;
   }
-  
+
   void EncodeDirectBits(UInt32 value, int numTotalBits)
   {
     for (int i = numTotalBits - 1; i >= 0; i--)
@@ -122,7 +122,7 @@ public:
       Range <<= 8;
     }
   }
-  
+
   void SetStream(ISequentialInStream *stream) { Stream.SetStream(stream); }
   void Init()
   {
@@ -150,7 +150,7 @@ public:
   UInt32 DecodeDirectBits(int numTotalBits)
   {
     UInt32 range = Range;
-    UInt32 code = Code;        
+    UInt32 code = Code;
     UInt32 result = 0;
     for (int i = numTotalBits; i != 0; i--)
     {
@@ -170,7 +170,7 @@ public:
       if (range < kTopValue)
       {
         code = (code << 8) | Stream.ReadByte();
-        range <<= 8; 
+        range <<= 8;
       }
     }
     Range = range;

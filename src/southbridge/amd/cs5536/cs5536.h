@@ -465,7 +465,7 @@
 #define FLASH_IO_256B		0x0000FF00
 
 #if !defined(ASSEMBLY) && !defined(__ROMCC__)
-#if defined(__PRE_RAM__) 
+#if defined(__PRE_RAM__)
 void cs5536_setup_onchipuart(int uart);
 void cs5536_disable_internal_uart(void);
 #else

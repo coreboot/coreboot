@@ -199,7 +199,7 @@ static int sdram_capabilities_two_dimms_per_channel(void)
 	return (reg8 != 0);
 }
 
-// TODO check if we ever need this function 
+// TODO check if we ever need this function
 #if 0
 static int sdram_capabilities_MEM4G_disable(void)
 {

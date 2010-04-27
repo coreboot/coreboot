@@ -23,7 +23,7 @@ static struct syscall_result syscall1(unsigned long nr, unsigned long arg1)
 		: "=a" (res)
 		: "a" (nr), "b" (arg1));
 	return syscall_return(res);
-	
+
 }
 
 static struct syscall_result syscall3(unsigned long nr, unsigned long arg1, unsigned long arg2,
@@ -35,7 +35,7 @@ static struct syscall_result syscall3(unsigned long nr, unsigned long arg1, unsi
 		: "=a" (res)
 		: "a" (nr), "b" (arg1), "c" (arg2), "d" (arg3));
 	return syscall_return(res);
-	
+
 }
 
 #define NR_exit                 1

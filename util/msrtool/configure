@@ -82,7 +82,7 @@ trycompile() {
 			echo " using: ${CFLAGS} ${1}" 1>&2
 			echo "${CFLAGS} ${1}"
 			exit 0
-		} 
+		}
 		shift
 		i=$(($i+1))
 	done

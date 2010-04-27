@@ -72,10 +72,10 @@
 #define AGPCTRL 0xb0 /* AGP Control Register (0x00000000) */
 #define APSIZE  0xb4 /* Aperture Size Control Register (0x00) */
 #define ATTBASE 0xb8 /* Aperture Translation Table (0x00000000) */
- 
+
 #define MBFS    0xca /* Memory Buffer Frequency Select (0x000000). */
 #define BSPAD   0xd0 /* BIOS Scratch Pad (0x000..000). */
-#define BSPAD0  0xd0 /* These are free for our use. */ 
+#define BSPAD0  0xd0 /* These are free for our use. */
 #define BSPAD1  0xd1
 #define BSPAD2  0xd2
 #define BSPAD3  0xd3

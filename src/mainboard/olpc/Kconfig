@@ -1,7 +1,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_OLPC
-        
+
 source "src/mainboard/olpc/rev_a/Kconfig"
 source "src/mainboard/olpc/btest/Kconfig"
 

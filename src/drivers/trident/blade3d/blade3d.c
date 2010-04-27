@@ -65,7 +65,7 @@ typedef struct Reg_struct {
 	BYTE rMask;
 } Def_Reg_struct;
 
-typedef Def_Reg_struct* lpDef_Reg_struct; 
+typedef Def_Reg_struct* lpDef_Reg_struct;
 // , *pDef_Reg_struct, far * lpDef_Reg_struct;
 
 static Def_Reg_struct Mode3_temp[] = {	//mode3 temp
@@ -209,7 +209,7 @@ static Def_Reg_struct Init_reg[] = {
 	{Port_GRX, 0x33, 0x20, 0x00},
 	{Port_GRX, 0x30, 0x00, 0x00},
 	//
-	{Port_GRX, 0x28, 0x18, 0x00}, 
+	{Port_GRX, 0x28, 0x18, 0x00},
 
 	{Port_CRX, 0x0F, 0x20, 0x40},
 	{Port_CRX, 0x1F, 0x00, 0x00},
@@ -806,7 +806,7 @@ static void config_OEM_regs(void)
 	lpInit_reg = &Init_reg[0];
 
 	printk(BIOS_DEBUG, "blade3d: config_OEM_regs()\n");
-	
+
 	outp(Port_GRX, 0x24);
 	outp(Port_GRX + 1, 0xe0);
 	//MCLK VCLK to 16 bit
@@ -1025,4 +1025,4 @@ static const struct pci_driver trident_blade3d_driver __pci_driver = {
         .vendor = 0x1023,
         .device = 0x9880,
 };
- 
+

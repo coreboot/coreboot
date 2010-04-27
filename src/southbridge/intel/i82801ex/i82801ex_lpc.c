@@ -89,7 +89,7 @@ static void set_i82801ex_gpio_direction(
 		switch(config->gpio[i] & ICH5R_GPIO_SEL_MASK) {
 		case ICH5R_GPIO_SEL_OUTPUT: val = 0; break;
 		case ICH5R_GPIO_SEL_INPUT:  val = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		/* The caller is responsible for not playing with unimplemented bits */
@@ -121,7 +121,7 @@ static void set_i82801ex_gpio_level(
 		case ICH5R_GPIO_LVL_LOW:   val = 0; blink = 0; break;
 		case ICH5R_GPIO_LVL_HIGH:  val = 1; blink = 0; break;
 		case ICH5R_GPIO_LVL_BLINK: val = 1; blink = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		/* The caller is responsible for not playing with unimplemented bits */
@@ -152,7 +152,7 @@ static void set_i82801ex_gpio_inv(
 		switch(config->gpio[i] & ICH5R_GPIO_INV_MASK) {
 		case ICH5R_GPIO_INV_OFF: val = 0; break;
 		case ICH5R_GPIO_INV_ON:  val = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		gpio_inv &= ~( 1 << i);
@@ -195,7 +195,7 @@ static void i82801ex_gpio_init(device_t dev)
 	/* Find the GPIO bar */
 	res = find_resource(dev, GPIO_BAR);
 	if (!res) {
-		return; 
+		return;
 	}
 
 	/* Set the use selects */
@@ -271,7 +271,7 @@ static void lpc_init(struct device *dev)
 
 	/* Set up the PIRQ */
 	i82801ex_pirq_init(dev);
-	
+
 	/* Set the state of the gpio lines */
 	i82801ex_gpio_init(dev);
 
@@ -283,7 +283,7 @@ static void lpc_init(struct device *dev)
 
 	/* Disable IDE (needed when sata is enabled) */
 	pci_write_config8(dev, 0xf2, 0x60);
-	
+
 	enable_hpet(dev);
 }
 
@@ -330,7 +330,7 @@ static void i82801ex_lpc_enable_resources(device_t dev)
 	acpi_cntl = pci_read_config8(dev, 0x44);
 	acpi_cntl |= (1 << 4);
 	pci_write_config8(dev, 0x44, acpi_cntl);
-	
+
 	/* Enable the GPIO bar */
 	gpio_cntl = pci_read_config8(dev, 0x5c);
 	gpio_cntl |= (1 << 4);

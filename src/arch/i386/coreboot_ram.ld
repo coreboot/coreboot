@@ -59,7 +59,7 @@ SECTIONS
 		 . = ALIGN(4);
 
 		_erodata = .;
-	}	
+	}
 	/* After the code we place initialized data (typically initialized
 	 * global variables). This gets copied into ram by startup code.
 	 * __data_start and __data_end shows where in ram this should be placed,
@@ -113,11 +113,11 @@ SECTIONS
 	/* Avoid running into 0xa0000-0xfffff */
 	_bogus = ASSERT(CONFIG_RAMBASE >= 0x100000 || _eheap < 0xa0000, "Please move RAMBASE to 1MB");
 
-	/* The ram segment. This includes all memory used by the memory 
+	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on
 	 * the fly, but including stack and heap.
 	 */
-	_ram_seg = _text; 
+	_ram_seg = _text;
 	_eram_seg = _eheap;
 
 	/* CONFIG_RAMTOP is the upper address of cached memory (among other

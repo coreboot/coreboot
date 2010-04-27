@@ -231,7 +231,7 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 		unsigned where;
 		unsigned long reg;
 #if 0
-		prink(BIOS_DEBUG, "%08x <-  %08x\n", 
+		prink(BIOS_DEBUG, "%08x <-  %08x\n",
 			register_values[i], register_values[i+2]);
 #endif
 		where = register_values[i];

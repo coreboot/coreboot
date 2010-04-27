@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2002 Eric Biederman
  *
  * This program is free software; you can redistribute it and/or modify

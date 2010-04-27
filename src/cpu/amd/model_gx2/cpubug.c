@@ -50,8 +50,8 @@ pcideadlock(void)
 	msr_t msr;
 
 	/*
-	 * forces serialization of all load misses. Setting this bit prevents the 
-	 * DM pipe from backing up if a read request has to be held up waiting 
+	 * forces serialization of all load misses. Setting this bit prevents the
+	 * DM pipe from backing up if a read request has to be held up waiting
 	 * for PCI writes to complete.
 	*/
 	msr = rdmsr(CPU_DM_CONFIG0);
@@ -61,14 +61,14 @@ pcideadlock(void)
 	wrmsr(CPU_DM_CONFIG0, msr);
 
 	/* interlock instruction fetches to WS regions with data accesses.
-	 * This prevents an instruction fetch from going out to PCI if the 
+	 * This prevents an instruction fetch from going out to PCI if the
 	 * data side is about to make a request.
 	 */
 	msr = rdmsr(CPU_IM_CONFIG);
 	msr.lo |= IM_CONFIG_LOWER_QWT_SET;
 	wrmsr(CPU_IM_CONFIG, msr);
-	
-	/* write serialize memory hole to PCI. Need to unWS when something is 
+
+	/* write serialize memory hole to PCI. Need to unWS when something is
 	 * shadowed regardless of cachablility.
 	 */
 	msr.lo = 0x021212121;
@@ -78,7 +78,7 @@ pcideadlock(void)
 	wrmsr( CPU_RCONF_E0_FF, msr);
 }
 
-/**************************************************************************** 
+/****************************************************************************
  *
  *	CPUbug784
  *
@@ -176,7 +176,7 @@ eng2900(void)
 	wrmsr(0x3003, msr);
 
 	/* change this value to zero if you need to disable this BTB SWAPSiF. */
-	if (1) { 
+	if (1) {
 
 		/* Disable enable_actions in DIAGCTL while setting up GLCP */
 		msr.hi = 0;
@@ -192,16 +192,16 @@ eng2900(void)
 		msr.lo = 2;
 		wrmsr(MSR_GLCP + 0x0016, msr);
 
-		/* The code below sets up the CPU to stall for 4 GeodeLink 
-		 * clocks when CPU is snooped.  Because setting XSTATE to 0 
-		 * overrides any other XSTATE action, the code will always 
-		 * stall for 4 GeodeLink clocks after a snoop request goes 
-		 * away even if it occured a clock or two later than a 
-		 * different snoop; the stall signal will never 'glitch high' 
+		/* The code below sets up the CPU to stall for 4 GeodeLink
+		 * clocks when CPU is snooped.  Because setting XSTATE to 0
+		 * overrides any other XSTATE action, the code will always
+		 * stall for 4 GeodeLink clocks after a snoop request goes
+		 * away even if it occured a clock or two later than a
+		 * different snoop; the stall signal will never 'glitch high'
 		 * for only one or two CPU clocks with this code.
 		 */
 
-		/* Send mb0 port 3 requests to upper GeodeLink diag bits 
+		/* Send mb0 port 3 requests to upper GeodeLink diag bits
 		   [63:32] */
 		msr.hi = 0;
 		msr.lo = 0x80338041;
@@ -222,25 +222,25 @@ eng2900(void)
 		msr.lo = 0;
 		wrmsr(MSR_GLCP + 0x004D, msr);
 
-		/* Writing action number 13: XSTATE=0 to occur when CPU is 
+		/* Writing action number 13: XSTATE=0 to occur when CPU is
 		   snooped unless we're stalled */
 		msr.hi = 0;
 		msr.lo = 0x00400000;
 		wrmsr(MSR_GLCP + 0x0075, msr);
 
-		/* Writing action number 11: inc XSTATE every GeodeLink clock 
+		/* Writing action number 11: inc XSTATE every GeodeLink clock
 		   unless we're idle */
 		msr.hi = 0;
 		msr.lo = 0x30000;
 		wrmsr(MSR_GLCP + 0x0073, msr);
 
-		/* Writing action number 5: STALL_CPU_PIPE when exitting idle 
+		/* Writing action number 5: STALL_CPU_PIPE when exitting idle
 		   state or not in idle state */
 		msr.hi = 0;
 		msr.lo = 0x00430000;
 		wrmsr(MSR_GLCP + 0x006D, msr);
 
-		/* Writing DIAGCTL Register to enable the stall action and to 
+		/* Writing DIAGCTL Register to enable the stall action and to
 		   let set5m watch the upper GeodeLink diag bits. */
 		msr.hi = 0;
 		msr.lo = 0x80004000;
@@ -338,7 +338,7 @@ static void bug118339(void)
 /***/
 /****************************************************************************/
 static void disablememoryreadorder(void)
-{	
+{
 	msr_t msr;
 	msr = rdmsr(MC_CF8F_DATA);
 
@@ -365,7 +365,7 @@ cpubug(void)
 		case 0x20:
 			pcideadlock();
 			eng1398();
-			/* cs 5530 bug; ignore 
+			/* cs 5530 bug; ignore
 			bug752();
 			*/
 			break;
@@ -376,7 +376,7 @@ cpubug(void)
 			bug118339();
 			break;
 		case 0x22:
-		case 0x30: 
+		case 0x30:
 			break;
 		default:
 			printk(BIOS_ERR, "unknown rev %x, bailing\n", rev);

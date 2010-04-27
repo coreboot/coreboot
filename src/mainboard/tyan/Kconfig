@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_TYAN
-	
+
 source "src/mainboard/tyan/s1846/Kconfig"
 source "src/mainboard/tyan/s2735/Kconfig"
 source "src/mainboard/tyan/s2850/Kconfig"

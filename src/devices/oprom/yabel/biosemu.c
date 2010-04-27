@@ -250,7 +250,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	X86EMU_setupMemFuncs(&my_mem_funcs);
 
 	//setup PMM struct in BIOS_DATA_SEGMENT, offset 0x0
-	u8 pmm_length = pmm_setup(BIOS_DATA_SEGMENT, 0x0);	
+	u8 pmm_length = pmm_setup(BIOS_DATA_SEGMENT, 0x0);
 	if (pmm_length <= 0) {
 		printf ("\nYABEL: Warning: PMM Area could not be setup. PMM not available (%x)\n",
 		     pmm_length);

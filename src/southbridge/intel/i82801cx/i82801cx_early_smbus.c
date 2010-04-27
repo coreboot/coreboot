@@ -10,9 +10,9 @@ static void enable_smbus(void)
 	pci_write_config32(dev, SMB_BASE, SMBUS_IO_BASE | PCI_BASE_ADDRESS_SPACE_IO);
 	/* Set smbus enable */
 	pci_write_config8(dev, HOSTC, HST_EN);
-	/* Set smbus iospace enable */ 
+	/* Set smbus iospace enable */
 	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_IO);
-	/* Disable interrupt generation */ 
+	/* Disable interrupt generation */
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
 	/* clear any lingering errors, so the transaction will run */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
@@ -55,7 +55,7 @@ static int smbus_wait_until_ready(void)
 		}
 		if(loops == (SMBUS_TIMEOUT / 2)) {
 			// Clear status flags
-			outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), 
+			outb(inb(SMBUS_IO_BASE + SMBHSTSTAT),
 				SMBUS_IO_BASE + SMBHSTSTAT);
 		}
 	} while(--loops);
@@ -69,7 +69,7 @@ static int smbus_wait_until_done(void)
 	do {
 		unsigned char val;
 		smbus_delay();
-		
+
 		val = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 		// !HOST_BUSY?
 		if ( (val & 1) == 0) {
@@ -92,7 +92,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	if (smbus_wait_until_ready() < 0) {
 		return -2;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xfe, SMBUS_IO_BASE + SMBHSTCTL);

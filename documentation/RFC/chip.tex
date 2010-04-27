@@ -2,17 +2,17 @@
 
 \begin{abstract}
 At the end of this document is the original message that motivated the
-change. 
+change.
 \end{abstract}
 
 \section{Scope}
 This document defines how LinuxBIOS programmers can specify chips that
-are used, specified, and initalized. The current scope is for superio 
-chips, but the architecture should allow for specification of other chips such 
-as southbridges. Multiple chips of same or different type are supported. 
+are used, specified, and initalized. The current scope is for superio
+chips, but the architecture should allow for specification of other chips such
+as southbridges. Multiple chips of same or different type are supported.
 
 \section{Goals}
-The goals of the new chip architecture are these: 
+The goals of the new chip architecture are these:
 \begin{itemize}
 \item seperate implementation details from specification in the Config file
 (translation: no more C code in Config files)
@@ -27,33 +27,33 @@ The specification looks like this:
 \begin{verbatim}
 chip <name> [path=<path>] ["<configuration>"]
 \end{verbatim}
-The name is in the standard LinuxBIOS form of type/vendor/name, e.g. 
-"southbridge/intel/piix4e" or "superio/ite/it8671f". The class of the 
-chip is derived from the first pathname component of the name, and the chip 
-configuration is derived from the following components. 
+The name is in the standard LinuxBIOS form of type/vendor/name, e.g.
+"southbridge/intel/piix4e" or "superio/ite/it8671f". The class of the
+chip is derived from the first pathname component of the name, and the chip
+configuration is derived from the following components.
 
-The path defines the access mechanism to the chip. 
-It is optional. If present, it overrides the default path to the chip. 
+The path defines the access mechanism to the chip.
+It is optional. If present, it overrides the default path to the chip.
 
 The configuration defines chip-specific configuration details, and is also
-optional. Note that an empty configuration will leave the chip with 
-no enabled resources. This may be desirable in some cases. 
+optional. Note that an empty configuration will leave the chip with
+no enabled resources. This may be desirable in some cases.
 
 \section{Results of specifying a chip}
 
 When one or more chips are specified, the data about the chips
 is saved until the entire file is parsed. At this point, the config tool
 creates a file in the build directory called chip.c This file contains
-a common struct containing information about 
-each individual chip and an array of pointers to these structures. 
+a common struct containing information about
+each individual chip and an array of pointers to these structures.
 
-For each chip, there are two structures. The structures contain control 
-information for the chip, and register initialization information. The 
-names of the structures are derived by ``flattening'' the chip name, 
-as in the current linuxbios. For example, superio/ite/xyz uses 
+For each chip, there are two structures. The structures contain control
+information for the chip, and register initialization information. The
+names of the structures are derived by ``flattening'' the chip name,
+as in the current linuxbios. For example, superio/ite/xyz uses
 two structs, one called superio_ite_xyz_control and one called
-superio_ite_xyz_init. The control struct is initialized from the 
-chip name and path information, and has a pointer to the 
+superio_ite_xyz_init. The control struct is initialized from the
+chip name and path information, and has a pointer to the
 config struct. The config struct is initialized from the quote string
 
 \begin{verbatim}
@@ -64,29 +64,29 @@ To: linuxbios@clustermatic.org
 Subject: RFC:new superio proposal
 
 Abstract:
-	The superio architecture for linuxbios has worked for the last 2 
-years but is being stretched to the limit by the changes in superio chips. 
-The architecture depended on superio resources being relatively constant 
-between chips, but this assumption no longer holds. In this document we 
-propose several alternatives and solicit comments. 
+	The superio architecture for linuxbios has worked for the last 2
+years but is being stretched to the limit by the changes in superio chips.
+The architecture depended on superio resources being relatively constant
+between chips, but this assumption no longer holds. In this document we
+propose several alternatives and solicit comments.
 
 Overview:
-The superio architecture in linuxbios was developed over time, and 
-modified as circumstances required. In the beginning it was relatively 
-simple and assumed only one superio per mainboard. The latest version 
+The superio architecture in linuxbios was developed over time, and
+modified as circumstances required. In the beginning it was relatively
+simple and assumed only one superio per mainboard. The latest version
 allows an arbitrary number of superios per mainboard, and allows complete
 specification of the superio base I/O address along with the specification
-of reasonable default valures for both the base I/O address and the 
-superio parameters such as serial enable, baud rate, and so on. 
+of reasonable default valures for both the base I/O address and the
+superio parameters such as serial enable, baud rate, and so on.
 
-Specification of superio control parameters is done by a configuration 
+Specification of superio control parameters is done by a configuration
 line such as:
 
 nsuperio sis/950 com1={1} floppy=1  lpt=1
 
-This fragment sets the superio type to sis/950; sets com1, floppy, and lpt 
-to enabled; and leaves the defaults to com1 (baud rate, etc.) to the 
-default values. 
+This fragment sets the superio type to sis/950; sets com1, floppy, and lpt
+to enabled; and leaves the defaults to com1 (baud rate, etc.) to the
+default values.
 
 While it is not obvious, these configuration parameters are fragments of a
 C initializer. The initializers are used to build a statically initialized
@@ -96,7 +96,7 @@ struct superio {
         struct superio_control *super; // the ops for the device.
         unsigned int port; // if non-zero, overrides the default port
         // com ports. This is not done as an array (yet).
-        // We think it's easier to set up from python if it is not an 
+        // We think it's easier to set up from python if it is not an
 	// array.
         struct com_ports com1, com2, com3, com4;
         // DMA, if it exists.
@@ -114,14 +114,14 @@ struct superio {
 
 These structures are, in turn, created and statically initialized by a
 config-tool-generated structure that defines all the superios. This file
-is called nsuperio.c, is created for each mainboard you build, only 
+is called nsuperio.c, is created for each mainboard you build, only
 appears in the build directory, and looks like this:
 
 ===
-extern struct superio_control superio_winbond_w83627hf_control; 
+extern struct superio_control superio_winbond_w83627hf_control;
 
-struct superio superio_winbond_w83627hf= { 
-  &superio_winbond_w83627hf_control, 
+struct superio superio_winbond_w83627hf= {
+  &superio_winbond_w83627hf_control,
   .com1={1}, .com2={1}, .floppy=1, .lpt=1, .keyboard=1, .hwmonitor=1};
 
 struct superio *all_superio[] = {&superio_winbond_w83627hf,
@@ -131,12 +131,12 @@ unsigned long nsuperio = 1;
 ===
 
 This example shows a board with one superio (nsuperio). The superio
-consists of a winbond w83627hf, with com1, com2, floppy, lpt, keyboard, 
-and hwmonitor enabled. Note that this structure also allows for 
-over-riding the default superio base, although that capability is rarely 
-used. 
+consists of a winbond w83627hf, with com1, com2, floppy, lpt, keyboard,
+and hwmonitor enabled. Note that this structure also allows for
+over-riding the default superio base, although that capability is rarely
+used.
 
-The control structure is used to define how to access the superio for 
+The control structure is used to define how to access the superio for
 purposes of control. It looks like this:
 ===
 struct superio_control {
@@ -151,13 +151,13 @@ struct superio_control {
 };
 ===
 
-There are three methods for stages of hardwaremain. First is pre_pci_init 
-(for chips like the acer southbridge that require you to enable some 
-resources BEFORE pci scan); init, called during the 'middle' phase of 
-hardwaremain; and finishup, called before the payload is loaded. 
+There are three methods for stages of hardwaremain. First is pre_pci_init
+(for chips like the acer southbridge that require you to enable some
+resources BEFORE pci scan); init, called during the 'middle' phase of
+hardwaremain; and finishup, called before the payload is loaded.
 
-This approach was inspired by and borrows heavily on the Plan 9 kernel 
-configuration tools. 
+This approach was inspired by and borrows heavily on the Plan 9 kernel
+configuration tools.
 
 The problem:
 
@@ -166,22 +166,22 @@ smaller. It has grown and in the limit this structure is the union of all
 possibly superio chips. Obviously, in the long term, this is not
 practical: we can not anticipate all possible superio chips for all time.
 
-The common PC BIOS solution to this type of problem is to continue with 
-binary structures but add version numbers to them, so that all code that 
-uses a given structure has to check the version number. Personally, I find 
-this grotesque and would rather not work this way. 
+The common PC BIOS solution to this type of problem is to continue with
+binary structures but add version numbers to them, so that all code that
+uses a given structure has to check the version number. Personally, I find
+this grotesque and would rather not work this way.
 
-Using textual strings for configuration is something I find far more 
-attractive. Plan 9 has shown that this approach has no real limits and 
-suffices for configuration tasks. The Linux kernel does more limited use 
-of strings for configuration, but still depends on them. Strings are 
-easier to read and work with than binary structures, and more important, a 
-lot easier to deal with when things start going wrong. 
+Using textual strings for configuration is something I find far more
+attractive. Plan 9 has shown that this approach has no real limits and
+suffices for configuration tasks. The Linux kernel does more limited use
+of strings for configuration, but still depends on them. Strings are
+easier to read and work with than binary structures, and more important, a
+lot easier to deal with when things start going wrong.
 
 The proposed solution:
 
-What follows are three possible ideas for specifying superio resources and 
-their settings. 
+What follows are three possible ideas for specifying superio resources and
+their settings.
 
 A common part of the new idea is to eliminate the common superio
 structure, due to the many variations in chips, and make it invisible
@@ -203,9 +203,9 @@ struct superio_control {
   char *name;
 };
 
-I.e. we add a new function for creating the superio. 
+I.e. we add a new function for creating the superio.
 
-Communication of superio settings from linuxbios to the superio would be 
+Communication of superio settings from linuxbios to the superio would be
 via textual strings. The superio structure becomes this:
 
 struct superio {
@@ -215,7 +215,7 @@ struct superio {
 };
 
 
-So now the question becomes, what is the configuration structure? 
+So now the question becomes, what is the configuration structure?
 There are several choices. The simplest, from my point of view, are
 keyword-value pairs:
 struct configuration {
@@ -223,11 +223,11 @@ struct configuration {
 	const char *value;
 };
 
-These get filled in by the config tool as before. The linuxbios libary can 
-then provide a generic parsing function for the superios to use. 
+These get filled in by the config tool as before. The linuxbios libary can
+then provide a generic parsing function for the superios to use.
 
-The remaining question is how should the superio command look in 
-freebios2? 
+The remaining question is how should the superio command look in
+freebios2?
 
 superio sis/950 "com1=115200,8n1 lpt=1 com2=9600"
 
@@ -242,22 +242,22 @@ superio sis/950 ((com1 115200 8n1) (lpt 1))
 So,  my questions:
 
 1. Does this new scheme look workable. If not, what needs to change?
-2. What should the 'struct configuration' be? does keyword/value work? 
-3. what should the superio command look like? 
+2. What should the 'struct configuration' be? does keyword/value work?
+3. what should the superio command look like?
 
 Comments welcome.
 
-I'd like to adopt this "RFC" approach for freebios2 as much as we can.  
+I'd like to adopt this "RFC" approach for freebios2 as much as we can.
 There was a lot of give-and-take in the early days of linuxbios about
 structure and it proved useful. There's a lot that will start happening in
 freebios2 now, and we need to try to make sure it will work for everyone.
 
 Those of you who are doing mainboards, please look at freebios2 and see
 how it looks for you. There's a lot of good work that has been done (not
-by me so far, thanks Eric and Stefan), and more that needs to be done. 
-Consider trying out romcc as an "assembly code killer". See how it fits 
-together and if you can work with it or need changes. Bring comments back 
-to this list. 
+by me so far, thanks Eric and Stefan), and more that needs to be done.
+Consider trying out romcc as an "assembly code killer". See how it fits
+together and if you can work with it or need changes. Bring comments back
+to this list.
 
 thanks
 

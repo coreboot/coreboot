@@ -43,7 +43,7 @@ static void paging_on(void *pdp)
 		);
 }
 
-void *map_2M_page(unsigned long page) 
+void *map_2M_page(unsigned long page)
 {
 	struct pde {
 		uint32_t addr_lo;
@@ -56,7 +56,7 @@ void *map_2M_page(unsigned long page)
 
 #if (CONFIG_RAMTOP>0x100000) && (CONFIG_RAMBASE<0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
 	/*
-	 pgtbl is too big, so use last one 1M before CONFIG_LB_MEM_TOP, otherwise for 8 way dual core with vga support will push stack and heap cross 0xa0000, 
+	 pgtbl is too big, so use last one 1M before CONFIG_LB_MEM_TOP, otherwise for 8 way dual core with vga support will push stack and heap cross 0xa0000,
 	 and that region need to be used as vga font buffer. Please make sure set CONFIG_RAMTOP=0x200000 in MB Config
 	*/
 	struct pg_table *pgtbl = (struct pg_table*)0x100000; //1M

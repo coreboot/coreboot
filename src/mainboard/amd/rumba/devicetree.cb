@@ -6,7 +6,7 @@ chip northbridge/amd/gx2
 			device apic 0 on end
 		end
 	end
-  	device pci_domain 0 on 
+  	device pci_domain 0 on
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536

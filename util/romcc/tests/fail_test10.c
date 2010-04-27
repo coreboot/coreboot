@@ -14,6 +14,6 @@ static struct result main(int a, int b, struct big_arg d)
 	result.b = 1;
 	result.c = b + 1;
 	result.d = a + 1;
-		
+
 }
 

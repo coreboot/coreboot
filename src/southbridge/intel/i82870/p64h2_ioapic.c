@@ -39,9 +39,9 @@ static void p64h2_ioapic_init(device_t dev)
     num_p64h2_ioapics++;
 
     // A note on IOAPIC addresses:
-    //  0 and 1 are used for the local APICs of the dual virtual 
+    //  0 and 1 are used for the local APICs of the dual virtual
 	//	(hyper-threaded) CPUs of physical CPU 0 (mainboard/Config.lb).
-    //  6 and 7 are used for the local APICs of the dual virtual 
+    //  6 and 7 are used for the local APICs of the dual virtual
 	//	(hyper-threaded) CPUs of physical CPU 1 (mainboard/Config.lb).
     //  2 is used for the IOAPIC in the 82801 Southbridge (hard-coded in i82801xx_lpc.c)
 
@@ -63,7 +63,7 @@ static void p64h2_ioapic_init(device_t dev)
     pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
 
     printk(BIOS_DEBUG, "IOAPIC %d at %02x:%02x.%01x  MBAR = %p DataAddr = %p\n",
-                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn), 
+                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn),
                  PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
 
     apic_id <<= 24;             // Convert ID to bitmask
@@ -72,13 +72,13 @@ static void p64h2_ioapic_init(device_t dev)
     *pWindowRegister = (*pWindowRegister & ~(0xF<<24)) | apic_id;   // Set the ID
 
     if ((*pWindowRegister & (0xF<<24)) != apic_id)
-        die("p64h2_ioapic_init failed"); 
+        die("p64h2_ioapic_init failed");
 
     *pIndexRegister  = 3;   // Select Boot Configuration register
     *pWindowRegister |= 1;  // Use Processor System Bus to deliver interrupts
 
     if (!(*pWindowRegister & 1))
-        die("p64h2_ioapic_init failed"); 
+        die("p64h2_ioapic_init failed");
 }
 
 static struct device_operations ioapic_ops = {

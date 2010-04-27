@@ -30,7 +30,7 @@ extern struct console_driver econsole_drivers[];
 extern int console_loglevel;
 #else
 /* __PRE_RAM__ */
-/* Using a global varible can cause problems when we reset the stack 
+/* Using a global varible can cause problems when we reset the stack
  * from cache as ram to ram. If we make this a define USE_SHARED_STACK
  * we could use the same code on all architectures.
  */

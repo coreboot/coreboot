@@ -1,7 +1,7 @@
 /*
  * coreboot ACPI Table support
  * written by Stefan Reinauer <stepan@openbios.org>
- * ACPI FADT, FACS, and DSDT table support added by 
+ * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
  * (C) Copyright 2004 Nick Barker
  * (C) Copyright 2005 Stefan Reinauer
@@ -130,11 +130,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
-	
+
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;
 	current = start;
-	
+
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
@@ -145,10 +145,10 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
-	
+
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
-	
+
 	/*
 	 * We explicitly add these tables later on:
 	 */

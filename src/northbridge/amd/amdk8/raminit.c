@@ -567,7 +567,7 @@ static int is_opteron(const struct mem_controller *ctrl)
 {
 	/* Test to see if I am an Opteron.  Socket 939 based Athlon64
 	 * have dual channel capability, too, so we need a better test
-	 * for Opterons. 
+	 * for Opterons.
 	 * However, all code uses is_opteron() to find out whether to
 	 * use dual channel, so if we really check for opteron here, we
 	 * need to fix up all code using this function, too.

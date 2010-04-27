@@ -25,7 +25,7 @@ extern struct memelfphdr *add_program_headers(struct memelfheader *ehdr, int cou
 extern struct memelfnote *add_notes(struct memelfheader *ehdr, int count);
 
 typedef char *(probe_t)(char *kernel_buf, off_t kernel_size);
-typedef int (mkelf_t)(int argc, char **argv, 
+typedef int (mkelf_t)(int argc, char **argv,
 	struct memelfheader *hdr, char *kernel_buf, off_t kernel_size);
 typedef void (usage_t)(void);
 struct file_type {

@@ -56,10 +56,10 @@ static unsigned int pxhd_scan_bridge(device_t dev, unsigned int max)
 		word &= ~(3 << 9);
 		word |= (2 << 9);
 		pci_write_config16(dev, 0x40, word);
-		
+
 		/* reset the bus to make the new frequencies effective */
 		pci_bus_reset(&dev->link[0]);
-	}	
+	}
 	return pcix_scan_bridge(dev, max);
 }
 static void pcix_init(device_t dev)
@@ -78,7 +78,7 @@ static void pcix_init(device_t dev)
 	byte = pci_read_config8(dev, 0x04);
         byte |= 0x10;
         pci_write_config8(dev, 0x04, byte);
- 	
+
 	/* Set drive strength */
 	word = pci_read_config16(dev, 0xe0);
         word = 0x0404;
@@ -86,7 +86,7 @@ static void pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0xe4);
         word = 0x0404;
         pci_write_config16(dev, 0xe4, word);
-	
+
 	/* Set impedance */
 	word = pci_read_config16(dev, 0xe8);
         word = 0x0404;
@@ -96,7 +96,7 @@ static void pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0x4c);
         word |= 1;
         pci_write_config16(dev, 0x4c, word);
-	
+
 	/* Set split transaction limits */
 	word = pci_read_config16(dev, 0xa8);
         pci_write_config16(dev, 0xaa, word);
@@ -108,12 +108,12 @@ static void pcix_init(device_t dev)
 	dword = pci_read_config32(dev, 0x04);
         dword |= (1<<8);
         pci_write_config32(dev, 0x04, dword);
- 	
+
 	/* system and error parity enable */
 	dword = pci_read_config32(dev, 0x3c);
         dword |= (3<<16);
         pci_write_config32(dev, 0x3c, dword);
- 	
+
 	/* NMI enable */
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
@@ -122,7 +122,7 @@ static void pcix_init(device_t dev)
         	dword |= (1<<0);
         	pci_write_config32(dev, 0x44, dword);
 	}
- 	
+
 	/* Set up CRC flood enable */
 	dword = pci_read_config32(dev, 0xc0);
 	if(dword) {  /* do device A only */
@@ -133,7 +133,7 @@ static void pcix_init(device_t dev)
 		dword |= (1<<1);
 		pci_write_config32(dev, 0xc8, dword);
 	}
-	
+
 	return;
 #endif
 }
@@ -175,7 +175,7 @@ static void ioapic_init(device_t dev)
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
@@ -197,14 +197,14 @@ static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0326,
-	
+
 };
 
 static const struct pci_driver ioapic2_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0327,
-	
+
 };
 
 struct chip_operations southbridge_intel_pxhd_ops = {

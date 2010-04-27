@@ -35,7 +35,7 @@ static void *smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 	smp_write_processors(mc);
-	
+
 	{
 		device_t dev;
 
@@ -75,7 +75,7 @@ static void *smp_write_config_table(void *v)
 			bus_pxhd_2 = 3;
 		}
 	}
-	
+
 	/* define bus and isa numbers */
 	for(bus_num = 0; bus_num < bus_isa; bus_num++) {
 		smp_write_bus(mc, bus_num, "PCI	  ");
@@ -162,7 +162,7 @@ static void *smp_write_config_table(void *v)
 		bus_esb6300_2, 0x04, 0x02, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, // -- added
 		bus_esb6300_2, 0x08, 0x02, 0x14);
-	
+
 	/* Standard local interrupt assignments */
 	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 		bus_isa, 0x00, MP_APIC_ALL, 0x00);

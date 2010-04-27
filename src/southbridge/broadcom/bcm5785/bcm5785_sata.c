@@ -44,7 +44,7 @@ static void sata_init(struct device *dev)
 
 		printk(BIOS_DEBUG, "init PHY...\n");
 		for(i=0; i<4; i++) {
-			mmio = res->base + 0x100 * i; 
+			mmio = res->base + 0x100 * i;
 			byte = read8(mmio + 0x40);
 			printk(BIOS_DEBUG, "port %d PHY status = %02x\n", i, byte);
 			if(byte & 0x4) {// bit 2 is set

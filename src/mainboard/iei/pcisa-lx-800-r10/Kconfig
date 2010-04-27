@@ -13,7 +13,7 @@ config BOARD_IEI_PCISA_LX_800_R10
 
 config MAINBOARD_DIR
 	string
-	default iei/pcisa-lx-800-r10 
+	default iei/pcisa-lx-800-r10
 	depends on BOARD_IEI_PCISA_LX_800_R10
 
 config MAINBOARD_PART_NUMBER

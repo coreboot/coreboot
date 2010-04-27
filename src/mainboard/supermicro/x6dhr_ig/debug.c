@@ -5,7 +5,7 @@
 static void print_reg(unsigned char index)
 {
         unsigned char data;
-                                                                                
+
         outb(index, 0x2e);
         data = inb(0x2f);
 	print_debug("0x");
@@ -15,7 +15,7 @@ static void print_reg(unsigned char index)
 	print_debug("\n");
         return;
 }
-        
+
 static void xbus_en(void)
 {
         /* select the XBUS function in the SIO */
@@ -25,7 +25,7 @@ static void xbus_en(void)
         outb(0x01, 0x2f);
 	return;
 }
-                                                                        
+
 static void setup_func(unsigned char func)
 {
         /* select the function in the SIO */
@@ -43,27 +43,27 @@ static void setup_func(unsigned char func)
         print_reg(0x75);
         return;
 }
-                                                                                
+
 static void siodump(void)
 {
         int i;
         unsigned char data;
-       
+
 	 print_debug("\n*** SERVER I/O REGISTERS ***\n");
         for (i=0x10; i<=0x2d; i++) {
                 print_reg((unsigned char)i);
         }
-#if 0                                                                         
+#if 0
         print_debug("\n*** XBUS REGISTERS ***\n");
         setup_func(0x0f);
         for (i=0xf0; i<=0xff; i++) {
                 print_reg((unsigned char)i);
         }
-                                                                                
+
         print_debug("\n***  SERIAL 1 CONFIG REGISTERS ***\n");
         setup_func(0x03);
         print_reg(0xf0);
-                                                                                
+
         print_debug("\n***  SERIAL 2 CONFIG REGISTERS ***\n");
         setup_func(0x02);
         print_reg(0xf0);
@@ -82,13 +82,13 @@ static void siodump(void)
 	print_debug("\nGPDI 4: 0x");
 	print_debug_hex8(data);
 	print_debug("\n");
-	
-#if 0                                                                                
-                                                                                
+
+#if 0
+
         print_debug("\n***  WATCHDOG TIMER REGISTERS ***\n");
         setup_func(0x0a);
         print_reg(0xf0);
-                                                                                
+
         print_debug("\n***  FAN CONTROL REGISTERS ***\n");
         setup_func(0x09);
         print_reg(0xf0);
@@ -103,11 +103,11 @@ static void siodump(void)
         print_reg(0xf7);
         print_reg(0xfe);
         print_reg(0xff);
-                                                                                
+
         print_debug("\n***  HEALTH MONITORING & CONTROL REGISTERS ***\n");
         setup_func(0x14);
         print_reg(0xf0);
-#endif                                                                           
+#endif
         return;
 }
 
@@ -124,8 +124,8 @@ static void print_debug_pci_dev(unsigned dev)
 static void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -144,7 +144,7 @@ static void dump_pci_device(unsigned dev)
 	int i;
 	print_debug_pci_dev(dev);
 	print_debug("\n");
-	
+
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
@@ -164,19 +164,19 @@ static void dump_bar14(unsigned dev)
 {
 	int i;
 	unsigned long bar;
-	
+
 	print_debug("BAR 14 Dump\n");
-	
+
 	bar = pci_read_config32(dev, 0x14);
 	for(i = 0; i <= 0x300; i+=4) {
-#if 0		
+#if 0
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
 			print_debug_hex8(i);
 			print_debug_char(':');
 		}
 		val = pci_read_config8(dev, i);
-#endif		
+#endif
 		if((i%4)==0) {
 		print_debug("\n");
 		print_debug_hex16(i);
@@ -191,8 +191,8 @@ static void dump_bar14(unsigned dev)
 static void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -215,8 +215,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -241,8 +241,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel1[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".1: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -278,7 +278,7 @@ void dump_spd_registers(void)
         	print_debug("\n");
                 print_debug("dimm ");
 		print_debug_hex8(device);
-		
+
                 for(i = 0; (i < 256) ; i++) {
 	                unsigned char byte;
                         if ((i % 16) == 0) {
@@ -291,7 +291,7 @@ void dump_spd_registers(void)
 			         print_debug("bad device: ");
 				 print_debug_hex8(-status);
 				 print_debug("\n");
-			         break; 
+			         break;
 			}
 			print_debug_hex8(status);
 			print_debug_char(' ');
@@ -311,7 +311,7 @@ void dump_ipmi_registers(void)
         	print_debug("\n");
                 print_debug("ipmi ");
 		print_debug_hex8(device);
-		
+
                 for(i = 0; (i < 8) ; i++) {
 	                unsigned char byte;
 			status = smbus_read_byte(device, 2);
@@ -319,7 +319,7 @@ void dump_ipmi_registers(void)
 			         print_debug("bad device: ");
 				 print_debug_hex8(-status);
 				 print_debug("\n");
-			         break; 
+			         break;
 			}
 			print_debug_hex8(status);
 			print_debug_char(' ');
@@ -327,4 +327,4 @@ void dump_ipmi_registers(void)
 		device += SMBUS_MEM_DEVICE_INC;
 		print_debug("\n");
 	}
-}	
+}

@@ -21,7 +21,7 @@ static void mch_reset(void)
 		value = inl(base);
 		value |= (1 <<19);
 		outl(value, base);
-		
+
                 /* Pull GPIO 19 low */
                 value = inl(base + 0x0c);
                 value &= ~(1 << 19);
@@ -38,7 +38,7 @@ static void mainboard_set_e7520_pll(unsigned bits)
 
 	/* currently only handle the Jarrell/PC87427 case */
 	dev = PC87427_GPIO_DEV;
-		
+
 
 	pnp_set_logical_device(dev);
 	gpio_index = pnp_read_iobase(dev, 0x60);
@@ -66,7 +66,7 @@ static void mainboard_set_e7520_pll(unsigned bits)
 		// mch_reset();
 		full_reset();
 	}
-	return; 
+	return;
 }
 
 static void mainboard_set_e7520_leds(void)
@@ -77,7 +77,7 @@ static void mainboard_set_e7520_leds(void)
 
 	/* currently only handle the Jarrell/PC87427 case */
 	dev = PC87427_GPIO_DEV;
-		
+
 	pnp_set_logical_device(dev);
 
 	/* enable */
@@ -88,17 +88,17 @@ static void mainboard_set_e7520_leds(void)
 
 	/* Set auto mode for dimm leds and post */
 	outb(0xf0,0x2e);
-	outb(0x70,0x2f);	
+	outb(0x70,0x2f);
 	outb(0xf4,0x2e);
-	outb(0x30,0x2f);	
+	outb(0x30,0x2f);
 	outb(0xf5,0x2e);
-	outb(0x88,0x2f);	
+	outb(0x88,0x2f);
 	outb(0xf6,0x2e);
-	outb(0x00,0x2f);	
+	outb(0x00,0x2f);
 	outb(0xf7,0x2e);
-	outb(0x90,0x2f);	
+	outb(0x90,0x2f);
 	outb(0xf8,0x2e);
-	outb(0x00,0x2f);	
+	outb(0x00,0x2f);
 
 	/* Turn the leds off */
 	outb(0x00,0x88);
@@ -106,12 +106,12 @@ static void mainboard_set_e7520_leds(void)
 
 	/* Disable the ports */
 	outb(0xf5,0x2e);
-	outb(0x00,0x2f);	
+	outb(0x00,0x2f);
 	outb(0xf7,0x2e);
-	outb(0x00,0x2f);	
+	outb(0x00,0x2f);
 	outb(0xf4,0x2e);
-	outb(0x00,0x2f);	
-	
-	return; 
+	outb(0x00,0x2f);
+
+	return;
 }
 

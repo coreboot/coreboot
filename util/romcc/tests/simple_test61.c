@@ -16,7 +16,7 @@ static void spd_set_nbxcfg(void)
 
 		/* set the device I'm talking too */
 		__builtin_outb(device, 0x1004);
-		
+
 		/* poll for transaction completion */
 		byte = __builtin_inb(0x10);
 		while(byte == 0) {

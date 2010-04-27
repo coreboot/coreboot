@@ -25,7 +25,7 @@ static void pci_routing_fixup(struct device *dev)
 	printk(BIOS_INFO, "%s: dev is %p\n", __func__, dev);
 	if (dev) {
 		/* initialize PCI interupts - these assignments depend
-		   on the PCB routing of PINTA-D 
+		   on the PCB routing of PINTA-D
 
 		   PINTA = IRQ11
 		   PINTB = IRQ5
@@ -61,60 +61,60 @@ static void vt8231_init(struct device *dev)
 	enables = pci_read_config8(dev, 0x6C);
 	enables |= 0x80;
 	pci_write_config8(dev, 0x6C, enables);
-	
+
 	// Map 4MB of FLASH into the address space
 	pci_write_config8(dev, 0x41, 0x7f);
-	
+
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
-	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI 
+	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI
 	// interrupts can be properly marked as level triggered.
 	enables = pci_read_config8(dev, 0x40);
 	pci_write_config8(dev, 0x40, enables);
-	
+
 	// Set 0x42 to 0xf0 to match Award bios
 	enables = pci_read_config8(dev, 0x42);
 	enables |= 0xf0;
 	pci_write_config8(dev, 0x42, enables);
-	
+
 	// Set bit 3 of 0x4a, to match award (dummy pci request)
 	enables = pci_read_config8(dev, 0x4a);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4a, enables);
-	
+
 	// Set bit 3 of 0x4f to match award (use INIT# as cpu reset)
 	enables = pci_read_config8(dev, 0x4f);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
-	
+
 	// Set 0x58 to 0x03 to match Award
 	pci_write_config8(dev, 0x58, 0x03);
-	
+
 	// enable the ethernet/RTC
 	if (dev) {
 		enables = pci_read_config8(dev, 0x51);
-		enables |= 0x18; 
+		enables |= 0x18;
 		pci_write_config8(dev, 0x51, enables);
 	}
 
 	// enable IDE, since Linux won't do it.
 	// First do some more things to devfn (17,0)
-	// note: this should already be cleared, according to the book. 
+	// note: this should already be cleared, according to the book.
 	enables = pci_read_config8(dev, 0x50);
 	printk(BIOS_DEBUG, "IDE enable in reg. 50 is 0x%x\n", enables);
 	enables &= ~8; // need manifest constant here!
 	printk(BIOS_DEBUG, "set IDE reg. 50 to 0x%x\n", enables);
 	pci_write_config8(dev, 0x50, enables);
-	
+
 	// set default interrupt values (IDE)
 	enables = pci_read_config8(dev, 0x4c);
 	printk(BIOS_DEBUG, "IRQs in reg. 4c are 0x%x\n", enables & 0xf);
-	// clear out whatever was there. 
+	// clear out whatever was there.
 	enables &= ~0xf;
 	enables |= 4;
 	printk(BIOS_DEBUG, "setting reg. 4c to 0x%x\n", enables);
 	pci_write_config8(dev, 0x4c, enables);
-	
-	// set up the serial port interrupts. 
+
+	// set up the serial port interrupts.
 	// com2 to 3, com1 to 4
 	pci_write_config8(dev, 0x46, 0x04);
 	pci_write_config8(dev, 0x47, 0x03);
@@ -123,7 +123,7 @@ static void vt8231_init(struct device *dev)
 	/* set up isa bus -- i/o recovery time, rom write enable, extend-ale */
 	pci_write_config8(dev, 0x40, 0x54);
 	//ethernet_fixup();
-	
+
 	// Start the rtc
 	rtc_init(0);
 }

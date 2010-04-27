@@ -27,7 +27,7 @@ struct spd_entry {
 
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
 /* 128MB */
-const struct spd_entry spd_table [] = 
+const struct spd_entry spd_table [] =
 {
 {SPD_MEMORY_TYPE,                     0x07}, /* (Fundamental) memory type */
 {SPD_NUM_ROWS,                        0x0D}, /* Number of row address bits */

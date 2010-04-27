@@ -29,11 +29,11 @@
       <chain>
 	<file>payloads/passwd.elf</file>
 	<lar>passwd</lar>
-      </chain>      
+      </chain>
       <chain>
 	<file>payloads/coreinfo.elf</file>
       </chain>
-    </payload>    
+    </payload>
     <payload type="chooser">
       <file>payloads/coreinfo.elf</file>
     </payload>

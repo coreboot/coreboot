@@ -19,7 +19,7 @@
 
 #define NORTHBRIDGE_FILE "northbridge.c"
 
-/* todo: add a resource record. We don't do this here because this may be called when 
+/* todo: add a resource record. We don't do this here because this may be called when
   * very little of the platform is actually working.
   */
 int
@@ -128,7 +128,7 @@ static void irq_init_steering(struct device *dev, u16 irq_map) {
 	printk(BIOS_DEBUG, "%s(%p [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
 
 	/* The IRQ steering values (in hex) are effectively dcba, where:
-	 *    <a> represents the IRQ for INTA, 
+	 *    <a> represents the IRQ for INTA,
 	 *    <b> represents the IRQ for INTB,
 	 *    <c> represents the IRQ for INTC, and
 	 *    <d> represents the IRQ for INTD.
@@ -146,10 +146,10 @@ static void irq_init_steering(struct device *dev, u16 irq_map) {
 /*
  * setup_gx2_cache
  *
- * Returns the amount of memory (in KB) available to the system.  This is the 
+ * Returns the amount of memory (in KB) available to the system.  This is the
  * total amount of memory less the amount of memory reserved for SMM use.
  *
- */ 
+ */
 static int
 setup_gx2_cache(void)
 {
@@ -200,13 +200,13 @@ setup_gx2(void)
 
 	membytes = size_kb * 1024;
 	/* NOTE! setup_gx2_cache returns the SIZE OF RAM - RAMADJUST!
-	  * so it is safe to use. You should NOT at this point call 	
-	  * sizeram() directly. 
+	  * so it is safe to use. You should NOT at this point call
+	  * sizeram() directly.
 	  */
 
 	/* we need to set 0x10000028 and 0x40000029 */
 	/*
-	 * These two descriptors cover the range from 1 MB (0x100000) to 
+	 * These two descriptors cover the range from 1 MB (0x100000) to
 	 * SYSTOP (a.k.a. TOM, or Top of Memory)
 	 */
 
@@ -271,16 +271,16 @@ setup_gx2(void)
 
 static void enable_shadow(device_t dev)
 {
-	
+
 }
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	unsigned long m;
 
 	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
-	
+
 	enable_shadow(dev);
 	irq_init_steering(dev, nb->irqmap);
 
@@ -421,7 +421,7 @@ static void pci_domain_set_resources(device_t dev)
 				continue;
 			ramreg += 1 << (((mem_config & (DIMM_SZ << i)) >> (i + 8)) + 2);
 		}
-			
+
 		tomk = ramreg << 10;
 
 		/* Sort out the framebuffer size */
@@ -455,7 +455,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {
@@ -516,5 +516,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_amd_gx2_ops = {
 	CHIP_NAME("AMD GX (previously GX2) Northbridge")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

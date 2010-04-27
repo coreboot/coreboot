@@ -12,7 +12,7 @@
 	{linkc, AVAILABLE_IRQS}, {linkd, AVAILABLE_IRQS}}, slot, 0}
 
 /*  Each IRQ_SLOT entry consists of:
- *  bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  
+ *  bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu
  */
 
 const struct irq_routing_table intel_irq_routing_table = {

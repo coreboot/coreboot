@@ -14,10 +14,10 @@ static void irqdump(void)
   int i;
   int irqlist[] = {0xd00, 0xd02, 0xd03, 0xd04, 0xd08, 0xd0a,
 	        0xd14, 0xd18, 0xd1a, 0xd1b, 0xd1c,
-		0xd20, 0xd21, 0xd22, 0xd28, 0xd29, 
+		0xd20, 0xd21, 0xd22, 0xd28, 0xd29,
 		0xd30, 0xd31, 0xd32, 0xd33,
-		0xd40, 0xd41, 0xd42, 0xd43,0xd44, 0xd45, 0xd46, 
-		0xd50, 0xd51, 0xd52, 0xd53,0xd54, 0xd55, 0xd56, 0xd57,0xd58, 0xd59, 0xd5a, 
+		0xd40, 0xd41, 0xd42, 0xd43,0xd44, 0xd45, 0xd46,
+		0xd50, 0xd51, 0xd52, 0xd53,0xd54, 0xd55, 0xd56, 0xd57,0xd58, 0xd59, 0xd5a,
 		-1};
   mmcr = (void *) 0xfffef000;
 
@@ -37,7 +37,7 @@ static void enable_dev(struct device *dev)
 	//volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
-	/* msm586seg has this register set to a weird value. 
+	/* msm586seg has this register set to a weird value.
 	 * follow the board, not the manual!
 	 */
 
@@ -47,7 +47,7 @@ static void enable_dev(struct device *dev)
 
 	/* from fuctory bios */
 	/* NOTE: the following interrupt settings made interrupts work
-	 * for hard drive, and serial, but not for ethernet 
+	 * for hard drive, and serial, but not for ethernet
 	 */
 	/* just do what they say and nobody gets hurt. */
 	mmcr->pic.pcicr = 0 ; // M_GINT_MODE | M_S1_MODE | M_S2_MODE;
@@ -78,7 +78,7 @@ static void enable_dev(struct device *dev)
 	printk(BIOS_ERR, "0xc22 0x%x\n", *(unsigned short *) 0xfffefc22);
 
 	/* The following block has NOT proven sufficient to get
-	 * the VGA hardware to talk to us 
+	 * the VGA hardware to talk to us
 	 */
 	/* let's set some mmcr stuff per the BIOS settings */
 	mmcr->dbctl.dbctl = 0x10;
@@ -100,20 +100,20 @@ static void enable_dev(struct device *dev)
 	 */
 	mmcr->sysmap.adddecctl = 0x10;
 
-	/* VGA now talks to us, so this adddecctl was the trick. 
-	 * still no interrupts from enet. 
-	 * Let's try fixing the piodata stuff, as there may be 
+	/* VGA now talks to us, so this adddecctl was the trick.
+	 * still no interrupts from enet.
+	 * Let's try fixing the piodata stuff, as there may be
 	 * some wire there not documented.
 	 */
 	mmcr->pio.data31_16 = 0xffbf;
 	/* also, our sl?picmode needs to match fuctory bios */
 	mmcr->pic.sl1picmode = 0x80;
 	mmcr->pic.sl2picmode = 0x0;
-	/* and, finally, they do set gp5imap and we don't. 
+	/* and, finally, they do set gp5imap and we don't.
 	 */
 	mmcr->pic.gp5imap = 0xd;
 	/* remaining problem: almost certainly, the irq table is bogus
-	 * NO SHOCK as it came from fuctory bios. 
+	 * NO SHOCK as it came from fuctory bios.
 	 * but let's try these 4 changes for now and see what shakes.
 	 */
 	/* still not interrupts. */

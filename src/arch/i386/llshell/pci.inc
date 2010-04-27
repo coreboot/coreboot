@@ -11,7 +11,7 @@
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
 	 *              And the tricks it does cannot scale beyond writing a single byte.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the data byte
@@ -52,7 +52,7 @@
 	 * Effects:	writes a single byte to pci config space
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the least significant
@@ -91,7 +91,7 @@
 	 * Effects:	writes a single byte to pci config space
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the least significant
@@ -118,7 +118,7 @@
 
 
 
-	
+
 	/*
 	 * Macro:	PCI_READ_CONFIG_BYTE
 	 * Arguments:	%eax address to read from (includes bus, device, function, &offset)
@@ -129,7 +129,7 @@
 	 * Effects:	reads a single byte from pci config space
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the least significant
@@ -165,7 +165,7 @@
 	 * Effects:	reads a 2 bytes from pci config space
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the least significant
@@ -201,7 +201,7 @@
 	 * Effects:	reads 4 bytes from pci config space
 	 *
 	 * Notes:	This routine is optimized for minimal register usage.
-	 *               
+	 *
 	 *              What it does is almost simple.
 	 *              It preserves %eax (baring special bits) until it is written
 	 *              out to the appropriate port.  And hides the least significant

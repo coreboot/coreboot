@@ -73,26 +73,26 @@ static void
 init_cafe_irq(void){
 	const unsigned char slots_cafe[4] = {11, 0, 0, 0};
 
- 
-	/* CAFE PCI slots */ 
-	pci_assign_irqs(0, 0x0C, slots_cafe); 
 
-	/* Make the pin assignments - NOTENOTENOTE:  This should be 
-	  * configurable! 
-	  */ 
+	/* CAFE PCI slots */
+	pci_assign_irqs(0, 0x0C, slots_cafe);
 
-	/* Configure the GPIO pins to use - class 0, index 9 to configure 
-	  * AB.  Write 0xFF to disable 
-	  */ 
-	
-	vrWrite(0x9, 0XFF00); 
-	
-	/* Configure the GPIO pins to use - class 0, index A to configure 
-	  * CD.  Write 0xFF to disable 
-	  */ 
-	
-       vrWrite(0xA, 0xFFFF); 
-	 
+	/* Make the pin assignments - NOTENOTENOTE:  This should be
+	  * configurable!
+	  */
+
+	/* Configure the GPIO pins to use - class 0, index 9 to configure
+	  * AB.  Write 0xFF to disable
+	  */
+
+	vrWrite(0x9, 0XFF00);
+
+	/* Configure the GPIO pins to use - class 0, index A to configure
+	  * CD.  Write 0xFF to disable
+	  */
+
+       vrWrite(0xA, 0xFFFF);
+
 }
 
 
@@ -111,7 +111,7 @@ static void init(struct device *dev) {
 	  * conditional we can make it a config variable later.
 	  */
 
-	printk(BIOS_DEBUG, "%s (%x,%x)SET USB PCI interrupt line to %d\n", 
+	printk(BIOS_DEBUG, "%s (%x,%x)SET USB PCI interrupt line to %d\n",
 		__func__, bus, devfn, usbirq);
 	usb = dev_find_slot(bus, devfn);
 	if (! usb){

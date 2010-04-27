@@ -87,7 +87,7 @@
 #define DRAM_TIMING_LOW	   0x88
 #define	 DTL_TCL_SHIFT	   0
 #define	 DTL_TCL_MASK	   7
-#define	  DTL_TCL_BASE 	   1 
+#define	  DTL_TCL_BASE 	   1
 #define	  DTL_TCL_MIN	   3
 #define	  DTL_TCL_MAX	   6
 #define	 DTL_TRCD_SHIFT	   4
@@ -125,7 +125,7 @@
 #define   DTL_TRRD_BASE    2
 #define   DTL_TRRD_MIN	   2
 #define   DTL_TRRD_MAX     5
-#define  DTL_MemClkDis_SHIFT 24    /* Channel A */ 
+#define  DTL_MemClkDis_SHIFT 24    /* Channel A */
 #define  DTL_MemClkDis3       (1 << 26)
 #define  DTL_MemClkDis2       (1 << 27)
 #define  DTL_MemClkDis1       (1 << 28)
@@ -135,16 +135,16 @@
 #define  DTL_MemClkDis0_S1g1      (0xa2 << 24)
 
 /* DTL_MemClkDis for m2 and s1g1 is different */
- 
+
 #define DRAM_TIMING_HIGH   0x8c
 #define  DTH_TRWTTO_SHIFT  4
 #define  DTH_TRWTTO_MASK   7
-#define   DTH_TRWTTO_BASE   2 
+#define   DTH_TRWTTO_BASE   2
 #define   DTH_TRWTTO_MIN    2
 #define   DTH_TRWTTO_MAX    9
 #define	 DTH_TWTR_SHIFT	   8
 #define	 DTH_TWTR_MASK	   3
-#define	  DTH_TWTR_BASE	   0 
+#define	  DTH_TWTR_BASE	   0
 #define	  DTH_TWTR_MIN	   1
 #define	  DTH_TWTR_MAX	   3
 #define	 DTH_TWRRD_SHIFT   10
@@ -154,7 +154,7 @@
 #define	  DTH_TWRRD_MAX	   3
 #define  DTH_TWRWR_SHIFT   12
 #define  DTH_TWRWR_MASK    3
-#define   DTH_TWRWR_BASE   1 
+#define   DTH_TWRWR_BASE   1
 #define   DTH_TWRWR_MIN    1
 #define   DTH_TWRWR_MAX    3
 #define  DTH_TRDRD_SHIFT   14
@@ -167,7 +167,7 @@
 #define	  DTH_TREF_7_8_US  2
 #define	  DTH_TREF_3_9_US  3
 #define  DTH_TRFC0_SHIFT   20 /* for Logical DIMM0 */
-#define  DTH_TRFC_MASK      7  
+#define  DTH_TRFC_MASK      7
 #define	  DTH_TRFC_75_256M   0
 #define	  DTH_TRFC_105_512M  1
 #define   DTH_TRFC_127_5_1G  2
@@ -185,12 +185,12 @@
 #define   DCL_DramTerm_No   0
 #define   DCL_DramTerm_75_OH 1
 #define   DCL_DramTerm_150_OH 2
-#define   DCL_DramTerm_50_OH 3     
+#define   DCL_DramTerm_50_OH 3
 #define  DCL_DrvWeak	   (1<<7)
 #define  DCL_ParEn	   (1<<8)
 #define  DCL_SelfRefRateEn (1<<9)
 #define  DCL_BurstLength32 (1<<10)
-#define  DCL_Width128	   (1<<11) 
+#define  DCL_Width128	   (1<<11)
 #define  DCL_X4Dimm_SHIFT  12
 #define  DCL_X4Dimm_MASK   0xf
 #define  DCL_UnBuffDimm    (1<<16)
@@ -312,7 +312,7 @@
 #define  DATC_CkeFineDelay_MASK  0x1f
 #define   DATC_CkeFineDelay_BASE 0
 #define   DATC_CkeFineDelay_MIN  0
-#define   DATC_CkeFineDelay_MAX 31 
+#define   DATC_CkeFineDelay_MAX 31
 #define  DATC_CkeSetup	(1<<5)
 #define  DATC_CsOdtFineDelay_SHIFT 8
 #define  DATC_CsOdtFineDelay_MASK  0x1f
@@ -320,7 +320,7 @@
 #define   DATC_CsOdtFineDelay_MIN  0
 #define   DATC_CsOdtFineDelay_MAX 31
 #define  DATC_CsOdtSetup   (1<<13)
-#define  DATC_AddrCmdFineDelay_SHIFT 16 
+#define  DATC_AddrCmdFineDelay_SHIFT 16
 #define  DATC_AddrCmdFineDelay_MASK  0x1f
 #define   DATC_AddrCmdFineDelay_BASE 0
 #define   DATC_AddrCmdFineDelay_MIN  0
@@ -361,7 +361,7 @@
 #define DRAM_DQS_RECV_ENABLE_TIME2 0x16
 #define DRAM_DQS_RECV_ENABLE_TIME3 0x19
 
-/* there are index        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x30, 0x33, 0x36, 0x39 
+/* there are index        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x30, 0x33, 0x36, 0x39
 that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 0x13, 0x16, 0x19
 */
 #define DRAM_CTRL_MISC 0xa0
@@ -417,7 +417,7 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 #define	  SCRUB_655_4us	   15
 #define	  SCRUB_1_31ms	   16
 #define	  SCRUB_2_62ms	   17
-#define	  SCRUB_5_24ms	   18 
+#define	  SCRUB_5_24ms	   18
 #define	  SCRUB_10_49ms	   19
 #define	  SCRUB_20_97ms	   20
 #define	  SCRUB_42ms	   21
@@ -530,7 +530,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	unsigned needs_reset = 0;
 
 
-	if(sysinfo->nodes == 1) return; // in case only one cpu installed	
+	if(sysinfo->nodes == 1) return; // in case only one cpu installed
 
 	for(i=1; i<sysinfo->nodes; i++) {
 		/* Skip everything if I don't have any memory on this controller */
@@ -563,7 +563,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 #ifdef __PRE_RAM__
 		print_debug("mem_trained["); print_debug_hex8(i); print_debug("]="); print_debug_hex8(sysinfo->mem_trained[i]); print_debug("\n");
 #else
-		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]); 
+		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
 #endif
 		switch(sysinfo->mem_trained[i]) {
 		case 0: //don't need train
@@ -581,7 +581,7 @@ static inline void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		print_debug("mem trained failed\n");
 		soft_reset();
 #else
-		printk(BIOS_DEBUG, "mem trained failed\n"); 
+		printk(BIOS_DEBUG, "mem trained failed\n");
 		hard_reset();
 #endif
 	}

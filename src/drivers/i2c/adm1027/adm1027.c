@@ -44,7 +44,7 @@ static void adm1027_init(device_t dev)
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
 		if (ops_smbus_bus(get_pbus_smbus(dev))) {
 			if (dev->bus->dev->path.type == DEVICE_PATH_I2C)
-				smbus_set_link(dev);	// it is under mux 
+				smbus_set_link(dev);	// it is under mux
 			adm1027_enable_monitoring(dev);
 		}
 

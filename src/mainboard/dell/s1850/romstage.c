@@ -65,7 +65,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static inline void  ibfzero(void)
 {
-	while(inb(ipmicsr) &  (1<<IBF)) 
+	while(inb(ipmicsr) &  (1<<IBF))
 		;
 }
 static inline void  clearobf(void)
@@ -75,7 +75,7 @@ static inline void  clearobf(void)
 
 static inline void  waitobf(void)
 {
-	while((inb(ipmicsr) &  (1<<OBF)) == 0) 
+	while((inb(ipmicsr) &  (1<<OBF)) == 0)
 		;
 }
 /* quite possibly the stupidest interface ever designed. */
@@ -162,8 +162,8 @@ static void main(unsigned long bist)
 	u32 l;
 	int do_reset;
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	static const struct mem_controller mch[] = {
 		{
@@ -192,9 +192,9 @@ static void main(unsigned long bist)
 		0,
 	};
 
-	/* using SerialICE, we've seen this basic reset sequence on the dell. 
+	/* using SerialICE, we've seen this basic reset sequence on the dell.
 	 * we don't understand it as it uses undocumented registers, but
-	 * we're going to clone it. 
+	 * we're going to clone it.
 	 */
 	/* enable a hidden device. */
 	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
@@ -217,11 +217,11 @@ static void main(unsigned long bist)
 	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
 	b &= ~0x8;
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
-	
+
 	/* set up LPC bridge bits, some of which reply on undocumented
 	 * registers
 	 */
-	
+
 	b= pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xd8);
 	b |= 4;
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xd8, b);
@@ -244,9 +244,9 @@ static void main(unsigned long bist)
 	w = inw(0x866);
 	outw(w|2, 0x866);
 
-#if 0 
+#if 0
 	/*seriaice shows
-	dell does this so leave it here so I don't forget 
+	dell does this so leave it here so I don't forget
  	 */
 	/* SMBUS */
 	pci_write_config16(PCI_DEV(0, 0x1f, 3), 0x20, 0x08c0);
@@ -260,7 +260,7 @@ static void main(unsigned long bist)
 	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
 	b |= 2;
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
-	
+
 	/* ?? */
 	l = pci_read_config32(PCI_DEV(0, 8, 0), 0xc0);
 	do_reset = l & 0x8000000;
@@ -334,7 +334,7 @@ static void main(unsigned long bist)
 #endif
 	disable_watchdogs();
 //	dump_ipmi_registers();
-	mainboard_set_e7520_leds();	
+	mainboard_set_e7520_leds();
 
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 #if 0
@@ -345,7 +345,7 @@ static void main(unsigned long bist)
 //	dump_bar14(PCI_DEV(0, 0x00, 0));
 #endif
 
-#if 1 // temporarily disabled 
+#if 1 // temporarily disabled
 	/* Check the first 1M */
 //	ram_check(0x00000000, 0x000100000);
 //	ram_check(0x00000000, 0x000a0000);
@@ -357,8 +357,8 @@ static void main(unsigned long bist)
 #if 0
 	ram_check(0x00000000, 0x02000000);
 #endif
-	
-#if 0	
+
+#if 0
 	while(1) {
 		hlt();
 	}

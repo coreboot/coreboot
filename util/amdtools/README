@@ -24,9 +24,9 @@ Finally run the txt file through the parse-bkdg.pl script like so:
 Now we have the bkdg.data file that is used by the other scripts.
 
 If you want to test the scripts without doing all this work, you can use some
-sample input files from the 'example_input/' directory. 
+sample input files from the 'example_input/' directory.
 
--- 
+--
 Ward Vandewege, 2009-10-28.
 ward@jhvc.com
- 
+

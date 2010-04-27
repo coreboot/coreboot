@@ -20,7 +20,7 @@ chip northbridge/amd/lx
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0"	# End of list has a zero
-			
+
 			device pci d.0 on end			# Ethernet 4
 			device pci a.0 on end			# Ethernet 1
 			device pci b.0 on end			# Ethernet 2

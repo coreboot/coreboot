@@ -5,7 +5,7 @@
  * (Written by Yinghai Lu <yinghailu@amd.com> for AMD)
  * Copyright (C) 2006 MSI
  * (Written by Bingxun Shi <bingxunshi@gmail.com> for MSI)
- * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz> 
+ * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
-	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE 
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
 		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	sio_init();

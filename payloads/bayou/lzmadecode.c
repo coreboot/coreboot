@@ -1,21 +1,21 @@
 /*
   LzmaDecode.c
   LZMA Decoder (optimized for Speed version)
-  
+
   LZMA SDK 4.40 Copyright (c) 1999-2006 Igor Pavlov (2006-05-01)
   http://www.7-zip.org/
 
   LZMA SDK is licensed under two licenses:
   1) GNU Lesser General Public License (GNU LGPL)
   2) Common Public License (CPL)
-  It means that you can select one of these two licenses and 
+  It means that you can select one of these two licenses and
   follow rules of that license.
 
   SPECIAL EXCEPTION:
-  Igor Pavlov, as the author of this Code, expressly permits you to 
-  statically or dynamically link your Code (or bind by name) to the 
-  interfaces of this file without subjecting your linked Code to the 
-  terms of the CPL or GNU LGPL. Any modifications or additions 
+  Igor Pavlov, as the author of this Code, expressly permits you to
+  statically or dynamically link your Code (or bind by name) to the
+  interfaces of this file without subjecting your linked Code to the
+  terms of the CPL or GNU LGPL. Any modifications or additions
   to this file, however, are subject to the LGPL or CPL terms.
 */
 
@@ -37,7 +37,7 @@
 #define RC_TEST { if (Buffer == BufferLim) return LZMA_RESULT_DATA_ERROR; }
 
 #define RC_INIT(buffer, bufferSize) Buffer = buffer; BufferLim = buffer + bufferSize; RC_INIT2
- 
+
 
 #define RC_NORMALIZE if (Range < kTopValue) { RC_TEST; Range <<= 8; Code = (Code << 8) | RC_READ_BYTE; }
 
@@ -47,9 +47,9 @@
 
 #define RC_GET_BIT2(p, mi, A0, A1) IfBit0(p) \
   { UpdateBit0(p); mi <<= 1; A0; } else \
-  { UpdateBit1(p); mi = (mi + mi) + 1; A1; } 
-  
-#define RC_GET_BIT(p, mi) RC_GET_BIT2(p, mi, ; , ;)               
+  { UpdateBit1(p); mi = (mi + mi) + 1; A1; }
+
+#define RC_GET_BIT(p, mi) RC_GET_BIT2(p, mi, ; , ;)
 
 #define RangeDecoderBitTreeDecode(probs, numLevels, res) \
   { int i = numLevels; res = 1; \
@@ -72,7 +72,7 @@
 #define LenLow (LenChoice2 + 1)
 #define LenMid (LenLow + (kNumPosStatesMax << kLenNumLowBits))
 #define LenHigh (LenMid + (kNumPosStatesMax << kLenNumMidBits))
-#define kNumLenProbs (LenHigh + kLenNumHighSymbols) 
+#define kNumLenProbs (LenHigh + kLenNumHighSymbols)
 
 
 #define kNumStates 12
@@ -161,7 +161,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
     for (i = 0; i < numProbs; i++)
       p[i] = kBitModelTotal >> 1;
   }
-  
+
   RC_INIT(inStream, inSize);
 
 
@@ -170,7 +170,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
     CProb *prob;
     UInt32 bound;
     int posState = (int)(
-        (nowPos 
+        (nowPos
         )
         & posStateMask);
 
@@ -179,9 +179,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
     {
       int symbol = 1;
       UpdateBit0(prob)
-      prob = p + Literal + (LZMA_LIT_SIZE * 
+      prob = p + Literal + (LZMA_LIT_SIZE *
         (((
-        (nowPos 
+        (nowPos
         )
         & literalPosMask) << lc) + (previousByte >> (8 - lc))));
 
@@ -212,7 +212,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
       else if (state < 10) state -= 3;
       else state -= 6;
     }
-    else             
+    else
     {
       UpdateBit1(prob);
       prob = p + IsRep + state;
@@ -236,10 +236,10 @@ int LzmaDecode(CLzmaDecoderState *vs,
           IfBit0(prob)
           {
             UpdateBit0(prob);
-            
+
             if (nowPos == 0)
               return LZMA_RESULT_DATA_ERROR;
-            
+
             state = state < kNumLitStates ? 9 : 11;
             previousByte = outStream[nowPos - rep0];
             outStream[nowPos++] = previousByte;
@@ -261,7 +261,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
             UpdateBit0(prob);
             distance = rep1;
           }
-          else 
+          else
           {
             UpdateBit1(prob);
             prob = p + IsRepG2 + state;
@@ -322,7 +322,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         int posSlot;
         state += kNumLitStates;
         prob = p + PosSlot +
-            ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) << 
+            ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) <<
             kNumPosSlotBits);
         RangeDecoderBitTreeDecode(prob, kNumPosSlotBits, posSlot);
         if (posSlot >= kStartPosModelIndex)

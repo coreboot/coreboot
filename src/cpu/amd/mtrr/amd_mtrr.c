@@ -5,7 +5,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
-static unsigned long resk(uint64_t value) 
+static unsigned long resk(uint64_t value)
 {
 	unsigned long resultk;
 	if (value < (1ULL << 42)) {
@@ -98,7 +98,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
 		start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
-	
+
 }
 
 void amd_setup_mtrrs(void)
@@ -118,7 +118,7 @@ void amd_setup_mtrrs(void)
 
 	printk(BIOS_DEBUG, "\n");
 	/* Initialized the fixed_mtrrs to uncached */
-	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) type: UC\n", 
+	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) type: UC\n",
 		0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
@@ -162,7 +162,7 @@ void amd_setup_mtrrs(void)
 		wrmsr(i, msr);
 	}
 
-	/* Enable Variable Mtrrs 
+	/* Enable Variable Mtrrs
 	 * Enable the RdMem and WrMem bits in the fixed mtrrs.
 	 * Disable access to the RdMem and WrMem in the fixed mtrr.
 	 */

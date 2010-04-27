@@ -305,11 +305,11 @@ lout:
 	pushl	%eax  /* bist */
 	call	main
 
-	/* 
+	/*
 	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
 		It is only needed if we want to go back
 	*/
-	
+
         /* We don't need cache as ram for now on */
         /* disable cache */
 	movl    %cr0, %eax
@@ -396,7 +396,7 @@ lout:
 __main:
 	post_code(0x11)
 	cld			/* clear direction flag */
-	
+
 	movl	%ebp, %esi
 
 	movl $ROMSTAGE_STACK, %esp
@@ -404,7 +404,7 @@ __main:
 	pushl %esi
 	call copy_and_run
 
-.Lhlt:	
+.Lhlt:
 	post_code(0xee)
 	hlt
 	jmp	.Lhlt

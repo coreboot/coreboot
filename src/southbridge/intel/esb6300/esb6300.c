@@ -25,7 +25,7 @@ void esb6300_enable(device_t dev)
 		(lpc_dev->device != PCI_DEVICE_ID_INTEL_6300ESB_LPC)) {
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
-		if (id != (PCI_VENDOR_ID_INTEL | 
+		if (id != (PCI_VENDOR_ID_INTEL |
 				(PCI_DEVICE_ID_INTEL_6300ESB_LPC << 16))) {
 			return;
 		}
@@ -39,7 +39,7 @@ void esb6300_enable(device_t dev)
 	if (reg != reg_old) {
 		pci_write_config16(lpc_dev, 0xf2, reg);
 	}
-	
+
 }
 
 struct chip_operations southbridge_intel_esb6300_ops = {

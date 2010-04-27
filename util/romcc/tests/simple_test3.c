@@ -7,7 +7,7 @@ static void spd_set_drb(void)
 	 */
 	unsigned end_of_memory;
 	unsigned device;
-	
+
 	end_of_memory = 0; /* in multiples of 8MiB */
 	device = 0x50;
 	while (device <= 0x53) {
@@ -23,7 +23,7 @@ static void spd_set_drb(void)
 			/* Make it mulitples of 8MB */
 			side1_bits -= 25;
 		}
-		
+
 		/* Compute the end address for the DRB register */
 		/* Only process dimms < 2GB (2^8 * 8MB) */
 		if (1) {

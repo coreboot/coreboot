@@ -3,7 +3,7 @@
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #endif
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -75,7 +75,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 
  /* tyan does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -109,7 +109,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         struct mem_controller ctrl[8];
         unsigned nodes;
 
-        if (!cpu_init_detectedx && boot_cpu()) {  
+        if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 
@@ -130,7 +130,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 //	post_code(0x33);
-	
+
         uart_init();
 //	post_code(0x34);
 
@@ -142,7 +142,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
 
         setup_blast_resource_map();
-	
+
 #if 0
         dump_pci_device(PCI_DEV(0, 0x18, 0));
 	dump_pci_device(PCI_DEV(0, 0x19, 0));
@@ -174,7 +174,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-#if 0 
+#if 0
         int i;
         for(i=4;i<8;i++) {
                 change_i2c_mux(i);

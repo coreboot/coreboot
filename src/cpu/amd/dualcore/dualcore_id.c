@@ -14,7 +14,7 @@ unsigned int read_nb_cfg_54(void)
         return ( ( msr.hi >> (54-32)) & 1);
 }
 
-static inline unsigned get_initial_apicid(void) 
+static inline unsigned get_initial_apicid(void)
 {
 	return ((cpuid_ebx(1) >> 24) & 0xf);
 }
@@ -22,7 +22,7 @@ static inline unsigned get_initial_apicid(void)
 //called by amd_siblings too
 #define CORE_ID_BIT 1
 #define NODE_ID_BIT 3
-struct node_core_id get_node_core_id(unsigned nb_cfg_54) 
+struct node_core_id get_node_core_id(unsigned nb_cfg_54)
 {
 	struct node_core_id id;
 	//    get the apicid via cpuid(1) ebx[27:24]
@@ -31,8 +31,8 @@ struct node_core_id get_node_core_id(unsigned nb_cfg_54)
                 id.coreid = (cpuid_ebx(1) >> 24) & 0xf;
                 id.nodeid = (id.coreid>>CORE_ID_BIT);
                 id.coreid &= ((1<<CORE_ID_BIT)-1);
-        } 
-	else 
+        }
+	else
 	{
                 // when NB_CFG[54] is clear, nodeid = ebx[26:24], coreid = ebx[27]
                 id.nodeid = (cpuid_ebx(1) >> 24) & 0xf;

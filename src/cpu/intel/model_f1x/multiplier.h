@@ -1,5 +1,5 @@
 
-/* 
+/*
  ** NMI A20M IGNNE INTR
  * X8  H H H H
  * X9  H H H L projected
@@ -8,7 +8,7 @@
  * X12 H L H H
  * X13 H L H L
  * X14 H L L H
- * X15 H L L L 
+ * X15 H L L L
  * X16 L H H H
  * X17 L H H L
  * X18 L H L H
@@ -18,7 +18,7 @@
  * X22 L L L H  projected
  * X23 L L L L  projected
  *
- ** NMI INTR IGNNE A20M 
+ ** NMI INTR IGNNE A20M
  * X8  H H H H
  * X9  H L H H projected
  * X10 H H L H
@@ -26,7 +26,7 @@
  * X12 H H H L
  * X13 H L H L
  * X14 H H L L
- * X15 H L L L 
+ * X15 H L L L
  * X16 L H H H
  * X17 L L H H
  * X18 L H L H

@@ -26,5 +26,5 @@ config UDELAY_TSC
 	default y
 	depends on SOUTHBRIDGE_AMD_CS5536
 
-	
+
 

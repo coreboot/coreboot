@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ struct msrinit {
 	msr_t msr;
 };
 
-static const struct msrinit msr_table[] = 
+static const struct msrinit msr_table[] =
 {
 	{CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, /* Setup access to cache under 1MB.
 								   * Rom Properties: Write Serialize, WriteProtect.
@@ -35,7 +35,7 @@ static const struct msrinit msr_table[] =
 	{CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xA0000-0xBFFFF : (Write Back) */
 	{CPU_RCONF_C0_DF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xC0000-0xDFFFF : (Write Back) */
 	{CPU_RCONF_E0_FF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xE0000-0xFFFFF : (Write Back) */
-       
+
 	/* Setup access to memory under 1MB. Note: VGA hole at 0xA0000-0xBFFFF */
 	{MSR_GLIU0_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
 	{MSR_GLIU0_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF

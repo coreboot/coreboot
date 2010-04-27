@@ -20,7 +20,7 @@ void CPriceTables::Init()
     UInt32 start = 1 << (kNumBits - i - 1);
     UInt32 end = 1 << (kNumBits - i);
     for (UInt32 j = start; j < end; j++)
-      ProbPrices[j] = (i << kNumBitPriceShiftBits) + 
+      ProbPrices[j] = (i << kNumBitPriceShiftBits) +
           (((end - j) << kNumBitPriceShiftBits) >> (kNumBits - i - 1));
   }
 
@@ -29,7 +29,7 @@ void CPriceTables::Init()
   for(UInt32 i = 1; i < (kBitModelTotal >> kNumMoveReducingBits) - 1; i++)
     ProbPrices[i] = kBitPrice;
   */
-  
+
   /*
   const double kDummyMultMid = (1.0 / kBitPrice) / 2;
   const double kDummyMultMid = 0;
@@ -39,7 +39,7 @@ void CPriceTables::Init()
   for(UInt32 i = 1; i < (kBitModelTotal >> kNumMoveReducingBits) - 1; i++)
     ProbPrices[i] = UInt32((fabs(lnAll - log(double(i))) / ln2 + kDummyMultMid) * kBitPrice);
   */
-  
+
   /*
   // experimental, slow, solution:
   for(UInt32 i = 1; i < (kBitModelTotal >> kNumMoveReducingBits) - 1; i++)
@@ -70,7 +70,7 @@ void CPriceTables::Init()
         range -= (1 << 31);
       }
     }
-    ProbPrices[i] = (bitCount 
+    ProbPrices[i] = (bitCount
       // + (1 << (kCyclesBits - 1))
       ) >> kCyclesBits;
   }

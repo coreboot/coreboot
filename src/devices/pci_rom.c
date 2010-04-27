@@ -87,7 +87,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		    rom_data->class_hi, rom_data->class_lo,
 		    rom_data->type);
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
-		printk(BIOS_DEBUG, "Class Code mismatch ROM %08x, dev %08x\n", 
+		printk(BIOS_DEBUG, "Class Code mismatch ROM %08x, dev %08x\n",
 			     (rom_data->class_hi << 8) | rom_data->class_lo,
 			     dev->class);
 		//return NULL;

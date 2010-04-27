@@ -16,7 +16,7 @@ static void print_pci_regs(struct device *dev)
 
       for(i=0;i<256;i++) {
 	      byte = pci_read_config8(dev, i);
-   
+
 	      if((i & 0xf)==0) printk(BIOS_DEBUG, "\n%02x:",i);
 	      printk(BIOS_DEBUG, " %02x",byte);
       }
@@ -51,7 +51,7 @@ static void print_pci_regs_all(void)
 				if(!dev->enabled) {
 					continue;
 				}
-			        printk(BIOS_DEBUG, "\n%02x:%02x:%02x aka %s", 
+			        printk(BIOS_DEBUG, "\n%02x:%02x:%02x aka %s",
 					bus, device, function, dev_path(dev));
 				print_pci_regs(dev);
 			}
@@ -83,7 +83,7 @@ static void print_cpuid(void)
 
 }
 static void print_smbus_regs(struct device *dev)
-{               
+{
 	int j;
 	printk(BIOS_DEBUG, "smbus: %s[%d]->", dev_path(dev->bus->dev), dev->bus->link);
 	printk(BIOS_DEBUG, "%s", dev_path(dev));
@@ -97,7 +97,7 @@ static void print_smbus_regs(struct device *dev)
 		}
                 if ((j & 0xf) == 0) {
                         printk(BIOS_DEBUG, "\n%02x: ", j);
-                }  
+                }
 		byte = status & 0xff;
 		printk(BIOS_DEBUG, "%02x ", byte);
 	}
@@ -113,12 +113,12 @@ static void print_smbus_regs_all(struct device *dev)
 		// Here don't need to call smbus_set_link, because we scan it from top to down
 		if( dev->bus->dev->path.type == DEVICE_PATH_I2C) { // it's under i2c MUX so set mux at first
 			if(ops_smbus_bus(get_pbus_smbus(dev->bus->dev))) {
-				if(dev->bus->dev->ops && dev->bus->dev->ops->set_link) 
+				if(dev->bus->dev->ops && dev->bus->dev->ops->set_link)
 					dev->bus->dev->ops->set_link(dev->bus->dev, dev->bus->link);
 			}
 		}
-		
-		if(ops_smbus_bus(get_pbus_smbus(dev))) print_smbus_regs(dev);	
+
+		if(ops_smbus_bus(get_pbus_smbus(dev))) print_smbus_regs(dev);
 	}
 
 	for(i=0; i< dev->links; i++) {
@@ -142,7 +142,7 @@ static void print_msr_dualcore(void)
         printk(BIOS_DEBUG, "cpuid[%08x]: %08x %08x %08x %08x\n",
                 index, eax, ebx, ecx, edx);
 
-        printk(BIOS_DEBUG, "core number %d\n", ecx & 0xff);   
+        printk(BIOS_DEBUG, "core number %d\n", ecx & 0xff);
 
         index = 0xc001001f;
         printk(BIOS_DEBUG, "Reading msr: 0x%08x\n", index);
@@ -217,7 +217,7 @@ static tsc_t rdtsc(void)
 }
 
 static void print_tsc(void) {
-	
+
 	tsc_t tsc;
 	tsc = rdtsc();
         printk(BIOS_DEBUG, "tsc: 0x%08x%08x\n",
@@ -245,29 +245,29 @@ static void debug_init(device_t dev)
 			printk(BIOS_DEBUG, "\n");
 		}
 		break;
-		
+
 	case 1:
 		print_pci_regs_all();
 		break;
-	case 2: 
+	case 2:
 		print_mem();
 		break;
 	case 3:
 		print_cpuid();
 		break;
-	case 4: 
+	case 4:
 		print_smbus_regs_all(&dev_root);
 		break;
-        case 5: 
+        case 5:
                 print_msr_dualcore();
                 break;
-	case 6: 
+	case 6:
 		print_cache_size();
 		break;
 	case 7:
 		print_tsc();
 		break;
-	case 8: 
+	case 8:
 		hard_reset();
 		break;
 	}
@@ -291,5 +291,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations drivers_generic_debug_ops = {
 	CHIP_NAME("Debug device")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

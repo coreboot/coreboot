@@ -147,8 +147,8 @@ int acpigen_emit_stream(const char *data, int size)
 	return size;
 }
 
-/* The NameString are bit tricky, each element can be 4 chars, if 
-   less its padded with underscore. Check 18.2.2 and 18.4 
+/* The NameString are bit tricky, each element can be 4 chars, if
+   less its padded with underscore. Check 18.2.2 and 18.4
    and 5.3 of ACPI specs 3.0 for details
 */
 
@@ -160,14 +160,14 @@ static int acpigen_emit_simple_namestring(const char *name) {
 			len += acpigen_emit_stream(ud, 4 - i);
 			break;
 		} else {
-			len += acpigen_emit_byte(name[i]);				
+			len += acpigen_emit_byte(name[i]);
 		}
 	}
 	return len;
 }
 
 static int acpigen_emit_double_namestring(const char *name, int dotpos) {
-	int len = 0; 
+	int len = 0;
 	/* mark dual name prefix */
 	len += acpigen_emit_byte(0x2e);
 	len += acpigen_emit_simple_namestring(name);
@@ -177,7 +177,7 @@ static int acpigen_emit_double_namestring(const char *name, int dotpos) {
 
 static int acpigen_emit_multi_namestring(const char *name) {
 	int len = 0, count = 0;
-	unsigned char *pathlen; 
+	unsigned char *pathlen;
 	/* mark multi name prefix */
 	len += acpigen_emit_byte(0x2f);
 	len += acpigen_emit_byte(0x0);
@@ -229,7 +229,7 @@ int acpigen_emit_namestring(const char *namepath) {
 
 	if (dotcount == 0) {
 		len += acpigen_emit_simple_namestring(namepath);
-	} else if (dotcount == 1) { 
+	} else if (dotcount == 1) {
 		len += acpigen_emit_double_namestring(namepath, dotpos);
 	} else {
 		len += acpigen_emit_multi_namestring(namepath);

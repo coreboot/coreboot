@@ -60,7 +60,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			Name (_ADR, 0x00)
 			Name (_UID, 0x00)
 			Name (_BBN, 0x00)
-			
+
 		    External (BUSN)
 		    External (MMIO)
 		    External (PCIO)
@@ -95,7 +95,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				Concatenate (\_SB.GMEM (0x00, \_SB.PCI0.SBLK), BUF0, Local1)
 				Concatenate (\_SB.GIOR (0x00, \_SB.PCI0.SBLK), Local1, Local2)
 				Concatenate (\_SB.GWBN (0x00, \_SB.PCI0.SBLK), Local2, Local3)
-				Return (Local3) 
+				Return (Local3)
 			}
 
 			/* PCI Routing Table */
@@ -185,7 +185,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 					/* two LSB bits are blink rate */
 					LEDR,   2,
 				}
-				
+
 				/* PS/2 keyboard (seems to be important for WinXP install) */
 				Device (KBD)
 				{

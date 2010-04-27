@@ -17,10 +17,10 @@ static void irqdump(void)
   int i;
   int irqlist[] = {0xd00, 0xd02, 0xd03, 0xd04, 0xd08, 0xd0a,
 	        0xd14, 0xd18, 0xd1a, 0xd1b, 0xd1c,
-		0xd20, 0xd21, 0xd22, 0xd28, 0xd29, 
+		0xd20, 0xd21, 0xd22, 0xd28, 0xd29,
 		0xd30, 0xd31, 0xd32, 0xd33,
-		0xd40, 0xd41, 0xd42, 0xd43,0xd44, 0xd45, 0xd46, 
-		0xd50, 0xd51, 0xd52, 0xd53,0xd54, 0xd55, 0xd56, 0xd57,0xd58, 0xd59, 0xd5a, 
+		0xd40, 0xd41, 0xd42, 0xd43,0xd44, 0xd45, 0xd46,
+		0xd50, 0xd51, 0xd52, 0xd53,0xd54, 0xd55, 0xd56, 0xd57,0xd58, 0xd59, 0xd5a,
 		-1};
   mmcr = (void *) 0xfffef000;
 
@@ -44,7 +44,7 @@ static void enable_dev(struct device *dev) {
 
 	/* from fuctory bios */
 	/* NOTE: the following interrupt settings made interrupts work
-	 * for hard drive, and serial, but not for ethernet 
+	 * for hard drive, and serial, but not for ethernet
 	 */
 
 	printk(BIOS_ERR, "Setting up PIC\n");
@@ -63,7 +63,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->pic.rtcmap  = 0x03;
 	mmcr->pic.ferrmap = 0x00;
 	mmcr->pic.intpinpol = 0x100;
-	
+
 	mmcr->pic.gp0imap = 0x00;
 	mmcr->pic.gp1imap = 0x02;
 	mmcr->pic.gp2imap = 0x07;
@@ -83,7 +83,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->sysarb.ctl = 0x00;
 	mmcr->sysarb.menb = 0x1f;
 	mmcr->sysarb.prictl = 0x40000f0f;
-	
+
 	/* this is bios setting, depends on sysarb above */
 	mmcr->hostbridge.ctl = 0x0;
 	mmcr->hostbridge.tgtirqctl = 0x0;
@@ -125,7 +125,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->gpctl.gprdoff = 0x02;
 	mmcr->gpctl.gpwrw = 0x07;
 	mmcr->gpctl.gpwroff = 0x02;
-	
+
 	//mmcr->reset.sysinfo = 0xdf;
 	//mmcr->reset.rescfg = 0x5;
 	/* their IRQ table is wrong. Just hardwire it */

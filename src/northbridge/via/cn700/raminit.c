@@ -51,7 +51,7 @@ static void do_ram_command(device_t dev, u8 command)
 }
 
 /**
- * Configure the bus between the CPU and the northbridge. This might be able to 
+ * Configure the bus between the CPU and the northbridge. This might be able to
  * be moved to post-ram code in the future. For the most part, these registers
  * should not be messed around with. These are too complex to explain short of
  * copying the datasheets into the comments, but most of these values are from
@@ -244,7 +244,7 @@ static void sdram_set_size(const struct mem_controller *ctrl)
 }
 
 /**
- * Set up various RAM and other control registers statically. Some of these may 
+ * Set up various RAM and other control registers statically. Some of these may
  * not be needed, other should be done with SPD info, but that's a project for
  * the future.
  */
@@ -422,7 +422,7 @@ static void sdram_enable(device_t dev, unsigned long rank_address)
 	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\n");
 	/* Safe value for now, BL=8, WR=5, CAS=4 */
 	/*
-	 * (E)MRS values are from the BPG. No direct explanation is given, but 
+	 * (E)MRS values are from the BPG. No direct explanation is given, but
 	 * they should somehow conform to the JEDEC DDR2 SDRAM Specification
 	 * (JESD79-2C).
 	 */

@@ -21,7 +21,7 @@ static void nvram_on(struct device *dev)
 	/* Set positive decode on ROM */
 	/* Also, there is no apparent reason to turn off the devoce on the */
 	/* IDE devices */
-	
+
 	reg = pci_read_config8(dev, 0x5b);
 	reg |= 1 << 5;	/* ROM Decode */
 	reg |= 1 << 3;	/* Primary IDE decode */
@@ -43,7 +43,7 @@ static void nvram_on(struct device *dev)
 #endif
 }
 
-	
+
 static void southbridge_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "cs5535: %s\n", __func__);

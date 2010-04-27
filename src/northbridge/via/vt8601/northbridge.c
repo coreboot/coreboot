@@ -18,7 +18,7 @@
  * slower than normal, ethernet drops packets).
  * Apparently these registers govern some sort of bus master behavior.
  */
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	printk(BIOS_SPEW, "VT8601 random fixup ...\n");
 	pci_write_config8(dev, 0x70, 0xc0);
@@ -108,16 +108,16 @@ static void pci_domain_set_resources(device_t dev)
 		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
 			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes. 
+			/* these are ENDING addresses, not sizes.
 			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total. 
+			 * So we just take the max, that gives us total.
 			 * We take the highest one to cover for once and future coreboot
 			 * bugs. We warn about bugs.
 			 */
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n",
 					ramregs[i]);
 		}
 		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
@@ -149,7 +149,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {
@@ -182,5 +182,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_via_vt8601_ops = {
 	CHIP_NAME("VIA VT8601 Northbridge")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

@@ -410,7 +410,7 @@ handleInt1a(void)
 				M.x86.R_CL =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config8(dev, offs);
-#else					
+#else
 				    (u8) rtas_pci_config_read(bios_device.
 								   puid, 1,
 								   bus, devfn,
@@ -425,7 +425,7 @@ handleInt1a(void)
 				M.x86.R_CX =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config16(dev, offs);
-#else					
+#else
 				    (u16) rtas_pci_config_read(bios_device.
 								    puid, 2,
 								    bus, devfn,
@@ -440,7 +440,7 @@ handleInt1a(void)
 				M.x86.R_ECX =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config32(dev, offs);
-#else					
+#else
 				    (u32) rtas_pci_config_read(bios_device.
 								    puid, 4,
 								    bus, devfn,
@@ -478,7 +478,7 @@ handleInt1a(void)
 			case 0xb10b:
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_write_config8(bios_device.dev, offs, M.x86.R_CL);
-#else					
+#else
 				rtas_pci_config_write(bios_device.puid, 1, bus,
 						      devfn, offs, M.x86.R_CL);
 #endif
@@ -490,7 +490,7 @@ handleInt1a(void)
 			case 0xb10c:
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_write_config16(bios_device.dev, offs, M.x86.R_CX);
-#else					
+#else
 				rtas_pci_config_write(bios_device.puid, 2, bus,
 						      devfn, offs, M.x86.R_CX);
 #endif
@@ -502,7 +502,7 @@ handleInt1a(void)
 			case 0xb10d:
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_write_config32(bios_device.dev, offs, M.x86.R_ECX);
-#else					
+#else
 				rtas_pci_config_write(bios_device.puid, 4, bus,
 						      devfn, offs, M.x86.R_ECX);
 #endif
@@ -576,7 +576,7 @@ handleInterrupt(int intNum)
 			int_handled = 1;
 			break;
 		case PMM_INT_NUM:
-			/* the selfdefined PMM INT number, this is called by the code in PMM struct, it 
+			/* the selfdefined PMM INT number, this is called by the code in PMM struct, it
 			 * is handled by pmm_handleInt()
 			 */
 			pmm_handleInt();

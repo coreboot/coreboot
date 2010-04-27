@@ -143,7 +143,7 @@ int xmodemReceive(unsigned char *dest, int destsz)
 			*p++ = c;
 		}
 
-		if (xbuff[1] == (unsigned char)(~xbuff[2]) && 
+		if (xbuff[1] == (unsigned char)(~xbuff[2]) &&
 			(xbuff[1] == packetno || xbuff[1] == (unsigned char)packetno-1) &&
 			check(crc, &xbuff[3], bufsz)) {
 			if (xbuff[1] == packetno)	{

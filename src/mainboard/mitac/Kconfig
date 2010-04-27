@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_MITAC
-	
+
 source "src/mainboard/mitac/6513wu/Kconfig"
 
 endchoice

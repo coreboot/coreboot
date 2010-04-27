@@ -134,12 +134,12 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100f22 },
 	{ X86_VENDOR_AMD, 0x100f23 },
 	{ X86_VENDOR_AMD, 0x100f40 },		/* RB-C0 */
-	{ X86_VENDOR_AMD, 0x100F42 },           /* RB-C2 */ 
-	{ X86_VENDOR_AMD, 0x100F43 },           /* RB-C3 */ 
-	{ X86_VENDOR_AMD, 0x100F52 },           /* BL-C2 */ 
-	{ X86_VENDOR_AMD, 0x100F62 },           /* DA-C2 */ 
-	{ X86_VENDOR_AMD, 0x100F63 },           /* DA-C3 */ 
-	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */ 
+	{ X86_VENDOR_AMD, 0x100F42 },           /* RB-C2 */
+	{ X86_VENDOR_AMD, 0x100F43 },           /* RB-C3 */
+	{ X86_VENDOR_AMD, 0x100F52 },           /* BL-C2 */
+	{ X86_VENDOR_AMD, 0x100F62 },           /* DA-C2 */
+	{ X86_VENDOR_AMD, 0x100F63 },           /* DA-C3 */
+	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */
 	{ 0, 0 },
 };
 

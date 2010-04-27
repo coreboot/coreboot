@@ -3,7 +3,7 @@
  * (for MacOS) when it is used to boot Linux.
  *
  * Written by Benjamin Herrenschmidt.
- *  
+ *
  * Move to coreboot by LYH  yhlu@tyan.com
  *
  */

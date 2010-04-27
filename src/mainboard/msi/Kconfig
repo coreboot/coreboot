@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_MSI
-	
+
 source "src/mainboard/msi/ms6119/Kconfig"
 source "src/mainboard/msi/ms6147/Kconfig"
 source "src/mainboard/msi/ms6156/Kconfig"

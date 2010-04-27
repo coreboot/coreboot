@@ -3,7 +3,7 @@
  * (C) Copyright 2009 Jon Harrison <jon.harrison@blueyonder.co.uk>
  * Heavily based on EPIA-M dstd.asl
  * (C) Copyright 2004 Nick Barker <Nick.Barker9@btinternet.com>
- * 
+ *
  */
 DefinitionBlock ("dsdt.aml", "DSDT", 1, "CBT-V2", "CBT-DSDT", 1)
 {

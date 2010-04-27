@@ -19,11 +19,11 @@
 static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
-	
+
 	pci_write_config32(dev,0xa0, 0xfed00001);
 	hpet_address = pci_read_config32(dev,0xa0)& 0xfffffffe;
 	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address);
-	
+
 }
 
 static void lpc_init(struct device *dev)
@@ -40,7 +40,7 @@ static void lpc_init(struct device *dev)
 
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1<<0)); 
+	pci_write_config8(dev, 0x46, byte | (1<<0));
 
 	/* Enable 5Mib Rom window */
 	byte = pci_read_config8(dev, 0x43);
@@ -65,11 +65,11 @@ static void lpc_init(struct device *dev)
 	pci_write_config8(dev, 0x40, byte);
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if (nmi_option) {			
+	if (nmi_option) {
 		byte |= (1 << 7); /* set NMI */
 		pci_write_config8(dev, 0x40, byte);
 	}
-	
+
 	/* Initialize the real time clock */
 	rtc_init(0);
 
@@ -114,7 +114,7 @@ static void amd8111_lpc_enable_resources(device_t dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x70, 
+	pci_write_config32(dev, 0x70,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

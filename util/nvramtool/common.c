@@ -48,7 +48,7 @@ int get_line_from_file(FILE * f, char line[], int line_buf_size)
 		return LINE_EOF;
 
 	/* If the file contains a line that is too long, then it's best
-	 * to let the user know right away rather than passing back a 
+	 * to let the user know right away rather than passing back a
 	 * truncated result that will lead to problems later on.
 	 */
 	return (strlen(line) == ((size_t) (line_buf_size - 1))) ?

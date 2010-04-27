@@ -5,7 +5,7 @@
  *  written with much help from Jon Howell
  *
  * Updated for 3D RAGE PRO and 3D RAGE Mobility by Geert Uytterhoeven
- *	
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version

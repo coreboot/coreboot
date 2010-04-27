@@ -15,4 +15,4 @@
 /* TODO: check how this works in x86 */
 extern unsigned long tb_freq;
 u64 get_time(void);
-#endif 
+#endif

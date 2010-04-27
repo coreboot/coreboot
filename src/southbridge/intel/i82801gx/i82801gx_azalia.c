@@ -96,7 +96,7 @@ u32 cim_verb_data_size = 0;
 static u32 find_verb(struct device *dev, u32 viddid, u32 ** verb)
 {
 	int idx=0;
-	
+
 	while (idx < (cim_verb_data_size / sizeof(u32))) {
 		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
 		if (cim_verb_data[idx] != viddid) {

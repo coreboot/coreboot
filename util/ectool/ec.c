@@ -121,6 +121,6 @@ uint8_t ec_idx_read(uint16_t addr)
 
 	outb(addr & 0xff, lpc_idx + 2);
 	outb(addr >> 8, lpc_idx + 1);
-	
+
 	return inb(lpc_idx + 3);
 }

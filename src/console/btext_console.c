@@ -62,8 +62,8 @@ u32 boot_text_mapped;
 
 boot_infos_t disp_bi;
 
-#define BTEXT		
-#define BTDATA	
+#define BTEXT
+#define BTDATA
 
 
 /* This function will enable the early boot text when doing OF booting. This
@@ -100,7 +100,7 @@ btext_setup_display(u32 width, u32 height, u32 depth, u32 pitch,
  *    changes.
  */
 
-void 
+void
 map_boot_text(void)
 {
 #if 0
@@ -111,9 +111,9 @@ map_boot_text(void)
 		return;
 	base = ((unsigned long) bi->dispDeviceBase) & 0xFFFFF000UL;
 	offset = ((unsigned long) bi->dispDeviceBase) - base;
-	size = bi->dispDeviceRowBytes * bi->dispDeviceRect[3] + offset 
+	size = bi->dispDeviceRowBytes * bi->dispDeviceRect[3] + offset
 		+ bi->dispDeviceRect[0];
-	bi->logicalDisplayBase = ioremap(base,0x800000 ); 
+	bi->logicalDisplayBase = ioremap(base,0x800000 );
 	if (bi->logicalDisplayBase == 0)
 		return;
 //	bi->logicalDisplayBase += offset;
@@ -360,7 +360,7 @@ static u32 expand_bits_8[16] BTDATA = {
     0x0000ffff,0xff00ffff,0x00ffffff,0xffffffff
 #else
 #error FIXME: No endianness??
-#endif                      
+#endif
 };
 #if 0
 static const u32 expand_bits_16[4] BTDATA = {

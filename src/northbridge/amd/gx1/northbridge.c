@@ -40,10 +40,10 @@ static void enable_shadow(device_t dev)
        write32(GX_BASE+BC_XMAP_3, 0x77777777);
 }
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
-	
+
 	optimize_xbus(dev);
 	enable_shadow(dev);
 	printk(BIOS_SPEW, "Calling enable_cache()\n");
@@ -63,7 +63,7 @@ static struct device_operations northbridge_operations = {
 static const struct pci_driver northbridge_driver __pci_driver = {
 	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_CYRIX,
-	.device = PCI_DEVICE_ID_CYRIX_PCI_MASTER, 
+	.device = PCI_DEVICE_ID_CYRIX_PCI_MASTER,
 };
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -132,7 +132,7 @@ static void pci_domain_set_resources(device_t dev)
 				continue;
 			ramreg += 1 << (((mem_config & (DIMM_SZ << i)) >> (i + 8)) + 2);
 		}
-			
+
 		tomk = ramreg << 10;
 
 		/* Sort out the framebuffer size */
@@ -172,7 +172,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {
@@ -211,5 +211,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_amd_gx1_ops = {
 	CHIP_NAME("AMD GX1 Northbridge")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

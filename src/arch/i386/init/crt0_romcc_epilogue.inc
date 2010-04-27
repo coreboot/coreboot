@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2002 Eric Biederman
  *
  * This file is free software; you can redistribute it and/or
@@ -11,7 +11,7 @@
 __main:
 	post_code(0x11)
 	cld			/* clear direction flag */
-	
+
 	movl	%ebp, %esi
 
 	movl $ROMSTAGE_STACK, %esp
@@ -19,7 +19,7 @@ __main:
 	pushl %esi
 	call copy_and_run
 
-.Lhlt:	
+.Lhlt:
 	post_code(0xee)
 	hlt
 	jmp	.Lhlt

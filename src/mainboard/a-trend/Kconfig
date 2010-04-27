@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_A_TREND
-	
+
 source "src/mainboard/a-trend/atc-6220/Kconfig"
 source "src/mainboard/a-trend/atc-6240/Kconfig"
 

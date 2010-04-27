@@ -4,15 +4,15 @@ static void goto_test(void)
 {
 	int i;
 	print_debug("goto_test\n");
-	
+
 	i = 0;
 	goto bottom;
 	{
 	top:
-		print_debug("i = "); 
-		print_debug_hex8(i); 
+		print_debug("i = ");
+		print_debug_hex8(i);
 		print_debug("\n");
-		
+
 		i = i + 1;
 	}
  bottom:

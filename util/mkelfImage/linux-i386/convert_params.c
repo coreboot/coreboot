@@ -15,9 +15,9 @@ long user_stack [STACK_SIZE] = { 0 };
 unsigned long * stack_start = & user_stack[STACK_SIZE];
 
 /* FIXME expand on drive_info_)struct... */
-struct drive_info_struct { 
-	uint8_t dummy[32]; 
-}; 
+struct drive_info_struct {
+	uint8_t dummy[32];
+};
 struct sys_desc_table {
 	uint16_t length;
 	uint8_t  table[318];
@@ -150,7 +150,7 @@ struct parameters {
 	uint16_t ramdisk_flags;			/* 0x1f8 */
 #define RAMDISK_IMAGE_START_MASK  	0x07FF
 #define RAMDISK_PROMPT_FLAG		0x8000
-#define RAMDISK_LOAD_FLAG		0x4000	
+#define RAMDISK_LOAD_FLAG		0x4000
 	uint8_t  reserved8[2];			/* 0x1fa */
 	uint16_t orig_root_dev;			/* 0x1fc */
 	uint8_t  reserved9[1];			/* 0x1fe */
@@ -292,7 +292,7 @@ static void printf(const char *fmt, ...)
 			continue;
 		}
 		if (*++fmt == 's') {
-			for(p = va_arg(args, char *); *p != '\0'; p++) 
+			for(p = va_arg(args, char *); *p != '\0'; p++)
 				putchar(*p);
 		}
 		else {	/* Length of item is bounded */
@@ -314,7 +314,7 @@ static void printf(const char *fmt, ...)
 					fmt++;
 				}
 			}
-			
+
 			/*
 			 * Before each format q points to tmp buffer
 			 * After each format q points past end of item
@@ -376,7 +376,7 @@ static void printf(const char *fmt, ...)
 }
 
 /*
- * String Functions 
+ * String Functions
  * =============================================================================
  */
 
@@ -408,7 +408,7 @@ void* memcpy(void *dest, const void *src, size_t len)
 	d = dest;
 	s = src;
 
-	for (i=0; i < len; i++) 
+	for (i=0; i < len; i++)
 		d[i] = s[i];
 
 	return dest;
@@ -426,7 +426,7 @@ int memcmp(void *src1, void *src2, size_t len)
 		}
 	}
 	return 0;
-	
+
 }
 
 /*
@@ -510,7 +510,7 @@ void append_command_line(struct parameters *real_mode, char *arg, int arg_bytes)
 	*dest++ = '\0';
 }
 
-static void set_memsize_k(struct parameters *real_mode, unsigned long mem_k) 
+static void set_memsize_k(struct parameters *real_mode, unsigned long mem_k)
 {
 	/* ALT_MEM_K maxes out at 4GB */
 	if (mem_k > 0x3fffff) {
@@ -527,7 +527,7 @@ static void set_memsize_k(struct parameters *real_mode, unsigned long mem_k)
 }
 
 static void add_e820_map(struct parameters *real_mode,
-	unsigned long long addr, unsigned long long size, 
+	unsigned long long addr, unsigned long long size,
 	unsigned long type)
 {
 	unsigned long long high;
@@ -628,8 +628,8 @@ static void convert_multiboot_memmap(
 	multi_puts("size: "); multi_put_hex(size); multi_puts("\n");
 	multi_puts("end: "); multi_put_hex((unsigned)end); multi_puts("\n");
 	for(seg = info->mmap_addr; (seg < end); seg = next_seg(seg,size)) {
-		multi_puts("multi-mem: "); 
-		multi_put_lhex(seg->size); 
+		multi_puts("multi-mem: ");
+		multi_put_lhex(seg->size);
 		multi_puts(" @ ");
 		multi_put_lhex(seg->addr);
 		multi_puts(" (");
@@ -662,7 +662,7 @@ static void convert_multiboot(
 		set_memsize_k(info->real_mode, mb_info->mem_upper + (1 << 10));
 	}
 	if (mb_info->flags & MULTIBOOT_CMDLINE_VALID) {
-		append_command_line(info->real_mode, mb_info->command_line, 
+		append_command_line(info->real_mode, mb_info->command_line,
 			MULTIBOOT_MAX_COMMAND_LINE);
 	}
 	if (info->need_mem_sizes && (mb_info->flags & MULTIBOOT_MMAP_VALID)) {
@@ -699,8 +699,8 @@ static void convert_uniform_boot_memory(
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	for(i = 0; (i < entries) && (i < E820MAX); i++) {
 		unsigned long type;
-		ube_puts("ube-mem: "); 
-		ube_put_lhex(mem->map[i].size); 
+		ube_puts("ube-mem: ");
+		ube_put_lhex(mem->map[i].size);
 		ube_puts(" @ ");
 		ube_put_lhex(mem->map[i].start);
 		ube_puts(" (");
@@ -724,7 +724,7 @@ static void convert_uniform_boot_memory(
 			break;
 		}
 		ube_puts(")\n");
-		add_e820_map(real_mode, 
+		add_e820_map(real_mode,
 			mem->map[i].start, mem->map[i].size, type);
 	}
 }
@@ -762,9 +762,9 @@ static void convert_uniform_boot(struct param_info *info,
  * =============================================================================
  */
 
-/* we're getting screwed again and again by this problem of the 8259. 
- * so we're going to leave this lying around for inclusion into 
- * crt0.S on an as-needed basis. 
+/* we're getting screwed again and again by this problem of the 8259.
+ * so we're going to leave this lying around for inclusion into
+ * crt0.S on an as-needed basis.
  * well, that went ok, I hope. Now we have to reprogram the interrupts :-(
  * we put them right after the intel-reserved hardware interrupts, at
  * int 0x20-0x2F. There they won't mess up anything. Sadly IBM really
@@ -786,7 +786,7 @@ static void setup_i8259(void)
 	outb(0x02, 0xA1);		/*! 8259-2 is slave*/
 
 	outb(0x01, 0x21);		/*! 8086 mode for both*/
-	outb(0x01, 0xA1);		
+	outb(0x01, 0xA1);
 
 	outb(0xFF, 0xA1);		/*! mask off all interrupts for now*/
 	outb(0xFB, 0x21);		/*! mask all irq's but irq2 which is cascaded*/
@@ -831,11 +831,11 @@ static int count_elf_notes(Elf_Bhdr *bhdr)
 		printf("elf_note = %lx\n", (unsigned long)note);
 		printf("elf_namesz = %x\n", hdr->n_namesz);
 		printf("elf_descsz = %x\n", hdr->n_descsz);
-		printf("elf_type   = %x\n", hdr->n_type); 
+		printf("elf_type   = %x\n", hdr->n_type);
 		printf("elf_name = %lx\n", (unsigned long)n_name);
 		printf("elf_desc = %lx\n", (unsigned long)n_desc);
 #endif
-		if (next > end) 
+		if (next > end)
 			break;
 		count++;
 		note = next;
@@ -843,7 +843,7 @@ static int count_elf_notes(Elf_Bhdr *bhdr)
 	return count;
 }
 
-static Elf_Nhdr *find_elf_note(Elf_Bhdr *bhdr, 
+static Elf_Nhdr *find_elf_note(Elf_Bhdr *bhdr,
 	Elf_Word namesz, unsigned char *name, Elf_Word type)
 {
 	unsigned char *note, *end;
@@ -856,7 +856,7 @@ static Elf_Nhdr *find_elf_note(Elf_Bhdr *bhdr,
 		n_name = note + sizeof(*hdr);
 		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
 		next = n_desc + ((hdr->n_descsz + 3) & ~3);
-		if (next > end) 
+		if (next > end)
 			break;
 		if ((hdr->n_type == type) &&
 			(hdr->n_namesz == namesz) &&
@@ -897,7 +897,7 @@ static void convert_elf_boot(struct param_info *info, Elf_Bhdr *bhdr)
 		n_name = note + sizeof(*hdr);
 		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
 		next = n_desc + ((hdr->n_descsz + 3) & ~3);
-		if (next > end) 
+		if (next > end)
 			break;
 		for(i = 0; i < sizeof(elf_notes)/sizeof(elf_notes[0]); i++) {
 			if ((hdr->n_type == elf_notes[i].type) &&
@@ -935,7 +935,7 @@ static unsigned count_lb_records(void *start, unsigned long length)
 	count = 0;
 	end = ((char *)start) + length;
 	for(rec = start; ((void *)rec < end) &&
-		(rec->size <= (unsigned long)(end - (void *)rec)); 
+		(rec->size <= (unsigned long)(end - (void *)rec));
 		rec = (void *)(((char *)rec) + rec->size)) {
 		count++;
 	}
@@ -948,7 +948,7 @@ static struct lb_header *__find_lb_table(void *start, void *end)
 	/* For now be stupid.... */
 	for(ptr = start; (void *)ptr < end; ptr += 16) {
 		struct lb_header *head = (void *)ptr;
-		if ((head->signature[0] == 'L') && 
+		if ((head->signature[0] == 'L') &&
 			(head->signature[1] == 'B') &&
 			(head->signature[2] == 'I') &&
 			(head->signature[3] == 'O') &&
@@ -1001,10 +1001,10 @@ static void convert_lb_memory(struct param_info *info, struct lb_memory *mem)
 		unsigned long type;
 		unsigned long long end;
 		end = mem->map[i].start + mem->map[i].size;
-		lb_puts("lb-mem: "); 
+		lb_puts("lb-mem: ");
 		lb_put_lhex(mem->map[i].start);
 		lb_puts(" - ");
-		lb_put_lhex(end); 
+		lb_put_lhex(end);
 		lb_puts(" (");
 		switch(mem->map[i].type) {
 		case LB_MEM_RAM:
@@ -1017,12 +1017,12 @@ static void convert_lb_memory(struct param_info *info, struct lb_memory *mem)
 			break;
 		}
 		lb_puts(")\n");
-		add_e820_map(info->real_mode, 
+		add_e820_map(info->real_mode,
 			mem->map[i].start, mem->map[i].size, type);
 	}
 	info->need_mem_sizes = 0;
 }
-	
+
 static void query_lb_values(struct param_info *info)
 {
 	struct lb_header *head;
@@ -1032,17 +1032,17 @@ static void query_lb_values(struct param_info *info)
 	start = ((unsigned char *)head) + sizeof(*head);
 	end = ((char *)start) + head->table_bytes;
 	for(rec = start; ((void *)rec < end) &&
-		(rec->size <= (unsigned long)(end - (void *)rec)); 
+		(rec->size <= (unsigned long)(end - (void *)rec));
 		rec = (void *)(((char *)rec) + rec->size)) {
 		switch(rec->tag) {
 		case LB_TAG_MEMORY:
 		{
 			struct lb_memory *mem;
 			mem = (struct lb_memory *) rec;
-			convert_lb_memory(info, mem); 
+			convert_lb_memory(info, mem);
 			break;
 		}
-		default: 
+		default:
 			break;
 		};
 	}
@@ -1087,7 +1087,7 @@ static void get_meminfo(struct param_info *info)
 		struct e820entry *seg = meminfo.map + i;
 		end = seg->addr + seg->size;
 		pc_puts("BIOS-e820: ");
-		pc_put_lhex(seg->addr); 
+		pc_put_lhex(seg->addr);
 		pc_puts(" - ");
 		pc_put_lhex(end);
 		pc_puts(" (");
@@ -1108,7 +1108,7 @@ static void get_meminfo(struct param_info *info)
 			break;
 		}
 		pc_puts(")\n");
-		add_e820_map(info->real_mode, 
+		add_e820_map(info->real_mode,
 			seg->addr, seg->size, seg->type);
 	}
 	info->real_mode->alt_mem_k = meme801();
@@ -1191,7 +1191,7 @@ static void query_bootloader_param_class(struct param_info *info)
 	}
 }
 
-static void query_bootloader_values(struct param_info *info) 
+static void query_bootloader_values(struct param_info *info)
 {
 	if (info->has_multiboot) {
 		convert_multiboot(info, info->data);
@@ -1252,7 +1252,7 @@ static int bootloader_query_firmware_class(struct param_info *info)
 		detected_firmware_type = 1;
 	}
 	if (!detected_firmware_type && hdr &&
-		(hdr->n_descsz == 1) && 
+		(hdr->n_descsz == 1) &&
 		(memcmp(n_desc, "", 1) == 0)) {
 		/* No firmware is present */
 		detected_firmware_type = 1;
@@ -1305,7 +1305,7 @@ static void query_firmware_values(struct param_info *info)
 	if (info->has_pcbios) {
 		query_pcbios_values(info);
 	}
-	
+
 }
 
 /*
@@ -1325,59 +1325,59 @@ static void print_offsets(void)
 	printf("orig_video_page      =%x\n", (uint32_t)&real_mode->orig_video_page);
 	printf("orig_video_mode      =%x\n", (uint32_t)&real_mode->orig_video_mode);
 	printf("orig_video_cols      =%x\n", (uint32_t)&real_mode->orig_video_cols);
-	printf("unused2              =%x\n", (uint32_t)&real_mode->unused2); 
-	printf("orig_video_ega_bx    =%x\n", (uint32_t)&real_mode->orig_video_ega_bx); 
+	printf("unused2              =%x\n", (uint32_t)&real_mode->unused2);
+	printf("orig_video_ega_bx    =%x\n", (uint32_t)&real_mode->orig_video_ega_bx);
 	printf("unused3              =%x\n", (uint32_t)&real_mode->unused3);
-	printf("orig_video_lines     =%x\n", (uint32_t)&real_mode->orig_video_lines); 
-	printf("orig_video_isVGA     =%x\n", (uint32_t)&real_mode->orig_video_isVGA); 
+	printf("orig_video_lines     =%x\n", (uint32_t)&real_mode->orig_video_lines);
+	printf("orig_video_isVGA     =%x\n", (uint32_t)&real_mode->orig_video_isVGA);
 	printf("orig_video_points    =%x\n", (uint32_t)&real_mode->orig_video_points);
 	printf("lfb_width            =%x\n", (uint32_t)&real_mode->lfb_width);
 	printf("lfb_height           =%x\n", (uint32_t)&real_mode->lfb_height);
-	printf("lfb_depth            =%x\n", (uint32_t)&real_mode->lfb_depth); 
-	printf("lfb_base             =%x\n", (uint32_t)&real_mode->lfb_base); 
-	printf("lfb_size             =%x\n", (uint32_t)&real_mode->lfb_size); 
-	printf("cl_magic             =%x\n", (uint32_t)&real_mode->cl_magic); 
+	printf("lfb_depth            =%x\n", (uint32_t)&real_mode->lfb_depth);
+	printf("lfb_base             =%x\n", (uint32_t)&real_mode->lfb_base);
+	printf("lfb_size             =%x\n", (uint32_t)&real_mode->lfb_size);
+	printf("cl_magic             =%x\n", (uint32_t)&real_mode->cl_magic);
 	printf("cl_offset            =%x\n", (uint32_t)&real_mode->cl_offset);
 	printf("lfb_linelength       =%x\n", (uint32_t)&real_mode->lfb_linelength);
 	printf("red_size             =%x\n", (uint32_t)&real_mode->red_size);
-	printf("red_pos              =%x\n", (uint32_t)&real_mode->red_pos); 
+	printf("red_pos              =%x\n", (uint32_t)&real_mode->red_pos);
 	printf("green_size           =%x\n", (uint32_t)&real_mode->green_size);
-	printf("green_pos            =%x\n", (uint32_t)&real_mode->green_pos); 
-	printf("blue_size            =%x\n", (uint32_t)&real_mode->blue_size); 
-	printf("blue_pos             =%x\n", (uint32_t)&real_mode->blue_pos); 
+	printf("green_pos            =%x\n", (uint32_t)&real_mode->green_pos);
+	printf("blue_size            =%x\n", (uint32_t)&real_mode->blue_size);
+	printf("blue_pos             =%x\n", (uint32_t)&real_mode->blue_pos);
 	printf("rsvd_size            =%x\n", (uint32_t)&real_mode->rsvd_size);
-	printf("rsvd_pos             =%x\n", (uint32_t)&real_mode->rsvd_pos); 
+	printf("rsvd_pos             =%x\n", (uint32_t)&real_mode->rsvd_pos);
 	printf("vesapm_seg           =%x\n", (uint32_t)&real_mode->vesapm_seg);
 	printf("vesapm_off           =%x\n", (uint32_t)&real_mode->vesapm_off);
-	printf("pages                =%x\n", (uint32_t)&real_mode->pages); 
-	printf("reserved4            =%x\n", (uint32_t)&real_mode->reserved4); 
+	printf("pages                =%x\n", (uint32_t)&real_mode->pages);
+	printf("reserved4            =%x\n", (uint32_t)&real_mode->reserved4);
 	printf("apm_bios_info        =%x\n", (uint32_t)&real_mode->apm_bios_info);
-	printf("drive_info           =%x\n", (uint32_t)&real_mode->drive_info); 
+	printf("drive_info           =%x\n", (uint32_t)&real_mode->drive_info);
 	printf("sys_desc_table       =%x\n", (uint32_t)&real_mode->sys_desc_table);
-	printf("alt_mem_k            =%x\n", (uint32_t)&real_mode->alt_mem_k); 
-	printf("reserved5            =%x\n", (uint32_t)&real_mode->reserved5); 
-	printf("e820_map_nr          =%x\n", (uint32_t)&real_mode->e820_map_nr); 
-	printf("reserved6            =%x\n", (uint32_t)&real_mode->reserved6); 
-	printf("mount_root_rdonly    =%x\n", (uint32_t)&real_mode->mount_root_rdonly); 
+	printf("alt_mem_k            =%x\n", (uint32_t)&real_mode->alt_mem_k);
+	printf("reserved5            =%x\n", (uint32_t)&real_mode->reserved5);
+	printf("e820_map_nr          =%x\n", (uint32_t)&real_mode->e820_map_nr);
+	printf("reserved6            =%x\n", (uint32_t)&real_mode->reserved6);
+	printf("mount_root_rdonly    =%x\n", (uint32_t)&real_mode->mount_root_rdonly);
 	printf("reserved7            =%x\n", (uint32_t)&real_mode->reserved7);
 	printf("ramdisk_flags        =%x\n", (uint32_t)&real_mode->ramdisk_flags);
-	printf("reserved8            =%x\n", (uint32_t)&real_mode->reserved8); 
+	printf("reserved8            =%x\n", (uint32_t)&real_mode->reserved8);
 	printf("orig_root_dev        =%x\n", (uint32_t)&real_mode->orig_root_dev);
-	printf("reserved9            =%x\n", (uint32_t)&real_mode->reserved9); 
+	printf("reserved9            =%x\n", (uint32_t)&real_mode->reserved9);
 	printf("aux_device_info      =%x\n", (uint32_t)&real_mode->aux_device_info);
-	printf("reserved10           =%x\n", (uint32_t)&real_mode->reserved10); 
+	printf("reserved10           =%x\n", (uint32_t)&real_mode->reserved10);
 	printf("param_block_signature=%x\n", (uint32_t)&real_mode->param_block_signature);
-	printf("param_block_version  =%x\n", (uint32_t)&real_mode->param_block_version); 
-	printf("reserved11           =%x\n", (uint32_t)&real_mode->reserved11); 
+	printf("param_block_version  =%x\n", (uint32_t)&real_mode->param_block_version);
+	printf("reserved11           =%x\n", (uint32_t)&real_mode->reserved11);
 	printf("loader_type          =%x\n", (uint32_t)&real_mode->loader_type);
 	printf("loader_flags         =%x\n", (uint32_t)&real_mode->loader_flags);
-	printf("reserved12           =%x\n", (uint32_t)&real_mode->reserved12); 
+	printf("reserved12           =%x\n", (uint32_t)&real_mode->reserved12);
 	printf("kernel_start         =%x\n", (uint32_t)&real_mode->kernel_start);
 	printf("initrd_start         =%x\n", (uint32_t)&real_mode->initrd_start);
 	printf("initrd_size          =%x\n", (uint32_t)&real_mode->initrd_size);
 	printf("reserved13           =%x\n", (uint32_t)&real_mode->reserved13);
-	printf("e820_map             =%x\n", (uint32_t)&real_mode->e820_map); 
-	printf("reserved16           =%x\n", (uint32_t)&real_mode->reserved16); 
+	printf("e820_map             =%x\n", (uint32_t)&real_mode->e820_map);
+	printf("reserved16           =%x\n", (uint32_t)&real_mode->reserved16);
 	printf("command_line         =%x\n", (uint32_t)&real_mode->command_line);
 	printf("reserved17           =%x\n", (uint32_t)&real_mode->reserved17);
 }
@@ -1397,7 +1397,7 @@ static void print_linux_params(struct param_info *info)
 	printf("orig_video_ega_bx=%x\n", info->real_mode->orig_video_ega_bx);
 	printf("orig_video_isVGA =%x\n", info->real_mode->orig_video_isVGA);
 	printf("orig_video_points=%x\n", info->real_mode->orig_video_points);
-	
+
 
 	/* System descriptor table... */
 	printf("sys_dest_table_len=%x\n", info->real_mode->sys_desc_table.length);
@@ -1407,27 +1407,27 @@ static void print_linux_params(struct param_info *info)
 	printf("alt_mem_k        =%x\n", info->real_mode->alt_mem_k);
 	printf("e820_map_nr      =%x\n", info->real_mode->e820_map_nr);
 	for(i = 0; i < E820MAX; i++) {
-		printf("addr[%x]         =%Lx\n", 
+		printf("addr[%x]         =%Lx\n",
 			i,  info->real_mode->e820_map[i].addr);
-		printf("size[%x]         =%Lx\n", 
+		printf("size[%x]         =%Lx\n",
 			i, info->real_mode->e820_map[i].size);
-		printf("type[%x]         =%Lx\n", 
+		printf("type[%x]         =%Lx\n",
 			i, info->real_mode->e820_map[i].type);
 	}
-	printf("mount_root_rdonly=%x\n", info->real_mode->mount_root_rdonly); 
-	printf("ramdisk_flags    =%x\n", info->real_mode->ramdisk_flags); 
-	printf("orig_root_dev    =%x\n", info->real_mode->orig_root_dev); 
-	printf("aux_device_info  =%x\n", info->real_mode->aux_device_info); 
+	printf("mount_root_rdonly=%x\n", info->real_mode->mount_root_rdonly);
+	printf("ramdisk_flags    =%x\n", info->real_mode->ramdisk_flags);
+	printf("orig_root_dev    =%x\n", info->real_mode->orig_root_dev);
+	printf("aux_device_info  =%x\n", info->real_mode->aux_device_info);
 	printf("param_block_signature=%x\n", *((uint32_t *)info->real_mode->param_block_signature));
-	printf("loader_type      =%x\n", info->real_mode->loader_type); 
+	printf("loader_type      =%x\n", info->real_mode->loader_type);
 	printf("loader_flags     =%x\n", info->real_mode->loader_flags);
 	printf("initrd_start     =%x\n", info->real_mode->initrd_start);
-	printf("initrd_size      =%x\n", info->real_mode->initrd_size); 
+	printf("initrd_size      =%x\n", info->real_mode->initrd_size);
 
 	/* Where I'm putting the command line */
-	printf("cl_magic         =%x\n", info->real_mode->cl_magic); 
+	printf("cl_magic         =%x\n", info->real_mode->cl_magic);
 	printf("cl_offset        =%x\n", info->real_mode->cl_offset);
-	
+
 	/* Now print the command line */
 	printf("command_line     =%s\n", info->real_mode->command_line);
 }
@@ -1445,7 +1445,7 @@ void initialize_linux_params(struct param_info *info)
 	int len;
 	/* First the defaults */
 	memset(info->real_mode, 0, PAGE_SIZE);
-	
+
 	/* Default screen size */
 	info->real_mode->orig_x = 0;
 	info->real_mode->orig_y = 25;
@@ -1456,10 +1456,10 @@ void initialize_linux_params(struct param_info *info)
 	info->real_mode->orig_video_ega_bx = 0;
 	info->real_mode->orig_video_isVGA = 1;
 	info->real_mode->orig_video_points = 16;
-	
+
 	/* Fill this in later */
 	info->real_mode->ext_mem_k = 0;
-		
+
 	/* Fill in later... */
 	info->real_mode->e820_map_nr = 0;
 
@@ -1468,7 +1468,7 @@ void initialize_linux_params(struct param_info *info)
 	info->real_mode->cl_offset = 2048;
 
 	info->real_mode->cmd_line_ptr = info->real_mode->cl_offset + (unsigned long) info->real_mode;
-	
+
 	/* Now set the command line */
 	len = strnlen(info->image->cmdline, sizeof(info->real_mode->command_line) -1);
 	memcpy(info->real_mode->command_line, info->image->cmdline, len);
@@ -1476,49 +1476,49 @@ void initialize_linux_params(struct param_info *info)
 
 	/* from the bios initially */
 	memset(&info->real_mode->apm_bios_info, 0, sizeof(info->real_mode->apm_bios_info));
-	
+
 	memset(&info->real_mode->drive_info, 0, sizeof(info->real_mode->drive_info));
 
 	/* forget it for now... */
-	info->real_mode->sys_desc_table.length = 0; 
-	
+	info->real_mode->sys_desc_table.length = 0;
+
 	/* Fill this in later */
 	info->real_mode->alt_mem_k = 0;
 	info->real_mode->ext_mem_k = 0;
-		
+
 	/* default yes: this can be overridden on the command line */
 	info->real_mode->mount_root_rdonly = 0xFFFF;
-	
+
 	/* old ramdisk options, These really should be command line
 	 * things...
 	 */
 	info->real_mode->ramdisk_flags = info->image->ramdisk_flags;
 
 	/* default to /dev/hda.
-	 * Override this on the command line if necessary 
+	 * Override this on the command line if necessary
 	 */
 	info->real_mode->orig_root_dev = info->image->root_dev;
-	
+
 	/* Originally from the bios? */
 	info->real_mode->aux_device_info = 0;
-	
+
 	/* Boot block magic */
 	memcpy(info->real_mode->param_block_signature, "HdrS", 4);
 	info->real_mode->param_block_version = 0x0201;
-	
+
 	/* Say I'm a kernel boot loader */
 	info->real_mode->loader_type = (LOADER_TYPE_KERNEL << 4) + 0 /* version */;
-	
+
 	/* No loader flags */
 	info->real_mode->loader_flags = 0;
-	
+
 	/* Ramdisk address and size ... */
 	info->real_mode->initrd_start = 0;
 	info->real_mode->initrd_size = 0;
 	if (info->image->initrd_size) {
 		info->real_mode->initrd_start = info->image->initrd_start;
 		info->real_mode->initrd_size = info->image->initrd_size;
-	}	
+	}
 
 	/* Now remember those things that I need */
 	info->need_mem_sizes = 1;
@@ -1556,7 +1556,7 @@ void *convert_params(unsigned type, void *data, void *param, void *image)
 #if 0
 	printf("info.real_mode = 0x%x\n", info.real_mode );
 	printf("Jumping to Linux\n");
-#endif	
+#endif
 	return info.real_mode;
 }
 

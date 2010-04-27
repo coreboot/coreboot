@@ -31,7 +31,7 @@ void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_ph
 {
         struct intel_mp_floating *mf;
         void *v;
-	
+
 	v = (void *)addr;
         mf = v;
         mf->mpf_signature[0] = '_';
@@ -106,7 +106,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	unsigned cpu_feature_flags;
 	struct cpuid_result result;
 	device_t cpu;
-	
+
 	boot_apic_id = lapicid();
 	apic_version = lapic_read(LAPIC_LVR) & 0xff;
 	result = cpuid(1);
@@ -114,7 +114,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	cpu_feature_flags = result.edx;
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		unsigned long cpu_flag;
-		if ((cpu->path.type != DEVICE_PATH_APIC) || 
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
 			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
 		{
 			continue;
@@ -126,7 +126,7 @@ void smp_write_processors(struct mp_config_table *mc)
 		if (boot_apic_id == cpu->path.apic.apic_id) {
 			cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 		}
-		smp_write_processor(mc, 
+		smp_write_processor(mc,
 			cpu->path.apic.apic_id, apic_version,
 			cpu_flag, cpu_features, cpu_feature_flags
 		);
@@ -146,7 +146,7 @@ void smp_write_bus(struct mp_config_table *mc,
 }
 
 void smp_write_ioapic(struct mp_config_table *mc,
-	unsigned char id, unsigned char ver, 
+	unsigned char id, unsigned char ver,
 	unsigned long apicaddr)
 {
 	struct mpc_config_ioapic *mpc;

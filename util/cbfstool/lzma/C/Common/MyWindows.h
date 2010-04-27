@@ -85,9 +85,9 @@ typedef LONG SCODE;
 #define E_INVALIDARG ((HRESULT)0x80070057L)
 
 #ifdef _MSC_VER
-#define STDMETHODCALLTYPE __stdcall 
+#define STDMETHODCALLTYPE __stdcall
 #else
-#define STDMETHODCALLTYPE 
+#define STDMETHODCALLTYPE
 #endif
 
 #define STDMETHOD_(t, f) virtual t STDMETHODCALLTYPE f
@@ -97,7 +97,7 @@ typedef LONG SCODE;
 
 #define PURE = 0
 
-#define MIDL_INTERFACE(x) struct 
+#define MIDL_INTERFACE(x) struct
 
 struct IUnknown
 {
@@ -113,7 +113,7 @@ typedef IUnknown *LPUNKNOWN;
 #define VARIANT_FALSE ((VARIANT_BOOL)0)
 
 enum VARENUM
-{	
+{
   VT_EMPTY	= 0,
 	VT_NULL	= 1,
 	VT_I2	= 2,
@@ -153,7 +153,7 @@ typedef struct tagPROPVARIANT
   PROPVAR_PAD1 wReserved1;
   PROPVAR_PAD2 wReserved2;
   PROPVAR_PAD3 wReserved3;
-  union 
+  union
   {
     CHAR cVal;
     UCHAR bVal;
@@ -191,7 +191,7 @@ MY_EXTERN_C LONG CompareFileTime(const FILETIME* ft1, const FILETIME* ft2);
 #define CP_OEMCP  1
 
 typedef enum tagSTREAM_SEEK
-{	
+{
   STREAM_SEEK_SET	= 0,
   STREAM_SEEK_CUR	= 1,
   STREAM_SEEK_END	= 2

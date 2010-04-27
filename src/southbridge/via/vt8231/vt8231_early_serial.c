@@ -8,18 +8,18 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vt8231_writesuper(uint8_t reg, uint8_t val) 
+static void vt8231_writesuper(uint8_t reg, uint8_t val)
 {
 	outb(reg, SIO_BASE);
 	outb(val, SIO_DATA);
 }
 
-static void vt8231_writesiobyte(uint16_t reg, uint8_t val) 
+static void vt8231_writesiobyte(uint16_t reg, uint8_t val)
 {
 	outb(val, reg);
 }
 
-static void vt8231_writesioword(uint16_t reg, uint16_t val) 
+static void vt8231_writesioword(uint16_t reg, uint16_t val)
 {
 	outw(val, reg);
 }
@@ -29,26 +29,26 @@ static void vt8231_writesioword(uint16_t reg, uint16_t val)
    mainboard
  */
 
-static void enable_vt8231_serial(void) 
+static void enable_vt8231_serial(void)
 {
 	uint8_t c;
 	device_t dev;
 	outb(6, 0x80);
 	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
-	
+
 	if (dev == PCI_DEV_INVALID) {
 		outb(7, 0x80);
 		die("Serial controller not found\n");
 	}
-	
-	/* first, you have to enable the superio and superio config. 
+
+	/* first, you have to enable the superio and superio config.
 	   put a 6 reg 80
 	*/
 	c = pci_read_config8(dev, 0x50);
 	c |= 6;
 	pci_write_config8(dev, 0x50, c);
 	outb(2, 0x80);
-	// now go ahead and set up com1. 
+	// now go ahead and set up com1.
 	// set address
 	vt8231_writesuper(0xf4, 0xfe);
 	// enable serial out

@@ -28,7 +28,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
                 dst_node = (config_map >> 4) & 7;
                 dst_link = (config_map >> 8) & 3;
                 bus_base = (config_map >> 16) & 0xff;
-#if 0                           
+#if 0
                 printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
                         dst_node, dst_link, bus_base,
                         reg, config_map);
@@ -58,7 +58,7 @@ static void *smp_write_config_table(void *v)
         unsigned apicid_8111;
         unsigned apicid_8131_1;
         unsigned apicid_8131_2;
-  
+
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
 
@@ -78,7 +78,7 @@ static void *smp_write_config_table(void *v)
 
         smp_write_processors(mc);
 
-       
+
         {
                 device_t dev;
 
@@ -88,14 +88,14 @@ static void *smp_write_config_table(void *v)
                         printk(BIOS_DEBUG, "ERROR - cound not find bus for node 0 chain 0, using defaults\n");
                         bus_chain_0 = 1;
                 }
-                
+
                 /* 8111 */
                 dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x03,0));
                 if (dev) {
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_isa++; 
-                }       
+                        bus_isa++;
+                }
                 else {
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:03.0, using defaults\n");
 
@@ -133,14 +133,14 @@ static void *smp_write_config_table(void *v)
         }
         smp_write_bus(mc, bus_isa, "ISA   ");
 
-	
+
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(3);
-#else  
-        apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+#else
+        apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
-        apicid_8111 = apicid_base+0; 
+        apicid_8111 = apicid_base+0;
         apicid_8131_1 = apicid_base+1;
         apicid_8131_2 = apicid_base+2;
 
@@ -164,7 +164,7 @@ static void *smp_write_config_table(void *v)
                 }
 
 	}
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_8111, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x1, apicid_8111, 0x1);
@@ -182,7 +182,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xd, apicid_8111, 0xd);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xe, apicid_8111, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xf, apicid_8111, 0xf);
-	
+
 
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chain_0, (4<<2)|0, apicid_8111, 0x13);
 
@@ -214,7 +214,7 @@ static void *smp_write_config_table(void *v)
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|2, apicid_8131_1, 0x1);//
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|3, apicid_8131_1, 0x2);//
 
-//Slot 3 PCIX 100/66        
+//Slot 3 PCIX 100/66
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|0, apicid_8131_1, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|1, apicid_8131_1, 0x3);//
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|2, apicid_8131_1, 0x0);//

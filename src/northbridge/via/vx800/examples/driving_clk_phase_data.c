@@ -20,7 +20,7 @@
 
  #include "northbridge/via/vx800/driving_clk_phase_data.h"
 
-// DQS	Driving  
+// DQS	Driving
 //Reg0xE0, 0xE1
 // According to #Bank to set DRAM DQS Driving
 //	                          #Bank	   1	 2     3     4	   5	 6     7     8
@@ -161,7 +161,7 @@ static const  u8 DDR2_ChA_WrtData_Phase_Table[WrtData_REG_NUM ][WrtData_FREQ_NUM
         {0x8C,  0xFC,  0x03,  0x03,  0x03,  0x03 }
     };
 
-/*static const  u8 DDR2_ChB_WrtData_Phase_Table[WrtData_REG_NUM ][WrtData_FREQ_NUM] = 
+/*static const  u8 DDR2_ChB_WrtData_Phase_Table[WrtData_REG_NUM ][WrtData_FREQ_NUM] =
     {
         //    (And NOT) DDR800 DDR667 DDR533 DDR400
         //Reg  Mask  Value Value Value Value

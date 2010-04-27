@@ -44,15 +44,15 @@ static void pcideadlock(void)
 	msr_t msr;
 
 	/*
-	 * forces serialization of all load misses. Setting this bit prevents the 
-	 * DM pipe from backing up if a read request has to be held up waiting 
+	 * forces serialization of all load misses. Setting this bit prevents the
+	 * DM pipe from backing up if a read request has to be held up waiting
 	 * for PCI writes to complete.
 	 */
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.lo |= DM_CONFIG0_LOWER_MISSER_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
 
-	/* write serialize memory hole to PCI. Need to unWS when something is 
+	/* write serialize memory hole to PCI. Need to unWS when something is
 	 * shadowed regardless of cachablility.
 	 */
 	msr.lo = 0x021212121;

@@ -33,4 +33,3 @@ jmp_to_program_entry:
 	movl 24+__original_registers, %esp
 	movl 28+__original_registers, %ebp
 	jmp *__entry
-	

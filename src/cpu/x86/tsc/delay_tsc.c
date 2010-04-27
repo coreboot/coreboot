@@ -10,7 +10,7 @@ static unsigned long clocks_per_usec;
 #if (CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 == 1)
 #define CLOCK_TICK_RATE	1193180U /* Underlying HZ */
 
-/* ------ Calibrate the TSC ------- 
+/* ------ Calibrate the TSC -------
  * Too much 64-bit arithmetic here to do this cleanly in C, and for
  * accuracy's sake we want to keep the overhead on the CTC speaker (channel 2)
  * output busy loop as low as possible. We avoid reading the CTC registers
@@ -88,13 +88,13 @@ bad_ctc:
  * this is the "no timer2" version.
  * to calibrate tsc, we get a TSC reading, then do 1,000,000 outbs to port 0x80
  * then we read TSC again, and divide the difference by 1,000,000
- * we have found on a wide range of machines that this gives us a a 
+ * we have found on a wide range of machines that this gives us a a
  * good microsecond value
  * to +- 10%. On a dual AMD 1.6 Ghz box, it gives us .97 microseconds, and on a
  * 267 Mhz. p5, it gives us 1.1 microseconds.
  * also, since gcc now supports long long, we use that.
  * also no unsigned long long / operator, so we play games.
- * about the only thing you can do with long longs, it seems, 
+ * about the only thing you can do with long longs, it seems,
  *is return them and assign them.
  * (and do asm on them, yuck)
  * so avoid all ops on long longs.
@@ -103,7 +103,7 @@ static unsigned long long calibrate_tsc(void)
 {
 	unsigned long long start, end, delta;
 	unsigned long result, count;
-	
+
 	printk(BIOS_SPEW, "Calibrating delay loop...\n");
 	start = rdtscll();
 	// no udivdi3 because we don't like libgcc. (only in x86emu)
@@ -130,7 +130,7 @@ static unsigned long long calibrate_tsc(void)
 	result = delta;
 	printk(BIOS_SPEW, "end %llx, start %llx\n", end, start);
 	printk(BIOS_SPEW, "32-bit delta %ld\n", (unsigned long) delta);
-	
+
 	printk(BIOS_SPEW, "%s 32-bit result is %ld\n",
 			__func__,
 			result);

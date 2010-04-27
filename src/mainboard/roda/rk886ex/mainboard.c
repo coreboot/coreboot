@@ -114,7 +114,7 @@ static void dump_runtime_registers(void)
 }
 #endif
 
-static void mainboard_enable(device_t dev) 
+static void mainboard_enable(device_t dev)
 {
 	/* Configure the MultiKey controller */
 	// m3885_configure_multikey();

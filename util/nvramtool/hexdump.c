@@ -88,7 +88,7 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 	 * terminates, the number of remaining bytes to display (if any)
 	 * will not be enough to fill an entire line.
 	 */
-	for (bytes_left = bytes; 
+	for (bytes_left = bytes;
 			bytes_left >= format->bytes_per_line;
 			bytes_left -= format->bytes_per_line) {
 		/* print start address for current line */

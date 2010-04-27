@@ -33,13 +33,13 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		/* CKDIS 0x8c disable clocks */
 	PCI_ADDR(0, 0x00, 0, CKDIS), 0xffff0000, 0x0000ffff,
 
-		/* 0x9c Device present and extended RAM control 
+		/* 0x9c Device present and extended RAM control
 		 * DEVPRES is very touchy, hard code the initialization
 		 * of PCI-E ports here.
 		 */
 	PCI_ADDR(0, 0x00, 0, DEVPRES), 0x00000000, 0x07020801 | DEVPRES_CONFIG,
 
-		/* 0xc8 Remap RAM base and limit off */	
+		/* 0xc8 Remap RAM base and limit off */
 	PCI_ADDR(0, 0x00, 0, REMAPLIMIT), 0x00000000, 0x03df0000,
 
 		/* ??? */
@@ -57,7 +57,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	PCI_ADDR(0, 0x00, 0, DEVPRES1), 0xffbffff, (1<<22)|(6<<2) | DEVPRES1_CONFIG,
 
 		/* 0x14 */
-	PCI_ADDR(0, 0x00, 0, IURBASE), 0x00000fff, BAR |0,  
+	PCI_ADDR(0, 0x00, 0, IURBASE), 0x00000fff, BAR |0,
 	};
 	int i;
 	int max;
@@ -122,7 +122,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	if (value < 0) goto hw_err;
 	value &= 0xff;
 	value <<= 8;
-	
+
 	low = spd_read_byte(device, 6);	/* (low byte) */
 	if (low < 0) goto hw_err;
 	value = value | (low & 0xff);
@@ -169,7 +169,7 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 {
 	int i;
 	int cum;
-	
+
 	for(i = cum = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 		if (dimm_mask & (1 << i)) {
@@ -233,7 +233,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 }
 
 
-static int spd_set_row_attributes(const struct mem_controller *ctrl, 
+static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		long dimm_mask)
 {
 
@@ -264,22 +264,22 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		reg += log2(value & 0xff);
 
 		/* Get the device width and convert it to a power of two */
-		value = spd_read_byte(ctrl->channel0[cnt], 13);	
+		value = spd_read_byte(ctrl->channel0[cnt], 13);
 		if (value < 0) goto hw_err;
 		value = log2(value & 0xff);
 		reg += value;
 		if(reg < 27) goto hw_err;
 		reg -= 27;
 		reg += (value << 2);
-	
+
 		dra += reg << (cnt*8);
 		value = spd_read_byte(ctrl->channel0[cnt], 5);
 		if (value & 2)
-			dra += reg << ((cnt*8)+4);	
+			dra += reg << ((cnt*8)+4);
 	}
 
 	/* 0x70 DRA */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DRA, dra);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRA, dra);
 	goto out;
 
  val_err:
@@ -293,7 +293,7 @@ hw_err:
 }
 
 
-static int spd_set_drt_attributes(const struct mem_controller *ctrl, 
+static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		long dimm_mask, uint32_t drc)
 {
 	int value;
@@ -305,23 +305,23 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	int latency;
 	uint32_t index = 0;
 	uint32_t index2 = 0;
-	static const unsigned char cycle_time[3] = {0x75,0x60,0x50}; 
+	static const unsigned char cycle_time[3] = {0x75,0x60,0x50};
 	static const int latency_indicies[] = { 26, 23, 9 };
 
 	/* 0x78 DRT */
 	drt = pci_read_config32(PCI_DEV(0, 0x00, 0), DRT);
 	drt &= 3;  /* save bits 1:0 */
-	
+
 	for(first_dimm = 0; first_dimm < 4; first_dimm++) {
-		if (dimm_mask & (1 << first_dimm)) 
+		if (dimm_mask & (1 << first_dimm))
 			break;
 	}
-	
+
 	/* get dimm type */
 	value = spd_read_byte(ctrl->channel0[first_dimm], 2);
 	if(value == 8) {
 		drt |= (3<<5); /* back to bark write turn around & cycle add */
-	}	
+	}
 
 	drt |= (3<<18);  /* Trasmax */
 
@@ -332,22 +332,22 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		reg = spd_read_byte(ctrl->channel0[cnt], 18); /* CAS Latency */
 		/* Compute the lowest cas latency supported */
 		latency = log2(reg) -2;
-	
+
 		/* Loop through and find a fast clock with a low latency */
 		for(index = 0; index < 3; index++, latency++) {
 			if ((latency < 2) || (latency > 4) ||
 				(!(reg & (1 << latency)))) {
 				continue;
 			}
-			value = spd_read_byte(ctrl->channel0[cnt], 
+			value = spd_read_byte(ctrl->channel0[cnt],
 				        latency_indicies[index]);
-	  
+
 			if(value <= cycle_time[drc&3]) {
 				if( latency > cas_latency) {
 					cas_latency = latency;
 				}
 				break;
-			}	
+			}
 		}
 	}
 	index = (cas_latency-2);
@@ -401,7 +401,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<8);  /* Trp RAS Precharg */
 		}
-		
+
 		/* Trcd RAS to CAS delay */
 		if((index2&0x0ff)<=0x03c) {
 			drt |= (0<<10);
@@ -411,7 +411,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 
 		/* Tdal Write auto precharge recovery delay */
 		drt |= (1<<12);
-	
+
 		/* Trc TRS min */
 		if((index2&0x0ff00)<=0x03700)
 			drt |= (0<<14);
@@ -419,9 +419,9 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 			drt |= (1<<14);
 		else
 			drt |= (2<<14); /* spd 41 */
-		
+
 		drt |= (2<<16);  /* Twr not defined for DDR docs say use 2 */
-		
+
 		/* Trrd Row Delay */
 		if((index&0x0ff0000)<=0x0140000) {
 			drt |= (0<<20);
@@ -432,7 +432,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (3<<20);
 		}
-		
+
 		/* Trfc Auto refresh cycle time */
 		if((index2&0x0ff0000)<=0x04b0000) {
 			drt |= (0<<22);
@@ -446,14 +446,14 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	}
 	else if(value <= 0x60) { /* 167 Mhz */
 		/* according to new documentation CAS latency is 00
-		 * for bits 3:2 for all 167 Mhz 
+		 * for bits 3:2 for all 167 Mhz
 		drt |= ((index&3)<<2); */  /* set CAS latency */
 		if((index&0x0ff00)<=0x03000) {
 			drt |= (1<<8);  /* Trp RAS Precharg */
 		} else {
 			drt |= (2<<8);  /* Trp RAS Precharg */
 		}
-		
+
 		/* Trcd RAS to CAS delay */
 		if((index2&0x0ff)<=0x030) {
 			drt |= (0<<10);
@@ -462,13 +462,13 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		}
 
 		/* Tdal Write auto precharge recovery delay */
-		drt |= (2<<12); 
-		
+		drt |= (2<<12);
+
 		/* Trc TRS min */
 		drt |= (2<<14); /* spd 41, but only one choice */
-		
+
 		drt |= (2<<16);  /* Twr not defined for DDR docs say 2 */
-		
+
 		/* Trrd Row Delay */
 		if((index&0x0ff0000)<=0x0180000) {
 			drt |= (0<<20);
@@ -477,7 +477,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<20);
 		}
-		
+
 		/* Trfc Auto refresh cycle time */
 		if((index2&0x0ff0000)<=0x0480000) {
 			drt |= (0<<22);
@@ -505,13 +505,13 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		}
 
 		/* Tdal Write auto precharge recovery delay */
-		drt |= (1<<12); 
-		
+		drt |= (1<<12);
+
 		/* Trc TRS min */
 		drt |= (2<<14); /* spd 41, but only one choice */
-		
+
 		drt |= (1<<16);  /* Twr not defined for DDR docs say 1 */
-		
+
 		/* Trrd Row Delay */
 		if((index&0x0ff0000)<=0x01e0000) {
 			drt |= (0<<20);
@@ -520,7 +520,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<20);
 		}
-		
+
 		/* Trfc Auto refresh cycle time */
 		if((index2&0x0ff0000)<=0x04b0000) {
 			drt |= (0<<22);
@@ -529,13 +529,13 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<22);
 		}
-		
+
 		/* Based on CAS latency */
 		if(index&7)
 			drt |= (0x099<<24);
 		else
 			drt |= (0x055<<24);
-		
+
 	}
 	else {
 		die("Invalid SPD 9 bus speed.\n");
@@ -547,7 +547,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	return(cas_latency);
 }
 
-static int spd_set_dram_controller_mode(const struct mem_controller *ctrl, 
+static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 		long dimm_mask)
 {
 	int value;
@@ -558,12 +558,12 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	unsigned char dram_type = 0xff;
 	unsigned char ecc = 0xff;
 	unsigned char rate = 62;
-	static const unsigned char spd_rates[6] = {15,3,7,7,62,62}; 
+	static const unsigned char spd_rates[6] = {15,3,7,7,62,62};
 	static const unsigned char drc_rates[5] = {0,15,7,62,3};
 	static const unsigned char fsb_conversion[4] = {3,1,3,2};
 
 	/* 0x7c DRC */
-	drc = pci_read_config32(PCI_DEV(0, 0x00, 0), DRC);	
+	drc = pci_read_config32(PCI_DEV(0, 0x00, 0), DRC);
 	for(cnt=0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
@@ -578,7 +578,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 				else if (ecc == 1) {
 					die("ERROR - Mixed DDR & DDR2 RAM\n");
 				}
-			} 
+			}
 			else if ( reg == 7 ) {
 				if ( ecc == 0xff) {
 					ecc = 1;
@@ -586,7 +586,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 				else if ( ecc > 1 ) {
 					die("ERROR - Mixed DDR & DDR2 RAM\n");
 				}
-			}	
+			}
 			else {
 				die("ERROR - RAM not DDR\n");
 			}
@@ -650,7 +650,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	drc |= (fsb_conversion[value] << 2);
 	drc &= ~(3 << 0); /* set the dram type */
 	drc |= (dram_type << 0);
-		
+
 	goto out;
 
  val_err:
@@ -662,7 +662,7 @@ hw_err:
 	return drc;
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	long dimm_mask;
 
@@ -681,7 +681,7 @@ static void do_delay(void)
 	unsigned char b;
 	for(i=0;i<16;i++)
 		b=inb(0x80);
-}	
+}
 
 static void pll_setup(uint32_t drc)
 {
@@ -710,7 +710,7 @@ static void pll_setup(uint32_t drc)
 	}
 	mainboard_set_e7520_pll(pins);
 	return;
-}	
+}
 
 #define TIMEOUT_LOOPS 300000
 
@@ -724,7 +724,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
         unsigned int dimm,i;
         unsigned int data32;
 	unsigned int t4;
- 
+
 	/* Set up northbridge values */
 	/* ODT enable */
   	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x88, 0xf0000180);
@@ -741,10 +741,10 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 	for(i=0;i<1;i++) {
 	    if((t4&0x0f) == 1) {
 		if( ((t4>>8)&0x0f) == 0 ) {
-			data32 = 0x00000010; /* EEES */ 
+			data32 = 0x00000010; /* EEES */
 			break;
 		}
-		if ( ((t4>>16)&0x0f) == 0 ) { 
+		if ( ((t4>>16)&0x0f) == 0 ) {
 			data32 = 0x00003132; /* EESS */
 			break;
 		}
@@ -757,7 +757,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 	    }
 	    if((t4&0x0f) == 2) {
 		if( ((t4>>8)&0x0f) == 0 ) {
-			data32 = 0x00003132; /* EEED */ 
+			data32 = 0x00003132; /* EEED */
 			break;
 		}
 		if ( ((t4>>8)&0x0f) == 2 ) {
@@ -784,14 +784,14 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, 0x83000003 | (dimm << 20));
-		
+
 		for(i=0;i<1001;i++) {
 			data32 = read32(BAR+DCALCSR);
 			if(!(data32 & (1<<31)))
 				break;
 		}
 	}
-}	
+}
 static void set_receive_enable(const struct mem_controller *ctrl)
 {
 	unsigned int i;
@@ -799,7 +799,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	uint32_t recena=0;
 	uint32_t recenb=0;
 
-	{	
+	{
 	unsigned int dimm;
 	unsigned int edge;
 	int32_t data32;
@@ -817,7 +817,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 		if(!(dimm&1)) {
 			write32(BAR+DCALDATA+(17*4), 0x04020000);
 			write32(BAR+DCALCSR, 0x83800004 | (dimm << 20));
-		
+
 			for(i=0;i<1001;i++) {
 				data32 = read32(BAR+DCALCSR);
 				if(!(data32 & (1<<31)))
@@ -825,7 +825,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			}
 			if(i>=1000)
 				continue;
-		
+
 			dcal_data32_0 = read32(BAR+DCALDATA + 0);
 			dcal_data32_1 = read32(BAR+DCALDATA + 4);
 			dcal_data32_2 = read32(BAR+DCALDATA + 8);
@@ -914,7 +914,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 				data32++;
 			}
 			/* test for frame edge cross overs */
-			if((edge == 1) && (data32 > 12) && 
+			if((edge == 1) && (data32 > 12) &&
 			    (((recen+16)-data32) < 3)) {
 				data32 = 0;
 				cnt += 2;
@@ -1063,15 +1063,15 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		/* FSB 200 DIMM 400 */
 	{{ 0x00000001, 0x00000000, 0x00000001, 0x00000000}},
 	};
-	
+
 	static const uint32_t dqs_data[] = {
-		0xffffffff, 0xffffffff, 0x000000ff, 
-		0xffffffff, 0xffffffff, 0x000000ff, 
+		0xffffffff, 0xffffffff, 0x000000ff,
+		0xffffffff, 0xffffffff, 0x000000ff,
 		0xffffffff, 0xffffffff,	0x000000ff,
 		0xffffffff, 0xffffffff, 0x000000ff,
-		0xffffffff, 0xffffffff, 0x000000ff, 
-		0xffffffff, 0xffffffff, 0x000000ff, 
-		0xffffffff, 0xffffffff, 0x000000ff, 
+		0xffffffff, 0xffffffff, 0x000000ff,
+		0xffffffff, 0xffffffff, 0x000000ff,
+		0xffffffff, 0xffffffff, 0x000000ff,
 		0xffffffff, 0xffffffff, 0x000000ff};
 
 	mask = spd_detect_dimms(ctrl);
@@ -1101,24 +1101,24 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 	/* 0x7c DRC */
   	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);
-	
+
 		/* turn the clocks on */
 	/* 0x8c CKDIS */
   	pci_write_config16(PCI_DEV(0, 0x00, 0), CKDIS, 0x0000);
-	
+
 		/* 0x9a DDRCSR Take subsystem out of idle */
   	data16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DDRCSR);
 	data16 &= ~(7 << 12);
 	data16 |= (3 << 12);   /* use dual channel lock step */
   	pci_write_config16(PCI_DEV(0, 0x00, 0), DDRCSR, data16);
-	
+
 		/* program row size DRB */
 	spd_set_ram_size(ctrl, mask);
 
 		/* program page size DRA */
 	spd_set_row_attributes(ctrl, mask);
 
-		/* program DRT timing values */	
+		/* program DRT timing values */
 	cas_latency = spd_set_drt_attributes(ctrl, mask, drc);
 
 	for(i=0;i<8;i++) { /* loop throught each dimm to test for row */
@@ -1127,7 +1127,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		/* Apply NOP */
 		do_delay();
-		
+
 		write32(BAR + 0x100, (0x03000000 | (i<<20)));
 
 		write32(BAR+0x100, (0x83000000 | (i<<20)));
@@ -1137,12 +1137,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			data32 = read32(BAR+DCALCSR);
 
 	}
-	
+
 	/* Apply NOP */
 	do_delay();
 
-	for(cs=0;cs<8;cs++) {	
-		write32(BAR + DCALCSR, (0x83000000 | (cs<<20))); 
+	for(cs=0;cs<8;cs++) {
+		write32(BAR + DCALCSR, (0x83000000 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
@@ -1150,7 +1150,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Precharg all banks */
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
                         write32(BAR+DCALADDR, 0x04000000);
                 else   /* DDR1  */
@@ -1160,10 +1160,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while(data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-		
+
 	/* EMRS dll's enabled */
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
 			/* fixme hard code AL additive latency */
                         write32(BAR+DCALADDR, 0x0b940001);
@@ -1188,7 +1188,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
                 else  /*  CAS Latency 2.5 */
                         mode_reg = 0x016a0000;
         }
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALADDR, mode_reg);
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
@@ -1200,7 +1200,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	do_delay();
 	do_delay();
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
                         write32(BAR+DCALADDR, 0x04000000);
                 else   /* DDR1  */
@@ -1210,17 +1210,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while(data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-	
+
 	/* Do 2 refreshes */
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000)
@@ -1228,33 +1228,33 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 	do_delay();
 	/* for good luck do 6 more */
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
 	}
 	do_delay();
 	/* MRS reset dll's normal */
 	do_delay();
-	for(cs=0;cs<8;cs++) {	
+	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALADDR, (mode_reg & ~(1<<24)));
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
@@ -1279,7 +1279,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	write32(BAR+DCALCSR, 0x0000000f);
 
 	/* DDR1 This is test code to copy some codes in the factory setup */
-	
+
 	write32(BAR, 0x00100000);
 
         if ((drc & 3) == 2) { /* DDR2  */
@@ -1292,9 +1292,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* receive enable calibration */
 	set_receive_enable(ctrl);
-	
+
 	/* DQS */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x94, 0x3904a100 ); 
+	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x94, 0x3904a100 );
 	for(i = 0, cnt = (BAR+0x200); i < 24; i++, cnt+=4) {
 		write32(cnt, dqs_data[i]);
 	}
@@ -1303,7 +1303,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Enable refresh */
 	/* 0x7c DRC */
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);
 	write32(BAR+DCALCSR, 0x0008000f);
 
 	/* clear memory and init ECC */
@@ -1311,7 +1311,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for(i=0;i<64;i+=4) {
 		write32(BAR+DCALDATA+i, 0x00000000);
 	}
-	
+
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x830831d8 | (cs<<20)));
 		data32 = read32(BAR+DCALCSR);
@@ -1331,22 +1331,22 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			break;
 	}
 	print_debug("Done\n");
-	
+
 	/* Set initialization complete */
 	/* 0x7c DRC */
 	drc |= (1 << 29);
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);
 
 	/* Set the ecc mode */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, drc);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, drc);
 
 	/* Enable memory scrubbing */
-	/* 0x52 MCHSCRB */	
+	/* 0x52 MCHSCRB */
 	data16 = pci_read_config16(PCI_DEV(0, 0x00, 0), MCHSCRB);
 	data16 &= ~0x0f;
 	data16 |= ((2 << 2) | (2 << 0));
-	pci_write_config16(PCI_DEV(0, 0x00, 0), MCHSCRB, data16);	
+	pci_write_config16(PCI_DEV(0, 0x00, 0), MCHSCRB, data16);
 
 	/* The memory is now setup, use it */
 	cache_lbmem(MTRR_TYPE_WRBACK);

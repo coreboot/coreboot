@@ -96,7 +96,7 @@ static const struct xl_card_cfg_t {
 		0x10, 0x19
 	}
 };
-	  
+
 typedef struct {
 	u8 lcd_reg;
 	u32 val;
@@ -202,7 +202,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	u32 temp;
 	union aty_pll pll;
 	const struct xl_card_cfg_t * card = &card_cfg[xl_card];
-	
+
 	aty_st_8(CONFIG_STAT0, 0x85, info);
 	mdelay(10);
 
@@ -222,7 +222,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 		info->features &= ~M64F_MFB_TIMES_4;
 	}
 #endif
-	
+
 	/*
 	 * Calculate mclk and xclk dividers, etc. The passed
 	 * pixclock and bpp values don't matter yet, the vclk
@@ -243,7 +243,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	aty_st_pll(PLL_EXT_CNTL, pll.ct.pll_ext_cntl, info);
 	aty_st_pll(SPLL_CNTL2, 0x03, info);
 	aty_st_pll(PLL_GEN_CNTL, 0x44, info);
-	
+
 	reset_clocks(info, &pll.ct, 0);
 	mdelay(10);
 
@@ -302,7 +302,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	aty_st_8(LCD_INDEX, 0x08, info);
 	aty_st_8(LCD_DATA, 0x0B, info);
 	mdelay(2);
-	
+
 	// enable display requests, enable CRTC
 	aty_st_8(CRTC_GEN_CNTL+3, 0x02, info);
 	// disable display
@@ -482,7 +482,7 @@ static void aty_calc_mem_refresh(struct fb_info_aty *info, u16 id, int xclk)
         info->mem_refresh_rate = i;
 }
 #endif /*CONFIG_CONSOLE_BTEXT */
-static void ati_ragexl_init(device_t dev) 
+static void ati_ragexl_init(device_t dev)
 {
         u32 chip_id;
     	int j;
@@ -513,9 +513,9 @@ static void ati_ragexl_init(device_t dev)
 #endif /*CONFIG_CONSOLE_BTEXT==1 */
 
         struct fb_info_aty *info;
-        struct fb_info_aty info_t; 
-        struct resource *res; 
-        info = &info_t; 
+        struct fb_info_aty info_t;
+        struct resource *res;
+        info = &info_t;
 
 #define USE_AUX_REG 1
 
@@ -529,12 +529,12 @@ static void ati_ragexl_init(device_t dev)
 	info->frame_buffer = res->base;
 #endif /* CONFIG_CONSOLE_BTEXT */
 
-#if USE_AUX_REG==0   
+#if USE_AUX_REG==0
         info->ati_regbase = res->base+0x7ff000+0xc00;
-#else 
+#else
         res = &dev->resource[2];
         if(res->flags & IORESOURCE_MEM) {
-                info->ati_regbase = res->base+0x400; //using auxiliary register 
+                info->ati_regbase = res->base+0x400; //using auxiliary register
         }
 
 #endif
@@ -570,7 +570,7 @@ found:
         	/* for many chips, the mclk is 67 MHz for SDRAM, 63 MHz otherwise */
         	if (mclk == 67 && info->ram_type < SDRAM)
             		mclk = 63;
-    	}   
+    	}
 #endif
 #if CONFIG_CONSOLE_BTEXT==1
         aty_calc_mem_refresh(info, type, xclk);
@@ -583,14 +583,14 @@ found:
 //        info->dac_ops = &aty_dac_ct;
 //        info->pll_ops = &aty_pll_ct;
         info->bus_type = PCI;
-	
+
 
 	atyfb_xl_init(info);
 
 #if CONFIG_CONSOLE_BTEXT==1
 
 	info->ram_type = (aty_ld_le32(CONFIG_STAT0, info) & 0x07);
-	
+
         info->ref_clk_per = 1000000000000ULL/14318180;
     	xtal = "14.31818";
 #if 0
@@ -719,7 +719,7 @@ found:
     }
 
     if (atyfb_decode_var(&var, &info->default_par, info)) {
-#if 0	
+#if 0
         printk(BIOS_DEBUG, "atyfb: can't set default video mode\n");
 #endif
         return ;
@@ -779,7 +779,7 @@ found:
 #endif
 
  btext_clearscreen();
- 
+
  map_boot_text();
 
 #if 0
@@ -791,7 +791,7 @@ found:
 #endif
 
 #endif /* CONFIG_CONSOLE_BTEXT */
-	
+
 }
 
 #if CONFIG_CONSOLE_BTEXT==1
@@ -856,13 +856,13 @@ static void aty_set_crtc(const struct fb_info_aty *info,
 static int aty_var_to_crtc(const struct fb_info_aty *info,
                            const struct fb_var_screeninfo *var,
                            struct crtc *crtc)
-{       
+{
     u32 xres, yres, vxres, vyres, xoffset, yoffset, bpp;
     u32 left, right, upper, lower, hslen, vslen, sync, vmode;
     u32 h_total, h_disp, h_sync_strt, h_sync_dly, h_sync_wid, h_sync_pol;
     u32 v_total, v_disp, v_sync_strt, v_sync_wid, v_sync_pol, c_sync;
     u32 pix_width, dp_pix_width, dp_chain_mask;
-        
+
     /* input */
     xres = var->xres;
     yres = var->yres;
@@ -877,9 +877,9 @@ static int aty_var_to_crtc(const struct fb_info_aty *info,
     lower = var->lower_margin;
     hslen = var->hsync_len;
     vslen = var->vsync_len;
-    sync = var->sync; 
+    sync = var->sync;
     vmode = var->vmode;
-        
+
     /* convert (and round up) and validate */
     xres = (xres+7) & ~7;
     xoffset = (xoffset+7) & ~7;
@@ -887,7 +887,7 @@ static int aty_var_to_crtc(const struct fb_info_aty *info,
     if (vxres < xres+xoffset)
         vxres = xres+xoffset;
     h_disp = xres/8-1;
-    if (h_disp > 0xff) 
+    if (h_disp > 0xff)
         FAIL("h_disp too large");
     h_sync_strt = h_disp+(right/8);
     if (h_sync_strt > 0x1ff)
@@ -924,7 +924,7 @@ static int aty_var_to_crtc(const struct fb_info_aty *info,
         pix_width = CRTC_PIX_WIDTH_8BPP;
         dp_pix_width = HOST_8BPP | SRC_8BPP | DST_8BPP | BYTE_ORDER_LSB_TO_MSB;
         dp_chain_mask = 0x8080;
-    } 
+    }
 #if SUPPORT_8_BPP_ABOVE==1
    else if (bpp <= 16) {
         bpp = 16;
@@ -943,7 +943,7 @@ static int aty_var_to_crtc(const struct fb_info_aty *info,
         dp_pix_width = HOST_32BPP | SRC_32BPP | DST_32BPP |
                        BYTE_ORDER_LSB_TO_MSB;
         dp_chain_mask = 0x8080;
-    } 
+    }
 #endif
 else
         FAIL("invalid bpp");
@@ -1123,7 +1123,7 @@ static int encode_fix(struct fb_fix_screeninfo *fix,
     fix->smem_start = info->frame_buffer;
     fix->smem_len = (u32)info->total_vram;
 
-    /* 
+    /*
      *  Reg Block 0 (CT-compatible block) is at ati_regbase_phys
      *  Reg Block 1 (multimedia extensions) is at ati_regbase_phys-0x400
      */
@@ -1158,11 +1158,11 @@ static int encode_fix(struct fb_fix_screeninfo *fix,
 #endif
    /*
      *  Set the User Defined Part of the Display
-     */ 
-#if PLL_CRTC_DECODE==1    
+     */
+#if PLL_CRTC_DECODE==1
 static int atyfb_set_var(struct fb_var_screeninfo *var, int con,
                          struct fb_info *fb)
-{                        
+{
     struct fb_info_aty *info = (struct fb_info_aty *)fb;
     struct atyfb_par par;
 #if 0
@@ -1171,8 +1171,8 @@ static int atyfb_set_var(struct fb_var_screeninfo *var, int con,
 #endif
     int err;
     int activate = var->activate;
-   
-#if 0 
+
+#if 0
     if (con >= 0)
         display = &fb_display[con];
     else
@@ -1180,13 +1180,13 @@ static int atyfb_set_var(struct fb_var_screeninfo *var, int con,
 #if 0
         display = fb->disp;     /* used during initialization */
 #endif
-        
+
     if ((err = atyfb_decode_var(var, &par, info)))
         return err;
-        
+
     atyfb_encode_var(var, &par, (struct fb_info_aty *)info);
-   
-#if 0 
+
+#if 0
     printk(BIOS_INFO, "atyfb_set_var: activate=%d\n", activate & FB_ACTIVATE_MASK);
 #endif
 
@@ -1262,7 +1262,7 @@ static void atyfb_set_par(const struct atyfb_par *par,
 
 #if PLL_CRTC_DECODE==1
     info->current_par = *par;
-#endif 
+#endif
 
     if (info->blitter_may_be_busy)
         wait_for_idle(info);
@@ -1344,7 +1344,7 @@ static void atyfb_set_par(const struct atyfb_par *par,
 
 }
 #if 0
-static u16 red2[] = { 
+static u16 red2[] = {
     0x0000, 0xaaaa
 };
 static u16 green2[] = {
@@ -1356,14 +1356,14 @@ static u16 blue2[] = {
 
 static u16 red4[] = {
     0x0000, 0xaaaa, 0x5555, 0xffff
-};      
+};
 static u16 green4[] = {
     0x0000, 0xaaaa, 0x5555, 0xffff
-};      
+};
 static u16 blue4[] = {
     0x0000, 0xaaaa, 0x5555, 0xffff
-};      
- 
+};
+
 static u16 red8[] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0xaaaa, 0xaaaa, 0xaaaa, 0xaaaa
 };
@@ -1405,12 +1405,12 @@ static struct fb_cmap default_16_colors = {
 
 static int atyfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
                            u_int transp, struct fb_info_aty *info)
-{                          
+{
     int i, scale;
-    
+
     if (regno > 255)
         return 1;
-    red >>= 8; 
+    red >>= 8;
     green >>= 8;
     blue >>= 8;
 #if 0
@@ -1418,7 +1418,7 @@ static int atyfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
     info->palette[regno].red = red;
     info->palette[regno].green = green;
     info->palette[regno].blue = blue;
-#endif 
+#endif
     i = aty_ld_8(DAC_CNTL, info) & 0xfc;
     if (M64_HAS(EXTRA_BRIGHT))
         i |= 0x2;       /*DAC_CNTL|0x2 turns off the extra brightness for gt*/
@@ -1440,11 +1440,11 @@ int fb_set_cmap(struct fb_cmap *cmap, int kspc,
                 int (*setcolreg)(u_int, u_int, u_int, u_int, u_int,
                                  struct fb_info_aty *),
                 struct fb_info_aty *info)
-{   
+{
     int i, start;
     u16 *red, *green, *blue, *transp;
     u_int hred, hgreen, hblue, htransp;
-    
+
     red = cmap->red;
     green = cmap->green;
     blue = cmap->blue;
@@ -1480,13 +1480,13 @@ struct fb_cmap *fb_default_cmap(int len)
         return &default_8_colors;
 #endif
     return &default_16_colors;
-}   
+}
 
 static void do_install_cmap(int con, struct fb_info_aty *info)
 {
 #if PLL_CRTC_DECODE==1
         int size = info->current_par.crtc.bpp == 16 ? 32 : 256;
-#else 
+#else
 	int size = 256;
 #endif
         fb_set_cmap(fb_default_cmap(size), 1, atyfb_setcolreg, info);

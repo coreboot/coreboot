@@ -27,10 +27,10 @@ static void adm1026_init(device_t dev)
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
 	{
 		if(ops_smbus_bus(get_pbus_smbus(dev))) {
-			if( dev->bus->dev->path.type == DEVICE_PATH_I2C) smbus_set_link(dev); // it is under mux 
+			if( dev->bus->dev->path.type == DEVICE_PATH_I2C) smbus_set_link(dev); // it is under mux
 			adm1026_enable_monitoring(dev);
 		}
-		
+
 	}
 
 }
@@ -65,5 +65,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations drivers_i2c_adm1026_ops = {
 	CHIP_NAME("adm1026")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

@@ -35,7 +35,7 @@ static inline unsigned int fls(unsigned int x)
         return r;
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
 	 *                      component Banks (byte 17) * module banks, side (byte 5) *
@@ -86,7 +86,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	msr = rdmsr(0x20000019);
 	msr.hi = 0x18000108;
 	msr.lo = 0x696332a3;
-	wrmsr(0x20000019, msr);		
+	wrmsr(0x20000019, msr);
 
 }
 
@@ -122,7 +122,7 @@ static void main(unsigned long bist)
 	};
 
 	SystemPreInit();
-	
+
 
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
@@ -134,7 +134,7 @@ static void main(unsigned long bist)
 
 	cpuRegInit();
 	print_err("done cpuRegInit\n");
-	
+
 	sdram_initialize(1, memctrl);
 
 	msr_init();

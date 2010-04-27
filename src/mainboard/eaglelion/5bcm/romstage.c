@@ -28,11 +28,11 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-	
+
 	cs5530_enable_rom();
 
 	sdram_init();
-	
+
 	/* Check all of memory */
 #if 0
 	ram_check(0x00000000, msr.lo);

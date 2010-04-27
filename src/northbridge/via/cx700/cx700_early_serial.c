@@ -61,7 +61,7 @@ static void enable_cx700_serial(void)
 	// turn on pnp
 	cx700_writepnpaddr(0x87);
 	cx700_writepnpaddr(0x87);
-	// now go ahead and set up com1. 
+	// now go ahead and set up com1.
 	// set address
 	cx700_writepnpaddr(0x7);
 	cx700_writepnpdata(0x2);

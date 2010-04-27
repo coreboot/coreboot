@@ -19,7 +19,7 @@
 #include "northbridge/amd/gx2/raminit.h"
 
 /* this has to be done on a per-mainboard basis, esp. if you don't have smbus */
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	msr_t msr;
 	/* 1. Initialize GLMC registers base on SPD values,

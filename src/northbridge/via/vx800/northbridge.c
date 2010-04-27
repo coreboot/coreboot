@@ -118,7 +118,7 @@ static u32 find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
-	/* 
+	/*
 	 * the order is important to find the correct ram size.
 	 */
 	u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };

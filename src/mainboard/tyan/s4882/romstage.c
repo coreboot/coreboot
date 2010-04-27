@@ -1,4 +1,4 @@
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -70,7 +70,7 @@ static inline void change_i2c_mux(unsigned device)
 {
 #define SMBUS_HUB 0x18
         int ret, i;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n"); 
+        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
         i=2;
         do {
                 ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
@@ -93,7 +93,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 
  /* tyan does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -155,7 +155,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
-	
+
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
@@ -187,7 +187,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         nodes = get_nodes();
         //It's the time to set ctrl now;
         fill_mem_ctrl(nodes, ctrl, spd_addr);
-	
+
 	enable_smbus();
 
 	memreset_setup();

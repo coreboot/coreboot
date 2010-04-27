@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* 
+/*
   Automatically detect and set up ddr dram on the CLE266 chipset.
   Assumes DDR memory, though chipset also supports SDRAM
   Assumes at least 266Mhz memory as no attempt is made to clock
@@ -35,9 +35,9 @@
 
 
 
-void dimm_read(unsigned long bank,unsigned long x) 
+void dimm_read(unsigned long bank,unsigned long x)
 {
-	//unsigned long eax; 
+	//unsigned long eax;
 	volatile unsigned long y;
 	//eax =  x;
 	y = * (volatile unsigned long *) (x+ bank) ;
@@ -46,7 +46,7 @@ void dimm_read(unsigned long bank,unsigned long x)
 
 
 void
-dumpnorth(device_t north) 
+dumpnorth(device_t north)
 {
 	uint16_t r, c;
 	for(r = 0; r < 256; r += 16) {
@@ -65,7 +65,7 @@ void print_val(char *str, int val)
 	print_debug_hex8(val);
 }
 
-static void ddr_ram_setup(const struct mem_controller *ctrl) 
+static void ddr_ram_setup(const struct mem_controller *ctrl)
 {
 	device_t north = (device_t) 0;
 	uint8_t b, c, bank;
@@ -75,7 +75,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	print_debug("vt8623 init starting\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
-	
+
 
 	pci_write_config8(north,0x75,0x08);
 
@@ -105,7 +105,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	print_val("Detecting Memory\nNumber of Banks ",b);
 
 	if( b != 2 ){            // not 16 Mb type
-	
+
 /*
     Read SPD byte 3, Number of row addresses.
 */
@@ -126,7 +126,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     64/128Mb chip
 
     Read SPD byte 4, Number of column addresses.
-*/		
+*/
 		b = smbus_read_byte(0xa0,4);
 		print_val("\nNo Columns ",b);
 		if( b == 10 || b == 11 ) c |= 0x60;   // 10/11 bit col addr
@@ -153,7 +153,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	if( b & 0x02 ) c = 0x80;         // 2GB
 	else if( b & 0x01) c = 0x40;     // 1GB
 	else if( b & 0x80) c = 0x20;     // 512Mb
-	else if( b & 0x40) c = 0x10;     // 256Mb 
+	else if( b & 0x40) c = 0x10;     // 256Mb
 	else if( b & 0x20) c = 0x08;     // 128Mb
 	else if( b & 0x10) c = 0x04;     // 64Mb
 	else if( b & 0x08) c = 0x02;     // 32Mb
@@ -191,7 +191,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	print_val("\nCycle time at CL X     (nS)",smbus_read_byte(0xa0,9));
 	print_val("\nCycle time at CL X-0.5 (nS)",smbus_read_byte(0xa0,23));
 	print_val("\nCycle time at CL X-1   (nS)",smbus_read_byte(0xa0,25));
-	
+
 
 	if( b & 0x10 ){             // DDR offering optional CAS 3
 		print_debug("\nStarting at CAS 3");
@@ -405,7 +405,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		/* MSR Enable */
 		pci_write_config8(north,0x6b,0x13);
 
-/* 
+/*
     Mode Register Definition
     with adjustement so that address calculation is correct - 64 bit technology, therefore
     a0-a2 refer to byte within a 64 bit long word, and a3 is the first address line presented
@@ -414,9 +414,9 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     MR[9-7]   CAS Latency
     MR[6]     Burst Type 0 = sequential, 1 = interleaved
     MR[5-3]   burst length 001 = 2, 010 = 4, 011 = 8, others reserved
-    MR[0-2]   dont care 
+    MR[0-2]   dont care
 
-    CAS Latency 
+    CAS Latency
     000       reserved
     001       reserved
     010       2
@@ -498,10 +498,10 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 		// if everything verified then found low bond
 		break;
-		
+
 	}
-	print_val("\nLow Bond ",i);	
-	if( i < 0xff ){ 
+	print_val("\nLow Bond ",i);
+	if( i < 0xff ){
 		c = i++;
 		for(  ; i <0xff ; i++){
  			pci_write_config8(north,0x68,i ^ (i>>1) );
@@ -588,7 +588,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 
 	pci_write_config8(north,0x71,0xc8);
-	
+
 
 	/* graphics aperture base */
 

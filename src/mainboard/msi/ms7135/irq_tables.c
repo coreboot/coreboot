@@ -78,7 +78,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	int i;
 	unsigned sbdn;
 
-	/* get_bus_conf() will find out all bus num and apic that share with 
+	/* get_bus_conf() will find out all bus num and apic that share with
 	 * mptable.c and mptable.c
 	 */
 	get_bus_conf();
@@ -112,7 +112,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-//Slot1 PCIE 16x 
+//Slot1 PCIE 16x
 	write_pirq_info(pirq_info, bus_ck804[1], (0 << 3) | 0, 0x3, 0xdeb8, 0x4,
 			0xdeb8, 0x1, 0xdeb8, 0x2, 0xdeb8, 4, 0);
 	pirq_info++;
@@ -130,7 +130,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info++;
 	slot_num++;
 
-//Slot4 PCIE 4x 
+//Slot4 PCIE 4x
 	write_pirq_info(pirq_info, bus_ck804[4], (0x4 << 3) | 0,
 			0x2, 0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0x1, 0xdeb8,
 			7, 0);
@@ -229,7 +229,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	irq[0] = 10; /* Ethernet */
 	pci_assign_irqs(bus_ck804[0], 10, irq);
 
-	
+
 	/* physical slots */
 
 	irq[0] = 5; /* PCI E1 - x1 */
@@ -237,7 +237,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	irq[0] = 11; /* PCI E2 - x16 */
 	pci_assign_irqs(bus_ck804[3], 0, irq);
-	
+
 	/* AGP-on-PCI "AGR" ignored */
 
 	irq[0] = 10; /* PCI1 */
@@ -257,7 +257,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	irq[2] = 11;
 	irq[3] = 0;
 	pci_assign_irqs(bus_ck804[1], 9, irq);
-#endif	
+#endif
 
 	return (unsigned long)pirq_info;
 }

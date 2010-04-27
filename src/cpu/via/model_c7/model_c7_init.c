@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@
 #define MSR_IA32_MISC_ENABLE	0x000001a0
 
 static int c7a_speed_translation[] = {
-//      LFM     HFM             
+//      LFM     HFM
 	0x0409, 0x0f13,		// 400MHz, 844mV --> 1500MHz, 1.004V    C7-M
 	0x0409, 0x1018,		// 400MHz, 844mV --> 1600MHz, 1.084V
 	0x0409, 0x0c18,		// 533MHz, 844mV --> 1600MHz, 1.084V
@@ -51,7 +51,7 @@ static int c7a_speed_translation[] = {
 };
 
 static int c7d_speed_translation[] = {
-//      LFM     HFM             
+//      LFM     HFM
 	0x0409, 0x1018,		// 400MHz, 844mV --> 1600MHz, 1.084V    C7-M
 	0x0409, 0x121f,		// 400MHz, 844mV --> 1800MHz, 1.196V
 	0x0809, 0x121f,		// 800MHz, 844mV --> 1800MHz, 1.196V

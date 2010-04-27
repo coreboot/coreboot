@@ -1,6 +1,6 @@
 #
 # Makefile for nvram utility
-# 
+#
 # (C) 2005-2008 coresystems GmbH
 # written by Stefan Reinauer <stepan@coresystems.de>
 #

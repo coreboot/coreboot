@@ -13,7 +13,7 @@
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x44, 
+	pci_write_config32(dev, 0x44,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

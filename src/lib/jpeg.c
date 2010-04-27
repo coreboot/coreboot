@@ -270,7 +270,7 @@ int jpeg_check_size(unsigned char *buf, int width, int height)
         return 1;
 }
 
-int jpeg_decode(unsigned char *buf, unsigned char *pic, 
+int jpeg_decode(unsigned char *buf, unsigned char *pic,
 		int width, int height, int depth, struct jpeg_decdata *decdata)
 {
 	int i, j, m, tac, tdc;

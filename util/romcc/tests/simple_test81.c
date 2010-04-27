@@ -4,5 +4,5 @@ static void main(void)
 	i = __builtin_inb(0x1234);
 	int j;
 	j = __builtin_inb(0xabcd);
-		
+
 }

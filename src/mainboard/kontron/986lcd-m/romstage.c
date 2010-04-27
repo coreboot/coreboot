@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 /* Configuration of the i945 driver */
 #define CHIPSET_I945GM 1
-/* Usually system firmware turns off system memory clock signals to 
+/* Usually system firmware turns off system memory clock signals to
  * unused SO-DIMM slots to reduce EMI and power consumption.
  * However, the Kontron 986LCD-M does not like unused clock signals to
  * be disabled. If other similar mainboard occur, it would make sense
@@ -107,7 +107,7 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000403e9);
 	// COM4 decode
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x000402e9);
-	// io 0x300 decode 
+	// io 0x300 decode
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000301);
 }
 
@@ -119,7 +119,7 @@ static void ich7_enable_lpc(void)
 static void early_superio_config_w83627thg(void)
 {
 	device_t dev;
-	
+
 	dev=PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_enter_ext_func_mode(dev);
 
@@ -194,7 +194,7 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 11);
 	pnp_set_enable(dev, 1);
 
-	dev=PNP_DEV(0x4e, W83627THG_SP2); 
+	dev=PNP_DEV(0x4e, W83627THG_SP2);
 	pnp_set_logical_device(dev); // Set COM4 to sane non-conflicting values
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2e8);
@@ -249,7 +249,7 @@ static void rcba_config(void)
 	 * would essentially disable all three ethernet ports of the mainboard.
 	 * It's possible to rename the ports to achieve compatibility to the
 	 * PCI spec but this will confuse all (static!) tables containing
-	 * interrupt routing information. 
+	 * interrupt routing information.
 	 * To avoid this, we enable (unused) port 6 and swap it with port 1
 	 * in the case that ethernet port 1 is disabled. Since no devices
 	 * are connected to that port, we don't have to worry about interrupt
@@ -413,7 +413,7 @@ void main(unsigned long bist)
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
-	
+
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
@@ -423,8 +423,8 @@ void main(unsigned long bist)
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();
 
-	/* This should probably go away. Until now it is required 
-	 * and mainboard specific 
+	/* This should probably go away. Until now it is required
+	 * and mainboard specific
 	 */
 	rcba_config();
 
@@ -470,7 +470,7 @@ void main(unsigned long bist)
 		 * memory completely, but that's a wonderful clean up task for another
 		 * day.
 		 */
-		if (resume_backup_memory) 
+		if (resume_backup_memory)
 			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */

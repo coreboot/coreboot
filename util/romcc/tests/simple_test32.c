@@ -3,7 +3,7 @@ void main(void)
 	unsigned long addr, start, stop;
 	start = 0x00100000;
 	stop = 0x00180000;
-	
+
 
 	for(addr = start; addr < stop ;) {
 		unsigned char ch;
@@ -12,7 +12,7 @@ void main(void)
 			while(__builtin_inb(0x3f))
 				;
 			__builtin_outb(ch, 0x3f8);
-			
+
 			while(__builtin_inb(0x3f))
 				;
 		}

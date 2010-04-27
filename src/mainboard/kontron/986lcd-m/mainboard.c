@@ -104,7 +104,7 @@ struct fan_speed {
 	u16 fan_speed;
 };
 
-// FANIN Target Speed Register 
+// FANIN Target Speed Register
 // FANIN = 337500 / RPM
 struct fan_speed fan_speeds[] = {
 	{ 0x3c, 5625 }, { 0x41, 5192 }, { 0x47, 4753 }, { 0x4e, 4326 },
@@ -119,7 +119,7 @@ struct temperature {
 };
 
 struct temperature temperatures[] = {
-	{ 30,  86 }, { 33,  91 }, { 36,  96 }, { 39, 102 }, 
+	{ 30,  86 }, { 33,  91 }, { 36,  96 }, { 39, 102 },
 	{ 42, 107 }, { 45, 113 }, { 48, 118 }, { 51, 123 },
 	{ 54, 129 }, { 57, 134 }, { 60, 140 }, { 63, 145 },
 	{ 66, 150 }, { 69, 156 }, { 72, 161 }, { 75, 167 }
@@ -144,7 +144,7 @@ static void hwm_setup(void)
 		sysfan_speed = FAN_SPEED_5625;
 	//if (get_option(&sysfan_temperature, "sysfan_temperature") < 0)
 	//	sysfan_temperature = FAN_TEMPERATURE_30DEGC;
-	
+
 	// hwm_write(0x31, 0x20); // AVCC high limit
 	// hwm_write(0x34, 0x06); // VIN2 low limit
 
@@ -223,10 +223,10 @@ static void verb_setup(void)
 	cim_verb_data_size = 0;
 }
 
-// mainboard_enable is executed as first thing after 
+// mainboard_enable is executed as first thing after
 // enumerate_buses().
 
-static void mainboard_enable(device_t dev) 
+static void mainboard_enable(device_t dev)
 {
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	/* Install custom int15 handler for VGA OPROM */

@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2008 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -26,8 +26,8 @@
 static inline void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -64,8 +64,8 @@ static inline void dump_pci_device(unsigned dev)
 static inline void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -86,7 +86,7 @@ static inline void dump_spd_registers(void)
                 int status = 0;
                 int i;
         	printk(BIOS_DEBUG, "\ndimm %02x", device);
-		
+
                 for(i = 0; (i < 256) ; i++) {
                         if ((i % 16) == 0) {
 				printk(BIOS_DEBUG, "\n%02x: ", i);
@@ -94,7 +94,7 @@ static inline void dump_spd_registers(void)
 			status = smbus_read_byte(device, i);
                         if (status < 0) {
 			         printk(BIOS_DEBUG, "bad device: %02x\n", -status);
-			         break; 
+			         break;
 			}
 			printk(BIOS_DEBUG, "%02x ", status);
 		}

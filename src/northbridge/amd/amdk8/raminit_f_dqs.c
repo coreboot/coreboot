@@ -436,7 +436,7 @@ static uint16_t get_exact_T1000(unsigned i)
 		unsigned fid_start;
 		msr = rdmsr(0xc0010015);
 		fid_start = (msr.lo & (0x3f << 24));
-		
+
 		index = fid_start>>25;
 	}
 
@@ -600,12 +600,12 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	}
 
 	for ( ; (channel < 2) && (!Errors); channel++)
-	{ 
-		print_debug_dqs("\tTrainRcvEn51: channel ",channel, 1); 
-		
-		/* for each rank */ 
-		/* there are four recriver pairs, loosely associated with CS */ 
-		for( receiver = 0; (receiver < 8) && (!Errors); receiver+=2) 
+	{
+		print_debug_dqs("\tTrainRcvEn51: channel ",channel, 1);
+
+		/* for each rank */
+		/* there are four recriver pairs, loosely associated with CS */
+		for( receiver = 0; (receiver < 8) && (!Errors); receiver+=2)
 		{
 
 			unsigned index=(receiver>>1) * 3 + 0x10;

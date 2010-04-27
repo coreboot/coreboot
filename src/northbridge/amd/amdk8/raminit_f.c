@@ -393,7 +393,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   110 = 8 bus clocks
 	 *	   111 = 9 bus clocks
 	 * [ 7: 7] Reserved
-	 * [ 9: 8] Twtr (Internal DRAM Write-to-Read Command Delay, 
+	 * [ 9: 8] Twtr (Internal DRAM Write-to-Read Command Delay,
 	 * minium write-to-read delay when both access the same chip select)
 	 *	   00 = Reserved
 	 *	   01 = 1 bus clocks
@@ -525,7 +525,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	       registered DIMM is present
 	 * [19:19] Reserved
 	 * [20:20] SlowAccessMode (Slow Access Mode (2T Mode))
-	 *	   0 = DRAM address and control signals are driven for one 
+	 *	   0 = DRAM address and control signals are driven for one
 	 *	       MEMCLK cycle
 	 *	   1 = One additional MEMCLK of setup time is provided on all
 	 *	       DRAM address and control signals except CS, CKE, and ODT;
@@ -720,7 +720,7 @@ static int is_opteron(const struct mem_controller *ctrl)
 {
 	/* Test to see if I am an Opteron. M2 and S1G1 support dual
 	 * channel, too, but only support unbuffered DIMMs so we need a
-	 * better test for Opterons. 
+	 * better test for Opterons.
 	 * However, all code uses is_opteron() to find out whether to
 	 * use dual channel, so if we really check for opteron here, we
 	 * need to fix up all code using this function, too.
@@ -1221,7 +1221,7 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 			csbase = value;
 			canidate = index;
 		}
-		
+
 		/* See if I have found a new canidate */
 		if (csbase == 0) {
 			break;
@@ -1640,7 +1640,7 @@ static uint8_t get_exact_divisor(int i, uint8_t divisor)
 	  /*15*/   200, 160, 120, 100,
 	};
 
-	
+
 	int index;
 	msr_t msr;
 
@@ -1659,7 +1659,7 @@ static uint8_t get_exact_divisor(int i, uint8_t divisor)
 		unsigned fid_start;
 		msr = rdmsr(0xc0010015);
 		fid_start = (msr.lo & (0x3f << 24));
-		
+
 		index = fid_start>>25;
 	}
 
@@ -1843,7 +1843,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 				continue;
 			}
 		}
-		
+
 	}
 	/* Make a second pass through the dimms and disable
 	 * any that cannot support the selected memclk and cas latency.
@@ -2060,7 +2060,7 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	if (clocks < TT_MIN) {
 		clocks = TT_MIN;
 	}
-	
+
 	if (clocks > TT_MAX) {
 		printk(BIOS_INFO, "warning spd byte : %x = %x > TT_MAX: %x, setting TT_MAX", SPD_TT, value, TT_MAX);
 		clocks = TT_MAX;
@@ -3001,7 +3001,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 #else
 	int suspend = 0;
 #endif
- 
+
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	 unsigned cpu_f0_f1[8];
 	/* FIXME: How about 32 node machine later? */

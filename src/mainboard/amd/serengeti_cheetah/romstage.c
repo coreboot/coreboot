@@ -1,7 +1,7 @@
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
-#define SET_NB_CFG_54 1 
+#define SET_NB_CFG_54 1
 
 //used by raminit
 #define QRANK_DIMM_SUPPORT 1
@@ -107,7 +107,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 
  /* tyan does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -186,7 +186,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         console_init();
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
@@ -201,21 +201,21 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
 
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram 
+        set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
 #endif
 	setup_coherent_ht_domain(); // routing table and start other core0
 
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
-	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain, 
+	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	 * So here need to make sure last core0 is started, esp for two way system,
-	 * (there may be apic id conflicts in that case) 
+	 * (there may be apic id conflicts in that case)
 	 */
         start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
-	
+
 	/* it will set up chains and store link pair for optimization later */
         ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
@@ -249,7 +249,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         {
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
-                print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n"); 
+                print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
 
         }
 

@@ -8,7 +8,7 @@ We describe the new configuration language for LinuxBIOS.
 This document defines the new configuration language for LinuxBIOS.
 
 \section{Goals}
-The goals of the new language are these: 
+The goals of the new language are these:
 \begin{itemize}
 \item Simplified Makefiles so people can see what is set
 \item Move from the regular-expression-based language to something
@@ -16,22 +16,22 @@ a bit more comprehensible and flexible
 \item make the specification easier for people to use and understand
 \item allow unique register-set-specifiers for each chip
 \item allow generic register-set-specifiers for each chip
-\item generate static initialization code, as needed, for the 
-specifiers. 
+\item generate static initialization code, as needed, for the
+specifiers.
 \end{itemize}
 
 \section{Language}
 Here is the new language. It is very similar to the old one, differing
-in only a few respects. It borrows heavily from Greg Watson's suggestions. 
+in only a few respects. It borrows heavily from Greg Watson's suggestions.
 
-I am presenting it in a pseudo-BNF in the hopes it will be easier. Things 
-in '' are keywords; things in ``'' are strings in the actual text. 
+I am presenting it in a pseudo-BNF in the hopes it will be easier. Things
+in '' are keywords; things in ``'' are strings in the actual text.
 \begin{verbatim}
 #exprs are composed of factor or factor + factor etc.
 expr ::= factor ( ``+'' factor | ``-'' factor | )*
 #factors are term or term * term or term / term or ...
 factor ::=  term ( ``*'' term | ``/'' term | ... )*
-# 
+#
 unary-op ::= ``!'' ID
 # term is a number, hexnumber, ID, unary-op, or a full-blown expression
 term ::= NUM | XNUM | ID | unary-op | ``(`` expr ``)''
@@ -39,27 +39,27 @@ term ::= NUM | XNUM | ID | unary-op | ``(`` expr ``)''
 # Option command. Can be an expression or quote-string.
 # Options are used in the config tool itself (in expressions and 'if')
 # and are also passed to the C compiler when building linuxbios.
-# It is an error to have two option commands in a file. 
+# It is an error to have two option commands in a file.
 # It is an error to have an option command after the ID has been used
 #   in an expression (i.e. 'set after used' is an error)
 option ::= 'option' ID '=' (``value'' | term)
 
 # Default command. The ID is set to this value if no option command
-# is scanned. 
-# Multiple defaults for an ID will produce warning, but not errors. 
+# is scanned.
+# Multiple defaults for an ID will produce warning, but not errors.
 # It is OK to scan a default command after use of an ID.
 # Options always over-ride defaults.
 default ::= 'default' ID '=' (``value'' | term)
 
 # the mainboard, southbridge, northbridge commands
 # cause sourcing of Config.lb files as in the old config tool
-# as parts are sourced, a device tree is built. The structure 
+# as parts are sourced, a device tree is built. The structure
 # of the tree is determined by the structure of the components
 # as they are specified. To attach a superio to a southbridge, for
 # example, one would do this:
-# southbridge acer/5432 
-#   superio nsc/123 
-#   end 
+# southbridge acer/5432
+#   superio nsc/123
+#   end
 # end
 # the tool generates static initializers for this hierarchy.
 
@@ -79,17 +79,17 @@ register ::= 'register' ``CODE''
 mainboard ::= 'mainboard' PATH (statements)* 'end'
 
 # standard linuxbios commands
-southbridge ::= 'southbridge' PATH (statemnts)* 'end'			
-northbridge ::= 'northbridge' PATH (statemnts)* 'end'			
-superio ::= 'superio PATH (statemnts)* 'end'			
-cpu ::= 'cpu' PATH (statemnts)* 'end'			
-arch ::= 'arch' PATH (statemnts)* 'end'			
+southbridge ::= 'southbridge' PATH (statemnts)* 'end'
+northbridge ::= 'northbridge' PATH (statemnts)* 'end'
+superio ::= 'superio PATH (statemnts)* 'end'
+cpu ::= 'cpu' PATH (statemnts)* 'end'
+arch ::= 'arch' PATH (statemnts)* 'end'
 
 # files for building linuxbios
-# include a file in crt0.S 
-mainboardinit ::= 'mainboardinit' PATH 
+# include a file in crt0.S
+mainboardinit ::= 'mainboardinit' PATH
 
-# object file 
+# object file
 object ::= 'object' PATH
 # driver objects are just built into the image in a different way
 driver ::= 'driver' PATH
@@ -116,7 +116,7 @@ makedefine ::= 'makedefine' ``RAWTEXT''
 addaction ::= 'addaction' PATH ``ACTION''
 
 # statements
-statement ::= 
+statement ::=
 		  option
 		| default
         	| cpu
@@ -204,12 +204,12 @@ ldscript cpu/i386/entry32.lds
 ###
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
-if CONFIG_USE_FALLBACK_IMAGE 
-	mainboardinit cpu/i386/reset16.inc 
-	ldscript cpu/i386/reset16.lds 
+if CONFIG_USE_FALLBACK_IMAGE
+	mainboardinit cpu/i386/reset16.inc
+	ldscript cpu/i386/reset16.lds
 else
-	mainboardinit cpu/i386/reset32.inc 
-	ldscript cpu/i386/reset32.lds 
+	mainboardinit cpu/i386/reset32.inc
+	ldscript cpu/i386/reset32.lds
 end
 .
 .
@@ -227,7 +227,7 @@ makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
 mainboardinit ./auto.inc
 #
 ###
-### Include the secondary Configuration files 
+### Include the secondary Configuration files
 ###
 northbridge amd/amdk8
 end
@@ -286,6 +286,6 @@ export CC:=$(CONFIG_CROSS_COMPILE)gcc
 
 \end{verbatim}
 
-In other words, instead of expressions, we see the values. It's easier to 
-deal with. 
+In other words, instead of expressions, we see the values. It's easier to
+deal with.
 

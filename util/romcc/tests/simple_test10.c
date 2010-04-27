@@ -11,7 +11,7 @@ static void spd_set_drb(void)
 	 */
 	unsigned end_of_memory;
 	unsigned char device;
-	
+
 	end_of_memory = 0; /* in multiples of 8MiB */
 	device = SMBUS_MEM_DEVICE_START;
 	while (device <= SMBUS_MEM_DEVICE_END) {

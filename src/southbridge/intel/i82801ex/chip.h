@@ -1,7 +1,7 @@
 #ifndef I82801EX_CHIP_H
 #define I82801EX_CHIP_H
 
-struct southbridge_intel_i82801ex_config 
+struct southbridge_intel_i82801ex_config
 {
 
 #define ICH5R_GPIO_USE_MASK      0x03

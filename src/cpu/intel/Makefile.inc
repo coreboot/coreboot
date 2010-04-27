@@ -1,5 +1,5 @@
 # Note: From here on down, we are socket-centric. Socket choice determines
-# what other cpu files are included. 
+# what other cpu files are included.
 #
 # Therefore: ONLY include Makefile.inc from socket directories!
 

@@ -1,4 +1,4 @@
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -50,7 +50,7 @@ void main(unsigned long bist)
                         .channel1 = { (0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, 0 },
                 },
 	};
-	
+
 	if (bist == 0) {
 		enable_lapic();
 	}

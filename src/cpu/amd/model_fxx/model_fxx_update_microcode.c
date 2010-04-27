@@ -94,7 +94,7 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	#endif
 
 	#if CONFIG_K8_REV_F_SUPPORT == 1
-	
+
 	#endif
 
 	};
@@ -102,7 +102,7 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 
 	unsigned new_id;
 	int i;
-	
+
 	new_id = 0;
 
 	for(i=0; i<sizeof(id_mapping_table); i+=2 ) {
@@ -112,7 +112,7 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 		}
 	}
 
-	return new_id;	
+	return new_id;
 
 }
 

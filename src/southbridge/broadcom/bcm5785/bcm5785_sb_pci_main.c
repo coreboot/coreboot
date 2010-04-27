@@ -30,7 +30,7 @@ static void sb_init(device_t dev)
 	byte_old = byte;
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if (nmi_option) {			
+	if (nmi_option) {
 		byte &= ~(1 << 7); /* set NMI */
 	} else {
 		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
@@ -47,16 +47,16 @@ static void bcm5785_sb_read_resources(device_t dev)
 	struct resource *res;
 
 	/* Get the normal pci resources of this device */
-	pci_dev_read_resources(dev); 		
-	/* Get Resource for SMBUS */	
-	pci_get_resource(dev, 0x90);	
+	pci_dev_read_resources(dev);
+	/* Get Resource for SMBUS */
+	pci_get_resource(dev, 0x90);
 
-	compact_resources(dev);	
+	compact_resources(dev);
 
         /* Add an extra subtractive resource for both memory and I/O */
         res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
         res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-        
+
         res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
         res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
@@ -75,7 +75,7 @@ static int lsmbus_recv_byte(device_t dev)
 
         return do_smbus_recv_byte(res->base, device);
 }
-        
+
 static int lsmbus_send_byte(device_t dev, uint8_t val)
 {
         unsigned device;

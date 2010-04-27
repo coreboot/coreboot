@@ -5,7 +5,7 @@
 #if 0
 #define FAIL(x) do { printk(BIOS_DEBUG, x); return -EINVAL; } while (0)
 #else
-#define FAIL(x) 
+#define FAIL(x)
 #endif
 
 static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
@@ -34,7 +34,7 @@ static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
 #if DEBUG_PLL==1
     printk(BIOS_DEBUG, "aty_dsp_gt : mclk_fb_mult=%d\n", pll->mclk_fb_mult);
 #endif
-    
+
     /* (64*xclk/vclk/bpp)<<11 = xclocks_per_row<<11 */
     xclks_per_row = ((u32)pll->mclk_fb_mult * (u32)pll->mclk_fb_div *
 		     (u32)pll->vclk_post_div_real * 64) << 11;
@@ -98,11 +98,11 @@ static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
     t_rp  = ((memcntl >>  8) & 0x03) + 1;
     t_ras = ((memcntl >> 16) & 0x07) + 1;
     t_lat =  (memcntl >>  4) & 0x03;
-    
+
     t_pfc = t_rp + t_rcd + t_crd;
 
     t_rcc = max(t_rp + t_ras, t_pfc + n);
-    
+
     /* fifo_on<<6 */
     fifo_on = (2 * t_rcc + t_pfc + n - 1) << 6;
 
@@ -125,9 +125,9 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
     int pllmclk, pllsclk;
 #endif
     u32 q;
-    
+
     pll->pll_ref_div = info->pll_per*2*255/info->ref_clk_per;
-    
+
     /* FIXME: use the VTB/GTB /3 post divider if it's better suited */
 
     /* actually 8*q */
@@ -145,14 +145,14 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 	pll->mclk_post_div_real = 1;
     pll->sclk_fb_div = q*pll->mclk_post_div_real/8;
 
-#if DEBUG_PLL==1    
+#if DEBUG_PLL==1
     pllsclk = (1000000 * 2 * pll->sclk_fb_div) /
 	    (info->ref_clk_per * pll->pll_ref_div);
 
     printk(BIOS_DEBUG, "aty_valid_pll_ct: pllsclk=%d MHz, mclk=%d MHz\n",
 	   pllsclk, pllsclk / pll->mclk_post_div_real);
 #endif
-    
+
     pll->mclk_fb_mult = M64_HAS(MFB_TIMES_4) ? 4 : 2;
 
     /* actually 8*q */
@@ -177,7 +177,7 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
     printk(BIOS_DEBUG, "aty_valid_pll_ct: pllmclk=%d MHz, xclk=%d MHz\n",
 	   pllmclk, pllmclk / pll->xclk_post_div_real);
 #endif
-    
+
     /* FIXME: use the VTB/GTB /{3,6,12} post dividers if they're better suited */
     q = info->ref_clk_per*pll->pll_ref_div*4/vclk_per;	/* actually 8*q */
     if (q < 16*8 || q > 255*8)
@@ -199,7 +199,7 @@ static void aty_calc_pll_ct(const struct fb_info_aty *info, struct pll_ct *pll)
     u8 xpostdiv = 0;
     u8 mpostdiv = 0;
     u8 vpostdiv = 0;
-    
+
     if (M64_HAS(SDRAM_MAGIC_PLL) && (info->ram_type >= SDRAM))
 	    pll->pll_gen_cntl = 0x64; /* mclk = sclk */
     else
@@ -221,7 +221,7 @@ static void aty_calc_pll_ct(const struct fb_info_aty *info, struct pll_ct *pll)
     }
 
     pll->spll_cntl2 = mpostdiv << 4; /* sclk == pllsclk / mpostdiv */
-    
+
     switch (pll->xclk_post_div_real) {
 	case 1:
 	    xpostdiv = 0;
@@ -316,12 +316,12 @@ void aty_set_pll_ct(const struct fb_info_aty *info, const union aty_pll *pll)
 
     aty_st_pll(PLL_EXT_CNTL, pll->ct.pll_ext_cntl, info);
     aty_st_pll(MCLK_FB_DIV, pll->ct.mclk_fb_div, info); // for XCLK
-    
+
     aty_st_pll(SPLL_CNTL2, pll->ct.spll_cntl2, info);
     aty_st_pll(SCLK_FB_DIV, pll->ct.sclk_fb_div, info); // for MCLK
 
     aty_st_pll(PLL_GEN_CNTL, pll->ct.pll_gen_cntl, info);
-    
+
     aty_st_pll(EXT_VPLL_CNTL, 0, info);
     aty_st_pll(PLL_VCLK_CNTL, pll->ct.pll_vclk_cntl, info);
     aty_st_pll(VCLK_POST_DIV, pll->ct.vclk_post_div, info);

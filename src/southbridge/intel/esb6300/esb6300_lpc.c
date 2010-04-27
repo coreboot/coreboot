@@ -96,7 +96,7 @@ static void set_esb6300_gpio_direction(
 		switch(config->gpio[i] & ESB6300_GPIO_SEL_MASK) {
 		case ESB6300_GPIO_SEL_OUTPUT: val = 0; break;
 		case ESB6300_GPIO_SEL_INPUT:  val = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		/* The caller is responsible for not playing with unimplemented bits */
@@ -133,7 +133,7 @@ static void set_esb6300_gpio_level(
 		case ESB6300_GPIO_LVL_LOW:   val = 0; blink = 0; break;
 		case ESB6300_GPIO_LVL_HIGH:  val = 1; blink = 0; break;
 		case ESB6300_GPIO_LVL_BLINK: val = 1; blink = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		/* The caller is responsible for not playing with unimplemented bits */
@@ -166,7 +166,7 @@ static void set_esb6300_gpio_inv(
 		switch(config->gpio[i] & ESB6300_GPIO_INV_MASK) {
 		case ESB6300_GPIO_INV_OFF: val = 0; break;
 		case ESB6300_GPIO_INV_ON:  val = 1; break;
-		default: 
+		default:
 			continue;
 		}
 		gpio_inv &= ~( 1 << i);
@@ -210,7 +210,7 @@ static void esb6300_gpio_init(device_t dev)
 	/* Find the GPIO bar */
 	res = find_resource(dev, GPIO_BAR);
 	if (!res) {
-		return; 
+		return;
 	}
 
 	/* Set the use selects */
@@ -274,7 +274,7 @@ static void lpc_init(struct device *dev)
 	pci_write_config8(dev, 0xa0, 0x20);
 	pci_write_config8(dev, 0xad, 0x03);
 	pci_write_config8(dev, 0xbb, 0x09);
-	
+
 	esb6300_enable_serial_irqs(dev);
 
 	esb6300_pci_dma_cfg(dev);
@@ -292,7 +292,7 @@ static void lpc_init(struct device *dev)
 
 	/* Set up the PIRQ */
 	esb6300_pirq_init(dev);
-	
+
 	/* Set the state of the gpio lines */
 	esb6300_gpio_init(dev);
 
@@ -346,7 +346,7 @@ static void esb6300_lpc_enable_resources(device_t dev)
 	acpi_cntl = pci_read_config8(dev, 0x44);
 	acpi_cntl |= (1 << 4);
 	pci_write_config8(dev, 0x44, acpi_cntl);
-	
+
 	/* Enable the GPIO bar */
 	gpio_cntl = pci_read_config8(dev, 0x5c);
 	gpio_cntl |= (1 << 4);

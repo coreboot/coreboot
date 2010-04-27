@@ -295,7 +295,7 @@ static void keyboard_set_mode(unsigned char mode)
 
 /**
  * Set keyboard layout
- * @param country string describing the keyboard layout language. 
+ * @param country string describing the keyboard layout language.
  * Valid values are "us", "de".
  */
 

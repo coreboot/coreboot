@@ -13,8 +13,8 @@ void amd8111_enable(device_t dev)
 
 	/* See if we are on the bus behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
-	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) && 
-	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) 
+	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) &&
+	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI))
 	{
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
@@ -33,7 +33,7 @@ void amd8111_enable(device_t dev)
 		return;
 	}
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_AMD) ||
-	    (lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) 
+	    (lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA))
 	{
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
@@ -66,7 +66,7 @@ void amd8111_enable(device_t dev)
 
 struct chip_operations southbridge_amd_amd8111_ops = {
 	CHIP_NAME("AMD-8111 Southbridge")
-	/* This only called when this device is listed in the 
+	/* This only called when this device is listed in the
 	* static device tree.
 	*/
 	.enable_dev = amd8111_enable,

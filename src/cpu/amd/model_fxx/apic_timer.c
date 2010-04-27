@@ -25,5 +25,5 @@ void udelay(unsigned usecs)
 	do {
 		value = lapic_read(LAPIC_TMCCT);
 	} while((start - value) < ticks);
-	
+
 }

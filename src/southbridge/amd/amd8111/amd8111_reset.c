@@ -67,7 +67,7 @@ void hard_reset(void)
 	 */
 	bus = node_link_to_bus(node, link);
 	dev = pci_locate_device_on_bus(
-		PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA), 
+		PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA),
 		bus);
 
 	/* Reset */

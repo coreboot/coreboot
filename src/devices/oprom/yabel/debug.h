@@ -39,7 +39,7 @@ static inline void set_ci(void) {};
  * |||-Currently unused
  * ||||-Currently unused
  * |||||-Currently unused
- * ||||||-DEBUG_PNP - Print Plug And Play access made by option rom 
+ * ||||||-DEBUG_PNP - Print Plug And Play access made by option rom
  * |||||||-DEBUG_DISK - Print Disk I/O related messages, currently unused
  * ||||||||-DEBUG_PMM - Print messages related to POST Memory Manager (PMM)
  * |||||||||-DEBUG_VBE - Print messages related to VESA BIOS Extension (VBE) functions
@@ -47,7 +47,7 @@ static inline void set_ci(void) {};
  * |||||||||||-DEBUG_INTR - Print messages related to interrupt handling
  * ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to accesse to certain areas of the virtual Memory (e.g. BDA (BIOS Data Area) or Interrupt Vectors)
  * |||||||||||||-DEBUG_MEM - Print memory access made by option rom (NOTE: this also includes accesses to fetch instructions)
- * ||||||||||||||-DEBUG_IO - Print I/O access made by option rom 
+ * ||||||||||||||-DEBUG_IO - Print I/O access made by option rom
  * 11000111111111 - Max Binary Value, Debug All (WARNING: - This could run for hours)
  */
 

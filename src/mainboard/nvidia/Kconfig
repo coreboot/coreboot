@@ -1,7 +1,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_NVIDIA
-        
+
 source "src/mainboard/nvidia/l1_2pvv/Kconfig"
 
 endchoice

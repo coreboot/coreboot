@@ -38,7 +38,7 @@
 				// Address, there will only be a call to this INT and a RETF
 #define PNP_INT_NUM 0xFD
 
-/* array of funtion pointers to override generic interrupt handlers 
+/* array of funtion pointers to override generic interrupt handlers
  * a YABEL caller can add functions to this array before calling YABEL
  * if a interrupt occurs, YABEL checks wether a function is set in
  * this array and only runs the generic interrupt handler code, if

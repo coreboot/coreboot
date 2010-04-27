@@ -1,7 +1,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_SUPERMICRO
-	
+
 source "src/mainboard/supermicro/h8dme/Kconfig"
 source "src/mainboard/supermicro/h8dmr/Kconfig"
 source "src/mainboard/supermicro/h8dmr_fam10/Kconfig"

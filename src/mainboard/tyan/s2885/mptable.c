@@ -83,7 +83,7 @@ static void *smp_write_config_table(void *v)
 			}
                 }
 	}
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_8111, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_8111, 0x1);
@@ -100,7 +100,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid_8111, 0xf);
 //??? What
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((sysconf.sbdn+1)<<2)|3, apicid_8111, 0x13);
-//Onboard AMD AC97 Audio 
+//Onboard AMD AC97 Audio
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((sysconf.sbdn+1)<<2)|1, apicid_8111, 0x11);
 // Onboard AMD USB
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, apicid_8111, 0x13);
@@ -108,7 +108,7 @@ static void *smp_write_config_table(void *v)
 //  AGP Display Adapter
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8151_1, 0x0, apicid_8111, 0x10);
 
-//Onboard Serial ATA        
+//Onboard Serial ATA
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x0b<<2)|0, apicid_8111, 0x11);
 //Onboard Firewire
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x0c<<2)|0, apicid_8111, 0x13);
@@ -127,7 +127,7 @@ static void *smp_write_config_table(void *v)
         }
 
 
-//Slot 4 PCIX 100/66        
+//Slot 4 PCIX 100/66
         for(i=0;i<4;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (7<<2)|i, apicid_8131_1, (2+i)%4); //26
         }

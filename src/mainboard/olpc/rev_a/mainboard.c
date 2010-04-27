@@ -83,7 +83,7 @@ static void init(struct device *dev) {
 	  * conditional we can make it a config variable later.
 	  */
 
-	printk(BIOS_DEBUG, "%s (%x,%x)SET USB PCI interrupt line to %d\n", 
+	printk(BIOS_DEBUG, "%s (%x,%x)SET USB PCI interrupt line to %d\n",
 		__func__, bus, devfn, usbirq);
 	usb = dev_find_slot(bus, devfn);
 	if (! usb){

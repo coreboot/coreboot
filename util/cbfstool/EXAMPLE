@@ -1,4 +1,4 @@
- rm coreboot.rom; 
+ rm coreboot.rom;
 ./cbfstool coreboot.rom create 0x80000 0x10000 /tmp/coreboot.strip
 ./cbfstool coreboot.rom add-payload /tmp/filo.elf normal/payload l
 ./cbfstool coreboot.rom print

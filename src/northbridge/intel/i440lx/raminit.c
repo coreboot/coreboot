@@ -61,14 +61,14 @@ static const long register_values[] = {
 	//  0x04 == bit 10
 	// BASE is 0x8A but we dont want bit 9 or 10 have ENABLED so 0x8C
 	PACCFG + 1, 0x38, 0x8c,
-	
+
 	DBC, 0x00, 0xC3,
 
 	DRT,   0x00, 0xFF,
 	DRT+1, 0x00, 0xFF,
 
 	DRAMC, 0x00, 0x00, /* disable refresh for now. */
-	DRAMT, 0x00, 0x00, 
+	DRAMT, 0x00, 0x00,
 
 	PAM0, 0x00, 0x30, // everything is a mem
 	PAM1, 0x00, 0x33,
@@ -109,7 +109,7 @@ static void do_ram_command(u32 command)
 	u32 addr, addr_offset;
 
 	/* Configure the RAM command. */
-	reg16 = pci_read_config16(NB, DRAMXC); 
+	reg16 = pci_read_config16(NB, DRAMXC);
 	reg16 &= 0xff1f;		/* Clear bits 7-5. */
 	reg16 |= (u16) (command << 5);	/* Write command into bits 7-5. */
 	pci_write_config16(NB, DRAMXC, reg16);
@@ -127,7 +127,7 @@ static void do_ram_command(u32 command)
                 addr_offset = 0;
                 caslatency = 3; /* TODO: Dynamically get CAS latency later. */
 
-		/* before translation it is 
+		/* before translation it is
 		 *
 		 * M[02:00] Burst Length
 		 * M[03:03] Burst Type
@@ -153,7 +153,7 @@ static void do_ram_command(u32 command)
 		 * must be left shifted by 3
 		 * so possible formula is (caslatency <<4)|(burst_type << 1)|(burst length)
 		 * then << 3 shift to compensate shift in Memory Controller
-		 */ 
+		 */
 		if (command == RAM_COMMAND_MRS) {
 			if (caslatency == 3)
 				addr_offset = 0x1d0;
@@ -194,7 +194,7 @@ static void spd_enable_refresh(void)
 	/* this chipset offer only two choices regarding refresh
 	 * refresh disabled, or refresh normal
 	 */
-	
+
 	pci_write_config8(NB, DRAMC, reg | 0x01);
 	reg = pci_read_config8(NB, DRAMC);
 
@@ -216,10 +216,10 @@ static void northbridge_init(void)
 	pci_write_config32(NB, APBASE, reg32);
 
 	#ifdef DEBUG_RAM_SETUP
-	/* 
-	 * apbase dont get set still, no idea what i have doing wrong yet, 
+	/*
+	 * apbase dont get set still, no idea what i have doing wrong yet,
 	 * i am almost sure that somehow i set it by mistake once, but can't
-	 * repeat that. 
+	 * repeat that.
 	 */
 	reg32 = pci_read_config32(NB, APBASE);
 	PRINT_DEBUG("APBASE ");
@@ -238,11 +238,11 @@ static void sdram_set_registers(void)
 	int i, max;
 
 	/* nice banner with FSB shown? do we have
-	 * any standart policy about such things? 
+	 * any standart policy about such things?
 	 */
 #if 0
 	uint16_t reg16;
-	reg16 = pci_read_config16(NB, PACCFG); 
+	reg16 = pci_read_config16(NB, PACCFG);
 	printk(BIOS_DEBUG, "i82443LX Host Freq: 6%C MHz\n", (reg16 & 0x4000) ? '0' : '6');
 #endif
 
@@ -261,8 +261,8 @@ static void sdram_set_registers(void)
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
 		pci_write_config8(NB, register_values[i], reg);
 
-		/* 
-		 * i am not sure if that is needed, but was usefull 
+		/*
+		 * i am not sure if that is needed, but was usefull
 		 * for me to confirm what got written
 		 */
 #ifdef DEBUG_RAM_SETUP
@@ -282,7 +282,7 @@ static void sdram_set_registers(void)
 #endif
 	}
 
-	PRINT_DEBUG("Northbridge atexit sdram set registers\n");	
+	PRINT_DEBUG("Northbridge atexit sdram set registers\n");
 	DUMPNORTH();
 }
 
@@ -293,9 +293,9 @@ static void sdram_set_spd_registers(void)
 	u16 memsize = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t ds = 0; // dimm size 
+		uint16_t ds = 0; // dimm size
 		int j;
-		/* this code skips second bank on each socket (no idea how to fix it now) 
+		/* this code skips second bank on each socket (no idea how to fix it now)
 		 */
 
 		PRINT_DEBUG("DIMM");
@@ -321,8 +321,8 @@ static void sdram_set_spd_registers(void)
 
 
 		/* This is more or less crude hack
-		 * allowing to run this target under qemu (even if that is not really 
-		 * same hardware emulated), 
+		 * allowing to run this target under qemu (even if that is not really
+		 * same hardware emulated),
 		 * probably some kconfig expert option should be added to enable/disable
 		 * this nicelly
 		 */
@@ -333,10 +333,10 @@ static void sdram_set_spd_registers(void)
 
 
 		// todo: support for bank with not equal sizes as per jedec standart?
-		
+
 		/*
 		 * because density is reported in units of 4Mbyte
-		 * and rows in device are just value, 
+		 * and rows in device are just value,
 		 * and for setting registers we need value in 8Mbyte units
 		 */
 
@@ -348,7 +348,7 @@ static void sdram_set_spd_registers(void)
 		pci_write_config8(NB, DRB + (2*i), memsize);
 		pci_write_config8(NB, DRB + (2*i) + 1, memsize);
 		if (ds > 0) {
-			/* i have no idea why pci_read_config16 not work for 
+			/* i have no idea why pci_read_config16 not work for
 			 * me correctly here
 			 */
 			ds = pci_read_config8(NB, DRT+1);
@@ -364,9 +364,9 @@ static void sdram_set_spd_registers(void)
 			PRINT_DEBUG_HEX16(ds);
 			PRINT_DEBUG("\n");
 
-			/* 
+			/*
 			 * modify DRT register if current row isn't empty
-			 * code assume its SDRAM plugged (should check if its sdram or EDO, 
+			 * code assume its SDRAM plugged (should check if its sdram or EDO,
 			 * edo would have 0x00 as constand instead 0x10 for SDRAM
 			 * also this code is buggy because ignores second row of each dimm socket
 			 */
@@ -400,7 +400,7 @@ static void sdram_set_spd_registers(void)
 	pci_write_config8(NB, DRAMC, 0x00);
 
 	/* Cas latency 3, and other shouldbe properly from spd too */
-	pci_write_config8(NB, DRAMT, 0xAC); 
+	pci_write_config8(NB, DRAMT, 0xAC);
 
 	/* TODO? */
 	pci_write_config8(NB, PCI_LATENCY_TIMER, 0x40);

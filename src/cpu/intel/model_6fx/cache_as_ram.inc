@@ -1,18 +1,18 @@
-/* 
+/*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
@@ -213,7 +213,7 @@ clear_mtrrs:
 	xorl	%eax, %eax
 	movl	$((1024*1024) / 4), %ecx
 	rep stosl
-	
+
 	post_code(0x37)
 #endif
 
@@ -268,7 +268,7 @@ clear_mtrrs:
 __main:
 	post_code(0x11)
 	cld			/* clear direction flag */
-	
+
 	movl	%ebp, %esi
 
 	movl $ROMSTAGE_STACK, %esp
@@ -276,7 +276,7 @@ __main:
 	pushl %esi
 	call copy_and_run
 
-.Lhlt:	
+.Lhlt:
 	post_code(0xee)
 	hlt
 	jmp	.Lhlt

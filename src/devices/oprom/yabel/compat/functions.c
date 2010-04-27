@@ -61,6 +61,6 @@ u64 get_time(void)
 	"rdtsc"
         : "=a"(eax), "=d"(edx)
         : /* no inputs, no clobber */);
-    act = ((u64) edx << 32) | eax; 
+    act = ((u64) edx << 32) | eax;
     return act;
 }

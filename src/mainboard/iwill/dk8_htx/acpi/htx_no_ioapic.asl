@@ -1,7 +1,7 @@
 /*
  * Copyright 2006 AMD
  */
-		
+
             Device (HTXA)
             {
                 /*  HTX */

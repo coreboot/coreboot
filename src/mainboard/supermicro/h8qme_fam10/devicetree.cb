@@ -8,9 +8,9 @@ chip northbridge/amd/amdfam10/root_complex
 		chip northbridge/amd/amdfam10 #mc0
 			device pci 18.0 on end
 			device pci 18.0 on end
-			device pci 18.0 on 
+			device pci 18.0 on
         # SB on link 2.0
-			        chip southbridge/nvidia/mcp55 
+			        chip southbridge/nvidia/mcp55
 					device pci 0.0 on end   # HT
                 			device pci 1.0 on # LPC
 						chip superio/winbond/w83627hf
@@ -37,14 +37,14 @@ chip northbridge/amd/amdfam10/root_complex
                 	                			irq 0x70 = 1
 								irq 0x72 = 12
 							end
-                	        			device pnp 2e.6 off  # SFI 
+                	        			device pnp 2e.6 off  # SFI
                 	                 			io 0x62 = 0x100
 							end
                 	        			device pnp 2e.7 off #  GPIO_GAME_MIDI
 								io 0x60 = 0x220
 								io 0x62 = 0x300
 								irq 0x70 = 9
-							end						
+							end
                 	        			device pnp 2e.8 off end #  WDTO_PLED
                 	        			device pnp 2e.9 off end #  GPIO_SUSLED
                 	        			device pnp 2e.a off end #  ACPI
@@ -57,12 +57,12 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 1.1 on end
                                         device pci 1.1 on # SM 1
 #PCI device smbus address will depend on addon pci device, do we need to scan_smbus_bus?
-#                                                         
+#
                                                 chip drivers/generic/generic #MAC EEPROM
                                                         device i2c 51 on end
-                                                end 
+                                                end
 
-                                        end # SM 
+                                        end # SM
 	                		device pci 2.0 on end # USB 1.1
         	        		device pci 2.1 on end # USB 2
                 			device pci 4.0 on end # IDE
@@ -70,7 +70,7 @@ chip northbridge/amd/amdfam10/root_complex
 	                		device pci 5.1 on end # SATA 1
 	                		device pci 5.2 on end # SATA 2
 					device pci 6.1 off end # AZA
-					device pci 7.0 on 
+					device pci 7.0 on
 					    device pci 1.0 on end
 					end
 					device pci 8.0 off end
@@ -87,7 +87,7 @@ chip northbridge/amd/amdfam10/root_complex
 					register "mac_eeprom_smbus" = "3" # 1: smbus under 2e.8, 2: SM0 3: SM1
 					register "mac_eeprom_addr" = "0x51"
 				end
-			end #  device pci 18.0 
+			end #  device pci 18.0
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
@@ -110,10 +110,10 @@ chip northbridge/amd/amdfam10/root_complex
 			device pci 19.3 on end
 			device pci 19.4 on end
 		end # mc0
-		
+
 	end # PCI domain
-	
-#       chip drivers/generic/debug 
+
+#       chip drivers/generic/debug
 #               device pnp 0.0 off end # chip name
 #                device pnp 0.1 on end # pci_regs_all
 #                device pnp 0.2 off end # mem
@@ -124,5 +124,5 @@ chip northbridge/amd/amdfam10/root_complex
 #                device pnp 0.7 off end # tsc
 #                device pnp 0.8 off  end # io
 #                device pnp 0.9 on end # io
-#       end  
+#       end
 end #root_complex

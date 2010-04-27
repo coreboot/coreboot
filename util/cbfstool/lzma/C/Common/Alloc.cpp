@@ -35,7 +35,7 @@ void MyFree(void *address) throw()
   if (address != 0)
     fprintf(stderr, "\nFree; count = %10d", --g_allocCount);
   #endif
-  
+
   ::free(address);
 }
 
@@ -62,7 +62,7 @@ void MidFree(void *address) throw()
   ::VirtualFree(address, 0, MEM_RELEASE);
 }
 
-static SIZE_T g_LargePageSize = 
+static SIZE_T g_LargePageSize =
     #ifdef _WIN64
     (1 << 21);
     #else
@@ -92,10 +92,10 @@ void *BigAlloc(size_t size) throw()
   #ifdef _SZ_ALLOC_DEBUG
   fprintf(stderr, "\nAlloc_Big %10d bytes;  count = %10d", size, g_allocCountBig++);
   #endif
-  
+
   if (size >= (1 << 18))
   {
-    void *res = ::VirtualAlloc(0, (size + g_LargePageSize - 1) & (~(g_LargePageSize - 1)), 
+    void *res = ::VirtualAlloc(0, (size + g_LargePageSize - 1) & (~(g_LargePageSize - 1)),
         MEM_COMMIT, PAGE_READWRITE);
     if (res != 0)
       return res;
@@ -109,7 +109,7 @@ void BigFree(void *address) throw()
   if (address != 0)
     fprintf(stderr, "\nFree_Big; count = %10d", --g_allocCountBig);
   #endif
-  
+
   if (address == 0)
     return;
   ::VirtualFree(address, 0, MEM_RELEASE);

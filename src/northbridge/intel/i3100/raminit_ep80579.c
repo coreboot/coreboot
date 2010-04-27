@@ -34,7 +34,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		PCI_ADDR(0, 0x00, 0, PAM-1), 0xcccccc7f, 0x33333000,
 		PCI_ADDR(0, 0x00, 0, PAM+3), 0xcccccccc, 0x33333333,
 		PCI_ADDR(0, 0x00, 0, DEVPRES1), 0xffffffff, 0x0040003a,
-		PCI_ADDR(0, 0x00, 0, SMRBASE), 0x00000fff, BAR | 0,  
+		PCI_ADDR(0, 0x00, 0, SMRBASE), 0x00000fff, BAR | 0,
 	};
 	int i;
 	int max;
@@ -89,7 +89,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
 	if (value < 0) goto hw_err;
 	value &= 0xff;
 	value <<= 8;
-	
+
 	low = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);
 	if (low < 0) goto hw_err;
 	value = value | (low & 0xff);
@@ -143,7 +143,7 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, u8 dimm_mask)
 {
 	int i;
 	int cum;
-	
+
 	for (i = cum = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 		if (dimm_mask & (1 << i)) {
@@ -212,7 +212,7 @@ static u8 spd_detect_dimms(const struct mem_controller *ctrl)
 }
 
 
-static int spd_set_row_attributes(const struct mem_controller *ctrl, 
+static int spd_set_row_attributes(const struct mem_controller *ctrl,
 				  u8 dimm_mask)
 {
 	int value;
@@ -258,7 +258,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		/* set device width (x8) */
 		dra |= (1 << 4);
 		dra |= (1 << 10);
-	
+
 		/* set device type (registered) */
 		dra |= (1 << 14);
 
@@ -278,7 +278,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 }
 
 
-static u32 spd_set_drt_attributes(const struct mem_controller *ctrl, 
+static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		u8 dimm_mask, u32 drc)
 {
 	int i;
@@ -409,7 +409,7 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 	return val;
 }
 
-static int spd_set_dram_controller_mode(const struct mem_controller *ctrl, 
+static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 					u8 dimm_mask)
 {
 	int value;
@@ -486,7 +486,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	return drc;
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	u8 dimm_mask;
 	int i;
@@ -506,7 +506,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
         u32 dimm,i;
         u32 data32;
 	u32 t4;
- 
+
 	/* Set up northbridge values */
 	/* ODT enable */
   	pci_write_config32(ctrl->f0, SDRC, 0xa0002c30);
@@ -581,17 +581,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	data32 = data32 | (3 << 5);  /* temp turn off ODT */
   	/* Set DRAM controller mode */
   	pci_write_config32(ctrl->f0, DRC, data32);
-	
+
 	/* Turn the clocks on */
   	pci_write_config16(ctrl->f0, CKDIS, 0x0000);
-	
+
 	/* Program row size */
 	spd_set_ram_size(ctrl, mask);
-	
+
 	/* Program row attributes */
 	spd_set_row_attributes(ctrl, mask);
 
-	/* Program timing values */	
+	/* Program timing values */
 	mode_reg = spd_set_drt_attributes(ctrl, mask, drc);
 
 	dump_dcal_regs();
@@ -608,14 +608,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-	
+
 	/* Apply NOP */
 	udelay(16);
 	for (cs = 0; cs < 2; cs++) {
 		print_debug("NOP CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
-		write32(BAR + DCALCSR, (0x80000000 | ((cs+1)<<21))); 
+		write32(BAR + DCALCSR, (0x80000000 | ((cs+1)<<21)));
 		data32 = read32(BAR+DCALCSR);
 		while (data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
@@ -623,7 +623,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Precharge all banks */
 	udelay(16);
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		print_debug("Precharge CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
@@ -633,10 +633,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-		
+
 	/* EMRS: Enable DLLs, set OCD calibration mode to default */
 	udelay(16);
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		print_debug("EMRS CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
@@ -648,7 +648,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 	/* MRS: Reset DLLs */
 	udelay(16);
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		print_debug("MRS CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
@@ -661,7 +661,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* Precharge all banks */
 	udelay(48);
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		print_debug("Precharge CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
@@ -671,11 +671,11 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-	
+
 	/* Do 2 refreshes */
 	for (i = 0; i < 2; i++) {
 		udelay(16);
-		for (cs = 0; cs < 2; cs++) {	
+		for (cs = 0; cs < 2; cs++) {
 			print_debug("Refresh CS");
 			print_debug_hex8(cs);
 			print_debug("\n");
@@ -688,7 +688,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* MRS: Set DLLs to normal */
 	udelay(16);
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		print_debug("MRS CS");
 		print_debug_hex8(cs);
 		print_debug("\n");
@@ -734,7 +734,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		while (data32 & 0x80000000)
 			data32 = read32(BAR+DCALCSR);
 	}
-	
+
 	dump_dcal_regs();
 
 	/* Adjust RCOMP */
@@ -746,11 +746,11 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	dump_dcal_regs();
 
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(ctrl->f0, DRC, data32);	
+	pci_write_config32(ctrl->f0, DRC, data32);
 	write32(BAR+DCALCSR, 0x0008000f);
 
 	/* Clear memory and init ECC */
-	for (cs = 0; cs < 2; cs++) {	
+	for (cs = 0; cs < 2; cs++) {
 		if (!(mask & (1<<cs)))
 			continue;
 		print_debug("clear memory CS");
@@ -779,10 +779,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	drc |= (1 << 29);
 	drc |= (3 << 30);
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(ctrl->f0, DRC, data32);	
+	pci_write_config32(ctrl->f0, DRC, data32);
 
 	/* Set the ECC mode */
-	pci_write_config32(ctrl->f0, DRC, drc);	
+	pci_write_config32(ctrl->f0, DRC, drc);
 
 	/* The memory is now set up--use it */
 	cache_lbmem(MTRR_TYPE_WRBACK);

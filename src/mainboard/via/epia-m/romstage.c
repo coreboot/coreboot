@@ -26,27 +26,27 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/via/vt8623/raminit.c"
 
-static void enable_mainboard_devices(void) 
+static void enable_mainboard_devices(void)
 {
 	device_t dev;
-  
+
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_8235), 0);
-  
+
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
 	}
 	pci_write_config8(dev, 0x50, 0x80);
 	pci_write_config8(dev, 0x51, 0x1f);
 #if 0
-	// This early setup switches IDE into compatibility mode before PCI gets 
+	// This early setup switches IDE into compatibility mode before PCI gets
 	// a chance to assign I/Os
 	// movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
 	// //      movb    $0x09, %dl
 	// movb    $0x00, %dl
 	// PCI_WRITE_CONFIG_BYTE
 #endif
-	/* we do this here as in V2, we can not yet do raw operations 
+	/* we do this here as in V2, we can not yet do raw operations
 	 * to pci!
 	 */
         dev += 0x100; /* ICKY */
@@ -58,7 +58,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x3d, 0);
 }
 
-static void enable_shadow_ram(void) 
+static void enable_shadow_ram(void)
 {
 	device_t dev = 0; /* no need to look up 0:0.0 */
 	unsigned char shadowreg;
@@ -108,7 +108,7 @@ static void main(unsigned long bist)
 	enable_shadow_ram();
 
 	ddr_ram_setup((const struct mem_controller *)0);
-	
+
 	/* Check all of memory */
 #if 0
 	static const struct {
@@ -129,7 +129,7 @@ static void main(unsigned long bist)
 	}
 
 	//dump_pci_devices();
-	
+
 	print_spew("Leaving romstage.c:main()\n");
 }
 

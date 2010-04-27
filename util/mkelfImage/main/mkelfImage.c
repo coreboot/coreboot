@@ -71,7 +71,7 @@ uint16_t add_ipchksums(unsigned long offset, uint16_t sum, uint16_t new)
 	sum = ~sum & 0xFFFF;
 	new = ~new & 0xFFFF;
 	if (offset & 1) {
-		/* byte swap the sum if it came from an odd offset 
+		/* byte swap the sum if it came from an odd offset
 		 * since the computation is endian independant this
 		 * works.
 		 */
@@ -114,7 +114,7 @@ char *slurp_file(const char *filename, off_t *r_size)
 	off_t size, progress;
 	ssize_t result;
 	struct stat stats;
-	
+
 
 	if (!filename) {
 		*r_size = 0;
@@ -305,7 +305,7 @@ static void serialize_notes(char *buf, struct memelfheader *ehdr)
 	notes = ehdr->e_notenum;
 	size = sizeof_notes(note, notes);
 	memset(buf, 0, size);
-	
+
 	/* Write the Elf Notes */
 	offset = 0;
 	for(i = 0; i < notes; i++) {
@@ -317,11 +317,11 @@ static void serialize_notes(char *buf, struct memelfheader *ehdr)
 		hdr.n_type   = cpu_to_elf32(ehdr, note[i].n_type);
 
 		/* Copy the note into the buffer */
-		memcpy(buf + offset, &hdr,       sizeof(hdr));  
+		memcpy(buf + offset, &hdr,       sizeof(hdr));
 		offset += sizeof(hdr);
-		memcpy(buf + offset, note[i].n_name, n_namesz); 
+		memcpy(buf + offset, note[i].n_name, n_namesz);
 		offset += roundup(n_namesz, 4);
-		memcpy(buf + offset, note[i].n_desc, note[i].n_descsz); 
+		memcpy(buf + offset, note[i].n_desc, note[i].n_descsz);
 		offset += roundup(note[i].n_descsz, 4);
 
 	}
@@ -382,7 +382,7 @@ static void serialize_phdrs(char *buf, struct memelfheader *ehdr, size_t note_si
 	size_t offset, note_offset;
 	if (ehdr->ei_class == ELFCLASS32) {
 		Elf32_Phdr *phdr = (Elf32_Phdr *)buf;
-		note_offset = 
+		note_offset =
 			sizeof(Elf32_Ehdr) + (sizeof(Elf32_Phdr)*ehdr->e_phnum);
 		offset = note_offset + note_size;
 		for(i = 0; i < ehdr->e_phnum; i++) {
@@ -406,7 +406,7 @@ static void serialize_phdrs(char *buf, struct memelfheader *ehdr, size_t note_si
 	}
 	else if (ehdr->ei_class == ELFCLASS64) {
 		Elf64_Phdr *phdr = (Elf64_Phdr *)buf;
-		note_offset = 
+		note_offset =
 			sizeof(Elf64_Ehdr) + (sizeof(Elf64_Phdr)*ehdr->e_phnum);
 		offset = note_offset + note_size;
 		for(i = 0; i < ehdr->e_phnum; i++) {
@@ -478,7 +478,7 @@ static void write_elf(struct memelfheader *ehdr, char *output)
 	if (ehdr->ei_class == ELFCLASS32) {
 		ehdr_size = sizeof(Elf32_Ehdr);
 		phdr_size = sizeof(Elf32_Phdr) * ehdr->e_phnum;
-	} 
+	}
 	else if (ehdr->ei_class == ELFCLASS64) {
 		ehdr_size = sizeof(Elf64_Ehdr);
 		phdr_size = sizeof(Elf64_Phdr) * ehdr->e_phnum;
@@ -505,7 +505,7 @@ static void write_elf(struct memelfheader *ehdr, char *output)
 
 	/* Compute the final form of the notes */
 	serialize_notes(buf + ehdr_size + phdr_size, ehdr);
-	
+
 	/* Now write the elf image */
 	fd = open(output, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IRGRP | S_IROTH);
 	if (fd < 0) {
@@ -612,7 +612,7 @@ int main(int argc, char **argv)
 		}
 	}
 	fileind = optind;
-	
+
 	/* Reset getopt for the next pass */
 	opterr = 1;
 	optind = 1;

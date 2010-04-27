@@ -62,8 +62,8 @@ void CLZInWindow::ReleaseStream()
 //     _streamPos >= _pos + _keepSizeAfter
 //     _posLimit = _streamPos - _keepSizeAfter;
 //   else
-//          
-  
+//
+
 HRESULT CLZInWindow::ReadBlock()
 {
   if(_streamEndWasReached)
@@ -98,7 +98,7 @@ void CLZInWindow::MoveBlock()
   UInt32 offset = (UInt32)(_buffer - _bufferBase) + _pos - _keepSizeBefore;
   // we need one additional byte, since MovePos moves on 1 byte.
   if (offset > 0)
-    offset--; 
+    offset--;
   UInt32 numBytes = (UInt32)(_buffer - _bufferBase) + _streamPos -  offset;
   memmove(_bufferBase, _bufferBase + offset, numBytes);
   _buffer -= offset;

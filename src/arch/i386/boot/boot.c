@@ -63,9 +63,9 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	return (
 		((ehdr->e_machine == EM_386) ||	(ehdr->e_machine == EM_486)) &&
 		(ehdr->e_ident[EI_CLASS] == ELFCLASS32) &&
-		(ehdr->e_ident[EI_DATA] == ELFDATA2LSB) 
+		(ehdr->e_ident[EI_DATA] == ELFDATA2LSB)
 		);
-	
+
 }
 
 void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
@@ -74,7 +74,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 	unsigned long lb_start, lb_size;
 	unsigned long adjust, adjusted_boot_notes;
 
-	elf_boot_notes.hdr.b_checksum = 
+	elf_boot_notes.hdr.b_checksum =
 		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
 
 	lb_start = (unsigned long)&_ram_seg;
@@ -82,7 +82,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 	adjust = buffer +  size - lb_start;
 
 	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
-	adjusted_boot_notes += adjust; 
+	adjusted_boot_notes += adjust;
 
 	printk(BIOS_SPEW, "entry    = 0x%08lx\n", (unsigned long)entry);
 	printk(BIOS_SPEW, "lb_start = 0x%08lx\n", lb_start);
@@ -91,7 +91,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 	printk(BIOS_SPEW, "buffer   = 0x%08lx\n", buffer);
 	printk(BIOS_SPEW, "     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
 	printk(BIOS_SPEW, "adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
-	
+
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"	cld	\n\t"
@@ -172,7 +172,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 		"	popl	%%edi\n\t"
 		"	popl	%%esi\n\t"
 
-		:: 
+		::
 		"ri" (lb_start), "ri" (buffer), "ri" (lb_size),
 		"ri" (entry),
 #if CONFIG_MULTIBOOT

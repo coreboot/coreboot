@@ -163,7 +163,7 @@ static void setup_mb_resource_map(void)
 		 *	   1 = base/limit registers i are read-only
 		 * [ 7: 4] Reserved
 		 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
-		 *	   This field defines the upper address bits of a 40bit address 
+		 *	   This field defines the upper address bits of a 40bit address
 		 *	   that defines the start of memory-mapped I/O region i
 		 */
 		PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00000000,
@@ -201,7 +201,7 @@ static void setup_mb_resource_map(void)
 		 * [31:25] Reserved
 		 */
 //		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x00007000,
-		PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000, 
+		PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
 
@@ -219,7 +219,7 @@ static void setup_mb_resource_map(void)
 		 * [ 3: 2] Reserved
 		 * [ 4: 4] VGA Enable
 		 *	   0 = VGA matches Disabled
-		 *	   1 = matches all address < 64K and where A[9:0] is in the 
+		 *	   1 = matches all address < 64K and where A[9:0] is in the
 		 *	       range 3B0-3BB or 3C0-3DF independen of the base & limit registers
 		 * [ 5: 5] ISA Enable
 		 *	   0 = ISA matches Disabled
@@ -227,7 +227,7 @@ static void setup_mb_resource_map(void)
 		 *	       from matching agains this base/limit pair
 		 * [11: 6] Reserved
 		 * [24:12] PCI I/O Base i
-		 *	   This field defines the start of PCI I/O region n 
+		 *	   This field defines the start of PCI I/O region n
 		 * [31:25] Reserved
 		 */
 //		PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000033,
@@ -272,9 +272,9 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the highest bus number in configuration region i
 		 */
 //		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003, /* link 0 of cpu 0 --> Nvidia MCP55 */
-		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000, 
+		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
-		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000, 
+		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
 
 	};
 

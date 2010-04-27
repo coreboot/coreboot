@@ -8,7 +8,7 @@ config CPU_INTEL_SOCKET_MPGA604
 	select UDELAY_TSC
 
 # mPGA604 are usually Intel Netburst CPUs which should have SSE2
-# but the ramtest.c code on the Dell S1850 seems to choke on 
+# but the ramtest.c code on the Dell S1850 seems to choke on
 # enabling it, so disable it for now.
 config SSE2
 	bool

@@ -24,7 +24,7 @@ unsigned apicid_8111 ;
 unsigned apicid_8131_1;
 unsigned apicid_8131_2;
 
-unsigned pci1234x[] = 
+unsigned pci1234x[] =
 {        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
         0x0000ff0,
@@ -36,7 +36,7 @@ unsigned pci1234x[] =
 //        0x0000ff0,
 //        0x0000ff0
 };
-unsigned hcdnx[] = 
+unsigned hcdnx[] =
 { //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
@@ -73,7 +73,7 @@ void get_bus_conf(void)
         }
 
         get_sblk_pci1234();
-	
+
 	sysconf.sbdn = (sysconf.hcdn[0] >> 8) & 0xff;
 	sbdn3 = sysconf.hcdn[0] & 0xff;
 	sbdn5 = sysconf.hcdn[1] & 0xff;
@@ -135,8 +135,8 @@ void get_bus_conf(void)
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(3);
-#else 
-	apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+#else
+	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	apicid_8111 = apicid_base+0;
 	apicid_8131_1 = apicid_base+1;

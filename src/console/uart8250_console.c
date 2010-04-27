@@ -38,17 +38,17 @@ static void ttyS0_init(void)
 	uart8250_init(CONFIG_TTYS0_BASE, divisor, CONFIG_TTYS0_LCS);
 }
 
-static void ttyS0_tx_byte(unsigned char data) 
+static void ttyS0_tx_byte(unsigned char data)
 {
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, data);
 }
 
-static unsigned char ttyS0_rx_byte(void) 
+static unsigned char ttyS0_rx_byte(void)
 {
 	return uart8250_rx_byte(CONFIG_TTYS0_BASE);
 }
 
-static int ttyS0_tst_byte(void) 
+static int ttyS0_tst_byte(void)
 {
 	return uart8250_can_rx_byte(CONFIG_TTYS0_BASE);
 }

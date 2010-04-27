@@ -102,7 +102,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_RISE       7
 #define X86_VENDOR_TRANSMETA  8
 #define X86_VENDOR_NSC        9
-#define X86_VENDOR_SIS       10 
+#define X86_VENDOR_SIS       10
 #define X86_VENDOR_UNKNOWN 0xff
 
 #if !defined(__PRE_RAM__)
@@ -129,8 +129,8 @@ static inline struct cpu_info *cpu_info(void)
 	struct cpu_info *ci;
 	__asm__("andl %%esp,%0; "
 		"orl  %2, %0 "
-		:"=r" (ci) 
-		: "0" (~(CONFIG_STACK_SIZE - 1)), 
+		:"=r" (ci)
+		: "0" (~(CONFIG_STACK_SIZE - 1)),
 		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
 	);
 	return ci;

@@ -1,5 +1,5 @@
-#ifndef ELF_BOOT_H 
-#define ELF_BOOT_H 
+#ifndef ELF_BOOT_H
+#define ELF_BOOT_H
 
 #include <stdint.h>
 
@@ -32,7 +32,7 @@ typedef struct
 	Elf_Half b_records;
 } Elf_Bhdr;
 
-typedef struct 
+typedef struct
 {
 	Elf_Word n_namesz;		/* Length of the note's name.  */
 	Elf_Word n_descsz;		/* Length of the note's descriptor.  */

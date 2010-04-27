@@ -21,7 +21,7 @@ stem="$root$N"
 base=tests/$stem
 op="-Itests/include"
 op="$op -feliminate-inefectual-code -fsimplify -fscc-transform "
-#op="$op -O2 " 
+#op="$op -O2 "
 #op="$op -mmmx -msse"
 op="$op -finline-policy=defaulton"
 #op="$op -finline-policy=nopenalty"
@@ -47,12 +47,12 @@ op="$op -fdebug-scc-transform2"
 #op="-fdebug -fdebug-inline -O2 -mmmx  "
 #op="-fdebug -fdebug-live-range-conflicts -fdebug-live-range-conflicts2 -fno-debug-interference -fdebug-color-graph -fdebug-coalescing -fmax-allocation-passes=10 -O2 -mmmx -msse"
 #op="-fdebug -O2 -mmmx -msse"
-#op="-fdebug -fdebug-inline -fno-eliminate-inefectual-code -fno-always-inline -mmmx" 
-#op="-fdebug -fdebug-inline -fno-always-inline -mmmx" 
+#op="-fdebug -fdebug-inline -fno-eliminate-inefectual-code -fno-always-inline -mmmx"
+#op="-fdebug -fdebug-inline -fno-always-inline -mmmx"
 export ALLOC_CHECK_=2
-rm -f core $base.S $base.debug $base.debug2 $base.elf $base.out && 
-make romcc && 
-$ROMCC $op -o $base.S $base.c 2>&1 > $base.debug | tee $base.debug2 
+rm -f core $base.S $base.debug $base.debug2 $base.elf $base.out &&
+make romcc &&
+$ROMCC $op -o $base.S $base.c 2>&1 > $base.debug | tee $base.debug2
 if [ '(' -f $base.c ')' -a '(' '!' -f core ')' -a '(' -f $base.S ')' ]; then
 	if [ "$stem" = "linux_test$N" ] ; then
 		as $base.S -o $base.o &&

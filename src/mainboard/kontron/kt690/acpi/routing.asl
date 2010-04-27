@@ -92,38 +92,38 @@ Scope(\_SB) {
 		/* Bus 0, Dev 0 - RS690 Host Controller */
 		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics */
 		/* Bus 0, Dev 2 - PCIe Bridge for x8 PCIe Slot (GFX0) */
-		Package(){ 0x0002FFFF, 0, 0, 18 }, 
-		Package(){ 0x0002FFFF, 1, 0, 19 }, 
-		Package(){ 0x0002FFFF, 2, 0, 16 }, 
-		Package(){ 0x0002FFFF, 3, 0, 17 }, 
+		Package(){ 0x0002FFFF, 0, 0, 18 },
+		Package(){ 0x0002FFFF, 1, 0, 19 },
+		Package(){ 0x0002FFFF, 2, 0, 16 },
+		Package(){ 0x0002FFFF, 3, 0, 17 },
 
 		/* Bus 0, Dev 3 - PCIe graphics port 1 bridge */
-		Package(){ 0x0003FFFF, 0, 0, 19 }, 
-		Package(){ 0x0003FFFF, 1, 0, 16 }, 
-		Package(){ 0x0003FFFF, 2, 0, 17 }, 
-		Package(){ 0x0003FFFF, 3, 0, 18 }, 
-	
+		Package(){ 0x0003FFFF, 0, 0, 19 },
+		Package(){ 0x0003FFFF, 1, 0, 16 },
+		Package(){ 0x0003FFFF, 2, 0, 17 },
+		Package(){ 0x0003FFFF, 3, 0, 18 },
+
 		/* Bus 0, Dev 4 - PCIe Bridge for Express Card Slot */
-		Package(){ 0x0004FFFF, 0, 0, 16 }, 
-		Package(){ 0x0004FFFF, 1, 0, 17 }, 
-		Package(){ 0x0004FFFF, 2, 0, 18 }, 
-		Package(){ 0x0004FFFF, 3, 0, 19 }, 
+		Package(){ 0x0004FFFF, 0, 0, 16 },
+		Package(){ 0x0004FFFF, 1, 0, 17 },
+		Package(){ 0x0004FFFF, 2, 0, 18 },
+		Package(){ 0x0004FFFF, 3, 0, 19 },
 
 		/* Bus 0, Dev 5 - General purpose PCIe bridge 5 */
-		Package(){ 0x0005FFFF, 0, 0, 17 }, 
-		Package(){ 0x0005FFFF, 1, 0, 18 }, 
-		Package(){ 0x0005FFFF, 2, 0, 19 }, 
-		Package(){ 0x0005FFFF, 3, 0, 16 }, 
+		Package(){ 0x0005FFFF, 0, 0, 17 },
+		Package(){ 0x0005FFFF, 1, 0, 18 },
+		Package(){ 0x0005FFFF, 2, 0, 19 },
+		Package(){ 0x0005FFFF, 3, 0, 16 },
 
 		/* Bus 0, Dev 6 - General purpose PCIe bridge 6 */
-		Package(){ 0x0006FFFF, 0, 0, 18 }, 
-		Package(){ 0x0006FFFF, 1, 0, 19 }, 
-		Package(){ 0x0006FFFF, 2, 0, 16 }, 
-		Package(){ 0x0006FFFF, 3, 0, 17 }, 
+		Package(){ 0x0006FFFF, 0, 0, 18 },
+		Package(){ 0x0006FFFF, 1, 0, 19 },
+		Package(){ 0x0006FFFF, 2, 0, 16 },
+		Package(){ 0x0006FFFF, 3, 0, 17 },
 
 		/* Bus 0, Dev 7 - PCIe Bridge for network card */
-		Package(){ 0x0007FFFF, 0, 0, 19 }, 
-		Package(){ 0x0007FFFF, 1, 0, 16 }, 
+		Package(){ 0x0007FFFF, 0, 0, 19 },
+		Package(){ 0x0007FFFF, 1, 0, 16 },
 		Package(){ 0x0007FFFF, 2, 0, 17 },
 		Package(){ 0x0007FFFF, 3, 0, 18 },
 

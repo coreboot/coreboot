@@ -247,7 +247,7 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
 
 	isa_dma_init();
 }
-			
+
 
 /**
  * Depending on settings in the config struct, enable COM1 or COM2 or both.
@@ -263,8 +263,8 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 	u16 addr = 0;
 	u32 gpio_addr;
 	device_t dev;
-	
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 	gpio_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
 	gpio_addr &= ~1;	/* Clear I/O bit */
@@ -431,7 +431,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	msr_t msr;
 	device_t dev;
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_EHCI, 0);
 	if (dev) {
 
@@ -452,7 +452,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		write32(bar + HCCPARAMS, 0x00005012);
 	}
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
 		bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -480,7 +480,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	 * - set PADEN (former OTGPADEN) bit in uoc register
 	 * - set APU bit in uoc register */
 	if (sb->enable_USBP4_device) {
-		dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+		dev = dev_find_device(PCI_VENDOR_ID_AMD,
 				PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 		if (dev) {
 			bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -499,13 +499,13 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	}
 
 	/* Disable virtual PCI UDC and OTG headers */
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 	if (dev) {
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
 	}
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
@@ -513,14 +513,14 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 }
 
 /****************************************************************************
- * 
- * 	ChipsetInit 
+ *
+ * 	ChipsetInit
  *
  *	Called from northbridge init (Pre-VSA).
  *
  *	NOTE! This function is NOT called if the CS5536 is combined with
  *	an AMD Geode GX2. It's ONLY used on Geode LX based systems.
- * 
+ *
  ****************************************************************************/
 void chipsetinit(void)
 {
@@ -530,7 +530,7 @@ void chipsetinit(void)
 	struct southbridge_amd_cs5536_config *sb;
 	struct msrinit *csi;
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 
 	if (!dev) {

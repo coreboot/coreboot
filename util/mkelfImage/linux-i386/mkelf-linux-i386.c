@@ -228,7 +228,7 @@ static void parse_elf64_kernel(struct kernel_info *info, char *kernel_buf, size_
 
 	if(!phdrs)
 		die("We need at least one phdr\n");
-	
+
 	info->phdrs = phdrs;
         info->entry   = le64_to_cpu(ehdr->e_entry);
 #if  0
@@ -296,7 +296,7 @@ void linux_i386_usage(void)
 
 #define DEFAULT_RAMDISK_BASE (8*1024*1024)
 
-int linux_i386_mkelf(int argc, char **argv, 
+int linux_i386_mkelf(int argc, char **argv,
 	struct memelfheader *ehdr, char *kernel_buf, off_t kernel_size)
 {
 	const char *ramdisk, *cmdline;
@@ -379,7 +379,7 @@ int linux_i386_mkelf(int argc, char **argv,
 	strncpy(params->cmdline, cmdline, sizeof(params->cmdline));
 	params->cmdline[sizeof(params->cmdline)-1]= '\0';
 
-	
+
 	/* Add a program header for the note section */
 	index = 4;
 	index += (kinfo.phdrs - 1);
@@ -388,7 +388,7 @@ int linux_i386_mkelf(int argc, char **argv,
 
 	/* Fill in the program headers*/
 	phdr[0].p_type = PT_NOTE;
-	
+
 	/* Fill in the converter program headers */
 	phdr[1].p_paddr  = CONVERTLOC;
 	phdr[1].p_vaddr  = CONVERTLOC;
@@ -420,7 +420,7 @@ int linux_i386_mkelf(int argc, char **argv,
 		phdr[index].p_data   = kinfo.kernel[i];
 		index++;
 	}
-	
+
 	/* Put the ramdisk at ramdisk base.
 	 */
 	params->initrd_start = params->initrd_size = 0;
@@ -438,7 +438,7 @@ int linux_i386_mkelf(int argc, char **argv,
 		params->initrd_size  = phdr[index].p_filesz;
 		index++;
 	}
-	
+
 	/* Set the start location */
 	params->entry = kinfo.entry;
 	params->switch_64 = kinfo.switch_64;

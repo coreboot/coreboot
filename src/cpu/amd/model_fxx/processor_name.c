@@ -77,7 +77,7 @@ static const char *processor_names[]={
 	/* 0x24 */ "AMD Athlon(tm) 64 FX-ZZ Processor",
 	/* 0x25 */ NULL,
 	/* 0x26 */ "AMD Sempron(tm) Processor TT00+",
-	/* 0x27-0x28 */ NULL, NULL, 
+	/* 0x27-0x28 */ NULL, NULL,
 	/* 0x29 */ "Dual Core AMD Opteron(tm) Processor 1RR SE",
 	/* 0x2A */ "Dual Core AMD Opteron(tm) Processor 2RR SE",
 	/* 0x2B */ "Dual Core AMD Opteron(tm) Processor 8RR SE",
@@ -404,13 +404,13 @@ int init_processor_name(void)
 
 	memset(program_string, 0, 48);
 	strcpy(program_string, processor_name_string);
-	
+
 	/* Now create a model number - See Table 4. Model Number Calculation
-	 * in the Revision Guide. NOTE: #6, EE was changed to VV because 
+	 * in the Revision Guide. NOTE: #6, EE was changed to VV because
 	 * otherwise it clashes with the brand names.
 	 */
-	
-	for (i=0; i<47; i++) { // 48 -1 
+
+	for (i=0; i<47; i++) { // 48 -1
 		if(program_string[i] == program_string[i+1]) {
 			switch (program_string[i]) {
 #if CONFIG_K8_REV_F_SUPPORT == 0
@@ -430,11 +430,11 @@ int init_processor_name(void)
 			case 'Y': ModelNumber = 29 + NN; break;
 #endif
 			}
-			
+
 			if(ModelNumber && ModelNumber < 100) {
 				// No idea what to do with RR=100. According
 				// to the revision guide this is possible.
-				// 
+				//
 				// --> "AMD Opteron(tm) Processor 8100"?
 				program_string[i]=(ModelNumber/10)+'0';
 				program_string[i+1]=(ModelNumber%10)+'0';
@@ -442,7 +442,7 @@ int init_processor_name(void)
 			}
 		}
 	}
-	
+
 	printk(BIOS_DEBUG, "CPU model %s\n", program_string);
 
 	for (i=0; i<6; i++) {

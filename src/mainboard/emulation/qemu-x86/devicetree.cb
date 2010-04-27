@@ -1,5 +1,5 @@
 chip mainboard/emulation/qemu-x86
-	device pci_domain 0 on 
+	device pci_domain 0 on
 		device pci 0.0 on end
 
 		chip southbridge/intel/i82371eb # southbridge

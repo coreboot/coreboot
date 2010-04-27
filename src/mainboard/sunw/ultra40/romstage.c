@@ -6,7 +6,7 @@
 #define SET_NB_CFG_54 1
 #endif
 
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -55,7 +55,7 @@ static void sio_gpio_setup(void)
         unsigned value;
 
         /*Enable onboard scsi*/
-        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
+        lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L
         value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
 }
@@ -76,7 +76,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 
  /* tyan does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -111,21 +111,21 @@ static void sio_setup(void)
         unsigned value;
         uint32_t dword;
         uint8_t byte;
-        
+
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
-        
+
         byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
+        byte |= 0x20;
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
-        
+
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<29)|(1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
-        
+
         lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);
-                
+
         value =  lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x77);
-        value &= 0xbf; 
+        value &= 0xbf;
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x77, value);
 }
 
@@ -165,7 +165,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	lpc47b397_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 

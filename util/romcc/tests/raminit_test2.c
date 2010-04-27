@@ -136,7 +136,7 @@ void uart_wait_to_tx_byte(void)
 
 void uart_wait_until_sent(void)
 {
-	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40)) 
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
 		;
 }
 
@@ -355,7 +355,7 @@ int smbus_read_byte(unsigned device, unsigned address)
 	/* CAS latency 2 */
 #if (CAS_LATENCY == 2)
 #define CAS_NB 0x17
-	/* 
+	/*
 	 * 7 == 0111
 	 * 1 == 0001
 	 */
@@ -367,7 +367,7 @@ int smbus_read_byte(unsigned device, unsigned address)
 #endif
 
 	/* CAS latency 3 */
-#if (CAS_LATENCY == 3) 
+#if (CAS_LATENCY == 3)
 #define CAS_NB 0x13
 	/*
 	 * 3 == 0011
@@ -381,11 +381,11 @@ int smbus_read_byte(unsigned device, unsigned address)
 #endif
 
 #ifndef CAS_NB
-#error "Nothing defined" 
+#error "Nothing defined"
 #endif
 
 /* Default values for config registers */
-	
+
 static void set_nbxcfg(void)
 {
 	/* NBXCFG 0x50 - 0x53 */
@@ -417,7 +417,7 @@ static void set_nbxcfg(void)
 	 * ECC Diagnostic Mode Enable == 0 Not Enabled
 	 * MDA present == 0 Not Present
 	 * USWC Write Post During During I/O Bridge Access Enable == 1 Enabled
-	 * In Order Queue Depth (IQD) (RO) == ?? 
+	 * In Order Queue Depth (IQD) (RO) == ??
 	 */
 	pcibios_write_config_dword(I440GX_BUS, I440GX_DEVFN, 0x50, 0xff00000c);
 }
@@ -486,7 +486,7 @@ static void set_mbsc(void)
 	 * MD[63:0]# Buffer Strength Control 1 == 3x
 	 * MECC[7:0] Buffer Strength Control 2 == 3x
 	 * MECC[7:0] Buffer Strength Control 1 == 3x
-	 * CSB7# Buffer Strength == 3x	
+	 * CSB7# Buffer Strength == 3x
 	 * CSA7# Buffer Strength == 3x
 	 * CSB6# Buffer Strength == 3x
 	 * CSA6# Buffer Strength == 3x
@@ -575,13 +575,13 @@ static void set_pgpol(void)
 static void set_mbfs(void)
 {
 	/* MBFS - Memory Buffer Frequencey Select Register */
-	/* 0xffff7f					     
-	 * [23:20] f == 1111				     
-	 * [19:16] f == 1111				     
-	 * [15:12] f == 1111				     
-	 * [11: 8] f == 1111				     
-	 * [ 7: 4] 7 == 0111				     
-	 * [ 3: 0] f == 1111				     
+	/* 0xffff7f
+	 * [23:20] f == 1111
+	 * [19:16] f == 1111
+	 * [15:12] f == 1111
+	 * [11: 8] f == 1111
+	 * [ 7: 4] 7 == 0111
+	 * [ 3: 0] f == 1111
 	 * MAA[14:0], WEA#, SRASA#, SCASA# == 100Mhz Buffers Enabled
 	 * MAB[14,13,10,12:11,9:0], WEB#, SRASB#, SCASB# == 100Mhz Buffers Enabled
 	 * MD[63:0] Control 2 == 100 Mhz Buffer Enable
@@ -622,12 +622,12 @@ static void set_drtc(void)
 
 static void set_pmcr(void)
 {
-	/* PMCR -- BIOS sets 0x90 into it. 
+	/* PMCR -- BIOS sets 0x90 into it.
 	 * 0x10 is REQUIRED.
 	 * we have never used it. So why did this ever work?
 	 */
 	pcibios_write_config_byte(I440GX_BUS, I440GX_DEVFN, 0x7a, 0x90);
-	
+
 }
 void sdram_set_registers(void)
 {
@@ -651,7 +651,7 @@ void sdram_set_registers(void)
 int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
-	 * instruction with the exception that it returns -1  
+	 * instruction with the exception that it returns -1
 	 * when the value presented to it is zero.
 	 * Otherwise __builtin_bsr returns the zero based index of
 	 * the highest bit set.
@@ -670,7 +670,7 @@ static void spd_set_drb(void)
 	unsigned end_of_memory;
 	unsigned device;
 	unsigned drb_reg;
-	
+
 	end_of_memory = 0; /* in multiples of 8MiB */
 	device = SMBUS_MEM_DEVICE_START;
 	drb_reg = 0x60;
@@ -704,13 +704,13 @@ static void spd_set_drb(void)
 #else
 			side1_bits += log2((byte2 << 8) | byte);
 #endif
-			
+
 			/* now I have the ram size in bits as a power of two (less 1) */
 			/* Make it mulitples of 8MB */
 			side1_bits -= 25;
-			
+
 			/* side two */
-			
+
 			/* number of physical banks */
 			byte = smbus_read_byte(device, 5);
 			if (byte > 1) {
@@ -783,8 +783,8 @@ static void spd_set_dramc(void)
 	}
 	dramc = 0x8;
 	if ((byte & 0x12) != 0) {
-		/* this is a registered part. 
-		 * observation: for register parts, BIOS zeros (!) 
+		/* this is a registered part.
+		 * observation: for register parts, BIOS zeros (!)
 		 * registers CA-CC. This has an undocumented meaning.
 		 */
 		/* But it does make sense the oppisite of registered
@@ -835,7 +835,7 @@ static void spd_enable_refresh(void)
 	}
 	byte &= 0x7f;
 	/* Default refresh rate be conservative */
-	refresh_rate = 5; 
+	refresh_rate = 5;
 	/* see if the ram refresh is a supported one */
 	if (byte < 6) {
 #if HAVE_STATIC_ARRAY_SUPPORT
@@ -856,7 +856,7 @@ static void spd_set_sdramc(void)
 static void spd_set_rps(void)
 {
 	/*
-	 * Effects:	Uses serial presence detect to set the row size 
+	 * Effects:	Uses serial presence detect to set the row size
 	 *		on a given DIMM
 	 * FIXME:	Check for illegal/unsupported ram configurations and abort
 	 */
@@ -881,16 +881,16 @@ static void spd_set_rps(void)
 		page_size = byte & 0xf;
 		/* make it in multiples of 2Kb */
 		page_size -= 11;
-		
+
 		if (page_size <= 0) continue;
-		
+
 		/* FIXME: do something with page sizes greather than 8KB!! */
 		page_sizes |= (page_size << index);
-				
+
 		/* side two */
 		byte = smbus_read_byte(device, 5);
 		if (byte <= 1)  continue;
-			
+
 		/* For now only handle the symmetrical case */
 		page_sizes |= (page_size << (index +2));
 	}
@@ -898,10 +898,10 @@ static void spd_set_rps(void)
 	/* we have just verified that we have to have this code. It appears that
 	 * the registered SDRAMs do indeed set the RPS wrong. sheesh.
 	 */
-	/* at this point, page_sizes holds the RPS for all ram. 
-	 * we have verified that for registered DRAM the values are 
+	/* at this point, page_sizes holds the RPS for all ram.
+	 * we have verified that for registered DRAM the values are
 	 * 1/2 the size they should be. So we test for registered
-	 * and then double the sizes if needed. 
+	 * and then double the sizes if needed.
 	 */
 
 	dramc = pcibios_read_config_byte(I440GX_BUS, I440GX_DEVFN, 0x57);
@@ -909,9 +909,9 @@ static void spd_set_rps(void)
 		/* registered */
 
 		/* BIOS makes weird page size for registered! */
-		/* what we have found is you need to set the EVEN banks to 
-		 * twice the size. Fortunately there is a very easy way to 
-		 * do this. First, read the WORD value of register 0x74. 
+		/* what we have found is you need to set the EVEN banks to
+		 * twice the size. Fortunately there is a very easy way to
+		 * do this. First, read the WORD value of register 0x74.
 		 */
 		page_sizes += 0x1111;
 	}
@@ -938,8 +938,8 @@ static void spd_set_pgpol(void)
 	bank_sizes = 0;
 	bank = 0;
 	device = SMBUS_MEM_DEVICE_START;
-	for(; device <= SMBUS_MEM_DEVICE_END; 
-	    bank += 2, device += SMBUS_MEM_DEVICE_INC) { 
+	for(; device <= SMBUS_MEM_DEVICE_END;
+	    bank += 2, device += SMBUS_MEM_DEVICE_INC) {
 		int byte;
 
 		/* logical banks */
@@ -947,7 +947,7 @@ static void spd_set_pgpol(void)
 		if (byte < 0) continue;
 		if (byte < 4) continue;
 		bank_sizes |= (1 << bank);
-		
+
 		/* side 2 */
 		/* Number of physical banks */
 		byte  = smbus_read_byte(device, 5);
@@ -974,14 +974,14 @@ static void spd_set_nbxcfg(void)
 	/* Say all dimms have no ECC support */
 	reg = 0xff;
 	index = 0;
-	
+
 	device = SMBUS_MEM_DEVICE_START;
 	for(; device <= SMBUS_MEM_DEVICE_END; index += 2, device += SMBUS_MEM_DEVICE_INC) {
 		int byte;
 
 		byte = smbus_read_byte(device, 11);
 		if (byte < 0) continue;
-#if !USE_ECC 
+#if !USE_ECC
 		byte = 0; /* Disable ECC */
 #endif
 		/* 0 == None, 1 == Parity, 2 == ECC */
@@ -1015,7 +1015,7 @@ static void spd_set_nbxcfg(void)
 		/* try this.
 		 * We should be setting bit 2 in register 76 and we're not
 		 * technically we should see if CL=2 for the ram,
-		 * but registered is so screwed up that it's kind of a lost 
+		 * but registered is so screwed up that it's kind of a lost
 		 * cause.
 		 */
 		byte = pcibios_read_config_byte(I440GX_BUS, I440GX_DEVFN, 0x76);
@@ -1098,7 +1098,7 @@ static void dimms_read(unsigned long offset)
 	int i;
 	for(i = 0; i < 8; i++) {
 		unsigned long dummy;
-		unsigned long addr; 
+		unsigned long addr;
 		unsigned long next_base;
 
 		next_base = dimm_base(i +1);
@@ -1108,8 +1108,8 @@ static void dimms_read(unsigned long offset)
 		}
 		addr += offset;
 #if HAVE_STRING_SUPPORT
-		print_debug("Reading "); 
-		print_debug_hex32(addr); 
+		print_debug("Reading ");
+		print_debug_hex32(addr);
 		print_debug("\n");
 #endif
 #if HAVE_POINTER_SUPPORT
@@ -1120,8 +1120,8 @@ static void dimms_read(unsigned long offset)
 #endif
 #endif
 #if HAVE_STRING_SUPPORT
-		print_debug("Reading "); 
-		print_debug_hex32(addr ^ 0xddf8); 
+		print_debug("Reading ");
+		print_debug_hex32(addr ^ 0xddf8);
 		print_debug("\n");
 #endif
 #if HAVE_POINTER_SUPPORT
@@ -1132,9 +1132,9 @@ static void dimms_read(unsigned long offset)
 #endif
 #endif
 #if HAVE_STRING_SUPPORT
-		print_debug("Read "); 
-		print_debug_hex32(addr); 
-		print_debug_hex32(addr ^ 0xddf8); 
+		print_debug("Read ");
+		print_debug_hex32(addr);
+		print_debug_hex32(addr ^ 0xddf8);
 		print_debug("\n");
 #endif
 	}
@@ -1212,9 +1212,9 @@ void sdram_enable(void)
 #if HAVE_STRING_SUPPORT
 	print_debug("Ram Enable 2\n");
 #endif
-	
+
 	/* Now we need 8 AUTO REFRESH / CBR cycles to be performed */
-	
+
 	sdram_set_command_cbr();
 	sdram_assert_command();
 	sdram_assert_command();
@@ -1224,11 +1224,11 @@ void sdram_enable(void)
 	sdram_assert_command();
 	sdram_assert_command();
 	sdram_assert_command();
-	
+
 #if HAVE_STRING_SUPPORT
 	print_debug("Ram Enable 3\n");
 #endif
-	
+
 	/* mode register set */
 	sdram_set_mode_register();
 	/* MAx[14:0] lines,
@@ -1245,7 +1245,7 @@ void sdram_enable(void)
 
 	/* normal operation */
 	sdram_set_command_none();
-	
+
 #if HAVE_STRING_SUPPORT
 	print_debug("Ram Enable 5\n");
 #endif
@@ -1270,7 +1270,7 @@ void sdram_initialize(void)
 	print_debug("Ram3\n");
 #endif
 	/* Now that everything is setup enable the SDRAM.
-	 * Some chipsets do the work for use while on others 
+	 * Some chipsets do the work for use while on others
 	 * we need to it by hand.
 	 */
 	sdram_enable();

@@ -33,7 +33,7 @@
 #include "northbridge.h"
 #include "i440lx.h"
 
-/* This code is mostly same as 440BX created by Uwe Hermann, 
+/* This code is mostly same as 440BX created by Uwe Hermann,
  * i done only very minor changes like renamed functions to 440lx etc
  * Maciej
  */

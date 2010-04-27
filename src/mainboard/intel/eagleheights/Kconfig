@@ -57,7 +57,7 @@ config MAX_CPUS
 	int
 	default 4
 	depends on BOARD_INTEL_EAGLEHEIGHTS
-	
+
 config MAX_PHYSICAL_CPUS
 	int
 	default 2

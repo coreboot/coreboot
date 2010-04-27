@@ -114,7 +114,7 @@ static void amd8132_pcix_tune_dev(device_t dev, void *ptr)
 	max_read = (status & PCI_X_STATUS_MAX_READ) >> 21;
 	max_tran = (status & PCI_X_STATUS_MAX_SPLIT) >> 23;
 
-	if (info->rev == 0x01) { // only a1 need it 
+	if (info->rev == 0x01) { // only a1 need it
 		/* Errata #53 Limit the number of split transactions to avoid starvation */
 		if (sibs >= 2) {
 			/* At most 2 outstanding split transactions when we have
@@ -186,7 +186,7 @@ static unsigned int amd8132_scan_bus(struct bus *bus,
 	amd8132_walk_children(bus, amd8132_count_dev, &info);
 
 #if 0
-	/* Disable the bus if there are no devices on it 
+	/* Disable the bus if there are no devices on it
 	 */
 	if (!bus->children)
 	{
@@ -201,7 +201,7 @@ static unsigned int amd8132_scan_bus(struct bus *bus,
 		pcix_misc = pci_read_config32(bus->dev, 0x40);
 		pcix_misc &= ~(0x1f << 16);
 		pci_write_config32(bus->dev, 0x40, pcix_misc);
-		
+
 		return max;
 	}
 #endif
@@ -229,7 +229,7 @@ static void amd8132_pcix_init(device_t dev)
 	uint32_t dword;
 	uint8_t byte;
 	unsigned chip_rev;
-        
+
 	/* Find the revision of the 8132 */
         chip_rev = pci_read_config8(dev, PCI_CLASS_REVISION);
 
@@ -259,7 +259,7 @@ static void amd8132_pcix_init(device_t dev)
 	dword = pci_read_config32(dev, 0x04);
         dword |= (1<<8);
         pci_write_config32(dev, 0x04, dword);
- 	
+
 	/* system and error parity enable */
 	dword = pci_read_config32(dev, 0x3c);
         dword |= (3<<16);
@@ -267,7 +267,7 @@ static void amd8132_pcix_init(device_t dev)
 
         dword = pci_read_config32(dev, 0x40);
 //        dword &= ~(1<<31); /* WriteChainEnable */
-	dword |= (1<<31); 
+	dword |= (1<<31);
 	dword |= (1<<7);// must set to 1
 	dword |= (3<<21); //PCIErrorSerrDisable
         pci_write_config32(dev, 0x40, dword);
@@ -335,7 +335,7 @@ static void bridge_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_bus_read_resources(dev);
-	res = find_resource(dev, PCI_MEMORY_BASE);	
+	res = find_resource(dev, PCI_MEMORY_BASE);
 	if (res) {
 		res->limit = 0xffffffffffULL;
 	}
@@ -450,5 +450,5 @@ static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7459,
-	
+
 };

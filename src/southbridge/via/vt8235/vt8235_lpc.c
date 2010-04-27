@@ -88,7 +88,7 @@ static void pci_routing_fixup(struct device *dev)
 	printk(BIOS_INFO, "setting pci slot\n");
 	pci_assign_irqs(0, 0x14, pin_to_irq(slotPins));
 
-	// Cardbus slot 
+	// Cardbus slot
 	printk(BIOS_INFO, "setting cardbus slot\n");
 	pci_assign_irqs(0, 0x0a, pin_to_irq(cbPins));
 
@@ -99,11 +99,11 @@ static void pci_routing_fixup(struct device *dev)
 	printk(BIOS_SPEW, "%s: DONE\n", __func__);
 }
 
-/* 
+/*
  * Set up the power management capabilities directly into ACPI mode.  This
  * avoids having to handle any System Management Interrupts (SMI's) which I
  * can't figure out how to do !!!!
- */ 
+ */
 
 static void setup_pm(device_t dev)
 {
@@ -112,7 +112,7 @@ static void setup_pm(device_t dev)
 
 	// Set ACPI base address to IO 0x4000
 	pci_write_config16(dev, 0x88, 0x0401);
-	
+
 	// set ACPI irq to 5
 	pci_write_config8(dev, 0x82, 0x45);
 
@@ -138,7 +138,7 @@ static void setup_pm(device_t dev)
 	outw(0xffff, 0x420);
 	outw(0xffff, 0x428);
 	outl(0xffffffff, 0x430);
-	
+
 	outw(0x0, 0x424);
 	outw(0x0, 0x42a);
 	outw(0x1, 0x42c);
@@ -152,29 +152,29 @@ static void setup_pm(device_t dev)
 static void vt8235_init(struct device *dev)
 {
 	unsigned char enables;
-	
+
 	printk(BIOS_DEBUG, "vt8235 init\n");
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev, 0x6C);
 	enables |= 0x80;
 	pci_write_config8(dev, 0x6C, enables);
-	
+
 	// Map 4MB of FLASH into the address space
 	pci_write_config8(dev, 0x41, 0x7f);
-	
+
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
-	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI 
+	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI
 	// interrupts can be properly marked as level triggered.
 	enables = pci_read_config8(dev, 0x40);
 	enables |= 0x45;
 	pci_write_config8(dev, 0x40, enables);
-	
+
 	// Set 0x42 to 0xf0 to match Award bios
 	enables = pci_read_config8(dev, 0x42);
 	enables |= 0xf0;
 	pci_write_config8(dev, 0x42, enables);
-	
+
 	/* Set 0x58 to 0x03 to match Award */
 	pci_write_config8(dev, 0x58, 0x03);
 
@@ -187,16 +187,16 @@ static void vt8235_init(struct device *dev)
 	enables = pci_read_config8(dev, 0x4a);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4a, enables);
-	
+
 	// Set bit 3 of 0x4f to match award (use INIT# as cpu reset)
 	enables = pci_read_config8(dev, 0x4f);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
-	
+
 	// Set 0x58 to 0x03 to match Award
 	pci_write_config8(dev, 0x58, 0x03);
-	
-	
+
+
 	/* enable serial irq */
 	pci_write_config8(dev, 0x52, 0x9);
 
@@ -205,10 +205,10 @@ static void vt8235_init(struct device *dev)
 
 	// Power management setup
 	setup_pm(dev);
-	
+
 	/* set up isa bus -- i/o recovery time, rom write enable, extend-ale */
 	pci_write_config8(dev, 0x40, 0x54);
-	
+
 	// Start the rtc
 	rtc_init(0);
 }
@@ -248,7 +248,7 @@ static void vt8235_enable_resources(device_t dev)
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }
-	
+
 static void southbridge_init(struct device *dev)
 {
 	vt8235_init(dev);

@@ -16,7 +16,7 @@
 
 static unsigned int max_bus;
 
-static void ram_resource(device_t dev, unsigned long index, 
+static void ram_resource(device_t dev, unsigned long index,
 	unsigned long basek, unsigned long sizek)
 {
 	struct resource *resource;
@@ -195,7 +195,7 @@ static void mc_set_resources(device_t dev)
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

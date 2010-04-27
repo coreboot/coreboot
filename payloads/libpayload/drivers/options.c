@@ -81,7 +81,7 @@ int get_option(void *dest, char *name)
 	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
 	struct cb_cmos_entries *cmos_entry;
 	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
-	
+
 	/* cmos entries are located right after the option table */
 
 	for (   cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);

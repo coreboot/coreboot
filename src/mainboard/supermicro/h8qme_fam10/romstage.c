@@ -93,12 +93,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdfam10/raminit_amdmct.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
 
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define MCP55_NUM 1
-#define MCP55_USE_NIC 0 
+#define MCP55_USE_NIC 0
 #define MCP55_USE_AZA 0
 
 #define MCP55_PCI_E_X_0 4
@@ -128,13 +128,13 @@ static void sio_setup(void)
 	smbusx_write_byte(1, (0x58>>1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
 
         byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
+        byte |= 0x20;
         pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
-        
+
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<0);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-        
+
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
@@ -206,7 +206,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         }
 
   post_code(0x30);
- 
+
         if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }

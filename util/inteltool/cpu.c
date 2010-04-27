@@ -1,8 +1,8 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008-2010 by coresystems GmbH 
- * 
+ * Copyright (C) 2008-2010 by coresystems GmbH
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -104,7 +104,7 @@ int print_intel_core_msrs(void)
 		{ 0x002a, "EBL_CR_POWERON" },
 		{ 0x0033, "TEST_CTL" },
 		{ 0x003f, "THERM_DIODE_OFFSET" },
-		//{ 0x0079, "IA32_BIOS_UPDT_TRIG" }, // Seems to be RO 
+		//{ 0x0079, "IA32_BIOS_UPDT_TRIG" }, // Seems to be RO
 		{ 0x008b, "IA32_BIOS_SIGN_ID" },
 		{ 0x00c1, "PERFCTR0" },
 		{ 0x00c2, "PERFCTR1" },
@@ -308,8 +308,8 @@ int print_intel_core_msrs(void)
 	};
 
 	/* Pentium 4 and XEON */
-	/* 
-	 * All MSRs per 
+	/*
+	 * All MSRs per
 	 *
 	 * Intel® 64 and IA-32 Architectures
 	 * Software Developer.s Manual
@@ -326,7 +326,7 @@ int print_intel_core_msrs(void)
 		{ 0x002a, "MSR_EBC_HARD_POWERON" },
 		{ 0x002b, "MSR_EBC_SOFT_POWRON" },
 		{ 0x002c, "MSR_EBC_FREQUENCY_ID" },
-// WRITE ONLY	{ 0x0079, "IA32_BIOS_UPDT_TRIG" },		
+// WRITE ONLY	{ 0x0079, "IA32_BIOS_UPDT_TRIG" },
 		{ 0x019c, "IA32_THERM_STATUS" },
 		{ 0x019d, "MSR_THERM2_CTL" },
 		{ 0x01a0, "IA32_MISC_ENABLE" },
@@ -365,7 +365,7 @@ int print_intel_core_msrs(void)
 		{ 0x0303, "MSR_BPU_COUNTER3" },
 		/* Skipped through 0x3ff  for now*/
 
-	/* All MCX_ADDR AND MCX_MISC MSRs depend on a bit being 
+	/* All MCX_ADDR AND MCX_MISC MSRs depend on a bit being
 	 * set in MCX_STATUS */
 		{ 0x400, "IA32_MC0_CTL" },
 		{ 0x401, "IA32_MC0_STATUS" },
@@ -374,7 +374,7 @@ int print_intel_core_msrs(void)
 		{ 0x404, "IA32_MC1_CTL" },
 		{ 0x405, "IA32_MC1_STATUS" },
 		{ 0x406, "IA32_MC1_ADDR" },
-		{ 0x407, "IA32_MC1_MISC" }, 
+		{ 0x407, "IA32_MC1_MISC" },
 		{ 0x408, "IA32_MC2_CTL" },
 		{ 0x409, "IA32_MC2_STATUS" },
 		{ 0x40a, "IA32_MC2_ADDR" },
@@ -439,7 +439,7 @@ int print_intel_core_msrs(void)
 		*/
 		{ 0x0600, "IA32_DS_AREA" },
 		/* 0x0680 - 0x06cf Branch Records Skipped */
-	
+
 	};
 
 
@@ -461,7 +461,7 @@ int print_intel_core_msrs(void)
 
 	cpu_t *cpu = NULL;
 
-	/* Get CPU family and model, not the stepping 
+	/* Get CPU family and model, not the stepping
 	 * (TODO: extended family/model)
 	 */
 	id = cpuid(1) & 0xff0;

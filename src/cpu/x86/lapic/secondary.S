@@ -26,7 +26,7 @@ _secondary_start:
 	movl	%eax, %cr0
 
 	ljmpl	$0x10, $1f
-1:	
+1:
 	.code32
 	movw	$0x18, %ax
 	movw	%ax, %ds

@@ -40,7 +40,7 @@ static void pic_read_resources(device_t dev)
 	res->limit = res->base + res->size -1;
 	res->align = 8;
 	res->gran  = 8;
-	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | 
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 		IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 	dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
 }

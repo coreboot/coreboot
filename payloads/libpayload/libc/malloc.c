@@ -286,10 +286,10 @@ static struct align_region_t *allocate_region(int alignment, int num_elements)
 {
 	struct align_region_t *new_region;
 #ifdef CONFIG_DEBUG_MALLOC
-	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u)\n", 
+	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u)\n",
 			__func__, align_regions, alignment, num_elements);
 #endif
-	
+
 	new_region = malloc(sizeof(struct align_region_t));
 
 	if (!new_region)
@@ -342,7 +342,7 @@ void *memalign(size_t align, size_t size)
 		memset(align_regions, 0, sizeof(struct align_region_t));
 	}
 	struct align_region_t *reg = align_regions;
-look_further:	
+look_further:
 	while (reg != 0)
 	{
 		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))

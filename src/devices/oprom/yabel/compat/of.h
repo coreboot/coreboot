@@ -19,7 +19,7 @@
 #define phandle_t p32
 #define ihandle_t p32
 
-typedef struct 
+typedef struct
 {
     unsigned int serv;
     int nargs;

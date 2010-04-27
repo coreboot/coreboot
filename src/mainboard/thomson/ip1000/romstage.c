@@ -89,7 +89,7 @@ static void mb_early_setup(void)
 	/* CPU Frequency Strap */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xd5, 0x02);
 	/* ACPI base address and enable Resource Indicator */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, (PMBASE_ADDR | 1)); 
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, (PMBASE_ADDR | 1));
 	/* Enable the SMBUS */
 	enable_smbus();
 	/*  ACPI Enable */

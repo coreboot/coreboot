@@ -35,7 +35,7 @@ struct msrinit {
 };
 
 static const struct msrinit geodelx_vga_msr[] = {
-	/* Enable the GLIU Memory routing to the hardware 
+	/* Enable the GLIU Memory routing to the hardware
 	* PDID1 : Port 4, GLIU0
 	* PBASE : 0x000A0
 	* PMASK : 0xFFFE0
@@ -71,9 +71,9 @@ void graphics_init(void)
 
 	/* SoftVG initialization */
 	printk(BIOS_DEBUG, "Graphics init...\n");
-   
+
 	geodelx_vga_msr_init();
-   
+
 	/* Call SoftVG with the main configuration parameters. */
 	/* NOTE: SoftVG expects the memory size to be given in 2MB blocks */
 
@@ -94,7 +94,7 @@ void graphics_init(void)
 	 *   so we can add the real value in megabytes
 	 */
 
-	wData = VG_CFG_DRIVER | VG_CFG_PRIORITY | 
+	wData = VG_CFG_DRIVER | VG_CFG_PRIORITY |
 			VG_CFG_DSCRT | (CONFIG_VIDEO_MB & VG_MEM_MASK);
 	vrWrite(wClassIndex, wData);
 

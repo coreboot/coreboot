@@ -21,18 +21,18 @@ SECTIONS
 	/* Global data */
 	.data : {
 		_data = .;
-		*(.data) 
+		*(.data)
 		CONSTRUCTORS
 		*(.got)
 		*(.sdata)
 		_edata = .;
 	}
-	
+
 	/* Important align _bss so bss may be zeroed with quadword access */
 	. = ALIGN(BASIC_ALIGN);
 	.bss : {
 		_bss = .;
-		*(.sbss) 
+		*(.sbss)
 		*(.scommon)
 		*(.bss)
 		*(COMMON)

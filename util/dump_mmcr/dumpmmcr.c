@@ -1,9 +1,9 @@
 /*
  * dump mmcr of Elan520 uController (incomplete, see 22005b pg23+).
  *
- * Copyright 2006 coresystems GmbH 
- *      Stefan Reinauer <stepan@coresystems.de> 
- * 
+ * Copyright 2006 coresystems GmbH
+ *      Stefan Reinauer <stepan@coresystems.de>
+ *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
@@ -37,12 +37,12 @@ int print_mmcr(struct mmcr *mmcr)
 	int i;
 	printf("revid is 0x%x\n\n", val(mmcr, revid));
 	printf("cpucontrol is 0x%x\n\n", val(mmcr, cpucontrol));
-	
+
 	printf("\n");
 	printf("drcctl is 0x%x\n", val(mmcr, memregs.drcctl));
 	printf("drctmctl is 0x%x\n", val(mmcr, memregs.drctmctl));
 	printf("drccfg is 0x%x\n", val(mmcr, memregs.drccfg));
-	printf("bendaddr is 0x%02x%02x%02x%02x\n", 
+	printf("bendaddr is 0x%02x%02x%02x%02x\n",
 			val(mmcr, memregs.drcbendadr[3]),
 			val(mmcr, memregs.drcbendadr[2]),
 			val(mmcr, memregs.drcbendadr[1]),
@@ -53,15 +53,15 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("cktest is 0x%x\n", val(mmcr, memregs.ecccktest));
 	printf("sbadd is 0x%x\n", val(mmcr, memregs.eccsbadd));
 	printf("mbadd is 0x%x\n", val(mmcr, memregs.eccmbadd));
-	
+
 	printf("\n");
 	printf("dbctl is 0x%x\n", val(mmcr, dbctl.dbctl));
-	
+
 	printf("\n");
 	printf("bootcs is 0x%x\n", val(mmcr, romregs.bootcs));
 	printf("romcs1 is 0x%x\n", val(mmcr, romregs.romcs1));
 	printf("romcs2 is 0x%x\n", val(mmcr, romregs.romcs2));
-	
+
 	printf("\n");
 	printf("hbctl is 0x%x\n",  val(mmcr, hostbridge.ctl));
 	printf("hbtgtirqctl is 0x%x\n",  val(mmcr, hostbridge.tgtirqctl));
@@ -69,20 +69,20 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("hbmstirqctl is 0x%x\n",  val(mmcr, hostbridge.mstirqctl));
 	printf("hbmstirqsta is 0x%x\n",  val(mmcr, hostbridge.mstirqsta));
 	printf("mstintadd is 0x%x\n",  val(mmcr, hostbridge.mstintadd));
-	
-	
+
+
 	printf("\n");
 	printf("sysarbctl is 0x%x\n", val(mmcr, sysarb.ctl));
 	printf("pciarbsta is 0x%x\n", val(mmcr, sysarb.sta));
 	printf("sysarbmenb is 0x%x\n", val(mmcr, sysarb.menb));
 	printf("arbprictl is 0x%x\n", val(mmcr, sysarb.prictl));
-	
+
 	printf("\n");
 	printf("adddecctl is 0x%x\n", val(mmcr, sysmap.adddecctl));
 	printf("wpvsta is 0x%x\n", val(mmcr, sysmap.wpvsta));
 	for (i=0; i<16; i++)
 		printf("par %d is 0x%x\n", i, val(mmcr, sysmap.par[i]));
-	
+
 	printf("\n");
 	printf("gpecho is 0x%x\n", val(mmcr, gpctl.gpecho));
 	printf("gpcsdw is 0x%x\n", val(mmcr, gpctl.gpcsdw));
@@ -96,9 +96,9 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("gpwroff is 0x%x\n", val(mmcr, gpctl.gpwroff));
 	printf("gpalew is 0x%x\n", val(mmcr, gpctl.gpalew));
 	printf("gpaleoff is 0x%x\n", val(mmcr, gpctl.gpaleoff));
-	
+
 	printf("\n");
-	
+
 	printf("piopfs15_0 is 0x%x\n",  val(mmcr, pio.pfs15_0));
 	printf("piopfs31_16 is 0x%x\n",  val(mmcr, pio.pfs31_16));
 	printf("cspfs is 0x%x\n",  val(mmcr, pio.cspfs));
@@ -112,19 +112,19 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("pioset31_16 is 0x%x\n",  val(mmcr, pio.set31_16));
 	printf("pioclr15_0 is 0x%x\n",  val(mmcr, pio.clr15_0));
 	printf("pioclr31_16 is 0x%x\n",  val(mmcr, pio.clr31_16));
-	
+
 	printf("swtmrmilli is 0x%x\n", val(mmcr, swtmr.swtmrmilli));
 	printf("swtmrmicro is 0x%x\n", val(mmcr, swtmr.swtmrmicro));
 	printf("swtmrcfg is 0x%x\n", val(mmcr, swtmr.swtmrcfg));
-	
+
 	printf("status  is 0x%x\n", val(mmcr, gptimers.status));
 	printf("pad  is 0x%x\n", val(mmcr, gptimers.pad));
-	
+
 	printf("timers[0].ctl is 0x%x\n",  val(mmcr, gptimers.timer[0].ctl));
 	printf("timers[0].cnt is 0x%x\n",  val(mmcr, gptimers.timer[0].cnt));
 	printf("timers[0].maxcmpa is 0x%x\n",  val(mmcr, gptimers.timer[0].maxcmpa));
 	printf("timers[0].maxcmpb is 0x%x\n",  val(mmcr, gptimers.timer[0].maxcmpb));
-	
+
 	printf("timers[1].ctl is 0x%x\n",  val(mmcr, gptimers.timer[1].ctl));
 	printf("timers[1].cnt is 0x%x\n",  val(mmcr, gptimers.timer[1].cnt));
 	printf("timers[1].maxcmpa is 0x%x\n",  val(mmcr, gptimers.timer[1].maxcmpa));
@@ -132,24 +132,24 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("timers[2].ctl is 0x%x\n",  val(mmcr, gptimers.ctl2));
 	printf("timers[2].cnt is 0x%x\n",  val(mmcr, gptimers.cnt2));
 	printf("timers[2].maxcmpa is 0x%x\n",  val(mmcr, gptimers.maxcmpa2));
-	
+
 	printf("ctl  is 0x%x\n",  val(mmcr, watchdog.ctl));
 	printf("cntll  is 0x%x\n",  val(mmcr, watchdog.cntll));
 	printf("cntlh  is 0x%x\n",  val(mmcr, watchdog.cntlh));
-	
+
 	printf("uart 1 ctl is 0x%x\n", val(mmcr, uarts.uart[0].ctl));
 	printf("uart 1 sta is 0x%x\n", val(mmcr, uarts.uart[0].sta));
 	printf("uart 1 fcrshad is 0x%x\n", val(mmcr, uarts.uart[0].fcrshad));
 	printf("uart 2 ctl is 0x%x\n", val(mmcr, uarts.uart[1].ctl));
 	printf("uart 2 sta is 0x%x\n", val(mmcr, uarts.uart[1].sta));
 	printf("uart 2 fcrshad is 0x%x\n", val(mmcr, uarts.uart[1].fcrshad));
-	
+
 	printf("ssi ctl is 0x%x\n", val(mmcr, ssi.ctl));
 	printf("ssi xmit is 0x%x\n", val(mmcr, ssi.xmit));
 	printf("ssi cmd is 0x%x\n", val(mmcr, ssi.cmd));
 	printf("ssi sta is 0x%x\n", val(mmcr, ssi.sta));
 	printf("ssi rcv is 0x%x\n", val(mmcr, ssi.rcv));
-	
+
 	printf("pcicr is 0x%x\n", val(mmcr, pic.pcicr));
 	printf("mpicmode is 0x%x\n", val(mmcr, pic.mpicmode));
 	printf("sl1picmode is 0x%x\n", val(mmcr, pic.sl1picmode));
@@ -189,12 +189,12 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("gp8imap is 0x%x\n", val(mmcr, pic.gp8imap));
 	printf("gp9imap is 0x%x\n", val(mmcr, pic.gp9imap));
 	printf("gp10imap is 0x%x\n", val(mmcr, pic.gp10imap));
-	
+
 	printf("sysinfo is 0x%x\n", val(mmcr, reset.sysinfo));
 	printf("rescfg is 0x%x\n", val(mmcr, reset.rescfg));
 	printf("ressta is 0x%x\n", val(mmcr, reset.ressta));
-	
-	
+
+
 	printf("ctl is 0x%x\n", val(mmcr, dmacontrol.ctl));
 	printf("mmio is 0x%x\n", val(mmcr, dmacontrol.mmio));
 	printf("extchanmapa is 0x%x\n", val(mmcr, dmacontrol.extchanmapa));
@@ -230,7 +230,7 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("nxtttch6 is 0x%x\n", val(mmcr, dmacontrol.nxtttch6));
 	printf("nxtttcl7 is 0x%x\n", val(mmcr, dmacontrol.nxtttcl7));
 	printf("nxtttch7 is 0x%x\n", val(mmcr, dmacontrol.nxtttch7));
-	
+
 	return 0;
 }
 
@@ -248,15 +248,15 @@ int map_mmcr(void)
 	if (getpagesize() > size) {
 		size = getpagesize();
 	}
-	
+
 	mmcr = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		    fd_mem, (off_t) (0xFFFEF000));
-	
+
 	if (mmcr == MAP_FAILED) {
 		perror("Error MMAP /dev/mem");
 		exit(1);
 	}
-	
+
 
 	print_mmcr((struct mmcr *)mmcr);
 #if 0

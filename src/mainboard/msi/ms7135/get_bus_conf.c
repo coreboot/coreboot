@@ -47,7 +47,7 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 	0x0000ff0,		//no HTIO for ms7135
 };
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
-	0x20202020,		//ms7135 has only one ht-chain 
+	0x20202020,		//ms7135 has only one ht-chain
 };
 unsigned bus_type[256];
 
@@ -100,7 +100,7 @@ void get_bus_conf(void)
 		switch (i) {
 			case 1: dn = 9; break;
 			case 2: dn = 13; break;
-			case 3: dn = 14; break;	
+			case 3: dn = 14; break;
 			default: dn = -1; break;
 		}
 		dev = dev_find_slot(bus_ck804[0], PCI_DEVFN(sbdn + dn, 0));

@@ -15,7 +15,7 @@ static void i2cmux_set_link(device_t dev, unsigned int link)
 			smbus_write_byte(dev, 0x01, 1<<link); // output value
 			smbus_write_byte(dev, 0x03, 0); // all output
 		}
-		
+
 	}
 
 }
@@ -40,5 +40,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations drivers_i2c_i2cmux_ops = {
 	CHIP_NAME("i2cmux")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

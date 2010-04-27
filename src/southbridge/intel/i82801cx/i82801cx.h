@@ -70,9 +70,9 @@ void i82801cx_hard_reset(void);
 #define SMBTRNSADD		9
 #define SMBSLVDATA		10
 #define SMLINK_PIN_CTL	14
-#define SMBUS_PIN_CTL	15 
+#define SMBUS_PIN_CTL	15
 
-/* Between 1-10 seconds, We should never timeout normally 
+/* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
 #define SMBUS_TIMEOUT (100*1000)

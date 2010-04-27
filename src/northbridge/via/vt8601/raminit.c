@@ -13,7 +13,7 @@ U.S. Government has rights to use, reproduce, and distribute this
 SOFTWARE.  The public may copy, distribute, prepare derivative works
 and publicly display this SOFTWARE without charge, provided that this
 Notice and any statement of authorship are reproduced on all copies.
-Neither the Government nor the University makes any warranty, express 
+Neither the Government nor the University makes any warranty, express
 or implied, or assumes any liability or responsibility for the use of
 this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
 such modified SOFTWARE should be clearly marked, so as not to confuse
@@ -107,14 +107,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	pci_write_config8(north, 0x78, 0x01);
 	print_debug_hex8(pci_read_config8(north, 0x78));
 
-	// dram control, see the book. 
+	// dram control, see the book.
 #if DIMM_PC133
 	pci_write_config8(north, 0x68, 0x52);
 #else
 	pci_write_config8(north, 0x68, 0x42);
 #endif
 
-	// dram control, see the book. 
+	// dram control, see the book.
 	pci_write_config8(north, 0x6B, 0x0c);
 
 	// Initial setting, 256MB in each bank, will be rewritten later.
@@ -125,7 +125,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	pci_write_config8(north, 0x5D, 0x80);
 	pci_write_config8(north, 0x5E, 0xA0);
 	pci_write_config8(north, 0x5F, 0xC0);
-	// It seems we have to take care of these 2 registers as if 
+	// It seems we have to take care of these 2 registers as if
 	// they are bank 6 and 7.
 	pci_write_config8(north, 0x56, 0xC0);
 	pci_write_config8(north, 0x57, 0xC0);
@@ -149,7 +149,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 #endif
 
 	// dram frequency select.
-	// enable 4K pages for 64M dram. 
+	// enable 4K pages for 64M dram.
 #if DIMM_PC133
 	pci_write_config8(north, 0x69, 0x3c);
 #else
@@ -181,8 +181,8 @@ static unsigned long spd_module_size(unsigned char slot)
 	/* unsigned int module = ((0x50 + slot) << 1) + 1; */
 	unsigned int module = 0x50 + slot;
 
-	/* is the module there? if byte 2 is not 4, then we'll assume it 
-	 * is useless. 
+	/* is the module there? if byte 2 is not 4, then we'll assume it
+	 * is useless.
 	 */
 	print_info("Slot ");
 	print_info_hex8(slot);
@@ -292,7 +292,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config8(north, 0x6C, 0x01);
 	print_debug("NOP\n");
 	/* wait 200us */
-	// You need to do the memory reference. That causes the nop cycle. 
+	// You need to do the memory reference. That causes the nop cycle.
 	dimms_read(0);
 	udelay(400);
 	print_debug("PRECHARGE\n");
@@ -340,7 +340,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	dimms_read(0);
 	udelay(200);
 	print_debug("set ref. rate\n");
-	// Set the refresh rate. 
+	// Set the refresh rate.
 #if DIMM_PC133
 	pci_write_config8(north, 0x6A, 0x86);
 #else
@@ -370,7 +370,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 		/* Set the MA map type.
 		 *
-		 * 0xa should be another option, but when 
+		 * 0xa should be another option, but when
 		 * it would be used is unknown.
 		 */
 

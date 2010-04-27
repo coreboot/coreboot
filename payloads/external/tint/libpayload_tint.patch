@@ -9,7 +9,7 @@ diff -Naur tint-0.03b.orig/config.h tint-0.03b/config.h
 @@ -29,7 +29,16 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
- 
+
 +#include <libpayload.h>
 +#include <curses.h>
 +#define random(x) rand(x)
@@ -21,7 +21,7 @@ diff -Naur tint-0.03b.orig/config.h tint-0.03b/config.h
 +#if 0
  const char scorefile[] = SCOREFILE;
 +#endif
- 
+
  #endif	/* #ifndef CONFIG_H */
 diff -Naur tint-0.03b.orig/engine.c tint-0.03b/engine.c
 --- tint-0.03b.orig/engine.c	2005-07-17 13:26:22.000000000 +0200
@@ -29,14 +29,14 @@ diff -Naur tint-0.03b.orig/engine.c tint-0.03b/engine.c
 @@ -27,8 +27,12 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
- 
+
 +#include "config.h"
 +
 +#if 0
  #include <stdlib.h>
  #include <string.h>
 +#endif
- 
+
  #include "typedefs.h"
  #include "utils.h"
 diff -Naur tint-0.03b.orig/io.c tint-0.03b/io.c
@@ -45,7 +45,7 @@ diff -Naur tint-0.03b.orig/io.c tint-0.03b/io.c
 @@ -27,9 +27,13 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
- 
+
 +#include "config.h"
 +
 +#if 0
@@ -53,9 +53,9 @@ diff -Naur tint-0.03b.orig/io.c tint-0.03b/io.c
  #include <sys/time.h>	/* gettimeofday() */
  #include <unistd.h>		/* gettimeofday() */
 +#endif
- 
+
  #include <curses.h>
- 
+
 @@ -70,7 +74,11 @@
  /* Initialize screen */
  void io_init ()
@@ -93,14 +93,14 @@ diff -Naur tint-0.03b.orig/io.c tint-0.03b/io.c
 +#endif
     return ch;
  }
- 
+
 diff -Naur tint-0.03b.orig/Makefile tint-0.03b/Makefile
 --- tint-0.03b.orig/Makefile	2005-07-17 13:30:54.000000000 +0200
 +++ tint-0.03b/Makefile	2008-04-11 22:19:35.000000000 +0200
 @@ -28,6 +28,36 @@
  #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
+
 +LIBPAYLOAD_DIR := ../libpayload
 +CC := $(LIBPAYLOAD_DIR)/bin/lpgcc
 +AS := $(LIBPAYLOAD_DIR)/bin/lpas
@@ -132,12 +132,12 @@ diff -Naur tint-0.03b.orig/Makefile tint-0.03b/Makefile
 +ifdef $(UNUSED)
 +
  #CROSS = arm-linux-
- 
+
  bindir = $(DESTDIR)/usr/games
 @@ -110,3 +140,4 @@
  distclean: clean
  	$(MAKE) -C debian clean
- 
+
 +endif
 diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
 --- tint-0.03b.orig/tint.c	2005-07-17 13:26:43.000000000 +0200
@@ -145,7 +145,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
 @@ -27,6 +27,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
- 
+
 +#if 0
  #include <stdlib.h>
  #include <stdio.h>
@@ -155,13 +155,13 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
  #include <sys/types.h>
  #include <unistd.h>
 +#endif
- 
+
  #include "typedefs.h"
  #include "utils.h"
 @@ -321,6 +323,7 @@
     time_t timestamp;
  } score_t;
- 
+
 +#if 0
  static void getname (char *name)
  {
@@ -171,7 +171,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
  	 }
  }
 +#endif
- 
+
 +#if 0
  static void err1 ()
  {
@@ -181,7 +181,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     exit (EXIT_FAILURE);
  }
 +#endif
- 
+
  void showplayerstats (engine_t *engine)
  {
 -   fprintf (stderr,
@@ -192,7 +192,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
 @@ -360,6 +366,7 @@
  			GETSCORE (engine->score),engine->status.efficiency,GETSCORE (engine->score) / getsum ());
  }
- 
+
 +#if 0
  static void createscores (int score)
  {
@@ -202,7 +202,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     fprintf (stderr,"\t  1* %7d        %s\n\n",score,scores[0].name);
  }
 +#endif
- 
+
 +#if 0
  static int cmpscores (const void *a,const void *b)
  {
@@ -212,7 +212,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     return 0;
  }
 +#endif
- 
+
 +#if 0
  static void savescores (int score)
  {
@@ -222,11 +222,11 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     fprintf (stderr,"\n");
  }
 +#endif
- 
+
            /***************************************************************************/
            /***************************************************************************/
            /***************************************************************************/
- 
+
 +#if 0
  static void showhelp ()
  {
@@ -236,7 +236,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     exit (EXIT_FAILURE);
  }
 +#endif
- 
+
  static void parse_options (int argc,char *argv[])
  {
 +#if 0
@@ -249,12 +249,12 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
  	 }
 +#endif
  }
- 
+
  static void choose_level ()
  {
 +#if 0
     char buf[NAMELEN];
- 
+
     do
 @@ -549,6 +566,8 @@
  		buf[strlen (buf) - 1] = '\0';
@@ -263,7 +263,7 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
 +#endif
 +	level = 1;
  }
- 
+
            /***************************************************************************/
 @@ -663,8 +682,15 @@
     if (ch != 'q')
@@ -280,14 +280,14 @@ diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
     exit (EXIT_SUCCESS);
 +#endif
  }
- 
+
 diff -Naur tint-0.03b.orig/utils.c tint-0.03b/utils.c
 --- tint-0.03b.orig/utils.c	2001-12-07 16:49:19.000000000 +0100
 +++ tint-0.03b/utils.c	2008-04-11 22:19:35.000000000 +0200
 @@ -27,9 +27,13 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
- 
+
 +#include "config.h"
 +
 +#if 0
@@ -295,9 +295,9 @@ diff -Naur tint-0.03b.orig/utils.c tint-0.03b/utils.c
  #include <time.h>
  #include <limits.h>
 +#endif
- 
+
  #include "typedefs.h"
- 
+
 @@ -41,8 +45,11 @@
  #ifdef USE_RAND
     srand (time (NULL));
@@ -308,7 +308,7 @@ diff -Naur tint-0.03b.orig/utils.c tint-0.03b/utils.c
 +   srandom (123);
 +#endif
  }
- 
+
  /*
 @@ -61,6 +68,7 @@
   * Convert an str to long. Returns TRUE if successful,
@@ -321,5 +321,5 @@ diff -Naur tint-0.03b.orig/utils.c tint-0.03b/utils.c
 @@ -69,3 +77,4 @@
     return TRUE;
  }
- 
+
 +#endif

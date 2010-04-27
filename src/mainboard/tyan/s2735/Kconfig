@@ -26,12 +26,12 @@ config DCACHE_RAM_BASE
 	hex
 	default 0xcf000
 	depends on BOARD_TYAN_S2735
-	
+
 config DCACHE_RAM_SIZE
 	hex
 	default 0x1000
 	depends on BOARD_TYAN_S2735
-	
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "S2735"

@@ -65,7 +65,7 @@ static void lpc_common_init(device_t dev, int master)
 
 	if (master)
 		setup_ioapic(ioapic_base, 0);
-	else 
+	else
 		clear_ioapic(ioapic_base);
 }
 

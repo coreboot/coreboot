@@ -20,11 +20,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* the problem: we have 82801dbm support in fb1, and 82801er in fb2. 
- * fb1 code is what we want, fb2 structure is needed however. 
- * so we need to get fb1 code for 82801dbm into fb2 structure. 
+/* the problem: we have 82801dbm support in fb1, and 82801er in fb2.
+ * fb1 code is what we want, fb2 structure is needed however.
+ * so we need to get fb1 code for 82801dbm into fb2 structure.
  */
-/* What I did: took the 80801er stuff from fb2, verify it against the 
+/* What I did: took the 80801er stuff from fb2, verify it against the
  * db stuff in fb1, and made sure it was right.
  */
 
@@ -132,9 +132,9 @@ extern void i82801dx_enable(device_t dev);
 #define SMBTRNSADD 0x9
 #define SMBSLVDATA 0xa
 #define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf 
+#define SMBUS_PIN_CTL  0xf
 
-/* Between 1-10 seconds, We should never timeout normally 
+/* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
 #define SMBUS_TIMEOUT (100*1000)

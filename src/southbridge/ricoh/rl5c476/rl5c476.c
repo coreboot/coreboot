@@ -51,7 +51,7 @@ static void rl5c476_init(device_t dev)
 		printk(BIOS_DEBUG, "CF boot not enabled.\n");
 		return;
 	}
-	
+
 	if (PCI_FUNC(dev->path.pci.devfn) != 1) {
 		// Only configure if second CF slot.
 		return;
@@ -154,8 +154,8 @@ static void rl5c476_init(device_t dev)
 	cptr = (unsigned char *)(cf_base + 0x200);
 	printk(BIOS_DEBUG, "CF Config = %x\n",*cptr);
 
-	/* Set CF to decode 16 IO bytes on any 16 byte boundary - 
-	 * rely on the io windows of the bridge set up above to 
+	/* Set CF to decode 16 IO bytes on any 16 byte boundary -
+	 * rely on the io windows of the bridge set up above to
 	 * map those bytes into the addresses for IDE controller 3
 	 * (0x1e8 - 0x1ef and 0x3ed - 0x3ee)
 	 */
@@ -167,10 +167,10 @@ static void rl5c476_read_resources(device_t dev)
 
 	struct resource *resource;
 
-	 /* For CF socket we need an extra memory window for 
+	 /* For CF socket we need an extra memory window for
 	  * the control structure of the CF itself
 	  */
-	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
+	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		/* fake index as it isn't in PCI config space */
 		resource = new_resource(dev, 1);
 		resource->flags |= IORESOURCE_MEM;

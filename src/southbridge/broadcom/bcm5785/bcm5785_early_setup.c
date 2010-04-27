@@ -85,7 +85,7 @@ static unsigned get_sbdn(unsigned bus)
 
 static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-	//ACPI Decode Enable	
+	//ACPI Decode Enable
 	outb(0x0e, 0xcd6);
 	outb((1<<3), 0xcd7);
 

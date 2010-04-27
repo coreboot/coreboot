@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* AMD64 SMM State-Save Area 
+/* AMD64 SMM State-Save Area
  * starts @ 0x7e00
  */
 typedef struct {
@@ -115,7 +115,7 @@ typedef struct {
 } __attribute__((packed)) amd64_smm_state_save_area_t;
 
 
-/* Intel Core 2 (EM64T) SMM State-Save Area 
+/* Intel Core 2 (EM64T) SMM State-Save Area
  * starts @ 0x7d00
  */
 typedef struct {
@@ -193,7 +193,7 @@ typedef struct {
 } __attribute__((packed)) em64t_smm_state_save_area_t;
 
 
-/* Legacy x86 SMM State-Save Area 
+/* Legacy x86 SMM State-Save Area
  * starts @ 0x7e00
  */
 

@@ -68,7 +68,7 @@ static void enable_var_mtrr(void)
 
 /* setting variable mtrr, comes from linux kernel source */
 static void set_var_mtrr(
-	unsigned int reg, unsigned long basek, unsigned long sizek, 
+	unsigned int reg, unsigned long basek, unsigned long sizek,
 	unsigned char type, unsigned address_bits)
 {
 	msr_t base, mask;
@@ -81,7 +81,7 @@ static void set_var_mtrr(
         // do this.
         if (sizek == 0) {
         	disable_cache();
-	
+
                 msr_t zero;
                 zero.lo = zero.hi = 0;
                 /* The invalid bit is kept in the mask, so we simply clear the
@@ -109,8 +109,8 @@ static void set_var_mtrr(
 		mask.lo = 0;
 	}
 
-	// it is recommended that we disable and enable cache when we 
-	// do this. 
+	// it is recommended that we disable and enable cache when we
+	// do this.
 	disable_cache();
 
 	/* Bit 32-35 of MTRRphysMask should be set to 1 */
@@ -228,7 +228,7 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 	return index;
 }
 
-static unsigned int range_to_mtrr(unsigned int reg, 
+static unsigned int range_to_mtrr(unsigned int reg,
 	unsigned long range_startk, unsigned long range_sizek,
 	unsigned long next_range_startk, unsigned char type, unsigned address_bits)
 {
@@ -253,7 +253,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		unsigned long sizek;
 		/* Compute the maximum size I can make a range */
 		max_align = fls(range_startk);
-		align = fms(range_sizek); 
+		align = fms(range_sizek);
 		if (align > max_align) {
 			align = max_align;
 		}
@@ -274,7 +274,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	return reg;
 }
 
-static unsigned long resk(uint64_t value) 
+static unsigned long resk(uint64_t value)
 {
 	unsigned long resultk;
 	if (value < (1ULL << 42)) {
@@ -298,7 +298,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB\n",
 		start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
-	
+
 }
 
 #ifndef CONFIG_VAR_MTRR_HOLE
@@ -343,10 +343,10 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 			return;
 		}
 #endif
-		state->reg = range_to_mtrr(state->reg, state->range_startk, 
+		state->reg = range_to_mtrr(state->reg, state->range_startk,
 			state->range_sizek, basek, MTRR_TYPE_WRBACK, state->address_bits);
 #if CONFIG_VAR_MTRR_HOLE
-		state->reg = range_to_mtrr(state->reg, state->hole_startk, 
+		state->reg = range_to_mtrr(state->reg, state->hole_startk,
 			state->hole_sizek, basek,  MTRR_TYPE_UNCACHEABLE, state->address_bits);
 #endif
 		state->range_startk = 0;
@@ -356,7 +356,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
                 state->hole_sizek = 0;
 #endif
 	}
-	/* Allocate an msr */  
+	/* Allocate an msr */
 	printk(BIOS_SPEW, " Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
 	state->range_startk = basek;
 	state->range_sizek  = sizek;
@@ -365,7 +365,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 void x86_setup_fixed_mtrrs(void)
 {
         /* Try this the simple way of incrementally adding together
-         * mtrrs.  If this doesn't work out we can get smart again 
+         * mtrrs.  If this doesn't work out we can get smart again
          * and clear out the mtrrs.
          */
 
@@ -390,20 +390,20 @@ void x86_setup_fixed_mtrrs(void)
 
 void x86_setup_var_mtrrs(unsigned address_bits)
 /* this routine needs to know how many address bits a given processor
- * supports.  CPUs get grumpy when you set too many bits in 
+ * supports.  CPUs get grumpy when you set too many bits in
  * their mtrr registers :(  I would generically call cpuid here
  * and find out how many physically supported but some cpus are
  * buggy, and report more bits then they actually support.
  */
 {
 	/* Try this the simple way of incrementally adding together
-	 * mtrrs.  If this doesn't work out we can get smart again 
+	 * mtrrs.  If this doesn't work out we can get smart again
 	 * and clear out the mtrrs.
 	 */
 	struct var_mtrr_state var_state;
 
 	/* Cache as many memory areas as possible */
-	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
+	/* FIXME is there an algorithm for computing the optimal set of mtrrs?
 	 * In some cases it is definitely possible to do better.
 	 */
 	var_state.range_startk = 0;
@@ -431,7 +431,7 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	}
 #endif
 	/* Write the last range */
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, 
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk,
 		var_state.range_sizek, 0, MTRR_TYPE_WRBACK, var_state.address_bits);
 #if CONFIG_VAR_MTRR_HOLE
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,

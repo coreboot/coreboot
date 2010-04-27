@@ -120,7 +120,7 @@ $(obj)/ssdt3.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci3.asl"
   iasl -p $(CURDIR)/pci3 -tc $(CONFIG_MAINBOARD)/
   perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex
   mv pci3.hex ssdt3.c
-  
+
 $(obj)/ssdt4.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci4.asl"
   iasl -p $(CURDIR)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl
   perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex
@@ -470,7 +470,7 @@ we don't need to test for the chipset CONFIG variable. We
 can therefore test other variables (which is part of the reason
 we set up conditional inclusion of this file, instead
 of unconditionally including it). Here is an example from AMD 8111.
-No conditionals in this one yet. 
+No conditionals in this one yet.
 \begin{verbatim}
 driver-y += amd8111.o
 driver-y += amd8111_usb.o

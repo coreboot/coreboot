@@ -5,7 +5,7 @@
 
             Device (ISA)
             {
-                /* lpc  0x00040000 */ 
+                /* lpc  0x00040000 */
                 Method (_ADR, 0, NotSerialized)
                 {
 			Return (DADD(\_SB.PCI0.SBDN, 0x00010000))
@@ -15,11 +15,11 @@
                 Field (PIRY, ByteAcc, NoLock, Preserve)
                 {
                     Z000,   2,  // Parallel Port Range
-                        ,   1, 
+                        ,   1,
                     ECP,    1,  // ECP Enable
                     FDC1,   1,  // Floppy Drive Controller 1
                     FDC2,   1,  // Floppy Drive Controller 2
-                    Offset (0x01), 
+                    Offset (0x01),
                     Z001,   3,  // Serial Port A Range
                     SAEN,   1,  // Serial Post A Enabled
                     Z002,   3,  // Serial Port B Range
@@ -106,7 +106,7 @@
                         IO (Decode16, 0x0090, 0x0090, 0x01, 0x10)
                         IO (Decode16, 0x00A2, 0x00A2, 0x01, 0x1E)
                         IO (Decode16, 0x00E0, 0x00E0, 0x01, 0x10)
-                        IO (Decode16, 0x0B78, 0x0B78, 0x01, 0x04) // Added this to remove ACPI Unrepoted IO Error 
+                        IO (Decode16, 0x0B78, 0x0B78, 0x01, 0x04) // Added this to remove ACPI Unrepoted IO Error
                         IO (Decode16, 0x0190, 0x0190, 0x01, 0x04) // Added this to remove ACPI Unrepoted IO Error
                     })
                     Method (_CRS, 0, NotSerialized)
@@ -134,7 +134,7 @@
                             Memory32Fixed (ReadWrite, 0x00000000, 0x00000000) //Overlay BIOS
                             Memory32Fixed (ReadWrite, 0x00000000, 0x00000000) //Overlay BIOS
                         })
-			// Read the Video Memory length 
+			// Read the Video Memory length
                         CreateDWordField (BUF0, 0x14, CLEN)
                         CreateDWordField (BUF0, 0x10, CBAS)
 

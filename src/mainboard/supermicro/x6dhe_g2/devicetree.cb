@@ -6,12 +6,12 @@ chip northbridge/intel/e7520  # MCH
 		device pnp 00.3 off end
 	end
 	device pci_domain 0 on
-		chip southbridge/intel/i82801ex	# ICH5R 
+		chip southbridge/intel/i82801ex	# ICH5R
 			register "pirq_a_d" = "0x0b070a05"
 			register "pirq_e_h" = "0x0a808080"
 
-			device pci 1c.0 on 
-				chip drivers/generic/generic 
+			device pci 1c.0 on
+				chip drivers/generic/generic
 					device pci 01.0 on end	# onboard gige1
 					device pci 02.0 on end 	# onboard gige2
 				end
@@ -25,9 +25,9 @@ chip northbridge/intel/e7520  # MCH
 			device pci 1d.7 on end
 
 			# VGA / PCI 32-bit
-			device pci 1e.0 on 
+			device pci 1e.0 on
 				chip drivers/generic/generic
-					device pci 01.0 on end 
+					device pci 01.0 on end
 				end
 			end
 
@@ -35,7 +35,7 @@ chip northbridge/intel/e7520  # MCH
 			device pci 1f.0 on 	# ISA bridge
 				chip superio/nsc/pc87427
 					device pnp 2e.0 off end
-					device pnp 2e.2 on 
+					device pnp 2e.2 on
 						 io 0x60 = 0x3f8
 						irq 0x70 = 4
 					end
@@ -62,17 +62,17 @@ chip northbridge/intel/e7520  # MCH
 		device pci 00.0	on end	# Northbridge
 		device pci 00.1	on end  # Northbridge Error reporting
 		device pci 01.0 on end
-		device pci 02.0 on 
-			chip southbridge/intel/pxhd	# PXHD 6700 
-				device pci 00.0 on end   # bridge 
+		device pci 02.0 on
+			chip southbridge/intel/pxhd	# PXHD 6700
+				device pci 00.0 on end   # bridge
 				device pci 00.1 on end   # I/O apic
 				device pci 00.2 on end   # bridge
 				device pci 00.3 on end   # I/O apic
 			end
 		end
-#	 	device register "intrline" = "0x00070105" 
-		device 	pci 04.0 on end	
-		device 	pci 06.0 on end	
+#	 	device register "intrline" = "0x00070105"
+		device 	pci 04.0 on end
+		device 	pci 06.0 on end
 	end
 
 	device apic_cluster 0 on

@@ -179,12 +179,12 @@ testok:	movb $0x40,%al
 	pushl	%eax  /* bist */
 	call	main
 
-	/* 
+	/*
 	 * TODO: Backup stack in CACHE_AS_RAM into MMX and SSE and after we
 	 *       get STACK up, we restore that. It is only needed if we
 	 *       want to go back.
 	 */
-	
+
 	/* We don't need cache as ram for now on */
 	/* disable cache */
 	movl    %cr0, %eax
@@ -207,7 +207,7 @@ testok:	movb $0x40,%al
 	movl     $(0 | 6), %eax
 	//movl     $(0 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
- 
+
 	/* enable cache for 0-7ffff, 80000-9ffff, e0000-fffff;
 	 * If 1M cacheable, then when S3 resume, there is stange color on
 	 * screen for 2 sec. suppose problem of a0000-dfffff and cache.
@@ -218,7 +218,7 @@ testok:	movb $0x40,%al
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
  	movl    $((~(( 0 + 0x80000) - 1)) | 0x800), %eax
 	wrmsr
-	
+
 	movl    $0x202, %ecx
 	xorl    %edx, %edx
 	movl     $(0x80000 | 6), %eax
@@ -229,7 +229,7 @@ testok:	movb $0x40,%al
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
  	movl    $((~(( 0 + 0x20000) - 1)) | 0x800), %eax
 	wrmsr
-	
+
 	movl    $0x204, %ecx
 	xorl    %edx, %edx
 	movl     $(0xc0000 | 6), %eax
@@ -239,8 +239,8 @@ testok:	movb $0x40,%al
 	movl    $0x205, %ecx
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
 	movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax
-	wrmsr        
-	
+	wrmsr
+
 	/* cache XIP_ROM_BASE-SIZE to speedup coreboot code */
 	movl    $0x206, %ecx
 	xorl    %edx, %edx
@@ -267,7 +267,7 @@ testok:	movb $0x40,%al
 __main:
 	post_code(0x11)
 	cld			/* clear direction flag */
-	
+
 	movl	%ebp, %esi
 
 	movl $ROMSTAGE_STACK, %esp
@@ -275,7 +275,7 @@ __main:
 	pushl %esi
 	call copy_and_run
 
-.Lhlt:	
+.Lhlt:
 	post_code(0xee)
 	hlt
 	jmp	.Lhlt

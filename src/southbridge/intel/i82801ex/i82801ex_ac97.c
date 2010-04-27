@@ -8,7 +8,7 @@
 static void ac97_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* Write the subsystem vendor and device id */
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

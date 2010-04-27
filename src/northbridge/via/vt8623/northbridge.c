@@ -21,7 +21,7 @@
  * Apparently these registers govern some sort of bus master behavior.
  */
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	device_t fb_dev;
 	unsigned long fb;
@@ -40,7 +40,7 @@ static void northbridge_init(device_t dev)
 	pci_write_config8(dev,  0x84, 0x80);
 	pci_write_config16(dev, 0x80, 0x610f);
 	pci_write_config32(dev, 0x88, 0x00000002);
-	
+
 	fb_dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3122, 0);
 	if (fb_dev) {
 		/* Fixup GART and framebuffer addresses properly.
@@ -168,16 +168,16 @@ static void pci_domain_set_resources(device_t dev)
 		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
 			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes. 
+			/* these are ENDING addresses, not sizes.
 			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total. 
+			 * So we just take the max, that gives us total.
 			 * We take the highest one to cover for once and future coreboot
 			 * bugs. We warn about bugs.
 			 */
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n",
 					ramregs[i]);
 		}
 		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*16*1024);
@@ -210,7 +210,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {

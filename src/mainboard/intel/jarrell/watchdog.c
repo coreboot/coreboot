@@ -29,17 +29,17 @@ static void disable_ich5_watchdog(void)
 	value = pci_read_config16(dev, 0x04);
 	value |= (1 << 10);
 	pci_write_config16(dev, 0x04, value);
-	
+
 	/* Set and enable acpibase */
 	pci_write_config32(dev, 0x40, ICH5_WDBASE | 1);
 	pci_write_config8(dev, 0x44, 0x10);
 	base = ICH5_WDBASE + 0x60;
-	
+
 	/* Set bit 11 in TCO1_CNT */
 	value = inw(base + 0x08);
 	value |= 1 << 11;
 	outw(value, base + 0x08);
-	
+
 	/* Clear TCO timeout status */
 	outw(0x0008, base + 0x04);
 	outw(0x0002, base + 0x06);
@@ -83,7 +83,7 @@ static void disable_jarell_frb3(void)
 	outl(value, base + 0x38);
 	value &= ~(1 << 16);
 	outl(value, base + 0x38);
-				  
+
 }
 
 static void disable_watchdogs(void)
@@ -114,12 +114,12 @@ static void ich5_watchdog_on(void)
 	value = pci_read_config16(dev, 0x04);
 	value |= (1 << 10);
 	pci_write_config16(dev, 0x04, value);
-	
+
 	/* Set and enable acpibase */
 	pci_write_config32(dev, 0x40, ICH5_WDBASE | 1);
 	pci_write_config8(dev, 0x44, 0x10);
 	base = ICH5_WDBASE + 0x60;
-	
+
 	/* Clear TCO timeout status */
 	outw(0x0008, base + 0x04);
 	outw(0x0002, base + 0x06);
@@ -132,7 +132,7 @@ static void ich5_watchdog_on(void)
 	/* clear bit 11 in TCO1_CNT to start watchdog */
 	value = inw(base + 0x08);
 	value &= ~(1 << 11);
-	outw(value, base + 0x08);	
+	outw(value, base + 0x08);
 
 	print_debug("Watchdog ICH5 enabled\n");
 }

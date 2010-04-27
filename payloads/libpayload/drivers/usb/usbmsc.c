@@ -295,7 +295,7 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 	}
 	cb.block = htonl (start);
 	cb.numblocks = htonw (n);
-		
+
 	return execute_command (dev, dir, (u8 *) &cb, sizeof (cb), buf,
 				n * MSC_INST(dev)->blocksize);
 }
@@ -310,7 +310,7 @@ request_sense (usbdev_t *dev)
 	cmdblock6_t cb;
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x3;
-	
+
 	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
 				sizeof (cb), buf, 19);
 }
@@ -430,7 +430,7 @@ usb_msc_init (usbdev_t *dev)
 	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
 	while (test_unit_ready (dev) && --timeout) {
 		mdelay (100);
-		if (!(timeout % 10)) 
+		if (!(timeout % 10))
 			printf (".");
 	}
 	if (test_unit_ready (dev)) {

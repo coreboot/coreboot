@@ -48,7 +48,7 @@ static void main(unsigned long bist)
 		},
 	};
 
-	if (bist == 0) 
+	if (bist == 0)
 	{
 		// Skip this if there was a built in self test failure
 		early_mtrr_init();
@@ -68,14 +68,14 @@ static void main(unsigned long bist)
 
 	// If this is a warm boot, some initialization can be skipped
 
-	if (!bios_reset_detected()) 
+	if (!bios_reset_detected())
 	{
 		enable_smbus();
 		// dump_spd_registers(&memctrl[0]);
 		// dump_smbus_registers();
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 	}
-	
+
 	// NOTE: ROMCC dies with an internal compiler error
 	//		 if the following line is removed.
 	print_debug("SDRAM is up.\n");

@@ -33,7 +33,7 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 		vendor = o->read16(&pbus, bus, devfn, PCI_VENDOR_ID);
 		if (((class == PCI_CLASS_BRIDGE_HOST) || (class == PCI_CLASS_DISPLAY_VGA)) ||
 			((vendor == PCI_VENDOR_ID_INTEL) || (vendor == PCI_VENDOR_ID_COMPAQ) ||
-				(vendor == PCI_VENDOR_ID_MOTOROLA))) { 
+				(vendor == PCI_VENDOR_ID_MOTOROLA))) {
 			return 1;
 		}
 	}
@@ -54,8 +54,8 @@ static const struct pci_bus_operations *pci_check_direct(void)
 		outb(0x01, 0xCFB);
 		tmp = inl(0xCF8);
 		outl(0x80000000, 0xCF8);
-		if ((inl(0xCF8) == 0x80000000) && 
-			pci_sanity_check(&pci_cf8_conf1)) 
+		if ((inl(0xCF8) == 0x80000000) &&
+			pci_sanity_check(&pci_cf8_conf1))
 		{
 			outl(tmp, 0xCF8);
 			printk(BIOS_DEBUG, "PCI: Using configuration type 1\n");

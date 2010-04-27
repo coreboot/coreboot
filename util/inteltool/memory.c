@@ -1,8 +1,8 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008-2010 by coresystems GmbH 
- * 
+ * Copyright (C) 2008-2010 by coresystems GmbH
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -60,7 +60,7 @@ int print_mchbar(struct pci_dev *nb)
 	}
 
 	mchbar = map_physical(mchbar_phys, size);
-	
+
 	if (mchbar == NULL) {
 		perror("Error mapping MCHBAR");
 		exit(1);

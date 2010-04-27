@@ -52,7 +52,7 @@ static void host_ctrl_enable_k8t890(struct device *dev)
 	pci_write_config8(dev, 0xa6, 0x80);
 
 	/* this will be possibly removed, when I figure out
-	 * if the ROM SIP is good, second reason is that the 
+	 * if the ROM SIP is good, second reason is that the
 	 * unknown bits are AGP related, which are dummy on K8T890
 	 */
 

@@ -37,7 +37,7 @@
 #define ntohl(in) ((( (in) & 0xFF) << 24) | (( (in) & 0xFF00) << 8) | \
 		(( (in) & 0xFF0000) >> 8) | (( (in) & 0xFF000000) >> 24))
 
-#define ntohll(in) (((u64) ntohl( (in) & 0xFFFFFFFF) << 32) | ((u64) ntohl( (in) >> 32))) 
+#define ntohll(in) (((u64) ntohl( (in) & 0xFFFFFFFF) << 32) | ((u64) ntohl( (in) >> 32)))
 
 #define htonw(in) ntohw(in)
 #define htonl(in) ntohl(in)

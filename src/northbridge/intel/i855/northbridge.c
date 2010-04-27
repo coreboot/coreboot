@@ -79,15 +79,15 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
         uint32_t pci_tolm;
-        
+
         printk(BIOS_DEBUG, "Entered with dev vid = %x\n", dev->vendor);
 	printk(BIOS_DEBUG, "Entered with dev did = %x\n", dev->device);
 
-        pci_tolm = find_pci_tolm(&dev->link[0]);	
+        pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children->sibling;
 	printk(BIOS_DEBUG, "MC dev vendor = %x\n", mc_dev->vendor);
 	printk(BIOS_DEBUG, "MC dev device = %x\n", mc_dev->device);
-	
+
 	if (mc_dev) {
 		/* Figure out which areas are/should be occupied by RAM.
 		 * This is all computed in kilobytes and converted to/from
@@ -117,7 +117,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Write the ram configuration registers,
 		 * preserving the reserved bits.
 		 */
-		 
+
 		/* Report the memory regions */
 		printk(BIOS_DEBUG, "tomk = %ld\n", tomk);
 		printk(BIOS_DEBUG, "tolmk = %ld\n", tolmk);
@@ -143,7 +143,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {

@@ -170,7 +170,7 @@ static void x86emuOp2_rdmsr(u8 op2)
   M.x86.R_EAX = 0;
   DECODE_CLEAR_SEGOVR();
   END_OF_INSTR();
-}  
+}
 
 #define xorl(a,b)   (((a) && !(b)) || (!(a) && (b)))
 

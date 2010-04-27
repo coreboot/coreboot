@@ -2,8 +2,8 @@
 /* default location of the MMCR */
 #define MMCR 0xfffef000
 
-/* the PAR register struct definition, the location in memory, 
-  * and a handy pointer for you to use 
+/* the PAR register struct definition, the location in memory,
+  * and a handy pointer for you to use
   */
 
 struct parreg {
@@ -25,7 +25,7 @@ struct parreg {
 /* here is the real mmcr struct */
 
 struct memregs {
-	/* make these shorts, we are lsb and the hardware seems to like it 
+	/* make these shorts, we are lsb and the hardware seems to like it
 	 * better
 	 */
 	unsigned short drcctl;
@@ -46,7 +46,7 @@ struct dbctl {
 	unsigned char dbctl;
 	unsigned char pad4[15];
 };
-	
+
 struct romregs {
 	unsigned char bootcs;
 	unsigned char pad5[3];
@@ -55,7 +55,7 @@ struct romregs {
 	unsigned char romcs2;
 	unsigned char pad7[6];
 };
-	
+
 
 struct hostbridge {
 	unsigned short ctl;
@@ -169,7 +169,7 @@ struct ssi {
 	unsigned char pad[0x2b];
 };
 
-	
+
 /* interrupt control registers */
 /* defined this way for portability. Shame we can't just use plan 9 c. */
 struct pic {
@@ -225,7 +225,7 @@ struct pic {
 	unsigned char gp9imap;
 	unsigned char gp10imap;
 	unsigned char padend[0x14];
-}; 
+};
 
 struct reset {
 	unsigned char sysinfo;
@@ -282,7 +282,7 @@ struct dmacontrol {
 };
 
 
-	
+
 
 struct mmcr {
 	unsigned short revid;

@@ -1,7 +1,7 @@
 #ifndef AMD8111_CHIP_H
 #define AMD8111_CHIP_H
 
-struct southbridge_amd_amd8111_config 
+struct southbridge_amd_amd8111_config
 {
 	unsigned int ide0_enable : 1;
 	unsigned int ide1_enable : 1;

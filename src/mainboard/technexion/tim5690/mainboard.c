@@ -184,7 +184,7 @@ static void mb_gpio_init(u16 *iobase)
         it8712f_enter_conf();
         outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
         outb(IT8712F_GPIO, SIO_DATA);
-        outb(0x62, SIO_INDEX); 
+        outb(0x62, SIO_INDEX);
         outb((*iobase >> 8), SIO_DATA);
         outb(0x63, SIO_INDEX);
         outb((*iobase & 0xff), SIO_DATA);

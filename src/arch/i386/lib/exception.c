@@ -4,7 +4,7 @@
 #if defined(CONFIG_GDB_STUB) && CONFIG_GDB_STUB == 1
 
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers.
- * At least NUM_REGBYTES*2 are needed for register packets 
+ * At least NUM_REGBYTES*2 are needed for register packets
  */
 #define BUFMAX 400
 enum regnames {
@@ -62,7 +62,7 @@ static uint32_t gdb_stub_registers[NUM_REGS];
 #define GDB_SIGSOUND     42    /* Sound completed */
 #define GDB_SIGSAK       43    /* Secure attention */
 #define GDB_SIGPRIO      44    /* SIGPRIO */
-		        
+
 #define GDB_SIG33        45    /* Real-time event 33 */
 #define GDB_SIG34        46    /* Real-time event 34 */
 #define GDB_SIG35        47    /* Real-time event 35 */
@@ -375,7 +375,7 @@ void x86_exception(struct eregs *info)
 	if (info->vector < ARRAY_SIZE(exception_to_signal)) {
 		signo = exception_to_signal[info->vector];
 	}
-	
+
 	/* reply to the host that an exception has occured */
 	out_buffer[0] = 'S';
 	out_buffer[1] = hexchars[(signo>>4) & 0xf];
@@ -412,7 +412,7 @@ void x86_exception(struct eregs *info)
 		case 'm':
 			/* mAA..AA,LLLL  Read LLLL bytes at address AA..AA */
 			ptr = &in_buffer[1];
-			if (	parse_ulong(&ptr, &addr) && 
+			if (	parse_ulong(&ptr, &addr) &&
 				(*ptr++ == ',') &&
 				parse_ulong(&ptr, &length)) {
 				copy_to_hex(out_buffer, (void *)addr, length);
@@ -423,7 +423,7 @@ void x86_exception(struct eregs *info)
 		case 'M':
 			/* MAA..AA,LLLL: Write LLLL bytes at address AA.AA return OK */
 			ptr = &in_buffer[1];
-			if (	parse_ulong(&ptr, &addr) && 
+			if (	parse_ulong(&ptr, &addr) &&
 				(*(ptr++) == ',') &&
 				parse_ulong(&ptr, &length) &&
 				(*(ptr++) == ':')) {
@@ -475,7 +475,7 @@ void x86_exception(struct eregs *info)
 		put_packet(out_buffer);
 	}
 #else /* !CONFIG_GDB_STUB */
-	printk(BIOS_EMERG, 
+	printk(BIOS_EMERG,
 		"Unexpected Exception: %d @ %02x:%08x - Halting\n"
 		"Code: %d eflags: %08x\n"
 		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"

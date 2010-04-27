@@ -5,7 +5,7 @@ chip northbridge/intel/e7501
         	device pci 2.0 on
         		chip southbridge/intel/i82870
         	        	device pci 1c.0 on end
-		                device pci 1d.0 on 
+		                device pci 1d.0 on
                                      	 device pci 1.0 on end # intel lan
                                         device pci 1.1 on end
 				end
@@ -20,7 +20,7 @@ chip northbridge/intel/e7501
         	        device pci 1d.2 on end
         	        device pci 1d.3 on end
 		        device pci 1d.7 on end
-		        device pci 1e.0 on 
+		        device pci 1e.0 on
                              	device pci 1.0 on end # intel lan 10/100
                                 device pci 2.0 on end # ati
 			end
@@ -56,7 +56,7 @@ chip northbridge/intel/e7501
                                                 io 0x60 = 0x220
                                                 io 0x62 = 0x300
                                                 irq 0x70 = 9
-                                        end                               
+                                        end
                                         device pnp 2e.8 off end #  GPIO2
                                         device pnp 2e.9 off end #  GPIO3
                                         device pnp 2e.a off end #  ACPI

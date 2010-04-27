@@ -43,7 +43,7 @@ void intel_sibling_init(device_t cpu)
 		}
 		return;
 	}
-	
+
 	/* I am the primary cpu start up my siblings */
 	for(i = 1; i < siblings; i++) {
 		struct device_path cpu_path;
@@ -61,7 +61,7 @@ void intel_sibling_init(device_t cpu)
 		}
 
 #if 1
-		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n", 
+		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n",
 			cpu->path.apic.apic_id,
 			new->path.apic.apic_id);
 #endif
@@ -72,6 +72,6 @@ void intel_sibling_init(device_t cpu)
 				new->path.apic.apic_id);
 		}
 	}
-	
+
 }
 

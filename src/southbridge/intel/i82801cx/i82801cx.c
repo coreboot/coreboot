@@ -19,7 +19,7 @@ void i82801cx_enable(device_t dev)
 
 	// Calculate disable bit position for specified device:function
 	// NOTE: For ICH-3, only the following devices can be disabled:
-	//		 D31:F1, D31:F3, D31:F5, D31:F6, 
+	//		 D31:F1, D31:F3, D31:F5, D31:F6,
 	//		 D29:F0, D29:F1, D29:F2
 
     if (PCI_SLOT(dev->path.pci.devfn) == 31) {

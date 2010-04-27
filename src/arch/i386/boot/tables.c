@@ -60,12 +60,12 @@ struct lb_memory *write_tables(void)
 
 	printk(BIOS_DEBUG, "High Tables Base is %llx.\n", high_tables_base);
 
-	rom_table_start = 0xf0000; 
+	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
 
 	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
 	 * in case our data structures grow beyound 0x400. Only multiboot, GDT
-	 * and the coreboot table use low_tables. 
+	 * and the coreboot table use low_tables.
 	 */
 	low_table_start = 0;
 	low_table_end = 0x500;
@@ -126,7 +126,7 @@ struct lb_memory *write_tables(void)
 	/* Write ACPI tables to F segment and high tables area */
 
 	/* Ok, this is a bit hacky still, because some day we want to have this
-	 * completely dynamic. But right now we are setting fixed sizes. 
+	 * completely dynamic. But right now we are setting fixed sizes.
 	 * It's probably still better than the old high_table_base code because
 	 * now at least we know when we have an overflow in the area.
 	 *
@@ -213,7 +213,7 @@ struct lb_memory *write_tables(void)
 		write_coreboot_table(low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 	}
- 
+
 	post_code(0x9e);
 
 #if CONFIG_HAVE_ACPI_RESUME
@@ -223,7 +223,7 @@ struct lb_memory *write_tables(void)
 	 */
 	cbmem_add(CBMEM_ID_RESUME, 1024 * (1024-64));
 #endif
-	
+
 	// Remove before sending upstream
 	cbmem_list();
 

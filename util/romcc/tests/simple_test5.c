@@ -85,7 +85,7 @@ static void pcibios_write_config_dword(
 int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
-	 * instruction with the exception that it returns -1  
+	 * instruction with the exception that it returns -1
 	 * when the value presented to it is zero.
 	 * Otherwise __builtin_bsr returns the zero based index of
 	 * the highest bit set.
@@ -102,7 +102,7 @@ int log2(int value)
 #define PM_BUS 0
 #define PM_DEVFN (PIIX4_DEVFN+3)
 
-#if HAVE_CONSTANT_PROPOGATION 
+#if HAVE_CONSTANT_PROPOGATION
 #define SMBUS_IO_BASE 0x1000
 #define SMBHSTSTAT 0
 #define SMBHSTCTL  2
@@ -290,7 +290,7 @@ static void spd_enable_refresh(void)
 	}
 	byte &= 0x7f;
 	/* Default refresh rate be conservative */
-	refresh_rate = 5; 
+	refresh_rate = 5;
 	/* see if the ram refresh is a supported one */
 	if (byte < 6) {
 #if HAVE_STATIC_ARRAY_SUPPORT

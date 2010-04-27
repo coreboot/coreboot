@@ -45,10 +45,10 @@ it with the version available from LANL.
 /**
  * @brief Main function of the RAM part of coreboot.
  *
- * Coreboot is divided into Pre-RAM part and RAM part. 
- * 
+ * Coreboot is divided into Pre-RAM part and RAM part.
+ *
  * Device Enumeration:
- *	In the dev_enumerate() phase, 
+ *	In the dev_enumerate() phase,
  */
 
 void hardwaremain(int boot_complete);
@@ -61,10 +61,10 @@ void hardwaremain(int boot_complete)
 
 	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();
-	
+
 	post_code(0x39);
 
-	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n", 
+	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n",
 		      coreboot_version, coreboot_extra_version, coreboot_build,
 		      (boot_complete)?"rebooting":"booting");
 
@@ -76,7 +76,7 @@ void hardwaremain(int boot_complete)
 	}
 
 	/* FIXME: Is there a better way to handle this? */
-	init_timer(); 
+	init_timer();
 
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();

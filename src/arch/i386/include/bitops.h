@@ -15,6 +15,6 @@ static inline unsigned long log2(unsigned long x)
 		"1:\n\t"
 		: "=r" (r) : "r" (x));
 	return r;
-		
+
 }
 #endif /* I386_BITOPS_H */

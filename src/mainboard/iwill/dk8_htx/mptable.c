@@ -101,8 +101,8 @@ static void *smp_write_config_table(void *v)
                 }
 
 	}
-  
-/*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */	
+
+/*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, m->apicid_8111, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x1, m->apicid_8111, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x0, m->apicid_8111, 0x2);
@@ -149,14 +149,14 @@ static void *smp_write_config_table(void *v)
 
 //Slot 4 PCI-X 133/100/66
         for(i=0;i<4;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (2<<2)|i, m->apicid_8132_1, (2+i)%4); //26 
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (2<<2)|i, m->apicid_8132_1, (2+i)%4); //26
         }
 
 //Onboard NICS
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (3<<2)|0, m->apicid_8132_1, 3); //27
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (4<<2)|0, m->apicid_8132_1, 0); //24
 
-//Onboard SATA 
+//Onboard SATA
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_1, (5<<2)|0, m->apicid_8132_1, 1); //25
 
         j = 0;

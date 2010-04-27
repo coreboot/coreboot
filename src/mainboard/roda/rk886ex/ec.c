@@ -35,7 +35,7 @@ int send_ec_command(u8 command)
 			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n", 
+		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n",
 				command);
 		// return -1;
 	}

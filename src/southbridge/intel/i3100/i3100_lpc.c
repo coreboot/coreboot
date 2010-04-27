@@ -230,9 +230,9 @@ static void i3100_power_options(device_t dev) {
   /* avoid #S4 assertions */
   reg8 |= (3 << 4);
   /* minimum asssertion is 1 to 2 RTCCLK */
-  reg8 &= ~(1 << 3);	
+  reg8 &= ~(1 << 3);
   pci_write_config8(dev, GEN_PMCON_3, reg8);
-  printk(BIOS_INFO, "set power %s after power fail\n", pwr_on ? "on" : "off");  
+  printk(BIOS_INFO, "set power %s after power fail\n", pwr_on ? "on" : "off");
 
   /* Set up NMI on errors. */
   reg8 = inb(0x61);
@@ -245,14 +245,14 @@ static void i3100_power_options(device_t dev) {
   /* PCI SERR# Disable for now */
   reg8 |= (1 << 2);
   outb(reg8, 0x61);
-  
+
   reg8 = inb(0x70);
   nmi_option = NMI_OFF;
   get_option(&nmi_option, "nmi");
   if (nmi_option) {
     /* Set NMI. */
     printk(BIOS_INFO, "NMI sources enabled.\n");
-    reg8 &= ~(1 << 7);	
+    reg8 &= ~(1 << 7);
   } else {
     /* Can't mask NMI from PCI-E and NMI_NOW */
     printk(BIOS_INFO, "NMI sources disabled.\n");
@@ -267,7 +267,7 @@ static void i3100_power_options(device_t dev) {
   /* CLKRUN_EN */
   // reg16 |= (1 << 2);
   pci_write_config16(dev, GEN_PMCON_1, reg16);
-  
+
   // Set the board's GPI routing.
   // i82801gx_gpi_routing(dev);
 }
@@ -321,7 +321,7 @@ static void lpc_init(struct device *dev)
 
 	// TODO this code sets int 0 of the IOAPIC in Virtual Wire Mode
 	// (register 0x10/0x11) while the old code used int 1 (register 0x12)
-	// ... Why? 
+	// ... Why?
 	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IOAPIC ID
 
 	/* Decode 0xffc00000 - 0xffffffff to fwh idsel 0 */

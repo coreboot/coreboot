@@ -1,5 +1,5 @@
-#define DEBG(x)  
-#define DEBG1(x)  
+#define DEBG(x)
+#define DEBG1(x)
 /* Taken from /usr/src/linux/lib/inflate.c [unmodified]
    Used for start32, 1/11/2000
    James Hendricks, Dale Webster */
@@ -7,9 +7,9 @@
 /* inflate.c -- Not copyrighted 1992 by Mark Adler
    version c10p1, 10 January 1993 */
 
-/* 
+/*
  * Adapted for booting Linux by Hannu Savolainen 1993
- * based on gzip-1.0.3 
+ * based on gzip-1.0.3
  *
  * Nicolas Pitre <nico@cam.org>, 1999/04/14 :
  *   Little mods for all variable to reside either into rodata or bss segments
@@ -54,7 +54,7 @@
    chunks), otherwise the dynamic method is used.  In the latter case, the
    codes are customized to the probabilities in the current block, and so
    can code it much better than the pre-determined fixed codes.
- 
+
    The Huffman codes themselves are decoded using a multi-level table
    lookup, in order to maximize the speed of decoding plus the speed of
    building the decoding tables.  See the comments below that precede the
@@ -121,7 +121,7 @@ static char rcsid[] = "#Id: inflate.c,v 0.14 1993/06/10 13:27:04 jloup Exp #";
 #include "gzip.h"
 #define STATIC
 #endif /* !STATIC */
-	
+
 #define slide window
 
 /* Huffman code lookup table entry--this entry is four bytes for machines
@@ -142,7 +142,7 @@ struct huft {
 
 
 /* Function prototypes */
-STATIC int huft_build OF((unsigned *, unsigned, unsigned, 
+STATIC int huft_build OF((unsigned *, unsigned, unsigned,
 		const ush *, const ush *, struct huft **, int *));
 STATIC int huft_free OF((struct huft *));
 STATIC int inflate_codes OF((struct huft *, struct huft *, int, int));
@@ -188,7 +188,7 @@ static const ush cpdext[] = {         /* Extra bits for distance codes */
 
 /* Macros for inflate() bit peeking and grabbing.
    The usage is:
-   
+
         NEEDBITS(j)
         x = b & mask_bits[j];
         DUMPBITS(j)
@@ -315,7 +315,7 @@ DEBG("huft1 ");
   memzero(c, sizeof(c));
   p = b;  i = n;
   do {
-    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"), 
+    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"),
 	    n-i, *p));
     c[*p]++;                    /* assume all entries <= BMAX */
     p++;                      /* Can't combine with above line (Solaris bug) */
@@ -509,7 +509,7 @@ struct huft *t;         /* table to free */
     q = (--p)->v.t;
     free((char*)p);
     p = q;
-  } 
+  }
   return 0;
 }
 
@@ -978,7 +978,7 @@ STATIC int inflate()
     hufts = 0;
     malloc_mark(&mark);
     if ((r = inflate_block(&e)) != 0) {
-      malloc_release(&mark);	    
+      malloc_release(&mark);
       return r;
     }
     malloc_release(&mark);
@@ -1014,7 +1014,7 @@ static ulg crc;		/* initialized in makecrc() so it'll reside in bss */
 #define CRC_VALUE (crc ^ 0xffffffffL)
 
 /*
- * Code to compute the CRC-32 table. Borrowed from 
+ * Code to compute the CRC-32 table. Borrowed from
  * gzip-1.0.3/makecrc.c.
  */
 
@@ -1122,7 +1122,7 @@ int gunzip(void)
     if ((flags & ORIG_NAME) != 0) {
 	    /* Discard the old name */
 	    while (get_byte() != 0) /* null */ ;
-    } 
+    }
 
     /* Discard file comment if any */
     if ((flags & COMMENT) != 0) {
@@ -1148,7 +1148,7 @@ int gunzip(void)
 	    }
 	    return -1;
     }
-	    
+
     /* Get the crc and original length */
     /* crc32  (see algorithm.doc)
      * uncompressed input size modulo 2^32
@@ -1157,12 +1157,12 @@ int gunzip(void)
     orig_crc |= (ulg) get_byte() << 8;
     orig_crc |= (ulg) get_byte() << 16;
     orig_crc |= (ulg) get_byte() << 24;
-    
+
     orig_len = (ulg) get_byte();
     orig_len |= (ulg) get_byte() << 8;
     orig_len |= (ulg) get_byte() << 16;
     orig_len |= (ulg) get_byte() << 24;
-    
+
     /* Validate decompression */
     if (orig_crc != CRC_VALUE) {
 	    error("crc error");

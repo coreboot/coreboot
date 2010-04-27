@@ -18,7 +18,7 @@ BIST(void){
 	msr = rdmsr(msrnum);
 	msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
 	wrmsr(msrnum, msr);
-	
+
 	msr.lo =  0x00000003F;
 	msr.hi =  0x000000000;
 	msrnum = CPU_DM_BIST;
@@ -29,7 +29,7 @@ BIST(void){
 	msr.lo &= 0x0F3FF0000;
 	if (msr.lo != 0xfeff0000)
 		goto BISTFail;
- 
+
 	msrnum = CPU_DM_CONFIG0;
 	msr = rdmsr(msrnum);
 	msr.lo &=  ~ DM_CONFIG0_LOWER_DCDIS_SET;
@@ -89,58 +89,58 @@ cpuRegInit (void){
 		msr.hi =  0;
 		msr.lo = DIAG_SEL1_SET | DIAG_SET0_SET;
 		wrmsr(msrnum, msr);
-	
+
 		/*  Set up GLCP to grab BTM data.*/
 		msrnum = 0x04C00000C;		/*  GLCP_DBGOUT MSR*/
 		msr.hi =  0x0;
 		msr.lo =  0x08;			/*  reset value (SCOPE_SEL = 0) causes FIFO toshift out,*/
 		wrmsr(msrnum, msr);		/*  exchange it to anything else to prevent this*/
-	
+
 		/* ;Turn off debug clock*/
 		msrnum = 0x04C000016;		/* DBG_CLK_CTL*/
 		msr.lo =  0x00;			/* No clock*/
 		msr.hi =  0x00;
 		wrmsr(msrnum, msr);
-	
+
 		/* ;Set debug clock to CPU*/
 		msrnum = 0x04C000016;		/* DBG_CLK_CTL*/
 		msr.lo =  0x01;			/* CPU CLOCK*/
 		msr.hi =  0x00;
 		wrmsr(msrnum, msr);
-	
+
 		/* ;Set fifo ctl to BTM bits wide*/
 		msrnum = 0x04C00005E;		/*  FIFO_CTL*/
 		msr.lo =  0x003880000;		/*  Bit [25:24] are size (11=BTM, 10 = 64 bit, 01= 32 bit, 00 = 16bit)*/
 		wrmsr(msrnum, msr);	/*  Bit [23:21] are position (100 = CPU downto0)*/
 							/*  Bit [19] sets it up in slow data mode.*/
-	
+
 		/* ;enable fifo loading - BTM sizing will constrain*/
 		/* ; only valid BTM packets to load - this action should always be on*/
-	
+
 		msrnum = 0x04C00006F;		/*  GLCP ACTION7 - load fifo*/
 		msr.lo =  0x00000F000;		/*    Any nibble all 1's will always trigger*/
 		msr.hi =  0x000000000;		/* */
 		wrmsr(msrnum, msr);
-	
+
 		/* ;start storing diag data in the fifo*/
 		msrnum = 0x04C00005F;		/* DIAG CTL*/
 		msr.lo =  0x080000000;		/*  enable actions*/
 		msr.hi =  0x000000000;
 		wrmsr(msrnum, msr);
-	
+
 		/*  Set up delay on data lines, so that the hold time*/
 		/*  is 1 ns.*/
 		msrnum = 0x04C00000D ;	/*  GLCP IO DELAY CONTROLS*/
 		msr.lo =  0x082b5ad68;
 		msr.hi =  0x080ad6b57;	/*  RGB delay = 0x07*/
 		wrmsr(msrnum, msr);
-	
+
 		/*  Set up DF to output diag information on DF pins.*/
 		msrnum = DF_GLD_MSR_MASTER_CONF;
 		msr.lo =  0x0220;
 		msr.hi = 0;
 		wrmsr(msrnum, msr);
-	
+
 		msrnum = 0x04C00000C ;	/*  GLCP_DBGOUT MSR*/
 		msr.hi =  0x0;
 		msr.lo =  0x0;				/*  reset value (SCOPE_SEL = 0) causes FIFO to shift out,*/
@@ -237,7 +237,7 @@ cpuRegInit (void){
 	/* */
 	/* This code disables the data cache.  Don't execute this
 	 * unless you're testing something.
-	 */ 
+	 */
 	/*  Allow NVRam to override DM Setup*/
 	/*if (getnvram( TOKEN_CACHE_DM_MODE) != 1) {*/
 	{
@@ -249,7 +249,7 @@ cpuRegInit (void){
 	}
 	/* This code disables the instruction cache.  Don't execute
 	 * this unless you're testing something.
-	*/ 
+	*/
 	/*  Allow NVRam to override IM Setup*/
 	/*if (getnvram( TOKEN_CACHE_IM_MODE) ==1) {*/
 	{

@@ -63,7 +63,7 @@ sub parse_file {
         if ($tmp[1] eq '98.l') {
             $register = ($tmp[2] =~ /(..)$/)[0]; # last 2 digits are (hex) of what we wrote to the register, if second field is 98.l
             $devreg = "$device $register";
-            if ("$binrep" =~ /^1/) {  
+            if ("$binrep" =~ /^1/) {
                 # bit 31 *must* be 1 if readout is to be correct
                 print "$tmp[0] - $register<br>\n" if ($DEBUG);
             } else {
@@ -77,7 +77,7 @@ sub parse_file {
             $data{$devreg}{$filename} = $packed;
         }
     }
-    return %data;   
+    return %data;
 }
 
 sub interpret_differences {

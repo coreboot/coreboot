@@ -6,7 +6,7 @@
 
 	jmp	rt_skip
 #define RAMTEST 1
-#if RAMTEST	
+#if RAMTEST
 	.section ".rom.data"
 
 rt_test:	.string "Testing SDRAM : "
@@ -16,7 +16,7 @@ rt_toomany:	.string "Too many errors.\r\n"
 rt_done:	.string "Done.\r\n"
 	.previous
 #endif
-	
+
 ramtest:
 #if RAMTEST
 	mov %eax, %esi
@@ -41,7 +41,7 @@ ramtest:
 
 	/* Display address being filled */
 	/* CONSOLE_INFO_TX_HEX32(arg) will overwrite %ebx with arg */
-	
+
 	CONSOLE_INFO_TX_HEX32(%ebx)
 	CONSOLE_INFO_TX_CHAR($'\r')
 2:
@@ -110,7 +110,7 @@ ramtest:
 	sub $1, %ecx
 	jz 5f
 	jmp 3b
-5:	
+5:
 	CONSOLE_INFO_TX_STRING($rt_toomany)
 	post_code(0xf1)
 	jmp	.Lhlt

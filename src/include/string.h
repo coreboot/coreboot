@@ -12,10 +12,10 @@ int memcmp(const void *s1, const void *s2, size_t n);
 int sprintf(char * buf, const char *fmt, ...);
 #endif
 
-// simple string functions 
+// simple string functions
 
-static inline size_t strnlen(const char *src, size_t max) 
-{ 
+static inline size_t strnlen(const char *src, size_t max)
+{
 	size_t i = 0;
 	while((*src++) && (i < max)) {
 		i++;
@@ -37,13 +37,13 @@ static inline char *strchr(const char *s, int c)
 	for (; *s; s++) {
 		if (*s == c)
 			return (char *) s;
-	}       
+	}
 	return 0;
 }
 
 #if !defined(__PRE_RAM__)
 static inline char *strdup(const char *s)
-{   
+{
 	size_t sz = strlen(s) + 1;
 	char *d = malloc(sz);
 	memcpy(d, s, sz);
@@ -69,7 +69,7 @@ static inline char *strncpy(char *to, const char *from, int count)
 }
 
 static inline int strcmp(const char *s1, const char *s2)
-{   
+{
 	int r;
 
 	while ((r = (*s1 - *s2)) == 0 && *s1) {
@@ -77,7 +77,7 @@ static inline int strcmp(const char *s1, const char *s2)
 		s2++;
 	}
 	return r;
-}  
+}
 
 static inline int strncmp(const char *s1, const char *s2, int maxlen)
 {

@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -161,7 +161,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 				MP_IRQ_POLARITY_HIGH |
 				MP_IRQ_TRIGGER_EDGE, 0x01);
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-				current, 1, MP_IRQ_POLARITY_HIGH | 
+				current, 1, MP_IRQ_POLARITY_HIGH |
 				MP_IRQ_TRIGGER_EDGE, 0x01);
 
 	/* INT_SRC_OVR */
@@ -277,7 +277,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += dsdt->length;
 	memcpy(dsdt, &AmlCode, dsdt->length);
 
-	/* Fix up global NVS region for SMI handler. The GNVS region lives 
+	/* Fix up global NVS region for SMI handler. The GNVS region lives
 	 * in the (high) table area. The low memory map looks like this:
 	 *
 	 * 0x00000000 - 0x000003ff	Real Mode IVT

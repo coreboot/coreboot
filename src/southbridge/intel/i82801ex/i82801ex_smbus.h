@@ -10,7 +10,7 @@
 #define SMBTRNSADD 0x9
 #define SMBSLVDATA 0xa
 #define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf 
+#define SMBUS_PIN_CTL  0xf
 
 #define SMBUS_TIMEOUT (100*1000*10)
 

@@ -25,10 +25,10 @@
     library from upx.  That code is:
     Copyright (C) 1996-2002 Markus Franz Xaver Johannes Oberhumer
     And is distributed under the terms of the GPL.
-    The conversion was performed 
+    The conversion was performed
     by Eric Biederman <ebiederman@lnxi.com>.
                                              20 August 2002
-                                                
+
 **************************************************************/
 #define UCLPACK_COMPAT 0
 #include <stdio.h>
@@ -144,19 +144,19 @@ struct ucl_compress
 	int init;
 
 	unsigned int look;          /* bytes in lookahead buffer */
-	
+
 	unsigned int m_len;
 	unsigned int m_off;
-	
+
 	unsigned int last_m_len;
 	unsigned int last_m_off;
-	
+
 	const unsigned char *bp;
 	const unsigned char *ip;
 	const unsigned char *in;
 	const unsigned char *in_end;
 	unsigned char *out;
-	
+
 	uint32_t bb_b;
 	unsigned bb_k;
 	unsigned bb_c_endian;
@@ -164,7 +164,7 @@ struct ucl_compress
 	unsigned bb_c_s8;
 	unsigned char *bb_p;
 	unsigned char *bb_op;
-	
+
 	struct ucl_compress_config conf;
 	unsigned int *result;
 
@@ -173,7 +173,7 @@ struct ucl_compress
 	unsigned int printcount; /* counter for reporting progress every 1K
 				    bytes */
 
-	
+
 	/* some stats */
 	unsigned long lit_bytes;
 	unsigned long match_bytes;
@@ -209,13 +209,13 @@ struct ucl_swd
 	unsigned int n;
 	unsigned int f;
 	unsigned int threshold;
-	
+
 /* public - configuration */
 	unsigned int max_chain;
 	unsigned int nice_length;
 	int use_best_off;
 	unsigned int lazy_insert;
-	
+
 /* public - output */
 	unsigned int m_len;
 	unsigned int m_off;
@@ -224,27 +224,27 @@ struct ucl_swd
 #if defined(SWD_BEST_OFF)
 	unsigned int best_off[ SWD_BEST_OFF ];
 #endif
-	
+
 /* semi public */
 	struct ucl_compress *c;
 	unsigned int m_pos;
 #if defined(SWD_BEST_OFF)
 	unsigned int best_pos[ SWD_BEST_OFF ];
 #endif
-	
+
 /* private */
 	const uint8_t *dict;
 	const uint8_t *dict_end;
 	unsigned int dict_len;
-	
+
 /* private */
 	unsigned int ip;                /* input pointer (lookahead) */
 	unsigned int bp;                /* buffer pointer */
 	unsigned int rp;                /* remove pointer */
 	unsigned int b_size;
-	
+
 	unsigned char *b_wrap;
-	
+
 	unsigned int node_count;
 	unsigned int first_rp;
 
@@ -266,7 +266,7 @@ static void assert_match(const struct ucl_swd * swd, unsigned int m_len,
 {
 	const struct ucl_compress *c = swd->c;
 	unsigned int d_off;
-	
+
 	assert(m_len >= 2);
 	if (m_off <= (unsigned int) (c->bp - c->in))
 	{
@@ -468,7 +468,7 @@ void swd_remove_node(struct ucl_swd *s, unsigned int node)
 	if (s->node_count == 0)
 	{
 		unsigned int key;
-		
+
 #ifdef UCL_DEBUG
 		if (s->first_rp != UINT_MAX)
 		{
@@ -481,11 +481,11 @@ void swd_remove_node(struct ucl_swd *s, unsigned int node)
 			s->first_rp = UINT_MAX;
 		}
 #endif
-		
+
 		key = HEAD3(s->b,node);
 		assert(s->llen3[key] > 0);
 		--s->llen3[key];
-		
+
 		key = HEAD2(s->b,node);
 		assert(s->head2[key] != NIL2);
 		if ((unsigned int) s->head2[key] == node)
@@ -544,18 +544,18 @@ void swd_search(struct ucl_swd *s, unsigned int node, unsigned int cnt)
 	const unsigned char * bp = s->b + s->bp;
 	const unsigned char * bx = s->b + s->bp + s->look;
 	unsigned char scan_end1;
-	
+
 	assert(s->m_len > 0);
-	
+
 	scan_end1 = bp[m_len - 1];
 	for ( ; cnt-- > 0; node = s->succ3[node])
 	{
 		p1 = bp;
 		p2 = b + node;
 		px = bx;
-		
+
 		assert(m_len < s->look);
-		
+
 		if (
 			p2[m_len - 1] == scan_end1 &&
 			p2[m_len] == p1[m_len] &&
@@ -564,11 +564,11 @@ void swd_search(struct ucl_swd *s, unsigned int node, unsigned int cnt)
 		{
 			unsigned int i;
 			assert(memcmp(bp,&b[node],3) == 0);
-			
+
 			p1 += 2; p2 += 2;
 			do {} while (++p1 < px && *p1 == *++p2);
 			i = p1 - bp;
-			
+
 #ifdef UCL_DEBUG
 			if (memcmp(bp,&b[node],i) != 0)
 				printf("%5ld %5ld %02x%02x %02x%02x\n",
@@ -576,7 +576,7 @@ void swd_search(struct ucl_swd *s, unsigned int node, unsigned int cnt)
 					bp[0], bp[1], b[node], b[node+1]);
 #endif
 			assert(memcmp(bp,&b[node],i) == 0);
-			
+
 #if defined(SWD_BEST_OFF)
 			if (i < SWD_BEST_OFF)
 			{
@@ -603,10 +603,10 @@ void swd_search(struct ucl_swd *s, unsigned int node, unsigned int cnt)
 static int swd_search2(struct ucl_swd *s)
 {
 	unsigned int key;
-	
+
 	assert(s->look >= 2);
 	assert(s->m_len > 0);
-	
+
 	key = s->head2[ HEAD2(s->b,s->bp) ];
 	if (key == NIL2)
 		return 0;
@@ -620,7 +620,7 @@ static int swd_search2(struct ucl_swd *s)
 	if (s->best_pos[2] == 0)
 		s->best_pos[2] = key + 1;
 #endif
-	
+
 	if (s->m_len < 2)
 	{
 		s->m_len = 2;
@@ -702,25 +702,25 @@ init_match ( struct ucl_compress *c, struct ucl_swd *s,
 	uint32_t flags )
 {
 	int r;
-	
+
 	assert(!c->init);
 	c->init = 1;
-	
+
 	s->c = c;
-	
+
 	c->last_m_len = c->last_m_off = 0;
-	
+
 	c->textsize = c->codesize = c->printcount = 0;
 	c->lit_bytes = c->match_bytes = c->rep_bytes = 0;
 	c->lazy = 0;
-	
+
 	r = swd_init(s,dict,dict_len);
 	if (r != UCL_E_OK)
 	{
 		swd_exit(s);
 		return r;
 	}
-	
+
 	s->use_best_off = (flags & 1) ? 1 : 0;
 	return UCL_E_OK;
 }
@@ -730,7 +730,7 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 	unsigned int this_len, unsigned int skip )
 {
 	assert(c->init);
-	
+
 	if (skip > 0)
 	{
 		assert(this_len >= skip);
@@ -742,7 +742,7 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 		assert(this_len <= 1);
 		c->textsize += this_len - skip;
 	}
-	
+
 	s->m_len = THRESHOLD;
 #ifdef SWD_BEST_OFF
 	if (s->use_best_off)
@@ -751,9 +751,9 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 	swd_findbest(s);
 	c->m_len = s->m_len;
 	c->m_off = s->m_off;
-	
+
 	swd_getbyte(s);
-	
+
 	if (s->b_char < 0)
 	{
 		c->look = 0;
@@ -765,7 +765,7 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 		c->look = s->look + 1;
 	}
 	c->bp = c->ip - c->look;
-	
+
 #if 0
 	/* brute force match search */
 	if (c->m_len > THRESHOLD && c->m_len + 1 <= c->look)
@@ -773,7 +773,7 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 		const uint8_t *ip = c->bp;
 		const uint8_t *m  = c->bp - c->m_off;
 		const uint8_t *in = c->in;
-		
+
 		if (ip - in > N)
 			in = ip - N;
 		for (;;)
@@ -791,7 +791,7 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 		}
 	}
 #endif
-	
+
 	return UCL_E_OK;
 }
 
@@ -924,7 +924,7 @@ code_match(struct ucl_compress *c, unsigned int m_len, const unsigned int m_off)
 		code_match(c, c->conf.max_match - 3, m_off);
 		m_len -= c->conf.max_match - 3;
 	}
-	
+
 	c->match_bytes += m_len;
 	if (m_len > c->result[3])
 		c->result[3] = m_len;
@@ -987,9 +987,9 @@ len_of_coded_match(struct ucl_compress *c, unsigned int m_len, unsigned int
 		|| m_off > c->conf.max_offset)
 		return -1;
 	assert(m_off > 0);
-	
+
 	m_len = m_len - 2 - (m_off > M2_MAX_OFFSET);
-	
+
 	if (m_off == c->last_m_off)
 		b = 1 + 2;
 	else
@@ -1038,7 +1038,7 @@ int ucl_nrv2b_99_compress(
 #define SC_MAX_CHAIN   4096
 #define SC_FLAGS       1
 #define SC_MAX_OFFSET  N
-	
+
 	memset(c, 0, sizeof(*c));
 	c->ip = c->in = in;
 	c->in_end = in + in_len;
@@ -1054,10 +1054,10 @@ int ucl_nrv2b_99_compress(
 	if (r != 0)
 		return UCL_E_INVALID_ARGUMENT;
 	c->bb_op = out;
-	
+
 	ii = c->ip;             /* point to start of literal run */
 	lit = 0;
-	
+
 
 	swd = (struct ucl_swd *) malloc(sizeof(*swd));
 	if (!swd)
@@ -1082,7 +1082,7 @@ int ucl_nrv2b_99_compress(
 		swd->nice_length = SC_NICE_LENGTH;
 	if (c->conf.max_match < swd->nice_length)
 		swd->nice_length = c->conf.max_match;
-	
+
 	c->last_m_off = 1;
 	r = find_match(c,swd,0,0);
 	if (r != UCL_E_OK)
@@ -1092,19 +1092,19 @@ int ucl_nrv2b_99_compress(
 		unsigned int ahead;
 		unsigned int max_ahead;
 		int l1, l2;
-		
+
 		c->codesize = c->bb_op - out;
-		
+
 		m_len = c->m_len;
 		m_off = c->m_off;
-		
+
 		assert(c->bp == c->ip - c->look);
 		assert(c->bp >= in);
 		if (lit == 0)
 			ii = c->bp;
 		assert(ii + lit == c->bp);
 		assert(swd->b_char == *(c->bp));
-		
+
 		if (m_len < 2 || (m_len == 2 && (m_off > M2_MAX_OFFSET))
 			|| m_off > c->conf.max_offset)
 		{
@@ -1115,10 +1115,10 @@ int ucl_nrv2b_99_compress(
 			assert(r == 0);
 			continue;
 		}
-		
+
 		/* a match */
 		assert_match(swd,m_len,m_off);
-		
+
 		/* shall we try a lazy match ? */
 		ahead = 0;
 		if (SC_TRY_LAZY <= 0 || m_len >= SC_MAX_LAZY || m_off ==
@@ -1139,7 +1139,7 @@ int ucl_nrv2b_99_compress(
 				max_ahead = m_len -1;
 			}
 		}
-		
+
 		while (ahead < max_ahead && c->look > m_len)
 		{
 			if (m_len >= SC_GOOD_LENGTH)
@@ -1148,11 +1148,11 @@ int ucl_nrv2b_99_compress(
 				swd->max_chain = SC_MAX_CHAIN;
 			r = find_match(c,swd,1,0);
 			ahead++;
-			
+
 			assert(r == 0);
 			assert(c->look > 0);
 			assert(ii + lit + ahead == c->bp);
-			
+
 			if (c->m_len < 2)
 				continue;
 			l2 = len_of_coded_match(c,c->m_len,c->m_off);
@@ -1168,36 +1168,36 @@ int ucl_nrv2b_99_compress(
 				goto lazy_match_done;
 			}
 		}
-		
+
 		assert(ii + lit + ahead == c->bp);
-		
+
 		/* 1 - code run */
 		code_run(c,ii,lit);
 		lit = 0;
-		
+
 		/* 2 - code match */
 		code_match(c,m_len,m_off);
 		swd->max_chain = SC_MAX_CHAIN;
 		r = find_match(c,swd,m_len,1+ahead);
 		assert(r == 0);
-		
+
 	lazy_match_done: ;
 	}
-	
+
 	/* store final run */
 	code_run(c,ii,lit);
-	
+
 	/* EOF */
 	bbPutBit(c, 0);
 	code_prefix_ss11(c, 0x1000000U);
 	bbPutByte(c, 0xff);
 
 	bbFlushBits(c, 0);
-	
+
 	assert(c->textsize == in_len);
 	c->codesize = c->bb_op - out;
 	*out_len = c->bb_op - out;
-	
+
 #if 0
 	printf("%7ld %7ld -> %7ld   %7ld %7ld   %ld  (max: %d %d %d)\n",
 		(long) c->textsize, (long) in_len, (long) c->codesize,
@@ -1205,7 +1205,7 @@ int ucl_nrv2b_99_compress(
 		c->result[1], c->result[3], c->result[5]);
 #endif
 	assert(c->lit_bytes + c->match_bytes == in_len);
-	
+
 	swd_exit(swd);
 	free(swd);
 
@@ -1250,7 +1250,7 @@ void Encode(void)  /* compression */
 	tw = host_to_i86ul(in_len);
 	if (fwrite(&tw, sizeof(tw), 1, outfile) != 1)
 		Error("Can't write.");	/* output size of text */
-#endif	
+#endif
 	if (in_len == 0)
 		return;
 	rewind(infile);
@@ -1292,7 +1292,7 @@ void Encode(void)  /* compression */
 	Fprintf((stderr, "input/output = %ld/%ld = %.3f\n", in_len, out_len,
 		(double)in_len / out_len));
 #endif
-	
+
 }
 
 #endif
@@ -1365,7 +1365,7 @@ void Decode(void)  /* recover */
 	if (!src)
 		Error("Can't malloc");
 	src_len = fread(src, 1, max_src_len, infile);
-	if (src_len <= 0) 
+	if (src_len <= 0)
 		Error("Can't read");
 
 	for(;;) {
@@ -1395,7 +1395,7 @@ void Decode(void)  /* recover */
 		}
 		m_len = GETBIT(bb, src, ilen);
 		m_len = m_len*2 + GETBIT(bb, src, ilen);
-		if (m_len == 0) 
+		if (m_len == 0)
 		{
 			m_len++;
 			do {
@@ -1437,7 +1437,7 @@ int main(int argc, char *argv[])
 	char  *s;
 	FILE  *f;
 	int    c;
-	
+
 	if (argc == 2) {
 		outfile = stdout;
 		if ((f = tmpfile()) == NULL) {

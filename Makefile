@@ -161,7 +161,7 @@ $(obj)/config.h:
 
 CBFSTOOL:=$(objutil)/cbfstool/cbfstool
 
-# needed objects that every mainboard uses 
+# needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent
 $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
@@ -282,14 +282,14 @@ printcrt0s:
 	@echo ldscripts=$(ldscripts)
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
-INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include 
+INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include
 INCLUDES += -Isrc/devices/oprom/include
 # abspath is a workaround for romcc
 INCLUDES += -include $(abspath $(obj)/config.h)
 
 CFLAGS = $(INCLUDES) -Os -nostdinc -pipe
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
+CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Wshadow
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS += -Werror

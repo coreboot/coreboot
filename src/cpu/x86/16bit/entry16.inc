@@ -21,8 +21,8 @@ it with the version available from LANL.
  */
 
 
-/** Start code to put an i386 or later processor into 32-bit 
- * protected mode. 
+/** Start code to put an i386 or later processor into 32-bit
+ * protected mode.
  */
 
 /* .section ".rom.text" */
@@ -31,7 +31,7 @@ it with the version available from LANL.
 .globl _start
 .type _start, @function
 
-_start: 
+_start:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
@@ -68,13 +68,13 @@ _start:
 	 * pratical problem of being able to write code that can
 	 * be relocated.
 	 *
-	 * An lgdt call before we have memory enabled cannot be 
+	 * An lgdt call before we have memory enabled cannot be
 	 * position independent, as we cannot execute a call
 	 * instruction to get our current instruction pointer.
 	 * So while this code is relocateable it isn't arbitrarily
 	 * relocatable.
 	 *
-	 * The criteria for relocation have been relaxed to their 
+	 * The criteria for relocation have been relaxed to their
 	 * utmost, so that we can use the same code for both
 	 * our initial entry point and startup of the second cpu.
 	 * The code assumes when executing at _start that:

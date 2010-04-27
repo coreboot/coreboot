@@ -194,7 +194,7 @@ static void pci_scan_bus(int bus)
 			if (devices_index >= MAX_PCI_DEVICES)
 				return;
 
-			devices[devices_index].device = 
+			devices[devices_index].device =
 			    PCI_DEV(bus, slot, func);
 
 			devices[devices_index++].id = val;

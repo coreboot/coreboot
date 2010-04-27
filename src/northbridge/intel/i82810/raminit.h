@@ -27,7 +27,7 @@
 /* DIMM0 is at 0x50, DIMM1 is at 0x51. */
 #define DIMM_SPD_BASE 0x50
 
-/* The following table has been bumped over to this header to avoid clutter in 
+/* The following table has been bumped over to this header to avoid clutter in
  * raminit.c. It's used to translate the value read from SPD Byte 31 to a value
  * the northbridge can understand in DRP, aka Rx52[7:4], [3:0]. Where most
  * northbridges have some sort of simple calculation that can be done for this,
@@ -38,7 +38,7 @@
 /* TODO: Find a better way of doing this. */
 
 static const uint8_t translate_spd_to_i82810[] = {
-	/* Note: 4MB sizes are not supported, so dual-sided DIMMs with a 4MB 
+	/* Note: 4MB sizes are not supported, so dual-sided DIMMs with a 4MB
 	 * side can't be either, at least for now.
 	 */
 	/* TODO: For above case, only use the other side if > 4MB, and get some

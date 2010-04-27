@@ -1,4 +1,4 @@
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -135,7 +135,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         setup_default_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-	
+
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
         start_other_cores();

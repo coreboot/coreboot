@@ -1187,7 +1187,7 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 
 #if CONFIG_PC80_SYSTEM == 1
 /**
- * 
+ *
  * @brief Assign IRQ numbers
  *
  * This function assigns IRQs for all functions contained within the indicated
@@ -1199,8 +1199,8 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
  * @param bus
  * @param slot
  * @param pIntAtoD is an array of IRQ #s that are assigned to PINTA through
- *        PINTD of this slot.  The particular irq #s that are passed in 
- *        depend on the routing inside your southbridge and on your 
+ *        PINTD of this slot.  The particular irq #s that are passed in
+ *        depend on the routing inside your southbridge and on your
  *        motherboard.
  */
 void pci_assign_irqs(unsigned bus, unsigned slot,
@@ -1229,7 +1229,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "Assigning IRQ %d to %d:%x.%d\n",
 			irq, bus, slot, funct);
 
-		pci_write_config8(pdev, PCI_INTERRUPT_LINE, 
+		pci_write_config8(pdev, PCI_INTERRUPT_LINE,
 			pIntAtoD[line - 1]);
 
 #ifdef PARANOID_IRQ_ASSIGNMENTS

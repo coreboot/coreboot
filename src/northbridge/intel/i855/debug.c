@@ -31,8 +31,8 @@ static void print_debug_pci_dev(unsigned dev)
 static inline void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -51,7 +51,7 @@ static void dump_pci_device(unsigned dev)
 	int i;
 	print_debug_pci_dev(dev);
 	print_debug("\n");
-	
+
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
@@ -70,8 +70,8 @@ static void dump_pci_device(unsigned dev)
 static inline void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+	for(dev = PCI_DEV(0, 0, 0);
+		dev <= PCI_DEV(0, 0x1f, 0x7);
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -93,8 +93,8 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -130,7 +130,7 @@ static inline void dump_smbus_registers(void)
                 print_debug("smbus: ");
                 print_debug_hex8(device);
                 for(j = 0; j < 256; j++) {
-                	int status; 
+                	int status;
                         unsigned char byte;
                         if ((j & 0xf) == 0) {
                 	        print_debug("\n");
@@ -147,5 +147,5 @@ static inline void dump_smbus_registers(void)
                         print_debug_char(' ');
                 }
                 print_debug("\n");
-	}	
+	}
 }

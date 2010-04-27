@@ -61,13 +61,13 @@ static void mb_gpio_init(void)
 	outl(0x01, PME_IO_BASE_ADDR + 0x2c);
 
 	/* GP30 - FAN2_TACH */
-	outl(0x05, PME_IO_BASE_ADDR + 0x33); 
+	outl(0x05, PME_IO_BASE_ADDR + 0x33);
 
 	/* GP31 - FAN1_TACH */
 	outl(0x05, PME_IO_BASE_ADDR + 0x34);
 
 	/* GP32 - FAN2_CTRL */
-	outl(0x04, PME_IO_BASE_ADDR + 0x35); 
+	outl(0x04, PME_IO_BASE_ADDR + 0x35);
 
 	/* GP33 - FAN1_CTRL */
 	outl(0x04, PME_IO_BASE_ADDR + 0x36);
@@ -82,7 +82,7 @@ static void mb_gpio_init(void)
 	outl(0x00, PME_IO_BASE_ADDR + 0x3a);
 
 	/* GP42 - GPIO_PME_OUT */
-	outl(0x00, PME_IO_BASE_ADDR + 0x3d); 
+	outl(0x00, PME_IO_BASE_ADDR + 0x3d);
 
 	/* GP50 - SER2_RI */
 	outl(0x05, PME_IO_BASE_ADDR + 0x3f);

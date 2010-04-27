@@ -8,7 +8,7 @@
  *
  * Other parts were taken from etherboot-5.0.5
  */
-	
+
 #define ASSEMBLY 1
 
 #define RELOC 0x10000
@@ -37,7 +37,7 @@ startup_32:
 	jz	1f
 	movl	4(%esp), %eax
 	movl	%eax, boot_param
-1:	
+1:
 
 	movl stack_start, %esp
 
@@ -63,7 +63,7 @@ startup_32:
 	# Linux makes stupid assumptions about the segments
 	# that are already setup, so setup a new gdt & ldt
 	# and then reload the segment registers.
-	
+
 	lgdt	gdt_48
 	lidt	idt_48
 
@@ -80,17 +80,17 @@ startup_32:
 	pushl	boot_data	# boot data pointer as second arg
 	pushl	boot_type	# boot data type as first argument
 	call	convert_params
-	
+
 	movl	%eax, %esi	# put the real mode pointer in a safe place
 	addl	$16, %esp	# pop the arguments
 
-	
+
 	# Setup the registers before jumping to linux
 
 
 	# clear eflags
 	pushl	$0
-	popfl	
+	popfl
 
 	# Flag to indicate we are the bootstrap processor
 	xorl	%ebx, %ebx
@@ -231,7 +231,7 @@ jmpe820:
 	cmpl	$SMAP, %eax
 	jne	bail820
 
-good820:	
+good820:
 	/* If this is useable memory, we save it by simply advancing %di by
 	 * sizeof(e820rec)
 	 */
@@ -250,7 +250,7 @@ bail820:
 	popl	%eax
 	subl	%esi, %eax	/* Compute how many structure we read */
 
-	/* Restore everything else */	
+	/* Restore everything else */
 	popl	%edi
 	popl	%esi
 	popl	%ebx
@@ -260,7 +260,7 @@ bail820:
 
 
 /**************************************************************************
-MEME801 - Determine size of extended memory 
+MEME801 - Determine size of extended memory
 **************************************************************************/
 	.globl meme801
 meme801:
@@ -270,12 +270,12 @@ meme801:
 	call	_prot_to_real
 	.code16
 
-	stc					# fix to work around buggy      
-	xorw	%cx,%cx				# BIOSes which dont clear/set   
-	xorw	%dx,%dx				# carry on pass/error of        
-						# e801h memory size call        
-						# or merely pass cx,dx though   
-						# without changing them.        
+	stc					# fix to work around buggy
+	xorw	%cx,%cx				# BIOSes which dont clear/set
+	xorw	%dx,%dx				# carry on pass/error of
+						# e801h memory size call
+						# or merely pass cx,dx though
+						# without changing them.
 	movw	$0xe801,%ax
 	int	$0x15
 	jc	e801absent
@@ -284,7 +284,7 @@ meme801:
 	jne	e801usecxdx			# which report their extended
 	cmpw	$0x0, %dx			# memory in AX/BX rather than
 	jne	e801usecxdx			# CX/DX.  The spec I have read
-	movw	%ax, %cx			# seems to indicate AX/BX 
+	movw	%ax, %cx			# seems to indicate AX/BX
 	movw	%bx, %dx			# are more reasonable anyway...
 
 e801usecxdx:
@@ -298,7 +298,7 @@ e801usecxdx:
 e801absent:
 	xorl	%eax,%eax
 
-e801out:	
+e801out:
 	data32 call	_real_to_prot
 	.code32
 	/* Restore Everything */
@@ -308,7 +308,7 @@ e801out:
 	ret
 
 /**************************************************************************
-MEM88 - Determine size of extended memory 
+MEM88 - Determine size of extended memory
 **************************************************************************/
 	.globl mem88
 mem88:
@@ -330,7 +330,7 @@ mem88:
 	popl	%esi
 	popl	%ebx
 	ret
-	
+
 
 /**************************************************************************
 BASEMEMSIZE - Get size of the conventional (base) memory
@@ -375,7 +375,7 @@ _real_to_prot:
 	popl	%eax			/* Fix up return address */
 	addl	$RELOC,%eax
 	pushl	%eax
-	
+
 	/* switch to protected mode idt */
 	cs
 	lidt	idt_48
@@ -469,7 +469,7 @@ gdt:
 	.byte	(RELOC>>16),0x93,0x00,(RELOC>>24)
 
 	/* For 2.5.x the kernel segments have moved */
-	
+
 	/* 0x28 dummy */
 	.quad	0
 
@@ -485,7 +485,7 @@ gdt:
 	.quad	0
 	/* 0x58 dummy */
 	.quad	0
-	
+
 
 	/* 0x60 */
 	.word	0xFFFF				# 4Gb - (0x100000*0x1000 = 4Gb)
@@ -534,7 +534,7 @@ gdt:
  *  20 - PNPBIOS support
  *  21 - APM BIOS support
  *  22 - APM BIOS support
- *  23 - APM BIOS support 
+ *  23 - APM BIOS support
  */
 gdt_end:
 
@@ -546,7 +546,7 @@ gdt64:
 	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
 	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
 gdt64_end:
-	
+
 	.section ".trailer", "a"
 	/* Constants set at build time, these are at the very end of my image */
 	.balign 16

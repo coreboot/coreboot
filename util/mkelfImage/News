@@ -67,9 +67,9 @@
   Better firmware detection, and stripping excess symbols from the
   generated object.
 
-* 1.11 24 January 2002 
+* 1.11 24 January 2002
   Bug fix to command line processing.
- 
+
 * 1.10 21 January 2002
   Starting using the PHDRS directive which many versions of ld cannot
   handle correctly.  The symptom is generally a file that is 9MB in
@@ -103,7 +103,7 @@
   Code cleanup in bzImage support.
 
 * 1.5 1 Febuary 2001
-  Add support for bzImage 
+  Add support for bzImage
 
 * 1.4 ???
   ???
@@ -113,7 +113,7 @@
 
 * 1.2 18 December 2000
   Work around for some versions of ld not treating /dev/null and an
-  empty file the same 
+  empty file the same
 
 * 1.1 30 November 2000
   Fix for ramdisks and large amounts of memory with 2.2 series

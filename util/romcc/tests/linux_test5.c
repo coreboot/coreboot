@@ -4,7 +4,7 @@
 inline int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
-	 * instruction with the exception that it returns -1  
+	 * instruction with the exception that it returns -1
 	 * when the value presented to it is zero.
 	 * Otherwise __builtin_bsr returns the zero based index of
 	 * the highest bit set.
@@ -91,8 +91,8 @@ static unsigned spd_to_dimm(unsigned device)
 
 static void disable_dimm(unsigned index)
 {
-	print_debug("disabling dimm"); 
-	print_debug_hex8(index); 
+	print_debug("disabling dimm");
+	print_debug_hex8(index);
 	print_debug("\r\n");
 #if 0
 	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CSBASE + (((index << 1)+0)<<2), 0);
@@ -175,8 +175,8 @@ static const struct mem_param *spd_set_memclk(void)
 	min_latency = 2;
 
 #if 1
-	print_debug("min_cycle_time: "); 
-	print_debug_hex8(min_cycle_time); 
+	print_debug("min_cycle_time: ");
+	print_debug_hex8(min_cycle_time);
 	print_debug(" min_latency: ");
 	print_debug_hex8(min_latency);
 	print_debug("\r\n");
@@ -236,8 +236,8 @@ static const struct mem_param *spd_set_memclk(void)
 #if 1
 				print_debug("device: ");
 				print_debug_hex8(device);
-				print_debug(" new_cycle_time: "); 
-				print_debug_hex8(new_cycle_time); 
+				print_debug(" new_cycle_time: ");
+				print_debug_hex8(new_cycle_time);
 				print_debug(" new_latency: ");
 				print_debug_hex8(new_latency);
 				print_debug("\r\n");
@@ -249,8 +249,8 @@ static const struct mem_param *spd_set_memclk(void)
 #if 1
 		print_debug("device: ");
 		print_debug_hex8(device);
-		print_debug(" new_cycle_time: "); 
-		print_debug_hex8(new_cycle_time); 
+		print_debug(" new_cycle_time: ");
+		print_debug_hex8(new_cycle_time);
 		print_debug(" new_latency: ");
 		print_debug_hex8(new_latency);
 		print_debug("\r\n");
@@ -270,8 +270,8 @@ static const struct mem_param *spd_set_memclk(void)
 #if 1
 		print_debug("device: ");
 		print_debug_hex8(device);
-		print_debug(" min_cycle_time: "); 
-		print_debug_hex8(min_cycle_time); 
+		print_debug(" min_cycle_time: ");
+		print_debug_hex8(min_cycle_time);
 		print_debug(" min_latency: ");
 		print_debug_hex8(min_latency);
 		print_debug("\r\n");
@@ -309,11 +309,11 @@ static const struct mem_param *spd_set_memclk(void)
 		if ((latency != min_latency) || (index >= 3)) {
 			goto dimm_err;
 		}
-		
+
 		/* Read the min_cycle_time for this latency */
 		value = smbus_read_byte(device, latency_indicies[index]);
-		
-		/* All is good if the selected clock speed 
+
+		/* All is good if the selected clock speed
 		 * is what I need or slower.
 		 */
 		if (value <= min_cycle_time) {
@@ -324,8 +324,8 @@ static const struct mem_param *spd_set_memclk(void)
 		disable_dimm(spd_to_dimm(device));
 	}
 #if 1
-	print_debug("min_cycle_time: "); 
-	print_debug_hex8(min_cycle_time); 
+	print_debug("min_cycle_time: ");
+	print_debug_hex8(min_cycle_time);
 	print_debug(" min_latency: ");
 	print_debug_hex8(min_latency);
 	print_debug("\r\n");
@@ -347,7 +347,7 @@ static const struct mem_param *spd_set_memclk(void)
 	value |= latencies[min_latency - 2];
 	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW, value);
 #endif
-	
+
 	return param;
 }
 

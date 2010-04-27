@@ -1,5 +1,5 @@
 chip northbridge/intel/i855
-	device pci_domain 0 on 
+	device pci_domain 0 on
 		device pci 0.0 on end
 		device pci 1.0 on end
 		chip southbridge/intel/i82801dx
@@ -51,7 +51,7 @@ chip northbridge/intel/i855
                 	end
 		end
 	end
-	device apic_cluster 0 on 
+	device apic_cluster 0 on
 		chip cpu/intel/socket_mPGA479M
 			device apic 0 on end
 		end

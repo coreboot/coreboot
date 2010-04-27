@@ -29,10 +29,10 @@ static void si_sata_init(struct device *dev)
 
 	/* some driver change class code to 0x104, but not change deviceid without reason*/
         /* restore it so we don't need to unplug AC power to restore it*/
-	
+
 	word = pci_read_config16(dev, 0x0a);
 	if(word!=0x0180) {
-		 /* enble change device id and class id*/	
+		 /* enble change device id and class id*/
 	        dword = pci_read_config32(dev,0x40);
 	        dword |= (1<<0);
         	pci_write_config32(dev, 0x40, dword);
@@ -49,7 +49,7 @@ static void si_sata_init(struct device *dev)
 
 	}
 
-	
+
 }
 static struct device_operations si_sata_ops  = {
 	.read_resources   = pci_dev_read_resources,
@@ -64,4 +64,4 @@ static const struct pci_driver si_sata_driver __pci_driver = {
         .vendor = 0x1095,
         .device = 0x3114,
 };
- 
+

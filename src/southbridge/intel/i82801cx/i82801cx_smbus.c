@@ -9,7 +9,7 @@
 void smbus_enable(void)
 {
 	/* iobase addr */
-	pcibios_write_config_dword(PM_BUS, PM_DEVFN, SMB_BASE, 
+	pcibios_write_config_dword(PM_BUS, PM_DEVFN, SMB_BASE,
 							   SMBUS_IO_BASE | PCI_BASE_ADDRESS_SPACE_IO);
 	/* smbus enable */
 	pcibios_write_config_byte(PM_BUS, PM_DEVFN, HOSTC, HST_EN);
@@ -31,13 +31,13 @@ static void smbus_wait_until_ready(void)
 static void smbus_wait_until_done(void)
 {
 	unsigned char byte;
-	
+
 	// Loop while HOST_BUSY
 	do {
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 	while((byte &1) == 1);
-	
+
 	// Wait for SUCCESS or error or BYTE_DONE
 	while( (byte & ~1) == 0) {
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);

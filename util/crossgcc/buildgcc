@@ -3,7 +3,7 @@
 # Copyright (C) 2008-2009 by coresystems GmbH
 # written by Patrick Georgi <patrick.georgi@coresystems.de> and
 #            Stefan Reinauer <stefan.reinauer@coresystems.de>
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -202,7 +202,7 @@ for PACKAGE in GMP MPFR GCC BINUTILS GDB $MINGW_PACKAGES; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
-	test -d ${!dir} || ( 
+	test -d ${!dir} || (
 		printf " * `basename $archive`\n"
 		FLAGS=zxf
 		test ${archive:${#archive}-2:2} = "gz" && FLAGS=zxf

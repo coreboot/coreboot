@@ -40,13 +40,13 @@ void clear_ioapic(u32 ioapic_base)
 	u32 low, high;
 	u32 i, ioapic_interrupts;
 
-	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base); 
+	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base);
 
 	/* Read the available number of interrupts */
 	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
 	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
 		ioapic_interrupts = 24;
-	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts); 
+	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
 
 	low = DISABLED;
 	high = NONE;
@@ -70,15 +70,15 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	u32 low, high;
 	u32 i, ioapic_interrupts;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n", ioapic_base); 
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n", ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = %02x\n",
 			bsp_lapicid);
 
 	if (ioapic_id) {
-		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id); 
+		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
 		/* Set IOAPIC ID if it has been specified */
-		io_apic_write(ioapic_base, 0x00, 
-			(io_apic_read(ioapic_base, 0x00) & 0xfff0ffff) | 
+		io_apic_write(ioapic_base, 0x00,
+			(io_apic_read(ioapic_base, 0x00) & 0xfff0ffff) |
 				(ioapic_id << 24));
 	}
 
@@ -86,7 +86,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
 	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
 		ioapic_interrupts = 24;
-	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts); 
+	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
 
 
 // XXX this decision should probably be made elsewhere, and
@@ -101,11 +101,11 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	/* For the Pentium 4 and above APICs deliver their interrupts
 	 * on the front side bus, enable that.
 	 */
-	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n"); 
+	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n");
 	io_apic_write(ioapic_base, 0x03, io_apic_read(ioapic_base, 0x03) | (1 << 0));
 #endif
 #ifdef IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
-	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n"); 
+	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n");
 	io_apic_write(ioapic_base, 0x03, 0);
 #endif
 

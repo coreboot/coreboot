@@ -87,7 +87,7 @@ static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 		/* Stop when the transaction is finished */
 		if (ctrl & DBGP_DONE)
 			break;
-	} while(--loop>0); 
+	} while(--loop>0);
 
 	if (!loop) return -1000;
 
@@ -132,7 +132,7 @@ retry:
 	 */
 	if ((lpid == USB_PID_NAK) || (lpid == USB_PID_NYET))
 		dbgp_breath();
-	
+
 	/* If I get a NACK reissue the transmission */
 	if (lpid == USB_PID_NAK) {
 		if (--loop > 0) goto retry;
@@ -179,7 +179,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, unsigned devnum, un
 
 	pids = read32(&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_OUT);
-	
+
 	ctrl = read32(&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl |= DBGP_OUT;
@@ -213,12 +213,12 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum, uns
 
 	pids = read32(&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_IN);
-		
+
 	ctrl = read32(&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl &= ~DBGP_OUT;
 	ctrl |= DBGP_GO;
-		
+
 	write32(&ehci_debug->address, addr);
 	write32(&ehci_debug->pids, pids);
 	ret = dbgp_wait_until_done(ehci_debug, ctrl);
@@ -234,7 +234,7 @@ int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum, dbg_info->endpoint_in, data, size);
 }
 
-static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype, int request, 
+static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype, int request,
 	int value, int index, void *data, int size)
 {
 	unsigned pids, addr, ctrl;
@@ -245,7 +245,7 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	read = (requesttype & USB_DIR_IN) != 0;
 	if (size > (read?DBGP_MAX_PACKET:0))
 		return -1;
-	
+
 	/* Compute the control message */
 	req.bRequestType = requesttype;
 	req.bRequest = request;
@@ -298,7 +298,7 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 			loop = 2;
 			write32(&ehci_regs->port_status[port - 1],
 					portsc & ~(PORT_RWC_BITS | PORT_RESET));
-			do {	
+			do {
 				dbgp_mdelay(delay);
 				portsc = read32(&ehci_regs->port_status[port - 1]);
 				delay_time += delay;
@@ -395,7 +395,7 @@ try_next_port:
 			set_debug_port(debug_port);
 			goto try_next_time;
 		}
-		return;	
+		return;
 	}
 
 	/* Reset the EHCI controller */
@@ -492,7 +492,7 @@ try_next_port:
 			USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
 			USB_REQ_SET_ADDRESS, USB_DEBUG_DEVNUM, 0, (void *)0, 0);
 		if (ret < 0) {
-			dbgp_printk("Could not move attached device to %d.\n", 
+			dbgp_printk("Could not move attached device to %d.\n",
 				USB_DEBUG_DEVNUM);
 			goto err;
 		}
@@ -525,7 +525,7 @@ try_next_port:
 	info->devnum = devnum;
 	info->endpoint_out = dbgp_endpoint_out;
 	info->endpoint_in = dbgp_endpoint_in;
-	
+
 	return;
 err:
 	/* Things didn't work so remove my claim */

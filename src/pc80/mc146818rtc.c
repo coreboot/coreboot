@@ -156,7 +156,7 @@ void rtc_init(int invalid)
 
 	if (invalid || cmos_invalid || checksum_invalid) {
 		printk(BIOS_WARNING, "RTC:%s%s%s zeroing cmos\n",
-			invalid?" Clear requested":"", 
+			invalid?" Clear requested":"",
 			cmos_invalid?" Power Problem":"",
 			checksum_invalid?" Checksum invalid":"");
 #if 0
@@ -166,7 +166,7 @@ void rtc_init(int invalid)
 		for(i = 10; i < 48; i++) {
 			cmos_write(0, i);
 		}
-		
+
 		if (cmos_invalid) {
 			/* Now setup a default date of Sat 1 January 2000 */
 			cmos_write(0, 0x00); /* seconds */
@@ -218,7 +218,7 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	unsigned long i;
 	unsigned char uchar;
 
-	/* The table is checked when it is built to ensure all 
+	/* The table is checked when it is built to ensure all
 		values are valid. */
 	ret = vret;
 	byte=bit/8;	/* find the byte where the data starts */
@@ -248,7 +248,7 @@ int get_option(void *dest, const char *name)
 
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
-	
+
 	/* find the requested entry record */
 	ct=&option_table;
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
@@ -263,7 +263,7 @@ int get_option(void *dest, const char *name)
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
 		return(-2);
 	}
-	
+
 	if(get_cmos_value(ce->bit, ce->length, dest))
 		return(-3);
 	if(!rtc_checksum_valid(LB_CKS_RANGE_START,

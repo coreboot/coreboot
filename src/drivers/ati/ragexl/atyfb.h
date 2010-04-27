@@ -1,7 +1,7 @@
 /*
  *  ATI Frame Buffer Device Driver Core Definitions
  */
-	
+
 #define PLL_CRTC_DECODE 0
 
 #define EINVAL -1

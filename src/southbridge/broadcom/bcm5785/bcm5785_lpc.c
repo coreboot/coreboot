@@ -52,25 +52,25 @@ static void bcm5785_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-/**     
+/**
  * @brief Enable resources for children devices
- *      
+ *
  * @param dev the device whos children's resources are to be enabled
- *      
+ *
  * This function is call by the global enable_resources() indirectly via the
  * device_operation::enable_resources() method of devices.
- *      
+ *
  * Indirect mutual recursion:
  *      enable_childrens_resources() -> enable_resources()
  *      enable_resources() -> device_operation::enable_resources()
  *      device_operation::enable_resources() -> enable_children_resources()
- */     
+ */
 static void bcm5785_lpc_enable_childrens_resources(device_t dev)
-{       
-        unsigned link; 
+{
+        unsigned link;
 	uint32_t reg;
 	int i;
-	
+
 	reg = pci_read_config8(dev, 0x44);
 
         for (link = 0; link < dev->links; link++) {
@@ -93,10 +93,10 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 					case 0x3f8: // COM1
 						reg |= (1<<6); 	break;
 					case 0x2f8: // COM2
-						reg |= (1<<7);  break; 
+						reg |= (1<<7);  break;
 					case 0x378: // Parallal 1
 						reg |= (1<<0); break;
-					case 0x3f0: // FD0 
+					case 0x3f0: // FD0
 						reg |= (1<<26); break;
 					case 0x220:  // Aduio 0
 						reg |= (1<<14);	break;
@@ -108,7 +108,7 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
                 }
         }
 	pci_write_config32(dev, 0x44, reg);
-	
+
 
 }
 

@@ -67,7 +67,7 @@ void cbmem_init(u64 baseaddr, u64 size)
 #ifndef __PRE_RAM__
 	bss_cbmem_toc = cbmem_toc;
 #endif
-	
+
 	debug("Initializing CBMEM area to 0x%llx (%lld bytes)\n", baseaddr, size);
 
 	if (size < (64 * 1024)) {
@@ -103,7 +103,7 @@ void *cbmem_add(u32 id, u64 size)
 	struct cbmem_entry *cbmem_toc;
 	int i;
 	cbmem_toc = get_cbmem_toc();
-	
+
 	if (cbmem_toc == NULL) {
 		return NULL;
 	}
@@ -121,7 +121,7 @@ void *cbmem_add(u32 id, u64 size)
 
 	/* Align size to 512 byte blocks */
 
-	size = ALIGN(size, 512) < cbmem_toc[0].size ? 
+	size = ALIGN(size, 512) < cbmem_toc[0].size ?
 		ALIGN(size, 512) : cbmem_toc[0].size;
 
 	/* Now look for the first free/usable TOC entry */
@@ -155,7 +155,7 @@ void *cbmem_find(u32 id)
 	struct cbmem_entry *cbmem_toc;
 	int i;
 	cbmem_toc = get_cbmem_toc();
-	
+
 	if (cbmem_toc == NULL)
 		return NULL;
 
@@ -197,7 +197,7 @@ void cbmem_list(void)
 	struct cbmem_entry *cbmem_toc;
 	int i;
 	cbmem_toc = get_cbmem_toc();
-	
+
 	if (cbmem_toc == NULL)
 		return;
 

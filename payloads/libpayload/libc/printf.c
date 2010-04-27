@@ -368,7 +368,7 @@ static int print_number(uint64_t num, int width, int precision, int base,
  *
  * Print string formatted according to the fmt parameter and variadic arguments.
  * Each formatting directive must have the following form:
- * 
+ *
  * 	\% [ FLAGS ] [ WIDTH ] [ .PRECISION ] [ TYPE ] CONVERSION
  *
  * FLAGS:@n
@@ -386,7 +386,7 @@ static int print_number(uint64_t num, int width, int precision, int base,
  * 	- "0"	Print 0 as padding instead of spaces. Zeroes are placed between
  *		sign and the rest of the number. This flag is ignored if "-"
  *		flag is specified.
- * 
+ *
  * WIDTH:@n
  * 	- Specify the minimal width of a printed argument. If it is bigger,
  *	width is ignored. If width is specified with a "*" character instead of
@@ -403,15 +403,15 @@ static int print_number(uint64_t num, int width, int precision, int base,
  *	value is then expected in parameters. When both width and precision are
  *	specified using "*", the first parameter is used for width and the
  *	second one for precision.
- * 
+ *
  * TYPE:@n
  * 	- "hh"	Signed or unsigned char.@n
  * 	- "h"	Signed or unsigned short.@n
  * 	- ""	Signed or unsigned int (default value).@n
  * 	- "l"	Signed or unsigned long int.@n
  * 	- "ll"	Signed or unsigned long long int.@n
- * 
- * 
+ *
+ *
  * CONVERSION:@n
  * 	- %	Print percentile character itself.
  *
@@ -419,16 +419,16 @@ static int print_number(uint64_t num, int width, int precision, int base,
  *
  * 	- s	Print zero terminated string. If a NULL value is passed as
  *		value, "(NULL)" is printed instead.
- * 
+ *
  * 	- P, p	Print value of a pointer. Void * value is expected and it is
  *		printed in hexadecimal notation with prefix (as with \%#X / \%#x
  *		for 32-bit or \%#X / \%#x for 64-bit long pointers).
  *
  * 	- b	Print value as unsigned binary number. Prefix is not printed by
  *		default. (Nonstandard extension.)
- * 
+ *
  * 	- o	Print value as unsigned octal number. Prefix is not printed by
- *		default. 
+ *		default.
  *
  * 	- d, i	Print signed decimal number. There is no difference between d
  *		and i conversion.
@@ -437,7 +437,7 @@ static int print_number(uint64_t num, int width, int precision, int base,
  *
  * 	- X, x	Print hexadecimal number with upper- or lower-case. Prefix is
  *		not printed by default.
- * 
+ *
  * All other characters from fmt except the formatting directives are printed in
  * verbatim.
  *

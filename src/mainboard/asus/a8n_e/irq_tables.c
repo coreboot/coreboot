@@ -67,7 +67,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	uint8_t *v, sum = 0;
 	int i;
 
-	/* get_bus_conf() will find out all bus num and APIC that share with 
+	/* get_bus_conf() will find out all bus num and APIC that share with
 	 * mptable.c and mptable.c.
 	 */
 	get_bus_conf();

@@ -126,14 +126,14 @@ ShadowInit(struct gliutable *gl)
 	msr = rdmsr(gl->desc_name);
 
 	if (msr.lo == 0) {
-		writeglmsr(gl); 
+		writeglmsr(gl);
 	}
 }
 
-/* NOTE: transcribed from assembly code. There is the usual redundant assembly nonsense in here. 
+/* NOTE: transcribed from assembly code. There is the usual redundant assembly nonsense in here.
   * CLEAN ME UP
    */
-/* yes, this duplicates later code, but it seems that is how they want it done. 
+/* yes, this duplicates later code, but it seems that is how they want it done.
   */
 static void
 SysmemInit(struct gliutable *gl)
@@ -141,8 +141,8 @@ SysmemInit(struct gliutable *gl)
 	msr_t msr;
 	int sizembytes, sizebytes;
 
-	/* 
-	 * Figure out how much RAM is in the machine and alocate all to the 
+	/*
+	 * Figure out how much RAM is in the machine and alocate all to the
 	 * system. We will adjust for SMM and DMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
@@ -165,7 +165,7 @@ SysmemInit(struct gliutable *gl)
 	msr = rdmsr(gl->desc_name);
 	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 				gl->desc_name, msr.hi, msr.lo);
-	
+
 }
 static void
 DMMGL0Init(struct gliutable *gl) {
@@ -188,11 +188,11 @@ DMMGL0Init(struct gliutable *gl) {
 	msr.hi |= (DMM_OFFSET >> 24);
 	msr.lo = DMM_OFFSET << 8;
 	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-	
+
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
 	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
-	
+
 }
 static void
 DMMGL1Init(struct gliutable *gl) {
@@ -211,7 +211,7 @@ DMMGL1Init(struct gliutable *gl) {
 	/* hmm. AMD source has SMM here ... SMM, not DMM? We think DMM */
 	printk(BIOS_ERR, "%s: warning, using DMM_SIZE even though AMD used SMM_SIZE\n", __func__);
 	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-	
+
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
 	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
@@ -238,7 +238,7 @@ SMMGL0Init(struct gliutable *gl) {
 
 	msr.lo = SMM_OFFSET << 8;
 	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
-	
+
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
 	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
@@ -254,7 +254,7 @@ SMMGL1Init(struct gliutable *gl) {
 	msr.hi |= (SMM_OFFSET >> 24);
 	msr.lo = SMM_OFFSET << 8;
 	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
-	
+
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
 	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
@@ -265,31 +265,31 @@ GLIUInit(struct gliutable *gl){
 
 	while (gl->desc_type != GL_END){
 		switch(gl->desc_type){
-		default: 
+		default:
 			/* For Unknown types: Write then read MSR */
 			writeglmsr(gl);
 		case SC_SHADOW: /*  Check for a Shadow entry*/
 			ShadowInit(gl);
 			break;
-	
+
 		case R_SYSMEM: /*  check for a SYSMEM entry*/
 			SysmemInit(gl);
 			break;
-	
+
 		case BMO_DMM: /*  check for a DMM entry*/
 			DMMGL0Init(gl);
 			break;
-	
+
 		case BM_DMM	: /*  check for a DMM entry*/
 			DMMGL1Init(gl);
 			break;
-	
+
 		case BMO_SMM	: /*  check for a SMM entry*/
 			SMMGL0Init(gl);
 			break;
-	
+
 		case BM_SMM	: /*  check for a SMM entry*/
-			SMMGL1Init(gl);	
+			SMMGL1Init(gl);
 			break;
 		}
 		gl++;
@@ -413,7 +413,7 @@ static void GLPCIInit(void){
 
 	/* */
 	/* 5535 NB Init*/
-	/* */	
+	/* */
 	msrnum = GLPCI_ARB;
 	msr = rdmsr(msrnum);
 	msr.hi |=  GLPCI_ARB_UPPER_PRE0_SET | GLPCI_ARB_UPPER_PRE1_SET;
@@ -432,19 +432,19 @@ static void GLPCIInit(void){
 
 	msr.lo &=  ~ (0x07 << GLPCI_CTRL_LOWER_IRFT_SHIFT);
 	msr.lo |=  0x06 << GLPCI_CTRL_LOWER_IRFT_SHIFT;
-	
+
 	msr.hi &=  ~ (0x0f << GLPCI_CTRL_UPPER_FTH_SHIFT);
 	msr.hi |=  0x0F << GLPCI_CTRL_UPPER_FTH_SHIFT;
-	
+
 	msr.hi &=  ~ (0x0f << GLPCI_CTRL_UPPER_RTH_SHIFT);
 	msr.hi |=  0x0F << GLPCI_CTRL_UPPER_RTH_SHIFT;
-	
+
 	msr.hi &=  ~ (0x0f << GLPCI_CTRL_UPPER_SBRTH_SHIFT);
 	msr.hi |=  0x0F << GLPCI_CTRL_UPPER_SBRTH_SHIFT;
-	
+
 	msr.hi &=  ~ (0x03 << GLPCI_CTRL_UPPER_WTO_SHIFT);
 	msr.hi |=  0x06 << GLPCI_CTRL_UPPER_WTO_SHIFT;
-	
+
 	msr.hi &=  ~ (0x03 << GLPCI_CTRL_UPPER_ILTO_SHIFT);
 	msr.hi |=  0x00 << GLPCI_CTRL_UPPER_ILTO_SHIFT;
 	wrmsr(msrnum, msr);
@@ -478,7 +478,7 @@ static void GLPCIInit(void){
 	/* *	Modified:*/
 	/* **/
 	/* ***************************************************************************/
-static void 
+static void
 ClockGatingInit (void){
 	msr_t msr;
 	struct msrinit *gating = ClockGatingDefault;
@@ -489,7 +489,7 @@ ClockGatingInit (void){
 	NOSTACK	bx, GetNVRAMValueBX
 	cmp	al, TVALUE_CG_OFF
 	je	gatingdone
-	
+
 	cmp	al, TVALUE_CG_DEFAULT
 	jb	allon
 	ja	performance
@@ -517,7 +517,7 @@ performance:
 
 }
 
-static void 
+static void
 GeodeLinkPriority(void){
 	msr_t msr;
 	struct msrinit *prio = GeodeLinkPriorityTable;
@@ -537,7 +537,7 @@ GeodeLinkPriority(void){
 }
 
 
-	
+
 /*
  *	Get the GLIU0 shadow register settings
  *	If the setShadow function is used then all shadow descriptors
@@ -613,7 +613,7 @@ static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
 static void setShadowGLPCI(uint32_t shadowHi, uint32_t shadowLo)
 {
 	msr_t msr;
-	
+
 // Set the Enable Register.
 
 	msr = rdmsr(GLPCI_REN);
@@ -667,7 +667,7 @@ static void setShadow(uint64_t shadowSettings)
  *	Destroys:
  *
  **************************************************************************/
-static void 
+static void
 shadowRom(void)
 {
 	uint64_t shadowSettings = getShadow();
@@ -688,7 +688,7 @@ shadowRom(void)
  *  ROMBASE(36:55) = 0FFFC0h ; Top of PCI/bottom of rom chipselect area
  *  DEVRC(35:28) =  39h	 ; cache disabled in PCI memory + WS bit on + Write Combine + write burst.
  *  SYSTOP(27:8) = top of system memory
- *  SYSRC(7:0) = 00h 		 ; writeback, can set to 08h to make writethrough 
+ *  SYSRC(7:0) = 00h 		 ; writeback, can set to 08h to make writethrough
  *
  ***************************************************************************/
 #define SYSMEM_RCONF_WRITETHROUGH 8
@@ -716,17 +716,17 @@ RCONFInit(void)
 		while (1);
 	}
 
-// sysdescfound:	
+// sysdescfound:
 	/* found the descriptor... get its contents */
 	msr = rdmsr(gl->desc_name);
 
-	/* 20 bit address -  The bottom 12 bits go into bits 20-31 in eax, the 
-	 * top 8 bits go into 0-7 of edx. 
+	/* 20 bit address -  The bottom 12 bits go into bits 20-31 in eax, the
+	 * top 8 bits go into 0-7 of edx.
 	 */
 	msr.lo = (msr.lo & 0xFFFFFF00) | (msr.hi & 0xFF);
 	msr.lo = ((msr.lo << 12) | (msr.lo >> 20)) & 0x000FFFFF;
 	msr.lo <<= RCONF_DEFAULT_LOWER_SYSTOP_SHIFT;	// 8
-	
+
 	// Set Default SYSMEM region properties
 	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	// 8 (or ~8)
 
@@ -739,7 +739,7 @@ RCONFInit(void)
 
 	// Set ROMBASE cache properties.
 	msr.hi |= ((ROMRC_RCONF_DEFAULT >> 8) | (ROMRC_RCONF_DEFAULT << 24));
-	
+
 	// now program RCONF_DEFAULT
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 
@@ -776,15 +776,15 @@ northbridgeinit(void)
 		GLIUInit(gliutables[i]);
 
 	GeodeLinkPriority();
-	
+
 	shadowRom();
-	
-	// GeodeROM ensures that the BIOS waits the required 1 second before 
+
+	// GeodeROM ensures that the BIOS waits the required 1 second before
 	// allowing anything to access PCI
 	// PCIDelay();
-	
+
 	RCONFInit();
-	
+
 	// The cacheInit function in GeodeROM tests cache and, among other things,
 	// makes sure all INVD instructions are treated as WBINVD.  We do this
 	// because we've found some programs which require this behavior.
@@ -792,7 +792,7 @@ northbridgeinit(void)
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
-	
+
 	/*  Now that the descriptor to memory is set up.*/
 	/*  The memory controller needs one read to synch its lines before it can be used.*/
 	i = *(int *) 0;

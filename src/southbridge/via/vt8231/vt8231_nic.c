@@ -5,7 +5,7 @@
 #include <device/pci_ids.h>
 
 /*
- * Enable the ethernet device and turn off stepping (because it is integrated 
+ * Enable the ethernet device and turn off stepping (because it is integrated
  * inside the southbridge)
  */
 static void nic_init(struct device *dev)

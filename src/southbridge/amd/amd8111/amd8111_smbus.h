@@ -27,7 +27,7 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 			break;
 		}
 		if(loops == (SMBUS_TIMEOUT / 2)) {
-			outw(inw(smbus_io_base + SMBGSTATUS), 
+			outw(inw(smbus_io_base + SMBGSTATUS),
 				smbus_io_base + SMBGSTATUS);
 		}
 	} while(--loops);
@@ -41,7 +41,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	do {
 		unsigned short val;
 		smbus_delay();
-		
+
 		val = inw(smbus_io_base + SMBGSTATUS);
 		if (((val & 0x8) == 0) | ((val & 0x0037) != 0)) {
 			break;
@@ -58,7 +58,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
@@ -103,7 +103,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
@@ -146,7 +146,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);

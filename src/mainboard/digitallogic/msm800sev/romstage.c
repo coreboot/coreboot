@@ -93,7 +93,7 @@ void main(unsigned long bist)
 	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");
-	/* we are finding the return does not work on this board. Explicitly call the label that is 
+	/* we are finding the return does not work on this board. Explicitly call the label that is
 	 * after the call to us. This is gross, but sometimes at this level it is the only way out
 	 */
 	void done_cache_as_ram_main(void);

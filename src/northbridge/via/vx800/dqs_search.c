@@ -22,8 +22,8 @@ void SetDQSOutputCHB(DRAM_SYS_ATTR * DramAttr);
 
 /*===================================================================
 Function   : DRAMDQSOutputSearchCHA()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
@@ -40,12 +40,12 @@ void DRAMDQSOutputSearch(DRAM_SYS_ATTR * DramAttr)
 
 /*===================================================================
 Function   : SetDQSOutputCHA()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void
-Purpose   :  according the frequence set CHA DQS output 
+Purpose   :  according the frequence set CHA DQS output
 ===================================================================*/
 void SetDQSOutputCHA(DRAM_SYS_ATTR * DramAttr)
 {
@@ -80,8 +80,8 @@ void SetDQSOutputCHA(DRAM_SYS_ATTR * DramAttr)
 
 /*===================================================================
 Function   : DRAMDQSInputSearch()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void

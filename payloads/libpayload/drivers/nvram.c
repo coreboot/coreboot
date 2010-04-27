@@ -68,7 +68,7 @@
 
 /**
  * Read a byte from the specified NVRAM address.
- * 
+ *
  * @param addr The NVRAM address to read a byte from.
  * @return The byte at the given NVRAM address.
  */
@@ -82,7 +82,7 @@ u8 nvram_read(u8 addr)
 
 /**
  * Write a byte to the specified NVRAM address.
- * 
+ *
  * @param val The byte to write to NVRAM.
  * @param addr The NVRAM address to write to.
  */

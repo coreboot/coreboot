@@ -19,7 +19,7 @@ static void ide_init(struct device *dev)
 static void i82801ex_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* This value is also visible in uchi[0-2] and smbus functions */
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

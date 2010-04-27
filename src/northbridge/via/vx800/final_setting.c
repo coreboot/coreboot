@@ -64,8 +64,8 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr)
 
 /*===================================================================
 Function   : DRAMRegFinalValue()
-Precondition : 
-Input      :  
+Precondition :
+Input      :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
 		                    in MotherBoard
 Output     : Void

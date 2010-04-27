@@ -1,9 +1,9 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008-2010 by coresystems GmbH 
- *  written by Stefan Reinauer <stepan@coresystems.de> 
- * 
+ * Copyright (C) 2008-2010 by coresystems GmbH
+ *  written by Stefan Reinauer <stepan@coresystems.de>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -145,7 +145,7 @@ static const io_register_t ich8_pm_registers[] = {
 	{ 0x7c, 4, "RESERVED" },
 };
 
-/* 
+/*
  * INTEL I/O Controller Hub 6 Family
  * http://www.intel.com/assets/pdf/datasheet/301473.pdf
  */

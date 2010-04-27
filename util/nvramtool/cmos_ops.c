@@ -122,7 +122,7 @@ int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
 		break;
 
 	case CMOS_ENTRY_HEX:
-		/* See if the first character of 'value_str' (excluding 
+		/* See if the first character of 'value_str' (excluding
 		 * any initial whitespace) is a minus sign.
 		 */
 		for (p = value_str; isspace(*p); p++) ;

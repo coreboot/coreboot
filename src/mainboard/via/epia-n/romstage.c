@@ -41,8 +41,8 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
 /*
- * NOOB ::			
- * d0f0 - Device 0 Function 0 etc. 
+ * NOOB ::
+ * d0f0 - Device 0 Function 0 etc.
  */
 static const struct mem_controller ctrl = {
 	.d0f0 = 0x0000,
@@ -65,7 +65,7 @@ static void enable_mainboard_devices(void)
 {
 	device_t dev;
 	u8 reg;
- 
+
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
@@ -95,10 +95,10 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x51, 0x9d);
 }
 
-static void enable_shadow_ram(void) 
+static void enable_shadow_ram(void)
 {
 	unsigned char shadowreg;
-	
+
 	shadowreg = pci_read_config8(ctrl.d0f3, 0x82);
 	/* 0xf0000-0xfffff Read/Write*/
 	shadowreg |= 0x30;
@@ -133,10 +133,10 @@ static void main(unsigned long bist)
 
 	print_debug("Enable F-ROM Shadow RAM\n");
 	enable_shadow_ram();
-	
+
 	/* setup cpu */
 	print_debug("Setup CPU Interface\n");
-	c3_cpu_setup(ctrl.d0f2);	
+	c3_cpu_setup(ctrl.d0f2);
 
 	ddr_ram_setup();
 
@@ -144,7 +144,7 @@ static void main(unsigned long bist)
 		print_debug("doing early_mtrr\n");
 		early_mtrr_init();
 	}
-	
+
 	//ram_check(0, 640 * 1024);
 
 	print_spew("Leaving romstage.c:main()\n");

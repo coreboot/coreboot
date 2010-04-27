@@ -3,17 +3,17 @@ typedef __builtin_ldiv_t ldiv_t;
 typedef __builtin_udiv_t udiv_t;
 typedef __builtin_uldiv_t uldiv_t;
 
-static div_t div(int numer, int denom) 
-{ 
-	return __builtin_div(numer, denom); 
+static div_t div(int numer, int denom)
+{
+	return __builtin_div(numer, denom);
 }
-static ldiv_t ldiv(long numer, long denom) 
-{ 
-	return __builtin_ldiv(numer, denom); 
+static ldiv_t ldiv(long numer, long denom)
+{
+	return __builtin_ldiv(numer, denom);
 }
 static udiv_t udiv(unsigned numer, unsigned denom)
-{ 
-	return __builtin_udiv(numer, denom); 
+{
+	return __builtin_udiv(numer, denom);
 }
 static uldiv_t uldiv(unsigned long numer, unsigned long denom)
 {

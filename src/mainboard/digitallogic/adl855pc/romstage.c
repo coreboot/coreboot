@@ -15,7 +15,7 @@
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
@@ -45,7 +45,7 @@ void main(unsigned long bist)
 		init_timer();
 #endif
 	}
-        
+
         w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
@@ -66,7 +66,7 @@ void main(unsigned long bist)
 
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 
-	} 
+	}
 
 #if 0
 	dump_pci_devices();
@@ -76,7 +76,7 @@ void main(unsigned long bist)
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
-	// Check 16MB of memory @ 2GB 
+	// Check 16MB of memory @ 2GB
 	ram_check(0x80000000, 0x81000000);
 #endif
 }

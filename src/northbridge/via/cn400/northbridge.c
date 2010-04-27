@@ -45,7 +45,7 @@ static void memctrl_init(device_t dev)
 	/* vlink mirror */
 	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
-	
+
 	/* Setup Low Memory Top */
 	/* 0x47 == HA(32:25)    */
 	/* 0x84/85 == HA(31:20) << 4 | DRAM Granularity */
@@ -104,7 +104,7 @@ static void memctrl_init(device_t dev)
 		pci_write_config8(vlink_dev, 0x63, shadowreg);
 
 	/* Activate VGA Frame Buffer */
-	
+
 	reg8 = pci_read_config8(dev, 0xA0);
 	reg8 |= 0x01;
 	pci_write_config8(dev, 0xA0, reg8);
@@ -268,7 +268,7 @@ static void cn400_domain_set_resources(device_t dev)
 			     (tolmk - 768 - CONFIG_VIDEO_MB * 1024));
 	}
 	assign_resources(&dev->link[0]);
-	
+
 	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
 

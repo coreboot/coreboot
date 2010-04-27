@@ -128,7 +128,7 @@ extern u32 X86API rdl(u32 addr);
 extern void X86API wrb(u32 addr, u8 val);
 extern void X86API wrw(u32 addr, u16 val);
 extern void X86API wrl(u32 addr, u32 val);
- 
+
 #pragma	pack()
 
 /*--------------------- type definitions -----------------------------------*/
@@ -175,10 +175,10 @@ void 	X86EMU_halt_sys(void);
 #define DEBUG_SYSINT_F          0x000200 /* bios system interrupts. */
 #define DEBUG_TRACECALL_F       0x000400
 #define DEBUG_INSTRUMENT_F      0x000800
-#define DEBUG_MEM_TRACE_F       0x001000 
-#define DEBUG_IO_TRACE_F        0x002000 
+#define DEBUG_MEM_TRACE_F       0x001000
+#define DEBUG_IO_TRACE_F        0x002000
 #define DEBUG_TRACECALL_REGS_F  0x004000
-#define DEBUG_DECODE_NOPRINT_F  0x008000 
+#define DEBUG_DECODE_NOPRINT_F  0x008000
 #define DEBUG_SAVE_IP_CS_F      0x010000
 #define DEBUG_TRACEJMP_F        0x020000
 #define DEBUG_TRACEJMP_REGS_F   0x040000

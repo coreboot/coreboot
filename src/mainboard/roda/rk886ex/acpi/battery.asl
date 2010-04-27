@@ -113,7 +113,7 @@ Device (BAT1)
 				}
 			}
 		}
-		
+
 		Store (CBA1, Local0)
 		Store (Local0, Index(PBST, 2))
 		Store (DerefOf(Index(PBIF, 4)), Index(PBST, 3))
@@ -130,7 +130,7 @@ Device (BAT1)
 				Store (1, Local1)
 			}
 		}
-		
+
 		Store (Local1, Index(PBST, 0))
 		If (\_SB.PCI0.LPCB.EC0.P63S) {
 			Store (0x16, Index(PBST, 1))
@@ -253,7 +253,7 @@ Device (BAT2)
 				}
 			}
 		}
-		
+
 		Store (CBA2, Local0)
 		Store (Local0, Index(PBST, 2))
 		Store (DerefOf(Index(PBIF, 4)), Index(PBST, 3))
@@ -270,7 +270,7 @@ Device (BAT2)
 				Store (1, Local1)
 			}
 		}
-		
+
 		Store (Local1, Index(PBST, 0))
 		If (\_SB.PCI0.LPCB.EC0.P62S) {
 			Store (0x16, Index(PBST, 1))

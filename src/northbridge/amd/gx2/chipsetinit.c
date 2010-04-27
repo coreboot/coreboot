@@ -61,7 +61,7 @@ static struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 
 #ifdef UNUSED_CODE
 struct acpiinit {
-	unsigned short ioreg; 
+	unsigned short ioreg;
 	unsigned long regdata;
 	unsigned short iolen;
 };
@@ -116,21 +116,21 @@ static void pmChipsetInit(void)
 	port =  (PMLogic_BASE + 0x034);
 	val =  0x0A0		; /*  5ms*/
 	outl(val, port);
-	
+
 	/*  PM_WKD*/
 	port =  (PMLogic_BASE + 0x030);
 	outl(val, port);
-		
+
 	/*  PM_SED*/
 	port =  (PMLogic_BASE + 0x014);
 	val =  0x04601		; /*  5ms*/
 	outl(val, port);
-	
+
 	/*  PM_SIDD*/
 	port =  (PMLogic_BASE + 0x020);
 	val =  0x08C02		; /*  10ms*/
 	outl(val, port);
-	
+
 	/* GPIO24 OUT_AUX1 function is the external signal for 5535's
 	 * vsb_working_aux which is de-asserted when 5535 enters Standby (S3 or
 	 * S5) state.  On Hawk, GPIO24 controls all voltage rails except Vmem
@@ -154,7 +154,7 @@ static void pmChipsetInit(void)
 	 * Programming of GPIO11 will be done by VSA PM code.  During VSA
 	 * Init. BIOS writes PM Core Virual Register indicating if S1 Clocks
 	 * should be On or Off. This is based on a Setup item.  We do not want
-	 * to leave GPIO11 enabled because of a Hawk board problem.  With 
+	 * to leave GPIO11 enabled because of a Hawk board problem.  With
 	 * GPIO11 enabled in S3, something is back-driving GPIO11 causing it
 	 * to float to 1.6-1.7V.
 	 */
@@ -188,7 +188,7 @@ static uint32_t FlashPort[] = {
  *	ChipsetFlashSetup
  *
  *	Flash LBARs need to be setup before VSA init so the PCI BARs have
- *	correct size info.  Call this routine only if flash needs to be 
+ *	correct size info.  Call this routine only if flash needs to be
  *	configured (don't call it if you want IDE).
  *
  **************************************************************************/
@@ -240,16 +240,16 @@ static void ChipsetFlashSetup(void)
 }
 
 
- 
+
 /****************************************************************************
- * 
+ *
  * 	ChipsetGeodeLinkInit
  *
  * 	Handle chipset specific GeodeLink settings here.
  * 	Called from GeodeLink init code.
- * 
+ *
  ****************************************************************************/
-static void 
+static void
 ChipsetGeodeLinkInit(void)
 {
 	msr_t msr;
@@ -269,7 +269,7 @@ ChipsetGeodeLinkInit(void)
 		return;
 
 	totalmem = sizeram() << 20 - 1;
-	totalmem >>= 12; 
+	totalmem >>= 12;
 	totalmem = ~totalmem;
 	totalmem &= 0xfffff;
 	msr.lo = totalmem;
@@ -292,7 +292,7 @@ gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
 	printk(BIOS_DEBUG, "Companion is a %s\n", is_5536()?"CS5536":"CS5535");
 
 #ifdef UNUSED_CODE
-	/* we hope NEVER to be in coreboot when S3 resumes 
+	/* we hope NEVER to be in coreboot when S3 resumes
 	if (! IsS3Resume()) */
 	{
 		struct acpiinit *aci = acpi_init_table;
@@ -319,14 +319,14 @@ gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
 		msrnum = MSR_SB_USB2 + 8;
 		wrmsr(msrnum, msr);
 	}
-	
+
 	/* set hd IRQ */
 	outl	(GPIOL_2_SET, GPIOL_INPUT_ENABLE);
 	outl	(GPIOL_2_SET, GPIOL_IN_AUX1_SELECT);
 
 	/*  Allow IO read and writes during a ATA DMA operation. */
 	/*   This could be done in the HD rom but do it here for easier debugging. */
-	
+
 	msrnum = ATA_SB_GLD_MSR_ERR;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~0x100;

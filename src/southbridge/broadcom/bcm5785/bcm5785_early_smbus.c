@@ -15,11 +15,11 @@ static void enable_smbus(void)
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\n");
 	}
-	
+
 	print_debug("SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x90, SMBUS_IO_BASE | 1);
-	/* Set smbus iospace enable */ 
+	/* Set smbus iospace enable */
 	pci_write_config8(dev, 0xd2, 0x03);
 	/* clear any lingering errors, so the transaction will run */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);

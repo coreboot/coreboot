@@ -23,7 +23,7 @@
 #include <cpu/x86/smm.h>
 #include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
 
-/* The southbridge SMI handler checks whether gnvs has a 
+/* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
 extern global_nvs_t *gnvs;

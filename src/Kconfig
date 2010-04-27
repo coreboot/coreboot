@@ -454,8 +454,8 @@ config FALLBACK_BOOTSPLASH_FILE
 	depends on BOOTSPLASH
 	default "bootsplash.jpg"
 	help
-	  The path and filename of the file to use as graphical bootsplash 
-	  screen. The file format has to be jpg. 
+	  The path and filename of the file to use as graphical bootsplash
+	  screen. The file format has to be jpg.
 
 # TODO: Turn this into a "choice".
 config FRAMEBUFFER_VESA_MODE
@@ -568,7 +568,7 @@ config X86EMU_DEBUG_TRACE
 	depends on X86EMU_DEBUG
 	help
 	  Print _all_ opcodes that are executed by x86emu.
-	  
+
 	  WARNING: This will produce a LOT of output and take a long time.
 
 	  Note: This option will increase the size of the coreboot image.

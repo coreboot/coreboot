@@ -30,7 +30,7 @@ static void *smp_write_config_table(void *v)
         unsigned char bus_num;
 
 	int i;
-  
+
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
 
@@ -51,7 +51,7 @@ static void *smp_write_config_table(void *v)
         smp_write_processors(mc);
 
 	get_bus_conf();
-       
+
 
 /*Bus:          Bus ID  Type*/
         /* define bus and isa numbers */
@@ -60,7 +60,7 @@ static void *smp_write_config_table(void *v)
         }
         smp_write_bus(mc, bus_isa, "ISA   ");
 
-	
+
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, apicid_8111, 0x11, 0xfec00000);
         {
@@ -82,7 +82,7 @@ static void *smp_write_config_table(void *v)
                 }
 
 	}
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_8111, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x1, apicid_8111, 0x1);
@@ -96,7 +96,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xd, apicid_8111, 0xd);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xe, apicid_8111, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xf, apicid_8111, 0xf);
-	
+
 //8111 LPC ????
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((sysconf.sbdn+1)<<2)|0, apicid_8111, 0x13);
 

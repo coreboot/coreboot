@@ -52,7 +52,7 @@ void setup_pars(void)
 static void identify_ts9500(void)
 {
 	unsigned i, val;
-	
+
 	TS9500_LED_ON;
 
 	print_err("TS-9500 add-on found:\n");
@@ -61,23 +61,23 @@ static void identify_ts9500(void)
 		print_err("  DIP");
 		print_err_char(i+0x31);
 		print_err(": ");
-		if((val&(1<<i))!=0) 
-			print_err("on\n"); 
+		if((val&(1<<i))!=0)
+			print_err("on\n");
 		else
-			print_err("off\n"); 
+			print_err("off\n");
 	}
 	print_err("\n");
-	
+
 	val=inb(0x19a);
-	
+
 	for (i=6; i<8; i++) {
 		print_err("  JP");
 		print_err_char(i+0x30-5);
 		print_err(": ");
-		if((val&(1<<i))!=0) 
-			print_err("on\n"); 
+		if((val&(1<<i))!=0)
+			print_err("on\n");
 		else
-			print_err("off\n"); 
+			print_err("off\n");
 	}
 	print_err("\n");
 
@@ -103,33 +103,33 @@ static void identify_system(void)
 	print_err("  SRAM option:   ");
 	if((val&1)==0) print_err("not ");
 	print_err("installed\n");
-	
+
 	print_err("  RS-485 option: ");
 	if((val&2)==0) print_err("not ");
 	print_err("installed\n");
 
 	val=inb(0x76);
 	print_err("  Temp. range:   ");
-	if((val&2)==0) print_err("commercial\n"); 
+	if((val&2)==0) print_err("commercial\n");
 	else print_err("industrial\n");
-	
+
 	print_err("\n");
-	
+
 	val=inb(0x77);
 	for (i=1; i<8; i++) {
 		print_err("  JP");
 		print_err_char(i+0x30);
 		print_err(": ");
-		if((val&(1<<i))!=0) 
-			print_err("on\n"); 
+		if((val&(1<<i))!=0)
+			print_err("on\n");
 		else
-			print_err("off\n"); 
+			print_err("off\n");
 	}
 	print_err("\n");
 
 	/* Detect TS-9500 */
 	val=inb(0x19d);
-	if(val==0x5f) 
+	if(val==0x5f)
 		identify_ts9500();
 
 }
@@ -144,18 +144,18 @@ static void main(unsigned long bist)
 {
 	volatile int i;
 	unsigned val;
-	
+
 	TS5300_LED_ON;
-	
+
 	// Let the hardware settle a bit.
 	for(i = 0; i < 100; i++)
 		;
-	
+
         setupsc520();
         uart_init();
         console_init();
-	
-	
+
+
 	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\n");
 	staticmem();
 	print_err("Memory initialized: 32MB\n");
@@ -170,7 +170,7 @@ static void main(unsigned long bist)
 	ram_check(0x00000000, 0x000a0000);
 	ram_check(0x000b0000, 0x02000000);
 #endif
-	
+
 	TS5300_LED_OFF;
 }
 

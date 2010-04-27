@@ -172,11 +172,11 @@ static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *inf
 	unsigned moving, gran, step;
 
 	resource = new_resource(dev, index);
-	
+
 	/* Initilize the resource */
 	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
-	
+
 	/* Get the resource size */
 	moving = info->mask;
 	gran = 15;
@@ -259,9 +259,9 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
-} 
+}
 
-void pnp_enable_devices(device_t base_dev, struct device_operations *ops, 
+void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 	unsigned functions, struct pnp_info *info)
 {
 	struct device_path path;
@@ -270,7 +270,7 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 
 	path.type       = DEVICE_PATH_PNP;
 	path.pnp.port = base_dev->path.pnp.port;
-	
+
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
 		/* Skip logical devices this Super I/O doesn't have. */
@@ -279,9 +279,9 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 
 		path.pnp.device = info[i].function;
 		dev = alloc_find_dev(base_dev->bus, &path);
-		
+
 		/* Don't initialize a device multiple times */
-		if (dev->ops) 
+		if (dev->ops)
 			continue;
 
 		if (info[i].ops == 0) {

@@ -72,7 +72,7 @@ void *memmove(void *dst, const void *src, size_t n)
 	offs = n - (n % sizeof(unsigned long));
 
 	for (i = (n % sizeof(unsigned long)) - 1; i >= 0; i--)
-		((unsigned char *)dst)[i + offs] = 
+		((unsigned char *)dst)[i + offs] =
 			((unsigned char *)src)[i + offs];
 
 	for (i = n / sizeof(unsigned long) - 1; i >= 0; i--)

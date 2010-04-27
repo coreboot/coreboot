@@ -159,8 +159,8 @@ void cardbus_enable_resources(device_t dev)
 	uint16_t ctrl;
 	ctrl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
 	ctrl |= (dev->link[0].bridge_ctrl & (
-			PCI_BRIDGE_CTL_PARITY | 
-			PCI_BRIDGE_CTL_SERR | 
+			PCI_BRIDGE_CTL_PARITY |
+			PCI_BRIDGE_CTL_SERR |
 			PCI_BRIDGE_CTL_NO_ISA |
 			PCI_BRIDGE_CTL_VGA |
 			PCI_BRIDGE_CTL_MASTER_ABORT |
@@ -174,8 +174,8 @@ void cardbus_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
-unsigned int cardbus_scan_bus(struct bus *bus, 
-	unsigned min_devfn, unsigned max_devfn, 
+unsigned int cardbus_scan_bus(struct bus *bus,
+	unsigned min_devfn, unsigned max_devfn,
 	unsigned int max)
 {
 	return pci_scan_bus(bus, min_devfn, max_devfn, max);
@@ -196,7 +196,7 @@ unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
 
 	/* Set up the primary, secondary and subordinate bus numbers. We have
 	 * no idea how many buses are behind this bridge yet, so we set the
-	 * subordinate bus number to 0xff for the moment. 
+	 * subordinate bus number to 0xff for the moment.
 	 */
 	bus->secondary = ++max;
 	bus->subordinate = 0xff;
@@ -222,7 +222,7 @@ unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
 		((unsigned int) (bus->subordinate) << 16));
 	pci_write_config32(dev, PCI_CB_PRIMARY_BUS, buses);
 
-	/* Now we can scan all subordinate buses 
+	/* Now we can scan all subordinate buses
 	 * i.e. the bus behind the bridge.
 	 */
 	max = cardbus_scan_bus(bus, 0x00, 0xff, max);
@@ -235,7 +235,7 @@ unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
 		((unsigned int) (bus->subordinate) << 16);
 	pci_write_config32(dev, PCI_CB_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
-	
+
 	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
 	return max;
 }

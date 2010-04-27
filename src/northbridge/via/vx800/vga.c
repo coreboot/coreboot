@@ -62,19 +62,19 @@ static int via_vx800_int15_handler(struct eregs *regs)
 	case 0x5f18:
 	{
 		/*
-		 * BL Bit[7:4] 
-		 * Memory Data Rate 
-		 * 0000: 66MHz 
-		 * 0001: 100MHz 
-		 * 0010: 133MHz 
-		 * 0011: 200MHz ( DDR200 ) 
-		 * 0100: 266MHz ( DDR266 ) 
-		 * 0101: 333MHz ( DDR333 ) 
-		 * 0110: 400MHz ( DDR400 ) 
-		 * 0111: 533MHz ( DDR I/II 533 
+		 * BL Bit[7:4]
+		 * Memory Data Rate
+		 * 0000: 66MHz
+		 * 0001: 100MHz
+		 * 0010: 133MHz
+		 * 0011: 200MHz ( DDR200 )
+		 * 0100: 266MHz ( DDR266 )
+		 * 0101: 333MHz ( DDR333 )
+		 * 0110: 400MHz ( DDR400 )
+		 * 0111: 533MHz ( DDR I/II 533
 		 * 1000: 667MHz ( DDR I/II 667)
-		 * Bit[3:0]  
-		 * N:  Frame Buffer Size 2^N  MB 
+		 * Bit[3:0]
+		 * N:  Frame Buffer Size 2^N  MB
 		 */
 		u8 i;
 		device_t dev;
@@ -109,7 +109,7 @@ static int via_vx800_int15_handler(struct eregs *regs)
 	case 0x5f02:
 		regs->eax=0x5f;
 		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
 		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
 		res=0;
 		break;
@@ -118,7 +118,7 @@ static int via_vx800_int15_handler(struct eregs *regs)
 		res = 0;
 		break;
         default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				regs->eax & 0xffff);
 		regs->eax = 0;
 		break;

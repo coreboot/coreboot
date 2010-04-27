@@ -22,9 +22,9 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
-static const unsigned char NumColAddr[] = { 
-	0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x07, 
-	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F 
+static const unsigned char NumColAddr[] = {
+	0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x07,
+	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F
 };
 
 static void banner(const char *s)
@@ -35,8 +35,8 @@ static void banner(const char *s)
 static void hcf(void)
 {
 	print_emerg("DIE\n");
-	/* this guarantees we flush the UART fifos (if any) and also 
-	 * ensures that things, in general, keep going so no debug output 
+	/* this guarantees we flush the UART fifos (if any) and also
+	 * ensures that things, in general, keep going so no debug output
 	 * is lost
 	 */
 	while (1)
@@ -231,7 +231,7 @@ static void set_refresh_rate(void)
 	}
 
 	msr = rdmsr(MC_CF07_DATA);
-	msr.lo |= ((rate0 * (GeodeLinkSpeed() / 2)) / 16) 
+	msr.lo |= ((rate0 * (GeodeLinkSpeed() / 2)) / 16)
 			<< CF07_LOWER_REF_INT_SHIFT;
 	wrmsr(MC_CF07_DATA, msr);
 }
@@ -649,7 +649,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* If both Page Size = "Not Installed" we have a problems and should halt. */
 	msr = rdmsr(MC_CF07_DATA);
-	if ((msr.hi & ((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) == 
+	if ((msr.hi & ((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) ==
 			((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) {
 		print_emerg("No memory in the system\n");
 		post_code(ERROR_NO_DIMMS);

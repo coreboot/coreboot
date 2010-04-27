@@ -75,7 +75,7 @@ static inline unsigned char get_bits(unsigned long long value, unsigned bit,
 static inline void put_bits(unsigned char value, unsigned bit,
 			    unsigned nr_bits, unsigned long long *result)
 {
-	*result += ((unsigned long long)(value & 
+	*result += ((unsigned long long)(value &
 				((unsigned char)((1 << nr_bits) - 1)))) << bit;
 }
 
@@ -161,7 +161,7 @@ void cmos_write(const cmos_entry_t * e, unsigned long long value)
 	} else {
 		for (next_bit = 0, bits_left = length;
 		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {
-			nr_bits = cmos_bit_op_strategy(bit + next_bit, 
+			nr_bits = cmos_bit_op_strategy(bit + next_bit,
 					bits_left, &where);
 			cmos_write_bits(&where, nr_bits,
 					get_bits(value, next_bit, nr_bits));

@@ -8,13 +8,13 @@
  *
  */
 
-#define CS5535_GLINK_PORT_NUM	0x02	/* the geode link port number to the CS5535 */       
+#define CS5535_GLINK_PORT_NUM	0x02	/* the geode link port number to the CS5535 */
 #define CS5535_DEV_NUM 		0x0F	/* default PCI device number for CS5535 */
 
 /**
  * @brief Setup PCI IDSEL for CS5535
  *
- * 
+ *
  */
 
 static void cs5535_setup_extmsr(void)

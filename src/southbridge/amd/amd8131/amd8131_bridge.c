@@ -121,7 +121,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		}
 	}
 	/* Errata #56 additional limits when the bus runs at 133Mhz */
-	if (info->errata_56 && 
+	if (info->errata_56 &&
 		(PCI_X_SSTATUS_MFREQ(info->sstatus) == PCI_X_SSTATUS_MODE1_133MHZ))
 	{
 		unsigned limit_read;
@@ -131,7 +131,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		if (sib_funcs == 0) {
 			/* 2k reads */
 			limit_read = 2;
-		} 
+		}
 		else if (sib_funcs <= 1) {
 			/* 1k reads */
 			limit_read = 1;
@@ -226,8 +226,8 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 	 * we are running at 133Mhz and have a 4 function device.
 	 * see errata #56
 	 */
-	if (!bus->children || 
-		(info.errata_56 && 
+	if (!bus->children ||
+		(info.errata_56 &&
 			(info.max_func >= 3) &&
 			(PCI_X_SSTATUS_MFREQ(info.sstatus) == PCI_X_SSTATUS_MODE1_133MHZ)))
 	{
@@ -242,7 +242,7 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 		pcix_misc = pci_read_config32(bus->dev, 0x40);
 		pcix_misc &= ~(0x1f << 16);
 		pci_write_config32(bus->dev, 0x40, pcix_misc);
-		
+
 		return max;
 	}
 
@@ -284,7 +284,7 @@ static void amd8131_pcix_init(device_t dev)
 	byte = pci_read_config8(dev, 0x04);
         byte |= 0x10;
         pci_write_config8(dev, 0x04, byte);
- 	
+
 	/* Set drive strength */
 	word = pci_read_config16(dev, 0xe0);
         word = 0x0404;
@@ -292,7 +292,7 @@ static void amd8131_pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0xe4);
         word = 0x0404;
         pci_write_config16(dev, 0xe4, word);
-	
+
 	/* Set impedance */
 	word = pci_read_config16(dev, 0xe8);
         word = 0x0404;
@@ -303,7 +303,7 @@ static void amd8131_pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0x4c);
         word |= 1;
         pci_write_config16(dev, 0x4c, word);
-	
+
 	/* Set split transaction limits */
 	word = pci_read_config16(dev, 0xa8);
         pci_write_config16(dev, 0xaa, word);
@@ -315,12 +315,12 @@ static void amd8131_pcix_init(device_t dev)
 	dword = pci_read_config32(dev, 0x04);
         dword |= (1<<8);
         pci_write_config32(dev, 0x04, dword);
- 	
+
 	/* system and error parity enable */
 	dword = pci_read_config32(dev, 0x3c);
         dword |= (3<<16);
         pci_write_config32(dev, 0x3c, dword);
- 	
+
 	/* NMI enable */
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
@@ -329,7 +329,7 @@ static void amd8131_pcix_init(device_t dev)
         	dword |= (1<<0);
         	pci_write_config32(dev, 0x44, dword);
 	}
- 	
+
 	/* Set up CRC flood enable */
 	dword = pci_read_config32(dev, 0xc0);
 	if(dword) {  /* do device A only */
@@ -349,7 +349,7 @@ static void bridge_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_bus_read_resources(dev);
-	res = find_resource(dev, PCI_MEMORY_BASE);	
+	res = find_resource(dev, PCI_MEMORY_BASE);
 	if (res) {
 		res->limit = 0xffffffffffULL;
 	}
@@ -428,5 +428,5 @@ static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7451,
-	
+
 };

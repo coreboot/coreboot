@@ -34,7 +34,7 @@ static void order_dimms(void)
 		__builtin_outl(0xc260, 0xCF8);
 		__builtin_outl(csmask, 0xCFC);
         }
-	
+
 	tom &=  ~0xff000000;
 
 	__builtin_outl(tom, 0x1234);

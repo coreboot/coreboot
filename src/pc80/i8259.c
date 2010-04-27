@@ -75,7 +75,7 @@ void setup_i8259(void)
 	outb(INT_VECTOR_MASTER | IRQ0, MASTER_PIC_ICW2);
 	outb(INT_VECTOR_SLAVE  | IRQ8, SLAVE_PIC_ICW2);
 
-	/* Now the interrupt controller expects us to write to ICW3. 
+	/* Now the interrupt controller expects us to write to ICW3.
 	 *
 	 * The normal scenario is to set up cascading on IRQ2 on the master
 	 * i8259 and assign the slave ID 2 to the slave i8259.
@@ -89,9 +89,9 @@ void setup_i8259(void)
 	 * operating as part of an x86 architecture based chipset
 	 */
 	outb(MICROPROCESSOR_MODE, MASTER_PIC_ICW2);
-	outb(MICROPROCESSOR_MODE, SLAVE_PIC_ICW2);		
+	outb(MICROPROCESSOR_MODE, SLAVE_PIC_ICW2);
 
-	/* Now clear the interrupts through OCW1. 
+	/* Now clear the interrupts through OCW1.
 	 * First we mask off all interrupts on the slave interrupt controller
 	 * then we mask off all interrupts but interrupt 2 on the master
 	 * controller. This way the cascading stays alife.

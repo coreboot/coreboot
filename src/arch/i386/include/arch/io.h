@@ -82,7 +82,7 @@ static inline uint32_t inl(uint16_t port)
 static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsb " 
+		"cld ; rep ; outsb "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -91,7 +91,7 @@ static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 static inline void outsw(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsw " 
+		"cld ; rep ; outsw "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -100,7 +100,7 @@ static inline void outsw(uint16_t port, const void *addr, unsigned long count)
 static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsl " 
+		"cld ; rep ; outsl "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -110,7 +110,7 @@ static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 static inline void insb(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insb " 
+		"cld ; rep ; insb "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -119,7 +119,7 @@ static inline void insb(uint16_t port, void *addr, unsigned long count)
 static inline void insw(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insw " 
+		"cld ; rep ; insw "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -128,7 +128,7 @@ static inline void insw(uint16_t port, void *addr, unsigned long count)
 static inline void insl(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insl " 
+		"cld ; rep ; insl "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);

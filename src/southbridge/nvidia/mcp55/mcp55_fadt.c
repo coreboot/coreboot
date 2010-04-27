@@ -34,7 +34,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 	device_t dev;
-	int is_mcp55 = 0;	
+	int is_mcp55 = 0;
 	dev = dev_find_device(PCI_VENDOR_ID_NVIDIA,
 		PCI_DEVICE_ID_NVIDIA_MCP55_LPC, 0);
 	if (dev)
@@ -56,7 +56,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->preferred_pm_profile = 1; //check
 	fadt->sci_int = 9;
 	/* disable system management mode by setting to 0 */
-	fadt->smi_cmd = 0x0; //pm_base+0x42e; (value from proprietary acpi fadt) 
+	fadt->smi_cmd = 0x0; //pm_base+0x42e; (value from proprietary acpi fadt)
 	fadt->acpi_enable = 0xa1;
 	fadt->acpi_disable = 0xa0;
 	fadt->s4bios_req = 0x0;
@@ -92,7 +92,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
-	fadt->duty_width = 3;	
+	fadt->duty_width = 3;
 	fadt->day_alrm = 0x7d;
 	fadt->mon_alrm = 0x7e;
 	fadt->century = 0x32;

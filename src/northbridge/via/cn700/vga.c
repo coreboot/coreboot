@@ -62,7 +62,7 @@ static int via_cn700_int15_handler(struct eregs *regs)
 	case 0x5f02:
 		regs->eax=0x5f;
 		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
 		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
 		res=0;
 		break;
@@ -70,7 +70,7 @@ static int via_cn700_int15_handler(struct eregs *regs)
 		regs->eax=0x860f;
 		break;
         default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				regs->eax & 0xffff);
 		break;
 	}

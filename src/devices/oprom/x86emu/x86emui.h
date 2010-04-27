@@ -75,7 +75,7 @@
 #include <xf86_ansic.h>
 #else
 #include <string.h>
-#endif                                                                                           
+#endif
 /*--------------------------- Inline Functions ----------------------------*/
 
 #ifdef  __cplusplus

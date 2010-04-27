@@ -32,7 +32,7 @@ extern unsigned char bus_mcp55[8]; //1
 
 extern unsigned apicid_mcp55;
 
-extern unsigned bus_type[256]; 
+extern unsigned bus_type[256];
 
 
 
@@ -94,7 +94,7 @@ static void *smp_write_config_table(void *v)
                 }
 	}
 
-	/*I/O Ints:	     Type	Trigger    Polarity	                  Bus ID   IRQ	APIC ID	      PIN# */	
+	/*I/O Ints:	     Type	Trigger    Polarity	                  Bus ID   IRQ	APIC ID	      PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_mcp55, 0x0);
 
 /* ISA ints are edge-triggered, and usually originate from the ISA bus,
@@ -122,7 +122,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,\
 			 bus_mcp55[bus], (((dev)<<2)|(fn)), apicid_mcp55, (pin))
 
-	PCI_INT(0,sbdn+1,1, 10); /* SMBus */ 
+	PCI_INT(0,sbdn+1,1, 10); /* SMBus */
 	PCI_INT(0,sbdn+2,0, 22); /* USB */
 	PCI_INT(0,sbdn+2,1, 23); /* USB */
 	PCI_INT(0,sbdn+4,0, 21); /* IDE */
@@ -144,8 +144,8 @@ static void *smp_write_config_table(void *v)
         }
 
 	/* On bus 1: the PCI bus slots...
-	   pyhsical PCI slots are j = 7,8 
-	   FireWire is j = 10		
+	   pyhsical PCI slots are j = 7,8
+	   FireWire is j = 10
 	*/
         k=2;
         for(i=0; i<4; i++){

@@ -112,11 +112,11 @@ static void pci_domain_set_resources(device_t dev)
 		remapbase_r = pci_read_config16(mc_dev, 0xc6);
 		remapbase_r = (remapbasek >> 16) | (remapbase_r & 0xfc00);
 		pci_write_config16(mc_dev, 0xc6, remapbase_r);
-		
+
 		remaplimit_r = pci_read_config16(mc_dev, 0xc8);
 		remaplimit_r = (remaplimitk >> 16) | (remaplimit_r & 0xfc00);
 		pci_write_config16(mc_dev, 0xc8, remaplimit_r);
-		
+
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
@@ -145,7 +145,7 @@ static struct device_operations pci_domain_ops = {
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
 	.ops_pci_bus      = &pci_cf8_conf1,
-};  
+};
 
 static void cpu_bus_init(device_t dev)
 {

@@ -42,7 +42,7 @@ static void ide_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x70, 
+	pci_write_config32(dev, 0x70,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 static struct pci_operations lops_pci = {

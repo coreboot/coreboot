@@ -58,7 +58,7 @@ void DRAMDriving(DRAM_SYS_ATTR * DramAttr)
 /*
 ODT	Control	for DQ/DQS/CKE/SCMD/DCLKO in ChA & ChB
 which include driving enable/range and strong/weak selection
- 
+
 Processing: According to DRAM frequency to ODT control bits.
       		Because function enable bit must be the last one to be set.
       		So the register VIA_NB3DRAM_REGD4 and VIA_NB3DRAM_REGD3 should be
@@ -125,7 +125,7 @@ static const u8 ODTLookup_TBL[ODTLookup_Tbl_count][3] = {
 };
 
 #define ODT_Table_Width_DDR2		4
-//                                                                                               RxD6   RxD3 
+//                                                                                               RxD6   RxD3
 static const u8 ODT_Control_DDR2[ODT_Table_Width_DDR2] = { 0xFC, 0x01 };
 
 void DrivingODT(DRAM_SYS_ATTR * DramAttr)

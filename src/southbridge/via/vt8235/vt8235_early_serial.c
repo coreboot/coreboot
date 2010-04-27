@@ -8,25 +8,25 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vt8235_writepnpaddr(uint8_t val) 
+static void vt8235_writepnpaddr(uint8_t val)
 {
 	outb(val, 0x2e);
 	outb(val, 0xeb);
 }
 
-static void vt8235_writepnpdata(uint8_t val) 
+static void vt8235_writepnpdata(uint8_t val)
 {
 	outb(val, 0x2f);
 	outb(val, 0xeb);
 }
 
 
-static void vt8235_writesiobyte(uint16_t reg, uint8_t val) 
+static void vt8235_writesiobyte(uint16_t reg, uint8_t val)
 {
 	outb(val, reg);
 }
 
-static void vt8235_writesioword(uint16_t reg, uint16_t val) 
+static void vt8235_writesioword(uint16_t reg, uint16_t val)
 {
 	outw(val, reg);
 }
@@ -36,12 +36,12 @@ static void vt8235_writesioword(uint16_t reg, uint16_t val)
    mainboard
  */
 
-static void enable_vt8235_serial(void) 
+static void enable_vt8235_serial(void)
 {
 	// turn on pnp
 	vt8235_writepnpaddr(0x87);
 	vt8235_writepnpaddr(0x87);
-	// now go ahead and set up com1. 
+	// now go ahead and set up com1.
 	// set address
 	vt8235_writepnpaddr(0x7);
 	vt8235_writepnpdata(0x2);

@@ -2,11 +2,11 @@ ABOUT:
 
 This utility will help to create irq_table.c file, that is very hard to create
 manually, specialy when you are testing new motherboards, changing your
-hardware often, placing new cards, etc.. 
+hardware often, placing new cards, etc..
 
 USAGE:
 
-Steps 
+Steps
 1. make distclean;
 2. make getpir
 3. ./getpir
@@ -23,7 +23,7 @@ Steps
    checkpir.c Will verify the irq_tables.c, currently it only checks the
    checksum. In case of wrong checksum, a good value is proposed, so you can
    edit irq_tables.c manualy and replace checksum.
-		
+
 
 Do not run make checkpir and ./checkpir directly because it needs to be linked
 to irq_table.o first.

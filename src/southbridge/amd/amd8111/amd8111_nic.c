@@ -25,20 +25,20 @@ typedef enum {
 	ASF_INIT_DONE_ALIAS	= (1 << 29),
 	/* VAL2 */
 	JUMBO			= (1 << 21),
-	VSIZE			= (1 << 20),	
+	VSIZE			= (1 << 20),
 	VLONLY			= (1 << 19),
-	VL_TAG_DEL		= (1 << 18),	
+	VL_TAG_DEL		= (1 << 18),
 	/* VAL1 */
-	EN_PMGR			= (1 << 14),			
+	EN_PMGR			= (1 << 14),
 	INTLEVEL		= (1 << 13),
-	FORCE_FULL_DUPLEX	= (1 << 12),	
-	FORCE_LINK_STATUS	= (1 << 11),	
-	APEP			= (1 << 10),	
-	MPPLBA			= (1 << 9),	
+	FORCE_FULL_DUPLEX	= (1 << 12),
+	FORCE_LINK_STATUS	= (1 << 11),
+	APEP			= (1 << 10),
+	MPPLBA			= (1 << 9),
 	/* VAL0 */
-	RESET_PHY_PULSE		= (1 << 2),	
-	RESET_PHY		= (1 << 1),	
-	PHY_RST_POL		= (1 << 0),	
+	RESET_PHY_PULSE		= (1 << 2),
+	RESET_PHY		= (1 << 1),
+	PHY_RST_POL		= (1 << 0),
 }CMD3_BITS;
 
 static void nic_init(struct device *dev)
@@ -72,7 +72,7 @@ static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
-	
+
 static struct device_operations nic_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,

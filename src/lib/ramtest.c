@@ -48,7 +48,7 @@ static void phys_memory_barrier(void)
 static void ram_fill(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
-	/* 
+	/*
 	 * Fill.
 	 */
 #if CONFIG_USE_PRINTK_IN_CAR
@@ -85,7 +85,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
 	int i = 0;
-	/* 
+	/*
 	 * Verify.
 	 */
 #if CONFIG_USE_PRINTK_IN_CAR
@@ -168,7 +168,7 @@ void ram_check(unsigned long start, unsigned long stop)
 #else
 	print_debug("Testing DRAM : ");
 	print_debug_hex32(start);
-	print_debug("-");	
+	print_debug("-");
 	print_debug_hex32(stop);
 	print_debug("\n");
 #endif

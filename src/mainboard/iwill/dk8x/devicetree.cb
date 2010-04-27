@@ -1,8 +1,8 @@
 chip northbridge/amd/amdk8/root_complex
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
-			device pci 18.0 on #  northbridge 
-				#  devices on link 0, link 0 == LDT 0 
+			device pci 18.0 on #  northbridge
+				#  devices on link 0, link 0 == LDT 0
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
 					device pci 0.0 on end
@@ -28,15 +28,15 @@ chip northbridge/amd/amdk8/root_complex
 							device pnp 2e.4 on end
 							device pnp 2e.5 on end
 							device pnp 2e.6 on end
-							device pnp 2e.7 on end 
-							device pnp 2e.8 on end 
-							device pnp 2e.9 on end 
-							device pnp 2e.a on end 
+							device pnp 2e.7 on end
+							device pnp 2e.8 on end
+							device pnp 2e.9 on end
+							device pnp 2e.a on end
 						end
 					end
 					device pci 1.1 on end
 					device pci 1.2 on end
-					device pci 1.3 on end 
+					device pci 1.3 on end
 					device pci 1.5 off end
 					device pci 1.6 off end
 				end
@@ -55,7 +55,7 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.2 on end
 			device pci 19.3 on end
 		end
-	end 
+	end
 	device apic_cluster 0 on
 		chip cpu/amd/socket_940
 			device apic 0 on end

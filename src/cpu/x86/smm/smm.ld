@@ -4,7 +4,7 @@ CPUS = 4;
 
 SECTIONS
 {
-	/* This is the actual SMM handler. 
+	/* This is the actual SMM handler.
 	 *
 	 * We just put code, rodata, data and bss all in a row.
 	 */
@@ -43,7 +43,7 @@ SECTIONS
 	. = 0xa8000 - (( CPUS - 1) * 0x400);
 	.jumptable : {
 		*(.jumptable)
-	}	
+	}
 
 	/DISCARD/ : {
 		*(.comment)

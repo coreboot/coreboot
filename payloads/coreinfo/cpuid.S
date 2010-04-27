@@ -20,7 +20,7 @@
  */
 
 /* calling syntax:  docpuid(idx,eax,ebx,ecx,edx) */
-	
+
 .align 4
 .text
 

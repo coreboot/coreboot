@@ -43,5 +43,5 @@ static void main(void)
 	print_debug("A\n");
 	dimm_mask = spd_detect_dimms(cpu);
 	print_debug("B\n");
-	_exit(0);	
+	_exit(0);
 }

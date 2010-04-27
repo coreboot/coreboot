@@ -8,7 +8,7 @@
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.
  *
- * All of the information should be Position Independent Data.  
+ * All of the information should be Position Independent Data.
  * That is it should be safe to relocated any of the information
  * without it's meaning/correctnes changing.   For table that
  * can reasonably be used on multiple architectures the data
@@ -63,7 +63,7 @@ struct lb_memory_range {
 	uint32_t type;
 #define LB_MEM_RAM      1
 #define LB_MEM_RESERVED 2
-	
+
 };
 
 struct lb_memory {

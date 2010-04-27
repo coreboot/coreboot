@@ -17,7 +17,7 @@ static void wrmsr(unsigned long index, msr_t msr)
 
 #else
 
-typedef struct msr_struct 
+typedef struct msr_struct
 {
 	unsigned lo;
 	unsigned hi;

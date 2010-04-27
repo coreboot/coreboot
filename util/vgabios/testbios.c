@@ -267,7 +267,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	
+
 	if (absegname) {
 		abseg = mapitin(absegname, (off_t) 0xa0000, 0x20000);
 		if (!abseg)
@@ -302,7 +302,7 @@ int main(int argc, char **argv)
 	if (devfn) {
 		printf("Loading ax with BusDevFn = %x\n",devfn);
 	}
-	
+
 	current->ax = devfn   ? devfn : 0xff;
 	current->dx = 0x80;
 	//      current->ip = 0;
@@ -359,7 +359,7 @@ unsigned short get_device(char *arg_val)
 	unsigned short devfn=0;
 	long bus=0,dev=0,fn=0,need_pack=0;
 	char *tok;
-	
+
 	tok = strsep(&arg_val,":");
 	if (arg_val != NULL) {
 		bus = strtol(tok,0,16);
@@ -377,10 +377,10 @@ unsigned short get_device(char *arg_val)
 	}
 	else {
 		if (need_pack ==1 && (strlen(tok))) {
-			dev = strtol(tok,0,16);			
+			dev = strtol(tok,0,16);
 		}
 	}
-	
+
 	if ( need_pack == 1) {
 		devfn = bus<<8 | (dev<<3) | fn;
 	}

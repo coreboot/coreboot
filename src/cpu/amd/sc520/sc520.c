@@ -16,10 +16,10 @@
 #include "chip.h"
 
 /*
- * set up basic things ... 
- * PAR should NOT go here, as it might change with the mainboard. 
+ * set up basic things ...
+ * PAR should NOT go here, as it might change with the mainboard.
  */
-static void cpu_init(device_t dev) 
+static void cpu_init(device_t dev)
 {
   unsigned long *l = (unsigned long *) 0xfffef088;
   int i;
@@ -30,9 +30,9 @@ static void cpu_init(device_t dev)
 }
 
 
-/* Ollie says: make a northbridge/amd/sc520. Ron sez: 
- * there is no real northbridge, keep it here in cpu. 
- * Ron wins, he's writing the code. 
+/* Ollie says: make a northbridge/amd/sc520. Ron sez:
+ * there is no real northbridge, keep it here in cpu.
+ * Ron wins, he's writing the code.
  */
 static void sc520_enable_resources(struct device *dev) {
 	unsigned char command;
@@ -141,16 +141,16 @@ static void pci_domain_set_resources(device_t dev)
 		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
 			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes. 
+			/* these are ENDING addresses, not sizes.
 			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total. 
+			 * So we just take the max, that gives us total.
 			 * We take the highest one to cover for once and future coreboot
 			 * bugs. We warn about bugs.
 			 */
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n",
 					ramregs[i]);
 		}
 		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
@@ -245,5 +245,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations cpu_amd_sc520_ops = {
 	CHIP_NAME("AMD Elan SC520 CPU")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

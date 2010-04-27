@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -184,7 +184,7 @@ static void rcba_config(void)
 	RCBA32(0x3400) = (1 << 2);
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE3 | FD_PCIE2 | 
+	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_PCIE3 | FD_PCIE2 |
 			 FD_INTLAN | FD_ACMOD | FD_HDAUD | FD_PATA;
 	RCBA32(0x3418) |= (1 << 0); // Required.
 
@@ -266,7 +266,7 @@ static void init_artec_dongle(void)
 #include <cbmem.h>
 
 // Now, this needs to be included because it relies on the symbol
-// __PRE_RAM__ being set during CAR stage (in order to compile the 
+// __PRE_RAM__ being set during CAR stage (in order to compile the
 // BSS free versions of the functions). Either rewrite the code
 // to be always BSS free, or invent a flag that's better suited than
 // __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
@@ -330,7 +330,7 @@ void main(unsigned long bist)
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
-	
+
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
@@ -340,8 +340,8 @@ void main(unsigned long bist)
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();
 
-	/* This should probably go away. Until now it is required 
-	 * and mainboard specific 
+	/* This should probably go away. Until now it is required
+	 * and mainboard specific
 	 */
 	rcba_config();
 
@@ -385,7 +385,7 @@ void main(unsigned long bist)
 		 * memory completely, but that's a wonderful clean up task for another
 		 * day.
 		 */
-		if (resume_backup_memory) 
+		if (resume_backup_memory)
 			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */

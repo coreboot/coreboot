@@ -38,7 +38,7 @@ static const struct pci_driver agp3bridge_driver __pci_driver = {
 static void agp3dev_enable(device_t dev)
 {
 	uint32_t value;
-	
+
 	/* AGP enable */
 	value = pci_read_config32(dev, 0xa8);
 	value |= (3<<8)|2; //AGP 8x
@@ -71,5 +71,5 @@ static struct device_operations agp3dev_ops = {
 static const struct pci_driver agp3dev_driver __pci_driver = {
 	.ops    = &agp3dev_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = 0x7454, //AGP Device	
+	.device = 0x7454, //AGP Device
 };

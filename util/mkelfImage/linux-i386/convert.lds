@@ -11,8 +11,8 @@ SECTIONS
 		*(.text)
 		*(.text.*)
 	}  = 0x9090
-	.rodata (.): { 
-		*(.rodata) 
+	.rodata (.): {
+		*(.rodata)
 		*(.rodata.*)
 	}
 	_etext = .;			/* End of text section */
@@ -28,7 +28,7 @@ SECTIONS
 	}
 	_end = . ;
 	bss_sizex = _end - _bss;
-	
+
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)

@@ -6,7 +6,7 @@ chip northbridge/amd/gx2
 			device apic 0 on end
 		end
 	end
-  	device pci_domain 0 on 
+  	device pci_domain 0 on
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536
@@ -18,7 +18,7 @@ chip northbridge/amd/gx2
 		# SIRQ Mode = continous , It would be better if the EC could operate in
 		# Active(Quiet) mode. Save power....
 		# SIRQ Enable = Enabled
-		# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK 
+		# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK
 			#register "lpc_irq" = "0x00001002"
 			#register "lpc_serirq_enable" = "0xEFFD0080"
 			#register "enable_gpio0_inta" = "1"

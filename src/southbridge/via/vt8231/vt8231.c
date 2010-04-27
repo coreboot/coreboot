@@ -18,7 +18,7 @@ static void keyboard_on(void)
 
 	if (lpc_dev) {
 		regval = pci_read_config8(lpc_dev, 0x51);
-		regval |= 0x0f; 
+		regval |= 0x0f;
 		pci_write_config8(lpc_dev, 0x51, regval);
 	}
 	pc_keyboard_init(0);
@@ -27,9 +27,9 @@ static void keyboard_on(void)
 static void com_port_on(void)
 {
 #if 0
-	// enable com1 and com2. 
+	// enable com1 and com2.
 	enables = pci_read_config8(dev, 0x6e);
-	
+
 	/* 0x80 is enable com port b, 0x10 is to make it com2, 0x8
 	 * is enable com port a as com1 kevinh/Ispiri - Old code
 	 * thought 0x01 would make it com1, that was wrong enables =

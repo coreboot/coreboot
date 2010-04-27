@@ -1,7 +1,7 @@
 #ifndef BCM5785_CHIP_H
 #define BCM5785_CHIP_H
 
-struct southbridge_broadcom_bcm5785_config 
+struct southbridge_broadcom_bcm5785_config
 {
         unsigned int ide0_enable : 1;
         unsigned int ide1_enable : 1;

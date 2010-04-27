@@ -27,7 +27,7 @@ Scope (\_TZ)
 	{
 
 		// FIXME these could/should be read from the
-		// GNVS area, so they can be controlled by 
+		// GNVS area, so they can be controlled by
 		// coreboot
 		Name(TC1V, 0x04)
 		Name(TC2V, 0x03)

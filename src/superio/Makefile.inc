@@ -1,4 +1,4 @@
-subdirs-y += fintek 
+subdirs-y += fintek
 subdirs-y += intel
 subdirs-y += ite
 subdirs-y += nsc

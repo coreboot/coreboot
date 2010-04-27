@@ -18,23 +18,23 @@ gdtptr:
 	.word	0
 
 	/* selgdt 0x08, flat code segment */
-	.word	0xffff, 0x0000		
-	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */	
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */
 
 	/* selgdt 0x10,flat data segment */
-	.word	0xffff, 0x0000		
+	.word	0xffff, 0x0000
 	.byte	0x00, 0x93, 0xcf, 0x00
 
 gdt_end:
-	
+
 
 /*
- *	When we come here we are in protected mode. We expand 
+ *	When we come here we are in protected mode. We expand
  *	the stack and copies the data segment from ROM to the
  *	memory.
  *
  *	After that, we call the chipset bootstrap routine that
- *	does what is left of the chipset initialization. 
+ *	does what is left of the chipset initialization.
  *
  *	NOTE aligned to 4 so that we are sure that the prefetch
  *	cache will be reloaded.
@@ -45,7 +45,7 @@ protected_start:
 
 	lgdt	%cs:gdtptr
 	ljmp	$ROM_CODE_SEG, $__protected_start
-	
+
 __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp

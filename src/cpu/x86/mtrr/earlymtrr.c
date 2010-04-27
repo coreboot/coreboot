@@ -89,13 +89,13 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	set_var_mtrr(1, REAL_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
-	/* Set the default memory type and enable fixed and variable MTRRs 
+	/* Set the default memory type and enable fixed and variable MTRRs
 	 */
 	/* Enable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000800;
 	wrmsr(MTRRdefType_MSR, msr);
-	
+
 }
 
 static inline void early_mtrr_init(void)

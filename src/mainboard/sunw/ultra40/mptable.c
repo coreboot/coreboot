@@ -133,7 +133,7 @@ static void *smp_write_config_table(void *v)
 	    }
 
 	}
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_ck804, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_ck804, 0x1);
@@ -212,7 +212,7 @@ static void *smp_write_config_table(void *v)
 
 //Channel A of 8131
 
-//Slot 6 PCIX 133/100/66       
+//Slot 6 PCIX 133/100/66
         for(i=0;i<4;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (4<<2)|i, apicid_8131_1, (0+i)%4); //24
         }

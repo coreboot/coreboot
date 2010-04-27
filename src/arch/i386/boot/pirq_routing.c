@@ -26,7 +26,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_DEBUG, "%s(): Interrupt Routing Table located at %p.\n",
 		     __func__, addr);
 
-	
+
 	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
@@ -72,9 +72,9 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 		}
 	}
 	printk(BIOS_INFO, "done\n");
-	
+
 	check_pirq_routing_table((struct irq_routing_table *)addr);
-	
+
 	return 0;
 }
 #endif

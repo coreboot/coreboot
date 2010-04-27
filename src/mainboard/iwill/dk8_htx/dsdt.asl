@@ -100,11 +100,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
                 Concatenate (\_SB.GMEM (0x00, \_SB.PCI0.SBLK), BUF0, Local1)
                 Concatenate (\_SB.GIOR (0x00, \_SB.PCI0.SBLK), Local1, Local2)
                 Concatenate (\_SB.GWBN (0x00, \_SB.PCI0.SBLK), Local2, Local3)
-                Return (Local3) 
+                Return (Local3)
 	    }
 
 	    #include "acpi/pci0_hc.asl"
-		
+
         }
         Device (PCI1)
         {
@@ -138,7 +138,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
             Notify (\_SB.PCI0.PG0B, 0x02)
         }
 
-        Method (_L29, 0, NotSerialized) // GPIO25 (Suspend) - Pogo 0 Bridge A 
+        Method (_L29, 0, NotSerialized) // GPIO25 (Suspend) - Pogo 0 Bridge A
         {
             Notify (\_SB.PCI0.PG0A, 0x02)
         }
@@ -183,14 +183,14 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
     OperationRegion (GRAM, SystemMemory, 0x0400, 0x0100)
     Field (GRAM, ByteAcc, Lock, Preserve)
     {
-        Offset (0x10), 
+        Offset (0x10),
         FLG0,   8
     }
 
     OperationRegion (GSTS, SystemIO, 0xC028, 0x02)
     Field (GSTS, ByteAcc, NoLock, Preserve)
     {
-            ,   4, 
+            ,   4,
         IRQR,   1
     }
 

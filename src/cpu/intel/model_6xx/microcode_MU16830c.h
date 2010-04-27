@@ -1,12 +1,12 @@
 	/*
-	  Copyright  Intel Corporation, 1995, 96, 97, 98, 99, 2000. 
+	  Copyright  Intel Corporation, 1995, 96, 97, 98, 99, 2000.
 
-	  These microcode updates are distributed for the sole purpose of 
+	  These microcode updates are distributed for the sole purpose of
 	  installation in the BIOS or Operating System of computer systems
 	  which include an Intel P6 family microprocessor sold or distributed
 	  to or by you.  You are authorized to copy and install this material
 	  on such systems.  You are not authorized to use this material for
-	  any other purpose.  
+	  any other purpose.
 	*/
 
 /*  MU16830c.inc  */

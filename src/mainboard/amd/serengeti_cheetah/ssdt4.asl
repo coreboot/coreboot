@@ -28,16 +28,16 @@ DefinitionBlock ("SSDT4.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 
 	    // BUS ? Second HT Chain
 	    Name (HCIN, 0xcc)  // HC2 0x01
-            
+
 	    Name (_UID,  0xdd)  // HC 0x03
 
-	    Name (_HID, "PNP0A03") 
+	    Name (_HID, "PNP0A03")
 
             Method (_ADR, 0, NotSerialized) //Fake bus should be 0
 	    {
 		Return (DADD(GHCN(HCIN), 0x00000000))
 	    }
-	
+
             Method (_BBN, 0, NotSerialized)
             {
                 Return (GBUS (GHCN(HCIN), GHCL(HCIN)))
@@ -45,7 +45,7 @@ DefinitionBlock ("SSDT4.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 
             Method (_STA, 0, NotSerialized)
             {
-                Return (\_SB.GHCE(HCIN)) 
+                Return (\_SB.GHCE(HCIN))
             }
 
             Method (_CRS, 0, NotSerialized)

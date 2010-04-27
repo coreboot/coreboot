@@ -10,7 +10,7 @@
 #  This file is subject to the terms and conditions of the GNU General
 #  Public License. See the file COPYING in the main directory of this
 #  archive for more details.
-#     
+#
 
 #set -x # Turn echo on....
 
@@ -99,10 +99,10 @@ function xml
 
 function xmlfile
 {
-	test "$mode" == "xml" && { 
+	test "$mode" == "xml" && {
 		printf '<![CDATA[\n'
 		cat $1
-		printf ']]>\n' 
+		printf ']]>\n'
 	} >> $XMLFILE
 }
 
@@ -119,9 +119,9 @@ function mainboards
 {
 	# make this a function so we can easily select
 	# without breaking readability
-	
+
 	VENDOR=$1
-	
+
 	ls -1 $ROOT/src/mainboard/$VENDOR | grep -v Kconfig
 }
 
@@ -143,7 +143,7 @@ function create_config
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
 
         # get a working payload for the board if we have one.
-        # the --payload option expects a directory containing 
+        # the --payload option expects a directory containing
 	# a shell script payload.sh
 	#   Usage: payload.sh [VENDOR] [DEVICE]
 	# the script returns an absolute path to the payload binary.
@@ -253,7 +253,7 @@ function create_buildenv
 }
 
 function compile_target
-{	
+{
 	VENDOR=$1
 	MAINBOARD=$2
 
@@ -381,17 +381,17 @@ function build_target
 			done
 		fi
 
-	
+
 		# TBD: look for suitable cross compiler suite
 		# cross-$TARCH-gcc and cross-$TARCH-ld
-		
+
 		# Check result:
 		if [ $found_crosscompiler == "false" ]; then
 			printf "$TARCH: skipped, we're $ARCH\n\n"
 			xml "  <status>notbuilt</status>"
 			xml ""
 			xml "</mainboard>"
-		
+
 			return 0
 		else
 			printf "$TARCH: ok, $ARCH using ${CROSS_COMPILE}gcc\n"
@@ -426,14 +426,14 @@ function build_target
 		xml "</mainboard>"
 		return 0
 	}
-	
+
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		if [ "$scanbuild" = "true" ]; then
 			rm -rf $TARGET/scan-build-results-tmp
 		fi
-		compile_target $VENDOR $MAINBOARD && 
+		compile_target $VENDOR $MAINBOARD &&
 			xml "  <status>ok</status>" ||
 			xml "<status>broken</status>"
 		if [ "$scanbuild" = "true" ]; then
@@ -541,7 +541,7 @@ function myhelp
 	printf "				  (defaults to $ROOT)\n\n"
 }
 
-function myversion 
+function myversion
 {
 	cat << EOF
 

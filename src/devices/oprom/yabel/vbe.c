@@ -796,7 +796,7 @@ void vbe_set_graphics(void)
 
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
 	vbe_get_mode_info(&mode_info);
-	unsigned char *framebuffer = 
+	unsigned char *framebuffer =
 		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
 	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%08x\n", framebuffer);
 	vbe_set_mode(&mode_info);
@@ -807,9 +807,9 @@ void vbe_set_graphics(void)
 	/* Switching Intel IGD to 1MB video memory will break this. Who
 	 * cares. */
 	// int imagesize = 1024*768*2;
-	
+
 	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg", CBFS_TYPE_BOOTSPLASH);
-	if (!jpeg) { 
+	if (!jpeg) {
 		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
 		return;
 	}

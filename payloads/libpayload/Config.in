@@ -134,9 +134,9 @@ config SERIAL_ACS_FALLBACK
 	  displaying a couple of other special graphics characters.  The
 	  ACS characters generally look good on screen, but can be difficult
 	  to cut and paste from a terminal window to a text editor.
-	
+
 	  Say 'y' here if you want to always use plain ASCII characters to
-	  approximate the appearance of ACS characters on the serial port 
+	  approximate the appearance of ACS characters on the serial port
 	  console.
 
 config VIDEO_CONSOLE
@@ -194,12 +194,12 @@ config RTC_PORT_EXTENDED_VIA
 	  For recent chipsets with 256 NVRAM bytes, you have to access the
 	  upper 128 bytes (128-255) using two different I/O ports,
 	  usually 0x72/0x73.
-	
+
 	  On some chipsets this can be a different set of ports, though.
 	  The VIA VT8237R for example only recognizes the ports 0x74/0x75
 	  for accessing the high 128 NVRAM bytes (as seems to be the case for
 	  multiple VIA chipsets).
-	
+
 	  If you want to read or write CMOS bytes on computers with one of
 	  these chipsets, say 'y' here.
 

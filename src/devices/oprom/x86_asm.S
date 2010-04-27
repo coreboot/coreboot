@@ -25,7 +25,7 @@
 
 /* This is the intXX interrupt handler stub code. It gets copied
  * to the IDT and to some fixed addresses in the F segment. Before
- * the code can used, it gets patched up by the C function copying 
+ * the code can used, it gets patched up by the C function copying
  * it: byte 3 (the $0 in movb $0, %al) is overwritten with the int#.
  */
 
@@ -85,11 +85,11 @@ __run_optionrom = RELOCATED(.)
 	 * protected mode is turned off.
 	 */
 	mov	$0x30, %ax
-	mov	%ax, %ds       
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
-	mov	%ax, %ss       
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
 
 	/* Turn off protection */
 	movl	%cr0, %eax
@@ -114,9 +114,9 @@ __run_optionrom = RELOCATED(.)
 	lidt	__realmode_idt
 
 	/* Set all segments to 0x0000, ds to 0x0040 */
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
 	mov	$0x40, %ax
 	mov	%ax, %ds
 
@@ -140,8 +140,8 @@ __run_optionrom = RELOCATED(.)
 	data32	ljmp	$0x10, $RELOCATED(1f)
 1:
 	.code32
-	movw	$0x18, %ax     
-	mov	%ax, %ds       
+	movw	$0x18, %ax
+	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
@@ -185,11 +185,11 @@ __run_vsa = RELOCATED(.)
 	 * protected mode is turned off.
 	 */
 	mov	$0x30, %ax
-	mov	%ax, %ds       
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
-	mov	%ax, %ss       
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
 
 	/* Turn off protection */
 	movl	%cr0, %eax
@@ -214,9 +214,9 @@ __run_vsa = RELOCATED(.)
 	lidt	__realmode_idt
 
 	/* Set all segments to 0x0000, ds to 0x0040 */
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
 	mov	$0x40, %ax
 	mov	%ax, %ds
 	mov	%cx, %ax	// restore ax
@@ -238,8 +238,8 @@ __run_vsa = RELOCATED(.)
 	data32	ljmp	$0x10, $RELOCATED(1f)
 1:
 	.code32
-	movw	$0x18, %ax     
-	mov	%ax, %ds       
+	movw	$0x18, %ax
+	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
@@ -275,17 +275,17 @@ __run_interrupt = RELOCATED(.)
 	 * descriptors.  They will retain these configurations (limits,
 	 * writability, etc.) once protected mode is turned off.
 	 */
-	mov	$0x30, %ax     
-	mov	%ax, %ds       
-	mov	%ax, %es       
-	mov	%ax, %fs       
-	mov	%ax, %gs       
-	mov	%ax, %ss       
+	mov	$0x30, %ax
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
 
 	/* Turn off protected mode */
-	movl	%cr0, %eax     
+	movl	%cr0, %eax
 	andl	$~PE, %eax
-	movl	%eax, %cr0     
+	movl	%eax, %cr0
 
 	/* Now really going into real mode */
 	data32 ljmp	$0, $RELOCATED(1f)
@@ -302,7 +302,7 @@ __run_interrupt = RELOCATED(.)
 	movl	%eax, %esp
 
 	/* Load 16-bit intXX IDT */
-	xor	%ax, %ax       
+	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
 

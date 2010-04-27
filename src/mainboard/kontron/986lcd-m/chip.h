@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2008 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify

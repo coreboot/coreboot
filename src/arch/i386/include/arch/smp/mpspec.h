@@ -9,9 +9,9 @@
 
 /*
  * This tag identifies where the SMP configuration
- * information is. 
+ * information is.
  */
- 
+
 #define SMP_MAGIC_IDENT	(('_'<<24)|('P'<<16)|('M'<<8)|'_')
 
 /*
@@ -72,7 +72,7 @@ struct mpc_config_processor
 	unsigned char mpc_cpuflag;
 #define MPC_CPU_ENABLED		1	/* Processor is available */
 #define MPC_CPU_BOOTPROCESSOR	2	/* Processor is the BP */
-	unsigned long mpc_cpufeature;		
+	unsigned long mpc_cpufeature;
 #define MPC_CPU_STEPPING_MASK 0x0F
 #define MPC_CPU_MODEL_MASK	0xF0
 #define MPC_CPU_FAMILY_MASK	0xF00
@@ -140,7 +140,7 @@ struct mpc_config_lintsrc
 	unsigned short mpc_irqflag;
 	unsigned char mpc_srcbusid;
 	unsigned char mpc_srcbusirq;
-	unsigned char mpc_destapic;	
+	unsigned char mpc_destapic;
 #define MP_APIC_ALL	0xFF
 	unsigned char mpc_destapiclint;
 } __attribute__((packed));
@@ -211,7 +211,7 @@ struct mp_exten_compatibility_address_space {
 #define ADDRESS_RANGE_SUBTRACT 1
 #define ADDRESS_RANGE_ADD      0
 	unsigned int  mpe_range_list;
-#define RANGE_LIST_IO_ISA	0	
+#define RANGE_LIST_IO_ISA	0
 	/* X100 - X3FF
 	 * X500 - X7FF
 	 * X900 - XBFF
@@ -243,7 +243,7 @@ void smp_write_processors(struct mp_config_table *mc);
 void smp_write_bus(struct mp_config_table *mc,
 	unsigned char id, const char *bustype);
 void smp_write_ioapic(struct mp_config_table *mc,
-	unsigned char id, unsigned char ver, 
+	unsigned char id, unsigned char ver,
 	unsigned long apicaddr);
 void smp_write_intsrc(struct mp_config_table *mc,
 	unsigned char irqtype, unsigned short irqflag,
@@ -269,7 +269,7 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	unsigned int range_list);
 unsigned char smp_compute_checksum(void *v, int len);
 void *smp_write_floating_table(unsigned long addr);
-void *smp_write_floating_table_physaddr(unsigned long addr, 
+void *smp_write_floating_table_physaddr(unsigned long addr,
 		unsigned long mpf_physptr);
 unsigned long write_smp_table(unsigned long addr);
 

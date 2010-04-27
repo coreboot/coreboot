@@ -51,7 +51,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			External (HCLK)
 			External (SBDN)
 			External (HCDN)
-                    
+
 			Method (_CRS, 0, NotSerialized)
                         {
 				Name (BUF0, ResourceTemplate ()
@@ -272,7 +272,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				Method (_CRS, 0, NotSerialized)
 				{
 					Name (BUF1, ResourceTemplate () {
-						IO (Decode16, 0x0378, 0x0378, 0x01, 0x08) 
+						IO (Decode16, 0x0378, 0x0378, 0x01, 0x08)
 						IRQNoFlags () {7}
 					})
 					Return (BUF1)
@@ -289,7 +289,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				Method (_CRS, 0, NotSerialized)
 				{
 					Name (BUF1, ResourceTemplate () {
-						IO (Decode16, 0x0378, 0x0378, 0x01, 0x04) 
+						IO (Decode16, 0x0378, 0x0378, 0x01, 0x04)
 						IO (Decode16, 0x0778, 0x0778, 0x01, 0x04)
 						IRQNoFlags() {7}
 						DMA (Compatibility, NotBusMaster, Transfer8) {0,1,3}

@@ -105,7 +105,7 @@ static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device
 	unsigned char val;
 	unsigned long loops;
 	loops = SMBUS_TIMEOUT;
-                        
+
 	/* send the slave address */
 	outb(device, smbus_io_base + SMB_SDA);
 
@@ -123,7 +123,7 @@ static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device
 			break;
 		}
 	} while(--loops);
-	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;	
+	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
 static int smbus_send_command(unsigned smbus_io_base, unsigned char command)
@@ -149,7 +149,7 @@ static int smbus_send_command(unsigned smbus_io_base, unsigned char command)
 			break;
 		}
 	} while(--loops);
-	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;	
+	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
 static unsigned char do_smbus_read_byte(unsigned smbus_io_base, unsigned char device, unsigned char address)

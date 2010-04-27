@@ -6,7 +6,7 @@ chip northbridge/amd/amdk8/root_complex
         end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
-			device pci 18.0 on #  northbridge 
+			device pci 18.0 on #  northbridge
 				#  devices on link 0, link 0 == LDT 0
 				chip southbridge/amd/amd8132
 					# the on/off keyword is mandatory
@@ -56,7 +56,7 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0x220
 								io 0x62 = 0x300
 								irq 0x70 = 9
-							end						
+							end
                 	        			device pnp 2e.8 off end #  GPIO2
                 	        			device pnp 2e.9 off end #  GPIO3
                 	        			device pnp 2e.a off end #  ACPI
@@ -120,7 +120,7 @@ chip northbridge/amd/amdk8/root_complex
 			end #  device pci 18.0
 
                         device pci 18.0 on end
-                        device pci 18.0 on end  
+                        device pci 18.0 on end
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end

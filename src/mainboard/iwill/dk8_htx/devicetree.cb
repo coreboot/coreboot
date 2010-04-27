@@ -8,7 +8,7 @@ chip northbridge/amd/amdk8/root_complex
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end
 			device pci 18.0 on end
-			device pci 18.0 on #  northbridge 
+			device pci 18.0 on #  northbridge
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
 					device pci 0.0 on end
@@ -57,7 +57,7 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0x220
 								io 0x62 = 0x300
 								irq 0x70 = 9
-							end						
+							end
 							device pnp 2e.8 on #  GPIO2
 								io 0x07 = 0x08ff
 								io 0x30 = 0x01ff

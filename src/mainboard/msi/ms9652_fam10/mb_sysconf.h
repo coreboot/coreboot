@@ -26,7 +26,7 @@ struct mb_sysconf_t {
 	unsigned char bus_isa;
 	unsigned char bus_mcp55[8]; //1
 	unsigned apicid_mcp55;
-	unsigned bus_type[256]; 
+	unsigned bus_type[256];
 
 };
 

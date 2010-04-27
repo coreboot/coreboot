@@ -1,25 +1,25 @@
 #ifndef _LINUX_UNIFORM_BOOT_H
 #define _LINUX_UNIFORM_BOOT_H
 
-/* The uniform boot environment information is restricted to 
+/* The uniform boot environment information is restricted to
  * hardware information.  In particular for a simple enough machine
  * all of the environment information should be able to reside in
  * a rom and not need to be moved.  This information is the
  * information a trivial boot room can pass to linux to let it
- * run the hardware.  
+ * run the hardware.
  *
- * Also all of the information should be Position Independent Data.  
+ * Also all of the information should be Position Independent Data.
  * That is it should be safe to relocated any of the information
  * without it's meaning/correctnes changing. The exception is the
  * uniform_boot_header with it's two pointers arg & env.
- * 
+ *
  * The addresses in the arg & env pointers must be physical
  * addresses. A physical address is an address you put in the page
- * table. 
+ * table.
  *
  * The Command line is for user policy.  Things like the default
  * root device.
- * 
+ *
  */
 
 struct uniform_boot_header
@@ -55,7 +55,7 @@ struct ube_memory_range {
 #define UBE_MEM_RESERVED 2
 #define UBE_MEM_ACPI     3
 #define UBE_MEM_NVS      4
-	
+
 };
 
 struct ube_memory {

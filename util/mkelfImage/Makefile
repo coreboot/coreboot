@@ -39,7 +39,7 @@ SRCS+=$(GENERATED_SRCS)
 PSRCS:=$(patsubst ./%,mkelfImage-$(VERSION)/%,$(SRCS))
 PSRCS+=./mkelfImage-$(VERSION).spec
 
-SBIN_TARGETS=$(OBJDIR)/sbin/mkelfImage 
+SBIN_TARGETS=$(OBJDIR)/sbin/mkelfImage
 MAN8_TARGETS=$(OBJDIR)/man/man8/mkelfImage.8
 
 TARGETS:=$(SBIN_TARGETS) $(MAN8_TARGETS)
@@ -56,7 +56,7 @@ include linux-ia64/Makefile
 clean::
 	@$(RM) -rf objdir
 	@$(RM) -rf rpm
-	@$(RM) -f config.log config.status config.cache 
+	@$(RM) -f config.log config.status config.cache
 	@$(RM) -f $(SBIN_TARGETS) $(MAN1_TARGETS)
 	@$(RM) -f mkelfImage-$(VERSION) $(TARBALL)
 

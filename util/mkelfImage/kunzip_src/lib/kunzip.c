@@ -7,7 +7,7 @@
  */
 
 #ifdef DEBUG
-#  define Trace(x) 
+#  define Trace(x)
 #  define Tracev(x)
 #  define Tracevv(x)
 #  define Tracec(c,x)
@@ -113,7 +113,7 @@ static void flush_window(void)
 			limit = outcnt;
 		}
 		out = output_ptr;
-		DBG(("flush 0x%08lx start 0x%08lx limit 0x%08lx\n", 
+		DBG(("flush 0x%08lx start 0x%08lx limit 0x%08lx\n",
 			(unsigned long) out, (unsigned long)n, limit));
 		for (; n < limit; n++) {
 			ch = *out++ = *in++;

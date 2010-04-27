@@ -150,7 +150,7 @@ static void corebootfb_putchar(u8 row, u8 col, unsigned int ch)
 
 	for(y = 0; y < FONT_HEIGHT; y++) {
 		for(x = FONT_WIDTH - 1; x >= 0; x--) {
-	
+
 			switch (FI->bits_per_pixel) {
 			case 8: /* Indexed */
 				dst[(FONT_WIDTH - x) * (FI->bits_per_pixel >> 3)] = (*glyph & (1 << x)) ?  fg : bg;

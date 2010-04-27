@@ -38,21 +38,21 @@ unsigned long acpi_fill_madt(unsigned long current)
 	device_t dev = 0;
     struct resource* res = NULL;
 
- 
+
 	// SJM: Hard-code CPU LAPIC entries for now
 	//		Use SourcePoint numbering of processors
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 6);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 7);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 2, 0);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 3, 1);
-	
+
 
 	// Southbridge IOAPIC
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_ICH3, 0xfec00000, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
 
 	// P64H2#2 Bus A IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -60,7 +60,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
 
 	// P64H2#2 Bus B IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(28, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(28, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -69,7 +69,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 
 	// P64H2#1 Bus A IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(30, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(30, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -77,7 +77,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
 
 	// P64H2#1 Bus B IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(28, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(28, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -104,7 +104,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;
 	current = start;
-	
+
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
@@ -115,10 +115,10 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
-	
+
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
-	
+
 	/*
 	 * We explicitly add these tables later on:
 	 */

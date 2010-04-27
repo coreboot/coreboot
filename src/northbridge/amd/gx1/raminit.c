@@ -12,7 +12,7 @@ U.S. Government has rights to use, reproduce, and distribute this
 SOFTWARE.  The public may copy, distribute, prepare derivative works
 and publicly display this SOFTWARE without charge, provided that this
 Notice and any statement of authorship are reproduced on all copies.
-Neither the Government nor the University makes any warranty, express 
+Neither the Government nor the University makes any warranty, express
 or implied, or assumes any liability or responsibility for the use of
 this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
 such modified SOFTWARE should be clearly marked, so as not to confuse
@@ -22,7 +22,7 @@ it with the version available from LANL.
  * rminnich@lanl.gov
  */
 
-/* 	SDRAM initialization for GX1 - translated from Christer Weinigel's 
+/* 	SDRAM initialization for GX1 - translated from Christer Weinigel's
 	assembler version into C.
 
 	Hamish Guthrie 10/4/2005 hamish@prodigi.ch
@@ -53,7 +53,7 @@ unsigned int tval, i;
 		setGX1Mem(GX_BASE + MC_MEM_CNTRL1, tval);
 	outb(0x72, 0x80);
 }
-	
+
 
 void enable_dimm(void)
 {
@@ -93,12 +93,12 @@ unsigned int tval, i;
 	tval &= ~PROGRAM_SDRAM;
 	setGX1Mem(GX_BASE + MC_MEM_CNTRL1, tval);
 
-	/* Refresh memory again */	
+	/* Refresh memory again */
 	tval = getGX1Mem(GX_BASE + MC_MEM_CNTRL1);
 	tval |= RFSHTST;
 	for(i=0; i>NUM_REFRESH; i++)
 		setGX1Mem(GX_BASE + MC_MEM_CNTRL1, tval);
-	
+
 	for(i=0; i<2000; i++)
 		outb(0, 0xed);
 	outb(0x74, 0x80);
@@ -132,7 +132,7 @@ int failed_flag = 1;
 		return (0x0070 << dimm_shift);
 	else
 		return(getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_SZ << dimm_shift));
-		
+
 }
 
 static unsigned int module_banks(int dimm_shift)
@@ -229,7 +229,7 @@ unsigned int probe_config;
 #endif
 			return(page_size_config << dimm_shift);
 			}
-		
+
 		temp = ~(DIMM_PG_SZ << dimm_shift);
 
 		probe_config = getGX1Mem(GX_BASE + MC_BANK_CFG);
@@ -300,23 +300,23 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 
 	mem_config &= (~(DIMM_MOD_BNK << dimm_shift));
 	mem_config |= (module_banks(dimm_shift));
-	
+
 	print_debug("    Module Banks:    ");
 	print_debug_char((((mem_config & (DIMM_MOD_BNK << dimm_shift)) >> (dimm_shift + 14)) ? 2 : 1) + 0x30);
 	print_debug("\n");
 
 	mem_config &= (~(DIMM_SZ << dimm_shift));
 	mem_config |= (size_dimm(dimm_shift));
-	
+
 	print_debug("    DIMM size:       ");
-	print_debug_hex32(1 << 
+	print_debug_hex32(1 <<
 		((mem_config & (DIMM_SZ << dimm_shift)) >> (dimm_shift + 8)) + 22);
 	print_debug("\n");
 
 	return (mem_config);
 }
 
-static void sdram_init(void) 
+static void sdram_init(void)
 {
 unsigned int mem_config = 0x00700070;
 
@@ -327,7 +327,7 @@ unsigned int mem_config = 0x00700070;
 	setGX1Mem(GX_BASE + MC_MEM_CNTRL1, 0x92140000); /* MD_DS=2, MA_DS=2, CNTL_DS=2 SDCLKRATE=4 */
 	setGX1Mem(GX_BASE + MC_BANK_CFG,   0x00700070); /* No DIMMS installed */
 	setGX1Mem(GX_BASE + MC_SYNC_TIM1,  0x3a733225); /* LTMODE=3, RC=10, RAS=7, RP=3, RCD=3, RRD=2, DPL=2 */
-	setGX1Mem(GX_BASE + MC_BANK_CFG,   0x57405740); /* Largest DIMM size 
+	setGX1Mem(GX_BASE + MC_BANK_CFG,   0x57405740); /* Largest DIMM size
 						0x4000 -- 2 module banks
 						0x1000 -- 4 component banks
 						0x0700 -- DIMM size 512MB

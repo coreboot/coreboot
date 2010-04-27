@@ -6,7 +6,7 @@ chip northbridge/amd/amdk8/root_complex
         end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
-			device pci 18.0 on #  northbridge 
+			device pci 18.0 on #  northbridge
                               #  devices on link 0
                                 chip southbridge/broadcom/bcm5780 # HT2000
                                         device pci 0.0 on end   # PXB 1 0x0130
@@ -95,7 +95,7 @@ chip northbridge/amd/amdk8/root_complex
                                                         device pnp 2e.10 on #RTC
 								 io 0x60 = 0x70
 								 io 0x62 = 0x72
-							end 
+							end
                                                 end
                                         end
                                         device pci 1.3 on end # WDTimer    0x0238
@@ -110,7 +110,7 @@ chip northbridge/amd/amdk8/root_complex
 			end #  device pci 18.0
 
                         device pci 18.0 on end
-                        device pci 18.0 on end  
+                        device pci 18.0 on end
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end

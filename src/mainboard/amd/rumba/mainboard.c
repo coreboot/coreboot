@@ -19,7 +19,7 @@ static void init(struct device *dev) {
 	printk(BIOS_DEBUG, "AMD RUMBA ENTER %s\n", __func__);
 
 	if (nicirq) {
-		printk(BIOS_DEBUG, "%s (%x,%x)SET PCI interrupt line to %d\n", 
+		printk(BIOS_DEBUG, "%s (%x,%x)SET PCI interrupt line to %d\n",
 			__func__, bus, devfn, nicirq);
 		nic = dev_find_slot(bus, devfn);
 		if (! nic){

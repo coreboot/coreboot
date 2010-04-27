@@ -22,16 +22,16 @@ static void spd_set_memclk(void)
 		if (loops < 0) {
 			continue;
 		}
-		
+
 		__builtin_outb(device, 0x10e4);
 		__builtin_outb(address, 0x10e8);
-		
+
 		loops = 1000000;
 		if ((loops?0:-1) < 0) {
 			continue;
 		}
 	}
-	
+
 	if (new_cycle_time > min_cycle_time) {
 		min_cycle_time = new_cycle_time;
 	}

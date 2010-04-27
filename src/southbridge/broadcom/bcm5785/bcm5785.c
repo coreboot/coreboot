@@ -16,7 +16,7 @@ void bcm5785_enable(device_t dev)
 
 	/* See if we are on the behind the pcix bridge */
 	bus_dev = dev->bus->dev;
-	if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) && 
+	if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
 		(bus_dev->device == 0x0036 )) // device under PCI-X Bridge
 	{
 		unsigned devfn;
@@ -34,7 +34,7 @@ void bcm5785_enable(device_t dev)
 	else { // same bus
 		unsigned devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
-		if( dev->vendor == PCI_VENDOR_ID_SERVERWORKS ) { 
+		if( dev->vendor == PCI_VENDOR_ID_SERVERWORKS ) {
 			if(dev->device == 0x0036) //PCI-X Bridge
 			{ devfn += (1<<3); }
 			else if(dev->device == 0x0223) // USB

@@ -27,16 +27,16 @@ jmp llshell_out
 // Designed to be an interactive shell that operates with zero
 // system resources.  For example at initial boot.
 
-// to use, jump to label "low_level_shell" 
+// to use, jump to label "low_level_shell"
 // set %esp to the return address for exiting
 
 
-#define UART_BASEADDR $0x3f8  
+#define UART_BASEADDR $0x3f8
 #define resultreg %esi
 #define subroutinereg %edi
 #define freqtime $2193  // 1.93 * freq
 #define timertime $6000
-.equ	sys_IOPL, 110		
+.equ	sys_IOPL, 110
 
 // .data
 // .text
@@ -75,9 +75,9 @@ cmds:
 \r\nAll values in hex (0x prefixing ok)  \
 \r\n"
 
-cr:     
+cr:
 	.string "\r\n"
-spaces:     
+spaces:
 	.string "   "
 
 // .globl _start
@@ -187,7 +187,7 @@ jz  wmemw
 cmp $0x00776d6c,%eax
 jz  wmeml
 cmp $0x0000646d,%eax
-jz  dodmem  
+jz  dodmem
 cmp $0x6d656d74,%eax
 jz  memt                    // mem test
 cmp $0x00727374,%eax
@@ -195,7 +195,7 @@ jz  rst                     // reset
 cmp $0x00525354,%eax
 jz  RST
 cmp $0x62656570,%eax
-jz  beep   
+jz  beep
 cmp $0x0000646c,%eax
 jz  dodl                    // download to mem <loc> <size>
 cmp $0x006a6d70,%eax
@@ -203,7 +203,7 @@ jz  jmpto                   // jump to location (eax holds return addr)
 cmp $0x62617564,%eax
 jz  baud                    // change baudrate
 cmp $0x00696e74,%eax
-jz  doint                   // trigger an interrupt 
+jz  doint                   // trigger an interrupt
 cmp $0x63616c6c,%eax
 jz  callto                  // call assumes memory
 cmp $0x70757368,%eax
@@ -270,7 +270,7 @@ processchar:
 cmp  $0x3A,%al
 jl   subnum
 cmp  $0x47,%al
-jl   subcaps 
+jl   subcaps
 //sublc:
 sub  $0x57,%al
 jmp  additupn
@@ -370,7 +370,7 @@ jmp displaystring
 doneshow1:
 dec %cx
 cmp $0x0,%cx
-jz  exitdmem 
+jz  exitdmem
 add $0x04,%ebx
 jmp dmemloop
 exitdmem:
@@ -517,7 +517,7 @@ movl $int1a, subroutinereg
 jmp  readnibbles
 int1a:
 mov  resultreg,%eax
-// need to lookup int table? 
+// need to lookup int table?
 // int  %eax
 jmp  readcommand
 
@@ -560,7 +560,7 @@ jmp  *subroutinereg
 
 displayhexlinear:
 mov  resultreg,%eax
-xchg %al,%ah     
+xchg %al,%ah
 rol  $0x10,%eax
 xchg %al,%ah
 mov  %eax,resultreg
@@ -602,7 +602,7 @@ jmp  *subroutinereg
 
 displayasciilinear:
 mov  resultreg,%eax
-xchg %al,%ah     
+xchg %al,%ah
 rol  $0x10,%eax
 xchg %al,%ah
 mov  %eax,resultreg

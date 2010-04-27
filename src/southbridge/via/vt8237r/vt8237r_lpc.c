@@ -187,7 +187,7 @@ static void setup_pm(device_t dev)
 	 * 6 = SUSST# Deasserted Before PWRGD for STD
 	 * 5 = Keyboard/Mouse Swap
 	 * 4 = PWRGOOD reset on VT8237A/S
-	 * 3 = GPO26/GPO27 is GPO 
+	 * 3 = GPO26/GPO27 is GPO
 	 * 2 = Disable Alert on Lan
 	 * 1 = SUSCLK/GPO4
 	 * 0 = USB Wakeup
@@ -247,7 +247,7 @@ static void setup_pm(device_t dev)
 static void vt8237r_init(struct device *dev)
 {
 	u8 enables;
-	
+
 #if CONFIG_EPIA_VT8237R_INIT
 	printk(BIOS_SPEW, "Entering vt8237r_init, for EPIA.\n");
 	/*
@@ -260,9 +260,9 @@ static void vt8237r_init(struct device *dev)
 	enables = pci_read_config8(dev, 0xe5);
 	enables |= 0x23;
 	pci_write_config8(dev, 0xe5, enables);
-	
-	/* 
-	 * Enable Flash Write Access. 
+
+	/*
+	 * Enable Flash Write Access.
 	 * Note EPIA-N Does not use REQ5 or PCISTP#(Hang)
 	 */
 	enables = pci_read_config8(dev, 0xe4);
@@ -274,14 +274,14 @@ static void vt8237r_init(struct device *dev)
 	enables |= 0x80;
 	pci_write_config8(dev, 0x4E, enables);
 
-#else 
+#else
 	printk(BIOS_SPEW, "Entering vt8237r_init.\n");
 	/*
 	 * Enable SATA LED, disable special CPU Frequency Change -
 	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
 	 */
 	pci_write_config8(dev, 0xe5, 0x09);
-	
+
 	/* REQ5 as PCI request input - should be together with INTE-INTH. */
 	pci_write_config8(dev, 0xe4, 0x4);
 #endif
@@ -329,7 +329,7 @@ static void vt8237s_init(struct device *dev)
 			   (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
 
 	/*
-	 * REQ5 as PCI request input - should be together with INTE-INTH. 
+	 * REQ5 as PCI request input - should be together with INTE-INTH.
 	 */
 	pci_write_config8(dev, 0xe4, 0x04);
 

@@ -35,7 +35,7 @@
 struct mb_sysconf_t mb_sysconf;
 
 unsigned pci1234x[] =
-{	
+{
 	// Here you only need to set value in pci1234 for HT-IO that could be
 	// installed or not.
 	// You may need to preset pci1234 for HTIO board, please refer to
@@ -50,7 +50,7 @@ unsigned pci1234x[] =
 //	0x0000ff0
 };
 unsigned hcdnx[] =
-{ 
+{
 	// HT Chain device num, actually it is unit id base of every ht device
 	// in chain, assume every chain only have 4 ht device at most
 	0x20202020,

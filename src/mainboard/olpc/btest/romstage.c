@@ -50,7 +50,7 @@ static inline unsigned int fls(unsigned int x)
 	Trrd=2 (act2act)
 	Tref=17.8ms
   */
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
 	 *                      component Banks (byte 17) * module banks, side (byte 5) *
@@ -100,11 +100,11 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* timing and mode ... */
 
 	msr = rdmsr(0x20000019);
-	
-	/* per standard bios settings */	
+
+	/* per standard bios settings */
 
 	msr.hi = 0x18000108;
-	msr.lo = 
+	msr.lo =
 			(6<<28) |		// cas_lat
 			(10<<24)|		// ref2act
 			(7<<20)|		// act2pre
@@ -114,8 +114,8 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 			(2<<6)|			// dplwr
 			(2<<4)|			// dplrd
 			(3);			// dal
-	/* the msr value reported by quanta is very, very different. 
-	 * we will go with that value for now. 
+	/* the msr value reported by quanta is very, very different.
+	 * we will go with that value for now.
 	 */
 	msr.lo = 0x286332a3;
 
@@ -180,9 +180,9 @@ static void main(unsigned long bist)
 
 	cpuRegInit();
 	print_err("done cpuRegInit\n");
-	
+
 	sdram_initialize(1, memctrl);
-	
+
 	/* Check all of memory */
 	//ram_check(0x00000000, 640*1024);
 }

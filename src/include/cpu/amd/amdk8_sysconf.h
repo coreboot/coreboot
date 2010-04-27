@@ -20,7 +20,7 @@ struct amdk8_sysconf_t {
 	int apicid_offset;
 
 	void *mb; // pointer for mb releated struct
-	
+
 };
 
 extern struct amdk8_sysconf_t sysconf;

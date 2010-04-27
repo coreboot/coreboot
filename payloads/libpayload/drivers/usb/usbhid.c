@@ -86,7 +86,7 @@ char *countries[36][2] = {
 	{ "Persian (Farsi)", "ir" },
 	{ "Poland", "pl" },
 	{ "Portuguese", "pt" },
-	{ "Russia", "ru" }, 
+	{ "Russia", "ru" },
 	{ "Slovakia", "sl" },
 	{ "Spanish", "es" },
 	{ "Swedish", "se" },
@@ -241,8 +241,8 @@ typedef union {
 #define INITIAL_REPEAT_DELAY	10
 #define REPEAT_DELAY		 2
 
-static void 
-usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current, 
+static void
+usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current,
 		usb_hid_keyboard_event_t *previous)
 {
 	int i, keypress = 0, modifiers = 0;
@@ -429,16 +429,16 @@ usb_hid_init (usbdev_t *dev)
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);
 			debug ("  activating...\n");
 
-			HID_INST (dev)->descriptor = 
+			HID_INST (dev)->descriptor =
 				(hid_descriptor_t *)
 					get_descriptor(dev, gen_bmRequestType
-					(device_to_host, standard_type, iface_recp), 
+					(device_to_host, standard_type, iface_recp),
 					0x21, 0, 0);
 			countrycode = HID_INST(dev)->descriptor->bCountryCode;
 			/* 35 countries defined: */
 			if (countrycode > 35)
 				countrycode = 0;
-			printf ("  Keyboard has %s layout (country code %02x)\n", 
+			printf ("  Keyboard has %s layout (country code %02x)\n",
 					countries[countrycode][0], countrycode);
 
 			/* Set keyboard layout accordingly */

@@ -30,7 +30,7 @@ config SDRAMPWR_4DIMM
 	  This option affects how the SDRAMC register is programmed.
 	  Memory clock signals will not be routed properly if this option
 	  is set wrong.
-	
+
 	  If your board has 4 DIMM slots, you must use select this option, in
 	  your Kconfig file of the board. On boards with 3 DIMM slots,
 	  do _not_ select this option.

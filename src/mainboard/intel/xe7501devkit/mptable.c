@@ -40,14 +40,14 @@ static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 	smp_write_ioapic(mc, IOAPIC_ICH3, 0x20, 0xfec00000);	// APIC ID, Version, Address
 
 	// P64H2#2 Bus A IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	smp_write_ioapic(mc, IOAPIC_P64H2_2_BUS_A, P64H2_IOAPIC_VERSION, res->base);
 
 	// P64H2#2 Bus B IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(28, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(28, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -55,14 +55,14 @@ static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 
 
 	// P64H2#1 Bus A IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(30, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(30, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	smp_write_ioapic(mc, IOAPIC_P64H2_1_BUS_A, P64H2_IOAPIC_VERSION, res->base);
 
 	// P64H2#1 Bus B IOAPIC
-	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(28, 0));	
+	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(28, 0));
 	if (!dev)
 		BUG();		// Config.lb error?
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -98,11 +98,11 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_2_B, 	PCI_IRQ(4, INT_B), 	IOAPIC_P64H2_2_BUS_B,   13);	// Slot 2D (J12)
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_2_B, 	PCI_IRQ(4, INT_C), 	IOAPIC_P64H2_2_BUS_B,   14);	// Slot 2D (J12)
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_2_B, 	PCI_IRQ(4, INT_D), 	IOAPIC_P64H2_2_BUS_B,   15);	// Slot 2D (J12)
-	
+
 	// P64H2#2 Bus A
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_P64H2_2_A, 	PCI_IRQ(1, INT_A),	IOAPIC_P64H2_2_BUS_A,	 0);	// SCSI
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_P64H2_2_A, 	PCI_IRQ(1, INT_B),	IOAPIC_P64H2_2_BUS_A,	 1);	// SCSI
-	
+
 	// P64H2#1 Bus B
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_1_B, 	PCI_IRQ(1, INT_A), 	IOAPIC_P64H2_1_BUS_B,    0);	// GB Ethernet
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_1_B, 	PCI_IRQ(2, INT_A), 	IOAPIC_P64H2_1_BUS_B,    4);	// Slot 1B (J21)
@@ -117,13 +117,13 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_P64H2_1_A, 	PCI_IRQ(1, INT_D), 	IOAPIC_P64H2_1_BUS_A,    3);	// Slot 1A (J20)
 
 	// ICH-3
-	
+
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_ICH3,		PCI_IRQ(0, INT_A),	IOAPIC_ICH3,			16);	// Video
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_ICH3,		PCI_IRQ(2, INT_A),	IOAPIC_ICH3,			18);	// Debug slot (J11)
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_ICH3,		PCI_IRQ(2, INT_B),	IOAPIC_ICH3,			19);	// Debug slot (J11)
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_ICH3,		PCI_IRQ(2, INT_C),	IOAPIC_ICH3,			16);	// Debug slot (J11)
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_ICH3,		PCI_IRQ(2, INT_D),	IOAPIC_ICH3,			17);	// Debug slot (J11)
-	
+
 	// TODO: Not sure how to handle BT_INTR# signals from the P64H2s. Do we even need to, in APIC mode?
 
 	// Super I/O (ISA interrupts)

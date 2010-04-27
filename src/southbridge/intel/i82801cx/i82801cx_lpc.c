@@ -23,7 +23,7 @@
 #define MAINBOARD_POWER_ON  1
 
 
-static void i82801cx_enable_ioapic( struct device *dev) 
+static void i82801cx_enable_ioapic( struct device *dev)
 {
 	uint32_t dword;
     volatile uint32_t* ioapic_index = (volatile uint32_t*)0xfec00000;
@@ -36,12 +36,12 @@ static void i82801cx_enable_ioapic( struct device *dev)
     dword |= (1 << 2); /* DMA collection buf enable */
     pci_write_config32(dev, GEN_CNTL, dword);
     printk(BIOS_DEBUG, "ioapic southbridge enabled %x\n",dword);
-        
+
     // Must program the APIC's ID before using it
 
     *ioapic_index = 0;		// Select APIC ID register
     *ioapic_data = (2<<24);
-        
+
     // Hang if the ID didn't take (chip not present?)
     *ioapic_index = 0;
     dword = *ioapic_data;
@@ -65,11 +65,11 @@ static void i82801cx_enable_serial_irqs( struct device *dev)
 // Parameters:  	dev
 //					mask - identifies whether each channel should be used for PCI DMA
 //						   (bit = 0) or LPC DMA (bit = 1). The LSb controls channel 0.
-//						   Channel 4 is not used (reserved). 
+//						   Channel 4 is not used (reserved).
 // Return Value:	None
 // Description: 	Route all DMA channels to either PCI or LPC.
 //
-static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask) 
+static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask)
 {
     uint16_t dmaConfig;
     int channelIndex;
@@ -105,13 +105,13 @@ static void i82801cx_rtc_init(struct device *dev)
 		pmcon3 |= SLEEP_AFTER_POWER_FAIL;
 	}
 	pci_write_config8(dev, GEN_PMCON_3, pmcon3);
-	printk(BIOS_INFO, "set power %s after power fail\n", 
+	printk(BIOS_INFO, "set power %s after power fail\n",
 				 pwr_on ? "on" : "off");
 
     // See if the Safe Mode jumper is set
     dword = pci_read_config32(dev, GEN_STS);
     rtc_failed |= dword & (1 << 2);
-        
+
     rtc_init(rtc_failed);
 }
 
@@ -120,28 +120,28 @@ static void i82801cx_1f0_misc(struct device *dev)
 {
 	// Prevent LPC disabling, enable parity errors, and SERR# (System Error)
     pci_write_config16(dev, PCI_COMMAND, 0x014f);
-        
+
     // Set ACPI base address to 0x1100 (I/O space)
     pci_write_config32(dev, PMBASE, 0x00001101);
-        
+
     // Enable ACPI I/O and power management
     pci_write_config8(dev, ACPI_CNTL, 0x10);
-        
+
     // Set GPIO base address to 0x1180 (I/O space)
     pci_write_config32(dev, GPIO_BASE, 0x00001181);
-        
+
     // Enable GPIO
     pci_write_config8(dev, GPIO_CNTL, 0x10);
-        
+
     // Route PIRQA to IRQ11, PIRQB to IRQ3, PIRQC to IRQ5, PIRQD to IRQ10
     pci_write_config32(dev, PIRQA_ROUT, 0x0A05030B);
-        
+
     // Route PIRQE to IRQ7. Leave PIRQF - PIRQH unrouted.
     pci_write_config8(dev, PIRQE_ROUT, 0x07);
-        
+
     // Enable access to the upper 128 byte bank of CMOS RAM
     pci_write_config8(dev, RTC_CONF, 0x04);
-        
+
     // Decode 0x3F8-0x3FF (COM1) for COMA port,
 	//		  0x2F8-0x2FF (COM2) for COMB
     pci_write_config8(dev, COM_DEC, 0x10);
@@ -149,7 +149,7 @@ static void i82801cx_1f0_misc(struct device *dev)
 	// LPT decode defaults to 0x378-0x37F and 0x778-0x77F
 	// Floppy decode defaults to 0x3F0-0x3F5, 0x3F7
 
-    // Enable COMA, COMB, LPT, floppy; 
+    // Enable COMA, COMB, LPT, floppy;
 	// disable microcontroller, Super I/O, sound, gameport
     pci_write_config16(dev, LPC_EN, 0x000F);
 }
@@ -164,7 +164,7 @@ static void lpc_init(struct device *dev)
 	i82801cx_enable_ioapic(dev);
 
 	i82801cx_enable_serial_irqs(dev);
-	
+
 	/* power after power fail */
 	        /* FIXME this doesn't work! */
         /* Which state do we want to goto after g3 (power restored)?
@@ -187,11 +187,11 @@ static void lpc_init(struct device *dev)
     byte = inb(0x70);
     nmi_option = NMI_OFF;
     get_option(&nmi_option, "nmi");
-    if (nmi_option) {			
+    if (nmi_option) {
         byte &= ~(1 << 7); /* set NMI */
         outb(byte, 0x70);
     }
-	
+
 	/* Initialize the real time clock */
 	i82801cx_rtc_init(dev);
 

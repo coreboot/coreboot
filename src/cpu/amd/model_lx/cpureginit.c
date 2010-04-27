@@ -248,8 +248,8 @@ void cpuRegInit(void)
 	msr.hi |= ARB_UPPER_QUACK_EN_SET;
 	wrmsr(msrnum, msr);
 
-	/* GLIU port active enable, limit south pole masters 
-	 * (AES and PCI) to one outstanding transaction. 
+	/* GLIU port active enable, limit south pole masters
+	 * (AES and PCI) to one outstanding transaction.
 	 */
 	print_debug(" GLIU port active enable\n");
 	msrnum = GLIU1_PORT_ACTIVE;

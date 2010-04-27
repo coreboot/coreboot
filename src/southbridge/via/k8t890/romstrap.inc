@@ -48,7 +48,7 @@ tblpointer:
 .long 0x0
 .long 0x0
 .long 0x0
-.long 0x0 
+.long 0x0
 
 /*
  * The pointer to above table should be at 0xffffd,

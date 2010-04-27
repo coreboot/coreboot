@@ -25,7 +25,7 @@
 #if DUMP_ACPI_TABLES == 1
 static void dump_mem(unsigned start, unsigned end)
 {
-        
+
 	unsigned i;
         print_debug("dump_mem:");
         for(i=start;i<end;i++) {
@@ -63,10 +63,10 @@ unsigned long acpi_fill_madt(unsigned long current)
         struct mb_sysconf_t *m;
 
         m = sysconf.mb;
- 
+
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
-	
+
 	/* Write 8111 IOAPIC */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8111,
 			IO_APIC_ADDR, 0);
@@ -102,7 +102,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 			unsigned d = 0;
                         if(!(sysconf.pci1234[i] & 0x1) ) continue;
                         // 8131 need to use +4
-			
+
                         switch (sysconf.hcid[i]) {
                         case 1:
 				d = 7;
@@ -145,7 +145,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 			current, 0, 0, 2, 5 );
 		/* 0: mean bus 0--->ISA */
 		/* 0: PIC 0 */
-		/* 2: APIC 2 */ 
+		/* 2: APIC 2 */
 		/* 5 mean: 0101 --> Edige-triggered, Active high*/
 
 
@@ -185,7 +185,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;
 	current = start;
-	
+
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
@@ -196,7 +196,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
-	
+
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 

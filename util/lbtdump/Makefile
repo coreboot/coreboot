@@ -1,7 +1,7 @@
 TARGET=lbtdump
 
 CC=gcc
-CFLAGS=-g -O -Wall 
+CFLAGS=-g -O -Wall
 
 all: $(TARGET)
 

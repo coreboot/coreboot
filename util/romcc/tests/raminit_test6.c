@@ -1,30 +1,30 @@
 typedef unsigned char      uint8_t;
-typedef signed char        int8_t; 
+typedef signed char        int8_t;
 typedef unsigned short     uint16_t;
 typedef signed short       int16_t;
 typedef unsigned int       uint32_t;
 typedef signed int         int32_t;
- 
+
 typedef unsigned char      uint_least8_t;
-typedef signed char        int_least8_t; 
+typedef signed char        int_least8_t;
 typedef unsigned short     uint_least16_t;
 typedef signed short       int_least16_t;
 typedef unsigned int       uint_least32_t;
 typedef signed int         int_least32_t;
- 
+
 typedef unsigned char      uint_fast8_t;
-typedef signed char        int_fast8_t; 
+typedef signed char        int_fast8_t;
 typedef unsigned int       uint_fast16_t;
 typedef signed int         int_fast16_t;
 typedef unsigned int       uint_fast32_t;
 typedef signed int         int_fast32_t;
- 
+
 typedef int                intptr_t;
 typedef unsigned int       uintptr_t;
- 
+
 typedef long int           intmax_t;
 typedef unsigned long int  uintmax_t;
- 
+
 static inline unsigned long apic_read(unsigned long reg)
 {
 	return *((volatile unsigned long *)(0xfee00000 +reg));
@@ -37,7 +37,7 @@ static inline void apic_wait_icr_idle(void)
 {
 	do { } while ( apic_read( 0x300  ) & 0x01000  );
 }
- 
+
 static void outb(unsigned char value, unsigned short port)
 {
 	__builtin_outb(value, port);
@@ -65,7 +65,7 @@ static unsigned char inl(unsigned short port)
 static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsb " 
+		"cld ; rep ; outsb "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -73,7 +73,7 @@ static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 static inline void outsw(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsw " 
+		"cld ; rep ; outsw "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -81,7 +81,7 @@ static inline void outsw(uint16_t port, const void *addr, unsigned long count)
 static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; outsl " 
+		"cld ; rep ; outsl "
 		: "=S" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -89,7 +89,7 @@ static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 static inline void insb(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insb " 
+		"cld ; rep ; insb "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -97,7 +97,7 @@ static inline void insb(uint16_t port, void *addr, unsigned long count)
 static inline void insw(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insw " 
+		"cld ; rep ; insw "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -105,7 +105,7 @@ static inline void insw(uint16_t port, void *addr, unsigned long count)
 static inline void insl(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
-		"cld ; rep ; insl " 
+		"cld ; rep ; insl "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
 		);
@@ -180,7 +180,7 @@ static uldiv_t uldiv(unsigned long numer, unsigned long denom)
 }
 int log2(int value)
 {
-	 
+
 	return __builtin_bsr(value);
 }
 typedef unsigned device_t;
@@ -237,11 +237,11 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 	}
 	return (0xffffffffU) ;
 }
- 
- 
- 
- 
- 
+
+
+
+
+
 static int uart_can_tx_byte(void)
 {
 	return inb(1016  + 0x05 ) & 0x20;
@@ -253,29 +253,29 @@ static void uart_wait_to_tx_byte(void)
 }
 static void uart_wait_until_sent(void)
 {
-	while(!(inb(1016  + 0x05 ) & 0x40)) 
+	while(!(inb(1016  + 0x05 ) & 0x40))
 		;
 }
 static void uart_tx_byte(unsigned char data)
 {
 	uart_wait_to_tx_byte();
 	outb(data, 1016  + 0x00 );
-	 
+
 	uart_wait_until_sent();
 }
 static void uart_init(void)
 {
-	 
+
 	outb(0x0, 1016  + 0x01 );
-	 
+
 	outb(0x01, 1016  + 0x02 );
-	 
+
 	outb(0x80 | 3  , 1016  + 0x03 );
 	outb((115200/ 115200 )  & 0xFF,   1016  + 0x00 );
 	outb(((115200/ 115200 )  >> 8) & 0xFF,    1016  + 0x01 );
 	outb(3  , 1016  + 0x03 );
 }
- 
+
 static void __console_tx_byte(unsigned char byte)
 {
 	uart_tx_byte(byte);
@@ -380,12 +380,12 @@ static void print_spew_hex32(unsigned int value) { __console_tx_hex32(8 , value)
 static void print_spew(const char *str) { __console_tx_string(8 , str); }
 static void console_init(void)
 {
-	static const char console_test[] = 
+	static const char console_test[] =
 		"\r\n\r\nLinuxBIOS-"
-		"1.1.4"  
-		".0Fallback"  
+		"1.1.4"
+		".0Fallback"
 		" "
-		"Thu Oct 9 20:29:48 MDT 2003"  
+		"Thu Oct 9 20:29:48 MDT 2003"
 		" starting...\r\n";
 	print_info(console_test);
 }
@@ -400,9 +400,9 @@ static void write_phys(unsigned long addr, unsigned long value)
 {
 	asm volatile(
 		"movnti %1, (%0)"
-		:  
-		: "r" (addr), "r" (value)  
-		:  
+		:
+		: "r" (addr), "r" (value)
+		:
 		);
 }
 static unsigned long read_phys(unsigned long addr)
@@ -414,28 +414,28 @@ static unsigned long read_phys(unsigned long addr)
 static void ram_fill(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
-	 
+
 	print_debug("DRAM fill: ");
 	print_debug_hex32(start);
 	print_debug("-");
 	print_debug_hex32(stop);
 	print_debug("\r\n");
 	for(addr = start; addr < stop ; addr += 4) {
-		 
+
 		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
 			print_debug("\r");
 		}
 		write_phys(addr, addr);
 	};
-	 
+
 	print_debug_hex32(addr);
 	print_debug("\r\nDRAM filled\r\n");
 }
 static void ram_verify(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
-	 
+
 	print_debug("DRAM verify: ");
 	print_debug_hex32(start);
 	print_debug_char('-');
@@ -443,31 +443,31 @@ static void ram_verify(unsigned long start, unsigned long stop)
 	print_debug("\r\n");
 	for(addr = start; addr < stop ; addr += 4) {
 		unsigned long value;
-		 
+
 		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
 			print_debug("\r");
 		}
 		value = read_phys(addr);
 		if (value != addr) {
-			 
+
 			print_err_hex32(addr);
 			print_err_char(':');
 			print_err_hex32(value);
 			print_err("\r\n");
 		}
 	}
-	 
+
 	print_debug_hex32(addr);
 	print_debug("\r\nDRAM verified\r\n");
 }
 void ram_check(unsigned long start, unsigned long stop)
 {
 	int result;
-	 
+
 	print_debug("Testing DRAM : ");
 	print_debug_hex32(start);
-	print_debug("-");	
+	print_debug("-");
 	print_debug_hex32(stop);
 	print_debug("\r\n");
 	ram_fill(start, stop);
@@ -476,7 +476,7 @@ void ram_check(unsigned long start, unsigned long stop)
 }
 static int enumerate_ht_chain(unsigned link)
 {
-	 
+
 	unsigned next_unitid, last_unitid;
 	int reset_needed = 0;
 	next_unitid = 1;
@@ -485,7 +485,7 @@ static int enumerate_ht_chain(unsigned link)
 		uint8_t hdr_type, pos;
 		last_unitid = next_unitid;
 		id = pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 0 ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8)) , 0x00 );
-		 
+
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0x0000)) {
@@ -531,7 +531,7 @@ static void enable_smbus(void)
 	pci_write_config32(dev, 0x58, 0x0f00  | 1);
 	enable = pci_read_config8(dev, 0x41);
 	pci_write_config8(dev, 0x41, enable | (1 << 7));
-	 
+
 	outw(inw(0x0f00  + 0xe0 ), 0x0f00  + 0xe0 );
 }
 static inline void smbus_delay(void)
@@ -550,7 +550,7 @@ static int smbus_wait_until_ready(void)
 			break;
 		}
 		if(loops == ((100*1000*10)  / 2)) {
-			outw(inw(0x0f00  + 0xe0 ), 
+			outw(inw(0x0f00  + 0xe0 ),
 				0x0f00  + 0xe0 );
 		}
 	} while(--loops);
@@ -563,7 +563,7 @@ static int smbus_wait_until_done(void)
 	do {
 		unsigned short val;
 		smbus_delay();
-		
+
 		val = inw(0x0f00  + 0xe0 );
 		if (((val & 0x8) == 0) | ((val & 0x437) != 0)) {
 			break;
@@ -579,29 +579,29 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	if (smbus_wait_until_ready() < 0) {
 		return -2;
 	}
-	
-	 
-	 
+
+
+
 	outw(inw(0x0f00  + 0xe2 ) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), 0x0f00  + 0xe2 );
-	 
+
 	outw(((device & 0x7f) << 1) | 1, 0x0f00  + 0xe4 );
-	 
+
 	outb(address & 0xFF, 0x0f00  + 0xe8 );
-	 
+
 	outw((inw(0x0f00  + 0xe2 ) & ~7) | (0x2), 0x0f00  + 0xe2 );
-	 
-	 
+
+
 	outw(inw(0x0f00  + 0xe0 ), 0x0f00  + 0xe0 );
-	 
+
 	outw(0, 0x0f00  + 0xe6 );
-	 
+
 	outw((inw(0x0f00  + 0xe2 ) | (1 << 3)), 0x0f00  + 0xe2 );
-	 
+
 	if (smbus_wait_until_done() < 0) {
 		return -3;
 	}
 	global_status_register = inw(0x0f00  + 0xe0 );
-	 
+
 	byte = inw(0x0f00  + 0xe6 ) & 0xff;
 	if (global_status_register != (1 << 4)) {
 		return -1;
@@ -636,31 +636,31 @@ static tsc_t rdtsc(void)
 {
 	tsc_t res;
 	asm ("rdtsc"
-		: "=a" (res.lo), "=d"(res.hi)  
-		:  
-		:  
+		: "=a" (res.lo), "=d"(res.hi)
+		:
+		:
 		);
 	return res;
 }
 void init_timer(void)
 {
-	 
+
 	apic_write(0x320 , (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0));
-	 
+
 	apic_write(0x3E0 , 0xB );
-	 
+
 	apic_write(0x380 , 0xffffffff);
 }
 void udelay(unsigned usecs)
 {
 	uint32_t start, value, ticks;
-	 
+
 	ticks = usecs * 200;
 	start = apic_read(0x390 );
 	do {
 		value = apic_read(0x390 );
 	} while((start - value) < ticks);
-	
+
 }
 void mdelay(unsigned msecs)
 {
@@ -732,8 +732,8 @@ static void print_debug_pci_dev(unsigned dev)
 static void print_pci_devices(void)
 {
 	device_t dev;
-	for(dev = ( ((( 0 ) & 0xFF) << 16) | (((  0 ) & 0x1f) << 11) | (((  0 )  & 0x7) << 8)) ; 
-		dev <= ( ((( 0 ) & 0xFF) << 16) | (((  0x1f ) & 0x1f) << 11) | (((  0x7 )  & 0x7) << 8)) ; 
+	for(dev = ( ((( 0 ) & 0xFF) << 16) | (((  0 ) & 0x1f) << 11) | (((  0 )  & 0x7) << 8)) ;
+		dev <= ( ((( 0 ) & 0xFF) << 16) | (((  0x1f ) & 0x1f) << 11) | (((  0x7 )  & 0x7) << 8)) ;
 		dev += ( ((( 0 ) & 0xFF) << 16) | ((( 0 ) & 0x1f) << 11) | ((( 1 )  & 0x7) << 8)) ) {
 		uint32_t id;
 		id = pci_read_config32(dev, 0x00 );
@@ -751,7 +751,7 @@ static void dump_pci_device(unsigned dev)
 	int i;
 	print_debug_pci_dev(dev);
 	print_debug("\r\n");
-	
+
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
@@ -769,8 +769,8 @@ static void dump_pci_device(unsigned dev)
 static void dump_pci_devices(void)
 {
 	device_t dev;
-	for(dev = ( ((( 0 ) & 0xFF) << 16) | (((  0 ) & 0x1f) << 11) | (((  0 )  & 0x7) << 8)) ; 
-		dev <= ( ((( 0 ) & 0xFF) << 16) | (((  0x1f ) & 0x1f) << 11) | (((  0x7 )  & 0x7) << 8)) ; 
+	for(dev = ( ((( 0 ) & 0xFF) << 16) | (((  0 ) & 0x1f) << 11) | (((  0 )  & 0x7) << 8)) ;
+		dev <= ( ((( 0 ) & 0xFF) << 16) | (((  0x1f ) & 0x1f) << 11) | (((  0x7 )  & 0x7) << 8)) ;
 		dev += ( ((( 0 ) & 0xFF) << 16) | ((( 0 ) & 0x1f) << 11) | ((( 1 )  & 0x7) << 8)) ) {
 		uint32_t id;
 		id = pci_read_config32(dev, 0x00 );
@@ -791,8 +791,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -817,8 +817,8 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel1[i];
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".1: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {
@@ -842,13 +842,13 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
- 
+
 static unsigned int cpuid(unsigned int op)
 {
 	unsigned int ret;
 	unsigned dummy2,dummy3,dummy4;
-	asm volatile ( 
-		"cpuid" 
+	asm volatile (
+		"cpuid"
 		: "=a" (ret), "=b" (dummy2), "=c" (dummy3), "=d" (dummy4)
 		: "a" (op)
 		);
@@ -865,13 +865,13 @@ static int is_cpu_pre_c0(void)
 static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
-		 
+
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), 0x0f00  + 0xc0 + 28);
-		 
+
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), 0x0f00  + 0xc0 + 29);
 	}
 	else {
-		 
+
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 0x0f00  + 0xc0 + 29);
 	}
 }
@@ -879,15 +879,15 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 	if (is_cpu_pre_c0()) {
 		udelay(800);
-		 
+
 		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 0x0f00  + 0xc0 + 28);
 		udelay(90);
 	}
 }
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 {
-	 
-	uint32_t ret=0x00010101;  
+
+	uint32_t ret=0x00010101;
 	static const unsigned int rows_2p[2][2] = {
 		{ 0x00050101, 0x00010404 },
 		{ 0x00010404, 0x00050101 }
@@ -905,33 +905,33 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
- 
+
 static void coherent_ht_mainboard(unsigned cpus)
 {
 }
- 
+
 void cpu_ldtstop(unsigned cpus)
 {
 	uint32_t tmp;
 	device_t dev;
 	unsigned cnt;
 	for(cnt=0; cnt<cpus; cnt++) {
-		 
+
         	pci_write_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24 ) & 0x1f) << 11) | ((( 3 )  & 0x7) << 8)) ,0x81,0x23);
-		 
+
 		pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24 ) & 0x1f) << 11) | ((( 3 )  & 0x7) << 8)) ,0xd4,0x00000701);
-		 
+
 		pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24 ) & 0x1f) << 11) | ((( 3 )  & 0x7) << 8)) ,0xd8,0x00000000);
-		 
+
 		tmp=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24 ) & 0x1f) << 11) | ((( 2 )  & 0x7) << 8)) ,0x90);
 		pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24 ) & 0x1f) << 11) | ((( 2 )  & 0x7) << 8)) ,0x90, tmp | (1<<24) );
 	}
 }
- 
- 
- 
- 
- 
+
+
+
+
+
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
@@ -952,8 +952,8 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 static void setup_default_resource_map(void)
 {
 	static const unsigned int register_values[] = {
-	 
-	 
+
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x44 ) & 0xFF)) , 0x0000f8f8, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x4C ) & 0xFF)) , 0x0000f8f8, 0x00000001,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x54 ) & 0xFF)) , 0x0000f8f8, 0x00000002,
@@ -962,7 +962,7 @@ static void setup_default_resource_map(void)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x6C ) & 0xFF)) , 0x0000f8f8, 0x00000005,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x74 ) & 0xFF)) , 0x0000f8f8, 0x00000006,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x7C ) & 0xFF)) , 0x0000f8f8, 0x00000007,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x40 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x48 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x50 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
@@ -971,7 +971,7 @@ static void setup_default_resource_map(void)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x68 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x70 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x78 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x84 ) & 0xFF)) , 0x00000048, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x8C ) & 0xFF)) , 0x00000048, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x94 ) & 0xFF)) , 0x00000048, 0x00000000,
@@ -980,7 +980,7 @@ static void setup_default_resource_map(void)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xAC ) & 0xFF)) , 0x00000048, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xB4 ) & 0xFF)) , 0x00000048, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xBC ) & 0xFF)) , 0x00000048, 0x00ffff00,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x80 ) & 0xFF)) , 0x000000f0, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x88 ) & 0xFF)) , 0x000000f0, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x90 ) & 0xFF)) , 0x000000f0, 0x00000000,
@@ -989,17 +989,17 @@ static void setup_default_resource_map(void)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xA8 ) & 0xFF)) , 0x000000f0, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xB0 ) & 0xFF)) , 0x000000f0, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xB8 ) & 0xFF)) , 0x000000f0, 0x00fc0003,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xC4 ) & 0xFF)) , 0xFE000FC8, 0x01fff000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xCC ) & 0xFF)) , 0xFE000FC8, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xD4 ) & 0xFF)) , 0xFE000FC8, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xDC ) & 0xFF)) , 0xFE000FC8, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xC0 ) & 0xFF)) , 0xFE000FCC, 0x00000003,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xC8 ) & 0xFF)) , 0xFE000FCC, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xD0 ) & 0xFF)) , 0xFE000FCC, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xD8 ) & 0xFF)) , 0xFE000FCC, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xE0 ) & 0xFF)) , 0x0000FC88, 0xff000003,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xE4 ) & 0xFF)) , 0x0000FC88, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0xE8 ) & 0xFF)) , 0x0000FC88, 0x00000000,
@@ -1012,8 +1012,8 @@ static void setup_default_resource_map(void)
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	static const unsigned int register_values[] = {
-	 
-	 
+
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x44 ) & 0xFF)) , 0x0000f8f8, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x4C ) & 0xFF)) , 0x0000f8f8, 0x00000001,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x54 ) & 0xFF)) , 0x0000f8f8, 0x00000002,
@@ -1022,7 +1022,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x6C ) & 0xFF)) , 0x0000f8f8, 0x00000005,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x74 ) & 0xFF)) , 0x0000f8f8, 0x00000006,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x7C ) & 0xFF)) , 0x0000f8f8, 0x00000007,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x40 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x48 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x50 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
@@ -1031,7 +1031,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x68 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x70 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  1 ) & 0x07) << 8) | ((  0x78 ) & 0xFF)) , 0x0000f8fc, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x40 ) & 0xFF)) , 0x001f01fe, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x44 ) & 0xFF)) , 0x001f01fe, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x48 ) & 0xFF)) , 0x001f01fe, 0x00000000,
@@ -1040,7 +1040,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x54 ) & 0xFF)) , 0x001f01fe, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x58 ) & 0xFF)) , 0x001f01fe, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x5C ) & 0xFF)) , 0x001f01fe, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x60 ) & 0xFF)) , 0xC01f01ff, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x64 ) & 0xFF)) , 0xC01f01ff, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x68 ) & 0xFF)) , 0xC01f01ff, 0x00000000,
@@ -1049,33 +1049,33 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x74 ) & 0xFF)) , 0xC01f01ff, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x78 ) & 0xFF)) , 0xC01f01ff, 0x00000000,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x7C ) & 0xFF)) , 0xC01f01ff, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x80 ) & 0xFF)) , 0xffff8888, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x88 ) & 0xFF)) , 0xe8088008, 0x02522001   ,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x8c ) & 0xFF)) , 0xff8fe08e, (0 << 20)|(0 << 8)|(0 << 4)|(0 << 0),
-	 
-	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x90 ) & 0xFF)) , 0xf0000000, 
-	(4 << 25)|(0 << 24)| 
-	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)| 
-	(1 << 19)|(0 << 18)|(1 << 17)|(0 << 16)| 
-	(2 << 14)|(0 << 13)|(0 << 12)| 
-	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)| 
+
+	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x90 ) & 0xFF)) , 0xf0000000,
+	(4 << 25)|(0 << 24)|
+	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)|
+	(1 << 19)|(0 << 18)|(1 << 17)|(0 << 16)|
+	(2 << 14)|(0 << 13)|(0 << 12)|
+	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)|
 	(0 << 3) |(0 << 1) |(0 << 0),
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x94 ) & 0xFF)) , 0xc180f0f0,
 	(0 << 29)|(0 << 28)|(0 << 27)|(0 << 26)|(0 << 25)|
 	(0 << 20)|(0 << 19)|(3  << 16)|(0 << 8)|(0 << 0),
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  2 ) & 0x07) << 8) | ((  0x98 ) & 0xFF)) , 0xfc00ffff, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x58 ) & 0xFF)) , 0xffe0e0e0, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x5C ) & 0xFF)) , 0x0000003e, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x60 ) & 0xFF)) , 0xffffff00, 0x00000000,
-	 
+
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x94 ) & 0xFF)) , 0xffff8000, 0x00000f70,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x90 ) & 0xFF)) , 0xffffff80, 0x00000002,
 	( ((( 0 ) & 0xFF) << 16) | (((  0x18 ) & 0x1f) << 11) | (((  3 ) & 0x07) << 8) | ((  0x98 ) & 0xFF)) , 0x0000000f, 0x00068300,
@@ -1107,14 +1107,14 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 }
 static int is_opteron(const struct mem_controller *ctrl)
 {
-	 
+
 	uint32_t nbcap;
 	nbcap = pci_read_config32(ctrl->f3, 0xE8 );
 	return !!(nbcap & 0x0001 );
 }
 static int is_registered(const struct mem_controller *ctrl)
 {
-	 
+
 	uint32_t dcl;
 	dcl = pci_read_config32(ctrl->f2, 0x90 );
 	return !(dcl & (1<<18) );
@@ -1125,45 +1125,45 @@ struct dimm_size {
 };
 static struct dimm_size spd_get_dimm_size(unsigned device)
 {
-	 
+
 	struct dimm_size sz;
 	int value, low;
 	sz.side1 = 0;
 	sz.side2 = 0;
-	 
-	value = spd_read_byte(device, 3);	 
+
+	value = spd_read_byte(device, 3);
 	if (value < 0) goto out;
 	sz.side1 += value & 0xf;
-	value = spd_read_byte(device, 4);	 
+	value = spd_read_byte(device, 4);
 	if (value < 0) goto out;
 	sz.side1 += value & 0xf;
-	value = spd_read_byte(device, 17);	 
+	value = spd_read_byte(device, 17);
 	if (value < 0) goto out;
 	sz.side1 += log2(value & 0xff);
-	 
-	value = spd_read_byte(device, 7);	 
+
+	value = spd_read_byte(device, 7);
 	if (value < 0) goto out;
 	value &= 0xff;
 	value <<= 8;
-	
-	low = spd_read_byte(device, 6);	 
+
+	low = spd_read_byte(device, 6);
 	if (low < 0) goto out;
 	value = value | (low & 0xff);
 	sz.side1 += log2(value);
-	 
-	value = spd_read_byte(device, 5);	 
+
+	value = spd_read_byte(device, 5);
 	if (value <= 1) goto out;
-	 
+
 	sz.side2 = sz.side1;
-	value = spd_read_byte(device, 3);	 
+	value = spd_read_byte(device, 3);
 	if (value < 0) goto out;
-	if ((value & 0xf0) == 0) goto out;	 
-	sz.side2 -= (value & 0x0f);		 
-	sz.side2 += ((value >> 4) & 0x0f);	 
-	value = spd_read_byte(device, 4);	 
+	if ((value & 0xf0) == 0) goto out;
+	sz.side2 -= (value & 0x0f);
+	sz.side2 += ((value >> 4) & 0x0f);
+	value = spd_read_byte(device, 4);
 	if (value < 0) goto out;
-	sz.side2 -= (value & 0x0f);		 
-	sz.side2 += ((value >> 4) & 0x0f);	 
+	sz.side2 -= (value & 0x0f);
+	sz.side2 += ((value >> 4) & 0x0f);
  out:
 	return sz;
 }
@@ -1176,32 +1176,32 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	}
 	map = pci_read_config32(ctrl->f2, 0x80 );
 	map &= ~(0xf << (index + 4));
-	 
-	
+
+
 	base0 = base1 = 0;
-	 
+
 	if (sz.side1 >= (25 +3)) {
 		map |= (sz.side1 - (25 + 3)) << (index *4);
 		base0 = (1 << ((sz.side1 - (25 + 3)) + 21)) | 1;
 	}
-	 
+
 	if (sz.side2 >= (25 + 3)) {
 		base1 = (1 << ((sz.side2 - (25 + 3)) + 21)) | 1;
 	}
-	 
+
 	if (is_dual_channel(ctrl)) {
 		base0 = (base0 << 1) | (base0 & 1);
 		base1 = (base1 << 1) | (base1 & 1);
 	}
-	 
+
 	base0 &= ~0x001ffffe;
 	base1 &= ~0x001ffffe;
-	 
+
 	pci_write_config32(ctrl->f2, 0x40  + (((index << 1)+0)<<2), base0);
 	pci_write_config32(ctrl->f2, 0x40  + (((index << 1)+1)<<2), base1);
 	pci_write_config32(ctrl->f2, 0x80 , map);
-	
-	 
+
+
 	if (base0) {
 		dch = pci_read_config32(ctrl->f2, 0x94 );
 		dch |= (1 << 26)  << index;
@@ -1211,7 +1211,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 static void spd_set_ram_size(const struct mem_controller *ctrl)
 {
 	int i;
-	
+
 	for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 		struct dimm_size sz;
 		sz = spd_get_dimm_size(ctrl->channel0[i]);
@@ -1221,7 +1221,7 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
-	 
+
 	unsigned node_id;
 	unsigned limit;
 	unsigned base;
@@ -1246,25 +1246,25 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 }
 static void set_top_mem(unsigned tom_k)
 {
-	 
+
 	if (!tom_k) {
 		set_bios_reset();
 		print_debug("No memory - reset");
-		 
+
 		pci_write_config8(( ((( 0 ) & 0xFF) << 16) | (((  0x04 ) & 0x1f) << 11) | (((  3 )  & 0x7) << 8)) , 0x41, 0xf1);
-		 
+
 		outb(0x0e, 0x0cf9);
 	}
-	 
+
 	print_debug("RAM: 0x");
 	print_debug_hex32(tom_k);
 	print_debug(" KB\r\n");
-	 
+
 	msr_t msr;
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(0xC001001D , msr);
-	 
+
 	if (tom_k >= 0x003f0000) {
 		tom_k = 0x3f0000;
 	}
@@ -1274,15 +1274,15 @@ static void set_top_mem(unsigned tom_k)
 }
 static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 {
-	 
-	static const uint32_t csbase_low[] = { 
+
+	static const uint32_t csbase_low[] = {
 	 	(1 << (13 - 4)),
 	 	(1 << (14 - 4)),
-	 	(1 << (14 - 4)), 
+	 	(1 << (14 - 4)),
 	 	(1 << (15 - 4)),
 	 	(1 << (15 - 4)),
 	 	(1 << (16 - 4)),
-	 	(1 << (16 - 4)), 
+	 	(1 << (16 - 4)),
 	};
 	uint32_t csbase_inc;
 	int chip_selects, index;
@@ -1290,16 +1290,16 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 	int dual_channel;
 	unsigned common_size;
 	uint32_t csbase, csmask;
-	 
+
 	chip_selects = 0;
 	common_size = 0;
 	for(index = 0; index < 8; index++) {
 		unsigned size;
 		uint32_t value;
-		
+
 		value = pci_read_config32(ctrl->f2, 0x40  + (index << 2));
-		
-		 
+
+
 		if (!(value & 1)) {
 			continue;
 		}
@@ -1308,36 +1308,36 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		if (common_size == 0) {
 			common_size = size;
 		}
-		 
+
 		if (common_size != size) {
 			return 0;
 		}
 	}
-	 
+
 	bits = log2(chip_selects);
 	if (((1 << bits) != chip_selects) || (bits < 1) || (bits > 3)) {
 		return 0;
-		
+
 	}
-	 
+
 	if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
 		print_debug("8 4GB chip selects cannot be interleaved\r\n");
 		return 0;
 	}
-	 
+
 	if (is_dual_channel(ctrl)) {
 		csbase_inc = csbase_low[log2(common_size) - 1] << 1;
 	} else {
 		csbase_inc = csbase_low[log2(common_size)];
 	}
-	 
+
 	csbase = 0 | 1;
 	csmask = (((common_size  << bits) - 1) << 21);
 	csmask |= 0xfe00 & ~((csbase_inc << bits) - csbase_inc);
 	for(index = 0; index < 8; index++) {
 		uint32_t value;
 		value = pci_read_config32(ctrl->f2, 0x40  + (index << 2));
-		 
+
 		if (!(value & 1)) {
 			continue;
 		}
@@ -1345,19 +1345,19 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		pci_write_config32(ctrl->f2, 0x60  + (index << 2), csmask);
 		csbase += csbase_inc;
 	}
-	
+
 	print_debug("Interleaved\r\n");
-	 
+
 	return common_size << (15 + bits);
 }
 static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 {
 	unsigned long tom;
-	
-	 
+
+
 	tom = 0;
 	for(;;) {
-		 
+
 		unsigned index, canidate;
 		uint32_t csbase, csmask;
 		unsigned size;
@@ -1366,46 +1366,46 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 		for(index = 0; index < 8; index++) {
 			uint32_t value;
 			value = pci_read_config32(ctrl->f2, 0x40  + (index << 2));
-			 
+
 			if (!(value & 1)) {
 				continue;
 			}
-			
-			 
+
+
 			if (value <= csbase) {
 				continue;
 			}
-			
-			 
+
+
 			if (tom & (1 << (index + 24))) {
 				continue;
 			}
-			 
+
 			csbase = value;
 			canidate = index;
 		}
-		 
+
 		if (csbase == 0) {
 			break;
 		}
-		 
+
 		size = csbase >> 21;
-		 
+
 		tom |= (1 << (canidate + 24));
-		 
+
 		csbase = (tom << 21) | 1;
-		 
+
 		tom += size;
-		 
+
 		csmask = ((size -1) << 21);
-		csmask |= 0xfe00;		 
-		 
+		csmask |= 0xfe00;
+
 		pci_write_config32(ctrl->f2, 0x40  + (canidate << 2), csbase);
-		 
+
 		pci_write_config32(ctrl->f2, 0x60  + (canidate << 2), csmask);
-		
+
 	}
-	 
+
 	return (tom & ~0xff000000) << 15;
 }
 static void order_dimms(const struct mem_controller *ctrl)
@@ -1416,14 +1416,14 @@ static void order_dimms(const struct mem_controller *ctrl)
 	if (!tom_k) {
 		tom_k = order_chip_selects(ctrl);
 	}
-	 
+
 	base_k = 0;
 	for(node_id = 0; node_id < ctrl->node_id; node_id++) {
 		uint32_t limit, base;
 		unsigned index;
 		index = node_id << 3;
 		base = pci_read_config32(ctrl->f1, 0x40 + index);
-		 
+
 		if ((base & 3) == 3) {
 			limit = pci_read_config32(ctrl->f1, 0x44 + index);
 			base_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
@@ -1435,8 +1435,8 @@ static void order_dimms(const struct mem_controller *ctrl)
 }
 static void disable_dimm(const struct mem_controller *ctrl, unsigned index)
 {
-	print_debug("disabling dimm"); 
-	print_debug_hex8(index); 
+	print_debug("disabling dimm");
+	print_debug_hex8(index);
 	print_debug("\r\n");
 	pci_write_config32(ctrl->f2, 0x40  + (((index << 1)+0)<<2), 0);
 	pci_write_config32(ctrl->f2, 0x40  + (((index << 1)+1)<<2), 0);
@@ -1456,11 +1456,11 @@ static void spd_handle_unbuffered_dimms(const struct mem_controller *ctrl)
 			disable_dimm(ctrl, i);
 			continue;
 		}
-		 
+
 		if (value & (1 << 1)) {
 			registered = 1;
-		} 
-		 
+		}
+
 		else {
 			unbuffered = 1;
 		}
@@ -1482,29 +1482,29 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 {
 	int i;
 	uint32_t nbcap;
-	 
-	 
+
+
 	static const unsigned addresses[] = {
-		2,	 
-		3,	 
-		4,	 
-		5,	 
-		6,	 
-		7,	 
-		9,	 
-		11,	 
-		13,	 
-		17,	 
-		18,	 
-		21,	 
-		23,	 
-		26,	 
-		27,	 
-		28,	 
-		29,	 
-		30,	 
-		41,	 
-		42,	 
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		9,
+		11,
+		13,
+		17,
+		18,
+		21,
+		23,
+		26,
+		27,
+		28,
+		29,
+		30,
+		41,
+		42,
 	};
 	nbcap = pci_read_config32(ctrl->f3, 0xE8 );
 	if (!(nbcap & 0x0001 )) {
@@ -1543,7 +1543,7 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 }
 struct mem_param {
 	uint8_t cycle_time;
-	uint8_t divisor;  
+	uint8_t divisor;
 	uint8_t tRC;
 	uint8_t tRFC;
 	uint32_t dch_memclk;
@@ -1616,35 +1616,35 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 }
 static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 {
-	 
+
 	const struct mem_param *param;
 	unsigned min_cycle_time, min_latency;
 	int i;
 	uint32_t value;
 	static const int latency_indicies[] = { 26, 23, 9 };
 	static const unsigned char min_cycle_times[] = {
-		[0 ] = 0x50,  
-		[1 ] = 0x60,  
-		[2 ] = 0x75,  
-		[3 ] = 0xa0,  
+		[0 ] = 0x50,
+		[1 ] = 0x60,
+		[2 ] = 0x75,
+		[3 ] = 0xa0,
 	};
 	value = pci_read_config32(ctrl->f3, 0xE8 );
 	min_cycle_time = min_cycle_times[(value >> 5 ) & 3 ];
 	min_latency = 2;
-	 
+
 	for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 		int new_cycle_time, new_latency;
 		int index;
 		int latencies;
 		int latency;
-		 
+
 		new_cycle_time = 0xa0;
 		new_latency = 5;
 		latencies = spd_read_byte(ctrl->channel0[i], 18);
 		if (latencies <= 0) continue;
-		 
+
 		latency = log2(latencies) -2;
-		 
+
 		for(index = 0; index < 3; index++, latency++) {
 			int value;
 			if ((latency < 2) || (latency > 4) ||
@@ -1655,7 +1655,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 			if (value < 0) {
 				continue;
 			}
-			 
+
 			if ((value >= min_cycle_time) && (value < new_cycle_time)) {
 				new_cycle_time = value;
 				new_latency = latency;
@@ -1664,17 +1664,17 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		if (new_latency > 4){
 			continue;
 		}
-		 
+
 		if (new_cycle_time > min_cycle_time) {
 			min_cycle_time = new_cycle_time;
 		}
-		 
+
 		if (new_latency > min_latency) {
 			min_latency = new_latency;
 		}
 	}
-	 
-	
+
+
 	for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 		int latencies;
 		int latency;
@@ -1685,9 +1685,9 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		if (latencies <= 0) {
 			goto dimm_err;
 		}
-		 
+
 		latency = log2(latencies) -2;
-		 
+
 		for(index = 0; index < 3; index++, latency++) {
 			if (!(latencies & (1 << latency))) {
 				continue;
@@ -1695,36 +1695,36 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 			if (latency == min_latency)
 				break;
 		}
-		 
+
 		if ((latency != min_latency) || (index >= 3)) {
 			goto dimm_err;
 		}
-		
-		 
+
+
 		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
-		
-		 
+
+
 		if (value <= min_cycle_time) {
 			continue;
 		}
-		 
+
 	dimm_err:
 		disable_dimm(ctrl, i);
 	}
-	 
+
 	param = get_mem_param(min_cycle_time);
-	 
+
 	value = pci_read_config32(ctrl->f2, 0x94 );
 	value &= ~(0x7  << 20 );
 	value |= param->dch_memclk;
 	pci_write_config32(ctrl->f2, 0x94 , value);
 	static const unsigned latencies[] = { 1 , 5 , 2  };
-	 
+
 	value = pci_read_config32(ctrl->f2, 0x88 );
 	value &= ~(0x7  << 0 );
 	value |= latencies[min_latency - 2] << 0 ;
 	pci_write_config32(ctrl->f2, 0x88 , value);
-	
+
 	return param;
 }
 static int update_dimm_Trc(const struct mem_controller *ctrl, const struct mem_param *param, int i)
@@ -1969,7 +1969,7 @@ static void set_Twtr(const struct mem_controller *ctrl, const struct mem_param *
 {
 	uint32_t dth;
 	unsigned clocks;
-	clocks = 1;  
+	clocks = 1;
 	dth = pci_read_config32(ctrl->f2, 0x8c );
 	dth &= ~(0x1  << 0 );
 	dth |= ((clocks - 1 ) << 0 );
@@ -1988,11 +1988,11 @@ static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *
 	if (is_opteron(ctrl)) {
 		if (latency == 1 ) {
 			if (divisor == ((6 << 0) + 0)) {
-				 
+
 				clocks = 3;
 			}
 			else if (divisor > ((6 << 0)+0)) {
-				 
+
 				clocks = 2;
 			}
 		}
@@ -2001,11 +2001,11 @@ static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *
 		}
 		else if (latency == 2 ) {
 			if (divisor == ((6 << 0)+0)) {
-				 
+
 				clocks = 4;
 			}
 			else if (divisor > ((6 << 0)+0)) {
-				 
+
 				clocks = 3;
 			}
 		}
@@ -2037,7 +2037,7 @@ static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *
 	if ((clocks < 1 ) || (clocks > 6 )) {
 		die("Unknown Trwt");
 	}
-	
+
 	dth = pci_read_config32(ctrl->f2, 0x8c );
 	dth &= ~(0x7  << 4 );
 	dth |= ((clocks - 1 ) << 4 );
@@ -2046,7 +2046,7 @@ static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *
 }
 static void set_Twcl(const struct mem_controller *ctrl, const struct mem_param *param)
 {
-	 
+
 	uint32_t dth;
 	unsigned clocks;
 	if (is_registered(ctrl)) {
@@ -2070,19 +2070,19 @@ static void set_read_preamble(const struct mem_controller *ctrl, const struct me
 	rdpreamble = 0;
 	if (is_registered(ctrl)) {
 		if (divisor == ((10 << 1)+0)) {
-			 
+
 			rdpreamble = ((9 << 1)+ 0);
 		}
 		else if (divisor == ((7 << 1)+1)) {
-			 
+
 			rdpreamble = ((8 << 1)+0);
 		}
 		else if (divisor == ((6 << 1)+0)) {
-			 
+
 			rdpreamble = ((7 << 1)+1);
 		}
 		else if (divisor == ((5 << 1)+0)) {
-			 
+
 			rdpreamble = ((7 << 1)+0);
 		}
 	}
@@ -2096,42 +2096,42 @@ static void set_read_preamble(const struct mem_controller *ctrl, const struct me
 			}
 		}
 		if (divisor == ((10 << 1)+0)) {
-			 
+
 			if (slots <= 2) {
-				 
+
 				rdpreamble = ((9 << 1)+0);
 			} else {
-				 
+
 				rdpreamble = ((14 << 1)+0);
 			}
 		}
 		else if (divisor == ((7 << 1)+1)) {
-			 
+
 			if (slots <= 2) {
-				 
+
 				rdpreamble = ((7 << 1)+0);
 			} else {
-				 
+
 				rdpreamble = ((11 << 1)+0);
 			}
 		}
 		else if (divisor == ((6 << 1)+0)) {
-			 
+
 			if (slots <= 2) {
-				 
+
 				rdpreamble = ((7 << 1)+0);
 			} else {
-				 
+
 				rdpreamble = ((9 << 1)+0);
 			}
 		}
 		else if (divisor == ((5 << 1)+0)) {
-			 
+
 			if (slots <= 2) {
-				 
+
 				rdpreamble = ((5 << 1)+0);
 			} else {
-				 
+
 				rdpreamble = ((7 << 1)+0);
 			}
 		}
@@ -2154,11 +2154,11 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 	async_lat = 0;
 	if (is_registered(ctrl)) {
 		if (dimms == 4) {
-			 
+
 			async_lat = 9;
-		} 
+		}
 		else {
-			 
+
 			async_lat = 8;
 		}
 	}
@@ -2167,11 +2167,11 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 			die("Too many unbuffered dimms");
 		}
 		else if (dimms == 3) {
-			 
+
 			async_lat = 7;
 		}
 		else {
-			 
+
 			async_lat = 6;
 		}
 	}
@@ -2181,7 +2181,7 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 static void set_idle_cycle_limit(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	uint32_t dch;
-	 
+
 	dch = pci_read_config32(ctrl->f2, 0x94 );
 	dch &= ~(0x7  << 16 );
 	dch |= 3  << 16 ;
@@ -2193,39 +2193,39 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	int dimms;
 	int i;
 	int rc;
-	
+
 	init_Tref(ctrl, param);
 	for(i = 0; (i < 4) && ctrl->channel0[i]; i++) {
 		int rc;
-		 
+
 		if (update_dimm_Trc (ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_Trfc(ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_Trcd(ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_Trrd(ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_Tras(ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_Trp (ctrl, param, i) < 0) goto dimm_err;
-		 
+
 		if (update_dimm_Tref(ctrl, param, i) < 0) goto dimm_err;
-		 
+
 		if (update_dimm_x4 (ctrl, param, i) < 0) goto dimm_err;
 		if (update_dimm_ecc(ctrl, param, i) < 0) goto dimm_err;
 		continue;
 	dimm_err:
 		disable_dimm(ctrl, i);
-		
+
 	}
-	 
+
 	set_Twr(ctrl, param);
-	 
+
 	set_Twtr(ctrl, param);
 	set_Trwt(ctrl, param);
 	set_Twcl(ctrl, param);
-	 
+
 	set_read_preamble(ctrl, param);
 	set_max_async_latency(ctrl, param);
 	set_idle_cycle_limit(ctrl, param);
 }
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	const struct mem_param *param;
 	spd_enable_2channels(ctrl);
@@ -2238,18 +2238,18 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
-	 
+
 	for(i = 0; i < controllers; i++) {
 		uint32_t dch;
 		dch = pci_read_config32(ctrl[i].f2, 0x94 );
 		dch |= (1 << 25) ;
 		pci_write_config32(ctrl[i].f2, 0x94 , dch);
 	}
-	 
+
 	memreset(controllers, ctrl);
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl;
-		 
+
 		dcl = pci_read_config32(ctrl[i].f2, 0x90 );
 		if (dcl & (1<<17) ) {
 			uint32_t mnc;
@@ -2289,7 +2289,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		if (dcl & (1<<17) ) {
 			print_debug("Clearing memory: ");
 			if (!is_cpu_pre_c0()) {
-				 
+
 				dcl &= ~((1<<11)  | (1<<10) );
 				pci_write_config32(ctrl[i].f2, 0x90 , dcl);
 				do {
@@ -2299,10 +2299,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			uint32_t base, last_scrub_k, scrub_k;
 			uint32_t cnt,zstart,zend;
 			msr_t msr,msr_201;
-			 
+
 			pci_write_config32(ctrl[i].f3, 0x58 ,
 				(0  << 16) | (0  << 8) | (0  << 0));
-			 
+
 			msr_201 = rdmsr(0x201);
 			zstart = pci_read_config32(ctrl[0].f1, 0x40 + (i*8));
 			zend = pci_read_config32(ctrl[0].f1, 0x44 + (i*8));
@@ -2313,50 +2313,50 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			print_debug("-");
 			print_debug_hex32(zend);
 			print_debug("\r\n");
-			
-			 
+
+
 			msr = rdmsr(0x2ff );
 			msr.lo &= ~(1<<10);
 			wrmsr(0x2ff , msr);
-			 
+
 			msr = rdmsr(0xc0010015);
 			msr.lo |= (1<<17);
 			wrmsr(0xc0010015,msr);
 			for(;zstart<zend;zstart+=4) {
-				 
+
 				if(zstart == 0x0fc)
 					continue;
-				
-				 
+
+
 				__asm__ volatile(
 					"movl  %%cr0, %0\n\t"
 					"orl  $0x40000000, %0\n\t"
 					"movl  %0, %%cr0\n\t"
 					:"=r" (cnt)
 					);
-				
-				 
+
+
 				msr.lo = 1 + ((zstart&0x0ff)<<24);
 				msr.hi = (zstart&0x0ff00)>>8;
 				wrmsr(0x200,msr);
-				 
+
 				msr.hi = 0x000000ff;
 				msr.lo = 0xfc000800;
 				wrmsr(0x201,msr);
-				 
+
 				__asm__ volatile(
 					"movl  %%cr0, %0\n\t"
 					"andl  $0x9fffffff, %0\n\t"
-					"movl  %0, %%cr0\n\t"	
-					:"=r" (cnt)	
+					"movl  %0, %%cr0\n\t"
+					:"=r" (cnt)
 					);
-				 
+
 				msr.lo = (zstart&0xff) << 24;
 				msr.hi = (zstart&0xff00) >> 8;
 				wrmsr(0xc0000100,msr);
-				print_debug_char((zstart > 0x0ff)?'+':'-');	
-					
-				 
+				print_debug_char((zstart > 0x0ff)?'+':'-');
+
+
 				__asm__ volatile(
 					"1: \n\t"
 					"movl %0, %%fs:(%1)\n\t"
@@ -2365,67 +2365,67 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 					"jnz 1b\n\t"
 					:
 					: "a" (0), "D" (0), "c" (0x01000000)
-					);			
+					);
 			}
-			
-			 
+
+
 			__asm__ volatile(
 				"movl  %%cr0, %0\n\t"
 				"orl  $0x40000000, %0\n\t"
 				"movl  %0, %%cr0\n\t"
-				:"=r" (cnt)	
+				:"=r" (cnt)
 				);
-		
-			 	
+
+
 			msr = rdmsr(0x2ff );
 			msr.lo |= 0x0400;
 			wrmsr(0x2ff , msr);
-			 
+
 			msr.lo = 6;
 			msr.hi = 0;
 			wrmsr(0x200,msr);
 			wrmsr(0x201,msr_201);
-			 
+
 			msr.lo = 0;
 			msr.hi = 0;
 			wrmsr(0xc0000100,msr);
-			 
+
 			__asm__ volatile(
 				"movl  %%cr0, %0\n\t"
 				"andl  $0x9fffffff, %0\n\t"
-				"movl  %0, %%cr0\n\t"	
-				:"=r" (cnt)	
+				"movl  %0, %%cr0\n\t"
+				:"=r" (cnt)
 				);
-			
-			 
+
+
 			msr = rdmsr(0xc0010015);
 			msr.lo &= ~(1<<17);
 			wrmsr(0xc0010015,msr);
-			 
+
 			base = pci_read_config32(ctrl[i].f1, 0x40 + (ctrl[i].node_id << 3));
 			base &= 0xffff0000;
-			 
+
 			pci_write_config32(ctrl[i].f3, 0x5C , base << 8);
 			pci_write_config32(ctrl[i].f3, 0x60 , base >> 24);
-			 
-			pci_write_config32(ctrl[i].f3, 0x58 , 
+
+			pci_write_config32(ctrl[i].f3, 0x58 ,
 				(22  << 16) | (22  << 8) | (22  << 0));
 			print_debug("done\r\n");
 		}
 	}
 }
- 
- 
- 
- 
- 
+
+
+
+
+
 typedef uint8_t u8;
 typedef uint32_t u32;
 typedef int8_t bool;
 static void disable_probes(void)
 {
-	 
-	 
+
+
 	u32 val;
 	print_debug("Disabling read/write/fill probes for UP... ");
 	val=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ 0  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x68);
@@ -2433,8 +2433,8 @@ static void disable_probes(void)
 	pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ 0  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x68, val);
 	print_debug("done.\r\n");
 }
- 
-static void wait_ap_stop(u8 node) 
+
+static void wait_ap_stop(u8 node)
 {
 	unsigned long reg;
 	unsigned long i;
@@ -2444,7 +2444,7 @@ static void wait_ap_stop(u8 node)
 		if((regx & (1<<4))==1) break;
         }
 	reg = pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  ,0x6c);
-        reg &= ~(1<<4);   
+        reg &= ~(1<<4);
         pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x6c, reg);
 }
 static void notify_bsp_ap_is_stopped(void)
@@ -2453,31 +2453,31 @@ static void notify_bsp_ap_is_stopped(void)
 	unsigned long apic_id;
         apic_id = *((volatile unsigned long *)(0xfee00000 + 0x020 ));
 	apic_id >>= 24;
-	 
+
         if(apic_id != 0) {
-		 
+
                 reg = pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ apic_id  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x6C);
                 reg |= 1<<4;
                 pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ apic_id  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x6C, reg);
         }
- 
+
 }
- 
+
 static void enable_routing(u8 node)
 {
 	u32 val;
-	 
-	 
+
+
 	print_debug("Enabling routing table for node ");
 	print_debug_hex32(node);
 	val=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x6c);
 	val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0));
 	pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x6c, val);
- 
+
 	if(node!=0) {
 		wait_ap_stop(node);
 	}
- 
+
 	print_debug(" done.\r\n");
 }
 static void rename_temp_node(u8 node)
@@ -2486,21 +2486,21 @@ static void rename_temp_node(u8 node)
 	print_debug("Renaming current temp node to ");
 	print_debug_hex32(node);
 	val=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ 7  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x60);
-	val &= (~7);   
-        val |= node;    
+	val &= (~7);
+        val |= node;
 	pci_write_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ 7  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x60, val);
 	print_debug(" done.\r\n");
 }
 static bool check_connection(u8 src, u8 dest, u8 link)
 {
-	 
+
 	u32 val;
-	
-	 
+
+
 	val=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ src  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x98+link);
 	if ( (val&0x17) != 0x03)
 		return 0;
-	 
+
         val=pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ dest  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  ,0);
 	if(val != 0x11001022)
 		return 0;
@@ -2513,37 +2513,37 @@ static void optimize_connection(u8 node1, u8 link1, u8 node2, u8 link2)
 	uint16_t freq_cap1, freq_cap2, freq_cap, freq_mask;
 	uint8_t width_cap1, width_cap2, width_cap, width, ln_width1, ln_width2;
 	uint8_t freq;
-	 
-	 
+
+
 	freq_cap1  = pci_read_config16(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node1  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link1 + 0x0a );
 	freq_cap2  = pci_read_config16(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node2  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link2 + 0x0a );
-	 
-	 
+
+
 	freq = log2(freq_cap1 & freq_cap2 & 0xff);
-	 
+
 	pci_write_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node1  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link1 + 0x09 , freq);
 	pci_write_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node2  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link2 + 0x09 , freq);
-	 
+
 	width_cap1 = pci_read_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node1  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  ,  0x80 + link1 + 6 );
 	width_cap2 = pci_read_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node2  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  ,  0x80 + link2 + 6 );
-	 
+
 	ln_width1 = link_width_to_pow2[width_cap1 & 7];
 	ln_width2 = link_width_to_pow2[(width_cap2 >> 4) & 7];
 	if (ln_width1 > ln_width2) {
 		ln_width1 = ln_width2;
 	}
 	width = pow2_to_link_width[ln_width1];
-	 
+
 	ln_width1 = link_width_to_pow2[(width_cap1 >> 4) & 7];
 	ln_width2 = link_width_to_pow2[width_cap2 & 7];
 	if (ln_width1 > ln_width2) {
 		ln_width1 = ln_width2;
 	}
 	width |= pow2_to_link_width[ln_width1] << 4;
-	
-	 
+
+
 	pci_write_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node1  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link1 + 6  + 1, width);
-	 
+
 	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
 	pci_write_config8(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node2  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , 0x80 + link2 + 6  + 1, width);
 }
@@ -2571,8 +2571,8 @@ static void setup_remote_row(u8 source, u8 dest, u8 cpus)
 }
 static void setup_remote_node(u8 node, u8 cpus)
 {
-	static const uint8_t pci_reg[] = { 
-		0x44, 0x4c, 0x54, 0x5c, 0x64, 0x6c, 0x74, 0x7c, 
+	static const uint8_t pci_reg[] = {
+		0x44, 0x4c, 0x54, 0x5c, 0x64, 0x6c, 0x74, 0x7c,
 		0x40, 0x48, 0x50, 0x58, 0x60, 0x68, 0x70, 0x78,
 		0x84, 0x8c, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbc,
 		0x80, 0x88, 0x90, 0x98, 0xa0, 0xa8, 0xb0, 0xb8,
@@ -2585,7 +2585,7 @@ static void setup_remote_node(u8 node, u8 cpus)
 	print_debug("setup_remote_node\r\n");
 	for(row=0; row<cpus; row++)
 		setup_remote_row(node, row, cpus);
-	 
+
 	for(i = 0; i < sizeof(pci_reg)/sizeof(pci_reg[0]); i++) {
 		uint32_t value;
 		uint8_t reg;
@@ -2606,24 +2606,24 @@ static u8 setup_smp(void)
 	u8 cpus=2;
 	print_debug("Enabling SMP settings\r\n");
 	setup_row(0,0,cpus);
-	 
+
 	setup_temp_row(0,1,cpus);
-	
+
 	if (!check_connection(0, 7, 0x20  )) {
 		print_debug("No connection to Node 1.\r\n");
-		fill_row( 0 ,7,0x00010101 ) ;	 
-		setup_uniprocessor();	 
+		fill_row( 0 ,7,0x00010101 ) ;
+		setup_uniprocessor();
 		return 1;
 	}
-	 
+
 	optimize_connection(0, 0x20 , 7, 0x20 );
-	setup_node(0, cpus);	 
-	setup_remote_node(1, cpus);   
-        rename_temp_node(1);     
-        enable_routing(1);       
-  	
-	fill_row( 0 ,7,0x00010101 ) ;	 
-	
+	setup_node(0, cpus);
+	setup_remote_node(1, cpus);
+        rename_temp_node(1);
+        enable_routing(1);
+
+	fill_row( 0 ,7,0x00010101 ) ;
+
 	print_debug_hex32(cpus);
 	print_debug(" nodes initialized.\r\n");
 	return cpus;
@@ -2636,29 +2636,29 @@ static unsigned detect_mp_capabilities(unsigned cpus)
 	print_debug_hex32(cpus);
 	print_debug("\r\n");
 	if (cpus>2)
-		mask=0x06;	 
+		mask=0x06;
 	else
-		mask=0x02;	 
+		mask=0x02;
 	for (node=0; node<cpus; node++) {
 		if ((pci_read_config32(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node  ) & 0x1f) << 11) | ((( 3 )  & 0x7) << 8))  , 0xe8) & mask)!=mask)
 			mp_cap= (0) ;
 	}
 	if (mp_cap)
 		return cpus;
-	 
+
 	print_debug("One of the CPUs is not MP capable. Going back to UP\r\n");
 	for (node=cpus; node>0; node--)
 	    for (row=cpus; row>0; row--)
 		fill_row(( ((( 0 ) & 0xFF) << 16) | ((( 24+ node-1  ) & 0x1f) << 11) | ((( 0 )  & 0x7) << 8))  , row-1, 0x00010101 );
-	
+
 	return setup_uniprocessor();
 }
 static void coherent_ht_finalize(unsigned cpus)
 {
 	int node;
 	bool rev_a0;
-	
-	 
+
+
 	print_debug("coherent_ht_finalize\r\n");
 	rev_a0= is_cpu_rev_a0();
 	for (node=0; node<cpus; node++) {
@@ -2686,36 +2686,36 @@ static int setup_coherent_ht_domain(void)
 	cpus=setup_smp();
 	cpus=detect_mp_capabilities(cpus);
 	coherent_ht_finalize(cpus);
-	 
+
 	coherent_ht_mainboard(cpus);
 	return reset_needed;
 }
 void sdram_no_memory(void)
 {
 	print_err("No memory!!\r\n");
-	while(1) { 
-		hlt(); 
+	while(1) {
+		hlt();
 	}
 }
- 
+
 void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
-	 
+
 	for(i = 0; i < controllers; i++) {
 		print_debug("Ram1.");
 		print_debug_hex8(i);
 		print_debug("\r\n");
 		sdram_set_registers(ctrl + i);
 	}
-	 
+
 	for(i = 0; i < controllers; i++) {
 		print_debug("Ram2.");
 		print_debug_hex8(i);
 		print_debug("\r\n");
 		sdram_set_spd_registers(ctrl + i);
 	}
-	 
+
 	print_debug("Ram3\r\n");
 	sdram_enable(controllers, ctrl);
 	print_debug("Ram4\r\n");
@@ -2733,17 +2733,17 @@ static void stop_this_cpu(void)
 {
 	unsigned apicid;
 	apicid = apic_read(0x020 ) >> 24;
-	 
+
 	apic_write(0x310 , (( apicid )<<24) );
 	apic_write(0x300 , 0x08000  | 0x04000  | 0x00500 );
-	 
+
 	apic_wait_icr_idle();
-	 
+
 	apic_write(0x310 , (( apicid )<<24) );
 	apic_write(0x300 ,  0x08000  | 0x00500 );
-	 
+
 	apic_wait_icr_idle();
-	 
+
 	for(;;) {
 		hlt();
 	}
@@ -2756,7 +2756,7 @@ static void pc87360_enable_serial(void)
 }
 static void main(void)
 {
-	 
+
 	static const struct mem_controller cpu[] = {
 		{
 			.node_id = 0,
@@ -2792,9 +2792,9 @@ static void main(void)
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
-	
+
 	enable_smbus();
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-	 
+
 }

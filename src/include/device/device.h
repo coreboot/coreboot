@@ -49,8 +49,8 @@ struct bus {
 	unsigned	disable_relaxed_ordering : 1;
 };
 
-#define MAX_RESOURCES 24 
-#define MAX_LINKS    8 
+#define MAX_RESOURCES 24
+#define MAX_LINKS    8
 /*
  * There is one device structure for each slot-number/function-number
  * combination:
@@ -78,7 +78,7 @@ struct device {
 	unsigned int resources;
 
 	/* links are (downstream) buses attached to the device, usually a leaf
-	 * device with no children have 0 buses attached and a bridge has 1 bus 
+	 * device with no children have 0 buses attached and a bridge has 1 bus
 	 */
 	struct bus link[MAX_LINKS];
 	/* number of buses attached to the device */
@@ -139,10 +139,10 @@ void show_one_resource(int debug_level, struct device *dev,
 		       struct resource *resource, const char *comment);
 void show_all_devs_resources(int debug_level, const char* msg);
 
-/* Rounding for boundaries. 
+/* Rounding for boundaries.
  * Due to some chip bugs, go ahead and round IO to 16
  */
-#define DEVICE_IO_ALIGN 16 
+#define DEVICE_IO_ALIGN 16
 #define DEVICE_MEM_ALIGN 4096
 
 extern struct device_operations default_dev_ops_root;

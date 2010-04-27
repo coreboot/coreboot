@@ -230,7 +230,7 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 		DramAttr->DramFreq = DIMMFREQ_200;
 		DramAttr->DramCyc = 1000;
 	}
-	//if set the frequence mannul                
+	//if set the frequence mannul
 	PRINT_DEBUG_MEM("Dram Frequency:");
 	PRINT_DEBUG_MEM_HEX16(DramAttr->DramFreq);
 	PRINT_DEBUG_MEM(" \r");

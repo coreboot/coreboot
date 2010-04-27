@@ -1,8 +1,8 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008-2010 by coresystems GmbH 
- * 
+ * Copyright (C) 2008-2010 by coresystems GmbH
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -57,7 +57,7 @@ int print_epbar(struct pci_dev *nb)
 	}
 
 	epbar = map_physical(epbar_phys, size);
-	
+
 	if (epbar == NULL) {
 		perror("Error mapping EPBAR");
 		exit(1);
@@ -109,7 +109,7 @@ int print_dmibar(struct pci_dev *nb)
 	}
 
 	dmibar = map_physical(dmibar_phys, size);
-	
+
 	if (dmibar == NULL) {
 		perror("Error mapping DMIBAR");
 		exit(1);
@@ -182,17 +182,17 @@ int print_pciexbar(struct pci_dev *nb)
 	default: // RSVD
 		printf("Undefined address base. Bailing out.\n");
 		return 1;
-	}	
+	}
 
 	printf("PCIEXBAR: 0x%08llx\n", pciexbar_phys);
 
 	pciexbar = map_physical(pciexbar_phys, (max_busses * 1024 * 1024));
-	
+
 	if (pciexbar == NULL) {
 		perror("Error mapping PCIEXBAR");
 		exit(1);
 	}
-	
+
 	for (bus = 0; bus < max_busses; bus++) {
 		for (dev = 0; dev < 32; dev++) {
 			for (fn = 0; fn < 8; fn++) {
@@ -200,7 +200,7 @@ int print_pciexbar(struct pci_dev *nb)
 
 				if (*(uint16_t *)(pciexbar + devbase) == 0xffff)
 					continue;
-				
+
 				/* This is a heuristics. Anyone got a better check? */
 				if( (*(uint32_t *)(pciexbar + devbase + 256) == 0xffffffff) &&
 					(*(uint32_t *)(pciexbar + devbase + 512) == 0xffffffff) ) {

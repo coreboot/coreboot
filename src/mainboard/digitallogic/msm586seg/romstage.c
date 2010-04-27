@@ -74,7 +74,7 @@ static inline void irqinit(void){
 /* these values taken from the msm board itself.
  * and they cause the board to not even come out of calibrating_delay_loop
  * if you can believe it. Our problem right now is no IDE or serial interrupts
- * So we'll try to put interrupts in, one at a time. IDE first. 
+ * So we'll try to put interrupts in, one at a time. IDE first.
  */
 	cp = (volatile unsigned char *) 0xfffefd00;
 	*cp =  0x11;
@@ -179,9 +179,9 @@ static void main(unsigned long bist)
 		print_err("HI THERE!\n");
 		//			sizemem();
 	staticmem();
-	print_err("c60 is "); print_err_hex16(*(unsigned short *)0xfffefc60); 
+	print_err("c60 is "); print_err_hex16(*(unsigned short *)0xfffefc60);
 	print_err("\n");
-			
+
 	//			while(1)
 	print_err("STATIC MEM DONE\n");
 	outb(0xee, 0x80);
@@ -198,18 +198,18 @@ static void main(unsigned long bist)
 			 "jnz 1b\n\t"
 			 :
 			 : "a" (0), "D" (0), "c" (1024*1024)
-			 ); 
-	
-	
+			 );
+
+
 #endif
-	
+
 #if 0
 	dump_pci_devices();
 #endif
 #if 0
 	dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
-	
+
 #if 0
 	print_err("RAM CHECK!\n");
 	// Check 16MB of memory @ 0
@@ -223,10 +223,10 @@ static void main(unsigned long bist)
 #if 1
 	{
 	  volatile unsigned char *src = (unsigned char *) 0x2000000 + 0x60000;
-	  volatile unsigned char *dst = (unsigned char *) 0x4000; 
+	  volatile unsigned char *dst = (unsigned char *) 0x4000;
 	  for(i = 0; i < 0x20000; i++) {
 	    /*
-	      print_err("Set dst "); print_err_hex32((unsigned long) dst); 
+	      print_err("Set dst "); print_err_hex32((unsigned long) dst);
 	      print_err(" to "); print_err_hex32(*src); print_err("\n");
 	    */
 	    *dst = *src;
@@ -244,10 +244,10 @@ static void main(unsigned long bist)
 			 "jmp *%%edi\n\t"
 			 :
 			 : "a" (0x4000)
-			 ); 
-	
+			 );
+
 	print_err("Oh dear, I'm afraid it didn't work...\n");
-	
+
 	while(1);
 #endif
 }

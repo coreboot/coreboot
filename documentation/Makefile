@@ -31,7 +31,7 @@ else ifneq ($(strip $(CONVERT)),)
 	convert $< $@
 endif
 
-LinuxBIOS-AMD64.toc: $(FIGS) LinuxBIOS-AMD64.tex 
+LinuxBIOS-AMD64.toc: $(FIGS) LinuxBIOS-AMD64.tex
 	# 2 times to make sure we have a current toc.
 	$(PDFLATEX) LinuxBIOS-AMD64.tex
 	$(PDFLATEX) LinuxBIOS-AMD64.tex

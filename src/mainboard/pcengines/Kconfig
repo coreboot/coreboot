@@ -1,7 +1,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_PC_ENGINES
-        
+
 source "src/mainboard/pcengines/alix1c/Kconfig"
 
 endchoice

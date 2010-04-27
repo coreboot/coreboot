@@ -84,7 +84,7 @@
 
 struct cbfs_header {
 	u32 magic;
-        u32 version; 
+        u32 version;
         u32 romsize;
         u32 bootblocksize;
 	u32 align;

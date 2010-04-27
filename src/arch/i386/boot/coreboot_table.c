@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2003-2004 Eric Biederman
  * Copyright (C) 2005-2010 coresystems GmbH
  *
@@ -71,7 +71,7 @@ static struct lb_record *lb_last_record(struct lb_header *header)
 #if 0
 static struct lb_record *lb_next_record(struct lb_record *rec)
 {
-	rec = (void *)(((char *)rec) + rec->size);	
+	rec = (void *)(((char *)rec) + rec->size);
 	return rec;
 }
 #endif
@@ -173,7 +173,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	mainboard->tag = LB_TAG_MAINBOARD;
 
 	mainboard->size = (sizeof(*mainboard) +
-		strlen(mainboard_vendor) + 1 + 
+		strlen(mainboard_vendor) + 1 +
 		strlen(mainboard_part_number) + 1 +
 		3) & ~3;
 
@@ -203,7 +203,7 @@ static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
 	cmos_checksum->location = LB_CKS_LOC * 8;
 	cmos_checksum->type = CHECKSUM_PCBIOS;
-	
+
 	return cmos_checksum;
 }
 #endif
@@ -320,7 +320,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	int entries;
 	int i, j;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	
+
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
 		uint64_t entry_start = unpack_lb64(mem->map[i].start);
@@ -357,17 +357,17 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 			mem->map[i].size  = pack_lb64(end - start);
 
 			/* Delete the entry I have merged with */
-			memmove(&mem->map[i + 1], &mem->map[i + 2], 
+			memmove(&mem->map[i + 1], &mem->map[i + 2],
 				((entries - i - 2) * sizeof(mem->map[0])));
 			mem->size -= sizeof(mem->map[0]);
 			entries -= 1;
 			/* See if I can merge with the next entry as well */
-			i -= 1; 
+			i -= 1;
 		}
 	}
 }
 
-static void lb_remove_memory_range(struct lb_memory *mem, 
+static void lb_remove_memory_range(struct lb_memory *mem,
 	uint64_t start, uint64_t size)
 {
 	uint64_t end;
@@ -383,16 +383,16 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 		uint64_t map_end   = map_start + unpack_lb64(mem->map[i].size);
 		if ((start <= map_start) && (end >= map_end)) {
 			/* Remove the completely covered range */
-			memmove(&mem->map[i], &mem->map[i + 1], 
+			memmove(&mem->map[i], &mem->map[i + 1],
 				((entries - i - 1) * sizeof(mem->map[0])));
 			mem->size -= sizeof(mem->map[0]);
 			entries -= 1;
 			/* Since the index will disappear revisit what will appear here */
-			i -= 1; 
+			i -= 1;
 		}
 		else if ((start > map_start) && (end < map_end)) {
 			/* Split the memory range */
-			memmove(&mem->map[i + 1], &mem->map[i], 
+			memmove(&mem->map[i + 1], &mem->map[i],
 				((entries - i) * sizeof(mem->map[0])));
 			mem->size += sizeof(mem->map[0]);
 			entries += 1;
@@ -430,7 +430,7 @@ static void lb_dump_memory_ranges(struct lb_memory *mem)
 	int entries;
 	int i;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	
+
 	printk(BIOS_DEBUG, "coreboot memory table:\n");
 	for(i = 0; i < entries; i++) {
 		uint64_t entry_start = unpack_lb64(mem->map[i].start);
@@ -448,14 +448,14 @@ static void lb_dump_memory_ranges(struct lb_memory *mem)
 		default: entry_type="UNKNOWN!"; break;
 		}
 
-		printk(BIOS_DEBUG, "%2d. %016llx-%016llx: %s\n", 
+		printk(BIOS_DEBUG, "%2d. %016llx-%016llx: %s\n",
 			i, entry_start, entry_start+entry_size-1, entry_type);
-		
+
 	}
 }
 
 
-/* Routines to extract part so the coreboot table or 
+/* Routines to extract part so the coreboot table or
  * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
  * implementaiton.
@@ -492,8 +492,8 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
-unsigned long write_coreboot_table( 
-	unsigned long low_table_start, unsigned long low_table_end, 
+unsigned long write_coreboot_table(
+	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
 	struct lb_header *head;
@@ -509,7 +509,7 @@ unsigned long write_coreboot_table(
 	printk(BIOS_DEBUG, "New low_table_end: 0x%08lx\n", low_table_end);
 	printk(BIOS_DEBUG, "Now going to write high coreboot table at 0x%08lx\n",
 			rom_table_end);
-	
+
 	head = lb_table_init(rom_table_end);
 	rom_table_end = (unsigned long)head;
 	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
@@ -523,7 +523,7 @@ unsigned long write_coreboot_table(
 		low_table_end = (unsigned long)head;
 	}
 #endif
- 
+
 	printk(BIOS_DEBUG, "Adjust low_table_end from 0x%08lx to ", low_table_end);
 	low_table_end += 0xfff; // 4K aligned
 	low_table_end &= ~0xfff;
@@ -535,7 +535,7 @@ unsigned long write_coreboot_table(
 	rom_table_end &= ~0xffff;
 	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
 
-#if (CONFIG_HAVE_OPTION_TABLE == 1) 
+#if (CONFIG_HAVE_OPTION_TABLE == 1)
 	{
 		struct lb_record *rec_dest = lb_new_record(head);
 		/* Copy the option config table, it's already a lb_record... */
@@ -546,9 +546,9 @@ unsigned long write_coreboot_table(
 #endif
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
-	
+
 	/* Record the mptable and the the lb_table (This will be adjusted later) */
-	lb_add_memory_range(mem, LB_MEM_TABLE, 
+	lb_add_memory_range(mem, LB_MEM_TABLE,
 		low_table_start, low_table_end - low_table_start);
 
 	/* Record the pirq table, acpi tables, and maybe the mptable */
@@ -588,5 +588,5 @@ unsigned long write_coreboot_table(
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);
-	
+
 }

@@ -285,11 +285,11 @@
 #define	CPU_L2TB_ENTRY						0x189E
 #define	CPU_L2TB_ENTRY_I					0x189F
 #define	CPU_DM_BIST							0x18C0
-	
+
 #define	CPU_BC_CONF_0						0x1900
 #define		TSC_SUSP_SET				 (1<<5)
 #define		SUSP_EN_SET				 (1<<12)
-	
+
 #define CPU_BC_CONF_1						0x1901
 #define CPU_BC_MSR_LOCK						0x1908
 #define CPU_BC_L2_CONF						0x1920
@@ -342,11 +342,11 @@
 #define CPU_CPUID12							0x3012
 #define CPU_CPUID13							0x3013
 
-	
+
 
 
 	/*	VG GLIU0 port4*/
-	
+
 
 #define	VG_GLD_MSR_CAP				(MSR_VG + 0x2000)
 #define	VG_GLD_MSR_CONFIG			(MSR_VG + 0x2001)

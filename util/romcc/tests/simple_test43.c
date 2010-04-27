@@ -24,13 +24,13 @@ static void spd_set_memclk(void)
 			if (!loops) {
 				goto end;
 			}
-			
+
 			loops = 1000000;
 			while(--loops)
 				;
-		end:	
+		end:
 			;
-			
+
                 }
 		loops = 1000000;
 		while(--loops)

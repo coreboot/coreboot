@@ -43,7 +43,7 @@ static int have_cpuid_p(void)
  * by the fact that they preserve the flags across the division of 5/2.
  * PII and PPro exhibit this behavior too, but they have cpuid available.
  */
- 
+
 /*
  * Perform the Cyrix 5/2 test. A Cyrix won't change
  * the flags, while other 486 chips will.
@@ -68,11 +68,11 @@ static inline int test_cyrix_52div(void)
  *	Detect a NexGen CPU running without BIOS hypercode new enough
  *	to have CPUID. (Thanks to Herbert Oppmann)
  */
- 
+
 static int deep_magic_nexgen_probe(void)
 {
 	int ret;
-	
+
 	__asm__ __volatile__ (
 		"	movw	$0x5555, %%ax\n"
 		"	xorw	%%dx,%%dx\n"
@@ -81,7 +81,7 @@ static int deep_magic_nexgen_probe(void)
 		"	movl	$0, %%eax\n"
 		"	jnz	1f\n"
 		"	movl	$1, %%eax\n"
-		"1:\n" 
+		"1:\n"
 		: "=a" (ret) : : "cx", "dx" );
 	return  ret;
 }
@@ -95,7 +95,7 @@ static struct {
 } x86_vendors[] = {
 	{ X86_VENDOR_INTEL,     "GenuineIntel", },
 	{ X86_VENDOR_CYRIX,     "CyrixInstead", },
-	{ X86_VENDOR_AMD,       "AuthenticAMD", },       
+	{ X86_VENDOR_AMD,       "AuthenticAMD", },
 	{ X86_VENDOR_UMC,       "UMC UMC UMC ", },
 	{ X86_VENDOR_NEXGEN,    "NexGenDriven", },
 	{ X86_VENDOR_CENTAUR,   "CentaurHauls", },
@@ -124,7 +124,7 @@ static const char *cpu_vendor_name(int vendor)
 	const char *name;
 	name = "<invalid cpu vendor>";
 	if ((vendor < (ARRAY_SIZE(x86_vendor_name))) &&
-		(x86_vendor_name[vendor] != 0)) 
+		(x86_vendor_name[vendor] != 0))
 	{
 		name = x86_vendor_name[vendor];
 	}
@@ -173,7 +173,7 @@ static void identify_cpu(struct device *cpu)
 		vendor_name[10] = (result.ecx >> 16) & 0xff;
 		vendor_name[11] = (result.ecx >> 24) & 0xff;
 		vendor_name[12] = '\0';
-		
+
 		/* Intel-defined flags: level 0x00000001 */
 		if (cpuid_level >= 0x00000001) {
 			cpu->device = cpuid_eax(0x00000001);
@@ -200,7 +200,7 @@ static void set_cpu_ops(struct device *cpu)
 		struct cpu_device_id *id;
 		for(id = driver->id_table; id->vendor != X86_VENDOR_INVALID; id++) {
 			if ((cpu->vendor == id->vendor) &&
-				(cpu->device == id->device)) 
+				(cpu->device == id->device))
 			{
 				goto found;
 			}
@@ -221,7 +221,7 @@ void cpu_initialize(void)
 	struct device *cpu;
 	struct cpu_info *info;
 	struct cpuinfo_x86 c;
-	
+
 	info = cpu_info();
 
 	printk(BIOS_INFO, "Initializing CPU #%ld\n", info->index);
@@ -240,11 +240,11 @@ void cpu_initialize(void)
 
 	printk(BIOS_DEBUG, "CPU: family %02x, model %02x, stepping %02x\n",
 		c.x86, c.x86_model, c.x86_mask);
-	
+
 	/* Lookup the cpu's operations */
 	set_cpu_ops(cpu);
 
-	if(!cpu->ops) { 
+	if(!cpu->ops) {
 		/* mask out the stepping and try again */
 		cpu->device -= c.x86_mask;
 		set_cpu_ops(cpu);
@@ -252,7 +252,7 @@ void cpu_initialize(void)
 		if(!cpu->ops) die("Unknown cpu");
 		printk(BIOS_DEBUG, "Using generic cpu ops (good)\n");
 	}
-	
+
 
 	/* Initialize the cpu */
 	if (cpu->ops && cpu->ops->init) {

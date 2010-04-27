@@ -61,7 +61,7 @@ void pci_bus_enable_resources(device_t dev);
 void pci_bus_reset(struct bus *bus);
 device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn);
 unsigned int do_pci_scan_bridge(device_t bus, unsigned int max,
-	unsigned int (*do_scan_bus)(struct bus *bus, 
+	unsigned int (*do_scan_bus)(struct bus *bus,
 		unsigned min_devfn, unsigned max_devfn, unsigned int max));
 unsigned int pci_scan_bridge(device_t bus, unsigned int max);
 unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
-#include <arch/cpu.h>                                                                      
+#include <arch/cpu.h>
 #include <arch/io.h>
 
 #define HT_INIT_CONTROL 0x6c
@@ -26,7 +26,7 @@ static void smp_write_processors_inorder(struct mp_config_table *mc)
         unsigned cpu_feature_flags;
         struct cpuid_result result;
         device_t cpu;
-                                                                                
+
         boot_apic_id = lapicid();
         apic_version = lapic_read(LAPIC_LVR) & 0xff;
         result = cpuid(1);
@@ -57,7 +57,7 @@ static void smp_write_processors_inorder(struct mp_config_table *mc)
             }
 	}
 }
-                                                                                
+
 static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
 	device_t dev;
@@ -79,12 +79,12 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 		dst_node = (config_map >> 4) & 7;
 		dst_link = (config_map >> 8) & 3;
 		bus_base = (config_map >> 16) & 0xff;
-#if 0				
+#if 0
 		printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
 			dst_node, dst_link, bus_base,
 			reg, config_map);
 #endif
-		if ((dst_node == node) && (dst_link == link)) 
+		if ((dst_node == node) && (dst_link == link))
 		{
 			return bus_base;
 		}

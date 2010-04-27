@@ -424,7 +424,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 
 static u32 calc_common_fidvid(unsigned fidvid, unsigned fidvidx)
 {
-	/* FIXME: need to check the change path to verify if it is reachable 
+	/* FIXME: need to check the change path to verify if it is reachable
 	 * when common fid is small than 1.6G */
 	if ((fidvid & 0xff00) <= (fidvidx & 0xff00)) {
 		return fidvid;
@@ -549,7 +549,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 	/* let all ap trains to state 1 */
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 1);
 
-	/* calculate the common max fid/vid that could be used for 
+	/* calculate the common max fid/vid that could be used for
 	 * all APs and BSP */
 #if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
 	ap_apicidx.num = 0;

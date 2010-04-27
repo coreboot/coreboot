@@ -34,7 +34,7 @@ DefinitionBlock(
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
-	
+
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
 

@@ -2,7 +2,7 @@
 	 * Put the processor back into a reset state
 	 * with respect to the xmm registers.
 	 */
-	
+
 	xorps %xmm0, %xmm0
 	xorps %xmm1, %xmm1
 	xorps %xmm2, %xmm2

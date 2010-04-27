@@ -21,7 +21,7 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_AZZA
-	
+
 source "src/mainboard/azza/pt-6ibd/Kconfig"
 
 endchoice

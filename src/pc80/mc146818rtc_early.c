@@ -88,7 +88,7 @@ static inline int do_normal_boot(void)
 
 	/* The RTC_BOOT_BYTE is now o.k. see where to go. */
 	byte = cmos_read(RTC_BOOT_BYTE);
-	
+
 	/* Are we in normal mode? */
 	if (byte & 1) {
 		byte &= 0x0f; /* yes, clear the boot count */

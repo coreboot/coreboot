@@ -9,7 +9,7 @@
 CC       =  gcc
 CFLAGS   = -O2 -g -fomit-frame-pointer
 CFLAGS  += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
+CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS  += -Wstrict-aliasing -Wshadow -Wextra
 
 INCLUDES = -Iinclude -I../../src/devices/oprom/include/
@@ -27,7 +27,7 @@ all: testbios
 
 testbios: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
- 
+
 helper_exec.o: helper_exec.c test.h
 
 clean:

@@ -14,13 +14,13 @@ static void lm63_init(device_t dev)
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
 	{
 		if(ops_smbus_bus(get_pbus_smbus(dev))) {
-			if( dev->bus->dev->path.type == DEVICE_PATH_I2C) smbus_set_link(dev); // it is under mux 
+			if( dev->bus->dev->path.type == DEVICE_PATH_I2C) smbus_set_link(dev); // it is under mux
 			result = smbus_read_byte(dev, 0x03);
 //			result &= ~0x04;
 			result |= 0x04;
 			smbus_write_byte(dev, 0x03, result & 0xff); // config lm63
 		}
-		
+
 	}
 
 }
@@ -42,5 +42,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations drivers_i2c_lm63_ops = {
 	CHIP_NAME("National Semiconductor LM63")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

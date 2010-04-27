@@ -18,17 +18,17 @@ static void disable_esb6300_watchdog(void)
 	value = pci_read_config16(dev, 0x04);
 	value |= (1 << 10);
 	pci_write_config16(dev, 0x04, value);
-	
+
 	/* Set and enable acpibase */
 	pci_write_config32(dev, 0x40, ICH5_WDBASE | 1);
 	pci_write_config8(dev, 0x44, 0x10);
 	base = ICH5_WDBASE + 0x60;
-	
+
 	/* Set bit 11 in TCO1_CNT */
 	value = inw(base + 0x08);
 	value |= 1 << 11;
 	outw(value, base + 0x08);
-	
+
 	/* Clear TCO timeout status */
 	outw(0x0008, base + 0x04);
 	outw(0x0002, base + 0x06);

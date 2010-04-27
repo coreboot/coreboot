@@ -1,4 +1,4 @@
-void main(void) 
+void main(void)
 {
 	int i;
 	i = 0;
@@ -8,5 +8,5 @@ void main(void)
 		j = i++;
 		__builtin_outb(j, 0xdc);
 	} while(i <= 9);
-	
+
 }

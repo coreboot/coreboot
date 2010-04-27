@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ static void enable_mainboard_devices(void)
 	if (dev == PCI_DEV_INVALID) {
 		die("LPC bridge not found!!!\n");
 	}
-	// Disable GP3 
+	// Disable GP3
 	pci_write_config8(dev, 0x98, 0x00);
 
 	// Disable mc97

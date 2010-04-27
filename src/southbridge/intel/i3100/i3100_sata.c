@@ -73,29 +73,29 @@ static void sata_init(struct device *dev)
 
 	  /* IDE I/O configuration */
 	  pci_write_config32(dev, SATA_IIOC, 0);
-	  
+
 	} else {
 	  /* SATA configuration */
 	  pci_write_config8(dev, SATA_CMD, 0x07);
 	  pci_write_config8(dev, SATA_PI, 0x8f);
-	  
+
 	  /* Set timings */
 	  pci_write_config16(dev, SATA_PTIM, 0x0a307);
 	  pci_write_config16(dev, SATA_STIM, 0x0a307);
-	  
+
 	  /* Sync DMA */
 	  pci_write_config8(dev, SATA_SYNCC, 0x0f);
 	  pci_write_config16(dev, SATA_SYNCTIM, 0x1111);
-	  
+
 	  /* Fast ATA */
 	  pci_write_config16(dev, SATA_IIOC, 0x1000);
-	  
+
 	  /* Select IDE mode */
 	  pci_write_config8(dev, SATA_MAP, 0x00);
-	  
+
 	  /* Enable ports 0-3 */
 	  pci_write_config8(dev, SATA_PCS + 1, 0x0f);
-	  
+
 	}
 	printk(BIOS_DEBUG, "SATA Enabled\n");
 }

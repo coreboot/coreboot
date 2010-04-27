@@ -16,7 +16,7 @@ struct display {
     struct fb_var_screeninfo var;   /* variable infos. yoffset and vmode */
                                     /* are updated by fbcon.c */
     struct fb_cmap cmap;            /* colormap */
-    char *screen_base;              /* pointer to top of virtual screen */    
+    char *screen_base;              /* pointer to top of virtual screen */
                                     /* (virtual address) */
     int visual;
     int type;                       /* see FB_TYPE_* */
@@ -96,11 +96,11 @@ struct display {
 	((s) & 0x400)
 #define attr_blink(p,s) \
 	((s) & 0x8000)
-	
+
     /*
      *  Scroll Method
      */
-     
+
 /* Internal flags */
 #define __SCROLL_YPAN		0x001
 #define __SCROLL_YWRAP		0x002

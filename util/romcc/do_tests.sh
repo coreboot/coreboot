@@ -22,12 +22,12 @@ LIST="1 2 3 4 5 6"
 BASE="raminit_test"
 #SKIP="6"
 EXPECTED_BAD=""
-fi 
+fi
 if [ "$type" = "hello" ] ; then
 LIST="1 2"
 BASE="hello_world"
 EXPECTED_BAD=""
-fi 
+fi
 
 
 SKIPPED=""
@@ -36,7 +36,7 @@ BAD=""
 OLD_BAD=""
 NEW_BAD=""
 NEW_GOOD=""
-for i in $LIST ; do 
+for i in $LIST ; do
 	DO_SKIP=""
 	for j in $SKIP ; do
 		if [ "$j" = "$i" ] ; then
@@ -55,8 +55,8 @@ for i in $LIST ; do
 			break;
 		fi
 	done
-	echo -e -n "$i $PROBLEM\t" 
-	if ./tests.sh $BASE $i > /dev/null 2> /dev/null ; then 
+	echo -e -n "$i $PROBLEM\t"
+	if ./tests.sh $BASE $i > /dev/null 2> /dev/null ; then
 		echo OK
 		if [ ! -z "$PROBLEM" ] ; then
 			NEW_GOOD="$NEW_GOOD$i "
@@ -65,10 +65,10 @@ for i in $LIST ; do
 	else
 		echo -n "FAILED: "
 		tail -n 1 tests/$BASE$i.debug2 | tr -d '\r\n'
-		echo 
+		echo
 		if [ -z "$PROBLEM" ] ; then
 			NEW_BAD="$NEW_BAD$i "
-		else 
+		else
 			OLD_BAD="$OLD_BAD$i "
 		fi
 		BAD="$BAD$i "

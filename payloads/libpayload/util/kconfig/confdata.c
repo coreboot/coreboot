@@ -19,7 +19,7 @@
 #define mkdir(x,y) mkdir(x)
 #define UNLINK_IF_NECESSARY(x) unlink(x)
 #else
-#define UNLINK_IF_NECESSARY(X) 
+#define UNLINK_IF_NECESSARY(X)
 #endif
 
 static void conf_warning(const char *fmt, ...)

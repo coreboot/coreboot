@@ -10,4 +10,4 @@ static inline int memory_initialized(void)
         //print_debug("\n");
 
     	return (drc & (1<<29));
-}	
+}

@@ -37,7 +37,7 @@
 #if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -98,7 +98,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -129,13 +129,13 @@ static void sio_setup(void)
 	smbusx_write_byte(1, (0x58>>1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
 
         byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
+        byte |= 0x20;
         pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
-        
+
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<0);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-        
+
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
@@ -181,7 +181,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         uart_init();
         console_init();
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 

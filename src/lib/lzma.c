@@ -1,4 +1,4 @@
-/* 
+/*
 
 Coreboot interface to memory-saving variant of LZMA decoder
 

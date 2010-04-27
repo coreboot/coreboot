@@ -7,7 +7,7 @@ struct socket_desc {
 	short across;
 };
 
-static void main(void) 
+static void main(void)
 {
 	static const struct socket_desc cpu_socketsA[] = {
 		{  .up = 2,  .down = -1, .across = 1 }, /* Node 0 */

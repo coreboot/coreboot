@@ -8,8 +8,8 @@ static void dump_spd_registers(void)
 		device = DIMM_SPD_BASE + i;
 		if (device) {
 			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
+			print_debug("dimm: ");
+			print_debug_hex8(i);
 			print_debug(".0: ");
 			print_debug_hex8(device);
 			for(j = 0; j < 256; j++) {

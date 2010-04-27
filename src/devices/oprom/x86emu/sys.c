@@ -85,7 +85,7 @@ RETURNS:
 Byte value read from emulator memory.
 
 REMARKS:
-Reads a byte value from the emulator memory. 
+Reads a byte value from the emulator memory.
 ****************************************************************************/
 u8 X86API rdb(u32 addr)
 {
@@ -130,7 +130,7 @@ addr	- Emulator memory address to read
 RETURNS:
 Long value read from emulator memory.
 REMARKS:
-Reads a long value from the emulator memory. 
+Reads a long value from the emulator memory.
 ****************************************************************************/
 u32 X86API rdl(u32 addr)
 {
@@ -189,7 +189,7 @@ addr	- Emulator memory address to read
 val		- Value to store
 
 REMARKS:
-Writes a long value to emulator memory. 
+Writes a long value to emulator memory.
 ****************************************************************************/
 void X86API wrl(u32 addr, u32 val)
 {

@@ -4,17 +4,17 @@
 //AMD8111
             Name (APIC, Package (0x04)
             {
-                Package (0x04) { 0x0004FFFF, 0x00, 0x00, 0x10},// 0x0004ffff : assusme 8131 is present 
-                Package (0x04) { 0x0004FFFF, 0x01, 0x00, 0x11}, 
-                Package (0x04) { 0x0004FFFF, 0x02, 0x00, 0x12}, 
+                Package (0x04) { 0x0004FFFF, 0x00, 0x00, 0x10},// 0x0004ffff : assusme 8131 is present
+                Package (0x04) { 0x0004FFFF, 0x01, 0x00, 0x11},
+                Package (0x04) { 0x0004FFFF, 0x02, 0x00, 0x12},
                 Package (0x04) { 0x0004FFFF, 0x03, 0x00, 0x13}
             })
 
             Name (PICM, Package (0x04)
             {
-                Package (0x04) { 0x0004FFFF, 0x00, \_SB.PCI0.LNKA, 0x00}, 
-                Package (0x04) { 0x0004FFFF, 0x01, \_SB.PCI0.LNKB, 0x00}, 
-                Package (0x04) { 0x0004FFFF, 0x02, \_SB.PCI0.LNKC, 0x00}, 
+                Package (0x04) { 0x0004FFFF, 0x00, \_SB.PCI0.LNKA, 0x00},
+                Package (0x04) { 0x0004FFFF, 0x01, \_SB.PCI0.LNKB, 0x00},
+                Package (0x04) { 0x0004FFFF, 0x02, \_SB.PCI0.LNKC, 0x00},
                 Package (0x04) { 0x0004FFFF, 0x03, \_SB.PCI0.LNKD, 0x00}
             })
 
@@ -34,16 +34,16 @@
                         Store(Local0, Index (DeRefOf (Index (APIC, 1)), 0))
                         Store(Local0, Index (DeRefOf (Index (APIC, 2)), 0))
                         Store(Local0, Index (DeRefOf (Index (APIC, 3)), 0))
-			
+
 			Store (0x00, ^DNCG)
-			
+
 		}
 
-                If (LNot (PICF)) { 
-			Return (PICM) 
+                If (LNot (PICF)) {
+			Return (PICM)
 		}
                 Else {
-			Return (APIC) 
+			Return (APIC)
 		}
             }
 
@@ -57,7 +57,7 @@
                 OperationRegion (PIRQ, PCI_Config, 0x56, 0x02)
                 Field (PIRQ, ByteAcc, Lock, Preserve)
                 {
-                    PIBA,   8, 
+                    PIBA,   8,
                     PIDC,   8
                 }
 /*
@@ -144,7 +144,7 @@
                     Package (0x04) { 0x0005FFFF, 0x02, 0x00, 0x13 },
                     Package (0x04) { 0x0005FFFF, 0x03, 0x00, 0x10 }
                 })
-	
+
                 Name (PICM, Package (0x0C)
                 {
                     Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 }, //USB

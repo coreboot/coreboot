@@ -8,11 +8,11 @@ chip northbridge/amd/amdk8/root_complex
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # LDT0
 			device pci 18.0 on end # LDT1
-			device pci 18.0 on #  northbridge 
+			device pci 18.0 on #  northbridge
 				#  devices on link 2, link 2 == LDT 2
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
-					device pci 0.0 on 
+					device pci 0.0 on
                                                 device pci 9.0 on end # Broadcom 5704
                                                 device pci 9.1 on end
                                                 device pci a.0 on end # Adaptic
@@ -65,7 +65,7 @@ chip northbridge/amd/amdk8/root_complex
                 	                                        io 0x60 = 0x220
                 	                                        io 0x62 = 0x300
                 	                                        irq 0x70 = 9
-                	                                end  
+                	                                end
                 	                                device pnp 2e.8 off end #  GPIO2
                 	                                device pnp 2e.9 off end #  GPIO3
                 	                                device pnp 2e.a off end #  ACPI
@@ -77,13 +77,13 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 1.1 on end
 					device pci 1.2 on end
-                                        device pci 1.3 on 
+                                        device pci 1.3 on
                                                 chip drivers/generic/generic #dimm 0-0-0
                                                         device i2c 50 on end
                                                 end
                                                 chip drivers/generic/generic #dimm 0-0-1
                                                         device i2c 51 on end
-                                                end     
+                                                end
                                                 chip drivers/generic/generic #dimm 0-1-0
                                                         device i2c 52 on end
                                                 end
@@ -120,12 +120,12 @@ chip northbridge/amd/amdk8/root_complex
                                         register "ide0_enable" = "1"
                                         register "ide1_enable" = "1"
 				end
-			end #  device pci 18.0 
-			
+			end #  device pci 18.0
+
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end
-	end 
+	end
 end
 

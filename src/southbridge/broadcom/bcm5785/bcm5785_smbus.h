@@ -19,7 +19,7 @@
 #define SMBSLVDAT 0xc
 
 
-/* Between 1-10 seconds, We should never timeout normally 
+/* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
 #define SMBUS_TIMEOUT (100*1000*10)
@@ -36,7 +36,7 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 	do {
 		unsigned char val;
 		val = inb(smbus_io_base + SMBHSTSTAT);
-		val &= 0x1f; 
+		val &= 0x1f;
 		if (val == 0) { // ready now
 			return 0;
 		}
@@ -51,7 +51,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	loops = SMBUS_TIMEOUT;
 	do {
 		unsigned char val;
-		
+
 		val = inb(smbus_io_base + SMBHSTSTAT);
 		val &= 0x1f; // mask off reserved bits
 		if ( val & 0x1c) {
@@ -68,7 +68,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 {
 	uint8_t byte;
-	
+
         if (smbus_wait_until_ready(smbus_io_base) < 0) {
                 return -2; // not ready
         }
@@ -128,7 +128,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return -2; // not ready
 	}
-	
+
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 

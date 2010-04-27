@@ -34,7 +34,7 @@ typedef struct {
 	u8 code[3];
 } __attribute__ ((__packed__)) pmm_information_t;
 
-/* This function is used to setup the PMM struct in virtual memory 
+/* This function is used to setup the PMM struct in virtual memory
  * at a certain offset */
 u8 pmm_setup(u16 segment, u16 offset);
 

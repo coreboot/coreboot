@@ -1,10 +1,10 @@
 /*
  * This code is derived from the Tyan s2882 romstage.c
  * Adapted by Stefan Reinauer <stepan@coresystems.de>
- * Additional (C) 2007 coresystems GmbH 
+ * Additional (C) 2007 coresystems GmbH
  */
 
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -81,7 +81,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 
  /* newisys khepri does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -129,13 +129,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         }
 
 //	post_code(0x32);
-	
+
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 

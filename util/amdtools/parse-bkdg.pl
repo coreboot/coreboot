@@ -191,7 +191,7 @@ while (<>) {
         $previous_start = $start;
         $previous_stop = $stop;
 
-        # the 'range' field is not useful in this instance, but used in the 'fields' version of this block to easily go 
+        # the 'range' field is not useful in this instance, but used in the 'fields' version of this block to easily go
         # from a bit position to the corresponding range.
         my $str = "
 \$info{'$registers[0]'}{'ranges'}{'" . $f[0] . "'}{'function'} = \"" . $f[2] . "\";
@@ -260,7 +260,7 @@ sub multiply {
     my $tmp = $str;
     $tmp =~ s/\{'$range'\}/{'$i'}/g;
     $tmp =~ s/\{'ranges'\}/{'fields'}/g;
-    $tmp .= 
+    $tmp .=
     $output .= $tmp;
   }
 

@@ -10,8 +10,8 @@ static void spd_set_memclk(void)
 	device = 0x50;
 	new_cycle_time = 0xa0;
 	new_latency = 5;
-	
-	
+
+
 	latency = 0;
 	for(index = 0; index < 3; index++, latency++) {
 		unsigned long loops;
@@ -23,10 +23,10 @@ static void spd_set_memclk(void)
 		if (!loops) {
 			continue;
 		}
-		
+
 		__builtin_outb(device, 0xe4);
 		__builtin_outb(index, 0xe8);
-		
+
 		loops = 1000000;
 		while(--loops)
 			;

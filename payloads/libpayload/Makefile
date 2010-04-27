@@ -145,7 +145,7 @@ prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
 	$(Q)mkdir -p $(obj)/drivers/usb
-	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
+	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc
 	$(Q)mkdir -p $(obj)/lib/$(ARCHDIR-y)
 	$(Q)mkdir -p $(obj)/include
 
@@ -159,7 +159,7 @@ doxygen-clean:
 
 clean: doxygen-clean
 	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
-	$(Q)rm -rf $(obj)/i386 $(obj)/powerpc $(obj)/lib $(obj)/libc 
+	$(Q)rm -rf $(obj)/i386 $(obj)/powerpc $(obj)/lib $(obj)/libc
 
 distclean: clean
 	$(Q)rm -rf build # should be $(obj) ?

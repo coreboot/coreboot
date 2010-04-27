@@ -2,7 +2,7 @@
  * microcode update lengths.  They are encoded in int 8 and 9.  A
  * dummy header of nulls must terminate the list.
  */
-                                                                                
+
         /*
            Copyright  Intel Corporation, 1995, 96, 97, 98, 99, 2000.
            These microcode updates are distributed for the sole purpose of
@@ -12,9 +12,9 @@
            on such systems.  You are not authorized to use this material for
            any other purpose.
         */
-                                                                                
+
         /*  M1DF3413.TXT - Noconoa D-0  */
-                                                                                
+
         0x00000001, /* Header Version   */
         0x00000013, /* Patch ID         */
         0x07302004, /* DATE             */
@@ -27,7 +27,7 @@
         0x00000000, /* reserved         */
         0x00000000, /* reserved         */
         0x00000000, /* reserved         */
- 
+
 	0x9fbf327a,
 	0x2b41b451,
 	0xb2abaca8,

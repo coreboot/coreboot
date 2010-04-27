@@ -3,7 +3,7 @@
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #endif
- 
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -117,7 +117,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         }
 
 //	post_code(0x32);
-	
+
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();

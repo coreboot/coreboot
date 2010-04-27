@@ -35,8 +35,8 @@
 #include <libpayload.h>
 #include <getopt.h>
 
-/* We don't want to waste malloc on this, so we live with a small 
- * fixed size array 
+/* We don't want to waste malloc on this, so we live with a small
+ * fixed size array
  */
 char *string_argv[MAX_ARGS];
 int string_argc;

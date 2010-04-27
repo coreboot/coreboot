@@ -1,5 +1,5 @@
 chip northbridge/amd/gx1
-  device pci_domain 0 on 
+  device pci_domain 0 on
     device pci 0.0 on end
       chip southbridge/amd/cs5530
         device pci 12.0 on

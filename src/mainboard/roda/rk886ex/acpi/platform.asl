@@ -48,9 +48,9 @@ Method(TRAP, 1, Serialized)
 	Return (SMIF)		// Return value of SMI handler
 }
 
-/* The _PIC method is called by the OS to choose between interrupt 
+/* The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.
- * 
+ *
  * _PIC is called with a parameter of 0 for i8259 configuration and
  * with a parameter of 1 for Local Apic/IOAPIC configuration.
  */
@@ -80,12 +80,12 @@ Method(_WAK,1)
 	// Notify PCI Express slots in case a card
 	// was inserted while a sleep state was active.
 
-	// Are we going to S3? 
+	// Are we going to S3?
 	If (LEqual(Arg0, 3)) {
 		// ..
 	}
 
-	// Are we going to S4? 
+	// Are we going to S4?
 	If (LEqual(Arg0, 4)) {
 		// ..
 	}

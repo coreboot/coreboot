@@ -68,8 +68,8 @@ typedef struct southbridge_intel_i82801bx_config config_t;
 #define PIRQG 0x0A
 #define PIRQH 0x0B
 
-/* 
- * Use 0x0ef8 for a bitmap to cover all these IRQ's. 
+/*
+ * Use 0x0ef8 for a bitmap to cover all these IRQ's.
  * Use the defined IRQ values above or set mainboard
  * specific IRQ values in your mainboards Config.lb.
 */

@@ -194,10 +194,10 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 				i+=16;
 				continue;
 			}
-			
+
 			mbi_header = (mbi_header_t *)&mbi[i];
 			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
-			
+
 			if (obj_header->objnum == count) {
 #ifdef DEBUG_SMI_I82830
 				if (mbi_header->name_len == 0xff) {
@@ -224,7 +224,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			i += len;
 			count++;
 		}
-		if (obj_header->banner.retsts == MSH_IF_NOT_FOUND) 
+		if (obj_header->banner.retsts == MSH_IF_NOT_FOUND)
 			printk(BIOS_DEBUG, "|     |- MBI object #%d not found.\n", obj_header->objnum);
 		break;
 	}
@@ -251,10 +251,10 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 				i+=16;
 				continue;
 			}
-			
+
 			mbi_header = (mbi_header_t *)&mbi[i];
 			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
-			
+
 			if (getobj->objnum == count) {
 				printk(BIOS_DEBUG, "|  |- len = %x\n", len);
 				memcpy((void *)(getobj->buffer + OBJ_OFFSET),
@@ -270,7 +270,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			i += len;
 			count++;
 		}
-		if (getobj->banner.retsts == MSH_IF_NOT_FOUND) 
+		if (getobj->banner.retsts == MSH_IF_NOT_FOUND)
 			printk(BIOS_DEBUG, "MBI module %d not found.\n", getobj->objnum);
 		break;
 	}

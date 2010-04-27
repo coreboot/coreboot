@@ -262,7 +262,7 @@ void print_conf(void)
 #endif				//CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 }
 
-/* todo: add a resource record. We don't do this here because this may be called when 
+/* todo: add a resource record. We don't do this here because this may be called when
   * very little of the platform is actually working.
   */
 int sizeram(void)

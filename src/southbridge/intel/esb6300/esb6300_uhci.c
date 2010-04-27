@@ -12,7 +12,7 @@ static void uhci_init(struct device *dev)
 #if 1
 	printk(BIOS_DEBUG, "UHCI: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, 
+	pci_write_config32(dev, PCI_COMMAND,
 		cmd | PCI_COMMAND_MASTER);
 
 

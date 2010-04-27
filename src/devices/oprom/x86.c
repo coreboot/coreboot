@@ -45,16 +45,16 @@ int (*intXX_handler[256])(struct eregs *regs) = { NULL };
 
 static int intXX_exception_handler(struct eregs *regs)
 {
-	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n", 
+	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n",
 			regs->vector);
-	x86_exception(regs);	// Call coreboot exception handler 
+	x86_exception(regs);	// Call coreboot exception handler
 
 	return 0;		// Never returns?
 }
 
 static int intXX_unknown_handler(struct eregs *regs)
 {
-	printk(BIOS_INFO, "Unsupported software interrupt #0x%x\n", 
+	printk(BIOS_INFO, "Unsupported software interrupt #0x%x\n",
 			regs->vector);
 
 	return -1;
@@ -74,12 +74,12 @@ static void setup_interrupt_handlers(void)
 {
 	int i;
 
-	/* The first 16 intXX functions are not BIOS services, 
+	/* The first 16 intXX functions are not BIOS services,
 	 * but the CPU-generated exceptions ("hardware interrupts")
 	 */
 	for (i = 0; i < 0x10; i++)
 		intXX_handler[i] = &intXX_exception_handler;
-	
+
 	/* Mark all other intXX calls as unknown first */
 	for (i = 0x10; i < 0x100; i++)
 	{
@@ -133,14 +133,14 @@ static void setup_realmode_idt(void)
 	}
 
 	/* Many option ROMs use the hard coded interrupt entry points in the
-	 * system bios. So install them at the known locations. 
+	 * system bios. So install them at the known locations.
 	 */
-	
+
 	/* int42 is the relocated int10 */
 	write_idt_stub((void *)0xff065, 0x42);
 
 	/* VIA's VBIOS calls f000:f859 instead of int15 */
-	write_idt_stub((void *)0xff859, 0x15); 
+	write_idt_stub((void *)0xff859, 0x15);
 }
 
 void run_bios(struct device *dev, unsigned long addr)
@@ -187,7 +187,7 @@ static u32 VSA_vrRead(u16 classIndex)
 		"outl	%%eax, %%dx\n"
 		"addb	$2, %%dl\n"
 		"inw	%%dx, %%ax\n"
-		: "=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx) 
+		: "=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
 		: "a"(classIndex)
 	);
 
@@ -245,7 +245,7 @@ void do_vsmbios(void)
 }
 #endif
 
-/* interrupt_handler() is called from assembler code only, 
+/* interrupt_handler() is called from assembler code only,
  * so there is no use in putting the prototype into a header file.
  */
 int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
@@ -308,7 +308,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	// will later pop them.
 	// What happens here is that we force (volatile!) changing
 	// the values of the parameters of this function. We do this
-	// because we know that they stay alive on the stack after 
+	// because we know that they stay alive on the stack after
 	// we leave this function. Don't say this is bollocks.
 	*(volatile u32 *)&eax = reg_info.eax;
 	*(volatile u32 *)&ecx = reg_info.ecx;

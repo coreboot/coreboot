@@ -36,7 +36,7 @@ static void *smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 	smp_write_processors(mc);
-	
+
 	{
 		device_t dev;
 
@@ -98,9 +98,9 @@ static void *smp_write_config_table(void *v)
 
 			bus_pxhd_4 = 7;
 		}
-	
+
 	}
-	
+
 	/* define bus and isa numbers */
 	for(bus_num = 0; bus_num < bus_isa; bus_num++) {
 		smp_write_bus(mc, bus_num, "PCI	  ");
@@ -159,7 +159,7 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
-	
+
 	/* ISA backward compatibility interrupts  */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 		bus_isa, 0x00, 0x02, 0x00);

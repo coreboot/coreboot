@@ -4,7 +4,7 @@
  * devices which is done by the kernel
  *
  * written in 2003 by Eric Biederman
- * 
+ *
  *  - Athlon64 workarounds by Stefan Reinauer
  *  - "reset once" logic by Yinghai Lu
  */
@@ -24,7 +24,7 @@
 /**
  * @brief Read resources for AGP aperture
  *
- * @param 
+ * @param
  *
  * There is only one AGP aperture resource needed. The resoruce is added to
  * the northbridge of BSP.
@@ -64,7 +64,7 @@ static void mcf3_read_resources(device_t dev)
 static void set_agp_aperture(device_t dev)
 {
 	struct resource *resource;
-		
+
 	resource = probe_resource(dev, 0x94);
 	if (resource) {
 		device_t pdev;
@@ -78,7 +78,7 @@ static void set_agp_aperture(device_t dev)
 
 		/* Get the base address */
 		gart_base = ((resource->base) >> 25) & 0x00007fff;
-		
+
 		/* Update the other northbriges */
 		pdev = 0;
 		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
@@ -90,7 +90,7 @@ static void set_agp_aperture(device_t dev)
 
 			/* Don't set the GART Table base address */
 			pci_write_config32(pdev, 0x98, 0);
-			
+
 			/* Report the resource has been stored... */
 			report_resource_stored(pdev, resource, " <gart>");
 		}
@@ -111,7 +111,7 @@ static void misc_control_init(struct device *dev)
 	uint32_t cmd, cmd_ref;
 	int needs_reset;
 	struct device *f0_dev;
-	
+
 	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 	needs_reset = 0;
 
@@ -125,7 +125,7 @@ static void misc_control_init(struct device *dev)
 	if (is_cpu_pre_c0()) {
 
 		/* Errata 58
-		 * Disable CPU low power states C2, C1 and throttling 
+		 * Disable CPU low power states C2, C1 and throttling
 		 */
 		cmd = pci_read_config32(dev, 0x80);
 		cmd &= ~(1<<0);
@@ -136,7 +136,7 @@ static void misc_control_init(struct device *dev)
 		pci_write_config32(dev, 0x84, cmd );
 
 		/* Errata 66
-		 * Limit the number of downstream posted requests to 1 
+		 * Limit the number of downstream posted requests to 1
 		 */
 		cmd = pci_read_config32(dev, 0x70);
 		if ((cmd & (3 << 0)) != 2) {
@@ -164,7 +164,7 @@ static void misc_control_init(struct device *dev)
 		struct device *f2_dev;
 		uint32_t dcl;
 		f2_dev = dev_find_slot(0, dev->path.pci.devfn - 3 + 2);
-		/* Errata 98 
+		/* Errata 98
 		 * Set Clk Ramp Hystersis to 7
 		 * Clock Power/Timing Low
 		 */
@@ -192,7 +192,7 @@ static void misc_control_init(struct device *dev)
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
 			/* Only handle coherent link here please */
-			if ((link_type & (LinkConnected|InitComplete|NonCoherent)) 
+			if ((link_type & (LinkConnected|InitComplete|NonCoherent))
 				== (LinkConnected|InitComplete))
 			{
 				cmd &= ~(0xff << (link *8));

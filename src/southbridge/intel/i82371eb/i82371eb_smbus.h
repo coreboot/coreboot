@@ -31,9 +31,9 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 		if ((val & 0x1) == 0) {
 			break;
 		}
-#if 0		
+#if 0
 		if(loops == (SMBUS_TIMEOUT / 2)) {
-			outw(inw(smbus_io_base + SMBHST_STATUS), 
+			outw(inw(smbus_io_base + SMBHST_STATUS),
 				smbus_io_base + SMBHST_STATUS);
 		}
 #endif
@@ -48,10 +48,10 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	do {
 		unsigned short val;
 		smbus_delay();
-		
+
 		val = inb(smbus_io_base + SMBHST_STATUS);
 		// Make sure the command is done
-		if ((val & 0x1) != 0) { 
+		if ((val & 0x1) != 0) {
 			continue;
 		}
 		// Don't break out until one of the interrupt
@@ -71,7 +71,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBHST_CTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBHST_CTL);
@@ -117,7 +117,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBHST_CTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBHST_CTL);
@@ -160,7 +160,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 
 	/* clear any lingering errors, so the transaction will run */

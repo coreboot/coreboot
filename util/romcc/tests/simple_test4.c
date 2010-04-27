@@ -86,7 +86,7 @@ static void pcibios_write_config_dword(
 int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
-	 * instruction with the exception that it returns -1  
+	 * instruction with the exception that it returns -1
 	 * when the value presented to it is zero.
 	 * Otherwise __builtin_bsr returns the zero based index of
 	 * the highest bit set.
@@ -149,7 +149,7 @@ void uart_wait_to_tx_byte(void)
 
 void uart_wait_until_sent(void)
 {
-	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40)) 
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
 		;
 }
 
@@ -274,7 +274,7 @@ void print_spew(char *str) { __console_tx_string(str); }
 #define PM_BUS 0
 #define PM_DEVFN (PIIX4_DEVFN+3)
 
-#if HAVE_CONSTANT_PROPOGATION 
+#if HAVE_CONSTANT_PROPOGATION
 #define SMBUS_IO_BASE 0x1000
 #define SMBHSTSTAT 0
 #define SMBHSTCTL  2
@@ -428,7 +428,7 @@ static void spd_set_drb(void)
 	unsigned end_of_memory;
 	unsigned char device;
 	unsigned char drb_reg;
-	
+
 	end_of_memory = 0; /* in multiples of 8MiB */
 	device = SMBUS_MEM_DEVICE_START;
 #if !CALCULATE_DRB_REG
@@ -464,13 +464,13 @@ static void spd_set_drb(void)
 #else
 			side1_bits += log2((((byte2 << 8) | byte));
 #endif
-			
+
 			/* now I have the ram size in bits as a power of two (less 1) */
 			/* Make it mulitples of 8MB */
 			side1_bits -= 25;
 
 			/* side two */
-			
+
 			/* number of physical banks */
 			byte = smbus_read_byte(device, 5);
 			if (byte > 1) {
@@ -487,7 +487,7 @@ static void spd_set_drb(void)
 #if CALCULATE_DRB_REG
 		drb_reg = ((device - SMBUS_MEM_DEVICE_START) << 1) + 0x60;
 #endif
-		
+
 #if HAVE_STRING_SUPPORT
 		print_debug("end_of_memory: "); print_debug_hex32(end_of_memory); print_debug("\n");
 #endif

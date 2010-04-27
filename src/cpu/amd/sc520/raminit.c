@@ -65,13 +65,13 @@ void setupsc520(void)
 
 	/* do this to see if MMCR will start acting right. we suspect
 	 * you have to do SOMETHING to get things going. I'm really
-	 * starting to hate this processor. 
+	 * starting to hate this processor.
 	 */
-	
-	/* no, that did not help. I wonder what will?  
+
+	/* no, that did not help. I wonder what will?
 	 * outl(0x800df0cb, 0xfffc);
 	 */
-	
+
 	/* well, this is special! You have to do SHORT writes to the
 	 * locations, even though they are CHAR in size and CHAR aligned
 	 * and technically, a SHORT write will result in -- yoo ha! --
@@ -80,7 +80,7 @@ void setupsc520(void)
 	 * it now reliably comes up after power cycle with printk. Ah yi
 	 * yi.
    	 */
-	
+
 	/* turn off the write buffer*/
 	/* per the note above, make this a short? Let's try it. */
 	sp = (unsigned short *)0xfffef040;
@@ -92,7 +92,7 @@ void setupsc520(void)
 	/*    moved to romstage.c by Stepan, Ron says: */
 	/* NOTE: move this to mainboard.c ASAP */
 	setup_pars();
-  
+
 	/* CPCSF register */
 	sp =  (unsigned short *)0xfffefc24;
 	*sp = 0xfe;
@@ -120,7 +120,7 @@ void setupsc520(void)
 	/*set the GP RD offset */
 	sp =  (unsigned short *)0xfffefc0c;
 	*sp = 0x00001;
-	/*set the GP WR pulse width*/ 
+	/*set the GP WR pulse width*/
 	sp =  (unsigned short *)0xfffefc0d;
 	*sp = 0x00003;
 	/*set the GP WR offset*/
@@ -164,19 +164,19 @@ void setupsc520(void)
 /*; set the interrupt mapping registers.*/
 	cp = (unsigned char *)0x0fffefd20;
 	*cp = 0x01;
-	
+
 	cp = (unsigned char *)0x0fffefd28;
 	*cp = 0x0c;
-	
+
 	cp = (unsigned char *)0x0fffefd29;
 	*cp = 0x0b;
-	
+
 	cp = (unsigned char *)0x0fffefd30;
 	*cp = 0x07;
-	
+
 	cp = (unsigned char *)0x0fffefd43;
 	*cp = 0x03;
-	
+
 	cp = (unsigned char *)0x0fffefd51;
 	*cp = 0x02;
 #endif
@@ -186,8 +186,8 @@ void setupsc520(void)
 	outl(0x08000683c, 0xcf8);
 	outl(0xc, 0xcfc); /* set the interrupt line */
 
-	
-	/* Set the SC520 PCI host bridge to target mode to 
+
+	/* Set the SC520 PCI host bridge to target mode to
 	 * allow external bus mastering events
 	 */
 	/* index the status command register on device 0*/
@@ -195,7 +195,7 @@ void setupsc520(void)
 	outl(0x2, 0xcfc);		/*set the memory access enable bit*/
 	OUTC(0x0fffef072, 1);		/* enable req bits in SYSARBMENB */
 }
-	
+
 
 /*
  *
@@ -228,7 +228,7 @@ void setupsc520(void)
 #define ROW11_DATA 0x07070707	/*  11 row data/also bank switch (MASK)*/
 #define ROW10_DATA 0xaaaaaaaa	/*  10 row data/also bank switch (MASK)*/
 
-void 
+void
 dummy_write(void){
   volatile unsigned short *ptr = (volatile unsigned short *)CACHELINESZ;
   *ptr = 0;
@@ -247,16 +247,16 @@ static void dumpram(void){
   print_err("bendadr3"); print_err_hex8(*drcbendadr); print_err("\n");
 }
 
-/* there is a lot of silliness in the amd code, and it is 
- * causing romcc real headaches, so we're going to be be a little 
+/* there is a lot of silliness in the amd code, and it is
+ * causing romcc real headaches, so we're going to be be a little
  * less silly.
- * so, the order of ops is: 
+ * so, the order of ops is:
  * for i in 3 to 0
- * see if bank is there. 
+ * see if bank is there.
  * if we can write a word, and read it back, to hell with paranoia
- * the bank is there. So write the magic byte, read it back, and 
- * use that to get size, etc. Try to keep things very simple, 
- * so people can actually follow the damned code. 
+ * the bank is there. So write the magic byte, read it back, and
+ * use that to get size, etc. Try to keep things very simple,
+ * so people can actually follow the damned code.
  */
 
 /* cache is assumed to be disabled */
@@ -273,14 +273,14 @@ int sizemem(void)
 	/* no ecc interrupts of any kind. */
 	*eccctl = 0;
 	/* Set SDRAM timing for slowest speed. */
-	*drcmctl = 0x1e; 
+	*drcmctl = 0x1e;
 
 	/* setup dram register for all banks
 	 * with max cols and max banks
 	 * this is the oldest trick in the book. You are going to set up for max rows
-	 * and cols, then do a write, then see if the data is wrapped to low memory. 
-	 * you can actually tell by which data gets to which low memory, 
-	 * exactly how many rows and cols you have. 
+	 * and cols, then do a write, then see if the data is wrapped to low memory.
+	 * you can actually tell by which data gets to which low memory,
+	 * exactly how many rows and cols you have.
 	 */
 	*drccfg=0xbbbb;
 
@@ -339,24 +339,24 @@ int sizemem(void)
 	  *lp = 0xdeadbeef;
 	  print_err("assigned l ... \n");
 	  if (*lp != 0xdeadbeef) {
-	    print_err(" no memory at bank "); 
-	    // print_err_hex8(bank); 
+	    print_err(" no memory at bank ");
+	    // print_err_hex8(bank);
 	    //   print_err(" value "); print_err_hex32(*lp);
-	    print_err("\n"); 
+	    print_err("\n");
 	    //	    continue;
 	  }
 	  *drcctl = 2;
 	  dummy_write();
 	  *drccfg = *drccfg >> 4;
 	  l = *drcbendadr;
-	  l >>= 8; 
+	  l >>= 8;
 	  *drcbendadr = l;
 	  print_err("loop around\n");
 	  *drcctl = 0;
 	  dummy_write();
 	}
 #if 0
-	/* enable last bank and setup ending address 
+	/* enable last bank and setup ending address
 	 * register for max ram in last bank
 	 */
 	*drcbendadr=0x0ff000000;
@@ -410,10 +410,10 @@ int sizemem(void)
 	bank = 3;
 
 
-	/* this is really ugly, it is right from assembly code. 
+	/* this is really ugly, it is right from assembly code.
 	 * we need to clean it up later
 	 */
-	
+
 start:
 	/* write col 11 wrap adr */
 	COL11_ADR=COL11_DATA;
@@ -519,7 +519,7 @@ print_err("4b\n");
 	print_err("cols"); print_err_hex32(cols); print_err("\n");
 	cols -= COL08_DATA;
 
-	/* cols now is in the range of 0 1 2 3 ... 
+	/* cols now is in the range of 0 1 2 3 ...
 	 */
 	i = cols&3;
 	//	i = cols + rows;
@@ -533,22 +533,22 @@ print_err("4b\n");
 	/* what a fookin' mess this is */
 	if(banks==4)
 		i+=8; /* <-- i holds merged value */
-	/* i now has the col width in bits 0-1 and the bank count (2 or 4) 
+	/* i now has the col width in bits 0-1 and the bank count (2 or 4)
 	 * in bit 3.
-	 * this is the format for the drccfg register 
+	 * this is the format for the drccfg register
 	 */
-	
+
 	/* fix ending addr mask*/
 	/*FIXME*/
 	/* let's just go with this to start ... see if we can get ANYWHERE */
 	/* need to get end addr. Need to do it with the bank in mind. */
 /*
-	al = 3; 
+	al = 3;
 	al -= i&3;
 	*drcbendaddr = rows >> al;
-	print_err("computed ending_adr = "); print_err_hex8(ending_adr); 
+	print_err("computed ending_adr = "); print_err_hex8(ending_adr);
 	print_err("\n");
-	
+
 */
 bad_reinit:
 	/* issue all banks recharge */
@@ -557,7 +557,7 @@ bad_reinit:
 
 	/* update ending address register */
 //	*drcbendadr = ending_adr;
-	
+
 	/* update config register */
 	*drccfg &= ~(0xff << bank*4);
 	if (ending_adr)
@@ -579,11 +579,11 @@ bad_reinit:
 	*drcctl=0x18;
 	dummy_write();
 	return bank;
-	
+
 bad_ram:
 	print_info("bad ram!\n");
-	/* you are here because the read-after-write failed, 
-	 * in most cases because: no ram in that bank! 
+	/* you are here because the read-after-write failed,
+	 * in most cases because: no ram in that bank!
 	 * set badbank to 1 and go to reinit
 	 */
 	ending_adr = 0;
@@ -591,7 +591,7 @@ bad_ram:
 	while(1)
 	print_err("DONE NEXTBANK\n");
 #endif
-}	
+}
 
 /* note: based on AMD code*/
 /* This code is known to work on the digital logic board and on the technologic
@@ -600,7 +600,7 @@ bad_ram:
 int staticmem(void)
 {
 	volatile unsigned long *zero = (unsigned long *) CACHELINESZ;
-	
+
 	/* set up 0x18 .. **/
 	*drcbendadr = 0x88;
 	*drcmctl = 0x1e;
@@ -609,7 +609,7 @@ int staticmem(void)
 	*drcctl = 0x1;
 	/* do the dummy write */
 	*zero = 0;
-	
+
 	/* precharge */
 	*drcctl = 2;
 	*zero = 0;
@@ -625,7 +625,7 @@ int staticmem(void)
 	*drcctl = 3;
 	*zero = 0;
 	print_debug("DONE the load mode reg\n");
-	
+
 	/* normal mode */
 	*drcctl = 0x0;
 	*zero = 0;
@@ -634,7 +634,7 @@ int staticmem(void)
 	*zero = 0;
 	print_debug("DONE the normal\n");
 	*zero = 0xdeadbeef;
-	if (*zero != 0xdeadbeef) 
+	if (*zero != 0xdeadbeef)
 	  print_debug("NO LUCK\n");
 	else
 	  print_debug("did a store and load ...\n");

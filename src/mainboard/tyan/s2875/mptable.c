@@ -28,7 +28,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
                 dst_node = (config_map >> 4) & 7;
                 dst_link = (config_map >> 8) & 3;
                 bus_base = (config_map >> 16) & 0xff;
-#if 0                           
+#if 0
                 printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
                         dst_node, dst_link, bus_base,
                         reg, config_map);
@@ -104,15 +104,15 @@ static void *smp_write_config_table(void *v)
                 if (dev) {
                         bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151_1);
-   
+
                 }
                 else {
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
 
                         bus_8151_1 = 2;
                 }
-  
-   
+
+
         }
 
 /*Bus:		Bus ID	Type*/
@@ -126,11 +126,11 @@ static void *smp_write_config_table(void *v)
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(1);
 #else
-        apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+        apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
-        apicid_8111 = apicid_base+0; 
+        apicid_8111 = apicid_base+0;
 	smp_write_ioapic(mc, apicid_8111, 0x11, 0xfec00000);
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_8111, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_8111, 0x1);
@@ -156,7 +156,7 @@ static void *smp_write_config_table(void *v)
 //  AGP Display Adapter
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8151_1, 0x0, apicid_8111, 0x10);
 
-// Onboard Serial ATA        
+// Onboard Serial ATA
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x05<<2)|0, apicid_8111, 0x13);
 //Onboard Firewire
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x0a<<2)|0, apicid_8111, 0x11);

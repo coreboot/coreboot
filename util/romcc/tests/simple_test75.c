@@ -1,7 +1,7 @@
 static void goto_test(void)
 {
 	int i;
-	
+
 	i = 0;
 	goto bottom;
 	{

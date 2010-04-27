@@ -86,12 +86,12 @@ const char *pcix_speed(unsigned sstatus)
 	static const char pcix_266mhz[] = "266MHz PCI-X";
 	static const char pcix_533mhz[] = "533MHZ PCI-X";
 	static const char unknown[] = "Unknown";
-		
+
 	const char *result;
 	result = unknown;
 	switch(PCI_X_SSTATUS_MFREQ(sstatus)) {
-	case PCI_X_SSTATUS_CONVENTIONAL_PCI:	
-		result = conventional; 
+	case PCI_X_SSTATUS_CONVENTIONAL_PCI:
+		result = conventional;
 		break;
 	case PCI_X_SSTATUS_MODE1_66MHZ:
 		result = pcix_66mhz;
@@ -99,17 +99,17 @@ const char *pcix_speed(unsigned sstatus)
 	case PCI_X_SSTATUS_MODE1_100MHZ:
 		result = pcix_100mhz;
 		break;
-		
+
 	case PCI_X_SSTATUS_MODE1_133MHZ:
 		result = pcix_133mhz;
 		break;
-		
+
 	case PCI_X_SSTATUS_MODE2_266MHZ_REF_66MHZ:
 	case PCI_X_SSTATUS_MODE2_266MHZ_REF_100MHZ:
 	case PCI_X_SSTATUS_MODE2_266MHZ_REF_133MHZ:
 		result = pcix_266mhz;
 		break;
-		
+
 	case PCI_X_SSTATUS_MODE2_533MHZ_REF_66MHZ:
 	case PCI_X_SSTATUS_MODE2_533MHZ_REF_100MHZ:
 	case PCI_X_SSTATUS_MODE2_533MHZ_REF_133MHZ:

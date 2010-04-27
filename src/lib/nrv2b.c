@@ -1,4 +1,4 @@
-// This GETBIT is supposed to work on little endian 
+// This GETBIT is supposed to work on little endian
 // 32bit systems. The algorithm will definitely need
 // some fixing on other systems, but it might not be
 // a problem since the nrv2b binary behaves the same..
@@ -37,7 +37,7 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
 
 	// skip length
 	src += 4;
-	/* FIXME: check olen with the length stored in first 4 bytes */	
+	/* FIXME: check olen with the length stored in first 4 bytes */
 
 	for (;;) {
 		unsigned int m_off, m_len;

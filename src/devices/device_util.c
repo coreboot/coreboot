@@ -79,7 +79,7 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_PCI) &&
-			(dev->bus->secondary == bus) && 
+			(dev->bus->secondary == bus) &&
 			(dev->path.pci.devfn == devfn)) {
 			result = dev;
 			break;
@@ -92,32 +92,32 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
  * @brief Given a smbus bus and a device number, find the device structure
  *
  * @param bus The bus number
- * @param addr a device number 
+ * @param addr a device number
  * @return pointer to the device structure
  */
 struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 {
         struct device *dev, *result;
-        
+
         result = 0;
         for (dev = all_devices; dev; dev = dev->next) {
                 if ((dev->path.type == DEVICE_PATH_I2C) &&
-                        (dev->bus->secondary == bus) && 
+                        (dev->bus->secondary == bus) &&
                         (dev->path.i2c.device == addr)) {
                         result = dev;
-                        break; 
-                }       
-        }       
+                        break;
+                }
+        }
         return result;
-}    
+}
 
 /** Find a device of a given vendor and type
  * @param vendor Vendor ID (e.g. 0x8086 for Intel)
  * @param device Device ID
  * @param from Pointer to the device structure, used as a starting point
- *        in the linked list of all_devices, which can be 0 to start at the 
+ *        in the linked list of all_devices, which can be 0 to start at the
  *        head of the list (i.e. all_devices)
- * @return Pointer to the device struct 
+ * @return Pointer to the device struct
  */
 struct device *dev_find_device(unsigned int vendor, unsigned int device, struct device *from)
 {
@@ -134,9 +134,9 @@ struct device *dev_find_device(unsigned int vendor, unsigned int device, struct 
 /** Find a device of a given class
  * @param class Class of the device
  * @param from Pointer to the device structure, used as a starting point
- *        in the linked list of all_devices, which can be 0 to start at the 
+ *        in the linked list of all_devices, which can be 0 to start at the
  *        head of the list (i.e. all_devices)
- * @return Pointer to the device struct 
+ * @return Pointer to the device struct
  */
 struct device *dev_find_class(unsigned int class, struct device *from)
 {
@@ -167,11 +167,11 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_PCI:
 #if CONFIG_PCI_BUS_SEGN_BITS
 			sprintf(buffer, "PCI: %04x:%02x:%02x.%01x",
-				dev->bus->secondary>>8, dev->bus->secondary & 0xff, 
+				dev->bus->secondary>>8, dev->bus->secondary & 0xff,
 				PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
 #else
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
-				dev->bus->secondary, 
+				dev->bus->secondary,
 				PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
 #endif
 			break;
@@ -408,7 +408,7 @@ resource_t resource_end(struct resource *resource)
 	 * the bridge.  While the granularity is simply how many low bits of the
 	 * address cannot be set.
 	 */
-	
+
 	/* Get the end (rounded up) */
 	end = base + align_up(resource->size, resource->gran) - 1;
 
@@ -468,7 +468,7 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 			sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
 		}
-		printk(BIOS_DEBUG, 
+		printk(BIOS_DEBUG,
 			"%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx gran 0x%02x %s%s%s\n",
 			dev_path(dev),
 			resource->index,

@@ -31,7 +31,7 @@ static void spd_enable_refresh(void)
 	}
 	byte &= 0x7f;
 	/* Default refresh rate be conservative */
-	refresh_rate = 5; 
+	refresh_rate = 5;
 	/* see if the ram refresh is a supported one */
 	if (byte < 6) {
 		refresh_rate = refresh_rates[byte];

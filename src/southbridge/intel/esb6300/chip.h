@@ -1,4 +1,4 @@
-struct southbridge_intel_esb6300_config 
+struct southbridge_intel_esb6300_config
 {
 #define ESB6300_GPIO_USE_MASK      0x03
 #define ESB6300_GPIO_USE_DEFAULT   0x00

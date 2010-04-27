@@ -30,7 +30,7 @@
 #if CONFIG_GENERATE_ACPI_TABLES==1
 
 #include <stdint.h>
- 
+
 #define RSDP_SIG		"RSD PTR "  /* RSDT Pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"
 #define OEM_ID			"CORE  "

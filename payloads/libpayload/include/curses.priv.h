@@ -66,24 +66,24 @@ extern "C" {
 //// #include <stdlib.h>
 //// #include <string.h>
 //// #include <sys/types.h>
-//// 
+////
 //// #if HAVE_UNISTD_H
 //// #include <unistd.h>
 //// #endif
-//// 
+////
 //// #if HAVE_SYS_BSDTYPES_H
 //// #include <sys/bsdtypes.h>	/* needed for ISC */
 //// #endif
-//// 
+////
 //// #if HAVE_LIMITS_H
 //// # include <limits.h>
 //// #elif HAVE_SYS_PARAM_H
 //// # include <sys/param.h>
 //// #endif
-//// 
+////
 //// #include <assert.h>
 //// #include <stdio.h>
-//// 
+////
 //// #include <errno.h>
 
 #ifndef PATH_MAX
@@ -101,7 +101,7 @@ extern int errno;
 #endif
 
 //// #include <nc_panel.h>
-//// 
+////
 //// /* Some systems have a broken 'select()', but workable 'poll()'.  Use that */
 //// #if HAVE_WORKING_POLL
 //// #define USE_FUNC_POLL 1
@@ -113,10 +113,10 @@ extern int errno;
 //// #else
 //// #define USE_FUNC_POLL 0
 //// #endif
-//// 
+////
 //// /* include signal.h before curses.h to work-around defect in glibc 2.1.3 */
 //// #include <signal.h>
- 
+
 /* Alessandro Rubini's GPM (general-purpose mouse) */
 #if HAVE_LIBGPM && HAVE_GPM_H
 #define USE_GPM_SUPPORT 1

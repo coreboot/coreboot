@@ -59,7 +59,7 @@ static void adt7463_init(device_t dev)
 	result = smbus_write_byte(adt7463, 0x5e, 0xc2);
 
 	/* Make sure that our fans never stop when temp. falls below Tmin,
-	 * but rather keep going at minimum duty cycle (applies to automatic 
+	 * but rather keep going at minimum duty cycle (applies to automatic
 	 * fan control mode only).
 	 */
 	result = smbus_write_byte(adt7463, 0x62, 0xc0);

@@ -16,7 +16,7 @@ static void ide_init(struct device *dev)
         pci_write_config8(dev, 0x48, 0x05);
         pci_write_config16(dev, 0x4a, 0x0101);
         pci_write_config16(dev, 0x54, 0x5055);
- 
+
 #if 0
 	uint16_t word;
 	word = pci_read_config16(dev, 0x40);
@@ -32,7 +32,7 @@ static void ide_init(struct device *dev)
 static void esb6300_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* This value is also visible in uchi[0-2] and smbus functions */
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

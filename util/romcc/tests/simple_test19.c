@@ -1,4 +1,4 @@
-static void hlt(void) 
+static void hlt(void)
 {
 	__builtin_hlt();
 }

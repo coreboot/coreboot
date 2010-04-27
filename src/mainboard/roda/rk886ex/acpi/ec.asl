@@ -81,14 +81,14 @@ Device(EC0)
 	{
 		// This method is needed by Windows XP/2000 for
 		// EC initialization before a driver is loaded
-	
+
 		If (LEqual(Arg0, 0x03)) {
 			Store (Arg1, ECON)
 		}
 	}
 
 	// EC Query methods
-	
+
 	Method (_Q11, 0)
 	{
 		Store("_Q11: Fn-F8 (Sleep Button) pressed", Debug)

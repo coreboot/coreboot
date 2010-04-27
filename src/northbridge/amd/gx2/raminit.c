@@ -61,7 +61,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	//print_debug("sdram_enable step 6\n");
 
 	/* 7. Reset DLL, Bit 27 is undocumented in GX datasheet,
-	 * it is documented in LX datasheet  */	
+	 * it is documented in LX datasheet  */
 	/* load Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(0x20000018);
 	msr.lo |=  ((0x01 << 27) | 0x01);
@@ -85,10 +85,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* load RDSYNC */
 	msr = rdmsr(0x2000001f);
 	msr.hi = 0x000ff310;
-	/* the above setting is supposed to be good for "slow" ram. We have found that for 
-	 * some dram, at some clock rates, e.g. hynix at 366/244, this will actually 
+	/* the above setting is supposed to be good for "slow" ram. We have found that for
+	 * some dram, at some clock rates, e.g. hynix at 366/244, this will actually
 	 * cause errors. The fix is to just set it to 0x310. Tested on 3 boards
-	 * with 3 different type of dram -- Hynix, PSC, infineon. 
+	 * with 3 different type of dram -- Hynix, PSC, infineon.
 	 * I am leaving this comment here so that at some future time nobody is tempted
 	 * to mess with this setting -- RGM, 9/2006
 	 */

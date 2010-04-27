@@ -119,7 +119,7 @@ struct fb_fix_screeninfo {
 	u32 smem_len;			/* Length of frame buffer mem */
 	u32 type;			/* see FB_TYPE_*		*/
 	u32 type_aux;			/* Interleave for interleaved Planes */
-	u32 visual;			/* see FB_VISUAL_*		*/ 
+	u32 visual;			/* see FB_VISUAL_*		*/
 	u16 xpanstep;			/* zero if no hardware panning  */
 	u16 ypanstep;			/* zero if no hardware panning  */
 	u16 ywrapstep;		/* zero if no hardware ywrap    */
@@ -142,8 +142,8 @@ struct fb_fix_screeninfo {
 struct fb_bitfield {
 	u32 offset;			/* beginning of bitfield	*/
 	u32 length;			/* length of bitfield		*/
-	u32 msb_right;		/* != 0 : Most significant bit is */ 
-					/* right */ 
+	u32 msb_right;		/* != 0 : Most significant bit is */
+					/* right */
 };
 
 #define FB_NONSTD_HAM		1	/* Hold-And-Modify (HAM)        */
@@ -191,7 +191,7 @@ struct fb_var_screeninfo {
 	struct fb_bitfield red;		/* bitfield in fb mem if true color, */
 	struct fb_bitfield green;	/* else only length is significant */
 	struct fb_bitfield blue;
-	struct fb_bitfield transp;	/* transparency			*/	
+	struct fb_bitfield transp;	/* transparency			*/
 
 	u32 nonstd;			/* != 0 Non standard pixel format */
 
@@ -326,7 +326,7 @@ struct fb_info {
    devfs_handle_t devfs_handle;         /* Devfs handle for new name         */
    devfs_handle_t devfs_lhandle;        /* Devfs handle for compat. symlink  */
    int (*changevar)(int);               /* tell console var has changed */
-   int (*switch_con)(int, struct fb_info*); 
+   int (*switch_con)(int, struct fb_info*);
                                         /* tell fb to switch consoles */
    int (*updatevar)(int, struct fb_info*);
                                         /* tell fb to update the vars */
@@ -338,7 +338,7 @@ struct fb_info {
                                            the cursor's color for non
                                            palette mode */
    /* From here on everything is device dependent */
-   void *par;   
-};  
+   void *par;
+};
 
 #endif /* _LINUX_FB_H */

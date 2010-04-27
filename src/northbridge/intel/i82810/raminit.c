@@ -312,7 +312,7 @@ static void set_dram_buffer_strength(void)
 					SPD_NUM_DIMM_BANKS) > 1;
 		d1.ss = !d1.ds;
 	}
-	
+
 	buff_sc = 0;
 
 	/* Tame the beast... */
@@ -350,7 +350,7 @@ static void set_dram_buffer_strength(void)
 		buff_sc |= 1 << 14;
 	if (!d0.size && d1.size)
 		buff_sc |= 1 << 15;
-	
+
 	print_debug("BUFF_SC calculated to 0x");
 	print_debug_hex16(buff_sc);
 	print_debug("\n");
@@ -371,7 +371,7 @@ static void sdram_set_registers(void)
 
 	/* Ideally, this should be R/W for as many ranges as possible. */
 	pci_write_config8(PCI_DEV(0, 0, 0), PAMR, 0xff);
-	
+
 	/* Set size for onboard-VGA framebuffer. */
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), SMRAM);
 	reg8 &= 0x3f;			     /* Disable graphics (for now). */

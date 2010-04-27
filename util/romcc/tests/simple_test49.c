@@ -11,5 +11,5 @@ static void main(void)
 		}
 	}
 	__builtin_outb(i, 0x5678);
-		
+
 }

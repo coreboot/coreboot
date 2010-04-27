@@ -118,7 +118,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 			.slot = 0x2,
 		},
  */
- 
+
 /*
  * Definition for "slot#2". There is no real slot,
  * the network device is soldered...

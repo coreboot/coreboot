@@ -70,14 +70,14 @@ static void setup_coherent_ht_domain(void)
 	(((FN) & 0x07) << 8) | \
 	((WHERE) & 0xFF))
 
-	/* Routing Table Node i 
-	 * F0:0x40 i = 0, 
+	/* Routing Table Node i
+	 * F0:0x40 i = 0,
 	 * F0:0x44 i = 1,
-	 * F0:0x48 i = 2, 
+	 * F0:0x48 i = 2,
 	 * F0:0x4c i = 3,
-	 * F0:0x50 i = 4, 
+	 * F0:0x50 i = 4,
 	 * F0:0x54 i = 5,
-	 * F0:0x58 i = 6, 
+	 * F0:0x58 i = 6,
 	 * F0:0x5c i = 7
 	 * [ 0: 3] Request Route
 	 *     [0] Route to this node
@@ -104,7 +104,7 @@ static void setup_coherent_ht_domain(void)
 	PCI_ADDR(0, 0x18, 0, 0x58), 0xfff0f0f0, 0x00010101,
 	PCI_ADDR(0, 0x18, 0, 0x5c), 0xfff0f0f0, 0x00010101,
 
-	/* Hypetransport Transaction Control Register 
+	/* Hypetransport Transaction Control Register
 	 * F0:0x68
 	 * [ 0: 0] Disable read byte probe
 	 *         0 = Probes issues
@@ -146,7 +146,7 @@ static void setup_coherent_ht_domain(void)
 	 * [12:12] Change ISOC to Ordered
 	 *         0 = Bit 1 of coherent HT RdSz/WrSz command used for iosynchronous prioritization
 	 *         1 = Bit 1 of coherent HT RdSz/WrSz command used for ordering.
-	 * [14:13] Buffer Release Priority select 
+	 * [14:13] Buffer Release Priority select
 	 *         00 = 64
 	 *         01 = 16
 	 *         10 = 8
@@ -253,7 +253,7 @@ static void setup_coherent_ht_domain(void)
 	 * [13:13] HT Stop Tristate Enable
 	 *         0 = Driven during an LDTSTOP_L
 	 *         1 = Tristated during and LDTSTOP_L
-	 * [14:14] Extended CTL Time 
+	 * [14:14] Extended CTL Time
 	 *         0 = CTL is asserted for 16 bit times during link initialization
 	 *         1 = CTL is asserted for 50us during link initialization
 	 * [18:16] Max Link Width In (Read-Only?)
@@ -519,7 +519,7 @@ static void setup_coherent_ht_domain(void)
 	 *         1 = base/limit registers i are read-only
 	 * [ 7: 4] Reserved
 	 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
-	 *         This field defines the upper address bits of a 40bit address 
+	 *         This field defines the upper address bits of a 40bit address
 	 *         that defines the start of memory-mapped I/O region i
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00e00003,
@@ -580,7 +580,7 @@ static void setup_coherent_ht_domain(void)
 	 * [ 3: 2] Reserved
 	 * [ 4: 4] VGA Enable
 	 *         0 = VGA matches Disabled
-	 *         1 = matches all address < 64K and where A[9:0] is in the 
+	 *         1 = matches all address < 64K and where A[9:0] is in the
 	 *             range 3B0-3BB or 3C0-3DF independen of the base & limit registers
 	 * [ 5: 5] ISA Enable
 	 *         0 = ISA matches Disabled
@@ -588,7 +588,7 @@ static void setup_coherent_ht_domain(void)
 	 *             from matching agains this base/limit pair
 	 * [11: 6] Reserved
 	 * [24:12] PCI I/O Base i
-	 *         This field defines the start of PCI I/O region n 
+	 *         This field defines the start of PCI I/O region n
 	 * [31:25] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x0000d003,

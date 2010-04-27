@@ -1,5 +1,5 @@
 #define ASSEMBLY 1
-	
+
 	.text
 
 #include "convert.h"
@@ -13,13 +13,13 @@ _start:
 	movl	r15=@gprel(_start)
 	;;
 	sub	gp=r14,r15	/* gp = _start - @gprel(_start), current value of gp */
-	;; 
+	;;
 	mov	out0=in0
 	mov	out1=r28
 	add	out2=@gprel(params),gp
 	br.call.sptk.few rp=convert_params
 
-	
+
 	mov	r28=r8
 	add	r15=@gprel(entry), gp
 	;;
@@ -50,7 +50,7 @@ _start:
 #define UART_FCR	0x02
 #define UART_LCR	0x03
 #define UART_MCR	0x04
-	
+
 #define UART_DLL	0x00
 #define UART_DLM	0x01
 /* Status */
@@ -75,38 +75,38 @@ uart_init:
 	/* set the UART_BASE */
 	movl	r31=UART_PHYS_BASE
 	;;
-	
+
 	/* disable interrupts */
 	add	r30=UART_IER,r31
 	mov	r29=0x00
-	;; 
+	;;
 	st1	[r30]=r29
 
 	/* enable fifos */
 	add	r30=UART_FCR,r31
 	mov	r29=0x01
-	;; 
+	;;
 	st1	[r30]=r29
 
 	/* Set Baud Rate Divisor to UART_BAUD */
 	add	r30=UART_LCR,r31
 	mov	r29=0x83
-	;; 
+	;;
 	st1	[r30]=r29
 
 	add	r30=UART_DLL,r31
 	mov	r29=UART_DIV_LO
-	;; 
+	;;
 	st1	[r30]=r29
-	
+
 	add	r30=UART_DLM,r31
 	mov	r29=UART_DIV_HI
-	;; 
+	;;
 	st1	[r30]=r29
 
 	add	r30=UART_LCR,r31
 	mov	r29=0x03
-	;; 
+	;;
 	st1	[r30]=r29
 
 	br.ret.sptk.few rp
@@ -133,7 +133,7 @@ __uart_tx_byte:
 	;;
 	st1.rel.nta	[r30]=r32
 	;;
-	
+
 	/* Wait until the UART is empty to be certain the byte is flushed */
 	add	r30=UART_LSR,r31
 	;;
@@ -153,7 +153,7 @@ __uart_tx_hex_char:
 (p63)	add	r32=48,r32	/* digits*/
 (p62)	add	r32=55,r32	/* letters */
 	br.cond.sptk.few __uart_tx_byte
-	
+
 uart_tx_hex64:
 	/* set the UART_bASE */
 	movl	r31=UART_PHYS_BASE
@@ -212,7 +212,7 @@ uart_tx_hex64:
 	;;
 	mov	ar.pfs = r26
 	mov	rp = r27
-	;; 
+	;;
 	br.ret.sptk.few	rp
 #endif
 

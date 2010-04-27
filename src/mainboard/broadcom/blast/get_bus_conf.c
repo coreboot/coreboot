@@ -21,7 +21,7 @@ unsigned char bus_bcm5785_1_1 = 9;
 unsigned apicid_bcm5785[3];
 
 
-unsigned pci1234x[] = 
+unsigned pci1234x[] =
 {        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
         0x0000ff0,
@@ -115,9 +115,9 @@ void get_bus_conf(void)
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(3);
-#else 
-	apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+#else
+	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
-	for(i=0;i<3;i++) 
+	for(i=0;i<3;i++)
 		apicid_bcm5785[i] = apicid_base+i;
 }

@@ -160,11 +160,11 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	if (orom == NULL)
 		return NULL;
 
-	/* They might have specified a dest address. If so, we can decompress. 
+	/* They might have specified a dest address. If so, we can decompress.
 	 * If not, there's not much hope of decompressing or relocating the rom.
 	 * in the common case, the expansion rom is uncompressed, we
-	 * pass 0 in for the dest, and all we have to do is find the rom and 
-	 * return a pointer to it. 
+	 * pass 0 in for the dest, and all we have to do is find the rom and
+	 * return a pointer to it.
  	 */
 
 	/* BUG: the cbfstool is (not yet) including a cbfs_optionrom header */
@@ -193,9 +193,9 @@ void * cbfs_load_stage(const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	printk(BIOS_INFO, "Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n", 
+	printk(BIOS_INFO, "Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n",
 			name,
-			(u32) stage->load, stage->memlen, 
+			(u32) stage->load, stage->memlen,
 			stage->entry);
 	memset((void *) (u32) stage->load, 0, stage->memlen);
 
@@ -235,9 +235,9 @@ int cbfs_execute_stage(const char *name)
 
 /**
  * run_address is passed the address of a function taking no parameters and
- * jumps to it, returning the result. 
- * @param f the address to call as a function. 
- * @return value returned by the function. 
+ * jumps to it, returning the result.
+ * @param f the address to call as a function.
+ * @return value returned by the function.
  */
 
 int run_address(void *f)

@@ -70,7 +70,7 @@ static void enable_vx800_serial(void)
 	// turn on pnp
 	vx800_writepnpaddr(0x87);
 	vx800_writepnpaddr(0x87);
-	// now go ahead and set up com1. 
+	// now go ahead and set up com1.
 	// set address
 	vx800_writepnpaddr(0x7);
 	vx800_writepnpdata(0x2);

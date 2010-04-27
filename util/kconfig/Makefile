@@ -12,22 +12,22 @@ endif
 
 Kconfig := src/Kconfig
 
-xconfig: prepare $(objk)/qconf
+xconfig: $(objk)/qconf
 	$(objk)/qconf $(Kconfig)
 
-gconfig: prepare $(objk)/gconf
+gconfig: $(objk)/gconf
 	$(objk)/gconf $(Kconfig)
 
-menuconfig: prepare $(objk)/mconf
+menuconfig: $(objk)/mconf
 	$(objk)/mconf $(Kconfig)
 
-config: prepare $(objk)/conf
+config: $(objk)/conf
 	$(objk)/conf $(Kconfig)
 
-oldconfig: prepare $(objk)/conf
+oldconfig: $(objk)/conf
 	$(objk)/conf -o $(Kconfig)
 
-silentoldconfig: prepare $(objk)/conf
+silentoldconfig: $(objk)/conf
 	$(objk)/conf -s $(Kconfig)
 
 # --- UNUSED, ignore ----------------------------------------------------------
@@ -57,19 +57,19 @@ update-po-config: $(obj)/kxgettext $(obj)/gconf.glade.h
 
 PHONY += randconfig allyesconfig allnoconfig allmodconfig defconfig
 
-randconfig: prepare $(objk)/conf
+randconfig: $(objk)/conf
 	$(objk)/conf -r $(Kconfig)
 
-allyesconfig: prepare $(objk)/conf
+allyesconfig: $(objk)/conf
 	$(objk)/conf -y $(Kconfig)
 
-allnoconfig: prepare $(objk)/conf
+allnoconfig: $(objk)/conf
 	$(objk)/conf -n $(Kconfig)
 
-allmodconfig: prepare $(objk)/conf
+allmodconfig: $(objk)/conf
 	$(objk)/conf -m $(Kconfig)
 
-defconfig: prepare $(objk)/conf
+defconfig: $(objk)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
 	$(objk)/conf -d $(Kconfig)
 else
@@ -77,7 +77,7 @@ else
 	$(objk)/conf -D $(KBUILD_DEFCONFIG) $(Kconfig)
 endif
 
-%_defconfig: prepare $(objk)/conf
+%_defconfig: $(objk)/conf
 	$(objk)/conf -D configs/$@ $(Kconfig)
 
 # Help text used by make help
@@ -180,7 +180,7 @@ $(objk)/.tmp_qtcheck: $(srck)/Makefile
 -include $(objk)/.tmp_qtcheck
 
 # QT needs some extra effort...
-$(objk)/.tmp_qtcheck: prepare
+$(objk)/.tmp_qtcheck:
 	@set -e; dir=""; pkg=""; \
 	pkg-config --exists qt 2> /dev/null && pkg=qt; \
 	pkg-config --exists qt-mt 2> /dev/null && pkg=qt-mt; \
@@ -228,7 +228,7 @@ ifeq ($(gconf-target),1)
 -include $(objk)/.tmp_gtkcheck
 
 # GTK needs some extra effort, too...
-$(objk)/.tmp_gtkcheck: prepare
+$(objk)/.tmp_gtkcheck:
 	@if `pkg-config --exists gtk+-2.0 gmodule-2.0 libglade-2.0`; then		\
 		if `pkg-config --atleast-version=2.0.0 gtk+-2.0`; then			\
 			touch $@;								\

@@ -210,7 +210,7 @@ static const long register_values[] = {
 	 * 0x60 - 0x67
 	 *
 	 * An array of 8 byte registers, which hold the ending memory address
-	 * assigned to each pair of DIMMs, in 8MB granularity.   
+	 * assigned to each pair of DIMMs, in 8MB granularity.
 	 *
 	 * 0x60 DRB0 = Total memory in row0 (in 8 MB)
 	 * 0x61 DRB1 = Total memory in row0+1 (in 8 MB)
@@ -433,13 +433,13 @@ static void do_ram_command(u32 command)
 static void set_dram_buffer_strength(void)
 {
 	/* To give some breathing room for romcc,
-	 * mbsc0 doubles as drb 
+	 * mbsc0 doubles as drb
 	 * mbsc1 doubles as drb1
 	 * mbfs0 doubles as i and reg
 	 */
 	uint8_t mbsc0,mbsc1,mbsc3,mbsc4,mbfs0,mbfs2,fsb;
 
-	/* Tally how many rows between rows 0-3 and rows 4-7 are populated. 
+	/* Tally how many rows between rows 0-3 and rows 4-7 are populated.
 	 * This determines how to program MBFS and MBSC.
 	 */
 	uint8_t dimm03 = 0;
@@ -527,7 +527,7 @@ static void set_dram_buffer_strength(void)
 	 * Therefore it assumes a board with 4 slots, and will need testing
 	 * on boards with 3 DIMM slots.
 	 */
-	 
+
 	mbsc0 = 0x80;
 	mbsc1 = 0x2a;
 	mbfs2 = 0x1f;
@@ -542,36 +542,36 @@ static void set_dram_buffer_strength(void)
 		mbsc4 = 0x0a;
 		mbfs0 = 0x84;
 	}
-	
-	if (dimm03 > 2) { 
-		mbsc4 = mbsc4 | 0x80; 
+
+	if (dimm03 > 2) {
+		mbsc4 = mbsc4 | 0x80;
 		mbsc1 = mbsc1 | 0x28;
 		mbfs2 = mbfs2 | 0x40;
 		mbfs0 = mbfs0 | 0x60;
-	} else { 
-		mbsc4 = mbsc4 | 0xc0; 
+	} else {
+		mbsc4 = mbsc4 | 0xc0;
 		if (fsb == 100) {
 			mbsc1 = mbsc1 | 0x3c;
 		}
-	}	
-	if (dimm47 > 2) { 
-		mbsc4 = mbsc4 | 0x20; 
-		mbsc1 = mbsc1 | 0x02; 
+	}
+	if (dimm47 > 2) {
+		mbsc4 = mbsc4 | 0x20;
+		mbsc1 = mbsc1 | 0x02;
 		mbsc0 = mbsc0 | 0x80;
 		mbfs2 = mbfs2 | 0x20;
 		mbfs0 = mbfs0 | 0x18;
-	} else { 
+	} else {
 		mbsc4 = mbsc4 | 0x30;
 		if (fsb == 100) {
-			mbsc1 = mbsc1 | 0x03; 
+			mbsc1 = mbsc1 | 0x03;
 			mbsc0 = mbsc0 | 0xc0;
 		}
 	}
-	if ((dimm03 + dimm47) > 4) { 
+	if ((dimm03 + dimm47) > 4) {
 		mbsc0 = mbsc0 | 0x30;
 		mbfs0 = mbfs0 | 0x02;
-	} else { 
-		mbsc0 = mbsc0 | 0x2c; 
+	} else {
+		mbsc0 = mbsc0 | 0x2c;
 	}
 
 	pci_write_config8(NB, MBSC + 0, mbsc0);
@@ -724,15 +724,15 @@ static void set_dram_row_attributes(void)
 
 			PRINT_DEBUG("Found ");
 			if (value == SPD_MEMORY_TYPE_EDO) {
-				edosd |= 0x02; 
-			} else if (value == SPD_MEMORY_TYPE_SDRAM) { 
-				edosd |= 0x04; 
+				edosd |= 0x02;
+			} else if (value == SPD_MEMORY_TYPE_SDRAM) {
+				edosd |= 0x04;
 			}
 			PRINT_DEBUG("DIMM in slot ");
 			PRINT_DEBUG_HEX8(i);
 			PRINT_DEBUG("\n");
 
-			if (edosd == 0x06) { 
+			if (edosd == 0x06) {
 				print_err("Mixing EDO/SDRAM unsupported!\n");
 				die("HALT\n");
 			}
@@ -752,7 +752,7 @@ static void set_dram_row_attributes(void)
 
 			/* Data width */
 			width = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);
-			
+
 			/* Exclude error checking data width from page size calculations */
 			if (ecc) {
 				value = spd_read_byte(device,

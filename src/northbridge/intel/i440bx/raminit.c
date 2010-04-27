@@ -694,6 +694,23 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
 	sz.side1 *= 4;
 	sz.side2 *= 4;
 
+	/* It is possible to partially use larger then supported
+	 * modules by setting them to a supported size.
+	 */
+	if(sz.side1 > 128) {
+		PRINT_DEBUG("Side1 was 0x");
+		PRINT_DEBUG_HEX16(sz.side1);
+		PRINT_DEBUG(" but only 128MB will be used.\n");
+		sz.side1 = 128;
+
+		if(sz.side2 > 128) {
+			PRINT_DEBUG("Side2 was 0x");
+			PRINT_DEBUG_HEX16(sz.side2);
+			PRINT_DEBUG(" but only 128MB will be used.\n");
+			sz.side2 = 128;
+		}
+	}
+
 	return sz;
 }
 /*
@@ -792,6 +809,12 @@ static void set_dram_row_attributes(void)
 					dra = 0x1; /* 4KB */
 				} else if (dra == 8) {
 					dra = 0x2; /* 8KB */
+				} else if (dra >= 16) {
+					/* Page sizes larger than supported are
+					 * set to 8KB to use module partially.
+					 */
+					PRINT_DEBUG("Page size forced to 8KB.\n");
+					dra = 0x2; /* 8KB */
 				} else {
 					dra = -1;
 				}
@@ -807,6 +830,10 @@ static void set_dram_row_attributes(void)
 				} else if (dra == 4) {
 					dra = 0x05; /* 4KB */
 				} else if (dra == 8) {
+					dra = 0x0a; /* 8KB */
+				} else if (dra >= 16) {
+					/* Ditto */
+					PRINT_DEBUG("Page size forced to 8KB.\n");
 					dra = 0x0a; /* 8KB */
 				} else {
 					dra = -1;
@@ -826,17 +853,12 @@ static void set_dram_row_attributes(void)
 			/*
 			 * 440BX supports asymmetrical dual-sided DIMMs,
 			 * but can't handle DIMMs smaller than 8MB per
-			 * side or larger than 128MB per side.
+			 * side.
 			 */
 			struct dimm_size sz = spd_get_dimm_size(device);
 			if ((sz.side1 < 8)) {
 				print_err("DIMMs smaller than 8MB per side\n"
 					  "are not supported on this NB.\n");
-				die("HALT\n");
-			}
-			if ((sz.side1 > 128)) {
-				print_err("DIMMs > 128MB per side\n"
-					   "are not supported on this NB\n");
 				die("HALT\n");
 			}
 

@@ -304,12 +304,11 @@ CBFS_PAYLOAD_COMPRESS_FLAG:=l
 CBFS_PAYLOAD_COMPRESS_NAME:=LZMA
 endif
 
-coreboot: prepare $(obj)/coreboot.rom
+coreboot: $(obj)/coreboot.rom
 
 endif
 
-prepare:
-	mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options $(alldirs)
+$(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options $(alldirs))
 
 $(obj)/build.h: .xcompile
 	@printf "    GEN        build.h\n"
@@ -383,5 +382,5 @@ $(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c
 	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
-.PHONY: $(PHONY) prepare clean distclean doxygen doxy coreboot .xcompile
+.PHONY: $(PHONY) clean distclean doxygen doxy coreboot .xcompile
 

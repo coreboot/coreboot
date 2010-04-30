@@ -109,3 +109,9 @@
 #define W83627HF_HAP1		0x14
 #define W83627HF_XSCNF		0x15
 #define W83627HF_XWBCNF		0x16
+
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+void w83627hf_disable_dev(device_t dev);
+void w83627hf_enable_dev(device_t dev, unsigned iobase);
+#endif
+

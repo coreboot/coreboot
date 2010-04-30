@@ -172,11 +172,11 @@ void SetUMARam(void)
 	Tmp = VIACONFIG_VGA_PCI_14;
 	pci_write_config32(vga_dev, 0x14, Tmp);
 
-//enable direct cpu frame buffer access
-	i = pci_rawread_config8(PCI_RAWDEV(0, 0, 3), 0xa1);
+	//enable direct cpu frame buffer access
+	i = pci_read_config8(PCI_DEV(0, 0, 3), 0xa1);
 	i = (i & 0xf0) | (VIACONFIG_VGA_PCI_10 >> 28);
-	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa1, i);
-	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa0, 0x01);
+	pci_write_config8(PCI_DEV(0, 0, 3), 0xa1, i);
+	pci_write_config8(PCI_DEV(0, 0, 3), 0xa0, 0x01);
 
 	//enable GFx memory space access control for S.L and mmio
 	ByteVal = pci_read_config8(d0f0_dev, 0xD4);

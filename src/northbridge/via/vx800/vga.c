@@ -126,6 +126,7 @@ static int via_vx800_int15_handler(struct eregs *regs)
 	return res;
 }
 
+#ifdef UNUSED_CODE
 void write_protect_vgabios(void)
 {
 	device_t dev;
@@ -141,6 +142,7 @@ void write_protect_vgabios(void)
 	   //if(dev)
 	   //   pci_write_config8(dev, 0x61, 0xff); */
 }
+#endif
 
 extern u8 acpi_sleep_type;
 static void vga_init(device_t dev)

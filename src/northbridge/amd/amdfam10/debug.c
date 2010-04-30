@@ -26,7 +26,7 @@
 
 static inline void print_debug_addr(const char *str, void *val)
 {
-#if CACHE_AS_RAM_ADDRESS_DEBUG == 1
+#if defined(CACHE_AS_RAM_ADDRESS_DEBUG) && CACHE_AS_RAM_ADDRESS_DEBUG == 1
 		printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
 #endif
 }

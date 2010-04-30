@@ -10,4 +10,3 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += sspr4.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += sspr5.o
 
 obj-y += get_pci1234.o
-

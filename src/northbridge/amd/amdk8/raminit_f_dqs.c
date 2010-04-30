@@ -528,7 +528,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	unsigned is_Width128 = sysinfo->meminfo[ctrl->node_id].is_Width128;
 
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
-	unsigned cpu_f0_f1;
+	unsigned cpu_f0_f1 = 0;
 #endif
 
 	if(Pass == DQS_FIRST_PASS) {

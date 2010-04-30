@@ -42,8 +42,6 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
 static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
-static void ResetNBECCstat_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstatA);
 static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
 static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
@@ -477,6 +475,8 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 }
 
 #ifdef UNUSED_CODE
+static void ResetNBECCstat_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstatA);
 static void ResetNBECCstat_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA)
 {

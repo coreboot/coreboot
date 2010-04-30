@@ -36,7 +36,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 /* The ALIX1.C has no SMBus; the setup is hard-wired. */
-void cs5536_enable_smbus(void)
+static void cs5536_enable_smbus(void)
 {
 }
 

@@ -1,10 +1,10 @@
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include <stdlib.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"

@@ -944,7 +944,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	u32 drc;
 	u32 data32;
 	u32 mode_reg;
-	u32 *iptr;
+	u32 const *iptr;
 	u16 data16;
 	static const struct {
 		u32 clkgr[4];

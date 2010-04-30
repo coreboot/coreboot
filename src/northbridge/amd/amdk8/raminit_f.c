@@ -2511,9 +2511,8 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 	unsigned SlowAccessMode = 0;
 #endif
 
-	long dimm_mask = meminfo->dimm_mask & 0x0f;
-
 #if CONFIG_DIMM_SUPPORT==0x0104   /* DDR2 and REG */
+	long dimm_mask = meminfo->dimm_mask & 0x0f;
 	/* for REG DIMM */
 	dword = 0x00111222;
 	dwordx = 0x002f0000;
@@ -2578,6 +2577,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 #endif
 
 #if CONFIG_DIMM_SUPPORT==0x0004  /* DDR2 and unbuffered */
+	long dimm_mask = meminfo->dimm_mask & 0x0f;
 	/* for UNBUF DIMM */
 	dword = 0x00111222;
 	dwordx = 0x002f2f00;

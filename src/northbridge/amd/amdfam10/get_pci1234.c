@@ -55,6 +55,7 @@
  *
  */
 
+#include "northbridge.h"
 
 void get_pci1234(void)
 {

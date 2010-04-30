@@ -152,6 +152,7 @@ static u32 get_DctSelBaseAddr(u32 i)
 	return sel_m;
 }
 
+#if CONFIG_AMDMCT == 0
 #ifdef UNUSED_CODE
 static void set_DctSelHiEn(u32 i, u32 val)
 {
@@ -218,8 +219,6 @@ static u32 get_DctSelBaseOffset(u32 i)
 	return sel_off_m;
 }
 #endif
-
-#if CONFIG_AMDMCT == 0
 
 static u32 get_one_DCT(struct mem_info *meminfo)
 {

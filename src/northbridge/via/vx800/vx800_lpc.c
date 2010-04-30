@@ -342,9 +342,11 @@ static void southbridge_init(struct device *dev)
 
 	/* turn on keyboard and RTC, no need to visit this reg twice */
 	pc_keyboard_init(0);
+
 	printk(BIOS_DEBUG, "ps2 usb lid, you  set who can wakeup system from s3 sleep\n");
 	S3_ps2_kb_ms_wakeup(dev);
 	S3_usb_wakeup(dev);
+	S3_lid_wakeup(dev);
 
 /*	enable acpi cpu c3 state. (c2 state need not do anything.)
 	#1

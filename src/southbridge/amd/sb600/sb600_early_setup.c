@@ -213,7 +213,7 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-static void sb600_pci_port80(void)
+void sb600_pci_port80(void)
 {
 	u8 byte;
 	device_t dev;
@@ -258,7 +258,7 @@ static void sb600_pci_port80(void)
 	pci_write_config8(dev, 0x4A, byte);
 }
 
-static void sb600_lpc_port80(void)
+void sb600_lpc_port80(void)
 {
 	u8 byte;
 	device_t dev;

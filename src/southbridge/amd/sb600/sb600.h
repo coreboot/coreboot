@@ -37,4 +37,7 @@ extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 void sb600_enable(device_t dev);
 
+void sb600_lpc_port80(void);
+void sb600_pci_port80(void);
+
 #endif /* SB600_H */

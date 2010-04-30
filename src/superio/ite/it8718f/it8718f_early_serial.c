@@ -64,7 +64,7 @@ static void it8718f_exit_conf(void)
 	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CC, 0x02);
 }
 
-static void it8718f_24mhz_clkin(void)
+void it8718f_24mhz_clkin(void)
 {
 	it8718f_enter_conf();
 
@@ -75,7 +75,7 @@ static void it8718f_24mhz_clkin(void)
 }
 
 /* Enable the peripheral devices on the IT8718F Super I/O chip. */
-static void it8718f_enable_serial(device_t dev, unsigned iobase)
+void it8718f_enable_serial(device_t dev, unsigned iobase)
 {
 	/* (1) Enter the configuration state (MB PnP mode). */
 	it8718f_enter_conf();

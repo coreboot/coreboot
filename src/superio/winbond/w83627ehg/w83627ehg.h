@@ -44,3 +44,9 @@
 #define W83627EHG_GPIO3		((1 << 8) | 9)
 #define W83627EHG_GPIO4		((2 << 8) | 9)
 #define W83627EHG_GPIO5		((3 << 8) | 9)
+
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+void w83627ehg_enable_dev(device_t dev, unsigned iobase);
+void w83627ehg_disable_dev(device_t dev);
+void w83627ehg_enable_serial(device_t dev, unsigned iobase);
+#endif

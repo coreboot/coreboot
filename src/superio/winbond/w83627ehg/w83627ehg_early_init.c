@@ -22,13 +22,13 @@
 #include <arch/romcc_io.h>
 #include "w83627ehg.h"
 
-static void w83627ehg_disable_dev(device_t dev)
+void w83627ehg_disable_dev(device_t dev)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 }
 
-static void w83627ehg_enable_dev(device_t dev, unsigned iobase)
+void w83627ehg_enable_dev(device_t dev, unsigned iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

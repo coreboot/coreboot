@@ -113,5 +113,7 @@
 #if defined(__PRE_RAM__) && !defined(__ROMCC__)
 void w83627hf_disable_dev(device_t dev);
 void w83627hf_enable_dev(device_t dev, unsigned iobase);
+void w83627hf_enable_serial(device_t dev, unsigned iobase);
+void w83627hf_set_clksel_48(device_t dev);
 #endif
 

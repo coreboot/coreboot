@@ -30,3 +30,8 @@
 #define IT8718F_KBCM 0x06 /* Mouse */
 #define IT8718F_IR   0x0a /* Consumer IR */
 
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+void it8718f_24mhz_clkin(void);
+void it8718f_enable_serial(device_t dev, unsigned iobase);
+#endif
+

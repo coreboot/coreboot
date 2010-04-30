@@ -67,7 +67,7 @@ static void pcix_init(device_t dev)
 	/* Bridge control ISA enable */
 	pci_write_config8(dev, 0x3e, 0x07);
 
-#warning "Please review lots of dead code here."
+	// FIXME Please review lots of dead code here.
 #if 0
 	int nmi_option;
 	uint32_t dword;

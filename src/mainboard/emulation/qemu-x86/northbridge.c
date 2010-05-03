@@ -53,60 +53,44 @@ static uint32_t find_pci_tolm(struct bus *bus)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
+#define CMOS_ADDR_PORT 0x70
+#define CMOS_DATA_PORT 0x71
+#define HIGH_RAM_ADDR 0x35
+#define LOW_RAM_ADDR 0x34
+
 static void cpu_pci_domain_set_resources(device_t dev)
 {
-	static const uint8_t ramregs[] = {
-		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
-	};
-	device_t mc_dev;
-	uint32_t pci_tolm;
+	u32 pci_tolm = find_pci_tolm(&dev->link[0]);
+	unsigned long tomk = 0, tolmk;
+	int idx;
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
-	mc_dev = dev->link[0].children;
-	if (mc_dev) {
-		unsigned long tomk, tolmk;
-		unsigned char rambits;
-		int i, idx;
+	outb (HIGH_RAM_ADDR, CMOS_ADDR_PORT);
+	tomk = ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
+	outb (LOW_RAM_ADDR, CMOS_ADDR_PORT);
+	tomk |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
+	tomk += 16 * 1024;
 
-		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
-			unsigned char reg;
-			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes.
-			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total.
-			 * We take the highest one to cover for once and future coreboot
-			 * bugs. We warn about bugs.
-			 */
-			if (reg > rambits)
-				rambits = reg;
-			if (reg < rambits)
-				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n",
-					ramregs[i]);
-		}
-		if (rambits == 0) {
-			printk(BIOS_ERR, "RAM size config registers are empty; defaulting to 64 MBytes\n");
-			rambits = 8;
-		}
-		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
-		tomk = rambits*8*1024;
-		/* Compute the top of Low memory */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does not overlap the memory. */
-			tolmk = tomk;
-		}
+	printk(BIOS_DEBUG, "Detected %lu Kbytes (%lu MiB) RAM.\n",
+	       tomk, tomk / 1024);
 
-		/* Report the memory regions. */
-		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
+	/* Compute the top of Low memory */
+	tolmk = pci_tolm >> 10;
+	if (tolmk >= tomk) {
+		/* The PCI hole does not overlap the memory. */
+		tolmk = tomk;
+	}
+
+	/* Report the memory regions. */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 640);
+	ram_resource(dev, idx++, 768, tolmk - 768);
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-		/* Leave some space for ACPI, PIRQ and MP tables */
-		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE * 1024;
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+	high_tables_size = HIGH_TABLES_SIZE * 1024;
 #endif
-	}
+
 	assign_resources(&dev->link[0]);
 }
 

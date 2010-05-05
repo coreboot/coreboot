@@ -1,8 +1,8 @@
 chip northbridge/intel/i945
 
-        device apic_cluster 0 on
+        device lapic_cluster 0 on
                 chip cpu/intel/socket_mFCPGA478
-                        device apic 0 on end
+                        device lapic 0 on end
                 end
         end
 

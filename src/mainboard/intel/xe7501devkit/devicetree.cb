@@ -61,12 +61,12 @@ chip northbridge/intel/e7501
 			device pci 1f.6 off end # AC97 Modem
 		end # SB
 	end # PCI_DOMAIN
-	device apic_cluster 0 on
+	device lapic_cluster 0 on
 		chip cpu/intel/socket_mPGA604
-			device apic 0 on end
+			device lapic 0 on end
 		end
 		chip cpu/intel/socket_mPGA604
-			device apic 6 on end
+			device lapic 6 on end
 		end
 	end
 end

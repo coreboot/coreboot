@@ -80,9 +80,9 @@ chip northbridge/via/cn700			# Northbridge
       device pci 12.0 on end			# Ethernet
     end
   end
-  device apic_cluster 0 on			# APIC cluster
+  device lapic_cluster 0 on			# APIC cluster
     chip cpu/via/model_c7			# VIA C7
-      device apic 0 on end			# APIC
+      device lapic 0 on end			# APIC
     end
   end
 end

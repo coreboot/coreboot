@@ -58,12 +58,12 @@ chip northbridge/intel/e7520 # mch
 		device pci 04.0 on end
 		device pci 06.0 on end
 	end
-	device apic_cluster 0 on
+	device lapic_cluster 0 on
 		chip cpu/intel/socket_mPGA604 # cpu 0
-			device apic 0 on end
+			device lapic 0 on end
 		end
 		chip cpu/intel/socket_mPGA604 # cpu 1
-			device apic 6 on end
+			device lapic 6 on end
 		end
 	end
 	register "intrline" = "0x00070100"

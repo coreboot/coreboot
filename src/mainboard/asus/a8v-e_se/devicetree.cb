@@ -1,7 +1,7 @@
 chip northbridge/amd/amdk8/root_complex		# Root complex
-  device apic_cluster 0 on			# APIC cluster
+  device lapic_cluster 0 on			# APIC cluster
     chip cpu/amd/socket_939			# CPU
-      device apic 0 on end			# APIC
+      device lapic 0 on end			# APIC
     end
   end
   device pci_domain 0 on			# PCI domain

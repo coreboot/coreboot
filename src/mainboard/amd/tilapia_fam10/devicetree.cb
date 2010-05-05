@@ -1,8 +1,8 @@
 # sample config for amd/tilapia_fam10
 chip northbridge/amd/amdfam10/root_complex
-	device apic_cluster 0 on
+	device lapic_cluster 0 on
 		chip cpu/amd/socket_AM3  #L1 and DDR3
-			 device apic 0 on end
+			 device lapic 0 on end
 		end
 	end
 	device pci_domain 0 on

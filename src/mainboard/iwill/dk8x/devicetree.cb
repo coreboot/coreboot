@@ -56,12 +56,12 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.3 on end
 		end
 	end
-	device apic_cluster 0 on
+	device lapic_cluster 0 on
 		chip cpu/amd/socket_940
-			device apic 0 on end
+			device lapic 0 on end
 		end
 		chip cpu/amd/socket_940
-			device apic 1 on end
+			device lapic 1 on end
 		end
 	end
 end

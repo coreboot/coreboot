@@ -170,7 +170,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 
 $(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) -MMD $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
 
 $(obj)/%.o: $(obj)/%.c $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

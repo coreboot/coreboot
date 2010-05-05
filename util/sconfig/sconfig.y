@@ -31,19 +31,17 @@ static struct device *cur_parent, *cur_bus;
 }
 %token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC APIC_CLUSTER PCI_DOMAIN IRQ DRQ IO NUMBER
 %%
-devtree: { cur_parent = cur_bus = head; } devchip { postprocess_devtree(); } ;
+devtree: { cur_parent = cur_bus = head; } chip { postprocess_devtree(); } ;
 
-devchip: chip | device ;
+chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
-devices: devices devchip | devices registers | ;
-
-devicesorresources: devicesorresources devchip | devicesorresources resource | ;
+devicechildren: devicechildren device | devicechildren chip | devicechildren resource | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
 	$<device>$ = new_chip(cur_parent, cur_bus, $<string>2);
 	cur_parent = $<device>$;
 }
-	devices END {
+	chipchildren END {
 	cur_parent = $<device>3->parent;
 	fold_in($<device>3);
 	add_header($<device>3);
@@ -54,7 +52,7 @@ device: DEVICE BUS NUMBER /* == devnum */ BOOL {
 	cur_parent = $<device>$;
 	cur_bus = $<device>$;
 }
-	devicesorresources END {
+	devicechildren END {
 	cur_parent = $<device>5->parent;
 	cur_bus = $<device>5->bus;
 	fold_in($<device>5);

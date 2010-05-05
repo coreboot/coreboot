@@ -74,7 +74,7 @@ struct device {
 	struct reg *reg;
 };
 
-extern struct device *cur_parent, *cur_bus;
+struct device *head;
 
 struct header;
 struct header {
@@ -85,9 +85,9 @@ struct header {
 void fold_in(struct device *parent);
 
 void postprocess_devtree(void);
-struct device *new_chip(char *path);
+struct device *new_chip(struct device *parent, struct device *bus, char *path);
 void add_header(struct device *dev);
-struct device *new_device(const int bus, const char *devnum, int enabled);
+struct device *new_device(struct device *parent, struct device *busdev, const int bus, const char *devnum, int enabled);
 void alias_siblings(struct device *d);
-void add_resource(int type, int index, int base);
-void add_register(char *name, char *val);
+void add_resource(struct device *dev, int type, int index, int base);
+void add_register(struct device *dev, char *name, char *val);

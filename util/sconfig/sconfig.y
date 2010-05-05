@@ -21,7 +21,7 @@
 
 #include "sconfig.h"
 
-struct device *cur_parent, *cur_bus;
+static struct device *cur_parent, *cur_bus;
 
 %}
 %union {
@@ -31,7 +31,7 @@ struct device *cur_parent, *cur_bus;
 }
 %token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC APIC_CLUSTER PCI_DOMAIN IRQ DRQ IO NUMBER
 %%
-devtree: devchip { postprocess_devtree(); } ;
+devtree: { cur_parent = cur_bus = head; } devchip { postprocess_devtree(); } ;
 
 devchip: chip | device ;
 
@@ -40,7 +40,7 @@ devices: devices devchip | devices registers | ;
 devicesorresources: devicesorresources devchip | devicesorresources resource | ;
 
 chip: CHIP STRING /* == path */ {
-	$<device>$ = new_chip($<string>2);
+	$<device>$ = new_chip(cur_parent, cur_bus, $<string>2);
 	cur_parent = $<device>$;
 }
 	devices END {
@@ -50,7 +50,7 @@ chip: CHIP STRING /* == path */ {
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ BOOL {
-	$<device>$ = new_device($<number>2, $<string>3, $<number>4);
+	$<device>$ = new_device(cur_parent, cur_bus, $<number>2, $<string>3, $<number>4);
 	cur_parent = $<device>$;
 	cur_bus = $<device>$;
 }
@@ -62,9 +62,9 @@ device: DEVICE BUS NUMBER /* == devnum */ BOOL {
 };
 
 resource: RESOURCE NUMBER /* == resnum */ EQUALS NUMBER /* == resval */
-	{ add_resource($<number>1, strtol($<string>2, NULL, 0), strtol($<string>4, NULL, 0)); } ;
+	{ add_resource(cur_parent, $<number>1, strtol($<string>2, NULL, 0), strtol($<string>4, NULL, 0)); } ;
 
 registers: REGISTER STRING /* == regname */ EQUALS STRING /* == regval */
-	{ add_register($<string>2, $<string>4); } ;
+	{ add_register(cur_parent, $<string>2, $<string>4); } ;
 
 %%

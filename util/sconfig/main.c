@@ -51,12 +51,12 @@ static struct device root = {
 	.enabled = 1
 };
 
-static struct device *new_dev() {
+static struct device *new_dev(struct device *parent, struct device *bus) {
 	struct device *dev = malloc(sizeof(struct device));
 	memset(dev, 0, sizeof(struct device));
 	dev->id = ++devcount;
-	dev->parent = cur_parent;
-	dev->bus = cur_bus;
+	dev->parent = parent;
+	dev->bus = bus;
 	head->next = dev;
 	head = dev;
 	return dev;
@@ -110,8 +110,8 @@ void postprocess_devtree(void) {
 	}
 }
 
-struct device *new_chip(char *path) {
-	struct device *new_chip = new_dev();
+struct device *new_chip(struct device *parent, struct device *bus, char *path) {
+	struct device *new_chip = new_dev(parent, bus);
 	new_chip->chiph_exists = 1;
 	new_chip->name = path;
 	new_chip->name_underscore = strdup(new_chip->name);
@@ -129,13 +129,13 @@ struct device *new_chip(char *path) {
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
 		new_chip->chiph_exists = 0;
 
-	if (cur_parent->latestchild) {
-		cur_parent->latestchild->next_sibling = new_chip;
-		cur_parent->latestchild->sibling = new_chip;
+	if (parent->latestchild) {
+		parent->latestchild->next_sibling = new_chip;
+		parent->latestchild->sibling = new_chip;
 	}
-	cur_parent->latestchild = new_chip;
-	if (!cur_parent->children)
-		cur_parent->children = new_chip;
+	parent->latestchild = new_chip;
+	if (!parent->children)
+		parent->children = new_chip;
 	return new_chip;
 }
 
@@ -162,8 +162,8 @@ void add_header(struct device *dev) {
 	}
 }
 
-struct device *new_device(const int bus, const char *devnum, int enabled) {
-	struct device *new_d = new_dev();
+struct device *new_device(struct device *parent, struct device *busdev, const int bus, const char *devnum, int enabled) {
+	struct device *new_d = new_dev(parent, busdev);
 	new_d->bustype = bus;
 
 	char *tmp;
@@ -181,13 +181,13 @@ struct device *new_device(const int bus, const char *devnum, int enabled) {
 	new_d->enabled = enabled;
 	new_d->chip = new_d->parent->chip;
 
-	if (cur_parent->latestchild) {
-		cur_parent->latestchild->next_sibling = new_d;
-		cur_parent->latestchild->sibling = new_d;
+	if (parent->latestchild) {
+		parent->latestchild->next_sibling = new_d;
+		parent->latestchild->sibling = new_d;
 	}
-	cur_parent->latestchild = new_d;
-	if (!cur_parent->children)
-		cur_parent->children = new_d;
+	parent->latestchild = new_d;
+	if (!parent->children)
+		parent->children = new_d;
 
 	lastdev->nextdev = new_d;
 	lastdev = new_d;
@@ -235,29 +235,29 @@ void alias_siblings(struct device *d) {
 	}
 }
 
-void add_resource(int type, int index, int base) {
+void add_resource(struct device *dev, int type, int index, int base) {
 	struct resource *r = malloc(sizeof(struct resource));
 	memset (r, 0, sizeof(struct resource));
 	r->type = type;
 	r->index = index;
 	r->base = base;
-	if (cur_parent->res) {
-		struct resource *head = cur_parent->res;
+	if (dev->res) {
+		struct resource *head = dev->res;
 		while (head->next) head = head->next;
 		head->next = r;
 	} else {
-		cur_parent->res = r;
+		dev->res = r;
 	}
-	cur_parent->rescnt++;
+	dev->rescnt++;
 }
 
-void add_register(char *name, char *val) {
+void add_register(struct device *dev, char *name, char *val) {
 	struct reg *r = malloc(sizeof(struct reg));
 	memset (r, 0, sizeof(struct reg));
 	r->key = name;
 	r->value = val;
-	if (cur_parent->reg) {
-		struct reg *head = cur_parent->reg;
+	if (dev->reg) {
+		struct reg *head = dev->reg;
 		// sorting to be equal to sconfig's behaviour
 		int sort = strcmp(r->key, head->key);
 		if (sort == 0) {
@@ -266,14 +266,14 @@ void add_register(char *name, char *val) {
 		}
 		if (sort<0) {
 			r->next = head;
-			cur_parent->reg = r;
+			dev->reg = r;
 		} else {
 			while ((head->next) && (strcmp(head->next->key, r->key)<0)) head = head->next;
 			r->next = head->next;
 			head->next = r;
 		}
 	} else {
-		cur_parent->reg = r;
+		dev->reg = r;
 	}
 }
 
@@ -390,7 +390,7 @@ int main(int argc, char** argv) {
 
 	FILE *staticc = fopen(outputc, "w");
 
-	cur_bus = cur_parent = lastdev = head = &root;
+	lastdev = head = &root;
 	yyparse();
 	fclose(filec);
 

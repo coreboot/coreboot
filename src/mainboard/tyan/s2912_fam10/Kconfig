@@ -112,11 +112,6 @@ config AMD_UCODE_PATCH_FILE
 	default "mc_patch_01000095.h"
 	depends on BOARD_TYAN_S2912_FAM10
 
-config SERIAL_CPU_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
 config RAMBASE
 	hex
 	default 0x200000

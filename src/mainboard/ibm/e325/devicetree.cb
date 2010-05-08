@@ -1,4 +1,9 @@
 chip northbridge/amd/amdk8/root_complex
+	device lapic_cluster 0 on
+		chip cpu/amd/socket_940
+			device lapic 0 on end
+		end
+	end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # LDT 0
@@ -59,22 +64,6 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
-		end
-		chip northbridge/amd/amdk8
-			device pci 19.0 on end
-			device pci 19.0 on end
-			device pci 19.0 on end
-			device pci 19.1 on end
-			device pci 19.2 on end
-			device pci 19.3 on end
-		end
-	end
-	device lapic_cluster 0 on
-		chip cpu/amd/socket_940
-			device lapic 0 on end
-		end
-		chip cpu/amd/socket_940
-			device lapic 1 on end
 		end
 	end
 end

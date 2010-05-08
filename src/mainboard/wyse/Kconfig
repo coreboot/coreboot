@@ -1,0 +1,8 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_WYSE
+
+source "src/mainboard/wyse/s50/Kconfig"
+
+endchoice
+

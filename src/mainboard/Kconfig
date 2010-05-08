@@ -100,6 +100,8 @@ config VENDOR_VIA
 	bool "VIA"
 config VENDOR_WINENT
 	bool "Win Enterprises"
+config VENDOR_WYSE
+	bool "Wyse"
 
 endchoice
 
@@ -373,6 +375,16 @@ config MAINBOARD_VENDOR
 	default "Win Enterprise"
 	depends on VENDOR_WINENT
 
+config MAINBOARD_VENDOR
+	string
+	default "Wyse"
+	depends on VENDOR_WYSE
+	
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x102d
+	depends on VENDOR_WYSE
+
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/abit/Kconfig"
 source "src/mainboard/advantech/Kconfig"
@@ -421,6 +433,7 @@ source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
 source "src/mainboard/winent/Kconfig"
+source "src/mainboard/wyse/Kconfig"
 
 config BOARD_ROMSIZE_KB_128
 	bool

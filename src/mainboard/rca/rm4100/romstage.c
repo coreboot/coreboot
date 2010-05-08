@@ -25,9 +25,8 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
 #include "pc80/udelay_io.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"

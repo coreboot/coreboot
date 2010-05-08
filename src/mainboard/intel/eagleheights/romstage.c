@@ -32,8 +32,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include <cpu/x86/bist.h>
 
 #include "lib/ramtest.c"

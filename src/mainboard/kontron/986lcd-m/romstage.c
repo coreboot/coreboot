@@ -46,8 +46,6 @@
 #include "pc80/mc146818rtc_early.c"
 
 #include <console/console.h>
-#include "pc80/serial.c"
-#include "console/console.c"
 #include <cpu/x86/bist.h>
 
 #if CONFIG_USBDEBUG_DIRECT

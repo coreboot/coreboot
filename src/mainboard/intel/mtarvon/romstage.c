@@ -28,7 +28,7 @@
 #include <cpu/x86/lapic.h>
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"

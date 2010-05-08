@@ -6,7 +6,7 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"

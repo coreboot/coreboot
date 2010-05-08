@@ -48,8 +48,7 @@
 #define CK804_NUM 1
 
 #include <cpu/amd/model_fxx_rev.h>
-#include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"

@@ -47,8 +47,7 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
-#include "console/console.c"
-#include "pc80/serial.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"

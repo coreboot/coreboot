@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"

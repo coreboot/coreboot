@@ -5,9 +5,9 @@
 #include <console/console.h>
 #include <build.h>
 #include <arch/hlt.h>
+#include <arch/io.h>
 
 #ifndef __PRE_RAM__
-#include <arch/io.h>
 #include <string.h>
 #include <pc80/mc146818rtc.h>
 

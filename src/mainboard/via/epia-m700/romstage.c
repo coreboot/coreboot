@@ -33,8 +33,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "northbridge/via/vx800/vx800.h"
 #include "cpu/x86/mtrr/earlymtrr.c"

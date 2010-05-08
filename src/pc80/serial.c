@@ -1,4 +1,5 @@
 #include <lib.h> /* Prototypes */
+#include <arch/io.h>
 
 /* Base Address */
 #ifndef CONFIG_TTYS0_BASE

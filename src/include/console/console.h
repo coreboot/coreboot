@@ -307,4 +307,9 @@ static void print_spew(const char *str) { __console_tx_string(BIOS_SPEW, str); }
 
 #endif
 
+#ifdef __ROMCC__
+/* if included by romcc, include the sources, too. romcc can't use prototypes */
+#include <console/console.c>
+#endif
+
 #endif /* CONSOLE_CONSOLE_H_ */

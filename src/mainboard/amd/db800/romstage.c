@@ -19,13 +19,12 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
 #include <console/console.h>
-#include "console/console.c"
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
@@ -33,7 +32,6 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"

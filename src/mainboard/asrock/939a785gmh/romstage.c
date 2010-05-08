@@ -43,8 +43,7 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
-#include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"

@@ -53,8 +53,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #if CONFIG_USBDEBUG_DIRECT
 #include "southbridge/sis/sis966/sis966_enable_usbdebug_direct.c"
 #include "pc80/usbdebug_direct_serial.c"

@@ -26,7 +26,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
-#include "console/console.c"
+#include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"

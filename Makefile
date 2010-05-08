@@ -368,12 +368,12 @@ include util/kconfig/Makefile
 $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
 
-_OS=$(shell uname -s |cut -c-7)
+_OS=$(shell uname -o)
 STACK=
-ifeq ($(_OS),MINGW32)
+ifeq ($(_OS),Msys)
 	STACK=-Wl,--stack,16384000
 endif
-ifeq ($(_OS),CYGWIN_)
+ifeq ($(_OS),Cygwin)
 	STACK=-Wl,--stack,16384000
 endif
 $(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c

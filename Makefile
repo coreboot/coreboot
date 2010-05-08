@@ -368,14 +368,15 @@ include util/kconfig/Makefile
 $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
 
-_OS=$(shell uname -o)
+_WINCHECK=$(shell uname -o 2> /dev/null)
 STACK=
-ifeq ($(_OS),Msys)
+ifeq ($(_WINCHECK),Msys)
 	STACK=-Wl,--stack,16384000
 endif
-ifeq ($(_OS),Cygwin)
+ifeq ($(_WINCHECK),Cygwin)
 	STACK=-Wl,--stack,16384000
 endif
+
 $(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	@# Note: Adding -O2 here might cause problems. For details see:

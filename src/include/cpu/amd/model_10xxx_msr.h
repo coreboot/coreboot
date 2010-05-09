@@ -20,6 +20,8 @@
 #ifndef CPU_AMD_MODEL_10XXX_MSR_H
 #define CPU_AMD_MODEL_10XXX_MSR_H
 
+#include <cpu/x86/msr.h>
+
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 #define LS_CFG_MSR			0xC0011020

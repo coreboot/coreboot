@@ -1,6 +1,7 @@
 /* 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  */
+#include <string.h>
 #include <arch/stages.h>
 #include "cpu/amd/car/disable_cache_as_ram.c"
 

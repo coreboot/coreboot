@@ -18,6 +18,12 @@
  */
 
 #include "defaults.h"
+#include <stdlib.h>
+#include <cpu/x86/lapic.h>
+#include <cpu/x86/mtrr.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
+#include <northbridge/amd/amdht/AsPsDefs.h>
+#include <northbridge/amd/amdht/porting.h>
 
 //it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
 #ifndef SET_FIDVID

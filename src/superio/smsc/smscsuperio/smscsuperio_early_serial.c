@@ -19,6 +19,7 @@
  */
 
 #include <arch/romcc_io.h>
+#include <device/pnp_def.h>
 
 /* All known/supported SMSC Super I/Os have the same logical device IDs
  * for the serial ports (COM1, COM2).

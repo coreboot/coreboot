@@ -19,6 +19,7 @@
 
 
 #include "mct_d.h"
+#include <cpu/amd/mtrr.h>
 
 static void SetMTRRrangeWB_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr);
 static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType);

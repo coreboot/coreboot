@@ -8,9 +8,7 @@ typedef long ssize_t;
 typedef int wchar_t;
 typedef unsigned int wint_t;
 
-#ifndef NULL
 #define NULL ((void *)0)
-#endif
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 

@@ -4,14 +4,11 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"

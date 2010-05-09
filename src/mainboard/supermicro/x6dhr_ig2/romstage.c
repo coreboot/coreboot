@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"

@@ -24,7 +24,6 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "northbridge/amd/gx1/raminit.c"

@@ -25,7 +25,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 /* TODO: It's a PC87364 actually! */

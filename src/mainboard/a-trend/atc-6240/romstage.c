@@ -25,7 +25,6 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"

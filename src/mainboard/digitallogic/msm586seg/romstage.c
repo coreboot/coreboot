@@ -5,7 +5,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/mc146818rtc_early.c"
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"

@@ -5,7 +5,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
-#include "pc80/serial.c"
 #include <console/console.h>
 #include "lib/ramtest.c"
 //#include "southbridge/intel/i440bx/i440bx_early_smbus.c"

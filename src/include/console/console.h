@@ -129,6 +129,7 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define print_spew_hex32(HEX)    printk(BIOS_SPEW,   "%08x", (HEX))
 #else
 
+#include <pc80/serial.c>
 
 /* __ROMCC__ */
 static void __console_tx_byte(unsigned char byte)

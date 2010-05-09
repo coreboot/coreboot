@@ -258,11 +258,11 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			if (getobj->objnum == count) {
 				printk(BIOS_DEBUG, "|  |- len = %x\n", len);
 				memcpy((void *)(getobj->buffer + OBJ_OFFSET),
-						((char *)mbi_header) + 0x20 , (len > getobj->buflen ? getobj->buflen : len));
+						((char *)mbi_header) + 0x20 , (len > getobj->buflen) ? getobj->buflen : len);
 
 				getobj->banner.retsts = MSH_OK;
 #ifdef DEBUG_SMI_I82830
-				dump(banner_id, sizeof(getobj));
+				dump(banner_id, sizeof(*getobj));
 				dump(getobj->buffer + OBJ_OFFSET, len);
 #endif
 				break;

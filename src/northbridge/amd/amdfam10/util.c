@@ -19,18 +19,18 @@
  */
 
 /*
- * K8 northbridge utilities (dump routing registers).
+ * fam10 northbridge utilities (dump routing registers).
  * Designed to be called at any time.
  * It can be called before RAM is set up by including this file.
- * It can be called after RAM is set up by including amdk8.h and enabling the
- * compilation of this file in src/northbridge/amd/amdk8/Makefile.inc.
+ * It can be called after RAM is set up by including amdfam10.h and enabling the
+ * compilation of this file in src/northbridge/amd/amdfam10/Makefile.inc.
  */
 #ifndef __PRE_RAM__
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #endif
-#include "amdk8.h"
+#include "amdfam10.h"
 
 /* Function 1 */
 /* the DRAM, MMIO,and PCIIO routing are 64-bit registers, hence the ending at

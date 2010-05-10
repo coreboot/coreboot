@@ -1169,4 +1169,8 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 
 #endif
 
+#ifndef __ROMCC__
+void showallroutes(int level, device_t dev);
+#endif
+
 #endif /* AMDFAM10_H */

@@ -1021,7 +1021,7 @@ static void amdk8_domain_set_resources(device_t dev)
 					idx += 0x10;
 					sizek -= pre_sizek;
 #if CONFIG_WRITE_HIGH_TABLES==1
-					if (i==0 && high_tables_base==0) {
+					if (high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
 						high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
@@ -1061,7 +1061,7 @@ static void amdk8_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES==1
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
 			     i, mmio_basek, basek, limitk);
-		if (i==0 && high_tables_base==0) {
+		if (high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
 			high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);

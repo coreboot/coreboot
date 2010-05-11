@@ -21,6 +21,7 @@
 #define NORTHBRIDGE_VIA_VX800_H
 
 extern unsigned int vx800_scan_root_bus(device_t root, unsigned int max);
-extern void (*vga_enable_console)(void) __attribute__((regparm(0)));
+extern void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx, 
+		u32 esi, u32 edi) __attribute__((regparm(0)));
 
 #endif				/* NORTHBRIDGE_VIA_VX800_H */

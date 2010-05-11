@@ -127,7 +127,7 @@ static int via_vx800_int15_handler(struct eregs *regs)
 }
 
 #ifdef UNUSED_CODE
-void write_protect_vgabios(void)
+static void write_protect_vgabios(void)
 {
 	device_t dev;
 
@@ -143,6 +143,17 @@ void write_protect_vgabios(void)
 	   //   pci_write_config8(dev, 0x61, 0xff); */
 }
 #endif
+
+static void vga_enable_console(void)
+{
+	/* Call VGA BIOS int10 function 0x4f14 to enable main console
+	 * Epia-M does not always autosense the main console so forcing
+	 * it on is good.
+	 */
+
+	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
+	realmode_interrupt(0x10, 0x4f1f, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+}
 
 extern u8 acpi_sleep_type;
 static void vga_init(device_t dev)
@@ -170,9 +181,6 @@ static void vga_init(device_t dev)
 	pci_dev_init(dev);
 
 	printk(BIOS_DEBUG, "Enable VGA console\n");
-	// this is how it should look:
-	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
-	// this is how it looks:
 	vga_enable_console();
 
 	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {

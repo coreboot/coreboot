@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2009 coresystems GmbH
+ * Copyright (C) 2009-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,21 +57,49 @@ __realmode_idt = RELOCATED(.)
 __stack = RELOCATED(.)
 	.long 0
 
+/* Register store for realmode_call and realmode_interrupt */
+__registers = RELOCATED(.)
+	.long 0 /* 0x00 - EAX */
+	.long 0 /* 0x04 - EBX */
+	.long 0 /* 0x08 - ECX */
+	.long 0 /* 0x0c - EDX */
+	.long 0 /* 0x10 - EDI */
+	.long 0 /* 0x14 - ESI */
+
 	.code32
-	.globl __run_optionrom
-__run_optionrom = RELOCATED(.)
+	.globl __realmode_call
+__realmode_call = RELOCATED(.)
 	/* save all registers to the stack */
 	pushal
 
 	/* Move the protected mode stack to a safe place */
-	mov 	%esp, __stack
-
-	/* Get devfn into %ecx */
+	movl	%esp, __stack
 	movl    %esp, %ebp
+
 	/* This function is called with regparm=0 and we have
-	 * to skip the 32 byte from pushal:
+	 * to skip the 32 byte from pushal. Hence start at 36.
 	 */
-	movl    36(%ebp), %ecx
+
+	/* entry point */
+	movl    36(%ebp), %eax
+	movw	%ax, __lcall_instr + 1
+	andl	$0xffff0000, %eax
+	shrl	$4, %eax
+	movw	%ax, __lcall_instr + 3
+
+	/* initial register values */
+	movl	40(%ebp), %eax
+	movl	%eax, __registers + 0x00 /* eax */
+	movl	44(%ebp), %eax
+	movl	%eax, __registers + 0x04 /* ebx */
+	movl	48(%ebp), %eax
+	movl	%eax, __registers + 0x08 /* ecx */
+	movl	52(%ebp), %eax
+	movl	%eax, __registers + 0x0c /* edx */
+	movl	56(%ebp), %eax
+	movl	%eax, __registers + 0x10 /* esi */
+	movl	60(%ebp), %eax
+	movl	%eax, __registers + 0x14 /* esi */
 
 	/* Activate the right segment descriptor real mode. */
 	ljmp	$0x28, $RELOCATED(1f)
@@ -120,11 +148,18 @@ __run_optionrom = RELOCATED(.)
 	mov	$0x40, %ax
 	mov	%ax, %ds
 
+	/* initialize registers for option rom lcall */
+	movl	__registers +  0, %eax
+	movl	__registers +  4, %ebx
+	movl	__registers +  8, %ecx
+	movl	__registers + 12, %edx
+	movl	__registers + 16, %esi
+	movl	__registers + 20, %edi
+
 	/* ************************************ */
-	mov	%cx, %ax	// restore ax
-	// TODO this will not work for non-VGA option ROMs
-	/* run VGA BIOS at 0xc000:0003 */
-	lcall	$0xc000, $0x0003
+__lcall_instr = RELOCATED(.)
+	.byte 0x9a
+	.word 0x0000, 0x0000
 	/* ************************************ */
 
 	/* If we got here, just about done.
@@ -151,125 +186,46 @@ __run_optionrom = RELOCATED(.)
 	lidt	idtarg
 
 	/* and exit */
-	mov	__stack, %esp
+	movl	__stack, %esp
 	popal
+
+	// TODO return AX from OPROM call
 	ret
 
-#if defined(CONFIG_GEODE_VSA) && CONFIG_GEODE_VSA
-#define VSA2_ENTRY_POINT	0x60020
-
-	.globl __run_vsa
-__run_vsa = RELOCATED(.)
+	.globl __realmode_interrupt
+__realmode_interrupt = RELOCATED(.)
 	/* save all registers to the stack */
 	pushal
-
-	/* Move the protected mode stack to a safe place */
-	mov 	%esp, __stack
-
-	movl    %esp, %ebp
-	/* This function is called with regparm=0 and we have
-	 * to skip the 32 byte from pushal:
-	 */
-	movl    36(%ebp), %ecx
-	movl    40(%ebp), %edx
-
-	/* Activate the right segment descriptor real mode. */
-	ljmp	$0x28, $RELOCATED(1f)
-1:
-.code16
-	/* 16 bit code from here on... */
-
-	/* Load the segment registers w/ properly configured
-	 * segment descriptors. They will retain these
-	 * configurations (limits, writability, etc.) once
-	 * protected mode is turned off.
-	 */
-	mov	$0x30, %ax
-	mov	%ax, %ds
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-	mov	%ax, %ss
-
-	/* Turn off protection */
-	movl	%cr0, %eax
-	andl	$~PE, %eax
-	movl	%eax, %cr0
-
-	/* Now really going into real mode */
-	ljmp	$0, $RELOCATED(1f)
-1:
-	/* Setup a stack: Put the stack at the end of page zero.
-	 * That way we can easily share it between real and
-	 * protected, since the 16 bit ESP at segment 0 will
-	 * work for any case. */
-	mov	$0x0, %ax
-	mov	%ax, %ss
-	movl	$0x1000, %eax
-	movl	%eax, %esp
-
-	/* Load our 16 bit idt */
-	xor	%ax, %ax
-	mov	%ax, %ds
-	lidt	__realmode_idt
-
-	/* Set all segments to 0x0000, ds to 0x0040 */
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-	mov	$0x40, %ax
-	mov	%ax, %ds
-	mov	%cx, %ax	// restore ax
-
-	/* ************************************ */
-	lcall	$((VSA2_ENTRY_POINT & 0xffff0000) >> 4), $(VSA2_ENTRY_POINT & 0xffff)
-	/* ************************************ */
-
-	/* If we got here, just about done.
-	 * Need to get back to protected mode
-	 */
-	movl	%cr0, %eax
-	orl	$PE, %eax
-	movl	%eax, %cr0
-
-	/* Now that we are in protected mode
-	 * jump to a 32 bit code segment.
-	 */
-	data32	ljmp	$0x10, $RELOCATED(1f)
-1:
-	.code32
-	movw	$0x18, %ax
-	mov	%ax, %ds
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-	mov	%ax, %ss
-
-	/* restore proper idt */
-	lidt	idtarg
-
-	/* and exit */
-	mov	__stack, %esp
-	popal
-	ret
-#endif
-
-	.globl __run_interrupt
-__run_interrupt = RELOCATED(.)
-
-	pushal
 	/* save the stack */
-	mov	%esp, __stack
+	movl	%esp, __stack
+	movl    %esp, %ebp
 
+	/* This function is called with regparm=0 and we have
+	 * to skip the 32 byte from pushal. Hence start at 36.
+	 */
+
+	/* prepare interrupt calling code */
+	movl    36(%ebp), %eax
+	movb	%al, __intXX_instr + 1 /* intno */
+
+	/* initial register values */
+	movl	40(%ebp), %eax
+	movl	%eax, __registers + 0x00 /* eax */
+	movl	44(%ebp), %eax
+	movl	%eax, __registers + 0x04 /* ebx */
+	movl	48(%ebp), %eax
+	movl	%eax, __registers + 0x08 /* ecx */
+	movl	52(%ebp), %eax
+	movl	%eax, __registers + 0x0c /* edx */
+	movl	56(%ebp), %eax
+	movl	%eax, __registers + 0x10 /* esi */
+	movl	60(%ebp), %eax
+	movl	%eax, __registers + 0x14 /* esi */
 
 	/*  This configures CS properly for real mode. */
 	ljmp 	$0x28, $RELOCATED(1f)
 1:
 	.code16 /* 16 bit code from here on... */
-
-	// DEBUG
-	movb    $0xec, %al
-	outb    %al, $0x80
 
 	/* Load the segment registers w/ properly configured segment
 	 * descriptors.  They will retain these configurations (limits,
@@ -291,9 +247,9 @@ __run_interrupt = RELOCATED(.)
 	data32 ljmp	$0, $RELOCATED(1f)
 1:
 
-	/* put the stack at the end of page zero.
-	 * that way we can easily share it between real and protected,
-	 * since the 16-bit ESP at segment 0 will work for any case.
+	/* put the stack at the end of page zero.  That way we can easily 
+	 * share it between real mode and protected mode, because %esp and
+	 * %ss:%sp point to the same memory.
 	 */
 	/* setup a stack */
 	mov	$0x0, %ax
@@ -312,18 +268,16 @@ __run_interrupt = RELOCATED(.)
 	mov	%ax, %fs
 	mov	%ax, %gs
 
-	/* Call VGA BIOS int10 function 0x4f14 to enable main console
-	 * Epia-M does not always autosence the main console so forcing
-	 * it on is good.
-	 */
+	/* initialize registers for intXX call */
+	movl	__registers +  0, %eax
+	movl	__registers +  4, %ebx
+	movl	__registers +  8, %ecx
+	movl	__registers + 12, %edx
+	movl	__registers + 16, %esi
+	movl	__registers + 20, %edi
 
-	/* Ask VGA option rom to enable main console */
-	movw	$0x4f14,%ax
-	movw	$0x8003,%bx
-	movw	$1, %cx
-	movw	$0, %dx
-	movw	$0, %di
-	int	$0x10
+__intXX_instr = RELOCATED(.)
+	.byte 0xcd, 0x00 /* This becomes intXX */
 
 	/* Ok, the job is done, now go back to protected mode coreboot */
 	movl	%cr0, %eax
@@ -345,13 +299,15 @@ __run_interrupt = RELOCATED(.)
 	lidt	idtarg
 
 	/* Exit */
-	mov	__stack, %esp
+	movl	__stack, %esp
 	popal
 	ret
 
 /* This is the 16-bit interrupt entry point called by the IDT stub code.
+ *
  * Before this code code is called, %eax is pushed to the stack, and the
- * interrupt number is loaded into %al
+ * interrupt number is loaded into %al. On return this function cleans up
+ * for its caller.
  */
 	.code16
 __interrupt_handler_16bit = RELOCATED(.)

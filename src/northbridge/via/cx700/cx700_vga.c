@@ -144,6 +144,17 @@ static void write_protect_vgabios(void)
 }
 #endif
 
+static void vga_enable_console(void)
+{
+	/* Call VGA BIOS int10 function 0x4f14 to enable main console
+	 * Epia-M does not always autosense the main console so forcing
+	 * it on is good.
+	 */
+
+	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
+	realmode_interrupt(0x10, 0x4f1f, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+}
+
 static void vga_init(device_t dev)
 {
 	u8 reg8;
@@ -166,9 +177,6 @@ static void vga_init(device_t dev)
 	if (pci_read_config32(dev, PCI_ROM_ADDRESS) != 0xc0000) return;
 
 	printk(BIOS_DEBUG, "Enable VGA console\n");
-	// this is how it should look:
-	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
-	// this is how it looks:
 	vga_enable_console();
 
 	/* It's not clear if these need to be programmed before or after

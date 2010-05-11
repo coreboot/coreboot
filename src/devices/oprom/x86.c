@@ -34,12 +34,45 @@ struct realmode_idt {
 
 void x86_exception(struct eregs *info);
 
+/* From x86_asm.S */
 extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
-extern unsigned char __run_optionrom, __run_interrupt;
+extern unsigned char __realmode_call, __realmode_interrupt;
 
-void (*run_optionrom)(u32 devfn) __attribute__((regparm(0))) = (void *)&__run_optionrom;
-void (*vga_enable_console)(void) __attribute__((regparm(0))) = (void *)&__run_interrupt;
+void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
+		u32 esi, u32 edi) __attribute__((regparm(0))) = (void *)&__realmode_call;
+
+void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx, 
+		u32 esi, u32 edi) __attribute__((regparm(0))) = (void *)&__realmode_interrupt;
+
+#define FAKE_MEMORY_SIZE (1024*1024) // only 1MB
+#define INITIAL_EBDA_SEGMENT 0xF600
+#define INITIAL_EBDA_SIZE 0x400
+
+static void setup_bda(void)
+{
+	/* clear BIOS DATA AREA */
+	memset((void *)0x400, 0, 0x200);
+
+	write16(0x413, FAKE_MEMORY_SIZE / 1024);
+	write16(0x40e, INITIAL_EBDA_SEGMENT);
+
+	/* Set up EBDA */
+	memset((void *)(INITIAL_EBDA_SEGMENT << 4), 0, INITIAL_EBDA_SIZE);
+	write16((INITIAL_EBDA_SEGMENT << 4) + 0x0, INITIAL_EBDA_SIZE / 1024);
+}
+
+static void setup_rombios(void)
+{
+	const char date[] = "06/11/99";
+	memcpy((void *)0xffff5, &date, 8);
+
+	const char ident[] = "PCI_ISA";
+	memcpy((void *)0xfffd9, &ident, 7);
+
+	/* system model: IBM-AT */
+	write8(0xffffe, 0xfc);
+}
 
 int (*intXX_handler[256])(struct eregs *regs) = { NULL };
 
@@ -47,7 +80,12 @@ static int intXX_exception_handler(struct eregs *regs)
 {
 	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n",
 			regs->vector);
+#if 0
+	// Odd: The i945GM VGA oprom chokes on a pushl %eax and will
+	// die with an exception #6 if we run the coreboot exception 
+	// handler. Just continue, as it executes fine.
 	x86_exception(regs);	// Call coreboot exception handler
+#endif
 
 	return 0;		// Never returns?
 }
@@ -138,20 +176,38 @@ static void setup_realmode_idt(void)
 
 	/* int42 is the relocated int10 */
 	write_idt_stub((void *)0xff065, 0x42);
-
-	/* VIA's VBIOS calls f000:f859 instead of int15 */
+	/* BIOS Int 11 Handler F000:F84D */
+	write_idt_stub((void *)0xff84d, 0x11);
+	/* BIOS Int 12 Handler F000:F841 */
+	write_idt_stub((void *)0xff841, 0x12);
+	/* BIOS Int 13 Handler F000:EC59 */
+	write_idt_stub((void *)0xfec59, 0x13);
+	/* BIOS Int 14 Handler F000:E739 */
+	write_idt_stub((void *)0xfe739, 0x14);
+	/* BIOS Int 15 Handler F000:F859 */
 	write_idt_stub((void *)0xff859, 0x15);
+	/* BIOS Int 16 Handler F000:E82E */
+	write_idt_stub((void *)0xfe82e, 0x16);
+	/* BIOS Int 17 Handler F000:EFD2 */
+	write_idt_stub((void *)0xfefd2, 0x17);
+	/* ROM BIOS Int 1A Handler F000:FE6E */
+	write_idt_stub((void *)0xffe6e, 0x1a);
 }
 
 void run_bios(struct device *dev, unsigned long addr)
 {
-	/* clear vga bios data area */
-	memset((void *)0x400, 0, 0x200);
+	u32 num_dev = (dev->bus->secondary << 8) | dev->path.pci.devfn;
+
+	/* Set up BIOS Data Area */
+	setup_bda();
+
+	/* Set up some legacy information in the F segment */
+	setup_rombios();
 
 	/* Set up C interrupt handlers */
 	setup_interrupt_handlers();
 
-	/* Setting up realmode IDT */
+	/* Set up real-mode IDT */
 	setup_realmode_idt();
 
 	memcpy(REALMODE_BASE, &__realmode_code, (size_t)&__realmode_code_size);
@@ -159,7 +215,9 @@ void run_bios(struct device *dev, unsigned long addr)
 			(u32)&__realmode_code_size);
 
 	printk(BIOS_DEBUG, "Calling Option ROM...\n");
-	run_optionrom((dev->bus->secondary << 8) | dev->path.pci.devfn);
+	/* TODO ES:DI Pointer to System BIOS PnP Installation Check Structure */
+	/* Option ROM entry point is at OPROM start + 3 */
+	realmode_call(addr + 0x0003, num_dev, 0xffff, 0x0000, 0xffff, 0x0, 0x0);
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 }
 
@@ -167,9 +225,6 @@ void run_bios(struct device *dev, unsigned long addr)
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/vr.h>
 #include <cbfs.h>
-
-extern unsigned char __run_vsa;
-void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
 
 #define VSA2_BUFFER		0x60000
 #define VSA2_ENTRY_POINT	0x60020
@@ -197,9 +252,6 @@ static u32 VSA_vrRead(u16 classIndex)
 void do_vsmbios(void)
 {
 	printk(BIOS_DEBUG, "Preparing for VSA...\n");
-
-	/* clear bios data area */
-	memset((void *)0x400, 0, 0x200);
 
 	/* Set up C interrupt handlers */
 	setup_interrupt_handlers();
@@ -229,8 +281,11 @@ void do_vsmbios(void)
 	}
 
 	printk(BIOS_DEBUG, "Calling VSA module...\n");
+
 	/* ECX gets SMM, EDX gets SYSMEM */
-	run_vsa(MSR_GLIU0_SMM, MSR_GLIU0_SYSMEM);
+	realmode_call(VSA2_ENTRY_POINT, 0x0, 0x0, MSR_GLIU0_SMM, 
+			MSR_GLIU0_SYSMEM, 0x0, 0x0);
+
 	printk(BIOS_DEBUG, "... VSA module returned.\n");
 
 	/* Restart timer 1 */

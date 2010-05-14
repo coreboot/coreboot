@@ -1,3 +1,24 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2010 Nils Jacobs
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -20,16 +41,17 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/gx2/raminit.h"
 
+	/* This is needed because ROMCC doesn`t now the ctz bitop */
 static inline unsigned int ctz(unsigned int n)
 {
-        int zeros;
+	int zeros;
 
-        n = (n ^ (n - 1)) >> 1;
+	n = (n ^ (n - 1)) >> 1;
 	for (zeros = 0; n; zeros++)
 	{
 	  n >>= 1;
 	}
-        return zeros;
+	return zeros;
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
@@ -42,7 +64,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	msr_t msr;
 	unsigned char module_banks, val;
 	uint16_t dimm_size;
-	
+
 	msr = rdmsr(MC_CF07_DATA);
 
 	/* get module banks (sides) per dimm, SPD byte 5 */
@@ -97,35 +119,30 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 #include "northbridge/amd/gx2/raminit.c"
 #include "lib/generic_sdram.c"
-
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
 
 static void msr_init(void)
 {
-	/* total physical memory */
-	__builtin_wrmsr(0x1808,  0x11f6bf00, 0x21c00002);
+	/* Setup access to cache under 1MB.
+	__builtin_wrmsr(CPU_RCONF_DEFAULT,  0x1000a000, 0x24fffc02); /* Rom Properties: Write Serialize, WriteProtect.
+								      * RomBase: 0xFFFC0
+								      * SysTop to RomBase Properties: Write Serialize, Cache Disable.
+								      * SysTop: 0x000A0
+								      * System Memory Properties:  (Write Back) */
 
-	/* traditional memory 0kB-512kB, 512kB-1MB */
-	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
-	__builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
-	__builtin_wrmsr(0x10000026, 0x400fffc0, 0x2dfbc040);
-	__builtin_wrmsr(0x10000028, 0x6bf00100, 0x2000001f);
-	__builtin_wrmsr(0x1000002c, 0xffff0003, 0x2000ffff);
-
-	__builtin_wrmsr(0x10000080, 0x3, 0x0);
-
-	__builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
-	__builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
-	__builtin_wrmsr(0x40000023, 0x400fffc0, 0x20000040);
-	__builtin_wrmsr(0x40000029, 0x6bf00100, 0x2000001f);
-	__builtin_wrmsr(0x4000002d, 0xffff0003, 0x2000ffff);
-
-	__builtin_wrmsr(0x40000080, 0x1, 0x0);
-
-	__builtin_wrmsr(0x50002001, 0x27, 0x0);
-	__builtin_wrmsr(0x4c002001, 0x1, 0x0);
+	__builtin_wrmsr(CPU_RCONF_A0_BF,  0x00000000, 0x00000000); /* 0xA0000-0xBFFFF : (Write Back) */
+	__builtin_wrmsr(CPU_RCONF_C0_DF,  0x00000000, 0x00000000); /* 0xC0000-0xDFFFF : (Write Back) */
+	__builtin_wrmsr(CPU_RCONF_E0_FF,  0x00000000, 0x00000000); /* 0xE0000-0xFFFFF : (Write Back) */
+	
+	/* Setup access to memory under 1MB. Note: VGA hole at 0xA0000-0xBFFFF */
+	__builtin_wrmsr(MSR_GLIU0_BASE1, 0x000fff80, 0x20000000); /*	0x00000-0x7FFFF */
+	__builtin_wrmsr(MSR_GLIU0_BASE2, 0x080fffe0, 0x20000000); /*	0x80000-0x9FFFF */
+	__builtin_wrmsr(MSR_GLIU0_SHADOW, 0xffff0003, 0x2000ffff); /*	0xC0000-0xFFFFF */
+	__builtin_wrmsr(MSR_GLIU1_BASE1, 0x000fff80, 0x20000000); /*	0x00000-0x7FFFF */
+	__builtin_wrmsr(MSR_GLIU1_BASE2, 0x080fffe0, 0x20000000); /*	0x80000-0x9FFFF */
+	__builtin_wrmsr(MSR_GLIU1_SHADOW, 0xffff0003, 0x2000ffff); /*	0xC0000-0xFFFFF */
 
 	/* put code in northbridge[init].c here */
 }
@@ -137,13 +154,13 @@ static void main(unsigned long bist)
 	};
 
 	SystemPreInit();
-	msr_init();
 
 	cs5536_early_setup();
-
+	
 	/* disable the power button */
 	outl(0x00, PMS_IO_BASE + 0x40);
 
+	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
 	cs5536_setup_onchipuart(1);
 
 	uart_init();
@@ -156,6 +173,8 @@ static void main(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 	print_err("ram setup done\n");
+
+	msr_init();
 
 	/* Check all of memory */
 	/*ram_check(0x00000000, 640*1024);*/

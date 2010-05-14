@@ -1,12 +1,11 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2010 Nils Jacobs
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
+## the Free Software Foundation; version 2 of the License.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,4 +47,9 @@ config HAVE_OPTION_TABLE
 config IRQ_SLOT_COUNT
 	int
 	default 3
+	depends on BOARD_WYSE_S50
+
+config RAMBASE
+	hex
+	default 0x4000
 	depends on BOARD_WYSE_S50

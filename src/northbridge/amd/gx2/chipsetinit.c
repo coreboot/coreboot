@@ -268,7 +268,7 @@ ChipsetGeodeLinkInit(void)
 	if ((msr.lo&0xff) == 0x11)
 		return;
 
-	totalmem = sizeram() << 20 - 1;
+	totalmem = (sizeram() << 20) - 1; // highest address
 	totalmem >>= 12;
 	totalmem = ~totalmem;
 	totalmem &= 0xfffff;

@@ -131,7 +131,7 @@ Scope (\_SB)
 				0x0000, // Address Range Minimum
 				0x0000, // Address Range Maximum
 				0x0000, // Address Translation Offset
-				0x0000,,,)
+				0x0001,,,)
 		})
 		CreateWordField (BUF0, 0x08, BMIN)
 		CreateWordField (BUF0, 0x0A, BMAX)
@@ -170,7 +170,7 @@ Scope (\_SB)
 				0x00000000, // Address Range Minimum
 				0x00000000, // Address Range Maximum
 				0x00000000, // Address Translation Offset
-				0x00000000,,,
+				0x00000001,,,
 				, AddressRangeMemory, TypeStatic)
 		})
 		CreateDWordField (BUF0, 0x0A, MMIN)
@@ -231,7 +231,7 @@ Scope (\_SB)
 				0x00000000, // Address Range Minimum
 				0x00000000, // Address Range Maximum
 				0x00000000, // Address Translation Offset
-				0x00000000,,,
+				0x00000001,,,
 				, TypeStatic)
 		})
 		CreateDWordField (BUF0, 0x0A, PMIN)

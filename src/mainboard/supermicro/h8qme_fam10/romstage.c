@@ -42,7 +42,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
-#include "pc80/mc146818rtc_early.c"
 
 #include <console/console.h>
 #include "lib/ramtest.c"
@@ -86,10 +85,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-#include "northbridge/amd/amdht/ht_wrapper.c"
 
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/raminit_amdmct.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
 
 #include "resourcemap.c"
@@ -113,7 +110,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
 
-#include "cpu/amd/model_10xxx/fidvid.c"
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"

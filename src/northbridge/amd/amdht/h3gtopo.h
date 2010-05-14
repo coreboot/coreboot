@@ -20,6 +20,8 @@
 #ifndef HTTOPO_H
 #define HTTOPO_H
 
+#include <stddef.h>
+
 /*----------------------------------------------------------------------------
  *   Mixed (DEFINITIONS AND MACROS / TYPEDEFS, STRUCTURES, ENUMS)
  *

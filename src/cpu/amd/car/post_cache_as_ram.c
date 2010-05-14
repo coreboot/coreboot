@@ -3,7 +3,9 @@
  */
 #include <string.h>
 #include <arch/stages.h>
+#include <cpu/x86/mtrr.h>
 #include "cpu/amd/car/disable_cache_as_ram.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 
 static inline void print_debug_pcar(const char *strval, uint32_t val)
 {

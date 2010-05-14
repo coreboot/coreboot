@@ -25,6 +25,9 @@
 #include <northbridge/amd/amdht/AsPsDefs.h>
 #include <northbridge/amd/amdht/porting.h>
 
+#include <cpu/x86/mtrr/earlymtrr.c>
+#include <northbridge/amd/amdfam10/raminit_amdmct.c>
+
 //it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
 #ifndef SET_FIDVID
 	#define SET_FIDVID 1
@@ -976,3 +979,5 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 	}
 #endif
 }
+
+#include "fidvid.c"

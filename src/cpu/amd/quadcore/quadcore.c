@@ -18,6 +18,8 @@
  */
 
 #include <console/console.h>
+#include <pc80/mc146818rtc_early.c>
+#include <northbridge/amd/amdht/ht_wrapper.c>
 
 #ifndef SET_NB_CFG_54
 	#define SET_NB_CFG_54 1

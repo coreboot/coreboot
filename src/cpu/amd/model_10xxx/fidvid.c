@@ -18,7 +18,7 @@
  */
 
 #if SET_FIDVID == 1
-#include "../../../northbridge/amd/amdht/AsPsDefs.h"
+#include <northbridge/amd/amdht/AsPsDefs.h>
 
 #define SET_FIDVID_DEBUG 1
 

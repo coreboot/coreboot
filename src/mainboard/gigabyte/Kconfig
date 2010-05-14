@@ -23,6 +23,7 @@ choice
 
 source "src/mainboard/gigabyte/ga_2761gxdk/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
+source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 
 endchoice

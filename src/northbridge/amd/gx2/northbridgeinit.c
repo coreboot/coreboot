@@ -672,7 +672,7 @@ shadowRom(void)
 {
 	uint64_t shadowSettings = getShadow();
 	shadowSettings &= (uint64_t) 0xFFFF00000000FFFFULL;	// Disable read & writes
-	shadowSettings |= (uint64_t) 0x00000000F0000000ULL;	// Enable reads for F0000-FFFFF
+	shadowSettings |= (uint64_t) 0x0000FFFFFFFF0000ULL;	// Enable reads for C0000-FFFFF
 	setShadow(shadowSettings);
 }
 

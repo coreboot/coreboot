@@ -207,17 +207,17 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 				0x00010000,,, FSEG)
 
-		 // PCI Memory Region (Top of memory-0xfebfffff)
-		 DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
-				 Cacheable, ReadWrite,
-				 0x00000000, 0x00000000, 0xfebfffff, 0x00000000,
-				 0x00000000,,, PM01)
+		// PCI Memory Region (Top of memory-0xfebfffff)
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0x00000000, 0xfebfffff, 0x00000000,
+				0xfec00000,,, PM01)
 
-		 // TPM Area (0xfed40000-0xfed44fff)
-		 DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
-				 Cacheable, ReadWrite,
-				 0x00000000, 0xfed40000, 0xfed44fff, 0x00000000,
-				 0x00000000,,, TPMR)
+		// TPM Area (0xfed40000-0xfed44fff)
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0xfed40000, 0xfed44fff, 0x00000000,
+				0x00005000,,, TPMR)
 	})
 
 	// Find PCI resource area in MCRS

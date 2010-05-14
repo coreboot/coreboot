@@ -52,7 +52,7 @@ static void main(unsigned long bist)
 	if (bist == 0)
 		early_mtrr_init();
 
-	/* it8671f_48mhz_clkin(); */
+	it8671f_48mhz_clkin();
 	it8671f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();

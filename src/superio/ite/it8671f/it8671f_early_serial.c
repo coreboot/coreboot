@@ -24,7 +24,7 @@
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */
 #define SIO_BASE                   0x3f0
 #define SIO_INDEX                  SIO_BASE
-#define SIO_DATA                   SIO_BASE+1
+#define SIO_DATA                   (SIO_BASE + 1)
 
 /* Global configuration registers. */
 #define IT8671F_CONFIG_REG_CC      0x02   /* Configure Control (write-only). */
@@ -34,8 +34,10 @@
 
 #define IT8671F_CONFIGURATION_PORT 0x0279 /* Write-only. */
 
-/* Special values used for entering MB PnP mode. The first four bytes of
-   each line determine the address port, the last four are data. */
+/*
+ * Special values used for entering MB PnP mode. The first four bytes of
+ * each line determine the address port, the last four are data.
+ */
 static const uint8_t init_values[] = {
 	0x6a, 0xb5, 0xda, 0xed, /**/ 0xf6, 0xfb, 0x7d, 0xbe,
 	0xdf, 0x6f, 0x37, 0x1b, /**/ 0x0d, 0x86, 0xc3, 0x61,
@@ -43,8 +45,10 @@ static const uint8_t init_values[] = {
 	0xe8, 0x74, 0x3a, 0x9d, /**/ 0xce, 0xe7, 0x73, 0x39,
 };
 
-/* The content of IT8671F_CONFIG_REG_LDN (index 0x07) must be set to the
-   LDN the register belongs to, before you can access the register. */
+/*
+ * The content of IT8671F_CONFIG_REG_LDN (index 0x07) must be set to the
+ * LDN the register belongs to, before you can access the register.
+ */
 static void it8671f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
 	outb(IT8671F_CONFIG_REG_LDN, SIO_BASE);
@@ -53,12 +57,10 @@ static void it8671f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-/* Enable the peripheral devices on the IT8671F Super I/O chip. */
-static void it8671f_enable_serial(device_t dev, unsigned iobase)
+/* Enter the configuration state (MB PnP mode). */
+static void it8671f_enter_conf(void)
 {
 	uint8_t i;
-
-	/* (1) Enter the configuration state (MB PnP mode). */
 
 	/* Perform MB PnP setup to put the SIO chip at 0x3f0. */
 	/* Base address 0x3f0: 0x86 0x80 0x55 0x55. */
@@ -70,24 +72,36 @@ static void it8671f_enable_serial(device_t dev, unsigned iobase)
 	outb(0x55, IT8671F_CONFIGURATION_PORT);
 
 	/* Sequentially write the 32 special values. */
-	for (i = 0; i < 32; i++) {
+	for (i = 0; i < 32; i++)
 		outb(init_values[i], SIO_BASE);
-	}
+}
 
-	/* (2) Modify the data of configuration registers. */
+/* Exit the configuration state (MB PnP mode). */
+static void it8671f_exit_conf(void)
+{
+	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_CC, 0x02);
+}
+
+/* Select 48MHz CLKIN (24MHz is the default). */
+void it8671f_48mhz_clkin(void)
+{
+	it8671f_enter_conf();
+	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_SWSUSP, (1 << 6));
+	it8671f_exit_conf();
+}
+
+/* Enable the serial ports on the IT8671F Super I/O chip. */
+static void it8671f_enable_serial(device_t dev, unsigned iobase)
+{
+	it8671f_enter_conf();
 
 	/* Allow all devices to be enabled. Bits: FDC (0), Com1 (1), Com2 (2),
            PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7). */
 	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_LDE, 0x6f);
 
 	/* Enable serial port(s). */
-	it8671f_sio_write(IT8671F_SP1,  0x30, 0x01); /* Serial port 1 */
-	it8671f_sio_write(IT8671F_SP2,  0x30, 0x01); /* Serial port 2 */
+	it8671f_sio_write(IT8671F_SP1, 0x30, 0x01); /* Serial port 1 */
+	it8671f_sio_write(IT8671F_SP2, 0x30, 0x01); /* Serial port 2 */
 
-	/* Select 24MHz CLKIN (clear bit 6) and clear software suspend
-	   mode (clear bit 0). */
-	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_SWSUSP, 0x00);
-
-	/* (3) Exit the configuration state (MB PnP mode). */
-	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_CC, 0x02);
+	it8671f_exit_conf();
 }

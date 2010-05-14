@@ -89,16 +89,17 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
  	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
+			ACPI_FADT_RESET_REGISTER |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
 
- 	fadt->reset_reg.space_id = 0;
- 	fadt->reset_reg.bit_width = 0;
+ 	fadt->reset_reg.space_id = 1;
+ 	fadt->reset_reg.bit_width = 8;
  	fadt->reset_reg.bit_offset = 0;
  	fadt->reset_reg.resv = 0;
- 	fadt->reset_reg.addrl = 0x0;
- 	fadt->reset_reg.addrh = 0x0;
+ 	fadt->reset_reg.addrl = 0xcf9;
+ 	fadt->reset_reg.addrh = 0;
 
- 	fadt->reset_value = 0;
+ 	fadt->reset_value = 6;
  	fadt->x_firmware_ctl_l = (unsigned long)facs;
  	fadt->x_firmware_ctl_h = 0;
  	fadt->x_dsdt_l = (unsigned long)dsdt;

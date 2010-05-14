@@ -367,6 +367,13 @@ void main(unsigned long bist)
 	}
 
 	ich7_enable_lpc();
+
+	/* Force PCIRST# */
+	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
+	udelay(200);
+	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
+	udelay(200);
+
 	early_superio_config_w83627thg();
 
 	/* Set up the console */
@@ -383,8 +390,9 @@ void main(unsigned long bist)
 	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected.\n");
-		boot_mode = 1;
+		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
+		outb(0x6, 0xcf9);
+		while (1) asm("hlt");
 	}
 
 	/* Perform some early chipset initialization required

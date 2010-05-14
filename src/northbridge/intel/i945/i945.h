@@ -331,5 +331,7 @@
 
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
+static inline void barrier(void) { asm("" ::: "memory"); }
+
 #endif
 #endif

@@ -132,7 +132,7 @@ static int sdram_capabilities_max_supported_memory_frequency(void)
 	return MAXIMUM_SUPPORTED_FREQUENCY;
 #endif
 
-	reg32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xe4);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xe4); /* CAPID0 + 4 */
 	reg32 &= (7 << 0);
 
 	switch (reg32) {
@@ -156,7 +156,7 @@ static int sdram_capabilities_interleave(void)
 {
 	u32 reg32;
 
-	reg32 = pci_read_config8(PCI_DEV(0, 0x00,0), 0xe4);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x00,0), 0xe4); /* CAPID0 + 4 */
 	reg32 >>= 25;
 	reg32 &= 1;
 
@@ -172,7 +172,7 @@ static int sdram_capabilities_dual_channel(void)
 {
 	u32 reg32;
 
-	reg32 = pci_read_config8(PCI_DEV(0, 0x00,0), 0xe4);
+	reg32 = pci_read_config32(PCI_DEV(0, 0x00,0), 0xe4); /* CAPID0 + 4 */
 	reg32 >>= 24;
 	reg32 &= 1;
 
@@ -205,7 +205,7 @@ static int sdram_capabilities_MEM4G_disable(void)
 {
 	u8 reg8;
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5); /* CAPID0 + 5 */
 	reg8 &= (1 << 0);
 
 	return (reg8 != 0);
@@ -228,7 +228,7 @@ static int sdram_capabilities_core_frequencies(void)
 	return (reg8);
 }
 
-static void sdram_detect_errors(void)
+static void sdram_detect_errors(struct sys_info *sysinfo)
 {
 	u8 reg8;
 	u8 do_reset = 0;
@@ -269,6 +269,29 @@ static void sdram_detect_errors(void)
 	reg8 |= (1<<7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
+	/* clear self refresh if not wake-up from suspend */
+	if (sysinfo->boot_path != 2) {
+		MCHBAR8(0xf14) |= 3;
+	} else {
+		/* Validate self refresh config */
+		if (((sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED) ||
+		     (sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED)) &&
+		    !(MCHBAR8(0xf14) & (1<<0))) {
+			do_reset = 1;
+		}
+		if (((sysinfo->dimm[2] != SYSINFO_DIMM_NOT_POPULATED) ||
+		     (sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED)) &&
+		    !(MCHBAR8(0xf14) & (1<<1))) {
+			do_reset = 1;
+		}
+	}
+
+	if (do_reset) {
+		printk(BIOS_DEBUG, "Reset required.\n");
+		outb(0x00, 0xcf9);
+		outb(0x0e, 0xcf9);
+		for (;;) asm("hlt"); /* Wait for reset! */
+	}
 }
 
 /**
@@ -1311,7 +1334,7 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 	reg32 |= (1 << 6) | (1 << 4);
 	MCHBAR32(DRTST) = reg32;
 
-	asm volatile ("nop; nop;");
+	asm volatile ("nop; nop;" ::: "memory");
 
 	reg32 = MCHBAR32(DRTST);
 
@@ -1890,6 +1913,7 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 		printk(BIOS_DEBUG, "Single Channel 0 only.\n");
 	}
 
+	/* Now disable channel XORing */
 	reg32 |= (1 << 10);
 
 	MCHBAR32(DCC) = reg32;
@@ -1960,7 +1984,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 		if (voltage == VOLTAGE_1_05)
 			freq = CRCLK_250MHz;
 		else
-			freq = CRCLK_400MHz;
+			freq = CRCLK_400MHz; /* 1.5V requires 400MHz */
 		break;
 	case GFX_FREQUENCY_CAP_250MHZ: freq = CRCLK_250MHz; break;
 	case GFX_FREQUENCY_CAP_200MHZ: freq = CRCLK_200MHz; break;
@@ -2096,7 +2120,7 @@ vco_update:
 	clkcfg |= (1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
 
-	__asm__ __volatile__ (
+	asm volatile (
 		"	movl $0x100, %%ecx\n"
 		"delay_update:\n"
 		"	nop\n"
@@ -2106,7 +2130,7 @@ vco_update:
 		"	loop delay_update\n"
 		: /* No outputs */
 		: /* No inputs */
-		: "%ecx"
+		: "%ecx", "memory"
 		);
 
 	clkcfg &= ~(1 << 10);
@@ -2136,7 +2160,7 @@ static void sdram_program_clock_crossing(void)
 
 		0x08040120, 0x00000000,	/* DDR400 FSB533 */
 		0x00100401, 0x00000000, /* DDR533 FSB533 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0x00010402, 0x00000000, /* DDR667 FSB533 - fake values */
 
 		0x04020120, 0x00000010,	/* DDR400 FSB667 */
 		0x10040280, 0x00000040, /* DDR533 FSB667 */
@@ -2615,6 +2639,7 @@ static void sdram_thermal_management(void)
 	 * 0x30/0x32.
 	 */
 
+	/* TODO This is not implemented yet. Volunteers? */
 }
 
 static void sdram_save_receive_enable(void)
@@ -3007,8 +3032,6 @@ void sdram_initialize(int boot_path)
 	struct sys_info sysinfo;
 	u8 reg8, cas_mask;
 
-	sdram_detect_errors();
-
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
@@ -3017,6 +3040,9 @@ void sdram_initialize(int boot_path)
 
 	/* Look at the type of DIMMs and verify all DIMMs are x8 or x16 width */
 	sdram_get_dram_configuration(&sysinfo);
+
+	/* If error, do cold boot */
+	sdram_detect_errors(&sysinfo);
 
 	/* Check whether we have stacked DIMMs */
 	sdram_verify_package_type(&sysinfo);

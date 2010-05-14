@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2007-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ static void i945_setup_bars(void)
 	printk(BIOS_DEBUG, " done.\n");
 
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	RCBA32(GCS) = (RCBA32(0x3410)) | (1 << 5);	/* No reset */
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
 
@@ -344,8 +344,7 @@ static void i945_setup_dmi_rcrb(void)
 {
 	u32 reg32;
 	u32 timeout;
-
-	int activate_aspm = 1;
+	int activate_aspm = 1; /* hardcode ASPM for now */
 
 	printk(BIOS_DEBUG, "Setting up DMI RCRB\n");
 
@@ -481,10 +480,12 @@ static void i945_setup_dmi_rcrb(void)
 	else
 		printk(BIOS_DEBUG, "ok\n");
 
+	/* Clear Error Status Bits! */
 	DMIBAR32(0x1c4) = 0xffffffff;
 	DMIBAR32(0x1d0) = 0xffffffff;
 	DMIBAR32(0x228) = 0xffffffff;
 
+	/* Program Read-Only Write-Once Registers */
 	DMIBAR32(0x308) = DMIBAR32(0x308);
 	DMIBAR32(0x314) = DMIBAR32(0x314);
 	DMIBAR32(0x324) = DMIBAR32(0x324);
@@ -500,7 +501,7 @@ static void i945_setup_dmi_rcrb(void)
 			reg32 |= (3 << 0);
 			DMIBAR32(0x224) = reg32;
 			outb(0x06, 0xcf9);
-			for (;;) ;	/* wait for reset */
+			for (;;) asm("hlt");	/* wait for reset */
 		}
 	}
 }
@@ -530,11 +531,11 @@ static void i945_setup_pci_express_x16(void)
 
 	/* First we reset the secondary bus */
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
-	reg16 |= (1 << 6);
+	reg16 |= (1 << 6); /* SRESET */
 	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 	/* Read back and clear reset bit. */
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
-	reg16 &= ~(1 << 6);
+	reg16 &= ~(1 << 6); /* SRESET */
 	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xba);
@@ -625,9 +626,11 @@ static void i945_setup_pci_express_x16(void)
 	if (reg16 == 1) {
 		reg32 |= 0x32b;
 		// TODO
+		/* pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
 	} else if (reg16 == 16) {
 		reg32 |= 0x0f4;
 		// TODO
+		/* pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x204, reg32); */
 	}
 
 	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
@@ -745,8 +748,8 @@ static void i945_setup_pci_express_x16(void)
 	if (i945_silicon_revision() <= 2 ) {
 		/* Set voltage specific parameters */
 		reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
-		reg32 &= (0xf << 4);
-		if ((MCHBAR32(0xe08) & (1 << 20)) == 0) {
+		reg32 &= (0xf << 4);	/* Default case 1.05V */
+		if ((MCHBAR32(0xe08) & (1 << 20)) == 0) {	/* 1.50V */
 			reg32 |= (7 << 4);
 		}
 		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xe80, reg32);
@@ -843,7 +846,12 @@ static void ich7_setup_pci_express(void)
 {
 	RCBA32(CG) |= (1 << 0);
 
+	/* Initialize slot power limit for root ports */
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0x54, 0x00000060);
+#if 0
+	pci_write_config32(PCI_DEV(0, 0x1c, 4), 0x54, 0x00480ce0);
+	pci_write_config32(PCI_DEV(0, 0x1c, 5), 0x54, 0x00500ce0);
+#endif
 
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
 }
@@ -852,11 +860,11 @@ static void i945_early_initialization(void)
 {
 	/* Print some chipset specific information */
 	switch (pci_read_config32(PCI_DEV(0, 0x00, 0), 0)) {
-	case 0x27708086:
+	case 0x27708086: /* 82945G/GZ/GC/P/PL */
 		i945_detect_chipset();
 		break;
-	case 0x27a08086:
-	case 0x27ac8086:
+	case 0x27a08086: /* 945GME/GSE */
+	case 0x27ac8086: /* 945GM/PM/GMS/GU/GT, 943/940GML */
 		i945m_detect_chipset();
 		break;
 	}

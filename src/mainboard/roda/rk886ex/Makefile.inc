@@ -19,6 +19,6 @@
 
 obj-y += m3885.o
 obj-y += ec.o
-obj-y += rtl8168.o
+driver-y += rtl8168.o
 
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o

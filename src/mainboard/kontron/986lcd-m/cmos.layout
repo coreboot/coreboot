@@ -89,7 +89,8 @@ entries
 
 # coreboot config options: bootloader
 416        512       s       0        boot_devices
-#928         40       r       0        unused
+928          8       h       0        boot_default
+#936         12       r       0        unused
 
 # coreboot config options: mainboard specific options
 948          2       e       8        cpufan_cruise_control

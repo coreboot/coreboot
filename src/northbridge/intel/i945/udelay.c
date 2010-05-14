@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <delay.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
 
@@ -24,7 +25,7 @@
  * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
  */
 
-static void udelay(u32 us)
+void udelay(u32 us)
 {
 	u32 dword;
 	tsc_t tsc, tsc1, tscd;

@@ -399,6 +399,10 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
 
+#if CONFIG_HAVE_ACPI_SLIC
+unsigned long acpi_create_slic(unsigned long current);
+#endif
+
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_xsdt(acpi_xsdt_t *xsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);

@@ -23,8 +23,6 @@
 /* the memory clobber prevents the GCC from reordering the read/write order
    of CR0 */
 
- */
-
 #if defined(__GNUC__)
 
 /*
@@ -46,6 +44,11 @@ static inline void write_cr0(unsigned long cr0)
 	asm volatile ("movl %0, %%cr0" : : "r" (cr0) : "memory");
 }
 
+static inline void wbinvd(void)
+{
+	asm volatile ("wbinvd" ::: "memory");
+}
+
 #else
 
 static inline unsigned long read_cr0(void)
@@ -60,17 +63,16 @@ static inline void write_cr0(unsigned long cr0)
 	asm volatile ("movl %0, %%cr0" : : "r" (cr0));
 }
 
-#endif
+static inline void wbinvd(void)
+{
+	asm volatile ("wbinvd");
+}
 
+#endif
 
 static inline void invd(void)
 {
 	asm volatile("invd" ::: "memory");
-}
-
-static inline void wbinvd(void)
-{
-	asm volatile ("wbinvd" ::: "memory");
 }
 
 static inline void enable_cache(void)

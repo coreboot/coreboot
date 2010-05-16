@@ -42,6 +42,8 @@ config VENDOR_EAGLELION
 	bool "EagleLion"
 config VENDOR_EMULATION
 	bool "Emulation"
+config VENDOR_GETAC
+	bool "Getac"
 config VENDOR_GIGABYTE
 	bool "GIGABYTE"
 config VENDOR_HP
@@ -199,6 +201,11 @@ config MAINBOARD_VENDOR
 	string
 	default "Emulation"
 	depends on VENDOR_EMULATION
+
+config MAINBOARD_VENDOR
+	string
+	default "Getac"
+	depends on VENDOR_GETAC
 
 config MAINBOARD_VENDOR
 	string
@@ -404,6 +411,7 @@ source "src/mainboard/dell/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
 source "src/mainboard/emulation/Kconfig"
+source "src/mainboard/getac/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"
 source "src/mainboard/hp/Kconfig"
 source "src/mainboard/ibm/Kconfig"

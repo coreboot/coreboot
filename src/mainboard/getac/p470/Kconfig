@@ -1,0 +1,96 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2008 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config BOARD_GETAC_P470
+	bool "P470"
+	select ARCH_X86
+	select CPU_INTEL_CORE
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SOUTHBRIDGE_TI_PCIXX12
+	select SUPERIO_SMSC_FDC37N972
+	select SUPERIO_SMSC_SIO10N268
+	select BOARD_HAS_FADT
+	select GENERATE_ACPI_TABLES
+	select GENERATE_PIRQ_TABLE
+	select GENERATE_MP_TABLE
+	select HAVE_HARD_RESET
+	select HAVE_ACPI_RESUME
+	select HAVE_MAINBOARD_RESOURCES
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	select AP_IN_SIPI_WAIT
+	select UDELAY_LAPIC
+	select HAVE_SMI_HANDLER
+	select BOARD_ROMSIZE_KB_1024
+	select USE_DCACHE_RAM
+	select GFXUMA
+	select TINY_BOOTBLOCK
+
+config MAINBOARD_DIR
+	string
+	default getac/p470
+	depends on BOARD_GETAC_P470
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_GETAC_P470
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_GETAC_P470
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P470"
+	depends on BOARD_GETAC_P470
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+	depends on BOARD_GETAC_P470
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+	depends on BOARD_GETAC_P470
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_GETAC_P470
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_GETAC_P470
+
+config FALLBACK_VGA_BIOS_FILE
+	string
+	default "getac-pci8086,27a2.rom"
+	depends on BOARD_GETAC_P470
+
+config HAVE_ACPI_SLIC
+	bool
+	default y
+	depends on BOARD_GETAC_P470
+

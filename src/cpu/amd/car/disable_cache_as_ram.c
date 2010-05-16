@@ -1,50 +1,55 @@
-/* by yhlu 6.2005 */
-/* be warned, this file will be used other cores and core 0 / node 0 */
+/*
+ * This file is part of the coreboot project.
+ *
+ * original idea yhlu 6.2005 (assembler code)
+ *
+ * Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
+ * be warned, this file will be used other cores and core 0 / node 0
+ */
+
 static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 {
-	__asm__ __volatile__ (
-	/* We don't need cache as ram for now on */
+	msr_t msr;
+
 	/* disable cache */
-	"movl    %%cr0, %%eax\n\t"
-	"orl    $(0x1<<30),%%eax\n\t"
-	"movl    %%eax, %%cr0\n\t"
+	write_cr0(read_cr0() | (1 << 30));
 
-	/* clear sth */
-	"movl    $0x269, %%ecx\n\t"  /* fix4k_c8000*/
-	"xorl    %%edx, %%edx\n\t"
-	"xorl    %%eax, %%eax\n\t"
-	"wrmsr\n\t"
+	msr.lo = 0;
+	msr.hi = 0;
+	wrmsr(MTRRfix4K_C8000_MSR, msr);
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
-	"movl    $0x268, %%ecx\n\t"  /* fix4k_c0000*/
-	"wrmsr\n\t"
+	wrmsr(MTRRfix4K_C0000_MSR, msr);
 #endif
-
 	/* disable fixed mtrr from now on, it will be enabled by coreboot_ram again*/
-	"movl    $0xC0010010, %%ecx\n\t"
-//	"movl    $SYSCFG_MSR, %ecx\n\t"
-	"rdmsr\n\t"
-	"andl    $(~(3<<18)), %%eax\n\t"
-//	"andl    $(~(SYSCFG_MSR_MtrrFixDramModEn | SYSCFG_MSR_MtrrFixDramEn)), %eax\n\t"
-	"wrmsr\n\t"
+
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~(SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrFixDramModEn);
+	wrmsr(SYSCFG_MSR, msr);
 
 	/* Set the default memory type and disable fixed and enable variable MTRRs */
-	"movl    $0x2ff, %%ecx\n\t"
-//	"movl    $MTRRdefType_MSR, %ecx\n\t"
-	"xorl    %%edx, %%edx\n\t"
-	/* Enable Variable and Disable Fixed MTRRs */
-	"movl    $0x00000800, %%eax\n\t"
-	"wrmsr\n\t"
+	msr.hi = 0;
+	msr.lo = (1 << 11);
 
-	/* enable cache */
-	"movl    %%cr0, %%eax\n\t"
-	"andl    $0x9fffffff,%%eax\n\t"
-	"movl    %%eax, %%cr0\n\t"
-	::: "memory", "eax", "ecx", "edx"
-	);
+	wrmsr(MTRRdefType_MSR, msr);
+
+	enable_cache();
 }
 
 static void disable_cache_as_ram_bsp(void)
 {
 	disable_cache_as_ram();
 }
-

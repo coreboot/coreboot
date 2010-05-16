@@ -18,3 +18,4 @@
 ##
 
 subdirs-$(CONFIG_SOUTHBRIDGE_TI_PCI7420) += pci7420
+subdirs-$(CONFIG_SOUTHBRIDGE_TI_PCIXX12) += pcixx12

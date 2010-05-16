@@ -17,5 +17,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-source src/southbridge/ti/pci7420/Kconfig
-source src/southbridge/ti/pcixx12/Kconfig
+driver-y += pcixx12.o
+

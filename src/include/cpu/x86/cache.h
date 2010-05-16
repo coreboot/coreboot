@@ -23,6 +23,17 @@
 /* the memory clobber prevents the GCC from reordering the read/write order
    of CR0 */
 
+ */
+
+#if defined(__GNUC__)
+
+/*
+Need this because ROMCC fails here with:
+
+cache.h:29.71: cache.h:60.24: earlymtrr.c:117.23: romstage.c:144.33: 
+0x1559920 asm        Internal compiler error: lhs 1 regcm == 0
+*/
+
 static inline unsigned long read_cr0(void)
 {
 	unsigned long cr0;
@@ -34,6 +45,23 @@ static inline void write_cr0(unsigned long cr0)
 {
 	asm volatile ("movl %0, %%cr0" : : "r" (cr0) : "memory");
 }
+
+#else
+
+static inline unsigned long read_cr0(void)
+{
+	unsigned long cr0;
+	asm volatile ("movl %%cr0, %0" : "=r" (cr0));
+	return cr0;
+}
+
+static inline void write_cr0(unsigned long cr0)
+{
+	asm volatile ("movl %0, %%cr0" : : "r" (cr0));
+}
+
+#endif
+
 
 static inline void invd(void)
 {

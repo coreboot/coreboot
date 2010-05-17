@@ -77,13 +77,35 @@ static void print_bitval(FILE *f, const struct msrbits *mb, const struct msr val
 
 void hexprint(FILE *f, const struct msr val, const uint8_t bits) {
 	if (bits <= 4)
-		fprintf(f, "0x%x", val.lo & 0x0f);
+		fprintf(f, "0x%01x", val.lo & 0xf);
 	else if (bits <= 8)
 		fprintf(f, "0x%02x", val.lo & 0xff);
+	else if (bits <= 12)
+		fprintf(f, "0x%03x", val.lo & 0xfff);
 	else if (bits <= 16)
 		fprintf(f, "0x%04x", val.lo & 0xffff);
+	else if (bits <= 20)
+		fprintf(f, "0x%05x", val.lo & 0xfffff);
+	else if (bits <= 24)
+		fprintf(f, "0x%06x", val.lo & 0xffffff);
+	else if (bits <= 28)
+		fprintf(f, "0x%07x", val.lo & 0xfffffff);
 	else if (bits <= 32)
 		fprintf(f, "0x%08x", val.lo);
+	else if (bits <= 36)
+		fprintf(f, "0x%01x%08x", val.hi & 0xf, val.lo);
+	else if (bits <= 40)
+		fprintf(f, "0x%02x%08x", val.hi & 0xff, val.lo);
+	else if (bits <= 44)
+		fprintf(f, "0x%03x%08x", val.hi & 0xfff, val.lo);
+	else if (bits <= 48)
+		fprintf(f, "0x%04x%08x", val.hi & 0xffff, val.lo);
+	else if (bits <= 52)
+		fprintf(f, "0x%05x%08x", val.hi & 0xfffff, val.lo);
+	else if (bits <= 56)
+		fprintf(f, "0x%06x%08x", val.hi & 0xffffff, val.lo);
+	else if (bits <= 60)
+		fprintf(f, "0x%07x%08x", val.hi & 0xfffffff, val.lo);
 	else
 		fprintf(f, "0x%08x%08x", val.hi, val.lo);
 }

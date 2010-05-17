@@ -77,11 +77,11 @@ static void print_bitval(FILE *f, const struct msrbits *mb, const struct msr val
 
 void hexprint(FILE *f, const struct msr val, const uint8_t bits) {
 	if (bits <= 4)
-		fprintf(f, "0x%x", (uint8_t)(val.lo & 0x0f));
+		fprintf(f, "0x%x", val.lo & 0x0f);
 	else if (bits <= 8)
-		fprintf(f, "0x%02x", (uint8_t)(val.lo & 0xff));
+		fprintf(f, "0x%02x", val.lo & 0xff);
 	else if (bits <= 16)
-		fprintf(f, "0x%04x", (uint16_t)(val.lo & 0xffff));
+		fprintf(f, "0x%04x", val.lo & 0xffff);
 	else if (bits <= 32)
 		fprintf(f, "0x%08x", val.lo);
 	else

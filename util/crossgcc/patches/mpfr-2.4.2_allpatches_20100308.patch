@@ -1,0 +1,266 @@
+diff -ur mpfr-2.4.2.orig/PATCHES mpfr-2.4.2/PATCHES
+--- mpfr-2.4.2.orig/PATCHES	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/PATCHES	2010-03-08 22:28:53.000000000 +0100
+@@ -0,0 +1,3 @@
++gmp5
++longlong.h
++sin_cos_underflow
+diff -ur mpfr-2.4.2.orig/VERSION mpfr-2.4.2/VERSION
+--- mpfr-2.4.2.orig/VERSION	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/VERSION	2010-03-08 22:28:53.000000000 +0100
+@@ -1 +1 @@
+-2.4.2
++2.4.2-p3
+diff -ur mpfr-2.4.2.orig/configure mpfr-2.4.2/configure
+--- mpfr-2.4.2.orig/configure	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/configure	2010-03-08 22:28:53.000000000 +0100
+@@ -20449,6 +20449,9 @@
+ main ()
+ {
+ 
++#ifndef BITS_PER_MP_LIMB
++#define BITS_PER_MP_LIMB GMP_LIMB_BITS
++#endif
+   return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+          && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+ 
+diff -ur mpfr-2.4.2.orig/configure.in mpfr-2.4.2/configure.in
+--- mpfr-2.4.2.orig/configure.in	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/configure.in	2010-03-08 22:28:53.000000000 +0100
+@@ -424,6 +424,9 @@
+ #include "gmp.h"
+ #include "gmp-impl.h"
+ ]], [[
++#ifndef BITS_PER_MP_LIMB
++#define BITS_PER_MP_LIMB GMP_LIMB_BITS
++#endif
+   return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+          && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+ ]])], [AC_MSG_RESULT(yes)], [
+diff -ur mpfr-2.4.2.orig/mpfr-impl.h mpfr-2.4.2/mpfr-impl.h
+--- mpfr-2.4.2.orig/mpfr-impl.h	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/mpfr-impl.h	2010-03-08 22:28:53.000000000 +0100
+@@ -65,6 +65,12 @@
+ # ifndef __GMP_IMPL_H__
+ #  include "gmp-impl.h"
+ # endif
++# ifndef BITS_PER_MP_LIMB
++#  define BITS_PER_MP_LIMB GMP_LIMB_BITS
++# endif
++#ifndef mpn_sqr_n
++# define mpn_sqr_n mpn_sqr
++#endif
+ # ifdef MPFR_NEED_LONGLONG_H
+ #  include "longlong.h"
+ # endif
+diff -ur mpfr-2.4.2.orig/mpfr-longlong.h mpfr-2.4.2/mpfr-longlong.h
+--- mpfr-2.4.2.orig/mpfr-longlong.h	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/mpfr-longlong.h	2010-03-08 22:28:53.000000000 +0100
+@@ -1011,7 +1011,15 @@
+ #endif /* __m88000__ */
+ 
+ #if defined (__mips) && W_TYPE_SIZE == 32
+-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
++#if (__GNUC__ >= 5) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 4)
++#define umul_ppmm(w1, w0, u, v) \
++  do {									\
++    UDItype _r;							\
++    _r = (UDItype) u * v;						\
++    (w1) = _r >> 32;							\
++    (w0) = (USItype) _r;						\
++  } while (0)
++#elif __GNUC__ > 2 || __GNUC_MINOR__ >= 7
+ #define umul_ppmm(w1, w0, u, v) \
+   __asm__ ("multu %2,%3" : "=l" (w0), "=h" (w1) : "d" (u), "d" (v))
+ #else
+@@ -1024,7 +1032,16 @@
+ #endif /* __mips */
+ 
+ #if (defined (__mips) && __mips >= 3) && W_TYPE_SIZE == 64
+-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
++#if (__GNUC__ >= 5) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 4)
++typedef unsigned int UTItype __attribute__ ((mode (TI)));
++#define umul_ppmm(w1, w0, u, v) \
++  do {									\
++    UTItype _r;							\
++    _r = (UTItype) u * v;						\
++    (w1) = _r >> 64;							\
++    (w0) = (UDItype) _r;						\
++  } while (0)
++#elif __GNUC__ > 2 || __GNUC_MINOR__ >= 7
+ #define umul_ppmm(w1, w0, u, v) \
+   __asm__ ("dmultu %2,%3" : "=l" (w0), "=h" (w1) : "d" (u), "d" (v))
+ #else
+diff -ur mpfr-2.4.2.orig/mpfr.h mpfr-2.4.2/mpfr.h
+--- mpfr-2.4.2.orig/mpfr.h	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/mpfr.h	2010-03-08 22:28:53.000000000 +0100
+@@ -27,7 +27,7 @@
+ #define MPFR_VERSION_MAJOR 2
+ #define MPFR_VERSION_MINOR 4
+ #define MPFR_VERSION_PATCHLEVEL 2
+-#define MPFR_VERSION_STRING "2.4.2"
++#define MPFR_VERSION_STRING "2.4.2-p3"
+ 
+ /* Macros dealing with MPFR VERSION */
+ #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
+diff -ur mpfr-2.4.2.orig/sin_cos.c mpfr-2.4.2/sin_cos.c
+--- mpfr-2.4.2.orig/sin_cos.c	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/sin_cos.c	2010-03-08 22:28:53.000000000 +0100
+@@ -82,17 +82,19 @@
+       if (y != x)
+         /* y and x differ, thus we can safely try to compute y first */
+         {
+-          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
+-                                            { inexy = _inexact;
+-                                              goto small_input; });
++          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
++            y, x, -2 * expx, 2, 0, rnd_mode,
++            { inexy = _inexact;
++              goto small_input; });
+           if (0)
+             {
+             small_input:
+               /* we can go here only if we can round sin(x) */
+-              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
+-                                                1, 0, rnd_mode,
+-                                                { inexz = _inexact;
+-                                                  goto end; });
++              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
++                z, __gmpfr_one, -2 * expx, 1, 0, rnd_mode,
++                { inexz = _inexact;
++                  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
++                  goto end; });
+             }
+ 
+           /* if we go here, one of the two MPFR_FAST_COMPUTE_IF_SMALL_INPUT
+@@ -101,18 +103,19 @@
+       else /* y and x are the same variable: try to compute z first, which
+               necessarily differs */
+         {
+-          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
+-                                            1, 0, rnd_mode,
+-                                            { inexz = _inexact;
+-                                              goto small_input2; });
++          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
++            z, __gmpfr_one, -2 * expx, 1, 0, rnd_mode,
++            { inexz = _inexact;
++              goto small_input2; });
+           if (0)
+             {
+             small_input2:
+               /* we can go here only if we can round cos(x) */
+-              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0,
+-                                                rnd_mode,
+-                                                { inexy = _inexact;
+-                                                  goto end; });
++              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
++                y, x, -2 * expx, 2, 0, rnd_mode,
++                { inexy = _inexact;
++                  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
++                  goto end; });
+             }
+         }
+       m += 2 * (-expx);
+@@ -207,7 +210,6 @@
+   mpfr_clear (xr);
+ 
+  end:
+-  /* FIXME: update the underflow flag if need be. */
+   MPFR_SAVE_EXPO_FREE (expo);
+   mpfr_check_range (y, inexy, rnd_mode);
+   mpfr_check_range (z, inexz, rnd_mode);
+diff -ur mpfr-2.4.2.orig/tests/tsin_cos.c mpfr-2.4.2/tests/tsin_cos.c
+--- mpfr-2.4.2.orig/tests/tsin_cos.c	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/tests/tsin_cos.c	2010-03-08 22:28:53.000000000 +0100
+@@ -382,23 +382,56 @@
+ consistency (void)
+ {
+   mpfr_t x, s1, s2, c1, c2;
++  mp_exp_t emin, emax;
+   mp_rnd_t rnd;
++  unsigned int flags_sin, flags_cos, flags, flags_before, flags_ref;
++  int inex_sin, inex_cos, inex, inex_ref;
+   int i;
+ 
++  emin = mpfr_get_emin ();
++  emax = mpfr_get_emax ();
++
+   for (i = 0; i <= 10000; i++)
+     {
+       mpfr_init2 (x, MPFR_PREC_MIN + (randlimb () % 8));
+       mpfr_inits2 (MPFR_PREC_MIN + (randlimb () % 8), s1, s2, c1, c2,
+                    (mpfr_ptr) 0);
+-      tests_default_random (x, 256, -5, 50);
+-      rnd = RND_RAND ();
+-      mpfr_sin (s1, x, rnd);
+-      mpfr_cos (c1, x, rnd);
+-      mpfr_sin_cos (s2, c2, x, rnd);
+-      if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)))
++      if (i < 8 * GMP_RND_MAX)
++        {
++          int j = i / GMP_RND_MAX;
++          if (j & 1)
++            mpfr_set_emin (MPFR_EMIN_MIN);
++          mpfr_set_si (x, (j & 2) ? 1 : -1, GMP_RNDN);
++          mpfr_set_exp (x, mpfr_get_emin ());
++          rnd = (mpfr_rnd_t) (i % GMP_RND_MAX);
++          flags_before = 0;
++          if (j & 4)
++            mpfr_set_emax (-17);
++        }
++      else
++        {
++          tests_default_random (x, 256, -5, 50);
++          rnd = RND_RAND ();
++          flags_before = (randlimb () & 1) ?
++            (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
++            (unsigned int) 0;
++        }
++      __gmpfr_flags = flags_before;
++      inex_sin = mpfr_sin (s1, x, rnd);
++      flags_sin = __gmpfr_flags;
++      __gmpfr_flags = flags_before;
++      inex_cos = mpfr_cos (c1, x, rnd);
++      flags_cos = __gmpfr_flags;
++      __gmpfr_flags = flags_before;
++      inex = !!mpfr_sin_cos (s2, c2, x, rnd);
++      flags = __gmpfr_flags;
++      inex_ref = inex_sin || inex_cos;
++      flags_ref = flags_sin | flags_cos;
++      if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)) ||
++          inex != inex_ref || flags != flags_ref)
+         {
+-          printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,\nx = ",
+-                  mpfr_print_rnd_mode (rnd));
++          printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,"
++                  " i = %d\nx = ", mpfr_print_rnd_mode (rnd), i);
+           mpfr_dump (x);
+           printf ("s1 = ");
+           mpfr_dump (s1);
+@@ -408,9 +441,16 @@
+           mpfr_dump (c1);
+           printf ("c2 = ");
+           mpfr_dump (c2);
++          printf ("inex_sin = %d, inex_cos = %d, inex = %d (expected %d)\n",
++                  inex_sin, inex_cos, inex, inex_ref);
++          printf ("flags_sin = 0x%x, flags_cos = 0x%x, "
++                  "flags = 0x%x (expected 0x%x)\n",
++                  flags_sin, flags_cos, flags, flags_ref);
+           exit (1);
+         }
+       mpfr_clears (x, s1, s2, c1, c2, (mpfr_ptr) 0);
++      mpfr_set_emin (emin);
++      mpfr_set_emax (emax);
+     }
+ }
+ 
+diff -ur mpfr-2.4.2.orig/version.c mpfr-2.4.2/version.c
+--- mpfr-2.4.2.orig/version.c	2010-03-08 22:28:46.000000000 +0100
++++ mpfr-2.4.2/version.c	2010-03-08 22:28:53.000000000 +0100
+@@ -25,5 +25,5 @@
+ const char *
+ mpfr_get_version (void)
+ {
+-  return "2.4.2";
++  return "2.4.2-p3";
+ }

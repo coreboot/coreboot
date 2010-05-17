@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2008-2009 by coresystems GmbH
+# Copyright (C) 2008-2010 by coresystems GmbH
 # written by Patrick Georgi <patrick.georgi@coresystems.de> and
 #            Stefan Reinauer <stefan.reinauer@coresystems.de>
 #
@@ -18,8 +18,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="August 18th, 2009"
-CROSSGCC_VERSION="0.9"
+CROSSGCC_DATE="March 29th, 2010"
+CROSSGCC_VERSION="1.0"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -27,17 +27,21 @@ TARGETARCH=i386-elf
 DESTDIR=
 
 # version numbers
-GMP_VERSION=4.3.1
+GMP_VERSION=5.0.1
 MPFR_VERSION=2.4.2
-GCC_VERSION=4.4.2
-BINUTILS_VERSION=2.20
-GDB_VERSION=7.0
+MPC_VERSION=0.8.2
+LIBELF_VERSION=0.8.13
+GCC_VERSION=4.5.0 # enable for Link Time Optimization & Co
+BINUTILS_VERSION=2.20.1
+GDB_VERSION=7.1
 W32API_VERSION=3.14
 MINGWRT_VERSION=3.18
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
 MPFR_ARCHIVE="http://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.bz2"
+MPC_ARCHIVE="http://www.multiprecision.org/mpc/download/mpc-${MPC_VERSION}.tar.gz"
+LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
@@ -46,6 +50,8 @@ MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20Runtime/
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
+MPC_DIR="mpc-${MPC_VERSION}"
+LIBELF_DIR="libelf-${LIBELF_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
@@ -88,7 +94,7 @@ MAKE=`searchgnu make`
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* binutils-* gdb-* w32api-* mingwrt-*
+	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-*
 	printf "${green}ok${NC}\n"
 }
 
@@ -117,7 +123,7 @@ myversion()
 	# version tag is always printed, so just print the license here
 
 	cat << EOF
-Copyright (C) 2008-2009 by coresystems GmbH
+Copyright (C) 2008-2010 by coresystems GmbH
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -175,9 +181,33 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
 fi
 
+if [ ${GCC_VERSION} == "4.5.0" -o ${GCC_VERSION} == "4.6.0" ]; then
+  # coreboot does not like the GOLD linker
+  # USE_GOLD="--enable-gold"
+  USE_GOLD=""
+  GCC_OPTIONS="--enable-lto"
+fi
+
+if [ ${GCC_VERSION} == "4.6.0" ]; then
+  if [ ! -r tarballs/gcc-core-${GCC_VERSION}.tar.bz2 ]; then
+    printf "Pre-Release GCC ${GCC_VERSION}, checking out subversion trunk\n"
+    mkdir -p tarballs/.tmp
+    cd tarballs/.tmp
+    rm -rf gcc-${GCC_VERSION}
+    svn export -q svn://gcc.gnu.org/svn/gcc/trunk gcc-${GCC_VERSION}
+    printf "done. Now creating tar ball...\n"
+    tar cjf ../gcc-core-${GCC_VERSION}.tar.bz2 gcc-${GCC_VERSION}
+    printf "done. Now cleaning up...\n"
+    cd ..
+    rm -rf .tmp
+    cd ..
+    printf "done.\n"
+  fi
+fi
+
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES; do
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
 	test -f tarballs/$FILE && printf "(cached)" || (
@@ -185,7 +215,7 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_AR
 		cd tarballs
 		wget -q $ARCHIVE
 	)
-	test -f tarballs/$FILE || printf "Failed to download $FILE.\n"
+	test -f tarballs/$FILE || printf "\n${RED}Failed to download $FILE.${red}\n"
 	test -f tarballs/$FILE || exit 1
 	printf "\n"
 done
@@ -198,7 +228,7 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 fi
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR GCC BINUTILS GDB $MINGW_PACKAGES; do
+for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS GDB $MINGW_PACKAGES; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
@@ -223,7 +253,29 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* $TARGETDIR/i386-mingw32/sys-include
 fi
 
-mkdir -p build-gmp build-mpfr build-binutils build-gcc build-gdb
+if [ `uname` = "Darwin" ]; then
+	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
+
+	# generally the OS X compiler can create x64 binaries.
+	# Per default it generated i386 binaries in 10.5 and x64
+	# binaries in 10.6 (even if the kernel is 32bit)
+	# For some weird reason, 10.5 autodetects an ABI=64 though
+	# so we're setting the ABI explicitly here.
+	if [ `sysctl -n hw.optional.x86_64` -eq 1 ]; then
+		OPTIONS="ABI=64"
+	else
+		OPTIONS="ABI=32"
+	fi
+	# old check:
+	#OPTIONS="ABI=32"
+	#touch .architecture_check.c
+	#gcc .architecture_check.c -c -o .architecture_check.o
+	#ARCH=`file .architecture_check.o |cut -f5 -d\ `
+	#test  "$ARCH" = "x86_64" && OPTIONS="ABI=64"
+	#rm .architecture_check.c .architecture_check.o
+fi
+
+mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc build-gdb
 if [ -f build-gmp/.success ]; then
 	printf "Skipping GMP as it is already built\n"
 else
@@ -231,20 +283,6 @@ printf "Building GMP ${GMP_VERSION} ... "
 (
 	cd build-gmp
 	rm -f .failed
-	if [ `uname` = "Darwin" ]; then
-		# generally the OS X compiler can create x64 binaries.
-		# Per default it generated i386 binaries in 10.5 and x64
-		# binaries in 10.6 (even if the kernel is 32bit)
-		# For some weird reason, 10.5 autodetects an ABI=64 though
-		# so we're setting the ABI explicitly here.
-		OPTIONS="ABI=32"
-		touch .architecture_check.c
-		gcc .architecture_check.c -c -o .architecture_check.o
-		ARCH=`file .architecture_check.o |cut -f5 -d\ `
-		test  "$ARCH" = "x86_64" && OPTIONS="ABI=64"
-		rm .architecture_check.c .architecture_check.o
-	fi
-
 	../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
@@ -288,15 +326,57 @@ test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok
 test -r build-mpfr/.failed && exit 1
 fi
 
+if [ -f build-mpc/.success ]; then
+	printf "Skipping MPC as it is already built\n"
+else
+printf "Building MPC ${MPC_VERSION} ... "
+(
+	#test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	cd build-mpc
+	rm -f .failed
+	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-mpc/crossgcc-build.log
+test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-mpc/.failed && exit 1
+fi
+
+if [ -f build-libelf/.success ]; then
+	printf "Skipping libelf as it is already built\n"
+else
+printf "Building libelf ${LIBELF_VERSION} ... "
+(
+	cd build-libelf
+	rm -f .failed
+	echo "$HOSTCFLAGS"
+	CFLAGS="$HOSTCFLAGS"  ../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-libelf/crossgcc-build.log
+test -r build-libelf/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-libelf/.failed && exit 1
+fi
+
 if [ -f build-binutils/.success ]; then
 	printf "Skipping binutils as it is already built\n"
 else
 printf "Building binutils ${BINUTILS_VERSION} ... "
 (
+	# workaround for building binutils 2.20.1 on MINGW:
+ 	touch ../binutils-${BINUTILS_VERSION}/bfd/doc/bfd.info
+	# now build binutils
 	cd build-binutils
 	rm -f .failed
 	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
-		--disable-werror --disable-nls \
+		--disable-werror --disable-nls $USE_GOLD \
 		CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -318,11 +398,14 @@ printf "Building GCC ${GCC_VERSION} ... "
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
-	CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+	CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--disable-libssp --disable-bootstrap --disable-nls \
+		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
+		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
+		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		|| touch .failed
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -340,8 +423,8 @@ printf "Building GDB ${GDB_VERSION} ... "
 	cd build-gdb
 	export PATH=$PATH:$PREFIX/bin
 	rm -f .failed
-	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
-		--disable-werror --disable-nls
+	CFLAGS="$HOSTCFLAGS" ../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
+		--without-python --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
@@ -354,6 +437,8 @@ if [ $SAVETEMPS -eq 0 ]; then
 	printf "Cleaning up... "
 	rm -rf ${GMP_DIR} build-gmp
 	rm -rf ${MPFR_DIR} build-mpfr
+	rm -rf ${MPC_DIR} build-mpc
+	rm -rf ${LIBELF_DIR} build-libelf
 	rm -rf ${BINUTILS_DIR} build-binutils
 	rm -rf ${GCC_DIR} build-gcc
 	rm -rf ${GDB_DIR} build-gdb

@@ -20,6 +20,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef __SUPERIO_WINBOND_W83627HF_W83627HF_H
+#define __SUPERIO_WINBOND_W83627HF_W83627HF_H
+
 #define W83627HF_FDC              0   /* Floppy */
 #define W83627HF_PP               1   /* Parallel Port */
 #define W83627HF_SP1              2   /* Com1 */
@@ -117,3 +120,4 @@ void w83627hf_enable_serial(device_t dev, unsigned iobase);
 void w83627hf_set_clksel_48(device_t dev);
 #endif
 
+#endif

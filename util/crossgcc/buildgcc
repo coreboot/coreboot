@@ -18,8 +18,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="March 29th, 2010"
-CROSSGCC_VERSION="1.0"
+CROSSGCC_DATE="May 18th, 2010"
+CROSSGCC_VERSION="1.01"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -31,7 +31,9 @@ GMP_VERSION=5.0.1
 MPFR_VERSION=2.4.2
 MPC_VERSION=0.8.2
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.5.0 # enable for Link Time Optimization & Co
+# GCC 4.5.0 is broken on some AMD boards:
+# GCC_VERSION=4.5.0 # enable for Link Time Optimization & Co
+GCC_VERSION=4.4.4
 BINUTILS_VERSION=2.20.1
 GDB_VERSION=7.1
 W32API_VERSION=3.14

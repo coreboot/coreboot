@@ -80,6 +80,13 @@ config CCACHE
 	  Enables the use of ccache for faster builds.
 	  Requires ccache in path.
 
+config USE_OPTION_TABLE
+	bool "Use CMOS for configuration values"
+	default n
+	help
+	  Enable this option if coreboot shall read options from the "CMOS"
+	  NVRAM instead of using hard coded values.
+
 endmenu
 
 source src/mainboard/Kconfig
@@ -138,10 +145,6 @@ config DEBUG
 
 config USE_PRINTK_IN_CAR
 	bool
-	default n
-
-config USE_OPTION_TABLE
-	bool "Use CMOS for configuration values"
 	default n
 
 config MAX_CPUS

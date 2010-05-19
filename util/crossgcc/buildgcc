@@ -371,7 +371,7 @@ else
 printf "Building binutils ${BINUTILS_VERSION} ... "
 (
 	# workaround for building binutils 2.20.1 on MINGW:
- 	touch ../binutils-${BINUTILS_VERSION}/bfd/doc/bfd.info
+ 	touch binutils-${BINUTILS_VERSION}/bfd/doc/bfd.info
 	# now build binutils
 	cd build-binutils
 	rm -f .failed

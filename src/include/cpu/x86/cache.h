@@ -20,18 +20,17 @@
 #ifndef CPU_X86_CACHE
 #define CPU_X86_CACHE
 
-/* the memory clobber prevents the GCC from reordering the read/write order
-   of CR0 */
+/*
+ * Need two versions because ROMCC chokes on certain clobbers:
+ * cache.h:29.71: cache.h:60.24: earlymtrr.c:117.23: romstage.c:144.33: 
+ * 0x1559920 asm        Internal compiler error: lhs 1 regcm == 0
+ */
 
 #if defined(__GNUC__)
 
-/*
-Need this because ROMCC fails here with:
-
-cache.h:29.71: cache.h:60.24: earlymtrr.c:117.23: romstage.c:144.33: 
-0x1559920 asm        Internal compiler error: lhs 1 regcm == 0
-*/
-
+/* The memory clobber prevents the GCC from reordering the read/write order
+ * of CR0
+ */
 static inline unsigned long read_cr0(void)
 {
 	unsigned long cr0;

@@ -73,29 +73,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, VT8237R_APIC_BASE);
 
 	/* Now, assemble the table. */
-
-	smp_write_intsrc(mc, mp_ExtINT,
-			 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x0, VT8237R_APIC_ID, 0x0);
-
-#define ISA_INT(intr, pin) \
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, \
-		bus_isa, (intr), VT8237R_APIC_ID, (pin))
-
-	ISA_INT(1, 1);
-	ISA_INT(0, 2);
-	ISA_INT(3, 3);
-	ISA_INT(4, 4);
-
-	ISA_INT(6, 6);
-	ISA_INT(7, 7);
-	ISA_INT(8, 8);
-	ISA_INT(9, 9);
-
-	ISA_INT(0xc, 0xc);
-	ISA_INT(0xd, 0xd);
-	ISA_INT(0xe, 0xe);
-	ISA_INT(0xf, 0xf);
+	mptable_add_isa_interrupts(mc, bus_isa, VT8237R_APIC_ID, 0);
 
 #define PCI_INT(bus, dev, fn, pin) \
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, \

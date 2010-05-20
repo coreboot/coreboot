@@ -179,39 +179,7 @@ static void *smp_write_config_table(void *v)
                 }
 	}
 	*/
-	/*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
-	/* IRQ0 8254 Counter 0, MNT0 */
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  0, IO_APIC0,  0);
-	/* IRQ1 Keyboard */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  1, IO_APIC0,  1);
-	/* IRQ2 8259 cascade only */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  0, IO_APIC0,  2);
-	/* IRQ3 COM2, Option for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  3, IO_APIC0,  3);
-	/* IRQ4 COM1, Option for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  4, IO_APIC0,  4);
-	/* IRQ5 Option for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  5, IO_APIC0,  5);
-	/* IRQ6 Option for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  6, IO_APIC0,  6);
-	/* IRQ7 OPtion for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  7, IO_APIC0,  7);
-	/* IRQ8# RTC, MNT1 */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE   |MP_IRQ_POLARITY_HIGH,    bus_isa,  8, IO_APIC0,  8);
-	/* IRQ9 Option for PIRQx, SCI, TCO */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa,  9, IO_APIC0,  9);
-	/* IRQ10 Option for PIRQx, SCI, TCO */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 12, IO_APIC0, 10);
-	/* IRQ11 Option for PIRQx, SCI, TCO, MMT2 */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 12, IO_APIC0, 11);
-	/* IRQ12 Mouse, Option for PIRQx */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 12, IO_APIC0, 12);
-	/* IRQ13 Floating point interrupt generated off of the processor assertion of FERR# */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 13, IO_APIC0, 13);
-	/* IRQ14 PIRQx Sata primary (legacy mode) */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 14, IO_APIC0, 14);
-	/* IRQ15 PIRQx Sata secondary (legacy mode) */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 15, IO_APIC0, 15);
+	mptable_add_isa_interrupts(mc, bus_isa, IO_APIC0, 0);
 
 	/*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0, MP_APIC_ALL, 0);

@@ -63,6 +63,8 @@ static void *smp_write_config_table(void *v)
 	/* I/O APICs:   APIC ID Version State Address */
 	smp_write_ioapic(mc, 2, 17, 0xfec00000);
 
+	mptable_add_isa_interrupts(mc, 0x81, 0x2, 0);
+
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x40, 0x2, 0x14);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x41, 0x2, 0x16);
@@ -71,19 +73,6 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x80, 0x4, 0x2, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x1, 0x0, 0x2, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x2, 0x10, 0x2, 0x11);
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x0, 0x2, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x1, 0x2, 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x0, 0x2, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x3, 0x2, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x4, 0x2, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x6, 0x2, 0x6);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x7, 0x2, 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 0x81, 0x8, 0x2, 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0x9, 0x2, 0x9);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0xc, 0x2, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0xd, 0x2, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0xe, 0x2, 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x81, 0xf, 0x2, 0xf);
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, 0x0, 0x0, MP_APIC_ALL, 0x0);

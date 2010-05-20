@@ -102,23 +102,7 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
-	/* ISA backward compatibility interrupts  */
-	smp_write_intsrc(mc, mp_ExtINT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x00, 0x02, 0x00);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x01, 0x02, 0x01);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x00, 0x02, 0x02);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x03, 0x02, 0x03);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x04, 0x02, 0x04);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x05, 0x02, 0x05);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x06, 0x02, 0x06);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x07, 0x02, 0x07);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x08, 0x02, 0x08);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x09, 0x02, 0x09);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0a, 0x02, 0x0a);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0b, 0x02, 0x0b);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0c, 0x02, 0x0c);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0d, 0x02, 0x0d);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0e, 0x02, 0x0e);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_isa, 0x0f, 0x02, 0x0f);
+	mptable_add_isa_interrupts(mc, bus_isa, 0x2, 0);
 
 	/* PCI Ints:	     Type	Polarity    	    Trigger		  	Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
 	/* Integrated SMBus 2.0 */

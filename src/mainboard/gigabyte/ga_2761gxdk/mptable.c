@@ -100,26 +100,7 @@ static void *smp_write_config_table(void *v)
                 }
 	}
 
-	/* I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_sis966, 0x0);
-
-/* ISA ints are edge-triggered, and usually originate from the ISA bus,
- * or its remainings.
- */
-#define ISA_INT(intr, pin)\
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, (intr), apicid_sis966,(pin))
-
-	ISA_INT(0x1, 0x1);
-	ISA_INT(0x0, 0x2);
-	ISA_INT(0x3, 0x3);
-	ISA_INT(0x4, 0x4);
-	ISA_INT(0x6, 0x6);
-	ISA_INT(0x7, 0x7);
-	ISA_INT(0x8, 0x8);
-	ISA_INT(0xc, 0xc);
-	ISA_INT(0xd, 0xd);
-	ISA_INT(0xe, 0xe);
-	ISA_INT(0xf, 0xf);
+	mptable_add_isa_interrupts(mc, bus_isa, apicid_sis966, 0);
 
 /* PCI interrupts are level triggered, and are
  * associated with a specific bus/device/function tuple.

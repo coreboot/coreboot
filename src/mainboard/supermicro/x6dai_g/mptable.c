@@ -61,39 +61,14 @@ static void *smp_write_config_table(void *v)
 	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);
 	smp_write_ioapic(mc, 3, 0x20, 0xfec10000);
 
-	/* ISA backward compatibility interrupts  */
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x00, 0x02, 0x00);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x01, 0x02, 0x01);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x00, 0x02, 0x02);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x03, 0x02, 0x03);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x04, 0x02, 0x04);
+	mptable_add_isa_interrupts(mc, bus_isa, 0x2, 0);
+
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x00, 0x74, 0x02, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x06, 0x02, 0x06);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x07, 0x02, 0x07);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x08, 0x02, 0x08);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x09, 0x02, 0x09);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x00, 0x77, 0x02, 0x17);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x00, 0x75, 0x02, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x0c, 0x02, 0x0c);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x0d, 0x02, 0x0d);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x0e, 0x02, 0x0e);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x0f, 0x02, 0x0f);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x00, 0x7c, 0x02, 0x12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,

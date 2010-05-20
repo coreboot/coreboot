@@ -273,5 +273,7 @@ void *smp_write_floating_table_physaddr(unsigned long addr,
 		unsigned long mpf_physptr);
 unsigned long write_smp_table(unsigned long addr);
 
+void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_isa, unsigned long apicid, int external);
+
 #endif
 

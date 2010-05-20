@@ -126,20 +126,7 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 
 	// TODO: Not sure how to handle BT_INTR# signals from the P64H2s. Do we even need to, in APIC mode?
 
-	// Super I/O (ISA interrupts)
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 0,					IOAPIC_ICH3,			 0);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 1,					IOAPIC_ICH3,			 1);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 0,					IOAPIC_ICH3,			 2);
-
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 3,					IOAPIC_ICH3,			 3);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 4,					IOAPIC_ICH3,			 4);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 6,					IOAPIC_ICH3,			 6);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 8,					IOAPIC_ICH3,			 8);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		 9,					IOAPIC_ICH3,			 9);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		12,					IOAPIC_ICH3,			12);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		13,					IOAPIC_ICH3,			13);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		14,					IOAPIC_ICH3,			14);
-	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		15,					IOAPIC_ICH3,			15);
+	mptable_add_isa_interrupts(mc, SUPERIO_BUS, IOAPIC_ICH3, 0);
 }
 
 static void *smp_write_config_table(void* v)

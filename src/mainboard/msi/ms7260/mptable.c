@@ -95,19 +95,9 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
+	mptable_add_isa_interrupts(mc, bus_isa, apicid_mcp55, 0);
+
 	/* I/O Ints:         Type       Trigger                Polarity              Bus ID        IRQ                    APIC ID       PIN# */
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x0,                   apicid_mcp55, 0x0);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x1,                   apicid_mcp55, 0x1);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x0,                   apicid_mcp55, 0x2);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x3,                   apicid_mcp55, 0x3);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x4,                   apicid_mcp55, 0x4);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x6,                   apicid_mcp55, 0x6);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x7,                   apicid_mcp55, 0x7);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0x8,                   apicid_mcp55, 0x8);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0xc,                   apicid_mcp55, 0xc);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0xd,                   apicid_mcp55, 0xd);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0xe,                   apicid_mcp55, 0xe);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE  | MP_IRQ_POLARITY_HIGH, bus_isa,      0xf,                   apicid_mcp55, 0xf);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 1) << 2) | 1, apicid_mcp55, 0xa);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 0, apicid_mcp55, 0x16);	// 22
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 1, apicid_mcp55, 0x17);	// 23

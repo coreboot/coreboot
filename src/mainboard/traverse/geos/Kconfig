@@ -1,0 +1,37 @@
+config BOARD_TRAVERSE_GEOS
+	bool "Geos"
+	select ARCH_X86
+	select CPU_AMD_LX
+	select NORTHBRIDGE_AMD_LX
+	select SOUTHBRIDGE_AMD_CS5536
+	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
+	select UDELAY_TSC
+	select USE_DCACHE_RAM
+	select USE_PRINTK_IN_CAR
+	select BOARD_ROMSIZE_KB_1024
+
+config MAINBOARD_DIR
+	string
+	default traverse/geos
+	depends on BOARD_TRAVERSE_GEOS
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Geos"
+	depends on BOARD_TRAVERSE_GEOS
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_TRAVERSE_GEOS
+
+config IRQ_SLOT_COUNT
+	int
+	default 6
+	depends on BOARD_TRAVERSE_GEOS
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_TRAVERSE_GEOS

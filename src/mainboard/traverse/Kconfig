@@ -1,0 +1,7 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_TRAVERSE
+
+source "src/mainboard/traverse/geos/Kconfig"
+
+endchoice

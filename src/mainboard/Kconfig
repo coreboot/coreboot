@@ -96,6 +96,8 @@ config VENDOR_TELEVIDEO
 	bool "TeleVideo"
 config VENDOR_THOMSON
 	bool "Thomson"
+config VENDOR_TRAVERSE
+	bool "Traverse Technologies"
 config VENDOR_TYAN
 	bool "Tyan"
 config VENDOR_VIA
@@ -359,6 +361,11 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
+	default "Traverse Technologies"
+	depends on VENDOR_TRAVERSE
+
+config MAINBOARD_VENDOR
+	string
 	default "Tyan"
 	depends on VENDOR_TYAN
 
@@ -438,6 +445,7 @@ source "src/mainboard/technexion/Kconfig"
 source "src/mainboard/technologic/Kconfig"
 source "src/mainboard/televideo/Kconfig"
 source "src/mainboard/thomson/Kconfig"
+source "src/mainboard/traverse/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
 source "src/mainboard/winent/Kconfig"

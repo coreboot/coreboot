@@ -755,7 +755,7 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	struct fidvid_st fv;
 	device_t dev;
 	u32 vid_max;
-	u32 fid_max;
+	u32 fid_max=0;
 	u8 nb_cof_vid_update;
 	u32 reg1fc;
 	u8 pvimode;

@@ -84,6 +84,7 @@ Scope (\_SB)
 		Return (Local0)
 	}
 
+	/* GetBus(Node, Link) */
 	Method (GBUS, 2, NotSerialized)
 	{
 		Store (0x00, Local0)
@@ -107,6 +108,7 @@ Scope (\_SB)
 		Return (0x00)
 	}
 
+	/* GetBusResources(Node, Link) */
 	Method (GWBN, 2, NotSerialized)
 	{
 		Name (BUF0, ResourceTemplate ()
@@ -146,6 +148,7 @@ Scope (\_SB)
 		Return (RTAG (BUF0))
 	}
 
+	/* GetMemoryResources(Node, Link) */
 	Method (GMEM, 2, NotSerialized)
 	{
 		Name (BUF0, ResourceTemplate ()
@@ -166,22 +169,25 @@ Scope (\_SB)
 		Store (0x00, Local3)
 		While (LLess (Local0, 0x10))
 		{
+			/* Get value of the first register */
 			Store (DerefOf (Index (\_SB.PCI0.MMIO, Local0)), Local1)
 			Increment (Local0)
 			Store (DerefOf (Index (\_SB.PCI0.MMIO, Local0)), Local2)
-			If (LEqual (And (Local1, 0x03), 0x03))
+			If (LEqual (And (Local1, 0x03), 0x03)) /* Pair enabled? */
 			{
-				If (LEqual (Arg0, And (Local2, 0x07)))
+				If (LEqual (Arg0, And (Local2, 0x07))) /* Node matches? */
 				{
+					/* If Link Matches (or we got passed 0xFF) */
 					If (LOr (LEqual (Arg1, 0xFF), LEqual (Arg1, ShiftRight (And (Local2, 0x30), 0x04))))
 					{
+						/* Extract the Base and Limit values */
 						Store (ShiftLeft (And (Local1, 0xFFFFFF00), 0x08), MMIN)
 						Store (ShiftLeft (And (Local2, 0xFFFFFF00), 0x08), MMAX)
 						Or (MMAX, 0xFFFF, MMAX)
 						Subtract (MMAX, MMIN, MLEN)
 						Increment (MLEN)
 
-						If (Local4)
+						If (Local4) /* I've already done this once */
 						{
 							Concatenate (RTAG (BUF0), Local3, Local5)
 							Store (Local5, Local3)
@@ -199,14 +205,15 @@ Scope (\_SB)
 			Increment (Local0)
 		}
 
-		If (LNot (Local4))
+		If (LNot (Local4)) /* No resources for this node and link. */
 		{
-			Store (BUF0, Local3)
+			Store (RTAG (BUF0), Local3)
 		}
 
 		Return (Local3)
 	}
 
+	/* GetIOResources(Node, Link) */
 	Method (GIOR, 2, NotSerialized)
 	{
 		Name (BUF0, ResourceTemplate ()
@@ -230,19 +237,21 @@ Scope (\_SB)
 			Store (DerefOf (Index (\_SB.PCI0.PCIO, Local0)), Local1)
 			Increment (Local0)
 			Store (DerefOf (Index (\_SB.PCI0.PCIO, Local0)), Local2)
-			If (LEqual (And (Local1, 0x03), 0x03))
+			If (LEqual (And (Local1, 0x03), 0x03)) /* Pair enabled? */
 			{
-				If (LEqual (Arg0, And (Local2, 0x07)))
+				If (LEqual (Arg0, And (Local2, 0x07))) /* Node matches? */
 				{
+					/* If Link Matches (or we got passed 0xFF) */
 					If (LOr (LEqual (Arg1, 0xFF), LEqual (Arg1, ShiftRight (And (Local2, 0x30), 0x04))))
 					{
+						/* Extract the Base and Limit values */
 						Store (And (Local1, 0x01FFF000), PMIN)
 						Store (And (Local2, 0x01FFF000), PMAX)
 						Or (PMAX, 0x0FFF, PMAX)
 						Subtract (PMAX, PMIN, PLEN)
 						Increment (PLEN)
 
-						If (Local4)
+						If (Local4) /* I've already done this once */
 						{
 							Concatenate (RTAG (BUF0), Local3, Local5)
 							Store (Local5, Local3)
@@ -288,7 +297,7 @@ Scope (\_SB)
 			Increment (Local0)
 		}
 
-		If (LNot (Local4))
+		If (LNot (Local4)) /* No resources for this node and link. */
 		{
 			Store (RTAG (BUF0), Local3)
 		}

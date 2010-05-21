@@ -520,9 +520,9 @@ static void ati_ragexl_init(device_t dev)
 #define USE_AUX_REG 1
 
 
-	res = &dev->resource[0];
+	res = dev->resource_list;
 	if(res->flags & IORESOURCE_IO) {
-		res = &dev->resource[1];
+		res = res->next;
 	}
 
 #if CONFIG_CONSOLE_BTEXT==1
@@ -532,7 +532,9 @@ static void ati_ragexl_init(device_t dev)
 #if USE_AUX_REG==0
         info->ati_regbase = res->base+0x7ff000+0xc00;
 #else
-        res = &dev->resource[2];
+	/* Fix this to look for the correct index. */
+	//if (dev->resource_list && dev->resource_list->next)
+        res = dev->resource_list->next->next;
         if(res->flags & IORESOURCE_MEM) {
                 info->ati_regbase = res->base+0x400; //using auxiliary register
         }

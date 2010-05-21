@@ -278,8 +278,11 @@ void add_register(struct device *dev, char *name, char *val) {
 }
 
 static void pass0(FILE *fil, struct device *ptr) {
-	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used))
+	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
 		fprintf(fil, "struct device %s;\n", ptr->name);
+		if (ptr->rescnt > 0)
+			fprintf(fil, "struct resource %s_res[];\n", ptr->name);
+	}
 	if ((ptr->type == device) && (ptr->id != 0) && ptr->used)
 		fprintf(fil, "struct device %s;\n", ptr->aliased_name);
 }
@@ -295,18 +298,7 @@ static void pass1(FILE *fil, struct device *ptr) {
 		fprintf(fil, "\t.enabled = %d,\n", ptr->enabled);
 		fprintf(fil, "\t.on_mainboard = 1,\n");
 		if (ptr->rescnt > 0) {
-			fprintf(fil, "\t.resources = %d,\n", ptr->rescnt);
-			fprintf(fil, "\t.resource = {\n");
-			struct resource *r = ptr->res;
-			while (r) {
-				fprintf(fil, "\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
-				if (r->type == IRQ) fprintf(fil, "IRQ");
-				if (r->type == DRQ) fprintf(fil, "DRQ");
-				if (r->type == IO) fprintf(fil, "IO");
-				fprintf(fil, ", .index=0x%x, .base=0x%x},\n", r->index, r->base);
-				r = r->next;
-			}
-			fprintf(fil, "\t },\n");
+			fprintf(fil, "\t.resource_list = &%s_res[0],\n", ptr->name);
 		}
 		int link = 0;
 		fprintf(fil, "\t.link = {\n");
@@ -345,6 +337,24 @@ static void pass1(FILE *fil, struct device *ptr) {
 		if (ptr->nextdev)
 			fprintf(fil, "\t.next=&%s\n", ptr->nextdev->name);
 		fprintf(fil, "};\n");
+	}
+	if (ptr->rescnt > 0) {
+		int i=1;
+		fprintf(fil, "struct resource %s_res[] = {\n", ptr->name);
+		struct resource *r = ptr->res;
+		while (r) {
+			fprintf(fil, "\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
+			if (r->type == IRQ) fprintf(fil, "IRQ");
+			if (r->type == DRQ) fprintf(fil, "DRQ");
+			if (r->type == IO) fprintf(fil, "IO");
+			fprintf(fil, ", .index=0x%x, .base=0x%x,", r->index, r->base);
+			if (r->next)
+				fprintf(fil, ".next=&%s_res[%d]},\n", ptr->name, i++);
+			else
+				fprintf(fil, ".next=NULL },\n");
+			r = r->next;
+		}
+		fprintf(fil, "\t };\n");
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {

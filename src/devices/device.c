@@ -43,6 +43,8 @@
 struct device *all_devices = &dev_root;
 /** Pointer to the last device */
 extern struct device **last_dev_p;
+/** Linked list of free resources */
+struct resource *free_resources = NULL;
 
 
 /**
@@ -253,16 +255,15 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 
 	/* For each child which is a bridge, compute_resource_needs. */
 	for (dev = bus->children; dev; dev = dev->sibling) {
-		unsigned i;
 		struct resource *child_bridge;
 
 		if (!dev->links)
 			continue;
 
 		/* Find the resources with matching type flags. */
-		for (i = 0; i < dev->resources; i++) {
+		for (child_bridge = dev->resource_list; child_bridge;
+		     child_bridge = child_bridge->next) {
 			unsigned link;
-			child_bridge = &dev->resource[i];
 
 			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
 			    (child_bridge->flags & type_mask) != type)
@@ -502,16 +503,15 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 
 	/* For each child which is a bridge, allocate_resources. */
 	for (dev = bus->children; dev; dev = dev->sibling) {
-		unsigned i;
 		struct resource *child_bridge;
 
 		if (!dev->links)
 			continue;
 
 		/* Find the resources with matching type flags. */
-		for (i = 0; i < dev->resources; i++) {
+		for (child_bridge = dev->resource_list; child_bridge;
+		     child_bridge = child_bridge->next) {
 			unsigned link;
-			child_bridge = &dev->resource[i];
 
 			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
 			    (child_bridge->flags & type_mask) != type)
@@ -556,8 +556,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 
 	/* Constrain limits based on the fixed resources of this device. */
-	for (i = 0; i < dev->resources; i++) {
-		res = &dev->resource[i];
+	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_FIXED))
 			continue;
 		if (!res->size) {
@@ -604,7 +603,6 @@ static void avoid_fixed_resources(struct device *dev)
 {
 	struct constraints limits;
 	struct resource *res;
-	int i;
 
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 	/* Initialize constraints to maximum size. */
@@ -617,8 +615,7 @@ static void avoid_fixed_resources(struct device *dev)
 	limits.mem.limit = 0xffffffffffffffffULL;
 
 	/* Constrain the limits to dev's initial resources. */
-	for (i = 0; i < dev->resources; i++) {
-		res = &dev->resource[i];
+	for (res = dev->resource_list; res; res = res->next) {
 		if ((res->flags & IORESOURCE_FIXED))
 			continue;
 		printk(BIOS_SPEW, "%s:@%s %02lx limit %08Lx\n", __func__,
@@ -638,9 +635,8 @@ static void avoid_fixed_resources(struct device *dev)
 	constrain_resources(dev, &limits);
 
 	/* Update dev's resources with new limits. */
-	for (i = 0; i < dev->resources; i++) {
+	for (res = dev->resource_list; res; res = res->next) {
 		struct resource *lim;
-		res = &dev->resource[i];
 
 		if ((res->flags & IORESOURCE_FIXED))
 			continue;
@@ -764,7 +760,7 @@ void assign_resources(struct bus *bus)
 		    dev_path(bus->dev), bus->secondary, bus->link);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
-		if (!curdev->enabled || !curdev->resources) {
+		if (!curdev->enabled || !curdev->resource_list) {
 			continue;
 		}
 		if (!curdev->ops || !curdev->ops->set_resources) {
@@ -927,7 +923,6 @@ void dev_configure(void)
 	struct resource *res;
 	struct device *root;
 	struct device *child;
-	int i;
 
 #if CONFIG_VGA_BRIDGE_SETUP == 1
 	set_vga_bridge_bits();
@@ -954,8 +949,7 @@ void dev_configure(void)
 	for (child = root->link[0].children; child; child = child->sibling) {
 		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
 			continue;
-		for (i = 0; i < child->resources; i++) {
-			res = &child->resource[i];
+		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)
 				continue;
 			if (res->flags & IORESOURCE_PREFETCH) {
@@ -987,8 +981,7 @@ void dev_configure(void)
 	for (child = root->link[0].children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_PCI_DOMAIN)
 			continue;
-		for (i = 0; i < child->resources; i++) {
-			res = &child->resource[i];
+		for (res = child->resource_list; res; res = res->next) {
 			if (!(res->flags & IORESOURCE_MEM) ||
 			    res->flags & IORESOURCE_FIXED)
 				continue;
@@ -1001,8 +994,7 @@ void dev_configure(void)
 	for (child = root->link[0].children; child; child = child->sibling) {
 		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
 			continue;
-		for (i = 0; i < child->resources; i++) {
-			res = &child->resource[i];
+		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)
 				continue;
 			if (res->flags & IORESOURCE_PREFETCH) {

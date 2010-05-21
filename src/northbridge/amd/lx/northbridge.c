@@ -318,18 +318,18 @@ static void northbridge_init(device_t dev)
 
 static void northbridge_set_resources(struct device *dev)
 {
-	struct resource *resource, *last;
 	unsigned link;
 	uint8_t line;
 
-	last = &dev->resource[dev->resources];
-
-	for (resource = &dev->resource[0]; resource < last; resource++) {
+#if 0
+	struct resource *res;
+	for (res = dev->resource_list; res; res = res->next) {
 
 		// andrei: do not change the base address, it will make the VSA virtual registers unusable
-		//pci_set_resource(dev, resource);
+		//pci_set_resource(dev, res);
 		// FIXME: static allocation may conflict with dynamic mappings!
 	}
+#endif
 
 	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;

@@ -550,14 +550,12 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 
 void pci_dev_set_resources(struct device *dev)
 {
-	struct resource *resource, *last;
+	struct resource *res;
 	unsigned link;
 	u8 line;
 
-	last = &dev->resource[dev->resources];
-
-	for (resource = &dev->resource[0]; resource < last; resource++) {
-		pci_set_resource(dev, resource);
+	for (res = dev->resource_list; res; res = res->next) {
+		pci_set_resource(dev, res);
 	}
 	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;

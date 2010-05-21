@@ -217,10 +217,9 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 		for (child = dev->link[link].children; child; child = child->sibling) {
 			enable_resources(child);
 			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
-				for(i=0;i<child->resources;i++) {
-					struct resource *res;
+				struct resource *res;
+				for(res = child->resource_list; res; res = res->next) {
 					unsigned long base, end; // don't need long long
-					res = &child->resource[i];
 					if(!(res->flags & IORESOURCE_IO)) continue;
 					base = res->base;
 					end = resource_end(res);

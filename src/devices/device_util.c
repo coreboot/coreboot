@@ -261,25 +261,54 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 }
 
 /**
+ * Allocate 64 more resources to the free list.
+ */
+static int allocate_more_resources(void)
+{
+	int i;
+	struct resource *new_res_list;
+	new_res_list = malloc(64 * sizeof(*new_res_list));
+
+	if (new_res_list == NULL)
+		return 0;
+
+	memset(new_res_list, 0, 64 * sizeof(*new_res_list));
+
+	for (i = 0; i < 64-1; i++)
+		new_res_list[i].next = &new_res_list[i+1];
+
+	free_resources = new_res_list;
+	return 1;
+}
+
+/**
+ * Remove resource res from the device's list and add it to the free list.
+ */
+static void free_resource(device_t dev, struct resource *res, struct resource *prev)
+{
+	if (prev)
+		prev->next = res->next;
+	else
+		dev->resource_list = res->next;
+	res->next = free_resources;
+	free_resources = res;
+}
+
+/**
  * See if we have unused but allocated resource structures.
  * If so remove the allocation.
  * @param dev The device to find the resource on
  */
 void compact_resources(device_t dev)
 {
-	struct resource *resource;
-	int i;
+	struct resource *res, *next, *prev = NULL;
 	/* Move all of the free resources to the end */
-	for(i = 0; i < dev->resources;) {
-		resource = &dev->resource[i];
-		if (!resource->flags) {
-			memmove(resource, resource + 1, (dev->resources - i) *
-				sizeof(*resource));
-			dev->resources -= 1;
-			memset(&dev->resource[dev->resources], 0, sizeof(*resource));
-		} else {
-			i++;
-		}
+	for(res = dev->resource_list; res; res = next) {
+		next = res->next;
+		if (!res->flags)
+			free_resource(dev, res, prev);
+		else
+			prev = res;
 	}
 }
 
@@ -292,17 +321,13 @@ void compact_resources(device_t dev)
  */
 struct resource *probe_resource(device_t dev, unsigned index)
 {
-	struct resource *resource;
-	int i;
+	struct resource *res;
 	/* See if there is a resource with the appropriate index */
-	resource = 0;
-	for(i = 0; i < dev->resources; i++) {
-		if (dev->resource[i].index == index) {
-			resource = &dev->resource[i];
+	for(res = dev->resource_list; res; res = res->next) {
+		if (res->index == index)
 			break;
-		}
 	}
-	return resource;
+	return res;
 }
 
 /**
@@ -314,7 +339,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
  */
 struct resource *new_resource(device_t dev, unsigned index)
 {
-	struct resource *resource;
+	struct resource *resource, *tail;
 
 	/* First move all of the free resources to the end */
 	compact_resources(dev);
@@ -322,12 +347,20 @@ struct resource *new_resource(device_t dev, unsigned index)
 	/* See if there is a resource with the appropriate index */
 	resource = probe_resource(dev, index);
 	if (!resource) {
-		if (dev->resources == MAX_RESOURCES) {
-			die("MAX_RESOURCES exceeded.");
-		}
-		resource = &dev->resource[dev->resources];
+		if (free_resources == NULL && !allocate_more_resources())
+			die("Couldn't allocate more resources.");
+
+		resource = free_resources;
+		free_resources = free_resources->next;
 		memset(resource, 0, sizeof(*resource));
-		dev->resources++;
+		resource->next = NULL;
+		tail = dev->resource_list;
+		if (tail) {
+			while (tail->next) tail = tail->next;
+			tail->next = resource;
+		}
+		else
+			dev->resource_list = resource;
 	}
 	/* Initialize the resource values */
 	if (!(resource->flags & IORESOURCE_FIXED)) {
@@ -486,23 +519,22 @@ void search_bus_resources(struct bus *bus,
 {
 	struct device *curdev;
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
-		int i;
+		struct resource *res;
 		/* Ignore disabled devices */
 		if (!curdev->enabled) continue;
-		for(i = 0; i < curdev->resources; i++) {
-			struct resource *resource = &curdev->resource[i];
+		for(res = curdev->resource_list; res; res = res->next) {
 			/* If it isn't the right kind of resource ignore it */
-			if ((resource->flags & type_mask) != type) {
+			if ((res->flags & type_mask) != type) {
 				continue;
 			}
 			/* If it is a subtractive resource recurse */
-			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
+			if (res->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus * subbus;
-				subbus = &curdev->link[IOINDEX_SUBTRACTIVE_LINK(resource->index)];
+				subbus = &curdev->link[IOINDEX_SUBTRACTIVE_LINK(res->index)];
 				search_bus_resources(subbus, type_mask, type, search, gp);
 				continue;
 			}
-			search(gp, curdev, resource);
+			search(gp, curdev, res);
 		}
 	}
 }
@@ -513,20 +545,19 @@ void search_global_resources(
 {
 	struct device *curdev;
 	for(curdev = all_devices; curdev; curdev = curdev->next) {
-		int i;
+		struct resource *res;
 		/* Ignore disabled devices */
 		if (!curdev->enabled) continue;
-		for(i = 0; i < curdev->resources; i++) {
-			struct resource *resource = &curdev->resource[i];
+		for(res = curdev->resource_list; res; res = res->next) {
 			/* If it isn't the right kind of resource ignore it */
-			if ((resource->flags & type_mask) != type) {
+			if ((res->flags & type_mask) != type) {
 				continue;
 			}
 			/* If it is a subtractive resource ignore it */
-			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
+			if (res->flags & IORESOURCE_SUBTRACTIVE) {
 				continue;
 			}
-			search(gp, curdev, resource);
+			search(gp, curdev, res);
 		}
 	}
 }
@@ -561,6 +592,7 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 {
 	int i = 0, link = 0;
 	struct device *child;
+	struct resource *res;
 	char indent[30];	/* If your tree has more levels, it's wrong. */
 
 	for (i = 0; i < depth + 1 && i < 29; i++)
@@ -571,13 +603,13 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		  dev_path(root), root->links);
 	do_printk(BIOS_DEBUG, " %s\n", root->link[0].children ?
 		  dev_path(root->link[0].children) : "NULL");
-	for (i = 0; i < root->resources; i++) {
+	for (res = root->resource_list; res; res = res->next) {
 		do_printk(BIOS_DEBUG,
 			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
-			  indent, dev_path(root), root->resource[i].base,
-			  root->resource[i].size, root->resource[i].align,
-			  root->resource[i].gran, root->resource[i].limit,
-			  root->resource[i].flags, root->resource[i].index);
+			  indent, dev_path(root), res->base,
+			  res->size, res->align,
+			  res->gran, res->limit,
+			  res->flags, res->index);
 	}
 
 	for (link = 0; link < root->links; link++) {
@@ -611,8 +643,8 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 	for (i = 0; i < depth; i++)
 		depth_str[i] = ' ';
 	depth_str[i] = '\0';
-	do_printk(debug_level, "%s%s: enabled %d, %d resources\n",
-		  depth_str, dev_path(dev), dev->enabled, dev->resources);
+	do_printk(debug_level, "%s%s: enabled %d\n",
+		  depth_str, dev_path(dev), dev->enabled);
 	for (i = 0; i < dev->links; i++) {
 		for (sibling = dev->link[i].children; sibling;
 		     sibling = sibling->sibling)
@@ -646,10 +678,8 @@ void show_all_devs(int debug_level, const char *msg)
 	if (!do_printk(debug_level, "Show all devs...%s\n", msg))
 		return;
 	for (dev = all_devices; dev; dev = dev->next) {
-		do_printk(debug_level,
-			  "%s: enabled %d, %d resources\n",
-			  dev_path(dev), dev->enabled,
-			  dev->resources);
+		do_printk(debug_level, "%s: enabled %d\n",
+			  dev_path(dev), dev->enabled);
 	}
 }
 
@@ -687,12 +717,10 @@ void show_all_devs_resources(int debug_level, const char* msg)
 		return;
 
 	for (dev = all_devices; dev; dev = dev->next) {
-		int i;
-		do_printk(debug_level,
-			  "%s: enabled %d, %d resources\n",
-			  dev_path(dev), dev->enabled,
-			  dev->resources);
-		for (i = 0; i < dev->resources; i++)
-			show_one_resource(debug_level, dev, &dev->resource[i], "");
+		struct resource *res;
+		do_printk(debug_level, "%s: enabled %d\n",
+			  dev_path(dev), dev->enabled);
+		for (res = dev->resource_list; res; res = res->next)
+			show_one_resource(debug_level, dev, res, "");
 	}
 }

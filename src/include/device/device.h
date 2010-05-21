@@ -74,11 +74,10 @@ struct device {
 	u8 command;
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
-	struct resource resource[MAX_RESOURCES];
-	unsigned int resources;
+	struct resource *resource_list;
 
 	/* links are (downstream) buses attached to the device, usually a leaf
-	 * device with no children have 0 buses attached and a bridge has 1 bus
+	 * device with no children has 0 buses attached and a bridge has 1 bus
 	 */
 	struct bus link[MAX_LINKS];
 	/* number of buses attached to the device */
@@ -96,6 +95,7 @@ struct device {
 extern struct device	dev_root;
 extern struct device	*all_devices;	/* list of all devices */
 
+extern struct resource	*free_resources;
 
 /* Generic device interface functions */
 device_t alloc_dev(struct bus *parent, struct device_path *path);

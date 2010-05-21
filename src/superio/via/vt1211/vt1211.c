@@ -127,15 +127,13 @@ static void vt1211_pnp_enable_resources(device_t dev)
 
 static void vt1211_pnp_set_resources(struct device *dev)
 {
-	int i;
-	struct resource *resource;
+	struct resource *res;
 
 #if CONFIG_CONSOLE_SERIAL8250 == 1
 	if( dev->path.pnp.device == 2 ){
-		for( i = 0 ; i < dev->resources; i++){
-			resource = &dev->resource[i];
-			resource->flags |= IORESOURCE_STORED;
-			report_resource_stored(dev, resource, "");
+		for(res = dev->resource_list; res; res = res->next){
+			res->flags |= IORESOURCE_STORED;
+			report_resource_stored(dev, res, "");
 		}
 		return;
 	}
@@ -145,34 +143,33 @@ static void vt1211_pnp_set_resources(struct device *dev)
 	pnp_set_logical_device(dev);
 
 	/* Paranoia says I should disable the device here... */
-	for(i = 0; i < dev->resources; i++) {
-		resource = &dev->resource[i];
-		if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+	for(res = dev->resource_list; res; res = res->next){
+		if (!(res->flags & IORESOURCE_ASSIGNED)) {
 			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
-				dev_path(dev), dev->resource->index,
-				resource_type(resource),
-				resource->size);
+				dev_path(dev), res->index,
+				resource_type(res),
+				res->size);
 			continue;
 		}
 
 		/* Now store the resource */
-		if (resource->flags & IORESOURCE_IO) {
-			vt1211_set_iobase(dev, resource->index, resource->base);
+		if (res->flags & IORESOURCE_IO) {
+			vt1211_set_iobase(dev, res->index, res->base);
 		}
-		else if (resource->flags & IORESOURCE_DRQ) {
-			pnp_set_drq(dev, resource->index, resource->base);
+		else if (res->flags & IORESOURCE_DRQ) {
+			pnp_set_drq(dev, res->index, res->base);
 		}
-		else if (resource->flags  & IORESOURCE_IRQ) {
-			pnp_set_irq(dev, resource->index, resource->base);
+		else if (res->flags  & IORESOURCE_IRQ) {
+			pnp_set_irq(dev, res->index, res->base);
 		}
 		else {
 			printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
-				dev_path(dev), resource->index);
+				dev_path(dev), res->index);
 			return;
 		}
-		resource->flags |= IORESOURCE_STORED;
+		res->flags |= IORESOURCE_STORED;
 
-		report_resource_stored(dev, resource, "");
+		report_resource_stored(dev, res, "");
 	}
 
 	pnp_exit_ext_func_mode(dev);

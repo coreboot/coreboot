@@ -132,14 +132,14 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 
 void pnp_set_resources(device_t dev)
 {
-	int i;
+	struct resource *res;
 
 	/* Select the device */
 	pnp_set_logical_device(dev);
 
 	/* Paranoia says I should disable the device here... */
-	for(i = 0; i < dev->resources; i++) {
-		pnp_set_resource(dev, &dev->resource[i]);
+	for(res = dev->resource_list; res; res = res->next) {
+		pnp_set_resource(dev, res);
 	}
 }
 

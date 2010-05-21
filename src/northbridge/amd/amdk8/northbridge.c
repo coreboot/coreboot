@@ -520,14 +520,13 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 static void amdk8_set_resources(device_t dev)
 {
 	unsigned nodeid, link;
-	int i;
+	struct resource *res;
 
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);
 
 	/* Set each resource we have found */
-	for(i = 0; i < dev->resources; i++) {
-		struct resource *res = &dev->resource[i];
+	for(res = dev->resource_list; res; res = res->next) {
 		struct resource *old = NULL;
 		unsigned index;
 
@@ -846,7 +845,7 @@ static void amdk8_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
 	struct resource *io, *mem1, *mem2;
-	struct resource *resource, *last;
+	struct resource *res;
 #endif
 	unsigned long mmio_basek;
 	uint32_t pci_tolm;
@@ -905,12 +904,11 @@ static void amdk8_domain_set_resources(device_t dev)
 		mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
-	last = &dev->resource[dev->resources];
-	for(resource = &dev->resource[0]; resource < last; resource++)
+	for(res = dev->resource_list; res; res = res->next)
 	{
-		resource->flags |= IORESOURCE_ASSIGNED;
-		resource->flags |= IORESOURCE_STORED;
-		report_resource_stored(dev, resource, "");
+		res->flags |= IORESOURCE_ASSIGNED;
+		res->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, res, "");
 
 	}
 #endif

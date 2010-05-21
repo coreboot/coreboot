@@ -53,8 +53,7 @@ biosemu_dev_get_addr_info(void)
 	bios_device.devfn = devfn;
 
 	DEBUG_PRINTF("bus: %x, devfn: %x\n", bus, devfn);
-	for (i = 0; i < bios_device.dev->resources; i++) {
-		r = &bios_device.dev->resource[i];
+	for (r = bios_device.dev->resource_list; r; r = r->next) {
 		translate_address_array[taa_index].info = r->flags;
 		translate_address_array[taa_index].bus = bus;
 		translate_address_array[taa_index].devfn = devfn;

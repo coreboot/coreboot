@@ -183,9 +183,8 @@ static void mc_read_resources(device_t dev)
 
 static void mc_set_resources(device_t dev)
 {
-	struct resource *resource, *last;
+	struct resource *resource;
 
-	last = &dev->resource[dev->resources];
 	resource = find_resource(dev, 0xcf);
 	if (resource) {
 		report_resource_stored(dev, resource, "<mmconfig>");

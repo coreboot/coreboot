@@ -108,7 +108,6 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 {
 	u32 link;
 	u32 reg, reg_x;
-	int i;
 	int var_num = 0;
 	u16 reg_var[3];
 
@@ -122,10 +121,9 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 			enable_resources(child);
 			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
-				for (i = 0; i < child->resources; i++) {
-					struct resource *res;
+				struct resource *res;
+				for (res = child->resource_list; res; res = res->next) {
 					u32 base, end;	/*  don't need long long */
-					res = &child->resource[i];
 					if (!(res->flags & IORESOURCE_IO))
 						continue;
 					base = res->base;

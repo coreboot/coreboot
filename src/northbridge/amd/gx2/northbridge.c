@@ -297,11 +297,9 @@ static void northbridge_init(device_t dev)
 static void set_resources(struct device *dev)
 {
 #if 0
-        struct resource *resource, *last;
+        struct resource *res;
 
-        last = &dev->resource[dev->resources];
-
-        for(resource = &dev->resource[0]; resource < last; resource++) {
+        for(res = &dev->resource_list; res; res = res->next) {
                 pci_set_resource(dev, resource);
         }
 #endif

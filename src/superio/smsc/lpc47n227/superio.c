@@ -96,14 +96,14 @@ static void enable_dev(device_t dev)
 //
 void lpc47n227_pnp_set_resources(device_t dev)
 {
-	int i;
+	struct resource *res;
 
 	pnp_enter_conf_state(dev);
 
 	// NOTE: Cannot use pnp_set_resources() here because it assumes chip
 	// support for logical devices, which the LPC47N227 doesn't have
-	for (i = 0; i < dev->resources; i++)
-		lpc47n227_pnp_set_resource(dev, &dev->resource[i]);
+	for (res = dev->resource_list; res; res = res->next)
+		lpc47n227_pnp_set_resource(dev, res);
 
 	pnp_exit_conf_state(dev);
 }

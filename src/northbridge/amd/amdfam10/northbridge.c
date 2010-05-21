@@ -592,7 +592,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 static void amdfam10_set_resources(device_t dev)
 {
 	u32 nodeid, link;
-	int i;
+	struct resource *res;
 
 	/* Find the nodeid */
 	nodeid = amdfam10_nodeid(dev);
@@ -600,8 +600,8 @@ static void amdfam10_set_resources(device_t dev)
 	amdfam10_create_vga_resource(dev, nodeid);
 
 	/* Set each resource we have found */
-	for(i = 0; i < dev->resources; i++) {
-		amdfam10_set_resource(dev, &dev->resource[i], nodeid);
+	for(res = dev->resource_list; res; res = res->next) {
+		amdfam10_set_resource(dev, res, nodeid);
 	}
 
 	for(link = 0; link < dev->links; link++) {
@@ -889,7 +889,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
 	struct resource *io, *mem1, *mem2;
-	struct resource *resource, *last;
+	struct resource *res;
 #endif
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -943,14 +943,13 @@ static void pci_domain_set_resources(device_t dev)
 			mem2->base, mem2->limit, mem2->size, mem2->align);
 	}
 
-	last = &dev->resource[dev->resources];
-	for(resource = &dev->resource[0]; resource < last; resource++)
+	for(res = &dev->resource_list; res; res = res->next)
 	{
-		resource->flags |= IORESOURCE_ASSIGNED;
-		resource->flags &= ~IORESOURCE_STORED;
-		link = (resource>>2) & 3;
-		resource->flags |= IORESOURCE_STORED;
-		report_resource_stored(dev, resource, "");
+		res->flags |= IORESOURCE_ASSIGNED;
+		res->flags &= ~IORESOURCE_STORED;
+		link = (res>>2) & 3;
+		res->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, res, "");
 
 	}
 #endif

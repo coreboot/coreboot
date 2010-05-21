@@ -1347,10 +1347,10 @@ DefinitionBlock (
 					Name(_CRS, ResourceTemplate() {
 						DMA(Compatibility,BusMaster,Transfer8){4}
 						IO(Decode16, 0x0000, 0x0000, 0x10, 0x10)
-						IO(Decode16, 0x0081, 0x0081, 0x10, 0x03)
-						IO(Decode16, 0x0087, 0x0087, 0x10, 0x01)
-						IO(Decode16, 0x0089, 0x0089, 0x10, 0x03)
-						IO(Decode16, 0x008F, 0x008F, 0x10, 0x01)
+						IO(Decode16, 0x0081, 0x0081, 0x01, 0x03)
+						IO(Decode16, 0x0087, 0x0087, 0x01, 0x01)
+						IO(Decode16, 0x0089, 0x0089, 0x01, 0x03)
+						IO(Decode16, 0x008F, 0x008F, 0x01, 0x01)
 						IO(Decode16, 0x00C0, 0x00C0, 0x10, 0x20)
 					}) /* End Name(_SB.PCI0.LpcIsaBr.MAD._CRS) */
 				} /* End Device(_SB.PCI0.LpcIsaBr.MAD) */
@@ -1425,29 +1425,29 @@ DefinitionBlock (
 					0x00000000,		/* Min */
 					0x00000000,		/* Max */
 					0x00000000,		/* Translation */
-					0x00000000,		/* Max-Min, RLEN */
+					0x00000001,		/* Max-Min, RLEN */
 					,,
 					PCBM
 				)
 
 				/* DRAM memory from 4GB to TopMem2 */
 				QWORDMemory(ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-					0xFFFFFFFF,		/* Granularity */
-					0x00000000,		/*  Min */
+					0x00000000,		/* Granularity */
+					0x00000000,		/* Min */
 					0x00000000,		/* Max */
 					0x00000000,		/* Translation */
-					0x00000000,		/* Max-Min, RLEN */
+					0x00000001,		/* Max-Min, RLEN */
 					,,
 					DMHI
 				)
 
 				/* BIOS space just below 16EB */
 				QWORDMemory(ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-					0xFFFFFFFF,		/* Granularity */
+					0x00000000,		/* Granularity */
 					0x00000000,		/* Min */
-					0x00000000,		/*  Max */
+					0x00000000,		/* Max */
 					0x00000000,		/* Translation */
-					0x00000000,		/* Max-Min, RLEN */
+					0x00000001,		/* Max-Min, RLEN */
 					,,
 					PEBM
 				)

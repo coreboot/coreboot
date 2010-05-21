@@ -124,7 +124,7 @@
                         Name (BUF0, ResourceTemplate ()
                         {
                             Memory32Fixed (ReadWrite, 0x000E0000, 0x00020000) // BIOS E4000-FFFFF
-                            Memory32Fixed (ReadWrite, 0x000C0000, 0x00000000) // video BIOS c0000-c8404
+                            Memory32Fixed (ReadWrite, 0x000C0000, 0x00010000) // video BIOS c0000-c8404
                             Memory32Fixed (ReadWrite, 0xFEC00000, 0x00001000) // I/O APIC
                             Memory32Fixed (ReadWrite, 0xFFC00000, 0x00380000) // LPC forwarded, 4 MB w/ROM
                             Memory32Fixed (ReadWrite, 0xFEE00000, 0x00001000) // Local APIC

@@ -82,9 +82,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
 					DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
 						0x00000000, // Address Space Granularity
 						0x000C0000, // Address Range Minimum
-						0x00000000, // Address Range Maximum
+						0x000CFFFF, // Address Range Maximum
 						0x00000000, // Address Translation Offset
-						0x00000000,,,
+						0x00010000,,,
 						, AddressRangeMemory, TypeStatic)   //Video BIOS A0000h-C7FFFh
 
 					Memory32Fixed (ReadWrite, 0x000D8000, 0x00004000)//USB HC D8000-DBFFF

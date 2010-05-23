@@ -59,12 +59,12 @@ __stack = RELOCATED(.)
 
 /* Register store for realmode_call and realmode_interrupt */
 __registers = RELOCATED(.)
-	.long 0 /* 0x00 - EAX */
-	.long 0 /* 0x04 - EBX */
-	.long 0 /* 0x08 - ECX */
-	.long 0 /* 0x0c - EDX */
-	.long 0 /* 0x10 - EDI */
-	.long 0 /* 0x14 - ESI */
+	.long 0 /*  0 - EAX */
+	.long 0 /*  4 - EBX */
+	.long 0 /*  8 - ECX */
+	.long 0 /* 12 - EDX */
+	.long 0 /* 16 - ESI */
+	.long 0 /* 20 - EDI */
 
 	.code32
 	.globl __realmode_call
@@ -89,17 +89,17 @@ __realmode_call = RELOCATED(.)
 
 	/* initial register values */
 	movl	40(%ebp), %eax
-	movl	%eax, __registers + 0x00 /* eax */
+	movl	%eax, __registers +  0 /* eax */
 	movl	44(%ebp), %eax
-	movl	%eax, __registers + 0x04 /* ebx */
+	movl	%eax, __registers +  4 /* ebx */
 	movl	48(%ebp), %eax
-	movl	%eax, __registers + 0x08 /* ecx */
+	movl	%eax, __registers +  8 /* ecx */
 	movl	52(%ebp), %eax
-	movl	%eax, __registers + 0x0c /* edx */
+	movl	%eax, __registers + 12 /* edx */
 	movl	56(%ebp), %eax
-	movl	%eax, __registers + 0x10 /* esi */
+	movl	%eax, __registers + 16 /* esi */
 	movl	60(%ebp), %eax
-	movl	%eax, __registers + 0x14 /* esi */
+	movl	%eax, __registers + 20 /* edi */
 
 	/* Activate the right segment descriptor real mode. */
 	ljmp	$0x28, $RELOCATED(1f)
@@ -210,17 +210,17 @@ __realmode_interrupt = RELOCATED(.)
 
 	/* initial register values */
 	movl	40(%ebp), %eax
-	movl	%eax, __registers + 0x00 /* eax */
+	movl	%eax, __registers +  0 /* eax */
 	movl	44(%ebp), %eax
-	movl	%eax, __registers + 0x04 /* ebx */
+	movl	%eax, __registers +  4 /* ebx */
 	movl	48(%ebp), %eax
-	movl	%eax, __registers + 0x08 /* ecx */
+	movl	%eax, __registers +  8 /* ecx */
 	movl	52(%ebp), %eax
-	movl	%eax, __registers + 0x0c /* edx */
+	movl	%eax, __registers + 12 /* edx */
 	movl	56(%ebp), %eax
-	movl	%eax, __registers + 0x10 /* esi */
+	movl	%eax, __registers + 16 /* esi */
 	movl	60(%ebp), %eax
-	movl	%eax, __registers + 0x14 /* esi */
+	movl	%eax, __registers + 20 /* edi */
 
 	/*  This configures CS properly for real mode. */
 	ljmp 	$0x28, $RELOCATED(1f)

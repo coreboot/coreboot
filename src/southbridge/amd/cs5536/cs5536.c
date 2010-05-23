@@ -530,8 +530,7 @@ void chipsetinit(void)
 	struct southbridge_amd_cs5536_config *sb;
 	struct msrinit *csi;
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
-			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
+	dev = dev_find_slot(0, PCI_DEVFN(0xf, 0));
 
 	if (!dev) {
 		printk(BIOS_ERR, "CS5536 not found.\n");

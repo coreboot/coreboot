@@ -106,7 +106,7 @@ static void vga_enable_console(void)
 	 */
 
 	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
-	realmode_interrupt(0x10, 0x4f1f, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
 }
 
 static void vga_init(device_t dev)

@@ -17,15 +17,15 @@
 
 #include "../lib/usbdebug.c"
 
-static void early_usbdebug_direct_init(void)
+static void early_usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
 	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
 
-	usbdebug_direct_init(EHCI_BAR, EHCI_DEBUG_OFFSET, dbg_info);
+	usbdebug_init(EHCI_BAR, EHCI_DEBUG_OFFSET, dbg_info);
 }
 
-void usbdebug_direct_tx_byte(unsigned char data)
+void usbdebug_tx_byte(unsigned char data)
 {
 	struct ehci_debug_info *dbg_info;
 
@@ -38,7 +38,7 @@ void usbdebug_direct_tx_byte(unsigned char data)
 	}
 }
 
-void usbdebug_direct_ram_tx_byte(unsigned char data)
+void usbdebug_ram_tx_byte(unsigned char data)
 {
 	struct ehci_debug_info *dbg_info;
 

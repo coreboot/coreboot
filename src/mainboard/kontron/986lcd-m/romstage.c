@@ -381,8 +381,8 @@ void main(unsigned long bist)
 	uart_init();
 
 #if CONFIG_USBDEBUG_DIRECT
-	i82801gx_enable_usbdebug_direct(DBGP_DEFAULT);
-	early_usbdebug_direct_init();
+	i82801gx_enable_usbdebug(DBGP_DEFAULT);
+	early_usbdebug_init();
 #endif
 
 	console_init();

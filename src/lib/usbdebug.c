@@ -83,7 +83,7 @@ static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 	unsigned ctrl;
 	int loop = 0x100000;
 	do {
-		ctrl = read32(&ehci_debug->control);
+		ctrl = read32((unsigned long)&ehci_debug->control);
 		/* Stop when the transaction is finished */
 		if (ctrl & DBGP_DONE)
 			break;
@@ -94,7 +94,7 @@ static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 	/* Now that we have observed the completed transaction,
 	 * clear the done bit.
 	 */
-	write32(&ehci_debug->control, ctrl | DBGP_DONE);
+	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_DONE);
 	return (ctrl & DBGP_ERROR) ? -DBGP_ERRCODE(ctrl) : DBGP_LEN(ctrl);
 }
 
@@ -119,9 +119,9 @@ static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, unsigned ctrl)
 
 	int loop = 3;
 retry:
-	write32(&ehci_debug->control, ctrl | DBGP_GO);
+	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_GO);
 	ret = dbgp_wait_until_complete(ehci_debug);
-	pids = read32(&ehci_debug->pids);
+	pids = read32((unsigned long)&ehci_debug->pids);
 	lpid = DBGP_PID_GET(pids);
 
 	if (ret < 0)
@@ -151,8 +151,8 @@ static void dbgp_set_data(struct ehci_dbg_port *ehci_debug, const void *buf, int
 		lo |= bytes[i] << (8*i);
 	for (; i < 8 && i < size; i++)
 		hi |= bytes[i] << (8*(i - 4));
-	write32(&ehci_debug->data03, lo);
-	write32(&ehci_debug->data47, hi);
+	write32((unsigned long)&ehci_debug->data03, lo);
+	write32((unsigned long)&ehci_debug->data47, hi);
 }
 
 static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
@@ -160,8 +160,8 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 	unsigned char *bytes = buf;
 	unsigned lo, hi;
 	int i;
-	lo = read32(&ehci_debug->data03);
-	hi = read32(&ehci_debug->data47);
+	lo = read32((unsigned long)&ehci_debug->data03);
+	hi = read32((unsigned long)&ehci_debug->data47);
 	for (i = 0; i < 4 && i < size; i++)
 		bytes[i] = (lo >> (8*i)) & 0xff;
 	for (; i < 8 && i < size; i++)
@@ -177,17 +177,17 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, unsigned devnum, un
 
 	addr = DBGP_EPADDR(devnum, endpoint);
 
-	pids = read32(&ehci_debug->pids);
+	pids = read32((unsigned long)&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_OUT);
 
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl |= DBGP_OUT;
 	ctrl |= DBGP_GO;
 
 	dbgp_set_data(ehci_debug, bytes, size);
-	write32(&ehci_debug->address, addr);
-	write32(&ehci_debug->pids, pids);
+	write32((unsigned long)&ehci_debug->address, addr);
+	write32((unsigned long)&ehci_debug->pids, pids);
 
 	ret = dbgp_wait_until_done(ehci_debug, ctrl);
 	if (ret < 0) {
@@ -211,16 +211,16 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum, uns
 
 	addr = DBGP_EPADDR(devnum, endpoint);
 
-	pids = read32(&ehci_debug->pids);
+	pids = read32((unsigned long)&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_IN);
 
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl &= ~DBGP_OUT;
 	ctrl |= DBGP_GO;
 
-	write32(&ehci_debug->address, addr);
-	write32(&ehci_debug->pids, pids);
+	write32((unsigned long)&ehci_debug->address, addr);
+	write32((unsigned long)&ehci_debug->pids, pids);
 	ret = dbgp_wait_until_done(ehci_debug, ctrl);
 	if (ret < 0)
 		return ret;
@@ -256,15 +256,15 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	pids = DBGP_PID_SET(USB_PID_DATA0, USB_PID_SETUP);
 	addr = DBGP_EPADDR(devnum, 0);
 
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, sizeof(req));
 	ctrl |= DBGP_OUT;
 	ctrl |= DBGP_GO;
 
 	/* Send the setup message */
 	dbgp_set_data(ehci_debug, &req, sizeof(req));
-	write32(&ehci_debug->address, addr);
-	write32(&ehci_debug->pids, pids);
+	write32((unsigned long)&ehci_debug->address, addr);
+	write32((unsigned long)&ehci_debug->pids, pids);
 	ret = dbgp_wait_until_done(ehci_debug, ctrl);
 	if (ret < 0)
 		return ret;
@@ -282,25 +282,25 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 	int loop;
 
 	/* Reset the usb debug port */
-	portsc = read32(&ehci_regs->port_status[port - 1]);
+	portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
 	portsc &= ~PORT_PE;
 	portsc |= PORT_RESET;
-	write32(&ehci_regs->port_status[port - 1], portsc);
+	write32((unsigned long)&ehci_regs->port_status[port - 1], portsc);
 
 	delay = HUB_ROOT_RESET_TIME;
 	for (delay_time = 0; delay_time < HUB_RESET_TIMEOUT;
 	     delay_time += delay) {
 		dbgp_mdelay(delay);
 
-		portsc = read32(&ehci_regs->port_status[port - 1]);
+		portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
 		if (portsc & PORT_RESET) {
 			/* force reset to complete */
 			loop = 2;
-			write32(&ehci_regs->port_status[port - 1],
+			write32((unsigned long)&ehci_regs->port_status[port - 1],
 					portsc & ~(PORT_RWC_BITS | PORT_RESET));
 			do {
 				dbgp_mdelay(delay);
-				portsc = read32(&ehci_regs->port_status[port - 1]);
+				portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
 				delay_time += delay;
 			} while ((portsc & PORT_RESET) && (--loop > 0));
 			if (!loop) {
@@ -329,7 +329,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 	int ret, reps;
 	for (reps = 0; reps < 3; reps++) {
 		dbgp_mdelay(100);
-		status = read32(&ehci_regs->status);
+		status = read32((unsigned long)&ehci_regs->status);
 		if (status & STS_PCD) {
 			ret = ehci_reset_port(ehci_regs, port);
 			if (ret == 0)
@@ -346,7 +346,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 #else
 #define dbgp_printk(fmt_arg...)   do {} while(0)
 #endif
-static void usbdebug_direct_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
+static void usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
@@ -356,7 +356,6 @@ static void usbdebug_direct_init(unsigned ehci_bar, unsigned offset, struct ehci
 	struct usb_debug_descriptor dbgp_desc;
 	unsigned ctrl, devnum;
 	int ret;
-	unsigned delay_time, delay;
 	int loop;
 
 	unsigned cmd,  status, portsc, hcs_params, debug_port, n_ports, new_debug_port;
@@ -366,16 +365,18 @@ static void usbdebug_direct_init(unsigned ehci_bar, unsigned offset, struct ehci
 	unsigned playtimes = 3;
 
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
-	ehci_regs  = (struct ehci_regs *)(ehci_bar + HC_LENGTH(read32(&ehci_caps->hc_capbase)));
+	ehci_regs  = (struct ehci_regs *)(ehci_bar + HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
 
 	info->ehci_debug = (void *)0;
+
+	new_debug_port = 0;
 
 try_next_time:
 	port_map_tried = 0;
 
 try_next_port:
-	hcs_params = read32(&ehci_caps->hcs_params);
+	hcs_params = read32((unsigned long)&ehci_caps->hcs_params);
 	debug_port = HCS_DEBUG_PORT(hcs_params);
 	n_ports    = HCS_N_PORTS(hcs_params);
 
@@ -385,7 +386,7 @@ try_next_port:
 
 #if 1
         for (i = 1; i <= n_ports; i++) {
-                portsc = read32(&ehci_regs->port_status[i-1]);
+                portsc = read32((unsigned long)&ehci_regs->port_status[i-1]);
                 dbgp_printk("PORTSC #%d: %08x\n", i, portsc);
         }
 #endif
@@ -400,11 +401,11 @@ try_next_port:
 
 	/* Reset the EHCI controller */
 	loop = 10;
-	cmd = read32(&ehci_regs->command);
+	cmd = read32((unsigned long)&ehci_regs->command);
 	cmd |= CMD_RESET;
-	write32(&ehci_regs->command, cmd);
+	write32((unsigned long)&ehci_regs->command, cmd);
 	do {
-		cmd = read32(&ehci_regs->command);
+		cmd = read32((unsigned long)&ehci_regs->command);
 	} while ((cmd & CMD_RESET) && (--loop > 0));
 
 	if(!loop)
@@ -413,24 +414,24 @@ try_next_port:
 		dbgp_printk("EHCI controller reset successfully.\n");
 
 	/* Claim ownership, but do not enable yet */
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl |= DBGP_OWNER;
 	ctrl &= ~(DBGP_ENABLED | DBGP_INUSE);
-	write32(&ehci_debug->control, ctrl);
+	write32((unsigned long)&ehci_debug->control, ctrl);
 
 	/* Start the ehci running */
-	cmd = read32(&ehci_regs->command);
+	cmd = read32((unsigned long)&ehci_regs->command);
 	cmd &= ~(CMD_LRESET | CMD_IAAD | CMD_PSE | CMD_ASE | CMD_RESET);
 	cmd |= CMD_RUN;
-	write32(&ehci_regs->command, cmd);
+	write32((unsigned long)&ehci_regs->command, cmd);
 
 	/* Ensure everything is routed to the EHCI */
-	write32(&ehci_regs->configured_flag, FLAG_CF);
+	write32((unsigned long)&ehci_regs->configured_flag, FLAG_CF);
 
 	/* Wait until the controller is no longer halted */
 	loop = 10;
 	do {
-		status = read32(&ehci_regs->status);
+		status = read32((unsigned long)&ehci_regs->status);
 	} while ((status & STS_HALT) && (--loop>0));
 
 	if(!loop) {
@@ -448,21 +449,21 @@ try_next_port:
 	dbgp_printk("EHCI done waiting for port.\n");
 
 	/* Enable the debug port */
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl |= DBGP_CLAIM;
-	write32(&ehci_debug->control, ctrl);
-	ctrl = read32(&ehci_debug->control);
+	write32((unsigned long)&ehci_debug->control, ctrl);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	if ((ctrl & DBGP_CLAIM) != DBGP_CLAIM) {
 		dbgp_printk("No device in EHCI debug port.\n");
-		write32(&ehci_debug->control, ctrl & ~DBGP_CLAIM);
+		write32((unsigned long)&ehci_debug->control, ctrl & ~DBGP_CLAIM);
 		goto err;
 	}
 	dbgp_printk("EHCI debug port enabled.\n");
 
 	/* Completely transfer the debug device to the debug controller */
-	portsc = read32(&ehci_regs->port_status[debug_port - 1]);
+	portsc = read32((unsigned long)&ehci_regs->port_status[debug_port - 1]);
 	portsc &= ~PORT_PE;
-	write32(&ehci_regs->port_status[debug_port - 1], portsc);
+	write32((unsigned long)&ehci_regs->port_status[debug_port - 1], portsc);
 
 	dbgp_mdelay(100);
 
@@ -529,9 +530,9 @@ try_next_port:
 	return;
 err:
 	/* Things didn't work so remove my claim */
-	ctrl = read32(&ehci_debug->control);
+	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl &= ~(DBGP_CLAIM | DBGP_OUT);
-	write32((unsigned long)&ehci_debug->control, ctrl);
+	write32((unsigned long)(unsigned long)&ehci_debug->control, ctrl);
 
 next_debug_port:
 	port_map_tried |= (1<<(debug_port-1));

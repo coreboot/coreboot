@@ -27,7 +27,7 @@
 #define EHCI_BAR 0xFEF00000
 #define EHCI_DEBUG_OFFSET 0xE0
 
-static void sb700_enable_usbdebug_direct(u32 port)
+static void sb700_enable_usbdebug(u32 port)
 {
 	set_debug_port(port);
 	pci_write_config32(PCI_DEV(0, SB700_DEVN_BASE + 0x13, 5),

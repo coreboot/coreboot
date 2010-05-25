@@ -41,7 +41,7 @@ static void set_debug_port(unsigned port)
 
 }
 
-static void sis966_enable_usbdebug_direct(unsigned port)
+static void sis966_enable_usbdebug(unsigned port)
 {
 	set_debug_port(port);
 	pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), EHCI_BAR_INDEX, EHCI_BAR);

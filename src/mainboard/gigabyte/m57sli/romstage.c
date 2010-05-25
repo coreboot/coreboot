@@ -213,8 +213,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
 #if CONFIG_USBDEBUG_DIRECT
-	mcp55_enable_usbdebug_direct(DBGP_DEFAULT);
-	early_usbdebug_direct_init();
+	mcp55_enable_usbdebug(DBGP_DEFAULT);
+	early_usbdebug_init();
 #endif
         console_init();
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);

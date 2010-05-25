@@ -36,7 +36,7 @@ void set_debug_port(unsigned port)
 	write32(EHCI_BAR + EHCI_DEBUG_OFFSET, dbgctl);
 }
 
-static void i82801gx_enable_usbdebug_direct(unsigned port)
+static void i82801gx_enable_usbdebug(unsigned port)
 {
 	pci_write_config32(PCI_DEV(0, 0x1d, 7), EHCI_BAR_INDEX, EHCI_BAR);
 	pci_write_config8(PCI_DEV(0, 0x1d, 7), 0x04, 0x2); // Memory Space Enable

@@ -30,7 +30,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-737-MU16b11c.h"

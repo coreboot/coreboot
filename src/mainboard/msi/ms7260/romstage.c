@@ -57,8 +57,8 @@
 
 #include <console/console.h>
 #if CONFIG_USBDEBUG_DIRECT
-#include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug_direct.c"
-#include "pc80/usbdebug_direct_serial.c"
+#include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
+#include "pc80/usbdebug_serial.c"
 #endif
 #include "lib/ramtest.c"
 #include <cpu/amd/model_fxx_rev.h>

@@ -10,7 +10,7 @@ initobj-y += vtxprintf.o
 initobj-$(CONFIG_USE_DCACHE_RAM) += console.o
 
 driver-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.o
-driver-$(CONFIG_USBDEBUG_DIRECT) += usbdebug_direct_console.o
+driver-$(CONFIG_USBDEBUG_DIRECT) += usbdebug_console.o
 driver-$(CONFIG_CONSOLE_VGA) += vga_console.o
 driver-$(CONFIG_CONSOLE_BTEXT) += btext_console.o
 driver-$(CONFIG_CONSOLE_BTEXT) += font-8x16.o

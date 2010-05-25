@@ -17,7 +17,7 @@
 
 #include <string.h>
 #include <console/console.h>
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 #include <pc80/mc146818rtc.h>
 
 static struct ehci_debug_info dbg_info;

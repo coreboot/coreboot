@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include "i82801gx.h"
 #if CONFIG_USBDEBUG_DIRECT
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 #endif
 #include <arch/io.h>
 

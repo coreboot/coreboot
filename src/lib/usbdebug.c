@@ -31,7 +31,7 @@
 
 #include <usb_ch9.h>
 #include <ehci.h>
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 
 #define USB_DEBUG_DEVNUM 127
 

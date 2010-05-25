@@ -31,7 +31,7 @@
 #include <arch/io.h>
 #include "sis966.h"
 #if CONFIG_USBDEBUG_DIRECT
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 #endif
 
 extern struct ehci_debug_info dbg_info;

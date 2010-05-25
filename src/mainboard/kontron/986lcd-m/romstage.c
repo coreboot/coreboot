@@ -50,9 +50,9 @@
 
 #if CONFIG_USBDEBUG_DIRECT
 #define DBGP_DEFAULT 1
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 #include "southbridge/intel/i82801gx/i82801gx_usb_debug.c"
-#include "pc80/usbdebug_direct_serial.c"
+#include "pc80/usbdebug_serial.c"
 #endif
 
 #include "lib/ramtest.c"

@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 #include <arch/io.h>
 #include "sb700.h"
 

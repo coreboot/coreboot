@@ -31,7 +31,7 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <usbdebug_direct.h>
+#include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-2129-m206f257.h"

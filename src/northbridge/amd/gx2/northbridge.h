@@ -6,7 +6,6 @@
 #else
 unsigned int gx2_scan_root_bus(device_t root, unsigned int max);
 int sizeram(void);
-void gx2_chipsetinit (struct northbridge_amd_gx2_config *nb);
 void graphics_init(void);
 void northbridgeinit(void);
 #endif

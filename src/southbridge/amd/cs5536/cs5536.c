@@ -518,9 +518,6 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
  *
  *	Called from northbridge init (Pre-VSA).
  *
- *	NOTE! This function is NOT called if the CS5536 is combined with
- *	an AMD Geode GX2. It's ONLY used on Geode LX based systems.
- *
  ****************************************************************************/
 void chipsetinit(void)
 {

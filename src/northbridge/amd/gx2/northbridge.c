@@ -486,13 +486,12 @@ static void enable_dev(struct device *dev)
 
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 		u32 tomk;
 		printk(BIOS_DEBUG, "DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		northbridgeinit();
 		cpubug();
-		gx2_chipsetinit(nb);
+		chipsetinit();
 		setup_gx2();
 		do_vsmbios();
 		graphics_init();

@@ -8,10 +8,12 @@
 #include <string.h>
 #include <bitops.h>
 #include "chip.h"
-#include "northbridge.h"
+#include "northbridge/amd/gx2/northbridge.h"
 #include <cpu/amd/gx2def.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
+#include "southbridge/amd/cs5535/cs5535.h"
+// This code uses some cs5536 includes because cs5535 includes are empty:
 #include "southbridge/amd/cs5536/cs5536.h"
 
 /* the structs in this file only set msr.lo. But ... that may not always be true */
@@ -47,18 +49,6 @@ static struct msrinit CS5535_CLOCK_GATING_TABLE[] = {
 	{ 0,			{.hi=0, .lo=0x000000000} }
 };
 
-/*  5536 Clock Gating*/
-static struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
-/* MSR		  Setting*/
-	{ GLIU_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000004} },
-	{ GLPCI_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ GLCP_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000004} },
-	{ MDD_SB_GLD_MSR_PM,	{.hi=0, .lo=0x050554111} }, /*  SMBus clock gating errata (PBZ 2226 & SiBZ 3977) */
-	{ ATA_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ AC97_SB_GLD_MSR_PM,	{.hi=0, .lo=0x000000005} },
-	{ 0,			{.hi=0, .lo=0x000000000} }
-};
-
 #ifdef UNUSED_CODE
 struct acpiinit {
 	unsigned short ioreg;
@@ -81,19 +71,7 @@ static struct acpiinit acpi_init_table[] = {
 	{PM_WKXD, 0x0000000A0, 4},
 	{0,0,0}
 };
-#endif
 
-/* return 1 if we are a 5536-based system */
-static int is_5536(void)
-{
-	msr_t msr;
-	msr = rdmsr(GLIU_SB_GLD_MSR_CAP);
-	msr.lo >>= 20;
-	printk(BIOS_DEBUG, "is_5536: msr.lo is 0x%x(==5 means 5536)\n", msr.lo&0xf);
-	return ((msr.lo&0xf) == 5);
-}
-
-#ifdef UNUSED_CODE
 /*****************************************************************************
  *
  *	pmChipsetInit
@@ -256,9 +234,6 @@ ChipsetGeodeLinkInit(void)
 	unsigned long msrnum;
 	unsigned long totalmem;
 
-	if (is_5536())
-		return;
-
 	/*  SWASIF for A1 DMA */
 	/*  Set all memory to  "just above systop" PCI so DMA will work */
 
@@ -279,17 +254,32 @@ ChipsetGeodeLinkInit(void)
 }
 
 void
-gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
+chipsetinit(void)
 {
+	device_t dev;
+	struct southbridge_amd_cs5535_config *sb;
 	msr_t msr;
 	struct msrinit *csi;
 	int i;
 	unsigned long msrnum;
 
+	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+			PCI_DEVICE_ID_NS_CS5535_ISA, 0);
+
+	if (!dev) {
+		printk(BIOS_ERR, "CS5535 not found.\n");
+		return;
+	}
+
+	sb = (struct southbridge_amd_cs5535_config *)dev->chip_info;
+
+	if (!sb) {
+		printk(BIOS_ERR, "CS5535 configuration not found.\n");
+		return;
+	}
+
 	outb( P80_CHIPSET_INIT, 0x80);
 	ChipsetGeodeLinkInit();
-
-	printk(BIOS_DEBUG, "Companion is a %s\n", is_5536()?"CS5536":"CS5535");
 
 #ifdef UNUSED_CODE
 	/* we hope NEVER to be in coreboot when S3 resumes
@@ -310,15 +300,13 @@ gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
 	}
 #endif
 
-	if (!is_5536()) {
-		/*  Setup USB. Need more details. #118.18 */
-		msrnum = MSR_SB_USB1 + 8;
-		msr.lo =  0x00012090;
-		msr.hi = 0;
-		wrmsr(msrnum, msr);
-		msrnum = MSR_SB_USB2 + 8;
-		wrmsr(msrnum, msr);
-	}
+	/*  Setup USB. Need more details. #118.18 */
+	msrnum = MSR_SB_USB1 + 8;
+	msr.lo =  0x00012090;
+	msr.hi = 0;
+	wrmsr(msrnum, msr);
+	msrnum = MSR_SB_USB2 + 8;
+	wrmsr(msrnum, msr);
 
 	/* set hd IRQ */
 	outl	(GPIOL_2_SET, GPIOL_INPUT_ENABLE);
@@ -340,10 +328,7 @@ gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
 
 	/*  Set up Master Configuration Register */
 	/*  If 5536, use same master config settings as 5535, except for OHCI MSRs */
-	if (is_5536())
-		i = 2;
-	else
-		i = 0;
+	i = 0;
 
 	csi = &SB_MASTER_CONF_TABLE[i];
 	for(; csi->msrnum; csi++){
@@ -354,19 +339,16 @@ gx2_chipsetinit (struct northbridge_amd_gx2_config *nb)
 
 	/*  Flash Setup */
 	printk(BIOS_INFO, "%sDOING ChipsetFlashSetup()!\n",
-			nb->setupflash ? "" : "NOT ");
+			sb->setupflash ? "" : "NOT ");
 
-	if (nb->setupflash)
+	if (sb->setupflash)
 		ChipsetFlashSetup();
 
 	/*  Set up Hardware Clock Gating */
 
 	/* if (getnvram(TOKEN_SB_CLK_GATE) != TVALUE_DISABLE) */
 	{
-		if (is_5536())
-			csi = CS5536_CLOCK_GATING_TABLE;
-		else
-			csi = CS5535_CLOCK_GATING_TABLE;
+		csi = CS5535_CLOCK_GATING_TABLE;
 
 		for(; csi->msrnum; csi++){
 			msr.lo = csi->msr.lo;

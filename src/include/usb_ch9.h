@@ -61,22 +61,21 @@
 
 #define USB_DEVICE_DEBUG_MODE           6       /* (special devices only) */
 
-//frim usb_ch9.h
 struct usb_ctrlrequest {
-        uint8_t bRequestType;
-        uint8_t bRequest;
-        uint16_t wValue;
-        uint16_t wIndex;
-        uint16_t wLength;
+        u8  bRequestType;
+        u8  bRequest;
+        u16 wValue;
+        u16 wIndex;
+        u16 wLength;
 } __attribute__ ((packed));
 
 struct usb_debug_descriptor {
-        uint8_t  bLength;
-        uint8_t  bDescriptorType;
+        u8  bLength;
+        u8  bDescriptorType;
 
         /* bulk endpoints with 8 byte maxpacket */
-        uint8_t  bDebugInEndpoint;
-        uint8_t  bDebugOutEndpoint;
+        u8  bDebugInEndpoint;
+        u8  bDebugOutEndpoint;
 };
 
 #endif

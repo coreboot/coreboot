@@ -342,9 +342,9 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 
 #define DBGP_DEBUG 1
 #if DBGP_DEBUG
-# define dbgp_printk(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
+# define dbgp_printk(fmt_arg...) printk(BIOS_DEBUG, fmt_arg)
 #else
-#define dbgp_printk(fmt, arg...)   do {} while(0)
+#define dbgp_printk(fmt_arg...)   do {} while(0)
 #endif
 static void usbdebug_direct_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
@@ -531,7 +531,7 @@ err:
 	/* Things didn't work so remove my claim */
 	ctrl = read32(&ehci_debug->control);
 	ctrl &= ~(DBGP_CLAIM | DBGP_OUT);
-	write32(&ehci_debug->control, ctrl);
+	write32((unsigned long)&ehci_debug->control, ctrl);
 
 next_debug_port:
 	port_map_tried |= (1<<(debug_port-1));

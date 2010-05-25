@@ -15,8 +15,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#ifndef USBDEBUG_DIRECT_H
-#define USBDEBUG_DIRECT_H
+#ifndef USBDEBUG_H
+#define USBDEBUG_H
 
 struct ehci_debug_info {
         void *ehci_caps;

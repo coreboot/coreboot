@@ -159,7 +159,7 @@ config PCI_ROM_RUN
 	default y
 	depends on BOARD_MSI_MS9652_FAM10
 
-config USBDEBUG_DIRECT
+config USBDEBUG
 	bool
 	default n
 	depends on BOARD_MSI_MS9652_FAM10

@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "i82801gx.h"
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 #include <usbdebug.h>
 #endif
 #include <arch/io.h>
@@ -87,7 +87,7 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 
 static void usb_ehci_set_resources(struct device *dev)
 {
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	struct resource *res;
 	u32 base;
 	u32 usb_debug;
@@ -97,7 +97,7 @@ static void usb_ehci_set_resources(struct device *dev)
 #endif
 	pci_dev_set_resources(dev);
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	res = find_resource(dev, 0x10);
 	set_ehci_debug(usb_debug);
 	if (!res) return;

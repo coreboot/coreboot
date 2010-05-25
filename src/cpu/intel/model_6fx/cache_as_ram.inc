@@ -130,7 +130,7 @@ clear_mtrrs:
 	movl	%eax, %cr0
 
 	/* Set up stack pointer */
-#if defined(CONFIG_USBDEBUG_DIRECT) && (CONFIG_USBDEBUG_DIRECT == 1)
+#if defined(CONFIG_USBDEBUG) && (CONFIG_USBDEBUG == 1)
 	/* leave some space for the struct ehci_debug_info */
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
 #else

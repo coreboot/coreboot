@@ -23,7 +23,7 @@ initobj-y += cbfs.o
 initobj-y += lzma.o
 #initobj-y += lzmadecode.o
 
-obj-$(CONFIG_USBDEBUG_DIRECT) += usbdebug.o
+obj-$(CONFIG_USBDEBUG) += usbdebug.o
 
 obj-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.o
 

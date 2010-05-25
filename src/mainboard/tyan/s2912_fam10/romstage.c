@@ -45,7 +45,7 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include <console/console.h>
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
 #include "pc80/usbdebug_serial.c"
 #endif
@@ -180,7 +180,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	mcp55_enable_usbdebug(DBGP_DEFAULT);
 	early_usbdebug_init();
 #endif

@@ -169,7 +169,7 @@ static void usb_init2(struct device *dev)
 
 static void usb_set_resources(struct device *dev)
 {
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	struct resource *res;
 	u32 base;
 	u32 old_debug;
@@ -179,7 +179,7 @@ static void usb_set_resources(struct device *dev)
 #endif
 	pci_dev_set_resources(dev);
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	res = find_resource(dev, 0x10);
 	set_ehci_debug(old_debug);
 	if (!res)

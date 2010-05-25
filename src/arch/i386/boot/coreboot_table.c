@@ -146,7 +146,7 @@ static void lb_console(struct lb_header *header)
 #if CONFIG_CONSOLE_SROM
 	add_console(header, LB_TAG_CONSOLE_SROM);
 #endif
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	add_console(header, LB_TAG_CONSOLE_EHCI);
 #endif
 }

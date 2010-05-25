@@ -76,7 +76,7 @@ static void fill_processor_name(char *processor_name)
 	strcpy(processor_name, processor_name_start);
 }
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 static unsigned ehci_debug_addr;
 #endif
 
@@ -94,7 +94,7 @@ static void model_6bx_init(device_t cpu)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	// Is this caution really needed?
 	if(!ehci_debug_addr)
 		ehci_debug_addr = get_ehci_debug();
@@ -105,7 +105,7 @@ static void model_6bx_init(device_t cpu)
 	x86_setup_mtrrs(36);
 	x86_mtrr_check();
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	set_ehci_debug(ehci_debug_addr);
 #endif
 

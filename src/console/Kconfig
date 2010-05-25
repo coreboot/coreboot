@@ -86,7 +86,7 @@ config TTYS0_LCS
 	depends on CONSOLE_SERIAL8250
 
 # TODO: FIX DEPENDENCY HERE
-config USBDEBUG_DIRECT
+config USBDEBUG
 	bool "USB 2.0 EHCI debug dongle support"
 	default n
 	help

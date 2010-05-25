@@ -48,7 +48,7 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 #define DBGP_DEFAULT 1
 #include <usbdebug.h>
 #include "southbridge/intel/i82801gx/i82801gx_usb_debug.c"
@@ -380,7 +380,7 @@ void main(unsigned long bist)
 	/* Set up the console */
 	uart_init();
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	i82801gx_enable_usbdebug(DBGP_DEFAULT);
 	early_usbdebug_init();
 #endif

@@ -27,7 +27,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "mcp55.h"
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 #include <usbdebug.h>
 #endif
 
@@ -43,7 +43,7 @@ static void usb2_init(struct device *dev)
 
 static void usb2_set_resources(struct device *dev)
 {
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	struct resource *res;
 	unsigned base;
 	unsigned old_debug;
@@ -53,7 +53,7 @@ static void usb2_set_resources(struct device *dev)
 #endif
 	pci_dev_set_resources(dev);
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	res = find_resource(dev, 0x10);
 	set_ehci_debug(old_debug);
 	if (!res) return;

@@ -462,7 +462,7 @@ static inline void k8_errata(void)
 
 }
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 static unsigned ehci_debug_addr;
 #endif
 
@@ -481,7 +481,7 @@ static void model_fxx_init(device_t dev)
 	get_fms(&c, dev->device);
 #endif
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	if (!ehci_debug_addr)
 		ehci_debug_addr = get_ehci_debug();
 	set_ehci_debug(0);
@@ -492,7 +492,7 @@ static void model_fxx_init(device_t dev)
 	amd_setup_mtrrs();
 	x86_mtrr_check();
 
-#if CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG
 	set_ehci_debug(ehci_debug_addr);
 #endif
 

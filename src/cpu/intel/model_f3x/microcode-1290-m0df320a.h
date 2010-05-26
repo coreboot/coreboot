@@ -1,5 +1,5 @@
 //+++
-//       Copyright (c) <1995-2010>, Intel Corporation.
+//	Copyright (c) <1995-2010>, Intel Corporation.
 //	All rights reserved.
 //
 //	Redistribution. Redistribution and use in binary form, without modification, are

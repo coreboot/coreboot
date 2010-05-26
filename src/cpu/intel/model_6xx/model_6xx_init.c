@@ -16,8 +16,16 @@ static uint32_t microcode_updates[] = {
 	 * microcode update lengths.  They are encoded in int 8 and 9.  A
 	 * dummy header of nulls must terminate the list.
 	 */
-#include "microcode_MU16810d.h"
-#include "microcode_MU16830c.h"
+#include "microcode-534-MU16810d.h"
+#include "microcode-535-MU16810e.h"
+#include "microcode-536-MU16810f.h"
+#include "microcode-538-MU168111.h"
+
+#include "microcode-550-MU168307.h"
+#include "microcode-551-MU168308.h"
+#include "microcode-727-MU168313.h"
+#include "microcode-728-MU168314.h"
+
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

@@ -8,27 +8,26 @@
 #include <cpu/intel/microcode.h>
 
 struct microcode {
-	uint32_t hdrver;
-	uint32_t rev;
-	uint32_t date;
-	uint32_t sig;
+	u32 hdrver;	/* Header Version */
+	u32 rev;	/* Patch ID       */
+	u32 date;	/* DATE           */
+	u32 sig;	/* CPUID          */
 
-	uint32_t cksum;
-	uint32_t ldrver;
-	uint32_t pf;
+	u32 cksum;	/* Checksum       */
+	u32 ldrver;	/* Loader Version */
+	u32 pf;		/* Platform ID    */
 
-	uint32_t data_size;
-	uint32_t total_size;
+	u32 data_size;	/* Data size      */
+	u32 total_size;	/* Total size     */
 
-	uint32_t reserved[3];
-	uint32_t bits[1012];
+	u32 reserved[3];
+	u32 bits[1012];
 };
 
-
-static inline uint32_t read_microcode_rev(void)
+static inline u32 read_microcode_rev(void)
 {
 	/* Some Intel Cpus can be very finicky about the
-	 * cpuid sequence used.  So this is implemented in
+	 * CPUID sequence used.  So this is implemented in
 	 * assembly so that it works reliably.
 	 */
 	msr_t msr;
@@ -47,7 +46,7 @@ static inline uint32_t read_microcode_rev(void)
 		: /* inputs */
 		: /* trashed */
 		 "ecx"
-		);
+	);
 	return msr.hi;
 }
 

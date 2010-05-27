@@ -449,8 +449,6 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 	dump_gpe0_status(gpe0_sts);
 }
 
-void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
-
 static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u16 reg16;

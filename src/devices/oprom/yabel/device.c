@@ -44,7 +44,6 @@ static void
 biosemu_dev_get_addr_info(void)
 {
 	int taa_index = 0;
-	int i = 0;
 	struct resource *r;
 	u8 bus = bios_device.dev->bus->link;
 	u16 devfn = bios_device.dev->path.pci.devfn;
@@ -115,6 +114,7 @@ biosemu_dev_get_addr_info(void)
 	//dump translate_address_array
 	printf("translate_address_array: \n");
 	translate_address_t ta;
+	int i;
 	for (i = 0; i <= taa_last_entry; i++) {
 		ta = translate_address_array[i];
 		printf

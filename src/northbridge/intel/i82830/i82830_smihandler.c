@@ -196,7 +196,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			}
 
 			mbi_header = (mbi_header_t *)&mbi[i];
-			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
+			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + ALIGN(mbi_header->name_len, 16), 16); 
 
 			if (obj_header->objnum == count) {
 #ifdef DEBUG_SMI_I82830
@@ -205,7 +205,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 					break;
 				}
 #endif
-				int headerlen = ALIGN(sizeof(mbi_header) + mbi_header->name_len + 15, 16);
+				int headerlen = ALIGN(sizeof(mbi_header) + ALIGN(mbi_header->name_len, 16), 16);
 #ifdef DEBUG_SMI_I82830
 				printk(BIOS_DEBUG, "|  |- headerlen = %d\n", headerlen);
 #endif
@@ -245,7 +245,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		getobj->banner.retsts = MSH_IF_NOT_FOUND;
 
 		for (i=0; i< mbi_len;) {
-			int len;
+			int headerlen, objectlen;
 
 			if (!(mbi[i] == 0xf0 && mbi [i+1] == 0xf6)) {
 				i+=16;
@@ -253,21 +253,23 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			}
 
 			mbi_header = (mbi_header_t *)&mbi[i];
-			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
+			headerlen = ALIGN(sizeof(mbi_header) + ALIGN(mbi_header->name_len, 16), 16);
+			objectlen = ALIGN((mbi_header->size * 16), 16);
 
 			if (getobj->objnum == count) {
-				printk(BIOS_DEBUG, "|  |- len = %x\n", len);
+				printk(BIOS_DEBUG, "|  |- len = %x\n", headerlen + objectlen);
+
 				memcpy((void *)(getobj->buffer + OBJ_OFFSET),
-						((char *)mbi_header) + 0x20 , (len > getobj->buflen) ? getobj->buflen : len);
+						((char *)mbi_header) + headerlen, (objectlen > getobj->buflen) ? getobj->buflen : objectlen);
 
 				getobj->banner.retsts = MSH_OK;
 #ifdef DEBUG_SMI_I82830
 				dump((u8 *)banner_id, sizeof(*getobj));
-				dump((u8 *)getobj->buffer + OBJ_OFFSET, len);
+				dump((u8 *)getobj->buffer + OBJ_OFFSET, objectlen);
 #endif
 				break;
 			}
-			i += len;
+			i += (headerlen + objectlen);
 			count++;
 		}
 		if (getobj->banner.retsts == MSH_IF_NOT_FOUND)

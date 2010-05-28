@@ -32,6 +32,13 @@
 #include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
+	#include "microcode-2963-M01106C2217.h"
+	#include "microcode-2964-M04106C2218.h"
+	#include "microcode-2965-M08106C2219.h"
+	#include "microcode-3101-M04106CA107.h"
+	#include "microcode-3104-M08106CA107.h"
+	#include "microcode-3107-M10106CA107.h"
+
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

@@ -1,0 +1,8 @@
+choice
+        prompt "Mainboard model"
+        depends on VENDOR_IBASE
+
+source "src/mainboard/ibase/mb899/Kconfig"
+
+endchoice
+

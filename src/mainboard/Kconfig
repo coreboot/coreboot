@@ -48,6 +48,8 @@ config VENDOR_GIGABYTE
 	bool "GIGABYTE"
 config VENDOR_HP
 	bool "HP"
+config VENDOR_IBASE
+	bool "iBase"
 config VENDOR_IBM
 	bool "IBM"
 config VENDOR_IEI
@@ -218,6 +220,11 @@ config MAINBOARD_VENDOR
 	string
 	default "HP"
 	depends on VENDOR_HP
+
+config MAINBOARD_VENDOR
+	string
+	default "iBase"
+	depends on VENDOR_IBASE
 
 config MAINBOARD_VENDOR
 	string
@@ -421,6 +428,7 @@ source "src/mainboard/emulation/Kconfig"
 source "src/mainboard/getac/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"
 source "src/mainboard/hp/Kconfig"
+source "src/mainboard/ibase/Kconfig"
 source "src/mainboard/ibm/Kconfig"
 source "src/mainboard/iei/Kconfig"
 source "src/mainboard/intel/Kconfig"

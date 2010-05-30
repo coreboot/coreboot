@@ -1,0 +1,73 @@
+config BOARD_IBASE_MB899
+	bool "MB899"
+	select ARCH_X86
+	select CPU_INTEL_CORE
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_WINBOND_W83627EHG
+	select BOARD_HAS_FADT
+	select GENERATE_ACPI_TABLES
+	select GENERATE_PIRQ_TABLE
+	select GENERATE_MP_TABLE
+	select HAVE_HARD_RESET
+	select HAVE_ACPI_RESUME
+	select HAVE_MAINBOARD_RESOURCES
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	select HAVE_SMI_HANDLER
+	select BOARD_ROMSIZE_KB_512
+	select USE_DCACHE_RAM
+	select GFXUMA
+	select TINY_BOOTBLOCK
+
+config MAINBOARD_DIR
+	string
+	default ibase/mb899
+	depends on BOARD_IBASE_MB899
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_IBASE_MB899
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_IBASE_MB899
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MB899"
+	depends on BOARD_IBASE_MB899
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+	depends on BOARD_IBASE_MB899
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+	depends on BOARD_IBASE_MB899
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_IBASE_MB899
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_IBASE_MB899
+
+config FALLBACK_VGA_BIOS_FILE
+	string
+	default "amipci_01.20"
+	depends on BOARD_IBASE_MB899
+
+config HAVE_ACPI_SLIC
+	bool
+	default n
+	depends on BOARD_IBASE_MB899
+

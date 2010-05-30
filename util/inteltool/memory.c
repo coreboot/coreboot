@@ -54,6 +54,10 @@ int print_mchbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have MCHBAR.\n");
 		return 1;
+	case PCI_DEVICE_ID_INTEL_GS45:
+		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
+		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
+ 		break;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
 		return 1;

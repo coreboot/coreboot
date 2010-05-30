@@ -33,12 +33,12 @@ unsigned int cpuid(unsigned int op)
 	uint32_t ret;
 
 #if defined(__DARWIN__) && !defined(__LP64__)
-        asm volatile (
-                "pushl %%ebx    \n"
-                "cpuid          \n"
-                "popl %%ebx     \n"
-                : "=a" (ret) : "a" (op) : "%ecx", "%edx"
-        );
+	asm volatile (
+		"pushl %%ebx\n"
+		"cpuid\n"
+		"popl %%ebx\n"
+		: "=a" (ret) : "a" (op) : "%ecx", "%edx"
+	);
 #else
 	asm ("cpuid" : "=a" (ret) : "a" (op) : "%ebx", "%ecx", "%edx");
 #endif

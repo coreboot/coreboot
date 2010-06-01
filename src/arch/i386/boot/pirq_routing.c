@@ -64,7 +64,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 
 	rt_curr = (uint8_t*)addr;
 	rt_orig = (uint8_t*)&intel_irq_routing_table;
-	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08x... ", addr);
+	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08lx... ", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk(BIOS_INFO, "failed\n");

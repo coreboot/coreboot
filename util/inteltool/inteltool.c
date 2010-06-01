@@ -45,7 +45,9 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82G33, "P35/G33/G31/P31" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82Q33, "Q33" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_X58, "X58" },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_GS45, "GS45ME-GMCH" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_GS45, "GS45ME" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SCH_POULSBO, "SCH Poulsbo" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SCH_POULSBO_LPC, "SCH Poulsbo" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10R, "ICH10R" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH9DH, "ICH9DH" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH9DO, "ICH9DO" },
@@ -261,8 +263,16 @@ int main(int argc, char *argv[])
 	}
 
 	id = cpuid(1);
-	printf("Intel CPU: Family %x, Model %x\n",
-			(id >> 8) & 0xf, (id >> 4) & 0xf);
+
+	/* Intel has suggested applications to display the family of a CPU as
+	 * the sum of the "Family" and the "Extended Family" fields shown
+	 * above, and the model as the sum of the "Model" and the 4-bit
+	 * left-shifted "Extended Model" fields.
+	 * http://download.intel.com/design/processor/applnots/24161832.pdf
+	 */
+	printf("Intel CPU: Processor Type: %x, Family %x, Model %x, Stepping %x\n",
+			(id >> 12) & 0x3, ((id >> 8) & 0xf) + ((id >> 20) & 0xff),
+			((id >> 12) & 0xf0) + ((id >> 4) & 0xf), (id & 0xf));
 
 	/* Determine names */
 	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)

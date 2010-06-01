@@ -464,7 +464,7 @@ int print_intel_core_msrs(void)
 	/* Get CPU family and model, not the stepping
 	 * (TODO: extended family/model)
 	 */
-	id = cpuid(1) & 0xff0;
+	id = cpuid(1) & 0xfffff0;
 	for (i = 0; i < ARRAY_SIZE(cpulist); i++) {
 		if(cpulist[i].model == id) {
 			cpu = &cpulist[i];

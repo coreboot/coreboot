@@ -3,7 +3,7 @@
 #include <string.h>
 #include <device/pci.h>
 
-#if CONFIG_DEBUG
+#if CONFIG_DEBUG_PIRQ
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
@@ -13,7 +13,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "Checking Interrupt Routing Table consistency...\n");
 
 	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
+		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%lx/0x%x).\n",
 			       sizeof(struct irq_routing_table),
 			       rt->size
 			);
@@ -51,7 +51,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	 */
 	if (sum) {
 		printk(BIOS_WARNING, "Checksum error in Interrupt Routing Table "
-				"could not be fixed.\n");
+				"could not be fixed.\n");
 	}
 
 	printk(BIOS_INFO, "done.\n");
@@ -64,7 +64,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 
 	rt_curr = (uint8_t*)addr;
 	rt_orig = (uint8_t*)&intel_irq_routing_table;
-	printk(BIOS_INFO, "Verifing copy of Interrupt Routing Table at 0x%08x... ", addr);
+	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08x... ", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk(BIOS_INFO, "failed\n");
@@ -89,7 +89,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk(BIOS_INFO, "done.\n");
-#if CONFIG_DEBUG
+#if CONFIG_DEBUG_PIRQ
 	verify_copy_pirq_routing_table(addr);
 #endif
 	pirq_routing_irqs(addr);

@@ -139,10 +139,6 @@ config HEAP_SIZE
 	hex
 	default 0x4000
 
-config DEBUG
-	bool
-	default n
-
 config USE_PRINTK_IN_CAR
 	bool
 	default n
@@ -520,6 +516,13 @@ config DEBUG_RAM_SETUP
 
 	  If unsure, say N.
 
+config DEBUG_PIRQ
+	bool "Check PIRQ table consistency"
+	default n
+	depends on GENERATE_PIRQ_TABLE
+	help
+	  If unsure, say N.
+
 config DEBUG_SMBUS
 	bool "Output verbose SMBus debug messages"
 	default n
@@ -528,6 +531,7 @@ config DEBUG_SMBUS
 		 || NORTHBRIDGE_VIA_CX700 \
 		 || NORTHBRIDGE_AMD_AMDK8 \
 		 || NORTHBRIDGE_AMD_AMDFAM10 \
+		 || BOARD_LIPPERT_SPACERUNNER_LX \
 		 || SOUTHBRIDGE_VIA_VT8231)
 	help
 	  This option enables additional SMBus (and SPD) debug messages.

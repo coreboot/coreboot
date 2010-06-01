@@ -473,6 +473,8 @@ static int load_self_segments(
 				case CBFS_COMPRESS_LZMA: {
 					printk(BIOS_DEBUG, "using LZMA\n");
 					len = ulzma(src, dest);
+					if (!len) /* Decompression Error. */
+						return 0;
 					break;
 				}
 #if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
@@ -495,7 +497,7 @@ static int load_self_segments(
 			}
 			end = dest + ptr->s_memsz;
 			middle = dest + len;
-			printk(BIOS_SPEW, "[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
+			printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
 				(unsigned long)dest,
 				(unsigned long)middle,
 				(unsigned long)end,

@@ -599,12 +599,12 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
-	do_printk(BIOS_DEBUG, "%s%s links %x child on link 0", indent,
+	do_printk(debug_level, "%s%s links %x child on link 0", indent,
 		  dev_path(root), root->links);
-	do_printk(BIOS_DEBUG, " %s\n", root->link[0].children ?
+	do_printk(debug_level, " %s\n", root->link[0].children ?
 		  dev_path(root->link[0].children) : "NULL");
 	for (res = root->resource_list; res; res = res->next) {
-		do_printk(BIOS_DEBUG,
+		do_printk(debug_level,
 			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
 			  indent, dev_path(root), res->base,
 			  res->size, res->align,

@@ -337,7 +337,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	value = nbmc_read_index(nb_dev, 0x10);
 	*(GpuF0MMReg + 0x2000/4) = 0x11;
 	*(GpuF0MMReg + 0x2180/4) = ((value&0xff00)>>8)|((value&0xff000000)>>8);
-	*(GpuF0MMReg + 0x2c04/4) = ((value&0xff0)<<8);
+	*(GpuF0MMReg + 0x2c04/4) = ((value&0xff00)<<8);
 	*(GpuF0MMReg + 0x5428/4) = ((value&0xffff0000)+0x10000)-((value&0xffff)<<16);
 	*(GpuF0MMReg + 0x2000/4) = 0x00000011;
 	*(GpuF0MMReg + 0x200c/4) = 0x00000020;

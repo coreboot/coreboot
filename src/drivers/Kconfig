@@ -23,3 +23,21 @@ config DRIVERS_SIL
 	help
 	It sets PCI class to IDE compatible native mode, allowing
 	SeaBIOS, FILO etc... to boot from it.
+
+config DRIVERS_TI
+	bool
+
+config DRIVERS_TI_PCI1225
+	select DRIVERS_TI
+	bool
+
+config DRIVERS_TI_PCI1420
+	select DRIVERS_TI
+	bool
+
+config DRIVERS_TI_PCI1520
+	select DRIVERS_TI
+	bool
+
+config DRIVERS_DEC_21143PD
+	bool

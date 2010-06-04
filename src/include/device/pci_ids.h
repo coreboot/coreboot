@@ -696,6 +696,7 @@
 #define PCI_DEVICE_ID_TI_4410		0xac41
 #define PCI_DEVICE_ID_TI_4451		0xac42
 #define PCI_DEVICE_ID_TI_1420		0xac51
+#define PCI_DEVICE_ID_TI_1520		0xAC55
 
 #define PCI_VENDOR_ID_SONY		0x104d
 #define PCI_DEVICE_ID_SONY_CXD3222	0x8039
@@ -1740,6 +1741,10 @@
 #define PCI_DEVICE_ID_CCD_B00B		0xb00b
 #define PCI_DEVICE_ID_CCD_B00C		0xb00c
 #define PCI_DEVICE_ID_CCD_B100		0xb100
+
+#define PCI_VENDOR_ID_NOKIA		0x13B8	// Nokia Telecommunications oy
+#define PCI_VENDOR_ID_NOKIA_WIRELESS	0x1603	// Nokia Wireless Communications
+#define PCI_VENDOR_ID_NOKIA_HOME	0x1622	// Nokia Home Communications
 
 #define PCI_VENDOR_ID_3WARE		0x13C1
 #define PCI_DEVICE_ID_3WARE_1000	0x1000

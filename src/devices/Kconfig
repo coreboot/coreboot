@@ -46,7 +46,7 @@ choice
 	prompt "Option ROM execution type"
 	default PCI_OPTION_ROM_RUN_YABEL if !ARCH_X86
 	default PCI_OPTION_ROM_RUN_REALMODE if ARCH_X86
-	depends on PCI_ROM_RUN || VGA_ROM_RUN
+	depends on PCI_ROM_RUN || VGA_ROM_RUN || GEODE_VSA
 
 config PCI_OPTION_ROM_RUN_REALMODE
 	prompt "Native mode"
@@ -61,6 +61,7 @@ config PCI_OPTION_ROM_RUN_REALMODE
 config PCI_OPTION_ROM_RUN_YABEL
 	prompt "Secure mode"
 	bool
+	depends on !GEODE_VSA
 	help
 	  If you select this option, the x86emu CPU emulator will be used to
 	  execute PCI option ROMs.

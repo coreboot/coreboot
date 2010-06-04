@@ -11,11 +11,11 @@ obj-y += pnp_device.o
 obj-y += pci_ops.o
 obj-y += smbus_ops.o
 
+subdirs-y += oprom
+
 ifeq ($(CONFIG_PCI_ROM_RUN),y)
 obj-y += pci_rom.o
-subdirs-y += oprom
 else
 obj-$(CONFIG_VGA_ROM_RUN) += pci_rom.o
-subdirs-$(CONFIG_VGA_ROM_RUN) += oprom
 endif
 

@@ -54,7 +54,7 @@ config IRQ_SLOT_COUNT
 
 ## Configuration items for the ethernet adaptors
 config DEC21143_CACHE_LINE_SIZE
-	int
+	hex
 	default 0x00000000
 	depends on BOARD_NOKIA_IP530
 

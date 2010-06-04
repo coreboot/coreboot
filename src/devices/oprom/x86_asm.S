@@ -141,20 +141,23 @@ __realmode_call = RELOCATED(.)
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* Set all segments to 0x0000, ds to 0x0040 */
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-	mov	$0x40, %ax
-	mov	%ax, %ds
-
 	/* initialize registers for option rom lcall */
 	movl	__registers +  0, %eax
 	movl	__registers +  4, %ebx
 	movl	__registers +  8, %ecx
 	movl	__registers + 12, %edx
 	movl	__registers + 16, %esi
-	movl	__registers + 20, %edi
+	movl	__registers + 20, %edi	
+
+	/* Set all segments to 0x0000, ds to 0x0040 */
+	push	%ax
+	xor	%ax, %ax
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	$0x40, %ax
+	mov	%ax, %ds
+	pop	%ax
 
 	/* ************************************ */
 __lcall_instr = RELOCATED(.)
@@ -262,12 +265,6 @@ __realmode_interrupt = RELOCATED(.)
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* Set all segments to 0x0000 */
-	mov	%ax, %ds
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-
 	/* initialize registers for intXX call */
 	movl	__registers +  0, %eax
 	movl	__registers +  4, %ebx
@@ -275,6 +272,15 @@ __realmode_interrupt = RELOCATED(.)
 	movl	__registers + 12, %edx
 	movl	__registers + 16, %esi
 	movl	__registers + 20, %edi
+
+	/* Set all segments to 0x0000 */
+	push	%ax
+	xor	%ax, %ax
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	pop	%ax
 
 __intXX_instr = RELOCATED(.)
 	.byte 0xcd, 0x00 /* This becomes intXX */
@@ -376,7 +382,7 @@ __interrupt_handler_16bit = RELOCATED(.)
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* Set up segment registers to segment 0x0000 */
+	/* Set up segment registers to segment 0x0000 and ds to 0x040 */
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs

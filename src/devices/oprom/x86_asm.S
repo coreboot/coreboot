@@ -82,10 +82,10 @@ __realmode_call = RELOCATED(.)
 
 	/* entry point */
 	movl    36(%ebp), %eax
-	movw	%ax, __lcall_instr + 1
+	mov	%ax, __lcall_instr + 1
 	andl	$0xffff0000, %eax
 	shrl	$4, %eax
-	movw	%ax, __lcall_instr + 3
+	mov	%ax, __lcall_instr + 3
 
 	/* initial register values */
 	movl	40(%ebp), %eax
@@ -147,7 +147,7 @@ __realmode_call = RELOCATED(.)
 	movl	__registers +  8, %ecx
 	movl	__registers + 12, %edx
 	movl	__registers + 16, %esi
-	movl	__registers + 20, %edi	
+	movl	__registers + 20, %edi
 
 	/* Set all segments to 0x0000, ds to 0x0040 */
 	push	%ax
@@ -165,8 +165,8 @@ __lcall_instr = RELOCATED(.)
 	.word 0x0000, 0x0000
 	/* ************************************ */
 
-	/* If we got here, just about done.
-	 * Need to get back to protected mode
+	/* If we got here, we are just about done.
+	 * Need to get back to protected mode.
 	 */
 	movl	%cr0, %eax
 	orl	$PE, %eax
@@ -178,7 +178,7 @@ __lcall_instr = RELOCATED(.)
 	data32	ljmp	$0x10, $RELOCATED(1f)
 1:
 	.code32
-	movw	$0x18, %ax
+	mov	$0x18, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -294,7 +294,7 @@ __intXX_instr = RELOCATED(.)
 	data32	ljmp	$0x10, $RELOCATED(1f)
 1:
 	.code32
-	movw	$0x18, %ax
+	mov	$0x18, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -337,7 +337,7 @@ __interrupt_handler_16bit = RELOCATED(.)
 	data32 ljmp    $0x10, $RELOCATED(1f)
 1:
 	.code32
-	movw	$0x18, %ax
+	mov	$0x18, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -381,13 +381,6 @@ __interrupt_handler_16bit = RELOCATED(.)
 	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
-
-	/* Set up segment registers to segment 0x0000 and ds to 0x040 */
-	mov	%ax, %es
-	mov	%ax, %fs
-	mov	%ax, %gs
-	mov	$0x40, %ax
-	mov	%ax, %ds
 
 	/* Restore all registers, including those
 	 * manipulated by the C handler

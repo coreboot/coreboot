@@ -90,10 +90,10 @@ no_codec:
 	return 0;
 }
 
-u32 * cim_verb_data = NULL;
+const u32 * cim_verb_data = NULL;
 u32 cim_verb_data_size = 0;
 
-static u32 find_verb(struct device *dev, u32 viddid, u32 ** verb)
+static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 {
 	int idx=0;
 
@@ -166,7 +166,7 @@ static int wait_for_valid(u32 base)
 static void codec_init(struct device *dev, u32 base, int addr)
 {
 	u32 reg32;
-	u32 *verb;
+	const u32 *verb;
 	u32 verb_size;
 	int i;
 

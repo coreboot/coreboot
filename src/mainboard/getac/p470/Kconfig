@@ -33,6 +33,7 @@ config BOARD_GETAC_P470
 	select GENERATE_MP_TABLE
 	select HAVE_HARD_RESET
 	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_SLIC
 	select HAVE_MAINBOARD_RESOURCES
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
@@ -87,10 +88,5 @@ config MAX_PHYSICAL_CPUS
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "getac-pci8086,27a2.rom"
-	depends on BOARD_GETAC_P470
-
-config HAVE_ACPI_SLIC
-	bool
-	default y
 	depends on BOARD_GETAC_P470
 

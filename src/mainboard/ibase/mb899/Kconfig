@@ -66,8 +66,3 @@ config FALLBACK_VGA_BIOS_FILE
 	default "amipci_01.20"
 	depends on BOARD_IBASE_MB899
 
-config HAVE_ACPI_SLIC
-	bool
-	default n
-	depends on BOARD_IBASE_MB899
-

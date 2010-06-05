@@ -164,6 +164,10 @@ config HAVE_ACPI_RESUME
 	bool
 	default n
 
+config HAVE_ACPI_SLIC
+	bool
+	default n
+
 config ACPI_SSDTX_NUM
 	int
 	default 0

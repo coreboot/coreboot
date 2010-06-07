@@ -169,8 +169,8 @@ leave_DCacheSetup:
 	popl	%ecx
 	cmpl	%ecx, %edx
 	je	DCacheSetupGood
-	movb	$0xC5, %al
-	outb	%al, $0x80
+
+	post_code(0xc5)
 DCacheSetupBad:
 	hlt		/* issues */
 	jmp DCacheSetupBad

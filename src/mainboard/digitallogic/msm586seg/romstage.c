@@ -183,7 +183,7 @@ static void main(unsigned long bist)
 
 	//			while(1)
 	print_err("STATIC MEM DONE\n");
-	outb(0xee, 0x80);
+	post_code(0xee);
 	print_err("loop forever ...\n");
 
 #if 0
@@ -231,13 +231,14 @@ static void main(unsigned long bist)
 	    *dst = *src;
 	    //print_err(" dst is now "); print_err_hex32(*dst); print_err("\n");
 	    dst++, src++;
-	    outb((unsigned char)i, 0x80);
+	    post_code(i & 0xff);
 	  }
 	}
 	dumpmem();
-	outb(0, 0x80);
+	post_code(0x00);
+
 	print_err("loop forever\n");
-	outb(0xdd, 0x80);
+	post_code(0xdd);
         __asm__ volatile(
 			 "movl %0, %%edi\n\t"
 			 "jmp *%%edi\n\t"

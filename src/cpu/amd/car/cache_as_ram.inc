@@ -49,9 +49,7 @@
 	/*for normal part %ebx already contain cpu_init_detected from fallback call */
 
 cache_as_ram_setup:
-
-	movb	$0xA0, %al
-	outb	%al, $0x80
+	post_code(0xa0)
 
 	/* enable SSE */
 	movl %cr4, %eax
@@ -284,8 +282,7 @@ wbcache_post_fam10_setup:
 	orl	$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
 	wrmsr
 
-	movb	$0xA1, %al
-	outb	%al, $0x80
+	post_code(0xa1)
 
 	/* enable cache */
 	movl	%cr0, %eax
@@ -301,8 +298,7 @@ wbcache_post_fam10_setup:
 	jnc	CAR_FAM10_ap
 fam10_end_part1:
 
-	movb	$0xA2, %al
-	outb	%al, $0x80
+	post_code(0xa2)
 
 	/* Read the range with lodsl*/
 	cld
@@ -320,8 +316,7 @@ fam10_end_part1:
 	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax
 	movl	%eax, %esp
 
-	movb	$0xA3, %al
-	outb	%al, $0x80
+	post_code(0xa3)
 
 	jmp	CAR_FAM10_ap_out
 CAR_FAM10_ap:
@@ -363,13 +358,11 @@ roll_cfg:
 	/* retrive init detected */
 	movl	%esi, %ebx
 
-	movb	$0xA4, %al
-	outb	%al, $0x80
+	post_code(0xa4)
 
 CAR_FAM10_ap_out:
 
-	movb	$0xA5, %al
-	outb	%al, $0x80
+	post_code(0xa5)
 
 	/* disable SSE */
 	movl %cr4, %eax
@@ -386,8 +379,7 @@ CAR_FAM10_ap_out:
 	call	cache_as_ram_main
 	/* We will not go back */
 
-	movb	$0xAF, %al	/* Should never see this postcode */
-	outb	%al, $0x80
+	post_code(0xaf)		/* Should never see this postcode */
 
 fixed_mtrr_msr:
 	.long	0x250, 0x258, 0x259

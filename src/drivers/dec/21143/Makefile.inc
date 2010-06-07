@@ -1,2 +1,0 @@
-driver-$(CONFIG_DRIVERS_DEC_21143PD) += 21143pd.o
-

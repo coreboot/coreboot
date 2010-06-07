@@ -65,27 +65,20 @@ static struct device_operations ti_pci1x2y_ops  = {
 	.scan_bus         = 0,
 };
 
-#ifdef CONFIG_DRIVERS_TI_PCI1225
 static const struct pci_driver ti_pci1225_driver __pci_driver = {
         .ops    = &ti_pci1x2y_ops,
         .vendor = PCI_VENDOR_ID_TI,
         .device = PCI_DEVICE_ID_TI_1225,
 };
 
-#endif
-#ifdef CONFIG_DRIVERS_TI_PCI1420
 static const struct pci_driver ti_pci1420_driver __pci_driver = {
         .ops    = &ti_pci1x2y_ops,
         .vendor = PCI_VENDOR_ID_TI,
         .device = PCI_DEVICE_ID_TI_1420,
 };
-#endif
-#ifdef CONFIG_DRIVERS_TI_PCI1520
+
 static const struct pci_driver ti_pci1520_driver __pci_driver = {
         .ops    = &ti_pci1x2y_ops,
         .vendor = PCI_VENDOR_ID_TI,
         .device = PCI_DEVICE_ID_TI_1420,
 };
-#endif
-
-

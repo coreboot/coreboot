@@ -19,3 +19,4 @@
 
 source src/southbridge/ti/pci7420/Kconfig
 source src/southbridge/ti/pcixx12/Kconfig
+source src/southbridge/ti/pci1x2x/Kconfig

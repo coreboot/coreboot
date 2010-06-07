@@ -40,9 +40,9 @@
 /**
  * This driver take the values from Kconfig and load them in the registers
  */
-static void dec_21143pd_enable( device_t dev )
+static void dec_21143_enable( device_t dev )
 {
-	printk( BIOS_DEBUG, "Init of DECchip 21143PD/TD Kconfig style\n");
+	printk( BIOS_DEBUG, "Init of DECchip 21143 Kconfig style\n");
 	// Command and Status Configuration Register (Offset 0x04)
 	pci_write_config32( dev, 0x04, CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION );
 	printk( BIOS_DEBUG, "0x04 = %08x (07 01 80 02)\n", pci_read_config32(dev, 0x04) );
@@ -55,16 +55,16 @@ static void dec_21143pd_enable( device_t dev )
 	return;
 }
 
-static struct device_operations dec_21143pd_ops  = {
+static struct device_operations dec_21143_ops  = {
         .read_resources   = pci_dev_read_resources,
         .set_resources    = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
-        .init             = dec_21143pd_enable,
+        .init             = dec_21143_enable,
         .scan_bus         = 0,
 };
 
-static const struct pci_driver dec_21143pd_driver __pci_driver = {
-        .ops    = &dec_21143pd_ops,
+static const struct pci_driver dec_21143_driver __pci_driver = {
+        .ops    = &dec_21143_ops,
         .vendor = PCI_VENDOR_ID_DEC,
         .device = PCI_DEVICE_ID_DEC_21142,
 };

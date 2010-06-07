@@ -651,10 +651,9 @@ static void cs5536_read_resources(device_t dev)
 
 	res = new_resource(dev, 1);
 	res->base = 0x0UL;
-	res->size = 0x400UL;
+	res->size = 0x1000UL;
 	res->limit = 0xffffUL;
-	res->flags = IORESOURCE_IO |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = 0xfec00000;
@@ -670,7 +669,7 @@ static void southbridge_enable(struct device *dev)
 
 static void cs5536_pci_dev_enable_resources(device_t dev)
 {
-	printk(BIOS_ERR, "cs5536: %s()\n", __func__);
+	printk(BIOS_DEBUG, "%s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

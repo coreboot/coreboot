@@ -58,7 +58,7 @@ endif
 ifeq ($(CONFIG_GEODE_VSA_FILE),y)
 	@printf "    VSA        $(CONFIG_VSA_FILENAME)\n"
 	$(OBJCOPY) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(CONFIG_VSA_FILENAME) $(obj)/vsa.o
-	$(LD) -e 0x60020 --section-start .data=0x60000 $(obj)/vsa.o -o $(obj)/vsa.elf
+	$(LD) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(obj)/vsa.o -o $(obj)/vsa.elf
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/vsa.elf vsa
 endif
 	mv $@.tmp $@

@@ -102,7 +102,7 @@ static struct device_operations ti_pci7420_ops = {
 	.set_resources    = pci7420_cardbus_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init             = pci7420_cardbus_init,
-	.scan_bus         = cardbus_scan_bridge,
+	.scan_bus         = pci_scan_bridge,
 };
 
 static const struct pci_driver ti_pci7420_driver __pci_driver = {

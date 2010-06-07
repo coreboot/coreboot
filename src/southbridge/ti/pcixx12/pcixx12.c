@@ -52,7 +52,7 @@ static struct device_operations ti_pcixx12_ops = {
 	.set_resources    = pcixx12_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init             = pcixx12_init,
-	.scan_bus         = cardbus_scan_bridge,
+	.scan_bus         = pci_scan_bridge,
 };
 
 static const struct pci_driver ti_pcixx12_driver __pci_driver = {

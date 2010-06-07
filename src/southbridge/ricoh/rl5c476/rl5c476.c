@@ -203,7 +203,7 @@ static struct device_operations ricoh_rl5c476_ops = {
 	.set_resources    = rl5c476_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init             = rl5c476_init,
-	.scan_bus         = cardbus_scan_bridge,
+	.scan_bus         = pci_scan_bridge,
 };
 
 static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {

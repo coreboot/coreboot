@@ -80,14 +80,14 @@ typedef struct usbdev_hc hci_t;
 struct usbdev;
 typedef struct usbdev usbdev_t;
 
-typedef enum { SETUP = 0x2d, IN = 0x69, OUT = 0xe1 } pid_t;
+typedef enum { SETUP, IN, OUT } direction_t;
 typedef enum { CONTROL = 0, ISOCHRONOUS = 1, BULK = 2, INTERRUPT = 3
 } endpoint_type;
 
 typedef struct {
 	usbdev_t *dev;
 	int endpoint;
-	pid_t direction;
+	direction_t direction;
 	int toggle;
 	int maxpacketsize;
 	endpoint_type type;
@@ -121,7 +121,7 @@ struct usbdev_hc {
 	void (*reset) (hci_t *controller);
 	void (*shutdown) (hci_t *controller);
 	int (*bulk) (endpoint_t *ep, int size, u8 *data, int finalize);
-	int (*control) (usbdev_t *dev, pid_t pid, int dr_length,
+	int (*control) (usbdev_t *dev, direction_t pid, int dr_length,
 			void *devreq, int data_length, u8 *data);
 	void* (*create_intr_queue) (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
 	void (*destroy_intr_queue) (endpoint_t *ep, void *queue);

@@ -29,16 +29,17 @@
 
 //#define USB_DEBUG
 
+#include <arch/virtual.h>
 #include <usb/usb.h>
 #include "uhci.h"
-#include <arch/virtual.h>
+#include "uhci_private.h"
 
 static void uhci_start (hci_t *controller);
 static void uhci_stop (hci_t *controller);
 static void uhci_reset (hci_t *controller);
 static void uhci_shutdown (hci_t *controller);
 static int uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize);
-static int uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq,
+static int uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
 static void* uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
 static void uhci_destroy_intr_queue (endpoint_t *ep, void *queue);
@@ -66,13 +67,13 @@ td_dump (td_t *td)
 	char td_value[3];
 	char *td_type;
 	switch (td->pid) {
-		case SETUP:
+		case UHCI_SETUP:
 			td_type="SETUP";
 			break;
-		case IN:
+		case UHCI_IN:
 			td_type="IN";
 			break;
-		case OUT:
+		case UHCI_OUT:
 			td_type="OUT";
 			break;
 		default:
@@ -296,7 +297,7 @@ min (int a, int b)
 }
 
 static int
-uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
+uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 	      unsigned char *data)
 {
 	int endp = 0;		/* this is control: always 0 */
@@ -316,7 +317,7 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 	tds[count].depth_first = 1;
 	tds[count].terminate = 1;
 
-	tds[0].pid = SETUP;
+	tds[0].pid = UHCI_SETUP;
 	tds[0].dev_addr = dev->address;
 	tds[0].endp = endp;
 	tds[0].maxlen = maxlen (drlen);
@@ -328,7 +329,11 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 
 	int toggle = 1;
 	for (i = 1; i < count; i++) {
-		tds[i].pid = dir;
+		switch (dir) {
+			case SETUP: tds[i].pid = UHCI_SETUP; break;
+			case IN:    tds[i].pid = UHCI_IN;    break;
+			case OUT:   tds[i].pid = UHCI_OUT;   break;
+		}
 		tds[i].dev_addr = dev->address;
 		tds[i].endp = endp;
 		tds[i].maxlen = maxlen (min (mlen, dalen));
@@ -342,7 +347,7 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 		data += mlen;
 	}
 
-	tds[count].pid = (dir == OUT) ? IN : OUT;
+	tds[count].pid = (dir == OUT) ? UHCI_IN : UHCI_OUT;
 	tds[count].dev_addr = dev->address;
 	tds[count].endp = endp;
 	tds[count].maxlen = maxlen (0);

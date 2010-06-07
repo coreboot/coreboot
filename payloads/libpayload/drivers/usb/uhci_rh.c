@@ -31,6 +31,7 @@
 
 #include <libpayload.h>
 #include "uhci.h"
+#include "uhci_private.h"
 
 typedef struct {
 	int port[2];

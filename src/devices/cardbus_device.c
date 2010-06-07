@@ -41,9 +41,9 @@ static void cardbus_record_bridge_resource(
 	device_t dev, resource_t moving, resource_t min_size,
 	unsigned index, unsigned long type)
 {
-	/* Initiliaze the constraints on the current bus */
+	/* Initialize the constraints on the current bus. */
 	struct resource *resource;
-	resource = 0;
+	resource = NULL;
 	if (moving) {
 		unsigned long gran;
 		resource_t step;
@@ -51,7 +51,7 @@ static void cardbus_record_bridge_resource(
 		resource->size = 0;
 		gran = 0;
 		step = 1;
-		while((moving & step) == 0) {
+		while ((moving & step) == 0) {
 			gran += 1;
 			step <<= 1;
 		}
@@ -174,78 +174,12 @@ void cardbus_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
-unsigned int cardbus_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn,
-	unsigned int max)
-{
-	return pci_scan_bus(bus, min_devfn, max_devfn, max);
-}
-
-
-unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
-{
-	struct bus *bus;
-	uint32_t buses;
-	uint16_t cr;
-
-	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(dev));
-
-	bus = &dev->link[0];
-	bus->dev = dev;
-	dev->links = 1;
-
-	/* Set up the primary, secondary and subordinate bus numbers. We have
-	 * no idea how many buses are behind this bridge yet, so we set the
-	 * subordinate bus number to 0xff for the moment.
-	 */
-	bus->secondary = ++max;
-	bus->subordinate = 0xff;
-
-	/* Clear all status bits and turn off memory, I/O and master enables. */
-	cr = pci_read_config16(dev, PCI_COMMAND);
-	pci_write_config16(dev, PCI_COMMAND, 0x0000);
-	pci_write_config16(dev, PCI_STATUS, 0xffff);
-
-	/*
-	 * Read the existing primary/secondary/subordinate bus
-	 * number configuration.
-	 */
-	buses = pci_read_config32(dev, PCI_CB_PRIMARY_BUS);
-
-	/* Configure the bus numbers for this bridge: the configuration
-	 * transactions will not be propagated by the bridge if it is not
-	 * correctly configured.
-	 */
-	buses &= 0xff000000;
-	buses |= (((unsigned int) (dev->bus->secondary) << 0) |
-		((unsigned int) (bus->secondary) << 8) |
-		((unsigned int) (bus->subordinate) << 16));
-	pci_write_config32(dev, PCI_CB_PRIMARY_BUS, buses);
-
-	/* Now we can scan all subordinate buses
-	 * i.e. the bus behind the bridge.
-	 */
-	max = cardbus_scan_bus(bus, 0x00, 0xff, max);
-
-	/* We know the number of buses behind this bridge. Set the subordinate
-	 * bus number to its real value.
-	 */
-	bus->subordinate = max;
-	buses = (buses & 0xff00ffff) |
-		((unsigned int) (bus->subordinate) << 16);
-	pci_write_config32(dev, PCI_CB_PRIMARY_BUS, buses);
-	pci_write_config16(dev, PCI_COMMAND, cr);
-
-	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
-	return max;
-}
-
 struct device_operations default_cardbus_ops_bus = {
 	.read_resources   = cardbus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init		  = 0,
-	.scan_bus	  = cardbus_scan_bridge,
+	.scan_bus	  = pci_scan_bridge,
 	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
 };

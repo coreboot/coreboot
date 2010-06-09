@@ -110,7 +110,7 @@ static void setup_pm(device_t dev)
 	// Set gen config 0
 	pci_write_config8(dev, 0x80, 0x20);
 
-	// Set ACPI base address to IO 0x4000
+	// Set ACPI base address to IO 0x400
 	pci_write_config16(dev, 0x88, 0x0401);
 
 	// set ACPI irq to 5
@@ -223,7 +223,7 @@ static void vt8235_read_resources(device_t dev)
 
 	res = new_resource(dev, 1);
 	res->base = 0x0UL;
-	res->size = 0x400UL;
+	res->size = 0x1000UL;
 	res->limit = 0xffffUL;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

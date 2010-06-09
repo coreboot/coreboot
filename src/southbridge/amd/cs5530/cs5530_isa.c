@@ -33,7 +33,7 @@ static void cs5530_read_resources(device_t dev)
 
 	res = new_resource(dev, 1);
 	res->base = 0x0UL;
-	res->size = 0x400UL;
+	res->size = 0x1000UL;
 	res->limit = 0xffffUL;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

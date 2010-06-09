@@ -55,17 +55,17 @@ static void get_fx_devs(void)
 	}
 }
 
-static uint32_t f1_read_config32(unsigned reg)
+static u32 f1_read_config32(unsigned reg)
 {
-	if ( fx_devs == 0)
+	if (fx_devs == 0)
 		get_fx_devs();
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
-static void f1_write_config32(unsigned reg, uint32_t value)
+static void f1_write_config32(unsigned reg, u32 value)
 {
 	int i;
-	if ( fx_devs == 0)
+	if (fx_devs == 0)
 		get_fx_devs();
 	for(i = 0; i < fx_devs; i++) {
 		device_t dev;
@@ -76,22 +76,23 @@ static void f1_write_config32(unsigned reg, uint32_t value)
 	}
 }
 
-static unsigned int amdk8_nodeid(device_t dev)
+static u32 amdk8_nodeid(device_t dev)
 {
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
-static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
+static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
+				u32 max, u32 offset_unitid)
 {
 
-		uint32_t link_type;
+		u32 link_type;
 		int i;
-		uint32_t busses, config_busses;
-		unsigned free_reg, config_reg;
-		unsigned ht_unitid_base[4]; // here assume only 4 HT device on chain
-		unsigned max_bus;
-		unsigned min_bus;
-		unsigned max_devfn;
+		u32 busses, config_busses;
+		u32 free_reg, config_reg;
+		u32 ht_unitid_base[4]; // here assume only 4 HT device on chain
+		u32 max_bus;
+		u32 min_bus;
+		u32 max_devfn;
 
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
@@ -111,7 +112,7 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		 */
 		free_reg = 0;
 		for(config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
-			uint32_t config;
+			u32 config;
 			config = f1_read_config32(config_reg);
 			if (!free_reg && ((config & 3) == 0)) {
 				free_reg = config_reg;
@@ -150,7 +151,7 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		max = min_bus;
 	#else
 		//other ...
-		else  {
+		else {
 			min_bus = ++max;
 		}
 	#endif
@@ -214,9 +215,9 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		f1_write_config32(config_reg, config_busses);
 
 		{
-			// config config_reg, and ht_unitid_base to update hcdn_reg;
+			// use config_reg and ht_unitid_base to update hcdn_reg
 			int index;
-			unsigned temp = 0;
+			u32 temp = 0;
 			index = (config_reg-0xe0) >> 2;
 			for(i=0;i<4;i++) {
 				temp |= (ht_unitid_base[i] & 0xff) << (i*8);
@@ -225,16 +226,16 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 			sysconf.hcdn_reg[index] = temp;
 
 		}
-
 	return max;
 }
 
-static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
+static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 {
 	unsigned nodeid;
 	unsigned link;
 	unsigned sblink = 0;
 	unsigned offset_unitid = 0;
+
 	nodeid = amdk8_nodeid(dev);
 
 	if(nodeid==0) {
@@ -247,7 +248,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 #endif
 	}
 
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		if( (nodeid == 0) && (sblink == link) ) continue; //already done
 #endif
@@ -261,16 +262,15 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
 		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
 	}
-
 	return max;
 }
 
 
-static int reg_useable(unsigned reg,
-	device_t goal_dev, unsigned goal_nodeid, unsigned goal_link)
+static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
+			unsigned goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link=0;
+	unsigned nodeid, link = 0;
 	int result;
 	res = 0;
 	for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
@@ -291,7 +291,6 @@ static int reg_useable(unsigned reg,
 			result = 1;
 		}
 	}
-
 	return result;
 }
 
@@ -351,10 +350,10 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	/* Initialize the prefetchable memory constraints on the current bus */
 	resource = new_resource(dev, IOINDEX(2, link));
 	if (resource) {
-		resource->base  = 0;
-		resource->size  = 0;
+		resource->base = 0;
+		resource->size = 0;
 		resource->align = log2(HT_MEM_HOST_ALIGN);
-		resource->gran  = log2(HT_MEM_HOST_ALIGN);
+		resource->gran = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 		resource->flags |= IORESOURCE_BRIDGE;
@@ -363,10 +362,10 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	/* Initialize the memory constraints on the current bus */
 	resource = new_resource(dev, IOINDEX(1, link));
 	if (resource) {
-		resource->base  = 0;
-		resource->size  = 0;
+		resource->base = 0;
+		resource->size = 0;
 		resource->align = log2(HT_MEM_HOST_ALIGN);
-		resource->gran  = log2(HT_MEM_HOST_ALIGN);
+		resource->gran = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
 	}
@@ -430,7 +429,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	link = IOINDEX_LINK(resource->index);
 
 	if (resource->flags & IORESOURCE_IO) {
-		uint32_t base, limit;
+		u32 base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base  &= 0xfe000fcc;
@@ -454,7 +453,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		f1_write_config32(reg, base);
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
-		uint32_t base, limit;
+		u32 base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base  &= 0x000000f0;
@@ -468,7 +467,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		f1_write_config32(reg, base);
 	}
 	resource->flags |= IORESOURCE_STORED;
-	sprintf(buf, " <node %d link %d>",
+	sprintf(buf, " <node %x link %x>",
 		nodeid, link);
 	report_resource_stored(dev, resource, buf);
 }
@@ -580,18 +579,18 @@ static void mcf0_control_init(struct device *dev)
 }
 
 static struct device_operations northbridge_operations = {
-	.read_resources   = amdk8_read_resources,
-	.set_resources    = amdk8_set_resources,
+	.read_resources	  = amdk8_read_resources,
+	.set_resources	  = amdk8_set_resources,
 	.enable_resources = amdk8_enable_resources,
-	.init             = mcf0_control_init,
-	.scan_bus         = amdk8_scan_chains,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		  = mcf0_control_init,
+	.scan_bus	  = amdk8_scan_chains,
+	.enable		  = 0,
+	.ops_pci	  = 0,
 };
 
 
 static const struct pci_driver mcf0_driver __pci_driver = {
-	.ops    = &northbridge_operations,
+	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1100,
 };
@@ -608,20 +607,20 @@ static void amdk8_domain_read_resources(device_t dev)
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
 	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
-		uint32_t base, limit;
+		u32 base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x04);
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
-			unsigned nodeid, link;
+			unsigned nodeid, reg_link;
 			device_t reg_dev;
 			nodeid = limit & 7;
-			link   = (limit >> 4) & 3;
+			reg_link = (limit >> 4) & 3;
 			reg_dev = __f0_dev[nodeid];
 			if (reg_dev) {
 				/* Reserve the resource  */
 				struct resource *res;
-				res = new_resource(reg_dev, IOINDEX(0x100 + reg, link));
+				res = new_resource(reg_dev, IOINDEX(0x100 + reg, reg_link));
 				if (res) {
 					res->base = base;
 					res->limit = limit;
@@ -650,8 +649,8 @@ static void ram_resource(device_t dev, unsigned long index,
 		return;
 	}
 	resource = new_resource(dev, index);
-	resource->base  = ((resource_t)basek) << 10;
-	resource->size  = ((resource_t)sizek) << 10;
+	resource->base = ((resource_t)basek) << 10;
+	resource->size = ((resource_t)sizek) << 10;
 	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
@@ -668,10 +667,10 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 	*best_p = best;
 }
 
-static uint32_t find_pci_tolm(struct bus *bus)
+static u32 find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
-	uint32_t tolm;
+	u32 tolm;
 	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
 	tolm = 0xffffffffUL;
@@ -697,8 +696,8 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		mem_hole.node_id = -1;
 
 		for (i = 0; i < fx_devs; i++) {
-			uint32_t base;
-			uint32_t hole;
+			u32 base;
+			u32 hole;
 			base  = f1_read_config32(0x40 + (i << 3));
 			if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 				continue;
@@ -714,9 +713,9 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 		//We need to double check if there is speical set on base reg and limit reg are not continous instead of hole, it will find out it's hole_startk
 		if(mem_hole.node_id==-1) {
-			uint32_t limitk_pri = 0;
+			u32 limitk_pri = 0;
 			for(i=0; i<8; i++) {
-				uint32_t base, limit;
+				u32 base, limit;
 				unsigned base_k, limit_k;
 				base  = f1_read_config32(0x40 + (i << 3));
 				if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -735,18 +734,16 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 				limitk_pri = limit_k;
 			}
 		}
-
 		return mem_hole;
-
 }
 
 static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 {
 	int i;
 	device_t dev;
-	uint32_t base, limit;
-	uint32_t hoist;
-	uint32_t hole_sizek;
+	u32 base, limit;
+	u32 hoist;
+	u32 hole_sizek;
 
 
 	//1. find which node has hole
@@ -776,22 +773,22 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 		return;
 	}
 	hoist = pci_read_config32(dev, 0xf0);
-	if(hoist & 1)
+	if(hoist & 1) {
 		pci_write_config32(dev, 0xf0, 0);
-	else {
+	} else {
 		base = pci_read_config32(dev, 0x40 + (node_id << 3));
 		f1_write_config32(0x40 + (node_id << 3),base - (hole_sizek << 2));
 	}
 }
 
-static uint32_t hoist_memory(unsigned long hole_startk, int node_id)
+static u32 hoist_memory(unsigned long hole_startk, int node_id)
 {
 	int i;
-	uint32_t carry_over;
+	u32 carry_over;
 	device_t dev;
-	uint32_t base, limit;
-	uint32_t basek;
-	uint32_t hoist;
+	u32 base, limit;
+	u32 basek;
+	u32 hoist;
 
 	carry_over = (4*1024*1024) - hole_startk;
 
@@ -848,11 +845,11 @@ static void amdk8_domain_set_resources(device_t dev)
 	struct resource *res;
 #endif
 	unsigned long mmio_basek;
-	uint32_t pci_tolm;
+	u32 pci_tolm;
 	int i, idx;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
-	unsigned reset_memhole = 1;
+	u32 reset_memhole = 1;
 #endif
 
 #if 0
@@ -909,7 +906,6 @@ static void amdk8_domain_set_resources(device_t dev)
 		res->flags |= IORESOURCE_ASSIGNED;
 		res->flags |= IORESOURCE_STORED;
 		report_resource_stored(dev, res, "");
-
 	}
 #endif
 
@@ -953,10 +949,10 @@ static void amdk8_domain_set_resources(device_t dev)
 
 		#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
-			uint32_t basek_pri;
+			u32 basek_pri;
 			for (i = 0; i < fx_devs; i++) {
-				uint32_t base;
-				uint32_t basek;
+				u32 base;
+				u32 basek;
 				base  = f1_read_config32(0x40 + (i << 3));
 				if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 					continue;
@@ -980,8 +976,8 @@ static void amdk8_domain_set_resources(device_t dev)
 
 	idx = 0x10;
 	for(i = 0; i < fx_devs; i++) {
-		uint32_t base, limit;
-		unsigned basek, limitk, sizek;
+		u32 base, limit;
+		u32 basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));
 		limit = f1_read_config32(0x44 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -1074,9 +1070,9 @@ static void amdk8_domain_set_resources(device_t dev)
 
 }
 
-static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
+static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 {
-	unsigned reg;
+	u32 reg;
 	int i;
 	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
@@ -1092,7 +1088,7 @@ static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
 		device_t f0_dev;
 		f0_dev = __f0_dev[i];
 		if (f0_dev && f0_dev->enabled) {
-			uint32_t httc;
+			u32 httc;
 			httc = pci_read_config32(f0_dev, HT_TRANSACTION_CONTROL);
 			httc &= ~HTTC_RSP_PASS_PW;
 			if (!dev->link[0].disable_relaxed_ordering) {
@@ -1109,15 +1105,15 @@ static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources   = amdk8_domain_read_resources,
-	.set_resources    = amdk8_domain_set_resources,
+	.read_resources	  = amdk8_domain_read_resources,
+	.set_resources	  = amdk8_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
-	.init             = 0,
-	.scan_bus         = amdk8_domain_scan_bus,
-	.ops_pci_bus      = &pci_cf8_conf1,
+	.init		  = 0,
+	.scan_bus	  = amdk8_domain_scan_bus,
+	.ops_pci_bus	  = &pci_cf8_conf1,
 };
 
-static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
+static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
@@ -1142,9 +1138,9 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 	get_option(&disable_siblings, "multi_core");
 #endif
 
-	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)
-	// How can I get the nb_cfg_54 of every node' nb_cfg_54 in bsp??? and differ d0 and e0 single core
-
+	// for pre_e0, nb_cfg_54 can not be set, (when you read it still is 0)
+	// How can I get the nb_cfg_54 of every node's nb_cfg_54 in bsp???
+	// and differ d0 and e0 single core
 	nb_cfg_54 = read_nb_cfg_54();
 
 	dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
@@ -1197,7 +1193,6 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 					dev_f0->link[local_j].dev = dev_f0;
 				}
 			}
-
 		}
 
 		e0_later_single_core = 0;
@@ -1236,7 +1231,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
   			}
 		}
 
-		unsigned jj;
+		u32 jj;
 		if(e0_later_single_core || disable_siblings) {
 			jj = 0;
 		} else
@@ -1280,8 +1275,8 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 						cpu->path.apic.apic_id += sysconf.apicid_offset;
 					} else
 					{
-					       if (cpu->path.apic.apic_id != 0)
-						       cpu->path.apic.apic_id += sysconf.apicid_offset;
+						if (cpu->path.apic.apic_id != 0)
+							cpu->path.apic.apic_id += sysconf.apicid_offset;
 					}
 				}
 				printk(BIOS_DEBUG, "CPU: %s %s\n",
@@ -1303,11 +1298,11 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.read_resources	  = cpu_bus_noop,
+	.set_resources	  = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = cpu_bus_scan,
+	.init		  = cpu_bus_init,
+	.scan_bus	  = cpu_bus_scan,
 };
 
 static void root_complex_enable_dev(struct device *dev)

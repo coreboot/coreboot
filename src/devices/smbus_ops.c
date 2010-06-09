@@ -58,7 +58,7 @@ int smbus_set_link(device_t dev)
 //		printk(BIOS_INFO, " %s[%d] -> ", dev_path(pbus_a[i]->dev), pbus_a[i]->link);
         	if (ops_smbus_bus(get_pbus_smbus(pbus_a[i]->dev))) {
                 	if (pbus_a[i]->dev->ops && pbus_a[i]->dev->ops->set_link)
-                        	pbus_a[i]->dev->ops->set_link(pbus_a[i]->dev, pbus_a[i]->link);
+                        	pbus_a[i]->dev->ops->set_link(pbus_a[i]->dev, pbus_a[i]->link_num);
 		}
 	}
 //	printk(BIOS_INFO, " %s\n", dev_path(dev));

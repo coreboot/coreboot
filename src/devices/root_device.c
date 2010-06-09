@@ -75,17 +75,17 @@ static int smbus_max = 0;
 unsigned int scan_static_bus(device_t bus, unsigned int max)
 {
 	device_t child;
-	unsigned link;
+	struct bus* link;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	for(link = 0; link < bus->links; link++) {
+	for(link = bus->link_list; link; link = link->next) {
 		/* for smbus bus enumerate */
-		child = bus->link[link].children;
+		child = link->children;
 		if(child && child->path.type == DEVICE_PATH_I2C) {
-			bus->link[link].secondary = ++smbus_max;
+			link->secondary = ++smbus_max;
 		}
-		for(child = bus->link[link].children; child; child = child->sibling) {
+		for(child =link->children; child; child = child->sibling) {
 			if (child->chip_ops && child->chip_ops->enable_dev) {
 				child->chip_ops->enable_dev(child);
 			}
@@ -94,15 +94,15 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
  				printk(BIOS_DEBUG, "smbus: %s[%d]->",
-					dev_path(child->bus->dev), child->bus->link );
+					dev_path(child->bus->dev), child->bus->link_num );
 			}
 			printk(BIOS_DEBUG, "%s %s\n",
 				dev_path(child),
 				child->enabled?"enabled": "disabled");
 		}
 	}
-	for(link = 0; link < bus->links; link++) {
-		for(child = bus->link[link].children; child; child = child->sibling) {
+	for(link = bus->link_list; link; link = link->next) {
+		for(child = link->children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
@@ -130,10 +130,10 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
  */
 void enable_childrens_resources(device_t dev)
 {
-	unsigned link;
-	for(link = 0; link < dev->links; link++) {
+	struct bus *link;
+	for(link = dev->link_list; link; link = link->next) {
 		device_t child;
-		for(child = dev->link[link].children; child; child = child->sibling) {
+		for(child = link->children; child; child = child->sibling) {
 			enable_resources(child);
 		}
 	}

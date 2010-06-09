@@ -41,7 +41,7 @@ static int lsmbus_recv_byte(device_t dev)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
+	res = find_resource(pbus->dev, 0x20 + (pbus->link_num * 4));
 
 	return do_smbus_recv_byte(res->base, device);
 }
@@ -55,7 +55,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
+	res = find_resource(pbus->dev, 0x20 + (pbus->link_num * 4));
 
 	return do_smbus_send_byte(res->base, device, val);
 }
@@ -69,7 +69,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
+	res = find_resource(pbus->dev, 0x20 + (pbus->link_num * 4));
 
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -83,7 +83,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
-	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
+	res = find_resource(pbus->dev, 0x20 + (pbus->link_num * 4));
 
 	return do_smbus_write_byte(res->base, device, address, val);
 }

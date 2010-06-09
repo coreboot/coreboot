@@ -46,7 +46,7 @@ static void adt7463_init(device_t dev)
 	/* Find the ADT7463 device. */
 	path.type = DEVICE_PATH_I2C;
 	path.i2c.device = 0x2d;
-	adt7463 = find_dev_path(smbus_dev->link, &path);
+	adt7463 = find_dev_path(smbus_dev->link_list, &path);
 	if (!adt7463)
 		die("ADT7463 not found\n");
 	printk(BIOS_DEBUG, "ADT7463 found\n");
@@ -113,7 +113,6 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 {
 	struct device_path path;
 	device_t dummy;
-	unsigned link_i;
 
 	max = root_dev_scan_bus(root, max);
 
@@ -126,20 +125,10 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 	 * as the last device to be initialized.
 	 */
 
-	link_i = root->links;
-	if (link_i >= MAX_LINKS) {
-		printk(BIOS_DEBUG, "Reached MAX_LINKS, not configuring ADT7463");
-		return max;
-	}
-	root->link[link_i].link = link_i;
-	root->link[link_i].dev = root;
-	root->link[link_i].children = 0;
-	root->links++;
-
 	path.type = DEVICE_PATH_PNP;
 	path.pnp.port = 0;
 	path.pnp.device = 0;
-	dummy = alloc_dev(&root->link[link_i], &path);
+	dummy = alloc_dev(root->link_list, &path);
 	dummy->ops = &dummy_operations;
 
 	return max;

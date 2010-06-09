@@ -190,7 +190,6 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 {
 	struct device *child;
 
-	int linkn;
 	int i;
 	int srcbus;
 	int slot;
@@ -198,9 +197,8 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 	struct bus *link;
 	unsigned char dstirq_x[4];
 
-	for (linkn = 0; linkn < dev->links; linkn++) {
+	for (link = dev->link_list; link; link = link->next) {
 
-		link = &dev->link[linkn];
 		child = link->children;
 		srcbus = link->secondary;
 

@@ -87,7 +87,7 @@ static void pci_domain_set_resources(device_t dev)
 	unsigned char rambits;
 	int idx;
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3324, 0);
 
 	rambits = pci_read_config8(mc_dev, 0x88);
@@ -128,7 +128,7 @@ static void pci_domain_set_resources(device_t dev)
 	/* TODO: Hole needed? Should this go elsewhere? */
 	ram_resource(dev, idx++, 0, 640);	/* first 640k */
 	ram_resource(dev, idx++, 768, (tolmk - 768));	/* leave a hole for vga */
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
@@ -141,7 +141,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

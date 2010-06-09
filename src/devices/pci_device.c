@@ -551,15 +551,13 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 void pci_dev_set_resources(struct device *dev)
 {
 	struct resource *res;
-	unsigned link;
+	struct bus *bus;
 	u8 line;
 
 	for (res = dev->resource_list; res; res = res->next) {
 		pci_set_resource(dev, res);
 	}
-	for (link = 0; link < dev->links; link++) {
-		struct bus *bus;
-		bus = &dev->link[link];
+	for (bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			assign_resources(bus);
 		}
@@ -614,10 +612,10 @@ void pci_bus_enable_resources(struct device *dev)
 	/* Enable I/O in command register if there is VGA card
 	 * connected with (even it does not claim I/O resource).
 	 */
-	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
+	if (dev->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA)
 		dev->command |= PCI_COMMAND_IO;
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	ctrl |= dev->link[0].bridge_ctrl;
+	ctrl |= dev->link_list->bridge_ctrl;
 	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR);	/* Error check. */
 	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
@@ -1102,9 +1100,17 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(dev));
 
-	bus = &dev->link[0];
-	bus->dev = dev;
-	dev->links = 1;
+	if (dev->link_list == NULL) {
+		struct bus *link;
+		link = malloc(sizeof(*link));
+		if (link == NULL)
+			die("Couldn't allocate a link!\n");
+		memset(link, 0, sizeof(*link));
+		link->dev = dev;
+		dev->link_list = link;
+	}
+
+	bus = dev->link_list;
 
 	/* Set up the primary, secondary and subordinate bus numbers. We have
 	 * no idea how many buses are behind this bridge yet, so we set the
@@ -1179,7 +1185,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
  */
 unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0, 0), 0xff, max);
 	return max;
 }
 

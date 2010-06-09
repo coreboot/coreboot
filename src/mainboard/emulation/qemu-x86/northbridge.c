@@ -60,7 +60,7 @@ extern uint64_t high_tables_base, high_tables_size;
 
 static void cpu_pci_domain_set_resources(device_t dev)
 {
-	u32 pci_tolm = find_pci_tolm(&dev->link[0]);
+	u32 pci_tolm = find_pci_tolm(dev->link_list);
 	unsigned long tomk = 0, tolmk;
 	int idx;
 
@@ -91,7 +91,7 @@ static void cpu_pci_domain_set_resources(device_t dev)
 	high_tables_size = HIGH_TABLES_SIZE * 1024;
 #endif
 
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 static void cpu_pci_domain_read_resources(struct device *dev)

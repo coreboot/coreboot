@@ -158,7 +158,7 @@ void cardbus_enable_resources(device_t dev)
 {
 	uint16_t ctrl;
 	ctrl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
-	ctrl |= (dev->link[0].bridge_ctrl & (
+	ctrl |= (dev->link_list->bridge_ctrl & (
 			PCI_BRIDGE_CTL_PARITY |
 			PCI_BRIDGE_CTL_SERR |
 			PCI_BRIDGE_CTL_NO_ISA |
@@ -178,8 +178,8 @@ struct device_operations default_cardbus_ops_bus = {
 	.read_resources   = cardbus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init		  = 0,
-	.scan_bus	  = pci_scan_bridge,
+	.init			  = 0,
+	.scan_bus		  = pci_scan_bridge,
 	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
 };

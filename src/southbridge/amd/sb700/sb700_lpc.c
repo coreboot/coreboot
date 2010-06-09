@@ -118,7 +118,7 @@ static void sb700_lpc_set_resources(struct device *dev)
  */
 static void sb700_lpc_enable_childrens_resources(device_t dev)
 {
-	u32 link;
+	struct bus *link;
 	u32 reg, reg_x;
 	int var_num = 0;
 	u16 reg_var[3];
@@ -126,9 +126,9 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config32(dev, 0x44);
 	reg_x = pci_read_config32(dev, 0x48);
 
-	for (link = 0; link < dev->links; link++) {
+	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
-		for (child = dev->link[link].children; child;
+		for (child = link->children; child;
 		     child = child->sibling) {
 			enable_resources(child);
 			if (child->enabled

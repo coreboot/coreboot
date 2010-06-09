@@ -61,20 +61,11 @@ static void pcix_tune_dev(device_t dev)
 	}
 }
 
-unsigned int pcix_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn, unsigned int max)
+static void pcix_tune_bus(struct bus *bus)
 {
 	device_t child;
-	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
-	for(child = bus->children; child; child = child->sibling) {
-		if (	(child->path.pci.devfn < min_devfn) ||
-			(child->path.pci.devfn > max_devfn))
-		{
-			continue;
-		}
+	for(child = bus->children; child; child = child->sibling)
 		pcix_tune_dev(child);
-	}
-	return max;
 }
 
 const char *pcix_speed(unsigned sstatus)
@@ -124,18 +115,17 @@ unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
 	unsigned pos;
 	unsigned sstatus;
 
+	max = do_pci_scan_bridge(dev, max, pci_scan_bus);
 	/* Find the PCI-X capability */
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	sstatus = pci_read_config16(dev, pos + PCI_X_SEC_STATUS);
 
-	if (PCI_X_SSTATUS_MFREQ(sstatus) == PCI_X_SSTATUS_CONVENTIONAL_PCI) {
-		max = do_pci_scan_bridge(dev, max, pci_scan_bus);
-	} else {
-		max = do_pci_scan_bridge(dev, max, pcix_scan_bus);
+	if (PCI_X_SSTATUS_MFREQ(sstatus) != PCI_X_SSTATUS_CONVENTIONAL_PCI) {
+		pcix_tune_bus(dev->link_list);
 	}
 
 	/* Print the PCI-X bus speed */
-	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link[0].secondary, pcix_speed(sstatus));
+	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link_list->secondary, pcix_speed(sstatus));
 
 	return max;
 }

@@ -66,7 +66,6 @@ DECLARE_SPIN_LOCK(dev_lock)
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
 	device_t dev, child;
-	int link;
 
 	spin_lock(&dev_lock);
 
@@ -81,12 +80,6 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 
 	memset(dev, 0, sizeof(*dev));
 	memcpy(&dev->path, path, sizeof(*path));
-
-	/* Initialize the back pointers in the link fields. */
-	for (link = 0; link < MAX_LINKS; link++) {
-		dev->link[link].dev = dev;
-		dev->link[link].link = link;
-	}
 
 	/* By default devices are enabled. */
 	dev->enabled = 1;
@@ -132,11 +125,11 @@ static void read_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk(BIOS_SPEW, "%s %s bus %x link: %d\n", dev_path(bus->dev), __func__,
-		    bus->secondary, bus->link);
+		    bus->secondary, bus->link_num);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
-		int i;
+		struct bus *link;
 		if (!curdev->enabled) {
 			continue;
 		}
@@ -148,11 +141,11 @@ static void read_resources(struct bus *bus)
 		curdev->ops->read_resources(curdev);
 
 		/* Read in the resources behind the current device's links. */
-		for (i = 0; i < curdev->links; i++)
-			read_resources(&curdev->link[i]);
+		for (link = curdev->link_list; link; link = link->next)
+			read_resources(link);
 	}
 	printk(BIOS_SPEW, "%s read_resources bus %d link: %d done\n",
-		    dev_path(bus->dev), bus->secondary, bus->link);
+		    dev_path(bus->dev), bus->secondary, bus->link_num);
 }
 
 struct pick_largest_state {
@@ -257,13 +250,13 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 	for (dev = bus->children; dev; dev = dev->sibling) {
 		struct resource *child_bridge;
 
-		if (!dev->links)
+		if (!dev->link_list)
 			continue;
 
 		/* Find the resources with matching type flags. */
 		for (child_bridge = dev->resource_list; child_bridge;
 		     child_bridge = child_bridge->next) {
-			unsigned link;
+			struct bus* link;
 
 			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
 			    (child_bridge->flags & type_mask) != type)
@@ -275,8 +268,15 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 			 * need it separated.  Add the PREFETCH flag to the
 			 * type_mask and type.
 			 */
-			link = IOINDEX_LINK(child_bridge->index);
-			compute_resources(&dev->link[link], child_bridge,
+			link = dev->link_list;
+			while (link && link->link_num !=
+					IOINDEX_LINK(child_bridge->index))
+				link = link->next;
+			if (link == NULL)
+				printk(BIOS_ERR, "link %ld not found on %s\n",
+				       IOINDEX_LINK(child_bridge->index),
+				       dev_path(dev));
+			compute_resources(link, child_bridge,
 					  type_mask | IORESOURCE_PREFETCH,
 					  type | (child_bridge->flags &
 						  IORESOURCE_PREFETCH));
@@ -505,13 +505,13 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	for (dev = bus->children; dev; dev = dev->sibling) {
 		struct resource *child_bridge;
 
-		if (!dev->links)
+		if (!dev->link_list)
 			continue;
 
 		/* Find the resources with matching type flags. */
 		for (child_bridge = dev->resource_list; child_bridge;
 		     child_bridge = child_bridge->next) {
-			unsigned link;
+			struct bus* link;
 
 			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
 			    (child_bridge->flags & type_mask) != type)
@@ -523,8 +523,15 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 			 * need it separated.  Add the PREFETCH flag to the
 			 * type_mask and type.
 			 */
-			link = IOINDEX_LINK(child_bridge->index);
-			allocate_resources(&dev->link[link], child_bridge,
+			link = dev->link_list;
+			while (link && link->link_num !=
+			               IOINDEX_LINK(child_bridge->index))
+				link = link->next;
+			if (link == NULL)
+				printk(BIOS_ERR, "link %ld not found on %s\n",
+				       IOINDEX_LINK(child_bridge->index),
+				       dev_path(dev));
+			allocate_resources(link, child_bridge,
 					   type_mask | IORESOURCE_PREFETCH,
 					   type | (child_bridge->flags &
 						   IORESOURCE_PREFETCH));
@@ -551,7 +558,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	struct device *child;
 	struct resource *res;
 	struct resource *lim;
-	int i;
+	struct bus *link;
 
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 
@@ -592,8 +599,8 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	}
 
 	/* Descend into every enabled child and look for fixed resources. */
-	for (i = 0; i < dev->links; i++)
-		for (child = dev->link[i].children; child;
+	for (link = dev->link_list; link; link = link->next)
+		for (child = link->children; child;
 		     child = child->sibling)
 			if (child->enabled)
 				constrain_resources(child, limits);
@@ -757,7 +764,7 @@ void assign_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-		    dev_path(bus->dev), bus->secondary, bus->link);
+		    dev_path(bus->dev), bus->secondary, bus->link_num);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resource_list) {
@@ -771,7 +778,7 @@ void assign_resources(struct bus *bus)
 		curdev->ops->set_resources(curdev);
 	}
 	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-		    dev_path(bus->dev), bus->secondary, bus->link);
+		    dev_path(bus->dev), bus->secondary, bus->link_num);
 }
 
 /**
@@ -846,12 +853,12 @@ unsigned int scan_bus(struct device *busdev, unsigned int max)
 
 	do_scan_bus = 1;
 	while (do_scan_bus) {
-		int link;
+		struct bus *link;
 		new_max = busdev->ops->scan_bus(busdev, max);
 		do_scan_bus = 0;
-		for (link = 0; link < busdev->links; link++) {
-			if (busdev->link[link].reset_needed) {
-				if (reset_bus(&busdev->link[link])) {
+		for (link = busdev->link_list; link; link = link->next) {
+			if (link->reset_needed) {
+				if (reset_bus(link)) {
 					do_scan_bus = 1;
 				} else {
 					busdev->bus->reset_needed = 1;
@@ -940,30 +947,30 @@ void dev_configure(void)
 	/* Read the resources for the entire tree. */
 
 	printk(BIOS_INFO, "Reading resources...\n");
-	read_resources(&root->link[0]);
+	read_resources(root->link_list);
 	printk(BIOS_INFO, "Done reading resources.\n");
 
 	print_resource_tree(root, BIOS_SPEW, "After reading.");
 
 	/* Compute resources for all domains. */
-	for (child = root->link[0].children; child; child = child->sibling) {
+	for (child = root->link_list->children; child; child = child->sibling) {
 		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)
 				continue;
 			if (res->flags & IORESOURCE_PREFETCH) {
-				compute_resources(&child->link[0],
+				compute_resources(child->link_list,
 					       res, MEM_MASK, PREF_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_MEM) {
-				compute_resources(&child->link[0],
+				compute_resources(child->link_list,
 					       res, MEM_MASK, MEM_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_IO) {
-				compute_resources(&child->link[0],
+				compute_resources(child->link_list,
 					       res, IO_MASK, IO_TYPE);
 				continue;
 			}
@@ -971,14 +978,14 @@ void dev_configure(void)
 	}
 
 	/* For all domains. */
-	for (child = root->link[0].children; child; child=child->sibling)
+	for (child = root->link_list->children; child; child=child->sibling)
 		if (child->path.type == DEVICE_PATH_PCI_DOMAIN)
 			avoid_fixed_resources(child);
 
 	/* Now we need to adjust the resources. MEM resources need to start at
 	 * the highest address managable.
 	 */
-	for (child = root->link[0].children; child; child = child->sibling) {
+	for (child = root->link_list->children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_PCI_DOMAIN)
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
@@ -991,30 +998,30 @@ void dev_configure(void)
 
 	/* Store the computed resource allocations into device registers ... */
 	printk(BIOS_INFO, "Setting resources...\n");
-	for (child = root->link[0].children; child; child = child->sibling) {
+	for (child = root->link_list->children; child; child = child->sibling) {
 		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)
 				continue;
 			if (res->flags & IORESOURCE_PREFETCH) {
-				allocate_resources(&child->link[0],
+				allocate_resources(child->link_list,
 					       res, MEM_MASK, PREF_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_MEM) {
-				allocate_resources(&child->link[0],
+				allocate_resources(child->link_list,
 					       res, MEM_MASK, MEM_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_IO) {
-				allocate_resources(&child->link[0],
+				allocate_resources(child->link_list,
 					       res, IO_MASK, IO_TYPE);
 				continue;
 			}
 		}
 	}
-	assign_resources(&root->link[0]);
+	assign_resources(root->link_list);
 	printk(BIOS_INFO, "Done setting resources.\n");
 	print_resource_tree(root, BIOS_SPEW, "After assigning values.");
 
@@ -1055,7 +1062,7 @@ void dev_initialize(void)
 			if (dev->path.type == DEVICE_PATH_I2C) {
 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
 					     dev_path(dev->bus->dev),
-					     dev->bus->link);
+					     dev->bus->link_num);
 			}
 			printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
 			dev->initialized = 1;

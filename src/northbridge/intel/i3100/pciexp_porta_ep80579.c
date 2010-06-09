@@ -56,7 +56,7 @@ static void pcie_init(struct device *dev)
 
 static void pcie_bus_enable_resources(struct device *dev)
 {
-	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+	if (dev->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 		printk(BIOS_SPEW, "Enable VGA IO/MEM forwarding on PCIe port\n");
 		pci_write_config8(dev, PCI_BRIDGE_CONTROL, 8);
 

@@ -33,7 +33,7 @@ static struct device_operations i2cmux2_operations = {
 
 static void enable_dev(struct device *dev)
 {
-	if(dev->links>0)
+	if(dev->link_list != NULL)
 		dev->ops = &i2cmux2_operations;
 }
 

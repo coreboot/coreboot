@@ -81,7 +81,7 @@ static u32 amdk8_nodeid(device_t dev)
 	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
-static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
+static u32 amdk8_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 link_num, u32 sblink,
 				u32 max, u32 offset_unitid)
 {
 
@@ -94,15 +94,15 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 		u32 min_bus;
 		u32 max_devfn;
 
-		dev->link[link].cap = 0x80 + (link *0x20);
+		link->cap = 0x80 + (link_num *0x20);
 		do {
-			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
+			link_type = pci_read_config32(dev, link->cap + 0x18);
 		} while(link_type & ConnectionPending);
 		if (!(link_type & LinkConnected)) {
 			return max;
 		}
 		do {
-			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
+			link_type = pci_read_config32(dev, link->cap + 0x18);
 		} while(!(link_type & InitComplete));
 		if (!(link_type & NonCoherent)) {
 			return max;
@@ -120,7 +120,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 			}
 			if (((config & 3) == 3) &&
 				(((config >> 4) & 7) == nodeid) &&
-				(((config >> 8) & 3) == link)) {
+				(((config >> 8) & 3) == link_num)) {
 				break;
 			}
 		}
@@ -140,7 +140,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 		 */
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		// first chain will on bus 0
-		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
+		if((nodeid == 0) && (sblink==link_num)) { // actually max is 0 here
 			min_bus = max;
 		}
 	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
@@ -160,13 +160,13 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 #endif
 		max_bus = 0xff;
 
-		dev->link[link].secondary = min_bus;
-		dev->link[link].subordinate = max_bus;
+		link->secondary = min_bus;
+		link->subordinate = max_bus;
 
 		/* Read the existing primary/secondary/subordinate bus
 		 * number configuration.
 		 */
-		busses = pci_read_config32(dev, dev->link[link].cap + 0x14);
+		busses = pci_read_config32(dev, link->cap + 0x14);
 		config_busses = f1_read_config32(config_reg);
 
 		/* Configure the bus numbers for this bridge: the configuration
@@ -175,17 +175,17 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 		 */
 		busses &= 0xff000000;
 		busses |= (((unsigned int)(dev->bus->secondary) << 0) |
-			((unsigned int)(dev->link[link].secondary) << 8) |
-			((unsigned int)(dev->link[link].subordinate) << 16));
-		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
+			((unsigned int)(link->secondary) << 8) |
+			((unsigned int)(link->subordinate) << 16));
+		pci_write_config32(dev, link->cap + 0x14, busses);
 
 		config_busses &= 0x000fc88;
 		config_busses |=
 			(3 << 0) |  /* rw enable, no device compare */
 			(( nodeid & 7) << 4) |
-			(( link & 3 ) << 8) |
-			((dev->link[link].secondary) << 16) |
-			((dev->link[link].subordinate) << 24);
+			(( link_num & 3 ) << 8) |
+			((link->secondary) << 16) |
+			((link->subordinate) << 24);
 		f1_write_config32(config_reg, config_busses);
 
 		/* Now we can scan all of the subordinate busses i.e. the
@@ -200,18 +200,18 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 		else
 			max_devfn = (0x1f<<3) | 7;
 
-		max = hypertransport_scan_chain(&dev->link[link], 0, max_devfn, max, ht_unitid_base, offset_unitid);
+		max = hypertransport_scan_chain(link, 0, max_devfn, max, ht_unitid_base, offset_unitid);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
 		 */
-		dev->link[link].subordinate = max;
+		link->subordinate = max;
 		busses = (busses & 0xff00ffff) |
-			((unsigned int) (dev->link[link].subordinate) << 16);
-		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
+			((unsigned int) (link->subordinate) << 16);
+		pci_write_config32(dev, link->cap + 0x14, busses);
 
 		config_busses = (config_busses & 0x00ffffff) |
-			(dev->link[link].subordinate << 24);
+			(link->subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
 
 		{
@@ -232,7 +232,7 @@ static u32 amdk8_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 {
 	unsigned nodeid;
-	unsigned link;
+	struct bus *link;
 	unsigned sblink = 0;
 	unsigned offset_unitid = 0;
 
@@ -244,23 +244,25 @@ static unsigned amdk8_scan_chains(device_t dev, unsigned max)
 	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
 		offset_unitid = 1;
 	#endif
-		max = amdk8_scan_chain(dev, nodeid, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
+		for (link = dev->link_list; link; link = link->next)
+			if (link->link_num == sblink)
+				max = amdk8_scan_chain(dev, nodeid, link, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
 #endif
 	}
 
-	for (link = 0; link < dev->links; link++) {
+	for (link = dev->link_list; link; link = link->next) {
 #if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-		if( (nodeid == 0) && (sblink == link) ) continue; //already done
+		if( (nodeid == 0) && (sblink == link->link_num) ) continue; //already done
 #endif
 		offset_unitid = 0;
 		#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
 			#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
-			if((nodeid == 0) && (sblink == link))
+			if((nodeid == 0) && (sblink == link->link_num))
 			#endif
 				offset_unitid = 1;
 		#endif
 
-		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
+		max = amdk8_scan_chain(dev, nodeid, link, link->link_num, sblink, max, offset_unitid);
 	}
 	return max;
 }
@@ -375,21 +377,22 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid);
 
 static void amdk8_read_resources(device_t dev)
 {
-	unsigned nodeid, link;
+	unsigned nodeid;
+	struct bus *link;
 	nodeid = amdk8_nodeid(dev);
-	for(link = 0; link < dev->links; link++) {
-		if (dev->link[link].children) {
-			amdk8_link_read_bases(dev, nodeid, link);
+	for(link = dev->link_list; link; link = link->next) {
+		if (link->children) {
+			amdk8_link_read_bases(dev, nodeid, link->link_num);
 		}
 	}
-
 	amdk8_create_vga_resource(dev, nodeid);
 }
 
 static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned nodeid)
 {
+	struct bus *link;
 	resource_t rbase, rend;
-	unsigned reg, link;
+	unsigned reg, link_num;
 	char buf[50];
 
 	/* Make certain the resource has actually been set */
@@ -426,7 +429,17 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 
 	/* Get the register and link */
 	reg  = resource->index & 0xfc;
-	link = IOINDEX_LINK(resource->index);
+	link_num = IOINDEX_LINK(resource->index);
+
+	for (link = dev->link_list; link; link = link->next)
+		if (link->link_num == link_num)
+			break;
+
+	if (link == NULL) {
+		printk(BIOS_ERR, "%s: can't find link %x for %lx\n", __func__,
+			   link_num, resource->index);
+		return;
+	}
 
 	if (resource->flags & IORESOURCE_IO) {
 		u32 base, limit;
@@ -437,15 +450,15 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		base  |= 3;
 		limit &= 0xfe000fc8;
 		limit |= rend & 0x01fff000;
-		limit |= (link & 3) << 4;
+		limit |= (link_num & 3) << 4;
 		limit |= (nodeid & 7);
 
-		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 			printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link 0x%x\n",
-				    __func__, dev_path(dev), link);
+				    __func__, dev_path(dev), link_num);
 			base |= PCI_IO_BASE_VGA_EN;
 		}
-		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
+		if (link->bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
 			base |= PCI_IO_BASE_NO_ISA;
 		}
 
@@ -461,14 +474,14 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		base  |= 3;
 		limit &= 0x00000048;
 		limit |= (rend >> 8) & 0xffffff00;
-		limit |= (link & 3) << 4;
+		limit |= (link_num & 3) << 4;
 		limit |= (nodeid & 7);
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	}
 	resource->flags |= IORESOURCE_STORED;
 	sprintf(buf, " <node %x link %x>",
-		nodeid, link);
+		nodeid, link_num);
 	report_resource_stored(dev, resource, buf);
 }
 
@@ -479,18 +492,18 @@ extern device_t vga_pri;	// the primary vga device, defined in device.c
 static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
-	unsigned link;
+	struct bus *link;
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
-	for (link = 0; link < dev->links; link++) {
-		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+	for (link = dev->link_list; link; link = link->next) {
+		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if CONFIG_CONSOLE_VGA_MULTI == 1
-			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary,
-				dev->link[link].secondary,dev->link[link].subordinate);
+			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
+				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */
-			if((vga_pri->bus->secondary >= dev->link[link].secondary ) &&
-				(vga_pri->bus->secondary <= dev->link[link].subordinate )
+			if((vga_pri->bus->secondary >= link->secondary ) &&
+				(vga_pri->bus->secondary <= link->subordinate )
 			)
 #endif
 			break;
@@ -498,13 +511,13 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	}
 
 	/* no VGA card installed */
-	if (link == dev->links)
+	if (link == NULL)
 		return;
 
-	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
 
 	/* allocate a temp resource for the legacy VGA buffer */
-	resource = new_resource(dev, IOINDEX(4, link));
+	resource = new_resource(dev, IOINDEX(4, link->link_num));
 	if(!resource){
 		printk(BIOS_DEBUG, "VGA: %s out of resources.\n", dev_path(dev));
 		return;
@@ -518,7 +531,8 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 static void amdk8_set_resources(device_t dev)
 {
-	unsigned nodeid, link;
+	unsigned nodeid;
+	struct bus *bus;
 	struct resource *res;
 
 	/* Find the nodeid */
@@ -553,9 +567,7 @@ static void amdk8_set_resources(device_t dev)
 
 	compact_resources(dev);
 
-	for(link = 0; link < dev->links; link++) {
-		struct bus *bus;
-		bus = &dev->link[link];
+	for(bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			assign_resources(bus);
 		}
@@ -909,7 +921,7 @@ static void amdk8_domain_set_resources(device_t dev)
 	}
 #endif
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(dev->link_list);
 
 	// FIXME handle interleaved nodes. If you fix this here, please fix
 	// amdfam10, too.
@@ -1066,7 +1078,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		}
 #endif
 	}
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 
 }
 
@@ -1078,7 +1090,7 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
 
 	/* Tune the hypertransport transaction for best performance.
 	 * Including enabling relaxed ordering if it is safe.
@@ -1091,12 +1103,12 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 			u32 httc;
 			httc = pci_read_config32(f0_dev, HT_TRANSACTION_CONTROL);
 			httc &= ~HTTC_RSP_PASS_PW;
-			if (!dev->link[0].disable_relaxed_ordering) {
+			if (!dev->link_list->disable_relaxed_ordering) {
 				httc |= HTTC_RSP_PASS_PW;
 			}
 			printk(BIOS_SPEW, "%s passpw: %s\n",
 				dev_path(dev),
-				(!dev->link[0].disable_relaxed_ordering)?
+				(!dev->link_list->disable_relaxed_ordering)?
 				"enabled":"disabled");
 			pci_write_config32(f0_dev, HT_TRANSACTION_CONTROL, httc);
 		}
@@ -1112,6 +1124,42 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	  = amdk8_domain_scan_bus,
 	.ops_pci_bus	  = &pci_cf8_conf1,
 };
+
+static void add_more_links(device_t dev, unsigned total_links)
+{
+	struct bus *link, *last = NULL;
+	int link_num;
+
+	for (link = dev->link_list; link; link = link->next)
+		last = link;
+
+	if (last) {
+		int links = total_links - last->link_num;
+		link_num = last->link_num;
+		if (links > 0) {
+			link = malloc(links*sizeof(*link));
+			if (!link)
+				die("Couldn't allocate more links!\n");
+			memset(link, 0, links*sizeof(*link));
+			last->next = link;
+		}
+	}
+	else {
+		link_num = -1;
+		link = malloc(total_links*sizeof(*link));
+		memset(link, 0, total_links*sizeof(*link));
+		dev->link_list = link;
+	}
+
+	for (link_num = link_num + 1; link_num < total_links; link_num++) {
+		link->link_num = link_num;
+		link->dev = dev;
+		link->next = link + 1;
+		last = link;
+		link = link->next;
+	}
+	last->next = NULL;
+}
 
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
@@ -1165,7 +1213,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	}
 
 	/* Find which cpus are present */
-	cpu_bus = &dev->link[0];
+	cpu_bus = dev->link_list;
 	for(i = 0; i < sysconf.nodes; i++) {
 		device_t cpu_dev, cpu;
 		struct device_path cpu_path;
@@ -1187,11 +1235,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			 */
 			dev_f0 = dev_find_slot(0, PCI_DEVFN(0x18+i,0));
 			if(dev_f0) {
-				dev_f0->links = 3;
-				for(local_j=0;local_j<3;local_j++) {
-					dev_f0->link[local_j].link = local_j;
-					dev_f0->link[local_j].dev = dev_f0;
-				}
+				add_more_links(dev_f0, 3);
 			}
 		}
 
@@ -1290,7 +1334,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 static void cpu_bus_init(device_t dev)
 {
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

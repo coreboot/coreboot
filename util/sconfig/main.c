@@ -278,10 +278,14 @@ void add_register(struct device *dev, char *name, char *val) {
 }
 
 static void pass0(FILE *fil, struct device *ptr) {
+	if (ptr->type == device && ptr->id == 0)
+		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
 		fprintf(fil, "struct device %s;\n", ptr->name);
 		if (ptr->rescnt > 0)
 			fprintf(fil, "struct resource %s_res[];\n", ptr->name);
+		if (ptr->children || ptr->multidev)
+			fprintf(fil, "struct bus %s_links[];\n", ptr->name);
 	}
 	if ((ptr->type == device) && (ptr->id != 0) && ptr->used)
 		fprintf(fil, "struct device %s;\n", ptr->aliased_name);
@@ -291,7 +295,7 @@ static void pass1(FILE *fil, struct device *ptr) {
 	if (!ptr->used && (ptr->type == device)) {
 		fprintf(fil, "struct device %s = {\n", ptr->name);
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops)?(ptr->ops):"0");
-		fprintf(fil, "\t.bus = &%s.link[%d],\n", ptr->bus->name, ptr->bus->link);
+		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name, ptr->bus->link);
 		fprintf(fil, "\t.path = {");
 		fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
 		fprintf(fil, "},\n");
@@ -301,33 +305,10 @@ static void pass1(FILE *fil, struct device *ptr) {
 			fprintf(fil, "\t.resource_list = &%s_res[0],\n", ptr->name);
 		}
 		int link = 0;
-		fprintf(fil, "\t.link = {\n");
-		if (ptr->multidev) {
-			struct device *d = ptr;
-			while (d) {
-				if (device_match(d, ptr)) {
-					fprintf(fil, "\t\t[%d] = {\n", d->link);
-					fprintf(fil, "\t\t\t.link = %d,\n", d->link);
-					fprintf(fil, "\t\t\t.dev = &%s,\n", d->name);
-					if (d->children)
-						fprintf(fil, "\t\t\t.children = &%s,\n", d->children->name);
-					fprintf(fil, "\t\t},\n");
-					link++;
-				}
-				d = d->next_sibling;
-			}
-		} else {
-			if (ptr->children) {
-				fprintf(fil, "\t\t[0] = {\n");
-				fprintf(fil, "\t\t\t.link = 0,\n");
-				fprintf(fil, "\t\t\t.dev = &%s,\n", ptr->name);
-				fprintf(fil, "\t\t\t.children = &%s,\n", ptr->children->name);
-				fprintf(fil, "\t\t},\n");
-				link++;
-			}
-		}
-		fprintf(fil, "\t},\n");
-		fprintf(fil, "\t.links = %d,\n", link);
+		if (ptr->children || ptr->multidev)
+			fprintf(fil, "\t.link_list = &%s_links[0],\n", ptr->name);
+		else
+			fprintf(fil, "\t.link_list = NULL,\n", ptr->name);
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 		if (ptr->chip->chiph_exists) {
@@ -355,6 +336,37 @@ static void pass1(FILE *fil, struct device *ptr) {
 			r = r->next;
 		}
 		fprintf(fil, "\t };\n");
+	}
+	if (!ptr->used && ptr->type == device && (ptr->children || ptr->multidev)) {
+		fprintf(fil, "struct bus %s_links[] = {\n", ptr->name);
+		if (ptr->multidev) {
+			struct device *d = ptr;
+			while (d) {
+				if (device_match(d, ptr)) {
+					fprintf(fil, "\t\t[%d] = {\n", d->link);
+					fprintf(fil, "\t\t\t.link_num = %d,\n", d->link);
+					fprintf(fil, "\t\t\t.dev = &%s,\n", d->name);
+					if (d->children)
+						fprintf(fil, "\t\t\t.children = &%s,\n", d->children->name);
+					if (device_match(d->next_sibling, ptr))
+						fprintf(fil, "\t\t\t.next=&%s_links[%d],\n", d->name, d->link+1);
+					else
+						fprintf(fil, "\t\t\t.next = NULL,\n");
+					fprintf(fil, "\t\t},\n");
+				}
+				d = d->next_sibling;
+			}
+		} else {
+			if (ptr->children) {
+				fprintf(fil, "\t\t[0] = {\n");
+				fprintf(fil, "\t\t\t.link_num = 0,\n");
+				fprintf(fil, "\t\t\t.dev = &%s,\n", ptr->name);
+				fprintf(fil, "\t\t\t.children = &%s,\n", ptr->children->name);
+				fprintf(fil, "\t\t\t.next = NULL,\n");
+				fprintf(fil, "\t\t},\n");
+			}
+		}
+		fprintf(fil, "\t};\n");
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {

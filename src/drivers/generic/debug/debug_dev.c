@@ -85,7 +85,7 @@ static void print_cpuid(void)
 static void print_smbus_regs(struct device *dev)
 {
 	int j;
-	printk(BIOS_DEBUG, "smbus: %s[%d]->", dev_path(dev->bus->dev), dev->bus->link);
+	printk(BIOS_DEBUG, "smbus: %s[%d]->", dev_path(dev->bus->dev), dev->bus->link_num);
 	printk(BIOS_DEBUG, "%s", dev_path(dev));
 	for(j = 0; j < 256; j++) {
 		int status;
@@ -107,22 +107,22 @@ static void print_smbus_regs(struct device *dev)
 static void print_smbus_regs_all(struct device *dev)
 {
 	struct device *child;
-	int i;
+	struct bus *link;
 	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
 	{
 		// Here don't need to call smbus_set_link, because we scan it from top to down
 		if( dev->bus->dev->path.type == DEVICE_PATH_I2C) { // it's under i2c MUX so set mux at first
 			if(ops_smbus_bus(get_pbus_smbus(dev->bus->dev))) {
 				if(dev->bus->dev->ops && dev->bus->dev->ops->set_link)
-					dev->bus->dev->ops->set_link(dev->bus->dev, dev->bus->link);
+					dev->bus->dev->ops->set_link(dev->bus->dev, dev->bus->link_num);
 			}
 		}
 
 		if(ops_smbus_bus(get_pbus_smbus(dev))) print_smbus_regs(dev);
 	}
 
-	for(i=0; i< dev->links; i++) {
-		for (child = dev->link[i].children; child; child = child->sibling) {
+	for(link = dev->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling) {
 			print_smbus_regs_all(child);
         	}
 	}

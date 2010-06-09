@@ -25,7 +25,7 @@ static void amd8131_walk_children(struct bus *bus,
 			continue;
 		}
 		if (child->hdr_type == PCI_HEADER_TYPE_BRIDGE) {
-			amd8131_walk_children(&child->link[0], visit, ptr);
+			amd8131_walk_children(child->link_list, visit, ptr);
 		}
 		visit(child, ptr);
 	}

@@ -40,8 +40,9 @@ struct device_operations {
 struct bus {
 	device_t 	dev;		/* This bridge device */
 	device_t 	children;	/* devices behind this bridge */
+	struct bus	*next;		/* The next bridge on this device */
 	unsigned	bridge_ctrl;	/* Bridge control register */
-	unsigned char	link;		/* The index of this link */
+	unsigned char	link_num;	/* The index of this link */
 	uint16_t	secondary; 	/* secondary bus number */
 	uint16_t	subordinate;	/* max subordinate bus number */
 	unsigned char   cap;		/* PCi capability offset */
@@ -49,8 +50,6 @@ struct bus {
 	unsigned	disable_relaxed_ordering : 1;
 };
 
-#define MAX_RESOURCES 24
-#define MAX_LINKS    8
 /*
  * There is one device structure for each slot-number/function-number
  * combination:
@@ -79,9 +78,7 @@ struct device {
 	/* links are (downstream) buses attached to the device, usually a leaf
 	 * device with no children has 0 buses attached and a bridge has 1 bus
 	 */
-	struct bus link[MAX_LINKS];
-	/* number of buses attached to the device */
-	unsigned int links;
+	struct bus *link_list;
 
 	struct device_operations *ops;
 	const struct chip_operations *chip_ops;
@@ -96,6 +93,7 @@ extern struct device	dev_root;
 extern struct device	*all_devices;	/* list of all devices */
 
 extern struct resource	*free_resources;
+extern struct bus	*free_links;
 
 /* Generic device interface functions */
 device_t alloc_dev(struct bus *parent, struct device_path *path);

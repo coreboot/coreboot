@@ -130,8 +130,8 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
         uint32_t pci_tolm;
   printk(BIOS_SPEW, "%s\n", __func__);
-        pci_tolm = find_pci_tolm(&dev->link[0]);
-	mc_dev = dev->link[0].children;
+        pci_tolm = find_pci_tolm(dev->link_list);
+	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
 		//		unsigned char rambits;
@@ -168,7 +168,7 @@ static void pci_domain_set_resources(device_t dev)
 		idx = 10;
 		ram_resource(dev, idx++, 0, tolmk);
 	}
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 #if 0

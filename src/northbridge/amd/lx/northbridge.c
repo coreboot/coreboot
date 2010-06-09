@@ -318,7 +318,6 @@ static void northbridge_init(device_t dev)
 
 static void northbridge_set_resources(struct device *dev)
 {
-	unsigned link;
 	uint8_t line;
 
 #if 0
@@ -331,9 +330,8 @@ static void northbridge_set_resources(struct device *dev)
 	}
 #endif
 
-	for (link = 0; link < dev->links; link++) {
-		struct bus *bus;
-		bus = &dev->link[link];
+	struct bus *bus;
+	for (bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
 			     bus->secondary);
@@ -402,7 +400,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
-	mc_dev = dev->link[0].children;
+	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		tomk = get_systop() / 1024;
 		/* Report the memory regions
@@ -418,7 +416,7 @@ static void pci_domain_set_resources(device_t dev)
 #endif
 	}
 
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 static void pci_domain_enable(device_t dev)
@@ -452,7 +450,7 @@ static void cpu_bus_init(device_t dev)
 {
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

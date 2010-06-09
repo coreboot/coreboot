@@ -205,16 +205,16 @@ static void mcp55_lpc_read_resources(device_t dev)
  */
 static void mcp55_lpc_enable_childrens_resources(device_t dev)
 {
-	unsigned link;
 	uint32_t reg, reg_var[4];
 	int i;
 	int var_num = 0;
+	struct bus *link;
 
 	reg = pci_read_config32(dev, 0xa0);
 
-	for (link = 0; link < dev->links; link++) {
+	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
-		for (child = dev->link[link].children; child; child = child->sibling) {
+		for (child = link->children; child; child = child->sibling) {
 			enable_resources(child);
 			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;

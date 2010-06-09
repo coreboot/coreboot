@@ -233,7 +233,7 @@ static void cn400_domain_set_resources(device_t dev)
 
 	printk(BIOS_SPEW, "Entering %s.\n", __func__);
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				 PCI_DEVICE_ID_VIA_CN400_MEMCTRL, 0);
 
@@ -267,7 +267,7 @@ static void cn400_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 768,
 			     (tolmk - 768 - CONFIG_VIDEO_MB * 1024));
 	}
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 
 	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
@@ -276,7 +276,7 @@ static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 {
 	printk(BIOS_DEBUG, "Entering %s.\n", __func__);
 
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0, 0), 0xff, max);
 	return max;
 }
 
@@ -290,7 +290,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

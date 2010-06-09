@@ -41,8 +41,7 @@ static unsigned int pxhd_scan_bridge(device_t dev, unsigned int max)
 {
 	int bus_100Mhz = 0;
 
-	dev->link[0].dev = dev;
-	dev->links = 1;
+	dev->link_list->dev = dev;
 
 	get_option(&bus_100Mhz, "pxhd_bus_speed_100");
 	if(bus_100Mhz) {
@@ -58,7 +57,7 @@ static unsigned int pxhd_scan_bridge(device_t dev, unsigned int max)
 		pci_write_config16(dev, 0x40, word);
 
 		/* reset the bus to make the new frequencies effective */
-		pci_bus_reset(&dev->link[0]);
+		pci_bus_reset(dev->link_list);
 	}
 	return pcix_scan_bridge(dev, max);
 }

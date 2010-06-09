@@ -138,7 +138,7 @@ static void pci_domain_set_resources(device_t dev)
 	/* Can we find out how much memory we can use at most
 	 * this way?
 	 */
-	pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 
 	printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
@@ -208,7 +208,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
 
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 	/* Leave some space for ACPI, PIRQ and MP tables */
@@ -326,7 +326,7 @@ static const struct pci_driver mc_driver __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

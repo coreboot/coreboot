@@ -158,8 +158,8 @@ static void pci_domain_set_resources(device_t dev)
 
 	printk(BIOS_SPEW, "Entering vt8623 pci_domain_set_resources.\n");
 
-        pci_tolm = find_pci_tolm(&dev->link[0]);
-	mc_dev = dev->link[0].children;
+        pci_tolm = find_pci_tolm(dev->link_list);
+	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
 		unsigned char rambits;
@@ -201,7 +201,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);		/* first 640k */
 		ram_resource(dev, idx++, 768, tolmk - 768);	/* leave a hole for vga */
 	}
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
@@ -214,7 +214,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(&dev->link[0]);
+        initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

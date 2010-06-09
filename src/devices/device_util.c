@@ -40,7 +40,7 @@
 device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for(child = parent->children; child; child = child->sibling) {
+	for (child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			break;
 		}
@@ -213,7 +213,7 @@ const char *dev_path(device_t dev)
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
-	sprintf(buffer, "%s,%d", dev_path(bus->dev), bus->link);
+	sprintf(buffer, "%s,%d", dev_path(bus->dev), bus->link_num);
 	return buffer;
 }
 
@@ -303,7 +303,7 @@ void compact_resources(device_t dev)
 {
 	struct resource *res, *next, *prev = NULL;
 	/* Move all of the free resources to the end */
-	for(res = dev->resource_list; res; res = next) {
+	for (res = dev->resource_list; res; res = next) {
 		next = res->next;
 		if (!res->flags)
 			free_resource(dev, res, prev);
@@ -323,7 +323,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
 {
 	struct resource *res;
 	/* See if there is a resource with the appropriate index */
-	for(res = dev->resource_list; res; res = res->next) {
+	for (res = dev->resource_list; res; res = res->next) {
 		if (res->index == index)
 			break;
 	}
@@ -496,9 +496,9 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 		buf[0] = '\0';
 		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
 #if CONFIG_PCI_BUS_SEGN_BITS
-			sprintf(buf, "bus %04x:%02x ", dev->bus->secondary>>8, dev->link[0].secondary & 0xff);
+			sprintf(buf, "bus %04x:%02x ", dev->bus->secondary>>8, dev->link_list->secondary & 0xff);
 #else
-			sprintf(buf, "bus %02x ", dev->link[0].secondary);
+			sprintf(buf, "bus %02x ", dev->link_list->secondary);
 #endif
 		}
 		printk(BIOS_DEBUG,
@@ -518,11 +518,11 @@ void search_bus_resources(struct bus *bus,
 	resource_search_t search, void *gp)
 {
 	struct device *curdev;
-	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		struct resource *res;
 		/* Ignore disabled devices */
 		if (!curdev->enabled) continue;
-		for(res = curdev->resource_list; res; res = res->next) {
+		for (res = curdev->resource_list; res; res = res->next) {
 			/* If it isn't the right kind of resource ignore it */
 			if ((res->flags & type_mask) != type) {
 				continue;
@@ -530,7 +530,9 @@ void search_bus_resources(struct bus *bus,
 			/* If it is a subtractive resource recurse */
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus * subbus;
-				subbus = &curdev->link[IOINDEX_SUBTRACTIVE_LINK(res->index)];
+				for (subbus = curdev->link_list; subbus; subbus = subbus->next)
+					if (subbus->link_num == IOINDEX_SUBTRACTIVE_LINK(res->index))
+						break;
 				search_bus_resources(subbus, type_mask, type, search, gp);
 				continue;
 			}
@@ -544,11 +546,11 @@ void search_global_resources(
 	resource_search_t search, void *gp)
 {
 	struct device *curdev;
-	for(curdev = all_devices; curdev; curdev = curdev->next) {
+	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		struct resource *res;
 		/* Ignore disabled devices */
 		if (!curdev->enabled) continue;
-		for(res = curdev->resource_list; res; res = res->next) {
+		for (res = curdev->resource_list; res; res = res->next) {
 			/* If it isn't the right kind of resource ignore it */
 			if ((res->flags & type_mask) != type) {
 				continue;
@@ -579,10 +581,10 @@ void dev_set_enabled(device_t dev, int enable)
 void disable_children(struct bus *bus)
 {
 	device_t child;
-	for(child = bus->children; child; child = child->sibling) {
-		int link;
-		for(link = 0; link < child->links; link++) {
-			disable_children(&child->link[link]);
+	for (child = bus->children; child; child = child->sibling) {
+		struct bus *link;
+		for (link = child->link_list; link; link = link->next) {
+			disable_children(link);
 		}
 		dev_set_enabled(child, 0);
 	}
@@ -590,8 +592,9 @@ void disable_children(struct bus *bus)
 
 static void resource_tree(struct device *root, int debug_level, int depth)
 {
-	int i = 0, link = 0;
+	int i = 0;
 	struct device *child;
+	struct bus *link;
 	struct resource *res;
 	char indent[30];	/* If your tree has more levels, it's wrong. */
 
@@ -599,10 +602,12 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
-	do_printk(debug_level, "%s%s links %x child on link 0", indent,
-		  dev_path(root), root->links);
-	do_printk(debug_level, " %s\n", root->link[0].children ?
-		  dev_path(root->link[0].children) : "NULL");
+ 	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
+ 	if (root->link_list && root->link_list->children)
+ 		do_printk(BIOS_DEBUG, " child on link 0 %s",
+ 			  dev_path(root->link_list->children));
+ 	do_printk(BIOS_DEBUG, "\n");
+
 	for (res = root->resource_list; res; res = res->next) {
 		do_printk(debug_level,
 			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
@@ -612,9 +617,8 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 			  res->flags, res->index);
 	}
 
-	for (link = 0; link < root->links; link++) {
-		for (child = root->link[link].children; child;
-		     child = child->sibling)
+	for (link = root->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling)
 			resource_tree(child, debug_level, depth + 1);
 	}
 }
@@ -640,13 +644,15 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 	char depth_str[20] = "";
 	int i;
 	struct device *sibling;
+	struct bus *link;
+
 	for (i = 0; i < depth; i++)
 		depth_str[i] = ' ';
 	depth_str[i] = '\0';
 	do_printk(debug_level, "%s%s: enabled %d\n",
 		  depth_str, dev_path(dev), dev->enabled);
-	for (i = 0; i < dev->links; i++) {
-		for (sibling = dev->link[i].children; sibling;
+	for (link = dev->link_list; link; link = link->next) {
+		for (sibling = link->children; sibling;
 		     sibling = sibling->sibling)
 			show_devs_tree(sibling, debug_level, depth + 1, i);
 	}

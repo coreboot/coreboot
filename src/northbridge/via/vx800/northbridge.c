@@ -128,7 +128,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	printk(BIOS_SPEW, "Entering vx800 pci_domain_set_resources.\n");
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				 PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
 
@@ -175,7 +175,7 @@ if register with invalid value we set frame buffer size to 32M for default, but 
 		/* Leave a hole for vga, 0xa0000 - 0xc0000 */
 		ram_resource(dev, idx++, 768, (tolmk - 768));
 	}
-	assign_resources(&dev->link[0]);
+	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
@@ -188,7 +188,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	initialize_cpus(&dev->link[0]);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

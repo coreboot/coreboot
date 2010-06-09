@@ -70,7 +70,7 @@ static void *smp_write_config_table(void *v)
 	if (!riser)
 		riser = dev_find_device(0x3388, 0x0022, 0);
 	if (riser) {
-		riser_bus = riser->link[0].secondary;
+		riser_bus = riser->link_list->secondary;
 		printk(BIOS_SPEW, "Riser bus is %x\n", riser_bus);
 		max_pci_bus = riser_bus;
 	}

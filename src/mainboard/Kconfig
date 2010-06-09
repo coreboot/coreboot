@@ -40,6 +40,8 @@ config VENDOR_DIGITAL_LOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
 	bool "EagleLion"
+config VENDOR_ECS
+	bool "ECS"
 config VENDOR_EMULATION
 	bool "Emulation"
 config VENDOR_GETAC
@@ -200,6 +202,11 @@ config MAINBOARD_VENDOR
 	string
 	default "EagleLion"
 	depends on VENDOR_EAGLELION
+
+config MAINBOARD_VENDOR
+	string
+	default "ECS"
+	depends on VENDOR_ECS
 
 config MAINBOARD_VENDOR
 	string
@@ -424,6 +431,7 @@ source "src/mainboard/compaq/Kconfig"
 source "src/mainboard/dell/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
+source "src/mainboard/ecs/Kconfig"
 source "src/mainboard/emulation/Kconfig"
 source "src/mainboard/getac/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"

@@ -15,7 +15,7 @@ chip northbridge/amd/gx2
         		device pci f.2 on end	# IDE Controller
         		device pci f.3 on end 	# Audio
         		device pci f.4 on end	# OHCI
-			device pci f.4 on end	# UHCI
+			device pci f.5 on end	# EHCI
       		end
     	end
 end

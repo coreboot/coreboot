@@ -23,6 +23,12 @@ typedef struct msr_struct
 	unsigned hi;
 } msr_t;
 
+typedef struct msrinit_struct 
+{
+        unsigned index;
+        msr_t msr;
+} msrinit_t;
+
 static inline msr_t rdmsr(unsigned index)
 {
 	msr_t result;

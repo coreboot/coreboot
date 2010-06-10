@@ -623,9 +623,16 @@
 #define SMM_OFFSET	0x80400000	/* above 2GB */
 #define SMM_SIZE	128			/* changed SMM_SIZE from 256 KB to 128 KB */
 
+/* DRAM_TERMINATED affects how the DELAY register is set. */
+#define DRAM_TERMINATED 'T'
+#define DRAM_UNTERMINATED 't'
+/* Bitfield definitions for the DELAY register */
+#define DELAY_UPPER_DISABLE_CLK135	(1 << 23)
+#define DELAY_LOWER_STATUS_MASK		0x7C0
+
 #if !defined(__ROMCC__)  && !defined(ASSEMBLY)
 #if defined(__PRE_RAM__)
-void cpuRegInit(void);
+void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated);
 void SystemPreInit(void);
 #endif
 void cpubug(void);

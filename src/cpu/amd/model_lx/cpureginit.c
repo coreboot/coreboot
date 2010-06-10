@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- *
+ * 
  * Copyright (C) 2006 Indrek Kruusa <indrek.kruusa@artecdesign.ee>
  * Copyright (C) 2006 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
@@ -25,200 +25,156 @@
 ;*	SetDelayControl
 ;*
 ;*************************************************************************/
-static void SetDelayControl(void)
+#include "cpu/x86/msr.h"
+
+
+
+
+/**
+ * Delay Control Settings table from AMD (MCP 0x4C00000F).
+ */
+static const msrinit_t delay_msr_table[] = {
+	{CPU_BC_MSS_ARRAY_CTL0, {.hi = 0x00000000, .lo = 0x2814D352}},
+	{CPU_BC_MSS_ARRAY_CTL1, {.hi = 0x00000000, .lo = 0x1068334D}},
+	{CPU_BC_MSS_ARRAY_CTL2, {.hi = 0x00000106, .lo = 0x83104104}},
+};
+
+
+
+static const struct delay_controls {
+	u8 dimms;
+	u8 devices;
+	u32 slow_hi;
+	u32 slow_low;
+	u32 fast_hi;
+	u32 fast_low;
+} delay_control_table[] = {
+	/* DIMMs Devs Slow (<=333MHz)            Fast (>334MHz) */
+	{   1,     4, 0x0837100FF, 0x056960004,  0x0827100FF, 0x056960004 },
+	{   1,     8, 0x0837100AA, 0x056960004,  0x0827100AA, 0x056960004 },
+	{   1,    16, 0x0837100AA, 0x056960004,  0x082710055, 0x056960004 },
+	{   2,     8, 0x0837100A5, 0x056960004,  0x082710000, 0x056960004 },
+	{   2,    16, 0x0937100A5, 0x056960004,  0x0C27100A5, 0x056960004 },
+	{   2,    20, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{   2,    24, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{   2,    32, 0x0B37100A5, 0x056960004,  0x0B2710000, 0x056960004 },
+};
+
+/*
+ * Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM
+ * in slot 0, but it should be clear for all 2 DIMM settings and if a
+ * single DIMM is in slot 1. Bits 54:52 should always be set to '111'.
+ *
+ * Settings for single DIMM and no VTT termination (like DB800 platform)
+ * 0xF2F100FF 0x56960004
+ * -------------------------------------
+ * ADDR/CTL have 22 ohm series R
+ * DQ/DQM/DQS have 33 ohm series R
+ */
+
+/**
+ * This is Black Magic DRAM timing juju[1].
+ *
+ * DRAM delay depends on CPU clock, memory bus clock, memory bus loading,
+ * memory bus termination, your middle initial (ha! caught you!), GeodeLink
+ * clock rate, and DRAM timing specifications.
+ *
+ * From this the code computes a number which is "known to work". No,
+ * hardware is not an exact science. And, finally, if an FS2 (JTAG debugger)
+ * is hooked up, then just don't do anything. This code was written by a master
+ * of the Dark Arts at AMD and should not be modified in any way.
+ * 
+ * [1] (http://www.thefreedictionary.com/juju)
+ *
+ * @param dimm0 The SMBus address of DIMM 0 (mainboard dependent).
+ * @param dimm1 The SMBus address of DIMM 1 (mainboard dependent).
+ * @param terminated The bus is terminated. (mainboard dependent).
+ */
+static void SetDelayControl(u8 dimm0, u8 dimm1, int terminated)
 {
-	unsigned int msrnum, glspeed;
-	unsigned char spdbyte0, spdbyte1;
+	u32 glspeed;
+	u8 spdbyte0, spdbyte1, dimms, i;
 	msr_t msr;
 
 	glspeed = GeodeLinkSpeed();
 
-	/* fix delay controls for DM and IM arrays */
-	msrnum = CPU_BC_MSS_ARRAY_CTL0;
-	msr.hi = 0;
-	msr.lo = 0x2814D352;
-	wrmsr(msrnum, msr);
+	/* Fix delay controls for DM and IM arrays. */
+	for (i = 0; i < ARRAY_SIZE(delay_msr_table); i++)
+		wrmsr(delay_msr_table[i].index, delay_msr_table[i].msr);
 
-	msrnum = CPU_BC_MSS_ARRAY_CTL1;
-	msr.hi = 0;
-	msr.lo = 0x1068334D;
-	wrmsr(msrnum, msr);
-
-	msrnum = CPU_BC_MSS_ARRAY_CTL2;
-	msr.hi = 0x00000106;
-	msr.lo = 0x83104104;
-	wrmsr(msrnum, msr);
-
-	msrnum = GLCP_FIFOCTL;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLCP_FIFOCTL);
 	msr.hi = 0x00000005;
-	wrmsr(msrnum, msr);
+	wrmsr(GLCP_FIFOCTL, msr);
 
-	/* Enable setting */
-	msrnum = CPU_BC_MSS_ARRAY_CTL_ENA;
+	/* Enable setting. */
 	msr.hi = 0;
 	msr.lo = 0x00000001;
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_BC_MSS_ARRAY_CTL_ENA, msr);
 
-	/* Debug Delay Control Setup Check
-	   Leave it alone if it has been setup. FS2 or something is here. */
-	msrnum = GLCP_DELAY_CONTROLS;
-	msr = rdmsr(msrnum);
-	if (msr.lo & ~(0x7C0)) {
-		return;
-	}
-
-	/*
-	 * Delay Controls based on DIMM loading. UGH!
-	 * # of Devices = Module Width (SPD6) / Device Width(SPD13) * Physical Banks(SPD5)
-	 * Note - We only support module width of 64.
+	/* Debug Delay Control setup check.
+	 * Leave it alone if it has been setup. FS2 or something is here.
 	 */
-	spdbyte0 = spd_read_byte(DIMM0, SPD_PRIMARY_SDRAM_WIDTH);
+	msr = rdmsr(GLCP_DELAY_CONTROLS);
+	if (msr.lo & ~(DELAY_LOWER_STATUS_MASK))
+		return;
+
+	/* Delay Controls based on DIMM loading. UGH!
+	 * Number of devices = module width (SPD 6) / device width (SPD 13)
+	 *                     * physical banks (SPD 5)
+	 *
+	 * Note: We only support a module width of 64.
+	 */
+	dimms = 0;
+	spdbyte0 = spd_read_byte(dimm0, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte0 != 0xFF) {
-		spdbyte0 = (unsigned char)64 / spdbyte0 *
-		    (unsigned char)(spd_read_byte(DIMM0, SPD_NUM_DIMM_BANKS));
+		dimms++;
+		spdbyte0 = (u8)64 / spdbyte0 *
+			   (u8)(spd_read_byte(dimm0, SPD_NUM_DIMM_BANKS));
 	} else {
 		spdbyte0 = 0;
 	}
 
-	spdbyte1 = spd_read_byte(DIMM1, SPD_PRIMARY_SDRAM_WIDTH);
+	spdbyte1 = spd_read_byte(dimm1, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte1 != 0xFF) {
-		spdbyte1 = (unsigned char)64 / spdbyte1 *
-		    (unsigned char)(spd_read_byte(DIMM1, SPD_NUM_DIMM_BANKS));
+		dimms++;
+		spdbyte1 = (u8)64 / spdbyte1 *
+			   (u8)(spd_read_byte(dimm1, SPD_NUM_DIMM_BANKS));
 	} else {
 		spdbyte1 = 0;
 	}
 
-/* The current thinking. Subject to change...
-
-;								   "FUTURE ROBUSTNESS" PROPOSAL
-;								   ----------------------------
-;		DIMM	 Max MBUS					   MC 0x2000001A bits 26:24
-;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting		 vvv
-;-----	-------	 ---------	 ----------------------	 ----------
-;1		 4		 400MHz		 0x82*100FF 0x56960004		  4
-;1		 8		 400MHz		 0x82*100AA 0x56960004		  4
-;1		 16		 400MHz		 0x82*10055 0x56960004		  4
-;
-;2		 4,4	 400MHz		 0x82710000 0x56960004		  4
-;
-;1		 4		 <=333MHz	 0x83*100FF 0x56960004		  3
-;1		 8		 <=333MHz	 0x83*100AA 0x56960004		  3
-;1		 16		 <=333MHz	 0x83*100AA 0x56960004		  3
-;
-;2		 4,4	 <=333MHz	 0x837100A5 0x56960004		  3
-;2		 8,8	 <=333MHz	 0x937100A5 0x56960004		  3
-;
-;=========================================================================
-;* - Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM in slot 0,
-;	 but it should be clear for all 2 DIMM settings and if a single DIMM is in slot 1.
-;	 Bits 54:52 should always be set to '111'.
-
-;No VTT termination
-;-------------------------------------
-;ADDR/CTL have 22 ohm series R
-;DQ/DQM/DQS have 33 ohm series R
-;
-;		DIMM	 Max MBUS
-;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting
-;-----	-------	 ---------	 ----------------------
-;1		 4		 400MHz		 0xF2F100FF 0x56960004		  4			The No VTT changes improve timing.
-;1		 8		 400MHz		 0xF2F100FF 0x56960004		  4
-;1		 4		 <=333MHz	 0xF2F100FF 0x56960004		  3
-;1		 8		 <=333MHz	 0xF2F100FF 0x56960004		  3
-;1		 16		 <=333MHz	 0xF2F100FF 0x56960004		  3
-*/
+	/* Zero GLCP_DELAY_CONTROLS MSR */
 	msr.hi = msr.lo = 0;
 
-	if (spdbyte0 == 0 || spdbyte1 == 0) {
-		/* one dimm solution */
-		if (spdbyte1 == 0) {
-			msr.hi |= 0x000800000;
-		}
-		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 8) {
-			/* large dimm */
+	/* Save some power, disable clock to second DIMM if it is empty. */
+	if (spdbyte1 == 0)
+		msr.hi |= DELAY_UPPER_DISABLE_CLK135;
+
+	spdbyte0 += spdbyte1;
+
+	if ((dimms == 1) && (terminated == DRAM_TERMINATED)) {
+		msr.hi = 0xF2F100FF;
+		msr.lo = 0x56960004;
+	} else for (i = 0; i < ARRAY_SIZE(delay_control_table); i++) {
+		if ((dimms == delay_control_table[i].dimms) &&
+		    (spdbyte0 <= delay_control_table[i].devices)) {
 			if (glspeed < 334) {
-				msr.hi |= 0x0837100AA;
-				msr.lo |= 0x056960004;
+				msr.hi |= delay_control_table[i].slow_hi;
+				msr.lo |= delay_control_table[i].slow_low;
 			} else {
-				msr.hi |= 0x082710055;
-				msr.lo |= 0x056960004;
+				msr.hi |= delay_control_table[i].fast_hi;
+				msr.lo |= delay_control_table[i].fast_low;
 			}
-		} else if (spdbyte0 > 4) {
-			/* medium dimm */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100AA;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0827100AA;
-				msr.lo |= 0x056960004;
-			}
-		} else {
-			/* small dimm */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100FF;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0827100FF;
-				msr.lo |= 0x056960004;
-			}
-		}
-	} else {
-		/* two dimm solution */
-		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 24) {
-			/* huge dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0B37100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0B2710000;
-				msr.lo |= 0x056960004;
-			}
-		} else if (spdbyte0 > 16) {
-			/* large dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0B37100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0B27100A5;
-				msr.lo |= 0x056960004;
-			}
-		} else if (spdbyte0 >= 8) {
-			/* medium dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0937100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0C27100A5;
-				msr.lo |= 0x056960004;
-			}
-		} else {
-			/* small dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x082710000;
-				msr.lo |= 0x056960004;
-			}
+			break;
 		}
 	}
-	print_debug("Try to write GLCP_DELAY_CONTROLS: hi ");
-	print_debug_hex32(msr.hi);
-	print_debug(" and lo ");
-	print_debug_hex32(msr.lo);
-	print_debug("\n");
 	wrmsr(GLCP_DELAY_CONTROLS, msr);
-	print_debug("SetDelayControl done\n");
-	return;
 }
 
 /* ***************************************************************************/
 /* *	cpuRegInit*/
 /* ***************************************************************************/
-void cpuRegInit(void)
+void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 {
 	int msrnum;
 	msr_t msr;
@@ -259,7 +215,7 @@ void cpuRegInit(void)
 
 	/* Set the Delay Control in GLCP */
 	print_debug("Set the Delay Control in GLCP\n");
-	SetDelayControl();
+	SetDelayControl(dimm0, dimm1, terminated);
 
 	/*  Enable RSDC */
 	print_debug("Enable RSDC\n");
@@ -294,12 +250,12 @@ void cpuRegInit(void)
 
 	/* Disable the debug clock to save power. */
 	/* NOTE: leave it enabled for fs2 debug */
-#if 0
-	msrnum = GLCP_DBGCLKCTL;
-	msr.hi = 0;
-	msr.lo = 0;
-	wrmsr(msrnum, msr);
-#endif
+	if (debug_clock_disable && 0) {
+		msrnum = GLCP_DBGCLKCTL;
+		msr.hi = 0;
+		msr.lo = 0;
+		wrmsr(msrnum, msr);
+	}
 
 	/* Setup throttling delays to proper mode if it is ever enabled. */
 	print_debug("Setup throttling delays to proper mode\n");

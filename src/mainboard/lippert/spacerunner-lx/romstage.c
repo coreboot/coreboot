@@ -184,7 +184,7 @@ void main(unsigned long bist)
 
 	pll_reset(ManualConf);
 
-	cpuRegInit();
+	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
 	/* bit1 = on-board IDE is slave, bit0 = Spread Spectrum */
 	if ((err = smc_send_config(SMC_CONFIG))) {

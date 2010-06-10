@@ -44,8 +44,8 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 }
 
 #define ManualConf 0		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x00001490	/* Manual settings for the PLL */
-#define PLLMSRlo 0x02000030
+#define PLLMSRhi 0x000005DD	/* Manual settings for the PLL */
+#define PLLMSRlo 0x00DE60EE
 #define DIMM0 0xA0
 #define DIMM1 0xA2
 
@@ -88,7 +88,7 @@ void main(unsigned long bist)
 
 	pll_reset(ManualConf);
 
-	cpuRegInit();
+	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
 	sdram_initialize(1, memctrl);
 

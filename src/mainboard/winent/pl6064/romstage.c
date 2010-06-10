@@ -90,7 +90,7 @@ void main(unsigned long bist)
 
 	pll_reset(ManualConf);
 
-	cpuRegInit();
+	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
 	sdram_initialize(1, memctrl);
 

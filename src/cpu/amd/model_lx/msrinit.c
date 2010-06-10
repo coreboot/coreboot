@@ -18,13 +18,9 @@
  */
 
 #include <stdlib.h>
+#include "cpu/x86/msr.h"
 
-struct msrinit {
-	u32 msrnum;
-	msr_t msr;
-};
-
-static const struct msrinit msr_table[] =
+static const msrinit_t msr_table[] =
 {
 	{CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, /* Setup access to cache under 1MB.
 								   * Rom Properties: Write Serialize, WriteProtect.
@@ -49,7 +45,7 @@ static void msr_init(void)
 {
 	int i;
 	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
-		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
+		wrmsr(msr_table[i].index, msr_table[i].msr);
 }
 
 

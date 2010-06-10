@@ -348,7 +348,7 @@ static void pass1(FILE *fil, struct device *ptr) {
 					fprintf(fil, "\t\t\t.dev = &%s,\n", d->name);
 					if (d->children)
 						fprintf(fil, "\t\t\t.children = &%s,\n", d->children->name);
-					if (device_match(d->next_sibling, ptr))
+					if (d->next_sibling && device_match(d->next_sibling, ptr))
 						fprintf(fil, "\t\t\t.next=&%s_links[%d],\n", d->name, d->link+1);
 					else
 						fprintf(fil, "\t\t\t.next = NULL,\n");

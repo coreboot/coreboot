@@ -400,7 +400,11 @@ static void
 fill_schedule (td_t *td, endpoint_t *ep, int length, unsigned char *data,
 	       int *toggle)
 {
-	td->pid = ep->direction;
+	switch (ep->direction) {
+		case IN: td->pid = UHCI_IN; break;
+		case OUT: td->pid = UHCI_OUT; break;
+		case SETUP: td->pid = UHCI_SETUP; break;
+	}
 	td->dev_addr = ep->dev->address;
 	td->endp = ep->endpoint & 0xf;
 	td->maxlen = maxlen (length);
@@ -507,7 +511,11 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 		tds[i].queue_head = 0;
 		tds[i].depth_first = 0;
 
-		tds[i].pid = ep->direction;
+		switch (ep->direction) {
+			case IN: tds[i].pid = UHCI_IN; break;
+			case OUT: tds[i].pid = UHCI_OUT; break;
+			case SETUP: tds[i].pid = UHCI_SETUP; break;
+		}
 		tds[i].dev_addr = ep->dev->address;
 		tds[i].endp = ep->endpoint & 0xf;
 		tds[i].maxlen = maxlen (reqsize);

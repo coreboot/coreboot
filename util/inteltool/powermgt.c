@@ -299,6 +299,69 @@ static const io_register_t ich4_pm_registers[] = {
 	{ 0x7c, 4, "RESERVED" },
 };
 
+static const io_register_t ich2_pm_registers[] = {
+	{ 0x00, 2, "PM1_STS" },
+	{ 0x02, 2, "PM1_EN" },
+	{ 0x04, 4, "PM1_CNT" },
+	{ 0x08, 4, "PM1_TMR" },
+	{ 0x0c, 4, "RESERVED" },
+	{ 0x10, 4, "PROC_CNT" },
+#if DANGEROUS_REGISTERS
+	/* This register returns 0 on read, but reading it may cause
+	 * the system to enter C2 state, which might hang the system.
+	 */
+	{ 0x14, 1, "LV2" },
+	{ 0x15, 1, "RESERVED" },
+	{ 0x16, 2, "RESERVED" },
+#endif
+	{ 0x18, 4, "RESERVED" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 2, "GPE0_STS" },
+	{ 0x2a, 2, "GPE0_EN" },
+	{ 0x2c, 2, "GPE1_STS" },
+	{ 0x2e, 2, "GPE1_EN" },
+	{ 0x30, 2, "SMI_EN" },
+	{ 0x32, 2, "RESERVED" },
+	{ 0x34, 2, "SMI_STS" },
+	{ 0x36, 2, "RESERVED" },
+	{ 0x38, 4, "RESERVED" },
+	{ 0x3c, 4, "RESERVED" },
+	{ 0x40, 2, "MON_SMI_STS" },
+	{ 0x42, 2, "RESERVED" },
+	{ 0x44, 2, "DEV_TRP_STS" },
+	{ 0x46, 2, "RESERVED" },
+	{ 0x48, 2, "TRP_EN" },
+	{ 0x4A, 2, "RESERVED" },
+	{ 0x4c, 2, "BUS_ADDR_TRACK" },
+	{ 0x4e, 1, "BUS_CYC_TRACK" },
+	{ 0x4f, 1, "RESERVED" },
+	{ 0x50, 4, "RESERVED" },
+	{ 0x54, 4, "RESERVED" },
+	{ 0x58, 4, "RESERVED" },
+	{ 0x5c, 4, "RESERVED" },
+	/* Here start the TCO registers */
+	{ 0x60, 1, "TCO_RLD" },
+	{ 0x61, 1, "TCO_TMR" },
+	{ 0x62, 1, "TCO_DAT_IN" },
+	{ 0x63, 1, "TCO_DAT_OUT" },
+	{ 0x64, 2, "TCO1_STS" },
+	{ 0x66, 2, "TCO2_STS" },
+	{ 0x68, 2, "TCO1_CNT" },
+	{ 0x6a, 2, "TCO2_CNT" },
+	{ 0x6c, 1, "TCO_MESSAGE1" },
+	{ 0x6d, 1, "TCO_MESSAGE2" },
+	{ 0x6e, 1, "TCO_WDSTATUS" },
+	{ 0x6f, 1, "RESERVED" },
+	{ 0x70, 1, "SW_IRQ_GEN" },
+	{ 0x71, 1, "RESERVED" },
+	{ 0x72, 2, "RESERVED" },
+	{ 0x74, 4, "RESERVED" },
+	{ 0x78, 4, "RESERVED" },
+	{ 0x7c, 4, "RESERVED" },
+};
+
 static const io_register_t ich0_pm_registers[] = {
 	{ 0x00, 2, "PM1_STS" },
 	{ 0x02, 2, "PM1_EN" },
@@ -442,6 +505,11 @@ int print_pmbase(struct pci_dev *sb)
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich4_pm_registers;
 		size = ARRAY_SIZE(ich4_pm_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH2:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = ich2_pm_registers;
+		size = ARRAY_SIZE(ich2_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH0:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;

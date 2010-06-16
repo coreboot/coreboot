@@ -49,6 +49,7 @@ int print_epbar(struct pci_dev *nb)
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82810E_MC:
 	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have EPBAR.\n");
 		return 1;
@@ -102,6 +103,7 @@ int print_dmibar(struct pci_dev *nb)
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82810E_MC:
 		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
 	default:
@@ -156,6 +158,7 @@ int print_pciexbar(struct pci_dev *nb)
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82810E_MC:
 		printf("Error: This northbrigde does not have PCIEXBAR.\n");
 		return 1;
 	default:

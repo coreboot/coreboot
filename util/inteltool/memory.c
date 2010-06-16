@@ -50,6 +50,7 @@ int print_mchbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82443LX:
 	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:
+	case PCI_DEVICE_ID_INTEL_82810E_MC:
 	case PCI_DEVICE_ID_INTEL_82810DC:
 	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have MCHBAR.\n");

@@ -283,8 +283,8 @@ static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 static struct device_operations pci_domain_ops = {
 	.read_resources   = cn400_domain_read_resources,
 	.set_resources    = cn400_domain_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
+	.enable_resources = NULL,
+	.init             = NULL,
 	.scan_bus         = cn400_domain_scan_bus,
 };
 

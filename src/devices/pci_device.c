@@ -621,7 +621,6 @@ void pci_bus_enable_resources(struct device *dev)
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
 }
 
 void pci_bus_reset(struct bus *bus)

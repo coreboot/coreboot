@@ -322,16 +322,10 @@ static void i82801dx_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void i82801dx_lpc_enable_resources(device_t dev)
-{
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static struct device_operations lpc_ops = {
 	.read_resources		= i82801dx_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= i82801dx_lpc_enable_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801dx_enable,

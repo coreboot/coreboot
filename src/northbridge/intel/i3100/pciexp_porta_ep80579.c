@@ -64,7 +64,6 @@ static void pcie_bus_enable_resources(struct device *dev)
 		dev->command |= PCI_COMMAND_MEMORY;
 	}
 	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
 }
 
 

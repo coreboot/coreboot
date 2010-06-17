@@ -222,12 +222,6 @@ static void ck804_lpc_read_resources(device_t dev)
  * This function is called by the global enable_resources() indirectly via the
  * device_operation::enable_resources() method of devices.
  *
- * Indirect mutual recursion:
- *      enable_childrens_resources() -> enable_resources()
- *      enable_resources() -> device_operation::enable_resources()
- *      device_operation::enable_resources() -> enable_children_resources()
- *
- * @param dev The device whose children's resources are to be enabled.
  */
 static void ck804_lpc_enable_childrens_resources(device_t dev)
 {
@@ -240,7 +234,6 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
 		for (child = link->children; child; child = child->sibling) {
-			enable_resources(child);
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for (res = child->resource_list; res; res = res->next) {

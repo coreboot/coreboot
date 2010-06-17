@@ -574,12 +574,6 @@ static void amdk8_set_resources(device_t dev)
 	}
 }
 
-static void amdk8_enable_resources(device_t dev)
-{
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void mcf0_control_init(struct device *dev)
 {
 #if 0
@@ -593,7 +587,7 @@ static void mcf0_control_init(struct device *dev)
 static struct device_operations northbridge_operations = {
 	.read_resources	  = amdk8_read_resources,
 	.set_resources	  = amdk8_set_resources,
-	.enable_resources = amdk8_enable_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init		  = mcf0_control_init,
 	.scan_bus	  = amdk8_scan_chains,
 	.enable		  = 0,
@@ -1119,8 +1113,8 @@ static u32 amdk8_domain_scan_bus(device_t dev, u32 max)
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = amdk8_domain_read_resources,
 	.set_resources	  = amdk8_domain_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init		  = 0,
+	.enable_resources = NULL,
+	.init		  = NULL,
 	.scan_bus	  = amdk8_domain_scan_bus,
 	.ops_pci_bus	  = &pci_cf8_conf1,
 };

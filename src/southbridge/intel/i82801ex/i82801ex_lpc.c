@@ -335,8 +335,6 @@ static void i82801ex_lpc_enable_resources(device_t dev)
 	gpio_cntl = pci_read_config8(dev, 0x5c);
 	gpio_cntl |= (1 << 4);
 	pci_write_config8(dev, 0x5c, gpio_cntl);
-
-	enable_childrens_resources(dev);
 }
 
 static struct pci_operations lops_pci = {

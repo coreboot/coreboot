@@ -505,17 +505,6 @@ static void vt8237r_read_resources(device_t dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-/**
- * The VT8237R is not a PCI bridge and has no resources of its own (other
- * than standard PC I/O addresses), however it does control the ISA bus
- * and so we need to manually call enable childrens resources on that bus.
- */
-static void vt8237r_enable_resources(device_t dev)
-{
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void init_keyboard(struct device *dev)
 {
 	u8 regval = pci_read_config8(dev, 0x51);
@@ -535,16 +524,16 @@ static void southbridge_init_common(struct device *dev)
 static const struct device_operations vt8237r_lpc_ops_s = {
 	.read_resources		= vt8237r_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= vt8237r_enable_resources,
-	.init			= &vt8237s_init,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= vt8237s_init,
 	.scan_bus		= scan_static_bus,
 };
 
 static const struct device_operations vt8237r_lpc_ops_r = {
 	.read_resources		= vt8237r_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= vt8237r_enable_resources,
-	.init			= &vt8237r_init,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= vt8237r_init,
 	.scan_bus		= scan_static_bus,
 };
 

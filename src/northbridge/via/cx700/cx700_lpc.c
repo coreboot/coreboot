@@ -270,7 +270,6 @@ static void cx700_enable_resources(device_t dev)
 {
 	/* Enable SuperIO decoding */
 	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
 }
 
 static void cx700_lpc_init(struct device *dev)

@@ -163,8 +163,8 @@ static u32 e7525_domain_scan_bus(device_t dev, u32 max)
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
 	.set_resources    = pci_domain_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
+	.enable_resources = NULL,
+	.init             = NULL,
 	.scan_bus         = e7525_domain_scan_bus,
 	.ops_pci_bus      = &pci_cf8_conf1, /* Do we want to use the memory mapped space here? */
 };

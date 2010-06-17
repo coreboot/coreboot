@@ -47,17 +47,10 @@ static void isa_init(struct device *dev)
 {
 }
 
-static void cs5530_pci_dev_enable_resources(device_t dev)
-{
-	// TODO: Needed?
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static struct device_operations isa_ops = {
 	.read_resources		= cs5530_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= cs5530_pci_dev_enable_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= isa_init,
 	.enable			= 0,
 	.scan_bus		= scan_static_bus,

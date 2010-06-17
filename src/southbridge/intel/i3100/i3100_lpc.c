@@ -404,8 +404,6 @@ static void i3100_lpc_enable_resources(device_t dev)
 
 	/* Enable the RCBA */
 	pci_write_config32(dev, RCBA, pci_read_config32(dev, RCBA) | (1 << 0));
-
-	enable_childrens_resources(dev);
 }
 
 static struct pci_operations lops_pci = {

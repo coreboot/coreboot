@@ -32,7 +32,7 @@
  * that encompass the resources for the entire system.
  * @param root Pointer to the device structure for the system root device
  */
-void root_dev_read_resources(device_t root)
+static void root_dev_read_resources(device_t root)
 {
 	printk(BIOS_ERR, "%s should never be called.\n", __func__);
 }
@@ -44,7 +44,7 @@ void root_dev_read_resources(device_t root)
  * and every device under it which are all of the devices.
  * @param root Pointer to the device structure for the system root device
  */
-void root_dev_set_resources(device_t root)
+static void root_dev_set_resources(device_t root)
 {
 	printk(BIOS_ERR, "%s should never be called.\n", __func__);
 }
@@ -115,33 +115,8 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 	return max;
 }
 
-/**
- * @brief Enable resources for children devices
- *
- * @param dev the device whos children's resources are to be enabled
- *
- * This function is called by the global enable_resource() indirectly via the
- * device_operation::enable_resources() method of devices.
- *
- * Indirect mutual recursion:
- *	enable_childrens_resources() -> enable_resources()
- *	enable_resources() -> device_operation::enable_resources()
- *	device_operation::enable_resources() -> enable_children_resources()
- */
-void enable_childrens_resources(device_t dev)
+static void root_dev_enable_resources(device_t dev)
 {
-	struct bus *link;
-	for(link = dev->link_list; link; link = link->next) {
-		device_t child;
-		for(child = link->children; child; child = child->sibling) {
-			enable_resources(child);
-		}
-	}
-}
-
-void root_dev_enable_resources(device_t dev)
-{
-	enable_childrens_resources(dev);
 }
 
 /**
@@ -152,16 +127,16 @@ void root_dev_enable_resources(device_t dev)
  *
  * This function is the default scan_bus() method of the root device.
  */
-unsigned int root_dev_scan_bus(device_t root, unsigned int max)
+static unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
 	return scan_static_bus(root, max);
 }
 
-void root_dev_init(device_t root)
+static void root_dev_init(device_t root)
 {
 }
 
-void root_dev_reset(struct bus *bus)
+static void root_dev_reset(struct bus *bus)
 {
 	printk(BIOS_INFO, "Reseting board...\n");
 	hard_reset();

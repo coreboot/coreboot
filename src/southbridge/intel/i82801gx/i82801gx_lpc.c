@@ -481,12 +481,6 @@ static void i82801gx_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void i82801gx_lpc_enable_resources(device_t dev)
-{
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
@@ -505,7 +499,7 @@ static struct pci_operations pci_ops = {
 static struct device_operations device_ops = {
 	.read_resources		= i82801gx_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= i82801gx_lpc_enable_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,

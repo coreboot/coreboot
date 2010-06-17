@@ -87,17 +87,10 @@ static void cs5535_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void cs5535_pci_dev_enable_resources(device_t dev)
-{
-	printk(BIOS_DEBUG, "%s()\n", __func__);
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static struct device_operations southbridge_ops = {
 	.read_resources   = cs5535_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = cs5535_pci_dev_enable_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init             = southbridge_init,
 	.enable           = southbridge_enable,
 	.scan_bus         = scan_static_bus,

@@ -322,16 +322,6 @@ static void vx800_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void vx800_enable_resources(device_t dev)
-{
-	/* vx800 is not a pci bridge and has no resources of its own (other than
-	   standard PC i/o addresses). however it does control the isa bus and so
-	   we need to manually call enable childrens resources on that bus */
-	/* TODO: do we even care about ISA? If so, for what? SuperIO on LPC bus */
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void southbridge_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "vx800 sb init\n");
@@ -375,8 +365,8 @@ static void southbridge_init(struct device *dev)
 static struct device_operations vx800_lpc_ops = {
 	.read_resources = vx800_read_resources,
 	.set_resources = vx800_set_resources,
-	.enable_resources = vx800_enable_resources,
-	.init = &southbridge_init,
+	.enable_resources = pci_dev_enable_resources,
+	.init = southbridge_init,
 	.scan_bus = scan_static_bus,
 };
 

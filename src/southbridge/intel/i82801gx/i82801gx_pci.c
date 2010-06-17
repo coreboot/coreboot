@@ -110,8 +110,6 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 
 	/* This is the reason we need our own pci_bus_enable_resources */
 	ich_pci_dev_enable_resources(dev);
-
-	enable_childrens_resources(dev);
 }
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)

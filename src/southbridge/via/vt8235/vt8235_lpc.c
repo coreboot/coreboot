@@ -241,14 +241,6 @@ static void vt8235_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-static void vt8235_enable_resources(device_t dev)
-{
-	/* vt8235 is not a pci bridge and has no resources of its own (other than standard PC i/o addresses)
-           however it does control the isa bus and so we need to manually call enable childrens resources on that bus */
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void southbridge_init(struct device *dev)
 {
 	vt8235_init(dev);
@@ -258,8 +250,8 @@ static void southbridge_init(struct device *dev)
 static struct device_operations vt8235_lpc_ops = {
 	.read_resources   = vt8235_read_resources,
 	.set_resources    = vt8235_set_resources,
-	.enable_resources = vt8235_enable_resources,
-	.init             = &southbridge_init,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = southbridge_init,
 	.scan_bus         = scan_static_bus,
 };
 

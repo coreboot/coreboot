@@ -106,12 +106,6 @@ static void amd8111_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void amd8111_lpc_enable_resources(device_t dev)
-{
-	pci_dev_enable_resources(dev);
-	enable_childrens_resources(dev);
-}
-
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x70,
@@ -125,7 +119,7 @@ static struct pci_operations lops_pci = {
 static struct device_operations lpc_ops  = {
 	.read_resources   = amd8111_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = amd8111_lpc_enable_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
 	.enable           = amd8111_enable,

@@ -170,8 +170,6 @@ void cardbus_enable_resources(device_t dev)
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	pci_dev_enable_resources(dev);
-
-	enable_childrens_resources(dev);
 }
 
 struct device_operations default_cardbus_ops_bus = {

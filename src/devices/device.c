@@ -782,33 +782,34 @@ void assign_resources(struct bus *bus)
 }
 
 /**
- * @brief Enable the resources for a specific device
+ * @brief Enable the resources for devices on a link
  *
- * @param dev the device whose resources are to be enabled
+ * @param link the link whose devices' resources are to be enabled
  *
  * Enable resources of the device by calling the device specific
  * enable_resources() method.
  *
  * The parent's resources should be enabled first to avoid having enabling
  * order problem. This is done by calling the parent's enable_resources()
- * method and let that method to call it's children's enable_resoruces()
- * method via the (global) enable_childrens_resources().
+ * method before its childrens' enable_resources() methods.
  *
- * Indirect mutual recursion:
- *	enable_resources() -> device_operations::enable_resource()
- *	device_operations::enable_resource() -> enable_children_resources()
- *	enable_children_resources() -> enable_resources()
  */
-void enable_resources(struct device *dev)
+static void enable_resources(struct bus *link)
 {
-	if (!dev->enabled) {
-		return;
+	struct device *dev;
+	struct bus *c_link;
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		if (dev->enabled && dev->ops && dev->ops->enable_resources) {
+			dev->ops->enable_resources(dev);
+		}
 	}
-	if (!dev->ops || !dev->ops->enable_resources) {
-		printk(BIOS_ERR, "%s missing enable_resources\n", dev_path(dev));
-		return;
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		for (c_link = dev->link_list; c_link; c_link = c_link->next) {
+			enable_resources(c_link);
+		}
 	}
-	dev->ops->enable_resources(dev);
 }
 
 /**
@@ -1036,39 +1037,77 @@ void dev_configure(void)
  */
 void dev_enable(void)
 {
+	struct bus *link;
+
 	printk(BIOS_INFO, "Enabling resources...\n");
 
 	/* now enable everything. */
-	enable_resources(&dev_root);
+	for (link = dev_root.link_list; link; link = link->next)
+		enable_resources(link);
 
 	printk(BIOS_INFO, "done.\n");
 }
 
 /**
- * @brief Initialize all devices in the global device list.
+ * @brief Initialize a specific device
  *
- * Starting at the first device on the global device link list,
- * walk the list and call the device's init() method to do deivce
- * specific setup.
+ * @param dev the device to be initialized
+ *
+ * The parent should be initialized first to avoid having an ordering
+ * problem. This is done by calling the parent's init()
+ * method before its childrens' init() methods.
+ *
+ */
+static void init_dev(struct device *dev)
+{
+	if (!dev->enabled) {
+		return;
+	}
+
+	if (!dev->initialized && dev->ops && dev->ops->init) {
+		if (dev->path.type == DEVICE_PATH_I2C) {
+			printk(BIOS_DEBUG, "smbus: %s[%d]->",
+			       dev_path(dev->bus->dev), dev->bus->link_num);
+		}
+
+		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
+		dev->initialized = 1;
+		dev->ops->init(dev);
+	}
+}
+
+static void init_link(struct bus *link)
+{
+	struct device *dev;
+	struct bus *c_link;
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		init_dev(dev);
+	}
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		for (c_link = dev->link_list; c_link; c_link = c_link->next) {
+			init_link(c_link);
+		}
+	}
+}
+
+/**
+ * @brief Initialize all devices in the global device tree.
+ *
+ * Starting at the root device, call the device's init() method to do device-
+ * specific setup, then call each child's init() method.
  */
 void dev_initialize(void)
 {
-	struct device *dev;
+	struct bus *link;
 
 	printk(BIOS_INFO, "Initializing devices...\n");
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->enabled && !dev->initialized &&
-		    dev->ops && dev->ops->init) {
-			if (dev->path.type == DEVICE_PATH_I2C) {
-				printk(BIOS_DEBUG, "smbus: %s[%d]->",
-					     dev_path(dev->bus->dev),
-					     dev->bus->link_num);
-			}
-			printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
-			dev->initialized = 1;
-			dev->ops->init(dev);
-		}
-	}
+
+	/* now initialize everything. */
+	for (link = dev_root.link_list; link; link = link->next)
+		init_link(link);
+
 	printk(BIOS_INFO, "Devices initialized\n");
 	show_all_devs(BIOS_SPEW, "After init.");
 }

@@ -58,7 +58,6 @@ static void lpc_init(device_t dev)
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
 	pci_write_config8(dev, 0x78, byte);
-
 }
 
 static void sb700_lpc_read_resources(device_t dev)
@@ -100,7 +99,6 @@ static void sb700_lpc_set_resources(struct device *dev)
 	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
 	res = find_resource(dev, 0xA0);
 	pci_write_config32(dev, 0xA0, res->base | 1 << 1);
-
 }
 
 /**

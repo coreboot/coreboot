@@ -120,21 +120,21 @@ void sb700_enable(device_t dev)
 
 	printk(BIOS_DEBUG, "sb700_enable()\n");
 
-/*
-*	0:11.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
-*	0:12.0  OHCI0-USB1	bit 0 of sm_dev 0x68
-*	0:12.1  OHCI1-USB1	bit 1 of sm_dev 0x68
-*	0:12.2  EHCI-USB1	bit 2 of sm_dev 0x68
-*	0:13.0  OHCI0-USB2	bit 4 of sm_dev 0x68
-*	0:13.1  OHCI1-USB2	bit 5 of sm_dev 0x68
-*	0:13.2  EHCI-USB2	bit 6 of sm_dev 0x68
-*	0:14.5  OHCI0-USB3	bit 7 of sm_dev 0x68
-*	0:14.0  SMBUS							0
-*	0:14.1  IDE							1
-*	0:14.2  HDA	bit 3 of pm_io 0x59 : 1 - enable, default	    + 32 * 4
-*	0:14.3  LPC	bit 20 of sm_dev 0x64 : 0 - disable, default  + 32 * 1
-*	0:14.4  PCI							4
-*/
+	/*
+	 * 0:11.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
+	 * 0:12.0  OHCI0-USB1	bit 0 of sm_dev 0x68
+	 * 0:12.1  OHCI1-USB1	bit 1 of sm_dev 0x68
+	 * 0:12.2  EHCI-USB1	bit 2 of sm_dev 0x68
+	 * 0:13.0  OHCI0-USB2	bit 4 of sm_dev 0x68
+	 * 0:13.1  OHCI1-USB2	bit 5 of sm_dev 0x68
+	 * 0:13.2  EHCI-USB2	bit 6 of sm_dev 0x68
+	 * 0:14.5  OHCI0-USB3	bit 7 of sm_dev 0x68
+	 * 0:14.0  SMBUS							0
+	 * 0:14.1  IDE							1
+	 * 0:14.2  HDA	bit 3 of pm_io 0x59 : 1 - enable, default	    + 32 * 4
+	 * 0:14.3  LPC	bit 20 of sm_dev 0x64 : 0 - disable, default  + 32 * 1
+	 * 0:14.4  PCI							4
+	 */
 	if (dev->device == 0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid >> 16) & 0xffff;
@@ -143,6 +143,7 @@ void sb700_enable(device_t dev)
 		vendorid = dev->vendor;
 		deviceid = dev->device;
 	}
+
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_ATI) &&
 	    (bus_dev->device == PCI_DEVICE_ID_ATI_SB700_PCI)) {
@@ -156,7 +157,6 @@ void sb700_enable(device_t dev)
 		case 5 << 3:
 			;
 		}
-
 		return;
 	}
 

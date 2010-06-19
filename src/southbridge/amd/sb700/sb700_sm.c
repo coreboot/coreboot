@@ -72,7 +72,6 @@ static void sm_init(device_t dev)
 	dword |= 1 << 13;
 	pci_write_config16(dev, 0x64, dword);
 
-
 	/* rrg:K8 INTR Enable (BIOS should set this bit after PIC initialization) */
 	/* rpr 2.1 Enabling Legacy Interrupt */
 	dword = pci_read_config8(dev, 0x62);
@@ -282,6 +281,7 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 
 	return do_smbus_write_byte(res->base, device, address, val);
 }
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.recv_byte = lsmbus_recv_byte,
 	.send_byte = lsmbus_send_byte,
@@ -335,17 +335,15 @@ static void sb700_sm_read_resources(device_t dev)
 	res->gran = 8;
 	res->flags = IORESOURCE_IO | IORESOURCE_FIXED;
 
-
 	compact_resources(dev);
-
 }
+
 static void sb700_sm_set_resources(struct device *dev)
 {
 	struct resource *res;
 	u8 byte;
 
 	pci_dev_set_resources(dev);
-
 
 	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
 	byte = pm_ioread(0x52);
@@ -365,6 +363,7 @@ static void sb700_sm_set_resources(struct device *dev)
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
+
 static struct device_operations smbus_ops = {
 	.read_resources = sb700_sm_read_resources,
 	.set_resources = sb700_sm_set_resources,
@@ -374,6 +373,7 @@ static struct device_operations smbus_ops = {
 	.ops_pci = &lops_pci,
 	.ops_smbus_bus = &lops_smbus_bus,
 };
+
 static const struct pci_driver smbus_driver __pci_driver = {
 	.ops = &smbus_ops,
 	.vendor = PCI_VENDOR_ID_ATI,

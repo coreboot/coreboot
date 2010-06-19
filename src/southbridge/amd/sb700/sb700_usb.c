@@ -42,7 +42,6 @@ static void usb_init(struct device *dev)
 	byte |= 0xFF;
 	pci_write_config8(sm_dev, 0x68, byte);
 
-
 	/* RPR 6.2 Enables the USB PME Event,Enable USB resume support */
 	byte = pm_ioread(0x61);
 	byte |= 1 << 6;
@@ -188,7 +187,6 @@ static void usb_set_resources(struct device *dev)
 	set_ehci_base(base);
 	report_resource_stored(dev, res, "");
 #endif
-
 }
 
 static struct device_operations usb_ops = {
@@ -205,6 +203,7 @@ static const struct pci_driver usb_0_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB700_USB_18_0,
 };
+
 static const struct pci_driver usb_1_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,

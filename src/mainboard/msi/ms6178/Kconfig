@@ -27,6 +27,8 @@ config BOARD_MSI_MS_6178
 	select ROMCC
 	select HAVE_PIRQ_TABLE
 	select BOARD_ROMSIZE_KB_512
+	select HAVE_MAINBOARD_RESOURCES
+	select GFXUMA
 
 config MAINBOARD_DIR
 	string

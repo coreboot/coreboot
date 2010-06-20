@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Corey Osgood <corey@slightlyhackish.com>
+ * Copyright (C) 2010 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include "chip.h"
+#include <boot/tables.h>
 #include "northbridge.h"
 #include "i82810.h"
 
@@ -100,6 +102,18 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
+/* IGD UMA memory */
+uint64_t uma_memory_base=0, uma_memory_size=0;
+
+int add_northbridge_resources(struct lb_memory *mem)
+{
+	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		uma_memory_base, uma_memory_size);
+
+	return 0;
+}
+
 /* Table which returns the RAM size in MB when fed the DRP[7:4] or [3:0] value.
  * Note that 2 is a value which the DRP should never be programmed to.
  * Some size values appear twice, due to single-sided vs dual-sided banks.
@@ -118,66 +132,67 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
 	uint32_t pci_tolm;
+	int igd_memory = 0;
 
 	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
+	if (!mc_dev)
+		return;
 
-	if (mc_dev) {
-		/* Figure out which areas are/should be occupied by RAM.
-		 * This is all computed in kilobytes and converted to/from
-		 * the memory controller right at the edges.
-		 * Having different variables in different units is
-		 * too confusing to get right.  Kilobytes are good up to
-		 * 4 Terabytes of RAM...
-		 */
-		unsigned long tomk, tolmk;
-		int idx;
-		int drp_value;
+	unsigned long tomk, tolmk;
+	int idx, drp_value;
+	u8 reg8;
 
-		/* First get the value for DIMM 0. */
-		drp_value = pci_read_config8(mc_dev, DRP);
-		/* Translate it to MB and add to tomk. */
-		tomk = (unsigned long)(translate_i82810_to_mb[drp_value & 0xf]);
-		/* Now do the same for DIMM 1. */
-		drp_value = drp_value >> 4;	// >>= 4; //? mess with later
-		tomk += (unsigned long)(translate_i82810_to_mb[drp_value]);
+	reg8 = pci_read_config8(mc_dev, SMRAM);
+	reg8 &= 0xc0;
 
-		printk(BIOS_DEBUG, "Setting RAM size to %ld MB\n", tomk);
+	switch (reg8) {
+		case 0xc0:
+			igd_memory = 1024;
+			printk(BIOS_DEBUG, "%dKB IGD UMA\n", igd_memory);
+			break;
+		case 0x80:
+			igd_memory = 512;
+			printk(BIOS_DEBUG, "%dKB IGD UMA\n", igd_memory);
+			break;
+		default:
+			igd_memory = 0;
+			printk(BIOS_DEBUG, "No IGD UMA Memory\n");
+			break;
+	}
 
-		/* Convert tomk from MB to KB. */
-		tomk = tomk << 10;
+	/* Get the value for DIMM 0 and translate it to MB. */
+	drp_value = pci_read_config8(mc_dev, DRP);
+	tomk = (unsigned long)(translate_i82810_to_mb[drp_value & 0x0f]);
+	/* Get the value for DIMM 1 and translate it to MB. */
+	drp_value = drp_value >> 4;
+	tomk += (unsigned long)(translate_i82810_to_mb[drp_value]);
+	/* Convert tomk from MB to KB. */
+	tomk = tomk << 10;
+	tomk -= igd_memory;
 
-#if CONFIG_VIDEO_MB
-		/* Check for VGA reserved memory. */
-		if (CONFIG_VIDEO_MB == 512) {
-			tomk -= 512;
-			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "512KB");
-		} else if (CONFIG_VIDEO_MB == 1) {
-			tomk -= 1024 ;
-			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "1MB");
-		} else {
-			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "0MB");
-		}
-#endif
+	/* For reserving UMA memory in the memory map */
+	uma_memory_base = tomk * 1024ULL;
+	uma_memory_size = igd_memory * 1024ULL;
+	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
 
-		/* Compute the top of Low memory. */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does does not overlap the memory. */
-			tolmk = tomk;
-		}
+	/* Compute the top of low memory. */
+	tolmk = pci_tolm >> 10;
+	if (tolmk >= tomk) {
+		/* The PCI hole does does not overlap the memory. */
+		tolmk = tomk;
+	}
 
-		/* Report the memory regions. */
-		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
+	/* Report the memory regions. */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 640);
+	ram_resource(dev, idx++, 768, tolmk - 768);
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-		/* Leave some space for ACPI, PIRQ and MP tables */
-		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE * 1024;
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+	high_tables_size = HIGH_TABLES_SIZE * 1024;
 #endif
-	}
 	assign_resources(dev->link_list);
 }
 

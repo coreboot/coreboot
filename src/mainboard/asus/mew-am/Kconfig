@@ -28,6 +28,8 @@ config BOARD_ASUS_MEW_AM
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_512
+	select HAVE_MAINBOARD_RESOURCES
+	select GFXUMA
 
 config MAINBOARD_DIR
 	string

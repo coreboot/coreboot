@@ -1,5 +1,6 @@
 # CPU models
 source src/cpu/intel/model_6xx/Kconfig
+source src/cpu/intel/model_68x/Kconfig
 source src/cpu/intel/model_69x/Kconfig
 source src/cpu/intel/model_6bx/Kconfig
 source src/cpu/intel/model_6dx/Kconfig
@@ -17,6 +18,7 @@ source src/cpu/intel/ep80579/Kconfig
 source src/cpu/intel/bga956/Kconfig
 source src/cpu/intel/slot_2/Kconfig
 source src/cpu/intel/slot_1/Kconfig
+source src/cpu/intel/socket_FC_PGA370/Kconfig
 source src/cpu/intel/socket_mFCBGA479/Kconfig
 source src/cpu/intel/socket_mFCPGA478/Kconfig
 source src/cpu/intel/socket_mPGA478/Kconfig

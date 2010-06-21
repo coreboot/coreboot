@@ -2,6 +2,7 @@ choice
         prompt "Mainboard model"
         depends on VENDOR_INTEL
 
+source "src/mainboard/intel/d810e2cb/Kconfig"
 source "src/mainboard/intel/d945gclf/Kconfig"
 source "src/mainboard/intel/eagleheights/Kconfig"
 source "src/mainboard/intel/jarrell/Kconfig"

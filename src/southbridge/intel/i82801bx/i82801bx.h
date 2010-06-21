@@ -37,10 +37,8 @@ extern void i82801bx_enable(device_t dev);
 #define PMBASE_ADDR		0x0400 /* ACPI Base Address Register */
 #define ACPI_CNTL		0x44
 #define BIOS_CNTL		0x4E
-#define GPIO_BASE_ICH0_5	0x58 /* LPC GPIO Base Addr. Reg. (ICH0-ICH5) */
-#define GPIO_BASE_ICH6_9	0x48 /* LPC GPIO Base Address Register (ICH6-ICH9) */
-#define GPIO_CNTL_ICH0_5	0x5C /* LPC GPIO Control Register (ICH0-ICH5) */
-#define GPIO_CNTL_ICH6_9	0x4C /* LPC GPIO Control Register (ICH6-ICH9) */
+#define GPIO_BASE		0x58 /* LPC GPIO Base Address Register */
+#define GPIO_CNTL		0x5C /* LPC GPIO Control Register */
 
 #define PIRQA_ROUT		0x60
 #define PIRQB_ROUT		0x61
@@ -68,6 +66,8 @@ extern void i82801bx_enable(device_t dev);
 #define CNF			0x50
 #define MTT			0x70
 #define PCI_MAST_STS		0x82
+
+#define GPIO_BASE_ADDR		0x00000500 /* GPIO Base Address Register */
 
 #define TCOBASE			0x60 /* TCO Base Address Register */
 #define TCO1_CNT		0x08 /* TCO1 Control Register */

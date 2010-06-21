@@ -32,8 +32,6 @@
 #include <arch/io.h>
 #include "i82801bx.h"
 
-#define GPIO_BASE_ADDR	0x00000500 /* GPIO Base Address Register */
-
 #define NMI_OFF 0
 
 typedef struct southbridge_intel_i82801bx_config config_t;
@@ -206,18 +204,11 @@ static void i82801bx_power_options(device_t dev)
 	}
 }
 
-static void gpio_init(device_t dev, uint16_t ich_model)
+static void gpio_init(device_t dev)
 {
-	/* Set the value for GPIO base address register and enable GPIO.
-	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
-	 */
-	if (ich_model <= 0x24D0) {
-		pci_write_config32(dev, GPIO_BASE_ICH0_5, (GPIO_BASE_ADDR | 1));
-		pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
-	} else if (ich_model >= 0x2640) {
-		pci_write_config32(dev, GPIO_BASE_ICH6_9, (GPIO_BASE_ADDR | 1));
-		pci_write_config8(dev, GPIO_CNTL_ICH6_9, 0x10);
-	}
+	/* Set the value for GPIO base address register and enable GPIO. */
+	pci_write_config32(dev, GPIO_BASE, (GPIO_BASE_ADDR | 1));
+	pci_write_config8(dev, GPIO_CNTL, 0x10);
 }
 
 void i82801bx_rtc_init(struct device *dev)
@@ -291,7 +282,7 @@ static void lpc_init(struct device *dev)
 	i82801bx_power_options(dev);
 
 	/* Set the state of the GPIO lines. */
-	gpio_init(dev, ich_model);
+	gpio_init(dev);
 
 	/* Initialize the real time clock. */
 	i82801bx_rtc_init(dev);

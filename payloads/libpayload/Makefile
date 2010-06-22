@@ -58,7 +58,7 @@ HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -pipe
 HOSTCXXFLAGS := -I$(srck) -I$(objk) -pipe
 
-DESTDIR = /opt
+DESTDIR = $(src)/install
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen

@@ -41,7 +41,7 @@ touch $TMPFILE
 # This should be a loop over all supported architectures
 TARCH=i386
 TWIDTH=32
-for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; do
+for gccprefixes in `pwd`/../../util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; do
 	if ! which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		continue
 	fi

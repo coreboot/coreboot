@@ -102,7 +102,7 @@ chip northbridge/amd/amdk8/root_complex
                                                 chip drivers/generic/generic #dimm 1-1-1
                                                         device i2c 57 on end
                                                 end
-                                                chip drivers/i2c/adm1027 # ADT7463A CPU0/1 temp, CPU1 vid, SYS FAN 1/2/3
+                                                chip drivers/i2c/adt7463 # CPU0/1 temp, CPU1 vid, SYS FAN 1/2/3
                                                         device i2c 2d on end
                                                 end
                                                 chip drivers/generic/generic # Winbond HWM 0x54 CPU0/1 VRM temp, SYSFAN 4,CPU0 vid, CPU0/1 FAN

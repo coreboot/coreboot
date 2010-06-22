@@ -33,25 +33,11 @@
  * See Analog Devices ADT7463 datasheet, Rev C (2004):
  * http://www.analog.com/en/prod/0,,766_825_ADT7463,00.html
  */
-static void adt7463_init(device_t dev)
+static void adt7463_init(device_t adt7463)
 {
-	device_t smbus_dev, adt7463;
-	struct device_path path;
 	int result;
 
-	/* Find the SMBus controller (AMD-8111). */
-	smbus_dev = dev_find_device(0x1022, 0x746b, 0);
-	if (!smbus_dev)
-		die("SMBus controller not found\n");
-	printk(BIOS_DEBUG, "SMBus controller found\n");
-
-	/* Find the ADT7463 device. */
-	path.type = DEVICE_PATH_I2C;
-	path.i2c.device = 0x2d;
-	adt7463 = find_dev_path(smbus_dev->link_list, &path);
-	if (!adt7463)
-		die("ADT7463 not found\n");
-	printk(BIOS_DEBUG, "ADT7463 found\n");
+	printk(BIOS_DEBUG, "ADT7463 is %s\n", dev_path(adt7463));
 
 	/* Set all fans to 'Fastest Speed Calculated by All 3 Temperature
 	 * Channels Controls PWMx'.
@@ -116,7 +102,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &adt7463_operations;
 }
 
-struct chip_operations mainboard_ops = {
+struct chip_operations drivers_i2c_adt7463_ops = {
 	CHIP_NAME("adt7463")
 	.enable_dev = enable_dev,
 };

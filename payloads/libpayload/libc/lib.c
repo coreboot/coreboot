@@ -113,3 +113,10 @@ void fatal(const char *msg)
 	halt();
 }
 
+void exit(int status)
+{
+	printf("exited with status %d\n", status);
+	halt();
+}
+
+int errno;

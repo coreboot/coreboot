@@ -44,12 +44,16 @@
 #define _LIBPAYLOAD_H
 
 #include <libpayload-config.h>
+#include <ctype.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 #include <arch/types.h>
 #include <arch/io.h>
 #include <arch/virtual.h>
 #include <sysinfo.h>
-#include <stdarg.h>
 #include <pci.h>
 #ifdef CONFIG_LAR
 #include <lar.h>
@@ -225,114 +229,12 @@ void console_add_input_driver(struct console_input_driver *in);
 /** @} */
 
 /**
- * @defgroup ctype Character type functions
- * @{
- */
-int isalnum(int c);
-int isalpha(int c);
-int isascii(int c);
-int isblank(int c);
-int iscntrl(int c);
-int isdigit(int c);
-int isgraph(int c);
-int islower(int c);
-int isprint(int c);
-int ispunct(int c);
-int isspace(int c);
-int isupper(int c);
-int isxdigit(int c);
-int tolower(int c);
-int toupper(int c);
-/** @} */
-
-/**
  * @defgroup ipchecksum IP checksum functions
  * @{
  */
 unsigned short ipchksum(const void *ptr, unsigned long nbytes);
 /** @} */
 
-/**
- * @defgroup malloc Memory allocation functions
- * @{
- */
-#if defined(CONFIG_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
-#define free(p)	\
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void free(void *); \
-	 printf("free(%p) called from %s:%s:%d...\n", p, __FILE__, __func__, \
-	        __LINE__);\
-	 printf("PRE free()\n"); \
-	 print_malloc_map(); \
-	 free(p); \
-	 printf("POST free()\n"); \
-	 print_malloc_map(); \
-	 })
-#define malloc(s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *malloc(size_t); \
-	 void *ptr; \
-	 printf("malloc(%u) called from %s:%s:%d...\n", s, __FILE__, __func__, \
-	        __LINE__);\
-	 printf("PRE malloc\n"); \
-	 print_malloc_map(); \
-	 ptr = malloc(s); \
-	 printf("POST malloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define calloc(n,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *calloc(size_t,size_t); \
-	 void *ptr; \
-	 printf("calloc(%u, %u) called from %s:%s:%d...\n", n, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE calloc\n"); \
-	 print_malloc_map(); \
-	 ptr = calloc(n,s); \
-	 printf("POST calloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define realloc(p,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *realloc(void*,size_t); \
-	 void *ptr; \
-	 printf("realloc(%p, %u) called from %s:%s:%d...\n", p, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE realloc\n"); \
-	 print_malloc_map(); \
-	 ptr = realloc(p,s); \
-	 printf("POST realloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#define memalign(a,s) \
-	({ \
-	 extern void print_malloc_map(void); \
-	 extern void *memalign(size_t, size_t); \
-	 void *ptr; \
-	 printf("memalign(%u, %u) called from %s:%s:%d...\n", a, s, __FILE__, \
-	        __func__, __LINE__);\
-	 printf("PRE memalign\n"); \
-	 print_malloc_map(); \
-	 ptr = memalign(a,s); \
-	 printf("POST realloc (ptr = %p)\n", ptr); \
-	 print_malloc_map(); \
-	 ptr; \
-	 })
-#else
-void free(void *ptr);
-void *malloc(size_t size);
-void *calloc(size_t nmemb, size_t size);
-void *realloc(void *ptr, size_t size);
-void *memalign(size_t align, size_t size);
-#endif
-/** @} */
 
 /**
  * @defgroup exec Execution functions
@@ -355,36 +257,6 @@ u8 hex2bin(u8 h);
 void fatal(const char *msg) __attribute__ ((noreturn));
 /** @} */
 
-/**
- * @defgroup memory Memory manipulation functions
- * @{
- */
-void *memset(void *s, int c, size_t n);
-void *memcpy(void *dst, const void *src, size_t n);
-void *memmove(void *dst, const void *src, size_t n);
-int memcmp(const void *s1, const void *s2, size_t len);
-/** @} */
-
-/**
- * @defgroup printf Print functions
- * @{
- */
-int snprintf(char *str, size_t size, const char *fmt, ...);
-int sprintf(char *str, const char *fmt, ...);
-int vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
-int vsprintf(char *str, const char *fmt, va_list ap);
-int printf(const char *fmt, ...);
-int vprintf(const char *fmt, va_list ap);
-/** @} */
-
-/**
- * @defgroup rand Random number generator functions
- * @{
- */
-int rand_r(unsigned int *seed);
-int rand(void);
-void srand(unsigned int seed);
-/** @} */
 
 /**
  * @defgroup hash Hashing functions
@@ -402,27 +274,6 @@ void SHA1Transform(u32 state[5], const u8 buffer[SHA1_BLOCK_LENGTH]);
 void SHA1Update(SHA1_CTX *context, const u8 *data, size_t len);
 void SHA1Final(u8 digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context);
 u8 *sha1(const u8 *data, size_t len, u8 *buf);
-/** @} */
-
-/**
- * @defgroup string String functions
- * @{
- */
-size_t strnlen(const char *str, size_t maxlen);
-size_t strlen(const char *str);
-int strcmp(const char *s1, const char *s2);
-int strncmp(const char *s1, const char *s2, size_t maxlen);
-char *strncpy(char *d, const char *s, size_t n);
-char *strcpy(char *d, const char *s);
-char *strncat(char *d, const char *s, size_t n);
-size_t strlcat(char *d, const char *s, size_t n);
-char *strchr(const char *s, int c);
-char *strrchr(const char *s, int c);
-char *strdup(const char *s);
-char *strstr(const char *h, const char *n);
-char *strsep(char **stringp, const char *delim);
-unsigned int strtoul(const char *s, char **nptr, int base);
-
 /** @} */
 
 /**
@@ -526,14 +377,6 @@ void ndelay(unsigned int n);
 void udelay(unsigned int n);
 void mdelay(unsigned int n);
 void delay(unsigned int n);
-
-#define abort() halt()    /**< Alias for the halt() function */
-
-/**
- * Stop execution and halt the processor (this function does not return).
- */
-void halt(void) __attribute__ ((noreturn));
-/** @} */
 
 /**
  * @defgroup readline Readline functions

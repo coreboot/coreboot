@@ -30,3 +30,7 @@
 
 unsigned long virtual_offset = 0;
 
+int getpagesize(void)
+{
+	return 4096;
+}

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,6 +30,9 @@
  */
 
 #include <libpayload.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
 
 /**
  * Calculate the length of a fixed-size string.
@@ -83,29 +87,57 @@ size_t strlen(const char *str)
  * 	   zero, if s1 equals s2. Returns a value greater than zero, if
  * 	   s1 is longer than s2.
  */
-int strcmp(const char *s1, const char *s2)
+int strcasecmp(const char *s1, const char *s2)
 {
-	char c1, c2;
+	int i;
 
-	/* Set c1 == c2, so that we can enter the while loop. */
-	c1 = 0;
-	c2 = 0;
-
-	/* Compare characters until they differ, or one of the strings ends. */
-	while (c1 == c2) {
-		/* Read the next character from each string. */
-		c1 = *s1++;
-		c2 = *s2++;
-
-		/* Return something negative (if s1 is shorter than s2), or
-		   zero (if s1 equals s2). */
-		if (c1 == '\0')
-			return c1 - c2;
+	for (i = 0; 1; i++) {
+		if (tolower(s1[i]) != tolower(s2[i]))
+			return s1[i] - s2[i];
 	}
 
-	/* Return something positive (if s1 is longer than s2), or zero (if s1
-	   and s2 are equal). */
-	return c1 - c2;
+	return 0;
+}
+
+/**
+ * Compare two strings with fixed length.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @param maxlen Return at most maxlen characters as length of the string.
+ * @return A non-zero value if s1 and s2 differ, or zero if s1 equals s2.
+ */
+int strncasecmp(const char *s1, const char *s2, size_t maxlen)
+{
+	int i;
+
+	for (i = 0; i < maxlen; i++) {
+		if (tolower(s1[i]) != tolower(s2[i]))
+			return s1[i] - s2[i];
+	}
+
+	return 0;
+}
+
+/**
+ * Compare two strings.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @return Returns a value less than zero, if s1 is shorter than s2. Returns
+ * 	   zero, if s1 equals s2. Returns a value greater than zero, if
+ * 	   s1 is longer than s2.
+ */
+int strcmp(const char *s1, const char *s2)
+{
+	int i;
+
+	for (i = 0; 1; i++) {
+		if (s1[i] != s2[i])
+			return s1[i] - s2[i];
+	}
+
+	return 0;
 }
 
 /**
@@ -158,6 +190,26 @@ char *strncpy(char *d, const char *s, size_t n)
 char *strcpy(char *d, const char *s)
 {
 	return strncpy(d, s, strlen(s) + 1);
+}
+
+/**
+ * Concatenates two strings
+ *
+ * @param d The destination string.
+ * @param s The source string.
+ * @return A pointer to the destination string.
+ */
+char *strcat(char *d, const char *s)
+{
+	char *p = d + strlen(d);
+	int sl = strlen(s);
+	int i;
+
+	for (i = 0; i < sl; i++)
+		p[i] = s[i];
+
+	p[i] = '\0';
+	return d;
 }
 
 /**
@@ -353,6 +405,69 @@ static int _offset(char ch, int base)
 }
 
 /**
+ * Convert the initial portion of a string into a signed int
+ * @param ptr A pointer to the string to convert
+ * @param endptr A pointer to the unconverted part of the string
+ * @param base The base of the number to convert, or 0 for auto
+ * @return A signed integer representation of the string
+ */
+
+long int strtol(const char *ptr, char **endptr, int base)
+{
+        int ret = 0;
+	int negative = 1;
+
+	if (endptr != NULL)
+		*endptr = (char *) ptr;
+
+        /* Purge whitespace */
+
+        for( ; *ptr && isspace(*ptr); ptr++);
+
+	if (ptr[0] == '-') {
+		negative = -1;
+		ptr++;
+	}
+
+        if (!*ptr)
+                return 0;
+
+        /* Determine the base */
+
+        if (base == 0) {
+		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
+			base = 16;
+		else if (ptr[0] == '0') {
+			base = 8;
+			ptr++;
+		}
+		else
+			base = 10;
+        }
+
+	/* Base 16 allows the 0x on front - so skip over it */
+
+	if (base == 16) {
+		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
+			ptr += 2;
+	}
+
+	/* If the first character isn't valid, then don't
+         * bother */
+
+        if (!*ptr || !_valid(*ptr, base))
+                return 0;
+
+        for( ; *ptr && _valid(*ptr, base); ptr++)
+                ret = (ret * base) + _offset(*ptr, base);
+
+	if (endptr != NULL)
+		*endptr = (char *) ptr;
+
+        return ret * negative;
+}
+
+/**
  * Convert the initial portion of a string into an unsigned int
  * @param ptr A pointer to the string to convert
  * @param endptr A pointer to the unconverted part of the string
@@ -360,7 +475,7 @@ static int _offset(char ch, int base)
  * @return An unsigned integer representation of the string
  */
 
-unsigned int strtoul(const char *ptr, char **endptr, int base)
+unsigned long int strtoul(const char *ptr, char **endptr, int base)
 {
         int ret = 0;
 
@@ -409,4 +524,102 @@ unsigned int strtoul(const char *ptr, char **endptr, int base)
         return ret;
 }
 
+/**
+ * Determine the number of leading characters in s that match characters in a
+ * @param s A pointer to the string to analyse
+ * @param a A pointer to an array of characters that match the prefix
+ * @return The number of matching characters
+ */
 
+size_t strspn(const char *s, const char *a)
+{
+	int i, j;
+	int al = strlen(a);
+	for (i = 0; s[i] != 0; i++) {
+		int found = 0;
+		for (j = 0; j < al; j++) {
+			if (s[i] == a[j]) {
+				found = 1;
+				break;
+			}
+		}
+		if (!found)
+			break;
+	}
+	return i;
+}
+
+/**
+ * Determine the number of leading characters in s that do not match characters in a
+ * @param s A pointer to the string to analyse
+ * @param a A pointer to an array of characters that do not match the prefix
+ * @return The number of not matching characters
+ */
+
+size_t strcspn(const char *s, const char *a)
+{
+	int i, j;
+	int al = strlen(a);
+	for (i = 0; s[i] != 0; i++) {
+		int found = 0;
+		for (j = 0; j < al; j++) {
+			if (s[i] == a[j]) {
+				found = 1;
+				break;
+			}
+		}
+		if (found)
+			break;
+	}
+	return i;
+}
+
+/**
+ * Extract first token in string str that is delimited by a character in tokens.
+ * Destroys str and eliminates the token delimiter.
+ * @param str A pointer to the string to tokenize.
+ * @param delim A pointer to an array of characters that delimit the token
+ * @param ptr A pointer to a string pointer to keep state of the tokenizer
+ * @return Pointer to token
+ */
+
+char* strtok_r(char *str, const char *delim, char **ptr)
+{
+	/* start new tokenizing job or continue existing one? */
+	if (str == NULL)
+		str = *ptr;
+
+	/* skip over prefix delimiters */
+	char *start = str + strspn(str, delim);
+
+	/* find first delimiter character */
+	char *end = start + strcspn(start, delim);
+	end[0] = '\0';
+
+	*ptr = end+1;
+	return start;
+}
+
+static char **strtok_global;
+
+/**
+ * Extract first token in string str that is delimited by a character in tokens.
+ * Destroys str, eliminates the token delimiter and uses global state.
+ * @param str A pointer to the string to tokenize.
+ * @param delim A pointer to an array of characters that delimit the token
+ * @return Pointer to token
+ */
+
+char* strtok(char *str, const char *delim)
+{
+	return strtok_r(str, delim, strtok_global);
+}
+
+/**
+ * Print error message and error number
+ * @param s Error message to print
+ */
+void perror(const char *s)
+{
+	printf("%s: %d\n", s?s:"(none)", errno);
+}

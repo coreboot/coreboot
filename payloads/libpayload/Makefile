@@ -77,7 +77,7 @@ ARCHDIR-$(CONFIG_TARGET_POWERPC) := powerpc
 PLATFORM-y += arch/$(ARCHDIR-y)/Makefile.inc
 TARGETS-y :=
 
-BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc
+BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc libpci/Makefile.inc
 BUILD-$(CONFIG_TINYCURSES) += curses/Makefile.inc
 
 # The primary target needs to be here before we include the
@@ -145,7 +145,7 @@ prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
 	$(Q)mkdir -p $(obj)/drivers/usb
-	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc
+	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc $(obj)/libpci
 	$(Q)mkdir -p $(obj)/lib/$(ARCHDIR-y)
 	$(Q)mkdir -p $(obj)/include
 

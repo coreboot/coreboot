@@ -103,16 +103,14 @@ done
 if [ "$CONFIG_TARGET_I386" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/i386
   _ARCHLIBDIR=$_LIBDIR/i386
-  _TARGETCFLAGS="-D__i386__=1"
 fi
 
 if [ "$CONFIG_TARGET_POWERPC" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/powerpc
   _ARCHLIBDIR=$_LIBDIR/powerpc
-  _TARGETCFLAGS="-D__powerpc__=1"
 fi
 
-_CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1 $_TARGETCFLAGS"
+_CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
 # Check for the -fno-stack-protector silliness
 

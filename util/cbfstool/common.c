@@ -90,11 +90,23 @@ void *loadrom(const char *filename)
 	return romarea;
 }
 
-void writerom(const char *filename, void *start, uint32_t size)
+int writerom(const char *filename, void *start, uint32_t size)
 {
 	FILE *file = fopen(filename, "wb");
-	fwrite(start, size, 1, file);
+	if (!file) {
+		fprintf(stderr, "Could not open '%s' for writing: ", filename);
+		perror("");
+		return 1;
+	}
+
+	if (fwrite(start, size, 1, file) != 1) {
+		fprintf(stderr, "Could not write to '%s': ", filename);
+		perror("");
+		return 1;
+	}
+
 	fclose(file);
+	return 0;
 }
 
 int cbfs_file_header(uint32_t physaddr)

@@ -44,7 +44,7 @@ uint32_t getfilesize(const char *filename);
 void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	       int place);
 void *loadrom(const char *filename);
-void writerom(const char *filename, void *start, uint32_t size);
+int writerom(const char *filename, void *start, uint32_t size);
 
 int iself(unsigned char *input);
 

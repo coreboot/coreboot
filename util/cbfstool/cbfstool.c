@@ -83,7 +83,8 @@ static int cbfs_add(int argc, char **argv)
 	cbfsfile = create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
 	if (add_file_to_cbfs(cbfsfile, filesize, base))
 		return 1;
-	writerom(romname, rom, romsize);
+	if (writerom(romname, rom, romsize))
+		return 1;
 	return 0;
 }
 
@@ -131,7 +132,8 @@ static int cbfs_add_payload(int argc, char **argv)
 			     CBFS_COMPONENT_PAYLOAD, &base);
 	if (add_file_to_cbfs(cbfsfile, filesize, base))
 		return 1;
-	writerom(romname, rom, romsize);
+	if (writerom(romname, rom, romsize))
+		return 1;
 	return 0;
 }
 
@@ -180,7 +182,8 @@ static int cbfs_add_stage(int argc, char **argv)
 
 	if (add_file_to_cbfs(cbfsfile, filesize, base))
 		return 1;
-	writerom(romname, rom, romsize);
+	if (writerom(romname, rom, romsize))
+		return 1;
 	return 0;
 }
 

@@ -323,3 +323,37 @@ void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_is
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid, 0xf);
 }
+
+void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus, int *isa_bus) {
+	int dummy, i, highest;
+	char buses[256];
+	struct device *dev;
+
+	if (!max_pci_bus) max_pci_bus = &dummy;
+	if (!isa_bus) isa_bus = &dummy;
+
+	*max_pci_bus = 0;
+	highest = 0;
+	memset(buses, 0, sizeof(buses));
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		struct bus *bus;
+		for (bus = dev->link_list; bus; bus = bus->next) {
+			if (bus->secondary > 255) {
+				printk(BIOS_ERR, "A bus claims to have a bus ID > 255?!? Aborting");
+				return;
+			}
+			buses[bus->secondary] = 1;
+			if (highest < bus->secondary) highest = bus->secondary;
+		}
+	}
+	for (i=0; i <= highest; i++) {
+		if (buses[i]) {
+			smp_write_bus(mc, i, "PCI   ");
+			*max_pci_bus = i;
+		}
+	}
+	*isa_bus = *max_pci_bus + 1;
+	smp_write_bus(mc, *isa_bus, "ISA   ");
+}
+

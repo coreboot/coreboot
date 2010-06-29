@@ -22,8 +22,8 @@
 
 #include <stdint.h>
 
-#define EC_DATA	0x62
-#define EC_SC	0x66
+#define EC_DATA		0x62
+#define EC_SC		0x66
 
 /* EC_SC input */
 #define   EC_SMI_EVT	(1 << 6)	// 1: SMI event pending
@@ -40,12 +40,16 @@
 #define   BE_EC		0x82	// Burst Enable Embedded Controller
 #define   BD_EC 	0x83	// Burst Disable Embedded Controller
 #define   QR_EC 	0x84	// Query Embedded Controller
+#define   RX_EC		0xf0	// Read Extended operation
+#define   WX_EC		0xf1	// Write Extended operation
 
 int send_ec_command(uint8_t command);
 int send_ec_data(uint8_t data);
 int send_ec_data_nowait(uint8_t data);
 uint8_t recv_ec_data(void);
 uint8_t ec_read(uint8_t addr);
-
+int ec_write(uint8_t addr, uint8_t data);
+uint8_t ec_ext_read(uint16_t addr);
+int ec_ext_write(uint16_t addr, uint8_t data);
 uint8_t ec_idx_read(uint16_t addr);
 #endif

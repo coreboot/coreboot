@@ -38,7 +38,7 @@ int send_ec_command(uint8_t command)
 			debug(".");
 	}
 	if (!timeout) {
-		printf("Timeout while sending command 0x%02x to EC!\n",
+		debug("Timeout while sending command 0x%02x to EC!\n",
 		       command);
 		// return -1;
 	}
@@ -57,8 +57,8 @@ int send_ec_data(uint8_t data)
 		if ((timeout & 0xff) == 0)
 			debug(".");
 	}
-	if (!timeout) {
-		printf("Timeout while sending data 0x%02x to EC!\n", data);
+	if (timeout) {
+		debug("Timeout while sending data 0x%02x to EC!\n", data);
 		// return -1;
 	}
 
@@ -89,7 +89,7 @@ uint8_t recv_ec_data(void)
 			debug(".");
 	}
 	if (!timeout) {
-		printf("\nTimeout while receiving data from EC!\n");
+		debug("\nTimeout while receiving data from EC!\n");
 		// return -1;
 	}
 
@@ -101,15 +101,37 @@ uint8_t recv_ec_data(void)
 
 uint8_t ec_read(uint8_t addr)
 {
-	send_ec_command(0x80);
+	send_ec_command(RD_EC);
 	send_ec_data(addr);
 
 	return recv_ec_data();
 }
 
+uint8_t ec_ext_read(uint16_t addr)
+{
+	send_ec_command(WR_EC);
+	send_ec_data(0x02);
+	send_ec_data(addr & 0xff);
+	send_ec_command(RX_EC);
+	send_ec_data(addr >> 8);
+
+	return recv_ec_data();
+}
+
+int ec_ext_write(uint16_t addr, uint8_t data)
+{
+	send_ec_command(WR_EC);
+	send_ec_data(0x02);
+	send_ec_data(addr & 0xff);
+	send_ec_command(WX_EC);
+	send_ec_data(addr >> 8);
+    
+	return send_ec_data(data);
+}
+
 int ec_write(uint8_t addr, uint8_t data)
 {
-	send_ec_command(0x81);
+	send_ec_command(WR_EC);
 	send_ec_data(addr);
 
 	return send_ec_data(data);

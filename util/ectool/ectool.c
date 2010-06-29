@@ -45,16 +45,17 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?V]\n", name);
+ 	printf("usage: %s [-vh?Vi]\n", name);
 	printf("\n"
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "   -V | --verbose:                   print debug information\n"
+	       "   -i | --idx:                       print IDX RAM\n"
 	       "\n");
 	exit(1);
 }
 
-int verbose = 0;
+int verbose = 0, dump_idx = 0;
 
 int main(int argc, char *argv[])
 {
@@ -64,10 +65,11 @@ int main(int argc, char *argv[])
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{"verbose", 0, 0, 'V'},
+		{"idx", 0, 0, 'i'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?V",
+	while ((opt = getopt_long(argc, argv, "vh?Vi",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -77,6 +79,8 @@ int main(int argc, char *argv[])
 		case 'V':
 			verbose = 1;
 			break;
+		case 'i':
+			dump_idx = 1;
 		case 'h':
 		case '?':
 		default:
@@ -99,14 +103,17 @@ int main(int argc, char *argv[])
 	}
 	printf("\n\n");
 
-	printf("EC IDX RAM:\n");
-	for (i = 0; i < 0x10000; i++) {
-		if ((i % 0x10) == 0)
-			printf("\n%04x: ", i);
-		printf("%02x ", ec_idx_read(i));
+	if (dump_idx) {
+		printf("EC IDX RAM:\n");
+		for (i = 0; i < 0x10000; i++) {
+			if ((i % 0x10) == 0)
+				printf("\n%04x: ", i);
+			printf("%02x ", ec_idx_read(i));
+		}
+		printf("\n\n");
+	} else {
+		printf("Not dumping EC IDX RAM.\n");
 	}
-	printf("\n\n");
-
 
 	return 0;
 }

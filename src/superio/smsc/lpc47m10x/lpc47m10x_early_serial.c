@@ -47,15 +47,15 @@ static void pnp_exit_conf_state(device_t dev)
 }
 
 /*
- * Function:    	lpc47b272_enable_serial
+ * Function:    	lpc47m10x_enable_serial
  * Parameters:  	dev - high 8 bits = Super I/O port,
- *			      low 8 bits = logical device number (per lpc47b272.h)
+ *			      low 8 bits = logical device number (per lpc47m10x.h)
  *			iobase - processor I/O port address to assign to this serial device
  * Return Value:	bool
  * Description: 	Configure the base I/O port of the specified serial device
  *			and enable the serial device.
  */
-static void lpc47b272_enable_serial(device_t dev, unsigned iobase)
+static void lpc47m10x_enable_serial(device_t dev, unsigned iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

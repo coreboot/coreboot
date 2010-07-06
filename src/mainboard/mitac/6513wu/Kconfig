@@ -41,11 +41,6 @@ config MAINBOARD_PART_NUMBER
 	default "6513WU"
 	depends on BOARD_MITAC_6513WU
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_MITAC_6513WU
-
 config IRQ_SLOT_COUNT
 	int
 	default 8

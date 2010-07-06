@@ -19,11 +19,6 @@ config MAINBOARD_PART_NUMBER
 	default "btest"
 	depends on BOARD_OLPC_BTEST
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_OLPC_BTEST
-
 config IRQ_SLOT_COUNT
 	int
 	default 2

@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "MB-5BLMP"
 	depends on BOARD_ASI_MB_5BLMP
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ASI_MB_5BLMP
-
 config IRQ_SLOT_COUNT
 	int
 	default 5

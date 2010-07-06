@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <libgen.h>
+#define UTIL_BUILD_OPTION_TABLE
 #include "../../src/include/pc80/mc146818rtc.h"
 #include "../../src/include/boot/coreboot_tables.h"
 

@@ -41,7 +41,6 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include "option_table.h"
 
 #include <console/console.h>
 #include "lib/ramtest.c"

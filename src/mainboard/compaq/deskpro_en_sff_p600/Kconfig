@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "Deskpro EN SFF P600"
 	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
-
 config IRQ_SLOT_COUNT
 	int
 	default 5

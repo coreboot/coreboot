@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "PL6064"
 	depends on BOARD_WINENT_PL6064
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_WINENT_PL6064
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

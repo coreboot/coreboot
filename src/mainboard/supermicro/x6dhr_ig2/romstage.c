@@ -5,8 +5,7 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
-#include "option_table.h"
-#include "pc80/mc146818rtc_early.c"
+#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"

@@ -1,8 +1,5 @@
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
-#if CONFIG_HAVE_OPTION_TABLE
-#include <option_table.h>
-#endif
 
 #ifndef CONFIG_MAX_REBOOT_CNT
 #error "CONFIG_MAX_REBOOT_CNT not defined"
@@ -10,28 +7,6 @@
 #if  CONFIG_MAX_REBOOT_CNT > 15
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
-
-static unsigned char cmos_read(unsigned char addr)
-{
-	int offs = 0;
-	if (addr >= 128) {
-		offs = 2;
-		addr -= 128;
-	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	return inb(RTC_BASE_PORT + offs + 1);
-}
-
-static void cmos_write(unsigned char val, unsigned char addr)
-{
-	int offs = 0;
-	if (addr >= 128) {
-		offs = 2;
-		addr -= 128;
-	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	outb(val, RTC_BASE_PORT + offs + 1);
-}
 
 static int cmos_error(void)
 {
@@ -43,7 +18,7 @@ static int cmos_error(void)
 
 static int cmos_chksum_valid(void)
 {
-#if CONFIG_HAVE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
 	unsigned char addr;
 	unsigned long sum, old_sum;
 	sum = 0;
@@ -114,9 +89,9 @@ static inline int do_normal_boot(void)
 	return (byte & (1<<1));
 }
 
-static inline unsigned read_option(unsigned start, unsigned size, unsigned def)
+unsigned read_option(unsigned start, unsigned size, unsigned def)
 {
-#if CONFIG_USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
 	unsigned byte;
 	byte = cmos_read(start/8);
 	return (byte >> (start & 7U)) & ((1U << size) - 1U);

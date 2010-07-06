@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "3100 devkit (Mt. Arvon)"
 	depends on BOARD_INTEL_MTARVON
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_INTEL_MTARVON
-
 config IRQ_SLOT_COUNT
 	int
 	default 1

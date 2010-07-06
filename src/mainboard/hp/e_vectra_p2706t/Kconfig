@@ -44,11 +44,6 @@ config MAINBOARD_PART_NUMBER
 	default "e-Vectra P2706T"
 	depends on BOARD_HP_E_VECTRA_P2706T
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_HP_E_VECTRA_P2706T
-
 config IRQ_SLOT_COUNT
 	int
 	default 3

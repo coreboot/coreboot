@@ -42,11 +42,6 @@ config MAINBOARD_PART_NUMBER
 	default "IP530"
 	depends on BOARD_NOKIA_IP530
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_NOKIA_IP530
-
 config IRQ_SLOT_COUNT
 	int
 	default 22

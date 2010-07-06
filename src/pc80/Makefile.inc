@@ -3,7 +3,7 @@ obj-y += isa-dma.o
 obj-y += i8259.o
 obj-$(CONFIG_UDELAY_IO) += udelay_io.o
 obj-y += keyboard.o
-
+initobj-$(CONFIG_USE_OPTION_TABLE) += mc146818rtc_early.o
 initobj-$(CONFIG_USE_DCACHE_RAM) += serial.o
 subdirs-y += vga
 

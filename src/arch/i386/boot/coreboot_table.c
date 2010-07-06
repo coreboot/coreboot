@@ -29,7 +29,7 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
-#if (CONFIG_HAVE_OPTION_TABLE == 1)
+#if (CONFIG_USE_OPTION_TABLE == 1)
 #include <option_table.h>
 #endif
 
@@ -188,7 +188,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-#if (CONFIG_HAVE_OPTION_TABLE == 1)
+#if (CONFIG_USE_OPTION_TABLE == 1)
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -535,7 +535,7 @@ unsigned long write_coreboot_table(
 	rom_table_end &= ~0xffff;
 	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
 
-#if (CONFIG_HAVE_OPTION_TABLE == 1)
+#if (CONFIG_USE_OPTION_TABLE == 1)
 	{
 		struct lb_record *rec_dest = lb_new_record(head);
 		/* Copy the option config table, it's already a lb_record... */

@@ -41,11 +41,6 @@ config MAINBOARD_PART_NUMBER
 	default "MEW-AM"
 	depends on BOARD_ASUS_MEW_AM
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ASUS_MEW_AM
-
 config IRQ_SLOT_COUNT
 	int
 	default 8

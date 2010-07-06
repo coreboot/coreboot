@@ -26,11 +26,6 @@ config MAINBOARD_PART_NUMBER
 	default "RM4100"
 	depends on BOARD_RCA_RM4100
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_RCA_RM4100
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000

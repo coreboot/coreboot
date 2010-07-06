@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "5BCM"
 	depends on BOARD_EAGLELION_5BCM
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_EAGLELION_5BCM
-
 config IRQ_SLOT_COUNT
 	int
 	default 2

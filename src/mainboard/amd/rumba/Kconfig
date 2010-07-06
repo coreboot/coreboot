@@ -38,11 +38,6 @@ config MAINBOARD_PART_NUMBER
 	default "Rumba"
 	depends on BOARD_AMD_RUMBA
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_AMD_RUMBA
-
 config IRQ_SLOT_COUNT
 	int
 	default 2

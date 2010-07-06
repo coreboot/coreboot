@@ -49,11 +49,6 @@ config IRQ_SLOT_COUNT
 	default 0
 	depends on BOARD_MSI_MS9652_FAM10
 
-config HAVE_OPTION_TABLE
-	bool
-	default y
-	depends on BOARD_MSI_MS9652_FAM10
-
 config MAX_CPUS
 	int
 	default 8

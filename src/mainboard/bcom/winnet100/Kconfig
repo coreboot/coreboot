@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "WinNET100"
 	depends on BOARD_BCOM_WINNET100
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_BCOM_WINNET100
-
 # Soldered NIC, internal USB, no real PCI slots.
 config IRQ_SLOT_COUNT
 	int

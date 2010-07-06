@@ -43,7 +43,6 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include "option_table.h"
 #include <console/console.h>
 #if CONFIG_USBDEBUG
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"

@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "DB800"
 	depends on BOARD_AMD_DB800
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_AMD_DB800
-
 config IRQ_SLOT_COUNT
 	int
 	default 4

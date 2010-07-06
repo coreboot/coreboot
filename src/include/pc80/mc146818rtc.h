@@ -85,15 +85,48 @@
  * LB_CKS_RANGE_START, LB_CKS_RANGE_END and LB_CKS_LOC are defined
  * in option_table.h
  */
+#if CONFIG_HAVE_OPTION_TABLE
+#include <option_table.h>
+#endif
 
-#if !defined(ASSEMBLY) && !defined(__PRE_RAM__)
+#ifndef UTIL_BUILD_OPTION_TABLE
+#include <arch/io.h>
+static inline unsigned char cmos_read(unsigned char addr)
+{
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	return inb(RTC_BASE_PORT + offs + 1);
+}
+
+static inline void cmos_write(unsigned char val, unsigned char addr)
+{
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	outb(val, RTC_BASE_PORT + offs + 1);
+}
+#endif
+
+#if !defined(__ROMCC__)
 void rtc_init(int invalid);
-#if CONFIG_USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
 int get_option(void *dest, const char *name);
+unsigned read_option(unsigned start, unsigned size, unsigned def);
 #else
 static inline int get_option(void *dest __attribute__((unused)),
 	const char *name __attribute__((unused))) { return -2; }
+static inline unsigned read_option(unsigned start, unsigned size, unsigned def)
+	{ return def; }
 #endif
+#else
+#include <pc80/mc146818rtc_early.c>
 #endif
 
 #endif /*  PC80_MC146818RTC_H */

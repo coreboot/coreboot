@@ -23,11 +23,6 @@ config MAINBOARD_PART_NUMBER
 	default "Truxton"
 	depends on BOARD_INTEL_TRUXTON
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_INTEL_TRUXTON
-
 config IRQ_SLOT_COUNT
 	int
 	default 1

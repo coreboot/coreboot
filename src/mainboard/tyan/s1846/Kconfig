@@ -38,7 +38,3 @@ config MAINBOARD_PART_NUMBER
 	default "S1846"
 	depends on BOARD_TYAN_S1846
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_TYAN_S1846

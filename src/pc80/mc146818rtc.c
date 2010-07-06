@@ -1,11 +1,7 @@
 #include <console/console.h>
-#include <arch/io.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
 #include <string.h>
-#if CONFIG_HAVE_OPTION_TABLE
-#include <option_table.h>
-#endif
 
 /* control registers - Moto names
  */
@@ -76,29 +72,7 @@
 # define RTC_VRT 0x80		/* valid RAM and time */
 /**********************************************************************/
 
-static inline unsigned char cmos_read(unsigned char addr)
-{
-	int offs = 0;
-	if (addr >= 128) {
-		offs = 2;
-		addr -= 128;
-	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	return inb(RTC_BASE_PORT + offs + 1);
-}
-
-static inline void cmos_write(unsigned char val, unsigned char addr)
-{
-	int offs = 0;
-	if (addr >= 128) {
-		offs = 2;
-		addr -= 128;
-	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	outb(val, RTC_BASE_PORT + offs + 1);
-}
-
-#if CONFIG_HAVE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE
 static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
 	int i;
@@ -138,14 +112,14 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 
 void rtc_init(int invalid)
 {
-#if CONFIG_HAVE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE
 	unsigned char x;
 	int cmos_invalid, checksum_invalid;
 #endif
 
 	printk(BIOS_DEBUG, "RTC Init\n");
 
-#if CONFIG_HAVE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE
 	/* See if there has been a CMOS power problem. */
 	x = cmos_read(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);
@@ -186,7 +160,7 @@ void rtc_init(int invalid)
 	/* Setup the frequency it operates at */
 	cmos_write(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 
-#if CONFIG_HAVE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
 	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
 			LB_CKS_RANGE_END,LB_CKS_LOC);
@@ -203,7 +177,7 @@ void rtc_init(int invalid)
 }
 
 
-#if CONFIG_USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
 /* This routine returns the value of the requested bits
 	input bit = bit count from the beginning of the cmos image
 	      length = number of bits to include in the value

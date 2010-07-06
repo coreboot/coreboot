@@ -39,11 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "BE6-II V2.0"
 	depends on BOARD_ABIT_BE6_II_V2_0
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ABIT_BE6_II_V2_0
-
 config IRQ_SLOT_COUNT
 	int
 	default 9

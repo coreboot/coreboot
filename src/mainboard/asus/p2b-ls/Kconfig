@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "P2B-LS"
 	depends on BOARD_ASUS_P2B_LS
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ASUS_P2B_LS
-
 config IRQ_SLOT_COUNT
 	int
 	default 8

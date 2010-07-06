@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "TC320"
 	depends on BOARD_AXUS_TC320
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_AXUS_TC320
-
 # Soldered NIC, internal USB, no real PCI slots.
 config IRQ_SLOT_COUNT
 	int

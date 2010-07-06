@@ -26,7 +26,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include "pc80/mc146818rtc_early.c"
+#include <pc80/mc146818rtc.h>
 #include "pc80/udelay_io.c"
 #include <console/console.h>
 #include "lib/ramtest.c"

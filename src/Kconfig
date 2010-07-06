@@ -83,6 +83,7 @@ config CCACHE
 config USE_OPTION_TABLE
 	bool "Use CMOS for configuration values"
 	default n
+	depends on HAVE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard coded values.
@@ -189,13 +190,17 @@ config HAVE_MAINBOARD_RESOURCES
 	bool
 	default n
 
+config USE_OPTION_TABLE
+	bool
+	default n
+
 config HAVE_OPTION_TABLE
 	bool
-	default y
+	default n
 	help
 	  This variable specifies whether a given board has a cmos.layout
 	  file containing NVRAM/CMOS bit definitions.
-	  It defaults to 'y' but can be changed to 'n' in mainboard/*/Kconfig.
+	  It defaults to 'n' but can be selected in mainboard/*/Kconfig.
 
 config PIRQ_ROUTE
 	bool

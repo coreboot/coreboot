@@ -39,11 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "GA-6BXC"
 	depends on BOARD_GIGABYTE_GA_6BXC
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_GIGABYTE_GA_6BXC
-
 config IRQ_SLOT_COUNT
 	int
 	default 6

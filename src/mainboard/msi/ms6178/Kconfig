@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "MS-6178"
 	depends on BOARD_MSI_MS_6178
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_MSI_MS_6178
-
 config IRQ_SLOT_COUNT
 	int
 	default 4

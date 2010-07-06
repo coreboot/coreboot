@@ -39,11 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "SY-6BA+ III"
 	depends on BOARD_SOYO_SY_6BA_PLUS_III
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_SOYO_SY_6BA_PLUS_III
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

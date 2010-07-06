@@ -41,8 +41,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include "option_table.h"
-#include "pc80/mc146818rtc_early.c"
+#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 
 #include <cpu/amd/model_fxx_rev.h>

@@ -6,6 +6,7 @@
 #endif
 
 #include "cpu/amd/dualcore/dualcore_id.c"
+#include <pc80/mc146818rtc.h>
 
 static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 {
@@ -56,8 +57,7 @@ static inline void start_other_cores(void)
 	unsigned nodes;
 	unsigned nodeid;
 
-	if (CONFIG_HAVE_OPTION_TABLE &&
-	    read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0)  {
+	if (read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0))  {
 		return; // disable multi_core
 	}
 

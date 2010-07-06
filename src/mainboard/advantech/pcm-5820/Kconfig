@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "PCM-5820"
 	depends on BOARD_ADVANTECH_PCM_5820
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ADVANTECH_PCM_5820
-
 config IRQ_SLOT_COUNT
 	int
 	default 2

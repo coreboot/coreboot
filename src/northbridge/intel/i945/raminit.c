@@ -19,6 +19,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include "raminit.h"
 #include "i945.h"
@@ -2671,7 +2672,7 @@ static void sdram_save_receive_enable(void)
 	values[3] |= (reg32 >> (24 - 4)) & 0xf0;
 
 	/* coreboot only uses bytes 0 - 127 for its CMOS values so far
-	 * so we grad bytes 128 - 131 to save the receive enable values
+	 * so we grab bytes 128 - 131 to save the receive enable values
 	 */
 
 	for (i=0; i<4; i++)

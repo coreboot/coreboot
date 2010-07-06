@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "ALIX.1C"
 	depends on BOARD_PCENGINES_ALIX1C
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_PCENGINES_ALIX1C
-
 config IRQ_SLOT_COUNT
 	int
 	default 5

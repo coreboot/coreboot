@@ -40,11 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "D810E2CB"
 	depends on BOARD_INTEL_D810E2CB
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_INTEL_D810E2CB
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

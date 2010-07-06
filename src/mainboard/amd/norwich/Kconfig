@@ -21,11 +21,6 @@ config MAINBOARD_PART_NUMBER
 	default "Norwich"
 	depends on BOARD_AMD_NORWICH
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_AMD_NORWICH
-
 config IRQ_SLOT_COUNT
 	int
 	default 6

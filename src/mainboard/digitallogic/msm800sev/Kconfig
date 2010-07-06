@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "MSM800SEV"
 	depends on BOARD_DIGITALLOGIC_MSM800SEV
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_DIGITALLOGIC_MSM800SEV
-
 config IRQ_SLOT_COUNT
 	int
 	default 9

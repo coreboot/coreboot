@@ -21,11 +21,6 @@ config MAINBOARD_PART_NUMBER
 	default "PCISA-LX-800-R10"
 	depends on BOARD_IEI_PCISA_LX_800_R10
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_IEI_PCISA_LX_800_R10
-
 config IRQ_SLOT_COUNT
 	int
 	default 9

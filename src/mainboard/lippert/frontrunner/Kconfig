@@ -19,11 +19,6 @@ config MAINBOARD_PART_NUMBER
 	default "Cool Frontrunner"
 	depends on BOARD_LIPPERT_FRONTRUNNER
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_LIPPERT_FRONTRUNNER
-
 config IRQ_SLOT_COUNT
 	int
 	default 2

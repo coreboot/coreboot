@@ -21,11 +21,6 @@ config MAINBOARD_PART_NUMBER
 	default "Geos"
 	depends on BOARD_TRAVERSE_GEOS
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_TRAVERSE_GEOS
-
 config IRQ_SLOT_COUNT
 	int
 	default 6

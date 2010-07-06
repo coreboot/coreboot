@@ -42,11 +42,6 @@ config MAINBOARD_PART_NUMBER
 	default "P6IWP-FE"
 	depends on BOARD_ECS_P6IWP_FE
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ECS_P6IWP_FE
-
 config IRQ_SLOT_COUNT
 	int
 	default 10

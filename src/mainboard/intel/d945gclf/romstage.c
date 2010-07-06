@@ -33,8 +33,7 @@
 
 #include "superio/smsc/lpc47m15x/lpc47m15x.h"
 
-#include "option_table.h"
-#include "pc80/mc146818rtc_early.c"
+#include <pc80/mc146818rtc.h>
 
 #include <console/console.h>
 #include <cpu/x86/bist.h>

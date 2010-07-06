@@ -39,11 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "M6TBA"
 	depends on BOARD_BIOSTAR_M6TBA
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_BIOSTAR_M6TBA
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

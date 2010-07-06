@@ -22,11 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "Cool RoadRunner-LX"
 	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

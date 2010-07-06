@@ -1,5 +1,6 @@
 #include <lib.h> /* Prototypes */
 #include <arch/io.h>
+#include "pc80/mc146818rtc.h"
 
 /* Base Address */
 #ifndef CONFIG_TTYS0_BASE
@@ -80,7 +81,7 @@ void uart_init(void)
 	outb(0x01, CONFIG_TTYS0_BASE + UART_FCR);
 	/* Set Baud Rate Divisor to 12 ==> 115200 Baud */
 	outb(0x80 | UART_LCS, CONFIG_TTYS0_BASE + UART_LCR);
-#if CONFIG_USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
 	static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
 	unsigned ttys0_div, ttys0_index;
 	ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
@@ -101,7 +102,7 @@ void uart_init(void)
 extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
 void uart_init(void)
 {
-#if CONFIG_USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE
         static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
         unsigned ttys0_div, ttys0_index;
         ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);

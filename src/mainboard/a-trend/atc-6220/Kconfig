@@ -39,11 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "ATC-6220"
 	depends on BOARD_A_TREND_ATC_6220
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_A_TREND_ATC_6220
-
 config IRQ_SLOT_COUNT
 	int
 	default 7

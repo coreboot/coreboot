@@ -60,7 +60,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define CK804_NUM 1
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 //set GPIO to input mode
 #define CK804_MB_SETUP \

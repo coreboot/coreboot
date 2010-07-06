@@ -15,7 +15,8 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
 #endif
 		dev = (register_values[i] & ~0xfff) + offset_pci_dev;
 		where = register_values[i] & 0xfff;
-		reg = pci_read_config32(dev, where);
+		if (register_values[i+1])
+			reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2] + offset_io_base;
 		pci_write_config32(dev, where, reg);
@@ -60,7 +61,8 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 			unsigned long reg;
 			dev = (register_values[i+1] & ~0xfff) + offset_pci_dev;
 			where = register_values[i+1] & 0xfff;
-			reg = pci_read_config32(dev, where);
+			if (register_values[i+2])
+				reg = pci_read_config32(dev, where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];
 			pci_write_config32(dev, where, reg);
@@ -71,7 +73,8 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 			unsigned where;
 			unsigned reg;
 			where = register_values[i+1] + offset_io_base;
-			reg = inb(where);
+			if (register_values[i+2])
+				reg = inb(where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];
 			outb(reg, where);
@@ -82,7 +85,8 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 			unsigned where;
 			unsigned long reg;
 			where = register_values[i+1] + offset_io_base;
-			reg = inl(where);
+			if (register_values[i+2])
+				reg = inl(where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];
 			outl(reg, where);

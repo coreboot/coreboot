@@ -102,8 +102,8 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
 				   unsigned *io_base)
 {
 	static const unsigned int ctrl_devport_conf_clear[] = {
-		PCI_ADDR(0, 0x1, 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
-		PCI_ADDR(0, 0x1, 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
+		PCI_ADDR(0, 0x1, 0, ANACTRL_REG_POS), ~(0x0000ff01), 0,
+		PCI_ADDR(0, 0x1, 0, SYSCTRL_REG_POS), ~(0x0000ff01), 0,
 	};
 
 	int j;
@@ -211,9 +211,10 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0x1a, ~(0xff), ((0 << 4) | (2 << 2) | (0 << 0)),
 #endif
 
-#if CK804_NUM > 1
+	};
+
+	static const unsigned int ctrl_conf_multiple[] = {
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0, ~(3 << 2), (0 << 2),
-#endif
 	};
 
 	static const unsigned int ctrl_conf_slave[] = {
@@ -284,7 +285,12 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		if (busn[j] == 0) {
 			setup_resource_map_x_offset(ctrl_conf_master,
 				ARRAY_SIZE(ctrl_conf_master),
-				PCI_DEV(busn[0], CK804_DEVN_BASE, 0), io_base[0]);
+				PCI_DEV(0, CK804_DEVN_BASE, 0), io_base[0]);
+			if (ck804_num > 1)
+				setup_resource_map_x_offset(ctrl_conf_multiple,
+					ARRAY_SIZE(ctrl_conf_multiple),
+					PCI_DEV(0, CK804_DEVN_BASE, 0), 0);
+
 			continue;
 		}
 

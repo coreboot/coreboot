@@ -45,7 +45,6 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
 /* Used by ck804_early_setup(). */
-#define CK804_NUM 1
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 

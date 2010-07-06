@@ -79,7 +79,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define CK804_NUM 2
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 

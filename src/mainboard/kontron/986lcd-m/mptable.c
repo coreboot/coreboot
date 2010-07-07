@@ -32,7 +32,6 @@ static void *smp_write_config_table(void *v)
         static const char productid[12] = "986LCD-M    ";
         struct mp_config_table *mc;
 	struct device *riser = NULL, *firewire = NULL;
-	int i;
 	int firewire_bus = 0, riser_bus = 0, isa_bus;
 	int ioapic_id;
 

@@ -65,17 +65,3 @@ static inline int smbus_read_byte(unsigned device, unsigned address)
 {
 	return do_smbus_read_byte(device, address);
 }
-
-static void smbus_write_byte(unsigned device, unsigned address,
-			     unsigned char val)
-{
-	print_err("Unimplemented smbus_write_byte() called\n");
-	return;
-}
-
-static inline int smbus_write_block(unsigned device, unsigned length,
-				    unsigned cmd, unsigned data1,
-				    unsigned data2)
-{
-	return do_smbus_write_block(device, length, cmd, data1, data2);
-}

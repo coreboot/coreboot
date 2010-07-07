@@ -365,7 +365,7 @@ Public interface.
 static void sdram_set_registers(void)
 {
 	u8 reg8;
-	u16 reg16, did;
+	u16 did;
 
 	did = pci_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 

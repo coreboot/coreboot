@@ -43,30 +43,6 @@ static void pci_modify_config8(device_t dev, unsigned where, u8 orval, u8 mask)
 	pci_write_config8(dev, where, data);
 }
 
-static void pci_modify_config16(device_t dev, unsigned where, u16 orval, u16 mask)
-{
-	u16 data = pci_read_config16(dev, where);
-	data &= (~mask);
-	data |= orval;
-	pci_write_config16(dev, where, data);
-}
-
-static void pci_modify_config32(device_t dev, unsigned where, u32 orval, u32 mask)
-{
-	u32 data = pci_read_config32(dev, where);
-	data &= (~mask);
-	data |= orval;
-	pci_write_config32(dev, where, data);
-}
-
-static void io_modify_config8(u16 where, u8 orval, u8 mask)
-{
-	u8 data = inb(where);
-	data &= (~mask);
-	data |= orval;
-	outb(data, where);
-}
-
 static void via_pci_inittable(u8 chipversion,
 		       const struct VIA_PCI_REG_INIT_TABLE *initdata)
 {

@@ -19,6 +19,7 @@
 
 #include <device/pci_ids.h>
 #include "vx800.h"
+
 #define SMBUS_IO_BASE		0x0500	//from award bios
 #define PMIO_BASE		VX800_ACPI_IO_BASE	//might as well set this while we're here
 
@@ -137,14 +138,11 @@ static unsigned int get_spd_data(unsigned int dimm, unsigned int offset)
 	return val;
 }
 
-static void enable_smbus(void)
+void enable_smbus(void)
 {
 	device_t dev;
 
-	dev =
-	    pci_locate_device(PCI_ID
-			      (PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_LPC),
-			      0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		/* This won't display text if enable_smbus() is before serial init */
@@ -183,7 +181,7 @@ static void enable_smbus(void)
  *
  * @param mem_ctrl The memory controller and SMBus addresses.
  */
-static void smbus_fixup(const struct mem_controller *mem_ctrl)
+void smbus_fixup(const struct mem_controller *mem_ctrl)
 {
 	int i, ram_slots, current_slot = 0;
 	u8 result = 0;

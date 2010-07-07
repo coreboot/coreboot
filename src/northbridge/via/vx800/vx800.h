@@ -26,6 +26,17 @@ static inline void vx800_noop(device_t dev)
 {
 }
 #endif
+
+#ifdef __PRE_RAM__
+/* vx800_early_smbus.c */
+struct mem_controller;
+void enable_smbus(void);
+void smbus_fixup(const struct mem_controller *mem_ctrl);
+
+/* vx800_early_serial.c */
+void enable_vx800_serial(void);
+#endif
+
 //#define REV_B0 0x10
 #define REV_B1 0x11
 //#define REV_B2 0x12

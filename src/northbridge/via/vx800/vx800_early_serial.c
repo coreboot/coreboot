@@ -27,12 +27,6 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vx800_writesuper(uint8_t reg, uint8_t val)
-{
-	outb(reg, SIO_BASE);
-	outb(val, SIO_DATA);
-}
-
 static void vx800_writepnpaddr(uint8_t val)
 {
 	outb(val, 0x2e);
@@ -59,7 +53,7 @@ static void vx800_writesioword(uint16_t reg, uint16_t val)
    mainboard
  */
 
-static void enable_vx800_serial(void)
+void enable_vx800_serial(void)
 {
 	outb(6, 0x80);
 	outb(0x03, 0x22);

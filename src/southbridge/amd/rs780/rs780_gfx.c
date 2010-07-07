@@ -96,22 +96,6 @@ typedef struct _MMIORANGE
 
 MMIORANGE MMIO[8], CreativeMMIO[8];
 
-static MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
-{
-	int i;
-	for (i=0; i<8; i++)
-	{
-		if (pMMIO[i].Limit == 0)
-				return &pMMIO[i];
-	}
-	return 0;
-}
-static void FreeMMIO(MMIORANGE* pMMIO)
-{
-	pMMIO->Base = 0;
-	pMMIO->Limit = 0;
-}
-
 #define CIM_STATUS u32
 #define CIM_SUCCESS 0x00000000
 #define CIM_ERROR	0x80000000
@@ -123,6 +107,22 @@ static void FreeMMIO(MMIORANGE* pMMIO)
 #define MMIO_ATTRIB_SKIP_ZERO 1<<2
 
 #ifdef DONT_TRUST_RESOURCE_ALLOCATION
+static MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
+{
+	int i;
+	for (i=0; i<8; i++) {
+		if (pMMIO[i].Limit == 0)
+				return &pMMIO[i];
+	}
+	return 0;
+}
+
+static void FreeMMIO(MMIORANGE* pMMIO)
+{
+	pMMIO->Base = 0;
+	pMMIO->Limit = 0;
+}
+
 static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 {
 	int i;
@@ -584,7 +584,6 @@ static void rs780_internal_gfx_enable(device_t dev)
 {
 	u32 l_dword;
 	int i;
-	device_t k8_f0 = 0, k8_f2 = 0;
 	device_t nb_dev = dev_find_slot(0, 0);
 	msr_t sysmem;
 
@@ -617,7 +616,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 
 	/* LPC DMA Deadlock workaround? */
 	/* GFX_InitCommon*/
-	k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	l_dword = pci_read_config32(k8_f0, 0x68);
 	l_dword &= ~(3 << 21);
 	l_dword |= (1 << 21);
@@ -632,7 +631,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 #if (CONFIG_GFXUMA == 1)
 	/* GFX_InitUMA. */
 	/* Copy CPU DDR Controller to NB MC. */
-	k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
 	for (i = 0; i < 12; i++)
 	{
 		l_dword = pci_read_config32(k8_f2, 0x40 + i * 4);

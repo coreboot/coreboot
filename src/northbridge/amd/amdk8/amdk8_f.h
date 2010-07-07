@@ -1,6 +1,6 @@
 #ifndef AMDK8_F_H
-
 #define AMDK8_F_H
+
 /* Definitions of various K8 registers */
 /* Function 0 */
 #define HT_TRANSACTION_CONTROL 0x68

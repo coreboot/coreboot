@@ -206,12 +206,12 @@ static void enable_routing(u8 node)
 	print_spew(" done.\n");
 }
 
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
 static void fill_row(u8 node, u8 row, u32 value)
 {
 	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
 
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
 static u8 link_to_register(int ldt)
 {
 	/*
@@ -447,28 +447,33 @@ static void setup_row_direct_x(u8 temp, u8 source, u8 dest, u8 linkn)
 }
 
 #if CROSS_BAR_47_56
-static void opt_broadcast_rt(u8 source, u8 dest, u8 kickout) {
+static void opt_broadcast_rt(u8 source, u8 dest, u8 kickout)
+{
 	uint32_t val;
 	val = get_row(source, dest);
 	val -= link_connection(source, kickout)<<16;
 	fill_row(source, dest, val);
 }
 
-static void opt_broadcast_rt_group(const u8 *conn, int num) {
+static void opt_broadcast_rt_group(const u8 *conn, int num)
+{
 	int i;
 
 	for(i=0; i<num; i+=3) {
 		opt_broadcast_rt(conn[i], conn[i+1],conn[i+2]);
 	}
 }
-static void opt_broadcast_rt_plus(u8 source, u8 dest, u8 kickout) {
+
+static void opt_broadcast_rt_plus(u8 source, u8 dest, u8 kickout)
+{
 	uint32_t val;
 	val = get_row(source, dest);
 	val += link_connection(source, kickout)<<16;
 	fill_row(source, dest, val);
 }
 
-static void opt_broadcast_rt_plus_group(const u8 *conn, int num) {
+static void opt_broadcast_rt_plus_group(const u8 *conn, int num)
+{
 	int i;
 
 	for(i=0; i<num; i+=3) {
@@ -477,26 +482,21 @@ static void opt_broadcast_rt_plus_group(const u8 *conn, int num) {
 }
 #endif
 
-static void setup_row_direct(u8 source, u8 dest, u8 linkn){
+static void setup_row_direct(u8 source, u8 dest, u8 linkn)
+{
 	setup_row_direct_x(source, source, dest, linkn);
 }
 
-static void setup_remote_row_direct(u8 source, u8 dest, u8 linkn){
+static void setup_remote_row_direct(u8 source, u8 dest, u8 linkn)
+{
 	setup_row_direct_x(7, source, dest, linkn);
 }
 
 static void setup_temp_row(u8 source, u8 dest)
 {
-	/* copy val from (source, dest) to (source,7) */
-	fill_row(source,7,get_row(source,dest));
+	/* copy value from (source, dest) to (source,7) */
+	fill_row(source, 7, get_row(source, dest));
 }
-
-#if 0
-static void clear_temp_row(u8 source)
-{
-	fill_row(source, 7, DEFAULT);
-}
-#endif
 
 static void setup_remote_node(u8 node)
 {
@@ -670,7 +670,8 @@ static void setup_uniprocessor(void)
 }
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-static int optimize_connection_group(const u8 *opt_conn, int num) {
+static int optimize_connection_group(const u8 *opt_conn, int num) 
+{
 	int needs_reset = 0;
 	int i;
 	for(i=0; i<num; i+=2) {

@@ -63,7 +63,7 @@ static int smbus_wait_until_done(u32 smbus_io_base)
 	return -3;		/* timeout */
 }
 
-static int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
+int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 {
 	u8 byte;
 
@@ -90,7 +90,7 @@ static int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 	return byte;
 }
 
-static int do_smbus_send_byte(u32 smbus_io_base, u32 device,
+int do_smbus_send_byte(u32 smbus_io_base, u32 device,
 			      u8 val)
 {
 	u8 byte;

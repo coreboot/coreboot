@@ -49,4 +49,9 @@ extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 void sb700_enable(device_t dev);
 
+#ifdef __PRE_RAM__
+void sb700_lpc_port80(void);
+void sb700_pci_port80(void);
+#endif
+
 #endif /* SB700_H */

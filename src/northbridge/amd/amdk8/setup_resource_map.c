@@ -1,6 +1,8 @@
+#include "amdk8.h"
+
 #define RES_DEBUG 0
 
-static void setup_resource_map_offset(const unsigned int *register_values, int max, unsigned offset_pci_dev, unsigned offset_io_base)
+void setup_resource_map_offset(const unsigned int *register_values, int max, unsigned offset_pci_dev, unsigned offset_io_base)
 {
 	int i;
 #if RES_DEBUG

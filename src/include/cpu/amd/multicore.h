@@ -38,6 +38,9 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54);
 struct device;
 u32 get_apicid_base(u32 ioapic_num);
 void amd_sibling_init(struct device *cpu);
+#else
+void wait_all_other_cores_started(u32 bsp_apicid);
+void wait_all_aps_started(u32 bsp_apicid);
 #endif
 
 #endif /* CPU_AMD_QUADCORE_H */

@@ -1717,6 +1717,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	return reg;
 }
 
+#if CONFIG_MEM_TRAIN_SEQ == 1
 static void set_top_mem_ap(unsigned tom_k, unsigned tom2_k)
 {
 	msr_t msr;
@@ -1730,6 +1731,7 @@ static void set_top_mem_ap(unsigned tom_k, unsigned tom2_k)
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(TOP_MEM, msr);
 }
+#endif
 
 static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k)
 {
@@ -1802,6 +1804,7 @@ static void set_htic_bit(unsigned i, unsigned val, unsigned bit)
 }
 
 
+#if CONFIG_MEM_TRAIN_SEQ == 1
 static unsigned get_htic_bit(unsigned i, unsigned bit)
 {
 	uint32_t dword;
@@ -1816,6 +1819,7 @@ static void wait_till_sysinfo_in_ram(void)
 		if(get_htic_bit(0, 9)) return;
 	}
 }
+#endif
 
 static void set_sysinfo_in_ram(unsigned val)
 {

@@ -244,7 +244,7 @@ static void wait_ap_started(u32 ap_apicid, void *gp)
 	}
 }
 
-static void wait_all_other_cores_started(u32 bsp_apicid)
+void wait_all_other_cores_started(u32 bsp_apicid)
 {
 	// all aps other than core0
 	printk(BIOS_DEBUG, "started ap apicid: ");

@@ -1,5 +1,4 @@
 #ifndef AMDK8_PRE_F_H
-
 #define AMDK8_PRE_F_H
 
 /* Definitions of various K8 registers */

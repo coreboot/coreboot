@@ -8,8 +8,9 @@
         #include "amdk8_pre_f.h"
 #endif
 
-#ifndef __ROMCC__
+#ifdef __PRE_RAM__
 void showallroutes(int level, device_t dev);
+void setup_resource_map_offset(const unsigned int *register_values, int max, unsigned offset_pci_dev, unsigned offset_io_base);
 #endif
 
 #endif /* AMDK8_H */

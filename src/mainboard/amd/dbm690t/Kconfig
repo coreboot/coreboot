@@ -30,6 +30,13 @@ config HAVE_HIGH_TABLES
 	default n
 	depends on BOARD_AMD_DBM690T
 
+# This is a temporary fix, and should be removed when the race condition for
+# building option_table.h is fixed.
+config WARNINGS_ARE_ERRORS
+	bool
+	default n
+	depends on BOARD_AMD_DBM690T
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000

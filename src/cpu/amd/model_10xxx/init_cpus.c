@@ -252,12 +252,11 @@ void wait_all_other_cores_started(u32 bsp_apicid)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static void allow_all_aps_stop(u32 bsp_apicid)
+void allow_all_aps_stop(u32 bsp_apicid)
 {
 	/* Called by the BSP to indicate AP can stop */
 
-	/* FIXME Do APs use this?
-	   Looks like wait_till_sysinfo_in_ram is used instead. */
+	/* FIXME Do APs use this? */
 
 	// allow aps to stop use 6 bits for state
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x14);
@@ -395,15 +394,11 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		}
 #endif
 
-		/* AP is ready, Wait for the BSP to get memory configured */
-		/* FIXME: many cores spinning on node0 pci register seems to be bad.
-		 * Why do we need to wait? These APs are just going to go sit in a hlt.
-		 */
-		//wait_till_sysinfo_in_ram();
-
+		/* AP is ready, configure MTRRs and go to sleep */
 		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
 		STOP_CAR_AND_CPU();
+
 		printk(BIOS_DEBUG,
 		       "\nAP %02x should be halted but you are reading this....\n",
 		       apicid);
@@ -912,6 +907,7 @@ static void cpuSetAMDPCI(u8 node)
 	printk(BIOS_DEBUG, " done\n");
 }
 
+#ifdef UNUSED_CODE
 static void cpuInitializeMCA(void)
 {
 	/* Clears Machine Check Architecture (MCA) registers, which power on
@@ -939,6 +935,7 @@ static void cpuInitializeMCA(void)
 		}
 	}
 }
+#endif
 
 /**
  * finalize_node_setup()

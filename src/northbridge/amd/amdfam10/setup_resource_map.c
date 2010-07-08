@@ -41,9 +41,7 @@ static void setup_resource_map(const u32 *register_values, u32 max)
 }
 
 
-static void setup_resource_map_offset(const u32 *register_values,
-					u32 max, u32 offset_pci_dev,
-					u32 offset_io_base)
+void setup_resource_map_offset(const u32 *register_values, u32 max, u32 offset_pci_dev, u32 offset_io_base)
 {
 	u32 i;
 //	print_debug("setting up resource map offset....");
@@ -66,8 +64,7 @@ static void setup_resource_map_offset(const u32 *register_values,
 #define RES_PORT_IO_32 0x20
 #define RES_MEM_IO 0x40
 
-static void setup_resource_map_x_offset(const u32 *register_values, u32 max,
-					u32 offset_pci_dev, u32 offset_io_base)
+void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32 offset_pci_dev, u32 offset_io_base)
 {
 	u32 i;
 
@@ -133,7 +130,8 @@ static void setup_resource_map_x_offset(const u32 *register_values, u32 max,
 	print_debug("done.\n");
 #endif
 }
-static void setup_resource_map_x(const u32 *register_values, u32 max)
+
+void setup_resource_map_x(const u32 *register_values, u32 max)
 {
 	u32 i;
 

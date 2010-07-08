@@ -191,7 +191,7 @@ void wait_all_other_cores_started(u32 bsp_apicid)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static void allow_all_aps_stop(u32 bsp_apicid)
+void allow_all_aps_stop(u32 bsp_apicid)
 {
 	// allow aps to stop
 

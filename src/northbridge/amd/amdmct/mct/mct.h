@@ -538,7 +538,6 @@ u32 SetUpperFSbase(u32 addr_hi);
 
 void K8FECCInit(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 
-unsigned amd_FD_support(void);
 void amd_MCTInit(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 
 void K8FCPUMemTyping(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);

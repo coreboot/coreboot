@@ -70,13 +70,12 @@ static u8 mct_Average_RcvrEnDly_1Pass(struct DCTStatStruc *pDCTstat, u8 Channel,
 	return MaxValue;
 }
 
-
-
+#ifdef UNUSED_CODE
 static u8 mct_AdjustFinalDQSRcvValue_1Pass(u8 val_1p, u8 val_2p)
 {
 	return (val_1p & 0xff) + ((val_2p & 0xff)<<8);
 }
-
+#endif
 
 u8 mct_SaveRcvEnDly_D_1Pass(struct DCTStatStruc *pDCTstat, u8 pass)
 {

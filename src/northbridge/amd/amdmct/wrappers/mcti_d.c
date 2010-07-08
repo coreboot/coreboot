@@ -337,6 +337,7 @@ static void mctHookAfterDramInit(void)
 static void coreDelay (void);
 
 
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
 /* Erratum 350 */
 static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {
@@ -398,6 +399,7 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 	coreDelay();
 
 }
+#endif
 
 
 static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)

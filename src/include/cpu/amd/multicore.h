@@ -41,6 +41,8 @@ void amd_sibling_init(struct device *cpu);
 #else
 void wait_all_other_cores_started(u32 bsp_apicid);
 void wait_all_aps_started(u32 bsp_apicid);
+void allow_all_aps_stop(u32 bsp_apicid);
 #endif
+u32 get_initial_apicid(void);
 
 #endif /* CPU_AMD_QUADCORE_H */

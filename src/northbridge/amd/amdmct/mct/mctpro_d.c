@@ -375,7 +375,7 @@ static void beforeInterleaveChannels_D(struct DCTStatStruc *pDCTstatA, u8 *enabl
 		*enabled = 0;
 }
 
-
+#ifdef UNUSED_CODE
 static u8 mctDoAxRdPtrInit_D(struct DCTStatStruc *pDCTstat, u8 *Rdtr)
 {
 	u32 tmp;
@@ -387,6 +387,7 @@ static u8 mctDoAxRdPtrInit_D(struct DCTStatStruc *pDCTstat, u8 *Rdtr)
 	}
 	return 0;
 }
+#endif
 
 void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request) {
 

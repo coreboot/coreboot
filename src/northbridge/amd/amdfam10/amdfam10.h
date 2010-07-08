@@ -1169,8 +1169,16 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 
 #endif
 
-#ifndef __ROMCC__
+#ifdef __PRE_RAM__
 void showallroutes(int level, device_t dev);
+
+void setup_resource_map_offset(const u32 *register_values, u32 max, u32
+		offset_pci_dev, u32 offset_io_base);
+
+void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32
+		offset_pci_dev, u32 offset_io_base);
+
+void setup_resource_map_x(const u32 *register_values, u32 max);
 #endif
 
 #endif /* AMDFAM10_H */

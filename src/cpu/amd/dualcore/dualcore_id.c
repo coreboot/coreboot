@@ -14,7 +14,7 @@ unsigned int read_nb_cfg_54(void)
         return ( ( msr.hi >> (54-32)) & 1);
 }
 
-static inline unsigned get_initial_apicid(void)
+u32 get_initial_apicid(void)
 {
 	return ((cpuid_ebx(1) >> 24) & 0xf);
 }

@@ -28,7 +28,7 @@ static void set_htic_bit(u8 i, u32 val, u8 bit)
 	pci_write_config32(NODE_PCI(i, 0), HT_INIT_CONTROL, dword);
 }
 
-
+#ifdef UNUSED_CODE
 static u32 get_htic_bit(u8 i, u8 bit)
 {
 	u32 dword;
@@ -47,6 +47,7 @@ static void wait_till_sysinfo_in_ram(void)
 		if(get_htic_bit(0, 9)) return;
 	}
 }
+#endif
 
 static void set_sysinfo_in_ram(u32 val)
 {

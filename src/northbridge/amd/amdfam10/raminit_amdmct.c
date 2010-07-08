@@ -111,8 +111,6 @@ static  void print_t(const char *strval)
 //#include "../amdmct/mct/mctardk5.c"
 #endif
 
-#include "../amdmct/mct/mct_fd.c"
-
 #endif	/* DDR2 */
 
 int mctRead_SPD(u32 smaddr, u32 reg)

@@ -1,3 +1,4 @@
+#include "amd8111.h"
 #include <reset.h>
 
 /* by yhlu 2005.10 */
@@ -45,7 +46,7 @@ void hard_reset(void)
         outb(0x0e, 0x0cf9); // make sure cf9 is enabled
 }
 
-static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
         device_t dev;
 

@@ -22,7 +22,9 @@
 
 static void setSyncOnUnEccEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA);
+#ifdef UNUSED_CODE
 static u32 GetScrubAddr_D(u32 Node);
+#endif
 static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat);
 
 
@@ -249,7 +251,7 @@ static void setSyncOnUnEccEn_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
-
+#ifdef UNUSED_CODE
 static u32 GetScrubAddr_D(u32 Node)
 {
 	/* Get the current 40-bit Scrub ADDR address, scaled to 32-bits,
@@ -280,7 +282,7 @@ static u32 GetScrubAddr_D(u32 Node)
 
 	return val;		/* ScrubAddr[39:8] */
 }
-
+#endif
 
 static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat)
 {

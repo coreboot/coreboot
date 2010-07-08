@@ -30,10 +30,11 @@
 //used by raminit
 #define QRANK_DIMM_SUPPORT 1
 
-//used by init_cpus and fidvid
-#define SET_FIDVID 1
-//if we want to wait for core1 done before DQS training, set it to 0
-#define SET_FIDVID_CORE0_ONLY 1
+// used by init_cpus and fidvid (disabled until someone tests this)
+// #define SET_FIDVID 1
+#define SET_FIDVID 0
+// if we want to wait for core1 done before DQS training, set it to 0
+// #define SET_FIDVID_CORE0_ONLY 1
 
 #include <stdint.h>
 #include <string.h>
@@ -121,7 +122,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
-#include "cpu/amd/model_fxx/fidvid.c"
+// Disabled until it's actually used:
+// #include "cpu/amd/model_fxx/fidvid.c"
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"

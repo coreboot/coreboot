@@ -61,6 +61,7 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	return d;
 }
 
+#if CONFIG_AMDMCT == 0
 static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 {
 	u32 i;
@@ -117,8 +118,9 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 	pci_write_config32(dev, 0x124, d.mask>>8);
 
 }
+#endif
 
-
+#if CONFIG_AMDMCT == 0
 static void set_DctSelBaseAddr(u32 i, u32 sel_m)
 {
 	device_t dev;
@@ -152,7 +154,6 @@ static u32 get_DctSelBaseAddr(u32 i)
 	return sel_m;
 }
 
-#if CONFIG_AMDMCT == 0
 #ifdef UNUSED_CODE
 static void set_DctSelHiEn(u32 i, u32 val)
 {
@@ -234,6 +235,7 @@ static u32 get_one_DCT(struct mem_info *meminfo)
 
 	return one_DCT;
 }
+
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 // See that other copy in northbridge.c
 static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
@@ -574,7 +576,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 }
 #endif
 
-
+#ifdef UNUSED_CODE
 static void re_set_all_config_map_reg(u32 nodes, u32 segbit,
 					sys_info_conf_t *sysinfo)
 {
@@ -616,7 +618,7 @@ static void re_set_all_config_map_reg(u32 nodes, u32 segbit,
 	}
 
 }
-
+#endif
 
 static u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 {
@@ -660,7 +662,7 @@ static void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 }
 
-
+#ifdef UNUSED_CODE
 static  void set_BusSegmentEn(u32 node, u32 segbit)
 {
 #if CONFIG_PCI_BUS_SEGN_BITS
@@ -679,6 +681,7 @@ static  void set_BusSegmentEn(u32 node, u32 segbit)
 	pci_write_config32(dev, 0x68, dword);
 #endif
 }
+#endif
 
 #if !defined(__PRE_RAM__)
 static u32 get_io_addr_index(u32 nodeid, u32 linkn)

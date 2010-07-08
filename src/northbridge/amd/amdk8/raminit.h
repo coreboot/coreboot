@@ -13,6 +13,7 @@ struct mem_controller {
 
 struct sys_info;
 void exit_from_self(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
+void setup_resource_map(const unsigned int *register_values, int max);
 
 #if defined(__PRE_RAM__) && defined(RAMINIT_SYSINFO) && RAMINIT_SYSINFO == 1
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);

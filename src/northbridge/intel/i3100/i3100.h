@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef __I3100_H__
+#define __I3100_H__
+
 #define IURBASE	0X14
 #define MCHCFG0	0X50
 #define MCHSCRB	0X52
@@ -60,3 +63,10 @@
 /* DRC */
 #define DRC_NOECC_MODE        (0 << 20)
 #define DRC_72BIT_ECC         (1 << 20)
+
+
+#ifdef __GNUC__
+int bios_reset_detected(void);
+#endif
+
+#endif

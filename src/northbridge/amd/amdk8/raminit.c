@@ -19,7 +19,7 @@
 #define QRANK_DIMM_SUPPORT 0
 #endif
 
-static void setup_resource_map(const unsigned int *register_values, int max)
+void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 //	printk(BIOS_DEBUG, "setting up resource map....");
@@ -2346,7 +2346,7 @@ static void set_sysinfo_in_ram(unsigned val)
 {
 }
 
-static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
+void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
 			  const uint16_t *spd_addr)
 {
 	int i;

@@ -313,7 +313,8 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 	}
 }
 
-
+#ifdef UNUSED_CODE
+/* Callback not required */
 static u8 mct_AdjustDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
 {
 	u8 skip = 0;
@@ -323,7 +324,7 @@ static u8 mct_AdjustDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
 
 	return skip;
 }
-
+#endif
 
 static u8 mct_checkFenceHoleAdjust_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 DQSDelay,

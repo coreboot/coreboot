@@ -326,7 +326,7 @@ static u32 is_core0_started(u32 nodeid)
 	return htic;
 }
 
-static void wait_all_core0_started(void)
+void wait_all_core0_started(void)
 {
 	/* When core0 is started, it will distingush_cpu_resets
 	 * So wait for that to finish */

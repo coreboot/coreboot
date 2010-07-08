@@ -722,7 +722,7 @@ config ENABLE_APIC_EXT_ID
 
 config WARNINGS_ARE_ERRORS
 	bool
-	default n
+	default y
 
 config ID_SECTION_OFFSET
 	hex

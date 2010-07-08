@@ -32,6 +32,7 @@ static u32 pci_read_config32_index(device_t dev, u32 index_reg, u32 index)
 	return dword;
 }
 
+#ifdef UNUSED_CODE
 static void pci_write_config32_index(device_t dev, u32 index_reg, u32 index, u32 data)
 {
 
@@ -40,6 +41,7 @@ static void pci_write_config32_index(device_t dev, u32 index_reg, u32 index, u32
 	pci_write_config32(dev, index_reg + 0x4, data);
 
 }
+#endif
 
 static u32 pci_read_config32_index_wait(device_t dev, u32 index_reg, u32 index)
 {
@@ -55,6 +57,7 @@ static u32 pci_read_config32_index_wait(device_t dev, u32 index_reg, u32 index)
 	return dword;
 }
 
+#ifdef UNUSED_CODE
 static void pci_write_config32_index_wait(device_t dev, u32 index_reg, u32 index, u32 data)
 {
 
@@ -68,6 +71,7 @@ static void pci_write_config32_index_wait(device_t dev, u32 index_reg, u32 index
 	} while (!(dword & (1<<31)));
 
 }
+#endif
 #endif
 
 

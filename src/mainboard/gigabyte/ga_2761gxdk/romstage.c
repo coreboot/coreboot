@@ -123,9 +123,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
         RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
 
 #include "southbridge/sis/sis966/sis966_early_setup_ss.h"
-#include "southbridge/sis/sis966/sis966_early_setup_car.c"
-
-
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

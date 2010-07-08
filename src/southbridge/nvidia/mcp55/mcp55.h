@@ -24,6 +24,9 @@
 
 #include "chip.h"
 
+#ifndef __PRE_RAM__
 void mcp55_enable(device_t dev);
-
+#else
+void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
+#endif
 #endif /* MCP55_H */

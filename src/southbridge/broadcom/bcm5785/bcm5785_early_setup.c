@@ -4,6 +4,7 @@
  */
 
 #include <reset.h>
+#include "bcm5785.h"
 #include "bcm5785_enable_rom.c"
 
 static void bcm5785_enable_lpc(void)
@@ -53,12 +54,12 @@ static void bcm5785_enable_wdt_port_cf9(void)
         pci_write_config8(dev, 0x40, (1<<2));
 }
 
-static unsigned get_sbdn(unsigned bus)
+unsigned get_sbdn(unsigned bus)
 {
         device_t dev;
 
         /* Find the device.
-         * There can only be one 8111 on a hypertransport chain/bus.
+         * There can only be one bcm5785 on a hypertransport chain/bus.
          */
         dev = pci_locate_device_on_bus(
                 PCI_ID(0x1166, 0x0036),
@@ -70,7 +71,7 @@ static unsigned get_sbdn(unsigned bus)
 
 #define SB_VFSMAF 0
 
-static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
 	//ACPI Decode Enable
 	outb(0x0e, 0xcd6);
@@ -89,7 +90,7 @@ static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 	outb(9, 0xcd7);
 }
 
-static void ldtstop_sb(void)
+void ldtstop_sb(void)
 {
 	outb(1, 0x2060);
 }

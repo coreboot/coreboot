@@ -74,7 +74,7 @@
 	*/
 
 
-static void setup_resource_map(const unsigned int *register_values, int max)
+void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 	for (i = 0; i < max; i += 3) {
@@ -3206,7 +3206,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 }
 
-static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
+void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
 			  const uint16_t *spd_addr)
 {
 	int i;

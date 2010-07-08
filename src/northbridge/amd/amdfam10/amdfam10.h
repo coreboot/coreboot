@@ -1179,6 +1179,14 @@ void setup_resource_map_x_offset(const u32 *register_values, u32 max, u32
 		offset_pci_dev, u32 offset_io_base);
 
 void setup_resource_map_x(const u32 *register_values, u32 max);
+
+/* reset_test.c */
+u32 cpu_init_detected(u8 nodeid);
+u32 bios_reset_detected(void);
+u32 cold_reset_detected(void);
+u32 other_reset_detected(void);
+u32 get_sblk(void);
+u8 get_sbbusn(u8 sblk);
 #endif
 
 #endif /* AMDFAM10_H */

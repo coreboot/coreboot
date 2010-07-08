@@ -17,12 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+
+#if (CONFIG_DIMM_SUPPORT & 0x000F)!=0x0005 /* not needed for AMD_FAM10_DDR3 */
 static  void print_tx(const char *strval, u32 val)
 {
 #if CONFIG_DEBUG_RAM_SETUP
 	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 #endif
 }
+#endif
 
 static  void print_t(const char *strval)
 {

@@ -37,16 +37,16 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 /*
- XMM map:
-    xmm1: cpu family
-    xmm2: fam10 comparison value
-    xmm3: backup ebx
-*/
+ * XMM map:
+ *   xmm1: cpu family
+ *   xmm2: fam10 comparison value
+ *   xmm3: backup ebx
+ */
 
 	/* Save the BIST result */
 	movl	%eax, %ebp
 
-	/*for normal part %ebx already contain cpu_init_detected from fallback call */
+	/* for normal part %ebx already contain cpu_init_detected from fallback call */
 
 cache_as_ram_setup:
 	post_code(0xa0)
@@ -113,7 +113,8 @@ cache_as_ram_setup:
 CAR_FAM10_out:
 
 	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
-	   Re-enable it in after RAM is initialized and before CAR is disabled */
+	 * Re-enable it in after RAM is initialized and before CAR is disabled
+	 */
 	movl	$0xc001102a, %ecx
 	rdmsr
 	bts	$15, %eax

@@ -29,7 +29,7 @@
 
 /* mmconf is not ready */
 /* io_ext is not ready */
-static u32 cpu_init_detected(u8 nodeid)
+u32 cpu_init_detected(u8 nodeid)
 {
 	u32 htic;
 	device_t dev;
@@ -40,7 +40,7 @@ static u32 cpu_init_detected(u8 nodeid)
 	return !!(htic & HTIC_INIT_Detect);
 }
 
-static u32 bios_reset_detected(void)
+u32 bios_reset_detected(void)
 {
 	u32 htic;
 	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
@@ -48,7 +48,7 @@ static u32 bios_reset_detected(void)
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
 }
 
-static u32 cold_reset_detected(void)
+u32 cold_reset_detected(void)
 {
 	u32 htic;
 	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
@@ -56,7 +56,7 @@ static u32 cold_reset_detected(void)
 	return !(htic & HTIC_ColdR_Detect);
 }
 
-static u32 other_reset_detected(void)	// other warm reset not started by BIOS
+u32 other_reset_detected(void)	// other warm reset not started by BIOS
 {
 	u32 htic;
 	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
@@ -154,7 +154,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 	return 0;
 }
 
-static u32 get_sblk(void)
+u32 get_sblk(void)
 {
 	u32 reg;
 	/* read PCI_DEV(CONFIG_CBB,CONFIG_CDB,0) 0x64 bit [8:9] to find out SbLink m */
@@ -163,7 +163,7 @@ static u32 get_sblk(void)
 }
 
 
-static u8 get_sbbusn(u8 sblk)
+u8 get_sbbusn(u8 sblk)
 {
 	return node_link_to_bus(0, sblk);
 }

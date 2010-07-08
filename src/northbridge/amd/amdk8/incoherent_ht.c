@@ -576,7 +576,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 	return reset_needed;
 }
 
-#if defined(CONFIG_SOUTHBRIDGE_NVIDIA_CK804) || defined(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55)
+#if defined(CONFIG_SOUTHBRIDGE_NVIDIA_CK804) // || defined(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55)
 static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, unsigned val)
 {
 	uint32_t dword;

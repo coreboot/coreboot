@@ -19,6 +19,7 @@
 
 /* Call-backs */
 #include <delay.h>
+
 static u16 mctGet_NVbits(u8 index)
 {
 	u16 val = 0;
@@ -411,6 +412,7 @@ static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTSt
 #endif
 }
 
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
 static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
 {
 	if (pDCTstatA->LogicalCPUID & AMD_DR_Bx) {
@@ -420,6 +422,7 @@ static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStr
 	}
 	return val;
 }
+#endif
 
 static void mctHookAfterAnyTraining(void)
 {
@@ -430,8 +433,9 @@ static u32 mctGetLogicalCPUID_D(u8 node)
 	return mctGetLogicalCPUID(node);
 }
 
+#if (CONFIG_DIMM_SUPPORT & 0x000F)!=0x0005 /* not needed for AMD_FAM10_DDR3 */
 static u8 mctSetNodeBoundary_D(void)
 {
 	return 0;
 }
-
+#endif

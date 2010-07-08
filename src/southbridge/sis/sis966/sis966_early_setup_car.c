@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-static void sis966_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
+void sis966_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
 {
 	uint32_t tgio_ctrl;
 	uint32_t pll_ctrl;

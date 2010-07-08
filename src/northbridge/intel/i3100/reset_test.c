@@ -6,7 +6,7 @@
 /* To see if I have already booted I check to see if memory
  * has been enabled.
  */
-static int bios_reset_detected(void)
+int bios_reset_detected(void)
 {
 	uint32_t dword;
 

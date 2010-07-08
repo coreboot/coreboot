@@ -51,6 +51,7 @@ static int smbus_wait_until_done(void)
 	return loops ? 0 : -1;
 }
 
+#ifdef UNUNSED_CODE
 static int smbus_wait_until_blk_done(void)
 {
 	unsigned loops = SMBUS_TIMEOUT;
@@ -63,6 +64,7 @@ static int smbus_wait_until_blk_done(void)
 	} while ((byte & (1 << 7)) == 0);
 	return loops ? 0 : -1;
 }
+#endif
 
 static int do_smbus_read_byte(unsigned device, unsigned address)
 {
@@ -110,3 +112,69 @@ static int do_smbus_read_byte(unsigned device, unsigned address)
 	return byte;
 }
 
+#ifdef UNUNSED_CODE
+static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
+				unsigned data1, unsigned data2)
+{
+	unsigned char byte;
+	unsigned char stat;
+	int i;
+
+	print_err("Untested smbus_write_block called\n");
+
+	/* Clear the PM timeout flags, SECOND_TO_STS */
+	outw(inw(PMBASE_ADDR + 0x66), PMBASE_ADDR + 0x66);
+
+	if (smbus_wait_until_ready() < 0) {
+		return -2;
+	}
+
+	/* Setup transaction */
+	/* Obtain ownership */
+	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
+	for (stat = 0; (stat & 0x40) == 0;) {
+		stat = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+	}
+	/* Clear the done bit */
+	outb(0x80, SMBUS_IO_BASE + SMBHSTSTAT);
+	/* Disable interrupts */
+	outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & (~1), SMBUS_IO_BASE + SMBHSTCTL);
+
+	/* Set the device I'm talking too */
+	outb(((device & 0x7f) << 1), SMBUS_IO_BASE + SMBXMITADD);
+
+	/* Set the command address */
+	outb(cmd & 0xff, SMBUS_IO_BASE + SMBHSTCMD);
+
+	/* Set the block length */
+	outb(length & 0xff, SMBUS_IO_BASE + SMBHSTDAT0);
+
+	/* Try sending out the first byte of data here */
+	byte = (data1 >> (0)) & 0x0ff;
+	outb(byte, SMBUS_IO_BASE + SMBBLKDAT);
+	/* Issue a block write command */
+	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xe3) | (0x5 << 2) | 0x40,
+	     SMBUS_IO_BASE + SMBHSTCTL);
+
+	for (i = 0; i < length; i++) {
+		/* Poll for transaction completion */
+		if (smbus_wait_until_blk_done() < 0) {
+			return -3;
+		}
+
+		/* Load the next byte */
+		if (i > 3)
+			byte = (data2 >> (i % 4)) & 0x0ff;
+		else
+			byte = (data1 >> (i)) & 0x0ff;
+		outb(byte, SMBUS_IO_BASE + SMBBLKDAT);
+
+		/* Clear the done bit */
+		outb(inb(SMBUS_IO_BASE + SMBHSTSTAT),
+		     SMBUS_IO_BASE + SMBHSTSTAT);
+	}
+
+	print_debug("SMBUS Block complete\n");
+	return 0;
+}
+#endif

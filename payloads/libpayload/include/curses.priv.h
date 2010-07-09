@@ -46,9 +46,6 @@
 #ifndef _CURSES_PRIV_H
 #define _CURSES_PRIV_H 1
 
-//// XXX
-extern void *memset(void *s, int c, size_t len);
-
 //// #include <ncurses_dll.h>
 
 #ifdef __cplusplus
@@ -63,38 +60,28 @@ extern "C" {
 #define MODULE_ID(id) /*nothing*/
 #endif
 
-//// #include <stdlib.h>
-//// #include <string.h>
-//// #include <sys/types.h>
-////
-//// #if HAVE_UNISTD_H
-//// #include <unistd.h>
-//// #endif
-////
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 //// #if HAVE_SYS_BSDTYPES_H
 //// #include <sys/bsdtypes.h>	/* needed for ISC */
 //// #endif
-////
-//// #if HAVE_LIMITS_H
-//// # include <limits.h>
+
+#if HAVE_LIMITS_H
+# include <limits.h>
 //// #elif HAVE_SYS_PARAM_H
 //// # include <sys/param.h>
-//// #endif
+#endif
 ////
 //// #include <assert.h>
-//// #include <stdio.h>
-////
-//// #include <errno.h>
+#include <stdio.h>
 
-#ifndef PATH_MAX
-# if defined(_POSIX_PATH_MAX)
-#  define PATH_MAX _POSIX_PATH_MAX
-# elif defined(MAXPATHLEN)
-#  define PATH_MAX MAXPATHLEN
-# else
-#  define PATH_MAX 255	/* the Posix minimum path-size */
-# endif
-#endif
+#include <errno.h>
 
 #if DECL_ERRNO
 extern int errno;

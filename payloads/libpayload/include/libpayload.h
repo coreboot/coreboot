@@ -342,10 +342,6 @@ int lfverify(struct LAR *lar, const char *filename);
 struct LFILE *lfopen(struct LAR *lar, const char *filename);
 int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 
-#define SEEK_SET 0 /**< The seek offset is absolute. */
-#define SEEK_CUR 1 /**< The seek offset is against the current position. */
-#define SEEK_END 2 /**< The seek offset is against the end of the file. */
-
 int lfseek(struct LFILE *stream, long offset, int whence);
 int lfclose(struct LFILE *file);
 /** @} */

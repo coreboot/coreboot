@@ -46,6 +46,8 @@
 #define NCURSES_NO_PADDING 0
 #define USE_HARD_TABS 0
 #define HAVE_FCNTL_H 0
+#define HAVE_LIMITS_H 1
+#define HAVE_UNISTD_H 1
 #define USE_XMC_SUPPORT 0
 #define NCURSES_EXPANDED 0
 #define HAVE_GETCWD 0

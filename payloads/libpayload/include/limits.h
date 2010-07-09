@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,25 +27,17 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _STDIO_H
-#define _STDIO_H
+#ifndef _LIMITS_H
+#define _LIMITS_H
 
-#include <stddef.h>
-
-/**
- * @defgroup printf Print functions
- * @{
- */
-int snprintf(char *str, size_t size, const char *fmt, ...);
-int sprintf(char *str, const char *fmt, ...);
-int printf(const char *fmt, ...);
-/** @} */
-
-void perror(const char *s);
-
-#define SEEK_SET 0 /**< The seek offset is absolute. */
-#define SEEK_CUR 1 /**< The seek offset is against the current position. */
-#define SEEK_END 2 /**< The seek offset is against the end of the file. */
-
+#ifndef PATH_MAX
+# if defined(_POSIX_PATH_MAX)
+#  define PATH_MAX _POSIX_PATH_MAX
+# elif defined(MAXPATHLEN)
+#  define PATH_MAX MAXPATHLEN
+# else
+#  define PATH_MAX 255	/* the Posix minimum path-size */
+# endif
+#endif
 
 #endif

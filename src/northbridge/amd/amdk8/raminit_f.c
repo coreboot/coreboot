@@ -2410,7 +2410,7 @@ static void set_TT(const struct mem_controller *ctrl,
 	uint32_t reg;
 
 	if ((val < TT_MIN) || (val > TT_MAX)) {
-		printk(BIOS_ERR, str);
+		printk(BIOS_ERR, "%s", str);
 		die(" Unknown\n");
 	}
 

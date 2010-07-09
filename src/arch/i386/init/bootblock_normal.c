@@ -1,7 +1,4 @@
 #include <bootblock_common.h>
-
-#include <arch/io.h>
-#include "arch/romcc_io.h"
 #include <pc80/mc146818rtc.h>
 
 static void main(unsigned long bist)

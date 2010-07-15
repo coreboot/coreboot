@@ -21,6 +21,8 @@
 #include "sconfig.h"
 #include "sconfig.tab.h"
 
+extern int linenum;
+
 struct device *head, *lastdev;
 
 struct header headers;
@@ -87,7 +89,7 @@ int yywrap(void) {
 
 void yyerror (char const *str)
 {
-	fprintf (stderr, "%s\n", str);
+	fprintf (stderr, "line %d: %s\n", linenum, str);
 }
 
 void postprocess_devtree(void) {

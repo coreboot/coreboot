@@ -131,10 +131,17 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 
 #include <pc80/serial.c>
 
+#if CONFIG_CONSOLE_NE2K
+#include "lib/ne2k.c"
+#endif
+
 /* __ROMCC__ */
 static void __console_tx_byte(unsigned char byte)
 {
 	uart_tx_byte(byte);
+#if CONFIG_CONSOLE_NE2K
+	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 }
 
 static void __console_tx_nibble(unsigned nibble)
@@ -151,6 +158,10 @@ static void __console_tx_char(int loglevel, unsigned char byte)
 {
 	if (console_loglevel >= loglevel) {
 		uart_tx_byte(byte);
+#if CONFIG_CONSOLE_NE2K
+	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
+	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 	}
 }
 
@@ -160,6 +171,9 @@ static void __console_tx_hex8(int loglevel, unsigned char value)
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
 	}
+#if CONFIG_CONSOLE_NE2K
+		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 }
 
 static void __console_tx_hex16(int loglevel, unsigned short value)
@@ -170,6 +184,9 @@ static void __console_tx_hex16(int loglevel, unsigned short value)
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
 	}
+#if CONFIG_CONSOLE_NE2K
+		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 }
 
 static void __console_tx_hex32(int loglevel, unsigned int value)
@@ -184,6 +201,9 @@ static void __console_tx_hex32(int loglevel, unsigned int value)
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
 	}
+#if CONFIG_CONSOLE_NE2K
+		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 }
 
 static void __console_tx_string(int loglevel, const char *str)
@@ -195,6 +215,9 @@ static void __console_tx_string(int loglevel, const char *str)
 				__console_tx_byte('\r');
 			__console_tx_byte(ch);
 		}
+#if CONFIG_CONSOLE_NE2K
+		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 	}
 }
 

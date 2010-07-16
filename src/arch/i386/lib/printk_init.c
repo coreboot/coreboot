@@ -21,8 +21,17 @@
 #include <console/vtxprintf.h>
 #include <uart8250.h>
 
+#if CONFIG_CONSOLE_NE2K
+#include <console/ne2k.h>
+#endif
+
 static void console_tx_byte(unsigned char byte)
 {
+#if CONFIG_CONSOLE_NE2K
+#ifdef __PRE_RAM__
+	ne2k_append_data(&byte, 1, CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
+#endif
 	if (byte == '\n')
 		uart8250_tx_byte(CONFIG_TTYS0_BASE, '\r');
 
@@ -41,6 +50,8 @@ int do_printk(int msg_level, const char *fmt, ...)
 	va_start(args, fmt);
 	i = vtxprintf(console_tx_byte, fmt, args);
 	va_end(args);
-
+#if CONFIG_CONSOLE_NE2K
+	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 	return i;
 }

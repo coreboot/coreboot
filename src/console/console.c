@@ -7,10 +7,13 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 
+#if CONFIG_CONSOLE_NE2K
+#include <console/ne2k.h>
+#endif
+
 #ifndef __PRE_RAM__
 #include <string.h>
 #include <pc80/mc146818rtc.h>
-
 
 /* initialize the console */
 void console_init(void)
@@ -99,6 +102,10 @@ void __attribute__((noreturn)) die(const char *msg)
 
 void console_init(void)
 {
+
+#if CONFIG_CONSOLE_NE2K
+	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
 	static const char console_test[] =
 		"\n\ncoreboot-"
 		COREBOOT_VERSION

@@ -22,6 +22,9 @@ initobj-y += memcmp.o
 initobj-y += cbfs.o
 initobj-y += lzma.o
 #initobj-y += lzmadecode.o
+initobj-$(CONFIG_CONSOLE_NE2K) += ne2k.o
+initobj-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.o
+driver-$(CONFIG_CONSOLE_NE2K) += ne2k.o
 
 obj-$(CONFIG_USBDEBUG) += usbdebug.o
 

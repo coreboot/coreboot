@@ -1,5 +1,4 @@
 menu "Console options"
-
 # TODO: Rename to SERIAL_CONSOLE once Kconfig transition is complete.
 config CONSOLE_SERIAL8250
 	bool "Serial port console output"
@@ -129,6 +128,49 @@ config CONSOLE_VGA_ONBOARD_AT_FIRST
 	default n
 	help
 	  If not selected, the last adapter found will be used.
+
+config CONSOLE_NE2K
+	bool "Network console over NE2000 compatible Ethernet adapter"
+	default n
+	help
+	  Send coreboot debug output to a Ethernet console, it works
+	  same way as Linux netconsole, packets are received to UDP
+	  port 6666 on IP/MAC specified with options bellow.
+	  Use following netcat command: nc -u -l -p 6666
+
+config CONSOLE_NE2K_DST_MAC
+	depends on CONSOLE_NE2K
+	string "Destination MAC address of remote system"
+	default "00:13:d4:76:a2:ac"
+	help
+	  Type in either MAC address of logging system or MAC address
+	  of the router.
+
+config CONSOLE_NE2K_DST_IP
+	depends on CONSOLE_NE2K
+	string "Destination IP of logging system"
+	default "10.0.1.27"
+	help
+	  This is IP adress of the system running for example
+	  netcat command to dump the packets.
+
+config CONSOLE_NE2K_SRC_IP
+	depends on CONSOLE_NE2K
+	string "IP adress of Coreboot system"
+	default "10.0.1.253"
+	help
+	  This is the IP of the Coreboot system
+
+config CONSOLE_NE2K_IO_PORT
+	depends on CONSOLE_NE2K
+	hex "NE2000 adapter fixed IO port address"
+	default 0xe00
+	help
+	  This is the IO port address for the IO port
+	  on the card, please select some non-conflicting region,
+	  32 bytes of IO spaces will be used (and align on 32 bytes
+	  boundary, qemu needs broader align)
+
 
 choice
 	prompt "Maximum console log level"

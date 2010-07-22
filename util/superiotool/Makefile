@@ -32,7 +32,7 @@ SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
          -Werror-implicit-function-declaration -ansi -pedantic $(SVNDEF)
 
-OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
+OBJS = superiotool.o ali.o fintek.o ite.o nsc.o nuvoton.o smsc.o winbond.o
 
 OS_ARCH = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)

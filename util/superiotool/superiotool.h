@@ -143,6 +143,10 @@ void print_ite_chips(void);
 void probe_idregs_nsc(uint16_t port);
 void print_nsc_chips(void);
 
+/* nuvoton.c */
+void probe_idregs_nuvoton(uint16_t port);
+void print_nuvoton_chips(void);
+
 /* smsc.c */
 void probe_idregs_smsc(uint16_t port);
 void print_smsc_chips(void);
@@ -167,6 +171,9 @@ static const struct {
 	/* Only use 0x370 for ITE, but 0x3f0 or 0x3bd would also be valid. */
 	{probe_idregs_ite,	{0x2e, 0x4e, 0x370, EOT}},
 	{probe_idregs_nsc,	{0x2e, 0x4e, 0x15c, EOT}},
+	/* I/O pairs on Nuvoton EC chips can be configured by firmware in
+	 * addition to the following hardware strapping options. */
+	{probe_idregs_nuvoton, {0x164e, 0x2e, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 #ifdef PCI_SUPPORT
@@ -182,6 +189,7 @@ static const struct {
 	{print_fintek_chips},
 	{print_ite_chips},
 	{print_nsc_chips},
+	{print_nuvoton_chips},
 	{print_smsc_chips},
 	{print_winbond_chips},
 #ifdef PCI_SUPPORT

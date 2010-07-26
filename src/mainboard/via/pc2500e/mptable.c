@@ -27,7 +27,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#include <../../../southbridge/via/vt8237r/vt8237r.h>
+#include "../../../southbridge/via/vt8237r/vt8237r.h"
 
 
 #define bus_isa 2

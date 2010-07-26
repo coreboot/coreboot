@@ -21,7 +21,7 @@
 #if CONFIG_HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
 #endif
-#include <../northbridge/via/vx800/vx800.h>
+#include "../vx800.h"
 
 #include <arch/io.h>
 #include "pci_rawops.h"

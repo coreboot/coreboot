@@ -33,7 +33,7 @@
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
-#include <../../../northbridge/via/vx800/vx800.h>
+#include "../../../northbridge/via/vx800/vx800.h"
 
 extern const unsigned char AmlCode_dsdt[];
 extern const unsigned char AmlCode_ssdt[];

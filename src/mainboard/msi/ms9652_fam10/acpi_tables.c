@@ -29,7 +29,7 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
-//#include <../../../northbridge/amd/amdfam10/amdfam10_acpi.h>
+//#include "../../../northbridge/amd/amdfam10/amdfam10_acpi.h"
 #include <cpu/amd/model_fxx_powernow.h>
 #include <device/pci.h>
 #include <cpu/amd/amdfam10_sysconf.h>

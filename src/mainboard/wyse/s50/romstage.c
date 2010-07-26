@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
@@ -122,32 +121,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
+#include "cpu/amd/model_lx/msrinit.c"
 
-static void msr_init(void)
-{
-	/* Setup access to cache under 1MB.
-	__builtin_wrmsr(CPU_RCONF_DEFAULT,  0x1000a000, 0x24fffc02); /* Rom Properties: Write Serialize, WriteProtect.
-								      * RomBase: 0xFFFC0
-								      * SysTop to RomBase Properties: Write Serialize, Cache Disable.
-								      * SysTop: 0x000A0
-								      * System Memory Properties:  (Write Back) */
-
-	__builtin_wrmsr(CPU_RCONF_A0_BF,  0x00000000, 0x00000000); /* 0xA0000-0xBFFFF : (Write Back) */
-	__builtin_wrmsr(CPU_RCONF_C0_DF,  0x00000000, 0x00000000); /* 0xC0000-0xDFFFF : (Write Back) */
-	__builtin_wrmsr(CPU_RCONF_E0_FF,  0x00000000, 0x00000000); /* 0xE0000-0xFFFFF : (Write Back) */
-	
-	/* Setup access to memory under 1MB. Note: VGA hole at 0xA0000-0xBFFFF */
-	__builtin_wrmsr(MSR_GLIU0_BASE1, 0x000fff80, 0x20000000); /*	0x00000-0x7FFFF */
-	__builtin_wrmsr(MSR_GLIU0_BASE2, 0x080fffe0, 0x20000000); /*	0x80000-0x9FFFF */
-	__builtin_wrmsr(MSR_GLIU0_SHADOW, 0xffff0003, 0x2000ffff); /*	0xC0000-0xFFFFF */
-	__builtin_wrmsr(MSR_GLIU1_BASE1, 0x000fff80, 0x20000000); /*	0x00000-0x7FFFF */
-	__builtin_wrmsr(MSR_GLIU1_BASE2, 0x080fffe0, 0x20000000); /*	0x80000-0x9FFFF */
-	__builtin_wrmsr(MSR_GLIU1_SHADOW, 0xffff0003, 0x2000ffff); /*	0xC0000-0xFFFFF */
-
-	/* put code in northbridge[init].c here */
-}
-
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
@@ -165,6 +141,9 @@ static void main(unsigned long bist)
 
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset();
 

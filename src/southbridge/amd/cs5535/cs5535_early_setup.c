@@ -8,9 +8,6 @@
  *
  */
 
-#define CS5535_GLINK_PORT_NUM	0x02	/* the geode link port number to the CS5535 */
-#define CS5535_DEV_NUM 		0x0F	/* default PCI device number for CS5535 */
-
 /**
  * @brief Setup PCI IDSEL for CS5535
  *
@@ -51,46 +48,33 @@ static void cs5535_usb_swapsif(void)
 	}
 }
 
-static int cs5535_setup_iobase(void)
+static void cs5535_setup_iobase(void)
 {
 	msr_t msr;
-
 	/* setup LBAR for SMBus controller */
-	__builtin_wrmsr(0x5140000b, 0x00006000, 0x0000f001);
+	msr.hi = 0x0000f001;
+	msr.lo = SMBUS_IO_BASE;
+	wrmsr(MDD_LBAR_SMB, msr);
+
 	/* setup LBAR for GPIO */
-	__builtin_wrmsr(0x5140000c, 0x00006100, 0x0000f001);
+	msr.hi = 0x0000f001;
+	msr.lo = GPIO_IO_BASE;
+	wrmsr(MDD_LBAR_GPIO, msr);
+
 	/* setup LBAR for MFGPT */
-	__builtin_wrmsr(0x5140000d, 0x00006200, 0x0000f001);
+	msr.hi = 0x0000f001;
+	msr.lo = MFGPT_IO_BASE;
+	wrmsr(MDD_LBAR_MFGPT, msr);
+
 	/* setup LBAR for ACPI */
-	__builtin_wrmsr(0x5140000e, 0x00009c00, 0x0000f001);
+	msr.hi = 0x0000f001;
+	msr.lo = ACPI_IO_BASE;
+	wrmsr(MDD_LBAR_ACPI, msr);
+
 	/* setup LBAR for PM Support */
-	__builtin_wrmsr(0x5140000f, 0x00009d00, 0x0000f001);
-}
-
-static void cs5535_setup_power_bottun(void)
-{
-	/* not implemented yet */
-#if 0
-	pwrBtn_setup:
-	;
-	;	Power Button Setup
-	;
-	;mov	eax, 0C0020000h				; 4 seconds + lock
-	mov	eax, 040020000h				; 4 seconds no lock
-	mov	dx, PMLogic_BASE + 40h
-	out	dx, eax
-
-	; setup GPIO24, it is the external signal for 5535 vsb_work_aux
-	; which controls all voltage rails except Vstandby & Vmem.
-	; We need to enable, OUT_AUX1 and OUTPUT_ENABLE in this order.
-	; If GPIO24 is not enabled then soft-off will not work.
-	mov	dx, GPIOH_OUT_AUX1_SELECT
-	mov	eax, GPIOH_24_SET
-	out	dx, eax
-	mov	dx, GPIOH_OUTPUT_ENABLE
-	out	dx, eax
-
-#endif
+	msr.hi = 0x0000f001;
+	msr.lo = PMS_IO_BASE;
+	wrmsr(MDD_LBAR_PMS, msr);
 }
 
 static void cs5535_setup_gpio(void)
@@ -115,27 +99,8 @@ static void cs5535_setup_gpio(void)
 	//outl(val, 0x6100 + 0x34);
 }
 
-static void cs5535_disable_internal_uart(void)
+void cs5535_disable_internal_uart(void)
 {
-	/* not implemented yet */
-#if 0
-	; The UARTs default to enabled.
-	; Disable and reset them and configure them later. (SIO init)
-	mov	ecx, MDD_UART1_CONF
-	RDMSR
-	mov	eax, 1h					; reset
-	WRMSR
-	mov	eax, 0h					; disabled
-	WRMSR
-
-	mov	ecx, MDD_UART2_CONF
-	RDMSR
-	mov	eax, 1h					; reset
-	WRMSR
-	mov	eax, 0h					; disabled
-	WRMSR
-
-#endif
 }
 
 static void cs5535_setup_cis_mode(void)
@@ -143,19 +108,21 @@ static void cs5535_setup_cis_mode(void)
 	msr_t msr;
 
 	/* setup CPU interface serial to mode C on both sides */
-	msr = __builtin_rdmsr(0x51000010);
+	msr = rdmsr(GLPCI_SB_CTRL);
 	msr.lo &= ~0x18;
 	msr.lo |= 0x10;
-	__builtin_wrmsr(0x51000010, msr.lo, msr.hi);
+	wrmsr(GLPCI_SB_CTRL, msr);
 	//Only do this if we are building for 5535
-	__builtin_wrmsr(0x54002010, 0x00000002, 0x00000000);
+	msr.lo = 0x2;
+	msr.hi = 0x0;
+	wrmsr(VIP_GIO_MSR_SEL, msr);
 }
 
 static void dummy(void)
 {
 }
 
-static int cs5535_early_setup(void)
+static void cs5535_early_setup(void)
 {
 	msr_t msr;
 

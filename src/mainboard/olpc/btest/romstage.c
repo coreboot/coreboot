@@ -2,7 +2,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
@@ -132,16 +131,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
-static void msr_init(void)
-{
-	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
-
-	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
-
-        __builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
-}
+#include "cpu/amd/model_lx/msrinit.c"
 
 static void gpio_init(void)
 {
@@ -155,7 +145,7 @@ static void gpio_init(void)
 	outl(m, GPIOL_EVENTS_ENABLE);
 }
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
@@ -174,6 +164,9 @@ static void main(unsigned long bist)
 	gpio_init();
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset();
 

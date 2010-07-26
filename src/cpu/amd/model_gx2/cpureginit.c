@@ -1,81 +1,9 @@
 
-
-/* ***************************************************************************/
-/* **/
-/* *	BIST */
-/* **/
-/* *	GX2 BISTs need to be run before BTB or caches are enabled.*/
-/* *	BIST result left in registers on failure to be checked with FS2.*/
-/* **/
-/* ***************************************************************************/
-static void
-BIST(void){
-	int msrnum;
-	msr_t msr;
-
-	/* DM*/
-	msrnum = CPU_DM_CONFIG0;
-	msr = rdmsr(msrnum);
-	msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
-	wrmsr(msrnum, msr);
-
-	msr.lo =  0x00000003F;
-	msr.hi =  0x000000000;
-	msrnum = CPU_DM_BIST;
-	wrmsr(msrnum, msr);
-
-	outb(POST_CPU_DM_BIST_FAILURE, 0x80);				/* 0x29*/
-	msr = rdmsr(msrnum);						/* read back for pass fail*/
-	msr.lo &= 0x0F3FF0000;
-	if (msr.lo != 0xfeff0000)
-		goto BISTFail;
-
-	msrnum = CPU_DM_CONFIG0;
-	msr = rdmsr(msrnum);
-	msr.lo &=  ~ DM_CONFIG0_LOWER_DCDIS_SET;
-	wrmsr(msrnum, msr);
-
-	/* FPU*/
-	msr.lo =  0x000000131;
-	msr.hi = 0;
-	msrnum = CPU_FP_UROM_BIST;
-	wrmsr(msrnum, msr);
-
-	outb(POST_CPU_FPU_BIST_FAILURE, 0x80);				/* 0x89*/
-	inb(0x80);									/*  IO delay*/
-	msr = rdmsr(msrnum);							/* read back for pass fail*/
-	while ((msr.lo&0x884) != 0x884)
-		msr = rdmsr(msrnum);					/*  Endless loop if BIST is broken*/
-	if ((msr.lo&0x642) != 0x642)
-		goto BISTFail;
-
-	msr.lo = msr.hi = 0;				/*  clear FPU BIST bits*/
-	msrnum = CPU_FP_UROM_BIST;
-	wrmsr(msrnum, msr);
-
-
-	/* BTB*/
-	msr.lo =  0x000000303;
-	msr.hi =  0x000000000;
-	msrnum = CPU_PF_BTBRMA_BIST;
-	wrmsr(msrnum, msr);
-
-	outb(POST_CPU_BTB_BIST_FAILURE	, 0x80);				/* 0x8A*/
-	msr = rdmsr(msrnum);							/* read back for pass fail*/
-	if ((msr.lo & 0x3030) != 0x3030)
-		goto BISTFail;
-
-	return;
-
-BISTFail:
-	print_err("BIST failed!\n");
-	while(1);
-}
 /* ***************************************************************************/
 /* *	cpuRegInit*/
 /* ***************************************************************************/
-void
-cpuRegInit (void){
+void cpuRegInit (void)
+{
 	int msrnum;
 	msr_t msr;
 	/*  Turn on BTM for early debug based on setup. */
@@ -197,16 +125,6 @@ cpuRegInit (void){
 	msr.lo |=  0x08;
 	wrmsr(msrnum, msr);
 
-
-/* */
-/*  BIST*/
-/* */
-	/*if (getnvram( TOKEN_BIST_ENABLE) & == TVALUE_DISABLE) {*/
-	{
-//		BIST();
-	}
-
-
 /* */
 /*  Enable BTB*/
 /* */
@@ -259,46 +177,4 @@ cpuRegInit (void){
 		wrmsr(msrnum, msr);
 	}
 #endif
-}
-
-
-
-
-/* ***************************************************************************/
-/* **/
-/* *	MTestPinCheckBX*/
-/* **/
-/* *	Set MTEST pins to expected values from OPTIONS.INC/NVRAM*/
-/* *  This version is called when there isn't a stack available*/
-/* **/
-/* ***************************************************************************/
-static void
-MTestPinCheckBX (void){
-	int msrnum;
-	msr_t msr;
-
-	/*if (getnvram( TOKEN_MTEST_ENABLE) ==TVALUE_DISABLE ) {*/
-			/* return ; */
-	/* } */
-
-	/*  Turn on MTEST*/
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
-	msr.hi |=  CFCLK_UPPER_MTST_B2B_DIS_SET | CFCLK_UPPER_MTEST_EN_SET;
-	wrmsr(msrnum, msr);
-
-	msrnum = GLCP_SYS_RSTPLL			/*  Get SDR/DDR mode from GLCP*/;
-	msr = rdmsr(msrnum);
-	msr.lo >>=  RSTPPL_LOWER_SDRMODE_SHIFT;
-	if (msr.lo & 1) {
-		msrnum = MC_CFCLK_DBUG;			/*  Turn on SDR MTEST stuff*/
-		msr = rdmsr(msrnum);
-		msr.lo |=  CFCLK_LOWER_SDCLK_SET;
-		msr.hi |=  CFCLK_UPPER_MTST_DQS_EN_SET;
-		wrmsr(msrnum, msr);
-	}
-
-	/*  Lock the cache down here.*/
-	__asm__("wbinvd\n");
-
 }

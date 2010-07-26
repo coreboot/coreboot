@@ -2,7 +2,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
@@ -99,22 +98,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
-static void msr_init(void)
-{
-	/* total physical memory */
-	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
+#include "cpu/amd/model_lx/msrinit.c"
 
-	/* traditional memory 0kB-512kB, 512kB-1MB */
-	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
-
-        __builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
-
-	/* put code in northbridge[init].c here */
-}
-
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
@@ -122,12 +108,14 @@ static void main(unsigned long bist)
 
 	SystemPreInit();
 
-
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 
 	cs5536_early_setup();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset();
 

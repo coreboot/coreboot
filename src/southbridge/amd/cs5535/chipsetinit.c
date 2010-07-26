@@ -13,8 +13,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 #include "southbridge/amd/cs5535/cs5535.h"
-// This code uses some cs5536 includes because cs5535 includes are empty:
-#include "southbridge/amd/cs5536/cs5536.h"
 
 /* the structs in this file only set msr.lo. But ... that may not always be true */
 

@@ -435,14 +435,15 @@
 #define VIP_GLD_MSR_CAP		(MSR_VIP + 0x2000)
 #define VIP_GLD_MSR_CONFIG	(MSR_VIP + 0x2001)
 #define VIP_GLD_MSR_PM		(MSR_VIP + 0x2004)
-#define VIP_BIST			(MSR_VIP + 0x2005)
+#define VIP_BIST		(MSR_VIP + 0x2005)
+#define VIP_GIO_MSR_SEL		(MSR_VIP + 0x2010)
 /* */
 /*  AES GLIU1 port 6*/
 /* */
 #define AES_GLD_MSR_CAP		(MSR_AES + 0x2000)
 #define AES_GLD_MSR_CONFIG	(MSR_AES + 0x2001)
 #define AES_GLD_MSR_PM		(MSR_AES + 0x2004)
-#define AES_CONTROL			(MSR_AES + 0x2006)
+#define AES_CONTROL		(MSR_AES + 0x2006)
 /* more fun stuff */
 #define BM			1	/*  Base Mask - map power of 2 size aligned region*/
 #define BMO			2	/*  BM with an offset*/
@@ -695,9 +696,10 @@
 
 #if !defined(__ROMCC__)  && !defined(ASSEMBLY)
 #if defined(__PRE_RAM__)
-#else
-void cpubug(void);
+void cpuRegInit(void);
+void SystemPreInit(void);
 #endif
+void cpubug(void);
 #endif
 
 #endif /* CPU_AMD_GX2DEF_H */

@@ -4,6 +4,7 @@
 #define CALIBRATE_INTERVAL ((20*CLOCK_TICK_RATE)/1000) /* 20ms */
 #define CALIBRATE_DIVISOR  (20*1000) /* 20ms / 20000 == 1usec */
 
+#if 0
 static unsigned int calibrate_tsc(void)
 {
 	/* Set the Gate high, disable speaker */
@@ -64,6 +65,7 @@ bad_ctc:
 	print_err("bad_ctc\n");
 	return 0;
 }
+#endif
 
 /* spll_raw_clk = SYSREF * FbDIV,
  * GLIU Clock   = spll_raw_clk / MDIV

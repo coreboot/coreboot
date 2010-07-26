@@ -22,12 +22,12 @@ config CPU_AMD_GX2
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xc0000
+	default 0xc8000
 	depends on CPU_AMD_GX2
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x01000
+	default 0x04000
 	depends on CPU_AMD_GX2
 
 config GEODE_VSA

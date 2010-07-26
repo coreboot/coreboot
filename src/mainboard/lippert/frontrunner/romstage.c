@@ -2,7 +2,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
@@ -10,6 +9,7 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
+#include "southbridge/amd/cs5535/cs5535.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -46,31 +46,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
-static void msr_init(void)
-{
-	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
+#include "cpu/amd/model_lx/msrinit.c"
 
-	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
-        __builtin_wrmsr(0x10000026, 0x400fffc0, 0x2cfbc040);
-        __builtin_wrmsr(0x10000027, 0xfff00000, 0xff);
-        __builtin_wrmsr(0x10000028, 0x7bf00100, 0x2000000f);
-        __builtin_wrmsr(0x1000002c, 0xff030003, 0x20000000);
-
-        __builtin_wrmsr(0x10000080, 0x3, 0x0);
-
-        __builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
-	__builtin_wrmsr(0x40000023, 0x400fffc0, 0x20000040);
-        __builtin_wrmsr(0x40000024, 0xff4ffffc, 0x200000ef);
-        __builtin_wrmsr(0x40000029, 0x7bf00100, 0x2000000f);
-        __builtin_wrmsr(0x4000002d, 0xff030003, 0x20000000);
-
-        __builtin_wrmsr(0x50002001, 0x27, 0x0);
-        __builtin_wrmsr(0x4c002001, 0x1, 0x0);
-}
-
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
@@ -85,6 +63,10 @@ static void main(unsigned long bist)
 
 	cs5535_early_setup();
 	print_err("done cs5535 early\n");
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+
 	pll_reset();
 	print_err("done pll_reset\n");
 

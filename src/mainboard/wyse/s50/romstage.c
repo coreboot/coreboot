@@ -29,6 +29,7 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
+#include <cpu/amd/geode_post_code.h>
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"

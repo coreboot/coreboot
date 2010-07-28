@@ -9,6 +9,7 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
+#include <cpu/amd/geode_post_code.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

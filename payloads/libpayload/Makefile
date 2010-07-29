@@ -163,7 +163,7 @@ clean: doxygen-clean
 
 distclean: clean
 	$(Q)rm -rf build # should be $(obj) ?
-	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	$(Q)rm -f .config .config.old .xcompile ..config.tmp .kconfig.d .tmpconfig*
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
@@ -182,5 +182,5 @@ $(obj)/%.S.o: $(src)/%.S
 
 endif
 
-.PHONY: $(PHONY) prepare clean distclean doxygen doxy
+.PHONY: $(PHONY) prepare install clean distclean doxygen doxy
 

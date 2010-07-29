@@ -62,6 +62,7 @@
 #define PCI_DEVICE_ID_INTEL_82945P		0x2770
 #define PCI_DEVICE_ID_INTEL_82945GM		0x27a0
 #define PCI_DEVICE_ID_INTEL_PM965		0x2a00
+#define PCI_DEVICE_ID_INTEL_Q965		0x2990
 #define PCI_DEVICE_ID_INTEL_82975X		0x277c
 #define PCI_DEVICE_ID_INTEL_82Q35		0x29b0
 #define PCI_DEVICE_ID_INTEL_82G33		0x29c0
@@ -69,6 +70,10 @@
 #define PCI_DEVICE_ID_INTEL_GS45		0x2a40
 #define PCI_DEVICE_ID_INTEL_X58			0x3405
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO		0x8100
+#define PCI_DEVICE_ID_INTEL_ATOM_DXXX		0xa000
+
+/* untested, but almost identical to D-series */
+#define PCI_DEVICE_ID_INTEL_ATOM_NXXX		0xa010
 
 #define PCI_DEVICE_ID_INTEL_82443LX		0x7180
 /* 82443BX has a different device ID if AGP is disabled (hardware-wise). */

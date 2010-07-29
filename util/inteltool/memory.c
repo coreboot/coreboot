@@ -47,6 +47,31 @@ int print_mchbar(struct pci_dev *nb)
  		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
  		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;
+ 	case PCI_DEVICE_ID_INTEL_Q965:
+	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
+	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
+ 		mchbar_phys = pci_read_long(nb, 0x48);
+
+		/* Test if bit 0 of the MCHBAR reg is 1 to enable memory reads.
+		 * If it isn't, try to set it. This may fail, because there is 
+		 * some bit that locks that bit, and isn't in the public 
+		 * datasheets.
+		 */
+
+		if(!(mchbar_phys & 1))
+		{
+			printf("Access to the MCHBAR is currently disabled, "\
+						"attempting to enable.\n");
+			mchbar_phys |= 0x1;
+			pci_write_long(nb, 0x48, mchbar_phys);
+	 		if(pci_read_long(nb, 0x48) & 1)
+				printf("Enabled successfully.\n");
+			else
+				printf("Enable FAILED!\n");
+		}
+		mchbar_phys &= 0xfffffffe;
+ 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
+ 		break;
 	case PCI_DEVICE_ID_INTEL_82443LX:
 	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:

@@ -40,10 +40,13 @@ int print_epbar(struct pci_dev *nb)
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
  	case PCI_DEVICE_ID_INTEL_PM965:
+ 	case PCI_DEVICE_ID_INTEL_Q965:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
 	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
+	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
  		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
  		break;
@@ -94,10 +97,13 @@ int print_dmibar(struct pci_dev *nb)
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
  	case PCI_DEVICE_ID_INTEL_PM965:
+	case PCI_DEVICE_ID_INTEL_Q965:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
 	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
+	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffffffe;
  		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
  		break;
@@ -149,10 +155,13 @@ int print_pciexbar(struct pci_dev *nb)
 		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
  	case PCI_DEVICE_ID_INTEL_PM965:
+	case PCI_DEVICE_ID_INTEL_Q965:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
 	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
+	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		pciexbar_reg = pci_read_long(nb, 0x60);
  		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;
  		break;

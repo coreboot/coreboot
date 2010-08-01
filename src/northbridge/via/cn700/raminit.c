@@ -183,6 +183,8 @@ static void sdram_set_size(const struct mem_controller *ctrl)
 
 	if (result == 0xff)
 		die("DRAM module size too big, not supported by CN700\n");
+	else
+		printk(BIOS_DEBUG, "Found %iMB of ram\n", result * ranks * 64);
 
 	pci_write_config8(ctrl->d0f3, 0x40, result);
 	pci_write_config8(ctrl->d0f3, 0x48, 0x00);
@@ -400,18 +402,18 @@ static void sdram_enable(device_t dev, unsigned long rank_address)
 	read32(rank_address + 0x10);
 
 	/* 3. Mode register set. */
-	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\n");
+	PRINT_DEBUG_MEM("RAM Enable 3: Mode register set\n");
 	do_ram_command(dev, RAM_COMMAND_MRS);
 	read32(rank_address + 0x120000);	/* EMRS DLL Enable */
 	read32(rank_address + 0x800);		/* MRS DLL Reset */
 
 	/* 4. Precharge all again. */
-	PRINT_DEBUG_MEM("RAM Enable 2: Precharge all\n");
+	PRINT_DEBUG_MEM("RAM Enable 4: Precharge all\n");
 	do_ram_command(dev, RAM_COMMAND_PRECHARGE);
 	read32(rank_address + 0x0);
 
 	/* 5. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG_MEM("RAM Enable 3: CBR\n");
+	PRINT_DEBUG_MEM("RAM Enable 5: CBR\n");
 	do_ram_command(dev, RAM_COMMAND_CBR);
 	for (i = 0; i < 8; i++) {
 		read32(rank_address + 0x20);
@@ -419,7 +421,7 @@ static void sdram_enable(device_t dev, unsigned long rank_address)
 	}
 
 	/* 6. Mode register set. */
-	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\n");
+	PRINT_DEBUG_MEM("RAM Enable 6: Mode register set\n");
 	/* Safe value for now, BL=8, WR=5, CAS=4 */
 	/*
 	 * (E)MRS values are from the BPG. No direct explanation is given, but
@@ -432,7 +434,7 @@ static void sdram_enable(device_t dev, unsigned long rank_address)
 	read32(rank_address + 0x120020); /* EMRS OCD Calibration Mode Exit */
 
 	/* 8. Normal operation */
-	PRINT_DEBUG_MEM("RAM Enable 5: Normal operation\n");
+	PRINT_DEBUG_MEM("RAM Enable 7: Normal operation\n");
 	do_ram_command(dev, RAM_COMMAND_NORMAL);
 	read32(rank_address + 0x30);
 }

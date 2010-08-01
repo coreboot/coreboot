@@ -99,11 +99,6 @@ void main(unsigned long bist)
 	enable_smbus();
 	smbus_fixup(&ctrl);
 
-	if (bist == 0) {
-		print_debug("doing early_mtrr\n");
-		early_mtrr_init();
-	}
-
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 

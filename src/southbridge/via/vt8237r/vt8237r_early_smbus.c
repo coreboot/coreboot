@@ -61,8 +61,10 @@ static void smbus_wait_until_ready(void)
 
 	PRINT_DEBUG("Waiting until SMBus ready\n");
 
-	/* Yes, this is a mess, but it's the easiest way to do it. */
-	/* XXX not so messy, but an explanation of the hack would have been better */
+	/* Loop up to SMBUS_TIMEOUT times, waiting for bit 0 of the
+	 * SMBus Host Status register to go to 0, indicating the operation
+	 * was completed successfully. I don't remember why I did it this way,
+	 * but I think it was because ROMCC was running low on registers */
 	loops = 0;
 	while ((inb(SMBHSTSTAT) & 1) == 1 && loops < SMBUS_TIMEOUT)
 		++loops;

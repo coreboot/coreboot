@@ -177,7 +177,7 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 		tomk = rambits * 64 * 1024;
-		printk(BIOS_SPEW, "tomk is 0x%lx\n", tomk);
+		printk(BIOS_DEBUG, "tomk is 0x%lx\n", tomk);
 		/* Compute the Top Of Low Memory (TOLM), in Kb. */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {

@@ -36,6 +36,7 @@ int print_mchbar(struct pci_dev *nb)
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
+	case PCI_DEVICE_ID_INTEL_82945GSE:
 	case PCI_DEVICE_ID_INTEL_82945P:
  	case PCI_DEVICE_ID_INTEL_82975X:
 		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;

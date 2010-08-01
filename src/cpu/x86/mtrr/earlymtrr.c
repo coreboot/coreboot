@@ -62,6 +62,7 @@ static inline void cache_lbmem(int type)
 	enable_cache();
 }
 
+#if !defined(CONFIG_USE_DCACHE_RAM) || (CONFIG_USE_DCACHE_RAM == 0)
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */
@@ -118,6 +119,7 @@ static inline void early_mtrr_init(void)
 	do_early_mtrr_init(mtrr_msrs);
 	enable_cache();
 }
+#endif
 
 static inline int early_mtrr_init_detected(void)
 {

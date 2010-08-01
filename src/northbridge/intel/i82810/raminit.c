@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2007 Corey Osgood <corey@slightlyhackish.com>
+ * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
  * Copyright (C) 2008-2009 Elia Yehuda <z4ziggy@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify

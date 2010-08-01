@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Corey Osgood <corey_osgood@verizon.net>
+ * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify

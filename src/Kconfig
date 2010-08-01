@@ -560,6 +560,18 @@ config DEBUG_SMI
 
 	  If unsure, say N.
 
+config DEBUG_SMM_RELOCATION
+	bool "Debug SMM relocation code"
+	default n
+	depends on HAVE_SMI_HANDLER
+	help
+	  This option enables additional SMM handler relocation related
+	  debug messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
 config X86EMU_DEBUG
 	bool "Output verbose x86emu debug messages"
 	default n

@@ -86,6 +86,7 @@ extern void i82801dx_enable(device_t dev);
 #define PCICMD          0x04
 #define PMBASE          0x40
 #define   PMBASE_ADDR	0x0400
+#define   DEFAULT_PMBASE PMBASE_ADDR
 #define ACPI_CNTL       0x44
 #define BIOS_CNTL       0x4E
 #define GPIO_BASE       0x58

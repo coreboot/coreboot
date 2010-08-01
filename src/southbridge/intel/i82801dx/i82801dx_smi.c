@@ -335,11 +335,13 @@ static void smm_install(void)
 
 void smm_init(void)
 {
-	// FIXME is this a race condition?
-	smm_relocate();
+	/* Put SMM code to 0xa0000 */
 	smm_install();
 
-	// We're done. Make sure SMIs can happen!
+	/* Put relocation code to 0x38000 and relocate SMBASE */
+	smm_relocate();
+
+	/* We're done. Make sure SMIs can happen! */
 	smi_set_eos();
 }
 

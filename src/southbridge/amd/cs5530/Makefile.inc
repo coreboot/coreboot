@@ -21,5 +21,5 @@
 driver-y += cs5530.o
 driver-y += cs5530_isa.o
 driver-y += cs5530_ide.o
-driver-y += cs5530_vga.o
+driver-$(CONFIG_VGA_ROM_RUN) += cs5530_vga.o
 driver-y += cs5530_pirq.o

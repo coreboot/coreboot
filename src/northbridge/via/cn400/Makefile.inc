@@ -20,6 +20,6 @@
 
 driver-y += northbridge.o
 driver-y += agp.o
-driver-y += vga.o
+driver-$(CONFIG_VGA_ROM_RUN) += vga.o
 driver-y += vlink.o
 

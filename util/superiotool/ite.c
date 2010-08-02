@@ -307,6 +307,8 @@ static const struct superio_registers reg_table[] = {
 	{0x8706, "IT8706R", {	/* TODO: Not yet in sensors-detect */
 		/* This is a "Special General Purpose I/O chip". */
 		{EOT}}},
+	{0x8707, "IT8707F", {
+		{EOT}}},
 	{0x8708, "IT8708F", {
 		{NOLDN, NULL,
 			{0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,

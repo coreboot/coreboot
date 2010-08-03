@@ -23,4 +23,4 @@ obj-y += northbridge.o
 driver-y += cx700_agp.o
 driver-y += cx700_lpc.o
 driver-y += cx700_sata.o
-driver-$(CONFIG_VGA_ROM_RUN) += cx700_vga.o
+driver-y += cx700_vga.o

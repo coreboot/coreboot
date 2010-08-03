@@ -19,5 +19,5 @@
 ##
 
 driver-y += northbridge.o
-driver-$(CONFIG_VGA_ROM_RUN) += vga.o
+driver-y += vga.o
 

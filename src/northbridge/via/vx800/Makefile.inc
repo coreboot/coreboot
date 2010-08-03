@@ -19,7 +19,7 @@
 ##
 
 driver-y += northbridge.o
-driver-$(CONFIG_VGA_ROM_RUN) += vga.o
+driver-y += vga.o
 driver-y += vx800_lpc.o
 driver-y += vx800_ide.o
 

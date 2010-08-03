@@ -1,6 +1,5 @@
 config CPU_AMD_MODEL_10XXX
 	bool
-	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select SSE
 	select SSE2

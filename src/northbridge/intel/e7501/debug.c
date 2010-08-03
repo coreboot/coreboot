@@ -39,7 +39,7 @@ static void dump_pci_device(unsigned dev)
 	for(i = 0; i < 256; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
                         printk(BIOS_DEBUG, "\n%02x:",i);
 #else
 			print_debug("\n");
@@ -48,7 +48,7 @@ static void dump_pci_device(unsigned dev)
 #endif
 		}
 		val = pci_read_config8(dev, i);
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 		printk(BIOS_DEBUG, " %02x", val);
 #else
 		print_debug_char(' ');
@@ -101,7 +101,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel0[i];
 		if (device) {
 			int j;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 #else
 			print_debug("dimm: ");
@@ -113,7 +113,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 					printk(BIOS_DEBUG, "\n%02x: ", j);
 #else
 					print_debug("\n");
@@ -126,7 +126,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 					break;
 				}
 				byte = status & 0xff;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 				printk(BIOS_DEBUG, "%02x ", byte);
 #else
 				print_debug_hex8(byte);
@@ -138,7 +138,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->channel1[i];
 		if (device) {
 			int j;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
                         printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 #else
 			print_debug("dimm: ");
@@ -150,7 +150,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
                                         printk(BIOS_DEBUG, "\n%02x: ", j);
 #else
 					print_debug("\n");
@@ -163,7 +163,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 					break;
 				}
 				byte = status & 0xff;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
                                 printk(BIOS_DEBUG, "%02x ", byte);
 #else
 				print_debug_hex8(byte);
@@ -181,7 +181,7 @@ static inline void dump_smbus_registers(void)
         for(device = 1; device < 0x80; device++) {
                 int j;
 		if( smbus_read_byte(device, 0) < 0 ) continue;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 		printk(BIOS_DEBUG, "smbus: %02x", device);
 #else
                 print_debug("smbus: ");
@@ -195,7 +195,7 @@ static inline void dump_smbus_registers(void)
 				break;
                         }
                         if ((j & 0xf) == 0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 				printk(BIOS_DEBUG, "\n%02x: ",j);
 #else
                 	        print_debug("\n");
@@ -204,7 +204,7 @@ static inline void dump_smbus_registers(void)
 #endif
                         }
                         byte = status & 0xff;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
                         printk(BIOS_DEBUG, "%02x ", byte);
 #else
                         print_debug_hex8(byte);
@@ -219,7 +219,7 @@ static inline void dump_io_resources(unsigned port)
 {
 
 	int i;
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 	printk(BIOS_DEBUG, "%04x:\n", port);
 #else
         print_debug_hex16(port);
@@ -228,7 +228,7 @@ static inline void dump_io_resources(unsigned port)
         for(i=0;i<256;i++) {
                 uint8_t val;
                 if ((i & 0x0f) == 0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 			printk(BIOS_DEBUG, "%02x:", i);
 #else
                         print_debug_hex8(i);
@@ -236,7 +236,7 @@ static inline void dump_io_resources(unsigned port)
 #endif
                 }
                 val = inb(port);
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 		printk(BIOS_DEBUG, " %02x",val);
 #else
                 print_debug_char(' ');
@@ -255,7 +255,7 @@ static inline void dump_mem(unsigned start, unsigned end)
 	print_debug("dump_mem:");
         for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 			printk(BIOS_DEBUG, "\n%08x:", i);
 #else
 			print_debug("\n");
@@ -263,7 +263,7 @@ static inline void dump_mem(unsigned start, unsigned end)
 			print_debug(":");
 #endif
 		}
-#if CONFIG_USE_PRINTK_IN_CAR
+#if CONFIG_USE_DCACHE_RAM
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
 #else
 		print_debug(" ");

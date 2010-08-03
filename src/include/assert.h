@@ -20,7 +20,7 @@
 #ifndef __ASSERT_H__
 #define __ASSERT_H__
 
-#if defined(__PRE_RAM__) && !CONFIG_USE_PRINTK_IN_CAR
+#if defined(__PRE_RAM__) && !CONFIG_USE_DCACHE_RAM
 
 /* ROMCC versions */
 #define ASSERT(x) {						\

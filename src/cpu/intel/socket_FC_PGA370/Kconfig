@@ -23,7 +23,6 @@ config CPU_INTEL_SOCKET_FC_PGA370
 	select CPU_INTEL_MODEL_68X
 	select MMX
 	select SSE
-	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select TINY_BOOTBLOCK
 

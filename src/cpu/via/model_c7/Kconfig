@@ -3,7 +3,6 @@ config CPU_VIA_C7
 	select UDELAY_TSC
 	select MMX
 	select SSE2
-	select USE_PRINTK_IN_CAR
 
 config DCACHE_RAM_BASE
 	hex

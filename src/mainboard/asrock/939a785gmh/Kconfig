@@ -16,7 +16,6 @@ config BOARD_ASROCK_939A785GMH
 	select HAVE_OPTION_TABLE
 	select HAVE_BUS_CONFIG
 	select LIFT_BSP_APIC_ID
-	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
@@ -91,11 +90,6 @@ config HT_CHAIN_END_UNITID_BASE
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_ASROCK_939A785GMH
-
-config USE_INIT
-	bool
-	default n
 	depends on BOARD_ASROCK_939A785GMH
 
 config IRQ_SLOT_COUNT

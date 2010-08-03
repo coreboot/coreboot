@@ -140,10 +140,6 @@ config HEAP_SIZE
 	hex
 	default 0x4000
 
-config USE_PRINTK_IN_CAR
-	bool
-	default n
-
 config MAX_CPUS
 	int
 	default 1

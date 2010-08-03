@@ -32,8 +32,6 @@
 
 #include "lib/delay.c"
 
-
-//#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
 #include "northbridge/amd/amdk8/debug.c"
@@ -58,33 +56,30 @@ static inline unsigned get_nodes(void)
 
 void hardwaremain(int ret_addr)
 {
-	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in CACHE
-        struct sys_info *sysinfox = ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
+	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE +
+			CONFIG_DCACHE_RAM_SIZE -
+			CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in CACHE
+	struct sys_info *sysinfox = ((CONFIG_RAMTOP) -
+			CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
 
 	struct node_core_id id;
 
 	id = get_node_core_id_x();
 
-#if CONFIG_USE_PRINTK_IN_CAR
-        printk(BIOS_DEBUG, "CODE IN CACHE ON NODE: %02x\n");
-#else
-        print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\n");
-#endif
+        printk(BIOS_DEBUG, "CODE IN CACHE ON NODE: %02x\n", id.nodeid);
 
 	train_ram(id.nodeid, sysinfo, sysinfox);
 
 	/*
-		go back, but can not use stack any more, because we only keep ret_addr and can not restore esp, and ebp
-	*/
+	 * go back, but can not use stack any more, because we 
+	 * only keep ret_addr and can not restore esp, and ebp.
+	 */
 
         __asm__ volatile (
                 "movl  %0, %%edi\n\t"
                 "jmp     *%%edi\n\t"
                 :: "a"(ret_addr)
         );
-
-
-
 }
 
 #include <arch/registers.h>
@@ -95,5 +90,4 @@ void x86_exception(struct eregs *info)
                 hlt();
         } while(1);
 }
-
 

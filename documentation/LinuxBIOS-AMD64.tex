@@ -1533,14 +1533,6 @@ There are two big additions to the build process and, furthermore, more than two
 
 Set to \texttt{1} to use Cache As Ram (CAR). Defaults to \texttt{0}
 
-\item \begin{verbatim}CONFIG_USE_INIT\end{verbatim}
-
-Set to \texttt{1} to figure this out. Defaults to \texttt{0}
-
-\item \begin{verbatim}CONFIG_USE_PRINTK_IN_CAR\end{verbatim}
-
-Set to \texttt{1} to use printk, instead of the primitive print functions, in CAR. Defaults to \texttt{0}
-
 \end{itemize}
 
 Before going over the new image types, derived from v3, we will quickly review the standard v2 image types. We are hoping this review will
@@ -1646,41 +1638,6 @@ There is a make variable, INIT-OBJECTS, that for all our other targets is empty.
 No significant change from romcc code.
 \subsubsection{boot sequence}
 No significant change from romcc code, except that the CAR code has to set up a stack.
-\subsection{car + CONFIG\_USE\_PRINTK\_IN\_CAR images}
-When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. This config variable is used in one of two ways. If CONFIG\_USE\_INIT is 0, then different .c files just include other .c files, as in console.c:
-\begin{verbatim}
-#if CONFIG_USE_PRINTK_IN_CAR == 0
-static void __console_tx_byte(unsigned char byte)
-{
-        uart_tx_byte(byte);
-}
-
-#include "console_print.c"
-
-#else
-/* CONFIG_USE_PRINTK_IN_CAR == 1 */
-
-#include "console_printk.c"
-
-#if CONFIG_USE_INIT == 0
-// do_printk
-#include "../../../console/vtxprintf.c"
-#include "printk_init.c"
-#endif
-
-#endif /* CONFIG_USE_PRINTK_IN_CAR */
-
-\end{verbatim}\footnote{yuck!}
-
-If CONFIG\_USE\_INIT is 1, then the Config.lb is configured differently:
-\begin{verbatim}
-if CONFIG_USE_INIT
-        if CONFIG_USE_PRINTK_IN_CAR
-                initobject printk_init.o
-        end
-end
-
-\end{verbatim}\footnote{see previous footnote}
 
 \subsubsection{layout}
 No significant change from romcc code.

@@ -34,7 +34,7 @@ void usbdebug_tx_byte(unsigned char data)
 	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
 
 	if (dbg_info->ehci_debug) {
-		dbgp_bulk_write_x(dbg_info, &data, 1);
+		dbgp_bulk_write_x(dbg_info, (char*)&data, 1);
 	}
 }
 
@@ -47,6 +47,6 @@ void usbdebug_ram_tx_byte(unsigned char data)
 	    ((CONFIG_RAMTOP) - sizeof(struct ehci_debug_info));
 
 	if (dbg_info->ehci_debug) {
-		dbgp_bulk_write_x(dbg_info, &data, 1);
+		dbgp_bulk_write_x(dbg_info, (char*)&data, 1);
 	}
 }

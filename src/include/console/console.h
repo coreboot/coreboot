@@ -12,6 +12,9 @@ int console_tst_byte(void);
 #if CONFIG_CONSOLE_VGA == 1
 void vga_console_init(void);
 #endif
+#if CONFIG_USBDEBUG
+#include <usbdebug.h>
+#endif
 
 struct console_driver {
 	void (*init)(void);

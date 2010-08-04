@@ -26,6 +26,8 @@
 #define EHCI_PORTSC		0x44
 #define EHCI_DEBUG_OFFSET	0xA0
 
+#include <usbdebug.h>
+
 void set_debug_port(unsigned port)
 {
 	u32 dbgctl;

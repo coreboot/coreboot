@@ -18,6 +18,8 @@
 #ifndef USBDEBUG_H
 #define USBDEBUG_H
 
+#include <ehci.h>
+
 struct ehci_debug_info {
         void *ehci_caps;
         void *ehci_regs;
@@ -29,9 +31,14 @@ struct ehci_debug_info {
 
 int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size);
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size);
+int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype, int request,
+	int value, int index, void *data, int size);
+int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port);
 void set_ehci_base(unsigned ehci_base);
 void set_ehci_debug(unsigned ehci_deug);
 unsigned get_ehci_debug(void);
 void set_debug_port(unsigned port);
+void usbdebug_ram_tx_byte(unsigned char data);
+void usbdebug_tx_byte(unsigned char data);
 
 #endif

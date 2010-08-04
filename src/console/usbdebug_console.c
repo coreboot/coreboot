@@ -29,20 +29,20 @@ void set_ehci_base(unsigned ehci_base)
 	if (!dbg_info.ehci_debug)
 		return;
 
-	diff = dbg_info.ehci_caps - ehci_base;
+	diff = (unsigned)dbg_info.ehci_caps - ehci_base;
 	dbg_info.ehci_regs -= diff;
 	dbg_info.ehci_debug -= diff;
-	dbg_info.ehci_caps = ehci_base;
+	dbg_info.ehci_caps = (void*)ehci_base;
 }
 
 void set_ehci_debug(unsigned ehci_debug)
 {
-	dbg_info.ehci_debug = ehci_debug;
+	dbg_info.ehci_debug = (void*)ehci_debug;
 }
 
 unsigned get_ehci_debug(void)
 {
-	return dbg_info.ehci_debug;
+	return (unsigned)dbg_info.ehci_debug;
 }
 
 static void dbgp_init(void)
@@ -61,7 +61,7 @@ static void dbgp_init(void)
 static void dbgp_tx_byte(unsigned char data)
 {
 	if (dbg_info.ehci_debug)
-		dbgp_bulk_write_x(&dbg_info, &data, 1);
+		dbgp_bulk_write_x(&dbg_info, (char*)&data, 1);
 }
 
 static unsigned char dbgp_rx_byte(void)
@@ -76,7 +76,7 @@ static unsigned char dbgp_rx_byte(void)
 
 static int dbgp_tst_byte(void)
 {
-	return dbg_info.ehci_debug;
+	return (int)dbg_info.ehci_debug;
 }
 
 static const struct console_driver usbdebug_direct_console __console = {

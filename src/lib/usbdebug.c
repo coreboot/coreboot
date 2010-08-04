@@ -234,7 +234,7 @@ int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum, dbg_info->endpoint_in, data, size);
 }
 
-static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype, int request,
+int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype, int request,
 	int value, int index, void *data, int size)
 {
 	unsigned pids, addr, ctrl;
@@ -323,7 +323,7 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 	return -16;//-EBUSY;
 }
 
-static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
+int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 {
 	unsigned status;
 	int ret, reps;
@@ -346,6 +346,8 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 #else
 #define dbgp_printk(fmt_arg...)   do {} while(0)
 #endif
+
+#ifdef __PRE_RAM__
 static void usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
@@ -547,5 +549,6 @@ next_debug_port:
 	}
 
 }
+#endif
 
 

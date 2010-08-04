@@ -31,7 +31,9 @@
 #define EHCI_BAR	0xFEF00000
 #define EHCI_DEBUG_OFFSET	0x98
 
-static void set_debug_port(unsigned port)
+#include <usbdebug.h>
+
+void set_debug_port(unsigned port)
 {
 	uint32_t dword;
 	dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), 0x74);

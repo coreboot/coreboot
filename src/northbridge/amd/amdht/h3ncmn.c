@@ -555,16 +555,17 @@ static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 	u8 i;
 
 	ASSERT((node < nb->maxNodes));
-	/* Read CmpCap */
+	/* Read CmpCap [2][1:0] */
 	AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(node),
 				makePCIBusFromNode(node),
 				makePCIDeviceFromNode(node),
 				CPU_NB_FUNC_03,
 				REG_NB_CAPABILITY_3XE8),
-				13, 12, &temp);
+				15, 12, &temp);
 
+	/* bits[15,13,12] specify the cores */
 	/* Support Downcoring */
-	cores = temp + 1;
+	cores = ((temp & 8) >> 1) + (temp & 3) + 1;
 	AmdPCIReadBits (MAKE_SBDFO(makePCISegmentFromNode(node),
 					makePCIBusFromNode(node),
 					makePCIDeviceFromNode(node),

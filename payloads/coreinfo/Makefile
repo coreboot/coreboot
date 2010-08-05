@@ -44,7 +44,7 @@ HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-LIBPAYLOAD_DIR := ../libpayload
+LIBPAYLOAD_DIR := ../libpayload/install/libpayload
 XCC := CC=$(CC) $(LIBPAYLOAD_DIR)/bin/lpgcc
 AS = $(LIBPAYLOAD_DIR)/bin/lpas
 STRIP ?= strip

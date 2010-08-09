@@ -755,30 +755,37 @@ void probe_idregs_ite(uint16_t port)
 		enter_conf_mode_ite_legacy(port, initkey_it8661f);
 		probe_idregs_ite_helper("(init=legacy/it8661f) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 
 		enter_conf_mode_ite_legacy(port, initkey_it8671f);
 		probe_idregs_ite_helper("(init=legacy/it8671f) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 	} else {
 		enter_conf_mode_ite(port);
 		probe_idregs_ite_helper("(init=standard) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 
 		enter_conf_mode_ite_it8502e(port);
 		probe_idregs_ite_helper("(init=it8502e) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 
 		enter_conf_mode_ite_it8761e(port);
 		probe_idregs_ite_helper("(init=it8761e) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 
 		enter_conf_mode_ite_it8228e(port);
 		probe_idregs_ite_helper("(init=it8228e) ", port);
 		exit_conf_mode_ite(port);
+		if (chip_found) return;
 
 		enter_conf_mode_winbond_fintek_ite_8787(port);
 		probe_idregs_ite_helper("(init=0x87,0x87) ", port);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
+		if (chip_found) return;
 	}
 }
 

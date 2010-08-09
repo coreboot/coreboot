@@ -614,18 +614,22 @@ void probe_idregs_winbond(uint16_t port)
 	enter_conf_mode_winbond_88(port);
 	probe_idregs_winbond_helper("(init=0x88) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
+	if (chip_found) return;
 
 	enter_conf_mode_winbond_89(port);
 	probe_idregs_winbond_helper("(init=0x89) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
+	if (chip_found) return;
 
 	enter_conf_mode_winbond_86(port);
 	probe_idregs_winbond_helper("(init=0x86,0x86) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
+	if (chip_found) return;
 
 	enter_conf_mode_winbond_fintek_ite_8787(port);
 	probe_idregs_winbond_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
+	if (chip_found) return;
 }
 
 void print_winbond_chips(void)

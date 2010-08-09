@@ -80,6 +80,16 @@ config CCACHE
 	  Enables the use of ccache for faster builds.
 	  Requires ccache in path.
 
+config SCONFIG_GENPARSER
+	bool "Generate SCONFIG parser using flex and bison"
+	default n
+	depends on EXPERT
+	help
+	  Enable this option if you are working on the sconfig
+	  device tree parser and made changes to sconfig.l and
+	  sconfig.y. 
+	  Otherwise, say N.
+
 config USE_OPTION_TABLE
 	bool "Use CMOS for configuration values"
 	default n

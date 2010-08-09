@@ -16,13 +16,15 @@ $(objutil)/sconfig/%.o: $(objutil)/sconfig/%.c
 	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(SCONFIGFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-ifdef SCONFIG_GENPARSER
+ifdef CONFIG_SCONFIG_GENPARSER
 $(top)/util/sconfig/lex.yy.c_shipped: $(top)/util/sconfig/sconfig.l
+	printf "    FLEX       $(subst $(top)/,,$(@))\n"
 	flex -L -o $@ $<
 
 # the .c rule also creates .h
 $(top)/util/sconfig/sconfig.tab.h_shipped: $(top)/util/sconfig/sconfig.tab.c_shipped
 $(top)/util/sconfig/sconfig.tab.c_shipped: $(top)/util/sconfig/sconfig.y
+	printf "    BISON      $(subst $(top)/,,$(@))\n"
 	bison -l --defines=$(top)/util/sconfig/sconfig.tab.h_shipped -o $@ $<
 
 endif

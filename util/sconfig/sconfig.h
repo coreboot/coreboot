@@ -54,7 +54,6 @@ struct device {
 	int chiph_exists;
 	char *ops;
 	char *name;
-	char *aliased_name;
 	char *name_underscore;
 	char *path;
 	int path_a;

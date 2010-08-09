@@ -223,8 +223,6 @@ void alias_siblings(struct device *d) {
 				if (device_match(d, cmp)) {
 					d->multidev = 1;
 
-					cmp->aliased_name = malloc(12);
-					sprintf(cmp->aliased_name, "_dev%d", cmp->id);
 					cmp->id = d->id;
 					cmp->name = d->name;
 					cmp->used = 1;
@@ -289,8 +287,6 @@ static void pass0(FILE *fil, struct device *ptr) {
 		if (ptr->children || ptr->multidev)
 			fprintf(fil, "struct bus %s_links[];\n", ptr->name);
 	}
-	if ((ptr->type == device) && (ptr->id != 0) && ptr->used)
-		fprintf(fil, "static struct device %s;\n", ptr->aliased_name);
 }
 
 static void pass1(FILE *fil, struct device *ptr) {

@@ -283,18 +283,20 @@ static void pass0(FILE *fil, struct device *ptr) {
 	if (ptr->type == device && ptr->id == 0)
 		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
-		fprintf(fil, "struct device %s;\n", ptr->name);
+		fprintf(fil, "static struct device %s;\n", ptr->name);
 		if (ptr->rescnt > 0)
 			fprintf(fil, "struct resource %s_res[];\n", ptr->name);
 		if (ptr->children || ptr->multidev)
 			fprintf(fil, "struct bus %s_links[];\n", ptr->name);
 	}
 	if ((ptr->type == device) && (ptr->id != 0) && ptr->used)
-		fprintf(fil, "struct device %s;\n", ptr->aliased_name);
+		fprintf(fil, "static struct device %s;\n", ptr->aliased_name);
 }
 
 static void pass1(FILE *fil, struct device *ptr) {
 	if (!ptr->used && (ptr->type == device)) {
+		if (ptr->id != 0)
+			fprintf(fil, "static ", ptr->name);
 		fprintf(fil, "struct device %s = {\n", ptr->name);
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops)?(ptr->ops):"0");
 		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name, ptr->bus->link);

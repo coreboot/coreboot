@@ -60,6 +60,10 @@ TARGETS-$(CONFIG_USB) += drivers/usb/quirks.o
 TARGETS-$(CONFIG_USB_HUB) += drivers/usb/usbhub.o
 TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci.o
 TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci_rh.o
+TARGETS-$(CONFIG_USB_OHCI) += drivers/usb/ohci.o
+TARGETS-$(CONFIG_USB_OHCI) += drivers/usb/ohci_rh.o
+TARGETS-$(CONFIG_USB_XHCI) += drivers/usb/xhci.o
+TARGETS-$(CONFIG_USB_XHCI) += drivers/usb/xhci_rh.o
 TARGETS-$(CONFIG_USB_HID) += drivers/usb/usbhid.o
 TARGETS-$(CONFIG_USB_MSC) += drivers/usb/usbmsc.o
 

@@ -30,9 +30,9 @@
 #include <libpayload-config.h>
 #include <usb/usb.h>
 #include "uhci.h"
-//#include "ohci.h"
+#include "ohci.h"
 //#include "ehci.h"
-//#include "xhci.h"
+#include "xhci.h"
 #include <usb/usbdisk.h>
 
 /**
@@ -68,7 +68,7 @@ usb_controller_initialize (int bus, int dev, int func)
 		pci_command |= PCI_COMMAND_MASTER;
 		pci_write_config32(addr, PCI_COMMAND, pci_command);
 
-		printf ("%02x:%02x.%x %04x:%04x.%d ", 0, dev, func,
+		printf ("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
 			pciid >> 16, pciid & 0xFFFF, func);
 		if (prog_if == 0) {
 			printf ("UHCI controller\n");
@@ -81,8 +81,7 @@ usb_controller_initialize (int bus, int dev, int func)
 		if (prog_if == 0x10) {
 			printf ("OHCI controller\n");
 #ifdef CONFIG_USB_OHCI
-			//ohci_init(addr);
-			printf ("Not supported.\n");
+			ohci_init(addr);
 #else
 			printf ("Not supported.\n");
 #endif
@@ -99,10 +98,9 @@ usb_controller_initialize (int bus, int dev, int func)
 
 		}
 		if (prog_if == 0x30) {
-			printf ("XHCI controller\n");
+			printf ("xHCI controller\n");
 #ifdef CONFIG_USB_XHCI
-			//xhci_init(addr);
-			printf ("Not supported.\n");
+			xhci_init(addr);
 #else
 			printf ("Not supported.\n");
 #endif
@@ -128,8 +126,9 @@ usb_initialize (void)
 	 */
 	for (bus = 0; bus < 256; bus++)
 		for (dev = 0; dev < 32; dev++)
-			for (func = 7; func >= 0 ; func--)
-				usb_controller_initialize (bus, dev, func);
+			if (pci_read_config32 (PCI_DEV(bus, dev, 0), 8) >> 16 == 0x0c03)
+				for (func = 7; func >= 0 ; func--)
+					usb_controller_initialize (bus, dev, func);
 	usb_poll();
 	return 0;
 }

@@ -224,13 +224,19 @@ config USB_OHCI
 	help
 	  Select this option if you are going to use USB 1.1 on an AMD based
 	  system.
-	  NOTE: This option is not (fully) implemented yet
 
 config USB_EHCI
 	bool "Support for USB EHCI controllers"
 	depends on USB
 	help
 	  Select this option if you want to use USB 2.0
+	  NOTE: This option is not (fully) implemented yet
+
+config USB_XHCI
+	bool "Support for USB xHCI controllers"
+	depends on USB
+	help
+	  Select this option if you want to use USB 3.0
 	  NOTE: This option is not (fully) implemented yet
 
 config USB_HID

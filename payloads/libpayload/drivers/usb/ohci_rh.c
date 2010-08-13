@@ -1,0 +1,164 @@
+/*
+ * This file is part of the libpayload project.
+ *
+ * Copyright (C) 2010 Patrick Georgi
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+//#define USB_DEBUG
+
+#include <libpayload.h>
+#include "ohci_private.h"
+#include "ohci.h"
+
+typedef struct {
+	int numports;
+	int *port;
+} rh_inst_t;
+
+#define RH_INST(dev) ((rh_inst_t*)(dev)->data)
+
+static void
+ohci_rh_enable_port (usbdev_t *dev, int port)
+{
+	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & CurrentConnectStatus))
+		return;
+
+	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = SetPortEnable; // enable port
+	mdelay(10);
+	while (!(OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus)) mdelay(1);
+	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = SetPortReset; // reset port
+	while (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortResetStatus) mdelay(1);
+	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = PortResetStatusChange;
+}
+
+/* disable root hub */
+static void
+ohci_rh_disable_port (usbdev_t *dev, int port)
+{
+	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ClearPortEnable; // disable port
+	while (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus) mdelay(1);
+}
+
+static void
+ohci_rh_scanport (usbdev_t *dev, int port)
+{
+	if (port >= RH_INST(dev)->numports) {
+		debug("Invalid port %d\n", port);
+		return;
+	}
+
+	/* device registered, and device change logged, so something must have happened */
+	if (RH_INST (dev)->port[port] != -1) {
+		usb_detach_device(dev->controller, RH_INST (dev)->port[port]);
+		RH_INST (dev)->port[port] = -1;
+	}
+
+	/* no device attached
+	   previously registered devices are detached, nothing left to do */
+	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & CurrentConnectStatus))
+		return;
+
+	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ConnectStatusChange; // clear port state change
+	ohci_rh_enable_port (dev, port);
+
+	mdelay(100); // wait for signal to stabilize
+
+	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus)) {
+		debug ("port enable failed\n");
+		return;
+	}
+
+	int speed = (OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & LowSpeedDeviceAttached) != 0;
+	RH_INST (dev)->port[port] = usb_attach_device(dev->controller, dev->address, port, speed);
+}
+
+static int
+ohci_rh_report_port_changes (usbdev_t *dev)
+{
+	int i;
+
+	if (!(OHCI_INST (dev->controller)->opreg->HcInterruptStatus & RootHubStatusChange)) return -1;
+	OHCI_INST (dev->controller)->opreg->HcInterruptStatus = RootHubStatusChange;
+	debug("port change\n");
+
+	for (i = 0; i < RH_INST(dev)->numports; i++) {
+		// maybe detach+attach happened between two scans?
+		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[i] & ConnectStatusChange) {
+			debug("attachment change on port %d\n", i);
+			return i;
+		}
+	}
+
+	// no change
+	return -1;
+}
+
+static void
+ohci_rh_destroy (usbdev_t *dev)
+{
+	int i;
+	for (i = 0; i < RH_INST (dev)->numports; i++)
+		ohci_rh_disable_port (dev, i);
+	free (RH_INST (dev));
+}
+
+static void
+ohci_rh_poll (usbdev_t *dev)
+{
+	int port;
+	while ((port = ohci_rh_report_port_changes (dev)) != -1)
+		ohci_rh_scanport (dev, port);
+}
+
+void
+ohci_rh_init (usbdev_t *dev)
+{
+	int i;
+
+	dev->destroy = ohci_rh_destroy;
+	dev->poll = ohci_rh_poll;
+
+	dev->data = malloc (sizeof (rh_inst_t));
+	if (!dev->data)
+		usb_fatal ("Not enough memory for OHCI RH.\n");
+
+	RH_INST (dev)->numports = OHCI_INST (dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
+	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);
+	debug("%d ports registered\n", RH_INST (dev)->numports);
+
+	for (i = 0; i < RH_INST (dev)->numports; i++) {
+		ohci_rh_enable_port (dev, i);
+		RH_INST (dev)->port[i] = -1;
+	}
+
+	/* we can set them here because a root hub _really_ shouldn't
+	   appear elsewhere */
+	dev->address = 0;
+	dev->hub = -1;
+	dev->port = -1;
+
+	debug("rh init done\n");
+}

@@ -183,39 +183,12 @@ clear_mtrrs:
 
 	post_code(0x33)
 
-#undef CLEAR_FIRST_1M_RAM
-#ifdef CLEAR_FIRST_1M_RAM
-	post_code(0x34)
-	/* Enable Write Combining and Speculative Reads for the first 1MB */
-	movl	$MTRRphysBase_MSR(0), %ecx
-	movl	$(0x00000000 | MTRR_TYPE_WRCOMB), %eax
-	xorl	%edx, %edx
-	wrmsr
-	movl	$MTRRphysMask_MSR(0), %ecx
-	movl	$(~(1024*1024 -1) | (1 << 11)), %eax
-	movl	$0x0000000f, %edx	// 36bit address space
-	wrmsr
-	post_code(0x35)
-#endif
-
 	/* Enable Cache */
 	movl	%cr0, %eax
 	andl    $~( (1 << 30) | (1 << 29) ), %eax
 	movl	%eax, %cr0
 
-
 	post_code(0x36)
-#ifdef CLEAR_FIRST_1M_RAM
-
-	/* Clear first 1MB of RAM */
-	movl	$0x00000000, %edi
-	cld
-	xorl	%eax, %eax
-	movl	$((1024*1024) / 4), %ecx
-	rep stosl
-
-	post_code(0x37)
-#endif
 
 	/* Disable Cache */
 	movl	%cr0, %eax

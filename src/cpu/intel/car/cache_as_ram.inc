@@ -1,12 +1,10 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2000, 2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2005 Eswar Nallusamy, LANL
- * Copyright (C) 2005 Tyan
- * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
- * Copyright (C) 2007 coresystems GmbH
- * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2005 Tyan (written by Yinghai Lu for Tyan)
+ * Copyright (C) 2007-2010 coresystems GmbH
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,15 +21,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* We will use 4K bytes only */
-/* disable HyperThreading is done by eswar*/
-/* other's is the same as AMD except remove amd specific msr */
-
 #define CacheSize CONFIG_DCACHE_RAM_SIZE
 #define CacheBase (0xd0000 - CacheSize)
 
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/lapic_def.h>
 
 	/* Save the BIST result */
 	movl	%eax, %ebp
@@ -47,18 +42,18 @@ CacheAsRam:
 	jbe	NotHtProcessor
 
 	// It is a HT processor; Send SIPI to the other logical processor
-	// within this processor so that the CAR related common system registers
-	// are programmed accordingly
+	// within this processor so that the CAR related common system 
+	// registers are programmed accordingly.
 
 	// Use some register that is common to both logical processors
 	// as semaphore. Refer Appendix B, Vol.3
 	xorl	%eax, %eax
 	xorl	%edx, %edx
-	movl	$0x250, %ecx
+	movl	$MTRRfix64K_00000_MSR, %ecx
 	wrmsr
 
-	// Figure out the logical AP's APIC ID; the following logic will work
-	// only for processors with 2 threads
+	// Figure out the logical AP's APIC ID; the following logic will
+	// work only for processors with 2 threads.
 	// Refer to Vol 3. Table 7-1 for details about this logic
 	movl	$0xFEE00020, %esi
 	movl	(%esi), %ebx
@@ -73,8 +68,9 @@ LogicalAP0:
 Send_SIPI:
 	bswapl	%ebx  // ebx - logical AP's APIC ID
 
-	// Fill up the IPI command registers in the Local APIC mapped to default address
-	// and issue SIPI to the other logical processor within this processor die.
+	// Fill up the IPI command registers in the Local APIC mapped to
+	// default address and issue SIPI to the other logical processor
+	// within this processor die.
 Retry_SIPI:
 	movl	%ebx, %eax
 	movl	$0xFEE00310, %esi
@@ -97,21 +93,18 @@ SIPI_Delay:
 
 	// Wait for the Logical AP to complete initialization
 LogicalAP_SIPINotdone:
-	movl	$0x250, %ecx
+	movl	$MTRRfix64K_00000_MSR, %ecx
 	rdmsr
 	orl	%eax, %eax
 	jz	LogicalAP_SIPINotdone
 
 NotHtProcessor:
-
-#if 1
 	/* Set the default memory type and enable fixed and variable MTRRs */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
 	/* Enable Variable and Fixed MTRRs */
 	movl	$0x00000c00, %eax
 	wrmsr
-#endif
 
 	/* Clear all MTRRs */
 	xorl	%edx, %edx
@@ -144,8 +137,8 @@ clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
  * segs is the number of 4k segments in the area of the particular
- *   register we want to use for CAR.
- * reg is the register where the IO type should be stored.
+ *      register we want to use for CAR.
+ * reg  is the register where the IO type should be stored.
  */
 .macro extractmask segs, reg
 .if \segs <= 0
@@ -155,13 +148,13 @@ clear_fixed_var_mtrr_out:
 	 */
 	xorl \reg, \reg
 .elseif \segs == 1
-	movl $0x06000000, \reg /* WB IO type */
+	movl	$0x06000000, \reg /* WB IO type */
 .elseif \segs == 2
-	movl $0x06060000, \reg /* WB IO type */
+	movl	$0x06060000, \reg /* WB IO type */
 .elseif \segs == 3
-	movl $0x06060600, \reg /* WB IO type */
+	movl	$0x06060600, \reg /* WB IO type */
 .elseif \segs >= 4
-	movl $0x06060606, \reg /* WB IO type */
+	movl	$0x06060606, \reg /* WB IO type */
 .endif
 .endm
 
@@ -192,13 +185,13 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize > 0x8000
 	/* enable caching for 32K-64K using fixed mtrr */
-	movl	$0x268, %ecx  /* fix4k_c0000*/
+	movl	$MTRRfix4K_C0000_MSR, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
 	/* enable caching for 0-32K using fixed mtrr */
-	movl	$0x269, %ecx  /* fix4k_c8000*/
+	movl	$MTRRfix4K_C8000_MSR, %ecx
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -211,13 +204,13 @@ clear_fixed_var_mtrr_out:
 	/* enable write base caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	movl	$0x202, %ecx
+	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl    $REAL_XIP_ROM_BASE, %eax
-	orl     $MTRR_TYPE_WRBACK, %eax
+	movl	$REAL_XIP_ROM_BASE, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	movl	$0x203, %ecx
+	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$0x0000000f, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
@@ -239,7 +232,6 @@ clear_fixed_var_mtrr_out:
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
-
 
 #if 0
 	/* check the cache as ram */
@@ -282,20 +274,10 @@ clear_fixed_var_mtrr_out:
 	add	$4, %esi
 	jmp	.xin1x
 .xout1x:
-
 #endif
 
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
-
-	/* Load a different set of data segments */
-#if CONFIG_USE_INIT
-	movw	$CACHE_RAM_DATA_SEG, %ax
-	movw	%ax, %ds
-	movw	%ax, %es
-	movw	%ax, %ss
-#endif
-
 lout:
 	/* Restore the BIST result */
 	movl	%ebp, %eax
@@ -305,91 +287,36 @@ lout:
 	pushl	%eax  /* bist */
 	call	main
 
-	/*
-	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
-		It is only needed if we want to go back
-	*/
-
         /* We don't need cache as ram for now on */
         /* disable cache */
-	movl    %cr0, %eax
-	orl    $(0x1<<30),%eax
-	movl    %eax, %cr0
+	movl	%cr0, %eax
+	orl	$(0x1<<30),%eax
+	movl	%eax, %cr0
 
         /* clear sth */
-	movl    $0x269, %ecx  /* fix4k_c8000*/
-	xorl    %edx, %edx
-	xorl    %eax, %eax
+	movl	$MTRRfix4K_C8000_MSR, %ecx
+	xorl	%edx, %edx
+	xorl	%eax, %eax
 	wrmsr
 
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
-	movl    $0x268, %ecx  /* fix4k_c0000*/
+	movl	$MTRRfix4K_C0000_MSR, %ecx
 	wrmsr
 #endif
 
-        /* Set the default memory type and disable fixed and enable variable MTRRs */
-	movl    $0x2ff, %ecx
-//	movl    $MTRRdefType_MSR, %ecx
-	xorl    %edx, %edx
-        /* Enable Variable and Disable Fixed MTRRs */
-	movl    $0x00000800, %eax
-	wrmsr
-
-#if defined(CLEAR_FIRST_1M_RAM)
-        /* enable caching for first 1M using variable mtrr */
-	movl    $0x200, %ecx
-	xorl    %edx, %edx
-	movl     $(0 | 1), %eax
-//	movl     $(0 | MTRR_TYPE_WRCOMB), %eax
-	wrmsr
-
-	movl    $0x201, %ecx
-	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
-	movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax
-	wrmsr
-#endif
-
-        /* enable cache */
-	movl    %cr0, %eax
-	andl    $0x9fffffff,%eax
-	movl    %eax, %cr0
-
-#if defined(CLEAR_FIRST_1M_RAM)
-        /* clear the first 1M */
-	movl    $0x0, %edi
-	cld
-	movl    $(0x100000>>2), %ecx
-	xorl    %eax, %eax
-	rep     stosl
-
-        /* disable cache */
-	movl    %cr0, %eax
-	orl    $(0x1<<30),%eax
-	movl    %eax, %cr0
-
-        /* enable caching for first 1M using variable mtrr */
-	movl    $0x200, %ecx
-	xorl    %edx, %edx
-	movl     $(0 | 6), %eax
-//	movl     $(0 | MTRR_TYPE_WRBACK), %eax
-	wrmsr
-
-	movl    $0x201, %ecx
-	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
-	movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax
-	wrmsr
-
-        /* enable cache */
-	movl    %cr0, %eax
-	andl    $0x9fffffff,%eax
-	movl    %eax, %cr0
-	invd
-
-	/* FIXME: I hope we don't need to change esp and ebp value here, so we
-	 * can restore value from mmx sse back But the problem is the range is
-	 * some io related, So don't go back
+	/* Set the default memory type and disable fixed
+	 * and enable variable MTRRs
 	 */
-#endif
+	movl	$MTRRdefType_MSR, %ecx
+	xorl	%edx, %edx
+        /* Enable Variable and Disable Fixed MTRRs */
+	movl	$0x00000800, %eax
+	wrmsr
+
+        /* enable cache */
+	movl	%cr0, %eax
+	andl	$0x9fffffff,%eax
+	movl	%eax, %cr0
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
@@ -399,10 +326,10 @@ __main:
 
 	movl	%ebp, %esi
 
-	movl $ROMSTAGE_STACK, %esp
+	movl	$ROMSTAGE_STACK, %esp
 	movl	%esp, %ebp
-	pushl %esi
-	call copy_and_run
+	pushl	%esi
+	call	copy_and_run
 
 .Lhlt:
 	post_code(0xee)

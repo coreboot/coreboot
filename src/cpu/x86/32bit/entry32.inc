@@ -2,15 +2,16 @@
 
 #include <arch/rom_segs.h>
 
-/* 	.section ".rom.text" */
 	.code32
+
+
+	/* This is the GDT for the ROM stage part of coreboot. It 
+	 * is different from the RAM stage GDT which is defined in 
+	 * c_start.S
+	 */
 
 	.align	4
 .globl gdtptr
-
-	/* This is the gdt for ROMCC/ASM part of coreboot.
-	 * It is different from the gdt in GCC part of coreboot
-	 * which is defined in c_start.S */
 gdt:
 gdtptr:
 	.word	gdt_end - gdt -1 /* compute the table limit */

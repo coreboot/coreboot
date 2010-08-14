@@ -113,7 +113,7 @@ endif
 #######################################################################
 # done
 
-crt0s = $(src)/arch/i386/init/crt0_prologue.inc
+crt0s = $(src)/arch/i386/init/prologue.inc
 ldscripts =
 ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)

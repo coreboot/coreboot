@@ -29,7 +29,7 @@ bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
 bootblock_lds += $(src)/arch/i386/lib/id.lds
 bootblock_lds += $(chipset_bootblock_lds)
 
-bootblock_inc = $(src)/arch/i386/init/bootblock_prologue.c
+bootblock_inc = $(src)/arch/i386/init/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc

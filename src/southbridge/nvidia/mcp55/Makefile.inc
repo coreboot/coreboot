@@ -1,5 +1,5 @@
 driver-y += mcp55.o
-driver-y += mcp55_aza.o
+driver-y += mcp55_azalia.o
 driver-y += mcp55_ht.o
 driver-y += mcp55_ide.o
 driver-y += mcp55_lpc.o

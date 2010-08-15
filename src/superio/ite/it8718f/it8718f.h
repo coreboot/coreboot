@@ -32,6 +32,7 @@
 
 #if defined(__PRE_RAM__) && !defined(__ROMCC__)
 void it8718f_24mhz_clkin(void);
+void it8718f_disable_reboot(void);
 void it8718f_enable_serial(device_t dev, unsigned iobase);
 #endif
 

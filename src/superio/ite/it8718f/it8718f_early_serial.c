@@ -74,6 +74,20 @@ void it8718f_24mhz_clkin(void)
 	it8718f_exit_conf();
 }
 
+/* GIGABYTE uses a special SuperIO register to protect its Dual BIOS
+ * mechanism. It lives in the GPIO LDN. However, register 0xEF is not
+ * mentioned in the IT8718F datasheet so just hardcode it to 0x7E for
+ * now.
+ */
+void it8718f_disable_reboot(void)
+{
+	it8718f_enter_conf();
+
+	it8718f_sio_write(0x07, 0xEF, 0x7E);
+
+	it8718f_exit_conf();
+}
+
 /* Enable the peripheral devices on the IT8718F Super I/O chip. */
 void it8718f_enable_serial(device_t dev, unsigned iobase)
 {

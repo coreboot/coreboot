@@ -30,6 +30,9 @@
 #ifndef _PCI_PCI_H
 #define _PCI_PCI_H
 
+/* we implement at least this version */
+#define PCI_LIB_VERSION 0x020200
+
 #include <pci.h>
 
 #define PCI_CLASS_DEVICE	REG_CLASS_DEV

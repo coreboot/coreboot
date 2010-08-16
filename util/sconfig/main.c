@@ -89,7 +89,9 @@ int yywrap(void) {
 
 void yyerror (char const *str)
 {
-	fprintf (stderr, "line %d: %s\n", linenum, str);
+	extern char *yytext;
+	fprintf (stderr, "line %d: %s: %s\n", linenum + 1, yytext, str);
+	exit(1);
 }
 
 void postprocess_devtree(void) {
@@ -408,18 +410,31 @@ int main(int argc, char** argv) {
 	sprintf(headers.next->name, "mainboard/%s", mainboard);
 
 	FILE *filec = fopen(devtree, "r");
+	if (!filec) {
+		fprintf(stderr, "Could not open file '%s' for reading: ", devtree);
+		perror(NULL);
+		exit(1);
+	}
+
 	yyrestart(filec);
 
-	FILE *staticc = fopen(outputc, "w");
-
 	lastdev = head = &root;
+
 	yyparse();
+
 	fclose(filec);
 
 	if ((head->type == chip) && (!head->chiph_exists)) {
 		struct device *tmp = head;
 		head = &root;
 		while (head->next != tmp) head = head->next;
+	}
+
+	FILE *staticc = fopen(outputc, "w");
+	if (!staticc) {
+		fprintf(stderr, "Could not open file '%s' for writing: ", outputc);
+		perror(NULL);
+		exit(1);
 	}
 
 	fprintf(staticc, "#include <device/device.h>\n");
@@ -435,5 +450,6 @@ int main(int argc, char** argv) {
 	walk_device_tree(staticc, &root, pass1, NULL);
 
 	fclose(staticc);
+
 	return 0;
 }

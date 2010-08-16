@@ -1104,6 +1104,9 @@ void dev_initialize(void)
 
 	printk(BIOS_INFO, "Initializing devices...\n");
 
+	/* First call the mainboard init. */
+	init_dev(&dev_root);
+
 	/* now initialize everything. */
 	for (link = dev_root.link_list; link; link = link->next)
 		init_link(link);

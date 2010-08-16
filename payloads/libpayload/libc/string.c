@@ -91,7 +91,7 @@ int strcasecmp(const char *s1, const char *s2)
 {
 	int i;
 
-	for (i = 0; 1; i++) {
+	for (i = 0; s1[i] != '\0'; i++) {
 		if (tolower(s1[i]) != tolower(s2[i]))
 			return s1[i] - s2[i];
 	}
@@ -116,7 +116,7 @@ int strncasecmp(const char *s1, const char *s2, size_t maxlen)
 			return s1[i] - s2[i];
 	}
 
-	return 0;
+	return s1[i] - s2[i];
 }
 
 /**
@@ -132,12 +132,12 @@ int strcmp(const char *s1, const char *s2)
 {
 	int i;
 
-	for (i = 0; 1; i++) {
+	for (i = 0; s1[i] != '\0'; i++) {
 		if (s1[i] != s2[i])
 			return s1[i] - s2[i];
 	}
 
-	return 0;
+	return s1[i] - s2[i];
 }
 
 /**

@@ -583,7 +583,9 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 		else
 			continue;
 
-		/* Is it already outside the limits? */
+		/* Is it a fixed resource outside the current known region?
+		   If so, we don't have to consider it - it will be handled
+		   correctly and doesn't affect current region's limits */
 		if (((res->base + res->size -1) < lim->base) || (res->base > lim->limit))
 			continue;
 

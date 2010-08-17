@@ -48,6 +48,23 @@ static int options_checksum_valid(void)
 	return (checksum_old == checksum);
 }
 
+void fix_options_checksum(void)
+{
+	int i;
+	int range_start = lib_sysinfo.cmos_range_start / 8;
+	int range_end = lib_sysinfo.cmos_range_end / 8;
+	int checksum_location = lib_sysinfo.cmos_checksum_location / 8;
+	u16 checksum = 0;
+
+	for(i = range_start; i <= range_end; i++) {
+		checksum += nvram_read(i);
+	}
+	checksum = (~checksum)&0xffff;
+
+	nvram_write((checksum >> 8), checksum_location);
+	nvram_write((checksum & 0xff), checksum_location + 1);
+}
+
 static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 {
 	u8 *value = (u8 *)valptr;

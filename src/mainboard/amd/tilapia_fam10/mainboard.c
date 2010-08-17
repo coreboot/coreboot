@@ -48,6 +48,7 @@ uint64_t uma_memory_base, uma_memory_size;
 
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
+u8 is_dev3_present(void);
 
 void set_pcie_dereset()
 {
@@ -128,6 +129,90 @@ static void get_ide_dma66(void)
 	pci_write_config8(ide_dev, 0x56, byte);
 }
 #endif
+
+/*
+ * justify the dev3 is exist or not
+ */
+u8 is_dev3_present(void)
+{
+	u16 word;
+	device_t sm_dev;
+
+	/* access the smbus extended register */
+	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+
+	/* put the GPIO68 output to tristate */
+	word = pci_read_config16(sm_dev, 0x7e);
+	word |= 1 << 6;
+	pci_write_config16(sm_dev, 0x7e,word);
+
+	/* read the GPIO68 input status */
+	word = pci_read_config16(sm_dev, 0x7e);
+
+	if(word & (1 << 10)){
+		/*not exist*/
+		return 0;
+	}else{
+		/*exist*/
+		return 1;
+	}
+}
+
+
+/*
+ * set gpio40 gfx
+ */
+static void set_gpio40_gfx(void)
+{
+	u8 byte;
+	u32 dword;
+	device_t sm_dev;
+	/* disable the GPIO40 as CLKREQ2# function */
+	byte = pm_ioread(0xd3);
+	byte &= ~(1 << 7);
+	pm_iowrite(0xd3, byte);
+
+	/* disable the GPIO40 as CLKREQ3# function */
+	byte = pm_ioread(0xd4);
+	byte &= ~(1 << 0);
+	pm_iowrite(0xd4, byte);
+
+	/* enable pull up for GPIO68 */
+	byte = pm2_ioread(0xf1);
+	byte &=	~(1 << 4);
+	pm2_iowrite(0xf1, byte);
+
+	/* access the smbus extended register */
+	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+
+	/*if the dev3 is present, set the gfx to 2x8 lanes*/
+	/*otherwise set the gfx to 1x16 lanes*/
+	if(is_dev3_present()){
+
+		printk(BIOS_INFO, "Dev3 is present. GFX Configuration is Two x8 slots\n");
+		/* when the gpio40 is configured as GPIO, this will enable the output */
+		pci_write_config32(sm_dev, 0xf8, 0x4);
+		dword = pci_read_config32(sm_dev, 0xfc);
+		dword &= ~(1 << 10);
+
+	        /* When the gpio40 is configured as GPIO, this will represent the output value*/
+		/* 1 :enable two x8  , 0 : master slot enable only */
+		dword |= (1 << 26);
+		pci_write_config32(sm_dev, 0xfc, dword);
+
+	}else{
+		printk(BIOS_INFO, "Dev3 is not present. GFX Configuration is One x16 slot\n");
+		/* when the gpio40 is configured as GPIO, this will enable the output */
+		pci_write_config32(sm_dev, 0xf8, 0x4);
+		dword = pci_read_config32(sm_dev, 0xfc);
+		dword &= ~(1 << 10);
+
+        	/* When the gpio40 is configured as GPIO, this will represent the output value*/
+		/* 1 :enable two x8  , 0 : master slot enable only */
+		dword &=  ~(1 << 26);
+		pci_write_config32(sm_dev, 0xfc, dword);
+	}
+}
 
 /*
  * set thermal config
@@ -247,6 +332,7 @@ static void tilapia_enable(device_t dev)
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 	set_thermal_config();
+	set_gpio40_gfx();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

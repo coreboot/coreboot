@@ -34,7 +34,7 @@ uint64_t uma_memory_base, uma_memory_size;
 
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
-
+u8 is_dev3_present(void);
 /*
  * Mahogany uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
  * pull it up before training the slot.
@@ -94,6 +94,10 @@ static void get_ide_dma66(void)
 }
 #endif	/* get_ide_dma66 */
 
+u8 is_dev3_present(void)
+{
+	return 0;
+}
 /*************************************************
 * enable the dedicated function in mahogany board.
 * This function called early than rs780_enable.

@@ -35,7 +35,7 @@
 #include <delay.h>
 #include <cpu/x86/msr.h>
 #include "rs780.h"
-
+extern int is_dev3_present(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
@@ -1214,6 +1214,40 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
 		dual_port_configuration(nb_dev, dev);
 		break;
+
+	case 2:
+
+		if(is_dev3_present()){
+			/* step 1, lane reversal (only need if CMOS option is enabled) */
+			if (cfg->gfx_lane_reversal) {
+				set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
+				set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
+			}
+			printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
+			/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */
+			/* AMD calls the configuration CrossFire */
+			set_nbmisc_enable_bits(nb_dev, 0x0, 0xf << 8, 5 << 8);
+			printk(BIOS_DEBUG, "rs780_gfx_init step2.\n");
+
+
+			printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
+			dual_port_configuration(nb_dev, dev);
+
+		}else{
+			if (cfg->gfx_lane_reversal) {
+				set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
+			}
+			printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
+			printk(BIOS_DEBUG, "rs780_gfx_init step2.\n");
+
+			if((dev->path.pci.devfn >> 3) == 2)
+				single_port_configuration(nb_dev, dev);
+			else{
+				set_nbmisc_enable_bits(nb_dev, 0xc, 0, 0x2 << 2); /* hide the GFX bridge. */
+				printk(BIOS_DEBUG, "If dev3.., single port. Do nothing.\n");
+			    }
+		}
+
 	default:
 		printk(BIOS_INFO, "Incorrect configuration of external GFX slot.\n");
 		break;

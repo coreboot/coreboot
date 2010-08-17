@@ -1,8 +1,9 @@
-#Define gpp_configuration,	A=0, B=1, C=2, D=3, E=4(default)
+#Define gppsb_configuration,	A=0, B=1, C=2, D=3, E=4(default)
+#Define gpp_configuration -> device 9 1x and device a 1x is 3 and device 9 2x is 2
 #Define port_enable, (bit map): GFX(2,3), GPP(4,5,6,7)
 #Define gfx_dev2_dev3, 0: a link will never be established on Dev2 or Dev3,
 #			1: the system allows a PCIE link to be established on Dev2 or Dev3.
-#Define gfx_dual_slot, 0: single slot, 1: dual slot
+#Define gfx_dual_slot, 0: single slot, 1: dual slot (means if GFX slot are two 2 8x slots)
 #Define gfx_lane_reversal, 0: disable lane reversal, 1: enable
 #Define gfx_tmds, 0: didn't support TMDS, 1: support
 #Define gfx_compliance, 0: didn't support compliance, 1: support
@@ -20,20 +21,20 @@ chip northbridge/amd/amdk8/root_complex
 				chip southbridge/amd/rs780
 					device pci 0.0 on end # HT  	0x9600
 					device pci 1.0 on end # Internal Graphics P2P bridge 0x9602
-					device pci 2.0 on end # PCIE P2P bridge (external graphics) 0x9603
-					device pci 3.0 on end # PCIE P2P bridge	0x960b
-					device pci 4.0 on end # PCIE P2P bridge 0x9604
-					device pci 5.0 off end # PCIE P2P bridge 0x9605
-					device pci 6.0 off end # PCIE P2P bridge 0x9606
-					device pci 7.0 off end # PCIE P2P bridge 0x9607
+					device pci 2.0 on end # PCIE P2P bridge 16x slot
+					device pci 3.0 off end # used in dual slot config
+					device pci 4.0 off end # GPPSB
+					device pci 5.0 off end # GPPSB
+					device pci 6.0 off end # GPPSB
+					device pci 7.0 off end # GPPSB
 					device pci 8.0 off end # NB/SB Link P2P bridge
-					device pci 9.0 on end #
-					device pci a.0 on end #
-					register "gppsb_configuration" = "1"   # Configuration B
+					device pci 9.0 on end # GPP for x1 slot
+					device pci a.0 on end # GPP for internal network adapter
+					register "gppsb_configuration" = "4"   # Configuration ?
 					register "gpp_configuration" = "3"   # Configuration D default
-					register "port_enable" = "0x6fc"
+					register "port_enable" = "0x60c"
 					register "gfx_dev2_dev3" = "1"
-					register "gfx_dual_slot" = "1"
+					register "gfx_dual_slot" = "0"
 					register "gfx_lane_reversal" = "0"
 					register "gfx_tmds" = "0"
 					register "gfx_compliance" = "0"

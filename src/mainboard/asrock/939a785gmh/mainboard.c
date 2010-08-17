@@ -35,34 +35,12 @@ uint64_t uma_memory_base, uma_memory_size;
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
 u8 is_dev3_present(void);
-/*
- * Mahogany uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
- * pull it up before training the slot.
- ***/
 void set_pcie_dereset()
 {
-	u16 word;
-	device_t sm_dev;
-	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-
-	word = pci_read_config16(sm_dev, 0xA8);
-	word |= (1 << 0) | (1 << 2);	/* Set Gpio6,4 as output */
-	word &= ~((1 << 8) | (1 << 10));
-	pci_write_config16(sm_dev, 0xA8, word);
 }
 
 void set_pcie_reset()
 {
-	u16 word;
-	device_t sm_dev;
-	/* GPIO 6 reset PCIe slot, GPIO 4 reset GFX PCIe */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-
-	word = pci_read_config16(sm_dev, 0xA8);
-	word &= ~((1 << 0) | (1 << 2));	/* Set Gpio6,4 as output */
-	word &= ~((1 << 8) | (1 << 10));
-	pci_write_config16(sm_dev, 0xA8, word);
 }
 
 #if 0	     /* not tested yet */
@@ -103,13 +81,13 @@ u8 is_dev3_present(void)
 * enable the dedicated function in mahogany board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mahogany_enable(device_t dev)
+static void mb_enable(device_t dev)
 {
 	/* Leave it for future. */
 	/* struct mainboard_config *mainboard =
 	   (struct mainboard_config *)dev->chip_info;*/
 
-	printk(BIOS_INFO, "Mainboard MAHOGANY Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard 939A785GMH/128M Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
@@ -170,6 +148,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD MAHOGANY   Mainboard")
-	.enable_dev = mahogany_enable,
+	CHIP_NAME("Asrock 939A785GMH/128M Mainboard")
+	.enable_dev = mb_enable,
 };

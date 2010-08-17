@@ -1178,9 +1178,11 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* Single-port/Dual-port configureation. */
 	switch (cfg->gfx_dual_slot) {
 	case 0:
-		/* step 1, lane reversal (only need if CMOS option is enabled) */
+		/* step 1, lane reversal (only need if build config option is enabled) */
 		if (cfg->gfx_lane_reversal) {
+			set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 1 << 31);
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
+			set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 0 << 31);
 		}
 		printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 
@@ -1194,10 +1196,12 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 		break;
 	case 1:
-		/* step 1, lane reversal (only need if CMOS option is enabled) */
+		/* step 1, lane reversal (only need if build config option is enabled) */
 		if (cfg->gfx_lane_reversal) {
+			set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 1 << 31);
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
+			set_nbmisc_enable_bits(nb_dev, 0x36, 1 << 31, 0 << 31);
 		}
 		printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 		/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */

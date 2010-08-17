@@ -26,5 +26,6 @@ source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 source "src/mainboard/gigabyte/ma785gmt/Kconfig"
+source "src/mainboard/gigabyte/ma78gm/Kconfig"
 endchoice
 

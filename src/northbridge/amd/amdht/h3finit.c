@@ -845,8 +845,6 @@ static void finializeCoherentInit(sMainData *pDat)
  */
 static void coherentInit(sMainData *pDat)
 {
-	u8 i, j;
-
 #ifdef HT_BUILD_NC_ONLY
 	/* Replace discovery process with:
 	 * No other nodes, no coherent links
@@ -856,6 +854,8 @@ static void coherentInit(sMainData *pDat)
 	pDat->TotalLinks = 0;
 	pDat->nb->enableRoutingTables(0, pDat->nb);
 #else
+	u8 i, j;
+
 	pDat->NodesDiscovered = 0;
 	pDat->TotalLinks = 0;
 	for (i = 0; i < MAX_NODES; i++)

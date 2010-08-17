@@ -1553,6 +1553,8 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
+#ifndef HT_BUILD_NC_ONLY
+
 static void fam0fWriteHTLinkCmdBufferAlloc(u8 node, u8 link, u8 req, u8 preq, u8 rsp, u8 prb)
 {
 	u32 temp;
@@ -1574,6 +1576,7 @@ static void fam0fWriteHTLinkCmdBufferAlloc(u8 node, u8 link, u8 req, u8 preq, u8
 	temp = prb;
 	AmdPCIWriteBits(currentPtr, 15, 12, &temp);
 }
+#endif /* HT_BUILD_NC_ONLY */
 
 /**----------------------------------------------------------------------------------------
  *
@@ -1594,6 +1597,8 @@ static void fam0fWriteHTLinkCmdBufferAlloc(u8 node, u8 link, u8 req, u8 preq, u8
  *
  * ---------------------------------------------------------------------------------------
  */
+#ifndef HT_BUILD_NC_ONLY
+
 static void fam0fWriteHTLinkDatBufferAlloc(u8 node, u8 link, u8 reqD, u8 preqD, u8 rspD)
 {
 	u32 temp;
@@ -1612,6 +1617,7 @@ static void fam0fWriteHTLinkDatBufferAlloc(u8 node, u8 link, u8 reqD, u8 preqD, 
 	temp = rspD;
 	AmdPCIWriteBits(currentPtr, 26, 24, &temp);
 }
+#endif /* HT_BUILD_NC_ONLY */
 
 /**----------------------------------------------------------------------------------------
  *

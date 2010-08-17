@@ -3,6 +3,6 @@ choice
 	depends on VENDOR_JETWAY
 
 source "src/mainboard/jetway/j7f24/Kconfig"
-
+source "src/mainboard/jetway/pa78vm5/Kconfig"
 endchoice
 

@@ -13,8 +13,8 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "Checking Interrupt Routing Table consistency...\n");
 
 	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%lx/0x%x).\n",
-			       sizeof(struct irq_routing_table),
+		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
+			       (unsigned int) sizeof(struct irq_routing_table),
 			       rt->size
 			);
 		rt->size=sizeof(struct irq_routing_table);

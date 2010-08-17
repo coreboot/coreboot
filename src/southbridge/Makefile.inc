@@ -1,6 +1,5 @@
 subdirs-y += amd
 subdirs-y += broadcom
-subdirs-y += dec
 subdirs-y += intel
 subdirs-y += nvidia
 subdirs-y += ricoh

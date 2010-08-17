@@ -270,7 +270,7 @@ DefinitionBlock (
 			/* Byte offsets are computed using the following technique:
 			 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 			 * The 8 comes from 8 functions per device, and 4096 bytes per function config space
-			*/
+			 */
 			Offset(0x00088024),	/* Byte offset to SATA register 24h - Bus 0, Device 17, Function 0 */
 			STB5, 32,
 			Offset(0x00098042),	/* Byte offset to OHCI0 register 42h - Bus 0, Device 19, Function 0 */

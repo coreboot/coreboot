@@ -1,6 +1,5 @@
 source src/southbridge/amd/Kconfig
 source src/southbridge/broadcom/Kconfig
-source src/southbridge/dec/Kconfig
 source src/southbridge/intel/Kconfig
 source src/southbridge/nvidia/Kconfig
 source src/southbridge/ricoh/Kconfig

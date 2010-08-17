@@ -1,2 +1,0 @@
-config SOUTHBRIDGE_DEC_21143
-	bool

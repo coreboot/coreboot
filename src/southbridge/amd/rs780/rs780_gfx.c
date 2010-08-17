@@ -660,8 +660,10 @@ static void rs780_internal_gfx_enable(device_t dev)
 
 	/* Set UMA in the 780 side. */
 	/* UMA start address, size. */
-	/* The same value in spite of system memory size. */
-	nbmc_write_index(nb_dev, 0x10, 0xcfffc000);
+	/* The UMA starts at 0xC0000000 of internal RS780 address space
+	    [31:16] addr of last byte | [31:16] addr of first byte
+	*/
+	nbmc_write_index(nb_dev, 0x10, ((uma_memory_size - 1 + 0xC0000000) & (~0xffff)) | 0xc000);
 	nbmc_write_index(nb_dev, 0x11, uma_memory_base);
 	nbmc_write_index(nb_dev, 0x12, 0);
 	nbmc_write_index(nb_dev, 0xf0, 256);

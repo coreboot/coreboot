@@ -477,6 +477,7 @@ int print_pmbase(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
+	case PCI_DEVICE_ID_INTEL_NM10:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich7_pm_registers;
 		size = ARRAY_SIZE(ich7_pm_registers);
@@ -491,6 +492,7 @@ int print_pmbase(struct pci_dev *sb)
 		pm_registers = ich9_pm_registers;
 		size = ARRAY_SIZE(ich9_pm_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_ICH8:
 	case PCI_DEVICE_ID_INTEL_ICH8M:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich8_pm_registers;

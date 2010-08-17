@@ -171,6 +171,7 @@ int print_gpios(struct pci_dev *sb)
 		gpio_registers = ich9_gpio_registers;
 		size = ARRAY_SIZE(ich9_gpio_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_ICH8:
 	case PCI_DEVICE_ID_INTEL_ICH8M:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich8_gpio_registers;
@@ -180,6 +181,7 @@ int print_gpios(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
+	case PCI_DEVICE_ID_INTEL_NM10:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich7_gpio_registers;
 		size = ARRAY_SIZE(ich7_gpio_registers);

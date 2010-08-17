@@ -117,6 +117,8 @@ uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
 void enter_conf_mode_winbond_fintek_ite_8787(uint16_t port);
 void exit_conf_mode_winbond_fintek_ite_8787(uint16_t port);
+void enter_conf_mode_fintek_7777(uint16_t port);
+void exit_conf_mode_fintek_7777(uint16_t port);
 int superio_unknown(const struct superio_registers reg_table[], uint16_t id);
 const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
@@ -133,6 +135,7 @@ void print_ali_chips(void);
 
 /* fintek.c */
 void probe_idregs_fintek(uint16_t port);
+void probe_idregs_fintek_alternative(uint16_t port);
 void print_fintek_chips(void);
 
 /* ite.c */
@@ -168,6 +171,7 @@ static const struct {
 } superio_ports_table[] = {
 	{probe_idregs_ali,	{0x3f0, 0x370, EOT}},
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
+	{probe_idregs_fintek_alternative,	{0x2e, 0x4e, EOT}},
 	/* Only use 0x370 for ITE, but 0x3f0 or 0x3bd would also be valid. */
 	{probe_idregs_ite,	{0x2e, 0x4e, 0x370, EOT}},
 	{probe_idregs_nsc,	{0x2e, 0x4e, 0x15c, EOT}},

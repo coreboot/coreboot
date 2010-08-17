@@ -153,6 +153,46 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x0581, "F8000", {	/* Fintek/ASUS F8000 */
 		{EOT}}},
+	{0x0802, "F81216D/DG", {
+		{NOLDN, NULL,
+			{0x25,0x2f,EOT},
+			{0x00,RSVD,EOT}},
+		{0x0, "UART1",
+			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
+			{NANA,NANA,NANA,NANA,0x00,0x40,EOT}},
+		{0x1, "UART2",
+			{0x30,0x60,0x61,0x70,0xf0,EOT},
+			{NANA,NANA,NANA,NANA,0x00,EOT}},
+		{0x2, "UART3",
+			{0x30,0x60,0x61,0x70,0xf0,EOT},
+			{NANA,NANA,NANA,NANA,0x00,EOT}},
+		{0x3, "UART4",
+			{0x30,0x60,0x61,0x70,0xf0,EOT},
+			{NANA,NANA,NANA,NANA,0x00,EOT}},
+		{0x8, "WDT",
+			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
+			{0x00,NANA,NANA,NANA,NANA,NANA,EOT}},
+		{EOT}}},
+	{0x1602, "F81216AD", {
+		{NOLDN, NULL,
+			{0x25,0x27,EOT},
+			{0x00,NANA,EOT}},
+		{0x0, "UART1",
+			{0x30,0x60,0x61,0x70,0xf0,0xf1,0xf4,0xf5,EOT},
+			{NANA,NANA,NANA,NANA,0x00,0x40,0x00,0x00,EOT}},
+		{0x1, "UART2",
+			{0x30,0x60,0x61,0x70,0xf0,0xf4,0xf5,EOT},
+			{NANA,NANA,NANA,NANA,0x00,0x00,0x00,EOT}},
+		{0x2, "UART3",
+			{0x30,0x60,0x61,0x70,0xf0,0xf4,0xf5,EOT},
+			{NANA,NANA,NANA,NANA,0x00,0x00,0x00,EOT}},
+		{0x3, "UART4",
+			{0x30,0x60,0x61,0x70,0xf0,0xf4,0xf5,EOT},
+			{NANA,NANA,NANA,NANA,0x00,0x00,0x00,EOT}},
+		{0x8, "WDT",
+			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
+			{0x00,NANA,NANA,NANA,NANA,NANA,EOT}},
+		{EOT}}},
 	{EOT}
 };
 
@@ -184,6 +224,37 @@ void probe_idregs_fintek(uint16_t port)
 	dump_superio("Fintek", reg_table, port, did, LDN_SEL);
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
+}
+
+
+void probe_idregs_fintek_alternative(uint16_t port)
+{
+	uint16_t vid, did;
+
+	probing_for("Fintek", "", port);
+
+	enter_conf_mode_fintek_7777(port);
+
+	did = regval(port, DEVICE_ID_BYTE1_REG);
+	did |= (regval(port, DEVICE_ID_BYTE2_REG) << 8);
+
+	vid = regval(port, VENDOR_ID_BYTE1_REG);
+	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
+
+	if (vid != FINTEK_VENDOR_ID || superio_unknown(reg_table, did)) {
+		if (verbose)
+			printf(NOTFOUND "vid=0x%04x, id=0x%04x\n", vid, did);
+		exit_conf_mode_fintek_7777(port);
+		return;
+	}
+
+	printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at 0x%x\n",
+	       get_superio_name(reg_table, did), vid, did, port);
+	chip_found = 1;
+
+	dump_superio("Fintek", reg_table, port, did, LDN_SEL);
+
+	exit_conf_mode_fintek_7777(port);
 }
 
 void print_fintek_chips(void)

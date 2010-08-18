@@ -206,7 +206,7 @@ static void geodelx_set_palette(int entry, unsigned int color)
 static void geodelx_scroll_up(void)
 {
 	unsigned char *dst = FB;
-	unsigned char *src = FB + vga_mode.hactive;
+	unsigned char *src = FB + FONT_HEIGHT * vga_mode.hactive;
 	int y;
 
 	for(y = 0; y < vga_mode.vactive - FONT_HEIGHT; y++) {
@@ -215,8 +215,6 @@ static void geodelx_scroll_up(void)
 		dst += vga_mode.hactive;
 		src += vga_mode.hactive;
 	}
-
-	dst = FB + (vga_mode.vactive - FONT_HEIGHT) * vga_mode.hactive;
 
 	for(; y < vga_mode.vactive; y++) {
 		memset(dst, 0, vga_mode.hactive);
@@ -279,6 +277,8 @@ static int geodelx_init(void)
 	for(i = 0; i < ARRAY_SIZE(vga_colors); i++) {
 		geodelx_set_palette(i, vga_colors[i]);
 	}
+
+	geodelx_clear();
 
 	return 0;
 }

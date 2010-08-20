@@ -29,8 +29,6 @@ static void *smp_write_config_table(void *v)
 
         unsigned char bus_num;
 
-	int i;
-
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
 

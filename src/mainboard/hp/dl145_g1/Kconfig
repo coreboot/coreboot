@@ -1,0 +1,81 @@
+config BOARD_HP_DL145_G1
+	bool "ProLiant DL145 G1"
+	select ARCH_X86
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_BUS_CONFIG
+	select HAVE_HARD_RESET
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select BOARD_ROMSIZE_KB_512
+#	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+
+config MAINBOARD_DIR
+	string
+	default hp/dl145_g1
+	depends on BOARD_HP_DL145_G1
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+	depends on BOARD_HP_DL145_G1
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_HP_DL145_G1
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ProLiant DL145 G1"
+	depends on BOARD_HP_DL145_G1
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_HP_DL145_G1
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x7460
+	depends on BOARD_HP_DL145_G1
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_HP_DL145_G1
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_HP_DL145_G1
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_HP_DL145_G1
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_HP_DL145_G1
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x1
+	depends on BOARD_HP_DL145_G1
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x6
+	depends on BOARD_HP_DL145_G1
+
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_HP_DL145_G1

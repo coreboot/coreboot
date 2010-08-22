@@ -88,6 +88,10 @@ static const struct {
 	{ CPUIDFEATURES, AMD_FAM10_ALL, AMD_PTYPE_DC,
 	  0x00000000, 1 << (33-32),
 	  0x00000000, 1 << (33-32) },	/* [ExtendedFeatEn]=1 */
+
+        { BU_CFG2, AMD_DRBH_Cx , AMD_PTYPE_ALL,
+	  0x00000000, 1 << (35-32),
+	  0x00000000, 1 << (35-32) },	/* Erratum 343 (set to 0 after CAR, in post_cache_as_ram() )  */  
 };
 
 

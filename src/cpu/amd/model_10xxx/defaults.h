@@ -161,7 +161,7 @@ static const struct {
 
 	/* Link Global Extended Control Register */
 	{ 0, 0x16C,  AMD_DRBA23_RBC2, AMD_PTYPE_ALL,
-	  0x00000014, 0x0000003F },	/* [15:13] ForceFullT0 = 0b,
+	  0x00000014, 0x0000E03F },	/* [15:13] ForceFullT0 = 0b,
 								 * Set T0Time 14h per BKDG */
 
 

@@ -400,14 +400,31 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 	coreDelay();
 
 }
+
+static void vErratum372(struct DCTStatStruc *pDCTstat)
+{
+        msr_t msr = rdmsr(NB_CFG_MSR);
+  
+        int  nbPstate1supported = ! (msr.hi && (1 << (NB_GfxNbPstateDis -32))) ;
+
+        // is this the right way to check for NB pstate 1 or DDR3-1333 ? 
+        if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
+            &&(!pDCTstat->GangedMode)) {
+           	/* DisableCf8ExtCfg */
+        	msr.hi &= ~(3 << (51 - 32));
+        	wrmsr(NB_CFG_MSR, msr);
+        }
+}
 #endif
 
 
 static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
-	if (pDCTstatA->LogicalCPUID & (AMD_RB_C2 | AMD_DA_C2 | AMD_DA_C3)) {
+  /* FIXME :  as of 25.6.2010 errata 350 and 372 should apply to  ((RB|BL|DA)-C[23])|(HY-D[01])|(PH-E0) but I don't find constants for all of them */
+	if (pDCTstatA->LogicalCPUID & AMD_DRBH_Cx) {
 		vErrata350(pMCTstat, pDCTstatA);
+		vErratum372(pDCTstatA);
 	}
 #endif
 }

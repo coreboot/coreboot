@@ -175,6 +175,7 @@
 #define Ddr3FourSocketCh	2	/* func 2, offset A8h, bit 2 */
 #define SendControlWord		30	/* func 2, offset 7Ch, bit 30 */
 
+#define NB_GfxNbPstateDis       62     /* MSRC001_001F Northbridge Configuration Register (NB_CFG) bit 62 GfxNbPstateDis disable northbridge p-state transitions */
 /*=============================================================================
 	SW Initialization
 ============================================================================*/

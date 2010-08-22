@@ -415,6 +415,23 @@ static void vErratum372(struct DCTStatStruc *pDCTstat)
         	wrmsr(NB_CFG_MSR, msr);
         }
 }
+
+static void vErratum414(struct DCTStatStruc *pDCTstat)
+{
+     int dct=0;
+    for(; dct < 2 ; dct++) 
+    {
+        int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct)); 
+        int powerDown =  dRAMConfigHi && (1 << PowerDownEn ) ;
+        int ddr3 = dRAMConfigHi && (1 << Ddr3Mode ) ;
+        int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
+        int pchgPDModeSel = dRAMMRS && (1 << PchgPDModeSel ) ;
+	if (powerDown && ddr3 && pchgPDModeSel ) 
+	{
+	  Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel) );
+	}
+    }
+}
 #endif
 
 
@@ -425,6 +442,7 @@ static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTSt
 	if (pDCTstatA->LogicalCPUID & AMD_DRBH_Cx) {
 		vErrata350(pMCTstat, pDCTstatA);
 		vErratum372(pDCTstatA);
+		vErratum414(pDCTstatA);
 	}
 #endif
 }

@@ -118,6 +118,7 @@
 #define TestFail		2	/* func 2, offset 40h-5C, bit 2*/
 #define DqsRcvEnTrain		18	/* func 2, offset 78h, bit 18*/
 #define EnDramInit		31	/* func 2, offset 7Ch, bit 31*/
+#define PchgPDModeSel           23      /* func 2, offset 84h, bit 23 */
 #define DisAutoRefresh		18	/* func 2, offset 8Ch, bit 18*/
 #define InitDram		0	/* func 2, offset 90h, bit 0*/
 #define BurstLength32		10	/* func 2, offset 90h, bit 10*/
@@ -128,6 +129,7 @@
 #define MemClkFreqVal		3	/* func 2, offset 94h, bit 3*/
 #define RDqsEn			12	/* func 2, offset 94h, bit 12*/
 #define DisDramInterface	14	/* func 2, offset 94h, bit 14*/
+#define PowerDownEn      	15	/* func 2, offset 94h, bit 15*/
 #define DctAccessWrite		30	/* func 2, offset 98h, bit 30*/
 #define DctAccessDone		31	/* func 2, offset 98h, bit 31*/
 #define MemClrStatus		0	/* func 2, offset A0h, bit 0*/

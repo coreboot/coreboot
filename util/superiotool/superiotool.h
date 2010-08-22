@@ -173,7 +173,7 @@ static const struct {
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek_alternative,	{0x2e, 0x4e, EOT}},
 	/* Only use 0x370 for ITE, but 0x3f0 or 0x3bd would also be valid. */
-	{probe_idregs_ite,	{0x2e, 0x4e, 0x370, EOT}},
+	{probe_idregs_ite,	{0x25e, 0x2e, 0x4e, 0x370, EOT}},
 	{probe_idregs_nsc,	{0x2e, 0x4e, 0x15c, EOT}},
 	/* I/O pairs on Nuvoton EC chips can be configured by firmware in
 	 * addition to the following hardware strapping options. */

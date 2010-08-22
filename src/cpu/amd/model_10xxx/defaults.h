@@ -321,9 +321,9 @@ static const struct {
 	u32 mask;
 } fam10_htphy_default[] = {
 
-	/* Errata 344 - Fam10 C2/D0
+	/* Errata 344 - Fam10 C2/D0 -- FIXME at 25.6.2010 should be for ((RB|BL|DA)-C[23])|(HY-D[01])|(PH-E0) but I don't find constants for all of them
 	 * System software should set bit 6 of F4x1[9C, 94, 8C, 84]_x[78:70, 68:60]. */
-	{ 0x60, AMD_RB_C2 | AMD_DA_C2 | AMD_DA_C3 | AMD_HY_D0, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
+	{ 0x60,   AMD_DRBH_Cx , AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x00000040, 0x00000040 },
 	{ 0x61, AMD_RB_C2 | AMD_DA_C2 | AMD_DA_C3 | AMD_HY_D0, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x00000040, 0x00000040 },

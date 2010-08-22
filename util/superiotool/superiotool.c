@@ -105,7 +105,10 @@ static void dump_regs(const struct superio_registers reg_table[],
 			printf(" (%s)", reg_table[i].ldn[j].name);
 		regwrite(port, ldn_sel, reg_table[i].ldn[j].ldn);
 	} else {
-		printf("Register dump:");
+		if (reg_table[i].ldn[j].name == NULL)
+			printf("Register dump:");
+		else
+			printf("(%s)", reg_table[i].ldn[j].name);
 	}
 
 	idx = reg_table[i].ldn[j].idx;

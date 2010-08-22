@@ -290,9 +290,9 @@ static const struct {
 					   [5] DisPciCfgCpuMstAbtRsp = 1,
 					   [1] SyncFloodOnUsPwDataErr = 1 */
 
-	/* errata 346 - Fam10 C2
+	/* errata 346 - Fam10 C2 -- FIXME at 25.6.2010 should apply to BL-C[23] too but I can't find their constants
 	 *  System software should set F3x188[22] to 1b. */
-	{ 3, 0x188, AMD_RB_C2 | AMD_DA_C2 | AMD_DA_C3, AMD_PTYPE_ALL,
+	{ 3, 0x188, AMD_DR_Cx, AMD_PTYPE_ALL,
 	  0x00400000, 0x00400000 },
 
 	/* L3 Control Register */

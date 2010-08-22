@@ -29,8 +29,9 @@ PREFIX  = /usr/local
 SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
           | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
 
-CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
+CFLAGS += -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
          -Werror-implicit-function-declaration -ansi -pedantic $(SVNDEF)
+LDFLAGS += -lz
 
 OBJS = superiotool.o ali.o fintek.o ite.o nsc.o nuvoton.o smsc.o winbond.o
 

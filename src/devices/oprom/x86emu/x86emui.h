@@ -59,7 +59,7 @@
 #ifdef __cplusplus
 #define	X86EMU_UNUSED(v)
 #else
-#define	X86EMU_UNUSED(v)	v
+#define	X86EMU_UNUSED(v)	v __attribute__((unused))
 #endif
 
 #include "x86emu/x86emu.h"

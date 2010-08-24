@@ -739,7 +739,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr.lo |= (209 << 8);	/* bits[15:8] = 209 */
 	wrmsr(msrnum, msr);
 
-	print_emerg("DRAM controller init done.\n");
+	banner("DRAM controller init done.\n");
 	post_code(POST_MEM_SETUP_GOOD);	//0x7E
 
 	/* make sure there is nothing stale in the cache */

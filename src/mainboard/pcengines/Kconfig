@@ -3,6 +3,7 @@ choice
 	depends on VENDOR_PC_ENGINES
 
 source "src/mainboard/pcengines/alix1c/Kconfig"
+source "src/mainboard/pcengines/alix2d3/Kconfig"
 
 endchoice
 

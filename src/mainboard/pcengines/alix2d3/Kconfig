@@ -1,0 +1,31 @@
+config BOARD_PCENGINES_ALIX2D3
+	bool "ALIX.2D3"
+	select ARCH_X86
+	select CPU_AMD_LX
+	select NORTHBRIDGE_AMD_LX
+	select SOUTHBRIDGE_AMD_CS5536
+	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
+	select UDELAY_TSC
+	select USE_DCACHE_RAM
+	select BOARD_ROMSIZE_KB_512
+
+config MAINBOARD_DIR
+	string
+	default pcengines/alix2d3
+	depends on BOARD_PCENGINES_ALIX2D3
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ALIX.2D3"
+	depends on BOARD_PCENGINES_ALIX2D3
+
+config IRQ_SLOT_COUNT
+	int
+	default 6
+	depends on BOARD_PCENGINES_ALIX2D3
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_PCENGINES_ALIX2D3

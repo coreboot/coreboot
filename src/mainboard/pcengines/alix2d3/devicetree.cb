@@ -1,0 +1,46 @@
+chip northbridge/amd/lx
+  	device pci_domain 0 on
+    		device pci 1.0 on end
+		device pci 1.1 on end
+      		chip southbridge/amd/cs5536
+			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+			# SIRQ Mode = Active(Quiet) mode. Save power....
+			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK
+			# How to get these? Boot linux and do this:
+			# rdmsr 0x51400025
+			register "lpc_serirq_enable" = "0x00001002"
+			# rdmsr 0x5140004e -- polairy is high 16 bits of low 32 bits
+			register "lpc_serirq_polarity" = "0x0000EFFD"
+			# mode is high 10 bits (determined from code)
+			register "lpc_serirq_mode" = "1"
+			# Don't yet know how to find this.
+			register "enable_gpio_int_route" = "0x0D0C0700"
+			register "enable_ide_nand_flash" = "0" # 0:ide mode, 1:flash
+			register "enable_USBP4_device" = "0"	#0: host, 1:device
+			register "enable_USBP4_overcurrent" = "0" #0:off, xxxx:overcurrent setting CS5536 Data Book (pages 380-381)
+			register "com1_enable" = "1"
+			register "com1_address" = "0x3F8"
+			register "com1_irq" = "4"
+			register "com2_enable" = "1"                # Wired on Alix.2D13 only
+			register "com2_address" = "0x2F8"
+			register "com2_irq" = "3"
+			register "unwanted_vpci[0]" = "0x80000900"	# Disable VGA controller (not wired)
+			register "unwanted_vpci[1]" = "0x80007B00"	# Disable AC97 controller (not wired)
+			register "unwanted_vpci[2]" = "0"	        # End of list has a zero
+			device pci f.0 on end	# ISA Bridge
+			device pci f.1 on end	# Flash controller
+			device pci f.2 on end	# IDE controller
+			device pci f.4 on end	# OHCI
+			device pci f.5 on end	# EHCI
+      		end
+	end
+
+	# APIC cluster is late CPU init.
+	device lapic_cluster 0 on
+		chip cpu/amd/model_lx
+			device lapic 0 on end
+		end
+	end
+
+end
+

@@ -45,7 +45,7 @@
 #define RAM_EMRS_2			(0x1 << 21)
 #define RAM_EMRS_3			(0x2 << 21)
 
-static void do_ram_command(u32 command)
+static __attribute__((noinline)) void do_ram_command(u32 command)
 {
 	u32 reg32;
 

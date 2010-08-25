@@ -366,14 +366,12 @@ void main(unsigned long bist)
 		enable_lapic();
 	}
 
-	ich7_enable_lpc();
-
 	/* Force PCIRST# */
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
-	udelay(200);
+	udelay(200 * 1000);
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
-	udelay(200);
 
+	ich7_enable_lpc();
 	early_superio_config_w83627thg();
 
 	/* Set up the console */

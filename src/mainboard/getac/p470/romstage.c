@@ -308,9 +308,8 @@ void main(unsigned long bist)
 #if 0
 	/* Force PCIRST# */
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
-	udelay(200);
+	udelay(200 * 1000);
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
-	udelay(200);
 #endif
 
 	ich7_enable_lpc();

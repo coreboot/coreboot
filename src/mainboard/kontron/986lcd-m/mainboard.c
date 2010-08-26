@@ -21,7 +21,7 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <boot/tables.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -34,7 +34,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	return add_northbridge_resources(mem);
 }
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
 static int int15_handler(void)
 {
 #define BOOT_DISPLAY_DEFAULT	0
@@ -228,7 +228,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	/* Install custom int15 handler for VGA OPROM */
 	int15_install();
 #endif

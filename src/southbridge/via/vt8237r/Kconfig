@@ -19,6 +19,7 @@
 
 config SOUTHBRIDGE_VIA_VT8237R
 	bool
+	select HAVE_DEBUG_SMBUS
 	select IOAPIC
 
 config EPIA_VT8237R_INIT

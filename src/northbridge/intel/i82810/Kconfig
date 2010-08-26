@@ -19,6 +19,7 @@
 
 config NORTHBRIDGE_INTEL_I82810
 	bool
+	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_HIGH_TABLES
 
 choice

@@ -509,19 +509,13 @@ config GDB_STUB
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/i386/lib/c_start.S for details.
 
+config HAVE_DEBUG_RAM_SETUP
+	def_bool n
+
 config DEBUG_RAM_SETUP
 	bool "Output verbose RAM init debug messages"
 	default n
-	depends on (NORTHBRIDGE_AMD_AMDFAM10 \
-		 || NORTHBRIDGE_AMD_AMDK8 \
-		 || NORTHBRIDGE_VIA_CN700 \
-		 || NORTHBRIDGE_VIA_CX700 \
-		 || NORTHBRIDGE_VIA_VX800 \
-		 || NORTHBRIDGE_INTEL_E7501 \
-		 || NORTHBRIDGE_INTEL_I440BX \
-		 || NORTHBRIDGE_INTEL_I82810 \
-		 || NORTHBRIDGE_INTEL_I82830 \
-		 || NORTHBRIDGE_INTEL_I945)
+	depends on HAVE_DEBUG_RAM_SETUP
 	help
 	  This option enables additional RAM init related debug messages.
 	  It is recommended to enable this when debugging issues on your
@@ -538,16 +532,13 @@ config DEBUG_PIRQ
 	help
 	  If unsure, say N.
 
+config HAVE_DEBUG_SMBUS
+	def_bool n
+
 config DEBUG_SMBUS
 	bool "Output verbose SMBus debug messages"
 	default n
-	depends on (SOUTHBRIDGE_VIA_VT8237R \
-		 || NORTHBRIDGE_VIA_VX800 \
-		 || NORTHBRIDGE_VIA_CX700 \
-		 || NORTHBRIDGE_AMD_AMDK8 \
-		 || NORTHBRIDGE_AMD_AMDFAM10 \
-		 || BOARD_LIPPERT_SPACERUNNER_LX \
-		 || SOUTHBRIDGE_VIA_VT8231)
+	depends on HAVE_DEBUG_SMBUS
 	help
 	  This option enables additional SMBus (and SPD) debug messages.
 

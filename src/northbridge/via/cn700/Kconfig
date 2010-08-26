@@ -1,5 +1,6 @@
 config NORTHBRIDGE_VIA_CN700
 	bool
+	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_HIGH_TABLES
 
 config FALLBACK_SIZE

@@ -1,5 +1,7 @@
 config NORTHBRIDGE_VIA_CX700
 	bool
+	select HAVE_DEBUG_RAM_SETUP
+	select HAVE_DEBUG_SMBUS
 	select HAVE_HIGH_TABLES
 	select HAVE_HARD_RESET
 	select IOAPIC

@@ -19,4 +19,4 @@
 
 config SOUTHBRIDGE_VIA_VT8231
 	bool
-
+	select HAVE_DEBUG_SMBUS

@@ -284,10 +284,6 @@ static void set_thermal_config(void)
 *************************************************/
 static void tilapia_enable(device_t dev)
 {
-	/* Leave it for furture use. */
-	/* struct mainboard_config *mainboard =
-	   (struct mainboard_config *)dev->chip_info; */
-
 	printk(BIOS_INFO, "Mainboard TILAPIA Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)

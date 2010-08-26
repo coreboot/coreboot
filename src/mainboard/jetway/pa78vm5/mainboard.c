@@ -107,10 +107,6 @@ u8 is_dev3_present(void)
 *************************************************/
 static void pa78vm5_enable(device_t dev)
 {
-	/* Leave it for furture use. */
-	/* struct mainboard_config *mainboard =
-	   (struct mainboard_config *)dev->chip_info; */
-
 	printk(BIOS_INFO, "Mainboard PA78VM5 Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)

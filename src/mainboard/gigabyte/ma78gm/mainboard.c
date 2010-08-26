@@ -78,10 +78,6 @@ u8 is_dev3_present(void)
 *************************************************/
 static void ma78gm_enable(device_t dev)
 {
-	/* Leave it for furture use. */
-	/* struct mainboard_config *mainboard =
-	   (struct mainboard_config *)dev->chip_info; */
-
 	printk(BIOS_INFO, "Mainboard MA78GM-US2H Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)

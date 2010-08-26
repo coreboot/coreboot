@@ -18,9 +18,4 @@
  */
 
 extern struct chip_operations mainboard_ops;
-
-struct mainboard_config
-{
-	u32 uma_size;			/* How many UMA should be used in memory for TOP. */
-};
-
+struct mainboard_config {};

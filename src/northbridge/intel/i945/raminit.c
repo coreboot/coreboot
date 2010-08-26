@@ -62,6 +62,8 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 	MCHBAR32(DCC) = reg32;  /* This is the actual magic */
 
 	PRINTK_DEBUG("...done\n");
+
+	udelay(1);
 }
 
 static void ram_read32(u32 offset)

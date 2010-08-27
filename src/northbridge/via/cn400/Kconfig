@@ -1,11 +1,6 @@
 config NORTHBRIDGE_VIA_CN400
 	bool
 
-config FALLBACK_SIZE
-	int
-	default 0
-	depends on NORTHBRIDGE_VIA_CN400
-
 # TODO: Values are from the CX700 datasheet, not sure if this matches CN400.
 # TODO: What should be the per-chipset default value here?
 choice

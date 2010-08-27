@@ -1,9 +1,3 @@
 config NORTHBRIDGE_VIA_VT8601
 	bool
-	select HAVE_HIGH_TABLES
-
-config FALLBACK_SIZE
-	int
-	default 0
-	depends on NORTHBRIDGE_VIA_VT8601
 

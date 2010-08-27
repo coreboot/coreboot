@@ -1,6 +1,5 @@
 config NORTHBRIDGE_AMD_LX
 	bool
-	select HAVE_HIGH_TABLES
 	select GEODE_VSA
 
 config VIDEO_MB

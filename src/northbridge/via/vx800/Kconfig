@@ -3,8 +3,3 @@ config NORTHBRIDGE_VIA_VX800
 	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_DEBUG_SMBUS
 
-config FALLBACK_SIZE
-	int
-	default 0
-	depends on NORTHBRIDGE_VIA_VX800
-

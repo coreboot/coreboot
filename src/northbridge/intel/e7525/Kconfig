@@ -1,4 +1,3 @@
 config NORTHBRIDGE_INTEL_E7525
 	bool
-	select HAVE_HIGH_TABLES
 

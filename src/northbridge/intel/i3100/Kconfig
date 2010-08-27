@@ -1,4 +1,3 @@
 config NORTHBRIDGE_INTEL_I3100
 	bool
-	select HAVE_HIGH_TABLES
 

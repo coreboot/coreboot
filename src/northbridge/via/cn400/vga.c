@@ -83,23 +83,6 @@ static void vga_init(device_t dev)
 
 	mainboard_interrupt_handlers(0x15, &via_cn400_int15_handler);
 
-#undef OLD_BOCHS_METHOD
-#ifdef OLD_BOCHS_METHOD
-	u32 temp;
-	// XXX We might need more bios hooks in the f segment, but
-	// this way of copying the BOCHS BIOS does not work anymore.
-	// As soon as someone verifies that CN400 can init VGA, the
-	// code should be removed.
-	temp = (0xffffffff - CONFIG_FALLBACK_SIZE - 0xffff);
-	printk(BIOS_DEBUG, "Copying BOCHS BIOS from 0x%08X	to 0xf000\n", temp);
-	/*
-	 * Copy BOCHS BIOS from 4G-CONFIG_FALLBACK_SIZE-64k (in flash) to 0xf0000 (in RAM)
-	 * This is for compatibility with the VGA ROM's BIOS callbacks.
-	 */
-	//memcpy(0xf0000, (0xffffffff - CONFIG_ROM_SIZE - 0xffff), 0x10000);
-	memcpy((void *)0xf0000, (void *)temp, 0x10000);
-#endif
-
 	/* Set memory rate to 200 MHz. */
 	outb(0x3d, CRTM_INDEX);
 	reg8 = inb(CRTM_DATA);
@@ -137,11 +120,6 @@ static void vga_init(device_t dev)
 	reg8 = (CONFIG_VIDEO_MB / 4);
 	outb(0x39, SR_INDEX);
 	outb(reg8, SR_DATA);
-
-#ifdef OLD_BOCHS_METHOD
-	/* Clear the BOCHS BIOS out of memory, so it doesn't confuse Linux. */
-	memset((void *)0xf0000, 0, 0x10000);
-#endif
 
 #ifdef DEBUG_CN400
 	int i, j;

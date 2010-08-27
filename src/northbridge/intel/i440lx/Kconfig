@@ -19,5 +19,4 @@
 
 config NORTHBRIDGE_INTEL_I440LX
 	bool
-	select HAVE_HIGH_TABLES
 

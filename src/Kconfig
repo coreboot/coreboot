@@ -250,27 +250,6 @@ config GFXUMA
 #
 # endmenu
 
-#TODO Remove this option or make it useful.
-config HAVE_LOW_TABLES
-	bool
-	default y
-	help
-	  This Option is unused in the code.  Since two boards try to set it to
-	  'n', they may be broken.  We either need to make the option useful or
-	  get rid of it.  The broken boards are:
-	  asus/m2v-mx_se
-	  supermicro/h8dme
-
-config HAVE_HIGH_TABLES
-	bool
-	default y
-	help
-	  This variable specifies whether a given northbridge has high table
-	  support.
-	  It is set in northbridge/*/Kconfig.
-	  Whether or not the high tables are actually written by coreboot is
-	  configurable by the user via WRITE_HIGH_TABLES.
-
 config HAVE_ACPI_TABLES
 	bool
 	help
@@ -310,15 +289,10 @@ config GENERATE_PIRQ_TABLE
 	bool
 	default HAVE_PIRQ_TABLE
 
-config WRITE_HIGH_TABLES
-	bool
-	default HAVE_HIGH_TABLES
-
 menu "System tables"
 
 config WRITE_HIGH_TABLES
 	bool "Write 'high' tables to avoid being overwritten in F segment"
-	depends on HAVE_HIGH_TABLES
 	default y
 
 config MULTIBOOT

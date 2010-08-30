@@ -18,10 +18,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef RAMINIT_H
-#define RAMINIT_H
+#ifndef NORTHBRIDGE_INTEL_I855_RAMINIT_H
+#define NORTHBRIDGE_INTEL_I855_RAMINIT_H
 
+/* i855 Northbridge PCI device */
+#define NORTHBRIDGE         PCI_DEV(0, 0, 0)
+#define NORTHBRIDGE_MMC     PCI_DEV(0, 0, 1)
+
+/* The i855 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS 2
+
+/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
+#define DIMM_SPD_BASE   0x50
 
 struct mem_controller {
   device_t d0;
@@ -31,4 +39,4 @@ struct mem_controller {
 void sdram_initialize(int controllers, const struct mem_controller *ctrl);
 
 
-#endif /* RAMINIT_H */
+#endif /* NORTHBRIDGE_INTEL_I855_RAMINIT_H */

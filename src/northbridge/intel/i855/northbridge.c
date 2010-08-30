@@ -25,12 +25,33 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/cpu.h>
 #include "chip.h"
+
+static void northbridge_init(device_t dev)
+{
+        printk(BIOS_SPEW, "Northbridge init\n");
+}
+
+static struct device_operations northbridge_operations = {
+        .read_resources = pci_dev_read_resources,
+        .set_resources = pci_dev_set_resources,
+        .enable_resources = pci_dev_enable_resources,
+        .init = northbridge_init,
+        .enable = 0,
+        .ops_pci = 0,
+};
+
+static const struct pci_driver northbridge_driver __pci_driver = {
+        .ops = &northbridge_operations,
+        .vendor = PCI_VENDOR_ID_INTEL,
+        .device = 0x3580,
+};
 
 static void ram_resource(device_t dev, unsigned long index,
         unsigned long basek, unsigned long sizek)

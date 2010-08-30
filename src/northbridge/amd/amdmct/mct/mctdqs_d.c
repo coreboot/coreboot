@@ -1086,12 +1086,12 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 	*valid = 0;
 
 
-	if (!pDCTstat->GangedMode)  {	// FIXME: not used.
+	if (!pDCTstat->GangedMode) {
 		reg_off = 0x100 * Channel;
 	}
 
 	/* get the local base addr of the chipselect */
-	reg = 0x40 + (receiver << 2);
+	reg = 0x40 + (receiver << 2) + reg_off;
 	val = Get_NB32(dev, reg);
 
 	val &= ~0x0F;

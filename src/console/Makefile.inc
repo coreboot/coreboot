@@ -7,7 +7,7 @@ smmobj-y += printk.o
 smmobj-y += vtxprintf.o
 
 initobj-y += vtxprintf.o
-initobj-$(CONFIG_USE_DCACHE_RAM) += console.o
+initobj-$(CONFIG_CACHE_AS_RAM) += console.o
 
 driver-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.o
 driver-$(CONFIG_USBDEBUG) += usbdebug_console.o

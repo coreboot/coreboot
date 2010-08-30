@@ -28,7 +28,7 @@
 #define UART_LCS	CONFIG_TTYS0_LCS
 
 
-#if CONFIG_USE_DCACHE_RAM == 0
+#if CONFIG_CACHE_AS_RAM == 0
 
 /* Data */
 #define UART_RBR 0x00
@@ -97,7 +97,7 @@ void uart_init(void)
 }
 
 #else
-/* CONFIG_USE_DCACHE_RAM == 1 */
+/* CONFIG_CACHE_AS_RAM == 1 */
 
 extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
 void uart_init(void)

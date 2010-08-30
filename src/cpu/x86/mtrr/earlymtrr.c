@@ -62,7 +62,7 @@ static inline void cache_lbmem(int type)
 	enable_cache();
 }
 
-#if !defined(CONFIG_USE_DCACHE_RAM) || (CONFIG_USE_DCACHE_RAM == 0)
+#if !defined(CONFIG_CACHE_AS_RAM) || (CONFIG_CACHE_AS_RAM == 0)
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */

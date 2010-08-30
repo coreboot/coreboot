@@ -22,7 +22,7 @@
 #if !defined(__ROMCC__)
 #include <console/console.h>
 #else
-#if CONFIG_USE_DCACHE_RAM==0
+#if CONFIG_CACHE_AS_RAM==0
 #define printk(BIOS_DEBUG, fmt, arg...)   do {} while(0)
 #endif
 #endif

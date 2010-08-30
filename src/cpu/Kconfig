@@ -3,7 +3,7 @@ source src/cpu/intel/Kconfig
 source src/cpu/via/Kconfig
 source src/cpu/x86/Kconfig
 
-config USE_DCACHE_RAM
+config CACHE_AS_RAM
 	bool
 	default !ROMCC
 

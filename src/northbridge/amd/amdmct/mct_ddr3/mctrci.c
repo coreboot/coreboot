@@ -22,6 +22,8 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 {
 	u8 Dimms, DimmNum, MaxDimm, Speed;
 	u32 val;
+	u32 dct = 0;
+	u32 reg_off = 0;
 
 	DimmNum = MrsChipSel >> 20;
 
@@ -32,8 +34,14 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 
 	MaxDimm = mctGet_NVbits(NV_MAX_DIMMS);
 	Speed = pDCTstat->DIMMAutoSpeed;
-	/* if (dct == 0) */
-	Dimms = pDCTstat->MAdimms[0];
+
+	if (pDCTstat->CSPresent_DCT[0] > 0) {
+		dct = 0;
+	} else if (pDCTstat->CSPresent_DCT[1] > 0 ){
+		dct = 1;
+	}
+	reg_off = 0x100 * dct;
+	Dimms = pDCTstat->MAdimms[dct];
 
 	val = 0;
 	if (CtrlWordNum == 0)
@@ -87,14 +95,21 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 static void mct_SendCtrlWrd(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u32 val)
 {
+	u32 reg_off = 0;
 	u32 dev = pDCTstat->dev_dct;
 
-	val |= Get_NB32(dev, 0x7C) & ~0xFFFFFF;
+	if (pDCTstat->CSPresent_DCT[0] > 0) {
+		reg_off = 0;
+	} else if (pDCTstat->CSPresent_DCT[1] > 0 ){
+		reg_off = 0x100;
+	}
+
+	val |= Get_NB32(dev, reg_off + 0x7C) & ~0xFFFFFF;
 	val |= 1 << SendControlWord;
-	Set_NB32(dev, 0x7C, val);
+	Set_NB32(dev, reg_off + 0x7C, val);
 
 	do {
-		val = Get_NB32(dev, 0x7C);
+		val = Get_NB32(dev, reg_off + 0x7C);
 	} while (val & (1 << SendControlWord));
 }
 
@@ -104,6 +119,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 	u8 MrsChipSel;
 	u32 dev = pDCTstat->dev_dct;
 	u32 val, cw;
+	u32 reg_off = 0x100 * dct;
 
 	mct_Wait(1600);
 
@@ -111,7 +127,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 
 	for (MrsChipSel = 0; MrsChipSel < 8; MrsChipSel ++, MrsChipSel ++) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
-			val = Get_NB32(dev, 0xA8);
+			val = Get_NB32(dev, reg_off + 0xA8);
 			val &= ~(0xF << 8);
 
 			switch (MrsChipSel) {
@@ -128,7 +144,7 @@ void mct_DramControlReg_Init_D(struct MCTStatStruc *pMCTstat,
 			case 7:
 				val |= (3 << 6) << 8;
 			}
-			Set_NB32(dev, 0xA8, val);
+			Set_NB32(dev, reg_off + 0xA8 , val);
 
 			for (cw=0; cw <=15; cw ++) {
 				mct_Wait(1600);

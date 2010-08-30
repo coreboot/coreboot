@@ -40,8 +40,8 @@ static u16 mctGet_NVbits(u8 index)
 		val = MAX_NODES_SUPPORTED;
 		break;
 	case NV_MAX_DIMMS:
-		//val = MAX_DIMMS_SUPPORTED;
-		val = 8;
+		val = MAX_DIMMS_SUPPORTED;
+		//val = 8;
 		break;
 	case NV_MAX_MEMCLK:
 		/* Maximum platform supported memclk */

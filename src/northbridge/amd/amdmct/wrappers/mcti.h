@@ -51,9 +51,18 @@ COMMENT OUT ALL BUT 1
 /*----------------------------------------------------------------------------
 UPDATE AS NEEDED
 ----------------------------------------------------------------------------*/
+#ifndef MAX_NODES_SUPPORTED
 #define MAX_NODES_SUPPORTED		8
+#endif
+
+#ifndef MAX_DIMMS_SUPPORTED
 #define MAX_DIMMS_SUPPORTED		8
+#endif
+
+#ifndef MAX_CS_SUPPORTED
 #define MAX_CS_SUPPORTED		8
+#endif
+
 #define MCT_TRNG_KEEPOUT_START		0x00000C00
 #define MCT_TRNG_KEEPOUT_END		0x00000CFF
 

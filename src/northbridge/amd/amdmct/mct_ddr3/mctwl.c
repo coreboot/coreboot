@@ -86,7 +86,7 @@ void PrepareC_DCT(struct MCTStatStruc *pMCTstat,
 
 	for (dimm = 0; dimm < MAX_TOTAL_DIMMS; dimm++) {
 		u8  DimmRanks;
-		if (DimmValid & (1 << dimm)) {
+		if (DimmValid & (1 << (dimm << 1))) {
 			DimmRanks = 1;
 			if (pDCTstat->DimmDRPresent & (1 << (dimm+dct)))
 				DimmRanks = 2;

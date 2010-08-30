@@ -332,7 +332,6 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 
 		if (pDCTstat->DIMMValidDCT[Channel] == 0)	/* mct_BeforeTrainDQSRdWrPos_D */
 			continue;
-
 		pDCTstat->DqsRdWrPos_Saved = 0;
 		for ( DQSWrDelay = 0; DQSWrDelay < dqsWrDelay_end; DQSWrDelay++) {
 			pDCTstat->DQSDelay = DQSWrDelay;
@@ -1174,12 +1173,12 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 	*valid = 0;
 
 
-	if (!pDCTstat->GangedMode)  {	/* FIXME: not used. */
+	if (!pDCTstat->GangedMode) {
 		reg_off = 0x100 * Channel;
 	}
 
 	/* get the local base addr of the chipselect */
-	reg = 0x40 + (receiver << 2);
+	reg = 0x40 + (receiver << 2) + reg_off;
 	val = Get_NB32(dev, reg);
 
 	val &= ~0x0F;

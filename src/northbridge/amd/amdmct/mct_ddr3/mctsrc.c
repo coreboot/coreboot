@@ -446,9 +446,9 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 
 		printk(BIOS_DEBUG, "TrainRcvrEn: CH_D_B_RCVRDLY:\n");
 		for(Channel = 0; Channel < 2; Channel++) {
-			printk(BIOS_DEBUG, "Channel:%x\n");
+			printk(BIOS_DEBUG, "Channel:%x\n", Channel);
 			for(Receiver = 0; Receiver<8; Receiver+=2) {
-				printk(BIOS_DEBUG, "\t\tReceiver:%x:");
+				printk(BIOS_DEBUG, "\t\tReceiver:%x:", Receiver);
 				p = pDCTstat->CH_D_B_RCVRDLY[Channel][Receiver>>1];
 				for (i=0;i<8; i++) {
 					val  = p[i];

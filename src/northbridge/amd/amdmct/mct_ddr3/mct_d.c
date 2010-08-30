@@ -2030,7 +2030,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 	RegDIMMPresent = 0;
 	pDCTstat->DimmQRPresent = 0;
 
-	for (i = 0;  i< MAX_DIMMS_SUPPORTED; i++) {
+	for (i = 0; i < MAX_DIMMS_SUPPORTED; i++) {
 		if (i >= MaxDimms)
 			break;
 
@@ -2214,7 +2214,7 @@ static void mct_initDCT(struct MCTStatStruc *pMCTstat,
 	} else {
 		/* Configure DCT1 if unganged and enabled*/
 		if (!pDCTstat->GangedMode) {
-			if ( pDCTstat->DIMMValidDCT[1] > 0) {
+			if (pDCTstat->DIMMValidDCT[1] > 0) {
 				err_code = pDCTstat->ErrCode;		/* save DCT0 errors */
 				pDCTstat->ErrCode = 0;
 				DCTInit_D(pMCTstat, pDCTstat, 1);
@@ -2512,7 +2512,7 @@ static u8 mct_DIMMPresence(struct MCTStatStruc *pMCTstat,
 {
 	u8 ret;
 
-	if ( dct == 0)
+	if (dct == 0)
 		ret = DIMMPresence_D(pMCTstat, pDCTstat);
 	else
 		ret = pDCTstat->ErrCode;

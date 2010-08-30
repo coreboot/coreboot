@@ -16,13 +16,23 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_A_TREND
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_A_TREND
+
+config BOARD_A_TREND_ATC_6220
+	bool "ATC-6220"
+config BOARD_A_TREND_ATC_6240
+	bool "ATC-6240"
+
+endchoice
 
 source "src/mainboard/a-trend/atc-6220/Kconfig"
 source "src/mainboard/a-trend/atc-6240/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "A-Trend"
 
+endif # VENDOR_A_TREND

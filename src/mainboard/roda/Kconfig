@@ -1,7 +1,21 @@
+if VENDOR_RODA
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_RODA
+
+config BOARD_RODA_RK886EX
+	bool "RK886EX"
+
+endchoice
 
 source "src/mainboard/roda/rk886ex/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Roda"
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x4352
+
+endif # VENDOR_RODA

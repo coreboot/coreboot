@@ -1,5 +1,7 @@
-config BOARD_TYAN_S2735
-	bool "S2735 (Tiger i7501R)"
+if BOARD_TYAN_S2735
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7501
@@ -19,40 +21,33 @@ config BOARD_TYAN_S2735
 config MAINBOARD_DIR
 	string
 	default tyan/s2735
-	depends on BOARD_TYAN_S2735
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xcf000
-	depends on BOARD_TYAN_S2735
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x1000
-	depends on BOARD_TYAN_S2735
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "S2735"
-	depends on BOARD_TYAN_S2735
 
 config IRQ_SLOT_COUNT
 	int
 	default 15
-	depends on BOARD_TYAN_S2735
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_TYAN_S2735
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_TYAN_S2735
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2735
-	depends on BOARD_TYAN_S2735
 
+endif # BOARD_TYAN_S2735

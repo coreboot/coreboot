@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_MSI_MS_6178
 
-config BOARD_MSI_MS_6178
-	bool "MS-6178"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -33,21 +34,18 @@ config BOARD_MSI_MS_6178
 config MAINBOARD_DIR
 	string
 	default msi/ms6178
-	depends on BOARD_MSI_MS_6178
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MS-6178"
-	depends on BOARD_MSI_MS_6178
 
 config IRQ_SLOT_COUNT
 	int
 	default 4
-	depends on BOARD_MSI_MS_6178
 
 # No need to override the chipset FALLBACK_VGA_BIOS_ID.
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "i810.vga"
-	depends on BOARD_MSI_MS_6178
 
+endif # BOARD_MSI_MS_6178

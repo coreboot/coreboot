@@ -1,5 +1,7 @@
-config BOARD_BCOM_WINNETP680
-	bool "WinNET P680"
+if BOARD_BCOM_WINNETP680
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
@@ -13,20 +15,17 @@ config BOARD_BCOM_WINNETP680
 config MAINBOARD_DIR
 	string
 	default bcom/winnetp680
-	depends on BOARD_BCOM_WINNETP680
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "WinNET P680"
-	depends on BOARD_BCOM_WINNETP680
 
 config IRQ_SLOT_COUNT
 	int
 	default 10
-	depends on BOARD_BCOM_WINNETP680
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_BCOM_WINNETP680
 
+endif # BOARD_BCOM_WINNETP680

@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ASUS_MEW_AM
 
-config BOARD_ASUS_MEW_AM
-	bool "MEW-AM"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -34,15 +35,13 @@ config BOARD_ASUS_MEW_AM
 config MAINBOARD_DIR
 	string
 	default asus/mew-am
-	depends on BOARD_ASUS_MEW_AM
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MEW-AM"
-	depends on BOARD_ASUS_MEW_AM
 
 config IRQ_SLOT_COUNT
 	int
 	default 8
-	depends on BOARD_ASUS_MEW_AM
 
+endif # BOARD_ASUS_MEW_AM

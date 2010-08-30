@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_AZZA_PT_6IBD
 
-config BOARD_AZZA_PT_6IBD
-	bool "PT-6IBD"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -32,15 +33,13 @@ config BOARD_AZZA_PT_6IBD
 config MAINBOARD_DIR
 	string
 	default azza/pt-6ibd
-	depends on BOARD_AZZA_PT_6IBD
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "PT-6IBD"
-	depends on BOARD_AZZA_PT_6IBD
 
 config IRQ_SLOT_COUNT
 	int
 	default 7
-	depends on BOARD_AZZA_PT_6IBD
 
+endif # BOARD_AZZA_PT_6IBD

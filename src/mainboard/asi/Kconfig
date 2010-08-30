@@ -16,13 +16,23 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ASI
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ASI
+
+config BOARD_ASI_MB_5BLGP
+	bool "MB-5BLGP"
+config BOARD_ASI_MB_5BLMP
+	bool "MB-5BLMP"
+
+endchoice
 
 source "src/mainboard/asi/mb_5blgp/Kconfig"
 source "src/mainboard/asi/mb_5blmp/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "ASI"
 
+endif # VENDOR_ASI

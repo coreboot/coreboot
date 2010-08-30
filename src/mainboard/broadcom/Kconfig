@@ -1,8 +1,17 @@
+if VENDOR_BROADCOM
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_BROADCOM
 
-source "src/mainboard/broadcom/blast/Kconfig"
+config BOARD_BROADCOM_BLAST
+	bool "Blast"
 
 endchoice
 
+source "src/mainboard/broadcom/blast/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Broadcom"
+
+endif # VENDOR_BROADCOM

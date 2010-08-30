@@ -1,7 +1,17 @@
+if VENDOR_EMULATION
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_EMULATION
+
+config BOARD_EMULATION_QEMU_X86
+	bool "QEMU x86"
+
+endchoice
 
 source "src/mainboard/emulation/qemu-x86/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Emulation"
+
+endif # VENDOR_EMULATION

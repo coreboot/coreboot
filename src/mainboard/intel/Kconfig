@@ -1,6 +1,24 @@
+if VENDOR_INTEL
+
 choice
-        prompt "Mainboard model"
-        depends on VENDOR_INTEL
+	prompt "Mainboard model"
+
+config BOARD_INTEL_D810E2CB
+	bool "D810E2CB"
+config BOARD_INTEL_D945GCLF
+	bool "D945GCLF"
+config BOARD_INTEL_EAGLEHEIGHTS
+	bool "EagleHeights"
+config BOARD_INTEL_JARRELL
+	bool "Jarrell (SE7520JR2)"
+config BOARD_INTEL_MTARVON
+	bool "3100 devkit (Mt. Arvon)"
+config BOARD_INTEL_TRUXTON
+	bool "EP80579 devkit (Truxton)"
+config BOARD_INTEL_XE7501DEVKIT
+	bool "XE7501devkit"
+
+endchoice
 
 source "src/mainboard/intel/d810e2cb/Kconfig"
 source "src/mainboard/intel/d945gclf/Kconfig"
@@ -10,5 +28,12 @@ source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"
 source "src/mainboard/intel/xe7501devkit/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+
+endif # VENDOR_INTEL

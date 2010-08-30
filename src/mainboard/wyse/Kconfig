@@ -16,12 +16,24 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_WYSE
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_WYSE
 
-source "src/mainboard/wyse/s50/Kconfig"
+config BOARD_WYSE_S50
+	bool "S50"
 
 endchoice
 
+source "src/mainboard/wyse/s50/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Wyse"
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x102d
+
+endif # VENDOR_WYSE

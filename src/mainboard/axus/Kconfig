@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_AXUS
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_AXUS
 
-source "src/mainboard/axus/tc320/Kconfig"
+config BOARD_AXUS_TC320
+	bool "TC320"
 
 endchoice
 
+source "src/mainboard/axus/tc320/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "AXUS"
+
+endif # VENDOR_AXUS

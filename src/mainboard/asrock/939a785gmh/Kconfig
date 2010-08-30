@@ -1,5 +1,7 @@
-config BOARD_ASROCK_939A785GMH
-	bool "939A785GMH/128M"
+if BOARD_ASROCK_939A785GMH
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_939
 	select K8_HT_FREQ_1G_SUPPORT
@@ -25,79 +27,65 @@ config BOARD_ASROCK_939A785GMH
 config MAINBOARD_DIR
 	string
 	default asrock/939a785gmh
-	depends on BOARD_ASROCK_939A785GMH
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_ASROCK_939A785GMH
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_ASROCK_939A785GMH
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_ASROCK_939A785GMH
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_ASROCK_939A785GMH
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "939A785GMH"
-	depends on BOARD_ASROCK_939A785GMH
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_ASROCK_939A785GMH
 
 config MAX_CPUS
 	int
 	default 8
-	depends on BOARD_ASROCK_939A785GMH
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_ASROCK_939A785GMH
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_ASROCK_939A785GMH
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_ASROCK_939A785GMH
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_ASROCK_939A785GMH
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_ASROCK_939A785GMH
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_ASROCK_939A785GMH
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_ASROCK_939A785GMH
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x3060
-	depends on BOARD_ASROCK_939A785GMH
+
+endif # BOARD_ASROCK_939A785GMH

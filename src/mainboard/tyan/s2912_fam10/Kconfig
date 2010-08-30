@@ -1,5 +1,7 @@
-config BOARD_TYAN_S2912_FAM10
-	bool "S2912 Fam10 (Thunder n3600R)"
+if BOARD_TYAN_S2912_FAM10
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F_1207
 	select NORTHBRIDGE_AMD_AMDFAM10
@@ -20,109 +22,89 @@ config BOARD_TYAN_S2912_FAM10
 config MAINBOARD_DIR
 	string
 	default tyan/s2912_fam10
-	depends on BOARD_TYAN_S2912_FAM10
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc4000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x04000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config APIC_ID_OFFSET
 	hex
 	default 0
-	depends on BOARD_TYAN_S2912_FAM10
 
 config MEM_TRAIN_SEQ
 	int
 	default 2
-	depends on BOARD_TYAN_S2912_FAM10
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_TYAN_S2912_FAM10
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "S2912 (Fam10)"
-	depends on BOARD_TYAN_S2912_FAM10
 
 config PCI_64BIT_PREF_MEM
 	bool
 	default n
-	depends on BOARD_TYAN_S2912_FAM10
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config MAX_CPUS
 	int
 	default 12
-	depends on BOARD_TYAN_S2912_FAM10
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_TYAN_S2912_FAM10
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_TYAN_S2912_FAM10
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_TYAN_S2912_FAM10
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_TYAN_S2912_FAM10
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_TYAN_S2912_FAM10
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2912
-	depends on BOARD_TYAN_S2912_FAM10
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_TYAN_S2912_FAM10
 
 config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000095.h"
-	depends on BOARD_TYAN_S2912_FAM10
 
 config RAMBASE
 	hex
 	default 0x200000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config RAMTOP
 	hex
 	default 0x1000000
-	depends on BOARD_TYAN_S2912_FAM10
 
 config HEAP_SIZE
 	hex
 	default 0xc0000
-	depends on BOARD_TYAN_S2912_FAM10
+
+endif # BOARD_TYAN_S2912_FAM10

@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_WYSE_S50
 
-config BOARD_WYSE_S50
-	bool "S50"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX2
 	select NORTHBRIDGE_AMD_GX2
@@ -32,19 +33,17 @@ config BOARD_WYSE_S50
 config MAINBOARD_DIR
 	string
 	default wyse/s50
-	depends on BOARD_WYSE_S50
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "s50"
-	depends on BOARD_WYSE_S50
 
 config IRQ_SLOT_COUNT
 	int
 	default 3
-	depends on BOARD_WYSE_S50
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_WYSE_S50
+
+endif # BOARD_WYSE_S50

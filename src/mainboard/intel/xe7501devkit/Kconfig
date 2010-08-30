@@ -1,5 +1,7 @@
-config BOARD_INTEL_XE7501DEVKIT
-	bool "XE7501devkit"
+if BOARD_INTEL_XE7501DEVKIT
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7501
@@ -18,35 +20,29 @@ config BOARD_INTEL_XE7501DEVKIT
 config MAINBOARD_DIR
 	string
 	default intel/xe7501devkit
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "XE7501devkit"
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config IRQ_SLOT_COUNT
 	int
 	default 12
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config MAX_CPUS
 	int
 	default 2
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x8086
-	depends on BOARD_INTEL_XE7501DEVKIT
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2480
-	depends on BOARD_INTEL_XE7501DEVKIT
 
+endif # BOARD_INTEL_XE7501DEVKIT

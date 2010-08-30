@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_IEI_NOVA_4899R
 
-config BOARD_IEI_NOVA_4899R
-	bool "NOVA-4899R"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -34,15 +35,13 @@ config BOARD_IEI_NOVA_4899R
 config MAINBOARD_DIR
 	string
 	default iei/nova4899r
-	depends on BOARD_IEI_NOVA_4899R
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "NOVA-4899R"
-	depends on BOARD_IEI_NOVA_4899R
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_IEI_NOVA_4899R
 
+endif # BOARD_IEI_NOVA_4899R

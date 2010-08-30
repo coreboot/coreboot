@@ -1,8 +1,20 @@
+if VENDOR_KONTRON
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_KONTRON
+
+config BOARD_KONTRON_986LCD_M
+	bool "986LCD-M/mITX"
+config BOARD_KONTRON_KT690
+	bool "KT690/mITX"
+
+endchoice
 
 source "src/mainboard/kontron/986lcd-m/Kconfig"
 source "src/mainboard/kontron/kt690/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Kontron"
+
+endif # VENDOR_KONTRON

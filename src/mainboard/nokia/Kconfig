@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_NOKIA
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_NOKIA
 
-source "src/mainboard/nokia/ip530/Kconfig"
+config BOARD_NOKIA_IP530
+	bool "IP530"
 
 endchoice
 
+source "src/mainboard/nokia/ip530/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Nokia"
+
+endif # VENDOR_NOKIA

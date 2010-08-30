@@ -1,8 +1,17 @@
+if VENDOR_DELL
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_DELL
 
-source "src/mainboard/dell/s1850/Kconfig"
+config BOARD_DELL_S1850
+	bool "PowerEdge 1850"
 
 endchoice
 
+source "src/mainboard/dell/s1850/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Dell"
+
+endif # VENDOR_DELL

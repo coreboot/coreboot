@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_BIOSTAR
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_BIOSTAR
 
-source "src/mainboard/biostar/m6tba/Kconfig"
+config BOARD_BIOSTAR_M6TBA
+	bool "M6TBA"
 
 endchoice
 
+source "src/mainboard/biostar/m6tba/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Biostar"
+
+endif # VENDOR_BIOSTAR

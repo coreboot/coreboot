@@ -16,22 +16,50 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ASUS
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ASUS
 
-source "src/mainboard/asus/a8n_e/Kconfig"
-source "src/mainboard/asus/a8v-e_se/Kconfig"
-source "src/mainboard/asus/p2b/Kconfig"
-source "src/mainboard/asus/p2b-d/Kconfig"
-source "src/mainboard/asus/p2b-ds/Kconfig"
-source "src/mainboard/asus/p2b-ls/Kconfig"
-source "src/mainboard/asus/p2b-f/Kconfig"
-source "src/mainboard/asus/p3b-f/Kconfig"
-source "src/mainboard/asus/m2v-mx_se/Kconfig"
-source "src/mainboard/asus/mew-am/Kconfig"
-source "src/mainboard/asus/mew-vm/Kconfig"
+config BOARD_ASUS_A8N_E
+	bool "A8N-E"
+config BOARD_ASUS_A8V_E_SE
+	bool "A8V-E SE"
+config BOARD_ASUS_M2V_MX_SE
+	bool "M2V-MX SE"
+config BOARD_ASUS_MEW_AM
+	bool "MEW-AM"
+config BOARD_ASUS_MEW_VM
+	bool "MEW-VM"
+config BOARD_ASUS_P2B
+	bool "P2B"
+config BOARD_ASUS_P2B_D
+	bool "P2B-D"
+config BOARD_ASUS_P2B_DS
+	bool "P2B-DS"
+config BOARD_ASUS_P2B_F
+	bool "P2B-F"
+config BOARD_ASUS_P2B_LS
+	bool "P2B-LS"
+config BOARD_ASUS_P3B_F
+	bool "P3B-F"
 
 endchoice
 
+source "src/mainboard/asus/a8n_e/Kconfig"
+source "src/mainboard/asus/a8v-e_se/Kconfig"
+source "src/mainboard/asus/m2v-mx_se/Kconfig"
+source "src/mainboard/asus/mew-am/Kconfig"
+source "src/mainboard/asus/mew-vm/Kconfig"
+source "src/mainboard/asus/p2b/Kconfig"
+source "src/mainboard/asus/p2b-d/Kconfig"
+source "src/mainboard/asus/p2b-ds/Kconfig"
+source "src/mainboard/asus/p2b-f/Kconfig"
+source "src/mainboard/asus/p2b-ls/Kconfig"
+source "src/mainboard/asus/p3b-f/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "ASUS"
+
+endif # VENDOR_ASUS

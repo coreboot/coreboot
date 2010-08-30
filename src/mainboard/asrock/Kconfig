@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ASROCK
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ASROCK
 
-source "src/mainboard/asrock/939a785gmh/Kconfig"
+config BOARD_ASROCK_939A785GMH
+	bool "939A785GMH/128M"
 
 endchoice
 
+source "src/mainboard/asrock/939a785gmh/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "ASROCK"
+
+endif # VENDOR_ASROCK

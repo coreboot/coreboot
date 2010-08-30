@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_NEC_POWERMATE_2000
 
-config BOARD_NEC_POWERMATE_2000
-	bool "PowerMate 2000"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -34,15 +35,13 @@ config BOARD_NEC_POWERMATE_2000
 config MAINBOARD_DIR
 	string
 	default nec/powermate2000
-	depends on BOARD_NEC_POWERMATE_2000
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "PowerMate 2000"
-	depends on BOARD_NEC_POWERMATE_2000
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_NEC_POWERMATE_2000
 
+endif # BOARD_NEC_POWERMATE_2000

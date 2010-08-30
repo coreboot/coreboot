@@ -1,9 +1,20 @@
+if VENDOR_IBM
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_IBM
+
+config BOARD_IBM_E325
+	bool "eServer 325"
+config BOARD_IBM_E326
+	bool "eServer 326"
+
+endchoice
 
 source "src/mainboard/ibm/e325/Kconfig"
 source "src/mainboard/ibm/e326/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "IBM"
 
+endif # VENDOR_IBM

@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_INTEL_D810E2CB
 
-config BOARD_INTEL_D810E2CB
-	bool "D810E2CB"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_FC_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -35,15 +36,13 @@ config BOARD_INTEL_D810E2CB
 config MAINBOARD_DIR
 	string
 	default intel/d810e2cb
-	depends on BOARD_INTEL_D810E2CB
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "D810E2CB"
-	depends on BOARD_INTEL_D810E2CB
 
 config IRQ_SLOT_COUNT
 	int
 	default 7
-	depends on BOARD_INTEL_D810E2CB
 
+endif # BOARD_INTEL_D810E2CB

@@ -1,5 +1,7 @@
-config BOARD_INTEL_JARRELL
-	bool "Jarrell (SE7520JR2)"
+if BOARD_INTEL_JARRELL
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7520
@@ -20,30 +22,25 @@ config BOARD_INTEL_JARRELL
 config MAINBOARD_DIR
 	string
 	default intel/jarrell
-	depends on BOARD_INTEL_JARRELL
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Jarrell"
-	depends on BOARD_INTEL_JARRELL
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_INTEL_JARRELL
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_INTEL_JARRELL
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x8086
-	depends on BOARD_INTEL_JARRELL
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x1079
-	depends on BOARD_INTEL_JARRELL
 
+endif # BOARD_INTEL_JARRELL

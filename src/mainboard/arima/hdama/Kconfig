@@ -1,5 +1,7 @@
-config BOARD_ARIMA_HDAMA
-	bool "HDAMA"
+if BOARD_ARIMA_HDAMA
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_940
 	select NORTHBRIDGE_AMD_AMDK8
@@ -18,64 +20,53 @@ config BOARD_ARIMA_HDAMA
 config MAINBOARD_DIR
 	string
 	default arima/hdama
-	depends on BOARD_ARIMA_HDAMA
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x161f
-	depends on BOARD_ARIMA_HDAMA
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x3016
-	depends on BOARD_ARIMA_HDAMA
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_ARIMA_HDAMA
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "HDAMA"
-	depends on BOARD_ARIMA_HDAMA
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x0
-	depends on BOARD_ARIMA_HDAMA
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_ARIMA_HDAMA
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_ARIMA_HDAMA
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_ARIMA_HDAMA
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_ARIMA_HDAMA
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_ARIMA_HDAMA
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_ARIMA_HDAMA
 
 config IRQ_SLOT_COUNT
 	int
 	default 9
-	depends on BOARD_ARIMA_HDAMA
+
+endif # BOARD_ARIMA_HDAMA

@@ -1,5 +1,7 @@
-config BOARD_MSI_MS9282
-	bool "MS-9282 (K9SD Master)"
+if BOARD_MSI_MS9282
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F
 	select NORTHBRIDGE_AMD_AMDK8
@@ -18,89 +20,73 @@ config BOARD_MSI_MS9282
 config MAINBOARD_DIR
 	string
 	default msi/ms9282
-	depends on BOARD_MSI_MS9282
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xcc000
-	depends on BOARD_MSI_MS9282
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x04000
-	depends on BOARD_MSI_MS9282
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_MSI_MS9282
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_MSI_MS9282
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_MSI_MS9282
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MS-9282"
-	depends on BOARD_MSI_MS9282
 
 config PCI_64BIT_PREF_MEM
 	bool
-        default n
-	depends on BOARD_MSI_MS9282
+	default n
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_MSI_MS9282
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_MSI_MS9282
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_MSI_MS9282
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_MSI_MS9282
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_MSI_MS9282
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_MSI_MS9282
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_MSI_MS9282
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1462
-	depends on BOARD_MSI_MS9282
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x9282
-	depends on BOARD_MSI_MS9282
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_MSI_MS9282
+
+endif # BOARD_MSI_MS9282

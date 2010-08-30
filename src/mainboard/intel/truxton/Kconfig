@@ -1,5 +1,7 @@
-config BOARD_INTEL_TRUXTON
-	bool "EP80579 devkit (Truxton)"
+if BOARD_INTEL_TRUXTON
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_EP80579
 	select NORTHBRIDGE_INTEL_I3100
@@ -16,29 +18,25 @@ config BOARD_INTEL_TRUXTON
 config MAINBOARD_DIR
 	string
 	default intel/truxton
-	depends on BOARD_INTEL_TRUXTON
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Truxton"
-	depends on BOARD_INTEL_TRUXTON
 
 config IRQ_SLOT_COUNT
 	int
 	default 1
-	depends on BOARD_INTEL_TRUXTON
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x8086
-	depends on BOARD_INTEL_TRUXTON
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2680
-	depends on BOARD_INTEL_TRUXTON
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_INTEL_TRUXTON
+
+endif # BOARD_INTEL_TRUXTON

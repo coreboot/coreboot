@@ -1,5 +1,7 @@
-config BOARD_IWILL_DK8_HTX
-	bool "DK8-HTX"
+if BOARD_IWILL_DK8_HTX
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_940
 	select NORTHBRIDGE_AMD_AMDK8
@@ -23,89 +25,73 @@ config BOARD_IWILL_DK8_HTX
 config MAINBOARD_DIR
 	string
 	default iwill/dk8_htx
-	depends on BOARD_IWILL_DK8_HTX
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_IWILL_DK8_HTX
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_IWILL_DK8_HTX
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_IWILL_DK8_HTX
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_IWILL_DK8_HTX
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "DK8-HTX"
-	depends on BOARD_IWILL_DK8_HTX
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_IWILL_DK8_HTX
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_IWILL_DK8_HTX
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_IWILL_DK8_HTX
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_IWILL_DK8_HTX
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_IWILL_DK8_HTX
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x6
-	depends on BOARD_IWILL_DK8_HTX
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0xa
-	depends on BOARD_IWILL_DK8_HTX
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_IWILL_DK8_HTX
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_IWILL_DK8_HTX
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_IWILL_DK8_HTX
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2b80
-	depends on BOARD_IWILL_DK8_HTX
 
 config ACPI_SSDTX_NUM
 	int
 	default 5
-	depends on BOARD_IWILL_DK8_HTX
+
+endif # BOARD_IWILL_DK8_HTX

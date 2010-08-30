@@ -1,5 +1,7 @@
-config BOARD_INTEL_EAGLEHEIGHTS
-	bool "EagleHeights"
+if BOARD_INTEL_EAGLEHEIGHTS
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_BGA956
 	select NORTHBRIDGE_INTEL_I3100
@@ -21,44 +23,37 @@ config BOARD_INTEL_EAGLEHEIGHTS
 config MAINBOARD_DIR
 	string
 	default intel/eagleheights
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "EagleHeights"
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config IRQ_SLOT_COUNT
 	int
 	default 9
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+endif # BOARD_INTEL_EAGLEHEIGHTS

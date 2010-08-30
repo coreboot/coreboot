@@ -1,8 +1,17 @@
+if VENDOR_ARTEC_GROUP
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ARTEC_GROUP
 
-source "src/mainboard/artecgroup/dbe61/Kconfig"
+config BOARD_ARTECGROUP_DBE61
+	bool "DBE61"
 
 endchoice
 
+source "src/mainboard/artecgroup/dbe61/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Artec Group"
+
+endif # VENDOR_ARTEC_GROUP

@@ -1,5 +1,7 @@
-config BOARD_DIGITALLOGIC_ADL855PC
-	bool "smartModule855"
+if BOARD_DIGITALLOGIC_ADL855PC
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA479M
 	select NORTHBRIDGE_INTEL_I855
@@ -15,24 +17,21 @@ config BOARD_DIGITALLOGIC_ADL855PC
 config MAINBOARD_DIR
 	string
 	default digitallogic/adl855pc
-	depends on BOARD_DIGITALLOGIC_ADL855PC
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "smartModule855"
-	depends on BOARD_DIGITALLOGIC_ADL855PC
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_DIGITALLOGIC_ADL855PC
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_DIGITALLOGIC_ADL855PC
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_DIGITALLOGIC_ADL855PC
+
+endif # BOARD_DIGITALLOGIC_ADL855PC

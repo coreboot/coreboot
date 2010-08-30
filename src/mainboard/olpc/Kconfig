@@ -1,9 +1,20 @@
+if VENDOR_OLPC
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_OLPC
 
-source "src/mainboard/olpc/rev_a/Kconfig"
-source "src/mainboard/olpc/btest/Kconfig"
+config BOARD_OLPC_BTEST
+	bool "btest"
+config BOARD_OLPC_REV_A
+	bool "rev_a"
 
 endchoice
 
+source "src/mainboard/olpc/btest/Kconfig"
+source "src/mainboard/olpc/rev_a/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "OLPC"
+
+endif # VENDOR_OLPC

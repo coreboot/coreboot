@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ASUS_P2B
 
-config BOARD_ASUS_P2B
-	bool "P2B"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -32,15 +33,13 @@ config BOARD_ASUS_P2B
 config MAINBOARD_DIR
 	string
 	default asus/p2b
-	depends on BOARD_ASUS_P2B
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P2B"
-	depends on BOARD_ASUS_P2B
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_ASUS_P2B
 
+endif # BOARD_ASUS_P2B

@@ -16,10 +16,43 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_TYAN
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_TYAN
+
+config BOARD_TYAN_S1846
+	bool "S1846 (Tsunami ATX)"
+config BOARD_TYAN_S2735
+	bool "S2735 (Tiger i7501R)"
+config BOARD_TYAN_S2850
+	bool "S2850 (Tomcat K8S)"
+config BOARD_TYAN_S2875
+	bool "S2875 (Tiger K8W)"
+config BOARD_TYAN_S2880
+	bool "S2880 (Thunder K8S)"
+config BOARD_TYAN_S2881
+	bool "S2881 (Thunder K8SR)"
+config BOARD_TYAN_S2882
+	bool "S2882 (Thunder K8S Pro)"
+config BOARD_TYAN_S2885
+	bool "S2885 (Thunder K8W)"
+config BOARD_TYAN_S2891
+	bool "S2891 (Thunder K8SRE)"
+config BOARD_TYAN_S2892
+	bool "S2892 (Thunder K8SE)"
+config BOARD_TYAN_S2895
+	bool "S2895 (Thunder K8WE)"
+config BOARD_TYAN_S2912
+	bool "S2912 (Thunder n3600R)"
+config BOARD_TYAN_S2912_FAM10
+	bool "S2912 Fam10 (Thunder n3600R)"
+config BOARD_TYAN_S4880
+	bool "S4880 (Thunder K8QS)"
+config BOARD_TYAN_S4882
+	bool "S4882 (Thunder K8QS Pro)"
+
+endchoice
 
 source "src/mainboard/tyan/s1846/Kconfig"
 source "src/mainboard/tyan/s2735/Kconfig"
@@ -37,5 +70,12 @@ source "src/mainboard/tyan/s2912_fam10/Kconfig"
 source "src/mainboard/tyan/s4880/Kconfig"
 source "src/mainboard/tyan/s4882/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Tyan"
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x10f1
+
+endif # VENDOR_TYAN

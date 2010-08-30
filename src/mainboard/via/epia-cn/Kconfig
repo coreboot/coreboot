@@ -1,5 +1,7 @@
-config BOARD_VIA_EPIA_CN
-	bool "EPIA-CN"
+if BOARD_VIA_EPIA_CN
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
@@ -12,19 +14,17 @@ config BOARD_VIA_EPIA_CN
 config MAINBOARD_DIR
 	string
 	default via/epia-cn
-	depends on BOARD_VIA_EPIA_CN
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-CN"
-	depends on BOARD_VIA_EPIA_CN
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_VIA_EPIA_CN
 
 config IRQ_SLOT_COUNT
 	int
 	default 9
-	depends on BOARD_VIA_EPIA_CN
+
+endif # BOARD_VIA_EPIA_CN

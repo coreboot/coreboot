@@ -1,8 +1,17 @@
+if VENDOR_NVIDIA
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_NVIDIA
 
-source "src/mainboard/nvidia/l1_2pvv/Kconfig"
+config BOARD_NVIDIA_L1_2PVV
+	bool "l1_2pvv"
 
 endchoice
 
+source "src/mainboard/nvidia/l1_2pvv/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "NVIDIA"
+
+endif # VENDOR_NVIDIA

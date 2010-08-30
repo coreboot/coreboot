@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_INTEL_D945GCLF
 
-config BOARD_INTEL_D945GCLF
-	bool "D945GCLF"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_ATOM_230
 	select CPU_INTEL_SOCKET_441
@@ -47,45 +48,37 @@ config BOARD_INTEL_D945GCLF
 config MAINBOARD_DIR
 	string
 	default intel/d945gclf
-	depends on BOARD_INTEL_D945GCLF
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_INTEL_D945GCLF
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_INTEL_D945GCLF
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "D945GCLF"
-	depends on BOARD_INTEL_D945GCLF
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x464C
-	depends on BOARD_INTEL_D945GCLF
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-	depends on BOARD_INTEL_D945GCLF
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_INTEL_D945GCLF
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_INTEL_D945GCLF
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_INTEL_D945GCLF
 
+endif # BOARD_INTEL_D945GCLF

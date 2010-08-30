@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_TELEVIDEO_TC7020
 
-config BOARD_TELEVIDEO_TC7020
-	bool "TC7020"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -33,15 +34,13 @@ config BOARD_TELEVIDEO_TC7020
 config MAINBOARD_DIR
 	string
 	default televideo/tc7020
-	depends on BOARD_TELEVIDEO_TC7020
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "TC7020"
-	depends on BOARD_TELEVIDEO_TC7020
 
 config IRQ_SLOT_COUNT
 	int
 	default 3
-	depends on BOARD_TELEVIDEO_TC7020
 
+endif # BOARD_TELEVIDEO_TC7020

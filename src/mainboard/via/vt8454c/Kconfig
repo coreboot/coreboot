@@ -1,5 +1,7 @@
-config BOARD_VIA_VT8454C
-	bool "VT8454c"
+if BOARD_VIA_VT8454C
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CX700
@@ -18,19 +20,17 @@ config BOARD_VIA_VT8454C
 config MAINBOARD_DIR
 	string
 	default via/vt8454c
-	depends on BOARD_VIA_VT8454C
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "VT8454c"
-	depends on BOARD_VIA_VT8454C
 
 config IRQ_SLOT_COUNT
 	int
 	default 15
-	depends on BOARD_VIA_VT8454C
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_VIA_VT8454C
+
+endif # BOARD_VIA_VT8454C

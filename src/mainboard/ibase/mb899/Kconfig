@@ -1,5 +1,7 @@
-config BOARD_IBASE_MB899
-	bool "MB899"
+if BOARD_IBASE_MB899
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478
@@ -24,45 +26,37 @@ config BOARD_IBASE_MB899
 config MAINBOARD_DIR
 	string
 	default ibase/mb899
-	depends on BOARD_IBASE_MB899
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_IBASE_MB899
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_IBASE_MB899
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MB899"
-	depends on BOARD_IBASE_MB899
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-	depends on BOARD_IBASE_MB899
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_IBASE_MB899
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_IBASE_MB899
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_IBASE_MB899
 
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "amipci_01.20"
-	depends on BOARD_IBASE_MB899
 
+endif # BOARD_IBASE_MB899

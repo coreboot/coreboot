@@ -1,5 +1,7 @@
-config BOARD_KONTRON_986LCD_M
-	bool "986LCD-M/mITX"
+if BOARD_KONTRON_986LCD_M
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478
@@ -24,45 +26,37 @@ config BOARD_KONTRON_986LCD_M
 config MAINBOARD_DIR
 	string
 	default kontron/986lcd-m
-	depends on BOARD_KONTRON_986LCD_M
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_KONTRON_986LCD_M
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_KONTRON_986LCD_M
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "986LCD-M"
-	depends on BOARD_KONTRON_986LCD_M
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-	depends on BOARD_KONTRON_986LCD_M
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_KONTRON_986LCD_M
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_KONTRON_986LCD_M
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_KONTRON_986LCD_M
 
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "amipci_01.20"
-	depends on BOARD_KONTRON_986LCD_M
 
+endif # BOARD_KONTRON_986LCD_M

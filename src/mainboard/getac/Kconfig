@@ -16,11 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
+if VENDOR_GETAC
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_GETAC
+
+config BOARD_GETAC_P470
+	bool "P470"
+
+endchoice
 
 source "src/mainboard/getac/p470/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Getac"
+
+endif # VENDOR_GETAC

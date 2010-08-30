@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_NOKIA_IP530
 
-config BOARD_NOKIA_IP530
-	bool "IP530"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I440BX
@@ -35,61 +36,51 @@ config BOARD_NOKIA_IP530
 config MAINBOARD_DIR
 	string
 	default nokia/ip530
-	depends on BOARD_NOKIA_IP530
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "IP530"
-	depends on BOARD_NOKIA_IP530
 
 config IRQ_SLOT_COUNT
 	int
 	default 22
-	depends on BOARD_NOKIA_IP530
 
 ## Configuration items for the ethernet adaptors
 config DEC21143_CACHE_LINE_SIZE
 	hex
 	default 0x00000000
-	depends on BOARD_NOKIA_IP530
 
 config DEC21143_EXPANSION_ROM_BASE_ADDRESS
 	hex
 	default 0x00000000
-	depends on BOARD_NOKIA_IP530
 
 config DEC21143_COMMAND_AND_STATUS_CONFIGURATION
 	hex
 	default 0x02800107
-	depends on BOARD_NOKIA_IP530
 
 ## Configuration for the PCMCIA-Cardbus controller.
 config TI_PCMCIA_CARDBUS_CMDR
 	hex
 	default 0x0107
-	depends on BOARD_NOKIA_IP530
 
 config TI_PCMCIA_CARDBUS_CLSR
 	hex
 	default 0x00
-	depends on BOARD_NOKIA_IP530
 
 config TI_PCMCIA_CARDBUS_CLTR
 	hex
 	default 0x40
-	depends on BOARD_NOKIA_IP530
 
 config TI_PCMCIA_CARDBUS_BCR
 	hex
 	default 0x07C0
-	depends on BOARD_NOKIA_IP530
 
 config TI_PCMCIA_CARDBUS_SCR
 	hex
 	default 0x08449060
-	depends on BOARD_NOKIA_IP530
 
 config TI_PCMCIA_CARDBUS_MRR
 	hex
 	default 0x00007522
-	depends on BOARD_NOKIA_IP530
+
+endif # BOARD_NOKIA_IP530

@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_IEI_JUKI_511P
 
-config BOARD_IEI_JUKI_511P
-	bool "JUKI-511P"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -32,15 +33,13 @@ config BOARD_IEI_JUKI_511P
 config MAINBOARD_DIR
 	string
 	default iei/juki-511p
-	depends on BOARD_IEI_JUKI_511P
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "JUKI-511P"
-	depends on BOARD_IEI_JUKI_511P
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
-	depends on BOARD_IEI_JUKI_511P
 
+endif # BOARD_IEI_JUKI_511P

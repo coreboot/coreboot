@@ -1,5 +1,7 @@
-config BOARD_INTEL_MTARVON
-	bool "3100 devkit (Mt. Arvon)"
+if BOARD_INTEL_MTARVON
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA479M
 	select NORTHBRIDGE_INTEL_I3100
@@ -15,29 +17,25 @@ config BOARD_INTEL_MTARVON
 config MAINBOARD_DIR
 	string
 	default intel/mtarvon
-	depends on BOARD_INTEL_MTARVON
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "3100 devkit (Mt. Arvon)"
-	depends on BOARD_INTEL_MTARVON
 
 config IRQ_SLOT_COUNT
 	int
 	default 1
-	depends on BOARD_INTEL_MTARVON
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x8086
-	depends on BOARD_INTEL_MTARVON
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2680
-	depends on BOARD_INTEL_MTARVON
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_INTEL_MTARVON
+
+endif # BOARD_INTEL_MTARVON

@@ -1,5 +1,7 @@
-config BOARD_IWILL_DK8S2
-	bool "DK8S2"
+if BOARD_IWILL_DK8S2
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_940
 	select NORTHBRIDGE_AMD_AMDK8
@@ -20,85 +22,69 @@ config BOARD_IWILL_DK8S2
 config MAINBOARD_DIR
 	string
 	default iwill/dk8s2
-	depends on BOARD_IWILL_DK8S2
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_IWILL_DK8S2
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_IWILL_DK8S2
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_IWILL_DK8S2
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_IWILL_DK8S2
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "DK8S2"
-	depends on BOARD_IWILL_DK8S2
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_IWILL_DK8S2
 
 config MAX_CPUS
 	int
 	default 2
-	depends on BOARD_IWILL_DK8S2
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_IWILL_DK8S2
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_IWILL_DK8S2
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 0
-	depends on BOARD_IWILL_DK8S2
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_IWILL_DK8S2
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_IWILL_DK8S2
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_IWILL_DK8S2
 
 config IRQ_SLOT_COUNT
 	int
 	default 12
-	depends on BOARD_IWILL_DK8S2
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x161f
-	depends on BOARD_IWILL_DK8S2
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x3016
-	depends on BOARD_IWILL_DK8S2
 
+endif # BOARD_IWILL_DK8S2

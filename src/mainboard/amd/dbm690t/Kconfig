@@ -1,5 +1,7 @@
-config BOARD_AMD_DBM690T
-	bool "DBM690T (Herring)"
+if BOARD_AMD_DBM690T
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_S1G1
 	select NORTHBRIDGE_AMD_AMDK8
@@ -22,86 +24,71 @@ config BOARD_AMD_DBM690T
 config MAINBOARD_DIR
 	string
 	default amd/dbm690t
-	depends on BOARD_AMD_DBM690T
 
 # This is a temporary fix, and should be removed when the race condition for
 # building option_table.h is fixed.
 config WARNINGS_ARE_ERRORS
 	bool
 	default n
-	depends on BOARD_AMD_DBM690T
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_AMD_DBM690T
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_AMD_DBM690T
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_AMD_DBM690T
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_AMD_DBM690T
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "DBM690T"
-	depends on BOARD_AMD_DBM690T
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_AMD_DBM690T
 
 config MAX_CPUS
 	int
 	default 2
-	depends on BOARD_AMD_DBM690T
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 1
-	depends on BOARD_AMD_DBM690T
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_AMD_DBM690T
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_AMD_DBM690T
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_AMD_DBM690T
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_AMD_DBM690T
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_AMD_DBM690T
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_AMD_DBM690T
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x3050
-	depends on BOARD_AMD_DBM690T
+
+endif # BOARD_AMD_DBM690T

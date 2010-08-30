@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ADVANTECH
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ADVANTECH
 
-source "src/mainboard/advantech/pcm-5820/Kconfig"
+config BOARD_ADVANTECH_PCM_5820
+	bool "PCM-5820"
 
 endchoice
 
+source "src/mainboard/advantech/pcm-5820/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Advantech"
+
+endif # VENDOR_ADVANTECH

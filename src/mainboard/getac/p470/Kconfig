@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
+if BOARD_GETAC_P470
 
-config BOARD_GETAC_P470
-	bool "P470"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478
@@ -48,45 +49,37 @@ config BOARD_GETAC_P470
 config MAINBOARD_DIR
 	string
 	default getac/p470
-	depends on BOARD_GETAC_P470
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_GETAC_P470
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_GETAC_P470
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P470"
-	depends on BOARD_GETAC_P470
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-	depends on BOARD_GETAC_P470
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_GETAC_P470
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_GETAC_P470
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_GETAC_P470
 
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "getac-pci8086,27a2.rom"
-	depends on BOARD_GETAC_P470
 
+endif # BOARD_GETAC_P470

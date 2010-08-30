@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_AZZA
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_AZZA
 
-source "src/mainboard/azza/pt-6ibd/Kconfig"
+config BOARD_AZZA_PT_6IBD
+	bool "PT-6IBD"
 
 endchoice
 
+source "src/mainboard/azza/pt-6ibd/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "AZZA"
+
+endif # VENDOR_AZZA

@@ -1,8 +1,17 @@
-choice
-        prompt "Mainboard model"
-        depends on VENDOR_IBASE
+if VENDOR_IBASE
 
-source "src/mainboard/ibase/mb899/Kconfig"
+choice
+	prompt "Mainboard model"
+
+config BOARD_IBASE_MB899
+	bool "MB899"
 
 endchoice
 
+source "src/mainboard/ibase/mb899/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "iBase"
+
+endif # VENDOR_IBASE

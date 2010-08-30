@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ADVANTECH_PCM_5820
 
-config BOARD_ADVANTECH_PCM_5820
-	bool "PCM-5820"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -33,15 +34,13 @@ config BOARD_ADVANTECH_PCM_5820
 config MAINBOARD_DIR
 	string
 	default advantech/pcm-5820
-	depends on BOARD_ADVANTECH_PCM_5820
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "PCM-5820"
-	depends on BOARD_ADVANTECH_PCM_5820
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
-	depends on BOARD_ADVANTECH_PCM_5820
 
+endif # BOARD_ADVANTECH_PCM_5820

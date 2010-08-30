@@ -16,10 +16,25 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_GIGABYTE
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_GIGABYTE
+
+config BOARD_GIGABYTE_GA_2761GXDK
+	bool "GA-2761GXDK"
+config BOARD_GIGABYTE_GA_6BXC
+	bool "GA-6BXC"
+config BOARD_GIGABYTE_GA_6BXE
+	bool "GA-6BXE"
+config BOARD_GIGABYTE_M57SLI
+	bool "GA-M57SLI-S4"
+config BOARD_GIGABYTE_GA785GMT
+	bool "MA785GMT"
+config BOARD_GIGABYTE_MA78GM
+	bool "MA78GM-US2H"
+
+endchoice
 
 source "src/mainboard/gigabyte/ga_2761gxdk/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
@@ -27,5 +42,9 @@ source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 source "src/mainboard/gigabyte/ma785gmt/Kconfig"
 source "src/mainboard/gigabyte/ma78gm/Kconfig"
-endchoice
 
+config MAINBOARD_VENDOR
+	string
+	default "GIGABYTE"
+
+endif # VENDOR_GIGABYTE

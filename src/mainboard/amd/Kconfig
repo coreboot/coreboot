@@ -1,17 +1,44 @@
+if VENDOR_AMD
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_AMD
+
+config BOARD_AMD_DB800
+	bool "DB800 (Salsa)"
+config BOARD_AMD_DBM690T
+	bool "DBM690T (Herring)"
+config BOARD_AMD_MAHOGANY
+	bool "Mahogany"
+config BOARD_AMD_MAHOGANY_FAM10
+	bool "Mahogany (Fam10)"
+config BOARD_AMD_NORWICH
+	bool "Norwich"
+config BOARD_AMD_PISTACHIO
+	bool "Pistachio"
+config BOARD_AMD_RUMBA
+	bool "Rumba"
+config BOARD_AMD_SERENGETI_CHEETAH
+	bool "Serengeti Cheetah"
+config BOARD_AMD_SERENGETI_CHEETAH_FAM10
+	bool "Serengeti Cheetah (Fam10)"
+config BOARD_AMD_TILAPIA_FAM10
+	bool "Tilapia (Fam10)"
+
+endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
 source "src/mainboard/amd/dbm690t/Kconfig"
 source "src/mainboard/amd/mahogany/Kconfig"
 source "src/mainboard/amd/mahogany_fam10/Kconfig"
-source "src/mainboard/amd/tilapia_fam10/Kconfig"
 source "src/mainboard/amd/norwich/Kconfig"
 source "src/mainboard/amd/pistachio/Kconfig"
 source "src/mainboard/amd/rumba/Kconfig"
 source "src/mainboard/amd/serengeti_cheetah/Kconfig"
 source "src/mainboard/amd/serengeti_cheetah_fam10/Kconfig"
+source "src/mainboard/amd/tilapia_fam10/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "AMD"
 
+endif # VENDOR_AMD

@@ -1,5 +1,7 @@
-config BOARD_LIPPERT_ROADRUNNER_LX
-	bool "Cool RoadRunner-LX"
+if BOARD_LIPPERT_ROADRUNNER_LX
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -14,19 +16,17 @@ config BOARD_LIPPERT_ROADRUNNER_LX
 config MAINBOARD_DIR
 	string
 	default lippert/roadrunner-lx
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Cool RoadRunner-LX"
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
 config IRQ_SLOT_COUNT
 	int
 	default 7
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
+
+endif # BOARD_LIPPERT_ROADRUNNER_LX

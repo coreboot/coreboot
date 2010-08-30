@@ -1,8 +1,17 @@
+if VENDOR_RCA
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_RCA
 
-source "src/mainboard/rca/rm4100/Kconfig"
+config BOARD_RCA_RM4100
+	bool "RM4100"
 
 endchoice
 
+source "src/mainboard/rca/rm4100/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "RCA"
+
+endif # VENDOR_RCA

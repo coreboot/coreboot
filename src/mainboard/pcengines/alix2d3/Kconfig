@@ -1,5 +1,7 @@
-config BOARD_PCENGINES_ALIX2D3
-	bool "ALIX.2D3"
+if BOARD_PCENGINES_ALIX2D3
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -13,19 +15,17 @@ config BOARD_PCENGINES_ALIX2D3
 config MAINBOARD_DIR
 	string
 	default pcengines/alix2d3
-	depends on BOARD_PCENGINES_ALIX2D3
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "ALIX.2D3"
-	depends on BOARD_PCENGINES_ALIX2D3
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_PCENGINES_ALIX2D3
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_PCENGINES_ALIX2D3
+
+endif # BOARD_PCENGINES_ALIX2D3

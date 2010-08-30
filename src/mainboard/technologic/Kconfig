@@ -1,8 +1,17 @@
+if VENDOR_TECHNOLOGIC
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_TECHNOLOGIC
 
-source "src/mainboard/technologic/ts5300/Kconfig"
+config BOARD_TECHNOLOGIC_TS5300
+	bool "TS-5300"
 
 endchoice
 
+source "src/mainboard/technologic/ts5300/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Technologic"
+
+endif # VENDOR_TECHNOLOGIC

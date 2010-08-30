@@ -1,14 +1,39 @@
+if VENDOR_VIA
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_VIA
+
+config BOARD_VIA_EPIA
+	bool "EPIA"
+config BOARD_VIA_EPIA_CN
+	bool "EPIA-CN"
+config BOARD_VIA_EPIA_M700
+	bool "EPIA-M700"
+config BOARD_VIA_EPIA_M
+	bool "EPIA-M"
+config BOARD_VIA_EPIA_N
+	bool "EPIA-N"
+config BOARD_VIA_PC2500E
+	bool "pc2500e"
+config BOARD_VIA_VT8454C
+	bool "VT8454c"
+
+endchoice
 
 source "src/mainboard/via/epia/Kconfig"
 source "src/mainboard/via/epia-cn/Kconfig"
-source "src/mainboard/via/epia-m/Kconfig"
 source "src/mainboard/via/epia-m700/Kconfig"
+source "src/mainboard/via/epia-m/Kconfig"
 source "src/mainboard/via/epia-n/Kconfig"
 source "src/mainboard/via/pc2500e/Kconfig"
 source "src/mainboard/via/vt8454c/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "VIA"
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1019
+
+endif # VENDOR_VIA

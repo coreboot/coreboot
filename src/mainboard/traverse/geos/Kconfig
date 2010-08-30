@@ -1,5 +1,7 @@
-config BOARD_TRAVERSE_GEOS
-	bool "Geos"
+if BOARD_TRAVERSE_GEOS
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -13,19 +15,17 @@ config BOARD_TRAVERSE_GEOS
 config MAINBOARD_DIR
 	string
 	default traverse/geos
-	depends on BOARD_TRAVERSE_GEOS
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Geos"
-	depends on BOARD_TRAVERSE_GEOS
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_TRAVERSE_GEOS
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_TRAVERSE_GEOS
+
+endif # BOARD_TRAVERSE_GEOS

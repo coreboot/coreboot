@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_TELEVIDEO
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_TELEVIDEO
 
-source "src/mainboard/televideo/tc7020/Kconfig"
+config BOARD_TELEVIDEO_TC7020
+	bool "TC7020"
 
 endchoice
 
+source "src/mainboard/televideo/tc7020/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "TeleVideo"
+
+endif # VENDOR_TELEVIDEO

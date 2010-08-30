@@ -1,5 +1,7 @@
-config BOARD_AMD_NORWICH
-	bool "Norwich"
+if BOARD_AMD_NORWICH
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -13,19 +15,17 @@ config BOARD_AMD_NORWICH
 config MAINBOARD_DIR
 	string
 	default amd/norwich
-	depends on BOARD_AMD_NORWICH
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Norwich"
-	depends on BOARD_AMD_NORWICH
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_AMD_NORWICH
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_AMD_NORWICH
+
+endif # BOARD_AMD_NORWICH

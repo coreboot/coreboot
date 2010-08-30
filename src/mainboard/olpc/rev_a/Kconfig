@@ -1,5 +1,7 @@
-config BOARD_OLPC_REV_A
-	bool "rev_a"
+if BOARD_OLPC_REV_A
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX2
 	select NORTHBRIDGE_AMD_GX2
@@ -12,14 +14,13 @@ config BOARD_OLPC_REV_A
 config MAINBOARD_DIR
 	string
 	default olpc/rev_a
-	depends on BOARD_OLPC_REV_A
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "rev_a"
-	depends on BOARD_OLPC_REV_A
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
-	depends on BOARD_OLPC_REV_A
+
+endif # BOARD_OLPC_REV_A

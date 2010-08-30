@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_MITAC
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_MITAC
 
-source "src/mainboard/mitac/6513wu/Kconfig"
+config BOARD_MITAC_6513WU
+	bool "6513WU"
 
 endchoice
 
+source "src/mainboard/mitac/6513wu/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Mitac"
+
+endif # VENDOR_MITAC

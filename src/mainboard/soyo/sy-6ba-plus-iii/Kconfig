@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_SOYO_SY_6BA_PLUS_III
 
-config BOARD_SOYO_SY_6BA_PLUS_III
-	bool "SY-6BA+ III"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -32,15 +33,13 @@ config BOARD_SOYO_SY_6BA_PLUS_III
 config MAINBOARD_DIR
 	string
 	default soyo/sy-6ba-plus-iii
-	depends on BOARD_SOYO_SY_6BA_PLUS_III
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "SY-6BA+ III"
-	depends on BOARD_SOYO_SY_6BA_PLUS_III
 
 config IRQ_SLOT_COUNT
 	int
 	default 7
-	depends on BOARD_SOYO_SY_6BA_PLUS_III
 
+endif # BOARD_SOYO_SY_6BA_PLUS_III

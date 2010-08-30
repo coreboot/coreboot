@@ -1,5 +1,7 @@
-config BOARD_AMD_SERENGETI_CHEETAH
-	bool "Serengeti Cheetah"
+if BOARD_AMD_SERENGETI_CHEETAH
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F
 	select NORTHBRIDGE_AMD_AMDK8
@@ -24,94 +26,77 @@ config BOARD_AMD_SERENGETI_CHEETAH
 config MAINBOARD_DIR
 	string
 	default amd/serengeti_cheetah
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config APIC_ID_OFFSET
 	hex
 	default 0x8
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Serengeti Cheetah"
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MAX_CPUS
 	int
 	default 8
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 4
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MEM_TRAIN_SEQ
 	int
 	default 1
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x6
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0xa
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
-        default 0x1022
-	depends on BOARD_AMD_SERENGETI_CHEETAH
+	default 0x1022
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
-        default 0x2b80
-	depends on BOARD_AMD_SERENGETI_CHEETAH
+	default 0x2b80
 
 config ACPI_SSDTX_NUM
 	int
 	default 4
-	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+endif # BOARD_AMD_SERENGETI_CHEETAH

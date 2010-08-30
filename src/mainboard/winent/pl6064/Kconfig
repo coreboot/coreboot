@@ -1,5 +1,7 @@
-config BOARD_WINENT_PL6064
-	bool "PL6064"
+if BOARD_WINENT_PL6064
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -14,19 +16,17 @@ config BOARD_WINENT_PL6064
 config MAINBOARD_DIR
 	string
 	default winent/pl6064
-	depends on BOARD_WINENT_PL6064
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "PL6064"
-	depends on BOARD_WINENT_PL6064
 
 config IRQ_SLOT_COUNT
 	int
 	default 7
-	depends on BOARD_WINENT_PL6064
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_WINENT_PL6064
+
+endif # BOARD_WINENT_PL6064

@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_NEC
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_NEC
 
-source "src/mainboard/nec/powermate2000/Kconfig"
+config BOARD_NEC_POWERMATE_2000
+	bool "PowerMate 2000"
 
 endchoice
 
+source "src/mainboard/nec/powermate2000/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "NEC"
+
+endif # VENDOR_NEC

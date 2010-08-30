@@ -1,5 +1,7 @@
-config BOARD_VIA_EPIA_M
-	bool "EPIA-M"
+if BOARD_VIA_EPIA_M
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C3
 	select NORTHBRIDGE_VIA_VT8623
@@ -16,15 +18,13 @@ config BOARD_VIA_EPIA_M
 config MAINBOARD_DIR
 	string
 	default via/epia-m
-	depends on BOARD_VIA_EPIA_M
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-M"
-	depends on BOARD_VIA_EPIA_M
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_VIA_EPIA_M
 
+endif # BOARD_VIA_EPIA_M

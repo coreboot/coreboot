@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ASUS_M2V_MX_SE
 
-config BOARD_ASUS_M2V_MX_SE
-	bool "M2V-MX SE"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_AM2
 	select NORTHBRIDGE_AMD_AMDK8
@@ -37,65 +38,53 @@ config BOARD_ASUS_M2V_MX_SE
 config MAINBOARD_DIR
 	string
 	default asus/m2v-mx_se
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xcc000
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x4000
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "M2V-MX SE"
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config MAX_CPUS
 	int
 	default 2
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 1
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config HEAP_SIZE
 	hex
 	default 0x40000
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_ASUS_M2V_MX_SE
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1043
-	depends on BOARD_ASUS_M2V_MX_SE
 
+endif # BOARD_ASUS_M2V_MX_SE

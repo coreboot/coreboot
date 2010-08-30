@@ -17,12 +17,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ECS
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ECS
 
-source "src/mainboard/ecs/p6iwp-fe/Kconfig"
+config BOARD_ECS_P6IWP_FE
+	bool "P6IWP-FE"
 
 endchoice
 
+source "src/mainboard/ecs/p6iwp-fe/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "ECS"
+
+endif # VENDOR_ECS

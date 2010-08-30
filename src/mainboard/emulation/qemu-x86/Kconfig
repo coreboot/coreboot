@@ -1,5 +1,7 @@
-config BOARD_EMULATION_QEMU_X86
-	bool "QEMU x86"
+if BOARD_EMULATION_QEMU_X86
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select SOUTHBRIDGE_INTEL_I82371EB
 	select ROMCC
@@ -12,14 +14,13 @@ config BOARD_EMULATION_QEMU_X86
 config MAINBOARD_DIR
 	string
 	default emulation/qemu-x86
-	depends on BOARD_EMULATION_QEMU_X86
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "QEMU x86"
-	depends on BOARD_EMULATION_QEMU_X86
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_EMULATION_QEMU_X86
+
+endif # BOARD_EMULATION_QEMU_X86

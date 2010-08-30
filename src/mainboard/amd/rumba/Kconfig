@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_AMD_RUMBA
 
-config BOARD_AMD_RUMBA
-	bool "Rumba"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX2
 	select NORTHBRIDGE_AMD_GX2
@@ -31,15 +32,13 @@ config BOARD_AMD_RUMBA
 config MAINBOARD_DIR
 	string
 	default amd/rumba
-	depends on BOARD_AMD_RUMBA
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Rumba"
-	depends on BOARD_AMD_RUMBA
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
-	depends on BOARD_AMD_RUMBA
 
+endif # BOARD_AMD_RUMBA

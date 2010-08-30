@@ -16,10 +16,31 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_MSI
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_MSI
+
+config BOARD_MSI_MS_6119
+	bool "MS-6119"
+config BOARD_MSI_MS_6147
+	bool "MS-6147"
+config BOARD_MSI_MS_6156
+	bool "MS-6156"
+config BOARD_MSI_MS_6178
+	bool "MS-6178"
+config BOARD_MSI_MS7135
+	bool "MS-7135 (K8N Neo3)"
+config BOARD_MSI_MS7260
+	bool "MS-7260 (K9N Neo)"
+config BOARD_MSI_MS9185
+	bool "MS-9185 (K9SD Master-S2R)"
+config BOARD_MSI_MS9282
+	bool "MS-9282 (K9SD Master)"
+config BOARD_MSI_MS9652_FAM10
+	bool "MS-9652 Fam10 (Speedster K9ND)"
+
+endchoice
 
 source "src/mainboard/msi/ms6119/Kconfig"
 source "src/mainboard/msi/ms6147/Kconfig"
@@ -31,5 +52,12 @@ source "src/mainboard/msi/ms9185/Kconfig"
 source "src/mainboard/msi/ms9282/Kconfig"
 source "src/mainboard/msi/ms9652_fam10/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "MSI"
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1462
+
+endif # VENDOR_MSI

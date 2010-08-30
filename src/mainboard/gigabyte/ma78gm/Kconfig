@@ -1,5 +1,7 @@
-config BOARD_GIGABYTE_MA78GM
-	bool "MA78GM-US2H"
+if BOARD_GIGABYTE_MA78GM
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_AM2R2
 	select NORTHBRIDGE_AMD_AMDFAM10
@@ -27,99 +29,81 @@ config BOARD_GIGABYTE_MA78GM
 config MAINBOARD_DIR
 	string
 	default gigabyte/ma78gm
-	depends on BOARD_GIGABYTE_MA78GM
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "GIGABYTE MA78GM"
-	depends on BOARD_GIGABYTE_MA78GM
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MAX_CPUS
 	int
 	default 8
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_GIGABYTE_MA78GM
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MEM_TRAIN_SEQ
 	int
 	default 2
-	depends on BOARD_GIGABYTE_MA78GM
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
-	depends on BOARD_GIGABYTE_MA78GM
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x1
-	depends on BOARD_GIGABYTE_MA78GM
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_GIGABYTE_MA78GM
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_GIGABYTE_MA78GM
 
 config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000095.h"
-	depends on BOARD_GIGABYTE_MA78GM
 
 config RAMTOP
 	hex
 	default 0x2000000
-	depends on BOARD_GIGABYTE_MA78GM
 
 config HEAP_SIZE
 	hex
 	default 0xc0000
-	depends on BOARD_GIGABYTE_MA78GM
 
 config ACPI_SSDTX_NUM
 	int
 	default 0
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x3060
-	depends on BOARD_GIGABYTE_MA78GM
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_GIGABYTE_MA78GM
 
 config RAMBASE
 	hex
 	default 0x200000
-	depends on BOARD_GIGABYTE_MA78GM
 
 config COMPRESS
 	hex
 	default 0
-	depends on BOARD_GIGABYTE_MA78GM
+
+endif # BOARD_GIGABYTE_MA78GM

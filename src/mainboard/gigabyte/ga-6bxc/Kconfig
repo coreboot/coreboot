@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_GIGABYTE_GA_6BXC
 
-config BOARD_GIGABYTE_GA_6BXC
-	bool "GA-6BXC"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -32,15 +33,13 @@ config BOARD_GIGABYTE_GA_6BXC
 config MAINBOARD_DIR
 	string
 	default gigabyte/ga-6bxc
-	depends on BOARD_GIGABYTE_GA_6BXC
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "GA-6BXC"
-	depends on BOARD_GIGABYTE_GA_6BXC
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
-	depends on BOARD_GIGABYTE_GA_6BXC
 
+endif # BOARD_GIGABYTE_GA_6BXC

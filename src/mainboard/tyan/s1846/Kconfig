@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_TYAN_S1846
 
-config BOARD_TYAN_S1846
-	bool "S1846 (Tsunami ATX)"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -31,10 +32,9 @@ config BOARD_TYAN_S1846
 config MAINBOARD_DIR
 	string
 	default tyan/s1846
-	depends on BOARD_TYAN_S1846
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "S1846"
-	depends on BOARD_TYAN_S1846
 
+endif # BOARD_TYAN_S1846

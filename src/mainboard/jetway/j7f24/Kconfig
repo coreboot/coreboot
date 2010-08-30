@@ -1,6 +1,8 @@
 # FIXME: There is no such board, "J7F24" is probably too generic and/or wrong.
-config BOARD_JETWAY_J7F24
-	bool "J7F24"
+if BOARD_JETWAY_J7F24
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
@@ -13,19 +15,17 @@ config BOARD_JETWAY_J7F24
 config MAINBOARD_DIR
 	string
 	default jetway/j7f24
-	depends on BOARD_JETWAY_J7F24
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "J7f24"
-	depends on BOARD_JETWAY_J7F24
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_JETWAY_J7F24
 
 config IRQ_SLOT_COUNT
 	int
 	default 10
-	depends on BOARD_JETWAY_J7F24
+
+endif # BOARD_JETWAY_J7F24

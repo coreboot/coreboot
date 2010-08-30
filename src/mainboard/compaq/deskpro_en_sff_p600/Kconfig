@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 
-config BOARD_COMPAQ_DESKPRO_EN_SFF_P600
-	bool "Deskpro EN SFF P600"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SLOT_1
 	select NORTHBRIDGE_INTEL_I440BX
@@ -33,15 +34,13 @@ config BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 config MAINBOARD_DIR
 	string
 	default compaq/deskpro_en_sff_p600
-	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Deskpro EN SFF P600"
-	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 
+endif # BOARD_COMPAQ_DESKPRO_EN_SFF_P600

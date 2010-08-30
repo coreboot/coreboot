@@ -20,8 +20,10 @@
 # FIXME: It's a PC87360 actually.
 # FIXME: It's an i810E actually!
 # FIXME: ROM chip size really 512KB?
-config BOARD_HP_E_VECTRA_P2706T
-	bool "e-Vectra P2706T"
+if BOARD_HP_E_VECTRA_P2706T
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -37,15 +39,13 @@ config BOARD_HP_E_VECTRA_P2706T
 config MAINBOARD_DIR
 	string
 	default hp/e_vectra_p2706t
-	depends on BOARD_HP_E_VECTRA_P2706T
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "e-Vectra P2706T"
-	depends on BOARD_HP_E_VECTRA_P2706T
 
 config IRQ_SLOT_COUNT
 	int
 	default 3
-	depends on BOARD_HP_E_VECTRA_P2706T
 
+endif # BOARD_HP_E_VECTRA_P2706T

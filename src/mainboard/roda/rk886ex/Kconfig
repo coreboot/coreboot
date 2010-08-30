@@ -1,5 +1,7 @@
-config BOARD_RODA_RK886EX
-	bool "RK886EX"
+if BOARD_RODA_RK886EX
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478
@@ -21,45 +23,37 @@ config BOARD_RODA_RK886EX
 config MAINBOARD_DIR
 	string
 	default roda/rk886ex
-	depends on BOARD_RODA_RK886EX
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000
-	depends on BOARD_RODA_RK886EX
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
-	depends on BOARD_RODA_RK886EX
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "RK886EX"
-	depends on BOARD_RODA_RK886EX
 
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
-	depends on BOARD_RODA_RK886EX
 
 config IRQ_SLOT_COUNT
 	int
 	default 18
-	depends on BOARD_RODA_RK886EX
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_RODA_RK886EX
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_RODA_RK886EX
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x6886
-	depends on BOARD_RODA_RK886EX
 
+endif # BOARD_RODA_RK886EX

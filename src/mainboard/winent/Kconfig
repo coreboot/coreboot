@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_WINENT
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_WINENT
 
-source "src/mainboard/winent/pl6064/Kconfig"
+config BOARD_WINENT_PL6064
+	bool "PL6064"
 
 endchoice
 
+source "src/mainboard/winent/pl6064/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Win Enterprise"
+
+endif # VENDOR_WINENT

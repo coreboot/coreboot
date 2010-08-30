@@ -1,8 +1,17 @@
+if VENDOR_LANNER
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_LANNER
 
-source "src/mainboard/lanner/em8510/Kconfig"
+config BOARD_LANNER_EM8510
+	bool "EM-8510"
 
 endchoice
 
+source "src/mainboard/lanner/em8510/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Lanner"
+
+endif # VENDOR_LANNER

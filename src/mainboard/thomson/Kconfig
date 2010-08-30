@@ -1,20 +1,17 @@
+if VENDOR_THOMSON
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_THOMSON
+
+config BOARD_THOMSON_IP1000
+	bool "IP1000"
+
+endchoice
 
 source "src/mainboard/thomson/ip1000/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "Thomson"
 
-choice
-	prompt "IP1000 Onboard Memory"
-	default ONBOARD_MEMORY_64MB
-	depends on BOARD_THOMSON_IP1000
-
-config ONBOARD_MEMORY_64MB
-	bool "IP1000-64MB"
-config ONBOARD_MEMORY_128MB
-	bool "IP1000T-128MB"
-
-endchoice
-
+endif # VENDOR_THOMSON

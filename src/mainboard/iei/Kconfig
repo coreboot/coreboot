@@ -16,14 +16,26 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_IEI
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_IEI
+
+config BOARD_IEI_JUKI_511P
+	bool "JUKI-511P"
+config BOARD_IEI_NOVA_4899R
+	bool "NOVA-4899R"
+config BOARD_IEI_PCISA_LX_800_R10
+	bool "PCISA LX-800-R10"
+
+endchoice
 
 source "src/mainboard/iei/juki-511p/Kconfig"
 source "src/mainboard/iei/nova4899r/Kconfig"
 source "src/mainboard/iei/pcisa-lx-800-r10/Kconfig"
 
-endchoice
+config MAINBOARD_VENDOR
+	string
+	default "IEI"
 
+endif # VENDOR_IEI

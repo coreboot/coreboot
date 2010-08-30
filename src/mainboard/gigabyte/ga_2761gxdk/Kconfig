@@ -1,5 +1,7 @@
-config BOARD_GIGABYTE_GA_2761GXDK
-	bool "GA-2761GXDK"
+if BOARD_GIGABYTE_GA_2761GXDK
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_AM2
 	select NORTHBRIDGE_AMD_AMDK8
@@ -18,94 +20,77 @@ config BOARD_GIGABYTE_GA_2761GXDK
 config MAINBOARD_DIR
 	string
 	default gigabyte/ga_2761gxdk
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MEM_TRAIN_SEQ
 	int
 	default 2
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "GA-2761GXDK"
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config PCI_64BIT_PREF_MEM
 	bool
-        default n
-	depends on BOARD_GIGABYTE_GA_2761GXDK
+	default n
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MAX_CPUS
 	int
 	default 2
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 1
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1039
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x1234
-	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+endif # BOARD_GIGABYTE_GA_2761GXDK

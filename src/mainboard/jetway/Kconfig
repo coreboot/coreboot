@@ -1,8 +1,20 @@
+if VENDOR_JETWAY
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_JETWAY
+
+config BOARD_JETWAY_J7F24
+	bool "J7F24"
+config BOARD_JETWAY_PA78VM5
+	bool "PA78VM5 (Fam10)"
+
+endchoice
 
 source "src/mainboard/jetway/j7f24/Kconfig"
 source "src/mainboard/jetway/pa78vm5/Kconfig"
-endchoice
 
+config MAINBOARD_VENDOR
+	string
+	default "Jetway"
+
+endif # VENDOR_JETWAY

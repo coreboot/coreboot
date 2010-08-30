@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_ABIT
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ABIT
 
-source "src/mainboard/abit/be6-ii_v2_0/Kconfig"
+config BOARD_ABIT_BE6_II_V2_0
+	bool "BE6-II V2.0"
 
 endchoice
 
+source "src/mainboard/abit/be6-ii_v2_0/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Abit"
+
+endif # VENDOR_ABIT

@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_EAGLELION_5BCM
 
-config BOARD_EAGLELION_5BCM
-	bool "5BCM"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -33,15 +34,13 @@ config BOARD_EAGLELION_5BCM
 config MAINBOARD_DIR
 	string
 	default eaglelion/5bcm
-	depends on BOARD_EAGLELION_5BCM
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "5BCM"
-	depends on BOARD_EAGLELION_5BCM
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
-	depends on BOARD_EAGLELION_5BCM
 
+endif # BOARD_EAGLELION_5BCM

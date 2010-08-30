@@ -1,8 +1,17 @@
+if VENDOR_NEWISYS
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_NEWISYS
 
-source "src/mainboard/newisys/khepri/Kconfig"
+config BOARD_NEWISYS_KHEPRI
+	bool "Khephri - 2100 Server (SUN Fire v20z)"
 
 endchoice
 
+source "src/mainboard/newisys/khepri/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Newisys"
+
+endif # VENDOR_NEWISYS

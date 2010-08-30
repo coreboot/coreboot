@@ -17,9 +17,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ECS_P6IWP_FE
 
-config BOARD_ECS_P6IWP_FE
-	bool "P6IWP-FE"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82810
@@ -35,15 +36,13 @@ config BOARD_ECS_P6IWP_FE
 config MAINBOARD_DIR
 	string
 	default ecs/p6iwp-fe
-	depends on BOARD_ECS_P6IWP_FE
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P6IWP-FE"
-	depends on BOARD_ECS_P6IWP_FE
 
 config IRQ_SLOT_COUNT
 	int
 	default 10
-	depends on BOARD_ECS_P6IWP_FE
 
+endif # BOARD_ECS_P6IWP_FE

@@ -1,5 +1,7 @@
-config BOARD_VIA_PC2500E
-	bool "pc2500e"
+if BOARD_VIA_PC2500E
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
@@ -15,40 +17,33 @@ config BOARD_VIA_PC2500E
 config MAINBOARD_DIR
 	string
 	default via/pc2500e
-	depends on BOARD_VIA_PC2500E
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "pc2500e"
-	depends on BOARD_VIA_PC2500E
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_VIA_PC2500E
 
 config IRQ_SLOT_COUNT
 	int
 	default 10
-	depends on BOARD_VIA_PC2500E
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1019
-	depends on BOARD_VIA_PC2500E
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0xaa51
-	depends on BOARD_VIA_PC2500E
 
 config FALLBACK_VGA_BIOS_FILE
 	string
 	default "M14CRT.ROM"
-	depends on BOARD_VIA_PC2500E
 
 config FALLBACK_VGA_BIOS_ID
 	string
 	default "1106,3344"
-	depends on BOARD_VIA_PC2500E
 
+endif # BOARD_VIA_PC2500E

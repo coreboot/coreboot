@@ -1,5 +1,7 @@
-config BOARD_AMD_SERENGETI_CHEETAH_FAM10
-	bool "Serengeti Cheetah (Fam10)"
+if BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F_1207
 	select NORTHBRIDGE_AMD_AMDFAM10
@@ -25,100 +27,82 @@ config BOARD_AMD_SERENGETI_CHEETAH_FAM10
 config MAINBOARD_DIR
 	string
 	default amd/serengeti_cheetah_fam10
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Serengeti Cheetah (Fam10)"
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 # 6 * MAX_PHYSICAL_CPUS
 config MAX_CPUS
 	int
 	default 48
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 8
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config MEM_TRAIN_SEQ
 	int
 	default 2
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x6
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0xa
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000095.h"
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config RAMTOP
 	hex
 	default 0x1000000
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HEAP_SIZE
 	hex
 	default 0xc0000
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config ACPI_SSDTX_NUM
 	int
 	default 5
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2b80
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config RAMBASE
 	hex
 	default 0x200000
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config ID_SECTION_OFFSET
 	hex
 	default 0x80
-	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+endif # BOARD_AMD_SERENGETI_CHEETAH_FAM10

@@ -1,8 +1,17 @@
+if VENDOR_ARIMA
+
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_ARIMA
 
-source "src/mainboard/arima/hdama/Kconfig"
+config BOARD_ARIMA_HDAMA
+	bool "HDAMA"
 
 endchoice
 
+source "src/mainboard/arima/hdama/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Arima"
+
+endif # VENDOR_ARIMA

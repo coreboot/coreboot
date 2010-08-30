@@ -16,9 +16,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if BOARD_ASI_MB_5BLMP
 
-config BOARD_ASI_MB_5BLMP
-	bool "MB-5BLMP"
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_GX1
 	select NORTHBRIDGE_AMD_GX1
@@ -33,15 +34,13 @@ config BOARD_ASI_MB_5BLMP
 config MAINBOARD_DIR
 	string
 	default asi/mb_5blmp
-	depends on BOARD_ASI_MB_5BLMP
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MB-5BLMP"
-	depends on BOARD_ASI_MB_5BLMP
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_ASI_MB_5BLMP
 
+endif # BOARD_ASI_MB_5BLMP

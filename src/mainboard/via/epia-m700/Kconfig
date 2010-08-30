@@ -1,5 +1,7 @@
-config BOARD_VIA_EPIA_M700
-	bool "EPIA-M700"
+if BOARD_VIA_EPIA_M700
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_VX800
@@ -12,19 +14,17 @@ config BOARD_VIA_EPIA_M700
 config MAINBOARD_DIR
 	string
 	default via/epia-m700
-	depends on BOARD_VIA_EPIA_M700
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-M700"
-	depends on BOARD_VIA_EPIA_M700
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_VIA_EPIA_M700
 
 config IRQ_SLOT_COUNT
 	int
 	default 13
-	depends on BOARD_VIA_EPIA_M700
+
+endif # BOARD_VIA_EPIA_M700

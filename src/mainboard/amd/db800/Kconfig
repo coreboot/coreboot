@@ -1,5 +1,7 @@
-config BOARD_AMD_DB800
-	bool "DB800 (Salsa)"
+if BOARD_AMD_DB800
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -14,19 +16,17 @@ config BOARD_AMD_DB800
 config MAINBOARD_DIR
 	string
 	default amd/db800
-	depends on BOARD_AMD_DB800
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "DB800"
-	depends on BOARD_AMD_DB800
 
 config IRQ_SLOT_COUNT
 	int
 	default 4
-	depends on BOARD_AMD_DB800
 
 config RAMBASE
 	hex
 	default 0x4000
-	depends on BOARD_AMD_DB800
+
+endif # BOARD_AMD_DB800

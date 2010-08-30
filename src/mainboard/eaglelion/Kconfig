@@ -16,12 +16,20 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+if VENDOR_EAGLELION
 
 choice
 	prompt "Mainboard model"
-	depends on VENDOR_EAGLELION
 
-source "src/mainboard/eaglelion/5bcm/Kconfig"
+config BOARD_EAGLELION_5BCM
+	bool "5BCM"
 
 endchoice
 
+source "src/mainboard/eaglelion/5bcm/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "EagleLion"
+
+endif # VENDOR_EAGLELION

@@ -1,5 +1,7 @@
-config BOARD_ARTECGROUP_DBE61
-	bool "DBE61"
+if BOARD_ARTECGROUP_DBE61
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -13,19 +15,17 @@ config BOARD_ARTECGROUP_DBE61
 config MAINBOARD_DIR
 	string
 	default artecgroup/dbe61
-	depends on BOARD_ARTECGROUP_DBE61
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "DBE61"
-	depends on BOARD_ARTECGROUP_DBE61
 
 config IRQ_SLOT_COUNT
 	int
 	default 3
-	depends on BOARD_ARTECGROUP_DBE61
 
 #config RAMBASE
 #	hex
 #	default 0x4000
-##	depends on BOARD_ARTECGROUP_DBE61
+
+endif # BOARD_ARTECGROUP_DBE61

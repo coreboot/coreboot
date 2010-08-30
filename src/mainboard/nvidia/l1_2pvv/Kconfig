@@ -1,5 +1,7 @@
-config BOARD_NVIDIA_L1_2PVV
-	bool "l1_2pvv"
+if BOARD_NVIDIA_L1_2PVV
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F
 	select NORTHBRIDGE_AMD_AMDK8
@@ -19,94 +21,77 @@ config BOARD_NVIDIA_L1_2PVV
 config MAINBOARD_DIR
 	string
 	default nvidia/l1_2pvv
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MEM_TRAIN_SEQ
 	int
 	default 1
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "l1_2pvv"
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config PCI_64BIT_PREF_MEM
 	bool
-        default n
-	depends on BOARD_NVIDIA_L1_2PVV
+	default n
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2b80
-	depends on BOARD_NVIDIA_L1_2PVV
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_NVIDIA_L1_2PVV
+
+endif # BOARD_NVIDIA_L1_2PVV

@@ -1,0 +1,38 @@
+config BOARD_LANNER_EM8510
+	bool "EM-8510"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA479M
+	select NORTHBRIDGE_INTEL_I855
+	select SOUTHBRIDGE_INTEL_I82801DX
+	select SUPERIO_WINBOND_W83627THF
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_HARD_RESET
+	select BOARD_ROMSIZE_KB_512
+	select USE_DCACHE_RAM
+	select TINY_BOOTBLOCK
+
+config MAINBOARD_DIR
+	string
+	default lanner/em8510
+	depends on BOARD_LANNER_EM8510
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EM-8510"
+	depends on BOARD_LANNER_EM8510
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_LANNER_EM8510
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_LANNER_EM8510
+
+config IRQ_SLOT_COUNT
+	int
+	default 10
+	depends on BOARD_LANNER_EM8510

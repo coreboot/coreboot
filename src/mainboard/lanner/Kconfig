@@ -1,0 +1,8 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_LANNER
+
+source "src/mainboard/lanner/em8510/Kconfig"
+
+endchoice
+

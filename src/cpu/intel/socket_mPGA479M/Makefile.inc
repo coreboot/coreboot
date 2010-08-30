@@ -1,6 +1,7 @@
 obj-y += socket_mPGA479M.o
 subdirs-y += ../model_69x
 subdirs-y += ../model_6dx
+subdirs-y += ../model_f2x
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic
@@ -9,3 +10,4 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 
+cpu_incs += $(src)/cpu/intel/car/cache_as_ram.inc

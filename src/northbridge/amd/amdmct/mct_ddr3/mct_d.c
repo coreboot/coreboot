@@ -2124,7 +2124,15 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 						pDCTstat->MirrPresU_NumRegR |= 1 << i;
 				}
 				/* Get byte62: Reference Raw Card information. We dont need it now. */
-				/* byte = mctRead_SPD(smbaddr, 62); */
+				/* byte = mctRead_SPD(smbaddr, SPD_RefRawCard); */
+				/* Get Byte65/66 for register manufacture ID code */
+				if ((0x97 == mctRead_SPD(smbaddr, SPD_RegManufactureID_H)) &&
+				    (0x80 == mctRead_SPD(smbaddr, SPD_RegManufactureID_L))) {
+					if (0x16 == mctRead_SPD(smbaddr, SPD_RegManRevID))
+						pDCTstat->RegMan2Present |= 1 << i;
+					else
+						pDCTstat->RegMan1Present |= 1 << i;
+				}
 				/* Get Control word values for RC3. We dont need it. */
 				byte = mctRead_SPD(smbaddr, 70);
 				pDCTstat->CtrlWrd3 |= (byte >> 4) << (i << 2); /* C3 = SPD byte 70 [7:4] */

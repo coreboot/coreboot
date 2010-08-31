@@ -18,13 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Based on chip.h from AMD's DB800 mainboard. */
-
-#include <stdint.h>
-
 extern struct chip_operations mainboard_ops;
 
-struct mainboard_config {
-	/* bit5 = Live LED, bit2 = RS485_EN2, bit1 = RS485_EN1 */
-	u8 sio_gp1x_config;
-};
+struct mainboard_config {};

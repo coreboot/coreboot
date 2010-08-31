@@ -41,7 +41,11 @@
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
 /* Bit0 enables Spread Spectrum, bit1 makes on-board SSD act as IDE slave. */
-#define SMC_CONFIG 0x01
+#if CONFIG_ONBOARD_IDE_SLAVE
+	#define SMC_CONFIG	0x03
+#else
+	#define SMC_CONFIG	0x01
+#endif
 
 #define ManualConf 1		/* No automatic strapped PLL config */
 #define PLLMSRhi 0x0000059C	/* Manual settings for the PLL */
@@ -201,4 +205,3 @@ void main(unsigned long bist)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
-

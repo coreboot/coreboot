@@ -29,6 +29,13 @@
 #include <device/pci_ids.h>
 #include "chip.h"
 
+/* Bit1 switches Com1 to RS485, bit2 same for Com2, bit5 turns off the Live LED. */
+#if CONFIG_ONBOARD_UARTS_RS485
+	#define SIO_GP1X_CONFIG 0x26
+#else
+	#define SIO_GP1X_CONFIG 0x20
+#endif
+
 static const u16 ec_init_table[] = {	/* hi=data, lo=index */
 	0x1900,		/* Enable monitoring */
 	0x0351,		/* TMPIN1,2 diode mode, TMPIN3 off */
@@ -40,7 +47,6 @@ static const u16 ec_init_table[] = {	/* hi=data, lo=index */
 
 static void init(struct device *dev)
 {
-	struct mainboard_config *mb = dev->chip_info;
 	unsigned int gpio_base, i;
 	printk(BIOS_DEBUG, "LiPPERT RoadRunner-LX ENTER %s\n", __func__);
 
@@ -61,7 +67,8 @@ static void init(struct device *dev)
 		outb(val >> 8, 0x0296);
 	}
 
-	outb(mb->sio_gp1x_config, 0x1220); /* Simple-I/O GP17-10 */
+	/* bit5 = Live LED, bit2 = RS485_EN2, bit1 = RS485_EN1 */
+	outb(SIO_GP1X_CONFIG, 0x1220); /* Simple-I/O GP17-10 */
 	printk(BIOS_DEBUG, "LiPPERT RoadRunner-LX EXIT %s\n", __func__);
 }
 

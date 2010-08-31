@@ -132,4 +132,3 @@ void main(unsigned long bist)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
-

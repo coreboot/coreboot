@@ -94,7 +94,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 		/* On-board ethernet (Left) */
 		{0x00, (0x09 << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
 
-		/* On-board ethernet (Middle) */
+		/* On-board ethernet (Middle, ALIX.2D3 only) */
 		{0x00, (0x0A << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
 
 		/* On-board ethernet (Right) */
@@ -102,6 +102,9 @@ const struct irq_routing_table intel_irq_routing_table = {
 
 		/* Mini PCI (slot 1) */
 		{0x00, (0x0C << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
+
+		/* Mini PCI (slot 2, ALIX.2D2 only) */
+		{0x00, (0x0E << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
 
 		/* Chipset slots -- f.3 wires to B, and f.4 and f.5 wires to D. */
 		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},

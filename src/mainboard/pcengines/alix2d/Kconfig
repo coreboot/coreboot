@@ -1,4 +1,4 @@
-if BOARD_PCENGINES_ALIX2D3
+if BOARD_PCENGINES_ALIX2D
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -14,18 +14,18 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default pcengines/alix2d3
+	default pcengines/alix2d
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ALIX.2D3"
+	default "ALIX.2D"
 
 config IRQ_SLOT_COUNT
 	int
-	default 6
+	default 7
 
 config RAMBASE
 	hex
 	default 0x4000
 
-endif # BOARD_PCENGINES_ALIX2D3
+endif # BOARD_PCENGINES_ALIX2D

@@ -35,7 +35,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-/* The ALIX.2D3 has no SMBus; the setup is hard-wired. */
+/* The ALIX.2D has no SMBus; the setup is hard-wired. */
 static void cs5536_enable_smbus(void)
 {
 }

@@ -23,8 +23,8 @@
 
 static void init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "ALIX.2D3 ENTER %s\n", __func__);
-	printk(BIOS_DEBUG, "ALIX.2D3 EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "ALIX.2D ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "ALIX.2D EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)
@@ -33,7 +33,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("PC Engines ALIX.2D3 Mainboard")
+	CHIP_NAME("PC Engines ALIX.2D Mainboard")
 	.enable_dev = enable_dev,
 };
 

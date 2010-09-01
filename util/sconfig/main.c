@@ -446,7 +446,7 @@ int main(int argc, char** argv) {
 	}
 	fprintf(staticc, "\n/* pass 0 */\n");
 	walk_device_tree(staticc, &root, pass0, NULL);
-	fprintf(staticc, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\nstruct device **last_dev_p = &%s.next;\n", lastdev->name);
+	fprintf(staticc, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\nstruct device *last_dev = &%s;\n", lastdev->name);
 	walk_device_tree(staticc, &root, pass1, NULL);
 
 	fclose(staticc);

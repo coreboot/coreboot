@@ -42,7 +42,7 @@
 /** Linked list of ALL devices */
 struct device *all_devices = &dev_root;
 /** Pointer to the last device */
-extern struct device **last_dev_p;
+extern struct device *last_dev;
 /** Linked list of free resources */
 struct resource *free_resources = NULL;
 
@@ -95,8 +95,8 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	/* Append a new device to the global device list.
 	 * The list is used to find devices once everything is set up.
 	 */
-	*last_dev_p = dev;
-	last_dev_p = &dev->next;
+	last_dev->next = dev;
+	last_dev = dev;
 
 	spin_unlock(&dev_lock);
 	return dev;

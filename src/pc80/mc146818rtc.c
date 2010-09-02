@@ -2,9 +2,6 @@
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
 #include <string.h>
-#if CONFIG_USE_OPTION_TABLE
-#include <option_table.h>
-#endif
 
 /* control registers - Moto names
  */

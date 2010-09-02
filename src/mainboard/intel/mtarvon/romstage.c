@@ -33,7 +33,6 @@
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "northbridge/intel/i3100/raminit.h"
 #include "superio/intel/i3100/i3100.h"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/i3100_early_serial.c"
 #include "northbridge/intel/i3100/memory_initialized.c"
@@ -52,10 +51,11 @@ static inline int spd_read_byte(u16 device, u8 address)
 
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"
-#include "../jarrell/debug.c"
+#if 0 /* skip_romstage doesn't compile with gcc */
 #include "arch/i386/lib/stages.c"
+#endif
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	msr_t msr;
 	u16 perf;
@@ -72,11 +72,12 @@ static void main(unsigned long bist)
 	};
 
 	if (bist == 0) {
+#if 0 /* skip_romstage doesn't compile with gcc */
 		/* Skip this if there was a built in self test failure */
-		early_mtrr_init();
 		if (memory_initialized()) {
 			skip_romstage();
 		}
+#endif
 	}
 	/* Set up the console */
 	i3100_enable_superio();

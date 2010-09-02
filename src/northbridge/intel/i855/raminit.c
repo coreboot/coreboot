@@ -872,10 +872,14 @@ static void spd_set_dram_throttle_control(const struct mem_controller *ctrl)
 
 static void spd_update(const struct mem_controller *ctrl, u8 reg, u32 new_value)
 {
+#if CONFIG_DEBUG_RAM_SETUP
 	u32 value1 = pci_read_config32(ctrl->d0, reg);
+#endif
 	pci_write_config32(ctrl->d0, reg, new_value);
+#if CONFIG_DEBUG_RAM_SETUP
 	u32 value2 = pci_read_config32(ctrl->d0, reg);
 	PRINTK_DEBUG("update reg %02x, old: %08x, new: %08x, read back: %08x\n", reg, value1, new_value, value2);
+#endif
 }	
 
 /* if ram still doesn't work do this function */

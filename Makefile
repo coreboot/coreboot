@@ -330,6 +330,9 @@ $(obj)/build.h: .xcompile
 	printf "#endif\n" >> $(obj)/build.ht
 	mv $(obj)/build.ht $(obj)/build.h
 
+cscope:
+	cscope -bR
+
 doxy: doxygen
 doxygen:
 	$(DOXYGEN) documentation/Doxyfile.coreboot
@@ -354,7 +357,10 @@ clean-for-update: doxygen-clean
 clean: clean-for-update
 	rm -f $(obj)/coreboot* .ccwrap
 
-distclean:
+clean-cscope:
+	rm -f cscope.out
+
+distclean: clean-cscope
 	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
@@ -383,5 +389,5 @@ $(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c
 	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
-.PHONY: $(PHONY) clean distclean doxygen doxy coreboot .xcompile
+.PHONY: $(PHONY) clean clean-cscope cscope distclean doxygen doxy coreboot .xcompile
 

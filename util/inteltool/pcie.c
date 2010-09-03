@@ -114,6 +114,9 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82810E_MC:
 		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
+	case PCI_DEVICE_ID_INTEL_X58:
+		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000;
+		break;
 	default:
 		printf("Error: Dumping DMIBAR on this northbridge is not (yet) supported.\n");
 		return 1;

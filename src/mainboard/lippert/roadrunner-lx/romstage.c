@@ -63,16 +63,15 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 
 static const u16 sio_init_table[] = {	// hi=data, lo=index
 	0x0707,		// select LDN 7 (GPIO, SPI, watchdog, ...)
-	0x1E2C,		// disable ATXPowerGood - will cause a reboot!
-	0x0423,		// don't delay POWerOK1/2
-	0x9072,		// watchdog triggers POWOK, counts seconds
+	0x1E2C,		// disable ATXPG; VIN6,FAN4/5,VIN3 enabled, VIN7 internal
+	0x1423,		// don't delay PoWeROK1/2 - triggers 2nd reset
+	0x9072,		// watchdog triggers PWROK, counts seconds
 #if !CONFIG_USE_WATCHDOG_ON_BOOT
-	0x0073, 0x0074,	// disable watchdog by setting timeout to 0
+	0x0073, 0x0074,	// disarm watchdog by changing 56 s timeout to 0
 #endif
 	0xBF25, 0x372A, 0xF326, // select GPIO function for most pins
 	0xBF27, 0xFF28, 0x2529, // (GP36=FAN_CTL3, GP13=PWROK1)
-	0x1E2C,		// VIN6=enabled?, FAN4/5 enabled, VIN7=internal, VIN3=enabled
-	0x46B8, 0x0CB9,	// enable pullups
+	0x46B8, 0x0CB9,	// enable pullups on RS485_EN
 	0x36C0,		// enable Simple-I/O for GP15,14,12,11= LIVE_LED, WD_ACTIVE, RS485_EN2,1
 	0xFFC3,		// enable Simple-I/O for GP47-40 (GPIOs on Supervisory Connector)
 	0x26C8,		// config GP15,12,11 as output; GP14 as input

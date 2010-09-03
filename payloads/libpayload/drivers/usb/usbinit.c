@@ -126,7 +126,7 @@ usb_initialize (void)
 	 */
 	for (bus = 0; bus < 256; bus++)
 		for (dev = 0; dev < 32; dev++)
-			if (pci_read_config32 (PCI_DEV(bus, dev, 0), 8) >> 16 == 0x0c03)
+			if (pci_read_config32 (PCI_DEV(bus, dev, 0), 8) >> 16 != 0xffff)
 				for (func = 7; func >= 0 ; func--)
 					usb_controller_initialize (bus, dev, func);
 	usb_poll();

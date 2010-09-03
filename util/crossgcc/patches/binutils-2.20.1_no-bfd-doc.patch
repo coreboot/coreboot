@@ -1,0 +1,11 @@
+--- binutils-2.20.1/bfd/Makefile.in~	2010-07-25 10:56:45 +0000
++++ binutils-2.20.1/bfd/Makefile.in	2010-07-25 10:19:24 +0000
+@@ -320,7 +320,7 @@
+ # RELEASE=y
+ INCDIR = $(srcdir)/../include
+ CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
+-SUBDIRS = doc po
++SUBDIRS = po
+ bfddocdir = doc
+ libbfd_la_LDFLAGS = $(am__append_1) -release `cat libtool-soversion` \
+ 	@SHARED_LDFLAGS@ $(am__empty)

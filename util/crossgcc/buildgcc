@@ -372,9 +372,6 @@ if [ -f build-binutils/.success ]; then
 else
 printf "Building binutils ${BINUTILS_VERSION} ... "
 (
-	# workaround for building binutils 2.20.1 on MINGW:
- 	touch binutils-${BINUTILS_VERSION}/bfd/doc/bfd.info
-	# now build binutils
 	cd build-binutils
 	rm -f .failed
 	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
@@ -394,6 +391,7 @@ else
 printf "Building GCC ${GCC_VERSION} ... "
 (
 	cd build-gcc
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files. This is pretty misdesigned.
@@ -423,7 +421,7 @@ else
 printf "Building GDB ${GDB_VERSION} ... "
 (
 	cd build-gdb
-	export PATH=$PATH:$PREFIX/bin
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS" ../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
 		--without-python --disable-werror --disable-nls

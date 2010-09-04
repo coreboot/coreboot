@@ -3461,9 +3461,10 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 		i = 0; /* use i for the dct setting required */
 		if (pDCTstat->MAdimms[0] < 4)
 			i = 1;
-		if (((pDCTstat->Speed == 2) || (pDCTstat->Speed == 3)) && (pDCTstat->MAdimms[i] == 4))
+		if (((pDCTstat->Speed == 2) || (pDCTstat->Speed == 3)) && (pDCTstat->MAdimms[i] == 4)) {
 			dword &= 0xF18FFF18;
 			index_reg = 0x98;	/* force dct = 0 */
+		}
 	}
 
 	Set_NB32_index_wait(dev, index_reg, 0x0a, dword);

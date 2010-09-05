@@ -1295,6 +1295,7 @@ static void GetPresetmaxF_D(struct MCTStatStruc *pMCTstat,
 	 * Specific information.  Return the least of these three in
 	 * DCTStatStruc.PresetmaxFreq.
 	 */
+	/* TODO: Set the proper max frequency in wrappers/mcti_d.c. */
 	u16 proposedFreq;
 	u16 word;
 

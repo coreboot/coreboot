@@ -99,7 +99,8 @@ int int1a_handler(struct eregs *regs)
 		}
 		if (dev) {
 			unsigned short busdevfn;
-			regs->eax = 0;
+			regs->eax &= 0xffff00ff; /* Clear AH */
+			regs->eax |= PCIBIOS_SUCCESSFUL;
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off.
 			busdevfn = (dev->bus->secondary << 8)
@@ -108,7 +109,8 @@ int int1a_handler(struct eregs *regs)
 			regs->ebx = busdevfn;
 			retval = 0;
 		} else {
-			regs->eax = PCIBIOS_NODEV;
+			regs->eax &= 0xffff00ff; /* Clear AH */
+			regs->eax |= PCIBIOS_NODEV;
 			retval = -1;
 		}
 		break;
@@ -125,7 +127,8 @@ int int1a_handler(struct eregs *regs)
 		if (!dev) {
 			printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n", func, bus, devfn);
 			// Or are we supposed to return PCIBIOS_NODEV?
-			regs->eax = PCIBIOS_BADREG;
+			regs->eax &= 0xffff00ff; /* Clear AH */
+			regs->eax |= PCIBIOS_BADREG;
 			retval = -1;
 			return retval;
 		}
@@ -160,11 +163,14 @@ int int1a_handler(struct eregs *regs)
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%x\n",
 			     func, bus, devfn, reg, regs->ecx);
 #endif
-		regs->eax = 0;
+		regs->eax &= 0xffff00ff; /* Clear AH */
+		regs->eax |= PCIBIOS_SUCCESSFUL;
 		retval = 0;
 		break;
 	default:
 		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
+		regs->eax &= 0xffff00ff; /* Clear AH */
+		regs->eax |= PCIBIOS_UNSUPPORTED;
 		retval = -1;
 		break;
 	}

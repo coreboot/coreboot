@@ -18,8 +18,8 @@ static unsigned long clocks_per_usec;
  * device.
  */
 
-#define CALIBRATE_INTERVAL ((20*CLOCK_TICK_RATE)/1000) /* 20ms */
-#define CALIBRATE_DIVISOR  (20*1000) /* 20ms / 20000 == 1usec */
+#define CALIBRATE_INTERVAL ((2*CLOCK_TICK_RATE)/1000) /* 2ms */
+#define CALIBRATE_DIVISOR  (2*1000) /* 2ms / 2000 == 1usec */
 
 static unsigned long long calibrate_tsc(void)
 {

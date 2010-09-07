@@ -329,6 +329,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	cs = cs_ip >> 16;
 	flags = stackflags;
 
+#if CONFIG_REALMODE_DEBUG
 	printk(BIOS_DEBUG, "oprom: INT# 0x%x\n", intnumber);
 	printk(BIOS_DEBUG, "oprom: eax: %08x ebx: %08x ecx: %08x edx: %08x\n",
 		      eax, ebx, ecx, edx);
@@ -336,6 +337,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 		     ebp, esp, edi, esi);
 	printk(BIOS_DEBUG, "oprom:  ip: %04x      cs: %04x   flags: %08x\n",
 		     ip, cs, flags);
+#endif
 
 	// Fetch arguments from the stack and put them into
 	// a structure that we want to pass on to our sub interrupt

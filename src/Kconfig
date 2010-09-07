@@ -543,6 +543,17 @@ config DEBUG_SMM_RELOCATION
 
 	  If unsure, say N.
 
+config REALMODE_DEBUG
+	bool "Enable debug messages for option ROM execution"
+	default n
+	depends on PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  This option enables additional x86emu related debug messages.
+
+	  Note: This option will increase the time to emulate a ROM.
+
+	  If unsure, say N.
+
 config X86EMU_DEBUG
 	bool "Output verbose x86emu debug messages"
 	default n

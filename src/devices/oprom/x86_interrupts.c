@@ -156,8 +156,10 @@ int int1a_handler(struct eregs *regs)
 			break;
 		}
 
+#if CONFIG_REALMODE_DEBUG
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%x\n",
 			     func, bus, devfn, reg, regs->ecx);
+#endif
 		regs->eax = 0;
 		retval = 0;
 		break;

@@ -26,11 +26,9 @@
 
 static void ide_init(struct device *dev)
 {
-	struct southbridge_amd_sb600_config *conf;
 	/* Enable ide devices so the linux ide driver will work */
 	u32 dword;
 	u8 byte;
-	conf = dev->chip_info;
 
 	/* RPR10.1 disable MSI */
 	dword = pci_read_config32(dev, 0x70);

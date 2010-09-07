@@ -110,8 +110,6 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 14.4 on end # PCI 0x4384
 					device pci 14.5 on end # ACI 0x4382
 					device pci 14.6 on end # MCI 0x438e
-					register "ide0_enable" = "1"
-					register "sata0_enable" = "1"
 					register "hda_viddid" = "0x10ec0888"
 				end	#southbridge/amd/sb600
 			end #  device pci 18.0

@@ -22,8 +22,6 @@
 
 struct southbridge_amd_sb600_config
 {
-	u32 ide0_enable : 1;
-	u32 sata0_enable : 1;
 	u32 hda_viddid;
 };
 struct chip_operations;

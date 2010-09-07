@@ -39,6 +39,19 @@ static const msrinit_t msr_table[] =
 	{MSR_GLIU1_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
 	{MSR_GLIU1_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
 	{MSR_GLIU1_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
+
+	/* Pre-setup access to memory above 1Mb. Here we set up about 500Mb of memory.
+	 * It doesn't really matter in fact how much, however, because the only usage
+	 * of this extended memory will be to host the coreboot_ram stage at RAMBASE,
+	 * currently 1Mb.
+	 * These registers will be set to their correct value by the Northbridge init code.
+	 * 
+	 * WARNING: if coreboot_ram could not be loaded, these registers are probably
+	 * incorrectly set here. You may comment the following two lines and set RAMBASE
+	 * to 0x4000 to revert to the previous behavior for LX-boards.
+	 */
+	{MSR_GLIU0_SYSMEM,  {.hi = 0x2000001F,.lo = 0x6BF00100}}, // 0x100000-0x1F6BF000
+	{MSR_GLIU1_SYSMEM,  {.hi = 0x2000001F,.lo = 0x6BF00100}}, // 0x100000-0x1F6BF000
 };
 
 static void msr_init(void)

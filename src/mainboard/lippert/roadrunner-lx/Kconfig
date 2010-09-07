@@ -27,10 +27,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 7
 
-config RAMBASE
-	hex
-	default 0x4000
-
 config ONBOARD_UARTS_RS485
 	bool "Switch on-board serial ports to RS485"
 	default n

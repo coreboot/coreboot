@@ -24,8 +24,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 6
 
-config RAMBASE
-	hex
-	default 0x4000
-
 endif # BOARD_TRAVERSE_GEOS

@@ -89,14 +89,15 @@ size_t strlen(const char *str)
  */
 int strcasecmp(const char *s1, const char *s2)
 {
-	int i;
+	int i, res;
 
-	for (i = 0; s1[i] != '\0'; i++) {
-		if (tolower(s1[i]) != tolower(s2[i]))
-			return s1[i] - s2[i];
+	for (i = 0; 1; i++) {
+		res = tolower(s1[i]) - tolower(s2[i]);
+		if (res || (s1[i] == '\0'))
+			break;
 	}
 
-	return 0;
+	return res;
 }
 
 /**
@@ -109,14 +110,16 @@ int strcasecmp(const char *s1, const char *s2)
  */
 int strncasecmp(const char *s1, const char *s2, size_t maxlen)
 {
-	int i;
+	int i, res;
 
+	res = 0;
 	for (i = 0; i < maxlen; i++) {
-		if (tolower(s1[i]) != tolower(s2[i]))
-			return s1[i] - s2[i];
+		res = tolower(s1[i]) - tolower(s2[i]);
+		if (res || (s1[i] == '\0'))
+			break;
 	}
 
-	return s1[i] - s2[i];
+	return res;
 }
 
 /**
@@ -130,14 +133,15 @@ int strncasecmp(const char *s1, const char *s2, size_t maxlen)
  */
 int strcmp(const char *s1, const char *s2)
 {
-	int i;
+	int i, res;
 
-	for (i = 0; s1[i] != '\0'; i++) {
-		if (s1[i] != s2[i])
-			return s1[i] - s2[i];
+	for (i = 0; 1; i++) {
+		res = s1[i] - s2[i];
+		if (res || (s1[i] == '\0'))
+			break;
 	}
 
-	return s1[i] - s2[i];
+	return res;
 }
 
 /**
@@ -150,14 +154,16 @@ int strcmp(const char *s1, const char *s2)
  */
 int strncmp(const char *s1, const char *s2, size_t maxlen)
 {
-	int i;
+	int i, res;
 
+	res = 0;
 	for (i = 0; i < maxlen; i++) {
-		if (s1[i] != s2[i])
-			return s1[i] - s2[i];
+		res = s1[i] - s2[i];
+		if (res || (s1[i] == '\0'))
+			break;
 	}
 
-	return 0;
+	return res;
 }
 
 /**

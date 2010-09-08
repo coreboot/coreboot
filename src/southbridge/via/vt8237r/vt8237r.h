@@ -47,6 +47,7 @@
 #define IDE_UDMA			0x50
 
 /* SMBus */
+#define VT8237R_PSON			0x82
 #define VT8237R_POWER_WELL		0x94
 #define VT8237R_SMBUS_IO_BASE_REG	0xd0
 #define VT8237R_SMBUS_HOST_CONF		0xd2

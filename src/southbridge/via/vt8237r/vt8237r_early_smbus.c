@@ -132,12 +132,15 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 	return val;
 }
 
+#define PSONREADY_TIMEOUT 0x7fffffff
+
 /**
  * Enable the SMBus on VT8237R-based systems.
  */
 void enable_smbus(void)
 {
 	device_t dev;
+	int loops;
 
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
@@ -149,6 +152,12 @@ void enable_smbus(void)
 		if (dev == PCI_DEV_INVALID)
 			die("Power management controller not found\n");
 	}
+
+	/* Make sure the RTC power well is up before touching smbus. */
+	loops = 0;
+	while (!(pci_read_config8(dev, VT8237R_PSON) & (1<<6))
+	       && loops < PSONREADY_TIMEOUT)
+		++loops;
 
 	/*
 	 * 7 = SMBus Clock from RTC 32.768KHz

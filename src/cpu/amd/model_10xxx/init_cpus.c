@@ -877,7 +877,7 @@ static void cpuSetAMDPCI(u8 node)
 			/* HT Phy settings either apply to both sublinks or have
 			 * separate registers for sublink zero and one, so there
 			 * will be two table entries. So, here we only loop
-			 cd t   * through the sublink zeros in function zero.
+			 * through the sublink zeros in function zero.
 			 */
 			for (j = 0; j < 4; j++) {
 				if (AMD_CpuFindCapability(node, j, &offset)) {

@@ -19,12 +19,5 @@
 
 config SOUTHBRIDGE_AMD_CS5536
 	bool
-	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
-
-config UDELAY_TSC
-	bool
-	default y
-	depends on SOUTHBRIDGE_AMD_CS5536
-
-
+	select UDELAY_TSC
 

@@ -7,7 +7,7 @@
 
 static unsigned long clocks_per_usec;
 
-#if (CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 == 1)
+#if !CONFIG_TSC_CALIBRATE_WITH_IO
 #define CLOCK_TICK_RATE	1193180U /* Underlying HZ */
 
 /* ------ Calibrate the TSC -------
@@ -82,7 +82,7 @@ bad_ctc:
 	return 0;
 }
 
-#else /*  CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 */
+#else /*  CONFIG_TSC_CALIBRATE_WITH_IO */
 
 /*
  * this is the "no timer2" version.

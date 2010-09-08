@@ -19,7 +19,7 @@ config UDELAY_TSC
 	bool
 	default n
 
-config TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+config TSC_CALIBRATE_WITH_IO
 	bool
 	default n
 

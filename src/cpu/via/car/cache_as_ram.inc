@@ -139,10 +139,12 @@ clear_fixed_var_mtrr_out:
 	xorl	$0x5c5c5c5c,%eax
 	rep	stosl
 
+#ifdef CARTEST
 	movl	REAL_XIP_ROM_BASE, %esi
 	movl	%esi, %edi
 	movl	$(CONFIG_XIP_ROM_SIZE>>2), %ecx
 	rep	lodsl
+#endif
 
 	/* The key point of this CAR code is C7 cache does not turn into
 	 * "no fill" mode, which is not compatible with general CAR code.

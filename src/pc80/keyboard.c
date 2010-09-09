@@ -244,7 +244,7 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	outb(0x60, KBD_COMMAND);
 	if (!kbc_input_buffer_empty()) return;
 	outb(0x61, KBD_DATA);	/* send cmd: enable keyboard and IRQ 1 */
-	if (kbc_output_buffer_full()) {
+	if (!kbc_input_buffer_empty()) {
 		printk(BIOS_ERR, "Timeout during final keyboard enable\n");
 		return;
 	}

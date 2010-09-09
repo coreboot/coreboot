@@ -92,8 +92,8 @@ static int intXX_exception_handler(struct eregs *regs)
 
 static int intXX_unknown_handler(struct eregs *regs)
 {
-	printk(BIOS_INFO, "Unsupported software interrupt #0x%x\n",
-			regs->vector);
+	printk(BIOS_INFO, "Unsupported software interrupt #0x%x eax 0x%x\n",
+			regs->vector, regs->eax);
 
 	return -1;
 }
@@ -102,6 +102,75 @@ static int intXX_unknown_handler(struct eregs *regs)
 void mainboard_interrupt_handlers(int intXX, void *intXX_func)
 {
 	intXX_handler[intXX] = intXX_func;
+}
+
+static int int10_handler(struct eregs *regs)
+{
+	int res=-1;
+	static u8 cursor_row=0, cursor_col=0;
+	switch((regs->eax & 0xff00)>>8) {
+	case 0x01: // Set cursor shape
+		res = 0;
+		break;
+	case 0x02: // Set cursor position
+		if (cursor_row != ((regs->edx >> 8) & 0xff) ||
+		    cursor_col >= (regs->edx & 0xff)) {
+			printk(BIOS_INFO, "\n");
+		}
+		cursor_row = (regs->edx >> 8) & 0xff;
+		cursor_col = regs->edx & 0xff;
+		res = 0;
+		break;
+	case 0x03: // Get cursor position
+		regs->eax &= 0x00ff;
+		regs->ecx = 0x0607;
+		regs->edx = (cursor_row << 8) | cursor_col;
+		res = 0;
+		break;
+	case 0x06: // Scroll up
+		printk(BIOS_INFO, "\n");
+		res = 0;
+		break;
+	case 0x08: // Get Character and Mode at Cursor Position
+		regs->eax = 0x0f00 | 'A'; // White on black 'A'
+		res = 0;
+		break;
+	case 0x09: // Write Character and attribute
+	case 0x10: // Write Character
+		printk(BIOS_INFO, "%c", regs->eax & 0xff);
+		res = 0;
+		break;
+	case 0x0f: // Get video mode
+		regs->eax = 0x5002; //80x25
+		regs->ebx &= 0x00ff;
+		res = 0;
+		break;
+        default:
+		printk(BIOS_WARNING, "Unknown INT10 function %04x!\n",
+				regs->eax & 0xffff);
+		break;
+	}
+	return res;
+}
+
+static int int16_handler(struct eregs *regs)
+{
+	int res=-1;
+	switch((regs->eax & 0xff00)>>8) {
+	case 0x00: // Check for Keystroke
+		regs->eax = 0x6120; // Space Bar, Space
+		res = 0;
+		break;
+	case 0x01: // Check for Keystroke
+		regs->eflags |= 1<<6; // Zero Flag set (no key available)
+		res = 0;
+		break;
+        default:
+		printk(BIOS_WARNING, "Unknown INT16 function %04x!\n",
+				regs->eax & 0xffff);
+		break;
+	}
+	return res;
 }
 
 int int12_handler(struct eregs *regs);
@@ -131,11 +200,17 @@ static void setup_interrupt_handlers(void)
 			 * interrupt handlers, such as the int15
 			 */
 			switch (i) {
+			case 0x10:
+				intXX_handler[0x10] = &int10_handler;
+				break;
 			case 0x12:
 				intXX_handler[0x12] = &int12_handler;
 				break;
 			case 0x15:
 				intXX_handler[0x15] = &int15_handler;
+				break;
+			case 0x16:
+				intXX_handler[0x16] = &int16_handler;
 				break;
 			case 0x1a:
 				intXX_handler[0x1a] = &int1a_handler;

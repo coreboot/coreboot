@@ -3189,7 +3189,7 @@ static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 	print_t("\tmct_FinalMCT_D: Clr Cl, Wb\n");
 
 
-	/* ClrClToNB_D postponed til we're done executing from ROM */
+	/* ClrClToNB_D postponed until we're done executing from ROM */
 	mct_ClrWbEnhWsbDis_D(pMCTstat, pDCTstat);
 }
 

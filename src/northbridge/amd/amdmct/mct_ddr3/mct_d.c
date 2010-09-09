@@ -2873,7 +2873,7 @@ static u16 Get_WrDatGross_MaxMin(struct DCTStatStruc *pDCTstat,
 static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
-	mct_ClrClToNB_D(pMCTstat, pDCTstat);
+	/* ClrClToNB_D postponed until we're done executing from ROM */
 	mct_ClrWbEnhWsbDis_D(pMCTstat, pDCTstat);
 }
 

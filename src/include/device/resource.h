@@ -20,6 +20,7 @@
 						 * to the bus below.
 						 */
 #define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
+#define IORESOURCE_RESERVE	0x10000000	/* The resource needs to be reserved in the Coreboot table */
 #define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */
 #define IORESOURCE_ASSIGNED	0x40000000	/* An IO resource that has been assigned a value */
 #define IORESOURCE_FIXED	0x80000000	/* An IO resource the allocator must not change */

@@ -488,6 +488,20 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
+static void lb_add_rsvd_range(void *gp, struct device *dev, struct resource *res)
+{
+	struct lb_memory *mem = gp;
+	lb_add_memory_range(mem, LB_MEM_RESERVED, res->base, res->size);
+}
+
+static void add_lb_reserved(struct lb_memory *mem)
+{
+	/* Add reserved ranges */
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_RESERVE, IORESOURCE_MEM | IORESOURCE_RESERVE,
+		lb_add_rsvd_range, mem);
+}
+
 #if CONFIG_WRITE_HIGH_TABLES == 1
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -561,6 +575,9 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		high_tables_base, high_tables_size);
 #endif
+
+	/* Add reserved regions */
+	add_lb_reserved(mem);
 
 #if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
 	add_mainboard_resources(mem);

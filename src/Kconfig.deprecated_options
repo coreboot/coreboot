@@ -31,3 +31,18 @@ config HAVE_BUS_CONFIG
 	help
 	  This variable specifies whether a given board has a get_bus_conf.c
 	  file containing information about bus routing.
+
+# Will be removed (alongside with the PS2 init code) once payloads
+# reliably support PS2 init themselves.
+config DRIVERS_PS2_KEYBOARD
+	bool "PS2 Keyboard init"
+	default y
+	help
+	  Enable this option to initialize PS2 keyboards found connected
+	  to the PS2 port.  Some payloads (eg, filo) require this
+	  option.  Other payloads (eg, SeaBIOS, Linux) do not require
+	  it.  Initializing a PS2 keyboard can take several hundred
+	  milliseconds.
+	  If you know you will only use a payload which does not require
+	  this option, then you can say "n" here to speed up boot time.
+	  Otherwise say "y".

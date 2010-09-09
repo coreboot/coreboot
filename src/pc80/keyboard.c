@@ -162,6 +162,8 @@ static u8 send_keyboard(u8 command)
 void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	u8 regval;
+	if (!CONFIG_DRIVERS_PS2_KEYBOARD)
+		return;
 	printk(BIOS_DEBUG, "Keyboard init...\n");
 
 	/* Run a keyboard controller self-test */

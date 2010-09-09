@@ -1970,7 +1970,7 @@ static void StitchMemory_D(struct MCTStatStruc *pMCTstat,
 				reg  = 0x40 + (q << 2) + reg_off;  /* Base[q] reg.*/
 				val = Get_NB32(dev, reg);
 				if (!(val & 3)) {	/* (CSEnable|Spare==1)bank is enabled already? */
-					reg = 0x60 + (q << 1) + reg_off; /*Mask[q] reg.*/
+					reg = 0x60 + ((q << 1) & 0xc) + reg_off; /*Mask[q] reg.*/
 					val = Get_NB32(dev, reg);
 					val >>= 19;
 					val++;

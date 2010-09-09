@@ -57,32 +57,28 @@ static void set_EnableCf8ExtCfg(void)
 static void set_EnableCf8ExtCfg(void) { }
 #endif
 
-/*[39:8] */
-#define PCI_MMIO_BASE 0xfe000000
-/* because we will use gs to store hi, so need to make sure lo can start
-   from 0, So PCI_MMIO_BASE & 0x00ffffff should be equal to 0*/
+
+#define _ULLx(x) x ## ULL
+#define _ULL(x) _ULLx(x)
+
+/*[63:0] */
+#define PCI_MMIO_BASE _ULL(CONFIG_MMCONF_BASE_ADDRESS)
 
 static void set_pci_mmio_conf_reg(void)
 {
 #if CONFIG_MMCONF_SUPPORT
+#  if PCI_MMIO_BASE > 0xffffffff
+#    error CONFIG_MMCONF_BASE_ADDRESS must currently fit in 32 bits!
+#  endif
 	msr_t msr;
 	msr = rdmsr(0xc0010058);
 	msr.lo &= ~(0xfff00000 | (0xf << 2));
-	// 256 bus per segment, MMIO reg will be 4G , enable MMIO Config space
-	msr.lo |= ((8 + CONFIG_PCI_BUS_SEGN_BITS) << 2) | (1 << 0);
+	// 256 buses, one segment. Total 256M address space.
+	msr.lo |= (PCI_MMIO_BASE & 0xfff00000) | (8 << 2) | (1 << 0);
 	msr.hi &= ~(0x0000ffff);
-	msr.hi |= (PCI_MMIO_BASE >> (32 - 8));
-	wrmsr(0xc0010058, msr);	// MMIO Config Base Address Reg
+	msr.hi |= (PCI_MMIO_BASE >> (32));
 
-	//mtrr for that range?
-	// set_var_mtrr_x(7, PCI_MMIO_BASE<<8, PCI_MMIO_BASE>>(32-8), 0x00000000, 0x01, MTRR_TYPE_UNCACHEABLE);
-
-	set_wrap32dis();
-
-	msr.hi = (PCI_MMIO_BASE >> (32 - 8));
-	msr.lo = 0;
-	wrmsr(0xc0000101, msr);	//GS_Base Reg
-
+	wrmsr(0xc0010058, msr); // MMIO Config Base Address Reg
 #endif
 }
 

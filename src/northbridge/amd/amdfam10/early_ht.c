@@ -129,7 +129,7 @@ static void enumerate_ht_chain(void)
 						PCI_HT_CAP_SLAVE_CTRL0 : PCI_HT_CAP_SLAVE_CTRL1;
 
 					do {
-						ctrl = pci_read_config16(devx, pos + ctrl_off);
+						ctrl = pci_io_read_config16(devx, pos + ctrl_off);
 						/* Is this the end of the hypertransport chain? */
 						if (ctrl & (1 << 6)) {
 							goto out;
@@ -144,8 +144,8 @@ static void enumerate_ht_chain(void)
 							 * if its transient
 							 */
 							ctrl |= ((1 << 4) | (1 <<8)); // Link fail + Crc
-							pci_write_config16(devx, pos + ctrl_off, ctrl);
-							ctrl = pci_read_config16(devx, pos + ctrl_off);
+							pci_io_write_config16(devx, pos + ctrl_off, ctrl);
+							ctrl = pci_io_read_config16(devx, pos + ctrl_off);
 							if (ctrl & ((1 << 4) | (1 << 8))) {
 								// can not clear the error
 								break;

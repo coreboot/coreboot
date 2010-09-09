@@ -1440,9 +1440,29 @@ static void cpu_bus_noop(device_t dev)
 {
 }
 
+static void cpu_bus_read_resources(device_t dev)
+{
+#if CONFIG_MMCONF_SUPPORT
+	struct resource *resource = new_resource(dev, 0xc0010058);
+	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
+	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+#endif
+}
+
+static void cpu_bus_set_resources(device_t dev)
+{
+	struct resource *resource = find_resource(dev, 0xc0010058);
+	if (resource) {
+		report_resource_stored(dev, resource, " <mmconfig>");
+	}
+	pci_dev_set_resources(dev);
+}
+
 static struct device_operations cpu_bus_ops = {
-	.read_resources	  = cpu_bus_noop,
-	.set_resources	  = cpu_bus_noop,
+	.read_resources	  = cpu_bus_read_resources,
+	.set_resources	  = cpu_bus_set_resources,
 	.enable_resources = cpu_bus_noop,
 	.init		  = cpu_bus_init,
 	.scan_bus	  = cpu_bus_scan,

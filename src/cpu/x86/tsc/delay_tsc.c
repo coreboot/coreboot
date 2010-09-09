@@ -138,7 +138,7 @@ static unsigned long long calibrate_tsc(void)
 }
 
 
-#endif /* CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2*/
+#endif /* CONFIG_TSC_CALIBRATE_WITH_IO */
 
 void init_timer(void)
 {

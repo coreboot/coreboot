@@ -191,7 +191,9 @@ NCURSES_CH_T _nc_render(WINDOW *win, NCURSES_CH_T ch)
 int beep(void)
 {
 	/* TODO: Flash the screen if beeping fails? */
+#ifdef CONFIG_SPEAKER
 	speaker_tone(1760, 500);	/* 1760 == note A6 */
+#endif
 	return OK;
 }
 // bool can_change_color(void) {}

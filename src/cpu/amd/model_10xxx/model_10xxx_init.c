@@ -113,6 +113,11 @@ static void model_10xxx_init(device_t dev)
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 
+	/* Clear ClLinesToNbDis */
+	msr = rdmsr(BU_CFG2_MSR);
+	msr.lo &= ~(1 << 15);
+	wrmsr(BU_CFG2_MSR, msr);
+
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);

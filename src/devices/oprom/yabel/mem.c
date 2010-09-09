@@ -19,149 +19,177 @@
 #include "mem.h"
 #include "compat/time.h"
 
+#if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
+
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
 #if CONFIG_X86EMU_DEBUG
 static u8 in_check = 0;	// to avoid recursion...
-u16 ebda_segment;
-u32 ebda_size;
 
-//TODO: these macros have grown so large, that they should be changed to an inline function,
-//just for the sake of readability...
+static inline void DEBUG_CHECK_VMEM_READ(u32 _addr, u32 _rval)
+{
+	u16 ebda_segment;
+	u32 ebda_size;
+	if (!((debug_flags & DEBUG_CHECK_VMEM_ACCESS) && (in_check == 0)))
+		return;
+	in_check = 1;
+	/* determine ebda_segment and size
+	* since we are using my_rdx calls, make sure, this is after setting in_check! */
+	/* offset 03 in BDA is EBDA segment */
+	ebda_segment = my_rdw(0x40e);
+	/* first value in ebda is size in KB */
+	ebda_size = my_rdb(ebda_segment << 4) * 1024;
+	/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */
+	if (_addr < 0x400) {
+		DEBUG_PRINTF_CS_IP("%s: read from Interrupt Vector %x --> %x\n",
+				__func__, _addr / 4, _rval);
+	}
+	/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/
+	else if ((_addr >= 0x400) && (_addr < 0x500)) {
+		DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Area: addr: %x --> %x\n",
+				__func__, _addr, _rval);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* access to first 64k of memory... */
+	else if (_addr < 0x10000) {
+		DEBUG_PRINTF_CS_IP("%s: read from segment 0000h: addr: %x --> %x\n",
+				__func__, _addr, _rval);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* read from PMM_CONV_SEGMENT */
+	else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: read from PMM Segment %04xh: addr: %x --> %x\n",
+				__func__, PMM_CONV_SEGMENT, _addr, _rval);
+		/* HALT_SYS(); */
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* read from PNP_DATA_SEGMENT */
+	else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: read from PnP Data Segment %04xh: addr: %x --> %x\n",
+				__func__, PNP_DATA_SEGMENT, _addr, _rval);
+		/* HALT_SYS(); */
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* read from EBDA Segment */
+	else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: read from Extended BIOS Data Area %04xh, size: %04x: addr: %x --> %x\n",
+				__func__, ebda_segment, ebda_size, _addr, _rval);
+	}
+	/* read from BIOS_DATA_SEGMENT */
+	else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Segment %04xh: addr: %x --> %x\n",
+				__func__, BIOS_DATA_SEGMENT, _addr, _rval);
+		/* for PMM debugging */
+		/*if (_addr == BIOS_DATA_SEGMENT << 4) {
+			X86EMU_trace_on();
+			M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
+		}*/
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	in_check = 0;
+}
 
-#define DEBUG_CHECK_VMEM_READ(_addr, _rval) \
-   if ((debug_flags & DEBUG_CHECK_VMEM_ACCESS) && (in_check == 0)) { \
-         in_check = 1; \
-         /* determine ebda_segment and size \
-          * since we are using my_rdx calls, make sure, this is after setting in_check! */ \
-         /* offset 03 in BDA is EBDA segment */ \
-         ebda_segment = my_rdw(0x40e); \
-         /* first value in ebda is size in KB */ \
-         ebda_size = my_rdb(ebda_segment << 4) * 1024; \
-			/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */ \
-			if (_addr < 0x400) { \
-				DEBUG_PRINTF_CS_IP("%s: read from Interrupt Vector %x --> %x\n", \
-						__func__, _addr / 4, _rval); \
-			} \
-			/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/ \
-			else if ((_addr >= 0x400) && (addr < 0x500)) { \
-				DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Area: addr: %x --> %x\n", \
-						__func__, _addr, _rval); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* access to first 64k of memory... */ \
-			else if (_addr < 0x10000) { \
-				DEBUG_PRINTF_CS_IP("%s: read from segment 0000h: addr: %x --> %x\n", \
-						__func__, _addr, _rval); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* read from PMM_CONV_SEGMENT */ \
-			else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: read from PMM Segment %04xh: addr: %x --> %x\n", \
-						__func__, PMM_CONV_SEGMENT, _addr, _rval); \
-				/* HALT_SYS(); */ \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* read from PNP_DATA_SEGMENT */ \
-			else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: read from PnP Data Segment %04xh: addr: %x --> %x\n", \
-						__func__, PNP_DATA_SEGMENT, _addr, _rval); \
-				/* HALT_SYS(); */ \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* read from EBDA Segment */ \
-			else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: read from Extended BIOS Data Area %04xh, size: %04x: addr: %x --> %x\n", \
-						__func__, ebda_segment, ebda_size, _addr, _rval); \
-			} \
-			/* read from BIOS_DATA_SEGMENT */ \
-			else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Segment %04xh: addr: %x --> %x\n", \
-						__func__, BIOS_DATA_SEGMENT, _addr, _rval); \
-				/* for PMM debugging */ \
-				/*if (_addr == BIOS_DATA_SEGMENT << 4) { \
-					X86EMU_trace_on(); \
-					M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F; \
-				}*/ \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-         in_check = 0; \
-   }
-#define DEBUG_CHECK_VMEM_WRITE(_addr, _val) \
-   if ((debug_flags & DEBUG_CHECK_VMEM_ACCESS) && (in_check == 0)) { \
-         in_check = 1; \
-         /* determine ebda_segment and size \
-          * since we are using my_rdx calls, make sure, this is after setting in_check! */ \
-         /* offset 03 in BDA is EBDA segment */ \
-         ebda_segment = my_rdw(0x40e); \
-         /* first value in ebda is size in KB */ \
-         ebda_size = my_rdb(ebda_segment << 4) * 1024; \
-			/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */ \
-			if (_addr < 0x400) { \
-				DEBUG_PRINTF_CS_IP("%s: write to Interrupt Vector %x <-- %x\n", \
-						__func__, _addr / 4, _val); \
-			} \
-			/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/ \
-			else if ((_addr >= 0x400) && (addr < 0x500)) { \
-				DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Area: addr: %x <-- %x\n", \
-						__func__, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* access to first 64k of memory...*/ \
-			else if (_addr < 0x10000) { \
-				DEBUG_PRINTF_CS_IP("%s: write to segment 0000h: addr: %x <-- %x\n", \
-						__func__, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* write to PMM_CONV_SEGMENT... */ \
-			else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: write to PMM Segment %04xh: addr: %x <-- %x\n", \
-						__func__, PMM_CONV_SEGMENT, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* write to PNP_DATA_SEGMENT... */ \
-			else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: write to PnP Data Segment %04xh: addr: %x <-- %x\n", \
-						__func__, PNP_DATA_SEGMENT, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* write to EBDA Segment... */ \
-			else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: write to Extended BIOS Data Area %04xh, size: %04x: addr: %x <-- %x\n", \
-						__func__, ebda_segment, ebda_size, _addr, _val); \
-			} \
-			/* write to BIOS_DATA_SEGMENT... */ \
-			else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Segment %04xh: addr: %x <-- %x\n", \
-						__func__, BIOS_DATA_SEGMENT, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-			/* write to current CS segment... */ \
-			else if ((_addr < ((M.x86.R_CS << 4) | 0xffff)) && (_addr > (M.x86.R_CS << 4))) { \
-				DEBUG_PRINTF_CS_IP("%s: write to CS segment %04xh: addr: %x <-- %x\n", \
-						__func__, M.x86.R_CS, _addr, _val); \
-				/* dump registers */ \
-				/* x86emu_dump_xregs(); */ \
-			} \
-         in_check = 0; \
-   }
+static inline void DEBUG_CHECK_VMEM_WRITE(u32 _addr, u32 _val)
+{
+	u16 ebda_segment;
+	u32 ebda_size;
+	if (!((debug_flags & DEBUG_CHECK_VMEM_ACCESS) && (in_check == 0)))
+		return;
+	in_check = 1;
+	/* determine ebda_segment and size
+	 * since we are using my_rdx calls, make sure that this is after
+	 * setting in_check! */
+	/* offset 03 in BDA is EBDA segment */
+	ebda_segment = my_rdw(0x40e);
+	/* first value in ebda is size in KB */
+	ebda_size = my_rdb(ebda_segment << 4) * 1024;
+	/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */
+	if (_addr < 0x400) {
+		DEBUG_PRINTF_CS_IP("%s: write to Interrupt Vector %x <-- %x\n",
+				__func__, _addr / 4, _val);
+	}
+	/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/
+	else if ((_addr >= 0x400) && (_addr < 0x500)) {
+		DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Area: addr: %x <-- %x\n",
+					__func__, _addr, _val);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* access to first 64k of memory...*/
+	else if (_addr < 0x10000) {
+		DEBUG_PRINTF_CS_IP("%s: write to segment 0000h: addr: %x <-- %x\n",
+				__func__, _addr, _val);
+	/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* write to PMM_CONV_SEGMENT... */
+	else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: write to PMM Segment %04xh: addr: %x <-- %x\n",
+				__func__, PMM_CONV_SEGMENT, _addr, _val);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* write to PNP_DATA_SEGMENT... */
+	else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: write to PnP Data Segment %04xh: addr: %x <-- %x\n",
+				__func__, PNP_DATA_SEGMENT, _addr, _val);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* write to EBDA Segment... */
+	else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: write to Extended BIOS Data Area %04xh, size: %04x: addr: %x <-- %x\n",
+				__func__, ebda_segment, ebda_size, _addr, _val);
+	}
+	/* write to BIOS_DATA_SEGMENT... */
+	else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Segment %04xh: addr: %x <-- %x\n",
+				__func__, BIOS_DATA_SEGMENT, _addr, _val);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	/* write to current CS segment... */
+	else if ((_addr < ((M.x86.R_CS << 4) | 0xffff)) && (_addr > (M.x86.R_CS << 4))) {
+		DEBUG_PRINTF_CS_IP("%s: write to CS segment %04xh: addr: %x <-- %x\n",
+				__func__, M.x86.R_CS, _addr, _val);
+		/* dump registers */
+		/* x86emu_dump_xregs(); */
+	}
+	in_check = 0;
+}
 #else
-#define DEBUG_CHECK_VMEM_READ(_addr, _rval)
-#define DEBUG_CHECK_VMEM_WRITE(_addr, _val)
+static inline void DEBUG_CHECK_VMEM_READ(u32 _addr, u32 _rval) {};
+static inline void DEBUG_CHECK_VMEM_WRITE(u32 _addr, u32 _val) {};
 #endif
 
-void update_time(u32);
+//update time in BIOS Data Area
+//DWord at offset 0x6c is the timer ticks since midnight, timer is running at 18Hz
+//byte at 0x70 is timer overflow (set if midnight passed since last call to interrupt 1a function 00
+//cur_val is the current value, of offset 6c...
+static void
+update_time(u32 cur_val)
+{
+	//for convenience, we let the start of timebase be at midnight, we currently dont support
+	//real daytime anyway...
+	u64 ticks_per_day = tb_freq * 60 * 24;
+	// at 18Hz a period is ~55ms, converted to ticks (tb_freq is ticks/second)
+	u32 period_ticks = (55 * tb_freq) / 1000;
+	u64 curr_time = get_time();
+	u64 ticks_since_midnight = curr_time % ticks_per_day;
+	u32 periods_since_midnight = ticks_since_midnight / period_ticks;
+	// if periods since midnight is smaller than last value, set overflow
+	// at BDA Offset 0x70
+	if (periods_since_midnight < cur_val) {
+		my_wrb(0x470, 1);
+	}
+	// store periods since midnight at BDA offset 0x6c
+	my_wrl(0x46c, periods_since_midnight);
+}
 
-#if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
 // read byte from memory
 u8
 my_rdb(u32 addr)
@@ -467,27 +495,3 @@ my_wrl(u32 addr, u32 val)
 	wrl(addr, val);
 }
 #endif
-
-//update time in BIOS Data Area
-//DWord at offset 0x6c is the timer ticks since midnight, timer is running at 18Hz
-//byte at 0x70 is timer overflow (set if midnight passed since last call to interrupt 1a function 00
-//cur_val is the current value, of offset 6c...
-void
-update_time(u32 cur_val)
-{
-	//for convenience, we let the start of timebase be at midnight, we currently dont support
-	//real daytime anyway...
-	u64 ticks_per_day = tb_freq * 60 * 24;
-	// at 18Hz a period is ~55ms, converted to ticks (tb_freq is ticks/second)
-	u32 period_ticks = (55 * tb_freq) / 1000;
-	u64 curr_time = get_time();
-	u64 ticks_since_midnight = curr_time % ticks_per_day;
-	u32 periods_since_midnight = ticks_since_midnight / period_ticks;
-	// if periods since midnight is smaller than last value, set overflow
-	// at BDA Offset 0x70
-	if (periods_since_midnight < cur_val) {
-		my_wrb(0x470, 1);
-	}
-	// store periods since midnight at BDA offset 0x6c
-	my_wrl(0x46c, periods_since_midnight);
-}

@@ -154,7 +154,7 @@ vbe_prepare(void)
 	return 0;		// successfull init
 }
 
-#if CONFIG_BOOTSPLASH || CONFIG_EXPERT
+#if CONFIG_BOOTSPLASH
 // VBE Function 00h
 static u8
 vbe_info(vbe_info_t * info)
@@ -301,9 +301,7 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 	}
 	return 0;
 }
-#endif
 
-#if CONFIG_EXPERT
 //VBE Function 08h
 static u8
 vbe_set_palette_format(u8 format)
@@ -766,9 +764,7 @@ vbe_get_info(void)
 	}
 	return 0;
 }
-#endif
 
-#if CONFIG_BOOTSPLASH
 vbe_mode_info_t mode_info;
 
 void vbe_set_graphics(void)
@@ -798,7 +794,7 @@ void vbe_set_graphics(void)
 	vbe_get_mode_info(&mode_info);
 	unsigned char *framebuffer =
 		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
-	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%08x\n", framebuffer);
+	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);
 	vbe_set_mode(&mode_info);
 
 	struct jpeg_decdata *decdata;
@@ -813,7 +809,7 @@ void vbe_set_graphics(void)
 		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
 		return;
 	}
-	DEBUG_PRINTF_VBE("Splash at %08x ...\n", jpeg);
+	DEBUG_PRINTF_VBE("Splash at %p ...\n", jpeg);
 	dump(jpeg, 64);
 
 	int ret = 0;

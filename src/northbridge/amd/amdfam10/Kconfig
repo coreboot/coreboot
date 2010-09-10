@@ -75,4 +75,52 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	default n
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
+config DIMM_FBDIMM
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config DIMM_DDR2
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config DIMM_DDR3
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config DIMM_REGISTERED
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+if DIMM_FB_DIMM
+	config DIMM_SUPPORT
+		hex
+		default 0x0110
+endif
+
+if DIMM_DDR2
+	if DIMM_REGISTERED
+	config DIMM_SUPPORT
+		hex
+		default 0x0104
+	endif
+
+	if !DIMM_REGISTERED
+	config DIMM_SUPPORT
+		hex
+		default 0x0004
+	endif
+endif
+
+if DIMM_DDR3
+	if DIMM_REGISTERED
+	config DIMM_SUPPORT
+		hex
+		default 0x0005
+	endif
+endif
+
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

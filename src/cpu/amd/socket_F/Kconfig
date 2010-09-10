@@ -9,9 +9,3 @@ config CPU_SOCKET_TYPE
 	default 0x10
 	depends on CPU_AMD_SOCKET_F
 
-# DDR2 and REG
-config DIMM_SUPPORT
-	hex
-	default 0x0104
-	depends on CPU_AMD_SOCKET_F
-

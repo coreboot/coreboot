@@ -53,4 +53,28 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	default n
 	depends on NORTHBRIDGE_AMD_AMDK8
 
+config DIMM_DDR2
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config DIMM_REGISTERED
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+if DIMM_DDR2
+	if DIMM_REGISTERED
+	config DIMM_SUPPORT
+		hex
+		default 0x0104
+	endif
+
+	if !DIMM_REGISTERED
+	config DIMM_SUPPORT
+		hex
+		default 0x0004
+	endif
+endif
+
 source src/northbridge/amd/amdk8/root_complex/Kconfig

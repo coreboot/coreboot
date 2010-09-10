@@ -9,12 +9,6 @@ config CPU_SOCKET_TYPE
 	default 0x11
 	depends on CPU_AMD_SOCKET_AM3
 
-# DDR3 and REG
-config DIMM_SUPPORT
-	hex
-	default 0x0005
-	depends on CPU_AMD_SOCKET_AM3
-
 config EXT_RT_TBL_SUPPORT
 	bool
 	default n

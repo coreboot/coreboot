@@ -5,6 +5,8 @@ choice
 
 config BOARD_LIPPERT_FRONTRUNNER
 	bool "Cool Frontrunner"
+config BOARD_LIPPERT_HURRICANE_LX
+	bool "Hurricane-LX"
 config BOARD_LIPPERT_LITERUNNER_LX
 	bool "Cool LiteRunner-LX"
 config BOARD_LIPPERT_ROADRUNNER_LX
@@ -15,6 +17,7 @@ config BOARD_LIPPERT_SPACERUNNER_LX
 endchoice
 
 source "src/mainboard/lippert/frontrunner/Kconfig"
+source "src/mainboard/lippert/hurricane-lx/Kconfig"
 source "src/mainboard/lippert/literunner-lx/Kconfig"
 source "src/mainboard/lippert/roadrunner-lx/Kconfig"
 source "src/mainboard/lippert/spacerunner-lx/Kconfig"

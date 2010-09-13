@@ -137,7 +137,7 @@ CAR_FAM10_out:
 
 	/* Erratum 343 end */
 
-#if defined(CONFIG_MMCONF_SUPPORT)
+#if CONFIG_MMCONF_SUPPORT
 	/* Set MMIO Config space BAR */
 	movl	$MSR_MCFG_BASE, %ecx
 	rdmsr

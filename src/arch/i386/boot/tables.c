@@ -179,14 +179,6 @@ struct lb_memory *write_tables(void)
 
 #endif
 
-#if CONFIG_MULTIBOOT
-	post_code(0x9d);
-
-	/* The Multiboot information structure */
-	rom_table_end = write_multiboot_info(
-				low_table_start, low_table_end,
-				rom_table_start, rom_table_end);
-#endif
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 	post_code(0x9d);
@@ -210,8 +202,9 @@ struct lb_memory *write_tables(void)
 				new_high_table_pointer - high_table_pointer);
 	} else {
 		/* The coreboot table must be in 0-4K or 960K-1M */
-		write_coreboot_table(low_table_start, low_table_end,
-			      rom_table_start, rom_table_end);
+		rom_table_end = write_coreboot_table(
+				     low_table_start, low_table_end,
+				     rom_table_start, rom_table_end);
 	}
 
 	post_code(0x9e);
@@ -222,6 +215,13 @@ struct lb_memory *write_tables(void)
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
 	cbmem_add(CBMEM_ID_RESUME, 1024 * (1024-64));
+#endif
+
+#if CONFIG_MULTIBOOT
+	post_code(0x9d);
+
+	/* The Multiboot information structure */
+	write_multiboot_info(rom_table_end);
 #endif
 
 	// Remove before sending upstream

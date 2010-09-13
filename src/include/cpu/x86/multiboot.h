@@ -167,6 +167,9 @@ struct multiboot_info {
 	uint16_t vbe_interface_len;
 };
 
+#define MULTIBOOT_MEMORY_AVAILABLE              1
+#define MULTIBOOT_MEMORY_RESERVED               2
+
 struct multiboot_mmap_entry {
 	uint32_t size;
 	uint64_t addr;
@@ -176,6 +179,6 @@ struct multiboot_mmap_entry {
 
 extern struct multiboot_info *mbi;
 
-unsigned long  write_multiboot_info(unsigned long, unsigned long, unsigned long, unsigned long);
+unsigned long  write_multiboot_info(unsigned long rom_table_end);
 
 #endif

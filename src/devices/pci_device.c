@@ -1019,6 +1019,14 @@ unsigned int pci_scan_bus(struct bus *bus,
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
 #endif
 
+	// Maximum sane devfn is 0xFF
+	if (max_devfn > 0xff) {
+		printk(BIOS_ERR, "PCI: pci_scan_bus limits devfn %x - devfn %x\n",
+			   min_devfn, max_devfn );
+		printk(BIOS_ERR, "PCI: pci_scan_bus upper limit too big. Using 0xff.\n");
+		max_devfn=0xff;
+	}
+
 	old_devices = bus->children;
 	bus->children = NULL;
 

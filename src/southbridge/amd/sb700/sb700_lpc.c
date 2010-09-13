@@ -42,7 +42,11 @@ static void lpc_init(device_t dev)
 	pci_write_config32(sm_dev, 0x64, dword);
 
 	/* Initialize isa dma */
+#if CONFIG_SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
+	printk(BIOS_DEBUG, "Skipping isa_dma_init() to avoid getting stuck.\n");
+#else
 	isa_dma_init();
+#endif
 
 	/* Enable DMA transaction on the LPC bus */
 	byte = pci_read_config8(dev, 0x40);

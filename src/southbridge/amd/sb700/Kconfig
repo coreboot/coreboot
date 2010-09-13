@@ -20,3 +20,9 @@
 config SOUTHBRIDGE_AMD_SB700
 	bool
 	select IOAPIC
+
+config SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
+	bool
+	default n
+	depends on SOUTHBRIDGE_AMD_SB700
+

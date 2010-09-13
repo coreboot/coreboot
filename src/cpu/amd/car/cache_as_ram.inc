@@ -27,6 +27,7 @@
 /* for CAR with FAM10 */
 #define CacheSizeAPStack 0x400 /* 1K */
 
+#define MSR_MCFG_BASE  0xC0010058
 #define MSR_FAM10      0xC001102A
 
 #define jmp_if_k8(x)	comisd	%xmm2, %xmm1; jb x
@@ -115,7 +116,7 @@ CAR_FAM10_out:
 	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
 	 * Re-enable it in after RAM is initialized and before CAR is disabled
 	 */
-	movl	$0xc001102a, %ecx
+	movl	$MSR_FAM10, %ecx
 	rdmsr
 	bts	$15, %eax
 	wrmsr
@@ -135,6 +136,19 @@ CAR_FAM10_out:
 	wrmsr
 
 	/* Erratum 343 end */
+
+#if defined(CONFIG_MMCONF_SUPPORT)
+	/* Set MMIO Config space BAR */
+	movl	$MSR_MCFG_BASE, %ecx
+	rdmsr
+
+	andl	$(~(0xfff00000 | (0xf << 2))), %eax
+	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000) | (8 << 2) | (1 << 0)), %eax
+	andl	$(~(0x0000ffff)), %edx
+	orl	$(CONFIG_MMCONF_BASE_ADDRESS >> 32), %edx
+
+	wrmsr
+#endif
 
 CAR_FAM10_out_post_errata:
 

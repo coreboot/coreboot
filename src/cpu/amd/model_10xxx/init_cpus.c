@@ -58,30 +58,6 @@ static void set_EnableCf8ExtCfg(void) { }
 #endif
 
 
-#define _ULLx(x) x ## ULL
-#define _ULL(x) _ULLx(x)
-
-/*[63:0] */
-#define PCI_MMIO_BASE _ULL(CONFIG_MMCONF_BASE_ADDRESS)
-
-static void set_pci_mmio_conf_reg(void)
-{
-#if CONFIG_MMCONF_SUPPORT
-#  if PCI_MMIO_BASE > 0xffffffff
-#    error CONFIG_MMCONF_BASE_ADDRESS must currently fit in 32 bits!
-#  endif
-	msr_t msr;
-	msr = rdmsr(0xc0010058);
-	msr.lo &= ~(0xfff00000 | (0xf << 2));
-	// 256 buses, one segment. Total 256M address space.
-	msr.lo |= (PCI_MMIO_BASE & 0xfff00000) | (8 << 2) | (1 << 0);
-	msr.hi &= ~(0x0000ffff);
-	msr.hi |= (PCI_MMIO_BASE >> (32));
-
-	wrmsr(0xc0010058, msr); // MMIO Config Base Address Reg
-#endif
-}
-
 typedef void (*process_ap_t) (u32 apicid, void *gp);
 
 //core_range = 0 : all cores
@@ -294,9 +270,6 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	/*
 	 * already set early mtrr in cache_as_ram.inc
 	 */
-
-	/* enable access pci conf via mmio */
-	set_pci_mmio_conf_reg();
 
 	/* that is from initial apicid, we need nodeid and coreid
 	   later */

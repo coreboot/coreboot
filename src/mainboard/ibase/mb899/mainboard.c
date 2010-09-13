@@ -29,11 +29,6 @@
 #include <arch/coreboot_tables.h>
 #include "chip.h"
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return add_northbridge_resources(mem);
-}
-
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 static int int15_handler(void)
 {

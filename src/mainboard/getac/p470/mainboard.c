@@ -98,11 +98,6 @@ static void mainboard_enable(device_t dev)
 	verb_setup();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return add_northbridge_resources(mem);
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Getac P470 Rugged Notebook")
 	.enable_dev = mainboard_enable,

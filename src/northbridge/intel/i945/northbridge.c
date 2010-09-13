@@ -70,20 +70,26 @@ static int get_pcie_bar(u32 *base, u32 *len)
 /* IDG memory */
 uint64_t uma_memory_base=0, uma_memory_size=0;
 
-int add_northbridge_resources(struct lb_memory *mem)
+static void add_fixed_resources(struct device *dev, int index)
 {
+	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
 
 	printk(BIOS_DEBUG, "Adding UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_base, uma_memory_size);
+	resource = new_resource(dev, index);
+	resource->base = (resource_t) uma_memory_base;
+	resource->size = (resource_t) uma_memory_size;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	printk(BIOS_DEBUG, "Adding PCIe config bar\n");
-	get_pcie_bar(&pcie_config_base, &pcie_config_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		pcie_config_base, pcie_config_size);
-
-	return 0;
+	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
+		printk(BIOS_DEBUG, "Adding PCIe config bar\n");
+		resource = new_resource(dev, index+1);
+		resource->base = (resource_t) pcie_config_base;
+		resource->size = (resource_t) pcie_config_size;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	}
 }
 
 static void ram_resource(device_t dev, unsigned long index, unsigned long basek,
@@ -207,6 +213,8 @@ static void pci_domain_set_resources(device_t dev)
 	if (tomk > 4 * 1024 * 1024) {
 		ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
+
+	add_fixed_resources(dev, 6);
 
 	assign_resources(dev->link_list);
 

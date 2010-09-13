@@ -134,11 +134,6 @@ static void mainboard_enable(device_t dev)
 #endif
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return add_northbridge_resources(mem);
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Roda Computer GmbH RK886EX Rugged Notebook (ROCKY3+)")
 	.enable_dev = mainboard_enable,

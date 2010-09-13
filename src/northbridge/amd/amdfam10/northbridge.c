@@ -865,9 +865,22 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 #if CONFIG_WRITE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 #if CONFIG_GFXUMA == 1
 extern uint64_t uma_memory_base, uma_memory_size;
-#endif
+
+static void add_uma_resource(struct device *dev, int index)
+{
+	struct resource *resource;
+
+	printk(BIOS_DEBUG, "Adding UMA memory area\n");
+	resource = new_resource(dev, index);
+	resource->base = (resource_t) uma_memory_base;
+	resource->size = (resource_t) uma_memory_size;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+}
 #endif
 
 static void amdfam10_domain_set_resources(device_t dev)
@@ -1089,6 +1102,10 @@ static void amdfam10_domain_set_resources(device_t dev)
 		}
 #endif
 	}
+
+#if CONFIG_GFXUMA == 1
+	add_uma_resource(dev, 7);
+#endif
 
 	for(link = dev->link_list; link; link = link->next) {
 		if (link->children) {

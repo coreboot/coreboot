@@ -23,6 +23,8 @@ choice
 
 config BOARD_IEI_JUKI_511P
 	bool "JUKI-511P"
+config BOARD_IEI_KINO_FAM10
+	bool "Kino-780AM2(Fam10)"
 config BOARD_IEI_NOVA_4899R
 	bool "NOVA-4899R"
 config BOARD_IEI_PCISA_LX_800_R10
@@ -31,6 +33,7 @@ config BOARD_IEI_PCISA_LX_800_R10
 endchoice
 
 source "src/mainboard/iei/juki-511p/Kconfig"
+source "src/mainboard/iei/kino-780am2-fam10/Kconfig"
 source "src/mainboard/iei/nova4899r/Kconfig"
 source "src/mainboard/iei/pcisa-lx-800-r10/Kconfig"
 

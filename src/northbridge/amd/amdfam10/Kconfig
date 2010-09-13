@@ -95,7 +95,7 @@ config DIMM_REGISTERED
 	default n
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
-if DIMM_FB_DIMM
+if DIMM_FBDIMM
 	config DIMM_SUPPORT
 		hex
 		default 0x0110

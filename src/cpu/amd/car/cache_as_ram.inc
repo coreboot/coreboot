@@ -129,8 +129,8 @@ CAR_FAM10_out:
 	/* execute special read command for msr-register. Result is then in the EDX:EAX-registers (MSBs in EDX) */
 	rdmsr
 
-	/* Set bit 35 to 1 in EAX */
-	bts	$35, %eax
+	/* Set bit 35 to 1 in EAX:EDX */
+	bts	$35-32, %edx
 
 	/* write back the modified register EDX:EAX to the MSR specified in ECX */
 	wrmsr

@@ -29,7 +29,17 @@ typedef struct msrinit_struct
         msr_t msr;
 } msrinit_t;
 
-static inline msr_t rdmsr(unsigned index)
+/* The following functions require the always_inline due to AMD
+ * function STOP_CAR_AND_CPU that disables cache as
+ * ram, the cache as ram stack can no longer be used. Called
+ * functions must be inlined to avoid stack usage. Also, the
+ * compiler must keep local variables register based and not
+ * allocated them from the stack. With gcc 4.5.0, some functions
+ * declared as inline are not being inlined. This patch forces
+ * these functions to always be inlined by adding the qualifier
+ * __attribute__((always_inline)) to their declaration.
+ */
+static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
 {
 	msr_t result;
 	__asm__ __volatile__ (
@@ -40,7 +50,7 @@ static inline msr_t rdmsr(unsigned index)
 	return result;
 }
 
-static inline void wrmsr(unsigned index, msr_t msr)
+static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

@@ -113,9 +113,11 @@ static void model_10xxx_init(device_t dev)
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 
-	/* Clear ClLinesToNbDis */
 	msr = rdmsr(BU_CFG2_MSR);
+	/* Clear ClLinesToNbDis */
 	msr.lo &= ~(1 << 15);
+	/* Clear bit 35 as per Erratum 343 */
+	msr.hi &= ~(1 << (35-32));
 	wrmsr(BU_CFG2_MSR, msr);
 
 	/* Write protect SMM space with SMMLOCK. */

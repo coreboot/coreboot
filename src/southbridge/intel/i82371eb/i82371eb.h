@@ -72,5 +72,6 @@ void i82371eb_hard_reset(void);
 #define SSDE1			(1 << 3)  /* Secondary Drive 1 UDMA/33 */
 #define ISA			(1 << 0)  /* Select ISA */
 #define EIO			(0 << 0)  /* Select EIO */
+#define PMIOSE			(1 << 0)  /* PM I/O Space Enable */
 
 #endif /* SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H */

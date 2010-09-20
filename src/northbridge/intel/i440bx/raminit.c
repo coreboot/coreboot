@@ -29,15 +29,15 @@
 Macros and definitions.
 -----------------------------------------------------------------------------*/
 
+#define NB PCI_DEV(0, 0, 0)
+
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
-// no dump_pci_device in src/northbridge/intel/i440bx
-// #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
-#define DUMPNORTH()
+#define DUMPNORTH()		dump_pci_device(NB)
 #else
 #define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX8(x)
@@ -45,8 +45,6 @@ Macros and definitions.
 #define PRINT_DEBUG_HEX32(x)
 #define DUMPNORTH()
 #endif
-
-#define NB PCI_DEV(0, 0, 0)
 
 /* SDRAMC[7:5] - SDRAM Mode Select (SMS). */
 #define RAM_COMMAND_NORMAL	0x0
@@ -70,7 +68,7 @@ static const uint32_t refresh_rate_map[] = {
 };
 
 /* Table format: register, bitmask, value. */
-static const long register_values[] = {
+static const u8 register_values[] = {
 	/* NBXCFG - NBX Configuration Register
 	 * 0x50 - 0x53
 	 *
@@ -131,9 +129,8 @@ static const long register_values[] = {
 	 *         0 = A7# is sampled asserted (i.e., 0)
 	 * [01:00] Reserved
 	 */
-	// TODO
 	NBXCFG + 0, 0x00, 0x0c,
-	// NBXCFG + 1, 0x00, 0xa0,
+	// TODO: Bit 15 should be 0 for multiprocessor boards
 	NBXCFG + 1, 0x00, 0x80,
 	NBXCFG + 2, 0x00, 0x00,
 	NBXCFG + 3, 0x00, 0xff,
@@ -143,7 +140,12 @@ static const long register_values[] = {
 	 *
 	 * [7:6] Reserved
 	 * [5:5] Module Mode Configuration (MMCONFIG)
-	 *       TODO
+	 *       The combination of SDRAMPWR and this bit (which is set by an
+	 *       external strapping option) determine how CKE works.
+	 *       SDRAMPWR MMCONFIG
+	 *	 0        0         = 3 DIMM, CKE0[5:0] driven
+	 *	 X        1         = 3 DIMM, CKE0 only
+	 *	 1        0         = 4 DIMM, GCKE only
 	 * [4:3] DRAM Type (DT)
 	 *       00 = EDO
 	 *       01 = SDRAM
@@ -252,12 +254,25 @@ static const long register_values[] = {
 	 * Sets the row page size for SDRAM. For EDO memory, the page
 	 * size is fixed at 2 KB.
 	 *
-	 * [15:0] Page Size (PS)
-	 *        TODO
+	 * Bits[1:0] Page Size
+	 * 00        2 KB
+	 * 01        4 KB
+	 * 10        8 KB
+	 * 11        Reserved
+	 * 
+	 * RPS bits Corresponding DRB register
+	 * [01:00]  DRB[0], row 0
+	 * [03:02]  DRB[1], row 1
+	 * [05:04]  DRB[2], row 2
+	 * [07:06]  DRB[3], row 3
+	 * [09:08]  DRB[4], row 4
+	 * [11:10]  DRB[5], row 5
+	 * [13:12]  DRB[6], row 6
+	 * [15:14]  DRB[7], row 7
 	 */
-	// TODO
-	RPS + 0, 0x00, 0x00,
-	RPS + 1, 0x00, 0x00,
+	/* Power on defaults to 2KB. Will be set later. */
+	// RPS + 0, 0x00, 0x00,
+	// RPS + 1, 0x00, 0x00,
 
 	/* SDRAMC - SDRAM Control Register
 	 * 0x76 - 0x77
@@ -266,8 +281,7 @@ static const long register_values[] = {
 	 * [09:08] Idle/Pipeline DRAM Leadoff Timing (IPDLT)
 	 *         00 = Illegal
 	 *         01 = Add a clock delay to the lead-off clock count
-	 *         10 = Illegal
-	 *         11 = Illegal
+	 *         1x = Illegal
 	 * [07:05] SDRAM Mode Select (SMS)
 	 *         000 = Normal SDRAM Operation (default)
 	 *         001 = NOP Command Enable
@@ -296,7 +310,7 @@ static const long register_values[] = {
 #if CONFIG_SDRAMPWR_4DIMM
 	SDRAMC + 0, 0x00, 0x10, /* The board has 4 DIMM slots. */
 #else
-	SDRAMC + 0, 0x00, 0x00, /* The board has 3 DIMM slots.*/
+	SDRAMC + 0, 0x00, 0x00, /* The board has 3 DIMM slots. */
 #endif
 	SDRAMC + 1, 0x00, 0x00,
 
@@ -304,7 +318,9 @@ static const long register_values[] = {
 	 * 0x78 - 0x79
 	 *
 	 * [15:08] Banks per Row (BPR)
-	 *         TODO
+	 *         Each bit in this field corresponds to one row of the memory
+	 *         array. Bit 15 corresponds to row 7 while bit 8 corresponds
+	 *         to row 0. Bits for empty rows are "don't care".
 	 *         0 = 2 banks
 	 *         1 = 4 banks
 	 * [07:05] Reserved
@@ -320,7 +336,6 @@ static const long register_values[] = {
 	 *         0111 = 32 clocks
 	 *         1xxx = Infinite (pages are not closed for idle condition)
 	 */
-	// TODO
 	PGPOL + 0, 0x00, 0x00,
 	PGPOL + 1, 0x00, 0xff,
 
@@ -354,7 +369,6 @@ static const long register_values[] = {
 	/* Enable normal refresh and the gated clock. */
 	// TODO: Only do this later?
 	// PMCR, 0x00, 0x14,
-	// PMCR, 0x00, 0x10,
 	PMCR, 0x00, 0x00,
 
 	/* Enable SCRR.SRRAEN and let BX choose the SRR. */
@@ -458,11 +472,11 @@ static void set_dram_buffer_strength(void)
 		}
 	}
 
-	/* Algorithm bitmap for programming MBSC[39:0] and MBFS[23:0]
+	/* Algorithm bitmap for programming MBSC[39:0] and MBFS[23:0].
 	 *
-	 * 440BX datasheet says buffer frequency is independent from bus frequency
-	 * and mismatch both ways are possible. This is how it is programmed
-	 * in ASUS P2B-LS.
+	 * The 440BX datasheet says buffer frequency is independent from bus
+	 * frequency and mismatch both ways are possible. This is how it is
+	 * programmed in the ASUS P2B-LS mainboard.
 	 *
 	 * There are four main conditions to check when programming DRAM buffer
 	 * frequency and strength:
@@ -523,7 +537,8 @@ static void set_dram_buffer_strength(void)
 	 *   +--------------------------------------- MAA[13:0],WEA#,SRASA#,SCASA#
 	 * MBSC[47:40] and MBFS[23] are reserved.
 	 *
-	 * This algorithm is checked against P2B-LS factory BIOS. It has 4 DIMM slots.
+	 * This algorithm is checked against the ASUS P2B-LS (which has
+	 * 4 DIMM slots) factory BIOS.
 	 * Therefore it assumes a board with 4 slots, and will need testing
 	 * on boards with 3 DIMM slots.
 	 */
@@ -946,17 +961,14 @@ static void sdram_set_spd_registers(void)
 	/* Setup DRAM row boundary registers and other attributes. */
 	set_dram_row_attributes();
 
-	/* TODO: Set SDRAMC. */
-	pci_write_config16(NB, SDRAMC, 0x0010);	/* SDRAMPWR=1: 4 DIMM config */
-
-	/* TODO */
+	/* Setup DRAM buffer strength. */
 	set_dram_buffer_strength();
 
 	/* TODO: Set PMCR? */
 	// pci_write_config8(NB, PMCR, 0x14);
 	pci_write_config8(NB, PMCR, 0x10);
 
-	/* TODO? */
+	/* TODO: This is for EDO memory only. */
 	pci_write_config8(NB, DRAMT, 0x03);
 }
 

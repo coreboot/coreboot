@@ -1220,7 +1220,7 @@ static void SPD2ndTiming(struct MCTStatStruc *pMCTstat,
 	Set_NB32(dev, 0x88 + reg_off, DramTimingLo);	/*DCT Timing Low*/
 
 	if (pDCTstat->Speed > 4) {
-		DramTimingLo |= 1 << DisAutoRefresh;
+		DramTimingHi |= 1 << DisAutoRefresh;
 	}
 	DramTimingHi |= 0x000018FF;
 	Set_NB32(dev, 0x8c + reg_off, DramTimingHi);	/*DCT Timing Hi*/

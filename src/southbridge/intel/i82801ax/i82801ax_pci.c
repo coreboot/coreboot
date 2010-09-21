@@ -58,15 +58,3 @@ static const struct pci_driver i82801ab_pci __pci_driver = {
 	.device	= 0x2428,
 };
 
-/* 82801BA, 82801CA, 82801DB, 82801EB, and 82801ER */
-static const struct pci_driver i82801misc_pci __pci_driver = {
-	.ops	= &pci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x244e,
-};
-
-static const struct pci_driver i82801dbm_pci __pci_driver = {
-	.ops	= &pci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2448,
-};

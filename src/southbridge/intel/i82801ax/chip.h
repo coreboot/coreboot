@@ -19,17 +19,7 @@
  */
 
 /*
- * The i82801ax code currently supports:
- *  - 82801AA
- *  - 82801AB
- *  - 82801BA
- *  - 82801CA
- *  - 82801DB
- *  - 82801DBM
- *  - 82801EB
- *  - 82801ER
- *
- * This code should NOT be used for ICH6 and later versions.
+ * The i82801ax code supports: 82801AA/82801AB (ICH/ICH0).
  */
 
 #ifndef SOUTHBRIDGE_INTEL_I82801AX_CHIP_H

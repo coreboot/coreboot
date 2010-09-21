@@ -22,12 +22,9 @@ driver-y += i82801ax.o
 driver-y += i82801ax_ac97.o
 driver-y += i82801ax_ide.o
 driver-y += i82801ax_lpc.o
-driver-y += i82801ax_nic.o
 driver-y += i82801ax_pci.o
-driver-y += i82801ax_sata.o
 # driver-y += i82801ax_smbus.o
 driver-y += i82801ax_usb.o
-driver-y += i82801ax_usb_ehci.o
 
 obj-y += i82801ax_reset.o
 obj-y += i82801ax_watchdog.o

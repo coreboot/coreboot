@@ -21,8 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* From 82801DBM, needs to be fixed to support everything the 82801ER does. */
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -63,10 +61,6 @@ typedef struct southbridge_intel_i82801ax_config config_t;
 #define PIRQB 0x04
 #define PIRQC 0x05
 #define PIRQD 0x06
-#define PIRQE 0x07
-#define PIRQF 0x09
-#define PIRQG 0x0A
-#define PIRQH 0x0B
 
 /*
  * Use 0x0ef8 for a bitmap to cover all these IRQ's.
@@ -146,34 +140,6 @@ static void i82801ax_pirq_init(device_t dev, uint16_t ich_model)
 	} else {
 		pci_write_config8(dev, PIRQD_ROUT, PIRQD);
 	}
-
-	/* Route PIRQE - PIRQH (for ICH2-ICH9). */
-	if (ich_model >= 0x2440) {
-
-		if (config->pirqe_routing) {
-			pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
-		} else {
-			pci_write_config8(dev, PIRQE_ROUT, PIRQE);
-		}
-
-		if (config->pirqf_routing) {
-			pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
-		} else {
-			pci_write_config8(dev, PIRQF_ROUT, PIRQF);
-		}
-
-		if (config->pirqg_routing) {
-			pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
-		} else {
-			pci_write_config8(dev, PIRQG_ROUT, PIRQG);
-		}
-
-		if (config->pirqh_routing) {
-			pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
-		} else {
-			pci_write_config8(dev, PIRQH_ROUT, PIRQH);
-		}
-	}
 }
 
 static void i82801ax_power_options(device_t dev)
@@ -208,16 +174,8 @@ static void i82801ax_power_options(device_t dev)
 
 static void gpio_init(device_t dev, uint16_t ich_model)
 {
-	/* Set the value for GPIO base address register and enable GPIO.
-	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
-	 */
-	if (ich_model <= 0x24D0) {
-		pci_write_config32(dev, GPIO_BASE_ICH0_5, (GPIO_BASE_ADDR | 1));
-		pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
-	} else if (ich_model >= 0x2640) {
-		pci_write_config32(dev, GPIO_BASE_ICH6_9, (GPIO_BASE_ADDR | 1));
-		pci_write_config8(dev, GPIO_CNTL_ICH6_9, 0x10);
-	}
+	pci_write_config32(dev, GPIO_BASE_ICH0_5, (GPIO_BASE_ADDR | 1));
+	pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
 }
 
 static void i82801ax_rtc_init(struct device *dev)
@@ -261,15 +219,9 @@ static void i82801ax_lpc_decode_en(device_t dev, uint16_t ich_model)
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
 	 * Floppy decode defaults to 0x3F0-0x3F5, 0x3F7.
 	 * We also need to set the value for LPC I/F Enables Register.
-	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
 	 */
-	if (ich_model <= 0x24D0) {
-		pci_write_config8(dev, COM_DEC, 0x10);
-		pci_write_config16(dev, LPC_EN_ICH0_5, 0x300F);
-	} else if (ich_model >= 0x2640) {
-		pci_write_config8(dev, LPC_IO_DEC, 0x10);
-		pci_write_config16(dev, LPC_EN_ICH6_9, 0x300F);
-	}
+	pci_write_config8(dev, COM_DEC, 0x10);
+	pci_write_config16(dev, LPC_EN_ICH0_5, 0x300F);
 }
 
 static void lpc_init(struct device *dev)
@@ -353,33 +305,3 @@ static const struct pci_driver i82801ab_lpc __pci_driver = {
 	.device	= 0x2420,
 };
 
-static const struct pci_driver i82801ba_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2440,
-};
-
-static const struct pci_driver i82801ca_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2480,
-};
-
-static const struct pci_driver i82801db_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24c0,
-};
-
-static const struct pci_driver i82801dbm_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24cc,
-};
-
-/* 82801EB and 82801ER */
-static const struct pci_driver i82801ex_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24d0,
-};

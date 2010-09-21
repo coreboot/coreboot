@@ -34,7 +34,6 @@ static void ide_init(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	/* TODO: Needs to be tested for compatibility with ICH5(R). */
 	/* Enable IDE devices so the Linux IDE driver will work. */
 	uint16_t ideTimingConfig;
 
@@ -84,37 +83,3 @@ static const struct pci_driver i82801ab_ide __pci_driver = {
 	.device	= 0x2421,
 };
 
-/* 82801BA */
-static const struct pci_driver i82801ba_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x244b,
-};
-
-/* 82801CA */
-static const struct pci_driver i82801ca_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x248b,
-};
-
-/* 82801DB */
-static const struct pci_driver i82801db_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24cb,
-};
-
-/* 82801DBM */
-static const struct pci_driver i82801dbm_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24ca,
-};
-
-/* 82801EB & 82801ER */
-static const struct pci_driver i82801ex_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24db,
-};

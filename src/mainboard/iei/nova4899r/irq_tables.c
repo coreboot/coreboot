@@ -57,7 +57,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	.exclusive_irqs = 0x4C20,	/* IRQs devoted exclusively to PCI usage */
 	.rtr_vendor = 0x1078,		/* Vendor */
 	.rtr_device = 0x0100,		/* Device */
-	.miniport_data = 0,		/* Crap (miniport) */
+	.miniport_data = 0,		/* Miniport data */
 	.checksum = 0xBF+16,		/* TODO! calculate correct sum ! */
 /*
  * Definition for "slot#0". There is no real slot,

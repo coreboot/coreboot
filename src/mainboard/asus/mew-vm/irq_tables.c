@@ -16,7 +16,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0xe20,		 /* IRQs devoted exclusively to PCI usage */
 	0x8086,		 /* Vendor */
 	0x7120,		 /* Device */
-	0,		 /* Crap (miniport) */
+	0,		 /* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0x89,		 /*  u8 checksum , this has to set to some value
 that would give 0 after the sum of all bytes for this structure (including checksum) */

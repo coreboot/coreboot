@@ -72,7 +72,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	.exclusive_irqs = IRQ_DEVOTED_TO_PCI,	/* IRQs devoted to PCI */
 	.rtr_vendor = 0x1078,		/* Vendor */
 	.rtr_device = 0x0100,		/* Device */
-	.miniport_data = 0,		/* Crap (miniport) */
+	.miniport_data = 0,		/* Miniport data */
 	.checksum = 0xe3,		/* Checksum */
 	.slots = {
 		/*

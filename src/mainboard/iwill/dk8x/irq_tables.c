@@ -25,7 +25,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x00,			/* IRQs devoted exclusively to PCI usage */
 	IRQ_ROUTER_VENDOR,	/* Vendor */
 	IRQ_ROUTER_DEVICE,	/* Device */
-	0x00,			/* Crap (miniport) */
+	0x00,			/* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	/* u8 rfu[11] */
 	0x00,			/*  u8 checksum , mod 256 checksum must give
 				 *  zero, will be corrected later

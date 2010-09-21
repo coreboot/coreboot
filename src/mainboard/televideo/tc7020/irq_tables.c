@@ -54,7 +54,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	EXCLUSIVE_PCI_IRQS,		 /* IRQs devoted exclusively to PCI usage */
 	0x1078,		 /* Vendor */
 	0x1,		 /* Device */
-	0,		 /* Crap (miniport) */
+	0,		 /* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0x60,		 /* u8 checksum. This has to be set to some
 			    value that would give 0 after the sum of all

@@ -2426,8 +2426,11 @@ static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 
 			val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
 			val &= ~(1 << DisAutoRefresh);
+			Set_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct), val);
 			val |= 1 << DisAutoRefresh;
+			Set_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct), val);
 			val &= ~(1 << DisAutoRefresh);
+			Set_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct), val);
 		}
 	}
 }

@@ -278,7 +278,7 @@ int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requ
 static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 {
 	unsigned portsc;
-	unsigned delay_time, delay;
+	unsigned delay_time, delay_ms;
 	int loop;
 
 	/* Reset the usb debug port */
@@ -287,10 +287,10 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 	portsc |= PORT_RESET;
 	write32((unsigned long)&ehci_regs->port_status[port - 1], portsc);
 
-	delay = HUB_ROOT_RESET_TIME;
+	delay_ms = HUB_ROOT_RESET_TIME;
 	for (delay_time = 0; delay_time < HUB_RESET_TIMEOUT;
-	     delay_time += delay) {
-		dbgp_mdelay(delay);
+	     delay_time += delay_ms) {
+		dbgp_mdelay(delay_ms);
 
 		portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
 		if (portsc & PORT_RESET) {
@@ -299,9 +299,9 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 			write32((unsigned long)&ehci_regs->port_status[port - 1],
 					portsc & ~(PORT_RWC_BITS | PORT_RESET));
 			do {
-				dbgp_mdelay(delay);
+				dbgp_mdelay(delay_ms);
 				portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
-				delay_time += delay;
+				delay_time += delay_ms;
 			} while ((portsc & PORT_RESET) && (--loop > 0));
 			if (!loop) {
 				printk(BIOS_DEBUG, "ehci_reset_port forced done");

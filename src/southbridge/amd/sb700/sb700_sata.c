@@ -53,6 +53,29 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	return 0;
 }
 
+	/* This function can be overloaded in mainboard.c */
+
+void __attribute__((weak)) sb700_setup_sata_phys(struct device *dev) {
+	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
+	pci_write_config16(dev, 0x86, 0x2c00);
+
+	/* RPR7.6.2 SATA GENI PHY ports setting */
+	pci_write_config32(dev, 0x88, 0x01B48017);
+	pci_write_config32(dev, 0x8c, 0x01B48019);
+	pci_write_config32(dev, 0x90, 0x01B48016);
+	pci_write_config32(dev, 0x94, 0x01B48016);
+	pci_write_config32(dev, 0x98, 0x01B48016);
+	pci_write_config32(dev, 0x9C, 0x01B48016);
+
+	/* RPR7.6.3 SATA GEN II PHY port setting for port [0~5]. */
+	pci_write_config16(dev, 0xA0, 0xA09A);
+	pci_write_config16(dev, 0xA2, 0xA09F);
+	pci_write_config16(dev, 0xA4, 0xA07A);
+	pci_write_config16(dev, 0xA6, 0xA07A);
+	pci_write_config16(dev, 0xA8, 0xA07A);
+	pci_write_config16(dev, 0xAA, 0xA07A);
+}
+
 static void sata_init(struct device *dev)
 {
 	u8 byte;
@@ -161,27 +184,7 @@ static void sata_init(struct device *dev)
 	/* Program the watchdog counter to 0x10 */
 	byte = 0x10;
 	pci_write_config8(dev, 0x46, byte);
-
-	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
-	word = 0x2c00;
-	pci_write_config16(dev, 0x86, word);
-
-	/* RPR7.6.2 SATA GENI PHY ports setting */
-	pci_write_config32(dev, 0x88, 0x01B48017);
-	pci_write_config32(dev, 0x8c, 0x01B48019);
-	pci_write_config32(dev, 0x90, 0x01B48016);
-	pci_write_config32(dev, 0x94, 0x01B48016);
-	pci_write_config32(dev, 0x98, 0x01B48016);
-	pci_write_config32(dev, 0x9C, 0x01B48016);
-
-	/* RPR7.6.3 SATA GEN II PHY port setting for port [0~5]. */
-	pci_write_config16(dev, 0xA0, 0xA09A);
-	pci_write_config16(dev, 0xA2, 0xA09F);
-	pci_write_config16(dev, 0xA4, 0xA07A);
-	pci_write_config16(dev, 0xA6, 0xA07A);
-	pci_write_config16(dev, 0xA8, 0xA07A);
-	pci_write_config16(dev, 0xAA, 0xA07A);
-
+	sb700_setup_sata_phys(dev);
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
 	byte |= 7 << 0;

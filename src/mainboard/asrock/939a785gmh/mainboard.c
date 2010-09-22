@@ -147,3 +147,25 @@ struct chip_operations mainboard_ops = {
 	CHIP_NAME("Asrock 939A785GMH/128M Mainboard")
 	.enable_dev = mb_enable,
 };
+
+/* override the default SATA PHY setup */
+void sb700_setup_sata_phys(struct device *dev) {
+	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
+	pci_write_config16(dev, 0x86, 0x2c00);
+
+	/* RPR7.6.2 SATA GENI PHY ports setting */
+	pci_write_config32(dev, 0x88, 0x01B48016);
+	pci_write_config32(dev, 0x8c, 0x01B48016);
+	pci_write_config32(dev, 0x90, 0x01B48016);
+	pci_write_config32(dev, 0x94, 0x01B48016);
+	pci_write_config32(dev, 0x98, 0x01B48016);
+	pci_write_config32(dev, 0x9C, 0x01B48016);
+
+	/* RPR7.6.3 SATA GEN II PHY port setting for port [0~5]. */
+	pci_write_config16(dev, 0xA0, 0xA07A);
+	pci_write_config16(dev, 0xA2, 0xA07A);
+	pci_write_config16(dev, 0xA4, 0xA07A);
+	pci_write_config16(dev, 0xA6, 0xA07A);
+	pci_write_config16(dev, 0xA8, 0xA07A);
+	pci_write_config16(dev, 0xAA, 0xA0FF);
+}

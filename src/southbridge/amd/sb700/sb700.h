@@ -52,6 +52,11 @@ void sb700_enable(device_t dev);
 #ifdef __PRE_RAM__
 void sb700_lpc_port80(void);
 void sb700_pci_port80(void);
+#else
+#include <device/pci.h>
+/* allow override in mainboard.c */
+void sb700_setup_sata_phys(struct device *dev);
+
 #endif
 
 #endif /* SB700_H */

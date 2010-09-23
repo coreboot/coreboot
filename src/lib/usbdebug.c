@@ -16,9 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
-/*
- *	2006.12.10 yhlu moved it to corbeoot and use struct instead
- */
+
 #if !defined(__ROMCC__)
 #include <console/console.h>
 #else

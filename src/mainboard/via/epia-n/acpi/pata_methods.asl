@@ -47,13 +47,14 @@ Name (TIM0, Package (0x07)
 })
 
 
-/* This method sets up the PATA Timing Control*/
-/* Note that a lot of this is done in the     */
-/* Coreboot VT8237R Init code, but this is    */
-/* already getting very cluttered with board  */
-/* specific code. Using ACPI will allow this  */
-/* to be de-cluttered a bit (so long as we're */
-/* running a ACPI Capable OS !!!)             */
+/* This method sets up the PATA Timing Control.
+ * Note that a lot of this is done in the
+ * coreboot VT8237R init code, but this is
+ * already getting very cluttered with board
+ * specific code. Using ACPI will allow this
+ * to be de-cluttered a bit (so long as we're
+ * running a ACPI capable OS!)
+ */
 
 Method (PMEX, 0, Serialized)
 {

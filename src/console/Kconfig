@@ -156,10 +156,10 @@ config CONSOLE_NE2K_DST_IP
 
 config CONSOLE_NE2K_SRC_IP
 	depends on CONSOLE_NE2K
-	string "IP adress of Coreboot system"
+	string "IP address of coreboot system"
 	default "10.0.1.253"
 	help
-	  This is the IP of the Coreboot system
+	  This is the IP of the coreboot system
 
 config CONSOLE_NE2K_IO_PORT
 	depends on CONSOLE_NE2K

@@ -175,7 +175,7 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 			break;
 		}
 		if ((mtype == LB_MEM_TABLE) && (start < mend) && (end > mstart)) {
-			printk(BIOS_ERR, "Payload is overwriting Coreboot tables.\n");
+			printk(BIOS_ERR, "Payload is overwriting coreboot tables.\n");
 			break;
 		}
 	}

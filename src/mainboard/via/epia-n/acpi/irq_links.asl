@@ -16,7 +16,7 @@
  	 /* Status - always return ready */
 	 Method (_STA, 0, NotSerialized)
 	 {
-	 	/* See If Coreboot has allocated INTA# */
+	 	/* See if coreboot has allocated INTA# */
 	 	And (PIRA, 0xF0, Local0)
 		If (LEqual (Local0, 0x00))
 		{
@@ -94,7 +94,7 @@
 	 Name (_UID, 0x02)
 	 Method (_STA, 0, NotSerialized)
 	 {
-	 	/* See If Coreboot has allocated INTB# */
+	 	/* See if coreboot has allocated INTB# */
 	 	And (PIBC, 0x0F, Local0)
 		If (LEqual (Local0, 0x00))
 		{
@@ -172,7 +172,7 @@
 	 Name (_UID, 0x03)
 	 Method (_STA, 0, NotSerialized)
 	 {
-	 	/* See If Coreboot has allocated INTC# */
+	 	/* See if coreboot has allocated INTC# */
 	 	And (PIBC, 0xF0, Local0)
 		If (LEqual (Local0, 0x00))
 		{
@@ -251,7 +251,7 @@ Device (LNKD)
 	 Name (_UID, 0x04)
 	 Method (_STA, 0, NotSerialized)
 	 {
-	 	/* See If Coreboot has allocated INTD# */
+	 	/* See if coreboot has allocated INTD# */
 	 	And (PIRD, 0xF0, Local0)
 		If (LEqual (Local0, 0x00))
 		{

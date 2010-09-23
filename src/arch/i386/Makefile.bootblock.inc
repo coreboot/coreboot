@@ -75,6 +75,9 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
 	$(NM) -n $(obj)/bootblock.elf | sort > $(obj)/bootblock.map
+	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
+	$(OBJCOPY) --strip-debug $@
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@
 
 #######################################################################
 # Build the romstage
@@ -89,6 +92,9 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(initobjs) $(obj)/romstage/ldsc
 	printf ';\nAUTO_XIP_ROM_BASE = CONFIG_ROMBASE & ~(CONFIG_XIP_ROM_SIZE - 1);\n' >> $(obj)/location.ld
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)
 	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
+	$(OBJCOPY) --only-keep-debug $(obj)/romstage.elf $(obj)/romstage.debug
+	$(OBJCOPY) --strip-debug $(obj)/romstage.elf
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/romstage.debug $(obj)/romstage.elf
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
 
 $(obj)/romstage/ldscript.ld: $$(ldscripts) $(obj)/ldoptions

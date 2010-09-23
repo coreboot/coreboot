@@ -32,4 +32,7 @@ $(obj)/coreboot: $$(initobjs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/ldscript.ld $(initobjs)
 	$(NM) -n $(obj)/coreboot | sort > $(obj)/coreboot.map
+	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
+	$(OBJCOPY) --strip-debug $@
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@
 

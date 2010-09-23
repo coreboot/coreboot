@@ -107,6 +107,9 @@ $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldo
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/coreboot_ram.ld $(obj)/coreboot_ram.o
 	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
+	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ram.debug
+	$(OBJCOPY) --strip-debug $@
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ram.debug $@
 
 $(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $$(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -125,6 +128,9 @@ ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 $(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/init/ldscript_apc.lb $^
+	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ap.debug
+	$(OBJCOPY) --strip-debug $@
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ap.debug $@
 	$(NM) -n $(obj)/coreboot_ap | sort > $(obj)/coreboot_ap.map
 
 

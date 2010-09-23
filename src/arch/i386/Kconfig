@@ -76,10 +76,10 @@ config UPDATE_IMAGE
 	default n
 	depends on TINY_BOOTBLOCK
 	help
-		If this option is activate, no new coreboot.rom file
-		is created. Instead it is expected that there already
-		is a suitable file for further processing.
-		The bootblock will not be modified.
+	  If this option is enabled, no new coreboot.rom file
+	  is created. Instead it is expected that there already
+	  is a suitable file for further processing.
+	  The bootblock will not be modified.
 
 config ROMCC
 	bool

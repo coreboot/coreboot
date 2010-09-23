@@ -210,7 +210,7 @@ done_cache_as_ram_main:
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
 __main:
-	post_code(0x11)		/* post 11 */
+	post_code(0x11)
 
 	/* TODO For suspend/resume the cache will have to live between
 	 * CONFIG_RAMBASE and CONFIG_RAMTOP
@@ -227,7 +227,7 @@ __main:
 	call copy_and_run
 
 .Lhlt:
-	post_code(0xee)	/* post fail ee */
+	post_code(0xee)
 	hlt
 	jmp	.Lhlt
 

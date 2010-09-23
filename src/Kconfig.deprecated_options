@@ -4,45 +4,48 @@
 
 # It might be possible to consolidate hard_reset() to southbridges,
 # given that it (usually) uses its registers.
-# The long term goal would be to eliminate hard_reset from boards.
+# The long term goal would be to eliminate hard_reset() from boards.
 config BOARD_HAS_HARD_RESET
-        bool
-        default n
-        help
-          This variable specifies whether a given board has a reset.c
-          file containing a hard_reset() function.
+	bool
+	default n
+	help
+	  This variable specifies whether a given board has a reset.c
+	  file containing a hard_reset() function.
 
 # It might be possible to consolidate FADTs to southbridges. This would
 # improve code reuse in the tree.
 config BOARD_HAS_FADT
-        bool
-        default n
-        help
-          This variable specifies whether a given board has a board-local
-          FADT in fadt.c. Long-term, those should be moved to appropriate
-          chipset components (eg. southbridge)
+	bool
+	default n
+	help
+	  This variable specifies whether a given board has a board-local
+	  FADT in fadt.c. Long-term, those should be moved to appropriate
+	  chipset components (eg. southbridge).
 
 # There ought to be a better place to put data than code. Also, make this
 # (or a similar) framework more universally usable, so all boards benefit
 # from sharing data between the various tables.
 config HAVE_BUS_CONFIG
-        bool
-        default n
+	bool
+	default n
 	help
 	  This variable specifies whether a given board has a get_bus_conf.c
 	  file containing information about bus routing.
 
-# Will be removed (alongside with the PS2 init code) once payloads
-# reliably support PS2 init themselves.
+# Will be removed (alongside with the PS/2 init code) once payloads
+# reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD
-	bool "PS2 Keyboard init"
+	bool "PS/2 keyboard init"
 	default y
 	help
-	  Enable this option to initialize PS2 keyboards found connected
-	  to the PS2 port.  Some payloads (eg, filo) require this
-	  option.  Other payloads (eg, SeaBIOS, Linux) do not require
-	  it.  Initializing a PS2 keyboard can take several hundred
-	  milliseconds.
+	  Enable this option to initialize PS/2 keyboards found connected
+	  to the PS/2 port.
+
+	  Some payloads (eg, filo) require this option.  Other payloads
+	  (eg, SeaBIOS, Linux) do not require it.
+	  Initializing a PS/2 keyboard can take several hundred milliseconds.
+
 	  If you know you will only use a payload which does not require
-	  this option, then you can say "n" here to speed up boot time.
-	  Otherwise say "y".
+	  this option, then you can say N here to speed up boot time.
+	  Otherwise say Y.
+

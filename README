@@ -51,7 +51,7 @@ Please consult http://www.coreboot.org/Build_HOWTO for details.
 
 
 Testing coreboot Without Modifying Your Hardware
--------------------------------------------------
+------------------------------------------------
 
 If you want to test coreboot without any risks before you really decide
 to use it on your hardware, you can use the QEMU system emulator to run

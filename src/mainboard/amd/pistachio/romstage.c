@@ -46,6 +46,11 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
+#if CONFIG_USBDEBUG
+#include "southbridge/amd/sb600/sb600_enable_usbdebug.c"
+#include "pc80/usbdebug_serial.c"
+#endif
+
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
@@ -117,8 +122,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb600_lpc_init();
 
 	/* Pistachio used a FPGA to enable serial debug instead of a SIO
-	 * and it doens't require any special setup. */
+	 * and it doesn't require any special setup. */
 	uart_init();
+
+#if CONFIG_USBDEBUG
+	sb600_enable_usbdebug(0);
+	early_usbdebug_init();
+#endif
+
 	console_init();
 
 	post_code(0x03);

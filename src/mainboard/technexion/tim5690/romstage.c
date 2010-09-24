@@ -53,6 +53,11 @@
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
+#if CONFIG_USBDEBUG
+#include "southbridge/amd/sb600/sb600_enable_usbdebug.c"
+#include "pc80/usbdebug_serial.c"
+#endif
+
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
@@ -130,6 +135,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	uart_init();
+
+#if CONFIG_USBDEBUG
+	sb600_enable_usbdebug(0);
+	early_usbdebug_init();
+#endif
+
 	console_init();
 
 	/* Halt if there was a built in self test failure */

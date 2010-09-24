@@ -60,6 +60,12 @@
 static int smbus_read_byte(u32 device, u32 address);
 
 #include "superio/ite/it8718f/it8718f_early_serial.c"
+
+#if CONFIG_USBDEBUG
+#include "southbridge/amd/sb700/sb700_enable_usbdebug.c"
+#include "pc80/usbdebug_serial.c"
+#endif
+
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
@@ -138,6 +144,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
 	uart_init();
+
+#if CONFIG_USBDEBUG
+	sb700_enable_usbdebug(0);
+	early_usbdebug_init();
+#endif
+
 	console_init();
 	printk(BIOS_DEBUG, "\n");
 

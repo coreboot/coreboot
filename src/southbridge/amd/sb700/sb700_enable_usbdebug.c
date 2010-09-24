@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <usbdebug.h>
+
 #ifndef SB700_DEVN_BASE
 
 #define SB700_DEVN_BASE 0
@@ -26,6 +28,11 @@
 #define EHCI_BAR_INDEX 0x10
 #define EHCI_BAR 0xFEF00000
 #define EHCI_DEBUG_OFFSET 0xE0
+
+/* Required for successful build, but currently empty. */
+void set_debug_port(unsigned int port)
+{
+}
 
 static void sb700_enable_usbdebug(u32 port)
 {

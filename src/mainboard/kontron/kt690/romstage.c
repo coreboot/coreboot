@@ -54,6 +54,11 @@
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627dhg/w83627dhg_early_serial.c"
 
+#if CONFIG_USBDEBUG
+#include "southbridge/amd/sb600/sb600_enable_usbdebug.c"
+#include "pc80/usbdebug_serial.c"
+#endif
+
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
@@ -125,6 +130,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	dev=PNP_DEV(0x2e, W83627DHG_SP1);
 	w83627dhg_enable_serial(dev, CONFIG_TTYS0_BASE);
 	uart_init();
+
+#if CONFIG_USBDEBUG
+	sb600_enable_usbdebug(0);
+	early_usbdebug_init();
+#endif
+
 	console_init();
 
 	/* Halt if there was a built in self test failure */

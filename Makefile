@@ -88,7 +88,7 @@ all: config
 
 else
 
-include $(top)/.config
+include $(HAVE_DOTCONFIG)
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
@@ -98,10 +98,11 @@ endif
 endif
 
 ifeq ($(CONFIG_CCACHE),y)
-CCACHE:=CCACHE_COMPILERCHECK=content $(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH))))
+CCACHE:=$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH))))
 ifeq ($(CCACHE),)
 $(error ccache selected, but not found in PATH)
 endif
+CCACHE:=CCACHE_COMPILERCHECK=content CCACHE_BASEDIR=$(top) $(CCACHE)
 CC := $(CCACHE) $(CC)
 HOSTCC := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)

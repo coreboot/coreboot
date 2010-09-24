@@ -37,6 +37,16 @@ static void pilot_early_init(device_t dev)
 	pilot_disable_serial(PNP_DEV(port, 0x1));
 	print_debug("disable serial 1\n");
 
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_logical_device(PNP_DEV(port, 0x3));
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, 0x60, 0x0b00);
+	pnp_set_iobase(dev, 0x62, 0x0b80);
+	pnp_set_iobase(dev, 0x64, 0x0b84);
+	pnp_set_iobase(dev, 0x66, 0x0b86);
+	pnp_set_enable(dev, 1);
+	pnp_exit_ext_func_mode(dev);
+
 /*
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x3));
@@ -58,14 +68,27 @@ static void pilot_early_init(device_t dev)
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_enable(PNP_DEV(port, 0x5), 0);
 	pnp_exit_ext_func_mode(dev);
-/*
+
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x6));
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
+	pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
+	pnp_set_irq(dev, PNP_IDX_IRQ0, 1);
+	pnp_set_drq(dev, 0x71, 3);
+	pnp_set_enable(dev, 0);
 	pnp_exit_ext_func_mode(dev);
+
 	pnp_enter_ext_func_mode(dev);
-	pnp_set_enable( PNP_DEV(port, 0x6), 0);
+	pnp_set_logical_device(PNP_DEV(port, 0xe));
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x70);
+	pnp_set_iobase(dev, PNP_IDX_IO1, 0x72);
+	pnp_set_irq(dev, PNP_IDX_IRQ0, 8);
+	pnp_set_drq(dev, 0x71, 3);
+	pnp_set_enable(dev, 0);
 	pnp_exit_ext_func_mode(dev);
-*/
+
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x7));
 	pnp_exit_ext_func_mode(dev);

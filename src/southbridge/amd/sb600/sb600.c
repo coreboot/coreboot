@@ -120,21 +120,21 @@ void sb600_enable(device_t dev)
 
 	printk(BIOS_DEBUG, "sb600_enable()\n");
 
-/*
-*	0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
-*	0:13.1  USB-1	bit 2 of sm_dev 0x68
-*	0:13.2  USB-2	bit 3 of sm_dev 0x68
-*	0:13.3  USB-3	bit 4 of sm_dev 0x68
-*	0:13.4  USB-4	bit 5 of sm_dev 0x68
-*	0:13.5  USB2	bit 0 of sm_dev 0x68 : 1 - enable, default
-*	0:14.0  SMBUS							0
-*	0:14.1  IDE							1
-*	0:14.2  HDA	bit 3 of pm_io 0x59 : 1 - enable, default	    + 32 * 4
-*	0:14.3  LPC	bit 20 of sm_dev 0x64 : 0 - disable, default  + 32 * 1
-*	0:14.4  PCI							4
-*	0:14.5  ACI	bit 0 of pm_io 0x59 : 0 - enable, default
-*	0:14.6  MCI	bit 1 of pm_io 0x59 : 0 - enable, default
-*/
+	/*
+	 * 0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
+	 * 0:13.1  USB-1	bit 2 of sm_dev 0x68
+	 * 0:13.2  USB-2	bit 3 of sm_dev 0x68
+	 * 0:13.3  USB-3	bit 4 of sm_dev 0x68
+	 * 0:13.4  USB-4	bit 5 of sm_dev 0x68
+	 * 0:13.5  USB2	bit 0 of sm_dev 0x68 : 1 - enable, default
+	 * 0:14.0  SMBUS							0
+	 * 0:14.1  IDE							1
+	 * 0:14.2  HDA	bit 3 of pm_io 0x59 : 1 - enable, default	    + 32 * 4
+	 * 0:14.3  LPC	bit 20 of sm_dev 0x64 : 0 - disable, default  + 32 * 1
+	 * 0:14.4  PCI							4
+	 * 0:14.5  ACI	bit 0 of pm_io 0x59 : 0 - enable, default
+	 * 0:14.6  MCI	bit 1 of pm_io 0x59 : 0 - enable, default
+	 */
 	if (dev->device == 0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid >> 16) & 0xffff;

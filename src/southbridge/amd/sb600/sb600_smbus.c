@@ -114,8 +114,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 	return 0;
 }
 
-int do_smbus_read_byte(u32 smbus_io_base, u32 device,
-			      u32 address)
+int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address)
 {
 	u8 byte;
 
@@ -145,8 +144,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 	return byte;
 }
 
-int do_smbus_write_byte(u32 smbus_io_base, u32 device,
-			       u32 address, u8 val)
+int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 {
 	u8 byte;
 
@@ -176,8 +174,7 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device,
 	return 0;
 }
 
-static void alink_ab_indx(u32 reg_space, u32 reg_addr,
-			  u32 mask, u32 val)
+static void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 {
 	u32 tmp;
 

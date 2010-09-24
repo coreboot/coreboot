@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef  _SB700_EARLY_SETUP_C_
-#define  _SB700_EARLY_SETUP_C_
+#ifndef _SB700_EARLY_SETUP_C_
+#define _SB700_EARLY_SETUP_C_
 
 #include <reset.h>
 #include <arch/cpu.h>
@@ -40,7 +40,7 @@ static u8 pmio_read(u8 reg)
 	return inb(PM_INDEX + 1);
 }
 
-/* RPR 2.28 Get SB ASIC Revision.*/
+/* RPR 2.28: Get SB ASIC Revision. */
 static u8 set_sb700_revision(void)
 {
 	device_t dev;
@@ -195,11 +195,11 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	byte |= 0x03;
 	pmio_write(0x7c, byte);
 
-	/*Must be 0 for K8 platform.*/
+	/* Must be 0 for K8 platform. */
 	byte = pmio_read(0x68);
 	byte &= ~0x01;
 	pmio_write(0x68, byte);
-	/*Must be 0 for K8 platform.*/
+	/* Must be 0 for K8 platform. */
 	byte = pmio_read(0x8d);
 	byte &= ~(1<<6);
 	pmio_write(0x8d, byte);

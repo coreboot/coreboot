@@ -151,6 +151,7 @@ static u32 cim_verb_data[] = {
 	0x01f71ec4,
 	0x01f71f01,
 };
+
 static u32 find_verb(u32 viddid, u32 ** verb)
 {
 	device_t azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
@@ -171,7 +172,6 @@ static u32 find_verb(u32 viddid, u32 ** verb)
  *  Wait 50usec for for the codec to indicate it is ready
  *  no response would imply that the codec is non-operative
  */
-
 static int wait_for_ready(u32 base)
 {
 	/* Use a 50 usec timeout - the Linux kernel uses the
@@ -194,7 +194,6 @@ static int wait_for_ready(u32 base)
  *  the previous command.  No response would imply that the code
  *  is non-operative
  */
-
 static int wait_for_valid(u32 base)
 {
 	/* Use a 50 usec timeout - the Linux kernel uses the
@@ -301,7 +300,7 @@ static void hda_init(struct device *dev)
 	if (!res)
 		return;
 
-	base = ((u32)res->base);
+	base = (u32)res->base;
 	printk(BIOS_DEBUG, "base = 0x%x\n", base);
 	codec_mask = codec_detect(base);
 

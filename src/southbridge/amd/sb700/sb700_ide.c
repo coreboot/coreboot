@@ -51,7 +51,7 @@ static void ide_init(struct device *dev)
 	pci_write_config16(dev, 0x4, dword);
 
 	/* set ide as primary, if you want to boot from IDE, you'd better set it
-	 * in mainboard/Config.lb */
+	 * in $vendor/$mainboard/devicetree.cb */
 	if (conf->boot_switch_sata_ide == 1) {
 		byte = pci_read_config8(dev, 0xAD);
 		byte |= 1 << 4;

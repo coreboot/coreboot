@@ -20,14 +20,12 @@
 #include <usbdebug.h>
 
 #ifndef SB600_DEVN_BASE
-
 #define SB600_DEVN_BASE 0
-
 #endif
 
-#define EHCI_BAR_INDEX 0x10
-#define EHCI_BAR 0xFEF00000
-#define EHCI_DEBUG_OFFSET 0xE0
+#define EHCI_BAR_INDEX		0x10
+#define EHCI_BAR		0xFEF00000
+#define EHCI_DEBUG_OFFSET	0xE0
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
@@ -39,5 +37,5 @@ static void sb600_enable_usbdebug(u32 port)
 	set_debug_port(port);
 	pci_write_config32(PCI_DEV(0, SB600_DEVN_BASE + 0x13, 5),
 			   EHCI_BAR_INDEX, EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, SB600_DEVN_BASE + 0x13, 5), 0x04, 0x2);	/* mem space enabe */
+	pci_write_config8(PCI_DEV(0, SB600_DEVN_BASE + 0x13, 5), 0x04, 0x2);	/* mem space enable */
 }

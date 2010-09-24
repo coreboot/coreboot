@@ -25,7 +25,6 @@
 #define SMBUS_IO_BASE 0x1000	/* Is it a temporary SMBus I/O base address? */
 	 /*SIZE 0x40 */
 
-
 static void pmio_write(u8 reg, u8 value)
 {
 	outb(reg, PM_INDEX);
@@ -38,7 +37,7 @@ static u8 pmio_read(u8 reg)
 	return inb(PM_INDEX + 1);
 }
 
-/* Get SB ASIC Revision.*/
+/* RPR 2.1: Get SB ASIC Revision. */
 static u8 get_sb600_revision(void)
 {
 	device_t dev;
@@ -131,22 +130,21 @@ static u32 get_sbdn(u32 bus)
 	return (dev >> 15) & 0x1f;
 }
 
-
 static u8 dual_core(void)
 {
 	return (pci_read_config32(PCI_DEV(0, 0x18, 3), 0xE8) & (0x3<<12)) != 0;
 }
 
 /*
-SB600 VFSMAF (VID/FID System Management Action Field)  is 010b by default.
-RPR 2.3.3 C-state and VID/FID change for the K8 platform.
+ * SB600 VFSMAF (VID/FID System Management Action Field) is 010b by default.
+ * RPR 2.3.3 C-state and VID/FID change for the K8 platform.
 */
 static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 {
 	u8 byte;
 	byte = pmio_read(0x9a);
 	byte &= ~0x34;
-	if(dual_core())
+	if (dual_core())
 		byte |= 0x34;
 	else
 		byte |= 0x04;
@@ -170,11 +168,11 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	byte |= 0x01;
 	pmio_write(0x7c, byte);
 
-	/*Must be 0 for K8 platform.*/
+	/* Must be 0 for K8 platform. */
 	byte = pmio_read(0x68);
 	byte &= ~0x01;
 	pmio_write(0x68, byte);
-	/*Must be 0 for K8 platform.*/
+	/* Must be 0 for K8 platform. */
 	byte = pmio_read(0x8d);
 	byte &= ~(1<<6);
 	pmio_write(0x8d, byte);
@@ -187,7 +185,7 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	byte &= ~0x04;
 	pmio_write(0x42, byte);
 
-	if(get_sb600_revision() == 0x14) {
+	if (get_sb600_revision() == 0x14) {
 		pmio_write(0x89, 0x10);
 
 		byte = pmio_read(0x52);
@@ -195,7 +193,6 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 		pmio_write(0x52, byte);
 	}
 }
-
 
 void hard_reset(void)
 {
@@ -276,7 +273,6 @@ void sb600_lpc_port80(void)
 	byte |= 1 << 5;		/* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
 }
-
 
 /* sbDevicesPorInitTable */
 static void sb600_devices_por_init(void)

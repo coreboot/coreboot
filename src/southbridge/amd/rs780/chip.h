@@ -20,7 +20,7 @@
 #ifndef RS780_CHIP_H
 #define RS780_CHIP_H
 
-/* Member variables are defined in Config.lb. */
+/* Member variables are defined in devicetree.cb. */
 struct southbridge_amd_rs780_config
 {
 	u8 gppsb_configuration;		/* The configuration of General Purpose Port, A/B/C/D/E. */

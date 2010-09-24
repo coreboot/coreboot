@@ -10,6 +10,7 @@ static void *smp_write_config_table(void *v)
         static const char oem[8] = "COREBOOT";
         static const char productid[12] = "S2735       ";
         struct mp_config_table *mc;
+        int isa_bus;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
@@ -29,15 +30,7 @@ static void *smp_write_config_table(void *v)
         mc->reserved = 0;
 
         smp_write_processors(mc);
-
-
-/*Bus:		Bus ID	Type*/
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, 1, "PCI   ");
-	smp_write_bus(mc, 2, "PCI   ");
-	smp_write_bus(mc, 3, "PCI   ");
-	smp_write_bus(mc, 4, "PCI   ");
-	smp_write_bus(mc, 5, "ISA   ");
+	mptable_write_buses(mc, NULL, &isa_bus);
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, 8, 0x20, 0xfec00000);
 	{
@@ -58,7 +51,7 @@ static void *smp_write_config_table(void *v)
                         }
 		}
 	}
-	mptable_add_isa_interrupts(mc, 0x5, 0x8, 0);
+	mptable_add_isa_interrupts(mc, isa_bus, 0x8, 0);
 
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */

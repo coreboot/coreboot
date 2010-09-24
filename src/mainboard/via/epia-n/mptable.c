@@ -12,6 +12,7 @@ static void *smp_write_config_table(void *v)
         static const char oem[8] = "COREBOOT";
         static const char productid[12] = "P4DPE       ";
         struct mp_config_table *mc;
+        int isa_bus;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
@@ -31,12 +32,8 @@ static void *smp_write_config_table(void *v)
         mc->reserved = 0;
 
         smp_write_processors(mc);
+        mptable_write_buses(mc, NULL, &isa_bus);
 
-
-/*Bus:		Bus ID	Type*/
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, 1, "PCI   ");
-	smp_write_bus(mc, 2, "ISA   ");
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);
 	{
@@ -71,7 +68,7 @@ static void *smp_write_config_table(void *v)
 			}
                 }
 	}
-	mptable_add_isa_interrupts(mc, 0x2, 0x2, 0);
+	mptable_add_isa_interrupts(mc, isa_bus, 0x2, 0);
 
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x40, 0x2, 0x15);

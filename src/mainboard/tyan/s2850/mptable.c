@@ -50,8 +50,7 @@ static void *smp_write_config_table(void *v)
         static const char productid[12] = "S2850       ";
         struct mp_config_table *mc;
 
-        unsigned char bus_num;
-        unsigned char bus_isa;
+        int bus_isa;
 	unsigned char bus_chain_0;
         unsigned char bus_8111_1;
         unsigned apicid_base;
@@ -88,23 +87,15 @@ static void *smp_write_config_table(void *v)
                 dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x01,0));
                 if (dev) {
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_isa++;
                 }
                 else {
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:01.0, using defaults\n");
 
                         bus_8111_1 = 2;
-                        bus_isa = 3;
                 }
         }
 /*Bus:          Bus ID  Type*/
-        /* define bus and isa numbers */
-        for(bus_num = 0; bus_num < bus_isa; bus_num++) {
-                smp_write_bus(mc, bus_num, "PCI   ");
-        }
-        smp_write_bus(mc, bus_isa, "ISA   ");
-
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1

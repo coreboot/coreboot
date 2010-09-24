@@ -29,9 +29,6 @@
 #include <stdint.h>
 #include "../../../southbridge/via/vt8237r/vt8237r.h"
 
-
-#define bus_isa 2
-
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
@@ -39,7 +36,7 @@ static void *smp_write_config_table(void *v)
 	static const char productid[12] = "PC2500      ";
 	struct mp_config_table *mc;
 
-	int bus_num;
+	int isa_bus;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -59,21 +56,13 @@ static void *smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 	smp_write_processors(mc);
-
-
-/* Bus:		Bus ID	Type*/
-	/* define numbers for pci and isa bus */
-	for (bus_num = 0; bus_num < bus_isa; bus_num++) {
-		smp_write_bus(mc, bus_num, "PCI   ");
-	}
-	smp_write_bus(mc, bus_isa, "ISA   ");
-
+	mptable_write_buses(mc, NULL, &isa_bus);
 
 /* I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, VT8237R_APIC_BASE);
 
 	/* Now, assemble the table. */
-	mptable_add_isa_interrupts(mc, bus_isa, VT8237R_APIC_ID, 0);
+	mptable_add_isa_interrupts(mc, isa_bus, VT8237R_APIC_ID, 0);
 
 #define PCI_INT(bus, dev, fn, pin) \
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, \

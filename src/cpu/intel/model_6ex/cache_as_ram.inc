@@ -23,7 +23,6 @@
 
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/amd/mtrr.h>
 
 	/* Save the BIST result */
 	movl    %eax, %ebp

@@ -17,16 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stdint.h>
 #include <usbdebug.h>
+#include <device/pci_def.h>
 
-// An arbitrary address for the BAR
-#define EHCI_BAR		0xFEF00000
-// These could be read from DEBUG_BASE (0:1d.7 R 0x5A 16bit)
-#define EHCI_BAR_INDEX		0x10
-
-#define EHCI_CONFIG_FLAG	0x40
-#define EHCI_PORTSC		0x44
-#define EHCI_DEBUG_OFFSET	0xA0
+#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
+#define EHCI_BAR_INDEX		0x10		/* Hardwired 0x10 (>= ICH4). */
+#define EHCI_DEBUG_OFFSET	0xA0		/* Hardwired 0xa0 (>= ICH5). */
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
@@ -37,13 +34,17 @@ void set_debug_port(unsigned int port)
 static void i82801gx_enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;
+	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
 
-	pci_write_config32(PCI_DEV(0, 0x1d, 7), EHCI_BAR_INDEX, EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, 0x1d, 7), 0x04, 0x2); // Memory Space Enable
+	/* Set the EHCI BAR address. */
+	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
 
+	/* Enable access to the EHCI memory space registers. */
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+
+	/* Force ownership of the Debug Port to the EHCI controller. */
 	printk(BIOS_DEBUG, "Enabling OWNER_CNT\n");
 	dbgctl = read32(EHCI_BAR + EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
 	write32(EHCI_BAR + EHCI_DEBUG_OFFSET, dbgctl);
 }
-

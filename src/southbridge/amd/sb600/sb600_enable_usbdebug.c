@@ -17,25 +17,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stdint.h>
 #include <usbdebug.h>
+#include <device/pci_def.h>
 
-#ifndef SB600_DEVN_BASE
-#define SB600_DEVN_BASE 0
-#endif
-
-#define EHCI_BAR_INDEX		0x10
-#define EHCI_BAR		0xFEF00000
-#define EHCI_DEBUG_OFFSET	0xE0
+#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
+#define EHCI_BAR_INDEX		0x10		/* TODO: DBUG_PRT[31:29] */
+#define EHCI_DEBUG_OFFSET	0xE0		/* Hardcoded to 0xE0 */
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
 {
+	/* TODO: Allow changing the physical USB port used as Debug Port. */
 }
 
-static void sb600_enable_usbdebug(u32 port)
+static void sb600_enable_usbdebug(unsigned int port)
 {
+	device_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
+
+	/* Select the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);
-	pci_write_config32(PCI_DEV(0, SB600_DEVN_BASE + 0x13, 5),
-			   EHCI_BAR_INDEX, EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, SB600_DEVN_BASE + 0x13, 5), 0x04, 0x2);	/* mem space enable */
+
+	/* Set the EHCI BAR address. */
+	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
+
+	/* Enable access to the EHCI memory space registers. */
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 }

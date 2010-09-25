@@ -21,32 +21,44 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* TODO: Check whether this actually works (might be copy-paste leftover). */
+
+#include <stdint.h>
+#include <usbdebug.h>
+#include <device/pci_def.h>
+
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-	#define SIS966_DEVN_BASE	CONFIG_HT_CHAIN_END_UNITID_BASE
+#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
-	#define SIS966_DEVN_BASE	CONFIG_HT_CHAIN_UNITID_BASE
+#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
 #endif
 
-#define EHCI_BAR_INDEX	0x10
-#define EHCI_BAR	0xFEF00000
+#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
+#define EHCI_BAR_INDEX		0x10
 #define EHCI_DEBUG_OFFSET	0x98
 
-#include <usbdebug.h>
-
-void set_debug_port(unsigned port)
+void set_debug_port(unsigned int port)
 {
-	uint32_t dword;
-	dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), 0x74);
-	dword &= ~(0xf<<12);
-	dword |= (port<<12);
-	pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), 0x74, dword);
+	u32 dword;
+	device_t dev = PCI_DEV(0, SIS966_DEVN_BASE + 2, 1); /* USB EHCI */
 
+	/* Write the port number to 0x74[15:12]. */
+	dword = pci_read_config32(dev, 0x74);
+	dword &= ~(0xf << 12);
+	dword |= (port << 12);
+	pci_write_config32(dev, 0x74, dword);
 }
 
-static void sis966_enable_usbdebug(unsigned port)
+static void sis966_enable_usbdebug(unsigned int port)
 {
+	device_t dev = PCI_DEV(0, SIS966_DEVN_BASE + 2, 1); /* USB EHCI */
+
+	/* Mark the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);
-	pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), EHCI_BAR_INDEX, EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, SIS966_DEVN_BASE+2, 1), 0x04, 0x2); // mem space enabe
-}
 
+	/* Set the EHCI BAR address. */
+	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
+
+	/* Enable access to the EHCI memory space registers. */
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+}

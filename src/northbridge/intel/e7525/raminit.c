@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include "raminit.h"
 #include "e7525.h"
+#include <pc80/mc146818rtc.h>
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"
 #endif

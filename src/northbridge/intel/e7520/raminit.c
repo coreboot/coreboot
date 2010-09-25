@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include "raminit.h"
 #include "e7520.h"
+#include <pc80/mc146818rtc.h>
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"
 #endif
@@ -626,7 +627,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	if (read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
 		ecc = 0;  /* ECC off in CMOS so disable it */
 		print_debug("ECC off\n");
-	} else 
+	} else
 #endif
 	{
 		print_debug("ECC on\n");

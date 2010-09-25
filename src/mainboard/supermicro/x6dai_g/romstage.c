@@ -5,7 +5,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
-#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "pc80/udelay_io.c"

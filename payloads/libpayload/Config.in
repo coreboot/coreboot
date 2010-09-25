@@ -230,7 +230,6 @@ config USB_EHCI
 	depends on USB
 	help
 	  Select this option if you want to use USB 2.0
-	  NOTE: This option is not (fully) implemented yet
 
 config USB_XHCI
 	bool "Support for USB xHCI controllers"

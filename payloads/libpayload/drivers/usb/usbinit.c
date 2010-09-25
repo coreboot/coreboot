@@ -31,7 +31,7 @@
 #include <usb/usb.h>
 #include "uhci.h"
 #include "ohci.h"
-//#include "ehci.h"
+#include "ehci.h"
 #include "xhci.h"
 #include <usb/usbdisk.h>
 
@@ -90,8 +90,7 @@ usb_controller_initialize (int bus, int dev, int func)
 		if (prog_if == 0x20) {
 			printf ("EHCI controller\n");
 #ifdef CONFIG_USB_EHCI
-			//ehci_init(addr);
-			printf ("Not supported.\n");
+			ehci_init(addr);
 #else
 			printf ("Not supported.\n");
 #endif

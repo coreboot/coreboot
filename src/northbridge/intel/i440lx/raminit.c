@@ -31,7 +31,7 @@ Macros and definitions.
 /* Uncomment this to enable debugging output. */
 
 /* Debugging macros. */
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
@@ -215,7 +215,7 @@ static void northbridge_init(void)
 	reg32 &= 0xe8000000U;
 	pci_write_config32(NB, APBASE, reg32);
 
-	#ifdef DEBUG_RAM_SETUP
+#if CONFIG_DEBUG_RAM_SETUP
 	/*
 	 * apbase dont get set still, no idea what i have doing wrong yet,
 	 * i am almost sure that somehow i set it by mistake once, but can't
@@ -225,7 +225,7 @@ static void northbridge_init(void)
 	PRINT_DEBUG("APBASE ");
 	PRINT_DEBUG_HEX32(reg32);
 	PRINT_DEBUG("\n");
-	#endif
+#endif
 }
 
 
@@ -265,7 +265,7 @@ static void sdram_set_registers(void)
 		 * i am not sure if that is needed, but was usefull
 		 * for me to confirm what got written
 		 */
-#ifdef DEBUG_RAM_SETUP
+#if CONFIG_DEBUG_RAM_SETUP
 		PRINT_DEBUG("    Set register 0x");
 		PRINT_DEBUG_HEX8(register_values[i]);
 		PRINT_DEBUG(" to 0x");

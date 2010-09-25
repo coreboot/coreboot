@@ -379,7 +379,7 @@ void main(unsigned long bist)
 
 #if CONFIG_HAVE_ACPI_RESUME == 0
 	/* When doing resume, we must not overwrite RAM */
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 	sdram_dump_mchbar_registers();
 
 	{

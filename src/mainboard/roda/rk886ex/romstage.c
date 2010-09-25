@@ -355,7 +355,7 @@ void main(unsigned long bist)
 
 #if !CONFIG_HAVE_ACPI_RESUME
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 	sdram_dump_mchbar_registers();
 
 	{

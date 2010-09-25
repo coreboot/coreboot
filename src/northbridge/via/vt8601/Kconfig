@@ -1,3 +1,4 @@
 config NORTHBRIDGE_VIA_VT8601
 	bool
+	select HAVE_DEBUG_RAM_SETUP
 

@@ -69,7 +69,7 @@ static void dimms_write(int x)
 	}
 }
 
-#ifdef CONFIG_DEBUG_RAM_SETUP
+#if CONFIG_DEBUG_RAM_SETUP
 static void dumpnorth(device_t north)
 {
 	unsigned int r, c;

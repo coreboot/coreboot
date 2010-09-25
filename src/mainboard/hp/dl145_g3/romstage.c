@@ -44,8 +44,6 @@
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
-#define DBGP_DEFAULT 7
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

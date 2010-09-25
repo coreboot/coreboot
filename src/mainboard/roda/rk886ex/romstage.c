@@ -41,7 +41,6 @@
 #include <cpu/x86/bist.h>
 
 #if CONFIG_USBDEBUG
-#define DBGP_DEFAULT 1
 #include "southbridge/intel/i82801gx/i82801gx_usb_debug.c"
 #include "pc80/usbdebug_serial.c"
 #endif
@@ -291,7 +290,7 @@ void main(unsigned long bist)
 	uart_init();
 
 #if CONFIG_USBDEBUG
-	i82801gx_enable_usbdebug(DBGP_DEFAULT);
+	i82801gx_enable_usbdebug(1);
 	early_usbdebug_init();
 #endif
 

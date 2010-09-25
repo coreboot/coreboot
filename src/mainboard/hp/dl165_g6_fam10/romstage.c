@@ -39,8 +39,6 @@
 #define SET_FIDVID 1
 #define SET_FIDVID_CORE_RANGE 0
 
-#define DBGP_DEFAULT 7
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

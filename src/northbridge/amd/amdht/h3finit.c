@@ -899,7 +899,7 @@ static void processLink(u8 node, u8 link, sMainData *pDat)
 	u32 unitIDcnt;
 	SBDFO currentPtr;
 	u8 depth;
-	u8 *pSwapPtr;
+	const u8 *pSwapPtr;
 
 	SBDFO lastSBDFO = ILLEGAL_SBDFO;
 	u8 lastLink = 0;

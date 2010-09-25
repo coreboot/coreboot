@@ -195,7 +195,7 @@ typedef struct {
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
-	BOOL (*AMD_CB_ManualBUIDSwapList)(u8 Node, u8 Link, u8 **List);
+	BOOL (*AMD_CB_ManualBUIDSwapList)(u8 Node, u8 Link, const u8 **List);
 
 	/**----------------------------------------------------------------------------------------
 	 *

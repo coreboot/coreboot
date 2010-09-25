@@ -117,9 +117,9 @@ static void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
  *	@param[out] BOOL result = true to use a manual list
  *				  false to initialize the link automatically
  */
-static BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, u8 **List)
+static BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
-	static u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
+	static const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
 	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {
 		printk(BIOS_DEBUG, "AMD_CB_ManualBUIDSwapList()\n");

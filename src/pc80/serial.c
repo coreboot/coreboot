@@ -1,6 +1,9 @@
 #include <lib.h> /* Prototypes */
 #include <arch/io.h>
 #include "pc80/mc146818rtc.h"
+#if CONFIG_USE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 /* Base Address */
 #ifndef CONFIG_TTYS0_BASE

@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include "raminit.h"
 #include "e7525.h"
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 #define BAR 0x40000000
 
@@ -619,11 +622,13 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 
 	}
 	ecc = 2;
+#if CONFIG_HAVE_OPTION_TABLE
 	if (read_option(CMOS_VSTART_ECC_memory,CMOS_VLEN_ECC_memory,1) == 0) {
 		ecc = 0;  /* ECC off in CMOS so disable it */
 		print_debug("ECC off\n");
-	}
-	else {
+	} else
+#endif
+	{
 		print_debug("ECC on\n");
 	}
 	drc &= ~(3 << 20); /* clear the ecc bits */

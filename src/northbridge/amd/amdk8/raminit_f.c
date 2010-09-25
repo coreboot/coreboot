@@ -28,6 +28,9 @@
 #include "raminit.h"
 #include "amdk8_f.h"
 #include <spd_ddr2.h>
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 #ifndef QRANK_DIMM_SUPPORT
 #define QRANK_DIMM_SUPPORT 0

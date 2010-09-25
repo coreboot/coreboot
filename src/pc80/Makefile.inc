@@ -8,3 +8,4 @@ initobj-$(CONFIG_CACHE_AS_RAM) += serial.o
 subdirs-y += vga
 
 $(obj)/pc80/mc146818rtc.o : $(OPTION_TABLE_H)
+$(obj)/pc80/mc146818rtc_early.initobj.o : $(OPTION_TABLE_H)

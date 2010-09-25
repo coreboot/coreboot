@@ -10,6 +10,9 @@
 #include <reset.h>
 #include "raminit.h"
 #include "amdk8.h"
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 #if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
 # error "CONFIG_RAMTOP must be a power of 2"

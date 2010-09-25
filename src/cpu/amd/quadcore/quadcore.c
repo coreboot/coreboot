@@ -20,6 +20,9 @@
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <northbridge/amd/amdht/ht_wrapper.c>
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 #ifndef SET_NB_CFG_54
 	#define SET_NB_CFG_54 1

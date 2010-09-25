@@ -1,3 +1,7 @@
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
+
 //it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
 #ifndef SET_FIDVID
 #if CONFIG_K8_REV_F_SUPPORT == 0

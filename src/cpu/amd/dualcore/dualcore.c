@@ -7,6 +7,9 @@
 
 #include "cpu/amd/dualcore/dualcore_id.c"
 #include <pc80/mc146818rtc.h>
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 {

@@ -43,6 +43,7 @@
 #include "superio/winbond/w83627thg/w83627thg.h"
 
 #include <pc80/mc146818rtc.h>
+#include "option_table.h"
 
 #include <console/console.h>
 #include <cpu/x86/bist.h>

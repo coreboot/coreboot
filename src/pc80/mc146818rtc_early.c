@@ -1,5 +1,8 @@
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
+#if CONFIG_USE_OPTION_TABLE
+#include "option_table.h"
+#endif
 
 #ifndef CONFIG_MAX_REBOOT_CNT
 #error "CONFIG_MAX_REBOOT_CNT not defined"

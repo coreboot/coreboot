@@ -32,7 +32,7 @@
 
 extern unsigned char AmlCode[];
 
-#include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
+#include "southbridge/intel/i82801gx/i82801gx_nvs.h"
 
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {

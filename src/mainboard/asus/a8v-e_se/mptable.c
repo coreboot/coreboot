@@ -20,8 +20,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/smp/mpspec.h>
-#include "../../../southbridge/via/vt8237r/vt8237r.h"
-#include "../../../southbridge/via/k8t890/k8t890.h"
+#include "southbridge/via/vt8237r/vt8237r.h"
+#include "southbridge/via/k8t890/k8t890.h"
 
 static void *smp_write_config_table(void *v)
 {

@@ -27,7 +27,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#include "../../../southbridge/via/vt8237r/vt8237r.h"
+#include "southbridge/via/vt8237r/vt8237r.h"
 
 static void *smp_write_config_table(void *v)
 {

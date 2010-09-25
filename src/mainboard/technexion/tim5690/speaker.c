@@ -29,7 +29,7 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "../../../southbridge/amd/sb600/sb600.h"
+#include "southbridge/amd/sb600/sb600.h"
 #include <delay.h>
 
 #endif /* __PRE_RAM__ */

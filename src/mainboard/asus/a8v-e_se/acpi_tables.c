@@ -28,8 +28,8 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
-#include "../../../southbridge/via/vt8237r/vt8237r.h"
-#include "../../../southbridge/via/k8t890/k8t890.h"
+#include "southbridge/via/vt8237r/vt8237r.h"
+#include "southbridge/via/k8t890/k8t890.h"
 
 extern const unsigned char AmlCode[];
 

@@ -25,7 +25,7 @@
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
-#include "../../../southbridge/amd/cs5536/cs5536.h"
+#include "southbridge/amd/cs5536/cs5536.h"
 #include "chip.h"
 
 static void init_gpio(void)

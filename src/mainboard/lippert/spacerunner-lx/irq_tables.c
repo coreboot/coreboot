@@ -24,7 +24,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/pirq_routing.h>
-#include "../../../southbridge/amd/cs5536/cs5536.h"
+#include "southbridge/amd/cs5536/cs5536.h"
 
 /* Platform IRQs */
 #define PIRQA 10

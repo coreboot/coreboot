@@ -89,6 +89,9 @@ config HAVE_USBDEBUG
 	def_bool n
 
 config USBDEBUG
+	def_bool n
+
+config USBDEBUG
 	bool "USB 2.0 EHCI debug dongle support"
 	default n
 	depends on HAVE_USBDEBUG

@@ -6,7 +6,7 @@
 
  * Copyright 2005 AMD
  * 2005.08 yhlu add microcode support
-*/
+ */
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -18,7 +18,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
 
-#include "../../../northbridge/amd/amdk8/amdk8.h"
+#include "northbridge/amd/amdk8/amdk8.h"
 
 #include <cpu/amd/model_fxx_rev.h>
 #include <cpu/amd/microcode.h>

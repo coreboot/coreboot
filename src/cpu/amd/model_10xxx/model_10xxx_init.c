@@ -28,7 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
 
-#include "../../../northbridge/amd/amdfam10/amdfam10.h"
+#include "northbridge/amd/amdfam10/amdfam10.h"
 
 #include <cpu/amd/model_10xxx_rev.h>
 #include <cpu/cpu.h>

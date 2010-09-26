@@ -84,38 +84,30 @@ config TTYS0_LCS
 	default 3
 	depends on CONSOLE_SERIAL8250
 
-# TODO: FIX DEPENDENCY HERE
+# Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
+config HAVE_USBDEBUG
+	def_bool n
+
 config USBDEBUG
 	bool "USB 2.0 EHCI debug dongle support"
 	default n
+	depends on HAVE_USBDEBUG
 	help
 	  This option allows you to use a so-called USB EHCI Debug device
+	  (such as the Ajays NET20DC, AMIDebug RX, or a system using the
+	  Linux "EHCI Debug Device gadget" driver found in recent kernel)
 	  to retrieve the coreboot debug messages (instead, or in addition
 	  to, a serial port).
 
 	  This feature is NOT supported on all chipsets in coreboot!
 
 	  It also requires a USB2 controller which supports the EHCI
-	  Debug Port capability. Controllers which are known to work:
+	  Debug Port capability.
 
-	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
-	    * 8086:24cd Intel ICH4/ICH4-M
-	    * 8086:24dd Intel ICH5
-	    * 8086:265c Intel ICH6
-	    * 8086:268c Intel 631xESB/632xESB/3100
-	    * 8086:27cc Intel ICH7
-	    * 8086:2836 Intel ICH8
-	    * 8086:283a Intel ICH8
-	    * 8086:293a Intel ICH9
-	    * 10de:0088 NVIDIA MCP2A
-	    * 10de:005b NVIDIA CK804
-	    * 10de:026e NVIDIA MCP51
-	    * 10de:036d NVIDIA MCP55
-	    * 10de:03f2 NVIDIA MCP61
-	    * 1002:4386 ATI/AMD SB600
-	    * 1106:3104 VIA VX800
+	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
+	  of supported controllers.
 
-	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list.
+	  If unsure, say N.
 
 config CONSOLE_VGA
 	bool "Use VGA console once initialized"

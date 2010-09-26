@@ -20,3 +20,5 @@
 config SOUTHBRIDGE_AMD_SB600
 	bool
 	select IOAPIC
+	select HAVE_USBDEBUG
+

@@ -1,6 +1,7 @@
 config SOUTHBRIDGE_NVIDIA_MCP55
 	bool
 	select IOAPIC
+	select HAVE_USBDEBUG
 
 config ID_SECTION_OFFSET
 	hex

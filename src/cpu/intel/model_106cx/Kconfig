@@ -1,4 +1,4 @@
-config CPU_INTEL_ATOM_230
+config CPU_INTEL_MODEL_106CX
 	bool
 	select SMP
 	select SSE2

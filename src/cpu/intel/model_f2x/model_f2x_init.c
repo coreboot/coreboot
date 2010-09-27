@@ -1,6 +1,5 @@
 #include <console/console.h>
 #include <device/device.h>
-#include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
 #include <cpu/cpu.h>
@@ -29,7 +28,6 @@ static uint32_t microcode_updates[] = {
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
 };
-
 
 static void model_f2x_init(device_t cpu)
 {

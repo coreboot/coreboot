@@ -20,6 +20,7 @@
 #ifndef CONSOLE_CONSOLE_H_
 #define CONSOLE_CONSOLE_H_
 
+#include <stdint.h>
 #include <console/loglevel.h>
 
 #ifndef __PRE_RAM__

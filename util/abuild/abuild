@@ -570,8 +570,8 @@ test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache Vvhat:bp:Tc:sxCl:rP:uy -- "$@"`
-	eval set "$args"
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:bp:Tc:sxCl:rP:uy -- "$@"`
+	eval set -- $args
 else
 	# Detected non-GNU getopt
 	args=`getopt Vvhat:bp:Tc:sxCl:rP:uy $*`
@@ -589,7 +589,7 @@ while true ; do
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-b|--broken)	shift; buildbroken=true;;
-		-r|--remove)	shift; remove=true; shift;;
+		-r|--remove)	shift; remove=true;;
 		-v|--verbose)	shift; verbose=true; silent='V=1';;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;

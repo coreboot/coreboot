@@ -10,7 +10,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select PIRQ_ROUTE
 	select UDELAY_TSC
-	select CACHE_AS_RAM
 	# Board is equipped with a 1 MB SPI flash, however, due to limitations
 	# of the IT8712F Super I/O, only the top 512 KB are directly mapped.
 	select BOARD_ROMSIZE_KB_512

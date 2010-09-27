@@ -10,7 +10,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select PIRQ_ROUTE
 	select UDELAY_TSC
-	select CACHE_AS_RAM
 	# Standard chip is a 512 KB FWH. Replacing it with a 1 MB
 	# SST 49LF008A is possible.
 	select BOARD_ROMSIZE_KB_512

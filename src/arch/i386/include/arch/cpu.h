@@ -108,7 +108,6 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #if !defined(__PRE_RAM__)
 #include <device/device.h>
 
-
 struct cpu_device_id {
 	unsigned vendor;
 	unsigned device;

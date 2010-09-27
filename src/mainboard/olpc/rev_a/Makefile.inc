@@ -1,1 +1,0 @@
-ROMCCFLAGS=-mcpu=p2 -O

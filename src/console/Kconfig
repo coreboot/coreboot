@@ -112,6 +112,27 @@ config USBDEBUG
 
 	  If unsure, say N.
 
+# Note: This option doesn't make sense on Intel ICH southbridges as those
+# hardcode the physical USB port to be used as Debug Port to 1. It cannot
+# be changed by coreboot.
+config USBDEBUG_DEFAULT_PORT
+	int "Default USB port to use as Debug Port"
+	default 1
+	depends on USBDEBUG && !SOUTHBRIDGE_INTEL_I82801GX
+	help
+	  This option selects which physical USB port coreboot will try to
+	  use as EHCI Debug Port first (valid values are: 1-15).
+
+	  If coreboot doesn't detect an EHCI Debug Port dongle on this port,
+	  it will try all the other ports one after the other. This will take
+	  a few seconds of time though, and thus slow down the booting process.
+
+	  Hence, if you select the correct port here, you can speed up
+	  your boot time. Which USB port number (1-15) refers to which
+	  actual port on your mainboard (potentially also USB pin headers
+	  on your mainboard) is highly board-specific, and you'll likely
+	  have to find out by trial-and-error.
+
 config CONSOLE_VGA
 	bool "Use VGA console once initialized"
 	default n

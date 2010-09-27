@@ -38,8 +38,6 @@
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
-#define DBGP_DEFAULT 7
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -192,7 +190,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
 #if CONFIG_USBDEBUG
-	mcp55_enable_usbdebug(DBGP_DEFAULT);
+	mcp55_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
 	console_init();

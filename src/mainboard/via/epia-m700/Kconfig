@@ -19,10 +19,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-M700"
 
-config RAMBASE
-	hex
-	default 0x4000
-
 config IRQ_SLOT_COUNT
 	int
 	default 13

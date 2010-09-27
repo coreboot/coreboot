@@ -29,8 +29,5 @@ config IRQ_SLOT_COUNT
 	int
 	default 15
 
-config RAMBASE
-	hex
-	default 0x4000
-
 endif # BOARD_VIA_VT8454C
+

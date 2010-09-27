@@ -20,10 +20,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "J7f24"
 
-config RAMBASE
-	hex
-	default 0x4000
-
 config IRQ_SLOT_COUNT
 	int
 	default 10

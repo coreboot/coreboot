@@ -42,8 +42,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 3
 
-config RAMBASE
-	hex
-	default 0x4000
-
 endif # BOARD_WYSE_S50

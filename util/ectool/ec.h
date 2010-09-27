@@ -20,8 +20,6 @@
 #ifndef _EC_H
 #define _EC_H
 
-#include <stdint.h>
-
 #define EC_DATA		0x62
 #define EC_SC		0x66
 

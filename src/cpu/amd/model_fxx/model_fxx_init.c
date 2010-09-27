@@ -471,15 +471,6 @@ static void model_fxx_init(device_t dev)
 	unsigned long i;
 	msr_t msr;
 	struct node_core_id id;
-#if CONFIG_LOGICAL_CPUS == 1
-	u32 siblings;
-#endif
-
-#if CONFIG_K8_REV_F_SUPPORT == 1
-	struct cpuinfo_x86 c;
-
-	get_fms(&c, dev->device);
-#endif
 
 #if CONFIG_USBDEBUG
 	if (!ehci_debug_addr)
@@ -524,7 +515,7 @@ static void model_fxx_init(device_t dev)
 	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS == 1
-	siblings = cpuid_ecx(0x80000008) & 0xff;
+	u32 siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
 		msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
@@ -548,12 +539,6 @@ static void model_fxx_init(device_t dev)
 	 */
 	if (id.coreid == 0)
 		init_ecc_memory(id.nodeid);	// only do it for core 0
-
-#if CONFIG_LOGICAL_CPUS==1
-	/* Start up my cpu siblings */
-//      if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
-#endif
-
 }
 
 static struct device_operations cpu_dev_ops = {

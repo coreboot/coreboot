@@ -3516,10 +3516,11 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	for (Node = 0; Node < 8; Node++) {
 		pDCTstat = pDCTstatA + Node;
 
-		if (pDCTstat->NodePresent)
+		if (pDCTstat->NodePresent) {
 			mct_BeforeDQSTrainSamp(pDCTstat); /* only Bx */
 			mct_ResetDLL_D(pMCTstat, pDCTstat, 0);
 			mct_ResetDLL_D(pMCTstat, pDCTstat, 1);
+		}
 	}
 }
 

@@ -633,7 +633,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 		devx = pDCTstat->dev_map;
 
 		if (pDCTstat->NodePresent) {
-		printk(BIOS_DEBUG, " Copy dram map from Node 0 to Node %02x \n", Node);
+			printk(BIOS_DEBUG, " Copy dram map from Node 0 to Node %02x \n", Node);
 			reg = 0x40;		/*Dram Base 0*/
 			do {
 				val = Get_NB32(dev, reg);
@@ -3774,11 +3774,11 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	for (Node = 0; Node < 8; Node++) {
 		pDCTstat = pDCTstatA + Node;
 
-		if (pDCTstat->NodePresent)
+		if (pDCTstat->NodePresent) {
 			mct_BeforeDQSTrain_Samp_D(pMCTstat, pDCTstat);
 			mct_ResetDLL_D(pMCTstat, pDCTstat, 0);
 			mct_ResetDLL_D(pMCTstat, pDCTstat, 1);
-
+		}
 	}
 }
 

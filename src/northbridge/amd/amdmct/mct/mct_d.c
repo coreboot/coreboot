@@ -776,7 +776,7 @@ static u8 NodePresent_D(u8 Node)
 		if (val  == dword)	/* current nodeID = requested nodeID ? */
 			ret = 1;
 finish:
-	;
+		;
 	}
 
 	return ret;
@@ -1040,33 +1040,33 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 				if (byte & 0xF0) {
 					val++;	/* round up in case fractional extention is non-zero.*/
 				}
-		}
-		if (Trc < val)
-			Trc = val;
+			}
+			if (Trc < val)
+				Trc = val;
 
-		/* dev density=rank size/#devs per rank */
-		byte = mctRead_SPD(smbaddr, SPD_BANKSZ);
+			/* dev density=rank size/#devs per rank */
+			byte = mctRead_SPD(smbaddr, SPD_BANKSZ);
 
-		val = ((byte >> 5) | (byte << 3)) & 0xFF;
-		val <<= 2;
+			val = ((byte >> 5) | (byte << 3)) & 0xFF;
+			val <<= 2;
 
-		byte = mctRead_SPD(smbaddr, SPD_DEVWIDTH) & 0xFE;     /* dev density=2^(rows+columns+banks) */
-		if (byte == 4) {
-			val >>= 4;
-		} else if (byte == 8) {
-			val >>= 3;
-		} else if (byte == 16) {
-			val >>= 2;
-		}
+			byte = mctRead_SPD(smbaddr, SPD_DEVWIDTH) & 0xFE;     /* dev density=2^(rows+columns+banks) */
+			if (byte == 4) {
+				val >>= 4;
+			} else if (byte == 8) {
+				val >>= 3;
+			} else if (byte == 16) {
+				val >>= 2;
+			}
 
-		byte = bsr(val);
+			byte = bsr(val);
 
-		if (Trfc[LDIMM] < byte)
-			Trfc[LDIMM] = byte;
+			if (Trfc[LDIMM] < byte)
+				Trfc[LDIMM] = byte;
 
-		byte = mctRead_SPD(smbaddr, SPD_TRAS);
-		if (Tras < byte)
-			Tras = byte;
+			byte = mctRead_SPD(smbaddr, SPD_TRAS);
+			if (Tras < byte)
+				Tras = byte;
 		}	/* Dimm Present */
 	}
 
@@ -1129,7 +1129,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 	}
 	pDCTstat->Trp = val;
 
-	 /*Trrd*/
+	/*Trrd*/
 	dword = Trrd * 10;
 	pDCTstat->DIMMTrrd = dword;
 	val = dword / Tk40;
@@ -2183,8 +2183,8 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 						pDCTstat->DimmECCPresent |= 1 << i;
 					}
 					if (byte & JED_ADRCPAR) {
-					/* DIMM is ECC capable */
-					pDCTstat->DimmPARPresent |= 1 << i;
+						/* DIMM is ECC capable */
+						pDCTstat->DimmPARPresent |= 1 << i;
 					}
 					/* Check if x4 device */
 					devwidth = mctRead_SPD(smbaddr, SPD_DEVWIDTH) & 0xFE;
@@ -2455,8 +2455,8 @@ static u8 mct_setMode(struct MCTStatStruc *pMCTstat,
 	if (byte != bytex) {
 		pDCTstat->ErrStatus &= ~(1 << SB_DimmMismatchO);
 	} else {
-	if ( mctGet_NVbits(NV_Unganged) )
-		pDCTstat->ErrStatus |= (1 << SB_DimmMismatchO);
+		if ( mctGet_NVbits(NV_Unganged) )
+			pDCTstat->ErrStatus |= (1 << SB_DimmMismatchO);
 
 		if (!(pDCTstat->ErrStatus & (1 << SB_DimmMismatchO))) {
 			pDCTstat->GangedMode = 1;
@@ -2872,7 +2872,7 @@ static void Get_Twrwr(struct MCTStatStruc *pMCTstat,
 		dword = bsr(pDCTstat->DIMMValid);
 		if (dword != val && dword != 0)  {
 			/*the largest WrDatGrossDlyByte of any DIMM minus the
-			WrDatGrossDlyByte of any other DIMM is equal to CGDD */
+			  WrDatGrossDlyByte of any other DIMM is equal to CGDD */
 			val = Get_WrDatGross_Diff(pDCTstat, dct, dev, index_reg);
 		}
 		if (val == 0)
@@ -3128,7 +3128,7 @@ static u16 Get_DqsRcvEnGross_MaxMin(struct DCTStatStruc *pDCTstat,
 					Largest = byte;
 			}
 		}
-	index += 3;
+		index += 3;
 	}	/* while ++i */
 
 	word = Smallest;
@@ -3265,7 +3265,7 @@ static void mct_HTMemMapExt(struct MCTStatStruc *pMCTstat,
 	dev = pDCTstat->dev_map;
 
 	/* Copy dram map from F1x40/44,F1x48/4c,
-	  to F1x120/124(Node0),F1x120/124(Node1),...*/
+	   to F1x120/124(Node0),F1x120/124(Node1),...*/
 	for (Node=0; Node < MAX_NODES_SUPPORTED; Node++) {
 		pDCTstat = pDCTstatA + Node;
 		devx = pDCTstat->dev_map;
@@ -3738,7 +3738,7 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	Set_NB32_index_wait(dev, index_reg, index, val | (1 << DisAutoComp));
 
 	//FIXME: check for Bx Cx CPU
-	  // if Ax mct_SetDramConfigHi_Samp_D
+	// if Ax mct_SetDramConfigHi_Samp_D
 
 	/* errata#177 */
 	index = 0x4D014F00;	/* F2x[1, 0]9C_x[D0FFFFF:D000000] DRAM Phy Debug Registers */

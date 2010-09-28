@@ -2814,7 +2814,7 @@ static u16 Get_DqsRcvEnGross_MaxMin(struct DCTStatStruc *pDCTstat,
 					Largest = byte;
 			}
 		}
-	index += 3;
+		index += 3;
 	}	/* while ++i */
 
 	word = Smallest;

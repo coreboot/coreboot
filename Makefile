@@ -32,7 +32,7 @@ HOSTCC:=$(CC_real) --hostcc
 HOSTCXX:=$(CC_real) --hostcxx
 endif
 
-export top := $(PWD)
+export top := $(CURDIR)
 export src := src
 export srck := $(top)/util/kconfig
 export obj ?= build
@@ -196,7 +196,7 @@ includemakefiles= \
 			$$(abspath $$(patsubst src/%, \
 					$(obj)/%, \
 					$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
-	$(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
+	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles, passing $(1) as $(3)
 # Repeat until subdirs is empty

@@ -38,10 +38,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Serengeti Cheetah (Fam10)"
 
-config HW_MEM_HOLE_SIZEK
-	hex
-	default 0x100000
-
 # 6 * MAX_PHYSICAL_CPUS
 config MAX_CPUS
 	int
@@ -50,10 +46,6 @@ config MAX_CPUS
 config MAX_PHYSICAL_CPUS
 	int
 	default 8
-
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
 
 config MEM_TRAIN_SEQ
 	int

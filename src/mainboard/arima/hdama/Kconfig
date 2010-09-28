@@ -49,10 +49,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool
-	default n
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1

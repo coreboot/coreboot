@@ -30,9 +30,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include "sis966.h"
-#if CONFIG_USBDEBUG
 #include <usbdebug.h>
-#endif
 
 extern struct ehci_debug_info dbg_info;
 

@@ -359,7 +359,7 @@ clean: clean-for-update
 	rm -f $(obj)/coreboot* .ccwrap
 
 clean-abuild:
-	rm -rf coreboot_builds
+	rm -rf coreboot-builds
 
 clean-cscope:
 	rm -f cscope.out

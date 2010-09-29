@@ -364,7 +364,7 @@ clean-abuild:
 clean-cscope:
 	rm -f cscope.out
 
-distclean: clean-cscope clean-abuild
+distclean: clean-cscope
 	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 

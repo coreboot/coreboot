@@ -31,6 +31,7 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/name.h>
 #include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
@@ -57,38 +58,6 @@ static const uint32_t microcode_updates[] = {
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
 };
-
-static inline void strcpy(char *dst, char *src)
-{
-	while (*src) *dst++ = *src++;
-}
-
-static void fill_processor_name(char *processor_name)
-{
-	struct cpuid_result regs;
-	char temp_processor_name[49];
-	char *processor_name_start;
-	unsigned int *name_as_ints = (unsigned int *)temp_processor_name;
-	int i;
-
-	for (i=0; i<3; i++) {
-		regs = cpuid(0x80000002 + i);
-		name_as_ints[i*4 + 0] = regs.eax;
-		name_as_ints[i*4 + 1] = regs.ebx;
-		name_as_ints[i*4 + 2] = regs.ecx;
-		name_as_ints[i*4 + 3] = regs.edx;
-	}
-
-	temp_processor_name[48] = 0;
-
-	/* Skip leading spaces */
-	processor_name_start = temp_processor_name;
-	while (*processor_name_start == ' ')
-		processor_name_start++;
-
-	memset(processor_name, 0, 49);
-	strcpy(processor_name, processor_name_start);
-}
 
 #define IA32_FEATURE_CONTROL 0x003a
 

@@ -111,12 +111,6 @@ static inline void wrmsr_amd(unsigned index, msr_t msr)
                 );
 }
 
-static inline void strcpy(char *dst, const char *src)
-{
-	while (*src) *dst++ = *src++;
-}
-
-
 int init_processor_name(void)
 {
 #if CONFIG_K8_REV_F_SUPPORT == 0

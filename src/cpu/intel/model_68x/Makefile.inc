@@ -19,3 +19,5 @@
 ##
 
 driver-y += model_68x_init.o
+subdirs-y += ../../x86/name
+

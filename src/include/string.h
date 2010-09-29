@@ -68,6 +68,12 @@ static inline char *strncpy(char *to, const char *from, int count)
 	return ret;
 }
 
+static inline void strcpy(char *dst, const char *src)
+{
+	while (*src)
+		*dst++ = *src++;
+}
+
 static inline int strcmp(const char *s1, const char *s2)
 {
 	int r;

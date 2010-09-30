@@ -1,30 +1,8 @@
 config CPU_AMD_MODEL_FXX
 	bool
-	select CACHE_AS_RAM
 	select MMX
 	select SSE
 	select SSE2
-
-config CPU_ADDR_BITS
-	int
-	default 40
-	depends on CPU_AMD_MODEL_FXX
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-	depends on CPU_AMD_MODEL_FXX
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x08000
-	depends on CPU_AMD_MODEL_FXX
-
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x01000
-	depends on CPU_AMD_MODEL_FXX
-
 
 config UDELAY_IO
 	bool

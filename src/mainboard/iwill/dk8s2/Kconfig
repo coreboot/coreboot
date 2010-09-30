@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select HAVE_OPTION_TABLE
 	select HAVE_MP_TABLE
-	select CACHE_AS_RAM
 	select HAVE_HARD_RESET
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select WAIT_BEFORE_CPUS_INIT
@@ -22,18 +21,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 config MAINBOARD_DIR
 	string
 	default iwill/dk8s2
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x08000
-
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x01000
 
 config APIC_ID_OFFSET
 	hex

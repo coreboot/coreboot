@@ -18,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_SUPERIO_FINTEK_F71863FG) += superio.o
+ramstage-$(CONFIG_SUPERIO_FINTEK_F71863FG) += superio.c
 

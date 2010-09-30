@@ -18,8 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += cs5530.o
-driver-y += cs5530_isa.o
-driver-y += cs5530_ide.o
-driver-y += cs5530_vga.o
-driver-y += cs5530_pirq.o
+driver-y += cs5530.c
+driver-y += cs5530_isa.c
+driver-y += cs5530_ide.c
+driver-y += cs5530_vga.c
+driver-y += cs5530_pirq.c

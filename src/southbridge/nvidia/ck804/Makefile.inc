@@ -1,19 +1,19 @@
-driver-y += ck804.o
-driver-y += ck804_usb.o
-driver-y += ck804_lpc.o
-driver-y += ck804_smbus.o
-driver-y += ck804_ide.o
-driver-y += ck804_sata.o
-driver-y += ck804_usb2.o
-driver-y += ck804_ac97.o
-driver-y += ck804_nic.o
-driver-y += ck804_pci.o
-driver-y += ck804_pcie.o
-driver-y += ck804_ht.o
+driver-y += ck804.c
+driver-y += ck804_usb.c
+driver-y += ck804_lpc.c
+driver-y += ck804_smbus.c
+driver-y += ck804_ide.c
+driver-y += ck804_sata.c
+driver-y += ck804_usb2.c
+driver-y += ck804_ac97.c
+driver-y += ck804_nic.c
+driver-y += ck804_pci.c
+driver-y += ck804_pcie.c
+driver-y += ck804_ht.c
 
-obj-y += ck804_reset.o
+ramstage-y += ck804_reset.c
 
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += ck804_fadt.o
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ck804_fadt.c
 
 chipset_bootblock_inc += $(src)/southbridge/nvidia/ck804/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/nvidia/ck804/romstrap.lds

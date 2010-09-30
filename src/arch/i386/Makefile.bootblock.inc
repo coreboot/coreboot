@@ -81,16 +81,16 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 
 #######################################################################
 # Build the romstage
-$(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(initobjs) $(obj)/romstage/ldscript.ld
+$(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	printf "CONFIG_ROMBASE = 0x0;\nAUTO_XIP_ROM_BASE = 0x0;\n" > $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)
+	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
 	printf "CONFIG_ROMBASE = 0x" > $(obj)/location.ld
 	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt
 	cat $(obj)/location.txt >> $(obj)/location.ld
 	printf ';\nAUTO_XIP_ROM_BASE = CONFIG_ROMBASE & ~(CONFIG_XIP_ROM_SIZE - 1);\n' >> $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)
+	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
 	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
 	$(OBJCOPY) --only-keep-debug $(obj)/romstage.elf $(obj)/romstage.debug
 	$(OBJCOPY) --strip-debug $(obj)/romstage.elf
@@ -107,7 +107,7 @@ $(obj)/romstage/crt0.S: $$(crt0s)
 	mkdir -p $(obj)/romstage
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+$(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 

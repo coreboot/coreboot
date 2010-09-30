@@ -1,2 +1,2 @@
-obj-y += vga_io.o
-obj-$(CONFIG_VGA) += vga.o
+ramstage-y += vga_io.c
+ramstage-$(CONFIG_VGA) += vga.c

@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-y += socket_FC_PGA370.o
+ramstage-y += socket_FC_PGA370.c
 subdirs-y += ../model_68x
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

@@ -1,1 +1,1 @@
-driver-y += bcm21000_pcie.o
+driver-y += bcm21000_pcie.c

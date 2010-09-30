@@ -17,21 +17,21 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += i82801gx.o
-driver-y += i82801gx_ac97.o
-driver-y += i82801gx_azalia.o
-driver-y += i82801gx_ide.o
-driver-y += i82801gx_lpc.o
-driver-y += i82801gx_nic.o
-driver-y += i82801gx_pci.o
-driver-y += i82801gx_pcie.o
-driver-y += i82801gx_sata.o
-driver-y += i82801gx_smbus.o
-driver-y += i82801gx_usb.o
-driver-y += i82801gx_usb_ehci.o
+driver-y += i82801gx.c
+driver-y += i82801gx_ac97.c
+driver-y += i82801gx_azalia.c
+driver-y += i82801gx_ide.c
+driver-y += i82801gx_lpc.c
+driver-y += i82801gx_nic.c
+driver-y += i82801gx_pci.c
+driver-y += i82801gx_pcie.c
+driver-y += i82801gx_sata.c
+driver-y += i82801gx_smbus.c
+driver-y += i82801gx_usb.c
+driver-y += i82801gx_usb_ehci.c
 
-obj-y += i82801gx_reset.o
-obj-y += i82801gx_watchdog.o
+ramstage-y += i82801gx_reset.c
+ramstage-y += i82801gx_watchdog.c
 
-obj-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.o
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smihandler.o
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smihandler.c

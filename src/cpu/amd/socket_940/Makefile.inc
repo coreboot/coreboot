@@ -1,4 +1,4 @@
-obj-y += socket_940.o
+ramstage-y += socket_940.c
 subdirs-y += ../model_fxx
 subdirs-y += ../dualcore
 subdirs-y += ../mtrr

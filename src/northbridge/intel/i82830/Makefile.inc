@@ -1,4 +1,4 @@
-driver-y += northbridge.o
-driver-y += vga.o
+driver-y += northbridge.c
+driver-y += vga.c
 
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += i82830_smihandler.o
+smm-$(CONFIG_HAVE_SMI_HANDLER) += i82830_smihandler.c

@@ -1,13 +1,13 @@
-obj-y += c_start.o
-obj-y += cpu.o
-obj-y += pci_ops_conf1.o
-obj-y += pci_ops_conf2.o
-obj-y += pci_ops_mmconf.o
-obj-y += pci_ops_auto.o
-obj-y += exception.o
-obj-$(CONFIG_IOAPIC) += ioapic.o
+ramstage-y += c_start.S
+ramstage-y += cpu.c
+ramstage-y += pci_ops_conf1.c
+ramstage-y += pci_ops_conf2.c
+ramstage-y += pci_ops_mmconf.c
+ramstage-y += pci_ops_auto.c
+ramstage-y += exception.c
+ramstage-$(CONFIG_IOAPIC) += ioapic.c
 
-initobj-y += printk_init.o
-initobj-y += cbfs_and_run.o
+romstage-y += printk_init.c
+romstage-y += cbfs_and_run.c
 
-$(obj)/arch/i386/lib/console.o :: $(obj)/build.h
+$(obj)/arch/i386/lib/console.ramstage.o :: $(obj)/build.h

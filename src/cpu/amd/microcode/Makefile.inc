@@ -1,1 +1,1 @@
-obj-y += microcode.o
+ramstage-y += microcode.c

@@ -1,1 +1,1 @@
-obj-y += cache.o
+ramstage-y += cache.c

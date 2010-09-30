@@ -18,16 +18,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += i82801ax.o
-driver-y += i82801ax_ac97.o
-driver-y += i82801ax_ide.o
-driver-y += i82801ax_lpc.o
-driver-y += i82801ax_pci.o
-# driver-y += i82801ax_smbus.o
-driver-y += i82801ax_usb.o
+driver-y += i82801ax.c
+driver-y += i82801ax_ac97.c
+driver-y += i82801ax_ide.c
+driver-y += i82801ax_lpc.c
+driver-y += i82801ax_pci.c
+# driver-y += i82801ax_smbus.c
+driver-y += i82801ax_usb.c
 
-obj-y += i82801ax_reset.o
-obj-y += i82801ax_watchdog.o
+ramstage-y += i82801ax_reset.c
+ramstage-y += i82801ax_watchdog.c
 
 # TODO: Fix and enable i82801ax_smbus.o later.
 

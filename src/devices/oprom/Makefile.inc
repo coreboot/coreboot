@@ -17,9 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86.o
-obj-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_asm.o
-obj-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_interrupts.o
+ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86.c
+ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_asm.S
+ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_interrupts.c
 
 subdirs-$(CONFIG_PCI_OPTION_ROM_RUN_YABEL) += x86emu
 subdirs-$(CONFIG_PCI_OPTION_ROM_RUN_YABEL) += yabel

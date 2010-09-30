@@ -1,1 +1,1 @@
-obj-y += amd_mtrr.o
+ramstage-y += amd_mtrr.c

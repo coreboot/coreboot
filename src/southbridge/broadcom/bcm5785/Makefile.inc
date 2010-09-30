@@ -1,7 +1,7 @@
-driver-y += bcm5785.o
-driver-y += bcm5785_usb.o
-driver-y += bcm5785_lpc.o
-driver-y += bcm5785_sb_pci_main.o
-driver-y += bcm5785_ide.o
-driver-y += bcm5785_sata.o
-obj-y += bcm5785_reset.o
+driver-y += bcm5785.c
+driver-y += bcm5785_usb.c
+driver-y += bcm5785_lpc.c
+driver-y += bcm5785_sb_pci_main.c
+driver-y += bcm5785_ide.c
+driver-y += bcm5785_sata.c
+ramstage-y += bcm5785_reset.c

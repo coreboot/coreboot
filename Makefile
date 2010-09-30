@@ -173,32 +173,35 @@ $(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
 
-$(obj)/%.o: $(obj)/%.c $(obj)/config.h
+$(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -c -o $@ $<
 
-objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
-initobjs:=
-drivers:=
-smmobjs:=
-types:=obj initobj driver smmobj
+ramstage-srcs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
+romstage-srcs:=
+driver-srcs:=
+smm-srcs:=
+
+ramstage-objs:=
+romstage-objs:=
+driver-objs:=
+smm-objs:=
+types:=ramstage romstage driver smm
 
 # Clean -y variables, include Makefile.inc
-# If $(3) is non-empty, add paths to files in X-y, and add them to Xs
+# Add paths to files in X-y to X-srcs
 # Add subdirs-y to subdirs
 includemakefiles= \
 	$(foreach type,$(2), $(eval $(type)-y:=)) \
 	$(eval subdirs-y:=) \
 	$(eval -include $(1)) \
 	$(foreach type,$(2), \
-		$(eval $(type)s+= \
+		$(eval $(type)-srcs+= \
 			$$(subst $(top)/,, \
-			$$(abspath $$(patsubst src/%, \
-					$(obj)/%, \
-					$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
+			$$(abspath $$(addprefix $(dir $(1)),$$($(type)-y)))))) \
 	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
-# For each path in $(subdirs) call includemakefiles, passing $(1) as $(3)
+# For each path in $(subdirs) call includemakefiles
 # Repeat until subdirs is empty
 evaluate_subdirs= \
 	$(eval cursubdirs:=$(subdirs)) \
@@ -211,70 +214,62 @@ evaluate_subdirs= \
 subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs))
 
-initobjs:=$(addsuffix .initobj.o, $(basename $(initobjs)))
-drivers:=$(addsuffix .driver.o, $(basename $(drivers)))
-smmobjs:=$(addsuffix .smmobj.o, $(basename $(smmobjs)))
+src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
 
-allobjs:=$(foreach var, $(addsuffix s,$(types)), $($(var)))
+ramstage-objs:=$(call src-to-obj,ramstage)
+romstage-objs:=$(call src-to-obj,romstage)
+driver-objs:=$(call src-to-obj,driver)
+smm-objs:=$(call src-to-obj,smm)
+
+allsrcs:=$(foreach var, $(addsuffix -srcs,$(types)), $($(var)))
+allobjs:=$(foreach var, $(addsuffix -objs,$(types)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))
-source_with_ext=$(patsubst $(obj)/%.o,src/%.$(1),$(allobjs))
-allsrc=$(wildcard $(call source_with_ext,c) $(call source_with_ext,S))
 
-define objs_asl_template
-$(obj)/$(1)%.o: src/$(1)%.asl
+define ramstage-objs_asl_template
+$(obj)/$(1).ramstage.o: src/$(1).asl
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CPP) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
-	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
-	mv $$(basename $$@).hex $$(basename $$@).c
-	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
+	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl
+	mv $$(obj)/$(1).hex $$(basename $$@).c
+	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
 	# keep %.o: %.c rule from catching the temporary .c file after a make clean
 	mv $$(basename $$@).c $$(basename $$@).hex
 endef
 
 # macro to define template macros that are used by use_template macro
 define create_cc_template
-# $1 obj class (objs, initobjs, ...)
+# $1 obj class (ramstage, romstage, driver, smm)
 # $2 source suffix (c, S)
-# $3 .o infix ("" ".initobj", ...)
-# $4 additional compiler flags
-de$(EMPTY)fine $(1)_$(2)_template
-$(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
+# $3 additional compiler flags
+de$(EMPTY)fine $(1)-objs_$(2)_template
+$(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(4) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
+	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 endef
 
-$(eval $(call create_cc_template,objs,c))
-$(eval $(call create_cc_template,objs,S,,-DASSEMBLY))
-$(eval $(call create_cc_template,initobjs,c,.initobj,-D__PRE_RAM__))
-$(eval $(call create_cc_template,initobjs,S,.initobj,-DASSEMBLY -D__PRE_RAM__))
-$(eval $(call create_cc_template,drivers,c,.driver))
-$(eval $(call create_cc_template,drivers,S,.driver,-DASSEMBLY))
-$(eval $(call create_cc_template,smmobjs,c,.smmobj))
-$(eval $(call create_cc_template,smmobjs,S,.smmobj))
+$(eval $(call create_cc_template,ramstage,c))
+$(eval $(call create_cc_template,ramstage,S,-DASSEMBLY))
+$(eval $(call create_cc_template,romstage,c,-D__PRE_RAM__))
+$(eval $(call create_cc_template,romstage,S,-DASSEMBLY -D__PRE_RAM__))
+$(eval $(call create_cc_template,driver,c))
+$(eval $(call create_cc_template,driver,S,-DASSEMBLY))
+$(eval $(call create_cc_template,smm,c))
+$(eval $(call create_cc_template,smm,S))
 
-usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
-usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
-$(eval $(call usetemplate,objs,asl))
-$(eval $(call usetemplate,objs,c))
-$(eval $(call usetemplate,objs,S))
-$(eval $(call usetemplate,initobjs,c))
-$(eval $(call usetemplate,initobjs,S))
-$(eval $(call usetemplate,drivers,c))
-$(eval $(call usetemplate,drivers,S))
-$(eval $(call usetemplate,smmobjs,c))
-$(eval $(call usetemplate,smmobjs,S))
+foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
+$(eval $(foreach type,$(types),$(call foreach-src,$(type))))
 
-DEPENDENCIES = $(objs:.o=.d) $(initobjs:.o=.d) $(drivers:.o=.d) $(smmobjs:.o=.d)
+DEPENDENCIES = $(ramstage-objs:.o=.d) $(romstage-objs:.o=.d) $(driver-objs:.o=.d) $(smm-objs:.o=.d)
 -include $(DEPENDENCIES)
 
 printall:
-	@echo objs:=$(objs)
-	@echo initobjs:=$(initobjs)
-	@echo drivers:=$(drivers)
-	@echo smmobjs:=$(smmobjs)
+	@echo ramstage-objs:=$(ramstage-objs)
+	@echo romstage-objs:=$(romstage-objs)
+	@echo driver-objs:=$(driver-objs)
+	@echo smm-objs:=$(smm-objs)
 	@echo alldirs:=$(alldirs)
-	@echo allsrc=$(allsrc)
+	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
 	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
 
@@ -343,7 +338,7 @@ doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 clean-for-update: doxygen-clean
-	rm -f $(objs) $(initobjs) $(drivers) $(smmobjs) .xcompile
+	rm -f $(ramstage-objs) $(romstage-objs) $(driver-objs) $(smm-objs) .xcompile
 	rm -f $(DEPENDENCIES)
 	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*

@@ -1,1 +1,1 @@
-driver-y += model_f3x_init.o
+driver-y += model_f3x_init.c

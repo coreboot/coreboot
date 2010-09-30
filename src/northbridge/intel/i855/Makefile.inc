@@ -1,1 +1,1 @@
-obj-y += northbridge.o
+ramstage-y += northbridge.c

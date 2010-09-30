@@ -1,1 +1,1 @@
-driver-y += amd8131_bridge.o
+driver-y += amd8131_bridge.c

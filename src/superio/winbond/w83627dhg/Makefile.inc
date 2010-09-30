@@ -19,4 +19,4 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += superio.o
+ramstage-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += superio.c

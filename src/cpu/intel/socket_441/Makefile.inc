@@ -1,4 +1,4 @@
-obj-y += socket_441.o
+ramstage-y += socket_441.c
 subdirs-y += ../model_106cx
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

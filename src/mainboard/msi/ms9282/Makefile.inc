@@ -18,6 +18,6 @@
 ##
 
 # FIXME drivers should be selected through Kconfig
-obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
-obj-y += ../../../drivers/i2c/adm1027/adm1027.o
+ramstage-y += ../../../drivers/i2c/i2cmux2/i2cmux2.c
+ramstage-y += ../../../drivers/i2c/adm1027/adm1027.c
 

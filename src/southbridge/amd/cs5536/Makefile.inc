@@ -17,6 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += cs5536.o
-driver-y += cs5536_ide.o
-driver-y += cs5536_pirq.o
+driver-y += cs5536.c
+driver-y += cs5536_ide.c
+driver-y += cs5536_pirq.c

@@ -1,2 +1,2 @@
-driver-y += model_6fx_init.o
+driver-y += model_6fx_init.c
 subdirs-y += ../../x86/name

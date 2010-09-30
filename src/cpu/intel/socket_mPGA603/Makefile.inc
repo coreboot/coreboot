@@ -1,4 +1,4 @@
-obj-y += socket_mPGA603_400Mhz.o
+ramstage-y += socket_mPGA603_400Mhz.c
 subdirs-y += ../model_f0x
 subdirs-y += ../model_f1x
 subdirs-y += ../model_f2x

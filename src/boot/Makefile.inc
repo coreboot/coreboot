@@ -1,2 +1,2 @@
-obj-y += hardwaremain.o
-obj-y += selfboot.o
+ramstage-y += hardwaremain.c
+ramstage-y += selfboot.c

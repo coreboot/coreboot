@@ -20,7 +20,7 @@
 # Needed by irq_tables and mptable and acpi_tables.
 
 # This is debug message for products of Technexion.
-obj-y += tn_post_code.o
+ramstage-y += tn_post_code.c
 
-obj-y += speaker.o
-obj-y += vgabios.o
+ramstage-y += speaker.c
+ramstage-y += vgabios.c

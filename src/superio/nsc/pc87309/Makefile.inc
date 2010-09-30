@@ -19,4 +19,4 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_NSC_PC87309) += superio.o
+ramstage-$(CONFIG_SUPERIO_NSC_PC87309) += superio.c

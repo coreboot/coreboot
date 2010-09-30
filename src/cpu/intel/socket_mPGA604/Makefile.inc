@@ -1,4 +1,4 @@
-obj-y += socket_mPGA604.o
+ramstage-y += socket_mPGA604.c
 subdirs-y += ../model_f2x
 subdirs-y += ../model_f3x
 subdirs-y += ../model_f4x

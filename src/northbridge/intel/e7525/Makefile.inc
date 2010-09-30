@@ -1,5 +1,5 @@
-driver-y += northbridge.o
-driver-y += pciexp_porta.o
-driver-y += pciexp_porta1.o
-driver-y += pciexp_portb.o
-driver-y += pciexp_portc.o
+driver-y += northbridge.c
+driver-y += pciexp_porta.c
+driver-y += pciexp_porta1.c
+driver-y += pciexp_portb.c
+driver-y += pciexp_portc.c

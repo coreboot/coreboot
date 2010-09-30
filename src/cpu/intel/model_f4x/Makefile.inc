@@ -1,1 +1,1 @@
-driver-y += model_f4x_init.o
+driver-y += model_f4x_init.c

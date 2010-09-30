@@ -22,7 +22,7 @@ subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
-driver-y += model_gx1_init.o
+driver-y += model_gx1_init.c
 
 cpu_incs += $(src)/cpu/amd/model_gx1/cpu_setup.inc
 cpu_incs += $(src)/cpu/amd/model_gx1/gx_setup.inc

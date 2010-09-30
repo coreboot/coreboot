@@ -1,37 +1,37 @@
-obj-y += clog2.o
-obj-y += uart8250.o
-obj-y += memset.o
-obj-y += memcpy.o
-obj-y += memcmp.o
-obj-y += memmove.o
-obj-y += malloc.o
-obj-y += delay.o
-obj-y += fallback_boot.o
-obj-y += compute_ip_checksum.o
-obj-y += version.o
-obj-y += cbfs.o
-obj-y += lzma.o
-#obj-y += lzmadecode.o
-obj-y += gcc.o
-obj-y += cbmem.o
+ramstage-y += clog2.c
+ramstage-y += uart8250.c
+ramstage-y += memset.c
+ramstage-y += memcpy.c
+ramstage-y += memcmp.c
+ramstage-y += memmove.c
+ramstage-y += malloc.c
+ramstage-y += delay.c
+ramstage-y += fallback_boot.c
+ramstage-y += compute_ip_checksum.c
+ramstage-y += version.c
+ramstage-y += cbfs.c
+ramstage-y += lzma.c
+#ramstage-y += lzmadecode.c
+ramstage-y += gcc.c
+ramstage-y += cbmem.c
 
-initobj-y += uart8250.o
-initobj-y += memset.o
-initobj-y += memcpy.o
-initobj-y += memcmp.o
-initobj-y += cbfs.o
-initobj-y += lzma.o
-#initobj-y += lzmadecode.o
-initobj-$(CONFIG_CONSOLE_NE2K) += ne2k.o
-initobj-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.o
-driver-$(CONFIG_CONSOLE_NE2K) += ne2k.o
+romstage-y += uart8250.c
+romstage-y += memset.c
+romstage-y += memcpy.c
+romstage-y += memcmp.c
+romstage-y += cbfs.c
+romstage-y += lzma.c
+#romstage-y += lzmadecode.c
+romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
+romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
+driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
-obj-$(CONFIG_USBDEBUG) += usbdebug.o
+ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
-obj-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.o
+ramstage-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.c
 
-obj-$(CONFIG_BOOTSPLASH) += jpeg.o
+ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 
-smmobj-y += memcpy.o
+smm-y += memcpy.c
 
-$(obj)/lib/version.o : $(obj)/build.h
+$(obj)/lib/version.ramstage.o : $(obj)/build.h

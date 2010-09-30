@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-driver-y += rtl8168.o
-obj-$(CONFIG_HAVE_ACPI_SLIC) += acpi_slic.o
+driver-y += rtl8168.c
+ramstage-$(CONFIG_HAVE_ACPI_SLIC) += acpi_slic.c
 
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

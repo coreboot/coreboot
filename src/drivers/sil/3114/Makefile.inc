@@ -1,1 +1,1 @@
-driver-$(CONFIG_DRIVERS_SIL_3114) += sil_sata.o
+driver-$(CONFIG_DRIVERS_SIL_3114) += sil_sata.c

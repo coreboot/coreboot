@@ -20,7 +20,7 @@ $(obj)/crt0.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+$(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
@@ -28,9 +28,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(obj)/coreboot: $$(initobjs) $(obj)/ldscript.ld
+$(obj)/coreboot: $$(romstage-objs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/ldscript.ld $(initobjs)
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/ldscript.ld $(romstage-objs)
 	$(NM) -n $(obj)/coreboot | sort > $(obj)/coreboot.map
 	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
 	$(OBJCOPY) --strip-debug $@

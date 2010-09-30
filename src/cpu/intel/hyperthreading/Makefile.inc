@@ -1,1 +1,1 @@
-obj-y += intel_sibling.o
+ramstage-y += intel_sibling.c

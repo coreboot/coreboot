@@ -1,1 +1,1 @@
-obj-y += mtrr.o
+ramstage-y += mtrr.c

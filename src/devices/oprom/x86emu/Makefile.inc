@@ -1,7 +1,7 @@
-obj-y += debug.o
-obj-y += decode.o
-obj-y += fpu.o
-obj-y += ops.o
-obj-y += ops2.o
-obj-y += prim_ops.o
-obj-y += sys.o
+ramstage-y += debug.c
+ramstage-y += decode.c
+ramstage-y += fpu.c
+ramstage-y += ops.c
+ramstage-y += ops2.c
+ramstage-y += prim_ops.c
+ramstage-y += sys.c

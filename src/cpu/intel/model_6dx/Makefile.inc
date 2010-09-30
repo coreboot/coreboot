@@ -1,1 +1,1 @@
-driver-y += model_6dx_init.o
+driver-y += model_6dx_init.c

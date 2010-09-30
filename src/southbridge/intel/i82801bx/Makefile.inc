@@ -18,19 +18,19 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += i82801bx.o
-driver-y += i82801bx_ac97.o
-driver-y += i82801bx_ide.o
-driver-y += i82801bx_lpc.o
-driver-y += i82801bx_nic.o
-driver-y += i82801bx_pci.o
-driver-y += i82801bx_sata.o
-# driver-y += i82801bx_smbus.o
-driver-y += i82801bx_usb.o
-driver-y += i82801bx_usb_ehci.o
+driver-y += i82801bx.c
+driver-y += i82801bx_ac97.c
+driver-y += i82801bx_ide.c
+driver-y += i82801bx_lpc.c
+driver-y += i82801bx_nic.c
+driver-y += i82801bx_pci.c
+driver-y += i82801bx_sata.c
+# driver-y += i82801bx_smbus.c
+driver-y += i82801bx_usb.c
+driver-y += i82801bx_usb_ehci.c
 
-obj-y += i82801bx_reset.o
-obj-y += i82801bx_watchdog.o
+ramstage-y += i82801bx_reset.c
+ramstage-y += i82801bx_watchdog.c
 
 # TODO: Fix and enable i82801bx_smbus.o later.
 

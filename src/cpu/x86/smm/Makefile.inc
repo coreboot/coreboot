@@ -17,24 +17,26 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.o
-obj-$(CONFIG_HAVE_SMI_HANDLER) += smm_wrap.o
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
+ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
+ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap
+endif
 
-smmobj-y += smmhandler.o
-smmobj-y += smihandler.o
-smmobj-y += smiutil.o
+smm-y += smmhandler.S
+smm-y += smihandler.c
+smm-y += smiutil.c
 
-$(obj)/cpu/x86/smm/smm.o: $$(smmobjs)
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
-$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
+$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
 	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
 	$(NM) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
-$(obj)/cpu/x86/smm/smm_wrap.o: $(obj)/cpu/x86/smm/smm
+$(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY) -I binary smm -O elf32-i386 -B i386 smm_wrap.o
+	cd $(obj)/cpu/x86/smm; $(OBJCOPY) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
 

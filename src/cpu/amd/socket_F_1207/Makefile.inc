@@ -1,4 +1,4 @@
-obj-y += socket_F_1207.o
+ramstage-y += socket_F_1207.c
 subdirs-y += ../model_10xxx
 subdirs-y += ../quadcore
 subdirs-y += ../mtrr

@@ -19,4 +19,4 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_INTEL_I3100) += superio.o
+ramstage-$(CONFIG_SUPERIO_INTEL_I3100) += superio.c

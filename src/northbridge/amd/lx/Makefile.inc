@@ -1,3 +1,3 @@
-driver-y += northbridge.o
-obj-y += northbridgeinit.o
-obj-y += grphinit.o
+driver-y += northbridge.c
+ramstage-y += northbridgeinit.c
+ramstage-y += grphinit.c

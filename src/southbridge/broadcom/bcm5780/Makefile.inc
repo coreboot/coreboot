@@ -1,3 +1,3 @@
-driver-y += bcm5780_nic.o
-driver-y += bcm5780_pcix.o
-driver-y += bcm5780_pcie.o
+driver-y += bcm5780_nic.c
+driver-y += bcm5780_pcix.c
+driver-y += bcm5780_pcie.c

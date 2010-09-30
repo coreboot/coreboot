@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_SUPERIO_SMSC_LPC47N227) += superio.o
+ramstage-$(CONFIG_SUPERIO_SMSC_LPC47N227) += superio.c

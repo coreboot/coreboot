@@ -18,6 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += northbridge.o
-driver-y += vga.o
+driver-y += northbridge.c
+driver-y += vga.c
 

@@ -19,15 +19,15 @@
 ## MA 02110-1301 USA
 ##
 
-driver-y += i82801dx.o
-driver-y += i82801dx_ac97.o
-driver-y += i82801dx_ide.o
-driver-y += i82801dx_lpc.o
-#driver-y += i82801dx_pci.o
-driver-y += i82801dx_usb.o
-driver-y += i82801dx_usb2.o
+driver-y += i82801dx.c
+driver-y += i82801dx_ac97.c
+driver-y += i82801dx_ide.c
+driver-y += i82801dx_lpc.c
+#driver-y += i82801dx_pci.c
+driver-y += i82801dx_usb.c
+driver-y += i82801dx_usb2.c
 
-obj-y += i82801dx_reset.o
-obj-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smi.o
+ramstage-y += i82801dx_reset.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smi.c
 
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smihandler.o
+smm-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smihandler.c

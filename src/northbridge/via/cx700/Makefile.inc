@@ -17,10 +17,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-y += cx700_reset.o
-obj-y += northbridge.o
+ramstage-y += cx700_reset.c
+ramstage-y += northbridge.c
 
-driver-y += cx700_agp.o
-driver-y += cx700_lpc.o
-driver-y += cx700_sata.o
-driver-y += cx700_vga.o
+driver-y += cx700_agp.c
+driver-y += cx700_lpc.c
+driver-y += cx700_sata.c
+driver-y += cx700_vga.c

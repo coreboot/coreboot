@@ -1,4 +1,4 @@
-obj-y += socket_mPGA478.o
+ramstage-y += socket_mPGA478.c
 subdirs-y += ../model_69x
 subdirs-y += ../model_6dx
 subdirs-y += ../../x86/tsc

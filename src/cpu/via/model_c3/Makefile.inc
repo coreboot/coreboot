@@ -5,4 +5,4 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../../intel/microcode
 
-driver-y += model_c3_init.o
+driver-y += model_c3_init.c

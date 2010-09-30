@@ -17,11 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += vt8237r.o
-driver-y += vt8237_ctrl.o
-driver-y += vt8237r_ide.o
-driver-y += vt8237r_lpc.o
-driver-y += vt8237r_sata.o
-driver-y += vt8237r_usb.o
-driver-y += vt8237r_nic.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += vt8237_fadt.o
+driver-y += vt8237r.c
+driver-y += vt8237_ctrl.c
+driver-y += vt8237r_ide.c
+driver-y += vt8237r_lpc.c
+driver-y += vt8237r_sata.c
+driver-y += vt8237r_usb.c
+driver-y += vt8237r_nic.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += vt8237_fadt.c

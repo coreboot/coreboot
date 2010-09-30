@@ -1,1 +1,1 @@
-driver-y += rl5c476.o
+driver-y += rl5c476.c

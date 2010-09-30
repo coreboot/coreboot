@@ -1,1 +1,1 @@
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.o
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c

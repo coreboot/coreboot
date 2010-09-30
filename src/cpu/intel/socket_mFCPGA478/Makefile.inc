@@ -1,4 +1,4 @@
-obj-y += socket_mFCPGA478.o
+ramstage-y += socket_mFCPGA478.c
 subdirs-y += ../model_69x
 subdirs-y += ../model_6dx
 subdirs-y += ../model_6ex

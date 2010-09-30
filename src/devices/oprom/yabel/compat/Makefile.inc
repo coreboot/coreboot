@@ -1,1 +1,1 @@
-obj-y += functions.o
+ramstage-y += functions.c

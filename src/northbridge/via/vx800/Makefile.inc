@@ -18,10 +18,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += northbridge.o
-driver-y += vga.o
-driver-y += vx800_lpc.o
-driver-y += vx800_ide.o
+driver-y += northbridge.c
+driver-y += vga.c
+driver-y += vx800_lpc.c
+driver-y += vx800_ide.c
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
 chipset_bootblock_lds += $(src)/northbridge/via/vx800/romstrap.lds

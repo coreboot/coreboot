@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-y += slot_2.o
+ramstage-y += slot_2.c
 subdirs-y += ../model_6xx
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

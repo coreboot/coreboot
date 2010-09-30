@@ -19,4 +19,4 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_SMSC_FDC37M60X) += superio.o
+ramstage-$(CONFIG_SUPERIO_SMSC_FDC37M60X) += superio.c

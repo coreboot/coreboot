@@ -1,1 +1,1 @@
-obj-y += sc520.o
+ramstage-y += sc520.c

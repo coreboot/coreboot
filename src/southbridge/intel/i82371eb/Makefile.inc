@@ -18,11 +18,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y +=  i82371eb.o
-driver-y +=  i82371eb_isa.o
-driver-y +=  i82371eb_ide.o
-driver-y +=  i82371eb_usb.o
-driver-y +=  i82371eb_smbus.o
-driver-y +=  i82371eb_reset.o
+driver-y +=  i82371eb.c
+driver-y +=  i82371eb_isa.c
+driver-y +=  i82371eb_ide.c
+driver-y +=  i82371eb_usb.c
+driver-y +=  i82371eb_smbus.c
+driver-y +=  i82371eb_reset.c
 
-#initobj-y += i82371eb_early_rom.o
+#romstage-y += i82371eb_early_rom.c

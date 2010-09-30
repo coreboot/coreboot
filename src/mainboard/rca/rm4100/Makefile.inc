@@ -1,2 +1,2 @@
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 

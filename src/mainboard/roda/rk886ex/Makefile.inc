@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-obj-y += m3885.o
-obj-y += ec.o
-driver-y += rtl8168.o
+ramstage-y += m3885.c
+ramstage-y += ec.c
+driver-y += rtl8168.c
 
-smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

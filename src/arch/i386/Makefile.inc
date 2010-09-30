@@ -25,7 +25,11 @@ subdirs-y += boot
 subdirs-y += lib
 subdirs-y += smp
 
-obj-$(CONFIG_HAVE_OPTION_TABLE) += ../../option_table.o
+OPTION_TABLE_H:=
+ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
+ramstage-srcs += $(obj)/option_table.c
+OPTION_TABLE_H:=$(obj)/option_table.h
+endif
 
 #######################################################################
 # Build the final rom image
@@ -88,13 +92,13 @@ endif
 #######################################################################
 # i386 specific tools
 
-$(obj)/option_table.h: $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(OPTION_TABLE_H): $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --header $(obj)/option_table.h
+	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --header $@
 
 $(obj)/option_table.c: $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --option $(obj)/option_table.c
+	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --option $@
 
 $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src/include/pc80/mc146818rtc.h $(top)/src/include/boot/coreboot_tables.h
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
@@ -111,11 +115,11 @@ $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldo
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ram.debug $@
 
-$(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $$(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
+$(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.o $(drivers) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
 
-$(obj)/coreboot.a: $$(objs)
+$(obj)/coreboot.a: $$(ramstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
 	rm -f $(obj)/coreboot.a
 	$(AR) cr $(obj)/coreboot.a $^
@@ -191,11 +195,6 @@ ifeq ($(CONFIG_ROMCC),y)
 crt0s += $(src)/arch/i386/init/crt0_romcc_epilogue.inc
 endif
 
-OPTION_TABLE_H:=
-ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-OPTION_TABLE_H:=$(obj)/option_table.h
-endif
-
 ifeq ($(CONFIG_ROMCC),y)
 ROMCCFLAGS ?= -mcpu=p2 -O2
 
@@ -219,36 +218,36 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/
 endif
 
 # Things that appear in every board
-initobjs += $(obj)/mainboard/$(MAINBOARDDIR)/crt0.o
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/mainboard.o
+romstage-srcs += $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/mptable.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mptable.c
 endif
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/irq_tables.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c
 endif
 ifeq ($(CONFIG_BOARD_HAS_HARD_RESET),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/reset.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_GENERATE_ACPI_TABLES),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/acpi_tables.o
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/dsdt.asl
 # make doesn't have arithmetic operators or greater-than comparisons
 ifeq ($(subst 5,4,$(CONFIG_ACPI_SSDTX_NUM)),4)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt2.o
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt3.o
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt4.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt2.asl
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt3.asl
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt4.asl
 endif
 ifeq ($(CONFIG_ACPI_SSDTX_NUM),5)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt5.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt5.asl
 endif
 ifeq ($(CONFIG_BOARD_HAS_FADT),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/fadt.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif
 endif
 
 ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
-objs += $(obj)/mainboard/$(MAINBOARDDIR)/get_bus_conf.o
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)

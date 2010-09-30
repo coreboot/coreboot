@@ -1,4 +1,4 @@
-obj-y += socket_ASB2.o
+ramstage-y += socket_ASB2.c
 subdirs-y += ../model_10xxx
 subdirs-y += ../quadcore
 subdirs-y += ../mtrr

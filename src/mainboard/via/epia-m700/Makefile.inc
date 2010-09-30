@@ -22,5 +22,5 @@
 # This code is unused and should be replaced by the generic resume code
 # completely. If anyone works on wakeup for this chipset/board, delete
 # wakeup.c when you are done.
-# obj-y += wakeup.o
+# ramstage-y += wakeup.c
 

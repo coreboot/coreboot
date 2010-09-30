@@ -18,6 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += model_68x_init.o
+driver-y += model_68x_init.c
 subdirs-y += ../../x86/name
 

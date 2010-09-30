@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_SUPERIO_SMSC_SIO10N268) += sio10n268.o
+ramstage-$(CONFIG_SUPERIO_SMSC_SIO10N268) += sio10n268.c

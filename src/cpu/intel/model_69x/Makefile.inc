@@ -1,1 +1,1 @@
-driver-y += model_69x_init.o
+driver-y += model_69x_init.c

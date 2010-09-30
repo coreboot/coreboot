@@ -1,9 +1,9 @@
-obj-y += biosemu.o
-obj-y += debug.o
-obj-y += device.o
-obj-y += interrupt.o
-obj-y += io.o
-obj-y += mem.o
-obj-y += pmm.o
-obj-y += vbe.o
+ramstage-y += biosemu.c
+ramstage-y += debug.c
+ramstage-y += device.c
+ramstage-y += interrupt.c
+ramstage-y += io.c
+ramstage-y += mem.c
+ramstage-y += pmm.c
+ramstage-y += vbe.c
 subdirs-y += compat

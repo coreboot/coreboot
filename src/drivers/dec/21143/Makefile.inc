@@ -1,2 +1,2 @@
-driver-y += 21143.o
+driver-y += 21143.c
 

@@ -1,1 +1,1 @@
-obj-y += pgtbl.o
+ramstage-y += pgtbl.c

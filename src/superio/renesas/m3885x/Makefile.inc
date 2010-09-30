@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-$(CONFIG_SUPERIO_RENESAS_M3885X) += superio.o
+ramstage-$(CONFIG_SUPERIO_RENESAS_M3885X) += superio.c

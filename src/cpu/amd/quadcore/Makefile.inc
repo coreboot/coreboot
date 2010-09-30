@@ -1,1 +1,1 @@
-obj-y += amd_sibling.o
+ramstage-y += amd_sibling.c

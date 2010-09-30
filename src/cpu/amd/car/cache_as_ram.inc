@@ -243,13 +243,13 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize > 0x8000
 	/* enable caching for 32K-64K using fixed mtrr */
-	movl	$0x268, %ecx  /* fix4k_c0000*/
+	movl	$MTRRfix4K_C0000_MSR, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
 	/* enable caching for 0-32K using fixed mtrr */
-	movl	$0x269, %ecx  /* fix4k_c8000*/
+	movl	$MTRRfix4K_C8000_MSR, %ecx
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -260,22 +260,23 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
-	/* enable write base caching so we can do execute in place
-	 * on the flash rom.
-	 */
-	movl	$0x202, %ecx
-	xorl	%edx, %edx
 
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
+
+	/* enable write base caching so we can do execute in place
+	 * on the flash rom.
+	 */
+	movl	$MTRRphysBase_MSR(1), %ecx
+	xorl	%edx, %edx
 	movl    $REAL_XIP_ROM_BASE, %eax
 	orl     $MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	movl	$0x203, %ecx
+	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$0xff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for K8 (CONFIG_CPU_ADDR_BITS = 40) */
 	jmp_if_k8(wbcache_post_fam10_setup)
 	movl	$0xffff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for FAM10 (CONFIG_CPU_ADDR_BITS = 48) */

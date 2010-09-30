@@ -78,36 +78,33 @@ var_mtrr_msr:
 	.long	0x000 /* NULL, end of table */
 
 clear_fixed_var_mtrr_out:
-	/* MTRRPhysBase */
-	movl	$0x200, %ecx
+	movl	$MTRRphysBase_MSR(0), %ecx
 	xorl	%edx, %edx
 	movl	$(CacheBase|MTRR_TYPE_WRBACK),%eax
 	wrmsr
 
-	/* MTRRPhysMask */
-	movl	$0x201, %ecx
+	movl	$MTRRphysMask_MSR(0), %ecx
 	/* This assumes we never access addresses above 2^36 in CAR. */
 	movl	$0x0000000f,%edx
 	movl	$(~(CacheSize-1)|0x800),%eax
 	wrmsr
 
-	/* enable write base caching so we can do execute in place
-	 * on the flash rom.
-	 */
-	/* MTRRPhysBase */
-	movl	$0x202, %ecx
-	xorl	%edx, %edx
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
+
+	/* enable write base caching so we can do execute in place
+	 * on the flash rom.
+	 */
+	movl	$MTRRphysBase_MSR(1), %ecx
+	xorl	%edx, %edx
 	movl    $REAL_XIP_ROM_BASE, %eax
 	orl     $MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
-	/* MTRRPhysMask */
-	movl	$0x203, %ecx
+	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$0x0000000f, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
@@ -195,8 +192,7 @@ testok:
 
 
 	/* Set the default memory type and disable fixed and enable variable MTRRs */
-	movl    $0x2ff, %ecx
-	//movl    $MTRRdefType_MSR, %ecx
+	movl    $MTRRdefType_MSR, %ecx
 	xorl    %edx, %edx
 
 	/* Enable Variable and Disable Fixed MTRRs */
@@ -204,7 +200,7 @@ testok:
 	wrmsr
 
 	/* enable caching for first 1M using variable mtrr */
-	movl    $0x200, %ecx
+	movl	$MTRRphysBase_MSR(0), %ecx
 	xorl    %edx, %edx
 	movl     $(0 | 6), %eax
 	//movl     $(0 | MTRR_TYPE_WRBACK), %eax
@@ -216,41 +212,41 @@ testok:
 	 * And in x86_setup_fixed_mtrrs()(mtrr.c), 0-256M is set cacheable.
 	 */
 
-	movl    $0x201, %ecx
+	movl	$MTRRphysMask_MSR(0), %ecx
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
  	movl    $((~(( 0 + 0x80000) - 1)) | 0x800), %eax
 	wrmsr
 
-	movl    $0x202, %ecx
+	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl    %edx, %edx
 	movl     $(0x80000 | 6), %eax
 	orl     $(0 | 6), %eax
 	wrmsr
 
-	movl    $0x203, %ecx
+	movl	$MTRRphysMask_MSR(1), %ecx
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
  	movl    $((~(( 0 + 0x20000) - 1)) | 0x800), %eax
 	wrmsr
 
-	movl    $0x204, %ecx
+	movl	$MTRRphysBase_MSR(2), %ecx
 	xorl    %edx, %edx
 	movl     $(0xc0000 | 6), %eax
 	orl     $(0 | 6), %eax
 	wrmsr
 
-	movl    $0x205, %ecx
+	movl	$MTRRphysMask_MSR(2), %ecx
 	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
 	movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax
 	wrmsr
 
 	/* cache XIP_ROM_BASE-SIZE to speedup coreboot code */
-	movl    $0x206, %ecx
+	movl	$MTRRphysBase_MSR(3), %ecx
 	xorl    %edx, %edx
 	movl     $REAL_XIP_ROM_BASE,%eax
 	orl     $(0 | 6), %eax
 	wrmsr
 
-	movl    $0x207, %ecx
+	movl	$MTRRphysMask_MSR(3), %ecx
 	xorl    %edx, %edx
 	movl     $CONFIG_XIP_ROM_SIZE,%eax
 	decl	%eax

@@ -21,18 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CacheSize CONFIG_DCACHE_RAM_SIZE
-#define CacheBase (0xd0000 - CacheSize)
-
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 
-	/* Save the BIST result */
+#define CacheSize		CONFIG_DCACHE_RAM_SIZE
+#define CacheBase		(0xd0000 - CacheSize)
+
+	/* Save the BIST result. */
 	movl	%eax, %ebp
 
 CacheAsRam:
-	// Check whether the processor has HT capability
+	/* Check whether the processor has HT capability. */
 	movl	$01, %eax
 	cpuid
 	btl	$28, %edx
@@ -41,20 +41,26 @@ CacheAsRam:
 	cmpb	$01, %bh
 	jbe	NotHtProcessor
 
-	// It is a HT processor; Send SIPI to the other logical processor
-	// within this processor so that the CAR related common system 
-	// registers are programmed accordingly.
+	/*
+	 * It is a HT processor. Send SIPI to the other logical processor
+	 * within this processor so that the CAR related common system
+	 * registers are programmed accordingly.
+	 */
 
-	// Use some register that is common to both logical processors
-	// as semaphore. Refer Appendix B, Vol.3
+	/*
+	 * Use some register that is common to both logical processors
+	 * as semaphore. Refer Appendix B, Vol.3.
+	 */
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 	movl	$MTRRfix64K_00000_MSR, %ecx
 	wrmsr
 
-	// Figure out the logical AP's APIC ID; the following logic will
-	// work only for processors with 2 threads.
-	// Refer to Vol 3. Table 7-1 for details about this logic
+	/*
+	 * Figure out the logical AP's APIC ID; the following logic will
+	 * work only for processors with 2 threads.
+	 * Refer to Vol 3. Table 7-1 for details about this logic.
+	 */
 	movl	$0xFEE00020, %esi
 	movl	(%esi), %ebx
 	andl	$0xFF000000, %ebx
@@ -66,17 +72,19 @@ CacheAsRam:
 LogicalAP0:
 	orb	$0x01, %bl
 Send_SIPI:
-	bswapl	%ebx  // ebx - logical AP's APIC ID
+	bswapl	%ebx	/* EBX - logical AP's APIC ID. */
 
-	// Fill up the IPI command registers in the Local APIC mapped to
-	// default address and issue SIPI to the other logical processor
-	// within this processor die.
+	/*
+	 * Fill up the IPI command registers in the Local APIC mapped to
+	 * default address and issue SIPI to the other logical processor
+	 * within this processor die.
+	 */
 Retry_SIPI:
 	movl	%ebx, %eax
 	movl	$0xFEE00310, %esi
 	movl	%eax, (%esi)
 
-	// SIPI vector - F900:0000
+	/* SIPI vector - F900:0000 */
 	movl	$0x000006F9, %eax
 	movl	$0xFEE00300, %esi
 	movl	%eax, (%esi)
@@ -91,7 +99,7 @@ SIPI_Delay:
 	andl	$0x00001000, %eax
 	jnz	Retry_SIPI
 
-	// Wait for the Logical AP to complete initialization
+	/* Wait for the Logical AP to complete initialization. */
 LogicalAP_SIPINotdone:
 	movl	$MTRRfix64K_00000_MSR, %ecx
 	rdmsr
@@ -99,14 +107,13 @@ LogicalAP_SIPINotdone:
 	jz	LogicalAP_SIPINotdone
 
 NotHtProcessor:
-	/* Set the default memory type and enable fixed and variable MTRRs */
+	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	/* Enable Variable and Fixed MTRRs */
-	movl	$0x00000c00, %eax
+	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
 	wrmsr
 
-	/* Clear all MTRRs */
+	/* Clear all MTRRs. */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
 
@@ -126,6 +133,7 @@ fixed_mtrr_msr:
 	.long	0x268, 0x269, 0x26A
 	.long	0x26B, 0x26C, 0x26D
 	.long	0x26E, 0x26F
+
 var_mtrr_msr:
 	.long	0x200, 0x201, 0x202, 0x203
 	.long	0x204, 0x205, 0x206, 0x207
@@ -135,14 +143,16 @@ var_mtrr_msr:
 
 clear_fixed_var_mtrr_out:
 
-/* 0x06 is the WB IO type for a given 4k segment.
+/*
+ * 0x06 is the WB IO type for a given 4k segment.
  * segs is the number of 4k segments in the area of the particular
  *      register we want to use for CAR.
  * reg  is the register where the IO type should be stored.
  */
 .macro extractmask segs, reg
 .if \segs <= 0
-	/* The xorl here is superfluous because at the point of first execution
+	/*
+	 * The xorl here is superfluous because at the point of first execution
 	 * of this macro, %eax and %edx are cleared. Later invocations of this
 	 * macro will have a monotonically increasing segs parameter.
 	 */
@@ -158,19 +168,21 @@ clear_fixed_var_mtrr_out:
 .endif
 .endm
 
-/* size is the cache size in bytes we want to use for CAR.
- * windowoffset is the 32k-aligned window into CAR size
+/*
+ * size is the cache size in bytes we want to use for CAR.
+ * windowoffset is the 32k-aligned window into CAR size.
  */
 .macro simplemask carsize, windowoffset
 	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000) - 4)
 	extractmask gas_bug_workaround, %eax
 	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000))
 	extractmask gas_bug_workaround, %edx
-/* Without the gas bug workaround, the entire macro would consist only of the
- * two lines below.
-	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
-	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
- */
+	/*
+	 * Without the gas bug workaround, the entire macro would consist
+	 * only of the two lines below:
+	 *   extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	 *   extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
+	 */
 .endm
 
 #if CacheSize > 0x10000
@@ -184,13 +196,13 @@ clear_fixed_var_mtrr_out:
 #endif
 
 #if CacheSize > 0x8000
-	/* enable caching for 32K-64K using fixed mtrr */
+	/* Enable caching for 32K-64K using fixed MTRR. */
 	movl	$MTRRfix4K_C0000_MSR, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
-	/* enable caching for 0-32K using fixed mtrr */
+	/* Enable caching for 0-32K using fixed MTRR. */
 	movl	$MTRRfix4K_C8000_MSR, %ecx
 	simplemask CacheSize, 0
 	wrmsr
@@ -203,8 +215,9 @@ clear_fixed_var_mtrr_out:
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
 
-	/* enable write base caching so we can do execute in place
-	 * on the flash rom.
+	/*
+	 * Enable write base caching so we can do execute in place (XIP)
+	 * on the flash ROM.
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
@@ -218,27 +231,27 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-	/* enable cache */
+	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
-	/* Read the range with lodsl*/
+	/* Read the range with lodsl. */
 	movl	$CacheBase, %esi
 	cld
 	movl	$(CacheSize >> 2), %ecx
 	rep	lodsl
 
-	/* Clear the range */
+	/* Clear the range. */
 	movl	$CacheBase, %edi
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
 #if 0
-	/* check the cache as ram */
+	/* Check the cache as ram. */
 	movl	$CacheBase, %esi
-	movl	$(CacheSize>>2), %ecx
+	movl	$(CacheSize >> 2), %ecx
 .xin1:
 	movl	%esi, %eax
 	movl	%eax, (%esi)
@@ -249,29 +262,30 @@ clear_fixed_var_mtrr_out:
 .xout1:
 
 	movl	$CacheBase, %esi
-//        movl    $(CacheSize>>2), %ecx
-	movl $4, %ecx
+	// movl	$(CacheSize >> 2), %ecx
+	movl	$4, %ecx
 .xin1x:
 	movl	%esi, %eax
 
 	movl	$0x4000, %edx
 	movb	%ah, %al
 .testx1:
-	outb %al, $0x80
+	outb	%al, $0x80
 	decl	%edx
-	jnz .testx1
+	jnz	.testx1
 
 	movl	(%esi), %eax
-	cmpb 0xff, %al
-	je .xin2  /* dont show */
+	cmpb	0xff, %al
+	je	.xin2	/* Don't show. */
 
 	movl	$0x4000, %edx
 .testx2:
-	outb %al, $0x80
+	outb	%al, $0x80
 	decl	%edx
-	jnz .testx2
+	jnz	.testx2
 
-.xin2:  decl     %ecx
+.xin2:
+	decl	%ecx
 	je	.xout1x
 	add	$4, %esi
 	jmp	.xin1x
@@ -281,21 +295,22 @@ clear_fixed_var_mtrr_out:
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
 lout:
-	/* Restore the BIST result */
+	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set ebp ? No need */
+	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
-	pushl	%eax  /* bist */
+	pushl	%eax  /* BIST */
 	call	main
 
-        /* We don't need cache as ram for now on */
-        /* disable cache */
+	/* We don't need CAR for now on. */
+
+	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(0x1<<30),%eax
+	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
 
-        /* clear sth */
+	/* Clear sth. */
 	movl	$MTRRfix4K_C8000_MSR, %ecx
 	xorl	%edx, %edx
 	xorl	%eax, %eax
@@ -306,25 +321,25 @@ lout:
 	wrmsr
 #endif
 
-	/* Set the default memory type and disable fixed
-	 * and enable variable MTRRs
+	/*
+	 * Set the default memory type and disable fixed
+	 * and enable variable MTRRs.
 	 */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-        /* Enable Variable and Disable Fixed MTRRs */
-	movl	$0x00000800, %eax
+	movl	$0x00000800, %eax /* Enable variable and disable fixed MTRRs. */
 	wrmsr
 
-        /* enable cache */
+	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff,%eax
+	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
-	/* clear boot_complete flag */
+	/* Clear boot_complete flag. */
 	xorl	%ebp, %ebp
 __main:
 	post_code(0x11)
-	cld			/* clear direction flag */
+	cld			/* Clear direction flag. */
 
 	movl	%ebp, %esi
 

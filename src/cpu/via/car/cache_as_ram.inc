@@ -25,31 +25,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CacheSize CONFIG_DCACHE_RAM_SIZE
-#define CacheBase CONFIG_DCACHE_RAM_BASE
-
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 
-	/* Save the BIST result */
+#define CacheSize		CONFIG_DCACHE_RAM_SIZE
+#define CacheBase		CONFIG_DCACHE_RAM_BASE
+
+	/* Save the BIST result. */
 	movl	%eax, %ebp
 
 CacheAsRam:
 
-	/* disable cache */
+	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(0x1<<30),%eax
-	movl	%eax,%cr0
+	orl	$(1 << 30), %eax
+	movl	%eax, %cr0
 	invd
 
-	/* Set the default memory type and enable fixed and variable MTRRs */
+	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	/* Enable Variable and Fixed MTRRs */
-	movl	$0x00000c00, %eax
+	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
 	wrmsr
 
-	/* Clear all MTRRs */
+	/* Clear all MTRRs. */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
 
@@ -80,13 +79,13 @@ var_mtrr_msr:
 clear_fixed_var_mtrr_out:
 	movl	$MTRRphysBase_MSR(0), %ecx
 	xorl	%edx, %edx
-	movl	$(CacheBase|MTRR_TYPE_WRBACK),%eax
+	movl	$(CacheBase | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(0), %ecx
 	/* This assumes we never access addresses above 2^36 in CAR. */
-	movl	$0x0000000f,%edx
-	movl	$(~(CacheSize-1)|0x800),%eax
+	movl	$0x0000000f, %edx
+	movl	$(~(CacheSize - 1) | 0x800), %eax
 	wrmsr
 
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
@@ -95,13 +94,14 @@ clear_fixed_var_mtrr_out:
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
 
-	/* enable write base caching so we can do execute in place
-	 * on the flash rom.
+	/*
+	 * Enable write base caching so we can do execute in place (XIP)
+	 * on the flash ROM.
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl    $REAL_XIP_ROM_BASE, %eax
-	orl     $MTRR_TYPE_WRBACK, %eax
+	movl	$REAL_XIP_ROM_BASE, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -111,39 +111,41 @@ clear_fixed_var_mtrr_out:
 
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	/* Enable Variable and Fixed MTRRs */
-	movl	$0x00000800, %eax
+	movl	$0x00000800, %eax	/* Enable variable and fixed MTRRs. */
 	wrmsr
 
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
-	/* Read the range with lodsl*/
+	/* Read the range with lodsl. */
 	cld
 	movl	$CacheBase, %esi
 	movl	%esi, %edi
-	movl	$(CacheSize>>2), %ecx
+	movl	$(CacheSize >> 2), %ecx
 	rep	lodsl
 
 	movl	$CacheBase, %esi
 	movl	%esi, %edi
 	movl	$(CacheSize >> 2), %ecx
 
-	/* 0x5c5c5c5c is a memory test pattern.
-	 * TODO: Check if everything works with the zero pattern as well. */
-	/*xorl	%eax, %eax*/
-	xorl	$0x5c5c5c5c,%eax
+	/*
+	 * 0x5c5c5c5c is a memory test pattern.
+	 * TODO: Check if everything works with the zero pattern as well.
+	 */
+	/* xorl	%eax, %eax */
+	xorl	$0x5c5c5c5c, %eax
 	rep	stosl
 
 #ifdef CARTEST
 	movl	REAL_XIP_ROM_BASE, %esi
 	movl	%esi, %edi
-	movl	$(CONFIG_XIP_ROM_SIZE>>2), %ecx
+	movl	$(CONFIG_XIP_ROM_SIZE >> 2), %ecx
 	rep	lodsl
 #endif
 
-	/* The key point of this CAR code is C7 cache does not turn into
+	/*
+	 * The key point of this CAR code is C7 cache does not turn into
 	 * "no fill" mode, which is not compatible with general CAR code.
 	 */
 
@@ -155,27 +157,27 @@ testok:
 	post_code(0x40)
 	xorl	%edx, %edx
 	xorl	%eax, %eax
-	movl	$0x5c5c,%edx
-	pushl %edx
-	pushl %edx
-	pushl %edx
-	pushl %edx
-	pushl %edx
+	movl	$0x5c5c, %edx
+	pushl	%edx
+	pushl	%edx
+	pushl	%edx
+	pushl	%edx
+	pushl	%edx
 	popl	%esi
 	popl	%esi
 	popl	%eax
 	popl	%eax
 	popl	%eax
-	cmpl %edx,%eax
-	jne stackerr
+	cmpl	%edx, %eax
+	jne	stackerr
 #endif
 
-	/* Restore the BIST result */
+	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set ebp ? No need */
+	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
-	pushl	%eax  /* bist */
+	pushl	%eax	/* BIST */
 	call	main
 
 	/*
@@ -184,94 +186,96 @@ testok:
 	 *       want to go back.
 	 */
 
-	/* We don't need cache as ram for now on */
-	/* disable cache */
-	movl    %cr0, %eax
-	orl    $(0x1<<30),%eax
-	movl    %eax, %cr0
+	/* We don't need CAR for now on. */
 
+	/* Disable cache. */
+	movl	%cr0, %eax
+	orl	$(1 << 30), %eax
+	movl	%eax, %cr0
 
-	/* Set the default memory type and disable fixed and enable variable MTRRs */
-	movl    $MTRRdefType_MSR, %ecx
-	xorl    %edx, %edx
-
-	/* Enable Variable and Disable Fixed MTRRs */
-	movl    $0x00000800, %eax
+	/*
+	 * Set the default memory type and disable fixed and enable
+	 * variable MTRRs.
+	 */
+	movl	$MTRRdefType_MSR, %ecx
+	xorl	%edx, %edx
+	movl	$0x00000800, %eax /* Enable variable & disable fixed MTRRs. */
 	wrmsr
 
-	/* enable caching for first 1M using variable mtrr */
+	/* Enable caching for first 1M using variable MTRR. */
 	movl	$MTRRphysBase_MSR(0), %ecx
-	xorl    %edx, %edx
-	movl     $(0 | 6), %eax
-	//movl     $(0 | MTRR_TYPE_WRBACK), %eax
+	xorl	%edx, %edx
+	movl	$(0 | 6), %eax
+	// movl	$(0 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
-	/* enable cache for 0-7ffff, 80000-9ffff, e0000-fffff;
+	/*
+	 * Enable cache for 0-7ffff, 80000-9ffff, e0000-fffff;
 	 * If 1M cacheable, then when S3 resume, there is stange color on
-	 * screen for 2 sec. suppose problem of a0000-dfffff and cache.
+	 * screen for 2 sec. Suppose problem of a0000-dfffff and cache.
 	 * And in x86_setup_fixed_mtrrs()(mtrr.c), 0-256M is set cacheable.
 	 */
 
 	movl	$MTRRphysMask_MSR(0), %ecx
-	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
- 	movl    $((~(( 0 + 0x80000) - 1)) | 0x800), %eax
+	movl	$0x0000000f, %edx	/* AMD 40 bit 0xff */
+	movl	$((~((0 + 0x80000) - 1)) | 0x800), %eax
 	wrmsr
 
 	movl	$MTRRphysBase_MSR(1), %ecx
-	xorl    %edx, %edx
-	movl     $(0x80000 | 6), %eax
-	orl     $(0 | 6), %eax
+	xorl	%edx, %edx
+	movl	$(0x80000 | 6), %eax
+	orl	$(0 | 6), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
- 	movl    $((~(( 0 + 0x20000) - 1)) | 0x800), %eax
+	movl	$0x0000000f, %edx	/* AMD 40 bit 0xff */
+	movl	$((~((0 + 0x20000) - 1)) | 0x800), %eax
 	wrmsr
 
 	movl	$MTRRphysBase_MSR(2), %ecx
-	xorl    %edx, %edx
-	movl     $(0xc0000 | 6), %eax
-	orl     $(0 | 6), %eax
+	xorl	%edx, %edx
+	movl	$(0xc0000 | 6), %eax
+	orl	$(0 | 6), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(2), %ecx
-	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
-	movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax
+	movl	$0x0000000f, %edx	/* AMD 40 bit 0xff */
+	movl	$((~(( 0 + 0x40000) - 1)) | 0x800), %eax
 	wrmsr
 
-	/* cache XIP_ROM_BASE-SIZE to speedup coreboot code */
+	/* Cache XIP_ROM_BASE-SIZE to speedup coreboot code. */
 	movl	$MTRRphysBase_MSR(3), %ecx
-	xorl    %edx, %edx
-	movl     $REAL_XIP_ROM_BASE,%eax
-	orl     $(0 | 6), %eax
+	xorl	%edx, %edx
+	movl	$REAL_XIP_ROM_BASE,%eax
+	orl	$(0 | 6), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(3), %ecx
-	xorl    %edx, %edx
-	movl     $CONFIG_XIP_ROM_SIZE,%eax
+	xorl	%edx, %edx
+	movl	$CONFIG_XIP_ROM_SIZE, %eax
 	decl	%eax
 	notl	%eax
-	orl     $(0 | 0x800), %eax
+	orl	$(0 | 0x800), %eax
 	wrmsr
 
-	/* enable cache */
-	movl    %cr0, %eax
-	andl    $0x9fffffff,%eax
-	movl    %eax, %cr0
+	/* Enable cache. */
+	movl	%cr0, %eax
+	andl	$0x9fffffff, %eax
+	movl	%eax, %cr0
 	invd
 
-	/* clear boot_complete flag */
+	/* Clear boot_complete flag. */
 	xorl	%ebp, %ebp
 __main:
 	post_code(0x11)
-	cld			/* clear direction flag */
+	cld			/* Clear direction flag. */
 
 	movl	%ebp, %esi
 
-	movl $ROMSTAGE_STACK, %esp
+	movl	$ROMSTAGE_STACK, %esp
 	movl	%esp, %ebp
-	pushl %esi
-	call copy_and_run
+	pushl	%esi
+	call	copy_and_run
 
 .Lhlt:
 	post_code(0xee)

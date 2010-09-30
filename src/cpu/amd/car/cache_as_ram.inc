@@ -18,76 +18,82 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CacheSize CONFIG_DCACHE_RAM_SIZE
-#define CacheBase (0xd0000 - CacheSize)
-
-/* leave some space for global variable to pass to RAM stage */
-#define GlobalVarSize CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
-
-/* for CAR with FAM10 */
-#define CacheSizeAPStack 0x400 /* 1K */
-
-#define MSR_MCFG_BASE  0xC0010058
-#define MSR_FAM10      0xC001102A
-
-#define jmp_if_k8(x)	comisd	%xmm2, %xmm1; jb x
-
-#define CPUID_MASK	0x0ff00f00
-#define CPUID_VAL_FAM10_ROTATED	0x0f000010
-
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+
+#define CacheSize		CONFIG_DCACHE_RAM_SIZE
+#define CacheBase		(0xd0000 - CacheSize)
+
+/* Leave some space for global variable to pass to RAM stage. */
+#define GlobalVarSize		CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
+
+/* For CAR with Fam10h. */
+#define CacheSizeAPStack	0x400 /* 1K */
+
+#define MSR_MCFG_BASE		0xC0010058
+#define MSR_FAM10		0xC001102A
+
+#define jmp_if_k8(x)		comisd	%xmm2, %xmm1; jb x
+
+#define CPUID_MASK		0x0ff00f00
+#define CPUID_VAL_FAM10_ROTATED	0x0f000010
+
 /*
  * XMM map:
- *   xmm1: cpu family
- *   xmm2: fam10 comparison value
- *   xmm3: backup ebx
+ *   xmm1: CPU family
+ *   xmm2: Fam10h comparison value
+ *   xmm3: Backup EBX
  */
 
-	/* Save the BIST result */
+	/* Save the BIST result. */
 	movl	%eax, %ebp
 
-	/* for normal part %ebx already contain cpu_init_detected from fallback call */
+	/*
+	 * For normal part %ebx already contain cpu_init_detected
+	 * from fallback call.
+	 */
 
 cache_as_ram_setup:
 	post_code(0xa0)
 
-	/* enable SSE */
-	movl %cr4, %eax
-	orl $(3<<9), %eax
-	movl %eax, %cr4
+	/* Enable SSE. */
+	movl	%cr4, %eax
+	orl	$(3 << 9), %eax
+	movl	%eax, %cr4
 
-	/* figure out cpu family */
+	/* Figure out the CPU family. */
 	cvtsi2sd %ebx, %xmm3
 	movl	$0x01, %eax
 	cpuid
-	/* base family is bits 8..11, extended family is bits 20..27 */
+	/* Base family is bits 8..11, extended family is bits 20..27. */
 	andl	$CPUID_MASK, %eax
-	/* reorder bits for easier comparison by value */
+	/* Reorder bits for easier comparison by value. */
 	roll	$0x10, %eax
 	cvtsi2sd %eax, %xmm1
 	movl	$CPUID_VAL_FAM10_ROTATED, %eax
 	cvtsi2sd %eax, %xmm2
 	cvtsd2si %xmm3, %ebx
 
-	/* check if cpu_init_detected */
+	/* Check if cpu_init_detected. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
 	andl	$(1 << 11), %eax
-	movl	%eax, %ebx	/* We store the status */
+	movl	%eax, %ebx	/* We store the status. */
 
 	jmp_if_k8(CAR_FAM10_out_post_errata)
 
-	/* for GH, CAR need to set DRAM Base/Limit Registers to direct that to node0 */
-
-	/* Only BSP needed, for other nodes set during HT/memory init. */
-	/* So we need to check if it is BSP */
+	/*
+	 * For GH, CAR need to set DRAM Base/Limit registers to direct that
+	 * to node0.
+	 * Only BSP needed, for other nodes set during HT/memory init.
+	 * So we need to check if it is BSP.
+	 */
 	movl	$0x1b, %ecx
 	rdmsr
-	bt	$8, %eax /*BSC */
+	bt	$8, %eax /* BSC */
 	jnc	CAR_FAM10_out
 
-	/* Enable RT tables on BSP */
+	/* Enable RT tables on BSP. */
 	movl	$0x8000c06c, %eax
 	movw	$0xcf8, %dx
 	outl	%eax, %dx
@@ -96,7 +102,7 @@ cache_as_ram_setup:
 	btr	$0, %eax
 	outl	%eax, %dx
 
-	/* Setup temporary DRAM map: [0,16M) bit 0-23 */
+	/* Setup temporary DRAM map: [0,16M) bit 0-23. */
 	movl	$0x8000c144, %eax
 	movw	$0xcf8, %dx
 	outl	%eax, %dx
@@ -113,8 +119,9 @@ cache_as_ram_setup:
 
 CAR_FAM10_out:
 
-	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
-	 * Re-enable it in after RAM is initialized and before CAR is disabled
+	/*
+	 * Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
+	 * Re-enable it in after RAM is initialized and before CAR is disabled.
 	 */
 	movl	$MSR_FAM10, %ecx
 	rdmsr
@@ -122,23 +129,13 @@ CAR_FAM10_out:
 	wrmsr
 
 	/* Erratum 343, RevGuide for Fam10h, Pub#41322 Rev. 3.33 */
-
-	/* read-address has to be stored in the ecx register */
 	movl	$MSR_FAM10, %ecx
-
-	/* execute special read command for msr-register. Result is then in the EDX:EAX-registers (MSBs in EDX) */
 	rdmsr
-
-	/* Set bit 35 to 1 in EAX:EDX */
-	bts	$35-32, %edx
-
-	/* write back the modified register EDX:EAX to the MSR specified in ECX */
+	bts	$35-32, %edx	/* Set bit 35 in EDX:EAX (bit 3 in EDX). */
 	wrmsr
 
-	/* Erratum 343 end */
-
 #if CONFIG_MMCONF_SUPPORT
-	/* Set MMIO Config space BAR */
+	/* Set MMIO Config space BAR. */
 	movl	$MSR_MCFG_BASE, %ecx
 	rdmsr
 
@@ -152,7 +149,7 @@ CAR_FAM10_out:
 
 CAR_FAM10_out_post_errata:
 
-	/* Set MtrrFixDramModEn for clear fixed mtrr */
+	/* Set MtrrFixDramModEn for clear fixed MTRR. */
 enable_fixed_mtrr_dram_modify:
 	movl	$SYSCFG_MSR, %ecx
 	rdmsr
@@ -160,7 +157,7 @@ enable_fixed_mtrr_dram_modify:
 	orl	$SYSCFG_MSR_MtrrFixDramModEn, %eax
 	wrmsr
 
-	/* Clear all MTRRs */
+	/* Clear all MTRRs. */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
 
@@ -176,59 +173,63 @@ clear_fixed_var_mtrr:
 	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-/* 0x06 is the WB IO type for a given 4k segment.
+/*
+ * 0x06 is the WB IO type for a given 4k segment.
  * 0x1e is the MEM IO type for a given 4k segment (K10 and above).
  * segs is the number of 4k segments in the area of the particular
- *   register we want to use for CAR.
+ *      register we want to use for CAR.
  * reg is the register where the IO type should be stored.
  */
 .macro extractmask segs, reg
 .if \segs <= 0
-	/* The xorl here is superfluous because at the point of first execution
+	/*
+	 * The xorl here is superfluous because at the point of first execution
 	 * of this macro, %eax and %edx are cleared. Later invocations of this
 	 * macro will have a monotonically increasing segs parameter.
 	 */
-	xorl \reg, \reg
+	xorl	\reg, \reg
 .else
 	jmp_if_k8(1f)
 
 .if \segs == 1
-	movl $0x1e000000, \reg /* WB MEM type */
+	movl	$0x1e000000, \reg /* WB MEM type */
 .elseif \segs == 2
-	movl $0x1e1e0000, \reg /* WB MEM type */
+	movl	$0x1e1e0000, \reg /* WB MEM type */
 .elseif \segs == 3
-	movl $0x1e1e1e00, \reg /* WB MEM type */
+	movl	$0x1e1e1e00, \reg /* WB MEM type */
 .elseif \segs >= 4
-	movl $0x1e1e1e1e, \reg /* WB MEM type */
+	movl	$0x1e1e1e1e, \reg /* WB MEM type */
 .endif
 	jmp 2f
 1:
 .if \segs == 1
-	movl $0x06000000, \reg /* WB IO type */
+	movl	$0x06000000, \reg /* WB IO type */
 .elseif \segs == 2
-	movl $0x06060000, \reg /* WB IO type */
+	movl	$0x06060000, \reg /* WB IO type */
 .elseif \segs == 3
-	movl $0x06060600, \reg /* WB IO type */
+	movl	$0x06060600, \reg /* WB IO type */
 .elseif \segs >= 4
-	movl $0x06060606, \reg /* WB IO type */
+	movl	$0x06060606, \reg /* WB IO type */
 .endif
 2:
 .endif /* if \segs <= 0 */
 .endm
 
-/* size is the cache size in bytes we want to use for CAR.
- * windowoffset is the 32k-aligned window into CAR size
+/*
+ * size is the cache size in bytes we want to use for CAR.
+ * windowoffset is the 32k-aligned window into CAR size.
  */
 .macro simplemask carsize, windowoffset
 	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000) - 4)
 	extractmask gas_bug_workaround, %eax
 	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000))
 	extractmask gas_bug_workaround, %edx
-/* Without the gas bug workaround, the entire macro would consist only of the
- * two lines below.
-	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
-	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
- */
+	/*
+	 * Without the gas bug workaround, the entire macro would consist
+	 * only of the two lines below:
+	 *   extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	 *   extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
+	 */
 .endm
 
 #if CacheSize > 0x10000
@@ -242,18 +243,18 @@ clear_fixed_var_mtrr_out:
 #endif
 
 #if CacheSize > 0x8000
-	/* enable caching for 32K-64K using fixed mtrr */
+	/* Enable caching for 32K-64K using fixed MTRR. */
 	movl	$MTRRfix4K_C0000_MSR, %ecx
 	simplemask CacheSize, 0x8000
 	wrmsr
 #endif
 
-	/* enable caching for 0-32K using fixed mtrr */
+	/* Enable caching for 0-32K using fixed MTRR. */
 	movl	$MTRRfix4K_C8000_MSR, %ecx
 	simplemask CacheSize, 0
 	wrmsr
 
-	/* enable memory access for first MBs using top_mem */
+	/* Enable memory access for first MBs using top_mem. */
 	movl	$TOP_MEM, %ecx
 	xorl	%edx, %edx
 	movl	$(((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
@@ -267,13 +268,13 @@ clear_fixed_var_mtrr_out:
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
 
-	/* enable write base caching so we can do execute in place
-	 * on the flash rom.
+	/* Enable write base caching so we can do execute in place (XIP)
+	 * on the flash ROM.
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl    $REAL_XIP_ROM_BASE, %eax
-	orl     $MTRR_TYPE_WRBACK, %eax
+	movl	$REAL_XIP_ROM_BASE, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -285,14 +286,13 @@ wbcache_post_fam10_setup:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-	/* Set the default memory type and enable fixed and variable MTRRs */
+	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	/* Enable Variable and Fixed MTRRs */
-	movl	$0x00000c00, %eax
+	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
 	wrmsr
 
-	/* Enable the MTRRs and IORRs in SYSCFG */
+	/* Enable the MTRRs and IORRs in SYSCFG. */
 	movl	$SYSCFG_MSR, %ecx
 	rdmsr
 	orl	$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
@@ -300,35 +300,35 @@ wbcache_post_fam10_setup:
 
 	post_code(0xa1)
 
-	/* enable cache */
+	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
 	jmp_if_k8(fam10_end_part1)
 
-	/* So we need to check if it is BSP */
+	/* So we need to check if it is BSP. */
 	movl	$0x1b, %ecx
 	rdmsr
-	bt	$8, %eax /*BSC */
+	bt	$8, %eax /* BSC */
 	jnc	CAR_FAM10_ap
 fam10_end_part1:
 
 	post_code(0xa2)
 
-	/* Read the range with lodsl*/
+	/* Read the range with lodsl. */
 	cld
 	movl	$CacheBase, %esi
 	movl	$(CacheSize >> 2), %ecx
 	rep	lodsl
 
-	/* Clear the range */
+	/* Clear the range. */
 	movl	$CacheBase, %edi
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
-	/* set up the stack pointer */
+	/* Set up the stack pointer. */
 	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax
 	movl	%eax, %esp
 
@@ -336,42 +336,47 @@ fam10_end_part1:
 
 	jmp	CAR_FAM10_ap_out
 CAR_FAM10_ap:
-	/* need to set stack pointer for AP */
-	/* it will be from CacheBase + (CacheSize - GlobalVarSize)/2 - (NodeID<<CoreIDbits + CoreID) * CacheSizeAPStack*/
-	/* So need to get the NodeID and CoreID at first */
-	/* If NB_CFG bit 54 is set just use initial apicid, otherwise need to reverse it */
+	/*
+	 * Need to set stack pointer for AP.
+	 * It will be from:
+	 *   CacheBase + (CacheSize - GlobalVarSize) / 2
+	 *   - (NodeID << CoreIDbits + CoreID) * CacheSizeAPStack
+	 * So need to get the NodeID and CoreID at first.
+	 * If NB_CFG bit 54 is set just use initial APIC ID, otherwise need
+	 * to reverse it.
+	 */
 
-	/* store our init detected */
+	/* Store our init detected. */
 	movl	%ebx, %esi
 
-	/* get the coreid bits at first */
+	/* Get the coreid bits at first. */
 	movl	$0x80000008, %eax
 	cpuid
 	shrl	$12, %ecx
 	andl	$0x0f, %ecx
 	movl	%ecx, %edi
 
-	/* get the initial apic id */
+	/* Get the initial APIC ID. */
 	movl	$1, %eax
 	cpuid
 	shrl	$24, %ebx
 
-	/* get the nb cfg bit 54 */
-	movl	$0xc001001f, %ecx /* NB_CFG_MSR */
+	/* Get the nb cfg bit 54. */
+	movl	$0xc001001f, %ecx	/* NB_CFG_MSR */
 	rdmsr
-	movl	%edi, %ecx	/* CoreID bits */
+	movl	%edi, %ecx		/* CoreID bits */
 	bt	$(54-32), %edx
 	jc	roll_cfg
 	rolb	%cl, %bl
 roll_cfg:
 
-	/* calculate stack pointer */
+	/* Calculate stack pointer. */
 	movl	$CacheSizeAPStack, %eax
 	mull	%ebx
-	movl	$(CacheBase + (CacheSize - GlobalVarSize)/2), %esp
+	movl	$(CacheBase + (CacheSize - GlobalVarSize) / 2), %esp
 	subl	%eax, %esp
 
-	/* retrive init detected */
+	/* Retrive init detected. */
 	movl	%esi, %ebx
 
 	post_code(0xa4)
@@ -380,35 +385,38 @@ CAR_FAM10_ap_out:
 
 	post_code(0xa5)
 
-	/* disable SSE */
-	movl %cr4, %eax
-	andl $~(3<<9), %eax
-	movl %eax, %cr4
+	/* Disable SSE. */
+	movl	%cr4, %eax
+	andl	$~(3 << 9), %eax
+	movl	%eax, %cr4
 
-	/* Restore the BIST result */
+	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set ebp ? No need */
+	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
-	pushl	%ebx  /* init detected */
-	pushl	%eax  /* bist */
+	pushl	%ebx		/* Init detected. */
+	pushl	%eax		/* BIST */
 	call	cache_as_ram_main
-	/* We will not go back */
+	/* We will not go back. */
 
-	post_code(0xaf)		/* Should never see this postcode */
+	post_code(0xaf)		/* Should never see this POST code. */
 
 fixed_mtrr_msr:
 	.long	0x250, 0x258, 0x259
 	.long	0x268, 0x269, 0x26A
 	.long	0x26B, 0x26C, 0x26D
 	.long	0x26E, 0x26F
+
 var_mtrr_msr:
 	.long	0x200, 0x201, 0x202, 0x203
 	.long	0x204, 0x205, 0x206, 0x207
 	.long	0x208, 0x209, 0x20A, 0x20B
 	.long	0x20C, 0x20D, 0x20E, 0x20F
+
 var_iorr_msr:
 	.long	0xC0010016, 0xC0010017, 0xC0010018, 0xC0010019
+
 mem_top:
 	.long	0xC001001A, 0xC001001D
 	.long	0x000 /* NULL, end of table */

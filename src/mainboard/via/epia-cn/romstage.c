@@ -29,7 +29,6 @@
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "northbridge/via/cn700/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"

@@ -1,8 +1,14 @@
 config CPU_VIA_C7
 	bool
+
+if CPU_VIA_C7
+
+config CPU_SPECFIC_OPTIONS
+	def_bool y
 	select UDELAY_TSC
 	select MMX
 	select SSE2
+	select CACHE_AS_RAM
 
 config DCACHE_RAM_BASE
 	hex
@@ -14,4 +20,4 @@ config DCACHE_RAM_SIZE
 	default 0x8000
 	depends on CPU_VIA_C7
 
-
+endif # CPU_VIA_C7

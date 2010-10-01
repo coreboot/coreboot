@@ -30,7 +30,6 @@
 #define DIMM0 0x50
 #define DIMM1 0x51
 
-#define ICS951462_ADDRESS	0x69
 #define SMBUS_HUB 0x71
 
 #include <stdint.h>

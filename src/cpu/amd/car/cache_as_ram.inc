@@ -90,7 +90,7 @@ cache_as_ram_setup:
 	 */
 	movl	$0x1b, %ecx
 	rdmsr
-	bt	$8, %eax /* BSC */
+	bt	$8, %eax	/* BSP */
 	jnc	CAR_FAM10_out
 
 	/* Enable RT tables on BSP. */
@@ -135,15 +135,14 @@ CAR_FAM10_out:
 	wrmsr
 
 #if CONFIG_MMCONF_SUPPORT
-	/* Set MMIO Config space BAR. */
+	/* Set MMIO config space BAR. */
 	movl	$MSR_MCFG_BASE, %ecx
 	rdmsr
-
 	andl	$(~(0xfff00000 | (0xf << 2))), %eax
-	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000) | (8 << 2) | (1 << 0)), %eax
+	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000), %eax
+	orl	$((8 << 2) | (1 << 0)), %eax
 	andl	$(~(0x0000ffff)), %edx
 	orl	$(CONFIG_MMCONF_BASE_ADDRESS >> 32), %edx
-
 	wrmsr
 #endif
 
@@ -216,7 +215,7 @@ clear_fixed_var_mtrr_out:
 .endm
 
 /*
- * size is the cache size in bytes we want to use for CAR.
+ * carsize is the cache size in bytes we want to use for CAR.
  * windowoffset is the 32k-aligned window into CAR size.
  */
 .macro simplemask carsize, windowoffset
@@ -289,7 +288,7 @@ wbcache_post_fam10_setup:
 	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
+	movl	$(MTRRdefTypeEn | MTRRdefTypeFixEn), %eax
 	wrmsr
 
 	/* Enable the MTRRs and IORRs in SYSCFG. */
@@ -302,7 +301,7 @@ wbcache_post_fam10_setup:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
 
 	jmp_if_k8(fam10_end_part1)
@@ -310,7 +309,7 @@ wbcache_post_fam10_setup:
 	/* So we need to check if it is BSP. */
 	movl	$0x1b, %ecx
 	rdmsr
-	bt	$8, %eax /* BSC */
+	bt	$8, %eax	/* BSP */
 	jnc	CAR_FAM10_ap
 fam10_end_part1:
 
@@ -365,7 +364,7 @@ CAR_FAM10_ap:
 	movl	$0xc001001f, %ecx	/* NB_CFG_MSR */
 	rdmsr
 	movl	%edi, %ecx		/* CoreID bits */
-	bt	$(54-32), %edx
+	bt	$(54 - 32), %edx
 	jc	roll_cfg
 	rolb	%cl, %bl
 roll_cfg:

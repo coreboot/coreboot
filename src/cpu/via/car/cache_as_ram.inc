@@ -45,7 +45,7 @@ CacheAsRam:
 	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
+	movl	$(MTRRdefTypeEn | MTRRdefTypeFixEn), %eax
 	wrmsr
 
 	/* Clear all MTRRs. */
@@ -100,8 +100,7 @@ clear_fixed_var_mtrr_out:
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl	$REAL_XIP_ROM_BASE, %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	movl	$(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -109,13 +108,16 @@ clear_fixed_var_mtrr_out:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
 
+	/* Set the default memory type and enable fixed and variable MTRRs. */
+	/* TODO: Or also enable fixed MTRRs? Bug in the code? */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000800, %eax	/* Enable variable and fixed MTRRs. */
+	movl	$(MTRRdefTypeEn), %eax
 	wrmsr
 
+	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
@@ -186,27 +188,24 @@ testok:
 	 *       want to go back.
 	 */
 
-	/* We don't need CAR for now on. */
+	/* We don't need CAR from now on. */
 
 	/* Disable cache. */
 	movl	%cr0, %eax
 	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
 
-	/*
-	 * Set the default memory type and disable fixed and enable
-	 * variable MTRRs.
-	 */
+	/* Set the default memory type and enable variable MTRRs. */
+	/* TODO: Or also enable fixed MTRRs? Bug in the code? */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000800, %eax /* Enable variable & disable fixed MTRRs. */
+	movl	$(MTRRdefTypeEn), %eax
 	wrmsr
 
 	/* Enable caching for first 1M using variable MTRR. */
 	movl	$MTRRphysBase_MSR(0), %ecx
 	xorl	%edx, %edx
-	movl	$(0 | 6), %eax
-	// movl	$(0 | MTRR_TYPE_WRBACK), %eax
+	movl	$(0 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	/*
@@ -223,8 +222,7 @@ testok:
 
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl	$(0x80000 | 6), %eax
-	orl	$(0 | 6), %eax
+	movl	$(0x80000 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -234,8 +232,7 @@ testok:
 
 	movl	$MTRRphysBase_MSR(2), %ecx
 	xorl	%edx, %edx
-	movl	$(0xc0000 | 6), %eax
-	orl	$(0 | 6), %eax
+	movl	$(0xc0000 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(2), %ecx
@@ -246,21 +243,17 @@ testok:
 	/* Cache XIP_ROM_BASE-SIZE to speedup coreboot code. */
 	movl	$MTRRphysBase_MSR(3), %ecx
 	xorl	%edx, %edx
-	movl	$REAL_XIP_ROM_BASE,%eax
-	orl	$(0 | 6), %eax
+	movl	$(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(3), %ecx
 	xorl	%edx, %edx
-	movl	$CONFIG_XIP_ROM_SIZE, %eax
-	decl	%eax
-	notl	%eax
-	orl	$(0 | 0x800), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
 	invd
 

@@ -110,7 +110,7 @@ NotHtProcessor:
 	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000c00, %eax	/* Enable variable and fixed MTRRs. */
+	movl	$(MTRRdefTypeEn | MTRRdefTypeFixEn), %eax
 	wrmsr
 
 	/* Clear all MTRRs. */
@@ -169,7 +169,7 @@ clear_fixed_var_mtrr_out:
 .endm
 
 /*
- * size is the cache size in bytes we want to use for CAR.
+ * carsize is the cache size in bytes we want to use for CAR.
  * windowoffset is the 32k-aligned window into CAR size.
  */
 .macro simplemask carsize, windowoffset
@@ -221,8 +221,7 @@ clear_fixed_var_mtrr_out:
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl	$REAL_XIP_ROM_BASE, %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	movl	$(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -233,7 +232,7 @@ clear_fixed_var_mtrr_out:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
@@ -303,7 +302,7 @@ lout:
 	pushl	%eax  /* BIST */
 	call	main
 
-	/* We don't need CAR for now on. */
+	/* We don't need CAR from now on. */
 
 	/* Disable cache. */
 	movl	%cr0, %eax
@@ -332,7 +331,7 @@ lout:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
 
 	/* Clear boot_complete flag. */

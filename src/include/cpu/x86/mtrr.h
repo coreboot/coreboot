@@ -15,6 +15,9 @@
 #define MTRRcap_MSR     0x0fe
 #define MTRRdefType_MSR 0x2ff
 
+#define MTRRdefTypeEn		(1 << 11)
+#define MTRRdefTypeFixEn	(1 << 10)
+
 #define MTRRphysBase_MSR(reg) (0x200 + 2 * (reg))
 #define MTRRphysMask_MSR(reg) (0x200 + 2 * (reg) + 1)
 

@@ -90,7 +90,7 @@ static void sdram_dump_mchbar_registers(void)
 static int memclk(void)
 {
 	int offset = 0;
-#if CONFIG_I945GM
+#if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
 	offset++;
 #endif
 	switch (((MCHBAR32(CLKCFG) >> 4) & 7) - offset) {
@@ -102,7 +102,7 @@ static int memclk(void)
 	return -1;
 }
 
-#if CONFIG_I945GM
+#if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
 static int fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
@@ -113,8 +113,7 @@ static int fsbclk(void)
 	}
 	return -1;
 }
-#endif
-#if CONFIG_I945GC
+#elif defined(CONFIG_NORTHBRIDGE_INTEL_I945GC)
 static int fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
@@ -1045,7 +1044,7 @@ static const u32 *slew_group_lookup(int dual_channel, int index)
 	return nc;
 }
 
-#if CONFIG_I945GM
+#if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
 /* Strength multiplier tables */
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
@@ -1100,8 +1099,7 @@ static const u8 single_channel_strength_multiplier[] = {
 	0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
 	0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11
 };
-#endif
-#if CONFIG_I945GC
+#elif defined(CONFIG_NORTHBRIDGE_INTEL_I945GC)
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
@@ -2155,7 +2153,7 @@ static void sdram_program_clock_crossing(void)
 	/**
 	 * We add the indices according to our clocks from CLKCFG.
 	 */
-#if CONFIG_I945GM
+#if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
 	static const u32 data_clock_crossing[] = {
 		0x00100401, 0x00000000, /* DDR400 FSB400 */
 		0xffffffff, 0xffffffff, /*  nonexistant  */
@@ -2200,8 +2198,7 @@ static void sdram_program_clock_crossing(void)
 		0xffffffff, 0xffffffff, /*  nonexistant  */
 	};
 
-#endif
-#if CONFIG_I945GC
+#elif defined(CONFIG_NORTHBRIDGE_INTEL_I945GC)
 	/* i945 G/P */
 	static const u32 data_clock_crossing[] = {
 		0xffffffff, 0xffffffff, /*  nonexistant  */
@@ -2792,10 +2789,9 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 {
 	u8 clocks[2] = { 0, 0 };
 
-#if CONFIG_I945GM
+#if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
 #define CLOCKS_WIDTH 2
-#endif
-#if CONFIG_I945GC
+#elif defined(CONFIG_NORTHBRIDGE_INTEL_I945GC)
 #define CLOCKS_WIDTH 3
 #endif
 	if (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED)

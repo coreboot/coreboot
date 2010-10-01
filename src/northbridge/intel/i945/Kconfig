@@ -17,38 +17,27 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config NORTHBRIDGE_INTEL_I945
+config NORTHBRIDGE_INTEL_I945GC
 	bool
 	select HAVE_DEBUG_RAM_SETUP
+
+config NORTHBRIDGE_INTEL_I945GM
+	bool
+	select HAVE_DEBUG_RAM_SETUP
+
+if NORTHBRIDGE_INTEL_I945GC || NORTHBRIDGE_INTEL_I945GM
 
 config FALLBACK_VGA_BIOS_ID
 	string
 	default "8086,27a2"
-	depends on NORTHBRIDGE_INTEL_I945
-
-choice
-	default I945GM
-	depends on NORTHBRIDGE_INTEL_I945
-	help
-	  Different i945 variants require slightly different setup.
-
-config I945GM
-	bool "i945GM (Mobile) chipset"
-
-config I945GC
-	bool "i945GC chipset"
-
-endchoice
 
 config CHANNEL_XOR_RANDOMIZATION
 	bool
 	default n
-	depends on NORTHBRIDGE_INTEL_I945
 
 config OVERRIDE_CLOCK_DISABLE
 	bool
 	default n
-	depends on NORTHBRIDGE_INTEL_I945
 	help
 	  Usually system firmware turns off system memory clock
 	  signals to unused SO-DIMM slots to reduce EMI and power
@@ -59,8 +48,9 @@ config OVERRIDE_CLOCK_DISABLE
 config MAXIMUM_SUPPORTED_FREQUENCY
 	int
 	default 0
-	depends on NORTHBRIDGE_INTEL_I945
 	help
 	  If non-zero, this designates the maximum DDR frequency
 	  the board supports, despite what the chipset should be
 	  capable of.
+
+endif

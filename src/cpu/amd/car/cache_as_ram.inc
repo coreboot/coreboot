@@ -139,7 +139,7 @@ CAR_FAM10_out:
 	movl	$MSR_MCFG_BASE, %ecx
 	rdmsr
 	andl	$(~(0xfff00000 | (0xf << 2))), %eax
-	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000), %eax
+	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000)), %eax
 	orl	$((8 << 2) | (1 << 0)), %eax
 	andl	$(~(0x0000ffff)), %edx
 	orl	$(CONFIG_MMCONF_BASE_ADDRESS >> 32), %edx

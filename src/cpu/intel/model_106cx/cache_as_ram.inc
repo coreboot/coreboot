@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <cpu/x86/car.h>
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
-	/* Save the BIST result. */
-	movl	%eax, %ebp
+	save_bist_result()
 
 cache_as_ram:
 	post_code(0x20)
@@ -66,19 +66,12 @@ clear_mtrrs:
 	xorl	%edx, %edx
 	wrmsr
 
-	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
-	rdmsr
-	orl	$(1 << 11), %eax
-	wrmsr
+	enable_mtrr()
 
-	/* Enable L2 cache. */
-	movl	$0x11e, %ecx
-	rdmsr
-	orl	$(1 << 8), %eax
-	wrmsr
+	enable_l2_cache()
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
+	/* TODO: enable_cache()? But that doesn't have "invd". */
         movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	invd
@@ -93,9 +86,7 @@ clear_mtrrs:
 	rep	stosl
 
 	/* Enable Cache-as-RAM mode by disabling cache. */
-	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
-	movl	%eax, %cr0
+	disable_cache()
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 	/* Enable cache for our code in Flash because we do XIP here */
@@ -116,10 +107,7 @@ clear_mtrrs:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
-	movl	%eax, %cr0
+	enable_cache()
 
 	/* Set up the stack pointer. */
 #if defined(CONFIG_USBDEBUG) && (CONFIG_USBDEBUG == 1)
@@ -130,8 +118,8 @@ clear_mtrrs:
 #endif
 	movl	%eax, %esp
 
-	/* Restore the BIST result. */
-	movl	%ebp, %eax
+	restore_bist_result()
+
 	movl	%esp, %ebp
 	pushl	%eax
 
@@ -144,18 +132,11 @@ clear_mtrrs:
 
 	post_code(0x30)
 
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
-	movl	%eax, %cr0
+	disable_cache()
 
 	post_code(0x31)
 
-	/* Disable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
-	rdmsr
-	andl	$(~(1 << 11)), %eax
-	wrmsr
+	disable_mtrr()
 
 	post_code(0x31)
 
@@ -175,17 +156,11 @@ clear_mtrrs:
 
 	post_code(0x33)
 
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
-	movl	%eax, %cr0
+	enable_cache()
 
 	post_code(0x36)
 
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
-	movl	%eax, %cr0
+	disable_cache()
 
 	post_code(0x38)
 
@@ -202,17 +177,11 @@ clear_mtrrs:
 	post_code(0x39)
 
 	/* And enable cache again after setting MTRRs. */
-	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
-	movl	%eax, %cr0
+	enable_cache()
 
 	post_code(0x3a)
 
-	/* Enable MTRR. */
-	movl	$MTRRdefType_MSR, %ecx
-	rdmsr
-	orl	$(1 << 11), %eax
-	wrmsr
+	enable_mtrr()
 
 	post_code(0x3b)
 

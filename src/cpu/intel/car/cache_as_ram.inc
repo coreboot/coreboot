@@ -21,6 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <cpu/x86/car.h>
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
@@ -28,8 +29,7 @@
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		(0xd0000 - CacheSize)
 
-	/* Save the BIST result. */
-	movl	%eax, %ebp
+	save_bist_result()
 
 CacheAsRam:
 	/* Check whether the processor has HT capability. */
@@ -231,10 +231,7 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
-	movl	%eax, %cr0
+	enable_cache()
 
 	/* Read the range with lodsl. */
 	movl	$CacheBase, %esi
@@ -295,8 +292,7 @@ clear_fixed_var_mtrr_out:
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
 lout:
-	/* Restore the BIST result. */
-	movl	%ebp, %eax
+	restore_bist_result()
 
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
@@ -305,10 +301,7 @@ lout:
 
 	/* We don't need CAR from now on. */
 
-	/* Disable cache. */
-	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
-	movl	%eax, %cr0
+	disable_cache()
 
 	/* Clear sth. */
 	movl	$MTRRfix4K_C8000_MSR, %ecx
@@ -330,10 +323,7 @@ lout:
 	movl	$0x00000800, %eax /* Enable variable and disable fixed MTRRs. */
 	wrmsr
 
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
-	movl	%eax, %cr0
+	enable_cache();
 
 	/* Clear boot_complete flag. */
 	xorl	%ebp, %ebp

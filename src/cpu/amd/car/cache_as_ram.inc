@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <cpu/x86/car.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 
@@ -45,8 +46,7 @@
  *   xmm3: Backup EBX
  */
 
-	/* Save the BIST result. */
-	movl	%eax, %ebp
+	save_bist_result()
 
 	/*
 	 * For normal part %ebx already contain cpu_init_detected
@@ -56,10 +56,7 @@
 cache_as_ram_setup:
 	post_code(0xa0)
 
-	/* Enable SSE. */
-	movl	%cr4, %eax
-	orl	$(3 << 9), %eax
-	movl	%eax, %cr4
+	enable_sse()
 
 	/* Figure out the CPU family. */
 	cvtsi2sd %ebx, %xmm3
@@ -299,10 +296,7 @@ wbcache_post_fam10_setup:
 
 	post_code(0xa1)
 
-	/* Enable cache. */
-	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
-	movl	%eax, %cr0
+	enable_cache()
 
 	jmp_if_k8(fam10_end_part1)
 
@@ -384,13 +378,9 @@ CAR_FAM10_ap_out:
 
 	post_code(0xa5)
 
-	/* Disable SSE. */
-	movl	%cr4, %eax
-	andl	$~(3 << 9), %eax
-	movl	%eax, %cr4
+	disable_sse()
 
-	/* Restore the BIST result. */
-	movl	%ebp, %eax
+	restore_bist_result()
 
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp

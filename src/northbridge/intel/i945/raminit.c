@@ -103,7 +103,7 @@ static int memclk(void)
 }
 
 #if defined(CONFIG_NORTHBRIDGE_INTEL_I945GM)
-static int fsbclk(void)
+static u16 fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
 	case 0: return 400;
@@ -111,10 +111,10 @@ static int fsbclk(void)
 	case 3: return 667;
 	default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
 	}
-	return -1;
+	return 0xffff;
 }
 #elif defined(CONFIG_NORTHBRIDGE_INTEL_I945GC)
-static int fsbclk(void)
+static u16 fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
 	case 0: return 1066;
@@ -122,7 +122,7 @@ static int fsbclk(void)
 	case 2: return 800;
 	default: printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n", MCHBAR32(CLKCFG) & 7);
 	}
-	return -1;
+	return 0xffff;
 }
 #endif
 
@@ -1929,7 +1929,7 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 	MCHBAR32(PLLMON) = 0x80800000;
 
 	sysinfo->fsb_frequency = fsbclk();
-	if (sysinfo->fsb_frequency == -1)
+	if (sysinfo->fsb_frequency == 0xffff)
 		die("Unsupported FSB speed");
 
 	/* Program CPCTL according to FSB speed */

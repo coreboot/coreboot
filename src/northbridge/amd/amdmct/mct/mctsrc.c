@@ -961,7 +961,7 @@ static void CalcEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 				val += val0;
 			}
 
-		pDCTstat->CH_D_BC_RCVRDLY[Channel][ChipSel>>1] = val;
+			pDCTstat->CH_D_BC_RCVRDLY[Channel][ChipSel>>1] = val;
 		}
 	}
 	SetEccDQSRcvrEn_D(pDCTstat, Channel);
@@ -979,8 +979,8 @@ void mctSetEccDQSRcvrEn_D(struct MCTStatStruc *pMCTstat,
 		if (!pDCTstat->NodePresent)
 			break;
 		if (pDCTstat->DCTSysLimit) {
-		for(i=0; i<2; i++)
-		CalcEccDQSRcvrEn_D(pMCTstat, pDCTstat, i);
+			for(i=0; i<2; i++)
+				CalcEccDQSRcvrEn_D(pMCTstat, pDCTstat, i);
 		}
 	}
 }

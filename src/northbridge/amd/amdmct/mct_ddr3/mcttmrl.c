@@ -213,8 +213,8 @@ static void mct_setMaxRdLatTrnVal_D(struct DCTStatStruc *pDCTstat,
 
 	if (pDCTstat->GangedMode) {
 		Channel = 0; /* for safe */
-	for (i=0; i<2; i++)
-		pDCTstat->CH_MaxRdLat[i] = MaxRdLatVal;
+		for (i=0; i<2; i++)
+			pDCTstat->CH_MaxRdLat[i] = MaxRdLatVal;
 	} else {
 		pDCTstat->CH_MaxRdLat[Channel] = MaxRdLatVal;
 	}

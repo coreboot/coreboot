@@ -61,9 +61,9 @@ void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 				DramBase = pDCTstat->NodeSysBase >> 8;
 				dct1_size = ((pDCTstat->NodeSysLimit) + 2) >> 8;
 				dct0_size = Get_NB32(pDCTstat->dev_dct, 0x114);
-					if (dct0_size >= 0x10000) {
-						dct0_size -= HoleSize;
-					}
+				if (dct0_size >= 0x10000) {
+					dct0_size -= HoleSize;
+				}
 
 				dct0_size -= DramBase;
 				dct1_size -= dct0_size;

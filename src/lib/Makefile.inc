@@ -28,8 +28,6 @@ driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
-ramstage-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.c
-
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 
 smm-y += memcpy.c

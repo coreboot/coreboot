@@ -24,7 +24,6 @@
 #define __PRE_RAM__
 
 #define RAMINIT_SYSINFO 1
-#define CACHE_AS_RAM_ADDRESS_DEBUG 0
 #define SET_NB_CFG_54 1			/* Used by RAM init. */
 #define QRANK_DIMM_SUPPORT 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0

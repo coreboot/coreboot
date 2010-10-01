@@ -25,7 +25,6 @@
 #define __PRE_RAM__
 
 #define RAMINIT_SYSINFO 1
-#define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
 #define SET_NB_CFG_54 1
 

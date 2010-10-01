@@ -499,6 +499,16 @@ config DEBUG_RAM_SETUP
 
 	  If unsure, say N.
 
+config HAVE_DEBUG_CAR
+	def_bool n
+
+config DEBUG_CAR
+	bool "Output verbose Cache-as-RAM debug messages"
+	default n
+	depends on HAVE_DEBUG_CAR
+	help
+	  This option enables additional CAR related debug messages.
+
 config DEBUG_PIRQ
 	bool "Check PIRQ table consistency"
 	default n

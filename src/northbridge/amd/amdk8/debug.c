@@ -3,13 +3,9 @@
  *
  */
 
-#ifndef CACHE_AS_RAM_ADDRESS_DEBUG
-#define CACHE_AS_RAM_ADDRESS_DEBUG 0
-#endif
-
 static inline void print_debug_addr(const char *str, void *val)
 {
-#if CACHE_AS_RAM_ADDRESS_DEBUG == 1
+#if CONFIG_DEBUG_CAR
 		printk(BIOS_DEBUG, "------Address debug: %s%x------\n", str, val);
 #endif
 }

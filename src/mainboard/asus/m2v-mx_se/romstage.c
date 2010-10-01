@@ -24,8 +24,6 @@
 
 #define RAMINIT_SYSINFO 1
 
-#define CACHE_AS_RAM_ADDRESS_DEBUG 0
-
 unsigned int get_sbdn(unsigned bus);
 
 /* Used by raminit. */

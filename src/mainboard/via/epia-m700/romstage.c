@@ -23,7 +23,6 @@
  */
 
 #define RAMINIT_SYSINFO 1
-#define CACHE_AS_RAM_ADDRESS_DEBUG 0
 #define PAYLOAD_IS_SEABIOS 0
 
 #include <stdint.h>

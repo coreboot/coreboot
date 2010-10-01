@@ -40,6 +40,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_512
 	select GFXUMA
 	select TINY_BOOTBLOCK
+	select I945GC
+	select CHANNEL_XOR_RANDOMIZATION
 
 config MAINBOARD_DIR
 	string

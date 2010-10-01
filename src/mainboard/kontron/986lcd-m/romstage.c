@@ -19,19 +19,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-/* Configuration of the i945 driver */
-#define CHIPSET_I945GM 1
-/* Usually system firmware turns off system memory clock signals to
- * unused SO-DIMM slots to reduce EMI and power consumption.
- * However, the Kontron 986LCD-M does not like unused clock signals to
- * be disabled. If other similar mainboard occur, it would make sense
- * to make this an entry in the sysinfo structure, and pre-initialize that
- * structure in the mainboard's romstage.c main() function. For now a
- * #define will do.
- */
-#define OVERRIDE_CLOCK_DISABLE 1
-#define CHANNEL_XOR_RANDOMIZATION 1
-
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>

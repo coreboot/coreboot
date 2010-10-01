@@ -90,7 +90,7 @@ static void sdram_dump_mchbar_registers(void)
 static int memclk(void)
 {
 	int offset = 0;
-#ifdef CHIPSET_I945GM
+#if CONFIG_I945GM
 	offset++;
 #endif
 	switch (((MCHBAR32(CLKCFG) >> 4) & 7) - offset) {
@@ -102,7 +102,7 @@ static int memclk(void)
 	return -1;
 }
 
-#ifdef CHIPSET_I945GM
+#if CONFIG_I945GM
 static int fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
@@ -114,7 +114,7 @@ static int fsbclk(void)
 	return -1;
 }
 #endif
-#ifdef CHIPSET_I945GC
+#if CONFIG_I945GC
 static int fsbclk(void)
 {
 	switch (MCHBAR32(CLKCFG) & 7) {
@@ -131,8 +131,8 @@ static int sdram_capabilities_max_supported_memory_frequency(void)
 {
 	u32 reg32;
 
-#ifdef MAXIMUM_SUPPORTED_FREQUENCY
-	return MAXIMUM_SUPPORTED_FREQUENCY;
+#if CONFIG_MAXIMUM_SUPPORTED_FREQUENCY
+	return CONFIG_MAXIMUM_SUPPORTED_FREQUENCY;
 #endif
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xe4); /* CAPID0 + 4 */
@@ -1045,7 +1045,7 @@ static const u32 *slew_group_lookup(int dual_channel, int index)
 	return nc;
 }
 
-#ifdef CHIPSET_I945GM
+#if CONFIG_I945GM
 /* Strength multiplier tables */
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
@@ -1101,7 +1101,7 @@ static const u8 single_channel_strength_multiplier[] = {
 	0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11
 };
 #endif
-#ifdef CHIPSET_I945GC
+#if CONFIG_I945GC
 static const u8 dual_channel_strength_multiplier[] = {
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
 	0x44, 0x22, 0x00, 0x00, 0x44, 0x44, 0x44, 0x22,
@@ -2155,7 +2155,7 @@ static void sdram_program_clock_crossing(void)
 	/**
 	 * We add the indices according to our clocks from CLKCFG.
 	 */
-#ifdef CHIPSET_I945GM
+#if CONFIG_I945GM
 	static const u32 data_clock_crossing[] = {
 		0x00100401, 0x00000000, /* DDR400 FSB400 */
 		0xffffffff, 0xffffffff, /*  nonexistant  */
@@ -2201,7 +2201,7 @@ static void sdram_program_clock_crossing(void)
 	};
 
 #endif
-#ifdef CHIPSET_I945GC
+#if CONFIG_I945GC
 	/* i945 G/P */
 	static const u32 data_clock_crossing[] = {
 		0xffffffff, 0xffffffff, /*  nonexistant  */
@@ -2420,7 +2420,7 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 	if (sysinfo->interleaved) {
 
 		reg32 = MCHBAR32(DCC);
-#if CHANNEL_XOR_RANDOMIZATION
+#if CONFIG_CHANNEL_XOR_RANDOMIZATION
 		reg32 &= ~(1 << 10);
 		reg32 |= (1 << 9);
 #else
@@ -2792,10 +2792,10 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 {
 	u8 clocks[2] = { 0, 0 };
 
-#ifdef CHIPSET_I945GM
+#if CONFIG_I945GM
 #define CLOCKS_WIDTH 2
 #endif
-#ifdef CHIPSET_I945GC
+#if CONFIG_I945GC
 #define CLOCKS_WIDTH 3
 #endif
 	if (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED)
@@ -2810,15 +2810,11 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 	if (sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED)
 		clocks[1] |= ((1 << CLOCKS_WIDTH)-1) << CLOCKS_WIDTH;
 
-#ifdef OVERRIDE_CLOCK_DISABLE
+#if CONFIG_OVERRIDE_CLOCK_DISABLE
 	/* Usually system firmware turns off system memory clock signals
 	 * to unused SO-DIMM slots to reduce EMI and power consumption.
 	 * However, the Kontron 986LCD-M does not like unused clock
 	 * signals to be disabled.
-	 * If other similar mainboard occur, it would make sense to make
-	 * this an entry in the sysinfo structure, and pre-initialize that
-	 * structure in the mainboard's romstage.c main() function.
-	 * For now an #ifdef will do.
 	 */
 
 	clocks[0] = 0xf; /* force all clock gate pairs to enable */

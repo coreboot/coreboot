@@ -21,12 +21,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-/* Configuration of the i945 driver */
-#define CHIPSET_I945GM 1
-#define CHANNEL_XOR_RANDOMIZATION 1
-// Rocky freezing temperature settings:
-#define MAXIMUM_SUPPORTED_FREQUENCY 400
-
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>

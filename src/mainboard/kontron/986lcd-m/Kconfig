@@ -20,6 +20,9 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CACHE_AS_RAM
 	select GFXUMA
 	select TINY_BOOTBLOCK
+	select CHANNEL_XOR_RANDOMIZATION
+	select I945GM
+	select OVERRIDE_CLOCK_DISABLE
 
 config MAINBOARD_DIR
 	string

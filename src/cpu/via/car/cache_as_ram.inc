@@ -100,7 +100,8 @@ clear_fixed_var_mtrr_out:
 	 */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl	$(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl	$REAL_XIP_ROM_BASE, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
@@ -243,7 +244,8 @@ testok:
 	/* Cache XIP_ROM_BASE-SIZE to speedup coreboot code. */
 	movl	$MTRRphysBase_MSR(3), %ecx
 	xorl	%edx, %edx
-	movl	$(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl	$REAL_XIP_ROM_BASE, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(3), %ecx

@@ -20,9 +20,6 @@
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 
-#define SIO_GPIO_BASE 0x680
-#define SIO_XBUS_BASE 0x4880
-
 #define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, PC87427_SP1)
 #define HIDDEN_SERIAL_DEV  PNP_DEV(0x2e, PC87427_SP2)
 
@@ -34,9 +31,6 @@
 	DEVPRES_D6F0 | \
 	0 )
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
-
-#define RECVENA_CONFIG  0x0708090a
-#define RECVENB_CONFIG  0x0708090a
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

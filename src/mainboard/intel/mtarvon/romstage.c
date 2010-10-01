@@ -38,9 +38,6 @@
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include "cpu/x86/bist.h"
 
-#define SIO_GPIO_BASE 0x680
-#define SIO_XBUS_BASE 0x4880
-
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
 

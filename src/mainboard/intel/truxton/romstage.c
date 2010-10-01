@@ -40,9 +40,6 @@
 #include "cpu/x86/bist.h"
 #include "spd.h"
 
-#define SIO_GPIO_BASE 0x680
-#define SIO_XBUS_BASE 0x4880
-
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0 | DEVPRES_D4F0)
 
 static inline int spd_read_byte(u16 device, u8 address)

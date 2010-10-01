@@ -29,10 +29,6 @@
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D6F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
 
-/* Beta values:         0x00090800 */
-/* Silver values:       0x000a0900 */
-#define RECVENA_CONFIG  0x000a090a
-#define RECVENB_CONFIG  0x000a090a
 #define DIMM_MAP_LOGICAL 0x0124
 
 static inline int spd_read_byte(unsigned device, unsigned address)

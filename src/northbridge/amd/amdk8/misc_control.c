@@ -1,6 +1,6 @@
 /* Turn off machine check triggers when reading
- * pci space where there are no devices.
- * This is necessary when scaning the bus for
+ * PCI space where there are no devices.
+ * This is necessary when scanning the bus for
  * devices which is done by the kernel
  *
  * written in 2003 by Eric Biederman
@@ -26,13 +26,13 @@
  *
  * @param
  *
- * There is only one AGP aperture resource needed. The resoruce is added to
+ * There is only one AGP aperture resource needed. The resource is added to
  * the northbridge of BSP.
  *
  * The same trick can be used to augment legacy VGA resources which can
- * be detect by generic pci reousrce allocator for VGA devices.
+ * be detect by generic PCI resource allocator for VGA devices.
  * BAD: it is more tricky than I think, the resource allocation code is
- * implemented in a way to NOT DOING legacy VGA resource allcation on
+ * implemented in a way to NOT DOING legacy VGA resource allocation on
  * purpose :-(.
  */
 static void mcf3_read_resources(device_t dev)
@@ -42,7 +42,7 @@ static void mcf3_read_resources(device_t dev)
 	/* Read the generic PCI resources */
 	pci_dev_read_resources(dev);
 
-	/* If we are not the first processor don't allocate the gart apeture */
+	/* If we are not the first processor don't allocate the GART aperture */
 	if (dev->path.pci.devfn != PCI_DEVFN(0x18, 3)) {
 		return;
 	}
@@ -51,7 +51,7 @@ static void mcf3_read_resources(device_t dev)
 	get_option(&iommu, "iommu");
 
 	if (iommu) {
-		/* Add a Gart apeture resource */
+		/* Add a GART aperture resource */
 		resource = new_resource(dev, 0x94);
 		resource->size = CONFIG_AGP_APERTURE_SIZE;
 		resource->align = log2(resource->size);
@@ -79,7 +79,7 @@ static void set_agp_aperture(device_t dev)
 		/* Get the base address */
 		gart_base = ((resource->base) >> 25) & 0x00007fff;
 
-		/* Update the other northbriges */
+		/* Update the other northbridges */
 		pdev = 0;
 		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
 			/* Store the GART size but don't enable it */

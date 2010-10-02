@@ -95,8 +95,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
        return smbus_read_byte(device, address);
 }
 
-//#define K8_4RANK_DIMM_SUPPORT 1
-
 #include "northbridge/amd/amdk8/amdk8_f.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

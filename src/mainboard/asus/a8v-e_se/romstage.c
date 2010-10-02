@@ -98,8 +98,6 @@ void soft_reset(void)
 // defines S3_NVRAM_EARLY:
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 
-#define K8_4RANK_DIMM_SUPPORT 1
-
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

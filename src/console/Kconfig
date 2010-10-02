@@ -112,13 +112,13 @@ config USBDEBUG
 
 	  If unsure, say N.
 
-# Note: This option doesn't make sense on Intel ICH southbridges as those
-# hardcode the physical USB port to be used as Debug Port to 1. It cannot
-# be changed by coreboot.
+# Note: This option doesn't make sense on Intel ICH / AMD SB600 southbridges
+# as those hardcode the physical USB port to be used as Debug Port to 1.
+# It cannot be changed by coreboot.
 config USBDEBUG_DEFAULT_PORT
 	int "Default USB port to use as Debug Port"
 	default 1
-	depends on USBDEBUG && !SOUTHBRIDGE_INTEL_I82801GX
+	depends on USBDEBUG && !SOUTHBRIDGE_INTEL_I82801GX && !SOUTHBRIDGE_AMD_SB600
 	help
 	  This option selects which physical USB port coreboot will try to
 	  use as EHCI Debug Port first (valid values are: 1-15).

@@ -128,7 +128,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	uart_init();
 
 #if CONFIG_USBDEBUG
-	sb700_enable_usbdebug(0);
+	sb700_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
 

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,22 +26,39 @@
 #define EHCI_BAR_INDEX		0x10		/* TODO: DBUG_PRT[31:29] */
 #define EHCI_DEBUG_OFFSET	0xE0		/* Hardcoded to 0xE0 */
 
-/* Required for successful build, but currently empty. */
+#define EHCI_EOR		(EHCI_BAR + 0x20)
+#define DEBUGPORT_MISC_CONTROL	(EHCI_EOR + 0x80)
+
 void set_debug_port(unsigned int port)
 {
-	/* TODO: Allow changing the physical USB port used as Debug Port. */
+	u32 reg32;
+
+	/* Write the port number to DEBUGPORT_MISC_CONTROL[31:28]. */
+	reg32 = read32(DEBUGPORT_MISC_CONTROL);
+	reg32 &= ~(0xf << 28);
+	reg32 |= (port << 28);
+	reg32 |= (1 << 27); /* Enable Debug Port port number remapping. */
+	write32(DEBUGPORT_MISC_CONTROL, reg32);
 }
 
+/*
+ * Note: The SB700 has two EHCI devices, D18:F2 and D19:F2.
+ * This code currently only supports the first one, i.e., USB Debug devices
+ * attached to physical USB ports belonging to the first EHCI device.
+ */
 static void sb700_enable_usbdebug(unsigned int port)
 {
-	device_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
-
-	/* Select the requested physical USB port (1-15) as the Debug Port. */
-	set_debug_port(port);
+	device_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+
+	/*
+	* Select the requested physical USB port (1-15) as the Debug Port.
+	* Must be called after the EHCI BAR has been set up (see above).
+	*/
+	set_debug_port(port);
 }

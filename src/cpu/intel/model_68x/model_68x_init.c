@@ -100,8 +100,26 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_68x_init,
 };
 
+/*
+ * Intel Celeron Processor Identification Information
+ * http://www.intel.com/design/celeron/qit/update.pdf
+ *
+ * Intel Pentium III Processor Identification and Package Information
+ * http://www.intel.com/design/pentiumiii/qit/update.pdf
+ *
+ * Intel Pentium III Processor Specification Update
+ * http://download.intel.com/design/intarch/specupdt/24445358.pdf
+ *
+ * Mobile Intel Pentium III/III-M Processor Specification Update
+ * http://download.intel.com/design/intarch/specupdt/24530663.pdf
+ */
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0680 },
+	{ X86_VENDOR_INTEL, 0x0681 }, /* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
+	{ X86_VENDOR_INTEL, 0x0683 }, /* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/
+	{ X86_VENDOR_INTEL, 0x0686 }, /* PIII/Celeron, cC0/C0/BC0/PC0/MC0 */
+	{ X86_VENDOR_INTEL, 0x068a }, /* PIII/Celeron, cD0/D0/BD0/PD0 */
+
 	{ 0, 0 },
 };
 

@@ -26,6 +26,10 @@ config APIC_ID_OFFSET
 	hex
 	default 0x10
 
+config CK804_NUM
+	int
+	default 2
+
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

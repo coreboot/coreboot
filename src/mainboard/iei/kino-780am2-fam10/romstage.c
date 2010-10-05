@@ -62,11 +62,7 @@
 static int smbus_read_byte(u32 device, u32 address);
 
 #include "superio/fintek/f71859/f71859_early_serial.c"
-
-#if CONFIG_USBDEBUG
-#include "southbridge/amd/sb700/sb700_enable_usbdebug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
+#include <usbdebug.h>
 
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>

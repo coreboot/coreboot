@@ -33,6 +33,7 @@
 #include <pc80/mc146818rtc.h>
 
 #include <console/console.h>
+#include <usbdebug.h>
 #include <cpu/x86/bist.h>
 
 #include "superio/smsc/lpc47m15x/lpc47m15x_early_serial.c"

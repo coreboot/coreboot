@@ -22,3 +22,11 @@ config SOUTHBRIDGE_AMD_SB600
 	select IOAPIC
 	select HAVE_USBDEBUG
 
+config EHCI_BAR
+	hex
+	default 0xfef00000 if SOUTHBRIDGE_AMD_SB600
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xe0 if SOUTHBRIDGE_AMD_SB600
+

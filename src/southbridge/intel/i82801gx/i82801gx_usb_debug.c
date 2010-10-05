@@ -18,12 +18,12 @@
  */
 
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
-
-#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
-#define EHCI_BAR_INDEX		0x10		/* Hardwired 0x10 (>= ICH4). */
-#define EHCI_DEBUG_OFFSET	0xA0		/* Hardwired 0xa0 (>= ICH5). */
+#include "i82801gx.h"
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
@@ -31,20 +31,20 @@ void set_debug_port(unsigned int port)
 	/* Not needed, the ICH* southbridges hardcode physical USB port 1. */
 }
 
-static void i82801gx_enable_usbdebug(unsigned int port)
+void i82801gx_enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;
 	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
 
 	/* Set the EHCI BAR address. */
-	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
+	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 
 	/* Force ownership of the Debug Port to the EHCI controller. */
 	printk(BIOS_DEBUG, "Enabling OWNER_CNT\n");
-	dbgctl = read32(EHCI_BAR + EHCI_DEBUG_OFFSET);
+	dbgctl = read32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
-	write32(EHCI_BAR + EHCI_DEBUG_OFFSET, dbgctl);
+	write32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET, dbgctl);
 }

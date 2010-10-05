@@ -22,18 +22,17 @@
  */
 
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
+#include "ck804.h"
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
 #endif
-
-#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
-#define EHCI_BAR_INDEX		0x10
-#define EHCI_DEBUG_OFFSET	0x98
 
 void set_debug_port(unsigned int port)
 {
@@ -47,7 +46,7 @@ void set_debug_port(unsigned int port)
 	pci_write_config32(dev, 0x74, dword);
 }
 
-static void ck804_enable_usbdebug(unsigned int port)
+void ck804_enable_usbdebug(unsigned int port)
 {
 	device_t dev = PCI_DEV(0, CK804_DEVN_BASE + 2, 1); /* USB EHCI */
 
@@ -55,7 +54,7 @@ static void ck804_enable_usbdebug(unsigned int port)
 	set_debug_port(port);
 
 	/* Set the EHCI BAR address. */
-	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
+	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);

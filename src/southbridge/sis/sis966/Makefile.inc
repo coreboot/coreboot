@@ -9,6 +9,7 @@ driver-y += sis966_sata.c
 driver-y += sis966_pcie.c
 driver-y += sis966_aza.c
 ramstage-y += sis966_reset.c
+romstage-y += sis966_enable_usbdebug.c
 
 chipset_bootblock_inc += $(src)/southbridge/sis/sis966/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/sis/sis966/romstrap.lds

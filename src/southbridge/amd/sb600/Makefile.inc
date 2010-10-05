@@ -8,3 +8,4 @@ driver-y += sb600_hda.c
 driver-y += sb600_ac97.c
 driver-y += sb600_pci.c
 ramstage-y += sb600_reset.c
+romstage-y += sb600_enable_usbdebug.c

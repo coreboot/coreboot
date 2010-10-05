@@ -49,10 +49,7 @@
 #include <pc80/mc146818rtc.h>
 
 #include <console/console.h>
-#if CONFIG_USBDEBUG
-#include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
+#include <usbdebug.h>
 
 #include <cpu/amd/model_fxx_rev.h>
 

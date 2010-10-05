@@ -7,3 +7,4 @@ driver-y += sb700_sata.c
 driver-y += sb700_hda.c
 driver-y += sb700_pci.c
 ramstage-y += sb700_reset.c
+romstage-y += sb700_enable_usbdebug.c

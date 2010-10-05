@@ -42,10 +42,7 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#if CONFIG_USBDEBUG
-#include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
+#include <usbdebug.h>
 #include <lib.h>
 
 #include <cpu/amd/model_10xxx_rev.h>

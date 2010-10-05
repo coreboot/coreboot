@@ -33,6 +33,7 @@
 #include <pc80/mc146818rtc.h>
 
 #include <console/console.h>
+#include <usbdebug.h>
 #include <cpu/x86/bist.h>
 
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"

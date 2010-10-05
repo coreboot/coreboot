@@ -59,4 +59,5 @@ void sb700_setup_sata_phys(struct device *dev);
 
 #endif
 
+void sb700_enable_usbdebug(unsigned int port);
 #endif /* SB700_H */

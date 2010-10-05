@@ -29,4 +29,5 @@ void mcp55_enable(device_t dev);
 #else
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
 #endif
+void mcp55_enable_usbdebug(unsigned int port);
 #endif /* MCP55_H */

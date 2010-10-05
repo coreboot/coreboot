@@ -51,13 +51,11 @@
 #include <pc80/mc146818rtc.h>
 
 #include <console/console.h>
-#if CONFIG_USBDEBUG
-#include "southbridge/sis/sis966/sis966_enable_usbdebug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
+#include <usbdebug.h>
 
 #include <cpu/amd/model_fxx_rev.h>
 
+#include "southbridge/sis/sis966/sis966.h"
 #include "southbridge/sis/sis966/sis966_early_smbus.c"
 #include "southbridge/sis/sis966/sis966_enable_rom.c"
 #include "northbridge/amd/amdk8/raminit.h"

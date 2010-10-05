@@ -41,6 +41,7 @@ void set_ehci_base(unsigned ehci_base);
 void set_ehci_debug(unsigned ehci_deug);
 unsigned get_ehci_debug(void);
 void set_debug_port(unsigned port);
+void early_usbdebug_init(void);
 void usbdebug_ram_tx_byte(unsigned char data);
 void usbdebug_tx_byte(unsigned char data);
 

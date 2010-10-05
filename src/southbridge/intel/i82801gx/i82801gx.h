@@ -39,9 +39,12 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
+#if !defined(ASSEMBLY)
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801gx_enable(device_t dev);
+#endif
+void i82801gx_enable_usbdebug(unsigned int port);
 #endif
 
 #define MAINBOARD_POWER_OFF	0

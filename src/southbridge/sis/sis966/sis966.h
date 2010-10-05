@@ -32,5 +32,6 @@
 #include "chip.h"
 
 void sis966_enable(device_t dev);
+void sis966_enable_usbdebug(unsigned int port);
 
 #endif /* SIS966_H */

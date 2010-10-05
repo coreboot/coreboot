@@ -19,13 +19,15 @@
  */
 
 #include "../lib/usbdebug.c"
+#include <arch/io.h>
+#include <ehci.h>
 
-static void early_usbdebug_init(void)
+void early_usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
 	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
 
-	usbdebug_init(EHCI_BAR, EHCI_DEBUG_OFFSET, dbg_info);
+	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
 
 void usbdebug_tx_byte(unsigned char data)

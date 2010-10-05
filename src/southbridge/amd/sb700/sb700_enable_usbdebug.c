@@ -19,14 +19,13 @@
  */
 
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
+#include "sb700.h"
 
-#define EHCI_BAR		0xFEF00000	/* EHCI BAR address */
-#define EHCI_BAR_INDEX		0x10		/* TODO: DBUG_PRT[31:29] */
-#define EHCI_DEBUG_OFFSET	0xE0		/* Hardcoded to 0xE0 */
-
-#define EHCI_EOR		(EHCI_BAR + 0x20)
+#define EHCI_EOR		(CONFIG_EHCI_BAR + 0x20)
 #define DEBUGPORT_MISC_CONTROL	(EHCI_EOR + 0x80)
 
 void set_debug_port(unsigned int port)
@@ -46,12 +45,12 @@ void set_debug_port(unsigned int port)
  * This code currently only supports the first one, i.e., USB Debug devices
  * attached to physical USB ports belonging to the first EHCI device.
  */
-static void sb700_enable_usbdebug(unsigned int port)
+void sb700_enable_usbdebug(unsigned int port)
 {
 	device_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
 
 	/* Set the EHCI BAR address. */
-	pci_write_config32(dev, EHCI_BAR_INDEX, EHCI_BAR);
+	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);

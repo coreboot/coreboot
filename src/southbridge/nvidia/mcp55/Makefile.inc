@@ -15,5 +15,7 @@ driver-$(CONFIG_GENERATE_ACPI_TABLES) += mcp55_fadt.c
 
 ramstage-y += mcp55_reset.c
 
+romstage-y += mcp55_enable_usbdebug.c
+
 chipset_bootblock_inc += $(src)/southbridge/nvidia/mcp55/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/nvidia/mcp55/romstrap.lds

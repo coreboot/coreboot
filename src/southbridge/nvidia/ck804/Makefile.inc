@@ -15,5 +15,8 @@ ramstage-y += ck804_reset.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ck804_fadt.c
 
+romstage-y += ck804_enable_usbdebug.c
+
 chipset_bootblock_inc += $(src)/southbridge/nvidia/ck804/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/nvidia/ck804/romstrap.lds
+

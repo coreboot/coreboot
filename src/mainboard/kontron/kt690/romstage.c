@@ -53,10 +53,7 @@
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627dhg/w83627dhg_early_serial.c"
 
-#if CONFIG_USBDEBUG
-#include "southbridge/amd/sb600/sb600_enable_usbdebug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
+#include <usbdebug.h>
 
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"

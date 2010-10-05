@@ -178,7 +178,10 @@ struct parameters {
         uint32_t cmd_line_ptr;                  /* 0x228 */
         /* 2.03+ */
         uint32_t initrd_addr_max;               /* 0x22c */
-	uint8_t  reserved15[0x2d0 - 0x230];     /* 0x230 */
+	/* 2.05+ */
+	uint32_t kernel_alignment;		/* 0x230 */
+	uint8_t  relocateable_kernel;		/* 0x234 */
+	uint8_t  reserved15[0x2d0 - 0x235];     /* 0x235 */
 
 	struct e820entry e820_map[E820MAX];	/* 0x2d0 */
 	uint8_t  reserved16[688];		/* 0x550 */
@@ -1511,6 +1514,9 @@ void initialize_linux_params(struct param_info *info)
 
 	/* No loader flags */
 	info->real_mode->loader_flags = 0;
+
+	/* Set it to 16M, instead of 0 which means 4G */
+	info->real_mode->kernel_alignment = 16*1024*1024;
 
 	/* Ramdisk address and size ... */
 	info->real_mode->initrd_start = 0;

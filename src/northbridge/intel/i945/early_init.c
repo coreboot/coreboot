@@ -17,10 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <console/console.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
 #include "i945.h"
 #include "pcie_config.c"
 
-static int i945_silicon_revision(void)
+int i945_silicon_revision(void)
 {
 	return pci_read_config8(PCI_DEV(0, 0x00, 0), PCI_CLASS_REVISION);
 }
@@ -856,7 +862,7 @@ static void ich7_setup_pci_express(void)
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
 }
 
-static void i945_early_initialization(void)
+void i945_early_initialization(void)
 {
 	/* Print some chipset specific information */
 	switch (pci_read_config32(PCI_DEV(0, 0x00, 0), 0)) {
@@ -879,7 +885,7 @@ static void i945_early_initialization(void)
 	RCBA32(0x2010) |= (1 << 10);
 }
 
-static void i945_late_initialization(void)
+void i945_late_initialization(void)
 {
 	i945_setup_egress_port();
 

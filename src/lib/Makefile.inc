@@ -21,6 +21,7 @@ romstage-y += memcpy.c
 romstage-y += memcmp.c
 romstage-y += cbfs.c
 romstage-y += lzma.c
+romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c

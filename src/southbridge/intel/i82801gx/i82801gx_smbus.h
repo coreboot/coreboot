@@ -20,6 +20,8 @@
 
 #include <device/smbus_def.h>
 
+void enable_smbus(void);
+
 static void smbus_delay(void)
 {
 	inb(0x80);

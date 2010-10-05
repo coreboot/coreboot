@@ -34,7 +34,6 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 
-#include "lib/ramtest.c"
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "reset.c"

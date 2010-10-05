@@ -56,12 +56,12 @@
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
 #include "pc80/usbdebug_serial.c"
 #endif
-#include "lib/ramtest.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
+#include <lib.h>
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"

@@ -1,4 +1,6 @@
+#include <stdint.h>
 #include <lib.h> /* Prototypes */
+#include <console/console.h>
 
 static void write_phys(unsigned long addr, u32 value)
 {

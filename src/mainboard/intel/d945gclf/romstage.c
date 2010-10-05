@@ -26,6 +26,7 @@
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
+#include <lib.h>
 
 #include "superio/smsc/lpc47m15x/lpc47m15x.h"
 
@@ -34,21 +35,17 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 
-#if CONFIG_USBDEBUG
-#include "southbridge/intel/i82801gx/i82801gx_usb_debug.c"
-#include "pc80/usbdebug_serial.c"
-#endif
-
-#include "lib/ramtest.c"
-#include "southbridge/intel/i82801gx/i82801gx_early_smbus.c"
 #include "superio/smsc/lpc47m15x/lpc47m15x_early_serial.c"
-
-#include "northbridge/intel/i945/udelay.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
+#include "northbridge/intel/i945/i945.h"
+#include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
-static void setup_ich7_gpios(void)
+
+void enable_smbus(void);
+
+void setup_ich7_gpios(void)
 {
 	/* TODO: This is highly board specific and should be moved */
 	printk(BIOS_DEBUG, " GPIOS...");
@@ -64,18 +61,6 @@ static void setup_ich7_gpios(void)
 	outl(0x000000bf, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
 	outl(0x000300fd, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
 }
-
-#include "northbridge/intel/i945/early_init.c"
-
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-	return smbus_read_byte(device, address);
-}
-
-#include "northbridge/intel/i945/raminit.h"
-#include "northbridge/intel/i945/raminit.c"
-#include "northbridge/intel/i945/errata.c"
-#include "northbridge/intel/i945/debug.c"
 
 static void ich7_enable_lpc(void)
 {

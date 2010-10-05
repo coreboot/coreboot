@@ -27,13 +27,13 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "northbridge/via/cn700/raminit.h"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/fintek/f71805f/f71805f_early_serial.c"
+#include <lib.h>
 
 #if CONFIG_TTYS0_BASE == 0x2f8
 #define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP2)

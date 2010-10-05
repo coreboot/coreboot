@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"

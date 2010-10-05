@@ -17,10 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
+#include <string.h>
+#include <arch/romcc_io.h>
 #include "raminit.h"
 #include "i945.h"
 
@@ -44,6 +47,11 @@
 #define RAM_EMRS_1			(0x0 << 21)
 #define RAM_EMRS_2			(0x1 << 21)
 #define RAM_EMRS_3			(0x2 << 21)
+
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
 
 static __attribute__((noinline)) void do_ram_command(u32 command)
 {

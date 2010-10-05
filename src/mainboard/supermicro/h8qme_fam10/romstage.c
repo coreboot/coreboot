@@ -43,7 +43,7 @@
 #include <cpu/x86/lapic.h>
 
 #include <console/console.h>
-#include "lib/ramtest.c"
+#include <lib.h>
 
 #include <cpu/amd/model_10xxx_rev.h>
 

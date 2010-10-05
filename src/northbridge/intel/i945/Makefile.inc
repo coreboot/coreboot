@@ -20,3 +20,9 @@
 driver-y += northbridge.c
 driver-y += gma.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+
+romstage-y += udelay.c
+romstage-y += raminit.c
+romstage-y += early_init.c
+romstage-y += errata.c
+romstage-y += debug.c

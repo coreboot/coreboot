@@ -27,7 +27,7 @@
 #include <arch/hlt.h>
 #include "pc80/udelay_io.c"
 #include <console/console.h>
-#include "lib/ramtest.c"
+#include <lib.h>
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"
 #include "northbridge/intel/i82830/memory_initialized.c"

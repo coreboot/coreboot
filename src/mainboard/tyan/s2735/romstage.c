@@ -8,7 +8,7 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
+#include <lib.h>
 
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"

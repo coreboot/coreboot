@@ -27,7 +27,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
+#include <lib.h>
 #include "northbridge/via/cn700/raminit.h"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"

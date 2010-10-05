@@ -49,11 +49,11 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
+#include <lib.h>
 
 #include "cpu/amd/model_10xxx/apic_timer.c"
 #include "lib/delay.c"

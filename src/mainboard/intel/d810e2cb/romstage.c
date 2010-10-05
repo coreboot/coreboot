@@ -26,7 +26,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i82801bx/i82801bx.h"
 #include "southbridge/intel/i82801bx/i82801bx_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"
@@ -36,6 +35,7 @@
 #include "cpu/x86/bist.h"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "gpio.c"
+#include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 

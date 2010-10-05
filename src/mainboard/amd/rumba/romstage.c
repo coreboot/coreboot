@@ -4,7 +4,6 @@
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"

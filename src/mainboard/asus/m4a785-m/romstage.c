@@ -45,10 +45,10 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include <cpu/amd/model_10xxx_rev.h>
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
+#include <lib.h>
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"

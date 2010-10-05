@@ -35,3 +35,7 @@ ramstage-y += i82801gx_watchdog.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smihandler.c
+
+romstage-y += i82801gx_early_smbus.c
+romstage-$(CONFIG_USBDEBUG) += i82801gx_usb_debug.c
+

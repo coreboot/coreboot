@@ -46,7 +46,7 @@
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug.c"
 #include "pc80/usbdebug_serial.c"
 #endif
-#include "lib/ramtest.c"
+#include <lib.h>
 
 #include <cpu/amd/model_10xxx_rev.h>
 

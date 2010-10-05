@@ -18,6 +18,7 @@
  */
 
 #include <delay.h>
+#include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
 

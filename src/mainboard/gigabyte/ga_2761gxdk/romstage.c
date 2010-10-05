@@ -55,7 +55,6 @@
 #include "southbridge/sis/sis966/sis966_enable_usbdebug.c"
 #include "pc80/usbdebug_serial.c"
 #endif
-#include "lib/ramtest.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 

@@ -19,11 +19,18 @@
  * MA 02110-1301 USA
  */
 
+#include <lib.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
+#include <console/console.h>
+#include "i945.h"
+
 #define SMBUS_MEM_DEVICE_START 0x50
 #define SMBUS_MEM_DEVICE_END 0x53
 #define SMBUS_MEM_DEVICE_INC 1
 
-static inline void print_pci_devices(void)
+void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -42,7 +49,7 @@ static inline void print_pci_devices(void)
 	}
 }
 
-static inline void dump_pci_device(unsigned dev)
+void dump_pci_device(unsigned dev)
 {
 	int i;
 
@@ -61,7 +68,7 @@ static inline void dump_pci_device(unsigned dev)
 	}
 }
 
-static inline void dump_pci_devices(void)
+void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -78,7 +85,7 @@ static inline void dump_pci_devices(void)
 	}
 }
 
-static inline void dump_spd_registers(void)
+void dump_spd_registers(void)
 {
         unsigned device;
         device = SMBUS_MEM_DEVICE_START;
@@ -103,7 +110,7 @@ static inline void dump_spd_registers(void)
 	}
 }
 
-static inline void dump_mem(unsigned start, unsigned end)
+void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	print_debug("dump_mem:");

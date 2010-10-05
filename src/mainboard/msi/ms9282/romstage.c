@@ -105,7 +105,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define MCP55_NUM 1
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 //set GPIO to input mode
 #define MCP55_MB_SETUP \

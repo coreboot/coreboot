@@ -43,10 +43,6 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
-/* Used by ck804_early_setup(). */
-#define CK804_USE_NIC 1
-#define CK804_USE_ACI 1
-
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"

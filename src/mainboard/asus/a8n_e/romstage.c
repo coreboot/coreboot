@@ -42,10 +42,6 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
-
-/* Used by ck894_early_setup(). */
-#define CK804_NUM 1
-
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"

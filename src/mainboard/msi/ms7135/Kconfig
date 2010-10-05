@@ -15,6 +15,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_MP_TABLE
 	select CACHE_AS_RAM
 	select BOARD_ROMSIZE_KB_512
+	select CK804_USE_NIC
+	select CK804_USE_ACI
 
 config MAINBOARD_DIR
 	string

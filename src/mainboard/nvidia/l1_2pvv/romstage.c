@@ -100,10 +100,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define MCP55_NUM 2
-#define MCP55_USE_NIC 1
-#define MCP55_USE_AZA 1
-
 #define MCP55_PCI_E_X_0 2
 #define MCP55_PCI_E_X_1 4
 

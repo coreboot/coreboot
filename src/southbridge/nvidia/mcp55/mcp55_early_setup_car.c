@@ -89,14 +89,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 	#define MCP55_PCI_E_X_3	4
 #endif
 
-#ifndef MCP55_USE_NIC
-	#define MCP55_USE_NIC	0
-#endif
-
-#ifndef MCP55_USE_AZA
-	#define MCP55_USE_AZA	0
-#endif
-
 #define MCP55_CHIP_REV	3
 
 static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
@@ -269,7 +261,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC4), 0xFFFFFFF8, 0x00000007,
 	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
 
-#if MCP55_USE_AZA == 1
+#if CONFIG_MCP55_USE_AZA
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
 //	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), ~(1<<14), 1<<14,
@@ -279,7 +271,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	MCP55_MB_SETUP
 #endif
 
-#if MCP55_USE_AZA == 1
+#if CONFIG_MCP55_USE_AZA
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3<<2), (2<<2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3<<2), (2<<2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3<<2), (2<<2),
@@ -308,7 +300,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012,
 
 
-#if MCP55_USE_NIC == 1
+#if CONFIG_MCP55_USE_NIC
 	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xe4), ~((1<<22)|(1<<20)), (1<<22)|(1<<20),
 
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(0<<0)),
@@ -399,7 +391,7 @@ static int mcp55_early_setup_x(void)
 				devn[mcp55_num] = devnx;
 				io_base[mcp55_num] = ht_c_index * HT_CHAIN_IOBASE_D; // we may have ht chain other than MCP55
 				mcp55_num++;
-				if(mcp55_num == MCP55_NUM) goto out;
+				if(mcp55_num == CONFIG_MCP55_NUM) goto out;
 				break; // only one MCP55 on one chain
 			}
 		}

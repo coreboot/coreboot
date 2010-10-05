@@ -14,6 +14,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_MP_TABLE
 	select HAVE_HARD_RESET
 	select BOARD_ROMSIZE_KB_1024
+	select CK804_USE_NIC
+	select CK804_USE_ACI
 
 config MAINBOARD_DIR
 	string

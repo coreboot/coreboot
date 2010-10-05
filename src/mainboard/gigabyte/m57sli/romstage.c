@@ -90,10 +90,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define MCP55_NUM 1
-#define MCP55_USE_NIC 1
-#define MCP55_USE_AZA 1
-
 #define MCP55_PCI_E_X_0 0
 
 #define MCP55_MB_SETUP \

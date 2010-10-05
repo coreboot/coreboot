@@ -6,7 +6,7 @@
 static inline void print_debug_addr(const char *str, void *val)
 {
 #if CONFIG_DEBUG_CAR
-		printk(BIOS_DEBUG, "------Address debug: %s%x------\n", str, val);
+	printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
 #endif
 }
 

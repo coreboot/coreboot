@@ -26,16 +26,15 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "northbridge/intel/i440bx/raminit.h"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
+#include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
@@ -47,11 +46,8 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/intel/i440bx/raminit.c"
 #include "northbridge/intel/i440bx/debug.c"
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	if (bist == 0)
-		early_mtrr_init();
-
 	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
@@ -61,10 +57,8 @@ static void main(unsigned long bist)
 	i82371eb_enable_rom(PCI_DEV(0, 7, 0)); /* ISA bridge is 00:07.0. */
 
 	enable_smbus();
-	/* dump_spd_registers(); */
+	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 }
-

@@ -26,7 +26,6 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_pm.c"
@@ -34,10 +33,10 @@
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
+#include <lib.h>
 
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
@@ -81,11 +80,8 @@ static void disable_spd(void)
 	outb(0x67, PM_IO_BASE + 0x37);
 }
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	if (bist == 0)
-		early_mtrr_init();
-
 	/* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
@@ -100,12 +96,10 @@ static void main(unsigned long bist)
 
 	enable_spd();
 
-	/* dump_spd_registers(); */
+	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 
 	disable_spd();
 }
-

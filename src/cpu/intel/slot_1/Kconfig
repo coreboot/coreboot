@@ -19,6 +19,7 @@
 
 config CPU_INTEL_SLOT_1
 	bool
+	select CACHE_AS_RAM
 
 config DCACHE_RAM_BASE
 	hex

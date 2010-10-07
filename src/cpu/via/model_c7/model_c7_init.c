@@ -23,13 +23,11 @@
 #include <console/console.h>
 #include <delay.h>
 #include <stdlib.h>
-
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 
 #define MSR_IA32_PERF_STATUS	0x00000198
 #define MSR_IA32_PERF_CTL	0x00000199

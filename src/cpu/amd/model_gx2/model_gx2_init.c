@@ -6,7 +6,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 
-
 static void vsm_end_post_smi(void)
 {
 	__asm__ volatile (

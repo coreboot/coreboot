@@ -19,16 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/*
- * Description: Microcode patch support for k8 by yhlu
- */
-
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
-
 #include <cpu/amd/microcode.h>
 
 static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
@@ -80,7 +74,6 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 
 	};
 
-
 	unsigned new_id;
 	int i;
 
@@ -94,7 +87,6 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	}
 
 	return new_id;
-
 }
 
 void model_fxx_update_microcode(unsigned cpu_deviceid)
@@ -105,6 +97,4 @@ void model_fxx_update_microcode(unsigned cpu_deviceid)
 	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid );
 	if(equivalent_processor_rev_id != 0)
 	        amd_update_microcode(microcode_updates, equivalent_processor_rev_id);
-
 }
-

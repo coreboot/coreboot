@@ -30,7 +30,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/name.h>
 
 static const uint32_t microcode_updates[] = {

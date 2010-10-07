@@ -1,6 +1,5 @@
 #include <console/console.h>
 #include <device/device.h>
-#include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
 #include <cpu/cpu.h>
@@ -9,7 +8,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 
 static uint32_t microcode_updates[] = {
 	/* WARNING - Intel has a new data structure that has variable length
@@ -32,7 +30,6 @@ static uint32_t microcode_updates[] = {
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
 };
-
 
 static void model_6xx_init(device_t dev)
 {

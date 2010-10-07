@@ -7,6 +7,7 @@
  * Copyright 2005 AMD
  * 2005.08 yhlu add microcode support
  */
+
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -17,17 +18,13 @@
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
-
 #include "northbridge/amd/amdk8/amdk8.h"
-
 #include <cpu/amd/model_fxx_rev.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-
 #include <cpu/amd/multicore.h>
-
 #include <cpu/amd/model_fxx_msr.h>
 
 #if CONFIG_WAIT_BEFORE_CPUS_INIT
@@ -110,6 +107,7 @@ struct mtrr {
 	msr_t base;
 	msr_t mask;
 };
+
 struct mtrr_state {
 	struct mtrr mtrrs[MTRR_COUNT];
 	msr_t top_mem, top_mem2;

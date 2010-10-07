@@ -25,7 +25,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/mtrr.h>
 
 static void model_c3_init(device_t dev)
 {

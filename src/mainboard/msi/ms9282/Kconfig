@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_HARD_RESET
 	select K8_REV_F_SUPPORT
 	select BOARD_ROMSIZE_KB_512
+	select RAMINIT_SYSINFO
 
 config MAINBOARD_DIR
 	string

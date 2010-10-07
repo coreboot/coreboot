@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define RAMINIT_SYSINFO 1
 #define SET_FIDVID 1
 #define QRANK_DIMM_SUPPORT 1
 #if CONFIG_LOGICAL_CPUS==1

@@ -21,6 +21,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	#select AP_CODE_IN_CAR
 	select LIFT_BSP_APIC_ID
 	select BOARD_ROMSIZE_KB_1024
+	select RAMINIT_SYSINFO
 
 config MAINBOARD_DIR
 	string

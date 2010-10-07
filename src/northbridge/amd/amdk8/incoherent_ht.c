@@ -11,10 +11,6 @@
 	#define CONFIG_K8_HT_FREQ_1G_SUPPORT 0
 #endif
 
-#ifndef RAMINIT_SYSINFO
-	#define RAMINIT_SYSINFO 0
-#endif
-
 #ifndef K8_ALLOCATE_IO_RANGE
 	#define K8_ALLOCATE_IO_RANGE 0
 #endif
@@ -297,7 +293,7 @@ static int ht_optimize_link(
 	return needs_reset;
 }
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid, struct sys_info *sysinfo)
 #else
 static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid)
@@ -308,7 +304,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
 
-#if RAMINIT_SYSINFO == 0
+#if !CONFIG_RAMINIT_SYSINFO
 	int reset_needed = 0;
 #endif
 
@@ -415,7 +411,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
-		#if RAMINIT_SYSINFO == 1
+		#if CONFIG_RAMINIT_SYSINFO
 		/* store the link pair here and we will Setup the Hypertransport link later, after we get final FID/VID */
 		{
 			struct link_pair_st *link_pair = &sysinfo->link_pair[sysinfo->link_pair_num];
@@ -451,7 +447,7 @@ end_of_chain: ;
 		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(PCI_DEV(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 
-		#if RAMINIT_SYSINFO == 1
+		#if CONFIG_RAMINIT_SYSINFO
 		// Here need to change the dev in the array
 		int i;
 		for(i=0;i<sysinfo->link_pair_num;i++)
@@ -470,14 +466,14 @@ end_of_chain: ;
 	}
 #endif
 
-#if RAMINIT_SYSINFO == 0
+#if !CONFIG_RAMINIT_SYSINFO
 	return reset_needed;
 #endif
 
 }
 
 #if 0
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void ht_setup_chain(device_t udev, unsigned upos, struct sys_info *sysinfo)
 #else
 static int ht_setup_chain(device_t udev, unsigned upos)
@@ -501,7 +497,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	offset_unitid = 1;
 #endif
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 	ht_setup_chainx(udev, upos, 0, offset_unitid, sysinfo);
 #else
 	return ht_setup_chainx(udev, upos, 0, offset_unitid);
@@ -636,7 +632,7 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
 }
 #endif
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void ht_setup_chains(uint8_t ht_c_num, struct sys_info *sysinfo)
 #else
 static int ht_setup_chains(uint8_t ht_c_num)
@@ -651,7 +647,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 	device_t udev;
 	uint8_t i;
 
-#if RAMINIT_SYSINFO == 0
+#if !CONFIG_RAMINIT_SYSINFO
 	int reset_needed = 0;
 #else
 	sysinfo->link_pair_num = 0;
@@ -692,7 +688,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 		ht_setup_chainx(udev,upos,busn, offset_unitid, sysinfo); // all not
 #else
 		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unitid); //all not
@@ -700,7 +696,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 
 	}
 
-#if RAMINIT_SYSINFO == 0
+#if !CONFIG_RAMINIT_SYSINFO
 	reset_needed |= optimize_link_read_pointers_chain(ht_c_num);
 
 	return reset_needed;
@@ -712,7 +708,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 static inline unsigned get_nodes(void);
 #endif
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void ht_setup_chains_x(struct sys_info *sysinfo)
 #else
 static int ht_setup_chains_x(void)
@@ -734,7 +730,7 @@ static int ht_setup_chains_x(void)
 	reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
 	/* update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn=0x3f+1 */
 	print_linkn_in("SBLink=", ((reg>>8) & 3) );
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 	sysinfo->sblk = (reg>>8) & 3;
 	sysinfo->sbbusn = 0;
 	sysinfo->nodes = nodes;
@@ -840,7 +836,7 @@ static int ht_setup_chains_x(void)
 		}
 	}
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 	sysinfo->ht_c_num = i;
 	ht_setup_chains(i, sysinfo);
 	sysinfo->sbdn = get_sbdn(sysinfo->sbbusn);
@@ -850,7 +846,7 @@ static int ht_setup_chains_x(void)
 
 }
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 {
 	// We need to use recorded link pair info to optimize the link

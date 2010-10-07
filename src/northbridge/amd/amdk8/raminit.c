@@ -45,7 +45,7 @@ static int controller_present(const struct mem_controller *ctrl)
 	return pci_read_config32(ctrl->f0, 0) == 0x11001022;
 }
 
-#if RAMINIT_SYSINFO==1
+#if CONFIG_RAMINIT_SYSINFO
 static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 static void sdram_set_registers(const struct mem_controller *ctrl)
@@ -2062,7 +2062,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	return dimm_mask;
 }
 
-#if RAMINIT_SYSINFO==1
+#if CONFIG_RAMINIT_SYSINFO
 static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)
@@ -2223,7 +2223,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 #endif
 
 #define TIMEOUT_LOOPS 300000
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)

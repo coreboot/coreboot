@@ -1813,7 +1813,7 @@ static int optimize_link_coherent_ht(void)
 	return needs_reset;
 }
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static void setup_coherent_ht_domain(void)
 #else
 static int setup_coherent_ht_domain(void)
@@ -1835,7 +1835,7 @@ static int setup_coherent_ht_domain(void)
 	}
 	coherent_ht_finalize(nodes);
 
-#if RAMINIT_SYSINFO == 0
+#if !CONFIG_RAMINIT_SYSINFO
 	return optimize_link_coherent_ht();
 #endif
 }

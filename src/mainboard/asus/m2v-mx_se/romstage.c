@@ -22,8 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define RAMINIT_SYSINFO 1
-
 unsigned int get_sbdn(unsigned bus);
 
 /* Used by raminit. */

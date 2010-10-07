@@ -20,7 +20,6 @@
 
 #define ASSEMBLY 1
 #define __PRE_RAM__
-#define RAMINIT_SYSINFO 1
 
 #include <stdint.h>
 #include <device/pci_def.h>

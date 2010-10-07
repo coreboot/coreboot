@@ -22,8 +22,6 @@
 #define ASSEMBLY 1
 #define __PRE_RAM__
 
-#define RAMINIT_SYSINFO 1
-
 #define SET_NB_CFG_54 1
 
 //used by raminit

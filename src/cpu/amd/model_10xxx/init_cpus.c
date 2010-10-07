@@ -257,7 +257,7 @@ static void STOP_CAR_AND_CPU(void)
 	stop_this_cpu();
 }
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 #else
 static u32 init_cpus(u32 cpu_init_detectedx)
@@ -918,7 +918,7 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 	u8 nodes = get_nodes();
 	u32 reg;
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 	/* read Node0 F0_0x64 bit [8:10] to find out SbLink # */
 	reg = pci_read_config32(NODE_HT(0), 0x64);
 	sysinfo->sblk = (reg >> 8) & 7;

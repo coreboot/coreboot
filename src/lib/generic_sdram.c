@@ -1,9 +1,5 @@
 #include <lib.h> /* Prototypes */
 
-#ifndef RAMINIT_SYSINFO
-        #define RAMINIT_SYSINFO 0
-#endif
-
 static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 {
 #if CONFIG_CACHE_AS_RAM
@@ -14,7 +10,7 @@ static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 }
 
 /* Setup SDRAM */
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo)
 #else
 void sdram_initialize(int controllers, const struct mem_controller *ctrl)
@@ -25,7 +21,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	for(i = 0; i < controllers; i++) {
 		print_debug_sdram_8("Ram1.", i);
 
-	#if RAMINIT_SYSINFO == 1
+	#if CONFIG_RAMINIT_SYSINFO
 		sdram_set_registers(ctrl + i, sysinfo);
 	#else
 		sdram_set_registers(ctrl + i);
@@ -36,7 +32,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	for(i = 0; i < controllers; i++) {
                 print_debug_sdram_8("Ram2.", i);
 
-	#if RAMINIT_SYSINFO == 1
+	#if CONFIG_RAMINIT_SYSINFO
 		sdram_set_spd_registers(ctrl + i, sysinfo);
 	#else
                 sdram_set_spd_registers(ctrl + i);
@@ -50,7 +46,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	 */
 	print_debug("Ram3\n");
 
-	#if RAMINIT_SYSINFO == 1
+	#if CONFIG_RAMINIT_SYSINFO
 	sdram_enable(controllers, ctrl, sysinfo);
 	#else
 	sdram_enable(controllers, ctrl);

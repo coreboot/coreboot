@@ -22,7 +22,6 @@
  * and acpi_is_wakeup_early_via_VX800() is part of Rudolf's S3 patch.
  */
 
-#define RAMINIT_SYSINFO 1
 #define PAYLOAD_IS_SEABIOS 0
 
 #include <stdint.h>

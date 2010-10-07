@@ -30,6 +30,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include <arch/cpu.h>
 
+#if CONFIG_K8_REV_F_SUPPORT
 static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid,
 				u8 *pstate_fid, u32 *pstate_power, int coreID,
 				u32 pcontrol_blk, u8 plen, u8 onlyBSP)
@@ -386,3 +387,12 @@ int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	acpigen_patch_len(lens - 1);
 	return lens;
 }
+
+#else
+
+int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+{
+	return 0;
+}
+
+#endif

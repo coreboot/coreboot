@@ -209,7 +209,7 @@ static void STOP_CAR_AND_CPU(void)
 	stop_this_cpu();
 }
 
-#if RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 #else
 static u32 init_cpus(u32 cpu_init_detectedx)

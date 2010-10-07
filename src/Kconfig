@@ -720,6 +720,10 @@ config AP_CODE_IN_CAR
 	bool
 	default n
 
+config RAMINIT_SYSINFO
+	bool
+	default n
+
 config ENABLE_APIC_EXT_ID
 	bool
 	default n

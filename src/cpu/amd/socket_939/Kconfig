@@ -2,12 +2,3 @@ config CPU_AMD_SOCKET_939
 	bool
 	select CPU_AMD_MODEL_FXX
 
-config CPU_SOCKET_TYPE
-	hex
-	default 0x0
-	depends on CPU_AMD_SOCKET_939
-
-config DIMM_SUPPORT
-	hex
-	default 0x108
-	depends on CPU_AMD_SOCKET_939

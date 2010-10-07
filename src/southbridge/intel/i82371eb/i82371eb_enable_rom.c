@@ -19,11 +19,25 @@
  */
 
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_ids.h>
 #include "i82371eb.h"
 
-static void i82371eb_enable_rom(device_t dev)
+static void i82371eb_enable_rom(void)
 {
 	u16 reg16;
+	device_t dev;
+
+	/*
+	 * Note: The Intel 82371AB/EB/MB ISA device can be on different
+	 * PCI bus:device.function locations on different boards.
+	 * Examples we encountered: 00:07.0, 00:04.0, or 00:14.0.
+	 * But scanning for the PCI IDs (instead of hardcoding
+	 * bus/device/function numbers) works on all boards.
+	 */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
+				       PCI_DEVICE_ID_INTEL_82371AB_ISA), 0);
 
 	/* Enable access to the whole ROM, disable ROM write access. */
 	reg16 = pci_read_config16(dev, XBCS);

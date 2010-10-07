@@ -26,7 +26,6 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_pm.c"
 #include "northbridge/intel/i440bx/raminit.h"
@@ -87,9 +86,6 @@ void main(unsigned long bist)
 	uart_init();
 	console_init();
 	report_bist_failure(bist);
-
-	/* Enable access to the full ROM chip, needed very early by CBFS. */
-	i82371eb_enable_rom(PCI_DEV(0, 4, 0)); /* ISA bridge is 00:04.0. */
 
 	enable_smbus();
 	enable_pm();

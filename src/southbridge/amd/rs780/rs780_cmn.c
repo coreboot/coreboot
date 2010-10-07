@@ -204,7 +204,7 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 	if (in_out) {
 		pci_write_config32(k8_f1, 0xbc,
 				   (((pcie_base_add + 0x10000000 -
-				     1) >> 8) & 0xffffff00) | 0x8);
+				     1) >> 8) & 0xffffff00) | 0x80);
 		pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
 		pci_write_config32(k8_f1, 0xb4,
 				   ((mmio_base_add + 0x10000000 -

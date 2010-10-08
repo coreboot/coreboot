@@ -800,7 +800,7 @@ static void mct_InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat)
 {
 	/* Initialize the DQS Positions in preparation for
-	 * Reciever Enable Training.
+	 * Receiver Enable Training.
 	 * Write Position is 1/2 Memclock Delay
 	 * Read Position is 1/2 Memclock Delay
 	 */
@@ -814,7 +814,7 @@ static void InitDQSPos4RcvrEn_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 Channel)
 {
 	/* Initialize the DQS Positions in preparation for
-	 * Reciever Enable Training.
+	 * Receiver Enable Training.
 	 * Write Position is no Delay
 	 * Read Position is 1/2 Memclock Delay
 	 */

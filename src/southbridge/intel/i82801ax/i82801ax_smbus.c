@@ -19,25 +19,28 @@
  */
 
 #include <stdint.h>
-#include <smbus.h>
-#include <pci.h>
+#include <device/smbus.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 #include <arch/io.h>
 #include "i82801ax.h"
-#include "i82801_smbus.h"
+#include "i82801ax_smbus.h"
 
-static int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
+static int lsmbus_read_byte(device_t dev, u8 address)
 {
-	unsigned device;	/* TODO: u16? */
+	u16 device;
 	struct resource *res;
+	struct bus *pbus;
 
 	device = dev->path.i2c.device;
-	res = find_resource(bus->dev, 0x20);
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
 
 	return do_smbus_read_byte(res->base, device, address);
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte	= smbus_read_byte,
+	.read_byte	= lsmbus_read_byte,
 };
 
 static const struct device_operations smbus_ops = {
@@ -46,7 +49,7 @@ static const struct device_operations smbus_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= 0,
 	.scan_bus		= scan_static_bus,
-	.enable			= i82801er_enable,
+	.enable			= i82801ax_enable,
 	.ops_smbus_bus		= &lops_smbus_bus,
 };
 

@@ -23,11 +23,9 @@ driver-y += i82801ax_ac97.c
 driver-y += i82801ax_ide.c
 driver-y += i82801ax_lpc.c
 driver-y += i82801ax_pci.c
-# driver-y += i82801ax_smbus.c
+driver-y += i82801ax_smbus.c
 driver-y += i82801ax_usb.c
 
 ramstage-y += i82801ax_reset.c
 ramstage-y += i82801ax_watchdog.c
-
-# TODO: Fix and enable i82801ax_smbus.o later.
 

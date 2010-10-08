@@ -25,12 +25,10 @@ driver-y += i82801bx_lpc.c
 driver-y += i82801bx_nic.c
 driver-y += i82801bx_pci.c
 driver-y += i82801bx_sata.c
-# driver-y += i82801bx_smbus.c
+driver-y += i82801bx_smbus.c
 driver-y += i82801bx_usb.c
 driver-y += i82801bx_usb_ehci.c
 
 ramstage-y += i82801bx_reset.c
 ramstage-y += i82801bx_watchdog.c
-
-# TODO: Fix and enable i82801bx_smbus.o later.
 

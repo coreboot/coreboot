@@ -66,4 +66,3 @@ static const struct pci_driver i82801ab_smb __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801AB_SMB,
 };
-

@@ -36,7 +36,7 @@
 
 typedef struct southbridge_intel_i82801ax_config config_t;
 
-/* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
+/* PIRQ[n]_ROUT[3:0] - IRQ Routing (ISA compatible)
  * 0x00 - 0000 = Reserved
  * 0x01 - 0001 = Reserved
  * 0x02 - 0010 = Reserved
@@ -53,8 +53,10 @@ typedef struct southbridge_intel_i82801ax_config config_t;
  * 0x0D - 1101 = Reserved
  * 0x0E - 1110 = IRQ14
  * 0x0F - 1111 = IRQ15
- * PIRQ[n]_ROUT[7] - PIRQ Routing Control
- * 0x80 - The PIRQ is not routed.
+ *
+ * PIRQ[n]_ROUT[7] - Interrupt Routing Enable (IRQEN)
+ * 0 - The PIRQ is routed to the ISA-compatible interrupt specified above.
+ * 1 - The PIRQ is not routed to the 8259.
  */
 
 #define PIRQA 0x03
@@ -66,25 +68,24 @@ typedef struct southbridge_intel_i82801ax_config config_t;
  * Use 0x0ef8 for a bitmap to cover all these IRQ's.
  * Use the defined IRQ values above or set mainboard
  * specific IRQ values in your mainboards Config.lb.
-*/
-
+ */
 static void i82801ax_enable_apic(struct device *dev)
 {
-	uint32_t reg32;
-	volatile uint32_t *ioapic_index = (volatile uint32_t *)0xfec00000;
-	volatile uint32_t *ioapic_data = (volatile uint32_t *)0xfec00010;
+	u32 reg32;
+	volatile u32 *ioapic_index = (volatile u32 *)0xfec00000;
+	volatile u32 *ioapic_data = (volatile u32 *)0xfec00010;
 
 	/* Set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
 
-	/* Enable ACPI I/O and power management. */
-	pci_write_config8(dev, ACPI_CNTL, 0x10);
+	/* Enable ACPI I/O range decode and ACPI power management. */
+	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (3 << 7);	/* Enable IOAPIC */
-	reg32 |= (1 << 13);	/* Coprocessor error enable */
-	reg32 |= (1 << 1);	/* Delayed transaction enable */
-	reg32 |= (1 << 2);	/* DMA collection buffer enable */
+	reg32 |= (1 << 13);	/* Coprocessor error enable (COPR_ERR_EN) */
+	reg32 |= (3 << 7);	/* IOAPIC enable (APIC_EN) */
+	reg32 |= (1 << 2);	/* DMA collection buffer enable (DCB_EN) */
+	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
@@ -112,34 +113,22 @@ static void i82801ax_enable_serial_irqs(struct device *dev)
 	/* TODO: Explain/#define the real meaning of these magic numbers. */
 }
 
-static void i82801ax_pirq_init(device_t dev, uint16_t ich_model)
+static void i82801ax_pirq_init(device_t dev)
 {
-	/* Get the chip configuration */
+	u8 reg8;
 	config_t *config = dev->chip_info;
 
-	if (config->pirqa_routing) {
-		pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
-	} else {
-		pci_write_config8(dev, PIRQA_ROUT, PIRQA);
-	}
+	reg8 = (config->pirqa_routing) ? config->pirqa_routing : PIRQA;
+	pci_write_config8(dev, PIRQA_ROUT, reg8);
 
-	if (config->pirqb_routing) {
-		pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
-	} else {
-		pci_write_config8(dev, PIRQB_ROUT, PIRQB);
-	}
+	reg8 = (config->pirqb_routing) ? config->pirqb_routing : PIRQB;
+	pci_write_config8(dev, PIRQB_ROUT, reg8);
 
-	if (config->pirqc_routing) {
-		pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
-	} else {
-		pci_write_config8(dev, PIRQC_ROUT, PIRQC);
-	}
+	reg8 = (config->pirqc_routing) ? config->pirqc_routing : PIRQC;
+	pci_write_config8(dev, PIRQC_ROUT, reg8);
 
-	if (config->pirqd_routing) {
-		pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
-	} else {
-		pci_write_config8(dev, PIRQD_ROUT, PIRQD);
-	}
+	reg8 = (config->pirqd_routing) ? config->pirqd_routing : PIRQD;
+	pci_write_config8(dev, PIRQD_ROUT, reg8);
 }
 
 static void i82801ax_power_options(device_t dev)
@@ -172,10 +161,10 @@ static void i82801ax_power_options(device_t dev)
 	}
 }
 
-static void gpio_init(device_t dev, uint16_t ich_model)
+static void gpio_init(device_t dev)
 {
-	pci_write_config32(dev, GPIO_BASE_ICH0_5, (GPIO_BASE_ADDR | 1));
-	pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
+	pci_write_config32(dev, GPIO_BASE, (GPIO_BASE_ADDR | 1));
+	pci_write_config8(dev, GPIO_CNTL, GPIO_EN);
 }
 
 static void i82801ax_rtc_init(struct device *dev)
@@ -190,7 +179,7 @@ static void i82801ax_rtc_init(struct device *dev)
 		reg8 &= ~(1 << 1);	/* Preserve the power fail state. */
 		pci_write_config8(dev, GEN_PMCON_3, reg8);
 	}
-	reg32 = pci_read_config32(dev, GEN_STS);
+	reg32 = pci_read_config32(dev, GEN_STA);
 	rtc_failed |= reg32 & (1 << 2);
 	rtc_init(rtc_failed);
 
@@ -213,7 +202,7 @@ static void i82801ax_lpc_route_dma(struct device *dev, uint8_t mask)
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
-static void i82801ax_lpc_decode_en(device_t dev, uint16_t ich_model)
+static void i82801ax_lpc_decode_en(device_t dev)
 {
 	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
@@ -221,13 +210,11 @@ static void i82801ax_lpc_decode_en(device_t dev, uint16_t ich_model)
 	 * We also need to set the value for LPC I/F Enables Register.
 	 */
 	pci_write_config8(dev, COM_DEC, 0x10);
-	pci_write_config16(dev, LPC_EN_ICH0_5, 0x300F);
+	pci_write_config16(dev, LPC_EN, 0x300F);
 }
 
 static void lpc_init(struct device *dev)
 {
-	uint16_t ich_model = pci_read_config16(dev, PCI_DEVICE_ID);
-
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);
 
@@ -237,13 +224,13 @@ static void lpc_init(struct device *dev)
 	i82801ax_enable_serial_irqs(dev);
 
 	/* Setup the PIRQ. */
-	i82801ax_pirq_init(dev, ich_model);
+	i82801ax_pirq_init(dev);
 
 	/* Setup power options. */
 	i82801ax_power_options(dev);
 
 	/* Set the state of the GPIO lines. */
-	gpio_init(dev, ich_model);
+	gpio_init(dev);
 
 	/* Initialize the real time clock. */
 	i82801ax_rtc_init(dev);
@@ -255,7 +242,7 @@ static void lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Setup decode ports and LPC I/F enables. */
-	i82801ax_lpc_decode_en(dev, ich_model);
+	i82801ax_lpc_decode_en(dev);
 }
 
 static void i82801ax_lpc_read_resources(device_t dev)
@@ -293,15 +280,16 @@ static struct device_operations lpc_ops = {
 	.enable			= i82801ax_enable,
 };
 
+/* 82801AA (ICH) */
 static const struct pci_driver i82801aa_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2410,
 };
 
+/* 82801AB (ICH0) */
 static const struct pci_driver i82801ab_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2420,
 };
-

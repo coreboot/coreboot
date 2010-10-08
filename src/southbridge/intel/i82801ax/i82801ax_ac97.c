@@ -19,8 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* This code should work for all ICH* southbridges with AC97 audio/modem. */
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -61,4 +59,3 @@ static const struct pci_driver i82801ab_ac97_modem __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801AB_AC97_MODEM,
 };
-

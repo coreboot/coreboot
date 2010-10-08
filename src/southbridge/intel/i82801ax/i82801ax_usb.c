@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* This code should work for all ICH* southbridges with USB. */
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -53,4 +51,3 @@ static const struct pci_driver i82801ab_usb1 __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801AB_USB,
 };
-

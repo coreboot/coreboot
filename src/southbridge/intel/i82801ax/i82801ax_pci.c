@@ -26,16 +26,12 @@
 
 static void pci_init(struct device *dev)
 {
-	uint16_t reg16;
+	u16 reg16;
 
-	/* Clear system errors */
-	reg16 = pci_read_config16(dev, 0x06);
-	reg16 |= 0xf900;	/* Clear possible errors */
-	pci_write_config16(dev, 0x06, reg16);
-
-	reg16 = pci_read_config16(dev, 0x1e);
-	reg16 |= 0xf800;	/* Clear possible errors */
-	pci_write_config16(dev, 0x1e, reg16);
+	/* Clear possible errors. */
+	reg16 = pci_read_config16(dev, PCI_STATUS);
+	reg16 |= 0xf900;
+	pci_write_config16(dev, PCI_STATUS, reg16);
 }
 
 static struct device_operations pci_ops = {
@@ -46,15 +42,16 @@ static struct device_operations pci_ops = {
 	.scan_bus		= pci_scan_bridge,
 };
 
+/* 82801AA (ICH) */
 static const struct pci_driver i82801aa_pci __pci_driver = {
 	.ops	= &pci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2418,
 };
 
+/* 82801AB (ICH0) */
 static const struct pci_driver i82801ab_pci __pci_driver = {
 	.ops	= &pci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2428,
 };
-

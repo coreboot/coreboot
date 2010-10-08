@@ -656,7 +656,7 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 {
 
 	/* Initiates a memory clear operation for all node. The mem clr
-	 * is done in paralel. After the memclr is complete, all processors
+	 * is done in parallel. After the memclr is complete, all processors
 	 * status are checked to ensure that memclr has completed.
 	 */
 	u8 Node;
@@ -868,7 +868,7 @@ static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
 	 * HW memory clear process that the chip is capable of.	The sooner
 	 * that dram init is set for all nodes, the faster the memory system
 	 * initialization can complete.	Thus, the init loop is unrolled into
-	 * two loops so as to start the processeses for non BSP nodes sooner.
+	 * two loops so as to start the processes for non BSP nodes sooner.
 	 * This procedure will not wait for the process to finish.
 	 * Synchronization is handled elsewhere.
 	 */
@@ -1520,7 +1520,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	DramConfigMisc = 0;
 	DramConfigMisc2 = 0;
 
-	/* set bank addessing and Masks, plus CS pops */
+	/* set bank addressing and Masks, plus CS pops */
 	SPDSetBanks_D(pMCTstat, pDCTstat, dct);
 	if (pDCTstat->ErrCode == SC_StopError)
 		goto AutoConfig_exit;
@@ -1547,7 +1547,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	else
 		val = 6;
 	DramControl &= ~0xFF;
-	DramControl |= val;	/* RdPrtInit = 6 for Cx CPU */
+	DramControl |= val;	/* RdPtrInit = 6 for Cx CPU */
 
 	if (mctGet_NVbits(NV_CLKHZAltVidC3))
 		DramControl |= 1<<16; /* check */
@@ -1570,7 +1570,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!(Status & (1 << SB_Registered)))
-		DramConfigLo |= 1 << UnBuffDimm;	/* Unbufferd DIMMs */
+		DramConfigLo |= 1 << UnBuffDimm;	/* Unbuffered DIMMs */
 
 	if (mctGet_NVbits(NV_ECC_CAP))
 		if (Status & (1 << SB_ECCDIMMs))
@@ -3511,7 +3511,7 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Bug#15880: Determine validity of reset settings for DDR PHY timing.
-	 * Solutiuon: At least, set WrDqs fine delay to be 0 for DDR3 training.
+	 * Solution: At least, set WrDqs fine delay to be 0 for DDR3 training.
 	 */
 	for (Node = 0; Node < 8; Node++) {
 		pDCTstat = pDCTstatA + Node;

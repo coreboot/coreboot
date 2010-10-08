@@ -30,7 +30,7 @@
  * ordinarily in 64-bit mode.
  *
  * Trc precision does not use extra Jedec defined fractional component.
- * InsteadTrc (course) is rounded up to nearest 1 ns.
+ * Instead Trc (course) is rounded up to nearest 1 ns.
  *
  * Mini and Micro DIMM not supported. Only RDIMM, UDIMM, SO-DIMM defined types
  * supported.
@@ -183,7 +183,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * on setup options). It is the responsibility of PCI subsystem to
 	 * create an uncacheable IO region below 4GB and to adjust TOP_MEM
 	 * downward prior to any IO mapping or accesses. It is the same
-	 * responsibility of the CPU sub-system prior toaccessing LAPIC.
+	 * responsibility of the CPU sub-system prior to accessing LAPIC.
 	 *
 	 * Slot Number is an external convention, and is determined by OEM with
 	 * accompanying silk screening.  OEM may choose to use Slot number
@@ -655,7 +655,7 @@ static void MCTMemClr_D(struct MCTStatStruc *pMCTstat,
 {
 
 	/* Initiates a memory clear operation for all node. The mem clr
-	 * is done in paralel. After the memclr is complete, all processors
+	 * is done in parallel. After the memclr is complete, all processors
 	 * status are checked to ensure that memclr has completed.
 	 */
 	u8 Node;
@@ -856,7 +856,7 @@ static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
 	 * HW memory clear process that the chip is capable of.	The sooner
 	 * that dram init is set for all nodes, the faster the memory system
 	 * initialization can complete.	Thus, the init loop is unrolled into
-	 * two loops so as to start the processeses for non BSP nodes sooner.
+	 * two loops so as to start the processes for non BSP nodes sooner.
 	 * This procedure will not wait for the process to finish.
 	 * Synchronization is handled elsewhere.
 	 */
@@ -878,7 +878,7 @@ static void StartupDCT_D(struct MCTStatStruc *pMCTstat,
 			reg = 0x78 + reg_off;
 			val = Get_NB32(dev, reg);
 			/* Setting this bit forces a 1T window with hard left
-			 * pass/fail edge and a probabalistic right pass/fail
+			 * pass/fail edge and a probabilistic right pass/fail
 			 * edge.  LEFT edge is referenced for final
 			 * receiver enable position.*/
 			val |= 1 << DqsRcvEnTrain;
@@ -1038,7 +1038,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 			} else {
 				byte = mctRead_SPD(smbaddr, SPD_TRCRFC);
 				if (byte & 0xF0) {
-					val++;	/* round up in case fractional extention is non-zero.*/
+					val++;	/* round up in case fractional extension is non-zero.*/
 				}
 			}
 			if (Trc < val)
@@ -1496,7 +1496,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	DramConfigMisc = 0;
 	DramConfigMisc2 = 0;
 
-	/* set bank addessing and Masks, plus CS pops */
+	/* set bank addressing and Masks, plus CS pops */
 	SPDSetBanks_D(pMCTstat, pDCTstat, dct);
 	if (pDCTstat->ErrCode == SC_StopError)
 		goto AutoConfig_exit;
@@ -1582,7 +1582,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (!(Status & (1 << SB_Registered)))
-		DramConfigLo |= 1 << UnBuffDimm;	/* Unbufferd DIMMs */
+		DramConfigLo |= 1 << UnBuffDimm;	/* Unbuffered DIMMs */
 
 	if (mctGet_NVbits(NV_ECC_CAP))
 		if (Status & (1 << SB_ECCDIMMs))
@@ -3405,7 +3405,7 @@ static void SetODTTriState(struct MCTStatStruc *pMCTstat,
 		if (pDCTstat->CSPresent & (1 << cs)) {
 			odt &= ~(1 << (cs / 2));
 
-			/* if quad-rank capable platform clear adtitional pins */
+			/* if quad-rank capable platform clear additional pins */
 			if (max_dimms != MAX_CS_SUPPORTED) {
 				if (pDCTstat->CSPresent & (1 << (cs + 1)))
 					odt &= ~(4 << (cs / 2));
@@ -3768,7 +3768,7 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Bug#15880: Determine validity of reset settings for DDR PHY timing.
-	 * Solutiuon: At least, set WrDqs fine delay to be 0 for DDR2 training.
+	 * Solution: At least, set WrDqs fine delay to be 0 for DDR2 training.
 	 */
 
 	for (Node = 0; Node < 8; Node++) {

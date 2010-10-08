@@ -479,7 +479,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			continue;
 		}
 
-		BanksPresent = 1; 	/* flag for atleast one bank is present */
+		BanksPresent = 1; 	/* flag for at least one bank is present */
 		TestAddr = mct_GetMCTSysAddr_D(pMCTstat, pDCTstat, pDCTstat->Channel, ChipSel, &valid);
 		if (!valid) {
 			print_debug_dqs("\t\t\t\tAddress not supported on current CS ", TestAddr, 4);

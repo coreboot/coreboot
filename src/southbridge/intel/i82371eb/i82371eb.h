@@ -21,10 +21,17 @@
 #ifndef SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 #define SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 
+#if !defined(ASSEMBLY)
 #if !defined(__PRE_RAM__)
+
+#include <arch/io.h>
+#include <device/device.h>
 #include "chip.h"
+
 void i82371eb_enable(device_t dev);
 void i82371eb_hard_reset(void);
+
+#endif
 #endif
 
 /* If 'cond' is true this macro sets the bit(s) specified by 'bits' in the
@@ -54,6 +61,8 @@ void i82371eb_hard_reset(void);
 /* Power management (ACPI) */
 #define PMBA		0x40	/* Power management base address */
 #define PMREGMISC	0x80	/* Miscellaneous power management */
+
+#define PM_IO_BASE	0xe400
 
 /* Bit definitions */
 #define EXT_BIOS_ENABLE_1MB	(1 << 9)  /* 1-Meg Extended BIOS Enable */

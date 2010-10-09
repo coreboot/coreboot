@@ -1,4 +1,6 @@
-static void dump_spd_registers(void)
+#include "raminit.h"
+
+void dump_spd_registers(void)
 {
 #if CONFIG_DEBUG_RAM_SETUP
 	int i;

@@ -26,5 +26,12 @@
 
 /* DIMMs 1-4 are at 0x50, 0x51, 0x52, 0x53. */
 #define DIMM_SPD_BASE	0x50
+ 
+/* Function prototypes. */
+int spd_read_byte(unsigned int device, unsigned int address);
+void sdram_set_registers(void);
+void sdram_set_spd_registers(void);
+void sdram_enable(void);
+void dump_spd_registers(void);
 
 #endif				/* RAMINIT_H */

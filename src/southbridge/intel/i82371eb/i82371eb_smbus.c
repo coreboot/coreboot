@@ -24,6 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/smbus.h>
 #include "i82371eb.h"
+#include "i82371eb_smbus.h"
 
 /* TODO: Needed later? */
 static const struct smbus_bus_operations lops_smbus_bus = {

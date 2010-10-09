@@ -19,23 +19,24 @@
  */
 
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <console/console.h>
 #include "i82371eb.h"
 
-#define PM_IO_BASE 0xe400
+void enable_pm(void);
 
-static void enable_pm(void)
+void enable_pm(void)
 {
 	device_t dev;
 	u8 reg8;
 	u16 reg16;
 
-	/* Check for SMBus/PM device PCI ID on the 82371AB/EB/MB. */
+	/* Get the SMBus/PM device of the 82371AB/EB/MB. */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
-
-	if (dev == PCI_DEV_INVALID)
-		die("SMBus/PM controller not found\n");
 
 	/* Set the PM I/O base. */
 	pci_write_config32(dev, PMBA, PM_IO_BASE | 1);
@@ -50,4 +51,3 @@ static void enable_pm(void)
 	reg8 |= PMIOSE;
 	pci_write_config8(dev, PMREGMISC, reg8);
 }
-

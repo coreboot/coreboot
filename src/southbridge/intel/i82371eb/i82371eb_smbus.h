@@ -10,6 +10,9 @@
 #define SMBUS_STATUS_MASK 0x1e
 #define SMBUS_ERROR_FLAG (1<<2)
 
+void enable_smbus(void);
+int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address);
+
 static inline void smbus_delay(void)
 {
 	outb(0x80, 0x80);
@@ -63,7 +66,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return loops?0:SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
 }
 
-static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
+int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
 {
 	unsigned status_register;
 	unsigned byte;

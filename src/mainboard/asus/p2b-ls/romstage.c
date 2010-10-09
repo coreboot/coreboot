@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
+#include "southbridge/intel/i82371eb/i82371eb.h"
 #include "northbridge/intel/i440bx/raminit.h"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
@@ -38,13 +38,13 @@
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
+
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/intel/i440bx/raminit.c"
-#include "northbridge/intel/i440bx/debug.c"
 
 void main(unsigned long bist)
 {

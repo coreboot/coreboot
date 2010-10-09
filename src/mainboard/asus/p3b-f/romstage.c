@@ -26,10 +26,8 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
-#include "southbridge/intel/i82371eb/i82371eb_early_pm.c"
+#include "southbridge/intel/i82371eb/i82371eb.h"
 #include "northbridge/intel/i440bx/raminit.h"
-#include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
@@ -37,16 +35,17 @@
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
 #include <lib.h>
 
+void enable_pm(void);
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
+
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/intel/i440bx/raminit.c"
-#include "northbridge/intel/i440bx/debug.c"
 
 /*
  * ASUS P3B-F specific SPD enable magic.

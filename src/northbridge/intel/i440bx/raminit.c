@@ -21,7 +21,12 @@
 
 #include <spd.h>
 #include <delay.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
+#include <console/console.h>
 #include "i440bx.h"
 #include "raminit.h"
 
@@ -630,7 +635,7 @@ static void spd_enable_refresh(void)
 Public interface.
 -----------------------------------------------------------------------------*/
 
-static void sdram_set_registers(void)
+void sdram_set_registers(void)
 {
 	int i, max;
 	uint8_t reg;
@@ -956,7 +961,7 @@ static void set_dram_row_attributes(void)
 	PRINT_DEBUG("\n");
 }
 
-static void sdram_set_spd_registers(void)
+void sdram_set_spd_registers(void)
 {
 	/* Setup DRAM row boundary registers and other attributes. */
 	set_dram_row_attributes();
@@ -972,7 +977,7 @@ static void sdram_set_spd_registers(void)
 	pci_write_config8(NB, DRAMT, 0x03);
 }
 
-static void sdram_enable(void)
+void sdram_enable(void)
 {
 	int i;
 

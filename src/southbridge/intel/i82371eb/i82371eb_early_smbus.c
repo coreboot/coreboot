@@ -18,27 +18,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* TODO: Implement smbus_write_byte(), smbus_recv_byte(), smbus_send_byte(). */
-
 #include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <console/console.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include "i82371eb.h"
 #include "i82371eb_smbus.h"
 
 #define SMBUS_IO_BASE 0x0f00
 
-static void enable_smbus(void)
+int smbus_read_byte(u8 device, u8 address);
+
+void enable_smbus(void)
 {
 	device_t dev;
 	u8 reg8;
 	u16 reg16;
 
-	/* Check for SMBus/PM device PCI ID on the 82371AB/EB/MB. */
+	/* Get the SMBus/PM device of the 82371AB/EB/MB. */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
-
-	if (dev == PCI_DEV_INVALID)
-		die("SMBus/PM controller not found\n");
 
 	/* Set the SMBus I/O base. */
 	pci_write_config32(dev, SMBBA, SMBUS_IO_BASE | 1);
@@ -57,7 +58,7 @@ static void enable_smbus(void)
 	outb(inb(SMBUS_IO_BASE + SMBHST_STATUS), SMBUS_IO_BASE + SMBHST_STATUS);
 }
 
-static int smbus_read_byte(u8 device, u8 address)
+int smbus_read_byte(u8 device, u8 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

@@ -25,4 +25,6 @@ driver-y +=  i82371eb_usb.c
 driver-y +=  i82371eb_smbus.c
 driver-y +=  i82371eb_reset.c
 
-#romstage-y += i82371eb_early_rom.c
+romstage-y += i82371eb_early_pm.c
+romstage-y += i82371eb_early_smbus.c
+

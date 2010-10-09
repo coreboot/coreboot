@@ -23,7 +23,7 @@
 #define MAX_TOTAL_DIMMS 8	/* Maximum Number of DIMMs in systems */
 				/* (DCT0 + DCT1) */
 #define MAX_DIMMS 4		/* Maximum Number of DIMMs on each DCT */
-#define MAX_LDIMMS 4		/* Maximum number of Logial DIMMs per DCT */
+#define MAX_LDIMMS 4		/* Maximum number of Logical DIMMs per DCT */
 
 /*MCT Max variables */
 #define MAX_ERRORS 32		/* Maximum number of Errors Reported */

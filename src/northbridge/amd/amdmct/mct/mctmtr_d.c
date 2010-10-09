@@ -38,7 +38,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	u32 lo, hi;
 
 	/* Set temporary top of memory from Node structure data.
-	 * Adjust temp top of memory down to accomodate 32-bit IO space.
+	 * Adjust temp top of memory down to accommodate 32-bit IO space.
 	 * Bottom40bIO=top of memory, right justified 8 bits
 	 * 	(defines dram versus IO space type)
 	 * Bottom32bIO=sub 4GB top of memory, right justified 8 bits
@@ -151,7 +151,7 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 	 * 2. Each range must be naturally aligned (Base is same as size)
 	 *
 	 * There are two code paths: the ascending path and descending path
-	 * (analogous to bsf and bsr), where the next limit is a funtion of the
+	 * (analogous to bsf and bsr), where the next limit is a function of the
 	 * next set bit in a forward or backward sequence of bits (as a function
 	 * of the Limit). We start with the ascending path, to ensure that
 	 * regions are naturally aligned, then we switch to the descending path
@@ -219,7 +219,7 @@ void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat
 	u32 lo, hi;
 
 	/*======================================================================
-	 * Adjust temp top of memory down to accomodate UMA memory start
+	 * Adjust temp top of memory down to accommodate UMA memory start
 	 *======================================================================*/
 	/* Bottom32bIO=sub 4GB top of memory, right justified 8 bits
 	 * (defines dram versus IO space type)

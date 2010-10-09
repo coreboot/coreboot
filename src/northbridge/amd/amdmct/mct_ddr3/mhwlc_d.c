@@ -91,7 +91,7 @@ void AgesaHwWlPhase1(sMCTStruct *pMCTData, sDCTStruct *pDCTData,
 				DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 1);
 	else
 	{
-		/* Broadcast write to all D3Dbyte chiplet register offset 0xc
+		/* Broadcast write to all D3Dbyte chipset register offset 0xc
 		 * Set bit 0 (wrTrain)
 		 * Program bit 4 to nibble being trained (only matters for x4dimms)
 		 * retain value of 3:2 (Trdimmsel)
@@ -114,7 +114,7 @@ void AgesaHwWlPhase1(sMCTStruct *pMCTData, sDCTStruct *pDCTData,
 		AmdMemPCIReadBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
 		Value = bitTestSet(Value, 0);	/* enable WL training */
 		Value = bitTestReset(Value, 4); /* for x8 only */
-		Value = bitTestReset(Value, 5); /* for harward WL training */
+		Value = bitTestReset(Value, 5); /* for hardware WL training */
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Port), 31, 0, &Value);
 		Addr=0x4D030F0C;
 		AmdMemPCIWriteBits(MAKE_SBDFO(0,0,24+(pDCTData->NodeId),FUN_DCT,Addl_Data_Offset), 31, 0, &Addr);
@@ -172,7 +172,7 @@ void AgesaHwWlPhase1(sMCTStruct *pMCTData, sDCTStruct *pDCTData,
  * Parameters:
  *	IN  OUT   *DCTData - Pointer to buffer with information about each DCT
  *	IN	u32: MRS value
- *	OUT	u32: sWAPPED BANK BITS
+ *	OUT	u32: Swapped BANK BITS
  *
  * ----------------------------------------------------------------------------
  */
@@ -208,7 +208,7 @@ u32 swapAddrBits_wl(sDCTStruct *pDCTData, u32 MRSValue)
  *   Parameters:
  *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
  *       IN	u32: MRS value
- *       OUT       u32: sWAPPED BANK BITS
+ *       OUT       u32: Swapped BANK BITS
  *
  * ----------------------------------------------------------------------------
  */
@@ -262,7 +262,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 	MemClkFreq = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 			FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
 	/* Configure the DCT to send initialization MR commands to the target DIMM
-	 * ;by programming the F2x[1,0]7C register using the following steps.
+	 * by programming the F2x[1,0]7C register using the following steps.
 	 */
 	rank = 0;
 	while ((rank < pDCTData->DimmRanks[dimm]) && (rank < 2))
@@ -271,14 +271,14 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, MrsChipSelStart, MrsChipSelEnd, dimm*2+rank);
 		/* Program F2x[1, 0]7C[MrsBank[2:0]] for the appropriate internal DRAM
-		 * ;register that defines the required DDR3-defined function for write
-		 * ; levelization.
+		 * register that defines the required DDR3-defined function for write
+		 * levelization.
 		 */
 		MrsBank = swapBankBits(pDCTData,1);
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, MrsBankStart, MrsBankEnd, MrsBank);
 		/* Program F2x[1, 0]7C[MrsAddress[15:0]] to the required DDR3-defined function
-		 * ; for write levelization.
+		 * for write levelization.
 		 */
 		tempW = 0;/* DLL_DIS = 0, DIC = 0, AL = 0, TDQS = 0 */
 
@@ -347,7 +347,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 			tempW1 = bitTestSet(tempW, MRS_Level);
 			if (rank == 0)
 			{
-				/* ?Enable the output driver of the first rank of the target DIMM. */
+				/* Enable the output driver of the first rank of the target DIMM. */
 				tempW = tempW1;
 			}
 			else
@@ -371,7 +371,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, MrsAddressStart, MrsAddressEnd, tempW);
 		/* Program F2x[1, 0]7C[SendMrsCmd]=1 to initiate the command to
-		 * ;the specified DIMM.
+		 * the specified DIMM.
 		 */
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, SendMrsCmd, SendMrsCmd, 1);
@@ -381,13 +381,13 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 		{
 		}
 		/* Program F2x[1, 0]7C[MrsBank[2:0]] for the appropriate internal DRAM
-		 * ;register that defines the required DDR3-defined function for Rtt_WR.
+		 * register that defines the required DDR3-defined function for Rtt_WR.
 		 */
 		MrsBank = swapBankBits(pDCTData,2);
 		set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 			DRAM_INIT, MrsBankStart, MrsBankEnd, MrsBank);
 		/* Program F2x[1, 0]7C[MrsAddress[15:0]] to the required DDR3-defined function
-		 * ; for Rtt_WR (DRAMTermDyn).
+		 * for Rtt_WR (DRAMTermDyn).
 		 */
 		tempW = 0;/* PASR = 0,*/
 		/* program MrsAddress[7,6,5:3]=SRT,ASR,CWL,
@@ -457,19 +457,19 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 				{
 
 					/* Program F2x[1, 0]7C[MrsChipSel[2:0]] for the current rank
-					 * ;to be trained.
+					 * to be trained.
 					 */
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 						FUN_DCT, DRAM_INIT, MrsChipSelStart, MrsChipSelEnd, currDimm*2+rank);
 					/* Program F2x[1, 0]7C[MrsBank[2:0]] for the appropriate internal
-					 * ;DRAM register that defines the required DDR3-defined function
-					 * ; for write levelization.
+					 * DRAM register that defines the required DDR3-defined function
+					 * for write levelization.
 					 */
 					MrsBank = swapBankBits(pDCTData,1);
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 						FUN_DCT, DRAM_INIT, MrsBankStart, MrsBankEnd, MrsBank);
 					/* Program F2x[1, 0]7C[MrsAddress[15:0]] to the required
-					 * ;DDR3-defined function for write levelization.
+					 * DDR3-defined function for write levelization.
 					 */
 					tempW = 0;/* DLL_DIS = 0, DIC = 0, AL = 0, TDQS = 0, Level=0, Qoff=0 */
 
@@ -528,7 +528,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 						FUN_DCT, DRAM_INIT, MrsAddressStart, MrsAddressEnd, tempW);
 					/* Program F2x[1, 0]7C[SendMrsCmd]=1 to initiate the command
-					 * ; to the specified DIMM.
+					 * to the specified DIMM.
 					 */
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
 						FUN_DCT, DRAM_INIT, SendMrsCmd, SendMrsCmd, 1);
@@ -537,13 +537,13 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 							pDCTData->NodeId, FUN_DCT, DRAM_INIT,
 							SendMrsCmd, SendMrsCmd)) == 1);
 					/* Program F2x[1, 0]7C[MrsBank[2:0]] for the appropriate internal DRAM
-					 * ;register that defines the required DDR3-defined function for Rtt_WR.
+					 * register that defines the required DDR3-defined function for Rtt_WR.
 					 */
 					MrsBank = swapBankBits(pDCTData,2);
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 						DRAM_INIT, MrsBankStart, MrsBankEnd, MrsBank);
 					/* Program F2x[1, 0]7C[MrsAddress[15:0]] to the required DDR3-defined function
-					 * ; for Rtt_WR (DRAMTermDyn).
+					 * for Rtt_WR (DRAMTermDyn).
 					 */
 					tempW = 0;/* PASR = 0,*/
 					/* program MrsAddress[7,6,5:3]=SRT,ASR,CWL,
@@ -651,7 +651,7 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 	u16 Addl_Data_Offset, Addl_Data_Port;
 
 	/* Program F2x[1, 0]9C_x08[WrLvOdt[3:0]] to the proper ODT settings for the
-	 * ;current memory subsystem configuration.
+	 * current memory subsystem configuration.
 	 */
 	programODT(pMCTData, pDCTData, dimm);
 
@@ -711,12 +711,12 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 		while(ByteLane < MAX_BYTE_LANES)
 		{
 			/* Program an initialization value to registers F2x[1, 0]9C_x[51:50] and
-			 * ;F2x[1, 0]9C_x52 to set the gross and fine delay for all the byte lane fields
-			 * ; If the target frequency is different than 400MHz, BIOS must
+			 * F2x[1, 0]9C_x52 to set the gross and fine delay for all the byte lane fields
+			 * If the target frequency is different than 400MHz, BIOS must
 			 * execute two training passes for each DIMM.
 			 * For pass 1 at a 400MHz MEMCLK frequency, use an initial total delay value
-			 * ; of 01Fh. This represents a 1UI (UI=.5MEMCLK) delay and is determined
-			 * ;by design.
+			 * of 01Fh. This represents a 1UI (UI=.5MEMCLK) delay and is determined
+			 * by design.
 			 */
 			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
 			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;

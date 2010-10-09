@@ -64,7 +64,6 @@ static void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
 }
 
 /*-----------------------------------------------------------------------------
- * uint 32
  * u32 bitTestSet(u32 csMask,u32 tempD)
  *
  * Description:
@@ -86,7 +85,6 @@ static u32 bitTestSet(u32 csMask,u32 tempD)
 }
 
 /*-----------------------------------------------------------------------------
- * uint 32
  * u32 bitTestReset(u32 csMask,u32 tempD)
  *
  * Description:
@@ -110,12 +108,11 @@ static u32 bitTestReset(u32 csMask,u32 tempD)
 }
 
 /*-----------------------------------------------------------------------------
- * uint 32
  *  u32 get_Bits(DCTStruct *DCTData, u8 DCT, u8 Node, u8 func, u16 offset,
  *                 u8 low, u8 high)
  *
  * Description:
- *     This routine Gets the PCT bits from the specidfied Node, DCT and PCI address
+ *     This routine Gets the PCT bits from the specified Node, DCT and PCI address
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
@@ -161,12 +158,11 @@ static u32 get_Bits(sDCTStruct *pDCTData,
 }
 
 /*-----------------------------------------------------------------------------
- * uint 32
  *  void set_Bits(DCTStruct *DCTData,u8 DCT,u8 Node,u8 func, u16 offset,
  *                u8 low, u8 high, u32 value)
  *
  * Description:
- *     This routine Sets the PCT bits from the specidfied Node, DCT and PCI address
+ *     This routine Sets the PCT bits from the specified Node, DCT and PCI address
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
@@ -212,12 +208,11 @@ static void set_Bits(sDCTStruct *pDCTData,
 }
 
 /*-------------------------------------------------
- * uint 32
  *  u32 get_ADD_DCT_Bits(DCTStruct *DCTData,u8 DCT,u8 Node,u8 func,
  *                         u16 offset,u8 low, u8 high)
  *
  * Description:
- *     This routine gets the Additional PCT register from Function 2 by specidfied
+ *     This routine gets the Additional PCT register from Function 2 by specified
  *   Node, DCT and PCI address
  *
  * Parameters:
@@ -251,12 +246,11 @@ static u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
 }
 
 /*-------------------------------------------------
- * uint 32
  *  void set_DCT_ADDR_Bits(DCTStruct *DCTData, u8 DCT,u8 Node,u8 func,
  *                         u16 offset,u8 low, u8 high, u32 value)
  *
  * Description:
- *     This routine sets the Additional PCT register from Function 2 by specidfied
+ *     This routine sets the Additional PCT register from Function 2 by specified
  *   Node, DCT and PCI address
  *
  * Parameters:
@@ -297,7 +291,6 @@ static void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
 }
 
 /*-------------------------------------------------
- * uint 32
  * BOOL bitTest(u32 value, u8 bitLoc)
  *
  * Description:

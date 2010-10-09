@@ -56,7 +56,7 @@ static u8 isDramECCEn_D(struct DCTStatStruc *pDCTstat);
  * guarantee that the NB scrubs the entire dram on its node. Do do this, we
  * simply sample the scrub ADDR once, for an initial value, then we sample and poll until the polled value of scrub ADDR
  * has wrapped around at least once: Scrub ADDRi+1 < Scrub ADDRi. Since we let all
- * Nodes run in parallel, we need to gaurantee that all nodes have wrapped. To do
+ * Nodes run in parallel, we need to guarantee that all nodes have wrapped. To do
  * this efficiently, we need only to sample one of the nodes, the node with the
  * largest ammount of dram populated is the one which will take the longest amount
  * of time (the scrub rate is set to max, the same rate, on all nodes).  So,

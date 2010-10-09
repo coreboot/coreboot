@@ -110,7 +110,7 @@
 #define Mod64BitMux	4		/* func 2, offset A0h, bit 4 */
 #define DisableJitter	1		/* func 2, offset A0h, bit 1 */
 #define DramEnabled	9		/* func 2, offset A0h, bit 9 */
-#define SyncOnUcEccEn	2		/* fun 3, offset 44h, bit 2 */
+#define SyncOnUcEccEn	2		/* func 3, offset 44h, bit 2 */
 
 /*=============================================================================
 	Jedec DDR II
@@ -349,7 +349,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u16 DimmWk2406;	/* Bitmap indicating which Dimms have a manufactur's week code <= 24 of 2006 (June)*/
 	u16 DimmDRPresent;	/* Bitmap indicating that Dual Rank Dimms are present*/
 	u16 DimmPlPresent;	/* Bitmap indicating that Planar (1) or Stacked (0) Dimms are present.*/
-	u16 ChannelTrainFail;	/* Bitmap showing the chanel informaiton about failed Chip Selects*/
+	u16 ChannelTrainFail;	/* Bitmap showing the channel information about failed Chip Selects*/
 				/* 0 in any bit field indicates Channel 0*/
 				/* 1 in any bit field indicates Channel 1*/
 };
@@ -509,7 +509,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 #endif
 
 
-// global function
+/* global function */
 u32 NodePresent(u32 Node);
 u32 Get_NB32n(struct DCTStatStruc *pDCTstat, u32 addrx);
 u32 Get_NB32(u32 addr); /* NOTE: extend addr to 32 bit for bus > 0 */

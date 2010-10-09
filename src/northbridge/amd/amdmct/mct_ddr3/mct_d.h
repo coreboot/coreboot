@@ -263,7 +263,7 @@
 #define SPD_MANDATEWK	94		/*Module Manufacturing Week (BCD)*/
 
 /*-----------------------------
-	Jdec DDR II related equates
+	Jedec DDR II related equates
 -----------------------------*/
 #define MYEAR06	6	/* Manufacturing Year BCD encoding of 2006 - 06d*/
 #define MWEEK24	0x24	/* Manufacturing Week BCD encoding of June - 24d*/
@@ -464,7 +464,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u16 DimmWk2406;		/* Bitmap indicating which Dimms have a manufactur's week code <= 24 of 2006 (June)*/
 	u16 DimmDRPresent;	/* Bitmap indicating that Dual Rank Dimms are present*/
 	u16 DimmPlPresent;	/* Bitmap indicating that Planar (1) or Stacked (0) Dimms are present.*/
-	u16 ChannelTrainFai;	/* Bitmap showing the chanel informaiton about failed Chip Selects
+	u16 ChannelTrainFai;	/* Bitmap showing the channel information about failed Chip Selects
 		0 in any bit field indicates Channel 0
 		1 in any bit field indicates Channel 1 */
 	u16 DIMMTfaw;		/* Minimax Tfaw*16 (ns) of DIMMs */
@@ -513,7 +513,7 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 MaxDCTs;		/* Max number of DCTs in system*/
 	/* NOTE: removed u8 DCT. Use ->dev_ for pci R/W; */	/*DCT pointer*/
 	u8 GangedMode;		/* Ganged mode enabled, 0 = disabled, 1 = enabled*/
-	u8 DRPresent;		/* Family 10 present flag, 0 = n0t Fam10, 1 = Fam10*/
+	u8 DRPresent;		/* Family 10 present flag, 0 = not Fam10, 1 = Fam10*/
 	u32 NodeSysLimit;	/* BASE[39:8],for DCT0+DCT1 system address*/
 	u8 WrDatGrossH;
 	u8 DqsRcvEnGrossL;

@@ -134,7 +134,7 @@ void mct_BeforeDQSTrain_Samp_D(struct MCTStatStruc *pMCTstat,
 
 	/* Bug#15880: Determine validity of reset settings for DDR PHY timing
 	 *   regi..
-	 * Solutiuon: At least, set WrDqs fine delay to be 0 for DDR2 training.
+	 * Solution: At least, set WrDqs fine delay to be 0 for DDR2 training.
 	 */
 
 	u32 dev;

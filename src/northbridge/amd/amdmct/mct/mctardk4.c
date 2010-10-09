@@ -59,7 +59,7 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
  * #1, BYTE, Speed (DCTStatstruc.Speed)
  * #2, BYTE, number of Address bus loads on the Channel.
  *     These must be listed in ascending order.
- *     FFh (-1) has special meanying of 'any', and must be listed first for
+ *     FFh (-1) has special meaning of 'any', and must be listed first for
  *     each speed grade.
  * #3, DWORD, Address Timing Control Register Value
  * #4, DWORD, Output Driver Compensation Control Register Value

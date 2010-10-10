@@ -108,7 +108,7 @@ static void sb700_lpc_set_resources(struct device *dev)
 /**
  * @brief Enable resources for children devices
  *
- * @param dev the device whos children's resources are to be enabled
+ * @param dev the device whose children's resources are to be enabled
  *
  */
 static void sb700_lpc_enable_childrens_resources(device_t dev)

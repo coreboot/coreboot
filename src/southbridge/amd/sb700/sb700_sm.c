@@ -206,7 +206,7 @@ static void sm_init(device_t dev)
 	/* 4.14:Enabling Requester ID for upstream traffic. */
 	abcfg_reg(0x98, 1 << 16, 1 << 16);
 
-	/* 9.2: Enableing IDE Data Bus DD7 Pull Down Resistor */
+	/* 9.2: Enabling IDE Data Bus DD7 Pull Down Resistor */
 	byte = pm2_ioread(0xE5);
 	byte |= 1 << 2;
 	pm2_iowrite(0xE5, byte);
@@ -345,7 +345,7 @@ static void sb700_sm_set_resources(struct device *dev)
 
 	pci_dev_set_resources(dev);
 
-	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
+	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridge */
 	byte = pm_ioread(0x52);
 	byte |= 1 << 6;
 	pm_iowrite(0x52, byte);

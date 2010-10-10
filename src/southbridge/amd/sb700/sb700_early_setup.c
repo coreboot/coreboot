@@ -63,7 +63,7 @@ static u8 set_sb700_revision(void)
 			rev = 0x11;	/* A11 */
 		else if (enable_14Mhz == 0x1) {
 			/* This happens, if does, only once. So later if we need to get
-			 * the rivision ID, we don't have to make such a big function.
+			 * the revision ID, we don't have to make such a big function.
 			 * We just get reg 0x8 in smbus dev. 0x39 is A11, 0x3A is A12. */
 			rev = 0x12;
 			byte = pci_read_config8(dev, 0x40);
@@ -549,7 +549,7 @@ static void sb700_pci_cfg(void)
 
 	/* LPC Device, BDF:0-20-3 */
 	/* The code below is ported from old chipset. It is not
-	 * metioned in RPR. But I keep them. The registers and the
+	 * mentioned in RPR. But I keep them. The registers and the
 	 * comments are compatible. */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
 	/* Enabling LPC DMA function. */

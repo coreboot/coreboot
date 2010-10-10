@@ -338,7 +338,7 @@ static void sb600_sm_set_resources(struct device *dev)
 
 	pci_dev_set_resources(dev);
 
-	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
+	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridge */
 	byte = pm_ioread(0x52);
 	byte |= 1 << 6;
 	pm_iowrite(0x52, byte);

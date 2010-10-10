@@ -39,7 +39,7 @@ static int sata_drive_detect(int portnum, u16 iobar)
 		if (byte != (0xA0 + 0x10 * (portnum % 2))) {
 			/* This will happen at the first iteration of this loop
 			 * if the first SATA port is unpopulated and the
-			 * second SATA port is poulated.
+			 * second SATA port is populated.
 			 */
 			printk(BIOS_DEBUG, "drive no longer selected after %i ms, "
 				"retrying init\n", i * 10);
@@ -83,7 +83,7 @@ static void sata_init(struct device *dev)
 	byte = 0x6 << 2;
 	pci_write_config8(sm_dev, 0xaf, byte);
 
-	/* get base addresss */
+	/* get base address */
 	sata_bar5 = pci_read_config32(dev, 0x24) & ~0x3FF;
 	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
 	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x3;

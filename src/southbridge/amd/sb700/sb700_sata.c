@@ -111,7 +111,7 @@ static void sata_init(struct device *dev)
 	/* get rev_id */
 	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
 
-	/* get base addresss */
+	/* get base address */
 	sata_bar5 = pci_read_config32(dev, 0x24) & ~0x3FF;
 	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
 	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x3;

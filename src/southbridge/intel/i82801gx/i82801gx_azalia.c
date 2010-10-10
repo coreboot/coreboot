@@ -56,7 +56,7 @@ static int set_bits(u32 port, u32 mask, u32 val)
 		reg32 &= mask;
 	} while ((reg32 != val) && --count);
 
-	/* Timeout occured */
+	/* Timeout occurred */
 	if (!count)
 		return -1;
 	return 0;
@@ -112,7 +112,7 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 }
 
 /**
- *  Wait 50usec for for the codec to indicate it is ready
+ *  Wait 50usec for the codec to indicate it is ready
  *  no response would imply that the codec is non-operative
  */
 
@@ -134,7 +134,7 @@ static int wait_for_ready(u32 base)
 }
 
 /**
- *  Wait 50usec for for the codec to indicate that it accepted
+ *  Wait 50usec for the codec to indicate that it accepted
  *  the previous command.  No response would imply that the code
  *  is non-operative
  */

@@ -35,10 +35,9 @@ static void ide_init(struct device *dev)
 	dword &= ~(1 << 16);
 	pci_write_config32(dev, 0x70, dword);
 
-	/* Ultra DMA mode */
-	/* enable UDMA */
+	/* Enable UDMA on all devices, it will become UDMA0 (default PIO is PIO0) */
 	byte = pci_read_config8(dev, 0x54);
-	byte |= 1 << 0;
+	byte |= 0xf;
 	pci_write_config8(dev, 0x54, byte);
 
 	/* Enable I/O Access&& Bus Master */

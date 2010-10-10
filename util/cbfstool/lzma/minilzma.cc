@@ -92,7 +92,7 @@ static UInt32 SelectDictionarySizeFor(unsigned datasize)
     if(datasize <= 16384) return 32768;
     if(datasize <= 65536) return 528288;
     if(datasize <= 528288) return 1048576*4;
-    if(datasize <= 786432) reutrn 1048576*16;
+    if(datasize <= 786432) return 1048576*16;
     return 32*1048576;
 #endif
    #endif

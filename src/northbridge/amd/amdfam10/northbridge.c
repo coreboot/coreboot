@@ -689,33 +689,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 #endif
 }
 
-static void ram_resource(device_t dev, unsigned long index,
-	resource_t basek, resource_t sizek)
-{
-	struct resource *resource;
-
-	if (!sizek) {
-		return;
-	}
-	resource = new_resource(dev, index);
-	resource->base = basek << 10;
-	resource->size = sizek << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static u32 find_pci_tolm(struct bus *bus, u32 tolm)
+static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 {
 	struct resource *min;
 	min = 0;
@@ -951,7 +925,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 
 	pci_tolm = 0xffffffffUL;
 	for(link = dev->link_list; link; link = link->next) {
-		pci_tolm = find_pci_tolm(link, pci_tolm);
+		pci_tolm = my_find_pci_tolm(link, pci_tolm);
 	}
 
 	// FIXME handle interleaved nodes. If you fix this here, please fix

@@ -37,42 +37,6 @@
 
 static u32 max_bus;
 
-static void ram_resource(device_t dev, u32 index,
-	u32 basek, u32 sizek)
-{
-	struct resource *resource;
-
-	resource = new_resource(dev, index);
-	resource->base  = ((resource_t)basek) << 10;
-	resource->size  = ((resource_t)sizek) << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static u32 find_pci_tolm(struct bus *bus)
-{
-	struct resource *min;
-	u32 tolm;
-	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
-	tolm = 0xffffffffUL;
-	if (min && tolm > min->base) {
-		tolm = min->base;
-	}
-	return tolm;
-}
-
 #if CONFIG_WRITE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;

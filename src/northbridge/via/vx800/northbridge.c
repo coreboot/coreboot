@@ -74,48 +74,6 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_VX855_MEMCTRL,
 };
 
-static void ram_resource(device_t dev, unsigned long index,
-			 unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek) {
-		return;
-	}
-	resource = new_resource(dev, index);
-	resource->base = ((resource_t) basek) << 10;
-	resource->size = ((resource_t) sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static u32 find_pci_tolm(struct bus *bus)
-{
-	print_debug("Entering find_pci_tolm\n");
-	struct resource *min;
-	u32 tolm;
-	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM,
-			     tolm_test, &min);
-	tolm = 0xffffffffUL;
-	if (min && tolm > min->base) {
-		tolm = min->base;
-	}
-	print_debug("Leaving find_pci_tolm\n");
-	return tolm;
-}
-
 static void pci_domain_set_resources(device_t dev)
 {
 	/*

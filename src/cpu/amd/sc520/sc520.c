@@ -84,47 +84,6 @@ static const struct pci_driver cpu_driver __pci_driver = {
 	.device = 0x3000
 };
 
-static void ram_resource(device_t dev, unsigned long index,
-        unsigned long basek, unsigned long sizek)
-{
-        struct resource *resource;
-	printk(BIOS_SPEW, "%s sizek 0x%lx\n", __func__, sizek);
-        if (!sizek) {
-                return;
-        }
-        resource = new_resource(dev, index);
-        resource->base  = ((resource_t)basek) << 10;
-        resource->size  = ((resource_t)sizek) << 10;
-        resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-                IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static uint32_t find_pci_tolm(struct bus *bus)
-{
-	struct resource *min;
-	uint32_t tolm;
-  printk(BIOS_SPEW, "%s\n", __func__);
-	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
-	tolm = 0xffffffffUL;
-	if (min && tolm > min->base) {
-		tolm = min->base;
-	}
-  printk(BIOS_SPEW, "%s returns 0x%x\n", __func__, tolm);
-	return tolm;
-}
-
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;

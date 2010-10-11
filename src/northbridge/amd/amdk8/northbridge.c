@@ -646,22 +646,7 @@ static void amdk8_domain_read_resources(device_t dev)
 #endif
 }
 
-static void ram_resource(device_t dev, unsigned long index,
-	unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek) {
-		return;
-	}
-	resource = new_resource(dev, index);
-	resource->base = ((resource_t)basek) << 10;
-	resource->size = ((resource_t)sizek) << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
+static void my_tolm_test(void *gp, struct device *dev, struct resource *new)
 {
 	struct resource **best_p = gp;
 	struct resource *best;
@@ -673,12 +658,12 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 	*best_p = best;
 }
 
-static u32 find_pci_tolm(struct bus *bus)
+static u32 my_find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
 	u32 tolm;
 	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
+	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, my_tolm_test, &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base) {
 		tolm = min->base;
@@ -915,7 +900,7 @@ static void amdk8_domain_set_resources(device_t dev)
 	}
 #endif
 
-	pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = my_find_pci_tolm(dev->link_list);
 
 	// FIXME handle interleaved nodes. If you fix this here, please fix
 	// amdfam10, too.

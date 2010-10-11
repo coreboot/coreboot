@@ -48,14 +48,14 @@ static void ide_init_enable(struct device *dev)
 	reg16 = pci_read_config16(dev, IDETIM_PRI);
 	reg16 = ONOFF(conf->ide0_enable, reg16, IDE_DECODE_ENABLE);
 	pci_write_config16(dev, IDETIM_PRI, reg16);
-	printk(BIOS_DEBUG, "IDE: %s: %s\n", "Primary IDE interface",
+	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Primary",
 		     conf->ide0_enable ? "on" : "off");
 
 	/* Enable/disable the secondary IDE interface. */
 	reg16 = pci_read_config16(dev, IDETIM_SEC);
 	reg16 = ONOFF(conf->ide1_enable, reg16, IDE_DECODE_ENABLE);
 	pci_write_config16(dev, IDETIM_SEC, reg16);
-	printk(BIOS_DEBUG, "IDE: %s: %s\n", "Secondary IDE interface",
+	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Secondary",
 		     conf->ide1_enable ? "on" : "off");
 
 	/* Enable access to the legacy IDE ports (both primary and secondary),

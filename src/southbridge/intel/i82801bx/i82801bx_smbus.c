@@ -53,58 +53,9 @@ static const struct device_operations smbus_ops = {
 	.ops_smbus_bus		= &lops_smbus_bus,
 };
 
-/* 82801AA (ICH) */
-static const struct pci_driver i82801aa_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801AA_SMB,
-};
-
-/* 82801AB (ICH0) */
-static const struct pci_driver i82801ab_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801AB_SMB,
-};
-
 /* 82801BA/BAM (ICH2/ICH2-M) */
 static const struct pci_driver i82801ba_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801BA_SMB,
-};
-
-/* 82801CA/CAM (ICH3-S/ICH3-M) */
-static const struct pci_driver i82801ca_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801CA_SMB,
-};
-
-/* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */
-static const struct pci_driver i82801db_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801DB_SMB,
-};
-
-/* 82801EB/ER (ICH5/ICH5R) */
-static const struct pci_driver i82801eb_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801EB_SMB,
-};
-
-/* 82801FB/FR/FW/FRW/FBM (ICH6/ICH6R/ICH6W/ICH6RW/ICH6-M) */
-static const struct pci_driver i82801fb_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801FB_SMB,
-};
-
-/* 82801E (C-ICH) */
-static const struct pci_driver i82801e_smb __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801E_SMB,
 };

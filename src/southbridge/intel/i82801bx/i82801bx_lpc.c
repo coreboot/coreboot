@@ -21,8 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* From 82801DBM, needs to be fixed to support everything the 82801ER does. */
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -53,8 +51,10 @@ typedef struct southbridge_intel_i82801bx_config config_t;
  * 0x0D - 1101 = Reserved
  * 0x0E - 1110 = IRQ14
  * 0x0F - 1111 = IRQ15
- * PIRQ[n]_ROUT[7] - PIRQ Routing Control
- * 0x80 - The PIRQ is not routed.
+ *
+ * PIRQ[n]_ROUT[7] - Interrupt Routing Enable (IRQEN)
+ * 0 - The PIRQ is routed to the ISA-compatible interrupt specified above.
+ * 1 - The PIRQ is not routed to the 8259.
  */
 
 #define PIRQA 0x03
@@ -71,7 +71,6 @@ typedef struct southbridge_intel_i82801bx_config config_t;
  * Use the defined IRQ values above or set mainboard
  * specific IRQ values in your mainboards Config.lb.
 */
-
 static void i82801bx_enable_apic(struct device *dev)
 {
 	uint32_t reg32;
@@ -81,14 +80,14 @@ static void i82801bx_enable_apic(struct device *dev)
 	/* Set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
 
-	/* Enable ACPI I/O and power management. */
-	pci_write_config8(dev, ACPI_CNTL, 0x10);
+	/* Enable ACPI I/O range decode and ACPI power management. */
+	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (3 << 7);	/* Enable IOAPIC */
-	reg32 |= (1 << 13);	/* Coprocessor error enable */
-	reg32 |= (1 << 1);	/* Delayed transaction enable */
-	reg32 |= (1 << 2);	/* DMA collection buffer enable */
+	reg32 |= (1 << 13);	/* Coprocessor error enable (COPR_ERR_EN) */
+	reg32 |= (3 << 7);	/* IOAPIC enable (APIC_EN) */
+	reg32 |= (1 << 2);	/* DMA collection buffer enable (DCB_EN) */
+	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
@@ -118,60 +117,33 @@ static void i82801bx_enable_serial_irqs(struct device *dev)
 
 static void i82801bx_pirq_init(device_t dev, uint16_t ich_model)
 {
-	/* Get the chip configuration */
+	u8 reg8;
 	config_t *config = dev->chip_info;
 
-	if (config->pirqa_routing) {
-		pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
-	} else {
-		pci_write_config8(dev, PIRQA_ROUT, PIRQA);
-	}
+	reg8 = (config->pirqa_routing) ? config->pirqa_routing : PIRQA;
+	pci_write_config8(dev, PIRQA_ROUT, reg8);
 
-	if (config->pirqb_routing) {
-		pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
-	} else {
-		pci_write_config8(dev, PIRQB_ROUT, PIRQB);
-	}
+	reg8 = (config->pirqb_routing) ? config->pirqb_routing : PIRQB;
+	pci_write_config8(dev, PIRQB_ROUT, reg8);
 
-	if (config->pirqc_routing) {
-		pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
-	} else {
-		pci_write_config8(dev, PIRQC_ROUT, PIRQC);
-	}
+	reg8 = (config->pirqc_routing) ? config->pirqc_routing : PIRQC;
+	pci_write_config8(dev, PIRQC_ROUT, reg8);
 
-	if (config->pirqd_routing) {
-		pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
-	} else {
-		pci_write_config8(dev, PIRQD_ROUT, PIRQD);
-	}
+	reg8 = (config->pirqd_routing) ? config->pirqd_routing : PIRQD;
+	pci_write_config8(dev, PIRQD_ROUT, reg8);
 
-	/* Route PIRQE - PIRQH (for ICH2-ICH9). */
-	if (ich_model >= 0x2440) {
 
-		if (config->pirqe_routing) {
-			pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
-		} else {
-			pci_write_config8(dev, PIRQE_ROUT, PIRQE);
-		}
+	reg8 = (config->pirqe_routing) ? config->pirqe_routing : PIRQE;
+	pci_write_config8(dev, PIRQE_ROUT, reg8);
 
-		if (config->pirqf_routing) {
-			pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
-		} else {
-			pci_write_config8(dev, PIRQF_ROUT, PIRQF);
-		}
+	reg8 = (config->pirqf_routing) ? config->pirqf_routing : PIRQF;
+	pci_write_config8(dev, PIRQF_ROUT, reg8);
 
-		if (config->pirqg_routing) {
-			pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
-		} else {
-			pci_write_config8(dev, PIRQG_ROUT, PIRQG);
-		}
+	reg8 = (config->pirqg_routing) ? config->pirqg_routing : PIRQG;
+	pci_write_config8(dev, PIRQG_ROUT, reg8);
 
-		if (config->pirqh_routing) {
-			pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
-		} else {
-			pci_write_config8(dev, PIRQH_ROUT, PIRQH);
-		}
-	}
+	reg8 = (config->pirqh_routing) ? config->pirqh_routing : PIRQH;
+	pci_write_config8(dev, PIRQH_ROUT, reg8);
 }
 
 static void i82801bx_power_options(device_t dev)
@@ -208,7 +180,7 @@ static void gpio_init(device_t dev)
 {
 	/* Set the value for GPIO base address register and enable GPIO. */
 	pci_write_config32(dev, GPIO_BASE, (GPIO_BASE_ADDR | 1));
-	pci_write_config8(dev, GPIO_CNTL, 0x10);
+	pci_write_config8(dev, GPIO_CNTL, GPIO_EN);
 }
 
 static void i82801bx_rtc_init(struct device *dev)
@@ -252,15 +224,9 @@ static void i82801bx_lpc_decode_en(device_t dev, uint16_t ich_model)
 	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
 	 * Floppy decode defaults to 0x3F0-0x3F5, 0x3F7.
 	 * We also need to set the value for LPC I/F Enables Register.
-	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
 	 */
-	if (ich_model <= 0x24D0) {
-		pci_write_config8(dev, COM_DEC, 0x10);
-		pci_write_config16(dev, LPC_EN_ICH0_5, 0x300F);
-	} else if (ich_model >= 0x2640) {
-		pci_write_config8(dev, LPC_IO_DEC, 0x10);
-		pci_write_config16(dev, LPC_EN_ICH6_9, 0x300F);
-	}
+	pci_write_config8(dev, COM_DEC, 0x10);
+	pci_write_config16(dev, LPC_EN, 0x300F);
 }
 
 static void lpc_init(struct device *dev)
@@ -332,45 +298,9 @@ static struct device_operations lpc_ops = {
 	.enable			= i82801bx_enable,
 };
 
-static const struct pci_driver i82801aa_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2410,
-};
-
-static const struct pci_driver i82801ab_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2420,
-};
-
+/* 82801BA/BAM (ICH2/ICH2-M) */
 static const struct pci_driver i82801ba_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2440,
-};
-
-static const struct pci_driver i82801ca_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2480,
-};
-
-static const struct pci_driver i82801db_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24c0,
-};
-
-static const struct pci_driver i82801dbm_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24cc,
-};
-
-/* 82801EB and 82801ER */
-static const struct pci_driver i82801ex_lpc __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24d0,
 };

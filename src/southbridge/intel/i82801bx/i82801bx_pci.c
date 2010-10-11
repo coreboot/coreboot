@@ -26,16 +26,16 @@
 
 static void pci_init(struct device *dev)
 {
-	uint16_t reg16;
+	u16 reg16;
 
 	/* Clear system errors */
-	reg16 = pci_read_config16(dev, 0x06);
+	reg16 = pci_read_config16(dev, PCI_STATUS);
 	reg16 |= 0xf900;	/* Clear possible errors */
-	pci_write_config16(dev, 0x06, reg16);
+	pci_write_config16(dev, PCI_STATUS, reg16);
 
-	reg16 = pci_read_config16(dev, 0x1e);
+	reg16 = pci_read_config16(dev, SECSTS);
 	reg16 |= 0xf800;	/* Clear possible errors */
-	pci_write_config16(dev, 0x1e, reg16);
+	pci_write_config16(dev, SECSTS, reg16);
 }
 
 static struct device_operations pci_ops = {
@@ -46,27 +46,9 @@ static struct device_operations pci_ops = {
 	.scan_bus		= pci_scan_bridge,
 };
 
-static const struct pci_driver i82801aa_pci __pci_driver = {
-	.ops	= &pci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2418,
-};
-
-static const struct pci_driver i82801ab_pci __pci_driver = {
-	.ops	= &pci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2428,
-};
-
-/* 82801BA, 82801CA, 82801DB, 82801EB, and 82801ER */
+/* 82801BA/BAM (ICH2/ICH2-M) */
 static const struct pci_driver i82801misc_pci __pci_driver = {
 	.ops	= &pci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x244e,
-};
-
-static const struct pci_driver i82801dbm_pci __pci_driver = {
-	.ops	= &pci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2448,
 };

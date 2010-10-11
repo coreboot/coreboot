@@ -31,34 +31,24 @@ typedef struct southbridge_intel_i82801bx_config config_t;
 
 static void ide_init(struct device *dev)
 {
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	u16 reg16;
+	config_t *conf = dev->chip_info;
 
-	/* TODO: Needs to be tested for compatibility with ICH5(R). */
-	/* Enable IDE devices so the Linux IDE driver will work. */
-	uint16_t ideTimingConfig;
+	reg16 = pci_read_config16(dev, IDE_TIM_PRI);
+	reg16 &= ~IDE_DECODE_ENABLE;
+	if (!conf || conf->ide0_enable)
+		reg16 |= IDE_DECODE_ENABLE;
+	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Primary",
+	       conf->ide0_enable ? "on" : "off");
+	pci_write_config16(dev, IDE_TIM_PRI, reg16);
 
-	ideTimingConfig = pci_read_config16(dev, IDE_TIM_PRI);
-	ideTimingConfig &= ~IDE_DECODE_ENABLE;
-	if (!config || config->ide0_enable) {
-		/* Enable primary IDE interface. */
-		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk(BIOS_DEBUG, "IDE0: Primary IDE interface is enabled\n");
-	} else {
-		printk(BIOS_INFO, "IDE0: Primary IDE interface is disabled\n");
-	}
-	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
-
-	ideTimingConfig = pci_read_config16(dev, IDE_TIM_SEC);
-	ideTimingConfig &= ~IDE_DECODE_ENABLE;
-	if (!config || config->ide1_enable) {
-		/* Enable secondary IDE interface. */
-		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk(BIOS_DEBUG, "IDE1: Secondary IDE interface is enabled\n");
-	} else {
-		printk(BIOS_INFO, "IDE1: Secondary IDE interface is disabled\n");
-	}
-	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
+	reg16 = pci_read_config16(dev, IDE_TIM_SEC);
+	reg16 &= ~IDE_DECODE_ENABLE;
+	if (!conf || conf->ide1_enable)
+		reg16 |= IDE_DECODE_ENABLE;
+	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Secondary",
+	       conf->ide0_enable ? "on" : "off");
+	pci_write_config16(dev, IDE_TIM_SEC, reg16);
 }
 
 static struct device_operations ide_ops = {
@@ -70,51 +60,9 @@ static struct device_operations ide_ops = {
 	.enable			= i82801bx_enable,
 };
 
-/* 82801AA */
-static const struct pci_driver i82801aa_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2411,
-};
-
-/* 82801AB */
-static const struct pci_driver i82801ab_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2421,
-};
-
-/* 82801BA */
+/* 82801BA/BAM (ICH2/ICH2-M) */
 static const struct pci_driver i82801ba_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x244b,
-};
-
-/* 82801CA */
-static const struct pci_driver i82801ca_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x248b,
-};
-
-/* 82801DB */
-static const struct pci_driver i82801db_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24cb,
-};
-
-/* 82801DBM */
-static const struct pci_driver i82801dbm_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24ca,
-};
-
-/* 82801EB & 82801ER */
-static const struct pci_driver i82801ex_ide __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24db,
 };

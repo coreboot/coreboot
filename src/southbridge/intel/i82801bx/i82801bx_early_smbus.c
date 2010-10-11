@@ -29,18 +29,8 @@ static void enable_smbus(void)
 	device_t dev;
 	uint16_t device_id;
 
-	/* Set the SMBus device statically. */
+	/* Set the SMBus device statically (D31:F3). */
 	dev = PCI_DEV(0x0, 0x1f, 0x3);
-
-	/* Check to make sure we've got the right device. */
-	device_id = pci_read_config16(dev, 0x2);
-
-	/* Clear bits 7-4 (the only bits that vary between models). */
-	device_id &= 0xff0f;
-
-	if (device_id != 0x2403) {
-		die("Device not found, Corey probably screwed up!");
-	}
 
 	/* Set SMBus I/O base. */
 	pci_write_config32(dev, SMB_BASE,

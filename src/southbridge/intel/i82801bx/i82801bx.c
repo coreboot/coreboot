@@ -27,38 +27,21 @@
 
 void i82801bx_enable(device_t dev)
 {
-	unsigned int index = 0;
-	uint16_t cur_disable_mask, new_disable_mask;
+	u16 reg16, index;
+	device_t lpc_dev;
 
-	/* All 82801xx devices should be on bus 0. */
-	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// LPC
-	device_t lpc_dev = dev_find_slot(0, devfn);	// 0
+	/* Search for the 82801BA/BAM LPC device (D31:F0) on PCI bus 0. */
+	lpc_dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
 	if (!lpc_dev)
 		return;
 
-	/* We're going to assume, perhaps incorrectly, that if a function
-	 * exists it can be disabled. Workarounds for ICH variants that don't
-	 * follow this should be done by checking the device ID.
-	 */
-	if (PCI_SLOT(dev->path.pci.devfn) == 31) {
-		index = PCI_FUNC(dev->path.pci.devfn);
-	} else if (PCI_SLOT(dev->path.pci.devfn) == 29) {
-		index = 8 + PCI_FUNC(dev->path.pci.devfn);
-	}
+	index = PCI_FUNC(dev->path.pci.devfn);
 
-	/* Function 0 is a bit of an exception. */
-	if (index == 0) {
-		index = 14;
-	}
-
-	cur_disable_mask = pci_read_config16(lpc_dev, FUNC_DIS);
-	new_disable_mask = cur_disable_mask & ~(1 << index); /* Enable it. */
-	if (!dev->enabled) {
-		new_disable_mask |= (1 << index); /* Disable it, if desired. */
-	}
-	if (new_disable_mask != cur_disable_mask) {
-		pci_write_config16(lpc_dev, FUNC_DIS, new_disable_mask);
-	}
+	reg16 = pci_read_config16(lpc_dev, FUNC_DIS);
+	reg16 &= ~(1 << index);         /* Enable device. */
+	if (!dev->enabled)
+		reg16 |= (1 << index);  /* Disable device, if desired. */
+	pci_write_config16(lpc_dev, FUNC_DIS, reg16);
 }
 
 struct chip_operations southbridge_intel_i82801bx_ops = {

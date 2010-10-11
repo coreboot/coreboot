@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "i82801bx.h"
 
 static void pci_init(struct device *dev)
 {

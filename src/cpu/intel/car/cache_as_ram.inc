@@ -115,7 +115,7 @@ NotHtProcessor:
 
 	/* Clear all MTRRs. */
 	xorl	%edx, %edx
-	movl	$fixed_mtrr_msr, %esi
+	movl	$all_mtrr_msrs, %esi
 
 clear_fixed_var_mtrr:
 	lodsl	(%esi), %eax
@@ -128,17 +128,38 @@ clear_fixed_var_mtrr:
 
 	jmp	clear_fixed_var_mtrr
 
-fixed_mtrr_msr:
-	.long	0x250, 0x258, 0x259
-	.long	0x268, 0x269, 0x26A
-	.long	0x26B, 0x26C, 0x26D
-	.long	0x26E, 0x26F
+all_mtrr_msrs:
+	/* fixed MTRR MSRs */
+	.long	MTRRfix64K_00000_MSR
+	.long	MTRRfix16K_80000_MSR
+	.long	MTRRfix16K_A0000_MSR
+	.long	MTRRfix4K_C0000_MSR
+	.long	MTRRfix4K_C8000_MSR
+	.long	MTRRfix4K_D0000_MSR
+	.long	MTRRfix4K_D8000_MSR
+	.long	MTRRfix4K_E0000_MSR
+	.long	MTRRfix4K_E8000_MSR
+	.long	MTRRfix4K_F0000_MSR
+	.long	MTRRfix4K_F8000_MSR
 
-var_mtrr_msr:
-	.long	0x200, 0x201, 0x202, 0x203
-	.long	0x204, 0x205, 0x206, 0x207
-	.long	0x208, 0x209, 0x20A, 0x20B
-	.long	0x20C, 0x20D, 0x20E, 0x20F
+	/* var MTRR MSRs */
+	.long	MTRRphysBase_MSR(0)
+	.long	MTRRphysMask_MSR(0)
+	.long	MTRRphysBase_MSR(1)
+	.long	MTRRphysMask_MSR(1)
+	.long	MTRRphysBase_MSR(2)
+	.long	MTRRphysMask_MSR(2)
+	.long	MTRRphysBase_MSR(3)
+	.long	MTRRphysMask_MSR(3)
+	.long	MTRRphysBase_MSR(4)
+	.long	MTRRphysMask_MSR(4)
+	.long	MTRRphysBase_MSR(5)
+	.long	MTRRphysMask_MSR(5)
+	.long	MTRRphysBase_MSR(6)
+	.long	MTRRphysMask_MSR(6)
+	.long	MTRRphysBase_MSR(7)
+	.long	MTRRphysMask_MSR(7)
+
 	.long	0x000 /* NULL, end of table */
 
 clear_fixed_var_mtrr_out:

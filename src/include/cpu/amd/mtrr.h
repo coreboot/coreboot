@@ -21,12 +21,13 @@
 #define SYSCFG_MSR_SysVicLimitMask	((1 << 8) - (1 << 5))
 #define SYSCFG_MSR_SysAckLimitMask	((1 << 5) - (1 << 0))
 
-#define IORR0_BASE			0xC0010016
-#define IORR0_MASK			0xC0010017
-#define IORR1_BASE			0xC0010018
-#define IORR1_MASK			0xC0010019
-#define TOP_MEM				0xC001001A
-#define TOP_MEM2			0xC001001D
+#define IORRBase_MSR(reg) (0xC0010016 + 2 * (reg))
+#define IORRMask_MSR(reg) (0xC0010016 + 2 * (reg) + 1)
+
+#define TOP_MEM_MSR			0xC001001A
+#define TOP_MEM2_MSR			0xC001001D
+#define TOP_MEM				TOP_MEM_MSR
+#define TOP_MEM2			TOP_MEM2_MSR
 
 #define TOP_MEM_MASK			0x007fffff
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)

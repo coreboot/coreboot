@@ -20,6 +20,7 @@
 
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -56,7 +57,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_bus(mc, 2, "ISA   ");
 
 	/* I/O APICs: APIC ID  Version  State  Address */
-	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);
+	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
 	{
 		device_t dev;
 		struct resource *res;

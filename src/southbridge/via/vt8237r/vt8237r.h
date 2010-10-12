@@ -35,7 +35,6 @@
 #define VT8237S_SPI_MEM_BASE		0xfed02000UL
 #endif
 #define VT8237R_HPET_ADDR		0xfed00000ULL
-#define VT8237R_APIC_BASE		0xfec00000ULL
 
 /* IDE */
 #define IDE_CS				0x40

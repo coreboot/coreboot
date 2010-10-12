@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -58,8 +59,8 @@ static void *smp_write_config_table(void *v)
 
 	/* IOAPIC handling */
 
-	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);
-	smp_write_ioapic(mc, 3, 0x20, 0xfec10000);
+	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, 3, 0x20, IO_APIC_ADDR + 0x10000);
 
 	mptable_add_isa_interrupts(mc, bus_isa, 0x2, 0);
 

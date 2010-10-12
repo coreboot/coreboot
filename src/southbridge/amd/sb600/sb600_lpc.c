@@ -27,6 +27,7 @@
 #include <pc80/isa-dma.h>
 #include <bitops.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "sb600.h"
 
 static void lpc_init(device_t dev)
@@ -84,7 +85,7 @@ static void sb600_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

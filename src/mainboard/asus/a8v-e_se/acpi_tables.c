@@ -26,6 +26,7 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
@@ -59,7 +60,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write SB IOAPIC. */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				VT8237R_APIC_ID, VT8237R_APIC_BASE, 0);
+				VT8237R_APIC_ID, IO_APIC_ADDR, 0);
 
 	/* Write NB IOAPIC. */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,

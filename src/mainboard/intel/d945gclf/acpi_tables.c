@@ -27,6 +27,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
+#include <arch/ioapic.h>
 #include "dmi.h"
 
 #define OLD_ACPI 0
@@ -145,8 +146,6 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	header->checksum =
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
-
-#define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

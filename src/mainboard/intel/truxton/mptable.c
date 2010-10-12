@@ -20,6 +20,7 @@
 
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -95,7 +96,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_bus(mc, bus_isa, "ISA	  ");
 
 	/* IOAPIC handling */
-	smp_write_ioapic(mc, 0x8, 0x20, 0xfec00000);
+	smp_write_ioapic(mc, 0x8, 0x20, IO_APIC_ADDR);
 
 	mptable_add_isa_interrupts(mc, bus_isa, 0x8, 0);
 

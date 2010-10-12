@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -72,7 +72,7 @@ static void *smp_write_config_table(void *v)
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	ioapic_id = 2;
-	smp_write_ioapic(mc, ioapic_id, 0x20, 0xfec00000);
+	smp_write_ioapic(mc, ioapic_id, 0x20, IO_APIC_ADDR);
 
 	/* Legacy Interrupts */
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);

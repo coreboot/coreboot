@@ -175,7 +175,7 @@ enum acpi_apic_types {
 	LocalApic		= 0,
 	IOApic			= 1,
 	IRQSourceOverride	= 2,
-	NMI			= 3,
+	NMIType			= 3,
 	LocalApicNMI		= 4,
 	LApicAddressOverride	= 5,
 	IOSApic			= 6,

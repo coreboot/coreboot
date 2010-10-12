@@ -8,6 +8,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <assert.h>
@@ -48,7 +49,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 
 	// Southbridge IOAPIC
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_ICH3, 0xfec00000, irq_start);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_ICH3, IO_APIC_ADDR, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
 
 	// P64H2#2 Bus A IOAPIC

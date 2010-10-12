@@ -372,7 +372,7 @@ static void i3100_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

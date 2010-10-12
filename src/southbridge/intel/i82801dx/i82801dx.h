@@ -36,8 +36,6 @@
 extern void i82801dx_enable(device_t dev);
 #endif
 
-#define IO_APIC_ADDR		0xfec00000
-
 /*
  * HPET Memory Address Range. Possible values:
  * 0xfed00000 for FED0_0000h - FED0_03FFh

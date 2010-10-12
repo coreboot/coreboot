@@ -25,6 +25,7 @@
 #include <device/pci_ids.h>
 #include <pc80/isa-dma.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/ioapic.h>
 #include "i82371eb.h"
 
 static void isa_init(struct device *dev)
@@ -64,7 +65,7 @@ static void sb_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

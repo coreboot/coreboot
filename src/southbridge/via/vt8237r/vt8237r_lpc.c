@@ -490,7 +490,7 @@ static void vt8237r_read_resources(device_t dev)
 
 	/* Fixed APIC resource */
 	res = new_resource(dev, 0x44);
-	res->base = VT8237R_APIC_BASE;
+	res->base = IO_APIC_ADDR;
 	res->size = 256;
 	res->limit = 0xffffffffUL;
 	res->align = 8;
@@ -516,7 +516,7 @@ static void southbridge_init_common(struct device *dev)
 {
 	vt8237_common_init(dev);
 	pci_routing_fixup(dev);
-	setup_ioapic(VT8237R_APIC_BASE, VT8237R_APIC_ID);
+	setup_ioapic(IO_APIC_ADDR, VT8237R_APIC_ID);
 	setup_i8259();
 	init_keyboard(dev);
 }

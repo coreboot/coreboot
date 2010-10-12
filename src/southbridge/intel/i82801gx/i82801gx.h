@@ -32,7 +32,6 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#define IO_APIC_ADDR		0xfec00000
 #define HPET_ADDR		0xfed00000
 #define DEFAULT_RCBA		0xfed1c000
 

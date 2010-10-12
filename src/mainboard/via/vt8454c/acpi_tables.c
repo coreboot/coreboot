@@ -22,6 +22,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -84,10 +85,6 @@ static void acpi_create_via_hpet(acpi_hpet_t * hpet)
 	header->checksum =
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
-
-
-
-#define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

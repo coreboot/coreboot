@@ -23,6 +23,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -84,8 +85,6 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 
 #define IO_APIC0 2
 #define IO_APIC1 3
-#define IO_APIC0_ADDR	0xfec00000UL
-#define IO_APIC1_ADDR	0xfec10000UL
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -99,9 +98,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *) current, 2, 1);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, IO_APIC0, IO_APIC0_ADDR, irq_start);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, IO_APIC0, IO_APIC_ADDR, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, IO_APIC1, IO_APIC1_ADDR, irq_start);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, IO_APIC1, IO_APIC_ADDR + 0x10000, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x1e,0));

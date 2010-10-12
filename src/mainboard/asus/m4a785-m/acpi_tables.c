@@ -20,12 +20,12 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-
 #include "mb_sysconf.h"
 
 #define DUMP_ACPI_TABLES 0
@@ -55,8 +55,6 @@ extern const unsigned char AmlCode_ssdt3[];
 extern const unsigned char AmlCode_ssdt4[];
 extern const unsigned char AmlCode_ssdt5[];
 #endif
-
-#define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

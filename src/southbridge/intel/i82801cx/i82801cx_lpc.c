@@ -11,6 +11,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "i82801cx.h"
 
 #define NMI_OFF 0
@@ -26,8 +27,8 @@
 static void i82801cx_enable_ioapic( struct device *dev)
 {
 	uint32_t dword;
-    volatile uint32_t* ioapic_index = (volatile uint32_t*)0xfec00000;
-    volatile uint32_t* ioapic_data = (volatile uint32_t*)0xfec00010;
+    volatile uint32_t* ioapic_index = (volatile uint32_t*)IO_APIC_ADDR;
+    volatile uint32_t* ioapic_data = (volatile uint32_t*)(IO_APIC_ADDR + 0x10);
 
     dword = pci_read_config32(dev, GEN_CNTL);
     dword |= (3 << 7); /* enable ioapic & disable SMBus interrupts */
@@ -224,7 +225,7 @@ static void i82801cx_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

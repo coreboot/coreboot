@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -64,7 +65,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	/* Reserve space for the IOAPIC.  This should be in the Southbridge,
 	 * but I couldn't tell which device to put it in. */
 	res = new_resource(dev, 2);
-	res->base = 0xfec00000UL;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x100000UL;
 	res->limit = 0xffffffffUL;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |

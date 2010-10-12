@@ -308,7 +308,7 @@ static void sb700_sm_read_resources(device_t dev)
 
 	/* apic */
 	res = new_resource(dev, 0x74);
-	res->base  = 0xfec00000;
+	res->base  = IO_APIC_ADDR;
 	res->size = 256 * 0x10;
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;

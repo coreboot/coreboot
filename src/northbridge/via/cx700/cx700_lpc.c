@@ -19,17 +19,14 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-
 #include <pc80/mc146818rtc.h>
 #include <pc80/i8259.h>
 #include <pc80/keyboard.h>
 #include <pc80/isa-dma.h>
-
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 #include <stdlib.h>
@@ -253,7 +250,7 @@ static void cx700_read_resources(device_t dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

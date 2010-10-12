@@ -23,7 +23,7 @@ static void pic_init(struct device *dev)
 	pci_write_config8(dev, 0x3c, 0xff);
 
 	/* Setup the ioapic */
-	clear_ioapic(0xfec10000);
+	clear_ioapic(IO_APIC_ADDR + 0x10000);
 }
 
 static void pic_read_resources(device_t dev)
@@ -35,7 +35,7 @@ static void pic_read_resources(device_t dev)
 
 	/* Report the pic1 mbar resource */
 	res = new_resource(dev, 0x44);
-	res->base  = 0xfec10000;
+	res->base  = IO_APIC_ADDR + 0x10000;
 	res->size  = 256;
 	res->limit = res->base + res->size -1;
 	res->align = 8;

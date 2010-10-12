@@ -24,6 +24,7 @@
 
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -59,7 +60,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &isa_bus);
 
 /* I/O APICs:	APIC ID	Version	State		Address*/
-	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, VT8237R_APIC_BASE);
+	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, IO_APIC_ADDR);
 
 	/* Now, assemble the table. */
 	mptable_add_isa_interrupts(mc, isa_bus, VT8237R_APIC_ID, 0);

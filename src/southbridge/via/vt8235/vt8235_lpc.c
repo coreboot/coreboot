@@ -4,9 +4,8 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-
 #include <pc80/mc146818rtc.h>
-
+#include <arch/ioapic.h>
 #include "chip.h"
 
 /* The epia-m is really short on interrupts available, so PCI interupts A & D are ganged togther and so are B & C.
@@ -228,7 +227,7 @@ static void vt8235_read_resources(device_t dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

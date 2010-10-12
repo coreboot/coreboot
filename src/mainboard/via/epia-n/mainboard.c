@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <boot/tables.h>
+#include <arch/ioapic.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
 #include "chip.h"
 
@@ -30,7 +31,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 {
 #if CONFIG_IOAPIC == 1
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		VT8237R_APIC_BASE, 0x1000);
+		IO_APIC_ADDR, 0x1000);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		0xFEE00000ULL, 0x1000);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,

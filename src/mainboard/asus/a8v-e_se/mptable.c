@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
 #include "southbridge/via/k8t890/k8t890.h"
 
@@ -62,7 +63,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_bus(mc, bus_isa, "ISA   ");
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
-	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, VT8237R_APIC_BASE);
+	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, IO_APIC_ADDR);
 	smp_write_ioapic(mc, K8T890_APIC_ID, 0x20, K8T890_APIC_BASE);
 
 	mptable_add_isa_interrupts(mc, bus_isa, VT8237R_APIC_ID, 0);

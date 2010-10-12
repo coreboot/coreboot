@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -37,7 +38,7 @@ static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 	// TODO: Gack. This is REALLY ugly.
 
 	// Southbridge IOAPIC
-	smp_write_ioapic(mc, IOAPIC_ICH3, 0x20, 0xfec00000);	// APIC ID, Version, Address
+	smp_write_ioapic(mc, IOAPIC_ICH3, 0x20, IO_APIC_ADDR);	// APIC ID, Version, Address
 
 	// P64H2#2 Bus A IOAPIC
 	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));

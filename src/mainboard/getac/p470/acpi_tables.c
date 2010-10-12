@@ -23,6 +23,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
@@ -130,8 +131,6 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 
 	return header->length;
 }
-
-#define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

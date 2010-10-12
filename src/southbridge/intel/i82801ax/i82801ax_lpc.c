@@ -28,6 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "i82801ax.h"
 
 #define GPIO_BASE_ADDR	0x00000500 /* GPIO Base Address Register */
@@ -72,8 +73,8 @@ typedef struct southbridge_intel_i82801ax_config config_t;
 static void i82801ax_enable_apic(struct device *dev)
 {
 	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)0xfec00000;
-	volatile u32 *ioapic_data = (volatile u32 *)0xfec00010;
+	volatile u32 *ioapic_index = (volatile u32 *)IO_APIC_ADDR;
+	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
 
 	/* Set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
@@ -266,7 +267,7 @@ static void i82801ax_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

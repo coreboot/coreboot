@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <string.h>
@@ -143,7 +144,7 @@ static void *smp_write_config_table(void *v)
         apicid_8131_1 = apicid_base+1;
         apicid_8131_2 = apicid_base+2;
 
-	smp_write_ioapic(mc, apicid_8111, 0x11, 0xfec00000);
+	smp_write_ioapic(mc, apicid_8111, 0x11, IO_APIC_ADDR);
         {
                 device_t dev;
                 struct resource *res;

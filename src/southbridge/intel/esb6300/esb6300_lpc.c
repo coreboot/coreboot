@@ -242,7 +242,7 @@ static void lpc_init(struct device *dev)
 	value |= (1 << 8)|(1<<7);
 	value |= (6 << 0)|(1<<13)|(1<<11);
 	pci_write_config32(dev, 0xd0, value);
-	setup_ioapic(0xfec00000, 0); // don't rename IO APIC ID
+	setup_ioapic(IO_APIC_ADDR, 0); // don't rename IO APIC ID
 
 	/* disable reset timer */
 	pci_write_config8(dev, 0xd4, 0x02);
@@ -330,7 +330,7 @@ static void esb6300_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }

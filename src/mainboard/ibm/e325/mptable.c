@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
@@ -81,7 +82,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_bus(mc, bus_isa, "ISA	  ");
 
 	/* Legacy IOAPIC #2 */
-	smp_write_ioapic(mc, 2, 0x11, 0xfec00000);
+	smp_write_ioapic(mc, 2, 0x11, IO_APIC_ADDR);
 	{
 		device_t dev;
 		struct resource *res;

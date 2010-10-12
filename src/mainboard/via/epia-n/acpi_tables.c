@@ -30,6 +30,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -94,7 +95,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write SB IOAPIC. */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				   VT8237R_APIC_ID, VT8237R_APIC_BASE, gsi_base);
+				   VT8237R_APIC_ID, IO_APIC_ADDR, gsi_base);
 
 	/* IRQ0 -> APIC IRQ2. */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

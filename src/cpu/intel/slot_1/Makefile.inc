@@ -20,6 +20,7 @@
 
 ramstage-y += slot_1.c
 subdirs-y += ../model_6xx
+subdirs-y += ../model_6bx
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic

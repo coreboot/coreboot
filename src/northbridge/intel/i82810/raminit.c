@@ -58,6 +58,60 @@ Macros and definitions.
 #define RAM_COMMAND_CBR		 0x7 /* CBR */
 
 /*
+ * This table is used to translate the value read from SPD Byte 31 to a value
+ * the northbridge can understand in DRP, aka Rx52[7:4], [3:0]. Where most
+ * northbridges have some sort of simple calculation that can be done for this,
+ * I haven't yet figured out one for this northbridge. Until someone does,
+ * this table is necessary.
+ */
+static const u8 translate_spd_to_i82810[] = {
+	/* Note: 4MB sizes are not supported, so dual-sided DIMMs with a 4MB
+	 * side can't be either, at least for now.
+	 */
+	/* TODO: For above case, only use the other side if > 4MB, and get some
+	 * of these DIMMs to test it with. Same for unsupported 128/x sizes.
+	 */
+
+		/*   SPD Byte 31	Memory Size [Side 1/2]	*/
+	0xff,	/*	0x01		No memory	*/
+	0xff,	/*	0x01		 4/0		*/
+	0x01,	/*	0x02		 8/0		*/
+	0xff,	/*	0x03		 8/4		*/
+	0x04,	/*	0x04		16/0 or 16	*/
+	0xff,	/*	0x05		16/4		*/
+	0x05,	/*	0x06		16/8		*/
+	0xff,	/*	0x07		Invalid		*/
+	0x07,	/*	0x08		32/0 or 32	*/
+	0xff,	/*	0x09		32/4		*/
+	0xff,	/*	0x0A		32/8		*/
+	0xff,	/*	0x0B		Invalid		*/
+	0x08,	/*	0x0C		32/16		*/
+	0xff, 0xff, 0xff, /* 0x0D-0F	Invalid		*/
+	0x0a,	/*	0x10		64/0 or 64	*/
+	0xff,	/*	0x11		64/4		*/
+	0xff,	/*	0x12		64/8		*/
+	0xff,	/*	0x13		Invalid		*/
+	0xff,	/*	0x14		64/16		*/
+	0xff, 0xff, 0xff, /* 0x15-17	Invalid		*/
+	0x0b,	/*	0x18		64/32		*/
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, /* 0x19-1f Invalid */
+	0x0d,	/*	0x20		128/0 or 128	*/
+	/* These configurations are not supported by the i810 */
+	0xff,	/*	0x21		128/4		*/
+	0xff,	/*	0x22		128/8		*/
+	0xff,	/*	0x23		Invalid		*/
+	0xff,	/*	0x24		128/16		*/
+	0xff, 0xff, 0xff, /* 0x25-27	Invalid		*/
+	0xff,	/*	0x28		128/32		*/
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, /* 0x29-2f Invalid */
+	0x0e,	/*	0x30		128/64		*/
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+	0xff, 0xff, 0xff, /* 0x31-3f	Invalid		*/
+	0x0f,	/*	0x40		256/0 or 256	*/
+	/* Anything larger is not supported by the 82810. */
+};
+
+/*
  * Table which returns the RAM size in MB when fed the DRP[7:4] or [3:0] value.
  * Note that 2 is a value which the DRP should never be programmed to.
  * Some size values appear twice, due to single-sided vs dual-sided banks.

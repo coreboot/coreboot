@@ -491,9 +491,9 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 		print_debug_dqs("\t\t\t\tTrainDQSPos: 12 TestAddr ", TestAddr, 4);
 		SetUpperFSbase(TestAddr);	/* fs:eax=far ptr to target */
 
-		if (pDCTstat->Direction==DQS_READDIR) {
+		if (pDCTstat->Direction == DQS_READDIR) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 13 for read ", 0, 4);
-			WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
+			WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
 		}
 
 		for (DQSDelay = 0; DQSDelay < dqsDelay_end; DQSDelay++) {
@@ -517,12 +517,12 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 
 			if (pDCTstat->Direction == DQS_WRITEDIR) {
 				print_debug_dqs("\t\t\t\t\tTrainDQSPos: 143 for write", 0, 5);
-				WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
+				WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
 			}
 
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 144 Pattern ", pDCTstat->Pattern, 5);
-			ReadDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
-/* print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5); */
+			ReadDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
+			/* print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5); */
 			word = CompareDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8); /* 0=fail, 1=pass */
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 144 compare 1 ", word, 3);
 
@@ -541,7 +541,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 146 \tMutualCSPassW ", MutualCSPassW[DQSDelay], 5);
 
 			SetTargetWTIO_D(TestAddr);
-			FlushDQSTestPattern_D(pDCTstat, TestAddr<<8);
+			FlushDQSTestPattern_D(pDCTstat, TestAddr << 8);
 			ResetTargetWTIO_D();
 		}
 
@@ -552,7 +552,6 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (BanksPresent) {
-		u8 mask_pass = 0;
 		for (ByteLane = 0; ByteLane < 8; ByteLane++) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 31 ByteLane ",ByteLane, 4);
 			if (!(pDCTstat->DqsRdWrPos_Saved &(1 << ByteLane))) {
@@ -602,7 +601,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 				}
 				print_debug_dqs("\t\t\t\tTrainDQSPos: 33 RnkDlySeqPassMax ", RnkDlySeqPassMax, 4);
 				if (RnkDlySeqPassMax == 0) {
-					Errors |= 1<<SB_NODQSPOS; /* no passing window */
+					Errors |= 1 << SB_NODQSPOS; /* no passing window */
 				} else {
 					print_debug_dqs_pair("\t\t\t\tTrainDQSPos: 34 RnkDlyFilter: ", RnkDlyFilterMin, " ",  RnkDlyFilterMax, 4);
 					if (((RnkDlyFilterMax - RnkDlyFilterMin) < MIN_DQS_WNDW)){
@@ -624,9 +623,8 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 						pDCTstat->DqsRdWrPos_Saved |= 1 << ByteLane;
 					}
 				}
-			} /* if (pDCTstat->DqsRdWrPos_Saved &(1 << ByteLane)) */
-		}
-		print_debug_dqs("\t\t\t\tTrainDQSPos: 41 mask_pass ",mask_pass, 3);
+			}
+		} /* if (pDCTstat->DqsRdWrPos_Saved &(1 << ByteLane)) */
 	}
 /* skipLocMiddle: */
 	pDCTstat->TrainErrors = Errors;
@@ -850,14 +848,14 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 
 	if (pattern && channel) {
 		addr_lo += 8; /* second channel */
-		test_buf+= 2;
+		test_buf += 2;
 	}
 
-	bytelane = 0;
-	bitmap = 0xFFFF;
+	bytelane = 0;		/* bytelane counter */
+	bitmap = 0xFFFF;	/* bytelane test bitmap, 1=pass */
 	MEn1Results = 0xFFFF;
 	BeatCnt = 0;
-	for (i=0; i < (9 * 64 / 4); i++) { /* /4 due to next loop */
+	for (i = 0; i < (9 * 64 / 4); i++) { /* sizeof testpattern. /4 due to next loop */
 		value = read32_fs(addr_lo);
 		value_test = *test_buf;
 
@@ -867,7 +865,7 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 		if (pDCTstat->Direction == DQS_READDIR) {
 			if (BeatCnt != 0) {
 				value_r = *test_buf;
-				if (pattern)
+				if (pattern) /* if multi-channel */
 					value_r_test = read32_fs(addr_lo - 16);
 				else
 					value_r_test = read32_fs(addr_lo - 8);
@@ -876,7 +874,7 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 			print_debug_dqs_pair("\t\t\t\t\t\t\ttaddr_lo = ", addr_lo, " value_r = ", value_r_test, 7);
 		}
 
-		for (j = 0; j < (4 * 8); j += 8) {
+		for (j = 0; j < (4 * 8); j += 8) { /* go through a 32bit data, on 1 byte step. */
 			if (((value >> j) & 0xff) != ((value_test >> j) & 0xff)) {
 				bitmap &= ~(1 << bytelane);
 			}
@@ -900,7 +898,7 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 
 		if (bytelane == 0){
 			BeatCnt += 4;
-			if (!(pDCTstat->Status & (1 <<SB_128bitmode))) {
+			if (!(pDCTstat->Status & (1 << SB_128bitmode))) {
 				if (BeatCnt == 8) BeatCnt = 0; /* 8 beat burst */
 			} else {
 				if (BeatCnt == 4) BeatCnt = 0; /* 4 beat burst */
@@ -990,7 +988,7 @@ u32 SetUpperFSbase(u32 addr_hi)
 	hi = addr_hi>>24;
 	addr = FS_Base;
 	_WRMSR(addr, lo, hi);
-	return addr_hi<<8;
+	return addr_hi << 8;
 }
 
 void ResetDCTWrPtr_D(u32 dev, u32 index_reg, u32 index)
@@ -1079,6 +1077,9 @@ void mct_EnableDimmEccEn_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+/*
+ * Set DQS delay value to related register
+ */
 static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 ChipSel)
 {
@@ -1107,7 +1108,7 @@ static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 		}
 
 		/* get the proper register index */
-		shift = ByteLane%4;
+		shift = ByteLane % 4;
 		shift <<= 3; /* get bit position of bytelane, 8 bit */
 
 		index += (ChipSel>>1) << 8;
@@ -1126,6 +1127,10 @@ static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+/*
+ * mct_SetDQSDelayAllCSR_D:
+ * Write the Delay value to all eight byte lanes.
+ */
 static void mct_SetDQSDelayAllCSR_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat,
 					u8 cs_start)
@@ -1307,5 +1312,5 @@ void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 	SetUpperFSbase(addr);
 
 	/* 1st move causes read fill (to exclusive or shared)*/
-	value = read32_fs(addr<<8);
+	value = read32_fs(addr << 8);
 }

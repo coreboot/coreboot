@@ -415,7 +415,7 @@ static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 	u16 i;
 
 	buf = (u32 *)(((u32)buffer + 0x10) & (0xfffffff0));
-	if (pDCTstat->Status & (1<<SB_128bitmode)) {
+	if (pDCTstat->Status & (1 << SB_128bitmode)) {
 		pDCTstat->Pattern = 1;	/* 18 cache lines, alternating qwords */
 		for (i=0; i<16*18; i++)
 			buf[i] = TestPatternJD1b_D[i];
@@ -489,9 +489,9 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 		print_debug_dqs("\t\t\t\tTrainDQSPos: 12 TestAddr ", TestAddr, 4);
 		SetUpperFSbase(TestAddr);	/* fs:eax=far ptr to target */
 
-		if (pDCTstat->Direction==DQS_READDIR) {
+		if (pDCTstat->Direction == DQS_READDIR) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 13 for read ", 0, 4);
-			WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
+			WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
 		}
 
 		for (DQSDelay = 0; DQSDelay < dqsDelay_end; DQSDelay++) {
@@ -504,12 +504,12 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 
 			if (pDCTstat->Direction == DQS_WRITEDIR) {
 				print_debug_dqs("\t\t\t\t\tTrainDQSPos: 143 for write", 0, 5);
-				WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
+				WriteDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
 			}
 
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 144 Pattern ", pDCTstat->Pattern, 5);
-			ReadDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr<<8);
-//			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5);
+			ReadDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8);
+			/* print_debug_dqs("\t\t\t\t\tTrainDQSPos: 145 MutualCSPassW ", MutualCSPassW[DQSDelay], 5); */
 			tmp = CompareDQSTestPattern_D(pMCTstat, pDCTstat, TestAddr << 8); /* 0=fail, 1=pass */
 
 			if (mct_checkFenceHoleAdjust_D(pMCTstat, pDCTstat, DQSDelay, ChipSel, &tmp)) {
@@ -520,14 +520,13 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			print_debug_dqs("\t\t\t\t\tTrainDQSPos: 146 \tMutualCSPassW ", MutualCSPassW[DQSDelay], 5);
 
 			SetTargetWTIO_D(TestAddr);
-			FlushDQSTestPattern_D(pDCTstat, TestAddr<<8);
+			FlushDQSTestPattern_D(pDCTstat, TestAddr << 8);
 			ResetTargetWTIO_D();
 		}
 
 	}
 
 	if (BanksPresent) {
-		u8 mask_pass = 0;
 		for (ByteLane = 0; ByteLane < 8; ByteLane++) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 31 ByteLane ",ByteLane, 4);
 			pDCTstat->ByteLane = ByteLane;
@@ -556,7 +555,7 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 			}
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 33 RnkDlySeqPassMax ", RnkDlySeqPassMax, 4);
 			if (RnkDlySeqPassMax == 0) {
-				Errors |= 1<<SB_NODQSPOS; /* no passing window */
+				Errors |= 1 << SB_NODQSPOS; /* no passing window */
 			} else {
 				print_debug_dqs_pair("\t\t\t\tTrainDQSPos: 34 RnkDlyFilter: ", RnkDlyFilterMin, " ",  RnkDlyFilterMax, 4);
 				if (((RnkDlyFilterMax - RnkDlyFilterMin) < MIN_DQS_WNDW)){
@@ -572,7 +571,6 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 				}
 			}
 		}
-		print_debug_dqs("\t\t\t\tTrainDQSPos: 41 mask_pass ",mask_pass, 3);
 	}
 skipLocMiddle:
 	pDCTstat->TrainErrors = Errors;
@@ -779,19 +777,19 @@ static u8 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatS
 
 	if (pattern && channel) {
 		addr_lo += 8; //second channel
-		test_buf+= 2;
+		test_buf += 2;
 	}
 
-	bytelane = 0;
-	bitmap = 0xFF;
-	for (i=0; i < (9 * 64 / 4); i++) { /* /4 due to next loop */
+	bytelane = 0;  		/* bytelane counter */
+	bitmap = 0xFF;		/* bytelane test bitmap, 1=pass */
+	for (i=0; i < (9 * 64 / 4); i++) { /* sizeof testpattern. /4 due to next loop */
 		value = read32_fs(addr_lo);
 		value_test = *test_buf;
 
 		print_debug_dqs_pair("\t\t\t\t\t\ttest_buf = ", (u32)test_buf, " value = ", value_test, 7);
 		print_debug_dqs_pair("\t\t\t\t\t\ttaddr_lo = ", addr_lo, " value = ", value, 7);
 
-		for (j = 0; j < (4 * 8); j += 8) {
+		for (j = 0; j < (4 * 8); j += 8) { /* go through a 32bit data, on 1 byte step. */
 			if (((value >> j) & 0xff) != ((value_test >> j) & 0xff)) {
 				bitmap &= ~(1 << bytelane);
 			}
@@ -889,7 +887,7 @@ u32 SetUpperFSbase(u32 addr_hi)
 	hi = addr_hi>>24;
 	addr = FS_Base;
 	_WRMSR(addr, lo, hi);
-	return addr_hi<<8;
+	return addr_hi << 8;
 }
 
 
@@ -1021,7 +1019,7 @@ static void mct_SetDQSDelayCSR_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	/* get the proper register index */
-	shift = ByteLane%4;
+	shift = ByteLane % 4;
 	shift <<= 3; /* get bit position of bytelane, 8 bit */
 
 	if (pDCTstat->Status & (1 << SB_Over400MHz)) {
@@ -1222,5 +1220,5 @@ void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 	SetUpperFSbase(addr);
 
 	/* 1st move causes read fill (to exclusive or shared)*/
-	value = read32_fs(addr<<8);
+	value = read32_fs(addr << 8);
 }

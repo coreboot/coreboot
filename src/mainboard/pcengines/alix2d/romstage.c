@@ -120,12 +120,6 @@ static u8 spd_read_byte(u8 device, u8 address)
 static void mb_gpio_init(void)
 {
 	/*
-	 * Disable power button, since it is hardwired to ground on this board,
-	 * and the power would be cut off atfer a 4-second delay otherwise.
-	 */
-	outl(0x00020000, PMS_IO_BASE + 0x40);
-
-	/*
 	 * Enable LEDs GPIO outputs to light up the leds
 	 * This is how the original tinyBIOS sets them after boot.
 	 * Info: GPIO_IO_BASE, 0x6100, is only valid before PCI init, so it

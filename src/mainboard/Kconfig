@@ -247,4 +247,22 @@ config ROM_SIZE
 	default 0x200000 if COREBOOT_ROMSIZE_KB_2048
 	default 0x400000 if COREBOOT_ROMSIZE_KB_4096
 
+config ENABLE_POWER_BUTTON
+	bool "Enable the power button" if POWER_BUTTON_IS_OPTIONAL
+	default y if POWER_BUTTON_DEFAULT_ENABLE
+	default n if POWER_BUTTON_DEFAULT_DISABLE
+	help
+	  The selected mainboard can optionally have the power button tied
+	  to ground with a jumper so that the button appears to be
+	  constantly depressed. If this option is enabled and the jumper is
+	  installed then the board will turn on, but turn off again after a
+	  short timeout, usually 4 seconds.
+
+	  Select Y here if you have removed the jumper and want to use an
+	  actual power button. Select N if you have the jumper installed.
+
+config ENABLE_POWER_BUTTON
+	def_bool y if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_ENABLE
+	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
+
 endmenu

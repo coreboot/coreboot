@@ -13,6 +13,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Standard chip is a 512 KB FWH. Replacing it with a 1 MB
 	# SST 49LF008A is possible.
 	select BOARD_ROMSIZE_KB_512
+	select POWER_BUTTON_FORCE_ENABLE
 
 config MAINBOARD_DIR
 	string

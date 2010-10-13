@@ -10,6 +10,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select PIRQ_ROUTE
 	select BOARD_ROMSIZE_KB_256
+	select POWER_BUTTON_FORCE_ENABLE
 
 config MAINBOARD_DIR
 	string

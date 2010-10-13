@@ -736,4 +736,43 @@ config ID_SECTION_OFFSET
 	hex
 	default 0x10
 
+# The four POWER_BUTTON_DEFAULT_ENABLE, POWER_BUTTON_DEFAULT_DISABLE,
+# POWER_BUTTON_FORCE_ENABLE and POWER_BUTTON_FORCE_DISABLE options are
+# mutually exclusive. One of these options must be selected in the
+# mainboard Kconfig if the chipset supports enabling and disabling of
+# the power button. Chipset code uses the ENABLE_POWER_BUTTON option set
+# in mainboard/Kconfig to know if the button should be enabled or not.
+
+config POWER_BUTTON_DEFAULT_ENABLE
+	def_bool n
+	help
+	  Select when the board has a power button which can optionally be
+	  disabled by the user.
+
+config POWER_BUTTON_DEFAULT_DISABLE
+	def_bool n
+	help
+	  Select when the board has a power button which can optionally be
+	  enabled by the user, e.g. when the board ships with a jumper over
+	  the power switch contacts.
+
+config POWER_BUTTON_FORCE_ENABLE
+	def_bool n
+	help
+	  Select when the board requires that the power button is always
+	  enabled.
+
+config POWER_BUTTON_FORCE_DISABLE
+	def_bool n
+	help
+	  Select when the board requires that the power button is always
+	  disabled, e.g. when it has been hardwired to ground.
+
+config POWER_BUTTON_IS_OPTIONAL
+	bool
+	default y if POWER_BUTTON_DEFAULT_ENABLE || POWER_BUTTON_DEFAULT_DISABLE
+	default n if !(POWER_BUTTON_DEFAULT_ENABLE || POWER_BUTTON_DEFAULT_DISABLE)
+	help
+	  Internal option that controls ENABLE_POWER_BUTTON visibility.
+
 source src/Kconfig.deprecated_options

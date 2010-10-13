@@ -147,14 +147,7 @@ void main(unsigned long bist)
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 
-#if CONFIG_BOARD_OLD_REVISION
-	/*
-	 * Old revision boards need a jumper shorting the power button to power
-	 * on automatically. So we must disable the button's fail-safe function,
-	 * or the board will shut down after 4 s.
-	 */
-	outl(0, PMS_IO_BASE + PM_FSD); // Fail-Save Delay register
-#else
+#if !CONFIG_BOARD_OLD_REVISION
 	int err;
 	/* bit0 = Spread Spectrum */
 	if ((err = smc_send_config(SMC_CONFIG))) {

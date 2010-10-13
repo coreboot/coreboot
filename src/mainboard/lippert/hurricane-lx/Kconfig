@@ -29,10 +29,19 @@ config IRQ_SLOT_COUNT
 config BOARD_OLD_REVISION
 	bool "Board is old pre-3.0 revision"
 	default n
+	select POWER_BUTTON_DEFAULT_DISABLE
 	help
 	  Look on the bottom side for a number like 406-0001-30.  The last 2
 	  digits state the PCB revision (3.0 in this example).  For 2.0 or older
 	  boards choose Y, for 3.0 and newer say N.
+
+	  Old revision boards need a jumper shorting the power button to
+	  power on automatically.  You may enable the button only after this
+	  jumper has been removed.  New revision boards are not restricted
+	  in this way, and always have the power button enabled.
+
+config POWER_BUTTON_FORCE_ENABLE
+	def_bool y if !BOARD_OLD_REVISION
 
 config ONBOARD_UARTS_RS485
 	bool "Switch on-board serial ports to RS485"

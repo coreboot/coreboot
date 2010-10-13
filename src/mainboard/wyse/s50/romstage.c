@@ -134,9 +134,6 @@ void main(unsigned long bist)
 
 	cs5536_early_setup();
 	
-	/* disable the power button */
-	outl(0x00, PMS_IO_BASE + 0x40);
-
 	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
 	cs5536_setup_onchipuart(1);
 

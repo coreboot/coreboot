@@ -27,6 +27,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select HAVE_PIRQ_TABLE
 	select BOARD_ROMSIZE_KB_256
+	select POWER_BUTTON_FORCE_ENABLE
 
 config MAINBOARD_DIR
 	string

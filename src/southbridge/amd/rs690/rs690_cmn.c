@@ -72,7 +72,7 @@ void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		*((u32 *) addr) = val;
+		*((u32 *) addr) = reg;
 	}
 }
 

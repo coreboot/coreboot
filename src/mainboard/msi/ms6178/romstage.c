@@ -22,20 +22,20 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
+#include "southbridge/intel/i82801ax/i82801ax.h"
 #include "pc80/udelay_io.c"
-#include "lib/debug.c"
-#include "northbridge/intel/i82810/raminit.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
 
 void main(unsigned long bist)
 {
@@ -48,12 +48,9 @@ void main(unsigned long bist)
 
 	uart_init();
 	console_init();
-
 	enable_smbus();
-
 	report_bist_failure(bist);
-
-	/* dump_spd_registers(); */
+	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();

@@ -22,7 +22,13 @@
 
 #include <spd.h>
 #include <delay.h>
+#include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
+#include <console/console.h>
 #include "i82810.h"
+#include "raminit.h"
 
 /*-----------------------------------------------------------------------------
 Macros and definitions.
@@ -421,7 +427,7 @@ static void set_dram_buffer_strength(void)
 Public interface.
 -----------------------------------------------------------------------------*/
 
-static void sdram_set_registers(void)
+void sdram_set_registers(void)
 {
 	u8 reg8;
 	u16 did;
@@ -454,7 +460,7 @@ static void sdram_set_registers(void)
 	pci_write_config8(PCI_DEV(0, 0, 0), MISSC2, reg8);
 }
 
-static void sdram_set_spd_registers(void)
+void sdram_set_spd_registers(void)
 {
 	spd_set_dram_size();
 	set_dram_buffer_strength();
@@ -464,7 +470,7 @@ static void sdram_set_spd_registers(void)
 /**
  * Enable SDRAM.
  */
-static void sdram_enable(void)
+void sdram_enable(void)
 {
 	int i;
 

@@ -24,19 +24,17 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
+#include "southbridge/intel/i82801ax/i82801ax.h"
 #include "northbridge/intel/i82810/raminit.h"
-#include "lib/debug.c"
 #include "pc80/udelay_io.c"
-#include "lib/delay.c"
 #include "cpu/x86/bist.h"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
-#include "northbridge/intel/i82810/raminit.c"
-#include "northbridge/intel/i82810/debug.c"
 #include <lib.h>
+
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
 
 void main(unsigned long bist)
 {

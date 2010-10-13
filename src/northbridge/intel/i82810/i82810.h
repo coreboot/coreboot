@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef NORTHBRIDGE_INTEL_I82810_I82810_H
+#define NORTHBRIDGE_INTEL_I82810_I82810_H
+
 /*
  * Datasheet:
  *   - Name: Intel 810 Chipset:
@@ -43,3 +46,7 @@
 #define MISSC	0x72		/* Miscellaneous Control */
 #define MISSC2	0x80		/* Miscellaneous Control 2 */
 #define BUFF_SC	0x92		/* System Memory Buffer Strength Control */
+
+int smbus_read_byte(u8 device, u8 address);
+
+#endif

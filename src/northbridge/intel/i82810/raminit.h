@@ -27,4 +27,10 @@
 /* DIMM0 is at 0x50, DIMM1 is at 0x51. */
 #define DIMM_SPD_BASE 0x50
 
-#endif				/* NORTHBRIDGE_INTEL_I82810_RAMINIT_H */
+/* Function prototypes. */
+void sdram_set_registers(void);
+void sdram_set_spd_registers(void);
+void sdram_enable(void);
+void dump_spd_registers(void);
+
+#endif

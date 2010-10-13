@@ -23,23 +23,20 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "southbridge/intel/i82801bx/i82801bx.h"
-#include "southbridge/intel/i82801bx/i82801bx_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"
-#include "lib/debug.c"
 #include "pc80/udelay_io.c"
-#include "lib/delay.c"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "gpio.c"
-#include "northbridge/intel/i82810/raminit.c"
-/* #include "northbridge/intel/i82810/debug.c" */
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
+
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
 
 void main(unsigned long bist)
 {
@@ -52,7 +49,7 @@ void main(unsigned long bist)
 
 	report_bist_failure(bist);
 	enable_smbus();
-	/* dump_spd_registers(); */
+	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();

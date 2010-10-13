@@ -30,3 +30,5 @@ driver-y += i82801bx_usb.c
 ramstage-y += i82801bx_reset.c
 ramstage-y += i82801bx_watchdog.c
 
+romstage-y += i82801bx_early_smbus.c
+

@@ -29,3 +29,5 @@ driver-y += i82801ax_usb.c
 ramstage-y += i82801ax_reset.c
 ramstage-y += i82801ax_watchdog.c
 
+romstage-y += i82801ax_early_smbus.c
+

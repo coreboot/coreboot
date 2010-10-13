@@ -20,11 +20,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <console/console.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include "i82801bx.h"
 #include "i82801bx_smbus.h"
 
-static void enable_smbus(void)
+int smbus_read_byte(u8 device, u8 address);
+
+void enable_smbus(void)
 {
 	device_t dev;
 
@@ -50,7 +56,7 @@ static void enable_smbus(void)
 	print_debug("SMBus controller enabled\n");
 }
 
-static inline int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(u8 device, u8 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

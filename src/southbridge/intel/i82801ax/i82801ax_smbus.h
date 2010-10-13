@@ -20,6 +20,9 @@
 
 #include <device/smbus_def.h>
 
+void enable_smbus(void);
+int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address);
+
 static void smbus_delay(void)
 {
 	inb(0x80);
@@ -51,8 +54,7 @@ static int smbus_wait_until_done(u16 smbus_io_base)
 	return loops ? 0 : -1;
 }
 
-static int do_smbus_read_byte(u16 smbus_io_base, unsigned device,
-			      unsigned address)
+int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;

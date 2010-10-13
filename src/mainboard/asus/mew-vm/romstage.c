@@ -26,42 +26,28 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "superio/smsc/lpc47b272/lpc47b272_early_serial.c"
 #include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-
-#define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
-
 #include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "northbridge/intel/i82810/raminit.c"
 #include "northbridge/intel/i82810/debug.c"
+#include <lib.h>
 
-static void main(unsigned long bist)
+#define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
+
+void main(unsigned long bist)
 {
-	if (bist == 0)
-		early_mtrr_init();
-
 	lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-
 	enable_smbus();
-
-	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
-
-	/* dump_spd_registers(); */
-
+	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-
-	/* Check RAM. */
-	/* ram_check(0, 640 * 1024); */
 }
-

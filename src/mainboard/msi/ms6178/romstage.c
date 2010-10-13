@@ -26,23 +26,19 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "pc80/udelay_io.c"
 #include "lib/debug.c"
 #include "northbridge/intel/i82810/raminit.c"
+#include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	if (bist == 0)
-		early_mtrr_init();
-
 	/* FIXME */
 	outb(0x87, 0x2e);
 	outb(0x87, 0x2e);
@@ -61,6 +57,4 @@ static void main(unsigned long bist)
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 }
-

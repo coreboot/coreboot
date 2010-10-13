@@ -35,21 +35,15 @@
 #include "cpu/x86/bist.h"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "gpio.c"
+#include "northbridge/intel/i82810/raminit.c"
+/* #include "northbridge/intel/i82810/debug.c" */
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
-{
-	return smbus_read_byte(device, address);
-}
-
-#include "northbridge/intel/i82810/raminit.c"
-/* #include "northbridge/intel/i82810/debug.c" */
-
 void main(unsigned long bist)
 {
-	/* Set southbridge and superio gpios */
+	/* Set southbridge and Super I/O GPIOs. */
 	mb_gpio_init();
 
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
@@ -62,6 +56,4 @@ void main(unsigned long bist)
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 }
-

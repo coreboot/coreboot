@@ -21,10 +21,22 @@ config CPU_INTEL_SOCKET_PGA370
 	bool
 	select MMX
 	select UDELAY_TSC
+	select CACHE_AS_RAM
+
+if CPU_INTEL_SOCKET_PGA370
 
 # Not all CPUs for Socket 370 can do SSE2
 config SSE2
 	bool
 	default n
-	depends on CPU_INTEL_SOCKET_PGA370
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x01000
+
+endif
 

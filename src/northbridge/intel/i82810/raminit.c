@@ -137,6 +137,11 @@ struct dimm_info {
 SDRAM configuration functions.
 -----------------------------------------------------------------------------*/
 
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
+
 /**
  * Send the specified RAM command to all DIMMs.
  *

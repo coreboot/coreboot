@@ -1,6 +1,6 @@
-
 static void dump_spd_registers(void)
 {
+#if CONFIG_DEBUG_RAM_SETUP
 	int i;
 	print_debug("\n");
 	for(i = 0; i < DIMM_SOCKETS; i++) {
@@ -32,4 +32,5 @@ static void dump_spd_registers(void)
 			print_debug("\n");
 		}
 	}
+#endif
 }

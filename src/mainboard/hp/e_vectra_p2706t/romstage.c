@@ -26,40 +26,30 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 /* TODO: It's a PC87364 actually! */
 #include "superio/nsc/pc87360/pc87360_early_serial.c"
 /* TODO: It's i810E actually! */
 #include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "pc80/udelay_io.c"
 #include "lib/debug.c"
 #include "northbridge/intel/i82810/raminit.c"
+#include <lib.h>
 
 /* TODO: It's a PC87364 actually! */
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	if (bist == 0)
-		early_mtrr_init();
-
 	/* TODO: It's a PC87364 actually! */
 	pc87360_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
 	uart_init();
 	console_init();
-
 	enable_smbus();
-
 	report_bist_failure(bist);
-
 	/* dump_spd_registers(); */
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 }
-

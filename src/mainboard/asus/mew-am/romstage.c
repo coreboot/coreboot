@@ -26,31 +26,21 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
+#include "northbridge/intel/i82810/raminit.c"
+/* #include "northbridge/intel/i82810/debug.c" */
+#include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+void main(unsigned long bist)
 {
-	return smbus_read_byte(device, address);
-}
-
-#include "northbridge/intel/i82810/raminit.c"
-/* #include "northbridge/intel/i82810/debug.c" */
-
-static void main(unsigned long bist)
-{
-	if (bist == 0)
-		early_mtrr_init();
-
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
@@ -60,6 +50,4 @@ static void main(unsigned long bist)
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
-	/* ram_check(0, 640 * 1024); */
 }
-

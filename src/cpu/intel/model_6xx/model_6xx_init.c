@@ -93,9 +93,6 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0665 }, /* Celeron, B0 */
 	{ X86_VENDOR_INTEL, 0x066a }, /* PII, mdxA0/dmmA0 + others */
 
-	{ X86_VENDOR_INTEL, 0x0672 }, /* PIII, kB0 */
-	{ X86_VENDOR_INTEL, 0x0673 }, /* PIII, kC0 */
-
 	{ X86_VENDOR_INTEL, 0x0680 },
 	{ X86_VENDOR_INTEL, 0x0681 }, /* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
 	{ X86_VENDOR_INTEL, 0x0683 }, /* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/

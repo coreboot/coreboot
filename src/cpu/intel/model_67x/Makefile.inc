@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2010 Keith Hui <buurin@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,16 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ramstage-y += slot_1.c
-subdirs-y += ../model_6xx
-subdirs-y += ../model_67x
-subdirs-y += ../model_6bx
-subdirs-y += ../../x86/tsc
-subdirs-y += ../../x86/mtrr
-subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
-subdirs-y += ../../x86/smm
-subdirs-y += ../microcode
-
-cpu_incs += $(src)/cpu/intel/car/cache_as_ram.inc
+driver-y += model_67x_init.c
 

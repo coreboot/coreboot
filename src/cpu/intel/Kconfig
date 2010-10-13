@@ -1,5 +1,6 @@
 # CPU models
 source src/cpu/intel/model_6xx/Kconfig
+source src/cpu/intel/model_67x/Kconfig
 source src/cpu/intel/model_68x/Kconfig
 source src/cpu/intel/model_69x/Kconfig
 source src/cpu/intel/model_6bx/Kconfig

@@ -34,7 +34,6 @@ static void io_apic_write(u32 ioapic_base, u32 reg, u32 value)
 	write32(ioapic_base + 0x10, value);
 }
 
-
 void clear_ioapic(u32 ioapic_base)
 {
 	u32 low, high;
@@ -42,8 +41,8 @@ void clear_ioapic(u32 ioapic_base)
 
 	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base);
 
-	/* Read the available number of interrupts */
-	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
+	/* Read the available number of interrupts. */
+	ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
 	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
 		ioapic_interrupts = 24;
 	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
@@ -55,11 +54,12 @@ void clear_ioapic(u32 ioapic_base)
 		io_apic_write(ioapic_base, i * 2 + 0x10, low);
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
 
-		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", i, high, low);
+		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
+		       i, high, low);
 	}
 
 	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
-		printk(BIOS_WARNING, "IO APIC not responding.\n");
+		printk(BIOS_WARNING, "IOAPIC not responding.\n");
 		return;
 	}
 }
@@ -70,24 +70,24 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	u32 low, high;
 	u32 i, ioapic_interrupts;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n", ioapic_base);
-	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = %02x\n",
-			bsp_lapicid);
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
+	       ioapic_base);
+	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
+	       bsp_lapicid);
 
 	if (ioapic_id) {
 		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
-		/* Set IOAPIC ID if it has been specified */
+		/* Set IOAPIC ID if it has been specified. */
 		io_apic_write(ioapic_base, 0x00,
 			(io_apic_read(ioapic_base, 0x00) & 0xfff0ffff) |
-				(ioapic_id << 24));
+			(ioapic_id << 24));
 	}
 
-	/* Read the available number of interrupts */
-	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
+	/* Read the available number of interrupts. */
+	ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
 	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
 		ioapic_interrupts = 24;
 	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
-
 
 // XXX this decision should probably be made elsewhere, and
 // it's the C3, not the EPIA this depends on.
@@ -98,18 +98,20 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 #endif
 
 #ifdef IOAPIC_INTERRUPTS_ON_FSB
-	/* For the Pentium 4 and above APICs deliver their interrupts
+	/*
+	 * For the Pentium 4 and above APICs deliver their interrupts
 	 * on the front side bus, enable that.
 	 */
 	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n");
-	io_apic_write(ioapic_base, 0x03, io_apic_read(ioapic_base, 0x03) | (1 << 0));
+	io_apic_write(ioapic_base, 0x03,
+		      io_apic_read(ioapic_base, 0x03) | (1 << 0));
 #endif
 #ifdef IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n");
 	io_apic_write(ioapic_base, 0x03, 0);
 #endif
 
-	/* Enable Virtual Wire Mode */
+	/* Enable Virtual Wire Mode. */
 	low = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 	high = bsp_lapicid << (56 - 32);
 
@@ -117,11 +119,12 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	io_apic_write(ioapic_base, 0x11, high);
 
 	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
-		printk(BIOS_WARNING, "IO APIC not responding.\n");
+		printk(BIOS_WARNING, "IOAPIC not responding.\n");
 		return;
 	}
 
-	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", 0, high, low);
+	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
+	       0, high, low);
 
 	low = DISABLED;
 	high = NONE;
@@ -130,6 +133,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 		io_apic_write(ioapic_base, i * 2 + 0x10, low);
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
 
-		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", i, high, low);
+		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
+		       i, high, low);
 	}
 }

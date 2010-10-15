@@ -20,11 +20,6 @@
 config CPU_INTEL_SLOT_2
 	bool
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xc0000
-	depends on CPU_INTEL_SLOT_2
-
 config DCACHE_RAM_SIZE
 	hex
 	default 0x01000

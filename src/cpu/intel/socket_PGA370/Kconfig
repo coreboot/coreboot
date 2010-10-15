@@ -30,10 +30,6 @@ config SSE2
 	bool
 	default n
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xc0000
-
 config DCACHE_RAM_SIZE
 	hex
 	default 0x01000

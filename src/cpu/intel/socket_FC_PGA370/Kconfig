@@ -26,11 +26,6 @@ config CPU_INTEL_SOCKET_FC_PGA370
 	select CACHE_AS_RAM
 	select TINY_BOOTBLOCK
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xffdf8000
-	depends on CPU_INTEL_SOCKET_FC_PGA370
-
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000

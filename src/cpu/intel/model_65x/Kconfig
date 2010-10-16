@@ -1,0 +1,3 @@
+config CPU_INTEL_MODEL_65X
+	bool
+	select SMP

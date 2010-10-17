@@ -18,10 +18,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-MICROCODE_VERSION=20100209
+MICROCODE_VERSION=20100914
 MICROCODE_ARCHIVE=microcode-$MICROCODE_VERSION.tgz
 MICROCODE_FILE=microcode-$MICROCODE_VERSION.dat
-INTEL_MICROCODE=http://downloadmirror.intel.com/18683/eng/$MICROCODE_ARCHIVE
+INTEL_MICROCODE=http://downloadmirror.intel.com/19342/eng/$MICROCODE_ARCHIVE
 
 #
 # Getting Intel(R) Microcode
@@ -39,7 +39,7 @@ get_microcode() {
 
 separate_microcode() {
     printf "Separating microcode...\n"
-    csplit -s -n4 -k microcode-20100209.dat '/^\/\*.*\.inc.*\*\//' '{500}' 2> /dev/null
+    csplit -s -n4 -k $MICROCODE_FILE '/^\/\*.*\.inc.*\*\//' '{500}' 2> /dev/null
     mv xx0000 header.inc
     perl -pi -e 's,\ \ \ \ \ \ \ ,\	,' header.inc
     perl -pi -e 's,^,/,g' header.inc

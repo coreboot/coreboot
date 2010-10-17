@@ -200,15 +200,23 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
 	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 
 	if (in_out) {
+		u32 dword, sblk;
+
+		/* Get SBLink value (HyperTransport I/O Hub Link ID). */
+		dword = pci_read_config32(k8_f0, 0x64);
+		sblk = (dword >> 8) & 0x3;
+
+		/* Fill MMIO limit/base pair. */
 		pci_write_config32(k8_f1, 0xbc,
 				   (((pcie_base_add + 0x10000000 -
-				     1) >> 8) & 0xffffff00) | 0x80);
+				     1) >> 8) & 0xffffff00) | 0x80 | (sblk << 4));
 		pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
 		pci_write_config32(k8_f1, 0xb4,
-				   ((mmio_base_add + 0x10000000 -
-				     1) >> 8) & 0xffffff00);
+				   (((mmio_base_add + 0x10000000 -
+				     1) >> 8) & 0xffffff00) | (sblk << 4));
 		pci_write_config32(k8_f1, 0xb0, (mmio_base_add >> 8) | 0x3);
 	} else {
 		pci_write_config32(k8_f1, 0xb8, 0);

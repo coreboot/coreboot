@@ -30,12 +30,12 @@
 #include <string.h>
 
 /**
- * @brief See if a device structure exists for path
+ * See if a device structure exists for path.
  *
- * @param bus The bus to find the device on
- * @param path The relative path from the bus to the appropriate device
- * @return pointer to a device structure for the device on bus at path
- *         or 0/NULL if no device is found
+ * @param parent The bus to find the device on.
+ * @param path The relative path from the bus to the appropriate device.
+ * @return Pointer to a device structure for the device on bus at path
+ *         or 0/NULL if no device is found.
  */
 device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
@@ -49,11 +49,11 @@ device_t find_dev_path(struct bus *parent, struct device_path *path)
 }
 
 /**
- * @brief See if a device structure already exists and if not allocate it
+ * See if a device structure already exists and if not allocate it.
  *
- * @param bus The bus to find the device on
- * @param path The relative path from the bus to the appropriate device
- * @return pointer to a device structure for the device on bus at path
+ * @param parent The bus to find the device on.
+ * @param path The relative path from the bus to the appropriate device.
+ * @return Pointer to a device structure for the device on bus at path.
  */
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
@@ -66,11 +66,11 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 }
 
 /**
- * @brief Given a PCI bus and a devfn number, find the device structure
+ * Given a PCI bus and a devfn number, find the device structure.
  *
- * @param bus The bus number
- * @param devfn a device/function number
- * @return pointer to the device structure
+ * @param bus The bus number.
+ * @param devfn A device/function number.
+ * @return Pointer to the device structure (if found), 0 otherwise.
  */
 struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 {
@@ -89,11 +89,11 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 }
 
 /**
- * @brief Given a smbus bus and a device number, find the device structure
+ * Given an SMBus bus and a device number, find the device structure.
  *
- * @param bus The bus number
- * @param addr a device number
- * @return pointer to the device structure
+ * @param bus The bus number.
+ * @param addr A device number.
+ * @return Pointer to the device structure (if found), 0 otherwise.
  */
 struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 {
@@ -111,15 +111,18 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
         return result;
 }
 
-/** Find a device of a given vendor and type
- * @param vendor Vendor ID (e.g. 0x8086 for Intel)
- * @param device Device ID
+/**
+ * Find a device of a given vendor and type.
+ *
+ * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
+ * @param device A PCI device ID.
  * @param from Pointer to the device structure, used as a starting point
  *        in the linked list of all_devices, which can be 0 to start at the
- *        head of the list (i.e. all_devices)
- * @return Pointer to the device struct
+ *        head of the list (i.e. all_devices).
+ * @return Pointer to the device struct.
  */
-struct device *dev_find_device(unsigned int vendor, unsigned int device, struct device *from)
+struct device *dev_find_device(unsigned int vendor, unsigned int device,
+			       struct device *from)
 {
 	if (!from)
 		from = all_devices;
@@ -131,12 +134,14 @@ struct device *dev_find_device(unsigned int vendor, unsigned int device, struct 
 	return from;
 }
 
-/** Find a device of a given class
- * @param class Class of the device
+/**
+ * Find a device of a given class.
+ *
+ * @param class Class of the device.
  * @param from Pointer to the device structure, used as a starting point
  *        in the linked list of all_devices, which can be 0 to start at the
- *        head of the list (i.e. all_devices)
- * @return Pointer to the device struct
+ *        head of the list (i.e. all_devices).
+ * @return Pointer to the device struct.
  */
 struct device *dev_find_class(unsigned int class, struct device *from)
 {
@@ -149,12 +154,14 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 	return from;
 }
 
-/* Warning: This function uses a static buffer.  Don't call it more than once
- * from the same print statement! */
-
+/*
+ * Warning: This function uses a static buffer. Don't call it more than once
+ * from the same print statement!
+ */
 const char *dev_path(device_t dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
+
 	buffer[0] = '\0';
 	if (!dev) {
 		memcpy(buffer, "<null>", 7);
@@ -262,6 +269,8 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 
 /**
  * Allocate 64 more resources to the free list.
+ *
+ * @return TODO.
  */
 static int allocate_more_resources(void)
 {
@@ -283,8 +292,14 @@ static int allocate_more_resources(void)
 
 /**
  * Remove resource res from the device's list and add it to the free list.
+ *
+ * @param dev TODO
+ * @param res TODO
+ * @param prev TODO
+ * @return TODO.
  */
-static void free_resource(device_t dev, struct resource *res, struct resource *prev)
+static void free_resource(device_t dev, struct resource *res,
+			  struct resource *prev)
 {
 	if (prev)
 		prev->next = res->next;
@@ -297,7 +312,8 @@ static void free_resource(device_t dev, struct resource *res, struct resource *p
 /**
  * See if we have unused but allocated resource structures.
  * If so remove the allocation.
- * @param dev The device to find the resource on
+ *
+ * @param dev The device to find the resource on.
  */
 void compact_resources(device_t dev)
 {
@@ -312,16 +328,17 @@ void compact_resources(device_t dev)
 	}
 }
 
-
 /**
- * See if a resource structure already exists for a given index
- * @param dev The device to find the resource on
- * @param index  The index of the resource on the device.
- * @return the resource if it already exists
+ * See if a resource structure already exists for a given index.
+ *
+ * @param dev The device to find the resource on.
+ * @param index The index of the resource on the device.
+ * @return The resource, if it already exists.
  */
 struct resource *probe_resource(device_t dev, unsigned index)
 {
 	struct resource *res;
+
 	/* See if there is a resource with the appropriate index */
 	for (res = dev->resource_list; res; res = res->next) {
 		if (res->index == index)
@@ -331,11 +348,14 @@ struct resource *probe_resource(device_t dev, unsigned index)
 }
 
 /**
- * See if a resource structure already exists for a given index and if
- * not allocate one.  Then initialize the initialize the resource
- * to default values.
- * @param dev The device to find the resource on
- * @param index  The index of the resource on the device.
+ * See if a resource structure already exists for a given index and if not
+ * allocate one.
+ *
+ * Then initialize the initialize the resource to default values.
+ *
+ * @param dev The device to find the resource on.
+ * @param index The index of the resource on the device.
+ * @return TODO.
  */
 struct resource *new_resource(device_t dev, unsigned index)
 {
@@ -378,8 +398,10 @@ struct resource *new_resource(device_t dev, unsigned index)
 
 /**
  * Return an existing resource structure for a given index.
- * @param dev The device to find the resource on
- * @param index  The index of the resource on the device.
+ *
+ * @param dev The device to find the resource on.
+ * @param index The index of the resource on the device.
+ * return TODO.
  */
 struct resource *find_resource(device_t dev, unsigned index)
 {
@@ -397,10 +419,11 @@ struct resource *find_resource(device_t dev, unsigned index)
 
 
 /**
- * @brief round a number up to the next multiple of gran
- * @param val the starting value
- * @param gran granularity we are aligning the number to.
- * @returns aligned value
+ * Round a number up to the next multiple of gran.
+ *
+ * @param val The starting value.
+ * @param gran Granularity we are aligning the number to.
+ * @return The aligned value.
  */
 static resource_t align_up(resource_t val, unsigned long gran)
 {
@@ -412,10 +435,11 @@ static resource_t align_up(resource_t val, unsigned long gran)
 }
 
 /**
- * @brief round a number up to the previous multiple of gran
- * @param val the starting value
- * @param gran granularity we are aligning the number to.
- * @returns aligned value
+ * Round a number up to the previous multiple of gran.
+ *
+ * @param val The starting value.
+ * @param gran Granularity we are aligning the number to.
+ * @return The aligned value.
  */
 static resource_t align_down(resource_t val, unsigned long gran)
 {
@@ -426,9 +450,10 @@ static resource_t align_down(resource_t val, unsigned long gran)
 }
 
 /**
- * @brief Compute the maximum address that is part of a resource
- * @param resource the resource whose limit is desired
- * @returns the end
+ * Compute the maximum address that is part of a resource.
+ *
+ * @param resource The resource whose limit is desired.
+ * @return The end.
  */
 resource_t resource_end(struct resource *resource)
 {
@@ -449,9 +474,10 @@ resource_t resource_end(struct resource *resource)
 }
 
 /**
- * @brief Compute the maximum legal value for resource->base
- * @param resource the resource whose maximum is desired
- * @returns the maximum
+ * Compute the maximum legal value for resource->base.
+ *
+ * @param resource The resource whose maximum is desired.
+ * @return The maximum.
  */
 resource_t resource_max(struct resource *resource)
 {
@@ -463,8 +489,10 @@ resource_t resource_max(struct resource *resource)
 }
 
 /**
- * @brief return the resource type of a resource
- * @param resource the resource type to decode.
+ * Return the resource type of a resource.
+ *
+ * @param resource The resource type to decode.
+ * @return TODO.
  */
 const char *resource_type(struct resource *resource)
 {
@@ -482,11 +510,14 @@ const char *resource_type(struct resource *resource)
 }
 
 /**
- * @brief print the resource that was just stored.
- * @param dev the device the stored resorce lives on
- * @param resource the resource that was just stored.
+ * Print the resource that was just stored.
+ *
+ * @param dev The device the stored resorce lives on.
+ * @param resource The resource that was just stored.
+ * @param comment TODO
  */
-void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
+void report_resource_stored(device_t dev, struct resource *resource,
+			    const char *comment)
 {
 	if (resource->flags & IORESOURCE_STORED) {
 		char buf[10];

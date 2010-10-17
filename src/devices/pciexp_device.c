@@ -24,7 +24,6 @@
 #include <device/pci_ids.h>
 #include <device/pciexp.h>
 
-
 static void pciexp_tune_dev(device_t dev)
 {
 	unsigned cap;
@@ -62,7 +61,6 @@ unsigned int pciexp_scan_bus(struct bus *bus,
 	}
 	return max;
 }
-
 
 unsigned int pciexp_scan_bridge(device_t dev, unsigned int max)
 {

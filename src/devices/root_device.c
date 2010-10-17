@@ -28,9 +28,10 @@
 #include <reset.h>
 
 /**
- * Read the resources for the root device,
- * that encompass the resources for the entire system.
- * @param root Pointer to the device structure for the system root device
+ * Read the resources for the root device, that encompass the resources for
+ * the entire system.
+ *
+ * @param root Pointer to the device structure for the system root device.
  */
 static void root_dev_read_resources(device_t root)
 {
@@ -38,11 +39,12 @@ static void root_dev_read_resources(device_t root)
 }
 
 /**
- * @brief Write the resources for every device
+ * Write the resources for every device.
  *
- * Write the resources for the root device,
- * and every device under it which are all of the devices.
- * @param root Pointer to the device structure for the system root device
+ * Write the resources for the root device, and every device under it which
+ * are all of the devices.
+ *
+ * @param root Pointer to the device structure for the system root device.
  */
 static void root_dev_set_resources(device_t root)
 {
@@ -50,7 +52,7 @@ static void root_dev_set_resources(device_t root)
 }
 
 /**
- * @brief Scan devices on static buses.
+ * Scan devices on static buses.
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
@@ -67,8 +69,8 @@ static void root_dev_set_resources(device_t root)
  * This function is the default scan_bus() method for the root device and
  * LPC bridges.
  *
- * @param bus Pointer to the device structure which the static buses are attached
- * @param max  Maximum bus number currently used before scanning.
+ * @param bus Pointer to the device to which the static buses are attached to.
+ * @param max Maximum bus number currently used before scanning.
  * @return Largest bus number used.
  */
 static int smbus_max = 0;
@@ -120,12 +122,13 @@ static void root_dev_enable_resources(device_t dev)
 }
 
 /**
- * @brief Scan root bus for generic systems
- *
- * @param root The root device structure
- * @param max The current bus number scanned so far, usually 0x00
+ * Scan root bus for generic systems.
  *
  * This function is the default scan_bus() method of the root device.
+ *
+ * @param root The root device structure.
+ * @param max The current bus number scanned so far, usually 0x00.
+ * @return TODO.
  */
 static unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
@@ -143,10 +146,10 @@ static void root_dev_reset(struct bus *bus)
 }
 
 /**
- * @brief Default device operation for root device
+ * Default device operation for root device.
  *
  * This is the default device operation for root devices. These operations
- * should be fully usable as is.  However the chip_operations::enable_dev()
+ * should be fully usable as is. However the chip_operations::enable_dev()
  * of a motherboard can override this if you want non-default behavior.
  */
 struct device_operations default_dev_ops_root = {

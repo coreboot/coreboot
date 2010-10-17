@@ -106,8 +106,9 @@ u32 pci_moving_config32(struct device * dev, unsigned int reg)
  * matching capability. Always start at the head of the list.
  *
  * @param dev Pointer to the device structure.
- * @param cap_type PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ * @param cap PCI_CAP_LIST_ID of the PCI capability we're looking for.
  * @param last Location of the PCI capability register to start from.
+ * @return The next matching capability.
  */
 unsigned pci_find_next_capability(struct device *dev, unsigned cap,
 				  unsigned last)
@@ -157,7 +158,8 @@ unsigned pci_find_next_capability(struct device *dev, unsigned cap,
  * capability. Always start at the head of the list.
  *
  * @param dev Pointer to the device structure.
- * @param cap_type PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ * @param cap PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ * @return The next matching capability.
  */
 unsigned pci_find_capability(device_t dev, unsigned cap)
 {
@@ -169,6 +171,7 @@ unsigned pci_find_capability(device_t dev, unsigned cap)
  *
  * @param dev Pointer to the device structure.
  * @param index Address of the PCI configuration register.
+ * @return TODO
  */
 struct resource *pci_get_resource(struct device *dev, unsigned long index)
 {
@@ -373,11 +376,11 @@ static void pci_bridge_read_bases(struct device *dev)
 	/* See if the bridge I/O resources are implemented. */
 	moving_base = ((u32) pci_moving_config8(dev, PCI_IO_BASE)) << 8;
 	moving_base |=
-	    ((u32) pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
+	  ((u32) pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
 
 	moving_limit = ((u32) pci_moving_config8(dev, PCI_IO_LIMIT)) << 8;
 	moving_limit |=
-	    ((u32) pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
+	  ((u32) pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
 
 	moving = moving_base & moving_limit;
 
@@ -386,17 +389,14 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* See if the bridge prefmem resources are implemented. */
 	moving_base =
-	    ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_BASE)) << 16;
+	  ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_BASE)) << 16;
 	moving_base |=
-	    ((resource_t) pci_moving_config32(dev, PCI_PREF_BASE_UPPER32)) <<
-	    32;
+	  ((resource_t) pci_moving_config32(dev, PCI_PREF_BASE_UPPER32)) << 32;
 
 	moving_limit =
-	    ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_LIMIT)) <<
-	    16;
+	  ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_LIMIT)) << 16;
 	moving_limit |=
-	    ((resource_t) pci_moving_config32(dev, PCI_PREF_LIMIT_UPPER32)) <<
-	    32;
+	  ((resource_t) pci_moving_config32(dev, PCI_PREF_LIMIT_UPPER32)) << 32;
 
 	moving = moving_base & moving_limit;
 	/* Initialize the prefetchable memory constraints on the current bus. */
@@ -704,7 +704,7 @@ struct device_operations default_pci_ops_bus = {
 };
 
 /**
- * @brief Detect the type of downstream bridge
+ * Detect the type of downstream bridge.
  *
  * This function is a heuristic to detect which type of bus is downstream
  * of a PCI-to-PCI bridge. This functions by looking for various capability
@@ -768,8 +768,10 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 }
 
 /**
- * Set up PCI device operation.  Check if it already has a driver.  If not, use
- * find_device_operations, or set to a default based on type.
+ * Set up PCI device operation.
+ *
+ * Check if it already has a driver. If not, use find_device_operations(),
+ * or set to a default based on type.
  *
  * @param dev Pointer to the device whose pci_ops you want to set.
  * @see pci_drivers
@@ -827,7 +829,7 @@ static void set_pci_ops(struct device *dev)
 }
 
 /**
- * @brief See if we have already allocated a device structure for a given devfn.
+ * See if we have already allocated a device structure for a given devfn.
  *
  * Given a linked list of PCI device structures and a devfn number, find the
  * device structure correspond to the devfn, if present. This function also
@@ -835,7 +837,6 @@ static void set_pci_ops(struct device *dev)
  *
  * @param list The device structure list.
  * @param devfn A device/function number.
- *
  * @return Pointer to the device structure found or NULL if we have not
  *	   allocated a device for this devfn yet.
  */
@@ -881,18 +882,17 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 }
 
 /**
- * @brief Scan a PCI bus.
+ * Scan a PCI bus.
  *
  * Determine the existence of a given PCI device. Allocate a new struct device
  * if dev==NULL was passed in and the device exists in hardware.
  *
- * @param bus pointer to the bus structure
- * @param devfn to look at
- *
- * @return The device structure for hte device (if found)
- *         or the NULL if no device is found.
+ * @param dev Pointer to the dev structure.
+ * @param bus Pointer to the bus structure.
+ * @param devfn A device/function number to look at.
+ * @return The device structure for the device (if found), NULL otherwise.
  */
-device_t pci_probe_dev(device_t dev, struct bus * bus, unsigned devfn)
+device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 {
 	u32 id, class;
 	u8 hdr_type;
@@ -989,7 +989,7 @@ device_t pci_probe_dev(device_t dev, struct bus * bus, unsigned devfn)
 }
 
 /**
- * @brief Scan a PCI bus.
+ * Scan a PCI bus.
  *
  * Determine the existence of devices and bridges on a PCI bus. If there are
  * bridges on the bus, recursively scan the buses behind the bridges.
@@ -997,12 +997,11 @@ device_t pci_probe_dev(device_t dev, struct bus * bus, unsigned devfn)
  * This function is the default scan_bus() method for the root device
  * 'dev_root'.
  *
- * @param bus pointer to the bus structure
- * @param min_devfn minimum devfn to look at in the scan usually 0x00
- * @param max_devfn maximum devfn to look at in the scan usually 0xff
- * @param max current bus number
- *
- * @return The maximum bus number found, after scanning all subordinate busses
+ * @param bus Pointer to the bus structure.
+ * @param min_devfn Minimum devfn to look at in the scan, usually 0x00.
+ * @param max_devfn Maximum devfn to look at in the scan, usually 0xff.
+ * @param max Current bus number.
+ * @return The maximum bus number found, after scanning all subordinate busses.
  */
 unsigned int pci_scan_bus(struct bus *bus,
 			  unsigned min_devfn, unsigned max_devfn,
@@ -1084,7 +1083,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 }
 
 /**
- * @brief Scan a PCI bridge and the buses behind the bridge.
+ * Scan a PCI bridge and the buses behind the bridge.
  *
  * Determine the existence of buses behind the bridge. Set up the bridge
  * according to the result of the scan.
@@ -1093,6 +1092,7 @@ unsigned int pci_scan_bus(struct bus *bus,
  *
  * @param dev Pointer to the bridge device.
  * @param max The highest bus number assigned up to now.
+ * @param do_scan_bus TODO
  * @return The maximum bus number found, after scanning all subordinate buses.
  */
 unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
@@ -1164,7 +1164,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 }
 
 /**
- * @brief Scan a PCI bridge and the buses behind the bridge.
+ * Scan a PCI bridge and the buses behind the bridge.
  *
  * Determine the existence of buses behind the bridge. Set up the bridge
  * according to the result of the scan.
@@ -1181,14 +1181,13 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 }
 
 /**
- * @brief Scan a PCI domain.
+ * Scan a PCI domain.
  *
  * This function is the default scan_bus() method for PCI domains.
  *
- * @param dev pointer to the domain
- * @param max the highest bus number assgined up to now
- *
- * @return The maximum bus number found, after scanning all subordinate busses
+ * @param dev Pointer to the domain.
+ * @param max The highest bus number assigned up to now.
+ * @return The maximum bus number found, after scanning all subordinate busses.
  */
 unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
@@ -1198,8 +1197,7 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 
 #if CONFIG_PC80_SYSTEM == 1
 /**
- *
- * @brief Assign IRQ numbers
+ * Assign IRQ numbers.
  *
  * This function assigns IRQs for all functions contained within the indicated
  * device address.  If the device does not exist or does not require interrupts
@@ -1207,12 +1205,11 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
  *
  * This function should be called for each PCI slot in your system.
  *
- * @param bus
- * @param slot
- * @param pIntAtoD is an array of IRQ #s that are assigned to PINTA through
- *        PINTD of this slot.  The particular irq #s that are passed in
- *        depend on the routing inside your southbridge and on your
- *        motherboard.
+ * @param bus Pointer to the bus structure.
+ * @param slot TODO
+ * @param pIntAtoD An array of IRQ #s that are assigned to PINTA through PINTD
+ *        of this slot. The particular IRQ #s that are passed in depend on the
+ *        routing inside your southbridge and on your board.
  */
 void pci_assign_irqs(unsigned bus, unsigned slot,
 	const unsigned char pIntAtoD[4])

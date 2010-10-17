@@ -46,23 +46,20 @@ extern struct device *last_dev;
 /** Linked list of free resources */
 struct resource *free_resources = NULL;
 
+DECLARE_SPIN_LOCK(dev_lock)
 
 /**
- * @brief Allocate a new device structure.
+ * Allocate a new device structure.
  *
- * Allocte a new device structure and attached it to the device tree as a
+ * Allocte a new device structure and attach it to the device tree as a
  * child of the parent bus.
  *
- * @param parent parent bus the newly created device attached to.
- * @param path path to the device to be created.
- *
- * @return pointer to the newly created device structure.
+ * @param parent Parent bus the newly created device should be attached to.
+ * @param path Path to the device to be created.
+ * @return Pointer to the newly created device structure.
  *
  * @see device_path
  */
-
-DECLARE_SPIN_LOCK(dev_lock)
-
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
 	device_t dev, child;
@@ -103,10 +100,11 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 }
 
 /**
- * @brief round a number up to an alignment.
- * @param val the starting value
- * @param roundup Alignment as a power of two
- * @returns rounded up number
+ * Round a number up to an alignment.
+ *
+ * @param val The starting value.
+ * @param roundup Alignment as a power of two.
+ * @return Rounded up number.
  */
 static resource_t round(resource_t val, unsigned long pow)
 {
@@ -117,15 +115,17 @@ static resource_t round(resource_t val, unsigned long pow)
 	return val;
 }
 
-/** Read the resources on all devices of a given bus.
- * @param bus bus to read the resources on.
+/**
+ * Read the resources on all devices of a given bus.
+ *
+ * @param bus Bus to read the resources on.
  */
 static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s bus %x link: %d\n", dev_path(bus->dev), __func__,
-		    bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s bus %x link: %d\n", dev_path(bus->dev),
+	       __func__, bus->secondary, bus->link_num);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
@@ -205,7 +205,8 @@ static struct device *largest_resource(struct bus *bus,
 	return state.result_dev;
 }
 
-/* Compute allocate resources is the guts of the resource allocator.
+/**
+ * Compute allocate resources is the guts of the resource allocator.
  *
  * The problem.
  *  - Allocate resource locations for every device.
@@ -231,6 +232,11 @@ static struct device *largest_resource(struct bus *bus,
  *   a device with a couple of resources, and not need to special case it in
  *   the allocator. Also this allows handling of other types of bridges.
  *
+ * @param bus The bus we are traversing.
+ * @param bridge The bridge resource which must contain the bus' resources.
+ * @param type_mask This value gets ANDed with the resource type.
+ * @param type This value must match the result of the AND.
+ * @return TODO
  */
 static void compute_resources(struct bus *bus, struct resource *bridge,
 		       unsigned long type_mask, unsigned long type)
@@ -392,8 +398,8 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
  *
  * @param bus The bus we are traversing.
  * @param bridge The bridge resource which must contain the bus' resources.
- * @param type_mask This value gets anded with the resource type.
- * @param type This value must match the result of the and.
+ * @param type_mask This value gets ANDed with the resource type.
+ * @param type This value must match the result of the AND.
  */
 static void allocate_resources(struct bus *bus, struct resource *bridge,
 			unsigned long type_mask, unsigned long type)
@@ -540,10 +546,11 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 }
 
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
-	#define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
+#define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #else
-	#define MEM_MASK (IORESOURCE_MEM)
+#define MEM_MASK (IORESOURCE_MEM)
 #endif
+
 #define IO_MASK (IORESOURCE_IO)
 #define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #define MEM_TYPE (IORESOURCE_MEM)
@@ -749,9 +756,7 @@ static void set_vga_bridge_bits(void)
 #endif
 
 /**
- * @brief  Assign the computed resources to the devices on the bus.
- *
- * @param bus Pointer to the structure for this bus
+ * Assign the computed resources to the devices on the bus.
  *
  * Use the device specific set_resources method to store the computed
  * resources to hardware. For bridge devices, the set_resources() method
@@ -760,6 +765,8 @@ static void set_vga_bridge_bits(void)
  * Mutual recursion:
  *	assign_resources() -> device_operation::set_resources()
  *	device_operation::set_resources() -> assign_resources()
+ *
+ * @param bus Pointer to the structure for this bus.
  */
 void assign_resources(struct bus *bus)
 {
@@ -784,9 +791,7 @@ void assign_resources(struct bus *bus)
 }
 
 /**
- * @brief Enable the resources for devices on a link
- *
- * @param link the link whose devices' resources are to be enabled
+ * Enable the resources for devices on a link.
  *
  * Enable resources of the device by calling the device specific
  * enable_resources() method.
@@ -795,6 +800,7 @@ void assign_resources(struct bus *bus)
  * order problem. This is done by calling the parent's enable_resources()
  * method before its childrens' enable_resources() methods.
  *
+ * @param link The link whose devices' resources are to be enabled.
  */
 static void enable_resources(struct bus *link)
 {
@@ -815,14 +821,10 @@ static void enable_resources(struct bus *link)
 }
 
 /**
- * @brief Reset all of the devices a bus
- *
  * Reset all of the devices on a bus and clear the bus's reset_needed flag.
  *
- * @param bus pointer to the bus structure
- *
+ * @param bus Pointer to the bus structure.
  * @return 1 if the bus was successfully reset, 0 otherwise.
- *
  */
 int reset_bus(struct bus *bus)
 {
@@ -835,7 +837,7 @@ int reset_bus(struct bus *bus)
 }
 
 /**
- * @brief Scan for devices on a bus.
+ * Scan for devices on a bus.
  *
  * If there are bridges on the bus, recursively scan the buses behind the
  * bridges. If the setting up and tuning of the bus causes a reset to be
@@ -873,7 +875,7 @@ unsigned int scan_bus(struct device *busdev, unsigned int max)
 }
 
 /**
- * @brief Determine the existence of devices and extend the device tree.
+ * Determine the existence of devices and extend the device tree.
  *
  * Most of the devices in the system are listed in the mainboard Config.lb
  * file. The device structures for these devices are generated at compile
@@ -916,7 +918,7 @@ void dev_enumerate(void)
 }
 
 /**
- * @brief Configure devices on the devices tree.
+ * Configure devices on the devices tree.
  *
  * Starting at the root of the device tree, travel it recursively in two
  * passes. In the first pass, we compute and allocate resources (ranges)
@@ -1032,7 +1034,7 @@ void dev_configure(void)
 }
 
 /**
- * @brief Enable devices on the device tree.
+ * Enable devices on the device tree.
  *
  * Starting at the root, walk the tree and enable all devices/bridges by
  * calling the device's enable_resources() method.
@@ -1051,14 +1053,13 @@ void dev_enable(void)
 }
 
 /**
- * @brief Initialize a specific device
- *
- * @param dev the device to be initialized
+ * Initialize a specific device.
  *
  * The parent should be initialized first to avoid having an ordering
  * problem. This is done by calling the parent's init()
  * method before its childrens' init() methods.
  *
+ * @param dev The device to be initialized.
  */
 static void init_dev(struct device *dev)
 {
@@ -1095,10 +1096,10 @@ static void init_link(struct bus *link)
 }
 
 /**
- * @brief Initialize all devices in the global device tree.
+ * Initialize all devices in the global device tree.
  *
- * Starting at the root device, call the device's init() method to do device-
- * specific setup, then call each child's init() method.
+ * Starting at the root device, call the device's init() method to do
+ * device-specific setup, then call each child's init() method.
  */
 void dev_initialize(void)
 {

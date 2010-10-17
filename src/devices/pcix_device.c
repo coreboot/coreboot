@@ -24,7 +24,6 @@
 #include <device/pci_ids.h>
 #include <device/pcix.h>
 
-
 static void pcix_tune_dev(device_t dev)
 {
 	unsigned cap;
@@ -129,7 +128,6 @@ unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
 
 	return max;
 }
-
 
 /** Default device operations for PCI-X bridges */
 static struct pci_operations pcix_bus_ops_pci = {

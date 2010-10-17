@@ -23,10 +23,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/*
-	2005.11 yhlu add let the real sb to use small uintid
-*/
-
 #include <bitops.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -35,8 +31,9 @@
 #include <device/pci_ids.h>
 #include <device/hypertransport.h>
 
-/* The hypertransport link is already optimized in pre-ram code
- * so don't do it again
+/*
+ * The hypertransport link is already optimized in pre-RAM code so don't do
+ * it again.
  */
 #define OPT_HT_LINK 0
 
@@ -261,7 +258,6 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 	}
 
 	return reset_needed;
-
 }
 
 static unsigned ht_lookup_slave_capability(struct device *dev)
@@ -598,17 +594,18 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 }
 
 /**
- * @brief Scan a PCI bridge and the buses behind the bridge.
+ * Scan a PCI bridge and the buses behind the bridge.
  *
  * Determine the existence of buses behind the bridge. Set up the bridge
  * according to the result of the scan.
  *
  * This function is the default scan_bus() method for PCI bridge devices.
  *
- * @param dev pointer to the bridge device
- * @param max the highest bus number assgined up to now
- *
- * @return The maximum bus number found, after scanning all subordinate busses
+ * @param bus TODO
+ * @param min_devfn TODO
+ * @param max_devfn TODO
+ * @param max The highest bus number assgined up to now.
+ * @return The maximum bus number found, after scanning all subordinate busses.
  */
 static unsigned int hypertransport_scan_chain_x(struct bus *bus,
         unsigned min_devfn, unsigned max_devfn, unsigned int max)
@@ -622,7 +619,6 @@ unsigned int ht_scan_bridge(struct device *dev, unsigned int max)
 {
 	return do_pci_scan_bridge(dev, max, hypertransport_scan_chain_x);
 }
-
 
 /** Default device operations for hypertransport bridges */
 static struct pci_operations ht_bus_ops_pci = {

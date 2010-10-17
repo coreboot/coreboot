@@ -38,11 +38,15 @@ struct bus *get_pbus_smbus(device_t dev)
 	return pbus;
 }
 
-/*multi level i2c MUX??? may need to find the first i2c device and then set link
- * down to current dev
-  1 store get_pbus_smbus list link
-  2 reverse the link and call set link */
-
+/*
+ * Multi-level I2C MUX? may need to find the first i2c device and then set link
+ * down to current dev.
+ *
+ * 1 store get_pbus_smbus list link
+ * 2 reverse the link and call set link.
+ *
+ * @param dev TODO.
+ */
 int smbus_set_link(device_t dev)
 {
 	struct bus *pbus_a[4]; // 4 level mux only. Enough?
@@ -110,5 +114,3 @@ int smbus_block_write(device_t dev, uint8_t cmd, uint8_t bytes, const uint8_t *b
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd, bytes, buffer);
 }
-
-

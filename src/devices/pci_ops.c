@@ -25,7 +25,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-/* The only consumer of the return value of get_pbus() is ops_pci_bus().
+/*
+ * The only consumer of the return value of get_pbus() is ops_pci_bus().
  * ops_pci_bus() can handle being passed NULL and auto-picks working ops.
  */
 static struct bus *get_pbus(device_t dev)

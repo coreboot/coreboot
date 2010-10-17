@@ -29,7 +29,7 @@
 #include <string.h>
 #include <cbfs.h>
 
-struct rom_header * pci_rom_probe(struct device *dev)
+struct rom_header *pci_rom_probe(struct device *dev)
 {
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;

@@ -1,6 +1,21 @@
 /*
- * Copyright  2005 AMD
- *  by yinghai.lu@amd.com
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <reset.h>
@@ -9,7 +24,6 @@
 
 static void bcm5785_enable_lpc(void)
 {
-
         uint8_t byte;
         device_t dev;
 
@@ -119,8 +133,6 @@ void soft_reset(void)
 #endif
 }
 
-
-
 static void bcm5785_enable_msg(void)
 {
         device_t dev;
@@ -145,7 +157,6 @@ static void bcm5785_enable_msg(void)
         if(dword != dword_old ) {
                 pci_write_config32(dev, 0x6c, dword);
         }
-
 }
 
 static void bcm5785_early_setup(void)

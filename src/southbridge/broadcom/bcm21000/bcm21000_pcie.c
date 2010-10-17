@@ -1,8 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
-* Copyright (C) 2009 University of Heidelberg
- * Written by Mondrian Nuessle <nuessle@uni-heidelberg.de> for University of Heidelberg
+ * Copyright (C) 2009 University of Heidelberg
+ * Written by Mondrian Nuessle <nuessle@uni-heidelberg.de> for
+ * University of Heidelberg.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -28,7 +28,6 @@
 
 static void pcie_init(struct device *dev)
 {
-
 	/* Enable pci error detecting */
 	uint32_t dword;
 	uint32_t msicap;
@@ -61,7 +60,6 @@ static struct device_operations pcie_ops  = {
 	.ops_pci          = &lops_pci,
 };
 
-
 static const struct pci_driver pcie_driver1 __pci_driver = {
 	.ops    = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
@@ -79,4 +77,3 @@ static const struct pci_driver pcie_driver3 __pci_driver = {
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM21000_EXB2,
 };
-

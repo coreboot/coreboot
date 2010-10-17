@@ -1,6 +1,21 @@
 /*
- * Copyright  2005 AMD
- *  by yinghai.lu@amd.com
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <console/console.h>
@@ -9,10 +24,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-
 static void nic_init(struct device *dev)
 {
-
 #if CONFIG_PCI_ROM_RUN == 1
 	pci_dev_init(dev);// it will init option rom
 #endif
@@ -37,11 +50,13 @@ static struct device_operations nic_ops  = {
 	.scan_bus         = 0,
 	.ops_pci          = &lops_pci,
 };
+
 static const struct pci_driver nic_driver __pci_driver = {
 	.ops    = &nic_ops,
 	.vendor = PCI_VENDOR_ID_BROADCOM,
 	.device = PCI_DEVICE_ID_BROADCOM_BCM5780_NIC,
 };
+
 static const struct pci_driver nic1_driver __pci_driver = {
         .ops    = &nic_ops,
         .vendor = PCI_VENDOR_ID_BROADCOM,

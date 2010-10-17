@@ -1,6 +1,21 @@
 /*
- * Copyright  2005 AMD
- *  by yinghai.lu@amd.com
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <console/console.h>
@@ -89,6 +104,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 
         return do_smbus_send_byte(res->base, device, val);
 }
+
 static int lsmbus_read_byte(device_t dev, uint8_t address)
 {
         unsigned device;
@@ -102,6 +118,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 
         return do_smbus_read_byte(res->base, device, address);
 }
+
 static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 {
         unsigned device;
@@ -115,6 +132,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 
         return do_smbus_write_byte(res->base, device, address, val);
 }
+
 static struct smbus_bus_operations lops_smbus_bus = {
         .recv_byte  = lsmbus_recv_byte,
         .send_byte  = lsmbus_send_byte,
@@ -142,9 +160,9 @@ static struct device_operations sb_ops = {
         .ops_pci          = &lops_pci,
         .ops_smbus_bus    = &lops_smbus_bus,
 };
+
 static const struct pci_driver sb_driver __pci_driver = {
         .ops    = &sb_ops,
         .vendor = PCI_VENDOR_ID_SERVERWORKS,
         .device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_SB_PCI_MAIN,
 };
-

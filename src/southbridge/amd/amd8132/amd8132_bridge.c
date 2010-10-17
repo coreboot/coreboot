@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2005 Advanced Micro Devices, Inc.
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2005,2010 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- */
-
-/*
- * Description: Amd 8132 support by yhlu
  */
 
 #include <console/console.h>

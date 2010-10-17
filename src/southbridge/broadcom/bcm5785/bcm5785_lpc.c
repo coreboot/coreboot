@@ -1,6 +1,21 @@
 /*
- * Copyright  2005 AMD
- *  by yinghai.lu@amd.com
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <console/console.h>
@@ -18,13 +33,11 @@
 
 static void lpc_init(device_t dev)
 {
-
 	/* Initialize the real time clock */
 	rtc_init(0);
 
 	/* Initialize isa dma */
 	isa_dma_init();
-
 }
 
 static void bcm5785_lpc_read_resources(device_t dev)
@@ -54,10 +67,9 @@ static void bcm5785_lpc_read_resources(device_t dev)
 }
 
 /**
- * @brief Enable resources for children devices
+ * Enable resources for children devices.
  *
- * @param dev the device whos children's resources are to be enabled
- *
+ * @param dev The device whos children's resources are to be enabled.
  */
 static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 {
@@ -128,9 +140,9 @@ static struct device_operations lpc_ops  = {
 //	.enable           = bcm5785_enable,
 	.ops_pci          = &lops_pci,
 };
+
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops    = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_LPC,
 };
-

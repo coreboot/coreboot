@@ -1,6 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
+ * Written by Morgan Tsai <my_tsai@sis.com> for SiS.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -14,7 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
+ */
+
+/*
  * Turn off machine check triggers when reading
  * pci space where there are no devices.
  * This is necessary when scaning the bus for
@@ -24,9 +29,6 @@
  *
  *  - Athlon64 workarounds by Stefan Reinauer
  *  - "reset once" logic by Yinghai Lu
- * Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
- * Written by Morgan Tsai <my_tsai@sis.com> for SiS.
- *
  */
 
 #include <console/console.h>

@@ -1,7 +1,23 @@
 /*
- * Copyright 2005 AMD
- *  by yinghai.lu@amd.com
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #include <device/smbus_def.h>
 
 #define SMBHSTSTAT 0x0
@@ -90,8 +106,8 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
         byte = inb(smbus_io_base + SMBHSTCMD);
 
 	return byte;
-
 }
+
 static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned char val)
 {
         uint8_t byte;
@@ -117,9 +133,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
         }
 
         return 0;
-
 }
-
 
 static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
 {
@@ -150,6 +164,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 
 	return byte;
 }
+
 static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned address, unsigned char val)
 {
         uint8_t byte;
@@ -178,7 +193,4 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
         }
 
         return 0;
-
 }
-
-

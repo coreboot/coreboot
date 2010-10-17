@@ -1,4 +1,6 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2007 Juergen Beisert <juergen@kreuzholzen.de>
  *
  * This program is free software; you can redistribute it and/or modify

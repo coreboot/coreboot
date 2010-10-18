@@ -33,6 +33,16 @@
 #include <cpu/x86/name.h>
 
 static const uint32_t microcode_updates[] = {
+	#include "microcode-2618-m441067AA07.h"
+	#include "microcode-2626-m1010677705.h"
+	#include "microcode-2498-m101067660C.h"
+	#include "microcode-2497-m041067660C.h"
+	#include "microcode-2499-m401067660C.h"
+	#include "microcode-2617-m111067AA07.h"
+	#include "microcode-2619-mA01067AA07.h"
+	#include "microcode-2623-m011067660C.h"
+	#include "microcode-2501-m801067660C.h"
+
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -223,6 +233,8 @@ static struct device_operations cpu_dev_ops = {
 
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x10676 }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x10677 },
+	{ X86_VENDOR_INTEL, 0x1067A },
 	{ 0, 0 },
 };
 

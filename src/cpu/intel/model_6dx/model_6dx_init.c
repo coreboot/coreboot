@@ -10,6 +10,8 @@
 #include <cpu/x86/cache.h>
 
 static uint32_t microcode_updates[] = {
+	#include "microcode-1355-m206d618.h"
+
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

@@ -11,10 +11,11 @@
 
 /* 256KB cache */
 static uint32_t microcode_updates[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
+	#include "microcode-678-2f0708.h"
+	#include "microcode-965-m01f0a13.h"
+	#include "microcode-983-m02f0a15.h"
+	#include "microcode-964-m01f0712.h"
+	#include "microcode-966-m04f0a14.h"
 
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
@@ -42,6 +43,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_INTEL, 0x0f07 },
 	{ X86_VENDOR_INTEL, 0x0f0A },
 	{ 0, 0 },
 };

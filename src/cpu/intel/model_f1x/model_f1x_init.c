@@ -15,6 +15,10 @@ static uint32_t microcode_updates[] = {
 	 * microcode update lengths.  They are encoded in int 8 and 9.  A
 	 * dummy header of nulls must terminate the list.
 	 */
+	#include "microcode-1068-m01f122d.h"
+	#include "microcode-1069-m04f122e.h"
+	#include "microcode-1070-m02f122f.h"
+	#include "microcode-1072-m04f1305.h"
 
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
@@ -43,6 +47,7 @@ static struct device_operations cpu_dev_ops = {
 
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f12 },
+	{ X86_VENDOR_INTEL, 0x0f13 },
 	{ 0, 0 },
 };
 

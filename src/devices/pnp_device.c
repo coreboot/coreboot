@@ -32,13 +32,13 @@
 
 /* PNP fundamental operations */
 
-void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+void pnp_write_config(device_t dev, u8 reg, u8 value)
 {
 	outb(reg, dev->path.pnp.port);
 	outb(value, dev->path.pnp.port + 1);
 }
 
-uint8_t pnp_read_config(device_t dev, uint8_t reg)
+u8 pnp_read_config(device_t dev, u8 reg)
 {
 	outb(reg, dev->path.pnp.port);
 	return inb(dev->path.pnp.port + 1);
@@ -51,45 +51,49 @@ void pnp_set_logical_device(device_t dev)
 
 void pnp_set_enable(device_t dev, int enable)
 {
-	uint8_t tmp, bitpos;
+	u8 tmp, bitpos;
 
 	tmp = pnp_read_config(dev, 0x30);
-	/* handle the virtual devices, which share same LDN register */
+
+	/* Handle virtual devices, which share the same LDN register. */
 	bitpos = (dev->path.pnp.device >> 8) & 0x7;
 
-	if (enable) {
+	if (enable)
 		tmp |= (1 << bitpos);
-	} else {
+	else
 		tmp &= ~(1 << bitpos);
-	}
+
 	pnp_write_config(dev, 0x30, tmp);
 }
 
 int pnp_read_enable(device_t dev)
 {
-	uint8_t tmp, bitpos;
+	u8 tmp, bitpos;
+
 	tmp = pnp_read_config(dev, 0x30);
-	/* handle the virtual devices, which share same LDN register */
+
+	/* Handle virtual devices, which share the same LDN register. */
 	bitpos = (dev->path.pnp.device >> 8) & 0x7;
+
 	return !!(tmp & (1 << bitpos));
 }
 
-void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+void pnp_set_iobase(device_t dev, u8 index, u16 iobase)
 {
-	/* Index == 0x60 or 0x62 */
+	/* Index == 0x60 or 0x62. */
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+void pnp_set_irq(device_t dev, u8 index, u8 irq)
 {
-	/* Index == 0x70 or 0x72 */
+	/* Index == 0x70 or 0x72. */
 	pnp_write_config(dev, index, irq);
 }
 
-void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+void pnp_set_drq(device_t dev, u8 index, u8 drq)
 {
-	/* Index == 0x74 */
+	/* Index == 0x74. */
 	pnp_write_config(dev, index, drq & 0xff);
 }
 
@@ -103,26 +107,22 @@ void pnp_read_resources(device_t dev)
 static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
-			dev_path(dev), resource->index,
-			resource_type(resource),
-			resource->size);
+		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx "
+		       "not assigned\n", dev_path(dev), resource->index,
+		       resource_type(resource), resource->size);
 		return;
 	}
 
-	/* Now store the resource */
+	/* Now store the resource. */
 	if (resource->flags & IORESOURCE_IO) {
 		pnp_set_iobase(dev, resource->index, resource->base);
-	}
-	else if (resource->flags & IORESOURCE_DRQ) {
+	} else if (resource->flags & IORESOURCE_DRQ) {
 		pnp_set_drq(dev, resource->index, resource->base);
-	}
-	else if (resource->flags  & IORESOURCE_IRQ) {
+	} else if (resource->flags & IORESOURCE_IRQ) {
 		pnp_set_irq(dev, resource->index, resource->base);
-	}
-	else {
+	} else {
 		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
-			dev_path(dev), resource->index);
+		       dev_path(dev), resource->index);
 		return;
 	}
 	resource->flags |= IORESOURCE_STORED;
@@ -134,13 +134,12 @@ void pnp_set_resources(device_t dev)
 {
 	struct resource *res;
 
-	/* Select the device */
+	/* Select the logical device (LDN). */
 	pnp_set_logical_device(dev);
 
 	/* Paranoia says I should disable the device here... */
-	for(res = dev->resource_list; res; res = res->next) {
+	for (res = dev->resource_list; res; res = res->next)
 		pnp_set_resource(dev, res);
-	}
 }
 
 void pnp_enable_resources(device_t dev)
@@ -166,39 +165,45 @@ struct device_operations pnp_ops = {
 
 /* PNP chip opertations */
 
-static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *info)
+static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
 {
 	struct resource *resource;
 	unsigned moving, gran, step;
 
 	resource = new_resource(dev, index);
 
-	/* Initilize the resource */
+	/* Initilize the resource. */
 	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
 
-	/* Get the resource size */
+	/* Get the resource size... */
+
 	moving = info->mask;
 	gran = 15;
 	step = 1 << gran;
-	/* Find the first bit that moves */
-	while((moving & step) == 0) {
+
+	/* Find the first bit that moves. */
+	while ((moving & step) == 0) {
 		gran--;
 		step >>= 1;
 	}
-	/* Now find the first bit that does not move */
-	while((moving & step) != 0) {
+
+	/* Now find the first bit that does not move. */
+	while ((moving & step) != 0) {
 		gran--;
 		step >>= 1;
 	}
-	/* Of the moving bits the last bit in the first group,
+
+	/*
+	 * Of the moving bits the last bit in the first group,
 	 * tells us the size of this resource.
 	 */
 	if ((moving & step) == 0) {
 		gran++;
 		step <<= 1;
 	}
-	/* Set the resource size and alignment */
+
+	/* Set the resource size and alignment. */
 	resource->gran  = gran;
 	resource->align = gran;
 	resource->limit = info->mask | (step - 1);
@@ -241,8 +246,10 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
 	}
-	/* These are not IRQs, but set the flag to have the
-	 * resource allocator do the right thing
+
+	/*
+	 * These are not IRQs, but set the flag to have the
+	 * resource allocator do the right thing.
 	 */
 	if (info->flags & PNP_EN) {
 		resource = new_resource(dev, PNP_IDX_EN);
@@ -262,17 +269,17 @@ static void get_resources(device_t dev, struct pnp_info *info)
 }
 
 void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
-	unsigned functions, struct pnp_info *info)
+			unsigned int functions, struct pnp_info *info)
 {
 	struct device_path path;
 	device_t dev;
 	int i;
 
-	path.type       = DEVICE_PATH_PNP;
+	path.type = DEVICE_PATH_PNP;
 	path.pnp.port = base_dev->path.pnp.port;
 
-	/* Setup the ops and resources on the newly allocated devices */
-	for(i = 0; i < functions; i++) {
+	/* Setup the ops and resources on the newly allocated devices. */
+	for (i = 0; i < functions; i++) {
 		/* Skip logical devices this Super I/O doesn't have. */
 		if (info[i].function == -1)
 			continue;
@@ -280,15 +287,15 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 		path.pnp.device = info[i].function;
 		dev = alloc_find_dev(base_dev->bus, &path);
 
-		/* Don't initialize a device multiple times */
+		/* Don't initialize a device multiple times. */
 		if (dev->ops)
 			continue;
 
-		if (info[i].ops == 0) {
+		if (info[i].ops == 0)
 			dev->ops = ops;
-		} else {
+		else
 			dev->ops = info[i].ops;
-		}
+
 		get_resources(dev, &info[i]);
 	}
 }

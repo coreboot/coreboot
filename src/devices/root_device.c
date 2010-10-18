@@ -71,40 +71,42 @@ static void root_dev_set_resources(device_t root)
  *
  * @param bus Pointer to the device to which the static buses are attached to.
  * @param max Maximum bus number currently used before scanning.
- * @return Largest bus number used.
+ * @return The largest bus number used.
  */
 static int smbus_max = 0;
 unsigned int scan_static_bus(device_t bus, unsigned int max)
 {
 	device_t child;
-	struct bus* link;
+	struct bus *link;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	for(link = bus->link_list; link; link = link->next) {
-		/* for smbus bus enumerate */
+	for (link = bus->link_list; link; link = link->next) {
+		/* For SMBus bus enumerate. */
 		child = link->children;
-		if(child && child->path.type == DEVICE_PATH_I2C) {
+
+		if (child && child->path.type == DEVICE_PATH_I2C)
 			link->secondary = ++smbus_max;
-		}
-		for(child =link->children; child; child = child->sibling) {
-			if (child->chip_ops && child->chip_ops->enable_dev) {
+
+		for (child = link->children; child; child = child->sibling) {
+			if (child->chip_ops && child->chip_ops->enable_dev)
 				child->chip_ops->enable_dev(child);
-			}
-			if (child->ops && child->ops->enable) {
+
+			if (child->ops && child->ops->enable)
 				child->ops->enable(child);
+
+			if (child->path.type == DEVICE_PATH_I2C) {
+				printk(BIOS_DEBUG, "smbus: %s[%d]->",
+				       dev_path(child->bus->dev),
+				       child->bus->link_num);
 			}
- 			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
-					dev_path(child->bus->dev), child->bus->link_num );
-			}
-			printk(BIOS_DEBUG, "%s %s\n",
-				dev_path(child),
-				child->enabled?"enabled": "disabled");
+			printk(BIOS_DEBUG, "%s %s\n", dev_path(child),
+			       child->enabled ? "enabled" : "disabled");
 		}
 	}
-	for(link = bus->link_list; link; link = link->next) {
-		for(child = link->children; child; child = child->sibling) {
+
+	for (link = bus->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
@@ -128,7 +130,7 @@ static void root_dev_enable_resources(device_t dev)
  *
  * @param root The root device structure.
  * @param max The current bus number scanned so far, usually 0x00.
- * @return TODO.
+ * @return The largest bus number used.
  */
 static unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
@@ -141,7 +143,7 @@ static void root_dev_init(device_t root)
 
 static void root_dev_reset(struct bus *bus)
 {
-	printk(BIOS_INFO, "Reseting board...\n");
+	printk(BIOS_INFO, "Resetting board...\n");
 	hard_reset();
 }
 

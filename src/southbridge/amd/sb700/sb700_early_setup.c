@@ -129,6 +129,11 @@ static void sb700_lpc_init(void)
 	reg8 |= (1 << 5) | (1 << 6);
 	pci_write_config8(dev, 0x47, reg8);
 
+	/* Enable PrefetchEnSPIFromHost to speed up SPI flash read (does not affect LPC) */
+	reg8 = pci_read_config8(dev, 0xbb);
+	reg8 |= 1 << 0;
+	pci_write_config8(dev, 0xbb, reg8);
+
 	/* SuperIO, LPC ROM */
 	reg8 = pci_read_config8(dev, 0x48);
 	/* Decode ports 0x2e-0x2f, 0x4e-0x4f (SuperI/O configuration) */

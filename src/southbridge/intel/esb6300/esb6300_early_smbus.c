@@ -22,6 +22,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
+#ifdef DEADCODE
 static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
 	if (smbus_wait_until_ready(SMBUS_IO_BASE) < 0) {
@@ -33,8 +34,6 @@ static void smbus_write_byte(unsigned device, unsigned address, unsigned char va
 static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 		 unsigned data1, unsigned data2)
 {
-	unsigned char global_control_register;
-	unsigned char global_status_register;
 	unsigned char byte;
 	unsigned char stat;
 	int i;
@@ -95,4 +94,5 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	print_debug("SMBUS Block complete\n");
 	return 0;
 }
+#endif
 

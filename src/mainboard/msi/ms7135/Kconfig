@@ -29,10 +29,6 @@ config MEM_TRAIN_SEQ
 	int
 	default 2
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "MS-7135"

@@ -132,14 +132,34 @@ CAR_FAM10_out:
 	wrmsr
 
 #if CONFIG_MMCONF_SUPPORT
-	/* Set MMIO config space BAR. */
-	movl	$MSR_MCFG_BASE, %ecx
-	rdmsr
-	andl	$(~(0xfff00000 | (0xf << 2))), %eax
-	orl	$((CONFIG_MMCONF_BASE_ADDRESS & 0xfff00000)), %eax
-	orl	$((8 << 2) | (1 << 0)), %eax
-	andl	$(~(0x0000ffff)), %edx
-	orl	$(CONFIG_MMCONF_BASE_ADDRESS >> 32), %edx
+   #if (CONFIG_MMCONF_BASE_ADDRESS > 0xFFFFFFFF)
+   #error "MMCONF_BASE_ADDRESS too big"
+   #elif (CONFIG_MMCONF_BASE_ADDRESS & 0xFFFFF)
+   #error "MMCONF_BASE_ADDRESS not 1MB aligned"
+   #endif
+	movl	$0, %edx
+	movl	$((CONFIG_MMCONF_BASE_ADDRESS) | (1 << 0)), %eax
+   #if (CONFIG_MMCONF_BUS_NUMBER == 1)
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 2)
+	orl	$(1 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 4)
+	orl	$(2 << 2), %eax	
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 8)
+	orl	$(3 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 16)
+	orl	$(4 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 32)
+	orl	$(5 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 64)
+	orl	$(6 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 128)
+	orl	$(7 << 2), %eax
+   #elif (CONFIG_MMCONF_BUS_NUMBER == 256)
+	orl	$(8 << 2), %eax
+   #else
+	#error "bad MMCONF_BUS_NUMBER value"
+   #endif
+	movl	$(0xc0010058), %ecx
 	wrmsr
 #endif
 

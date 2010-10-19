@@ -113,7 +113,9 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
+#if !defined (CONFIG_CPU_AMD_MODEL_10XXX) && !defined (CONFIG_CPU_AMD_MODEL_14XXX)
 	mdelay(10);
+#endif
 
 	printk(BIOS_SPEW, "Deasserting INIT.\n");
 
@@ -143,7 +145,11 @@ static int lapic_start_cpu(unsigned long apicid)
 	start_eip = (unsigned long)_secondary_start;
 #endif
 
+#if !defined (CONFIG_CPU_AMD_MODEL_10XXX) && !defined (CONFIG_CPU_AMD_MODEL_14XXX)
 	num_starts = 2;
+#else
+	num_starts = 1;
+#endif
 
 	/*
 	 * Run STARTUP IPI loop.

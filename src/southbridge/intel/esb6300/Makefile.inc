@@ -1,4 +1,5 @@
 driver-y += esb6300.c
+driver-y += esb6300_reset.c
 driver-y += esb6300_uhci.c
 driver-y += esb6300_lpc.c
 driver-y += esb6300_ide.c

@@ -13,7 +13,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-	select CACHE_AS_RAM
 	select BOARD_ROMSIZE_KB_512
 	select CK804_USE_NIC
 	select CK804_USE_ACI
@@ -65,13 +64,5 @@ config SB_HT_CHAIN_ON_BUS0
 config IRQ_SLOT_COUNT
 	int
 	default 13
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
 
 endif # BOARD_MSI_MS7135

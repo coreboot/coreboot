@@ -1,3 +1,23 @@
 config CPU_AMD_SOCKET_754
 	bool
+
+if CPU_AMD_SOCKET_754
+
+config SOCKET_SPECIFIC_OPTIONS
+	def_bool y
 	select CPU_AMD_MODEL_FXX
+	select CACHE_AS_RAM
+
+config CPU_ADDR_BITS
+	int
+	default 40
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+
+endif # CPU_AMD_SOCKET_754

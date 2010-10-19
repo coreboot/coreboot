@@ -755,7 +755,7 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, uint8_t dimm_
 	 */
 
 	/*
-	 * Back to Back Read-Write command spaceing (DDR, different Rows/Bank)
+	 * Back to Back Read-Write command spacing (DDR, different Rows/Bank)
 	 */
 	/* Set to a 3 clock back to back read to write turn around.
 	 *  2 is a good delay if the CAS latency is 2.0 */
@@ -766,7 +766,7 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, uint8_t dimm_
 		dram_timing |= (1 << 28);	// 3 clocks
 
 	/*
-	 * Back to Back Read-Write command spaceing (DDR, same or different Rows/Bank)
+	 * Back to Back Read-Write command spacing (DDR, same or different Rows/Bank)
 	 */
 	dram_timing &= ~(3 << 26);
 	if (current_cas_latency == DRT_CAS_2_0)

@@ -30,13 +30,8 @@
 
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern unsigned char bus_isa;
 extern unsigned char bus_ck804[6];
 extern unsigned apicid_ck804;
-
-extern unsigned bus_type[256];
-
-
 
 static void *smp_write_config_table(void *v)
 {
@@ -44,9 +39,11 @@ static void *smp_write_config_table(void *v)
 	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "MS7135      ";
 	struct mp_config_table *mc;
+	int bus_isa;
 	unsigned sbdn;
 
-	int bus_num;
+	get_bus_conf();
+	sbdn = sysconf.sbdn;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -66,18 +63,7 @@ static void *smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 	smp_write_processors(mc);
-
-	get_bus_conf();
-	sbdn = sysconf.sbdn;
-
-/* Bus:		Bus ID	Type*/
-	/* define numbers for pci and isa bus */
-	for (bus_num = 0; bus_num < 256; bus_num++) {
-		if (bus_type[bus_num])
-			smp_write_bus(mc, bus_num, "PCI   ");
-	}
-	smp_write_bus(mc, bus_isa, "ISA   ");
-
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 /* I/O APICs:	APIC ID	Version	State		Address*/
 	{
@@ -98,7 +84,6 @@ static void *smp_write_config_table(void *v)
 			/* copied from stock bios */
 			/*0x01800500,0x1800d509,0x00520d08*/
 
-			/* if this register is what i think it is ... */
 			dword = 0x08d0d218;
 			pci_write_config32(dev, 0x7c, dword);
 

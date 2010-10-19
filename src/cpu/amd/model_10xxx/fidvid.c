@@ -530,7 +530,7 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 
 	// Send signal to BSP about this AP max fid
 	// This also indicates this AP is ready for warm reset (if required).
-	lapic_write(LAPIC_MSG_REG, send | 1);
+	lapic_write(LAPIC_MSG_REG, send | F10_APSTATE_RESET);
 }
 
 static u32 calc_common_fid(u32 fid_packed, u32 fid_packed_new)

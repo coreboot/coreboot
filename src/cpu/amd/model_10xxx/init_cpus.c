@@ -166,9 +166,6 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 	return result;
 }
 
-/* Use the LAPIC timer count register to hold each cores init status */
-#define LAPIC_MSG_REG 0x380
-
 #if SET_FIDVID == 1
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
 #endif
@@ -190,7 +187,7 @@ static u32 wait_cpu_state(u32 apicid, u32 state)
 	while (--loop > 0) {
 		if (lapic_remote_read(apicid, LAPIC_MSG_REG, &readback) != 0)
 			continue;
-		if ((readback & 0x3f) == state) {
+		if ((readback & 0x3f) == state || (readback & 0x3f) == F10_APSTATE_RESET) {
 			timeout = 0;
 			break;	//target cpu is in stage started
 		}
@@ -207,7 +204,7 @@ static u32 wait_cpu_state(u32 apicid, u32 state)
 static void wait_ap_started(u32 ap_apicid, void *gp)
 {
 	u32 timeout;
-	timeout = wait_cpu_state(ap_apicid, 0x13);	// started
+	timeout = wait_cpu_state(ap_apicid, F10_APSTATE_STARTED);
 	printk(BIOS_DEBUG, "* AP %02x", ap_apicid);
 	if (timeout) {
 		printk(BIOS_DEBUG, " timed out:%08x\n", timeout);
@@ -231,7 +228,7 @@ void allow_all_aps_stop(u32 bsp_apicid)
 	/* FIXME Do APs use this? */
 
 	// allow aps to stop use 6 bits for state
-	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x14);
+	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | F10_APSTATE_STOPPED);
 }
 
 static void enable_apic_ext_id(u32 node)
@@ -331,7 +328,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 			distinguish_cpu_resets(id.nodeid);	// Also indicates we are started
 	}
 	// Mark the core as started.
-	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x13);
+	lapic_write(LAPIC_MSG_REG, (apicid << 24) | F10_APSTATE_STARTED);
 
 	if (apicid != bsp_apicid) {
 		/* Setup each AP's cores MSRs.

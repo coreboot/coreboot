@@ -953,6 +953,16 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define NonCoherent	   (1 << 2)
 #define ConnectionPending (1 << 4)
 
+// Use the LAPIC timer count register to hold each core's init status
+//   Format: byte 0 - state
+//           byte 1 - fid_max
+//           byte 2 - nb_cof_vid_update
+//           byte 3 - apic id
+   
+#define LAPIC_MSG_REG 0x380
+#define F10_APSTATE_STARTED 0x13  // start of AP execution
+#define F10_APSTATE_STOPPED 0x14  // allow AP to stop
+#define F10_APSTATE_RESET   0x01  // waiting for warm reset
 
 #include "amdfam10_nums.h"
 

@@ -304,7 +304,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	volatile u32 * pointer;
 	int i;
 	u16 command;
-	u32 value, sblink;
+	u32 value, sblk;
 	u16 deviceid, vendorid;
 	device_t nb_dev = dev_find_slot(0, 0);
 	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
@@ -455,13 +455,13 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* Get SBLink value (HyperTransport I/O Hub Link ID). */
 	value = pci_read_config32(k8_f0, 0x64);
-	sblink = (value >> 8) & 0x3;
-	printk(BIOS_DEBUG, "SBLINK = %d.\n", sblink);
+	sblk = (value >> 8) & 0x3;
+	printk(BIOS_DEBUG, "SBLINK = %d.\n", sblk);
 
 	/* HT speed */
 	value = pci_read_config32(nb_dev, 0xd0);
 	printk(BIOS_DEBUG, "NB HT speed = %x.\n", value);
-	value = pci_read_config32(k8_f0, 0x88 + (sblink * 0x20));
+	value = pci_read_config32(k8_f0, 0x88 + (sblk * 0x20));
 	printk(BIOS_DEBUG, "CPU HT speed = %x.\n", value);
 	vgainfo.ulHTLinkFreq = 100 * 100; /* set HT speed. */
 

@@ -106,13 +106,6 @@ SECTIONS
         }
         _eheap = .;
 
-	/* Some assertions to print human readable errors for certain linker
-	 * error scenarios.
-	 */
-
-	/* Avoid running into 0xa0000-0xfffff */
-	_bogus = ASSERT(CONFIG_RAMBASE >= 0x100000 || _eheap < 0xa0000, "Please move RAMBASE to 1MB");
-
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on
 	 * the fly, but including stack and heap.
@@ -124,13 +117,6 @@ SECTIONS
 	 * things). We must not exceed beyond that address, there be dragons.
 	 */
 	_bogus = ASSERT( ( _eram_seg < (CONFIG_RAMTOP)) , "Please increase CONFIG_RAMTOP");
-
-	/* This rule is only good for the few broken targets that still live
-	 * below 1MB per default. Those are the Geode and VIA targets that come
-	 * with their own version of real mode switches that can't live above
-	 * 1MB. Once these are fixed, this rule should go away.
-	 */
-        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN || CONFIG_HAVE_SMI_HANDLER) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))), "Please increase CONFIG_RAMTOP and if still fail, try to set CONFIG_RAMBASE to 1M");
 
 	/* Discard the sections we don't need/want */
 

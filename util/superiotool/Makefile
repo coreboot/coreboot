@@ -39,6 +39,13 @@ OS_ARCH = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LIBS = -framework IOKit -framework DirectIO -lpci -lz
 endif
+ifeq ($(OS_ARCH), FreeBSD)
+CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
+         -Werror-implicit-function-declaration -ansi $(SVNDEF) \
+         -I/usr/local/include
+LDFLAGS += -L/usr/local/lib
+LIBS = -lz
+endif
 
 # Support for PCI-attached "Super I/Os" (e.g. in VIA VT82686A/B).
 CONFIG_PCI = yes

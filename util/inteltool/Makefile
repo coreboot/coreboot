@@ -33,6 +33,11 @@ OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LDFLAGS = -framework DirectIO -lpci -lz
 endif
+ifeq ($(OS_ARCH), FreeBSD)
+CFLAGS += -I/usr/local/include
+LDFLAGS += -L/usr/local/lib
+LIBS = -lz
+endif
 
 all: pciutils dep $(PROGRAM)
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2010 by coresystems GmbH
  *  written by Stefan Reinauer <stepan@coresystems.de>
+ * Copyright (C) 2009 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,9 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include "inteltool.h"
+#if defined(__FreeBSD__)
+#include <unistd.h>
+#endif
 
 static const struct {
 	uint16_t vendor_id, device_id;
@@ -213,7 +217,17 @@ int main(int argc, char *argv[])
 		}
 	}
 
+#if defined(__FreeBSD__)
+	int io_fd;
+#endif
+
+#if defined(__FreeBSD__)
+	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
+		perror("/dev/io");
+#else
 	if (iopl(3)) {
+		perror("iopl");
+#endif
 		printf("You need to be root.\n");
 		exit(1);
 	}

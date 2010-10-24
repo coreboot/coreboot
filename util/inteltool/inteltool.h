@@ -2,6 +2,7 @@
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
  * Copyright (C) 2008-2010 by coresystems GmbH
+ * Copyright (C) 2009 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,11 @@
 #include <DirectIO/darwinio.h>
 #endif
 #include <pci/pci.h>
+
+/* This #include is needed for freebsd_{rd,wr}msr. */
+#if defined(__FreeBSD__)
+#include <machine/cpufunc.h>
+#endif
 
 #define INTELTOOL_VERSION "1.0"
 
@@ -88,8 +94,18 @@
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
-#ifndef __DARWIN__
+#if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;
+#endif
+#if defined (__FreeBSD__)
+/* FreeBSD already has conflicting definitions for wrmsr/rdmsr. */
+#undef rdmsr
+#undef wrmsr
+#define rdmsr freebsd_rdmsr
+#define wrmsr freebsd_wrmsr
+typedef struct { uint32_t hi, lo; } msr_t;
+msr_t freebsd_rdmsr(int addr);
+int freebsd_wrmsr(int addr, msr_t msr);
 #endif
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
@@ -105,4 +121,3 @@ int print_gpios(struct pci_dev *sb);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
-

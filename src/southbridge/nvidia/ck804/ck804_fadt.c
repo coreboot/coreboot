@@ -20,10 +20,11 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	memcpy(header->signature, "FACP", 4);
 #ifdef LONG_FADT
 	header->length = 244;
+	header->revision = 3;
 #else
 	header->length = 0x74;
-#endif
 	header->revision = 1;
+#endif
 	memcpy(header->oem_id, "CORE  ", 6);
 	memcpy(header->oem_table_id, "CB-FADT ", 8);
 	memcpy(header->asl_compiler_id, "IASL", 4);

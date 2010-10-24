@@ -59,7 +59,7 @@
 #define INL  inl
 #endif
 
-#if defined(__NetBSD__) && defined(__i386__) || defined(__x86_64__)
+#if defined(__NetBSD__) && (defined(__i386__) || defined(__x86_64__))
 #include <sys/types.h>
 #include <machine/sysarch.h>
 #if defined(__i386__)

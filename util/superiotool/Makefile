@@ -46,6 +46,9 @@ CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
 LDFLAGS += -L/usr/local/lib
 LIBS = -lz
 endif
+ifeq ($(OS_ARCH), NetBSD)
+LDFLAGS = -l$(shell uname -p)
+endif
 
 # Support for PCI-attached "Super I/Os" (e.g. in VIA VT82686A/B).
 CONFIG_PCI = yes

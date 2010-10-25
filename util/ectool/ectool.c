@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
 			break;
 		case 'i':
 			dump_idx = 1;
+			break;
 		case 'h':
 		case '?':
 		default:

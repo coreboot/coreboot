@@ -27,7 +27,6 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-
 #include <cpu/amd/amdk8_sysconf.h>
 
 extern unsigned char bus_ck804[6];
@@ -35,9 +34,6 @@ extern unsigned apicid_ck804;
 
 static void *smp_write_config_table(void *v)
 {
-	static const char sig[4] = "PCMP";
-	static const char oem[8] = "COREBOOT";
-	static const char productid[12] = "MS7135      ";
 	struct mp_config_table *mc;
 	int bus_isa;
 	unsigned sbdn;
@@ -46,21 +42,8 @@ static void *smp_write_config_table(void *v)
 	sbdn = sysconf.sbdn;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-	memset(mc, 0, sizeof(*mc));
 
-	memcpy(mc->mpc_signature, sig, sizeof(sig));
-	mc->mpc_length = sizeof(*mc);	/* initially just the header */
-	mc->mpc_spec = 0x04;
-	mc->mpc_checksum = 0;	/* not yet computed */
-	memcpy(mc->mpc_oem, oem, sizeof(oem));
-	memcpy(mc->mpc_productid, productid, sizeof(productid));
-	mc->mpc_oemptr = 0;
-	mc->mpc_oemsize = 0;
-	mc->mpc_entry_count = 0;	/* No entries yet... */
-	mc->mpc_lapic = LAPIC_ADDR;
-	mc->mpe_length = 0;
-	mc->mpe_checksum = 0;
-	mc->reserved = 0;
+	mptable_init(mc, "MS-7135     ", LAPIC_ADDR);
 
 	smp_write_processors(mc);
 	mptable_write_buses(mc, NULL, &bus_isa);

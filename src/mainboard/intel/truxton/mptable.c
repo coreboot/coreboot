@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
 
 #include <console/console.h>
@@ -27,9 +26,6 @@
 
 static void *smp_write_config_table(void *v)
 {
-	static const char sig[4] = "PCMP";
-	static const char oem[8] = "COREBOOT";
-	static const char productid[12] = "Truxton     ";
 	struct mp_config_table *mc;
 	u8 bus_num;
 	u8 bus_isa;
@@ -39,24 +35,10 @@ static void *smp_write_config_table(void *v)
 	device_t dev;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-	memset(mc, 0, sizeof(*mc));
 
-	memcpy(mc->mpc_signature, sig, sizeof(sig));
-	mc->mpc_length = sizeof(*mc); /* initially just the header */
-	mc->mpc_spec = 0x04;
-	mc->mpc_checksum = 0; /* not yet computed */
-	memcpy(mc->mpc_oem, oem, sizeof(oem));
-	memcpy(mc->mpc_productid, productid, sizeof(productid));
-	mc->mpc_oemptr = 0;
-	mc->mpc_oemsize = 0;
-	mc->mpc_entry_count = 0; /* No entries yet... */
-	mc->mpc_lapic = LAPIC_ADDR;
-	mc->mpe_length = 0;
-	mc->mpe_checksum = 0;
-	mc->reserved = 0;
+	mptable_init(mc, "Truxton     ", LAPIC_ADDR);
 
 	smp_write_processors(mc);
-
 
 	/* AIOC bridge */
 	dev = dev_find_slot(0, PCI_DEVFN(0x04,0));

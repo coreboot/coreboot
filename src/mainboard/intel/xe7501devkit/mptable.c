@@ -15,7 +15,6 @@
 #define INT_D	3
 #define PCI_IRQ(dev, intLine)	(((dev)<<2) | intLine)
 
-
 static void xe7501devkit_register_buses(struct mp_config_table *mc)
 {
 	// Bus ID, Bus Type
@@ -132,19 +131,11 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 
 static void *smp_write_config_table(void* v)
 {
-	static const char sig[4] = MPC_SIGNATURE;
-	static const char oem[8] = "COREBOOT";
-	static const char productid[12] = "XE7501DEVKIT";
-	struct mp_config_table *mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-	memset(mc, 0, sizeof(*mc));
+	struct mp_config_table *mc;
 
-	memcpy(mc->mpc_signature, sig, sizeof(sig));
-	memcpy(mc->mpc_oem, oem, sizeof(oem));
-	memcpy(mc->mpc_productid, productid, sizeof(productid));
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
-	mc->mpc_length = sizeof(*mc);	// initially just the header
-	mc->mpc_spec = 0x04;		// Multiprocessing Spec V1.4
-	mc->mpc_lapic = LAPIC_ADDR;
+	mptable_init(mc, "XE7501DEVKIT", LAPIC_ADDR);
 
 	smp_write_processors(mc);
 

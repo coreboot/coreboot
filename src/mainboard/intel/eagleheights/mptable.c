@@ -20,7 +20,6 @@
  * MA 02110-1301 USA
  */
 
-
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
@@ -61,9 +60,6 @@
 
 static void *smp_write_config_table(void *v)
 {
-        static const char sig[4] = "PCMP";
-        static const char oem[8] = "COREBOOT";
-        static const char productid[12] = "EagleHeights";
         struct mp_config_table *mc;
 	unsigned char bus_num, bus_chipset, bus_isa, bus_pci;
 	unsigned char bus_pcie_a, bus_pcie_a1, bus_pcie_b;
@@ -81,21 +77,8 @@ static void *smp_write_config_table(void *v)
 	rcba = res->base;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-        memset(mc, 0, sizeof(*mc));
 
-        memcpy(mc->mpc_signature, sig, sizeof(sig));
-        mc->mpc_length = sizeof(*mc); /* initially just the header */
-        mc->mpc_spec = 0x04;
-        mc->mpc_checksum = 0; /* not yet computed */
-        memcpy(mc->mpc_oem, oem, sizeof(oem));
-        memcpy(mc->mpc_productid, productid, sizeof(productid));
-        mc->mpc_oemptr = 0;
-        mc->mpc_oemsize = 0;
-        mc->mpc_entry_count = 0; /* No entries yet... */
-        mc->mpc_lapic = LAPIC_ADDR;
-        mc->mpe_length = 0;
-        mc->mpe_checksum = 0;
-        mc->reserved = 0;
+	mptable_init(mc, "EagleHeights", LAPIC_ADDR);
 
         smp_write_processors(mc);
 

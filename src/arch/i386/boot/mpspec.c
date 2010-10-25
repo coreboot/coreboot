@@ -7,6 +7,30 @@
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 
+/* Initialize the specified "mc" struct with initial values. */
+void mptable_init(struct mp_config_table *mc, const char *productid,
+		  u32 lapic_addr)
+{
+	/* Error out if 'product_id' length doesn't match exactly. */
+	if (strlen(productid) != 12)
+		die("ERROR: 'productid' must be 12 bytes long!");
+
+	memset(mc, 0, sizeof(*mc));
+	memcpy(mc->mpc_signature, MPC_SIGNATURE, 4);
+	mc->mpc_length = sizeof(*mc);	/* Initially just the header size. */
+	mc->mpc_spec = 0x04;		/* MultiProcessor specification 1.4 */
+	mc->mpc_checksum = 0;		/* Not yet computed. */
+	memcpy(mc->mpc_oem, "COREBOOT", 8);
+	memcpy(mc->mpc_productid, productid, 12);
+	mc->mpc_oemptr = 0;
+	mc->mpc_oemsize = 0;
+	mc->mpc_entry_count = 0;	/* No entries yet... */
+	mc->mpc_lapic = lapic_addr;
+	mc->mpe_length = 0;
+	mc->mpe_checksum = 0;
+	mc->reserved = 0;
+}
+
 unsigned char smp_compute_checksum(void *v, int len)
 {
 	unsigned char *bytes;

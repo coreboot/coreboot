@@ -99,7 +99,7 @@ static void *smp_write_config_table(void *v)
 	}
 
 #define IO_LOCAL_INT(type, intr, apicid, pin) \
-	smp_write_intsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
+	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
 
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb700, 0);
 

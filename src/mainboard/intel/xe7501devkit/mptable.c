@@ -73,8 +73,8 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 {
 	// Chipset PCI bus
 	//					 Type		Trigger | Polarity							Bus ID				IRQ					APIC ID					PIN#
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	PCI_BUS_CHIPSET,	0,					MP_APIC_ALL,			 0);
-	smp_write_intsrc(mc, mp_NMI,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	PCI_BUS_CHIPSET,	0,					MP_APIC_ALL,			 1);
+	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	PCI_BUS_CHIPSET,	0,					MP_APIC_ALL,			 0);
+	smp_write_lintsrc(mc, mp_NMI,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	PCI_BUS_CHIPSET,	0,					MP_APIC_ALL,			 1);
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_CHIPSET, 	PCI_IRQ(29, INT_A), IOAPIC_ICH3, 			16);	// USB 1.1 Controller #1
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,	PCI_BUS_CHIPSET,	PCI_IRQ(31, INT_B),	IOAPIC_ICH3,			17);	// SMBus
 	smp_write_intsrc(mc, mp_INT, 	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 	PCI_BUS_CHIPSET, 	PCI_IRQ(29, INT_C), IOAPIC_ICH3, 			18);	// USB 1.1 Controller #3

@@ -1179,7 +1179,7 @@ lintEntry( void )
     printf( "\t %6d", (int)entry.dstApicID );
     printf( "\t %3d\n", (int)entry.dstApicINT );
     }
-    printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%x, MP_APIC_ALL, 0x%x);\n",
+    printf("\tsmp_write_lintsrc(mc, %s, %s|%s, 0x%x, 0x%x, MP_APIC_ALL, 0x%x);\n",
 	   intTypes[ (int)entry.intType ],
 	   triggerMode[ ((int)entry.intFlags >> 2) & 0x03 ] ,
 	   polarityMode[ (int)entry.intFlags & 0x03 ],

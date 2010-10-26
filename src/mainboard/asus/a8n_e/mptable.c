@@ -116,10 +116,10 @@ static void *smp_write_config_table(void *v)
 			 0x17);
 
 	/* Local Ints: Type Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
-	smp_write_intsrc(mc, mp_ExtINT,
+	smp_write_lintsrc(mc, mp_ExtINT,
 			 MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT,
 			 bus_ck804[0], 0x0, MP_APIC_ALL, 0x0);
-	smp_write_intsrc(mc, mp_NMI,
+	smp_write_lintsrc(mc, mp_NMI,
 			 MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT,
 			 bus_ck804[0], 0x0, MP_APIC_ALL, 0x1);
 

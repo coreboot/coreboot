@@ -20,7 +20,6 @@
 
 #include <reset.h>
 #include "bcm5785.h"
-#include "bcm5785_enable_rom.c"
 
 static void bcm5785_enable_lpc(void)
 {

@@ -49,6 +49,7 @@
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
+#include "southbridge/broadcom/bcm5785/bcm5785_enable_rom.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>

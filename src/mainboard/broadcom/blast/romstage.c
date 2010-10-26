@@ -17,6 +17,7 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
+#include "southbridge/broadcom/bcm5785/bcm5785_enable_rom.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"

@@ -85,7 +85,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
 static void sio_setup(void)
@@ -126,9 +125,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		enumerate_ht_chain();
 
 		sio_setup();
-
-		/* Setup the ck804 */
-		ck804_enable_rom();
 	}
 
 	if (bist == 0) {

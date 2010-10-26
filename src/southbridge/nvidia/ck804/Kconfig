@@ -3,6 +3,11 @@ config SOUTHBRIDGE_NVIDIA_CK804
 	select HAVE_HARD_RESET
 	select HAVE_USBDEBUG
 	select IOAPIC
+	select TINY_BOOTBLOCK
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string  
+	default "southbridge/nvidia/ck804/bootblock.c" if SOUTHBRIDGE_NVIDIA_CK804
 
 config ID_SECTION_OFFSET
 	hex

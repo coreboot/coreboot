@@ -363,9 +363,9 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 static int mcp55_early_setup_x(void)
 {
 	/*find out how many mcp55 we have */
-	unsigned busn[HT_CHAIN_NUM_MAX];
-	unsigned devn[HT_CHAIN_NUM_MAX];
-	unsigned io_base[HT_CHAIN_NUM_MAX];
+	unsigned busn[HT_CHAIN_NUM_MAX] = {0};
+	unsigned devn[HT_CHAIN_NUM_MAX] = {0};
+	unsigned io_base[HT_CHAIN_NUM_MAX] = {0};
 	/*
 		FIXME: May have problem if there is different MCP55 HTX card with different PCI_E lane allocation
 		Need to use same trick about pci1234 to verify node/link connection

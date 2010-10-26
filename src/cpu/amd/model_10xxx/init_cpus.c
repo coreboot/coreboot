@@ -913,9 +913,9 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 {
 	u8 i;
 	u8 nodes = get_nodes();
-	u32 reg;
 
 #if CONFIG_RAMINIT_SYSINFO
+	u32 reg;
 	/* read Node0 F0_0x64 bit [8:10] to find out SbLink # */
 	reg = pci_read_config32(NODE_HT(0), 0x64);
 	sysinfo->sblk = (reg >> 8) & 7;

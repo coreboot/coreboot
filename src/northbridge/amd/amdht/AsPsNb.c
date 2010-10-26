@@ -17,39 +17,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-/*
- *----------------------------------------------------------------------------
- *				MODULES USED
- *
- *----------------------------------------------------------------------------
- */
 #undef FILECODE
 #define FILECODE 0xCCCC
+
 #include "comlib.h"
 #include "AsPsDefs.h"
 #include "AsPsNb.h"
 
-
-/*----------------------------------------------------------------------------
- *			PROTOTYPES OF LOCAL FUNCTIONS
- *
- *----------------------------------------------------------------------------
- */
 u8 getNumOfNodeNb(void);
 u8 translateNodeIdToDeviceIdNb(u8 nodeId);
 
-
-/*----------------------------------------------------------------------------
- * FUNCTION: getMinNbCOF
- * INPUT: None
- * OUTPUT: minNbCOF (in multiple of half of CLKIN, 100MHz)
- * DESCRIPTION:
- * This function returns the minimum possible NbCOF (in 100MHz)
- * for the system .
- * This function can be run on any core and is used by the HT & Memory init code
- * in Phase 1.
- * ----------------------------------------------------------------------------
+/**
+ * Return the minimum possible NbCOF (in 100MHz) for the system.
+ *
+ * This function can be run on any core and is used by the HT & Memory init
+ * code in Phase 1.
+ *
+ * @return minNbCOF (in multiple of half of CLKIN, 100MHz).
  */
 u8 getMinNbCOF(void)
 {
@@ -130,14 +114,13 @@ u8 getNumOfNodeNb(void)
 	return (u8)dtemp;
 }
 
-/*----------------------------------------------------------------------------
- * FUNCTION: translateNodeIdToDeviceId
- * INPUT: u8 nodeId - node ID of the node
- * OUTPUT: u8 - PCI device ID of the node
- * DESCRIPTION:
- * This function return the PCI device ID for PCI access using node ID.
- * This function may need to chnage node ID to device ID in big MP systems.
- * ----------------------------------------------------------------------------
+/**
+ * Return the PCI device ID for PCI access using node ID.
+ *
+ * This function may need to change node ID to device ID in big MP systems.
+ *
+ * @param nodeId Node ID of the node.
+ * @return PCI device ID of the node.
  */
 u8 translateNodeIdToDeviceIdNb(u8 nodeId)
 {

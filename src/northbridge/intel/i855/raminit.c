@@ -25,6 +25,10 @@
 #include <delay.h>
 #include "i855.h"
 
+/*-----------------------------------------------------------------------------
+Macros and definitions:
+-----------------------------------------------------------------------------*/
+
 #define VALIDATE_DIMM_COMPATIBILITY
 
 /* Debugging macros. */
@@ -65,10 +69,6 @@ struct dimm_size {
 	unsigned int side2;
 };
 
-/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*				DEFINITIONS					  */
-/**********************************************************************************/
-
 static const uint32_t refresh_frequency[] = {
 	/* Relative frequency (array value) of each E7501 Refresh Mode Select
 	 * (RMS) value (array index)
@@ -104,7 +104,7 @@ static const uint32_t refresh_rate_map[] = {
 #define MAX_SPD_REFRESH_RATE ((sizeof(refresh_rate_map) / sizeof(uint32_t)) - 1)
 
 /*-----------------------------------------------------------------------------
-SPD functions.
+SPD functions:
 -----------------------------------------------------------------------------*/
 
 static void die_on_spd_error(int spd_return_value)
@@ -117,15 +117,16 @@ static void die_on_spd_error(int spd_return_value)
 */
 }
 
-//----------------------------------------------------------------------------------
-// Function:            sdram_spd_get_page_size
-// Parameters:          dimm_socket_address - SMBus address of DIMM socket to interrogate
-// Return Value:        struct dimm_size - log2(page size) for each side of the DIMM.
-// Description:         Calculate the page size for each physical bank of the DIMM:
-//                                              log2(page size) = (# columns) + log2(data width)
-//
-//                                      NOTE: page size is the total number of data bits in a row.
-//
+/**
+ * Calculate the page size for each physical bank of the DIMM:
+ *
+ *   log2(page size) = (# columns) + log2(data width)
+ *
+ * NOTE: Page size is the total number of data bits in a row.
+ *
+ * @param dimm_socket_address SMBus address of DIMM socket to interrogate.
+ * @return log2(page size) for each side of the DIMM.
+ */
 static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 {
 	uint16_t module_data_width;
@@ -180,13 +181,12 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	return pgsz;
 }
 
-//----------------------------------------------------------------------------------
-// Function:            sdram_spd_get_width
-// Parameters:          dimm_socket_address - SMBus address of DIMM socket to interrogate
-// Return Value:        dimm_size - width in bits of each DIMM side's DRAMs.
-// Description:         Read the width in bits of each DIMM side's DRAMs via SPD.
-//                                      (i.e. 4, 8, 16)
-//
+/**
+ * Read the width in bits of each DIMM side's DRAMs via SPD (i.e. 4, 8, 16).
+ *
+ * @param dimm_socket_address SMBus address of DIMM socket to interrogate.
+ * @return Width in bits of each DIMM side's DRAMs.
+ */
 static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 {
 	int value;
@@ -225,18 +225,19 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 	return width;
 }
 
-//----------------------------------------------------------------------------------
-// Function:            spd_get_dimm_size
-// Parameters:          dimm_socket_address - SMBus address of DIMM socket to interrogate
-// Return Value:        dimm_size - log2(number of bits) for each side of the DIMM
-// Description:         Calculate the log base 2 size in bits of both DIMM sides.
-//                      log2(# bits) = (# columns) + log2(data width) +
-//                                         (# rows) + log2(banks per SDRAM)
-//
-//                      Note that it might be easier to use SPD byte 31 here, it has the
-//                      DIMM size as a multiple of 4MB.  The way we do it now we can size
-//                      both sides of an asymmetric dimm.
-//
+/**
+ * Calculate the log base 2 size in bits of both DIMM sides.
+ *
+ * log2(# bits) = (# columns) + log2(data width) +
+ *                (# rows) + log2(banks per SDRAM)
+ *
+ * Note that it might be easier to use SPD byte 31 here, it has the DIMM size
+ * as a multiple of 4MB. The way we do it now we can size both sides of an
+ * asymmetric DIMM.
+ *
+ * @param dimm SMBus address of DIMM socket to interrogate.
+ * @return log2(number of bits) for each side of the DIMM.
+ */
 static struct dimm_size spd_get_dimm_size(unsigned dimm)
 {
 	int value;
@@ -270,13 +271,13 @@ static struct dimm_size spd_get_dimm_size(unsigned dimm)
 	return sz;
 }
 
-//----------------------------------------------------------------------------------
-// Function:            spd_get_supported_dimms
-// Parameters:          ctrl - PCI addresses of memory controller functions, and
-//                                              SMBus addresses of DIMM slots on the mainboard
-// Return Value:        uint8_t - a bitmask indicating which sockets contain a compatible DIMM.
-// Description:         Scan for compatible DIMMs.
-//
+/**
+ * Scan for compatible DIMMs.
+ *
+ * @param ctrl PCI addresses of memory controller functions, and SMBus
+ *             addresses of DIMM slots on the mainboard.
+ * @return A bitmask indicating which sockets contain a compatible DIMM.
+ */
 static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 {
 	int i;
@@ -356,8 +357,9 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-initialization functions.
+SDRAM configuration functions:
 -----------------------------------------------------------------------------*/
+
 static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 {
 	int i;
@@ -487,14 +489,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 }
 
 /*-----------------------------------------------------------------------------
-DIMM-independant configuration functions.
+DIMM-independant configuration functions:
 -----------------------------------------------------------------------------*/
 
 /**
-  * Set only what I need until it works, then make it figure things out on boot
-  * assumes only one dimm is populated
-  */
-
+ * Set only what I need until it works, then make it figure things out on boot
+ * assumes only one DIMM is populated.
+ *
+ * @param ctrl PCI addresses of memory controller functions, and SMBus
+ *             addresses of DIMM slots on the mainboard.
+ */
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	/*

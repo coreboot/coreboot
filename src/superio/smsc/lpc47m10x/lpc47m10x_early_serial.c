@@ -22,38 +22,26 @@
 #include <arch/romcc_io.h>
 #include "lpc47m10x.h"
 
-/*
- * Function:    	pnp_enter_conf_state
- * Parameters:  	dev - high 8 bits = Super I/O port
- * Return Value:	None
- * Description: 	Enable access to the LPC47M10X2's configuration registers.
- */
+/** Enable access to the LPC47M10X2's configuration registers. */
 static inline void pnp_enter_conf_state(device_t dev)
 {
 	unsigned port = dev>>8;
 	outb(0x55, port);
 }
 
-/*
- * Function:    	pnp_exit_conf_state
- * Parameters:  	dev - high 8 bits = Super I/O port
- * Return Value:	None
- * Description: 	Disable access to the LPC47M10X2's configuration registers.
- */
+/** Disable access to the LPC47M10X2's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
 	unsigned port = dev>>8;
 	outb(0xaa, port);
 }
 
-/*
- * Function:    	lpc47m10x_enable_serial
- * Parameters:  	dev - high 8 bits = Super I/O port,
- *			      low 8 bits = logical device number (per lpc47m10x.h)
- *			iobase - processor I/O port address to assign to this serial device
- * Return Value:	bool
- * Description: 	Configure the base I/O port of the specified serial device
- *			and enable the serial device.
+/**
+ * Configure the base I/O port of the specified serial device and enable the
+ * serial device.
+ *
+ * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
+ * @param iobase Processor I/O port address to assign to this serial device.
  */
 static void lpc47m10x_enable_serial(device_t dev, unsigned iobase)
 {

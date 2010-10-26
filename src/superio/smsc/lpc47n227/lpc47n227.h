@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Since the LPC47N227 does not have logical devices but a flat configuration
+/*
+ * Since the LPC47N227 does not have logical devices but a flat configuration
  * space, these are arbitrary, but must match declarations in the mainboard
- * devicetree.cb
+ * devicetree.cb.
  */
 #define LPC47N227_PP               1	/* Parallel Port */
 #define LPC47N227_SP1              2	/* COM1 */

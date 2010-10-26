@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
 
 #include <cpu/x86/mtrr.h>
@@ -80,8 +79,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	}
 	print_spew("done.\n");
 }
-
-
 
 struct dimm_size {
 	unsigned long side1;
@@ -209,7 +206,6 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 	return 0;
 }
 
-
 static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 {
 	unsigned dimm_mask;
@@ -235,7 +231,6 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 	}
 	return dimm_mask;
 }
-
 
 static int spd_set_row_attributes(const struct mem_controller *ctrl,
 		long dimm_mask)
@@ -295,7 +290,6 @@ hw_err:
 	return dra;
 
 }
-
 
 static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		long dimm_mask, uint32_t drc)
@@ -798,6 +792,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 		}
 	}
 }
+
 static void set_receive_enable(const struct mem_controller *ctrl)
 {
 	unsigned int i;
@@ -1029,7 +1024,6 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	write32(BAR+0x150, recena);
 	write32(BAR+0x154, recenb);
 }
-
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {

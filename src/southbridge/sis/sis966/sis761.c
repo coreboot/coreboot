@@ -41,22 +41,6 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include <arch/io.h>
 
-/**
- * @brief Read resources for AGP aperture
- *
- * @param
- *
- * There is only one AGP aperture resource needed. The resoruce is added to
- * the northbridge of BSP.
- *
- * The same trick can be used to augment legacy VGA resources which can
- * be detect by generic pci reousrce allocator for VGA devices.
- * BAD: it is more tricky than I think, the resource allocation code is
- * implemented in a way to NOT DOING legacy VGA resource allcation on
- * purpose :-(.
- */
-
-
 typedef struct msr_struct
 {
 	unsigned lo;
@@ -71,6 +55,20 @@ static inline msr_t rdmsr(unsigned index)
 	return result;
 }
 
+/**
+ * Read resources for AGP aperture.
+ *
+ * There is only one AGP aperture resource needed. The resoruce is added to
+ * the northbridge of BSP.
+ *
+ * The same trick can be used to augment legacy VGA resources which can
+ * be detect by generic PCI resource allocator for VGA devices.
+ * BAD: it is more tricky than I think, the resource allocation code is
+ * implemented in a way to NOT DOING legacy VGA resource allcation on
+ * purpose :-(.
+ *
+ * @param dev TODO
+ */
 static void sis761_read_resources(device_t dev)
 {
 	/* Read the generic PCI resources */

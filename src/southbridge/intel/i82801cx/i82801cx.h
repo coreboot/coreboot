@@ -32,9 +32,7 @@ void i82801cx_hard_reset(void);
 #define RTC_POWER_FAILED		(1<<1)
 #define SLEEP_AFTER_POWER_FAIL	(1<<0)
 
-/********************************************************************/
-/*							IDE Controller                          */
-/********************************************************************/
+/* IDE controller: */
 
 // PCI Configuration Space (D31:F1)
 #define IDE_TIM_PRI		0x40		// IDE timings, primary
@@ -44,9 +42,7 @@ void i82801cx_hard_reset(void);
 // IDE_TIM bits
 #define IDE_DECODE_ENABLE	(1<<15)
 
-/********************************************************************/
-/*								SMBus                               */
-/********************************************************************/
+/* SMBus: */
 
 // PCI Configuration Space (D31:F3)
 #define SMB_BASE	0x20

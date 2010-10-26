@@ -70,38 +70,34 @@ static struct pnp_info pnp_dev_info[] = {
 	 {0x7f8, 0x4},}
 };
 
-/**********************************************************************************/
-/*                             PUBLIC INTERFACE	                                  */
-/**********************************************************************************/
-
-//----------------------------------------------------------------------------------
-// Function:            enable_dev
-// Parameters:          dev - pointer to structure describing a Super I/O device
-// Return Value:        None
-// Description:         Create device structures and allocate resources to devices
-//                      specified in the pnp_dev_info array (above).
-//
+/**
+ * Create device structures and allocate resources to devices specified in the
+ * pnp_dev_info array (above).
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
+ */
 static void enable_dev(device_t dev)
 {
 	pnp_enable_devices(dev, &pnp_ops,
 			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            lpc47n227_pnp_set_resources
-// Parameters:          dev - pointer to structure describing a Super I/O device
-// Return Value:        None
-// Description:         Configure the specified Super I/O device with the resources
-//                      (I/O space, etc.) that have been allocate for it.
-//
+/**
+ * Configure the specified Super I/O device with the resources (I/O space,
+ * etc.) that have been allocate for it.
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
+ */
 void lpc47n227_pnp_set_resources(device_t dev)
 {
 	struct resource *res;
 
 	pnp_enter_conf_state(dev);
 
-	// NOTE: Cannot use pnp_set_resources() here because it assumes chip
-	// support for logical devices, which the LPC47N227 doesn't have
+	/*
+	 * NOTE: Cannot use pnp_set_resources() here because it assumes chip
+	 * support for logical devices, which the LPC47N227 doesn't have.
+	 */
 	for (res = dev->resource_list; res; res = res->next)
 		lpc47n227_pnp_set_resource(dev, res);
 
@@ -112,8 +108,10 @@ void lpc47n227_pnp_enable_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 
-	// NOTE: Cannot use pnp_enable_resources() here because it assumes chip
-	// support for logical devices, which the LPC47N227 doesn't have
+	/*
+	 * NOTE: Cannot use pnp_enable_resources() here because it assumes chip
+	 * support for logical devices, which the LPC47N227 doesn't have.
+	 */
 	lpc47n227_pnp_set_enable(dev, 1);
 
 	pnp_exit_conf_state(dev);
@@ -123,9 +121,10 @@ void lpc47n227_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 
-	// NOTE: Cannot use pnp_set_enable() here because it assumes chip
-	// support for logical devices, which the LPC47N227 doesn't have
-
+	/*
+	 * NOTE: Cannot use pnp_set_enable() here because it assumes chip
+	 * support for logical devices, which the LPC47N227 doesn't have.
+	 */
 	if (dev->enabled) {
 		lpc47n227_pnp_set_enable(dev, 1);
 	} else {
@@ -135,14 +134,14 @@ void lpc47n227_pnp_enable(device_t dev)
 	pnp_exit_conf_state(dev);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            lpc47n227_init
-// Parameters:          dev - pointer to structure describing a Super I/O device
-// Return Value:        None
-// Description:         Initialize the specified Super I/O device.
-//                      Devices other than COM ports and keyboard controller are ignored.
-//                      For COM ports, we configure the baud rate.
-//
+/**
+ * Initialize the specified Super I/O device.
+ *
+ * Devices other than COM ports and keyboard controller are ignored.
+ * For COM ports, we configure the baud rate.
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
+ */
 static void lpc47n227_init(device_t dev)
 {
 	struct superio_smsc_lpc47n227_config *conf = dev->chip_info;
@@ -169,10 +168,6 @@ static void lpc47n227_init(device_t dev)
 	}
 }
 
-/**********************************************************************************/
-/*                              PRIVATE FUNCTIONS                                 */
-/**********************************************************************************/
-
 static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
@@ -182,9 +177,10 @@ static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 	}
 
 	/* Now store the resource */
-	// NOTE: Cannot use pnp_set_XXX() here because they assume chip
-	// support for logical devices, which the LPC47N227 doesn't have
-
+	/*
+	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip
+	 * support for logical devices, which the LPC47N227 doesn't have.
+	 */
 	if (resource->flags & IORESOURCE_IO) {
 		lpc47n227_pnp_set_iobase(dev, resource->base);
 	} else if (resource->flags & IORESOURCE_DRQ) {
@@ -328,25 +324,14 @@ void lpc47n227_pnp_set_enable(device_t dev, int enable)
 	pnp_write_config(dev, power_register, new_power);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            pnp_enter_conf_state
-// Parameters:          dev - pointer to structure describing a Super I/O device
-// Return Value:        None
-// Description:         Enable access to the LPC47N227's configuration registers.
-//
+/** Enable access to the LPC47N227's configuration registers. */
 static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            pnp_exit_conf_state
-// Parameters:          dev - pointer to structure describing a Super I/O device
-// Return Value:        None
-// Description:         Disable access to the LPC47N227's configuration registers.
-//
+/** Disable access to the LPC47N227's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
-

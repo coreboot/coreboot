@@ -67,30 +67,23 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, LPC47M10X2_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 };
 
-/**********************************************************************************/
-/*              		PUBLIC INTERFACE				  */
-/**********************************************************************************/
-
-/*
- * Function:    	enable_dev
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Create device structures and allocate resources to devices
- *			specified in the pnp_dev_info array (above).
+/**
+ * Create device structures and allocate resources to devices specified in the
+ * pnp_dev_info array (above).
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
  */
 static void enable_dev(device_t dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-			   ARRAY_SIZE(pnp_dev_info),
+	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
 			   pnp_dev_info);
 }
 
-/*
- * Function:    	lpc47m10x_pnp_set_resources
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Configure the specified Super I/O device with the resources
- *			(I/O space, etc.) that have been allocated for it.
+/**
+ * Configure the specified Super I/O device with the resources (I/O space,
+ * etc.) that have been allocated for it.
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
  */
 static void lpc47m10x_pnp_set_resources(device_t dev)
 {
@@ -120,13 +113,13 @@ static void lpc47m10x_pnp_enable(device_t dev)
 	pnp_exit_conf_state(dev);
 }
 
-/*
- * Function:    	lpc47m10x_init
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Initialize the specified Super I/O device.
- *			Devices other than COM ports and the keyboard controller are
- *			ignored. For COM ports, we configure the baud rate.
+/**
+ * Initialize the specified Super I/O device.
+ *
+ * Devices other than COM ports and the keyboard controller are ignored.
+ * For COM ports, we configure the baud rate.
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
  */
 static void lpc47m10x_init(device_t dev)
 {
@@ -155,40 +148,25 @@ static void lpc47m10x_init(device_t dev)
 	}
 }
 
-/**********************************************************************************/
-/*      			PRIVATE FUNCTIONS				  */
-/**********************************************************************************/
-
-/*
- * Function:    	pnp_enter_conf_state
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Enable access to the LPC47M10X2's configuration registers.
- */
+/** Enable access to the LPC47M10X2's configuration registers. */
 static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-/*
- * Function:    	pnp_exit_conf_state
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Disable access to the LPC47M10X2's configuration registers.
- */
+/** Disable access to the LPC47M10X2's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
 
 #if 0
-/*
- * Function:    	dump_pnp_device
- * Parameters:  	dev - pointer to structure describing a Super I/O device
- * Return Value:	None
- * Description: 	Print the values of all of the LPC47M10X2's configuration registers.
- *			NOTE: The LPC47M10X2 must be in configuration mode when this
- *			function is called.
+/**
+ * Print the values of all of the LPC47M10X2's configuration registers.
+ *
+ * NOTE: The LPC47M10X2 must be in config mode when this function is called.
+ *
+ * @param dev Pointer to structure describing a Super I/O device.
  */
 static void dump_pnp_device(device_t dev)
 {

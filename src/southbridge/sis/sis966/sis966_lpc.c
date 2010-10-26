@@ -184,10 +184,9 @@ static void sis966_lpc_read_resources(device_t dev)
 }
 
 /**
- * @brief Enable resources for children devices
+ * Enable resources for children devices.
  *
- * @param dev the device whos children's resources are to be enabled
- *
+ * @param dev The device whos children's resources are to be enabled.
  */
 static void sis966_lpc_enable_childrens_resources(device_t dev)
 {

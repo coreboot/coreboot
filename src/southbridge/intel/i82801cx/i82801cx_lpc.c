@@ -61,15 +61,14 @@ static void i82801cx_enable_serial_irqs( struct device *dev)
     pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(1 << 6)|((21 - 17) << 2)|(0<< 0));
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	i82801cx_lpc_route_dma
-// Parameters:  	dev
-//					mask - identifies whether each channel should be used for PCI DMA
-//						   (bit = 0) or LPC DMA (bit = 1). The LSb controls channel 0.
-//						   Channel 4 is not used (reserved).
-// Return Value:	None
-// Description: 	Route all DMA channels to either PCI or LPC.
-//
+/**
+ * Route all DMA channels to either PCI or LPC.
+ *
+ * @param dev TODO
+ * @param mask Identifies whether each channel should be used for PCI DMA
+ *             (bit = 0) or LPC DMA (bit = 1). The LSb controls channel 0.
+ *             Channel 4 is not used (reserved).
+ */
 static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask)
 {
     uint16_t dmaConfig;

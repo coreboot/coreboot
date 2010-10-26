@@ -124,17 +124,14 @@ static void set_apc(struct device *dev)
     pci_write_config8(dev, 0x73, bTmp);
 }
 
-//-----------------------------------------------------------------------------
-// Procedure:   ReadEEprom
-//
-// Description: This routine serially reads one word out of the EEPROM.
-//
-// Arguments:
-//      Reg - EEPROM word to read.
-//
-// Returns:
-//      Contents of EEPROM word (Reg).
-//-----------------------------------------------------------------------------
+/**
+ * Read one word out of the serial EEPROM.
+ *
+ * @param dev TODO
+ * @param base TODO
+ * @param Reg EEPROM word to read.
+ * @return Contents of EEPROM word (Reg).
+ */
 #define LoopNum 200
 static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 {

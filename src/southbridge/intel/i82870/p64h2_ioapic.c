@@ -18,15 +18,15 @@ static void p64h2_ioapic_enable(device_t dev)
     pci_write_config16(dev, PCI_COMMAND, command);
 }
 
-//----------------------------------------------------------------------------------
-// Function:        p64h2_ioapic_init
-// Parameters:      dev - PCI bus/device/function of P64H2 IOAPIC
-//                  NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0
-// Return Value:    None
-// Description:     Configure one of the IOAPICs in a P64H2.
-//                  Note that a PCI bus scan will detect both IOAPICs, so this function
-//                  will be called twice for each P64H2 in the system.
-//
+/**
+ * Configure one of the IOAPICs in a P64H2.
+ *
+ * Note that a PCI bus scan will detect both IOAPICs, so this function
+ * will be called twice for each P64H2 in the system.
+ *
+ * @param dev PCI bus/device/function of P64H2 IOAPIC.
+ *            NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0.
+ */
 static void p64h2_ioapic_init(device_t dev)
 {
     uint32_t memoryBase;

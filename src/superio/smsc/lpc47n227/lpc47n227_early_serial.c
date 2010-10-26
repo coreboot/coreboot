@@ -23,38 +23,34 @@
 #include <arch/romcc_io.h>
 #include "lpc47n227.h"
 
-//----------------------------------------------------------------------------------
-// Function:            pnp_enter_conf_state
-// Parameters:          dev - high 8 bits = Super I/O port
-// Return Value:        None
-// Description:         Enable access to the LPC47N227's configuration registers.
-//
+/**
+ * Enable access to the LPC47N227's configuration registers.
+ *
+ * @param dev High 8 bits = Super I/O port.
+ */
 static inline void pnp_enter_conf_state(device_t dev)
 {
 	unsigned port = dev >> 8;
 	outb(0x55, port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            pnp_exit_conf_state
-// Parameters:          dev - high 8 bits = Super I/O port
-// Return Value:        None
-// Description:         Disable access to the LPC47N227's configuration registers.
-//
+/**
+ * Disable access to the LPC47N227's configuration registers.
+ *
+ * @param dev High 8 bits = Super I/O port.
+ */
 static void pnp_exit_conf_state(device_t dev)
 {
 	unsigned port = dev >> 8;
 	outb(0xaa, port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            lpc47n227_pnp_set_iobase
-// Parameters:          dev - high 8 bits = Super I/O port,
-//                            low 8 bits = logical device number (per lpc47n227.h)
-//                      iobase - base I/O port for the logical device
-// Return Value:        None
-// Description:         Program the base I/O port for the specified logical device.
-//
+/**
+ * Program the base I/O port for the specified logical device.
+ *
+ * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
+ * @param iobase Base I/O port for the logical device.
+ */
 void lpc47n227_pnp_set_iobase(device_t dev, unsigned iobase)
 {
 	// LPC47N227 requires base ports to be a multiple of 4
@@ -78,20 +74,18 @@ void lpc47n227_pnp_set_iobase(device_t dev, unsigned iobase)
 	}
 }
 
-//----------------------------------------------------------------------------------
-// Function:            lpc47n227_pnp_set_enable
-// Parameters:          dev - high 8 bits = Super I/O port,
-//                      low 8 bits = logical device number (per lpc47n227.h)
-//                      enable - 0 to disable, anythig else to enable
-// Return Value:        None
-// Description:         Enable or disable the specified logical device.
-//                      Technically, a full disable requires setting the device's base
-//                      I/O port below 0x100. We don't do that here, because we don't
-//                      have access to a data structure that specifies what the 'real'
-//                      base port is (when asked to enable the device). Also the function
-//                      is used only to disable the device while its true base port is
-//                      programmed (see lpc47n227_enable_serial() below).
-//
+/**
+ * Enable or disable the specified logical device.
+ *
+ * Technically, a full disable requires setting the device's base I/O port
+ * below 0x100. We don't do that here, because we don't have access to a data
+ * structure that specifies what the 'real' base port is (when asked to enable
+ * the device). Also the function is used only to disable the device while its
+ * true base port is programmed (see lpc47n227_enable_serial() below).
+ *
+ * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
+ * @param enable 0 to disable, anythig else to enable.
+ */
 void lpc47n227_pnp_set_enable(device_t dev, int enable)
 {
 	uint8_t power_register = 0;
@@ -128,20 +122,19 @@ void lpc47n227_pnp_set_enable(device_t dev, int enable)
 	pnp_write_config(dev, power_register, new_power);
 }
 
-//----------------------------------------------------------------------------------
-// Function:            lpc47n227_enable_serial
-// Parameters:          dev - high 8 bits = Super I/O port,
-//                            low 8 bits = logical device number (per lpc47n227.h)
-//                      iobase - processor I/O port address to assign to this serial device
-// Return Value:        bool
-// Description:         Configure the base I/O port of the specified serial device
-//                      and enable the serial device.
-//
+/**
+ * Configure the base I/O port of the specified serial device and enable the
+ * serial device.
+ *
+ * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
+ * @param iobase Processor I/O port address to assign to this serial device.
+ */
 static void lpc47n227_enable_serial(device_t dev, unsigned iobase)
 {
-	// NOTE: Cannot use pnp_set_XXX() here because they assume chip
-	// support for logical devices, which the LPC47N227 doesn't have
-
+	/*
+	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip
+	 * support for logical devices, which the LPC47N227 doesn't have.
+	 */
 	pnp_enter_conf_state(dev);
 	lpc47n227_pnp_set_enable(dev, 0);
 	lpc47n227_pnp_set_iobase(dev, iobase);

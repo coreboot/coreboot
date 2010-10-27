@@ -266,11 +266,11 @@ static void ck804_early_setup(void)
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 8, ~(0xff), ((0 << 4) | (0 << 2) | (0 << 0)),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 9, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
 #if CONFIG_CK804_USE_NIC
-	RES_PCI_IO, PCI_ADDR(0, CK804B_DEVN_BASE +0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
+	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE +0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 19, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3,  ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3,  ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
-	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1 , 0, 0xe4), ~(1 << 23), (1 << 23),
+	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1 , 0, 0xe4), ~(1 << 23), (1 << 23),
 #endif
 
 #if CONFIG_CK804_USE_ACI

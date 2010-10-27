@@ -18,7 +18,7 @@
 #include <lib.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "southbridge/nvidia/ck804/ck804_early_smbus.c"
+#include "southbridge/nvidia/ck804/ck804_early_smbus.h"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"

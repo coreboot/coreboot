@@ -28,6 +28,7 @@
 #include <arch/ioapic.h>
 #include "i82371eb.h"
 
+#if CONFIG_IOAPIC
 static void enable_intel_82093aa_ioapic(void)
 {
 	u16 reg16;
@@ -56,6 +57,7 @@ static void enable_intel_82093aa_ioapic(void)
 	if (reg32 != ioapic_id)
 		die("IOAPIC error!\n");
 }
+#endif
 
 static void isa_init(struct device *dev)
 {

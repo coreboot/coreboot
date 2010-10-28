@@ -25,7 +25,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
-#include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include "southbridge/intel/i82371eb/i82371eb.h"
 #include "northbridge/intel/i440bx/raminit.h"
@@ -48,8 +47,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 
 void main(unsigned long bist)
 {
-	enable_lapic();		/* FIXME? */
-
 	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();

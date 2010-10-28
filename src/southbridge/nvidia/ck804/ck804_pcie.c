@@ -36,10 +36,6 @@ static void pcie_init(struct device *dev)
 	pci_write_config32(dev, 0x04, dword);
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = 0,
-};
-
 static struct device_operations pcie_ops = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -47,7 +43,6 @@ static struct device_operations pcie_ops = {
 	.init             = pcie_init,
 	.scan_bus         = pci_scan_bridge,
 	// .enable        = ck804_enable,
-	.ops_pci          = &lops_pci,
 };
 
 static const struct pci_driver pcie_driver __pci_driver = {

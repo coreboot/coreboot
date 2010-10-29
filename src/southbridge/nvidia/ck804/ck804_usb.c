@@ -44,16 +44,6 @@ static void usb1_init(struct device *dev)
 	}
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
-static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
-};
-
 static struct device_operations usb_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -61,7 +51,7 @@ static struct device_operations usb_ops = {
 	.init             = usb1_init,
 	// .enable        = ck804_enable,
 	.scan_bus         = 0,
-	.ops_pci          = &lops_pci,
+	.ops_pci          = &ck804_pci_ops,
 };
 
 static const struct pci_driver usb_driver __pci_driver = {

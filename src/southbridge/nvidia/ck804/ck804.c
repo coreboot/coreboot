@@ -188,6 +188,16 @@ void ck804_enable(device_t dev)
 	}
 }
 
+static void ck804_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x40,
+			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+struct pci_operations ck804_pci_ops = {
+	.set_subsystem = ck804_set_subsystem,
+};
+
 struct chip_operations southbridge_nvidia_ck804_ops = {
 	CHIP_NAME("NVIDIA CK804 Southbridge")
 	.enable_dev = ck804_enable,

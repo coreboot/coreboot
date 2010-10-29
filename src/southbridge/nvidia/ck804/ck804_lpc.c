@@ -299,16 +299,6 @@ static void ck804_lpc_enable_resources(device_t dev)
 	ck804_lpc_enable_childrens_resources(dev);
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
-static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
-};
-
 static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -316,7 +306,7 @@ static struct device_operations lpc_ops = {
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
 	// .enable        = ck804_enable,
-	.ops_pci          = &lops_pci,
+	.ops_pci          = &ck804_pci_ops,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
@@ -344,7 +334,7 @@ static struct device_operations lpc_slave_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_slave_init,
 	// .enable        = ck804_enable,
-	.ops_pci          = &lops_pci,
+	.ops_pci          = &ck804_pci_ops,
 };
 
 static const struct pci_driver lpc_driver_slave __pci_driver = {

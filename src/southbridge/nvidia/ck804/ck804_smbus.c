@@ -92,16 +92,6 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
-static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
-};
-
 static struct device_operations smbus_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -109,7 +99,7 @@ static struct device_operations smbus_ops = {
 	.init             = 0,
 	.scan_bus         = scan_static_bus,
 	// .enable        = ck804_enable,
-	.ops_pci          = &lops_pci,
+	.ops_pci          = &ck804_pci_ops,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };
 

@@ -26,4 +26,6 @@
 void ck804_enable(device_t dev);
 void ck804_enable_usbdebug(unsigned int port);
 
+extern struct pci_operations ck804_pci_ops;
+
 #endif

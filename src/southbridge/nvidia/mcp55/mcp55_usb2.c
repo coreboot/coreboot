@@ -62,15 +62,6 @@ static void usb2_set_resources(struct device *dev)
 
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-static struct pci_operations lops_pci = {
-	.set_subsystem	= lpci_set_subsystem,
-};
-
 static struct device_operations usb2_ops  = {
 	.read_resources	= pci_dev_read_resources,
 	.set_resources	= usb2_set_resources,
@@ -78,7 +69,7 @@ static struct device_operations usb2_ops  = {
 	.init		= usb2_init,
 //	.enable		= mcp55_enable,
 	.scan_bus	= 0,
-	.ops_pci	= &lops_pci,
+	.ops_pci	= &mcp55_pci_ops,
 };
 
 static const struct pci_driver usb2_driver __pci_driver = {

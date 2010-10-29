@@ -242,6 +242,16 @@ void mcp55_enable(device_t dev)
 
 }
 
+static void mcp55_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x40,
+			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+struct pci_operations mcp55_pci_ops = {
+	.set_subsystem = mcp55_set_subsystem,
+}; 
+
 struct chip_operations southbridge_nvidia_mcp55_ops = {
 	CHIP_NAME("NVIDIA MCP55 Southbridge")
 	.enable_dev	= mcp55_enable,

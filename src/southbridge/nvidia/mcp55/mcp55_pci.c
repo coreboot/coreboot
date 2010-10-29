@@ -85,10 +85,6 @@ static void pci_init(struct device *dev)
 	pci_write_config32(dev, 0x50, dword);	/* TOM */
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem	= 0,
-};
-
 static struct device_operations pci_ops  = {
 	.read_resources	= pci_bus_read_resources,
 	.set_resources	= pci_dev_set_resources,
@@ -97,7 +93,6 @@ static struct device_operations pci_ops  = {
 	.scan_bus	= pci_scan_bridge,
 //	.enable		= mcp55_enable,
 	.reset_bus	= pci_bus_reset,
-	.ops_pci	= &lops_pci,
 };
 
 static const struct pci_driver pci_driver __pci_driver = {

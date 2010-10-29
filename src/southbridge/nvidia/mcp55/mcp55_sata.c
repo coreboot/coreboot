@@ -69,15 +69,6 @@ static void sata_init(struct device *dev)
 
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-static struct pci_operations lops_pci = {
-	.set_subsystem	= lpci_set_subsystem,
-};
-
 static struct device_operations sata_ops = {
 	.read_resources	= pci_dev_read_resources,
 	.set_resources	= pci_dev_set_resources,
@@ -85,7 +76,7 @@ static struct device_operations sata_ops = {
 //	.enable		= mcp55_enable,
 	.init		= sata_init,
 	.scan_bus	= 0,
-	.ops_pci	= &lops_pci,
+	.ops_pci	= &mcp55_pci_ops,
 };
 
 static const struct pci_driver sata0_driver __pci_driver = {

@@ -26,6 +26,7 @@
 
 #ifndef __PRE_RAM__
 void mcp55_enable(device_t dev);
+extern struct pci_operations mcp55_pci_ops;
 #else
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
 #endif

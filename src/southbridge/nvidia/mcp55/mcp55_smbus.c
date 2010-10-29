@@ -123,15 +123,6 @@ static void mcp55_sm_init(device_t dev)
 #endif
 }
 
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
-static struct pci_operations lops_pci = {
-	.set_subsystem	= lpci_set_subsystem,
-};
 static struct device_operations smbus_ops = {
 	.read_resources	= mcp55_sm_read_resources,
 	.set_resources	= pci_dev_set_resources,
@@ -139,7 +130,7 @@ static struct device_operations smbus_ops = {
 	.init		= mcp55_sm_init,
 	.scan_bus	= scan_static_bus,
 //	.enable		= mcp55_enable,
-	.ops_pci	= &lops_pci,
+	.ops_pci	= &mcp55_pci_ops,
 	.ops_smbus_bus	= &lops_smbus_bus,
 };
 static const struct pci_driver smbus_driver __pci_driver = {

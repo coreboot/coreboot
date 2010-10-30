@@ -27,6 +27,7 @@
 
 static void *smp_write_config_table(void *v)
 {
+	int ioapic_id, ioapic_ver, isa_bus;
 	struct mp_config_table *mc;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -35,61 +36,24 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	/* Bus:		Bus ID	Type */
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, 1, "ISA   ");
+	mptable_write_buses(mc, NULL, &isa_bus);
 
-	/* I/O APICs:	APIC ID	Version	State		Address */
-	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
-	{
-		device_t dev;
-		struct resource *res;
+	ioapic_id = 2;
+	ioapic_ver = 0x11; /* External Intel 82093AA IOAPIC. */
+	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
 
-		dev = dev_find_slot(1, PCI_DEVFN(0x1e, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 3, 0x20, res->base);
-		}
-		dev = dev_find_slot(1, PCI_DEVFN(0x1c, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 4, 0x20, res->base);
-		}
-		dev = dev_find_slot(4, PCI_DEVFN(0x1e, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 5, 0x20, res->base);
-		}
-		dev = dev_find_slot(4, PCI_DEVFN(0x1c, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 8, 0x20, res->base);
-		}
-	}
+	/* Legacy Interrupts */
+	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);
 
-	mptable_add_isa_interrupts(mc, 0x1, 0x2, 0);
+	/* I/O Ints:          Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
+	smp_write_intsrc(mc,  mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  0x0,     0x13, ioapic_id,   0x13);
+	smp_write_intsrc(mc,  mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  0x0,     0x18, ioapic_id,   0x13);
 
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0x0, 0x13, 0x2, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0x0, 0x18, 0x2, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0x0, 0x30, 0x2, 0x10);
+	/* Local Ints:        Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
+	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE |  MP_IRQ_POLARITY_HIGH, 0x1,     0x0,  MP_APIC_ALL, 0x0);
+	smp_write_lintsrc(mc, mp_NMI,    MP_IRQ_TRIGGER_EDGE |  MP_IRQ_POLARITY_HIGH, 0x1,     0x0,  MP_APIC_ALL, 0x1);
 
-	/* Local Ints: Type  Polarity  Trigger  Bus ID  IRQ  APIC ID  PIN# */
-	smp_write_lintsrc(mc, mp_ExtINT,
-			 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 0x1, 0x0,
-			 MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 0x1, 0x0, MP_APIC_ALL, 0x1);
-
-	/* There is no extension information... */
-
-	/* Compute the checksums */
+	/* Compute the checksums. */
 	mc->mpe_checksum =
 	    smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);

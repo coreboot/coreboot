@@ -1,10 +1,10 @@
 chip northbridge/intel/i440bx		# Northbridge
-  device lapic_cluster 0 on		# APIC cluster
-    chip cpu/intel/slot_1		# CPU
-      device lapic 0 on end		# APIC
+  device lapic_cluster 0 on		# (L)APIC cluster
+    chip cpu/intel/slot_1		# CPU socket 0
+      device lapic 0 on end		# Local APIC of CPU 0
     end
-    chip cpu/intel/slot_1		# CPU
-      device lapic 1 on end		# APIC
+    chip cpu/intel/slot_1		# CPU socket 1
+      device lapic 1 on end		# Local APIC of CPU 1
     end
   end
   device pci_domain 0 on		# PCI domain

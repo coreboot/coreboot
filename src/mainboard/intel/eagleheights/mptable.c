@@ -129,40 +129,7 @@ static void *smp_write_config_table(void *v)
 
 	/*I/O APICs: APIC ID Version State Address*/
 	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);
-	/*
-	{
-		device_t dev;
-		struct resource *res;
-		dev = dev_find_slot(1, PCI_DEVFN(0x1e,0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, 3, 0x20, res->base);
-			}
-		}
-		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, 4, 0x20, res->base);
-			}
-		}
-                dev = dev_find_slot(4, PCI_DEVFN(0x1e,0));
-                if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, 5, 0x20, res->base);
-			}
-                }
-                dev = dev_find_slot(4, PCI_DEVFN(0x1c,0));
-                if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, 8, 0x20, res->base);
-			}
-                }
-	}
-	*/
+
 	mptable_add_isa_interrupts(mc, bus_isa, IO_APIC0, 0);
 
 	/*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/

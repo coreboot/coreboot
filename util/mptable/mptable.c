@@ -320,9 +320,7 @@ char *preamble[] = {
 };
 
 char *postamble[] = {
-"	/* There is no extension information... */",
-"",
-"	/* Compute the checksums */",
+"	/* Compute the checksums. */",
 "	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);",
 "	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);",
 "	printk(BIOS_DEBUG, \"Wrote the mp table end at: %p - %p\\n\",",
@@ -341,38 +339,7 @@ char *postamble[] = {
 
 char *ioapic_code[] = {
 "	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);",
-"	{",
-"		device_t dev;",
-"		struct resource *res;",
-"		dev = dev_find_slot(1, PCI_DEVFN(0x1e,0));",
-"		if (dev) {",
-"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
-"			if (res) {",
-"				smp_write_ioapic(mc, 3, 0x20, res->base);",
-"			}",
-"		}",
-"		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));",
-"		if (dev) {",
-"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
-"			if (res) {",
-"				smp_write_ioapic(mc, 4, 0x20, res->base);",
-"			}",
-"		}",
-"                dev = dev_find_slot(4, PCI_DEVFN(0x1e,0));",
-"                if (dev) {",
-"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
-"			if (res) {",
-"				smp_write_ioapic(mc, 5, 0x20, res->base);",
-"			}",
-"                }",
-"                dev = dev_find_slot(4, PCI_DEVFN(0x1c,0));",
-"                if (dev) {",
-"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
-"			if (res) {",
-"				smp_write_ioapic(mc, 8, 0x20, res->base);",
-"			}",
-"                }",
-"	}",
+"	/* TODO: If you have multiple IOAPICs, add them here. */",
 0
 };
 static void

@@ -42,35 +42,6 @@ static void *smp_write_config_table(void *v)
 	ioapic_ver = 0x11; /* External Intel 82093AA IOAPIC. */
 	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
 
-	{
-		device_t dev;
-		struct resource *res;
-		dev = dev_find_slot(1, PCI_DEVFN(0x1e, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 3, ioapic_ver, res->base);
-		}
-		dev = dev_find_slot(1, PCI_DEVFN(0x1c, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 4, ioapic_ver, res->base);
-		}
-		dev = dev_find_slot(4, PCI_DEVFN(0x1e, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 5, ioapic_ver, res->base);
-		}
-		dev = dev_find_slot(4, PCI_DEVFN(0x1c, 0));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res)
-				smp_write_ioapic(mc, 8, ioapic_ver, res->base);
-		}
-	}
-
 	/* Legacy Interrupts */
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);
 

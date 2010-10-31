@@ -204,7 +204,7 @@ int init_processor_name(void)
 	memset(program_string, 0, sizeof(program_string));
 
 	if (!Model) {
-		processor_name_string = Pg ? sample : thermal;
+		processor_name_string = Pg ? thermal : sample;
 		goto done;
 	}
 

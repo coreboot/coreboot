@@ -63,13 +63,25 @@ static const unsigned char fbdiv2plldiv[] = {
 
 #define DEFAULT_MDIV	3
 #define DEFAULT_VDIV	2
-#define DEFAULT_FBDIV	22	// 366/244 ; 24 400/266 018 ;300/200
 
 static void pll_reset(void)
 {
 	msr_t msrGlcpSysRstpll;
 	unsigned MDIV_VDIV_FBDIV;
 	unsigned SyncBits;			/* store the sync bits in up ebx */
+	unsigned DEFAULT_FBDIV;
+
+	if (CONFIG_PROCESSOR_MHZ == 400) {
+		DEFAULT_FBDIV = 24;
+	} else if (CONFIG_PROCESSOR_MHZ == 366) {
+		DEFAULT_FBDIV = 22;
+	} else if (CONFIG_PROCESSOR_MHZ == 300) {
+		DEFAULT_FBDIV = 18;
+	} else {
+		printk(BIOS_ERR, "Unsupported PROCESSOR_MHZ setting!\n");
+		post_code(POST_PLL_CPU_VER_FAIL);
+		__asm__ __volatile__("hlt\n");
+	}
 
 	/* clear the Bypass bit */
 
@@ -178,4 +190,11 @@ static void pll_reset(void)
 
 	} /* we haven't configured the PLL; do it now */
 
+}
+
+static unsigned int GeodeLinkSpeed(void)
+{
+	unsigned geodelinkspeed;
+	geodelinkspeed = ((CONFIG_PROCESSOR_MHZ * DEFAULT_VDIV) / DEFAULT_MDIV);
+	return (geodelinkspeed);
 }

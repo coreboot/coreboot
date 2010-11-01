@@ -15,87 +15,21 @@
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
+#define DIMM0 0xA0
+#define DIMM1 0xA2
+
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-        return smbus_read_byte(device, address);
+ 	if (device != DIMM0)
+		return 0xFF;	/* No DIMM1, don't even try. */
+
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/gx2/raminit.h"
-
-static inline unsigned int fls(unsigned int x)
-{
-        int r;
-
-        __asm__("bsfl %1,%0\n\t"
-                "jnz 1f\n\t"
-                "movl $32,%0\n"
-                "1:" : "=r" (r) : "g" (x));
-        return r;
-}
-
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
-{
-	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
-	 *                      component Banks (byte 17) * module banks, side (byte 5) *
-	 *                      width in bits (byte 6,7)
-	 *                    = Density per side (byte 31) * number of sides (byte 5) */
-	/* 1. Initialize GLMC registers base on SPD values, do one DIMM for now */
-	msr_t msr;
-	unsigned char module_banks, val;
-
-	msr = rdmsr(MC_CF07_DATA);
-
-	/* get module banks (sides) per dimm, SPD byte 5 */
-	module_banks = spd_read_byte(0xA0, 5);
-	if (module_banks < 1 || module_banks > 2)
-		print_err("Module banks per dimm\n");
-	module_banks >>= 1;
-	msr.hi &= ~(1 << CF07_UPPER_D0_MB_SHIFT);
-	msr.hi |= (module_banks << CF07_UPPER_D0_MB_SHIFT);
-
-	/* get component banks per module bank, SPD byte 17 */
-	val = spd_read_byte(0xA0, 17);
-	if (val < 2 || val > 4)
-		print_err("Component banks per module bank\n");
-	val >>= 2;
-	msr.hi &= ~(0x1 << CF07_UPPER_D0_CB_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_CB_SHIFT);
-
-	/* get the module bank density, SPD byte 31  */
-	val = spd_read_byte(0xA0, 31);
-	val = fls(val);
-	val <<= module_banks;
-	msr.hi &= ~(0xf << CF07_UPPER_D0_SZ_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_SZ_SHIFT);
-
-	/* page size = 2^col address */
-	val = spd_read_byte(0xA0, 4);
-	val -= 7;
-	msr.hi &= ~(0x7 << CF07_UPPER_D0_PSZ_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_PSZ_SHIFT);
-
-	print_debug("computed msr.hi ");
-	print_debug_hex32(msr.hi);
-	print_debug("\n");
-
-	msr.lo = 0x00003000;
-	wrmsr(MC_CF07_DATA, msr);
-
-	msr = rdmsr(0x20000019);
-	msr.hi = 0x18000108;
-	msr.lo = 0x696332a3;
-	wrmsr(0x20000019, msr);
-
-}
-
+#include "northbridge/amd/gx2/pll_reset.c"
 #include "northbridge/amd/gx2/raminit.c"
 #include "lib/generic_sdram.c"
-
-#define PLLMSRhi 0x00001490
-#define PLLMSRlo 0x02000030
-#define PLLMSRlo1 ((0xde << 16) | (1 << 26) | (1 << 24))
-#define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
-#include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
 #include "cpu/amd/model_gx2/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"

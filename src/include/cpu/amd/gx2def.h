@@ -413,6 +413,13 @@
 #define AES_GLD_MSR_PM		(MSR_AES + 0x2004)
 #define AES_CONTROL		(MSR_AES + 0x2006)
 
+/* from MC spec */
+#define MIN_MOD_BANKS		1
+#define MAX_MOD_BANKS		2
+#define MIN_DEV_BANKS		2
+#define MAX_DEV_BANKS		4
+#define MAX_COL_ADDR		17
+
 /* more fun stuff */
 #define BM			1	/* Base Mask - map power of 2 size aligned region */
 #define BMO			2	/* BM with an offset */

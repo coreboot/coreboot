@@ -21,3 +21,9 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	select GEODE_VSA
 
+# Valid PROCESSOR_MHZ options: 300/366/400 MHz.
+config PROCESSOR_MHZ
+	int
+	default 366
+	depends on NORTHBRIDGE_AMD_GX2
+

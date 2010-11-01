@@ -1,5 +1,6 @@
 #ifndef CPU_AMD_GX2DEF_H
 #define CPU_AMD_GX2DEF_H
+
 #define	CPU_ID_1_X							0x540		/* Stepping ID 1.x*/
 #define	CPU_ID_2_0							0x551		/* Stepping ID 2.0*/
 #define	CPU_ID_2_1							0x552		/* Stepping ID 2.1*/
@@ -13,6 +14,7 @@
 #define	CPU_REV_2_1							0x021
 #define	CPU_REV_2_2							0x022
 #define	CPU_REV_3_0							0x030
+
 /* GeodeLink Control Processor Registers, GLIU1, Port 3 */
 #define	GLCP_CLK_DIS_DELAY	0x4c000008
 #define	GLCP_PMCLKDISABLE	0x4c000009
@@ -37,28 +39,27 @@
 #define	GLCP_SYS_RSTPLL_PCI_SEMI_SYNC_MODE  8
 #define	GLCP_SYS_RSTPLL_CHIP_RESET	    0
 
-/* MSR routing as follows*/
-/* MSB = 1 means not for CPU*/
-/* next 3 bits 1st port*/
-/* next3 bits next port if through an GLIU*/
-/* etc...*/
+/* MSR routing as follows */
+/* MSB = 1 means not for CPU */
+/* next 3 bits 1st port */
+/* next3 bits next port if through an GLIU */
+/* etc... */
 
-/*Redcloud as follows.*/
+/* Redcloud as follows. */
 /* GLIU0*/
-/*	port0 - GLIU0*/
-/*	port1 - MC*/
-/*	port2 - GLIU1*/
-/*	port3 - CPU*/
-/*	port4 - VG*/
-/*	port5 - GP*/
-/*	port6 - DF*/
+/*	port0 - GLIU0 */
+/*	port1 - MC */
+/*	port2 - GLIU1 */
+/*	port3 - CPU */
+/*	port4 - VG */
+/*	port5 - GP */
+/*	port6 - DF */
 
 /* GLIU1*/
-/*	port1 - GLIU0*/
-/*	port3 - GLCP*/
-/*	port4 - PCI*/
-/*	port5 - FG*/
-
+/*	port1 - GLIU0 */
+/*	port3 - GLCP */
+/*	port4 - PCI */
+/*	port5 - FG */
 
 #define	GL0_GLIU0			0
 #define	GL0_MC				1
@@ -78,7 +79,7 @@
 #define	MSR_GLIU0			(GL0_GLIU0 << 29) + (1 << 28)	/* 1000xxxx - To get on GeodeLink one bit has to be set */
 #define	MSR_MC				(GL0_MC		<< 29)	/* 2000xxxx */
 #define	MSR_GLIU1			(GL0_GLIU1	<< 29)	/* 4000xxxx */
-#define	MSR_CPU				(GL0_CPU	<< 29)	/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't need to be routed*/
+#define	MSR_CPU				(GL0_CPU	<< 29)	/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't need to be routed */
 #define	MSR_VG				(GL0_VG		<< 29)	/* 8000xxxx */
 #define	MSR_GP				(GL0_GP		<< 29)	/* A000xxxx */
 #define	MSR_DF				(GL0_DF		<< 29)	/* C000xxxx */
@@ -88,14 +89,11 @@
 #define	MSR_FG				(GL1_FG << 26) + MSR_GLIU1	/* 5400xxxx */
 #define MSR_VIP				((GL1_VIP << 26) + MSR_GLIU1)	/* 5400xxxx */
 #define MSR_AES				((GL1_AES << 26) + MSR_GLIU1)	/* 5800xxxx */
-/* South Bridge*/
+
+/* South Bridge */
 #define SB_PORT	2			/* port of the SouthBridge */
 
-
-/**/
-/*GeodeLink Interface Unit 0 (GLIU0) port0*/
-/**/
-
+/* GeodeLink Interface Unit 0 (GLIU0) port0 */
 #define	GLIU0_GLD_MSR_CAP			(MSR_GLIU0 + 0x2000)
 #define	GLIU0_GLD_MSR_PM			(MSR_GLIU0 + 0x2004)
 
@@ -103,10 +101,7 @@
 #define	GLIU0_CAP					(MSR_GLIU0 + 0x86)
 #define	GLIU0_GLD_MSR_COH			(MSR_GLIU0 + 0x80)
 
-
-/**/
-/* Memory Controller GLIU0 port 1*/
-/**/
+/* Memory Controller GLIU0 port 1 */
 #define	MC_GLD_MSR_CAP			(MSR_MC + 0x2000)
 #define	MC_GLD_MSR_PM			(MSR_MC + 0x2004)
 
@@ -128,7 +123,6 @@
 #define		CF07_LOWER_EMR_DRV_SET				(1 << 25)
 #define		CF07_LOWER_REF_TEST_SET				(1 << 3)
 #define		CF07_LOWER_PROG_DRAM_SET			(1 << 0)
-
 
 #define	MC_CF8F_DATA			(MSR_MC + 0x19)
 
@@ -164,19 +158,13 @@
 
 #define	MC_CF_RDSYNC			(MSR_MC	+ 0x1F)
 
-
-/**/
-/* GLIU1 GLIU0 port2*/
-/**/
+/* GLIU1 GLIU0 port2 */
 #define	GLIU1_GLD_MSR_CAP			(MSR_GLIU1 + 0x2000)
 #define	GLIU1_GLD_MSR_PM			(MSR_GLIU1 + 0x2004)
 
 #define	GLIU1_GLD_MSR_COH			(MSR_GLIU1 + 0x80)
 
-
-/**/
-/* CPU	; does not need routing instructions since we are executing there.*/
-/**/
+/* CPU	; does not need routing instructions since we are executing there. */
 #define	CPU_GLD_MSR_CAP						0x2000
 #define	CPU_GLD_MSR_CONFIG					0x2001
 #define	CPU_GLD_MSR_PM						0x2004
@@ -200,7 +188,7 @@
 #define	CPU_AC_MSR							0x1301
 #define	CPU_EX_BIST							0x1428
 
-/*IM*/
+/* IM */
 #define	CPU_IM_CONFIG							0x1700
 #define		IM_CONFIG_LOWER_ICD_SET					(1 << 8)
 #define		IM_CONFIG_LOWER_QWT_SET					(1 << 20)
@@ -215,13 +203,13 @@
 #define	CPU_IM_BIST_TAG							0x1730
 #define	CPU_IM_BIST_DATA						0x1731
 
-
 /* various CPU MSRs */
 #define CPU_DM_CONFIG0 0x1800
 #define	DM_CONFIG0_UPPER_WSREQ_SHIFT  12
 #define	DM_CONFIG0_LOWER_DCDIS_SET		(1<<8)
 #define	DM_CONFIG0_LOWER_WBINVD_SET	(1<<5)
 #define	DM_CONFIG0_LOWER_MISSER_SET		(1<<1)
+
 /* configuration MSRs */
 #define	CPU_RCONF_DEFAULT						0x1808
 #define		RCONF_DEFAULT_UPPER_ROMRC_SHIFT				24
@@ -276,7 +264,7 @@
 #define	CPU_L2TB_ENTRY						0x189E
 #define	CPU_L2TB_ENTRY_I					0x189F
 #define	CPU_DM_BIST							0x18C0
-		/* SMM*/
+		/* SMM */
 #define	CPU_AC_SMM_CTL						0x1301
 #define		SMM_NMI_EN_SET					(1<<0)
 #define		SMM_SUSP_EN_SET					(1<<1)
@@ -294,10 +282,7 @@
 #define		TSC_SUSP_SET				 (1<<5)
 #define		SUSP_EN_SET				 (1<<12)
 
-	/**/
-	/*	VG GLIU0 port4*/
-	/**/
-
+/* VG GLIU0 port4 */
 #define	VG_GLD_MSR_CAP				(MSR_VG + 0x2000)
 #define	VG_GLD_MSR_CONFIG			(MSR_VG + 0x2001)
 #define	VG_GLD_MSR_PM				(MSR_VG + 0x2004)
@@ -306,29 +291,20 @@
 #define	GP_GLD_MSR_CONFIG			(MSR_GP + 0x2001)
 #define	GP_GLD_MSR_PM				(MSR_GP + 0x2004)
 
-
-
-/**/
-/*	DF GLIU0 port6*/
-/**/
-
+/* DF GLIU0 port6 */
 #define	DF_GLD_MSR_CAP					(MSR_DF + 0x2000)
 #define	DF_GLD_MSR_MASTER_CONF			(MSR_DF + 0x2001)
 #define		DF_LOWER_LCD_SHIFT				6
 #define	DF_GLD_MSR_PM					(MSR_DF + 0x2004)
 
-
-
-/**/
-/* GeodeLink Control Processor GLIU1 port3*/
-/**/
+/* GeodeLink Control Processor GLIU1 port3 */
 #define	GLCP_GLD_MSR_CAP			(MSR_GLCP + 0x2000)
 #define	GLCP_GLD_MSR_CONF			(MSR_GLCP + 0x2001)
 #define	GLCP_GLD_MSR_PM				(MSR_GLCP + 0x2004)
 
 #define	GLCP_DELAY_CONTROLS			(MSR_GLCP + 0x0F)
 
-#define	GLCP_SYS_RSTPLL				(MSR_GLCP +0x14	/* R/W*/)
+#define	GLCP_SYS_RSTPLL				(MSR_GLCP +0x14	/* R/W */)
 #define		RSTPLL_UPPER_MDIV_SHIFT				9
 #define		RSTPLL_UPPER_VDIV_SHIFT				6
 #define		RSTPLL_UPPER_FBDIV_SHIFT			0
@@ -352,13 +328,10 @@
 #define		RSTPPL_LOWER_PCI_SEMI_SYNC_SET		 (1<<8)
 #define		RSTPPL_LOWER_CHIP_RESET_SET		 (1<<0)
 
-#define	GLCP_DOTPLL				(MSR_GLCP + 0x15	/* R/W*/)
+#define	GLCP_DOTPLL				(MSR_GLCP + 0x15	/* R/W */)
 #define		DOTPPL_LOWER_PD_SET				 (1<<14)
 
-
-/**/
-/*  GLIU1 port 4*/
-/**/
+/* GLIU1 port 4 */
 #define	GLPCI_GLD_MSR_CAP			(MSR_PCI + 0x2000)
 #define	GLPCI_GLD_MSR_CONFIG			(MSR_PCI + 0x2001)
 #define	GLPCI_GLD_MSR_PM				(MSR_PCI + 0x2004)
@@ -423,64 +396,60 @@
 #define		GLPCI_SPARE_LOWER_NSE_SET					(1<<1)
 #define		GLPCI_SPARE_LOWER_SUPO_SET					(1<<0)
 
-
-/**/
-/* FooGlue GLIU1 port 5*/
-/**/
+/* FooGlue GLIU1 port 5 */
 #define	FG_GLD_MSR_CAP			(MSR_FG + 0x2000)
 #define	FG_GLD_MSR_PM			(MSR_FG + 0x2004)
 
-/*  VIP GLIU1 port 5*/
-/* */
+/* VIP GLIU1 port 5 */
 #define VIP_GLD_MSR_CAP		(MSR_VIP + 0x2000)
 #define VIP_GLD_MSR_CONFIG	(MSR_VIP + 0x2001)
 #define VIP_GLD_MSR_PM		(MSR_VIP + 0x2004)
 #define VIP_BIST		(MSR_VIP + 0x2005)
 #define VIP_GIO_MSR_SEL		(MSR_VIP + 0x2010)
-/* */
-/*  AES GLIU1 port 6*/
-/* */
+
+/* AES GLIU1 port 6 */
 #define AES_GLD_MSR_CAP		(MSR_AES + 0x2000)
 #define AES_GLD_MSR_CONFIG	(MSR_AES + 0x2001)
 #define AES_GLD_MSR_PM		(MSR_AES + 0x2004)
 #define AES_CONTROL		(MSR_AES + 0x2006)
+
 /* more fun stuff */
-#define BM			1	/*  Base Mask - map power of 2 size aligned region*/
-#define BMO			2	/*  BM with an offset*/
-#define R				3	/*  Range - 4k range minimum*/
-#define RO			4	/*  R with offset*/
-#define SC			5	/*  Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R*/
-#define BMIO			6	/*  Base Mask IO*/
-#define SCIO			7	/*  Swiss 0xCeese IO*/
-#define SC_SHADOW	8	/*  Special marker for Shadow SC descriptors so setShadow proc is independant of CPU*/
-#define R_SYSMEM		9	/*  Special marker for SYSMEM R descriptors so GLIUInit proc is independant of CPU*/
-#define BMO_SMM		10	/*  Specail marker for SMM*/
-#define BM_SMM		11	/*  Specail marker for SMM*/
-#define BMO_DMM		12	/*  Specail marker for DMM*/
-#define BM_DMM		13	/*  Specail marker for DMM*/
-#define RO_FB			14	/*  special for Frame buffer.*/
-#define R_FB			15	/*  special for FB.*/
-#define OTHER			0x0FE /*  Special marker for other*/
-#define GL_END		 0x0FF	/*  end*/
+#define BM			1	/* Base Mask - map power of 2 size aligned region */
+#define BMO			2	/* BM with an offset */
+#define R				3	/* Range - 4k range minimum */
+#define RO			4	/* R with offset */
+#define SC			5	/* Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R */
+#define BMIO			6	/* Base Mask IO */
+#define SCIO			7	/* Swiss 0xCeese IO */
+#define SC_SHADOW	8	/* Special marker for Shadow SC descriptors so setShadow proc is independant of CPU */
+#define R_SYSMEM		9	/* Special marker for SYSMEM R descriptors so GLIUInit proc is independant of CPU */
+#define BMO_SMM		10	/* Specail marker for SMM */
+#define BM_SMM		11	/* Specail marker for SMM */
+#define BMO_DMM		12	/* Specail marker for DMM */
+#define BM_DMM		13	/* Specail marker for DMM */
+#define RO_FB			14	/* special for Frame buffer. */
+#define R_FB			15	/* special for FB. */
+#define OTHER			0x0FE /* Special marker for other */
+#define GL_END		 0x0FF	/* end */
 
 #define MSR_GL0	(GL1_GLIU0 << 29)
 
-/*  Set up desc addresses from 20 - 3f*/
-/*  This is chip specific!*/
-#define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/*  BM*/
-#define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/*  BM*/
-#define MSR_GLIU0_SHADOW			(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
-#define MSR_GLIU0_SYSMEM			(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
-#define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/*  BMO*/
-#define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/*  BMO*/
+/* Set up desc addresses from 20 - 3f */
+/* This is chip specific! */
+#define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/* BM */
+#define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/* BM */
+#define MSR_GLIU0_SHADOW			(MSR_GLIU0 + 0x2C)		/* SCO should only be SC */
+#define MSR_GLIU0_SYSMEM			(MSR_GLIU0 + 0x28)		/* RO should only be R */
+#define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/* BMO */
+#define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/* BMO */
 
-#define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
-#define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
-#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
-#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
-#define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
-#define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
-#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/
+#define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/* BM */
+#define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/* BM */
+#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2D)		/* SCO should only be SC */
+#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x29)		/* RO should only be R */
+#define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/* BM */
+#define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/* BM */
+#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/* FooGlue F0 for FPU */
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET	0x40400000
@@ -503,9 +472,7 @@
 #define CHIPSET_DEV_NUM	15
 #define IDSEL_BASE	11			 // bit 11 = device 1
 
-/* */
-/* SB LBAR IO + MEMORY MAP*/
-/* */
+/* SB LBAR IO + MEMORY MAP */
 #define SMBUS_BASE		 (		0x6000)
 #define GPIO_BASE		 (		0x6100)
 #define MFGPT_BASE		 (		0x6200)

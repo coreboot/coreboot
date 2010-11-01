@@ -12,31 +12,31 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr_t msr;
 
 	/* 2. clock gating for PMode */
-	msr = rdmsr(0x20002004);
+	msr = rdmsr(MC_GLD_MSR_PM);
 	msr.lo &= ~0x04;
 	msr.lo |=  0x01;
-	wrmsr(0x20002004, msr);
+	wrmsr(MC_GLD_MSR_PM, msr);
 	/* undocmented bits in GX, in LX there are
 	 * 8 bits in PM1_UP_DLY */
-	msr = rdmsr(0x2000001a);
+	msr = rdmsr(MC_CF1017_DATA);
 	msr.lo = 0x0101;
-	wrmsr(0x2000001a, msr);
+	wrmsr(MC_CF1017_DATA, msr);
 	//print_debug("sdram_enable step 2\n");
 
 	/* 3. release CKE mask to enable CKE */
-	msr = rdmsr(0x2000001d);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~(0x03 << 8);
-	wrmsr(0x2000201d, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 	//print_debug("sdram_enable step 3\n");
 
 	/* 4. set and clear REF_TST 16 times, more shouldn't hurt
 	 * why this is before EMRS and MRS ? */
 	for (i = 0; i < 19; i++) {
-		msr = rdmsr(0x20000018);
+		msr = rdmsr(MC_CF07_DATA);
 		msr.lo |=  (0x01 << 3);
-		wrmsr(0x20000018, msr);
+		wrmsr(MC_CF07_DATA, msr);
 		msr.lo &= ~(0x01 << 3);
-		wrmsr(0x20000018, msr);
+		wrmsr(MC_CF07_DATA, msr);
 	}
 	//print_debug("sdram_enable step 4\n");
 
@@ -53,29 +53,29 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	//print_debug("sdram_enable step 5\n");
 
 	/* 6. enable DLL, load Extended Mode Register by set and clear PROG_DRAM */
-	msr = rdmsr(0x20000018);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |=  ((0x01 << 28) | 0x01);
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~((0x01 << 28) | 0x01);
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	//print_debug("sdram_enable step 6\n");
 
 	/* 7. Reset DLL, Bit 27 is undocumented in GX datasheet,
 	 * it is documented in LX datasheet  */
 	/* load Mode Register by set and clear PROG_DRAM */
-	msr = rdmsr(0x20000018);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |=  ((0x01 << 27) | 0x01);
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~((0x01 << 27) | 0x01);
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	//print_debug("sdram_enable step 7\n");
 
 	/* 8. load Mode Register by set and clear PROG_DRAM */
-	msr = rdmsr(0x20000018);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |=  0x01;
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~0x01;
-	wrmsr(0x20000018, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	//print_debug("sdram_enable step 8\n");
 
 	/* wait 200 SDCLKs */
@@ -83,7 +83,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		outb(0xaa, 0x80);
 
 	/* load RDSYNC */
-	msr = rdmsr(0x2000001f);
+	msr = rdmsr(MC_CF_RDSYNC);
 	msr.hi = 0x000ff310;
 	/* the above setting is supposed to be good for "slow" ram. We have found that for
 	 * some dram, at some clock rates, e.g. hynix at 366/244, this will actually
@@ -94,13 +94,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	 */
 	msr.hi = 0x00000310;
 	msr.lo = 0x00000000;
-	wrmsr(0x2000001f, msr);
+	wrmsr(MC_CF_RDSYNC, msr);
 
 	/* set delay control */
-	msr = rdmsr(0x4c00000f);
+	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	msr.hi = 0x830d415a;
 	msr.lo = 0x8ea0ad6a;
-	wrmsr(0x4c00000f, msr);
+	wrmsr(GLCP_DELAY_CONTROLS, msr);
 
 	/* The RAM dll needs a write to lock on so generate a few dummy writes */
 	/* Note: The descriptor needs to be enabled to point at memory */

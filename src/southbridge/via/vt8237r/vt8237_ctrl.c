@@ -37,6 +37,9 @@ static void vt8237_cfg(struct device *dev)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
 	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8T890CF_3, 0);
+	if (!devfun3)
 		die("Unknown NB");
 
 	/* CPU to PCI Flow Control 1 & 2, just fill in recommended. */
@@ -109,6 +112,9 @@ static void vt8237s_vlink_init(struct device *dev)
 	if (!devfun7)
 		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_7, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8T890CF_7, 0);
 	/* No pairing NB was found. */
 	if (!devfun7)
 		return;

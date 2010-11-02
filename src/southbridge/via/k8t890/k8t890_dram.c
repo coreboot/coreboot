@@ -170,6 +170,12 @@ static const struct pci_driver northbridge_driver_t __pci_driver = {
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_3,
 };
 
+static const struct pci_driver northbridge_driver_tcf __pci_driver = {
+	.ops	= &dram_ops_t,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CF_3,
+};
+
 static const struct pci_driver northbridge_driver_m __pci_driver = {
 	.ops	= &dram_ops_m,
 	.vendor	= PCI_VENDOR_ID_VIA,

@@ -36,8 +36,12 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
 
-		if (!devfun3)
-			devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					   PCI_DEVICE_ID_VIA_K8T890CF_3, 0);
+
+	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
 
 	pci_write_config8(dev, 0x70, 0xc2);
@@ -173,6 +177,12 @@ static const struct pci_driver northbridge_driver_t __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_7,
+};
+
+static const struct pci_driver northbridge_driver_tcf __pci_driver = {
+	.ops	= &ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CF_7,
 };
 
 static const struct pci_driver northbridge_driver_m __pci_driver = {

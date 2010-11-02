@@ -35,7 +35,23 @@ static void peg_init(struct device *dev)
 	reg = pci_read_config8(dev, 0x50);
 	pci_write_config8(dev, 0x50, reg | 0x10);
 
-	/* Award has 0xb, VIA recomends 0x4. */
+	/* Disable downstream read cycle retry,
+	 * otherwise the bus scan will hang if no device is plugged in. */
+	reg = pci_read_config8(dev, 0xa3);
+	pci_write_config8(dev, 0xa3, reg & ~0x01);
+
+	/* Use PHY negotiation for lane config */
+	reg = pci_read_config8(dev, 0xc1);
+	pci_write_config8(dev, 0xc1, reg & ~0x1f);
+
+	/* Award has 0xb, VIA recommends 0xd, default 0x8.
+	 * bit4: receive polarity change control
+	 * bits3:2: squelch window select 64~175mv
+	 * bit1: Number of non-idle bits detected before exiting idle state
+	 *       0: 10 bits, 1: 2 bits
+	 * bit0: Number of idle bits detected before entering idle state
+	 *       0: 10 bits, 1: 2 bits
+	 */
 	pci_write_config8(dev, 0xe1, 0xb);
 
 	/*
@@ -75,8 +91,25 @@ static void pcie_init(struct device *dev)
 	reg = pci_read_config8(dev, 0x50);
 	pci_write_config8(dev, 0x50, reg | 0x10);
 
-	/* Award has 0xb, VIA recommends 0x4. */
+	/* Disable downstream read cycle retry,
+	 * otherwise the bus scan will hang if no device is plugged in. */
+	reg = pci_read_config8(dev, 0xa3);
+	pci_write_config8(dev, 0xa3, reg & ~0x01);
+
+	/* Use PHY negotiation for lane config */
+	reg = pci_read_config8(dev, 0xc1);
+	pci_write_config8(dev, 0xc1, reg & ~0x1f);
+
+	/* Award has 0xb, VIA recommends 0xd, default 0x8.
+	 * bit4: receive polarity change control
+	 * bits3:2: squelch window select 64~175mv
+	 * bit1: Number of non-idle bits detected before exiting idle state
+	 *       0: 10 bits, 1: 2 bits
+	 * bit0: Number of idle bits detected before entering idle state
+	 *       0: 10 bits, 1: 2 bits
+	 */
 	pci_write_config8(dev, 0xe1, 0xb);
+
 	/* Set replay timer limit. */
 	pci_write_config8(dev, 0xb1, 0xf0);
 

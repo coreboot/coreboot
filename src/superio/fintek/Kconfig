@@ -4,3 +4,5 @@ config SUPERIO_FINTEK_F71863FG
 	bool
 config SUPERIO_FINTEK_F71859
 	bool
+config SUPERIO_FINTEK_F71889
+	bool

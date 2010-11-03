@@ -80,12 +80,13 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_setting |= (spd_byte >> 2) << CF07_UPPER_D0_CB_SHIFT;
 	banner("SPDNUMROWS");
 
-	/*; Field: DIMM size
-	 *; EEPROM byte usage: (3)  Number of Row Addresses
-	 *;                                       (4)  Number of Column Addresses
-	 *;                                       (5)  Number of DIMM Banks
-	 *;                                       (31) Module Bank Density
-	 *; Size = Module Density * Module Banks
+	/* Field: DIMM size
+	 * EEPROM byte usage:
+	 *   (3)  Number of Row Addresses
+	 *   (4)  Number of Column Addresses
+	 *   (5)  Number of DIMM Banks
+	 *   (31) Module Bank Density
+	 * Size = Module Density * Module Banks
 	 */
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
 	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
@@ -100,7 +101,7 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_size |= (dimm_size << 8);	/* align so 1GB(bit0) is bit 8, this is a little weird to get gcc to not optimize this out */
 	dimm_size &= 0x01FC;	/* and off 2GB DIMM size : not supported and the 1GB size we just moved up to bit 8 as well as all the extra on top */
 
-	/*       Module Density * Module Banks */
+	/* Module Density * Module Banks */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
 	banner("BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
@@ -113,27 +114,32 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_setting |= dimm_size << CF07_UPPER_D0_SZ_SHIFT;
 	banner("PAGESIZE");
 
-/*; Field: PAGE size
-*; EEPROM byte usage: (4)  Number of Column Addresses
-*; PageSize = 2^# Column Addresses * Data width in bytes (should be 8bytes for a normal DIMM)
-*
-*; But this really works by magic.
-*; If ma[11:0] is the memory address pins, and pa[13:0] is the physical column address
-*; that MC generates, here is how the MC assigns the pa onto the ma pins:
-*
-*;ma	11	10	09	08	07	06	05	04	03	02	01	00
-*;--------------------------------------------------------------------------------------------------------------------------------------
-*;pa						09	08	07	06	05	04	03	(7 col addr bits = 1K page size)
-*;pa					10	09	08	07	06	05	04	03	(8 col addr bits = 2K page size)
-*;pa				11	10	09	08	07	06	05	04	03	(9 col addr bits = 4K page size)
-*;pa			12	11	10	09	08	07	06	05	04	03	(10 col addr bits = 8K page size)
-*;pa	13	AP	12	11	10	09	08	07	06	05	04	03	(11 col addr bits = 16K page size)
-*; *AP=autoprecharge bit
-*
-*; Remember that pa[2:0] are zeroed out since it's a 64-bit data bus (8 bytes),
-*; so lower 3 address bits are dont_cares.So from the table above,
-*; it's easier to see what the old code is doing: if for example,#col_addr_bits=7(06h),
-*; it adds 3 to get 10, then does 2^10=1K.  Get it?*/
+/*
+ * Field: PAGE size
+ * EEPROM byte usage: (4)  Number of Column Addresses
+ * PageSize = 2^# Column Addresses * Data width in bytes
+ *                                   (should be 8bytes for a normal DIMM)
+ *
+ * But this really works by magic.
+ * If ma[11:0] is the memory address pins, and pa[13:0] is the physical column
+ * address that MC generates, here is how the MC assigns the pa onto the
+ * ma pins:
+ *
+ * ma  11 10 09 08 07 06 05 04 03 02 01 00
+ * ---------------------------------------
+ * pa                 09 08 07 06 05 04 03  (7 col addr bits = 1K page size)
+ * pa              10 09 08 07 06 05 04 03  (8 col addr bits = 2K page size)
+ * pa           11 10 09 08 07 06 05 04 03  (9 col addr bits = 4K page size)
+ * pa        12 11 10 09 08 07 06 05 04 03  (10 col addr bits = 8K page size)
+ * pa  13 AP 12 11 10 09 08 07 06 05 04 03  (11 col addr bits = 16K page size)
+ *
+ * (AP = autoprecharge bit)
+ *
+ * Remember that pa[2:0] are zeroed out since it's a 64-bit data bus (8 bytes),
+ * so lower 3 address bits are dont_cares. So from the table above,
+ * it's easier to see what the old code is doing: if for example,
+ * #col_addr_bits=7(06h), it adds 3 to get 10, then does 2^10=1K.
+ */
 
 	spd_byte = NumColAddr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
 	banner("MAXCOLADDR");
@@ -269,26 +275,25 @@ static u8 getcasmap(u32 dimm, u16 glspeed)
 
 static void setCAS(void)
 {
-/*;*****************************************************************************
-;*
-;*	setCAS
-;*	EEPROM byte usage: (18) SDRAM device attributes - CAS latency
-;*	EEPROM byte usage: (23) SDRAM Minimum Clock Cycle Time @ CLX -.5
-;*	EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1
-;*
-;*	The CAS setting is based on the information provided in each DIMMs SPD.
-;*	 The speed at which a DIMM can run is described relative to the slowest
-;*	 CAS the DIMM supports. Each speed for the relative CAS settings is
-;*	 checked that it is within the GeodeLink speed. If it isn't within the GeodeLink
-;*	 speed, the CAS setting	 is removed from the list of good settings for
-;*	 the DIMM. This is done for both DIMMs and the lists are compared to
-;*	 find the lowest common CAS latency setting. If there are no CAS settings
-;*	 in common we out a ERROR_DIFF_DIMMS (78h) to port 80h and halt.
-;*
-;*	Entry:
-;*	Exit: Set fastest CAS Latency based on GeodeLink speed and SPD information.
-;*	Destroys: We really use everything !
-;*****************************************************************************/
+/*
+ *	setCAS
+ *	EEPROM byte usage: (18) SDRAM device attributes - CAS latency
+ *	EEPROM byte usage: (23) SDRAM Minimum Clock Cycle Time @ CLX -.5
+ *	EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1
+ *
+ *	The CAS setting is based on the information provided in each DIMMs SPD.
+ *	 The speed at which a DIMM can run is described relative to the slowest
+ *	 CAS the DIMM supports. Each speed for the relative CAS settings is
+ *	 checked that it is within the GeodeLink speed. If it isn't within the GeodeLink
+ *	 speed, the CAS setting	 is removed from the list of good settings for
+ *	 the DIMM. This is done for both DIMMs and the lists are compared to
+ *	 find the lowest common CAS latency setting. If there are no CAS settings
+ *	 in common we out a ERROR_DIFF_DIMMS (78h) to port 80h and halt.
+ *
+ *	Entry:
+ *	Exit: Set fastest CAS Latency based on GeodeLink speed and SPD information.
+ *	Destroys: We really use everything !
+ */
 	uint16_t glspeed;
 	uint8_t spd_byte, casmap0, casmap1;
 	msr_t msr;
@@ -298,7 +303,7 @@ static void setCAS(void)
 	casmap0 = getcasmap(DIMM0, glspeed);
 	casmap1 = getcasmap(DIMM1, glspeed);
 
-	/*********************	CAS_LAT MAP COMPARE	***************************/
+	/* CAS_LAT MAP COMPARE */
 	if (casmap0 == 0) {
 		spd_byte = CASDDR[__builtin_ctz(casmap1)];
 	} else if (casmap1 == 0) {
@@ -468,7 +473,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	uint8_t spd_byte;
 
 	banner("sdram_set_spd_register");
-	post_code(POST_MEM_SETUP);	// post_70h
+	post_code(POST_MEM_SETUP);	/* post_70h */
 
 	spd_byte = spd_read_byte(DIMM0, SPD_MODULE_ATTRIBUTES);
 	banner("Check DIMM 0");
@@ -486,23 +491,23 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 		hcf();
 	}
 
-	post_code(POST_MEM_SETUP2);	// post_72h
+	post_code(POST_MEM_SETUP2);	/* post_72h */
 	banner("Check DDR MAX");
 
 	/* Check that the memory is not overclocked. */
 	checkDDRMax();
 
 	/* Size the DIMMS */
-	post_code(POST_MEM_SETUP3);	// post_73h
+	post_code(POST_MEM_SETUP3);	/* post_73h */
 	banner("AUTOSIZE DIMM 0");
 	auto_size_dimm(DIMM0);
-	post_code(POST_MEM_SETUP4);	// post_74h
+	post_code(POST_MEM_SETUP4);	/* post_74h */
 	banner("AUTOSIZE DIMM 1");
 	auto_size_dimm(DIMM1);
 
 	/* Set CAS latency */
 	banner("set cas latency");
-	post_code(POST_MEM_SETUP5);	// post_75h
+	post_code(POST_MEM_SETUP5);	/* post_75h */
 	setCAS();
 
 	/* Set all the other latencies here (tRAS, tRP....) */
@@ -563,7 +568,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	//print_debug("sdram_enable step 6\n");
 
 	/* 7. Reset DLL, Bit 27 is undocumented in GX datasheet,
-	 * it is documented in LX datasheet  */
+	 * it is documented in LX datasheet */
 	/* load Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |=  ((0x01 << 27) | 0x01);

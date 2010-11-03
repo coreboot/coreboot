@@ -460,12 +460,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	msr.lo &= ~0xC0;
 	msr.lo |= 0x0;		/* set refresh to 4SDRAM clocks */
 	wrmsr(msrnum, msr);
-
-	/* Memory Interleave: Set HOI here otherwise default is LOI */
-	/* msrnum = MC_CF8F_DATA;
-	   msr = rdmsr(msrnum);
-	   msr.hi |= CF8F_UPPER_HOI_LOI_SET;
-	   wrmsr(msrnum, msr); */
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)

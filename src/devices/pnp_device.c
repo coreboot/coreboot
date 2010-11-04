@@ -163,7 +163,7 @@ struct device_operations pnp_ops = {
 	.enable           = pnp_enable,
 };
 
-/* PNP chip opertations */
+/* PNP chip operations */
 
 static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
 {
@@ -214,18 +214,15 @@ static void get_resources(device_t dev, struct pnp_info *info)
 {
 	struct resource *resource;
 
-	if (info->flags & PNP_IO0) {
+	if (info->flags & PNP_IO0)
 		pnp_get_ioresource(dev, PNP_IDX_IO0, &info->io0);
-	}
-	if (info->flags & PNP_IO1) {
+	if (info->flags & PNP_IO1)
 		pnp_get_ioresource(dev, PNP_IDX_IO1, &info->io1);
-	}
-	if (info->flags & PNP_IO2) {
+	if (info->flags & PNP_IO2)
 		pnp_get_ioresource(dev, PNP_IDX_IO2, &info->io2);
-	}
-	if (info->flags & PNP_IO3) {
+	if (info->flags & PNP_IO3)
 		pnp_get_ioresource(dev, PNP_IDX_IO3, &info->io3);
-	}
+
 	if (info->flags & PNP_IRQ0) {
 		resource = new_resource(dev, PNP_IDX_IRQ0);
 		resource->size = 1;
@@ -236,6 +233,7 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
+
 	if (info->flags & PNP_DRQ0) {
 		resource = new_resource(dev, PNP_IDX_DRQ0);
 		resource->size = 1;

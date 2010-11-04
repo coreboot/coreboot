@@ -120,7 +120,7 @@ void run_bios(struct device *dev, unsigned long addr);
 /* Helper functions */
 device_t find_dev_path(struct bus *parent, struct device_path *path);
 device_t alloc_find_dev(struct bus *parent, struct device_path *path);
-device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
+device_t dev_find_device (u16 vendor, u16 device, device_t from);
 device_t dev_find_class (unsigned int class, device_t from);
 device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);

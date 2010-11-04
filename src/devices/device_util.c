@@ -41,9 +41,8 @@ device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
 	device_t child;
 	for (child = parent->children; child; child = child->sibling) {
-		if (path_eq(path, &child->path)) {
+		if (path_eq(path, &child->path))
 			break;
-		}
 	}
 	return child;
 }
@@ -59,9 +58,8 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
 	device_t child;
 	child = find_dev_path(parent, path);
-	if (!child) {
+	if (!child)
 		child = alloc_dev(parent, path);
-	}
 	return child;
 }
 
@@ -79,8 +77,8 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_PCI) &&
-			(dev->bus->secondary == bus) &&
-			(dev->path.pci.devfn == devfn)) {
+		    (dev->bus->secondary == bus) &&
+		    (dev->path.pci.devfn == devfn)) {
 			result = dev;
 			break;
 		}
@@ -97,18 +95,18 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
  */
 struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 {
-        struct device *dev, *result;
+	struct device *dev, *result;
 
-        result = 0;
-        for (dev = all_devices; dev; dev = dev->next) {
-                if ((dev->path.type == DEVICE_PATH_I2C) &&
-                        (dev->bus->secondary == bus) &&
-                        (dev->path.i2c.device == addr)) {
-                        result = dev;
-                        break;
-                }
-        }
-        return result;
+	result = 0;
+	for (dev = all_devices; dev; dev = dev->next) {
+		if ((dev->path.type == DEVICE_PATH_I2C) &&
+		    (dev->bus->secondary == bus) &&
+		    (dev->path.i2c.device == addr)) {
+			result = dev;
+			break;
+		}
+	}
+	return result;
 }
 
 /**
@@ -116,21 +114,21 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
  *
  * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
  * @param device A PCI device ID.
- * @param from Pointer to the device structure, used as a starting point
- *        in the linked list of all_devices, which can be 0 to start at the
- *        head of the list (i.e. all_devices).
+ * @param from Pointer to the device structure, used as a starting point in
+ *             the linked list of all_devices, which can be 0 to start at the
+ *             head of the list (i.e. all_devices).
  * @return Pointer to the device struct.
  */
-struct device *dev_find_device(unsigned int vendor, unsigned int device,
-			       struct device *from)
+struct device *dev_find_device(u16 vendor, u16 device, struct device *from)
 {
 	if (!from)
 		from = all_devices;
 	else
 		from = from->next;
-	while (from && (from->vendor != vendor || from->device != device)) {
+
+	while (from && (from->vendor != vendor || from->device != device))
 		from = from->next;
-	}
+
 	return from;
 }
 
@@ -138,9 +136,9 @@ struct device *dev_find_device(unsigned int vendor, unsigned int device,
  * Find a device of a given class.
  *
  * @param class Class of the device.
- * @param from Pointer to the device structure, used as a starting point
- *        in the linked list of all_devices, which can be 0 to start at the
- *        head of the list (i.e. all_devices).
+ * @param from Pointer to the device structure, used as a starting point in
+ *             the linked list of all_devices, which can be 0 to start at the
+ *             head of the list (i.e. all_devices).
  * @return Pointer to the device struct.
  */
 struct device *dev_find_class(unsigned int class, struct device *from)
@@ -149,8 +147,10 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 		from = all_devices;
 	else
 		from = from->next;
+
 	while (from && (from->class & 0xffffff00) != class)
 		from = from->next;
+
 	return from;
 }
 
@@ -165,8 +165,7 @@ const char *dev_path(device_t dev)
 	buffer[0] = '\0';
 	if (!dev) {
 		memcpy(buffer, "<null>", 7);
-	}
-	else {
+	} else {
 		switch(dev->path.type) {
 		case DEVICE_PATH_ROOT:
 			memcpy(buffer, "Root Device", 12);
@@ -174,12 +173,15 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_PCI:
 #if CONFIG_PCI_BUS_SEGN_BITS
 			sprintf(buffer, "PCI: %04x:%02x:%02x.%01x",
-				dev->bus->secondary>>8, dev->bus->secondary & 0xff,
-				PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+				dev->bus->secondary >> 8,
+				dev->bus->secondary & 0xff,
+				PCI_SLOT(dev->path.pci.devfn),
+				PCI_FUNC(dev->path.pci.devfn));
 #else
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary,
-				PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+				PCI_SLOT(dev->path.pci.devfn),
+				PCI_FUNC(dev->path.pci.devfn));
 #endif
 			break;
 		case DEVICE_PATH_PNP:
@@ -210,7 +212,8 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		default:
-			printk(BIOS_ERR, "Unknown device path type: %d\n", dev->path.type);
+			printk(BIOS_ERR, "Unknown device path type: %d\n",
+			       dev->path.type);
 			break;
 		}
 	}
@@ -227,43 +230,47 @@ const char *bus_path(struct bus *bus)
 int path_eq(struct device_path *path1, struct device_path *path2)
 {
 	int equal = 0;
-	if (path1->type == path2->type) {
-		switch(path1->type) {
-		case DEVICE_PATH_NONE:
-			break;
-		case DEVICE_PATH_ROOT:
-			equal = 1;
-			break;
-		case DEVICE_PATH_PCI:
-			equal = (path1->pci.devfn == path2->pci.devfn);
-			break;
-		case DEVICE_PATH_PNP:
-			equal = (path1->pnp.port == path2->pnp.port) &&
-				(path1->pnp.device == path2->pnp.device);
-			break;
-		case DEVICE_PATH_I2C:
-			equal = (path1->i2c.device == path2->i2c.device);
-			break;
-		case DEVICE_PATH_APIC:
-			equal = (path1->apic.apic_id == path2->apic.apic_id);
-			break;
-		case DEVICE_PATH_PCI_DOMAIN:
-			equal = (path1->pci_domain.domain == path2->pci_domain.domain);
-			break;
-		case DEVICE_PATH_APIC_CLUSTER:
-			equal = (path1->apic_cluster.cluster == path2->apic_cluster.cluster);
-			break;
-		case DEVICE_PATH_CPU:
-			equal = (path1->cpu.id == path2->cpu.id);
-			break;
-		case DEVICE_PATH_CPU_BUS:
-			equal = (path1->cpu_bus.id == path2->cpu_bus.id);
-			break;
-		default:
-			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
-			break;
-		}
+
+	if (path1->type != path2->type)
+		return 0;
+
+	switch (path1->type) {
+	case DEVICE_PATH_NONE:
+		break;
+	case DEVICE_PATH_ROOT:
+		equal = 1;
+		break;
+	case DEVICE_PATH_PCI:
+		equal = (path1->pci.devfn == path2->pci.devfn);
+		break;
+	case DEVICE_PATH_PNP:
+		equal = (path1->pnp.port == path2->pnp.port) &&
+			(path1->pnp.device == path2->pnp.device);
+		break;
+	case DEVICE_PATH_I2C:
+		equal = (path1->i2c.device == path2->i2c.device);
+		break;
+	case DEVICE_PATH_APIC:
+		equal = (path1->apic.apic_id == path2->apic.apic_id);
+		break;
+	case DEVICE_PATH_PCI_DOMAIN:
+		equal = (path1->pci_domain.domain == path2->pci_domain.domain);
+		break;
+	case DEVICE_PATH_APIC_CLUSTER:
+		equal = (path1->apic_cluster.cluster
+			 == path2->apic_cluster.cluster);
+		break;
+	case DEVICE_PATH_CPU:
+		equal = (path1->cpu.id == path2->cpu.id);
+		break;
+	case DEVICE_PATH_CPU_BUS:
+		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
+		break;
+	default:
+		printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
+		break;
 	}
+
 	return equal;
 }
 
@@ -276,6 +283,7 @@ static int allocate_more_resources(void)
 {
 	int i;
 	struct resource *new_res_list;
+
 	new_res_list = malloc(64 * sizeof(*new_res_list));
 
 	if (new_res_list == NULL)
@@ -283,7 +291,7 @@ static int allocate_more_resources(void)
 
 	memset(new_res_list, 0, 64 * sizeof(*new_res_list));
 
-	for (i = 0; i < 64-1; i++)
+	for (i = 0; i < 64 - 1; i++)
 		new_res_list[i].next = &new_res_list[i+1];
 
 	free_resources = new_res_list;
@@ -305,12 +313,14 @@ static void free_resource(device_t dev, struct resource *res,
 		prev->next = res->next;
 	else
 		dev->resource_list = res->next;
+
 	res->next = free_resources;
 	free_resources = res;
 }
 
 /**
  * See if we have unused but allocated resource structures.
+ *
  * If so remove the allocation.
  *
  * @param dev The device to find the resource on.
@@ -318,6 +328,7 @@ static void free_resource(device_t dev, struct resource *res,
 void compact_resources(device_t dev)
 {
 	struct resource *res, *next, *prev = NULL;
+
 	/* Move all of the free resources to the end */
 	for (res = dev->resource_list; res; res = next) {
 		next = res->next;
@@ -344,6 +355,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
 		if (res->index == index)
 			break;
 	}
+
 	return res;
 }
 
@@ -361,10 +373,10 @@ struct resource *new_resource(device_t dev, unsigned index)
 {
 	struct resource *resource, *tail;
 
-	/* First move all of the free resources to the end */
+	/* First move all of the free resources to the end. */
 	compact_resources(dev);
 
-	/* See if there is a resource with the appropriate index */
+	/* See if there is a resource with the appropriate index. */
 	resource = probe_resource(dev, index);
 	if (!resource) {
 		if (free_resources == NULL && !allocate_more_resources())
@@ -378,11 +390,12 @@ struct resource *new_resource(device_t dev, unsigned index)
 		if (tail) {
 			while (tail->next) tail = tail->next;
 			tail->next = resource;
-		}
-		else
+		} else {
 			dev->resource_list = resource;
+		}
 	}
-	/* Initialize the resource values */
+
+	/* Initialize the resource values. */
 	if (!(resource->flags & IORESOURCE_FIXED)) {
 		resource->flags = 0;
 		resource->base = 0;
@@ -407,16 +420,15 @@ struct resource *find_resource(device_t dev, unsigned index)
 {
 	struct resource *resource;
 
-	/* See if there is a resource with the appropriate index */
+	/* See if there is a resource with the appropriate index. */
 	resource = probe_resource(dev, index);
 	if (!resource) {
 		printk(BIOS_EMERG, "%s missing resource: %02x\n",
-			dev_path(dev), index);
+		       dev_path(dev), index);
 		die("");
 	}
 	return resource;
 }
-
 
 /**
  * Round a number up to the next multiple of gran.
@@ -458,16 +470,18 @@ static resource_t align_down(resource_t val, unsigned long gran)
 resource_t resource_end(struct resource *resource)
 {
 	resource_t base, end;
-	/* get the base address */
+
+	/* Get the base address. */
 	base = resource->base;
 
-	/* For a non bridge resource granularity and alignment are the same.
+	/*
+	 * For a non bridge resource granularity and alignment are the same.
 	 * For a bridge resource align is the largest needed alignment below
-	 * the bridge.  While the granularity is simply how many low bits of the
-	 * address cannot be set.
+	 * the bridge. While the granularity is simply how many low bits of
+	 * the address cannot be set.
 	 */
 
-	/* Get the end (rounded up) */
+	/* Get the end (rounded up). */
 	end = base + align_up(resource->size, resource->gran) - 1;
 
 	return end;
@@ -498,14 +512,14 @@ const char *resource_type(struct resource *resource)
 {
 	static char buffer[RESOURCE_TYPE_MAX];
 	sprintf(buffer, "%s%s%s%s",
-		((resource->flags & IORESOURCE_READONLY)? "ro": ""),
-		((resource->flags & IORESOURCE_PREFETCH)? "pref":""),
-		((resource->flags == 0)? "unused":
-	 	(resource->flags & IORESOURCE_IO)? "io":
-		(resource->flags & IORESOURCE_DRQ)? "drq":
-		(resource->flags & IORESOURCE_IRQ)? "irq":
-		(resource->flags & IORESOURCE_MEM)? "mem":"??????"),
-		((resource->flags & IORESOURCE_PCI64)?"64":""));
+		((resource->flags & IORESOURCE_READONLY) ? "ro" : ""),
+		((resource->flags & IORESOURCE_PREFETCH) ? "pref" : ""),
+		((resource->flags == 0) ? "unused" :
+		(resource->flags & IORESOURCE_IO) ? "io" :
+		(resource->flags & IORESOURCE_DRQ) ? "drq" :
+		(resource->flags & IORESOURCE_IRQ) ? "irq" :
+		(resource->flags & IORESOURCE_MEM) ? "mem" : "??????"),
+		((resource->flags & IORESOURCE_PCI64) ? "64" : ""));
 	return buffer;
 }
 
@@ -519,52 +533,58 @@ const char *resource_type(struct resource *resource)
 void report_resource_stored(device_t dev, struct resource *resource,
 			    const char *comment)
 {
-	if (resource->flags & IORESOURCE_STORED) {
-		char buf[10];
-		unsigned long long base, end;
-		base = resource->base;
-		end = resource_end(resource);
-		buf[0] = '\0';
-		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+	char buf[10];
+	unsigned long long base, end;
+
+	if (!(resource->flags & IORESOURCE_STORED))
+		return;
+
+	base = resource->base;
+	end = resource_end(resource);
+	buf[0] = '\0';
+
+	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
 #if CONFIG_PCI_BUS_SEGN_BITS
-			sprintf(buf, "bus %04x:%02x ", dev->bus->secondary>>8, dev->link_list->secondary & 0xff);
+		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
+			dev->link_list->secondary & 0xff);
 #else
-			sprintf(buf, "bus %02x ", dev->link_list->secondary);
+		sprintf(buf, "bus %02x ", dev->link_list->secondary);
 #endif
-		}
-		printk(BIOS_DEBUG,
-			"%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx gran 0x%02x %s%s%s\n",
-			dev_path(dev),
-			resource->index,
-			base, end,
-			resource->size, resource->gran,
-			buf,
-			resource_type(resource),
-			comment);
 	}
+	printk(BIOS_DEBUG, "%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx "
+	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
+		base, end, resource->size, resource->gran, buf,
+		resource_type(resource), comment);
 }
 
-void search_bus_resources(struct bus *bus,
-	unsigned long type_mask, unsigned long type,
-	resource_search_t search, void *gp)
+void search_bus_resources(struct bus *bus, unsigned long type_mask,
+			  unsigned long type, resource_search_t search,
+			  void *gp)
 {
 	struct device *curdev;
+
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		struct resource *res;
-		/* Ignore disabled devices */
-		if (!curdev->enabled) continue;
+
+		/* Ignore disabled devices. */
+		if (!curdev->enabled)
+			continue;
+
 		for (res = curdev->resource_list; res; res = res->next) {
-			/* If it isn't the right kind of resource ignore it */
-			if ((res->flags & type_mask) != type) {
+			/* If it isn't the right kind of resource ignore it. */
+			if ((res->flags & type_mask) != type)
 				continue;
-			}
-			/* If it is a subtractive resource recurse */
+
+			/* If it is a subtractive resource recurse. */
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus * subbus;
-				for (subbus = curdev->link_list; subbus; subbus = subbus->next)
-					if (subbus->link_num == IOINDEX_SUBTRACTIVE_LINK(res->index))
+				for (subbus = curdev->link_list; subbus;
+				     subbus = subbus->next)
+					if (subbus->link_num
+					== IOINDEX_SUBTRACTIVE_LINK(res->index))
 						break;
-				search_bus_resources(subbus, type_mask, type, search, gp);
+				search_bus_resources(subbus, type_mask, type,
+						     search, gp);
 				continue;
 			}
 			search(gp, curdev, res);
@@ -572,24 +592,27 @@ void search_bus_resources(struct bus *bus,
 	}
 }
 
-void search_global_resources(
-	unsigned long type_mask, unsigned long type,
-	resource_search_t search, void *gp)
+void search_global_resources(unsigned long type_mask, unsigned long type,
+			     resource_search_t search, void *gp)
 {
 	struct device *curdev;
+
 	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		struct resource *res;
-		/* Ignore disabled devices */
-		if (!curdev->enabled) continue;
+
+		/* Ignore disabled devices. */
+		if (!curdev->enabled)
+			continue;
+
 		for (res = curdev->resource_list; res; res = res->next) {
-			/* If it isn't the right kind of resource ignore it */
-			if ((res->flags & type_mask) != type) {
+			/* If it isn't the right kind of resource ignore it. */
+			if ((res->flags & type_mask) != type)
 				continue;
-			}
-			/* If it is a subtractive resource ignore it */
-			if (res->flags & IORESOURCE_SUBTRACTIVE) {
+
+			/* If it is a subtractive resource ignore it. */
+			if (res->flags & IORESOURCE_SUBTRACTIVE)
 				continue;
-			}
+
 			search(gp, curdev, res);
 		}
 	}
@@ -597,14 +620,13 @@ void search_global_resources(
 
 void dev_set_enabled(device_t dev, int enable)
 {
-	if (dev->enabled == enable) {
+	if (dev->enabled == enable)
 		return;
-	}
+
 	dev->enabled = enable;
 	if (dev->ops && dev->ops->enable) {
 		dev->ops->enable(dev);
-	}
-	else if (dev->chip_ops && dev->chip_ops->enable_dev) {
+	} else if (dev->chip_ops && dev->chip_ops->enable_dev) {
 		dev->chip_ops->enable_dev(dev);
 	}
 }
@@ -612,11 +634,11 @@ void dev_set_enabled(device_t dev, int enable)
 void disable_children(struct bus *bus)
 {
 	device_t child;
+
 	for (child = bus->children; child; child = child->sibling) {
 		struct bus *link;
-		for (link = child->link_list; link; link = link->next) {
+		for (link = child->link_list; link; link = link->next)
 			disable_children(link);
-		}
 		dev_set_enabled(child, 0);
 	}
 }
@@ -640,12 +662,11 @@ static void resource_tree(struct device *root, int debug_level, int depth)
  	do_printk(BIOS_DEBUG, "\n");
 
 	for (res = root->resource_list; res; res = res->next) {
-		do_printk(debug_level,
-			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
-			  indent, dev_path(root), res->base,
-			  res->size, res->align,
-			  res->gran, res->limit,
-			  res->flags, res->index);
+		do_printk(debug_level, "%s%s resource base %llx size %llx "
+			  "align %d gran %d limit %llx flags %lx index %lx\n",
+			  indent, dev_path(root), res->base, res->size,
+			  res->align, res->gran, res->limit, res->flags,
+			  res->index);
 	}
 
 	for (link = root->link_list; link; link = link->next) {
@@ -654,8 +675,7 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 	}
 }
 
-void print_resource_tree(struct device * root, int debug_level,
-			 const char *msg)
+void print_resource_tree(struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if root is null. */
 	if (!root) {
@@ -665,8 +685,9 @@ void print_resource_tree(struct device * root, int debug_level,
 
 	/* Bail if not printing to screen. */
 	if (!do_printk(debug_level, "Show resources in subtree (%s)...%s\n",
-		    dev_path(root), msg))
+		       dev_path(root), msg))
 		return;
+
 	resource_tree(root, debug_level, 0);
 }
 
@@ -680,8 +701,10 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 	for (i = 0; i < depth; i++)
 		depth_str[i] = ' ';
 	depth_str[i] = '\0';
+
 	do_printk(debug_level, "%s%s: enabled %d\n",
 		  depth_str, dev_path(dev), dev->enabled);
+
 	for (link = dev->link_list; link; link = link->next) {
 		for (sibling = link->children; sibling;
 		     sibling = sibling->sibling)
@@ -701,7 +724,7 @@ void show_devs_subtree(struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
 	if (!do_printk(debug_level, "Show all devs in subtree %s...%s\n",
-		    dev_path(root), msg))
+		       dev_path(root), msg))
 		return;
 	do_printk(debug_level, "%s\n", msg);
 	show_devs_tree(root, debug_level, 0, -1);
@@ -728,6 +751,7 @@ void show_one_resource(int debug_level, struct device *dev,
 	base = resource->base;
 	end = resource_end(resource);
 	buf[0] = '\0';
+
 /*
 	if (resource->flags & IORESOURCE_BRIDGE) {
 #if CONFIG_PCI_BUS_SEGN_BITS
@@ -738,19 +762,18 @@ void show_one_resource(int debug_level, struct device *dev,
 #endif
 	}
 */
-	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
-		  "size 0x%08Lx gran 0x%02x %s%s%s\n",
-		  dev_path(dev), resource->index, base, end,
-		  resource->size, resource->gran, buf,
-		  resource_type(resource), comment);
 
+	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
+		  "size 0x%08Lx gran 0x%02x %s%s%s\n", dev_path(dev),
+		  resource->index, base, end, resource->size, resource->gran,
+		  buf, resource_type(resource), comment);
 }
 
 void show_all_devs_resources(int debug_level, const char* msg)
 {
 	struct device *dev;
 
-	if(!do_printk(debug_level, "Show all devs with resources...%s\n", msg))
+	if (!do_printk(debug_level, "Show all devs with resources...%s\n", msg))
 		return;
 
 	for (dev = all_devices; dev; dev = dev->next) {

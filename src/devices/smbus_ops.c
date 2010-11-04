@@ -43,7 +43,7 @@ struct bus *get_pbus_smbus(device_t dev)
 }
 
 /*
- * Multi-level I2C MUX? may need to find the first i2c device and then set link
+ * Multi-level I2C MUX? May need to find the first I2C device and then set link
  * down to current dev.
  *
  * 1 store get_pbus_smbus list link

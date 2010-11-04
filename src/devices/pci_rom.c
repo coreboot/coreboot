@@ -38,59 +38,62 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	rom_header = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
 
 	if (rom_header) {
-		printk(BIOS_DEBUG, "In cbfs, rom address for %s = %p\n",
-			     dev_path(dev), rom_header);
+		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
+		       dev_path(dev), rom_header);
 	} else {
-		unsigned long rom_address;
+		u32 rom_address;
 
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 		if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-			#if defined(CONFIG_BOARD_EMULATION_QEMU_X86) \
-				 && CONFIG_BOARD_EMULATION_QEMU_X86
+#if defined(CONFIG_BOARD_EMULATION_QEMU_X86) && CONFIG_BOARD_EMULATION_QEMU_X86
 			if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
 				rom_address = 0xc0000;
 			else
-			#endif
+#endif
 				return NULL;
 		} else {
-			/* enable expansion ROM address decoding */
+			/* Enable expansion ROM address decoding. */
 			pci_write_config32(dev, PCI_ROM_ADDRESS,
 					   rom_address|PCI_ROM_ADDRESS_ENABLE);
 		}
 
-		printk(BIOS_DEBUG, "On card, rom address for %s = %lx\n",
-				dev_path(dev), rom_address);
+		printk(BIOS_DEBUG, "On card, ROM address for %s = %lx\n",
+		       dev_path(dev), (unsigned long)rom_address);
 		rom_header = (struct rom_header *)rom_address;
 	}
 
-	printk(BIOS_SPEW, "PCI Expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
-		    le32_to_cpu(rom_header->signature),
-		    rom_header->size * 512, le32_to_cpu(rom_header->data));
+	printk(BIOS_SPEW, "PCI expansion ROM, signature 0x%04x, "
+	       "INIT size 0x%04x, data ptr 0x%04x\n",
+	       le32_to_cpu(rom_header->signature),
+	       rom_header->size * 512, le32_to_cpu(rom_header->data));
+
 	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
-		printk(BIOS_ERR, "Incorrect Expansion ROM Header Signature %04x\n",
-			   le32_to_cpu(rom_header->signature));
+		printk(BIOS_ERR, "Incorrect expansion ROM header "
+		       "signature %04x\n", le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
 	rom_data = (((void *)rom_header) + le32_to_cpu(rom_header->data));
 
-	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
-		    rom_data->vendor, rom_data->device);
-	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
-		printk(BIOS_ERR, "ID mismatch: Vendor ID %04x, Device ID %04x\n",
-			   rom_data->vendor, rom_data->device);
+	printk(BIOS_SPEW, "PCI ROM image, vendor ID %04x, device ID %04x,\n",
+	       rom_data->vendor, rom_data->device);
+	if (dev->vendor != rom_data->vendor
+	    || dev->device != rom_data->device) {
+		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
+		       "device ID %04x\n", rom_data->vendor, rom_data->device);
 		return NULL;
 	}
 
-	printk(BIOS_SPEW, "PCI ROM Image,  Class Code %04x%02x, Code Type %02x\n",
-		    rom_data->class_hi, rom_data->class_lo,
-		    rom_data->type);
+	printk(BIOS_SPEW, "PCI ROM image, Class Code %04x%02x, "
+	       "Code Type %02x\n", rom_data->class_hi, rom_data->class_lo,
+	       rom_data->type);
+
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
 		printk(BIOS_DEBUG, "Class Code mismatch ROM %08x, dev %08x\n",
-			     (rom_data->class_hi << 8) | rom_data->class_lo,
-			     dev->class);
-		//return NULL;
+		       (rom_data->class_hi << 8) | rom_data->class_lo,
+		       dev->class);
+		// return NULL;
 	}
 
 	return rom_header;
@@ -98,41 +101,51 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)
+struct rom_header *pci_rom_load(struct device *dev,
+				struct rom_header *rom_header)
 {
 	struct pci_data * rom_data;
 	unsigned int rom_size;
 	unsigned int image_size=0;
 
 	do {
-		rom_header = (struct rom_header *)((void *) rom_header + image_size); // get next image
-	        rom_data = (struct pci_data *)((void *) rom_header + le32_to_cpu(rom_header->data));
-        	image_size = le32_to_cpu(rom_data->ilen) * 512;
-	} while ((rom_data->type!=0) && (rom_data->indicator!=0));  // make sure we got x86 version
+		/* Get next image. */
+		rom_header = (struct rom_header *)((void *) rom_header
+							    + image_size);
+
+		rom_data = (struct pci_data *)((void *) rom_header
+				+ le32_to_cpu(rom_header->data));
+
+		image_size = le32_to_cpu(rom_data->ilen) * 512;
+	} while ((rom_data->type != 0) && (rom_data->indicator != 0)); // make sure we got x86 version
 
 	if (rom_data->type != 0)
 		return NULL;
 
 	rom_size = rom_header->size * 512;
 
-	// We check to see if the device thinks it is a VGA device not
-	// whether the ROM image is for a VGA device because some
-	// devices have a mismatch between the hardware and the ROM
+	/*
+	 * We check to see if the device thinks it is a VGA device not
+	 * whether the ROM image is for a VGA device because some
+	 * devices have a mismatch between the hardware and the ROM.
+	 */
  	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
 #if CONFIG_CONSOLE_VGA == 1 && CONFIG_CONSOLE_VGA_MULTI == 0
-		extern device_t vga_pri;	// the primary vga device, defined in device.c
-		if (dev != vga_pri) return NULL; // only one VGA supported
+		extern device_t vga_pri; /* Primary VGA device (device.c). */
+		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
-			printk(BIOS_DEBUG, "copying VGA ROM Image from %p to 0x%x, 0x%x bytes\n",
-			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
-			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
+			printk(BIOS_DEBUG, "Copying VGA ROM Image from %p to "
+			       "0x%x, 0x%x bytes\n", rom_header,
+			       PCI_VGA_RAM_IMAGE_START, rom_size);
+			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
+			       rom_size);
 		}
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 	}
 
-	printk(BIOS_DEBUG, "copying non-VGA ROM Image from %p to %p, 0x%x bytes\n",
-		    rom_header, pci_ram_image_start, rom_size);
+	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x "
+	       "bytes\n", rom_header, pci_ram_image_start, rom_size);
 
 	memcpy(pci_ram_image_start, rom_header, rom_size);
 	pci_ram_image_start += rom_size;

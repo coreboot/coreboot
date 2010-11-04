@@ -42,36 +42,32 @@ static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
 		resource_t min_size, unsigned int index, unsigned long type)
 {
 	struct resource *resource;
+	unsigned long gran;
+	resource_t step;
 
 	/* Initialize the constraints on the current bus. */
 	resource = NULL;
-	if (moving) {
-		unsigned long gran;
-		resource_t step;
+	if (!moving)
+		return;
 
-		resource = new_resource(dev, index);
-		resource->size = 0;
-		gran = 0;
-		step = 1;
-		while ((moving & step) == 0) {
-			gran += 1;
-			step <<= 1;
-		}
-		resource->gran = gran;
-		resource->align = gran;
-		resource->limit = moving | (step - 1);
-		resource->flags = type;
-
-		/*
-		 * Don't let the minimum size exceed what we
-		 * can put in the resource.
-		 */
-		if ((min_size - 1) > resource->limit)
-			min_size = resource->limit + 1;
-
-		resource->size = min_size;
+	resource = new_resource(dev, index);
+	resource->size = 0;
+	gran = 0;
+	step = 1;
+	while ((moving & step) == 0) {
+		gran += 1;
+		step <<= 1;
 	}
-	return;
+	resource->gran = gran;
+	resource->align = gran;
+	resource->limit = moving | (step - 1);
+	resource->flags = type;
+
+	/* Don't let the minimum size exceed what we can put in the resource. */
+	if ((min_size - 1) > resource->limit)
+		min_size = resource->limit + 1;
+
+	resource->size = min_size;
 }
 
 static void cardbus_size_bridge_resource(device_t dev, unsigned int index)

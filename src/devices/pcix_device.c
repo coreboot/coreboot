@@ -56,7 +56,7 @@ static void pcix_tune_dev(device_t dev)
 	/* Don't attempt to handle PCI-X errors. */
 	cmd &= ~PCI_X_CMD_DPERR_E;
 
-	/* Enable Relaxed Ordering. */
+	/* Enable relaxed ordering. */
 	cmd |= PCI_X_CMD_ERO;
 
 	if (orig_cmd != cmd)
@@ -108,6 +108,7 @@ const char *pcix_speed(u16 sstatus)
 		result = pcix_533mhz;
 		break;
 	}
+
 	return result;
 }
 

@@ -27,6 +27,9 @@
 static void pciexp_tune_dev(device_t dev)
 {
 	unsigned int cap;
+#ifdef CONFIG_PCIE_TUNING
+	u32 reg32;
+#endif
 
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (!cap)
@@ -35,9 +38,9 @@ static void pciexp_tune_dev(device_t dev)
 #ifdef CONFIG_PCIE_TUNING
 	printk(BIOS_DEBUG, "PCIe: tuning %s\n", dev_path(dev));
 
-	// TODO make this depending on ASPM
-	/* Enable ASPM Role Based Error Reporting */
-	u32 reg32;
+	// TODO make this depending on ASPM.
+
+	/* Enable ASPM role based error reporting. */
 	reg32 = pci_read_config32(dev, cap + PCI_EXP_DEVCAP);
 	reg32 |= PCI_EXP_DEVCAP_RBER;
 	pci_write_config32(dev, cap + PCI_EXP_DEVCAP, reg32);

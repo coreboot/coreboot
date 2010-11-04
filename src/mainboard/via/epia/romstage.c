@@ -15,6 +15,7 @@
 #include "lib/debug.c"
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
+#include "southbridge/via/vt8231/vt8231_enable_rom.c"
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -86,6 +87,7 @@ static void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
+	vt8231_enable_rom();
 	enable_mainboard_devices();
 	enable_smbus();
 	enable_shadow_ram();

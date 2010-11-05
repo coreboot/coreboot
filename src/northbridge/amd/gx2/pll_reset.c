@@ -71,14 +71,14 @@ static void pll_reset(void)
 	unsigned SyncBits;			/* store the sync bits in up ebx */
 	unsigned DEFAULT_FBDIV;
 
-	if (CONFIG_PROCESSOR_MHZ == 400) {
+	if (CONFIG_GX2_PROCESSOR_MHZ == 400) {
 		DEFAULT_FBDIV = 24;
-	} else if (CONFIG_PROCESSOR_MHZ == 366) {
+	} else if (CONFIG_GX2_PROCESSOR_MHZ == 366) {
 		DEFAULT_FBDIV = 22;
-	} else if (CONFIG_PROCESSOR_MHZ == 300) {
+	} else if (CONFIG_GX2_PROCESSOR_MHZ == 300) {
 		DEFAULT_FBDIV = 18;
 	} else {
-		printk(BIOS_ERR, "Unsupported PROCESSOR_MHZ setting!\n");
+		printk(BIOS_ERR, "Unsupported GX2_PROCESSOR_MHZ setting!\n");
 		post_code(POST_PLL_CPU_VER_FAIL);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -195,6 +195,6 @@ static void pll_reset(void)
 static unsigned int GeodeLinkSpeed(void)
 {
 	unsigned geodelinkspeed;
-	geodelinkspeed = ((CONFIG_PROCESSOR_MHZ * DEFAULT_VDIV) / DEFAULT_MDIV);
+	geodelinkspeed = ((CONFIG_GX2_PROCESSOR_MHZ * DEFAULT_VDIV) / DEFAULT_MDIV);
 	return (geodelinkspeed);
 }

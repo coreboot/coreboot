@@ -21,9 +21,19 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	select GEODE_VSA
 
-# Valid PROCESSOR_MHZ options: 300/366/400 MHz.
-config PROCESSOR_MHZ
+# The GX2_PROCESSOR_MHZ options let you chose the correct GX2 processor
+# speed in the mainboard's Kconfig file.
+config GX2_PROCESSOR_MHZ_300
+	bool
+config GX2_PROCESSOR_MHZ_366
+	bool
+config GX2_PROCESSOR_MHZ_400
+	bool
+
+# Map the config names to an integer (MHz).
+config GX2_PROCESSOR_MHZ
 	int
-	default 366
-	depends on NORTHBRIDGE_AMD_GX2
+	default 300 if GX2_PROCESSOR_MHZ_300
+	default 366 if GX2_PROCESSOR_MHZ_366
+	default 400 if GX2_PROCESSOR_MHZ_400
 

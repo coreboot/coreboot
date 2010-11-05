@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Datasheet: http://www.fintek.com.tw/files/productfiles/F71805F_V025.pdf */
-
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
@@ -107,6 +105,6 @@ static void enable_dev(device_t dev)
 }
 
 struct chip_operations superio_fintek_f71805f_ops = {
-	CHIP_NAME("Fintek F71805F Super I/O")
+	CHIP_NAME("Fintek F71805F/FG Super I/O")
 	.enable_dev = enable_dev
 };

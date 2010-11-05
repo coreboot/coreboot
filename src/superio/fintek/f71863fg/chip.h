@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <pc80/keyboard.h>
 #include <device/device.h>
 #include <uart8250.h>
-
-/* This chip doesn't have keyboard and mouse support. */
 
 extern struct chip_operations superio_fintek_f71863fg_ops;
 
 struct superio_fintek_f71863fg_config {
 	struct uart8250 com1, com2;
+	struct pc_keyboard keyboard;
 };

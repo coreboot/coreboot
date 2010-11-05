@@ -21,8 +21,7 @@
 #include <arch/romcc_io.h>
 #include "i3100.h"
 
-static void i3100_sio_write(u8 port, u8 ldn, u8 index,
-			    u8 value)
+static void i3100_sio_write(u8 port, u8 ldn, u8 index, u8 value)
 {
 	outb(0x07, port);
 	outb(ldn, port + 1);
@@ -32,21 +31,21 @@ static void i3100_sio_write(u8 port, u8 ldn, u8 index,
 
 static void i3100_enable_serial(u8 port, u8 ldn, u16 iobase)
 {
-	/* Enter configuration state */
+	/* Enter configuration state. */
 	outb(0x80, port);
 	outb(0x86, port);
 
-	/* Enable serial port */
+	/* Enable serial port. */
 	i3100_sio_write(port, ldn, 0x30, 0x01);
 
-	/* Set serial port IO region */
+	/* Set serial port I/O region. */
 	i3100_sio_write(port, ldn, 0x60, (iobase >> 8) & 0xff);
 	i3100_sio_write(port, ldn, 0x61, iobase & 0xff);
 
-	/* Enable device interrupts, set UART_CLK predivide to 26 */
+	/* Enable device interrupts, set UART_CLK predivide to 26. */
 	i3100_sio_write(port, 0x00, 0x29, 0x0b);
 
-	/* Exit configuration state */
+	/* Exit configuration state. */
 	outb(0x68, port);
 	outb(0x08, port);
 }

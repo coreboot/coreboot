@@ -30,7 +30,7 @@
 #define F71805F_FDC	0x00	/* Floppy */
 #define F71805F_SP1	0x01	/* UART1 */
 #define	F71805F_SP2	0x02	/* UART2 */
-#define F71805F_PP	0x03	/* Parallel Port */
-#define	F71805F_HWM	0x04	/* Hardware Monitor */
+#define F71805F_PP	0x03	/* Parallel port */
+#define	F71805F_HWM	0x04	/* Hardware monitor */
 #define	F71805F_GPIO	0x06	/* General Purpose I/O (GPIO) */
 #define	F71805F_PME	0x0a	/* Power Management Events (PME) */

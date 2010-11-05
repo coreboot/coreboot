@@ -43,9 +43,8 @@ static void i3100_init(device_t dev)
 	struct superio_intel_i3100_config *conf;
 	struct resource *res0;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
 
 	conf = dev->chip_info;
 

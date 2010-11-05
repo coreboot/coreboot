@@ -1,6 +1,8 @@
 ##
 ## This file is part of the coreboot project.
 ##
+## Copyright (C) 2010 Marc Jones <marcj303@gmail.com>
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2 of the License, or
@@ -16,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#config chip.h
 ramstage-$(CONFIG_SUPERIO_FINTEK_F71859) += superio.c
+

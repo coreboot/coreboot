@@ -23,19 +23,19 @@
 #include <arch/romcc_io.h>
 #include "f71863fg.h"
 
-static inline void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0x87, port);
 }
 
 static void pnp_exit_conf_state(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static void f71863fg_enable_serial(device_t dev, unsigned int iobase)
+static void f71863fg_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

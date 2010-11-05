@@ -40,7 +40,7 @@ static void pnp_exit_conf_state(device_t dev)
 static void f71889_init(device_t dev)
 {
 	struct superio_fintek_f71889_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -57,7 +57,6 @@ static void f71889_init(device_t dev)
 		break;
 	case F71889_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}
@@ -95,14 +94,14 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x7f8 etc. values may not be correct. */
-	{ &ops, F71889_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, F71889_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
 	{ &ops, F71889_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, F71889_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, F71889_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, F71889_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0}, },
-	{ &ops, F71889_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
+	{ &ops, F71889_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
+	{ &ops, F71889_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
+	{ &ops, F71889_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, },
 	{ &ops, F71889_GPIO, },
-	{ &ops, F71889_VID,  PNP_IO0 | PNP_IRQ0, { 0x07f8, 0}, },
+	{ &ops, F71889_VID,  PNP_IO0 | PNP_IRQ0, { 0x07f8, 0 }, },
 	{ &ops, F71889_SPI, },
 	{ &ops, F71889_PME, },
 	{ &ops, F71889_VREF, },

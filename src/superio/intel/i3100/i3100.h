@@ -18,11 +18,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Datasheet: http://www.intel.com/design/intarch/datashts/313458.htm */
+/*
+ * Datasheet:
+ *  - Name: Intel 3100 Chipset
+ *  - URL: http://www.intel.com/design/intarch/datashts/313458.htm
+ *  - PDF: http://download.intel.com/design/intarch/datashts/31345803.pdf
+ *  - Revision / Date: 007, October 2008
+ *  - Order number: 313458-007US
+ */
 
 #ifndef SUPERIO_INTEL_I3100_I3100_H
 #define SUPERIO_INTEL_I3100_I3100_H
 
+/*
+ * The SIW ("Serial I/O and Watchdog Timer") integrated into the i3100 is
+ * very similar to a Super I/O, both in functionality and config mechanism.
+ *
+ * The SIW contains:
+ *  - UART(s)
+ *  - Serial interrupt controller
+ *  - Watchdog timer (WDT)
+ *  - LPC interface
+ */
+
+/* Logical device numbers (LDNs). */
 #define I3100_SP1 0x04 /* Com1 */
 #define I3100_SP2 0x05 /* Com2 */
 #define I3100_WDT 0x06 /* Watchdog timer */

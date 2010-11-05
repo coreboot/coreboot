@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
@@ -56,6 +55,10 @@ static void f71863fg_init(device_t dev)
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
+	case F71863FG_KBC:
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		pc_keyboard_init(&conf->keyboard);
+		break;
 	}
 }
 
@@ -91,12 +94,15 @@ static struct device_operations ops = {
 
 static struct pnp_info pnp_dev_info[] = {
 	/* TODO: Some of the 0x7f8 etc. values may not be correct. */
-	{ &ops, F71863FG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, F71863FG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
 	{ &ops, F71863FG_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, F71863FG_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, F71863FG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, F71863FG_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0}, },
-	{ &ops, F71863FG_GPIO, PNP_IRQ0, },
+	{ &ops, F71863FG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
+	{ &ops, F71863FG_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
+	{ &ops, F71863FG_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, },
+	{ &ops, F71863FG_GPIO, },
+	{ &ops, F71863FG_VID,  PNP_IO0, { 0x07f8, 0 }, },
+	{ &ops, F71863FG_SPI, },
 	{ &ops, F71863FG_PME, },
 };
 

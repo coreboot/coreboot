@@ -7,6 +7,10 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select NORTHBRIDGE_VIA_VX800
 	select SUPERIO_WINBOND_W83697HF
 	select BOARD_HAS_FADT
+	select HAVE_PIRQ_TABLE
+	# Note: For ACPI, you need to use the 'get_dsdt' script and uncomment
+	# the "select HAVE_ACPI_TABLES" line below.
+	# select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select BOARD_ROMSIZE_KB_512
 	select RAMINIT_SYSINFO

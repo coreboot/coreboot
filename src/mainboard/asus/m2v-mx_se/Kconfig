@@ -36,6 +36,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select VGA
 	select TINY_BOOTBLOCK
 	select HAVE_MAINBOARD_RESOURCES
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

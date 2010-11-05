@@ -49,6 +49,10 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n
 
+config QRANK_DIMM_SUPPORT
+	bool
+	default n
+
 if K8_REV_F_SUPPORT
 
 config DIMM_DDR2

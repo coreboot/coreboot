@@ -24,7 +24,6 @@
 #define SET_NB_CFG_54 1
 
 //used by raminit
-#define QRANK_DIMM_SUPPORT 1
 
 //used by init_cpus and fidvid
 #define SET_FIDVID 1

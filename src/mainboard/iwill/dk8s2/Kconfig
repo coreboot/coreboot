@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ATI_RAGE_XL
 	select BOARD_ROMSIZE_KB_512
 	select RAMINIT_SYSINFO
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

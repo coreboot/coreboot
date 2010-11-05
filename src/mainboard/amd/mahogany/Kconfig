@@ -24,6 +24,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_1024
 	select RAMINIT_SYSINFO
 	select GFXUMA
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

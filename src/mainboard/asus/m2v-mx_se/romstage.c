@@ -25,7 +25,6 @@
 unsigned int get_sbdn(unsigned bus);
 
 /* Used by raminit. */
-#define QRANK_DIMM_SUPPORT 1
 
 /* Used by init_cpus and fidvid */
 #define SET_FIDVID 1

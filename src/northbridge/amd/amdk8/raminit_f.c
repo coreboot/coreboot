@@ -32,10 +32,6 @@
 #include "option_table.h"
 #endif
 
-#ifndef QRANK_DIMM_SUPPORT
-#define QRANK_DIMM_SUPPORT 0
-#endif
-
 #if CONFIG_DEBUG_RAM_SETUP
 #define printk_raminit(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
 #else
@@ -870,7 +866,7 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 		/* Set the appropriate DIMM base address register */
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 0) << 2), base0);
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 1) << 2), base1);
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 		if (sz->rank == 4) {
 			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), base0);
 			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), base1);
@@ -898,7 +894,7 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 		} else {
 			dword = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW); //Channel A
 			dword &= ~(ClkDis0 >> index);
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 			if (sz->rank == 4) {
 				dword &= ~(ClkDis0 >> (index+2));
 			}
@@ -908,7 +904,7 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 			if (meminfo->is_Width128) { // ChannelA+B
 				dword = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
 				dword &= ~(ClkDis0 >> index);
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 				if (sz->rank == 4) {
 					dword &= ~(ClkDis0 >> (index+2));
 				}
@@ -961,7 +957,7 @@ static void set_dimm_cs_map(const struct mem_controller *ctrl,
 	}
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 	if (sz->rank == 4) {
 		map &= ~(0xf << ( (index + 2) * 4));
 	}
@@ -972,7 +968,7 @@ static void set_dimm_cs_map(const struct mem_controller *ctrl,
 		unsigned temp_map;
 		temp_map = cs_map_aaa[(sz->bank-2)*3*4 + (sz->rows - 13)*3 + (sz->col - 9) ];
 		map |= temp_map << (index*4);
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 		if (sz->rank == 4) {
 			map |=  temp_map << ( (index + 2) * 4);
 		}
@@ -1312,7 +1308,7 @@ static long disable_dimm(const struct mem_controller *ctrl, unsigned index,
 	} else {
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 0) << 2), 0);
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 1) << 2), 0);
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 		if (meminfo->sz[index].rank == 4) {
 			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), 0);
 			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), 0);
@@ -2194,7 +2190,7 @@ static int update_dimm_Tref(const struct mem_controller *ctrl,
 static void set_4RankRDimm(const struct mem_controller *ctrl,
 			const struct mem_param *param, struct mem_info *meminfo)
 {
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 	int value;
 	int i;
 	long dimm_mask = meminfo->dimm_mask;
@@ -2234,7 +2230,7 @@ static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
 	uint32_t mask_single_rank;
 	uint32_t mask_page_1k;
 	int value;
-#if QRANK_DIMM_SUPPORT == 1
+#if CONFIG_QRANK_DIMM_SUPPORT
 	int rank;
 #endif
 
@@ -2267,20 +2263,20 @@ static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
 
 		value = spd_read_byte(spd_device, SPD_PRI_WIDTH);
 
-		#if QRANK_DIMM_SUPPORT == 1
+		#if CONFIG_QRANK_DIMM_SUPPORT
 			rank = meminfo->sz[i].rank;
 		#endif
 
 		if (value==4) {
 			mask_x4 |= (1<<i);
-			#if QRANK_DIMM_SUPPORT == 1
+			#if CONFIG_QRANK_DIMM_SUPPORT
 			if (rank==4) {
 				mask_x4 |= 1<<(i+2);
 			}
 			#endif
 		} else if (value==16) {
 			mask_x16 |= (1<<i);
-			#if QRANK_DIMM_SUPPORT == 1
+			#if CONFIG_QRANK_DIMM_SUPPORT
 			 if (rank==4) {
 				 mask_x16 |= 1<<(i+2);
 			 }

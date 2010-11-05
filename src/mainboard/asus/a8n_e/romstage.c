@@ -25,7 +25,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 
 /* Used by raminit. */
-#define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS == 1
 #define SET_NB_CFG_54 1

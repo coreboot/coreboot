@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select AMDMCT
 	select TINY_BOOTBLOCK
 	select MMCONF_SUPPORT_DEFAULT
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SERIAL_CPU_INIT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_1024
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

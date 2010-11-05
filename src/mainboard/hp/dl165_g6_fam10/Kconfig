@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ENABLE_APIC_EXT_ID
 	select AMDMCT
 	select TINY_BOOTBLOCK
+	select QRANK_DIMM_SUPPORT
 
 config MAINBOARD_DIR
 	string

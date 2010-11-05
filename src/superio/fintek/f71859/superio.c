@@ -31,6 +31,7 @@
 static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x87, dev->path.pnp.port);
+	outb(0x87, dev->path.pnp.port);
 }
 
 static void pnp_exit_conf_state(device_t dev)

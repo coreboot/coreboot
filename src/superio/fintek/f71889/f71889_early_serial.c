@@ -26,6 +26,7 @@ static void pnp_enter_conf_state(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
+	outb(0x87, port);
 }
 
 static void pnp_exit_conf_state(device_t dev)

@@ -26,20 +26,15 @@ static const unsigned char NumColAddr[] = {
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
-static void banner(const char *s)
-{
-	printk(BIOS_DEBUG, " * %s\n", s);
-}
-
 static void hcf(void)
 {
-	print_emerg("DIE\n");
+	printk(BIOS_EMERG, "DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also
 	 * ensures that things, in general, keep going so no debug output
 	 * is lost
 	 */
 	while (1)
-		print_emerg_char(0);
+		printk(BIOS_EMERG, (0));
 }
 
 static void auto_size_dimm(unsigned int dimm)
@@ -51,35 +46,35 @@ static void auto_size_dimm(unsigned int dimm)
 
 	dimm_setting = 0;
 
-	banner("Check present");
+	printk(BIOS_DEBUG, "Check present\n");
 	/* Check that we have a dimm */
 	if (spd_read_byte(dimm, SPD_MEMORY_TYPE) == 0xFF) {
 		return;
 	}
 
-	banner("MODBANKS");
+	printk(BIOS_DEBUG, "MODBANKS\n");
 	/* Field: Module Banks per DIMM */
 	/* EEPROM byte usage: (5) Number of DIMM Banks */
 	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
 	if ((MIN_MOD_BANKS > spd_byte) || (spd_byte > MAX_MOD_BANKS)) {
-		print_emerg("Number of module banks not compatible\n");
+		printk(BIOS_EMERG, "Number of module banks not compatible\n");
 		post_code(ERROR_BANK_SET);
 		hcf();
 	}
 	dimm_setting |= (spd_byte >> 1) << CF07_UPPER_D0_MB_SHIFT;
-	banner("FIELDBANKS");
 
+	printk(BIOS_DEBUG, "FIELDBANKS\n");
 	/* Field: Banks per SDRAM device */
 	/* EEPROM byte usage: (17) Number of Banks on SDRAM Device */
 	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
 	if ((MIN_DEV_BANKS > spd_byte) || (spd_byte > MAX_DEV_BANKS)) {
-		print_emerg("Number of device banks not compatible\n");
+		printk(BIOS_EMERG, "Number of device banks not compatible\n");
 		post_code(ERROR_BANK_SET);
 		hcf();
 	}
 	dimm_setting |= (spd_byte >> 2) << CF07_UPPER_D0_CB_SHIFT;
-	banner("SPDNUMROWS");
 
+	printk(BIOS_DEBUG, "SPDNUMROWS\n");
 	/* Field: DIMM size
 	 * EEPROM byte usage:
 	 *   (3)  Number of Row Addresses
@@ -90,29 +85,29 @@ static void auto_size_dimm(unsigned int dimm)
 	 */
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
 	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
-		print_emerg("Assymetirc DIMM not compatible\n");
+		printk(BIOS_EMERG, "Asymmetric DIMM not compatible\n");
 		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
-	banner("SPDBANKDENSITY");
 
+	printk(BIOS_DEBUG, "SPDBANKDENSITY\n");
 	dimm_size = spd_read_byte(dimm, SPD_BANK_DENSITY);
-	banner("DIMMSIZE");
+	printk(BIOS_DEBUG, "DIMMSIZE\n");
 	dimm_size |= (dimm_size << 8);	/* align so 1GB(bit0) is bit 8, this is a little weird to get gcc to not optimize this out */
 	dimm_size &= 0x01FC;	/* and off 2GB DIMM size : not supported and the 1GB size we just moved up to bit 8 as well as all the extra on top */
 
 	/* Module Density * Module Banks */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
-	banner("BEFORT CTZ");
+	printk(BIOS_DEBUG, "BEFORT CTZ\n");
 	dimm_size = __builtin_ctz(dimm_size);
-	banner("TEST DIMM SIZE>7");
+	printk(BIOS_DEBUG, "TEST DIMM SIZE>7\n");
 	if (dimm_size > 7) {	/* 7 is 512MB only support 512MB per DIMM */
-		print_emerg("Only support up to 512MB per DIMM\n");
+		printk(BIOS_EMERG, "Only support up to 512MB per DIMM\n");
 		post_code(ERROR_DENSITY_DIMM);
 		hcf();
 	}
 	dimm_setting |= dimm_size << CF07_UPPER_D0_SZ_SHIFT;
-	banner("PAGESIZE");
+	printk(BIOS_DEBUG, "PAGESIZE\n");
 
 /*
  * Field: PAGE size
@@ -142,22 +137,22 @@ static void auto_size_dimm(unsigned int dimm)
  */
 
 	spd_byte = NumColAddr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
-	banner("MAXCOLADDR");
+	printk(BIOS_DEBUG, "MAXCOLADDR\n");
 	if (spd_byte > MAX_COL_ADDR) {
-		print_emerg("DIMM page size not compatible\n");
+		printk(BIOS_EMERG, "DIMM page size not compatible\n");
 		post_code(ERROR_SET_PAGE);
 		hcf();
 	}
-	banner(">11address test");
+	printk(BIOS_DEBUG, ">11address test\n");
 	spd_byte -= 7;
 	if (spd_byte > 4) {	/* if the value is above 4 it means >11 col address lines */
 		spd_byte = 7;	/* which means >16k so set to disabled */
 	}
 	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;	/* 0=1k,1=2k,2=4k,etc */
 
-	banner("RDMSR CF07");
+	printk(BIOS_DEBUG, "RDMSR CF07\n");
 	msr = rdmsr(MC_CF07_DATA);
-	banner("WRMSR CF07");
+	printk(BIOS_DEBUG, "WRMSR CF07\n");
 	if (dimm == DIMM0) {
 		msr.hi &= 0xFFFF0000;
 		msr.hi |= dimm_setting;
@@ -166,7 +161,7 @@ static void auto_size_dimm(unsigned int dimm)
 		msr.hi |= dimm_setting << 16;
 	}
 	wrmsr(MC_CF07_DATA, msr);
-	banner("ALL DONE");
+	printk(BIOS_DEBUG, "ALL DONE\n");
 }
 
 static void checkDDRMax(void)
@@ -194,7 +189,7 @@ static void checkDDRMax(void)
 
 	/* current speed > max speed? */
 	if (GeodeLinkSpeed() > speed) {
-		print_emerg("DIMM overclocked. Check GeodeLink Speed\n");
+		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink Speed\n");
 		post_code(POST_PLL_MEM_FAIL);
 		hcf();
 	}
@@ -311,7 +306,7 @@ static void setCAS(void)
 	} else if ((casmap0 &= casmap1)) {
 		spd_byte = CASDDR[__builtin_ctz(casmap0)];
 	} else {
-		print_emerg("DIMM CAS Latencies not compatible\n");
+		printk(BIOS_EMERG, "DIMM CAS Latencies not compatible\n");
 		post_code(ERROR_DIFF_DIMMS);
 		hcf();
 	}
@@ -466,53 +461,53 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	uint8_t spd_byte;
 
-	banner("sdram_set_spd_register");
+	printk(BIOS_DEBUG, "sdram_set_spd_register\n");
 	post_code(POST_MEM_SETUP);	/* post_70h */
 
 	spd_byte = spd_read_byte(DIMM0, SPD_MODULE_ATTRIBUTES);
-	banner("Check DIMM 0");
+	printk(BIOS_DEBUG, "Check DIMM 0\n");
 	/* Check DIMM is not Register and not Buffered DIMMs. */
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
-		print_emerg("DIMM0 NOT COMPATIBLE\n");
+		printk(BIOS_EMERG, "DIMM0 NOT COMPATIBLE\n");
 		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
-	banner("Check DIMM 1");
+	printk(BIOS_DEBUG, "Check DIMM 1\n");
 	spd_byte = spd_read_byte(DIMM1, SPD_MODULE_ATTRIBUTES);
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
-		print_emerg("DIMM1 NOT COMPATIBLE\n");
+		printk(BIOS_EMERG, "DIMM1 NOT COMPATIBLE\n");
 		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
 
 	post_code(POST_MEM_SETUP2);	/* post_72h */
-	banner("Check DDR MAX");
+	printk(BIOS_DEBUG, "Check DDR MAX\n");
 
 	/* Check that the memory is not overclocked. */
 	checkDDRMax();
 
 	/* Size the DIMMS */
 	post_code(POST_MEM_SETUP3);	/* post_73h */
-	banner("AUTOSIZE DIMM 0");
+	printk(BIOS_DEBUG, "AUTOSIZE DIMM 0\n");
 	auto_size_dimm(DIMM0);
 	post_code(POST_MEM_SETUP4);	/* post_74h */
-	banner("AUTOSIZE DIMM 1");
+	printk(BIOS_DEBUG, "AUTOSIZE DIMM 1\n");
 	auto_size_dimm(DIMM1);
 
 	/* Set CAS latency */
-	banner("set cas latency");
+	printk(BIOS_DEBUG, "set cas latency\n");
 	post_code(POST_MEM_SETUP5);	/* post_75h */
 	setCAS();
 
 	/* Set all the other latencies here (tRAS, tRP....) */
-	banner("set all latency");
+	printk(BIOS_DEBUG, "set all latency\n");
 	set_latencies();
 
 	/* Set Extended Mode Registers */
-	banner("set emrs");
+	printk(BIOS_DEBUG, "set emrs\n");
 	set_extended_mode_registers();
 
-	banner("set ref rate");
+	printk(BIOS_DEBUG, "set ref rate\n");
 	/* Set Memory Refresh Rate */
 	set_refresh_rate();
 }
@@ -534,13 +529,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr = rdmsr(MC_CF1017_DATA);
 	msr.lo = 0x0101;
 	wrmsr(MC_CF1017_DATA, msr);
-	//print_debug("sdram_enable step 2\n");
+	printk(BIOS_DEBUG, "sdram_enable step 2\n");
 
 	/* 3. release CKE mask to enable CKE */
 	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~(0x03 << 8);
 	wrmsr(MC_CFCLK_DBUG, msr);
-	//print_debug("sdram_enable step 3\n");
+	printk(BIOS_DEBUG, "sdram_enable step 3\n");
 
 	/* 4. set and clear REF_TST 16 times, more shouldn't hurt
 	 * why this is before EMRS and MRS ? */
@@ -551,7 +546,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		msr.lo &= ~(0x01 << 3);
 		wrmsr(MC_CF07_DATA, msr);
 	}
-	//print_debug("sdram_enable step 4\n");
+	printk(BIOS_DEBUG, "sdram_enable step 4\n");
 
 	/* 6. enable DLL, load Extended Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(MC_CF07_DATA);
@@ -559,7 +554,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~((0x01 << 28) | 0x01);
 	wrmsr(MC_CF07_DATA, msr);
-	//print_debug("sdram_enable step 6\n");
+	printk(BIOS_DEBUG, "sdram_enable step 6\n");
 
 	/* 7. Reset DLL, Bit 27 is undocumented in GX datasheet,
 	 * it is documented in LX datasheet */
@@ -569,7 +564,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~((0x01 << 27) | 0x01);
 	wrmsr(MC_CF07_DATA, msr);
-	//print_debug("sdram_enable step 7\n");
+	printk(BIOS_DEBUG, "sdram_enable step 7\n");
 
 	/* 8. load Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(MC_CF07_DATA);
@@ -577,7 +572,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~0x01;
 	wrmsr(MC_CF07_DATA, msr);
-	//print_debug("sdram_enable step 8\n");
+	printk(BIOS_DEBUG, "sdram_enable step 8\n");
 
 	/* wait 200 SDCLKs */
 	for (i = 0; i < 200; i++)

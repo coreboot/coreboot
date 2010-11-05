@@ -229,6 +229,8 @@ static const struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
 			{0x00,NANA,NANA,NANA,NANA,NANA,EOT}},
 		{EOT}}},
+	{0x0407, "F81865F/F-I", {
+		{EOT}}},
 	{EOT}
 };
 

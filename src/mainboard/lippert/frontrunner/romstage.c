@@ -18,7 +18,7 @@
 #include "southbridge/amd/cs5535/cs5535_early_setup.c"
 
 #define DIMM0 0xA0
-#define DIMM1 0xA2
+#define DIMM1 0xFF /* DIMM1 is not available/used on this board. */
 
 static const unsigned char spdbytes[] = {	/* 4x Qimonda HYB25DC512160CF-6 */
 	0xFF, 0xFF,				/* only values used by raminit.c are set */

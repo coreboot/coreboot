@@ -24,8 +24,6 @@
 /* Used by it8712f_enable_serial(). */
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 
-/* Used by raminit. */
-
 #if CONFIG_LOGICAL_CPUS == 1
 #define SET_NB_CFG_54 1
 #endif

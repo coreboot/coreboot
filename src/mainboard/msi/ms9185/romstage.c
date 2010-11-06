@@ -25,8 +25,6 @@
 
 #define SET_NB_CFG_54 1
 
-//used by raminit
-
 //used by incoherent_ht
 //#define K8_ALLOCATE_IO_RANGE 1
 

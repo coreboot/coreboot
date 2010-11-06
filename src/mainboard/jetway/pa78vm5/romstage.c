@@ -24,8 +24,6 @@
 
 #define SET_NB_CFG_54 1
 
-//used by raminit
-
 //used by incoherent_ht
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0

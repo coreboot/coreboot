@@ -23,8 +23,6 @@
 
 #define SET_NB_CFG_54 1
 
-//used by raminit
-
 //used by init_cpus and fidvid
 #define SET_FIDVID 1
 #define SET_FIDVID_CORE_RANGE 0

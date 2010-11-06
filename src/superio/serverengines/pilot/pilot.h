@@ -21,8 +21,8 @@
 
 /* PILOT Super I/O is only based on LPC observation done on factory system. */
 
-#define PILOT_SP1 0x02 /* Com1 */
 #define PILOT_LD1 0x01 /* Logical device 1 */
+#define PILOT_SP1 0x02 /* Com1 */
 #define PILOT_LD4 0x04 /* Logical device 4 */
 #define PILOT_LD5 0x05 /* Logical device 5 */
 #define PILOT_LD7 0x07 /* Logical device 7 */

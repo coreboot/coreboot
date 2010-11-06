@@ -29,7 +29,7 @@
  */
 static void pilot_early_init(device_t dev)
 {
-	unsigned port = dev >> 8;
+	u16 port = dev >> 8;
 
 	print_debug("Using port: ");
 	print_debug_hex16(port);
@@ -55,6 +55,7 @@ static void pilot_early_init(device_t dev)
 	pnp_set_enable(PNP_DEV(port, 0x3), 0);
 	pnp_exit_ext_func_mode(dev);
 */
+
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x4));
 	pnp_exit_ext_func_mode(dev);
@@ -95,6 +96,7 @@ static void pilot_early_init(device_t dev)
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_enable(PNP_DEV(port, 0x7), 0);
 	pnp_exit_ext_func_mode(dev);
+
 /*
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x8));

@@ -18,17 +18,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* vt1211 PNP devices */
-
-#define VT1211_FDC		0	/* Floppy */
-#define VT1211_PP		1	/* Parallel Port */
-#define VT1211_SP1		2	/* COM1 */
-#define VT1211_SP2		3	/* COM2 */
-#define VT1211_MIDI		6	/* MIDI */
-#define VT1211_GAME		7	/* Game port */
-#define VT1211_GPIO		8	/* GPIO pins */
-#define VT1211_WATCHDOG		9	/* Watchdog timer */
-#define VT1211_WAKEUP		10	/* Wakeup control */
-#define VT1211_HWM		11	/* Hardware monitor */
-#define VT1211_FIR		12	/* Irda */
-#define VT1211_ROM		13	/* ROM control */
+/* Logical device numbers (LDNs). */
+#define VT1211_FDC		0x00	/* Floppy */
+#define VT1211_PP		0x01	/* Parallel port */
+#define VT1211_SP1		0x02	/* COM1 */
+#define VT1211_SP2		0x03	/* COM2 */
+#define VT1211_MIDI		0x06	/* MIDI */
+#define VT1211_GAME		0x07	/* Game port (GMP) */
+#define VT1211_GPIO		0x08	/* GPIO */
+#define VT1211_WDG		0x09	/* Watchdog timer (WDG) */
+#define VT1211_WUC		0x0a	/* Wake-up control (WUC) */
+#define VT1211_HWM		0x0b	/* Hardware monitor (HM) */
+#define VT1211_FIR		0x0c	/* Very fast IR (VFIR/FIR) */
+#define VT1211_ROM		0x0d	/* Flash ROM */

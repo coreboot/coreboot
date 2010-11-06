@@ -44,15 +44,14 @@ static void m3885x_init(device_t dev)
 	m3885_configure_multikey();
 }
 
-
 static void m3885x_read_resources(device_t dev)
 {
-	// nothing, but this function avoids an error on serial console.
+	/* Nothing, but this function avoids an error on serial console. */
 }
 
 static void m3885x_enable_resources(device_t dev)
 {
-	// nothing, but this function avoids an error on serial console.
+	/* Nothing, but this function avoids an error on serial console. */
 }
 
 static struct device_operations ops = {
@@ -74,5 +73,3 @@ struct chip_operations superio_renesas_m3885x_ops = {
 	CHIP_NAME("Renesas M3885x Super I/O")
 	.enable_dev = enable_dev,
 };
-
-

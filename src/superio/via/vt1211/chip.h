@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _SUPERIO_VIA_VT1211
-#define _SUPERIO_VIA_VT1211
+#ifndef SUPERIO_VIA_VT1211_CHIP_H
+#define SUPERIO_VIA_VT1211_CHIP_H
 
 #include <uart8250.h>
 
@@ -29,4 +29,4 @@ struct superio_via_vt1211_config {
 	struct uart8250 com1, com2;
 };
 
-#endif /* _SUPERIO_VIA_VT1211 */
+#endif

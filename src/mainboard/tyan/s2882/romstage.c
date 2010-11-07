@@ -73,12 +73,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #endif
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define FIRST_CPU  1
-#define SECOND_CPU 1
-#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
-
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"

@@ -168,6 +168,75 @@ static void vt8237s_vlink_init(struct device *dev)
 
 }
 
+static void vt8237a_vlink_init(struct device *dev)
+{
+	u8 reg;
+	device_t devfun7;
+
+	devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+				  PCI_DEVICE_ID_VIA_K8T890CE_7, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8M890CE_7, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8T890CF_7, 0);
+	/* No pairing NB was found. */
+	if (!devfun7)
+		return;
+
+	/*
+	 * This init code is valid only for the VT8237A! For different
+	 * sounthbridges (e.g. VT8237S, VT8237R and VT8251) a different
+	 * init code is required.
+	 *
+	 * FIXME: This is based on vt8237r_vlink_init() in
+	 *        k8t890/k8t890_ctrl.c and modified to fit what the AMI
+	 *        BIOS on my M2V wrote to these registers (by looking
+	 *        at lspci -nxxx output).
+	 *        Works for me.
+	 */
+
+	/* disable auto disconnect */
+	reg = pci_read_config8(devfun7, 0x42);
+	reg &= ~0x4;
+	pci_write_config8(devfun7, 0x42, reg);
+
+	/* NB part setup */
+	pci_write_config8(devfun7, 0xb5, 0x88);
+	pci_write_config8(devfun7, 0xb6, 0x88);
+	pci_write_config8(devfun7, 0xb7, 0x61);
+
+	reg = pci_read_config8(devfun7, 0xb4);
+	reg |= 0x11;
+	pci_write_config8(devfun7, 0xb4, reg);
+
+	pci_write_config8(devfun7, 0xb0, 0x6);
+	pci_write_config8(devfun7, 0xb1, 0x1);
+
+	/* SB part setup */
+	pci_write_config8(dev, 0xb7, 0x50);
+	pci_write_config8(dev, 0xb9, 0x88);
+	pci_write_config8(dev, 0xba, 0x8a);
+	pci_write_config8(dev, 0xbb, 0x88);
+
+	reg = pci_read_config8(dev, 0xbd);
+	reg |= 0x3;
+	reg &= ~0x4;
+	pci_write_config8(dev, 0xbd, reg);
+
+	reg = pci_read_config8(dev, 0xbc);
+	reg &= ~0x7;
+	pci_write_config8(dev, 0xbc, reg);
+
+	pci_write_config8(dev, 0x48, 0x23);
+
+	/* enable auto disconnect, for STPGNT and HALT */
+	reg = pci_read_config8(devfun7, 0x42);
+	reg |= 0x7;
+	pci_write_config8(devfun7, 0x42, reg);
+}
+
 static void ctrl_enable(struct device *dev)
 {
 	/* Enable the 0:13 and 0:13.1. */
@@ -191,6 +260,12 @@ static void ctrl_init(struct device *dev)
 					 PCI_DEVICE_ID_VIA_VT8237S_LPC, 0);
 	if (devsb) {
 		vt8237s_vlink_init(dev);
+	}
+
+	devsb = dev_find_device(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_VT8237A_LPC, 0);
+	if (devsb) {
+		vt8237a_vlink_init(dev);
 	}
 
 	/* Configure PCI1 and copy mirror registers from D0F3. */

@@ -319,6 +319,58 @@ static void vt8237r_init(struct device *dev)
 	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
 
+static void vt8237a_init(struct device *dev)
+{
+	/*
+	 * FIXME: This is based on vt8237s_init() and the values the AMI
+	 *        BIOS on my M2V wrote to these registers (by loking
+	 *        at lspci -nxxx output).
+	 *        Works for me.
+	 */
+	u32 tmp;
+
+	/* Set bit 3 of 0x4f (use INIT# as CPU reset). */
+	tmp = pci_read_config8(dev, 0x4f);
+	tmp |= 0x08;
+	pci_write_config8(dev, 0x4f, tmp);
+
+	/*
+	 * bit2: REQ5 as PCI request input - should be together with INTE-INTH.
+	 * bit5: usb power control lines as gpio
+	 */
+	pci_write_config8(dev, 0xe4, 0x24);
+	/*
+	 * Enable APIC wakeup from INTH
+	 * Enable SATA LED, disable special CPU Frequency Change -
+	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
+	 */
+	pci_write_config8(dev, 0xe5, 0x69);
+
+	/* Reduce further the STPCLK/LDTSTP signal to 5us. */
+	pci_write_config8(dev, 0xec, 0x4);
+
+	/* Host Bus Power Management Control, maybe not needed */
+	pci_write_config8(dev, 0x8c, 0x5);
+
+	/* Enable HPET at VT8237R_HPET_ADDR. */
+	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
+
+	southbridge_init_common(dev);
+
+	/* Share INTE-INTH with INTA-INTD for simplicity */
+	pci_write_config8(dev, 0x46, 0x00);
+
+	/* FIXME: Intel needs more bit set for C2/C3. */
+
+	/*
+	 * Allow SLP# signal to assert LDTSTOP_L.
+	 * Will work for C3 and for FID/VID change.
+	 */
+	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
+
+	dump_south(dev);
+}
+
 static void vt8237s_init(struct device *dev)
 {
 	u32 tmp;
@@ -537,6 +589,14 @@ static const struct device_operations vt8237r_lpc_ops_r = {
 	.scan_bus		= scan_static_bus,
 };
 
+static const struct device_operations vt8237r_lpc_ops_a = {
+	.read_resources		= vt8237r_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= vt8237a_init,
+	.scan_bus		= scan_static_bus,
+};
+
 static const struct pci_driver lpc_driver_r __pci_driver = {
 	.ops	= &vt8237r_lpc_ops_r,
 	.vendor	= PCI_VENDOR_ID_VIA,
@@ -544,7 +604,7 @@ static const struct pci_driver lpc_driver_r __pci_driver = {
 };
 
 static const struct pci_driver lpc_driver_a __pci_driver = {
-	.ops	= &vt8237r_lpc_ops_r,
+	.ops	= &vt8237r_lpc_ops_a,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_VT8237A_LPC,
 };

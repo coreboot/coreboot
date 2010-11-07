@@ -40,7 +40,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "GIGABYTE MA78GM"
+	default "GA-MA78GM-US2H"
 
 config MAX_CPUS
 	int

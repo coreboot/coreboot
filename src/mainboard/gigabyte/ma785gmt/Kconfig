@@ -40,7 +40,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Gigabyte GA785GMT"
+	default "GA-MA785GMT-UD2H"
 
 config MAX_CPUS
 	int

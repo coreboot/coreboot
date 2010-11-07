@@ -25,9 +25,6 @@
 
 #define SET_NB_CFG_54 1
 
-//used by incoherent_ht
-//#define K8_ALLOCATE_IO_RANGE 1
-
 //used by init_cpus and fidvid
 #define SET_FIDVID 1
 //if we want to wait for core1 done before DQS training, set it to 0

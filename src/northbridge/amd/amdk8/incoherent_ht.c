@@ -11,10 +11,6 @@
 	#define CONFIG_K8_HT_FREQ_1G_SUPPORT 0
 #endif
 
-#ifndef K8_ALLOCATE_IO_RANGE
-	#define K8_ALLOCATE_IO_RANGE 0
-#endif
-
 // Do we need allocate MMIO? Current We direct last 64M to sblink only, We can not lose access to last 4M range to ROM
 #ifndef K8_ALLOCATE_MMIO_RANGE
 	#define K8_ALLOCATE_MMIO_RANGE 0
@@ -720,7 +716,7 @@ static int ht_setup_chains_x(void)
 	uint8_t next_busn;
 	uint8_t ht_c_num;
 	uint8_t nodes;
-#if K8_ALLOCATE_IO_RANGE == 1
+#if CONFIG_K8_ALLOCATE_IO_RANGE
 	unsigned next_io_base;
 #endif
 
@@ -740,7 +736,7 @@ static int ht_setup_chains_x(void)
 
 	next_busn=0x3f+1; /* 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage*/
 
-#if K8_ALLOCATE_IO_RANGE == 1
+#if CONFIG_K8_ALLOCATE_IO_RANGE
 	/* io range allocation */
 	tempreg = 0 | (((reg>>8) & 0x3) << 4 )|  (0x3<<12); //limit
 	pci_write_config32(PCI_DEV(0, 0x18, 1), 0xC4, tempreg);
@@ -753,7 +749,7 @@ static int ht_setup_chains_x(void)
 	for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
 
-#if K8_ALLOCATE_IO_RANGE == 1
+#if CONFIG_K8_ALLOCATE_IO_RANGE
 		/* io range allocation */
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xc4 + ht_c_num * 8, 0);
 		pci_write_config32(PCI_DEV(0, 0x18, 1), 0xc0 + ht_c_num * 8, 0);
@@ -786,7 +782,7 @@ static int ht_setup_chains_x(void)
 			pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
 			next_busn+=0x3f+1;
 
-#if K8_ALLOCATE_IO_RANGE == 1
+#if CONFIG_K8_ALLOCATE_IO_RANGE
 			/* io range allocation */
 			tempreg = nodeid | (linkn<<4) |  ((next_io_base+0x3)<<12); //limit
 			pci_write_config32(PCI_DEV(0, 0x18, 1), 0xC4 + ht_c_num * 8, tempreg);
@@ -810,7 +806,7 @@ static int ht_setup_chains_x(void)
 			pci_write_config32(dev, regpos, reg);
 		}
 
-#if K8_ALLOCATE_IO_RANGE == 1
+#if CONFIG_K8_ALLOCATE_IO_RANGE
 		/* io range allocation */
 		for(i = 0; i< 4; i++) {
 			unsigned regpos;

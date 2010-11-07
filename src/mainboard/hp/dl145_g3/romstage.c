@@ -25,9 +25,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define K8_ALLOCATE_IO_RANGE 1
-
-
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #endif

@@ -543,6 +543,12 @@ static const struct pci_driver lpc_driver_r __pci_driver = {
 	.device	= PCI_DEVICE_ID_VIA_VT8237R_LPC,
 };
 
+static const struct pci_driver lpc_driver_a __pci_driver = {
+	.ops	= &vt8237r_lpc_ops_r,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_VT8237A_LPC,
+};
+
 static const struct pci_driver lpc_driver_s __pci_driver = {
 	.ops	= &vt8237r_lpc_ops_s,
 	.vendor	= PCI_VENDOR_ID_VIA,

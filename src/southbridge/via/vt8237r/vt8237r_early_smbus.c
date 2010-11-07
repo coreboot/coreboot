@@ -146,6 +146,11 @@ static device_t get_vt8237_lpc(void)
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+	if (dev != PCI_DEV_INVALID)
+		return dev;
+
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_VT8237A_LPC), 0);
 	return dev;
 }
 

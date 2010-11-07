@@ -134,6 +134,21 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 
 #define PSONREADY_TIMEOUT 0x7fffffff
 
+static device_t get_vt8237_lpc(void)
+{
+	device_t dev;
+
+	/* Power management controller */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+	if (dev != PCI_DEV_INVALID)
+		return dev;
+
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+	return dev;
+}
+
 /**
  * Enable the SMBus on VT8237R-based systems.
  */
@@ -143,15 +158,9 @@ void enable_smbus(void)
 	int loops;
 
 	/* Power management controller */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		/* Power management controller */
-		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
-		if (dev == PCI_DEV_INVALID)
-			die("Power management controller not found\n");
-	}
+	dev = get_vt8237_lpc();
+	if (dev == PCI_DEV_INVALID)
+		die("Power management controller not found\n");
 
 	/* Make sure the RTC power well is up before touching smbus. */
 	loops = 0;
@@ -292,15 +301,9 @@ void enable_rom_decode(void)
 	device_t dev;
 
 	/* Power management controller */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		/* Power management controller */
-		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
-		if (dev == PCI_DEV_INVALID)
-			return;
-	}
+	dev = get_vt8237_lpc();
+	if (dev == PCI_DEV_INVALID)
+		return;
 
 	/* ROM decode last 1MB FFC00000 - FFFFFFFF. */
 	pci_write_config8(dev, 0x41, 0x7f);
@@ -316,15 +319,9 @@ static int acpi_is_wakeup_early(void) {
 	print_debug("IN TEST WAKEUP\n");
 
 	/* Power management controller */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		/* Power management controller */
-		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
-		if (dev == PCI_DEV_INVALID)
-			die("Power management controller not found\n");
-	}
+	dev = get_vt8237_lpc();
+	if (dev == PCI_DEV_INVALID)
+		die("Power management controller not found\n");
 
 	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
 	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);

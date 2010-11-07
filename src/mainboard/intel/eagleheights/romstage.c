@@ -40,24 +40,6 @@
 #include "superio/intel/i3100/i3100_early_serial.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 
-/* Data */
-#define UART_RBR 0x00
-#define UART_TBR 0x00
-
-/* Control */
-#define UART_IER 0x01
-#define UART_IIR 0x02
-#define UART_FCR 0x02
-#define UART_LCR 0x03
-#define UART_MCR 0x04
-#define UART_DLL 0x00
-#define UART_DLM 0x01
-
-/* Status */
-#define UART_LSR 0x05
-#define UART_MSR 0x06
-#define UART_SCR 0x07
-
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
 

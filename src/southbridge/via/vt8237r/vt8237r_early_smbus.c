@@ -257,19 +257,30 @@ void vt8237_sb_enable_fid_vid(void)
 		return;
 
 	devid = pci_read_config16(dev, PCI_DEVICE_ID);
-	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC) {
+
+	/* generic setup */
+
+	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
+	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
+
+	/* Enable ACPI accessm RTC signal gated with PSON. */
+	pci_write_config8(dev, 0x81, 0x84);
+
+	/* chipset-specific parts */
+
+	/* VLINK: FIXME: can we drop the devid check and just look for the VLINK device? */
+	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC ||
+	    devid == PCI_DEVICE_ID_VIA_VT8237A_LPC) {
 		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
 
-		if (devctl == PCI_DEV_INVALID)
-			return;
+		if (devctl != PCI_DEV_INVALID) {
+			/* So the chip knows we are on AMD. */
+			pci_write_config8(devctl, 0x7c, 0x7f);
+		}
+	}
 
-		/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
-		pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
-
-		/* Enable ACPI accessm RTC signal gated with PSON. */
-		pci_write_config8(dev, 0x81, 0x84);
-
+	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC) {
 		/*
 		 * Allow SLP# signal to assert LDTSTOP_L.
 		 * Will work for C3 and for FID/VID change.
@@ -280,17 +291,10 @@ void vt8237_sb_enable_fid_vid(void)
 		/* Reduce further the STPCLK/LDTSTP signal to 5us. */
 		pci_write_config8(dev, 0xec, 0x4);
 
-		/* So the chip knows we are on AMD. */
-		pci_write_config8(devctl, 0x7c, 0x7f);
-
 		return;
 	}
 
-	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
-	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
-
-	/* Enable ACPI accessm RTC signal gated with PSON. */
-	pci_write_config8(dev, 0x81, 0x84);
+	/* VT8237R and VT8237A */
 
 	/*
 	 * Allow SLP# signal to assert LDTSTOP_L.

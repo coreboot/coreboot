@@ -24,6 +24,12 @@
 #include <device/pci_ids.h>
 #include "k8t890.h"
 
+/*
+ * Note:
+ * The pcie bridges are similar to the VX800 ones documented at
+ * http://linux.via.com.tw/
+ */
+
 static void peg_init(struct device *dev)
 {
 	u8 reg;

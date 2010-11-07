@@ -1366,7 +1366,7 @@ DefinitionBlock (
 
 				/* Real Time Clock Device */
 				Device(RTC0) {
-					Name(_HID, EISAID("PNP0B01"))	/* AT Real Time Clock */
+					Name(_HID, EISAID("PNP0B00"))	/* AT Real Time Clock (not PIIX4 compatible) */
 					Name(_CRS, ResourceTemplate() {
 						IRQNoFlags(){8}
 						IO(Decode16,0x0070, 0x0070, 0, 2)

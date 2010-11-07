@@ -244,17 +244,15 @@ void smbus_fixup(const struct mem_controller *ctrl)
 void vt8237_sb_enable_fid_vid(void)
 {
 	device_t dev, devctl;
+	u16 devid;
 
 	/* Power management controller */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		/* Power management controller */
-		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
-		if (dev == PCI_DEV_INVALID)
-			return;
+	dev = get_vt8237_lpc();
+	if (dev == PCI_DEV_INVALID)
+		return;
 
+	devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC) {
 		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
 

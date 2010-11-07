@@ -25,6 +25,8 @@ config BOARD_ASUS_A8N_E
 	bool "A8N-E"
 config BOARD_ASUS_A8V_E_SE
 	bool "A8V-E SE"
+config BOARD_ASUS_M2V
+	bool "M2V"
 config BOARD_ASUS_M2V_MX_SE
 	bool "M2V-MX SE"
 config BOARD_ASUS_M4A785M
@@ -50,6 +52,7 @@ endchoice
 
 source "src/mainboard/asus/a8n_e/Kconfig"
 source "src/mainboard/asus/a8v-e_se/Kconfig"
+source "src/mainboard/asus/m2v/Kconfig"
 source "src/mainboard/asus/m2v-mx_se/Kconfig"
 source "src/mainboard/asus/m4a785-m/Kconfig"
 source "src/mainboard/asus/mew-am/Kconfig"

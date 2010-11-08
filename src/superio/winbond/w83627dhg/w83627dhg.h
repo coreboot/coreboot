@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_WINBOND_W83627DHG_W83627DHG_H
+#define SUPERIO_WINBOND_W83627DHG_W83627DHG_H
+
 #define W83627DHG_FDC              0   /* Floppy */
 #define W83627DHG_PP               1   /* Parallel port */
 #define W83627DHG_SP1              2   /* Com1 */
@@ -30,3 +33,5 @@
 #define W83627DHG_ACPI            10   /* ACPI */
 #define W83627DHG_HWM             11   /* Hardware monitor */
 #define W83627DHG_PECI_SST        12   /* PECI, SST */
+
+#endif

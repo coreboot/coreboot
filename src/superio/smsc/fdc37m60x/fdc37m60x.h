@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_FDC37M60X_FDC37M60X_H
+#define SUPERIO_SMSC_FDC37M60X_FDC37M60X_H
+
 /*
  * Datasheet:
  *   - Name: FDC37M60x Enhanced Super I/O Controller with Infrared Support.
@@ -36,3 +39,5 @@
 #define FDC37M60X_SP2  0x05 /* Com2 */
 #define FDC37M60X_KBCK 0x07 /* Keyboard */
 #define FDC37M60X_AUX  0x08 /* Auxiliary I/O */
+
+#endif

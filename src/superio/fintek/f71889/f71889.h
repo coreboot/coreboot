@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_FINTEK_F71889_F71889_H
+#define SUPERIO_FINTEK_F71889_F71889_H
+
 /* Logical Device Numbers (LDN). */
 #define F71889_FDC	0x00	/* Floppy */
 #define F71889_SP1	0x01	/* UART1 */
@@ -30,3 +33,5 @@
 #define F71889_SPI	0x08	/* SPI */
 #define F71889_PME	0x0a	/* Power Management Events (PME) and ACPI */
 #define F71889_VREF	0x0b	/* Vref */
+
+#endif

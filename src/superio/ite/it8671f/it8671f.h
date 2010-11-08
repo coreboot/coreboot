@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_ITE_IT8671F_IT8671F_H
+#define SUPERIO_ITE_IT8671F_IT8671F_H
+
 /* Datasheet: Not available online, got it from ITE per request. */
 
 #define IT8671F_FDC  0x00 /* Floppy */
@@ -26,3 +29,5 @@
 #define IT8671F_PP   0x03 /* Parallel port */
 #define IT8671F_KBCK 0x05 /* PS/2 keyboard */
 #define IT8671F_KBCM 0x06 /* PS/2 mouse */
+
+#endif

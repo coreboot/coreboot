@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_INTEL_I3100_I3100_H
+#define SUPERIO_INTEL_I3100_I3100_H
+
 /*
  * Datasheet:
  *  - Name: Intel 3100 Chipset
@@ -26,9 +29,6 @@
  *  - Revision / Date: 007, October 2008
  *  - Order number: 313458-007US
  */
-
-#ifndef SUPERIO_INTEL_I3100_I3100_H
-#define SUPERIO_INTEL_I3100_I3100_H
 
 /*
  * The SIW ("Serial I/O and Watchdog Timer") integrated into the i3100 is

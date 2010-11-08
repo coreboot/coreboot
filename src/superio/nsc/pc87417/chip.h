@@ -20,6 +20,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_NSC_PC87417_CHIP_H
+#define SUPERIO_NSC_PC87417_CHIP_H
+
 extern struct chip_operations superio_nsc_pc87417_ops;
 
 #include <pc80/keyboard.h>
@@ -29,3 +32,5 @@ struct superio_nsc_pc87417_config {
 	struct uart8250 com1, com2;
 	struct pc_keyboard keyboard;
 };
+
+#endif

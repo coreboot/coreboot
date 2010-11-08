@@ -18,8 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_NSC_PC87309_PC87309_H
+#define SUPERIO_NSC_PC87309_PC87309_H
+
 /* Datasheet: PC87309 SuperI/O Plug and Play Compatible Chip. */
-/* Status: Pre-RAM serial output is tested and works. The rest is untested. */
 
 #define PC87309_FDC  0x00	/* Floppy */
 #define PC87309_PP   0x01	/* Parallel port */
@@ -28,3 +30,5 @@
 #define PC87309_PM   0x04	/* Power management */
 #define PC87309_KBCM 0x05	/* Mouse */
 #define PC87309_KBCK 0x06	/* Keyboard */
+
+#endif

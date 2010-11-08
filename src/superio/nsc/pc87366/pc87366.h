@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_NSC_PC87366_PC87366_H
+#define SUPERIO_NSC_PC87366_PC87366_H
+
 #define PC87366_FDC  0x00 /* Floppy */
 #define PC87366_PP   0x01 /* Parallel port */
 #define PC87366_SP2  0x02 /* Com2 */
@@ -31,6 +34,8 @@
 #define PC87366_FSCM 0x09
 #define PC87366_WDT  0x0A
 #define PC87366_GMP  0x0b
-#define PC87366_MIDI  0x0C
+#define PC87366_MIDI 0x0C
 #define PC87366_VLM  0x0D
 #define PC87366_TMS  0x0E
+
+#endif

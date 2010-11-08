@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_FINTEK_F71805F_CHIP_H
+#define SUPERIO_FINTEK_F71805F_CHIP_H
+
 #include <device/device.h>
 #include <uart8250.h>
 
@@ -28,3 +31,5 @@ extern struct chip_operations superio_fintek_f71805f_ops;
 struct superio_fintek_f71805f_config {
 	struct uart8250 com1, com2;
 };
+
+#endif

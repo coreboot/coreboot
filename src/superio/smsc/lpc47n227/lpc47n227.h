@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_LPC47N227_LPC47N227_H
+#define SUPERIO_SMSC_LPC47N227_LPC47N227_H
+
 /*
  * Since the LPC47N227 does not have logical devices but a flat configuration
  * space, these are arbitrary, but must match declarations in the mainboard
@@ -28,3 +31,5 @@
 #define LPC47N227_KBDC             5	/* Keyboard */
 
 #define LPC47N227_MAX_CONFIG_REGISTER	0x39
+
+#endif

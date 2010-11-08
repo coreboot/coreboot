@@ -18,7 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Logical Device Numbers (LDN). */
+#ifndef SUPERIO_FINTEK_F71859_F71859_H
+#define SUPERIO_FINTEK_F71859_F71859_H
 
+/* Logical Device Numbers (LDN). */
 #define F71859_SP1	0x03	/* UART1 */
 
+#endif

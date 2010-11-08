@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _SUPERIO_SMSC_SIO10N268
-#define _SUPERIO_SMSC_SIO10N268
+#ifndef SUPERIO_SMSC_SIO10N268_CHIP_H
+#define SUPERIO_SMSC_SIO10N268_CHIP_H
 
 #include <device/device.h>
 #include <pc80/keyboard.h>
@@ -31,5 +31,4 @@ struct superio_smsc_sio10n268_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif /* _SUPERIO_SMSC_SIO10N268 */
-
+#endif

@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_SERVERENGINES_PILOT_PILOT_H
+#define SUPERIO_SERVERENGINES_PILOT_PILOT_H
+
 /* PILOT Super I/O is only based on LPC observation done on factory system. */
 
 #define PILOT_LD1 0x01 /* Logical device 1 */
@@ -26,3 +29,5 @@
 #define PILOT_LD4 0x04 /* Logical device 4 */
 #define PILOT_LD5 0x05 /* Logical device 5 */
 #define PILOT_LD7 0x07 /* Logical device 7 */
+
+#endif

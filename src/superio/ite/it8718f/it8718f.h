@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_ITE_IT8718F_IT8718F_H
+#define SUPERIO_ITE_IT8718F_IT8718F_H
+
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8718_2.asp */
 
 #define IT8718F_FDC  0x00 /* Floppy */
@@ -36,3 +39,4 @@ void it8718f_disable_reboot(void);
 void it8718f_enable_serial(device_t dev, u16 iobase);
 #endif
 
+#endif

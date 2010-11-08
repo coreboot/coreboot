@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_NSC_PC87351_PC87351_H
+#define SUPERIO_NSC_PC87351_PC87351_H
+
 #define PC87351_FDC  0x00 /* Floppy */
 #define PC87351_PP   0x01 /* Parallel port */
 #define PC87351_SP2  0x02 /* Com2 */
@@ -28,3 +31,5 @@
 #define PC87351_KBCK 0x06 /* Keyboard */
 #define PC87351_GPIO 0x07 /* General purpose IO */
 #define PC87351_FSD  0x08 /* Fan speed device */
+
+#endif

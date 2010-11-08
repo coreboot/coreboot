@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef SUPERIO_VIA_VT1211_VT1211_H
+#define SUPERIO_VIA_VT1211_VT1211_H
+
 /* Logical device numbers (LDNs). */
 #define VT1211_FDC		0x00	/* Floppy */
 #define VT1211_PP		0x01	/* Parallel port */
@@ -31,3 +34,5 @@
 #define VT1211_HWM		0x0b	/* Hardware monitor (HM) */
 #define VT1211_FIR		0x0c	/* Very fast IR (VFIR/FIR) */
 #define VT1211_ROM		0x0d	/* Flash ROM */
+
+#endif

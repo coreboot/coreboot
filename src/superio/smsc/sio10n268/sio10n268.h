@@ -17,9 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-// XXX the SIO10N268 has no logical devices.
+#ifndef SUPERIO_SMSC_SIO10N268_SIO10N268_H
+#define SUPERIO_SMSC_SIO10N268_SIO10N268_H
+
+/* Note: The SIO10N268 has no logical devices. */
 
 #define SIO10N268_FDC  0x00 /* Floppy */
 #define SIO10N268_PP   0x03 /* Parallel port */
 #define SIO10N268_KBDC 0x05 /* Keyboard */
 
+#endif

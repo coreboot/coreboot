@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_ITE_IT8712F_IT8712F_H
+#define SUPERIO_ITE_IT8712F_IT8712F_H
+
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8712_2.asp */
 
 #define IT8712F_FDC  0x00 /* Floppy */
@@ -37,4 +40,6 @@ void it8712f_kill_watchdog(void);
 void it8712f_enable_serial(device_t dev, u16 iobase);
 void it8712f_24mhz_clkin(void);
 void it8712f_enable_3vsbsw(void);
+#endif
+
 #endif

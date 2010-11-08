@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_ITE_IT8705F_IT8705F_H
+#define SUPERIO_ITE_IT8705F_IT8705F_H
+
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8705_2.asp */
 
 /* Note: This should also work on an IT8705AF, they're almost the same. */
@@ -31,3 +34,5 @@
 #define IT8705F_GAME 0x06 /* GAME port */
 #define IT8705F_IR   0x07 /* Consumer IR */
 #define IT8705F_MIDI 0x08 /* MIDI port */
+
+#endif

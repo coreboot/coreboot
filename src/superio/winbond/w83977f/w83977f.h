@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_WINBOND_W83977F_W83977F_H
+#define SUPERIO_WINBOND_W83977F_W83977F_H
+
 #define W83977F_FDC	0	/* Floppy */
 #define W83977F_PP	1	/* Parallel Port */
 #define W83977F_SP1	2	/* Com1 */
@@ -27,3 +30,5 @@
 #define W83977F_IR	6	/* Infrared Port */
 #define W83977F_GPIO1	7	/* General Purpose I/O 1 */
 #define W83977F_GPIO2	8	/* General Purpose I/O 2 */
+
+#endif

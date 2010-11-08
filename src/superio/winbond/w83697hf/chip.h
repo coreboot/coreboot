@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_WINBOND_W83697HF_CHIP_H
+#define SUPERIO_WINBOND_W83697HF_CHIP_H
+
 #include <uart8250.h>
 
 extern struct chip_operations superio_winbond_w83697hf_ops;
@@ -25,3 +28,5 @@ extern struct chip_operations superio_winbond_w83697hf_ops;
 struct superio_winbond_w83697hf_config {
 	struct uart8250 com1, com2;
 };
+
+#endif

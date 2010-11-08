@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_FINTEK_F71805F_F71805F_H
+#define SUPERIO_FINTEK_F71805F_F71805F_H
+
 /*
  * Datasheet:
  *  - Name: F71805F/FG Super H/W Monitor + LPC IO
@@ -34,3 +37,5 @@
 #define	F71805F_HWM	0x04	/* Hardware monitor */
 #define	F71805F_GPIO	0x06	/* General Purpose I/O (GPIO) */
 #define	F71805F_PME	0x0a	/* Power Management Events (PME) */
+
+#endif

@@ -20,6 +20,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef SUPERIO_SMSC_LPC47M10X_LPC47M10X_H
+#define SUPERIO_SMSC_LPC47M10X_LPC47M10X_H
+
 #define LPC47M10X2_FDC              0   /* Floppy */
 #define LPC47M10X2_PP               3   /* Parallel Port */
 #define LPC47M10X2_SP1              4   /* Com1 */
@@ -30,3 +33,5 @@
 #define LPC47M10X2_MPU           10   /* MPE -- who knows --   reg*/
 
 #define LPC47M10X2_MAX_CONFIG_REGISTER	0x5F
+
+#endif

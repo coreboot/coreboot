@@ -18,5 +18,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#config chip.h
 ramstage-$(CONFIG_SUPERIO_SMSC_SMSCSUPERIO) += superio.c

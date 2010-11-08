@@ -1,3 +1,6 @@
+#ifndef SUPERIO_NSC_PC87427_PC87427_H
+#define SUPERIO_NSC_PC87427_PC87427_H
+
 #define PC87427_FDC  0x00 /* Floppy */
 #define PC87427_SP2  0x02 /* Com2 */
 #define PC87427_SP1  0x03 /* Com1 */
@@ -91,4 +94,4 @@
 #define PC87427_XSCNF		0x15
 #define PC87427_XWBCNF		0x16
 
-
+#endif

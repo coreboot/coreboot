@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _SUPERIO_SMSC_FDC37M60X
-#define _SUPERIO_SMSC_FDC37M60X
+#ifndef SUPERIO_SMSC_FDC37M60X_CHIP_H
+#define SUPERIO_SMSC_FDC37M60X_CHIP_H
 
 #include <device/device.h>
 #include <pc80/keyboard.h>
@@ -32,4 +32,4 @@ struct superio_smsc_fdc37m60x_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif /* _SUPERIO_SMSC_FDC37M60X */
+#endif

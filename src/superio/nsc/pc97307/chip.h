@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _SUPERIO_NSC_PC97307
-#define _SUPERIO_NSC_PC97307
+#ifndef SUPERIO_NSC_PC97307_CHIP_H
+#define SUPERIO_NSC_PC97307_CHIP_H
 
 #ifndef PNP_INDEX_REG
 #define PNP_INDEX_REG   0x15C
@@ -37,4 +37,4 @@ struct superio_nsc_pc97307_config {
 	struct uart8250 com1, com2;
 	struct pc_keyboard keyboard;
 };
-#endif /* _SUPERIO_NSC_PC97307 */
+#endif

@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_ITE_IT8673F_IT8673F_H
+#define SUPERIO_ITE_IT8673F_IT8673F_H
+
 /* Datasheet: http://www.datasheet4u.com/html/I/T/8/IT8673F_ITE.pdf.html */
 
 #define IT8673F_FDC  0x00 /* Floppy */
@@ -27,3 +30,5 @@
 #define IT8673F_FAN  0x04 /* Fan controller */
 #define IT8673F_KBCK 0x05 /* PS/2 keyboard */
 #define IT8673F_KBCM 0x06 /* PS/2 mouse */
+
+#endif

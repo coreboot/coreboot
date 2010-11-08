@@ -20,6 +20,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_LPC47B397_CHIP_H
+#define SUPERIO_SMSC_LPC47B397_CHIP_H
+
 struct chip_operations;
 extern struct chip_operations superio_smsc_lpc47b397_ops;
 
@@ -30,3 +33,5 @@ struct superio_smsc_lpc47b397_config {
 	struct uart8250 com1, com2;
 	struct pc_keyboard keyboard;
 };
+
+#endif

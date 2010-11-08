@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_NSC_PC97307_PC97307_H
+#define SUPERIO_NSC_PC97307_PC97307_H
+
 #define PC97307_KBCK 0x00 /* Keyboard */
 #define PC97307_KBCM 0x01 /* Mouse */
 #define PC97307_RTC  0x02 /* Real-Time Clock */
@@ -28,3 +31,4 @@
 #define PC97307_GPIO 0x07
 #define PC97307_PM   0x08 /* Power Management */
 
+#endif

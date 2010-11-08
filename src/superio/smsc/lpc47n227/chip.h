@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_LPC47N227_CHIP_H
+#define SUPERIO_SMSC_LPC47N227_CHIP_H
+
 #include <device/device.h>
 #include <pc80/keyboard.h>
 #include <uart8250.h>
@@ -27,3 +30,5 @@ struct superio_smsc_lpc47n227_config {
 	struct uart8250 com1, com2;
 	struct pc_keyboard keyboard;
 };
+
+#endif

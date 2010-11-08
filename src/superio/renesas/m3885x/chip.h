@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SUPERIO_RENESAS_M3885X_CHIP_H
+#define SUPERIO_RENESAS_M3885X_CHIP_H
+
 #include <device/device.h>
 #include <pc80/keyboard.h>
 
@@ -26,3 +29,4 @@ struct superio_renesas_m3885x_config {
 	struct pc_keyboard keyboard;
 };
 
+#endif

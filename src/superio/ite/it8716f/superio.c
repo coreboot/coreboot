@@ -31,19 +31,14 @@
 #include "chip.h"
 #include "it8716f.h"
 
-/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
 static void pnp_enter_ext_func_mode(device_t dev)
 {
-	outb(0x87, dev->path.pnp.port);
-	outb(0x01, dev->path.pnp.port);
-	outb(0x55, dev->path.pnp.port);
+	u16 port = dev->path.pnp.port;
 
-	if (dev->path.pnp.port == 0x4e) {
-		outb(0xaa, dev->path.pnp.port);
-	} else {
-		outb(0x55, dev->path.pnp.port);
-	}
+	outb(0x87, port);
+	outb(0x01, port);
+	outb(0x55, port);
+	outb((port == 0x4e) ? 0xaa : 0x55, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
@@ -52,45 +47,41 @@ static void pnp_exit_ext_func_mode(device_t dev)
 }
 
 #if !defined(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) || !CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
-static void pnp_write_index(uint16_t port_base, uint8_t reg, uint8_t value)
+static void pnp_write_index(u16 port_base, u8 reg, u8 value)
 {
 	outb(reg, port_base);
 	outb(value, port_base + 1);
 }
 
-static uint8_t pnp_read_index(uint16_t port_base, uint8_t reg)
+static u8 pnp_read_index(u16 port_base, u8 reg)
 {
 	outb(reg, port_base);
 	return inb(port_base + 1);
 }
 
-static void init_ec(uint16_t base)
+static void init_ec(u16 base)
 {
-	uint8_t value;
+	u8 value;
 
-	/* Read out current value of FAN_CTL control register (0x14). */
+	/* Read out current value of FAN_CTL (0x14). */
 	value = pnp_read_index(base, 0x14);
 	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, read value = 0x%02x\n",
-		     base + 0x14, value);
+	       base + 0x14, value);
 
-	/* Set FAN_CTL control register (0x14) polarity to high, and
-	   activate fans 1, 2 and 3. */
+	/* Set FAN_CTL (0x14) polarity to high, activate fans 1, 2 and 3. */
 	pnp_write_index(base, 0x14, value | 0x87);
 	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, writing value = 0x%02x\n",
-		     base + 0x14, value | 0x87);
+	       base + 0x14, value | 0x87);
 }
 #endif
 
 static void it8716f_init(device_t dev)
 {
-	struct superio_ite_it8716f_config *conf;
+	struct superio_ite_it8716f_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	/* TODO: FDC, PP, KBCM, MIDI, GAME, IR. */
 	switch (dev->path.pnp.device) {
@@ -163,8 +154,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_ite_it8716f_ops = {

@@ -19,10 +19,8 @@
  */
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8705_2.asp */
-/* Status: Untested on real hardware, but it compiles. */
-/* Note: This should also work on an IT8705AF, they're almost the same. */
 
-/* This chip doesn't seem to have keyboard and mouse support. */
+/* Note: This should also work on an IT8705AF, they're almost the same. */
 
 #define IT8705F_FDC  0x00 /* Floppy */
 #define IT8705F_SP1  0x01 /* Com1 */

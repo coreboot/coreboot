@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* This chip doesn't seem to have keyboard and mouse support. */
-
 #include <device/device.h>
 #include <device/pnp.h>
 #include <uart8250.h>
@@ -29,14 +27,11 @@
 
 static void init(device_t dev)
 {
-	struct superio_ite_it8705f_config *conf;
+	struct superio_ite_it8705f_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	switch (dev->path.pnp.device) {
 	case IT8705F_FDC: /* TODO. */

@@ -28,14 +28,11 @@
 
 static void init(device_t dev)
 {
-	struct superio_ite_it8673f_config *conf;
+	struct superio_ite_it8673f_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	switch (dev->path.pnp.device) {
 	case IT8673F_FDC: /* TODO. */

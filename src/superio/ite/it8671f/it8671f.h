@@ -19,11 +19,10 @@
  */
 
 /* Datasheet: Not available online, got it from ITE per request. */
-/* Status: Com1 is tested and works. */
 
 #define IT8671F_FDC  0x00 /* Floppy */
 #define IT8671F_SP1  0x01 /* Com1 */
 #define IT8671F_SP2  0x02 /* Com2 */
 #define IT8671F_PP   0x03 /* Parallel port */
-#define IT8671F_KBCK 0x05 /* Keyboard */
-#define IT8671F_KBCM 0x06 /* Mouse */
+#define IT8671F_KBCK 0x05 /* PS/2 keyboard */
+#define IT8671F_KBCM 0x06 /* PS/2 mouse */

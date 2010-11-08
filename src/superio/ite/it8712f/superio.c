@@ -28,19 +28,14 @@
 #include "chip.h"
 #include "it8712f.h"
 
-/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
 static void pnp_enter_ext_func_mode(device_t dev)
 {
-	outb(0x87, dev->path.pnp.port);
-	outb(0x01, dev->path.pnp.port);
-	outb(0x55, dev->path.pnp.port);
+	u16 port = dev->path.pnp.port;
 
-	if (dev->path.pnp.port == 0x4e) {
-		outb(0xaa, dev->path.pnp.port);
-	} else {
-		outb(0x55, dev->path.pnp.port);
-	}
+	outb(0x87, port);
+	outb(0x01, port);
+	outb(0x55, port);
+	outb((port == 0x4e) ? 0xaa : 0x55, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
@@ -50,14 +45,11 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void it8712f_init(device_t dev)
 {
-	struct superio_ite_it8712f_config *conf;
+	struct superio_ite_it8712f_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	switch (dev->path.pnp.device) {
 	case IT8712F_FDC: /* TODO. */

@@ -24,7 +24,7 @@
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
 #define SIO_BASE                     0x2e
 #define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     SIO_BASE+1
+#define SIO_DATA                     (SIO_BASE + 1)
 
 /* Global configuration registers. */
 #define IT8705F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
@@ -37,9 +37,7 @@
 
 #define IT8705F_CONFIGURATION_PORT   0x2e /* Write-only. */
 
-/* The content of IT8705F_CONFIG_REG_LDN (index 0x07) must be set to the
-   LDN the register belongs to, before you can access the register. */
-static void it8705f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
+static void it8705f_sio_write(u8 ldn, u8 index, u8 value)
 {
 	outb(IT8705F_CONFIG_REG_LDN, SIO_BASE);
 	outb(ldn, SIO_DATA);
@@ -47,8 +45,8 @@ static void it8705f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-/* Enable the peripheral devices on the IT8705F Super I/O chip. */
-static void it8705f_enable_serial(device_t dev, unsigned iobase)
+/* Enable the serial port(s). */
+static void it8705f_enable_serial(device_t dev, u16 iobase)
 {
 	/* (1) Enter the configuration state (MB PnP mode). */
 
@@ -62,14 +60,16 @@ static void it8705f_enable_serial(device_t dev, unsigned iobase)
 
 	/* (2) Modify the data of configuration registers. */
 
-	/* Select the chip to configure (if there's more than one).
-	   Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-	   If this register is not written, both chips are configured. */
+	/*
+	 * Select the chip to configure (if there's more than one).
+	 * Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
+	 * If this register is not written, both chips are configured.
+	 */
 	/* it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CONFIGSEL, 0x00); */
 
 	/* Enable serial port(s). */
-	it8705f_sio_write(IT8705F_SP1,  0x30, 0x1); /* Serial port 1 */
-	it8705f_sio_write(IT8705F_SP2,  0x30, 0x1); /* Serial port 2 */
+	it8705f_sio_write(IT8705F_SP1, 0x30, 0x1); /* Serial port 1 */
+	it8705f_sio_write(IT8705F_SP2, 0x30, 0x1); /* Serial port 2 */
 
 	/* Select 24MHz CLKIN (set bit 0). */
 	it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CLOCKSEL, 0x01);

@@ -27,7 +27,7 @@
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
 #define SIO_BASE                     0x2e
 #define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     SIO_BASE+1
+#define SIO_DATA                     (SIO_BASE + 1)
 
 /* Global configuration registers. */
 #define IT8716F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
@@ -36,30 +36,22 @@
 #define IT8716F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8716F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
 
-#define IT8716F_CONFIGURATION_PORT   0x2e /* Write-only. */
-
-/* Perform MB PnP setup to put the SIO chip at 0x2e. */
-/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	unsigned port = dev >> 8;
+	u16 port = dev >> 8;
+
 	outb(0x87, port);
 	outb(0x01, port);
 	outb(0x55, port);
-	if (port == 0x4e) {
-		outb(0xaa, port);
-	} else {
-		outb(0x55, port);
-	}
+	outb((port == 0x4e) ? 0xaa : 0x55, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
 {
-	pnp_write_config(dev, 0x02, 0x02);
+	pnp_write_config(dev, IT8716F_CONFIG_REG_CC, 0x02);
 }
 
-void it8716f_enable_serial(device_t dev, unsigned iobase)
+void it8716f_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

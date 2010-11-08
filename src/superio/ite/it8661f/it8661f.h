@@ -19,9 +19,6 @@
  */
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8661_2.asp */
-/* Status: Untested on real hardware, but it compiles. */
-
-/* This chip doesn't seem to have keyboard and mouse support. */
 
 #define IT8661F_FDC  0x00 /* Floppy */
 #define IT8661F_SP1  0x01 /* Com1 */

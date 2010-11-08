@@ -28,7 +28,7 @@ void it8716f_disable_dev(device_t dev)
 	pnp_set_enable(dev, 0);
 }
 
-void it8716f_enable_dev(device_t dev, unsigned iobase)
+void it8716f_enable_dev(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

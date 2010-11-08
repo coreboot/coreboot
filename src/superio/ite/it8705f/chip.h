@@ -18,10 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _SUPERIO_ITE_IT8705F
-#define _SUPERIO_ITE_IT8705F
+#ifndef SUPERIO_ITE_IT8705F_CHIP_H
+#define SUPERIO_ITE_IT8705F_CHIP_H
 
-/* This chip doesn't seem to have keyboard and mouse support. */
+/* This chip doesn't have keyboard and mouse support. */
 
 #include <device/device.h>
 #include <uart8250.h>
@@ -32,4 +32,4 @@ struct superio_ite_it8705f_config {
 	struct uart8250 com1, com2;
 };
 
-#endif /* _SUPERIO_ITE_IT8705F */
+#endif

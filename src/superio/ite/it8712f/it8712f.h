@@ -19,7 +19,6 @@
  */
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8712_2.asp */
-/* Status: Com1 is tested and works. */
 
 #define IT8712F_FDC  0x00 /* Floppy */
 #define IT8712F_SP1  0x01 /* Com1 */
@@ -35,7 +34,7 @@
 
 #ifndef __ROMCC__
 void it8712f_kill_watchdog(void);
-void it8712f_enable_serial(device_t dev, unsigned iobase);
+void it8712f_enable_serial(device_t dev, u16 iobase);
 void it8712f_24mhz_clkin(void);
 void it8712f_enable_3vsbsw(void);
 #endif

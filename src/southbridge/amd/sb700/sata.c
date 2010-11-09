@@ -91,14 +91,13 @@ static void sata_init(struct device *dev)
 
 	device_t sm_dev;
 	/* SATA SMBus Disable */
-	/* sm_dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0); */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+
+	byte = pci_read_config8(sm_dev, 0xad);
 	/* Disable SATA SMBUS */
-	byte = pci_read_config8(sm_dev, 0xad);
-	byte |= (1 << 1);
-	/* Enable SATA and power saving */
-	byte = pci_read_config8(sm_dev, 0xad);
 	byte |= (1 << 0);
+	/* Enable SATA and power saving */
+	byte |= (1 << 1);
 	byte |= (1 << 5);
 	pci_write_config8(sm_dev, 0xad, byte);
 

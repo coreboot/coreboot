@@ -13,7 +13,7 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 0.0 on end # HT  	0x9600
 					device pci 1.0 on end # Internal Graphics P2P bridge 0x9602
 					device pci 2.0 on end # PCIE P2P bridge (external graphics) 0x9603
-					device pci 3.0 on end # PCIE P2P bridge	0x960b
+					device pci 3.0 off end # PCIE P2P bridge	0x960b
 					device pci 4.0 on end # PCIE P2P bridge 0x9604
 					device pci 5.0 off end # PCIE P2P bridge 0x9605
 					device pci 6.0 off end # PCIE P2P bridge 0x9606

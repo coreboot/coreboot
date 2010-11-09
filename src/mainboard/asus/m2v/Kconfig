@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_512
 	select RAMINIT_SYSINFO
 	select TINY_BOOTBLOCK
+	select HAVE_PIRQ_TABLE
 
 config MAINBOARD_DIR
 	string
@@ -73,5 +74,9 @@ config HT_CHAIN_UNITID_BASE
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1043
+
+config IRQ_SLOT_COUNT
+	int
+	default 14
 
 endif # BOARD_ASUS_M2V

@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <device/device.h>
+#include <arch/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
@@ -175,10 +176,12 @@ void amd_setup_mtrrs(void)
 
 	enable_cache();
 
-	/* FIXME we should probably query the cpu for this
-	 * but so far this is all any recent AMD cpu has supported.
-	 */
 	address_bits = CONFIG_CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
+
+	/* AMD specific cpuid function to query number of address bits */
+	if (cpuid_eax(0x80000000) >= 0x80000008) {
+		address_bits = cpuid_eax(0x80000008) & 0xff;
+	}
 
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.

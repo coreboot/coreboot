@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
 
 #include <stdint.h>
@@ -54,6 +53,8 @@ static inline int spd_read_byte(u16 device, u8 address)
 
 /* #define TRUXTON_DEBUG */
 
+#define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
+
 static void main(unsigned long bist)
 {
 	msr_t msr;
@@ -76,7 +77,9 @@ static void main(unsigned long bist)
 
 	/* Set up the console */
 	i3100_enable_superio();
-	i3100_enable_serial(I3100_SUPERIO_CONFIG_PORT, I3100_SP1, CONFIG_TTYS0_BASE);
+	i3100_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	i3100_configure_uart_clk(SERIAL_DEV, I3100_UART_CLK_PREDIVIDE_26);
+
 	uart_init();
 	console_init();
 

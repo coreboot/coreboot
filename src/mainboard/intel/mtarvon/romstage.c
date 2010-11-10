@@ -40,6 +40,8 @@
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
 
+#define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
+
 static inline int spd_read_byte(u16 device, u8 address)
 {
 	return smbus_read_byte(device, address);
@@ -75,9 +77,12 @@ void main(unsigned long bist)
 		}
 #endif
 	}
+
 	/* Set up the console */
 	i3100_enable_superio();
-	i3100_enable_serial(0x4e, I3100_SP1, CONFIG_TTYS0_BASE);
+	i3100_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	i3100_configure_uart_clk(SERIAL_DEV, I3100_UART_CLK_PREDIVIDE_26);
+
 	uart_init();
 	console_init();
 

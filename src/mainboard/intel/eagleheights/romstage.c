@@ -91,6 +91,8 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/reset_test.c"
 #include "debug.c"
 
+#define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
+
 static void early_config(void)
 {
 	u32 gcs, rpc, fd;
@@ -157,7 +159,9 @@ void main(unsigned long bist)
 
 	/* Setup the console */
 	i3100_enable_superio();
-	i3100_enable_serial(0x4E, I3100_SP1, CONFIG_TTYS0_BASE);
+	i3100_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	i3100_configure_uart_clk(SERIAL_DEV, I3100_UART_CLK_PREDIVIDE_26);
+
 	uart_init();
 	console_init();
 

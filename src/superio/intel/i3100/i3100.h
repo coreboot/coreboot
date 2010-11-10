@@ -46,6 +46,19 @@
 #define I3100_SP2 0x05 /* Com2 */
 #define I3100_WDT 0x06 /* Watchdog timer */
 
-#define I3100_SUPERIO_CONFIG_PORT 0x4e
+/* Registers and bit definitions: */
+
+#define I3100_SIW_CONFIGURATION		0x29
+
+/*
+ * SIW_CONFIGURATION[3:2] = UART_CLK predivide
+ * 00: divide by 1
+ * 01: divide by 8
+ * 10: divide by 26
+ * 11: reserved
+ */
+#define I3100_UART_CLK_PREDIVIDE_1	0x00
+#define I3100_UART_CLK_PREDIVIDE_8	0x01
+#define I3100_UART_CLK_PREDIVIDE_26	0x02
 
 #endif

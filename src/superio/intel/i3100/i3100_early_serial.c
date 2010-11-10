@@ -21,31 +21,36 @@
 #include <arch/romcc_io.h>
 #include "i3100.h"
 
-static void i3100_sio_write(u8 port, u8 ldn, u8 index, u8 value)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	outb(0x07, port);
-	outb(ldn, port + 1);
-	outb(index, port);
-	outb(value, port + 1);
-}
+	u16 port = dev >> 8;
 
-static void i3100_enable_serial(u8 port, u8 ldn, u16 iobase)
-{
-	/* Enter configuration state. */
 	outb(0x80, port);
 	outb(0x86, port);
+}
 
-	/* Enable serial port. */
-	i3100_sio_write(port, ldn, 0x30, 0x01);
+static void pnp_exit_ext_func_mode(device_t dev)
+{
+	u16 port = dev >> 8;
 
-	/* Set serial port I/O region. */
-	i3100_sio_write(port, ldn, 0x60, (iobase >> 8) & 0xff);
-	i3100_sio_write(port, ldn, 0x61, iobase & 0xff);
-
-	/* Enable device interrupts, set UART_CLK predivide to 26. */
-	i3100_sio_write(port, 0x00, 0x29, 0x0b);
-
-	/* Exit configuration state. */
 	outb(0x68, port);
 	outb(0x08, port);
+}
+
+/* Enable device interrupts, set UART_CLK predivide. */
+static void i3100_configure_uart_clk(device_t dev, u8 predivide)
+{
+	pnp_enter_ext_func_mode(dev);
+	pnp_write_config(dev, I3100_SIW_CONFIGURATION, (predivide << 2) | 1);
+	pnp_exit_ext_func_mode(dev);
+}
+
+static void i3100_enable_serial(device_t dev, u16 iobase)
+{
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
+	pnp_set_enable(dev, 1);
+	pnp_exit_ext_func_mode(dev);
 }

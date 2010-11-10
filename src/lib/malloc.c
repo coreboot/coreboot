@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <console/console.h>
 
-#if 0
-#define MALLOCDBG(x)
-#else
+#if CONFIG_DEBUG_MALLOC
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
+#else
+#define MALLOCDBG(x)
 #endif
+
 extern unsigned char _heap, _eheap;
 static void *free_mem_ptr = &_heap;		/* Start of heap */
 static void *free_mem_end_ptr = &_eheap;	/* End of heap */

@@ -22,12 +22,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 
-#if 1
-#define debug(x...) printk(BIOS_DEBUG, x)
-#else
-#define debug(x...)
-#endif
-
 // The CBMEM TOC reserves 512 bytes to keep
 // the other entries somewhat aligned.
 // Increase if MAX_CBMEM_ENTRIES exceeds 21
@@ -68,10 +62,11 @@ void cbmem_init(u64 baseaddr, u64 size)
 	bss_cbmem_toc = cbmem_toc;
 #endif
 
-	debug("Initializing CBMEM area to 0x%llx (%lld bytes)\n", baseaddr, size);
+	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
+	       baseaddr, size);
 
 	if (size < (64 * 1024)) {
-		debug("Increase CBMEM size!!\n");
+		printk(BIOS_DEBUG, "Increase CBMEM size!\n");
 		for (;;) ;
 	}
 
@@ -90,7 +85,9 @@ int cbmem_reinit(u64 baseaddr)
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
-	debug("Re-Initializing CBMEM area to 0x%lx\n", (unsigned long)baseaddr);
+	printk(BIOS_DEBUG, "Re-Initializing CBMEM area to 0x%lx\n",
+	       (unsigned long)baseaddr);
+
 #ifndef __PRE_RAM__
 	bss_cbmem_toc = cbmem_toc;
 #endif
@@ -135,7 +132,7 @@ void *cbmem_add(u32 id, u64 size)
 		return NULL;
 	}
 
-	debug("Adding CBMEM entry as no. %d\n", i);
+	printk(BIOS_DEBUG, "Adding CBMEM entry as no. %d\n", i);
 
 	cbmem_toc[i] = (struct cbmem_entry) {
 		.magic = CBMEM_MAGIC,

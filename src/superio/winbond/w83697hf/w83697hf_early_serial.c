@@ -22,7 +22,7 @@
 #include <arch/romcc_io.h>
 #include "w83697hf.h"
 
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
@@ -37,11 +37,12 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void w83697hf_set_clksel_48(device_t dev)
 {
-	u16 port = dev >> 8;
+	u8 reg8;
+
 	pnp_enter_ext_func_mode(dev);
-	outb(0x24, port);
-	/* Set the clock input to 48Mhz */
-	outb(inb(port+1)|0x40, port+1);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 6); /* Set the clock input to 48MHz. */
+	pnp_write_config(dev, 0x24, reg8);
 	pnp_exit_ext_func_mode(dev);
 }
 

@@ -43,13 +43,12 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void w83697hf_init(device_t dev)
 {
-	struct superio_winbond_w83697hf_config *conf;
+	struct superio_winbond_w83697hf_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
-	conf = dev->chip_info;
 	switch(dev->path.pnp.device) {
 	case W83697HF_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -71,12 +70,13 @@ static void w83697hf_pnp_set_resources(device_t dev)
 
 static void w83697hf_pnp_enable(device_t dev)
 {
-	if (!dev->enabled) {
-		pnp_enter_ext_func_mode(dev);
-		pnp_set_logical_device(dev);
-		pnp_set_enable(dev, 0);
-		pnp_exit_ext_func_mode(dev);
-	}
+	if (dev->enabled)
+		return;
+
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_exit_ext_func_mode(dev);
 }
 
 static void w83697hf_pnp_enable_resources(device_t dev)

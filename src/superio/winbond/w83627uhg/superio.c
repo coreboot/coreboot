@@ -72,13 +72,12 @@ static void set_uart_clock_source(device_t dev, u8 uart_clock)
 
 static void w83627uhg_init(device_t dev)
 {
-	struct superio_winbond_w83627uhg_config *conf;
+	struct superio_winbond_w83627uhg_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled)
 		return;
 
-	conf = dev->chip_info;
 	switch(dev->path.pnp.device) {
 	case W83627UHG_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);

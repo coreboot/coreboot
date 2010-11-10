@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan By LYH change from PC87360
+ * Copyright (C) 2004 Tyan
  * Copyright (C) 2010 Win Enterprises (anishp@win-ent.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,20 +24,20 @@
 #include <arch/romcc_io.h>
 #include "w83627hf.h"
 
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-void w83627hf_enable_serial(device_t dev, unsigned iobase)
+void w83627hf_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);
@@ -49,10 +49,11 @@ void w83627hf_enable_serial(device_t dev, unsigned iobase)
 
 void w83627hf_set_clksel_48(device_t dev)
 {
-	unsigned port = dev >> 8;
+	u8 reg8;
+
 	pnp_enter_ext_func_mode(dev);
-	outb(0x24, port);
-	/* Set CLKSEL (clock input on pin 1) to 48MHz. */
-	outb(inb(port + 1) | (1 << 6), port + 1);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 6); /* Set CLKSEL (clock input on pin 1) to 48MHz. */
+	pnp_write_config(dev, 0x24, reg8);
 	pnp_exit_ext_func_mode(dev);
 }

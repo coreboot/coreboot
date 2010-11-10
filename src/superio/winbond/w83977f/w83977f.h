@@ -22,12 +22,12 @@
 #define SUPERIO_WINBOND_W83977F_W83977F_H
 
 #define W83977F_FDC	0	/* Floppy */
-#define W83977F_PP	1	/* Parallel Port */
+#define W83977F_PP	1	/* Parallel port */
 #define W83977F_SP1	2	/* Com1 */
 #define W83977F_SP2	3	/* Com2 */
 #define W83977F_RTC	4	/* RTC */
-#define W83977F_KBC	5	/* Keyboard & Mouse */
-#define W83977F_IR	6	/* Infrared Port */
+#define W83977F_KBC	5	/* PS/2 keyboard & mouse */
+#define W83977F_IR	6	/* Infrared port */
 #define W83977F_GPIO1	7	/* General Purpose I/O 1 */
 #define W83977F_GPIO2	8	/* General Purpose I/O 2 */
 

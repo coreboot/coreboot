@@ -18,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 $
 ##
 
-#config chip.h
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83627UHG) += superio.c
+

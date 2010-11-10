@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright 2003-2004 Linux Networx
- * Copyright 2004 Tyan By LYH change from PC87360
+ * Copyright 2004 Tyan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ void w83627hf_disable_dev(device_t dev)
 	pnp_set_enable(dev, 0);
 }
 
-void w83627hf_enable_dev(device_t dev, unsigned iobase)
+void w83627hf_enable_dev(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

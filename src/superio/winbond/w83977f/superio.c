@@ -35,6 +35,7 @@ static void w83977f_enter_ext_func_mode(device_t dev)
 	outb(0x87, dev->path.pnp.port);
 	outb(0x87, dev->path.pnp.port);
 }
+
 static void w83977f_exit_ext_func_mode(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
@@ -42,13 +43,12 @@ static void w83977f_exit_ext_func_mode(device_t dev)
 
 static void w83977f_init(device_t dev)
 {
-	struct superio_winbond_w83977f_config *conf;
+	struct superio_winbond_w83977f_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-	conf = dev->chip_info;
+
 	switch(dev->path.pnp.device) {
 	case W83977F_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -109,11 +109,10 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(device_t dev)
 {
-	pnp_enable_devices(dev, &ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_winbond_w83977f_ops = {
-	CHIP_NAME("Winbond W83977F-A Super I/O")
+	CHIP_NAME("Winbond W83977F Super I/O")
 	.enable_dev = enable_dev,
 };

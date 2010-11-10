@@ -45,74 +45,74 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
-static void pnp_write_index(unsigned long port_base, uint8_t reg, uint8_t value)
+static void pnp_write_index(u16 port, u8 reg, u8 value)
 {
-	outb(reg, port_base);
-	outb(value, port_base + 1);
+	outb(reg, port);
+	outb(value, port + 1);
 }
 
-static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
+static u8 pnp_read_index(u16 port, u8 reg)
 {
-	outb(reg, port_base);
-	return inb(port_base + 1);
+	outb(reg, port);
+	return inb(port + 1);
 }
 
 static void enable_hwm_smbus(device_t dev)
 {
-	/* Set the pin 91,92 as I2C bus. */
-	uint8_t reg, value;
-	reg = 0x2a;
-	value = pnp_read_config(dev, reg);
-	value |= (1 << 1);
-	pnp_write_config(dev, reg, value);
+	u8 reg8;
+
+	/* Configure pins 91/92 as SDA/SCL (I2C bus). */
+	reg8 = pnp_read_config(dev, 0x2a);
+	reg8 |= (1 << 1);
+	pnp_write_config(dev, 0x2a, reg8);
 }
 
 static void init_acpi(device_t dev)
 {
-	uint8_t value = 0x20;
+	u8 value = 0x20; /* TODO: 0x20 value here never used? */
 	int power_on = 1;
 
 	get_option(&power_on, "power_on_after_fail");
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_index(dev->path.pnp.port, 7, 0x0a);
+	pnp_set_logical_device(dev);
 	value = pnp_read_config(dev, 0xe4);
 	value &= ~(3 << 5);
-	if (power_on) {
+	if (power_on)
 		value |= (1 << 5);
-	}
 	pnp_write_config(dev, 0xe4, value);
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void init_hwm(unsigned long base)
+static void init_hwm(u16 base)
 {
 	int i;
-	uint8_t reg, value;
+	u8 reg, value;
 
 	/* reg mask data */
-	unsigned hwm_reg_values[] = {
+	u8 hwm_reg_values[] = {
 		0x40, 0xff, 0x81, /* Start HWM. */
-		0x48, 0x7f, 0x2a, /* Set SMBus base to 0x54 >> 1. */
+		0x48, 0x7f, 0x2a, /* Set SMBus base to 0x2a (0x54 >> 1). */
 	};
 
-	for(i = 0; i < ARRAY_SIZE(hwm_reg_values); i += 3) {
+	for (i = 0; i < ARRAY_SIZE(hwm_reg_values); i += 3) {
 		reg = hwm_reg_values[i];
 		value = pnp_read_index(base, reg);
 		value &= 0xff & (~(hwm_reg_values[i + 1]));
 		value |= 0xff & hwm_reg_values[i + 2];
-		/* printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\n", base, reg,value); */
+		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, "
+		       "value = 0x%02x\n", base, reg, value);
 		pnp_write_index(base, reg, value);
 	}
 }
 
 static void w83627ehg_init(device_t dev)
 {
-	struct superio_winbond_w83627ehg_config *conf;
+	struct superio_winbond_w83627ehg_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
-	if (!dev->enabled) {
+
+	if (!dev->enabled)
 		return;
-	}
-	conf = dev->chip_info;
+
 	switch(dev->path.pnp.device) {
 	case W83627EHG_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -152,7 +152,7 @@ static void w83627ehg_pnp_enable_resources(device_t dev)
 
 	switch (dev->path.pnp.device) {
 	case W83627EHG_HWM:
-		printk(BIOS_DEBUG, "w83627ehg hwm smbus enabled\n");
+		printk(BIOS_DEBUG, "W83627EHG HWM SMBus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}
@@ -162,12 +162,13 @@ static void w83627ehg_pnp_enable_resources(device_t dev)
 
 static void w83627ehg_pnp_enable(device_t dev)
 {
-	if (!dev->enabled) {
-		pnp_enter_ext_func_mode(dev);
-		pnp_set_logical_device(dev);
-		pnp_set_enable(dev, 0);
-		pnp_exit_ext_func_mode(dev);
-	}
+	if (dev->enabled)
+		return;
+
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_exit_ext_func_mode(dev);
 }
 
 static struct device_operations ops = {
@@ -183,7 +184,6 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627EHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
 	{ &ops, W83627EHG_SP1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627EHG_SP2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	/* No 4 { 0,}, */
 	{ &ops, W83627EHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 	{ &ops, W83627EHG_SFI, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627EHG_WDTO_PLED, },
@@ -201,8 +201,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_winbond_w83627ehg_ops = {

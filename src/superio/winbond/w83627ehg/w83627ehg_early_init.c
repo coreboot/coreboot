@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stdint.h>
 #include <arch/romcc_io.h>
 #include "w83627ehg.h"
 
@@ -28,7 +29,7 @@ void w83627ehg_disable_dev(device_t dev)
 	pnp_set_enable(dev, 0);
 }
 
-void w83627ehg_enable_dev(device_t dev, unsigned iobase)
+void w83627ehg_enable_dev(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan By LYH change from PC87360
+ * Copyright (C) 2004 Tyan
  * Copyright (C) 2010 Win Enterprises (anishp@win-ent.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -45,95 +45,95 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
-static void pnp_write_index(unsigned long port_base, uint8_t reg, uint8_t value)
+static void pnp_write_index(u16 port, u8 reg, u8 value)
 {
-	outb(reg, port_base);
-	outb(value, port_base + 1);
+	outb(reg, port);
+	outb(value, port + 1);
 }
 
-static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
+static u8 pnp_read_index(u16 port, u8 reg)
 {
-	outb(reg, port_base);
-	return inb(port_base + 1);
+	outb(reg, port);
+	return inb(port + 1);
 }
 
 #if CONFIG_EXPERT
 static void w83627hf_16_bit_addr_qual(device_t dev)
 {
-      int port = dev->path.pnp.port >> 8;
-      pnp_enter_ext_func_mode(dev);
-      outb(0x24, port);
-      /* enable 16 bit address qualification */
-      outb(inb(port + 1) | 0x80, port + 1);
-      pnp_exit_ext_func_mode(dev);
+	u8 reg8;
+
+	/* Enable 16 bit address qualification. */
+	pnp_enter_ext_func_mode(dev);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 7);
+	pnp_write_config(dev, 0x24, reg8);
+	pnp_exit_ext_func_mode(dev);
 }
 #endif
 
 static void enable_hwm_smbus(device_t dev)
 {
-	/* set the pin 91,92 as I2C bus */
-	uint8_t reg, value;
-	reg = 0x2b;
-	value = pnp_read_config(dev, reg);
-	value &= 0x3f;
-	pnp_write_config(dev, reg, value);
+	u8 reg8;
+
+	/* Configure pins 91/92 as SDA/SCL (I2C bus). */
+	reg8 = pnp_read_config(dev, 0x2b);
+	reg8 &= 0x3f;
+	pnp_write_config(dev, 0x2b, reg8);
 }
 
 static void init_acpi(device_t dev)
 {
-	uint8_t  value = 0x20;
+	u8 value = 0x20; /* FIXME: The 0x20 value here is never used? */
 	int power_on = 1;
 
 	get_option(&power_on, "power_on_after_fail");
+
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_index(dev->path.pnp.port,7,0x0a);
+	pnp_set_logical_device(dev);
 	value = pnp_read_config(dev, 0xE4);
-	value &= ~(3<<5);
-	if(power_on) {
-		value |= (1<<5);
-	}
+	value &= ~(3 << 5);
+	if (power_on)
+		value |= (1 << 5);
 	pnp_write_config(dev, 0xE4, value);
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void init_hwm(unsigned long base)
+static void init_hwm(u16 base)
 {
-	uint8_t  reg, value;
+	u8 reg, value;
 	int i;
 
-	unsigned  hwm_reg_values[] = {
-	/*	reg  mask  data */
-		0x40, 0xff, 0x81,  /* start HWM */
-		0x48, 0xaa, 0x2a,  /* set SMBus base to 0x54>>1	*/
-		0x4a, 0x21, 0x21,  /* set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1 */
+	u8 hwm_reg_values[] = {
+	/*      reg   mask  data */
+		0x40, 0xff, 0x81, /* Start HWM. */
+		0x48, 0xaa, 0x2a, /* Set SMBus base to 0x2a (0x54 >> 1). */
+		0x4a, 0x21, 0x21, /* Set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1. */
 		0x4e, 0x80, 0x00,
 		0x43, 0x00, 0xff,
 		0x44, 0x00, 0x3f,
 		0x4c, 0xbf, 0x18,
-		0x4d, 0xff, 0x80   /* turn off beep */
-
+		0x4d, 0xff, 0x80, /* Turn off beep */
 	};
 
-	for(i = 0; i<  ARRAY_SIZE(hwm_reg_values); i+=3 ) {
+	for (i = 0; i < ARRAY_SIZE(hwm_reg_values); i += 3) {
 		reg = hwm_reg_values[i];
-	 	value = pnp_read_index(base, reg);
-		value &= 0xff & hwm_reg_values[i+1];
-		value |= 0xff & hwm_reg_values[i+2];
-#if 0
-		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\n", base, reg,value);
-#endif
+		value = pnp_read_index(base, reg);
+		value &= 0xff & hwm_reg_values[i + 1];
+		value |= 0xff & hwm_reg_values[i + 2];
+		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, "
+		       "value = 0x%02x\n", base, reg, value);
 		pnp_write_index(base, reg, value);
 	}
 }
 
 static void w83627hf_init(device_t dev)
 {
-	struct superio_winbond_w83627hf_config *conf;
+	struct superio_winbond_w83627hf_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
-	if (!dev->enabled) {
+
+	if (!dev->enabled)
 		return;
-	}
-	conf = dev->chip_info;
+
 	switch(dev->path.pnp.device) {
 	case W83627HF_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -172,7 +172,7 @@ static void w83627hf_pnp_enable_resources(device_t dev)
 	pnp_enable_resources(dev);
 	switch(dev->path.pnp.device) {
 	case W83627HF_HWM:
-		printk(BIOS_DEBUG, "w83627hf hwm smbus enabled\n");
+		printk(BIOS_DEBUG, "W83627HF HWM SMBus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}
@@ -181,14 +181,13 @@ static void w83627hf_pnp_enable_resources(device_t dev)
 
 static void w83627hf_pnp_enable(device_t dev)
 {
-	if (!dev->enabled) {
-		pnp_enter_ext_func_mode(dev);
+	if (dev->enabled)
+		return;
 
-		pnp_set_logical_device(dev);
-		pnp_set_enable(dev, 0);
-
-		pnp_exit_ext_func_mode(dev);
-	}
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_exit_ext_func_mode(dev);
 }
 
 static struct device_operations ops = {
@@ -204,7 +203,6 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
 	{ &ops, W83627HF_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627HF_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	/* No 4 { 0,}, */
 	{ &ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 	{ &ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
@@ -216,8 +214,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_winbond_w83627hf_ops = {

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan By LYH change from PC87360
+ * Copyright (C) 2004 Tyan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,14 @@
 #define SUPERIO_WINBOND_W83627THG_W83627THG_H
 
 #define W83627THG_FDC              0   /* Floppy */
-#define W83627THG_PP               1   /* Parallel Port */
+#define W83627THG_PP               1   /* Parallel port */
 #define W83627THG_SP1              2   /* Com1 */
 #define W83627THG_SP2              3   /* Com2 */
-#define W83627THG_KBC              5   /* Keyboard & Mouse */
+#define W83627THG_KBC              5   /* PS/2 keyboard & mouse */
 #define W83627THG_GAME_MIDI_GPIO1  7
 #define W83627THG_GPIO2            8
 #define W83627THG_GPIO3            9
 #define W83627THG_ACPI            10
-#define W83627THG_HWM             11   /* Hardware Monitor */
+#define W83627THG_HWM             11   /* Hardware monitor */
 
 #endif

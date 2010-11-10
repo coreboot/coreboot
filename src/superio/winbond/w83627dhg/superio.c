@@ -39,13 +39,11 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void w83627dhg_init(device_t dev)
 {
-	struct superio_winbond_w83627dhg_config *conf;
+	struct superio_winbond_w83627dhg_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled)
 		return;
-
-	conf = dev->chip_info;
 
 	switch(dev->path.pnp.device) {
 	case W83627DHG_SP1:

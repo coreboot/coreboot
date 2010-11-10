@@ -22,7 +22,7 @@
 #define SUPERIO_WINBOND_W83697HF_W83697HF_H
 
 #define W83697HF_FDC            0    /* Floppy */
-#define W83697HF_PP             1    /* Parallel Port */
+#define W83697HF_PP             1    /* Parallel port */
 #define W83697HF_SP1            2    /* Com1 */
 #define W83697HF_SP2            3    /* Com2 */
 #define W83697HF_CIR            6    /* Consumer IR */
@@ -30,6 +30,6 @@
 #define W83697HF_MIDI_GPIO5     8    /* MIDI, GPIO 5 */
 #define W83697HF_GPIO234        9    /* GPIO 2, 3, 4 */
 #define W83697HF_ACPI           10   /* ACPI */
-#define W83697HF_HWM            11   /* Hardware Monitor */
+#define W83697HF_HWM            11   /* Hardware monitor */
 
 #endif

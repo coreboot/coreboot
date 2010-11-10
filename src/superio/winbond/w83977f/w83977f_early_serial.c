@@ -21,20 +21,20 @@
 #include <arch/romcc_io.h>
 #include "w83977f.h"
 
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static void w83977f_enable_serial(device_t dev, unsigned int iobase)
+static void w83977f_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

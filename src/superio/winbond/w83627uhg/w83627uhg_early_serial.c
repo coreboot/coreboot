@@ -47,7 +47,7 @@ static void w83627uhg_set_input_clk_sel(device_t dev, u8 speed_24mhz)
 	pnp_write_config(dev, 0x24, value);
 }
 
-static void w83627uhg_enable_serial(device_t dev, u32 iobase)
+static void w83627uhg_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

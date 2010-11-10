@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan By LYH change from PC87360
+ * Copyright (C) 2004 Tyan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,20 +23,20 @@
 #include <arch/romcc_io.h>
 #include "w83627thg.h"
 
-static inline void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev)
 {
-	unsigned int port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static inline void w83627thg_enable_serial(device_t dev, unsigned int iobase)
+static void inline w83627thg_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

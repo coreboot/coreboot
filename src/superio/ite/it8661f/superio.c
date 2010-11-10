@@ -25,10 +25,12 @@
 #include "chip.h"
 #include "it8661f.h"
 
+/* TODO: Add pnp_enter_ext_func_mode() etc. and wrap functions. */
+
 static void init(device_t dev)
 {
 	struct superio_ite_it8661f_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;

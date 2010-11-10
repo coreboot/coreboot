@@ -33,9 +33,9 @@
 #endif
 
 #if CONFIG_DEBUG_RAM_SETUP
-#define printk_raminit(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
+#define printk_raminit(args...) printk(BIOS_DEBUG, args)
 #else
-#define printk_raminit(fmt, arg...)
+#define printk_raminit(args...)
 #endif
 
 

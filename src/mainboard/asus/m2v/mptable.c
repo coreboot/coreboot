@@ -38,24 +38,14 @@ static void smp_write_intsrc_pci(struct mp_config_table *mc,
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	int bus_isa = 42;
+	int bus_isa;
 
 	mc = (void*)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, "M2V         ", LAPIC_ADDR);
 
 	smp_write_processors(mc);
-
-	/* Bus:		Bus ID	Type */
-	smp_write_bus(mc, 0, "PCI   "); /* root bus */
-	smp_write_bus(mc, 1, "PCI   "); /* agp? */
-	smp_write_bus(mc, 2, "PCI   "); /* pcie x16 */
-	smp_write_bus(mc, 3, "PCI   "); /* pcie x1 */
-	smp_write_bus(mc, 4, "PCI   "); /* pcie x1 */
-	smp_write_bus(mc, 5, "PCI   "); /* pcie x1 */
-	smp_write_bus(mc, 6, "PCI   "); /* azalia audio */
-	smp_write_bus(mc, 7, "PCI   "); /* pci */
-	smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x3, IO_APIC_ADDR);

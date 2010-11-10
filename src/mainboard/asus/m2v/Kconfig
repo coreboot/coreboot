@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select TINY_BOOTBLOCK
 	select HAVE_PIRQ_TABLE
 	select HAVE_ACPI_TABLES
+	select HAVE_MP_TABLE
 
 config MAINBOARD_DIR
 	string

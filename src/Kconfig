@@ -502,15 +502,20 @@ config DEBUG_RAM_SETUP
 config HAVE_DEBUG_CAR
 	def_bool n
 
+config DEBUG_CAR
+	def_bool n
+	depends on HAVE_DEBUG_CAR
+
+if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
 # Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
 # printk(BIOS_DEBUG, ...) calls.
 config DEBUG_CAR
 	bool "Output verbose Cache-as-RAM debug messages"
 	default n
-	depends on HAVE_DEBUG_CAR && \
-		   (DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8)
+	depends on HAVE_DEBUG_CAR
 	help
 	  This option enables additional CAR related debug messages.
+endif
 
 config DEBUG_PIRQ
 	bool "Check PIRQ table consistency"
@@ -556,32 +561,41 @@ config DEBUG_SMM_RELOCATION
 
 	  If unsure, say N.
 
+config DEBUG_MALLOC
+	def_bool n
+
 # Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
 # printk(BIOS_DEBUG, ...) calls.
+if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
 config DEBUG_MALLOC
 	bool "Output verbose malloc debug messages"
 	default n
-	depends on DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
 	help
 	  This option enables additional malloc related debug messages.
 
 	  Note: This option will increase the size of the coreboot image.
 
 	  If unsure, say N.
+endif
 
+config REALMODE_DEBUG
+	def_bool n
+	depends on PCI_OPTION_ROM_RUN_REALMODE
+
+if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
 # Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
 # printk(BIOS_DEBUG, ...) calls.
 config REALMODE_DEBUG
 	bool "Enable debug messages for option ROM execution"
 	default n
-	depends on PCI_OPTION_ROM_RUN_REALMODE && \
-		   (DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8)
+	depends on PCI_OPTION_ROM_RUN_REALMODE
 	help
 	  This option enables additional x86emu related debug messages.
 
 	  Note: This option will increase the time to emulate a ROM.
 
 	  If unsure, say N.
+endif
 
 config X86EMU_DEBUG
 	bool "Output verbose x86emu debug messages"

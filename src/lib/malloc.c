@@ -4,7 +4,7 @@
 #if CONFIG_DEBUG_MALLOC
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
 #else
-#define MALLOCDBG(x)
+#define MALLOCDBG(x...)
 #endif
 
 extern unsigned char _heap, _eheap;

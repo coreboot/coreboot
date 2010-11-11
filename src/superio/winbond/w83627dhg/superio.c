@@ -40,7 +40,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 static void w83627dhg_init(device_t dev)
 {
 	struct superio_winbond_w83627dhg_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -55,8 +55,6 @@ static void w83627dhg_init(device_t dev)
 		init_uart8250(res0->base, &conf->com2);
 		break;
 	case W83627DHG_KBC:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

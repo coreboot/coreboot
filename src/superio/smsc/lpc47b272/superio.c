@@ -126,7 +126,7 @@ static void lpc47b272_pnp_enable(device_t dev)
 static void lpc47b272_init(device_t dev)
 {
 	struct superio_smsc_lpc47b272_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -143,8 +143,6 @@ static void lpc47b272_init(device_t dev)
 		break;
 
 	case LPC47B272_KBC:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

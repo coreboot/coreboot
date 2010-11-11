@@ -124,7 +124,7 @@ static void lpc47m10x_pnp_enable(device_t dev)
 static void lpc47m10x_init(device_t dev)
 {
 	struct superio_smsc_lpc47m10x_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -141,8 +141,6 @@ static void lpc47m10x_init(device_t dev)
 		break;
 
 	case LPC47M10X2_KBC:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

@@ -46,7 +46,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 static void it8712f_init(device_t dev)
 {
 	struct superio_ite_it8712f_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -67,8 +67,6 @@ static void it8712f_init(device_t dev)
 	case IT8712F_EC: /* TODO. */
 		break;
 	case IT8712F_KBCK:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		set_kbc_ps2_mode();
 		pc_keyboard_init(&conf->keyboard);
 		break;

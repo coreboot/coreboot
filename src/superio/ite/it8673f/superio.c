@@ -29,7 +29,7 @@
 static void init(device_t dev)
 {
 	struct superio_ite_it8673f_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -50,8 +50,6 @@ static void init(device_t dev)
 	case IT8673F_FAN: /* TODO. */
 		break;
 	case IT8673F_KBCK:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	case IT8673F_KBCM: /* TODO. */

@@ -57,7 +57,6 @@ static void f71889_init(device_t dev)
 		init_uart8250(res0->base, &conf->com2);
 		break;
 	case F71889_KBC:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

@@ -32,7 +32,7 @@
 static void init(device_t dev)
 {
 	struct superio_nsc_pc87427_config *conf;
-	struct resource *res0, *res1;
+	struct resource *res0;
 	/* Wishlist handle well known programming interfaces more
 	 * generically.
 	 */
@@ -50,8 +50,6 @@ static void init(device_t dev)
 		init_uart8250(res0->base, &conf->com2);
 		break;
 	case PC87427_KBCK:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

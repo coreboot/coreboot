@@ -28,7 +28,7 @@
 static void init(device_t dev)
 {
 	struct superio_ite_it8705f_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;

@@ -78,7 +78,7 @@ static void init_ec(u16 base)
 static void it8716f_init(device_t dev)
 {
 	struct superio_ite_it8716f_config *conf = dev->chip_info;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -99,8 +99,6 @@ static void it8716f_init(device_t dev)
 		init_ec(res0->base + EC_INDEX_PORT);
 		break;
 	case IT8716F_KBCK:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}

@@ -29,7 +29,7 @@
 static void init(device_t dev)
 {
 	struct superio_nsc_pc97317_config *conf;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled) {
 		return;
@@ -53,8 +53,6 @@ static void init(device_t dev)
 		pnp_write_config(dev, 0xf0, 0x40); /* Set KBC clock to 8 Mhz */
 		pnp_set_enable(dev, 1); /* Enable keyboard */
 
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(&conf->keyboard);
 		break;
 

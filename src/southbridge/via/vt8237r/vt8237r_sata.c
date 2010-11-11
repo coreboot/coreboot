@@ -119,6 +119,12 @@ static const struct pci_driver northbridge_driver_ii __pci_driver = {
 	.device	= PCI_DEVICE_ID_VIA_VT8237_SATA,
 };
 
+static const struct pci_driver northbridge_driver_i_a __pci_driver = {
+	.ops	= &sata_i_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_VT8237A_SATA,
+};
+
 static const struct pci_driver northbridge_driver_i __pci_driver = {
 	.ops	= &sata_i_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,

@@ -194,6 +194,19 @@ static void m2v_it8712f_gpio_init(void)
 		giv++;
 	}
 	it8712f_exit_conf();
+
+	printk(BIOS_INFO, "it8712f gpio: Setting DDR2 voltage to 1.80V\n");
+	/*
+	 * upper two bits of gpio_base+4 control ddr2 voltage:
+	 * 11: 1.80V
+	 * 01: 1.85V
+	 * 10: 1.90V
+	 * 00: 1.95V
+	 *
+	 * The lower six bits are inputs and normally read back as 1
+	 * (except bit 2, which seems rather random).
+	 */
+	outb(0xff, IT8712F_GPIO_BASE+4);
 }
 
 static void m2v_bus_init(void)

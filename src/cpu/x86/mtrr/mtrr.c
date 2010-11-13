@@ -230,7 +230,8 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 
 static unsigned int range_to_mtrr(unsigned int reg,
 	unsigned long range_startk, unsigned long range_sizek,
-	unsigned long next_range_startk, unsigned char type, unsigned address_bits)
+	unsigned long next_range_startk, unsigned char type,
+	unsigned int address_bits, unsigned int above4gb)
 {
 	if (!range_sizek) {
 		/* If there's no MTRR hole, this function will bail out
@@ -263,7 +264,12 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
 			);
-		set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
+
+		/* if range is above 4GB, MTRR is needed
+		 * only if above4gb flag is set
+		 */
+		if (range_startk < 0x100000000ull / 1024 || above4gb)
+			set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
 		range_startk += sizek;
 		range_sizek -= sizek;
 		if (reg >= BIOS_MTRRS) {
@@ -308,10 +314,9 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 struct var_mtrr_state {
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
-#if CONFIG_VAR_MTRR_HOLE
 	unsigned long hole_startk, hole_sizek;
-#endif
-	unsigned address_bits;
+	unsigned int address_bits;
+	unsigned int above4gb; /* Set if MTRRs are needed for DRAM above 4GB */
 };
 
 void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
@@ -344,17 +349,17 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 		}
 #endif
 		state->reg = range_to_mtrr(state->reg, state->range_startk,
-			state->range_sizek, basek, MTRR_TYPE_WRBACK, state->address_bits);
+			state->range_sizek, basek, MTRR_TYPE_WRBACK,
+			state->address_bits, state->above4gb);
 #if CONFIG_VAR_MTRR_HOLE
 		state->reg = range_to_mtrr(state->reg, state->hole_startk,
-			state->hole_sizek, basek,  MTRR_TYPE_UNCACHEABLE, state->address_bits);
+			state->hole_sizek, basek, MTRR_TYPE_UNCACHEABLE,
+			state->address_bits, state->above4gb);
 #endif
 		state->range_startk = 0;
 		state->range_sizek = 0;
-#if CONFIG_VAR_MTRR_HOLE
-                state->hole_startk = 0;
-                state->hole_sizek = 0;
-#endif
+		state->hole_startk = 0;
+		state->hole_sizek = 0;
 	}
 	/* Allocate an msr */
 	printk(BIOS_SPEW, " Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
@@ -388,12 +393,15 @@ void x86_setup_fixed_mtrrs(void)
 
 }
 
-void x86_setup_var_mtrrs(unsigned address_bits)
+void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 /* this routine needs to know how many address bits a given processor
  * supports.  CPUs get grumpy when you set too many bits in
  * their mtrr registers :(  I would generically call cpuid here
  * and find out how many physically supported but some cpus are
  * buggy, and report more bits then they actually support.
+ * If above4gb flag is set, variable MTRR ranges must be used to
+ * set cacheability of DRAM above 4GB. If above4gb flag is clear,
+ * some other mechanism is controlling cacheability of DRAM above 4GB.
  */
 {
 	/* Try this the simple way of incrementally adding together
@@ -408,34 +416,38 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	 */
 	var_state.range_startk = 0;
 	var_state.range_sizek = 0;
-#if CONFIG_VAR_MTRR_HOLE
 	var_state.hole_startk = 0;
 	var_state.hole_sizek = 0;
-#endif
 	var_state.reg = 0;
 	var_state.address_bits = address_bits;
+	var_state.above4gb = above4gb;
 
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
+
 #if (CONFIG_GFXUMA == 1) /* UMA or SP. */
-	// For now we assume the UMA space is at the end of memory
+	/* For now we assume the UMA space is at the end of memory below 4GB */
 	if (var_state.hole_startk || var_state.hole_sizek) {
 		printk(BIOS_DEBUG, "Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
 	} else {
+#if CONFIG_VAR_MTRR_HOLE
 		// Increase the base range and set up UMA as an UC hole instead
 		var_state.range_sizek += (uma_memory_size >> 10);
 
 		var_state.hole_startk = (uma_memory_base >> 10);
 		var_state.hole_sizek = (uma_memory_size >> 10);
+#endif
 	}
 #endif
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk,
-		var_state.range_sizek, 0, MTRR_TYPE_WRBACK, var_state.address_bits);
+		var_state.range_sizek, 0, MTRR_TYPE_WRBACK,
+		var_state.address_bits, var_state.above4gb);
 #if CONFIG_VAR_MTRR_HOLE
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
-		var_state.hole_sizek,  0, MTRR_TYPE_UNCACHEABLE, var_state.address_bits);
+		var_state.hole_sizek, 0, MTRR_TYPE_UNCACHEABLE,
+		var_state.address_bits, var_state.above4gb);
 #endif
 	printk(BIOS_DEBUG, "DONE variable MTRRs\n");
 	printk(BIOS_DEBUG, "Clear out the extra MTRR's\n");
@@ -449,10 +461,11 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	post_code(0x6A);
 }
 
+
 void x86_setup_mtrrs(unsigned address_bits)
 {
 	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(address_bits);
+	x86_setup_var_mtrrs(address_bits, 1);
 }
 
 

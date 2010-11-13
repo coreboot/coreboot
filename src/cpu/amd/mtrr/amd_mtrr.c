@@ -6,6 +6,10 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
+#if CONFIG_GFXUMA == 1
+extern uint64_t uma_memory_size;
+#endif
+
 static unsigned long resk(uint64_t value)
 {
 	unsigned long resultk;
@@ -107,14 +111,14 @@ void amd_setup_mtrrs(void)
 	unsigned long address_bits;
 	struct mem_state state;
 	unsigned long i;
-	msr_t msr;
+	msr_t msr, sys_cfg;
 
 
 	/* Enable the access to AMD RdDram and WrDram extension bits */
 	disable_cache();
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr);
+	sys_cfg = rdmsr(SYSCFG_MSR);
+	sys_cfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, sys_cfg);
 	enable_cache();
 
 	printk(BIOS_DEBUG, "\n");
@@ -146,13 +150,25 @@ void amd_setup_mtrrs(void)
 	/* Setup TOP_MEM */
 	msr.hi = state.mmio_basek >> 22;
 	msr.lo = state.mmio_basek << 10;
+
+	/* If UMA graphics is enabled, the frame buffer memory
+	 * has been deducted from the size of memory below 4GB.
+	 * When setting TOM, include UMA DRAM
+	 */
+	#if CONFIG_GFXUMA == 1
+	msr.lo += uma_memory_size;
+	#endif
 	wrmsr(TOP_MEM, msr);
 
+	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
 	if(state.tomk > (4*1024*1024)) {
-		/* Setup TOP_MEM2 */
+		/* DRAM above 4GB: set TOM2, SYSCFG_MSR_TOM2En
+		 * and SYSCFG_MSR_TOM2WB
+		 */
 		msr.hi = state.tomk >> 22;
 		msr.lo = state.tomk << 10;
 		wrmsr(TOP_MEM2, msr);
+		sys_cfg.lo |= SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB;
 	}
 
 	/* zero the IORR's before we enable to prevent
@@ -167,10 +183,9 @@ void amd_setup_mtrrs(void)
 	 * Enable the RdMem and WrMem bits in the fixed mtrrs.
 	 * Disable access to the RdMem and WrMem in the fixed mtrr.
 	 */
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_TOM2En;
-	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr);
+	sys_cfg.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn;
+	sys_cfg.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, sys_cfg);
 
 	enable_fixed_mtrr();
 
@@ -186,5 +201,5 @@ void amd_setup_mtrrs(void)
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.
 	 */
-	x86_setup_var_mtrrs(address_bits);
+	x86_setup_var_mtrrs(address_bits, 0);
 }

@@ -37,7 +37,7 @@
 #if !defined (ASSEMBLY) && !defined(__PRE_RAM__)
 #include <device/device.h>
 void enable_fixed_mtrr(void);
-void x86_setup_var_mtrrs(unsigned address_bits);
+void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
 void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res);

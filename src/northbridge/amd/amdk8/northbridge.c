@@ -822,11 +822,24 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 #endif
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+#define HIGH_TABLES_SIZE 64	/* maximum size of high tables in KB */
 extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 #if CONFIG_GFXUMA == 1
 extern uint64_t uma_memory_base, uma_memory_size;
-#endif
+
+static void add_uma_resource(struct device *dev, int index)
+{
+	struct resource *resource;
+
+	printk(BIOS_DEBUG, "Adding UMA memory area\n");
+	resource = new_resource(dev, index);
+	resource->base = (resource_t) uma_memory_base;
+	resource->size = (resource_t) uma_memory_size;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+}
 #endif
 
 static void amdk8_domain_set_resources(device_t dev)
@@ -1040,6 +1053,11 @@ static void amdk8_domain_set_resources(device_t dev)
 		/* If sizek == 0, it was split at mmio_basek without a hole.
 		 * Don't create an empty ram_resource.
 		 */
+#if CONFIG_GFXUMA == 1
+		/* Deduct uma memory before reporting because
+		 * this is what the mtrr code expects */
+		sizek -= uma_memory_size / 1024;
+#endif
 		if (sizek)
 			ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
@@ -1057,6 +1075,10 @@ static void amdk8_domain_set_resources(device_t dev)
 		}
 #endif
 	}
+
+#if CONFIG_GFXUMA == 1
+	add_uma_resource(dev, 7);
+#endif
 	assign_resources(dev->link_list);
 
 }

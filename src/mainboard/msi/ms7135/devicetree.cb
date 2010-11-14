@@ -1,14 +1,13 @@
 chip northbridge/amd/amdk8/root_complex		# Root complex
-  device lapic_cluster 0 on			# APIC cluster
-    chip cpu/amd/socket_754			# Socket 754 CPU
-      device lapic 0 on end			# APIC
+  device lapic_cluster 0 on			# (L)APIC cluster
+    chip cpu/amd/socket_754			# CPU socket
+      device lapic 0 on end			# Local APIC of the CPU
     end
   end
 
   device pci_domain 0 on			# PCI domain
-    chip northbridge/amd/amdk8			# mc0
-      device pci 18.0 on			# Northbridge
-        # Devices on link 0, link 0 == LDT 0
+    chip northbridge/amd/amdk8			# Northbridge / RAM controller
+      device pci 18.0 on			# Link 0 == LDT 0
         chip southbridge/nvidia/ck804		# Southbridge
           device pci 0.0 on end			# HT
           device pci 1.0 on			# LPC
@@ -52,14 +51,14 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           device pci 2.0 on end			# USB 1.1
           device pci 2.1 on end			# USB 2
           device pci 4.0 on end			# Onboard audio (ACI)
-          device pci 4.1 off end		# Onboard modem (MCI) -- not wired out
+          device pci 4.1 off end		# Onboard modem (MCI), N/A
           device pci 6.0 on end			# IDE
           device pci 7.0 on end			# SATA 1
           device pci 8.0 on end			# SATA 0
           device pci 9.0 on end			# PCI
           device pci a.0 on end			# NIC
-          device pci b.0 off end		# PCI E 3 -- not wired out
-          device pci c.0 off end		# PCI E 2 -- not wired out
+          device pci b.0 off end		# PCI E 3 (N/A)
+          device pci c.0 off end		# PCI E 2 (N/A)
           device pci d.0 on end			# PCI E 1
           device pci e.0 on end			# PCI E 0
           register "ide0_enable" = "1"

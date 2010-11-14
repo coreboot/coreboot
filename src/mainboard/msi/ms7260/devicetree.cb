@@ -1,13 +1,12 @@
 chip northbridge/amd/amdk8/root_complex		# Root complex
-  device lapic_cluster 0 on			# APIC cluster
-    chip cpu/amd/socket_AM2			# CPU
-      device lapic 0 on end			# APIC
+  device lapic_cluster 0 on			# (L)APIC cluster
+    chip cpu/amd/socket_AM2			# CPU socket
+      device lapic 0 on end			# Local APIC of the CPU
     end
   end
   device pci_domain 0 on			# PCI domain
-    chip northbridge/amd/amdk8			# Northbridge / mc0
-      device pci 18.0 on
-        # Devices on link 0, link 0 == LDT 0
+    chip northbridge/amd/amdk8			# Northbridge / RAM controller
+      device pci 18.0 on			# Link 0 == LDT 0
         chip southbridge/nvidia/mcp55		# Southbridge
           device pci 0.0 on end			# HT
           device pci 1.0 on			# LPC
@@ -83,19 +82,19 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           end
           # TODO: Check if the stuff below is correct / needed.
           device pci 1.1 on			# SM 1
-            # PCI device SMBus address will depend on addon PCI device,
-            # do we need to scan_smbus_bus?
-
-            # chip drivers/generic/generic	# PCIXA Slot1
+            # PCI device SMBus address will
+            # depend on addon PCI device, do
+            # we need to scan_smbus_bus?
+            # chip drivers/generic/generic	# PCIXA slot 1
             #   device i2c 50 on end
             # end
-            # chip drivers/generic/generic	# PCIXB Slot1
+            # chip drivers/generic/generic	# PCIXB slot 1
             #   device i2c 51 on end
             # end
-            # chip drivers/generic/generic	# PCIXB Slot2
+            # chip drivers/generic/generic	# PCIXB slot 2
             #   device i2c 52 on end
             # end
-            # chip drivers/generic/generic	# PCI Slot1
+            # chip drivers/generic/generic	# PCI slot 1
             #   device i2c 53 on end
             # end
             # chip drivers/generic/generic	# Master MCP55 PCI-E
@@ -128,7 +127,8 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           register "sata0_enable" = "1"
           register "sata1_enable" = "1"
           # TODO: Check the two lines below.
-          register "mac_eeprom_smbus" = "3"	# 1: SMBus under 2e.8, 2: SM0 3: SM1
+          # 1: SMBus under 2e.8, 2: SM0 3: SM1
+          register "mac_eeprom_smbus" = "3"
           register "mac_eeprom_addr" = "0x51"
         end
       end
@@ -139,19 +139,17 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
       device pci 18.3 on end
     end
   end
-
-# TODO
-#  chip drivers/generic/debug
-#    device pnp 0.0 off end			# chip name
-#    device pnp 0.1 on end			# pci_regs_all
-#    device pnp 0.2 on end			# mem
-#    device pnp 0.3 off end			# cpuid
-#    device pnp 0.4 on end			# smbus_regs_all
-#    device pnp 0.5 off end			# dual core msr
-#    device pnp 0.6 off end			# cache size
-#    device pnp 0.7 off end			# tsc
-#    device pnp 0.8 off end			# io
-#    device pnp 0.9 off end			# io
-#  end
-
+  # TODO
+  # chip drivers/generic/debug
+  #   device pnp 0.0 off end			# chip name
+  #   device pnp 0.1 on end			# pci_regs_all
+  #   device pnp 0.2 on end			# mem
+  #   device pnp 0.3 off end			# cpuid
+  #   device pnp 0.4 on end			# smbus_regs_all
+  #   device pnp 0.5 off end			# dual core msr
+  #   device pnp 0.6 off end			# cache size
+  #   device pnp 0.7 off end			# tsc
+  #   device pnp 0.8 off end			# io
+  #   device pnp 0.9 off end			# io
+  # end
 end

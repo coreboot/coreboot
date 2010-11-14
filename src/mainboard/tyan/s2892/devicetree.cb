@@ -1,152 +1,147 @@
-chip northbridge/amd/amdk8/root_complex
-	device lapic_cluster 0 on
-		chip cpu/amd/socket_940
-			device lapic 0 on end
-		end
-	end
-	device pci_domain 0 on
-		chip northbridge/amd/amdk8 #mc0
-			device pci 18.0 on #  northbridge
-				#  devices on link 0, link 0 == LDT 0
-				chip southbridge/nvidia/ck804
-					device pci 0.0 on end   # HT
-					device pci 1.0 on # LPC
-						chip superio/winbond/w83627hf
-							device pnp 2e.0 on #  Floppy
-								io 0x60 = 0x3f0
-								irq 0x70 = 6
-								drq 0x74 = 2
-							end
-							device pnp 2e.1 on #  Parallel Port
-								io 0x60 = 0x378
-								irq 0x70 = 7
-								drq 0x74 = 3
-							end
-							device pnp 2e.2 on #  Com1
-								io 0x60 = 0x3f8
-								irq 0x70 = 4
-							end
-							device pnp 2e.3 off #  Com2
-								io 0x60 = 0x2f8
-								irq 0x70 = 3
-							end
-							device pnp 2e.5 on #  Keyboard
-								io 0x60 = 0x60
-								io 0x62 = 0x64
-								irq 0x70 = 1
-								irq 0x72 = 12
-							end
-							device pnp 2e.6 off #  CIR
-								io 0x60 = 0x100
-							end
-							device pnp 2e.7 off #  GAME_MIDI_GIPO1
-								io 0x60 = 0x220
-								io 0x62 = 0x300
-								irq 0x70 = 9
-							end
-							device pnp 2e.8 off end #  GPIO2
-							device pnp 2e.9 off end #  GPIO3
-							device pnp 2e.a off end #  ACPI
-							device pnp 2e.b on #  HW Monitor
-								io 0x60 = 0x290
-								irq 0x70 = 5
-							end
-						end
-					end
-					device pci 1.1 on # SM 0
-						chip drivers/generic/generic #dimm 0-0-0
-							device i2c 50 on end
-						end
-						chip drivers/generic/generic #dimm 0-0-1
-							device i2c 51 on end
-						end
-						chip drivers/generic/generic #dimm 0-1-0
-							device i2c 52 on end
-						end
-						chip drivers/generic/generic #dimm 0-1-1
-							device i2c 53 on end
-						end
-						chip drivers/generic/generic #dimm 1-0-0
-							device i2c 54 on end
-						end
-						chip drivers/generic/generic #dimm 1-0-1
-							device i2c 55 on end
-						end
-						chip drivers/generic/generic #dimm 1-1-0
-							device i2c 56 on end
-						end
-						chip drivers/generic/generic #dimm 1-1-1
-							device i2c 57 on end
-						end
-					end # SM
-					device pci 1.1 on # SM 1
-						chip drivers/i2c/adm1027 # ADT7463A CPU0 temp, SYS FAN 2/3/4
-							device i2c 2d on end
-						end
-						chip drivers/i2c/adm1027 # ADT7463A CPU1 temp, CPU0/1 FAN , SYS FAN 1/5
-							device i2c 2e on end
-						end
-						chip drivers/generic/generic # Winbond HWM 0x54 CPU0/1 VRM temp, SYSFAN 6/7, SB FAN
-							device i2c 2a on end
-						end
-						chip drivers/generic/generic # Winbond HWM 0x92
-							device i2c 49 on end
-						end
-						chip drivers/generic/generic # Winbond HWM 0x94
-							device i2c 4a on end
-						end
-					end #SM
-					device pci 2.0 on end # USB 1.1
-					device pci 2.1 on end # USB 2
-					device pci 4.0 off end # ACI
-					device pci 4.1 off end # MCI
-					device pci 6.0 on end # IDE
-					device pci 7.0 on end # SATA 1
-					device pci 8.0 on end # SATA 0
-					device pci 9.0 on  # PCI
-					#	chip drivers/ati/ragexl
-						device pci 6.0 on end
-					#	end
-						device pci 8.0 on end
-					end
-					device pci a.0 off end # NIC
-					device pci b.0 off end # PCI E 3
-					device pci c.0 off end # PCI E 2
-					device pci d.0 on end # PCI E 1
-					device pci e.0 on end # PCI E 0
-					register "ide0_enable" = "1"
-					register "ide1_enable" = "1"
-					register "sata0_enable" = "1"
-					register "sata1_enable" = "1"
-				end
-			end #  device pci 18.0
-			device pci 18.0 on end # Link 1
-			device pci 18.0 on
-			#  devices on link 2, link 2 == LDT 2
-				chip southbridge/amd/amd8131
-					# the on/off keyword is mandatory
-					device pci 0.0 on end
-					device pci 0.1 on end
-					device pci 1.0 on
-						device pci 9.0 on end # broadcom 5704
-						device pci 9.1 on end
-					end
-					device pci 1.1 on end
-				end
-			end # device pci 18.0
-			device pci 18.1 on end
-			device pci 18.2 on end
-			device pci 18.3 on end
-		end #mc0
-
-	end # pci_domain
-
-#	chip drivers/generic/debug
-#		device pnp 0.0 off end
-#		device pnp 0.1 off end
-#		device pnp 0.2 off end
-#		device pnp 0.3 off end
-#		device pnp 0.4 off end
-#		device pnp 0.5 on end
-#	end
-end # root_complex
+chip northbridge/amd/amdk8/root_complex		# Root complex
+  device lapic_cluster 0 on			# (L)APIC cluster
+    chip cpu/amd/socket_940			# CPU socket
+      device lapic 0 on end			# Local APIC of the CPU
+    end
+  end
+  device pci_domain 0 on			# PCI domain
+    chip northbridge/amd/amdk8			# Northbridge / RAM controller
+      device pci 18.0 on			# Link 0 == LDT 0
+        chip southbridge/nvidia/ck804		# Southbridge
+          device pci 0.0 on end			# HT
+          device pci 1.0 on			# LPC
+            chip superio/winbond/w83627hf	# Super I/O
+              device pnp 2e.0 on		# Floppy
+                io 0x60 = 0x3f0
+                irq 0x70 = 6
+                drq 0x74 = 2
+              end
+              device pnp 2e.1 on		# Parallel port
+                io 0x60 = 0x378
+                irq 0x70 = 7
+                drq 0x74 = 3
+              end
+              device pnp 2e.2 on		# Com1
+                io 0x60 = 0x3f8
+                irq 0x70 = 4
+              end
+              device pnp 2e.3 off		# Com2
+                io 0x60 = 0x2f8
+                irq 0x70 = 3
+              end
+              device pnp 2e.5 on		# PS/2 keyboard & mouse
+                io 0x60 = 0x60
+                io 0x62 = 0x64
+                irq 0x70 = 1
+                irq 0x72 = 12
+              end
+              device pnp 2e.6 off		# Consumer IR
+                io 0x60 = 0x100
+              end
+              device pnp 2e.7 off		# Game port, MIDI, GPIO1
+                io 0x60 = 0x220
+                io 0x62 = 0x300
+                irq 0x70 = 9
+              end
+              device pnp 2e.8 off end		# GPIO2
+              device pnp 2e.9 off end		# GPIO3
+              device pnp 2e.a off end		# ACPI
+              device pnp 2e.b on		# Hardware monitor
+                io 0x60 = 0x290
+                irq 0x70 = 5
+              end
+            end
+          end
+          device pci 1.1 on			# SM 0
+            chip drivers/generic/generic	# DIMM 0-0-0
+              device i2c 50 on end
+            end
+            chip drivers/generic/generic	# DIMM 0-0-1
+              device i2c 51 on end
+            end
+            chip drivers/generic/generic	# DIMM 0-1-0
+              device i2c 52 on end
+            end
+            chip drivers/generic/generic	# DIMM 0-1-1
+              device i2c 53 on end
+            end
+            chip drivers/generic/generic	# DIMM 1-0-0
+              device i2c 54 on end
+            end
+            chip drivers/generic/generic	# DIMM 1-0-1
+              device i2c 55 on end
+            end
+            chip drivers/generic/generic	# DIMM 1-1-0
+              device i2c 56 on end
+            end
+            chip drivers/generic/generic	# DIMM 1-1-1
+              device i2c 57 on end
+            end
+          end
+          device pci 1.1 on			# SM 1
+            chip drivers/i2c/adm1027		# ADT7463A CPU0 temp, SYS FAN 2/3/4
+              device i2c 2d on end
+            end
+            chip drivers/i2c/adm1027		# ADT7463A CPU1 temp, CPU0/1 FAN , SYS FAN 1/5
+              device i2c 2e on end
+            end
+            chip drivers/generic/generic	# Winbond HWM 0x54 CPU0/1 VRM temp, SYSFAN 6/7, SB FAN
+              device i2c 2a on end
+            end
+            chip drivers/generic/generic	# Winbond HWM 0x92
+              device i2c 49 on end
+            end
+            chip drivers/generic/generic	# Winbond HWM 0x94
+              device i2c 4a on end
+            end
+          end
+          device pci 2.0 on end			# USB 1.1
+          device pci 2.1 on end			# USB 2
+          device pci 4.0 off end		# ACI
+          device pci 4.1 off end		# MCI
+          device pci 6.0 on end			# IDE
+          device pci 7.0 on end			# SATA 1
+          device pci 8.0 on end			# SATA 0
+          device pci 9.0 on			# PCI
+          #  chip drivers/ati/ragexl
+            device pci 6.0 on end
+          #  end
+            device pci 8.0 on end
+          end
+          device pci a.0 off end		# NIC
+          device pci b.0 off end		# PCI E 3
+          device pci c.0 off end		# PCI E 2
+          device pci d.0 on end			# PCI E 1
+          device pci e.0 on end			# PCI E 0
+          register "ide0_enable" = "1"
+          register "ide1_enable" = "1"
+          register "sata0_enable" = "1"
+          register "sata1_enable" = "1"
+        end
+      end
+      device pci 18.0 on end			# Link 1
+      device pci 18.0 on			# Link 2 == LDT 2
+        chip southbridge/amd/amd8131		# Southbridge
+          device pci 0.0 on end
+          device pci 0.1 on end
+          device pci 1.0 on
+            device pci 9.0 on end		# Broadcom 5704
+            device pci 9.1 on end
+          end
+          device pci 1.1 on end
+        end
+      end
+      device pci 18.1 on end
+      device pci 18.2 on end
+      device pci 18.3 on end
+    end
+  end
+  # chip drivers/generic/debug
+  #   device pnp 0.0 off end
+  #   device pnp 0.1 off end
+  #   device pnp 0.2 off end
+  #   device pnp 0.3 off end
+  #   device pnp 0.4 off end
+  #   device pnp 0.5 on end
+  # end
+end

@@ -35,11 +35,11 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_VT8237A_LPC, 0);
 	if (!lpc_dev)
-		return;
+		return 0;
 
 	acpi_io_base = pci_read_config16(lpc_dev, 0x88);
 	if (!acpi_io_base || (acpi_io_base & ~1) == 0)
-		return;
+		return 0;
 	acpi_io_base &= ~1;
 
 	gpio_in = inl(acpi_io_base + 0x48);

@@ -27,6 +27,19 @@
 #include "chip.h"
 
 /**
+ * Cable type detect function, weak so it can be overloaded in mainboard.c
+ */
+u32 __attribute__((weak)) vt8237_ide_80pin_detect(struct device *dev)
+{
+	struct southbridge_via_vt8237r_config *sb =
+	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
+	u32 res;
+	res  = sb->ide0_80pin_cable ? VT8237R_IDE0_80PIN_CABLE : 0;
+	res |= sb->ide1_80pin_cable ? VT8237R_IDE1_80PIN_CABLE : 0;
+	return res;
+}
+
+/**
  * No native mode. Interrupts from unconnected HDDs might occur if
  * IRQ14/15 is used for PCI. Therefore no native mode support.
  */
@@ -88,11 +101,8 @@ static void ide_init(struct device *dev)
 
 	/* Cable guy... */
 	cablesel = pci_read_config32(dev, IDE_UDMA);
-	cablesel &= ~((1 << 28) | (1 << 20) | (1 << 12) | (1 << 4));
-	cablesel |= (sb->ide0_80pin_cable << 28) |
-		    (sb->ide0_80pin_cable << 20) |
-		    (sb->ide1_80pin_cable << 12) |
-		    (sb->ide1_80pin_cable << 4);
+	cablesel &= ~VT8237R_IDE_CABLESEL_MASK;
+	cablesel |= vt8237_ide_80pin_detect(dev);
 	pci_write_config32(dev, IDE_UDMA, cablesel);
 
 #if CONFIG_EPIA_VT8237R_INIT

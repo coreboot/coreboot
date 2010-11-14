@@ -45,6 +45,10 @@
 #define IDE_MISC_II			0x45
 #define IDE_UDMA			0x50
 
+#define VT8237R_IDE0_80PIN_CABLE ((1UL<<28)|(1UL<<20))
+#define VT8237R_IDE1_80PIN_CABLE ((1UL<<12)|(1UL<< 4))
+#define VT8237R_IDE_CABLESEL_MASK (VT8237R_IDE0_80PIN_CABLE|VT8237R_IDE1_80PIN_CABLE)
+
 /* SMBus */
 #define VT8237R_PSON			0x82
 #define VT8237R_POWER_WELL		0x94
@@ -118,6 +122,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom);
 #include <device/device.h>
 void writeback(struct device *dev, u16 where, u8 what);
 void dump_south(device_t dev);
+u32 vt8237_ide_80pin_detect(struct device *dev);
 #endif
 
 #endif

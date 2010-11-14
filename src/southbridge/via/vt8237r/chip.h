@@ -50,12 +50,12 @@ struct southbridge_via_vt8237r_config {
 	 */
 	u16 fn_ctrl_hi;
 
-	int ide0_enable:1;
-	int ide1_enable:1;
+	u8 ide0_enable;
+	u8 ide1_enable;
 
 	/* 1 = 80-pin cable, 0 = 40-pin cable */
-	int ide0_80pin_cable:1;
-	int ide1_80pin_cable:1;
+	u8 ide0_80pin_cable;
+	u8 ide1_80pin_cable;
 };
 
 #endif /* SOUTHBRIDGE_VIA_VT8237R_CHIP_H */

@@ -114,7 +114,7 @@ Device (SIO1)
 		Method(_CRS, 0)
 		{
 			Name(NONE, ResourceTemplate() {
-				IO(Decode16, 0x000, 0x000, 0x0, 0x0)
+				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
 				IRQNoFlags() { }
 			})
 
@@ -269,7 +269,7 @@ Device (SIO1)
 		Method(_CRS, 0)
 		{
 			Name(NONE, ResourceTemplate() {
-				IO(Decode16, 0x000, 0x000, 0x0, 0x0)
+				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
 				IRQNoFlags() { }
 			})
 
@@ -423,7 +423,7 @@ Device (SIO1)
 		Method(_CRS, 0)
 		{
 			Name(NONE, ResourceTemplate() {
-				IO(Decode16, 0x000, 0x000, 0x0, 0x0)
+				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
 				IRQNoFlags() { }
 			})
 
@@ -575,7 +575,7 @@ Device (SIO1)
 		Method(_CRS, 0)
 		{
 			Name(NONE, ResourceTemplate() {
-				IO(Decode16, 0x000, 0x000, 0x0, 0x0)
+				IO(Decode16, 0x000, 0x000, 0x0, 0x1)
 				IRQNoFlags() { }
 			})
 

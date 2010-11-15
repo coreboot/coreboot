@@ -33,7 +33,7 @@
 
 static void init(device_t dev)
 {
-	struct superio_nsc_pc8374_config *conf = dev­>chip_info;
+	struct superio_nsc_pc8374_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)

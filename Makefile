@@ -229,7 +229,7 @@ define ramstage-objs_asl_template
 $(obj)/$(1).ramstage.o: src/$(1).asl
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CPP) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
-	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl > $$(basename $$@).asl.out
+	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl
 	mv $$(obj)/$(1).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
 	# keep %.o: %.c rule from catching the temporary .c file after a make clean

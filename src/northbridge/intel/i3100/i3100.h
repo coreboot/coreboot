@@ -64,6 +64,8 @@
 #define DRC_NOECC_MODE        (0 << 20)
 #define DRC_72BIT_ECC         (1 << 20)
 
+#define RCBA 0xF0
+#define DEFAULT_RCBA 0xFEA00000
 
 #ifdef __GNUC__
 int bios_reset_detected(void);

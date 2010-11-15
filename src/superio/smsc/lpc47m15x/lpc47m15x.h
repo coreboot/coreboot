@@ -25,7 +25,7 @@
 #define LPC47M15X_SP1              4   /* Com1 */
 #define LPC47M15X_SP2              5   /* Com2 */
 #define LPC47M15X_KBC              7   /* Keyboard & Mouse */
-#define LPC47M15X_GAME             9  /* GAME */
+#define LPC47M15X_GAME             9   /* GAME */
 #define LPC47M15X_PME             10   /* PME  reg*/
 #define LPC47M15X_MPU             11   /* MPE -- who knows --   reg*/
 

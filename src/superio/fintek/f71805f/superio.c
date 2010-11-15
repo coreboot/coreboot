@@ -90,12 +90,12 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	/* TODO: Some of the 0x7f8 etc. values may not be correct. */
-	{ &ops, F71805F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, F71805F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, F71805F_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0}, },
+	/* TODO: Some of the 0x07f8 etc. values may not be correct. */
+	{ &ops, F71805F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, F71805F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, F71805F_HWM,  PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, F71805F_GPIO, PNP_IRQ0, },
 	{ &ops, F71805F_PME, },
 };

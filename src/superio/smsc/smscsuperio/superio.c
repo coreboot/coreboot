@@ -70,8 +70,8 @@
 
 /* Static variables for the Super I/O device ID and revision. */
 static int first_time = 1;
-static uint8_t superio_id = 0;
-static uint8_t superio_rev = 0;
+static u8 superio_id = 0;
+static u8 superio_rev = 0;
 
 /**
  * A list of all possible logical devices which may be supported by at least
@@ -117,7 +117,7 @@ enum {
  *       The result would be that the init code would be executed twice!
  */
 static const struct logical_devices {
-	uint8_t superio_id;
+	u8 superio_id;
 	int devs[MAX_LOGICAL_DEVICES];
 } logical_device_table[] = {
 	/* Chip   FDC PP SP1 SP2 RTC KBC AUX XBUS HWM GAME PME MPU RT ACPI SMB */
@@ -150,7 +150,7 @@ static const struct logical_devices {
  *
  * @param dev The device to use.
  */
-static inline void smsc_pnp_enter_conf_state(device_t dev)
+static void smsc_pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
@@ -162,7 +162,7 @@ static inline void smsc_pnp_enter_conf_state(device_t dev)
  *
  * @param dev The device to use.
  */
-static inline void smsc_pnp_exit_conf_state(device_t dev)
+static void smsc_pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
@@ -260,20 +260,19 @@ static struct device_operations ops = {
  * TODO: FDC, PP, SP1, SP2, and KBC should work, the rest probably not (yet).
  */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
-	{ &ops, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0 }, },
-	{ &ops, LD_SP1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LD_SP2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, LD_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LD_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LD_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LD_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, LD_RTC, },
-	{ &ops, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 },
-								 { 0x7ff, 4 },},
+	{ &ops, LD_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },
 	{ &ops, LD_AUX, },
 	{ &ops, LD_XBUS, },
-	{ &ops, LD_HWM, PNP_IO0, { 0x7f0, 0 }, },
+	{ &ops, LD_HWM, PNP_IO0, {0x07f0, 0}, },
 	{ &ops, LD_GAME, },
 	{ &ops, LD_PME, },
 	{ &ops, LD_MPU401, },
-	{ &ops, LD_RT,  PNP_IO0, { 0x780, 0 }, },
+	{ &ops, LD_RT,  PNP_IO0, {0x0780, 0}, },
 	{ &ops, LD_ACPI, },
 	{ &ops, LD_SMB, },
 };
@@ -291,7 +290,7 @@ static void enable_dev(device_t dev)
 {
 	int i, j, fn;
 	int tmp[MAX_LOGICAL_DEVICES];
-	uint8_t test7;
+	u8 test7;
 
 	if (first_time) {
 		/* Read the device ID and revision of the Super I/O chip. */
@@ -302,21 +301,23 @@ static void enable_dev(device_t dev)
 
 		/* TODO: Error handling? */
 
-		printk(BIOS_INFO, "Found SMSC Super I/O (ID=0x%02x, rev=0x%02x)\n",
-			    superio_id, superio_rev);
+		printk(BIOS_INFO, "Found SMSC Super I/O (ID=0x%02x, "
+		       "rev=0x%02x)\n", superio_id, superio_rev);
 		first_time = 0;
 
-		if(superio_id == LPC47M172) {
-		  /* Do not use the default logical device number
-		   * but instead the standard smsc registers set
-		   */
+		if (superio_id == LPC47M172) {
+			/*
+			 * Do not use the default logical device number but
+			 * instead the standard SMSC registers set.
+			 */
 
-		  /* TEST7 configuration register (0x29)
-		   * bit 0 : LD_NUM (0 = new, 1 = std smsc)
-		   */
-		  test7 = pnp_read_config(dev, DEVICE_TEST7_REG);
-		  test7 |= 1;
-		  pnp_write_config(dev, DEVICE_TEST7_REG, test7);
+			/*
+			 * TEST7 configuration register (0x29)
+			 * Bit 0: LD_NUM (0 = new, 1 = std SMSC)
+			 */
+			test7 = pnp_read_config(dev, DEVICE_TEST7_REG);
+			test7 |= (1 << 0);
+			pnp_write_config(dev, DEVICE_TEST7_REG, test7);
 		}
 	}
 
@@ -333,7 +334,8 @@ static void enable_dev(device_t dev)
 	for (j = 0; j < ARRAY_SIZE(pnp_dev_info); j++)
 		tmp[j] = pnp_dev_info[j].function;
 
-	/* Replace the LD_FOO markers in pnp_dev_info[] with
+	/*
+	 * Replace the LD_FOO markers in pnp_dev_info[] with
 	 * the real logical device IDs of this Super I/O chip.
 	 */
 	for (j = 0; j < ARRAY_SIZE(pnp_dev_info); j++) {

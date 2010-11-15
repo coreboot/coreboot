@@ -33,9 +33,9 @@
  * @param dev The device to use.
  * @param iobase The I/O base of the serial port (usually 0x3f8/0x2f8).
  */
-static inline void smscsuperio_enable_serial(device_t dev, uint16_t iobase)
+static void smscsuperio_enable_serial(device_t dev, u16 iobase)
 {
-	uint16_t port = dev >> 8;
+	u16 port = dev >> 8;
 
 	outb(0x55, port);		/* Enter the configuration state. */
 	pnp_set_logical_device(dev);

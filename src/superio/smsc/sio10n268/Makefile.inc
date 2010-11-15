@@ -18,3 +18,4 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_SMSC_SIO10N268) += sio10n268.c
+

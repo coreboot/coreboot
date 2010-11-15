@@ -37,41 +37,42 @@ static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
+
 static void pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
 
-static void pnp_write_index(unsigned long port_base, uint8_t reg, uint8_t value)
+static void pnp_write_index(u16 port, u8 reg, u8 value)
 {
-	outb(reg, port_base);
-	outb(value, port_base + 1);
+	outb(reg, port);
+	outb(value, port + 1);
 }
 
-static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
+static u8 pnp_read_index(u16 port, u8 reg)
 {
-	outb(reg, port_base);
-	return inb(port_base + 1);
+	outb(reg, port);
+	return inb(port + 1);
 }
 
 static void enable_hwm_smbus(device_t dev)
 {
-	/* enable SensorBus register access */
-	uint8_t reg, value;
-	reg = 0xf0;
-	value = pnp_read_config(dev, reg);
-	value |= 0x01;
-	pnp_write_config(dev, reg, value);
+	/* Enable SensorBus register access. */
+	u8 reg8;
+
+	reg8 = pnp_read_config(dev, 0xf0);
+	reg8 |= (1 << 1);
+	pnp_write_config(dev, 0xf0, reg8);
 }
 
 static void lpc47b397_init(device_t dev)
 {
-	struct superio_smsc_lpc47b397_config *conf;
+	struct superio_smsc_lpc47b397_config *conf = dev->chip_info;
 	struct resource *res0;
-	if (!dev->enabled) {
+
+	if (!dev->enabled)
 		return;
-	}
-	conf = dev->chip_info;
+
 	switch(dev->path.pnp.device) {
 	case LPC47B397_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -91,9 +92,7 @@ static void lpc47b397_pnp_set_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_resources(dev);
-#if 0
-	dump_pnp_device(dev);
-#endif
+	/* dump_pnp_device(dev); */
 	pnp_exit_conf_state(dev);
 }
 
@@ -104,14 +103,12 @@ static void lpc47b397_pnp_enable_resources(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	case LPC47B397_HWM:
-		printk(BIOS_DEBUG, "lpc47b397 SensorBus Register Access enabled\n");
+		printk(BIOS_DEBUG, "LPC47B397 SensorBus register access enabled\n");
 		pnp_set_logical_device(dev);
 		enable_hwm_smbus(dev);
 		break;
 	}
-#if 0
-	dump_pnp_device(dev);
-#endif
+	/* dump_pnp_device(dev); */
 	pnp_exit_conf_state(dev);
 }
 
@@ -119,13 +116,7 @@ static void lpc47b397_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
-
-	if(dev->enabled) {
-		pnp_set_enable(dev, 1);
-	}
-	else {
-		pnp_set_enable(dev, 0);
-	}
+	pnp_set_enable(dev, (dev->enabled) ? 1 : 0);
 	pnp_exit_conf_state(dev);
 }
 
@@ -145,9 +136,9 @@ static struct device_operations ops = {
 #define SB_DATA2  0x0e
 #define SB_DATA3  0x0f
 
-static int lsmbus_read_byte(device_t dev, uint8_t address)
+static int lsmbus_read_byte(device_t dev, u8 address)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	int result;
 
@@ -155,24 +146,26 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
-	pnp_write_index(res->base+HWM_INDEX, 0, device); /* why 0? */
+	pnp_write_index(res->base + HWM_INDEX, 0, device); /* Why 0? */
 
-	result = pnp_read_index(res->base+SB_INDEX, address);  /* we only read it one byte one time */
+	/* We only read it one byte one time. */
+	result = pnp_read_index(res->base + SB_INDEX, address);
 
 	return result;
 }
 
-static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
+static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 
 	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
-	pnp_write_index(res->base+HWM_INDEX, 0, device); /* why 0? */
+	pnp_write_index(res->base+HWM_INDEX, 0, device); /* Why 0? */
 
-	pnp_write_index(res->base+SB_INDEX, address, val); /* we only write it one byte one time */
+	/* We only write it one byte one time. */
+	pnp_write_index(res->base+SB_INDEX, address, val);
 
 	return 0;
 }
@@ -183,6 +176,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 	.write_byte = lsmbus_write_byte,
 };
+
 static struct device_operations ops_hwm = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = lpc47b397_pnp_set_resources,
@@ -194,13 +188,13 @@ static struct device_operations ops_hwm = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LPC47B397_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, LPC47B397_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, LPC47B397_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LPC47B397_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LPC47B397_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
-	{ &ops_hwm, LPC47B397_HWM,  PNP_IO0, { 0x7f0, 0 }, },
-	{ &ops, LPC47B397_RT,   PNP_IO0, { 0x780, 0 }, },
+	{ &ops, LPC47B397_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47B397_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47B397_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47B397_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47B397_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },
+	{ &ops_hwm, LPC47B397_HWM,  PNP_IO0, {0x07f0, 0}, },
+	{ &ops, LPC47B397_RT,  PNP_IO0, {0x0780, 0}, },
 };
 
 static void enable_dev(struct device *dev)

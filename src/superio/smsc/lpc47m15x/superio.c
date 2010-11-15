@@ -56,16 +56,17 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LPC47M15X_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, LPC47M15X_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, LPC47M15X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LPC47M15X_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LPC47M15X_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
+	{ &ops, LPC47M15X_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47M15X_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47M15X_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47M15X_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47M15X_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },
 };
 
 static void enable_dev(device_t dev)
 {
-	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &pnp_ops,
+			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 static void lpc47m15x_pnp_set_resources(device_t dev)
@@ -86,13 +87,7 @@ static void lpc47m15x_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
-
-	if(dev->enabled) {
-		pnp_set_enable(dev, 1);
-	}
-	else {
-		pnp_set_enable(dev, 0);
-	}
+	pnp_set_enable(dev, (dev->enabled) ? 1 : 0);
 	pnp_exit_conf_state(dev);
 }
 
@@ -109,12 +104,10 @@ static void lpc47m15x_init(device_t dev)
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
-
 	case LPC47M15X_SP2:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
-
 	case LPC47M15X_KBC:
 		pc_keyboard_init(&conf->keyboard);
 		break;

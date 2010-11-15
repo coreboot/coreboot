@@ -1,6 +1,5 @@
 /*
- * lpc47m10x_early_serial.c: Pre-RAM driver for SMSC LPC47M10X2 Super I/O chip
- * derived from lpc47n217
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2005 Digital Design Corporation
  *
@@ -22,17 +21,15 @@
 #include <arch/romcc_io.h>
 #include "lpc47m10x.h"
 
-/** Enable access to the LPC47M10X2's configuration registers. */
-static inline void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
-/** Disable access to the LPC47M10X2's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
@@ -43,7 +40,7 @@ static void pnp_exit_conf_state(device_t dev)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Processor I/O port address to assign to this serial device.
  */
-static void lpc47m10x_enable_serial(device_t dev, unsigned iobase)
+static void lpc47m10x_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

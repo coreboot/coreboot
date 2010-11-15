@@ -94,15 +94,15 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, W83977F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_RTC,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7f8, 0 }, { 0x7f8, 0x0}, },
-	{ &ops, W83977F_IR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_GPIO1, PNP_IO0, { 0x7f8, 0 }, },
-	{ &ops, W83977F_GPIO2, PNP_IO0, { 0x7f8, 0 }, },
+	{ &ops, W83977F_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_RTC,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07f8, 0}, {0x07f8, 0}, },
+	{ &ops, W83977F_IR, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83977F_GPIO1, PNP_IO0, {0x07f8, 0}, },
+	{ &ops, W83977F_GPIO2, PNP_IO0, {0x07f8, 0}, },
 };
 
 static void enable_dev(device_t dev)

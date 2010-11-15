@@ -24,17 +24,15 @@
 #include <assert.h>
 #include "lpc47n217.h"
 
-/** Enable access to the LPC47N217's configuration registers. */
-static inline void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
-/** Disable access to the LPC47N217's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
@@ -44,24 +42,21 @@ static void pnp_exit_conf_state(device_t dev)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Base I/O port for the logical device.
  */
-void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
+void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase)
 {
-	/* LPC47N217 requires base ports to be a multiple of 4 */
+	/* LPC47N217 requires base ports to be a multiple of 4. */
 	ASSERT(!(iobase & 0x3));
 
 	switch(dev & 0xFF) {
 	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
-
 	case LPC47N217_SP1:
 		pnp_write_config(dev, 0x24, (iobase >> 2) & 0xff);
 		break;
-
 	case LPC47N217_SP2:
 		pnp_write_config(dev, 0x25, (iobase >> 2) & 0xff);
 		break;
-
 	default:
 		break;
 	}
@@ -81,37 +76,29 @@ void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
  */
 void lpc47n217_pnp_set_enable(device_t dev, int enable)
 {
-	uint8_t power_register = 0;
-	uint8_t power_mask = 0;
-	uint8_t current_power;
-	uint8_t new_power;
+	u8 power_register = 0, power_mask = 0, current_power, new_power;
 
 	switch(dev & 0xFF) {
 	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;
 		break;
-
 	case LPC47N217_SP1:
 		power_register = 0x02;
 		power_mask = 0x08;
 		break;
-
 	case LPC47N217_SP2:
 		power_register = 0x02;
 		power_mask = 0x80;
 		break;
-
 	default:
 		return;
 	}
 
 	current_power = pnp_read_config(dev, power_register);
-	new_power = current_power & ~power_mask;	/* disable by default */
-
+	new_power = current_power & ~power_mask; /* Disable by default. */
 	if (enable)
-		new_power |= power_mask;		/* Enable */
-
+		new_power |= power_mask;	 /* Enable. */
 	pnp_write_config(dev, power_register, new_power);
 }
 
@@ -122,7 +109,7 @@ void lpc47n217_pnp_set_enable(device_t dev, int enable)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Processor I/O port address to assign to this serial device.
  */
-static void lpc47n217_enable_serial(device_t dev, unsigned iobase)
+static void lpc47n217_enable_serial(device_t dev, u16 iobase)
 {
 	/*
 	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip

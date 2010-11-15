@@ -27,26 +27,28 @@ static void pc87427_disable_dev(device_t dev)
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 }
-static void pc87427_enable_dev(device_t dev, unsigned iobase)
+
+static void pc87427_enable_dev(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
 	pnp_set_enable(dev, 1);
 }
+
 static void xbus_cfg(device_t dev)
 {
-	uint8_t i, data;
-	uint16_t xbus_index;
+	u8 i, data;
+	u16 xbus_index;
 
 	pnp_set_logical_device(dev);
-	/* select proper BIOS size (4MB) */
-	pnp_write_config(dev, PC87427_XMEMCNF2, (pnp_read_config(dev, PC87427_XMEMCNF2)) | 0x04);
+
+	/* Select proper BIOS size (4MB). */
+	pnp_write_config(dev, PC87427_XMEMCNF2,
+			 (pnp_read_config(dev, PC87427_XMEMCNF2)) | 0x04);
 	xbus_index = pnp_read_iobase(dev, 0x60);
 
-	/* enable writes to devices attached to XCS0 (XBUS Chip Select 0) */
-	for (i=0; i<= 0xf; i++) {
-		outb((i<<4), xbus_index + PC87427_HAP0);
-	}
-	return;
+	/* Enable writes to devices attached to XCS0 (XBUS Chip Select 0). */
+	for (i = 0; i <= 0xf; i++)
+		outb((i << 4), xbus_index + PC87427_HAP0);
 }

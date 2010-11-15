@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan by yhlu
+ * Copyright (C) 2004 Tyan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@
 #define PC87417_XWBCNF		0x16
 
 #if defined(__PRE_RAM__) && !defined(__ROMCC__)
-void pc87417_enable_serial(device_t dev, unsigned iobase);
+void pc87417_enable_serial(device_t dev, u16 iobase);
 void pc87417_enable_dev(device_t dev);
 #endif
 

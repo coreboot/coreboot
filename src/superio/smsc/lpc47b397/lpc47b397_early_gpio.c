@@ -20,30 +20,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-static void lpc47b397_gpio_offset_out(unsigned iobase, unsigned offset, unsigned value)
+static void lpc47b397_gpio_offset_out(u16 iobase, u16 offset, u8 value)
 {
-	outb(value,iobase+offset);
+	outb(value, iobase + offset);
 }
 
-static unsigned lpc47b397_gpio_offset_in(unsigned iobase, unsigned offset)
+static u8 lpc47b397_gpio_offset_in(u16 iobase, u16 offset)
 {
 	return inb(iobase+offset);
 }
 
 #if 0
-/* for GP60-GP64, GP66-GP85 */
+/* For GP60-GP64, GP66-GP85. */
 #define LPC47B397_GPIO_CNTL_INDEX 0x70
 #define LPC47B397_GPIO_CNTL_DATA 0x71
 
-static void lpc47b397_gpio_index_out(unsigned iobase, unsigned index, unsigned value)
+static void lpc47b397_gpio_index_out(u16 iobase, u8 index, u8 value)
 {
-	outb(index,iobase+LPC47B397_GPIO_CNTL_INDEX);
-	outb(value, iobase+LPC47B397_GPIO_CNTL_DATA);
+	outb(index, iobase + LPC47B397_GPIO_CNTL_INDEX);
+	outb(value, iobase + LPC47B397_GPIO_CNTL_DATA);
 }
 
-static unsigned lpc47b397_gpio_index_in(unsigned iobase, unsigned index)
+static u8 lpc47b397_gpio_index_in(u16 iobase, u8 index)
 {
-	outb(index,iobase+LPC47B397_GPIO_CNTL_INDEX);
-	return inb(iobase+LPC47B397_GPIO_CNTL_DATA);
+	outb(index, iobase + LPC47B397_GPIO_CNTL_INDEX);
+	return inb(iobase + LPC47B397_GPIO_CNTL_DATA);
 }
 #endif

@@ -22,7 +22,7 @@
 #include <arch/romcc_io.h>
 #include "pc87366.h"
 
-static void pc87366_enable_serial(device_t dev, unsigned iobase)
+static void pc87366_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

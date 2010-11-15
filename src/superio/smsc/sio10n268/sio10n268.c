@@ -27,13 +27,10 @@
 
 static void init(device_t dev)
 {
-	struct superio_smsc_sio10n268_config *conf;
+	struct superio_smsc_sio10n268_config *conf = dev->chip_info;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	switch (dev->path.pnp.device) {
 	case SIO10N268_FDC: /* TODO. */
@@ -58,7 +55,7 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, AUX. */
 static struct pnp_info pnp_dev_info[] = {
- { &ops, SIO10N268_KBDC, PNP_IO0 | PNP_IO1, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+	{ &ops, SIO10N268_KBDC, PNP_IO0 | PNP_IO1, {0x07f8, 0}, {0x07f8, 4}, },
 };
 
 static void enable_dev(struct device *dev)

@@ -24,7 +24,7 @@
 /* The base address is 0x3f0 or 0x370, depending on the SYSOPT pin. */
 #define SIO_BASE                       0x3f0
 #define SIO_INDEX                      SIO_BASE
-#define SIO_DATA                       SIO_BASE+1
+#define SIO_DATA                       (SIO_BASE + 1)
 
 /* Global configuration registers. */
 #define FDC37M60X_CONFIG_REG_CC        0x02  /* Configure Control. */
@@ -37,7 +37,7 @@
 
 /* The content of FDC37M60X_CONFIG_REG_LDN (index 0x07) must be set to the
    LDN the register belongs to, before you can access the register. */
-static void fdc37m60x_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
+static void fdc37m60x_sio_write(uint8_t ldn, u8 index, u8 value)
 {
 	outb(FDC37M60X_CONFIG_REG_LDN, SIO_BASE);
 	outb(ldn, SIO_DATA);
@@ -46,7 +46,7 @@ static void fdc37m60x_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 }
 
 /* Enable the peripheral devices on the FDC37M60X Super I/O chip. */
-static void fdc37m60x_enable_serial(device_t dev, unsigned iobase)
+static void fdc37m60x_enable_serial(device_t dev, u16 iobase)
 {
 	/* (1) Enter the configuration state. */
 	outb(0x55, FDC37M60X_CONFIGURATION_PORT);

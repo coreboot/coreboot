@@ -22,7 +22,6 @@
  */
 
 /* RAM-based driver for SMSC LPC47N217 Super I/O chip. */
-/* Based on coreboot code for SMSC 47B397. */
 
 #include <arch/io.h>
 #include <device/device.h>
@@ -43,13 +42,11 @@ static void lpc47n217_pnp_set_resources(device_t dev);
 static void lpc47n217_pnp_enable_resources(device_t dev);
 static void lpc47n217_pnp_enable(device_t dev);
 static void lpc47n217_init(device_t dev);
-
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource);
-static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase);
-static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq);
-static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq);
+static void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase);
+static void lpc47n217_pnp_set_drq(device_t dev, u8 drq);
+static void lpc47n217_pnp_set_irq(device_t dev, u8 irq);
 static void lpc47n217_pnp_set_enable(device_t dev, int enable);
-
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
 
@@ -67,9 +64,9 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, LPC47N217_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &ops, LPC47N217_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, LPC47N217_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, }
+	{ &ops, LPC47N217_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47N217_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, LPC47N217_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, }
 };
 
 /**
@@ -88,6 +85,9 @@ static void enable_dev(device_t dev)
  * Configure the specified Super I/O device with the resources (I/O space,
  * etc.) that have been allocate for it.
  *
+ * NOTE: Cannot use pnp_set_resources() here because it assumes chip
+ * support for logical devices, which the LPC47N217 doesn't have.
+ *
  * @param dev Pointer to structure describing a Super I/O device.
  */
 static void lpc47n217_pnp_set_resources(device_t dev)
@@ -95,46 +95,31 @@ static void lpc47n217_pnp_set_resources(device_t dev)
 	struct resource *res;
 
 	pnp_enter_conf_state(dev);
-
-	/* NOTE: Cannot use pnp_set_resources() here because it assumes chip
-	 * support for logical devices, which the LPC47N217 doesn't have
-	 */
-	for(res = dev->resource_list; res; res = res->next)
+	for (res = dev->resource_list; res; res = res->next)
 		lpc47n217_pnp_set_resource(dev, res);
-
 	/* dump_pnp_device(dev); */
-
    	pnp_exit_conf_state(dev);
 }
 
+/*
+ * NOTE: Cannot use pnp_enable_resources() here because it assumes chip
+ * support for logical devices, which the LPC47N217 doesn't have.
+ */
 static void lpc47n217_pnp_enable_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);
-
-	/*
-	 * NOTE: Cannot use pnp_enable_resources() here because it assumes chip
-	 * support for logical devices, which the LPC47N217 doesn't have.
-	 */
 	lpc47n217_pnp_set_enable(dev, 1);
-
 	pnp_exit_conf_state(dev);
 }
 
+/*
+ * NOTE: Cannot use pnp_set_enable() here because it assumes chip
+ * support for logical devices, which the LPC47N217 doesn't have.
+ */
 static void lpc47n217_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
-
-	/*
-	 * NOTE: Cannot use pnp_set_enable() here because it assumes chip
-	 * support for logical devices, which the LPC47N217 doesn't have.
-	 */
-	if(dev->enabled) {
-		lpc47n217_pnp_set_enable(dev, 1);
-	}
-	else {
-		lpc47n217_pnp_set_enable(dev, 0);
-	}
-
+	lpc47n217_pnp_set_enable(dev, (dev->enabled) ? 1 : 0);
 	pnp_exit_conf_state(dev);
 }
 
@@ -159,7 +144,6 @@ static void lpc47n217_init(device_t dev)
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
-
 	case LPC47N217_SP2:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
@@ -171,27 +155,25 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02x not allocated\n",
-			dev_path(dev), resource->index);
+		       dev_path(dev), resource->index);
 		return;
 	}
 
-	/* Now store the resource */
+	/* Now store the resource. */
+
 	/*
 	 * NOTE: Cannot use pnp_set_XXX() here because they assume chip
 	 * support for logical devices, which the LPC47N217 doesn't have.
 	 */
 	if (resource->flags & IORESOURCE_IO) {
 		lpc47n217_pnp_set_iobase(dev, resource->base);
-	}
-	else if (resource->flags & IORESOURCE_DRQ) {
+	} else if (resource->flags & IORESOURCE_DRQ) {
 		lpc47n217_pnp_set_drq(dev, resource->base);
-	}
-	else if (resource->flags  & IORESOURCE_IRQ) {
+	} else if (resource->flags & IORESOURCE_IRQ) {
 		lpc47n217_pnp_set_irq(dev, resource->base);
-	}
-	else {
+	} else {
 		printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
-			dev_path(dev), resource->index);
+		       dev_path(dev), resource->index);
 		return;
 	}
 	resource->flags |= IORESOURCE_STORED;
@@ -199,7 +181,7 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 	report_resource_stored(dev, resource, "");
 }
 
-static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
+static void lpc47n217_pnp_set_iobase(device_t dev, u16 iobase)
 {
 	ASSERT(!(iobase & 0x3));
 
@@ -207,30 +189,28 @@ static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
-
 	case LPC47N217_SP1:
 		pnp_write_config(dev, 0x24, (iobase >> 2) & 0xff);
 		break;
-
 	case LPC47N217_SP2:
 		pnp_write_config(dev, 0x25, (iobase >> 2) & 0xff);
 		break;
-
 	default:
 		BUG();
 		break;
 	}
 }
 
-static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
+static void lpc47n217_pnp_set_drq(device_t dev, u8 drq)
 {
-	if (dev->path.pnp.device == LPC47N217_PP) {
-		const uint8_t PP_DMA_MASK = 0x0F;
-		const uint8_t PP_DMA_SELECTION_REGISTER = 0x26;
-		uint8_t current_config = pnp_read_config(dev, PP_DMA_SELECTION_REGISTER);
-		uint8_t new_config;
+	const u8 PP_DMA_MASK = 0x0F;
+	const u8 PP_DMA_SELECTION_REGISTER = 0x26;
+	u8 current_config, new_config;
 
-		ASSERT(!(drq & ~PP_DMA_MASK));		/* DRQ out of range?? */
+	if (dev->path.pnp.device == LPC47N217_PP) {
+		current_config = pnp_read_config(dev,
+						 PP_DMA_SELECTION_REGISTER);
+		ASSERT(!(drq & ~PP_DMA_MASK)); /* DRQ out of range? */
 		new_config = (current_config & ~PP_DMA_MASK) | drq;
 		pnp_write_config(dev, PP_DMA_SELECTION_REGISTER, new_config);
 	} else {
@@ -238,36 +218,31 @@ static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
 	}
 }
 
-static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
+static void lpc47n217_pnp_set_irq(device_t dev, u8 irq)
 {
-	uint8_t irq_config_register = 0;
-	uint8_t irq_config_mask = 0;
-	uint8_t current_config;
-	uint8_t new_config;
+	u8 irq_config_register = 0, irq_config_mask = 0;
+	u8 current_config, new_config;
 
 	switch(dev->path.pnp.device) {
 	case LPC47N217_PP:
 		irq_config_register = 0x27;
 		irq_config_mask = 0x0F;
 		break;
-
 	case LPC47N217_SP1:
 		irq_config_register = 0x28;
 		irq_config_mask = 0xF0;
 		irq <<= 4;
 		break;
-
 	case LPC47N217_SP2:
 		irq_config_register = 0x28;
 		irq_config_mask = 0x0F;
 		break;
-
 	default:
 		BUG();
 		return;
 	}
 
-	ASSERT(!(irq & ~irq_config_mask));		/* IRQ out of range?? */
+	ASSERT(!(irq & ~irq_config_mask)); /* IRQ out of range? */
 
 	current_config = pnp_read_config(dev, irq_config_register);
 	new_config = (current_config & ~irq_config_mask) | irq;
@@ -276,54 +251,44 @@ static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
 
 static void lpc47n217_pnp_set_enable(device_t dev, int enable)
 {
-	uint8_t power_register = 0;
-	uint8_t power_mask = 0;
-	uint8_t current_power;
-	uint8_t new_power;
+	u8 power_register = 0, power_mask = 0, current_power, new_power;
 
 	switch(dev->path.pnp.device) {
 	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;
 		break;
-
 	case LPC47N217_SP1:
 		power_register = 0x02;
 		power_mask = 0x08;
 		break;
-
 	case LPC47N217_SP2:
 		power_register = 0x02;
 		power_mask = 0x80;
 		break;
-
 	default:
 		BUG();
 		return;
 	}
 
 	current_power = pnp_read_config(dev, power_register);
-	new_power = current_power & ~power_mask;		/* disable by default */
-
+	new_power = current_power & ~power_mask; /* Disable by default. */
 	if (enable) {
-		struct resource* ioport_resource = find_resource(dev, PNP_IDX_IO0);
+		struct resource* ioport_resource;
+		ioport_resource = find_resource(dev, PNP_IDX_IO0);
 		lpc47n217_pnp_set_iobase(dev, ioport_resource->base);
-
-		new_power |= power_mask;		/* Enable */
-
+		new_power |= power_mask; /* Enable. */
 	} else {
 		lpc47n217_pnp_set_iobase(dev, 0);
 	}
 	pnp_write_config(dev, power_register, new_power);
 }
 
-/** Enable access to the LPC47N217's configuration registers. */
 static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-/** Disable access to the LPC47N217's configuration registers. */
 static void pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
@@ -339,30 +304,32 @@ static void pnp_exit_conf_state(device_t dev)
  */
 static void dump_pnp_device(device_t dev)
 {
-	int register_index;
+	int i;
 	print_debug("\n");
 
-	for(register_index = 0; register_index <= LPC47N217_MAX_CONFIG_REGISTER; register_index++) {
-		uint8_t register_value;
+	for (i = 0; i <= LPC47N217_MAX_CONFIG_REGISTER; i++) {
+		u8 register_value;
 
-		if ((register_index & 0x0f) == 0) {
-			print_debug_hex8(register_index);
+		if ((i & 0x0f) == 0) {
+			print_debug_hex8(i);
 			print_debug_char(':');
 		}
 
-		/* Skip over 'register' that would cause exit from configuration mode */
-		if (register_index == 0xaa)
+		/*
+		 * Skip over 'register' that would cause exit from
+		 * configuration mode.
+		 */
+		if (i == 0xaa)
 			register_value = 0xaa;
 		else
-			register_value = pnp_read_config(dev, register_index);
+			register_value = pnp_read_config(dev, i);
 
 		print_debug_char(' ');
 		print_debug_hex8(register_value);
-		if ((register_index & 0x0f) == 0x0f) {
+		if ((i & 0x0f) == 0x0f)
 			print_debug("\n");
-		}
 	}
 
-   	print_debug("\n");
+	print_debug("\n");
 }
 #endif

@@ -28,14 +28,11 @@
 
 static void init(device_t dev)
 {
-	struct superio_smsc_fdc37m60x_config *conf;
+	struct superio_smsc_fdc37m60x_config *conf = dev->chip_info;
 	struct resource *res0;
 
-	if (!dev->enabled) {
+	if (!dev->enabled)
 		return;
-	}
-
-	conf = dev->chip_info;
 
 	switch (dev->path.pnp.device) {
 	case FDC37M60X_FDC: /* TODO. */
@@ -68,9 +65,9 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, AUX. */
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, FDC37M60X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, FDC37M60X_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
-	{ &ops, FDC37M60X_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+	{ &ops, FDC37M60X_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, FDC37M60X_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x07f8, 0}, },
+	{ &ops, FDC37M60X_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x07f8, 0}, {0x07f8, 4}, },
 };
 
 static void enable_dev(struct device *dev)

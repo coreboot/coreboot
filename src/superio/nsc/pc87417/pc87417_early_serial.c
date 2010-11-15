@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan by yhlu
+ * Copyright (C) 2004 Tyan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <arch/romcc_io.h>
 #include "pc87417.h"
 
-void pc87417_enable_serial(device_t dev, unsigned iobase)
+void pc87417_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

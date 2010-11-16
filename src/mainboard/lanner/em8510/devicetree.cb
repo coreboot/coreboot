@@ -13,7 +13,7 @@ chip northbridge/intel/i855
 			register "enable_usb" = "0"
 			register "enable_native_ide" = "0"
 			device pci 1f.0 on
-				chip superio/winbond/w83627thf # link 1
+				chip superio/winbond/w83627thg # link 1
                 		        device pnp 2e.0 on      #  Floppy
                 	        	        io 0x60 = 0x3f0
                 	                	irq 0x70 = 6
@@ -37,7 +37,6 @@ chip northbridge/intel/i855
                 		                irq 0x70 = 1
 						irq 0x72 = 12
 					end
-                		        device pnp 2e.6 off end #  CIR
                 		        device pnp 2e.7 off end #  GAME_MIDI_GIPO1
                 	 	        device pnp 2e.8 off end #  GPIO2
                 	 	        device pnp 2e.9 off end #  GPIO3

@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define SERIAL_DEV PNP_DEV(0x4e, W83627THF_SP1)
+#define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 
 #if CONFIG_LOGICAL_CPUS == 1
 #define SET_NB_CFG_54 1
@@ -38,7 +38,7 @@
 #include <pc80/mc146818rtc.h>
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/winbond/w83627thf/w83627thf_early_serial.c"
+#include "superio/winbond/w83627thg/w83627thg_early_serial.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
@@ -123,7 +123,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 	}
 
-	w83627thf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83627thg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

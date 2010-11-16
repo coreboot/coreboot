@@ -25,18 +25,18 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 1.0 off end
 					end
 					device pci 1.0 on
-						chip superio/winbond/w83627thf
+						# TODO: This is incomplete.
+						chip superio/winbond/w83627thg
 							device pnp 2e.0 on end
 							device pnp 2e.1 on end
 							device pnp 2e.2 on end
 							device pnp 2e.3 on end
-							device pnp 2e.4 on end
 							device pnp 2e.5 on end
-							device pnp 2e.6 on end
 							device pnp 2e.7 on end
 							device pnp 2e.8 on end
 							device pnp 2e.9 on end
 							device pnp 2e.a on end
+							device pnp 2e.b on end
 						end
 					end
 					device pci 1.1 on end

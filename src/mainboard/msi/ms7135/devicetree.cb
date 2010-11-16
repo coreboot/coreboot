@@ -11,7 +11,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
         chip southbridge/nvidia/ck804		# Southbridge
           device pci 0.0 on end			# HT
           device pci 1.0 on			# LPC
-            chip superio/winbond/w83627thf	# Super I/O
+            chip superio/winbond/w83627thg	# Super I/O
               device pnp 4e.0 on		# Floppy
                 io 0x60 = 0x3f0
                 irq 0x70 = 6
@@ -30,14 +30,13 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 io 0x60 = 0x2f8
                 irq 0x70 = 3
               end
-              device pnp 4e.5 on		# PS/2 keyboard
+              device pnp 4e.5 on		# PS/2 keyboard & mouse
                 io 0x60 = 0x60
                 io 0x62 = 0x64
                 irq 0x70 = 1
                 irq 0x72 = 12
               end
-              device pnp 4e.6 off end		# XXX keep allocator happy
-              device pnp 4e.7 off end		# Game, MIDI, GPIO 1, GPIO 5
+              device pnp 4e.7 off end		# Game port, MIDI, GPIO 1 & 5
               device pnp 4e.8 off end		# GPIO 2
               device pnp 4e.9 off end		# GPIO 3, GPIO 4
               device pnp 4e.a off end		# ACPI

@@ -34,11 +34,11 @@
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
-#include "superio/winbond/w83627thf/w83627thf_early_serial.c"
+#include "superio/winbond/w83627thg/w83627thg_early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627THF_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -65,7 +65,7 @@ void main(unsigned long bist)
 #endif
 	}
 
-        w83627thf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+        w83627thg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 

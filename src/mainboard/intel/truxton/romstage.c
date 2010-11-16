@@ -51,8 +51,6 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "../../intel/jarrell/debug.c"
 #include "arch/i386/lib/stages.c"
 
-/* #define TRUXTON_DEBUG */
-
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 
 static void main(unsigned long bist)

@@ -17,31 +17,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 #include <northbridge/amd/amdht/AsPsDefs.h>
-
-#define SET_FIDVID_DEBUG 1
-
-// if we are tight of CAR stack, disable it
-#define SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
 
 static inline void print_debug_fv(const char *str, u32 val)
 {
-#if SET_FIDVID_DEBUG == 1
+#if CONFIG_SET_FIDVID_DEBUG
 	printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, u8 val)
 {
-#if SET_FIDVID_DEBUG == 1
+#if CONFIG_SET_FIDVID_DEBUG
 	printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
-#if SET_FIDVID_DEBUG == 1
+#if CONFIG_SET_FIDVID_DEBUG
 	printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
@@ -729,7 +724,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 }
 
 
-#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
+#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
 struct ap_apicid_st {
 	u32 num;
 	// it could use 256 bytes for 64 node quad core system
@@ -748,7 +743,7 @@ static void store_ap_apicid(unsigned ap_apicid, void *gp)
 
 static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 {
-#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
+#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST
 	struct ap_apicid_st ap_apicidx;
 	u32 i;
 #endif
@@ -806,20 +801,20 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	fv.common_fid = (nb_cof_vid_update << 16) | (fid_max << 8);
 	print_debug_fv("BSP fid = ", fv.common_fid);
 
-#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1 && SET_FIDVID_CORE0_ONLY == 0
+#if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST && !CONFIG_SET_FIDVID_CORE0_ONLY
 	/* For all APs (We know the APIC ID of all APs even when the APIC ID
 	   is lifted) remote read from AP LAPIC_MSG_REG about max fid.
 	   Then calculate the common max fid that can be used for all
 	   APs and BSP */
 	ap_apicidx.num = 0;
 
-	for_each_ap(bsp_apicid, SET_FIDVID_CORE_RANGE, store_ap_apicid, &ap_apicidx);
+	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE_RANGE, store_ap_apicid, &ap_apicidx);
 
 	for (i = 0; i < ap_apicidx.num; i++) {
 		init_fidvid_bsp_stage1(ap_apicidx.apicid[i], &fv);
 	}
 #else
-	for_each_ap(bsp_apicid, SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
+	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
 #endif
 
 	print_debug_fv("common_fid = ", fv.common_fid);

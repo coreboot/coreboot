@@ -4,7 +4,31 @@ config CPU_AMD_MODEL_FXX
 	select SSE
 	select SSE2
 
+if CPU_AMD_MODEL_FXX
 config UDELAY_IO
 	bool
 	default n
-	depends on CPU_AMD_MODEL_FXX
+
+config SET_FIDVID
+	bool
+	default n
+	default y if K8_REV_F_SUPPORT
+
+if SET_FIDVID
+config SET_FIDVID_DEBUG
+	bool
+	default n
+
+config SET_FIDVID_CORE0_ONLY
+	bool
+	default y
+
+config SET_FIDVID_ONE_BY_ONE
+	bool
+	default y
+
+config SET_FIDVID_STORE_AP_APICID_AT_FIRST
+	bool
+	default y
+endif
+endif

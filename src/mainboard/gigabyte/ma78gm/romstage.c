@@ -27,10 +27,6 @@
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
-//used by init_cpus and fidvid
-#define SET_FIDVID 1
-#define SET_FIDVID_CORE_RANGE 0
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -195,7 +191,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs780_early_setup();
 	sb700_early_setup();
 
- #if SET_FIDVID == 1
+ #if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 

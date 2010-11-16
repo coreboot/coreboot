@@ -33,9 +33,6 @@
 #define SET_NB_CFG_54 1
 #endif
 
-#define SET_FIDVID 1
-#define SET_FIDVID_CORE_RANGE 0
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -187,7 +184,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 

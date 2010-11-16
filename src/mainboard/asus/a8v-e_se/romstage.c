@@ -24,12 +24,6 @@
 
 unsigned int get_sbdn(unsigned bus);
 
-/* Used by init_cpus and fidvid */
-#define SET_FIDVID 1
-
-/* If we want to wait for core1 done before DQS training, set it to 0. */
-#define SET_FIDVID_CORE0_ONLY 1
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

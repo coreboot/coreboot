@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select RAMINIT_SYSINFO
 	select QRANK_DIMM_SUPPORT
 	select K8_ALLOCATE_IO_RANGE
+	select SET_FIDVID
 
 config MAINBOARD_DIR
 	string

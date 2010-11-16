@@ -25,11 +25,6 @@
 
 #define SET_NB_CFG_54 1
 
-//used by init_cpus and fidvid
-#define SET_FIDVID 1
-//if we want to wait for core1 done before DQS training, set it to 0
-#define SET_FIDVID_CORE0_ONLY 1
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -201,7 +196,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         needs_reset |= optimize_link_incoherent_ht(sysinfo);
 #endif
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 
         {
                 msr_t msr;

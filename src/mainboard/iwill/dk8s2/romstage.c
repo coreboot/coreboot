@@ -1,10 +1,5 @@
 #define SET_NB_CFG_54 1
 
-//used by init_cpus and fidvid
-#define SET_FIDVID 0
-//if we want to wait for core1 done before DQS training, set it to 0
-#define SET_FIDVID_CORE0_ONLY 1
-
 #if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
@@ -171,7 +166,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* it will set up chains and store link pair for optimization later */
         ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 
         {
                 msr_t msr;

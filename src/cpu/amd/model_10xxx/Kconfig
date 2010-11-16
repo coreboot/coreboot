@@ -4,27 +4,50 @@ config CPU_AMD_MODEL_10XXX
 	select SSE
 	select SSE2
 
+if CPU_AMD_MODEL_10XXX
 config CPU_ADDR_BITS
 	int
 	default 48
-	depends on CPU_AMD_MODEL_10XXX
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc4000
-	depends on CPU_AMD_MODEL_10XXX
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
-	depends on CPU_AMD_MODEL_10XXX
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x04000
-	depends on CPU_AMD_MODEL_10XXX
 
 config UDELAY_IO
 	bool
 	default n
-	depends on CPU_AMD_MODEL_10XXX
+
+config SET_FIDVID
+	bool
+	default y
+
+if SET_FIDVID
+config SET_FIDVID_DEBUG
+	bool
+	default y
+
+config SET_FIDVID_STORE_AP_APICID_AT_FIRST
+	bool
+	default y
+
+config SET_FIDVID_CORE0_ONLY
+	bool
+	default n
+
+# 0: all cores
+# 1: core 0 only
+# 2: all but core 0
+config SET_FIDVID_CORE_RANGE
+	int
+	default 0
+
+endif
+endif

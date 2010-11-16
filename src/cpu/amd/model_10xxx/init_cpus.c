@@ -28,17 +28,6 @@
 #include <cpu/x86/mtrr/earlymtrr.c>
 #include <northbridge/amd/amdfam10/raminit_amdmct.c>
 
-//it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
-#ifndef SET_FIDVID
-	#define SET_FIDVID 1
-#endif
-
-#ifndef SET_FIDVID_CORE0_ONLY
-	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores,
-	   Need to do every AP to set common FID/VID */
-	#define SET_FIDVID_CORE0_ONLY 0
-#endif
-
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);
@@ -166,7 +155,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 	return result;
 }
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
@@ -338,8 +327,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		update_microcode(cpuid_eax(1));
 		cpuSetAMDMSR();
 
-#if SET_FIDVID == 1
-#if (CONFIG_LOGICAL_CPUS == 1) && (SET_FIDVID_CORE0_ONLY == 1)
+#if CONFIG_SET_FIDVID
+#if (CONFIG_LOGICAL_CPUS == 1) && CONFIG_SET_FIDVID_CORE0_ONLY
 		// Run on all AP for proper FID/VID setup.
 		if (id.coreid == 0)	// only need set fid for core0
 #endif
@@ -928,7 +917,7 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 		cpuSetAMDPCI(i);
 	}
 
-#if SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 	// Prep each node for FID/VID setup.
 	prep_fid_change();
 #endif

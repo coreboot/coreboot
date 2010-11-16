@@ -33,7 +33,7 @@
  * @param dev The device to use.
  * @param iobase The I/O base of the serial port (usually 0x3f8/0x2f8).
  */
-static void smscsuperio_enable_serial(device_t dev, u16 iobase)
+static inline void smscsuperio_enable_serial(device_t dev, u16 iobase)
 {
 	u16 port = dev >> 8;
 

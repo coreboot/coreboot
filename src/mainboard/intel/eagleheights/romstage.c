@@ -33,6 +33,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/bist.h>
+#include <cpu/intel/acpi.h>
 
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
@@ -43,11 +44,6 @@
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
-
-#define IA32_PERF_STS     0x198
-#define IA32_PERF_CTL     0x199
-#define MSR_THERM2_CTL    0x19D
-#define IA32_MISC_ENABLES 0x1A0
 
 /* SATA */
 #define SATA_MAP 0x90

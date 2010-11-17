@@ -25,6 +25,7 @@
 #include <arch/acpigen.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/acpi.h>
 #include <device/device.h>
 
 // XXX: PSS table values for power consumption are for Merom only
@@ -83,8 +84,6 @@ void generate_cpu_entries(void)
 
 			int max_states=8;
 			int busratio_step=2;
-#define IA32_PLATFORM_ID 0x017
-#define IA32_PERF_STS 0x198
 			msr = rdmsr(IA32_PERF_STS);
 			int busratio_min=(msr.lo >> 24) & 0x1f;
 			int busratio_max=(msr.hi >> (40-32)) & 0x1f;

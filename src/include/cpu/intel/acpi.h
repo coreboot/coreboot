@@ -1,0 +1,5 @@
+#define IA32_PLATFORM_ID  0x017
+#define IA32_PERF_STS     0x198
+#define IA32_PERF_CTL     0x199
+#define MSR_THERM2_CTL    0x19D
+#define IA32_MISC_ENABLES 0x1A0

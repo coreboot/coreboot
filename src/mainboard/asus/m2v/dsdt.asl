@@ -399,6 +399,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 				}
 			}
 
+			Device(MBRS) {
+				Name (_HID, EisaId ("PNP0C02"))
+				Name (_UID, 0x01)
+
+				External(_CRS) /* Resource Template in SSDT */
+			}
+
 			External(TOM1) /* top of memory below 4GB */
 
 			Method(_CRS, 0) {

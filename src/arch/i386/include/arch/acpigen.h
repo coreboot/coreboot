@@ -46,5 +46,11 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat
 typedef enum { SW_ALL=0xfc, SW_ANY=0xfd, HW_ALL=0xfe } PSD_coord;
 int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
+int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size);
+int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16);
+int acpigen_write_resourcetemplate_header(void);
+int acpigen_write_resourcetemplate_footer(int len);
+int acpigen_write_mainboard_resource_template(void);
+int acpigen_write_mainboard_resources(const char *scope, const char *name);
 
 #endif

@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
@@ -88,6 +89,7 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_ta
 {
 	k8acpi_write_vars();
 	amd_model_fxx_generate_powernow(0, 0, 0);
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 	return (unsigned long) (acpigen_get_current());
 }
 

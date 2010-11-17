@@ -28,6 +28,7 @@
 #include <string.h>
 #include <arch/acpigen.h>
 #include <console/console.h>
+#include <device/device.h>
 
 static char *gencurrent;
 
@@ -371,4 +372,146 @@ int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	len += lenp;
 	acpigen_patch_len(len - 1);
 	return len + lenh;
+}
+
+int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
+{
+	/*
+	 * acpi 4.0 section 6.4.3.4: 32-Bit Fixed Memory Range Descriptor
+	 * Byte 0:
+	 *   Bit7  : 1 => big item
+	 *   Bit6-0: 0000110 (0x6) => 32-bit fixed memory
+	 */
+	acpigen_emit_byte(0x86);
+	/* Byte 1+2: length (0x0009) */
+	acpigen_emit_byte(0x09);
+	acpigen_emit_byte(0x00);
+	/* bit1-7 are ignored */
+	acpigen_emit_byte(readwrite ? 0x01 : 0x00);
+	acpigen_emit_byte(base & 0xff);
+	acpigen_emit_byte((base >> 8) & 0xff);
+	acpigen_emit_byte((base >> 16) & 0xff);
+	acpigen_emit_byte((base >> 24) & 0xff);
+	acpigen_emit_byte(size & 0xff);
+	acpigen_emit_byte((size >> 8) & 0xff);
+	acpigen_emit_byte((size >> 16) & 0xff);
+	acpigen_emit_byte((size >> 24) & 0xff);
+	return 12;
+}
+
+int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
+{
+	/*
+	 * acpi 4.0 section 6.4.2.6: I/O Port Descriptor
+	 * Byte 0:
+	 *   Bit7  : 0 => small item
+	 *   Bit6-3: 1000 (0x8) => I/O port descriptor
+	 *   Bit2-0: 111 (0x7) => 7 Bytes long
+	 */
+	acpigen_emit_byte(0x47);
+	/* does the device decode all 16 or just 10 bits? */
+	/* bit1-7 are ignored */
+	acpigen_emit_byte(decode16 ? 0x01 : 0x00);
+	/* minimum base address the device may be configured for */
+	acpigen_emit_byte(min & 0xff);
+	acpigen_emit_byte((min >> 8) & 0xff);
+	/* maximum base address the device may be configured for */
+	acpigen_emit_byte(max & 0xff);
+	acpigen_emit_byte((max >> 8) & 0xff);
+	/* alignment for min base */
+	acpigen_emit_byte(align & 0xff);
+	acpigen_emit_byte(len & 0xff);
+	return 8;
+}
+
+int acpigen_write_resourcetemplate_header(void)
+{
+	int len;
+	/*
+	 * A ResourceTemplate() is a Buffer() with a
+	 * (Byte|Word|DWord) containing the length, followed by one or more
+	 * resource items, terminated by the end tag
+	 * (small item 0xf, len 1)
+	 */
+	len = acpigen_emit_byte(0x11); /* Buffer opcode */
+	len += acpigen_write_len_f();
+	len += acpigen_emit_byte(0x0b); /* Word opcode */
+	len_stack[ltop++] = acpigen_get_current();
+	len += acpigen_emit_byte(0x00);
+	len += acpigen_emit_byte(0x00);
+	return len;
+}
+
+int acpigen_write_resourcetemplate_footer(int len)
+{
+	char *p = len_stack[--ltop];
+	/*
+	 * end tag (acpi 4.0 Section 6.4.2.8)
+	 * 0x79 <checksum>
+	 * 0x00 is treated as a good checksum according to the spec
+	 * and is what iasl generates.
+	 */
+	len += acpigen_emit_byte(0x79);
+	len += acpigen_emit_byte(0x00);
+	/* patch len word */
+	p[0] = (len-6) & 0xff;
+	p[1] = ((len-6) >> 8) & 0xff;
+	/* patch len field */
+	acpigen_patch_len(len-1);
+	return 2;
+}
+
+static void acpigen_add_mainboard_rsvd_mem32(void *gp, struct device *dev,
+						struct resource *res)
+{
+	acpigen_write_mem32fixed(0, res->base, res->size);
+}
+
+static void acpigen_add_mainboard_rsvd_io(void *gp, struct device *dev,
+						struct resource *res)
+{
+	resource_t base = res->base;
+	resource_t size = res->size;
+	while (size > 0) {
+		resource_t sz = size > 255 ? 255 : size;
+		acpigen_write_io16(base, base, 0, sz, 1);
+		size -= sz;
+		base += sz;
+	}
+}
+
+int acpigen_write_mainboard_resource_template(void)
+{
+	int len;
+	char *start;
+	char *end;
+	len = acpigen_write_resourcetemplate_header();
+	start = acpigen_get_current();
+
+	/* Add reserved memory ranges */
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_RESERVE,
+		 IORESOURCE_MEM | IORESOURCE_RESERVE,
+		acpigen_add_mainboard_rsvd_mem32, 0);
+
+	/* Add reserved io ranges */
+	search_global_resources(
+		IORESOURCE_IO | IORESOURCE_RESERVE,
+		 IORESOURCE_IO | IORESOURCE_RESERVE,
+		acpigen_add_mainboard_rsvd_io, 0);
+
+	end = acpigen_get_current();
+	len += end-start;
+	len += acpigen_write_resourcetemplate_footer(len);
+	return len;
+}
+
+int acpigen_write_mainboard_resources(const char *scope, const char *name)
+{
+	int len;
+	len = acpigen_write_scope(scope);
+	len += acpigen_write_name(name);
+	len += acpigen_write_mainboard_resource_template();
+	acpigen_patch_len(len - 1);
+	return len;
 }

@@ -242,6 +242,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 					}
 				}
 			}
+			/* Dummy device to hold auto generated reserved resources */
+			Device(MBRS) {
+				Name (_HID, EisaId ("PNP0C02"))
+				Name (_UID, 0x01)
+				External(_CRS) /* Resource Template in SSDT */
+			}
 		}
 	}
 }

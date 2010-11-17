@@ -1128,7 +1128,7 @@ DefinitionBlock (
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
 			External (TOM1)
-			External (TOM2)
+			External (TOM2) /* (<real tom2> >> 20) to make it fit into 32 bit for XP */
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1480,7 +1480,8 @@ DefinitionBlock (
 				/*
 				* If(LNotEqual(TOM2, 0x00000000)){
 				*	Store(0x100000000,DMHB)			DRAM from 4GB to TopMem2
-				*	Subtract(TOM2, 0x100000000, DMHL)
+				*	ShiftLeft(TOM2, 20, Local0)
+				*	Subtract(Local0, 0x100000000, DMHL)
 				* }
 				*/
 

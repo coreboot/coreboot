@@ -58,7 +58,7 @@ static void apic_mmconfig_read_resources(device_t dev)
 	res->limit = res->base + res->size - 1;
 	res->align = 8;
 	res->gran = 8;
-	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	/* Add an MMCONFIG resource. */
@@ -67,7 +67,7 @@ static void apic_mmconfig_read_resources(device_t dev)
 	res->align = log2(res->size);
 	res->gran = log2(res->size);
 	res->limit = 0xffffffff;	/* 4G */
-	res->flags = IORESOURCE_MEM;
+	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE;
 }
 
 static void traf_ctrl_enable_generic(struct device *dev)

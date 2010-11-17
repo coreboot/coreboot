@@ -521,7 +521,7 @@ static void vt8237r_read_resources(device_t dev)
 	res->base = VT8237R_ACPI_IO_BASE;
 	res->size = 128;
 	res->limit = 0xffffUL;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED |
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	/* Fixed EISA ECLR I/O Regs	*/
@@ -529,7 +529,7 @@ static void vt8237r_read_resources(device_t dev)
 	res->base = 0x4d0;
 	res->size = 2;
 	res->limit = 0xffffUL;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED |
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	/* Fixed System Management Bus I/O Resource */
@@ -537,7 +537,7 @@ static void vt8237r_read_resources(device_t dev)
 	res->base = VT8237R_SMBUS_IO_BASE;
 	res->size = 16;
 	res->limit = 0xffffUL;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED |
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	/* Fixed APIC resource */
@@ -547,7 +547,15 @@ static void vt8237r_read_resources(device_t dev)
 	res->limit = 0xffffffffUL;
 	res->align = 8;
 	res->gran = 8;
-	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE |
+		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+
+	/* Fixed flashrom resource */
+	res = new_resource(dev, 4);
+	res->base = 0xff000000UL;
+	res->size = 0x01000000UL; /* 16MB */
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	res = new_resource(dev, 1);

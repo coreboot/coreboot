@@ -30,18 +30,6 @@ uint64_t uma_memory_base, uma_memory_size;
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	device_t dev;
-
-	dev = dev_find_device(PCI_VENDOR_ID_VIA,
-			      PCI_DEVICE_ID_VIA_K8M890CE_5, 0);
-	if (dev) {
-		struct resource *res =
-			find_resource(dev, K8T890_MMCONFIG_MBAR);
-		if (res)
-			lb_add_memory_range(mem, LB_MEM_RESERVED, res->base,
-					    res->size);
-	}
-
 #if (CONFIG_GFXUMA == 1)
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);

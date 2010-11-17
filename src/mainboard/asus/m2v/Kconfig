@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select RAMINIT_SYSINFO
 	select TINY_BOOTBLOCK
 	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
 	select HAVE_ACPI_TABLES
 	select HAVE_MP_TABLE
 	select SET_FIDVID

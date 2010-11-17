@@ -23,5 +23,5 @@ driver-y += vt8237r_ide.c
 driver-y += vt8237r_lpc.c
 driver-y += vt8237r_sata.c
 driver-y += vt8237r_usb.c
-driver-y += vt8237r_nic.c
+driver-$(CONFIG_PIRQ_ROUTE) += vt8237r_pirq.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += vt8237_fadt.c

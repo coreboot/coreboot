@@ -41,15 +41,10 @@
 #include "superio/intel/i3100/i3100_early_serial.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i3100/i3100.h"
+#include "southbridge/intel/i3100/i3100.h"
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
-
-/* SATA */
-#define SATA_MAP 0x90
-
-#define SATA_MODE_IDE  0x00
-#define SATA_MODE_AHCI 0x01
 
 #define RCBA_RPC   0x0224 /* 32 bit */
 

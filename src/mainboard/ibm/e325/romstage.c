@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -70,9 +69,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#endif
 #include "cpu/amd/dualcore/dualcore.c"
 
 #include "cpu/amd/car/post_cache_as_ram.c"

@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -92,9 +91,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  /* tyan does not want the default */
 #include "resourcemap.c"
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#endif
 #include "cpu/amd/dualcore/dualcore.c"
 
 #define RC0 ((1<<2)<<8)

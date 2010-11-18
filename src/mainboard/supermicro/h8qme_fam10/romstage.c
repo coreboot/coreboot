@@ -22,11 +22,6 @@
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 1
 
-
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#endif
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

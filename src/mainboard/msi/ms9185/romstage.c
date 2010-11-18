@@ -23,8 +23,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define SET_NB_CFG_54 1
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

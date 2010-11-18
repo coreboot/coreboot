@@ -24,10 +24,6 @@
 #include "option_table.h"
 #endif
 
-#ifndef SET_NB_CFG_54
-	#define SET_NB_CFG_54 1
-#endif
-
 #include "cpu/amd/quadcore/quadcore_id.c"
 
 static u32 get_core_num_in_bsp(u32 nodeid)
@@ -43,7 +39,6 @@ static u32 get_core_num_in_bsp(u32 nodeid)
 	return dword;
 }
 
-#if SET_NB_CFG_54 == 1
 static u8 set_apicid_cpuid_lo(void)
 {
 	// set the NB_CFG[54]=1; why the OS will be happy with that ???
@@ -54,12 +49,6 @@ static u8 set_apicid_cpuid_lo(void)
 
 	return 1;
 }
-#else
-
-static void set_apicid_cpuid_lo(void) { }
-
-#endif
-
 
 static void real_start_other_core(u32 nodeid, u32 cores)
 {

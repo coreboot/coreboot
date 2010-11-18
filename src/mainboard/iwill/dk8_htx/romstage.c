@@ -1,5 +1,3 @@
-#define SET_NB_CFG_54 1
-
 #if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif

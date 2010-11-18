@@ -1,10 +1,5 @@
 /* 2004.12 yhlu add dual core support */
 
-
-#ifndef SET_NB_CFG_54
-	#define SET_NB_CFG_54 1
-#endif
-
 #include "cpu/amd/dualcore/dualcore_id.c"
 #include <pc80/mc146818rtc.h>
 #if CONFIG_HAVE_OPTION_TABLE
@@ -20,7 +15,6 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 	return dword;
 }
 
-#if SET_NB_CFG_54 == 1
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
 #if CONFIG_K8_REV_F_SUPPORT == 0
@@ -35,11 +29,6 @@ static inline uint8_t set_apicid_cpuid_lo(void)
 
         return 1;
 }
-#else
-
-static inline void set_apicid_cpuid_lo(void) { }
-
-#endif
 
 static inline void real_start_other_core(unsigned nodeid)
 {

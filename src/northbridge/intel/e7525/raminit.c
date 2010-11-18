@@ -1055,12 +1055,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	print_debug("Starting SDRAM Enable\n");
 
 	/* 0x80 */
-#ifdef DIMM_MAP_LOGICAL
 	pci_write_config32(ctrl->f0, DRM,
-		0x00210000 | DIMM_MAP_LOGICAL);
-#else
-	pci_write_config32(ctrl->f0, DRM, 0x00211248);
-#endif
+		0x00210000 | CONFIG_DIMM_MAP_LOGICAL);
 	/* set dram type and Front Side Bus freq. */
 	drc = spd_set_dram_controller_mode(ctrl, mask);
 	if( drc == 0) {

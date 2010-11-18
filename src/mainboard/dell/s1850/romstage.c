@@ -37,9 +37,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* this is very highly mainboard dependent, related to wiring */
-/* from factory BIOS via lspci */
-#define DIMM_MAP_LOGICAL 0x2841
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
 

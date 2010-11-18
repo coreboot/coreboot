@@ -29,8 +29,6 @@
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D6F0)
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
 
-#define DIMM_MAP_LOGICAL 0x0124
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);

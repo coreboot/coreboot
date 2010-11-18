@@ -43,4 +43,8 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x1079
 
+config DIMM_MAP_LOGICAL
+	hex
+	default 0x0124
+
 endif # BOARD_INTEL_JARRELL

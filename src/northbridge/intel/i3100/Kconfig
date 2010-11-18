@@ -1,3 +1,9 @@
 config NORTHBRIDGE_INTEL_I3100
 	bool
 
+if NORTHBRIDGE_INTEL_I3100
+config DIMM_MAP_LOGICAL
+	hex
+	default 0x1248
+
+endif

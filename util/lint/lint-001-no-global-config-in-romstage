@@ -1,4 +1,5 @@
 #!/bin/sh
+# DESCR: Check that no symbols #defined in any romstage.c is used elsewhere
 DEFINES=`grep "#define" src/mainboard/*/*/romstage.c |sed 's,.*#define[\t ]\([^\t ]*\)[\t ].*,\1,' | grep -v "(" | sort -u`
 SCANBUCKET=`mktemp`
 LC_ALL=C export LC_ALL

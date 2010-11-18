@@ -366,6 +366,24 @@ distclean: clean-cscope
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
+lint:
+	LINTLOG=`mktemp`; \
+	for script in util/lint/lint-*; do \
+		echo `basename $$script`; \
+		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
+		echo ========; \
+		$$script > $$LINTLOG; \
+		if [ `wc -l $$LINTLOG | cut -d' ' -f1` -eq 0 ]; then \
+			printf "success\n\n"; \
+		else \
+			echo test failed: ; \
+			cat $$LINTLOG; \
+			rm -f $$LINTLOG; \
+			exit 1; \
+		fi \
+	done; \
+	rm -f $$LINTLOG
+
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
 include util/kconfig/Makefile

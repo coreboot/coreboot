@@ -50,7 +50,6 @@ unsigned int get_sbdn(unsigned bus);
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED)
 #define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
-#define RTC_DEV PNP_DEV(0x2e, W83627EHG_RTC)
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {

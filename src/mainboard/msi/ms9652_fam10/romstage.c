@@ -55,7 +55,6 @@
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
-#define RTC_DEV PNP_DEV(0x2e, W83627EHG_RTC)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 

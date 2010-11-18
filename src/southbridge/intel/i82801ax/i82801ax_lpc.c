@@ -68,7 +68,7 @@ typedef struct southbridge_intel_i82801ax_config config_t;
 /*
  * Use 0x0ef8 for a bitmap to cover all these IRQ's.
  * Use the defined IRQ values above or set mainboard
- * specific IRQ values in your mainboards Config.lb.
+ * specific IRQ values in your devicetree.cb.
  */
 static void i82801ax_enable_apic(struct device *dev)
 {

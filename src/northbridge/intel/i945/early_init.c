@@ -570,7 +570,7 @@ static void i945_setup_pci_express_x16(void)
 
 	/* Setup SLOTCAP */
 	/* TODO: These values are mainboard dependent and should
-	 * be set from Config.lb or Options.lb.
+	 * be set from devicetree.cb.
 	 */
 	/* NOTE: SLOTCAP becomes RO after the first write! */
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xb4);

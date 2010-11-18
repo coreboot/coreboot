@@ -37,7 +37,7 @@ static void ide_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "i82801gx_ide: initializing... ");
 	if (config == NULL) {
-		printk(BIOS_ERR, "\ni82801gx_ide: Not mentioned in mainboard's Config.lb!\n");
+		printk(BIOS_ERR, "\ni82801gx_ide: Not mentioned in devicetree.cb!\n");
 		// Trying to set somewhat safe defaults instead of bailing out.
 		enable_primary = enable_secondary = 1;
 	} else {

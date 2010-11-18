@@ -2,10 +2,6 @@
 
 There are a number of outstanding issues:
 
-* we don't have the mc_patch_01000086.h CPU ucode file yet which is
-referenced in a comment in src/mainboard/supermicro/h8dmr_fam10/Options.lb.
-AMD has not released it yet. This is not a problem specific to this port.
-
 * I'm seeing toolchain issues. I can't get this tree to compile correctly with
 gcc 4.3 (32 bit) - there is an optimization issue where certain parts of the
 CBFS code execute very slowly. With gcc 3.4 (32 bit) that slowness

@@ -1,6 +1,6 @@
 /* This should be done by Eric
 	2004.12 yhlu add dual core support
-	2005.01 yhlu add support move apic before pci_domain in MB Config.lb
+	2005.01 yhlu add support move apic before pci_domain in MB devicetree.cb
 	2005.02 yhlu add e0 memory hole support
 	2005.11 yhlu add put sb ht chain on bus 0
 */

@@ -85,7 +85,7 @@ void graphics_init(void)
 	 * Controller Priority Select(11)                       1, Primary
 	 * Display Select(10:8)                                         0x0, CRT
 	 * Graphics Memory Size(7:1)                            CONFIG_VIDEO_MB >> 1,
-	 *                                                                                      defined in mainboard/../Options.lb
+	 *                                                                                      defined in devicetree.cb
 	 * PLL Reference Clock Bypass(0)                        0, Default
 	 */
 

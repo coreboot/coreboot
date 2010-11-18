@@ -55,7 +55,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	// P64H2#2 Bus A IOAPIC
 	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(30, 0));
 	if (!dev)
-		BUG();		// Config.lb error?
+		BUG();
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_P64H2_2_BUS_A, res->base, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
@@ -63,7 +63,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	// P64H2#2 Bus B IOAPIC
 	dev = dev_find_slot(PCI_BUS_E7501_HI_B, PCI_DEVFN(28, 0));
 	if (!dev)
-		BUG();		// Config.lb error?
+		BUG();
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_P64H2_2_BUS_B, res->base, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
@@ -72,7 +72,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	// P64H2#1 Bus A IOAPIC
 	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(30, 0));
 	if (!dev)
-		BUG();		// Config.lb error?
+		BUG();
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_P64H2_1_BUS_A, res->base, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;
@@ -80,7 +80,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	// P64H2#1 Bus B IOAPIC
 	dev = dev_find_slot(PCI_BUS_E7501_HI_D, PCI_DEVFN(28, 0));
 	if (!dev)
-		BUG();		// Config.lb error?
+		BUG();
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, IOAPIC_P64H2_1_BUS_B, res->base, irq_start);
 	irq_start += INTEL_IOAPIC_NUM_INTERRUPTS;

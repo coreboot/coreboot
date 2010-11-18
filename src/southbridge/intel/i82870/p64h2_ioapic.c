@@ -40,10 +40,10 @@ static void p64h2_ioapic_init(device_t dev)
 
     // A note on IOAPIC addresses:
     //  0 and 1 are used for the local APICs of the dual virtual
-	//	(hyper-threaded) CPUs of physical CPU 0 (mainboard/Config.lb).
+    //  (hyper-threaded) CPUs of physical CPU 0 (devicetree.cb).
     //  6 and 7 are used for the local APICs of the dual virtual
-	//	(hyper-threaded) CPUs of physical CPU 1 (mainboard/Config.lb).
-    //  2 is used for the IOAPIC in the 82801 Southbridge (hard-coded in i82801xx_lpc.c)
+    //  (hyper-threaded) CPUs of physical CPU 1 (devicetree.cb).
+    //  2 is used for the IOAPIC in the 82801 southbridge (hard-coded in i82801xx_lpc.c)
 
     // Map APIC index into APIC ID
     // IDs 3, 4, 5, and 8+ are available (see above note)

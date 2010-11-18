@@ -78,7 +78,7 @@ void main(unsigned long bist)
 	/* cs5536_disable_internal_uart: disable them for now, set them
 	 * up later...
 	 */
-	/* If debug. real setup done in chipset init via Config.lb. */
+	/* If debug. real setup done in chipset init via devicetree.cb. */
 	cs5536_setup_onchipuart(1);
 	mb_gpio_init();
 	uart_init();

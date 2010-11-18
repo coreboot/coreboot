@@ -36,7 +36,7 @@ static void sata_init(struct device *dev)
 	printk(BIOS_DEBUG, "i82801gx_sata: initializing...\n");
 
 	if (config == NULL) {
-		printk(BIOS_ERR, "i82801gx_sata: error: device not in Config.lb!\n");
+		printk(BIOS_ERR, "i82801gx_sata: error: device not in devicetree.cb!\n");
 		return;
 	}
 

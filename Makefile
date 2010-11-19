@@ -367,9 +367,9 @@ update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
 lint:
-	LINTLOG=`mktemp`; \
+	FAILED=0; LINTLOG=`mktemp`; \
 	for script in util/lint/lint-*; do \
-		echo `basename $$script`; \
+		echo; echo `basename $$script`; \
 		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
 		echo ========; \
 		$$script > $$LINTLOG; \
@@ -379,9 +379,11 @@ lint:
 			echo test failed: ; \
 			cat $$LINTLOG; \
 			rm -f $$LINTLOG; \
-			exit 1; \
-		fi \
+			FAILED=$$(( $$FAILED + 1 )); \
+		fi; \
+		echo ========; \
 	done; \
+	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed." &&  exit 1; }; \
 	rm -f $$LINTLOG
 
 # This include must come _before_ the pattern rules below!

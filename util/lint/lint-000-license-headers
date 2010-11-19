@@ -16,17 +16,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
-# DESCR: Check that no symbol #defined in any romstage.c is used elsewhere
+#
+# DESCR: Check that all files in src/ and util/ have valid license headers
 
-DEFINES=`grep "#define" src/mainboard/*/*/romstage.c |sed 's,.*#define[\t ]\([^\t ]*\)[\t ].*,\1,' | grep -v "(" | sort -u`
-SCANBUCKET=`mktemp`
 LC_ALL=C export LC_ALL
-find src -name .svn -type d -prune -o -name mainboard -type d -prune -o -name examples -type d -prune -o -type f -exec sed -nf `dirname $0`/remccoms3.sed {} + > $SCANBUCKET
- 
-for define in $DEFINES; do
-	if [ `egrep -c "([^_A-Za-z0-9]$define[^_A-Za-z0-9]|^$define[^_A-Za-z0-9]|[^_A-Za-z0-9]$define\$)" $SCANBUCKET` -gt 0 ]; then
-		echo "$define is defined in mainboard(s) and used elsewhere"
-	fi
-done
-
-rm -f $SCANBUCKET
+find src util -name .svn -type d -prune -o \
+	-name README -prune -o \
+	-name LICENSE -prune -o \
+	-name TODO -prune -o \
+	-name COPYING -prune -o \
+	-name microcode-\*.h -prune -o \
+	-name \*.[18] -prune -o \
+	-name romcc -type d -prune -o \
+	-name crossgcc -type d -prune -o \
+	-type f -exec \
+		grep -L "51 Franklin St, Fifth Floor, Boston" {} + | \
+	sed -e "s,^.*$,File & has no valid GPL header.,"

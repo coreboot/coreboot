@@ -616,7 +616,7 @@ static void spd_enable_refresh(void)
 	reg = pci_read_config8(NB, DRAMC);
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		value = spd_read_byte(DIMM_SPD_BASE + i, SPD_REFRESH);
+		value = spd_read_byte(DIMM0 + i, SPD_REFRESH);
 		if (value < 0)
 			continue;
 		reg = (reg & 0xf8) | refresh_rate_map[(value & 0x7f)];
@@ -750,7 +750,7 @@ static void set_dram_row_attributes(void)
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned int device;
-		device = DIMM_SPD_BASE + i;
+		device = DIMM0 + i;
 		bpr >>= 2;
 
 		/* First check if a DIMM is actually present. */

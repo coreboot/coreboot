@@ -7,7 +7,7 @@ void dump_spd_registers(void)
 	print_debug("\n");
 	for(i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
-		device = DIMM_SPD_BASE + i;
+		device = DIMM0 + i;
 		if (device) {
 			int j;
 			print_debug("dimm: ");

@@ -30,6 +30,7 @@
 */
 /* ported and enhanced from assembler level code in coreboot v1 */
 
+#include <spd.h>
 #include <cpu/x86/mtrr.h>
 #include "raminit.h"
 
@@ -101,7 +102,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 17, Number of banks on SDRAM device.
 */
 	c = 0;
-	b = smbus_read_byte(0xa0,17);
+	b = smbus_read_byte(DIMM0,17);
 	print_val("Detecting Memory\nNumber of Banks ",b);
 
 	if( b != 2 ){            // not 16 Mb type
@@ -109,14 +110,14 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 /*
     Read SPD byte 3, Number of row addresses.
 */
-		b = smbus_read_byte(0xa0,3);
+		b = smbus_read_byte(DIMM0,3);
 		print_val("\nNumber of Rows ",b);
 		if( b >= 0x0d ){	// not 64/128Mb (rows <=12)
 
 /*
     Read SPD byte 13, Primary DRAM width.
 */
-			b = smbus_read_byte(0xa0,13);
+			b = smbus_read_byte(DIMM0,13);
 			print_val("\nPriamry DRAM width",b);
 			if( b != 4 )   // mot 64/128Mb (x4)
 				c = 0x80;  // 256Mb
@@ -127,7 +128,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Read SPD byte 4, Number of column addresses.
 */
-		b = smbus_read_byte(0xa0,4);
+		b = smbus_read_byte(DIMM0,4);
 		print_val("\nNo Columns ",b);
 		if( b == 10 || b == 11 ) c |= 0x60;   // 10/11 bit col addr
 		if( b == 9 ) c |= 0x40;           // 9 bit col addr
@@ -149,7 +150,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 // Read SPD byte 31 Module bank density
 	c = 0;
-	b = smbus_read_byte(0xa0,31);
+	b = smbus_read_byte(DIMM0,31);
 	if( b & 0x02 ) c = 0x80;         // 2GB
 	else if( b & 0x01) c = 0x40;     // 1GB
 	else if( b & 0x80) c = 0x20;     // 512Mb
@@ -166,7 +167,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	// set bank zero size
 	pci_write_config8(north,0x5a,c);
 	// SPD byte 5  # of physical banks
-	b = smbus_read_byte(0xa0,5);
+	b = smbus_read_byte(DIMM0,5);
 
 	print_val("\nNo Physical Banks ",b);
 	if( b == 2)
@@ -180,7 +181,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 
 	/* Read SPD byte 18 CAS Latency */
-	b = smbus_read_byte(0xa0,18);
+	b = smbus_read_byte(DIMM0,18);
 	print_debug("\nCAS Supported ");
 	if(b & 0x04)
 		print_debug("2 ");
@@ -188,9 +189,9 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		print_debug("2.5 ");
 	if(b & 0x10)
 		print_debug("3");
-	print_val("\nCycle time at CL X     (nS)",smbus_read_byte(0xa0,9));
-	print_val("\nCycle time at CL X-0.5 (nS)",smbus_read_byte(0xa0,23));
-	print_val("\nCycle time at CL X-1   (nS)",smbus_read_byte(0xa0,25));
+	print_val("\nCycle time at CL X     (nS)",smbus_read_byte(DIMM0,9));
+	print_val("\nCycle time at CL X-0.5 (nS)",smbus_read_byte(DIMM0,23));
+	print_val("\nCycle time at CL X-1   (nS)",smbus_read_byte(DIMM0,25));
 
 
 	if( b & 0x10 ){             // DDR offering optional CAS 3
@@ -198,13 +199,13 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		c = 0x30;
 		/* see if we can better it */
 		if( b & 0x08 ){     // DDR mandatory CAS 2.5
-			if( smbus_read_byte(0xa0,23) <= 0x75 ){ // we can manage 133Mhz at CAS 2.5
+			if( smbus_read_byte(DIMM0,23) <= 0x75 ){ // we can manage 133Mhz at CAS 2.5
 				print_debug("\nWe can do CAS 2.5");
 				c = 0x20;
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
-			if( smbus_read_byte(0xa0,25) <= 0x75 ){ // we can manage 133Mhz at CAS 2
+			if( smbus_read_byte(DIMM0,25) <= 0x75 ){ // we can manage 133Mhz at CAS 2
 				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -213,7 +214,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
-			if( smbus_read_byte(0xa0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
+			if( smbus_read_byte(DIMM0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
 				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -253,7 +254,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 27, min row pre-charge time.
 */
 
-	b = smbus_read_byte(0xa0,27);
+	b = smbus_read_byte(DIMM0,27);
 	print_val("\ntRP ",b);
 	if( b > 0x3c )           // set tRP = 3T
 		c |= 0x80;
@@ -265,7 +266,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 29, min row pre-charge time.
 */
 
-	b = smbus_read_byte(0xa0,29);
+	b = smbus_read_byte(DIMM0,29);
 	print_val("\ntRCD ",b);
 	if( b > 0x3c )           // set tRCD = 3T
 		c |= 0x04;
@@ -277,7 +278,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 30, device min active to pre-charge time.
 */
 
-	b = smbus_read_byte(0xa0,30);
+	b = smbus_read_byte(DIMM0,30);
 	print_val("\ntRAS ",b);
 	if( b > 0x25 )           // set tRAS = 6T
 		c |= 0x40;
@@ -288,7 +289,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Read SPD byte 17, Number of banks on SDRAM device.
 */
-	b = smbus_read_byte(0xa0,17);
+	b = smbus_read_byte(DIMM0,17);
 	if( b == 4) c |= 0x02;
 	else if (b == 2) c |= 0x01;
 
@@ -342,7 +343,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	pci_write_config8(north,0x6d,0x044);
 	pci_write_config8(north,0x67,0x3a);
 
-	b = smbus_read_byte(0xa0,5); // SPD byte 5  # of physical banks
+	b = smbus_read_byte(DIMM0,5); // SPD byte 5  # of physical banks
 	if( b > 1) {
                 // Increase drive control when there is more than 1 physical bank
 		pci_write_config8(north,0x6c,0x84);   // Drive control: MA, DQS, MD/CKE

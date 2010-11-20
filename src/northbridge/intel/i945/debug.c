@@ -19,16 +19,13 @@
  * MA 02110-1301 USA
  */
 
+#include <spd.h>
 #include <lib.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include "i945.h"
-
-#define SMBUS_MEM_DEVICE_START 0x50
-#define SMBUS_MEM_DEVICE_END 0x53
-#define SMBUS_MEM_DEVICE_INC 1
 
 void print_pci_devices(void)
 {
@@ -88,8 +85,8 @@ void dump_pci_devices(void)
 void dump_spd_registers(void)
 {
         unsigned device;
-        device = SMBUS_MEM_DEVICE_START;
-        while(device <= SMBUS_MEM_DEVICE_END) {
+        device = DIMM0;
+        while(device <= DIMM3) {
                 int status = 0;
                 int i;
         	printk(BIOS_DEBUG, "\ndimm %02x", device);
@@ -105,7 +102,7 @@ void dump_spd_registers(void)
 			}
 			printk(BIOS_DEBUG, "%02x ", status);
 		}
-		device += SMBUS_MEM_DEVICE_INC;
+		device++;
 		printk(BIOS_DEBUG, "\n");
 	}
 }

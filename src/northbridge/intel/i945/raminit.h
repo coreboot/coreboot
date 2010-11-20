@@ -22,7 +22,6 @@
 
 #define DIMM_SOCKETS 2
 
-#define DIMM_SPD_BASE 0x50
 #define DIMM_TCO_BASE 0x30
 
 /* Burst length is always 8 */

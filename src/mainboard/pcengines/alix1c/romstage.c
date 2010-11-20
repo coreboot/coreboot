@@ -89,7 +89,7 @@ static u8 spd_read_byte(u8 device, u8 address)
 	print_debug("spd_read_byte dev ");
 	print_debug_hex8(device);
 
-	if (device != (0x50 << 1)) {
+	if (device != DIMM0) {
 		print_debug(" returns 0xff\n");
 		return 0xff;
 	}
@@ -123,7 +123,7 @@ static void mb_gpio_init(void)
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
-		{.channel0 = {0x50}},
+		{.channel0 = {DIMM0}},
 	};
 
 	post_code(0x01);

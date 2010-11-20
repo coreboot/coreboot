@@ -27,7 +27,4 @@
 /* The 82830 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS	2
 
-/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
-#define DIMM_SPD_BASE	0x50
-
 #endif /* NORTHBRIDGE_INTEL_I82830_RAMINIT_H */

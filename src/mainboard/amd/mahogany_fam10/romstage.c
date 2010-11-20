@@ -86,11 +86,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 
-//#include "spd_addr.h"
-
-#define RC00  0
-#define RC01  1
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 

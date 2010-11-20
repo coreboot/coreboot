@@ -28,15 +28,11 @@
 /* The i855 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS 2
 
-/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
-#define DIMM_SPD_BASE   0x50
-
 struct mem_controller {
   device_t d0;
   uint16_t channel0[DIMM_SOCKETS];
 };
 
 void sdram_initialize(int controllers, const struct mem_controller *ctrl);
-
 
 #endif /* NORTHBRIDGE_INTEL_I855_RAMINIT_H */

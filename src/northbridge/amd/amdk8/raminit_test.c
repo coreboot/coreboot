@@ -268,11 +268,11 @@ static int spd_read_byte(unsigned device, unsigned address)
 {
 	int result;
 	spd_count++;
-	if ((device < 0x50) || (device >= (0x50 +MAX_DIMMS))) {
+	if ((device < DIMM0) || (device >= (DIMM0 + MAX_DIMMS))) {
 		result = -1;
 	}
 	else {
-		device -= 0x50;
+		device -= DIMM0; /* 0x50 */
 
 		if (address > 256) {
 			result = -1;
@@ -324,8 +324,8 @@ static void raminit_main(void)
 			.f1 = PCI_DEV(0, 0x18, 1),
 			.f2 = PCI_DEV(0, 0x18, 2),
 			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { 0x50+0, 0x50+2, 0x50+4, 0x50+6 },
-			.channel1 = { 0x50+1, 0x50+3, 0x50+5, 0x50+7 },
+			.channel0 = { DIMM0+0, DIMM0+2, DIMM0+4, DIMM0+6 },
+			.channel1 = { DIMM0+1, DIMM0+3, DIMM0+5, DIMM0+7 },
 		},
 #endif
 #if SECOND_CPU
@@ -335,8 +335,8 @@ static void raminit_main(void)
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
 			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { 0x50+8, 0x50+10, 0x50+12, 0x50+14 },
-			.channel1 = { 0x50+9, 0x50+11, 0x50+13, 0x50+15 },
+			.channel0 = { DIMM0+8, DIMM0+10, DIMM0+12, DIMM0+14 },
+			.channel1 = { DIMM0+9, DIMM0+11, DIMM0+13, DIMM0+15 },
 		},
 #endif
 	};

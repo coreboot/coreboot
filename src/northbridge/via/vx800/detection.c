@@ -19,13 +19,8 @@
 
 /* FIXME this should go away */
 static const struct mem_controller ctrl = {
-	.channel0 = {0x50, 0x51},
+	.channel0 = {DIMM0, DIMM1},
 };
-
-#define SMBUS_ADDR_CH_A_1       0xA0	/* Dimmx */
-#define SMBUS_ADDR_CH_A_2       0xA2	/* Dimmx */
-#define SMBUS_ADDR_CH_B_1       0xA4	/* Dimmx */
-#define SMBUS_ADDR_CH_B_2       0xA6	/* Dimmx */
 
 /* read data */
 CB_STATUS GetSPDData(u8 Slot, u8 Length, u8 *Buf);

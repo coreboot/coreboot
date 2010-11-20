@@ -24,9 +24,6 @@
 /* The 440BX supports up to four (single- or double-sided) DIMMs. */
 #define DIMM_SOCKETS	4
 
-/* DIMMs 1-4 are at 0x50, 0x51, 0x52, 0x53. */
-#define DIMM_SPD_BASE	0x50
- 
 /* Function prototypes. */
 int spd_read_byte(unsigned int device, unsigned int address);
 void sdram_set_registers(void);

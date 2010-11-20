@@ -34,6 +34,8 @@ it with the version available from LANL.
  */
 /* converted to C 9/2003 Ron Minnich */
 
+#include <spd.h>
+
 /* Set to 1 if your DIMMs are PC133 Note that I'm assuming CPU's FSB
  * frequency is 133MHz. If your CPU runs at another bus speed, you
  * might need to change some of register values.
@@ -178,8 +180,8 @@ static unsigned long spd_module_size(unsigned char slot)
 	/* we may run out of registers ... */
 	unsigned int banks, rows, cols;
 	unsigned int value = 0;
-	/* unsigned int module = ((0x50 + slot) << 1) + 1; */
-	unsigned int module = 0x50 + slot;
+	/* unsigned int module = ((DIMM0 + slot) << 1) + 1; */
+	unsigned int module = DIMM0 + slot;
 
 	/* is the module there? if byte 2 is not 4, then we'll assume it
 	 * is useless.
@@ -220,7 +222,7 @@ static unsigned long spd_module_size(unsigned char slot)
 #if 0
 static int spd_num_chips(unsigned char slot)
 {
-	unsigned int module = 0x50 + slot;
+	unsigned int module = DIMM0 + slot;
 	unsigned int width;
 
 	width = smbus_read_byte(module, 13);
@@ -236,13 +238,13 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	unsigned char Trp = 1, Tras = 1, casl = 2, val;
 	unsigned char timing = 0xe4;
 	/* read Trp */
-	val = smbus_read_byte(0x50, 27);
+	val = smbus_read_byte(DIMM0, 27);
 	if (val < 2 * T133)
 		Trp = 1;
-	val = smbus_read_byte(0x50, 30);
+	val = smbus_read_byte(DIMM0, 30);
 	if (val < 5 * T133)
 		Tras = 0;
-	val = smbus_read_byte(0x50, 18);
+	val = smbus_read_byte(DIMM0, 18);
 	if (val < 8)
 		casl = 1;
 	if (val < 4)
@@ -366,7 +368,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			continue;
 
 		/* Read the row densities */
-		size = smbus_read_byte(0x50+slot, 0x1f);
+		size = smbus_read_byte(DIMM0 + slot, 0x1f);
 
 		/* Set the MA map type.
 		 *

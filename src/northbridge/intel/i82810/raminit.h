@@ -24,9 +24,6 @@
 /* The 82810 supports max. 2 dual-sided DIMMs. */
 #define DIMM_SOCKETS	2
 
-/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
-#define DIMM_SPD_BASE 0x50
-
 /* Function prototypes. */
 void sdram_set_registers(void);
 void sdram_set_spd_registers(void);

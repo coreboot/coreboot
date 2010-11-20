@@ -301,18 +301,18 @@ static void sdram_set_spd_registers(void)
 		PRINT_DEBUG("DIMM");
 		PRINT_DEBUG_HEX8(i);
 		PRINT_DEBUG(" rows: ");
-		PRINT_DEBUG_HEX8(spd_read_byte(DIMM_SPD_BASE + i, SPD_NUM_DIMM_BANKS) & 0xFF);
+		PRINT_DEBUG_HEX8(spd_read_byte(DIMM0 + i, SPD_NUM_DIMM_BANKS) & 0xFF);
 		PRINT_DEBUG(" rowsize: ");
-		PRINT_DEBUG_HEX8(spd_read_byte(DIMM_SPD_BASE + i, SPD_DENSITY_OF_EACH_ROW_ON_MODULE) & 0xFF);
+		PRINT_DEBUG_HEX8(spd_read_byte(DIMM0 + i, SPD_DENSITY_OF_EACH_ROW_ON_MODULE) & 0xFF);
 		PRINT_DEBUG(" modulesize: ");
 
-		j = spd_read_byte(DIMM_SPD_BASE + i, SPD_NUM_DIMM_BANKS);
+		j = spd_read_byte(DIMM0 + i, SPD_NUM_DIMM_BANKS);
 		if (j < 0)
 			j = 0;
 		else
 			ds = j;
 
-		j = spd_read_byte(DIMM_SPD_BASE + i, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
+		j = spd_read_byte(DIMM0 + i, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
 
 		if (j < 0)
 			j = 0;

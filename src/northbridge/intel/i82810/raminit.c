@@ -255,12 +255,12 @@ static void spd_set_dram_size(void)
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		/* First check if a DIMM is actually present. */
-		if (smbus_read_byte(DIMM_SPD_BASE + i, 2) == 4) {
+		if (smbus_read_byte(DIMM0 + i, 2) == 4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
 			print_debug("\n");
 
-			dimm_size = smbus_read_byte(DIMM_SPD_BASE + i, 31);
+			dimm_size = smbus_read_byte(DIMM0 + i, 31);
 
 			/* WISHLIST: would be nice to display it as decimal? */
 			print_debug("DIMM is 0x");
@@ -293,7 +293,7 @@ static void spd_set_dram_size(void)
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
 			/* TODO: Figure out asymetrical configurations. */
-			if ((smbus_read_byte(DIMM_SPD_BASE + i, 127) | 0xf) ==
+			if ((smbus_read_byte(DIMM0 + i, 127) | 0xf) ==
 			    0xff) {
 				print_debug("DIMM is dual-sided\n");
 				dimm_size += 2;
@@ -361,20 +361,18 @@ static void set_dram_buffer_strength(void)
 
 	/* Check first slot. */
 	d0.size = d0.ds = d0.ss = 0;
-	if (smbus_read_byte(DIMM_SPD_BASE, SPD_MEMORY_TYPE)
-	    == SPD_MEMORY_TYPE_SDRAM) {
-		d0.size = smbus_read_byte(DIMM_SPD_BASE, SPD_BANK_DENSITY);
-		d0.ds = smbus_read_byte(DIMM_SPD_BASE, SPD_NUM_DIMM_BANKS) > 1;
+	if (smbus_read_byte(DIMM0, SPD_MEMORY_TYPE) == SPD_MEMORY_TYPE_SDRAM) {
+		d0.size = smbus_read_byte(DIMM0, SPD_BANK_DENSITY);
+		d0.ds = smbus_read_byte(DIMM0, SPD_NUM_DIMM_BANKS) > 1;
 		d0.ss = !d0.ds;
 	}
 
 	/* Check second slot. */
 	d1.size = d1.ds = d1.ss = 0;
-	if (smbus_read_byte(DIMM_SPD_BASE + 1, SPD_MEMORY_TYPE)
+	if (smbus_read_byte(DIMM0 + 1, SPD_MEMORY_TYPE)
 	    == SPD_MEMORY_TYPE_SDRAM) {
-		d1.size = smbus_read_byte(DIMM_SPD_BASE + 1, SPD_BANK_DENSITY);
-		d1.ds = smbus_read_byte(DIMM_SPD_BASE + 1,
-					SPD_NUM_DIMM_BANKS) > 1;
+		d1.size = smbus_read_byte(DIMM0 + 1, SPD_BANK_DENSITY);
+		d1.ds = smbus_read_byte(DIMM0 + 1, SPD_NUM_DIMM_BANKS) > 1;
 		d1.ss = !d1.ds;
 	}
 

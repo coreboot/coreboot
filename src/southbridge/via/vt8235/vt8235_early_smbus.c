@@ -174,7 +174,7 @@ static unsigned char smbus_read_byte(unsigned char devAdr,
 	outb(bIndex, SMBUS_IO_BASE+3);
 
 	/* set slave address */
-	outb(devAdr | 0x01, SMBUS_IO_BASE+4);
+	outb((devAdr << 1) | 0x01, SMBUS_IO_BASE+4);
 
 	/* start */
 	outb(0x48, SMBUS_IO_BASE+2);

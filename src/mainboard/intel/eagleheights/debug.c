@@ -20,9 +20,7 @@
  * MA 02110-1301 USA
  */
 
-#define SMBUS_MEM_DEVICE_START 0x50
-#define SMBUS_MEM_DEVICE_END 0x57
-#define SMBUS_MEM_DEVICE_INC 1
+#include <spd.h>
 
 static void print_reg(unsigned char index)
 {
@@ -230,8 +228,8 @@ static inline void dump_pci_devices(void)
 static inline void dump_spd_registers(void)
 {
         unsigned device;
-        device = SMBUS_MEM_DEVICE_START;
-        while(device <= SMBUS_MEM_DEVICE_END) {
+        device = DIMM0;
+        while(device <= DIMM7) {
                 int status = 0;
                 int i;
         	print_debug("\n");
@@ -254,7 +252,7 @@ static inline void dump_spd_registers(void)
 			print_debug_hex8(status);
 			print_debug_char(' ');
 		}
-		device += SMBUS_MEM_DEVICE_INC;
+		device++;
 		print_debug("\n");
 	}
 }
@@ -281,7 +279,7 @@ static inline void dump_ipmi_registers(void)
 			print_debug_hex8(status);
 			print_debug_char(' ');
 		}
-		device += SMBUS_MEM_DEVICE_INC;
+		device++;
 		print_debug("\n");
 	}
 }

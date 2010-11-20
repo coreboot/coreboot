@@ -45,15 +45,16 @@
 /**
  * The onboard 64MB PC133 memory does not have a SPD EEPROM so the
  * values have to be set manually, the SO-DIMM socket is located in
- * socket0 (0x50), and the onboard memory is located in socket1 (0x51).
+ * socket0 (0x50/DIMM0), and the onboard memory is located in socket1
+ * (0x51/DIMM1).
  */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	int i;
 
-	if (device == 0x50) {
+	if (device == DIMM0) {
 		return smbus_read_byte(device, address);
-	} else if (device == 0x51) {
+	} else if (device == DIMM1) {
 		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
 			if (spd_table[i].address == address)
 				return spd_table[i].data;

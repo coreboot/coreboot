@@ -101,16 +101,16 @@ static void initialize_dimm_rows(void)
 
 		switch (row) {
 			case 0:
-				device = DIMM_SPD_BASE;
+				device = DIMM0;
 				break;
 			case 1:
-				device = DIMM_SPD_BASE;
+				device = DIMM0;
 				break;
 			case 2:
-				device = DIMM_SPD_BASE + 1;
+				device = DIMM0 + 1;
 				break;
 			case 3:
-				device = DIMM_SPD_BASE + 1;
+				device = DIMM0 + 1;
 				break;
 		}
 
@@ -224,7 +224,7 @@ static void set_dram_row_boundaries(void)
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 		unsigned device;
-		device = DIMM_SPD_BASE + i;
+		device = DIMM0 + i;
 		drb1 = 0;
 		drb2 = 0;
 
@@ -316,7 +316,7 @@ static void set_dram_row_attributes(void)
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
-		device = DIMM_SPD_BASE + i;
+		device = DIMM0 + i;
 
 		/* First check if a DIMM is actually present. */
 		if (spd_read_byte(device, SPD_MEMORY_TYPE) == 0x4) {

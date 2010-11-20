@@ -174,17 +174,15 @@ static void ddr_ram_setup(void)
     Read SPD byte 17, Number of banks on SDRAM device.
 */
 	c = 0;
-	b = smbus_read_byte(0x50, SPD_NUM_BANKS_PER_SDRAM);
+	b = smbus_read_byte(DIMM0, SPD_NUM_BANKS_PER_SDRAM);
 	//print_val("Detecting Memory\nNumber of Banks ",b);
 
 	// Only supporting 4 bank chips just now
 	if( b == 4 ){
-		/*
-    		Read SPD byte 3, Number of row addresses.
-		*/
+		/* Read SPD byte 3, Number of row addresses. */
 		c = 0x01;
 		bank = 0x40;
-		b = smbus_read_byte(0x50, SPD_NUM_ROWS);
+		b = smbus_read_byte(DIMM0, SPD_NUM_ROWS);
 		//print_val("\nNumber of Rows ", b);
 
 		if( b >= 0x0d ){	// 256/512Mb
@@ -194,19 +192,15 @@ static void ddr_ram_setup(void)
 			else
 				bank = 0x44;
 
-			/*
-    			Read SPD byte 13, Primary DRAM width.
-			*/
-			b = smbus_read_byte(0x50, SPD_PRIMARY_SDRAM_WIDTH);
+			/* Read SPD byte 13, Primary DRAM width. */
+			b = smbus_read_byte(DIMM0, SPD_PRIMARY_SDRAM_WIDTH);
 			//print_val("\nPrimary DRAM width", b);
 			if( b != 4 )   // not 64/128Mb (x4)
 				c = 0x81;  // 256Mb
 		}
 
-		/*
-    		Read SPD byte 4, Number of column addresses.
-		*/
-		b = smbus_read_byte(0x50, SPD_NUM_COLUMNS);
+		/* Read SPD byte 4, Number of column addresses. */
+		b = smbus_read_byte(DIMM0, SPD_NUM_COLUMNS);
 		//print_val("\nNo Columns ",b);
 		if( b == 10 || b == 11 || b == 12) c |= 0x60;   // 10/11 bit col addr
 		if( b == 9 ) c |= 0x40;           // 9 bit col addr
@@ -238,7 +232,7 @@ static void ddr_ram_setup(void)
 
 	// Read SPD byte 31 Module bank density
 	//c = 0;
-	b = smbus_read_byte(0x50, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
+	b = smbus_read_byte(DIMM0, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
 	if( b & 0x02 )
 	{
 		c = 0x40;         				// 2GB
@@ -278,7 +272,7 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0x40, c);
 
 	// SPD byte 5  # of physical banks
-	b = smbus_read_byte(0x50, SPD_NUM_DIMM_BANKS);
+	b = smbus_read_byte(DIMM0, SPD_NUM_DIMM_BANKS);
 
 	//print_val("\nNo Physical Banks ",b);
 	if( b == 2)
@@ -307,7 +301,7 @@ static void ddr_ram_setup(void)
 	ma = bank;
 
 	/* Read SPD byte 18 CAS Latency */
-	b = smbus_read_byte(0x50, SPD_ACCEPTABLE_CAS_LATENCIES);
+	b = smbus_read_byte(DIMM0, SPD_ACCEPTABLE_CAS_LATENCIES);
 /*	print_debug("\nCAS Supported ");
 	if(b & 0x04)
 		print_debug("2 ");
@@ -316,30 +310,30 @@ static void ddr_ram_setup(void)
 	if(b & 0x10)
 		print_debug("3");
 
-	c = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
+	c = smbus_read_byte(DIMM0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 	print_val("\nCycle time at CL X     (nS)", c);
-	c = smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND);
+	c = smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND);
 	print_val("\nCycle time at CL X-0.5 (nS)", c);
-	c = smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_3RD);
+	c = smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD);
 	print_val("\nCycle time at CL X-1   (nS)", c);
 */
 	/* Scaling of Cycle Time SPD data */
 	/* 7      4 3       0             */
 	/*    ns     x0.1ns               */
-	bank = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
+	bank = smbus_read_byte(DIMM0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 
 	if( b & 0x10 ){             // DDR offering optional CAS 3
 		//print_debug("\nStarting at CAS 3");
 		c = 0x30;
 		/* see if we can better it */
 		if( b & 0x08 ){     // DDR mandatory CAS 2.5
-			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND) <= bank ){ // we can manage max MHz at CAS 2.5
+			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND) <= bank ){ // we can manage max MHz at CAS 2.5
 				//print_debug("\nWe can do CAS 2.5");
 				c = 0x20;
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
-			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_3RD) <= bank ){ // we can manage max Mhz at CAS 2
+			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD) <= bank ){ // we can manage max Mhz at CAS 2
 				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -348,7 +342,7 @@ static void ddr_ram_setup(void)
 		//print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
-			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max Mhz at CAS 2
+			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max Mhz at CAS 2
 				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -383,7 +377,7 @@ static void ddr_ram_setup(void)
     Read SPD byte 27, min row pre-charge time.
 */
 
-	b = smbus_read_byte(0x50, SPD_MIN_ROW_PRECHARGE_TIME);
+	b = smbus_read_byte(DIMM0, SPD_MIN_ROW_PRECHARGE_TIME);
 
 	//print_val("\ntRP ",b);
 	if ( b >= (5 * bank)) {
@@ -402,7 +396,7 @@ static void ddr_ram_setup(void)
     Read SPD byte 29, min row pre-charge time.
 */
 
-	b = smbus_read_byte(0x50, SPD_MIN_RAS_TO_CAS_DELAY);
+	b = smbus_read_byte(DIMM0, SPD_MIN_RAS_TO_CAS_DELAY);
 	//print_val("\ntRCD ",b);
 
 	if ( b >= (5 * bank)) c |= 0x0C;		// set tRCD = 5T
@@ -419,7 +413,7 @@ static void ddr_ram_setup(void)
 	/* tRAS is in whole ns */
 	bank = bank >> 2;
 
-	b = smbus_read_byte(0x50, SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
+	b = smbus_read_byte(DIMM0, SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
 	//print_val("\ntRAS ",b);
 	//print_val("\nBank ", bank);
 	if ( b >= (9 * bank)) c |= 0xC0;		// set tRAS = 9T
@@ -438,7 +432,7 @@ static void ddr_ram_setup(void)
 /*
     DRAM Clock  Device 0 Fn 3 Offset 68
 */
-	bank = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
+	bank = smbus_read_byte(DIMM0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 
 	/* Setup DRAM Cycle Time */
 	if ( bank <= 0x50 )
@@ -469,7 +463,7 @@ static void ddr_ram_setup(void)
     Read SPD byte 17, Number of banks on SDRAM device.
 */
 	c = 0x0F;
-	b = smbus_read_byte(0x50, SPD_NUM_BANKS_PER_SDRAM);
+	b = smbus_read_byte(DIMM0, SPD_NUM_BANKS_PER_SDRAM);
 	if( b == 4) c |= 0x80;
 	else if (b == 2) c |= 0x40;
 
@@ -520,7 +514,7 @@ static void ddr_ram_setup(void)
 
 
 	/* SPD byte 5  # of physical banks */
-	b = smbus_read_byte(0x50, SPD_NUM_DIMM_BANKS) -1;
+	b = smbus_read_byte(DIMM0, SPD_NUM_DIMM_BANKS) -1;
 	c = b | 0x40;
 
 	pci_write_config8(ctrl.d0f3, 0xb0, c);
@@ -532,7 +526,7 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0x48, ma);
 	udelay(200);
 
-	c = smbus_read_byte(0x50, SPD_SUPPORTED_BURST_LENGTHS);
+	c = smbus_read_byte(DIMM0, SPD_SUPPORTED_BURST_LENGTHS);
 	c &= 0x08;
 	if ( c == 0x08 )
 	{
@@ -673,7 +667,7 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0xED, 0x11);
 
 	/* SPD byte 5  # of physical banks */
-	b = smbus_read_byte(0x50, SPD_NUM_DIMM_BANKS) -1;
+	b = smbus_read_byte(DIMM0, SPD_NUM_DIMM_BANKS) -1;
 
 	/* determine low bond */
 	if( b == 2)
@@ -795,7 +789,7 @@ static void ddr_ram_setup(void)
 */
 	//c = pci_read_config8(ctrl.d0f3, 0x68);
 	//c &= 0x07;
-	//b = smbus_read_byte(0x50, SPD_REFRESH);
+	//b = smbus_read_byte(DIMM0, SPD_REFRESH);
 	//print_val("SPD_REFRESH = ", b);
 
 	pci_write_config8(ctrl.d0f3,0x6a,0x65);

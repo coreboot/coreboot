@@ -91,7 +91,7 @@ void main(unsigned long bist)
 	/* Set statically so it should work with cx700 as well */
 	static const struct mem_controller cx700[] = {
 		{
-			.channel0 = {0x50, 0x51},
+			.channel0 = {DIMM0, DIMM1},
 		},
 	};
 

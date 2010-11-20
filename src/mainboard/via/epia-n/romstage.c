@@ -50,7 +50,7 @@ static const struct mem_controller ctrl = {
 	.d0f4 = 0x4000,
 	.d0f7 = 0x7000,
 	.d1f0 = 0x8000,
-	.channel0 = { 0x50 },
+	.channel0 = { DIMM0 },
 };
 
 static inline int spd_read_byte(unsigned device, unsigned address)

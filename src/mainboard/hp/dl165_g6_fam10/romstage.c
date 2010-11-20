@@ -44,6 +44,7 @@
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>
+#include <spd.h>
 
 #include "cpu/amd/model_10xxx/apic_timer.c"
 #include "lib/delay.c"
@@ -98,7 +99,15 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdfam10/early_ht.c"
 
-#include "spd_addr.h"
+static const u8 spd_addr[] = {
+	// switch addr, 1A addr, 2A addr, 3A addr, 4A addr, 1B addr, 2B addr, 3B addr 4B addr
+	//first node
+	RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+	//second node
+	RC01, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
+#endif
+};
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

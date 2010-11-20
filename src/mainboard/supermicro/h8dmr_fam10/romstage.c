@@ -33,6 +33,7 @@
 
 #include <console/console.h>
 #include <lib.h>
+#include <spd.h>
 
 #include <cpu/amd/model_10xxx_rev.h>
 
@@ -117,7 +118,14 @@ static void sio_setup(void)
 
 }
 
-#include "spd_addr.h"
+static const u8 spd_addr[] = {
+	//first node
+	RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+	//second node
+	RC00, DIMM4, DIMM6, 0, 0, DIMM5, DIMM7, 0, 0,
+#endif
+};
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

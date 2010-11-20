@@ -20,9 +20,6 @@
 #define RC0 (6<<8)
 #define RC1 (7<<8)
 
-#define DIMM0 0x50
-#define DIMM1 0x51
-
 #define SMBUS_HUB 0x71
 
 #include <stdint.h>
@@ -43,6 +40,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
+#include <spd.h>
 
 #include <usbdebug.h>
 

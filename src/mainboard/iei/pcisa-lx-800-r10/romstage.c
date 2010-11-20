@@ -30,6 +30,7 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -49,9 +50,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 //0x0000059C 0000 0000 0000 0000 0000 |0101 1|0|01 110|0
 /* Hold Count - how long we will sit in reset */
 #define PLLMSRlo 0x00DE6000
-
-#define DIMM0 0xA0
-#define DIMM1 0xA2
 
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"

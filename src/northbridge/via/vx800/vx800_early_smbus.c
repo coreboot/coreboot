@@ -40,7 +40,6 @@
 
 /* Define register settings */
 #define HOST_RESET	0xff
-#define DIMM_BASE		0xa0	// 1010000 is base for DIMM in SMBus
 #define READ_CMD		0x01	// 1 in the 0 bit of SMBHSTADD states to READ
 
 #define SMBUS_TIMEOUT		(100*1000*10)
@@ -121,9 +120,7 @@ static unsigned int get_spd_data(unsigned int dimm, unsigned int offset)
 	smbus_wait_until_ready();
 
 	/* Do some mathmatic magic */
-	dimm = (dimm << 1);
-	dimm &= 0x0E;
-	dimm |= 0xA0;
+	dimm = (DIMM0 + dimm) << 1;
 
 	outb(dimm | 0x1, SMBXMITADD);
 	outb(offset, SMBHSTCMD);

@@ -30,6 +30,7 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
+#include <spd.h>
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
@@ -42,8 +43,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #define ManualConf 0		/* Do automatic strapped PLL config */
 #define PLLMSRhi 0x00001490	/* manual settings for the PLL */
 #define PLLMSRlo 0x02000030
-#define DIMM0 0xA0
-#define DIMM1 0xA2
 
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"

@@ -93,18 +93,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
+#include <spd.h>
 
 #define RC0 (0x10<<8)
 #define RC1 (0x01<<8)
-
-#define DIMM0 0x50
-#define DIMM1 0x51
-#define DIMM2 0x52
-#define DIMM3 0x53
-#define DIMM4 0x54
-#define DIMM5 0x55
-#define DIMM6 0x56
-#define DIMM7 0x57
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

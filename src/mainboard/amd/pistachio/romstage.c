@@ -17,9 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define DIMM0 0x50
-#define DIMM1 0x51
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -39,6 +36,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 #include <usbdebug.h>
+#include <spd.h>
 
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"

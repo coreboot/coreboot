@@ -57,6 +57,7 @@ static int smbus_read_byte(u32 device, u32 address);
 #include "southbridge/amd/rs780/rs780_early_setup.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
+#include <spd.h>
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -89,11 +90,6 @@ static int spd_read_byte(u32 device, u32 address)
 
 #define RC00  0
 #define RC01  1
-
-#define DIMM0 0x50
-#define DIMM1 0x51
-#define DIMM2 0x52
-#define DIMM3 0x53
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

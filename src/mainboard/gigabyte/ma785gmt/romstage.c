@@ -80,15 +80,11 @@ static int spd_read_byte(u32 device, u32 address)
 
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
+#include <spd.h>
 
 
 #define RC00  0
 #define RC01  1
-
-#define DIMM0 0x50
-#define DIMM1 0x51
-#define DIMM2 0x52
-#define DIMM3 0x53
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

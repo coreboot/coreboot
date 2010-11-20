@@ -9,14 +9,12 @@
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
-
-#define DIMM0 0xA0
-#define DIMM1 0xFF /* DIMM1 is not available/used on this board. */
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

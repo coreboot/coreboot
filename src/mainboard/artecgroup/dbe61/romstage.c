@@ -32,12 +32,10 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "spd_table.h"
+#include <spd.h>
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
-
-#define DIMM0 0xA0
-#define DIMM1 0xA2
 
 static int spd_read_byte(unsigned device, unsigned address)
 {

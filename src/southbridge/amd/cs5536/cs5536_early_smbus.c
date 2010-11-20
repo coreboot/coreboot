@@ -165,7 +165,7 @@ static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 		goto err;
 	}
 
-	if ((smbus_send_slave_address(smbus_io_base, device))) {
+	if ((smbus_send_slave_address(smbus_io_base, device << 1))) {
 		error = 3;
 		goto err;
 	}
@@ -182,7 +182,7 @@ static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 		goto err;
 	}
 
-	if ((smbus_send_slave_address(smbus_io_base, device | 0x01))) {
+	if ((smbus_send_slave_address(smbus_io_base, (device << 1) | 0x01))) {
 		error = 6;
 		goto err;
 	}

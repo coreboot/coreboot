@@ -37,7 +37,6 @@
 
 /* Define register settings */
 #define HOST_RESET		0xff
-#define DIMM_BASE		0xa0	// 1010000 is base for DIMM in SMBus
 #define READ_CMD		0x01	// 1 in the 0 bit of SMBHSTADD states to READ
 
 #define SMBUS_TIMEOUT		(100*1000*10)

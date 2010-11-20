@@ -34,6 +34,7 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
+#include <spd.h>
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
@@ -49,8 +50,6 @@
 #define ManualConf 1		/* No automatic strapped PLL config */
 #define PLLMSRhi 0x0000059C	/* Manual settings for the PLL */
 #define PLLMSRlo 0x00DE6001
-#define DIMM0 0xA0
-#define DIMM1 0xA2
 
 static const unsigned char spdbytes[] = {	// 4x Promos V58C2512164SA-J5I
 	0xFF, 0xFF,				// only values used by Geode-LX raminit.c are set

@@ -37,7 +37,7 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/i3100_early_serial.c"
 #include "cpu/x86/bist.h"
-#include "spd.h"
+#include <spd.h>
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0 | DEVPRES_D4F0)
 

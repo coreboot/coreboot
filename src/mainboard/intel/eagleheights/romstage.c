@@ -21,20 +21,16 @@
  */
 
 #include <delay.h>
-
 #include <stdint.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/acpi.h>
-
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "reset.c"
@@ -196,4 +192,3 @@ void main(unsigned long bist)
 	/* Initialize memory */
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 }
-

@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -10,13 +9,10 @@
 #include <console/console.h>
 #include <lib.h>
 #include <spd.h>
-
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
-
 #include "northbridge/intel/e7501/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 

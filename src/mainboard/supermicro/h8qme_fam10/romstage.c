@@ -30,15 +30,11 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-
 #include <console/console.h>
 #include <lib.h>
 #include <spd.h>
-
 #include <cpu/amd/model_10xxx_rev.h>
-
-// for enable the FAN
-#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
+#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c" // for enable the FAN
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include "cpu/amd/model_10xxx/apic_timer.c"
@@ -47,18 +43,13 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdfam10/debug.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
-
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
-#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -74,26 +65,16 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
-
 #include "resourcemap.c"
-
 #include "cpu/amd/quadcore/quadcore.c"
-
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
-
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
@@ -116,7 +97,6 @@ static void sio_setup(void)
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
-
 }
 
 static const u8 spd_addr[] = {
@@ -317,6 +297,4 @@ post_code(0x40);
 // printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
  post_cache_as_ram();  // BSP switch stack to ram, copy then execute LB.
  post_code(0x42);  // Should never see this post code.
-
 }
-

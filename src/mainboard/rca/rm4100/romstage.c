@@ -36,11 +36,10 @@
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
 #include "gpio.c"
-
-#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
-
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
 #include "southbridge/intel/i82801dx/i82801dx_tco_timer.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 /**
  * The onboard 64MB PC133 memory does not have a SPD EEPROM so the
@@ -128,4 +127,3 @@ void main(unsigned long bist)
 	/* ram_check(0, 640 * 1024); */
 	/* ram_check(64512 * 1024, 65536 * 1024); */
 }
-

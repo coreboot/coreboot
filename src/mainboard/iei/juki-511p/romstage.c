@@ -30,10 +30,9 @@
 #include "southbridge/amd/cs5530/cs5530_enable_rom.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
+#include "northbridge/amd/gx1/raminit.c"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977F_SP1)
-
-#include "northbridge/amd/gx1/raminit.c"
 
 static void main(unsigned long bist)
 {
@@ -57,4 +56,3 @@ static void main(unsigned long bist)
 	/* Check RAM. */
 	/* ram_check(0x00000000, 640 * 1024); */
 }
-

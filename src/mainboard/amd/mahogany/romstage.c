@@ -32,22 +32,17 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <spd.h>
-
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8718f/it8718f_early_serial.c"
 #include <usbdebug.h>
-
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-
 #include "southbridge/amd/rs780/rs780_early_setup.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdk8/debug.c" /* After sb700_early_setup.c! */
@@ -74,16 +69,10 @@ static inline int spd_read_byte(u32 device, u32 address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
-
 #include "cpu/amd/dualcore/dualcore.c"
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 #include "cpu/amd/model_fxx/fidvid.c"
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -186,4 +175,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-

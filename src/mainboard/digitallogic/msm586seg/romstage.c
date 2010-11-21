@@ -8,7 +8,6 @@
 #include <console/console.h>
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
-//#include "lib/delay.c"
 
 void setup_pars(void)
 {
@@ -47,8 +46,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 {
 //	return smbus_read_byte(device, address);
 }
-
-//#include "lib/generic_sdram.c"
 
 static inline void dumpmem(void){
   int i, j;
@@ -251,4 +248,3 @@ static void main(unsigned long bist)
 	while(1);
 #endif
 }
-

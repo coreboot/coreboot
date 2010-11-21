@@ -105,4 +105,3 @@ static void main(unsigned long bist)
 	ram_verify(0x00000000, 0x02000000);
 #endif
 }
-

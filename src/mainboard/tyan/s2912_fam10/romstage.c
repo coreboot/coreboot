@@ -34,31 +34,23 @@
 #include <usbdebug.h>
 #include <lib.h>
 #include <spd.h>
-
 #include <cpu/amd/model_10xxx_rev.h>
-
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
 #include "cpu/amd/model_10xxx/apic_timer.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdfam10/debug.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
-
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
-#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -71,12 +63,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
-
 #include "resourcemap.c"
-
 #include "cpu/amd/quadcore/quadcore.c"
 
 #define MCP55_MB_SETUP \
@@ -89,14 +78,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 

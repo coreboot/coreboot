@@ -43,4 +43,3 @@ static void main(unsigned long bist)
 	sdram_init();
 	/* ram_check(0, 640 * 1024); */
 }
-

@@ -31,28 +31,23 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
-
 #include <device/pci_ids.h>
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -87,12 +82,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-
- /* msi does not want the default */
-#include "resourcemap.c"
+#include "resourcemap.c" /* msi does not want the default */
 #include "cpu/amd/dualcore/dualcore.c"
-
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
+
 //set GPIO to input mode
 #define MCP55_MB_SETUP \
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
@@ -101,13 +94,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/model_fxx/init_cpus.c"
 // Disabled until it's actually used:
 // #include "cpu/amd/model_fxx/fidvid.c"
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -210,4 +200,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        post_cache_as_ram();
 }
-

@@ -27,22 +27,17 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <lib.h>
-
 #include "superio/winbond/w83627ehg/w83627ehg.h"
-
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <usbdebug.h>
 #include <cpu/x86/bist.h>
-
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
-
-#define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
-
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
+
+#define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 
 void enable_smbus(void);
 
@@ -358,4 +353,3 @@ void main(unsigned long bist)
 	}
 #endif
 }
-

@@ -10,11 +10,10 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include <spd.h>
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -61,4 +60,3 @@ void main(unsigned long bist)
 	/* Check all of memory */
 	//ram_check(0x00000000, 640*1024);
 }
-

@@ -78,4 +78,3 @@ static void main(unsigned long bist)
 	//		 if the following line is removed.
 	print_debug("SDRAM is up.\n");
 }
-

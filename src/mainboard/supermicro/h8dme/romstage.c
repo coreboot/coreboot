@@ -29,35 +29,25 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <lib.h>
 #include <spd.h>
-
 #include <cpu/amd/model_fxx_rev.h>
-
-// for enable the FAN
-#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
+#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c" // for enable the FAN
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdk8/debug.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
-#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -136,20 +126,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-
 #include "resourcemap.c"
-
 #include "cpu/amd/dualcore/dualcore.c"
-
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 #include "cpu/amd/model_fxx/fidvid.c"
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -313,6 +296,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	post_cache_as_ram();	// bsp swtich stack to ram and copy sysinfo ram now
-
 }
-

@@ -11,11 +11,10 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5535/cs5535.h"
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
 #include "southbridge/amd/cs5535/cs5535_early_smbus.c"
 #include "southbridge/amd/cs5535/cs5535_early_setup.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static const unsigned char spdbytes[] = {	/* 4x Qimonda HYB25DC512160CF-6 */
 	0xFF, 0xFF,				/* only values used by raminit.c are set */
@@ -131,6 +130,4 @@ void main(unsigned long bist)
 //	ram_check(0, 16384);
 	ram_check(0x20000, 0x24000);
 //	ram_check(0x00000000, 640*1024);
-
 }
-

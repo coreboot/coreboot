@@ -38,22 +38,16 @@
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
-
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-
 static int smbus_read_byte(u32 device, u32 address);
-
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 #include <usbdebug.h>
-
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
-
 #include "southbridge/amd/rs780/rs780_early_setup.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
@@ -70,18 +64,14 @@ static int spd_read_byte(u32 device, u32 address)
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
-
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include <spd.h>

@@ -28,12 +28,9 @@
 #include <cpu/x86/lapic.h>
 #include <lib.h>
 #include <usbdebug.h>
-
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
@@ -99,7 +96,6 @@ static void ich7_enable_lpc(void)
 	// Enable 0x68 - 0x6f
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x00040069);
 }
-
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between
@@ -398,4 +394,3 @@ void main(unsigned long bist)
 	}
 #endif
 }
-

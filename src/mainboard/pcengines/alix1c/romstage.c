@@ -187,4 +187,3 @@ void main(unsigned long bist)
 	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }
-

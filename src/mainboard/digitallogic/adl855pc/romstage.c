@@ -63,7 +63,6 @@ void main(unsigned long bist)
 #endif
 
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
-
 	}
 
 #if 0
@@ -78,4 +77,3 @@ void main(unsigned long bist)
 	ram_check(0x80000000, 0x81000000);
 #endif
 }
-

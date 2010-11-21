@@ -33,7 +33,6 @@
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "spd_table.h"
 #include <spd.h>
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
@@ -145,4 +144,3 @@ void main(unsigned long bist)
 	// ram_check(0x00000000, 640 * 1024);
 	// ram_check(1024 * 1024, 2 * 1024 * 1024);
 }
-

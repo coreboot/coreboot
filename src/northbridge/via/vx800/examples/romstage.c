@@ -38,12 +38,9 @@
 #include "lib/delay.c"
 #include "lib/memcpy.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-
 #include "driving_clk_phase_data.c"
-
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
-
 
 static int acpi_is_wakeup_early_via_vx800(void)
 {
@@ -77,7 +74,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-
 static void enable_mainboard_devices(void)
 {
 	device_t dev;
@@ -103,9 +99,7 @@ static void enable_shadow_ram(void)
 	/* 0xe0000-0xeffff - elfload? */
 
 	pci_write_config8(PCI_DEV(0, 0, 3), 0x82, 0xff);
-
 }
-
 
 /*
 this table contains the value needed to be set before begin to init dram.
@@ -182,7 +176,8 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 
 #define gCom1Base   0x3f8
 #define gCom2Base   0x2f8
-void EmbedComInit()
+
+void EmbedComInit(void)
 {
 	u8 ByteVal;
 	u16 ComBase;
@@ -232,8 +227,6 @@ void EmbedComInit()
 	else
 		ByteVal = (ByteVal & 0x3F) | 0xC0;
 	pci_write_config8(PCI_DEV(0, 17, 0), 0x46, ByteVal);
-
-
 
 	//enable embeded com1 and com2 D17F0RxB0[5,4]
 	ByteVal = pci_read_config8(PCI_DEV(0, 17, 0), 0xB0);
@@ -296,8 +289,6 @@ void EmbedComInit()
 	//while(1);
 }
 
-/* cache_as_ram.inc jump to here
-*/
 void main(unsigned long bist)
 {
 	unsigned cpu_reset = 0;
@@ -310,7 +301,6 @@ void main(unsigned long bist)
 	EmbedComInit();
 	//enable_vx800_serial();
 	//uart_init();
-
 
 /*	1.    D15F0
 

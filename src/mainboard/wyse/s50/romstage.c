@@ -31,7 +31,6 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include <spd.h>
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
@@ -84,4 +83,3 @@ void main(unsigned long bist)
 	/*ram_check(0x00000000, 640*1024);*/
 	print_err("ram check done\n");
 }
-

@@ -38,36 +38,26 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
-
 #include <cpu/amd/model_fxx_rev.h>
-
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
 #include "southbridge/broadcom/bcm5785/bcm5785_enable_rom.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-
 #include "superio/serverengines/pilot/pilot_early_serial.c"
 #include "superio/serverengines/pilot/pilot_early_init.c"
 #include "superio/nsc/pc87417/pc87417_early_serial.c"
-
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdk8/debug.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "southbridge/broadcom/bcm5785/bcm5785_early_setup.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PILOT_SP1)
 #define RTC_DEV PNP_DEV(0x4e, PC87417_RTC)
-
-#include "southbridge/broadcom/bcm5785/bcm5785_early_setup.c"
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -93,15 +83,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 #include <spd.h>
-
 #include "cpu/amd/dualcore/dualcore.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 #include "cpu/amd/model_fxx/fidvid.c"
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 #if 0
@@ -248,4 +233,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-

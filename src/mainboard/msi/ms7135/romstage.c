@@ -22,8 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -35,7 +33,6 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627thg/w83627thg_early_serial.c"
-
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -50,6 +47,8 @@
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
+
+#define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -70,10 +69,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 #include "southbridge/nvidia/ck804/ck804_early_setup_car.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 static void sio_setup(void)
@@ -171,4 +168,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-

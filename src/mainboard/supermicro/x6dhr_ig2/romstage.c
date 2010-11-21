@@ -66,6 +66,7 @@ static void main(unsigned long bist)
 			skip_romstage();
 		}
 	}
+
 	/* Setup the console */
 	outb(0x87,0x2e);
 	outb(0x87,0x2e);
@@ -127,11 +128,4 @@ static void main(unsigned long bist)
 #if 0
 	ram_check(0x00000000, 0x02000000);
 #endif
-
-#if 0
-	while(1) {
-		hlt();
-	}
-#endif
 }
-

@@ -45,28 +45,21 @@
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>
 #include <spd.h>
-
 #include "cpu/amd/model_10xxx/apic_timer.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
-
 #include "superio/serverengines/pilot/pilot_early_serial.c"
 #include "superio/serverengines/pilot/pilot_early_init.c"
 #include "superio/nsc/pc87417/pc87417_early_serial.c"
-
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdfam10/debug.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
-
 //#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include "southbridge/broadcom/bcm5785/bcm5785_early_setup.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PILOT_SP1)
 #define RTC_DEV PNP_DEV(0x4e, PC87417_RTC)
-
-#include "southbridge/broadcom/bcm5785/bcm5785_early_setup.c"
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -85,18 +78,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
-
 #include "cpu/amd/quadcore/quadcore.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 static const u8 spd_addr[] = {
@@ -112,7 +100,6 @@ static const u8 spd_addr[] = {
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo =  (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
 
 	u32 bsp_apicid = 0;
 	u32 val;

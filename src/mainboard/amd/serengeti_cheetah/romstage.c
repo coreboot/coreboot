@@ -11,31 +11,24 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include <reset.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-
 #include "cpu/x86/bist.h"
-
 #include "lib/delay.c"
-
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
-#include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
 
 static void memreset_setup(void)
 {
@@ -87,26 +80,19 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-
- /* tyan does not want the default */
-#include "resourcemap.c"
-
+#include "resourcemap.c" /* tyan does not want the default */
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
+#include "cpu/amd/car/post_cache_as_ram.c"
+#include "cpu/amd/model_fxx/init_cpus.c"
+#include "cpu/amd/model_fxx/fidvid.c"
+#include "southbridge/amd/amd8111/amd8111_enable_rom.c"
+#include "northbridge/amd/amdk8/early_ht.c"
 
 #define RC0 ((1<<0)<<8)
 #define RC1 ((1<<1)<<8)
 #define RC2 ((1<<2)<<8)
 #define RC3 ((1<<3)<<8)
-
-#include "cpu/amd/car/post_cache_as_ram.c"
-
-#include "cpu/amd/model_fxx/init_cpus.c"
-
-#include "cpu/amd/model_fxx/fidvid.c"
-
-#include "southbridge/amd/amd8111/amd8111_enable_rom.c"
-#include "northbridge/amd/amdk8/early_ht.c"
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -283,6 +269,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
         post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
-
 }
-

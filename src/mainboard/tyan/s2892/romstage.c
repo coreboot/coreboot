@@ -6,27 +6,21 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-
 #include <console/console.h>
 #include <lib.h>
 #include <spd.h>
-
 #include <cpu/amd/model_fxx_rev.h>
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.h"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
-
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -48,13 +42,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-
- /* tyan does not want the default */
-#include "resourcemap.c"
-
+#include "resourcemap.c" /* tyan does not want the default */
 #include "cpu/amd/dualcore/dualcore.c"
-
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
+
 //set GPIO to input mode
 #define CK804_MB_SETUP \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
@@ -63,13 +54,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
 #include "southbridge/nvidia/ck804/ck804_early_setup_car.c"
-
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
-
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 static void sio_setup(void)

@@ -38,15 +38,11 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include <string.h>
-
 /* This file contains the board-special SI value for raminit.c. */
 #include "driving_clk_phase_data.c"
-
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
-
 #include "wakeup.h"
-
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
@@ -676,8 +672,5 @@ void main(unsigned long bist)
 		);
 #endif
 	}
-
 #endif
-
 }
-

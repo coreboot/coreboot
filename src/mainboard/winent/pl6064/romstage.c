@@ -33,12 +33,11 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
@@ -99,4 +98,3 @@ void main(unsigned long bist)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
-

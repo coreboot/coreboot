@@ -31,7 +31,6 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
@@ -97,4 +96,3 @@ void main(unsigned long bist)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
-

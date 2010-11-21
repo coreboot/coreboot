@@ -69,15 +69,12 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 
 // defines S3_NVRAM_EARLY:
 #include "southbridge/via/k8t890/k8t890_early_car.c"
-
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-
 #include "cpu/amd/dualcore/dualcore.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
@@ -202,4 +199,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }
-

@@ -23,9 +23,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/via/vt8601/raminit.c"
-/*
-  #include "lib/generic_sdram.c"
-*/
 
 static void enable_mainboard_devices(void)
 {
@@ -121,4 +118,3 @@ static void main(unsigned long bist)
 	}
 #endif
 }
-

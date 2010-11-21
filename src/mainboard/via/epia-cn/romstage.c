@@ -105,4 +105,3 @@ void main(unsigned long bist)
 
 	print_spew("Leaving romstage.c:main()\n");
 }
-

@@ -136,8 +136,6 @@ static void mb_gpio_init(void)
 	/* outl(1 << 6, GPIO_IO_BASE + GPIOL_OUTPUT_VALUE); */  /* Led 1 enabled  */
     outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);        /* Led 2 disabled */
 	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);       /* Led 3 disabled */
-
-
 }
 
 void main(unsigned long bist)
@@ -207,4 +205,3 @@ void main(unsigned long bist)
 	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }
-

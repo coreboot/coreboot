@@ -28,24 +28,18 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <usbdebug.h>
-
 #include "superio/winbond/w83627thg/w83627thg.h"
-
 #include <pc80/mc146818rtc.h>
 #include "option_table.h"
-
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-
 #include "superio/winbond/w83627thg/w83627thg_early_serial.c"
-
 void enable_smbus(void);
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
-
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 void setup_ich7_gpios(void)
 {
@@ -454,4 +448,3 @@ void main(unsigned long bist)
 	}
 #endif
 }
-

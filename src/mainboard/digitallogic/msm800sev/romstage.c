@@ -12,12 +12,11 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
-
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -27,6 +26,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define ManualConf 0		/* Do automatic strapped PLL config */
 #define PLLMSRhi 0x00001490 /* manual settings for the PLL */
 #define PLLMSRlo 0x02000030
+
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -97,4 +97,3 @@ void main(unsigned long bist)
 	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }
-

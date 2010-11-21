@@ -130,7 +130,6 @@ static void identify_system(void)
 	val=inb(0x19d);
 	if(val==0x5f)
 		identify_ts9500();
-
 }
 
 static void hard_reset(void)
@@ -172,4 +171,3 @@ static void main(unsigned long bist)
 
 	TS5300_LED_OFF;
 }
-

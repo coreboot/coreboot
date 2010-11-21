@@ -74,4 +74,3 @@ void main(unsigned long bist)
 
 	/* ram_check(0, 640 * 1024); */
 }
-

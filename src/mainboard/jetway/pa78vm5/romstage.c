@@ -39,31 +39,25 @@
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
-
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-
 static int smbus_read_byte(u32 device, u32 address);
-
 #include "superio/fintek/f71863fg/f71863fg_early_serial.c"
+#include <usbdebug.h>
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include <cpu/amd/mtrr.h>
+#include "northbridge/amd/amdfam10/setup_resource_map.c"
+#include "southbridge/amd/rs780/rs780_early_setup.c"
+#include "southbridge/amd/sb700/sb700_early_setup.c"
+#include "northbridge/amd/amdfam10/debug.c"
+
 #if CONFIG_TTYS0_BASE == 0x2f8
 #define SERIAL_DEV PNP_DEV(0x2e, F71863FG_SP2)
 #else
 #define SERIAL_DEV PNP_DEV(0x2e, F71863FG_SP1)
 #endif
-
-#include <usbdebug.h>
-
-#include "cpu/x86/mtrr/earlymtrr.c"
-#include <cpu/amd/mtrr.h>
-#include "northbridge/amd/amdfam10/setup_resource_map.c"
-
-#include "southbridge/amd/rs780/rs780_early_setup.c"
-#include "southbridge/amd/sb700/sb700_early_setup.c"
-#include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -71,32 +65,24 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	int result;
-	result = smbus_read_byte(device, address);
-	return result;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
-
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
-
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include <spd.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	static const u8 spd_addr[] = {RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
 	u32 bsp_apicid = 0;
@@ -255,4 +241,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }
-

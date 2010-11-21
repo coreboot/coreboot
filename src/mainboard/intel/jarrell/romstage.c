@@ -63,6 +63,7 @@ static void main(unsigned long bist)
 			skip_romstage();
 		}
 	}
+
 	/* Setup the console */
 	pc87427_disable_dev(CONSOLE_SERIAL_DEV);
 	pc87427_disable_dev(HIDDEN_SERIAL_DEV);
@@ -128,10 +129,4 @@ static void main(unsigned long bist)
 #endif
 
 #endif
-#if 0
-	while(1) {
-		hlt();
-	}
-#endif
 }
-

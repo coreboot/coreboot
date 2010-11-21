@@ -5,30 +5,42 @@ config SOUTHBRIDGE_NVIDIA_CK804
 	select IOAPIC
 	select TINY_BOOTBLOCK
 
+if SOUTHBRIDGE_NVIDIA_CK804
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string  
-	default "southbridge/nvidia/ck804/bootblock.c" if SOUTHBRIDGE_NVIDIA_CK804
+	default "southbridge/nvidia/ck804/bootblock.c"
 
 config ID_SECTION_OFFSET
 	hex
-	default 0x80 if SOUTHBRIDGE_NVIDIA_CK804
+	default 0x80
 
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_NVIDIA_CK804
+	default 0xfef00000
 
 config EHCI_DEBUG_OFFSET
 	hex
-	default 0x98 if SOUTHBRIDGE_NVIDIA_CK804
+	default 0x98
 
 config CK804_USE_NIC
 	bool
-	default n if SOUTHBRIDGE_NVIDIA_CK804
+	default n
 
 config CK804_USE_ACI
 	bool
-	default n if SOUTHBRIDGE_NVIDIA_CK804
+	default n
+
+config CK804_PCI_E_X
+	int
+	default 4
+
+config CK804B_PCI_E_X
+	int
+	default 4
 
 config CK804_NUM
 	int
-	default 1 if SOUTHBRIDGE_NVIDIA_CK804
+	default 1
+
+endif

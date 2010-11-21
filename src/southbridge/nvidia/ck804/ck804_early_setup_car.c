@@ -54,20 +54,15 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 #define SYSCTRL_REG_POS 0x64
 
 /*
+ * Values for CONFIG_CK804_PCI_E_X and CONFIG_CK804B_PCI_E_X.
+ * Apparently some sort of lane configuration.
+ *
  *	16 1 1 2 :0
  *	 8 8 2 2 :1
  *	 8 8 4   :2
  *	 8 4 4 4 :3
  *	16 4     :4
-*/
-
-#ifndef CK804_PCI_E_X
-#define CK804_PCI_E_X 4
-#endif
-
-#ifndef CK804B_PCI_E_X
-#define CK804B_PCI_E_X 4
-#endif
+ */
 
 #define CK804_CHIP_REV 3
 
@@ -199,7 +194,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
-		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CK804_PCI_E_X << 4) | (1 << 8),
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CONFIG_CK804_PCI_E_X << 4) | (1 << 8),
 
 //SYSCTRL
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 8, ~(0xff), ((0 << 4) | (0 << 2) | (0 << 0)),
@@ -275,7 +270,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 /* This line doesn't exist in the non-CAR version. */
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
-		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CK804B_PCI_E_X << 4) | (1 << 8),
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CONFIG_CK804B_PCI_E_X << 4) | (1 << 8),
 
 #if CONFIG_CK804_USE_NIC
 		RES_PCI_IO, PCI_ADDR(0, 0xa, 0, 0xf8), 0xffffffbf, 0x00000040,

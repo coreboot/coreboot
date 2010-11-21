@@ -128,6 +128,7 @@ static const u8 spd_addr[] = {
 	//second node
 	RC00, DIMM4, DIMM6, 0, 0, DIMM5, DIMM7, 0, 0,
 #endif
+};
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

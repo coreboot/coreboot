@@ -36,9 +36,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 /* The ALIX.2D has no SMBus; the setup is hard-wired. */
-static void cs5536_enable_smbus(void)
-{
-}
+static void cs5536_enable_smbus(void) { }
 
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
@@ -128,13 +126,13 @@ static void mb_gpio_init(void)
 	 *       Ugly workaround: $ wrmsr 0x5140000C 0xf00100006100
 	 *         This resets the GPIO I/O space to 0x6100.
 	 *         This may break other things, though.
-     */
+	 */
 	outl(1 << 6, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
 	outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
 	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
 
 	/* outl(1 << 6, GPIO_IO_BASE + GPIOL_OUTPUT_VALUE); */  /* Led 1 enabled  */
-    outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);        /* Led 2 disabled */
+	outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);        /* Led 2 disabled */
 	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);       /* Led 3 disabled */
 }
 

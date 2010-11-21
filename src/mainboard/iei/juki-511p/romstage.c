@@ -36,12 +36,9 @@
 
 static void main(unsigned long bist)
 {
-	/* Initialize the serial console. */
 	w83977f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-
-	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
 
 	/* Disable Watchdog Timer. */
@@ -49,10 +46,6 @@ static void main(unsigned long bist)
 	inb(0x843);
 
 	cs5530_enable_rom();
-
-	/* Initialize RAM. */
 	sdram_init();
-
-	/* Check RAM. */
 	/* ram_check(0x00000000, 640 * 1024); */
 }

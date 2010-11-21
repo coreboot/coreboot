@@ -277,9 +277,8 @@ void main(unsigned long bist)
 	u32 reg32;
 	int boot_mode = 0;
 
-	if (bist == 0) {
+	if (bist == 0)
 		enable_lapic();
-	}
 
 #if 0
 	/* Force PCIRST# */

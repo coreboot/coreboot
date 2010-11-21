@@ -52,15 +52,11 @@ static int smbus_read_byte(u32 device, u32 address);
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	int result;
-	result = smbus_read_byte(device, address);
-	return result;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
@@ -78,11 +74,9 @@ static int spd_read_byte(u32 device, u32 address)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	static const u8 spd_addr[] = {RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
-	u32 bsp_apicid = 0;
-	u32 val;
+	u32 bsp_apicid = 0, val;
 	msr_t msr;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
@@ -91,7 +85,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
 		sb700_pci_port80();
 	}
 
@@ -108,7 +101,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb700_lpc_init();
 
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
-	it8712f_kill_watchdog(); /* disable watchdog, so it does not reset while still booting */
+	it8712f_kill_watchdog();
 	uart_init();
 
 #if CONFIG_USBDEBUG

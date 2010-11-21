@@ -448,17 +448,6 @@ void main(unsigned long bist)
 	/* This fix does help vx800!, but vx855 doesn't need this. */
 	/* smbus_fixup(&ctrl); */
 
-	if (bist == 0) {
-		/*
-		 * CAR needs MTRR until memory is ok, so disable this
-		 * early_mtrr_init() call.
-		 */
-#if 0
-		 print_debug("doing early_mtrr\n");
-		 early_mtrr_init();
-#endif
-	}
-
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 

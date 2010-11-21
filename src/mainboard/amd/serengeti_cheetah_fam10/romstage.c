@@ -55,8 +55,8 @@
 static void memreset_setup(void)
 {
 	//GPIO on amd8111 to enable MEMRST ????
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN=1
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN=1
+	outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
@@ -77,9 +77,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	int result;
-	result = smbus_read_byte(device, address);
-	return result;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
@@ -190,8 +188,7 @@ static const u8 spd_addr[] = {
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-	u32 bsp_apicid = 0;
-	u32 val;
+	u32 bsp_apicid = 0, val;
 	msr_t msr;
 
 	if (!cpu_init_detectedx && boot_cpu()) {

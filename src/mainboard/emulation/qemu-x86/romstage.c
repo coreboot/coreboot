@@ -13,7 +13,7 @@
 
 static void main(void)
 {
-	/*	init_timer();*/
+	/* init_timer(); */
 	post_code(0x05);
 
 	uart_init();
@@ -22,4 +22,3 @@ static void main(void)
 	//print_pci_devices();
 	//dump_pci_devices();
 }
-

@@ -201,9 +201,8 @@ void main(unsigned long bist)
 	u32 reg32;
 	int boot_mode = 0;
 
-	if (bist == 0) {
+	if (bist == 0)
 		enable_lapic();
-	}
 
 	ich7_enable_lpc();
 	early_superio_config_lpc47m15x();

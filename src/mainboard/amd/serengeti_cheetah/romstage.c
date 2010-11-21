@@ -33,13 +33,11 @@
 static void memreset_setup(void)
 {
 	//GPIO on amd8111 to enable MEMRST ????
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+        outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -54,6 +52,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 
         smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
+
 #if 0
 static inline void change_i2c_mux(unsigned device)
 {
@@ -80,7 +79,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* tyan does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -117,7 +116,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
 	struct sys_info *sysinfo = (void*)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
         int needs_reset;
         unsigned bsp_apicid = 0;
 #if CONFIG_SET_FIDVID
@@ -127,18 +125,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
-		/* Setup the rom access for 4M */
 		amd8111_enable_rom();
         }
 
-        if (bist == 0) {
+        if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
-
-//	post_code(0x32);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
@@ -188,20 +180,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	cpuid1 = cpuid(0x80000007);
-	if( (cpuid1.edx & 0x6) == 0x6 ) {
+	if ((cpuid1.edx & 0x6) == 0x6) {
 
         {
 		/* Read FIDVID_STATUS */
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
                 print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
         }
 
 	enable_fid_change();
-
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-
         init_fidvid_bsp(bsp_apicid);
 
         // show final fid and vid
@@ -209,13 +198,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
                 print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
         }
 
 	} else {
 		print_debug("Changing FIDVID not supported\n");
 	}
-
 #endif
 
 #if 1

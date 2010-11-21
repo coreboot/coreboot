@@ -77,15 +77,13 @@ void main(unsigned long bist)
 	print_pci_devices();
 #endif
 
-	if(!bios_reset_detected()) {
+	if (!bios_reset_detected()) {
         	enable_smbus();
 #if 1
 		dump_spd_registers(&memctrl[0]);
 		dump_smbus_registers();
 #endif
-
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
-
 	}
 
 #if 0
@@ -100,4 +98,3 @@ void main(unsigned long bist)
 	ram_check(0x80000000, 0x81000000);
 #endif
 }
-

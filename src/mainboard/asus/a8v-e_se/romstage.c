@@ -52,17 +52,12 @@ unsigned int get_sbdn(unsigned bus);
 #define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED)
 #define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
-}
-
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
 }
 
 #include <reset.h>

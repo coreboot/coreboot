@@ -49,9 +49,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -59,7 +57,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 #define SMBUS_SWITCH2 0x72
         unsigned device=(ctrl->channel0[0])>>8;
         smbus_send_byte(SMBUS_SWITCH1, device);
-       smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
+        smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 }
 
 #if 0
@@ -68,7 +66,7 @@ static inline void change_i2c_mux(unsigned device)
 #define SMBUS_SWITCH1 0x70
 #define SMBUS_SWITHC2 0x72
         smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
-       smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
+        smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 }
 #endif
 
@@ -82,7 +80,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* msi does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 
@@ -138,12 +136,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		sio_setup();
-
-		/* Setup the mcp55 */
 		mcp55_enable_rom();
         }
 
@@ -177,7 +171,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	needs_reset |= mcp55_early_setup_x();
-
         if (needs_reset) {
         	print_info("ht reset -\n");
                 soft_reset();

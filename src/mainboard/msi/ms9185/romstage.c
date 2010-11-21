@@ -52,9 +52,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PC87417_SP1)
 #define RTC_DEV PNP_DEV(0x2e, PC87417_RTC)
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -85,7 +83,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* msi does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -116,24 +114,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		bcm5785_enable_rom();
-
 		bcm5785_enable_lpc();
-
 		//enable RTC
 		pc87417_enable_dev(RTC_DEV);
         }
 
-        if (bist == 0) {
+        if (bist == 0)
                bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
 
-//     post_code(0x32);
-
-       pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+        pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 
@@ -142,11 +133,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
        /* Halt if there was a built in self test failure */
        report_bist_failure(bist);
 
-	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
+       printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
        setup_ms9185_resource_map();
 #if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
+       dump_pci_device(PCI_DEV(0, 0x18, 0));
        dump_pci_device(PCI_DEV(0, 0x19, 0));
 #endif
 
@@ -166,7 +157,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
        /* it will set up chains and store link pair for optimization later */
-        ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
+       ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
        bcm5785_early_setup();
 
@@ -177,26 +168,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 #if CONFIG_SET_FIDVID
-
         {
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
                 print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
         }
-
-       enable_fid_change();
-
-       enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-
+        enable_fid_change();
+        enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
         init_fidvid_bsp(bsp_apicid);
-
         // show final fid and vid
         {
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
                 print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
         }
 #endif
 

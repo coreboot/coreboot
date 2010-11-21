@@ -36,9 +36,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 /* The ALIX1.C has no SMBus; the setup is hard-wired. */
-static void cs5536_enable_smbus(void)
-{
-}
+static void cs5536_enable_smbus(void) { }
 
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
@@ -114,11 +112,6 @@ static u8 spd_read_byte(u8 device, u8 address)
 #include "cpu/amd/model_lx/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"
 
-/** Early mainboard specific GPIO setup. */
-static void mb_gpio_init(void)
-{
-}
-
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
@@ -137,7 +130,6 @@ void main(unsigned long bist)
 	 */
 	cs5536_disable_internal_uart();
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	mb_gpio_init();
 	uart_init();
 	console_init();
 

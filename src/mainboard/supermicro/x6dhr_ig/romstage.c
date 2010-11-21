@@ -62,9 +62,8 @@ static void main(unsigned long bist)
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();
-		if (memory_initialized()) {
+		if (memory_initialized())
 			skip_romstage();
-		}
 	}
 
 	/* Setup the console */
@@ -82,16 +81,13 @@ static void main(unsigned long bist)
 	/* config LPC decode for flash memory access */
         device_t dev;
         dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
-        if (dev == PCI_DEV_INVALID) {
+        if (dev == PCI_DEV_INVALID)
                 die("Missing ich5?");
-        }
         pci_write_config32(dev, 0xe8, 0x00000000);
         pci_write_config8(dev, 0xf0, 0x00);
 
 #if 0
 	display_cpuid_update_microcode();
-#endif
-#if 0
 	print_pci_devices();
 #endif
 #if 1
@@ -100,9 +96,8 @@ static void main(unsigned long bist)
 #if 0
 //	dump_spd_registers(&cpu[0]);
 	int i;
-	for(i = 0; i < 1; i++) {
+	for(i = 0; i < 1; i++)
 		dump_spd_registers();
-	}
 #endif
 	disable_watchdogs();
 //	dump_ipmi_registers();

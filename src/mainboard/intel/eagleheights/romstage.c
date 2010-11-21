@@ -138,9 +138,8 @@ void main(unsigned long bist)
 		}
 	};
 
-	if (bist == 0) {
+	if (bist == 0)
 		enable_lapic();
-	}
 
 	/* Setup the console */
 	i3100_enable_superio();

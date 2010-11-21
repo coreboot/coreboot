@@ -42,10 +42,7 @@ struct mem_controller {
 	int i;
 };
 
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-//	return smbus_read_byte(device, address);
-}
+static int spd_read_byte(unsigned device, unsigned address) { }
 
 static inline void dumpmem(void){
   int i, j;

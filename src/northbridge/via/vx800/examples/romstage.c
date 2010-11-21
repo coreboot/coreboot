@@ -81,9 +81,7 @@ static void enable_mainboard_devices(void)
 
 	print_debug("In enable_mainboard_devices \n");
 
-	/*
-	   Enable P2P Bridge Header for External PCI BUS.
-	 */
+	/* Enable P2P bridge Header for external PCI bus. */
 	dev = pci_locate_device(PCI_ID(0x1106, 0xa353), 0);
 	pci_write_config8(dev, 0x4f, 0x41);
 }
@@ -91,6 +89,7 @@ static void enable_mainboard_devices(void)
 static void enable_shadow_ram(void)
 {
 	uint8_t shadowreg;
+
 	pci_write_config8(PCI_DEV(0, 0, 3), 0x80, 0xff);
 	/* 0xf0000-0xfffff - ACPI tables */
 	shadowreg = pci_read_config8(PCI_DEV(0, 0, 3), 0x83);

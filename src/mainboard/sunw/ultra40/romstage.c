@@ -28,9 +28,7 @@
 #define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
 #define SUPERIO_GPIO_IO_BASE 0x400
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 #ifdef ENABLE_ONBOARD_SCSI
 static void sio_gpio_setup(void)
@@ -44,10 +42,7 @@ static void sio_gpio_setup(void)
 }
 #endif
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
+static inline void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -57,7 +52,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* tyan does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 
@@ -101,32 +96,27 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-			// Node 0
-			DIMM0, DIMM2, 0, 0,
-			DIMM1, DIMM3, 0, 0,
-			// Node 1
-			DIMM4, DIMM6, 0, 0,
-			DIMM5, DIMM7, 0, 0,
+		// Node 0
+		DIMM0, DIMM2, 0, 0,
+		DIMM1, DIMM3, 0, 0,
+		// Node 1
+		DIMM4, DIMM6, 0, 0,
+		DIMM5, DIMM7, 0, 0,
 	};
 
         int needs_reset;
-        unsigned bsp_apicid = 0;
-
+        unsigned bsp_apicid = 0, nodes;
         struct mem_controller ctrl[8];
-        unsigned nodes;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		sio_setup();
         }
 
-        if (bist == 0) {
+        if (bist == 0)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
-        }
 
 	lpc47b397_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
@@ -147,9 +137,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
         needs_reset |= ht_setup_chains_x();
-
         needs_reset |= ck804_early_setup_x();
-
        	if (needs_reset) {
                	print_info("ht reset -\n");
                	soft_reset();

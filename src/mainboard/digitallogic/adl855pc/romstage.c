@@ -55,13 +55,12 @@ void main(unsigned long bist)
 	print_pci_devices();
 #endif
 
-	if(!bios_reset_detected()) {
+	if (!bios_reset_detected()) {
         	enable_smbus();
 #if 0
 		dump_spd_registers(&memctrl[0]);
 		dump_smbus_registers();
 #endif
-
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 	}
 

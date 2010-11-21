@@ -25,9 +25,6 @@
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
-/* UART address and device number */
-#define SERIAL_DEV PNP_DEV(0x2e, F71859_SP1)
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -55,15 +52,13 @@ static int smbus_read_byte(u32 device, u32 address);
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
+#define SERIAL_DEV PNP_DEV(0x2e, F71859_SP1)
+
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	int result;
-	result = smbus_read_byte(device, address);
-	return result;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
@@ -81,11 +76,9 @@ static int spd_read_byte(u32 device, u32 address)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	static const u8 spd_addr[] = {RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
-	u32 bsp_apicid = 0;
-	u32 val;
+	u32 bsp_apicid = 0, val;
 	msr_t msr;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
@@ -94,7 +87,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
 		sb700_pci_port80();
 	}
 

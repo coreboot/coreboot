@@ -56,11 +56,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/model_lx/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"
 
-static void mb_gpio_init(void)
-{
-	/* Early mainboard specific GPIO setup. */
-}
-
 void main(unsigned long bist)
 {
 	post_code(0x01);
@@ -79,7 +74,6 @@ void main(unsigned long bist)
 	 */
 	w83627hf_set_clksel_48(SERIAL_DEV);
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	mb_gpio_init();
 	uart_init();
 	console_init();
 

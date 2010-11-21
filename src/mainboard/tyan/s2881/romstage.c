@@ -28,28 +28,23 @@
 
 static void memreset_setup(void)
 {
-   if (is_cpu_pre_c0()) {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-   }
-   else {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-   }
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+   if (is_cpu_pre_c0())
+        outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+   else
+        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+   outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
    if (is_cpu_pre_c0()) {
         udelay(800);
-        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
         udelay(90);
    }
 }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -69,33 +64,27 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-			DIMM0, DIMM2, 0, 0,
-			DIMM1, DIMM3, 0, 0,
+		DIMM0, DIMM2, 0, 0,
+		DIMM1, DIMM3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-			DIMM4, DIMM6, 0, 0,
-			DIMM5, DIMM7, 0, 0,
+		DIMM4, DIMM6, 0, 0,
+		DIMM5, DIMM7, 0, 0,
 #endif
 	};
 
         int needs_reset;
-        unsigned bsp_apicid = 0;
-
+        unsigned bsp_apicid = 0, nodes;
         struct mem_controller ctrl[8];
-        unsigned nodes;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
-		/* Setup the amd8111 */
 		amd8111_enable_rom();
         }
 
-        if (bist == 0) {
+        if (bist == 0)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
-        }
 
 //	post_code(0x32);
 
@@ -131,8 +120,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 #if 0
 	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
 	dump_smbus_registers();
 #endif
 
@@ -151,4 +138,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-

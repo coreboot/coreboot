@@ -77,6 +77,7 @@ void main(unsigned long bist)
 		{.channel0 = {DIMM0, DIMM1}}
 	};
 	unsigned char temp;
+
 	SystemPreInit();
 	msr_init();
 

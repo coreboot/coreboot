@@ -50,15 +50,8 @@
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-	/* Nothing to do. */
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* Nothing to do. */
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -108,7 +101,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-
 		sio_setup();
 	}
 
@@ -138,7 +130,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	needs_reset |= ht_setup_chains_x();
 	needs_reset |= ck804_early_setup_x();
-
 	if (needs_reset) {
 		print_info("ht reset -\n");
 		soft_reset();

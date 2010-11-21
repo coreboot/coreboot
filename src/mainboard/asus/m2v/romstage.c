@@ -56,17 +56,12 @@ unsigned int get_sbdn(unsigned bus);
 
 #define IT8712F_GPIO_BASE		0x0a20
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
-}
-
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
 }
 
 // defines S3_NVRAM_EARLY:

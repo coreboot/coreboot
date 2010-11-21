@@ -20,7 +20,7 @@
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-		return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 
 #define ManualConf 0		/* Do automatic strapped PLL config */
@@ -34,11 +34,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"
-
-static void mb_gpio_init(void)
-{
-	/* Early mainboard specific GPIO setup */
-}
 
 void main(unsigned long bist)
 {
@@ -59,7 +54,6 @@ void main(unsigned long bist)
 	 */
 	cs5536_disable_internal_uart();
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	mb_gpio_init();
 	uart_init();
 	console_init();
 

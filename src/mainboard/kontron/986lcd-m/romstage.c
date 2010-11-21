@@ -328,9 +328,8 @@ void main(unsigned long bist)
 	u32 reg32;
 	int boot_mode = 0;
 
-	if (bist == 0) {
+	if (bist == 0)
 		enable_lapic();
-	}
 
 	/* Force PCIRST# */
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);

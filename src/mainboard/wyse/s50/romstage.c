@@ -81,5 +81,4 @@ void main(unsigned long bist)
 
 	/* Check all of memory */
 	/*ram_check(0x00000000, 640*1024);*/
-	print_err("ram check done\n");
 }

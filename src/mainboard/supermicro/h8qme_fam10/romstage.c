@@ -117,6 +117,7 @@ static const u8 spd_addr[] = {
 #define GPIO1_DEV PNP_DEV(0x2e, W83627HF_GAME_MIDI_GPIO1)
 #define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)
 #define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
+
 static void write_GPIO(void)
 {
 	pnp_enter_ext_func_mode(GPIO1_DEV);
@@ -156,31 +157,24 @@ static void write_GPIO(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-  struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
-	u32 bsp_apicid = 0;
-	u32 val;
-	u32 wants_reset;
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	u32 bsp_apicid = 0, val, wants_reset;
 	msr_t msr;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
 		sio_setup();
-
-		/* Setup the mcp55 */
 		mcp55_enable_rom();
         }
 
   post_code(0x30);
 
-        if (bist == 0) {
+        if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
 
   post_code(0x32);
 

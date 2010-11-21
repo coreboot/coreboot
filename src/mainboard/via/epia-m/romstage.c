@@ -30,7 +30,7 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
-				PCI_DEVICE_ID_VIA_8235), 0);
+				       PCI_DEVICE_ID_VIA_8235), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
@@ -72,9 +72,7 @@ static void main(unsigned long bist)
 {
 	device_t dev;
 
-	/*
-	 * Enable VGA; 32MB buffer.
-	 */
+	/* Enable VGA; 32MB buffer. */
 	pci_write_config8(0, 0xe1, 0xdd);
 
 	/*
@@ -83,9 +81,8 @@ static void main(unsigned long bist)
 	 */
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_6305), 0);
-	if (dev != PCI_DEV_INVALID) {
+	if (dev != PCI_DEV_INVALID)
 		pci_write_config8(dev, 0x15, 0x1c);
-	}
 
 	enable_vt8235_serial();
 	uart_init();
@@ -122,12 +119,8 @@ static void main(unsigned long bist)
 	}
 #endif
 
-	if (bist == 0) {
-		print_debug(" Doing MTRR init.\n");
+	if (bist == 0)
 		early_mtrr_init();
-	}
 
 	//dump_pci_devices();
-
-	print_spew("Leaving romstage.c:main()\n");
 }

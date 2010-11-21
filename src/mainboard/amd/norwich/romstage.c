@@ -51,11 +51,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/model_lx/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"
 
-static void mb_gpio_init(void)
-{
-	/* Early mainboard specific GPIO setup. */
-}
-
 void main(unsigned long bist)
 {
 	post_code(0x01);
@@ -77,7 +72,6 @@ void main(unsigned long bist)
 	 */
 	/* If debug. real setup done in chipset init via devicetree.cb. */
 	cs5536_setup_onchipuart(1);
-	mb_gpio_init();
 	uart_init();
 	console_init();
 

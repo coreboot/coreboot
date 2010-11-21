@@ -47,17 +47,9 @@
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdk8/debug.c" /* After sb700_early_setup.c! */
 
-/* CAN'T BE REMOVED! crt0.S will use it. I don't know WHY!*/
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-/* called in raminit_f.c */
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
-
-/*called in raminit_f.c */
 static inline int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
@@ -88,14 +80,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-
 		/* sb700_lpc_port80(); */
 		sb700_pci_port80();
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-	}
 
 	enable_rs780_dev8();
 	sb700_lpc_init();
@@ -134,8 +124,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	cpuid1 = cpuid(0x80000007);
-	if( (cpuid1.edx & 0x6) == 0x6 ) {
-
+	if ((cpuid1.edx & 0x6) == 0x6) {
 		/* Read FIDVID_STATUS */
 		msr=rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
@@ -147,7 +136,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* show final fid and vid */
 		msr=rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
-
 	} else {
 		printk(BIOS_DEBUG, "Changing FIDVID not supported\n");
 	}

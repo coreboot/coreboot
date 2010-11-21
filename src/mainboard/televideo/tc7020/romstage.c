@@ -35,20 +35,11 @@
 
 static void main(unsigned long bist)
 {
-	/* Initialize the serial console. */
 	pc97317_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-
-	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
-
 	cs5530_enable_rom();
-
-	/* Initialize RAM. */
 	sdram_init();
-
-	/* Check whether RAM works. */
 	/* ram_check(0, 640 * 1024); */
 }
-

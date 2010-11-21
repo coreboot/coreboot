@@ -28,28 +28,23 @@
 
 static void memreset_setup(void)
 {
-   if (is_cpu_pre_c0()) {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-   }
-   else {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-   }
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+   if (is_cpu_pre_c0())
+        outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+   else
+        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+   outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
    if (is_cpu_pre_c0()) {
         udelay(800);
-        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
         udelay(90);
    }
 }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -59,7 +54,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* tyan does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -78,26 +73,18 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-        unsigned bsp_apicid = 0;
-
+        unsigned bsp_apicid = 0, nodes;
         struct mem_controller ctrl[8];
-        unsigned nodes;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
-		/* Setup the amd8111 */
 		amd8111_enable_rom();
         }
 
-        if (bist == 0) {
+        if (bist == 0)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
-        }
-
-//	post_code(0x32);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();

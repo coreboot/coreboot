@@ -27,13 +27,13 @@
 static void memreset_setup(void)
 {
    if (is_cpu_pre_c0()) {
-      /* Set the memreset low */
-      outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
-      /* Ensure the BIOS has control of the memory lines */
-      outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+      /* Set the memreset low. */
+      outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
+      /* Ensure the BIOS has control of the memory lines. */
+      outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
    } else {
-      /* Ensure the CPU has controll of the memory lines */
-      outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
+      /* Ensure the CPU has control of the memory lines. */
+      outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
    }
 }
 
@@ -41,8 +41,8 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
    if (is_cpu_pre_c0()) {
       udelay(800);
-      /* Set memreset_high */
-      outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
+      /* Set memreset high. */
+      outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
       udelay(90);
    }
 }
@@ -97,37 +97,29 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-			//first node
-			RC0|DIMM0, RC0|DIMM2, 0, 0,
-			RC0|DIMM1, RC0|DIMM3, 0, 0,
+		//first node
+		RC0|DIMM0, RC0|DIMM2, 0, 0,
+		RC0|DIMM1, RC0|DIMM3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-			//second node
-			RC1|DIMM0, RC1|DIMM2, 0, 0,
-			RC1|DIMM1, RC1|DIMM3, 0, 0,
+		//second node
+		RC1|DIMM0, RC1|DIMM2, 0, 0,
+		RC1|DIMM1, RC1|DIMM3, 0, 0,
 #endif
 	};
 
         int needs_reset;
-        unsigned bsp_apicid = 0;
-
+        unsigned bsp_apicid = 0, nodes;
         struct mem_controller ctrl[8];
-        unsigned nodes;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
-		/* Setup the amd8111 */
 		amd8111_enable_rom();
         }
 
-        if (bist == 0) {
+        if (bist == 0)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
-        }
-
-//	post_code(0x32);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();

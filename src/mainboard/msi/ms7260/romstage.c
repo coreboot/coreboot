@@ -117,7 +117,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
 		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;
 
@@ -125,10 +124,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0. */
 		/* Allow the HT devices to be found. */
 		enumerate_ht_chain();
-
 		sio_setup();
-
-		/* Setup the MCP55. */
 		mcp55_enable_rom();
 	}
 
@@ -186,11 +182,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		print_debug_hex32(msr.lo);
 		print_debug("\n");
 	}
-
 	enable_fid_change();
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
 	init_fidvid_bsp(bsp_apicid);
-
 	{
 		msr_t msr = rdmsr(0xc0010042);
 		print_debug("end   msr fid, vid ");

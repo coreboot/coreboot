@@ -48,17 +48,9 @@
 #include "southbridge/amd/rs690/rs690_early_setup.c"
 #include "southbridge/amd/sb600/sb600_early_setup.c"
 
-/* CAN'T BE REMOVED! crt0.S will use it. I don't know WHY!*/
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
-/* called in raminit_f.c */
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
-
-/*called in raminit_f.c */
 static inline int spd_read_byte(u32 device, u32 address)
 {
 	return smbus_read_byte(device, address);
@@ -76,9 +68,10 @@ static inline int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
+#define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	device_t dev;
 	static const u16 spd_addr[] = { DIMM0, 0, 0, 0, DIMM1, 0, 0, 0, };
 	int needs_reset = 0;
 	u32 bsp_apicid = 0;
@@ -90,20 +83,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-
 		/* sb600_lpc_port80(); */
 		sb600_pci_port80();
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-	}
 
 	enable_rs690_dev8();
 	sb600_lpc_init();
 
-	dev=PNP_DEV(0x2e, W83627DHG_SP1);
-	w83627dhg_enable_serial(dev, CONFIG_TTYS0_BASE);
+	w83627dhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 
 #if CONFIG_USBDEBUG
@@ -137,8 +127,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	cpuid1 = cpuid(0x80000007);
-	if( (cpuid1.edx & 0x6) == 0x6 ) {
-
+	if ((cpuid1.edx & 0x6) == 0x6) {
 		/* Read FIDVID_STATUS */
 		msr=rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
@@ -150,7 +139,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* show final fid and vid */
 		msr=rdmsr(0xc0010042);
 		printk(BIOS_DEBUG, "end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
-
 	} else {
 		printk(BIOS_DEBUG, "Changing FIDVID not supported\n");
 		printk(BIOS_SPEW, "... because cpuid returned %08x\n", cpuid1.edx);

@@ -53,14 +53,8 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -112,35 +106,29 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-			// Node 0
-			DIMM0, DIMM2, 0, 0,
-			DIMM1, DIMM3, 0, 0,
-			// Node 1
-			DIMM4, DIMM6, 0, 0,
-			DIMM5, DIMM7, 0, 0,
+		// Node 0
+		DIMM0, DIMM2, 0, 0,
+		DIMM1, DIMM3, 0, 0,
+		// Node 1
+		DIMM4, DIMM6, 0, 0,
+		DIMM5, DIMM7, 0, 0,
 	};
 
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
 		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		sio_setup();
-
-		/* Setup the mcp55 */
 		mcp55_enable_rom();
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-	}
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
 	pnp_write_config(SERIAL_DEV, 0x24, 0);
@@ -183,28 +171,22 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
 #if CONFIG_SET_FIDVID
-
 	{
 		msr_t msr;
 		msr=rdmsr(0xc0010042);
 		print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
 	}
-
 	enable_fid_change();
-
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-
 	init_fidvid_bsp(bsp_apicid);
-
 	// show final fid and vid
 	{
 		msr_t msr;
 		msr=rdmsr(0xc0010042);
 		print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-
 	}
 #endif
+
 	init_timer(); /* Need to use TMICT to synconize FID/VID. */
 
 	needs_reset |= optimize_link_coherent_ht();

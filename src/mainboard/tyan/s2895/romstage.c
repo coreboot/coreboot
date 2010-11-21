@@ -19,36 +19,29 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/smsc/lpc47b397/lpc47b397_early_serial.c"
 #include "superio/smsc/lpc47b397/lpc47b397_early_gpio.c"
-#define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
-#define SUPERIO_GPIO_IO_BASE 0x400
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include <cpu/amd/mtrr.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B397_SP1)
+#define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
+#define SUPERIO_GPIO_IO_BASE 0x400
 
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset_setup(void) { }
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static void sio_gpio_setup(void)
 {
 	unsigned value;
 
 	/*Enable onboard scsi*/
-	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L
+	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c,
+	  (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L
 	value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
 	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -59,7 +52,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* tyan does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 
@@ -113,23 +106,18 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
 	int needs_reset;
-	unsigned bsp_apicid = 0;
-
+	unsigned bsp_apicid = 0, nodes;
 	struct mem_controller ctrl[8];
-	unsigned nodes;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		sio_setup();
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
-	}
 
 	lpc47b397_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
@@ -151,9 +139,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	wait_all_other_cores_started(bsp_apicid);
 
 	needs_reset |= ht_setup_chains_x();
-
 	needs_reset |= ck804_early_setup_x();
-
 	if (needs_reset) {
 		printk(BIOS_INFO, "ht reset -\n");
 		soft_reset();
@@ -172,4 +158,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-

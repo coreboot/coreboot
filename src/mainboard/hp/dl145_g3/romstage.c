@@ -59,9 +59,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PILOT_SP1)
 #define RTC_DEV PNP_DEV(0x4e, PC87417_RTC)
 
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -133,7 +131,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		// first node
 		DIMM0, DIMM2, 0, 0,
 		DIMM1, DIMM3, 0, 0,
-
 		// second node
 		DIMM4, DIMM6, 0, 0,
 		DIMM5, DIMM7, 0, 0,
@@ -141,24 +138,20 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
 		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
 	int needs_reset;
 	unsigned bsp_apicid = 0;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
 		bcm5785_enable_rom();
 		bcm5785_enable_lpc();
-		//enable RTC
-		pc87417_enable_dev(RTC_DEV);
+		pc87417_enable_dev(RTC_DEV); /* Enable RTC */
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-	}
 
 	pilot_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

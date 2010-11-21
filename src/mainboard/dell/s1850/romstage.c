@@ -67,6 +67,7 @@ static inline void  waitobf(void)
 	while((inb(ipmicsr) &  (1<<OBF)) == 0)
 		;
 }
+
 /* quite possibly the stupidest interface ever designed. */
 static inline void  first_cmd_byte(unsigned char byte)
 {
@@ -154,12 +155,6 @@ static void main(unsigned long bist)
 	static const struct mem_controller mch[] = {
 		{
 			.node_id = 0,
-			/*
-			.f0 = PCI_DEV(0, 0x00, 0),
-			.f1 = PCI_DEV(0, 0x00, 1),
-			.f2 = PCI_DEV(0, 0x00, 2),
-			.f3 = PCI_DEV(0, 0x00, 3),
-			*/
 			/* the wiring on this part is really messed up */
 			/* this is my best guess so far */
 			.channel0 = {DIMM0, DIMM1, DIMM2, DIMM3, },
@@ -260,9 +255,8 @@ static void main(unsigned long bist)
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();
-		if (memory_initialized()) {
+		if (memory_initialized())
 			skip_romstage();
-		}
 	}
 	/* Setup the console */
 	mainboard_set_ich5();
@@ -311,9 +305,8 @@ static void main(unsigned long bist)
 #if 0
 //	dump_spd_registers(&cpu[0]);
 	int i;
-	for(i = 0; i < 1; i++) {
+	for(i = 0; i < 1; i++)
 		dump_spd_registers();
-	}
 #endif
 #if 1
 	show_dram_slots();

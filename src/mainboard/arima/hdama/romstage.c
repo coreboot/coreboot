@@ -32,14 +32,13 @@
 static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
-		/* Set the memreset low */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-		/* Ensure the BIOS has control of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	}
-	else {
-		/* Ensure the CPU has controll of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		/* Set the memreset low. */
+		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		/* Ensure the BIOS has control of the memory lines. */
+		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	} else {
+		/* Ensure the CPU has control of the memory lines. */
+		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
 	}
 }
 
@@ -47,16 +46,13 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 	if (is_cpu_pre_c0()) {
 		udelay(800);
-		/* Set memreset_high */
-		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		/* Set memreset high. */
+		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
 		udelay(90);
 	}
 }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -85,22 +81,18 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
 	int needs_reset;
-	unsigned bsp_apicid = 0;
+	unsigned bsp_apicid = 0, nodes;
 	struct mem_controller ctrl[8];
-	unsigned nodes;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		amd8111_enable_rom();
 	}
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
-	}
 
 	pc87360_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();

@@ -46,9 +46,8 @@ void main(unsigned long bist)
                 },
 	};
 
-	if (bist == 0) {
+	if (bist == 0)
 		enable_lapic();
-	}
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
@@ -57,15 +56,12 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	if(bios_reset_detected()) {
+	if (bios_reset_detected())
 		hard_reset();
-	}
 
 	enable_smbus();
 #if 0
 	dump_spd_registers(&memctrl[0]);
-#endif
-#if 0
 	dump_smbus_registers();
 #endif
 
@@ -79,4 +75,3 @@ void main(unsigned long bist)
         dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
 }
-

@@ -63,14 +63,9 @@ void main(unsigned long bist)
 	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-
 	enable_smbus();
 	smbus_fixup(&ctrl);
-
-	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
-
 	ddr_ram_setup(&ctrl);
-
 	/* ram_check(0, 640 * 1024); */
 }

@@ -31,9 +31,8 @@ static void enable_mainboard_devices(void)
 
 	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
 
-	if (dev == PCI_DEV_INVALID) {
+	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
-	}
 
 	pci_write_config8(dev, 0x50, 7);
 	pci_write_config8(dev, 0x51, 0xff);
@@ -74,9 +73,9 @@ static void enable_shadow_ram(void)
 
 static void main(unsigned long bist)
 {
-	if (bist == 0) {
+	if (bist == 0)
 		early_mtrr_init();
-	}
+
 	enable_vt8231_serial();
 	uart_init();
 	console_init();

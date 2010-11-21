@@ -100,30 +100,24 @@ static const u8 spd_addr[] = {
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo =  (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
-	u32 bsp_apicid = 0;
-	u32 val;
+	u32 bsp_apicid = 0, val;
 	msr_t msr;
  
 	if (!cpu_init_detectedx && boot_cpu()) {
-	    /* Nothing special needs to be done to find bus 0 */
+		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
-		/* Setup the rom access for 4M */
 		bcm5785_enable_rom();
 		bcm5785_enable_lpc();
-		//enable RTC
-		pc87417_enable_dev(RTC_DEV);
+		pc87417_enable_dev(RTC_DEV); /* Enable RTC */
 	}
 
 	post_code(0x30);
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-	}
 
 	pilot_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

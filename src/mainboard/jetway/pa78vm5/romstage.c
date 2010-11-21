@@ -59,9 +59,7 @@ static int smbus_read_byte(u32 device, u32 address);
 #define SERIAL_DEV PNP_DEV(0x2e, F71863FG_SP1)
 #endif
 
-static void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
+static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static int spd_read_byte(u32 device, u32 address)
 {
@@ -85,8 +83,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	static const u8 spd_addr[] = {RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
-	u32 bsp_apicid = 0;
-	u32 val;
+	u32 bsp_apicid = 0, val;
 	msr_t msr;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
@@ -95,7 +92,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
 		sb700_pci_port80();
 	}
 
@@ -175,7 +171,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs780_early_setup();
 	sb700_early_setup();
 
- #if CONFIG_SET_FIDVID
+#if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 
@@ -196,7 +192,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
- #endif
+#endif
 
 	rs780_htinit();
 

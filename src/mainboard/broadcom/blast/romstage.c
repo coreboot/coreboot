@@ -26,13 +26,8 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PC87417_SP1)
 #define RTC_DEV PNP_DEV(0x2e, PC87417_RTC)
 
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+static void memreset_setup(void) { }
+static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -60,7 +55,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c" /* tyan does not want the default */
+#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -80,36 +75,23 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-	unsigned bsp_apicid = 0;
-
+	unsigned bsp_apicid = 0, nodes;
         struct mem_controller ctrl[8];
-        unsigned nodes;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
-
 		enumerate_ht_chain();
-
 		bcm5785_enable_rom();
-
 		bcm5785_enable_lpc();
-
-		//enable RTC
-		pc87417_enable_dev(RTC_DEV);
+		pc87417_enable_dev(RTC_DEV); /* Enable RTC */
         }
 
-        if (bist == 0) {
+        if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
-        }
-//	post_code(0x32);
 
 	pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-//	post_code(0x33);
-
         uart_init();
-//	post_code(0x34);
-
         console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -166,9 +148,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if 0
         print_pci_devices();
-#endif
-
-#if 0
 	dump_pci_devices();
 #endif
 

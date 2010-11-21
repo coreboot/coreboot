@@ -68,9 +68,8 @@ static void main(unsigned long bist)
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();
-		if (memory_initialized()) {
+		if (memory_initialized())
 			skip_romstage();
-		}
 	}
 
 	/* Set up the console */

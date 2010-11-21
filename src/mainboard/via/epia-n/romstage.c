@@ -62,7 +62,8 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 	u8 reg;
 
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
 
@@ -110,13 +111,9 @@ static void main(unsigned long bist)
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
 	w83697hf_set_clksel_48(SERIAL_DEV);
-
 	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
 	uart_init();
 	console_init();
-
-	print_spew("In romstage.c:main()\n");
 
 	enable_smbus();
 	smbus_fixup(&ctrl);
@@ -130,18 +127,13 @@ static void main(unsigned long bist)
 	print_debug("Enable F-ROM Shadow RAM\n");
 	enable_shadow_ram();
 
-	/* setup cpu */
 	print_debug("Setup CPU Interface\n");
 	c3_cpu_setup(ctrl.d0f2);
 
 	ddr_ram_setup();
 
-	if (bist == 0) {
-		print_debug("doing early_mtrr\n");
+	if (bist == 0)
 		early_mtrr_init();
-	}
 
 	//ram_check(0, 640 * 1024);
-
-	print_spew("Leaving romstage.c:main()\n");
 }

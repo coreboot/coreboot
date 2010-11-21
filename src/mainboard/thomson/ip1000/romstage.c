@@ -98,9 +98,8 @@ static void mb_early_setup(void)
 void main(unsigned long bist)
 {
 	if (bist == 0) {
-		if (memory_initialized()) {
+		if (memory_initialized())
 			hard_reset();
-		}
 	}
 
 	/* Set southbridge and superio gpios */

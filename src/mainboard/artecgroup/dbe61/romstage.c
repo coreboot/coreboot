@@ -66,11 +66,6 @@ static int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_lx/syspreinit.c"
 #include "cpu/amd/model_lx/msrinit.c"
 
-static void mb_gpio_init(void)
-{
-	/* Early mainboard specific GPIO setup */
-}
-
 void main(unsigned long bist)
 {
 	post_code(0x01);
@@ -96,7 +91,6 @@ void main(unsigned long bist)
 	msr.lo |= 0x7 << 20;
 	wrmsr(MDD_LEG_IO, msr);
 
-	mb_gpio_init();
 	uart_init();
 	console_init();
 
@@ -109,7 +103,7 @@ void main(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 
-	/* Dump memory configuratation */
+	/* Dump memory configuration. */
 #if 0
 	msr = rdmsr(MC_CF07_DATA);
 	print_debug("MC_CF07_DATA: ");

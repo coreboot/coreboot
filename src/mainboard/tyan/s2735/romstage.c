@@ -9,6 +9,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <lib.h>
+#include <spd.h>
 
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
@@ -44,8 +45,8 @@ void main(unsigned long bist)
                 {
                         .d0 = PCI_DEV(0, 0, 0),
                         .d0f1 = PCI_DEV(0, 0, 1),
-                        .channel0 = { (0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, 0 },
-                        .channel1 = { (0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, 0 },
+                        .channel0 = { DIMM0, DIMM1, DIMM2, 0 },
+                        .channel1 = { DIMM4, DIMM5, DIMM6, 0 },
                 },
 	};
 

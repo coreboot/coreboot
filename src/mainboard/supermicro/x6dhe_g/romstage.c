@@ -21,6 +21,7 @@
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
 #define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define HIDDEN_SERIAL_DEV  PNP_DEV(0x2e, W83627HF_SP2)
@@ -58,8 +59,8 @@ static void main(unsigned long bist)
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
 			*/
-			.channel0 = {(0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, (0xa<<3)|3, },
-			.channel1 = {(0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, (0xa<<3)|7, },
+			.channel0 = {DIMM0, DIMM1, DIMM2, DIMM3, },
+			.channel1 = {DIMM4, DIMM5, DIMM6, DIMM7, },
 		}
 	};
 

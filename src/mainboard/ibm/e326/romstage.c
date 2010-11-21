@@ -29,6 +29,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PC87366_SP1)
 
 #include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
+#include <spd.h>
 
 static void memreset_setup(void)
 {
@@ -87,8 +88,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 			.f1 = PCI_DEV(0, 0x18, 1),
 			.f2 = PCI_DEV(0, 0x18, 2),
 			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+			.channel0 = { DIMM0, DIMM2, 0, 0 },
+			.channel1 = { DIMM1, DIMM3, 0, 0 },
 		},
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 		{
@@ -97,8 +98,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
 			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+			.channel0 = { DIMM4, DIMM6, 0, 0 },
+			.channel1 = { DIMM5, DIMM7, 0, 0 },
 		},
 #endif
 	};

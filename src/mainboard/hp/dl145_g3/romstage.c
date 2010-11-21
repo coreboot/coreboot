@@ -146,8 +146,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 		// first node
-		 DIMM0, DIMM2, 0, 0,
-		 DIMM1, DIMM3, 0, 0,
+		DIMM0, DIMM2, 0, 0,
+		DIMM1, DIMM3, 0, 0,
 
 		// second node
 		DIMM4, DIMM6, 0, 0,

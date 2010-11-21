@@ -15,6 +15,7 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -32,7 +33,7 @@ void main(unsigned long bist)
 	static const struct mem_controller memctrl[] = {
 		{
 			.d0 = PCI_DEV(0, 0, 1),
-			.channel0 = { (0xa<<3)|0, 0 },
+			.channel0 = { DIMM0, 0 },
 		},
 	};
 

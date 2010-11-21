@@ -49,6 +49,7 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "cpu/amd/dualcore/dualcore.c"
+#include <spd.h>
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -95,7 +96,7 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
-		(0xa << 3) | 0, (0xa << 3) | 1, 0, 0,
+		DIMM0, DIMM1, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,

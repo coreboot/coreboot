@@ -78,6 +78,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "lib/generic_sdram.c"
 #include "northbridge/intel/i3100/reset_test.c"
 #include "debug.c"
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 
@@ -136,8 +137,8 @@ void main(unsigned long bist)
 			.f1 = PCI_DEV(0, 0x00, 1),
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
-			.channel0 = { (0xa<<3)|3, (0xa<<3)|2, (0xa<<3)|1, (0xa<<3)|0 },
-			.channel1 = { (0xa<<3)|7, (0xa<<3)|6, (0xa<<3)|5, (0xa<<3)|4 },
+			.channel0 = { DIMM3, DIMM2, DIMM1, DIMM0 },
+			.channel1 = { DIMM7, DIMM6, DIMM5, DIMM4 },
 		}
 	};
 

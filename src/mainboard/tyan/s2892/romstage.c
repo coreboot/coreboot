@@ -9,6 +9,7 @@
 
 #include <console/console.h>
 #include <lib.h>
+#include <spd.h>
 
 #include <cpu/amd/model_fxx_rev.h>
 
@@ -88,11 +89,11 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-		(0xa<<3)|0, (0xa<<3)|2, 0, 0,
-		(0xa<<3)|1, (0xa<<3)|3, 0, 0,
+		DIMM0, DIMM2, 0, 0,
+		DIMM1, DIMM3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-		(0xa<<3)|4, (0xa<<3)|6, 0, 0,
-		(0xa<<3)|5, (0xa<<3)|7, 0, 0,
+		DIMM4, DIMM6, 0, 0,
+		DIMM5, DIMM7, 0, 0,
 #endif
 	};
 

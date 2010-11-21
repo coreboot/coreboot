@@ -34,7 +34,6 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
-#include <spd.h>
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
@@ -163,7 +162,7 @@ void main(unsigned long bist)
 	post_code(0x01);
 
 	static const struct mem_controller memctrl[] = {
-		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}
+		{.channel0 = {DIMM0, DIMM1}}
 	};
 
 	SystemPreInit();

@@ -34,6 +34,7 @@
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/ite/it8716f/it8716f_early_serial.c"
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
 

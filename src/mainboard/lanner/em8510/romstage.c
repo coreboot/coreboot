@@ -27,6 +27,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
+#include <spd.h>
 #include "pc80/udelay_io.c"
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
@@ -54,7 +55,7 @@ void main(unsigned long bist)
 	static const struct mem_controller memctrl[] = {
 		{
 			.d0 = PCI_DEV(0, 0, 1),
-			.channel0 = { (0xa<<3)|0, 0 },
+			.channel0 = { DIMM0, 0 },
 		},
 	};
 

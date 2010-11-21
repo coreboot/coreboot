@@ -36,13 +36,10 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
+#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
-/*
- * NOOB ::
- * d0f0 - Device 0 Function 0 etc.
- */
 static const struct mem_controller ctrl = {
 	.d0f0 = 0x0000,
 	.d0f2 = 0x2000,

@@ -109,9 +109,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
        static const uint16_t spd_addr[] = {
-                       //first node
-                        RC0|DIMM0, RC0|DIMM2, RC0|DIMM4, RC0|DIMM6,
-                        RC0|DIMM1, RC0|DIMM3, RC0|DIMM5, RC0|DIMM7,
+                      //first node
+                       RC0|DIMM0, RC0|DIMM2, RC0|DIMM4, RC0|DIMM6,
+                       RC0|DIMM1, RC0|DIMM3, RC0|DIMM5, RC0|DIMM7,
                        //second node
                        RC1|DIMM0, RC1|DIMM2, RC1|DIMM4, RC1|DIMM6,
                        RC1|DIMM1, RC1|DIMM3, RC1|DIMM5, RC1|DIMM7,

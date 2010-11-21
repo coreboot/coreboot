@@ -19,6 +19,7 @@
 #include "s1850_fixups.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
 #define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, PC8374_SP1)
 
@@ -149,10 +150,7 @@ static void main(unsigned long bist)
 	u16 w;
 	u32 l;
 	int do_reset;
-	/*
-	 *
-	 *
-	 */
+
 	static const struct mem_controller mch[] = {
 		{
 			.node_id = 0,
@@ -164,8 +162,8 @@ static void main(unsigned long bist)
 			*/
 			/* the wiring on this part is really messed up */
 			/* this is my best guess so far */
-			.channel0 = {(0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, (0xa<<3)|3, },
-			.channel1 = {(0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, (0xa<<3)|7, },
+			.channel0 = {DIMM0, DIMM1, DIMM2, DIMM3, },
+			.channel1 = {DIMM4, DIMM5, DIMM6, DIMM7, },
 		}
 	};
 

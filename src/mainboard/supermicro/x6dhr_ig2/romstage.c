@@ -19,6 +19,7 @@
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
 #define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define HIDDEN_SERIAL_DEV  PNP_DEV(0x2e, W83627HF_SP2)
@@ -44,10 +45,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void main(unsigned long bist)
 {
-	/*
-	 *
-	 *
-	 */
 	static const struct mem_controller mch[] = {
 		{
 			.node_id = 0,
@@ -57,8 +54,8 @@ static void main(unsigned long bist)
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
 			*/
-			.channel0 = {(0xa<<3)|3, (0xa<<3)|2, (0xa<<3)|1, (0xa<<3)|0, },
-			.channel1 = {(0xa<<3)|7, (0xa<<3)|6, (0xa<<3)|5, (0xa<<3)|4, },
+			.channel0 = {DIMM3, DIMM2, DIMM1, DIMM0, },
+			.channel1 = {DIMM7, DIMM6, DIMM5, DIMM4, },
 		}
 	};
 

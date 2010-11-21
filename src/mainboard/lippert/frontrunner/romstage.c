@@ -11,7 +11,6 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5535/cs5535.h"
-#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -76,7 +75,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
-		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
+		{.channel0 = {DIMM0, DIMM1}}
 	};
 	unsigned char temp;
 	SystemPreInit();

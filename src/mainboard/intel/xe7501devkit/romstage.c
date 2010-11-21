@@ -16,9 +16,9 @@
 #include "superio/smsc/lpc47b272/lpc47b272_early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
-#define SUPERIO_PORT	0x2e
-#define SERIAL_DEV		PNP_DEV(SUPERIO_PORT, LPC47B272_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
 
 static void hard_reset(void)
 {
@@ -41,8 +41,8 @@ static void main(unsigned long bist)
 		{
 			.d0 = PCI_DEV(0, 0, 0),
 			.d0f1 = PCI_DEV(0, 0, 1),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, 0 },
-			.channel1 = { (0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, 0 },
+			.channel0 = { DIMM0, DIMM1, DIMM2, 0 },
+			.channel1 = { DIMM4, DIMM5, DIMM6, 0 },
 		},
 	};
 

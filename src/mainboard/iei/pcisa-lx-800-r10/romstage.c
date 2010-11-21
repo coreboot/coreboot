@@ -69,7 +69,7 @@ void main(unsigned long bist)
 	post_code(0x01);
 
 	static const struct mem_controller memctrl[] = {
-		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}
+		{.channel0 = {DIMM0, DIMM1}}
 	};
 
 	SystemPreInit();

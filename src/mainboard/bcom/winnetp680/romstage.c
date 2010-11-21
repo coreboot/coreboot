@@ -32,6 +32,7 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include <lib.h>
+#include <spd.h>
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)

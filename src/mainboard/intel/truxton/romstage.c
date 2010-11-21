@@ -61,7 +61,7 @@ static void main(unsigned long bist)
 		{
 			.node_id = 0,
 			.f0 = PCI_DEV(0, 0x00, 0),
-			.channel0 = { (0xa<<3)|2, (0xa<<3)|3 },
+			.channel0 = { DIMM2, DIMM3 },
 		}
 	};
 

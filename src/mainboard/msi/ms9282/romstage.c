@@ -45,6 +45,7 @@
 
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include <spd.h>
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -132,11 +133,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 		// Node 0
-		RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
-		RC0|(0xa<<3)|1, RC0|(0xa<<3)|3, RC0|(0xa<<3)|5, RC0|(0xa<<3)|7,
+		RC0|DIMM0, RC0|DIMM2, RC0|DIMM4, RC0|DIMM6,
+		RC0|DIMM1, RC0|DIMM3, RC0|DIMM5, RC0|DIMM7,
 		// node 1
-		RC1|(0xa<<3)|0, RC1|(0xa<<3)|2, RC1|(0xa<<3)|4, RC1|(0xa<<3)|6,
-		RC1|(0xa<<3)|1, RC1|(0xa<<3)|3, RC1|(0xa<<3)|5, RC1|(0xa<<3)|7,
+		RC1|DIMM0, RC1|DIMM2, RC1|DIMM4, RC1|DIMM6,
+		RC1|DIMM1, RC1|DIMM3, RC1|DIMM5, RC1|DIMM7,
 	};
 
 	unsigned bsp_apicid = 0;

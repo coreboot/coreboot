@@ -39,6 +39,7 @@
 
 #include "northbridge/via/cx700/cx700_early_serial.c"
 #include "northbridge/via/cx700/raminit.c"
+#include <spd.h>
 
 static void enable_mainboard_devices(void)
 {

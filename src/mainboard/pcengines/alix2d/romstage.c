@@ -32,7 +32,6 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
-#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

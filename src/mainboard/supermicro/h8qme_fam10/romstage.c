@@ -82,8 +82,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/quadcore/quadcore.c"
 
-#define MCP55_PCI_E_X_0 4
-
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
 

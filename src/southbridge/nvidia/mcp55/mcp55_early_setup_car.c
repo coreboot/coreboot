@@ -76,19 +76,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 	 8 0 4 4 4 8 :5
 */
 
-#ifndef MCP55_PCI_E_X_0
-	#define MCP55_PCI_E_X_0	4
-#endif
-#ifndef MCP55_PCI_E_X_1
-	#define MCP55_PCI_E_X_1	4
-#endif
-#ifndef MCP55_PCI_E_X_2
-	#define MCP55_PCI_E_X_2	4
-#endif
-#ifndef MCP55_PCI_E_X_3
-	#define MCP55_PCI_E_X_3	4
-#endif
-
 #define MCP55_CHIP_REV	3
 
 static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
@@ -370,7 +357,7 @@ static int mcp55_early_setup_x(void)
 		FIXME: May have problem if there is different MCP55 HTX card with different PCI_E lane allocation
 		Need to use same trick about pci1234 to verify node/link connection
 	*/
-	unsigned pci_e_x[HT_CHAIN_NUM_MAX] = {MCP55_PCI_E_X_0, MCP55_PCI_E_X_1, MCP55_PCI_E_X_2, MCP55_PCI_E_X_3 };
+	unsigned pci_e_x[HT_CHAIN_NUM_MAX] = {CONFIG_MCP55_PCI_E_X_0, CONFIG_MCP55_PCI_E_X_1, CONFIG_MCP55_PCI_E_X_2, CONFIG_MCP55_PCI_E_X_3 };
 	int mcp55_num = 0;
 	unsigned busnx;
 	unsigned devnx;

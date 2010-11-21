@@ -88,4 +88,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
+config MCP55_PCI_E_X_0
+	int
+	default 1
+
 endif # BOARD_TYAN_S2912

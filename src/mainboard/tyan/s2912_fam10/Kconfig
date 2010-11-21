@@ -105,4 +105,8 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
+config MCP55_PCI_E_X_0
+	int
+	default 1
+
 endif # BOARD_TYAN_S2912_FAM10

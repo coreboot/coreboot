@@ -86,8 +86,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/dualcore/dualcore.c"
 
-#define MCP55_PCI_E_X_0 1
-
 #define MCP55_MB_SETUP \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \

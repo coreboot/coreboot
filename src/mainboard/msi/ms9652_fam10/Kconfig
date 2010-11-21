@@ -192,4 +192,8 @@ config HT3_SUPPORT
 	bool
 	default y
 
+config MCP55_PCI_E_X_0
+	int
+	default 1
+
 endif # BOARD_MSI_MS9652_FAM10

@@ -3,26 +3,46 @@ config SOUTHBRIDGE_NVIDIA_MCP55
 	select HAVE_USBDEBUG
 	select IOAPIC
 
+if SOUTHBRIDGE_NVIDIA_MCP55
+
 config ID_SECTION_OFFSET
 	hex
-	default 0x80 if SOUTHBRIDGE_NVIDIA_MCP55
+	default 0x80
 
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_NVIDIA_MCP55
+	default 0xfef00000
 
 config EHCI_DEBUG_OFFSET
 	hex
-	default 0x98 if SOUTHBRIDGE_NVIDIA_MCP55
+	default 0x98
 
 config MCP55_USE_NIC
 	bool
-	default n if SOUTHBRIDGE_NVIDIA_MCP55
+	default n
 
 config MCP55_USE_AZA
 	bool
-	default n if SOUTHBRIDGE_NVIDIA_MCP55
+	default n
 
 config MCP55_NUM
 	int
-	default 1 if SOUTHBRIDGE_NVIDIA_MCP55
+	default 1
+
+config MCP55_PCI_E_X_0
+	int
+	default 4
+
+config MCP55_PCI_E_X_1
+	int
+	default 4
+
+config MCP55_PCI_E_X_2
+	int
+	default 4
+
+config MCP55_PCI_E_X_3
+	int
+	default 4
+
+endif

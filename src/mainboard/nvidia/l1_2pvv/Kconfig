@@ -97,4 +97,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
+config MCP55_PCI_E_X_0
+	int
+	default 2
+
 endif # BOARD_NVIDIA_L1_2PVV

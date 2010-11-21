@@ -13,7 +13,6 @@
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
-unsigned char bus_isa = 5 ;
 unsigned char bus_8131_0 = 1;
 unsigned char bus_8131_1 = 2;
 unsigned char bus_8131_2 = 3;
@@ -82,11 +81,6 @@ void get_bus_conf(void)
         dev = dev_find_slot(bus_8111_0, PCI_DEVFN(sysconf.sbdn,0));
         if (dev) {
                 bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
-                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                bus_isa++;
-//		printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
         }
 	else {
                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:03.0, using defaults\n", bus_8111_0);
@@ -105,11 +99,6 @@ void get_bus_conf(void)
         dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,0));
         if (dev) {
                 bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                bus_isa++;
-//              printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
         }
         else {
                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);

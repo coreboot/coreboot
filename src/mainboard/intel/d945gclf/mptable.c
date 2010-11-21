@@ -28,8 +28,7 @@
 static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
-	int i;
-	int max_pci_bus, isa_bus;
+	int isa_bus;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -37,16 +36,7 @@ static void *smp_write_config_table(void *v)
 
         smp_write_processors(mc);
 
-	max_pci_bus = 5; // XXX read me from bridges.
-
-	/* ISA bus follows */
-	isa_bus = max_pci_bus + 1;
-
-	/* Bus:		Bus ID	Type */
-	for (i=0; i <= max_pci_bus; i++)
-		smp_write_bus(mc, i, "PCI   ");
-
-	smp_write_bus(mc, isa_bus, "ISA   ");
+	mptable_write_buses(mc, NULL, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);

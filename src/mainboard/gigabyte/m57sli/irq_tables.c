@@ -50,7 +50,6 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
         pirq_info->slot = slot;
         pirq_info->rfu = rfu;
 }
-extern unsigned char bus_isa;
 extern unsigned char bus_mcp55[8]; //1
 
 

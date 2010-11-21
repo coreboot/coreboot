@@ -23,15 +23,11 @@
 #define MB_SYSCONF_H
 
 struct mb_sysconf_t {
-	unsigned char bus_isa;
 	unsigned char bus_mcp55;
 	unsigned char bus_mcp55b;
 	unsigned apicid_mcp55;
 	unsigned apicid_mcp55b;
-	unsigned bus_type[256];
-
 	unsigned sbdnb;
-
 };
 
 #endif

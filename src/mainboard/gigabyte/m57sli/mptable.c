@@ -27,18 +27,15 @@
 #include <stdint.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern unsigned char bus_isa;
 extern unsigned char bus_mcp55[8]; //1
 
 extern unsigned apicid_mcp55;
-
-extern unsigned bus_type[256];
 
 static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
 	unsigned sbdn;
-	int i,j,k;
+	int i, j, k, bus_isa;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -49,13 +46,7 @@ static void *smp_write_config_table(void *v)
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
 
-/*Bus:		Bus ID	Type*/
-       /* define bus and isa numbers */
-        for(j= 0; j < 256 ; j++) {
-		if(bus_type[j])
-			 smp_write_bus(mc, j, "PCI   ");
-        }
-        smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
         {
@@ -106,7 +97,7 @@ static void *smp_write_config_table(void *v)
         }
 
 	/* On bus 1: the PCI bus slots...
-	   pyhsical PCI slots are j = 7,8
+	   physical PCI slots are j = 7,8
 	   FireWire is j = 10
 	*/
         k=2;

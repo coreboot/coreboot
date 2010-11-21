@@ -26,16 +26,14 @@
 #include <stdint.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern unsigned char bus_isa;
 extern unsigned char bus_mcp55[8];	// 1
 extern unsigned apicid_mcp55;
-extern unsigned bus_type[256];
 
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	unsigned int sbdn;
-	int i, j;
+	int i, j, bus_isa;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -46,13 +44,7 @@ static void *smp_write_config_table(void *v)
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
 
-	/* Bus:	Bus ID	Type */
-	/* Define bus and ISA numbers. */
-	for (j = 0; j < 256; j++) {
-		if (bus_type[j])
-			smp_write_bus(mc, j, "PCI   ");
-	}
-	smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* I/O APICs: APIC ID	Version	State		Address */
 	{

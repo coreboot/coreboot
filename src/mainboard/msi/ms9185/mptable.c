@@ -40,9 +40,8 @@ static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
 
-        unsigned char bus_num;
-       int i;
-       struct mb_sysconf_t *m;
+	int i, bus_isa;
+	struct mb_sysconf_t *m;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -50,15 +49,10 @@ static void *smp_write_config_table(void *v)
 
         smp_write_processors(mc);
 
-       get_bus_conf();
-       m = sysconf.mb;
+	get_bus_conf();
+	m = sysconf.mb;
 
-/*Bus:         Bus ID  Type*/
-       /* define bus and isa numbers */
-        for(bus_num = 0; bus_num < m->bus_isa; bus_num++) {
-                smp_write_bus(mc, bus_num, "PCI   ");
-        }
-        smp_write_bus(mc, m->bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:   APIC ID Version State           Address*/
         {
@@ -76,7 +70,7 @@ static void *smp_write_config_table(void *v)
 
        }
 
-	mptable_add_isa_interrupts(mc, m->bus_isa, m->apicid_bcm5785[0], 0);
+	mptable_add_isa_interrupts(mc, bus_isa, m->apicid_bcm5785[0], 0);
 
 //IDE
        outb(0x02, 0xc00); outb(0x0e, 0xc01);
@@ -152,8 +146,8 @@ static void *smp_write_config_table(void *v)
         }
 
 /*Local Ints:  Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN#*/
-       smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, MP_APIC_ALL, 0x0);
-       smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, MP_APIC_ALL, 0x1);
+       smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
+       smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
        /* There is no extension information... */
 
        /* Compute the checksums */

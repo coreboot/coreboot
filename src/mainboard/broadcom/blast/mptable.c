@@ -9,7 +9,6 @@
 #endif
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern  unsigned char bus_isa;
 extern  unsigned char bus_bcm5780[7];
 extern  unsigned char bus_bcm5785_0;
 extern  unsigned char bus_bcm5785_1;
@@ -21,8 +20,7 @@ extern  unsigned sbdn2;
 static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
-        unsigned char bus_num;
-	int i;
+	int i, bus_isa;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -32,12 +30,7 @@ static void *smp_write_config_table(void *v)
 
 	get_bus_conf();
 
-/*Bus:		Bus ID	Type*/
-       /* define bus and isa numbers */
-        for(bus_num = 0; bus_num < bus_isa; bus_num++) {
-                smp_write_bus(mc, bus_num, "PCI   ");
-        }
-        smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
         {

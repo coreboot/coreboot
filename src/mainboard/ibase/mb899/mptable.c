@@ -29,8 +29,7 @@ static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
 	struct device *riser = NULL, *firewire = NULL;
-	int i;
-	int max_pci_bus, firewire_bus = 0, riser_bus = 0, isa_bus;
+	int firewire_bus = 0, riser_bus = 0, isa_bus;
 	int ioapic_id;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -38,14 +37,12 @@ static void *smp_write_config_table(void *v)
 	mptable_init(mc, "MB899       ", LAPIC_ADDR);
 
         smp_write_processors(mc);
-	max_pci_bus=0;
 
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {
 		firewire_bus = firewire->bus->secondary;
 		printk(BIOS_SPEW, "Firewire device is on bus %x\n",
 				firewire_bus);
-		max_pci_bus = firewire_bus;
 	}
 
 	// If a riser card is used, this riser is detected on bus 4, so its secondary bus is the
@@ -56,17 +53,9 @@ static void *smp_write_config_table(void *v)
 	if (riser) {
 		riser_bus = riser->link_list->secondary;
 		printk(BIOS_SPEW, "Riser bus is %x\n", riser_bus);
-		max_pci_bus = riser_bus;
 	}
 
-	/* ISA bus follows */
-	isa_bus = max_pci_bus + 1;
-
-	/* Bus:		Bus ID	Type */
-	for (i=0; i <= max_pci_bus; i++)
-		smp_write_bus(mc, i, "PCI   ");
-
-	smp_write_bus(mc, isa_bus, "ISA   ");
+	mptable_write_buses(mc, NULL, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	ioapic_id = 2;

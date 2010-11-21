@@ -32,7 +32,6 @@
 
 /* Global variables for MB layouts (shared by irqtable/mptable/acpi_table). */
 // busnum is default.
-unsigned char bus_isa;
 unsigned char bus_mcp55[8];	// 1
 unsigned apicid_mcp55;
 
@@ -65,17 +64,13 @@ unsigned hcdnx[] = {
 //      0x20202020,
 };
 
-unsigned bus_type[256];
-
-
-
 static unsigned get_bus_conf_done = 0;
 
 void get_bus_conf(void)
 {
 	unsigned int apicid_base, sbdn;
 	device_t dev;
-	int i, j;
+	int i;
 
 	if (get_bus_conf_done == 1)
 		return;		/* Do it only once. */
@@ -96,14 +91,7 @@ void get_bus_conf(void)
 	for (i = 0; i < 8; i++)
 		bus_mcp55[i] = 0;
 
-	for (i = 0; i < 256; i++)
-		bus_type[i] = 0;
-
-	bus_type[0] = 1;	/* PCI */
-
 	bus_mcp55[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-
-	bus_type[bus_mcp55[0]] = 1;
 
 	/* MCP55 */
 	dev = dev_find_slot(bus_mcp55[0], PCI_DEVFN(sbdn + 0x06, 0));
@@ -111,8 +99,6 @@ void get_bus_conf(void)
 		bus_mcp55[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		bus_mcp55[2] = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_mcp55[2]++;
-		for (j = bus_mcp55[1]; j < bus_mcp55[2]; j++)
-			bus_type[j] = 1;
 	} else {
 		printk
 		    (BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n",
@@ -127,15 +113,6 @@ void get_bus_conf(void)
 				    PCI_DEVFN(sbdn + 0x0a + i - 2, 0));
 		if (dev) {
 			bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_isa++;
-			for (j = bus_mcp55[i]; j < bus_isa; j++)
-				bus_type[j] = 1;
-		} else {
-			printk
-			    (BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			     bus_mcp55[0], sbdn + 0x0a + i - 2);
-			bus_isa = bus_mcp55[i - 1] + 1;
 		}
 	}
 

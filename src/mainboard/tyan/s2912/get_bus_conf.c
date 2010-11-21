@@ -71,7 +71,7 @@ void get_bus_conf(void)
 	struct mb_sysconf_t *m;
 
 	device_t dev;
-	int i, j;
+	int i;
 
 	if(get_bus_conf_done==1) return; //do it only once
 
@@ -92,8 +92,6 @@ void get_bus_conf(void)
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 
-	m->bus_type[0] = 1; //pci
-
 	m->bus_mcp55[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 
 	/* MCP55 */
@@ -111,18 +109,6 @@ void get_bus_conf(void)
 		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
 		}
-	}
-
-	for(i=0; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
-
-		unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
-		unsigned busn_max = (sysconf.pci1234[i] >> 24) & 0xff;
-		for (j = busn; j <= busn_max; j++)
-			m->bus_type[j] = 1;
-		if(m->bus_isa <= busn_max)
-			m->bus_isa = busn_max + 1;
-		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
 	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/

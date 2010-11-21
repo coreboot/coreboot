@@ -36,7 +36,6 @@
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
-        unsigned char bus_isa;
         unsigned char bus_sis966[8]; //1
         unsigned apicid_sis966;
 
@@ -64,9 +63,6 @@ unsigned hcdnx[] =
 //        0x20202020,
 //        0x20202020,
 };
-unsigned bus_type[256];
-
-
 
 static unsigned get_bus_conf_done = 0;
 
@@ -77,7 +73,7 @@ void get_bus_conf(void)
 	unsigned sbdn;
 
         device_t dev;
-        int i, j;
+        int i;
 
         if(get_bus_conf_done==1) return; //do it only once
 
@@ -98,15 +94,7 @@ void get_bus_conf(void)
 		bus_sis966[i] = 0;
 	}
 
-	for(i=0;i<256; i++) {
-		bus_type[i] = 0;
-	}
-
-	bus_type[0] = 1; //pci
-
 	bus_sis966[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-
-	bus_type[bus_sis966[0]] = 1;
 
                 /* SIS966 */
                 dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn + 0x06,0));
@@ -114,7 +102,6 @@ void get_bus_conf(void)
                         bus_sis966[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_sis966[2] = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_sis966[2]++;
-			for(j=bus_sis966[1];j<bus_sis966[2]; j++) bus_type[j] = 1;
                 }
                 else {
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x06);
@@ -127,14 +114,7 @@ void get_bus_conf(void)
 	                dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn + 0x0a + i - 2 , 0));
         	        if (dev) {
                 	        bus_sis966[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	                        bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-        	                bus_isa++;
-				for(j=bus_sis966[i];j<bus_isa; j++) bus_type[j] = 1;
 	                }
-        	        else {
-                	        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_sis966[0], sbdn + 0x0a + i - 2 );
-	                        bus_isa = bus_sis966[i-1]+1;
-        	        }
 		}
 
 

@@ -108,11 +108,6 @@ void get_bus_conf(void)
 		printk(BIOS_DEBUG, "now found %s...\n",dev_path(dev));
 		if(dev) {
 			m->bus_bcm5785_1_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
-			m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			m->bus_isa++;
-			printk(BIOS_DEBUG, "bus_isa 1=%d\n",m->bus_isa);
-#endif
 		}
 	}
 	else {
@@ -124,12 +119,6 @@ void get_bus_conf(void)
 		dev = dev_find_slot(m->bus_bcm5780[0], PCI_DEVFN(m->sbdn2 + i - 1,0));
 		if(dev) {
 			m->bus_bcm5780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-			m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			m->bus_isa++;
-			printk(BIOS_DEBUG, "bus_isa 2=%d\n",m->bus_isa);
-#endif
-
 		}
 		else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5780[0], m->sbdn2+i-1);

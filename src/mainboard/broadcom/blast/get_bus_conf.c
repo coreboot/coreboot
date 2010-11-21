@@ -13,7 +13,6 @@
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
-unsigned char bus_isa = 10;
 unsigned char bus_bcm5780[7];
 unsigned char bus_bcm5785_0 = 1;
 unsigned char bus_bcm5785_1 = 8;
@@ -83,11 +82,6 @@ void get_bus_conf(void)
 		dev = dev_find_slot(bus_bcm5785_1, PCI_DEVFN(0x0d,0));
 		if(dev) {
 			bus_bcm5785_1_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
-	                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-	                bus_isa++;
-//        	        printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
 		}
         }
 	else {
@@ -99,12 +93,6 @@ void get_bus_conf(void)
 	        dev = dev_find_slot(bus_bcm5780[0], PCI_DEVFN(sbdn2 + i - 1,0));
 	        if(dev) {
         	        bus_bcm5780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-                        bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_isa++;
-//                      printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
-
 		}
         	else {
                 	printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_bcm5780[i]);

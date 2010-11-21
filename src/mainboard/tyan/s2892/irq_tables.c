@@ -30,7 +30,6 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
 	pirq_info->rfu = rfu;
 }
 
-extern  unsigned char bus_isa;
 extern  unsigned char bus_ck804_0; //1
 extern  unsigned char bus_ck804_1; //2
 extern  unsigned char bus_ck804_2; //3

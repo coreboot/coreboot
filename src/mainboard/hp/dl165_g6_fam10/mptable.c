@@ -56,7 +56,6 @@ static void *smp_write_config_table(void *v)
 	m = sysconf.mb;
 
 	mptable_write_buses(mc, NULL, &isa_bus);
-	printk(BIOS_DEBUG, "writing %d as ISA to mptable (%d for real)...\n", isa_bus, m->bus_isa);
 
 	/*I/O APICs:   APIC ID Version State           Address*/
 	{

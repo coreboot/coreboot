@@ -43,6 +43,7 @@ static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	struct mb_sysconf_t *m;
+	int bus_isa;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -53,22 +54,7 @@ static void *smp_write_config_table(void *v)
 	get_bus_conf();
 	m = sysconf.mb;
 
-	/*Bus:         Bus ID  Type*/
-	/* define bus and isa numbers */
-#if 0
-	unsigned char bus_num;
-	for(bus_num = 0; bus_num < m->bus_isa; bus_num++) {
-		smp_write_bus(mc, bus_num, "PCI   ");
-		printk(BIOS_DEBUG, "writing bus %d as PCI...\n",bus_num);
-	}
-#endif
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, 1, "PCI   ");
-	smp_write_bus(mc, 7, "PCI   ");
-	smp_write_bus(mc, 8, "PCI   ");
-
-	smp_write_bus(mc,m->bus_isa, "ISA   ");
-	printk(BIOS_DEBUG, "writing %d as ISA...\n",m->bus_isa);
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/*I/O APICs:   APIC ID Version State           Address*/
 	{
@@ -130,7 +116,7 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
-	mptable_add_isa_interrupts(mc, m->bus_isa, m->apicid_bcm5785[0], 0);
+	mptable_add_isa_interrupts(mc, bus_isa, m->apicid_bcm5785[0], 0);
 
 	//SATA
 /* 	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
@@ -177,9 +163,9 @@ static void *smp_write_config_table(void *v)
 	}
 
 /*Local Ints:  Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN#*/
-	printk(BIOS_DEBUG, "m->bus_isa is: %x\n",m->bus_isa);
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa , 0x0, MP_APIC_ALL, 0x1);
+	printk(BIOS_DEBUG, "bus_isa is: %x\n", bus_isa);
+	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
+	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa , 0x0, MP_APIC_ALL, 0x1);
 
 	//extended table entries
 	smp_write_address_space(mc,0 , ADDRESS_TYPE_IO, 0x0, 0x0, 0x0, 0x0001);

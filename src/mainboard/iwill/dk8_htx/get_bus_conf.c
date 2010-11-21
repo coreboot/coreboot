@@ -109,11 +109,6 @@ void get_bus_conf(void)
         dev = dev_find_slot(m->bus_8111_0, PCI_DEVFN(sysconf.sbdn,0));
         if (dev) {
                 m->bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
-                m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                m->bus_isa++;
-//		printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
         }
 	else {
                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8111_0, sysconf.sbdn);
@@ -132,11 +127,6 @@ void get_bus_conf(void)
         dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(m->sbdn3+1,0));
         if (dev) {
                 m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-                m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                m->bus_isa++;
-//              printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
-#endif
         }
         else {
                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3+1);
@@ -172,9 +162,6 @@ void get_bus_conf(void)
                         dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1,0));
                         if (dev) {
                                 m->bus_8132a[j][2] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                                m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                                m->bus_isa++;
-                //              printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
                                 }
                         else {
                                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]+1);
@@ -191,9 +178,6 @@ void get_bus_conf(void)
 
                         if (dev) {
                                 m->bus_8151[j][1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-        //                        printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151[j][1]);
-                                m->bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                                m->bus_isa++;
                         }
                         else {
                                 printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8151[j][0], m->sbdn5[j]+1);

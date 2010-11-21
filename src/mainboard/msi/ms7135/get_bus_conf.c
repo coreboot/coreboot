@@ -38,7 +38,6 @@
  * mptable and acpi_tables.
  */
 /* busnum is default */
-unsigned char bus_isa;
 unsigned char bus_ck804[6];
 unsigned apicid_ck804;
 
@@ -49,9 +48,6 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,		//ms7135 has only one ht-chain
 };
-unsigned bus_type[256];
-
-
 
 static unsigned get_bus_conf_done = 0;
 
@@ -61,7 +57,7 @@ void get_bus_conf(void)
 
 	device_t dev;
 	unsigned sbdn;
-	int i, j;
+	int i;
 
 	if (get_bus_conf_done == 1)
 		return;		//do it only once
@@ -84,15 +80,7 @@ void get_bus_conf(void)
 		bus_ck804[i] = 0;
 	}
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0;
-	}
-
-	bus_type[0] = 1;	//pci
-
 	bus_ck804[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-
-	bus_type[bus_ck804[0]] = 1;
 
 	/* CK804 */
 	int dn = -1;
@@ -106,15 +94,6 @@ void get_bus_conf(void)
 		dev = dev_find_slot(bus_ck804[0], PCI_DEVFN(sbdn + dn, 0));
 		if (dev) {
 			bus_ck804[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_isa++;
-			for (j = bus_ck804[i]; j < bus_isa; j++)
-				bus_type[j] = 1;
-		} else {
-			printk
-			    (BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			     bus_ck804[0], sbdn + dn);
-			bus_isa = bus_ck804[i - 1] + 1;
 		}
 	}
 

@@ -95,7 +95,7 @@ void get_bus_conf(void)
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
-	int i, j;
+	int i;
 
 	if (get_bus_conf_done)
 		return; //do it only once
@@ -119,24 +119,7 @@ void get_bus_conf(void)
 
 	m->sbdnb = (sysconf.hcdn[1] & 0xff); // first byte of second chain
 
-	m->bus_type[0] = 1; //pci
-
 	m->bus_mcp55 = (sysconf.pci1234[0] >> 16) & 0xff;
-
-	for (i = 0; i < sysconf.hc_possible_num; i++) {
-		unsigned busn_min, busn_max;
-
-		if (!(sysconf.pci1234[i] & 0x1))
-			continue;
-
-		busn_min = (sysconf.pci1234[i] >> 16) & 0xff;
-		busn_max = (sysconf.pci1234[i] >> 24) & 0xff;
-		for (j = busn_min; j <= busn_max; j++)
-			m->bus_type[j] = 1;
-		if(m->bus_isa <= busn_max)
-			m->bus_isa = busn_max + 1;
-		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn_min, busn_max, m->bus_isa);
-	}
 
 		/* MCP55b */
 	for (i = 1; i < sysconf.hc_possible_num; i++) {

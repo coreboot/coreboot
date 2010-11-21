@@ -25,7 +25,6 @@
 #define MB_SYSCONF_H
 
 struct mb_sysconf_t {
-       unsigned char bus_isa;
        unsigned char bus_bcm5780[7];
        unsigned char bus_bcm5785_0;
        unsigned char bus_bcm5785_1;

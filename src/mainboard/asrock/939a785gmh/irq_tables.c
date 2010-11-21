@@ -51,7 +51,6 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
-extern u8 bus_isa;
 extern u8 bus_rs780[8];
 extern u8 bus_sb700[2];
 extern unsigned long sbdn_sb700;

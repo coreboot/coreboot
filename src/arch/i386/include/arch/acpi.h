@@ -431,17 +431,6 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(void);
 
-#define ACPI_WRITE_MADT_IOAPIC(dev,id)			\
-do {							\
-	struct resource *res;				\
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);	\
-	if (!res) break;				\
-	current += acpi_create_madt_ioapic(		\
-		(acpi_madt_ioapic_t *)current,		\
-		id, res->base, gsi_base);		\
-	gsi_base += 4;					\
-} while(0);
-
 #else // CONFIG_GENERATE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)

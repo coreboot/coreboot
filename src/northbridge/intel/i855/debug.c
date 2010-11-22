@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <spd.h>
+
 static void print_debug_pci_dev(unsigned dev)
 {
 	print_debug("PCI: ");
@@ -84,13 +86,13 @@ static inline void dump_pci_devices(void)
 	}
 }
 
-static inline void dump_spd_registers(const struct mem_controller *ctrl)
+static inline void dump_spd_registers(void)
 {
 	int i;
 	print_debug("\n");
 	for(i = 0; i < 2; i++) {
 		unsigned device;
-		device = ctrl->channel0[i];
+		device = DIMM0 + i;
 		if (device) {
 			int j;
 			print_debug("dimm: ");

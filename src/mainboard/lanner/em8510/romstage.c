@@ -27,6 +27,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <stdlib.h>
+#include <lib.h>
 #include <spd.h>
 #include "pc80/udelay_io.c"
 #include <pc80/mc146818rtc.h>
@@ -48,17 +49,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/i855/raminit.c"
 #include "northbridge/intel/i855/reset_test.c"
-#include "lib/generic_sdram.c"
 
 void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 1),
-			.channel0 = { DIMM0, 0 },
-		},
-	};
-
 	if (bist == 0) {
 #if 0
 		enable_lapic();
@@ -80,10 +73,12 @@ void main(unsigned long bist)
 	if (!bios_reset_detected()) {
         	enable_smbus();
 #if 1
-		dump_spd_registers(&memctrl[0]);
+		dump_spd_registers();
 		dump_smbus_registers();
 #endif
-		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
+		sdram_set_registers();
+		sdram_set_spd_registers();
+		sdram_enable();
 	}
 
 #if 0

@@ -127,7 +127,7 @@ static void die_on_spd_error(int spd_return_value)
  * @param dimm_socket_address SMBus address of DIMM socket to interrogate.
  * @return log2(page size) for each side of the DIMM.
  */
-static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
+static struct dimm_size sdram_spd_get_page_size(u8 dimm_socket_address)
 {
 	uint16_t module_data_width;
 	int value;
@@ -187,7 +187,7 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
  * @param dimm_socket_address SMBus address of DIMM socket to interrogate.
  * @return Width in bits of each DIMM side's DRAMs.
  */
-static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
+static struct dimm_size sdram_spd_get_width(u8 dimm_socket_address)
 {
 	int value;
 	struct dimm_size width;
@@ -274,17 +274,15 @@ static struct dimm_size spd_get_dimm_size(unsigned dimm)
 /**
  * Scan for compatible DIMMs.
  *
- * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
  * @return A bitmask indicating which sockets contain a compatible DIMM.
  */
-static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
+static uint8_t spd_get_supported_dimms(void)
 {
 	int i;
 	uint8_t dimm_mask = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t dimm = ctrl->channel0[i];
+		u8 dimm = DIMM0 + i;
 
 #ifdef VALIDATE_DIMM_COMPATIBILITY
 		struct dimm_size page_size;
@@ -404,7 +402,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 	}
 }
 
-static void set_initialize_complete(const struct mem_controller *ctrl)
+static void set_initialize_complete(void)
 {
 	uint32_t drc_reg;
 
@@ -413,7 +411,7 @@ static void set_initialize_complete(const struct mem_controller *ctrl)
 	pci_write_config32(NORTHBRIDGE_MMC, DRC, drc_reg);
 }
 
-static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+static void sdram_enable(void)
 {
 	int i;
 
@@ -470,7 +468,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	delay();
 
 	print_debug("Ram enable 9\n");
-	set_initialize_complete(ctrl);
+	set_initialize_complete();
 
 	delay();
 	delay();
@@ -495,11 +493,8 @@ DIMM-independant configuration functions:
 /**
  * Set only what I need until it works, then make it figure things out on boot
  * assumes only one DIMM is populated.
- *
- * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
  */
-static void sdram_set_registers(const struct mem_controller *ctrl)
+static void sdram_set_registers(void)
 {
 	/*
 	print_debug("Before configuration:\n");
@@ -507,13 +502,13 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	*/
 }
 
-static void spd_set_row_attributes(const struct mem_controller *ctrl, uint8_t dimm_mask)
+static void spd_set_row_attributes(uint8_t dimm_mask)
 {
 	int i;
 	uint16_t row_attributes = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t dimm = ctrl->channel0[i];
+		u8 dimm = DIMM0 + i;
 		struct dimm_size page_size;
 		struct dimm_size sdram_width;
 
@@ -544,7 +539,7 @@ static void spd_set_row_attributes(const struct mem_controller *ctrl, uint8_t di
 	pci_write_config16(NORTHBRIDGE_MMC, DRA, row_attributes);
 }
 
-static void spd_set_dram_controller_mode(const struct mem_controller *ctrl, uint8_t dimm_mask)
+static void spd_set_dram_controller_mode(uint8_t dimm_mask)
 {
 	int i;
 
@@ -558,7 +553,7 @@ static void spd_set_dram_controller_mode(const struct mem_controller *ctrl, uint
 	controller_mode |= (2 << 10);  // FIXME: Undocumented, really needed?????
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t dimm = ctrl->channel0[i];
+		u8 dimm = DIMM0 + i;
 		uint32_t dimm_refresh_mode;
 		int value;
 		u8 tRCD, tRP;
@@ -610,7 +605,7 @@ static void spd_set_dram_controller_mode(const struct mem_controller *ctrl, uint
 	pci_write_config32(NORTHBRIDGE_MMC, DRC, controller_mode);
 }
 
-static void spd_set_dram_timing(const struct mem_controller *ctrl, uint8_t dimm_mask)
+static void spd_set_dram_timing(uint8_t dimm_mask)
 {
 	int i;
 	u32 dram_timing;
@@ -623,7 +618,7 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, uint8_t dimm_
 	uint8_t slowest_active_to_precharge_delay = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t dimm = ctrl->channel0[i];
+		u8 dimm = DIMM0 + i;
 		int value;
 		uint32_t current_cas_latency;
 		uint32_t dimm_compatible_cas_latencies;
@@ -788,14 +783,14 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, uint8_t dimm_
 	pci_write_config32(NORTHBRIDGE_MMC, DRT, dram_timing);
 }
 
-static void spd_set_dram_size(const struct mem_controller *ctrl, uint8_t dimm_mask)
+static void spd_set_dram_size(uint8_t dimm_mask)
 {
 	int i;
 	int total_dram = 0;
 	uint32_t drb_reg = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		uint16_t dimm = ctrl->channel0[i];
+		u8 dimm = DIMM0 + i;
 		struct dimm_size sz;
 
 		if (!(dimm_mask & (1 << i))) {
@@ -818,7 +813,7 @@ static void spd_set_dram_size(const struct mem_controller *ctrl, uint8_t dimm_ma
 }
 
 
-static void spd_set_dram_pwr_management(const struct mem_controller *ctrl)
+static void spd_set_dram_pwr_management(void)
 {
 	uint32_t pwrmg_reg;
 
@@ -826,7 +821,7 @@ static void spd_set_dram_pwr_management(const struct mem_controller *ctrl)
 	pci_write_config32(NORTHBRIDGE_MMC, PWRMG, pwrmg_reg);
 }
 
-static void spd_set_dram_throttle_control(const struct mem_controller *ctrl)
+static void spd_set_dram_throttle_control(void)
 {
 	uint32_t dtc_reg = 0;
 
@@ -874,28 +869,28 @@ static void spd_set_dram_throttle_control(const struct mem_controller *ctrl)
 	pci_write_config32(NORTHBRIDGE_MMC, DTC, dtc_reg);
 }
 
-static void spd_update(const struct mem_controller *ctrl, u8 reg, u32 new_value)
+static void spd_update(u8 reg, u32 new_value)
 {
 #if CONFIG_DEBUG_RAM_SETUP
-	u32 value1 = pci_read_config32(ctrl->d0, reg);
+	u32 value1 = pci_read_config32(NORTHBRIDGE_MMC, reg);
 #endif
-	pci_write_config32(ctrl->d0, reg, new_value);
+	pci_write_config32(NORTHBRIDGE_MMC, reg, new_value);
 #if CONFIG_DEBUG_RAM_SETUP
-	u32 value2 = pci_read_config32(ctrl->d0, reg);
+	u32 value2 = pci_read_config32(NORTHBRIDGE_MMC, reg);
 	PRINTK_DEBUG("update reg %02x, old: %08x, new: %08x, read back: %08x\n", reg, value1, new_value, value2);
 #endif
 }	
 
 /* if ram still doesn't work do this function */
-static void spd_set_undocumented_registers(const struct mem_controller *ctrl)
+static void spd_set_undocumented_registers(void)
 {
-	spd_update(ctrl, 0x74, 0x00000001);
-	spd_update(ctrl, 0x78, 0x001fe974);
-	spd_update(ctrl, 0x80, 0x00af0039);
-	spd_update(ctrl, 0x84, 0x0000033c);
-	spd_update(ctrl, 0x88, 0x00000010);
+	spd_update(0x74, 0x00000001);
+	spd_update(0x78, 0x001fe974);
+	spd_update(0x80, 0x00af0039);
+	spd_update(0x84, 0x0000033c);
+	spd_update(0x88, 0x00000010);
 
-	spd_update(ctrl, 0xc0, 0x00000003);
+	spd_update(0xc0, 0x00000003);
 }
 
 static void northbridge_set_registers(void)
@@ -961,26 +956,26 @@ static void northbridge_set_registers(void)
 	printk(BIOS_DEBUG, "Initial Northbridge registers have been set.\n");
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
+static void sdram_set_spd_registers(void)
 {
 	uint8_t dimm_mask;
 
 	PRINTK_DEBUG("Reading SPD data...\n");
 
-	dimm_mask = spd_get_supported_dimms(ctrl);
+	dimm_mask = spd_get_supported_dimms();
 
 	if (dimm_mask == 0) {
 		print_debug("No usable memory for this controller\n");
 	} else {
 		PRINTK_DEBUG("DIMM MASK: %02x\n", dimm_mask);	
 
-		spd_set_row_attributes(ctrl, dimm_mask);
-		spd_set_dram_controller_mode(ctrl, dimm_mask);
-		spd_set_dram_timing(ctrl, dimm_mask);
-		spd_set_dram_size(ctrl, dimm_mask);
-		spd_set_dram_pwr_management(ctrl);
-		spd_set_dram_throttle_control(ctrl);
-		spd_set_undocumented_registers(ctrl);
+		spd_set_row_attributes(dimm_mask);
+		spd_set_dram_controller_mode(dimm_mask);
+		spd_set_dram_timing(dimm_mask);
+		spd_set_dram_size(dimm_mask);
+		spd_set_dram_pwr_management();
+		spd_set_dram_throttle_control();
+		spd_set_undocumented_registers();
 	}
 
 	/* Setup Initial Northbridge Registers */

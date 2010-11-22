@@ -21,18 +21,13 @@
 #ifndef NORTHBRIDGE_INTEL_I855_RAMINIT_H
 #define NORTHBRIDGE_INTEL_I855_RAMINIT_H
 
-/* i855 Northbridge PCI device */
+/* i855 Northbridge PCI devices */
 #define NORTHBRIDGE         PCI_DEV(0, 0, 0)
 #define NORTHBRIDGE_MMC     PCI_DEV(0, 0, 1)
 
 /* The i855 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS 2
 
-struct mem_controller {
-  device_t d0;
-  uint16_t channel0[DIMM_SOCKETS];
-};
-
-void sdram_initialize(int controllers, const struct mem_controller *ctrl);
+void sdram_initialize(void);
 
 #endif /* NORTHBRIDGE_INTEL_I855_RAMINIT_H */

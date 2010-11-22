@@ -24,7 +24,7 @@
 #define HIGH_MEMORY_TABLES	( 64 * 1024 )
 
 #if CONFIG_HAVE_ACPI_RESUME
-#define HIGH_MEMORY_SIZE	( 1024 * 1024 )
+#define HIGH_MEMORY_SIZE	((CONFIG_RAMTOP - CONFIG_RAMBASE) + HIGH_MEMORY_TABLES)
 #define HIGH_MEMORY_SAVE	( HIGH_MEMORY_SIZE - HIGH_MEMORY_TABLES )
 #else
 #define HIGH_MEMORY_SIZE	HIGH_MEMORY_TABLES
@@ -48,4 +48,6 @@ void *cbmem_find(u32 id);
 void cbmem_list(void);
 void cbmem_arch_init(void);
 
+struct cbmem_entry *get_cbmem_toc(void);
+void set_cbmem_toc(struct cbmem_entry *);
 #endif

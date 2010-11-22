@@ -22,6 +22,8 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <cbmem.h>
+#include <arch/io.h>
 #include "k8t890.h"
 
 /* this may be later merged */
@@ -110,6 +112,14 @@ static void host_ctrl_enable_k8m890(struct device *dev) {
 	/* Arbitration control 2, Enable C2NOW delay to PSTATECTL */
 	pci_write_config8(dev, 0xa6, 0x83);
 
+}
+#if 0
+struct cbmem_entry *get_cbmem_toc(void) {
+		return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+}
+#endif
+void set_cbmem_toc(struct cbmem_entry *toc) {
+		outl((u32) toc, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
 }
 
 static const struct device_operations host_ctrl_ops_t = {

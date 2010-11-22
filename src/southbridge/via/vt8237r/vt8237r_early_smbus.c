@@ -316,9 +316,7 @@ void enable_rom_decode(void)
 	pci_write_config8(dev, 0x41, 0x7f);
 }
 
-#ifdef CONFIG_NORTHBRIDGE_AMD_K8 /* CN700 doesn't have the support yet */
-#define ACPI_IS_WAKEUP_EARLY 1
-
+#if CONFIG_HAVE_ACPI_RESUME == 1
 static int acpi_is_wakeup_early(void) {
 	device_t dev;
 	u16 tmp;

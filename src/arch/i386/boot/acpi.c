@@ -470,17 +470,6 @@ void suspend_resume(void)
 {
 	void *wake_vec;
 
-#if 0
-#if CONFIG_MEM_TRAIN_SEQ != 0
-	#error "So far it works on AMD and CONFIG_MEM_TRAIN_SEQ == 0"
-#endif
-
-#if CONFIG_RAMBASE < 0x1F00000
-	#error "For ACPI RESUME you need to have CONFIG_RAMBASE at least 31MB"
-	#error "Chipset support (S3_NVRAM_EARLY and ACPI_IS_WAKEUP_EARLY functions and memory ctrl)"
-	#error "And coreboot memory reserved in mainboard.c"
-#endif
-#endif
 	/* If we happen to be resuming find wakeup vector and jump to OS. */
 	wake_vec = acpi_find_wakeup_vector();
 	if (wake_vec)

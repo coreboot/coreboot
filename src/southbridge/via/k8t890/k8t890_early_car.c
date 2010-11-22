@@ -23,15 +23,13 @@
  */
 
 #include <stdlib.h>
+#include <cbmem.h>
+#include <arch/io.h>
 #include "k8t890.h"
 
 /* The 256 bytes of NVRAM for S3 storage, 256B aligned */
 #define K8T890_NVRAM_IO_BASE	0xf00
 #define K8T890_MULTIPLE_FN_EN	0x4f
-
-/* we provide S3 NVRAM to system */
-#define S3_NVRAM_EARLY	1
-
 
 /* AMD K8 LDT0, LDT1, LDT2 Link Control Registers */
 static u8 ldtreg[3] = {0x86, 0xa6, 0xc6};
@@ -155,3 +153,9 @@ static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", * old_dword, size, nvram_pos-size);
 	return nvram_pos;
 }
+
+/* this should be a function
+struct cbmem_entry *get_cbmem_toc(void) {
+*/
+
+#define get_cbmem_toc() ((struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC))

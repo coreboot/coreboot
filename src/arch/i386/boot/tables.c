@@ -214,7 +214,7 @@ struct lb_memory *write_tables(void)
 	 * it begin there during reboot time. We don't need the pointer, nor
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
-	cbmem_add(CBMEM_ID_RESUME, 1024 * (1024-64));
+	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
 #endif
 
 #if CONFIG_MULTIBOOT

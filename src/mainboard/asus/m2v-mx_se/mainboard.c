@@ -34,13 +34,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 #endif
-
-#if CONFIG_HAVE_ACPI_RESUME == 1
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		CONFIG_RAMBASE, ((CONFIG_RAMTOP) - CONFIG_RAMBASE));
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE);
-#endif
 	return 0;
 }
 

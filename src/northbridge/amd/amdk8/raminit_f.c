@@ -2988,14 +2988,15 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 }
 #endif
-
+#if CONFIG_HAVE_ACPI_RESUME == 1
 #include "exit_from_self.c"
+#endif
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			  struct sys_info *sysinfo)
 {
 	int i;
-#ifdef ACPI_IS_WAKEUP_EARLY
+#if CONFIG_HAVE_ACPI_RESUME == 1
 	int suspend = acpi_is_wakeup_early();
 #else
 	int suspend = 0;

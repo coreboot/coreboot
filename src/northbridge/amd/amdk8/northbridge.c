@@ -819,7 +819,8 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 #endif
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64	/* maximum size of high tables in KB */
+#include <cbmem.h>
+#define HIGH_TABLES_SIZE ((HIGH_MEMORY_SIZE + 1024) / 1024)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 

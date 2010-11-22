@@ -62,7 +62,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-// defines S3_NVRAM_EARLY:
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -74,6 +73,15 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 
 #define SB_VFSMAF 0
+
+
+// Now, this needs to be included because it relies on the symbol
+// __PRE_RAM__ being set during CAR stage (in order to compile the
+// BSS free versions of the functions). Either rewrite the code
+// to be always BSS free, or invent a flag that's better suited than
+// __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
+//
+#include "lib/cbmem.c"
 
 /* this function might fail on some K8 CPUs with errata #181 */
 static void ldtstop_sb(void)

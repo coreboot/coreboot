@@ -79,7 +79,6 @@ void soft_reset(void)
 	}
 }
 
-// defines S3_NVRAM_EARLY:
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"

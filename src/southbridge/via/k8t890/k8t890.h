@@ -31,6 +31,7 @@
 
 /* The 256 bytes of NVRAM for S3 storage, 256B aligned */
 #define K8T890_NVRAM_IO_BASE	0xf00
+#define K8T890_NVRAM_CBMEM_TOC	0xfc
 
 #define K8T890_MMCONFIG_MBAR	0x61
 #define K8T890_MULTIPLE_FN_EN	0x4f

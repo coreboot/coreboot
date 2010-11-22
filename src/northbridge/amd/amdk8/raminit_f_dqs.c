@@ -1826,25 +1826,7 @@ static void set_sysinfo_in_ram(unsigned val)
 	set_htic_bit(0, val, 9);
 }
 
-#ifdef S3_NVRAM_EARLY
-// Don't define these prototypes as the real functions are already included
-// at this point.
-//
-//int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
-//int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
-#else
-static inline int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
-{
-	return nvram_pos;
-}
-
-static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
-{
-	die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
-
-	return nvram_pos; /* Make GCC happy */
-}
-#endif
+#if CONFIG_HAVE_ACPI_RESUME == 1
 
 #if CONFIG_MEM_TRAIN_SEQ == 0
 static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
@@ -1930,6 +1912,7 @@ static void dqs_restore_MC_NVRAM(unsigned int dev)
 	reg |= pci_read_config32(dev, DRAM_CONFIG_HIGH);
 	pci_write_config32(dev, DRAM_CONFIG_HIGH, reg);
 }
+#endif
 
 #if CONFIG_MEM_TRAIN_SEQ == 0
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
@@ -1998,7 +1981,9 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 		if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
 		printk(BIOS_DEBUG, " done\n");
 		sysinfo->mem_trained[i]=1;
+#if CONFIG_HAVE_ACPI_RESUME == 1
 		dqs_save_MC_NVRAM((ctrl+i)->f2);
+#endif
 	}
 
 out:

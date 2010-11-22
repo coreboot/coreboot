@@ -21,7 +21,7 @@
  */
 
 /*
- * coreboot ACPI Support - headers and defines.
+ * coreboot ACPI support - headers and defines.
  */
 
 #ifndef __ASM_ACPI_H
@@ -31,73 +31,73 @@
 
 #include <stdint.h>
 
-#define RSDP_SIG		"RSD PTR "  /* RSDT Pointer signature */
-#define ACPI_TABLE_CREATOR	"COREBOOT"
-#define OEM_ID			"CORE  "
-#define ASLC			"CORE"
+#define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
+#define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
+#define OEM_ID			"CORE  "    /* Must be exactly 6 bytes long! */
+#define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
 
-/* ACPI 3.0 table RSDP */
-
+/* RSDP (Root System Description Pointer) */
 typedef struct acpi_rsdp {
-	char  signature[8];	/* RSDP signature "RSD PTR" */
-	u8    checksum;		/* checksum of the first 20 bytes */
-	char  oem_id[6];	/* OEM ID, "LXBIOS" */
-	u8    revision;		/* 0 for ACPI 1.0, 2 for ACPI 2.0/3.0 */
-	u32   rsdt_address;	/* physical address of RSDT */
-	u32   length;		/* total length of RSDP (including extended part) */
-	u64   xsdt_address;	/* physical address of XSDT */
-	u8    ext_checksum;	/* chechsum of whole table */
+	char  signature[8];	/* RSDP signature */
+	u8    checksum;		/* Checksum of the first 20 bytes */
+	char  oem_id[6];	/* OEM ID */
+	u8    revision;		/* 0 for ACPI 1.0, 2 for ACPI 2.0/3.0/4.0 */
+	u32   rsdt_address;	/* Physical address of RSDT (32 bits) */
+	u32   length;		/* Total RSDP length (incl. extended part) */
+	u64   xsdt_address;	/* Physical address of XSDT (64 bits) */
+	u8    ext_checksum;	/* Checksum of the whole table */
 	u8    reserved[3];
-} __attribute__((packed)) acpi_rsdp_t;
+} __attribute__ ((packed)) acpi_rsdp_t;
+/* Note: ACPI 1.0 didn't have length, xsdt_address, and ext_checksum. */
 
-/* Generic Address Container */
-
+/* GAS (Generic Address Structure) */
 typedef struct acpi_gen_regaddr {
-	u8  space_id;
-	u8  bit_width;
-	u8  bit_offset;
-	u8  resv;
-	u32 addrl;
-	u32 addrh;
+	u8  space_id;		/* Address space ID */
+	u8  bit_width;		/* Register size in bits */
+	u8  bit_offset;		/* Register bit offset */
+	u8  resv;		/* FIXME: Access size in ACPI 2.0/3.0/4.0 */
+	u32 addrl;		/* Register address, low 32 bits */
+	u32 addrh;		/* Register address, high 32 bits */
 } __attribute__ ((packed)) acpi_addr_t;
 
-#define ACPI_ADDRESS_SPACE_MEMORY	   0
-#define ACPI_ADDRESS_SPACE_IO		   1
-#define ACPI_ADDRESS_SPACE_PCI		   2
-#define ACPI_ADDRESS_SPACE_FIXED	0x7f
+#define ACPI_ADDRESS_SPACE_MEMORY	   0	/* System memory */
+#define ACPI_ADDRESS_SPACE_IO		   1	/* System I/O */
+#define ACPI_ADDRESS_SPACE_PCI		   2	/* PCI config space */
+#define ACPI_ADDRESS_SPACE_EC		   3	/* Embedded controller */
+#define ACPI_ADDRESS_SPACE_SMBUS	   4	/* SMBus */
+#define ACPI_ADDRESS_SPACE_FIXED	0x7f	/* Functional fixed hardware */
+/* 0x80-0xbf: Reserved */
+/* 0xc0-0xff: OEM defined */
 
-
-/* Generic ACPI Header, provided by (almost) all tables */
-
-typedef struct acpi_table_header         /* ACPI common table header */
-{
-	char signature [4];          /* ACPI signature (4 ASCII characters) */\
-	u32  length;                 /* Length of table, in bytes, including header */\
-	u8   revision;               /* ACPI Specification minor version # */\
-	u8   checksum;               /* To make sum of entire table == 0 */\
-	char oem_id [6];             /* OEM identification */\
-	char oem_table_id [8];       /* OEM table identification */\
-	u32  oem_revision;           /* OEM revision number */\
-	char asl_compiler_id [4];    /* ASL compiler vendor ID */\
+/* Generic ACPI header, provided by (almost) all tables */
+typedef struct acpi_table_header {
+	char signature[4];           /* ACPI signature (4 ASCII characters) */
+	u32  length;                 /* Table length in bytes (incl. header) */
+	u8   revision;               /* Table version (not ACPI version!) */
+	u8   checksum;               /* To make sum of entire table == 0 */
+	char oem_id[6];              /* OEM identification */
+	char oem_table_id[8];        /* OEM table identification */
+	u32  oem_revision;           /* OEM revision number */
+	char asl_compiler_id[4];     /* ASL compiler vendor ID */
 	u32  asl_compiler_revision;  /* ASL compiler revision number */
 } __attribute__ ((packed)) acpi_header_t;
 
-/* A maximum number of 32 ACPI tables ought to be enough for now */
+/* A maximum number of 32 ACPI tables ought to be enough for now. */
 #define MAX_ACPI_TABLES 32
 
-/* RSDT */
+/* RSDT (Root System Description Table) */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
 	u32 entry[MAX_ACPI_TABLES];
 } __attribute__ ((packed)) acpi_rsdt_t;
 
-/* XSDT */
+/* XSDT (Extended System Description Table) */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
 	u64 entry[MAX_ACPI_TABLES];
 } __attribute__ ((packed)) acpi_xsdt_t;
 
-/* HPET TIMERS */
+/* HPET timers */
 typedef struct acpi_hpet {
 	struct acpi_table_header header;
 	u32 id;
@@ -107,7 +107,7 @@ typedef struct acpi_hpet {
 	u8 attributes;
 } __attribute__ ((packed)) acpi_hpet_t;
 
-/* MCFG */
+/* MCFG (PCI Express MMIO config space BAR description table) */
 typedef struct acpi_mcfg {
 	struct acpi_table_header header;
 	u8 reserved[8];
@@ -122,104 +122,111 @@ typedef struct acpi_mcfg_mmconfig {
 	u8 reserved[4];
 } __attribute__ ((packed)) acpi_mcfg_mmconfig_t;
 
-
-/* SRAT */
+/* SRAT (System Resource Affinity Table) */
 typedef struct acpi_srat {
-        struct acpi_table_header header;
-        u32 resv;
+	struct acpi_table_header header;
+	u32 resv;
 	u64 resv1;
-	/* followed by static resource allocation structure[n]*/
+	/* Followed by static resource allocation structure[n] */
 } __attribute__ ((packed)) acpi_srat_t;
 
-
+/* SRAT: Processor Local APIC/SAPIC Affinity Structure */
 typedef struct acpi_srat_lapic {
-        u8 type;
-        u8 length;
-        u8 proximity_domain_7_0;
-        u8 apic_id;
-        u32 flags; /* enable bit 0  = 1, other bits reserved to 0 */
-	u8 local_sapic_eid;
-	u8 proximity_domain_31_8[3];
-	u32 resv;
+	u8 type;			/* Type (0) */
+	u8 length;			/* Length in bytes (16) */
+	u8 proximity_domain_7_0;	/* Proximity domain bits[7:0] */
+	u8 apic_id;			/* Local APIC ID */
+	u32 flags; /* Enable bit 0 = 1, other bits reserved to 0 */
+	u8 local_sapic_eid;		/* Local SAPIC EID */
+	u8 proximity_domain_31_8[3];	/* Proximity domain bits[31:8] */
+	u32 resv;			/* TODO: Clock domain in ACPI 4.0. */
 } __attribute__ ((packed)) acpi_srat_lapic_t;
 
+/* SRAT: Memory Affinity Structure */
 typedef struct acpi_srat_mem {
-        u8 type;
-        u8 length;
-        u32 proximity_domain;
-        u16 resv;
-	u32 base_address_low;
-	u32 base_address_high;
-	u32 length_low;
-	u32 length_high;
+	u8 type;			/* Type (1) */
+	u8 length;			/* Length in bytes (40) */
+	u32 proximity_domain;		/* Proximity domain */
+	u16 resv;
+	u32 base_address_low;		/* Mem range base address, low */
+	u32 base_address_high;		/* Mem range base address, high */
+	u32 length_low;			/* Mem range length, low */
+	u32 length_high;		/* Mem range length, high */
 	u32 resv1;
-        u32 flags; /* enable bit 0,  hot pluggable bit 1; Non Volatile bit 2, other bits reserved */
-        u32 resv2[2];
+	u32 flags; /* Enable bit 0, hot pluggable bit 1; Non Volatile bit 2, other bits reserved to 0 */
+	u32 resv2[2];
 } __attribute__ ((packed)) acpi_srat_mem_t;
 
-/* SLIT */
+/* SLIT (System Locality Distance Information Table) */
 typedef struct acpi_slit {
-        struct acpi_table_header header;
-	/* followed by static resource allocation 8+byte[num*num]*/
+	struct acpi_table_header header;
+	/* Followed by static resource allocation 8+byte[num*num] */
 } __attribute__ ((packed)) acpi_slit_t;
 
-
-/* MADT */
+/* MADT (Multiple APIC Description Table) */
 typedef struct acpi_madt {
 	struct acpi_table_header header;
-	u32 lapic_addr;
-	u32 flags;
+	u32 lapic_addr;			/* Local APIC address */
+	u32 flags;			/* Multiple APIC flags */
 } __attribute__ ((packed)) acpi_madt_t;
 
+/* MADT: APIC Structure Types */
+/* TODO: Convert to ALLCAPS. */
 enum acpi_apic_types {
-	LocalApic		= 0,
-	IOApic			= 1,
-	IRQSourceOverride	= 2,
-	NMIType			= 3,
-	LocalApicNMI		= 4,
-	LApicAddressOverride	= 5,
-	IOSApic			= 6,
-	LocalSApic		= 7,
-	PlatformIRQSources	= 8
+	LocalApic		= 0,	/* Processor local APIC */
+	IOApic			= 1,	/* I/O APIC */
+	IRQSourceOverride	= 2,	/* Interrupt source override */
+	NMIType			= 3,	/* NMI source */
+	LocalApicNMI		= 4,	/* Local APIC NMI */
+	LApicAddressOverride	= 5,	/* Local APIC address override */
+	IOSApic			= 6,	/* I/O SAPIC */
+	LocalSApic		= 7,	/* Local SAPIC */
+	PlatformIRQSources	= 8,	/* Platform interrupt sources */
+	Localx2Apic		= 9,	/* Processor local x2APIC */
+	Localx2ApicNMI		= 10,	/* Local x2APIC NMI */
+	/* 0x0b-0x7f: Reserved */
+	/* 0x80-0xff: Reserved for OEM use */
 };
 
+/* MADT: Processor Local APIC Structure */
 typedef struct acpi_madt_lapic {
-	u8 type;
-	u8 length;
-	u8 processor_id;
-	u8 apic_id;
-	u32 flags;
+	u8 type;			/* Type (0) */
+	u8 length;			/* Length in bytes (8) */
+	u8 processor_id;		/* ACPI processor ID */
+	u8 apic_id;			/* Local APIC ID */
+	u32 flags;			/* Local APIC flags */
 } __attribute__ ((packed)) acpi_madt_lapic_t;
 
+/* MADT: Local APIC NMI Structure */
 typedef struct acpi_madt_lapic_nmi {
-	u8 type;
-	u8 length;
-	u8 processor_id;
-	u16 flags;
-	u8 lint;
+	u8 type;			/* Type (4) */
+	u8 length;			/* Length in bytes (6) */
+	u8 processor_id;		/* ACPI processor ID */
+	u16 flags;			/* MPS INTI flags */
+	u8 lint;			/* Local APIC LINT# */
 } __attribute__ ((packed)) acpi_madt_lapic_nmi_t;
 
-
+/* MADT: I/O APIC Structure */
 typedef struct acpi_madt_ioapic {
-	u8 type;
-	u8 length;
-	u8 ioapic_id;
+	u8 type;			/* Type (1) */
+	u8 length;			/* Length in bytes (12) */
+	u8 ioapic_id;			/* I/O APIC ID */
 	u8 reserved;
-	u32 ioapic_addr;
-	u32 gsi_base;
+	u32 ioapic_addr;		/* I/O APIC address */
+	u32 gsi_base;			/* Global system interrupt base */
 } __attribute__ ((packed)) acpi_madt_ioapic_t;
 
+/* MADT: Interrupt Source Override Structure */
 typedef struct acpi_madt_irqoverride {
-	u8 type;
-	u8 length;
-	u8 bus;
-	u8 source;
-	u32 gsirq;
-	u16 flags;
+	u8 type;			/* Type (2) */
+	u8 length;			/* Length in bytes (10) */
+	u8 bus;				/* ISA (0) */
+	u8 source;			/* Bus-relative int. source (IRQ) */
+	u32 gsirq;			/* Global system interrupt */
+	u16 flags;			/* MPS INTI flags */
 } __attribute__ ((packed)) acpi_madt_irqoverride_t;
 
-/* FADT */
-
+/* FADT (Fixed ACPI Description Table) */
 typedef struct acpi_fadt {
 	struct acpi_table_header header;
 	u32 firmware_ctrl;
@@ -272,16 +279,14 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_pm1a_evt_blk;
 	struct acpi_gen_regaddr x_pm1b_evt_blk;
 	struct acpi_gen_regaddr x_pm1a_cnt_blk;
-	struct acpi_gen_regaddr	x_pm1b_cnt_blk;
+	struct acpi_gen_regaddr x_pm1b_cnt_blk;
 	struct acpi_gen_regaddr x_pm2_cnt_blk;
 	struct acpi_gen_regaddr x_pm_tmr_blk;
 	struct acpi_gen_regaddr x_gpe0_blk;
 	struct acpi_gen_regaddr x_gpe1_blk;
 } __attribute__ ((packed)) acpi_fadt_t;
 
-//
-// FADT Feature Flags
-//
+/* FADT Feature Flags */
 #define ACPI_FADT_WBINVD		(1 << 0)
 #define ACPI_FADT_WBINVD_FLUSH		(1 << 1)
 #define ACPI_FADT_C1_SUPPORTED		(1 << 2)
@@ -302,19 +307,16 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_REMOTE_POWER_ON	(1 << 17)
 #define ACPI_FADT_APIC_CLUSTER		(1 << 18)
 #define ACPI_FADT_APIC_PHYSICAL		(1 << 19)
+/* Bits 20-31: reserved */
 
-//
-// FADT Boot Architecture Flags
-//
+/* FADT Boot Architecture Flags */
 #define ACPI_FADT_LEGACY_DEVICES	(1 << 0)
 #define ACPI_FADT_8042			(1 << 1)
 #define ACPI_FADT_VGA_NOT_PRESENT	(1 << 2)
 #define ACPI_FADT_MSI_NOT_SUPPORTED	(1 << 3)
 #define ACPI_FADT_NO_PCIE_ASPM_CONTROL	(1 << 4)
 
-//
-// FADT Preferred Power Management Profile
-//
+/* FADT Preferred Power Management Profile */
 enum acpi_preferred_pm_profiles {
 	PM_UNSPECIFIED		= 0,
 	PM_DESKTOP		= 1,
@@ -323,71 +325,74 @@ enum acpi_preferred_pm_profiles {
 	PM_ENTERPRISE_SERVER	= 4,
 	PM_SOHO_SERVER  	= 5,
 	PM_APPLIANCE_PC		= 6,
-	PM_PERFORMANCE_SERVER	= 7
+	PM_PERFORMANCE_SERVER	= 7,
 };
 
-/* FACS */
+/* FACS (Firmware ACPI Control Structure) */
 typedef struct acpi_facs {
-	char signature[4];
-	u32 length;
-	u32 hardware_signature;
-	u32 firmware_waking_vector;
-	u32 global_lock;
-	u32 flags;
-	u32 x_firmware_waking_vector_l;
-	u32 x_firmware_waking_vector_h;
-	u8 version;
-	u8 resv[31];
+	char signature[4];			/* "FACS" */
+	u32 length;				/* Length in bytes (>= 64) */
+	u32 hardware_signature;			/* Hardware signature */
+	u32 firmware_waking_vector;		/* Firmware waking vector */
+	u32 global_lock;			/* Global lock */
+	u32 flags;				/* FACS flags */
+	u32 x_firmware_waking_vector_l;		/* X FW waking vector, low */
+	u32 x_firmware_waking_vector_h;		/* X FW waking vector, high */
+	u8 version;				/* ACPI 4.0: 2 */
+	u8 resv[31];				/* FIXME: 4.0: ospm_flags */
 } __attribute__ ((packed)) acpi_facs_t;
 
-//
-// FACS Flags
-//
+/* FACS flags */
 #define ACPI_FACS_S4BIOS_F	(1 << 0)
+#define ACPI_FACS_64BIT_WAKE_F	(1 << 1)
+/* Bits 31..2: reserved */
 
+/* ECDT (Embedded Controller Boot Resources Table) */
 typedef struct acpi_ecdt {
 	struct acpi_table_header header;
-	struct acpi_gen_regaddr ec_control;
-	struct acpi_gen_regaddr ec_data;
-	u32 uid;
-	u8 gpe_bit;
-	u8 ec_id[];
+	struct acpi_gen_regaddr ec_control;	/* EC control register */
+	struct acpi_gen_regaddr ec_data;	/* EC data register */
+	u32 uid;				/* UID */
+	u8 gpe_bit;				/* GPE bit */
+	u8 ec_id[];				/* EC ID  */
 } __attribute__ ((packed)) acpi_ecdt_t;
 
-
-/* These are implemented by the target port or north/southbridge*/
+/* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current);
 unsigned long acpi_fill_slit(unsigned long current);
-unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id);
+unsigned long acpi_fill_ssdt_generator(unsigned long current,
+				       const char *oem_table_id);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 
-void update_ssdt(void* ssdt);
-void update_ssdtx(void* ssdtx, int i);
+void update_ssdt(void *ssdt);
+void update_ssdtx(void *ssdtx, int i);
 
-/* These can be used by the target port */
+/* These can be used by the target port. */
 u8 acpi_checksum(u8 *table, u32 length);
 
 void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
 
-
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
-int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base);
+int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
+			    u32 gsi_base);
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
-                u8 bus, u8 source, u32 gsirq, u16 flags);
+				 u8 bus, u8 source, u32 gsirq, u16 flags);
 int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
-                u16 flags, u8 lint);
+			       u16 flags, u8 lint);
 void acpi_create_madt(acpi_madt_t *madt);
 unsigned long acpi_create_madt_lapics(unsigned long current);
-unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint);
-
+unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
+					  u8 lint);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
-int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek, u32 flags);
-int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end);
+int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek,
+			 u32 flags);
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
+			      u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat);
 
@@ -422,18 +427,19 @@ int acpi_get_sleep_type(void);
 
 /* northbridge/amd/amdfam10/amdfam10_acpi.c */
 unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
+
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(void);
 
-#define ACPI_WRITE_MADT_IOAPIC(dev,id)        		\
-do {                                                    \
-        struct resource *res;                           \
-        res = find_resource(dev, PCI_BASE_ADDRESS_0);   \
-        if (!res) break;                                \
+#define ACPI_WRITE_MADT_IOAPIC(dev,id)			\
+do {							\
+	struct resource *res;				\
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);	\
+	if (!res) break;				\
 	current += acpi_create_madt_ioapic(		\
 		(acpi_madt_ioapic_t *)current,		\
 		id, res->base, gsi_base);		\
-	gsi_base+=4;					\
+	gsi_base += 4;					\
 } while(0);
 
 #else // CONFIG_GENERATE_ACPI_TABLES

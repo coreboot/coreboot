@@ -28,7 +28,6 @@
 #include <pc80/mc146818rtc.h>
 #include "pc80/udelay_io.c"
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "northbridge/intel/i3100/raminit_ep80579.h"
@@ -97,10 +96,5 @@ static void main(unsigned long bist)
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
 #ifdef TRUXTON_DEBUG
 	dump_bar14(PCI_DEV(0, 0x00, 0));
-#endif
-
-#ifdef TRUXTON_DEBUG
-	ram_fill(0x00000000, 0x02000000);
-	ram_verify(0x00000000, 0x02000000);
 #endif
 }

@@ -25,7 +25,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "superio/winbond/w83977f/w83977f_early_serial.c"
 #include "southbridge/amd/cs5530/cs5530_enable_rom.c"
 #include "cpu/x86/bist.h"
@@ -47,5 +46,4 @@ static void main(unsigned long bist)
 
 	cs5530_enable_rom();
 	sdram_init();
-	/* ram_check(0x00000000, 640 * 1024); */
 }

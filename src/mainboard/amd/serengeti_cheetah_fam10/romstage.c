@@ -328,9 +328,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	dump_pci_device_range(PCI_DEV(0, 0x18, 3), 0, 0x200);
 */
 
-//	ram_check(0x00200000, 0x00200000 + (640 * 1024));
-//	ram_check(0x40200000, 0x40200000 + (640 * 1024));
-
 //	die("After MCT init before CAR disabled.");
 
 	post_code(0x42);

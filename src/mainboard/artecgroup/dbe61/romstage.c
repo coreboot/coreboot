@@ -133,8 +133,4 @@ void main(unsigned long bist)
 	msr = rdmsr(MC_CF8F_DATA);
 	print_debug(" \n");
 #endif
-
-	/* Check memory. */
-	// ram_check(0x00000000, 640 * 1024);
-	// ram_check(1024 * 1024, 2 * 1024 * 1024);
 }

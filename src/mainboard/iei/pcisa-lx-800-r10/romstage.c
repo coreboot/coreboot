@@ -87,8 +87,6 @@ void main(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 
-	/* ram_check(0, 640 * 1024); */
-
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }

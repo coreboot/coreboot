@@ -124,7 +124,4 @@ void main(unsigned long bist)
 #if CONFIG_LLSHELL
 	llshell();
 #endif
-	/* Check RAM. */
-	/* ram_check(0, 640 * 1024); */
-	/* ram_check(64512 * 1024, 65536 * 1024); */
 }

@@ -67,5 +67,4 @@ void main(unsigned long bist)
 	smbus_fixup(&ctrl);
 	report_bist_failure(bist);
 	ddr_ram_setup(&ctrl);
-	/* ram_check(0, 640 * 1024); */
 }

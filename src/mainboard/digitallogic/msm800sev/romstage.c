@@ -66,9 +66,6 @@ void main(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 
-	/* Check all of memory */
-	ram_check(0x00000000, 640*1024);
-
 	/* Switch from Cache as RAM to real RAM */
 	/* There are two ways we could think about this.
 	 1. If we are using the romstage.inc ROMCC way, the stack is going to be re-setup in the code following this code.

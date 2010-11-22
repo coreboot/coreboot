@@ -127,8 +127,4 @@ void main(unsigned long bist)
 	outb( temp, 0x4F);
 	temp = inb(0x4F);                            //watchdog function. Make sure to let the other Bits unchanged!
 	print_debug_hex8(temp);print_debug("\n");
-	/* Check all of memory */
-//	ram_check(0, 16384);
-	ram_check(0x20000, 0x24000);
-//	ram_check(0x00000000, 640*1024);
 }

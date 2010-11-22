@@ -6,7 +6,6 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
@@ -95,25 +94,4 @@ static void main(unsigned long bist)
 	sdram_set_registers((const struct mem_controller *) 0);
 	sdram_set_spd_registers((const struct mem_controller *) 0);
 	sdram_enable(0, (const struct mem_controller *) 0);
-
-	/* Check all of memory */
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
-	};
-	int i;
-	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
 }

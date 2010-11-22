@@ -166,10 +166,6 @@ void main(unsigned long bist)
 
 	sdram_initialize(1, memctrl);
 
-	/* Check memory */
-	/* Enable this only if you are having questions. */
-	/* ram_check(0, 640 * 1024); */
-
 	/* Switch from Cache as RAM to real RAM.
 	 *
 	 * There are two ways we could think about this.

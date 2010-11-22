@@ -56,7 +56,4 @@ void main(unsigned long bist)
 	sdram_initialize(1, memctrl);
 
 	msr_init();
-
-	/* Check all of memory */
-	//ram_check(0x00000000, 640*1024);
 }

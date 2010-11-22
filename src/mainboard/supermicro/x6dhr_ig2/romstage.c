@@ -6,7 +6,6 @@
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"
@@ -101,18 +100,5 @@ static void main(unsigned long bist)
 	dump_pci_devices();
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
 	dump_bar14(PCI_DEV(0, 0x00, 0));
-#endif
-
-#if 0 // temporarily disabled
-	/* Check the first 1M */
-//	ram_check(0x00000000, 0x000100000);
-//	ram_check(0x00000000, 0x000a0000);
-//	ram_check(0x00100000, 0x01000000);
-	ram_check(0x00100000, 0x00100100);
-	/* check the first 1M in the 3rd Gig */
-//	ram_check(0x30100000, 0x31000000);
-#endif
-#if 0
-	ram_check(0x00000000, 0x02000000);
 #endif
 }

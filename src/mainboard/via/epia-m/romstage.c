@@ -7,7 +7,6 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "northbridge/via/vt8623/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
@@ -104,20 +103,6 @@ static void main(unsigned long bist)
 	enable_shadow_ram();
 
 	ddr_ram_setup((const struct mem_controller *)0);
-
-	/* Check all of memory */
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-	};
-	int i;
-	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
 
 	if (bist == 0)
 		early_mtrr_init();

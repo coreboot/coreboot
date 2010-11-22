@@ -104,6 +104,4 @@ void main(unsigned long bist)
 	enable_mainboard_devices();
 
 	ddr_ram_setup(&ctrl);
-
-	/* ram_check(0, 640 * 1024); */
 }

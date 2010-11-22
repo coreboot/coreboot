@@ -12,7 +12,6 @@
 #include <arch/hlt.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 
 #define TS5300_LED_OFF outb((inb(0x77)&0xfe), 0x77)
@@ -160,13 +159,6 @@ static void main(unsigned long bist)
 
 #if 1
 	identify_system();
-#endif
-
-#if 0
-	// Check 32MB of memory @ 0 (very slow!)
-	print_err("Checking memory:\n");
-	ram_check(0x00000000, 0x000a0000);
-	ram_check(0x000b0000, 0x02000000);
 #endif
 
 	TS5300_LED_OFF;

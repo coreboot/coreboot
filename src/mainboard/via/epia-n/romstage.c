@@ -27,7 +27,6 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "northbridge/via/cn400/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
@@ -134,6 +133,4 @@ static void main(unsigned long bist)
 
 	if (bist == 0)
 		early_mtrr_init();
-
-	//ram_check(0, 640 * 1024);
 }

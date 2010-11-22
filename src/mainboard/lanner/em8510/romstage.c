@@ -80,16 +80,4 @@ void main(unsigned long bist)
 		sdram_set_spd_registers();
 		sdram_enable();
 	}
-
-#if 0
-	dump_pci_devices();
-	dump_pci_device(PCI_DEV(0, 0, 0));
-
-	// Check all of memory
-	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
-	// Check 16MB of memory @ 2GB
-	ram_check(0x80000000, 0x81000000);
-#endif
 }

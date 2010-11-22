@@ -121,8 +121,4 @@ void main(unsigned long bist)
 
 	/* Initialize memory */
 	sdram_initialize();
-
-	/* Check RAM. */
-	/* ram_check(0, 640 * 1024); */
-	/* ram_check(64512 * 1024, 65536 * 1024); */
 }

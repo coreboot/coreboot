@@ -78,7 +78,4 @@ void main(unsigned long bist)
 	print_err("ram setup done\n");
 
 	msr_init();
-
-	/* Check all of memory */
-	/*ram_check(0x00000000, 640*1024);*/
 }

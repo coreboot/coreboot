@@ -6,7 +6,6 @@
 #include <arch/hlt.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 
 void setup_pars(void)
@@ -203,16 +202,6 @@ static void main(unsigned long bist)
 	dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
 
-#if 0
-	print_err("RAM CHECK!\n");
-	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
-#endif
-#if 0
-	print_err("RAM CHECK for 32 MB!\n");
-	// Check 32MB of memory @ 0
-	ram_check(0x00000000, 0x02000000);
-#endif
 #if 1
 	{
 	  volatile unsigned char *src = (unsigned char *) 0x2000000 + 0x60000;

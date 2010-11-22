@@ -118,6 +118,4 @@ void main(unsigned long bist)
 	/* dump_pci_devices(); */
 	/* dump_pci_device(PCI_DEV(0, 0x00, 0)); */
 	/* dump_bar14(PCI_DEV(0, 0x00, 0)); */
-
-	ram_check(0, 1024 * 1024);
 }

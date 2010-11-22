@@ -3,7 +3,6 @@
 #define MB_SYSCONF_H
 
 struct mb_sysconf_t {
-	unsigned char bus_isa;
 	unsigned char bus_8132_0;
 	unsigned char bus_8132_1;
 	unsigned char bus_8132_2;

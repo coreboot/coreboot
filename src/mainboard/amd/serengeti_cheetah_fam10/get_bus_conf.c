@@ -108,10 +108,6 @@ void get_bus_conf(void)
 
 	m = sysconf.mb;
 
-	for(i=0;i<256; i++) {
-		m->bus_type[i] = 0;
-	}
-
 	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 	for(i=0;i<sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
@@ -119,8 +115,6 @@ void get_bus_conf(void)
 	}
 
 	get_pci1234();
-
-	m->bus_type[0] = 1; //pci
 
 	sysconf.sbdn = (sysconf.hcdn[0] >> 8) & 0xff;
 	m->sbdn3 = sysconf.hcdn[0] & 0xff;
@@ -150,18 +144,6 @@ void get_bus_conf(void)
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3+1);
-	}
-
-	for(i=0; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
-
-		u32 busn = (sysconf.pci1234[i] >> 12) & 0xff;
-		u32 busn_max = (sysconf.pci1234[i] >> 20) & 0xff;
-		for (j = busn; j <= busn_max; j++)
-			m->bus_type[j] = 1;
-		if(m->bus_isa <= busn_max)
-			m->bus_isa = busn_max + 1;
-		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
 	}
 
 	 /* HT chain 1 */

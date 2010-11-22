@@ -12,6 +12,5 @@
 #define PCI_BUS_P64H2_1_B	5		// P64H2#1 bus B
 #define PCI_BUS_P64H2_1_A	6		// P64H2#1 bus A
 #define PCI_BUS_ICH3		7		// ICH3-S
-#define SUPERIO_BUS			8		// (arbitrary but unique bus #)
 
 #endif	// XE7501DEVKIT_BUS_H_INCLUDED

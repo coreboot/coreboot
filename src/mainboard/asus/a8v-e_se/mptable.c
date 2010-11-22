@@ -27,7 +27,7 @@
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	int bus_isa = 42;
+	int bus_isa;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -35,15 +35,7 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	/* Bus:		Bus ID	Type */
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, 1, "PCI   ");
-	smp_write_bus(mc, 2, "PCI   ");
-	smp_write_bus(mc, 3, "PCI   ");
-	smp_write_bus(mc, 4, "PCI   ");
-	smp_write_bus(mc, 5, "PCI   ");
-	smp_write_bus(mc, 6, "PCI   ");
-	smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, IO_APIC_ADDR);

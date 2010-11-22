@@ -61,9 +61,9 @@
 static void *smp_write_config_table(void *v)
 {
         struct mp_config_table *mc;
-	unsigned char bus_num, bus_chipset, bus_isa, bus_pci;
+	unsigned char bus_chipset, bus_pci;
 	unsigned char bus_pcie_a, bus_pcie_a1, bus_pcie_b;
-	int i;
+	int bus_isa, i;
 	uint32_t pin, route;
 	device_t dev;
 	struct resource *res;
@@ -89,12 +89,9 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1E,0));
 	if (dev) {
 	  bus_pci = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	  bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-	  bus_isa++;
 	} else {
 	  printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
 	  bus_pci = 6;
-	  bus_isa = 7;
 	}
 
 	dev = dev_find_slot(0, PCI_DEVFN(2,0));
@@ -121,11 +118,7 @@ static void *smp_write_config_table(void *v)
 	  bus_pcie_b = 3;
 	}
 
-	/*Bus: Bus ID Type*/
-	for(bus_num = 0; bus_num < bus_isa; bus_num++) {
-	  smp_write_bus(mc, bus_num, "PCI   ");
-	}
-	smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/*I/O APICs: APIC ID Version State Address*/
 	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);

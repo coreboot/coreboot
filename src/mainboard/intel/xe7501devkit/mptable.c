@@ -15,19 +15,7 @@
 #define INT_D	3
 #define PCI_IRQ(dev, intLine)	(((dev)<<2) | intLine)
 
-static void xe7501devkit_register_buses(struct mp_config_table *mc)
-{
-	// Bus ID, Bus Type
-	smp_write_bus(mc, PCI_BUS_CHIPSET,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_E7501_HI_B,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_P64H2_2_B,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_P64H2_2_A,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_E7501_HI_D,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_P64H2_1_B,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_P64H2_1_A,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_ICH3,		BUSTYPE_PCI);
-	smp_write_bus(mc, SUPERIO_BUS,		BUSTYPE_ISA);
-}
+static int bus_isa;
 
 static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 {
@@ -126,7 +114,7 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 
 	// TODO: Not sure how to handle BT_INTR# signals from the P64H2s. Do we even need to, in APIC mode?
 
-	mptable_add_isa_interrupts(mc, SUPERIO_BUS, IOAPIC_ICH3, 0);
+	mptable_add_isa_interrupts(mc, bus_isa, IOAPIC_ICH3, 0);
 }
 
 static void *smp_write_config_table(void* v)
@@ -139,7 +127,7 @@ static void *smp_write_config_table(void* v)
 
 	smp_write_processors(mc);
 
-	xe7501devkit_register_buses(mc);
+	mptable_write_buses(mc, NULL, &bus_isa);
 	xe7501devkit_register_ioapics(mc);
 	xe7501devkit_register_interrupts(mc);
 

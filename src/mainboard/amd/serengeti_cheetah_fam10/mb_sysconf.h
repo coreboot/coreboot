@@ -22,7 +22,6 @@
 #define MB_SYSCONF_H
 
 struct mb_sysconf_t {
-	u8 bus_isa;
 	u8 bus_8132_0;
 	u8 bus_8132_1;
 	u8 bus_8132_2;
@@ -38,7 +37,6 @@ struct mb_sysconf_t {
 	u32 sbdn3;
 	u32 sbdn3a[31];
 	u32 sbdn5[31];
- 	u32 bus_type[256];
 };
 
 #endif

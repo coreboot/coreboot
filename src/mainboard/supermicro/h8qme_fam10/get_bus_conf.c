@@ -75,7 +75,7 @@ void get_bus_conf(void)
 	struct mb_sysconf_t *m;
 
 	device_t dev;
-	int i, j;
+	int i;
 
 	if(get_bus_conf_done==1) return; //do it only once
 
@@ -94,7 +94,6 @@ void get_bus_conf(void)
 
 	get_pci1234();
 
-	m->bus_type[0] = 1; //pci
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 	m->bus_mcp55[0] = (sysconf.pci1234[0] >> 12) & 0xff;
 
@@ -131,20 +130,6 @@ void get_bus_conf(void)
 		/* 8132_2 */
 		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3 + 1, 0));
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		m->bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-		m->bus_isa++;
-
-	for(i=0; i< sysconf.hc_possible_num; i++) {
-		if(!(sysconf.pci1234[i] & 0x1) ) continue;
-
-		unsigned busn = (sysconf.pci1234[i] >> 12) & 0xff;
-		unsigned busn_max = (sysconf.pci1234[i] >> 20) & 0xff;
-		for (j = busn; j <= busn_max; j++)
-			m->bus_type[j] = 1;
-		if(m->bus_isa <= busn_max)
-			m->bus_isa = busn_max + 1;
-		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
-	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1

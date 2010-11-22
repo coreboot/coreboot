@@ -27,8 +27,7 @@
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	u8 bus_num;
-	u8 bus_isa;
+	int bus_isa;
 	u8 bus_pea0 = 0;
 	u8 bus_pea1 = 0;
 	u8 bus_aioc;
@@ -44,13 +43,10 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x04,0));
 	if (dev) {
 		bus_aioc = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-		bus_isa++;
 	}
 	else {
 		printk(BIOS_DEBUG, "ERROR - could not find PCI 0:04.0\n");
 		bus_aioc = 0;
-		bus_isa = 9;
 	}
 	/* PCIe A0 */
 	dev = dev_find_slot(0, PCI_DEVFN(0x02,0));
@@ -71,11 +67,7 @@ static void *smp_write_config_table(void *v)
 		bus_pea1 = 0;
 	}
 
-	/* define bus and isa numbers */
-	for(bus_num = 0; bus_num < bus_isa; bus_num++) {
-		smp_write_bus(mc, bus_num, "PCI	  ");
-	}
-	smp_write_bus(mc, bus_isa, "ISA	  ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* IOAPIC handling */
 	smp_write_ioapic(mc, 0x8, 0x20, IO_APIC_ADDR);

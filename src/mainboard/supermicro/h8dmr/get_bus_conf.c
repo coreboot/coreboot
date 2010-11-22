@@ -34,7 +34,6 @@
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
-        unsigned char bus_isa;
         unsigned char bus_mcp55[8]; //1
         unsigned apicid_mcp55;
 
@@ -124,12 +123,9 @@ void get_bus_conf(void)
 	                dev = dev_find_slot(bus_mcp55[0], PCI_DEVFN(sbdn + 0x0a + i - 2 , 0));
         	        if (dev) {
                 	        bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	                        bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-        	                bus_isa++;
 	                }
         	        else {
                 	        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_mcp55[0], sbdn + 0x0a + i - 2 );
-	                        bus_isa = bus_mcp55[i-1]+1;
         	        }
 		}
 

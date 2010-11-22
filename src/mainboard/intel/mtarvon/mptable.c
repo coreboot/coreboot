@@ -29,7 +29,7 @@
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	u8 bus_isa = 7;
+	int bus_isa;
 	u8 bus_pci = 6;
 	u8 bus_pcie_a = 1;
 
@@ -39,11 +39,7 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 
-	/* Define bus numbers */
-	smp_write_bus(mc, 0, "PCI   ");
-	smp_write_bus(mc, bus_pci, "PCI   ");
-	smp_write_bus(mc, bus_pcie_a, "PCI   ");
-	smp_write_bus(mc, bus_isa, "ISA   ");
+	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* IOAPIC handling */
 	smp_write_ioapic(mc, 0x01, 0x20, IO_APIC_ADDR);

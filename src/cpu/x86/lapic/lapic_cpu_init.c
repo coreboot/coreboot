@@ -16,8 +16,6 @@
 #include <cpu/cpu.h>
 
 #if CONFIG_SMP == 1
-
-#if CONFIG_RAMBASE >= 0x100000
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -29,7 +27,6 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 {
 	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000
 }
-#endif
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
 char *lowmem_backup;
@@ -41,7 +38,6 @@ extern char _secondary_start[];
 
 static void copy_secondary_start_to_1m_below(void)
 {
-#if CONFIG_RAMBASE >= 0x100000
 	extern char _secondary_start_end[];
 	unsigned long code_size;
 	unsigned long start_eip;
@@ -67,7 +63,6 @@ static void copy_secondary_start_to_1m_below(void)
 	memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
-#endif
 }
 
 static int lapic_start_cpu(unsigned long apicid)
@@ -139,11 +134,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-#if CONFIG_RAMBASE >= 0x100000
 	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
-#else
-	start_eip = (unsigned long)_secondary_start;
-#endif
 
 #if !defined (CONFIG_CPU_AMD_MODEL_10XXX) && !defined (CONFIG_CPU_AMD_MODEL_14XXX)
 	num_starts = 2;

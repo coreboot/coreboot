@@ -28,9 +28,6 @@ void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-#if CONFIG_CONSOLE_VGA == 1
-void vga_console_init(void);
-#endif
 #if CONFIG_USBDEBUG
 #include <usbdebug.h>
 #endif
@@ -356,6 +353,8 @@ static void print_spew(const char *str) { __console_tx_string(BIOS_SPEW, str); }
 #ifdef __ROMCC__
 /* if included by romcc, include the sources, too. romcc can't use prototypes */
 #include <console/console.c>
+#include <console/post.c>
+#include <console/die.c>
 #endif
 
 #endif /* CONSOLE_CONSOLE_H_ */

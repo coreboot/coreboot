@@ -116,7 +116,7 @@ config YABEL_DIRECTHW
 	  they can still access all devices in the system.
 	  Enable this option for a good compromise between security and speed.
 
-config CONSOLE_VGA_MULTI
+config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 

@@ -133,13 +133,9 @@ config USBDEBUG_DEFAULT_PORT
 	  on your mainboard) is highly board-specific, and you'll likely
 	  have to find out by trial-and-error.
 
-config CONSOLE_VGA
-	bool "Use VGA console once initialized"
-	default n
-
 # TODO: Deps?
 # TODO: Improve description.
-config CONSOLE_VGA_ONBOARD_AT_FIRST
+config ONBOARD_VGA_IS_PRIMARY
 	bool "Use onboard VGA as primary video device"
 	default n
 	help
@@ -321,14 +317,6 @@ config DEFAULT_CONSOLE_LOGLEVEL
 	default 8 if DEFAULT_CONSOLE_LOGLEVEL_8
 	help
 	  Map the log level config names to an integer.
-
-config CONSOLE_BTEXT
-	bool
-	default n
-
-config CONSOLE_SROM
-	bool
-	default n
 
 config CONSOLE_LOGBUF
 	bool

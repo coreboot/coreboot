@@ -25,14 +25,10 @@ void cbfs_and_run_core(const char *filename, unsigned ebp)
 {
 	u8 *dst;
 
-	print_debug("Loading stage image.\n");
+	print_debug("Loading image.\n");
 	dst = cbfs_load_stage(filename);
-	if (dst == (void *) -1) {
-		/* We should use die() here. */
-		print_emerg("Loading stage failed!\n");
-		for (;;)
-			asm("hlt\n");
-	}
+	if ((void *)dst == (void *) -1)
+		die("FATAL: Essential component is missing.\n");
 
 	print_debug("Jumping to image.\n");
 	__asm__ volatile (

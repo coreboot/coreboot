@@ -545,13 +545,9 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 }
 
 /**
- *
  * I tried to reuse the resource allocation code in amdfam10_set_resource()
- * but it is too diffcult to deal with the resource allocation magic.
+ * but it is too difficult to deal with the resource allocation magic.
  */
-#if CONFIG_CONSOLE_VGA_MULTI == 1
-extern device_t vga_pri;	// the primary vga device, defined in device.c
-#endif
 
 static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 {
@@ -561,7 +557,8 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_MULTIPLE_VGA_ADAPTERS == 1
+			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */

@@ -9,19 +9,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-#if CONFIG_CONSOLE_BTEXT==1
-
-#define PLL_CRTC_DECODE 0
-#define SUPPORT_8_BPP_ABOVE 0
-
-#include "fb.h"
-#include "fbcon.h"
-
-#include <console/btext.h>
-
-#endif /*CONFIG_CONSOLE_BTEXT*/
-
-
 /* VGA init. We use the Bochs VESA VBE extensions  */
 #define VBE_DISPI_INDEX_ID              0x0
 #define VBE_DISPI_INDEX_XRES            0x1

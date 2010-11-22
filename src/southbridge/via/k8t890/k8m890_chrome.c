@@ -150,17 +150,10 @@ chrome_init(struct device *dev)
 
 	vga_textmode_init();
 
-#if CONFIG_CONSOLE_VGA == 1
-	vga_console_init();
-#endif
-
 	printk(BIOS_INFO, "Chrome VGA Textmode initialized.\n");
 
-#if CONFIG_CONSOLE_VGA == 0
 	/* if we don't have console, at least print something... */
 	vga_line_write(0, "Chrome VGA Textmode initialized.");
-#endif
-
 #endif /* CONFIG_VGA */
 }
 

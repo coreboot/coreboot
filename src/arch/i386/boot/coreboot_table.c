@@ -134,17 +134,8 @@ static void lb_console(struct lb_header *header)
 #if CONFIG_CONSOLE_SERIAL8250
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
 #endif
-#if CONFIG_CONSOLE_VGA
-	add_console(header, LB_TAG_CONSOLE_VGA);
-#endif
-#if CONFIG_CONSOLE_BTEXT
-	add_console(header, LB_TAG_CONSOLE_BTEXT);
-#endif
 #if CONFIG_CONSOLE_LOGBUF
 	add_console(header, LB_TAG_CONSOLE_LOGBUF);
-#endif
-#if CONFIG_CONSOLE_SROM
-	add_console(header, LB_TAG_CONSOLE_SROM);
 #endif
 #if CONFIG_USBDEBUG
 	add_console(header, LB_TAG_CONSOLE_EHCI);

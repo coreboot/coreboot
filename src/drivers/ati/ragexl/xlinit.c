@@ -21,6 +21,13 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+// FIXME BTEXT console within coreboot has been obsoleted
+// and will go away. The BTEXT code in this file should be 
+// fixed to export a framebuffer console through the coreboot
+// table (and possibly make it available for bootsplash use)
+// Hence do only remove this if you fix the code.
+#define CONFIG_CONSOLE_BTEXT 0
+
 #if CONFIG_CONSOLE_BTEXT==1
 
 #define PLL_CRTC_DECODE 0

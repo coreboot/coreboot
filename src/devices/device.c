@@ -722,7 +722,7 @@ static void set_vga_bridge_bits(void)
 	if (!vga)
 		vga = vga_first;
 
-#if CONFIG_CONSOLE_VGA_ONBOARD_AT_FIRST == 1
+#if CONFIG_ONBOARD_VGA_IS_PRIMARY == 1
 	if (vga_onboard)	/* Will use onboard VGA as primary. */
 #else
 	if (!vga)		/* Will use last add-on adapter as primary. */

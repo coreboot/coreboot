@@ -130,7 +130,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 * devices have a mismatch between the hardware and the ROM.
 	 */
  	if (PCI_CLASS_DISPLAY_VGA == (dev->class >> 8)) {
-#if CONFIG_CONSOLE_VGA == 1 && CONFIG_CONSOLE_VGA_MULTI == 0
+#if CONFIG_MULTIPLE_VGA_ADAPTERS == 0
 		extern device_t vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif

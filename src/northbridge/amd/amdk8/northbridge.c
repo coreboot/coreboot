@@ -485,10 +485,6 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	report_resource_stored(dev, resource, buf);
 }
 
-#if CONFIG_CONSOLE_VGA_MULTI == 1
-extern device_t vga_pri;	// the primary vga device, defined in device.c
-#endif
-
 static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
@@ -498,7 +494,8 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_MULTIPLE_VGA_ADAPTERS == 1
+			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d link bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
 			/* We need to make sure the vga_pri is under the link */

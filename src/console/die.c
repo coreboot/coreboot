@@ -23,8 +23,14 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 
+#ifndef __ROMCC__
+#define NORETURN __attribute__((noreturn))
+#else
+#define NORETURN
+#endif
+
 /* Report a fatal error */
-void __attribute__((noreturn)) die(const char *msg)
+void NORETURN die(const char *msg)
 {
 	print_emerg(msg);
 	do {

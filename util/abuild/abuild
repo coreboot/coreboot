@@ -203,7 +203,6 @@ function create_config
 			echo "CONFIG_SCANBUILD_ENABLE=y" >> .config
 			echo "CONFIG_SCANBUILD_REPORT_LOCATION=\"$TARGET/scan-build-results-tmp\"" >> .config
 		fi
-		echo "CONFIG_USBDEBUG=y" >> .config
 	fi
 
 	#yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log

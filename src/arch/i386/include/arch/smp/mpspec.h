@@ -243,8 +243,6 @@ void smp_write_processor(struct mp_config_table *mc,
 	unsigned char cpuflag, unsigned int cpufeature,
 	unsigned int featureflag);
 void smp_write_processors(struct mp_config_table *mc);
-void smp_write_bus(struct mp_config_table *mc,
-	unsigned char id, const char *bustype);
 void smp_write_ioapic(struct mp_config_table *mc,
 	unsigned char id, unsigned char ver,
 	unsigned long apicaddr);

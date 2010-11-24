@@ -483,9 +483,11 @@ static void rs780_por_pcicfg_init(device_t nb_dev)
 	/* Reg94h[31:29] = 0x7 Enables HT transmitter de-emphasis */
 	set_nbcfg_enable_bits_8(nb_dev, 0x97, (u8)(~0x1F), 0xE0);
 
-	/*Reg8Ch[10:9] = 0x3 Enables Gfx Debug BAR,
-	 * force this BAR as mem type in rs780_gfx.c */
-	set_nbcfg_enable_bits_8(nb_dev, 0x8D, (u8)(~0xFF), 0x03);
+	/* Reg8Ch[9] enables Gfx Debug BAR programming
+	 * Reg8Ch[10] enables Gfx Debug BAR operation
+	 * Enable programming of the debug bar now, but enable
+	 * operation only after it has been programmed */
+	set_nbcfg_enable_bits_8(nb_dev, 0x8D, (u8)(~0xFF), 0x02);
 }
 
 static void rs780_por_mc_index_init(device_t nb_dev)

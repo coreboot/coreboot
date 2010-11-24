@@ -29,6 +29,7 @@
 #include <cpu/amd/mtrr.h>
 #include <boot/coreboot_tables.h>
 #include <delay.h>
+#include <cpu/cpu.h>
 #include "rs780.h"
 
 static u32 nb_read_index(device_t dev, u32 index_reg, u32 index)
@@ -360,4 +361,43 @@ void rs780_set_tom(device_t nb_dev)
 	/* set TOM */
 	pci_write_config32(nb_dev, 0x90, uma_memory_base);
 	//nbmc_write_index(nb_dev, 0x1e, uma_memory_base);
+}
+
+// extract single bit
+u32 extractbit(u32 data, int bit_number)
+{
+	return (data >> bit_number) & 1;
+}
+
+// extract bit field
+u32 extractbits(u32 source, int lsb, int msb)
+{
+	int field_width = msb - lsb + 1;
+	u32 mask = 0xFFFFFFFF >> (32 - field_width);
+	return (source >> lsb) & mask;
+}
+
+// return AMD cpuid family
+int cpuidFamily(void)
+{
+	u32 baseFamily, extendedFamily, fms;
+	
+	fms = cpuid_eax (1);
+	baseFamily = extractbits (fms, 8, 11);
+	extendedFamily = extractbits (fms, 20, 27);
+	return baseFamily + extendedFamily;
+}
+
+
+// return non-zero for AMD family 0Fh processor found
+int is_family0Fh(void)
+{
+	return cpuidFamily() == 0x0F;
+}
+
+
+// return non-zero for AMD family 10h processor found
+int is_family10h(void)
+{
+	return cpuidFamily() == 0x10;
 }

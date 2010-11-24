@@ -208,4 +208,9 @@ void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev);
 void config_gpp_core(device_t nb_dev, device_t sb_dev);
 void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port);
 u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port);
+u32 extractbit(u32 data, int bit_number);
+u32 extractbits(u32 source, int lsb, int msb);
+int cpuidFamily(void);
+int is_family0Fh(void);
+int is_family10h(void);
 #endif				/* RS780_H */

@@ -39,6 +39,8 @@ extern int is_dev3_present(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
+extern uint64_t uma_memory_base, uma_memory_size;
+
 /* Trust the original resource allocation. Don't do it again. */
 #undef DONT_TRUST_RESOURCE_ALLOCATION
 //#define DONT_TRUST_RESOURCE_ALLOCATION
@@ -304,11 +306,15 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	volatile u32 * pointer;
 	int i;
 	u16 command;
-	u32 value, sblk;
+	u32 value;
 	u16 deviceid, vendorid;
 	device_t nb_dev = dev_find_slot(0, 0);
 	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
 	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	static const u8 ht_freq_lookup [] = {2, 0, 4, 0, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 0, 0, 28, 30, 32};
+	static const u8 ht_width_lookup [] = {8, 16, 0, 0, 2, 4, 0, 0};
+	static const u16 memclk_lookup_fam0F [] = {100, 0, 133, 0, 0, 166, 0, 200};
+	static const u16 memclk_lookup_fam10 [] = {200, 266, 333, 400, 533, 667, 800, 800};
 
 	/* We definetely will use this in future. Just leave it here. */
 	/*struct southbridge_amd_rs780_config *cfg =
@@ -339,6 +345,8 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	*(GpuF0MMReg + 0x2180/4) = ((value&0xff00)>>8)|((value&0xff000000)>>8);
 	*(GpuF0MMReg + 0x2c04/4) = ((value&0xff00)<<8);
 	*(GpuF0MMReg + 0x5428/4) = ((value&0xffff0000)+0x10000)-((value&0xffff)<<16);
+	*(GpuF0MMReg + 0xF774/4) = 0xffffffff;
+	*(GpuF0MMReg + 0xF770/4) = 0x00000001;
 	*(GpuF0MMReg + 0x2000/4) = 0x00000011;
 	*(GpuF0MMReg + 0x200c/4) = 0x00000020;
 	*(GpuF0MMReg + 0x2010/4) = 0x10204810;
@@ -352,21 +360,28 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	*(GpuF0MMReg + 0x7de4/4) |= (1<<3) | (1<<4);
 	/* Force allow LDT_STOP Cool'n'Quiet workaround. */
 	*(GpuF0MMReg + 0x655c/4) |= 1<<4;
+
+	// disable write combining, needed for stability
+   // reference bios does this only for RS780 rev A11
+   // need to figure out why we need it for all revs
+	*(GpuF0MMReg + 0x2000/4) = 0x00000010;
+	*(GpuF0MMReg + 0x2408/4) = 1 << 9;
+	*(GpuF0MMReg + 0x2000/4) = 0x00000011;
+
 	/* GFX_InitFBAccess finished. */
 
-	/* GFX_StartMC. */
 #if (CONFIG_GFXUMA == 1) /* for UMA mode. */
-	/* MC_INIT_COMPLETE. */
-	set_nbmc_enable_bits(nb_dev, 0x2, 0, 1<<31);
-	/* MC_STARTUP, MC_POWERED_UP and MC_VMODE.*/
-	set_nbmc_enable_bits(nb_dev, 0x1, 1<<18, 1|1<<2);
-
-	set_nbmc_enable_bits(nb_dev, 0xb1, 0, 1<<6);
-	set_nbmc_enable_bits(nb_dev, 0xc3, 0, 1);
-	nbmc_write_index(nb_dev, 0x07, 0x18);
-	nbmc_write_index(nb_dev, 0x06, 0x00000102);
-	nbmc_write_index(nb_dev, 0x09, 0x40000008);
-	set_nbmc_enable_bits(nb_dev, 0x6, 0, 1<<31);
+	/* GFX_StartMC. */
+	set_nbmc_enable_bits(nb_dev, 0x02, 0x00000000, 0x80000000);
+	set_nbmc_enable_bits(nb_dev, 0x01, 0x00000000, 0x00000001);
+	set_nbmc_enable_bits(nb_dev, 0x01, 0x00000000, 0x00000004);
+	set_nbmc_enable_bits(nb_dev, 0x01, 0x00040000, 0x00000000);
+	set_nbmc_enable_bits(nb_dev, 0xB1, 0xFFFF0000, 0x00000040);
+	set_nbmc_enable_bits(nb_dev, 0xC3, 0x00000000, 0x00000001);
+	set_nbmc_enable_bits(nb_dev, 0x07, 0xFFFFFFFF, 0x00000018);
+	set_nbmc_enable_bits(nb_dev, 0x06, 0xFFFFFFFF, 0x00000102);
+	set_nbmc_enable_bits(nb_dev, 0x09, 0xFFFFFFFF, 0x40000008);
+	set_nbmc_enable_bits(nb_dev, 0x06, 0x00000000, 0x80000000);
 	/* GFX_StartMC finished. */
 #else
 	/* for SP mode. */
@@ -418,77 +433,110 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	vgainfo.sHeader.ucTableContentRevision = 2;
 
 #if (CONFIG_GFXUMA == 0) /* SP mode. */
+	// Side port support is incomplete, do not use it
+	// These parameters must match the motherboard
 	vgainfo.ulBootUpSidePortClock = 667*100;
-	vgainfo.ucMemoryType = 3;
+	vgainfo.ucMemoryType = 3;  // 3=ddr3 sp mem, 2=ddr2 sp mem
 	vgainfo.ulMinSidePortClock = 333*100;
 #endif
 
-	vgainfo.ulBootUpEngineClock = 500 * 100; /* set boot up GFX engine clock. */
-	vgainfo.ulReserved1[0] = 0;	vgainfo.ulReserved1[1] = 0;
-	value = pci_read_config32(k8_f2, 0x94);
-	printk(BIOS_DEBUG, "MEMCLK = %x\n", value&0x7);
-	vgainfo.ulBootUpUMAClock = 333 * 100; /* set boot up UMA memory clock. */
-	vgainfo.ulBootUpSidePortClock = 0; /* disable SP. */
-	vgainfo.ulMinSidePortClock = 0; /* disable SP. */
-	for(i=0; i<6; i++)
-		vgainfo.ulReserved2[i] = 0;
-	vgainfo.ulSystemConfig = 0;
-	//vgainfo.ulSystemConfig |= 1<<1 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1;
-	vgainfo.ulBootUpReqDisplayVector = 0; //?
-	vgainfo.ulOtherDisplayMisc = 0; //?
-	vgainfo.ulDDISlot1Config = 0x000c0011; //0; //VGA
-	//vgainfo.ulDDISlot1Config = 0x000c00FF; //0; //HDMI
-	vgainfo.ulDDISlot2Config = 0x00130022; //0; //?
-	vgainfo.ucMemoryType = 2;
+	vgainfo.ulBootUpEngineClock = 500 * 100;	       	// setup option on reference BIOS, 500 is default
+
+	// find the DDR memory frequency
+	if (is_family10h()) {
+		value = pci_read_config32(k8_f2, 0x94);		// read channel 0 DRAM Configuration High Register
+		if (extractbit(value, 14))			// if channel 0 disabled, channel 1 must have memory
+			value = pci_read_config32(k8_f2, 0x194);// read channel 1 DRAM Configuration High Register
+		vgainfo.ulBootUpUMAClock = memclk_lookup_fam10 [extractbits (value, 0, 2)] * 100;
+	}
+	if (is_family0Fh()) {
+		value = pci_read_config32(k8_f2, 0x94);
+		vgainfo.ulBootUpUMAClock = memclk_lookup_fam0F [extractbits (value, 20, 22)] * 100;
+	}
+
 	/* UMA Channel Number: 1 or 2. */
-	vgainfo.ucUMAChannelNumber = 2;
-	vgainfo.ucDockingPinBit = 0; //?
-	vgainfo.ucDockingPinPolarity = 0; //?
-	vgainfo.ulDockingPinCFGInfo = 0; //?
-	vgainfo.ulCPUCapInfo = 3; /* K8. */
-
-	/* page 5-19 on BDG. */
-	vgainfo.usNumberOfCyclesInPeriod = 0x8019;
-	vgainfo.usMaxNBVoltage = 0x1a;
-	vgainfo.usMinNBVoltage = 0;
-	vgainfo.usBootUpNBVoltage = 0x1a;
-
-	/* Get SBLink value (HyperTransport I/O Hub Link ID). */
-	value = pci_read_config32(k8_f0, 0x64);
-	sblk = (value >> 8) & 0x3;
-	printk(BIOS_DEBUG, "SBLINK = %d.\n", sblk);
+	vgainfo.ucUMAChannelNumber = 1;
+	if (is_family0Fh()) {
+		value = pci_read_config32(k8_f2, 0x90);
+	if (extractbit(value, 11))  // 128-bit mode
+		vgainfo.ucUMAChannelNumber = 2;
+	}
+	if (is_family10h()) {
+		u32 dch0 = pci_read_config32(k8_f2, 0x94);
+		u32 dch1 = pci_read_config32(k8_f2, 0x194);
+		if (extractbit(dch0, 14) == 0 && extractbit(dch1, 14) == 0) { // both channels enabled
+			value = pci_read_config32(k8_f2, 0x110);
+			if (extractbit(value, 4))  // ganged mode
+			vgainfo.ucUMAChannelNumber = 2;
+		}
+	}
+      
+	// processor type
+	if (is_family0Fh())
+		vgainfo.ulCPUCapInfo = 3;
+	if (is_family10h())
+		vgainfo.ulCPUCapInfo = 2;
 
 	/* HT speed */
-	value = pci_read_config32(nb_dev, 0xd0);
-	printk(BIOS_DEBUG, "NB HT speed = %x.\n", value);
-	value = pci_read_config32(k8_f0, 0x88 + (sblk * 0x20));
-	printk(BIOS_DEBUG, "CPU HT speed = %x.\n", value);
-	vgainfo.ulHTLinkFreq = 100 * 100; /* set HT speed. */
+	value = pci_read_config8(nb_dev, 0xd1);
+	value = ht_freq_lookup [value] * 100;  // HT link frequency in MHz
+	vgainfo.ulHTLinkFreq = value * 100;    // HT frequency in units of 100 MHz
+	vgainfo.ulHighVoltageHTLinkFreq = vgainfo.ulHTLinkFreq;
+	vgainfo.ulLowVoltageHTLinkFreq = vgainfo.ulHTLinkFreq;
+
+	if (value <= 1800)
+		vgainfo.ulLowVoltageHTLinkFreq = vgainfo.ulHTLinkFreq;
+	else {
+		int sblink, cpuLnkFreqCap, nbLnkFreqCap;
+		value = pci_read_config32(k8_f0, 0x64);
+		sblink = extractbits(value, 8, 10);
+		cpuLnkFreqCap = pci_read_config16(k8_f0, 0x8a + sblink * 0x20);
+		nbLnkFreqCap = pci_read_config16(nb_dev, 0xd2);
+		if (cpuLnkFreqCap & nbLnkFreqCap & (1 << 10)) // if both 1800 MHz capable
+		vgainfo.ulLowVoltageHTLinkFreq = 1800*100;
+	}
 
 	/* HT width. */
-	value = pci_read_config32(nb_dev, 0xc8);
-	printk(BIOS_DEBUG, "HT width = %x.\n", value);
-	vgainfo.usMinHTLinkWidth = 16;
-	vgainfo.usMaxHTLinkWidth = 16;
-	vgainfo.usUMASyncStartDelay = 322;
-	vgainfo.usUMADataReturnTime = 86;
-	vgainfo.usLinkStatusZeroTime = 0x00c8; //0; //?
-	vgainfo.usReserved = 0;
-	vgainfo.ulHighVoltageHTLinkFreq = 100 * 100;
-	vgainfo.ulLowVoltageHTLinkFreq = 100 * 100;
-	vgainfo.usMaxUpStreamHTLinkWidth = 16;
-	vgainfo.usMaxDownStreamHTLinkWidth = 16;
-	vgainfo.usMinUpStreamHTLinkWidth = 16;
-	vgainfo.usMinDownStreamHTLinkWidth = 16;
-	for(i=0; i<97; i++)
-		vgainfo.ulReserved3[i] = 0;
+	value = pci_read_config8(nb_dev, 0xcb);
+	vgainfo.usMinDownStreamHTLinkWidth = 
+	vgainfo.usMaxDownStreamHTLinkWidth = 
+	vgainfo.usMinUpStreamHTLinkWidth = 
+	vgainfo.usMaxUpStreamHTLinkWidth =
+	vgainfo.usMinHTLinkWidth =
+	vgainfo.usMaxHTLinkWidth = ht_width_lookup [extractbits(value, 0, 2)];
+
+	if (is_family0Fh()) {
+		vgainfo.usUMASyncStartDelay = 322;
+		vgainfo.usUMADataReturnTime = 286;
+	}
+
+	if (is_family10h()) {
+		static u16 t0mult_lookup [] = {10, 50, 200, 2000};
+		int t0time, t0scale;
+		value = pci_read_config32(k8_f0, 0x16c);
+		t0time = extractbits(value, 0, 3);
+		t0scale = extractbits(value, 4, 5);
+		vgainfo.usLinkStatusZeroTime = t0mult_lookup [t0scale] * t0time;
+		vgainfo.usUMASyncStartDelay = 100;
+		if (vgainfo.ulHTLinkFreq < 1000 * 100) { // less than 1000 MHz
+			vgainfo.usUMADataReturnTime = 300;
+			vgainfo.usLinkStatusZeroTime = 6 * 100;   // 6us for GH in HT1 mode
+		}
+		else {
+			int lssel;
+			value = pci_read_config32(nb_dev, 0xac);
+			lssel = extractbits (value, 7, 8);
+			vgainfo.usUMADataReturnTime = 1300;
+			if (lssel == 0) vgainfo.usUMADataReturnTime = 150;
+		}
+	}
 
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
 	for(i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4)
 	{
 #if (CONFIG_GFXUMA == 1)
-		*GpuF0MMReg = 0x80000000 + 0x10000000 - 512 + i;
+		*GpuF0MMReg = 0x80000000 + uma_memory_size - 512 + i;
 #else
 		*GpuF0MMReg = 0x80000000 + 0x8000000 - 512 + i;
 #endif
@@ -497,11 +545,22 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* GFX_InitLate. */
 	{
-		u8 temp8;
-		temp8 = pci_read_config8(dev, 0x4);
-		//temp8 &= ~1; /* CIM clears this bit. Strangely, I can'd. */
-		temp8 |= 1<<1|1<<2;
-		pci_write_config8(dev, 0x4, temp8);
+		u32 temp;
+		temp = pci_read_config8(dev, 0x4);
+		//temp &= ~1; /* CIM clears this bit. Strangely, I can'd. */
+		temp |= 1<<1|1<<2;
+		pci_write_config8(dev, 0x4, temp);
+
+		// if the GFX debug bar is writable, then it has
+		// been programmed and can be safely enabled now
+		temp = pci_read_config32(nb_dev, 0x8c);
+
+		// if bits 1 (intgfx_enable) and 9 (gfx_debug_bar_enable)
+		// then enable gfx debug bar (set gxf_debug_decode_enable)
+		if (temp & 0x202)
+			temp |= (1 << 10);
+		pci_write_config32(nb_dev, 0x8c, temp);
+
 	}
 
 #ifdef DONT_TRUST_RESOURCE_ALLOCATION
@@ -584,7 +643,6 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 * Set registers in RS780 and CPU to enable the internal GFX.
 * Please refer to CIM source code and BKDG.
 */
-extern uint64_t uma_memory_base, uma_memory_size;
 
 static void rs780_internal_gfx_enable(device_t dev)
 {
@@ -637,7 +695,9 @@ static void rs780_internal_gfx_enable(device_t dev)
 #if (CONFIG_GFXUMA == 1)
 	/* GFX_InitUMA. */
 	/* Copy CPU DDR Controller to NB MC. */
+	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	device_t k8_f4 = dev_find_slot(0, PCI_DEVFN(0x18, 4));
 	for (i = 0; i < 12; i++)
 	{
 		l_dword = pci_read_config32(k8_f2, 0x40 + i * 4);
@@ -646,23 +706,39 @@ static void rs780_internal_gfx_enable(device_t dev)
 
 	l_dword = pci_read_config32(k8_f2, 0x80);
 	nbmc_write_index(nb_dev, 0x3c, l_dword);
-
 	l_dword = pci_read_config32(k8_f2, 0x94);
-	if(l_dword & (1<<22))
-		set_nbmc_enable_bits(nb_dev, 0x3c, 0, 1<<16);
-	else
-		set_nbmc_enable_bits(nb_dev, 0x3c, 1<<16, 0);
-
-	if(l_dword & (1<<8))
-		set_nbmc_enable_bits(nb_dev, 0x3c, 0, 1<<17);
-	else
-		set_nbmc_enable_bits(nb_dev, 0x3c, 1<<17, 0);
-
+	set_nbmc_enable_bits(nb_dev, 0x3c, 0, !!(l_dword & (1<<22))<<16);
+	set_nbmc_enable_bits(nb_dev, 0x3c, 0, !!(l_dword & (1<< 8))<<17);
 	l_dword = pci_read_config32(k8_f2, 0x90);
-	if(l_dword & (1<<10))
-		set_nbmc_enable_bits(nb_dev, 0x3c, 0, 1<<18);
-	else
-		set_nbmc_enable_bits(nb_dev, 0x3c, 1<<18, 0);
+	set_nbmc_enable_bits(nb_dev, 0x3c, 0, !!(l_dword & (1<<10))<<18);
+   if (is_family10h())
+   {
+	   for (i = 0; i < 12; i++)
+	   {
+		   l_dword = pci_read_config32(k8_f2, 0x140 + i * 4);
+		   nbmc_write_index(nb_dev, 0x3d + i, l_dword);
+	   }
+
+	   l_dword = pci_read_config32(k8_f2, 0x180);
+	   nbmc_write_index(nb_dev, 0x49, l_dword);
+	   l_dword = pci_read_config32(k8_f2, 0x194);
+	   set_nbmc_enable_bits(nb_dev, 0x49, 0, !!(l_dword & (1<<22))<<16);
+	   set_nbmc_enable_bits(nb_dev, 0x49, 0, !!(l_dword & (1<< 8))<<17);
+	   l_dword = pci_read_config32(k8_f2, 0x190);
+	   set_nbmc_enable_bits(nb_dev, 0x49, 0, !!(l_dword & (1<<10))<<18);
+
+	   l_dword = pci_read_config32(k8_f2, 0x110);
+	   nbmc_write_index(nb_dev, 0x4a, l_dword);
+	   l_dword = pci_read_config32(k8_f2, 0x114);
+	   nbmc_write_index(nb_dev, 0x4b, l_dword);
+	   l_dword = pci_read_config32(k8_f4, 0x44);
+	   set_nbmc_enable_bits(nb_dev, 0x4a, 0, !!(l_dword & (1<<22))<<24);
+	   l_dword = pci_read_config32(k8_f1, 0x40);
+	   nbmc_write_index(nb_dev, 0x4c, l_dword);
+	   l_dword = pci_read_config32(k8_f1, 0xf0);
+	   nbmc_write_index(nb_dev, 0x4d, l_dword);
+   }
+
 
 	/* Set UMA in the 780 side. */
 	/* UMA start address, size. */
@@ -672,7 +748,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 	nbmc_write_index(nb_dev, 0x10, ((uma_memory_size - 1 + 0xC0000000) & (~0xffff)) | 0xc000);
 	nbmc_write_index(nb_dev, 0x11, uma_memory_base);
 	nbmc_write_index(nb_dev, 0x12, 0);
-	nbmc_write_index(nb_dev, 0xf0, 256);
+	nbmc_write_index(nb_dev, 0xf0, uma_memory_size >> 20);
 	/* GFX_InitUMA finished. */
 #else
 	/* GFX_InitSP. */
@@ -1016,7 +1092,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* 5.9.1.1. Disables the GFX REFCLK transmitter so that the GFX
 	 * REFCLK PAD can be driven by an external source. */
 	/* 5.9.1.2. Enables GFX REFCLK receiver to receive the REFCLK from an external source. */
-	set_nbmisc_enable_bits(nb_dev, 0x38, 1 << 29 | 1 << 28, 0 << 29 | 1 << 28);
+	set_nbmisc_enable_bits(nb_dev, 0x38, 1 << 29 | 1 << 28 | 1 << 26, 1 << 28);
 
 	/* 5.9.1.3 Selects the GFX REFCLK to be the source for PLL A. */
 	/* 5.9.1.4 Selects the GFX REFCLK to be the source for PLL B. */

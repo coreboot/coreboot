@@ -133,11 +133,6 @@ static void rs780_nb_pci_table(device_t nb_dev)
 	temp32 = pci_read_config32(nb_dev, 0x4c);
 	printk(BIOS_DEBUG, "NB_PCI_REG4C = %x.\n", temp32);
 
-	/* disable GFX debug. */
-	temp8 = pci_read_config8(nb_dev, 0x8d);
-	temp8 &= ~(1<<1);
-	pci_write_config8(nb_dev, 0x8d, temp8);
-
 	/* set temporary NB TOM to 0x40000000. */
 	rs780_set_tom(nb_dev);
 
@@ -194,14 +189,24 @@ static void rs780_nb_pci_table(device_t nb_dev)
 static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 {
 	/* NB_InitGFXStraps */
-	u32 MMIOBase, apc04, apc18, apc24;
+	u32 MMIOBase, apc04, apc18, apc24, romstrap2;
+	msr_t pcie_mmio_save;
 	volatile u32 * strap;
+
+	// disable processor pcie mmio, if enabled
+	if (is_family10h()) {
+		msr_t temp;
+		pcie_mmio_save = temp = rdmsr (0xc0010058);
+		temp.lo &= ~1;
+		wrmsr (0xc0010058, temp);
+	}
 
 	/* Get PCIe configuration space. */
 	MMIOBase = pci_read_config32(nb_dev, 0x1c) & 0xfffffff0;
 	/* Temporarily disable PCIe configuration space. */
 	set_htiu_enable_bits(nb_dev, 0x32, 1<<28, 0);
 
+	// 1E: NB_BIF_SPARE
 	set_nbmisc_enable_bits(nb_dev, 0x1e, 0xffffffff, 1<<1 | 1<<4 | 1<<6 | 1<<7);
 	/* Set a temporary Bus number. */
 	apc18 = pci_read_config32(dev, 0x18);
@@ -214,18 +219,27 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 	pci_write_config8(dev, 0x04, 0x02);
 
 	/* Program Straps. */
-	strap = (volatile u32 *)(MMIOBase + 0x15020);
+	romstrap2 = 1 << 26; // enables audio function
 #if (CONFIG_GFXUMA == 1)
-	*strap = 1<<7; /* the format of BIF_MEM_AP_SIZE. 001->256MB? */
-#else
-	*strap = 0; /* 128M SP memory, 000 -> 128MB */
+	extern uint64_t uma_memory_size;
+	// bits 7-9: aperture size
+	// 0-7: 128mb, 256mb, 64mb, 32mb, 512mb, 1g, 2g, 4g 
+	if (uma_memory_size == 0x02000000) romstrap2 |= 3 << 7;
+	if (uma_memory_size == 0x04000000) romstrap2 |= 2 << 7;
+	if (uma_memory_size == 0x08000000) romstrap2 |= 0 << 7;
+	if (uma_memory_size == 0x10000000) romstrap2 |= 1 << 7;
+	if (uma_memory_size == 0x20000000) romstrap2 |= 4 << 7;
+	if (uma_memory_size == 0x40000000) romstrap2 |= 5 << 7;
+	if (uma_memory_size == 0x80000000) romstrap2 |= 6 << 7;
 #endif
+	strap = (volatile u32 *)(MMIOBase + 0x15020);
+	*strap = romstrap2;
 	strap = (volatile u32 *)(MMIOBase + 0x15000);
 	*strap = 0x2c006300;
 	strap = (volatile u32 *)(MMIOBase + 0x15010);
 	*strap = 0x03015330;
-	//strap = (volatile u32 *)(MMIOBase + 0x15020);
-	//*strap |= 0x00000040; /* Disable HDA device. */
+	strap = (volatile u32 *)(MMIOBase + 0x15020);
+	*strap = romstrap2 | 0x00000040;
 	strap = (volatile u32 *)(MMIOBase + 0x15030);
 	*strap = 0x00001002;
 	strap = (volatile u32 *)(MMIOBase + 0x15040);
@@ -240,8 +254,9 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 	/* BIF switches into normal functional mode. */
 	set_nbmisc_enable_bits(nb_dev, 0x1e, 1<<4 | 1<<5, 1<<5);
 
-	/* NB Revision is A12. */
-	set_nbmisc_enable_bits(nb_dev, 0x1e, 1<<9, 1<<9);
+	/* NB Revision is A12 or newer */
+	if (get_nb_rev(nb_dev) >= REV_RS780_A12)
+		set_nbmisc_enable_bits(nb_dev, 0x1e, 1<<9, 1<<9);
 
 	/* Restore APC04, APC18, APC24. */
 	pci_write_config32(dev, 0x04, apc04);
@@ -250,6 +265,11 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 
 	/* Enable PCIe configuration space. */
 	set_htiu_enable_bits(nb_dev, 0x32, 0, 1<<28);
+
+	// restore processor pcie mmio
+	if (is_family10h())
+		wrmsr (0xc0010058, pcie_mmio_save);
+
 	printk(BIOS_INFO, "GC is accessible from now on.\n");
 }
 
@@ -332,18 +352,17 @@ void rs780_enable(device_t dev)
 				       (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
-		disable_pcie_bar3(nb_dev);
 		break;
 	case 9:		/* bus 0, dev 9,10, GPP */
 	case 10:
 		printk(BIOS_INFO, "Bus-0, Dev-9, 10, Fun-0. enable=%d\n",
 			    dev->enabled);
-		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
 				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
-		/* Dont call disable_pcie_bar3(nb_dev) here, otherwise the screen will crash. */
+
+		if (dev_ind == 10) disable_pcie_bar3(nb_dev);
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));

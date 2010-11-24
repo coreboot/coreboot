@@ -221,6 +221,7 @@ void disable_pcie_bar3(device_t nb_dev)
 	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
 	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
+	set_htiu_enable_bits(nb_dev, 0x32, 1 << 28, 0);	/* disable bar3 decode */
 	ProgK8TempMmioBase(0, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
 }
 

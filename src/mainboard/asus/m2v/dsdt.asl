@@ -59,10 +59,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 
 	/* _PR CPU0 is dynamically supplied by SSDT */
 
-	/* For now only define 2 power states:
+	/* We define 3 power states:
 	 *  - S0 which is fully on
+	 *  - S3 which is suspend to ram
 	 *  - S5 which is soft off
-	 * Any others would involve declaring the wake up methods.
 	 *
 	 * Package contents:
 	 * ofs len desc
@@ -73,6 +73,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 	 * 2   2   Reserved
 	 */
 	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
+	Name (\_S3, Package () { 0x01, 0x01, 0x00, 0x00 })
 	Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
 
 	/* Root of the bus hierarchy */
@@ -341,6 +342,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 
 			Device (SBRG) { /* southbridge */
 				Name (_ADR, 0x00110000)
+				OperationRegion (PCIC, PCI_Config, 0x0, 0x100)
 
 				/* PS/2 keyboard (seems to be important for WinXP install) */
 				Device (KBD)
@@ -459,9 +461,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 			}
 		}
 
-		OperationRegion (PCI0.SBRG.SBR1, PCI_Config, 0x55, 0x03)
-		Field (PCI0.SBRG.SBR1, ByteAcc, NoLock, Preserve)
+		Field (PCI0.SBRG.PCIC, ByteAcc, NoLock, Preserve)
 		{
+			Offset (0x55),
 			/*
 			 * Offset 0x55:
 			 *    3-0: reserved
@@ -537,5 +539,26 @@ PCI_INTX_DEV(INTA, PINA, 1)
 PCI_INTX_DEV(INTB, PINB, 2)
 PCI_INTX_DEV(INTC, PINC, 3)
 PCI_INTX_DEV(INTD, PIND, 4)
+	}
+
+	Field (_SB.PCI0.SBRG.PCIC, ByteAcc, NoLock, Preserve)
+	{
+		Offset (0x94),
+		/* two LSB bits are blink rate */
+		LEDR,   2,
+	}
+
+	Method (_PTS, 1, NotSerialized)
+	{
+		/* blink power led while suspended */
+		Store (0x1, LEDR)
+	}
+
+	Method (_WAK, 1, NotSerialized)
+	{
+		/* stop power led blinking */
+		Store (0x0, LEDR)
+		/* wake OK */
+		Return(Package(0x02){0x00, 0x00})
 	}
 }

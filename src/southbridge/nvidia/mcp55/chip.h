@@ -22,6 +22,8 @@
 #ifndef MCP55_CHIP_H
 #define MCP55_CHIP_H
 
+#include <device/device.h>
+
 struct southbridge_nvidia_mcp55_config
 {
 	unsigned int ide0_enable : 1;

@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 AMD
- * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
+ * Copyright (C) 2010 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,24 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef MCP55_H
-#define MCP55_H
+#include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-	#define MCP55_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-	#define MCP55_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
-#ifndef __PRE_RAM__
-#include "chip.h"
-void mcp55_enable(device_t dev);
-extern struct pci_operations mcp55_pci_ops;
-#else
-#if !defined(__ROMCC__)
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
-void mcp55_enable_usbdebug(unsigned int port);
-#endif
-#endif
-
-#endif /* MCP55_H */
+static void bootblock_southbridge_init(void)
+{
+	mcp55_enable_rom();
+}

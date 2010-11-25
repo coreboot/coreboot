@@ -28,12 +28,6 @@
 #include <device/pci_def.h>
 #include "mcp55.h"
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-#define MCP55_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define MCP55_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
 void set_debug_port(unsigned int port)
 {
 	u32 dword;

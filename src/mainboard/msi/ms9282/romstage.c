@@ -96,7 +96,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 // Disabled until it's actually used:
 // #include "cpu/amd/model_fxx/fidvid.c"
-#include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
 static void sio_setup(void)
@@ -138,7 +137,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
 		sio_setup();
-		mcp55_enable_rom();
         }
 
         if (bist == 0) {

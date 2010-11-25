@@ -2,8 +2,13 @@ config SOUTHBRIDGE_NVIDIA_MCP55
 	bool
 	select HAVE_USBDEBUG
 	select IOAPIC
+	select TINY_BOOTBLOCK
 
 if SOUTHBRIDGE_NVIDIA_MCP55
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/nvidia/mcp55/bootblock.c"
 
 config ID_SECTION_OFFSET
 	hex

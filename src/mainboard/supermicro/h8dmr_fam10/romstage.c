@@ -69,7 +69,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-#include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 static void sio_setup(void)
@@ -117,7 +116,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
 		sio_setup();
-		mcp55_enable_rom();
 	}
 
 	post_code(0x30);

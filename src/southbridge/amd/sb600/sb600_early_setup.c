@@ -56,11 +56,9 @@ static u8 get_sb600_revision(void)
 *	Serial port 0
 *	KBC Port
 *	ACPI Micro-controller port
-*	LPC ROM size
 *	This function does not change port 0x80 decoding.
 *	Console output through any port besides 0x3f8 is unsupported.
 *	If you use FWH ROMs, you have to setup IDSEL.
-* NOTE: Call me ASAP, because I will reset LPC ROM size!
 * Reviewed-by: Carl-Daniel Hailfinger
 * Reviewed against AMD SB600 Register Reference Manual rev. 3.03, section 3.1
 * 	(LPC ISA Bridge)
@@ -97,27 +95,13 @@ static void sb600_lpc_init(void)
 	reg8 |= (1 << 5) | (1 << 6);
 	pci_write_config8(dev, 0x47, reg8);
 
-	/* SuperIO, LPC ROM */
+	/* Super I/O, RTC */
 	reg8 = pci_read_config8(dev, 0x48);
 	/* Decode ports 0x2e-0x2f, 0x4e-0x4f (SuperI/O configuration) */
 	reg8 |= (1 << 1) | (1 << 0);
-	/* Decode variable LPC ROM address ranges 1&2 (see register 0x68-0x6b, 0x6c-0x6f) */
-	reg8 |= (1 << 3) | (1 << 4);
 	/* Decode port 0x70-0x73 (RTC) */
-	reg8 |= 1 << 6;
+	reg8 |= (1 << 6);
 	pci_write_config8(dev, 0x48, reg8);
-
-	/* hardware should enable LPC ROM by pin straps */
-	/* ROM access at 0xFFF80000/0xFFF00000 - 0xFFFFFFFF */
-	/* See detail in BDG-215SB600-03.pdf page 15. */
-	/* enable LPC ROM range mirroring start 0x000e(0000) */
-	pci_write_config16(dev, 0x68, 0x000e);
-	/* enable LPC ROM range mirroring end   0x000f(ffff) */
-	pci_write_config16(dev, 0x6a, 0x000f);
-	/* enable LPC ROM range start, 0xfff8(0000): 512KB, 0xfff0(0000): 1MB, 0xffe0(0000): 2MB, 0xffc0(0000): 4MB */
-	pci_write_config16(dev, 0x6c, 0xffc0);
-	/* enable LPC ROM range end at 0xffff(ffff) */
-	pci_write_config16(dev, 0x6e, 0xffff);
 }
 
 /* what is its usage? */
@@ -387,13 +371,12 @@ static void sb600_devices_por_init(void)
 	pci_write_config8(dev, 0x46, 0xC3);
 	pci_write_config8(dev, 0x47, 0xFF);
 
+	// TODO: This has already been done(?)
 	/* IO/Mem Port Decode Enable, I don't know why CIM disable some ports.
 	 *  Disable LPC TimeOut counter, enable SuperIO Configuration Port (2e/2f),
-	 * Alternate SuperIO Configuration Port (4e/4f), Wide Generic IO Port (64/65).
-	 * Enable bits for LPC ROM memory address range 1&2 for 1M ROM setting.*/
+	 * Alternate SuperIO Configuration Port (4e/4f), Wide Generic IO Port (64/65). */
 	byte = pci_read_config8(dev, 0x48);
 	byte |= (1 << 1) | (1 << 0);	/* enable Super IO config port 2e-2h, 4e-4f */
-	byte |= (1 << 3) | (1 << 4);	/* enable for LPC ROM address range1&2, Enable 512KB rom access at 0xFFF80000 - 0xFFFFFFFF */
 	byte |= 1 << 6;		/* enable for RTC I/O range */
 	pci_write_config8(dev, 0x48, byte);
 	pci_write_config8(dev, 0x49, 0xFF);
@@ -401,12 +384,6 @@ static void sb600_devices_por_init(void)
 	byte = pci_read_config8(dev, 0x4A);
 	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
 	pci_write_config8(dev, 0x4A, byte);
-
-	/* Set LPC ROM size, it has been done in sb600_lpc_init().
-	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB;
-	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB
-	 * pci_write_config16(dev, 0x68, 0x000e)
-	 * pci_write_config16(dev, 0x6c, 0xfff0);*/
 
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
 	pci_write_config8(dev, 0x7C, 0x05);

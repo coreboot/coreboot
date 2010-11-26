@@ -78,7 +78,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include <spd.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
-#include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
 #define RC0 ((1<<2)<<8)
@@ -140,7 +139,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-		amd8111_enable_rom();
         }
 
         if (bist == 0)

@@ -89,7 +89,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
-#include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
 static const u8 spd_addr[] = {
@@ -197,9 +196,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-
-		/* Setup the rom access for 4M */
-		amd8111_enable_rom();
 	}
 
 	post_code(0x30);

@@ -20,8 +20,9 @@
 config SOUTHBRIDGE_AMD_AMD8111
 	bool
 	select IOAPIC
+	select TINY_BOOTBLOCK
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/amd8111/bootblock.c"
-        depends on SOUTHBRIDGE_AMD_AMD8111
+	string
+	default "southbridge/amd/amd8111/bootblock.c"
+	depends on SOUTHBRIDGE_AMD_AMD8111

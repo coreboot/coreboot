@@ -40,7 +40,6 @@
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
-#include "southbridge/broadcom/bcm5785/bcm5785_enable_rom.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include <lib.h>
@@ -109,7 +108,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-		bcm5785_enable_rom();
 		bcm5785_enable_lpc();
 		pc87417_enable_dev(RTC_DEV); /* Enable RTC */
 	}

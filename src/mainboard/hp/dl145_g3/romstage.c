@@ -41,7 +41,6 @@
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
-#include "southbridge/broadcom/bcm5785/bcm5785_enable_rom.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
@@ -145,7 +144,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-		bcm5785_enable_rom();
 		bcm5785_enable_lpc();
 		pc87417_enable_dev(RTC_DEV); /* Enable RTC */
 	}

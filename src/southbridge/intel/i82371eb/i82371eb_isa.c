@@ -67,6 +67,13 @@ static void isa_init(struct device *dev)
 	rtc_init(0);
 
 	/*
+	 * Enable special cycles, needed for soft poweroff.
+	 */
+	reg32 = pci_read_config16(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_SPECIAL;
+	pci_write_config16(dev, PCI_COMMAND, reg32);
+
+	/*
 	 * The PIIX4 can support the full ISA bus, or the Extended I/O (EIO)
 	 * bus, which is a subset of ISA. We select the full ISA bus here.
 	 */
@@ -105,12 +112,16 @@ static void sb_read_resources(struct device *dev)
 	res = new_resource(dev, 2);
 	res->base = 0xff800000UL;
 	res->size = 0x00800000UL; /* 8 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
+		IORESOURCE_RESERVE;
 
+#if CONFIG_IOAPIC
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
+		IORESOURCE_RESERVE;
+#endif
 }
 
 static const struct device_operations isa_ops = {

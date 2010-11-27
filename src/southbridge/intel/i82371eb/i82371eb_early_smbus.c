@@ -27,8 +27,6 @@
 #include "i82371eb.h"
 #include "i82371eb_smbus.h"
 
-#define SMBUS_IO_BASE 0x0f00
-
 int smbus_read_byte(u8 device, u8 address);
 
 void enable_smbus(void)

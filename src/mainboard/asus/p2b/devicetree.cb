@@ -54,6 +54,9 @@ chip northbridge/intel/i440bx		# Northbridge
       register "ide0_drive1_udma33_enable" = "0"
       register "ide1_drive0_udma33_enable" = "0"
       register "ide1_drive1_udma33_enable" = "0"
+      register "thrm_polarity" = "1"
+      register "lid_polarity" = "1"
+      register "gpo" = "0x7fffbbff"
     end
   end
 end

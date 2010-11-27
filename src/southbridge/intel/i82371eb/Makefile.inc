@@ -24,7 +24,8 @@ driver-y +=  i82371eb_ide.c
 driver-y +=  i82371eb_usb.c
 driver-y +=  i82371eb_smbus.c
 driver-y +=  i82371eb_reset.c
+driver-$(CONFIG_HAVE_ACPI_TABLES) += i82371eb_fadt.c
+driver-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.c
 
 romstage-y += i82371eb_early_pm.c
 romstage-y += i82371eb_early_smbus.c
-

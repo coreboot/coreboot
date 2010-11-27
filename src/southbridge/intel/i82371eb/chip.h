@@ -34,6 +34,10 @@ struct southbridge_intel_i82371eb_config {
 	int ide1_drive1_udma33_enable:1;
 	int ide_legacy_enable:1;
 	int usb_enable:1;
+	/* acpi */
+	u32 gpo; /* gpio output default */
+	u8 lid_polarity;
+	u8 thrm_polarity;
 };
 
 #endif /* SOUTHBRIDGE_INTEL_I82371EB_CHIP_H */

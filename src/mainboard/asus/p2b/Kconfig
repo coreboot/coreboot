@@ -28,6 +28,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_256
+	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
 	string

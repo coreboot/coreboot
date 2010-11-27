@@ -39,7 +39,7 @@ void enable_pm(void)
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
 
 	/* Set the PM I/O base. */
-	pci_write_config32(dev, PMBA, PM_IO_BASE | 1);
+	pci_write_config32(dev, PMBA, DEFAULT_PMBASE | 1);
 
 	/* Enable access to the PM I/O space. */
 	reg16 = pci_read_config16(dev, PCI_COMMAND);

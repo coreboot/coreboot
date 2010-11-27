@@ -56,13 +56,60 @@ void i82371eb_hard_reset(void);
 
 /* SMBus */
 #define SMBBA		0x90	/* SMBus base address */
+#define   SMBUS_IO_BASE	0x0f00
 #define SMBHSTCFG	0xd2	/* SMBus host configuration */
 
 /* Power management (ACPI) */
-#define PMBA		0x40	/* Power management base address */
-#define PMREGMISC	0x80	/* Miscellaneous power management */
+#define PMSTS		0x00	/* Power Management Status */
+#define PMEN		0x02	/* Power Management Resume Enable */
+#define   PWRBTN_EN	(1<<8)
+#define   GBL_EN	(1<<5)
+#define PMCNTRL		0x04	/* Power Management Control */
+#define   SUS_EN	(1<<13)	/* S0-S5 trigger */
+#define   SUS_TYP_MSK	(7<<10)
+#define   SUS_TYP_S0	(5<<10)
+#define   SUS_TYP_S1	(4<<10)
+#define   SUS_TYP_S2	(3<<10)
+//#define   SUS_TYP_S2>---(2<<10)
+#define   SUS_TYP_S3	(1<<10)
+#define   SUS_TYP_S5	(0<<10)
+#define   SCI_EN	(1<<0)
+#define PMTMR		0x08	/* Power Management Timer */
+#define GPSTS		0x0c	/* General Purpose Status */
+#define GPEN		0x0e	/* General Purpose Enable */
+#define   THRM_EN	(1<<0)
+#define PCNTRL		0x10	/* Processor control */
+#define GLBSTS		0x18	/* Global Status */
+#define   IRQ_RSM_STS	(1<<11)
+#define   EXTSMI_STS	(1<<10)
+#define   GSTBY_STS	(1<<8)
+#define   GP_STS	(1<<7)
+#define   BM1_STS	(1<<6)
+#define   APM_STS	(1<<5)
+#define   DEV_STS	(1<<4)
+#define   BIOS_EN	(1<<1)	/* GBL_RLS write triggers SMI */
+#define   LEGACY_USB_EN	(1<<0)	/* Keyboard controller access triggers SMI */
+#define DEVSTS		0x1c	/* Device Status */
+#define GLBEN		0x20	/* Global Enable */
+#define   EXTSMI_EN	(1<<10)	/* EXTSMI# signal triggers SMI */
+#define   GSTBY_EN	(1<<8)
+#define   BM_TRP_EN	(1<<1)
+#define   BIOS_EN	(1<<1)	/* GBL_RLS write triggers SMI */
+#define   LEGACY_USB_EN	(1<<0)	/* Keyboard controller access triggers SMI */
+#define GLBCTL		0x28	/* Global Control */
+#define   EOS		(1<<16)	/* End of SMI */
+#define   SMI_EN	(1<<0)	/* SMI enable */
+#define DEVCTL		0x2c	/* Device Control */
+#define   TRP_EN_DEV12	(1<<24)	/* SMI on dev12 trap */
+#define GPO0		0x34
+#define GPO1		0x35
+#define GPO2		0x36
+#define GPO3		0x37
 
-#define PM_IO_BASE	0xe400
+#define PMBA		0x40	/* Power management base address */
+#define   DEFAULT_PMBASE	0xe400
+#define   PM_IO_BASE DEFAULT_PMBASE
+#define PMREGMISC	0x80	/* Miscellaneous power management */
 
 /* Bit definitions */
 #define EXT_BIOS_ENABLE_1MB	(1 << 9)  /* 1-Meg Extended BIOS Enable */

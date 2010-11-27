@@ -524,11 +524,12 @@ static const io_register_t i82371xx_pm_registers[] = {
 	{ 0x37, 1, "GPOREG 3" },
 };
 
-int print_pmbase(struct pci_dev *sb)
+int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
 	int i, size;
 	uint16_t pmbase;
 	const io_register_t *pm_registers;
+	struct pci_dev *acpi;
 
 	printf("\n============= PMBASE ============\n\n");
 
@@ -584,7 +585,12 @@ int print_pmbase(struct pci_dev *sb)
 		size = ARRAY_SIZE(ich0_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_82371XX:
-		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		acpi = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 3);
+		if (!acpi) {
+			printf("Southbridge function 3 not found.\n");
+			return 1;
+		}
+		pmbase = pci_read_word(acpi, 0x40) & 0xfffc;
 		pm_registers = i82371xx_pm_registers;
 		size = ARRAY_SIZE(i82371xx_pm_registers);
 		break;

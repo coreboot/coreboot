@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (dump_pmbase) {
-		print_pmbase(sb);
+		print_pmbase(sb, pacc);
 		printf("\n\n");
 	}
 

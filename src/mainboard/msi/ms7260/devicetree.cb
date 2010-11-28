@@ -66,19 +66,6 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
             chip drivers/generic/generic	# DIMM 0-1-1
               device i2c 53 on end
             end
-            # TODO: Needed?
-            # chip drivers/generic/generic	# DIMM 1-0-0
-            #   device i2c 54 on end
-            # end
-            # chip drivers/generic/generic	# DIMM 1-0-1
-            #   device i2c 55 on end
-            # end
-            # chip drivers/generic/generic	# DIMM 1-1-0
-            #   device i2c 56 on end
-            # end
-            # chip drivers/generic/generic	# DIMM 1-1-1
-            #   device i2c 57 on end
-            # end
           end
           # TODO: Check if the stuff below is correct / needed.
           device pci 1.1 on			# SM 1

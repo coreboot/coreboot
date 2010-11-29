@@ -17,14 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "southbridge/intel/i82371eb/i82371eb.h"
+
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 {
 	/* Define the main processor.*/
 	Scope (\_PR)
 	{
-		/* Looks like the P_CNT field can't be a method or name
-		 * and has to be hardcoded to 0xe410 or generated in SSDT */
-		Processor (CPU0, 0x01, 0xe410, 0x06) {}
+		/* Looks like the P_CNT field can't be a name or method (except
+		 * builtins like Add()) and has to be hardcoded or generated
+		 * into SSDT */
+		Processor (CPU0, 0x01, Add(DEFAULT_PMBASE, PCNTRL), 0x06) {}
 	}
 
 	/* For now only define 2 power states:

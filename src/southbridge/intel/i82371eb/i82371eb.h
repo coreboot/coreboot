@@ -23,6 +23,7 @@
 
 #if !defined(ASSEMBLY)
 #if !defined(__PRE_RAM__)
+#if !defined(__ACPI__) /* dsdt include */
 
 #include <arch/io.h>
 #include <device/device.h>
@@ -31,6 +32,7 @@
 void i82371eb_enable(device_t dev);
 void i82371eb_hard_reset(void);
 
+#endif
 #endif
 #endif
 

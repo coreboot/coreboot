@@ -83,6 +83,10 @@ static void sio_init(void)
 	reg = pnp_read_config(GPIO2345_DEV, 0x29);
 	pnp_write_config(GPIO2345_DEV, 0x29, (reg | 2));
 
+	/* Turn on the Power LED ("Suspend LED" in Super I/O) */
+	reg = pnp_read_config(GPIO2345_DEV, 0xf3);
+	pnp_write_config(GPIO2345_DEV, 0xf3, (reg | 0x40));
+
 	/* todo document this */
 	pnp_write_config(GPIO2345_DEV, 0x2c, 0x1);
 	pnp_write_config(GPIO2345_DEV, 0x2d, 0x1);

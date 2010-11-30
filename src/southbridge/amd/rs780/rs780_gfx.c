@@ -362,8 +362,8 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	*(GpuF0MMReg + 0x655c/4) |= 1<<4;
 
 	// disable write combining, needed for stability
-   // reference bios does this only for RS780 rev A11
-   // need to figure out why we need it for all revs
+	// reference bios does this only for RS780 rev A11
+	// need to figure out why we need it for all revs
 	*(GpuF0MMReg + 0x2000/4) = 0x00000010;
 	*(GpuF0MMReg + 0x2408/4) = 1 << 9;
 	*(GpuF0MMReg + 0x2000/4) = 0x00000011;

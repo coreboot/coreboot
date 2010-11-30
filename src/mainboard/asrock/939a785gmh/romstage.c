@@ -121,7 +121,7 @@ static void sio_init(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	static const u16 spd_addr[] = { DIMM0, 0, 0, 0, DIMM1, 0, 0, 0, };
+	static const u16 spd_addr[] = { DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
 	int needs_reset = 0;
 	u32 bsp_apicid = 0;
 	msr_t msr;

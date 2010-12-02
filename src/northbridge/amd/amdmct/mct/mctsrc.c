@@ -1023,13 +1023,9 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 
 	dev = pDCTstat->dev_dct;
 	for (index = 0x50; index <= 0x52; index ++) {
-		val = Get_NB32_index_wait(dev, index_reg, index);
-		val |= (FenceTrnFinDlySeed & 0x1F);
+		val = (FenceTrnFinDlySeed & 0x1F);
 		if (index != 0x52) {
-			val &= ~(0xFF << 8);
-			val |= (val & 0xFF) << 8;
-			val &= 0xFFFF;
-			val |= val << 16;
+			val |= val << 8 | val << 16 | val << 24;
 		}
 		Set_NB32_index_wait(dev, index_reg, index, val);
 	}

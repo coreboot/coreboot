@@ -18,8 +18,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="May 18th, 2010"
-CROSSGCC_VERSION="1.01"
+CROSSGCC_DATE="November 16th, 2010"
+CROSSGCC_VERSION="1.02"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -28,15 +28,13 @@ DESTDIR=
 
 # version numbers
 GMP_VERSION=5.0.1
-MPFR_VERSION=2.4.2
+MPFR_VERSION=3.0.0
 MPC_VERSION=0.8.2
 LIBELF_VERSION=0.8.13
-# GCC 4.5.0 is broken on some AMD boards:
-# GCC_VERSION=4.5.0 # enable for Link Time Optimization & Co
-GCC_VERSION=4.4.4
+GCC_VERSION=4.5.1
 BINUTILS_VERSION=2.20.1
-GDB_VERSION=7.1
-W32API_VERSION=3.14
+GDB_VERSION=7.2
+W32API_VERSION=3.15
 MINGWRT_VERSION=3.18
 
 # archive locations
@@ -47,8 +45,8 @@ LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20API%20for%20MS-Windows/w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
-MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20Runtime/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
+MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
@@ -356,7 +354,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	cd build-libelf
 	rm -f .failed
 	echo "$HOSTCFLAGS"
-	CFLAGS="$HOSTCFLAGS"  ../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no ../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed

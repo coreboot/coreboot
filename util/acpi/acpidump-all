@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# Copyright (C) 2007-2010 by coresystems GmbH
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+#
+
+rm -rf out
+mkdir out
+ 
+# walk through all ACPI tables with their addresses
+# example: 
+#    RSDT @ 0xcf6794ba
+# we can not just dump the tables by their names because some 
+# machines have double ACPI tables
+
+acpidump | grep "@ 0x" | while read line
+do
+  NAME=$( echo `echo $line|cut -f1 -d@` )
+  FNAME=$( echo $NAME | sed s/\ /_/g |sed s/\!/b/g )
+  ADDR=$( echo `echo $line|cut -f2 -d@` )
+  if [ "${!FNAME}" == "" ]; then
+    eval $FNAME=0
+  else
+    eval $FNAME=$(( ${!FNAME} + 1 ))
+  fi
+  printf "Processing table \"$NAME\" at $ADDR ... "
+  printf "${!FNAME} tables of that kind found before.\n"
+
+  # acpidump -s ${!FNAME} --table "$NAME" > out/$FNAME-$ADDR-${!FNAME}.txt
+  acpidump -b -s ${!FNAME} --table "$NAME" > out/$FNAME-$ADDR-${!FNAME}.bin
+  if [ "`file -b out/$FNAME-$ADDR-${!FNAME}.bin`" != "ASCII text" ]; then
+    iasl -d out/$FNAME-$ADDR-${!FNAME}.bin &>/dev/null
+  else
+    printf "Skipping $NAME because it was not dumped correctly.\n\n"
+  fi
+
+done
+

@@ -85,7 +85,7 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0x2f8
 								irq 0x70 = 3
 							end
-							device pnp 2e.5 on #  Keyboard
+							device pnp 2e.5 on #  PS/2 keyboard & mouse
 								io 0x60 = 0x60
 								io 0x62 = 0x64
 								irq 0x70 = 1

@@ -49,9 +49,9 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 io 0x60 = 0x2f8
                 irq 0x70 = 3
               end
-              device pnp 2e.5 off		# PS/2 keyboard (off)
+              device pnp 2e.5 off		# PS/2 keyboard & mouse (off)
               end
-              device pnp 2e.106 off		# Serial flash
+              device pnp 2e.106 off		# Serial flash interface (SFI)
                 io 0x60 = 0x100
               end
               device pnp 2e.007 off		# GPIO 1
@@ -65,15 +65,15 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
               end
               device pnp 2e.307 off		# GPIO 6
               end
-              device pnp 2e.8 off		# WDTO_PLED
+              device pnp 2e.8 off		# WDTO#, PLED
               end
-              device pnp 2e.009 on		# GPIO 2 on LDN 9 is in sio_setup
+              device pnp 2e.009 on		# GPIO 2
               end
               device pnp 2e.109 off		# GPIO 3
               end
               device pnp 2e.209 off		# GPIO 4
               end
-              device pnp 2e.309 on		# GPIO5
+              device pnp 2e.309 on		# GPIO 5
               end
               device pnp 2e.a off		# ACPI
               end

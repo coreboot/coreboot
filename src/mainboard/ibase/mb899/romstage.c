@@ -38,6 +38,7 @@
 #include "southbridge/intel/i82801gx/i82801gx.h"
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
+#define DUMMY_DEV PNP_DEV(0x4e, 0)
 
 void enable_smbus(void);
 
@@ -79,7 +80,7 @@ static void early_superio_config_w83627ehg(void)
 {
 	device_t dev;
 
-	dev=PNP_DEV(0x4e, W83627EHG_SP1);
+	dev = DUMMY_DEV;
 	pnp_enter_ext_func_mode(dev);
 
 	pnp_write_config(dev, 0x24, 0xc4); // PNPCSV

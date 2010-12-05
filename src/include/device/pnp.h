@@ -31,7 +31,7 @@ struct io_info {
 
 struct pnp_info {
 	struct device_operations *ops;
-	unsigned int function;
+	unsigned int function; /* Must be at least 16 bits (virtual LDNs)! */
 	unsigned int flags;
 #define PNP_IO0  0x001
 #define PNP_IO1  0x002

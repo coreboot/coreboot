@@ -94,18 +94,21 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, W83627DHG_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
-	{ &ops, W83627DHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
-	{ &ops, W83627DHG_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, W83627DHG_SP2, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
-	{ &ops, W83627DHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x0fff, 0}, {0x0fff, 4}, },
+	{ &ops, W83627DHG_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627DHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627DHG_SP1, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83627DHG_SP2, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83627DHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },
 	/* the next line makes coreboot hang in pnp_enable_devices() */
-	/* { &ops, W83627DHG_SPI, PNP_IO1, { 0xff8, 0 }, }, */
+	/* { &ops, W83627DHG_SPI, PNP_IO1, { 0x7f8, 0 }, }, */
 	{ &ops, W83627DHG_GPIO6, },
 	{ &ops, W83627DHG_WDTO_PLED, },
-	{ &ops, W83627DHG_GPIO2345, },
-	{ &ops, W83627DHG_ACPI, },
-	{ &ops, W83627DHG_HWM, PNP_IO0 | PNP_IRQ0, {0x0ffe, 0}, },
+	{ &ops, W83627DHG_GPIO2, },
+	{ &ops, W83627DHG_GPIO3, },
+	{ &ops, W83627DHG_GPIO4, },
+	{ &ops, W83627DHG_GPIO5, },
+	{ &ops, W83627DHG_ACPI, PNP_IRQ0, },
+	{ &ops, W83627DHG_HWM, PNP_IO0 | PNP_IRQ0, {0x07fe, 0}, },
 	{ &ops, W83627DHG_PECI_SST, },
 };
 

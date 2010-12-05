@@ -28,28 +28,41 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 io 0x60 = 0x2f8
                 irq 0x70 = 3
               end
-              device pnp 4e.5 on		# PS/2 keyboard
+              device pnp 4e.5 on		# PS/2 keyboard & mouse
                 io 0x60 = 0x60
                 io 0x62 = 0x64
                 irq 0x70 = 1			# PS/2 keyboard IRQ
                 irq 0x72 = 12			# PS/2 mouse IRQ
               end
-              device pnp 4e.6 off		# Serial flash interface
+              device pnp 4e.106 off		# Serial flash interface (SFI)
                 # io 0x62 = 0x100
               end
-              device pnp 4e.7 off		# GPIO1/6, game port, MIDI port
+              device pnp 4e.007 off		# GPIO 1
+              end
+              device pnp 4e.107 off		# Game port
                 # io 0x60 = 0x220		# Datasheet: 0x201
+              end
+              device pnp 4e.207 off		# MIDI
                 # io 0x62 = 0x300		# Datasheet: 0x330
                 # irq 0x70 = 9
               end
+              device pnp 4e.307 off		# GPIO 6
+              end
               device pnp 4e.8 off		# WDTO#, PLED
               end
-              device pnp 4e.9 off		# GPIO2/3/4/5, SUSLED
+              device pnp 4e.009 off		# GPIO 2
+              end
+              device pnp 4e.109 off		# GPIO 3
+              end
+              device pnp 4e.209 off		# GPIO 4
+              end
+              device pnp 4e.309 off		# GPIO 5
               end
               device pnp 4e.a off		# ACPI
               end
-              device pnp 4e.b on		# HWM (for lm-sensors)
+              device pnp 4e.b on		# Hardware monitor
                 io 0x60 = 0xa10
+                # TODO: IRQ?
               end
             end
           end

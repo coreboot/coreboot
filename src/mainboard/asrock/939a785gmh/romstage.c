@@ -49,8 +49,7 @@
 #include "northbridge/amd/amdk8/debug.c" /* After sb700_early_setup.c! */
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
-#define GPIO6_DEV PNP_DEV(0x2e, W83627DHG_GPIO6)
-#define GPIO2345_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345)
+#define GPIO2345_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }

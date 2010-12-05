@@ -49,7 +49,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED)
+#define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED_V)
 #define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }

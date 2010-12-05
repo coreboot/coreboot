@@ -83,11 +83,17 @@ chip northbridge/amd/amdk8/root_complex
 							end
 							#device pnp 2e.6 off #  SPI
 							#end
-							device pnp 2e.7 off #  GPIO
+							device pnp 2e.307 off #  GPIO 1
 							end
 							device pnp 2e.8 on #  WDTO#, PLED
 							end
-							device pnp 2e.9 off #  GPIO
+							device pnp 2e.009 off #  GPIO2
+							end
+							device pnp 2e.109 off #  GPIO3
+							end
+							device pnp 2e.209 off #  GPIO4
+							end
+							device pnp 2e.309 off #  GPIO5
 							end
 							device pnp 2e.a off #  ACPI
 							end

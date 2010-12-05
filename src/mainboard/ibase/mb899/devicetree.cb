@@ -63,29 +63,38 @@ chip northbridge/intel/i945
                                                 irq 0x70 = 3
 						irq 0xf1 = 4 # set IRMODE 0 # XXX not an irq
                                         end
-					device pnp 4e.5 on		# Keyboard+Mouse
+					device pnp 4e.5 on		# PS/2 keyboard & mouse
 						 io 0x60 = 0x60
 						 io 0x62 = 0x64
 						irq 0x70 = 1
 						irq 0x72 = 12
 						irq 0xf0 = 0x82		# HW accel A20.
 					end
-					device pnp 4e.7 on		# GPIO1, GAME, MIDI
-						 io 0x62 = 0x330
+					device pnp 4e.106 off end	# Serial flash interface (SFI)
+					device pnp 4e.007 off end	# GPIO 1
+					device pnp 4e.107 off end	# Game port
+					device pnp 4e.207 on		# MIDI
+						io 0x62 = 0x330
 						irq 0x70 = 9
 					end
-					device pnp 4e.8 on		# GPIO2
-						# all default
+					device pnp 4e.307 off end	# GPIO 6
+					device pnp 4e.8 off end		# WDTO#, PLED
+					device pnp 4e.009 on		# GPIO 2
+						# All default
 					end
-					device pnp 4e.9 on		# GPIO3/4
-						irq 0x30 = 0x03		# does this work?
+					device pnp 4e.109 on		# GPIO 3
 						irq 0xf0 = 0xfb		# set inputs/outputs
 						irq 0xf1 = 0x66
 					end
+					device pnp 4e.209 on		# GPIO 4
+					end
+					device pnp 4e.309 off		# GPIO 5
+					end
 					device pnp 4e.a on		# ACPI
+						# TODO: IRQ
 					end
 					device pnp 4e.b on		# HWM
-						 io 0x60 = 0x290
+						io 0x60 = 0x290
 						irq 0x70 = 0
 					end
 

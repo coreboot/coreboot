@@ -27,19 +27,11 @@
 #include <southbridge/amd/sb700/sb700.h>
 #include "chip.h"
 
-#define ADT7461_ADDRESS 0x4C
-#define ARA_ADDRESS     0x0C /* Alert Response Address */
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 			       u8 val);
 
-#define ADT7461_read_byte(address) \
-	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
-#define ARA_read_byte(address) \
-	do_smbus_read_byte(SMBUS_IO_BASE, ARA_ADDRESS, address)
-#define ADT7461_write_byte(address, val) \
-	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
 #define SMBUS_IO_BASE 0x6000
 
@@ -132,7 +124,7 @@ static void get_ide_dma66(void)
 /*
  * justify the dev3 is exist or not
  * NOTE: This just copied from AMD Tilapia code.
- * It is completly unknown it it will work at all for ASUS M4A785-M.
+ * It is completly unknown if it will work at all for this board.
  */
 u8 is_dev3_present(void)
 {
@@ -159,75 +151,12 @@ u8 is_dev3_present(void)
 	}
 }
 
-/*
- * set thermal config
- */
-static void set_thermal_config(void)
-{
-	u8 byte;
-	u16 word;
-	device_t sm_dev;
-
-	/* set ADT 7461 */
-	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
-	ADT7461_write_byte(0x0C, 0x00);	/* Local Temperature Low limit */
-	ADT7461_write_byte(0x0D, 0x50);	/* External Temperature Hight limit  High Byte */
-	ADT7461_write_byte(0x0E, 0x00);	/* External Temperature Low limit High Byte */
-
-	ADT7461_write_byte(0x19, 0x55);	/* External THERM limit */
-	ADT7461_write_byte(0x20, 0x55);	/* Local THERM limit */
-
-	byte = ADT7461_read_byte(0x02);	/* read status register to clear it */
-	ARA_read_byte(0x05); /* A hardware alert can only be cleared by the master sending an ARA as a read command */
-	printk(BIOS_INFO, "Init adt7461 end , status 0x02 %02x\n", byte);
-
-	/* sb700 settings for thermal config */
-	/* set SB700 GPIO 64 to GPIO with pull-up */
-	byte = pm2_ioread(0x42);
-	byte &= 0x3f;
-	pm2_iowrite(0x42, byte);
-
-	/* set GPIO 64 to input */
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-	word = pci_read_config16(sm_dev, 0x56);
-	word |= 1 << 7;
-	pci_write_config16(sm_dev, 0x56, word);
-
-	/* set GPIO 64 internal pull-up */
-	byte = pm2_ioread(0xf0);
-	byte &= 0xee;
-	pm2_iowrite(0xf0, byte);
-
-	/* set Talert to be active low */
-	byte = pm_ioread(0x67);
-	byte &= ~(1 << 5);
-	pm_iowrite(0x67, byte);
-
-	/* set Talert to generate ACPI event */
-	byte = pm_ioread(0x3c);
-	byte &= 0xf3;
-	pm_iowrite(0x3c, byte);
-
-	/* THERMTRIP pin */
-	/* byte = pm_ioread(0x68);
-	 * byte |= 1 << 3;
-	 * pm_iowrite(0x68, byte);
-	 *
-	 * byte = pm_ioread(0x55);
-	 * byte |= 1 << 0;
-	 * pm_iowrite(0x55, byte);
-	 *
-	 * byte = pm_ioread(0x67);
-	 * byte &= ~( 1 << 6);
-	 * pm_iowrite(0x67, byte);
-	 */
-}
 
 /*************************************************
 * enable the dedicated function in this board.
 * This function called early than rs780_enable.
 *************************************************/
-static void m4a785m_enable(device_t dev)
+static void m4a78em_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard enable. dev=0x%p\n", dev);
 
@@ -272,10 +201,10 @@ static void m4a785m_enable(device_t dev)
 
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
-	set_thermal_config();
+	/* set_thermal_config(); */
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ASUS M4A785-M Mainboard")
-	.enable_dev = m4a785m_enable,
+	CHIP_NAME("ASUS M4A78-EM Mainboard")
+	.enable_dev = m4a78em_enable,
 };

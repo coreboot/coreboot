@@ -33,6 +33,8 @@ config BOARD_ASUS_M2V_MX_SE
 	bool "M2V-MX SE"
 config BOARD_ASUS_M4A785M
 	bool "M4A785-M"
+config BOARD_ASUS_M4A78_EM
+	bool "M4A78-EM"
 config BOARD_ASUS_MEW_AM
 	bool "MEW-AM"
 config BOARD_ASUS_MEW_VM
@@ -58,6 +60,7 @@ source "src/mainboard/asus/a8v-e_deluxe/Kconfig"
 source "src/mainboard/asus/m2v/Kconfig"
 source "src/mainboard/asus/m2v-mx_se/Kconfig"
 source "src/mainboard/asus/m4a785-m/Kconfig"
+source "src/mainboard/asus/m4a78-em/Kconfig"
 source "src/mainboard/asus/mew-am/Kconfig"
 source "src/mainboard/asus/mew-vm/Kconfig"
 source "src/mainboard/asus/p2b/Kconfig"

@@ -33,18 +33,15 @@
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
 
 void enable_smbus(void);
 int smbus_read_byte(u8 device, u8 address);
 
 void main(unsigned long bist)
 {
-	/* FIXME */
-	outb(0x87, 0x2e);
-	outb(0x87, 0x2e);
-	pnp_write_config(SERIAL_DEV, 0x24, 0x84 | (1 << 6));
+	w83627hf_set_clksel_48(DUMMY_DEV);
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	outb(0x87, 0xaa);
 
 	uart_init();
 	console_init();

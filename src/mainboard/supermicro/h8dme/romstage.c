@@ -48,6 +48,7 @@
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
@@ -193,10 +194,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
-	pnp_write_config(SERIAL_DEV, 0x24, 0x84 | (1 << 6));
-	w83627hf_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	w83627hf_set_clksel_48(DUMMY_DEV);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	uart_init();
 	console_init();

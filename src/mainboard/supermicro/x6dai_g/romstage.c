@@ -16,13 +16,14 @@
 #include "debug.c"
 #include "watchdog.c"
 #include "reset.c"
-#include "superio/winbond/w83627hf/w83627hf_early_init.c"
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "northbridge/intel/e7525/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
 
 #define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define HIDDEN_SERIAL_DEV  PNP_DEV(0x2e, W83627HF_SP2)
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
 
 #define DEVPRES_CONFIG  ( \
 	DEVPRES_D1F0 | \
@@ -63,11 +64,8 @@ static void main(unsigned long bist)
 			skip_romstage();
 	}
 
-	/* Setup the console */
-	outb(0x87,0x2e);
-	outb(0x87,0x2e);
-	pnp_write_config(CONSOLE_SERIAL_DEV, 0x24, 0x84 | (1 << 6));
-	w83627hf_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83627hf_set_clksel_48(DUMMY_DEV);
+	w83627hf_enable_serial(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

@@ -16,7 +16,6 @@
 #include "debug.c"
 #include "watchdog.c"
 #include "reset.c"
-#include "x6dhe_g_fixups.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
@@ -34,6 +33,10 @@
 	DEVPRES_D6F0 | \
 	0 )
 #define DEVPRES1_CONFIG (DEVPRES1_D0F1 | DEVPRES1_D8F0)
+
+static void mch_reset(void) {}
+static void mainboard_set_e7520_pll(unsigned bits) {}
+static void mainboard_set_e7520_leds(void) {}
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

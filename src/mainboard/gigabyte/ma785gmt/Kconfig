@@ -94,8 +94,4 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config COMPRESS
-	hex
-	default 0
-
 endif # BOARD_GIGABYTE_GA785GMT

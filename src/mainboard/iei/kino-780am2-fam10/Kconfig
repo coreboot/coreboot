@@ -94,10 +94,6 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config COMPRESS
-	hex
-	default 0
-
 config FALLBACK_VGA_BIOS_ID
 	string
 	default "1002,9615"

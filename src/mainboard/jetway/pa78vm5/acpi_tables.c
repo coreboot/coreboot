@@ -234,7 +234,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
-	/* FDAT */
+	/* FADT */
 	current	  = ( current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;

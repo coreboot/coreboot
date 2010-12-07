@@ -282,7 +282,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy(dsdt, &AmlCode, dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 
-	/* FDAT */
+	/* FADT */
 	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);

@@ -337,9 +337,6 @@ int i945_silicon_revision(void);
 void i945_early_initialization(void);
 void i945_late_initialization(void);
 
-/* provided by southbridge code */
-int smbus_read_byte(unsigned device, unsigned address);
-
 /* provided by mainboard code */
 void setup_ich7_gpios(void);
 

@@ -37,9 +37,6 @@ void it8671f_48mhz_clkin(void);
 
 #define SERIAL_DEV PNP_DEV(0x370, IT8671F_SP1)
 
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);

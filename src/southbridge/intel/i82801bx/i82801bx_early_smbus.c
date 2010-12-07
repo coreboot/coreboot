@@ -28,8 +28,6 @@
 #include "i82801bx.h"
 #include "i82801bx_smbus.h"
 
-int smbus_read_byte(u8 device, u8 address);
-
 void enable_smbus(void)
 {
 	device_t dev;

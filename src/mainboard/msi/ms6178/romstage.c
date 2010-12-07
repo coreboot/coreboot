@@ -35,9 +35,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define DUMMY_DEV PNP_DEV(0x2e, 0)
 
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 void main(unsigned long bist)
 {
 	w83627hf_set_clksel_48(DUMMY_DEV);

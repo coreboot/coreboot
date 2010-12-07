@@ -35,10 +35,6 @@
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
 #include <lib.h>
 
-void enable_pm(void);
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 

@@ -33,9 +33,6 @@
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 #include <lib.h>
 
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 void main(unsigned long bist)
 {
 	it8712f_24mhz_clkin();

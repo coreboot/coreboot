@@ -38,9 +38,6 @@
 /* TODO: It's a PC87364 actually! */
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 void main(unsigned long bist)
 {
 	/* TODO: It's a PC87364 actually! */

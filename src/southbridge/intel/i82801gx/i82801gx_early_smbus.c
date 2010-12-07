@@ -26,8 +26,6 @@
 #include "i82801gx.h"
 #include "i82801gx_smbus.h"
 
-int smbus_read_byte(unsigned device, unsigned address);
-
 void enable_smbus(void)
 {
 	device_t dev;

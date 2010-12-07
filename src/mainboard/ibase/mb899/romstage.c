@@ -40,8 +40,6 @@
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define DUMMY_DEV PNP_DEV(0x4e, 0)
 
-void enable_smbus(void);
-
 void setup_ich7_gpios(void)
 {
 	printk(BIOS_DEBUG, " GPIOS...");

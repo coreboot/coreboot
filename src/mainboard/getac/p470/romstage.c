@@ -35,8 +35,6 @@
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
 
-void enable_smbus(void);
-
 void setup_ich7_gpios(void)
 {
 	u32 gpios;

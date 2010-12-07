@@ -42,7 +42,6 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-static int smbus_read_byte(u32 device, u32 address);
 #include "superio/fintek/f71859/f71859_early_serial.c"
 #include <usbdebug.h>
 #include "cpu/x86/mtrr/earlymtrr.c"

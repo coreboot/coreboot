@@ -19,8 +19,8 @@
  */
 
 #include <device/smbus_def.h>
+#include "i82801ax.h"
 
-void enable_smbus(void);
 int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address);
 
 static void smbus_delay(void)

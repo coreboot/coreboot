@@ -19,8 +19,7 @@
  */
 
 #include <device/smbus_def.h>
-
-void enable_smbus(void);
+#include "i82801gx.h"
 
 static void smbus_delay(void)
 {

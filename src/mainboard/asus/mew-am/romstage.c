@@ -34,9 +34,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
-void enable_smbus(void);
-int smbus_read_byte(u8 device, u8 address);
-
 void main(unsigned long bist)
 {
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

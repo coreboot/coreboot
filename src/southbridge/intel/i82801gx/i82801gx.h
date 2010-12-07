@@ -46,6 +46,11 @@ extern void i82801gx_enable(device_t dev);
 void i82801gx_enable_usbdebug(unsigned int port);
 #endif
 
+#if defined(__PRE_RAM__) && !defined(__ROMCC__) && !defined(ASSEMBLY)
+void enable_smbus(void);
+int smbus_read_byte(unsigned device, unsigned address);
+#endif
+
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2

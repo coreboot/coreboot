@@ -26,8 +26,6 @@
 #include <console/console.h>
 #include "i82371eb.h"
 
-void enable_pm(void);
-
 void enable_pm(void)
 {
 	device_t dev;

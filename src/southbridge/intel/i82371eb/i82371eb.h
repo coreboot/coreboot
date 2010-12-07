@@ -36,6 +36,12 @@ void i82371eb_hard_reset(void);
 #endif
 #endif
 
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+void enable_smbus(void);
+int smbus_read_byte(u8 device, u8 address);
+void enable_pm(void);
+#endif
+
 /* If 'cond' is true this macro sets the bit(s) specified by 'bits' in the
  * 'reg' variable, otherwise it clears those bits.
  *

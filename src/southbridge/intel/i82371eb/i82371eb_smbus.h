@@ -1,4 +1,5 @@
 #include <device/smbus_def.h>
+#include "i82371eb.h"
 
 #define SMBHST_STATUS 	0x0
 #define SMBHST_CTL    	0x2
@@ -10,7 +11,6 @@
 #define SMBUS_STATUS_MASK 0x1e
 #define SMBUS_ERROR_FLAG (1<<2)
 
-void enable_smbus(void);
 int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address);
 
 static inline void smbus_delay(void)

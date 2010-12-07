@@ -684,6 +684,13 @@ static void amdfam10_domain_read_resources(device_t dev)
 		resource->flags = IORESOURCE_MEM;
 	}
 #endif
+#if CONFIG_MMCONF_SUPPORT
+	struct resource *res = new_resource(dev, 0xc0010058);
+	res->base = CONFIG_MMCONF_BASE_ADDRESS;
+	res->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
+	res->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+#endif
 }
 
 static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
@@ -1447,13 +1454,6 @@ static void cpu_bus_noop(device_t dev)
 
 static void cpu_bus_read_resources(device_t dev)
 {
-#if CONFIG_MMCONF_SUPPORT
-	struct resource *resource = new_resource(dev, 0xc0010058);
-	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-	resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
-#endif
 }
 
 static void cpu_bus_set_resources(device_t dev)

@@ -1,5 +1,5 @@
 driver-y += rs690.c
-driver-y += rs690_cmn.c
-driver-y += rs690_pcie.c
-driver-y += rs690_ht.c
-driver-y += rs690_gfx.c
+driver-y += cmn.c
+driver-y += pcie.c
+driver-y += ht.c
+driver-y += gfx.c

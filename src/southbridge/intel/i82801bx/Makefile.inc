@@ -19,16 +19,16 @@
 ##
 
 driver-y += i82801bx.c
-driver-y += i82801bx_ac97.c
-driver-y += i82801bx_ide.c
-driver-y += i82801bx_lpc.c
-driver-y += i82801bx_nic.c
-driver-y += i82801bx_pci.c
-driver-y += i82801bx_smbus.c
-driver-y += i82801bx_usb.c
+driver-y += ac97.c
+driver-y += ide.c
+driver-y += lpc.c
+driver-y += nic.c
+driver-y += pci.c
+driver-y += smbus.c
+driver-y += usb.c
 
-ramstage-y += i82801bx_reset.c
-ramstage-y += i82801bx_watchdog.c
+ramstage-y += reset.c
+ramstage-y += watchdog.c
 
-romstage-y += i82801bx_early_smbus.c
+romstage-y += early_smbus.c
 

@@ -38,7 +38,7 @@
 /* The ALIX.2D has no SMBus; the setup is hard-wired. */
 static void cs5536_enable_smbus(void) { }
 
-#include "southbridge/amd/cs5536/cs5536_early_setup.c"
+#include "southbridge/amd/cs5536/early_setup.c"
 
 /* The part is a Hynix hy5du121622ctp-d43.
  *

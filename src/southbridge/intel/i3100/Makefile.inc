@@ -1,9 +1,9 @@
 driver-y += i3100.c
-driver-y += i3100_uhci.c
-driver-y += i3100_lpc.c
-driver-y += i3100_sata.c
-driver-y += i3100_ehci.c
-driver-y += i3100_smbus.c
-driver-y += i3100_pci.c
-ramstage-y += i3100_reset.c
-ramstage-y += i3100_pciexp_portb.c
+driver-y += uhci.c
+driver-y += lpc.c
+driver-y += sata.c
+driver-y += ehci.c
+driver-y += smbus.c
+driver-y += pci.c
+ramstage-y += reset.c
+ramstage-y += pciexp_portb.c

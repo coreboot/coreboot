@@ -31,7 +31,7 @@
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
+#include "southbridge/via/vt8237r/early_smbus.c"
 #include "superio/fintek/f71805f/f71805f_early_serial.c"
 #include <lib.h>
 #include <spd.h>

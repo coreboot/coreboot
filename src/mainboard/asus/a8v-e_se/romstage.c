@@ -41,8 +41,8 @@ unsigned int get_sbdn(unsigned bus);
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
-#include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
-#include "northbridge/amd/amdk8/debug.c" /* After vt8237r_early_smbus.c! */
+#include "southbridge/via/vt8237r/early_smbus.c"
+#include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -79,7 +79,7 @@ void soft_reset(void)
 	}
 }
 
-#include "southbridge/via/k8t890/k8t890_early_car.c"
+#include "southbridge/via/k8t890/early_car.c"
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"

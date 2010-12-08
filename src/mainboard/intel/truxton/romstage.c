@@ -28,8 +28,8 @@
 #include <pc80/mc146818rtc.h>
 #include "pc80/udelay_io.c"
 #include <console/console.h>
-#include "southbridge/intel/i3100/i3100_early_smbus.c"
-#include "southbridge/intel/i3100/i3100_early_lpc.c"
+#include "southbridge/intel/i3100/early_smbus.c"
+#include "southbridge/intel/i3100/early_lpc.c"
 #include "northbridge/intel/i3100/raminit_ep80579.h"
 #include "superio/intel/i3100/i3100.h"
 #include "cpu/x86/lapic/boot_cpu.c"

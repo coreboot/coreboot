@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <device/pci_ids.h>
 #include "chip.h"
-#include "rs780_rev.h"
+#include "rev.h"
 
 #define NBMISC_INDEX 	0x60
 #define NBHTIU_INDEX 	0x94

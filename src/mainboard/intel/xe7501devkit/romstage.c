@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "southbridge/intel/i82801cx/i82801cx_early_smbus.c"
+#include "southbridge/intel/i82801cx/early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"

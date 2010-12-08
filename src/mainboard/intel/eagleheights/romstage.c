@@ -31,8 +31,8 @@
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/acpi.h>
-#include "southbridge/intel/i3100/i3100_early_smbus.c"
-#include "southbridge/intel/i3100/i3100_early_lpc.c"
+#include "southbridge/intel/i3100/early_smbus.c"
+#include "southbridge/intel/i3100/early_lpc.c"
 #include "reset.c"
 #include "superio/intel/i3100/i3100_early_serial.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"

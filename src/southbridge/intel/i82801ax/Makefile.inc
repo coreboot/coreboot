@@ -19,15 +19,15 @@
 ##
 
 driver-y += i82801ax.c
-driver-y += i82801ax_ac97.c
-driver-y += i82801ax_ide.c
-driver-y += i82801ax_lpc.c
-driver-y += i82801ax_pci.c
-driver-y += i82801ax_smbus.c
-driver-y += i82801ax_usb.c
+driver-y += ac97.c
+driver-y += ide.c
+driver-y += lpc.c
+driver-y += pci.c
+driver-y += smbus.c
+driver-y += usb.c
 
-ramstage-y += i82801ax_reset.c
-ramstage-y += i82801ax_watchdog.c
+ramstage-y += reset.c
+ramstage-y += watchdog.c
 
-romstage-y += i82801ax_early_smbus.c
+romstage-y += early_smbus.c
 

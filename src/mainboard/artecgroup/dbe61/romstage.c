@@ -33,8 +33,8 @@
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "spd_table.h"
 #include <spd.h>
-#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
-#include "southbridge/amd/cs5536/cs5536_early_setup.c"
+#include "southbridge/amd/cs5536/early_smbus.c"
+#include "southbridge/amd/cs5536/early_setup.c"
 
 static int spd_read_byte(unsigned device, unsigned address)
 {

@@ -47,8 +47,8 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
-#include "southbridge/amd/rs780/rs780_early_setup.c"
-#include "southbridge/amd/sb700/sb700_early_setup.c"
+#include "southbridge/amd/rs780/early_setup.c"
+#include "southbridge/amd/sb700/early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, F71859_SP1)
@@ -70,7 +70,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
-#include "southbridge/amd/sb700/sb700_early_setup.c"
 #include <spd.h>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

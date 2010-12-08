@@ -1,1 +1,1 @@
-driver-y += pxhd_bridge.c
+driver-y += bridge.c

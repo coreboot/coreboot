@@ -44,8 +44,8 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/amd/rs690/rs690_early_setup.c"
-#include "southbridge/amd/sb600/sb600_early_setup.c"
+#include "southbridge/amd/rs690/early_setup.c"
+#include "southbridge/amd/sb600/early_setup.c"
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }

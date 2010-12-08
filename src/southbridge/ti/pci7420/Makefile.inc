@@ -17,6 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += pci7420_cardbus.c
-driver-y += pci7420_firewire.c
+driver-y += cardbus.c
+driver-y += firewire.c
 

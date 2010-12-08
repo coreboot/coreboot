@@ -11,8 +11,8 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5535/cs5535.h"
-#include "southbridge/amd/cs5535/cs5535_early_smbus.c"
-#include "southbridge/amd/cs5535/cs5535_early_setup.c"
+#include "southbridge/amd/cs5535/early_smbus.c"
+#include "southbridge/amd/cs5535/early_setup.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

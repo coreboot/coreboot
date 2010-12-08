@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "southbridge/amd/sb600/sb600_enable_rom.c"
+#include "southbridge/amd/sb600/enable_rom.c"
 
 static void bootblock_southbridge_init(void)
 {

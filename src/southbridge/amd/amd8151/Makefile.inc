@@ -1,1 +1,1 @@
-driver-y += amd8151_agp3.c
+driver-y += agp3.c

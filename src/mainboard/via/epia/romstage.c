@@ -12,9 +12,9 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "lib/debug.c"
-#include "southbridge/via/vt8231/vt8231_early_smbus.c"
-#include "southbridge/via/vt8231/vt8231_early_serial.c"
-#include "southbridge/via/vt8231/vt8231_enable_rom.c"
+#include "southbridge/via/vt8231/early_smbus.c"
+#include "southbridge/via/vt8231/early_serial.c"
+#include "southbridge/via/vt8231/enable_rom.c"
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

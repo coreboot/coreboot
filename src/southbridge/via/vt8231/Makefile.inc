@@ -18,8 +18,8 @@
 ##
 
 driver-y += vt8231.c
-driver-y += vt8231_lpc.c
-driver-y += vt8231_acpi.c
-driver-y += vt8231_ide.c
-driver-y += vt8231_nic.c
-#driver-y += vt8231_usb.c
+driver-y += lpc.c
+driver-y += acpi.c
+driver-y += ide.c
+driver-y += nic.c
+#driver-y += usb.c

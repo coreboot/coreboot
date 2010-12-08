@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "superio/winbond/w83977f/w83977f_early_serial.c"
-#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
+#include "southbridge/amd/cs5530/enable_rom.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "northbridge/amd/gx1/raminit.c"

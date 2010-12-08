@@ -33,7 +33,7 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
+#include "southbridge/via/vt8237r/early_smbus.c"
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
 #include <spd.h>
 

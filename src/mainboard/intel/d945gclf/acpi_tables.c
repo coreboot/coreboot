@@ -66,7 +66,7 @@ typedef struct acpi_oemb {
 } __attribute__((packed)) acpi_oemb_t;
 #endif
 
-#include "southbridge/intel/i82801gx/i82801gx_nvs.h"
+#include "southbridge/intel/i82801gx/nvs.h"
 
 #if OLD_ACPI
 static void acpi_create_oemb(acpi_oemb_t *oemb)

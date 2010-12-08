@@ -20,14 +20,14 @@
 ##
 
 driver-y += i82801dx.c
-driver-y += i82801dx_ac97.c
-driver-y += i82801dx_ide.c
-driver-y += i82801dx_lpc.c
-#driver-y += i82801dx_pci.c
-driver-y += i82801dx_usb.c
-driver-y += i82801dx_usb2.c
+driver-y += ac97.c
+driver-y += ide.c
+driver-y += lpc.c
+#driver-y += pci.c
+driver-y += usb.c
+driver-y += usb2.c
 
-ramstage-y += i82801dx_reset.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smi.c
+ramstage-y += reset.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += i82801dx_smihandler.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

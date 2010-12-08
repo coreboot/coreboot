@@ -8,7 +8,7 @@
 #include <console/console.h>
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "southbridge/intel/esb6300/esb6300_early_smbus.c"
+#include "southbridge/intel/esb6300/early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"
 #include "cpu/x86/lapic/boot_cpu.c"

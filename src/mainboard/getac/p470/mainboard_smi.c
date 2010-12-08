@@ -24,7 +24,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/i82801gx.h"
-#include "southbridge/intel/i82801gx/i82801gx_nvs.h"
+#include "southbridge/intel/i82801gx/nvs.h"
 #include "northbridge/intel/i945/udelay.c"
 #include "ec.c"
 

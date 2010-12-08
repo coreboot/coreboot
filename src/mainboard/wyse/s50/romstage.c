@@ -31,8 +31,8 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/amd/geode_post_code.h>
 #include <spd.h>
-#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
-#include "southbridge/amd/cs5536/cs5536_early_setup.c"
+#include "southbridge/amd/cs5536/early_smbus.c"
+#include "southbridge/amd/cs5536/early_setup.c"
 
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {

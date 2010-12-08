@@ -13,7 +13,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
-#include "southbridge/amd/amd8111/amd8111_early_smbus.c"
+#include "southbridge/amd/amd8111/early_smbus.c"
 #include <reset.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
@@ -26,7 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
+#include "southbridge/amd/amd8111/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

@@ -34,8 +34,8 @@
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
-#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
-#include "southbridge/amd/cs5536/cs5536_early_setup.c"
+#include "southbridge/amd/cs5536/early_smbus.c"
+#include "southbridge/amd/cs5536/early_setup.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
 /* Bit0 enables Spread Spectrum, bit1 makes on-board SSD act as IDE slave. */

@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "southbridge/intel/i82371eb/i82371eb_enable_rom.c"
+#include "southbridge/intel/i82371eb/enable_rom.c"
 
 static void bootblock_southbridge_init(void)
 {

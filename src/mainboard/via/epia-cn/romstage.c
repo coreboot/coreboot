@@ -32,8 +32,8 @@
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
-#include "southbridge/via/vt8235/vt8235_early_serial.c"
+#include "southbridge/via/vt8237r/early_smbus.c"
+#include "southbridge/via/vt8235/early_serial.c"
 #include <spd.h>
 
 static inline int spd_read_byte(unsigned device, unsigned address)

@@ -1,3 +1,3 @@
-driver-y += p64h2_ioapic.c
-driver-y += p64h2_pcibridge.c
-#driver-y += p64h2_pci_parity.c
+driver-y += ioapic.c
+driver-y += pcibridge.c
+#driver-y += pci_parity.c

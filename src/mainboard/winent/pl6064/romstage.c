@@ -33,8 +33,8 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
-#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
-#include "southbridge/amd/cs5536/cs5536_early_setup.c"
+#include "southbridge/amd/cs5536/early_smbus.c"
+#include "southbridge/amd/cs5536/early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)

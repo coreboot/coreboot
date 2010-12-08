@@ -27,7 +27,7 @@
 #include "northbridge/amd/gx1/raminit.c"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83977f/w83977f_early_serial.c"
-#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
+#include "southbridge/amd/cs5530/enable_rom.c"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977F_SP1)
 

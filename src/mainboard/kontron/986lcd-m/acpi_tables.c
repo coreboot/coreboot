@@ -35,7 +35,7 @@ extern const unsigned char AmlCode[];
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
-#include "southbridge/intel/i82801gx/i82801gx_nvs.h"
+#include "southbridge/intel/i82801gx/nvs.h"
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));

@@ -43,9 +43,9 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "southbridge/amd/rs780/rs780_early_setup.c"
-#include "southbridge/amd/sb700/sb700_early_setup.c"
-#include "northbridge/amd/amdk8/debug.c" /* After sb700_early_setup.c! */
+#include "southbridge/amd/rs780/early_setup.c"
+#include "southbridge/amd/sb700/early_setup.c"
+#include "northbridge/amd/amdk8/debug.c" /* After sb700/early_setup.c! */
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }

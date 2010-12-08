@@ -18,5 +18,5 @@
 ##
 
 driver-y += cs5536.c
-driver-y += cs5536_ide.c
-driver-y += cs5536_pirq.c
+driver-y += ide.c
+driver-y += pirq.c

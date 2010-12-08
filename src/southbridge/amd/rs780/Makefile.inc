@@ -1,5 +1,5 @@
 driver-y += rs780.c
-driver-y += rs780_cmn.c
-driver-y += rs780_pcie.c
-driver-y += rs780_ht.c
-driver-y += rs780_gfx.c
+driver-y += cmn.c
+driver-y += pcie.c
+driver-y += ht.c
+driver-y += gfx.c

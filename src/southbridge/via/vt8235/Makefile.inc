@@ -18,7 +18,7 @@
 ##
 
 driver-y += vt8235.c
-driver-y += vt8235_ide.c
-driver-y += vt8235_lpc.c
-driver-y += vt8235_nic.c
-driver-y += vt8235_usb.c
+driver-y += ide.c
+driver-y += lpc.c
+driver-y += nic.c
+driver-y += usb.c

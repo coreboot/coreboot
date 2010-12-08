@@ -32,7 +32,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
-#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
+#include "southbridge/nvidia/mcp55/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
@@ -45,7 +45,7 @@
 #include <spd.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <device/pci_ids.h>
-#include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
+#include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 
@@ -82,7 +82,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
+#include "southbridge/nvidia/mcp55/early_setup_ss.h"
 
 //set GPIO to input mode
 #define MCP55_MB_SETUP \
@@ -91,7 +91,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
-#include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
+#include "southbridge/nvidia/mcp55/early_setup_car.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 // Disabled until it's actually used:

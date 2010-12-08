@@ -14,8 +14,8 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "lib/debug.c"
-#include "southbridge/via/vt8235/vt8235_early_smbus.c"
-#include "southbridge/via/vt8235/vt8235_early_serial.c"
+#include "southbridge/via/vt8235/early_smbus.c"
+#include "southbridge/via/vt8235/early_serial.c"
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

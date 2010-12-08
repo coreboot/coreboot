@@ -19,7 +19,7 @@
 ##
 
 driver-y += cs5530.c
-driver-y += cs5530_isa.c
-driver-y += cs5530_ide.c
-driver-y += cs5530_vga.c
-driver-y += cs5530_pirq.c
+driver-y += isa.c
+driver-y += ide.c
+driver-y += vga.c
+driver-y += pirq.c

@@ -20,7 +20,7 @@
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 
-#include "southbridge/nvidia/ck804/ck804_enable_rom.c"
+#include "southbridge/nvidia/ck804/enable_rom.c"
 
 static void bootblock_southbridge_init(void)
 {

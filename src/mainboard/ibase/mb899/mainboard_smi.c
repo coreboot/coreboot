@@ -21,7 +21,7 @@
 #include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include "southbridge/intel/i82801gx/i82801gx_nvs.h"
+#include "southbridge/intel/i82801gx/nvs.h"
 
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler

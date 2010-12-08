@@ -18,24 +18,24 @@
 ##
 
 driver-y += i82801gx.c
-driver-y += i82801gx_ac97.c
-driver-y += i82801gx_azalia.c
-driver-y += i82801gx_ide.c
-driver-y += i82801gx_lpc.c
-driver-y += i82801gx_nic.c
-driver-y += i82801gx_pci.c
-driver-y += i82801gx_pcie.c
-driver-y += i82801gx_sata.c
-driver-y += i82801gx_smbus.c
-driver-y += i82801gx_usb.c
-driver-y += i82801gx_usb_ehci.c
+driver-y += ac97.c
+driver-y += azalia.c
+driver-y += ide.c
+driver-y += lpc.c
+driver-y += nic.c
+driver-y += pci.c
+driver-y += pcie.c
+driver-y += sata.c
+driver-y += smbus.c
+driver-y += usb.c
+driver-y += usb_ehci.c
 
-ramstage-y += i82801gx_reset.c
-ramstage-y += i82801gx_watchdog.c
+ramstage-y += reset.c
+ramstage-y += watchdog.c
 
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smihandler.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-y += i82801gx_early_smbus.c
-romstage-$(CONFIG_USBDEBUG) += i82801gx_usb_debug.c
+romstage-y += early_smbus.c
+romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 

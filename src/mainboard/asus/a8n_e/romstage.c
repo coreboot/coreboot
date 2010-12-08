@@ -38,7 +38,7 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "southbridge/nvidia/ck804/ck804_early_smbus.h"
+#include "southbridge/nvidia/ck804/early_smbus.h"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
@@ -60,8 +60,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "lib/generic_sdram.c"
-#include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
-#include "southbridge/nvidia/ck804/ck804_early_setup.c"
+#include "southbridge/nvidia/ck804/early_setup_ss.h"
+#include "southbridge/nvidia/ck804/early_setup.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "northbridge/amd/amdk8/early_ht.c"

@@ -33,12 +33,12 @@
 #include "northbridge/intel/i82830/raminit.h"
 #include "northbridge/intel/i82830/memory_initialized.c"
 #include "southbridge/intel/i82801dx/i82801dx.h"
-#include "southbridge/intel/i82801dx/i82801dx_reset.c"
+#include "southbridge/intel/i82801dx/reset.c"
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
 #include "gpio.c"
-#include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
-#include "southbridge/intel/i82801dx/i82801dx_tco_timer.c"
+#include "southbridge/intel/i82801dx/early_smbus.c"
+#include "southbridge/intel/i82801dx/tco_timer.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 

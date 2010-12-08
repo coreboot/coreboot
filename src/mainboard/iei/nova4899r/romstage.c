@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
-#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
+#include "southbridge/amd/cs5530/enable_rom.c"
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)

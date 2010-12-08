@@ -6,7 +6,7 @@
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
+#include "southbridge/intel/i82801ex/early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
 #include "superio/nsc/pc87427/pc87427.h"
 #include "cpu/x86/lapic/boot_cpu.c"

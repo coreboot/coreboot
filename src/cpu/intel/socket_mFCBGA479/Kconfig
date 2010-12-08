@@ -3,3 +3,4 @@ config CPU_INTEL_SOCKET_MFCBGA479
 	select CPU_INTEL_MODEL_6BX
 	select MMX
 	select SSE
+	select CACHE_AS_RAM

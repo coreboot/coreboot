@@ -4,6 +4,7 @@ config CPU_AMD_SOCKET_AM2
 	# Opteron K8 1G HT support
 	select K8_HT_FREQ_1G_SUPPORT
 	select CPU_AMD_MODEL_FXX
+	select CACHE_AS_RAM
 
 config CPU_SOCKET_TYPE
 	hex

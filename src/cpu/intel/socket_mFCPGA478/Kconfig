@@ -1,2 +1,3 @@
 config CPU_INTEL_SOCKET_MFCPGA478
 	bool
+	select CACHE_AS_RAM

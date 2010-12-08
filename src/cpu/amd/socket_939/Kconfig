@@ -1,4 +1,5 @@
 config CPU_AMD_SOCKET_939
 	bool
 	select CPU_AMD_MODEL_FXX
+	select CACHE_AS_RAM
 

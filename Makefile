@@ -47,7 +47,10 @@ export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
-HAVE_DOTCONFIG := $(wildcard .config)
+DOTCONFIG ?= .config
+KCONFIG_CONFIG = $(DOTCONFIG)
+export KCONFIG_CONFIG
+HAVE_DOTCONFIG := $(wildcard $(DOTCONFIG))
 MAKEFLAGS += -rR --no-print-directory
 
 # Make is silent per default, but 'make V=1' will show all compiler calls.

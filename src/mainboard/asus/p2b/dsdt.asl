@@ -21,15 +21,6 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 {
-	/* Define the main processor.*/
-	Scope (\_PR)
-	{
-		/* Looks like the P_CNT field can't be a name or method (except
-		 * builtins like Add()) and has to be hardcoded or generated
-		 * into SSDT */
-		Processor (CPU0, 0x01, Add(DEFAULT_PMBASE, PCNTRL), 0x06) {}
-	}
-
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on
 	 *  - S5 which is soft off

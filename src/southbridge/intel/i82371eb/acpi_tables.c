@@ -26,8 +26,45 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
+#include "i82371eb.h"
 
 extern const unsigned char AmlCode[];
+
+static int determine_total_number_of_cores(void)
+{
+	device_t cpu;
+	int count = 0;
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		count++;
+	}
+	return count;
+}
+
+void generate_cpu_entries(void)
+{
+	int len;
+	int len_pr;
+	int cpu, pcontrol_blk=DEFAULT_PMBASE+PCNTRL, plen=6;
+	int numcpus = determine_total_number_of_cores();
+	printk(BIOS_DEBUG, "Found %d CPU(s).\n", numcpus);
+
+	/* without the outer scope, furhter ssdt addition will end up
+	 * within the processor statement */
+	len = acpigen_write_scope("\\_PR");
+	for (cpu=0; cpu < numcpus; cpu++) {
+		len_pr = acpigen_write_processor(cpu, pcontrol_blk, plen);
+		acpigen_patch_len(len_pr - 1);
+		len += len_pr;
+	}
+	acpigen_patch_len(len - 1);
+}
 
 unsigned long __attribute__((weak)) acpi_fill_slit(unsigned long current)
 {
@@ -57,6 +94,10 @@ unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(unsigned long curre
 						 const char *oem_table_id)
 {
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+	/* generate_cpu_entries() generates weird bytecode and has to come
+	 * last or else the following entries will end up inside the
+	 * processor scope */
+	generate_cpu_entries();
 	return (unsigned long) acpigen_get_current();
 }
 

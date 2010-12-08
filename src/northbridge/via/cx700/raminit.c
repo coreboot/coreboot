@@ -21,7 +21,7 @@
 #include <spd.h>
 #include <spd_ddr2.h>
 #include <delay.h>
-#include "cx700_registers.h"
+#include "registers.h"
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP

@@ -30,7 +30,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
-#include "cx700_registers.h"
+#include "registers.h"
 #include "chip.h"
 #include "northbridge.h"
 

@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 #include "northbridge/amd/gx1/raminit.c"
-#include "superio/nsc/pc87351/pc87351_early_serial.c"
+#include "superio/nsc/pc87351/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "southbridge/amd/cs5530/enable_rom.c"
 

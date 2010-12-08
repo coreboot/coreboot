@@ -14,7 +14,7 @@
 #include "debug.c"
 #include "watchdog.c"
 #include "reset.c"
-#include "superio/nsc/pc87427/pc87427_early_init.c"
+#include "superio/nsc/pc87427/early_init.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>

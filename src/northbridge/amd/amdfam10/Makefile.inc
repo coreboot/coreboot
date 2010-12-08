@@ -1,7 +1,7 @@
 driver-y += northbridge.c
 driver-y += misc_control.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += amdfam10_acpi.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt.asl
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += sspr1.asl
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += sspr2.asl

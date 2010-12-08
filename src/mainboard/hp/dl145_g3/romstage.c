@@ -46,9 +46,9 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/serverengines/pilot/pilot_early_serial.c"
-#include "superio/serverengines/pilot/pilot_early_init.c"
-#include "superio/nsc/pc87417/pc87417_early_serial.c"
+#include "superio/serverengines/pilot/early_serial.c"
+#include "superio/serverengines/pilot/early_init.c"
+#include "superio/nsc/pc87417/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
@@ -74,7 +74,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	 return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8_f.h"
+#include "northbridge/amd/amdk8/f.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"

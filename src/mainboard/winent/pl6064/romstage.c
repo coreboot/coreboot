@@ -35,7 +35,7 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 

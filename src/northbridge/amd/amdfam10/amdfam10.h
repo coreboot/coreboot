@@ -964,7 +964,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define F10_APSTATE_STOPPED 0x14  // allow AP to stop
 #define F10_APSTATE_RESET   0x01  // waiting for warm reset
 
-#include "amdfam10_nums.h"
+#include "nums.h"
 
 #ifdef __PRE_RAM__
 #if NODE_NUMS==64

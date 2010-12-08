@@ -32,7 +32,7 @@
 #include <console/console.h>
 #include <usbdebug.h>
 #include <cpu/x86/bist.h>
-#include "superio/smsc/lpc47m15x/lpc47m15x_early_serial.c"
+#include "superio/smsc/lpc47m15x/early_serial.c"
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"

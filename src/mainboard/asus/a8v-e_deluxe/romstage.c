@@ -40,7 +40,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-#include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
+#include "superio/winbond/w83627ehg/early_serial.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include "cpu/x86/mtrr/earlymtrr.c"

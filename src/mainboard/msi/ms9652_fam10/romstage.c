@@ -42,7 +42,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
+#include "superio/winbond/w83627ehg/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdfam10/debug.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
@@ -60,7 +60,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/amdfam10_pci.c"
+#include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 

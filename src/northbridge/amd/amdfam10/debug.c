@@ -21,7 +21,7 @@
  * Generic FAM10 debug code, used by mainboard specific romstage.c
  */
 
-#include "amdfam10_pci.c"
+#include "pci.c"
 #include <delay.h>
 
 static inline void print_debug_addr(const char *str, void *val)

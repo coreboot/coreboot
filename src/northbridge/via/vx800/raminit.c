@@ -35,8 +35,8 @@
 #endif
 #include "northbridge/via/vx800/translator_ddr2_init.c"
 #include "northbridge/via/vx800/dram_init.h"
-#include "northbridge/via/vx800/vx800_early_smbus.c"
-#include "northbridge/via/vx800/vx800_early_serial.c"
+#include "northbridge/via/vx800/early_smbus.c"
+#include "northbridge/via/vx800/early_serial.c"
 #include "northbridge/via/vx800/dram_util.h"
 #include "northbridge/via/vx800/dram_util.c"
 #include "northbridge/via/vx800/detection.c"

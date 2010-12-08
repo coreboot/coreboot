@@ -34,7 +34,7 @@
 #include <lib.h>
 #include <spd.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
-#include "superio/winbond/w83697hf/w83697hf_early_serial.c"
+#include "superio/winbond/w83697hf/early_serial.c"
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
 static inline int spd_read_byte(unsigned device, unsigned address)

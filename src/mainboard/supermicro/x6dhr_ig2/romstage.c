@@ -14,7 +14,7 @@
 #include "debug.c"
 #include "watchdog.c"
 #include "reset.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>

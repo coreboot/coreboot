@@ -39,7 +39,7 @@
 #include <spd.h>
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/winbond/w83627dhg/w83627dhg_early_serial.c"
+#include "superio/winbond/w83627dhg/early_serial.c"
 #include <usbdebug.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"

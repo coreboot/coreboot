@@ -36,7 +36,7 @@
 #include "southbridge/intel/i82801dx/early_smbus.c"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
-#include "superio/winbond/w83627thg/w83627thg_early_serial.c"
+#include "superio/winbond/w83627thg/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 

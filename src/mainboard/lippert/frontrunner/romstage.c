@@ -5,7 +5,7 @@
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>

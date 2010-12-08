@@ -33,7 +33,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
 static void it8671f_48mhz_clkin(void);
-#include "superio/ite/it8671f/it8671f_early_serial.c"
+#include "superio/ite/it8671f/early_serial.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, IT8671F_SP1)

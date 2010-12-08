@@ -36,7 +36,7 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/ite/it8712f/it8712f_early_serial.c"
+#include "superio/ite/it8712f/early_serial.c"
 
 /* Bit0 enables Spread Spectrum. */
 #define SMC_CONFIG	0x01

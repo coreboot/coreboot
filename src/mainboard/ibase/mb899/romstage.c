@@ -32,7 +32,7 @@
 #include <console/console.h>
 #include <usbdebug.h>
 #include <cpu/x86/bist.h>
-#include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
+#include "superio/winbond/w83627ehg/early_serial.c"
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"

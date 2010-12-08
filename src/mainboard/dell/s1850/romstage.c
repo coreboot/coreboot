@@ -8,7 +8,7 @@
 #include <console/console.h>
 #include "southbridge/intel/i82801ex/early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
-#include "superio/nsc/pc8374/pc8374_early_init.c"
+#include "superio/nsc/pc8374/early_init.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"

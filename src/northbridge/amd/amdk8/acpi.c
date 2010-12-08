@@ -31,7 +31,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
-#include "amdk8_acpi.h"
+#include "acpi.h"
 
 //it seems some functions can be moved arch/i386/boot/acpi.c
 

@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 /* TODO: It's a PC87364 actually! */
-#include "superio/nsc/pc87360/pc87360_early_serial.c"
+#include "superio/nsc/pc87360/early_serial.c"
 /* TODO: It's i810E actually! */
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/bist.h"

@@ -12,7 +12,7 @@
 #include "northbridge/intel/e7501/raminit.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"
-#include "superio/smsc/lpc47b272/lpc47b272_early_serial.c"
+#include "superio/smsc/lpc47b272/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>

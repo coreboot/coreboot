@@ -17,7 +17,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
-#include "northbridge/amd/amdk8/amdk8_acpi.h"
+#include "northbridge/amd/amdk8/acpi.h"
 #include "mb_sysconf.h"
 
 #define DUMP_ACPI_TABLES 0

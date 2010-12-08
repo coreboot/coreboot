@@ -34,8 +34,8 @@
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"
 #include "reset.c"
-#include "superio/intel/i3100/i3100_early_serial.c"
-#include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
+#include "superio/intel/i3100/early_serial.c"
+#include "superio/smsc/smscsuperio/early_serial.c"
 #include "northbridge/intel/i3100/i3100.h"
 #include "southbridge/intel/i3100/i3100.h"
 

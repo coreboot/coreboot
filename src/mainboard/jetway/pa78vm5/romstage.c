@@ -43,7 +43,7 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/fintek/f71863fg/f71863fg_early_serial.c"
+#include "superio/fintek/f71863fg/early_serial.c"
 #include <usbdebug.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
@@ -67,7 +67,7 @@ static int spd_read_byte(u32 device, u32 address)
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
-#include "northbridge/amd/amdfam10/amdfam10_pci.c"
+#include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
 #include "cpu/amd/car/post_cache_as_ram.c"

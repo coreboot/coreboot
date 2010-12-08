@@ -31,7 +31,7 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
-#include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
+#include "superio/smsc/smscsuperio/early_serial.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, SMSCSUPERIO_SP1)

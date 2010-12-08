@@ -32,9 +32,9 @@
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "northbridge/via/cx700/cx700_early_smbus.c"
+#include "northbridge/via/cx700/early_smbus.c"
 #include "lib/debug.c"
-#include "northbridge/via/cx700/cx700_early_serial.c"
+#include "northbridge/via/cx700/early_serial.c"
 #include "northbridge/via/cx700/raminit.c"
 #include <spd.h>
 

@@ -20,7 +20,7 @@
 #ifndef AMDFAM10_SYSCONF_H
 #define AMDFAM10_SYSCONF_H
 
-#include "../../../northbridge/amd/amdfam10/amdfam10_nums.h"
+#include "northbridge/amd/amdfam10/nums.h"
 
 #include <cpu/x86/msr.h>
 

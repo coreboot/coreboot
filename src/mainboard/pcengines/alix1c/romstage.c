@@ -39,7 +39,7 @@
 static void cs5536_enable_smbus(void) { }
 
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 
 /* The part is a Hynix hy5du121622ctp-d43.
  *

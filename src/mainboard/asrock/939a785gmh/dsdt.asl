@@ -28,7 +28,7 @@ DefinitionBlock (
 	)
 {	/* Start of ASL file */
 	/* #include "acpi/debug.asl" */		/* Include global debug methods if needed */
-	#include "northbridge/amd/amdk8/amdk8_util.asl"
+	#include "northbridge/amd/amdk8/util.asl"
 
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 

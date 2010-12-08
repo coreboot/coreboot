@@ -31,7 +31,7 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83627HF_SP1)

@@ -43,7 +43,7 @@
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
 #include "wakeup.h"
-#include "superio/winbond/w83697hf/w83697hf_early_serial.c"
+#include "superio/winbond/w83697hf/early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 #define DUMMY_DEV PNP_DEV(0x2e, 0)

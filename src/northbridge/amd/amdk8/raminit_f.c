@@ -26,7 +26,7 @@
 
 #include <stdlib.h>
 #include "raminit.h"
-#include "amdk8_f.h"
+#include "f.h"
 #include <spd_ddr2.h>
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"
@@ -43,7 +43,7 @@
 # error "CONFIG_RAMTOP must be a power of 2"
 #endif
 
-#include "amdk8_f_pci.c"
+#include "f_pci.c"
 
 
 	/* for PCI_ADDR(0, 0x18, 2, 0x98) index,

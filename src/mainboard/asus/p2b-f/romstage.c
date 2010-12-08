@@ -32,7 +32,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
 /* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
-#include "superio/winbond/w83977tf/w83977tf_early_serial.c"
+#include "superio/winbond/w83977tf/early_serial.c"
 #include <lib.h>
 
 /* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */

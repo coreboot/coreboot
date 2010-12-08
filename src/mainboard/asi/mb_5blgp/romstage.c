@@ -26,7 +26,7 @@
 #include <console/console.h>
 #include "northbridge/amd/gx1/raminit.c"
 #include "cpu/x86/bist.h"
-#include "superio/nsc/pc87351/pc87351_early_serial.c"
+#include "superio/nsc/pc87351/early_serial.c"
 #include "southbridge/amd/cs5530/enable_rom.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87351_SP1)

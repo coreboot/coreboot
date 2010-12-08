@@ -12,7 +12,7 @@
 #include "southbridge/intel/i82801ex/early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 #include "northbridge/intel/e7501/debug.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "superio/winbond/w83627hf/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 

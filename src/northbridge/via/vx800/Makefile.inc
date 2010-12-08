@@ -20,8 +20,8 @@
 
 driver-y += northbridge.c
 driver-y += vga.c
-driver-y += vx800_lpc.c
-driver-y += vx800_ide.c
+driver-y += lpc.c
+driver-y += ide.c
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
 chipset_bootblock_lds += $(src)/northbridge/via/vx800/romstrap.lds

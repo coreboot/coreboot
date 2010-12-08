@@ -36,7 +36,7 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/ite/it8712f/it8712f_early_serial.c"
+#include "superio/ite/it8712f/early_serial.c"
 
 #define ManualConf 1		/* No automatic strapped PLL config */
 #define PLLMSRhi 0x0000049C	/* Manual settings for the PLL */

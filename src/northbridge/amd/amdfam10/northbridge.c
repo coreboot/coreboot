@@ -124,7 +124,7 @@ static u32 amdfam10_nodeid(device_t dev)
 #endif
 }
 
-#include "amdfam10_conf.c"
+#include "conf.c"
 
 static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {

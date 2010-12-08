@@ -25,7 +25,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "superio/winbond/w83977tf/w83977tf_early_serial.c"
+#include "superio/winbond/w83977tf/early_serial.c"
 #include "southbridge/amd/cs5530/enable_rom.c"
 #include "cpu/x86/bist.h"
 

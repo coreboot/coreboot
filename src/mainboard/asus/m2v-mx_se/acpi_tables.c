@@ -32,7 +32,7 @@
 #include <device/pci_ids.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
 #include "southbridge/via/k8t890/k8t890.h"
-#include "northbridge/amd/amdk8/amdk8_acpi.h"
+#include "northbridge/amd/amdk8/acpi.h"
 #include <cpu/amd/model_fxx_powernow.h>
 
 extern const unsigned char AmlCode[];

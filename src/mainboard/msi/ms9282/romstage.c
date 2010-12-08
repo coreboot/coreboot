@@ -39,7 +39,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
+#include "superio/winbond/w83627ehg/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
@@ -75,7 +75,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
        return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8_f.h"
+#include "northbridge/amd/amdk8/f.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"

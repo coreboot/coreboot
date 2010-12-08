@@ -6,7 +6,7 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "superio/nsc/pc97317/pc97317_early_serial.c"
+#include "superio/nsc/pc97317/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "southbridge/amd/cs5530/enable_rom.c"
 #include "northbridge/amd/gx1/raminit.c"

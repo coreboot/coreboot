@@ -29,7 +29,7 @@
 #include "northbridge/intel/i82810/raminit.h"
 #include "pc80/udelay_io.c"
 #include "cpu/x86/bist.h"
-#include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
+#include "superio/smsc/smscsuperio/early_serial.c"
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)

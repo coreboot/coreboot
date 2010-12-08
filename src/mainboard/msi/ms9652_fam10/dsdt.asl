@@ -23,7 +23,7 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 {
-	#include "../../../../src/northbridge/amd/amdk8/amdk8_util.asl"
+	#include "../../../../src/northbridge/amd/amdk8/util.asl"
 
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on

@@ -44,7 +44,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/ite/it8712f/it8712f_early_serial.c"
+#include "superio/ite/it8712f/early_serial.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"

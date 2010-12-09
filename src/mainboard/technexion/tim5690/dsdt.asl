@@ -27,7 +27,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include "acpi/debug.asl" */		/* Include global debug methods if needed */
+	/* #include "../../../arch/i386/acpi/debug.asl" */		/* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
 	/* FIXME the patching is not done yet! */
@@ -1123,7 +1123,7 @@ DefinitionBlock (
 
 	/* South Bridge */
 	Scope(\_SB) { /* Start \_SB scope */
-		#include "acpi/globutil.asl" /* global utility methods expected within the \_SB scope */
+		#include "../../../arch/i386/acpi/globutil.asl" /* global utility methods expected within the \_SB scope */
 
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */

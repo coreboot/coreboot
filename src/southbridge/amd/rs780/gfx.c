@@ -1298,7 +1298,6 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		break;
 
 	case 2:
-
 		if(is_dev3_present()){
 			/* step 1, lane reversal (only need if CMOS option is enabled) */
 			if (cfg->gfx_lane_reversal) {
@@ -1332,6 +1331,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 				printk(BIOS_DEBUG, "If dev3.., single port. Do nothing.\n");
 			    }
 		}
+		break;
 
 	default:
 		printk(BIOS_INFO, "Incorrect configuration of external GFX slot.\n");

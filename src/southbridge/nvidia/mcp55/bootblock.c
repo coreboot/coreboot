@@ -1,7 +1,10 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2004 Tyan Computer
+ * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
+ * Copyright (C) 2006,2007 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +21,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "southbridge/nvidia/mcp55/enable_rom.c"
+#include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include "mcp55.h"
+
+static void mcp55_enable_rom(void)
+{
+	uint8_t byte;
+	uint16_t word;
+	device_t addr;
+
+	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
+#if 0
+	/*	default MCP55 LPC single */
+	addr = pci_locate_device(PCI_ID(0x10de, 0x0367), 0);
+#else
+//	addr = pci_locate_device(PCI_ID(0x10de, 0x0360), 0);
+	addr = PCI_DEV(0, (MCP55_DEVN_BASE+1), 0);
+#endif
+
+	/* Set the 4MB enable bit bit */
+	byte = pci_read_config8(addr, 0x88);
+	byte |= 0xff; //256K
+	pci_write_config8(addr, 0x88, byte);
+	byte = pci_read_config8(addr, 0x8c);
+	byte |= 0xff; //1M
+	pci_write_config8(addr, 0x8c, byte);
+	word = pci_read_config16(addr, 0x90);
+	word |= 0x7fff; //15M
+	pci_write_config16(addr, 0x90, word);
+}
 
 static void bootblock_southbridge_init(void)
 {

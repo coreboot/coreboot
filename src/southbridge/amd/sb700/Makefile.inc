@@ -6,6 +6,6 @@ driver-y += ide.c
 driver-y += sata.c
 driver-y += hda.c
 driver-y += pci.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += sb700_fadt.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 romstage-y += enable_usbdebug.c

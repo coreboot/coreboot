@@ -541,6 +541,8 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 					highest_supported_cas = 4;
 				} else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_3) {
 					highest_supported_cas = 3;
+				} else {
+					die("Invalid max. CAS.\n");
 				}
 				if (current_cas_mask & SPD_CAS_LATENCY_DDR2_3) {
 					current_cas = 3;
@@ -548,6 +550,8 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 					current_cas = 4;
 				} else if (current_cas_mask & SPD_CAS_LATENCY_DDR2_5) {
 					current_cas = 5;
+				} else {
+					die("Invalid CAS.\n");
 				}
 
 				idx = highest_supported_cas - current_cas;

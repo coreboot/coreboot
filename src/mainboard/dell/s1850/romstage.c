@@ -142,7 +142,7 @@ static inline void bmc_foad(void)
 
 /* end IPMI garbage */
 
-#include "arch/i386/lib/stages.c"
+#include "arch/x86/lib/stages.c"
 
 static void main(unsigned long bist)
 {

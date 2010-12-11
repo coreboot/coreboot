@@ -27,7 +27,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include "../../../arch/i386/acpi/debug.asl" */		/* Include global debug methods if needed */
+	/* #include "../../../arch/x86/acpi/debug.asl" */		/* Include global debug methods if needed */
 	#include "northbridge/amd/amdk8/util.asl"
 
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
@@ -460,7 +460,7 @@ DefinitionBlock (
 
 	/* South Bridge */
 	Scope(\_SB) { /* Start \_SB scope */
-		#include "../../../arch/i386/acpi/globutil.asl" /* global utility methods expected within the \_SB scope */
+		#include "../../../arch/x86/acpi/globutil.asl" /* global utility methods expected within the \_SB scope */
 
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */

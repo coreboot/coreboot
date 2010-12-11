@@ -37,7 +37,7 @@
 #include "console/console.c"
 #include "lib/uart8250.c"
 #include "console/vtxprintf.c"
-#include "./arch/i386/lib/printk_init.c"
+#include "./arch/x86/lib/printk_init.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"

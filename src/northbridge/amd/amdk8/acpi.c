@@ -33,7 +33,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include "acpi.h"
 
-//it seems some functions can be moved arch/i386/boot/acpi.c
+//it seems some functions can be moved arch/x86/boot/acpi.c
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint)
 {

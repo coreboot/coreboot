@@ -50,7 +50,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"
 #if 0 /* skip_romstage doesn't compile with gcc */
-#include "arch/i386/lib/stages.c"
+#include "arch/x86/lib/stages.c"
 #endif
 
 void main(unsigned long bist)

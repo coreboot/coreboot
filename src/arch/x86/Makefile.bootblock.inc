@@ -23,24 +23,24 @@ $(obj)/coreboot.bootblock: $(obj)/bootblock.elf
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -O binary $< $@
 
-bootblock_lds = $(src)/arch/i386/init/ldscript_failover.lb
+bootblock_lds = $(src)/arch/x86/init/ldscript_failover.lb
 bootblock_lds += $(src)/cpu/x86/16bit/entry16.lds
 bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
-bootblock_lds += $(src)/arch/i386/lib/id.lds
+bootblock_lds += $(src)/arch/x86/lib/id.lds
 bootblock_lds += $(chipset_bootblock_lds)
 
-bootblock_inc = $(src)/arch/i386/init/prologue.inc
+bootblock_inc = $(src)/arch/x86/init/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
-bootblock_inc += $(src)/arch/i386/lib/id.inc
+bootblock_inc += $(src)/arch/x86/lib/id.inc
 bootblock_inc += $(chipset_bootblock_inc)
 
 ifeq ($(CONFIG_SSE),y)
 bootblock_inc += $(src)/cpu/x86/sse_enable.inc
 endif
 bootblock_inc += $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc
-bootblock_inc += $(src)/arch/i386/lib/walkcbfs.S
+bootblock_inc += $(src)/arch/x86/lib/walkcbfs.S
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__
 ifeq ($(CONFIG_SSE),y)
@@ -63,9 +63,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/b
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -DASSEMBLY -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc
+$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
@@ -113,5 +113,5 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDI
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< -o $@
 

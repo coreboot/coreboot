@@ -31,7 +31,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0xB1,      								// Checksum of the entire structure (causes 8-bit sum == 0)
 	{
 		// NOTE: For 82801, a nonzero link value is a pointer to a PIRQ[n]_ROUT register in PCI configuration space
-		//		 This was determined from linux-2.6.11/arch/i386/pci/irq.c
+		//		 This was determined from linux-2.6.11/arch/x86/pci/irq.c
 		// bitmap of 0xdcf8 == routable to IRQ3-IRQ7, IRQ10-IRQ12, or IRQ14-IRQ15
 		// ICH-3 doesn't allow SERIRQ or PCI message to generate IRQ0, IRQ2, IRQ8, or IRQ13
 		// Not sure why IRQ9 isn't routable (inherited from Tyan S2735)

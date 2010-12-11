@@ -101,7 +101,7 @@ config USE_OPTION_TABLE
 endmenu
 
 source src/mainboard/Kconfig
-source src/arch/i386/Kconfig
+source src/arch/x86/Kconfig
 
 menu "Chipset"
 
@@ -481,7 +481,7 @@ config GDB_STUB
 	default y
 	help
 	  If enabled, you will be able to set breakpoints for gdb debugging.
-	  See src/arch/i386/lib/c_start.S for details.
+	  See src/arch/x86/lib/c_start.S for details.
 
 config HAVE_DEBUG_RAM_SETUP
 	def_bool n
@@ -740,7 +740,7 @@ config LLSHELL
 	help
 	  If enabled, you will have a low level shell to examine your machine.
 	  Put llshell() in your (romstage) code to start the shell.
-	  See src/arch/i386/llshell/llshell.inc for details.
+	  See src/arch/x86/llshell/llshell.inc for details.
 
 endmenu
 

@@ -107,17 +107,17 @@ $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src
 #######################################################################
 # Build the coreboot_ram (stage 2)
 
-$(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldoptions
+$(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/coreboot_ram.ld $(obj)/coreboot_ram.o
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
 	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
 	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ram.debug
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ram.debug $@
 
-$(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
+$(obj)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
 
 $(obj)/coreboot.a: $$(ramstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
@@ -131,7 +131,7 @@ ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 
 $(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/init/ldscript_apc.lb $^
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
 	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ap.debug
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ap.debug $@
@@ -143,9 +143,9 @@ endif
 #######################################################################
 # done
 
-crt0s = $(src)/arch/i386/init/prologue.inc
+crt0s = $(src)/arch/x86/init/prologue.inc
 ldscripts =
-ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/arch/x86/init/ldscript_fallback_cbfs.lb
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/entry16.inc
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds
@@ -155,8 +155,8 @@ ldscripts += $(src)/cpu/x86/32bit/entry32.lds
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/reset16.inc
 ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-crt0s += $(src)/arch/i386/lib/id.inc
-ldscripts += $(src)/arch/i386/lib/id.lds
+crt0s += $(src)/arch/x86/lib/id.inc
+ldscripts += $(src)/arch/x86/lib/id.lds
 endif
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
@@ -174,7 +174,7 @@ crt0s += $(src)/cpu/intel/car/cache_as_ram.inc
 endif
 
 ifeq ($(CONFIG_LLSHELL),y)
-crt0s += $(src)/arch/i386/llshell/llshell.inc
+crt0s += $(src)/arch/x86/llshell/llshell.inc
 endif
 
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
@@ -192,7 +192,7 @@ ldscripts += $(chipset_bootblock_lds)
 endif
 
 ifeq ($(CONFIG_ROMCC),y)
-crt0s += $(src)/arch/i386/init/crt0_romcc_epilogue.inc
+crt0s += $(src)/arch/x86/init/crt0_romcc_epilogue.inc
 endif
 
 ifeq ($(CONFIG_ROMCC),y)
@@ -251,7 +251,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)
-include $(src)/arch/i386/Makefile.bootblock.inc
+include $(src)/arch/x86/Makefile.bootblock.inc
 else
-include $(src)/arch/i386/Makefile.bigbootblock.inc
+include $(src)/arch/x86/Makefile.bigbootblock.inc
 endif

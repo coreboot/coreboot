@@ -424,7 +424,7 @@ void main(unsigned long bist)
 
 	/*
 	 * There are two function definitions of console_init(), while the
-	 * src/arch/i386/lib is the right one.
+	 * src/arch/x86/lib is the right one.
 	 */
 	console_init();
 

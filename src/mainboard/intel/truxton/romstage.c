@@ -48,7 +48,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/raminit_ep80579.c"
 #include "lib/generic_sdram.c"
 #include "../../intel/jarrell/debug.c"
-#include "arch/i386/lib/stages.c"
+#include "arch/x86/lib/stages.c"
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 

@@ -35,7 +35,7 @@
 #include "pc80/serial.c"
 
 #include "lib/uart8250.c"
-#include "arch/i386/lib/printk_init.c"
+#include "arch/x86/lib/printk_init.c"
 #include "console/vtxprintf.c"
 #include "console/console.c"
 

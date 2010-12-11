@@ -26,7 +26,7 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 #include "amdfam10.h"
 
-//it seems some functions can be moved arch/i386/boot/acpi.c
+//it seems some functions can be moved arch/x86/boot/acpi.c
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint)
 {

@@ -81,7 +81,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 /**
  * TODO: This stub function is here until the point is solved in the
- * main code of coreboot. see also arch/i386/boot/pirq_tables.c
+ * main code of coreboot. see also arch/x86/boot/pirq_tables.c
  */
 void pirq_assign_irqs(const unsigned char pIntAtoD[4])
 {

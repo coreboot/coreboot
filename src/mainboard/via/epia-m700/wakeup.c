@@ -323,7 +323,7 @@ void acpi_jump_wake(u32 vector)
  * ----------------------------------------------------------------------- */
 
 /*
- * arch/i386/boot/a20.c
+ * arch/x86/boot/a20.c
  *
  * Enable A20 gate (return -1 on failure)
  */

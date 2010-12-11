@@ -114,7 +114,7 @@ endif
 
 strip_quotes = $(subst ",,$(subst \",,$(1)))
 
-ARCHDIR-$(CONFIG_ARCH_X86)    := i386
+ARCHDIR-$(CONFIG_ARCH_X86)    := x86
 ARCHDIR-$(CONFIG_ARCH_POWERPC) := ppc
 
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))

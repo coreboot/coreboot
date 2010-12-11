@@ -41,7 +41,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7525/raminit.c"
 #include "lib/generic_sdram.c"
-#include "arch/i386/lib/stages.c"
+#include "arch/x86/lib/stages.c"
 
 static void main(unsigned long bist)
 {

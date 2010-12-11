@@ -26,7 +26,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDI
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(obj)/coreboot: $$(romstage-objs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

@@ -213,7 +213,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_c7_init,
 };
 
-/* Look in arch/i386/lib/cpu.c:cpu_initialize. If there is no CPU with an exact
+/* Look in arch/x86/lib/cpu.c:cpu_initialize. If there is no CPU with an exact
  * ID, the cpu mask (stepping) is masked out and the check is repeated. This
  * allows us to keep the table significantly smaller.
  */

@@ -10,4 +10,4 @@ ramstage-$(CONFIG_IOAPIC) += ioapic.c
 romstage-y += printk_init.c
 romstage-y += cbfs_and_run.c
 
-$(obj)/arch/i386/lib/console.ramstage.o :: $(obj)/build.h
+$(obj)/arch/x86/lib/console.ramstage.o :: $(obj)/build.h

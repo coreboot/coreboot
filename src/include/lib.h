@@ -32,7 +32,7 @@ unsigned long log2(unsigned long x);
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);
 
-/* Defined in src/arch/i386/boot/gdt.c */
+/* Defined in src/arch/x86/boot/gdt.c */
 void move_gdt(void);
 
 /* Defined in src/lib/ramtest.c */

@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/hyperthreading.h>
+#include <cpu/intel/speedstep.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <usbdebug.h>
@@ -80,15 +81,6 @@ static void enable_vmx(void)
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
 
-/* MWAIT coordination I/O base address. This must match
- * the \_PR_.CPU0 PM base address.
- */
-#define PMB0_BASE 0x510
-
-/* PMB1: I/O port that triggers SMI once cores are in the same state.
- * See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4]
- */
-#define PMB1_BASE 0x800
 #define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {

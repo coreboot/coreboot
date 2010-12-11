@@ -26,6 +26,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/speedstep.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
@@ -82,9 +83,7 @@ static void enable_vmx(void)
 #define PMG_CST_CONFIG_CONTROL	0xe2
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
-#define PMB0 0x510 /* analogous to P_BLK in cpu.asl */
-#define PMB1 0x0	/* IO port that triggers SMI once cores are in the same state.
-			See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4] */
+
 #define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {

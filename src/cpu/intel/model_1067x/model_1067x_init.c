@@ -28,6 +28,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/speedstep.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
@@ -98,8 +99,6 @@ static void enable_vmx(void)
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
 
-#define PMB0_BASE		0x580
-#define PMB1_BASE		0x800
 #define CST_RANGE		2
 static void configure_c_states(void)
 {

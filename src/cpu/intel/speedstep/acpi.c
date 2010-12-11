@@ -26,6 +26,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/acpi.h>
+#include <cpu/intel/speedstep.h>
 #include <device/device.h>
 
 // XXX: PSS table values for power consumption are for Merom only
@@ -64,7 +65,7 @@ static int get_fsb(void)
 void generate_cpu_entries(void)
 {
 	int len_pr, len_ps;
-	int coreID, cpuID, pcontrol_blk=0x510, plen=6;
+	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	msr_t msr;
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;

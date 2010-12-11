@@ -48,6 +48,8 @@ void *cbmem_find(u32 id);
 void cbmem_list(void);
 void cbmem_arch_init(void);
 
+#ifndef __PRE_RAM__
 struct cbmem_entry *get_cbmem_toc(void);
 void set_cbmem_toc(struct cbmem_entry *);
+#endif
 #endif

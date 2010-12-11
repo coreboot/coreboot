@@ -29,8 +29,7 @@
 #include "northbridge/amd/amdk8/acpi.h"
 #include <arch/cpu.h>
 #include <cpu/amd/model_fxx_powernow.h>
-
-extern u16 pm_base;
+#include <southbridge/amd/sb700/sb700.h>
 
 #define DUMP_ACPI_TABLES 0
 
@@ -100,7 +99,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
 	k8acpi_write_vars();
-	amd_model_fxx_generate_powernow(pm_base + 8, 6, 1);
+	amd_model_fxx_generate_powernow(ACPI_CPU_CONTROL, 6, 1);
 	return (unsigned long) (acpigen_get_current());
 }
 

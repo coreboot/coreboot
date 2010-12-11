@@ -29,6 +29,15 @@
 #define PM2_INDEX	0xcd0
 #define PM2_DATA	0xcd1
 
+#define SB700_ACPI_IO_BASE 0x800
+
+#define ACPI_PM_EVT_BLK		(SB700_ACPI_IO_BASE + 0x00) /* 4 bytes */
+#define ACPI_PM1_CNT_BLK	(SB700_ACPI_IO_BASE + 0x04) /* 2 bytes */
+#define ACPI_PMA_CNT_BLK	(SB700_ACPI_IO_BASE + 0x0F) /* 1 byte */
+#define ACPI_PM_TMR_BLK		(SB700_ACPI_IO_BASE + 0x18) /* 4 bytes */
+#define ACPI_GPE0_BLK		(SB700_ACPI_IO_BASE + 0x10) /* 8 bytes */
+#define ACPI_CPU_CONTROL	(SB700_ACPI_IO_BASE + 0x08) /* 6 bytes */
+
 extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);
 extern void pm2_iowrite(u8 reg, u8 value);

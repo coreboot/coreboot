@@ -26,7 +26,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
-
 #include "mb_sysconf.h"
 
 #define DUMP_ACPI_TABLES 0

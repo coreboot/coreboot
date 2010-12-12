@@ -344,6 +344,8 @@ static const struct superio_registers reg_table[] = {
 	{0x9774, "W83977ATF", {
 		{EOT}}},
 
+	{0xb07, "W83527HG", {	/* TODO: Not yet in sensors-detect */
+		{EOT}}},
 	/* ID only */
 	{0x52, "W83627HF/F/HG/G", {
 		{NOLDN, NULL,

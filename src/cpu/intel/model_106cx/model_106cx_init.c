@@ -97,14 +97,16 @@ static void configure_c_states(void)
 	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
 	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
 
-	// set P_BLK address
-	msr = rdmsr(PMG_IO_BASE_ADDR);
-	msr.lo = (PMB0 + 4) | (PMB1 << 16);
+	/* Set Processor MWAIT IO BASE (P_BLK) */
+	msr.hi = 0;
+	// TODO Do we want PM1_BASE? Needs SMM?
+	//msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
+	msr.lo = ((PMB0_BASE + 4) & 0xffff);
 	wrmsr(PMG_IO_BASE_ADDR, msr);
 
-	// set C_LVL controls
-	msr = rdmsr(PMG_IO_CAPTURE_ADDR);
-	msr.lo = (PMB0 + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
+	/* set C_LVL controls */
+	msr.hi = 0;
+	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
 	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
 }
 

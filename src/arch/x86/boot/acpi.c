@@ -517,6 +517,7 @@ void *acpi_find_wakeup_vector(void)
 	acpi_rsdt_t *rsdt;
 	acpi_facs_t *facs;
 	acpi_fadt_t *fadt;
+	cbmem_toc_ptr_t *cbmem_tocp;
 	void *wake_vec;
 	int i;
 
@@ -537,10 +538,21 @@ void *acpi_find_wakeup_vector(void)
 		return NULL;
 
 	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
+	cbmem_tocp = (cbmem_toc_ptr_t *)(rsdp->rsdt_address - sizeof(cbmem_toc_ptr_t));
 	rsdt = (acpi_rsdt_t *) rsdp->rsdt_address;
 
 	end = (char *)rsdt + rsdt->header.length;
 	printk(BIOS_DEBUG, "RSDT found at %p ends at %p\n", rsdt, end);
+
+	if (get_cbmem_toc() == 0) {
+		if (cbmem_tocp->sig != CBMEM_TOC_PTR_SIG) {
+			printk(BIOS_DEBUG, "cbmem toc pointer not found at %p (sig %08x sz %d)\n", cbmem_tocp, cbmem_tocp->sig, sizeof(cbmem_toc_ptr_t));
+			return NULL;
+		}
+		set_cbmem_toc(cbmem_tocp->ptr);
+	} else {
+		printk(BIOS_DEBUG, "cbmem toc is at %p\n", get_cbmem_toc());
+	}
 
 	for (i = 0; ((char *)&rsdt->entry[i]) < end; i++) {
 		fadt = (acpi_fadt_t *)rsdt->entry[i];

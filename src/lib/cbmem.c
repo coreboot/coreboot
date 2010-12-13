@@ -39,6 +39,9 @@ struct cbmem_entry {
 #ifndef __PRE_RAM__
 static struct cbmem_entry *bss_cbmem_toc;
 
+/* chipset can override get/set_cbmem_toc to store the cbmem_toc address
+ * in nvram if available */
+
 struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
 {
 	return bss_cbmem_toc;
@@ -46,7 +49,7 @@ struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
 
 void __attribute__((weak)) set_cbmem_toc(struct cbmem_entry * x)
 {
-	/* do nothing, this should be called by chipset to save TOC in NVRAM */
+	bss_cbmem_toc = x;
 }
 #else
 

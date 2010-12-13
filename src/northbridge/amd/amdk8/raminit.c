@@ -1164,14 +1164,13 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	dcl &= ~DCL_UnBuffDimm;
 	if (unbuffered) {
 		if ((has_dualch) && (!is_cpu_pre_d0())) {
-			dcl |= DCL_UnBuffDimm; /* set DCL_DualDIMMen too? */
-
-			/* set DCL_En2T if you have non-equal DDR mem types! */
-
+			dcl |= DCL_UnBuffDimm;
+#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
 			if ((cpuid_eax(1) & 0x30) == 0x30) {
 				/* CS[7:4] is copy of CS[3:0], should be set for 939 socket */
 				dcl |= DCL_UpperCSMap;
 			}
+#endif
 		} else {
 			dcl |= DCL_UnBuffDimm;
 		}
@@ -1382,21 +1381,150 @@ struct spd_set_memclk_result {
 	const struct mem_param *param;
 	long dimm_mask;
 };
+
+static const unsigned char min_cycle_times[] = {
+	[NBCAP_MEMCLK_200MHZ] = 0x50, /* 5ns */
+	[NBCAP_MEMCLK_166MHZ] = 0x60, /* 6ns */
+	[NBCAP_MEMCLK_133MHZ] = 0x75, /* 7.5ns */
+	[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
+};
+
+#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
+
+/* return the minimum cycle time and set 2T accordingly */
+static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl, long dimm_mask) {
+
+/* + 1 raise so we detect 0 as bad field */
+#define DDR200 (NBCAP_MEMCLK_100MHZ + 1)
+#define DDR333 (NBCAP_MEMCLK_166MHZ + 1)
+#define DDR400 (NBCAP_MEMCLK_200MHZ + 1)
+#define DDR_2T 0x80
+#define DDR_MASK 0x3
+
+#define DDR200_2T (DDR_2T | DDR200)
+#define DDR333_2T (DDR_2T | DDR333)
+#define DDR400_2T (DDR_2T | DDR400)
+
+/*
+	Following table comes directly from BKDG (unbuffered DIMM support)
+	[Y][X] Y = ch0_0, ch1_0, ch0_1, ch1_1 1=present 0=empty
+	  X uses same layout but 1 means double rank 0 is single rank/empty
+
+	Following tables come from BKDG the ch{0_0,1_0,0_1,1_1} maps to
+	MEMCS_{1L,1H,2L,2H} in i the PDF. PreE is table 45, and revE table 46.
+*/
+
+	static const unsigned char dimm_loading_config_preE[16][16] = {
+		[0x8] = {[0x0] = DDR400,[0x8] = DDR400},
+		[0x2] = {[0x0] = DDR333,[0x2] = DDR400},
+		[0xa] = {[0x0] = DDR400_2T,[0x2] = DDR400_2T,
+			 [0x8] = DDR400_2T,[0xa] = DDR333_2T},
+		[0xc] = {[0x0] = DDR400,[0xc] = DDR400},
+		[0x3] = {[0x0] = DDR333,[0x3] = DDR400},
+		[0xf] = {[0x0] = DDR400_2T,[0x3] = DDR400_2T,
+			 [0xc] = DDR400_2T,[0xf] = DDR333_2T},
+	};
+
+	static const unsigned char dimm_loading_config_revE[16][16] = {
+		[0x8] = {[0x0] = DDR400, [0x8] = DDR400},
+		[0x2] = {[0x0] = DDR333, [0x2] = DDR400},
+		[0x4] = {[0x0] = DDR400, [0x4] = DDR400},
+		[0x1] = {[0x0] = DDR333, [0x1] = DDR400},
+		[0xa] = {[0x0] = DDR400_2T, [0x2] = DDR400_2T,
+			 [0x8] = DDR400_2T, [0xa] = DDR333_2T},
+		[0x5] = {[0x0] = DDR400_2T, [0x1] = DDR400_2T,
+			 [0x4] = DDR400_2T, [0x5] = DDR333_2T},
+		[0xc] = {[0x0] = DDR400, [0xc] = DDR400, [0x4] = DDR400, [0x8] = DDR400},
+		[0x3] = {[0x0] = DDR333, [0x1] = DDR333, [0x2] = DDR333, [0x3] = DDR400},
+		[0xe] = {[0x0] = DDR400_2T, [0x4] = DDR400_2T, [0x2] = DDR400_2T,
+			 [0x6] = DDR400_2T, [0x8] = DDR400_2T, [0xc] = DDR400_2T,
+			 [0xa] = DDR333_2T, [0xe] = DDR333_2T},
+		[0xb] = {[0x0] = DDR333, [0x1] = DDR400_2T, [0x2] = DDR333_2T,
+			 [0x3] = DDR400_2T, [0x8] = DDR333_2T, [0x9] = DDR400_2T,
+			 [0xa] = DDR333_2T, [0xb] = DDR333_2T},
+		[0xd] = {[0x0] = DDR400_2T, [0x8] = DDR400_2T, [0x1] = DDR400_2T,
+			 [0x9] = DDR333_2T, [0x4] = DDR400_2T, [0xc] = DDR400_2T,
+			 [0x5] = DDR333_2T, [0xd] = DDR333_2T},
+		[0x7] = {[0x0] = DDR333,    [0x2] = DDR400_2T, [0x1] = DDR333_2T,
+			 [0x3] = DDR400_2T, [0x4] = DDR333_2T, [0x6] = DDR400_2T,
+			 [0x5] = DDR333_2T, [0x7] = DDR333_2T},
+		[0xf] = {[0x0] = DDR400_2T, [0x1] = DDR400_2T, [0x4] = DDR400_2T,
+			 [0x5] = DDR333_2T, [0x2] = DDR400_2T, [0x3] = DDR400_2T,
+			 [0x6] = DDR400_2T, [0x7] = DDR333_2T, [0x8] = DDR400_2T,
+			 [0x9] = DDR400_2T, [0xc] = DDR400_2T, [0xd] = DDR333_2T,
+			 [0xa] = DDR333_2T, [0xb] = DDR333_2T, [0xe] = DDR333_2T,
+			 [0xf] = DDR333_2T},
+	};
+	/*The dpos matches channel positions defined in BKDG and above arrays
+	  The rpos is bitmask of dual rank dimms in same order as dpos */
+	unsigned int dloading = 0, dloading_cycle_time, i, rpos = 0, dpos =0;
+	const unsigned char (*dimm_loading_config)[16] = dimm_loading_config_revE;
+	int rank;
+	uint32_t dcl;
+
+	if (is_cpu_pre_e0()) {
+		dimm_loading_config = dimm_loading_config_preE;
+	}
+
+	/* only DIMMS two per channel */
+	for (i = 0; i < 2; i++) {
+		if ((dimm_mask & (1 << i))) {
+			/* read rank channel 0 */
+			rank = spd_read_byte(ctrl->channel0[i], 5);
+			if (rank < 0) goto hw_error;
+			rpos |= (rank == 2) ? (1 << (3 - (i * 2))) : 0;
+			dpos |= (1 << (3 - (i * 2)));
+		}
+
+		if ((dimm_mask & (1 << (i+DIMM_SOCKETS)))) {
+			/* read rank channel 1*/
+			rank = spd_read_byte(ctrl->channel1[i], 5);
+			if (rank < 0) goto hw_error;
+			rpos |= (rank == 2) ? (1 << (2 - (i * 2))) : 0;
+			dpos |= (1 << (2 - (i * 2)));
+		}
+	}
+	/* now the lookup, decode the max speed DDR400_2T etc */
+	dloading = dimm_loading_config[dpos][rpos] & DDR_MASK;
+#if 0
+	printk(BIOS_DEBUG, "XXX %x %x dload %x 2T %x\n", dpos,rpos, dloading, dimm_loading_config[dpos][rpos] & DDR_2T);
+#endif
+hw_error:
+	if (dloading != 0) {
+		/* map it back to cycle load times */
+		dloading_cycle_time = min_cycle_times[dloading - 1];
+		/* we have valid combination check the restrictions */
+		dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
+		dcl |= (dimm_loading_config[dpos][rpos] & DDR_2T) ? (DCL_En2T) : 0;
+		/* Set DuallDimm is second channel is completely empty (revD+) */
+		if (((cpuid_eax(1) & 0xfff0f) >= 0x10f00) && ((dpos & 0x5) == 0)) {
+			printk(BIOS_DEBUG, "Setting DualDIMMen\n");
+			dcl |= DCL_DualDIMMen;
+		}
+		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
+	} else {
+		/* if we don't find it we se it to DDR400 */
+		printk(BIOS_WARNING, "Detected strange DIMM configuration, may not work! (or bug)\n");
+		dloading_cycle_time = min_cycle_times[NBCAP_MEMCLK_200MHZ];
+	}
+
+	return dloading_cycle_time;
+}
+
+#endif /* #if defined(CONFIG_CPU_AMD_SOCKET_939) */
+
 static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, long dimm_mask)
 {
 	/* Compute the minimum cycle time for these dimms */
 	struct spd_set_memclk_result result;
 	unsigned min_cycle_time, min_latency, bios_cycle_time;
+#if defined(CONFIG_CPU_AMD_SOCKET_939)
+	unsigned dloading_cycle_time;
+#endif
 	int i;
 	uint32_t value;
 
 	static const uint8_t latency_indicies[] = { 26, 23, 9 };
-	static const unsigned char min_cycle_times[] = {
-		[NBCAP_MEMCLK_200MHZ] = 0x50, /* 5ns */
-		[NBCAP_MEMCLK_166MHZ] = 0x60, /* 6ns */
-		[NBCAP_MEMCLK_133MHZ] = 0x75, /* 7.5ns */
-		[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
-	};
 
 	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 
@@ -1545,6 +1673,16 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	}
 #endif
 #endif
+
+#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
+	dloading_cycle_time = spd_dimm_loading_socket939(ctrl, dimm_mask);
+	if (dloading_cycle_time > min_cycle_time) {
+		min_cycle_time = dloading_cycle_time;
+		printk(BIOS_WARNING, "Memory speed reduced due to signal loading conditions\n");
+	}
+#endif
+
+
 	/* Now that I know the minimum cycle time lookup the memory parameters */
 	result.param = get_mem_param(min_cycle_time);
 

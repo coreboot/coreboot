@@ -48,6 +48,13 @@ void __attribute__((weak)) set_cbmem_toc(struct cbmem_entry * x)
 {
 	/* do nothing, this should be called by chipset to save TOC in NVRAM */
 }
+#else
+
+struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
+{
+	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_toc() for your chipset\n");
+	return NULL;
+}
 
 #endif
 

@@ -15,6 +15,7 @@ ramstage-y += lzma.c
 ramstage-y += gcc.c
 ramstage-y += cbmem.c
 
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 romstage-y += uart8250.c
 romstage-y += memset.c
 romstage-y += memcpy.c

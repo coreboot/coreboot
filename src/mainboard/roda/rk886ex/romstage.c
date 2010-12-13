@@ -235,14 +235,6 @@ static void init_artec_dongle(void)
 
 #include <cbmem.h>
 
-// Now, this needs to be included because it relies on the symbol
-// __PRE_RAM__ being set during CAR stage (in order to compile the
-// BSS free versions of the functions). Either rewrite the code
-// to be always BSS free, or invent a flag that's better suited than
-// __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
-//
-#include "lib/cbmem.c"
-
 void main(unsigned long bist)
 {
 	u32 reg32;

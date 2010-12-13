@@ -481,7 +481,8 @@ u8 acpi_slp_type = 0;
 
 static int acpi_is_wakeup(void)
 {
-	return (acpi_slp_type == 3);
+	/* Both resume from S2 and resume from S3 restart at CPU reset */
+	return (acpi_slp_type == 3 || acpi_slp_type == 2);
 }
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
@@ -567,9 +568,11 @@ void *acpi_find_wakeup_vector(void)
 	return wake_vec;
 }
 
+#if CONFIG_SMP
 extern char *lowmem_backup;
 extern char *lowmem_backup_ptr;
 extern int lowmem_backup_size;
+#endif
 
 #define WAKEUP_BASE 0x600
 
@@ -588,12 +591,14 @@ void acpi_jump_to_wakeup(void *vector)
 		return;
 	}
 
+#if CONFIG_SMP
 	// FIXME: This should go into the ACPI backup memory, too. No pork saussages.
 	/*
 	 * Just restore the SMP trampoline and continue with wakeup on
 	 * assembly level.
 	 */
 	memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
+#endif
 
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, (size_t)&__wakeup_size);

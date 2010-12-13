@@ -2226,6 +2226,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 #endif
 {
 	int i;
+	u32 whatWait = 0;
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	int suspend = acpi_is_wakeup_early();
+#else
+	int suspend = 0;
+#endif
 
 	/* Error if I don't have memory */
 	if (memory_end_k(ctrl, controllers) == 0) {
@@ -2277,13 +2283,31 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			}
 			pci_write_config32(ctrl[i].f3, MCA_NB_CONFIG, mnc);
 		}
-		dcl |= DCL_DisDqsHys;
-		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+
+		if (!suspend) {
+			dcl |= DCL_DisDqsHys;
+			pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+		}
 		dcl &= ~DCL_DisDqsHys;
 		dcl &= ~DCL_DLL_Disable;
 		dcl &= ~DCL_D_DRV;
 		dcl &= ~DCL_QFC_EN;
-		dcl |= DCL_DramInit;
+
+		if (suspend) {
+			enable_lapic();
+			init_timer();
+			dcl |= (DCL_ESR | DCL_SRS);
+			/* Handle errata 85 Insufficient Delay Between MEMCLK Startup
+			   and CKE Assertion During Resume From S3 */
+			udelay(10); /* for unregistered */
+			if (is_registered(&ctrl[i])) {
+				udelay(100); /* 110us for registered (we wait 10us already) */
+			}
+			whatWait = DCL_ESR;
+		} else {
+			dcl |= DCL_DramInit;
+			whatWait = DCL_DramInit;
+		}
 		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
 	}
 
@@ -2305,7 +2329,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			if ((loops & 1023) == 0) {
 				printk(BIOS_DEBUG, ".");
 			}
-		} while(((dcl & DCL_DramInit) != 0) && (loops < TIMEOUT_LOOPS));
+		} while(((dcl & whatWait) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
 			printk(BIOS_DEBUG, " failed\n");
 			continue;
@@ -2313,11 +2337,15 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 		if (!is_cpu_pre_c0()) {
 			/* Wait until it is safe to touch memory */
+#if 0
+			/* the registers are marked read-only but code zeros them */
 			dcl &= ~(DCL_MemClrStatus | DCL_DramEnable);
 			pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+#endif
 			do {
 				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
-			} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) );
+			} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) ||
+					((dcl & DCL_SRS)));
 		}
 
 		printk(BIOS_DEBUG, " done\n");

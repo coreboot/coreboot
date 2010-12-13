@@ -55,33 +55,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->acpi_disable = 0xf1;
 	fadt->s4bios_req = 0x0;
 	fadt->pstate_cnt = 0xe2;
-
-	pm_iowrite(0x20, ACPI_PM_EVT_BLK & 0xFF);
-	pm_iowrite(0x21, ACPI_PM_EVT_BLK >> 8);
-	pm_iowrite(0x22, ACPI_PM1_CNT_BLK & 0xFF);
-	pm_iowrite(0x23, ACPI_PM1_CNT_BLK >> 8);
-	pm_iowrite(0x24, ACPI_PM_TMR_BLK & 0xFF);
-	pm_iowrite(0x25, ACPI_PM_TMR_BLK >> 8);
-	pm_iowrite(0x28, ACPI_GPE0_BLK & 0xFF);
-	pm_iowrite(0x29, ACPI_GPE0_BLK >> 8);
-
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
-	pm_iowrite(0x26, ACPI_CPU_CONTROL & 0xFF);
-	pm_iowrite(0x27, ACPI_CPU_CONTROL >> 8);
-
-	pm_iowrite(0x2A, 0);	/* AcpiSmiCmdLo */
-	pm_iowrite(0x2B, 0);	/* AcpiSmiCmdHi */
-
-	pm_iowrite(0x2C, ACPI_PMA_CNT_BLK & 0xFF);
-	pm_iowrite(0x2D, ACPI_PMA_CNT_BLK >> 8);
-
-	pm_iowrite(0x0E, 1<<3 | 0<<2); /* AcpiDecodeEnable, When set, SB uses
-					* the contents of the PM registers at
-					* index 20-2B to decode ACPI I/O address.
-					* AcpiSmiEn & SmiCmdEn*/
-	pm_iowrite(0x10, 1<<1 | 1<<3| 1<<5); /* RTC_En_En, TMR_En_En, GBL_EN_EN */
-	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
-
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1b_evt_blk = 0x0000;
 	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;

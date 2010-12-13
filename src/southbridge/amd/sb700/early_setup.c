@@ -22,6 +22,7 @@
 
 #include <reset.h>
 #include <arch/cpu.h>
+#include <cbmem.h>
 #include "sb700.h"
 #include "smbus.c"
 
@@ -38,6 +39,33 @@ static u8 pmio_read(u8 reg)
 {
 	outb(reg, PM_INDEX);
 	return inb(PM_INDEX + 1);
+}
+
+static void sb700_acpi_init(void) {
+	pmio_write(0x20, ACPI_PM_EVT_BLK & 0xFF);
+	pmio_write(0x21, ACPI_PM_EVT_BLK >> 8);
+	pmio_write(0x22, ACPI_PM1_CNT_BLK & 0xFF);
+	pmio_write(0x23, ACPI_PM1_CNT_BLK >> 8);
+	pmio_write(0x24, ACPI_PM_TMR_BLK & 0xFF);
+	pmio_write(0x25, ACPI_PM_TMR_BLK >> 8);
+	pmio_write(0x28, ACPI_GPE0_BLK & 0xFF);
+	pmio_write(0x29, ACPI_GPE0_BLK >> 8);
+
+	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	pmio_write(0x26, ACPI_CPU_CONTROL & 0xFF);
+	pmio_write(0x27, ACPI_CPU_CONTROL >> 8);
+
+	pmio_write(0x2A, 0);	/* AcpiSmiCmdLo */
+	pmio_write(0x2B, 0);	/* AcpiSmiCmdHi */
+
+	pmio_write(0x2C, ACPI_PMA_CNT_BLK & 0xFF);
+	pmio_write(0x2D, ACPI_PMA_CNT_BLK >> 8);
+
+	pmio_write(0x0E, 1<<3 | 0<<2); /* AcpiDecodeEnable, When set, SB uses
+					* the contents of the PM registers at
+					* index 20-2B to decode ACPI I/O address.
+					* AcpiSmiEn & SmiCmdEn*/
+	pmio_write(0x10, 1<<1 | 1<<3| 1<<5); /* RTC_En_En, TMR_En_En, GBL_EN_EN */
 }
 
 /* RPR 2.28: Get SB ASIC Revision. */
@@ -588,10 +616,61 @@ static void sb700_early_setup(void)
 {
 	printk(BIOS_INFO, "sb700_early_setup()\n");
 	sb700_por_init();
+	sb700_acpi_init();
 }
 
 static int smbus_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
+
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+	int i;
+	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
+
+	for (i = 0; i<size; i++) {
+		outb(nvram_pos, BIOSRAM_INDEX);
+		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		nvram_pos++;
+	}
+
+	return nvram_pos;
+}
+
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
+	u32 data = *old_dword;
+	int i;
+	for (i = 0; i<size; i++) {
+		outb(nvram_pos, BIOSRAM_INDEX);
+		data &= ~(0xff << (i * 8));
+		data |= inb(BIOSRAM_DATA) << (i *8);
+		nvram_pos++;
+	}
+	*old_dword = data;
+	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", *old_dword, size,
+		nvram_pos-size);
+	return nvram_pos;
+}
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+static int acpi_is_wakeup_early(void) {
+	u16 tmp;
+	tmp = inw(ACPI_PM1_CNT_BLK);
+	printk(BIOS_DEBUG, "IN TEST WAKEUP %x\n", tmp);
+	return (((tmp & (7 << 10)) >> 10) == 3);
+}
+#endif
+
+struct cbmem_entry *get_cbmem_toc(void) {
+	uint32_t xdata = 0;
+	int xnvram_pos = 0xfc, xi;
+	for (xi = 0; xi<4; xi++) {
+		outb(xnvram_pos, BIOSRAM_INDEX);
+		xdata &= ~(0xff << (xi * 8));
+		xdata |= inb(BIOSRAM_DATA) << (xi *8);
+		xnvram_pos++;
+	}
+	return (struct cbmem_entry *) xdata;
+}
+
 #endif

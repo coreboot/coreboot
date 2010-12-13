@@ -154,8 +154,6 @@ static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-/* this should be a function
 struct cbmem_entry *get_cbmem_toc(void) {
-*/
-
-#define get_cbmem_toc() ((struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC))
+	return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+}

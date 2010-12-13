@@ -36,20 +36,7 @@ struct cbmem_entry {
 	u64 size;
 } __attribute__((packed));
 
-
-#ifdef __PRE_RAM__
-
-/* note this should be done as weak function but we do #include
-   of C files in the romstage breaking this (in same compile
-   unit is weak and non weak function
-struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
-*/
-#ifndef get_cbmem_toc
-	#define get_cbmem_toc()	(struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE)
-#endif
-
-#else
-
+#ifndef __PRE_RAM__
 static struct cbmem_entry *bss_cbmem_toc;
 
 struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)

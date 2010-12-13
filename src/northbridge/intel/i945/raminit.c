@@ -26,6 +26,11 @@
 #include <arch/romcc_io.h>
 #include "raminit.h"
 #include "i945.h"
+#include <cbmem.h>
+
+struct cbmem_entry *get_cbmem_toc(void) {
+	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
+}
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP

@@ -24,6 +24,8 @@
 #include "chip.h"
 
 /* Power management index/data registers */
+#define BIOSRAM_INDEX	0xcd4
+#define BIOSRAM_DATA	0xcd5
 #define PM_INDEX	0xcd6
 #define PM_DATA		0xcd7
 #define PM2_INDEX	0xcd0
@@ -67,6 +69,9 @@ void sb700_pci_port80(void);
 void sb700_setup_sata_phys(struct device *dev);
 
 #endif
+
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 void sb700_enable_usbdebug(unsigned int port);
 #endif /* SB700_H */

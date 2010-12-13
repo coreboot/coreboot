@@ -28,6 +28,7 @@
 #include <bitops.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <cbmem.h>
 #include "sb700.h"
 
 static void lpc_init(device_t dev)
@@ -63,6 +64,27 @@ static void lpc_init(device_t dev)
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
 	pci_write_config8(dev, 0x78, byte);
+
+	/* hack, but the whole sb700 startup lacks any device which
+	   is doing the acpi init */
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	{
+	extern u8 acpi_slp_type;
+	u16 tmp = inw(ACPI_PM1_CNT_BLK);
+	acpi_slp_type = ((tmp & (7 << 10)) >> 10);
+	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", acpi_slp_type);
+	}
+#endif
+}
+
+void set_cbmem_toc(struct cbmem_entry *toc) {
+	u32 dword = (u32) toc;
+	int nvram_pos = 0xfc, i;
+	for (i = 0; i<4; i++) {
+		outb(nvram_pos, BIOSRAM_INDEX);
+		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		nvram_pos++;
+	}
 }
 
 static void sb700_lpc_read_resources(device_t dev)

@@ -71,5 +71,4 @@ void sdram_initialize(int boot_path);
 unsigned long get_top_of_ram(void);
 int fixup_i945_errata(void);
 void udelay(u32 us);
-
 #endif				/* RAMINIT_H */

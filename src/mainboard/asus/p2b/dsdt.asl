@@ -21,26 +21,50 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 {
-	/* For now only define 2 power states:
-	 *  - S0 which is fully on
-	 *  - S5 which is soft off
-	 * Any others would involve declaring the wake up methods.
-	 */
-
-	/* intel i82371eb (piix4e) datasheet, section 7.2.3, page 142 */
 	/*
-	000b / 0x0: soft off/suspend to disk (soff/std)			s5
-	001b / 0x1: suspend to ram (str)				s3
-	010b / 0x2: powered on suspend, context lost (poscl)		s1
-	011b / 0x3: powered on suspend, cpu context lost (posccl)	s2
-	100b / 0x4: powered on suspend, context maintained (pos)	s4
-	101b / 0x5: working (clock control)				s0
-	110b / 0x6: reserved
-	111b / 0x7: reserved
-	*/
+	 * Intel 82371EB (PIIX4E) datasheet, section 7.2.3, page 142
+	 *
+	 * 0: soft off/suspend to disk					S5
+	 * 1: suspend to ram						S3
+	 * 2: powered on suspend, context lost				S2
+	 *    Note: 'context lost' means the CPU restarts at the reset
+	 *          vector
+	 * 3: powered on suspend, CPU context lost			S1
+	 *    Note: Looks like 'CPU context lost' does _not_ mean the
+	 *          CPU restarts at the reset vector. Most likely only
+	 *          caches are lost, so both 0x3 and 0x4 map to acpi S1
+	 * 4: powered on suspend, context maintained			S1
+	 * 5: working (clock control)					S0
+	 * 6: reserved
+	 * 7: reserved
+	 */
 	Name (\_S0, Package () { 0x05, 0x05, 0x00, 0x00 })
 	Name (\_S1, Package () { 0x03, 0x03, 0x00, 0x00 })
 	Name (\_S5, Package () { 0x00, 0x00, 0x00, 0x00 })
+
+	OperationRegion (SIO1, SystemIO, Add(DEFAULT_PMBASE, GPO0), 2)
+	Field (SIO1, ByteAcc, NoLock, Preserve)
+	{
+		FANP,	1, /* CPU/case fan power */
+		Offset (0x01),
+		PLED,	1,
+	}
+
+	Method (\_PTS, 1, NotSerialized)
+	{
+		/* Disable fan, blink power led */
+		Store (Zero, FANP)
+		Store (Zero, PLED)
+	}
+
+	Method (\_WAK, 1, NotSerialized)
+	{
+		/* Re-enable fan, stop power led blinking */
+		Store (One, FANP)
+		Store (One, PLED)
+		/* wake OK */
+		Return(Package(0x02){0x00, 0x00})
+	}
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)

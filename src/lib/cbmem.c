@@ -191,8 +191,10 @@ extern u8 acpi_slp_type;
 void cbmem_initialize(void)
 {
 #if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type == 3) {
+	printk(BIOS_DEBUG, "%s: acpi_slp_type=%d\n", __func__, acpi_slp_type);
+	if (acpi_slp_type == 3 || acpi_slp_type == 2) {
 		if (!cbmem_reinit(high_tables_base)) {
+			printk(BIOS_DEBUG, "cbmem_reinit failed\n");
 			/* Something went wrong, our high memory area got wiped */
 			acpi_slp_type = 0;
 			cbmem_init(high_tables_base, high_tables_size);

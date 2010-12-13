@@ -26,6 +26,7 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
+#include <cbmem.h>
 #include "i82371eb.h"
 
 extern const unsigned char AmlCode[];
@@ -104,6 +105,7 @@ unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(unsigned long curre
 unsigned long __attribute__((weak)) write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
+	cbmem_toc_ptr_t *cbmem_tocp;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_fadt_t *fadt;
@@ -113,19 +115,27 @@ unsigned long __attribute__((weak)) write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 
 	/* Align ACPI tables to 16 byte. */
-	start = (start + 0x0f) & -0x10;
-	current = start;
+	current = ALIGN(start, 16);
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT table. */
 	rsdp = (acpi_rsdp_t *) current;
 	current += sizeof(acpi_rsdp_t);
+
+	/* put cbmem toc ptr structure directly below rsdt */
+	printk(BIOS_INFO, "ACPI: Writing cbmem_toc pointer at %lx...\n", current);
+	cbmem_tocp = (cbmem_toc_ptr_t *) current;
+	current += sizeof(cbmem_toc_ptr_t);
+
 	rsdt = (acpi_rsdt_t *) current;
 	current += sizeof(acpi_rsdt_t);
 
 	/* Clear all table memory. */
 	memset((void *) start, 0, current - start);
+
+	cbmem_tocp->sig = CBMEM_TOC_PTR_SIG;
+	cbmem_tocp->ptr = get_cbmem_toc();
 
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);

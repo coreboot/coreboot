@@ -41,6 +41,13 @@ extern uint64_t high_tables_base, high_tables_size;
 #define CBMEM_ID_SMBIOS         0x534d4254
 #define CBMEM_ID_NONE		0x00000000
 
+#define CBMEM_TOC_PTR_SIG	0x43425443
+
+typedef struct cbmem_toc_ptr {
+	u32 sig;
+	void *ptr;
+} __attribute__((packed)) cbmem_toc_ptr_t;
+
 void cbmem_initialize(void);
 
 void cbmem_init(u64 baseaddr, u64 size);

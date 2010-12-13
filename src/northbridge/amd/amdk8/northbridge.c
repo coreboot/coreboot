@@ -820,8 +820,6 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 #include <cbmem.h>
-#define HIGH_TABLES_SIZE ((HIGH_MEMORY_SIZE + 1024) / 1024)
-extern uint64_t high_tables_base, high_tables_size;
 #endif
 
 #if CONFIG_GFXUMA == 1
@@ -1020,13 +1018,13 @@ static void amdk8_domain_set_resources(device_t dev)
 					if (high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-						high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
+						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
-						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
+						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
 #endif
-						high_tables_size = HIGH_TABLES_SIZE * 1024;
-						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
-							     high_tables_base);
+						high_tables_size = HIGH_MEMORY_SIZE;
+						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n",
+							HIGH_MEMORY_SIZE / 1024, high_tables_base);
 					}
 #endif
 				}
@@ -1065,11 +1063,11 @@ static void amdk8_domain_set_resources(device_t dev)
 		if (high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-			high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
+			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
-			high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
+			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
 #endif
-			high_tables_size = HIGH_TABLES_SIZE * 1024;
+			high_tables_size = HIGH_MEMORY_SIZE;
 		}
 #endif
 	}

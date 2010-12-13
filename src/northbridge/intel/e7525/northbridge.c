@@ -17,8 +17,7 @@
 static unsigned int max_bus;
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
-extern uint64_t high_tables_base, high_tables_size;
+#include <cbmem.h>
 #endif
 
 static void pci_domain_set_resources(device_t dev)
@@ -111,8 +110,8 @@ static void pci_domain_set_resources(device_t dev)
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
-		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE * 1024;
+		high_tables_base = (tolmk * 1024) - HIGH_MEMORY_SIZE;
+		high_tables_size = HIGH_MEMORY_SIZE;
 #endif
 	}
 	assign_resources(dev->link_list);

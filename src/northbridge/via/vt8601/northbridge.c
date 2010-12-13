@@ -46,9 +46,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 };
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-/* maximum size of high tables in KB */
-#define HIGH_TABLES_SIZE 64
-extern uint64_t high_tables_base, high_tables_size;
+#include <cbmem.h>
 #endif
 
 static void pci_domain_set_resources(device_t dev)
@@ -92,9 +90,10 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 #if CONFIG_WRITE_HIGH_TABLES == 1
-		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE* 1024;
-		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+		high_tables_base = (tolmk * 1024) - HIGH_MEMORY_SIZE;
+		high_tables_size = HIGH_MEMORY_SIZE;
+		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n",
+				tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions */

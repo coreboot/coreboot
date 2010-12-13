@@ -193,7 +193,6 @@ void *cbmem_find(u32 id)
 #if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
 #endif
-extern uint64_t high_tables_base, high_tables_size;
 
 void cbmem_initialize(void)
 {

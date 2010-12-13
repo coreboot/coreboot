@@ -97,7 +97,7 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 
 config RAMBASE
 	hex
-	default 0x00200000
+	default 0x200000
 
 config TTYS0_BAUD
 	int

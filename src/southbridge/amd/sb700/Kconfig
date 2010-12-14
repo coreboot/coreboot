@@ -23,6 +23,11 @@ config SOUTHBRIDGE_AMD_SB700
 	select HAVE_USBDEBUG
 	select TINY_BOOTBLOCK
 
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/amd/sb700/bootblock.c"
+	depends on SOUTHBRIDGE_AMD_SB700
+
 config SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
 	bool
 	default n

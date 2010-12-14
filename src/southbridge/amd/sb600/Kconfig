@@ -23,6 +23,11 @@ config SOUTHBRIDGE_AMD_SB600
 	select HAVE_USBDEBUG
 	select TINY_BOOTBLOCK
 
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/amd/sb600/bootblock.c"
+	depends on SOUTHBRIDGE_AMD_SB600
+
 config EHCI_BAR
 	hex
 	default 0xfef00000 if SOUTHBRIDGE_AMD_SB600

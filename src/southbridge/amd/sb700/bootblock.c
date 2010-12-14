@@ -23,12 +23,12 @@
 #include <device/pci_ids.h>
 
 /*
- * Enable 1MB (LPC) ROM access at 0xFFF00000 - 0xFFFFFFFF.
+ * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.
  *
  * Hardware should enable LPC ROM by pin straps. This function does not
  * handle the theoretically possible PCI ROM, FWH, or SPI ROM configurations.
  *
- * The SB700 power-on default is to map 256K ROM space.
+ * The SB700 power-on default is to map 512K ROM space.
  *
  * Details: AMD SB700/710/750 BIOS Developer's Guide (BDG), Rev. 1.00,
  *          PN 43366_sb7xx_bdg_pub_1.00, June 2009, section 3.1, page 14.
@@ -39,7 +39,7 @@ static void sb700_enable_rom(void)
 	device_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI,
-				PCI_DEVICE_ID_ATI_SB700_LPC), 0);
+				       PCI_DEVICE_ID_ATI_SB700_LPC), 0);
 
 	/* Decode variable LPC ROM address ranges 1 and 2. */
 	reg8 = pci_read_config8(dev, 0x48);
@@ -57,8 +57,10 @@ static void sb700_enable_rom(void)
 	 * Enable LPC ROM range start at:
 	 * 0xfff8(0000): 512KB
 	 * 0xfff0(0000): 1MB
+	 * 0xffe0(0000): 2MB
+	 * 0xffc0(0000): 4MB
 	 */
-	pci_write_config16(dev, 0x6c, 0xfff0); /* 1 MB */
+	pci_write_config16(dev, 0x6c, 0xffc0); /* 4 MB */
 	/* Enable LPC ROM range end at 0xffff(ffff). */
 	pci_write_config16(dev, 0x6e, 0xffff);
 }

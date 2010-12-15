@@ -19,21 +19,24 @@
  */
 
 #include <device/device.h>
-#include "hda_verb.h"
 #include "chip.h"
+
+#if 0
+#include "hda_verb.h"
 
 static void verb_setup(void)
 {
-	// cim_verb_data = mainboard_cim_verb_data;
-	// cim_verb_data_size = sizeof(mainboard_cim_verb_data);
+	cim_verb_data = mainboard_cim_verb_data;
+	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
 static void mainboard_enable(device_t dev)
 {
-	// verb_setup();
+	verb_setup();
 }
+#endif
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("MSI K9N Neo (MS-7260) Mainboard")
-	.enable_dev = mainboard_enable,
+	// .enable_dev = mainboard_enable,
 };

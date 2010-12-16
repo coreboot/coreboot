@@ -48,7 +48,6 @@
 #if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
 #include <device/cardbus.h>
 #endif
-#define CONFIG_PC80_SYSTEM 1
 #if CONFIG_PC80_SYSTEM == 1
 #include <pc80/i8259.h>
 #endif
@@ -1262,9 +1261,11 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
 #endif
 
+#if CONFIG_PC80_SYSTEM == 1
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);
+#endif
 	}
 }
 #endif

@@ -101,7 +101,16 @@ config USE_OPTION_TABLE
 endmenu
 
 source src/mainboard/Kconfig
+
+# This option is used to set the architecture of a mainboard to X86.
+# It is usually set in mainboard/*/Kconfig.
+config ARCH_X86
+	bool
+	default n
+
+if ARCH_X86
 source src/arch/x86/Kconfig
+endif
 
 menu "Chipset"
 
@@ -133,15 +142,6 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x0
-
-config CPU_ADDR_BITS
-	int
-	default 36
-
-config LOGICAL_CPUS
-	bool
-	default y
-
 config PCI_ROM_RUN
 	bool
 	default n

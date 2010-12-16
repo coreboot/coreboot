@@ -1,3 +1,5 @@
+if ARCH_X86
+
 source src/cpu/amd/Kconfig
 source src/cpu/intel/Kconfig
 source src/cpu/via/Kconfig
@@ -57,3 +59,5 @@ config VAR_MTRR_HOLE
 	help
 		Unset this if you don't want the MTRR code to use
 		subtractive MTRRs
+
+endif # ARCH_X86

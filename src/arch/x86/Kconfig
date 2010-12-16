@@ -1,9 +1,3 @@
-# This option is used to set the architecture of a mainboard to X86.
-# It is usually set in mainboard/*/Kconfig.
-config ARCH_X86
-	bool
-	default n
-
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
 # TODO: Improve description.
@@ -53,23 +47,26 @@ config BIG_BOOTBLOCK
 	default n if TINY_BOOTBLOCK
 	default y
 
+# We had to rename the choice options under arch/ because otherwise
+# the options would conflict between different architectures despite
+# the if ARCH_xxx guarding the arch/xxx/Kconfig sourcing.
 choice
 	prompt "Bootblock behaviour"
-	default BOOTBLOCK_SIMPLE
+	default X86_BOOTBLOCK_SIMPLE
 	depends on TINY_BOOTBLOCK
 
-config BOOTBLOCK_SIMPLE
+config X86_BOOTBLOCK_SIMPLE
 	bool "Always load fallback"
 
-config BOOTBLOCK_NORMAL
+config X86_BOOTBLOCK_NORMAL
 	bool "Switch to normal if CMOS says so"
 
 endchoice
 
 config BOOTBLOCK_SOURCE
 	string
-	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
-	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
+	default "bootblock_simple.c" if X86_BOOTBLOCK_SIMPLE
+	default "bootblock_normal.c" if X86_BOOTBLOCK_NORMAL
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
@@ -84,6 +81,10 @@ config UPDATE_IMAGE
 config ROMCC
 	bool
 	default n
+
+config PC80_SYSTEM
+	bool
+	default y
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string

@@ -53,6 +53,23 @@ ifeq ($(CONFIG_GEODE_VSA_FILE),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VSA_FILENAME)
 endif
 
+extract_nth=$(word $(1), $(subst |, ,$(2)))
+
+ifneq ($(CONFIG_UPDATE_IMAGE),y)
+prebuild-files = \
+	$(foreach file,$(cbfs-files), \
+		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
+prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
+
+$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(prebuilt-files) $(CBFSTOOL)
+	rm -f $@
+	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+	$(prebuild-files)
+else
+$(obj)/coreboot.pre1: $(CBFSTOOL)
+	mv $(obj)/coreboot.rom $@
+endif
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp

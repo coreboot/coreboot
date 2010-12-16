@@ -1,15 +1,6 @@
 #######################################################################
 # Build the final rom image
 
-ifneq ($(CONFIG_UPDATE_IMAGE),y)
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(CBFSTOOL)
-	rm -f $@
-	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
-else
-$(obj)/coreboot.pre1: $(CBFSTOOL)
-	mv $(obj)/coreboot.rom $@
-endif
-
 $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 	rm -f $@
 	cp $(obj)/coreboot.pre1 $@

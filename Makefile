@@ -184,6 +184,7 @@ ramstage-srcs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 romstage-srcs:=
 driver-srcs:=
 smm-srcs:=
+cbfs-files:=
 
 ramstage-objs:=
 romstage-objs:=
@@ -197,11 +198,20 @@ types:=ramstage romstage driver smm
 includemakefiles= \
 	$(foreach type,$(2), $(eval $(type)-y:=)) \
 	$(eval subdirs-y:=) \
+	$(eval cbfs-files-y:=) \
 	$(eval -include $(1)) \
 	$(foreach type,$(2), \
 		$(eval $(type)-srcs+= \
 			$$(subst $(top)/,, \
 			$$(abspath $$(addprefix $(dir $(1)),$$($(type)-y)))))) \
+	$(foreach file,$(cbfs-files-y), \
+		$(if $(wildcard $(dir $(1))$(file)), \
+			$(eval tmp-cbfs-file:= $(wildcard $(dir $(1))$(file))), \
+			$(eval tmp-cbfs-file:= $(file))) \
+		$(eval cbfs-files += $(tmp-cbfs-file)|$$($(file)-name)|$$($(file)-type)|$$($(file)-position)) \
+		$(eval $(file)-name:=) \
+		$(eval $(file)-type:=) \
+		$(eval $(file)-position:=)) \
 	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles
@@ -275,6 +285,7 @@ printall:
 	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
 	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
+	@echo cbfs-files:='$(cbfs-files)'
 
 printcrt0s:
 	@echo crt0s=$(crt0s)

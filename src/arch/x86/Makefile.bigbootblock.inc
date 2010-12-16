@@ -1,9 +1,9 @@
 #######################################################################
 # Build the final rom image
 
-$(obj)/coreboot.pre: $(obj)/coreboot.bootblock $(CBFSTOOL)
+$(obj)/coreboot.pre: $(obj)/coreboot.pre1 $(CBFSTOOL)
 	rm -f $@
-	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+	cp $(obj)/coreboot.pre1 $@
 
 #######################################################################
 # Build the bootblock

@@ -23,19 +23,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-	#define SIS966_DEVN_BASE	CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-	#define SIS966_DEVN_BASE	CONFIG_HT_CHAIN_UNITID_BASE
-#endif
+#include <stdint.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_ids.h>
+#include "sis966.h"
 
 static void sis966_enable_rom(void)
 {
 	device_t addr;
 
-	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
-	addr = pci_locate_device(PCI_ID(0x1039, 0x0966), 0);
+	/* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */
+	addr = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS,
+					PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 
-	/* Set the 4MB enable bit bit */
+	/* Set the 4MB enable bit(s). */
 	pci_write_config8(addr, 0x40, pci_read_config8(addr, 0x40) | 0x11);
+}
+
+static void bootblock_southbridge_init(void)
+{
+	sis966_enable_rom();
 }

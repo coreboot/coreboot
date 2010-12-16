@@ -40,7 +40,6 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/sis/sis966/sis966.h"
 #include "southbridge/sis/sis966/early_smbus.c"
-#include "southbridge/sis/sis966/enable_rom.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
@@ -131,7 +130,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
 		sio_setup();
-		sis966_enable_rom();
         }
 
         if (bist == 0)

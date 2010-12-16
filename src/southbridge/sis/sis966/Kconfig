@@ -2,6 +2,11 @@ config SOUTHBRIDGE_SIS_SIS966
 	bool
 	select IOAPIC
 	select HAVE_USBDEBUG
+	select TINY_BOOTBLOCK
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/sis/sis966/bootblock.c" if SOUTHBRIDGE_SIS_SIS966
 
 config ID_SECTION_OFFSET
 	hex

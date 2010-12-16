@@ -30,6 +30,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include "sis966.h"
+#include "chip.h"
 
 uint8_t	SiS_SiS5513_init[49][3]={
 {0x04, 0xFF, 0x05},

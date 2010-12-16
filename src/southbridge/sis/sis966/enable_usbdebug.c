@@ -30,12 +30,6 @@
 #include <device/pci_def.h>
 #include "sis966.h"
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
-#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
-#else
-#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
-#endif
-
 void set_debug_port(unsigned int port)
 {
 	u32 dword;

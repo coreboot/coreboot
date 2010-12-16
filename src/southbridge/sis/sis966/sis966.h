@@ -22,6 +22,12 @@
 #ifndef SIS966_H
 #define SIS966_H
 
+#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
+#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE
+#else
+#define SIS966_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
+#endif
+
 #define DEBUG_AZA 0
 #define DEBUG_NIC 0
 #define DEBUG_IDE 0
@@ -29,9 +35,12 @@
 #define DEBUG_USB 0
 #define DEBUG_USB2 0
 
-#include "chip.h"
-
+#if !defined(__ROMCC__)
 void sis966_enable(device_t dev);
+#endif
+
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
 void sis966_enable_usbdebug(unsigned int port);
+#endif
 
 #endif /* SIS966_H */

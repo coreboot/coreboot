@@ -27,25 +27,4 @@
 	__mod; \
 })
 
-/*
- * (long)X = ((long long)divs) / (long)div
- * (long)rem = ((long long)divs) % (long)div
- *
- * Warning, this will do an exception if X overflows.
- */
-#define div_long_long_rem(a,b,c) div_ll_X_l_rem(a,b,c)
-
-extern inline long
-div_ll_X_l_rem(long long divs, long div, long *rem);
-
-extern inline long
-div_ll_X_l_rem(long long divs, long div, long *rem)
-{
-	long dum2;
-      __asm__("divl %2":"=a"(dum2), "=d"(*rem)
-      :	"rm"(div), "A"(divs));
-
-	return dum2;
-
-}
 #endif

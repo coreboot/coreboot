@@ -42,7 +42,7 @@ static void *smp_write_config_table(void *v)
 
 	mc = (void*)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
-	mptable_init(mc, "M2V         ", LAPIC_ADDR);
+	mptable_init(mc, LAPIC_ADDR);
 
 	smp_write_processors(mc);
 	mptable_write_buses(mc, NULL, &bus_isa);

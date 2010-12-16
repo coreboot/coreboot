@@ -232,8 +232,7 @@ struct mp_exten_compatibility_address_space {
 /* Default local apic addr */
 #define LAPIC_ADDR 0xFEE00000
 
-void mptable_init(struct mp_config_table *mc, const char *productid,
-		  u32 lapic_addr);
+void mptable_init(struct mp_config_table *mc, u32 lapic_addr);
 
 void *smp_next_mpc_entry(struct mp_config_table *mc);
 void *smp_next_mpe_entry(struct mp_config_table *mc);

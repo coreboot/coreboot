@@ -1,0 +1,10 @@
+diff -ur gcc-4.5.1.orig/gcc/config/i386/i386elf.h gcc-4.5.1/gcc/config/i386/i386elf.h
+--- gcc-4.5.1.orig/gcc/config/i386/i386elf.h	2010-11-17 19:48:16.184401200 -0700
++++ gcc-4.5.1/gcc/config/i386/i386elf.h	2010-11-17 20:52:54.443969900 -0700
+@@ -123,3 +123,6 @@
+ #undef ASM_OUTPUT_ALIGNED_BSS
+ #define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN) \
+   asm_output_aligned_bss (FILE, DECL, NAME, SIZE, ALIGN)
++
++/* Enable parsing of #pragma pack(push,<n>) and #pragma pack(pop).  */
++#define HANDLE_PRAGMA_PACK_PUSH_POP 1

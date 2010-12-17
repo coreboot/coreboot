@@ -18,8 +18,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="November 16th, 2010"
-CROSSGCC_VERSION="1.02"
+CROSSGCC_DATE="December 16th, 2010"
+CROSSGCC_VERSION="1.03"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -31,7 +31,7 @@ GMP_VERSION=5.0.1
 MPFR_VERSION=3.0.0
 MPC_VERSION=0.8.2
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.5.1
+GCC_VERSION=4.5.2
 BINUTILS_VERSION=2.20.1
 GDB_VERSION=7.2
 W32API_VERSION=3.15
@@ -42,7 +42,7 @@ GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.
 MPFR_ARCHIVE="http://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://www.multiprecision.org/mpc/download/mpc-${MPC_VERSION}.tar.gz"
 LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
-GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
+GCC_ARCHIVE="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"

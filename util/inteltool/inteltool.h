@@ -24,7 +24,7 @@
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectIO is available here: http://www.coresystems.de/en/directio */
+/* DirectHW is available here: http://www.coresystems.de/en/directhw */
 #define __DARWIN__
 #include <DirectIO/darwinio.h>
 #endif
@@ -44,6 +44,7 @@
 #define PCI_DEVICE_ID_INTEL_ICH2		0x2440
 #define PCI_DEVICE_ID_INTEL_ICH4		0x24c0
 #define PCI_DEVICE_ID_INTEL_ICH4M		0x24cc
+#define PCI_DEVICE_ID_INTEL_ICH5		0x24d0
 #define PCI_DEVICE_ID_INTEL_ICH6		0x2640
 #define PCI_DEVICE_ID_INTEL_ICH7DH		0x27b0
 #define PCI_DEVICE_ID_INTEL_ICH7		0x27b8
@@ -66,6 +67,7 @@
 #define PCI_DEVICE_ID_INTEL_82810E_MC		0x7124
 #define PCI_DEVICE_ID_INTEL_82830M		0x3575
 #define PCI_DEVICE_ID_INTEL_82845		0x1a30
+#define PCI_DEVICE_ID_INTEL_82865		0x2570
 #define PCI_DEVICE_ID_INTEL_82915		0x2580
 #define PCI_DEVICE_ID_INTEL_82945P		0x2770
 #define PCI_DEVICE_ID_INTEL_82945GM		0x27a0
@@ -114,7 +116,7 @@ void unmap_physical(void *virt_addr, size_t len);
 
 unsigned int cpuid(unsigned int op);
 int print_intel_core_msrs(void);
-int print_mchbar(struct pci_dev *nb);
+int print_mchbar(struct pci_dev *nb, struct pci_access *pacc);
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
 int print_gpios(struct pci_dev *sb);

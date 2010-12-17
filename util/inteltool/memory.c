@@ -25,15 +25,42 @@
 /*
  * (G)MCH MMIO Config Space
  */
-int print_mchbar(struct pci_dev *nb)
+int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 {
 	int i, size = (16 * 1024);
 	volatile uint8_t *mchbar;
- 	uint64_t mchbar_phys;
+	uint64_t mchbar_phys;
+	struct pci_dev *nb_device6; /* "overflow device" on i865 */
+	uint16_t pcicmd6;
 
 	printf("\n============= MCHBAR ============\n\n");
 
 	switch (nb->device_id) {
+	case PCI_DEVICE_ID_INTEL_82865:
+		/*
+		 * On i865, the memory access enable/disable bit (MCHBAREN on
+		 * i945/i965) is not in the MCHBAR (i945/i965) register but in
+		 * the PCICMD6 register. BAR6 and PCICMD6 reside on device 6.
+		 *
+		 * The actual base address is in BAR6 on i865 where on
+		 * i945/i965 the base address is in MCHBAR.
+		 */
+		nb_device6 = pci_get_dev(pacc, 0, 0, 0x06, 0);  /* Device 6 */
+		mchbar_phys = pci_read_long(nb_device6, 0x10);  /* BAR6 */
+		pcicmd6 = pci_read_long(nb_device6, 0x04);      /* PCICMD6 */
+
+		/* Try to enable Memory Access Enable (MAE). */
+		if (!(pcicmd6 & (1 << 1))) {
+			printf("Access to BAR6 is currently disabled, "
+			       "attempting to enable.\n");
+			pci_write_long(nb_device6, 0x04, pcicmd6 | (1 << 1));
+			if (pci_read_long(nb_device6, 0x04) & (1 << 1))
+				printf("Enabled successfully.\n");
+			else
+				printf("Enable FAILED!\n");
+		}
+		mchbar_phys &= 0xfffff000; /* Bits 31:12 from BAR6 */
+		break;
 	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945GSE:
@@ -54,8 +81,8 @@ int print_mchbar(struct pci_dev *nb)
  		mchbar_phys = pci_read_long(nb, 0x48);
 
 		/* Test if bit 0 of the MCHBAR reg is 1 to enable memory reads.
-		 * If it isn't, try to set it. This may fail, because there is 
-		 * some bit that locks that bit, and isn't in the public 
+		 * If it isn't, try to set it. This may fail, because there is
+		 * some bit that locks that bit, and isn't in the public
 		 * datasheets.
 		 */
 
@@ -79,7 +106,7 @@ int print_mchbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82810E_MC:
 	case PCI_DEVICE_ID_INTEL_82810DC:
 	case PCI_DEVICE_ID_INTEL_82830M:
-		printf("This northbrigde does not have MCHBAR.\n");
+		printf("This northbridge does not have MCHBAR.\n");
 		return 1;
 	case PCI_DEVICE_ID_INTEL_GS45:
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
@@ -93,11 +120,17 @@ int print_mchbar(struct pci_dev *nb)
 	mchbar = map_physical(mchbar_phys, size);
 
 	if (mchbar == NULL) {
-		perror("Error mapping MCHBAR");
+		if (nb->device_id == PCI_DEVICE_ID_INTEL_82865)
+			perror("Error mapping BAR6");
+		else
+			perror("Error mapping MCHBAR");
 		exit(1);
 	}
 
-	printf("MCHBAR = 0x%08llx (MEM)\n\n", mchbar_phys);
+	if (nb->device_id == PCI_DEVICE_ID_INTEL_82865)
+		printf("BAR6 = 0x%08llx (MEM)\n\n", mchbar_phys);
+	else
+		printf("MCHBAR = 0x%08llx (MEM)\n\n", mchbar_phys);
 
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(mchbar + i))

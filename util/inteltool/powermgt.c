@@ -297,6 +297,32 @@ static const io_register_t ich6_pm_registers[] = {
 	{ 0x54, 4, "C3_RES (Mobile Only)" },
 };
 
+static const io_register_t ich5_pm_registers[] = {
+	{ 0x00, 2, "PM1_STS" },
+	{ 0x02, 2, "PM1_EN" },
+	{ 0x04, 4, "PM1_CNT" },
+	{ 0x08, 4, "PM1_TMR" },
+	{ 0x0c, 4, "RESERVED" },
+	{ 0x10, 4, "PROC_CNT" },
+	{ 0x14, 3, "RESERVED" },
+	{ 0x17, 9, "RESERVED" },
+	{ 0x20, 1, "RESERVED" },
+	{ 0x28, 4, "GPE0_STS" },
+	{ 0x2c, 4, "GPE0_EN" },
+	{ 0x30, 4, "SMI_EN" },
+	{ 0x34, 4, "SMI_STS" },
+	{ 0x38, 2, "ALT_GP_SMI_EN" },
+	{ 0x3a, 2, "ALT_GP_SMI_STS" },
+	{ 0x3c, 4, "RESERVED" },
+	{ 0x40, 1, "MON_SMI" },
+	{ 0x42, 2, "RESERVED" },
+	{ 0x44, 1, "DEVACT_STS" },
+	{ 0x48, 1, "DEVTRAP_EN" },
+	{ 0x50, 1, "RESERVED" },
+	{ 0x51, 15, "RESERVED" },
+	{ 0x60, 16, "RESERVED" },
+};
+
 static const io_register_t ich4_pm_registers[] = {
 	{ 0x00, 2, "PM1_STS" },
 	{ 0x02, 2, "PM1_EN" },
@@ -569,6 +595,11 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pm_registers = ich6_pm_registers;
 		size = ARRAY_SIZE(ich6_pm_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_ICH5:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = ich5_pm_registers;
+		size = ARRAY_SIZE(ich5_pm_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH4:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich4_pm_registers;
@@ -629,4 +660,3 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 
 	return 0;
 }
-

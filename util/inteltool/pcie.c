@@ -55,7 +55,8 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82810DC:
 	case PCI_DEVICE_ID_INTEL_82810E_MC:
 	case PCI_DEVICE_ID_INTEL_82830M:
-		printf("This northbrigde does not have EPBAR.\n");
+	case PCI_DEVICE_ID_INTEL_82865:
+		printf("This northbridge does not have EPBAR.\n");
 		return 1;
 	default:
 		printf("Error: Dumping EPBAR on this northbridge is not (yet) supported.\n");
@@ -112,7 +113,8 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
 	case PCI_DEVICE_ID_INTEL_82810E_MC:
-		printf("This northbrigde does not have DMIBAR.\n");
+	case PCI_DEVICE_ID_INTEL_82865:
+		printf("This northbridge does not have DMIBAR.\n");
 		return 1;
 	case PCI_DEVICE_ID_INTEL_X58:
 		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000;
@@ -174,7 +176,8 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
 	case PCI_DEVICE_ID_INTEL_82810E_MC:
-		printf("Error: This northbrigde does not have PCIEXBAR.\n");
+	case PCI_DEVICE_ID_INTEL_82865:
+		printf("Error: This northbridge does not have PCIEXBAR.\n");
 		return 1;
 	default:
 		printf("Error: Dumping PCIEXBAR on this northbridge is not (yet) supported.\n");
@@ -245,5 +248,3 @@ int print_pciexbar(struct pci_dev *nb)
 
 	return 0;
 }
-
-

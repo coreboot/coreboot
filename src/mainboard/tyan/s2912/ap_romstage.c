@@ -32,8 +32,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "pc80/serial.c"
-
 #include "console/console.c"
 
 #include <cpu/amd/model_fxx_rev.h>
@@ -83,9 +81,6 @@ void hardwaremain(int ret_addr)
 		"jmp     *%%edi\n\t"
 		:: "a"(ret_addr)
 	);
-
-
-
 }
 
 #include <arch/registers.h>
@@ -96,5 +91,4 @@ void x86_exception(struct eregs *info)
 		hlt();
 	} while(1);
 }
-
 

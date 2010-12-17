@@ -39,9 +39,6 @@ void move_gdt(void);
 void ram_check(unsigned long start, unsigned long stop);
 void quick_ram_check(void);
 
-/* Defined in src/pc80/serial.c */
-void uart_init(void);
-
 /* Defined in romstage.c */
 #if defined(CONFIG_CPU_AMD_LX) && CONFIG_CPU_AMD_LX
 void cache_as_ram_main(void);

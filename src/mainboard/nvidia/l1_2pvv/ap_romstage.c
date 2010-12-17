@@ -32,8 +32,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "pc80/serial.c"
-
 #include "lib/uart8250.c"
 #include "arch/x86/lib/printk_init.c"
 #include "console/vtxprintf.c"
@@ -45,7 +43,6 @@
 
 #include "lib/delay.c"
 
-//#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
 #include "northbridge/amd/amdk8/debug.c"
@@ -78,17 +75,15 @@ void hardwaremain(int ret_addr)
 	train_ram(id.nodeid, sysinfo, sysinfox);
 
 	/*
-		go back, but can not use stack any more, because we only keep ret_addr and can not restore esp, and ebp
-	*/
+	 * go back, but can not use stack any more, because we only keep
+	 * ret_addr and can not restore esp, and ebp
+	 */
 
 	__asm__ volatile (
 		"movl  %0, %%edi\n\t"
 		"jmp     *%%edi\n\t"
 		:: "a"(ret_addr)
 	);
-
-
-
 }
 
 #include <arch/registers.h>
@@ -99,5 +94,3 @@ void x86_exception(struct eregs *info)
 		hlt();
 	} while(1);
 }
-
-

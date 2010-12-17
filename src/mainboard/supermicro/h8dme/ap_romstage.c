@@ -32,7 +32,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "pc80/serial.c"
 
 #include "console/console.c"
 #include "lib/uart8250.c"
@@ -82,17 +81,14 @@ void hardwaremain(int ret_addr)
 	train_ram(id.nodeid, sysinfo, sysinfox);
 
 	/*
-		go back, but can not use stack any more, because we only keep ret_addr and can not restore esp, and ebp
-	*/
+	 * go back, but can not use stack any more, because we only keep ret_addr and can not restore esp, and ebp
+	 */
 
         __asm__ volatile (
                 "movl  %0, %%edi\n\t"
                 "jmp     *%%edi\n\t"
                 :: "a"(ret_addr)
         );
-
-
-
 }
 
 #include <arch/registers.h>
@@ -103,5 +99,4 @@ void x86_exception(struct eregs *info)
                 hlt();
         } while(1);
 }
-
 

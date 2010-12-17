@@ -11,9 +11,6 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "pc80/serial.c"
-#include "./arch/x86/lib/printk_init.c"
-
 #include "console/console.c"
 #include "lib/uart8250.c"
 #include "console/vtxprintf.c"

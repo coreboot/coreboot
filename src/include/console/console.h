@@ -148,8 +148,9 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define print_spew_hex32(HEX)    printk(BIOS_SPEW,   "%08x", (HEX))
 #else
 
-#include <pc80/serial.c>
-
+#if CONFIG_CONSOLE_SERIAL8250
+#include "lib/uart8259.c"
+#endif
 #if CONFIG_CONSOLE_NE2K
 #include "lib/ne2k.c"
 #endif
@@ -157,7 +158,9 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 /* __ROMCC__ */
 static void __console_tx_byte(unsigned char byte)
 {
-	uart_tx_byte(byte);
+#if CONFIG_CONSOLE_SERIAL8250
+	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+#endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
@@ -176,10 +179,12 @@ static void __console_tx_nibble(unsigned nibble)
 static void __console_tx_char(int loglevel, unsigned char byte)
 {
 	if (console_loglevel >= loglevel) {
-		uart_tx_byte(byte);
+#if CONFIG_CONSOLE_SERIAL8250
+		uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+#endif
 #if CONFIG_CONSOLE_NE2K
-	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
-	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+		ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
+		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
 	}
 }

@@ -81,7 +81,7 @@ static void enable_cx700_serial(void)
 	cx700_writepnpaddr(0xaa);
 
 	// XXX This part should be fully taken care of by
-	// src/pc80/serial.c:uart_init
+	// src/lib/uart8250.c:uart_init
 
 	// set up reg to set baud rate.
 	cx700_writesiobyte(0x3fb, 0x80);

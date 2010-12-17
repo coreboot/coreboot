@@ -54,6 +54,9 @@ extern int console_loglevel;
  * we could use the same code on all architectures.
  */
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
+#if CONFIG_CONSOLE_SERIAL8250
+#include <uart8250.h>
+#endif
 #endif
 
 #ifndef __ROMCC__
@@ -148,14 +151,15 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define print_spew_hex32(HEX)    printk(BIOS_SPEW,   "%08x", (HEX))
 #else
 
+/* __ROMCC__ */
+
 #if CONFIG_CONSOLE_SERIAL8250
-#include "lib/uart8259.c"
+#include "lib/uart8250.c"
 #endif
 #if CONFIG_CONSOLE_NE2K
 #include "lib/ne2k.c"
 #endif
 
-/* __ROMCC__ */
 static void __console_tx_byte(unsigned char byte)
 {
 #if CONFIG_CONSOLE_SERIAL8250

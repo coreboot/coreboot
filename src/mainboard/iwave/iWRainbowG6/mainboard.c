@@ -39,4 +39,3 @@ struct chip_operations mainboard_ops = {
 	CHIP_NAME("iW Rainbow G6 Mainboard")
 	.enable_dev = mainboard_enable,
 };
-

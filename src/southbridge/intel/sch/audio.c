@@ -96,7 +96,7 @@ static int codec_detect(u32 base)
 	if (set_bits(base + 0x08, 1, 1) == -1)
 		goto no_codec;
 
-	/* Read in Codec location (BAR + 0xe)[2..0]*/
+	/* Read in Codec location (BAR + 0xe)[2..0] */
 	reg32 = read32(base + 0xe);
 	reg32 &= 0x0f;
 	if (!reg32)
@@ -112,7 +112,7 @@ no_codec:
 	return 0;
 }
 
-const u32 * cim_verb_data = NULL;
+const u32 *cim_verb_data = NULL;
 u32 cim_verb_data_size = 0;
 
 static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
@@ -120,16 +120,16 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 	printk(BIOS_DEBUG, "sch_audio: dev=%s\n", dev_path(dev));
 	printk(BIOS_DEBUG, "sch_audio: Reading viddid=%x\n", viddid);
 
-	int idx=0;
+	int idx = 0;
 
 	while (idx < (cim_verb_data_size / sizeof(u32))) {
-		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
-		verb_size++; // we ship an additional gain value
+		u32 verb_size = 4 * cim_verb_data[idx + 2];	// in u32
+		verb_size++;	// we ship an additional gain value
 		if (cim_verb_data[idx] != viddid) {
-			idx += verb_size + 3; // skip verb + header
+			idx += verb_size + 3;	// skip verb + header
 			continue;
 		}
-		*verb = &cim_verb_data[idx+3];
+		*verb = &cim_verb_data[idx + 3];
 		return verb_size;
 	}
 
@@ -149,8 +149,8 @@ static int wait_for_ready(u32 base)
 
 	int timeout = 50;
 
-	while(timeout--) {
-		u32 reg32 = read32(base +  HDA_ICII_REG);
+	while (timeout--) {
+		u32 reg32 = read32(base + HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);
@@ -173,23 +173,19 @@ static int wait_for_valid(u32 base)
 	int timeout = 25;
 
 	write32(base + 0x68, 1);
-	while(timeout--)
-	{
+	while (timeout--) {
 		udelay(1);
 	}
 	timeout = 50;
-        while(timeout--)
-	{
-                u32 reg32 = read32(base + 0x68);
-                if ((reg32 & ((1 << 1) | (1 << 0))) ==(1 << 1))
-                {
+	while (timeout--) {
+		u32 reg32 = read32(base + 0x68);
+		if ((reg32 & ((1 << 1) | (1 << 0))) == (1 << 1)) {
 
 			write32(base + 0x68, 2);
-		        return 0;
+			return 0;
 		}
-                udelay(1);
-        }
-
+		udelay(1);
+	}
 
 	return 1;
 }
@@ -212,7 +208,6 @@ static void codec_init(struct device *dev, u32 base, int addr)
 
 	if (wait_for_valid(base) == -1)
 		return;
-
 
 	reg32 = read32(base + 0x0);
 	printk(BIOS_DEBUG, "sch_audio: GCAP: %08x\n", reg32);
@@ -250,6 +245,7 @@ static void codec_init(struct device *dev, u32 base, int addr)
 static void codecs_init(struct device *dev, u32 base, u32 codec_mask)
 {
 	int i;
+
 	for (i = 2; i >= 0; i--) {
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
@@ -263,8 +259,6 @@ static void sch_audio_init(struct device *dev)
 	u32 codec_mask;
 	u32 reg32;
 
-
-
 	res = find_resource(dev, 0x10);
 	if (!res)
 		return;
@@ -274,17 +268,16 @@ static void sch_audio_init(struct device *dev)
 
 	// NOTE this will break as soon as the sch_audio get's a bar above
 	// 4G. Is there anything we can do about it?
-	base = (u32)res->base;
-	printk(BIOS_DEBUG, "sch_audio: base = %08x\n", (u32)base);
+	base = (u32) res->base;
+	printk(BIOS_DEBUG, "sch_audio: base = %08x\n", (u32) base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {
-		printk(BIOS_DEBUG, "sch_audio: codec_mask = %02x\n", codec_mask);
+		printk(BIOS_DEBUG, "sch_audio: codec_mask = %02x\n",
+		       codec_mask);
 		codecs_init(dev, base, codec_mask);
-	}
-        else
-	{
-		/* No audio codecs found disable HD audio controller*/
+	} else {
+		/* No audio codecs found disable HD audio controller */
 		pci_write_config32(dev, 0x10, 0);
 		pci_write_config32(dev, PCI_COMMAND, 0);
 		reg32 = pci_read_config32(dev, 0xFC);
@@ -292,19 +285,20 @@ static void sch_audio_init(struct device *dev)
 	}
 }
 
-static void sch_audio_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sch_audio_set_subsystem(device_t dev, unsigned vendor,
+				    unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
+				   pci_read_config32(dev, PCI_VENDOR_ID));
 	} else {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
+			((device & 0xffff) << 16) | (vendor & 0xffff));
 	}
 }
 
 static struct pci_operations sch_audio_pci_ops = {
-	.set_subsystem    = sch_audio_set_subsystem,
+	.set_subsystem = sch_audio_set_subsystem,
 };
 
 static struct device_operations sch_audio_ops = {
@@ -322,4 +316,3 @@ static const struct pci_driver sch_audio __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x811B,
 };
-

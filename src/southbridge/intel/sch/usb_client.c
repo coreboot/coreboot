@@ -5,8 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * published by the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,7 +47,7 @@ static void usb_client_set_subsystem(device_t dev, unsigned vendor, unsigned dev
 }
 
 static struct pci_operations lops_pci = {
-	.set_subsystem	= &usb_client_set_subsystem,
+	.set_subsystem = &usb_client_set_subsystem,
 };
 
 static struct device_operations usb_client_ops = {
@@ -60,7 +59,6 @@ static struct device_operations usb_client_ops = {
 	.ops_pci		= &lops_pci,
 };
 
-/*  */
 static const struct pci_driver sch_usb_client __pci_driver = {
 	.ops	= &usb_client_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,

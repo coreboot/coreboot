@@ -6,8 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * published by the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,12 +27,12 @@ static void usb_init(struct device *dev)
 {
 	u32 reg32;
 
-	/* USB Specification says the device must be Bus Master */
+	/* USB Specification says the device must be Bus Master. */
 	printk(BIOS_DEBUG, "UHCI: Setting up controller.. ");
 
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
- 	/*Disable clock gating*/
+	/* Disable clock gating. */
 	reg32 = pci_read_config32(dev, 0xFC);
 	reg32 |= (1 << 2);
 	pci_write_config32(dev, 0xFC, reg32);
@@ -61,7 +60,7 @@ static void usb_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations usb_pci_ops = {
-	.set_subsystem    = usb_set_subsystem,
+	.set_subsystem = usb_set_subsystem,
 };
 
 static struct device_operations usb_ops = {
@@ -73,17 +72,18 @@ static struct device_operations usb_ops = {
 	.ops_pci		= &usb_pci_ops,
 };
 
-/*  */
 static const struct pci_driver sch_usb0 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x8114,
 };
+
 static const struct pci_driver sch_usb1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x8115,
 };
+
 static const struct pci_driver sch_usb2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,

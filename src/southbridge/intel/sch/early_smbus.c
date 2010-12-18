@@ -60,4 +60,3 @@ int smbus_read_byte(unsigned device, unsigned address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
-

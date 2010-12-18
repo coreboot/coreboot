@@ -22,9 +22,9 @@
 #ifndef __SCH_PULSBO_H__
 #define __SCH_PULSBO_H__ 1
 
-int sch_port_access_read(int port,int reg, int bytes);
-void sch_port_access_write(int port,int reg,int bytes,long data);
-void sch_port_access_write_ram_cmd(int cmd,int port,int reg,int data);
+int sch_port_access_read(int port, int reg, int bytes);
+void sch_port_access_write(int port, int reg, int bytes, long data);
+void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 
 /* Southbridge IO BARs */
 /* TODO Make sure these don't get changed by stage2 */

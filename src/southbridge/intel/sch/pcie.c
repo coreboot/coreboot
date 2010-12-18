@@ -46,7 +46,7 @@ static void pci_init(struct device *dev)
 	// reg16 &= ~(1 << 1); /* disable SERR */
 	//reg16 |= (1 << 2); /* ISA enable */
 	//pci_write_config16(dev, 0x3e, reg16);
-         /*Slot implimented*/
+	/* Slot implemented. */
 	reg16 = pci_read_config16(dev, 0x42);
 	reg16 |= (1 << 8);
 	pci_write_config16(dev, 0x42, reg16);
@@ -54,15 +54,13 @@ static void pci_init(struct device *dev)
 	reg16 = pci_read_config16(dev, 0x48);
 	reg16 |= 0xf;
 	pci_write_config16(dev, 0x48, reg16);
-
 }
 
 static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* NOTE: This is not the default position! */
 	if (!vendor || !device) {
-		pci_write_config32(dev, 0x94,
-				pci_read_config32(dev, 0));
+		pci_write_config32(dev, 0x94, pci_read_config32(dev, 0));
 	} else {
 		pci_write_config32(dev, 0x94,
 				((device & 0xffff) << 16) | (vendor & 0xffff));
@@ -95,4 +93,3 @@ static const struct pci_driver sch_pcie_port2 __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x8112,
 };
-

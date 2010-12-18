@@ -51,7 +51,8 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void usb_ehci_set_subsystem(device_t dev, unsigned vendor,
+				   unsigned device)
 {
 	u8 access_cntl;
 
@@ -73,7 +74,7 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 }
 
 static struct pci_operations lops_pci = {
-	.set_subsystem	= &usb_ehci_set_subsystem,
+	.set_subsystem = &usb_ehci_set_subsystem,
 };
 
 static struct device_operations usb_ehci_ops = {
@@ -85,7 +86,6 @@ static struct device_operations usb_ehci_ops = {
 	.ops_pci		= &lops_pci,
 };
 
-/*  */
 static const struct pci_driver sch_usb_ehci __pci_driver = {
 	.ops	= &usb_ehci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,

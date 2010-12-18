@@ -51,7 +51,8 @@ static int smbus_wait_until_done(u16 smbus_base)
 	return loops ? 0 : -1;
 }
 
-static int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned address)
+static int do_smbus_read_byte(unsigned smbus_base, unsigned device,
+			      unsigned address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;
@@ -76,8 +77,7 @@ static int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned add
 	outb(0, smbus_base + SMBHSTDAT0);
 
 	/* Start the command */
-	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
-	     smbus_base + SMBHSTCTL);
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40), smbus_base + SMBHSTCTL);
 
 	/* Poll for transaction completion */
 	if (smbus_wait_until_done(smbus_base) < 0) {
@@ -96,4 +96,3 @@ static int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned add
 	}
 	return byte;
 }
-

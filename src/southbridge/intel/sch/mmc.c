@@ -5,8 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * published by the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,7 +35,8 @@ static void sch_mmc_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void sch_mmc_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void sch_mmc_set_subsystem(device_t dev, unsigned vendor,
+				  unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
@@ -45,11 +45,10 @@ static void sch_mmc_set_subsystem(device_t dev, unsigned vendor, unsigned device
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 				((device & 0xffff) << 16) | (vendor & 0xffff));
 	}
-
 }
 
 static struct pci_operations lops_pci = {
-	.set_subsystem	= &sch_mmc_set_subsystem,
+	.set_subsystem = &sch_mmc_set_subsystem,
 };
 
 static struct device_operations sch_mmc_ops = {
@@ -79,4 +78,3 @@ static const struct pci_driver sch_mmc3 __pci_driver = {
 	.device	= 0x811E,
 
 };
-

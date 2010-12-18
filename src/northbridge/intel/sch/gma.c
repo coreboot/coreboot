@@ -26,7 +26,7 @@ static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
 
-	/* IGD needs to be Bus Master */
+	/* IGD needs to be bus master. */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
@@ -37,15 +37,15 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
+				   pci_read_config32(dev, PCI_VENDOR_ID));
 	} else {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
+			((device & 0xffff) << 16) | (vendor & 0xffff));
 	}
 }
 
 static struct pci_operations gma_pci_ops = {
-	.set_subsystem    = gma_set_subsystem,
+	.set_subsystem = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {
@@ -58,10 +58,8 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
-
 static const struct pci_driver sch_gma_func0_driver __pci_driver = {
 	.ops	= &gma_func0_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x8108,
 };
-

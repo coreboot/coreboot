@@ -35,18 +35,19 @@ extern const unsigned char AmlCode[];
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
-#include "southbridge/intel/i82801gx/nvs.h" // FIXME: our own copy of nvs would be nice
-static void acpi_create_gnvs(global_nvs_t *gnvs)
+#include "southbridge/intel/i82801gx/nvs.h"	// FIXME: our own copy of nvs would be nice
+
+static void acpi_create_gnvs(global_nvs_t * gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
 	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
+	gnvs->mpen = 1;		/* Enable Multi Processing. */
 
-	/* Enable both COM ports */
+	/* Enable both COM ports. */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
-	/* IGD Displays */
+	/* IGD Displays. */
 	gnvs->ndid = 3;
 	gnvs->did[0] = 0x80000100;
 	gnvs->did[1] = 0x80000240;
@@ -55,15 +56,15 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[4] = 0x00000005;
 }
 
-static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+static void acpi_create_intel_hpet(acpi_hpet_t *hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
 
-	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
+	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
 
-	/* fill out header fields */
+	/* Fill out header fields. */
 	memcpy(header->signature, "HPET", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, "COREBOOT", 8);
@@ -72,7 +73,7 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	header->length = sizeof(acpi_hpet_t);
 	header->revision = 1;
 
-	/* fill out HPET address */
+	/* Fill out HPET address. */
 	addr->space_id = 0;	/* Memory */
 	addr->bit_width = 64;
 	addr->bit_offset = 0;
@@ -83,8 +84,7 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	hpet->number = 0x00;
 	hpet->min_tick = 0x0080;
 
-	header->checksum =
-	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
+	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
 unsigned long acpi_fill_madt(unsigned long current)
@@ -94,26 +94,29 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* IOAPIC */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
+					   2, IO_APIC_ADDR, 0);
 
 	/* INT_SRC_OVR */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 0, 2, 0);
+						current, 0, 0, 2, 0);
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH);
+						current, 0, 9, 9,
+						MP_IRQ_TRIGGER_LEVEL |
+						MP_IRQ_POLARITY_HIGH);
 
 	return current;
 }
 
-unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
+unsigned long acpi_fill_ssdt_generator(unsigned long current,
+				       const char *oem_table_id)
 {
 	generate_cpu_entries();
-	return (unsigned long) (acpigen_get_current());
+	return (unsigned long)(acpigen_get_current());
 }
 
 unsigned long acpi_fill_slit(unsigned long current)
 {
-	// Not implemented
+	/* Not implemented. */
 	return current;
 }
 
@@ -130,6 +133,7 @@ unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
 	int i;
+
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_xsdt_t *xsdt;
@@ -163,7 +167,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 
 	/* clear all table memory */
-	memset((void *) start, 0, current - start);
+	memset((void *)start, 0, current - start);
 
 	acpi_write_rsdp(rsdp, rsdt, xsdt);
 	acpi_write_rsdt(rsdt);
@@ -210,16 +214,18 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 
 	/* Pack GNVS into the ACPI table area */
-	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
-			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
-			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
+	for (i = 0; i < dsdt->length; i++) {
+		if (*(u32 *) (((u32) dsdt) + i) == 0xC0DEBABE) {
+			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in "
+			       "DSDT at offset 0x%04x -> 0x%08lx\n",
+			       i, current);
+			*(u32 *) (((u32) dsdt) + i) = current;	// 0x92 bytes
 			break;
 		}
 	}
 
 	/* And fill it */
-	acpi_create_gnvs((global_nvs_t *)current);
+	acpi_create_gnvs((global_nvs_t *) current);
 
 	current += 0x100;
 	ALIGN_CURRENT;
@@ -232,11 +238,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt,
-		     dsdt->length);
+	       dsdt->length);
 
 #if CONFIG_HAVE_ACPI_SLIC
 	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");
-	slic = (acpi_header_t *)current;
+	slic = (acpi_header_t *) current;
 	current += acpi_create_slic(current);
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, slic);
@@ -251,7 +257,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, fadt);
 
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
-	ssdt = (acpi_header_t *)current;
+	ssdt = (acpi_header_t *) current;
 	acpi_create_ssdt_generator(ssdt, "COREBOOT");
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);

@@ -24,4 +24,3 @@
 struct chip_operations southbridge_intel_sch_ops = {
 	CHIP_NAME("Intel SCH Southbridge")
 };
-

@@ -6,8 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * published by the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,21 +23,19 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
-
 #include "chip.h"
 
-
-/*SCH LPC defines*/
-#define SCH_ACPI_CTL            0x58
-#define SCH_SIRQ_CTL	        0x68
-#define PIRQA_ROUT		0x60
-#define PIRQB_ROUT		0x61
-#define PIRQC_ROUT		0x62
-#define PIRQD_ROUT		0x63
-#define PIRQE_ROUT		0x64
-#define PIRQF_ROUT		0x65
-#define PIRQG_ROUT		0x66
-#define PIRQH_ROUT		0x67
+/* SCH LPC defines */
+#define SCH_ACPI_CTL	0x58
+#define SCH_SIRQ_CTL	0x68
+#define PIRQA_ROUT	0x60
+#define PIRQB_ROUT	0x61
+#define PIRQC_ROUT	0x62
+#define PIRQD_ROUT	0x63
+#define PIRQE_ROUT	0x64
+#define PIRQF_ROUT	0x65
+#define PIRQG_ROUT	0x66
+#define PIRQH_ROUT	0x67
 
 typedef struct southbridge_intel_sch_config config_t;
 
@@ -71,9 +68,11 @@ typedef struct southbridge_intel_sch_config config_t;
 #define PIRQF 0x0A
 #define PIRQG 0x0B
 #define PIRQH 0x0C
+
 static void sch_pirq_init(device_t dev)
 {
 	device_t irq_dev;
+
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -91,21 +90,27 @@ static void sch_pirq_init(device_t dev)
 	 * I am not so sure anymore he was right.
 	 */
 
-	for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next)
-	 {
-		u8 int_pin=0, int_line=0;
+	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+		u8 int_pin = 0, int_line = 0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
 			continue;
 
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
-		switch (int_pin)
-		{
-			case 1: /* INTA# */ int_line = config->pirqa_routing; break;
-			case 2: /* INTB# */ int_line = config->pirqb_routing; break;
-			case 3: /* INTC# */ int_line = config->pirqc_routing; break;
-			case 4: /* INTD# */ int_line = config->pirqd_routing; break;
+		switch (int_pin) {
+		case 1: /* INTA# */
+			int_line = config->pirqa_routing;
+			break;
+		case 2: /* INTB# */
+			int_line = config->pirqb_routing;
+			break;
+		case 3: /* INTC# */
+			int_line = config->pirqc_routing;
+			break;
+		case 4: /* INTD# */
+			int_line = config->pirqd_routing;
+			break;
 		}
 
 		if (!int_line)
@@ -114,13 +119,16 @@ static void sch_pirq_init(device_t dev)
 		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
 	}
 }
+
 static void sch_fixups(struct device *dev)
 {
-       u32 rcba_base;
-	/* This needs to happen after PCI enumeration
-	RCBA32(0x1d40) |= 1;*/
+	u32 rcba_base;
+
+	/* This needs to happen after PCI enumeration. */
+	/* RCBA32(0x1d40) |= 1; */
 	rcba_base = pci_read_config32(dev, 0xF0);
-        /*Remove the enable bit*/
+
+	/* Remove the enable bit. */
 	rcba_base = rcba_base >> 1;
 	rcba_base = rcba_base << 1;
 	*((volatile u32 *)(rcba_base +0x104)) &= 0xFF00FFFF;

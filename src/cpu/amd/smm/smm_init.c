@@ -57,12 +57,12 @@ void smm_init(void)
 
 		smm_handler_copied = 1;
 
-		/* MTRR changes don't like an enabled cache */
-		disable_cache();
-
 		/* Back up MSRs for later restore */
 		syscfg_orig = rdmsr(SYSCFG_MSR);
 		mtrr_aseg_orig = rdmsr(MTRRfix16K_A0000_MSR);
+
+		/* MTRR changes don't like an enabled cache */
+		disable_cache();
 
 		msr = syscfg_orig;
 		/* Allow changes to MTRR extended attributes */
@@ -78,60 +78,46 @@ void smm_init(void)
 		msr.lo = 0x18181818;
 		msr.hi = 0x18181818;
 		wrmsr(MTRRfix16K_A0000_MSR, msr);
-		enable_cache();
 
-		/* disable the extended features */
+		/* enable the extended features */
 		msr = syscfg_orig;
 		msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
 		msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 		wrmsr(SYSCFG_MSR, msr);
 
-		/* enable the SMM memory window */
-		// TODO does "Enable ASEG SMRAM Range"  have to happen on 
-		// every CPU core?
-		msr = rdmsr(SMM_MASK_MSR);
-		msr.lo |= (1 << 0); // Enable ASEG SMRAM Range
-		msr.lo &= ~(1 << 2); // Open ASEG SMRAM Range
-		wrmsr(SMM_MASK_MSR, msr);
-
+		enable_cache();
 		/* copy the real SMM handler */
 		memcpy((void *)SMM_BASE, &_binary_smm_start, (size_t)&_binary_smm_size);
 		wbinvd();
 
-		msr = rdmsr(SMM_MASK_MSR);
-		msr.lo |= ~(1 << 2); // Close ASEG SMRAM Range
-		wrmsr(SMM_MASK_MSR, msr);
-
-		/* Change SYSCFG so we can restore the MTRR */
-		msr = syscfg_orig;
-		msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-		msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
-		wrmsr(SYSCFG_MSR, msr);
-
 		/* Restore MTRR */
 		disable_cache();
-		wrmsr(MTRRfix16K_A0000_MSR, mtrr_aseg_orig);
 
 		/* Restore SYSCFG */
 		wrmsr(SYSCFG_MSR, syscfg_orig);
+
+		wrmsr(MTRRfix16K_A0000_MSR, mtrr_aseg_orig);
 		enable_cache();
 	}
+
 
 	/* But set SMM base address on all CPUs/cores */
 	msr = rdmsr(SMM_BASE_MSR);
 	msr.lo = SMM_BASE - (lapicid() * 0x400);
 	wrmsr(SMM_BASE_MSR, msr);
-}
 
-void smm_lock(void)
-{
-	// TODO I think this should be running on each CPU
-	msr_t msr;
-
-	printk(BIOS_DEBUG, "Locking SMM.\n");
+	/* enable the SMM memory window */
+	msr = rdmsr(SMM_MASK_MSR);
+	msr.lo |= (1 << 0); // Enable ASEG SMRAM Range
+	wrmsr(SMM_MASK_MSR, msr);
 
 	/* Set SMMLOCK to avoid exploits messing with SMM */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
+}
+
+void smm_lock(void)
+{
+	/* We lock SMM per CPU core */
 }

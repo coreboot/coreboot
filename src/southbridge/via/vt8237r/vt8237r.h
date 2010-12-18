@@ -20,12 +20,11 @@
 #ifndef SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 #define SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 
-#include <stdint.h>
-
 /* Static resources for the VT8237R southbridge */
 
 #define VT8237R_APIC_ID			0x2
 #define VT8237R_ACPI_IO_BASE		0x500
+#define DEFAULT_PMBASE			VT8237R_ACPI_IO_BASE
 #define VT8237R_SMBUS_IO_BASE		0x400
 /* 0x0 disabled, 0x2 reserved, 0xf = IRQ15 */
 #define VT8237R_ACPI_IRQ		0x9
@@ -35,6 +34,36 @@
 #define VT8237S_SPI_MEM_BASE		0xfed02000UL
 #endif
 #define VT8237R_HPET_ADDR		0xfed00000ULL
+
+/* PMBASE FIXME mostly taken from ich7 */
+#define PM1_STS		0x00
+#define   WAK_STS	(1 << 15)
+#define   PCIEXPWAK_STS	(1 << 14)
+#define   PRBTNOR_STS	(1 << 11)
+#define   RTC_STS	(1 << 10)
+#define   PWRBTN_STS	(1 << 8)
+#define   GBL_STS	(1 << 5)
+#define   BM_STS	(1 << 4)
+#define   TMROF_STS	(1 << 0)
+#define PM1_EN		0x02
+#define   PCIEXPWAK_DIS	(1 << 14)
+#define   RTC_EN	(1 << 10)
+#define   PWRBTN_EN	(1 << 8)
+#define   GBL_EN	(1 << 5)
+#define   TMROF_EN	(1 << 0)
+#define PM1_CNT		0x04
+#define   SLP_EN	(1 << 13)
+#define   SLP_TYP	(7 << 10)
+#define   GBL_RLS	(1 << 2)
+#define   BM_RLD	(1 << 1)
+#define   SCI_EN	(1 << 0)
+#define PM1_TMR		0x08
+#define PROC_CNT	0x10
+#define LV2		0x14
+#define LV3		0x15
+#define SMI_STS		0x28
+#define SMI_EN		0x2d
+#define EOS		(1 << 0)
 
 /* IDE */
 #define IDE_CS				0x40
@@ -107,6 +136,15 @@ __attribute__ ((packed))
 #endif
 ;
 
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
+
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#endif
+
+
 #ifdef __PRE_RAM__
 #ifndef __ROMCC__
 u8 smbus_read_byte(u8 dimm, u8 offset);
@@ -119,10 +157,9 @@ void vt8237_early_spi_init(void);
 int vt8237_early_network_init(struct vt8237_network_rom *rom);
 #endif
 #else
-#include <device/device.h>
-void writeback(struct device *dev, u16 where, u8 what);
+void writeback(device_t dev, u16 where, u8 what);
 void dump_south(device_t dev);
-u32 vt8237_ide_80pin_detect(struct device *dev);
+u32 vt8237_ide_80pin_detect(device_t dev);
 #endif
 
 #endif

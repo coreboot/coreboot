@@ -28,6 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/ioapic.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/cpu.h>
 #include <pc80/keyboard.h>
 #include <pc80/i8259.h>
 #include <stdlib.h>
@@ -217,11 +218,8 @@ static void setup_pm(device_t dev)
 	/* Disable SMI on GPIO. */
 	outw(0x0, VT8237R_ACPI_IO_BASE + 0x24);
 
-	/* Disable all global enable SMIs. */
-	outw(0x0, VT8237R_ACPI_IO_BASE + 0x2a);
-
-	/* All SMI off, both IDE buses ON, PSON rising edge. */
-	outw(0x0, VT8237R_ACPI_IO_BASE + 0x2c);
+	/* Disable all global enable SMIs, except SW SMI */
+	outw(0x40, VT8237R_ACPI_IO_BASE + 0x2a);
 
 	/* Primary activity SMI disable. */
 	outl(0x0, VT8237R_ACPI_IO_BASE + 0x34);
@@ -238,6 +236,10 @@ static void setup_pm(device_t dev)
 	acpi_slp_type = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
 	printk(BIOS_DEBUG, "SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
 #endif
+
+	/* All SMI on, both IDE buses ON, PSON rising edge. */
+	outw(0x1, VT8237R_ACPI_IO_BASE + 0x2c);
+
 	/* clear sleep */
 	tmp &= ~(7 << 10);
 	tmp |= 1;
@@ -500,7 +502,9 @@ static void vt8237_common_init(struct device *dev)
 
 	/* Enable serial IRQ, 6PCI clocks. */
 	pci_write_config8(dev, 0x52, 0x9);
-
+#endif
+#if CONFIG_HAVE_SMI_HANDLER
+	smm_lock();
 #endif
 
 	/* Power management setup */

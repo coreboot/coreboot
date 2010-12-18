@@ -25,3 +25,4 @@ driver-y += sata.c
 driver-y += usb.c
 driver-$(CONFIG_PIRQ_ROUTE) += pirq.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

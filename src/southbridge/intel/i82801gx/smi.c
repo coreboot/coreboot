@@ -318,8 +318,17 @@ static void smm_relocate(void)
 	outb(0x00, 0xb2);
 }
 
+static int smm_handler_copied = 0;
+
 static void smm_install(void)
 {
+	/* The first CPU running this gets to copy the SMM handler. But not all
+	 * of them.
+	 */
+	if (smm_handler_copied)
+		return;
+	smm_handler_copied = 1;
+
 	/* enable the SMM memory window */
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
 				D_OPEN | G_SMRAME | C_BASE_SEG);

@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <arch/acpi.h>
+#include <device/device.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
 
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){

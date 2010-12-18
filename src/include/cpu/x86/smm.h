@@ -254,7 +254,7 @@ void smi_handler(u32 smm_revision);
 
 void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);
-int mainboard_io_trap_handler(int smif);
+int __attribute__((weak)) mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 

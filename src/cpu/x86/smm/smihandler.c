@@ -87,6 +87,24 @@ static void smi_set_eos(void)
 	southbridge_smi_set_eos();
 }
 
+static u32 pci_orig;
+
+/**
+ * @brief Backup PCI address to make sure we do not mess up the OS
+ */
+static void smi_backup_pci_address(void)
+{
+	pci_orig = inl(0xcf8);
+}
+
+/**
+ * @brief Restore PCI address previously backed up
+ */
+static void smi_restore_pci_address(void)
+{
+	outl(pci_orig, 0xcf8);
+}
+
 /**
  * @brief Interrupt handler for SMI#
  *
@@ -106,6 +124,8 @@ void smi_handler(u32 smm_revision)
 		while (smi_handler_status == SMI_LOCKED) /* wait */ ;
 		return;
 	}
+
+	smi_backup_pci_address();
 
 	node=nodeid();
 
@@ -146,6 +166,8 @@ void smi_handler(u32 smm_revision)
 		northbridge_smi_handler(node, &state_save);
 	if (southbridge_smi_handler)
 		southbridge_smi_handler(node, &state_save);
+
+	smi_restore_pci_address();
 
 	smi_release_lock();
 

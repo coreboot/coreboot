@@ -499,11 +499,6 @@ static void model_fxx_init(device_t dev)
 
 	k8_errata();
 
-	/* Set SMMLOCK to avoid exploits messing with SMM */
-	msr = rdmsr(HWCR_MSR);
-	msr.lo |= (1 << 0);
-	wrmsr(HWCR_MSR, msr);
-
 	enable_cache();
 
 	/* Set the processor name string */

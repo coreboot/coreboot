@@ -38,6 +38,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_MAINBOARD_RESOURCES
 	select QRANK_DIMM_SUPPORT
 	select SET_FIDVID
+	# TODO test on multicore machines and enable if it works:
+	#select HAVE_SMI_HANDLER
 
 config MAINBOARD_DIR
 	string

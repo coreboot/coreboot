@@ -27,6 +27,7 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <cpu/cpu.h>
 #include "i82801gx.h"
 
 #define NMI_OFF	0
@@ -335,7 +336,6 @@ static void enable_clock_gating(void)
 #if CONFIG_HAVE_SMI_HANDLER
 static void i82801gx_lock_smm(struct device *dev)
 {
-	void smm_lock(void);
 #if TEST_SMM_FLASH_LOCKDOWN
 	u8 reg8;
 #endif

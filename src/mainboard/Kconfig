@@ -58,6 +58,8 @@ config VENDOR_IEI
 	bool "IEI"
 config VENDOR_INTEL
 	bool "Intel"
+config VENDOR_IWAVE
+	bool "iWave"
 config VENDOR_IWILL
 	bool "IWILL"
 config VENDOR_JETWAY
@@ -140,6 +142,7 @@ source "src/mainboard/ibase/Kconfig"
 source "src/mainboard/ibm/Kconfig"
 source "src/mainboard/iei/Kconfig"
 source "src/mainboard/intel/Kconfig"
+source "src/mainboard/iwave/Kconfig"
 source "src/mainboard/iwill/Kconfig"
 source "src/mainboard/jetway/Kconfig"
 source "src/mainboard/kontron/Kconfig"

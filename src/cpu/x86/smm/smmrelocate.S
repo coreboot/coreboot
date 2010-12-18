@@ -30,6 +30,8 @@
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"
 #elif defined(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
+#elif defined(CONFIG_SOUTHBRIDGE_INTEL_SCH)
+#include "../../../southbridge/intel/sch/sch.h"
 #else
 #error "Southbridge needs SMM handler support."
 #endif

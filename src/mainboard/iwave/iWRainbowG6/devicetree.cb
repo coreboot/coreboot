@@ -1,0 +1,39 @@
+chip northbridge/intel/sch
+
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_441
+			device lapic 0 on end
+		end
+	end
+
+	device pci_domain 0 on
+		device pci 00.0 on end # host bridge
+		device pci 02.0 on end # Integrated Graphics and Video Device
+
+		chip southbridge/intel/sch
+			register "pirqa_routing" = "0xa"
+			register "pirqb_routing" = "0xb"
+			register "pirqc_routing" = "0x5"
+			register "pirqd_routing" = "0xf"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			device pci 1a.0 on end  # 26 0 USB Client
+			device pci 1b.0 on end  # 27 0 HD Audio Controller
+			device pci 1c.0 on end  # 28 0 PCI Express Port 1
+			device pci 1c.1 on end  # 28 1 PCI Express Port 2
+			device pci 1d.0 on end  # USB Classic UHCI Controller 1
+			device pci 1d.1 on end  # USB Classic UHCI Controller 2
+			device pci 1d.2 on end  # USB Classic UHCI Controller 3
+			device pci 1d.7 on end  # USB2 EHCI Controller
+			device pci 1e.0 on end  # SDIO/MMC Port 0
+			device pci 1e.1 on end  # SDIO/MMC Port 1
+			device pci 1e.2 on end  # SDIO/MMC Port 2
+			device pci 1f.0 on end  # LPC bridge
+			device pci 1f.1 on end  # PATA Controller
+		end
+	end
+end
+

@@ -9,3 +9,4 @@ source src/southbridge/intel/i82801ex/Kconfig
 source src/southbridge/intel/i82801gx/Kconfig
 source src/southbridge/intel/i82870/Kconfig
 source src/southbridge/intel/pxhd/Kconfig
+source src/southbridge/intel/sch/Kconfig

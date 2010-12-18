@@ -8,3 +8,4 @@ source src/northbridge/intel/i82810/Kconfig
 source src/northbridge/intel/i82830/Kconfig
 source src/northbridge/intel/i855/Kconfig
 source src/northbridge/intel/i945/Kconfig
+source src/northbridge/intel/sch/Kconfig

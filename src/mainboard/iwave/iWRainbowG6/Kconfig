@@ -1,0 +1,46 @@
+if BOARD_IWAVE_RAINBOW_G6
+
+# TODO: move options to chipset components as appropriate
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_CORE # FIXME
+	select CPU_INTEL_SOCKET_441
+	select NORTHBRIDGE_INTEL_SCH
+	select SOUTHBRIDGE_INTEL_SCH
+	select BOARD_HAS_FADT
+	select HAVE_PIRQ_TABLE
+#	select HAVE_MP_TABLE
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	select AP_IN_SIPI_WAIT
+	select UDELAY_LAPIC
+	select HAVE_ACPI_TABLES
+	select HAVE_SMI_HANDLER
+	select BOARD_ROMSIZE_KB_1024
+	select USE_DCACHE_RAM
+	select GFXUMA
+	select HAVE_HARD_RESET
+
+config MAINBOARD_DIR
+	string
+	default iwave/iWRainbowG6
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "iWRainbowG6"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 10
+
+# WTF, is this 19200?
+config TTYS0_DIV
+	int
+	default 6
+
+endif

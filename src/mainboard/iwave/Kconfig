@@ -1,0 +1,18 @@
+if VENDOR_IWAVE
+
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_IWAVE
+
+config BOARD_IWAVE_RAINBOW_G6
+	bool "iWRainbowG6"
+
+endchoice
+
+source "src/mainboard/iwave/iWRainbowG6/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "iWave"
+
+endif # VENDOR_IWAVE

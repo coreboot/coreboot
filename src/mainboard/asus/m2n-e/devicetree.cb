@@ -103,7 +103,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           device pci c.0 on end			# PCI E 3 (PCIEX1_2)
           device pci d.0 on end			# PCI E 2 (PCIEX1_1)
           device pci e.0 off end		# PCI E 1
-          device pci f.0 off end		# PCI E 0
+          device pci f.0 on end			# PCI E 0 (PCIEX16_1)
           register "ide0_enable" = "1"		# Primary IDE
           register "ide1_enable" = "0"		# Secondary IDE (N/A)
           register "sata0_enable" = "1"

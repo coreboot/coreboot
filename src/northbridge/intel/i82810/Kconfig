@@ -42,7 +42,7 @@ config VIDEO_MB
 	default 1   if I810_VIDEO_MB_1MB
 	depends on NORTHBRIDGE_INTEL_I82810
 
-config FALLBACK_VGA_BIOS_ID
+config VGA_BIOS_ID
 	string
 	default "8086,7121"
 	depends on NORTHBRIDGE_INTEL_I82810

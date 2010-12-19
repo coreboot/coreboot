@@ -176,7 +176,7 @@ function create_config
 		if [ "$PAYLOAD" != "/dev/null" ]; then
 			echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
 			echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build
-			echo "CONFIG_FALLBACK_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
+			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
 		fi
 
 		if [ "$loglevel" != "default" ]; then

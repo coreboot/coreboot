@@ -357,7 +357,7 @@ config PAYLOAD_ELF
 
 endchoice
 
-config FALLBACK_PAYLOAD_FILE
+config PAYLOAD_FILE
 	string "Payload path and filename"
 	depends on PAYLOAD_ELF
 	default "payload.elf"
@@ -390,14 +390,14 @@ config VGA_BIOS
 	  You will be able to specify the location and file name of the
 	  image later.
 
-config FALLBACK_VGA_BIOS_FILE
+config VGA_BIOS_FILE
 	string "VGA BIOS path and filename"
 	depends on VGA_BIOS
 	default "vgabios.bin"
 	help
 	  The path and filename of the file to use as VGA BIOS.
 
-config FALLBACK_VGA_BIOS_ID
+config VGA_BIOS_ID
 	string "VGA device PCI IDs"
 	depends on VGA_BIOS
 	default "1106,3230"
@@ -421,7 +421,7 @@ config INTEL_MBI
 	  You will be able to specify the location and file name of the
 	  image later.
 
-config FALLBACK_MBI_FILE
+config MBI_FILE
 	string "Intel MBI path and filename"
 	depends on INTEL_MBI
 	default "mbi.bin"
@@ -441,7 +441,7 @@ config BOOTSPLASH
 	  This option shows a graphical bootsplash screen. The grapics are
 	  loaded from the CBFS file bootsplash.jpg.
 
-config FALLBACK_BOOTSPLASH_FILE
+config BOOTSPLASH_FILE
 	string "Bootsplash path and filename"
 	depends on BOOTSPLASH
 	default "bootsplash.jpg"

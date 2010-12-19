@@ -2,11 +2,6 @@ config NORTHBRIDGE_VIA_CN700
 	bool
 	select HAVE_DEBUG_RAM_SETUP
 
-config FALLBACK_SIZE
-	int
-	default 0
-	depends on NORTHBRIDGE_VIA_CN700
-
 # TODO: Values are from the CX700 datasheet, not sure if this matches CN700.
 # TODO: What should be the per-chipset default value here?
 choice

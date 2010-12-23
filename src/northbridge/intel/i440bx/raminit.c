@@ -38,13 +38,14 @@ Macros and definitions.
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINT_DEBUG(x)		print_debug(x)
-#define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
-#define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
-#define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
+#include "lib/debug.c"
+#define PRINT_DEBUG(x...)	printk(BIOS_DEBUG, x)
+#define PRINT_DEBUG_HEX8(x)	PRINT_DEBUG("%02x", x)
+#define PRINT_DEBUG_HEX16(x)	PRINT_DEBUG("%04x", x)
+#define PRINT_DEBUG_HEX32(x)	PRINT_DEBUG("%08x", x)
 #define DUMPNORTH()		dump_pci_device(NB)
 #else
-#define PRINT_DEBUG(x)
+#define PRINT_DEBUG(x...)
 #define PRINT_DEBUG_HEX8(x)
 #define PRINT_DEBUG_HEX16(x)
 #define PRINT_DEBUG_HEX32(x)
@@ -621,11 +622,7 @@ static void spd_enable_refresh(void)
 			continue;
 		reg = (reg & 0xf8) | refresh_rate_map[(value & 0x7f)];
 
-		PRINT_DEBUG("    Enabling refresh (DRAMC = 0x");
-		PRINT_DEBUG_HEX8(reg);
-		PRINT_DEBUG(") for DIMM ");
-		PRINT_DEBUG_HEX8(i);
-		PRINT_DEBUG("\n");
+		PRINT_DEBUG("    Enabling refresh (DRAMC = 0x%02x) for DIMM %02x\n", reg, i);
 	}
 
 	pci_write_config8(NB, DRAMC, reg);
@@ -662,8 +659,8 @@ void sdram_set_registers(void)
 }
 
 struct dimm_size {
-	unsigned long side1;
-	unsigned long side2;
+	u32 side1;
+	u32 side2;
 };
 
 static struct dimm_size spd_get_dimm_size(unsigned int device)
@@ -718,15 +715,13 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
 	 * modules by setting them to a supported size.
 	 */
 	if(sz.side1 > 128) {
-		PRINT_DEBUG("Side1 was 0x");
-		PRINT_DEBUG_HEX16(sz.side1);
-		PRINT_DEBUG(" but only 128MB will be used.\n");
+		PRINT_DEBUG("Side1 was %dMB but only 128MB will be used.\n",
+			sz.side1);
 		sz.side1 = 128;
 
 		if(sz.side2 > 128) {
-			PRINT_DEBUG("Side2 was 0x");
-			PRINT_DEBUG_HEX16(sz.side2);
-			PRINT_DEBUG(" but only 128MB will be used.\n");
+			PRINT_DEBUG("Side2 was %dMB but only 128MB will be used.\n",
+				sz.side2);
 			sz.side2 = 128;
 		}
 	}
@@ -759,15 +754,12 @@ static void set_dram_row_attributes(void)
 		if (value == SPD_MEMORY_TYPE_EDO
 			|| value == SPD_MEMORY_TYPE_SDRAM) {
 
-			PRINT_DEBUG("Found ");
 			if (value == SPD_MEMORY_TYPE_EDO) {
 				edosd |= 0x02;
 			} else if (value == SPD_MEMORY_TYPE_SDRAM) {
 				edosd |= 0x04;
 			}
-			PRINT_DEBUG("DIMM in slot ");
-			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG("\n");
+			PRINT_DEBUG("Found DIMM in slot %d\n", i);
 
 			if (edosd == 0x06) {
 				print_err("Mixing EDO/SDRAM unsupported!\n");
@@ -925,21 +917,15 @@ static void set_dram_row_attributes(void)
 
 	/* Set paging policy register. */
 	pci_write_config8(NB, PGPOL + 1, bpr);
-	PRINT_DEBUG("PGPOL[BPR] has been set to 0x");
-	PRINT_DEBUG_HEX8(bpr);
-	PRINT_DEBUG("\n");
+	PRINT_DEBUG("PGPOL[BPR] has been set to 0x%02x\n", bpr);
 
 	/* Set DRAM row page size register. */
 	pci_write_config16(NB, RPS, rps);
-	PRINT_DEBUG("RPS has been set to 0x");
-	PRINT_DEBUG_HEX16(rps);
-	PRINT_DEBUG("\n");
+	PRINT_DEBUG("RPS has been set to 0x%04x\n", rps);
 
 	/* ### ECC */
 	pci_write_config8(NB, NBXCFG + 3, nbxecc);
-	PRINT_DEBUG("NBXECC[31:24] has been set to 0x");
-	PRINT_DEBUG_HEX8(nbxecc);
-	PRINT_DEBUG("\n");
+	PRINT_DEBUG("NBXECC[31:24] has been set to 0x%02x\n", nbxecc);
 
 	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM).
 	 * TODO: Registered SDRAM support.
@@ -956,9 +942,7 @@ static void set_dram_row_attributes(void)
 	value = pci_read_config8(NB, DRAMC) & 0xe7;
 	value |= edosd;
 	pci_write_config8(NB, DRAMC, value);
-	PRINT_DEBUG("DRAMC has been set to 0x");
-	PRINT_DEBUG_HEX8(value);
-	PRINT_DEBUG("\n");
+	PRINT_DEBUG("DRAMC has been set to 0x%02x\n", value);
 }
 
 void sdram_set_spd_registers(void)

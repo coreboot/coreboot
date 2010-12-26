@@ -21,6 +21,11 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	select GEODE_VSA
 
+config VIDEO_MB
+	int
+	default 8
+	depends on NORTHBRIDGE_AMD_GX2
+
 # The GX2_PROCESSOR_MHZ options let you chose the correct GX2 processor
 # speed in the mainboard's Kconfig file.
 config GX2_PROCESSOR_MHZ_300

@@ -15,7 +15,6 @@
 #include <cpu/amd/vr.h>
 #include <cpu/cpu.h>
 #include "../../../southbridge/amd/cs5536/cs5536.h"
-#define VIDEO_MB 8
 
 #define NORTHBRIDGE_FILE "northbridge.c"
 
@@ -302,7 +301,7 @@ static void enable_dev(struct device *dev)
 		graphics_init();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-		tomk = ((sizeram() - VIDEO_MB) * 1024) - SMM_SIZE;
+		tomk = ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE;
 #if CONFIG_WRITE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;

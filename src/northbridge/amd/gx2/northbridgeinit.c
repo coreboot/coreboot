@@ -708,10 +708,6 @@ void northbridgeinit(void)
 
 	shadowRom();
 
-	/* GeodeROM ensures that the BIOS waits the required 1 second before */
-	/* allowing anything to access PCI */
-	// PCIDelay();
-
 	RCONFInit();
 
 	/* The cacheInit function in GeodeROM tests cache and, among other things,

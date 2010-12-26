@@ -4,8 +4,6 @@ void cpuRegInit (void)
 {
 	int msrnum;
 	msr_t msr;
-	/* Turn on BTM for early debug based on setup. */
-	// if (getnvram( TOKEN_BTM_DIAG_MODE) & 3) {
 	/* The following is only for diagnostics mode; do not use for OLPC */
 	if (0) {
 		/* Set Diagnostic Mode */
@@ -125,37 +123,10 @@ void cpuRegInit (void)
 	}
 
 /* FPU impercise exceptions bit */
-	//if (getnvram( TOKEN_FPU_IE_ENABLE) != TVALUE_DISABLE) {
 	{
 		msrnum = CPU_FPU_MSR_MODE;
 		msr = rdmsr(msrnum);
 		msr.lo |= FPU_IE_SET;
 		wrmsr(msrnum, msr);
 	}
-
-#if 0
-	/* Cache Overides */
-	/* This code disables the data cache.  Don't execute this
-	 * unless you're testing something.
-	 */
-	/* Allow NVRam to override DM Setup */
-	//if (getnvram( TOKEN_CACHE_DM_MODE) != 1) {
-	{
-		msrnum = CPU_DM_CONFIG0;
-		msr = rdmsr(msrnum);
-		msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
-		wrmsr(msrnum, msr);
-	}
-	/* This code disables the instruction cache.  Don't execute
-	 * this unless you're testing something.
-	*/
-	/* Allow NVRam to override IM Setup */
-	//if (getnvram( TOKEN_CACHE_IM_MODE) ==1) {
-	{
-		msrnum = CPU_IM_CONFIG;
-		msr = rdmsr(msrnum);
-		msr.lo |=  IM_CONFIG_LOWER_ICD_SET;
-		wrmsr(msrnum, msr);
-	}
-#endif
 }

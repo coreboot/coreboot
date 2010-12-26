@@ -66,23 +66,9 @@ int sizeram(void)
 #define RAM_PROPERTIES (0)
 #define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
 #define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_PROTECT|CACHE_DISABLE)
-#define MSR_WS_CD_DEFAULT (0x21212121)
-
-/* 1810-1817 give you 8 registers with which to program protection regions */
-/* the are region configuration range registers, or RRCF */
-/* in msr terms, the are a straight base, top address assign, since they are 4k aligned. */
-/* so no left-shift needed for top or base */
-#define RRCF_LOW(base,properties) (base|(1<<8)|properties)
-#define RRCF_LOW_CD(base)	RRCF_LOW(base, CACHE_DISABLE)
-
 /* build initializer for P2D MSR */
 #define P2D_BM(msr, pdid1, bizarro, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pbase>>24), .lo=(pbase<<8)|pmask}}
-#define P2D_BMO(msr, pdid1, bizarro, poffset, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(poffset<<8)|(pbase>>24), .lo=(pbase<<8)|pmask}}
-#define P2D_R(msr, pdid1, bizarro, pmax, pmin) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pmax>>12), .lo=(pmax<<20)|pmin}}
-#define P2D_RO(msr, pdid1, bizarro, poffset, pmax, pmin) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(poffset<<8)|(pmax>>12), .lo=(pmax<<20)|pmin}}
 #define P2D_SC(msr, pdid1, bizarro, wen, ren,pscbase) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(wen), .lo=(ren<<16)|(pscbase>>18)}}
-#define IOD_BM(msr, pdid1, bizarro, ibase, imask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(ibase>>12), .lo=(ibase<<20)|imask}}
-#define IOD_SC(msr, pdid1, bizarro, en, wen, ren, ibase) {msr, {.hi=(pdid1<<29)|(bizarro<<28), .lo=(en<<24)|(wen<<21)|(ren<<20)|(ibase<<3)}}
 
 struct msr_defaults
 {
@@ -91,20 +77,6 @@ struct msr_defaults
 } msr_defaults [] = {
 	{0x1700, {.hi = 0, .lo = IM_QWAIT}},
 	{0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST, .lo = DMCF_SERIAL_LOAD_MISSES}},
-	/* 1808 will be done down below, so we have to do 180a->1817 (well, 1813 really) */
-	/* for 180a, for now, we assume VSM will configure it */
-	/* 180b is left at reset value,a0000-bffff is non-cacheable */
-	/* 180c, c0000-dffff is set to write serialize and non-cachable */
-	/* oops, 180c will be set by cpu bug handling in cpubug.c */
-	//{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
-	/* 180d is left at default, e0000-fffff is non-cached */
-
-	/* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
-	/* we will not set 0x180f, the DMM,yet */
-	//{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
-	//{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
-	//{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
-	//{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
 	/* now for GLPCI routing */
 	/* GLIU0 */
 	P2D_BM(0x10000020, 0x1, 0x0, 0x0, 0xfff80),
@@ -196,29 +168,6 @@ static void setup_gx2(void)
 	 * sizeram() directly.
 	 */
 
-	/* we need to set 0x10000028 and 0x40000029 */
-
-	/* These two descriptors cover the range from 1 MB (0x100000) to
-	 * SYSTOP (a.k.a. TOM, or Top of Memory)
-	 */
-
-#if 0
-	/* This has already been done elsewhere */
-	printk(BIOS_DEBUG, "size_kb 0x%x, membytes 0x%x\n", size_kb, membytes);
-	msr.hi = 0x20000000 | membytes>>24;
-	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
-	wrmsr(0x10000028, msr);
-	msr.hi = 0x20000000 | membytes>>24;
-	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
-	wrmsr(0x40000029, msr);
-#endif
-#if 0
-	msr = rdmsr(0x10000028);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
-	msr = rdmsr(0x40000029);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
-#endif
-#if 1
 	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
 	/* calculate the OFFSET field */
 	tmp = membytes - SMM_OFFSET;
@@ -234,31 +183,6 @@ static void setup_gx2(void)
 	msr.hi = tmp;
 	msr.lo = tmp2;
 	wrmsr(0x10000026, msr);
-#endif
-#if 0
-
-	msr.hi = 0x2cfbc040;
-	msr.lo = 0x400fffc0;
-	wrmsr(0x10000026, msr);
-	msr = rdmsr(0x10000026);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, msr.hi, msr.lo);
-#endif
-#if 0
-	msr.hi = 0x22fffc02;
-	msr.lo = 0x10ffbf00;
-	wrmsr(0x1808, msr);
-	msr = rdmsr(0x1808);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
-#endif
-#if 0	/* SDG - don't do this */
-	/* now do the default MSR values */
-	for(i = 0; msr_defaults[i].msr_no; i++) {
-		msr_t msr;
-		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);	/* MSR - see table above */
-		msr = rdmsr(msr_defaults[i].msr_no);
-		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
-	}
-#endif
 }
 
 static void enable_shadow(device_t dev)
@@ -268,33 +192,17 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev)
 {
-	unsigned long m;
-
 	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
 
 	enable_shadow(dev);
 	irq_init_steering(dev, nb->irqmap);
-
-	/* HACK HACK HACK HACK */
-	/* 0x1000 is where GPIO is being assigned */
-	m = inl(0x1038);
-	m &= ~GPIOL_12_SET;
-	m |= GPIOL_12_CLEAR;
-	outl(m, 0x1038);
 }
 
 /* due to vsa interactions, we need not not touch the nb settings ... */
 /* this is a test -- we are not sure it will work -- but it ought to */
 static void set_resources(struct device *dev)
 {
-#if 0
-	struct resource *res;
-
-	for(res = &dev->resource_list; res; res = res->next) {
-		pci_set_resource(dev, resource);
-	}
-#endif
 	struct bus *bus;
 
 	for(bus = dev->link_list; bus; bus = bus->next) {
@@ -324,9 +232,6 @@ static void set_resources(struct device *dev)
 
 static struct device_operations northbridge_operations = {
 	.read_resources = pci_dev_read_resources,
-#if 0
-	.set_resources = pci_dev_set_resources,
-#endif
 	.set_resources = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = northbridge_init,
@@ -345,52 +250,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 
 static void pci_domain_set_resources(device_t dev)
 {
-#if 0
-	device_t mc_dev;
-	u32 pci_tolm;
-
-	pci_tolm = find_pci_tolm(dev->link_list);
-	mc_dev = dev->link_list->children;
-	if (mc_dev) {
-		unsigned int tomk, tolmk;
-		unsigned int ramreg = 0;
-		int i, idx;
-		unsigned int *bcdramtop = (unsigned int *)(GX_BASE + BC_DRAM_TOP);
-		unsigned int *mcgbaseadd = (unsigned int *)(GX_BASE + MC_GBASE_ADD);
-
-		for(i=0; i<0x20; i+= 0x10) {
-			unsigned int *mcreg = (unsigned int *)(GX_BASE + MC_BANK_CFG);
-			unsigned int mem_config = *mcreg;
-
-			if (((mem_config & (DIMM_PG_SZ << i)) >> (4 + i)) == 7)
-				continue;
-			ramreg += 1 << (((mem_config & (DIMM_SZ << i)) >> (i + 8)) + 2);
-		}
-
-		tomk = ramreg << 10;
-
-		/* Sort out the framebuffer size */
-		tomk -= FRAMEBUFFERK;
-		*bcdramtop = ((tomk << 10) - 1);
-		*mcgbaseadd = (tomk >> 9);
-
-		printk(BIOS_DEBUG, "BC_DRAM_TOP = 0x%08x\n", *bcdramtop);
-		printk(BIOS_DEBUG, "MC_GBASE_ADD = 0x%08x\n", *mcgbaseadd);
-
-		printk(BIOS_DEBUG, "I would set ram size to %d Mbytes\n", (tomk >> 10));
-
-		/* Compute the top of Low memory */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does does not overlap the memory.
-			 */
-			tolmk = tomk;
-		}
-		/* Report the memory regions */
-		idx = 10;
-		ram_resource(dev, idx++, 0, tolmk);
-	}
-#endif
 	assign_resources(dev->link_list);
 }
 

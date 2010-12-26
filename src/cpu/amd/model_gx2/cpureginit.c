@@ -5,7 +5,7 @@ void cpuRegInit (void)
 	int msrnum;
 	msr_t msr;
 	/* Turn on BTM for early debug based on setup. */
-	/* if (getnvram( TOKEN_BTM_DIAG_MODE) & 3) { */
+	// if (getnvram( TOKEN_BTM_DIAG_MODE) & 3) {
 	/* The following is only for diagnostics mode; do not use for OLPC */
 	if (0) {
 		/* Set Diagnostic Mode */
@@ -21,8 +21,8 @@ void cpuRegInit (void)
 		wrmsr(msrnum, msr);		/* exchange it to anything else to prevent this */
 
 		/* Turn off debug clock */
-		msrnum = 0x04C000016;		/* DBG_CLK_CTL*/
-		msr.lo =  0x00;			/* No clock*/
+		msrnum = 0x04C000016;		/* DBG_CLK_CTL */
+		msr.lo =  0x00;			/* No clock */
 		msr.hi =  0x00;
 		wrmsr(msrnum, msr);
 
@@ -64,7 +64,7 @@ void cpuRegInit (void)
 		msr.hi = 0;
 		wrmsr(msrnum, msr);
 
-		msrnum = 0x04C00000C ;	/* GLCP_DBGOUT MSR */
+		msrnum = 0x04C00000C ;		/* GLCP_DBGOUT MSR */
 		msr.hi =  0x0;
 		msr.lo =  0x0;			/* reset value (SCOPE_SEL = 0) causes FIFO to shift out, */
 		wrmsr(msrnum, msr);
@@ -97,7 +97,7 @@ void cpuRegInit (void)
 	msrnum = MSR_FG + 0x10;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~3;
-	msr.lo |= 2;			/* ModeB */
+	msr.lo |= 2;		/* ModeB */
 	wrmsr(msrnum, msr);
 #endif
 
@@ -125,7 +125,7 @@ void cpuRegInit (void)
 	}
 
 /* FPU impercise exceptions bit */
-	/* if (getnvram( TOKEN_FPU_IE_ENABLE) != TVALUE_DISABLE) { */
+	//if (getnvram( TOKEN_FPU_IE_ENABLE) != TVALUE_DISABLE) {
 	{
 		msrnum = CPU_FPU_MSR_MODE;
 		msr = rdmsr(msrnum);
@@ -139,7 +139,7 @@ void cpuRegInit (void)
 	 * unless you're testing something.
 	 */
 	/* Allow NVRam to override DM Setup */
-	/* if (getnvram( TOKEN_CACHE_DM_MODE) != 1) { */
+	//if (getnvram( TOKEN_CACHE_DM_MODE) != 1) {
 	{
 		msrnum = CPU_DM_CONFIG0;
 		msr = rdmsr(msrnum);
@@ -150,7 +150,7 @@ void cpuRegInit (void)
 	 * this unless you're testing something.
 	*/
 	/* Allow NVRam to override IM Setup */
-	/* if (getnvram( TOKEN_CACHE_IM_MODE) ==1) { */
+	//if (getnvram( TOKEN_CACHE_IM_MODE) ==1) {
 	{
 		msrnum = CPU_IM_CONFIG;
 		msr = rdmsr(msrnum);

@@ -20,15 +20,15 @@
 #define NORTHBRIDGE_FILE "northbridge.c"
 
 /* todo: add a resource record. We don't do this here because this may be called when
-  * very little of the platform is actually working.
-  */
-int
-sizeram(void)
+ * very little of the platform is actually working.
+ */
+int sizeram(void)
 {
 	msr_t msr;
 	int sizem = 0;
 	unsigned short dimm;
 
+	/* Get the RAM size from the memory controller as calculated and set by auto_size_dimm() */
 	msr = rdmsr(0x20000018);
 	printk(BIOS_DEBUG, "sizeram: %08x:%08x\n", msr.hi, msr.lo);
 
@@ -38,8 +38,7 @@ sizeram(void)
 	if ((dimm & 7) != 7)
 		sizem = (1 << ((dimm >> 12)-1)) * 8;
 
-
-	/* dimm 1*/
+	/* dimm 1 */
 	dimm = msr.hi >> 16;
 	/* installed? */
 	if ((dimm & 7) != 7)
@@ -49,8 +48,7 @@ sizeram(void)
 	return sizem;
 }
 
-
-/* here is programming for the various MSRs.*/
+/* here is programming for the various MSRs. */
 #define IM_QWAIT 0x100000
 
 #define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */ /* in high */
@@ -86,9 +84,8 @@ sizeram(void)
 #define IOD_BM(msr, pdid1, bizarro, ibase, imask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(ibase>>12), .lo=(ibase<<20)|imask}}
 #define IOD_SC(msr, pdid1, bizarro, en, wen, ren, ibase) {msr, {.hi=(pdid1<<29)|(bizarro<<28), .lo=(en<<24)|(wen<<21)|(ren<<20)|(ibase<<3)}}
 
-
-
-struct msr_defaults {
+struct msr_defaults
+{
 	int msr_no;
 	msr_t msr;
 } msr_defaults [] = {
@@ -121,7 +118,8 @@ struct msr_defaults {
 };
 
 /* note that dev is NOT used -- yet */
-static void irq_init_steering(struct device *dev, u16 irq_map) {
+static void irq_init_steering(struct device *dev, u16 irq_map)
+{
 	/* Set up IRQ steering */
 	u32 pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
@@ -142,16 +140,12 @@ static void irq_init_steering(struct device *dev, u16 irq_map) {
 	outl(irq_map,      0xCFC);
 }
 
-
-/*
- * setup_gx2_cache
+/* setup_gx2_cache
  *
  * Returns the amount of memory (in KB) available to the system.  This is the
  * total amount of memory less the amount of memory reserved for SMM use.
- *
  */
-static int
-setup_gx2_cache(void)
+static int setup_gx2_cache(void)
 {
 	msr_t msr;
 	unsigned long long val;
@@ -164,7 +158,7 @@ setup_gx2_cache(void)
 	/* set romrp */
 	val = ((unsigned long long) ROM_PROPERTIES) << 56;
 	/* make rom base useful for 1M roms */
-	/* Flash base address -- sized for 1M for now*/
+	/* Flash base address -- sized for 1M for now */
 	val |= ((unsigned long long) 0xfff00)<<36;
 	/* set the devrp properties */
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
@@ -172,7 +166,7 @@ setup_gx2_cache(void)
 	/* yank off memory for the SMM handler */
 	sizekbytes -= SMM_SIZE;
 	sizereg = sizekbytes;
-	sizereg *= 1024;	// convert to bytes
+	sizereg *= 1024;	/* convert to bytes */
 	sizereg >>= 12;
 	sizereg <<= 8;
 	val |= sizereg;
@@ -188,10 +182,8 @@ setup_gx2_cache(void)
 }
 
 /* we have to do this here. We have not found a nicer way to do it */
-static void
-setup_gx2(void)
+static void setup_gx2(void)
 {
-
 	unsigned long tmp, tmp2;
 	msr_t msr;
 	unsigned long size_kb, membytes;
@@ -200,13 +192,13 @@ setup_gx2(void)
 
 	membytes = size_kb * 1024;
 	/* NOTE! setup_gx2_cache returns the SIZE OF RAM - RAMADJUST!
-	  * so it is safe to use. You should NOT at this point call
-	  * sizeram() directly.
-	  */
+	 * so it is safe to use. You should NOT at this point call
+	 * sizeram() directly.
+	 */
 
 	/* we need to set 0x10000028 and 0x40000029 */
-	/*
-	 * These two descriptors cover the range from 1 MB (0x100000) to
+
+	/* These two descriptors cover the range from 1 MB (0x100000) to
 	 * SYSTOP (a.k.a. TOM, or Top of Memory)
 	 */
 
@@ -258,11 +250,11 @@ setup_gx2(void)
 	msr = rdmsr(0x1808);
 	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
 #endif
-#if 0	// SDG - don't do this
+#if 0	/* SDG - don't do this */
 	/* now do the default MSR values */
 	for(i = 0; msr_defaults[i].msr_no; i++) {
 		msr_t msr;
-		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);	// MSR - see table above
+		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);	/* MSR - see table above */
 		msr = rdmsr(msr_defaults[i].msr_no);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
 	}
@@ -297,51 +289,49 @@ static void northbridge_init(device_t dev)
 static void set_resources(struct device *dev)
 {
 #if 0
-        struct resource *res;
+	struct resource *res;
 
-        for(res = &dev->resource_list; res; res = res->next) {
-                pci_set_resource(dev, resource);
-        }
+	for(res = &dev->resource_list; res; res = res->next) {
+		pci_set_resource(dev, resource);
+	}
 #endif
 	struct bus *bus;
 
 	for(bus = dev->link_list; bus; bus = bus->next) {
-                if (bus->children) {
-                        assign_resources(bus);
-                }
-        }
+		if (bus->children) {
+			assign_resources(bus);
+		}
+	}
 
 #if 0
-        /* set a default latency timer */
-        pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
+	/* set a default latency timer */
+	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
 
-        /* set a default secondary latency timer */
-        if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE) {
-                pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
-        }
+	/* set a default secondary latency timer */
+	if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE) {
+		pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
+	}
 
-        /* zero the irq settings */
-        u8 line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
-        if (line) {
-                pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
-        }
-        /* set the cache line size, so far 64 bytes is good for everyone */
-        pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
+	/* zero the irq settings */
+	u8 line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+	if (line) {
+		pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
+	}
+	/* set the cache line size, so far 64 bytes is good for everyone */
+	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
 #endif
 }
 
-
-
 static struct device_operations northbridge_operations = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources = pci_dev_read_resources,
 #if 0
-	.set_resources    = pci_dev_set_resources,
+	.set_resources = pci_dev_set_resources,
 #endif
-	.set_resources    = set_resources,
+	.set_resources = set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init = northbridge_init,
+	.enable = 0,
+	.ops_pci = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
@@ -350,16 +340,16 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_NS_GX2,
 };
 
-// FIXME handle UMA correctly.
+/* FIXME handle UMA correctly. */
 #define FRAMEBUFFERK 4096
 
 static void pci_domain_set_resources(device_t dev)
 {
 #if 0
 	device_t mc_dev;
-        u32 pci_tolm;
+	u32 pci_tolm;
 
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		unsigned int tomk, tolmk;
@@ -405,16 +395,16 @@ static void pci_domain_set_resources(device_t dev)
 }
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
-        .enable_resources = NULL,
-        .init             = NULL,
-        .scan_bus         = pci_domain_scan_bus,
+	.read_resources = pci_domain_read_resources,
+	.set_resources = pci_domain_set_resources,
+	.enable_resources = NULL,
+	.init = NULL,
+	.scan_bus = pci_domain_scan_bus,
 };
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -422,11 +412,11 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources = cpu_bus_noop,
+	.set_resources = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init = cpu_bus_init,
+	.scan_bus = 0,
 };
 
 void chipsetInit (void);
@@ -440,8 +430,8 @@ static void enable_dev(struct device *dev)
 	printk(BIOS_DEBUG, "gx2 north: enable_dev\n");
 	void do_vsmbios(void);
 
-        /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		u32 tomk;
 		printk(BIOS_DEBUG, "DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
@@ -460,10 +450,10 @@ static void enable_dev(struct device *dev)
 		high_tables_size = HIGH_MEMORY_SIZE;
 #endif
 		ram_resource(dev, 0, 0, tomk);
-        } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+	} else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 		printk(BIOS_DEBUG, "DEVICE_PATH_APIC_CLUSTER\n");
-                dev->ops = &cpu_bus_ops;
-        }
+		dev->ops = &cpu_bus_ops;
+	}
 	printk(BIOS_DEBUG, "gx2 north: end enable_dev\n");
 }
 

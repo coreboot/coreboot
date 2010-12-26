@@ -11,49 +11,38 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 
-
 #if 0
-void
-bug645(void){
+void bug645(void)
+{
 	msr_t msr;
 	rdmsr(CPU_ID_CONFIG);
 	msr.whatever |= ID_CONFIG_SERIAL_SET;
 	wrmsr(msr);
 }
 
-void
-bug573(void){
+void bug573(void)
+{
 	msr_t msr;
-
 	msr = rdmsr(MC_GLD_MSR_PM);
 	msr.eax &= 0xfff3;
 	wrmsr(MC_GLD_MSR_PM);
 }
 #endif
 
-/**************************************************************************
+/* pcideadlock
  *
- *	pcideadlock
- *
- *	Bugtool #465 and #609
- *	PCI cache deadlock
- *	There is also fix code in cache and PCI functions. This bug is very is pervasive.
- *
- *	Entry:
- *	Exit:
- *	Modified:
- *
- **************************************************************************/
-static void
-pcideadlock(void)
+ * Bugtool #465 and #609
+ * PCI cache deadlock
+ * There is also fix code in cache and PCI functions. This bug is very is pervasive.
+ */
+static void pcideadlock(void)
 {
 	msr_t msr;
 
-	/*
-	 * forces serialization of all load misses. Setting this bit prevents the
+	/* forces serialization of all load misses. Setting this bit prevents the
 	 * DM pipe from backing up if a read request has to be held up waiting
 	 * for PCI writes to complete.
-	*/
+	 */
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.hi &= ~(7<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
 	msr.hi |= (2<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
@@ -78,20 +67,12 @@ pcideadlock(void)
 	wrmsr( CPU_RCONF_E0_FF, msr);
 }
 
-/****************************************************************************
+/* CPUbug784
  *
- *	CPUbug784
+ * Bugtool #784 + #792
  *
- *	Bugtool #784 + #792
- *
- *	Fix CPUID instructions for < 3.0 CPUs
- *
- *	Entry:
- *	Exit:
- *	Modified:
- *
- ****************************************************************************/
-
+ * Fix CPUID instructions for < 3.0 CPUs
+ */
 static void bug784(void)
 {
 	msr_t msr;
@@ -120,19 +101,14 @@ static void bug784(void)
 }
 
 /* cpubug 1398: enable MC if we KNOW we have DDR*/
-/**************************************************************************
+
+/* CPUbugIAENG1398
  *
- *	CPUbugIAENG1398
- *
- *	ClearQuest #IAENG1398
- *	The MC can not be enabled with SDR memory but can for DDR. Enable for
- *	DDR here if the setup token is "Default"
- *	Add this back to core by default once 2.0 CPUs are not supported.
- *	Entry:
- *	Exit:
- *	Modified:
- *
- **************************************************************************/
+ * ClearQuest #IAENG1398
+ * The MC can not be enabled with SDR memory but can for DDR. Enable for
+ * DDR here if the setup token is "Default"
+ * Add this back to core by default once 2.0 CPUs are not supported.
+ */
 static void eng1398(void)
 {
 	msr_t msr;
@@ -150,22 +126,14 @@ static void eng1398(void)
 	wrmsr(MC_GLD_MSR_PM, msr);
 }
 
-/***************************************************************************
+/* CPUbugIAENG2900
  *
- *	CPUbugIAENG2900
+ * Clear Quest IAENG00002900, VSS 118.150
  *
- *	Clear Quest IAENG00002900, VSS 118.150
- *
- *	BTB issue causes blue screen in windows, but the fix is required
- *	for all operating systems.
- *
- *	Entry:
- *	Exit:
- *	Modified:
- *
- **************************************************************************/
-static void
-eng2900(void)
+ * BTB issue causes blue screen in windows, but the fix is required
+ * for all operating systems.
+ */
+static void eng2900(void)
 {
 	msr_t msr;
 
@@ -267,38 +235,38 @@ static void bug118339(void)
 	/* Disable enable_actions in DIAGCTL while setting up GLCP */
 	wrmsr(MSR_GLCP + 0x005f, msr);
 
-	/*  SET2M fires if VG pri is odd (3, not 2) and Ystate=0 */
+	/* SET2M fires if VG pri is odd (3, not 2) and Ystate=0 */
 	msrnum =  MSR_GLCP + 0x042;
 	/* 	msr.hi =  2d6b8000h */;
 	msr.hi =  0x596b8000;
 	msr.lo =  0x00000a00;
 	wrmsr(msrnum, msr);
 
-	/*  SET3M fires if MBUS changed and VG pri is odd */
+	/* SET3M fires if MBUS changed and VG pri is odd */
 	msrnum =  MSR_GLCP + 0x043;
 	msr.hi =  0x596b8040;
 	msr.lo = 0;
 	wrmsr(msrnum, msr);
 
-	/*  Put VG request data on lower diag bus */
+	/* Put VG request data on lower diag bus */
 	msrnum =  MSR_GLIU0 + 0x2005;
 	msr.hi = 0;
 	msr.lo =  0x80338041;
 	wrmsr(msrnum, msr);
 
-	/*  Increment Y state if SET3M if true */
+	/* Increment Y state if SET3M if true */
 	msrnum =  MSR_GLCP + 0x074;
 	msr.hi = 0;
 	msr.lo =  0x0000c000;
 	wrmsr(msrnum, msr);
 
-	/*  Set up MBUS action to PRI=3 read of MBIU */
+	/* Set up MBUS action to PRI=3 read of MBIU */
 	msrnum =  MSR_GLCP + 0x020;
 	msr.hi =  0x0000d863;
 	msr.lo =  0x20002000;
 	wrmsr(msrnum, msr);
 
-	/*  Trigger MBUS action if VG=pri3 and Y=0, this blocks most PCI */
+	/* Trigger MBUS action if VG=pri3 and Y=0, this blocks most PCI */
 	msrnum =  MSR_GLCP + 0x071;
 	msr.hi = 0;
 	msr.lo =  0x00000c00;
@@ -310,10 +278,11 @@ static void bug118339(void)
 	msr.lo =  0x80004000;
 	wrmsr(msrnum, msr);
 
-	/*  Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled */
-	/*  As per Todd Roberts in PBz1094 and PBz1095 */
-	/*  Moved from CPUREG to CPUBUG per Tom Sylla */
-	msrnum =  0x04C000042;		/*  GLCP SETMCTL Register */;
+	/* Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled
+	 * As per Todd Roberts in PBz1094 and PBz1095
+	 * Moved from CPUREG to CPUBUG per Tom Sylla 
+	 */
+	msrnum =  0x04C000042;		/*  GLCP SETMCTL Register */
 	msr = rdmsr(msrnum);
 	msr.hi |= 8;			/*  Bit 35 = MCP_IN */
 	wrmsr(msrnum, msr);
@@ -321,33 +290,24 @@ static void bug118339(void)
 
 
 
-/****************************************************************************/
-/***/
-/**	DisableMemoryReorder*/
-/***/
-/**	PBZ 3659:*/
-/**	 The MC reordered transactions incorrectly and breaks coherency.*/
-/**	 Disable reording and take a potential performance hit.*/
-/**	 This is safe to do here and not in MC init since there is nothing*/
-/**	 to maintain coherency with and the cache is not enabled yet.*/
-/***/
-/***/
-/**	Entry:*/
-/**	Exit:*/
-/**	Modified:*/
-/***/
-/****************************************************************************/
+/* DisableMemoryReorder
+ *
+ * PBZ 3659:
+ * The MC reordered transactions incorrectly and breaks coherency.
+ * Disable reording and take a potential performance hit.
+ * This is safe to do here and not in MC init since there is nothing
+ * to maintain coherency with and the cache is not enabled yet.
+ */
 static void disablememoryreadorder(void)
 {
 	msr_t msr;
-	msr = rdmsr(MC_CF8F_DATA);
 
+	msr = rdmsr(MC_CF8F_DATA);
 	msr.hi |=  CF8F_UPPER_REORDER_DIS_SET;
 	wrmsr(MC_CF8F_DATA, msr);
 }
 
-void
-cpubug(void)
+void cpubug(void)
 {
 	msr_t msr;
 	int rev;

@@ -5,13 +5,10 @@
 #include "chip.h"
 #include "northbridge.h"
 
-// FIXME handle UMA properly.
-#define VIDEO_MB	8					// MB of video memory
+/* FIXME handle UMA properly. */
+#define VIDEO_MB	8	/* MB of video memory */
 
-
- /*
- * This function mirrors the Graphics_Init routine in GeodeROM.
- */
+/* This function mirrors the Graphics_Init routine in GeodeROM. */
 void graphics_init(void)
 {
 	/* SoftVG initialization */

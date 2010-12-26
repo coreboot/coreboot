@@ -38,33 +38,40 @@
 /* CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION try 0x02800107 or 0x02800007 if unsure */
 
 /**
- * This driver take the values from Kconfig and load them in the registers
+ * This driver takes the values from Kconfig and loads them in the registers.
  */
-static void dec_21143_enable( device_t dev )
+static void dec_21143_enable(device_t dev)
 {
-	printk( BIOS_DEBUG, "Init of DECchip 21143 Kconfig style\n");
-	// Command and Status Configuration Register (Offset 0x04)
-	pci_write_config32( dev, 0x04, CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION );
-	printk( BIOS_DEBUG, "0x04 = %08x (07 01 80 02)\n", pci_read_config32(dev, 0x04) );
-	// Cache Line Size Register (Offset 0x0C)
-	pci_write_config8( dev, 0x0C, CONFIG_DEC21143_CACHE_LINE_SIZE );
-	printk( BIOS_DEBUG, "0x0c = %08x (00 80 00 00)\n", pci_read_config32(dev, 0x0C) );
-	// Expansion ROM Base Address Register (Offset 0x30)
-	pci_write_config32( dev, 0x30, CONFIG_DEC21143_EXPANSION_ROM_BASE_ADDRESS );
-	printk( BIOS_DEBUG, "0x30 = %08x (0x00000000)\n", pci_read_config32(dev, 0x30) );
-	return;
+	printk(BIOS_DEBUG, "Initializing DECchip 21143\n");
+
+	/* Command and status configuration (offset 0x04) */
+	pci_write_config32(dev, 0x04,
+			   CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION);
+	printk(BIOS_DEBUG, "0x04 = %08x (07 01 80 02)\n",
+	       pci_read_config32(dev, 0x04));
+
+	/* Cache line size (offset 0x0C) */
+	pci_write_config8(dev, 0x0C, CONFIG_DEC21143_CACHE_LINE_SIZE);
+	printk(BIOS_DEBUG, "0x0c = %08x (00 80 00 00)\n",
+	       pci_read_config32(dev, 0x0C));
+
+	/* Expansion ROM base address (offset 0x30) */
+	pci_write_config32(dev, 0x30,
+			   CONFIG_DEC21143_EXPANSION_ROM_BASE_ADDRESS);
+	printk(BIOS_DEBUG, "0x30 = %08x (0x00000000)\n",
+	       pci_read_config32(dev, 0x30));
 }
 
-static struct device_operations dec_21143_ops  = {
-        .read_resources   = pci_dev_read_resources,
-        .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init             = dec_21143_enable,
-        .scan_bus         = 0,
+static struct device_operations dec_21143_ops = {
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = dec_21143_enable,
+	.scan_bus         = 0,
 };
 
 static const struct pci_driver dec_21143_driver __pci_driver = {
-        .ops    = &dec_21143_ops,
-        .vendor = PCI_VENDOR_ID_DEC,
-        .device = PCI_DEVICE_ID_DEC_21142,
+	.ops    = &dec_21143_ops,
+	.vendor = PCI_VENDOR_ID_DEC,
+	.device = PCI_DEVICE_ID_DEC_21142,
 };

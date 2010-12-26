@@ -30,5 +30,5 @@
 #include "chip.h"
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("HP DL145 G3 Mainboard")
+	CHIP_NAME("HP ProLiant DL145 G3 Mainboard")
 };

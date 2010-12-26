@@ -19,9 +19,9 @@
 ##
 
 chip northbridge/intel/i440bx		# Northbridge
-  device lapic_cluster 0 on		# APIC cluster
-    chip cpu/intel/socket_PGA370	# CPU
-      device lapic 0 on end		# APIC
+  device lapic_cluster 0 on		# (L)APIC cluster
+    chip cpu/intel/socket_PGA370	# CPU socket
+      device lapic 0 on end		# Local APIC of the CPU
     end
   end
   device pci_domain 0 on		# PCI domain
@@ -29,7 +29,7 @@ chip northbridge/intel/i440bx		# Northbridge
     device pci 1.0 on end		# PCI/AGP bridge
     chip southbridge/intel/i82371eb	# Southbridge
       device pci 7.0 on			# ISA bridge
-        chip superio/smsc/smscsuperio	# Super I/O (SMSC FDC37C878)
+        chip superio/smsc/smscsuperio	# Super I/O (SMSC FDC37B787)
           device pnp 3f0.0 off end	# Floppy (No connector)
           device pnp 3f0.3 off end	# Parallel port (No connector)
           device pnp 3f0.4 on		# COM1
@@ -40,10 +40,10 @@ chip northbridge/intel/i440bx		# Northbridge
             io 0x60 = 0x2f8
             irq 0x70 = 3
           end
-          device pnp 3f0.7 on end	# PS/2 keyboard / mouse
           device pnp 3f0.6 on end	# RTC
+          device pnp 3f0.7 off end	# PS/2 keyboard / mouse (No connector)
           device pnp 3f0.8 on end	# AUX I/O
-          device pnp 3f0.A off end	# ACPI (No support yet)
+          device pnp 3f0.a off end	# ACPI (No support yet)
         end
       end
       device pci 7.1 on end		# IDE

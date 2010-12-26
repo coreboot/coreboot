@@ -15,25 +15,25 @@ void cpuRegInit (void)
 		wrmsr(msrnum, msr);
 
 		/* Set up GLCP to grab BTM data. */
-		msrnum = 0x04C00000C;		/* GLCP_DBGOUT MSR */
+		msrnum = GLCP_DBGOUT;		/* GLCP_DBGOUT MSR */
 		msr.hi =  0x0;
 		msr.lo =  0x08;			/* reset value (SCOPE_SEL = 0) causes FIFO toshift out, */
 		wrmsr(msrnum, msr);		/* exchange it to anything else to prevent this */
 
 		/* Turn off debug clock */
-		msrnum = 0x04C000016;		/* DBG_CLK_CTL */
+		msrnum = GLCP_DBGCLKCTL;	/* DBG_CLK_CTL */
 		msr.lo =  0x00;			/* No clock */
 		msr.hi =  0x00;
 		wrmsr(msrnum, msr);
 
 		/* Set debug clock to CPU */
-		msrnum = 0x04C000016;		/* DBG_CLK_CTL */
+		msrnum = GLCP_DBGCLKCTL;	/* DBG_CLK_CTL */
 		msr.lo =  0x01;			/* CPU CLOCK */
 		msr.hi =  0x00;
 		wrmsr(msrnum, msr);
 
 		/* Set fifo ctl to BTM bits wide */
-		msrnum = 0x04C00005E;		/* FIFO_CTL */
+		msrnum = GLCP_FIFOCTL;		/* FIFO_CTL */
 		msr.lo =  0x003880000;		/* Bit [25:24] are size (11=BTM, 10 = 64 bit, 01= 32 bit, 00 = 16bit) */
 		wrmsr(msrnum, msr);		/* Bit [23:21] are position (100 = CPU downto0) */
 						/* Bit [19] sets it up in slow data mode. */
@@ -53,7 +53,7 @@ void cpuRegInit (void)
 
 		/* Set up delay on data lines, so that the hold time */
 		/* is 1 ns. */
-		msrnum = 0x04C00000D ;		/* GLCP IO DELAY CONTROLS */
+		msrnum = GLCP_PROCSTAT;		/* GLCP IO DELAY CONTROLS */
 		msr.lo =  0x082b5ad68;
 		msr.hi =  0x080ad6b57;		/* RGB delay = 0x07 */
 		wrmsr(msrnum, msr);
@@ -64,7 +64,7 @@ void cpuRegInit (void)
 		msr.hi = 0;
 		wrmsr(msrnum, msr);
 
-		msrnum = 0x04C00000C ;		/* GLCP_DBGOUT MSR */
+		msrnum = GLCP_DBGOUT;		/* GLCP_DBGOUT MSR */
 		msr.hi =  0x0;
 		msr.lo =  0x0;			/* reset value (SCOPE_SEL = 0) causes FIFO to shift out, */
 		wrmsr(msrnum, msr);
@@ -85,7 +85,7 @@ void cpuRegInit (void)
 	wrmsr(msrnum, msr);
 
 	/* Setup throttling to proper mode if it is ever enabled. */
-	msrnum = 0x04C00001E;
+	msrnum = GLCP_TH_OD;
 	msr.hi =  0x000000000;
 	msr.lo =  0x00000603C;
 	wrmsr(msrnum, msr);
@@ -108,14 +108,14 @@ void cpuRegInit (void)
 	wrmsr(msrnum, msr);
 
 /* Enable RSDC */
-	msrnum = 0x1301 ;
+	msrnum = CPU_AC_SMM_CTL;
 	msr = rdmsr(msrnum);
 	msr.lo |=  0x08;
 	wrmsr(msrnum, msr);
 
 /* Enable BTB */
 	/* I hate to put this check here but it doesn't really work in cpubug.asm */
-	msrnum = MSR_GLCP+0x17;
+	msrnum = GLCP_CHIP_REVID;
 	msr = rdmsr(msrnum);
 	if (msr.lo >= CPU_REV_2_1){
 		msrnum = CPU_PF_BTB_CONF;

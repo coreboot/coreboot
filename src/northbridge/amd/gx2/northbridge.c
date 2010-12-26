@@ -29,8 +29,8 @@ int sizeram(void)
 	unsigned short dimm;
 
 	/* Get the RAM size from the memory controller as calculated and set by auto_size_dimm() */
-	msr = rdmsr(0x20000018);
-	printk(BIOS_DEBUG, "sizeram: %08x:%08x\n", msr.hi, msr.lo);
+	msr = rdmsr(MC_CF07_DATA);
+	printk(BIOS_DEBUG, "sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
 
 	/* dimm 0 */
 	dimm = msr.hi;

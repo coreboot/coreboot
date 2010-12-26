@@ -15,10 +15,15 @@
 #define	CPU_REV_2_2		0x022
 #define	CPU_REV_3_0		0x030
 
-/* GeodeLink Control Processor Registers, GLIU1, Port 3 */
-#define	GLCP_CLK_DIS_DELAY	0x4c000008
-#define	GLCP_PMCLKDISABLE	0x4c000009
-#define	GLCP_CHIP_REVID		0x4c000017
+/* GeodeLink Control Processor Registers, GLIU1, Port 3 ; MSR_GLCP = 4c00xxxx */
+#define	GLCP_CLK_DIS_DELAY	(MSR_GLCP + 0x08)
+#define	GLCP_PMCLKDISABLE	(MSR_GLCP + 0x09)
+#define	GLCP_DBGOUT		(MSR_GLCP + 0x0C)
+#define	GLCP_PROCSTAT		(MSR_GLCP + 0x0D)
+#define	GLCP_DBGCLKCTL		(MSR_GLCP + 0x16)
+#define	GLCP_CHIP_REVID		(MSR_GLCP + 0x17)
+#define	GLCP_TH_OD		(MSR_GLCP + 0x1E)
+#define	GLCP_FIFOCTL		(MSR_GLCP + 0x5E)
 
 /* GLCP_SYS_RSTPLL, Upper 32 bits */
 #define	GLCP_SYS_RSTPLL_MDIV_SHIFT	9

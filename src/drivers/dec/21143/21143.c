@@ -24,42 +24,23 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
-/**
- * The following should be set in the mainboard-specific Kconfig file.
- */
-#if (!defined(CONFIG_DEC21143_CACHE_LINE_SIZE) || \
-     !defined(CONFIG_DEC21143_EXPANSION_ROM_BASE_ADDRESS) || \
-     !defined(CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION))
-#error "you must supply these values in your mainboard-specific Kconfig file"
-#endif
-
-/* CONFIG_DEC21143_CACHE_LINE_SIZE try 0x00000000 if unsure */
-/* CONFIG_DEC21143_EXPANSION_ROM_BASE_ADDRESS try 0x00000000 if unsure */
-/* CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION try 0x02800107 or 0x02800007 if unsure */
-
-/**
- * This driver takes the values from Kconfig and loads them in the registers.
- */
 static void dec_21143_enable(device_t dev)
 {
 	printk(BIOS_DEBUG, "Initializing DECchip 21143\n");
 
+	// The resource allocator should do this. If not, it needs to be fixed
+	// differently.
+#if 0 
 	/* Command and status configuration (offset 0x04) */
-	pci_write_config32(dev, 0x04,
-			   CONFIG_DEC21143_COMMAND_AND_STATUS_CONFIGURATION);
+	pci_write_config32(dev, 0x04, 0x02800107);
 	printk(BIOS_DEBUG, "0x04 = %08x (07 01 80 02)\n",
 	       pci_read_config32(dev, 0x04));
 
 	/* Cache line size (offset 0x0C) */
-	pci_write_config8(dev, 0x0C, CONFIG_DEC21143_CACHE_LINE_SIZE);
-	printk(BIOS_DEBUG, "0x0c = %08x (00 80 00 00)\n",
-	       pci_read_config32(dev, 0x0C));
-
-	/* Expansion ROM base address (offset 0x30) */
-	pci_write_config32(dev, 0x30,
-			   CONFIG_DEC21143_EXPANSION_ROM_BASE_ADDRESS);
-	printk(BIOS_DEBUG, "0x30 = %08x (0x00000000)\n",
-	       pci_read_config32(dev, 0x30));
+	pci_write_config8(dev, 0x0C, 0x00);
+	printk(BIOS_DEBUG, "0x0c = %08x (00)\n",
+	       pci_read_config8(dev, 0x0C));
+#endif
 }
 
 static struct device_operations dec_21143_ops = {
@@ -73,5 +54,5 @@ static struct device_operations dec_21143_ops = {
 static const struct pci_driver dec_21143_driver __pci_driver = {
 	.ops    = &dec_21143_ops,
 	.vendor = PCI_VENDOR_ID_DEC,
-	.device = PCI_DEVICE_ID_DEC_21142,
+	.device = PCI_DEVICE_ID_DEC_21142, // FIXME wrong ID?
 };

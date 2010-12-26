@@ -45,19 +45,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 22
 
-## Configuration items for the ethernet adaptors
-config DEC21143_CACHE_LINE_SIZE
-	hex
-	default 0x00000000
-
-config DEC21143_EXPANSION_ROM_BASE_ADDRESS
-	hex
-	default 0x00000000
-
-config DEC21143_COMMAND_AND_STATUS_CONFIGURATION
-	hex
-	default 0x02800107
-
 ## Configuration for the PCMCIA-Cardbus controller.
 config TI_PCMCIA_CARDBUS_CMDR
 	hex

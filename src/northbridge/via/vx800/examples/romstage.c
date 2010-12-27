@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-#define __PRE_RAM__
 
 #include <stdint.h>
 #include <device/pci_def.h>

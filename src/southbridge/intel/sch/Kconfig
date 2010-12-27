@@ -22,11 +22,31 @@ config SOUTHBRIDGE_INTEL_SCH
 	select TINY_BOOTBLOCK
 	select HAVE_USBDEBUG
 
+if SOUTHBRIDGE_INTEL_SCH
+
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_INTEL_SCH
+	default 0xfef00000
 
 config EHCI_DEBUG_OFFSET
 	hex
-	default 0xa0 if SOUTHBRIDGE_INTEL_SCH
+	default 0xa0
+
+config HAVE_CMC
+	bool "Add a CMC state machine binary"
+	help
+	  Select this option to add a CMC state machine binary to
+	  the resulting coreboot image.
+
+	  Note: Without this binary coreboot will not work
+
+config CMC_FILE
+	string "Intel CMC path and filename"
+	depends on HAVE_CMC
+	default "cmc.bin"
+	help
+	  The path and filename of the file to use as CMC state machine
+	  binary.
+
+endif
 

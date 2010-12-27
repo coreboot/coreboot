@@ -36,7 +36,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 
 # We don't ship that, but booting without it is bound to fail
-#cbfs-files-y += cmc.bin
-#cmc.bin-name := cmc.bin
-#cmc.bin-type := 0xaa
-#cmc.bin-position := 0xfffd0000
+cbfs-files-$(CONFIG_HAVE_CMC) += cmc.bin
+cmc.bin-name := $(CONFIG_CMC_FILE)
+cmc.bin-type := 0xaa
+cmc.bin-position := 0xfffd0000

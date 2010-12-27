@@ -28,7 +28,6 @@
 #include <console/console.h>
 #include "southbridge/intel/i82371eb/i82371eb.h"
 #include "northbridge/intel/i440bx/raminit.h"
-#include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"

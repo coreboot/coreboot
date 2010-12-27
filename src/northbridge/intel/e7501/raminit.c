@@ -1044,9 +1044,9 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 		sz = spd_get_dimm_size(dimm_socket_address);
 
 		RAM_DEBUG_MESSAGE("dimm size =");
-		RAM_DEBUG_HEX32(sz.side1);
+		RAM_DEBUG_HEX32((u32)sz.side1);
 		RAM_DEBUG_MESSAGE(" ");
-		RAM_DEBUG_HEX32(sz.side2);
+		RAM_DEBUG_HEX32((u32)sz.side2);
 		RAM_DEBUG_MESSAGE("\n");
 
 		if (sz.side1 == 0)

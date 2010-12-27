@@ -28,6 +28,8 @@
 void sdram_set_registers(void);
 void sdram_set_spd_registers(void);
 void sdram_enable(void);
-void dump_spd_registers(void);
 
+/* Debug */
+void dump_spd_registers(void);
+void dump_pci_device(unsigned dev);
 #endif

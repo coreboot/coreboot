@@ -193,7 +193,7 @@ void DumpRegisters(INTN DevNum, INTN FuncNum)
 	PRINT_DEBUG_MEM
 	    ("---------------------------------------------------\r");
 	for (i = 0; i < 0x10; i++) {
-		PRINT_DEBUG_MEM_HEX32(i);
+		PRINT_DEBUG_MEM_HEX32((u32)i);
 		for (j = 0; j < 0x10; j++) {
 			ByteVal =
 			    pci_read_config8(PCI_DEV(0, DevNum, FuncNum),

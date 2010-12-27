@@ -35,17 +35,12 @@ Macros and definitions.
 -----------------------------------------------------------------------------*/
 
 /* Debugging macros. */
-#define HAVE_ENOUGH_REGISTERS   0 /* Don't have enough registers to compile all
-				   * debugging code with ROMCC
-				   */
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINT_DEBUG(x)		print_debug(x)
-#define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
-#define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
-#define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
-// no dump_pci_device in src/northbridge/intel/i82810/
-// #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
-#define DUMPNORTH()
+#define PRINT_DEBUG(x...)	printk(BIOS_DEBUG, x)
+#define PRINT_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)
+#define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
+#define PRINT_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
+#define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
 #else
 #define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX8(x)
@@ -209,27 +204,14 @@ static void do_ram_command(u8 command)
 		dimm_size = translate_i82810_to_mb[drp];
 		if (dimm_size) {
 			addr = (dimm_start * 1024 * 1024) + addr_offset;
-#if HAVE_ENOUGH_REGISTERS
-			PRINT_DEBUG("    Sending RAM command 0x");
-			PRINT_DEBUG_HEX8(reg8);
-			PRINT_DEBUG(" to 0x");
-			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\n");
-#endif
-
+			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%08x\n", reg8, addr);
 			read32(addr);
 		}
 
 		dimm_bank = translate_i82810_to_bank[drp];
 		if (dimm_bank) {
 			addr = ((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset;
-#if HAVE_ENOUGH_REGISTERS
-			PRINT_DEBUG("    Sending RAM command 0x");
-			PRINT_DEBUG_HEX8(reg8);
-			PRINT_DEBUG(" to 0x");
-			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\n");
-#endif
+			PRINT_DEBUG("    Sending RAM command 0x%02x to 0x%08x\n", reg8, addr);
 			read32(addr);
 		}
 
@@ -256,16 +238,11 @@ static void spd_set_dram_size(void)
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		/* First check if a DIMM is actually present. */
 		if (smbus_read_byte(DIMM0 + i, 2) == 4) {
-			print_debug("Found DIMM in slot ");
-			print_debug_hex8(i);
-			print_debug("\n");
+			printk(BIOS_DEBUG, "Found DIMM in slot %d\n", i);
 
 			dimm_size = smbus_read_byte(DIMM0 + i, 31);
 
-			/* WISHLIST: would be nice to display it as decimal? */
-			print_debug("DIMM is 0x");
-			print_debug_hex8(dimm_size * 4);
-			print_debug("MB\n");
+			printk(BIOS_DEBUG, "DIMM is %dMB\n", dimm_size * 4);
 
 			/* The i810 can't handle DIMMs larger than 128MB per
 			 * side. This will fail if the DIMM uses a
@@ -274,10 +251,10 @@ static void spd_set_dram_size(void)
 			 * Note: the factory BIOS just dies if it spots this :D
 			 */
 			if (dimm_size > 32) {
-				print_err("DIMM row sizes larger than 128MB not"
+				printk(BIOS_ERR, "DIMM row sizes larger than 128MB not"
 					  "supported on i810\n");
-				print_err
-				    ("Attempting to treat as 128MB DIMM\n");
+				printk
+				    (BIOS_ERR, "Attempting to treat as 128MB DIMM\n");
 				dimm_size = 32;
 			}
 
@@ -287,21 +264,17 @@ static void spd_set_dram_size(void)
 			 */
 			dimm_size = translate_spd_to_i82810[dimm_size];
 
-			print_debug("After translation, dimm_size is 0x");
-			print_debug_hex8(dimm_size);
-			print_debug("\n");
+			printk(BIOS_DEBUG, "After translation, dimm_size is %d\n", dimm_size);
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
 			/* TODO: Figure out asymetrical configurations. */
 			if ((smbus_read_byte(DIMM0 + i, 127) | 0xf) ==
 			    0xff) {
-				print_debug("DIMM is dual-sided\n");
+				printk(BIOS_DEBUG, "DIMM is dual-sided\n");
 				dimm_size += 2;
 			}
 		} else {
-			print_debug("No DIMM found in slot ");
-			print_debug_hex8(i);
-			print_debug("\n");
+			printk(BIOS_DEBUG, "No DIMM found in slot %d\n", i);
 
 			/* If there's no DIMM in the slot, set value to 0. */
 			dimm_size = 0x00;
@@ -311,9 +284,7 @@ static void spd_set_dram_size(void)
 		drp |= dimm_size << (i * 4);
 	}
 
-	print_debug("DRP calculated to 0x");
-	print_debug_hex8(drp);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "DRP calculated to 0x%02x\n", drp);
 
 	pci_write_config8(PCI_DEV(0, 0, 0), DRP, drp);
 }
@@ -414,9 +385,7 @@ static void set_dram_buffer_strength(void)
 	if (!d0.size && d1.size)
 		buff_sc |= 1 << 15;
 
-	print_debug("BUFF_SC calculated to 0x");
-	print_debug_hex16(buff_sc);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "BUFF_SC calculated to 0x%04x\n", buff_sc);
 
 	pci_write_config16(PCI_DEV(0, 0, 0), BUFF_SC, buff_sc);
 }

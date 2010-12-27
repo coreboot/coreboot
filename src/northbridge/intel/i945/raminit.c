@@ -88,7 +88,7 @@ static void ram_read32(u32 offset)
 }
 
 #if CONFIG_DEBUG_RAM_SETUP
-static void sdram_dump_mchbar_registers(void)
+void sdram_dump_mchbar_registers(void)
 {
 	int i;
 	printk(BIOS_DEBUG, "Dumping MCHBAR Registers\n");

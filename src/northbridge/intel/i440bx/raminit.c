@@ -38,11 +38,10 @@ Macros and definitions.
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
-#include "lib/debug.c"
 #define PRINT_DEBUG(x...)	printk(BIOS_DEBUG, x)
-#define PRINT_DEBUG_HEX8(x)	PRINT_DEBUG("%02x", x)
-#define PRINT_DEBUG_HEX16(x)	PRINT_DEBUG("%04x", x)
-#define PRINT_DEBUG_HEX32(x)	PRINT_DEBUG("%08x", x)
+#define PRINT_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)
+#define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
+#define PRINT_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
 #define DUMPNORTH()		dump_pci_device(NB)
 #else
 #define PRINT_DEBUG(x...)

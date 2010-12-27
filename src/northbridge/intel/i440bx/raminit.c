@@ -39,15 +39,9 @@ Macros and definitions.
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG(x...)	printk(BIOS_DEBUG, x)
-#define PRINT_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)
-#define PRINT_DEBUG_HEX16(x)	printk(BIOS_DEBUG, "%04x", x)
-#define PRINT_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
 #define DUMPNORTH()		dump_pci_device(NB)
 #else
 #define PRINT_DEBUG(x...)
-#define PRINT_DEBUG_HEX8(x)
-#define PRINT_DEBUG_HEX16(x)
-#define PRINT_DEBUG_HEX32(x)
 #define DUMPNORTH()
 #endif
 
@@ -434,11 +428,8 @@ static void do_ram_command(u32 command)
 		addr = (dimm_start * 8 * 1024 * 1024) + addr_offset;
 		if (dimm_end > dimm_start) {
 #if 0
-			PRINT_DEBUG("    Sending RAM command 0x");
-			PRINT_DEBUG_HEX16(reg16);
-			PRINT_DEBUG(" to 0x");
-			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\n");
+			PRINT_DEBUG("    Sending RAM command 0x%04x to 0x%08x\n",
+					reg16, addr);
 #endif
 
 			read32(addr);
@@ -648,11 +639,8 @@ void sdram_set_registers(void)
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
 		pci_write_config8(NB, register_values[i], reg);
 #if 0
-		PRINT_DEBUG("    Set register 0x");
-		PRINT_DEBUG_HEX8(register_values[i]);
-		PRINT_DEBUG(" to 0x");
-		PRINT_DEBUG_HEX8(reg);
-		PRINT_DEBUG("\n");
+		PRINT_DEBUG("    Set register 0x%02x to 0x%02x\n",
+				register_values[i], reg);
 #endif
 	}
 }
@@ -885,9 +873,7 @@ static void set_dram_row_attributes(void)
 			drb |= (drb + (sz.side2 / 8)) << 8;
 		} else {
 #if 0
-			PRINT_DEBUG("No DIMM found in slot ");
-			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG("\n");
+			PRINT_DEBUG("No DIMM found in slot %d\n", i);
 #endif
 
 			/* If there's no DIMM in the slot, set dra to 0x00. */
@@ -900,9 +886,7 @@ static void set_dram_row_attributes(void)
 
 		pci_write_config16(NB, DRB + (2 * i), drb);
 #if 0
-		PRINT_DEBUG("DRB has been set to 0x");
-		PRINT_DEBUG_HEX16(drb);
-		PRINT_DEBUG("\n");
+		PRINT_DEBUG("DRB has been set to 0x%04x\n", drb);
 #endif
 
 		/* Brings the upper DRB back down to be base for

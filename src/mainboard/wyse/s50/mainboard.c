@@ -21,13 +21,21 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <arch/io.h>
 #include "chip.h"
+
+static void init(struct device *dev)
+{
+	printk(BIOS_DEBUG, "S50 ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "S50 EXIT %s\n", __func__);
+}
+
+static void enable_dev(struct device *dev)
+{
+	dev->ops->init = init;
+}
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("WYSE S50 Mainboard")
+	.enable_dev = enable_dev,
 };
 

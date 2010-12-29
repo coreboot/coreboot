@@ -70,6 +70,7 @@
 #define ATA_SB_GLD_MSR_CONF	(MSR_SB_ATA + 0x01)
 #define ATA_SB_GLD_MSR_ERR	(MSR_SB_ATA + 0x03)
 #define ATA_SB_GLD_MSR_PM	(MSR_SB_ATA + 0x04)
+#define ATA_SB_IDE_CFG		(MSR_SB_ATA + 0x10)
 
 /* AC97 */
 #define AC97_SB_GLD_MSR_CONF	(MSR_SB_AC97 + 0x01)

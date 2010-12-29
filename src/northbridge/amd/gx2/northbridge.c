@@ -1,3 +1,23 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010 Nils Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -9,14 +29,162 @@
 #include <bitops.h>
 #include "chip.h"
 #include "northbridge.h"
-#include <cpu/amd/gx2def.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/vr.h>
 #include <cpu/cpu.h>
 #include "../../../southbridge/amd/cs5536/cs5536.h"
 
-#define NORTHBRIDGE_FILE "northbridge.c"
+void print_conf(void);
+
+/* Print the platform configuration - do before PCI init or it will not
+ * work right.
+ */
+void print_conf(void)
+{
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
+	int i;
+	unsigned long iol;
+	msr_t msr;
+
+	int cpu_msr_defs[] = { CPU_IM_CONFIG, CPU_DM_CONFIG0,
+		CPU_RCONF_DEFAULT, CPU_RCONF_BYPASS, CPU_RCONF_A0_BF,
+		CPU_RCONF_C0_DF, CPU_RCONF_E0_FF, CPU_RCONF_SMM, CPU_RCONF_DMM,
+		GLCP_DELAY_CONTROLS, GL_END
+	};
+
+	int gliu0_msr_defs[] = { GLIU0_P2D_BM_0, GLIU0_P2D_BM_1,
+		GLIU0_P2D_BM_2, GLIU0_P2D_BM_3, GLIU0_P2D_BM_4,
+		GLIU0_P2D_BM_5, GLIU0_P2D_BMO_0, GLIU0_P2D_BMO_1,
+		GLIU0_P2D_R_0, GLIU0_P2D_RO_0, GLIU0_P2D_RO_1,
+		GLIU0_P2D_RO_2, GLIU0_P2D_SC_0, GLIU0_IOD_BM_0, GLIU0_IOD_BM_1,
+		GLIU0_IOD_BM_2, GLIU0_IOD_SC_0, GLIU0_IOD_SC_1, GLIU0_IOD_SC_2,
+		GLIU0_IOD_SC_3, GLIU0_IOD_SC_4, GLIU0_IOD_SC_5,
+		GLIU0_GLD_MSR_COH, GL_END
+	};
+
+	int gliu1_msr_defs[] = { GLIU1_P2D_BM_0, GLIU1_P2D_BM_1,
+		GLIU1_P2D_BM_2, GLIU1_P2D_BM_3, GLIU1_P2D_BM_4,
+		GLIU1_P2D_BM_5, GLIU1_P2D_BM_6, GLIU1_P2D_BM_7,
+		GLIU1_P2D_BM_8, GLIU1_P2D_R_0, GLIU1_P2D_R_1,
+		GLIU1_P2D_R_2, GLIU1_P2D_R_3, GLIU1_P2D_SC_0,
+		GLIU1_IOD_BM_0, GLIU1_IOD_BM_1, GLIU1_IOD_BM_2, GLIU1_IOD_SC_0,
+		GLIU1_IOD_SC_1, GLIU1_IOD_SC_2, GLIU1_IOD_SC_3, GLIU1_IOD_SC_4,
+		GLIU1_IOD_SC_5, GLIU1_GLD_MSR_COH, GL_END
+	};
+
+	int rconf_msr[] = { CPU_RCONF0, CPU_RCONF1, CPU_RCONF2, CPU_RCONF3,
+		CPU_RCONF4, CPU_RCONF5, CPU_RCONF6, CPU_RCONF7, GL_END
+	};
+
+	int lbar_msr[] = { MDD_LBAR_GPIO, MDD_LBAR_FLSH0, MDD_LBAR_FLSH1, GL_END
+	};
+
+	int irq_msr[] = { MDD_IRQM_YLOW, MDD_IRQM_YHIGH, MDD_IRQM_ZLOW, MDD_IRQM_ZHIGH,
+		MDD_IRQM_PRIM, GL_END
+	};
+
+	int pci_msr[] = { GLPCI_CTRL, GLPCI_ARB, GLPCI_REN, GLPCI_A0_BF,
+		GLPCI_C0_DF, GLPCI_E0_FF, GLPCI_RC0, GLPCI_RC1, GLPCI_RC2,
+		GLPCI_RC3, GLPCI_ExtMSR, GLPCI_SPARE, GL_END
+	};
+
+	int dma_msr[] = { MDD_DMA_MAP, MDD_DMA_SHAD1, MDD_DMA_SHAD2,
+		MDD_DMA_SHAD3, MDD_DMA_SHAD4, MDD_DMA_SHAD5, MDD_DMA_SHAD6,
+		MDD_DMA_SHAD7, MDD_DMA_SHAD8, MDD_DMA_SHAD9, GL_END
+	};
+
+	printk(BIOS_DEBUG, "---------- CPU ------------\n");
+
+	for (i = 0; cpu_msr_defs[i] != GL_END; i++) {
+		msr = rdmsr(cpu_msr_defs[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
+			     cpu_msr_defs[i], msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- GLIU 0 ------------\n");
+
+	for (i = 0; gliu0_msr_defs[i] != GL_END; i++) {
+		msr = rdmsr(gliu0_msr_defs[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
+			     gliu0_msr_defs[i], msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- GLIU 1 ------------\n");
+
+	for (i = 0; gliu1_msr_defs[i] != GL_END; i++) {
+		msr = rdmsr(gliu1_msr_defs[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
+			     gliu1_msr_defs[i], msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- RCONF ------------\n");
+
+	for (i = 0; rconf_msr[i] != GL_END; i++) {
+		msr = rdmsr(rconf_msr[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", rconf_msr[i],
+			     msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- VARIA ------------\n");
+	msr = rdmsr(ATA_SB_IDE_CFG);
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", ATA_SB_IDE_CFG, msr.hi,
+		     msr.lo);
+
+	msr = rdmsr(MDD_LEG_IO);
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_LEG_IO, msr.hi,
+		     msr.lo);
+
+	msr = rdmsr(MDD_PIN_OPT);
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_PIN_OPT, msr.hi,
+		     msr.lo);
+
+	printk(BIOS_DEBUG, "---------- PCI ------------\n");
+
+	for (i = 0; pci_msr[i] != GL_END; i++) {
+		msr = rdmsr(pci_msr[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", pci_msr[i],
+			     msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- LPC/UART DMA ------------\n");
+
+	for (i = 0; dma_msr[i] != GL_END; i++) {
+		msr = rdmsr(dma_msr[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", dma_msr[i],
+			     msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- DIVIL IRQ ------------\n");
+
+	for (i = 0; irq_msr[i] != GL_END; i++) {
+		msr = rdmsr(irq_msr[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", irq_msr[i],
+			     msr.hi, msr.lo);
+	}
+
+	printk(BIOS_DEBUG, "---------- DIVIL LBAR -----------\n");
+
+	for (i = 0; lbar_msr[i] != GL_END; i++) {
+		msr = rdmsr(lbar_msr[i]);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", lbar_msr[i],
+			     msr.hi, msr.lo);
+	}
+
+	iol = inl(GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
+		     GPIO_IO_BASE + GPIOL_INPUT_ENABLE, iol);
+	iol = inl(GPIOL_EVENTS_ENABLE);
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
+		     GPIO_IO_BASE + GPIOL_EVENTS_ENABLE, iol);
+	iol = inl(GPIOL_INPUT_INVERT_ENABLE);
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
+		     GPIO_IO_BASE + GPIOL_INPUT_INVERT_ENABLE, iol);
+	iol = inl(GPIO_MAPPER_X);
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n", GPIO_IO_BASE + GPIO_MAPPER_X,
+		     iol);
+#endif				/* CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR */
+}
 
 /* todo: add a resource record. We don't do this here because this may be called when
  * very little of the platform is actually working.
@@ -47,12 +215,6 @@ int sizeram(void)
 	return sizem;
 }
 
-/* here is programming for the various MSRs. */
-#define IM_QWAIT 0x100000
-
-#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */ /* in high */
-#define DMCF_SERIAL_LOAD_MISSES  (2) /* enabled */
-
 /* these are the 8-bit attributes for controlling RCONF registers */
 #define CACHE_DISABLE (1<<0)
 #define WRITE_ALLOCATE (1<<1)
@@ -65,51 +227,6 @@ int sizeram(void)
 #define RAM_PROPERTIES (0)
 #define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
 #define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_PROTECT|CACHE_DISABLE)
-/* build initializer for P2D MSR */
-#define P2D_BM(msr, pdid1, bizarro, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pbase>>24), .lo=(pbase<<8)|pmask}}
-#define P2D_SC(msr, pdid1, bizarro, wen, ren,pscbase) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(wen), .lo=(ren<<16)|(pscbase>>18)}}
-
-struct msr_defaults
-{
-	int msr_no;
-	msr_t msr;
-} msr_defaults [] = {
-	{0x1700, {.hi = 0, .lo = IM_QWAIT}},
-	{0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST, .lo = DMCF_SERIAL_LOAD_MISSES}},
-	/* now for GLPCI routing */
-	/* GLIU0 */
-	P2D_BM(0x10000020, 0x1, 0x0, 0x0, 0xfff80),
-	P2D_BM(0x10000021, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(0x1000002c, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
-	/* GLIU1 */
-	P2D_BM(0x40000020, 0x1, 0x0, 0x0, 0xfff80),
-	P2D_BM(0x40000021, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(0x4000002d, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
-	{0}
-};
-
-/* note that dev is NOT used -- yet */
-static void irq_init_steering(struct device *dev, u16 irq_map)
-{
-	/* Set up IRQ steering */
-	u32 pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
-
-	printk(BIOS_DEBUG, "%s(%p [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
-
-	/* The IRQ steering values (in hex) are effectively dcba, where:
-	 *    <a> represents the IRQ for INTA,
-	 *    <b> represents the IRQ for INTB,
-	 *    <c> represents the IRQ for INTC, and
-	 *    <d> represents the IRQ for INTD.
-	 * Thus, a value of irq_map = 0xAA5B translates to:
-	 *    INTA = IRQB (IRQ 11)
-	 *    INTB = IRQ5 (IRQ 5)
-	 *    INTC = IRQA (IRQ 10)
-	 *    INTD = IRQA (IRQ 10)
-	 */
-	outl(pciAddr & ~3, 0xCF8);
-	outl(irq_map,      0xCFC);
-}
 
 /* setup_gx2_cache
  *
@@ -191,26 +308,25 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev)
 {
-	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
-	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
+	printk(BIOS_SPEW, ">> Entering northbridge: %s()\n", __func__);
 
 	enable_shadow(dev);
-	irq_init_steering(dev, nb->irqmap);
 }
 
-/* due to vsa interactions, we need not not touch the nb settings ... */
-/* this is a test -- we are not sure it will work -- but it ought to */
-static void set_resources(struct device *dev)
+static void northbridge_set_resources(struct device *dev)
 {
+	uint8_t line;
+
 	struct bus *bus;
 
 	for(bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
+			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
+			     bus->secondary);
 			assign_resources(bus);
 		}
 	}
 
-#if 0
 	/* set a default latency timer */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
 
@@ -220,18 +336,17 @@ static void set_resources(struct device *dev)
 	}
 
 	/* zero the irq settings */
-	u8 line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+	line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 	if (line) {
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
 	}
 	/* set the cache line size, so far 64 bytes is good for everyone */
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
-#endif
 }
 
 static struct device_operations northbridge_operations = {
 	.read_resources = pci_dev_read_resources,
-	.set_resources = set_resources,
+	.set_resources = northbridge_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = northbridge_init,
 	.enable = 0,
@@ -244,24 +359,64 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_NS_GX2,
 };
 
-/* FIXME handle UMA correctly. */
-#define FRAMEBUFFERK 4096
+#if CONFIG_WRITE_HIGH_TABLES==1
+#include <cbmem.h>
+#endif
 
 static void pci_domain_set_resources(device_t dev)
 {
+	int idx;
+	u32 tomk;
+	device_t mc_dev;
+
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+
+	mc_dev = dev->link_list->children;
+	if (mc_dev) {
+		tomk = get_systop() / 1024;
+		/* Report the memory regions
+		   All memory up to systop except 0xa0000-0xbffff */
+		idx = 10;
+		ram_resource(dev, idx++, 0, 640);
+		ram_resource(dev, idx++, 768, tomk - 768);	/* Systop - 0xc0000 -> KB */
+
+#if CONFIG_WRITE_HIGH_TABLES==1
+		/* Leave some space for ACPI, PIRQ and MP tables */
+		high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
+		high_tables_size = HIGH_MEMORY_SIZE;
+#endif
+	}
+
 	assign_resources(dev->link_list);
+}
+
+static void pci_domain_enable(device_t dev)
+{
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+
+	/* do this here for now -- this chip really breaks our device model */
+	northbridge_init_early();
+	cpubug();
+	chipsetinit();
+	setup_gx2();
+	print_conf();
+	do_vsmbios();
+	graphics_init();
+	pci_set_method(dev);
 }
 
 static struct device_operations pci_domain_ops = {
 	.read_resources = pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
+	.enable = pci_domain_enable,
 };
 
 static void cpu_bus_init(device_t dev)
 {
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+
 	initialize_cpus(dev->link_list);
 }
 
@@ -277,42 +432,16 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus = 0,
 };
 
-void chipsetInit (void);
-
-#if CONFIG_WRITE_HIGH_TABLES==1
-#include <cbmem.h>
-#endif
-
 static void enable_dev(struct device *dev)
 {
-	printk(BIOS_DEBUG, "gx2 north: enable_dev\n");
-	void do_vsmbios(void);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s with path %d\n",
+		    __func__, dev->path.type);
 
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-		u32 tomk;
-		printk(BIOS_DEBUG, "DEVICE_PATH_PCI_DOMAIN\n");
-		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
-		northbridgeinit();
-		cpubug();
-		chipsetinit();
-		setup_gx2();
-		do_vsmbios();
-		graphics_init();
+	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN)
 		dev->ops = &pci_domain_ops;
-		pci_set_method(dev);
-		tomk = ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE;
-#if CONFIG_WRITE_HIGH_TABLES==1
-		/* Leave some space for ACPI, PIRQ and MP tables */
-		high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-		high_tables_size = HIGH_MEMORY_SIZE;
-#endif
-		ram_resource(dev, 0, 0, tomk);
-	} else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-		printk(BIOS_DEBUG, "DEVICE_PATH_APIC_CLUSTER\n");
+	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	}
-	printk(BIOS_DEBUG, "gx2 north: end enable_dev\n");
 }
 
 struct chip_operations northbridge_amd_gx2_ops = {

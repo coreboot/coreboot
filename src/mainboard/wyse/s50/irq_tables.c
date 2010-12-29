@@ -20,6 +20,24 @@
 
 #include <arch/pirq_routing.h>
 
+/* Platform IRQs */
+#define PIRQA 11
+#define PIRQB 5
+#define PIRQC 10
+#define PIRQD 10
+
+/* Map */
+#define M_PIRQA (1 << PIRQA)	/* Bitmap of supported IRQs */
+#define M_PIRQB (1 << PIRQB)	/* Bitmap of supported IRQs */
+#define M_PIRQC (1 << PIRQC)	/* Bitmap of supported IRQs */
+#define M_PIRQD (1 << PIRQD)	/* Bitmap of supported IRQs */
+
+/* Link */
+#define L_PIRQA	 1		/* Means Slot INTx# Connects To Chipset INTA# */
+#define L_PIRQB	 2		/* Means Slot INTx# Connects To Chipset INTB# */
+#define L_PIRQC	 3		/* Means Slot INTx# Connects To Chipset INTC# */
+#define L_PIRQD	 4		/* Means Slot INTx# Connects To Chipset INTD# */
+
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,		/* u16 version */

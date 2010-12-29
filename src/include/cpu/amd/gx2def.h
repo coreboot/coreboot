@@ -77,8 +77,6 @@
 #define	GL1_GLCP	3
 #define	GL1_PCI		4
 #define	GL1_FG		5
-#define GL1_VIP		5
-#define GL1_AES		6
 
 #define	MSR_GLIU0	(GL0_GLIU0	<< 29) + (1 << 28)	/* 1000xxxx - To get on GeodeLink one bit has to be set */
 #define	MSR_MC		(GL0_MC		<< 29)			/* 2000xxxx */
@@ -91,11 +89,6 @@
 #define	MSR_GLCP	(GL1_GLCP << 26) + MSR_GLIU1		/* 4C00xxxx */
 #define	MSR_PCI		(GL1_PCI << 26) + MSR_GLIU1		/* 5000xxxx */
 #define	MSR_FG		(GL1_FG << 26) + MSR_GLIU1		/* 5400xxxx */
-#define MSR_VIP		((GL1_VIP << 26) + MSR_GLIU1)		/* 5400xxxx */
-#define MSR_AES		((GL1_AES << 26) + MSR_GLIU1)		/* 5800xxxx */
-
-/* South Bridge */
-#define SB_PORT	2			/* port of the SouthBridge */
 
 /* GeodeLink Interface Unit 0 (GLIU0) port0 */
 #define	GLIU0_GLD_MSR_CAP		(MSR_GLIU0 + 0x2000)
@@ -386,20 +379,10 @@
 
 /* FooGlue GLIU1 port 5 */
 #define	FG_GLD_MSR_CAP		(MSR_FG + 0x2000)
+#define	FG_GLD_MSR_CONFIG	(MSR_FG + 0x2001)
 #define	FG_GLD_MSR_PM		(MSR_FG + 0x2004)
-
-/* VIP GLIU1 port 5 */
-#define VIP_GLD_MSR_CAP		(MSR_VIP + 0x2000)
-#define VIP_GLD_MSR_CONFIG	(MSR_VIP + 0x2001)
-#define VIP_GLD_MSR_PM		(MSR_VIP + 0x2004)
-#define VIP_BIST		(MSR_VIP + 0x2005)
-#define VIP_GIO_MSR_SEL		(MSR_VIP + 0x2010)
-
-/* AES GLIU1 port 6 */
-#define AES_GLD_MSR_CAP		(MSR_AES + 0x2000)
-#define AES_GLD_MSR_CONFIG	(MSR_AES + 0x2001)
-#define AES_GLD_MSR_PM		(MSR_AES + 0x2004)
-#define AES_CONTROL		(MSR_AES + 0x2006)
+#define	FG_GIO_MSR_SEL		(MSR_FG + 0x2010)
+#define	FG_BIST			(MSR_FG + 0x2005)
 
 /* from MC spec */
 #define MIN_MOD_BANKS		1
@@ -429,22 +412,75 @@
 
 #define MSR_GL0	(GL1_GLIU0 << 29)
 
-/* Set up desc addresses from 20 - 3f */
+/* Set up desc addresses from 20 - E8 */
 /* This is chip specific! */
+//remove after MSRINIT is gone
 #define MSR_GLIU0_BASE1		(MSR_GLIU0 + 0x20)	/* BM */
 #define MSR_GLIU0_BASE2		(MSR_GLIU0 + 0x21)	/* BM */
 #define MSR_GLIU0_SHADOW	(MSR_GLIU0 + 0x2C)	/* SCO should only be SC */
 #define MSR_GLIU0_SYSMEM	(MSR_GLIU0 + 0x28)	/* RO should only be R */
-#define MSR_GLIU0_SMM		(MSR_GLIU0 + 0x26)	/* BMO */
-#define MSR_GLIU0_DMM		(MSR_GLIU0 + 0x27)	/* BMO */
 
 #define MSR_GLIU1_BASE1		(MSR_GLIU1 + 0x20)	/* BM */
 #define MSR_GLIU1_BASE2		(MSR_GLIU1 + 0x21)	/* BM */
 #define MSR_GLIU1_SHADOW	(MSR_GLIU1 + 0x2D)	/* SCO should only be SC */
 #define MSR_GLIU1_SYSMEM	(MSR_GLIU1 + 0x29)	/* RO should only be R */
-#define MSR_GLIU1_SMM		(MSR_GLIU1 + 0x23)	/* BM */
-#define MSR_GLIU1_DMM		(MSR_GLIU1 + 0x24)	/* BM */
-#define MSR_GLIU1_FPU_TRAP	(MSR_GLIU1 + 0x0E3)	/* FooGlue F0 for FPU */
+
+#define GLIU0_P2D_BM_0		(MSR_GLIU0 + 0x20)	/* BASE1 */
+#define GLIU0_P2D_BM_1		(MSR_GLIU0 + 0x21)	/* BASE2 */
+#define GLIU0_P2D_BM_2		(MSR_GLIU0 + 0x22)
+#define GLIU0_P2D_BM_3		(MSR_GLIU0 + 0x23)
+#define GLIU0_P2D_BM_4		(MSR_GLIU0 + 0x24)
+#define GLIU0_P2D_BM_5		(MSR_GLIU0 + 0x25)
+
+#define GLIU0_P2D_BMO_0		(MSR_GLIU0 + 0x26)	/* SMM */
+#define GLIU0_P2D_BMO_1		(MSR_GLIU0 + 0x27)	/* DMM */
+
+#define GLIU0_P2D_R_0		(MSR_GLIU0 + 0x28)	/* SYSMEM */
+
+#define GLIU0_P2D_RO_0		(MSR_GLIU0 + 0x29)
+#define GLIU0_P2D_RO_1		(MSR_GLIU0 + 0x2A)
+#define GLIU0_P2D_RO_2		(MSR_GLIU0 + 0x2B)
+
+#define GLIU0_P2D_SC_0		(MSR_GLIU0 + 0x2C)	/* SHADOW */
+
+#define GLIU0_IOD_BM_0		(MSR_GLIU0 + 0xE0)
+#define GLIU0_IOD_BM_1		(MSR_GLIU0 + 0xE1)
+#define GLIU0_IOD_BM_2		(MSR_GLIU0 + 0xE2)
+
+#define GLIU0_IOD_SC_0		(MSR_GLIU0 + 0xE3)
+#define GLIU0_IOD_SC_1		(MSR_GLIU0 + 0xE4)
+#define GLIU0_IOD_SC_2		(MSR_GLIU0 + 0xE5)
+#define GLIU0_IOD_SC_3		(MSR_GLIU0 + 0xE6)
+#define GLIU0_IOD_SC_4		(MSR_GLIU0 + 0xE7)
+#define GLIU0_IOD_SC_5		(MSR_GLIU0 + 0xE8)
+
+#define GLIU1_P2D_BM_0		(MSR_GLIU1 + 0x20)	/* BASE1 */
+#define GLIU1_P2D_BM_1		(MSR_GLIU1 + 0x21)	/* BASE2 */
+#define GLIU1_P2D_BM_2		(MSR_GLIU1 + 0x22)
+#define GLIU1_P2D_BM_3		(MSR_GLIU1 + 0x23)	/* SMM */
+#define GLIU1_P2D_BM_4		(MSR_GLIU1 + 0x24)	/* DMM */
+#define GLIU1_P2D_BM_5		(MSR_GLIU1 + 0x25)
+#define GLIU1_P2D_BM_6		(MSR_GLIU1 + 0x26)
+#define GLIU1_P2D_BM_7		(MSR_GLIU1 + 0x27)
+#define GLIU1_P2D_BM_8		(MSR_GLIU1 + 0x28)
+
+#define GLIU1_P2D_R_0		(MSR_GLIU1 + 0x29)	/* SYSMEM */
+#define GLIU1_P2D_R_1		(MSR_GLIU1 + 0x2A)
+#define GLIU1_P2D_R_2		(MSR_GLIU1 + 0x2B)
+#define GLIU1_P2D_R_3		(MSR_GLIU1 + 0x2C)
+
+#define GLIU1_P2D_SC_0		(MSR_GLIU1 + 0x2D)	/* SHADOW */
+
+#define GLIU1_IOD_BM_0		(MSR_GLIU1 + 0xE0)
+#define GLIU1_IOD_BM_1		(MSR_GLIU1 + 0xE1)
+#define GLIU1_IOD_BM_2		(MSR_GLIU1 + 0xE2)
+
+#define GLIU1_IOD_SC_0		(MSR_GLIU1 + 0xE3)	/* FooGlue F0 for FPU */
+#define GLIU1_IOD_SC_1		(MSR_GLIU1 + 0xE4)
+#define GLIU1_IOD_SC_2		(MSR_GLIU1 + 0xE5)
+#define GLIU1_IOD_SC_3		(MSR_GLIU1 + 0xE6)
+#define GLIU1_IOD_SC_4		(MSR_GLIU1 + 0xE7)
+#define GLIU1_IOD_SC_5		(MSR_GLIU1 + 0xE8)
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET		0x40400000

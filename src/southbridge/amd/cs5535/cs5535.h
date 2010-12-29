@@ -91,12 +91,12 @@
 #define MDD_LBAR_MFGPT		(MSR_SB_MDD + 0x0D)
 #define MDD_LBAR_ACPI		(MSR_SB_MDD + 0x0E)
 #define MDD_LBAR_PMS		(MSR_SB_MDD + 0x0F)
-#define MDD_LBAR_FLSH0		(MSR_SB_MDD + 0x010)
-#define MDD_LBAR_FLSH1		(MSR_SB_MDD + 0x011)
-#define MDD_LBAR_FLSH2		(MSR_SB_MDD + 0x012)
-#define MDD_LBAR_FLSH3		(MSR_SB_MDD + 0x013)
-#define MDD_PIN_OPT		(MSR_SB_MDD + 0x015)
-#define MDD_NORF_CNTRL		(MSR_SB_MDD + 0x018)
+#define MDD_LBAR_FLSH0		(MSR_SB_MDD + 0x10)
+#define MDD_LBAR_FLSH1		(MSR_SB_MDD + 0x11)
+#define MDD_LBAR_FLSH2		(MSR_SB_MDD + 0x12)
+#define MDD_LBAR_FLSH3		(MSR_SB_MDD + 0x13)
+#define MDD_PIN_OPT		(MSR_SB_MDD + 0x15)
+#define MDD_NORF_CNTRL		(MSR_SB_MDD + 0x18)
 
 /* GPIO */
 #define GPIOL_2_SET		(1 << 2)

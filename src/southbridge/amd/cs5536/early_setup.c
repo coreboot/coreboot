@@ -20,7 +20,7 @@
 /*
  * cs5536_early_setup.c:	Early chipset initialization for CS5536 companion device
  *	This file implements the initialization sequence documented in section 4.2 of
- *	AMD Geode GX Processor CS5536 Companion Device GoedeROM Porting Guide.
+ *	AMD Geode GX Processor CS5536 Companion Device GeodeROM Porting Guide.
  */
 
 /**

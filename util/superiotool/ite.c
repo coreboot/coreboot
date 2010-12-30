@@ -798,6 +798,8 @@ static void exit_conf_mode_ite(uint16_t port)
 	regwrite(port, 0x02, 0x02);
 }
 
+static int chip_found_at_port;
+
 static void probe_idregs_ite_helper(const char *init, uint16_t port)
 {
 	uint16_t id, chipver, ecport;
@@ -817,6 +819,7 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 	printf("Found ITE %s (id=0x%04x, rev=0x%01x) at 0x%x\n",
 	       get_superio_name(reg_table, id), id, chipver, port);
 	chip_found = 1;
+	chip_found_at_port = 1;
 
 	dump_superio("ITE", reg_table, port, id, LDN_SEL);
 
@@ -837,41 +840,43 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 
 void probe_idregs_ite(uint16_t port)
 {
+	chip_found_at_port = 0;
+
 	if (port == 0x3f0 || port == 0x3bd || port == 0x370) {
 		enter_conf_mode_ite_legacy(port, initkey_it8661f);
 		probe_idregs_ite_helper("(init=legacy/it8661f) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 
 		enter_conf_mode_ite_legacy(port, initkey_it8671f);
 		probe_idregs_ite_helper("(init=legacy/it8671f) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 	} else {
 		enter_conf_mode_ite(port);
 		probe_idregs_ite_helper("(init=standard) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 
 		enter_conf_mode_ite_it8502e(port);
 		probe_idregs_ite_helper("(init=it8502e) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 
 		enter_conf_mode_ite_it8761e(port);
 		probe_idregs_ite_helper("(init=it8761e) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 
 		enter_conf_mode_ite_it8228e(port);
 		probe_idregs_ite_helper("(init=it8228e) ", port);
 		exit_conf_mode_ite(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 
 		enter_conf_mode_winbond_fintek_ite_8787(port);
 		probe_idregs_ite_helper("(init=0x87,0x87) ", port);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
-		if (chip_found) return;
+		if (chip_found_at_port) return;
 	}
 }
 

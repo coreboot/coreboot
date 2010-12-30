@@ -625,6 +625,8 @@ static void enter_conf_mode_winbond_86(uint16_t port)
 	OUTB(0x86, port);
 }
 
+static int chip_found_at_port;
+
 static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 {
 	uint16_t id, hwmport;
@@ -662,6 +664,7 @@ static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 		printf("Found Winbond %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
 		       get_superio_name(reg_table, id), devid, rev, port);
 	chip_found = 1;
+	chip_found_at_port = 1;
 
 	dump_superio("Winbond", reg_table, port, id, LDN_SEL);
 
@@ -688,25 +691,27 @@ static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 
 void probe_idregs_winbond(uint16_t port)
 {
+	chip_found_at_port = 0;
+
 	enter_conf_mode_winbond_88(port);
 	probe_idregs_winbond_helper("(init=0x88) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
-	if (chip_found) return;
+	if (chip_found_at_port) return;
 
 	enter_conf_mode_winbond_89(port);
 	probe_idregs_winbond_helper("(init=0x89) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
-	if (chip_found) return;
+	if (chip_found_at_port) return;
 
 	enter_conf_mode_winbond_86(port);
 	probe_idregs_winbond_helper("(init=0x86,0x86) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
-	if (chip_found) return;
+	if (chip_found_at_port) return;
 
 	enter_conf_mode_winbond_fintek_ite_8787(port);
 	probe_idregs_winbond_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
-	if (chip_found) return;
+	if (chip_found_at_port) return;
 }
 
 void print_winbond_chips(void)

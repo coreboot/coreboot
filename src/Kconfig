@@ -333,7 +333,8 @@ menu "Payload"
 
 choice
 	prompt "Add a payload"
-	default PAYLOAD_NONE
+	default PAYLOAD_NONE if !ARCH_X86
+	default PAYLOAD_SEABIOS if ARCH_X86
 
 config PAYLOAD_NONE
 	bool "None"
@@ -355,6 +356,31 @@ config PAYLOAD_ELF
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
+config PAYLOAD_SEABIOS
+	bool "SeaBIOS"
+	depends on ARCH_X86
+	help
+	  Select this option if you want to build a coreboot image
+	  with a SeaBIOS payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See http://coreboot.org/Payloads for more information.
+
+endchoice
+
+choice
+	prompt "SeaBIOS version"
+	default SEABIOS_STABLE
+	depends on PAYLOAD_SEABIOS
+
+config SEABIOS_STABLE
+	bool "stable"
+	help
+	  Stable SeaBIOS version
+config SEABIOS_MASTER
+	bool "master"
+	help
+	  Newest SeaBIOS version
 endchoice
 
 config PAYLOAD_FILE
@@ -364,11 +390,15 @@ config PAYLOAD_FILE
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
+config PAYLOAD_FILE
+	depends on PAYLOAD_SEABIOS
+	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
 	default y
-	depends on PAYLOAD_ELF
+	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.

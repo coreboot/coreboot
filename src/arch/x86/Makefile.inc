@@ -34,8 +34,11 @@ endif
 #######################################################################
 # Build the final rom image
 COREBOOT_ROM_DEPENDENCIES:=
-ifneq ($(CONFIG_PAYLOAD_NONE),y)
+ifeq ($(CONFIG_PAYLOAD_ELF),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_PAYLOAD_FILE)
+endif
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+COREBOOT_ROM_DEPENDENCIES+=seabios
 endif
 ifeq ($(CONFIG_VGA_BIOS),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VGA_BIOS_FILE)
@@ -80,8 +83,13 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call 
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
-else
+endif
+ifeq ($(CONFIG_PAYLOAD_ELF),y)
 	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
+	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_VGA_BIOS),y)
@@ -272,3 +280,10 @@ include $(src)/arch/x86/Makefile.bootblock.inc
 else
 include $(src)/arch/x86/Makefile.bigbootblock.inc
 endif
+
+seabios:
+	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
+			CC="$(CC)" LD="$(LD)" \
+			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \
+			CONFIG_SEABIOS_STABLE=$(CONFIG_SEABIOS_STABLE)
+

@@ -175,6 +175,7 @@ function create_config
 		echo "CONFIG_CBFS_PREFIX=\"$cbfs_prefix\"" >> ${build_dir}/config.build
 		if [ "$PAYLOAD" != "/dev/null" ]; then
 			echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
+			echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
 			echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build
 			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
 		fi

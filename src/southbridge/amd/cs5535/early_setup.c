@@ -107,15 +107,11 @@ static void cs5535_setup_cis_mode(void)
 {
 	msr_t msr;
 
-	/* setup CPU interface serial to mode C on both sides */
+	/* Setup CPU serial SouthBridge interface to mode C. */
 	msr = rdmsr(GLPCI_SB_CTRL);
 	msr.lo &= ~0x18;
 	msr.lo |= 0x10;
 	wrmsr(GLPCI_SB_CTRL, msr);
-	//Only do this if we are building for 5535
-	msr.lo = 0x2;
-	msr.hi = 0x0;
-	wrmsr(VIP_GIO_MSR_SEL, msr);
 }
 
 static void dummy(void)

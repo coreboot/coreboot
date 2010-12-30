@@ -145,7 +145,7 @@ static void cs5536_setup_cis_mode(void)
 {
 	msr_t msr;
 
-	/* setup CPU interface serial to mode B to match CPU */
+	/* Setup CPU serial SouthBridge interface to mode C. */
 	msr = rdmsr(GLPCI_SB_CTRL);
 	msr.lo &= ~0x18;
 	msr.lo |= 0x10;

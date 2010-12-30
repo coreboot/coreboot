@@ -88,16 +88,13 @@ void cpuRegInit (void)
 	msr.lo =  0x00000603C;
 	wrmsr(msrnum, msr);
 
-/* Only do this if we are building for 5535 */
 /* FooGlue Setup */
-#if 1
-	/* Enable CIS mode B in FooGlue */
-	msrnum = MSR_FG + 0x10;
+	/* Set CS5535/CS5536 mode in FooGlue */
+	msrnum = FG_GIO_MSR_SEL;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~3;
-	msr.lo |= 2;		/* ModeB */
+	msr.lo |= 2;		/* IIOC mode CS5535/CS5536 enable. (according to Jordan Crouse the databook is wrong bits 1:0 have to be 2 instead of 1) */
 	wrmsr(msrnum, msr);
-#endif
 
 /* Disable DOT PLL. Graphics init will enable it if needed. */
 	msrnum = GLCP_DOTPLL;

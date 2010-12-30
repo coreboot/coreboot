@@ -78,9 +78,8 @@ static void pll_reset(void)
 	} else if (CONFIG_GX2_PROCESSOR_MHZ == 300) {
 		DEFAULT_FBDIV = 18;
 	} else {
-		printk(BIOS_ERR, "Unsupported GX2_PROCESSOR_MHZ setting!\n");
 		post_code(POST_PLL_CPU_VER_FAIL);
-		__asm__ __volatile__("hlt\n");
+		die("Unsupported GX2_PROCESSOR_MHZ setting!\n");
 	}
 
 	/* clear the Bypass bit */
@@ -186,7 +185,7 @@ static void pll_reset(void)
 
 		/* You should never get here..... The chip has reset. */
 		post_code(POST_PLL_RESET_FAIL);
-		while (1);
+		die("CONFIGURING PLL FAILURE\n");
 
 	} /* we haven't configured the PLL; do it now */
 

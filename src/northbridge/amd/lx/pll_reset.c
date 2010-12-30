@@ -59,9 +59,8 @@ static void pll_reset(char manualconf)
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
 
 		/* You should never get here..... The chip has reset. */
-		printk(BIOS_ERR, "CONFIGURING PLL FAILURE\n");
 		post_code(POST_PLL_RESET_FAIL);
-		__asm__ __volatile__("hlt\n");
+		die("CONFIGURING PLL FAILURE\n");
 
 	}
 	printk(BIOS_DEBUG, "PLL configured.\n");

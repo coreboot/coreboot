@@ -16,14 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-#
+
 config SOUTHBRIDGE_AMD_CIMX_WRAPPER
-        bool
-        default n
+	bool
+	default n
 
 config SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
-        bool
-        select IOAPIC
-        select SOUTHBRIDGE_AMD_CIMX_WRAPPER
+	bool
+	select IOAPIC
+	select SOUTHBRIDGE_AMD_CIMX_WRAPPER
 
 source src/southbridge/amd/cimx_wrapper/sb800/Kconfig
+

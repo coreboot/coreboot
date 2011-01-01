@@ -27,6 +27,7 @@
 
 #include <cpu/x86/mtrr/earlymtrr.c>
 #include <northbridge/amd/amdfam10/raminit_amdmct.c>
+#include <reset.h>
 
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);

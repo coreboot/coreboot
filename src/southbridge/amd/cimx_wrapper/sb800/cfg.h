@@ -17,12 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #ifndef _SB800_CFG_H_
 #define _SB800_CFG_H_
 
 #include <stdint.h>
-
 
 /**
  * @def BIOS_SIZE_1M
@@ -150,7 +148,6 @@
  */
 #define SATA_PORT_MULT_CAP_RESERVED	1
 
-
 /**
  * @def   AZALIA_AUTO
  * @brief Detect Azalia controller automatically.
@@ -218,10 +215,8 @@
   #define GPP_CFGMODE			GPP_CFGMODE_X1111
 #endif
 
-
 /**
  * @brief South Bridge CIMx configuration
- *
  */
 void sb800_cimx_config(AMDSBCFG *sb_cfg);
 
@@ -233,7 +228,6 @@ void sb800_cimx_config(AMDSBCFG *sb_cfg);
  * @param[in] func    Southbridge CIMx Function ID.
  * @param[in] data    Southbridge Input Data.
  * @param[in] sb_cfg  Southbridge configuration structure pointer.
- *
  */
 u32 sb800_callout_entry(u32 func, u32 data, void* sb_cfg);
 

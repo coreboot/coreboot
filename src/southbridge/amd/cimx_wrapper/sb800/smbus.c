@@ -17,9 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <arch/io.h>
-#include "sb800_smbus.h"
+#include <southbridge/amd/cimx_wrapper/sb800/smbus.h>
 
 static inline void smbus_delay(void)
 {
@@ -248,4 +247,3 @@ void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val)
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);
 }
-

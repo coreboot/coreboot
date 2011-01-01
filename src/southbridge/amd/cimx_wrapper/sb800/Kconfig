@@ -17,10 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-
 if SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/cimx_wrapper/sb800/bootblock.c"
-endif #SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
+	string
+	default "southbridge/amd/cimx_wrapper/sb800/bootblock.c"
+
+endif
 

@@ -24,18 +24,18 @@
 #ifndef  _AMD_SBPLATFORM_H_
 #define  _AMD_SBPLATFORM_H_
 
-#include "cbtypes.h"
+#include <southbridge/amd/cimx_wrapper/sb800/cbtypes.h>
 typedef UINT64 PLACEHOLDER;
-#include "Amdlib.h"
-#include "Amd.h"
-#include "amdlib32.h"//TODO merge with agesa wrapper
-#include "SB800.h"
-#include "SBTYPE.h"
-#include "ACPILIB.h"
-#include "SBDEF.h"
-#include "AMDSBLIB.h"
-#include "SBSUBFUN.h"
-#include "OEM.h"
+#include <southbridge/amd/cimx_wrapper/sb800/Amdlib.h>
+#include <southbridge/amd/cimx_wrapper/sb800/Amd.h>
+#include <vendorcode/amd/cimx/lib/amdlib32.h> //TODO merge with agesa wrapper
+#include <vendorcode/amd/cimx/sb800/SB800.h>
+#include <vendorcode/amd/cimx/sb800/SBTYPE.h>
+#include <vendorcode/amd/cimx/sb800/ACPILIB.h>
+#include <vendorcode/amd/cimx/sb800/SBDEF.h>
+#include <vendorcode/amd/cimx/sb800/AMDSBLIB.h>
+#include <vendorcode/amd/cimx/sb800/SBSUBFUN.h>
+#include <vendorcode/amd/cimx/sb800/OEM.h>
 
 #ifdef NULL
   #undef NULL
@@ -65,9 +65,6 @@ typedef union _PCI_ADDR {
 #endif
 
 #define FIXUP_PTR(ptr)  ptr
-
-
-
 
 //------------------------------------------------------------------------------------------------------------------------//
 /**

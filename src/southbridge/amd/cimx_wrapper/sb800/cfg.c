@@ -17,10 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#include "SBPLATFORM.h"
-#include "sb800_cfg.h"
-
+#include <southbridge/amd/cimx_wrapper/sb800/SBPLATFORM.h>
+#include <southbridge/amd/cimx_wrapper/sb800/cfg.h>
 
 /**
  * @brief South Bridge CIMx configuration
@@ -124,4 +122,3 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	//sb_config->
 #endif //!__PRE_RAM__
 }
-

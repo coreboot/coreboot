@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #ifndef _CIMX_SB_EARLY_H_
 #define _CIMX_SB_EARLY_H_
 

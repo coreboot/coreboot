@@ -17,10 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <arch/io.h>
 #include <arch/romcc_io.h>
-
 
 #if CONFIG_SERIAL_POST == 1
 
@@ -52,7 +50,6 @@
 #define UART_LCS	CONFIG_TTYS0_LCS
 
 #endif // CONFIG_SERIAL_POST == 1
-
 
 static void sb800_enable_rom(void)
 {
@@ -90,7 +87,6 @@ static void sb800_enable_rom(void)
   pci_io_write_config16(dev, 0x6c, word);
 }
 
-
 static void uart_init(void)
 {
 #if CONFIG_SERIAL_POST == 1
@@ -105,7 +101,6 @@ static void uart_init(void)
   outb(UART_LCS, CONFIG_TTYS0_BASE + UART_LCR);
 #endif // CONFIG_SERIAL_POST == 1
 }
-
 
 static void bootblock_southbridge_init(void)
 {

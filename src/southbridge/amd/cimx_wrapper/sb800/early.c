@@ -17,16 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 //#include <config.h>
 #include <stdint.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>		/* inl, outl */
-#include <arch/romcc_io.h>	/* device_t */
-#include "SBPLATFORM.h"
-#include "SbEarly.h"
-#include "sb800_cfg.h"		/*sb800_cimx_config*/
-
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <southbridge/amd/cimx_wrapper/sb800/SBPLATFORM.h>
+#include <southbridge/amd/cimx_wrapper/sb800/SbEarly.h>
+#include <southbridge/amd/cimx_wrapper/sb800/cfg.h>
 
 /**
  * @brief Get SouthBridge device number
@@ -44,7 +42,6 @@ u32 get_sbdn(u32 bus)
 
 	return (dev >> 15) & 0x1f;
 }
-
 
 /**
  * @brief South Bridge CIMx romstage entry,

@@ -21,5 +21,5 @@
 #include "chip.h"
 
 struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops = {
-	CHIP_NAME("AMD South Bridge  SB800")
+	CHIP_NAME("AMD SB800 Southbridge")
 };

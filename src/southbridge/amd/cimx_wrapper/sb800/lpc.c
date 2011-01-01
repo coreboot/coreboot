@@ -18,8 +18,7 @@
  */
 
 #include <device/pci.h>
-#include "sb800_lpc.h"
-
+#include <southbridge/amd/cimx_wrapper/sb800/lpc.h>
 
 void lpc_read_resources(device_t dev)
 {
@@ -60,7 +59,6 @@ void lpc_set_resources(struct device *dev)
 	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
 	res = find_resource(dev, SPIROM_BASE_ADDRESS);
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS, res->base | 1 << 1);
-
 }
 
 /**

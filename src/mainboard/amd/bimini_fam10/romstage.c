@@ -47,7 +47,7 @@
 #include "southbridge/amd/rs780/early_setup.c"
 #include <SbEarly.h>
 #include <SBPLATFORM.h> /* SB OEM constants */
-#include <sb800_smbus.h>
+#include <southbridge/amd/cimx_wrapper/sb800/smbus.h>
 #include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
@@ -193,7 +193,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
- #endif
+#endif
 
 	rs780_htinit();
 

@@ -35,19 +35,14 @@
  *
  */
 
-
 #ifndef _AMD_H_
 #define _AMD_H_
 
-//
-//
 // AGESA Types and Definitions
-//
-//
+
 #ifndef NULL
   #define NULL 0
 #endif
-
 
 #define LAST_ENTRY 0xFFFFFFFF
 #define IOCF8 0xCF8
@@ -57,7 +52,6 @@
 #define IMAGE_SIGNATURE 'DMA$'
 
 typedef UINTN AGESA_STATUS;
-
 
 #define AGESA_SUCCESS       ((AGESA_STATUS) 0x0)
 #define AGESA_ALERT         ((AGESA_STATUS) 0x40000000)
@@ -130,7 +124,6 @@ typedef struct _AMD_MODULE_HEADER {
   IN       MODULE_ENTRY    ModuleDispatcherPtr;        ///< A pointer point to dispatcher
   IN       struct _AMD_MODULE_HEADER  *NextBlockPtr;    ///< Next module header link
 } AMD_MODULE_HEADER;
-
 
 #define FUNC_0    0   // bit-placed for PCI address creation
 #define FUNC_1    1
@@ -378,4 +371,5 @@ typedef enum {
 #ifndef BIT63
   #define BIT63       0x8000000000000000ull
 #endif
+
 #endif

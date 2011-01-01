@@ -17,17 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#include <device/device.h>	/* device_t */
-#include <device/pci.h>		/* device_operations */
+#include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/smbus.h>	/* smbus_bus_operations */
-#include <console/console.h>	/* printk */
-#include "sb800_lpc.h"		/* lpc_read_resources */
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
-#include "sb800_cfg.h"		/* sb800 Cimx configuration */
-#include "chip.h" 		/* struct southbridge_amd_cimx_wrapper_sb800_config */
-
+#include <device/smbus.h>
+#include <console/console.h>
+#include <southbridge/amd/cimx_wrapper/sb800/lpc.h>
+#include <southbridge/amd/cimx_wrapper/sb800/SBPLATFORM.h>
+#include <southbridge/amd/cimx_wrapper/sb800/cfg.h>
+#include "chip.h"
 
 /*implement in mainboard.c*/
 //void set_pcie_assert(void);
@@ -35,13 +33,12 @@
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
-
 #ifndef _RAMSTAGE_
 #define _RAMSTAGE_
 #endif
+
 static AMDSBCFG sb_late_cfg; //global, init in sb800_cimx_config
 static AMDSBCFG *sb_config = &sb_late_cfg;
-
 
 /**
  * @brief Entry point of Southbridge CIMx callout
@@ -78,14 +75,12 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 	return ret;
 }
 
-
 static struct pci_operations lops_pci = {
 	.set_subsystem = 0,
 };
 
 static void lpc_enable_resources(device_t dev)
 {
-
 	pci_dev_enable_resources(dev);
 	//lpc_enable_childrens_resources(dev);
 }
@@ -110,7 +105,6 @@ static const struct pci_driver lpc_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_ATI,
         .device = PCI_DEVICE_ID_ATI_SB800_LPC,
 };
-
 
 static void sata_enable_resources(struct device *dev)
 {
@@ -140,7 +134,6 @@ static const struct pci_driver sata_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB800_SATA, //SATA IDE Mode 4390
 };
-
 
 #if CONFIG_USBDEBUG
 static void usb_set_resources(struct device *dev)
@@ -225,7 +218,6 @@ static const struct pci_driver azalia_driver __pci_driver = {
         .device = PCI_DEVICE_ID_ATI_SB800_HDA,
 };
 
-
 static void gec_init(struct device *dev)
 {
 	gecInitAfterPciEnum(sb_config);
@@ -248,7 +240,6 @@ static const struct pci_driver gec_driver __pci_driver = {
         .device = PCI_DEVICE_ID_ATI_SB800_GEC,
 };
 
-
 static void pcie_init(device_t dev)
 {
 	sbPcieGppLateInit(sb_config);
@@ -269,7 +260,6 @@ static const struct pci_driver pci_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_ATI,
         .device = PCI_DEVICE_ID_ATI_SB800_PCI,
 };
-
 
 struct device_operations bridge_ops = {
 	.read_resources   = pci_bus_read_resources,
@@ -309,7 +299,6 @@ static const struct pci_driver PORTD_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_ATI,
         .device = PCI_DEVICE_ID_ATI_SB800_PCIED,
 };
-
 
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper

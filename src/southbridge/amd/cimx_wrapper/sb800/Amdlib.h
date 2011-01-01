@@ -36,7 +36,6 @@ typedef CHAR8  *va_list;
 #define va_arg(ap, t)    ( *(t *) ((ap += _INTSIZEOF (t)) - _INTSIZEOF (t)) )
 #define va_end(ap)      ( ap = (va_list)0 )
 
-
 #pragma pack (push, 1)
 
 #define IMAGE_ALIGN          32*1024

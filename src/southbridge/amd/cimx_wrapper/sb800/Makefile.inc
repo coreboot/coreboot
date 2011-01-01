@@ -23,13 +23,13 @@ subdirs-y += ../../../../../src/vendorcode/amd/cimx/lib
 
 # SB800 Platform Files
 
-romstage-y += sb800_cfg.c
-romstage-y += sb800_early.c
-romstage-y += sb800_smbus.c
+romstage-y += cfg.c
+romstage-y += early.c
+romstage-y += smbus.c
 
-ramstage-y += sb800_cfg.c
-ramstage-y += sb800_late.c
+ramstage-y += cfg.c
+ramstage-y += late.c
 
-driver-y   += sb800_smbus.c
-driver-y   += sb800_lpc.c
+driver-y   += smbus.c
+driver-y   += lpc.c
 

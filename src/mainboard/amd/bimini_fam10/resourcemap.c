@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-
 static void setup_mb_resource_map(void)
 {
 	static const unsigned int register_values[] = {
@@ -278,4 +276,3 @@ static void setup_mb_resource_map(void)
 	max = ARRAY_SIZE(register_values);
 	setup_resource_map(register_values, max);
 }
-

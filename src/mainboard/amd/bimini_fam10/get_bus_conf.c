@@ -26,7 +26,6 @@
 #if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/multicore.h>
 #endif
-
 #include <cpu/amd/amdfam10_sysconf.h>
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable

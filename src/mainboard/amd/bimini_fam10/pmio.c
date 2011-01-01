@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#include <arch/io.h>	/*inb, outb*/
+#include <arch/io.h>
 #include "pmio.h"
 
 static void pmio_write_index(u16 port_base, u8 reg, u8 value)
@@ -52,4 +51,3 @@ u8 pm2_ioread(u8 reg)
 {
 	return pmio_read_index(PM2_INDEX, reg);
 }
-

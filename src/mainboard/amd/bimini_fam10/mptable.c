@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
@@ -25,15 +24,12 @@
 #include <string.h>
 #include <stdint.h>
 #include "pmio.h"
-
 #include <cpu/amd/amdfam10_sysconf.h>
 
 extern int bus_isa;
 extern u8 bus_rs780[11];
 extern u8 bus_sb800[2];
-
 extern u32 apicid_sb800;
-
 extern u32 bus_type[256];
 extern u32 sbdn_rs780;
 extern u32 sbdn_sb800;

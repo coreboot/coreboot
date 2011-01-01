@@ -22,9 +22,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-
 #include <cpu/amd/amdfam10_sysconf.h>
-
 
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
@@ -44,6 +42,7 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->slot = slot;
 	pirq_info->rfu = rfu;
 }
+
 extern u8 bus_isa;
 extern u8 bus_rs780[8];
 extern u8 bus_sb800[2];

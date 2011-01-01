@@ -29,7 +29,6 @@
 #include "pmio.h"
 #include "chip.h"
 
-
 uint64_t uma_memory_base, uma_memory_size;
 
 u8 is_dev3_present(void);
@@ -94,6 +93,7 @@ u8 is_dev3_present(void)
 {
 	return 0;
 }
+
 #if 0	     /* not tested yet. */
 /********************************************************
 * bimini uses SB800 GPIO9 to detect IDE_DMA66.
@@ -195,6 +195,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD BIMINI   Mainboard")
+	CHIP_NAME("AMD Bimini Mainboard")
 	.enable_dev = bimini_enable,
 };

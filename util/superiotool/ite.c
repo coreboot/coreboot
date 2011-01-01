@@ -605,6 +605,8 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x8720, "IT8720F", {	/* From sensors-detect */
 		{EOT}}},
+	{0x8721, "IT8721F", {
+		{EOT}}},
 	{0x8722, "IT8722F", {
 		{EOT}}},
 	{0x8726, "IT8726F", {

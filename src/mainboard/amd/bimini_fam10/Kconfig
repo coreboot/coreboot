@@ -1,0 +1,113 @@
+if BOARD_AMD_BIMINI_FAM10
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_SOCKET_ASB2
+	select DIMM_DDR3
+	select DIMM_REGISTERED
+	#select QRANK_DIMM_SUPPORT
+	select NORTHBRIDGE_AMD_AMDFAM10
+	select SOUTHBRIDGE_AMD_RS780
+	select SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
+	select SUPERIO_ITE_IT8718F
+	select BOARD_HAS_FADT
+	select HAVE_BUS_CONFIG
+	select HAVE_OPTION_TABLE
+	select GENERATE_PIRQ_TABLE
+	select GENERATE_MP_TABLE
+	select HAVE_MAINBOARD_RESOURCES
+	select CACHE_AS_RAM
+	select HAVE_HARD_RESET
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select LIFT_BSP_APIC_ID
+	select SERIAL_CPU_INIT
+	select AMDMCT
+	select GENERATE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_2048
+	select RAMINIT_SYSINFO
+	select ENABLE_APIC_EXT_ID
+	select TINY_BOOTBLOCK
+	select GFXUMA
+
+config MAINBOARD_DIR
+	string
+	default amd/bimini_fam10
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Bimini (Fam10)"
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+
+config MAX_CPUS
+	int
+	default 8
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config MEM_TRAIN_SEQ
+	int
+	default 2
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 1
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x1
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config AMD_UCODE_PATCH_FILE
+	string
+	default "mc_patch_010000b6.h"
+
+config RAMTOP
+	hex
+	default 0x2000000
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config ACPI_SSDTX_NUM
+	int
+	default 0
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x3060
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+
+config RAMBASE
+	hex
+	default 0x200000
+
+config COMPRESS
+	hex
+	default 0
+
+endif #BOARD_AMD_BIMINI_FAM10

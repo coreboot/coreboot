@@ -28,20 +28,22 @@
 static void usb1_init(struct device *dev)
 {
 	struct southbridge_nvidia_ck804_config const *conf = dev->chip_info;
-	if (conf->usb1_hc_reset) {
-		/*
-		 * Somehow the warm reset does not really reset the USB
-		 * controller. Later, during boot, when the Bus Master bit is
-		 * set, the USB controller trashes the memory, causing weird
-		 * misbehavior. Was detected on Sun Ultra40, where mptable
-		 * was damaged.
-		 */
-		uint32_t bar0 = pci_read_config32(dev, 0x10);
-		uint32_t *regs = (uint32_t *) (bar0 & ~0xfff);
 
-		/* OHCI USB HCCommandStatus Register, HostControllerReset bit */
-		regs[2] |= 1;
-	}
+	if (!conf->usb1_hc_reset)
+		return;
+
+	/*
+	 * Somehow the warm reset does not really reset the USB
+	 * controller. Later, during boot, when the Bus Master bit is
+	 * set, the USB controller trashes the memory, causing weird
+	 * misbehavior. Was detected on Sun Ultra40, where mptable
+	 * was damaged.
+	 */
+	u32 bar0 = pci_read_config32(dev, 0x10);
+	u32 *regs = (u32 *) (bar0 & ~0xfff);
+
+	/* OHCI USB HCCommandStatus Register, HostControllerReset bit */
+	regs[2] |= 1;
 }
 
 static struct device_operations usb_ops = {

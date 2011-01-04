@@ -26,7 +26,7 @@
 #include <device/pci_ops.h>
 #include "ck804.h"
 
-static uint32_t final_reg;
+static u32 final_reg;
 
 static device_t find_lpc_dev(device_t dev, unsigned devfn)
 {
@@ -41,7 +41,7 @@ static device_t find_lpc_dev(device_t dev, unsigned devfn)
 		&& (lpc_dev->device != PCI_DEVICE_ID_NVIDIA_CK804_PRO)
 		&& (lpc_dev->device != PCI_DEVICE_ID_NVIDIA_CK804_SLAVE)))
 	{
-		uint32_t id;
+		u32 id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 		if ((id != (PCI_VENDOR_ID_NVIDIA |
 		      (PCI_DEVICE_ID_NVIDIA_CK804_LPC << 16)))
@@ -61,8 +61,8 @@ void ck804_enable(device_t dev)
 {
 	device_t lpc_dev;
 	unsigned index = 0, index2 = 0, deviceid, vendorid, devfn;
-	uint32_t reg_old, reg;
-	uint8_t byte;
+	u32 reg_old, reg;
+	u8 byte;
 
 	struct southbridge_nvidia_ck804_config *conf;
 	conf = dev->chip_info;

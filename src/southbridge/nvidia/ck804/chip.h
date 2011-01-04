@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CK804_CHIP_H
-#define CK804_CHIP_H
+#ifndef SOUTHBRIDGE_NVIDIA_CK804_CHIP_H
+#define SOUTHBRIDGE_NVIDIA_CK804_CHIP_H
 
 struct southbridge_nvidia_ck804_config {
 	unsigned int usb1_hc_reset : 1;

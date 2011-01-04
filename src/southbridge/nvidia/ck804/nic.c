@@ -29,10 +29,10 @@
 
 static void nic_init(struct device *dev)
 {
-	uint32_t dword, old, mac_h, mac_l;
+	u32 dword, old, mac_h, mac_l;
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_ck804_config *conf;
-	static uint32_t nic_index = 0;
+	static u32 nic_index = 0;
 	unsigned long base;
 	struct resource *res;
 

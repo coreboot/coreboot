@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-static int set_ht_link_ck804(uint8_t ht_c_num)
+static int set_ht_link_ck804(u8 ht_c_num)
 {
 	unsigned vendorid = 0x10de;
 	unsigned val = 0x01610169;
@@ -89,13 +89,12 @@ static void ck804_early_set_port(unsigned ck804_num, unsigned *busn,
 	int j;
 	for (j = 0; j < ck804_num; j++) {
 		u32 dev;
-		if (busn[j] == 0)	//sb chain
+		if (busn[j] == 0) /* SB chain */
 			dev = PCI_DEV(busn[j], CK804_DEVN_BASE, 0);
 		else
 			dev = PCI_DEV(busn[j], CK804B_DEVN_BASE, 0);
 		setup_resource_map_offset(ctrl_devport_conf,
-					  ARRAY_SIZE(ctrl_devport_conf), dev,
-					  io_base[j]);
+			ARRAY_SIZE(ctrl_devport_conf), dev, io_base[j]);
 	}
 }
 
@@ -110,13 +109,12 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
 	int j;
 	for (j = 0; j < ck804_num; j++) {
 		u32 dev;
-		if (busn[j] == 0)	//sb chain
+		if (busn[j] == 0) /* SB chain */
 			dev = PCI_DEV(busn[j], CK804_DEVN_BASE, 0);
 		else
 			dev = PCI_DEV(busn[j], CK804B_DEVN_BASE, 0);
 		setup_resource_map_offset(ctrl_devport_conf_clear,
-					  ARRAY_SIZE(ctrl_devport_conf_clear), dev,
-					  io_base[j]);
+			ARRAY_SIZE(ctrl_devport_conf_clear), dev, io_base[j]);
 	}
 }
 
@@ -165,7 +163,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xfcffff0f, 0x020000b0,
 
-	/* Activate master port on primary SATA controller. */
+		/* Activate master port on primary SATA controller. */
 		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x50), ~(0x1f000013), 0x15000013,
 		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x64), ~(0x00000001), 0x00000001,
 		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x68), ~(0x02000000), 0x02000000,
@@ -196,7 +194,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CONFIG_CK804_PCI_E_X << 4) | (1 << 8),
 
-//SYSCTRL
+		/* SYSCTRL */
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 8, ~(0xff), ((0 << 4) | (0 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 9, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
 #if CONFIG_CK804_USE_NIC
@@ -211,7 +209,6 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0x0d, ~(0xff), ((0 << 4) | (2 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 0x1a, ~(0xff), ((0 << 4) | (2 << 2) | (0 << 0)),
 #endif
-
 	};
 
 	static const unsigned int ctrl_conf_multiple[] = {
@@ -267,7 +264,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
 
-/* This line doesn't exist in the non-CAR version. */
+		/* This line doesn't exist in the non-CAR version. */
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CONFIG_CK804B_PCI_E_X << 4) | (1 << 8),
@@ -296,8 +293,8 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		}
 
 		setup_resource_map_x_offset(ctrl_conf_slave,
-					    ARRAY_SIZE(ctrl_conf_slave),
-					    PCI_DEV(busn[j], CK804B_DEVN_BASE, 0), io_base[j]);
+			ARRAY_SIZE(ctrl_conf_slave),
+			PCI_DEV(busn[j], CK804B_DEVN_BASE, 0), io_base[j]);
 	}
 
 	for (j = 0; j < ck804_num; j++) {
@@ -325,9 +322,9 @@ static int ck804_early_setup_x(void)
 	int i, ck804_num = 0;
 
 	for (i = 0; i < 4; i++) {
-		uint32_t id;
+		u32 id;
 		device_t dev;
-		if (i == 0) // SB chain
+		if (i == 0) /* SB chain */
 			dev = PCI_DEV(i * 0x40, CK804_DEVN_BASE, 0);
 		else
 			dev = PCI_DEV(i * 0x40, CK804B_DEVN_BASE, 0);

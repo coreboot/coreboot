@@ -53,16 +53,16 @@
 
 static void lpc_common_init(device_t dev)
 {
-	uint8_t byte;
-	uint32_t dword;
+	u8 byte;
+	u32 dword;
 
-	/* I/O APIC initialization */
+	/* I/O APIC initialization. */
 	byte = pci_read_config8(dev, 0x74);
 	byte |= (1 << 0);	/* Enable APIC. */
 	pci_write_config8(dev, 0x74, byte);
 	dword = pci_read_config32(dev, PCI_BASE_ADDRESS_1);	/* 0x14 */
 
-	setup_ioapic(dword, 0); // Don't rename IOAPIC ID
+	setup_ioapic(dword, 0); /* Don't rename IOAPIC ID. */
 
 #if 1
 	dword = pci_read_config32(dev, 0xe4);
@@ -78,8 +78,8 @@ static void lpc_slave_init(device_t dev)
 
 static void rom_dummy_write(device_t dev)
 {
-	uint8_t old, new;
-	uint8_t *p;
+	u8 old, new;
+	u8 *p;
 
 	old = pci_read_config8(dev, 0x88);
 	new = old | 0xc0;
@@ -92,7 +92,7 @@ static void rom_dummy_write(device_t dev)
 		pci_write_config8(dev, 0x6d, new);
 
 	/* Dummy write. */
-	p = (uint8_t *) 0xffffffe0;
+	p = (u8 *) 0xffffffe0;
 	old = 0;
 	*p = old;
 	old = *p;
@@ -113,11 +113,11 @@ static void enable_hpet(struct device *dev)
 	printk(BIOS_DEBUG, "Enabling HPET @0x%lx\n", hpet_address);
 }
 
-unsigned pm_base=0;
+unsigned pm_base = 0;
 
 static void lpc_init(device_t dev)
 {
-	uint8_t byte, byte_old;
+	u8 byte, byte_old;
 	int on, nmi_option;
 
 	lpc_common_init(dev);
@@ -125,7 +125,7 @@ static void lpc_init(device_t dev)
 	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
 	printk(BIOS_INFO, "%s: pm_base = %x \n", __func__, pm_base);
 
-#if CK804_CHIP_REV==1
+#if CK804_CHIP_REV == 1
 	if (dev->bus->secondary != 1)
 		return;
 #endif
@@ -136,7 +136,7 @@ static void lpc_init(device_t dev)
 	pci_write_config8(dev, 0x46, byte | (1 << 0));
 #endif
 
-	/* power after power fail */
+	/* Power after power fail */
 	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
@@ -150,18 +150,17 @@ static void lpc_init(device_t dev)
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
 	if (on) {
-		uint16_t pm10_bar;
-		uint32_t dword;
+		u16 pm10_bar;
+		u32 dword;
 		pm10_bar = (pci_read_config16(dev, 0x60) & 0xff00);
 		outl(((on << 1) + 0x10), (pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8 - on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
-			     (on * 12) + (on >> 1), (on & 1) * 5);
+		       (on * 12) + (on >> 1), (on & 1) * 5);
 	}
 #if 0
-// default is enabled
-	/* Enable Port 92 fast reset. */
+	/* Enable Port 92 fast reset (default is enabled). */
 	byte = pci_read_config8(dev, 0xe8);
 	byte |= ~(1 << 3);
 	pci_write_config8(dev, 0xe8, byte);
@@ -178,11 +177,10 @@ static void lpc_init(device_t dev)
 	byte_old = byte;
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if (nmi_option) {
+	if (nmi_option)
 		byte &= ~(1 << 7); /* Set NMI. */
-	} else {
+	else
 		byte |= (1 << 7); /* Can't mask NMI from PCI-E and NMI_NOW. */
-	}
 	if (byte != byte_old)
 		outb(byte, 0x70);
 
@@ -236,12 +234,11 @@ static void ck804_lpc_read_resources(device_t dev)
  *
  * This function is called by the global enable_resources() indirectly via the
  * device_operation::enable_resources() method of devices.
- *
  */
 static void ck804_lpc_enable_childrens_resources(device_t dev)
 {
 	struct bus *link;
-	uint32_t reg, reg_var[4];
+	u32 reg, reg_var[4];
 	int i, var_num = 0;
 
 	reg = pci_read_config32(dev, 0xa0);
@@ -252,7 +249,7 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for (res = child->resource_list; res; res = res->next) {
-					unsigned long base, end;	// don't need long long
+					unsigned long base, end; /* Don't need long long. */
 					if (!(res->flags & IORESOURCE_IO))
 						continue;
 					base = res->base;
@@ -279,8 +276,9 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 						break;
 					}
 					if (base == 0x290 || base >= 0x400) {
+						/* Only 4 var; compact them? */
 						if (var_num >= 4)
-							continue;	// only 4 var ; compact them ?
+							continue;
 						reg |= (1 << (28 + var_num));
 						reg_var[var_num++] = (base & 0xffff) | ((end & 0xffff) << 16);
 					}

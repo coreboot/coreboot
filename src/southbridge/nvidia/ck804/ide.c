@@ -28,9 +28,9 @@
 static void ide_init(struct device *dev)
 {
 	struct southbridge_nvidia_ck804_config *conf;
-	uint32_t dword;
-	uint16_t word;
-	uint8_t byte;
+	u32 dword;
+	u16 word;
+	u8 byte;
 
 	conf = dev->chip_info;
 

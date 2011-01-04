@@ -90,7 +90,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	outb(0, smbus_io_base + SMBHSTCMD);
 	smbus_delay();
 
-	/* Byte data recv */
+	/* Byte data recv. */
 	outb(0x05, smbus_io_base + SMBHSTPRTCL);
 	smbus_delay();
 
@@ -98,7 +98,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	if (smbus_wait_until_done(smbus_io_base) < 0)
 		return -3;
 
-	/* Lose check */
+	/* Lose check. */
 	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80;
 
 	/* Read results of transaction. */
@@ -140,7 +140,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
 	if (smbus_wait_until_done(smbus_io_base) < 0)
 		return -3;
 
-	/* Lose check */
+	/* Lose check. */
 	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80;
 
 	if (global_status_register != 0x80)
@@ -169,7 +169,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 	smbus_delay();
 
-	/* Byte data read */
+	/* Byte data read. */
 	outb(0x07, smbus_io_base + SMBHSTPRTCL);
 	smbus_delay();
 
@@ -177,7 +177,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
 	if (smbus_wait_until_done(smbus_io_base) < 0)
 		return -3;
 
-	/* Lose check */
+	/* Lose check. */
 	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80;
 
 	/* Read results of transaction. */
@@ -219,7 +219,7 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device,
 	if (smbus_wait_until_done(smbus_io_base) < 0)
 		return -3;
 
-	/* Lose check */
+	/* Lose check. */
 	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80;
 
 	if (global_status_register != 0x80)

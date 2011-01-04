@@ -64,7 +64,7 @@ int ck804_smbus_read_byte(unsigned bus, unsigned device, unsigned address)
 }
 
 int ck804_smbus_write_byte(unsigned bus, unsigned device, unsigned address,
-			    unsigned char val)
+			   unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS_BASE(bus), device, address, val);
 }

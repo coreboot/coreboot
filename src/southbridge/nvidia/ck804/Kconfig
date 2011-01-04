@@ -8,7 +8,7 @@ config SOUTHBRIDGE_NVIDIA_CK804
 if SOUTHBRIDGE_NVIDIA_CK804
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string  
+	string
 	default "southbridge/nvidia/ck804/bootblock.c"
 
 config ID_SECTION_OFFSET

@@ -35,11 +35,11 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 // reset = 1 : reset
 // reset = 0 : clear
 {
-	uint32_t *base;
-	uint32_t dword;
+	u32 *base;
+	u32 dword;
 	int loop;
 
-	base = (uint32_t *) pci_read_config32(dev, 0x24);
+	base = (u32 *) pci_read_config32(dev, 0x24);
 
 	printk(BIOS_DEBUG, "base = %08lx\n", base);
 
@@ -95,7 +95,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 
 static void sata_init(struct device *dev)
 {
-	uint32_t dword;
+	u32 dword;
 	struct southbridge_nvidia_ck804_config *conf;
 
 	conf = dev->chip_info;
@@ -161,7 +161,6 @@ static void sata_init(struct device *dev)
 
 	sata_com_reset(dev, 1);	/* For discover some s-atapi device. */
 #endif
-
 }
 
 static struct device_operations sata_ops = {

@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CK804_H
-#define CK804_H
+#ifndef SOUTHBRIDGE_NVIDIA_CK804_CK804_H
+#define SOUTHBRIDGE_NVIDIA_CK804_CK804_H
 
 #include "chip.h"
 

@@ -27,7 +27,7 @@
 
 static void pcie_init(struct device *dev)
 {
-	uint32_t dword;
+	u32 dword;
 
 	/* Enable PCI error detecting. */
 	dword = pci_read_config32(dev, 0x04);

@@ -20,7 +20,7 @@
 
 #include <reset.h>
 
-static int set_ht_link_ck804(uint8_t ht_c_num)
+static int set_ht_link_ck804(u8 ht_c_num)
 {
 	unsigned vendorid = 0x10de;
 	unsigned val = 0x01610169;
@@ -91,7 +91,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 static void ck804_early_set_port(void)
 {
 	static const unsigned int ctrl_devport_conf[] = {
-		PCI_ADDR(0, (CK804_DEVN_BASE+0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
+		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
 #if CONFIG_CK804_NUM > 1
 		PCI_ADDR(CK804B_BUSN, (CK804B_DEVN_BASE+0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), CK804B_ANACTRL_IO_BASE,
 #endif
@@ -229,7 +229,7 @@ static void ck804_early_setup(void)
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xd0), ~(0xf0000000), 0x00000000,
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xe0), ~(0xf0000000), 0x00000000,
-#if  CONFIG_CK804_NUM > 1
+#if CONFIG_CK804_NUM > 1
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x50), ~(0x1f000013), 0x15000013,
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x64), ~(0x00000001), 0x00000001,
 	RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x68), ~(0x02000000), 0x02000000,

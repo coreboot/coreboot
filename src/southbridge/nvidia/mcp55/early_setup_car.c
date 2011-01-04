@@ -19,30 +19,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #ifdef UNUSED_CODE
-int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val);
+int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid, unsigned val);
 
-static int set_ht_link_mcp55(uint8_t ht_c_num)
+static int set_ht_link_mcp55(u8 ht_c_num)
 {
 	unsigned vendorid = 0x10de;
 	unsigned val = 0x01610109;
-	/* Nvidia mcp55 hardcode, hw can not set it automatically */
+	/* NVIDIA MCP55 hardcode, hardware can not set it automatically. */
 	return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
-static void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)
+static void setup_ss_table(unsigned index, unsigned where, unsigned control,
+			   const unsigned int *register_values, int max)
 {
 	int i;
-
 	unsigned val;
 
 	val = inl(control);
 	val &= 0xfffffffe;
 	outl(val, control);
 
-	outl(0, index); //index
-	for(i = 0; i < max; i++) {
+	outl(0, index); /* Index */
+	for (i = 0; i < max; i++) {
 		unsigned long reg;
 		reg = register_values[i];
 		outl(reg, where);
@@ -51,7 +50,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 	val = inl(control);
 	val |= 1;
 	outl(val, control);
-
 }
 #endif
 
@@ -68,17 +66,18 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 #define ACPICTRL_REG_POS	0x60
 
 /*
-	16 1 1 1 1 8 :0
-	16 0 4 0 0 8 :1
-	16 0 4 2 2 4 :2
-	 4 4 4 4 4 8 :3
-	 8 8 4 0 0 8 :4
-	 8 0 4 4 4 8 :5
+ * 16 1 1 1 1 8 :0
+ * 16 0 4 0 0 8 :1
+ * 16 0 4 2 2 4 :2
+ *  4 4 4 4 4 8 :3
+ *  8 8 4 0 0 8 :4
+ *  8 0 4 4 4 8 :5
 */
 
-#define MCP55_CHIP_REV	3
+#define MCP55_CHIP_REV 3
 
-static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
+static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn,
+				 unsigned *devn, unsigned *io_base)
 {
 
 	static const unsigned int ctrl_devport_conf[] = {
@@ -88,16 +87,16 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *d
 	};
 
 	int j;
-	for(j = 0; j < mcp55_num; j++ ) {
+	for (j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf,
 			ARRAY_SIZE(ctrl_devport_conf),
 			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
 	}
 }
 
-static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
+static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn,
+				   unsigned *devn, unsigned *io_base)
 {
-
 	static const unsigned int ctrl_devport_conf_clear[] = {
 		PCI_ADDR(0, 1, 1, ANACTRL_REG_POS), ~(0x0000ff00), 0,
 		PCI_ADDR(0, 1, 1, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
@@ -105,58 +104,56 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 	};
 
 	int j;
-	for(j = 0; j < mcp55_num; j++ ) {
+	for (j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf_clear,
 			ARRAY_SIZE(ctrl_devport_conf_clear),
 			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
 	}
-
-
 }
 
-static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
+static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx,
+				   unsigned anactrl_io_base, unsigned pci_e_x)
 {
-	uint32_t tgio_ctrl;
-	uint32_t pll_ctrl;
-	uint32_t dword;
+	u32 tgio_ctrl, pll_ctrl, dword;
 	int i;
 	device_t dev;
-	dev = PCI_DEV(busnx, devnx+1, 1);
+
+	dev = PCI_DEV(busnx, devnx + 1, 1);
+
 	dword = pci_read_config32(dev, 0xe4);
-	dword |= 0x3f0; // disable it at first
+	dword |= 0x3f0; /* Disable it at first. */
 	pci_write_config32(dev, 0xe4, dword);
 
-	for(i=0; i<3; i++) {
+	for (i = 0; i < 3; i++) {
 		tgio_ctrl = inl(anactrl_io_base + 0xcc);
-		tgio_ctrl &= ~(3<<9);
-		tgio_ctrl |= (i<<9);
+		tgio_ctrl &= ~(3 << 9);
+		tgio_ctrl |= (i << 9);
 		outl(tgio_ctrl, anactrl_io_base + 0xcc);
 		pll_ctrl = inl(anactrl_io_base + 0x30);
-		pll_ctrl |= (1<<31);
+		pll_ctrl |= (1 << 31);
 		outl(pll_ctrl, anactrl_io_base + 0x30);
 		do {
 			pll_ctrl = inl(anactrl_io_base + 0x30);
 		} while (!(pll_ctrl & 1));
 	}
 	tgio_ctrl = inl(anactrl_io_base + 0xcc);
-	tgio_ctrl &= ~((7<<4)|(1<<8));
-	tgio_ctrl |= (pci_e_x<<4)|(1<<8);
+	tgio_ctrl &= ~((7 << 4) | (1 << 8));
+	tgio_ctrl |= (pci_e_x << 4) | (1 << 8);
 	outl(tgio_ctrl, anactrl_io_base + 0xcc);
 
-	// wait 100us
-	udelay(100);
+	udelay(100); /* Wait 100us. */
 
 	dword = pci_read_config32(dev, 0xe4);
-	dword &= ~(0x3f0); // enable
+	dword &= ~(0x3f0); /* Enable. */
 	pci_write_config32(dev, 0xe4, dword);
 
-	// need to wait 100ms
-	mdelay(100);
+	mdelay(100); /* Need to wait 100ms. */
 }
 
-static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base, unsigned *pci_e_x)
+static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
+			      unsigned *devn, unsigned *io_base,
+			      unsigned *pci_e_x)
 {
-
     static const unsigned int ctrl_conf_1[] = {
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000,
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0xa4, 0xffedffff, 0x0012000,
@@ -199,11 +196,11 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 
 	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x40), 0x00000000, 0xCB8410DE,
 	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x68), 0xFFFFFF00, 0x000000FF,
-	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xF8), 0xFFFFFFBF, 0x00000040,//Enable bridge mode
+	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xF8), 0xFFFFFFBF, 0x00000040, /* Enable bridge mode. */
 
 	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x40), 0x00000000, 0xCB8410DE,
 	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x68), 0xFFFFFF00, 0x000000FF,
-	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0xF8), 0xFFFFFFBF, 0x00000040,//Enable bridge mode
+	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0xF8), 0xFFFFFFBF, 0x00000040, /* Enable bridge mode. */
     };
 
     static const unsigned int ctrl_conf_1_1[] = {
@@ -217,7 +214,6 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xD0), 0xF0FFFFFF, 0x03000000,
 	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xE0), 0xF0FFFFFF, 0x03000000,
     };
-
 
     static const unsigned int ctrl_conf_mcp55_only[] = {
 	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0x40), 0x00000000, 0xCB8410DE,
@@ -251,33 +247,30 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 #if CONFIG_MCP55_USE_AZA
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
-//	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), ~(1<<14), 1<<14,
+	// RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), ~(1 << 14), (1 << 14),
 #endif
-// play a while with GPIO in MCP55
+
 #ifdef MCP55_MB_SETUP
+	/* Play a while with GPIO in MCP55. */
 	MCP55_MB_SETUP
 #endif
 
 #if CONFIG_MCP55_USE_AZA
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3<<2), (2<<2),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3<<2), (2<<2),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3<<2), (2<<2),
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3 << 2), (2 << 2),
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3 << 2), (2 << 2),
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3 << 2), (2 << 2),
 #endif
-
-
     };
 
     static const unsigned int ctrl_conf_master_only[] = {
-
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x80, 0xEFFFFFF, 0x01000000,
 
-	//Master MCP55 ????YHLU
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 0, ~(3<<2), (0<<2),
-
+	/* Master MCP55???? YHLU */
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 0, ~(3 << 2), (0 << 2),
     };
 
     static const unsigned int ctrl_conf_2[] = {
-	/* I didn't put pcie related stuff here */
+	/* I didn't put PCI-E related stuff here. */
 
 	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x74), 0xFFFFF00F, 0x000009D0,
 	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x74), 0xFFFF7FFF, 0x00008000,
@@ -286,117 +279,129 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 
 	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012,
 
-
 #if CONFIG_MCP55_USE_NIC
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xe4), ~((1<<22)|(1<<20)), (1<<22)|(1<<20),
+	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xe4), ~((1 << 22) | (1 << 20)), (1 << 22) | (1 << 20),
 
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(0<<0)),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(1<<0)),
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
 #endif
-
     };
-
 
 	int j, i;
 
-	for(j=0; j<mcp55_num; j++) {
-		mcp55_early_pcie_setup(busn[j], devn[j], io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
+	for (j = 0; j < mcp55_num; j++) {
+		mcp55_early_pcie_setup(busn[j], devn[j],
+				io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
 
-		setup_resource_map_x_offset(ctrl_conf_1, ARRAY_SIZE(ctrl_conf_1),
+		setup_resource_map_x_offset(ctrl_conf_1,
+				ARRAY_SIZE(ctrl_conf_1),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
-		for(i=0; i<3; i++) { // three SATA
-			setup_resource_map_x_offset(ctrl_conf_1_1, ARRAY_SIZE(ctrl_conf_1_1),
+
+		for (i = 0; i < 3; i++) { /* Three SATA */
+			setup_resource_map_x_offset(ctrl_conf_1_1,
+				ARRAY_SIZE(ctrl_conf_1_1),
 				PCI_DEV(busn[j], devn[j], i), io_base[j]);
 		}
-		if(busn[j] == 0) {
-			setup_resource_map_x_offset(ctrl_conf_mcp55_only, ARRAY_SIZE(ctrl_conf_mcp55_only),
+
+		if (busn[j] == 0) {
+			setup_resource_map_x_offset(ctrl_conf_mcp55_only,
+				ARRAY_SIZE(ctrl_conf_mcp55_only),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 		}
 
-		if( (busn[j] == 0) && (mcp55_num>1) ) {
-			setup_resource_map_x_offset(ctrl_conf_master_only, ARRAY_SIZE(ctrl_conf_master_only),
+		if ((busn[j] == 0) && (mcp55_num>1)) {
+			setup_resource_map_x_offset(ctrl_conf_master_only,
+				ARRAY_SIZE(ctrl_conf_master_only),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 		}
 
-		setup_resource_map_x_offset(ctrl_conf_2, ARRAY_SIZE(ctrl_conf_2),
+		setup_resource_map_x_offset(ctrl_conf_2,
+				ARRAY_SIZE(ctrl_conf_2),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
-
 	}
 
 #if 0
-	for(j=0; j< mcp55_num; j++) {
+	for (j = 0; j < mcp55_num; j++) {
 		// PCI-E (XSPLL) SS table 0x40, x044, 0x48
 		// SATA  (SPPLL) SS table 0xb0, 0xb4, 0xb8
 		// CPU   (PPLL)  SS table 0xc0, 0xc4, 0xc8
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0x40, io_base[j] + ANACTRL_IO_BASE+0x44,
-			io_base[j] + ANACTRL_IO_BASE+0x48, pcie_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xb0, io_base[j] + ANACTRL_IO_BASE+0xb4,
-			io_base[j] + ANACTRL_IO_BASE+0xb8, sata_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xc0, io_base[j] + ANACTRL_IO_BASE+0xc4,
-			io_base[j] + ANACTRL_IO_BASE+0xc8, cpu_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0x40,
+			io_base[j] + ANACTRL_IO_BASE + 0x44,
+			io_base[j] + ANACTRL_IO_BASE + 0x48, pcie_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xb0,
+			io_base[j] + ANACTRL_IO_BASE + 0xb4,
+			io_base[j] + ANACTRL_IO_BASE + 0xb8, sata_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xc0,
+			io_base[j] + ANACTRL_IO_BASE + 0xc4,
+			io_base[j] + ANACTRL_IO_BASE + 0xc8, cpu_ss_tbl, 64);
 	}
 #endif
-
 }
 
 #ifndef HT_CHAIN_NUM_MAX
 
 #define HT_CHAIN_NUM_MAX	4
-#define HT_CHAIN_BUSN_D	0x40
+#define HT_CHAIN_BUSN_D		0x40
 #define HT_CHAIN_IOBASE_D	0x4000
 
 #endif
 
 static int mcp55_early_setup_x(void)
 {
-	/*find out how many mcp55 we have */
+	/* Find out how many MCP55 we have. */
 	unsigned busn[HT_CHAIN_NUM_MAX] = {0};
 	unsigned devn[HT_CHAIN_NUM_MAX] = {0};
 	unsigned io_base[HT_CHAIN_NUM_MAX] = {0};
-	/*
-		FIXME: May have problem if there is different MCP55 HTX card with different PCI_E lane allocation
-		Need to use same trick about pci1234 to verify node/link connection
-	*/
-	unsigned pci_e_x[HT_CHAIN_NUM_MAX] = {CONFIG_MCP55_PCI_E_X_0, CONFIG_MCP55_PCI_E_X_1, CONFIG_MCP55_PCI_E_X_2, CONFIG_MCP55_PCI_E_X_3 };
-	int mcp55_num = 0;
-	unsigned busnx;
-	unsigned devnx;
-	int ht_c_index;
 
-	/* FIXME: multi pci segment handling */
+	/*
+	 * FIXME: May have problem if there is different MCP55 HTX card with
+	 * different PCI_E lane allocation. Need to use same trick about
+	 * pci1234 to verify node/link connection.
+	 */
+	unsigned pci_e_x[HT_CHAIN_NUM_MAX] = {
+		CONFIG_MCP55_PCI_E_X_0, CONFIG_MCP55_PCI_E_X_1,
+		CONFIG_MCP55_PCI_E_X_2, CONFIG_MCP55_PCI_E_X_3,
+	};
+	int mcp55_num = 0, ht_c_index;
+	unsigned busnx, devnx;
+
+	/* FIXME: Multi PCI segment handling. */
 
 	/* Any system that only have IO55 without MCP55? */
-	for(ht_c_index = 0; ht_c_index<HT_CHAIN_NUM_MAX; ht_c_index++) {
+	for (ht_c_index = 0; ht_c_index < HT_CHAIN_NUM_MAX; ht_c_index++) {
 		busnx = ht_c_index * HT_CHAIN_BUSN_D;
-		for(devnx=0;devnx<0x20;devnx++) {
-			uint32_t id;
+		for (devnx = 0; devnx < 0x20; devnx++) {
+			u32 id;
 			device_t dev;
 			dev = PCI_DEV(busnx, devnx, 0);
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 			if(id == 0x036910de) {
 				busn[mcp55_num] = busnx;
 				devn[mcp55_num] = devnx;
-				io_base[mcp55_num] = ht_c_index * HT_CHAIN_IOBASE_D; // we may have ht chain other than MCP55
+
+				/* We may have HT chain other than MCP55. */
+				io_base[mcp55_num]
+					= ht_c_index * HT_CHAIN_IOBASE_D;
+
 				mcp55_num++;
-				if(mcp55_num == CONFIG_MCP55_NUM) goto out;
-				break; // only one MCP55 on one chain
+				if (mcp55_num == CONFIG_MCP55_NUM)
+					goto out;
+				break; /* Only one MCP55 on one chain. */
 			}
 		}
 	}
 
 out:
-	print_debug("mcp55_num:"); print_debug_hex8(mcp55_num); print_debug("\n");
+	print_debug("mcp55_num:");
+	print_debug_hex8(mcp55_num);
+	print_debug("\n");
 
 	mcp55_early_set_port(mcp55_num, busn, devn, io_base);
 	mcp55_early_setup(mcp55_num, busn, devn, io_base, pci_e_x);
 
 	mcp55_early_clear_port(mcp55_num, busn, devn, io_base);
 
-//	set_ht_link_mcp55(HT_CHAIN_NUM_MAX);
+	// set_ht_link_mcp55(HT_CHAIN_NUM_MAX);
 
 	return 0;
-
 }
-
-
-

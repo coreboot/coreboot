@@ -31,7 +31,7 @@
 
 static void sata_init(struct device *dev)
 {
-	uint32_t dword;
+	u32 dword;
 
 	struct southbridge_nvidia_mcp55_config *conf;
 	conf = dev->chip_info;

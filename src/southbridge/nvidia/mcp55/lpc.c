@@ -54,14 +54,14 @@
 
 static void lpc_common_init(device_t dev, int master)
 {
-	uint8_t byte;
-	uint32_t ioapic_base;
+	u8 byte;
+	u32 ioapic_base;
 
-	/* IO APIC initialization */
+	/* IOAPIC initialization. */
 	byte = pci_read_config8(dev, 0x74);
-	byte |= (1<<0); // enable APIC
+	byte |= (1 << 0); /* Enable IOAPIC. */
 	pci_write_config8(dev, 0x74, byte);
-	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
+	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_1); /* 0x14 */
 
 	if (master)
 		setup_ioapic(ioapic_base, 0);
@@ -78,24 +78,22 @@ static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
 
-	pci_write_config32(dev,0x44, 0xfed00001);
-	hpet_address=pci_read_config32(dev,0x44)& 0xfffffffe;
+	pci_write_config32(dev, 0x44, 0xfed00001);
+	hpet_address=pci_read_config32(dev, 0x44) & 0xfffffffe;
 	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address);
 }
 
 static void lpc_init(device_t dev)
 {
-	uint8_t byte;
-	uint8_t byte_old;
-	int on;
-	int nmi_option;
+	u8 byte, byte_old;
+	int on, nmi_option;
 
 	lpc_common_init(dev, 1);
 
 #if 0
-	/* posted memory write enable */
+	/* Posted memory write enable. */
 	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1<<0));
+	pci_write_config8(dev, 0x46, byte | (1 << 0));
 #endif
 	/* power after power fail */
 
@@ -104,63 +102,58 @@ static void lpc_init(device_t dev)
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;
-	if (!on) {
+	if (!on)
 		byte |= 0x40;
-	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on ? "on" : "off");
 #endif
-	/* Throttle the CPU speed down for testing */
+	/* Throttle the CPU speed down for testing. */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
-	if(on) {
-		uint16_t pm10_bar;
-		uint32_t dword;
-		pm10_bar = (pci_read_config16(dev, 0x60)&0xff00);
-		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
+	if (on) {
+		u16 pm10_bar;
+		u32 dword;
+		pm10_bar = (pci_read_config16(dev, 0x60) & 0xff00);
+		outl(((on << 1) + 0x10), (pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
-		on = 8-on;
+		on = 8 - on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
-			     (on*12)+(on>>1),(on&1)*5);
+		       (on * 12) + (on >> 1), (on & 1) * 5);
 	}
 
 #if 0
-// default is enabled
-	/* Enable Port 92 fast reset */
+	/* Enable Port 92 fast reset (default is enabled). */
 	byte = pci_read_config8(dev, 0xe8);
 	byte |= ~(1 << 3);
 	pci_write_config8(dev, 0xe8, byte);
 #endif
 
-	/* Enable Error reporting */
-	/* Set up sync flood detected */
+	/* Enable error reporting. */
+	/* Set up sync flood detected. */
 	byte = pci_read_config8(dev, 0x47);
 	byte |= (1 << 1);
 	pci_write_config8(dev, 0x47, byte);
 
-	/* Set up NMI on errors */
-	byte = inb(0x70); // RTC70
+	/* Set up NMI on errors. */
+	byte = inb(0x70); /* RTC70 */
 	byte_old = byte;
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if (nmi_option) {
-		byte &= ~(1 << 7); /* set NMI */
-	} else {
-		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
-	}
-	if( byte != byte_old) {
+	if (nmi_option)
+		byte &= ~(1 << 7); /* Set NMI. */
+	else
+		byte |= ( 1 << 7); /* Can't mask NMI from PCI-E and NMI_NOW. */
+	if (byte != byte_old)
 		outb(byte, 0x70);
-	}
 
-	/* Initialize the real time clock */
+	/* Initialize the real time clock. */
 	rtc_init(0);
 
-	/* Initialize isa dma */
+	/* Initialize ISA DMA. */
 	isa_dma_init();
 
-	/* Initialize the High Precision Event Timers */
+	/* Initialize the High Precision Event Timers (HPET). */
 	enable_hpet(dev);
-
 }
 
 static void mcp55_lpc_read_resources(device_t dev)
@@ -191,16 +184,14 @@ static void mcp55_lpc_read_resources(device_t dev)
 }
 
 /**
- * @brief Enable resources for children devices
+ * Enable resources for children devices.
  *
- * @param dev the device whos children's resources are to be enabled
- *
+ * @param dev The device whose children's resources are to be enabled.
  */
 static void mcp55_lpc_enable_childrens_resources(device_t dev)
 {
-	uint32_t reg, reg_var[4];
-	int i;
-	int var_num = 0;
+	u32 reg, reg_var[4];
+	int i, var_num = 0;
 	struct bus *link;
 
 	reg = pci_read_config32(dev, 0xa0);
@@ -208,43 +199,50 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 	for (link = dev->link_list; link; link = link->next) {
 		device_t child;
 		for (child = link->children; child; child = child->sibling) {
-			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
+			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
-				for(res = child->resource_list; res; res = res->next) {
-					unsigned long base, end; // don't need long long
-					if(!(res->flags & IORESOURCE_IO)) continue;
+				for (res = child->resource_list; res; res = res->next) {
+					unsigned long base, end; /* Don't need long long. */
+					if (!(res->flags & IORESOURCE_IO))
+						continue;
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "mcp55 lpc decode:%s, base=0x%08lx, end=0x%08lx\n",dev_path(child),base, end);
 					switch(base) {
-					case 0x3f8: // COM1
-						reg |= (1<<0);	break;
-					case 0x2f8: // COM2
-						reg |= (1<<1);  break;
-					case 0x378: // Parallal 1
-						reg |= (1<<24); break;
-					case 0x3f0: // FD0
-						reg |= (1<<20); break;
-					case 0x220:  // Aduio 0
-						reg |= (1<<8);	break;
-					case 0x300:  // Midi 0
-						reg |= (1<<12);	break;
+					case 0x3f8: /* COM1 */
+						reg |= (1 << 0);
+						break;
+					case 0x2f8: /* COM2 */
+						reg |= (1 << 1);
+						break;
+					case 0x378: /* Parallel 1 */
+						reg |= (1 << 24);
+						break;
+					case 0x3f0: /* FD0 */
+						reg |= (1 << 20);
+						break;
+					case 0x220: /* Audio 0 */
+						reg |= (1 << 8);
+						break;
+					case 0x300: /* Midi 0 */
+						reg |= (1 << 12);
+						break;
 					}
-					if( (base == 0x290) || (base >= 0x400)) {
-						if(var_num>=4) continue; // only 4 var ; compact them ?
-						reg |= (1<<(28+var_num));
-						reg_var[var_num++] = (base & 0xffff)|((end & 0xffff)<<16);
+					if ((base == 0x290)
+					    || (base >= 0x400)) {
+						/* Only 4 var; compact them? */
+						if (var_num >= 4)
+							continue;
+						reg |= (1 << (28 + var_num));
+						reg_var[var_num++] = (base & 0xffff) | ((end & 0xffff) << 16);
 					}
 				}
 			}
 		}
 	}
 	pci_write_config32(dev, 0xa0, reg);
-	for(i=0;i<var_num;i++) {
-		pci_write_config32(dev, 0xa8 + i*4, reg_var[i]);
-	}
-
-
+	for (i = 0; i < var_num; i++)
+		pci_write_config32(dev, 0xa8 + i * 4, reg_var[i]);
 }
 
 static void mcp55_lpc_enable_resources(device_t dev)
@@ -253,14 +251,14 @@ static void mcp55_lpc_enable_resources(device_t dev)
 	mcp55_lpc_enable_childrens_resources(dev);
 }
 
-static struct device_operations lpc_ops  = {
-	.read_resources	= mcp55_lpc_read_resources,
-	.set_resources	= pci_dev_set_resources,
-	.enable_resources	= mcp55_lpc_enable_resources,
-	.init		= lpc_init,
-	.scan_bus	= scan_static_bus,
-//	.enable		= mcp55_enable,
-	.ops_pci	= &mcp55_pci_ops,
+static struct device_operations lpc_ops = {
+	.read_resources   = mcp55_lpc_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = mcp55_lpc_enable_resources,
+	.init             = lpc_init,
+	.scan_bus         = scan_static_bus,
+//	.enable           = mcp55_enable,
+	.ops_pci          = &mcp55_pci_ops,
 };
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops	= &lpc_ops,
@@ -279,34 +277,38 @@ static const struct pci_driver lpc_driver_lpc2 __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_2,
 };
+
 static const struct pci_driver lpc_driver_lpc3 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_3,
 };
+
 static const struct pci_driver lpc_driver_lpc4 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_4,
 };
+
 static const struct pci_driver lpc_driver_lpc5 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_5,
 };
+
 static const struct pci_driver lpc_driver_lpc6 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_6,
 };
 
-static struct device_operations lpc_slave_ops  = {
-	.read_resources	= mcp55_lpc_read_resources,
-	.set_resources	= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init		= lpc_slave_init,
-//	.enable		= mcp55_enable,
-	.ops_pci	= &mcp55_pci_ops,
+static struct device_operations lpc_slave_ops = {
+	.read_resources   = mcp55_lpc_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = lpc_slave_init,
+//	.enable           = mcp55_enable,
+	.ops_pci          = &mcp55_pci_ops,
 };
 
 static const struct pci_driver lpc_driver_slave __pci_driver = {

@@ -28,33 +28,31 @@
 #include "mcp55.h"
 
 #define HDA_ICII_REG 0x68
-#define   HDA_ICII_BUSY (1 << 0)
-#define   HDA_ICII_VALID  (1 << 1)
+#define   HDA_ICII_BUSY  (1 << 0)
+#define   HDA_ICII_VALID (1 << 1)
 
 static int set_bits(u32 port, u32 mask, u32 val)
 {
 	u32 reg32;
 	int count;
 
-	/* Write (val & mask) to port */
+	/* Write (val & mask) to port. */
 	val &= mask;
 	reg32 = read32(port);
 	reg32 &= ~mask;
 	reg32 |= val;
 	write32(port, reg32);
 
-	/* Wait for readback of register to
-	 * match what was just written to it
-	 */
+	/* Wait for readback of register to match what was written to it. */
 	count = 50;
 	do {
-		/* Wait 1ms based on BKDG wait time */
+		/* Wait 1ms based on BKDG wait time. */
 		mdelay(1);
 		reg32 = read32(port);
 		reg32 &= mask;
 	} while ((reg32 != val) && --count);
 
-	/* Timeout occurred */
+	/* Timeout occurred. */
 	if (!count)
 		return -1;
 	return 0;
@@ -64,15 +62,15 @@ static int codec_detect(u32 base)
 {
 	u32 reg32;
 
-	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
+	/* Set bit 0 to 0 to enter reset state (BAR + 0x8)[0]. */
 	if (set_bits(base + 0x08, 1, 0) == -1)
 		goto no_codec;
 
-	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
+	/* Set bit 0 to 1 to exit reset state (BAR + 0x8)[0]. */
 	if (set_bits(base + 0x08, 1, 1) == -1)
 		goto no_codec;
 
-	/* Read in Codec location (BAR + 0xe)[2..0]*/
+	/* Read in codec location (BAR + 0xe)[2..0]. */
 	reg32 = read32(base + 0xe);
 	reg32 &= 0x0f;
 	if (!reg32)
@@ -81,48 +79,45 @@ static int codec_detect(u32 base)
 	return reg32;
 
 no_codec:
-	/* Codec Not found */
-	/* Put HDA back in reset (BAR + 0x8) [0] */
+	/* Codec not found. */
+	/* Put HDA back in reset (BAR + 0x8)[0]. */
 	set_bits(base + 0x08, 1, 0);
 	printk(BIOS_DEBUG, "Azalia: No codec!\n");
 	return 0;
 }
 
-u32 * cim_verb_data = NULL;
+u32 *cim_verb_data = NULL;
 u32 cim_verb_data_size = 0;
 
-static u32 find_verb(struct device *dev, u32 viddid, u32 ** verb)
+static u32 find_verb(struct device *dev, u32 viddid, u32 **verb)
 {
-	int idx=0;
+	int idx = 0;
 
 	while (idx < (cim_verb_data_size / sizeof(u32))) {
-		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
+		u32 verb_size = 4 * cim_verb_data[idx + 2]; /* in u32 */
 		if (cim_verb_data[idx] != viddid) {
-			idx += verb_size + 3; // skip verb + header
+			idx += verb_size + 3; /* Skip verb + header. */
 			continue;
 		}
-		*verb = &cim_verb_data[idx+3];
+		*verb = &cim_verb_data[idx + 3];
 		return verb_size;
 	}
 
-	/* Not all codecs need to load another verb */
+	/* Not all codecs need to load another verb. */
 	return 0;
 }
 
 /**
- *  Wait 50usec for the codec to indicate it is ready
- *  no response would imply that the codec is non-operative
+ * Wait 50usec for the codec to indicate it is ready.
+ * No response would imply that the codec is non-operative.
  */
-
 static int wait_for_ready(u32 base)
 {
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration. */
 	int timeout = 50;
 
-	while(timeout--) {
-		u32 reg32 = read32(base +  HDA_ICII_REG);
+	while (timeout--) {
+		u32 reg32 = read32(base + HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);
@@ -132,25 +127,21 @@ static int wait_for_ready(u32 base)
 }
 
 /**
- *  Wait 50usec for the codec to indicate that it accepted
- *  the previous command.  No response would imply that the code
- *  is non-operative
+ * Wait 50usec for the codec to indicate that it accepted the previous command.
+ * No response would imply that the code is non-operative.
  */
-
 static int wait_for_valid(u32 base)
 {
 	u32 reg32;
 
-	/* Send the verb to the codec */
+	/* Send the verb to the codec. */
 	reg32 = read32(base + 0x68);
 	reg32 |= (1 << 0) | (1 << 1);
 	write32(base + 0x68, reg32);
 
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration. */
 	int timeout = 50;
-	while(timeout--) {
+	while (timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
 			HDA_ICII_VALID)
@@ -163,9 +154,8 @@ static int wait_for_valid(u32 base)
 
 static void codec_init(struct device *dev, u32 base, int addr)
 {
-	u32 reg32;
+	u32 reg32, verb_size;
 	u32 *verb;
-	u32 verb_size;
 	int i;
 
 	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
@@ -216,44 +206,44 @@ static void codecs_init(struct device *dev, u32 base, u32 codec_mask)
 
 static void azalia_init(struct device *dev)
 {
-	u32 base;
+	u32 base, codec_mask, reg32;
 	struct resource *res;
-	u32 codec_mask;
 	u8 reg8;
-	u32 reg32;
 
-	/* Set Bus Master */
+	/* Set bus master. */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
-	pci_write_config8(dev, 0x3c, 0x0a); // unused?
+	pci_write_config8(dev, 0x3c, 0x0a); // TODO: Unused?
 
 	reg8 = pci_read_config8(dev, 0x40);
-	reg8 |= (1 << 3); // Clear Clock Detect Bit
+	reg8 |= (1 << 3); /* Clear Clock Detect bit. */
 	pci_write_config8(dev, 0x40, reg8);
-	reg8 &= ~(1 << 3); // Keep CLKDETCLR from clearing the bit over and over
+	reg8 &= ~(1 << 3); /* Keep CLKDETCLR from clearing the bit over and over. */
 	pci_write_config8(dev, 0x40, reg8);
-	reg8 |= (1 << 2); // Enable clock detection
+	reg8 |= (1 << 2); /* Enable clock detection. */
 	pci_write_config8(dev, 0x40, reg8);
 	mdelay(1);
 	reg8 = pci_read_config8(dev, 0x40);
-	printk(BIOS_DEBUG, "Azalia: codec type: %s\n", (reg8 & (1 << 1))?"Azalia":"AC97");
+	printk(BIOS_DEBUG, "Azalia: codec type: %s\n",
+	       (reg8 & (1 << 1)) ? "Azalia" : "AC97");
 
-	//
-	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select Azalia mode. This needs to be controlled via devicetree.cb
+	reg8 = pci_read_config8(dev, 0x40); /* Audio control */
+	reg8 |= 1; /* Select Azalia mode. TODO: Control via devicetree.cb. */
 	pci_write_config8(dev, 0x40, reg8);
 
-	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
-	reg8 &= ~(1 << 7); // Docking not supported
+	reg8 = pci_read_config8(dev, 0x4d); /* Docking status. */
+	reg8 &= ~(1 << 7); /* Docking not supported. */
 	pci_write_config8(dev, 0x4d, reg8);
 
 	res = find_resource(dev, 0x10);
 	if (!res)
 		return;
 
-	// NOTE this will break as soon as the Azalia get's a bar above
-	// 4G. Is there anything we can do about it?
+	/*
+	 * NOTE: This will break as soon as the Azalia gets a BAR above
+	 * 4G. Is there anything we can do about it?
+	 */
 	base = (u32)res->base;
 	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
 	codec_mask = codec_detect(base);
@@ -276,7 +266,7 @@ static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations azalia_pci_ops = {
-	.set_subsystem    = azalia_set_subsystem,
+	.set_subsystem = azalia_set_subsystem,
 };
 
 static struct device_operations azalia_ops = {
@@ -294,4 +284,3 @@ static const struct pci_driver azalia __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_AZA,
 };
-

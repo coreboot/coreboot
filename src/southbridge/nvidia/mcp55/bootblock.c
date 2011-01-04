@@ -28,28 +28,28 @@
 
 static void mcp55_enable_rom(void)
 {
-	uint8_t byte;
-	uint16_t word;
+	u8 byte;
+	u16 word;
 	device_t addr;
 
-	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
+	/* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */
 #if 0
-	/*	default MCP55 LPC single */
+	/* Default MCP55 LPC single */
 	addr = pci_locate_device(PCI_ID(0x10de, 0x0367), 0);
 #else
 //	addr = pci_locate_device(PCI_ID(0x10de, 0x0360), 0);
-	addr = PCI_DEV(0, (MCP55_DEVN_BASE+1), 0);
+	addr = PCI_DEV(0, (MCP55_DEVN_BASE + 1), 0);
 #endif
 
-	/* Set the 4MB enable bit bit */
+	/* Set the 15MB enable bits. */
 	byte = pci_read_config8(addr, 0x88);
-	byte |= 0xff; //256K
+	byte |= 0xff; /* 256K */
 	pci_write_config8(addr, 0x88, byte);
 	byte = pci_read_config8(addr, 0x8c);
-	byte |= 0xff; //1M
+	byte |= 0xff; /* 1M */
 	pci_write_config8(addr, 0x8c, byte);
 	word = pci_read_config16(addr, 0x90);
-	word |= 0x7fff; //15M
+	word |= 0x7fff; /* 15M */
 	pci_write_config16(addr, 0x90, word);
 }
 

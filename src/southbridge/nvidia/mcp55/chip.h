@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef MCP55_CHIP_H
-#define MCP55_CHIP_H
+#ifndef SOUTHBRIDGE_NVIDIA_MCP55_CHIP_H
+#define SOUTHBRIDGE_NVIDIA_MCP55_CHIP_H
 
 #include <device/device.h>
 
@@ -36,4 +36,4 @@ struct southbridge_nvidia_mcp55_config
 struct chip_operations;
 extern struct chip_operations southbridge_nvidia_mcp55_ops;
 
-#endif /* MCP55_CHIP_H */
+#endif

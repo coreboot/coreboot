@@ -26,14 +26,11 @@ static unsigned get_sbdn(unsigned bus)
 {
 	device_t dev;
 
-	/* Find the device.
-	 */
-	dev = pci_locate_device_on_bus(
-		PCI_ID(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_MCP55_HT),
-		bus);
+	/* Find the device. */
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_NVIDIA,
+				       PCI_DEVICE_ID_NVIDIA_MCP55_HT), bus);
 
-	return (dev>>15) & 0x1f;
-
+	return (dev >> 15) & 0x1f;
 }
 
 void soft_reset(void)
@@ -55,7 +52,6 @@ void hard_reset(void)
 
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-	/* default value for mcp55 is good */
-	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
+	/* The default value for MCP55 is good. */
+	/* Set VFSMAF (VID/FID System Management Action Field) to 2. */
 }
-

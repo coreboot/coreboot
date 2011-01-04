@@ -85,6 +85,7 @@ static const unsigned int pcie_ss_tbl[] = {
 	0x0C5042040,
 	0x0C5042040,
 };
+
 static const unsigned int sata_ss_tbl[] = {
 	0x0c9044042,
 	0x0c9044042,
@@ -218,5 +219,3 @@ static const unsigned int cpu_ss_tbl[] = {
 	0x0C5039037,
 	0x0C5039037,
 };
-
-

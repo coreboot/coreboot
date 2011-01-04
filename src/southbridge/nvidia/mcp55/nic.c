@@ -35,91 +35,97 @@ static int phy_read(u32 base, unsigned phy_addr, unsigned phy_reg)
 {
 	u32 dword;
 	unsigned loop = 0x100;
-	write32(base+0x190, 0x8000); //Clear MDIO lock bit
-	mdelay(1);
-	dword = read32(base+0x190);
-	if(dword & (1<<15)) return -1;
 
-	write32(base+0x180, 1);
-	write32(base + 0x190, (phy_addr<<5) | (phy_reg));
-	do{
+	write32(base + 0x190, 0x8000); /* Clear MDIO lock bit. */
+	mdelay(1);
+	dword = read32(base + 0x190);
+	if (dword & (1 << 15))
+		return -1;
+
+	write32(base + 0x180, 1);
+	write32(base + 0x190, (phy_addr << 5) | (phy_reg));
+	do {
 		dword = read32(base + 0x190);
-		if(--loop==0) return -4;
-	} while ((dword & (1<<15)) );
+		if (--loop==0)
+			return -4;
+	} while ((dword & (1 << 15)));
 
 	dword = read32(base + 0x180);
-	if(dword & 1) return -3;
+	if (dword & 1)
+		return -3;
 
 	dword = read32(base + 0x194);
 
 	return dword;
-
 }
 
 static void phy_detect(u32 base)
 {
 	u32 dword;
-	int i;
-	int val;
+	int i, val;
 	unsigned id;
-	dword = read32(base+0x188);
-	dword &= ~(1<<20);
-	write32(base+0x188, dword);
+
+	dword = read32(base + 0x188);
+	dword &= ~(1 << 20);
+	write32(base + 0x188, dword);
 
 	phy_read(base, 0, 1);
 
-	for(i=1; i<=32; i++) {
+	for (i = 1; i <= 32; i++) {
 		int phyaddr = i & 0x1f;
 		val = phy_read(base, phyaddr, 1);
-		if(val<0) continue;
-		if((val & 0xffff) == 0xfffff) continue;
-		if((val & 0xffff) == 0) continue;
-		if(!(val & 1)) {
-			break; // Ethernet PHY
-		}
+		if (val < 0)
+			continue;
+		if ((val & 0xffff) == 0xfffff)
+			continue;
+		if ((val & 0xffff) == 0)
+			continue;
+		if (!(val & 1))
+			break; /* Ethernet PHY */
+
 		val = phy_read(base, phyaddr, 3);
-		if (val < 0 || val == 0xffff) continue;
+		if (val < 0 || val == 0xffff)
+			continue;
 		id = val & 0xfc00;
 		val = phy_read(base, phyaddr, 2);
-		if (val < 0 || val == 0xffff) continue;
-		id |= ((val & 0xffff)<<16);
-		printk(BIOS_DEBUG, "MCP55 MAC PHY ID 0x%08x PHY ADDR %d\n", id, i);
-//		if((id == 0xe0180000) || (id==0x0032cc00))
+		if (val < 0 || val == 0xffff)
+			continue;
+		id |= ((val & 0xffff) << 16);
+		printk(BIOS_DEBUG, "MCP55 MAC PHY ID 0x%08x PHY ADDR %d\n",
+		       id, i);
+//		if ((id == 0xe0180000) || (id == 0x0032cc00))
 			break;
 	}
 
-	if(i>32) {
+	if (i > 32)
 		printk(BIOS_DEBUG, "MCP55 MAC PHY not found\n");
-	}
 }
 
 static void nic_init(struct device *dev)
 {
-	u32 mac_h, mac_l;
+	u32 mac_h, mac_l, base;
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_mcp55_config *conf;
-
 	static u32 nic_index = 0;
-
-	u32 base;
 	struct resource *res;
 
 	res = find_resource(dev, 0x10);
 
-	if(!res) return;
+	if (!res)
+		return;
 
 	base = res->base;
 
 	phy_detect(base);
 
 #define NvRegPhyInterface	0xC0
-#define PHY_RGMII	0x10000000
+#define PHY_RGMII		0x10000000
 
 	write32(base + NvRegPhyInterface, PHY_RGMII);
 
 	conf = dev->chip_info;
 
-	if(conf->mac_eeprom_smbus != 0) {
+	if (conf->mac_eeprom_smbus != 0) {
 //	read MAC address from EEPROM at first
 		struct device *dev_eeprom;
 		dev_eeprom = dev_find_slot_on_smbus(conf->mac_eeprom_smbus, conf->mac_eeprom_addr);

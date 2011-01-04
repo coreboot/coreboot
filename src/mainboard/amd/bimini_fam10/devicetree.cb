@@ -31,7 +31,7 @@ chip northbridge/amd/amdfam10/root_complex
 					register "gfx_reconfiguration" = "1"
 					register "gfx_link_width" = "0"
 				end
-				chip southbridge/amd/cimx_wrapper/sb800 # it is under NB/SB Link, but on the same pri bus
+				chip southbridge/amd/cimx_wrapper/sb800 # it is under NB/SB Link, but on the same pci bus
 					device pci 11.0 on end # SATA
 					device pci 12.0 on end # USB
 					device pci 12.2 on end # USB

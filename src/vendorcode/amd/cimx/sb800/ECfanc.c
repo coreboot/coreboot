@@ -31,7 +31,7 @@
  *
  *
  */
-UINT8 FunctionNumber[] =
+const static UINT8 FunctionNumber[] =
 {
   Fun_81,
   Fun_83,
@@ -46,7 +46,7 @@ UINT8 FunctionNumber[] =
  *
  *
  */
-UINT8 MaxZone[] =
+const static UINT8 MaxZone[] =
 {
   4,
   4,
@@ -61,7 +61,7 @@ UINT8 MaxZone[] =
  *
  *
  */
-UINT8 MaxRegister[] =
+const static UINT8 MaxRegister[] =
 {
   MSG_REG9,
   MSG_REGB,

@@ -51,7 +51,7 @@ VOID configureAzaliaSetConfigD4Dword (IN CODECENTRY* tempAzaliaCodecEntryPtr, IN
  *
  *
  */
-CODECENTRY AzaliaCodecAlc882Table[] =
+const static CODECENTRY AzaliaCodecAlc882Table[] =
 {
   {0x14, 0x01014010},
   {0x15, 0x01011012},
@@ -74,7 +74,7 @@ CODECENTRY AzaliaCodecAlc882Table[] =
  *
  *
  */
-CODECENTRY AzaliaCodecAlc262Table[] =
+const static CODECENTRY AzaliaCodecAlc262Table[] =
 {
   {0x14, 0x01014010},
   {0x15, 0x411111F0},
@@ -96,7 +96,7 @@ CODECENTRY AzaliaCodecAlc262Table[] =
  *
  *
  */
-CODECENTRY AzaliaCodecAlc269Table[] =
+const static CODECENTRY AzaliaCodecAlc269Table[] =
 {
   {0x12, 0x99A30960},
   {0x14, 0x99130110},
@@ -119,7 +119,7 @@ CODECENTRY AzaliaCodecAlc269Table[] =
  *
  *
  */
-CODECENTRY AzaliaCodecAlc861Table[] =
+const static CODECENTRY AzaliaCodecAlc861Table[] =
 {
   {0x01, 0x8086C601},
   {0x0B, 0x01014110},
@@ -142,7 +142,7 @@ CODECENTRY AzaliaCodecAlc861Table[] =
  *
  *
  */
-CODECENTRY AzaliaCodecAlc889Table[] =
+const static CODECENTRY AzaliaCodecAlc889Table[] =
 {
   {0x11, 0x411111F0},
   {0x14, 0x01014010},
@@ -166,7 +166,7 @@ CODECENTRY AzaliaCodecAlc889Table[] =
  *
  *
  */
-CODECENTRY AzaliaCodecAd1984Table[] =
+const static CODECENTRY AzaliaCodecAd1984Table[] =
 {
   {0x11, 0x0221401F},
   {0x12, 0x90170110},
@@ -188,7 +188,7 @@ CODECENTRY AzaliaCodecAd1984Table[] =
  *
  *
  */
-CODECENTRY FrontPanelAzaliaCodecTableList[] =
+const static CODECENTRY FrontPanelAzaliaCodecTableList[] =
 {
   {0x19, 0x02A19040},
   {0x1b, 0x02214020},
@@ -201,17 +201,17 @@ CODECENTRY FrontPanelAzaliaCodecTableList[] =
  *
  *
  */
-CODECTBLLIST azaliaCodecTableList[] =
+const static CODECTBLLIST azaliaCodecTableList[] =
 {
-  {0x010ec0880, &AzaliaCodecAlc882Table[0]},
-  {0x010ec0882, &AzaliaCodecAlc882Table[0]},
-  {0x010ec0883, &AzaliaCodecAlc882Table[0]},
-  {0x010ec0885, &AzaliaCodecAlc882Table[0]},
-  {0x010ec0889, &AzaliaCodecAlc889Table[0]},
-  {0x010ec0262, &AzaliaCodecAlc262Table[0]},
-  {0x010ec0269, &AzaliaCodecAlc269Table[0]},
-  {0x010ec0861, &AzaliaCodecAlc861Table[0]},
-  {0x011d41984, &AzaliaCodecAd1984Table[0]},
+  {0x010ec0880, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},
+  {0x010ec0882, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},
+  {0x010ec0883, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},
+  {0x010ec0885, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},
+  {0x010ec0889, (CODECENTRY*)&AzaliaCodecAlc889Table[0]},
+  {0x010ec0262, (CODECENTRY*)&AzaliaCodecAlc262Table[0]},
+  {0x010ec0269, (CODECENTRY*)&AzaliaCodecAlc269Table[0]},
+  {0x010ec0861, (CODECENTRY*)&AzaliaCodecAlc861Table[0]},
+  {0x011d41984, (CODECENTRY*)&AzaliaCodecAd1984Table[0]},
   { (UINT32) 0x0FFFFFFFF, (CODECENTRY*) (UINTN)0x0FFFFFFFF}
 };
 

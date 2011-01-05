@@ -364,7 +364,7 @@ clean-for-update: doxygen-clean
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.*
 	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
-	$(MAKE) -C payloads/external/SeaBIOS clean
+	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc clean
 
 clean: clean-for-update
 	rm -f $(obj)/coreboot* .ccwrap

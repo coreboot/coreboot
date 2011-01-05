@@ -2,6 +2,8 @@
 # if possible, and if you find the time, or touch the general area
 # for other purposes, please consider removing their uses.
 
+menu "Deprecated"
+
 # It might be possible to consolidate hard_reset() to southbridges,
 # given that it (usually) uses its registers.
 # The long term goal would be to eliminate hard_reset() from boards.
@@ -49,3 +51,4 @@ config DRIVERS_PS2_KEYBOARD
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
 
+endmenu

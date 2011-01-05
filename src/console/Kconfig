@@ -1,4 +1,4 @@
-menu "Console options"
+menu "Console"
 # TODO: Rename to SERIAL_CONSOLE once Kconfig transition is complete.
 config CONSOLE_SERIAL8250
 	bool "Serial port console output"

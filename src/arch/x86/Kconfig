@@ -1,3 +1,5 @@
+menu "Architecture (x86)"
+
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
 # TODO: Improve description.
@@ -91,3 +93,5 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
+
+endmenu

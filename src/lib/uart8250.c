@@ -103,6 +103,7 @@ void init_uart8250(unsigned base_port, struct uart8250 *uart)
 }
 #endif
 
+#ifdef __PRE_RAM__
 void uart_init(void)
 {
 #if CONFIG_USE_OPTION_TABLE
@@ -117,4 +118,4 @@ void uart_init(void)
 	uart8250_init(CONFIG_TTYS0_BASE, CONFIG_TTYS0_DIV);
 #endif
 }
-
+#endif

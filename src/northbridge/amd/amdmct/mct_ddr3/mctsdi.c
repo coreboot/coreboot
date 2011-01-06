@@ -158,7 +158,7 @@ static u32 mct_MR1(struct MCTStatStruc *pMCTstat,
 		if (dword & (1 << 7))
 			ret |= 1 << 2;
 	} else {
-		/* TODO: mct_MR1Odt_RDimm */
+		ret |= mct_MR1Odt_RDimm(pMCTstat, pDCTstat, dct, MrsChipSel);
 	}
 
 	/* program MrsAddress[11]=TDQS: based on F2x[1,0]94[RDqsEn] */

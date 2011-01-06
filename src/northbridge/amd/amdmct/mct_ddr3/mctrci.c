@@ -25,7 +25,7 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 	u32 dct = 0;
 	u32 reg_off = 0;
 
-	DimmNum = MrsChipSel >> 20;
+	DimmNum = (MrsChipSel >> 20) & 0xFE;
 
 	/* assume dct=0; */
 	/* if (dct == 1) */
@@ -39,6 +39,7 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 		dct = 0;
 	} else if (pDCTstat->CSPresent_DCT[1] > 0 ){
 		dct = 1;
+		DimmNum ++;
 	}
 	reg_off = 0x100 * dct;
 	Dimms = pDCTstat->MAdimms[dct];
@@ -49,27 +50,26 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 	else if (CtrlWordNum == 1) {
 		if (!((pDCTstat->DimmDRPresent | pDCTstat->DimmQRPresent) & (1 << DimmNum)))
 			val |= 0xC; /* if single rank, set DBA1 and DBA0 */
-	}
-	else if (CtrlWordNum == 2) {
+	} else if (CtrlWordNum == 2) {
 		if (MaxDimm == 4) {
 			if (Speed == 4) {
-				if (((pDCTstat->DimmQRPresent & (1 << DimmNum)) && (Dimms == 1)) || Dimms == 2)
+				if (((pDCTstat->DimmQRPresent & (1 << DimmNum)) && (Dimms == 1)) || (Dimms == 2))
 					if (!(pDCTstat->MirrPresU_NumRegR & (1 << DimmNum)))
 						val |= 1 << 2;
 			} else {
 				if (pDCTstat->MirrPresU_NumRegR & (1 << DimmNum))
-					val |= 2;
+					val |= 1 << 2;
 			}
 		} else {
 			if (Dimms > 1)
-				val |= 2;
+				val |= 1 << 2;
 		}
 	} else if (CtrlWordNum == 3) {
-		val = pDCTstat->CtrlWrd3 >> (DimmNum << 2);
+		val |= (pDCTstat->CtrlWrd3 >> (DimmNum << 2)) & 0xFF;
 	} else if (CtrlWordNum == 4) {
-		val = pDCTstat->CtrlWrd4 >> (DimmNum << 2);
+		val |= (pDCTstat->CtrlWrd4 >> (DimmNum << 2)) & 0xFF;
 	} else if (CtrlWordNum == 5) {
-		val = pDCTstat->CtrlWrd5 >> (DimmNum << 2);
+		val |= (pDCTstat->CtrlWrd5 >> (DimmNum << 2)) & 0xFF;
 	} else if (CtrlWordNum == 8) {
 		if (MaxDimm == 4)
 			if (Speed == 4)
@@ -78,9 +78,9 @@ static u32 mct_ControlRC(struct MCTStatStruc *pMCTstat,
 	} else if (CtrlWordNum == 9) {
 		val |= 0xD;	/* DBA1, DBA0, DA3 = 0 */
 	}
-	val &= 0xf;
+	val &= 0xffffff0f;
 
-	val = MrsChipSel | ((val >> 2) & 3) << 16 | MrsChipSel | ((val >> 2) & 3);
+	val = MrsChipSel | ((val >> 2) & 3) << 16 | ((val & 3) << 3);
 
 	/* transfer Control word number to address [BA2,A2,A1,A0] */
 	if (CtrlWordNum > 7) {
@@ -170,17 +170,19 @@ void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
 	pDCTstat->DIMMAutoSpeed = pDCTstat->TargetFreq;
 	for (MrsChipSel=0; MrsChipSel < 8; MrsChipSel++, MrsChipSel++) {
 		if (pDCTstat->CSPresent & (1 << MrsChipSel)) {
-			val = Get_NB32(dev, 0xA8);
+			/* 2. Program F2x[1, 0]A8[CtrlWordCS]=bit mask for target chip selects. */
+			val = Get_NB32(dev, 0xA8); /* TODO: dct * 0x100 + 0xA8 */
 			val &= ~(0xFF << 8);
-			val |= (0x3 << MrsChipSel) << 8;
-			Set_NB32(dev, 0xA8, val);
+			val |= (0x3 << (MrsChipSel & 0xFE)) << 8;
+			Set_NB32(dev, 0xA8, val); /* TODO: dct * 0x100 + 0xA8 */
 
+			/* Resend control word 10 */
 			mct_Wait(1600);
 			switch (pDCTstat->TargetFreq) {
-			case 6:
+			case 5:
 				mct_SendCtrlWrd(pMCTstat, pDCTstat, MrsChipSel << 20 | 0x4000A);
 				break;
-			case 5:
+			case 6:
 				mct_SendCtrlWrd(pMCTstat, pDCTstat, MrsChipSel << 20 | 0x40012);
 				break;
 			case 7:
@@ -190,6 +192,7 @@ void FreqChgCtrlWrd(struct MCTStatStruc *pMCTstat,
 
 			mct_Wait(1600);
 
+			/* Resend control word 2 */
 			val = mct_ControlRC(pMCTstat, pDCTstat, MrsChipSel << 20, 2);
 			mct_SendCtrlWrd(pMCTstat, pDCTstat, val);
 

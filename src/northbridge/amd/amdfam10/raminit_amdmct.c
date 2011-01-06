@@ -65,6 +65,7 @@ static  void print_t(const char *strval)
 #include "../amdmct/mct_ddr3/mcthdi.c"
 #include "../amdmct/mct_ddr3/mctndi_d.c"
 #include "../amdmct/mct_ddr3/mctchi_d.c"
+#include "../amdmct/mct_ddr3/modtrd.c"
 
 #if CONFIG_CPU_SOCKET_TYPE == 0x10
 //TODO: S1G1?

@@ -80,6 +80,8 @@ static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct);
 static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct);
+static u8 mct_BeforePlatformSpec(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_SyncDCTsReady(struct DCTStatStruc *pDCTstat);
 static void Get_Trdrd(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct);
@@ -133,7 +135,7 @@ static void mct_OtherTiming(struct MCTStatStruc *pMCTstat,
 static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstatA);
 static void mct_EarlyArbEn_D(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat);
+					struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat);
 void mct_ClrClToNB_D(struct MCTStatStruc *pMCTstat,
@@ -153,7 +155,11 @@ static void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct);
 static u32 mct_DisDllShutdownSR(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u32 DramConfigLo, u8 dct);
+static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
 
+static u32 mct_MR1Odt_RDimm(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct, u32 MrsChipSel);
 static u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dimm);
 static u32 mct_SetDramConfigMisc2(struct DCTStatStruc *pDCTstat, u8 dct, u32 misc2);
@@ -163,6 +169,8 @@ static u8 Get_Latency_Diff(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct);
 static void SyncSetting(struct DCTStatStruc *pDCTstat);
 static u8 crcCheck(u8 smbaddr);
+static void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat);
+static void mct_ExtMCTConfig_Cx(struct DCTStatStruc *pDCTstat);
 
 /*See mctAutoInitMCT header for index relationships to CL and T*/
 static const u16 Table_F_k[]	= {00,200,266,333,400,533 };
@@ -334,7 +342,7 @@ restartinit:
 		MCTMemClr_D(pMCTstat,pDCTstatA);
 	}
 
-	mct_FinalMCT_D(pMCTstat, (pDCTstatA + 0) );	/* Node 0 */
+	mct_FinalMCT_D(pMCTstat, pDCTstatA);
 	printk(BIOS_DEBUG, "All Done\n");
 	return;
 
@@ -819,7 +827,7 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 		val = 0xFF000000;
 		Set_NB32(pDCTstat->dev_dct, reg_off+0x88, val);
 	} else {
-		/* mct_EnDllShutdownSR */
+		mct_EnDllShutdownSR(pMCTstat, pDCTstat, dct);
 	}
 }
 
@@ -902,7 +910,14 @@ static void ClearDCT_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	while(reg < reg_end) {
+		if ((reg & 0xFF) == 0x90) {
+			if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
+				val = Get_NB32(dev, reg); /* get DRAMConfigLow */
+				val |= 0x08000000; /* preserve value of DisDllShutdownSR for only Rev.D */
+			}
+		}
 		Set_NB32(dev, reg, val);
+		val = 0;
 		reg += 4;
 	}
 
@@ -1485,6 +1500,7 @@ static u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
 
 	if (pDCTstat->GangedMode == 1) {
 		mctGet_PS_Cfg_D(pMCTstat, pDCTstat, 1);
+		mct_BeforePlatformSpec(pMCTstat, pDCTstat, 1);
 	}
 
 	if ( pDCTstat->_2Tmode == 2) {
@@ -1495,6 +1511,7 @@ static u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
 		Set_NB32(dev, reg, val);
 	}
 
+	mct_BeforePlatformSpec(pMCTstat, pDCTstat, dct);
 	mct_PlatformSpec(pMCTstat, pDCTstat, dct);
 	if (pDCTstat->DIMMAutoSpeed == 4)
 		InitPhyCompensation(pMCTstat, pDCTstat, dct);
@@ -1674,7 +1691,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	dword = Get_NB32(dev, 0x94 + reg_off);
 	DramConfigHi |= dword;
 	mct_SetDramConfigHi_D(pDCTstat, dct, DramConfigHi);
-	mct_EarlyArbEn_D(pMCTstat, pDCTstat);
+	mct_EarlyArbEn_D(pMCTstat, pDCTstat, dct);
 	mctHookAfterAutoCfg();
 
 	/* dump_pci_device(PCI_DEV(0, 0x18+pDCTstat->Node_ID, 2)); */
@@ -2341,6 +2358,25 @@ void Set_NB32_index_wait(u32 dev, u32 index_reg, u32 index, u32 data)
 
 }
 
+static u8 mct_BeforePlatformSpec(struct MCTStatStruc *pMCTstat,
+					struct DCTStatStruc *pDCTstat, u8 dct)
+{
+	/* mct_checkForCxDxSupport_D */
+	if (pDCTstat->LogicalCPUID & AMD_DR_GT_Bx) {
+		/* 1. Write 00000000h to F2x[1,0]9C_xD08E000 */
+		Set_NB32_index_wait(pDCTstat->dev_dct, 0x98 + dct * 0x100, 0x0D08E000, 0);
+		/* 2. If DRAM Configuration Register[MemClkFreq] (F2x[1,0]94[2:0]) is
+		   greater than or equal to 011b (DDR-800 and higher),
+		   then write 00000080h to F2x[1,0]9C_xD02E001,
+		   else write 00000090h to F2x[1,0]9C_xD02E001. */
+		if (pDCTstat->Speed >= 4)
+			Set_NB32_index_wait(pDCTstat->dev_dct, 0x98 + dct * 0x100, 0xD02E001, 0x80);
+		else
+			Set_NB32_index_wait(pDCTstat->dev_dct, 0x98 + dct * 0x100, 0xD02E001, 0x90);
+	}
+	return pDCTstat->ErrCode;
+}
+
 static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
@@ -2368,7 +2404,6 @@ static u8 mct_PlatformSpec(struct MCTStatStruc *pMCTstat,
 	}
 
 	return pDCTstat->ErrCode;
-
 }
 
 static void mct_SyncDCTsReady(struct DCTStatStruc *pDCTstat)
@@ -2870,11 +2905,97 @@ static u16 Get_WrDatGross_MaxMin(struct DCTStatStruc *pDCTstat,
 	return word;
 }
 
-static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat)
+static void mct_PhyController_Config(struct MCTStatStruc *pMCTstat,
+				     struct DCTStatStruc *pDCTstat, u8 dct)
 {
+	u32 index_reg = 0x98 + 0x100 * dct;
+	u32 dev = pDCTstat->dev_dct;
+	u32 val;
+
+	if (pDCTstat->LogicalCPUID & (AMD_DR_DAC2_OR_C3 | AMD_RB_C3)) {
+		if (pDCTstat->Dimmx4Present == 0) {
+			/* Set bit7 RxDqsUDllPowerDown  to register F2x[1, 0]98_x0D0F0F13 for power saving */
+			val = Get_NB32_index_wait(dev, index_reg, 0x0D0F0F13); /* Agesa v3 v6 might be wrong here. */
+			val |= 1 << 7; /* BIOS should set this bit when x4 DIMMs are not present */
+			Set_NB32_index_wait(dev, index_reg, 0x0D0F0F13, val);
+		}
+	}
+
+	if (pDCTstat->LogicalCPUID & AMD_DR_DAC2_OR_C3) {
+		if (pDCTstat->DimmECCPresent == 0) {
+			/* Set bit4 PwrDn to register F2x[1, 0]98_x0D0F0830 for power saving */
+			val = Get_NB32_index_wait(dev, index_reg, 0x0D0F0830);
+			val |= 1 << 4; /* BIOS should set this bit if ECC DIMMs are not present */
+			Set_NB32_index_wait(dev, index_reg, 0x0D0F0830, val);
+		}
+	}
+
+}
+
+static void mct_FinalMCT_D(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstatA)
+{
+	u8 Node;
+	struct DCTStatStruc *pDCTstat;
+	u32 val;
+
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		pDCTstat = pDCTstatA + Node;
+
+		if (pDCTstat->NodePresent) {
+			mct_PhyController_Config(pMCTstat, pDCTstat, 0);
+			mct_PhyController_Config(pMCTstat, pDCTstat, 1);
+		}
+		if (!(pDCTstat->LogicalCPUID & AMD_DR_Dx)) { /* mct_checkForDxSupport */
+			mct_ExtMCTConfig_Cx(pDCTstat);
+			mct_ExtMCTConfig_Bx(pDCTstat);
+		} else {	/* For Dx CPU */
+			val = 0x0CE00F00 | 1 << 29/* FlushWrOnStpGnt */;
+			if (!(pDCTstat->GangedMode))
+				val |= 0x20; /* MctWrLimit =  8 for Unganed mode */
+			else
+				val |= 0x40; /* MctWrLimit =  16 for ganed mode */
+			Set_NB32(pDCTstat->dev_dct, 0x11C, val);
+
+			val = Get_NB32(pDCTstat->dev_dct, 0x1B0);
+			val &= 0xFFFFF8C0;
+			val |= 0x101;	/* BKDG recommended settings */
+			val |= 0x0FC00000; /* Agesa V5 */
+			if (!(pDCTstat->GangedMode))
+				val |= 1 << 12;
+			else
+				val &= ~(1 << 12);
+
+			val &= 0x0FFFFFFF;
+			switch (pDCTstat->Speed) {
+			case 4:
+				val |= 0x50000000; /* 5 for DDR800 */
+				break;
+			case 5:
+				val |= 0x60000000; /* 6 for DDR1066 */
+				break;
+			case 6:
+				val |= 0x80000000; /* 8 for DDR800 */
+				break;
+			default:
+				val |= 0x90000000; /* 9 for DDR1600 */
+				break;
+			}
+			Set_NB32(pDCTstat->dev_dct, 0x1B0, val);
+		}
+	}
+
 	/* ClrClToNB_D postponed until we're done executing from ROM */
 	mct_ClrWbEnhWsbDis_D(pMCTstat, pDCTstat);
+
+	/* set F3x8C[DisFastTprWr] on all DR, if L3Size=0 */
+	if (pDCTstat->LogicalCPUID & AMD_DR_ALL) {
+		if (!(cpuid_edx(0x80000006) & 0xFFFC0000)) {
+			val = Get_NB32(pDCTstat->dev_nbmisc, 0x8C);
+			val |= 1 << 24;
+			Set_NB32(pDCTstat->dev_nbmisc, 0x8C, val);
+		}
+	}
 }
 
 static void mct_InitialMCT_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
@@ -3138,7 +3259,7 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 }
 
 static void mct_EarlyArbEn_D(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat)
+					struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u32 reg;
 	u32 val;
@@ -3150,10 +3271,10 @@ static void mct_EarlyArbEn_D(struct MCTStatStruc *pMCTstat,
 	 * bit 19 of F2x[1,0]78 Dram  Control Register, set this bit only when
 	 * NB CLK : Memclk ratio is between 3:1 (inclusive) to 4:5 (inclusive)
 	 */
-	reg = 0x78;
+	reg = 0x78 + 0x100 * dct;
 	val = Get_NB32(dev, reg);
 
-	if (pDCTstat->LogicalCPUID & (AMD_DR_Bx | AMD_DR_Cx))
+	if (pDCTstat->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx))
 		val |= (1 << EarlyArbEn);
 	else if (CheckNBCOFEarlyArbEn(pMCTstat, pDCTstat))
 		val |= (1 << EarlyArbEn);
@@ -3272,6 +3393,25 @@ static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct)
+{
+	u32 reg_off = 0x100 * dct;
+	u32 dev = pDCTstat->dev_dct, val;
+
+	/* Write 0000_07D0h to register F2x[1, 0]98_x4D0FE006 */
+	if (pDCTstat->LogicalCPUID & (AMD_DR_DAC2_OR_C3)) {
+		Set_NB32(dev,  0x9C + reg_off, 0x1C);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE006);
+		Set_NB32(dev,  0x9C + reg_off, 0x13D);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE007);
+
+		val = Get_NB32(dev, 0x90 + reg_off);
+		val &= ~(1 << 27/* DisDllShutdownSR */);
+		Set_NB32(dev, 0x90 + reg_off, val);
+	}
+}
+
 static u32 mct_DisDllShutdownSR(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u32 DramConfigLo, u8 dct)
 {
@@ -3279,14 +3419,16 @@ static u32 mct_DisDllShutdownSR(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 
 	/* Write 0000_07D0h to register F2x[1, 0]98_x4D0FE006 */
-	if (pDCTstat->LogicalCPUID & (AMD_DA_C2 | AMD_RB_C3)) {
-		Set_NB32(dev,  0x9C + reg_off, 0x1c);
+	if (pDCTstat->LogicalCPUID & (AMD_DR_DAC2_OR_C3)) {
+		Set_NB32(dev,  0x9C + reg_off, 0x7D0);
 		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE006);
-		Set_NB32(dev,  0x9C + reg_off, 0x13d);
+		Set_NB32(dev,  0x9C + reg_off, 0x190);
 		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE007);
+
+		DramConfigLo |=  /* DisDllShutdownSR */ 1 << 27;
 	}
 
-	return DramConfigLo | /* DisDllShutdownSR */ 1 << 27;
+	return DramConfigLo;
 }
 
 void mct_SetClToNB_D(struct MCTStatStruc *pMCTstat,
@@ -3350,40 +3492,6 @@ void mct_ClrWbEnhWsbDis_D(struct MCTStatStruc *pMCTstat,
 	_RDMSR(msr, &lo, &hi);
 	hi &= ~(1 << WbEnhWsbDis_D);
 	_WRMSR(msr, lo, hi);
-}
-
-static u32 mct_DramTermDyn_RDimm(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, u8 dimm)
-{
-	u8 DimmsInstalled = dimm;
-	u32 DramTermDyn = 0;
-	u8 Speed = pDCTstat->Speed;
-
-	if (mctGet_NVbits(NV_MAX_DIMMS) == 4) {
-		if (pDCTstat->CSPresent & 0xF0) {
-			if (DimmsInstalled == 1)
-				if (Speed == 7)
-					DramTermDyn |= 1 << 10;
-				else
-					DramTermDyn |= 1 << 11;
-			else
-				if (Speed == 4)
-					DramTermDyn |= 1 << 11;
-				else
-					DramTermDyn |= 1 << 10;
-		} else {
-			if (DimmsInstalled != 1) {
-				if (Speed == 7)
-					DramTermDyn |= 1 << 10;
-				else
-					DramTermDyn |= 1 << 11;
-			}
-		}
-	} else {
-		if (DimmsInstalled != 1)
-			DramTermDyn |= 1 << 11;
-	}
-	return DramTermDyn;
 }
 
 void ProgDramMRSReg_D(struct MCTStatStruc *pMCTstat,

@@ -35,3 +35,10 @@ void mct_BeforeDQSTrainSamp(struct DCTStatStruc *pDCTstat)
 		Set_NB32(pDCTstat->dev_dct, 0x198, 0x4D0F4F07);
 	}
 }
+
+void mct_ExtMCTConfig_Bx(struct DCTStatStruc *pDCTstat)
+{
+	if (pDCTstat->LogicalCPUID & (AMD_DR_Bx)) {
+		Set_NB32(pDCTstat->dev_dct, 0x11C, 0x0FE40FC0 | 1 << 29/* FlushWrOnStpGnt */);
+	}
+}

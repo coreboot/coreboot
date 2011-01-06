@@ -552,6 +552,18 @@ static void TrainDQSPos_D(struct MCTStatStruc *pMCTstat,
 	}
 
 	if (BanksPresent) {
+		#if 0		/* show the bitmap */
+		for (ByteLane = 0; ByteLane < 8; ByteLane++) { /* just print ByteLane 0 */
+			for (DQSDelay = 0; DQSDelay < dqsDelay_end; DQSDelay++) {
+				if (!(MutualCSPassW[DQSDelay] &(1 << ByteLane))) {
+					printk(BIOS_DEBUG, ".");
+				} else {
+					printk(BIOS_DEBUG, "*");
+				}
+			}
+			printk(BIOS_DEBUG, "\n");
+		}
+		#endif
 		for (ByteLane = 0; ByteLane < 8; ByteLane++) {
 			print_debug_dqs("\t\t\t\tTrainDQSPos: 31 ByteLane ",ByteLane, 4);
 			if (!(pDCTstat->DqsRdWrPos_Saved &(1 << ByteLane))) {

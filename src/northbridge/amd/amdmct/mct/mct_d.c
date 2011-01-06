@@ -154,7 +154,10 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct);
-
+static u32 mct_DisDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u32 DramConfigLo, u8 dct);
+static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct);
 
 /*See mctAutoInitMCT header for index relationships to CL and T*/
 static const u16 Table_F_k[]	= {00,200,266,333,400,533 };
@@ -822,6 +825,8 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 		  all of the MemClkDis bits should also be set.*/
 		val = 0xFF000000;
 		Set_NB32(pDCTstat->dev_dct, reg_off+0x88, val);
+	} else {
+		mct_EnDllShutdownSR(pMCTstat, pDCTstat, dct);
 	}
 }
 
@@ -1589,7 +1594,7 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 			if ( mctGet_NVbits(NV_ECC))
 				DramConfigLo |= 1 << DimmEcEn;
 
-
+	DramConfigLo = mct_DisDllShutdownSR(pMCTstat, pDCTstat, DramConfigLo, dct);
 
 	/* Build Dram Config Hi Register Value */
 	dword = pDCTstat->Speed;
@@ -3630,6 +3635,41 @@ static void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
+static u32 mct_DisDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u32 DramConfigLo, u8 dct)
+{
+	u32 reg_off = 0x100 * dct;
+	u32 dev = pDCTstat->dev_dct;
+
+	/* Write 0000_07D0h to register F2x[1, 0]98_x4D0FE006 */
+	if (pDCTstat->LogicalCPUID & (AMD_DA_C2 | AMD_RB_C3)) {
+		Set_NB32(dev,  0x9C + reg_off, 0x7D0);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE006);
+		Set_NB32(dev,  0x9C + reg_off, 0x190);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE007);
+	}
+
+	return DramConfigLo | /* DisDllShutdownSR */ 1 << 27;
+}
+
+static void mct_EnDllShutdownSR(struct MCTStatStruc *pMCTstat,
+				struct DCTStatStruc *pDCTstat, u8 dct)
+{
+	u32 reg_off = 0x100 * dct;
+	u32 dev = pDCTstat->dev_dct, val;
+
+	/* Write 0000_07D0h to register F2x[1, 0]98_x4D0FE006 */
+	if (pDCTstat->LogicalCPUID & (AMD_DA_C2 | AMD_RB_C3)) {
+		Set_NB32(dev,  0x9C + reg_off, 0x1C);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE006);
+		Set_NB32(dev,  0x9C + reg_off, 0x13D);
+		Set_NB32(dev,  0x98 + reg_off, 0x4D0FE007);
+
+		val = Get_NB32(dev, 0x90 + reg_off);
+		val &= ~(1 << 27/* DisDllShutdownSR */);
+		Set_NB32(dev, 0x90 + reg_off, val);
+	}
+}
 
 void mct_SetClToNB_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat)

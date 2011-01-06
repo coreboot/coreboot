@@ -1012,7 +1012,7 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 
 	/* Write the (averaged value -8) to F2x[1,0]9C_x0C[PhyFence]. */
 	/* inlined mct_AdjustFenceValue() */
-	/* The RBC0 is not supported. */
+	/* TODO: The RBC0 is not supported. */
 	/* if (pDCTstat->LogicalCPUID & AMD_RB_C0)
 		avRecValue -= 3;
 	else

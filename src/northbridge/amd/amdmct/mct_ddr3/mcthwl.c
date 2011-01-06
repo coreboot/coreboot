@@ -190,7 +190,6 @@ static void WriteLevelization_HW(struct MCTStatStruc *pMCTstat,
 		SetTargetFreq(pMCTstat, pDCTstat);
 		PhyWLPass2(pMCTstat, pDCTstat, 0);
 		PhyWLPass2(pMCTstat, pDCTstat, 1);
-
 	}
 
 	SetEccWrDQS_D(pMCTstat, pDCTstat);

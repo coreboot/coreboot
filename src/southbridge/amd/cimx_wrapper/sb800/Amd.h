@@ -49,7 +49,15 @@
 #define IOCFC 0xCFC
 #define IN
 #define OUT
-#define IMAGE_SIGNATURE 'DMA$'
+
+#ifndef Int16FromChar
+#define Int16FromChar(a,b) ((a) << 0 | (b) << 8)
+#endif
+#ifndef Int32FromChar
+#define Int32FromChar(a,b,c,d) ((a) << 0 | (b) << 8 | (c) << 16 | (d) << 24)
+#endif
+
+#define IMAGE_SIGNATURE     Int32FromChar ('$', 'A', 'M', 'D')
 
 typedef UINTN AGESA_STATUS;
 

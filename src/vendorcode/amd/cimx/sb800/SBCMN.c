@@ -769,12 +769,10 @@ hpetInit (
 
   } else {
     if ( ! (pConfig->S3Resume) ) {
-      //pHpetTable = (DESCRIPTION_HEADER*) ACPI_LocateTable ('TEPH'); //gcc multi-character character constant warning
-      pHpetTable = (DESCRIPTION_HEADER*) ACPI_LocateTable (0x54455048);//'TEPH'
+      pHpetTable = (DESCRIPTION_HEADER*) ACPI_LocateTable (Int32FromChar('H', 'P', 'E', 'T'));
     }
     if ( pHpetTable != NULL ) {
-      //pHpetTable->Signature = 'HPET';
-      pHpetTable->Signature = 0x48504554; //'HPET'
+      pHpetTable->Signature = Int32FromChar('T', 'E', 'P', 'H');
     }
   }
 }

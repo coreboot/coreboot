@@ -204,8 +204,7 @@ VerifyImage (
   UINT16 Sum;
   UINT32  i;
   Sum = 0;
-  //if ( (*((UINT32*)ImagePtr) == 'DMA$' && ((CIMFILEHEADER*)ImagePtr)->CreatorID == Signature) ) { //gcc multi-character character constant warning
-  if ( (*((UINT32*)ImagePtr) == 0x444d4124 && ((CIMFILEHEADER*)ImagePtr)->CreatorID == Signature) ) {//'DMA$'
+  if ( (*((UINT32*)ImagePtr) == Int32FromChar('$', 'A', 'M', 'D') && ((CIMFILEHEADER*)ImagePtr)->CreatorID == Signature) ) {
     //GetImage Image size
     TempImagePtr = (UINT16*)ImagePtr;
     for ( i = 0; i < (((CIMFILEHEADER*)ImagePtr)->ImageSize); i += 2 ) {

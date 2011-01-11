@@ -52,9 +52,7 @@ ACPI_LocateTable (
   RsdPtr = (UINT32*) (UINTN)0xe0000;
   Rsdt = NULL;
   do {
-    //if ( *RsdPtr == ' DSR' && *(RsdPtr + 1) == ' RTP' ) { //gcc multi-character character constant warning
-    if ( *RsdPtr == 0x20445352 && *(RsdPtr + 1) == 0x20525450) {
-
+    if ( *RsdPtr == Int32FromChar('R', 'S', 'D', ' ') && *(RsdPtr + 1) == Int32FromChar('P', 'T', 'R', ' ')) {
       Rsdt = (UINT32*) (UINTN) ((RSDP*)RsdPtr)->RsdtAddress;
       break;
     }

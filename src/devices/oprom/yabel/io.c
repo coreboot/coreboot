@@ -22,6 +22,7 @@
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <device/resource.h>
 #endif
 
 #ifdef CONFIG_ARCH_X86
@@ -181,7 +182,7 @@ my_inb(X86EMU_pioAddr addr)
 {
 	u8 rval = 0xFF;
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
@@ -231,7 +232,7 @@ u16
 my_inw(X86EMU_pioAddr addr)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
@@ -276,7 +277,7 @@ u32
 my_inl(X86EMU_pioAddr addr)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
@@ -322,7 +323,7 @@ void
 my_outb(X86EMU_pioAddr addr, u8 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",
@@ -354,7 +355,7 @@ void
 my_outw(X86EMU_pioAddr addr, u16 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",
@@ -395,7 +396,7 @@ void
 my_outl(X86EMU_pioAddr addr, u32 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_IO, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",

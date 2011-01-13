@@ -106,6 +106,9 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 		printf("Error: Device Expansion ROM invalid!\n");
 		return -1;
 	}
+	biosemu_add_special_memory(0, 0x500); // IVT + BDA
+	biosemu_add_special_memory(OPTION_ROM_CODE_SEGMENT << 4, 0x10000); // option ROM
+
 	rom_image = (u8 *) bios_device.img_addr;
 	DEBUG_PRINTF("executing rom_image from %p\n", rom_image);
 	DEBUG_PRINTF("biosmem at %p\n", biosmem);
@@ -129,7 +132,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	// copy expansion ROM image to segment OPTION_ROM_CODE_SEGMENT
 	// NOTE: this sometimes fails, some bytes are 0x00... so we compare
 	// after copying and do some retries...
-	u8 *mem_img = biosmem + (OPTION_ROM_CODE_SEGMENT << 4);
+	u8 *mem_img = OPTION_ROM_CODE_SEGMENT << 4;
 	u8 copy_count = 0;
 	u8 cmp_result = 0;
 	do {
@@ -152,7 +155,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 				break;
 			}
 			clr_ci();
-			*(mem_img + i) = c;
+			my_wrb(mem_img + i, c);
 		}
 #endif
 		copy_count++;

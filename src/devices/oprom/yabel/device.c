@@ -24,8 +24,8 @@
 
 /* the device we are working with... */
 biosemu_device_t bios_device;
-//max. 6 BARs and 1 Exp.ROM plus CfgSpace and 3 legacy ranges
-translate_address_t translate_address_array[11];
+//max. 6 BARs and 1 Exp.ROM plus CfgSpace and 3 legacy ranges, plus 2 "special" memory ranges
+translate_address_t translate_address_array[13];
 u8 taa_last_entry;
 
 typedef struct {
@@ -208,6 +208,23 @@ biosemu_dev_get_addr_info(void)
 #endif
 }
 #endif
+
+// "special memory" is a hack to make some parts of memory fall through to real memory
+// (ie. no translation). Necessary if option ROMs attempt DMA there, map registers or
+// do similarily crazy things.
+void
+biosemu_add_special_memory(u32 start, u32 size)
+{
+	int taa_index = ++taa_last_entry;
+	translate_address_array[taa_index].info = IORESOURCE_FIXED | IORESOURCE_MEM;
+	translate_address_array[taa_index].bus = 0;
+	translate_address_array[taa_index].devfn = 0;
+	translate_address_array[taa_index].cfg_space_offset = 0;
+	translate_address_array[taa_index].address = start;
+	translate_address_array[taa_index].size = size;
+	/* dont translate addresses... all addresses are 1:1 */
+	translate_address_array[taa_index].address_offset = 0;
+}
 
 #ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 // to simulate accesses to legacy VGA Memory (0xA0000-0xBFFFF)
@@ -419,7 +436,7 @@ biosemu_dev_init(struct device * device)
 // and accessing client interface for every translation...
 // returns: 0 if addr not found in translate_address_array, 1 if found.
 u8
-biosemu_dev_translate_address(unsigned long * addr)
+biosemu_dev_translate_address(int type, unsigned long * addr)
 {
 	int i = 0;
 	translate_address_t ta;
@@ -443,7 +460,7 @@ biosemu_dev_translate_address(unsigned long * addr)
 #endif
 	for (i = 0; i <= taa_last_entry; i++) {
 		ta = translate_address_array[i];
-		if ((*addr >= ta.address) && (*addr <= (ta.address + ta.size))) {
+		if ((*addr >= ta.address) && (*addr <= (ta.address + ta.size)) && (ta.info & type)) {
 			*addr += ta.address_offset;
 			return 1;
 		}

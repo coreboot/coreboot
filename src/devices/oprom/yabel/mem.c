@@ -21,6 +21,10 @@
 
 #if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
 
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#include <device/resource.h>
+#endif
+
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
 #if CONFIG_X86EMU_DEBUG
 static u8 in_check = 0;	// to avoid recursion...
@@ -195,7 +199,7 @@ u8
 my_rdb(u32 addr)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u8 rval;
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
@@ -227,7 +231,7 @@ u16
 my_rdw(u32 addr)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u16 rval;
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
@@ -278,7 +282,7 @@ u32
 my_rdl(u32 addr)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u32 rval;
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
@@ -341,7 +345,7 @@ void
 my_wrb(u32 addr, u8 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
@@ -366,7 +370,7 @@ void
 my_wrw(u32 addr, u16 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
@@ -411,7 +415,7 @@ void
 my_wrl(u32 addr, u32 val)
 {
 	unsigned long translated_addr = addr;
-	u8 translated = biosemu_dev_translate_address(&translated_addr);
+	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",

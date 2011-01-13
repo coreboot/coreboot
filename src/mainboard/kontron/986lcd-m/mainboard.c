@@ -46,7 +46,7 @@ static int int15_handler(void)
 	switch (M.x86.R_AX) {
 	case 0x5f35: /* Boot Display */
 		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
+		M.x86.R_CL = BOOT_DISPLAY_CRT;
 		break;
 	case 0x5f40: /* Boot Panel Type */
 		// M.x86.R_AX = 0x015f; // Supported but failed

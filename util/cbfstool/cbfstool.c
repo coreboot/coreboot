@@ -29,7 +29,8 @@ typedef enum {
 	CMD_ADD_STAGE,
 	CMD_CREATE,
 	CMD_LOCATE,
-	CMD_PRINT
+	CMD_PRINT,
+	CMD_EXTRACT,
 } cmd_t;
 
 struct command {
@@ -244,13 +245,34 @@ static int cbfs_print(int argc, char **argv)
 	return 0;
 }
 
+static int cbfs_extract(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
+
+	if (argc != 5)
+	{
+		printf("Error: you must specify a CBFS name and a file to dump it in.\n");
+		return 1;
+	}
+
+	return extract_file_from_cbfs(romname, argv[3], argv[4]);
+}
+
 struct command commands[] = {
 	{CMD_ADD, "add", cbfs_add},
 	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
 	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
 	{CMD_CREATE, "create", cbfs_create},
 	{CMD_LOCATE, "locate", cbfs_locate},
-	{CMD_PRINT, "print", cbfs_print}
+	{CMD_PRINT, "print", cbfs_print},
+	{CMD_EXTRACT, "extract", cbfs_extract},
 };
 
 void usage(void)
@@ -266,7 +288,8 @@ void usage(void)
 	     " add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
 	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
 	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
-	     " print                                Show the contents of the ROM\n\n"
+	     " print                                Show the contents of the ROM\n"
+	     " extract NAME FILE                    Extracts a raw payload from ROM\n\n"
 	     "TYPEs:\n"
 	     );
 	print_supported_filetypes();

@@ -207,6 +207,69 @@ void print_cbfs_directory(const char *filename)
 	}
 }
 
+int extract_file_from_cbfs(const char *filename, const char *payloadname, const char *outpath)
+{
+	// Identify the coreboot image.
+	printf(
+	     "%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\nAlignment: %d bytes\n\n",
+	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
+	     romsize, ntohl(master_header->offset), align);
+
+	FILE *outfile = NULL;
+	uint32_t current = phys_start;
+	while (current < phys_end) {
+		if (!cbfs_file_header(current)) {
+			current += align;
+			continue;
+		}
+
+		// Locate the file start struct
+		struct cbfs_file *thisfile =
+		    (struct cbfs_file *)phys_to_virt(current);
+		// And its length
+		uint32_t length = ntohl(thisfile->len);
+		// Locate the file name
+		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+		// It's not the file we are looking for..
+		if (strcmp(fname, payloadname) != 0)
+		{
+			current =
+			   ALIGN(current + ntohl(thisfile->len) +
+				  ntohl(thisfile->offset), align);
+			continue;
+		}
+
+		// Else, it's our file.
+		printf("Found %.30s payload at 0x%x, type %.12s, size %d\n", fname,
+		       current - phys_start, strfiletype(ntohl(thisfile->type)),
+		       length);
+
+		// If we are not dumping to stdout, open the out file.
+		outfile = fopen(outpath, "wb");
+		if (!outfile)
+		{
+			printf("Could not open the file %s for writing. Aborting.\n", outpath);
+			return 1;
+		}
+
+		if (ntohl(thisfile->type) != CBFS_COMPONENT_RAW)
+		{
+			printf("Warning: only 'raw' files are safe to extract.\n");
+		}
+
+		fwrite(((char *)thisfile)
+				+ ntohl(thisfile->offset), length, 1, outfile);
+
+		fclose(outfile);
+		printf("Successfully dumped the payload.\n");
+
+		// We'll only dump one file.
+		return 0;
+	}
+
+}
+
+
 int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 {
 	uint32_t current = phys_start;

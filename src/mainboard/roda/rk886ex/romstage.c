@@ -43,14 +43,27 @@ void setup_ich7_gpios(void)
 	/* General Registers */
 	outl(0xbfc0f7c0, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
 	outl(0x70a87d83, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
-	outl(0x7dc07f83, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
+	// ------------------------------------------------------------
+	// 0 - GPO6  - Enable power of SATA channel 0
+	// 0 - GPO9  - Wireless LAN power on
+	// 0 - GPO15 - FAN on
+	// 1 - GPO22 - FWH WP
+	// 1 - GPO24 - GPS on
+	// 0 - GPO25 - External Antenna Mux on
+	// 0 - GPO26 - BT on
+	// 0 - GPO27 - GSM on
+	outl(0x01400000, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
+	// ------------------------------------------------------------
 	/* Output Control Registers */
 	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
 	/* Input Control Registers */
 	outl(0x00002180, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
 	outl(0x000100e8, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
 	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
-	outl(0x00010030, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
+	// ------------------------------------------------------------
+	// 1 - GPO48 - FWH TBL#
+	outl(0x00010000, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
+	// ------------------------------------------------------------
 }
 
 static void ich7_enable_lpc(void)

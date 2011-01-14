@@ -92,7 +92,8 @@ entries
 # coreboot config options: bootloader
 416        512       s       0        boot_devices
 928          8       h       0        boot_default
-#936         48       r       0        unused
+936          1       e       8        cmos_defaults_loaded
+#937         47       r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
@@ -136,6 +137,8 @@ enumerations
 7     0     Disable
 7     1     Enable
 7     2     Keep
+8     0     No
+8     1     Yes
 
 # -----------------------------------------------------------------
 checksums

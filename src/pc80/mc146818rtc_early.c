@@ -1,5 +1,6 @@
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
+#include <cbfs.h>
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
 #endif
@@ -11,11 +12,18 @@
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
 
+#include <console/loglevel.h>
+
+int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+#define printk_warning(fmt, arg...) do_printk(BIOS_WARNING ,fmt, ##arg)
+#define printk_debug(fmt, arg...) do_printk(BIOS_DEBUG ,fmt, ##arg)
+
 static int cmos_error(void)
 {
 	unsigned char reg_d;
 	/* See if the cmos error condition has been flagged */
 	reg_d = cmos_read(RTC_REG_D);
+	printk_debug("CMOS_REG_D(VRT): %x\n", reg_d & RTC_VRT);
 	return (reg_d & RTC_VRT) == 0;
 }
 
@@ -35,6 +43,7 @@ static int cmos_chksum_valid(void)
 	old_sum = cmos_read(LB_CKS_LOC) << 8;
 	old_sum |=  cmos_read(LB_CKS_LOC+1);
 
+	printk_debug("CMOS checksum: old = %lx, new=%lx\n", old_sum, sum);
 	return sum == old_sum;
 #else
 	return 0;
@@ -51,9 +60,26 @@ static inline int last_boot_normal(void)
 
 static inline int do_normal_boot(void)
 {
+	char *cmos_default = cbfs_find_file("cmos.default", 0xaa);
 	unsigned char byte;
+	int i;
 
 	if (cmos_error() || !cmos_chksum_valid()) {
+		if (cmos_default) {
+			printk_warning("WARNING - CMOS CORRUPTED. RESTORING DEFAULTS.\n");
+			/* First 14 bytes are reserved for
+			   RTC and ignored by nvramtool, too.
+			   Only 128 bytes: 128+ requires cmos configuration and
+			   contains only suspend-to-ram data, which isn't part
+			   of the recovery procedure. */
+			for (i = 14; i < 128; i++) {
+				cmos_write(cmos_default[i], i);
+			}
+			/* Now reboot to run with default cmos. */
+			outb(0x06, 0xcf9);
+			for (;;) asm("hlt"); /* Wait for reset! */
+		}
+
 		/* There are no impossible values, no checksums so just
 		 * trust whatever value we have in the the cmos,
 		 * but clear the fallback bit.

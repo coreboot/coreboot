@@ -91,6 +91,13 @@ config PC80_SYSTEM
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 
+config HAVE_CMOS_DEFAULT
+	def_bool n
+
+config CMOS_DEFAULT_FILE
+	string
+	depends on HAVE_CMOS_DEFAULT
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 

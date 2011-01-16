@@ -94,7 +94,7 @@ static void sio_init(void)
 	   GPI21 - unknown input (NC?)
 	   GPI22 - unknown input (NC?)
 	   GPO23 - mgpuV bit0
-	   GP24-27 - PS/2 mouse/keyb (only keyb is connected use flip interface for mouse)*/
+	   GP24-27 - PS/2 mouse/keyb (only keyb is connected use flip interface for mouse)
 	*/
 	pnp_write_config(GPIO2345_DEV, 0x30, 0x07);	/* Enable GPIO 2,3,4. */
 	pnp_write_config(GPIO2345_DEV, 0xe3, 0xf6);	/* dir of GPIO2 11110110*/

@@ -86,7 +86,7 @@ void AgesaHwWlPhase1(sMCTStruct *pMCTData, sDCTStruct *pDCTData,
 	procConifg(pMCTData,pDCTData, dimm, pass);
 	/* 5. Begin write levelization training:
 	 *  Program F2x[1, 0]9C_x08[WrtLevelTrEn]=1. */
-	if (pDCTData->LogicalCPUID & AMD_DR_Cx)
+	if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx))
 		set_DCT_ADDR_Bits(pDCTData, pDCTData->DctTrain, pDCTData->NodeId, FUN_DCT,
 				DRAM_ADD_DCT_PHY_CONTROL_REG, WrtLvTrEn, WrtLvTrEn, 1);
 	else
@@ -656,9 +656,9 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 	programODT(pMCTData, pDCTData, dimm);
 
 	/* Program F2x[1,0]9C_x08[WrLvOdtEn]=1 */
-	if (pDCTData->LogicalCPUID & AMD_DR_Cx)
+	if (pDCTData->LogicalCPUID & (AMD_DR_Cx | AMD_DR_Dx))
 		set_DCT_ADDR_Bits(pDCTData, pDCTData->DctTrain, pDCTData->NodeId, FUN_DCT,
-				DRAM_ADD_DCT_PHY_CONTROL_REG, WrLvOdtEn, WrLvOdtEn,(u32) 1);
+				DRAM_ADD_DCT_PHY_CONTROL_REG, WrLvOdtEn, WrLvOdtEn, (u32)1);
 	else
 	{
 		/* Program WrLvOdtEn=1 through set bit 12 of D3CSODT reg offset 0 for Rev.B*/
@@ -722,7 +722,36 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
 			ByteLane++;
 		}
+	} else if (pDCTData->Status[DCT_STATUS_REGISTERED]) {		/* For Pass 2 */
+		/* From BKDG, Write Leveling Seed Value. */
+		/* TODO: The unbuffered DIMMs are unstable on the code below. So temporarily it is
+		 * only for registered DIMMs. */
+		u32 RegisterDelay, SeedTotal;
+		u8 MemClkFreq;
+		u16 freq_tab[] = {400, 533, 667, 800};
+		while(ByteLane < MAX_BYTE_LANES)
+		{
+			MemClkFreq = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
+					      FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
+			if (pDCTData->Status[DCT_STATUS_REGISTERED])
+				RegisterDelay = 0x20; /* TODO: ((RCW2 & BIT0) == 0) ? 0x20 : 0x30; */
+			else
+				RegisterDelay = 0;
+			SeedTotal = (pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] & 0x1F) |
+				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5;
+			/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
+			   training) - RegisterDelay. */
+			/* MemClkFreq: 3: 400Mhz; 4: 533Mhz; 5: 667Mhz; 6: 800Mhz */
+			SeedTotal = (u16) (RegisterDelay + ((((u32) SeedTotal - RegisterDelay) *
+							     freq_tab[MemClkFreq-3]) / 400));
+			Seed_Gross = (SeedTotal & 0x20) != 0 ? 1 : 2;
+			Seed_Fine = SeedTotal & 0x1F;
+			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
+			pDCTData->WLFineDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Fine;
+			ByteLane ++;
+		}
 	}
+
 	setWLByteDelay(pDCTData, ByteLane, dimm, 0);
 }
 

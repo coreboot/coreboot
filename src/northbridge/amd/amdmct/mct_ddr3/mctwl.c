@@ -342,7 +342,21 @@ void SetTargetFreq(struct MCTStatStruc *pMCTstat,
 	mct_Wait(250);
 
 	if (pDCTstat->Status & (1 << SB_Registered)) {
-		/* TODO: Assuming the dct==0. The agesa here is confusing. */
+		u8 DCT0Present, DCT1Present;
+
+		DCT0Present = pDCTstat->DIMMValidDCT[0];
+		if (pDCTstat->GangedMode)
+			DCT1Present = 0;
+		else
+			DCT1Present = pDCTstat->DIMMValidDCT[1];
+
+		if (!DCT1Present)
+			pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[0];
+		else if (pDCTstat->GangedMode) {
+			pDCTstat->CSPresent = 0;
+		} else
+			pDCTstat->CSPresent = pDCTstat->CSPresent_DCT[1];
+
 		FreqChgCtrlWrd(pMCTstat, pDCTstat);
 	}
 }

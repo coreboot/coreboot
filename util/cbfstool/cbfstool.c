@@ -289,7 +289,8 @@ void usage(void)
 	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
 	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
 	     " print                                Show the contents of the ROM\n"
-	     " extract NAME FILE                    Extracts a raw payload from ROM\n\n"
+	     " extract NAME FILE                    Extracts a raw payload from ROM\n"
+	     "\n"
 	     "TYPEs:\n"
 	     );
 	print_supported_filetypes();

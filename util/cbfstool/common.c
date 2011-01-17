@@ -241,7 +241,7 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 		}
 
 		// Else, it's our file.
-		printf("Found %.30s payload at 0x%x, type %.12s, size %d\n", fname,
+		printf("Found file %.30s at 0x%x, type %.12s, size %d\n", fname,
 		       current - phys_start, strfiletype(ntohl(thisfile->type)),
 		       length);
 
@@ -262,7 +262,7 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 				+ ntohl(thisfile->offset), length, 1, outfile);
 
 		fclose(outfile);
-		printf("Successfully dumped the payload.\n");
+		printf("Successfully dumped the file.\n");
 
 		// We'll only dump one file.
 		return 0;

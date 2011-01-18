@@ -360,7 +360,7 @@ void dump_lbtable(void)
 	       "    table_bytes:     0x%x (decimal: %d)\n"
 	       "    table_checksum:  0x%x (decimal: %d)\n"
 	       "    table_entries:   0x%x (decimal: %d)\n\n",
-	       vtophys(lbtable), *((uint32_t *) lbtable->signature),
+	       vtophys(lbtable), lbtable->signature32,
 	       lbtable->signature[0], lbtable->signature[1],
 	       lbtable->signature[2], lbtable->signature[3],
 	       lbtable->header_bytes, lbtable->header_bytes,
@@ -483,14 +483,14 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 					    int *bad_header_count,
 					    int *bad_table_count)
 {
-	static const char signature[] = { 'L', 'B', 'I', 'O' };
+	static const char signature[4] = { 'L', 'B', 'I', 'O' };
 	const struct lb_header *table;
 	const struct lb_forward *forward;
 	const uint32_t *p;
 	uint32_t sig;
 
 	assert(end >= start);
-	sig = (*((const uint32_t *)signature));
+	memcpy(&sig, signature, sizeof(sig));
 	table = NULL;
 	*bad_header_count = 0;
 	*bad_table_count = 0;

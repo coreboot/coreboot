@@ -74,7 +74,10 @@ static inline struct lb_uint64 pack_lb64(uint64_t value)
 }
 
 struct lb_header {
-	uint8_t signature[4];	/* LBIO */
+	union {
+		uint8_t signature[4];	/* LBIO */
+		uint32_t signature32;
+	};
 	uint32_t header_bytes;
 	uint32_t header_checksum;
 	uint32_t table_bytes;

@@ -10,4 +10,3 @@ source src/southbridge/amd/rs690/Kconfig
 source src/southbridge/amd/sb600/Kconfig
 source src/southbridge/amd/rs780/Kconfig
 source src/southbridge/amd/sb700/Kconfig
-source src/southbridge/amd/cimx_wrapper/Kconfig

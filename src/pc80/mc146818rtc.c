@@ -228,6 +228,10 @@ int get_option(void *dest, const char *name)
 
 	/* find the requested entry record */
 	ct=cbfs_find_file("cmos_layout.bin", CMOS_COMPONENT_CMOS_LAYOUT);
+	if (!ct) {
+		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
+		return(-2);
+	}
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
 	for(;ce->tag==LB_TAG_OPTION;
 		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {

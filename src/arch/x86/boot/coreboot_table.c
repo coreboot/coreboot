@@ -549,6 +549,8 @@ unsigned long write_coreboot_table(
 			memcpy(rec_dest,  &option_table, option_table.size);
 			/* Create cmos checksum entry in coreboot table */
 			lb_cmos_checksum(head);
+		} else {
+			printk(BIOS_ERR, "cmos_layout.bin could not be found!\n");
 		}
 	}
 #endif

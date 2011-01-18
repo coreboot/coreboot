@@ -541,7 +541,7 @@ int main(int argc, char **argv)
 		}
 
 		/* write the header */
-        	if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
+        	if(fwrite("unsigned char option_table[] = {",1,32,fp) != 32) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);
 			unlink(tempfilename);
@@ -549,14 +549,14 @@ int main(int argc, char **argv)
         	}
 		/* write the array values */
 		for(i=0; i<(int)(ct->size-1); i++) {
-			if(!(i%10) && !err) err=!fwrite("\n\t",1,2,fp);
+			if(!(i%10) && !err) err=(fwrite("\n\t",1,2,fp) != 2);
 			sprintf(buf,"0x%02x,",cmos_table[i]);
-			if(!err) err=!fwrite(buf,1,5,fp);
+			if(!err) err=(fwrite(buf,1,5,fp) != 5);
 		}
 		/* write the end */
 		sprintf(buf,"0x%02x\n",cmos_table[i]);
-		if(!err) err=!fwrite(buf,1,4,fp);
-        	if(!fwrite("};\n",1,3,fp)) {
+		if(!err) err=(fwrite(buf,1,4,fp) != 4);
+        	if(fwrite("};\n",1,3,fp) != 3) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);
 			unlink(tempfilename);
@@ -590,7 +590,7 @@ int main(int argc, char **argv)
 		}
 
 		/* write the array values */
-		if(!fwrite(cmos_table, (int)(ct->size-1), 1, fp)) {
+		if(fwrite(cmos_table, (int)(ct->size-1), 1, fp) != 1) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);
 			unlink(tempfilename);

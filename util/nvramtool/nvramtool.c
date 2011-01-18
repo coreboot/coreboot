@@ -85,7 +85,7 @@ static const op_fn_t op_fns[] = { op_show_version,
 };
 
 static const hexdump_format_t cmos_dump_format =
-    { 16, 2, "", " | ", " ", " | ", '.', NULL };
+    { 16, 2, "", " | ", " ", " | ", '.' };
 
 /****************************************************************************
  * main

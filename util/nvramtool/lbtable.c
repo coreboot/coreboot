@@ -234,7 +234,7 @@ static const struct lb_header *lbtable = NULL;
 static const struct cmos_option_table *cmos_table = NULL;
 
 static const hexdump_format_t format =
-    { 12, 4, "            ", " | ", " ", " | ", '.', NULL };
+    { 12, 4, "            ", " | ", " ", " | ", '.' };
 
 /****************************************************************************
  * vtophys

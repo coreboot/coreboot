@@ -48,8 +48,6 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-typedef int (*is_printable_fn_t) (unsigned char c);
-
 /*--------------------------------------------------------------------------
  * hexdump_format_t
  *
@@ -75,11 +73,6 @@ typedef int (*is_printable_fn_t) (unsigned char c);
  *                      characters.  It serves as a separator.
  *     nonprintable:    This is a substitute character to display in place
  *                      of nonprintable characters.
- *     is_printable_fn: This is a user-supplied function that takes a byte
- *                      value as input and returns a boolean value
- *                      indicating whether the corresponding character is
- *                      printable.  A value of NULL will cause
- *                      default_is_printable_fn to be used.
  *--------------------------------------------------------------------------*/
 typedef struct {
 	int bytes_per_line;
@@ -89,7 +82,6 @@ typedef struct {
 	const char *sep2;
 	const char *sep3;
 	unsigned char nonprintable;
-	is_printable_fn_t is_printable_fn;
 } hexdump_format_t;
 
 /*--------------------------------------------------------------------------
@@ -110,21 +102,5 @@ typedef struct {
  *--------------------------------------------------------------------------*/
 void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 	     FILE * outfile, const hexdump_format_t * format);
-
-/*--------------------------------------------------------------------------
- * default_is_printable_fn
- *
- * Determine whether the input character is printable.  The proper behavior
- * for this type of function may be system-dependent.  This function appears
- * to work well on a Linux system.  However, if it is not adequate for your
- * purposes, you can write your own.
- *
- * parameters:
- *     c: the input character
- *
- * return value:
- *     Return 1 if the input character is printable.  Otherwise return 0.
- *--------------------------------------------------------------------------*/
-int default_is_printable_fn(unsigned char c);
 
 #endif				/* _HEXDUMP_H */

@@ -4,6 +4,7 @@
 #include <string.h>
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
+#include <cbfs.h>
 #endif
 
 /* control registers - Moto names
@@ -217,7 +218,6 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 
 int get_option(void *dest, const char *name)
 {
-	extern struct cmos_option_table option_table;
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	size_t namelen;
@@ -227,7 +227,7 @@ int get_option(void *dest, const char *name)
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	/* find the requested entry record */
-	ct=&option_table;
+	ct=cbfs_find_file("cmos_layout.bin", CMOS_COMPONENT_CMOS_LAYOUT);
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
 	for(;ce->tag==LB_TAG_OPTION;
 		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {

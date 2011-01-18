@@ -27,7 +27,10 @@ subdirs-y += smp
 
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-ramstage-srcs += $(obj)/option_table.c
+cbfs-files-y += $(obj)/cmos_layout.bin
+$(obj)/cmos_layout.bin-name = cmos_layout.bin
+$(obj)/cmos_layout.bin-type = 0x01aa
+
 OPTION_TABLE_H:=$(obj)/option_table.h
 endif
 
@@ -64,7 +67,7 @@ prebuild-files = \
 		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(prebuilt-files) $(CBFSTOOL)
+$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
 	rm -f $@
 	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
 	$(prebuild-files)
@@ -121,9 +124,9 @@ $(OPTION_TABLE_H): $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINB
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
 	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --header $@
 
-$(obj)/option_table.c: $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(obj)/cmos_layout.bin: $(objutil)/options/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --option $@
+	$(objutil)/options/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --binary $@
 
 $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src/include/pc80/mc146818rtc.h $(top)/src/include/boot/coreboot_tables.h
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"

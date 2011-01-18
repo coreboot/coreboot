@@ -77,6 +77,7 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_MBI        0x52
 #define CBFS_COMPONENT_MICROCODE  0x53
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
+#define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 
 /* The deleted type is chosen to be a value
  * that can be written in a FLASH from all other

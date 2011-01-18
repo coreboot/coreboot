@@ -542,11 +542,14 @@ unsigned long write_coreboot_table(
 
 #if (CONFIG_USE_OPTION_TABLE == 1)
 	{
-		struct lb_record *rec_dest = lb_new_record(head);
-		/* Copy the option config table, it's already a lb_record... */
-		memcpy(rec_dest,  &option_table, option_table.size);
-		/* Create cmos checksum entry in coreboot table */
-		lb_cmos_checksum(head);
+		struct cmos_option_table option_table = cbfs_find_file("cmos_layout.bin", 0x1aa);
+		if (option_table) {
+			struct lb_record *rec_dest = lb_new_record(head);
+			/* Copy the option config table, it's already a lb_record... */
+			memcpy(rec_dest,  &option_table, option_table.size);
+			/* Create cmos checksum entry in coreboot table */
+			lb_cmos_checksum(head);
+		}
 	}
 #endif
 	/* Record where RAM is located */

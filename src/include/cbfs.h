@@ -71,6 +71,9 @@
 #define CBFS_TYPE_VSA        0x51
 #define CBFS_TYPE_MBI        0x52
 #define CBFS_TYPE_MICROCODE  0x53
+#define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
+#define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
+
 
 /** this is the master cbfs header - it need to be
     located somewhere in the bootblock.  Where it

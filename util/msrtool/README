@@ -1,0 +1,36 @@
+ 
+You need to be ROOT or use SUDO to execute MSRTOOL.
+
+Note that you need /dev/cpu/*/msr available to run msrtool in Linux.
+
+
+syntax: msrtool [-hvqrkl] [-c cpu] [-m system] [-t target ...]
+         [-i addr=hi[:]lo] | [-s file] | [-d [:]file] | addr...
+  -h     show this help text                                                                                                                  
+  -v     be verbose                                                                                                                           
+  -q     be quiet (overrides -v)
+  -r     include [Reserved] values
+  -k     list all known systems and targets
+  -l     list MSRs and bit fields for current target(s) (-kl for ALL targets!)
+  -c     access MSRs on the specified CPU, default=0
+  -m     force a system, e.g: -m linux
+  -t     force a target, can be used multiple times, e.g: -t geodelx -t cs5536
+  -i     immediate mode
+         decode hex addr=hi:lo for the target without reading hw value
+         e.g: -i 4c00000f=f2f100ff56960004
+  -s     stream mode
+         read one MSR address per line and append current hw value to the line
+         use the filename - for stdin/stdout
+         using -l -s ignores input and will output all MSRs with values
+  -d     diff mode
+         read one address and value per line and compare with current hw value,
+         printing differences to stdout. use the filename - to read from stdin
+         use :file or :- to reverse diff, normally hw values are considered new
+  addr.. direct mode, read and decode values for the given MSR address(es)
+
+
+Examples:
+
+msrtool 0x20000018
+
+./msrtool 0x200000{18,19,1a,1b,1c,1d} 0x4c0000{0f,14}

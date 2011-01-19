@@ -26,6 +26,592 @@ int geodegx2_probe(const struct targetdef *target) {
 }
 
 const struct msrdef geodegx2_msrs[] = {
+	{ 0x10000020, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM0", "GLIU0 P2D Base Mask Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000021, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM1", "GLIU0 P2D Base Mask Descriptor 1", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000022, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM2", "GLIU0 P2D Base Mask Descriptor 2", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000023, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM3", "GLIU0 P2D Base Mask Descriptor 3", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000024, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM4", "GLIU0 P2D Base Mask Descriptor 4", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000025, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_P2D_BM5", "GLIU0 P2D Base Mask Descriptor 5", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000026, MSRTYPE_RDWR, MSR2(0x00000FF0, 0xFFF00000), "GLIU0_P2D_BMO0", "GLIU0 P2D Base Mask Offset Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, "POFFSET", "Physical Memory Address 2s Comp Offset", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000027, MSRTYPE_RDWR, MSR2(0x00000FF0, 0xFFF00000), "GLIU0_P2D_BMO1", "GLIU0 P2D Base Mask Offset Descriptor 1", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, "POFFSET", "Physical Memory Address 2s Comp Offset", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000028, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_R0", "GLIU0 P2D Range Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x10000029, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_RO0", "GLIU0 P2D Range Offset Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, "POFFSET", "Physical Memory Address 2s Comp Offset", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x1000002A, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_RO1", "GLIU0 P2D Range Offset Descriptor 1", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, "POFFSET", "Physical Memory Address 2s Comp Offset", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x1000002B, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_RO2", "GLIU0 P2D Range Offset Descriptor 2", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, "POFFSET", "Physical Memory Address 2s Comp Offset", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x1000002C, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_P2D_SC0", "GLIU0 P2D Swiss Cheese Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 12, RESERVED },
+		{ 47, 16, "WEN", "Enable hits to the base for the ith 16K page for writes", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 31, 16, "REN", "Enable hits to the base for the ith 16K page for ", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 15, 2, RESERVED },
+		{ 13, 14, "PSCBASE", "Physical Memory Address Base for hit", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x100000E0, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_IOD_BM0", "GLIU0 IOD Base Mask Descriptor 0", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x100000E1, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_IOD_BM1", "GLIU0 IOD Base Mask Descriptor 1", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x100000E2, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU0_IOD_BM2", "GLIU0 IOD Base Mask Descriptor 2", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x100000E3, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC0", "GLIU0 IOD Swiss Cheese Descriptor 0", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x100000E4, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC1", "GLIU0 IOD Swiss Cheese Descriptor 1", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x100000E5, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC2", "GLIU0 IOD Swiss Cheese Descriptor 2", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x100000E6, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC3", "GLIU0 IOD Swiss Cheese Descriptor 3", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x100000E7, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC4", "GLIU0 IOD Swiss Cheese Descriptor 4", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x100000E8, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU0_IOD_SC5", "GLIU0 IOD Swiss Cheese Descriptor 5", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
 	{ 0x20000018, MSRTYPE_RDWR, MSR2(0x10071007, 0x40), "MC_CF07_DATA", "Refresh and SDRAM Program", {
 		{ 63, 4, "D1_SZ", "DIMM1 Size", PRESENT_BIN, {
 			{ MSR1(0), "Reserved" },
@@ -406,6 +992,608 @@ const struct msrdef geodegx2_msrs[] = {
 			{ BITVAL_EOT }
 		}},
 		{ 4, 5, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x40000020, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM0", "GLIU1 P2D Base Mask Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000021, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM1", "GLIU1 P2D Base Mask Descriptor 1", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000022, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM2", "GLIU1 P2D Base Mask Descriptor 2", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000023, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM3", "GLIU1 P2D Base Mask Descriptor 3", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000024, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM4", "GLIU1 P2D Base Mask Descriptor 4", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000025, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM5", "GLIU1 P2D Base Mask Descriptor 5", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000026, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM6", "GLIU1 P2D Base Mask Descriptor 6", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000027, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM7", "GLIU1 P2D Base Mask Descriptor 7", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000028, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_P2D_BM8", "GLIU1 P2D Base Mask Descriptor 8", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PBASE", "Physical Memory Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMASK", "Physical Memory Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x40000029, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU1_P2D_R0", "GLIU0 P2D Range Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x4000002A, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU1_P2D_R1", "GLIU0 P2D Range Descriptor 1", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x4000002B, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_R2", "GLIU0 P2D Range Descriptor 2", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x4000002C, MSRTYPE_RDWR, MSR2(0x00000000, 0x000FFFFF), "GLIU0_P2D_R3", "GLIU0 P2D Range Descriptor 3", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "PMAX", "Physical Memory Address Max.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "PMIN", "Physical Memory Address Min.", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x4000002D, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_P2D_SC0", "GLIU1 P2D Swiss Cheese Descriptor 0", {
+		{ 63, 3, "PDID1", "Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 12, RESERVED },
+		{ 47, 16, "WEN", "Enable hits to the base for the ith 16K page for writes", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 31, 16, "REN", "Enable hits to the base for the ith 16K page for ", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 15, 2, RESERVED },
+		{ 13, 14, "PSCBASE", "Physical Memory Address Base for hit", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x400000E0, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_IOD_BM0", "GLIU1 IOD Base Mask Descriptor 0", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x400000E1, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_IOD_BM1", "GLIU1 IOD Base Mask Descriptor 1", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x400000E2, MSRTYPE_RDWR, MSR2(0x000000FF, 0xFFF00000), "GLIU1_IOD_BM2", "GLIU1 IOD Base Mask Descriptor 2", {
+		{ 63, 3, "IDID", "IO Descriptor Destination ID", PRESENT_BIN, {
+			{ MSR1(0), "Port 0 = GLIU0:GLIU GLIU1:GLIU" },
+			{ MSR1(1), "Port 1 = GLIU0:GLMC GLIU1:Interface to GLIU0" },
+			{ MSR1(2), "Port 2 = GLIU0:Interface to GLIU1 GLIU1:Not Used" },
+			{ MSR1(3), "Port 3 = GLIU0:CPU Core GLIU1:GLCP" },
+			{ MSR1(4), "Port 4 = GLIU0:DC GLIU1:GLPCI" },
+			{ MSR1(5), "Port 5 = GLIU0:GP GLIU1:GIO" },
+			{ MSR1(6), "Port 6 = GLIU0:VP GLIU1:Not Used" },
+			{ MSR1(7), "Port 7 = GLIU0:Not Used GLIU1:Not Used" },
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 20, RESERVED },
+		{ 39, 20, "IBASE", "Physical IO Address Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 20, "IMASK", "Physical IO Address Mask", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
+	{ 0x400000E3, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC0", "GLIU1 IOD Swiss Cheese Descriptor 0", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x400000E4, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC1", "GLIU1 IOD Swiss Cheese Descriptor 1", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x400000E5, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC2", "GLIU1 IOD Swiss Cheese Descriptor 2", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x400000E6, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC3", "GLIU1 IOD Swiss Cheese Descriptor 3", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x400000E7, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC4", "GLIU1 IOD Swiss Cheese Descriptor 4", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
+		{ BITS_EOT }
+	}},
+	{ 0x400000E8, MSRTYPE_RDWR, MSR2(0x00000000, 0x00000000), "GLIU1_IOD_SC5", "GLIU1 IOD Swiss Cheese Descriptor 5", {
+		{ 63, 3, "IDID1", "Descriptor Destination ID 1", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 36, 1, "PCMP_BIZ", "Compare Bizarro Flag", PRESENT_BIN, {
+			{ MSR1(0), "Only act if Bizarro Flag = 0 (Memory or I/O)" },
+			{ MSR1(1), "Only act if Bizarro Flag = 1 (PCI, Shutdown or Halt)" },
+			{ BITVAL_EOT }
+		}},
+		{ 59, 28, RESERVED },
+		{ 31, 8, "EN", "Enable for hits to IDID1 or else SUBP", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 23, 2, RESERVED },
+		{ 21, 1, "WEN", "Descriptor hits  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 20, 1, "WEN", "Descriptor hit  IDID1 on write request Types else SUBP", PRESENT_BIN, {
+			{ BITVAL_EOT }
+		}},
+		{ 19, 17, "IBASE", "IO Memory Base", PRESENT_HEX, {
+			{ BITVAL_EOT }
+		}},
+		{ 2, 3, RESERVED },
 		{ BITS_EOT }
 	}},
 	{ 0x4c00000f, MSRTYPE_RDWR, MSR2(0, 0), "GLCP_DELAY_CONTROLS", "GLCP I/O Delay Controls", {

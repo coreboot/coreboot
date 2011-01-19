@@ -21,9 +21,40 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	select GEODE_VSA
 
+choice
+	prompt "Framebuffer size"
+	default GX2_VIDEO_MB_8MB
+	depends on NORTHBRIDGE_AMD_GX2 && VGA_BRIDGE_SETUP
+
+config GX2_VIDEO_MB_4MB
+	bool "4MB"
+config GX2_VIDEO_MB_8MB
+	bool "8MB"
+config GX2_VIDEO_MB_16MB
+	bool "16MB"
+config GX2_VIDEO_MB_32MB
+	bool "32MB"
+config GX2_VIDEO_MB_64MB
+	bool "64MB"
+config GX2_VIDEO_MB_128MB
+	bool "128MB"
+config GX2_VIDEO_MB_256MB
+	bool "256MB"
+config GX2_VIDEO_MB_CMOS
+	bool "Use CMOS option"
+
+endchoice
+
 config VIDEO_MB
 	int
-	default 8
+	default 4 if GX2_VIDEO_MB_4MB
+	default 8 if GX2_VIDEO_MB_8MB
+	default 16 if GX2_VIDEO_MB_16MB
+	default 32 if GX2_VIDEO_MB_32MB
+	default 64 if GX2_VIDEO_MB_64MB
+	default 128 if GX2_VIDEO_MB_128MB
+	default 256 if GX2_VIDEO_MB_256MB
+	default -1  if GX2_VIDEO_MB_CMOS
 	depends on NORTHBRIDGE_AMD_GX2
 
 # The GX2_PROCESSOR_MHZ options let you chose the correct GX2 processor

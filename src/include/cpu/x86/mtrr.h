@@ -21,6 +21,8 @@
 #define MTRRphysBase_MSR(reg) (0x200 + 2 * (reg))
 #define MTRRphysMask_MSR(reg) (0x200 + 2 * (reg) + 1)
 
+#define MTRRphysMaskValid	(1 << 11)
+
 #define NUM_FIXED_RANGES 88
 #define MTRRfix64K_00000_MSR 0x250
 #define MTRRfix16K_80000_MSR 0x258

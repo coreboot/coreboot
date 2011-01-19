@@ -62,7 +62,7 @@ static void enable_var_mtrr(void)
 	msr_t msr;
 
 	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo |= 0x800;
+	msr.lo |= MTRRdefTypeEn;
 	wrmsr(MTRRdefType_MSR, msr);
 }
 
@@ -115,7 +115,7 @@ static void set_var_mtrr(
 
 	/* Bit 32-35 of MTRRphysMask should be set to 1 */
 	base.lo |= type;
-	mask.lo |= 0x800;
+	mask.lo |= MTRRphysMaskValid;
 	wrmsr (MTRRphysBase_MSR(reg), base);
 	wrmsr (MTRRphysMask_MSR(reg), mask);
 

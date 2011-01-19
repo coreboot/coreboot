@@ -25,18 +25,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <cpu/x86/car.h>
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		CONFIG_DCACHE_RAM_BASE
 
-	save_bist_result()
+	/* Save the BIST result. */
+	movl	%eax, %ebp
 
 CacheAsRam:
 
-	disable_cache()
+	/* Disable cache. */
+	movl	%cr0, %eax
+	orl	$(1 << 30), %eax
+	movl	%eax, %cr0
 	invd
 
 	/* Set the default memory type and enable fixed and variable MTRRs. */
@@ -139,7 +142,10 @@ clear_fixed_var_mtrr_out:
 	movl	$(MTRRdefTypeEn), %eax
 	wrmsr
 
-	enable_cache()
+	/* Enable cache. */
+	movl	%cr0, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
+	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
 	cld
@@ -195,7 +201,8 @@ testok:
 	jne	stackerr
 #endif
 
-	restore_bist_result()
+	/* Restore the BIST result. */
+	movl	%ebp, %eax
 
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
@@ -210,7 +217,10 @@ testok:
 
 	/* We don't need CAR from now on. */
 
-	disable_cache()
+	/* Disable cache. */
+	movl	%cr0, %eax
+	orl	$(1 << 30), %eax
+	movl	%eax, %cr0
 
 	/* Set the default memory type and enable variable MTRRs. */
 	/* TODO: Or also enable fixed MTRRs? Bug in the code? */
@@ -242,7 +252,10 @@ testok:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
-	enable_cache()
+	/* Enable cache. */
+	movl	%cr0, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
+	movl	%eax, %cr0
 	invd
 
 	/* Clear boot_complete flag. */

@@ -61,7 +61,7 @@ static void sb800_acpi_init(void) {
 	pmio_write(0x6C, ACPI_PMA_CNT_BLK & 0xFF);
 	pmio_write(0x6D, ACPI_PMA_CNT_BLK >> 8);
 
-	pm_iowrite(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
+	pmio_write(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
 					* the contents of the PM registers at
 					* index 60-6B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
@@ -95,8 +95,7 @@ static u8 get_sb800_revision(void)
 	return rev;
 }
 
-#if 0
-static void sb800_clk_output_48Mhz(void)
+void sb800_clk_output_48Mhz(void)
 {
 	/* AcpiMMioDecodeEn */
 	u8 reg8;
@@ -108,7 +107,6 @@ static void sb800_clk_output_48Mhz(void)
 	*(volatile u32 *)(0xFED80000+0xE00+0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
 	*(volatile u32 *)(0xFED80000+0xE00+0x40) |= 1 << 1; /* 48Mhz */
 }
-#endif
 /***************************************
 * Legacy devices are mapped to LPC space.
 *	Serial port 0
@@ -234,8 +232,7 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-#if 0
-static void sb800_pci_port80(void)
+void sb800_pci_port80(void)
 {
 	u8 byte;
 	device_t dev;
@@ -279,7 +276,7 @@ static void sb800_pci_port80(void)
 	byte &= ~(1 << 5);	/* disable lpc port 80 */
 	pci_write_config8(dev, 0x4A, byte);
 }
-#endif
+
 #define BIT0	(1 << 0)
 #define BIT1	(1 << 1)
 #define BIT2	(1 << 2)
@@ -296,54 +293,52 @@ struct pm_entry {
 };
 struct pm_entry const pm_table[] =
 {
-  {0x5D, 0x00, BIT0},
-  {0xD2, 0xCF, BIT4 + BIT5},
-  {0x12, 0x00, BIT0},
-  {0x28, 0xFF, BIT0},
-  {0x44 + 3, 0x7F, BIT7},
-  {0x48, 0xFF, BIT0},
-  {0x00, 0xFF, 0x0E},
-  {0x00 + 2, 0xFF, 0x40},
-  {0x00 + 3, 0xFF, 0x08},
-  {0x34, 0xEF, BIT0 + BIT1},
-  {0xEC, 0xFD, BIT1},
-  {0x5B, 0xF9, BIT1 + BIT2},
-  {0x08, 0xFE, BIT2 + BIT4},
-  {0x08 + 1, 0xFF, BIT0},
-  {0x54, 0x00, BIT4 + BIT7},
-  {0x04 + 3, 0xFD, BIT1},
-  {0x74, 0xF6, BIT0 + BIT3},
-  {0xF0, ~BIT2, 0x00},
-  {0xF8,     0x00, 0x6C},
-  {0xF8 + 1, 0x00, 0x27},
-  {0xF8 + 2, 0x00, 0x00},
-  {0xC4, 0xFE, 0x14},
-  {0xC0 + 2, 0xBF, 0x40},
-  {0xBE, 0xDD, BIT5},
-  // HPET workaround
-  {0x54 + 3, 0xFC, BIT0 + BIT1},
-  {0x54 + 2, 0x7F, BIT7},
-  {0x54 + 2, 0x7F, 0x00},
-  {0xC4, ~(BIT2 + BIT4), BIT2 + BIT4},
-  {0xC0, 0, 0xF9},
-  {0xC0 + 1, 0x04, 0x03},
-  {0xC2, 0x20, 0x58},
-  {0xC2 + 1, 0, 0x40},
-  {0xC2, ~(BIT4), BIT4},
-  {0x74, 0x00, BIT0 + BIT1 + BIT2 + BIT4},
-  {0xDE + 1, ~(BIT0 + BIT1), BIT0 + BIT1},
-  {0xDE, ~BIT4, BIT4},
-  {0xBA, ~BIT3, BIT3},
-  {0xBA + 1, ~BIT6, BIT6},
-  {0xBC, ~BIT1, BIT1},
-  {0xED, ~(BIT0 + BIT1), 0},
-  {0xDC, 0x7C, BIT0},
-
+	{0x5D, 0x00, BIT0},
+	{0xD2, 0xCF, BIT4 + BIT5},
+	{0x12, 0x00, BIT0},
+	{0x28, 0xFF, BIT0},
+	{0x44 + 3, 0x7F, BIT7},
+	{0x48, 0xFF, BIT0},
+	{0x00, 0xFF, 0x0E},
+	{0x00 + 2, 0xFF, 0x40},
+	{0x00 + 3, 0xFF, 0x08},
+	{0x34, 0xEF, BIT0 + BIT1},
+	{0xEC, 0xFD, BIT1},
+	{0x5B, 0xF9, BIT1 + BIT2},
+	{0x08, 0xFE, BIT2 + BIT4},
+	{0x08 + 1, 0xFF, BIT0},
+	{0x54, 0x00, BIT4 + BIT7},
+	{0x04 + 3, 0xFD, BIT1},
+	{0x74, 0xF6, BIT0 + BIT3},
+	{0xF0, ~BIT2, 0x00},
+	{0xF8,     0x00, 0x6C},
+	{0xF8 + 1, 0x00, 0x27},
+	{0xF8 + 2, 0x00, 0x00},
+	{0xC4, 0xFE, 0x14},
+	{0xC0 + 2, 0xBF, 0x40},
+	{0xBE, 0xDD, BIT5},
+	// HPET workaround
+	{0x54 + 3, 0xFC, BIT0 + BIT1},
+	{0x54 + 2, 0x7F, BIT7},
+	{0x54 + 2, 0x7F, 0x00},
+	{0xC4, ~(BIT2 + BIT4), BIT2 + BIT4},
+	{0xC0, 0, 0xF9},
+	{0xC0 + 1, 0x04, 0x03},
+	{0xC2, 0x20, 0x58},
+	{0xC2 + 1, 0, 0x40},
+	{0xC2, ~(BIT4), BIT4},
+	{0x74, 0x00, BIT0 + BIT1 + BIT2 + BIT4},
+	{0xDE + 1, ~(BIT0 + BIT1), BIT0 + BIT1},
+	{0xDE, ~BIT4, BIT4},
+	{0xBA, ~BIT3, BIT3},
+	{0xBA + 1, ~BIT6, BIT6},
+	{0xBC, ~BIT1, BIT1},
+	{0xED, ~(BIT0 + BIT1), 0},
+	{0xDC, 0x7C, BIT0},
 //  {0xFF, 0xFF, 0xFF},
-  
 };
 
-static void sb800_lpc_port80(void)
+void sb800_lpc_port80(void)
 {
 	u8 byte;
 	device_t dev;

@@ -47,12 +47,13 @@ extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define REV_SB800_A11	0x11
 #define REV_SB800_A12	0x12
 
-/* This shouldn't be called before set_sb800_revision() is called.
- * Once set_sb800_revision() is called, we use get_sb800_revision(),
- * the simpler one, to get the sb800 revision ID.
- * The id is 0x39 if A11, 0x3A if A12, 0x3C if A14, 0x3D if A15.
- * The differentiate is 0x28, isn't it? */
-//#define get_sb800_revision(sm_dev)	(pci_read_config8((sm_dev), 0x08) - 0x28)
+#ifdef __PRE_RAM__
+void sb800_lpc_port80(void);
+void sb800_pci_port80(void);
+void sb800_clk_output_48Mhz(void);
+#else
+/* void sb800_setup_sata_phys(struct device *dev); */
+#endif
 
 void sb800_enable(device_t dev);
 void sb800_enable_usbdebug(unsigned int port);

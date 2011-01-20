@@ -27,7 +27,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	#include "../../../arch/x86/acpi/debug.asl"		/* Include global debug methods if needed */
+	/* #include "../../../arch/x86/acpi/debug.asl" */		/* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
 	/* FIXME the patching is not done yet! */
@@ -842,10 +842,10 @@ DefinitionBlock (
 	* state of any device in the system.
 	*/
 	Method(\_PTS, 1) {
-		DBGO("\\_PTS\n")
-		DBGO("From S0 to S")
-		DBGO(Arg0)
-		DBGO("\n")
+		/* DBGO("\\_PTS\n") */
+		/* DBGO("From S0 to S") */
+		/* DBGO(Arg0) */
+		/* DBGO("\n") */
 
 		/* Don't allow PCIRST# to reset USB */
 		if (LEqual(Arg0,3)){
@@ -921,10 +921,10 @@ DefinitionBlock (
 	*			if non-zero the effective S-state the power supply entered
 	*/
 	Method(\_WAK, 1) {
-		DBGO("\\_WAK\n")
-		DBGO("From S")
-		DBGO(Arg0)
-		DBGO(" to S0\n")
+		/* DBGO("\\_WAK\n") */
+		/* DBGO("From S") */
+		/* DBGO(Arg0) */
+		/* DBGO(" to S0\n") */
 
 		/* Re-enable HPET */
 		Store(1,HPDE)

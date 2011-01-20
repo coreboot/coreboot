@@ -646,4 +646,54 @@ static int smbus_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
+
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+	int i;
+	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
+
+	for (i = 0; i<size; i++) {
+		outb(nvram_pos, BIOSRAM_INDEX);
+		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		nvram_pos++;
+	}
+
+	return nvram_pos;
+}
+
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
+	u32 data = *old_dword;
+	int i;
+	for (i = 0; i<size; i++) {
+		outb(nvram_pos, BIOSRAM_INDEX);
+		data &= ~(0xff << (i * 8));
+		data |= inb(BIOSRAM_DATA) << (i *8);
+		nvram_pos++;
+	}
+	*old_dword = data;
+	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", *old_dword, size,
+		nvram_pos-size);
+	return nvram_pos;
+}
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+static int acpi_is_wakeup_early(void) {
+	u16 tmp;
+	tmp = inw(ACPI_PM1_CNT_BLK);
+	printk(BIOS_DEBUG, "IN TEST WAKEUP %x\n", tmp);
+	return (((tmp & (7 << 10)) >> 10) == 3);
+}
+#endif
+
+struct cbmem_entry *get_cbmem_toc(void) {
+	uint32_t xdata = 0;
+	int xnvram_pos = 0xfc, xi;
+	for (xi = 0; xi<4; xi++) {
+		outb(xnvram_pos, BIOSRAM_INDEX);
+		xdata &= ~(0xff << (xi * 8));
+		xdata |= inb(BIOSRAM_DATA) << (xi *8);
+		xnvram_pos++;
+	}
+	return (struct cbmem_entry *) xdata;
+}
+
 #endif

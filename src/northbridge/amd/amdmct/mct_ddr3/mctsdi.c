@@ -306,7 +306,7 @@ void mct_DramInit_Sw_D(struct MCTStatStruc *pMCTstat,
 				if (!(pDCTstat->Status & (1 << SB_Registered)))
 					break; /* For UDIMM, only send MR commands once per channel */
 		}
-		if (pDCTstat->LogicalCPUID & (AMD_DR_Cx/* | AMD_RB_C0 */)) /* We dont support RB_C0 now. need to be added and tested. */
+		if (pDCTstat->LogicalCPUID & (AMD_DR_Bx/* | AMD_RB_C0 */)) /* TODO: We dont support RB_C0 now. need to be added and tested. */
 			if (!(pDCTstat->Status & (1 << SB_Registered)))
 				MrsChipSel ++;
 	}

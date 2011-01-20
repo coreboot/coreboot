@@ -1,0 +1,12 @@
+driver-y += sb800.c
+driver-y += usb.c
+driver-y += lpc.c
+driver-y += sm.c
+driver-y += ide.c
+driver-y += sata.c
+driver-y += hda.c
+driver-y += pci.c
+driver-y += pcie.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+ramstage-y += reset.c
+romstage-y += enable_usbdebug.c

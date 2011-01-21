@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #if (CONFIG_USE_OPTION_TABLE == 1)
 #include <option_table.h>
+#include <cbfs.h>
 #endif
 
 static struct lb_header *lb_table_init(unsigned long addr)
@@ -542,11 +543,11 @@ unsigned long write_coreboot_table(
 
 #if (CONFIG_USE_OPTION_TABLE == 1)
 	{
-		struct cmos_option_table option_table = cbfs_find_file("cmos_layout.bin", 0x1aa);
+		struct cmos_option_table *option_table = cbfs_find_file("cmos_layout.bin", 0x1aa);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a lb_record... */
-			memcpy(rec_dest,  &option_table, option_table.size);
+			memcpy(rec_dest,  &option_table, option_table->size);
 			/* Create cmos checksum entry in coreboot table */
 			lb_cmos_checksum(head);
 		} else {

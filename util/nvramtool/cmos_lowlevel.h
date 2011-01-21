@@ -34,6 +34,9 @@
 #include "common.h"
 #include "layout.h"
 
+typedef enum { HAL_CMOS, HAL_MEMORY } hal_t;
+void select_hal(hal_t hal, void *data);
+
 #define CMOS_AREA_OUT_OF_RANGE (CMOS_RESULT_START + 0)
 #define CMOS_AREA_OVERLAPS_RTC (CMOS_RESULT_START + 1)
 #define CMOS_AREA_TOO_WIDE (CMOS_RESULT_START + 2)

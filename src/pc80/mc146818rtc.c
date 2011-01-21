@@ -227,7 +227,7 @@ int get_option(void *dest, const char *name)
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	/* find the requested entry record */
-	ct=cbfs_find_file("cmos_layout.bin", CMOS_COMPONENT_CMOS_LAYOUT);
+	ct=cbfs_find_file("cmos_layout.bin", CBFS_COMPONENT_CMOS_LAYOUT);
 	if (!ct) {
 		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
 		return(-2);

@@ -28,6 +28,10 @@
  *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 \*****************************************************************************/
 
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 #include "common.h"
 #include "opts.h"
 #include "lbtable.h"
@@ -93,6 +97,7 @@ static const hexdump_format_t cmos_dump_format =
  ****************************************************************************/
 int main(int argc, char *argv[])
 {
+	void *cmos_default = NULL;
 	cmos_layout_get_fn_t fn = get_layout_from_cmos_table;
 
 	parse_nvramtool_args(argc, argv);
@@ -105,12 +110,38 @@ int main(int argc, char *argv[])
 		fn = get_layout_from_cmos_table;
 	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].found) {
 		open_cbfs(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].param);
-		void *cmosdefault = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT, NULL);
-		if (cmosdefault == NULL) {
-			printf("Need a cmos.default in the CBFS image for now.\n");
+		if (!nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].found) {
+			cmos_default = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT, NULL);
+			if (cmos_default == NULL) {
+				fprintf(stderr, "Need a cmos.default in the CBFS image or separate cmos file (-D).\n");
+				exit(1);
+			}
+		}
+	}
+	if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].found) {
+		int fd;
+		struct stat fd_stat;
+	       	if ((fd = open(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param, O_RDWR | O_CREAT, 0666)) < 0) {
+			fprintf(stderr, "Couldn't open '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);
 		}
-		select_hal(HAL_MEMORY, cmosdefault);
+		if (fstat(fd, &fd_stat) == -1) {
+			fprintf(stderr, "Couldn't stat '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
+			exit(1);
+		}
+		if (fd_stat.st_size < 128) {
+			lseek(fd, 127, SEEK_SET);
+			write(fd, "\0", 1);
+			fsync(fd);
+		}
+		cmos_default = mmap(NULL, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		if (cmos_default == MAP_FAILED) {
+			fprintf(stderr, "Couldn't map '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
+			exit(1);
+		}
+	}
+	if (cmos_default) {
+		select_hal(HAL_MEMORY, cmos_default);
 		fn = get_layout_from_cbfs_file;
 	}
 

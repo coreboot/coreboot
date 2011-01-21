@@ -41,7 +41,7 @@ static void register_op_modifier(nvramtool_op_modifier_t mod, char mod_param[]);
 static void resolve_op_modifiers(void);
 static void sanity_check_args(void);
 
-static const char getopt_string[] = "-ab:B:c::C:de:hil::np:r:tvw:xX:y:Y";
+static const char getopt_string[] = "-ab:B:c::C:dD:e:hil::np:r:tvw:xX:y:Y";
 
 /****************************************************************************
  * parse_nvramtool_args
@@ -88,6 +88,10 @@ void parse_nvramtool_args(int argc, char *argv[])
 			break;
 		case 'd':
 			register_op(&op_found, NVRAMTOOL_OP_LBTABLE_DUMP, NULL);
+			break;
+		case 'D':
+			register_op_modifier(NVRAMTOOL_MOD_USE_CMOS_FILE,
+					     optarg);
 			break;
 		case 'e':
 			register_op(&op_found, NVRAMTOOL_OP_SHOW_PARAM_VALUES,

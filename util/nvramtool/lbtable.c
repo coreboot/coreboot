@@ -632,6 +632,10 @@ static void get_cmos_checksum_info(void)
 
 	checksum = (struct cmos_checksum *)find_lbrec(LB_TAG_OPTION_CHECKSUM);
 
+	if (checksum == NULL) {
+		checksum = (struct cmos_checksum *)next_cmos_rec((const struct lb_record *)first_cmos_table_enum(), LB_TAG_OPTION_CHECKSUM);
+	}
+
 	if (checksum != NULL) {	/* We are lucky.  The coreboot table hints us to the checksum.
 				 * We might have to check the type field here though.
 				 */

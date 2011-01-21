@@ -82,6 +82,7 @@ void usage(FILE * outfile)
 		"LAYOUT_FILE.\n"
 		"       -t:             Use CMOS layout specified by CMOS option "
 		"table.\n"
+		"       -C CBFS_FILE:   Use CBFS file for layout and CMOS defaults.\n"
 		"       [-n] -r NAME:   Show parameter NAME.  If -n is given, "
 		"show value only.\n"
 		"       -e NAME:        Show all possible values for parameter "

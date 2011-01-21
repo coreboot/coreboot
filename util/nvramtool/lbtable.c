@@ -29,6 +29,7 @@
  *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 \*****************************************************************************/
 
+#include <arpa/inet.h>
 #include <string.h>
 #include <sys/mman.h>
 #include "common.h"
@@ -38,6 +39,7 @@
 #include "layout.h"
 #include "cmos_lowlevel.h"
 #include "hexdump.h"
+#include "cbfs.h"
 
 typedef void (*lbtable_print_fn_t) (const struct lb_record * rec);
 
@@ -315,6 +317,21 @@ void get_lbtable(void)
 	exit(1);
 }
 
+static void process_layout(void)
+{
+	if ((cmos_table) == NULL) {
+		fprintf(stderr,
+			"%s: CMOS option table not found in coreboot table.  "
+			"Apparently, the coreboot installed on this system was "
+			"built without specifying CONFIG_HAVE_OPTION_TABLE.\n",
+			prog_name);
+		exit(1);
+	}
+
+	process_cmos_table();
+	get_cmos_checksum_info();
+}
+
 /****************************************************************************
  * get_layout_from_cmos_table
  *
@@ -327,18 +344,18 @@ void get_layout_from_cmos_table(void)
 	get_lbtable();
 	cmos_table = (const struct cmos_option_table *)
 	    find_lbrec(LB_TAG_CMOS_OPTION_TABLE);
+	process_layout();
+}
 
-	if ((cmos_table) == NULL) {
-		fprintf(stderr,
-			"%s: CMOS option table not found in coreboot table.  "
-			"Apparently, the coreboot installed on this system was "
-			"built without specifying CONFIG_HAVE_OPTION_TABLE.\n",
-			prog_name);
-		exit(1);
-	}
-
-	process_cmos_table();
-	get_cmos_checksum_info();
+void get_layout_from_cbfs_file(void)
+{
+	static struct lb_header header;
+	u32 len;
+	cmos_table = cbfs_find_file("cmos_layout.bin", CBFS_COMPONENT_CMOS_LAYOUT, &len);
+	lbtable = &header;
+	header.header_bytes = (u32)cmos_table-(u32)lbtable;
+	header.table_bytes = ntohl(len);
+	process_layout();
 }
 
 /****************************************************************************

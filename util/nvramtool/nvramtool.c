@@ -38,6 +38,7 @@
 #include "cmos_lowlevel.h"
 #include "reg_expr.h"
 #include "hexdump.h"
+#include "cbfs.h"
 
 typedef void (*op_fn_t) (void);
 
@@ -92,7 +93,7 @@ static const hexdump_format_t cmos_dump_format =
  ****************************************************************************/
 int main(int argc, char *argv[])
 {
-	cmos_layout_get_fn_t fn;
+	cmos_layout_get_fn_t fn = get_layout_from_cmos_table;
 
 	parse_nvramtool_args(argc, argv);
 
@@ -100,8 +101,18 @@ int main(int argc, char *argv[])
 		set_layout_filename(nvramtool_op_modifiers
 				    [NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].param);
 		fn = get_layout_from_file;
-	} else
+	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found) {
 		fn = get_layout_from_cmos_table;
+	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].found) {
+		open_cbfs(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].param);
+		void *cmosdefault = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT, NULL);
+		if (cmosdefault == NULL) {
+			printf("Need a cmos.default in the CBFS image for now.\n");
+			exit(1);
+		}
+		select_hal(HAL_MEMORY, cmosdefault);
+		fn = get_layout_from_cbfs_file;
+	}
 
 	register_cmos_layout_get_fn(fn);
 	op_fns[nvramtool_op.op] ();

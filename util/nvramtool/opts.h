@@ -58,6 +58,7 @@ typedef struct {
 
 typedef enum { NVRAMTOOL_MOD_SHOW_VALUE_ONLY = 0,
 	NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE,
+	NVRAMTOOL_MOD_USE_CBFS_FILE,
 	NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE,
 	NVRAMTOOL_NUM_OP_MODIFIERS	/* must always be last */
 } nvramtool_op_modifier_t;

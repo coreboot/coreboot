@@ -24,12 +24,12 @@ CC      = gcc
 STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W
+CFLAGS  = -O2 -g -Wall -W -m32
 #CFLAGS  = -Os -Wall
 
 OBJS =  cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o \
 	hexdump.o input_file.o layout.o layout_file.o lbtable.o   \
-	nvramtool.o opts.o reg_expr.o
+	nvramtool.o opts.o reg_expr.o cbfs.o
 
 OS_ARCH        = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)

@@ -36,6 +36,67 @@
 #include "common.h"
 #include "cmos_lowlevel.h"
 
+/* Hardware Abstraction Layer: lowlevel byte-wise write access */
+typedef struct {
+	void (*init)(void* data);
+	unsigned char (*read)(unsigned addr);
+	void (*write)(unsigned addr, unsigned char value);
+} cmos_access_t;
+
+static void cmos_hal_init(void* data);
+static unsigned char cmos_hal_read(unsigned addr);
+static void cmos_hal_write(unsigned addr, unsigned char value);
+
+static cmos_access_t cmos_hal = {
+	.init = cmos_hal_init,
+	.read = cmos_hal_read,
+	.write = cmos_hal_write
+};
+
+static cmos_access_t *current_access = &cmos_hal;
+
+/* no need to initialize anything */
+static void cmos_hal_init(__attribute__((unused)) void *data)
+{
+}
+
+static unsigned char cmos_hal_read(unsigned index)
+{
+	unsigned short port_0, port_1;
+
+	assert(!verify_cmos_byte_index(index));
+
+	if (index < 128) {
+		port_0 = 0x70;
+		port_1 = 0x71;
+	} else {
+		port_0 = 0x72;
+		port_1 = 0x73;
+	}
+
+	OUTB(index, port_0);
+	return INB(port_1);
+}
+
+static void cmos_hal_write(unsigned index, unsigned char value)
+{
+	unsigned short port_0, port_1;
+
+	assert(!verify_cmos_byte_index(index));
+
+	if (index < 128) {
+		port_0 = 0x70;
+		port_1 = 0x71;
+	} else {
+		port_0 = 0x72;
+		port_1 = 0x73;
+	}
+
+	OUTB(index, port_0);
+	OUTB(value, port_1);
+}
+
+/* Bit-level access */
 typedef struct {
 	unsigned byte_index;
 	unsigned bit_offset;
@@ -181,20 +242,7 @@ void cmos_write(const cmos_entry_t * e, unsigned long long value)
  ****************************************************************************/
 unsigned char cmos_read_byte(unsigned index)
 {
-	unsigned short port_0, port_1;
-
-	assert(!verify_cmos_byte_index(index));
-
-	if (index < 128) {
-		port_0 = 0x70;
-		port_1 = 0x71;
-	} else {
-		port_0 = 0x72;
-		port_1 = 0x73;
-	}
-
-	OUTB(index, port_0);
-	return INB(port_1);
+	return current_access->read(index);
 }
 
 /****************************************************************************
@@ -209,20 +257,7 @@ unsigned char cmos_read_byte(unsigned index)
  ****************************************************************************/
 void cmos_write_byte(unsigned index, unsigned char value)
 {
-	unsigned short port_0, port_1;
-
-	assert(!verify_cmos_byte_index(index));
-
-	if (index < 128) {
-		port_0 = 0x70;
-		port_1 = 0x71;
-	} else {
-		port_0 = 0x72;
-		port_1 = 0x73;
-	}
-
-	OUTB(index, port_0);
-	OUTB(value, port_1);
+	current_access->write(index, value);
 }
 
 /****************************************************************************

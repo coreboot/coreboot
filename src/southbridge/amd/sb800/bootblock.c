@@ -36,8 +36,7 @@ static void sb800_enable_rom(void)
 	u8 reg8;
 	device_t dev;
 
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI,
-				       PCI_DEVICE_ID_ATI_SB800_LPC), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 
 	/* Decode variable LPC ROM address ranges 1 and 2. */
 	reg8 = pci_read_config8(dev, 0x48);

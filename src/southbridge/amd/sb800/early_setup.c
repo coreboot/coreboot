@@ -65,6 +65,8 @@ static void sb800_acpi_init(void) {
 					* the contents of the PM registers at
 					* index 60-6B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
+	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
+	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
 }
 
 /* RPR 2.28 Get SB ASIC Revision.*/
@@ -568,11 +570,11 @@ static void sb800_pci_cfg(void)
 	byte |= (1 << 3);
 	pci_write_config8(dev, 0x41, byte);
 
-	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles)
+	/* rpr 7.4. Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles)
 	 * generated PCIRST#. */
-	byte = pmio_read(0x65);
-	byte |= (1 << 4);
-	pmio_write(0x65, byte);
+	byte = pmio_read(0xF0);
+	byte |= (1 << 2);
+	pmio_write(0xF0, byte);
 
 	/* IDE Device, BDF:0-20-1 */
 	dev = PCI_DEV(0, 0x14, 1);//pci_locate_device(PCI_ID(0x1002, 0x439C), 0);

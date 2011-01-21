@@ -302,6 +302,7 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 	return 0;
 }
 
+#if 0
 //VBE Function 08h
 static u8
 vbe_set_palette_format(u8 format)
@@ -764,6 +765,7 @@ vbe_get_info(void)
 	}
 	return 0;
 }
+#endif
 
 vbe_mode_info_t mode_info;
 

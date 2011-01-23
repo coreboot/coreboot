@@ -1,7 +1,7 @@
 
 
 TAG-$(CONFIG_SEABIOS_MASTER)=master
-TAG-$(CONFIG_SEABIOS_STABLE)=0.6.1-stable
+TAG-$(CONFIG_SEABIOS_STABLE)=rel-0.6.1.3
 
 all: seabios
 

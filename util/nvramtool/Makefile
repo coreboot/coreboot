@@ -39,7 +39,7 @@ endif
 all: dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
-	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
+	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(CFLAGS)
 	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:

@@ -24,7 +24,7 @@ CC      = gcc
 STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W -m32
+CFLAGS  = -O2 -g -Wall -W
 #CFLAGS  = -Os -Wall
 
 OBJS =  cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o \

@@ -547,7 +547,7 @@ unsigned long write_coreboot_table(
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a lb_record... */
-			memcpy(rec_dest,  &option_table, option_table->size);
+			memcpy(rec_dest,  option_table, option_table->size);
 			/* Create cmos checksum entry in coreboot table */
 			lb_cmos_checksum(head);
 		} else {

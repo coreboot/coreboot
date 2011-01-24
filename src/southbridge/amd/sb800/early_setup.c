@@ -55,8 +55,11 @@ static void sb800_acpi_init(void) {
 	pmio_write(0x66, ACPI_CPU_CONTROL & 0xFF);
 	pmio_write(0x67, ACPI_CPU_CONTROL >> 8);
 
-	pmio_write(0x6A, 0);	/* AcpiSmiCmdLo */
+	pmio_write(0x6A, 0xB0);	/* AcpiSmiCmdLo */
 	pmio_write(0x6B, 0);	/* AcpiSmiCmdHi */
+
+	pmio_write(0x6E, 0xB8);	/* AcpiPmaCntBlkLo */
+	pmio_write(0x6F, 0);	/* AcpiPmaCntBlkHi */
 
 	pmio_write(0x6C, ACPI_PMA_CNT_BLK & 0xFF);
 	pmio_write(0x6D, ACPI_PMA_CNT_BLK >> 8);

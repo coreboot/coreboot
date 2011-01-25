@@ -1,6 +1,6 @@
 
 
-TAG-$(CONFIG_SEABIOS_MASTER)=master
+TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
 TAG-$(CONFIG_SEABIOS_STABLE)=rel-0.6.1.3
 
 all: seabios
@@ -18,9 +18,9 @@ patch: checkout
 
 checkout:
 	echo "Checking out SeaBIOS $(TAG-y)"
-	test -d seabios && ( cd seabios; git pull ) || \
+	test -d seabios && ( cd seabios; git fetch ) || \
 	git clone git://git.linuxtogo.org/home/kevin/seabios.git seabios
-	cd seabios; git checkout $(TAG-y)
+	cd seabios; git checkout -m $(TAG-y)
 
 clean:
 	test -d seabios && (cd seabios; $(MAKE) CC="$(CC)" LD="$(LD)" clean) || exit 0

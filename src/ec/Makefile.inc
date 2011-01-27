@@ -1,1 +1,1 @@
-subdirs-y += acpi
+subdirs-$(CONFIG_EC_ACPI) += acpi

@@ -86,7 +86,9 @@ chip northbridge/intel/i945
 					device pnp 2e.1 off		# ACPI PM
 					end
 					# 2e.2 does not exist
-					device pnp 2e.3 off		# Parallel port
+					device pnp 2e.3 on		# Parallel port
+						 io 0x60 = 0x378
+						irq 0x70 = 5
 					end
 					device pnp 2e.4 on		# COM1
                                                  io 0x60 = 0x3f8

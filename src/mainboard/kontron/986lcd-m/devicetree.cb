@@ -52,7 +52,9 @@ chip northbridge/intel/i945
                                 chip superio/winbond/w83627thg
 					device pnp 2e.0 off		# Floppy
 					end
-					device pnp 2e.1 off		# Parport
+					device pnp 2e.1 on		# Parallel port
+						 io 0x60 = 0x378
+						irq 0x70 = 5
 					end
                                         device pnp 2e.2 on
                                                  io 0x60 = 0x3f8

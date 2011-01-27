@@ -34,6 +34,7 @@
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
+#include "option_table.h"
 
 void setup_ich7_gpios(void)
 {
@@ -81,12 +82,16 @@ void setup_ich7_gpios(void)
 
 static void ich7_enable_lpc(void)
 {
+	int lpt_en = 0;
+	if (read_option(CMOS_VSTART_lpt, CMOS_VLEN_lpt, 0) != 0) {
+	       lpt_en = 1<<2; // enable LPT
+	}
 	// Enable Serial IRQ
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0007);
 	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0f);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0b | lpt_en);
 	// Enable 0x02e0 - 0x2ff
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x001c02e1);
 	// Enable 0x600 - 0x6ff

@@ -58,12 +58,16 @@ void setup_ich7_gpios(void)
 
 static void ich7_enable_lpc(void)
 {
+	int lpt_en = 0;
+	if (read_option(CMOS_VSTART_lpt, CMOS_VLEN_lpt, 0) != 0) {
+		lpt_en = 1<<2; // enable LPT
+	}
 	// Enable Serial IRQ
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);
 	// Set COM1/COM2 decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0010);
 	// Enable COM1/COM2/KBD/SuperIO1+2
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340b);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340b | lpt_en);
 	// Enable HWM at 0xa00
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x00fc0a01);
 	// COM3 decode

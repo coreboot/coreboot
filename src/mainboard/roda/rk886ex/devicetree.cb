@@ -83,7 +83,9 @@ chip northbridge/intel/i945
 			#device pci 1e.3 off end # AC'97 Modem
                         device pci 1f.0 on # LPC bridge
                                 chip superio/smsc/lpc47n227
-					device pnp 2e.1 off # Parallel port
+					device pnp 2e.1 on # Parallel port
+						 io 0x60 = 0x378
+						irq 0x70 = 5
 					end
 					device pnp 2e.2 on # COM1
                                                  io 0x60 = 0x3f8

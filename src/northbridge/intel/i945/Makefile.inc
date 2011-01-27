@@ -26,3 +26,5 @@ romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += errata.c
 romstage-y += debug.c
+
+smm-y += udelay.c

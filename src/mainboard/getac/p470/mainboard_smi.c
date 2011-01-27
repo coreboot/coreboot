@@ -25,7 +25,6 @@
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/i82801gx.h"
 #include "southbridge/intel/i82801gx/nvs.h"
-#include "northbridge/intel/i945/udelay.c"
 #include "ec.c"
 
 #define MAX_LCD_BRIGHTNESS 0xd8

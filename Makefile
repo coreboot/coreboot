@@ -123,7 +123,7 @@ export MAINBOARDDIR
 PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
 TARGETS-y :=
 
-BUILD-y := src/lib src/boot src/console src/devices src/southbridge src/northbridge src/superio src/drivers
+BUILD-y := src/lib src/boot src/console src/devices src/ec src/southbridge src/northbridge src/superio src/drivers
 BUILD-y += util/cbfstool util/sconfig
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 

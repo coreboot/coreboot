@@ -18,7 +18,6 @@
 ##
 
 ramstage-y += m3885.c
-ramstage-y += ec.c
 driver-y += rtl8168.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

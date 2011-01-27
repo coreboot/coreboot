@@ -28,7 +28,7 @@
 #include "chip.h"
 #include "hda_verb.h"
 
-#include "ec.c"
+#include "ec_oem.c"
 
 #define MAX_LCD_BRIGHTNESS	0xd8
 

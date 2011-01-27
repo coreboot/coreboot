@@ -1,0 +1,4 @@
+config EC_ACPI
+	bool
+	help
+	ACPI Embedded Controller interface. Mostly found in laptops.

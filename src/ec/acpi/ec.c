@@ -20,6 +20,7 @@
  */
 
 #include <console/console.h>
+#include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
 #include "ec.h"
@@ -112,3 +113,6 @@ int ec_write(u8 addr, u8 data)
 	return send_ec_data(data);
 }
 
+struct chip_operations ec_acpi_ops = {
+	CHIP_NAME("ACPI Embedded Controller")
+};

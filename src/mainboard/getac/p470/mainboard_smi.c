@@ -25,7 +25,8 @@
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/i82801gx.h"
 #include "southbridge/intel/i82801gx/nvs.h"
-#include "ec.c"
+#include <ec/acpi/ec.h>
+#include "ec_oem.c"
 
 #define MAX_LCD_BRIGHTNESS 0xd8
 

@@ -124,6 +124,8 @@ comment "Super I/O"
 source src/superio/Kconfig
 comment "Devices"
 source src/devices/Kconfig
+comment "Embedded Controllers"
+source src/ec/Kconfig
 
 endmenu
 

@@ -25,7 +25,7 @@
 #include <arch/io.h>
 #include <delay.h>
 
-#include "ec.h"
+#include <ec/acpi/ec.h>
 #include "m3885.h"
 
 #define TH0LOW	80

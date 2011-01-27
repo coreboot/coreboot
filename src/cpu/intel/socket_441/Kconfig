@@ -12,7 +12,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xffdf8000
+	default 0xffaf8000
 
 config DCACHE_RAM_SIZE
 	hex

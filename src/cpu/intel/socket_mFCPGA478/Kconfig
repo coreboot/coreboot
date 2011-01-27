@@ -1,3 +1,22 @@
 config CPU_INTEL_SOCKET_MFCPGA478
 	bool
+
+if CPU_INTEL_SOCKET_MFCPGA478
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_CORE
+	select CPU_INTEL_CORE2
+	select MMX
+	select SSE
 	select CACHE_AS_RAM
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffaf8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+
+endif

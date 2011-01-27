@@ -3,7 +3,6 @@ if BOARD_KONTRON_986LCD_M
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
-	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478
 	select NORTHBRIDGE_INTEL_I945GM
 	select SOUTHBRIDGE_INTEL_I82801GX
@@ -25,14 +24,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 config MAINBOARD_DIR
 	string
 	default kontron/986lcd-m
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xffdf8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
 
 config MAINBOARD_PART_NUMBER
 	string

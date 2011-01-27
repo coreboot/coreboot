@@ -53,15 +53,29 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	return 0;
 }
 
-static const u32 sata_phy[][3] = {
-	{0x0056A607, 0x00061400, 0x00061302}, /* port 0 */
-	{0x0056A607, 0x00061400, 0x00061302}, /* port 1 */
-	{0x0056A607, 0x00061402, 0x00064300}, /* port 2 */
-	{0x0056A607, 0x00061402, 0x00064300}, /* port 3 */
-	{0x0056A700, 0x00061502, 0x00064302}, /* port 4 */
-	{0x0056A700, 0x00061502, 0x00064302}  /* port 5 */
-};
+void __attribute__((weak)) sb800_setup_sata_phys(struct device *dev)
+{
+	int i;
+	static const u32 sata_phy[][3] = {
+		{0x0056A607, 0x00061400, 0x00061302}, /* port 0 */
+		{0x0056A607, 0x00061400, 0x00061302}, /* port 1 */
+		{0x0056A607, 0x00061402, 0x00064300}, /* port 2 */
+		{0x0056A607, 0x00061402, 0x00064300}, /* port 3 */
+		{0x0056A700, 0x00061502, 0x00064302}, /* port 4 */
+		{0x0056A700, 0x00061502, 0x00064302}  /* port 5 */
+	};
+	/* RPR8.4 */
+	/* Port 0 - 5 */
+	for (i = 0; i < 6; i++) {
+		pci_write_config16(dev, 0x84, 0x3006 | i << 9);
+		pci_write_config32(dev, 0x94, sata_phy[i][0]); /* Gen 3 */
+		pci_write_config16(dev, 0x84, 0x2006 | i << 9);
+		pci_write_config32(dev, 0x94, sata_phy[i][1]); /* Gen 2 */
+		pci_write_config16(dev, 0x84, 0x1006 | i << 9);
+		pci_write_config32(dev, 0x94, sata_phy[i][2]); /* Gen 1 */
+	}
 
+}
 static void sata_init(struct device *dev)
 {
 	u8 byte;
@@ -147,17 +161,7 @@ static void sata_init(struct device *dev)
 
 	pci_write_config8(dev, 0x46, 0x20);
 
-	/* RPR8.4 */
-	/* Port 0 - 5 */
-	for (i = 0; i < 6; i++) {
-		pci_write_config16(dev, 0x84, 0x3006 | i << 9);
-		pci_write_config32(dev, 0x94, sata_phy[i][0]); /* Gen 3 */
-		pci_write_config16(dev, 0x84, 0x2006 | i << 9);
-		pci_write_config32(dev, 0x94, sata_phy[i][1]); /* Gen 2 */
-		pci_write_config16(dev, 0x84, 0x1006 | i << 9);
-		pci_write_config32(dev, 0x94, sata_phy[i][2]); /* Gen 1 */
-	}
-
+	sb800_setup_sata_phys(dev);
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
 	byte |= 7 << 0;

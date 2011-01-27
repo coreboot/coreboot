@@ -53,9 +53,9 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	return 0;
 }
 
-	/* This function can be overloaded in mainboard.c */
-
-void __attribute__((weak)) sb700_setup_sata_phys(struct device *dev) {
+/* This function can be overloaded in mainboard.c */
+void __attribute__((weak)) sb700_setup_sata_phys(struct device *dev)
+{
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
 	pci_write_config16(dev, 0x86, 0x2c00);
 

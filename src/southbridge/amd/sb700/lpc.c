@@ -77,7 +77,8 @@ static void lpc_init(device_t dev)
 #endif
 }
 
-void set_cbmem_toc(struct cbmem_entry *toc) {
+void set_cbmem_toc(struct cbmem_entry *toc)
+{
 	u32 dword = (u32) toc;
 	int nvram_pos = 0xfc, i;
 	for (i = 0; i<4; i++) {

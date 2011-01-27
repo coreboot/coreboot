@@ -41,7 +41,8 @@ static u8 pmio_read(u8 reg)
 	return inb(PM_INDEX + 1);
 }
 
-static void sb800_acpi_init(void) {
+static void sb800_acpi_init(void)
+{
 	pmio_write(0x60, ACPI_PM_EVT_BLK & 0xFF);
 	pmio_write(0x61, ACPI_PM_EVT_BLK >> 8);
 	pmio_write(0x62, ACPI_PM1_CNT_BLK & 0xFF);
@@ -652,7 +653,8 @@ static int smbus_read_byte(u32 device, u32 address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
+{
 	int i;
 	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
 
@@ -665,7 +667,8 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
 	return nvram_pos;
 }
 
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
+{
 	u32 data = *old_dword;
 	int i;
 	for (i = 0; i<size; i++) {
@@ -681,7 +684,8 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
 }
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
-static int acpi_is_wakeup_early(void) {
+static int acpi_is_wakeup_early(void)
+{
 	u16 tmp;
 	tmp = inw(ACPI_PM1_CNT_BLK);
 	printk(BIOS_DEBUG, "IN TEST WAKEUP %x\n", tmp);
@@ -689,7 +693,8 @@ static int acpi_is_wakeup_early(void) {
 }
 #endif
 
-struct cbmem_entry *get_cbmem_toc(void) {
+struct cbmem_entry *get_cbmem_toc(void)
+{
 	uint32_t xdata = 0;
 	int xnvram_pos = 0xfc, xi;
 	for (xi = 0; xi<4; xi++) {

@@ -262,14 +262,13 @@ void write_cmos_layout(FILE * f)
  ****************************************************************************/
 static void process_layout_file(FILE * f)
 {
-	compile_reg_exprs(REG_EXTENDED | REG_NEWLINE, 7,
-			  blank_or_comment_regex, &blank_or_comment_expr,
-			  start_entries_regex, &start_entries_expr,
-			  entries_line_regex, &entries_line_expr,
-			  start_enums_regex, &start_enums_expr,
-			  enums_line_regex, &enums_line_expr,
-			  start_checksums_regex, &start_checksums_expr,
-			  checksum_line_regex, &checksum_line_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, blank_or_comment_regex, &blank_or_comment_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, start_entries_regex, &start_entries_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, entries_line_regex, &entries_line_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, start_enums_regex, &start_enums_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, enums_line_regex, &enums_line_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, start_checksums_regex, &start_checksums_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, checksum_line_regex, &checksum_line_expr);
 	line_num = 1;
 	skip_past_start(f);
 
@@ -322,10 +321,13 @@ static void process_layout_file(FILE * f)
 	 */
 	skip_remaining_lines(f);
 
-	free_reg_exprs(7, &blank_or_comment_expr, &start_entries_expr,
-		       &entries_line_expr, &start_enums_expr,
-		       &enums_line_expr, &start_checksums_expr,
-		       &checksum_line_expr);
+	regfree(&blank_or_comment_expr);
+	regfree(&start_entries_expr);
+	regfree(&entries_line_expr);
+	regfree(&start_enums_expr);
+	regfree(&enums_line_expr);
+	regfree(&start_checksums_expr);
+	regfree(&checksum_line_expr);
 }
 
 /****************************************************************************

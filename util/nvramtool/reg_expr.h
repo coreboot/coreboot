@@ -34,8 +34,6 @@
 #include <regex.h>
 #include "common.h"
 
-void compile_reg_exprs(int cflags, int num_exprs,
-		       /* const char *expr1, regex_t *reg1, */ ...);
-void free_reg_exprs(int num_exprs, /* regex_t *reg1, */ ...);
+void compile_reg_expr(int cflags, const char *expr, regex_t *reg);
 
 #endif				/* REG_EXPR_H */

@@ -88,8 +88,8 @@ cmos_write_t *process_input_file(FILE * f)
 	list = NULL;
 	p = &list;
 
-	compile_reg_exprs(REG_EXTENDED | REG_NEWLINE, 2, blank_or_comment_regex,
-			  &blank_or_comment, assignment_regex, &assignment);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, blank_or_comment_regex, &blank_or_comment);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, assignment_regex, &assignment);
 
 	/* each iteration processes one line from input file */
 	for (line_num = 1; get_input_file_line(f, line, LINE_BUF_SIZE) == OK; line_num++) {	/* skip comments and blank lines */
@@ -142,7 +142,8 @@ cmos_write_t *process_input_file(FILE * f)
 		p = &item->next;
 	}
 
-	free_reg_exprs(2, &blank_or_comment, &assignment);
+	regfree(&blank_or_comment);
+	regfree(&assignment);
 	return list;
 }
 

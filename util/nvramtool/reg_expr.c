@@ -33,50 +33,20 @@
 #include "reg_expr.h"
 
 /****************************************************************************
- * compile_reg_exprs
+ * compile_reg_expr
  *
- * Compile a bunch of regular expressions.
+ * Compile a regular expression.
  ****************************************************************************/
-void compile_reg_exprs(int cflags, int num_exprs,
-		       /* const char *expr1, regex_t *reg1, */ ...)
+void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 {
 	static const size_t ERROR_BUF_SIZE = 256;
 	char error_msg[ERROR_BUF_SIZE];
-	va_list ap;
-	regex_t *reg;
-	const char *expr;
-	int i, result;
+	int result;
 
-	va_start(ap, num_exprs);
-
-	for (i = 0; i < num_exprs; i++) {
-		expr = va_arg(ap, const char *);
-		reg = va_arg(ap, regex_t *);
-
-		if ((result = regcomp(reg, expr, cflags)) != 0) {
-			regerror(result, reg, error_msg, ERROR_BUF_SIZE);
-			fprintf(stderr, "%s: %s\n", prog_name, error_msg);
-			exit(1);
-		}
+	if ((result = regcomp(reg, expr, cflags)) != 0) {
+		regerror(result, reg, error_msg, ERROR_BUF_SIZE);
+		fprintf(stderr, "%s: %s\n", prog_name, error_msg);
+		exit(1);
 	}
-
-	va_end(ap);
 }
 
-/****************************************************************************
- * free_reg_exprs
- *
- * Destroy a bunch of previously compiled regular expressions.
- ****************************************************************************/
-void free_reg_exprs(int num_exprs, /* regex_t *reg1, */ ...)
-{
-	va_list ap;
-	int i;
-
-	va_start(ap, num_exprs);
-
-	for (i = 0; i < num_exprs; i++)
-		regfree(va_arg(ap, regex_t *));
-
-	va_end(ap);
-}

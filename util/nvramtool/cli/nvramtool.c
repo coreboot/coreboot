@@ -682,8 +682,7 @@ static void parse_assignment(char arg[], const char **name, const char **value)
 	regmatch_t match[N_MATCHES];
 	regex_t assignment;
 
-	compile_reg_exprs(REG_EXTENDED | REG_NEWLINE, 1, assignment_regex,
-			  &assignment);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE, assignment_regex, &assignment);
 
 	/* Does 'arg' conform to proper assignment syntax?  If not, exit with a
 	 * usage message.
@@ -699,7 +698,7 @@ static void parse_assignment(char arg[], const char **name, const char **value)
 	*name = &arg[match[1].rm_so];
 	*value = &arg[match[2].rm_so];
 
-	free_reg_exprs(1, &assignment);
+	regfree(&assignment);
 }
 
 /****************************************************************************

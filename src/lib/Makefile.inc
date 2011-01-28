@@ -26,8 +26,10 @@ romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
+
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
+romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c

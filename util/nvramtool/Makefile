@@ -30,7 +30,7 @@ CFLAGS  = -O2 -g -Wall -W -I.
 CLI_OBJS = cli/nvramtool.o cli/opts.o
 
 OBJS =  cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o \
-	hexdump.o input_file.o layout.o accessors/layout-text.o lbtable.o   \
+	hexdump.o input_file.o layout.o accessors/layout-text.o accessors/layout-bin.o lbtable.o   \
 	reg_expr.o cbfs.o accessors/cmos-hw-unix.o accessors/cmos-mem.o
 
 OBJS += $(CLI_OBJS)

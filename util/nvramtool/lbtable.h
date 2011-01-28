@@ -40,4 +40,5 @@ void dump_lbtable(void);
 void list_lbtable_choices(void);
 void list_lbtable_item(const char item[]);
 
+void process_layout(void);
 #endif				/* LBTABLE_H */

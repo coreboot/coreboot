@@ -36,7 +36,7 @@
 #include "opts.h"
 #include "lbtable.h"
 #include "layout.h"
-#include "layout_file.h"
+#include "accessors/layout-text.h"
 #include "input_file.h"
 #include "cmos_ops.h"
 #include "cmos_lowlevel.h"

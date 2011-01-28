@@ -1,5 +1,5 @@
 /*****************************************************************************\
- * layout_file.c
+ * layout-text.c
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -29,7 +29,7 @@
 \*****************************************************************************/
 
 #include "common.h"
-#include "layout_file.h"
+#include "layout-text.h"
 #include "layout.h"
 #include "cmos_lowlevel.h"
 #include "reg_expr.h"

@@ -40,28 +40,28 @@
 #define ACPI_GPE0_BLK		(SB800_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(SB800_ACPI_IO_BASE + 0x08) /* 6 bytes */
 
-extern void pm_iowrite(u8 reg, u8 value);
-extern u8 pm_ioread(u8 reg);
-extern void pm2_iowrite(u8 reg, u8 value);
-extern u8 pm2_ioread(u8 reg);
-extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
+void pm_iowrite(u8 reg, u8 value);
+u8 pm_ioread(u8 reg);
+void pm2_iowrite(u8 reg, u8 value);
+u8 pm2_ioread(u8 reg);
+void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #define REV_SB800_A11	0x11
 #define REV_SB800_A12	0x12
 
-void sb800_enable(device_t dev);
 
 #ifdef __PRE_RAM__
 void sb800_lpc_port80(void);
 void sb800_pci_port80(void);
 void sb800_clk_output_48Mhz(void);
-#else
-/* void sb800_setup_sata_phys(struct device *dev); */
-#endif
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 void sb800_enable_usbdebug(unsigned int port);
+#else
+void sb800_enable(device_t dev);
+void __attribute__((weak)) sb800_setup_sata_phys(struct device *dev);
+#endif
 
 #endif /* SB800_H */

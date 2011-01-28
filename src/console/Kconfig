@@ -326,14 +326,14 @@ config NO_POST
 	bool "Don't show any POST codes"
 	default n
 
-config SERIAL_POST
-	bool "Show POST codes on the serial port console"
-	depends on CONSOLE_SERIAL8250 && !NO_POST
+config CONSOLE_POST
+	bool "Show POST codes on the debug console"
+	depends on !NO_POST
 	default n
 	help
 	  If enabled, coreboot will additionally print POST codes (which are
 	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
-	  device) on the serial console.
+	  device) on the debug console.
 
 endmenu
 

@@ -27,7 +27,7 @@
 void post_code(uint8_t value)
 {
 #if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
-#if CONFIG_SERIAL_POST==1
+#if CONFIG_CONSOLE_POST==1
 	print_emerg("POST: 0x");
 	print_emerg_hex8(value);
 	print_emerg("\n");

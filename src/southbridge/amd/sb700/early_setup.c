@@ -411,25 +411,8 @@ static void sb700_devices_por_init(void)
 	/* DMA enable */
 	pci_write_config8(dev, 0x40, 0x04);
 
-	/* IO Port Decode Enable */
-	pci_write_config8(dev, 0x44, 0xFF);
-	pci_write_config8(dev, 0x45, 0xFF);
-	pci_write_config8(dev, 0x46, 0xC3);
-	pci_write_config8(dev, 0x47, 0xFF);
-
-	// TODO: This has already been done(?)
-	/* IO/Mem Port Decode Enable, I don't know why CIM disable some ports.
-	 *  Disable LPC TimeOut counter, enable SuperIO Configuration Port (2e/2f),
-	 * Alternate Super I/O Configuration Port (4e/4f), Wide Generic IO Port (64/65). */
-	byte = pci_read_config8(dev, 0x48);
-	byte |= (1 << 1) | (1 << 0);	/* enable Super IO config port 2e-2h, 4e-4f */
-	byte |= 1 << 6;		/* enable for RTC I/O range */
-	pci_write_config8(dev, 0x48, byte);
+	/* LPC Sync Timeout */
 	pci_write_config8(dev, 0x49, 0xFF);
-	/* Enable 0x480-0x4bf, 0x4700-0x470B */
-	byte = pci_read_config8(dev, 0x4A);
-	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
-	pci_write_config8(dev, 0x4A, byte);
 
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
 	pci_write_config8(dev, 0x7C, 0x05);

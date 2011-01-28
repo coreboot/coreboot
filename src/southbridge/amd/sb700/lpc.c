@@ -140,7 +140,8 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 	struct bus *link;
 	u32 reg, reg_x;
 	int var_num = 0;
-	u16 reg_var[3];
+	u16 reg_var[3] = {0x0, 0x0, 0x0};
+	u8 wiosize = pci_read_config8(dev, 0x74);
 
 	reg = pci_read_config32(dev, 0x44);
 	reg_x = pci_read_config32(dev, 0x48);
@@ -171,13 +172,14 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 					case 0x2f8:	/*  COM2 */
 						reg |= (1 << 7);
 						break;
-					case 0x378:	/*  Parallal 1 */
+					case 0x378:	/*  Parallel 1 */
 						reg |= (1 << 0);
+						reg |= (1 << 1); /* + 0x778 for ECP */
 						break;
 					case 0x3f0:	/*  FD0 */
 						reg |= (1 << 26);
 						break;
-					case 0x220:	/*  Aduio 0 */
+					case 0x220:	/*  Audio 0 */
 						reg |= (1 << 8);
 						break;
 					case 0x300:	/*  Midi 0 */
@@ -207,12 +209,19 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 						switch (var_num) {
 						case 0:
 							reg_x |= (1 << 2);
+							if ((end - base) < 16)
+								wiosize |= (1 << 0);
 							break;
 						case 1:
 							reg_x |= (1 << 24);
+							if ((end - base) < 16)
+								wiosize |= (1 << 2);
 							break;
 						case 2:
 							reg_x |= (1 << 25);
+							reg_x |= (1 << 24);
+							if ((end - base) < 16)
+								wiosize |= (1 << 3);
 							break;
 						}
 						reg_var[var_num++] =
@@ -234,6 +243,7 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 		pci_write_config16(dev, 0x64, reg_var[0]);
 		break;
 	}
+	pci_write_config8(dev, 0x74, wiosize);
 }
 
 static void sb700_lpc_enable_resources(device_t dev)

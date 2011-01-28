@@ -3,6 +3,7 @@
 \*****************************************************************************/
 
 #include "hexdump.h"
+#include <ctype.h>
 
 /* hexdump.c
  *
@@ -44,9 +45,6 @@
  */
 
 static void addrprint(FILE * outfile, uint64_t address, int width);
-static void hexprint(FILE * outfile, unsigned char byte);
-static void charprint(FILE * outfile, unsigned char byte,
-		      unsigned char nonprintable);
 
 /*--------------------------------------------------------------------------
  * hexdump
@@ -92,7 +90,7 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 
 		/* display the bytes in hex */
 		for (i = 0;;) {
-			hexprint(outfile, p[index++]);
+			fprintf(outfile, "%02x", p[index++]);
 
 			if (++i >= format->bytes_per_line)
 				break;
@@ -104,8 +102,8 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 		fprintf(outfile, format->sep3);
 
 		/* display the bytes as characters */
-		for (i = 0; i < format->bytes_per_line; i++)
-			charprint(outfile, p[index++], format->nonprintable);
+		for (i = 0; i < format->bytes_per_line; i++, index++)
+			fputc(isprint(p[index])?p[index]:format->nonprintable, outfile);
 
 		fprintf(outfile, "\n");
 	}
@@ -120,7 +118,7 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 
 	/* display bytes for last line in hex */
 	for (i = 0; i < bytes_left; i++) {
-		hexprint(outfile, p[index++]);
+		fprintf(outfile, "%02x", p[index++]);
 		fprintf(outfile, format->sep2);
 	}
 
@@ -140,7 +138,7 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 
 	/* display bytes for last line as characters */
 	for (i = 0; i < bytes_left; i++)
-		charprint(outfile, p[index++], format->nonprintable);
+		fputc(isprint(p[index])?p[index++]:format->nonprintable, outfile);
 
 	/* pad the rest of the character area with spaces */
 	for (; i < format->bytes_per_line; i++)
@@ -188,38 +186,3 @@ static void addrprint(FILE * outfile, uint64_t address, int width)
 	}
 }
 
-/*--------------------------------------------------------------------------
- * hexprint
- *
- * Display a byte as a two digit hex value.
- *
- * parameters:
- *     outfile: the place where the output should be written
- *     byte:    the byte to display
- *--------------------------------------------------------------------------*/
-static void hexprint(FILE * outfile, unsigned char byte)
-{
-	static const char tbl[] = {
-		'0', '1', '2', '3', '4', '5', '6', '7',
-		'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-	};
-
-	fprintf(outfile, "%c%c", tbl[byte >> 4], tbl[byte & 0x0f]);
-}
-
-/*--------------------------------------------------------------------------
- * charprint
- *
- * Display a byte as its character representation.
- *
- * parameters:
- *     outfile:         the place where the output should be written
- *     byte:            the byte to display
- *     nonprintable:    a substitute character to display if the byte
- *                      represents a nonprintable character
- *--------------------------------------------------------------------------*/
-static void charprint(FILE * outfile, unsigned char byte,
-		      unsigned char nonprintable)
-{
-	fprintf(outfile, "%c", ((byte >= 0x20) && (byte <= 0x7e)) ? byte : nonprintable);
-}

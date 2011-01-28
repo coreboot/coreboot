@@ -88,7 +88,6 @@ static void print_defaults_record(const struct cmos_defaults *cmos_defaults);
 static void print_unknown_record(const struct lb_record *cmos_item);
 static void option_checksum_print_fn(const struct lb_record *rec);
 static void string_print_fn(const struct lb_record *rec);
-static void uint64_to_hex_string(char str[], uint64_t n);
 
 static const char memory_desc[] =
     "    This shows information about system memory.\n";
@@ -1058,7 +1057,6 @@ static const struct lb_record *next_cmos_rec(const struct lb_record *last,
  ****************************************************************************/
 static void memory_print_fn(const struct lb_record *rec)
 {
-	char start_str[19], end_str[19], size_str[19];
 	const struct lb_memory *p;
 	const char *mem_type;
 	const struct lb_memory_range *ranges;
@@ -1096,13 +1094,10 @@ static void memory_print_fn(const struct lb_record *rec)
 		size = unpack_lb64(ranges[i].size);
 		start = unpack_lb64(ranges[i].start);
 		end = start + size - 1;
-		uint64_to_hex_string(start_str, start);
-		uint64_to_hex_string(end_str, end);
-		uint64_to_hex_string(size_str, size);
 		printf("%s memory:\n"
-		       "    from physical addresses %s to %s\n"
-		       "    size is %s bytes (%lld in decimal)\n",
-		       mem_type, start_str, end_str, size_str,
+		       "    from physical addresses 0x%016llx to 0x%016llx\n"
+		       "    size is 0x%016llx bytes (%lld in decimal)\n",
+		       mem_type, start, end, size,
 		       (unsigned long long)size);
 
 		if (++i >= entries)
@@ -1327,24 +1322,3 @@ static void string_print_fn(const struct lb_record *rec)
 	printf("%s\n", p->string);
 }
 
-/****************************************************************************
- * uint64_to_hex_string
- *
- * Convert the 64-bit integer 'n' to its hexadecimal string representation,
- * storing the result in 's'.  's' must point to a buffer at least 19 bytes
- * long.  The result is displayed with as many leading zeros as needed to
- * make a 16-digit hex number including a 0x prefix (example: the number 1
- * will be displayed as "0x0000000000000001").
- ****************************************************************************/
-static void uint64_to_hex_string(char str[], uint64_t n)
-{
-	int chars_printed;
-
-	str[0] = '0';
-	str[1] = 'x';
-
-	/* Print the result right-justified with leading spaces in a
-	 * 16-character field. */
-	chars_printed = sprintf(&str[2], "%016llx", (unsigned long long)n);
-	assert(chars_printed == 16);
-}

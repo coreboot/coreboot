@@ -34,6 +34,13 @@
 #include "common.h"
 #include "layout.h"
 
+typedef struct {
+	void (*init)(void* data);
+	unsigned char (*read)(unsigned addr);
+	void (*write)(unsigned addr, unsigned char value);
+	void (*set_iopl)(int level);
+} cmos_access_t;
+
 typedef enum { HAL_CMOS, HAL_MEMORY } hal_t;
 void select_hal(hal_t hal, void *data);
 

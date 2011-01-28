@@ -38,97 +38,8 @@
 
 /* Hardware Abstraction Layer: lowlevel byte-wise write access */
 
-typedef struct {
-	void (*init)(void* data);
-	unsigned char (*read)(unsigned addr);
-	void (*write)(unsigned addr, unsigned char value);
-	void (*set_iopl)(int level);
-} cmos_access_t;
-
-static void cmos_hal_init(void* data);
-static unsigned char cmos_hal_read(unsigned addr);
-static void cmos_hal_write(unsigned addr, unsigned char value);
-static void cmos_set_iopl(int level);
-
-static cmos_access_t cmos_hal = {
-	.init = cmos_hal_init,
-	.read = cmos_hal_read,
-	.write = cmos_hal_write,
-	.set_iopl = cmos_set_iopl,
-};
-
-static void mem_hal_init(void* data);
-static unsigned char mem_hal_read(unsigned addr);
-static void mem_hal_write(unsigned addr, unsigned char value);
-static void mem_set_iopl(int level);
-
-static cmos_access_t memory_hal = {
-	.init = mem_hal_init,
-	.read = mem_hal_read,
-	.write = mem_hal_write,
-	.set_iopl = mem_set_iopl,
-};
-
+extern cmos_access_t cmos_hal, memory_hal;
 static cmos_access_t *current_access = &cmos_hal;
-
-/* no need to initialize anything */
-static void cmos_hal_init(__attribute__((unused)) void *data)
-{
-}
-
-static unsigned char cmos_hal_read(unsigned index)
-{
-	unsigned short port_0, port_1;
-
-	assert(!verify_cmos_byte_index(index));
-
-	if (index < 128) {
-		port_0 = 0x70;
-		port_1 = 0x71;
-	} else {
-		port_0 = 0x72;
-		port_1 = 0x73;
-	}
-
-	OUTB(index, port_0);
-	return INB(port_1);
-}
-
-static void cmos_hal_write(unsigned index, unsigned char value)
-{
-	unsigned short port_0, port_1;
-
-	assert(!verify_cmos_byte_index(index));
-
-	if (index < 128) {
-		port_0 = 0x70;
-		port_1 = 0x71;
-	} else {
-		port_0 = 0x72;
-		port_1 = 0x73;
-	}
-
-	OUTB(index, port_0);
-	OUTB(value, port_1);
-}
-
-static unsigned char* mem_hal_data = (unsigned char*)-1;
-static void mem_hal_init(void *data)
-{
-	mem_hal_data = data;
-}
-
-static unsigned char mem_hal_read(unsigned index)
-{
-	assert(mem_hal_data != (unsigned char*)-1);
-	return mem_hal_data[index];
-}
-
-static void mem_hal_write(unsigned index, unsigned char value)
-{
-	assert(mem_hal_data != (unsigned char*)-1);
-	mem_hal_data[index] = value;
-}
 
 void select_hal(hal_t hal, void *data)
 {
@@ -351,42 +262,6 @@ void cmos_write_all(unsigned char data[])
 void set_iopl(int level)
 {
 	current_access->set_iopl(level);
-}
-
-static void cmos_set_iopl(int level)
-{
-#if defined(__FreeBSD__)
-	static int io_fd = -1;
-#endif
-
-	assert((level >= 0) && (level <= 3));
-
-#if defined(__FreeBSD__)
-	if (level == 0) {
-		if (io_fd != -1) {
-			close(io_fd);
-			io_fd = -1;
-		}
-	} else {
-		if (io_fd == -1) {
-			io_fd = open("/dev/io", O_RDWR);
-			if (io_fd < 0) {
-				perror("/dev/io");
-				exit(1);
-			}
-		}
-	}
-#else
-	if (iopl(level)) {
-		fprintf(stderr, "%s: iopl() system call failed.  "
-			"You must be root to do this.\n", prog_name);
-		exit(1);
-	}
-#endif
-}
-
-static void mem_set_iopl(__attribute__ ((unused)) int level)
-{
 }
 
 /****************************************************************************

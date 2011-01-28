@@ -43,30 +43,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(__FreeBSD__)
-#include <sys/types.h>
-#include <machine/cpufunc.h>
-#define OUTB(x, y) do { u_int tmp = (y); outb(tmp, (x)); } while (0)
-#define OUTW(x, y) do { u_int tmp = (y); outw(tmp, (x)); } while (0)
-#define OUTL(x, y) do { u_int tmp = (y); outl(tmp, (x)); } while (0)
-#define INB(x) __extension__ ({ u_int tmp = (x); inb(tmp); })
-#define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
-#define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
-#else
-#if defined(__GLIBC__)
-#include <sys/io.h>
-#endif
-#if (defined(__MACH__) && defined(__APPLE__))
-#include <DirectIO/darwinio.h>
-#endif
-#define OUTB outb
-#define OUTW outw
-#define OUTL outl
-#define INB  inb
-#define INW  inw
-#define INL  inl
-#endif
-
 #define FALSE 0
 #define TRUE 1
 

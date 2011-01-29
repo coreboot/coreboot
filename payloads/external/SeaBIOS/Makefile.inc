@@ -6,7 +6,7 @@ TAG-$(CONFIG_SEABIOS_STABLE)=rel-0.6.1.3
 all: seabios
 
 seabios: patch
-	cd seabios; $(MAKE) CC="$(CC)" LD="$(LD)"
+	cd seabios; $(MAKE)
 
 patch: checkout
 	test -r seabios/.patched || \
@@ -23,7 +23,7 @@ checkout:
 	cd seabios; git checkout -m $(TAG-y)
 
 clean:
-	test -d seabios && (cd seabios; $(MAKE) CC="$(CC)" LD="$(LD)" clean) || exit 0
+	test -d seabios && (cd seabios; $(MAKE) clean) || exit 0
 
 distclean:
 	rm -rf seabios

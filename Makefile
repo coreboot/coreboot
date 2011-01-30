@@ -163,7 +163,10 @@ $(obj)/config.h:
 #######################################################################
 # Build the tools
 
-CBFSTOOL:=$(objutil)/cbfstool/cbfstool
+CBFSTOOL:=$(obj)/cbfstool
+
+$(CBFSTOOL): $(objutil)/cbfstool/cbfstool
+	cp $< $@
 
 # needed objects that every mainboard uses
 # Creation of these is architecture and mainboard independent

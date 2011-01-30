@@ -43,15 +43,6 @@ endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 COREBOOT_ROM_DEPENDENCIES+=seabios
 endif
-ifeq ($(CONFIG_VGA_BIOS),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VGA_BIOS_FILE)
-endif
-ifeq ($(CONFIG_INTEL_MBI),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_MBI_FILE)
-endif
-ifeq ($(CONFIG_BOOTSPLASH),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_BOOTSPLASH_FILE)
-endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
 endif
@@ -95,18 +86,6 @@ ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
-ifeq ($(CONFIG_VGA_BIOS),y)
-	@printf "    VGABIOS    $(CONFIG_VGA_BIOS_FILE) $(CONFIG_VGA_BIOS_ID)\n"
-	$(CBFSTOOL) $@.tmp add $(CONFIG_VGA_BIOS_FILE) "pci$(CONFIG_VGA_BIOS_ID).rom" optionrom
-endif
-ifeq ($(CONFIG_INTEL_MBI),y)
-	@printf "    MBI        $(CONFIG_MBI_FILE)\n"
-	$(CBFSTOOL) $@.tmp add $(CONFIG_MBI_FILE) mbi.bin mbi
-endif
-ifeq ($(CONFIG_BOOTSPLASH),y)
-	@printf "    BOOTSPLASH $(CONFIG_BOOTSPLASH_FILE)\n"
-	$(CBFSTOOL) $@.tmp add $(CONFIG_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
-endif
 ifeq ($(CONFIG_GEODE_VSA_FILE),y)
 	@printf "    VSA        $(CONFIG_VSA_FILENAME)\n"
 	$(OBJCOPY) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(CONFIG_VSA_FILENAME) $(obj)/vsa.o
@@ -116,6 +95,19 @@ endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print
+
+stripped_vgabios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_ID))
+cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
+pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
+pci$(stripped_vgabios_id).rom-type := optionrom
+
+cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
+mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))
+mbi.bin-type := mbi
+
+cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
+bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
+bootsplash.jpg-type := bootsplash
 
 #######################################################################
 # i386 specific tools

@@ -208,10 +208,10 @@ includemakefiles= \
 			$$(subst $(top)/,, \
 			$$(abspath $$(addprefix $(dir $(1)),$$($(type)-y)))))) \
 	$(foreach file,$(cbfs-files-y), \
-		$(if $(wildcard $(dir $(1))$(file)), \
-			$(eval tmp-cbfs-file:= $(wildcard $(dir $(1))$(file))), \
-			$(eval tmp-cbfs-file:= $(file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$$($(file)-name)|$$($(file)-type)|$$($(file)-position)) \
+		$(if $(wildcard $(dir $(1))$$($(file)-file)), \
+			$(eval tmp-cbfs-file:= $(wildcard $(dir $(1))$$($(file)-file))), \
+			$(eval tmp-cbfs-file:= $$($(file)-file))) \
+		$(eval cbfs-files += $(tmp-cbfs-file)|$(file)|$$($(file)-type)|$$($(file)-position)) \
 		$(eval $(file)-name:=) \
 		$(eval $(file)-type:=) \
 		$(eval $(file)-position:=)) \

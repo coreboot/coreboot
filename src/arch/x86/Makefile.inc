@@ -27,9 +27,9 @@ subdirs-y += smp
 
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-cbfs-files-y += $(obj)/cmos_layout.bin
-$(obj)/cmos_layout.bin-name = cmos_layout.bin
-$(obj)/cmos_layout.bin-type = 0x01aa
+cbfs-files-y += cmos_layout.bin
+cmos_layout.bin-file = $(obj)/cmos_layout.bin
+cmos_layout.bin-type = 0x01aa
 
 OPTION_TABLE_H:=$(obj)/option_table.h
 endif

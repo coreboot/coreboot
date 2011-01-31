@@ -61,12 +61,12 @@ static inline int last_boot_normal(void)
 static inline int do_normal_boot(void)
 {
 	unsigned char byte;
-	int i;
 
 	if (cmos_error() || !cmos_chksum_valid()) {
 #if CONFIG_USE_CMOS_RECOVERY
 		char *cmos_default = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT);
 		if (cmos_default) {
+			int i;
 			printk_warning("WARNING - CMOS CORRUPTED. RESTORING DEFAULTS.\n");
 			/* First 14 bytes are reserved for
 			   RTC and ignored by nvramtool, too.

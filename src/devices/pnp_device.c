@@ -170,6 +170,12 @@ static void pnp_get_ioresource(device_t dev, u8 index, struct io_info *info)
 	struct resource *resource;
 	unsigned moving, gran, step;
 
+	if (!info->mask) {
+		printk(BIOS_ERR, "ERROR: device %s index %d has no mask.\n",
+				dev_path(dev), index);
+		return;
+	}
+
 	resource = new_resource(dev, index);
 
 	/* Initilize the resource. */

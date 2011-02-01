@@ -1,0 +1,2 @@
+config EC_LENOVO_PMH7
+	bool

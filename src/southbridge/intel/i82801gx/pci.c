@@ -73,11 +73,11 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk(BIOS_DEBUG, "%s subsystem <- %02x/%02x\n",
 			dev_path(dev),
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			mainboard_pci_subsystem_vendor_id(dev),
+			mainboard_pci_subsystem_device_id(dev));
 		ops->set_subsystem(dev,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			mainboard_pci_subsystem_vendor_id(dev),
+			mainboard_pci_subsystem_device_id(dev));
 	}
 
 	command = pci_read_config16(dev, PCI_COMMAND);

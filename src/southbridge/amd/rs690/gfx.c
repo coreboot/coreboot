@@ -193,8 +193,13 @@ static void rs690_internal_gfx_enable(device_t dev)
 	/* TODO: the optimization of voltage and frequency */
 }
 
+static void gfx_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x4c,  ((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
 static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
+	.set_subsystem = gfx_dev_set_subsystem,
 };
 
 static struct device_operations pcie_ops = {

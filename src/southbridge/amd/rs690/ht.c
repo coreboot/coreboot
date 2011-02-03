@@ -70,8 +70,13 @@ static void pcie_init(struct device *dev)
 	pci_write_config32(dev, 0x4C, dword);
 }
 
+static void ht_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x50,  ((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
 static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
+	.set_subsystem = ht_dev_set_subsystem,
 };
 
 static struct device_operations ht_ops = {

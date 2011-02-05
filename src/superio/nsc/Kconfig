@@ -28,6 +28,8 @@ config SUPERIO_NSC_PC87360
 	bool
 config SUPERIO_NSC_PC87366
 	bool
+config SUPERIO_NSC_PC87392
+	bool
 config SUPERIO_NSC_PC87417
 	bool
 config SUPERIO_NSC_PC87427

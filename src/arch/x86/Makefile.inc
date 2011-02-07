@@ -278,6 +278,7 @@ endif
 
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \
+			HOSTCC="$(HOSTCC)" \
 			CC="$(CC)" LD="$(LD)" OBJDUMP="$(OBJDUMP)" \
 			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
 			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \

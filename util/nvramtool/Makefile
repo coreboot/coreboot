@@ -39,6 +39,9 @@ OS_ARCH        = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LDFLAGS = -framework DirectIO
 endif
+ifeq ($(OS_ARCH), NetBSD)
+LDFLAGS = -l$(shell uname -p)
+endif
 
 all: dep $(PROGRAM)
 

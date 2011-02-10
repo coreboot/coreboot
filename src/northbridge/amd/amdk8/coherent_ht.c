@@ -1662,10 +1662,10 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 	unsigned node;
 	int needs_reset = 0;
 	for(node = 0; node < nodes; node++) {
-#if CONFIG_K8_REV_F_SUPPORT == 0
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
+#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66
@@ -1708,6 +1708,20 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 			}
 		}
 #endif
+
+		
+#if CONFIG_K8_REV_F_SUPPORT == 0
+		/* I can't touch this msr on early buggy cpus, and cannot apply either 169 or 131 */
+		if (!is_cpu_pre_b3())
+#endif
+		{
+			/* Errata 169 */
+			/* We also need to set some bits in NB_CFG_MSR, which is handled in src/cpu/amd/model_fxx/ */
+			cmd = pci_read_config32(dev, 0x68);
+			cmd &= ~(1 << 22);
+			cmd |= (1 << 21);
+			pci_write_config32(dev, 0x68, cmd);
+		}
 	}
 	return needs_reset;
 }

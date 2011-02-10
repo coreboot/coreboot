@@ -294,11 +294,11 @@ clear_fixed_var_mtrr_out:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The two lines below can _not_ be written like this:
-	 *   movl $(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	 *   movl $(REAL_XIP_ROM_BASE | MTRR_TYPE_WRPROT), %eax
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
 	movl	$REAL_XIP_ROM_BASE, %eax
-	orl	$MTRR_TYPE_WRBACK, %eax
+	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx

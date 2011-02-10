@@ -384,23 +384,6 @@ static inline void k8_errata(void)
 		wrmsr_amd(DC_CFG_MSR, msr);
 
 	}
-	/* I can't touch this msr on early buggy cpus */
-	if (!is_cpu_pre_b3()) {
-
-		/* Erratum 89 ... */
-		msr = rdmsr(NB_CFG_MSR);
-		msr.lo |= 1 << 3;
-
-		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
-			/* D0 later don't need it */
-			/* Erratum 86 Disable data masking on C0 and
-			 * later processor revs.
-			 * FIXME this is only needed if ECC is enabled.
-			 */
-			msr.hi |= 1 << (36 - 32);
-		}
-		wrmsr(NB_CFG_MSR, msr);
-	}
 
 	/* Erratum 97 ... */
 	if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
@@ -445,7 +428,28 @@ static inline void k8_errata(void)
 		msr.hi |= 1;
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
+	
+#if CONFIG_K8_REV_F_SUPPORT == 0
+		/* I can't touch this msr on early buggy cpus */
+	if (!is_cpu_pre_b3())
+#endif
+	{
 
+		/* Erratum 89 ... */
+		msr = rdmsr(NB_CFG_MSR);
+		msr.lo |= 1 << 3;
+#if CONFIG_K8_REV_F_SUPPORT == 0
+		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
+			/* D0 later don't need it */
+			/* Erratum 86 Disable data masking on C0 and
+			 * later processor revs.
+			 * FIXME this is only needed if ECC is enabled.
+			 */
+			msr.hi |= 1 << (36 - 32);
+		}
+#endif
+		wrmsr(NB_CFG_MSR, msr);
+	}
 	/* Erratum 122 */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= 1 << 6;

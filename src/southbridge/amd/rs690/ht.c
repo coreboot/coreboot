@@ -22,7 +22,92 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <lib.h>
 #include "rs690.h"
+
+static void ht_dev_set_resources(device_t dev)
+{
+#if CONFIG_EXT_CONF_SUPPORT == 1
+	unsigned reg;		
+	device_t k8_f1;
+	resource_t rbase, rend;
+	u32 base, limit;
+	struct resource *resource;
+	
+	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);
+	
+	resource = probe_resource(dev, 0x1C);
+	if (resource) {
+		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 0 << 3); // make bar3 visible	
+		set_nbcfg_enable_bits(dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
+		set_nbcfg_enable_bits(dev, 0x84, 7 << 16, 0 << 16); // program bus range: 255 busses 
+		pci_write_config32(dev, 0x1C, resource->base);
+		/* Enable MMCONFIG decoding. */
+		set_htiu_enable_bits(dev, 0x32, 1 << 28, 1 << 28);	/* PCIEMiscInit */
+		set_nbcfg_enable_bits(dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3 register. */
+		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3); // hide bar 3
+		
+		// setup resource nonposted in k8 mmio
+		/* Get the base address */
+		rbase = resource->base;
+		/* Get the limit (rounded up) */
+		rend  = resource_end(resource);
+		printk(BIOS_DEBUG,"%s: %s[0x1C] base = %0llx limit = %0llx\n", __func__, dev_path(dev), rbase, rend);
+		k8_f1 = dev_find_slot(0,PCI_DEVFN(0x18,1));
+		// find a not assigned resource
+		for( reg = 0xb8; reg >= 0x80; reg -= 8 ) {
+			base = pci_read_config32(k8_f1,reg);
+			limit = pci_read_config32(k8_f1,reg+4);
+			if( !(base & 3) ) break; // found a not assigned resource
+		}
+		if( !(base & 3) ) {
+			u32 sblk;
+			device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+			/* Remember this resource has been stored. */
+			resource->flags |= IORESOURCE_STORED;
+			report_resource_stored(dev, resource, " <mmconfig>");
+			/* Get SBLink value (HyperTransport I/O Hub Link ID). */
+			sblk = (pci_read_config32(k8_f0, 0x64) >> 8) & 0x3;
+			base  &= 0x000000f0;
+			base  |= ((rbase >> 8) & 0xffffff00);
+			base  |= 3;
+			limit &= 0x00000048;
+			limit |= ((rend >> 8) & 0xffffff00);
+			limit |= (sblk << 4);
+			limit |= (1 << 7); 
+			printk(BIOS_INFO, "%s <- index %x base %04x limit %04x\n", dev_path(k8_f1), reg, base, limit);
+			pci_write_config32(k8_f1, reg+4, limit); 
+			pci_write_config32(k8_f1, reg, base);
+		}
+	}
+#endif
+	pci_dev_set_resources(dev);
+}
+
+static void ht_dev_read_resources(device_t dev)
+{
+#if CONFIG_EXT_CONF_SUPPORT == 1
+	struct resource *res;
+	
+	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);	
+	set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3); // hide bar 3	
+#endif
+
+	pci_dev_read_resources(dev);
+	
+#if CONFIG_EXT_CONF_SUPPORT == 1
+	/* Add an MMCONFIG resource. */
+	res = new_resource(dev, 0x1C);
+	res->base = EXT_CONF_BASE_ADDRESS;
+	res->size = 256 * 1024 * 1024; // 256 busses, 1MB memory space each
+	res->align = log2(res->size);
+	res->gran = log2(res->size);
+	res->limit = 0xffffffffffffffffULL;	/* 64bit */
+	res->flags = IORESOURCE_FIXED | IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED;
+	
+	compact_resources(dev);
+#endif	
+}
 
 /* for UMA internal graphics */
 void avoid_lpc_dma_deadlock(device_t nb_dev, device_t sb_dev)
@@ -80,8 +165,8 @@ static struct pci_operations lops_pci = {
 };
 
 static struct device_operations ht_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
+	.read_resources = ht_dev_read_resources,
+	.set_resources = ht_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = pcie_init,
 	.scan_bus = 0,

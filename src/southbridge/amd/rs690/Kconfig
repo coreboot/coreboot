@@ -20,3 +20,10 @@
 config SOUTHBRIDGE_AMD_RS690
 	bool
 
+if SOUTHBRIDGE_AMD_RS690
+config EXT_CONF_SUPPORT
+	def_bool n
+	help
+	  Select if RS690 should be setup to support MMCONF.
+
+endif

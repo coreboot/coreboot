@@ -3,6 +3,7 @@ source src/northbridge/amd/gx1/Kconfig
 source src/northbridge/amd/gx2/Kconfig
 source src/northbridge/amd/amdfam10/Kconfig
 source src/northbridge/amd/lx/Kconfig
+source src/northbridge/amd/agesa_wrapper/Kconfig
 menu "HyperTransport setup"
 	#could be implemented for K8 (NORTHBRIDGE_AMD_AMDK8)
 	depends on (NORTHBRIDGE_AMD_AMDFAM10) && EXPERT

@@ -1717,6 +1717,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 		{
 			/* Errata 169 */
 			/* We also need to set some bits in NB_CFG_MSR, which is handled in src/cpu/amd/model_fxx/ */
+			dev = NODE_HT(node);
 			cmd = pci_read_config32(dev, 0x68);
 			cmd &= ~(1 << 22);
 			cmd |= (1 << 21);

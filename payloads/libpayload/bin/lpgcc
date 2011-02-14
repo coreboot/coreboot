@@ -30,11 +30,13 @@
 # let's not recurse.
 # This is a hack, I know, but it makes sure that really simple user errors
 # don't fork-bomb your machine.
-echo "CC = $CC"
+# echo "CC = $CC"
 
+if [ -n "$CC" ]; then
 b=`basename $CC`
 if [ "$b" = "lpgcc" ]; then
 CC=""
+fi
 fi
 
 

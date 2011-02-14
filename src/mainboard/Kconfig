@@ -68,6 +68,8 @@ config VENDOR_KONTRON
 	bool "Kontron"
 config VENDOR_LANNER
 	bool "Lanner"
+config VENDOR_LENOVO
+	bool "Lenovo"
 config VENDOR_LIPPERT
 	bool "Lippert"
 config VENDOR_MITAC
@@ -147,6 +149,7 @@ source "src/mainboard/iwill/Kconfig"
 source "src/mainboard/jetway/Kconfig"
 source "src/mainboard/kontron/Kconfig"
 source "src/mainboard/lanner/Kconfig"
+source "src/mainboard/lenovo/Kconfig"
 source "src/mainboard/lippert/Kconfig"
 source "src/mainboard/mitac/Kconfig"
 source "src/mainboard/msi/Kconfig"

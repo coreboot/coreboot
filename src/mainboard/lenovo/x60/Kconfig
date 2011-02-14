@@ -1,0 +1,56 @@
+if BOARD_LENOVO_X60
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_CORE
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945GM
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SOUTHBRIDGE_RICOH_RL5C476
+	select SUPERIO_NSC_PC87382
+	select SUPERIO_NSC_PC87392
+	select EC_LENOVO_PMH7
+	select EC_ACPI
+	select BOARD_HAS_FADT
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select MMCONF_SUPPORT
+	select GFXUMA
+	select BOARD_ROMSIZE_KB_2048
+	select CHANNEL_XOR_RANDOMIZATION
+
+config MAINBOARD_DIR
+	string
+	default lenovo/x60
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad X60 / X60s"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
+endif

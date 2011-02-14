@@ -1,0 +1,130 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/i945
+
+        device lapic_cluster 0 on
+                chip cpu/intel/socket_mFCPGA478
+                        device lapic 0 on end
+                end
+        end
+
+        device pci_domain 0 on
+                device pci 00.0 on end # host bridge
+		device pci 02.0 on end # vga controller
+		device pci 02.1 on end # display controller
+                chip southbridge/intel/i82801gx
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+                        register "gpi13_routing" = "2"
+                        register "gpi12_routing" = "2"
+                        register "gpi8_routing" = "2"
+
+                        register "sata_ahci" = "0x0"
+
+			register "gpe0_en" = "0x11000006"
+
+			device pci 1b.0 on end # Audio Controller
+			device pci 1c.0 on end # Ethernet
+			device pci 1c.1 on end # Atheros WLAN
+			device pci 1d.0 on end # USB UHCI
+			device pci 1d.1 on end # USB UHCI
+			device pci 1d.2 on end # USB UHCI
+			device pci 1d.3 on end # USB UHCI
+			device pci 1d.7 on end # USB2 EHCI
+			device pci 1f.0 on # PCI-LPC bridge
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on # dummy
+					end
+				end
+				chip ec/acpi
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+				end
+				chip superio/nsc/pc87382
+					device pnp 164e.2 on # IR
+						io 0x60 = 0x2f8
+					end
+
+					device pnp 164e.3 off # Serial Port
+						io 0x60 = 0x3f8
+					end
+
+					device pnp 164e.7 on # GPIO
+						io 0x60 = 0x1680
+					end
+
+					device pnp 164e.19 on # DLPC
+						io 0x60 = 0x164c
+					end
+				end
+
+				chip superio/nsc/pc87392
+					device pnp 2e.0 off #FDC
+					end
+
+					device pnp 2e.1 on # Parallel Port
+						io 0x60 = 0x3bc
+						irq 0x70 = 7
+					end
+
+					device pnp 2e.2 off # Serial Port / IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.3 on # Serial Port
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x1620
+					end
+
+					device pnp 2e.a off # WDT
+					end
+				end
+			end
+			device pci 1f.1 off end # IDE
+                        device pci 1f.2 on end  # SATA
+                        device pci 1f.3 on end  # SMBus
+		end
+		chip southbridge/ricoh/rl5c476
+		end
+	end
+end

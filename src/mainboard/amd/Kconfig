@@ -25,7 +25,10 @@ config BOARD_AMD_TILAPIA_FAM10
 	bool "Tilapia (Fam10)"
 config BOARD_AMD_BIMINI_FAM10
 	bool "Bimini (Fam10)"
-
+config BOARD_AMD_INAGUA
+	bool "Inagua"
+config BOARD_AMD_PERSIMMON
+	bool "Persimmon"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -39,6 +42,8 @@ source "src/mainboard/amd/serengeti_cheetah/Kconfig"
 source "src/mainboard/amd/serengeti_cheetah_fam10/Kconfig"
 source "src/mainboard/amd/tilapia_fam10/Kconfig"
 source "src/mainboard/amd/bimini_fam10/Kconfig"
+source "src/mainboard/amd/inagua/Kconfig"
+source "src/mainboard/amd/persimmon/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

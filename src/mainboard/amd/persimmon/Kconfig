@@ -1,0 +1,155 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2011 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+if BOARD_AMD_PERSIMMON
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+        def_bool y
+  select ARCH_X86
+        select DIMM_DDR3
+        select DIMM_UNREGISTERED
+  select CPU_AMD_AGESA_WRAPPER_FAMILY14
+  select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14_ROOT_COMPLEX
+  select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
+  select SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
+	select SUPERIO_FINTEK_F81865F
+  select BOARD_HAS_FADT
+        select HAVE_BUS_CONFIG
+        select HAVE_OPTION_TABLE
+        select HAVE_PIRQ_TABLE
+        select HAVE_MP_TABLE
+        select HAVE_MAINBOARD_RESOURCES
+        select HAVE_HARD_RESET
+        select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+        select LIFT_BSP_APIC_ID
+  select SERIAL_CPU_INIT
+  select AMDMCT
+        select HAVE_ACPI_TABLES
+  select BOARD_ROMSIZE_KB_4096
+  select ENABLE_APIC_EXT_ID
+  select TINY_BOOTBLOCK
+        select GFXUMA
+
+config AMD_AGESA
+        bool
+        default y
+
+config AMD_CIMX_SB800
+        bool
+        default y
+
+config MAINBOARD_DIR
+        string
+        default amd/persimmon
+
+config APIC_ID_OFFSET
+        hex
+        default 0x0
+
+config MAINBOARD_PART_NUMBER
+        string
+        default "Persimmon"
+
+config HW_MEM_HOLE_SIZEK
+        hex
+        default 0x200000
+
+config MAX_CPUS
+        int
+        default 2
+
+config MAX_PHYSICAL_CPUS
+        int
+        default 1
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+        bool
+        default n
+
+config MEM_TRAIN_SEQ
+        int
+        default 2
+
+config SB_HT_CHAIN_ON_BUS0
+        int
+        default 1
+
+config HT_CHAIN_END_UNITID_BASE
+        hex
+        default 0x1
+
+config HT_CHAIN_UNITID_BASE
+        hex
+        default 0x0
+
+config IRQ_SLOT_COUNT
+        int
+        default 11
+
+config RAMTOP
+        hex
+        default 0x1000000
+
+config HEAP_SIZE
+        hex
+        default 0xc0000
+
+config STACK_SIZE
+        hex
+        default 0x10000
+
+config ACPI_SSDTX_NUM
+        int
+        default 0
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+        hex
+        default 0x1510
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+        hex
+        default 0x1022
+
+config RAMBASE
+        hex
+        default 0x200000
+
+config SIO_PORT
+        hex
+        default 0x4e
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+#define CONFIG_VGA_BIOS_ID "1002,9804"
+config VGA_BIOS_ID
+        string
+        default "1002,9804"
+
+config DRIVERS_PS2_KEYBOARD
+	bool
+	default n
+
+config WARNINGS_ARE_ERRORS
+	bool
+	default n
+
+endif # BOARD_AMD_PERSIMMON
+

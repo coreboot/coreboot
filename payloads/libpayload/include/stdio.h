@@ -32,6 +32,15 @@
 
 #include <stddef.h>
 
+struct _FILE {
+} _stdout, _stdin, _stderr;
+
+typedef struct _FILE FILE;
+
+FILE *stdout = &_stdout;
+FILE *stdin = &_stdin;
+FILE *stderr = &_stderr;
+
 /**
  * @defgroup printf Print functions
  * @{
@@ -39,6 +48,7 @@
 int snprintf(char *str, size_t size, const char *fmt, ...);
 int sprintf(char *str, const char *fmt, ...);
 int printf(const char *fmt, ...);
+int fprintf(FILE *file, const char *fmt, ...);
 /** @} */
 
 void perror(const char *s);
@@ -46,6 +56,5 @@ void perror(const char *s);
 #define SEEK_SET 0 /**< The seek offset is absolute. */
 #define SEEK_CUR 1 /**< The seek offset is against the current position. */
 #define SEEK_END 2 /**< The seek offset is against the end of the file. */
-
 
 #endif

@@ -723,6 +723,20 @@ int sprintf(char *str, const char *fmt, ...)
 	return ret;
 }
 
+int fprintf(FILE *file, const char *fmt, ...)
+{
+	int ret;
+	if ((file == stdout) || (file == stderr)) {
+		va_list args;
+		va_start(args, fmt);
+		ret = vprintf(fmt, args);
+		va_end(args);
+
+		return ret;
+	}
+	return -1;
+}
+
 struct vsnprintf_data {
 	size_t size;		/* Total space for string */
 	size_t len;		/* Count of currently used characters */

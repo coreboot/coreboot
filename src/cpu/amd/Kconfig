@@ -20,3 +20,5 @@ source src/cpu/amd/model_gx2/Kconfig
 source src/cpu/amd/model_lx/Kconfig
 
 source src/cpu/amd/sc520/Kconfig
+
+source src/cpu/amd/agesa_wrapper/Kconfig

@@ -28,6 +28,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 // assert's existence depends on NDEBUG state on _last_ inclusion of assert.h,
 // so don't guard this against double-includes.
@@ -35,5 +36,5 @@
 // Heisenbugs appear if statement has side-effects. This could be worked around but does the standard allow for that?
 #define assert(statement)
 #else
-#define assert(statement) if ((statement) == 0) { printf("assertion failed in file %s, function %s(), line %s\n", __FILE__, __FUNCTION__, __LINE__); abort(); }
+#define assert(statement) if ((statement) == 0) { fprintf(stderr, "assertion failed in file %s, function %s(), line %s\n", __FILE__, __FUNCTION__, __LINE__); abort(); }
 #endif

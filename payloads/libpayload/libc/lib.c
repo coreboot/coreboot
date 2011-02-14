@@ -109,7 +109,7 @@ u8 hex2bin(u8 h)
  */
 void fatal(const char *msg)
 {
-	printf("%s",msg);
+	fprintf(stderr, "%s",msg);
 	halt();
 }
 

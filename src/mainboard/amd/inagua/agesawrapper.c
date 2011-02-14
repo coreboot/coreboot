@@ -402,7 +402,7 @@ agesawrapper_getlateinitptr (
       return AcpiWheaCmc;
     case PICK_ALIB:
       return AcpiAlib;
-    defaut:
+    default:
       return NULL;
   }
 }

@@ -1,0 +1,328 @@
+/**
+ * @file
+ *
+ * ALIB ASL library
+ *
+ *
+ *
+ * @xrefitem bom "File Content Label" "Release Content"
+ * @e project:     AGESA
+ * @e sub-project: GNB
+ * @e \$Revision: 31805 $   @e \$Date: 2010-05-21 17:58:16 -0700 (Fri, 21 May 2010) $
+ *
+ */
+/*
+ *****************************************************************************
+ *
+ * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
+ *       its contributors may be used to endorse or promote products derived 
+ *       from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * ***************************************************************************
+ *
+ */
+
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Set PCIe Bus Width
+   *
+   *  Arg0 - Data Buffer
+   */
+  Method (procPcieSetBusWidth, 1, Serialized) {
+    Store (Buffer (256) {}, Local7)
+    CreateWordField (Local7, 0x0, varReturnBufferLength)
+    CreateWordField (Local7, 0x2, varReturnBusWidth)
+    CreateByteField (Arg0, 0x2, varArgBusWidth)
+    //@todo deternime correct lane bitmap (check for reversal) gate/ungate unused lanes
+    Store (3, varReturnBufferLength)
+    Store (varArgBusWidth, varReturnBusWidth)
+    return (Local7)
+  }
+
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  PCIe port hotplug
+   *
+   *  Arg0 - Data Buffer
+   *  Local7 - Return buffer
+   */
+  Method (procPciePortHotplug, 1, Serialized) {
+    Store ("PciePortHotplug Enter", Debug)
+    Store (Buffer (256) {}, Local7)
+    CreateWordField (Local7, 0x0, varReturnBufferLength)
+    CreateByteField (Local7, 0x2, varReturnStatus)
+    CreateByteField (Local7, 0x3, varReturnDeviceStatus)
+    CreateWordField (Arg0, 0x2, varPortBdf)
+    CreateByteField (Arg0, 0x4, varHotplugState)
+    Subtract (ShiftRight (varPortBdf, 3), 2, Local1);
+    if (LEqual(varHotplugState, 1)) {
+      // Enable port
+      Store (procPciePortEnable (Local1), varHotplugState);
+    } else {
+      // Disable port
+      Store (procPciePortDisable (Local1), varHotplugState);
+    }
+    Store (0x4, varReturnBufferLength)
+    Store (0x0, varReturnStatus)
+    Store (varHotplugState, varReturnDeviceStatus)
+    Store ("PciePortHotplug Exit", Debug)
+    return (Local7)
+  }
+
+    
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Enable PCIe port 
+   *  
+   *  1) Ungate lanes
+   *  2) Enable Lanes
+   *  3) Train port
+   *  4) Disable unused lanes
+   *  5) Gate unused lanes
+   *
+   *  Arg0 	- Port Index
+   *  
+   */
+  Method (procPciePortEnable, 1, NotSerialized) {
+    Store ("PciePortEnable Enter", Debug)
+    Name (varLinkIsLinkReversed, 0)
+    Store (procPcieGetPortInfo (Arg0), Local7)
+    CreateByteField (Local7, DEF_OFFSET_LINK_HOTPLUG, varHotplugType)
+    if (LNotEqual (varHotplugType, DEF_BASIC_HOTPLUG)) {
+      Store ("  No action.[Hotplug type]", Debug)
+      Store ("PciePortEnable Exit", Debug)
+      return (1)
+    }
+    // Poweron phy lanes
+    CreateByteField (Local7, DEF_OFFSET_START_PHY_LANE, varStartPhyLane)
+    CreateByteField (Local7, DEF_OFFSET_END_PHY_LANE, varEndPhyLane)
+    procPcieLanePowerControl (varStartPhyLane, varEndPhyLane, 0)	
+    // Enable lanes
+    CreateByteField (Local7, DEF_OFFSET_START_CORE_LANE, varStartCoreLane)
+    CreateByteField (Local7, DEF_OFFSET_END_CORE_LANE, varEndCoreLane)
+    procPcieLaneEnableControl (Arg0, varStartPhyLane, varEndPhyLane, 0)	
+    //Release training
+    procPcieTrainingControl (Arg0, 0)
+    //Train link
+    Store (procPcieCheckDevicePrecence (Arg0), Local1)
+    if (LEqual (Local1, 1)) {
+      Store (" Device detected", Debug)
+      Store (procPcieIsPortReversed (Arg0), varLinkIsLinkReversed)
+      Subtract (procPcieGetLinkWidth (Arg0, 1), procPcieGetLinkWidth (Arg0, 0), Local2)
+      if (LNotEqual (Local2, 0)) {
+         //There is unused lanes after device plugged
+        if (LNotEqual(varLinkIsLinkReversed, 0)) {
+          Add (varStartCoreLane, Local2, Local3)
+          Store (varEndCoreLane, Local4)
+        } else {
+          Subtract (varEndCoreLane, Local2, Local4)
+          Store (varStartCoreLane, Local3)
+        }
+        procPcieLaneEnableControl (Arg0, Local3, Local4, 1)
+        if (LGreater (varStartPhyLane, varEndPhyLane)) {
+          Store (varEndPhyLane, Local3)
+          Store (varStartPhyLane, Local4)
+        } else {
+          Store (varEndPhyLane, Local4)
+          Store (varStartPhyLane, Local3)
+        }
+        if (LNotEqual(varLinkIsLinkReversed, 0)) {
+          Add (Local3, Local2, Local3)
+        } else {
+          Subtract (Local4, Local2, Local4)
+        }
+        procPcieLanePowerControl (Local3, Local4, 1)   
+      }
+      Store ("PciePortEnable Exit", Debug)
+      return (1)   
+    } 
+    Store (" Device detection fail", Debug)
+    procPciePortDisable (Arg0)  
+    Store ("PciePortEnable Exit", Debug)
+    return (0)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Disable PCIe port 
+   *  
+   *  1) Hold training
+   *  2) Disable lanes
+   *  3) Gate lanes
+   *
+   *  Arg0 - Port Index
+   *  
+   */
+  Method (procPciePortDisable, 1, NotSerialized) {
+    Store ("PciePortDisable Enter", Debug)   
+    Store (procPcieGetPortInfo (Arg0), Local7)
+    CreateByteField (Local7, DEF_OFFSET_LINK_HOTPLUG, varHotplugType)
+    if (LNotEqual (varHotplugType, DEF_BASIC_HOTPLUG)) {
+      Store ("  No action. [Hotplug type]", Debug)
+      Store ("PciePortDisable Exit", Debug)
+      return (0)	
+    }
+      //Hold training
+    procPcieTrainingControl (Arg0, 1)
+    CreateByteField (Local7, DEF_OFFSET_START_CORE_LANE, varStartCoreLane)
+    CreateByteField (Local7, DEF_OFFSET_END_CORE_LANE, varEndCoreLane)
+    // Disable lane
+    procPcieLaneEnableControl (Arg0, varStartCoreLane, varEndCoreLane, 1)
+    CreateByteField (Local7, DEF_OFFSET_START_PHY_LANE, varStartPhyLane)
+    CreateByteField (Local7, DEF_OFFSET_END_PHY_LANE, varEndPhyLane)
+    // Poweroff phy lanes
+    procPcieLanePowerControl (varStartPhyLane, varEndPhyLane, 1)
+  
+    Store ("PciePortDisable Exit", Debug)	
+    return (0)
+  }
+ /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Is port reversed
+   *  
+   *  Arg0 	 - Port Index
+   *  Retval - 0 - Not reversed / 1 - Reversed
+   */
+  Method (procPcieIsPortReversed , 1, NotSerialized) {
+    Store (procPcieGetPortInfo (Arg0), Local7)
+    CreateByteField (Local7, DEF_OFFSET_START_PHY_LANE, varStartPhyLane)
+    CreateByteField (Local7, DEF_OFFSET_END_PHY_LANE, varEndPhyLane)
+    Store (0, Local0)
+    if (LGreater (varStartPhyLane, varEndPhyLane)) {
+      Store (1, Local0)
+    }
+    And (procPciePortIndirectRegisterRead (Arg0, 0x50), 0x1, Local1)
+    return (Xor (Local0, Local1))
+  }
+
+ /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Training Control
+   *  
+   *  Arg0 	- Port Index
+   *  Arg1  - Hold Training (1) / Release Training (0)  
+   */
+  Method (procPcieTrainingControl , 2, NotSerialized) {
+    Store ("PcieTrainingControl Enter", Debug)
+    Store (procPcieGetPortInfo (Arg0), Local7)
+    CreateByteField (Local7, DEF_OFFSET_PORT_ID, varPortId)
+    CreateWordField (Local7, DEF_OFFSET_WRAPPER_ID, varWrapperId)
+    procIndirectRegisterRMW (0x0, 0xE0, Or (ShiftLeft (varWrapperId, 16), Add (0x800, Multiply (0x100, varPortId))), Not (0x1), Arg1);
+    Store ("PcieTrainingControl Exit", Debug)
+  }
+
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Check device presence
+   *  
+   *  Arg0 	 - Port Index
+   *  Retval - 1 - Device present, 0 - Device not present
+   */
+  Method (procPcieCheckDevicePrecence, 1, NotSerialized) {
+    Store ("PcieCheckDevicePrecence Enter", Debug)
+    Store (0, Local0)
+    Store (0, Local7)
+    while (LLess (Local0, 320)) { // @todo for debug only should be 80
+      And (procPciePortIndirectRegisterRead (Arg0, 0xa5), 0x3f, Local1)
+      if (LEqual (Local1, 0x10)) {
+        Store (1, Local7)
+        Store (320, Local0)
+        Break
+      }
+      Stall (250)
+      Increment (Local0) 
+    }
+    //Store (Concatenate ("Device Presence Status :", ToHexString (Local7)), Debug)
+    Store ("PcieCheckDevicePrecence Exit", Debug)
+    return (Local7) 
+  }
+
+ /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Get actual negotiated/PHY or core link width
+   *
+   *  Arg0 	 - Port Index
+   *  Arg1   - 0/1 Negotiated/Phy
+   *  Retval - Link Width
+   */
+  Method (procPcieGetLinkWidth, 2, NotSerialized) {
+    if (LEqual (Arg0, 0)){
+       //Get negotiated length 
+      And (ShiftRight (procPciePortIndirectRegisterRead (Arg0, 0xA2), 4), 0x7, Local0)
+      Store (DeRefOf (Index (Buffer (){0, 1, 2, 4, 8, 12, 16}, Local0)), Local1)
+    } else {
+       //Get phy length
+      Store (procPcieGetPortInfo (Arg0), Local7)
+      CreateByteField (Local7, DEF_OFFSET_START_PHY_LANE, varStartPhyLane)
+      CreateByteField (Local7, DEF_OFFSET_END_PHY_LANE, varEndPhyLane)
+      if (LGreater (varStartPhyLane, varEndPhyLane)) {
+        Subtract (varStartPhyLane, varEndPhyLane, Local1)
+      } else {
+        Subtract (varEndPhyLane, varStartPhyLane, Local1)
+      }
+      Increment (Local1)         
+    }
+    //Store (Concatenate ("Link Width :", ToHexString (Local7)), Debug)
+    return (Local1)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  PCIe lane mux lane enable control (hotplug support)
+   *
+   *  Arg0 - Port Index
+   *  Arg1 - Start Lane
+   *  Arg2 - End Lane
+   *  Arg3 - Enable(0) / Disable(1) 
+   */
+  Method (procPcieLaneEnableControl, 4, NotSerialized) {
+    Store ("PcieLaneEnableControl Enter", Debug)
+    Name (varStartCoreLane, 0)
+    Name (varEndCoreLane, 0)
+    Store (procPcieGetPortInfo (Arg0), Local7)
+    Store (Arg1, varStartCoreLane)
+    Store (Arg2, varEndCoreLane)
+    CreateWordField (Local7, DEF_OFFSET_WRAPPER_ID, varWrapperId)
+    if (LGreater (varStartCoreLane, varEndCoreLane)) {
+      Subtract (varStartCoreLane, varEndCoreLane, Local1)
+      Store (varEndCoreLane, Local2)
+    } else {
+      Subtract (varEndCoreLane, varStartCoreLane, Local1)
+      Store (varStartCoreLane, Local2)
+    }
+    ShiftLeft (Subtract (ShiftLeft (1, Add (Local1, 1)), 1), Local2, Local1)
+    //Store (Concatenate ("Lane Bitmap :", ToHexString (Local1)), Debug)
+    if (Lequal (Arg3, 0)) {
+      procIndirectRegisterRMW (0x0, 0xE0, Or (ShiftLeft (varWrapperId, 16), 0x8023), 0xffffffff, Local1);
+    } else {
+      procIndirectRegisterRMW (0x0, 0xE0, Or (ShiftLeft (varWrapperId, 16), 0x8023), Not (Local1), 0x0);
+    } 
+    Stall (10)
+    Store ("PcieLaneEnableControl Exit", Debug)
+  }
+
+

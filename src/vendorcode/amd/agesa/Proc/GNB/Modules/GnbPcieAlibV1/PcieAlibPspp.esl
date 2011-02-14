@@ -1,0 +1,682 @@
+/**
+* @file
+*
+* ALIB PSPP ASL library
+*
+*
+*
+* @xrefitem bom "File Content Label" "Release Content"
+* @e project:     AGESA
+* @e sub-project: GNB
+* @e \$Revision: 31805 $   @e \$Date: 2010-05-21 17:58:16 -0700 (Fri, 21 May 2010) $
+*
+*/
+/*
+ *****************************************************************************
+ *
+ * Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
+ *       its contributors may be used to endorse or promote products derived 
+ *       from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * ***************************************************************************
+ *
+ */
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  PCIe Performance Policy
+   *
+   *  varPsppPolicy - 0 Disabled
+   *                  1 Performance
+   *                  2 Balance Hight
+   *                  3 Balance Low
+   *                  4 Power Saving
+   */
+  Name (
+    AD02,
+    0x0
+  )
+
+  Alias (
+    AD02,
+    varPsppPolicy
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  GEN2 VID
+   *
+   */
+
+  Name (
+    AD03,
+    0x0
+  )
+
+  Alias (
+    AD03,
+    varGen2Vid
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  GEN1 VID
+   *
+   */
+  Name (
+    AD04,
+    0x0
+  )
+
+  Alias (
+    AD04,
+    varGen1Vid
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Boot VID
+   *
+   */
+
+  Name (
+    AD05,
+    0x0
+  )
+
+  Alias (
+    AD05,
+    varBootVid
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Max Port GEN capability
+   *
+   */
+  Name (
+    AD06,
+    Package () {
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00
+    }
+  )
+
+  Alias (
+    AD06,
+    varPsppMaxPortCapabilityArray
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Policy service status
+   *
+   *  varPsppPolicyService - 0 (Stopped)
+   *                         1 (Started)
+   */
+
+  Name (
+    varPsppPolicyService,
+    0x0
+  )
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  AC DC state
+   *
+   *  varPsppAcDcState - 0 (AC)
+   *                     1 (DC)
+   */
+
+  Name (
+    varPsppAcDcState,
+    0x0
+  )
+
+
+  Name (
+    varPsppClientIdArray,
+    Package () {
+      0x0000,
+      0x0000,
+      0x0000,
+      0x0000,
+      0x0000,
+      0x0000,
+      0x0000
+    }
+  )
+
+  Name (
+    varPsppClientCapabilityArray,
+    Package () {
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00
+    }
+  )
+
+  Name (
+    varPsppCurrentCapabilityArray,
+    Package () {
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00
+    }
+  )
+  Name (
+    varDefaultGen1CapabilityArray,
+    Package () {
+      0x2,
+      0x2,
+      0x2,
+      0x2,
+      0x2,
+      0x2,
+      0x2
+      }
+    )
+
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Report AC/DC state
+   *
+   *  Arg0 - Data Buffer
+   */
+  Method (procPsppReportAcDsState, 1, Serialized) {
+    Store ("PsppReportAcDsState Enter", Debug)
+    CreateByteField (Arg0, 0x2, varArgAcDcState)
+
+    Store ("AC/DC state = ", Debug)
+    Store (varArgAcDcState, Debug)
+    if (LEqual (varArgAcDcState, varPsppAcDcState)) {
+      Store ("  No action. [AC/DC state not changed]", Debug)
+      Store ("PsppReportAcDsState Exit", Debug)
+      return (0)
+    }
+    Store (varArgAcDcState, varPsppAcDcState)
+    // Set DPM state for Power Saving, due to this policy will not attend ApplyPsppState service.
+    if (LEqual (varPsppPolicy, DEF_PSPP_POLICY_POWERSAVING)) {
+      procNbLclkDpmActivate(1, varPsppAcDcState)
+    }
+    if (LOr (LLessEqual (varPsppPolicy, DEF_PSPP_POLICY_PERFORMANCE), LGreaterEqual (varPsppPolicy, DEF_PSPP_POLICY_POWERSAVING))) {
+      Store ("  No action. [Policy type]", Debug)
+      Store ("PsppReportAcDsState Exit", Debug)
+      return (0)
+    }
+    if (LEqual (varPsppPolicyService, DEF_PSPP_POLICY_STOP)) {
+      Store ("  No action. [Policy not started]", Debug)
+      Store ("PsppReportAcDsState Exit", Debug)
+      return (0)
+    }
+    procApplyPsppState ()
+    Store ("PsppReportAcDsState Exit", Debug)
+    return (0)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  PCIe Performance Request
+   *
+   *  Arg0 - Data Buffer
+   */
+  Method (procPsppPerformanceRequest, 1) {
+    Store ("PsppPerformanceRequest Enter", Debug)
+    Name (varClientBus, 0)
+    Name (varPortIndex, 0)
+    Store (Buffer (256) {}, Local7)
+    CreateWordField (Local7, 0x0, varReturnBufferLength)
+    Store (3, varReturnBufferLength)
+    CreateByteField (Local7, 0x2, varReturnStatus)
+    Store (1, varReturnStatus)
+    if (LOr (LLessEqual (varPsppPolicy, DEF_PSPP_POLICY_PERFORMANCE), LGreaterEqual (varPsppPolicy, DEF_PSPP_POLICY_POWERSAVING))) {
+      Store ("  No action. [Policy type]", Debug)
+      Store ("PsppPerformanceRequest Exit", Debug)
+      return (Local7)
+    }
+    if (LEqual (varPsppPolicyService, DEF_PSPP_POLICY_STOP)) {
+      Store ("  No action. [Policy not started]", Debug)
+      Store ("PsppPerformanceRequest Exit", Debug)
+      return (Local7)
+    }
+    CreateWordField (Arg0, 0x2, varClientId)
+    CreateWordField (Arg0, 0x4, varValidFlag)
+    CreateWordField (Arg0, 0x6, varFlag)
+    CreateByteField (Arg0, 0x8, varRequestType)
+    CreateByteField (Arg0, 0x9, varRequestData)
+
+    Store ("  Client ID:", Debug)
+    Store (varClientId, Debug)
+    Store ("  Valid Flags:", Debug)
+    Store (varValidFlag, Debug)
+    Store ("  Flags:", Debug)
+    Store (varFlag, Debug)
+    Store ("  Request Type:", Debug)
+    Store (varRequestType, Debug)
+    Store ("  Request Data:", Debug)
+    Store (varRequestData, Debug)
+
+    And (ShiftRight (varClientId, 8), 0xff, varClientBus)
+    While (LLessEqual (varPortIndex, varMaxPortIndexNumber)) {
+      if (LEqual (DeRefOf (Index (varPsppMaxPortCapabilityArray, varPortIndex)), 0)) {
+        Increment (varPortIndex)
+        Continue
+      }
+      Store (procPciDwordRead (ShiftLeft (Add( varPortIndex, 2), 3), 0x18), Local1)
+      And (ShiftRight (Local1, 16), 0xff, Local2)             //Local2 Port Subordinate Bus number
+      And (ShiftRight (Local1, 8), 0xff, Local1)              //Local1 Port Secondary Bus number
+      if (LAnd (LLess (varClientBus, Local1), LGreater (varClientBus, Local2))) {
+        Increment (varPortIndex)
+        Continue
+      }
+      Store ("Performance request for port index", Debug)
+      Store (varPortIndex, Debug)
+
+      if (LEqual (DeRefOf (Index (varPsppClientIdArray, varPortIndex)), 0x0000)) {
+        Store (varClientId, Index (varPsppClientIdArray, varPortIndex))
+      } ElseIf (LNotEqual (DeRefOf (Index (varPsppClientIdArray, varPortIndex)), varClientId)) {
+        // We already have registered client
+        Store ("  No action. [Unsupported request]", Debug)
+        Store ("PsppPerformanceRequest Exit", Debug)
+        return (Local7)
+      }
+      if (LEqual (varRequestData, 0)) {
+        Store (0x0000, Index (varPsppClientIdArray, varPortIndex))
+      } else {
+        if (LEqual (And (varValidFlag, varFlag), 0x1)) {
+          Store (DerefOf (Index (varPsppMaxPortCapabilityArray, varPortIndex)), Index (varPsppClientCapabilityArray, varPortIndex))
+        } else {
+          Store (varRequestData, Index (varPsppClientCapabilityArray, varPortIndex))
+        }
+      }
+      procApplyPsppState ()
+      Store (2, varReturnStatus)
+      Store ("PsppPerformanceRequest Exit", Debug)
+      return (Local7)
+    }
+    Store ("PsppPerformanceRequest Exit", Debug)
+    return (Local7)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  PSPP Start/Stop Management Request
+   *
+   *  Arg0 - Data Buffer
+   */
+  Method (procPsppControl, 1, Serialized) {
+    Store ("PsppControl Enter", Debug)
+    Store (Buffer (256) {}, Local7)
+    CreateWordField (Local7, 0x0, varReturnBufferLength)
+    Store (3, varReturnBufferLength)
+    CreateByteField (Local7, 0x2, varReturnStatus)
+    CreateByteField (Arg0, 0x2, varArgPsppRequest)
+    Store (varArgPsppRequest, varPsppPolicyService)
+    // Set DPM state for PSPP Power Saving, due to this policy will not attend ApplyPsppState service.
+    if (LEqual (varPsppPolicy, DEF_PSPP_POLICY_POWERSAVING)) {
+      procNbLclkDpmActivate(1, varPsppAcDcState)
+    }
+    //Reevaluate PCIe speed for all devices base on PSPP state switch to boot up voltage
+    if (LAnd (LGreater (varPsppPolicy, DEF_PSPP_POLICY_PERFORMANCE), LLess (varPsppPolicy, DEF_PSPP_POLICY_POWERSAVING))) {
+      // Load default speed capability state
+      if (LEqual (varPsppPolicy, DEF_PSPP_POLICY_BALANCEHIGH)) {
+        procCopyPackage (RefOf (varPsppMaxPortCapabilityArray), RefOf (varPsppCurrentCapabilityArray))
+      } else {
+        procCopyPackage (RefOf (varDefaultGen1CapabilityArray), RefOf (varPsppCurrentCapabilityArray))
+      }
+      // Unregister all clients
+      if (LEqual (varPsppPolicyService, DEF_PSPP_POLICY_STOP)) {
+        Name (varDefaultPsppClientIdArray, Package () {0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+        procCopyPackage (RefOf (varDefaultPsppClientIdArray), RefOf (varPsppClientIdArray))
+      }
+      procApplyPsppState ()
+    }
+    Store (3, varReturnBufferLength)
+    Store (0, varReturnStatus)
+    Store ("PsppControl Exit", Debug)
+    return (Local7)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Evaluate PCIe speed on all links according to PSPP state and client requests
+   *
+   *
+   *
+   */
+  Method (procApplyPsppState, 0, Serialized) {
+    Store ("ApplyPsppState Enter", Debug)
+    Name (varPortIndex, 0)
+    Name (varLowPowerMode, 0)
+    Name (varPcieCapabilityArray, Package () {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02})
+
+    Store (0, varPortIndex)
+    While (LLessEqual (varPortIndex, varMaxPortIndexNumber)) {
+      if (LNotEqual (DeRefOf (Index (varPsppMaxPortCapabilityArray, varPortIndex)), 0)) {
+        Store (procGetPortRequestedCapability (varPortIndex), Index (varPcieCapabilityArray, varPortIndex))
+      }
+      Increment (varPortIndex)
+    }
+    if (LNotEqual(Match (varPcieCapabilityArray, MEQ, 0x01, MTR, 0, 0), ONES)) {
+      procCopyPackage (RefOf (varDefaultGen1CapabilityArray), RefOf (varPcieCapabilityArray))
+    }
+    if (LNotEqual(Match (varPcieCapabilityArray, MEQ, 0x03, MTR, 0, 0), ONES)) {
+      // Set GEN2 voltage
+      Store ("Set GEN2 VID", Debug)
+      procPcieSetVoltage (varGen2Vid, 1)
+      procPcieAdjustPll (2)
+      procNbLclkDpmActivate(2, varPsppAcDcState)
+    }
+    Store (0, varPortIndex)
+    While (LLessEqual (varPortIndex, varMaxPortIndexNumber)) {
+      if (LEqual (DeRefOf (Index (varPsppMaxPortCapabilityArray, varPortIndex)), 0)) {
+        Increment (varPortIndex)
+        Continue
+      }
+      Store (procGetPortCurrentCapability (varPortIndex), Local0)
+      Store (DerefOf (Index (varPcieCapabilityArray, varPortIndex)), Local2)
+      if (LEqual (Local0, Local2)) {
+        Increment (varPortIndex)
+        Continue
+      }
+      procSetPortCapabilityAndSpeed (varPortIndex, Local2, 0)
+      Increment (varPortIndex)
+    }
+    if (LEqual(Match (varPcieCapabilityArray, MEQ, 0x03, MTR, 0, 0), ONES)) {
+      // Set GEN1 voltage
+      Store ("Set GEN1 VID", Debug)
+      procNbLclkDpmActivate(1, varPsppAcDcState)
+      procPcieAdjustPll (1)
+      procPcieSetVoltage (varGen1Vid, 0)
+    }
+    Store ("ApplyPsppState Exit", Debug)
+  }
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Read PCI config register
+   *
+   *  Arg0 - Port Index
+   *
+   */
+  Method (procGetPortRequestedCapability, 1) {
+    Store (0x3, Local0)
+    if (LEqual (DerefOf (Index (varPsppClientIdArray, Arg0)), 0x0000)) {
+      if (LOr (LEqual (varPsppAcDcState, DEF_PSPP_STATE_DC), LEqual (varPsppPolicy, DEF_PSPP_POLICY_BALANCELOW))) {
+        // Default policy cap to GEN1
+        Store (0x2, Local0)
+      }
+    } else {
+      Store (DerefOf (Index (varPsppClientCapabilityArray, Arg0)), Local0)
+    }
+    return (Local0)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Read PCI config register
+   *
+   *  Arg0 - Port Index
+   *
+   */
+  Method (procGetPortCurrentCapability, 1) {
+    return (DerefOf (Index (varPsppCurrentCapabilityArray, Arg0)))
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Set capability and speed
+   *
+   *  Arg0 - Port Index
+   *  Arg1 - Capability
+   *  Arg2 - Speed
+   */
+  Method (procSetPortCapabilityAndSpeed, 3) {
+    Store ("SetPortCapabilityAndSpeed Enter", Debug)
+    if (LOr (LEqual (Arg1, 0x2), LEqual (Arg1, 0x3))) {
+      Store ("Port Index = ", Debug)
+      Store (Arg0, Debug)
+      Store ("Cap   = ", Debug)
+      Store (Arg1, Debug)
+      Store ("Speed = ", Debug)
+      Store (Arg2, Debug)
+
+      Name (varDxF0xE4_xA4, 0x20000001)
+      Name (varPortPresent, 0x00000000)
+      Name (varDxF0x88, 0x00000002)
+      Name (varAXCFGx68_PmCtrl, 0x00000000)
+      Name (varLcCurrentDataRate,0x00000000)
+      Name (varSecondaryBus, 0x00000000)
+      Name (varHeaderType, 0x00000000)
+      Name (varMultiFunction, 0x00000000)
+      Name (varPcieLinkControlOffset, 0x00000000)
+      Name (varPcieLinkControlData, 0x00000000)
+      Name (varPcieLinkControlArray, Package () {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+
+      
+      //If request for UMI unhihe port congig space
+      if (LEqual (Arg0, 6)) {
+        procIndirectRegisterRMW (0x0, 0x60, 0x80, Not (0x40), 0x40);
+
+      }
+      Store (Arg1, Index (varPsppCurrentCapabilityArray, Arg0))
+      if (LEqual (Arg1, 0x2)) {
+        //Gen1
+        Store (0x00000000, varDxF0xE4_xA4)
+        Store (0x21, varDxF0x88)
+      }
+
+      // Programming for LcInitSpdChgWithCsrEn
+      if (LNotEqual (DeRefOf (Index (varPsppClientIdArray, Arg0)), 0x0000)) {
+      	// Registered port, LcInitSpdChgWithCsrEn = 0.
+      	procPciePortIndirectRegisterRMW (Arg0, 0xA1, Not (0x00001000), 0x0)
+      } else {
+        procPciePortIndirectRegisterRMW (Arg0, 0xA1, Not (0x00001000), 0x00001000)
+      }
+
+      // Initialize port
+      procPciePortIndirectRegisterRMW (Arg0, 0xA4, Not (0x20000001), varDxF0xE4_xA4)
+      //set target link speed
+      Store (ShiftLeft (Add( Arg0, 2), 3), Local0)
+      procPciDwordRMW (Local0, 0x88, Not (0x0000002f), varDxF0x88)
+
+      // Determine port PCI address and check port present
+      Store (ShiftLeft (Add( Arg0, 2), 3), Local0)
+      And (procPciDwordRead (Local0, 0x70), 0x400000, varPortPresent)
+      if (LNotEqual (varPortPresent, 0)) {
+        //Disable ASPM on EP
+        if (LNotEqual (Arg0, 6)) {
+          Store (procPciDwordRead (Local0, 0x18), Local3)
+          Store (And (ShiftRight (Local3, 8), 0xFF),  varSecondaryBus)
+            Store ("Disable EP ASPM on SecondaryBus = ", Debug)
+            Store (varSecondaryBus, Debug)
+          Store (ShiftLeft (varSecondaryBus, 8), Local3)
+          Store (procPciDwordRead (Local3, 0xC), Local3)
+          Store (And (ShiftRight (Local3, 16), 0xFF),  varHeaderType)
+            Store ("Header Type = ", Debug)
+            Store (varHeaderType, Debug)
+          
+          if (LNotEqual (And (varHeaderType, 0x80), 0)) {
+            Store (0x7, varMultiFunction)
+          }
+          
+          Store (ShiftLeft (varSecondaryBus, 8), Local3)
+          Store (0, Local2)
+          while (LLessEqual (Local2, varMultiFunction)) {
+            
+            //Find PcieLinkControl register offset = PcieCapPtr + 0x10
+            Store (procFindPciCapability (Local3, 0x10), varPcieLinkControlOffset)
+            if (LNotEqual (varPcieLinkControlOffset, 0)) {
+              Add (varPcieLinkControlOffset, 0x10, varPcieLinkControlOffset)
+                
+                Store ("Function number of SecondaryBus = ", Debug)
+                Store (Local2, Debug)
+                Store ("Find PcieLinkControl register offset = ", Debug)
+                Store (varPcieLinkControlOffset, Debug)
+              // Save ASPM on EP
+              Store (procPciDwordRead (Local3, varPcieLinkControlOffset), varPcieLinkControlData)
+              Store (And (varPcieLinkControlData, 0x3), Index (varPcieLinkControlArray, Local2))
+              Store ("PcieLinkControlData = ", Debug)
+              Store (varPcieLinkControlData, Debug)
+              Store ("Save ASPM = ", Debug)
+              Store (DerefOf (Index (varPcieLinkControlArray, Local2)), Debug)
+              // Disable ASPM
+              if (LNotEqual (And (varPcieLinkControlData, 0x3), 0x0)) {
+                procPciDwordRMW (Local3, varPcieLinkControlOffset, Not (0x00000003), 0x00)
+                Store ("Disable ASPM on EP Complete!!", Debug)
+              }
+            }
+            Increment (Local2)
+            Increment (Local3)
+          }
+
+        } else {
+
+        	Store (procPcieSbAspmControl (0, 0), varAXCFGx68_PmCtrl)
+        	And (varAXCFGx68_PmCtrl, 0x3, Local1)
+  	      if (LNotEqual (Local1, 0x0)) {
+            procPcieSbAspmControl (0, 1)
+          }
+        }
+          Store (1, Local2)
+          while (Local2) {
+            //retrain port
+            procPciDwordRMW (Local0, 0x68, Not (0x00000000), 0x20)
+            Sleep (30)
+            while (And (procPciDwordRead (Local0, 0x68), 0x08000000)) {Sleep (10)}
+            Store (0, Local2)
+            if (LEqual (Arg1, 0x2)) {  // if Gen1
+              Store (procPciePortIndirectRegisterRead (Arg0, 0xA4), varLcCurrentDataRate)
+              if (LNotEqual (And (varLcCurrentDataRate, 0x800), 0)) {
+                Store (1, Local2)
+              }
+            }
+          }
+        //restore ASPM setting
+        if (LNotEqual (Arg0, 6)) {
+        	// Restore EP
+          //if (LNotEqual (varPcieLinkControlOffset, 0)) {
+          //  procPciDwordWrite (Local3, varPcieLinkControlOffset, varPcieLinkControlData)
+          //}
+          Store (ShiftLeft (varSecondaryBus, 8), Local3)
+          Store (0, Local2)
+          while (LLessEqual (Local2, varMultiFunction)) {
+            
+            //Find PcieLinkControl register offset = PcieCapPtr + 0x10
+            Store (procFindPciCapability (Local3, 0x10), varPcieLinkControlOffset)
+            if (LNotEqual (varPcieLinkControlOffset, 0)) {
+              Add (varPcieLinkControlOffset, 0x10, varPcieLinkControlOffset)
+                
+                Store ("Restore Function number of SecondaryBus = ", Debug)
+                Store (Local2, Debug)
+                Store ("Restore Find PcieLinkControl register offset = ", Debug)
+                Store (varPcieLinkControlOffset, Debug)
+                Store ("Restore ASPM = ", Debug)
+                Store (DerefOf (Index (varPcieLinkControlArray, Local2)), Debug)
+              procPciDwordWrite (Local3, varPcieLinkControlOffset, DerefOf (Index (varPcieLinkControlArray, Local2)))
+            }
+            Increment (Local2)
+            Increment (Local3)
+          }
+
+        } else {
+        	// Restore SB
+          procPcieSbAspmControl (varAXCFGx68_PmCtrl, 1)
+        }
+      } else {
+        Store ("  Device not present. Set capability and speed only", Debug)
+      }
+      //If request for UMI hide port congig space
+      if (LEqual (Arg0, 6)) {
+        procIndirectRegisterRMW (0x0, 0x60, 0x80, Not (0x40), 0x00);
+      }
+    }
+    Store ("SetPortCapabilityAndSpeed Exit", Debug)
+  }
+  Mutex (varVoltageChangeMutex, 0)
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *   Request VID
+   *
+   *  Arg0 - VID index
+   *  Arg1 - 0 = do not wait intil voltage is set
+   *         1 = wait until voltage is set
+   */
+  Method (procPcieSetVoltage, 2) {
+    Store ("PcieSetVoltage(procPcieSetVoltage) Enter", Debug)
+    Acquire(varVoltageChangeMutex, 0xFFFF)
+    Store (procIndirectRegisterRead (0x0, 0x60, 0xEA), Local1)
+    //Enable voltage change
+    Or (Local1, 0x2, Local1)
+    procIndirectRegisterWrite (0x0, 0x60, 0xEA, Local1)
+    //Clear voltage index
+    And (Local1, Not (ShiftLeft (0x3, 3)), Local1)
+    //Set new voltage index
+    Store ("  Voltage Index:", Debug)
+    Store (Arg0, Debug)
+    Or (Local1, ShiftLeft (Arg0, 3), Local1)
+    //Togle request
+    And (Not (Local1), 0x4, Local2)
+    Or (And (Local1, Not (0x4)), Local2, Local1)
+    procIndirectRegisterWrite (0x0, 0x60, 0xEA, Local1)
+    if (LNotEqual (Arg1, 0)) {
+      while (LNotEqual (ShiftLeft(Local1, 0x2), Local2)) {
+        And (procIndirectRegisterRead (0x0, 0x60, 0xEB), 0x1, Local1)
+      }
+    }
+    Release (varVoltageChangeMutex)
+    Store ("PcieSetVoltage(procPcieSetVoltage) Exit", Debug)
+  }
+
+  /*----------------------------------------------------------------------------------------*/
+  /**
+   *  Read PCIe port indirect register
+   *
+   *  Arg0 - Ref Source Pckage
+   *  Arg1 - Ref to Destination Package
+   *
+   */
+  Method (procCopyPackage, 2, NotSerialized) {
+
+    Store (SizeOf (Arg0), Local1)
+    Store (0, Local0)
+    While (LLess (Local0, Local1)) {
+      Store (DerefOf(Index(DerefOf (Arg0), Local0)), Index(DerefOf (Arg1), Local0))
+      Increment (Local0)
+    }
+  }
+

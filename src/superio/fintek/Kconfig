@@ -27,3 +27,5 @@ config SUPERIO_FINTEK_F71872
 	bool
 config SUPERIO_FINTEK_F71889
 	bool
+config SUPERIO_FINTEK_F81865F
+	bool

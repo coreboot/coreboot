@@ -10,7 +10,7 @@ all: seabios
 checkout:
 	echo "    GIT        SeaBIOS $(TAG-y)"
 	test -d seabios && ( cd seabios; git fetch ) || \
-		git clone git://git.linuxtogo.org/home/kevin/seabios.git
+		git clone git://git.seabios.org/seabios.git
 	cd seabios; git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
 config: checkout

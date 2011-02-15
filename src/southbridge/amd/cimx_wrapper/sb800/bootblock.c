@@ -22,7 +22,7 @@
 #include <arch/romcc_io.h>
 
 
-#if CONFIG_SERIAL_POST == 1
+#if CONFIG_CONSOLE_POST == 1
 
 /* Data */
 #define UART_RBR 0x00
@@ -51,7 +51,7 @@
 
 #define UART_LCS	CONFIG_TTYS0_LCS
 
-#endif // CONFIG_SERIAL_POST == 1
+#endif // CONFIG_CONSOLE_POST == 1
 
 
 static void sb800_enable_rom(void)

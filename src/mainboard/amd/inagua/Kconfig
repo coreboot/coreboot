@@ -142,46 +142,10 @@ config WARNINGS_ARE_ERRORS
 	bool
 	default n
 
-config PAYLOAD_ELF
-	bool
-	default y
-
-config FALLBACK_PAYLOAD_FILE
-	string "Payload path and filename"
-	depends on PAYLOAD_ELF
-	default "payloads/seabios/out/bios.bin.elf"
-
-config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
-config VGA_BIOS
-	bool
-	default y
-
-config FALLBACK_VGA_BIOS_FILE
-	string "VGA BIOS path and filename"
-	depends on VGA_BIOS
-	default "rom/video/OntarioGenericVBios.bin"
-
 config FALLBACK_VGA_BIOS_ID
 	string "VGA device PCI IDs"
 	depends on VGA_BIOS
 	default "1002,9802"
-
-config AHCI_ROM
-	bool
-	default y
-
-config AHCI_ROM_FILE
-	string "AHCI ROM path and filename"
-	depends on AHCI_ROM
-	default "rom/ahci/sb800.bin"
-
-config AHCI_ROM_ID
-	string "AHCI device PCI IDs"
-	depends on AHCI_ROM
-	default "1002,4391"
 
 endif # BOARD_AMD_INAGUA
 

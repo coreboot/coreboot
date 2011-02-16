@@ -40,9 +40,9 @@ void writeback(struct device *dev, u16 where, u8 what)
 	if (regval != what) {
 		print_debug("Writeback to ");
 		print_debug_hex8(where);
-		print_debug("failed ");
+		print_debug(" failed ");
 		print_debug_hex8(regval);
-		print_debug("\n ");	/* TODO: Drop the space? */
+		print_debug("\n");
 	}
 }
 #else

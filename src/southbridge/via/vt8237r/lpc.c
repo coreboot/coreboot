@@ -299,11 +299,20 @@ static void vt8237r_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x48, 0x0c);
 #else
+	
+  #if CONFIG_SOUTHBRIDGE_VIA_K8T800
+	/* It seems that when we pair with the K8T800, we need to disable
+	 * the A2 mask
+	 */
+	pci_write_config8(dev, 0x48, 0x0c);
+  #else
 	/*
 	 * Set Read Pass Write Control Enable
 	 * (force A2 from APIC FSB to low).
 	 */
 	pci_write_config8(dev, 0x48, 0x8c);
+  #endif
+	
 #endif
 
 	southbridge_init_common(dev);
@@ -319,6 +328,8 @@ static void vt8237r_init(struct device *dev)
 #endif
 
 	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
+	printk(BIOS_SPEW, "And taking a dump:\n");
+	dump_south(dev);	
 }
 
 static void vt8237a_init(struct device *dev)
@@ -469,6 +480,7 @@ static void vt8237_common_init(struct device *dev)
 	 * Bit | Meaning
 	 * -------------
 	 *   3 | Bypass APIC De-Assert Message (1=Enable)
+	 *   2 | APIC HyperTransport Mode (1=Enable)
 	 *   1 | possibly "INTE#, INTF#, INTG#, INTH# as PCI"
 	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
@@ -485,12 +497,13 @@ static void vt8237_common_init(struct device *dev)
 	pci_write_config8(dev, 0x4c, 0x44);
 
 	/* ROM memory cycles go to LPC. */
-	pci_write_config8(dev, 0x59, 0x80);
+ 	pci_write_config8(dev, 0x59, 0x80);
 
 	/*
 	 * Bit | Meaning
 	 * -------------
 	 *   3 | Bypass APIC De-Assert Message (1=Enable)
+	 *   2 | APIC HyperTransport Mode (1=Enable)
 	 *   1 | possibly "INTE#, INTF#, INTG#, INTH# as PCI"
 	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)

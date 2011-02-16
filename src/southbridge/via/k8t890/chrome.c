@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <string.h> /* for memset */
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 #if CONFIG_VGA
 #include <pc80/vga_io.h>
@@ -167,8 +167,14 @@ chrome_ops = {
 	.enable           = 0,
 };
 
-static const struct pci_driver unichrome_driver __pci_driver = {
+static const struct pci_driver unichrome_driver_800 __pci_driver = {
 	.ops    = &chrome_ops,
-	.vendor = 0x1106,
-	.device = 0x3230,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.device = PCI_DEVICE_ID_VIA_K8M800_CHROME,
+};
+
+static const struct pci_driver unichrome_driver_890 __pci_driver = {
+	.ops    = &chrome_ops,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.device = PCI_DEVICE_ID_VIA_K8M890_CHROME,
 };

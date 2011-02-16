@@ -41,6 +41,7 @@
 
 #ifdef __PRE_RAM__
 u8 k8t890_early_setup_ht(void);
+#define k8x8xx_early_setup_ht() k8t890_early_setup_ht()
 #else
 #include <device/device.h>
 #if 0

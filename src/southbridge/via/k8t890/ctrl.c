@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include "k8x8xx.h"
 
 /* We support here K8M890/K8T890 and VT8237R PCI1/Vlink which setup is not in separate
  * PCI device 0:11.7, but it is mapped to PCI 0:0.7 (0x70-0x7c for PCI1)
@@ -32,10 +34,18 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	u8 regm, regm3;
 
 	device_t devfun3;
-
+	
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
+					   PCI_DEVICE_ID_VIA_K8T800_DRAM, 0);
 
+	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					   PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
+
+	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
+		
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T890CF_3, 0);
@@ -43,9 +53,12 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
+	
+	if(!devfun3)
+		die("\n vt8237r_cfg: Unable to find K8x8xx bridge via PCI scan. Stopping.\n");
 
 	pci_write_config8(dev, 0x70, 0xc2);
-
+	
 	/* PCI Control */
 	pci_write_config8(dev, 0x72, 0xee);
 	pci_write_config8(dev, 0x73, 0x01);
@@ -87,6 +100,7 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	/* Shadow page F + memhole copy */
 	regm = pci_read_config8(devfun3, 0x83);
 	pci_write_config8(dev, 0x63, regm3 | (regm & 0x3F));
+
 }
 
 
@@ -143,8 +157,10 @@ static void vt8237r_vlink_init(struct device *dev)
 	pci_write_config8(dev, 0x48, 0xa3);
 }
 
-static void ctrl_init(struct device *dev) {
+static void ctrl_init(struct device *dev) 
+{
 
+	print_debug("K8x8xx: Initializing V-Link to VT8237R sb: ");
 	/* TODO: Fix some ordering issue fo V-link set Rx77[6] and PCI1_Rx4F[0]
 	   should to 1 */
 
@@ -161,7 +177,13 @@ static void ctrl_init(struct device *dev) {
 	if (devsb) {
 		vt8237r_vlink_init(dev);
 		vt8237r_cfg(dev, devsb);
+	} else {
+		print_debug("VT8237R LPC not found !\n");
+		return;
 	}
+	print_debug(" Done\n");
+	print_debug(" VIA_X_7 device dump:\n");
+	dump_south(dev);
 
 }
 
@@ -173,19 +195,31 @@ static const struct device_operations ctrl_ops = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver_t __pci_driver = {
+static const struct pci_driver northbridge_driver_t800 __pci_driver = {
+	.ops	= &ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR,
+};
+
+static const struct pci_driver northbridge_driver_m800 __pci_driver = {
+	.ops	= &ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M800_NB_SB_CTR,
+};
+
+static const struct pci_driver northbridge_driver_t890 __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_7,
 };
 
-static const struct pci_driver northbridge_driver_tcf __pci_driver = {
+static const struct pci_driver northbridge_driver_t890cf __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CF_7,
 };
 
-static const struct pci_driver northbridge_driver_m __pci_driver = {
+static const struct pci_driver northbridge_driver_m890 __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8M890CE_7,

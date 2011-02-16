@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +23,15 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 static void host_enable(struct device *dev)
 {
 	/* Multiple function control */
 	pci_write_config8(dev, K8T890_MULTIPLE_FN_EN, 0x01);
 
+	print_debug(" VIA_X_0 device dump:\n");
+	dump_south(dev);
 }
 
 
@@ -70,19 +73,31 @@ static const struct device_operations host_ops_m = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver_t __pci_driver = {
+static const struct pci_driver northbridge_driver_t800 __pci_driver = {
+	.ops	= &host_ops_t,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T800_HT_AGP_CTR,
+};
+
+static const struct pci_driver northbridge_driver_m800 __pci_driver = {
+	.ops	= &host_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M800_HT_AGP_CTR,
+};
+
+static const struct pci_driver northbridge_driver_t890 __pci_driver = {
 	.ops	= &host_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_0,
 };
 
-static const struct pci_driver northbridge_driver_tcf __pci_driver = {
+static const struct pci_driver northbridge_driver_t890cf __pci_driver = {
 	.ops	= &host_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CF_0,
 };
 
-static const struct pci_driver northbridge_driver_m __pci_driver = {
+static const struct pci_driver northbridge_driver_m890 __pci_driver = {
 	.ops	= &host_ops_m,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8M890CE_0,

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 #include <stdlib.h>
 #include <cbmem.h>
 #include <arch/io.h>
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 /* The 256 bytes of NVRAM for S3 storage, 256B aligned */
 #define K8T890_NVRAM_IO_BASE	0xf00
@@ -36,6 +37,8 @@ static u8 ldtreg[3] = {0x86, 0xa6, 0xc6};
 
 /* This functions sets KT890 link frequency and width to same values as
  * it has been setup on K8 side, by AMD NB init.
+ * This will not work for K8T800_OLD, which has a slightly different
+ * register arrangement (device 3188)
  */
 
 u8 k8t890_early_setup_ht(void)
@@ -66,7 +69,17 @@ u8 k8t890_early_setup_ht(void)
 		ldtnr = 2;
 	}
 
+#if defined(CONFIG_SOUTHBRIDGE_VIA_K8M800)
+	print_debug("K8M800 found at LDT ");
+#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T800)
+	print_debug("K8T800 found at LDT ");
+#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T800PRO)
+	print_debug("K8T800 Pro found at LDT ");
+#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8M890)
+	print_debug("K8M890 found at LDT ");
+#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T890)
 	print_debug("K8T890 found at LDT ");
+#endif
 	print_debug_hex8(ldtnr);
 
 	/* get the maximum widths for both sides */

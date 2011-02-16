@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +25,13 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <arch/io.h>
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 /* this may be later merged */
 
 /* This fine tunes the HT link settings, which were loaded by ROM strap. */
-static void host_ctrl_enable_k8t890(struct device *dev)
+static void host_ctrl_enable_k8t8xx(struct device *dev)
 {
-	dump_south(dev);
-
 	/*
 	 * Bit 4 is reserved but set by AW. Set PCI to HT outstanding
 	 * requests to 3.
@@ -85,11 +84,12 @@ static void host_ctrl_enable_k8t890(struct device *dev)
 	writeback(dev, 0xc4, 0x50);
 	writeback(dev, 0xc5, 0x50);
 
+	print_debug(" VIA_X_2 device dump:\n");
 	dump_south(dev);
 }
 
 /* This fine tunes the HT link settings, which were loaded by ROM strap. */
-static void host_ctrl_enable_k8m890(struct device *dev) {
+static void host_ctrl_enable_k8m8xx(struct device *dev) {
 
 	/*
 	 * Set PCI to HT outstanding requests to 03.
@@ -126,7 +126,7 @@ static const struct device_operations host_ctrl_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= host_ctrl_enable_k8t890,
+	.enable			= host_ctrl_enable_k8t8xx,
 	.ops_pci		= 0,
 };
 
@@ -134,17 +134,29 @@ static const struct device_operations host_ctrl_ops_m = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= host_ctrl_enable_k8m890,
+	.enable			= host_ctrl_enable_k8m8xx,
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver_t __pci_driver = {
+static const struct pci_driver northbridge_driver_t800 __pci_driver = {
+	.ops	= &host_ctrl_ops_t,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T800_HOST_CTR,
+};
+
+static const struct pci_driver northbridge_driver_m800 __pci_driver = {
+	.ops	= &host_ctrl_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M800_HOST_CTR,
+};
+
+static const struct pci_driver northbridge_driver_t890 __pci_driver = {
 	.ops	= &host_ctrl_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_2,
 };
 
-static const struct pci_driver northbridge_driver_m __pci_driver = {
+static const struct pci_driver northbridge_driver_m890 __pci_driver = {
 	.ops	= &host_ctrl_ops_m,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8M890CE_2,

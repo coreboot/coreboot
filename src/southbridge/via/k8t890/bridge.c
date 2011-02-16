@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
- *
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -21,12 +21,13 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 static void bridge_enable(struct device *dev)
 {
 	u8 tmp;
 	print_debug("B188 device dump\n");
+	
 	/* VIA recommends this, sorry no known info. */
 
 	writeback(dev, 0x40, 0x91);
@@ -63,7 +64,11 @@ static const struct device_operations bridge_ops = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
+/*
+ * K8T890 and K8T800 both use device B188 as the bridge, so no need to
+ * add a separate driver
+ */
+static const struct pci_driver northbridge_driver_890 __pci_driver = {
 	.ops	= &bridge_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_BR,

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include <pc80/mc146818rtc.h>
 #include <bitops.h>
-#include "k8t890.h"
+#include "k8x8xx.h"
 
 static void dram_enable(struct device *dev)
 {
@@ -34,9 +35,9 @@ static void dram_enable(struct device *dev)
 
 	/*
 	 * Enable Lowest Interrupt arbitration for APIC, enable NB APIC
-	 * decoding, MSI support, no SMRAM, compatible SMM.
+	 * decoding, MSI support, no SMRAM, compatible SMM.
 	 */
-	pci_write_config8(dev, 0x86, 0x39);
+	pci_write_config8(dev, 0x86, 0x19);
 
 	/*
 	 * We want to use the 0xC0000-0xEFFFF as RAM mark area as RW, even if
@@ -64,6 +65,9 @@ static void dram_enable(struct device *dev)
 
 	/* The Address Next to the Last Valid DRAM Address */
 	pci_write_config16(dev, 0x88, (msr.lo >> 24) | reg);
+	
+	print_debug(" VIA_X_3 device dump:\n");
+	dump_south(dev);
 
 }
 
@@ -110,6 +114,8 @@ int
 k8m890_host_fb_size_get(void)
 {
 	struct device *dev = dev_find_device(PCI_VENDOR_ID_VIA,
+					     PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
+	if(!dev) dev = dev_find_device(PCI_VENDOR_ID_VIA,
 					     PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
 	unsigned char tmp;
 
@@ -164,19 +170,31 @@ static const struct device_operations dram_ops_m = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver_t __pci_driver = {
+static const struct pci_driver northbridge_driver_t800 __pci_driver = {
+	.ops	= &dram_ops_t,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T800_DRAM,
+};
+
+static const struct pci_driver northbridge_driver_m800 __pci_driver = {
+	.ops	= &dram_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M800_DRAM,
+};
+
+static const struct pci_driver northbridge_driver_t890 __pci_driver = {
 	.ops	= &dram_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_3,
 };
 
-static const struct pci_driver northbridge_driver_tcf __pci_driver = {
+static const struct pci_driver northbridge_driver_t890cf __pci_driver = {
 	.ops	= &dram_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CF_3,
 };
 
-static const struct pci_driver northbridge_driver_m __pci_driver = {
+static const struct pci_driver northbridge_driver_m890 __pci_driver = {
 	.ops	= &dram_ops_m,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8M890CE_3,

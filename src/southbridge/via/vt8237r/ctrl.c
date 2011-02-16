@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +33,13 @@ static void vt8237_cfg(struct device *dev)
 	device_t devfun3;
 
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-				  PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
+				  PCI_DEVICE_ID_VIA_K8T800_DRAM, 0);
+	if (!devfun3)
+		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
+	if (!devfun3)
+	  devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+				    PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
@@ -108,7 +115,13 @@ static void vt8237s_vlink_init(struct device *dev)
 	device_t devfun7;
 
 	devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
-				  PCI_DEVICE_ID_VIA_K8T890CE_7, 0);
+				  PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8M800_NB_SB_CTR, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8T890CE_7, 0);
 	if (!devfun7)
 		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_7, 0);
@@ -117,7 +130,10 @@ static void vt8237s_vlink_init(struct device *dev)
 					  PCI_DEVICE_ID_VIA_K8T890CF_7, 0);
 	/* No pairing NB was found. */
 	if (!devfun7)
+	{
+		print_debug("vt8237s_vlink_init: No pairing NB was found.\n");
 		return;
+	}
 
 	/*
 	 * This init code is valid only for the VT8237S! For different
@@ -174,7 +190,13 @@ static void vt8237a_vlink_init(struct device *dev)
 	device_t devfun7;
 
 	devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
-				  PCI_DEVICE_ID_VIA_K8T890CE_7, 0);
+				  PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8M800_NB_SB_CTR, 0);
+	if (!devfun7)
+		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
+					  PCI_DEVICE_ID_VIA_K8T890CE_7, 0);
 	if (!devfun7)
 		devfun7 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_7, 0);
@@ -183,7 +205,10 @@ static void vt8237a_vlink_init(struct device *dev)
 					  PCI_DEVICE_ID_VIA_K8T890CF_7, 0);
 	/* No pairing NB was found. */
 	if (!devfun7)
+	{
+		print_debug("vt8237a_vlink_init: No pairing NB was found.\n");
 		return;
+	}
 
 	/*
 	 * This init code is valid only for the VT8237A! For different

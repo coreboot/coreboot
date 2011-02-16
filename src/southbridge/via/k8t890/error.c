@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2011 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +22,11 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include "k8x8xx.h"
 
 static void error_enable(struct device *dev)
 {
+	print_debug(" K8x8xx: Enabling NB error reporting: ");
 	/*
 	 * bit0 - Enable V-link parity error reporting in 0x50 bit0 (RWC)
 	 * bit6 - Parity Error/SERR# Report Through V-Link to SB
@@ -31,7 +34,11 @@ static void error_enable(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x58, 0x81);
 
+	print_debug("Done\n");
 	/* TODO: enable AGP errors reporting on K8M890 */
+	
+	print_debug(" VIA_X_1 device dump:\n");
+	dump_south(dev);
 }
 
 static const struct device_operations error_ops = {
@@ -42,7 +49,19 @@ static const struct device_operations error_ops = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver_t __pci_driver = {
+static const struct pci_driver northbridge_driver_t800 __pci_driver = {
+	.ops	= &error_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T800_ERR,
+};
+
+static const struct pci_driver northbridge_driver_m800 __pci_driver = {
+	.ops	= &error_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M800_ERR,
+};
+
+static const struct pci_driver northbridge_driver_t890 __pci_driver = {
 	.ops	= &error_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_1,

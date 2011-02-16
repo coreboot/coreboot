@@ -33,6 +33,27 @@ __romstrap_start:
  * Below are some Dev0 Func2 HT control registers values,
  * depending on strap pin, one of below lines is used.
  */
+#if CONFIG_SOUTHBRIDGE_VIA_K8M800 || CONFIG_SOUTHBRIDGE_VIA_K8T800
+
+tblpointer:
+.long 0x50220000, 0X619707C2
+.long 0x50220000, 0X619707C2
+.long 0x50220000, 0X619707C2
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+
+#elif CONFIG_SOUTHBRIDGE_VIA_K8M890 || CONFIG_SOUTHBRIDGE_VIA_K8T890
+
 tblpointer:
 .long 0x504400AA, 0x61970FC2	//;200M
 .long 0x504400AA, 0x61970FC2	//;400M
@@ -50,6 +71,7 @@ tblpointer:
 .long 0x0
 .long 0x0
 
+#endif
 /*
  * The pointer to above table should be at 0xffffd,
  * the table itself MUST be aligned to 128B it seems!

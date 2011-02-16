@@ -138,6 +138,9 @@ static const struct device_operations traf_ctrl_ops_t = {
 	.ops_pci		= 0,
 };
 
+/* K8X800 chipsets have no APIC; no 800 PCI ids here */
+
+
 static const struct pci_driver northbridge_driver_t __pci_driver = {
 	.ops	= &traf_ctrl_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,

@@ -300,7 +300,7 @@ static void vt8237r_init(struct device *dev)
 	pci_write_config8(dev, 0x48, 0x0c);
 #else
 	
-  #if CONFIG_SOUTHBRIDGE_VIA_K8T800
+  #if defined(CONFIG_SOUTHBRIDGE_VIA_K8T800)
 	/* It seems that when we pair with the K8T800, we need to disable
 	 * the A2 mask
 	 */

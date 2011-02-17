@@ -202,6 +202,11 @@ $(call add-class,ramstage)
 $(call add-class,romstage)
 $(call add-class,driver)
 $(call add-class,smm)
+ramstage-S-ccopts:=-DASSEMBLY
+romstage-c-ccopts:=-D__PRE_RAM__
+romstage-S-ccopts:=-DASSEMBLY -D__PRE_RAM__
+driver-S-ccopts:=-DASSEMBLY
+
 
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
@@ -266,21 +271,19 @@ define create_cc_template
 # $1 obj class (ramstage, romstage, driver, smm)
 # $2 source suffix (c, S)
 # $3 additional compiler flags
+ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
 $(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
+end$(EMPTY)if
 endef
 
-$(eval $(call create_cc_template,ramstage,c))
-$(eval $(call create_cc_template,ramstage,S,-DASSEMBLY))
-$(eval $(call create_cc_template,romstage,c,-D__PRE_RAM__))
-$(eval $(call create_cc_template,romstage,S,-DASSEMBLY -D__PRE_RAM__))
-$(eval $(call create_cc_template,driver,c))
-$(eval $(call create_cc_template,driver,S,-DASSEMBLY))
-$(eval $(call create_cc_template,smm,c))
-$(eval $(call create_cc_template,smm,S))
+filetypes-of-class=$(subst .,,$(sort $(suffix $($(1)-srcs))))
+$(foreach class,$(classes), \
+	$(foreach type,$(call filetypes-of-class,$(class)), \
+		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts)))))
 
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))

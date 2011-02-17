@@ -183,38 +183,51 @@ $(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -c -o $@ $<
 
-ramstage-srcs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
-romstage-srcs:=
-driver-srcs:=
-smm-srcs:=
-cbfs-files:=
+# Add a new class of source/object files to the build system
+add-class= \
+	$(eval $(1)-srcs:=) \
+	$(eval $(1)-objs:=) \
+	$(eval classes+=$(1))
 
-ramstage-objs:=
-romstage-objs:=
-driver-objs:=
-smm-objs:=
-types:=ramstage romstage driver smm
+# Special classes are managed types with special behaviour
+# On parse time, for each entry in variable $(1)-y
+# a handler $(1)-handler is executed with the arguments:
+# * $(1): directory the parser is in
+# * $(2): current entry
+add-special-class= \
+	$(eval $(1):=) \
+	$(eval special-classes+=$(1))
+
+$(call add-class,ramstage)
+$(call add-class,romstage)
+$(call add-class,driver)
+$(call add-class,smm)
+
+$(call add-special-class,cbfs-files)
+cbfs-files-handler= \
+		$(if $(wildcard $(1)$($(2)-file)), \
+			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
+			$(eval tmp-cbfs-file:= $($(2)-file))) \
+		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-position)) \
+		$(eval $(2)-name:=) \
+		$(eval $(2)-type:=) \
+		$(eval $(2)-position:=)
+
+ramstage-srcs+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs
 # Add subdirs-y to subdirs
 includemakefiles= \
-	$(foreach type,$(2), $(eval $(type)-y:=)) \
-	$(eval subdirs-y:=) \
-	$(eval cbfs-files-y:=) \
+	$(foreach class,classes subdirs $(classes) $(special-classes), $(eval $(class)-y:=)) \
 	$(eval -include $(1)) \
-	$(foreach type,$(2), \
-		$(eval $(type)-srcs+= \
+	$(foreach class,$(classes-y), $(call add-class,$(class))) \
+	$(foreach class,$(classes), \
+		$(eval $(class)-srcs+= \
 			$$(subst $(top)/,, \
-			$$(abspath $$(addprefix $(dir $(1)),$$($(type)-y)))))) \
-	$(foreach file,$(cbfs-files-y), \
-		$(if $(wildcard $(dir $(1))$($(file)-file)), \
-			$(eval tmp-cbfs-file:= $(wildcard $(dir $(1))$($(file)-file))), \
-			$(eval tmp-cbfs-file:= $($(file)-file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$(file)|$($(file)-type)|$($(file)-position)) \
-		$(eval $(file)-name:=) \
-		$(eval $(file)-type:=) \
-		$(eval $(file)-position:=)) \
+			$$(abspath $$(addprefix $(dir $(1)),$$($(class)-y)))))) \
+	$(foreach special,$(special-classes), \
+		$(foreach item,$($(special)-y), $(call $(special)-handler,$(dir $(1)),$(item)))) \
 	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles
@@ -223,7 +236,7 @@ evaluate_subdirs= \
 	$(eval cursubdirs:=$(subdirs)) \
 	$(eval subdirs:=) \
 	$(foreach dir,$(cursubdirs), \
-		$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types)))) \
+		$(eval $(call includemakefiles,$(dir)/Makefile.inc))) \
 	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
 
 # collect all object files eligible for building
@@ -231,14 +244,10 @@ subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs))
 
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
+$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
 
-ramstage-objs:=$(call src-to-obj,ramstage)
-romstage-objs:=$(call src-to-obj,romstage)
-driver-objs:=$(call src-to-obj,driver)
-smm-objs:=$(call src-to-obj,smm)
-
-allsrcs:=$(foreach var, $(addsuffix -srcs,$(types)), $($(var)))
-allobjs:=$(foreach var, $(addsuffix -objs,$(types)), $($(var)))
+allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
+allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))
 
 define ramstage-objs_asl_template
@@ -274,7 +283,7 @@ $(eval $(call create_cc_template,smm,c))
 $(eval $(call create_cc_template,smm,S))
 
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
-$(eval $(foreach type,$(types),$(call foreach-src,$(type))))
+$(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
 DEPENDENCIES = $(ramstage-objs:.o=.d) $(romstage-objs:.o=.d) $(driver-objs:.o=.d) $(smm-objs:.o=.d)
 -include $(DEPENDENCIES)

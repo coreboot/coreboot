@@ -116,7 +116,7 @@ void lpc47n227_pnp_enable_resources(device_t dev)
 void lpc47n227_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
-	lpc47n227_pnp_set_enable(dev, (dev->enabled) ? 1 : 0);
+	lpc47n227_pnp_set_enable(dev, !!dev->enabled);
 	pnp_exit_conf_state(dev);
 }
 

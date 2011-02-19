@@ -99,7 +99,7 @@ static void it8712f_pnp_enable(device_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, dev->enabled);
+	pnp_set_enable(dev, !!dev->enabled);
 	pnp_exit_ext_func_mode(dev);
 }
 

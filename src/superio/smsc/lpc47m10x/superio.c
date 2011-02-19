@@ -103,7 +103,7 @@ static void lpc47m10x_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, (dev->enabled) ? 1 : 0);
+	pnp_set_enable(dev, !!dev->enabled);
 	pnp_exit_conf_state(dev);
 }
 

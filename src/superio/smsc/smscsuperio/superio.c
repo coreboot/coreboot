@@ -193,7 +193,7 @@ static void smsc_pnp_enable(device_t dev)
 {
 	smsc_pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
-	(dev->enabled) ? pnp_set_enable(dev, 1) : pnp_set_enable(dev, 0);
+	pnp_set_enable(dev, !!dev->enabled);
 	smsc_pnp_exit_conf_state(dev);
 }
 

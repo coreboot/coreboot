@@ -320,7 +320,7 @@ void main(unsigned long bist)
 	dump_spd_registers();
 #endif
 
-	sdram_initialize(boot_mode);
+	sdram_initialize(boot_mode, NULL);
 
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();

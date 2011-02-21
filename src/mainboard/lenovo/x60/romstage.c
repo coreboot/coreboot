@@ -294,6 +294,7 @@ void main(unsigned long bist)
 {
 	u32 reg32;
 	int boot_mode = 0;
+	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x52, 0x51, 0x53 };
 
 	if (bist == 0)
 		enable_lapic();
@@ -357,7 +358,7 @@ void main(unsigned long bist)
 	dump_spd_registers();
 #endif
 
-	sdram_initialize(boot_mode);
+	sdram_initialize(boot_mode, spd_addrmap);
 
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();

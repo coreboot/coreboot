@@ -63,11 +63,12 @@ struct sys_info {
 	u8 banks[2 * DIMM_SOCKETS];
 
 	u8 banksize[2 * 2 * DIMM_SOCKETS];
+	const u8 *spd_addresses;
 
 } __attribute__ ((packed));
 
 void receive_enable_adjust(struct sys_info *sysinfo);
-void sdram_initialize(int boot_path);
+void sdram_initialize(int boot_path, const u8 *sdram_addresses);
 unsigned long get_top_of_ram(void);
 int fixup_i945_errata(void);
 void udelay(u32 us);

@@ -4,6 +4,7 @@
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
 ## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
 ## Copyright (C) 2009-2010 coresystems GmbH
+## Copyright (C) 2011 secunet Security Networks AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -40,7 +41,6 @@ export objutil ?= $(obj)/util
 export objk := $(objutil)/kconfig
 
 
-export KERNELVERSION      := 4.0
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 
@@ -62,7 +62,6 @@ endif
 endif
 
 CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
-ROMCC:= $(objutil)/romcc/romcc
 HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
@@ -71,6 +70,13 @@ LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -pr
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
+
+all: real-all
+
+# This include must come _before_ he pattern rules below!
+# Order _does_ matter for pattern rules.
+include Makefile.inc
+include util/kconfig/Makefile
 
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
@@ -87,7 +93,7 @@ endif
 endif
 
 ifeq ($(NOCOMPILE),1)
-all: config
+real-all: config
 
 else
 
@@ -114,23 +120,6 @@ endif
 
 strip_quotes = $(subst ",,$(subst \",,$(1)))
 
-ARCHDIR-$(CONFIG_ARCH_X86)    := x86
-ARCHDIR-$(CONFIG_ARCH_POWERPC) := ppc
-
-MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
-export MAINBOARDDIR
-
-PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
-TARGETS-y :=
-
-BUILD-y := src/lib src/boot src/console src/devices src/ec src/southbridge src/northbridge src/superio src/drivers
-BUILD-y += util/cbfstool util/sconfig
-BUILD-$(CONFIG_ARCH_X86) += src/pc80
-
-ifneq ($(CONFIG_LOCALVERSION),"")
-COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
-endif
-
 # The primary target needs to be here before we include the
 # other files
 
@@ -142,7 +131,7 @@ ifeq ($(CONFIG_SCANBUILD_ENABLE),y)
 ifneq ($(CONFIG_SCANBUILD_REPORT_LOCATION),)
 CONFIG_SCANBUILD_REPORT_LOCATION:=-o $(CONFIG_SCANBUILD_REPORT_LOCATION)
 endif
-all:
+real-all:
 	echo '#!/bin/sh' > .ccwrap
 	echo 'CC="$(CC)"' >> .ccwrap
 	echo 'if [ "$$1" = "--hostcc" ]; then shift; CC="$(HOSTCC)"; fi' >> .ccwrap
@@ -151,7 +140,7 @@ all:
 	chmod +x .ccwrap
 	scan-build $(CONFIG_SCANBUILD_REPORT_LOCATION) -analyze-headers --use-cc=$(top)/.ccwrap --use-c++=$(top)/.ccwrap $(MAKE) INNER_SCANBUILD=y
 else
-all: $(obj)/config.h coreboot
+real-all: real-target
 endif
 
 # must come rather early
@@ -159,29 +148,6 @@ endif
 
 $(obj)/config.h:
 	$(MAKE) oldconfig
-
-#######################################################################
-# Build the tools
-
-CBFSTOOL:=$(obj)/cbfstool
-
-$(CBFSTOOL): $(objutil)/cbfstool/cbfstool
-	cp $< $@
-
-# needed objects that every mainboard uses
-# Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(objutil)/sconfig/sconfig
-	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
-	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
-
-$(objutil)/%.o: $(objutil)/%.c
-	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
-
-$(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD $(CFLAGS) -c -o $@ $<
 
 # Add a new class of source/object files to the build system
 add-class= \
@@ -197,28 +163,6 @@ add-class= \
 add-special-class= \
 	$(eval $(1):=) \
 	$(eval special-classes+=$(1))
-
-$(call add-class,ramstage)
-$(call add-class,romstage)
-$(call add-class,driver)
-$(call add-class,smm)
-ramstage-S-ccopts:=-DASSEMBLY
-romstage-c-ccopts:=-D__PRE_RAM__
-romstage-S-ccopts:=-DASSEMBLY -D__PRE_RAM__
-driver-S-ccopts:=-DASSEMBLY
-
-
-$(call add-special-class,cbfs-files)
-cbfs-files-handler= \
-		$(if $(wildcard $(1)$($(2)-file)), \
-			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
-			$(eval tmp-cbfs-file:= $($(2)-file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-position)) \
-		$(eval $(2)-name:=) \
-		$(eval $(2)-type:=) \
-		$(eval $(2)-position:=)
-
-ramstage-srcs+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 # Clean -y variables, include Makefile.inc
 # Add paths to files in X-y to X-srcs
@@ -245,7 +189,7 @@ evaluate_subdirs= \
 	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
 
 # collect all object files eligible for building
-subdirs:=$(PLATFORM-y) $(BUILD-y)
+subdirs:=.
 $(eval $(call evaluate_subdirs))
 
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
@@ -255,20 +199,9 @@ allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))
 
-define ramstage-objs_asl_template
-$(obj)/$(1).ramstage.o: src/$(1).asl
-	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
-	$(CPP) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
-	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl
-	mv $$(obj)/$(1).hex $$(basename $$@).c
-	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
-	# keep %.o: %.c rule from catching the temporary .c file after a make clean
-	mv $$(basename $$@).c $$(basename $$@).hex
-endef
-
 # macro to define template macros that are used by use_template macro
 define create_cc_template
-# $1 obj class (ramstage, romstage, driver, smm)
+# $1 obj class
 # $2 source suffix (c, S)
 # $3 additional compiler flags
 ifn$(EMPTY)def $(1)-objs_$(2)_template
@@ -288,75 +221,20 @@ $(foreach class,$(classes), \
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
-DEPENDENCIES = $(ramstage-objs:.o=.d) $(romstage-objs:.o=.d) $(driver-objs:.o=.d) $(smm-objs:.o=.d)
+DEPENDENCIES = $(allobjs:.o=.d)
 -include $(DEPENDENCIES)
 
 printall:
-	@echo ramstage-objs:=$(ramstage-objs)
-	@echo romstage-objs:=$(romstage-objs)
-	@echo driver-objs:=$(driver-objs)
-	@echo smm-objs:=$(smm-objs)
+	@$(foreach class,$(classes),echo $(class)-objs:=$($(class)-objs); )
 	@echo alldirs:=$(alldirs)
 	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
 	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
-	@echo cbfs-files:='$(cbfs-files)'
-
-printcrt0s:
-	@echo crt0s=$(crt0s)
-	@echo ldscripts=$(ldscripts)
-
-OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
-INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include
-INCLUDES += -Isrc/devices/oprom/include
-# abspath is a workaround for romcc
-INCLUDES += -include $(abspath $(obj)/config.h)
-
-CFLAGS = $(INCLUDES) -Os -pipe -g
-CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS += -Wstrict-aliasing -Wshadow
-ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
-CFLAGS += -Werror
-endif
-ifneq ($(CONFIG_AMD_AGESA),y)
-CFLAGS += -nostdinc 
-endif
-CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
-
-CBFS_COMPRESS_FLAG:=l
-CBFS_PAYLOAD_COMPRESS_FLAG:=
-CBFS_PAYLOAD_COMPRESS_NAME:=none
-ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
-CBFS_PAYLOAD_COMPRESS_FLAG:=l
-CBFS_PAYLOAD_COMPRESS_NAME:=LZMA
-endif
-
-coreboot: $(obj)/coreboot.rom
+	@$(foreach class,$(special-classes),echo $(class):='$($(class))'; )
 
 endif
 
-$(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options $(alldirs))
-
-$(obj)/build.h: .xcompile
-	@printf "    GEN        build.h\n"
-	rm -f $(obj)/build.h
-	printf "/* build system definitions (autogenerated) */\n" > $(obj)/build.ht
-	printf "#ifndef __BUILD_H\n" >> $(obj)/build.ht
-	printf "#define __BUILD_H\n\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)-r$(shell if [ -d $(top)/.svn -a -f "`which svnversion`" ]; then svnversion $(top); else if [ -d $(top)/.git -a -f "`which git`" ]; then git --git-dir=/$(top)/.git log|grep git-svn-id|cut -f 2 -d@|cut -f 1 -d' '|sort -g|tail -1; fi; fi)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.ht
-	printf "\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_BY \"$(subst \,@,$(shell PATH=$$PATH:/usr/ucb whoami))\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname -s 2>/dev/null)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname 2>/dev/null)\"\n" >> $(obj)/build.ht
-	printf "#endif\n" >> $(obj)/build.ht
-	mv $(obj)/build.ht $(obj)/build.h
+$(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
 
 cscope:
 	cscope -bR
@@ -369,25 +247,13 @@ doxyclean: doxygen-clean
 doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
-clean-for-update: doxygen-clean
-	rm -f $(ramstage-objs) $(romstage-objs) $(driver-objs) $(smm-objs) .xcompile
+clean-for-update: doxygen-clean clean-for-update-target
+	rm -f $(allobjs) .xcompile
 	rm -f $(DEPENDENCIES)
-	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
-	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
-	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.*
-	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
-	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc clean
 
-clean: clean-for-update
-	rm -f $(obj)/coreboot* .ccwrap
-
-clean-abuild:
-	rm -rf coreboot-builds
+clean: clean-for-update clean-target
+	rm -f .ccwrap
 
 clean-cscope:
 	rm -f cscope.out
@@ -396,50 +262,4 @@ distclean: clean-cscope
 	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
-update:
-	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
-
-lint:
-	FAILED=0; LINTLOG=`mktemp`; \
-	for script in util/lint/lint-*; do \
-		echo; echo `basename $$script`; \
-		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
-		echo ========; \
-		$$script > $$LINTLOG; \
-		if [ `wc -l $$LINTLOG | cut -d' ' -f1` -eq 0 ]; then \
-			printf "success\n\n"; \
-		else \
-			echo test failed: ; \
-			cat $$LINTLOG; \
-			rm -f $$LINTLOG; \
-			FAILED=$$(( $$FAILED + 1 )); \
-		fi; \
-		echo ========; \
-	done; \
-	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed." &&  exit 1; }; \
-	rm -f $$LINTLOG
-
-# This include must come _before_ the pattern rules below!
-# Order _does_ matter for pattern rules.
-include util/kconfig/Makefile
-
-$(obj)/ldoptions: $(obj)/config.h
-	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
-
-_WINCHECK=$(shell uname -o 2> /dev/null)
-STACK=
-ifeq ($(_WINCHECK),Msys)
-	STACK=-Wl,--stack,16384000
-endif
-ifeq ($(_WINCHECK),Cygwin)
-	STACK=-Wl,--stack,16384000
-endif
-
-$(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c
-	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
-	@# Note: Adding -O2 here might cause problems. For details see:
-	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
-	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
-
-.PHONY: $(PHONY) clean clean-abuild clean-cscope cscope distclean doxygen doxy coreboot .xcompile
-
+.PHONY: $(PHONY) clean clean-cscope cscope distclean doxygen doxy .xcompile

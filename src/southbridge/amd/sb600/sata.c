@@ -26,6 +26,10 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include "sb600.h"
+#include <pc80/mc146818rtc.h>
+
+#define SATA_MODE_IDE 1
+#define SATA_MODE_AHCI 0
 
 static int sata_drive_detect(int portnum, u16 iobar)
 {
@@ -98,10 +102,6 @@ static void sata_init(struct device *dev)
 	printk(BIOS_SPEW, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
 	printk(BIOS_SPEW, "sata_bar5=%x\n", sata_bar5);	/* e0309000 */
 
-	/* Program the 2C to 0x43801002 */
-	dword = 0x43801002;
-	pci_write_config32(dev, 0x2c, dword);
-
 	/* SERR-Enable */
 	word = pci_read_config16(dev, 0x04);
 	word |= (1 << 8);
@@ -112,13 +112,25 @@ static void sata_init(struct device *dev)
 	byte |= (1 << 2);
 	pci_write_config8(dev, 0x40, byte);
 
-	/* Set SATA Operation Mode, Set to IDE mode */
+	/* Set SATA Operation Mode */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= (1 << 0);
 	byte |= (1 << 4);
 	pci_write_config8(dev, 0x40, byte);
 
-	dword = 0x01018f00;
+	// 1 means IDE, 0 means AHCI
+	if( get_option(&i, "sata_mode") < 0 ) {
+		// no cmos option
+		i = CONFIG_SATA_MODE;
+	}
+	printk(BIOS_INFO, "%s: setting sata mode = %s\n", __func__, (i == SATA_MODE_IDE)?"ide":"ahci" );	
+	
+	dword = pci_read_config32(dev, 0x8);
+	dword &= 0xff0000ff;
+	if (i == SATA_MODE_IDE)
+		dword |= 0x00018f00; // IDE mode
+	else
+		dword |= 0x00060100; // AHCI mode
 	pci_write_config32(dev, 0x8, dword);
 
 	byte = pci_read_config8(dev, 0x40);
@@ -245,7 +257,7 @@ static void sata_init(struct device *dev)
 }
 
 static struct pci_operations lops_pci = {
-	/* .set_subsystem = pci_dev_set_subsystem, */
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

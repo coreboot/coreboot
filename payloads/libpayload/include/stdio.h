@@ -32,14 +32,9 @@
 
 #include <stddef.h>
 
-struct _FILE {
-} _stdout, _stdin, _stderr;
-
 typedef struct _FILE FILE;
 
-FILE *stdout = &_stdout;
-FILE *stdin = &_stdin;
-FILE *stderr = &_stderr;
+extern FILE *stdout, *stdin, *stderr;
 
 /**
  * @defgroup printf Print functions

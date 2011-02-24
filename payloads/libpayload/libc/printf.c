@@ -36,6 +36,13 @@
 #include <libpayload.h>
 #include <ctype.h>
 
+static struct _FILE {
+} _stdout, _stdin, _stderr;
+
+FILE *stdout = &_stdout;
+FILE *stdin = &_stdin;
+FILE *stderr = &_stderr;
+
 /** Structure for specifying output methods for different printf clones. */
 struct printf_spec {
 	/* Output function, returns count of printed characters or EOF. */

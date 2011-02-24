@@ -148,11 +148,7 @@ typedef unsigned long chtype;
 typedef unsigned long mmask_t;
 #endif
 
-//// #include <stdio.h>
-struct _IO_FILE {
-	// FIXME
-};
-typedef struct _IO_FILE FILE;
+#include <stdio.h>
 //// #include <ncursesw/unctrl.h>
 #include <stdarg.h>	/* we need va_list */
 //// #define va_list int	// FIXME

@@ -1107,6 +1107,15 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	/* See if all of the memory chip selects are the same size
 	 * and if so count them.
 	 */
+#if defined(CMOS_VSTART_interleave_chip_selects)
+	if (read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) == 0)
+		return 0;
+#else
+#if !defined(CONFIG_INTERLEAVE_CHIP_SELECTS) || (CONFIG_INTERLEAVE_CHIP_SELECTS == 0)
+	return 0;
+#endif
+#endif
+
 	chip_selects = 0;
 	common_size = 0;
 	common_cs_mode = 0xff;
@@ -1279,15 +1288,10 @@ static void order_dimms(const struct mem_controller *ctrl,
 {
 	unsigned long tom_k, base_k;
 
-	if (read_option(CMOS_VSTART_interleave_chip_selects,
-	    CMOS_VLEN_interleave_chip_selects, 1) != 0) {
-		tom_k = interleave_chip_selects(ctrl, meminfo->is_Width128);
-	} else {
-		printk(BIOS_DEBUG, "Interleaving disabled\n");
-		tom_k = 0;
-	}
+	tom_k = interleave_chip_selects(ctrl, meminfo->is_Width128);
 
 	if (!tom_k) {
+		printk(BIOS_DEBUG, "Interleaving disabled\n");
 		tom_k = order_chip_selects(ctrl);
 	}
 
@@ -1801,7 +1805,17 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	bios_cycle_time = min_cycle_times[
-		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)];
+#ifdef CMOS_VSTART_max_mem_clock
+		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)
+#else
+#if defined(CONFIG_MAX_MEM_CLOCK)
+		CONFIG_MAX_MEM_CLOCK
+#else
+		0 // use DDR400 as default
+#endif
+#endif
+	];
+	
 	if (bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
 	}
@@ -2360,14 +2374,21 @@ static void set_ecc(const struct mem_controller *ctrl,
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
+#ifdef CMOS_VSTART_ECC_memory
 	if (read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
+#else // CMOS_VSTART_ECC_memory not defined
+#if defined(CONFIG_ECC_MEMORY) && (CONFIG_ECC_MEMORY == 0)
+	dcl &= ~DCL_DimmEccEn;
+#endif
+#endif
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 
 	meminfo->is_ecc = 1;
 	if (!(dcl & DCL_DimmEccEn)) {
 		meminfo->is_ecc = 0;
+		printk(BIOS_DEBUG, "set_ecc: ECC disabled\n");
 		return; // already disabled the ECC, so don't need to read SPD any more
 	}
 

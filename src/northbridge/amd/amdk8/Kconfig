@@ -83,6 +83,10 @@ endif #DIMM_DDR2
 
 endif #K8_REV_F_SUPPORT
 
+config IOMMU
+	bool
+	default y
+
 endif #NORTHBRIDGE_AMD_K8
 
 source src/northbridge/amd/amdk8/root_complex/Kconfig

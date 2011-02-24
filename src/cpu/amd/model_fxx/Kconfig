@@ -14,6 +14,10 @@ config SET_FIDVID
 	default n
 	default y if K8_REV_F_SUPPORT
 
+config HW_SCRUBBER
+	bool
+	default n
+
 if SET_FIDVID
 config SET_FIDVID_DEBUG
 	bool

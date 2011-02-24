@@ -48,7 +48,10 @@ static void mcf3_read_resources(device_t dev)
 	}
 
 	iommu = 1;
-	get_option(&iommu, "iommu");
+	if( get_option(&iommu, "iommu") < 0 ) 
+	{
+		iommu = CONFIG_IOMMU;
+	}
 
 	if (iommu) {
 		/* Add a GART aperture resource */

@@ -232,6 +232,12 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	pmio_write(0x42, byte);
 
 	pmio_write(0x89, 0x10);
+
+	/* Toggle the LDT_STOP# during FID/VID Change, this bit is documented
+	   only in SB600!
+	   While here, enable C states too
+	*/
+	pmio_write(0x67, 0x6);
 }
 
 void hard_reset(void)

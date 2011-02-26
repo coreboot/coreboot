@@ -30,10 +30,9 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include <arch/cpu.h>
 
-#if CONFIG_K8_REV_F_SUPPORT
 static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid,
 				u8 *pstate_fid, u32 *pstate_power, int coreID,
-				u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+				u32 pcontrol_blk, u8 plen, u8 onlyBSP, u32 control)
 {
 	int lenp, lenpr, i;
 
@@ -50,16 +49,8 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 	lenp = acpigen_write_package(pstate_num);
 
 	for (i = 0;i < pstate_num;i++) {
-		u32 control, status;
-
-		control =
-			    (0x3 << 30) | /* IRT */
-			    (0x2 << 28) | /* RVO */
-			    (0x1 << 27) | /* ExtType */
-			    (0x2 << 20) | /* PLL_LOCK_TIME */
-			    (0x0 << 18) | /* MVS */
-			    (0x5 << 11) | /* VST */
-			    (pstate_vid[i] << 6) |
+		u32 status, c2;
+		c2 = control | (pstate_vid[i] << 6) |
 			    pstate_fid[i];
 		status =
 			    (pstate_vid[i] << 6) |
@@ -69,7 +60,7 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 						pstate_power[i],
 						0x64,
 						0x7,
-						control,
+						c2,
 						status);
 	}
 	/* update the package  size */
@@ -81,6 +72,8 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 	acpigen_patch_len(lenpr - 2);
 	return lenpr;
 }
+
+#if CONFIG_K8_REV_F_SUPPORT
 /*
 * Details about this algorithm , refert to BDKG 10.5.1
 * Two parts are included, the another is the DSDT reconstruction process
@@ -90,7 +83,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
 	int len;
 	u8 processor_brand[49];
-	u32 *v;
+	u32 *v, control;
 	struct cpuid_result cpuid1;
 
 	struct power_limit_encoding {
@@ -367,14 +360,287 @@ write_pstates:
 
 	len = 0;
 
+	control = (0x3 << 30) | /* IRT */
+		  (0x2 << 28) | /* RVO */
+		  (0x1 << 27) | /* ExtType */
+		  (0x2 << 20) | /* PLL_LOCK_TIME */
+		  (0x0 << 18) | /* MVS */
+		  (0x5 << 11); /* VST */
+
 	for (index = 0; index < (cmp_cap + 1); index++) {
 		len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
 				Pstate_fid, Pstate_power, index,
-				pcontrol_blk, plen, onlyBSP);
+				pcontrol_blk, plen, onlyBSP, control);
 	}
 
 	return len;
 }
+
+#else
+
+
+static uint8_t vid_to_reg(uint32_t vid)
+{
+	return (1550 - vid) / 25;
+}
+
+static uint32_t vid_from_reg(uint8_t val)
+{
+	return (val == 0x1f ? 0 : 1550 - val * 25);
+}
+
+static uint8_t freq_to_fid(uint32_t freq)
+{
+	return (freq - 800) / 100;
+}
+/* Return a frequency in MHz, given an input fid */
+static uint32_t fid_to_freq(uint32_t fid)
+{
+	return 800 + (fid * 100);
+}
+
+#define MAXP 7
+
+struct pstate {
+	uint16_t freqMhz; /* in MHz */
+	uint16_t voltage; /* in mV */
+	uint16_t tdp; /* in W * 10 */
+};
+
+struct cpuentry {
+	uint16_t modelnr; /* numeric model value, unused in code */
+	uint8_t brandID; /* CPUID 8000_0001h EBX [11:6] (BrandID) */
+	uint32_t cpuid; /* CPUID 8000_0001h EAX [31:0] (CPUID) */
+	uint8_t maxFID; /* FID/VID Status MaxFID Field */
+	uint8_t startFID; /* FID/VID Status StartFID Field */
+	uint16_t pwr:12; /* Thermal Design Power of Max P-State  *10 (fixed point) */
+	/* Other MAX P state are read from CPU, other P states in following table */
+	struct pstate pstates[MAXP];
+};
+
+struct cpuentry entr[] = {
+	/* rev E single core, check OSA152FAA5BK */
+	{152, 0xc, 0x20f51, 0x12, 0x12, 926,
+	 {{2400, 1350, 900}, {2200, 1300, 766},
+	  {2000, 1250, 651}, {1800, 1200, 522},
+	  {1000, 1100, 320}}},
+	{252, 0x10, 0x20f51, 0x12, 0x12, 926,
+	 {{2400, 1350, 900}, {2200, 1300, 766},
+	  {2000, 1250, 651}, {1800, 1200, 522},
+	  {1000, 1100, 320}}},
+	{852, 0x14, 0x20f51, 0x12, 0x12, 926,
+	 {{2400, 1350, 900}, {2200, 1300, 766},
+	  {2000, 1250, 651}, {1800, 1200, 522},
+	  {1000, 1100, 320}}},
+	{254, 0x10, 0x20f51, 0x14, 0x14, 926,
+	 {{2600, 1350, 902}, {2400, 1300, 770},
+	  {2200, 1250, 657}, {2000, 1200, 559},
+	  {1800, 1150, 476}, {1000, 1100, 361}}},
+	{854, 0x14, 0x20f51, 0x14, 0x14, 926,
+	 {{2600, 1350, 902}, {2400, 1300, 770},
+	  {2200, 1250, 657}, {2000, 1200, 559},
+	  {1800, 1150, 476}, {1000, 1100, 361}}},
+	{242, 0x10, 0x20f51, 0x8, 0x8, 853,
+	 {}},
+	{842, 0x10, 0x20f51, 0x8, 0x8, 853,
+	 {}},
+	{244, 0x10, 0x20f51, 0xa, 0xa, 853,
+	 {{1000, 1100, 378}}},
+	{844, 0x14, 0x20f51, 0xa, 0xa, 853,
+	 {{1000, 1100, 378}}},
+	{246, 0x10, 0x20f51, 0xc, 0xc, 853,
+	 {{1800, 1350, 853},
+	 {1000, 1100, 378}}},
+	{846, 0x14, 0x20f51, 0xc, 0xc, 853,
+	 {{1800, 1350, 853},
+	 {1000, 1100, 378}}},
+	{242, 0x10, 0x20f51, 0x8, 0x8, 853,
+	 {}},
+	{842, 0x14, 0x20f51, 0x8, 0x8, 853,
+	 {}},
+	{244, 0x10, 0x20f51, 0xa, 0xa, 853,
+	 {{1000, 1100, 378}}},
+	{844, 0x14, 0x20f51, 0xa, 0xa, 853,
+	 {{1000, 1100, 378}}},
+	{246, 0x10, 0x20f51, 0xc, 0xc, 853,
+	 {{1800, 1350, 827}, {1000, 1100, 366}}},
+	{846, 0x14, 0x20f51, 0xc, 0xc, 853,
+	 {{1800, 1350, 827}, {1000, 1100, 366}}},
+	{248, 0x10, 0x20f51, 0xe, 0xe, 853,
+	 {{2000, 1350, 827}, {1800, 1300, 700},
+	  {1000, 1100, 366}}},
+	{848, 0x14, 0x20f51, 0xe, 0xe, 853,
+	 {{2000, 1350, 827}, {1800, 1300, 700},
+	  {1000, 1100, 366}}},
+	{250, 0x10, 0x20f51, 0x10, 0x10, 853,
+	 {{2200, 1350, 853}, {2000, 1300, 827},
+	  {1800, 1250, 702}, {1000, 1100, 301}}},
+	{850, 0x14, 0x20f51, 0x10, 0x10, 853,
+	 {{2200, 1350, 853}, {2000, 1300, 827},
+	  {1800, 1250, 702}, {1000, 1100, 301}}},
+/* begin OSK246FAA5BL */
+	{246, 0x12, 0x20f51, 0xc, 0xc, 547,
+	 {{1800, 1350, 461}, {1000, 1100, 223}}},
+	{846, 0x16, 0x20f51, 0xc, 0xc, 547,
+	 {{1800, 1350, 461}, {1000, 1100, 223}}},
+	{148, 0xe, 0x20f51, 0xe, 0xe, 547,
+	 {{2000, 1350, 521}, {1800, 1300, 459},
+	  {1000, 1100, 211}}},
+	{248, 0x12, 0x20f51, 0xe, 0xe, 547,
+	 {{2000, 1350, 521}, {1800, 1300, 459},
+	  {1000, 1100, 211}}},
+	{848, 0x16, 0x20f51, 0xe, 0xe, 547,
+	 {{2000, 1350, 521}, {1800, 1300, 459},
+	  {1000, 1100, 211}}},
+	{250, 0x12, 0x20f51, 0x10, 0x10, 547,
+	 {{2200, 1350, 521}, {2000, 1300, 440},
+	  {1800, 1250, 379}, {1000, 1100, 199}}},
+	{850, 0x16, 0x20f51, 0x10, 0x10, 547,
+	 {{2200, 1350, 521}, {2000, 1300, 440},
+	  {1800, 1250, 379}, {1000, 1100, 199}}},
+	{144, 0xc, 0x20f71, 0xa, 0xa, 670,
+	 {{1000, 1100, 296}}},
+	{148, 0xc, 0x20f71, 0xe, 0xe, 853,
+	 {{2000, 1350, 830}, {1800, 1300, 704},
+	 {1000, 1100, 296}}},
+	{152, 0xc, 0x20f71, 0x12, 0x12, 104,
+	 {{2400, 1350, 1016}, {2200, 1300, 863},
+	 {2000, 1250, 732}, {1800, 1200, 621},
+	  {1000, 1100, 419}}},
+	{146, 0xc, 0x20f71, 0xc, 0xc, 670,
+	 {{1800, 1350, 647}, {1000, 1100, 286}}},
+	{150, 0xc, 0x20f71, 0x10, 0x10, 853,
+	{{2200, 1350, 830}, {2000, 1300, 706},
+	{1800, 1250, 596}, {1000, 1100, 350}}},
+	{154, 0xc, 0x20f71, 0x14, 0x14, 1040,
+	{{2600, 1350, 1017}, {2400, 1300, 868},
+	{2200, 1250, 740}, {2000, 1200, 630},
+	{1800, 1150, 537}, {1000, 1100, 416}}},
+	/* rev E dualcore */
+	{165, 0x2c, 0x20f12, 0xa, 0xa, 950,
+	 {{1000, 1100, 406}}},
+	{265, 0x30, 0x20f12, 0xa, 0xa, 950,
+	 {{1000, 1100, 406}}},
+	{865, 0x34, 0x20f12, 0xa, 0xa, 950,
+	 {{1000, 1100, 406}}},
+	{270, 0x30, 0x20f12, 0xc, 0xc, 950,
+	 {{1800, 1300, 903}, {1000, 1100, 383}}},
+	{870, 0x34, 0x20f12, 0xc, 0xc, 950,
+	 {{1800, 1300, 903}, {1000, 1100, 383}}},
+	{275, 0x30, 0x20f12, 0xe, 0xe, 950,
+	 {{2000, 1300, 903}, {1800, 1250, 759},
+	 {1000, 1100, 361}}},
+	{875, 0x34, 0x20f12, 0xe, 0xe, 950,
+	 {{2000, 1300, 903}, {1800, 1250, 759},
+	 {1000, 1100, 361}}},
+	{280, 0x30, 0x20f12, 0x10, 0x10, 926,
+	 {{2400, 1350, 900}, {2200, 1300, 766},
+	 {1800, 1200, 552}, {1000, 1100, 320}}},
+	{880, 0x34, 0x20f12, 0x10, 0x10, 926,
+	 {{2400, 1350, 900}, {2200, 1300, 766},
+	 {1800, 1200, 552}, {1000, 1100, 320}}},
+	{170, 0x2c, 0x20f32, 0xc, 0xc, 1100,
+	 {{1800, 1300, 1056}, {1000, 1100, 514}}},
+	{175, 0x2c, 0x20f32, 0xe, 0xe, 1100,
+	 {{2000, 1300, 1056}, {1800, 1250, 891},
+	  {1000, 1100, 490}}},
+	{260, 0x32, 0x20f32, 0x8, 0x8, 550,
+	 {}},
+	{860, 0x36, 0x20f32, 0x8, 0x8, 550,
+	 {}},
+	{165, 0x2e, 0x20f32, 0xa, 0xa, 550,
+	 {{1000, 1100, 365}}},
+	{265, 0x32, 0x20f32, 0xa, 0xa, 550,
+	 {{1000, 1100, 365}}},
+	{865, 0x36, 0x20f32, 0xa, 0xa, 550,
+	 {{1000, 1100, 365}}},
+	{270, 0x32, 0x20f12, 0xc, 0xc, 550,
+	 {{1800, 1150, 520}, {1000, 1100, 335}}},
+	{870, 0x36, 0x20f12, 0xc, 0xc, 550,
+	 {{1800, 1150, 520}, {1000, 1100, 335}}},
+	{180, 0x2c, 0x20f32, 0x10, 0x10, 1100,
+	 {{2200, 1300, 1056}, {2000, 1250, 891},
+	  {1800, 1200, 748}, {1000, 1100, 466}}},
+	{3000, 0x4, 0x10ff0, 0xa, 0xa, 670,
+	 {{1000, 1100, 210}}},
+};
+
+static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+{
+
+	u8 cmp_cap;
+	struct cpuentry *data = NULL;
+	uint32_t control;
+	int i = 0, index, len = 0, Pstate_num = 0;
+	msr_t msr;
+	u8 Pstate_fid[10];
+	u16 Pstate_feq[10];
+	u8 Pstate_vid[10];
+	u32 Pstate_power[10];
+	u8 Max_fid, Start_fid, Start_vid, Max_vid;
+	struct cpuid_result cpuid1 = cpuid(0x80000001);
+
+	msr = rdmsr(0xc0010042);
+	Max_fid = (msr.lo & 0x3F0000) >> 16;
+	Max_vid = (msr.hi & 0x3F0000) >> 16;
+	Start_fid = (msr.lo & 0x3F00) >> 8;
+	Start_vid = (msr.hi & 0x3F00) >> 8;
+
+	cmp_cap =
+	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &
+	     0x3000) >> 12;
+
+	for (i = 0; i < ARRAY_SIZE(entr); i++) {
+		if ((entr[i].cpuid == cpuid1.eax)
+		    && (entr[i].startFID == Start_fid)
+		    && (entr[i].maxFID == Max_fid)
+		    && (entr[i].brandID == ((u8 )((cpuid1.ebx >> 6) & 0xff)))) {
+			data = &entr[i];
+			break;
+		}
+	}
+
+	if (data == NULL) {
+		printk(BIOS_WARNING, "Unknown CPU, please update the powernow_acpi.c\n");
+		return 0;
+	}
+
+	/* IRT 80us, PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
+	control = (3 << 30) | (2 << 20) | (0 << 18) | (5 << 11) | (1 << 29);
+	len = 0;
+	Pstate_num = 0;
+
+	Pstate_fid[Pstate_num] = Max_fid;
+	Pstate_feq[Pstate_num] = fid_to_freq(Max_fid);
+	Pstate_vid[Pstate_num] = Max_vid;
+	Pstate_power[Pstate_num] = data->pwr * 100;
+	Pstate_num++;
+
+	do {
+		Pstate_fid[Pstate_num] = freq_to_fid(data->pstates[Pstate_num - 1].freqMhz) & 0x3f;
+		Pstate_feq[Pstate_num] = data->pstates[Pstate_num - 1].freqMhz;
+		Pstate_vid[Pstate_num] = vid_to_reg(data->pstates[Pstate_num - 1].voltage);
+		Pstate_power[Pstate_num] = data->pstates[Pstate_num - 1].tdp * 100;
+		Pstate_num++;
+	} while ((Pstate_num < MAXP) && (data->pstates[Pstate_num].freqMhz != 0));
+
+	for (i=0;i<Pstate_num;i++)
+		printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,
+		       Pstate_feq[i],
+		       vid_from_reg(Pstate_vid[i]),
+		       Pstate_power[i]);
+
+	for (index = 0; index < (cmp_cap + 1); index++) {
+		len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
+				Pstate_fid, Pstate_power, index,
+				pcontrol_blk, plen, onlyBSP, control);
+	}
+
+	return len;
+}
+
+#endif
+
 
 int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 {
@@ -388,11 +654,3 @@ int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	return lens;
 }
 
-#else
-
-int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
-{
-	return 0;
-}
-
-#endif

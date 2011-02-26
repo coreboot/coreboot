@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-if BOARD_AMD_PERSIMMON
+if BOARD_ASROCK_E350M1
 
 config BOARD_SPECIFIC_OPTIONS # dummy
         def_bool y
@@ -28,7 +28,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
   select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14_ROOT_COMPLEX
   select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
   select SOUTHBRIDGE_AMD_CIMX_WRAPPER_SB800
-	select SUPERIO_FINTEK_F81865F
+	select SUPERIO_WINBOND_W83627HF
   select BOARD_HAS_FADT
         select HAVE_BUS_CONFIG
         select HAVE_OPTION_TABLE
@@ -56,7 +56,7 @@ config AMD_CIMX_SB800
 
 config MAINBOARD_DIR
         string
-        default amd/persimmon
+        default asrock/e350m1
 
 config APIC_ID_OFFSET
         hex
@@ -64,7 +64,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
         string
-        default "Persimmon"
+        default "E350M1"
 
 config HW_MEM_HOLE_SIZEK
         hex
@@ -132,16 +132,15 @@ config RAMBASE
 
 config SIO_PORT
         hex
-        default 0x4e
+        default 0x2e
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-#define CONFIG_VGA_BIOS_ID "1002,9804"
 config VGA_BIOS_ID
         string
-        default "1002,9804"
+        default "1002,9802"
 
 config DRIVERS_PS2_KEYBOARD
 	bool
@@ -151,5 +150,5 @@ config WARNINGS_ARE_ERRORS
 	bool
 	default n
 
-endif # BOARD_AMD_PERSIMMON
+endif # BOARD_ASROCK_E350M1
 

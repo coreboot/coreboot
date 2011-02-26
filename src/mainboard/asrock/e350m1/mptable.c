@@ -50,7 +50,7 @@ static void *smp_write_config_table(void *v)
   mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
   mptable_init(mc, LAPIC_ADDR);
-  memcpy(mc->mpc_oem, "AMD     ", 8);
+  memcpy(mc->mpc_oem, "ASROCK  ", 8);
 
   smp_write_processors(mc);
 

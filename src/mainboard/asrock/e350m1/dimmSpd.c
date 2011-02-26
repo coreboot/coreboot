@@ -34,8 +34,8 @@ static const UINT8 spdAddressLookup [2] [2] [4] =  // socket, channel, dimm
    {
    // socket 0
       {
-         {0xA0, 0xA2},  // channel 0 dimms
-         {0xA4, 0xA8},  // channel 1 dimms
+         {0xA0, 0xA4},  // channel 0 dimms
+         {0x00, 0x00},  // channel 1 dimms
       },
    // socket 1
       {

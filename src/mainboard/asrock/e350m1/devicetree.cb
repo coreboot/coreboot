@@ -55,30 +55,46 @@ chip northbridge/amd/agesa_wrapper/family14/root_complex
                                         device pci 14.1 on end # IDE    0x439c
                                         device pci 14.2 on end # HDA    0x4383
                                         device pci 14.3 on # LPC        0x439d
-					        chip superio/fintek/f81865f
-							device pnp 4e.0 off		# Floppy
+						chip superio/winbond/w83627hf
+							device pnp 2e.0 off #  Floppy
 								io 0x60 = 0x3f0
 								irq 0x70 = 6
 								drq 0x74 = 2
 							end
-							device pnp 4e.3 off end			# Parallel Port
-							device pnp 4e.4 off end			# Hardware Monitor
-							device pnp 4e.5 on #  Keyboard
-								io 0x60 = 0x60
-								io 0x62 = 0x64
-								irq 0x70 = 1
+							device pnp 2e.1 off #  Parallel Port
+								io 0x60 = 0x378
+								irq 0x70 = 7
 							end
-							device pnp 4e.6 off end			# GPIO
-							device pnp 4e.a off end			# PME
-							device pnp 4e.10 on			# COM1
+							device pnp 2e.2 on #  Com1
 								io 0x60 = 0x3f8
 								irq 0x70 = 4
 							end
-							device pnp 4e.11 off			# COM2
+							device pnp 2e.3 off #  Com2
 								io 0x60 = 0x2f8
 								irq 0x70 = 3
 							end
-                                                end # f81865f
+							device pnp 2e.5 on #  Keyboard
+								io 0x60 = 0x60
+								io 0x62 = 0x64
+								irq 0x70 = 1
+								irq 0x72 = 12
+							end
+							device pnp 2e.6 off #  CIR
+								io 0x60 = 0x100
+							end
+							device pnp 2e.7 off #  GAME_MIDI_GIPO1
+								io 0x60 = 0x220
+								io 0x62 = 0x300
+								irq 0x70 = 9
+							end
+							device pnp 2e.8 off end #  GPIO2
+							device pnp 2e.9 off end #  GPIO3
+							device pnp 2e.a off end #  ACPI
+							device pnp 2e.b on #  HW Monitor
+								io 0x60 = 0x290
+								irq 0x70 = 5
+							end
+						end
 					end #LPC
   					device pci 14.4 on end # PCI 0x4384
 	  				device pci 14.5 on end # USB 2

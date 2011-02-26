@@ -23,10 +23,12 @@ choice
 
 config BOARD_ASROCK_939A785GMH
 	bool "939A785GMH/128M"
+config BOARD_ASROCK_E350M1
+	bool "E350M1"
 
 endchoice
 
-source "src/mainboard/asrock/939a785gmh/Kconfig"
+source "src/mainboard/asrock/e350m1/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

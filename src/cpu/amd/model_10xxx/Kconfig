@@ -50,3 +50,35 @@ config SET_FIDVID_CORE_RANGE
 
 endif
 endif
+
+config UPDATE_CPU_MICROCODE
+	bool
+	default y
+
+config UPDATE_CPU_MICROCODE
+	bool "Update CPU microcode"
+	default y
+	depends on EXPERT && CPU_AMD_MODEL_10XXX
+	help
+	  Select this to apply patches to the CPU microcode provided by
+	  AMD without source, and distributed with coreboot, to address
+	  issues in the CPU post production.
+
+	  Microcode updates distributed with coreboot are not necessarily
+	  the latest version available from AMD. Updates are only applied
+	  if they are newer than the microcode already in your CPU.
+
+	  Unselect this to let Fam10h CPUs run with microcode as shipped
+	  from factory. No binary microcode patches will be included in the
+	  coreboot image in that case, which can help with creating an image
+	  for which complete source code is available, which in turn might
+	  simplify license compliance.
+
+	  Microcode updates intend to solve issues that have been discovered
+	  after CPU production. The common case is that systems work as
+	  intended with updated microcode, but we have also seen cases where
+	  issues were solved by not applying the microcode updates.
+
+	  Note that some operating system include these same microcode
+	  patches, so you may need to also disable microcode updates in
+	  your operating system in order for this option to matter.

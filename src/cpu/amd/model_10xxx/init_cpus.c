@@ -325,7 +325,9 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		 * This happens after HTinit.
 		 * The BSP runs this code in it's own path.
 		 */
+#if CONFIG_UPDATE_CPU_MICROCODE
 		update_microcode(cpuid_eax(1));
+#endif
 		cpuSetAMDMSR();
 
 #if CONFIG_SET_FIDVID

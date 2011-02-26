@@ -65,7 +65,11 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/quadcore/quadcore.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/microcode/microcode.c"
+
+#if CONFIG_UPDATE_CPU_MICROCODE
 #include "cpu/amd/model_10xxx/update_microcode.c"
+#endif
+
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include <spd.h>
@@ -124,7 +128,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
 
+#if CONFIG_UPDATE_CPU_MICROCODE
 	update_microcode(val);
+#endif
 	post_code(0x33);
 
 	cpuSetAMDMSR();

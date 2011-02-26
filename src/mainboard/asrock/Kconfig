@@ -28,6 +28,7 @@ config BOARD_ASROCK_E350M1
 
 endchoice
 
+source "src/mainboard/asrock/939a785gmh/Kconfig"
 source "src/mainboard/asrock/e350m1/Kconfig"
 
 config MAINBOARD_VENDOR

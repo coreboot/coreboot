@@ -280,6 +280,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev) {
 	pci_write_config32(dev, 0x84, dword);
 	dword = 0xE600A681;
 	pci_write_config32(dev, 0x80, dword);
+
 }
 
 static void prep_fid_change(void)
@@ -503,24 +504,11 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 	}
 }
 
-
-static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
+static u32 needs_NB_COF_VID_update(void)
 {
-	device_t dev;
-	u32 vid_max;
-	u32 fid_max;
 	u8 nb_cof_vid_update;
-	u8 pvimode;
-	u32 reg1fc;
-	u32 send;
 	u8 nodes;
 	u8 i;
-
-	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
-
-	/* Steps 1-6 of BIOS NB COF and VID Configuration
-	 * for SVI and Single-Plane PVI Systems.
-	 */
 
 	/* If any node has nb_cof_vid_update set all nodes need an update. */
 	nodes = get_nodes();
@@ -531,6 +519,26 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 			break;
 		}
 	}
+	return nb_cof_vid_update;
+}
+
+static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
+{
+	device_t dev;
+	u32 vid_max;
+	u32 fid_max;
+	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
+	u8 pvimode;
+	u32 reg1fc;
+	u32 send;
+
+	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
+
+	/* Steps 1-6 of BIOS NB COF and VID Configuration
+	 * for SVI and Single-Plane PVI Systems.
+	 */
+
+
 
 	dev = NODE_PCI(nodeid, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
@@ -710,23 +718,13 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	u32 reg1fc;
 	u32 dtemp;
 	u32 nbvid;
-	u8 nb_cof_vid_update;
-	u8 nodes;
+	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
 	u8 NbVidUpdateAll;
-	u8 i;
 	u8 pvimode;
 
 	/* After warm reset finish the fid/vid setup for all cores. */
 
 	/* If any node has nb_cof_vid_update set all nodes need an update. */
-	nodes = get_nodes();
-	nb_cof_vid_update = 0;
-	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
-			nb_cof_vid_update = 1;
-			break;
-		}
-	}
 
 	dev = NODE_PCI(nodeid, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
@@ -788,7 +786,7 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	device_t dev;
 	u32 vid_max;
 	u32 fid_max=0;
-	u8 nb_cof_vid_update;
+	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
 	u32 reg1fc;
 	u8 pvimode;
 
@@ -800,15 +798,6 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems.
 	 */
-
-	/* If any node has nb_cof_vid_update set all nodes need an update. */
-	nb_cof_vid_update = 0;
-	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
-			nb_cof_vid_update = 1;
-			break;
-		}
-	}
 
 	dev = NODE_PCI(0, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;

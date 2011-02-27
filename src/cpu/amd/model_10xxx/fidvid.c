@@ -258,6 +258,17 @@ static void config_power_ctrl_misc_reg(device_t dev) {
 	}
 }
 
+            
+static void config_nb_syn_ptr_adj(device_t dev) {
+	/* Note the following settings are additional from the ported
+	 * function setFidVidRegs()
+	 */
+	u32 dword = pci_read_config32(dev, 0xDc);
+	dword |= 0x5 << 12;	/* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
+	pci_write_config32(dev, 0xdc, dword);
+
+}
+
 static void prep_fid_change(void)
 {
         u32 dword;
@@ -281,13 +292,8 @@ static void prep_fid_change(void)
 		config_clk_power_ctrl_reg0(i);
 
                 config_power_ctrl_misc_reg(dev);
-             
-		/* Note the following settings are additional from the ported
-		 * function setFidVidRegs()
-		 */
-		dword = pci_read_config32(dev, 0xDc);
-		dword |= 0x5 << 12;	/* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
-		pci_write_config32(dev, 0xdc, dword);
+
+ 		config_nb_syn_ptr_adj(dev);
 
 		/* Rev B settings - FIXME: support other revs. */
 		dword = 0xA0E641E6;

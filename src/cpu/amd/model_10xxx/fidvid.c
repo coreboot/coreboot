@@ -179,32 +179,16 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	pci_write_config32(dev, 0xd8, dtemp);
 }
 
-static void config_clk_power_ctrl_reg0(int node) {         
-        u32 dword;
-      	device_t dev = NODE_PCI(node, 3);
-	/* Program fields in Clock Power/Control register0 (F3xD4) */
-
-	/* set F3xD4 Clock Power/Timing Control 0 Register
-	 * NbClkDidApplyAll=1b
-	 * NbClkDid=100b
-	 * PowerStepUp= "platform dependent"
-	 * PowerStepDown= "platform dependent"
-	 * LinkPllLink=01b
-	 * ClkRampHystSel=HW default
-	 */
+static u32 power_up_down(int node) {
+       u32 dword=0;
 	/* check platform type */
 	if (!(get_platform_type() & AMD_PTYPE_SVR)) {
 		/* For non-server platform
 		 * PowerStepUp=01000b - 50nS
 		 * PowerStepDown=01000b - 50ns
 		 */
-		dword = pci_read_config32(dev, 0xd4);
-		dword &= CPTC0_MASK;
-		dword |= NB_CLKDID_ALL | NB_CLKDID | PW_STP_UP50 | PW_STP_DN50 | LNK_PLL_LOCK;	/* per BKDG */
-		pci_write_config32(dev, 0xd4, dword);
+        	dword |= PW_STP_UP50 | PW_STP_DN50 ; 
 	} else {
-		dword = pci_read_config32(dev, 0xd4);
-		dword &= CPTC0_MASK;
 		/* get number of cores for PowerStepUp & PowerStepDown in server
 		   1 core - 400nS  - 0000b
 		   2 cores - 200nS - 0010b
@@ -226,9 +210,31 @@ static void config_clk_power_ctrl_reg0(int node) {
 			dword |= PW_STP_UP100 | PW_STP_DN100;
 			break;
 		}
-		dword |= NB_CLKDID_ALL | NB_CLKDID | LNK_PLL_LOCK;
-		pci_write_config32(dev, 0xd4, dword);
 	}
+        return dword; 
+}
+
+static void config_clk_power_ctrl_reg0(int node) {         
+       	device_t dev = NODE_PCI(node, 3);
+
+
+	/* Program fields in Clock Power/Control register0 (F3xD4) */
+
+	/* set F3xD4 Clock Power/Timing Control 0 Register
+	 * NbClkDidApplyAll=1b
+	 * NbClkDid=100b
+	 * PowerStepUp= "platform dependent"
+	 * PowerStepDown= "platform dependent"
+	 * LinkPllLink=01b
+	 * ClkRampHystSel=HW default
+	 */
+        u32 dword= pci_read_config32(dev, 0xd4);
+	dword &= CPTC0_MASK;
+	dword |= NB_CLKDID_ALL | NB_CLKDID | LNK_PLL_LOCK;	/* per BKDG */
+        dword |= power_up_down(node);
+
+	pci_write_config32(dev, 0xd4, dword);
+
 }
 
 static void config_power_ctrl_misc_reg(device_t dev) {

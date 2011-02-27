@@ -24,8 +24,12 @@ choice
 
 config LIMIT_HT_SPEED_200
 	bool "Limit HT frequency to 200MHz"
+config LIMIT_HT_SPEED_300
+	bool "Limit HT frequency to 300MHz"
 config LIMIT_HT_SPEED_400
 	bool "Limit HT frequency to 400MHz"
+config LIMIT_HT_SPEED_500
+	bool "Limit HT frequency to 500MHz"
 config LIMIT_HT_SPEED_600
 	bool "Limit HT frequency to 600MHz"
 config LIMIT_HT_SPEED_800

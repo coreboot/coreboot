@@ -257,7 +257,6 @@ static void config_power_ctrl_misc_reg(device_t dev) {
 		pci_write_config32(dev, 0xD8, dword);
 	}
 }
-
             
 static void config_nb_syn_ptr_adj(device_t dev) {
 	/* Note the following settings are additional from the ported
@@ -267,6 +266,14 @@ static void config_nb_syn_ptr_adj(device_t dev) {
 	dword |= 0x5 << 12;	/* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
 	pci_write_config32(dev, 0xdc, dword);
 
+}
+
+static void config_acpi_pwr_state_ctrl_regs(device_t dev) {
+	/* Rev B settings - FIXME: support other revs. */
+	u32 dword = 0xA0E641E6;
+	pci_write_config32(dev, 0x84, dword);
+	dword = 0xE600A681;
+	pci_write_config32(dev, 0x80, dword);
 }
 
 static void prep_fid_change(void)
@@ -295,12 +302,7 @@ static void prep_fid_change(void)
 
  		config_nb_syn_ptr_adj(dev);
 
-		/* Rev B settings - FIXME: support other revs. */
-		dword = 0xA0E641E6;
-		pci_write_config32(dev, 0x84, dword);
-
-		dword = 0xE600A681;
-		pci_write_config32(dev, 0x80, dword);
+                config_acpi_pwr_state_ctrl_regs(dev);
 
 		dword = pci_read_config32(dev, 0x80);
 		printk(BIOS_DEBUG, "  F3x80: %08x \n", dword);

@@ -231,9 +231,36 @@ static void config_clk_power_ctrl_reg0(int node) {
 	}
 }
 
+static void config_power_ctrl_misc_reg(device_t dev) {
+	/* check PVI/SVI */
+	u32 dword = pci_read_config32(dev, 0xA0);
+	if (dword & PVI_MODE) {	/* PVI */
+		/* set slamVidMode to 0 for PVI */
+		dword &= VID_SLAM_OFF | PLLLOCK_OFF;
+		dword |= PLLLOCK_DFT_L;
+		pci_write_config32(dev, 0xA0, dword);
+	} else {	/* SVI */
+		/* set slamVidMode to 1 for SVI */
+		dword &= PLLLOCK_OFF;
+		dword |= PLLLOCK_DFT_L | VID_SLAM_ON;
+		pci_write_config32(dev, 0xA0, dword);
+
+		u32 dtemp = dword;
+
+		/* Program F3xD8[PwrPlanes] according F3xA0[DulaVdd]  */
+		dword = pci_read_config32(dev, 0xD8);
+
+		if (dtemp & DUAL_VDD_BIT)
+			dword |= PWR_PLN_ON;
+		else
+			dword &= PWR_PLN_OFF;
+		pci_write_config32(dev, 0xD8, dword);
+	}
+}
+
 static void prep_fid_change(void)
 {
-	u32 dword, dtemp;
+        u32 dword;
 	u32 nodes;
 	device_t dev;
 	int i;
@@ -253,31 +280,8 @@ static void prep_fid_change(void)
 
 		config_clk_power_ctrl_reg0(i);
 
-		/* check PVI/SVI */
-		dword = pci_read_config32(dev, 0xA0);
-		if (dword & PVI_MODE) {	/* PVI */
-			/* set slamVidMode to 0 for PVI */
-			dword &= VID_SLAM_OFF | PLLLOCK_OFF;
-			dword |= PLLLOCK_DFT_L;
-			pci_write_config32(dev, 0xA0, dword);
-		} else {	/* SVI */
-			/* set slamVidMode to 1 for SVI */
-			dword &= PLLLOCK_OFF;
-			dword |= PLLLOCK_DFT_L | VID_SLAM_ON;
-			pci_write_config32(dev, 0xA0, dword);
-
-			dtemp = dword;
-
-			/* Program F3xD8[PwrPlanes] according F3xA0[DulaVdd]  */
-			dword = pci_read_config32(dev, 0xD8);
-
-			if (dtemp & DUAL_VDD_BIT)
-				dword |= PWR_PLN_ON;
-			else
-				dword &= PWR_PLN_OFF;
-			pci_write_config32(dev, 0xD8, dword);
-		}
-
+                config_power_ctrl_misc_reg(dev);
+             
 		/* Note the following settings are additional from the ported
 		 * function setFidVidRegs()
 		 */

@@ -179,6 +179,58 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	pci_write_config32(dev, 0xd8, dtemp);
 }
 
+static void config_clk_power_ctrl_reg0(int node) {         
+        u32 dword;
+      	device_t dev = NODE_PCI(node, 3);
+	/* Program fields in Clock Power/Control register0 (F3xD4) */
+
+	/* set F3xD4 Clock Power/Timing Control 0 Register
+	 * NbClkDidApplyAll=1b
+	 * NbClkDid=100b
+	 * PowerStepUp= "platform dependent"
+	 * PowerStepDown= "platform dependent"
+	 * LinkPllLink=01b
+	 * ClkRampHystSel=HW default
+	 */
+	/* check platform type */
+	if (!(get_platform_type() & AMD_PTYPE_SVR)) {
+		/* For non-server platform
+		 * PowerStepUp=01000b - 50nS
+		 * PowerStepDown=01000b - 50ns
+		 */
+		dword = pci_read_config32(dev, 0xd4);
+		dword &= CPTC0_MASK;
+		dword |= NB_CLKDID_ALL | NB_CLKDID | PW_STP_UP50 | PW_STP_DN50 | LNK_PLL_LOCK;	/* per BKDG */
+		pci_write_config32(dev, 0xd4, dword);
+	} else {
+		dword = pci_read_config32(dev, 0xd4);
+		dword &= CPTC0_MASK;
+		/* get number of cores for PowerStepUp & PowerStepDown in server
+		   1 core - 400nS  - 0000b
+		   2 cores - 200nS - 0010b
+		   3 cores - 133nS -> 100nS - 0011b
+		   4 cores - 100nS - 0011b
+		 */
+		switch (get_core_num_in_bsp(node)) {
+		case 0:
+			dword |= PW_STP_UP400 | PW_STP_DN400;
+			break;
+		case 1:
+		case 2:
+			dword |= PW_STP_UP200 | PW_STP_DN200;
+			break;
+		case 3:
+			dword |= PW_STP_UP100 | PW_STP_DN100;
+			break;
+		default:
+			dword |= PW_STP_UP100 | PW_STP_DN100;
+			break;
+		}
+		dword |= NB_CLKDID_ALL | NB_CLKDID | LNK_PLL_LOCK;
+		pci_write_config32(dev, 0xd4, dword);
+	}
+}
+
 static void prep_fid_change(void)
 {
 	u32 dword, dtemp;
@@ -199,52 +251,7 @@ static void prep_fid_change(void)
 		/* Figure out the value for VsSlamTime and program it */
 		recalculateVsSlamTimeSettingOnCorePre(dev);
 
-		/* Program fields in Clock Power/Control register0 (F3xD4) */
-		/* set F3xD4 Clock Power/Timing Control 0 Register
-		 * NbClkDidApplyAll=1b
-		 * NbClkDid=100b
-		 * PowerStepUp= "platform dependent"
-		 * PowerStepDown= "platform dependent"
-		 * LinkPllLink=01b
-		 * ClkRampHystSel=HW default
-		 */
-		/* check platform type */
-		if (!(get_platform_type() & AMD_PTYPE_SVR)) {
-			/* For non-server platform
-			 * PowerStepUp=01000b - 50nS
-			 * PowerStepDown=01000b - 50ns
-			 */
-			dword = pci_read_config32(dev, 0xd4);
-			dword &= CPTC0_MASK;
-			dword |= NB_CLKDID_ALL | NB_CLKDID | PW_STP_UP50 | PW_STP_DN50 | LNK_PLL_LOCK;	/* per BKDG */
-			pci_write_config32(dev, 0xd4, dword);
-		} else {
-			dword = pci_read_config32(dev, 0xd4);
-			dword &= CPTC0_MASK;
-			/* get number of cores for PowerStepUp & PowerStepDown in server
-			   1 core - 400nS  - 0000b
-			   2 cores - 200nS - 0010b
-			   3 cores - 133nS -> 100nS - 0011b
-			   4 cores - 100nS - 0011b
-			 */
-			switch (get_core_num_in_bsp(i)) {
-			case 0:
-				dword |= PW_STP_UP400 | PW_STP_DN400;
-				break;
-			case 1:
-			case 2:
-				dword |= PW_STP_UP200 | PW_STP_DN200;
-				break;
-			case 3:
-				dword |= PW_STP_UP100 | PW_STP_DN100;
-				break;
-			default:
-				dword |= PW_STP_UP100 | PW_STP_DN100;
-				break;
-			}
-			dword |= NB_CLKDID_ALL | NB_CLKDID | LNK_PLL_LOCK;
-			pci_write_config32(dev, 0xd4, dword);
-		}
+		config_clk_power_ctrl_reg0(i);
 
 		/* check PVI/SVI */
 		dword = pci_read_config32(dev, 0xA0);

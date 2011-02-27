@@ -66,6 +66,21 @@ static void enable_fid_change(u8 fid)
 	}
 }
 
+static void setVSRamp(device_t dev) {
+	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime] 
+         * If this field accepts 8 values between 10 and 500 us why 
+         * does page 324 say "BIOS should set this field to 001b." 
+         * (20 us) ?
+         * Shouldn't it depend on the voltage regulators, mainboard
+         * or something ? 
+         */ 
+        u32 dword;
+	dword = pci_read_config32(dev, 0xd8);
+	dword &= VSRAMP_MASK;
+	dword |= VSRAMP_VALUE;
+	pci_write_config32(dev, 0xd8, dword);
+}
+
 static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 {
 	u8 pviModeFlag;
@@ -179,11 +194,8 @@ static void prep_fid_change(void)
 		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x \n", i);
 		dev = NODE_PCI(i, 3);
 
-		dword = pci_read_config32(dev, 0xd8);
-		dword &= VSRAMP_MASK;
-		dword |= VSRAMP_VALUE;
-		pci_write_config32(dev, 0xd8, dword);
-
+		setVSRamp(dev);
+		/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSSlamTime] */
 		/* Figure out the value for VsSlamTime and program it */
 		recalculateVsSlamTimeSettingOnCorePre(dev);
 

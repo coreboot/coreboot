@@ -229,6 +229,8 @@
 /* F3x1F0 Product Information Register */
 #define NB_PSTATE_MASK 0x00070000 /* NbPstate for CPU rev C3 */
 
+/* F3x1FC Product Information Register */
+#define NB_COF_VID_UPDATE_MASK 1 /* for CPU rev <= C */
 
 #define NM_PS_REG 5			/* number of P-state MSR registers */
 

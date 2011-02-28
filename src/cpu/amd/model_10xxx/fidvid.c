@@ -631,7 +631,11 @@ static u32 needs_NB_COF_VID_update(void)
 	nodes = get_nodes();
 	nb_cof_vid_update = 0;
 	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
+                u32 cpuRev = mctGetLogicalCPUID(i) ;
+                u32 nbCofVidUpdateDefined = (cpuRev & (AMD_FAM10_LT_D));
+		if (nbCofVidUpdateDefined 
+                    && (pci_read_config32(NODE_PCI(i, 3), 0x1FC) 
+                        & NB_COF_VID_UPDATE_MASK)) {
 			nb_cof_vid_update = 1;
 			break;
 		}

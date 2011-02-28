@@ -111,7 +111,7 @@
 #define STC_PS_LMT_MASK 0x8fffffff	/* StcPstateLimit mask off */
 
 #define CPTC0 0x0d4			/* Clock Power/Timing Control0 Register*/
-#define CPTC0_MASK 0x000c0fff		/* Reset mask for this register */
+#define CPTC0_MASK 0x000cffff		/* Reset mask for this register */
 #define CPTC0_NBFID_MASK 0xffffffe0	/* NbFid mask off for this register */
 #define CPTC0_NBFID_MON 0x1f		/* NbFid mask on for this register */
 #define NB_FID_EN 0x20			/* NbFidEn bit ON */

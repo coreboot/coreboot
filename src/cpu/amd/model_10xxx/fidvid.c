@@ -343,11 +343,59 @@ static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
 	pci_write_config32(dev, 0xdc, dword);
 }
 
-static void config_acpi_pwr_state_ctrl_regs(device_t dev) {
-	/* Rev B settings - FIXME: support other revs. */
-	u32 dword = 0xA0E641E6;
+static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg) {
+                /* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */ 
+        u32 dword;
+	u32 c1= 1;
+        if (cpuRev & (AMD_DR_Bx)) {
+            // will coreboot ever enable cache scrubbing ?
+            // if it does, will it be enough to check the current state
+            // or should we configure for what we'll set up later ? 
+            dword = pci_read_config32(dev, 0x58);
+            u32 scrubbingCache = dword &
+	                        ( (0x1F << 16) // DCacheScrub
+		 	          | (0x1F << 8) ); // L2Scrub 
+ 	    if (scrubbingCache) {
+	        c1 = 0x80;
+	    } else {
+	        c1 = 0xA0;
+	    }
+	} else { // rev C or later
+	    // same doubt as cache scrubbing: ok to check current state ?
+            dword = pci_read_config32(dev, 0xDC);
+            u32 cacheFlushOnHalt = dword & (7 << 16);
+            if (!cacheFlushOnHalt) {
+       	       c1 = 0x80;
+       	    }
+       	}
+       	dword = (c1 << 24) | (0xE641E6); 
 	pci_write_config32(dev, 0x84, dword);
-	dword = 0xE600A681;
+
+
+        /* FIXME: BKDG Table 100 says if the link is at a Gen1
+frequency and the chipset does not support a 10us minimum LDTSTOP
+assertion time, then { If ASB2 && SVI then smaf001 = F6h else
+smaf001=87h. } else ...  I hardly know what it means or how to check
+it from here, so I bluntly assume it is false and code here the else,
+which is easier  */ 
+
+        u32 smaf001 = 0xE6;
+        if (cpuRev & AMD_DR_Bx ) {
+	    smaf001 = 0xA6;
+        } else {
+            #if CONFIG_SVI_HIGH_FREQ
+                if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) { 
+		       smaf001 = 0xF6; 
+                }
+            #endif
+        }
+        u32 fidvidChange = 0;
+        if (((cpuRev & AMD_DA_Cx) && (procPkg & AMD_PKGTYPE_S1gX))
+		    || (cpuRev & AMD_RB_C3) ) { 
+                       fidvidChange=0x0B;
+        } 
+	dword = (0xE6 << 24) | (fidvidChange << 16)  
+                        | (smaf001 << 8) | 0x81; 
 	pci_write_config32(dev, 0x80, dword);
 }
 
@@ -378,7 +426,7 @@ static void prep_fid_change(void)
                 config_power_ctrl_misc_reg(dev,cpuRev,procPkg);                       
 		config_nb_syn_ptr_adj(dev,cpuRev);
 
-                config_acpi_pwr_state_ctrl_regs(dev);
+                config_acpi_pwr_state_ctrl_regs(dev,cpuRev,procPkg);
 
 		dword = pci_read_config32(dev, 0x80);
 		printk(BIOS_DEBUG, "  F3x80: %08x \n", dword);

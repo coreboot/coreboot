@@ -275,19 +275,18 @@ static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
 
 }
 
-static void config_power_ctrl_misc_reg(device_t dev) {
+static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) { 
 	/* check PVI/SVI */
 	u32 dword = pci_read_config32(dev, 0xA0);
+
+        /* BKDG r31116 2010-04-22  2.4.1.7 step b F3xA0[VSSlamVidMod] */
+        /* PllLockTime and PsiVidEn set in ruleset in defaults.h */
 	if (dword & PVI_MODE) {	/* PVI */
 		/* set slamVidMode to 0 for PVI */
-		dword &= VID_SLAM_OFF | PLLLOCK_OFF;
-		dword |= PLLLOCK_DFT_L;
-		pci_write_config32(dev, 0xA0, dword);
+		dword &= VID_SLAM_OFF ;
 	} else {	/* SVI */
 		/* set slamVidMode to 1 for SVI */
-		dword &= PLLLOCK_OFF;
-		dword |= PLLLOCK_DFT_L | VID_SLAM_ON;
-		pci_write_config32(dev, 0xA0, dword);
+		dword |= VID_SLAM_ON;
 
 		u32 dtemp = dword;
 
@@ -299,7 +298,27 @@ static void config_power_ctrl_misc_reg(device_t dev) {
 		else
 			dword &= PWR_PLN_OFF;
 		pci_write_config32(dev, 0xD8, dword);
+
+                dword = dtemp;
+        }
+        /* set the rest of A0 since we're at it... */
+        
+        if (cpuRev & (AMD_DA_Cx | AMD_RB_C3 )) { 
+	     dword |= NB_PSTATE_FORCE_ON;
+	} // else should we clear it ? 
+
+
+        if ((procPkg == AMD_PKGTYPE_G34) || (procPkg == AMD_PKGTYPE_C32) ) {
+	  dword |= BP_INS_TRI_EN_ON ;
 	}
+
+	   /* TODO: look into C1E state and F3xA0[IdleExitEn]*/
+        #if CONFIG_SVI_HIGH_FREQ
+	   if (cpuRev & AMD_FAM10_C3) {
+	     dword |= SVI_HIGH_FREQ_ON;
+           }
+        #endif
+	pci_write_config32(dev, 0xA0, dword);
 }
             
 static void config_nb_syn_ptr_adj(device_t dev) {
@@ -344,8 +363,7 @@ static void prep_fid_change(void)
 
                 config_clk_power_ctrl_reg0(i,cpuRev,procPkg);
 
-                config_power_ctrl_misc_reg(dev);
-
+                config_power_ctrl_misc_reg(dev,cpuRev,procPkg);                       
  		config_nb_syn_ptr_adj(dev);
 
                 config_acpi_pwr_state_ctrl_regs(dev);

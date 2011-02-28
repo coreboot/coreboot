@@ -198,11 +198,19 @@
 #define PVI_MODE 0x100			/* PviMode bit mask */
 #define VID_SLAM_OFF 0x0dfffffff	/* set VidSlamMode OFF */
 #define VID_SLAM_ON 0x020000000	/* set VidSlamMode ON */
+#define NB_PSTATE_FORCE_ON 0x010000000 /* set Northbridge P-state
+					  force on next LDTSTOP
+					  assertion on, in F3xA0 */
+#define BP_INS_TRI_EN_ON 0x00004000   /* breakpoint pins tristate
+					 enable in F3xA0 */
 #define PLLLOCK_OFF 0x0ffffc7ff	/* PllLockTime Mask OFF */
 #define PLLLOCK_DFT 0x00001800		/* PllLockTime default value = 011b */
 #define PLLLOCK_DFT_L 0x00002800	/* PllLockTime long value = 101b */
 
-/* P-state Specification register base in PCI sapce */
+#define SVI_HIGH_FREQ_ON 0x00000200     /* F3xA0[SviHighFreqSel] for
+					   3.4 MHz SVI in rev. C3 */
+
+/* P-state Specification register base in PCI space */
 #define PS_SPEC_REG 0x1e0		/* PS Spec register base address */
 #define PCI_REG_LEN 4			/* PCI register length */
 #define NB_DID_MASK 0x10000		/* NbDid bit mask */

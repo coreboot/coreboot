@@ -68,7 +68,7 @@ static const struct {
 	  1 << 24, 0x00000000,
 	  1 << 24, 0x00000000 },	/* Erratum #261 [DIS_PIGGY_BACK_SCRUB]=1 */
 
-	{ LS_CFG, AMD_FAM10_GT_B0, AMD_PTYPE_ALL,
+	{ LS_CFG, AMD_DR_GT_B0, AMD_PTYPE_ALL,
 	  0 << 1, 0x00000000,
 	  1 << 1, 0x00000000 },		/* IDX_MATCH_ALL=0 */
 
@@ -261,8 +261,11 @@ static const struct {
 	{ 3, 0xA0, AMD_FAM10_ALL, AMD_PTYPE_MOB | AMD_PTYPE_DSK,
 	  0x00000080, 0x00000080 },	/* [7] PSIVidEnable */
 
-	{ 3, 0xA0, AMD_FAM10_ALL, AMD_PTYPE_ALL,
-	  0x00001800, 0x000003800 },	/* [13:11] PllLockTime = 3 */
+	{ 3, 0xA0, AMD_DR_Bx, AMD_PTYPE_ALL,
+	  0x00002800, 0x000003800 },	/* [13:11] PllLockTime = 5 */
+
+	{ 3, 0xA0, (AMD_FAM10_ALL & ~(AMD_DR_Bx)), AMD_PTYPE_ALL,
+	  0x00000800, 0x000003800 },	/* [13:11] PllLockTime = 1 */
 
 	/* Reported Temp Control Register */
 	{ 3, 0xA4, AMD_FAM10_ALL, AMD_PTYPE_ALL,

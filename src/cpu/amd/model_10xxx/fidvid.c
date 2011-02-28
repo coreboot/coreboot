@@ -85,6 +85,58 @@ static void enableNbPState1( device_t dev ) {
   }
 }
 
+static u8 setPStateMaxVal( device_t dev ) {
+      u8 i,maxpstate=0;  
+      for (i = 0; i < NM_PS_REG; i++) {
+         msr_t msr =  rdmsr(PS_REG_BASE + i);
+         if (msr.hi & PS_IDD_VALUE_MASK) {
+	   msr.hi |= PS_EN_MASK ;
+	     wrmsr(PS_REG_BASE + i, msr);
+	 }
+         if (msr.hi | PS_EN_MASK) {
+	   maxpstate = i;
+	 }
+      }
+      //FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
+      u32 reg = pci_read_config32(dev, CPTC2);
+      reg &= PS_MAX_VAL_MASK;
+      reg |= (maxpstate << PS_MAX_VAL_POS);
+      pci_write_config32(dev, CPTC2,reg);
+      return maxpstate;
+}
+
+static void dualPlaneOnly(  device_t dev ) {
+  // BKDG 2.4.2.7
+
+  u32 cpuRev =  mctGetLogicalCPUID(0xFF);
+  if ((mctGetProcessorPackageType() ==  AMD_PKGTYPE_AM3_2r2)
+      && (cpuRev & AMD_DR_Cx)) { // should be rev C or rev E but there's no constant for E
+    if ( (pci_read_config32(dev, 0x1FC) & DUAL_PLANE_ONLY_MASK)
+	 && (pci_read_config32(dev, 0xA0) & PVI_MODE) ){
+      if (cpuid_edx(0x80000007) & CPB_MASK) {
+          // revision E only, but E is apparently not supported yet, therefore untested
+         msr_t minPstate = rdmsr(0xC0010065);
+         wrmsr(0xC0010065, rdmsr(0xC0010068) );
+         wrmsr(0xC0010068,minPstate);
+      } else {
+	 msr_t msr;
+         msr.lo=0; msr.hi=0;
+         wrmsr(0xC0010064, rdmsr(0xC0010068) );
+         wrmsr(0xC0010068, msr );
+      }  
+      
+      //FIXME: CPTC2 and HTC_REG should get max per node, not per core ?
+      u8 maxpstate = setPStateMaxVal(dev);
+
+      u32 reg = pci_read_config32(dev, HTC_REG);
+      reg &= HTC_PS_LMT_MASK;
+      reg |= (maxpstate << PS_LIMIT_POS);
+      pci_write_config32(dev, HTC_REG,reg);
+
+    }
+  }
+}
+
 static void setVSRamp(device_t dev) {
 	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime]
          * If this field accepts 8 values between 10 and 500 us why
@@ -819,6 +871,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	dtemp |= PLLLOCK_DFT_L;
 	pci_write_config32(dev, 0xA0, dtemp);
 
+        dualPlaneOnly(dev);
         enableNbPState1(dev);
 	finalPstateChange();
 

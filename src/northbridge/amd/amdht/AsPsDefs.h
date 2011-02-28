@@ -191,6 +191,7 @@
 #define NB_SYN_PTR_ADJ_MASK (0x7 << NB_SYN_PTR_ADJ_POS)  /* NbsynPtrAdj bit mask */
 
 #define PRCT_INFO 0x1fc		/* Product Info Register */
+#define DUAL_PLANE_ONLY_MASK 0x80000000  /* F3x1FC[DualPlaneOnly] */
 #define UNI_NB_FID_BIT 2		/* UniNbFid bit position */
 #define UNI_NB_VID_BIT 7		/* UniNbVid bit position */
 #define SPLT_NB_FID_OFFSET 14		/* SpltNbFidOffset value bit position */
@@ -199,6 +200,8 @@
 #define NB_VID_UPDATE_ALL 0x02		/* F3x1FC[NbVidUpdatedAll] bit mask */
 #define C_FID_DID_M_OFF  0xfffffe00	/* mask off Core FID & DID */
 
+#define CPB_MASK 0x00000020             /* core performance
+					   boost. CPUID Fn8000 0007 edx */
 #define PW_CTL_MISC 0x0a0		/* Power Control Miscellaneous Register */
 #define COF_VID_PROG_BIT 0x80000000	/* CofVidProg bit. 0= unfused part */
 #define DUAL_VDD_BIT 0x40000000	/* DualVdd bit. */

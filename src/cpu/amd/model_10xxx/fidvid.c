@@ -394,19 +394,6 @@ static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
 	} else {	/* SVI */
 		/* set slamVidMode to 1 for SVI */
 		dword |= VID_SLAM_ON;
-
-		u32 dtemp = dword;
-
-		/* Program F3xD8[PwrPlanes] according F3xA0[DulaVdd]  */
-		dword = pci_read_config32(dev, 0xD8);
-
-		if (dtemp & DUAL_VDD_BIT)
-			dword |= PWR_PLN_ON;
-		else
-			dword &= PWR_PLN_OFF;
-		pci_write_config32(dev, 0xD8, dword);
-
-                dword = dtemp;
         }
         /* set the rest of A0 since we're at it... */
 

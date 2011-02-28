@@ -61,6 +61,8 @@
 #define PS_NB_VID_SHFT 25		/* P-state NBVID shift */
 #define PS_DIS 0x7fffffff		/* disable P-state reg */
 #define PS_EN 0x80000000		/* enable P-state reg */
+#define PS_CPU_FID_MASK 0x03f           /* MSRC001_00[68:64][CpuFid]
+					   Core Frequency Id */
 #define PS_CURDIV_SHFT 8		/* P-state Current Divisor shift position */
 #define PS_CPUDID_SHIFT 6		/* P-state CPU DID shift position */
 
@@ -202,6 +204,8 @@
 
 #define CPB_MASK 0x00000020             /* core performance
 					   boost. CPUID Fn8000 0007 edx */
+#define NC_MASK 0x000000FF              /* number of cores - 1. CPUID
+					   Fn8000 0008 ecx */
 #define PW_CTL_MISC 0x0a0		/* Power Control Miscellaneous Register */
 #define COF_VID_PROG_BIT 0x80000000	/* CofVidProg bit. 0= unfused part */
 #define DUAL_VDD_BIT 0x40000000	/* DualVdd bit. */

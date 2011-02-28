@@ -65,6 +65,24 @@ static void enable_fid_change(u8 fid)
 		       dword);
 	}
 }
+
+static void applyBoostFIDOffset(  device_t dev ) {
+  // BKDG 2.4.2.8
+  // revision E only, but E is apparently not supported yet, therefore untested
+  if ((cpuid_edx(0x80000007) & CPB_MASK)
+      &&  ((cpuid_ecx(0x80000008) & NC_MASK) ==5) ) {
+      u32 core =  get_node_core_id_x().coreid;
+      u32 asymetricBoostThisCore = ((pci_read_config32(dev, 0x10C) >> (core*2))) & 3;
+      msr_t msr =  rdmsr(PS_REG_BASE);
+      u32 cpuFid = msr.lo & PS_CPU_FID_MASK;
+      cpuFid = cpuFid + asymetricBoostThisCore;
+      msr.lo &=   ~PS_CPU_FID_MASK;
+      msr.lo |= cpuFid ; 
+      wrmsr(PS_REG_BASE , msr);
+    
+  }
+}
+
 static void enableNbPState1( device_t dev ) {
   u32 cpuRev =  mctGetLogicalCPUID(0xFF);
   if (cpuRev & AMD_FAM10_C3) {
@@ -872,7 +890,9 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	pci_write_config32(dev, 0xA0, dtemp);
 
         dualPlaneOnly(dev);
+        applyBoostFIDOffset(dev);
         enableNbPState1(dev);
+
 	finalPstateChange();
 
 	/* Set TSC to tick at the P0 ndfid rate */

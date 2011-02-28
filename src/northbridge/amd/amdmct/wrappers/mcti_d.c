@@ -340,6 +340,39 @@ static void mctHookAfterDramInit(void)
 }
 
 #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+static void coreDelay(u32 microseconds)
+{
+	msr_t now;
+	msr_t end;
+	u32 cycles;
+
+	/* delay ~40us
+	   This seems like a hack to me...
+	   It would be nice to have a central delay function. */
+
+	cycles = (microseconds * 100) << 3;  /* x8 (number of 1.25ns ticks) */
+
+        if (!(rdmsr(HWCR).lo & TSC_FREQ_SEL_MASK)) {
+            msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
+            if (!(rdmsr(0xC0010064+pstate_msr.lo).lo & NB_DID_M_ON)) {
+	      cycles = cycles <<1; // half freq, double cycles
+	    }
+	} // else should we keep p0 freq at the time of setting TSC_FREQ_SEL_MASK somewhere and check it here ?
+
+	now = rdmsr(TSC_MSR);
+        // avoid overflow when called near 2^32 ticks ~ 5.3 s boundaries
+	if (0xffffffff - cycles >= now.lo ) {
+	  end.hi =  now.hi;
+          end.lo = now.lo + cycles;
+	} else {
+          end.hi = now.hi +1; //
+          end.lo = cycles - (1+(0xffffffff - now.lo));
+	}
+	do {
+          now = rdmsr(TSC_MSR);
+        } while ((now.hi < end.hi) || ((now.hi == end.hi) && (now.lo < end.lo)));
+}
+
 /* Erratum 350 */
 static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {
@@ -385,7 +418,7 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 
 	print_t("vErrata350: step 3\n");
 	/* 3. Wait at least 300 nanoseconds. */
-	coreDelay();
+	coreDelay(1);
 
 	print_t("vErrata350: step 4\n");
 	/* 4. Write 0000_0000h to register F2x[1, 0]9C_xD080F0C. */
@@ -398,7 +431,7 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 
 	print_t("vErrata350: step 5\n");
 	/* 5. Wait at least 2 microseconds. */
-	coreDelay();
+	coreDelay(2);
 
 }
 

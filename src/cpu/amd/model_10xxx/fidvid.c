@@ -179,16 +179,51 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	pci_write_config32(dev, 0xd8, dtemp);
 }
 
-static u32 power_up_down(int node) {
+static u32 nb_clk_did(int node, u32 cpuRev,u8 procPkg) {
+        u8 link0isGen3 = 0; 
+        u8 offset;
+        if (AMD_CpuFindCapability(node, 0, &offset)) {
+	  link0isGen3 = (AMD_checkLinkType(node, 0, offset) & HTPHY_LINKTYPE_HT3 );
+	}
+        /* FIXME: NB_CLKDID should be 101b for AMD_DA_C2 in package 
+           S1g3 in link Gen3 mode, but I don't know how to tell 
+           package S1g3 from S1g4 */  
+	if ((cpuRev & AMD_DA_C2) && (procPkg & AMD_PKGTYPE_S1gX) 
+           && link0isGen3) {
+	  return 5 ; /* divide clk by 128*/  
+        } else {  
+	  return 4 ; /* divide clk by 16 */
+        }
+}
+
+
+static u32 power_up_down(int node, u8 procPkg) {
        u32 dword=0;
-	/* check platform type */
-	if (!(get_platform_type() & AMD_PTYPE_SVR)) {
-		/* For non-server platform
-		 * PowerStepUp=01000b - 50nS
-		 * PowerStepDown=01000b - 50ns
-		 */
-        	dword |= PW_STP_UP50 | PW_STP_DN50 ; 
+        /* from CPU rev guide #41322 rev 3.74 June 2010 Table 26 */
+        u8 singleLinkFlag = ((procPkg == AMD_PKGTYPE_AM3_2r2) 
+                             || (procPkg == AMD_PKGTYPE_S1gX) 
+                             || (procPkg == AMD_PKGTYPE_ASB2));
+
+        if (singleLinkFlag) {
+	  /*	 
+           * PowerStepUp=01000b - 50nS
+	   * PowerStepDown=01000b - 50ns
+	   */
+	  dword |= PW_STP_UP50 | PW_STP_DN50;
 	} else {
+          u32 dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1; 
+          u32 isocEn = 0;
+          int j; 
+	  for(j=0 ; (j<4) && (!isocEn) ; j++ ) {
+	    u8 offset;
+	    if (AMD_CpuFindCapability(node, j, &offset)) {
+	      isocEn = (pci_read_config32(NODE_PCI(node,0),offset+4) >>12) & 1;
+	    }
+          }  
+
+          if (dispRefModeEn || isocEn) {
+        	dword |= PW_STP_UP50 | PW_STP_DN50 ; 
+          } else {
 		/* get number of cores for PowerStepUp & PowerStepDown in server
 		   1 core - 400nS  - 0000b
 		   2 cores - 200nS - 0010b
@@ -210,28 +245,31 @@ static u32 power_up_down(int node) {
 			dword |= PW_STP_UP100 | PW_STP_DN100;
 			break;
 		}
+	  }
 	}
         return dword; 
 }
 
-static void config_clk_power_ctrl_reg0(int node) {         
+static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {         
        	device_t dev = NODE_PCI(node, 3);
-
 
 	/* Program fields in Clock Power/Control register0 (F3xD4) */
 
 	/* set F3xD4 Clock Power/Timing Control 0 Register
 	 * NbClkDidApplyAll=1b
-	 * NbClkDid=100b
+	 * NbClkDid=100b or 101b 
 	 * PowerStepUp= "platform dependent"
 	 * PowerStepDown= "platform dependent"
 	 * LinkPllLink=01b
-	 * ClkRampHystSel=HW default
+	 * ClkRampHystCtl=HW default
+         * ClkRampHystSel=1111b
 	 */
         u32 dword= pci_read_config32(dev, 0xd4);
 	dword &= CPTC0_MASK;
-	dword |= NB_CLKDID_ALL | NB_CLKDID | LNK_PLL_LOCK;	/* per BKDG */
-        dword |= power_up_down(node);
+        dword |= NB_CLKDID_ALL | LNK_PLL_LOCK | CLK_RAMP_HYST_SEL_VAL;
+        dword |= (nb_clk_did(node,cpuRev,procPkg) <<  NB_CLKDID_SHIFT);
+
+        dword |= power_up_down(node, procPkg);
 
 	pci_write_config32(dev, 0xd4, dword);
 
@@ -296,13 +334,15 @@ static void prep_fid_change(void)
 	for (i = 0; i < nodes; i++) {
 		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x \n", i);
 		dev = NODE_PCI(i, 3);
+                u32 cpuRev = mctGetLogicalCPUID(0xFF) ;
+	        u8 procPkg =  mctGetProcessorPackageType();
 
 		setVSRamp(dev);
 		/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSSlamTime] */
 		/* Figure out the value for VsSlamTime and program it */
 		recalculateVsSlamTimeSettingOnCorePre(dev);
 
-		config_clk_power_ctrl_reg0(i);
+                config_clk_power_ctrl_reg0(i,cpuRev,procPkg);
 
                 config_power_ctrl_misc_reg(dev);
 

@@ -134,3 +134,13 @@
 #define DC_CFG			0xC0011022
 #define BU_CFG			0xC0011023
 #define BU_CFG2		0xC001102A
+
+/*
+ * Processor package types 
+ */
+#define AMD_PKGTYPE_FrX_1207 0
+#define AMD_PKGTYPE_AM3_2r2 1
+#define AMD_PKGTYPE_S1gX 2
+#define AMD_PKGTYPE_G34 3
+#define AMD_PKGTYPE_ASB2 4
+#define AMD_PKGTYPE_C32 5

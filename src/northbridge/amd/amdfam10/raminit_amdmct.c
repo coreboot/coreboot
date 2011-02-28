@@ -214,6 +214,11 @@ u32 mctGetLogicalCPUID(u32 Node)
 	return ret;
 }
 
+static u8 mctGetProcessorPackageType(void) {
+	/* FIXME: I guess this belongs wherever mctGetLogicalCPUID ends up ? */
+     u32 BrandId = cpuid_ebx(0x80000001);
+     return (u8)((BrandId >> 28) & 0x0F);
+}
 
 static void raminit_amdmct(struct sys_info *sysinfo)
 {

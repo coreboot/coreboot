@@ -111,6 +111,7 @@
 #define NB_FID_EN 0x20			/* NbFidEn bit ON */
 #define NB_CLKDID_ALL 0x80000000	/* NbClkDidApplyAll bit ON */
 #define NB_CLKDID     0x40000000	/* NbClkDid value set by BIOS */
+#define NB_CLKDID_SHIFT   28	        /* NbClkDid bit shift */
 #define PW_STP_UP50   0x08000000	/* PowerStepUp 50nS(1000b) */
 #define PW_STP_DN50   0x00800000	/* PowerStepDown 50nS (1000b)*/
 #define PW_STP_UP100  0x03000000	/* PowerStepUp 100nS(0011b) */
@@ -119,6 +120,11 @@
 #define PW_STP_DN200  0x00200000	/* PowerStepDown 200nS (0010b)*/
 #define PW_STP_UP400  0x00000000	/* PowerStepUp 400nS(0000b) */
 #define PW_STP_DN400  0x00000000	/* PowerStepDown 400nS (0000b)*/
+#define CLK_RAMP_HYST_SEL_VAL 0x00000f00 /* value mask for clock ramp
+					    hysteresis select. BIOS
+					    should program
+					    F3xC4[ClkRampHystSel] to
+					    1111b */
 
 
 #define LNK_PLL_LOCK  0x00010000	/* LnkPllLock value set (01b) by BIOS */

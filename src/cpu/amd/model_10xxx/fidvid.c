@@ -280,7 +280,6 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev) {
 	pci_write_config32(dev, 0x84, dword);
 	dword = 0xE600A681;
 	pci_write_config32(dev, 0x80, dword);
-
 }
 
 static void prep_fid_change(void)
@@ -522,23 +521,18 @@ static u32 needs_NB_COF_VID_update(void)
 	return nb_cof_vid_update;
 }
 
-static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
+static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 {
 	device_t dev;
 	u32 vid_max;
-	u32 fid_max;
+	u32 fid_max=0;
 	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
 	u8 pvimode;
 	u32 reg1fc;
-	u32 send;
-
-	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
 
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems.
 	 */
-
-
 
 	dev = NODE_PCI(nodeid, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
@@ -565,7 +559,17 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 			UpdateSinglePlaneNbVid();
 	}
 
-	send = (nb_cof_vid_update << 16) | (fid_max << 8);
+	return ((nb_cof_vid_update << 16) | (fid_max << 8));
+
+}
+
+static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
+{
+	u32 send;
+
+	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
+
+        send = init_fidvid_core(nodeid,coreid); 
 	send |= (apicid << 24);	// ap apicid
 
 	// Send signal to BSP about this AP max fid
@@ -783,48 +787,15 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	u32 i;
 #endif
 	struct fidvid_st fv;
-	device_t dev;
-	u32 vid_max;
-	u32 fid_max=0;
-	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
-	u32 reg1fc;
-	u8 pvimode;
 
 	printk(BIOS_DEBUG, "FIDVID on BSP, APIC_id: %02x\n", bsp_apicid);
-	/* FIXME: The first half of this function is nearly the same as
-	 * init_fidvid_bsp() and the code could be combined.
-	 */
 
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems.
 	 */
 
-	dev = NODE_PCI(0, 3);
-	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
-	reg1fc = pci_read_config32(dev, 0x1FC);
+	fv.common_fid = init_fidvid_core(0,0);
 
-	if (nb_cof_vid_update) {
-		if (pvimode) {
-			vid_max = (reg1fc >> 7) & 0x7F;
-			fid_max = (reg1fc >> 2) & 0x1F;
-
-			/* write newNbVid to P-state Reg's NbVid always if NbVidUpdatedAll=1 */
-			fixPsNbVidBeforeWR(vid_max, 0);
-		} else {	/* SVI */
-			vid_max = ((reg1fc >> 7) & 0x7F) - ((reg1fc >> 17) & 0x1F);
-			fid_max = ((reg1fc >> 2) & 0x1F) + ((reg1fc >> 14) & 0x7);
-			transitionVid(vid_max, dev, IS_NB);
-		}
-
-		/*  fid setup is handled by the BSP at the end. */
-
-	} else {		/* ! nb_cof_vid_update */
-		/* Use max values */
-		if (pvimode)
-			UpdateSinglePlaneNbVid();
-	}
-
-	fv.common_fid = (nb_cof_vid_update << 16) | (fid_max << 8);
 	print_debug_fv("BSP fid = ", fv.common_fid);
 
 #if CONFIG_SET_FIDVID_STORE_AP_APICID_AT_FIRST && !CONFIG_SET_FIDVID_CORE0_ONLY

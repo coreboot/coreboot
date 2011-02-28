@@ -321,14 +321,26 @@ static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
 	pci_write_config32(dev, 0xA0, dword);
 }
             
-static void config_nb_syn_ptr_adj(device_t dev) {
+static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
 	/* Note the following settings are additional from the ported
 	 * function setFidVidRegs()
 	 */
-	u32 dword = pci_read_config32(dev, 0xDc);
-	dword |= 0x5 << 12;	/* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
-	pci_write_config32(dev, 0xdc, dword);
+        /* adjust FIFO between nb and core clocks to max allowed 
+           values (min latency) */ 
+	u32 nbPstate = pci_read_config32(dev,0x1f0) & NB_PSTATE_MASK;
+        u8 nbSynPtrAdj;
+	if ((cpuRev & (AMD_DR_Bx|AMD_DA_Cx) )
+	    || ( (cpuRev & AMD_RB_C3) && (nbPstate!=0)))  { 
+	  nbSynPtrAdj = 5;   
+	} else {
+          nbSynPtrAdj = 6;
+	}
 
+	u32 dword = pci_read_config32(dev, 0xDc);
+        dword &= ~ NB_SYN_PTR_ADJ_MASK;
+	dword |= nbSynPtrAdj << NB_SYN_PTR_ADJ_POS;	
+        /* NbsynPtrAdj set to 5 or 6 per BKDG (needs reset) */
+	pci_write_config32(dev, 0xdc, dword);
 }
 
 static void config_acpi_pwr_state_ctrl_regs(device_t dev) {
@@ -364,7 +376,7 @@ static void prep_fid_change(void)
                 config_clk_power_ctrl_reg0(i,cpuRev,procPkg);
 
                 config_power_ctrl_misc_reg(dev,cpuRev,procPkg);                       
- 		config_nb_syn_ptr_adj(dev);
+		config_nb_syn_ptr_adj(dev,cpuRev);
 
                 config_acpi_pwr_state_ctrl_regs(dev);
 

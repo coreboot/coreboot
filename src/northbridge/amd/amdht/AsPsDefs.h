@@ -181,6 +181,8 @@
 #define CPTC2 0xdc			/* Clock Power/Timing Control2 Register*/
 #define PS_MAX_VAL_POS 8		/* PstateMaxValue bit shift */
 #define PS_MAX_VAL_MASK 0xfffff8ff	/* PstateMaxValue Mask off */
+#define NB_SYN_PTR_ADJ_POS 12            /* NbsynPtrAdj bit shift */
+#define NB_SYN_PTR_ADJ_MASK (0x7 << NB_SYN_PTR_ADJ_POS)  /* NbsynPtrAdj bit mask */
 
 #define PRCT_INFO 0x1fc		/* Product Info Register */
 #define UNI_NB_FID_BIT 2		/* UniNbFid bit position */
@@ -223,6 +225,10 @@
 
 /* F4x1F4 Northbridge P-state spec register */
 #define NB_PS_SPEC_REG 0x1f4		/* Nb PS spec reg */
+
+/* F3x1F0 Product Information Register */
+#define NB_PSTATE_MASK 0x00070000 /* NbPstate for CPU rev C3 */
+
 
 #define NM_PS_REG 5			/* number of P-state MSR registers */
 

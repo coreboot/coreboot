@@ -198,12 +198,29 @@ static void rl5c476_set_resources(device_t dev)
 
 }
 
+static void rl5c476_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+       u16 miscreg = pci_read_config16(dev, 0x82);
+       /* Enable subsystem id register writes */
+       pci_write_config16(dev, 0x82, miscreg | 0x40);
+
+       pci_write_config16(dev, 0x40, vendor);
+       pci_write_config16(dev, 0x42, device);
+       /* restore original contents */
+       pci_write_config16(dev, 0x82, miscreg);
+}
+
+static struct pci_operations rl5c476_pci_ops = {
+       .set_subsystem    = rl5c476_set_subsystem,
+};
+
 static struct device_operations ricoh_rl5c476_ops = {
 	.read_resources   = rl5c476_read_resources,
 	.set_resources    = rl5c476_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init             = rl5c476_init,
 	.scan_bus         = pci_scan_bridge,
+	.ops_pci          = &rl5c476_pci_ops,
 };
 
 static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {

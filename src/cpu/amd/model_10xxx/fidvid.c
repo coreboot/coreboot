@@ -712,36 +712,17 @@ static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp)
 
 }
 
-static void updateSviPsNbVidAfterWR(u32 newNbVid)
-{
-	msr_t msr;
-	u8 i;
-
-	/* This function copies newNbVid to NbVid bits in P-state Registers[4:0]
-	 * for SVI mode.
-	 */
-
-	for (i = 0; i < 5; i++) {
-		msr = rdmsr(0xC0010064 + i);
-		if ((msr.hi >> 31) & 1) {	/* PstateEn? */
-			msr.lo &= ~(0x7F << 25);
-			msr.lo |= (newNbVid & 0x7F) << 25;
-			wrmsr(0xC0010064 + i, msr);
-		}
-	}
-}
-
-
-static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll)
+static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll,u8 pviMode) 
 {
 	msr_t msr;
 	u8 i;
 	u8 StartupPstate;
 
-	/* This function copies newNbVid to NbVid bits in P-state
-	 * Registers[4:0] if its NbDid bit=0 and PstateEn bit =1 in case of
-	 * NbVidUpdatedAll =0 or copies copies newNbVid to NbVid bits in
-	 * P-state Registers[4:0] if its and PstateEn bit =1 in case of
+	/* BKDG 2.4.2.9.1 11-12
+         * This function copies newNbVid to NbVid bits in P-state
+	 * Registers[4:0] if its NbDid bit=0, and IddValue!=0 in case of
+	 * NbVidUpdatedAll =0 or copies newNbVid to NbVid bits in
+	 * P-state Registers[4:0] if its IddValue!=0 in case of
 	 * NbVidUpdatedAll=1. Then transition to StartPstate.
 	 */
 
@@ -749,26 +730,28 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll)
 	for (i = 0; i < 5; i++) {
 		msr = rdmsr(0xC0010064 + i);
 		/*  NbDid (bit 22 of P-state Reg) == 0  or NbVidUpdatedAll = 1 */
-		if ((((msr.lo >> 22) & 1) == 0) || NbVidUpdatedAll) {
-			msr.lo &= ~(0x7F << 25);
-			msr.lo |= (newNbVid & 0x7F) << 25;
+		if (   (msr.hi & PS_IDD_VALUE_MASK) 
+                    && (msr.hi & PS_EN_MASK)
+                    &&(((msr.lo & PS_NB_DID_MASK) == 0) || NbVidUpdatedAll)) {
+			msr.lo &= PS_NB_VID_M_OFF;
+			msr.lo |= (newNbVid & 0x7F) << PS_NB_VID_SHFT;
 			wrmsr(0xC0010064 + i, msr);
 		}
 	}
 
-	UpdateSinglePlaneNbVid();
-
+        /* Not documented. Would overwrite Nb_Vids just copied
+         * should we just update cpu_vid or nothing at all ?
+	 */
+	if (pviMode) { //single plane
+            UpdateSinglePlaneNbVid();
+	}
 	/* For each core in the system, transition all cores to StartupPstate */
 	msr = rdmsr(0xC0010071);
 	StartupPstate = msr.hi & 0x07;
-	msr = rdmsr(0xC0010062);
-	msr.lo = StartupPstate;
-	wrmsr(0xC0010062, msr);
+       
+	/* Set and wait for StartupPstate to set. */
+        set_pstate(StartupPstate);
 
-	/* Wait for StartupPstate to set. */
-	do {
-		msr = rdmsr(0xC0010063);
-	} while (msr.lo != StartupPstate);
 }
 
 static void finalPstateChange(void)
@@ -803,15 +786,12 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	NbVidUpdateAll = (reg1fc >> 1) & 1;
 
 	if (nb_cof_vid_update) {
-		if (pvimode) {
-			nbvid = (reg1fc >> 7) & 0x7F;
-			/* write newNbVid to P-state Reg's NbVid if its NbDid=0 */
-			fixPsNbVidAfterWR(nbvid, NbVidUpdateAll);
-		} else {	/* SVI */
-			nbvid = ((reg1fc >> 7) & 0x7F) - ((reg1fc >> 17) & 0x1F);
-			updateSviPsNbVidAfterWR(nbvid);
+		if (!pvimode) {	/* SVI */
+			nbvid = nbvid - ((reg1fc >> 17) & 0x1F);
 		}
-	} else {		/* !nb_cof_vid_update */
+		/* write newNbVid to P-state Reg's NbVid if its NbDid=0 */
+		fixPsNbVidAfterWR(nbvid, NbVidUpdateAll,pvimode);
+ 	} else {		/* !nb_cof_vid_update */
 		if (pvimode)
 			UpdateSinglePlaneNbVid();
 	}

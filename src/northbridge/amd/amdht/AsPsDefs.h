@@ -44,6 +44,10 @@
 #define PS_REG3 3			/* offset for P3 */
 #define PS_REG4 4			/* offset for P4 */
 
+#define PS_IDD_VALUE_SHFT 0            /* IddValue: current value
+					  field offset for msr.hi */
+#define PS_IDD_VALUE_MASK 0xFF         /* IddValue: current value
+					  field mask for msr.hi */
 #define PS_PSDIS_MASK	0x7fffffff	/* disable P-state register */
 #define PS_EN_MASK  0x80000000		/* P-state register enable mask */
 #define PS_NB_DID_MASK 0x400000	/* P-state Reg[NbDid] Mask */

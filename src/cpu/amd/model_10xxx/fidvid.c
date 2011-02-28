@@ -67,13 +67,13 @@ static void enable_fid_change(u8 fid)
 }
 
 static void setVSRamp(device_t dev) {
-	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime] 
-         * If this field accepts 8 values between 10 and 500 us why 
-         * does page 324 say "BIOS should set this field to 001b." 
+	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime]
+         * If this field accepts 8 values between 10 and 500 us why
+         * does page 324 say "BIOS should set this field to 001b."
          * (20 us) ?
          * Shouldn't it depend on the voltage regulators, mainboard
-         * or something ? 
-         */ 
+         * or something ?
+         */
         u32 dword;
 	dword = pci_read_config32(dev, 0xd8);
 	dword &= VSRAMP_MASK;
@@ -180,18 +180,18 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 }
 
 static u32 nb_clk_did(int node, u32 cpuRev,u8 procPkg) {
-        u8 link0isGen3 = 0; 
+        u8 link0isGen3 = 0;
         u8 offset;
         if (AMD_CpuFindCapability(node, 0, &offset)) {
 	  link0isGen3 = (AMD_checkLinkType(node, 0, offset) & HTPHY_LINKTYPE_HT3 );
 	}
-        /* FIXME: NB_CLKDID should be 101b for AMD_DA_C2 in package 
-           S1g3 in link Gen3 mode, but I don't know how to tell 
-           package S1g3 from S1g4 */  
-	if ((cpuRev & AMD_DA_C2) && (procPkg & AMD_PKGTYPE_S1gX) 
+        /* FIXME: NB_CLKDID should be 101b for AMD_DA_C2 in package
+           S1g3 in link Gen3 mode, but I don't know how to tell
+           package S1g3 from S1g4 */
+	if ((cpuRev & AMD_DA_C2) && (procPkg & AMD_PKGTYPE_S1gX)
            && link0isGen3) {
-	  return 5 ; /* divide clk by 128*/  
-        } else {  
+	  return 5 ; /* divide clk by 128*/
+        } else {
 	  return 4 ; /* divide clk by 16 */
         }
 }
@@ -200,29 +200,29 @@ static u32 nb_clk_did(int node, u32 cpuRev,u8 procPkg) {
 static u32 power_up_down(int node, u8 procPkg) {
        u32 dword=0;
         /* from CPU rev guide #41322 rev 3.74 June 2010 Table 26 */
-        u8 singleLinkFlag = ((procPkg == AMD_PKGTYPE_AM3_2r2) 
-                             || (procPkg == AMD_PKGTYPE_S1gX) 
+        u8 singleLinkFlag = ((procPkg == AMD_PKGTYPE_AM3_2r2)
+                             || (procPkg == AMD_PKGTYPE_S1gX)
                              || (procPkg == AMD_PKGTYPE_ASB2));
 
         if (singleLinkFlag) {
-	  /*	 
+	  /*
            * PowerStepUp=01000b - 50nS
 	   * PowerStepDown=01000b - 50ns
 	   */
 	  dword |= PW_STP_UP50 | PW_STP_DN50;
 	} else {
-          u32 dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1; 
+          u32 dispRefModeEn = (pci_read_config32(NODE_PCI(node,0),0x68) >> 24) & 1;
           u32 isocEn = 0;
-          int j; 
+          int j;
 	  for(j=0 ; (j<4) && (!isocEn) ; j++ ) {
 	    u8 offset;
 	    if (AMD_CpuFindCapability(node, j, &offset)) {
 	      isocEn = (pci_read_config32(NODE_PCI(node,0),offset+4) >>12) & 1;
 	    }
-          }  
+          }
 
           if (dispRefModeEn || isocEn) {
-        	dword |= PW_STP_UP50 | PW_STP_DN50 ; 
+        	dword |= PW_STP_UP50 | PW_STP_DN50 ;
           } else {
 		/* get number of cores for PowerStepUp & PowerStepDown in server
 		   1 core - 400nS  - 0000b
@@ -247,17 +247,17 @@ static u32 power_up_down(int node, u8 procPkg) {
 		}
 	  }
 	}
-        return dword; 
+        return dword;
 }
 
-static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {         
+static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
        	device_t dev = NODE_PCI(node, 3);
 
 	/* Program fields in Clock Power/Control register0 (F3xD4) */
 
 	/* set F3xD4 Clock Power/Timing Control 0 Register
 	 * NbClkDidApplyAll=1b
-	 * NbClkDid=100b or 101b 
+	 * NbClkDid=100b or 101b
 	 * PowerStepUp= "platform dependent"
 	 * PowerStepDown= "platform dependent"
 	 * LinkPllLink=01b
@@ -275,7 +275,7 @@ static void config_clk_power_ctrl_reg0(int node, u32 cpuRev, u8 procPkg) {
 
 }
 
-static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) { 
+static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
 	/* check PVI/SVI */
 	u32 dword = pci_read_config32(dev, 0xA0);
 
@@ -302,10 +302,10 @@ static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
                 dword = dtemp;
         }
         /* set the rest of A0 since we're at it... */
-        
-        if (cpuRev & (AMD_DA_Cx | AMD_RB_C3 )) { 
+
+        if (cpuRev & (AMD_DA_Cx | AMD_RB_C3 )) {
 	     dword |= NB_PSTATE_FORCE_ON;
-	} // else should we clear it ? 
+	} // else should we clear it ?
 
 
         if ((procPkg == AMD_PKGTYPE_G34) || (procPkg == AMD_PKGTYPE_C32) ) {
@@ -320,41 +320,41 @@ static void config_power_ctrl_misc_reg(device_t dev,u32 cpuRev, u8 procPkg) {
         #endif
 	pci_write_config32(dev, 0xA0, dword);
 }
-            
+
 static void config_nb_syn_ptr_adj(device_t dev, u32 cpuRev) {
 	/* Note the following settings are additional from the ported
 	 * function setFidVidRegs()
 	 */
-        /* adjust FIFO between nb and core clocks to max allowed 
-           values (min latency) */ 
+        /* adjust FIFO between nb and core clocks to max allowed
+           values (min latency) */
 	u32 nbPstate = pci_read_config32(dev,0x1f0) & NB_PSTATE_MASK;
         u8 nbSynPtrAdj;
 	if ((cpuRev & (AMD_DR_Bx|AMD_DA_Cx) )
-	    || ( (cpuRev & AMD_RB_C3) && (nbPstate!=0)))  { 
-	  nbSynPtrAdj = 5;   
+	    || ( (cpuRev & AMD_RB_C3) && (nbPstate!=0)))  {
+	  nbSynPtrAdj = 5;
 	} else {
           nbSynPtrAdj = 6;
 	}
 
 	u32 dword = pci_read_config32(dev, 0xDc);
         dword &= ~ NB_SYN_PTR_ADJ_MASK;
-	dword |= nbSynPtrAdj << NB_SYN_PTR_ADJ_POS;	
+	dword |= nbSynPtrAdj << NB_SYN_PTR_ADJ_POS;
         /* NbsynPtrAdj set to 5 or 6 per BKDG (needs reset) */
 	pci_write_config32(dev, 0xdc, dword);
 }
 
 static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg) {
-                /* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */ 
+                /* step 1, chapter 2.4.2.6 of AMD Fam 10 BKDG #31116 Rev 3.48 22.4.2010 */
         u32 dword;
 	u32 c1= 1;
         if (cpuRev & (AMD_DR_Bx)) {
             // will coreboot ever enable cache scrubbing ?
             // if it does, will it be enough to check the current state
-            // or should we configure for what we'll set up later ? 
+            // or should we configure for what we'll set up later ?
             dword = pci_read_config32(dev, 0x58);
             u32 scrubbingCache = dword &
 	                        ( (0x1F << 16) // DCacheScrub
-		 	          | (0x1F << 8) ); // L2Scrub 
+		 	          | (0x1F << 8) ); // L2Scrub
  	    if (scrubbingCache) {
 	        c1 = 0x80;
 	    } else {
@@ -368,7 +368,7 @@ static void config_acpi_pwr_state_ctrl_regs(device_t dev, u32 cpuRev, u8 procPkg
        	       c1 = 0x80;
        	    }
        	}
-       	dword = (c1 << 24) | (0xE641E6); 
+       	dword = (c1 << 24) | (0xE641E6);
 	pci_write_config32(dev, 0x84, dword);
 
 
@@ -377,25 +377,25 @@ frequency and the chipset does not support a 10us minimum LDTSTOP
 assertion time, then { If ASB2 && SVI then smaf001 = F6h else
 smaf001=87h. } else ...  I hardly know what it means or how to check
 it from here, so I bluntly assume it is false and code here the else,
-which is easier  */ 
+which is easier  */
 
         u32 smaf001 = 0xE6;
         if (cpuRev & AMD_DR_Bx ) {
 	    smaf001 = 0xA6;
         } else {
             #if CONFIG_SVI_HIGH_FREQ
-                if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) { 
-		       smaf001 = 0xF6; 
+                if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) {
+		       smaf001 = 0xF6;
                 }
             #endif
         }
         u32 fidvidChange = 0;
         if (((cpuRev & AMD_DA_Cx) && (procPkg & AMD_PKGTYPE_S1gX))
-		    || (cpuRev & AMD_RB_C3) ) { 
+		    || (cpuRev & AMD_RB_C3) ) {
                        fidvidChange=0x0B;
-        } 
-	dword = (0xE6 << 24) | (fidvidChange << 16)  
-                        | (smaf001 << 8) | 0x81; 
+        }
+	dword = (0xE6 << 24) | (fidvidChange << 16)
+                        | (smaf001 << 8) | 0x81;
 	pci_write_config32(dev, 0x80, dword);
 }
 
@@ -423,7 +423,7 @@ static void prep_fid_change(void)
 
                 config_clk_power_ctrl_reg0(i,cpuRev,procPkg);
 
-                config_power_ctrl_misc_reg(dev,cpuRev,procPkg);                       
+                config_power_ctrl_misc_reg(dev,cpuRev,procPkg);
 		config_nb_syn_ptr_adj(dev,cpuRev);
 
                 config_acpi_pwr_state_ctrl_regs(dev,cpuRev,procPkg);
@@ -442,6 +442,62 @@ static void prep_fid_change(void)
 
 	}
 }
+
+static void waitCurrentPstate(u32 target_pstate){
+  msr_t initial_msr = rdmsr(TSC_MSR);
+  msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
+  msr_t tsc_msr;
+  u8 timedout ;
+
+  /* paranoia ? I fear when we run fixPsNbVidBeforeWR we can enter a
+   * P1 that is a copy of P0, therefore has the same NB DID but the
+   * TSC will count twice per tick, so we have to wait for twice the
+   * count to achieve the desired timeout. But I'm likely to
+   * misunderstand this...
+   */
+  u32 corrected_timeout = (    (pstate_msr.lo==1)
+			    && (!(rdmsr(0xC0010065).lo & NB_DID_M_ON)) ) ?
+                          WAIT_PSTATE_TIMEOUT*2 : WAIT_PSTATE_TIMEOUT  ;
+  msr_t timeout;
+
+  timeout.lo = initial_msr.lo + corrected_timeout ;
+  timeout.hi = initial_msr.hi;
+  if ( (((u32)0xffffffff) - initial_msr.lo) < corrected_timeout ) {
+     timeout.hi++;
+  }
+
+  // assuming TSC ticks at 1.25 ns per tick (800 MHz)
+  do {
+      pstate_msr = rdmsr(CUR_PSTATE_MSR);
+      tsc_msr = rdmsr(TSC_MSR);
+      timedout = (tsc_msr.hi > timeout.hi)
+        	|| ((tsc_msr.hi == timeout.hi) && (tsc_msr.lo > timeout.lo ));
+  } while ( (pstate_msr.lo != target_pstate) && (! timedout) ) ;
+
+  if (pstate_msr.lo != target_pstate) {
+    msr_t limit_msr = rdmsr(0xc0010061);
+    printk(BIOS_ERR, "*** Time out waiting for P-state %01x. Current P-state %01x P-state current limit MSRC001_0061=%02x\n", target_pstate, pstate_msr.lo, limit_msr.lo);
+
+    do { // should we just go on instead ?
+      pstate_msr = rdmsr(CUR_PSTATE_MSR);
+    } while ( pstate_msr.lo != target_pstate  ) ;
+  }
+}
+
+static void set_pstate(u32 nonBoostedPState) {
+  	msr_t msr;
+
+	// Transition P0 for calling core.
+	msr = rdmsr(0xC0010062);
+
+	msr.lo = nonBoostedPState;
+	wrmsr(0xC0010062, msr);
+
+	/* Wait for P0 to set. */
+        waitCurrentPstate(nonBoostedPState);
+}
+
+
 
 
 static void UpdateSinglePlaneNbVid(void)
@@ -468,157 +524,62 @@ static void UpdateSinglePlaneNbVid(void)
 	}
 }
 
-static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid)
-{
-	msr_t msr;
-	u8 startup_pstate;
+static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid, u32 dev, u8 pviMode)
+ {
+ 	msr_t msr;
+ 	u8 startup_pstate;
 
-	/* This function sets NbVid before the warm reset.
-	 *       Get StartupPstate from MSRC001_0071.
-	 *       Read Pstate register pionted by [StartupPstate].
-	 *       and copy its content to P0 and P1 registers.
-	 *       Copy newNbVid to P0[NbVid].
-	 *       transition to P1 on all cores,
-	 *       then transition to P0 on core 0.
-	 *       Wait for MSRC001_0063[CurPstate] = 000b on core 0.
-	 */
+ 	/* This function sets NbVid before the warm reset.
+ 	 *       Get StartupPstate from MSRC001_0071.
+	 *       Read Pstate register pointed by [StartupPstate].
+ 	 *       and copy its content to P0 and P1 registers.
+ 	 *       Copy newNbVid to P0[NbVid].
+ 	 *       transition to P1 on all cores,
+ 	 *       then transition to P0 on core 0.
+ 	 *       Wait for MSRC001_0063[CurPstate] = 000b on core 0.
+         * see BKDG rev 3.48  2.4.2.9.1 BIOS NB COF and VID Configuration
+         *                              for SVI and Single-Plane PVI Systems
+ 	 */
 
-	msr = rdmsr(0xc0010071);
+ 	msr = rdmsr(0xc0010071);
 	startup_pstate = (msr.hi >> (32 - 32)) & 0x07;
 
-	/* Copy startup pstate to P1 and P0 MSRs. Set the maxvid for this node in P0.
-	 * Then transition to P1 for corex and P0 for core0.
-	 * These setting will be cleared by the warm reset
+	/* Copy startup pstate to P1 and P0 MSRs. Set the maxvid for
+	 * this node in P0.  Then transition to P1 for corex and P0
+	 * for core0.  These setting will be cleared by the warm reset
 	 */
 	msr = rdmsr(0xC0010064 + startup_pstate);
 	wrmsr(0xC0010065, msr);
 	wrmsr(0xC0010064, msr);
 
+        /* missing step 2 from BDKG , F3xDC[PstateMaxVal] =
+         * max(1,F3xDC[PstateMaxVal] ) because it would take
+         * synchronization between cores and we don't think
+         * PstatMaxVal is going to be 0 on cold reset anyway ?
+	 */
+        if ( ! (pci_read_config32(dev, 0xDC) & (~ PS_MAX_VAL_MASK)) ) {
+  	   printk(BIOS_ERR,"F3xDC[PstateMaxVal] is zero. Northbridge voltage setting will fail. fixPsNbVidBeforeWR in fidvid.c needs fixing. See AMD # 31116 rev 3.48 BKDG 2.4.2.9.1 \n");
+	};
+
 	msr.lo &= ~0xFE000000;	// clear nbvid
-	msr.lo |= newNbVid << 25;
+	msr.lo |= (newNbVid << 25);
 	wrmsr(0xC0010064, msr);
 
-	UpdateSinglePlaneNbVid();
+	if (pviMode) { /* single plane*/
+	  UpdateSinglePlaneNbVid();
+        }
 
 	// Transition to P1 for all APs and P0 for core0.
-	msr = rdmsr(0xC0010062);
-	msr.lo = (msr.lo & ~0x07) | 1;
-	wrmsr(0xC0010062, msr);
-
-	// Wait for P1 to set.
-	do {
-		msr = rdmsr(0xC0010063);
-	} while (msr.lo != 1);
+        set_pstate(1);
 
 	if (coreid == 0) {
-		msr.lo = msr.lo & ~0x07;
-		wrmsr(0xC0010062, msr);
-		// Wait for P0 to set.
-		do {
-			msr = rdmsr(0xC0010063);
-		} while (msr.lo != 0);
-	}
-}
+             set_pstate(0);
+ 	}
 
-static void coreDelay(void)
-{
-	u32 saved;
-	u32 hi, lo, msr;
-	u32 cycles;
-
-	/* delay ~40us
-	   This seems like a hack to me...
-	   It would be nice to have a central delay function. */
-
-	cycles = 8000 << 3;	/* x8 (number of 1.25ns ticks) */
-
-	msr = 0x10;		/* TSC */
-	_RDMSR(msr, &lo, &hi);
-	saved = lo;
-	do {
-		_RDMSR(msr, &lo, &hi);
-	} while (lo - saved < cycles);
-}
-
-static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
-{
-	u32 currentVid, dtemp;
-	msr_t msr;
-	u8 vsTimecode;
-	u16 timeTable[8] = { 10, 20, 30, 40, 60, 100, 200, 500 };
-	int vsTime;
-
-	/* This function steps or slam the Nb VID to the target VID.
-	 * It uses VSRampTime for [SlamVidMode]=0 ([PviMode]=1)
-	 * or VSSlamTime for [SlamVidMode]=1 ([PviMode]=0)to time period.
+	/* missing step 7 (restore PstateMax to 0 if needed) because
+	 * we skipped step 2
 	 */
 
-	/* get the current VID */
-	msr = rdmsr(0xC0010071);
-	if (isNb)
-		currentVid = (msr.lo >> NB_VID_POS) & BIT_MASK_7;
-	else
-		currentVid = (msr.lo >> CPU_VID_POS) & BIT_MASK_7;
-
-	/* Read MSRC001_0070 COFVID Control Register */
-	msr = rdmsr(0xC0010070);
-
-	/* check PVI/SPI */
-	dtemp = pci_read_config32(dev, 0xA0);
-	if (dtemp & PVI_MODE) {	/* PVI, step VID */
-		if (currentVid < targetVid) {
-			while (currentVid < targetVid) {
-				currentVid++;
-				if (isNb)
-					msr.lo = (msr.lo & NB_VID_MASK_OFF) | (currentVid << NB_VID_POS);
-				else
-					msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (currentVid << CPU_VID_POS);
-				wrmsr(0xC0010070, msr);
-
-				/* read F3xD8[VSRampTime]  */
-				dtemp = pci_read_config32(dev, 0xD8);
-				vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
-				vsTime = (int)timeTable[vsTimecode];
-				do {
-					coreDelay();
-					vsTime -= 40;
-				} while (vsTime > 0);
-			}
-		} else if (currentVid > targetVid) {
-			while (currentVid > targetVid) {
-				currentVid--;
-				if (isNb)
-					msr.lo = (msr.lo & NB_VID_MASK_OFF) | (currentVid << NB_VID_POS);
-				else
-					msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (currentVid << CPU_VID_POS);
-				wrmsr(0xC0010070, msr);
-
-				/* read F3xD8[VSRampTime]  */
-				dtemp = pci_read_config32(dev, 0xD8);
-				vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
-				vsTime = (int)timeTable[vsTimecode];
-				do {
-					coreDelay();
-					vsTime -= 40;
-				} while (vsTime > 0);
-			}
-		}
-	} else {		/* SVI, slam VID */
-		if (isNb)
-			msr.lo = (msr.lo & NB_VID_MASK_OFF) | (targetVid << NB_VID_POS);
-		else
-			msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (targetVid << CPU_VID_POS);
-		wrmsr(0xC0010070, msr);
-
-		/* read F3xD8[VSRampTime]  */
-		dtemp = pci_read_config32(dev, 0xD8);
-		vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
-		vsTime = (int)timeTable[vsTimecode];
-		do {
-			coreDelay();
-			vsTime -= 40;
-		} while (vsTime > 0);
-	}
 }
 
 static u32 needs_NB_COF_VID_update(void)
@@ -633,8 +594,8 @@ static u32 needs_NB_COF_VID_update(void)
 	for (i = 0; i < nodes; i++) {
                 u32 cpuRev = mctGetLogicalCPUID(i) ;
                 u32 nbCofVidUpdateDefined = (cpuRev & (AMD_FAM10_LT_D));
-		if (nbCofVidUpdateDefined 
-                    && (pci_read_config32(NODE_PCI(i, 3), 0x1FC) 
+		if (nbCofVidUpdateDefined
+                    && (pci_read_config32(NODE_PCI(i, 3), 0x1FC)
                         & NB_COF_VID_UPDATE_MASK)) {
 			nb_cof_vid_update = 1;
 			break;
@@ -647,31 +608,29 @@ static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 {
 	device_t dev;
 	u32 vid_max;
-	u32 fid_max=0;
+	u32 fid_max = 0;
 	u8 nb_cof_vid_update = needs_NB_COF_VID_update();
 	u8 pvimode;
 	u32 reg1fc;
 
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
-	 * for SVI and Single-Plane PVI Systems.
+	 * for SVI and Single-Plane PVI Systems. BKDG 2.4.2.9 #31116 rev 3.48
 	 */
 
 	dev = NODE_PCI(nodeid, 3);
-	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
+	pvimode = pci_read_config32(dev, PW_CTL_MISC) & PVI_MODE;
 	reg1fc = pci_read_config32(dev, 0x1FC);
 
 	if (nb_cof_vid_update) {
-		if (pvimode) {
-			vid_max = (reg1fc >> 7) & 0x7F;
-			fid_max = (reg1fc >> 2) & 0x1F;
+                vid_max = (reg1fc &  SINGLE_PLANE_NB_VID_MASK ) >>  SINGLE_PLANE_NB_VID_SHIFT ;
+	        fid_max = (reg1fc &  SINGLE_PLANE_NB_FID_MASK ) >>  SINGLE_PLANE_NB_FID_SHIFT ;
 
-			/* write newNbVid to P-state Reg's NbVid always if NbVidUpdatedAll=1 */
-			fixPsNbVidBeforeWR(vid_max, coreid);
-		} else {	/* SVI */
-			vid_max = ((reg1fc >> 7) & 0x7F) - ((reg1fc >> 17) & 0x1F);
-			fid_max = ((reg1fc >> 2) & 0x1F) + ((reg1fc >> 14) & 0x7);
-			transitionVid(vid_max, dev, IS_NB);
+	        if (!pvimode) { /* SVI, dual power plane */
+         		vid_max = vid_max - ((reg1fc &  DUAL_PLANE_NB_VID_OFF_MASK ) >>  DUAL_PLANE_NB_VID_SHIFT );
+			fid_max = fid_max +  ((reg1fc &  DUAL_PLANE_NB_FID_OFF_MASK ) >>  DUAL_PLANE_NB_FID_SHIFT );
 		}
+		/* write newNbVid to P-state Reg's NbVid always if NbVidUpdatedAll=1 */
+		fixPsNbVidBeforeWR(vid_max, coreid,dev,pvimode);
 
 		/* fid setup is handled by the BSP at the end. */
 
@@ -691,7 +650,7 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 
 	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
 
-        send = init_fidvid_core(nodeid,coreid); 
+        send = init_fidvid_core(nodeid,coreid);
 	send |= (apicid << 24);	// ap apicid
 
 	// Send signal to BSP about this AP max fid
@@ -812,21 +771,6 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll)
 	} while (msr.lo != StartupPstate);
 }
 
-static void set_p0(void)
-{
-	msr_t msr;
-
-	// Transition P0 for calling core.
-	msr = rdmsr(0xC0010062);
-	msr.lo = (msr.lo & ~0x07);
-	wrmsr(0xC0010062, msr);
-
-	/* Wait for P0 to set. */
-	do {
-		msr = rdmsr(0xC0010063);
-	} while (msr.lo != 0);
-}
-
 static void finalPstateChange(void)
 {
 	/* Enble P0 on all cores for best performance.
@@ -834,7 +778,7 @@ static void finalPstateChange(void)
 	 * It is safe since they will be in C1 halt
 	 * most of the time anyway.
 	 */
-	set_p0();
+	set_pstate(0);
 }
 
 static void init_fidvid_stage2(u32 apicid, u32 nodeid)

@@ -231,6 +231,16 @@
 
 /* F3x1FC Product Information Register */
 #define NB_COF_VID_UPDATE_MASK 1 /* for CPU rev <= C */
+#define SINGLE_PLANE_NB_FID_MASK 0x007c/* for CPU rev <= C */
+#define SINGLE_PLANE_NB_FID_SHIFT 2/* for CPU rev <= C */
+#define SINGLE_PLANE_NB_VID_MASK 0x3f80/* for CPU rev <= C */
+#define SINGLE_PLANE_NB_VID_SHIFT 7/* for CPU rev <= C */
+
+#define DUAL_PLANE_NB_FID_OFF_MASK 0x001c000/* for CPU rev <= C */
+#define DUAL_PLANE_NB_FID_SHIFT 14/* for CPU rev <= C */
+#define DUAL_PLANE_NB_VID_OFF_MASK 0x3e0000/* for CPU rev <= C */
+#define DUAL_PLANE_NB_VID_SHIFT 17/* for CPU rev <= C */
+
 
 #define NM_PS_REG 5			/* number of P-state MSR registers */
 
@@ -265,5 +275,10 @@
 
 #define GH_REV_A2 0x4			/* GH Rev A2 logical ID, Upper half */
 
+
+#define TSC_MSR 0x10
+#define CUR_PSTATE_MSR 0xc0010063
+
+#define  WAIT_PSTATE_TIMEOUT 80000000  /* 0.1 s , unit : 1.25 ns */
 
 #endif

@@ -58,7 +58,6 @@
 #define PS_NB_VID_SHFT 25		/* P-state bit shift for NbVid */
 #define PS_BOTH_VID_OFF 0x01ff01ff	/* Mask NbVid & CpuVid */
 #define PS_CPU_NB_VID_SHFT 16		/* P-state bit shift from CpuVid to NbVid */
-#define PS_NB_VID_SHFT 25		/* P-state NBVID shift */
 #define PS_DIS 0x7fffffff		/* disable P-state reg */
 #define PS_EN 0x80000000		/* enable P-state reg */
 #define PS_CPU_FID_MASK 0x03f           /* MSRC001_00[68:64][CpuFid]

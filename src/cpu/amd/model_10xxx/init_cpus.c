@@ -157,7 +157,7 @@ static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 }
 
 #if CONFIG_SET_FIDVID
-static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
+static void init_fidvid_ap(u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
 static inline __attribute__ ((always_inline))
@@ -346,8 +346,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 				printk(BIOS_DEBUG,
 				       "init_fidvid_ap(stage1) apicid: %02x\n",
 				       apicid);
-				init_fidvid_ap(bsp_apicid, apicid, id.nodeid,
-					       id.coreid);
+				init_fidvid_ap(apicid, id.nodeid, id.coreid);
 			}
 		}
 #endif

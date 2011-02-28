@@ -738,7 +738,7 @@ static u32 init_fidvid_core(u32 nodeid, u32 coreid)
 
 }
 
-static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
+static void init_fidvid_ap(u32 apicid, u32 nodeid, u32 coreid)
 {
 	u32 send;
 

@@ -153,6 +153,8 @@
 #define PS_2 0x00020000		/* P-state 2 */
 #define PS_CPU_DID_1 0x40		/* Cpu Did 1 */
 
+#define NB_VID1_MASK  0x00003f80      /* F3x1F4[NbVid1]*/
+#define NB_VID1_SHIFT  7      /* F3x1F4[NbVid1] */
 
 
 

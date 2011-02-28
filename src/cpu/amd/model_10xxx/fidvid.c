@@ -65,6 +65,25 @@ static void enable_fid_change(u8 fid)
 		       dword);
 	}
 }
+static void enableNbPState1( device_t dev ) {
+  u32 cpuRev =  mctGetLogicalCPUID(0xFF);
+  if (cpuRev & AMD_FAM10_C3) {
+    u32 nbPState = (pci_read_config32(dev, 0x1F0) & NB_PSTATE_MASK);
+    if ( nbPState){
+      u32 nbVid1 = (pci_read_config32(dev, 0x1F4) & NB_VID1_MASK) >> NB_VID1_SHIFT;
+      u32 i;
+      for (i = nbPState; i < NM_PS_REG; i++) {
+         msr_t msr =  rdmsr(PS_REG_BASE + i);
+         if (msr.hi &  PS_EN_MASK ) {
+            msr.hi |= NB_DID_M_ON;
+            msr.lo &= NB_VID_MASK_OFF;
+	    msr.lo |= ( nbVid1 << NB_VID_POS);
+	    wrmsr(PS_REG_BASE + i, msr);
+	 }
+      }
+    }
+  }
+}
 
 static void setVSRamp(device_t dev) {
 	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime]
@@ -800,6 +819,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	dtemp |= PLLLOCK_DFT_L;
 	pci_write_config32(dev, 0xA0, dtemp);
 
+        enableNbPState1(dev);
 	finalPstateChange();
 
 	/* Set TSC to tick at the P0 ndfid rate */

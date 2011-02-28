@@ -51,31 +51,9 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 14.2 on end # HDA    0x4383
 					device pci 14.3 on # LPC	0x439d
 						chip superio/fintek/f71859
-							device pnp 2e.0 off #  Floppy
-								io 0x60 = 0x3f0
-								irq 0x70 = 6
-								drq 0x74 = 2
-							end
-							device pnp 2e.1 on #  Com1
+							device pnp 2e.3 on #  Com1
 								io 0x60 = 0x3f8
 								irq 0x70 = 4
-							end
-							device pnp 2e.2 off #  Com2
-								io 0x60 = 0x2f8
-								irq 0x70 = 3
-							end
-							device pnp 2e.3 off #  Parallel Port
-								io 0x60 = 0x378
-								irq 0x70 = 7
-							end
-							device pnp 2e.4 off end #  EC
-							device pnp 2e.5 on #  Keyboard
-								io 0x60 = 0x60
-								io 0x62 = 0x64
-								irq 0x70 = 1
-							end
-							device pnp 2e.6 on #  Mouse
-								irq 0x70 = 12
 							end
 						end		#SIO
 					end		#LPC

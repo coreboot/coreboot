@@ -16,8 +16,93 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+/*
+ * This file initializes the CPU cores for voltage and frequency settings 
+ * in the different power states.
+ */
+/*
+
+checklist (functions are in this file if no source file named)
+Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010 
+
+2.4.2.6 Requirements for p-states
+
+1.- F3x[84:80] According to table 100 : prep_fid_change
+
+2.- COF/VID : 
+     2.4.2.9.1 Steps 1,3-6 and warning for 2,7 if they apply 
+               fixPsNbVidBeforeWR(...) 
+     2.4.2.9.1 Step 8 enable_fid_change
+               We do this for all nodes, I don't understand BKDG 100% on 
+               whether this is or isn't meant by "on the local 
+               processor". Must be OK.
+     2.4.2.9.1 Steps 9-10 (repeat 1-7 and reset) romstage.c/init_cpus ?
+     2.4.2.9.1 Steps 11-12 init_fidvid_stage2
+     2.4.2.9.2 DualPlane PVI : Not supported, don't know how to detect, 
+               needs specific circuitry. 
+
+3.-  2.4.2.7 dualPlaneOnly(dev)
+
+4.-  2.4.2.8 applyBoostFIDOffset(dev)
+
+5.-  enableNbPState1(dev) 
+
+6.- 2.4.1.7 
+    a) UpdateSinglePlaneNbVid()
+    b) setVSRamp(), called from  prep_fid_change
+    c) prep_fid_change
+    d) improperly, for lack of voltage regulator details?, 
+        F3xA0[PsiVidEn] in defaults.h 
+        F3xA0[PsiVid] in init_cpus.c AMD_SetupPSIVID_d (before prep_fid_change)
+
+7.- TODO (Core Performance Boost is only available in revision E cpus, and we 
+          don't seem to support those yet, at least they don't have any 
+          constant in amddefs.h )
+
+8.- FIXME ? Transition to min Pstate according to 2.4.2.15.3 is required 
+    by 2.4.2.6 after warm reset. But 2.4.2.15 states that it is not required 
+    if the warm reset is issued by coreboot to update NbFid. So it is required 
+    or not ? How can I tell who issued warm reset ? 
+    Coreboot transitions to P0 instead, which is not recommended, and does 
+    not follow 2.4.2.15.2 to do so.
+
+9.- TODO Requires information on current delivery capability 
+    (depends on mainboard and maybe power supply ?). One might use a config 
+    option with the maximum number of Ampers that the board can deliver to CPU.
+
+10.- [Multiprocessor] TODO 2.4.2.12
+     [Uniprocessor] FIXME ? We call setPStateMaxVal() in init_fidvid_stage2, 
+     but not sure this is what is meant by "Determine the valid set of 
+     P-states based on enabled P-states indicated 
+     in MSRC001_00[68:64][PstateEn]" in 2.4.2.6-10
+
+11.- finalPstateChange() from init_fidvid_Stage2 (BKDG says just "may", anyway)
+
+12.- generate ACPI for p-states. FIXME 
+     Needs more assesment. There's some kind of fixed support that
+     does not seem to depend on CPU revision or actual MSRC001_00[68:64]
+     as BKDG apparently requires. 
+     http://www.coreboot.org/ACPI#CPU_Power_Management
+     At least for Tilapia board:
+     src/mainboard/<vendor>/<model>/acpi_tables.c  write_acpi_tables(...) calls
+      acpi_add_ssdt_pstates(...) 
+     in /src/northbridge/amd/amdfam10/amdfam10_acpi.c
+     which apparently copies them from static info in
+     src/mainboard/<vendor>/<model>/acpi/cpstate.asl 
+     
+"must also be completed"
+
+a.-  PllLockTime set in ruleset in defaults.h
+     BKDG says set it "If MSRC001_00[68:64][CpuFid] is different between 
+     any two enabled P-states", but since it does not say "only if" 
+     I guess it is safe to do it always.
+
+b.-  prep_fid_change(...)
+
+ */
 
 #if CONFIG_SET_FIDVID
+
 #include <northbridge/amd/amdht/AsPsDefs.h>
 
 static inline void print_debug_fv(const char *str, u32 val)

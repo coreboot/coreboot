@@ -155,6 +155,18 @@ static void dualPlaneOnly(  device_t dev ) {
   }
 }
 
+static int vidTo100uV(u8 vid) 
+{// returns voltage corresponding to vid in tenths of mV, i.e. hundreds of uV
+ // BKDG #31116 rev 3.48 2.4.1.6
+  int voltage;
+  if (vid >= 0x7c) {
+    voltage = 0;
+  } else {
+    voltage = (15500 - (125*vid)); 
+  } 
+  return voltage;
+}
+
 static void setVSRamp(device_t dev) {
 	/* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSRampTime]
          * If this field accepts 8 values between 10 and 500 us why
@@ -181,12 +193,14 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 
 	/* This function calculates the VsSlamTime using the range of possible
 	 * voltages instead of a hardcoded 200us.
-	 * Note:This function is called from setFidVidRegs and setUserPs after
-	 * programming a custom Pstate.
+         * Note: his function is called only from prep_fid_change, 
+         * and that from init_cpus.c finalize_node_setup() 
+         * (after set AMD MSRs and init ht )
 	 */
 
+        /* BKDG r31116 2010-04-22  2.4.1.7 step b F3xD8[VSSlamTime] */ 
 	/* Calculate Slam Time
-	 * Vslam = 0.4us/mV * Vp0 - (lowest out of Vpmin or Valt)
+	 * Vslam = (mobileCPU?0.2:0.4)us/mV * (Vp0 - (lowest out of Vpmin or Valt)) mV
 	 * In our case, we will scale the values by 100 to avoid
 	 * decimals.
 	 */
@@ -200,8 +214,17 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 		pviModeFlag = 0;
 
 	/* Get P0's voltage */
+        /* MSRC001_00[68:64] are not programmed yet when called from
+	   prep_fid_change, one might use F4x1[F0:E0] instead, but
+	   theoretically MSRC001_00[68:64] are equal to them after
+	   reset. */
 	msr = rdmsr(0xC0010064);
 	highVoltageVid = (u8) ((msr.lo >> PS_CPU_VID_SHFT) & 0x7F);
+        if (!(msr.hi & 0x80000000)) {
+  	    printk(BIOS_ERR,"P-state info in MSRC001_0064 is invalid !!!\n");
+            highVoltageVid = (u8) ((pci_read_config32(dev, 0x1E0) 
+                                     >> PS_CPU_VID_SHFT) & 0x7F);
+	}
 
 	/* If SVI, we only care about CPU VID.
 	 * If PVI, determine the higher voltage b/t NB and CPU
@@ -212,17 +235,23 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 			highVoltageVid = bValue;
 	}
 
-	/* Get Pmin's index */
+	/* Get PSmax's index */
 	msr = rdmsr(0xC0010061);
-	bValue = (u8) ((msr.lo >> PS_CUR_LIM_SHFT) & BIT_MASK_3);
-
-	/* Get Pmin's VID */
+	bValue = (u8) ((msr.lo >> PS_MAX_VAL_SHFT) & BIT_MASK_3);
+ 
+	/* Get PSmax's VID */
 	msr = rdmsr(0xC0010064 + bValue);
 	lowVoltageVid = (u8) ((msr.lo >> PS_CPU_VID_SHFT) & 0x7F);
+        if (!(msr.hi & 0x80000000)) {
+	    printk(BIOS_ERR,"P-state info in MSR%8x is invalid !!!\n",0xC0010064 + bValue);
+            lowVoltageVid = (u8) ((pci_read_config32(dev, 0x1E0+(bValue*4)) 
+                                     >> PS_CPU_VID_SHFT) & 0x7F);
+	}
 
 	/* If SVI, we only care about CPU VID.
 	 * If PVI, determine the higher voltage b/t NB and CPU
-	 */
+         * BKDG 2.4.1.7 (a)
+ 	 */
 	if (pviModeFlag) {
 		bValue = (u8) ((msr.lo >> PS_NB_VID_SHFT) & 0x7F);
 		if (lowVoltageVid > bValue)
@@ -237,20 +266,9 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	if (lowVoltageVid < bValue)
 		lowVoltageVid = bValue;
 
-	/* If Vids are 7Dh - 7Fh, force 7Ch to keep calculations linear */
-	if (lowVoltageVid > 0x7C) {
-		lowVoltageVid = 0x7C;
-		if (highVoltageVid > 0x7C)
-			highVoltageVid = 0x7C;
-	}
+        u8 mobileFlag = get_platform_type() & AMD_PTYPE_MOB; 
+	minimumSlamTime =  (mobileFlag?2:4) * (vidTo100uV(highVoltageVid) - vidTo100uV(lowVoltageVid)); /* * 0.01 us */
 
-	bValue = (u8) (lowVoltageVid - highVoltageVid);
-
-	/* Each Vid increment is 12.5 mV.  The minimum slam time is:
-	 * vidCodeDelta * 12.5mV * 0.4us/mV
-	 * Scale by 100 to avoid decimals.
-	 */
-	minimumSlamTime = bValue * (125 * 4);
 
 	/* Now round up to nearest register setting.
 	 * Note that if we don't find a value, we

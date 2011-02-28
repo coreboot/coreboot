@@ -25,7 +25,7 @@
 #define APIC_BAR_BP 0x100		/* APIC_BAR BSP bit */
 
 #define PS_LIM_REG 0xC0010061		/* P-state Current Limit Register */
-#define PS_CUR_LIM_SHFT 4		/* P-state Current Limit shift position */
+#define PS_MAX_VAL_SHFT 4		/* P-state Maximum Value shift position */
 
 #define PS_CTL_REG 0xC0010062		/* P-state Control Register */
 #define PS_CMD_MASK_OFF 0xfffffff8	/* P-state Control Register CMD Mask OFF */

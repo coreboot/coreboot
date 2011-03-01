@@ -42,6 +42,8 @@ typedef u32 pcidev_t;
 #define REG_SUBSYS_VENDOR_ID 0x2C
 #define REG_SUBSYS_ID   0x2E
 
+#define REG_COMMAND_IO  (1 << 0)
+#define REG_COMMAND_MEM (1 << 1)
 #define REG_COMMAND_BM  (1 << 2)
 
 #define HEADER_TYPE_NORMAL  0

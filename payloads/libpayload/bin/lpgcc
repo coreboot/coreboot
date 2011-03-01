@@ -123,7 +123,7 @@ trygccoption -fno-stack-protector
 
 _CFLAGS="$_CFLAGS -I`$DEFAULT_CC -m32 -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
-_LDFLAGS="$_LDSCRIPT -static"
+_LDFLAGS="-L$BASE/../lib $_LDSCRIPT -static"
 
 if [ $DOLINK -eq 0 ]; then
     if [ $DEBUGME -eq 1 ]; then
@@ -134,7 +134,7 @@ if [ $DOLINK -eq 0 ]; then
 else
     _LIBGCC=`$DEFAULT_CC -m32 -print-libgcc-file-name`
     if [ $DEBUGME -eq 1 ]; then
-	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC"
+	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o $CMDLINE -lpayload $_LIBGCC"
     fi
 
     # Note: $_ARCHLIBDIR/head.o must be the first object being linked, because it
@@ -142,5 +142,5 @@ else
     # header to be placed below 0x2000 in the resulting image.  See:
     # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
 
-    $DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o  $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC
+    $DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o  $CMDLINE -lpayload $_LIBGCC
 fi

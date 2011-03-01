@@ -415,14 +415,13 @@ static void walk_device_tree(FILE *fil, struct device *ptr, void (*func)(FILE *,
 static void inherit_subsystem_ids(FILE *file, struct device *dev)
 {
 	struct device *p;
-	int i =0;
 
 	if (dev->subsystem_vendor != -1 && dev->subsystem_device != -1) {
 		/* user already gave us a subsystem vendor/device */
 		return;
 	}
 
-	for(p = dev; p && p != p->parent; (p = p->parent), i++) {
+	for(p = dev; p && p != p->parent; p = p->parent) {
 
 		if (p->bustype != PCI && p->bustype != PCI_DOMAIN)
 			continue;

@@ -40,4 +40,6 @@
 # endif
 #endif
 
+#define UINT_MAX (unsigned int)0xffffffff
+
 #endif

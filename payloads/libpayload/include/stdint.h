@@ -27,4 +27,9 @@
  * SUCH DAMAGE.
  */
 
+#ifndef __STDINT_H
+#define __STDINT_H
 #include <arch/types.h>
+
+typedef unsigned long uintptr_t;
+#endif

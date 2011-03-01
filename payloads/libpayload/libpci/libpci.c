@@ -77,9 +77,13 @@ struct pci_access *pci_alloc(void)
 	return pacc;
 }
 
-void pci_init(struct pci_access* pacc)
+void pci_init(struct pci_access *pacc)
 {
 	memset(pacc, 0, sizeof(*pacc));
+}
+
+void pci_cleanup(__attribute__ ((unused)) struct pci_access *pacc)
+{
 }
 
 void pci_filter_init(struct pci_access* pacc, struct pci_filter* pf)

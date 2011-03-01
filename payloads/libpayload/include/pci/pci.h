@@ -70,6 +70,7 @@ int pci_write_long(struct pci_dev *dev, int pos, u32 data);
 
 struct pci_access *pci_alloc(void);
 void pci_init(struct pci_access*);
+void pci_cleanup(struct pci_access*);
 char *pci_filter_parse_slot(struct pci_filter*, const char*);
 int pci_filter_match(struct pci_filter*, struct pci_dev*);
 void pci_filter_init(struct pci_access*, struct pci_filter*);

@@ -44,6 +44,9 @@ export objk := $(objutil)/kconfig
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 
+# directory containing the toplevel Makefile.inc
+TOPLEVEL := .
+
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
@@ -73,9 +76,8 @@ DOXYGEN_OUTPUT_DIR := doxygen
 
 all: real-all
 
-# This include must come _before_ he pattern rules below!
+# This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include Makefile.inc
 include util/kconfig/Makefile
 
 # Three cases where we don't need fully populated $(obj) lists:
@@ -93,6 +95,7 @@ endif
 endif
 
 ifeq ($(NOCOMPILE),1)
+include $(TOPLEVEL)/Makefile.inc
 real-all: config
 
 else
@@ -189,7 +192,7 @@ evaluate_subdirs= \
 	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
 
 # collect all object files eligible for building
-subdirs:=.
+subdirs:=$(TOPLEVEL)
 $(eval $(call evaluate_subdirs))
 
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))

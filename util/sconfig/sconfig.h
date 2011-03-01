@@ -52,6 +52,9 @@ struct device {
 	int link;
 	int rescnt;
 	int chiph_exists;
+	int subsystem_vendor;
+	int subsystem_device;
+	int inherit_subsystem;
 	char *ops;
 	char *name;
 	char *name_underscore;
@@ -90,3 +93,4 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
 void add_register(struct device *dev, char *name, char *val);
+void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit);

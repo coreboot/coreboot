@@ -59,6 +59,8 @@ static struct device *new_dev(struct device *parent, struct device *bus) {
 	dev->id = ++devcount;
 	dev->parent = parent;
 	dev->bus = bus;
+	dev->subsystem_vendor = -1;
+	dev->subsystem_device = -1;
 	head->next = dev;
 	head = dev;
 	return dev;
@@ -279,6 +281,18 @@ void add_register(struct device *dev, char *name, char *val) {
 	}
 }
 
+void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit)
+{
+	if (dev->bustype != PCI && dev->bustype != PCI_DOMAIN) {
+		printf("ERROR: 'subsystem' only allowed for PCI devices\n");
+		exit(1);
+	}
+
+	dev->subsystem_vendor = vendor;
+	dev->subsystem_device = device;
+	dev->inherit_subsystem = inherit;
+}
+
 static void pass0(FILE *fil, struct device *ptr) {
 	if (ptr->type == device && ptr->id == 0)
 		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
@@ -303,6 +317,12 @@ static void pass1(FILE *fil, struct device *ptr) {
 		fprintf(fil, "},\n");
 		fprintf(fil, "\t.enabled = %d,\n", ptr->enabled);
 		fprintf(fil, "\t.on_mainboard = 1,\n");
+		if (ptr->subsystem_vendor > 0)
+			fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n", ptr->subsystem_vendor);
+
+		if (ptr->subsystem_device > 0)
+			fprintf(fil, "\t.subsystem_device = 0x%04x,\n", ptr->subsystem_device);
+
 		if (ptr->rescnt > 0) {
 			fprintf(fil, "\t.resource_list = &%s_res[0],\n", ptr->name);
 		}
@@ -392,6 +412,29 @@ static void walk_device_tree(FILE *fil, struct device *ptr, void (*func)(FILE *,
 	} while (ptr);
 }
 
+static void inherit_subsystem_ids(FILE *file, struct device *dev)
+{
+	struct device *p;
+	int i =0;
+
+	if (dev->subsystem_vendor != -1 && dev->subsystem_device != -1) {
+		/* user already gave us a subsystem vendor/device */
+		return;
+	}
+
+	for(p = dev; p && p != p->parent; (p = p->parent), i++) {
+
+		if (p->bustype != PCI && p->bustype != PCI_DOMAIN)
+			continue;
+
+		if (p->inherit_subsystem) {
+			dev->subsystem_vendor = p->subsystem_vendor;
+			dev->subsystem_device = p->subsystem_device;
+			break;
+		}
+	}
+}
+
 int main(int argc, char** argv) {
 	if (argc != 3) {
 		printf("usage: sconfig vendor/mainboard outputdir\n");
@@ -444,6 +487,9 @@ int main(int argc, char** argv) {
 		h = h->next;
 		fprintf(staticc, "#include \"%s/chip.h\"\n", h->name);
 	}
+
+	walk_device_tree(staticc, &root, inherit_subsystem_ids, NULL);
+
 	fprintf(staticc, "\n/* pass 0 */\n");
 	walk_device_tree(staticc, &root, pass0, NULL);
 	fprintf(staticc, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\nstruct device *last_dev = &%s;\n", lastdev->name);

@@ -42,6 +42,8 @@ pci_domain	{yylval.number=PCI_DOMAIN; return(BUS);}
 irq		{yylval.number=IRQ; return(RESOURCE);}
 drq		{yylval.number=DRQ; return(RESOURCE);}
 io		{yylval.number=IO; return(RESOURCE);}
+inherit		{return(INHERIT);}
+subsystemid	{return(SUBSYSTEMID);}
 end		{return(END);}
 =		{return(EQUALS);}
 0x[0-9a-fA-F.]+	{yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}

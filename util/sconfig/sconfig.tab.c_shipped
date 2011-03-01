@@ -139,7 +139,9 @@ static struct device *cur_parent, *cur_bus;
      IRQ = 274,
      DRQ = 275,
      IO = 276,
-     NUMBER = 277
+     NUMBER = 277,
+     SUBSYSTEMID = 278,
+     INHERIT = 279
    };
 #endif
 
@@ -380,20 +382,20 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   24
+#define YYLAST   34
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  23
+#define YYNTOKENS  25
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  17
+#define YYNRULES  20
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  31
+#define YYNSTATES  36
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   277
+#define YYMAXUTOK   279
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -428,7 +430,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YYDEBUG
@@ -437,25 +439,28 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyprhs[] =
 {
        0,     0,     3,     4,     7,    10,    13,    16,    17,    20,
-      23,    26,    27,    28,    34,    35,    43,    48
+      23,    26,    29,    30,    31,    37,    38,    46,    51,    56,
+      60
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      24,     0,    -1,    -1,    25,    28,    -1,    26,    30,    -1,
-      26,    28,    -1,    26,    33,    -1,    -1,    27,    30,    -1,
-      27,    28,    -1,    27,    32,    -1,    -1,    -1,     3,    12,
-      29,    26,     9,    -1,    -1,     4,     7,    22,     6,    31,
-      27,     9,    -1,     8,    22,    10,    22,    -1,     5,    12,
-      10,    12,    -1
+      26,     0,    -1,    -1,    27,    30,    -1,    28,    32,    -1,
+      28,    30,    -1,    28,    35,    -1,    -1,    29,    32,    -1,
+      29,    30,    -1,    29,    34,    -1,    29,    36,    -1,    -1,
+      -1,     3,    12,    31,    28,     9,    -1,    -1,     4,     7,
+      22,     6,    33,    29,     9,    -1,     8,    22,    10,    22,
+      -1,     5,    12,    10,    12,    -1,    23,    22,    22,    -1,
+      23,    22,    22,    24,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    34,    36,    36,    36,    36,    38,    38,
-      38,    38,    40,    40,    50,    50,    62,    65
+       0,    35,    35,    35,    37,    37,    37,    37,    39,    39,
+      39,    39,    39,    41,    41,    51,    51,    63,    66,    69,
+      72
 };
 #endif
 
@@ -467,8 +472,9 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "CHIP", "DEVICE", "REGISTER", "BOOL",
   "BUS", "RESOURCE", "END", "EQUALS", "HEX", "STRING", "PCI", "PNP", "I2C",
   "APIC", "APIC_CLUSTER", "PCI_DOMAIN", "IRQ", "DRQ", "IO", "NUMBER",
-  "$accept", "devtree", "$@1", "chipchildren", "devicechildren", "chip",
-  "@2", "device", "@3", "resource", "registers", 0
+  "SUBSYSTEMID", "INHERIT", "$accept", "devtree", "$@1", "chipchildren",
+  "devicechildren", "chip", "@2", "device", "@3", "resource", "registers",
+  "subsystemid", 0
 };
 #endif
 
@@ -479,22 +485,24 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277
+     275,   276,   277,   278,   279
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    23,    25,    24,    26,    26,    26,    26,    27,    27,
-      27,    27,    29,    28,    31,    30,    32,    33
+       0,    25,    27,    26,    28,    28,    28,    28,    29,    29,
+      29,    29,    29,    31,    30,    33,    32,    34,    35,    36,
+      36
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     2,     2,     2,     2,     0,     2,     2,
-       2,     0,     0,     5,     0,     7,     4,     4
+       2,     2,     0,     0,     5,     0,     7,     4,     4,     3,
+       4
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -502,35 +510,35 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     0,     1,     0,     3,    12,     7,     0,     0,
-       0,    13,     5,     4,     6,     0,     0,     0,     0,    14,
-      17,    11,     0,     0,    15,     9,     8,    10,     0,     0,
-      16
+       2,     0,     0,     1,     0,     3,    13,     7,     0,     0,
+       0,    14,     5,     4,     6,     0,     0,     0,     0,    15,
+      18,    12,     0,     0,    16,     0,     9,     8,    10,    11,
+       0,     0,     0,    19,    17,    20
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     2,     8,    22,     5,     7,    13,    21,    27,
-      14
+      -1,     1,     2,     8,    22,     5,     7,    13,    21,    28,
+      14,    29
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -10
+#define YYPACT_NINF -9
 static const yytype_int8 yypact[] =
 {
-     -10,     6,     5,   -10,    -1,   -10,   -10,   -10,    -2,     8,
-       0,   -10,   -10,   -10,   -10,    -9,     7,    10,     9,   -10,
-     -10,   -10,     1,    -4,   -10,   -10,   -10,   -10,    12,    -3,
-     -10
+      -9,     3,     1,    -9,    -2,    -9,    -9,    -9,     4,     5,
+      -1,    -9,    -9,    -9,    -9,    -8,     7,     9,     6,    -9,
+      -9,    -9,    -3,     0,    -9,     2,    -9,    -9,    -9,    -9,
+      11,     8,    10,    -5,    -9,    -9
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -10,   -10,   -10,   -10,   -10,    -8,   -10,     2,   -10,   -10,
-     -10
+      -9,    -9,    -9,    -9,    -9,    -6,    -9,    12,    -9,    -9,
+      -9,    -9
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -540,26 +548,28 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      12,     4,     9,    10,     4,     9,     3,    11,     4,    23,
-      24,     6,    16,    17,    25,    15,    19,    18,    28,    30,
-       0,    20,    29,     0,    26
+       4,     9,    12,     3,     4,    23,    24,     4,     9,    10,
+       6,    16,    15,    11,    17,    19,    26,    18,    20,    35,
+      25,    32,    30,     0,    31,     0,     0,     0,     0,     0,
+      33,     0,    34,     0,    27
 };
 
 static const yytype_int8 yycheck[] =
 {
-       8,     3,     4,     5,     3,     4,     0,     9,     3,     8,
-       9,    12,    12,    22,    22,     7,     6,    10,    22,    22,
-      -1,    12,    10,    -1,    22
+       3,     4,     8,     0,     3,     8,     9,     3,     4,     5,
+      12,    12,     7,     9,    22,     6,    22,    10,    12,    24,
+      23,    10,    22,    -1,    22,    -1,    -1,    -1,    -1,    -1,
+      22,    -1,    22,    -1,    22
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    24,    25,     0,     3,    28,    12,    29,    26,     4,
-       5,     9,    28,    30,    33,     7,    12,    22,    10,     6,
-      12,    31,    27,     8,     9,    28,    30,    32,    22,    10,
-      22
+       0,    26,    27,     0,     3,    30,    12,    31,    28,     4,
+       5,     9,    30,    32,    35,     7,    12,    22,    10,     6,
+      12,    33,    29,     8,     9,    23,    30,    32,    34,    36,
+      22,    22,    10,    22,    22,    24
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1380,7 +1390,7 @@ yyreduce:
     { postprocess_devtree(); ;}
     break;
 
-  case 12:
+  case 13:
 
     {
 	(yyval.device) = new_chip(cur_parent, cur_bus, (yyvsp[(2) - (2)].string));
@@ -1388,7 +1398,7 @@ yyreduce:
 ;}
     break;
 
-  case 13:
+  case 14:
 
     {
 	cur_parent = (yyvsp[(3) - (5)].device)->parent;
@@ -1397,7 +1407,7 @@ yyreduce:
 ;}
     break;
 
-  case 14:
+  case 15:
 
     {
 	(yyval.device) = new_device(cur_parent, cur_bus, (yyvsp[(2) - (4)].number), (yyvsp[(3) - (4)].string), (yyvsp[(4) - (4)].number));
@@ -1406,7 +1416,7 @@ yyreduce:
 ;}
     break;
 
-  case 15:
+  case 16:
 
     {
 	cur_parent = (yyvsp[(5) - (7)].device)->parent;
@@ -1416,14 +1426,24 @@ yyreduce:
 ;}
     break;
 
-  case 16:
+  case 17:
 
     { add_resource(cur_parent, (yyvsp[(1) - (4)].number), strtol((yyvsp[(2) - (4)].string), NULL, 0), strtol((yyvsp[(4) - (4)].string), NULL, 0)); ;}
     break;
 
-  case 17:
+  case 18:
 
     { add_register(cur_parent, (yyvsp[(2) - (4)].string), (yyvsp[(4) - (4)].string)); ;}
+    break;
+
+  case 19:
+
+    { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[(2) - (3)].string), NULL, 16), strtol((yyvsp[(3) - (3)].string), NULL, 16), 0); ;}
+    break;
+
+  case 20:
+
+    { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[(2) - (4)].string), NULL, 16), strtol((yyvsp[(3) - (4)].string), NULL, 16), 1); ;}
     break;
 
 

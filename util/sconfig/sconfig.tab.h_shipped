@@ -58,7 +58,9 @@
      IRQ = 274,
      DRQ = 275,
      IO = 276,
-     NUMBER = 277
+     NUMBER = 277,
+     SUBSYSTEMID = 278,
+     INHERIT = 279
    };
 #endif
 

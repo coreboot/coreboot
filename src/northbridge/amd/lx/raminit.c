@@ -32,7 +32,7 @@ static void banner(const char *s)
 	printk(BIOS_DEBUG, " * %s\n", s);
 }
 
-static void hcf(void)
+static void __attribute__((noreturn)) hcf(void)
 {
 	print_emerg("DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also

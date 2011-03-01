@@ -26,6 +26,7 @@ chip northbridge/intel/i945
         end
 
         device pci_domain 0 on
+                subsystemid 0x8086 0x464c inherit
                 device pci 00.0 on end # host bridge
 		device pci 01.0 off end # i945 PCIe root port
 		device pci 02.0 on end # vga controller

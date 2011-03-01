@@ -32,8 +32,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Wyse"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x102d
-
 endif # VENDOR_WYSE

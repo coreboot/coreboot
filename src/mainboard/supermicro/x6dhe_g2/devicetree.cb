@@ -6,6 +6,7 @@ chip northbridge/intel/e7520  # MCH
 		device pnp 00.3 off end
 	end
 	device pci_domain 0 on
+		subsystemid 0x15d9 0x6080 inherit
 		chip southbridge/intel/i82801ex	# ICH5R
 			register "pirq_a_d" = "0x0b070a05"
 			register "pirq_e_h" = "0x0a808080"

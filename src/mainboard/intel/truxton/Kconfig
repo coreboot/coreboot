@@ -27,14 +27,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 1
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x8086
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x2680
-
 config MAX_CPUS
 	int
 	default 4

@@ -28,6 +28,7 @@ chip northbridge/intel/i945
         end
 
         device pci_domain 0 on
+                subsystemid 0x4352 0x0686 inherit
                 device pci 00.0 on end # host bridge
 		# auto detection:
 		#device pci 01.0 off end # i945 PCIe root port

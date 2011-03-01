@@ -72,14 +72,6 @@ config SERIAL_CPU_INIT
 	bool
 	default n
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1462
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x9282
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

@@ -1,5 +1,6 @@
 chip northbridge/intel/e7501
         device pci_domain 0 on
+		subsystemid 0x10f1 0x2735 inherit
 		device pci 0.0 on end
         	device pci 0.1 on end
         	device pci 2.0 on

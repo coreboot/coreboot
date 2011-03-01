@@ -6,6 +6,7 @@ chip northbridge/amd/amdk8/root_complex
         end
 
 	device pci_domain 0 on
+		subsystemid 0x10f1 0x4880 inherit
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # LDT0
 			device pci 18.0 on end # LDT1

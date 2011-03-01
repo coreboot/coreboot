@@ -75,10 +75,6 @@ config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1043
-
 config IRQ_SLOT_COUNT
 	int
 	default 14

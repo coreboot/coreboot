@@ -1,5 +1,6 @@
 chip northbridge/intel/e7501
 	device pci_domain 0 on
+		subsystemid 0x8086 0x2480 inherit
 		device pci 0.0 on end # Chipset host controller
 		device pci 0.1 on end # Host RASUM controller
 		device pci 2.0 on # Hub interface B

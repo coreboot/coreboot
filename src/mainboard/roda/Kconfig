@@ -14,8 +14,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Roda"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x4352
-
 endif # VENDOR_RODA

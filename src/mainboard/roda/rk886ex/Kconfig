@@ -46,10 +46,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x6886
-
 config MAXIMUM_SUPPORTED_FREQUENCY
 	int
 	default 400

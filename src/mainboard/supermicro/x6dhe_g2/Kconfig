@@ -26,14 +26,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "X6DHE-G2"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x15d9
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x6080
-
 config MAX_CPUS
 	int
 	default 4

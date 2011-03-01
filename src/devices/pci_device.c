@@ -586,16 +586,6 @@ void pci_dev_set_resources(struct device *dev)
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
 }
 
-unsigned __attribute__((weak)) mainboard_pci_subsystem_vendor_id(__attribute__((unused)) struct device *dev)
-{
-		return CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID;
-}
-
-unsigned __attribute__((weak)) mainboard_pci_subsystem_device_id(__attribute__((unused)) struct device *dev)
-{
-		return CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID;
-}
-
 void pci_dev_enable_resources(struct device *dev)
 {
 	const struct pci_operations *ops;
@@ -604,12 +594,11 @@ void pci_dev_enable_resources(struct device *dev)
 	/* Set the subsystem vendor and device ID for mainboard devices. */
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
-		printk(BIOS_DEBUG, "%s subsystem <- %02x/%02x\n", dev_path(dev),
-		       mainboard_pci_subsystem_vendor_id(dev),
-		       mainboard_pci_subsystem_device_id(dev));
-		ops->set_subsystem(dev,
-				   mainboard_pci_subsystem_vendor_id(dev),
-				   mainboard_pci_subsystem_device_id(dev));
+		printk(BIOS_DEBUG, "%s subsystem <- %04x/%04x\n",
+			dev_path(dev), dev->subsystem_vendor,
+			dev->subsystem_device);
+		ops->set_subsystem(dev, dev->subsystem_vendor,
+			dev->subsystem_device);
 	}
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;

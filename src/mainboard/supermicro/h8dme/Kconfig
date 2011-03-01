@@ -81,12 +81,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x15d9
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x1511
-
 endif # BOARD_SUPERMICRO_H8DME

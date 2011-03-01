@@ -137,13 +137,6 @@ config PCI_BUS_SEGN_BITS
 	int
 	default 0
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x0
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x0
 config PCI_ROM_RUN
 	bool
 	default n

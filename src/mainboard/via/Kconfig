@@ -32,8 +32,4 @@ config MAINBOARD_VENDOR
 	string
 	default "VIA"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1019
-
 endif # VENDOR_VIA

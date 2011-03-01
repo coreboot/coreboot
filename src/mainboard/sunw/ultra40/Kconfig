@@ -75,12 +75,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x108e
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x40
-
 endif # BOARD_SUNW_ULTRA40

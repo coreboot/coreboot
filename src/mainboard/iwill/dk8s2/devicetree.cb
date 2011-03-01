@@ -5,6 +5,7 @@ chip northbridge/amd/amdk8/root_complex
 		end
 	end
 	device pci_domain 0 on
+		subsystemid 0x161f 0x3016 inherit
 		chip northbridge/amd/amdk8
 			device pci 18.0 on # LDT 0
 				chip southbridge/amd/amd8131

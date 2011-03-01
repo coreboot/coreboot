@@ -38,8 +38,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Supermicro"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x15d9
-
 endif # VENDOR_SUPERMICRO

@@ -69,12 +69,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 9
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x17c2
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x10
-
 endif # BOARD_NEWISYS_KHEPRI

@@ -1,5 +1,6 @@
 chip northbridge/intel/e7520
 	device pci_domain 0 on
+		subsystemid 0x8086 0x1079 inherit
 		device pci 00.0 on end
 		device pci 00.1 on end
 		device pci 01.0 on end

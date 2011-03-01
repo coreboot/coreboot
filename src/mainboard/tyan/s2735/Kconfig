@@ -45,8 +45,4 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x2735
-
 endif # BOARD_TYAN_S2735

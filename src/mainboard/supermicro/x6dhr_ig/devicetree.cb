@@ -1,5 +1,6 @@
 chip northbridge/intel/e7520 # mch
 	device pci_domain 0 on
+		subsystemid 0x15d9 0x5580 inherit
 		chip southbridge/intel/i82801ex # i82801er
 			# USB ports
 			device pci 1d.0 on end

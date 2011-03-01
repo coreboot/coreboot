@@ -5,6 +5,7 @@ chip northbridge/amd/amdfam10/root_complex
 		end
 	end
 	device pci_domain 0 on
+		subsystemid 0x1043 0x83a2 inherit
 		chip northbridge/amd/amdfam10
 			device pci 18.0 on #  northbridge
 				chip southbridge/amd/rs780

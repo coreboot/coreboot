@@ -26,14 +26,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 10
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1019
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0xaa51
-
 config VGA_BIOS_FILE
 	string
 	default "M14CRT.ROM"

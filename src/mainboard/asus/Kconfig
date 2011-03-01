@@ -77,8 +77,4 @@ config MAINBOARD_VENDOR
 	string
 	default "ASUS"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1043
-
 endif # VENDOR_ASUS

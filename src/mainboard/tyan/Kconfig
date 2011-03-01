@@ -74,8 +74,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Tyan"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x10f1
-
 endif # VENDOR_TYAN

@@ -21,14 +21,6 @@ config MAINBOARD_DIR
 	string
 	default arima/hdama
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x161f
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x3016
-
 config APIC_ID_OFFSET
 	hex
 	default 0x0

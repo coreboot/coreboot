@@ -56,8 +56,4 @@ config MAINBOARD_VENDOR
 	string
 	default "MSI"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1462
-
 endif # VENDOR_MSI

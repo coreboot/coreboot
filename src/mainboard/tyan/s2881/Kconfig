@@ -35,10 +35,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "S2881"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x2881
-
 config MAX_CPUS
 	int
 	default 4

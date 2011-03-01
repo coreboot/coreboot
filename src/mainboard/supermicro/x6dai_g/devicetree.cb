@@ -1,5 +1,6 @@
 chip northbridge/intel/e7525 # mch
 	device pci_domain 0 on
+		subsystemid 0x15d9 0x6780 inherit
 		chip southbridge/intel/esb6300  # esb6300
 			register "pirq_a_d" = "0x0b0a0a05"
 			register "pirq_e_h" = "0x0a0b0c80"

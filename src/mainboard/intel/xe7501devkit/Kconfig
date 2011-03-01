@@ -37,12 +37,4 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x8086
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x2480
-
 endif # BOARD_INTEL_XE7501DEVKIT

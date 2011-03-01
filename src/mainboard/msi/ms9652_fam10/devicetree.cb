@@ -28,6 +28,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
     end
   end
   device pci_domain 0 on			# PCI domain
+    subsystemid 0x1462 0x9652 inherit
     chip northbridge/amd/amdfam10		# Northbridge / RAM controller
       device pci 18.0 on			# Link 0
         chip southbridge/nvidia/mcp55		# Southbridge

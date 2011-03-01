@@ -65,8 +65,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 22
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x4882
-
 endif # BOARD_TYAN_S4882

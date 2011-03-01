@@ -23,6 +23,7 @@ chip northbridge/amd/agesa_wrapper/family14/root_complex
                 end
         end
         device pci_domain 0 on
+                subsystemid 0x1022 0x1510 inherit
                 chip northbridge/amd/agesa_wrapper/family14 # CPU side of HT root complex
 #                       device pci 18.0 on #  northbridge
                                 chip northbridge/amd/agesa_wrapper/family14 # PCI side of HT root complex

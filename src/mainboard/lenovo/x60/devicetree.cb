@@ -22,17 +22,23 @@
 
 chip northbridge/intel/i945
 
-        device lapic_cluster 0 on
-                chip cpu/intel/socket_mFCPGA478
-                        device lapic 0 on end
-                end
-        end
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_mFCPGA478
+			device lapic 0 on end
+		end
+	end
 
-        device pci_domain 0 on
-                device pci 00.0 on end # host bridge
-		device pci 02.0 on end # vga controller
-		device pci 02.1 on end # display controller
-                chip southbridge/intel/i82801gx
+	device pci_domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x17aa 0x2017
+		end
+		device pci 02.0 on # VGA controller
+			subsystemid 0x17aa 0x201a
+		end
+		device pci 02.1 on # display controller
+			subsystemid 0x17aa 0x201a
+		end
+		chip southbridge/intel/i82801gx
 			register "pirqa_routing" = "0x0b"
 			register "pirqb_routing" = "0x0b"
 			register "pirqc_routing" = "0x0b"
@@ -46,23 +52,36 @@ chip northbridge/intel/i945
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
-                        register "gpi13_routing" = "2"
-                        register "gpi12_routing" = "2"
-                        register "gpi8_routing" = "2"
+			register "gpi13_routing" = "2"
+			register "gpi12_routing" = "2"
+			register "gpi8_routing" = "2"
 
-                        register "sata_ahci" = "0x0"
+			register "sata_ahci" = "0x0"
 
 			register "gpe0_en" = "0x11000006"
 
-			device pci 1b.0 on end # Audio Controller
+			device pci 1b.0 on # Audio Cnotroller
+				subsystemid 0x17aa 0x2010
+			end
 			device pci 1c.0 on end # Ethernet
 			device pci 1c.1 on end # Atheros WLAN
-			device pci 1d.0 on end # USB UHCI
-			device pci 1d.1 on end # USB UHCI
-			device pci 1d.2 on end # USB UHCI
-			device pci 1d.3 on end # USB UHCI
-			device pci 1d.7 on end # USB2 EHCI
+			device pci 1d.0 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.1 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.2 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.3 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.7 on # USB2 EHCI
+				subsystemid 0x17aa 0x200b
+			end
 			device pci 1f.0 on # PCI-LPC bridge
+				subsystemid 0x17aa 0x2009
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on # dummy
 					end
@@ -120,9 +139,15 @@ chip northbridge/intel/i945
 					end
 				end
 			end
-			device pci 1f.1 off end # IDE
-                        device pci 1f.2 on end  # SATA
-                        device pci 1f.3 on end  # SMBus
+			device pci 1f.1 off # IDE
+				subsystemid 0x17aa 0x200c
+			end
+			device pci 1f.2 on # SATA
+				subsystemid 0x17aa 0x200d
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x17aa 0x200f
+			end
 		end
 		chip southbridge/ricoh/rl5c476
 		end

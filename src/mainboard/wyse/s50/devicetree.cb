@@ -28,6 +28,7 @@ chip northbridge/amd/gx2
 		end
 	end
   	device pci_domain 0 on 
+		subsystemid 102d 0 inherit
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536

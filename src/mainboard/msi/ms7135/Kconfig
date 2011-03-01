@@ -34,10 +34,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "MS-7135"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x7135
-
 config MAX_CPUS
 	int
 	default 2

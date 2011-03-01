@@ -91,14 +91,6 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x3060
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1022
-
 config RAMBASE
 	hex
 	default 0x200000

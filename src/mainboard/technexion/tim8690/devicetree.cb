@@ -15,6 +15,7 @@ chip northbridge/amd/amdk8/root_complex
 		end
 	end
 	device pci_domain 0 on
+		subsystemid 0x1022 0x3050 inherit
 		chip northbridge/amd/amdk8
 			device pci 18.0 on #  southbridge
 				chip southbridge/amd/rs690

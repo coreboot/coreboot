@@ -118,14 +118,6 @@ config ACPI_SSDTX_NUM
         int
         default 0
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-        hex
-        default 0x1510
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-        hex
-        default 0x1022
-
 config RAMBASE
         hex
         default 0x200000

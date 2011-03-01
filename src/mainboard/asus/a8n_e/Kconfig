@@ -70,12 +70,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 13
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1043
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x815a
-
 endif # BOARD_ASUS_A8N_E

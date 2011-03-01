@@ -35,14 +35,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x8086
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x1079
-
 config DIMM_MAP_LOGICAL
 	hex
 	default 0x0124

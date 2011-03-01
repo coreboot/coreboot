@@ -64,8 +64,8 @@ struct device {
 	struct device_path path;
 	unsigned 	vendor;
 	unsigned 	device;
-	u16 subsystem_vendor;
-	u16  subsystem_device;
+	u16		subsystem_vendor;
+	u16		subsystem_device;
 	unsigned int	class;		/* 3 bytes: (base, sub, prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */

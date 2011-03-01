@@ -32,7 +32,7 @@ TARGETS-$(CONFIG_LIBC) += libc/malloc.o libc/printf.o libc/console.o libc/string
 TARGETS-$(CONFIG_LIBC) += libc/memory.o libc/ctype.o libc/ipchecksum.o libc/lib.o
 TARGETS-$(CONFIG_LIBC) += libc/rand.o libc/time.o libc/exec.o
 TARGETS-$(CONFIG_LIBC) += libc/readline.o libc/getopt_long.o libc/sysinfo.o
-TARGETS-$(CONFIG_LIBC) += libc/args.o
+TARGETS-$(CONFIG_LIBC) += libc/args.o libc/strings.o
 
 # should be moved to coreboot directory
 TARGETS-$(CONFIG_LAR) += libc/lar.o

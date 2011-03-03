@@ -1,11 +1,12 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,28 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ramstage-$(CONFIG_SUPERIO_NSC_PC87384) += superio.c
 
-config SUPERIO_NSC_PC8374
-	bool
-config SUPERIO_NSC_PC87309
-	bool
-config SUPERIO_NSC_PC87351
-	bool
-config SUPERIO_NSC_PC87360
-	bool
-config SUPERIO_NSC_PC87366
-	bool
-config SUPERIO_NSC_PC87382
-	bool
-config SUPERIO_NSC_PC87384
-	bool
-config SUPERIO_NSC_PC87392
-	bool
-config SUPERIO_NSC_PC87417
-	bool
-config SUPERIO_NSC_PC87427
-	bool
-config SUPERIO_NSC_PC97307
-	bool
-config SUPERIO_NSC_PC97317
-	bool

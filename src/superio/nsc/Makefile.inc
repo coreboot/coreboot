@@ -23,6 +23,7 @@ subdirs-y += pc87351
 subdirs-y += pc87360
 subdirs-y += pc87366
 subdirs-y += pc87382
+subdirs-y += pc87384
 subdirs-y += pc87392
 subdirs-y += pc87417
 subdirs-y += pc87427

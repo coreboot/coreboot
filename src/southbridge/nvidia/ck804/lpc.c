@@ -104,15 +104,6 @@ static void rom_dummy_write(device_t dev)
 		pci_write_config8(dev, 0x6d, new);
 }
 
-static void enable_hpet(struct device *dev)
-{
-	unsigned long hpet_address;
-
-	pci_write_config32(dev, 0x44, 0xfed00001);
-	hpet_address = pci_read_config32(dev, 0x44) & 0xfffffffe;
-	printk(BIOS_DEBUG, "Enabling HPET @0x%lx\n", hpet_address);
-}
-
 unsigned pm_base = 0;
 
 static void lpc_init(device_t dev)
@@ -128,12 +119,6 @@ static void lpc_init(device_t dev)
 #if CK804_CHIP_REV == 1
 	if (dev->bus->secondary != 1)
 		return;
-#endif
-
-#if 0
-	/* Posted memory write enable */
-	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1 << 0));
 #endif
 
 	/* Power after power fail */
@@ -166,12 +151,6 @@ static void lpc_init(device_t dev)
 	pci_write_config8(dev, 0xe8, byte);
 #endif
 
-	/* Enable Error reporting. */
-	/* Set up sync flood detected. */
-	byte = pci_read_config8(dev, 0x47);
-	byte |= (1 << 1);
-	pci_write_config8(dev, 0x47, byte);
-
 	/* Set up NMI on errors. */
 	byte = inb(0x70);		/* RTC70 */
 	byte_old = byte;
@@ -190,9 +169,6 @@ static void lpc_init(device_t dev)
 	/* Initialize ISA DMA. */
 	isa_dma_init();
 
-	/* Initialize the High Precision Event Timers (HPET). */
-	enable_hpet(dev);
-
 	rom_dummy_write(dev);
 }
 
@@ -204,6 +180,9 @@ static void ck804_lpc_read_resources(device_t dev)
 	/* Get the normal PCI resources of this device. */
 	/* We got one for APIC, or one more for TRAP. */
 	pci_dev_read_resources(dev);
+
+	/* HPET */
+	pci_get_resource(dev, 0x44);
 
 	/* Get resource for ACPI, SYSTEM_CONTROL, ANALOG_CONTROL. */
 	for (index = 0x60; index <= 0x68; index += 4)	/* We got another 3. */
@@ -223,10 +202,42 @@ static void ck804_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	if (dev->device != PCI_DEVICE_ID_NVIDIA_CK804_SLAVE) {
+		res = find_resource(dev, 0x14); /* IOAPIC */
+		if (res) {
+			res->base = IO_APIC_ADDR;
+			res->flags |= IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+		}
+
+		res = find_resource(dev, 0x44); /* HPET */
+		if (res) {
+			res->base = 0xfed00000;
+			res->flags |= IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+		}
+	}
+}
+
+static void ck804_lpc_set_resources(device_t dev)
+{
+	struct resource *res;
+
+	pci_dev_set_resources(dev);
+
+	/* APIC */
+	res = find_resource(dev, 0x14);
+	if (res) {
+		pci_write_config32(dev, 0x14, res->base);
+		res->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, res, "");
+	}
+
+	/* HPET */
+	res = find_resource(dev, 0x44);
+	if (res) {
+		pci_write_config32(dev, 0x44, res->base|1);
+		res->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, res, "");
+	}
 }
 
 /**
@@ -299,7 +310,7 @@ static void ck804_lpc_enable_resources(device_t dev)
 
 static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources    = ck804_lpc_set_resources,
 	.enable_resources = ck804_lpc_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,

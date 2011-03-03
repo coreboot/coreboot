@@ -58,4 +58,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 13
 
+config CK804_PCI_E_X
+	int
+	default 0
+
 endif # BOARD_MSI_MS7135

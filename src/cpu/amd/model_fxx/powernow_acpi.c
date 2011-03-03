@@ -622,7 +622,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		Pstate_vid[Pstate_num] = vid_to_reg(data->pstates[Pstate_num - 1].voltage);
 		Pstate_power[Pstate_num] = data->pstates[Pstate_num - 1].tdp * 100;
 		Pstate_num++;
-	} while ((Pstate_num < MAXP) && (data->pstates[Pstate_num].freqMhz != 0));
+	} while ((Pstate_num < MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0));
 
 	for (i=0;i<Pstate_num;i++)
 		printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,

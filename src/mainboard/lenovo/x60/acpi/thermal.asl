@@ -23,4 +23,19 @@ Scope(\_TZ)
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP0))
 		}
 	}
+
+	ThermalZone(THM1)
+	{
+		Method(_CRT, 0, NotSerialized) {
+			Return (C2K(99))
+		}
+
+		Method(_PSV, 0, NotSerialized) {
+			Return (C2K(94))
+		}
+
+		Method(_TMP) {
+			Return (C2K(\_SB.PCI0.LPCB.EC.TMP1))
+		}
+	}
 }

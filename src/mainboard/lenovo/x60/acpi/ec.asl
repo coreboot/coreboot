@@ -39,6 +39,7 @@ Device(EC)
 				KBLT, 1,        /* Keyboard Light */
 		Offset (0x78),
 				TMP0, 8,	/* Thermal Zone 0 temperature */
+				TMP1, 8,	/* Thermal Zone 1 temperature */
 		Offset (0x81),
 				PAGE, 8		/* Information Page Selector */
         }

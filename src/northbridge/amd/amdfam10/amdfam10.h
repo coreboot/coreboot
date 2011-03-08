@@ -1199,4 +1199,7 @@ u32 get_sblk(void);
 u8 get_sbbusn(u8 sblk);
 #endif
 
+#include "northbridge/amd/amdht/porting.h"
+BOOL AMD_CB_ManualBUIDSwapList(u8 Node, u8 Link, const u8 **List);
+
 #endif /* AMDFAM10_H */

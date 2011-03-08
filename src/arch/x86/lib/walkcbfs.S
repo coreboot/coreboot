@@ -15,19 +15,13 @@
 
 #define CBFS_FILE_STRUCTSIZE (CBFS_FILE_OFFSET + 4)
 
-#define CBFS_STAGE_COMPRESSION 0
-#define CBFS_STAGE_ENTRY (CBFS_STAGE_COMPRESSION + 4)
-#define CBFS_STAGE_LOAD (CBFS_STAGE_ENTRY + 8)
-#define CBFS_STAGE_LEN (CBFS_STAGE_LOAD + 8)
-#define CBFS_STAGE_MEMLEN (CBFS_STAGE_LEN + 4)
-
 /*
   input %esi: filename
   input %esp: return address (not pointer to return address!)
   output %eax: entry point
   clobbers %ebx, %ecx, %edi
 */
-walkcbfs:
+walkcbfs_asm:
 	cld
 
 	mov CBFS_HEADER_PTR, %eax
@@ -67,8 +61,6 @@ walker:
 	mov CBFS_FILE_OFFSET(%ebx), %eax
 	bswap %eax
 	add %ebx, %eax
-	add $CBFS_STAGE_ENTRY, %eax /* eax = ((cbfs_stage* (cbfs_file* ebx)->offset)->entry) */
-	mov 0(%eax), %eax
 	jmp *%esp
 
 tryharder:

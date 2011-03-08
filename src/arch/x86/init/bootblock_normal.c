@@ -8,6 +8,10 @@ static void main(unsigned long bist)
 		bootblock_southbridge_init();
 	}
 
+#if CONFIG_USE_OPTION_TABLE
+	sanitize_cmos();
+#endif
+
 	unsigned long entry;
 	if (do_normal_boot())
 		entry = findstage("normal/romstage");

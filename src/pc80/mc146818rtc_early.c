@@ -11,15 +11,6 @@
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
 
-#if CONFIG_USE_CMOS_RECOVERY
-#include <cbfs.h>
-#include <console/loglevel.h>
-
-int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
-#define printk_warning(fmt, arg...) do_printk(BIOS_WARNING ,fmt, ##arg)
-#define printk_debug(fmt, arg...) do_printk(BIOS_DEBUG ,fmt, ##arg)
-#endif
-
 static int cmos_error(void)
 {
 	unsigned char reg_d;
@@ -63,25 +54,6 @@ static inline int do_normal_boot(void)
 	unsigned char byte;
 
 	if (cmos_error() || !cmos_chksum_valid()) {
-#if CONFIG_USE_CMOS_RECOVERY
-		char *cmos_default = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT);
-		if (cmos_default) {
-			int i;
-			printk_warning("WARNING - CMOS CORRUPTED. RESTORING DEFAULTS.\n");
-			/* First 14 bytes are reserved for
-			   RTC and ignored by nvramtool, too.
-			   Only 128 bytes: 128+ requires cmos configuration and
-			   contains only suspend-to-ram data, which isn't part
-			   of the recovery procedure. */
-			for (i = 14; i < 128; i++) {
-				cmos_write(cmos_default[i], i);
-			}
-			/* Now reboot to run with default cmos. */
-			outb(0x06, 0xcf9);
-			for (;;) asm("hlt"); /* Wait for reset! */
-		}
-#endif
-
 		/* There are no impossible values, no checksums so just
 		 * trust whatever value we have in the the cmos,
 		 * but clear the fallback bit.

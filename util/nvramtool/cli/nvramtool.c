@@ -102,13 +102,9 @@ int main(int argc, char *argv[])
 
 	parse_nvramtool_args(argc, argv);
 
-	if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found) {
-		set_layout_filename(nvramtool_op_modifiers
-				    [NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].param);
-		fn = get_layout_from_file;
-	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found) {
-		fn = get_layout_from_cmos_table;
-	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].found) {
+	/* If we should operate on a CBFS file default to reading the layout
+	 * and CMOS contents from it. */
+	if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].found) {
 		open_cbfs(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CBFS_FILE].param);
 		if (!nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].found) {
 			cmos_default = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT, NULL);
@@ -117,36 +113,55 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 		}
+		fn = get_layout_from_cbfs_file;
 	}
+
+	/* If the user wants to use a specific layout file or explicitly use
+	 * the coreboot option table allow him to override previous settings. */
+	if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found) {
+		set_layout_filename(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].param);
+		fn = get_layout_from_file;
+	} else if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found) {
+		fn = get_layout_from_cmos_table;
+	}
+
+	/* Allow the user to use a file for the CMOS contents, possibly
+	 * overriding a previously opened "cmos.default" file from the CBFS. */
 	if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].found) {
-		int fd;
 		struct stat fd_stat;
-	       	if ((fd = open(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param, O_RDWR | O_CREAT, 0666)) < 0) {
+		int fd;
+
+		if ((fd = open(nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param, O_RDWR | O_CREAT, 0666)) < 0) {
 			fprintf(stderr, "Couldn't open '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);
 		}
+
 		if (fstat(fd, &fd_stat) == -1) {
 			fprintf(stderr, "Couldn't stat '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);
 		}
+		
 		if (fd_stat.st_size < 128) {
 			lseek(fd, 127, SEEK_SET);
 			write(fd, "\0", 1);
 			fsync(fd);
 		}
+		
 		cmos_default = mmap(NULL, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (cmos_default == MAP_FAILED) {
 			fprintf(stderr, "Couldn't map '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);
 		}
 	}
+
+	/* Switch to memory based CMOS access. */
 	if (cmos_default) {
 		select_hal(HAL_MEMORY, cmos_default);
-		fn = get_layout_from_cbfs_file;
 	}
 
 	register_cmos_layout_get_fn(fn);
-	op_fns[nvramtool_op.op] ();
+	op_fns[nvramtool_op.op]();
+
 	return 0;
 }
 

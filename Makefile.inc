@@ -54,6 +54,9 @@ romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-DASSEMBLY -D__PRE_RAM__
 driver-S-ccopts:=-DASSEMBLY
 
+ramstage-c-deps:=$$(OPTION_TABLE_H)
+romstage-c-deps:=$$(OPTION_TABLE_H)
+
 #######################################################################
 # Add handler to compile ACPI's ASL
 define ramstage-objs_asl_template
@@ -174,7 +177,7 @@ $(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
 
-$(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h
+$(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -c -o $@ $<
 

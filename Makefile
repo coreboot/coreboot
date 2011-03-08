@@ -207,9 +207,10 @@ define create_cc_template
 # $1 obj class
 # $2 source suffix (c, S)
 # $3 additional compiler flags
+# $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h
+$(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
@@ -219,7 +220,7 @@ endef
 filetypes-of-class=$(subst .,,$(sort $(suffix $($(1)-srcs))))
 $(foreach class,$(classes), \
 	$(foreach type,$(call filetypes-of-class,$(class)), \
-		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts)))))
+		$(eval $(call create_cc_template,$(class),$(type),$($(class)-$(type)-ccopts),$($(class)-$(type)-deps)))))
 
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))

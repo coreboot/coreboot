@@ -32,7 +32,7 @@ unsigned int cpuid(unsigned int op)
 {
 	uint32_t ret;
 
-#if defined(__DARWIN__) && !defined(__LP64__)
+#if defined(__PIC__) || defined(__DARWIN__) && !defined(__LP64__)
 	asm volatile (
 		"pushl %%ebx\n"
 		"cpuid\n"

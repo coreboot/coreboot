@@ -514,6 +514,7 @@ struct screen {
 #define _nc_idlok SP->_nc_sp_idlok
 #define _nc_idcok SP->_nc_sp_idcok
 
+#ifdef NCURSES_MOUSE_VERSION
 	/*
 	 * These are the data that support the mouse interface.
 	 */
@@ -531,6 +532,7 @@ struct screen {
 	NCURSES_CONST char *_mouse_xtermcap; /* string to enable/disable mouse */
 	MEVENT		_mouse_events[EV_MAX];	/* hold the last mouse event seen */
 	MEVENT		*_mouse_eventp;	/* next free slot in event queue */
+#endif
 
 #if USE_GPM_SUPPORT
 	bool		_mouse_gpm_loaded;

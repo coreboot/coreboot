@@ -286,7 +286,9 @@ int endwin(void)
 		return ERR;
 
 	SP->_endwin = TRUE;
+#ifdef NCURSES_MOUSE_VERSION
 	SP->_mouse_wrap(SP);
+#endif
 	// _nc_screen_wrap();
 	// _nc_mvcur_wrap();       /* wrap up cursor addressing */
 	// return reset_shell_mode();

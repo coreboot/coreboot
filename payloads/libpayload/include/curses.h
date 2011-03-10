@@ -58,7 +58,7 @@
 /*
  * Identify the mouse encoding version.
  */
-#define NCURSES_MOUSE_VERSION 1
+// #define NCURSES_MOUSE_VERSION 1
 
 /*
  * Definitions to facilitate DLL's.
@@ -1495,6 +1495,7 @@ extern NCURSES_EXPORT(const char *) _nc_viswibuf(const wint_t *);
 
 /* mouse interface */
 
+#ifdef NCURSES_MOUSE_VERSION
 #if NCURSES_MOUSE_VERSION > 1
 #define NCURSES_MOUSE_MASK(b,m) ((m) << (((b) - 1) * 5))
 #else
@@ -1591,6 +1592,7 @@ extern NCURSES_EXPORT(bool) wmouse_trafo (const WINDOW*, int*, int*, bool);
 extern NCURSES_EXPORT(bool) mouse_trafo (int*, int*, bool);              /* generated */
 
 #define mouse_trafo(y,x,to_screen) wmouse_trafo(stdscr,y,x,to_screen)
+#endif
 
 /* other non-XSI functions */
 
@@ -1616,7 +1618,9 @@ extern NCURSES_EXPORT(char *) _tracecchar_t2 (int, const cchar_t *);
 #define _tracech_t		_tracechtype
 #define _tracech_t2		_tracechtype2
 #endif
+#ifdef NCURSES_MOUSE_VERSION
 extern NCURSES_EXPORT(char *) _tracemouse (const MEVENT *);
+#endif
 extern NCURSES_EXPORT(void) trace (const unsigned int);
 
 /* trace masks */

@@ -84,6 +84,20 @@ void get_layout_from_cbfs_file(void)
 }
 
 /****************************************************************************
+ * get_layout_from_cmos_table
+ *
+ * Find the CMOS table which is stored within the coreboot table and set the
+ * global variable cmos_table to point to it.
+ ****************************************************************************/
+void get_layout_from_cmos_table(void)
+{
+	get_lbtable();
+	cmos_table = (const struct cmos_option_table *)
+	    find_lbrec(LB_TAG_CMOS_OPTION_TABLE);
+	process_layout();
+}
+
+/****************************************************************************
  * process_cmos_table
  *
  * Extract layout information from the CMOS option table and store it in our

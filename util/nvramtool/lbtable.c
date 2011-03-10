@@ -63,7 +63,6 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 					    unsigned long end,
 					    int *bad_header_count,
 					    int *bad_table_count);
-static const struct lb_record *find_lbrec(uint32_t tag);
 static const char *lbrec_tag_to_str(uint32_t tag);
 static void memory_print_fn(const struct lb_record *rec);
 static void mainboard_print_fn(const struct lb_record *rec);
@@ -215,11 +214,6 @@ static unsigned long low_phys_base = 0;
 /* Pointer to coreboot table. */
 static const struct lb_header *lbtable = NULL;
 
-/* The CMOS option table is located within the coreboot table.  It tells us
- * where the CMOS parameters are located in the nonvolatile RAM.
- */
-static const struct cmos_option_table *cmos_table = NULL;
-
 static const hexdump_format_t format =
     { 12, 4, "            ", " | ", " ", " | ", '.' };
 
@@ -300,21 +294,6 @@ void get_lbtable(void)
 		"            %d valid headers were found with bad table "
 		"checksums.\n", prog_name, bad_header_count, bad_table_count);
 	exit(1);
-}
-
-/****************************************************************************
- * get_layout_from_cmos_table
- *
- * Find the CMOS table which is stored within the coreboot table and set the
- * global variable cmos_table to point to it.
- ****************************************************************************/
-void get_layout_from_cmos_table(void)
-{
-
-	get_lbtable();
-	cmos_table = (const struct cmos_option_table *)
-	    find_lbrec(LB_TAG_CMOS_OPTION_TABLE);
-	process_layout();
 }
 
 /****************************************************************************
@@ -538,7 +517,7 @@ static const struct lb_header *lbtable_scan(unsigned long start,
  * Find the record in the coreboot table that matches 'tag'.  Return pointer
  * to record on success or NULL if record not found.
  ****************************************************************************/
-static const struct lb_record *find_lbrec(uint32_t tag)
+const struct lb_record *find_lbrec(uint32_t tag)
 {
 	const char *p;
 	uint32_t bytes_processed;

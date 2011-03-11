@@ -55,7 +55,6 @@ int strncasecmp(const char *s1, const char *s2, size_t maxlen);
 char *strncpy(char *d, const char *s, size_t n);
 char *strcpy(char *d, const char *s);
 char *strncat(char *d, const char *s, size_t n);
-size_t strlcat(char *d, const char *s, size_t n);
 char *strcat(char *d, const char *s);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
@@ -67,5 +66,14 @@ size_t strcspn(const char *s, const char *a);
 char* strtok(char *str, const char *delim);
 char* strtok_r(char *str, const char *delim, char **ptr);
 /** @} */
+
+/**
+ * @defgroup string OpenBSD based safe string functions
+ * @{
+ */
+size_t strlcpy(char *d, const char *s, size_t n);
+size_t strlcat(char *d, const char *s, size_t n);
+/** @} */
+
 
 #endif

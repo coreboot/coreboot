@@ -25,12 +25,15 @@
 #include <delay.h>
 #include "ec.h"
 
+static int ec_cmd_reg = EC_SC;
+static int ec_data_reg = EC_DATA;
+
 int send_ec_command(u8 command)
 {
 	int timeout;
 
 	timeout = 0x7ff;
-	while ((inb(EC_SC) & EC_IBF) && --timeout) {
+	while ((inb(ec_cmd_reg) & EC_IBF) && --timeout) {
 		udelay(10);
 		if ((timeout & 0xff) == 0)
 			printk(BIOS_SPEW, ".");
@@ -41,7 +44,7 @@ int send_ec_command(u8 command)
 		// return -1;
 	}
 
-	outb(command, EC_SC);
+	outb(command, ec_cmd_reg);
 	return 0;
 }
 
@@ -50,7 +53,7 @@ int send_ec_data(u8 data)
 	int timeout;
 
 	timeout = 0x7ff;
-	while ((inb(EC_SC) & EC_IBF) && --timeout) { // wait for IBF = 0
+	while ((inb(ec_cmd_reg) & EC_IBF) && --timeout) { // wait for IBF = 0
 		udelay(10);
 		if ((timeout & 0xff) == 0)
 			printk(BIOS_SPEW, ".");
@@ -61,14 +64,14 @@ int send_ec_data(u8 data)
 		// return -1;
 	}
 
-	outb(data, EC_DATA);
+	outb(data, ec_data_reg);
 
 	return 0;
 }
 
 int send_ec_data_nowait(u8 data)
 {
-	outb(data, EC_DATA);
+	outb(data, ec_data_reg);
 
 	return 0;
 }
@@ -80,7 +83,7 @@ u8 recv_ec_data(void)
 
 	timeout = 0x7fff;
 	while (--timeout) { // Wait for OBF = 1
-		if (inb(EC_SC) & EC_OBF) {
+		if (inb(ec_cmd_reg) & EC_OBF) {
 			break;
 		}
 		udelay(10);
@@ -92,7 +95,7 @@ u8 recv_ec_data(void)
 		// return -1;
 	}
 
-	data = inb(EC_DATA);
+	data = inb(ec_data_reg);
 	printk(BIOS_DEBUG, "recv_ec_data: 0x%02x\n", data);
 
 	return data;
@@ -121,6 +124,12 @@ void ec_set_bit(u8 addr, u8 bit)
 void ec_clr_bit(u8 addr, u8 bit)
 {
 	ec_write(addr, ec_read(addr) &  ~(1 << bit));
+}
+
+void ec_set_ports(u16 cmd_reg, u16 data_reg)
+{
+	ec_cmd_reg = cmd_reg;
+	ec_data_reg = data_reg;
 }
 
 struct chip_operations ec_acpi_ops = {

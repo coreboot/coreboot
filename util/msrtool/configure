@@ -155,7 +155,7 @@ CFLAGS=`trycompile "libpci (from pciutils)" "${pc_CFLAGS}" "-I/usr/local/include
 	rm -f .config.c
 	exit 1
 }
-LDFLAGS=`trylink "libpci (from pciutils)" "${pc_LDFLAGS}" "-lpci -lz" "-L/usr/local/lib -lpci -lz" "-framework DirectIO -lpci -lz"` || {
+LDFLAGS=`trylink "libpci (from pciutils)" "${pc_LDFLAGS}" "-lpci -lz" "-L/usr/local/lib -lpci -lz" "-framework DirectHW -lpci -lz"` || {
 	rm -f .config.c .config.o
 	exit 1
 }

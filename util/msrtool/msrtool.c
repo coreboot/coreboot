@@ -49,7 +49,7 @@ static struct targetdef alltargets[] = {
 
 static struct sysdef allsystems[] = {
 	{ "linux", "Linux with /dev/cpu/*/msr", linux_probe, linux_open, linux_close, linux_rdmsr },
-	{ "darwin", "OS X with DirectIO", darwin_probe, darwin_open, darwin_close, darwin_rdmsr },
+	{ "darwin", "Mac OS X with DirectHW", darwin_probe, darwin_open, darwin_close, darwin_rdmsr },
 	{ "freebsd", "FreeBSD with /dev/cpuctl*", freebsd_probe, freebsd_open, freebsd_close, freebsd_rdmsr },
 	{ SYSTEM_EOT }
 };

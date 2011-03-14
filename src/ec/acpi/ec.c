@@ -113,6 +113,16 @@ int ec_write(u8 addr, u8 data)
 	return send_ec_data(data);
 }
 
+void ec_set_bit(u8 addr, u8 bit)
+{
+	ec_write(addr, ec_read(addr) | (1 << bit));
+}
+
+void ec_clr_bit(u8 addr, u8 bit)
+{
+	ec_write(addr, ec_read(addr) &  ~(1 << bit));
+}
+
 struct chip_operations ec_acpi_ops = {
 	CHIP_NAME("ACPI Embedded Controller")
 };

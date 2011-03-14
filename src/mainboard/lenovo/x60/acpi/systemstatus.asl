@@ -19,31 +19,48 @@
  * MA 02110-1301 USA
  */
 
-Field(ERAM, ByteAcc, NoLock, Preserve)
-{
-		Offset (0x32),
-			    , 4,
-			WKFN, 1,
-		Offset(0x83),
-			FNKY, 8
-}
 
-Device(SLPB)
+Scope (\_SI)
 {
-        Name (_HID, EisaId ("PNP0C0E"))
-	Method(_PRW, 0, NotSerialized)
+	Method(_SST, 1, NotSerialized)
 	{
-		Return (Package() { 0x18, 0x03 })
-	}
+		If (LEqual (Arg0, 0)) {
+			/* Indicator off */
 
-	Method(_PSW, 1, NotSerialized)
-	{
-		if (Arg0) {
-			Store(6, FNKY) /* Fn key acts as wake button */
-			Store(1, WKFN)
-		} else {
-			Store(0, FNKY) /* Fn key normal operation */
-			Store(0, WKFN)
+			/* power LED off */
+			\_SB.PCI0.LPC.EC.LED(0x00)
+			/* suspend LED off */
+			\_SB.PCI0.LPC.EC.LED(0x07)
 		}
+
+		If (LEqual (Arg0, 1)) {
+			/* working state */
+
+			/* power LED on */
+			\_SB.PCI0.LPC.EC.LED(0x80)
+			/* suspend LED off */
+			\_SB.PCI0.LPC.EC.LED(0x07)
+		}
+
+		If (LEqual (Arg0, 2)) {
+			/* waking state */
+
+			/* power LED om */
+			\_SB.PCI0.LPC.EC.LED(0x80)
+			/* suspend LED blinking */
+			\_SB.PCI0.LPC.EC.LED(0xc7)
+		}
+
+		If (LEqual (Arg0, 3)) {
+			/* sleep state */
+
+			/* power LED off */
+			\_SB.PCI0.LPC.EC.LED(0x00)
+			/* suspend LED on */
+			\_SB.PCI0.LPC.EC.LED(0x87)
+		}
+		
+		
+		
 	}
 }

@@ -43,7 +43,7 @@ DefinitionBlock(
 	// Thermal Zone
 	#include "acpi/thermal.asl"
 	// System status indicators
-	#include "acpi/systemstatus.asl
+	#include "acpi/systemstatus.asl"
 	Scope (\_SB) {
 		Device (PCI0)
 		{

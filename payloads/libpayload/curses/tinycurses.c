@@ -584,6 +584,15 @@ int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs,
 {
 	int x, y;
 
+	if (ls == 0) ls = ACS_VLINE;
+	if (rs == 0) rs = ACS_VLINE;
+	if (ts == 0) ts = ACS_HLINE;
+	if (bs == 0) bs = ACS_HLINE;
+	if (tl == 0) tl = ACS_ULCORNER;
+	if (tr == 0) tr = ACS_URCORNER;
+	if (bl == 0) bl = ACS_LLCORNER;
+	if (br == 0) br = ACS_LRCORNER;
+
 	for(y = 0; y <= win->_maxy; y++) {
 
 		if (y == 0) {

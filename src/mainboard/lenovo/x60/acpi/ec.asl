@@ -37,6 +37,8 @@ Device(EC)
 		Offset (0x3B),
 				    , 1,
 				KBLT, 1,        /* Keyboard Light */
+		Offset (0x4e),
+		               WAKE, 16,
 		Offset (0x78),
 				TMP0, 8,	/* Thermal Zone 0 temperature */
 				TMP1, 8,	/* Thermal Zone 1 temperature */

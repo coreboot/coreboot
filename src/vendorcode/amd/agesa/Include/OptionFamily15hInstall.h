@@ -388,24 +388,18 @@ extern F_IS_NB_PSTATE_ENABLED F15IsNbPstateEnabled;
 
     #if GET_PATCHES == TRUE
       #define F15_OR_UCODE_09
-      #define F15_OR_UCODE_09_UNENC
 
       #if AGESA_ENTRY_INIT_EARLY == TRUE
         #if OPTION_EARLY_SAMPLES == TRUE
           extern  CONST MICROCODE_PATCHES_4K ROMDATA CpuF15OrMicrocodePatch06000009;
           #undef F15_OR_UCODE_09
           #define F15_OR_UCODE_09 &CpuF15OrMicrocodePatch06000009,
-
-          extern  CONST MICROCODE_PATCHES_4K ROMDATA CpuF15OrMicrocodePatch06000009_Unenc;
-          #undef F15_OR_UCODE_09_UNENC
-          #define F15_OR_UCODE_09_UNENC &CpuF15OrMicrocodePatch06000009_Unenc,
         #endif
       #endif
 
       CONST MICROCODE_PATCHES_4K ROMDATA *CpuF15OrMicroCodePatchArray[] =
       {
         F15_OR_UCODE_09
-        F15_OR_UCODE_09_UNENC
         NULL
       };
 

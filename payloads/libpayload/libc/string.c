@@ -407,7 +407,7 @@ static int _offset(char ch, int base)
         if (ch >= '0' && ch <= '9')
                 return ch - '0';
         else
-                return tolower(ch) - 'a';
+                return 10 + tolower(ch) - 'a';
 }
 
 /**

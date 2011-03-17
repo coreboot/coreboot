@@ -112,14 +112,13 @@ PciePortsVisibilityControl (
 PCIE_HOST_REGISTER_ENTRY CoreInitTable [] = {
   {
     D0F0xE4_CORE_0020_ADDRESS,
-    D0F0xE4_CORE_0020_CiRcOrderingDis_MASK |
-    D0F0xE4_CORE_0020_CiSlvOrderingDis_MASK,
+    D0F0xE4_CORE_0020_CiRcOrderingDis_MASK,
     (0x1 << D0F0xE4_CORE_0020_CiRcOrderingDis_OFFSET)
   },
   {
-    D0F0xE4_CORE_0010_ADDRESS,
-    D0F0xE4_CORE_0010_RxUmiAdjPayloadSize_MASK,
-    (0x4 << D0F0xE4_CORE_0010_RxUmiAdjPayloadSize_OFFSET)
+    0x10,
+    0x1c00,
+    (0x4 << 10)
   },
   {
     D0F0xE4_CORE_001C_ADDRESS,
@@ -149,8 +148,7 @@ PCIE_HOST_REGISTER_ENTRY CoreInitTable [] = {
   },
   {
     D0F0xE4_CORE_00B0_ADDRESS,
-    D0F0xE4_CORE_00B0_StrapF0MsiEn_MASK |
-    D0F0xE4_CORE_00B0_StrapF0AerEn_MASK,
+    D0F0xE4_CORE_00B0_StrapF0MsiEn_MASK, 
     (0x1 << D0F0xE4_CORE_00B0_StrapF0MsiEn_OFFSET)
   }
 };

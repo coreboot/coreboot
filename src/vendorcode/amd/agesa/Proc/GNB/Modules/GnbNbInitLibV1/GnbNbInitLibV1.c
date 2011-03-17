@@ -158,10 +158,10 @@ GnbLpcDmaDeadlockPrevention (
   // For GPP Link core, enable special NP memory write protocol on the  processor side PCIE controller
   GnbLibPciIndirectRMW (
     NbPciAddress.AddressValue | D0F0xE0_ADDRESS,
-    CORE_SPACE (1, D0F0xE4_CORE_0010_ADDRESS),
+    CORE_SPACE (1, 0x10),
     AccessWidth32,
     0xFFFFFFFF,
-    1 << D0F0xE4_CORE_0010_UmiNpMemWrite_OFFSET,
+    1 << 9,
     StdHeader
   );
 

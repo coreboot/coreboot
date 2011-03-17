@@ -525,29 +525,22 @@ PcieTopologyInitSrbmReset (
   IN      PCIe_PLATFORM_CONFIG  *Pcie
   )
 {
-  D0F0xE4_WRAP_8063_STRUCT  D0F0xE4_WRAP_8063;
-  D0F0xE4_WRAP_8063.Value = PcieRegisterRead (
+  UINT32 pcireg;
+  UINT32 regmask = 0x7030;;
+  pcireg = PcieRegisterRead (
                                Wrapper,
-                               WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8063_ADDRESS),
+                               WRAP_SPACE (Wrapper->WrapId, 0x8063),
                                Pcie
                                );
   if (SrbmResetEnable) {
-    D0F0xE4_WRAP_8063.Field.ResetSrbm0En = 0x1;
-    D0F0xE4_WRAP_8063.Field.ResetSrbm1En = 0x1;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmNbEn = 0x1;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmGfxEn = 0x1;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmDcEn = 0x1;
+	pcireg |= regmask;
   } else {
-    D0F0xE4_WRAP_8063.Field.ResetSrbm0En = 0x0;
-    D0F0xE4_WRAP_8063.Field.ResetSrbm1En = 0x0;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmNbEn = 0x0;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmGfxEn = 0x0;
-    D0F0xE4_WRAP_8063.Field.ResetSrbmDcEn = 0x0;
+	pcireg &= ~(regmask);
   }
   PcieRegisterWrite (
     Wrapper,
-    WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8063_ADDRESS),
-    D0F0xE4_WRAP_8063.Value,
+    WRAP_SPACE (Wrapper->WrapId, 0x8063),
+    pcireg,
     FALSE,
     Pcie
     );

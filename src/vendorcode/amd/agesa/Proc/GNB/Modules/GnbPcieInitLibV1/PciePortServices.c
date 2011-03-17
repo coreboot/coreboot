@@ -144,9 +144,9 @@ PcieLinkInitHotplug (
       );
     PcieRegisterWriteField (
       PcieEngineGetParentWrapper (Engine),
-      CORE_SPACE (Engine->Type.Port.CoreId, D0F0xE4_CORE_0010_ADDRESS),
-      D0F0xE4_CORE_0010_LcHotPlugDelSel_OFFSET,
-      D0F0xE4_CORE_0010_LcHotPlugDelSel_WIDTH,
+      CORE_SPACE (Engine->Type.Port.CoreId, 0x10),
+      1,
+      3,
       0x5,
       TRUE,
       Pcie

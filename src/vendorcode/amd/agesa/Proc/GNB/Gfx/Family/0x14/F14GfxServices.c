@@ -483,10 +483,10 @@ REGISTER_COPY_ENTRY CnbToGncRegisterCopyTable [] = {
     GMMx284C_Dimm0AddrMap_WIDTH + GMMx284C_Dimm1AddrMap_WIDTH
   },
   {
-    MAKE_SBDFO (0, 0, 0x18, 2, D18F2x94_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, D18F2x094_ADDRESS),
     GMMx284C_ADDRESS,
-    D18F2x94_BankSwizzleMode_OFFSET,
-    D18F2x94_BankSwizzleMode_WIDTH,
+    D18F2x094_BankSwizzleMode_OFFSET,
+    D18F2x094_BankSwizzleMode_WIDTH,
     GMMx284C_BankSwizzleMode_OFFSET,
     GMMx284C_BankSwizzleMode_WIDTH
   },

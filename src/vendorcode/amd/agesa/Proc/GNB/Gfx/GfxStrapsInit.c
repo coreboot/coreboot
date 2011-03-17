@@ -167,11 +167,9 @@ GfxStrapsInit (
   if (Gfx->GfxControllerMode == GfxControllerLegacyBridgeMode) {
     D0F0x64_x1D.Field.IntGfxAsPcieEn = 0x0;
     D0F0x64_x1C.Field.RcieEn = 0x0;
-    D0F0x64_x1C.Field.PcieDis = 0x1;
   } else {
     D0F0x64_x1D.Field.IntGfxAsPcieEn = 0x1;
     D0F0x64_x1C.Field.RcieEn = 0x1;
-    D0F0x64_x1C.Field.PcieDis = 0x0;
     //LN/ON A0 (MSI)
     GnbLibPciRMW (MAKE_SBDFO (0, 0, 1, 0, 0x4), AccessS3SaveWidth32, 0xffffffff, BIT2, GnbLibGetHeader (Gfx));
   }
@@ -182,7 +180,6 @@ GfxStrapsInit (
   }
   D0F0x64_x1C.Field.AudioEn = Gfx->GnbHdAudio;
   D0F0x64_x1C.Field.F0En = 0x1;
-//  D0F0x64_x1C.Field.F0BarEn = 0x1;  //Keep re-sizable bar disabled at 0 due to silicon bug
   D0F0x64_x1C.Field.RegApSize = 0x1;
 
   if (Gfx->UmaInfo.UmaSize > 128 * 0x100000) {
@@ -315,10 +312,4 @@ GfxSetIdleVoltageMode (
   IN      GFX_PLATFORM_CONFIG   *Gfx
   )
 {
-  FCRxFF30_0191_STRUCT   FCRxFF30_0191;
-  NbSmuSrbmRegisterRead (FCRxFF30_0191_ADDRESS, &FCRxFF30_0191.Value, GnbLibGetHeader (Gfx));
-  FCRxFF30_0191.Field.GfxIdleVoltChgEn = 0x1;
-  FCRxFF30_0191.Field.GfxIdleVoltChgMode = (Gfx->GfxFusedOff || Gfx->UmaInfo.UmaMode != UMA_NONE) ? 0x0 : 0x1;
-  NbSmuSrbmRegisterWrite (FCRxFF30_0191_ADDRESS, &FCRxFF30_0191.Value, TRUE, GnbLibGetHeader (Gfx));
-
 }

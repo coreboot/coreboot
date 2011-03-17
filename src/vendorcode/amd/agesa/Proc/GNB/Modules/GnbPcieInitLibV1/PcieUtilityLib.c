@@ -424,9 +424,9 @@ PcieLockRegisters (
     for (CoreId = Wrapper->StartPcieCoreId; CoreId <= Wrapper->EndPcieCoreId; CoreId++) {
       PcieRegisterWriteField (
         Wrapper,
-        CORE_SPACE (CoreId, D0F0xE4_CORE_0010_ADDRESS),
-        D0F0xE4_CORE_0010_HwInitWrLock_OFFSET,
-        D0F0xE4_CORE_0010_HwInitWrLock_WIDTH,
+        CORE_SPACE (CoreId, 0x10),
+        0,
+        1,
         0x1,
         TRUE,
         Pcie

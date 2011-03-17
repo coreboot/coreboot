@@ -94,7 +94,7 @@ static void sm_init(device_t dev)
 	byte = pm_ioread(0x74);
 	byte &= ~0x03;
 	if (on) {
-		byte |= 2;
+		byte |= 1 << 0;
 	}
 	byte |= 1 << 2;
 	pm_iowrite(0x74, byte);

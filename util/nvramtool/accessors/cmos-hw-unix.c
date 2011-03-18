@@ -15,7 +15,7 @@
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
-#include <DirectIO/darwinio.h>
+#include <DirectHW/DirectHW.h>
 #endif
 #if defined(__NetBSD__)
 #if defined(__i386__) || defined(__x86_64__) 

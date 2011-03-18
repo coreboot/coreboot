@@ -33,8 +33,8 @@
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
-/* DirectIO is available here: http://www.coresystems.de/en/directio */
-#include <DirectIO/darwinio.h>
+/* DirectHW is available here: http://www.coreboot.org/DirectHW */
+#include <DirectHW/DirectHW.h>
 #endif
 
 #ifdef PCI_SUPPORT

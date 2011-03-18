@@ -85,7 +85,7 @@ static const struct {
 #ifndef __DARWIN__
 static int fd_mem;
 
-void *map_physical(unsigned long phys_addr, size_t len)
+void *map_physical(uint64_t phys_addr, size_t len)
 {
 	void *virt_addr;
 

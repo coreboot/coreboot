@@ -31,7 +31,7 @@ OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
-LDFLAGS = -framework DirectIO -lpci -lz
+LDFLAGS = -framework DirectHW -lpci -lz
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS += -I/usr/local/include

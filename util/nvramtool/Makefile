@@ -37,7 +37,7 @@ OBJS += $(CLI_OBJS)
 
 OS_ARCH        = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
-LDFLAGS = -framework DirectIO
+LDFLAGS = -framework DirectHW
 endif
 ifeq ($(OS_ARCH), NetBSD)
 LDFLAGS = -l$(shell uname -p)

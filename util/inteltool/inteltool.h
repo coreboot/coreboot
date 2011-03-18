@@ -26,7 +26,7 @@
 #if (defined(__MACH__) && defined(__APPLE__))
 /* DirectHW is available here: http://www.coresystems.de/en/directhw */
 #define __DARWIN__
-#include <DirectIO/darwinio.h>
+#include <DirectHW/DirectHW.h>
 #endif
 #include <pci/pci.h>
 
@@ -111,7 +111,7 @@ int freebsd_wrmsr(int addr, msr_t msr);
 #endif
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
-void *map_physical(unsigned long phys_addr, size_t len);
+void *map_physical(uint64_t phys_addr, size_t len);
 void unmap_physical(void *virt_addr, size_t len);
 
 unsigned int cpuid(unsigned int op);

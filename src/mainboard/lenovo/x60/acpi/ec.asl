@@ -95,6 +95,16 @@ Device(EC)
 		Notify (AC, 0x80)
 	}
 
+       Method(_Q2A, 0, NotSerialized)
+       {
+               Notify(\_SB.PCI0.LPCB.EC.LID, 0x80)
+       }
+
+       Method(_Q2B, 0, NotSerialized)
+       {
+               Notify(\_SB.PCI0.LPCB.EC.LID, 0x80)
+       }
+
 
 #include "ac.asl"
 #include "battery.asl"

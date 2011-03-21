@@ -87,14 +87,12 @@ Device(EC)
 	Method(_Q26, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
-		Beep(6)
 	}
 
 	/* AC status change: not present */
 	Method(_Q27, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
-		Beep(6)
 	}
 
 

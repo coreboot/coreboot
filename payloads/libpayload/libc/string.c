@@ -246,7 +246,7 @@ char *strncat(char *d, const char *s, size_t n)
  *
  * @param d The destination string.
  * @param s The source string.
- * @param n Not more than n characters from s will be appended to d.
+ * @param n d will have at most n-1 characters (plus NUL) after invocation.
  * @return A pointer to the destination string.
  */
 size_t strlcat(char *d, const char *s, size_t n)

@@ -21,6 +21,7 @@ subdirs-y += fintek
 subdirs-y += intel
 subdirs-y += ite
 subdirs-y += nsc
+subdirs-y += nuvoton
 subdirs-y += renesas
 #subdirs-y += serverengines
 subdirs-y += smsc

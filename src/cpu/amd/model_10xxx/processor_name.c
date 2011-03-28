@@ -154,6 +154,25 @@ static const struct str_s String2_socket_AM2[] = {
 	{0, 0, 0, NULL}
 };
 
+static const struct str_s String1_socket_C32[] = {
+	{0x00, 0x03, 0x00, "AMD Opteron(tm) Processor 41"},
+	{0x00, 0x05, 0x00, "AMD Opteron(tm) Processor 41"},
+	{0x01, 0x03, 0x01, "Embedded AMD Opteron(tm) Processor "},
+	{0x01, 0x05, 0x01, "Embedded AMD Opteron(tm) Processor "},
+	{0, 0, 0, NULL}
+};
+
+static const struct str_s String2_socket_C32[] = {
+	{0x00, 0x03, 0x00, " HE"},
+	{0x00, 0x03, 0x01, " EE"},
+	{0x00, 0x05, 0x00, " HE"},
+	{0x00, 0x05, 0x01, " EE"},
+	{0x01, 0x03, 0x01, "QS HE"},
+	{0x01, 0x03, 0x02, "LE HE"},
+	{0x01, 0x05, 0x01, "KX HE"},
+	{0x01, 0x05, 0x02, "GL EE"},
+	{0, 0, 0, NULL}
+};
 
 const char const *unknown = "AMD Processor model unknown";
 const char const *unknown2 = " type unknown";
@@ -217,6 +236,10 @@ int init_processor_name(void)
 	case 1:		/* AM2 */
 		str = String1_socket_AM2;
 		str2 = String2_socket_AM2;
+		break;
+	case 5:		/* C32 */
+		str = String1_socket_C32;
+		str2 = String2_socket_C32;
 		break;
 	default:
 		goto done;

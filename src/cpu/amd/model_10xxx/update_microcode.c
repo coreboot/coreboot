@@ -50,6 +50,7 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
  * 00100F43h (RB-C3)     1043h                  010000b6h
  * 00100F62h (DA-C2)     1062h                  0100009Fh
  * 00100F63h (DA-C3)     1043h                  010000b6h
+ * 00100F81h (HY-D1)     1081h                  010000c4h
  */
 
 #include CONFIG_AMD_UCODE_PATCH_FILE
@@ -76,6 +77,7 @@ static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 		0x100f43, 0x1043,
 		0x100f62, 0x1062,
 		0x100f63, 0x1043,
+		0x100f81, 0x1081,
 	};
 
 	u32 new_id;

@@ -1,0 +1,42 @@
+config CPU_AMD_SOCKET_C32
+	bool
+	select CPU_AMD_MODEL_10XXX
+	select HT3_SUPPORT
+	select PCI_IO_CFG_EXT
+	select CACHE_AS_RAM
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x14
+	depends on CPU_AMD_SOCKET_C32
+
+config EXT_RT_TBL_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_C32
+
+config EXT_CONF_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_C32
+
+config CBB
+	hex
+	default 0x0
+	depends on CPU_AMD_SOCKET_C32
+
+config CDB
+	hex
+	default 0x18
+	depends on CPU_AMD_SOCKET_C32
+
+config XIP_ROM_BASE
+	hex
+	default 0xfff80000
+	depends on CPU_AMD_SOCKET_C32
+
+config XIP_ROM_SIZE
+	hex
+	default 0x80000
+	depends on CPU_AMD_SOCKET_C32
+

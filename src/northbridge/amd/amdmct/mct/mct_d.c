@@ -2407,7 +2407,7 @@ static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 	// FIXME: for rev A: mct_BeforeDramInit_D(pDCTstat, dct);
 
 	/* Disable auto refresh before Dram init when in ganged mode (Erratum 278) */
-	if (pDCTstat->LogicalCPUID & AMD_DR_LT_B2) {
+	if (pDCTstat->LogicalCPUID & (AMD_DR_B0 | AMD_DR_B1 | AMD_DR_BA)) {
 		if (pDCTstat->GangedMode) {
 			val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
 			val |= 1 << DisAutoRefresh;
@@ -2421,7 +2421,7 @@ static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 	 * to ensure both DCTs are in sync (Erratum 278)
 	 */
 
-	if (pDCTstat->LogicalCPUID & AMD_DR_LT_B2) {
+	if (pDCTstat->LogicalCPUID & (AMD_DR_B0 | AMD_DR_B1 | AMD_DR_BA)) {
 		if (pDCTstat->GangedMode) {
 			do {
 				val = Get_NB32(pDCTstat->dev_dct, 0x90 + (0x100 * dct));

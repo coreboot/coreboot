@@ -78,6 +78,9 @@ static  void print_t(const char *strval)
 #elif CONFIG_CPU_SOCKET_TYPE == 0x13
 //ASB2
 #include "../amdmct/mct_ddr3/mctardk5.c"
+//C32
+#elif CONFIG_CPU_SOCKET_TYPE == 0x14
+#include "../amdmct/mct_ddr3/mctardk5.c"
 #endif
 
 #else  /* DDR2 */
@@ -204,6 +207,9 @@ u32 mctGetLogicalCPUID(u32 Node)
 		break;
 	case 0x10080:
 		ret = AMD_HY_D0;
+		break;
+	case 0x10081:
+		ret = AMD_HY_D1;
 		break;
 	default:
 		/* FIXME: mabe we should die() here. */

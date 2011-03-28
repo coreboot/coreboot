@@ -45,6 +45,7 @@
 #define	AMD_HY_D0	0x04000000	/* Istanbul D0 */
 #define	AMD_RB_C3	0x08000000	/* ??? C3 */
 #define	AMD_DA_C3	0x10000000	/* XXXX C3 */
+#define	AMD_HY_D1	0x20000000	/* Istanbul D1 */
 
 /*
  * Groups - Create as many as you wish, from the above public values
@@ -61,19 +62,18 @@
 #define	AMD_DR_LT_B2	(AMD_DR_B0 | AMD_DR_B1 | AMD_DR_BA)
 #define	AMD_DR_LT_B3	(AMD_DR_B0 | AMD_DR_B1 | AMD_DR_B2 | AMD_DR_BA)
 #define	AMD_DR_GT_B0	(AMD_DR_ALL & ~(AMD_DR_B0))
+#define	AMD_DR_GT_Bx	(AMD_DR_ALL & ~(AMD_DR_Ax | AMD_DR_Bx))
 #define	AMD_DR_ALL	(AMD_DR_Bx)
-#define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 )
+#define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 | AMD_HY_D1)
 #define AMD_FAM10_LT_D  (AMD_FAM10_ALL & ~(AMD_HY_D0))
 #define	AMD_FAM10_GT_B0	(AMD_FAM10_ALL & ~(AMD_DR_B0))
 #define	AMD_DA_Cx       (AMD_DA_C2 | AMD_DA_C3)
 #define	AMD_DR_Cx       (AMD_RB_C2 | AMD_RB_C3 | AMD_DA_Cx)
 #define	AMD_FAM10_C3       (AMD_RB_C3 | AMD_DA_C3)
-#define	AMD_DR_Dx       (AMD_HY_D0)
-#define	AMD_DRBH_Cx       (AMD_DR_Cx | AMD_HY_D0 )
-#define AMD_DRBA23_RBC2 (AMD_DR_BA | AMD_DR_B2 | AMD_DR_B3 | AMD_RB_C2 )
-
-#define	AMD_DR_GT_Bx	(AMD_DR_ALL & ~(AMD_DR_Ax | AMD_DR_Bx))
-#define	AMD_DR_DAC2_OR_C3	(AMD_DA_C2 | AMD_DA_C3)
+#define	AMD_DR_Dx	(AMD_HY_D0 | AMD_HY_D1)
+#define	AMD_DRBH_Cx	(AMD_DR_Cx | AMD_HY_D0 )
+#define	AMD_DRBA23_RBC2	(AMD_DR_BA | AMD_DR_B2 | AMD_DR_B3 | AMD_RB_C2 )
+#define	AMD_DR_DAC2_OR_C3	(AMD_DA_C2 | AMD_DA_C3 | AMD_RB_C3)
 
 /*
  *  Public Platforms - USE THESE VERSIONS TO MAKE COMPARE WITH CPUPLATFORMTYPE RETURN VALUE

@@ -11,6 +11,8 @@ config BOARD_SUPERMICRO_H8DMR_FAM10
 	bool "H8DMR-i2 (Fam10)"
 config BOARD_SUPERMICRO_H8QME_FAM10
 	bool "H8QME-2+ (Fam10)"
+config BOARD_SUPERMICRO_H8SCM_FAM10
+	bool "H8SCM (Fam10)"
 config BOARD_SUPERMICRO_X6DAI_G
 	bool "X6DAi-G"
 config BOARD_SUPERMICRO_X6DHE_G2
@@ -28,6 +30,7 @@ source "src/mainboard/supermicro/h8dme/Kconfig"
 source "src/mainboard/supermicro/h8dmr/Kconfig"
 source "src/mainboard/supermicro/h8dmr_fam10/Kconfig"
 source "src/mainboard/supermicro/h8qme_fam10/Kconfig"
+source "src/mainboard/supermicro/h8scm_fam10/Kconfig"
 source "src/mainboard/supermicro/x6dai_g/Kconfig"
 source "src/mainboard/supermicro/x6dhe_g2/Kconfig"
 source "src/mainboard/supermicro/x6dhe_g/Kconfig"

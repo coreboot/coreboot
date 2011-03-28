@@ -63,6 +63,12 @@ static void lpc_init(device_t dev)
 	/* Disable LPC MSI Capability */
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+	/* Disable FlowContrl, Always service the request from Host
+	 * whenever there is a request from Host pending
+	 */
+	byte &= ~(1 << 0);
+#endif
 	pci_write_config8(dev, 0x78, byte);
 
 	/* hack, but the whole sb700 startup lacks any device which

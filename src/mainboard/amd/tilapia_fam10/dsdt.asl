@@ -1544,6 +1544,7 @@ DefinitionBlock (
 					0xF300			/* length */
 				)
 
+#if 0
 				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
@@ -1585,12 +1586,16 @@ DefinitionBlock (
 					,,
 					PEBM
 				)
+#endif
 
+				/* memory space for PCI BARs below 4GB */
+				Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
 			}) /* End Name(_SB.PCI0.CRES) */
 
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
 
+#if 0
 				CreateDWordField(CRES, ^EMM1._BAS, EM1B)
 				CreateDWordField(CRES, ^EMM1._LEN, EM1L)
 				CreateDWordField(CRES, ^DMLO._BAS, DMLB)
@@ -1628,6 +1633,22 @@ DefinitionBlock (
 					ShiftLeft(PBAD,16,EBMB)		/* Reserve the "BIOS" space */
 					Store(PBLN,EBML)
 				}
+#endif
+
+				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
+				Store(TOM1, MM1B)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, MM1L)
 
 				Return(CRES) /* note to change the Name buffer */
 			}  /* end of Method(_SB.PCI0._CRS) */

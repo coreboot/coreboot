@@ -168,7 +168,7 @@ struct chip_operations mainboard_ops = {
 };
 
 /* override the default SATA PHY setup */
-void sb700_setup_sata_phys(struct device *dev) {
+void sb7xx_51xx_setup_sata_phys(struct device *dev) {
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
 	pci_write_config16(dev, 0x86, 0x2c00);
 

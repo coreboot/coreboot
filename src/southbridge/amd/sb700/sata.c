@@ -54,7 +54,7 @@ static int sata_drive_detect(int portnum, u16 iobar)
 }
 
 /* This function can be overloaded in mainboard.c */
-void __attribute__((weak)) sb700_setup_sata_phys(struct device *dev)
+void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 {
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */
 	pci_write_config16(dev, 0x86, 0x2c00);
@@ -184,11 +184,16 @@ static void sata_init(struct device *dev)
 	/* Program the watchdog counter to 0x10 */
 	byte = 0x10;
 	pci_write_config8(dev, 0x46, byte);
-	sb700_setup_sata_phys(dev);
+	sb7xx_51xx_setup_sata_phys(dev);
 	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
 	byte |= 7 << 0;
 	pci_write_config8(dev, 0x4, byte);
+
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+	/* Master Latency Timer */
+	pci_write_config32(dev, 0xC, 0x00004000);
+#endif
 
 	/* RPR7.7 SATA drive detection. */
 	/* Use BAR5+0x128,BAR0 for Primary Slave */

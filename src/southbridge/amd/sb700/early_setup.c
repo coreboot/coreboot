@@ -43,6 +43,7 @@ static u8 pmio_read(u8 reg)
 
 static void sb700_acpi_init(void)
 {
+	u16 word;
 	pmio_write(0x20, ACPI_PM_EVT_BLK & 0xFF);
 	pmio_write(0x21, ACPI_PM_EVT_BLK >> 8);
 	pmio_write(0x22, ACPI_PM1_CNT_BLK & 0xFF);
@@ -67,6 +68,9 @@ static void sb700_acpi_init(void)
 					* index 20-2B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
 	pmio_write(0x10, 1<<1 | 1<<3| 1<<5); /* RTC_En_En, TMR_En_En, GBL_EN_EN */
+	word = inl(ACPI_PM1_CNT_BLK);
+	word |= 1;
+	outl(word, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
 }
 
 /* RPR 2.28: Get SB ASIC Revision. */
@@ -125,7 +129,7 @@ static u8 set_sb700_revision(void)
 *	Console output through any port besides 0x3f8 is unsupported.
 *	If you use FWH ROMs, you have to setup IDSEL.
 ***************************************/
-static void sb700_lpc_init(void)
+static void sb7xx_51xx_lpc_init(void)
 {
 	u8 reg8;
 	u32 reg32;
@@ -145,11 +149,25 @@ static void sb700_lpc_init(void)
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+	post_code(0x66);
+	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
+	reg8 = pci_read_config8(dev, 0xBB);
+	reg8 |= 1 << 2 | 1 << 3 | 1 << 6 | 1 << 7;
+	reg8 &= ~(1 << 1);
+	pci_write_config8(dev, 0xBB, reg8);
+#endif
+
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
 	/* Decode port 0x3f8-0x3ff (Serial 0) */
 	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_TTYS0_BASE == 0x2f8
+	reg8 |= 1 << 7;
+#endif
+#endif
 	pci_write_config8(dev, 0x44, reg8);
 
 	/* Decode port 0x60 & 0x64 (PS/2 keyboard) and port 0x62 & 0x66 (ACPI)*/
@@ -168,6 +186,32 @@ static void sb700_lpc_init(void)
 	reg8 |= (1 << 1) | (1 << 0);
 	/* Decode port 0x70-0x73 (RTC) */
 	reg8 |= (1 << 6);
+	pci_write_config8(dev, 0x48, reg8);
+}
+
+void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
+{
+	/* TODO: Now assume wio_index=0 */
+	device_t dev;
+	u8 reg8;
+
+	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
+	pci_write_config32(dev, 0x64, base);
+	reg8 = pci_read_config8(dev, 0x48);
+	reg8 |= 1 << 2;
+	pci_write_config8(dev, 0x48, reg8);
+}
+
+void sb7xx_51xx_disable_wideio(u8 wio_index)
+{
+	/* TODO: Now assume wio_index=0 */
+	device_t dev;
+	u8 reg8;
+
+	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
+	pci_write_config32(dev, 0x64, 0);
+	reg8 = pci_read_config8(dev, 0x48);
+	reg8 &= ~(1 << 2);
 	pci_write_config8(dev, 0x48, reg8);
 }
 
@@ -256,7 +300,7 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-void sb700_pci_port80(void)
+void sb7xx_51xx_pci_port80(void)
 {
 	u8 byte;
 	device_t dev;
@@ -301,7 +345,7 @@ void sb700_pci_port80(void)
 	pci_write_config8(dev, 0x4A, byte);
 }
 
-void sb700_lpc_port80(void)
+void sb7xx_51xx_lpc_port80(void)
 {
 	u8 byte;
 	device_t dev;
@@ -325,6 +369,9 @@ static void sb700_devices_por_init(void)
 {
 	device_t dev;
 	u8 byte;
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+	u32 dword;
+#endif
 
 	printk(BIOS_INFO, "sb700_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
@@ -417,8 +464,25 @@ static void sb700_devices_por_init(void)
 	/* DMA enable */
 	pci_write_config8(dev, 0x40, 0x04);
 
-	/* LPC Sync Timeout */
+	/* IO Port Decode Enable */
+	pci_write_config8(dev, 0x44, 0xFF);
+	pci_write_config8(dev, 0x45, 0xFF);
+	pci_write_config8(dev, 0x46, 0xC3);
+	pci_write_config8(dev, 0x47, 0xFF);
+
+	// TODO: This has already been done(?)
+	/* IO/Mem Port Decode Enable, I don't know why CIM disable some ports.
+	 *  Disable LPC TimeOut counter, enable SuperIO Configuration Port (2e/2f),
+	 * Alternate Super I/O Configuration Port (4e/4f), Wide Generic IO Port (64/65). */
+	byte = pci_read_config8(dev, 0x48);
+	byte |= (1 << 1) | (1 << 0);	/* enable Super IO config port 2e-2h, 4e-4f */
+	byte |= 1 << 6;		/* enable for RTC I/O range */
+	pci_write_config8(dev, 0x48, byte);
 	pci_write_config8(dev, 0x49, 0xFF);
+	/* Enable 0x480-0x4bf, 0x4700-0x470B */
+	byte = pci_read_config8(dev, 0x4A);
+	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
+	pci_write_config8(dev, 0x4A, byte);
 
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
 	pci_write_config8(dev, 0x7C, 0x05);
@@ -440,6 +504,29 @@ static void sb700_devices_por_init(void)
 	pci_write_config8(dev, 0x1b, 0x40);
 	/* Enable PCIB_DUAL_EN_UP will fix potential problem with PCI cards. */
 	pci_write_config8(dev, 0x50, 0x01);
+
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+	/* SP5100 default SATA mode is RAID5 MODE */
+	dev = pci_locate_device(PCI_ID(0x1002, 0x4393), 0);
+	/* Set SATA Operation Mode, Set to IDE mode */
+	byte = pci_read_config8(dev, 0x40);
+	byte |= (1 << 0);
+	pci_write_config8(dev, 0x40, byte);
+
+	dword = 0x01018f00;
+	pci_write_config32(dev, 0x8, dword);
+
+	/* set SATA Device ID writable */
+	dword = pci_read_config32(dev, 0x40);
+	dword &= ~(1 << 24);
+	pci_write_config32(dev, 0x40, dword);
+
+	/* set Device ID accommodate with IDE emulation mode configuration*/
+	pci_write_config32(dev, 0x0, 0x43901002);
+
+	/* rpr v2.13 4.17 Reset CPU on Sync Flood */
+	abcfg_reg(0x10050, 1 << 2, 1 << 2);
+#endif
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
 	printk(BIOS_INFO, "sb700_devices_por_init(): SATA Device, BDF:0-18-0\n");
@@ -594,7 +681,7 @@ static void sb700_por_init(void)
 /*
 * It should be called during early POST after memory detection and BIOS shadowing but before PCI bus enumeration.
 */
-static void sb700_before_pci_init(void)
+static void sb7xx_51xx_before_pci_init(void)
 {
 	sb700_pci_cfg();
 }
@@ -602,7 +689,7 @@ static void sb700_before_pci_init(void)
 /*
 * This function should be called after enable_sb700_smbus().
 */
-static void sb700_early_setup(void)
+static void sb7xx_51xx_early_setup(void)
 {
 	printk(BIOS_INFO, "sb700_early_setup()\n");
 	sb700_por_init();

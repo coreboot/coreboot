@@ -49,6 +49,7 @@ static void sm_init(device_t dev)
 {
 	u8 byte;
 	u8 byte_old;
+	u8 rev;
 	u32 dword;
 	u32 ioapic_base;
 	u32 on;
@@ -56,6 +57,7 @@ static void sm_init(device_t dev)
 
 	printk(BIOS_INFO, "sm_init().\n");
 
+	rev = get_sb700_revision(dev);
 	ioapic_base = pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
 	/* Don't rename APIC ID */
 	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
@@ -161,6 +163,21 @@ static void sm_init(device_t dev)
 		outb(byte, 0x70);
 	}
 
+	/*rpr v2.13  2.22 SMBUS PCI Config */
+ 	byte = pci_read_config8(dev, 0xE1);
+	if ((REV_SB700_A11 == rev) || REV_SB700_A12 == rev) {
+		byte |= 1 << 0;
+	}
+	/*Set bit2 to 1, enable Io port 60h read/wrire SMi trapping and
+	 *Io port 64h write Smi trapping. conflict with ps2 keyboard
+	 */
+	//byte |= 1 << 2 | 1 << 3 | 1 << 4;
+	byte |= 1 << 3 | 1 << 4;
+ 	pci_write_config8(dev, 0xE1, byte);
+
+	/* 2.5 Enabling Non-Posted Memory Write */
+       	axindxc_reg(0x10, 1 << 9, 1 << 9);
+
 	/* 2.11 IO Trap Settings */
 	abcfg_reg(0x10090, 1 << 16, 1 << 16);
 
@@ -180,8 +197,17 @@ static void sm_init(device_t dev)
 
 	/* 4.6 B-Link Client's Credit Variable Settings for the Downstream Arbitration Equation */
 	/* 4.7 Enabling Additional Address Bits Checking in Downstream */
-	/* 4.15 IO write and SMI ordering enhancement*/
-	abcfg_reg(0x9c, 3 << 0 | 1 << 8, 3 << 0 | 1 << 8);
+	/* 4.16 IO write and SMI ordering enhancement*/
+	abcfg_reg(0x9c, 3 << 0, 3 << 0);
+	if (REV_SB700_A12 == rev) {
+		abcfg_reg(0x9c, 1 << 8, 1 << 8);
+	} else if (rev >= REV_SB700_A14) {
+		abcfg_reg(0x9c, 1 << 8, 0 << 8);
+	}
+	if (REV_SB700_A15 == rev) {
+		abcfg_reg(0x90, 1 << 21, 1 << 21);
+		abcfg_reg(0x9c, 1 << 5 | 1 << 9 | 1 << 15, 1 << 5 | 1 << 9 | 1 << 15);
+	}
 
 	/* 4.8 Set B-Link Prefetch Mode */
 	abcfg_reg(0x80, 3 << 17, 3 << 17);
@@ -192,6 +218,44 @@ static void sm_init(device_t dev)
 	/* 4.10: Enabling Downstream Posted Transactions to Pass Non-Posted
 	 *  Transactions for the K8 Platform (for All Revisions) */
 	abcfg_reg(0x10090, 1 << 8, 1 << 8);
+
+	/* ACPI_SOFT_CLOCK_THROTTLE_PERIOD */
+	byte = pm_ioread(0x68);
+	byte &= ~(3 << 6);
+	byte |= (2 << 6);	/* 224us */
+	pm_iowrite(0x68, byte);
+
+	if (REV_SB700_A15 == rev) {
+		u16 word;
+
+		/* rpr v2.13 4.18 Enabling Posted Pass Non-Posted Downstream */
+        	axindxc_reg(0x02, 1 << 9, 1 << 9);
+		abcfg_reg(0x9C, 0x00007CC0, 0x00007CC0);
+		abcfg_reg(0x1009C, 0x00000030, 0x00000030);
+		abcfg_reg(0x10090, 0x00001E00, 0x00001E00);
+
+		/* rpr v2.13 4.19 Enabling Posted Pass Non-Posted Upstream */
+		abcfg_reg(0x58, 0x0000F800, 0x0000E800);
+
+		/* rpr v2.13 4.20 64 bit Non-Posted Memory Write Support */
+        	axindxc_reg(0x02, 1 << 10, 1 << 10);
+
+		/* rpr v2.13 2.38 Unconditional Shutdown */
+ 		byte = pci_read_config8(dev, 0x43);
+		byte &= ~(1 << 3);
+ 		pci_write_config8(dev, 0x43, byte);
+
+		word = pci_read_config16(dev, 0x38);
+		word |= 1 << 12;
+ 		pci_write_config16(dev, 0x38, word);
+
+		byte |= 1 << 3;
+ 		pci_write_config8(dev, 0x43, byte);
+	}
+	//ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER
+ 	byte = pci_read_config8(dev, 0xAE);
+	byte |= 1 << 5;
+ 	pci_write_config8(dev, 0xAE, byte);
 
 	/* 4.11:Programming Cycle Delay for AB and BIF Clock Gating */
 	/* 4.12: Enabling AB and BIF Clock Gating */
@@ -292,19 +356,9 @@ static struct smbus_bus_operations lops_smbus_bus = {
 static void sb700_sm_read_resources(device_t dev)
 {
 	struct resource *res;
-	u8 byte;
-
-	/* rpr2.14: Hides SM bus controller Bar1 where stores HPET MMIO base address */
-	byte = pm_ioread(0x55);
-	byte |= 1 << 7;
-	pm_iowrite(0x55, byte);
 
 	/* Get the normal pci resources of this device */
 	/* pci_dev_read_resources(dev); */
-
-	byte = pm_ioread(0x55);
-	byte &= ~(1 << 7);
-	pm_iowrite(0x55, byte);
 
 	/* apic */
 	res = new_resource(dev, 0x74);
@@ -315,15 +369,15 @@ static void sb700_sm_read_resources(device_t dev)
 	res->gran = 8;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
 
-	#if 0			       /* Linux ACPI crashes when it is 1. For late debugging. */
-	res = new_resource(dev, 0x14); /* TODO: hpet */
+	/* Linux ACPI crashes when it is 1. For late debugging. */
+	res = new_resource(dev, 0xB4);	/* TODO: test hpet */
 	res->base  = 0xfed00000;	/* reset hpet to widely accepted address */
 	res->size = 0x400;
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
 	res->gran = 8;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
-	#endif
+
 	/* dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER; */
 
 	/* smbus */
@@ -344,18 +398,34 @@ static void sb700_sm_set_resources(struct device *dev)
 	u8 byte;
 
 	pci_dev_set_resources(dev);
-
-	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridge */
-	byte = pm_ioread(0x52);
-	byte |= 1 << 6;
-	pm_iowrite(0x52, byte);
-
 	res = find_resource(dev, 0x74);
 	pci_write_config32(dev, 0x74, res->base | 1 << 3);
-#if 0				/* TODO:hpet */
-	res = find_resource(dev, 0x14);
-	pci_write_config32(dev, 0x14, res->base);
+
+	/* TODO: test hpet */
+#if 0	//rrg-2.0.3 shows BAR1 not used
+	/* Make SMBUS BAR1(HPET base at offset 14h) visible */
+	byte = pci_read_config8(dev, 0x43);
+	byte &= ~(1 << 3);
+	pci_write_config8(dev, 0x43, byte);
 #endif
+
+	res = find_resource(dev, 0xB4);
+	/* Program HPET BAR Address */
+	pci_write_config32(dev, 0xB4, res->base);
+
+	/* Enable decoding of HPET MMIO, enable HPET MSI */
+	byte = pci_read_config8(dev, 0x43);
+	//byte |= (1 << 3); // Make SMBus Bar1 invisible
+	//byte |= ((1 << 4) | (1 << 5) | (1 << 6) | (1 << 7));
+	byte |= (1 << 4);
+	pci_write_config8(dev, 0x43, byte);
+
+	/* Enable HPET irq */
+	byte = pci_read_config8(dev, 0x65);
+	byte |= (1 << 2);
+	pci_write_config8(dev, 0x65, byte);
+	/* TODO: End of test hpet */
+
 	res = find_resource(dev, 0x90);
 	pci_write_config32(dev, 0x90, res->base | 1);
 }

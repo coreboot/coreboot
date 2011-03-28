@@ -87,7 +87,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* mov bsp to bus 0xff when > 8 nodes */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
-		sb700_pci_port80();
+		sb7xx_51xx_pci_port80();
 	}
 
 	post_code(0x30);
@@ -100,14 +100,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x32);
 
 	enable_rs780_dev8();
-	sb700_lpc_init();
+	sb7xx_51xx_lpc_init();
 
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	uart_init();
 
 #if CONFIG_USBDEBUG
-	sb700_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	sb7xx_51xx_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
 
@@ -167,7 +167,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* run _early_setup before soft-reset. */
 	rs780_early_setup();
-	sb700_early_setup();
+	sb7xx_51xx_early_setup();
 
  #if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
@@ -225,7 +225,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 //	die("After MCT init before CAR disabled.");
 
 	rs780_before_pci_init();
-	sb700_before_pci_init();
+	sb7xx_51xx_before_pci_init();
 
 	post_code(0x42);
 	printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");

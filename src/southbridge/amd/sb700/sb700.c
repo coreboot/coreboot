@@ -104,7 +104,7 @@ static void set_pmio_enable_bits(device_t sm_dev, u32 reg_pos,
 	}
 }
 
-void sb700_enable(device_t dev)
+void sb7xx_51xx_enable(device_t dev)
 {
 	device_t sm_dev = 0;
 	device_t bus_dev = 0;
@@ -118,7 +118,7 @@ void sb700_enable(device_t dev)
 
 	u32 devfn;
 
-	printk(BIOS_DEBUG, "sb700_enable()\n");
+	printk(BIOS_DEBUG, "sb7xx_51xx_enable()\n");
 
 	/*
 	 * 0:11.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
@@ -161,7 +161,7 @@ void sb700_enable(device_t dev)
 	}
 
 	i = (dev->path.pci.devfn) & ~7;
-	i += (2 << 3);
+	i += (3 << 3);
 	for (devfn = (0x14 << 3); devfn <= i; devfn += (1 << 3)) {
 		sm_dev = find_sm_dev(dev, devfn);
 		if (sm_dev)
@@ -226,7 +226,14 @@ void sb700_enable(device_t dev)
 	}
 }
 
+#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+struct chip_operations southbridge_amd_sp5100_ops = {
+	CHIP_NAME("ATI SP5100")
+	.enable_dev = sb7xx_51xx_enable,
+};
+#else
 struct chip_operations southbridge_amd_sb700_ops = {
 	CHIP_NAME("ATI SB700")
-	.enable_dev = sb700_enable,
+	.enable_dev = sb7xx_51xx_enable,
 };
+#endif

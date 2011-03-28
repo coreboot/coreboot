@@ -34,6 +34,7 @@ static void usb_init(struct device *dev)
 {
 	u8 byte;
 	u16 word;
+	u32 dword;
 
 	/* 6.1 Enable OHCI0-4 and EHCI Controllers */
 	device_t sm_dev;
@@ -60,10 +61,21 @@ static void usb_init(struct device *dev)
 	byte |= (1 << 4);
 	pm_iowrite(0x65, byte);
 
+	/* USB_ADVANCED_SLEEP_CONTROL */
+	byte = pm_ioread(0x95);
+	byte &= ~(7 << 0);
+	byte |= 6 << 0;		/* Advanced sleep up to 6 uframes */
+	pm_iowrite(0x95, byte);
+
 	/* RPR 6.10 Disable OHCI MSI Capability. */
 	word = pci_read_config16(dev, 0x40);
 	word |= (0x3 << 8);
 	pci_write_config16(dev, 0x40, word);
+
+	/* USB-1_OHCI0_Corner Case S3 Wake Up */
+	dword = pci_read_config32(dev, 0x50);
+	dword |= (1 << 16);
+	pci_write_config32(dev, 0x50, dword);
 }
 
 static void usb_init2(struct device *dev)
@@ -99,11 +111,9 @@ static void usb_init2(struct device *dev)
 	/* RPR 6.12 EHCI Advance PHY Power Savings */
 	/* RPR says it is just for A12. CIMM sets it when it is above A11. */
 	/* But it makes the linux crash, so we skip it */
-	#if 0
 	dword = pci_read_config32(dev, 0x50);
 	dword |= 1 << 31;
 	pci_write_config32(dev, 0x50, dword);
-	#endif
 
 	/* RPR6.13 Enabling Fix for EHCI Controller Driver Yellow Sign Issue */
 	/* RPR says it is just for A12. CIMx sets it when it is above A11. */
@@ -118,7 +128,6 @@ static void usb_init2(struct device *dev)
 
 	/* Each step below causes the linux crashes. Leave them here
 	 * for future debugging. */
-#if 0
 	u8 byte;
 	u16 word;
 
@@ -137,6 +146,13 @@ static void usb_init2(struct device *dev)
 		byte = pci_read_config8(dev, 0x50);
 		byte |= (1 << 7);
 		pci_write_config8(dev, 0x50, byte);
+	}
+
+	/* SB700_A15, USB-2_EHCI_PID_ERROR_CHECKING */
+	if (rev == REV_SB700_A15) {
+		word = pci_read_config16(dev, 0x50);
+		word |= (1 << 9);
+		pci_write_config16(dev, 0x50, word);
 	}
 
 	/* RPR6.20 Async Park Mode. */
@@ -163,7 +179,6 @@ static void usb_init2(struct device *dev)
 		dword &= ~(1 << 27); /* 6.23 */
 	}
 	printk(BIOS_DEBUG, "rpr 6.23, final dword=%x\n", dword);
-#endif
 }
 
 static void usb_set_resources(struct device *dev)

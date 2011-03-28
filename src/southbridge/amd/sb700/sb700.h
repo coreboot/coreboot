@@ -35,7 +35,7 @@
 
 #define ACPI_PM_EVT_BLK		(SB700_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(SB700_ACPI_IO_BASE + 0x04) /* 2 bytes */
-#define ACPI_PMA_CNT_BLK	(SB700_ACPI_IO_BASE + 0x0F) /* 1 byte */
+#define ACPI_PMA_CNT_BLK	(SB700_ACPI_IO_BASE + 0x0E) /* 1 byte */
 #define ACPI_PM_TMR_BLK		(SB700_ACPI_IO_BASE + 0x18) /* 4 bytes */
 #define ACPI_GPE0_BLK		(SB700_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(SB700_ACPI_IO_BASE + 0x08) /* 6 bytes */
@@ -58,20 +58,22 @@ extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
  * The differentiate is 0x28, isn't it? */
 #define get_sb700_revision(sm_dev)	(pci_read_config8((sm_dev), 0x08) - 0x28)
 
-void sb700_enable(device_t dev);
+void sb7xx_51xx_enable(device_t dev);
 
 #ifdef __PRE_RAM__
-void sb700_lpc_port80(void);
-void sb700_pci_port80(void);
+void sb7xx_51xx_lpc_port80(void);
+void sb7xx_51xx_pci_port80(void);
+void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base);
+void sb7xx_51xx_disable_wideio(u8 wio_index);
 #else
 #include <device/pci.h>
 /* allow override in mainboard.c */
-void sb700_setup_sata_phys(struct device *dev);
+void sb7xx_51xx_setup_sata_phys(struct device *dev);
 
 #endif
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
-void sb700_enable_usbdebug(unsigned int port);
+void sb7xx_51xx_enable_usbdebug(unsigned int port);
 #endif /* SB700_H */

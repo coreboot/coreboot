@@ -80,21 +80,21 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
-		/* sb700_lpc_port80(); */
-		sb700_pci_port80();
+		/* sb7xx_51xx_lpc_port80(); */
+		sb7xx_51xx_pci_port80();
 	}
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
 	enable_rs780_dev8();
-	sb700_lpc_init();
+	sb7xx_51xx_lpc_init();
 
 	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
 	uart_init();
 
 #if CONFIG_USBDEBUG
-	sb700_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	sb7xx_51xx_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
 
@@ -119,7 +119,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* run _early_setup before soft-reset. */
 	rs780_early_setup();
-	sb700_early_setup();
+	sb7xx_51xx_early_setup();
 
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
@@ -159,7 +159,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	rs780_before_pci_init();
-	sb700_before_pci_init();
+	sb7xx_51xx_before_pci_init();
 
 	post_cache_as_ram();
 }

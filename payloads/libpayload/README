@@ -14,7 +14,7 @@ See http://coreboot.org for details on coreboot.
 Installation
 ------------
 
- $ svn co svn://coreboot.org/repos/trunk/payloads/libpayload
+ $ svn co svn://coreboot.org/coreboot/trunk/payloads/libpayload
 
  $ cd libpayload
 

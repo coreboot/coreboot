@@ -61,7 +61,7 @@ romstage-c-deps:=$$(OPTION_TABLE_H)
 #######################################################################
 # Add handler to compile ACPI's ASL
 define ramstage-objs_asl_template
-$(obj)/$(1).ramstage.o: src/$(1).asl
+$(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CPP) -MMD -MT $$(@) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl

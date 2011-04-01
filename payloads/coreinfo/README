@@ -1,3 +1,27 @@
 This is a silly little program that demonstrates how cool libpayload is
 and also serves a purpose.  Its fun and educational!
 
+Requirements
+------------
+
+You should use the coreboot reference cross compiler. If you insist on using
+your system compiler, some Linux distributions might require you to install
+a package called gcc-multilib if you are on a 64bit system.
+
+Build
+-----
+
+You need libpayload to build coreinfo. So, first, you need follow the README of 
+libpayload to build it but install libpayload into its own directory by doing 
+this:
+
+ $ make DESTDIR=/path/to/libpayload/install install
+
+Then you can build coreinfo now:
+
+ $ cd coreinfo
+
+ $ make menuconfig
+ 
+ $ make
+

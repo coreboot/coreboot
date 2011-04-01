@@ -491,16 +491,16 @@ Scope(\_SB)
 			If(And(RFDV, 0x08)) {
 				Or(Local0, 0x08, Local0)
 			}
-			If(And(GP16, 0x01)) {		// GDIS
+			If(And(GP15, 0x01)) {		// GDIS
 				Or(Local0, 0x10, Local0)
 			}
-			If(And(GP13, 0x01)) {		// WIFI Led (WLED)
+			If(And(GP12, 0x01)) {		// WIFI Led (WLED)
 				Or(Local0, 0x20, Local0)
 			}
 			If(And(BTEN, 0x01)) {		// BlueTooth Enable
 				Or(Local0, 0x40, Local0)
 			}
-			If(And(GP11, 0x01)) {		// GPS Enable
+			If(And(GP10, 0x01)) {		// GPS Enable
 				Or(Local0, 0x80, Local0)
 			}
 
@@ -511,28 +511,28 @@ Scope(\_SB)
 		Method(SRFD, 1, Serialized)
 		{
 			If (And(Arg0, 0x01)) {
-				Store (1, GP15)		// GLED
-				Store (1, GP16)		// GDIS
+				Store (1, GP14)		// GLED
+				Store (1, GP15)		// GDIS
 			} Else {
+				Store (0, GP14)
 				Store (0, GP15)
-				Store (0, GP16)
 			}
 
 			/* WIFI */
 			If (And(Arg0, 0x02)) {
-				Store (1, GP13)		// WLED
-				Store (1, GP26)		// WLAN
+				Store (1, GP12)		// WLED
+				Store (1, GP25)		// WLAN
 			} Else {
-				Store (0, GP13)
-				Store (0, GP26)
+				Store (0, GP12)
+				Store (0, GP25)
 			}
 
 			/* Bluetooth */
 			If (And(Arg0, 0x04)) {
-				Store (1, GP14)		// BLED
+				Store (1, GP13)		// BLED
 				Store (1, BTEN)
 			} Else {
-				Store (0, GP14)		// BLED
+				Store (0, GP13)		// BLED
 				Store (0, BTEN)
 			}
 			Return (0)
@@ -577,7 +577,7 @@ Scope(\_SB)
 		/* ??? */
 		Method(GTSD, 0, Serialized)
 		{
-			Return (GP20)	// TSDT
+			Return (GP19)	// TSDT
 		}
 
 		/* Not even decent function names anymore? */

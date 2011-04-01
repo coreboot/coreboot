@@ -59,29 +59,35 @@ Scope(\)
 		GIO2, 8,
 		GIO3, 8,
 		Offset(0x0c),	// GPIO Level
-		GL00, 6,
-		GP07, 1,	// GDET
+		GP00, 1,
+		GP01, 1,
+		GP02, 1,
+		GP03, 1,
+		GP04, 1,
+		GP05, 1,
+		GP06, 1,	// GDET
+		GP07, 1,
 		GP08, 1,
-		GP09, 1,
-		GP10, 1,	// HPMU
-		GP11, 1,	// GPSE
-		GP12, 1,
-		GP13, 1,	// WLED
-		GP14, 1,	// BLED
-		GP15, 1,	// GLED
-		GP16, 1,	// GDIS
+		GP09, 1,	// HPMU
+		GP10, 1,	// GPSE
+		GP11, 1,
+		GP12, 1,	// WLED
+		GP13, 1,	// BLED
+		GP14, 1,	// GLED
+		GP15, 1,	// GDIS
+		GP16, 1,
 		GP17, 1,
-		GP18, 1,
-		GP19, 1,	// SPCI
-		GP20, 1,	// TSDT
-		GP21, 1,	// SCPU
+		GP18, 1,	// SPCI
+		GP19, 1,	// TSDT
+		GP20, 1,	// SCPU
+		GP21, 1,
 		GP22, 1,
-		GP23, 1,
-		GP24, 1,	// LANP
-		GP25, 1,	// DKLR
-		GP26, 1,	// WLAN
-		GP27, 1,	// SATA_PWR_EN #0 / SPOF
-		GP28, 1,	// SATA_PWR_EN #1 / SPMU
+		GP23, 1,	// LANP
+		GP24, 1,	// DKLR
+		GP25, 1,	// WLAN
+		GP26, 1,	// SATA_PWR_EN #0 / SPOF
+		GP27, 1,	// SATA_PWR_EN #1 / SPMU
+		GP28, 1,
 		GP29, 1,
 		GP30, 1,
 		GP31, 1,

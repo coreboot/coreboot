@@ -24,30 +24,55 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/nvs.h"
+#include <ec/acpi/ec.h>
+#include "dock.h"
+#include "smi.h"
 
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
 extern global_nvs_t *gnvs;
 
+static void mainboard_smm_init(void)
+{
+	printk(BIOS_DEBUG, "initializing SMI\n");
+	/* Enable 0x1600/0x1600 register pair */
+	ec_set_bit(0x00, 0x05);
+	ec_set_ports(0x1604, 0x1600);
+}
+
 int mainboard_io_trap_handler(int smif)
 {
+	static int smm_initialized;
+
+	if (!smm_initialized) {
+		mainboard_smm_init();
+		smm_initialized = 1;
+	}
+
 	switch (smif) {
-	case 0x99:
-		printk(BIOS_DEBUG, "Sample\n");
-		//gnvs->smif = 0;
+	case SMI_DOCK_CONNECT:
+		dlpc_init();
+		if (!dock_connect()) {
+			/* set dock LED to indicate status */
+			ec_write(0x0c, 0x88);
+		} else {
+			/* blink dock LED to indicate failure */
+			ec_write(0x0c, 0xc8);
+		}
 		break;
+
+	case SMI_DOCK_DISCONNECT:
+		dock_disconnect();
+		ec_write(0x0c, 0x08);
+		break;
+
 	default:
-		return 0;
+		return 1;
 	}
 
 	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	//gnvs->smif = 0;
-	return 1;
+	 * On failure, the IO Trap Handler returns a value != 0 */
+	return 0;
 }
 

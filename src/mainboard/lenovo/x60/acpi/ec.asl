@@ -19,6 +19,7 @@
  * MA 02110-1301 USA
  */
 
+#include "smi.h"
 Device(EC)
 {
 	Name (_HID, EISAID("PNP0C09"))
@@ -83,6 +84,11 @@ Device(EC)
 		\DSPC.BRTD()
 	}
 
+	Method(_Q18, 0, NotSerialized)
+	{
+		Notify(\_SB.PCI0.LPCB.EC.DOCK, 3)
+	}
+
 	/* AC status change: present */
 	Method(_Q26, 0, NotSerialized)
 	{
@@ -111,4 +117,5 @@ Device(EC)
 #include "sleepbutton.asl"
 #include "lid.asl"
 #include "beep.asl"
+#include "dock.asl"
 }

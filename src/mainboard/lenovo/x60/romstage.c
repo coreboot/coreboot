@@ -37,6 +37,7 @@
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
+#include "dock.h"
 
 void setup_ich7_gpios(void)
 {
@@ -105,78 +106,6 @@ static void pnp_write_register(device_t dev, int reg, int val)
 	unsigned int port = dev >> 8;
 	outb(reg, port);
 	outb(val, port+1);
-}
-
-static void dock_write_register(int reg, int value)
-{
-	outb(reg, 0x164e);
-	outb(value, 0x164f);
-	/* original software reads the chip id after every
-	   I/O operation. Not sure if they are doing it for
-	   some code switching depending on hardware or just
-	   to have a delay after every operation.
-
-	   Do it the same way for now, we may remove it later
-	   if it isn't needed
-	*/
-	outb(0x20, 0x164e);
-	inb(0x164f);
-}
-
-static void dock_dlpc_init(void)
-{
-	/* Select DLPC module */
-	dock_write_register(0x07, 0x19);
-	/* DLPC Base Address 0x164c */
-	dock_write_register(0x60, 0x16);
-	dock_write_register(0x61, 0x4c);
-	/* Activate DLPC */
-	dock_write_register(0x30, 0x01);
-	outb(0x07, 0x164c);
-
-	while(!(inb(0x164c) & 8))
-		udelay(100 * 100);
-}
-
-static void dock_gpio_set_mode(int port, int mode)
-{
-	dock_write_register(0xf0, port);
-	dock_write_register(0xf1, mode);
-
-}
-
-static void dock_gpio_init(void)
-{
-	/* Select GPIO module */
-	dock_write_register(0x07, 0x07);
-	/* GPIO Base Address 0x1680 */
-	dock_write_register(0x60, 0x16);
-	dock_write_register(0x61, 0x80);
-
-	/* Activate GPIO */
-	dock_write_register(0x30, 0x01);
-
-	dock_gpio_set_mode(0x00, 3);
-	dock_gpio_set_mode(0x01, 3);
-	dock_gpio_set_mode(0x02, 0);
-	dock_gpio_set_mode(0x03, 3);
-	dock_gpio_set_mode(0x04, 4);
-	dock_gpio_set_mode(0x20, 4);
-	dock_gpio_set_mode(0x21, 4);
-	dock_gpio_set_mode(0x23, 4);
-}
-
-static void connect_dock(void)
-{
-	/* Enable 14.318MHz CLK on CLKIN */
-	dock_write_register(0x29, 0x00);
-	dock_write_register(0x29, 0xa0);
-	dock_gpio_init();
-	/* Assert D_PLTRST# */
-	outb(0xfe, 0x1680);
-	dock_dlpc_init();
-	/* Deassert D_PLTRST# */
-	outb(0xff, 0x1680);
 }
 
 static void early_superio_config(void)
@@ -306,12 +235,17 @@ void main(unsigned long bist)
 
 	ich7_enable_lpc();
 
-	connect_dock();
 
-	early_superio_config();
-
-	/* Set up the console */
-	uart_init();
+	/* dock_init initializes the DLPC switch on
+	 *  thinpad side, so this is required even
+	 *  if we're undocked.
+	 */
+	if (!dlpc_init() && dock_present()) {
+		dock_connect();
+		early_superio_config();
+		/* Set up the console */
+		uart_init();
+	}
 
 #if CONFIG_USBDEBUG
 	i82801gx_enable_usbdebug(1);

@@ -67,8 +67,7 @@ Method(_PIC, 1)
 
 Method(_PTS,1)
 {
-	// Call a trap so SMI can prepare for Sleep as well.
-	// TRAP(0x55)
+	\_SB.PCI0.LPCB.EC.MUTE(1)
 }
 
 /* The _WAK method is called on system wakeup */

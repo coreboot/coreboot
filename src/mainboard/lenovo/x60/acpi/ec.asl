@@ -35,6 +35,8 @@ Device(EC)
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
+		Offset (0x3a),
+				AMUT, 1,	/* Audio Mute */
 		Offset (0x3B),
 				    , 1,
 				KBLT, 1,        /* Keyboard Light */
@@ -64,6 +66,11 @@ Device(EC)
 
 	Method (_INI, 0, NotSerialized)
 	{
+	}
+
+	Method (MUTE, 1, NotSerialized)
+	{
+		Store(Arg0, AMUT)
 	}
 
 	/* Sleep Button pressed */

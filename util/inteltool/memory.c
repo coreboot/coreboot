@@ -109,6 +109,8 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		printf("This northbridge does not have MCHBAR.\n");
 		return 1;
 	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_X44:
+	case PCI_DEVICE_ID_INTEL_32X0:
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;

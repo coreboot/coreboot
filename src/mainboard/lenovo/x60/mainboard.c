@@ -32,6 +32,7 @@
 #include <arch/io.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
+#include <northbridge/intel/i945/i945.h>
 
 static void backlight_enable(void)
 {
@@ -50,6 +51,8 @@ static void wlan_enable(void)
 
 static void mainboard_enable(device_t dev)
 {
+	device_t dev0;
+
 	backlight_enable();
 	trackpoint_enable();
 	/* FIXME: this should be ACPI's task
@@ -77,6 +80,11 @@ static void mainboard_enable(device_t dev)
 
 	/* enable Audio */
 	ec_clr_bit(0x3a, 0);
+
+	/* If we're resuming from suspend, blink suspend LED */
+	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
+	if (dev0 && pci_read_config32(dev0, SKPAD) == 0xcafed00d)
+		ec_write(0x0c, 0xc7);
 }
 
 struct chip_operations mainboard_ops = {

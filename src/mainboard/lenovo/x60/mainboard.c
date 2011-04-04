@@ -74,6 +74,9 @@ static void mainboard_enable(device_t dev)
 	ec_write(0x13, 0xff);
 	ec_write(0x14, 0xf4);
 	ec_write(0x15, 0x3c);
+
+	/* enable Audio */
+	ec_clr_bit(0x3a, 0);
 }
 
 struct chip_operations mainboard_ops = {

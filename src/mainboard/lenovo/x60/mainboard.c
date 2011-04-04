@@ -51,7 +51,24 @@ static void wlan_enable(void)
 
 static void mainboard_enable(device_t dev)
 {
+	unsigned char ecfw[9], c;
+	u16 fwvh, fwvl;
 	device_t dev0;
+	int i;
+
+	for(i = 0; i < 8; i++) {
+		c = ec_read(0xf0 + i);
+		if (c < 0x20 || c > 0x7f)
+			break;
+		ecfw[i] = c;
+	}
+	ecfw[i] = '\0';
+
+	fwvh = ec_read(0xe9);
+	fwvl = ec_read(0xe8);
+
+	printk(BIOS_INFO, "EC Firmware ID %s, Version %d.%d%d%c\n", ecfw,
+	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
 
 	backlight_enable();
 	trackpoint_enable();

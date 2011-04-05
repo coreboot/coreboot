@@ -49,11 +49,10 @@ static void wlan_enable(void)
 	ec_write(0x3a, 0x20);
 }
 
-static void mainboard_enable(device_t dev)
+static void log_ec_version(void)
 {
 	unsigned char ecfw[9], c;
 	u16 fwvh, fwvl;
-	device_t dev0;
 	int i;
 
 	for(i = 0; i < 8; i++) {
@@ -69,9 +68,17 @@ static void mainboard_enable(device_t dev)
 
 	printk(BIOS_INFO, "EC Firmware ID %s, Version %d.%d%d%c\n", ecfw,
 	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
+}
+
+static void mainboard_enable(device_t dev)
+{
+	device_t dev0;
+
+	log_ec_version();
 
 	backlight_enable();
 	trackpoint_enable();
+
 	/* FIXME: this should be ACPI's task
 	 * but for now, enable it here */
 	wlan_enable();

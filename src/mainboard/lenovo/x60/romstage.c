@@ -101,25 +101,20 @@ static void ich7_enable_lpc(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x8e, 0x001c);
 }
 
-static void pnp_write_register(device_t dev, int reg, int val)
-{
-	unsigned int port = dev >> 8;
-	outb(reg, port);
-	outb(val, port+1);
-}
-
 static void early_superio_config(void)
 {
-	device_t dev;
+	int timeout = 100000;
+	device_t dev = PNP_DEV(0x2e, 3);
 
-	dev=PNP_DEV(0x2e, 0x00);
-	pnp_write_register(dev, 0x29, 0x06);
+	pnp_write_config(dev, 0x29, 0x06);
+
+	while(!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
+		udelay(1000);
 
 	/* Enable COM1 */
-	pnp_write_register(dev, 0x07, 0x03);
-	pnp_write_register(dev, 0x60, 0x03);
-	pnp_write_register(dev, 0x61, 0xf8);
-	pnp_write_register(dev, 0x30, 0x01);
+	pnp_set_logical_device(dev);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
+	pnp_set_enable(dev, 1);
 }
 
 static void rcba_config(void)

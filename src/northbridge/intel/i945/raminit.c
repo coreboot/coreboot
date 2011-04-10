@@ -3192,9 +3192,33 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 unsigned long get_top_of_ram(void)
 {
-	/* This will not work if TSEG is in place! */
-	u32 tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
+	u32 tom;
 
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & ((1 << 4) | (1 << 3))) {
+		/* IGD enabled, get top of Memory from BSM register */
+		tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
+	} else {
+		tom = (pci_read_config8(PCI_DEV(0,0,0), TOLUD) & 0xf7) << 24;
+	}
+
+	/* if TSEG enabled subtract size */
+	switch(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM)) {
+	case 0x01:
+		/* 1MB TSEG */
+		tom -= 0x10000;
+		break;
+	case 0x03:
+		/* 2MB TSEG */
+		tom -= 0x20000;
+		break;
+	case 0x05:
+		/* 8MB TSEG */
+		tom -= 0x80000;
+		break;
+	default:
+		/* TSEG either disabled or invalid */
+		break;
+	}
 	return (unsigned long) tom;
 }
 

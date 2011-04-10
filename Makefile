@@ -64,7 +64,6 @@ ifneq ($(Q),)
 endif
 endif
 
-CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g

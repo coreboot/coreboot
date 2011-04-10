@@ -225,7 +225,7 @@ else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD $(CFLAGS) -I$(src) -I. -I$(obj) -c $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
+	$(CC) -MMD $(CFLAGS) -I$(src) -D__PRE_RAM__ -I. -I$(obj) -c $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"

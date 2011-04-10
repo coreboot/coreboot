@@ -21,7 +21,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 #define SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 
-#if !defined(ASSEMBLY)
+#if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
 #if !defined(__ACPI__) /* dsdt include */
 

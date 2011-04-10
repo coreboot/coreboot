@@ -50,10 +50,8 @@ subdirs-$(CONFIG_ARCH_X86) += src/pc80
 # Add source classes and their build options
 classes-y := ramstage romstage driver smm
 
-ramstage-S-ccopts:=-DASSEMBLY
 romstage-c-ccopts:=-D__PRE_RAM__
-romstage-S-ccopts:=-DASSEMBLY -D__PRE_RAM__
-driver-S-ccopts:=-DASSEMBLY
+romstage-S-ccopts:=-D__PRE_RAM__
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
@@ -63,7 +61,7 @@ romstage-c-deps:=$$(OPTION_TABLE_H)
 define ramstage-objs_asl_template
 $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
-	$(CPP) -MMD -MT $$(@) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
+	$(CC) -x assembler-with-cpp -E -MMD -MT $$(@) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(obj)/$(1) -tc $$(basename $$@).asl
 	mv $$(obj)/$(1).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c

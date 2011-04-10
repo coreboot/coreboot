@@ -511,7 +511,7 @@
 #define PMLogic_BASE		(0x9D00)
 
 
-#if !defined(__ROMCC__)  && !defined(ASSEMBLY)
+#if !defined(__ROMCC__)  && !defined(__ASSEMBLER__)
 #if defined(__PRE_RAM__)
 void cpuRegInit(void);
 void SystemPreInit(void);

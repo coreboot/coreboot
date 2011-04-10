@@ -89,7 +89,6 @@ cat << EOF
 # elf${TWIDTH}-${TARCH} toolchain
 AS:=${GCCPREFIX}as ${ASFLAGS}
 CC:=${GCCPREFIX}gcc ${CFLAGS}
-CPP:=${GCCPREFIX}cpp
 AR:=${GCCPREFIX}ar
 LD:=${GCCPREFIX}ld ${LDFLAGS}
 STRIP:=${GCCPREFIX}strip

@@ -55,7 +55,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/b
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -DASSEMBLY -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
@@ -105,5 +105,5 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDI
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< -o $@
 

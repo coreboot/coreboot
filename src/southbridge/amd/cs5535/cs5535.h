@@ -115,7 +115,7 @@
 /* Flash Memory Mask values */
 #define FLASH_MEM_4K		0xFFFFF000
 
-#if !defined(ASSEMBLY) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 #if defined(__PRE_RAM__)
 void cs5535_disable_internal_uart(void);
 #else

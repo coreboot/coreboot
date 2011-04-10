@@ -38,7 +38,7 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#if !defined(ASSEMBLY) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801gx_enable(device_t dev);

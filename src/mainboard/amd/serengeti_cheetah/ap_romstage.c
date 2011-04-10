@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-#define __PRE_RAM__
-
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 
 #include <stdint.h>

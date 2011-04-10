@@ -630,7 +630,7 @@
 #define DELAY_UPPER_DISABLE_CLK135	(1 << 23)
 #define DELAY_LOWER_STATUS_MASK		0x7C0
 
-#if !defined(__ROMCC__)  && !defined(ASSEMBLY)
+#if !defined(__ROMCC__)  && !defined(__ASSEMBLER__)
 #if defined(__PRE_RAM__)
 void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated);
 void SystemPreInit(void);

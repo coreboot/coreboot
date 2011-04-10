@@ -21,9 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-#define __PRE_RAM__
-
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 
 #include <stdint.h>

@@ -36,7 +36,7 @@
 #define MTRRfix4K_F0000_MSR 0x26e
 #define MTRRfix4K_F8000_MSR 0x26f
 
-#if !defined (ASSEMBLY) && !defined(__PRE_RAM__)
+#if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
 #include <device/device.h>
 void enable_fixed_mtrr(void);
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
@@ -69,7 +69,7 @@ void x86_setup_fixed_mtrrs(void);
 #endif
 
 
-#if !defined (ASSEMBLY)
+#if !defined (__ASSEMBLER__)
 #if defined(CONFIG_XIP_ROM_SIZE)
 # if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
    extern unsigned long AUTO_XIP_ROM_BASE;

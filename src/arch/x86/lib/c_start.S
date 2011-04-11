@@ -14,7 +14,7 @@ _start:
 	movl	%eax, %fs
 	movl	%eax, %gs
 
-	post_code(0x13)		/* post 13 */
+	post_code(POST_ENTRY_C_START)		/* post 13 */
 
 	/** clear stack */
 	cld
@@ -73,7 +73,7 @@ _start:
 	 *	bss is cleared.   Now we call the main routine and
 	 *	let it do the rest.
 	 */
-	post_code(0xfe)	/* post fe */
+	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
 
 	/* Restore the stack location */
 	movl	%ebp, %esp
@@ -82,7 +82,7 @@ _start:
 	call	hardwaremain
 	/* NOTREACHED */
 .Lhlt:
-	post_code(0xee)	/* post ee */
+	post_code(POST_DEAD_CODE)	/* post ee */
 	hlt
 	jmp	.Lhlt
 

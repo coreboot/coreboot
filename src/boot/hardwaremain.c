@@ -57,18 +57,18 @@ void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
 
-	post_code(0x80);
+	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();
 
-	post_code(0x39);
+	post_code(POST_CONSOLE_READY);
 
 	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n",
 		      coreboot_version, coreboot_extra_version, coreboot_build,
 		      (boot_complete)?"rebooting":"booting");
 
-	post_code(0x40);
+	post_code(POST_CONSOLE_BOOT_MSG);
 
 	/* If we have already booted attempt a hard reboot */
 	if (boot_complete) {
@@ -80,15 +80,15 @@ void hardwaremain(int boot_complete)
 
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
-	post_code(0x66);
+	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
 	/* Now compute and assign the bus resources. */
 	dev_configure();
-	post_code(0x88);
+	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
 	/* Now actually enable devices on the bus */
 	dev_enable();
 	/* And of course initialize devices on the bus */
 	dev_initialize();
-	post_code(0x89);
+	post_code(POST_DEVICES_ENABLED);
 
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	cbmem_initialize();

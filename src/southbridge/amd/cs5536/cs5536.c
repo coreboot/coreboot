@@ -30,7 +30,6 @@
 #include <pc80/i8259.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/vr.h>
-#include <cpu/amd/geode_post_code.h>
 #include <stdlib.h>
 #include "chip.h"
 #include "cs5536.h"

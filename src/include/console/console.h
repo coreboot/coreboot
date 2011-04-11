@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <console/loglevel.h>
+#include <console/post_codes.h>
 
 #ifndef __PRE_RAM__
 void console_tx_byte(unsigned char byte);

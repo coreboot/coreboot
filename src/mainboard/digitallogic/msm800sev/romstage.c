@@ -9,7 +9,6 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
-#include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
@@ -37,7 +36,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 void main(unsigned long bist)
 {
-	post_code(0x01);
 
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {DIMM0, DIMM1}}
@@ -79,7 +77,6 @@ void main(unsigned long bist)
 	 We use method 1 on Norwich.
 	*/
 	post_code(0x02);
-	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");
 	/* we are finding the return does not work on this board. Explicitly call the label that is

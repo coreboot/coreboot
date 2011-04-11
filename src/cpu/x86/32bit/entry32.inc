@@ -1,6 +1,7 @@
 /* For starting coreboot in protected mode */
 
 #include <arch/rom_segs.h>
+#include <cpu/x86/post_code.h>
 
 	.code32
 
@@ -51,7 +52,7 @@ __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp
 
-	post_code(0x10)
+	post_code(POST_ENTER_PROTECTED_MODE)
 
 	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds

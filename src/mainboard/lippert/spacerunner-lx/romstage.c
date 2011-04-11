@@ -32,7 +32,6 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
-#include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
@@ -158,7 +157,6 @@ static void mb_gpio_init(void)
 void main(unsigned long bist)
 {
 	int err;
-	post_code(0x01);
 
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {DIMM0, DIMM1}}

@@ -553,7 +553,7 @@ static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	boot_successful();
 
 	printk(BIOS_DEBUG, "Jumping to boot code at %x\n", entry);
-	post_code(0xfe);
+	post_code(POST_ENTER_ELF_BOOT);
 
 	/* Jump to kernel */
 	jmp_to_elf_entry((void*)entry, bounce_buffer, bounce_size);

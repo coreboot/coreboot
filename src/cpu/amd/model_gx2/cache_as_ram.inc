@@ -27,6 +27,7 @@
 #define	CR0_CD				0x40000000	/* bit 30 = Cache Disable */
 #define	CR0_NW				0x20000000	/* bit 29 = Not Write Through */
 #include <cpu/amd/gx2def.h>
+#include <cpu/x86/post_code.h>
 /***************************************************************************
 /**
 /**	DCacheSetup
@@ -184,7 +185,7 @@ done_cache_as_ram_main:
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
 __main:
-	post_code(0x11)
+	post_code(POST_PREPARE_RAMSTAGE)
 
 	/* TODO For suspend/resume the cache will have to live between
 	 * CONFIG_RAMBASE and CONFIG_RAMTOP
@@ -201,7 +202,7 @@ __main:
 	call copy_and_run
 
 .Lhlt:
-	post_code(0xee)
+	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
 

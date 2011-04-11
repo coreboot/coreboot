@@ -30,7 +30,6 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
-#include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -141,8 +140,6 @@ void main(unsigned long bist)
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {DIMM0}},
 	};
-
-	post_code(0x01);
 
 	SystemPreInit();
 	msr_init();

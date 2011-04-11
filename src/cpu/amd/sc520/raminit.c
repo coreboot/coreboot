@@ -144,13 +144,13 @@ void setupsc520(void)
 
 
 	/* the 0x80 led should now be working*/
-	outb(0xaa, 0x80);
+	post_code(0xaa);
 #if 0
-	/* wtf are 680 leds ... */
+	/* wtf are 680 leds ... *//* <-- WTF is this comment? */
 	par = (unsigned long *) 0xfffef0c4;
 	*par = 0x28000680;
 	/* well? */
-	outb(0x55, 0x80);
+	post_code(0x55);
 #endif
 
 	/* set the uart baud rate clocks to the normal 1.8432 MHz.*/

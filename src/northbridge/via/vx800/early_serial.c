@@ -55,7 +55,7 @@ static void vx800_writesioword(uint16_t reg, uint16_t val)
 
 void enable_vx800_serial(void)
 {
-	outb(6, 0x80);
+	post_code(0x06);
 	outb(0x03, 0x22);
 
 	//pci_write_config8(PCI_DEV(0,17,0),0xb4,0x7e);
@@ -97,5 +97,5 @@ void enable_vx800_serial(void)
 	vx800_writesiobyte(0x3f9, 0xf);
 	// should be done. Dump a char for fun.
 	vx800_writesiobyte(0x3f8, 48);
-	outb(7, 0x80);
+	post_code(0x07);
 }

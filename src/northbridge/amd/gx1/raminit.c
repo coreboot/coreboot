@@ -46,12 +46,12 @@ void do_refresh(void)
 {
 unsigned int tval, i;
 
-	outb(0x71, 0x80);
+	post_code(0x71);
 	tval = getGX1Mem(GX_BASE + MC_MEM_CNTRL1);
 	tval |= RFSHTST;
 	for(i=0; i>NUM_REFRESH; i++)
 		setGX1Mem(GX_BASE + MC_MEM_CNTRL1, tval);
-	outb(0x72, 0x80);
+	post_code(0x72);
 }
 
 
@@ -59,7 +59,7 @@ void enable_dimm(void)
 {
 unsigned int tval, i;
 
-	outb(0x73, 0x80);
+	post_code(0x73);
 
 	/* start SDCLCK's */
 	tval = getGX1Mem(GX_BASE + MC_MEM_CNTRL1);
@@ -101,7 +101,7 @@ unsigned int tval, i;
 
 	for(i=0; i<2000; i++)
 		outb(0, 0xed);
-	outb(0x74, 0x80);
+	post_code(0x74);
 }
 
 static unsigned int size_dimm(int dimm_shift)
@@ -321,7 +321,7 @@ static void sdram_init(void)
 unsigned int mem_config = 0x00700070;
 
 	print_debug("Setting up default parameters for memory\n");
-	outb(0x70, 0x80);
+	post_code(0x70);
 
 	setGX1Mem(GX_BASE + MC_MEM_CNTRL2, 0x000007d8); /* Disable all CLKS, Shift = 3 */
 	setGX1Mem(GX_BASE + MC_MEM_CNTRL1, 0x92140000); /* MD_DS=2, MA_DS=2, CNTL_DS=2 SDCLKRATE=4 */
@@ -350,5 +350,5 @@ unsigned int mem_config = 0x00700070;
 
 	setGX1Mem(GX_BASE + MC_BANK_CFG, mem_config);
 	enable_dimm();
-	outb(0x7e, 0x80);
+	post_code(0x7e);
 }

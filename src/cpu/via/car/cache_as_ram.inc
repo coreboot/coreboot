@@ -27,6 +27,7 @@
 
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
+#include <console/post_codes.h>
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		CONFIG_DCACHE_RAM_BASE
@@ -261,7 +262,7 @@ testok:
 	/* Clear boot_complete flag. */
 	xorl	%ebp, %ebp
 __main:
-	post_code(0x11)
+	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
 	movl	%ebp, %esi
@@ -272,7 +273,7 @@ __main:
 	call	copy_and_run
 
 .Lhlt:
-	post_code(0xee)
+	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
 

@@ -10,7 +10,6 @@
 #include "chip.h"
 #include "northbridge/amd/gx2/northbridge.h"
 #include <cpu/amd/gx2def.h>
-#include <cpu/amd/geode_post_code.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 #include "southbridge/amd/cs5535/cs5535.h"
@@ -277,7 +276,7 @@ chipsetinit(void)
 		return;
 	}
 
-	outb( P80_CHIPSET_INIT, 0x80);
+	post_code(P80_CHIPSET_INIT);
 	ChipsetGeodeLinkInit();
 
 #ifdef UNUSED_CODE

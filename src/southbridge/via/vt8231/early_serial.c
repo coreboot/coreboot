@@ -1,3 +1,4 @@
+#include <console/console.h>
 /*
  * Enable the serial evices on the VIA
  */
@@ -33,11 +34,11 @@ static void enable_vt8231_serial(void)
 {
 	uint8_t c;
 	device_t dev;
-	outb(6, 0x80);
+	post_code(0x06);
 	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
 
 	if (dev == PCI_DEV_INVALID) {
-		outb(7, 0x80);
+		post_code(0x07);
 		die("Serial controller not found\n");
 	}
 
@@ -47,7 +48,7 @@ static void enable_vt8231_serial(void)
 	c = pci_read_config8(dev, 0x50);
 	c |= 6;
 	pci_write_config8(dev, 0x50, c);
-	outb(2, 0x80);
+	post_code(0x02);
 	// now go ahead and set up com1.
 	// set address
 	vt8231_writesuper(0xf4, 0xfe);

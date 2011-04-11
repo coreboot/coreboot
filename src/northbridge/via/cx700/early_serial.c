@@ -47,7 +47,7 @@ static void cx700_writesioword(u16 reg, u16 val)
 
 static void enable_cx700_serial(void)
 {
-	outb(6, 0x80);
+	post_code(0x06);
 
 	// WTH?
 	outb(0x03, 0x22);
@@ -98,5 +98,5 @@ static void enable_cx700_serial(void)
 	// should be done. Dump a char for fun.
 	cx700_writesiobyte(0x3f8, 48);
 
-	outb(7, 0x80);
+	post_code(0x07);
 }

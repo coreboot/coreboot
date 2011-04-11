@@ -86,13 +86,29 @@ chip northbridge/intel/i945
 					device pnp ff.1 on # dummy
 					end
 				end
-				chip ec/acpi
+				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy
 						io 0x60 = 0x62
 						io 0x62 = 0x66
 						io 0x64 = 0x1600
 						io 0x66 = 0x1604
 					end
+
+					register "config0" = "0xa6"
+					register "config1" = "0x05"
+					register "config2" = "0xa0"
+					register "config3" = "0x05"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xf4"
+					register "event5_enable" = "0x3c"
+
+					register "wlan_enable" = "0x01"
+					register "trackpoint_enable" = "0x03"
 				end
 				chip superio/nsc/pc87382
 					device pnp 164e.2 on # IR

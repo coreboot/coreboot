@@ -21,35 +21,47 @@
 
 #include "smi.h"
 
-OperationRegion (DLPC, SystemIO, 0x164c, 1)
-Field(DLPC, ByteAcc, NoLock, Preserve)
+Scope (\_SB)
 {
-	    ,	3,
-	DSTA,	1,
-}
-Device(DOCK)
-{
-	Name(_HID, "ACPI0003")
-	Name(_UID, 0x00)
-	Name(_PCL, Package() { \_SB } )
-
-	Method(_DCK, 1, NotSerialized)
+	OperationRegion (DLPC, SystemIO, 0x164c, 1)
+	Field(DLPC, ByteAcc, NoLock, Preserve)
 	{
-		if (Arg0) {
-		   Sleep(250)
-		   /* connect dock */
-		   TRAP(SMI_DOCK_CONNECT)
-		} else {
-		   /* disconnect dock */
-		   TRAP(SMI_DOCK_DISCONNECT)
-		}
-
-		Xor(Arg0, DSTA, Local0)
-		Return (Local0)
+		    ,	3,
+		DSTA,	1,
 	}
 
-	Method(_STA, 0, NotSerialized)
+	Device(DOCK)
 	{
+		Name(_HID, "ACPI0003")
+		Name(_UID, 0x00)
+		Name(_PCL, Package() { \_SB } )
+
+		Method(_DCK, 1, NotSerialized)
+		{
+			if (Arg0) {
+			   Sleep(250)
+			   /* connect dock */
+			   TRAP(SMI_DOCK_CONNECT)
+			} else {
+			   /* disconnect dock */
+			   TRAP(SMI_DOCK_DISCONNECT)
+			}
+
+			Xor(Arg0, DSTA, Local0)
+			Return (Local0)
+		}
+
+		Method(_STA, 0, NotSerialized)
+		{
 		Return (DSTA)
+		}
+	}
+}
+
+Scope(\_SB.PCI0.LPCB.EC)
+{
+	Method(_Q18, 0, NotSerialized)
+	{
+	       Notify(\_SB.DOCK, 3)
 	}
 }

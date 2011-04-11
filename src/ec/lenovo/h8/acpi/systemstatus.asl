@@ -59,8 +59,5 @@ Scope (\_SI)
 			/* suspend LED on */
 			\_SB.PCI0.LPCB.EC.LED(0x87)
 		}
-		
-		
-		
 	}
 }

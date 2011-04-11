@@ -40,10 +40,6 @@ DefinitionBlock(
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
 
-	// Thermal Zone
-	#include "acpi/thermal.asl"
-	// System status indicators
-	#include "acpi/systemstatus.asl"
 	Scope (\_SB) {
 		Device (PCI0)
 		{
@@ -54,4 +50,7 @@ DefinitionBlock(
 
 	/* Chipset specific sleep states */
 	#include "../../../southbridge/intel/i82801gx/acpi/sleepstates.asl"
+
+	// Dock support code
+	#include "acpi/dock.asl"
 }

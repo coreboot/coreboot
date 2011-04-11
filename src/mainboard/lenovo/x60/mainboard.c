@@ -32,78 +32,22 @@
 #include <arch/io.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
+#include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
 
 static void backlight_enable(void)
 {
-	pmh7_register_set_bit(0x50, 5);
-}
-
-static void trackpoint_enable(void)
-{
-	ec_write(0x0b, 0x03);
-}
-
-static void wlan_enable(void)
-{
-	ec_write(0x3a, 0x20);
-}
-
-static void log_ec_version(void)
-{
-	unsigned char ecfw[9], c;
-	u16 fwvh, fwvl;
-	int i;
-
-	for(i = 0; i < 8; i++) {
-		c = ec_read(0xf0 + i);
-		if (c < 0x20 || c > 0x7f)
-			break;
-		ecfw[i] = c;
-	}
-	ecfw[i] = '\0';
-
-	fwvh = ec_read(0xe9);
-	fwvl = ec_read(0xe8);
-
-	printk(BIOS_INFO, "EC Firmware ID %s, Version %d.%d%d%c\n", ecfw,
-	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
+       pmh7_register_set_bit(0x50, 5);
 }
 
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
 
-	log_ec_version();
-
 	backlight_enable();
-	trackpoint_enable();
-
-	/* FIXME: this should be ACPI's task
-	 * but for now, enable it here */
-	wlan_enable();
-
-	/* enable ACPI events */
-	ec_write(0x00, 0xa6);
-	ec_write(0x01, 0x05);
-
-	ec_write(0x02, 0xa0);
-	ec_write(0x03, 0x05);
-
-	/* set mask of enabled beeps */
-	ec_write(0x04, 0xfe);
-	ec_write(0x05, 0x96);
-
-	/* Unknown, but required for hotkeys
-	   Maybe a mask for enabled keys? */
-
-	ec_write(0x12, 0xff);
-	ec_write(0x13, 0xff);
-	ec_write(0x14, 0xf4);
-	ec_write(0x15, 0x3c);
 
 	/* enable Audio */
-	ec_clr_bit(0x3a, 0);
+	h8_set_audio_mute(0);
 
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));

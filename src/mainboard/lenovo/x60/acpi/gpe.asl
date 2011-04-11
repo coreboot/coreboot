@@ -12,10 +12,10 @@ Scope (\_GPE)
        {
                if (GP13) {
 		       Or(GIV1, 0x20, GIV1)
-		       Notify(\_SB.PCI0.LPCB.EC.DOCK, 3)
+		       Notify(\_SB.DOCK, 3)
                } else {
 		       And(GIV1, 0xdf, GIV1)
-		       Notify(\_SB.PCI0.LPCB.EC.DOCK, 0)
+		       Notify(\_SB.DOCK, 0)
                }
 	}
 }

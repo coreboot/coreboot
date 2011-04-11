@@ -23,6 +23,15 @@
 #include <device/pnp.h>
 #include <stdlib.h>
 #include "pmh7.h"
+#include "chip.h"
+
+void pmh7_backlight_enable(int onoff)
+{
+	if (onoff)
+		pmh7_register_set_bit(0x50, 5);
+	else
+		pmh7_register_clear_bit(0x50, 5);
+}
 
 void pmh7_register_set_bit(int reg, int bit)
 {
@@ -58,6 +67,7 @@ void pmh7_register_write(int reg, int val)
 
 static void enable_dev(device_t dev)
 {
+	struct ec_lenovo_pmh7_config *conf = dev->chip_info;
 	struct resource *resource;
 
 	resource = new_resource(dev, EC_LENOVO_PMH7_INDEX);
@@ -66,6 +76,8 @@ static void enable_dev(device_t dev)
 	resource->size = 16;
 	resource->align = 5;
 	resource->gran = 5;
+
+	pmh7_backlight_enable(conf->backlight_enable);
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

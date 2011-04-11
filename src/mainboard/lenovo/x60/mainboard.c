@@ -35,16 +35,9 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
 
-static void backlight_enable(void)
-{
-       pmh7_register_set_bit(0x50, 5);
-}
-
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
-
-	backlight_enable();
 
 	/* enable Audio */
 	h8_set_audio_mute(0);

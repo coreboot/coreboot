@@ -85,6 +85,7 @@ chip northbridge/intel/i945
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on # dummy
 					end
+					register "backlight_enable" = "0x01"
 				end
 				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy

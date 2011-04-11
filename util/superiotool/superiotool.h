@@ -182,6 +182,10 @@ void print_vendor_chips(const char *vendor,
 void probe_idregs_ali(uint16_t port);
 void print_ali_chips(void);
 
+/* serverengines.c */
+void probe_idregs_serverengines(uint16_t port);
+void print_serverengines_chips(void);
+
 /* fintek.c */
 void probe_idregs_fintek(uint16_t port);
 void probe_idregs_fintek_alternative(uint16_t port);
@@ -232,6 +236,7 @@ static const struct {
 #ifdef PCI_SUPPORT
 	{probe_idregs_via,	{0x3f0, EOT}},
 #endif
+	{probe_idregs_serverengines,	{0x2e, EOT}},
 };
 
 /** Table of functions to print out supported Super I/O chips. */
@@ -248,6 +253,7 @@ static const struct {
 #ifdef PCI_SUPPORT
 	{print_via_chips},
 #endif
+	{print_serverengines_chips},
 };
 
 #endif

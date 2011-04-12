@@ -67,6 +67,8 @@ void h8_disable_event(int event);
 #define H8_LED_CONTROL_DOCK_LED1	0x08
 #define H8_LED_CONTROL_DOCK_LED2	0x09
 
+#define H8_FAN_CONTROL			0x2f
+#define H8_FAN_CONTROL_AUTO		0x80
 /* Embedded controller events */
 #define H8_EVENT_FN_F1	0x10
 #define H8_EVENT_FN_F2	0x11

@@ -661,13 +661,15 @@ static void rs780_internal_gfx_enable(device_t dev)
 
 	printk(BIOS_DEBUG, "rs780_internal_gfx_enable dev = 0x%p, nb_dev = 0x%p.\n", dev, nb_dev);
 
-	sysmem = rdmsr(0xc001001a);
-	printk(BIOS_DEBUG, "sysmem = %x_%x\n", sysmem.hi, sysmem.lo);
-
 	/* The system top memory in 780. */
+	sysmem = rdmsr(0xc001001a);
+	printk(BIOS_DEBUG, "Sysmem TOM = %x_%x\n", sysmem.hi, sysmem.lo);
 	pci_write_config32(nb_dev, 0x90, sysmem.lo);
-	htiu_write_index(nb_dev, 0x30, 0);
-	htiu_write_index(nb_dev, 0x31, 0);
+
+	sysmem = rdmsr(0xc001001D);
+	printk(BIOS_DEBUG, "Sysmem TOM2 = %x_%x\n", sysmem.hi, sysmem.lo);
+	htiu_write_index(nb_dev, 0x31, sysmem.hi);
+	htiu_write_index(nb_dev, 0x30, sysmem.lo | 1);
 
 	/* Disable external GFX and enable internal GFX. */
 	l_dword = pci_read_config32(nb_dev, 0x8c);

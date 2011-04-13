@@ -119,4 +119,5 @@ Device(EC)
 #include "sleepbutton.asl"
 #include "lid.asl"
 #include "beep.asl"
+#include "thermal.asl"
 }

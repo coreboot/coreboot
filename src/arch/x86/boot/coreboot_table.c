@@ -116,7 +116,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
 #else
-	return header;
+	return NULL;
 #endif
 }
 

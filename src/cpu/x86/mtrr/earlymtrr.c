@@ -5,19 +5,6 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
 
-#if 0
-static void disable_var_mtrr(unsigned reg)
-{
-	/* The invalid bit is kept in the mask so we simply
-	 * clear the relevent mask register to disable a
-	 * range.
-	 */
-	msr_t zero;
-	zero.lo = zero.hi = 0;
-	wrmsr(MTRRphysMask_MSR(reg), zero);
-}
-#endif
-
 static void set_var_mtrr(
 	unsigned reg, unsigned base, unsigned size, unsigned type)
 
@@ -28,33 +15,13 @@ static void set_var_mtrr(
 	basem.lo = base | type;
 	basem.hi = 0;
 	wrmsr(MTRRphysBase_MSR(reg), basem);
-	maskm.lo = ~(size - 1) | 0x800;
-	maskm.hi = (1<<(CONFIG_CPU_ADDR_BITS-32))-1;
+	maskm.lo = ~(size - 1) | MTRRphysMaskValid;
+	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
-#if 0
-static void set_var_mtrr_x(
-        unsigned reg, uint32_t base_lo, uint32_t base_hi, uint32_t size_lo, uint32_t size_hi, unsigned type)
-
-{
-        /* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
-        msr_t basem, maskm;
-        basem.lo = (base_lo & 0xfffff000) | type;
-        basem.hi = base_hi & ((1<<(CONFIG_CPU_ADDR_BITS-32))-1);
-        wrmsr(MTRRphysBase_MSR(reg), basem);
-       	maskm.hi = (1<<(CONFIG_CPU_ADDR_BITS-32))-1;
-	if(size_lo) {
-	        maskm.lo = ~(size_lo - 1) | 0x800;
-	} else {
-		maskm.lo = 0x800;
-		maskm.hi &= ~(size_hi - 1);
-	}
-        wrmsr(MTRRphysMask_MSR(reg), maskm);
-}
-#endif
-
-static inline void cache_lbmem(int type)
+#if !defined(CONFIG_CACHE_AS_RAM) || (CONFIG_CACHE_AS_RAM == 0)
+static void cache_lbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */
 	disable_cache();
@@ -62,7 +29,6 @@ static inline void cache_lbmem(int type)
 	enable_cache();
 }
 
-#if !defined(CONFIG_CACHE_AS_RAM) || (CONFIG_CACHE_AS_RAM == 0)
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */
@@ -119,7 +85,6 @@ static inline void early_mtrr_init(void)
 	do_early_mtrr_init(mtrr_msrs);
 	enable_cache();
 }
-#endif
 
 static inline int early_mtrr_init_detected(void)
 {
@@ -131,7 +96,8 @@ static inline int early_mtrr_init_detected(void)
 	 * according to the documentation.
 	 */
 	msr = rdmsr(MTRRdefType_MSR);
-	return msr.lo & 0x00000800;
+	return msr.lo & MTRRdefTypeEn;
 }
+#endif
 
 #endif /* EARLYMTRR_C */

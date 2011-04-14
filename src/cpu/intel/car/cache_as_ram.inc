@@ -254,7 +254,7 @@ clear_fixed_var_mtrr_out:
 
 	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$0x0000000f, %edx
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
@@ -354,7 +354,7 @@ lout:
 	 */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
-	movl	$0x00000800, %eax /* Enable variable and disable fixed MTRRs. */
+	movl	$MTRRdefTypeEn, %eax /* Enable variable and disable fixed MTRRs. */
 	wrmsr
 
 	/* Enable cache. */

@@ -63,14 +63,14 @@ clear_mtrrs:
 
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRRphysMask_MSR(0)), %ecx
-	movl	$(~((CACHE_AS_RAM_SIZE - 1)) | (1 << 11)), %eax
+	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
 	movl	$0x0000000f, %edx
 	wrmsr
 
 	/* Enable MTRR. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
-	orl	$(1 << 11), %eax
+	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
 	/* Enable L2 cache. */
@@ -118,7 +118,7 @@ clear_mtrrs:
 
 	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$0x0000000f, %edx
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
@@ -160,7 +160,7 @@ clear_mtrrs:
 	/* Disable MTRR. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
-	andl	$(~(1 << 11)), %eax
+	andl	$(~MTRRdefTypeEn), %eax
 	wrmsr
 
 	post_code(0x31)
@@ -201,7 +201,7 @@ clear_mtrrs:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(0), %ecx
-	movl	$(~(1024 * 1024 - 1) | (1 << 11)), %eax
+	movl	$(~(1024 * 1024 - 1) | MTRRphysMaskValid), %eax
 	movl	$0x0000000f, %edx	// 36bit address space
 	wrmsr
 
@@ -217,7 +217,7 @@ clear_mtrrs:
 	/* Enable MTRR. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
-	orl	$(1 << 11), %eax
+	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
 	post_code(0x3b)

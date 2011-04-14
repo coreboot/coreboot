@@ -77,7 +77,7 @@ cache_as_ram_setup:
 	/* Check if cpu_init_detected. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
-	andl	$(1 << 11), %eax
+	andl	$MTRRdefTypeEn, %eax
 	movl	%eax, %ebx	/* We store the status. */
 
 	jmp_if_k8(CAR_FAM10_out_post_errata)
@@ -306,7 +306,7 @@ clear_fixed_var_mtrr_out:
 	jmp_if_k8(wbcache_post_fam10_setup)
 	movl	$0xffff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for FAM10 (CONFIG_CPU_ADDR_BITS = 48) */
 wbcache_post_fam10_setup:
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 

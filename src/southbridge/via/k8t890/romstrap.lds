@@ -22,7 +22,7 @@
 /* Modified for K8T890 ROM strap by Rudolf Marek <r.marek@assembler.cz>. */
 
 SECTIONS {
-	. = (CONFIG_ROMBASE + CONFIG_ROM_IMAGE_SIZE - 0x2c) - (__romstrap_end - __romstrap_start);
+	. = (0x100000000 - 0x2c) - (__romstrap_end - __romstrap_start);
 	.romstrap (.): {
 		*(.romstrap)
 	}

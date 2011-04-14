@@ -8,19 +8,9 @@ config AP_IN_SIPI_WAIT
 	default n
 	depends on ARCH_X86
 
-# This is the name of the respective architecture subdirectory in arch/.
-config ARCH
-	string
-	default i386
-	depends on ARCH_X86
-
 config ROMBASE
 	hex
 	default 0xffff0000
-
-config ROM_IMAGE_SIZE
-	hex
-	default 0x10000
 
 config RAMBASE
 	hex

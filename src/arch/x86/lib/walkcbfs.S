@@ -16,11 +16,11 @@
 #define CBFS_FILE_STRUCTSIZE (CBFS_FILE_OFFSET + 4)
 
 /*
-  input %esi: filename
-  input %esp: return address (not pointer to return address!)
-  output %eax: entry point
-  clobbers %ebx, %ecx, %edi
-*/
+ * input %esi: filename
+ * input %esp: return address (not pointer to return address!)
+ * output %eax: entry point
+ * clobbers %ebx, %ecx, %edi
+ */
 walkcbfs_asm:
 	cld
 
@@ -28,10 +28,10 @@ walkcbfs_asm:
 	mov CBFS_HEADER_ROMSIZE(%eax), %ecx
 	bswap %ecx
 	mov $0, %ebx
-	sub %ecx, %ebx
+	sub %ecx, %ebx	/* rom base address in ebx */
 	mov CBFS_HEADER_OFFSET(%eax), %ecx
 	bswap %ecx
-	add %ecx, %ebx
+	add %ecx, %ebx	/* address where we start looking for LARCHIVEs */
 
 	/* determine filename length */
 	mov $0, %eax
@@ -43,21 +43,22 @@ walkcbfs_asm:
 2:
 	add $1, %eax
 walker:
-	mov 0(%ebx), %edi
+	mov 0(%ebx), %edi /* Check for LARCHIVE header */
 	cmp %edi, filemagic
 	jne searchfile
 	mov 4(%ebx), %edi
 	cmp %edi, filemagic+4
 	jne searchfile
 
+	/* LARCHIVE header found */
 	mov %ebx, %edi
 	add $CBFS_FILE_STRUCTSIZE, %edi /* edi = address of first byte after struct cbfs_file */
 	mov %eax, %ecx
 	repe cmpsb
-	# zero flag set if strings are equal
+	/* zero flag set if strings are equal */
 	jnz tryharder
 
-	# we found it!
+	/* we found it! */
 	mov CBFS_FILE_OFFSET(%ebx), %eax
 	bswap %eax
 	add %ebx, %eax

@@ -52,6 +52,8 @@ classes-y := ramstage romstage driver smm
 
 romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-D__PRE_RAM__
+smm-c-ccopts:=-D__SMM__
+smm-S-ccopts:=-D__SMM__
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)

@@ -103,10 +103,10 @@ void init_uart8250(unsigned base_port, struct uart8250 *uart)
 }
 #endif
 
-#ifdef __PRE_RAM__
+#if defined(__PRE_RAM__) || defined(__SMM__)
 void uart_init(void)
 {
-#if CONFIG_USE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE && !defined(__SMM__)
         static const unsigned char divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96 };
         unsigned ttys0_div, ttys0_index;
         ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);

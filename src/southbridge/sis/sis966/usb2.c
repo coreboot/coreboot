@@ -32,52 +32,50 @@
 #include "sis966.h"
 #include <usbdebug.h>
 
-extern struct ehci_debug_info dbg_info;
+static const u8 SiS_SiS7002_init[22][3]={
+	{0x04, 0x00, 0x06},
+	{0x0D, 0x00, 0x00},
 
-u8	SiS_SiS7002_init[22][3]={
-{0x04, 0x00, 0x06},
-{0x0D, 0x00, 0x00},
+	{0x2C, 0xFF, 0x39},
+	{0x2D, 0xFF, 0x10},
+	{0x2E, 0xFF, 0x02},
+	{0x2F, 0xFF, 0x70},
 
-{0x2C, 0xFF, 0x39},
-{0x2D, 0xFF, 0x10},
-{0x2E, 0xFF, 0x02},
-{0x2F, 0xFF, 0x70},
+	{0x74, 0x00, 0x00},
+	{0x75, 0x00, 0x00},
+	{0x76, 0x00, 0x00},
+	{0x77, 0x00, 0x00},
 
-{0x74, 0x00, 0x00},
-{0x75, 0x00, 0x00},
-{0x76, 0x00, 0x00},
-{0x77, 0x00, 0x00},
+	{0x7A, 0x00, 0x00},
+	{0x7B, 0x00, 0x00},
 
-{0x7A, 0x00, 0x00},
-{0x7B, 0x00, 0x00},
+	{0x40, 0x00, 0x20},
+	{0x41, 0x00, 0x00},
+	{0x42, 0x00, 0x00},
+	{0x43, 0x00, 0x08},
 
-{0x40, 0x00, 0x20},
-{0x41, 0x00, 0x00},
-{0x42, 0x00, 0x00},
-{0x43, 0x00, 0x08},
+	{0x44, 0x00, 0x04},
 
-{0x44, 0x00, 0x04},
+	{0x48, 0x00, 0x10},
+	{0x49, 0x00, 0x80},
+	{0x4A, 0x00, 0x07},
+	{0x4B, 0x00, 0x00},
 
-{0x48, 0x00, 0x10},
-{0x49, 0x00, 0x80},
-{0x4A, 0x00, 0x07},
-{0x4B, 0x00, 0x00},
-
-{0x00, 0x00, 0x00}					//End of table
+	{0x00, 0x00, 0x00} //End of table
 };
 
 static void usb2_init(struct device *dev)
 {
         u32 base;
         struct resource *res;
+        int i;
+        u8  temp8;
 
         print_debug("USB 2.0 INIT:---------->\n");
 
-//-------------- enable USB2.0 (SiS7002) -------------------------
-{
-        u8  temp8;
-        int i=0;
+	//-------------- enable USB2.0 (SiS7002) ----------------------
 
+	i = 0;
         while(SiS_SiS7002_init[i][0] != 0)
         {
                 temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
@@ -86,7 +84,6 @@ static void usb2_init(struct device *dev)
                 pci_write_config8(dev, SiS_SiS7002_init[i][0], temp8);
                 i++;
         };
-}
 
         res = find_resource(dev, 0x10);
         if(!res)
@@ -95,12 +92,9 @@ static void usb2_init(struct device *dev)
         base = res->base;
         printk(BIOS_DEBUG, "base = 0x%08x\n", base);
         write32(base+0x20, 0x2);
-//-----------------------------------------------------------
+	//-------------------------------------------------------------
 
 #if DEBUG_USB2
-{
-        int i;
-
         print_debug("****** USB 2.0 PCI config ******");
         print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
 
@@ -114,7 +108,6 @@ static void usb2_init(struct device *dev)
                 print_debug("  ");
         }
         print_debug("\n");
-}
 #endif
         print_debug("USB 2.0 INIT:<----------\n");
 }
@@ -139,7 +132,6 @@ static void usb2_set_resources(struct device *dev)
 	set_ehci_base(base);
 	report_resource_stored(dev, res, "");
 #endif
-
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -147,6 +139,7 @@ static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	pci_write_config32(dev, 0x40,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
+
 static struct pci_operations lops_pci = {
 	.set_subsystem	= lpci_set_subsystem,
 };

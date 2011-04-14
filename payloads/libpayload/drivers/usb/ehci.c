@@ -31,7 +31,8 @@
 #include "ehci.h"
 #include "ehci_private.h"
 
-static void dump_td(u32 addr) {
+static void dump_td(u32 addr)
+{
 	qtd_t *td = phys_to_virt(addr);
 	printf("td at phys(%x): active: %x, halted: %x, data_buf_err: %x\n    babble: %x, xact_err: %x, missed_mframe: %x\n    splitxstate: %x, perr: %x\n\n",
 		addr, td->active, td->halted, td->data_buf_err, td->babble, td->xact_err, td->missed_mframe, td->splitxstate, td->perr);
@@ -61,7 +62,8 @@ static void ehci_shutdown (hci_t *controller)
 enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };
 
 /* returns handled bytes */
-int fill_td(qtd_t *td, void* data, int datalen) {
+int fill_td(qtd_t *td, void* data, int datalen)
+{
 	u32 total_len = 0;
 	u32 page_minus_1 = 0;
 
@@ -99,7 +101,8 @@ int fill_td(qtd_t *td, void* data, int datalen) {
 }
 
 /* free up data structures */
-void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur) {
+void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur)
+{
 	qtd_t *next;
 	while (cur) {
 		next = (qtd_t*)phys_to_virt(cur->next_qtd & ~31);
@@ -109,7 +112,8 @@ void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur) {
 	free(qh);
 }
 
-int wait_for_tds(qtd_t *head) {
+int wait_for_tds(qtd_t *head)
+{
 	int result = 0;
 	qtd_t *cur = head;
 	while (1) {

@@ -29,7 +29,7 @@ SECTIONS
 
 	/* cut _start into last 64k*/
 	_x = .;
-	. = (_x < (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE)) ? (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE) : _x;
+	. = (_x < CONFIG_ROMBASE) ? (CONFIG_ROMBASE) : _x;
 
 	/* This section might be better named .setup */
 	.rom . : {
@@ -49,6 +49,5 @@ SECTIONS
 		*(.comment.*)
 		*(.note.*)
 	}
-/*	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0, "Do not use global variables in romstage"); */
-	_bogus = ASSERT((SIZEOF(.bss)) == 0, "Do not use global variables in romstage"); 
+	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0, "Do not use global variables in romstage");
 }

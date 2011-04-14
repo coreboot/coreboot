@@ -165,7 +165,7 @@ endif
 
 crt0s = $(src)/arch/x86/init/prologue.inc
 ldscripts =
-ldscripts += $(src)/arch/x86/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/arch/x86/init/bootblock.ld
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/entry16.inc
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds

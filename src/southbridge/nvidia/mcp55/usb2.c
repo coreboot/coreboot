@@ -29,8 +29,6 @@
 #include "mcp55.h"
 #include <usbdebug.h>
 
-extern struct ehci_debug_info dbg_info;
-
 static void usb2_init(struct device *dev)
 {
 	u32 dword;

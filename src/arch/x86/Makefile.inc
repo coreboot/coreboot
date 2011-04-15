@@ -43,6 +43,9 @@ endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 COREBOOT_ROM_DEPENDENCIES+=seabios
 endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+COREBOOT_ROM_DEPENDENCIES+=filo
+endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
 endif
@@ -58,7 +61,7 @@ prebuild-files = \
 		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
+$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(prebuilt-files) $(CBFSTOOL)
 	rm -f $@
 	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
 	$(prebuild-files)
@@ -84,6 +87,10 @@ ifeq ($(CONFIG_PAYLOAD_ELF),y)
 endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
+	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_GEODE_VSA_FILE),y)
@@ -283,4 +290,11 @@ seabios:
 			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
 			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \
 			CONFIG_SEABIOS_STABLE=$(CONFIG_SEABIOS_STABLE)
+filo:
+	$(MAKE) -C payloads/external/FILO -f Makefile.inc \
+			HOSTCC="$(HOSTCC)" \
+			CC="$(CC)" LD="$(LD)" OBJDUMP="$(OBJDUMP)" \
+			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
+			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
+			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
 

@@ -358,6 +358,15 @@ config PAYLOAD_SEABIOS
 
 	  See http://coreboot.org/Payloads for more information.
 
+config PAYLOAD_FILO
+	bool "FILO"
+	help
+	  Select this option if you want to build a coreboot image
+	  with a FILO payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See http://coreboot.org/Payloads for more information.
+
 endchoice
 
 choice
@@ -375,6 +384,21 @@ config SEABIOS_MASTER
 	  Newest SeaBIOS version
 endchoice
 
+choice
+	prompt "FILO version"
+	default FILO_STABLE
+	depends on PAYLOAD_FILO
+
+config FILO_STABLE
+	bool "0.6.0"
+	help
+	  Stable FILO version
+config FILO_MASTER
+	bool "HEAD"
+	help
+	  Newest FILO version
+endchoice
+
 config PAYLOAD_FILE
 	string "Payload path and filename"
 	depends on PAYLOAD_ELF
@@ -386,11 +410,15 @@ config PAYLOAD_FILE
 	depends on PAYLOAD_SEABIOS
 	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 
+config PAYLOAD_FILE
+	depends on PAYLOAD_FILO
+	default "payloads/external/FILO/filo/build/filo.elf"
+
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
 	default y
-	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS
+	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.

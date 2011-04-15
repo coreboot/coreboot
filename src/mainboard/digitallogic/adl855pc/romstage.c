@@ -14,7 +14,6 @@
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
 #include "superio/winbond/w83627hf/early_serial.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
 

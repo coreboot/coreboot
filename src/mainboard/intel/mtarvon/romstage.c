@@ -31,7 +31,6 @@
 #include "southbridge/intel/i3100/early_lpc.c"
 #include "northbridge/intel/i3100/raminit.h"
 #include "superio/intel/i3100/i3100.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/intel/i3100/early_serial.c"
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include "cpu/x86/bist.h"

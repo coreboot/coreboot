@@ -68,7 +68,6 @@ static inline int spd_read_byte(u16 device, u8 address)
 }
 
 #include "northbridge/intel/i3100/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"

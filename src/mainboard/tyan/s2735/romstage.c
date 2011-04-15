@@ -13,7 +13,6 @@
 #include "northbridge/intel/e7501/raminit.h"
 #include "northbridge/intel/e7501/debug.c"
 #include "superio/winbond/w83627hf/early_serial.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)

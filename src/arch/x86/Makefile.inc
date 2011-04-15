@@ -61,7 +61,7 @@ prebuild-files = \
 		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(prebuilt-files) $(CBFSTOOL)
+$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
 	rm -f $@
 	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
 	$(prebuild-files)

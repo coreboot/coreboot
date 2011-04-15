@@ -27,7 +27,7 @@ SECTIONS
 {
 	. = CONFIG_ROMBASE;
 
-	/* cut _start into last 64k*/
+	/* cut _start into last 64k */
 	_x = .;
 	. = (_x < CONFIG_ROMBASE) ? (CONFIG_ROMBASE) : _x;
 

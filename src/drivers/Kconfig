@@ -17,13 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config DRIVERS_SIL_3114
-	bool "Silicon Image SIL3114"
-	default n
-	help
-	It sets PCI class to IDE compatible native mode, allowing
-	SeaBIOS, FILO etc... to boot from it.
-
-
+source src/drivers/ati/Kconfig
 source src/drivers/dec/Kconfig
+source src/drivers/emulation/Kconfig
+source src/drivers/generic/Kconfig
+source src/drivers/i2c/Kconfig
+source src/drivers/sil/Kconfig
+source src/drivers/trident/Kconfig
 

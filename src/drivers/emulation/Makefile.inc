@@ -1,0 +1,1 @@
+subdirs-y += qemu

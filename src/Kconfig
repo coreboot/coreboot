@@ -157,9 +157,6 @@ config MMCONF_SUPPORT
 	bool
 	default n
 
-config ATI_RAGE_XL
-	bool
-
 source src/console/Kconfig
 
 config HAVE_ACPI_RESUME

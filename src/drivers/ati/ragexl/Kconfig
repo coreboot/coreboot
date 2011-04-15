@@ -1,0 +1,2 @@
+config ATI_RAGE_XL
+	bool

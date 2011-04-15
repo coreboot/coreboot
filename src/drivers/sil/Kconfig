@@ -1,0 +1,8 @@
+config DRIVERS_SIL_3114
+	bool "Silicon Image SIL3114"
+	default n
+	help
+	It sets PCI class to IDE compatible native mode, allowing
+	SeaBIOS, FILO etc... to boot from it.
+
+

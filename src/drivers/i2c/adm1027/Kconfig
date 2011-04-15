@@ -1,0 +1,2 @@
+config DRIVERS_I2C_ADM1027
+	bool

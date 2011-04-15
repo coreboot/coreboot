@@ -17,19 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+subdirs-y += ati
 subdirs-y += dec
-
-# should these be cleaned up to behave like all other subdirectories?
-
-subdirs-y += ati/ragexl
-subdirs-y += emulation/qemu
-subdirs-y += generic/debug
-subdirs-y += i2c/adm1026
-subdirs-y += i2c/adm1027
-subdirs-y += i2c/adt7463
-subdirs-y += i2c/i2cmux
-subdirs-y += i2c/i2cmux2
-subdirs-y += i2c/lm63
-subdirs-y += sil/3114
-subdirs-y += trident/blade3d
+subdirs-y += emulation
+subdirs-y += generic
+subdirs-y += i2c
+subdirs-y += sil
+subdirs-y += trident
 

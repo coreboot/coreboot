@@ -1,0 +1,6 @@
+source src/drivers/i2c/adm1026/Kconfig
+source src/drivers/i2c/adm1027/Kconfig
+source src/drivers/i2c/adt7463/Kconfig
+source src/drivers/i2c/i2cmux/Kconfig
+source src/drivers/i2c/i2cmux2/Kconfig
+source src/drivers/i2c/lm63/Kconfig

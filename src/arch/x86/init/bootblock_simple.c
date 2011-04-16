@@ -5,6 +5,7 @@ static void main(unsigned long bist)
 	if (boot_cpu()) {
 		bootblock_northbridge_init();
 		bootblock_southbridge_init();
+		bootblock_cpu_init();
 	}
 
 #if CONFIG_USE_OPTION_TABLE

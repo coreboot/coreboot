@@ -32,9 +32,11 @@
 #include <libpayload.h>
 
 #define IOBASE lib_sysinfo.ser_ioport
+#define MEMBASE (phys_to_virt(lib_sysinfo.ser_base))
 #define DIVISOR(x) (115200 / x)
 
-void serial_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
+#ifdef CONFIG_SERIAL_SET_SPEED
+static void serial_io_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
 {
 	unsigned char reg;
 
@@ -58,6 +60,31 @@ void serial_hardware_init(int port, int speed, int word_bits, int parity, int st
 	outb(reg & ~0x80, port + 0x03);
 }
 
+static void serial_mem_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
+{
+	unsigned char reg;
+
+	/* We will assume 8n1 for now. Does anyone use anything else these days? */
+
+	/* Disable interrupts. */
+	writeb(0, MEMBASE + 0x01);
+
+	/* Assert RTS and DTR. */
+	writeb(3, MEMBASE + 0x04);
+
+	/* Set the divisor latch. */
+	reg = readb(MEMBASE + 0x03);
+	writeb(reg | 0x80, MEMBASE + 0x03);
+
+	/* Write the divisor. */
+	writeb(DIVISOR(speed) & 0xFF, MEMBASE);
+	writeb(DIVISOR(speed) >> 8 & 0xFF, MEMBASE + 1);
+
+	/* Restore the previous value of the divisor. */
+	writeb(reg & ~0x80, MEMBASE + 0x03);
+}
+#endif
+
 static struct console_input_driver consin = {
 	.havekey = serial_havechar,
 	.getchar = serial_getchar
@@ -69,29 +96,82 @@ static struct console_output_driver consout = {
 
 void serial_init(void)
 {
+	pcidev_t oxpcie_dev;
+	if (pci_find_device(0x1415, 0xc158, &oxpcie_dev)) {
+		lib_sysinfo.ser_base = pci_read_resource(oxpcie_dev, 0) + 0x1000;
+	} else {
+		lib_sysinfo.ser_base = 0;
+	}
+
 #ifdef CONFIG_SERIAL_SET_SPEED
-	serial_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
+	if (lib_sysinfo.ser_base)
+		serial_mem_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
+	else
+		serial_io_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);
 }
 
-void serial_putchar(unsigned int c)
+static void serial_io_putchar(unsigned int c)
 {
 	c &= 0xff;
 	while ((inb(IOBASE + 0x05) & 0x20) == 0) ;
 	outb(c, IOBASE);
 }
 
-int serial_havechar(void)
+static int serial_io_havechar(void)
 {
 	return inb(IOBASE + 0x05) & 0x01;
 }
 
+static int serial_io_getchar(void)
+{
+	while (!serial_io_havechar()) ;
+	return (int)inb(IOBASE);
+}
+
+static void serial_mem_putchar(unsigned int c)
+{
+	c &= 0xff;
+	while ((readb(MEMBASE + 0x05) & 0x20) == 0) ;
+	writeb(c, MEMBASE);
+}
+
+static int serial_mem_havechar(void)
+{
+	return readb(MEMBASE + 0x05) & 0x01;
+}
+
+static int serial_mem_getchar(void)
+{
+	while (!serial_mem_havechar()) ;
+	return (int)readb(MEMBASE);
+}
+
+
+void serial_putchar(unsigned int c)
+{
+	if (lib_sysinfo.ser_base)
+		serial_mem_putchar(c);
+	else
+		serial_io_putchar(c);
+}
+
+int serial_havechar(void)
+{
+	if (lib_sysinfo.ser_base)
+		return serial_mem_havechar();
+	else
+		return serial_io_havechar();
+}
+
 int serial_getchar(void)
 {
-	while (!serial_havechar()) ;
-	return (int)inb(IOBASE);
+	if (lib_sysinfo.ser_base)
+		return serial_mem_getchar();
+	else
+		return serial_io_getchar();
 }
 
 /*  These are thinly veiled vt100 functions used by curses */

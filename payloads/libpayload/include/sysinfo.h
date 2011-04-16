@@ -36,6 +36,7 @@
 struct sysinfo_t {
 	unsigned int cpu_khz;
 	unsigned short ser_ioport;
+	unsigned long ser_base; // for mmapped serial
 
 	int n_memranges;
 

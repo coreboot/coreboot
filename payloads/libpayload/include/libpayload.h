@@ -153,7 +153,6 @@ int keyboard_set_layout(char *country);
  * @{
  */
 void serial_init(void);
-void serial_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits);
 void serial_putchar(unsigned int c);
 int serial_havechar(void);
 int serial_getchar(void);

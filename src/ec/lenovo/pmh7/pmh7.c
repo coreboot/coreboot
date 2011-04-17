@@ -33,6 +33,14 @@ void pmh7_backlight_enable(int onoff)
 		pmh7_register_clear_bit(0x50, 5);
 }
 
+void pmh7_dock_event_enable(int onoff)
+{
+	if (onoff)
+		pmh7_register_set_bit(0x60, 3);
+	else
+		pmh7_register_clear_bit(0x60, 3);
+
+}
 void pmh7_register_set_bit(int reg, int bit)
 {
 	char val;
@@ -78,6 +86,7 @@ static void enable_dev(device_t dev)
 	resource->gran = 5;
 
 	pmh7_backlight_enable(conf->backlight_enable);
+	pmh7_dock_event_enable(conf->dock_event_enable);
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

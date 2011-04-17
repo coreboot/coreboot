@@ -32,4 +32,5 @@ char pmh7_register_read(int reg);
 void pmh7_register_write(int reg, int val);
 
 void pmh7_backlight_enable(int onoff);
+void pmh7_dock_event_enable(int onoff);
 #endif

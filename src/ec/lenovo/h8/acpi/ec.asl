@@ -120,4 +120,5 @@ Device(EC)
 #include "lid.asl"
 #include "beep.asl"
 #include "thermal.asl"
+#include "systemstatus.asl"
 }

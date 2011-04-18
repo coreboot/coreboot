@@ -721,8 +721,15 @@ int conf_write_autoconf(void)
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
-		if (!(sym->flags & SYMBOL_WRITE) || !sym->name)
+		if (!sym->name)
 			continue;
+		if (!(sym->flags & SYMBOL_WRITE)) {
+			if (sym->type == S_BOOLEAN || sym->type == S_HEX
+			    || sym->type == S_INT)
+				fprintf(out_h, "#define CONFIG_%s 0\n",
+					sym->name);
+			continue;
+		}
 		switch (sym->type) {
 		case S_BOOLEAN:
 		case S_TRISTATE:

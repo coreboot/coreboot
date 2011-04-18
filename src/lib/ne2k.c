@@ -444,8 +444,7 @@ static void read_resources(struct device *dev)
 	return;
 }
 
-
-static struct device_operations si_sata_ops  = {
+static struct device_operations ne2k_ops  = {
 	.read_resources   = read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -453,7 +452,7 @@ static struct device_operations si_sata_ops  = {
 	.scan_bus         = 0,
 };
 
-static const struct pci_driver si_sata_driver __pci_driver = {
+static const struct pci_driver ne2k_driver __pci_driver = {
         .ops    = &si_sata_ops,
         .vendor = 0x10ec,
         .device = 0x8029,

@@ -138,15 +138,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-	printk(BIOS_DEBUG, "\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-
-#if CONFIG_USBDEBUG
-	mcp55_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
-	early_usbdebug_init();
-#endif
 
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);

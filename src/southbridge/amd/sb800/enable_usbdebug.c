@@ -43,7 +43,7 @@ void set_debug_port(unsigned int port)
 }
 
 
-void sb800_enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int port)
 {
 	pci_write_config32(PCI_DEV(0, SB800_DEVN_BASE + 0x13, 5),
 			   EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

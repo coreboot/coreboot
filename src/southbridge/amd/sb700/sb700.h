@@ -75,5 +75,5 @@ void sb7xx_51xx_setup_sata_phys(struct device *dev);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
-void sb7xx_51xx_enable_usbdebug(unsigned int port);
+void enable_usbdebug(unsigned int port);
 #endif /* SB700_H */

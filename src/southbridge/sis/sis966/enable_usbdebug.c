@@ -42,7 +42,7 @@ void set_debug_port(unsigned int port)
 	pci_write_config32(dev, 0x74, dword);
 }
 
-void sis966_enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int port)
 {
 	device_t dev = PCI_DEV(0, SIS966_DEVN_BASE + 2, 1); /* USB EHCI */
 

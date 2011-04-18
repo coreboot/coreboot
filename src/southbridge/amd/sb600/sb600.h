@@ -40,5 +40,5 @@ void sb600_enable(device_t dev);
 void sb600_lpc_port80(void);
 void sb600_pci_port80(void);
 
-void sb600_enable_usbdebug(unsigned int port);
+void enable_usbdebug(unsigned int port);
 #endif /* SB600_H */

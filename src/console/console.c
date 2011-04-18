@@ -95,6 +95,10 @@ int console_tst_byte(void)
 
 void console_init(void)
 {
+#if CONFIG_USBDEBUG
+	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	early_usbdebug_init();
+#endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif

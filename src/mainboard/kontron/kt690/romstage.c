@@ -96,11 +96,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627dhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 
-#if CONFIG_USBDEBUG
-	sb600_enable_usbdebug(0);
-	early_usbdebug_init();
-#endif
-
 	console_init();
 
 	/* Halt if there was a built in self test failure */

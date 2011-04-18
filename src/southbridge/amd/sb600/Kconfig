@@ -36,6 +36,10 @@ config EHCI_DEBUG_OFFSET
 	hex
 	default 0xe0
 
+config USBDEBUG_DEFAULT_PORT
+	int
+	default 0
+
 choice
 	prompt "SATA Mode"
 	default SATA_MODE_IDE

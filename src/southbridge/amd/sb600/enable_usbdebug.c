@@ -30,7 +30,7 @@ void set_debug_port(unsigned int port)
 	/* TODO: Allow changing the physical USB port used as Debug Port. */
 }
 
-void sb600_enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int port)
 {
 	device_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
 

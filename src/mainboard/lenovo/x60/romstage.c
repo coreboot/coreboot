@@ -242,11 +242,6 @@ void main(unsigned long bist)
 		uart_init();
 	}
 
-#if CONFIG_USBDEBUG
-	i82801gx_enable_usbdebug(1);
-	early_usbdebug_init();
-#endif
-
 	console_init();
 
 	/* Halt if there was a built in self test failure */

@@ -110,12 +110,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb800_lpc_init();
 
 	uart_init();
-#if CONFIG_USBDEBUG
-	sb800_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
-	early_usbdebug_init();
-#endif
 	console_init();
-	printk(BIOS_DEBUG, "\n");
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 

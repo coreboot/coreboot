@@ -91,11 +91,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 * and it doesn't require any special setup. */
 	uart_init();
 
-#if CONFIG_USBDEBUG
-	sb600_enable_usbdebug(0);
-	early_usbdebug_init();
-#endif
-
 	console_init();
 
 	post_code(0x03);

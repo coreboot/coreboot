@@ -40,7 +40,7 @@ void sis966_enable(device_t dev);
 #endif
 
 #if defined(__PRE_RAM__) && !defined(__ROMCC__)
-void sis966_enable_usbdebug(unsigned int port);
+void enable_usbdebug(unsigned int port);
 #endif
 
 #endif /* SIS966_H */

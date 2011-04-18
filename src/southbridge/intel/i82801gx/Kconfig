@@ -24,11 +24,19 @@ config SOUTHBRIDGE_INTEL_I82801GX
 	select HAVE_USBDEBUG
 	select USE_WATCHDOG_ON_BOOT
 
+if SOUTHBRIDGE_INTEL_I82801GX
+
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_INTEL_I82801GX
+	default 0xfef00000
 
 config EHCI_DEBUG_OFFSET
 	hex
-	default 0xa0 if SOUTHBRIDGE_INTEL_I82801GX
+	default 0xa0
+
+config USBDEBUG_DEFAULT_PORT
+	int
+	default 1 
+
+endif
 

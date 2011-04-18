@@ -46,7 +46,7 @@ extern void i82801gx_enable(device_t dev);
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);
 #endif
-void i82801gx_enable_usbdebug(unsigned int port);
+void enable_usbdebug(unsigned int port);
 #endif
 
 #define MAINBOARD_POWER_OFF	0

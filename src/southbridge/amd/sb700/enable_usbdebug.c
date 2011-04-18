@@ -45,7 +45,7 @@ void set_debug_port(unsigned int port)
  * This code currently only supports the first one, i.e., USB Debug devices
  * attached to physical USB ports belonging to the first EHCI device.
  */
-void sb7xx_51xx_enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int port)
 {
 	device_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
 

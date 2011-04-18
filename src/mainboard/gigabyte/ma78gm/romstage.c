@@ -106,13 +106,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	it8718f_disable_reboot();
 	uart_init();
 
-#if CONFIG_USBDEBUG
-	sb7xx_51xx_enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
-	early_usbdebug_init();
-#endif
-
 	console_init();
-	printk(BIOS_DEBUG, "\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

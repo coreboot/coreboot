@@ -30,7 +30,7 @@ void set_debug_port(unsigned int port)
 	/* Not needed, the southbridges hardcode physical USB port 1. */
 }
 
-void sch_enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;
 	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */

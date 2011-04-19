@@ -800,7 +800,7 @@ static int list_cmos_entry(const cmos_entry_t * e, int show_name)
 	case CMOS_ENTRY_STRING:
 		w = (char *)(unsigned long)value;
 		while (*w) {
-			if(!isprint(*w)) {
+			if(!isprint((int)(unsigned char)*w)) {
 				if (show_name)
 					printf("# Bad value -> %s\n", e->name);
 				else
@@ -846,7 +846,7 @@ static uint16_t convert_checksum_value(const char value[])
 	uint16_t result;
 	int negative;
 
-	for (p = value; isspace(*p); p++) ;
+	for (p = value; isspace((int)(unsigned char)*p); p++) ;
 
 	negative = (*p == '-');
 	n = strtoul(value, (char **)&p, 0);

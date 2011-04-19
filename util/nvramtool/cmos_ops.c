@@ -125,7 +125,7 @@ int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
 		/* See if the first character of 'value_str' (excluding
 		 * any initial whitespace) is a minus sign.
 		 */
-		for (p = value_str; isspace(*p); p++) ;
+		for (p = value_str; isspace((int)(unsigned char)*p); p++) ;
 		negative = (*p == '-');
 
 		out = strtoull(value_str, (char **)&p, 0);

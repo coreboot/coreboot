@@ -24,8 +24,8 @@ driver-y +=  ide.c
 driver-y +=  usb.c
 driver-y +=  smbus.c
 driver-y +=  reset.c
-driver-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
-driver-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.c
+driver-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+driver-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.c
 
 romstage-y += early_pm.c
 romstage-y += early_smbus.c

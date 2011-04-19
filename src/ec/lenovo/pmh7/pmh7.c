@@ -41,6 +41,14 @@ void pmh7_dock_event_enable(int onoff)
 		pmh7_register_clear_bit(0x60, 3);
 
 }
+
+void pmh7_touchpad_enable(int onoff)
+{
+	if (onoff)
+		pmh7_register_clear_bit(0x51, 2);
+	else
+		pmh7_register_set_bit(0x51, 2);
+}
 void pmh7_register_set_bit(int reg, int bit)
 {
 	char val;

@@ -33,4 +33,5 @@ void pmh7_register_write(int reg, int val);
 
 void pmh7_backlight_enable(int onoff);
 void pmh7_dock_event_enable(int onoff);
+void pmh7_touchpad_enable(int onoff);
 #endif

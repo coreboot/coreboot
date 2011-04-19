@@ -565,7 +565,8 @@ static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 
 	/* bits[15,13,12] specify the cores */
 	/* Support Downcoring */
-	cores = ((temp & 8) >> 1) + (temp & 3) + 1;
+	temp = ((temp & 8) >> 1) + (temp & 3);
+	cores = temp + 1;
 	AmdPCIReadBits (MAKE_SBDFO(makePCISegmentFromNode(node),
 					makePCIBusFromNode(node),
 					makePCIDeviceFromNode(node),

@@ -22,17 +22,18 @@
 // Make sure no stage 2 code is included:
 #define __PRE_RAM__
 
-#if !defined(CONFIG_NORTHBRIDGE_AMD_AMDK8) && !defined(CONFIG_NORTHBRIDGE_AMD_FAM10)
+/* On AMD's platforms we can set SMBASE by writing an MSR */
+#if !CONFIG_NORTHBRIDGE_AMD_AMDK8 && !CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 
 // FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from
 // here.
-#if defined(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#if CONFIG_SOUTHBRIDGE_INTEL_I82801GX
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"
-#elif defined(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
+#elif CONFIG_SOUTHBRIDGE_INTEL_I82801DX
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
-#elif defined(CONFIG_SOUTHBRIDGE_INTEL_SCH)
+#elif CONFIG_SOUTHBRIDGE_INTEL_SCH
 #include "../../../southbridge/intel/sch/sch.h"
 #else
 #error "Southbridge needs SMM handler support."
@@ -152,7 +153,7 @@ smm_relocate:
 
 	/* End of southbridge specific section. */
 
-#if defined(CONFIG_DEBUG_SMM_RELOCATION) && CONFIG_DEBUG_SMM_RELOCATION
+#if CONFIG_DEBUG_SMM_RELOCATION
 	/* print [SMM-x] so we can determine if CPUx went to SMM */
 	movw $CONFIG_TTYS0_BASE, %dx
 	mov $'[', %al

@@ -43,22 +43,8 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void w83697hf_init(device_t dev)
 {
-	struct superio_winbond_w83697hf_config *conf = dev->chip_info;
-	struct resource *res0;
-
 	if (!dev->enabled)
 		return;
-
-	switch(dev->path.pnp.device) {
-	case W83697HF_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case W83697HF_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
-	}
 }
 
 static void w83697hf_pnp_set_resources(device_t dev)

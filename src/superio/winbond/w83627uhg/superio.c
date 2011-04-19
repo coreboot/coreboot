@@ -73,41 +73,28 @@ static void set_uart_clock_source(device_t dev, u8 uart_clock)
 static void w83627uhg_init(device_t dev)
 {
 	struct superio_winbond_w83627uhg_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	case W83627UHG_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com1);
 		break;
 	case W83627UHG_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com2);
 		break;
 	case W83627UHG_SP3:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com3);
 		break;
 	case W83627UHG_SP4:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com4);
 		break;
 	case W83627UHG_SP5:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com5);
 		break;
 	case W83627UHG_SP6:
-		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
-		init_uart8250(res0->base, &conf->com6);
 		break;
 	case W83627UHG_KBC:
 		pc_keyboard_init(&conf->keyboard);

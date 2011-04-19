@@ -85,14 +85,6 @@ static void it8716f_init(device_t dev)
 
 	/* TODO: FDC, PP, KBCM, MIDI, GAME, IR. */
 	switch (dev->path.pnp.device) {
-	case IT8716F_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case IT8716F_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case IT8716F_EC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 #define EC_INDEX_PORT 5

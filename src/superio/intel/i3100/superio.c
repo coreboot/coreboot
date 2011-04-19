@@ -40,24 +40,8 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void i3100_init(device_t dev)
 {
-	struct superio_intel_i3100_config *conf;
-	struct resource *res0;
-
 	if (!dev->enabled)
 		return;
-
-	conf = dev->chip_info;
-
-	switch (dev->path.pnp.device) {
-	case I3100_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case I3100_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
-	}
 }
 
 static void i3100_pnp_set_resources(device_t dev)

@@ -36,8 +36,6 @@ chip northbridge/amd/gx1
             device pnp 2e.8 on		# Power Management
                io 0x60 = 0xe800
             end
-            register "com1" = "{115200}"
-            register "com2" = "{38400}"
           end
         device pci 12.1 off end		# SMI
         device pci 12.2 on  end		# IDE

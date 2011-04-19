@@ -94,20 +94,11 @@ static void lpc47m15x_pnp_enable(device_t dev)
 static void lpc47m15x_init(device_t dev)
 {
 	struct superio_smsc_lpc47m15x_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
-	case LPC47M15X_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case LPC47M15X_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case LPC47M15X_KBC:
 		pc_keyboard_init(&conf->keyboard);
 		break;

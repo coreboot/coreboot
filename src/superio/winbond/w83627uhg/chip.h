@@ -27,7 +27,7 @@
 extern struct chip_operations superio_winbond_w83627uhg_ops;
 
 struct superio_winbond_w83627uhg_config {
-	struct uart8250 com1, com2, com3, com4, com5, com6;
+	
 	struct pc_keyboard keyboard;
 };
 

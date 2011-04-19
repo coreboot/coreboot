@@ -134,21 +134,9 @@ static void lpc47n217_pnp_enable(device_t dev)
 static void lpc47n217_init(device_t dev)
 {
 	struct superio_smsc_lpc47n217_config* conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
-
-	switch(dev->path.pnp.device) {
-	case LPC47N217_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case LPC47N217_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
-	}
 }
 
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)

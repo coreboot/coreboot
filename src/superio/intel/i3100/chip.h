@@ -27,7 +27,6 @@
 extern struct chip_operations superio_intel_i3100_ops;
 
 struct superio_intel_i3100_config {
-	struct uart8250 com1, com2;
 };
 
 #endif

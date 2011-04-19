@@ -45,9 +45,6 @@ chip northbridge/intel/i855
                 	        device pnp 2e.b on      #  HW Monitor
  					 io 0x60 = 0x290
 				end
-				register "com1" = "{1}"
-			#	register "com1" = "{1, 0, 0x3f8, 4}"
-			#	register "lpt" = "{1}"
                 	end
 		end
 	end

@@ -34,7 +34,7 @@ extern struct chip_operations superio_nsc_pc97317_ops;
 #include <uart8250.h>
 
 struct superio_nsc_pc97317_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

@@ -35,20 +35,11 @@
 static void init(device_t dev)
 {
 	struct superio_nsc_pc87417_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
-	case PC87417_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case PC87417_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case PC87417_KBCK:
 		pc_keyboard_init(&conf->keyboard);
 		break;

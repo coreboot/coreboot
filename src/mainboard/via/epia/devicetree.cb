@@ -33,7 +33,6 @@ chip northbridge/via/vt8601
 					  irq 0x70 = 1
 					  irq 0x72 = 12
 	      				end
-				register "com1" = "{CONFIG_TTYS0_BAUD}"
 				end
 				device pnp 2e.6 off end 	#  CIR
 				device pnp 2e.7 off end 	#  GAME_MIDI_GIPO1

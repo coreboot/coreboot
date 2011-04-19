@@ -29,7 +29,7 @@
 extern struct chip_operations superio_fintek_f81865f_ops;
 
 struct superio_fintek_f81865f_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

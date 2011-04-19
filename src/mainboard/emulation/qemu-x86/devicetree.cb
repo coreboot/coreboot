@@ -9,7 +9,5 @@ chip mainboard/emulation/qemu-x86
 			register "ide1_enable" = "1"
 		end
 
-#		register "com1" = "{1}"
-#		register "com1" = "{1, 0, 0x3f8, 4}"
 	end
 end

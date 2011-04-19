@@ -114,14 +114,6 @@ static void w83627ehg_init(device_t dev)
 		return;
 
 	switch(dev->path.pnp.device) {
-	case W83627EHG_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case W83627EHG_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case W83627EHG_KBC:
 		pc_keyboard_init(&conf->keyboard);
 		break;

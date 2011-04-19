@@ -48,14 +48,6 @@ static void f71863fg_init(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
-	case F71863FG_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case F71863FG_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case F71863FG_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		pc_keyboard_init(&conf->keyboard);

@@ -27,7 +27,7 @@
 extern struct chip_operations superio_smsc_lpc47n227_ops;
 
 struct superio_smsc_lpc47n227_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

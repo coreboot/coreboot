@@ -3,8 +3,5 @@ chip cpu/amd/sc520
 		device pci 0.0 on end
 		device pci 12.0 on end # enet
 		device pci 14.0 on end # 69000
-#		register "com1" = "{1}"
-#		register "com1" = "{1, 0, 0x3f8, 4}"
 	end
-
 end

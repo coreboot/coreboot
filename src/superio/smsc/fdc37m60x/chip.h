@@ -28,7 +28,7 @@
 extern struct chip_operations superio_smsc_fdc37m60x_ops;
 
 struct superio_smsc_fdc37m60x_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

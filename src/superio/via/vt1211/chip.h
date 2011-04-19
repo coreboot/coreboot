@@ -26,7 +26,7 @@
 extern struct chip_operations superio_via_vt1211_ops;
 
 struct superio_via_vt1211_config {
-	struct uart8250 com1, com2;
+	
 };
 
 #endif

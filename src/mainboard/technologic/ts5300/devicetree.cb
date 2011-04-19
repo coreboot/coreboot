@@ -1,9 +1,6 @@
 chip cpu/amd/sc520
 	device pci_domain 0 on
 		device pci 0.0 on end
-
-#		register "com1" = "{1}"
-#		register "com1" = "{1, 0, 0x3f8, 4}"
 	end
 
 end

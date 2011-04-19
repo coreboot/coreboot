@@ -29,7 +29,6 @@
 static void init(device_t dev)
 {
 	struct superio_smsc_fdc37m60x_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
@@ -38,14 +37,6 @@ static void init(device_t dev)
 	case FDC37M60X_FDC: /* TODO. */
 		break;
 	case FDC37M60X_PP: /* TODO. */
-		break;
-	case FDC37M60X_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case FDC37M60X_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
 		break;
 	case FDC37M60X_KBCK:
 		pc_keyboard_init(&conf->keyboard);

@@ -29,20 +29,11 @@
 static void init(device_t dev)
 {
 	struct superio_nsc_pc97317_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
-	case PC97317_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case PC97317_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case PC97317_KBCK:
 		pnp_set_logical_device(dev);
 		pnp_set_enable(dev, 0);		   /* Disable keyboard */

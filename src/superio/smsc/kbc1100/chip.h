@@ -27,7 +27,7 @@ struct chip_operations;
 extern struct chip_operations superio_smsc_kbc1100_ops;
 
 struct superio_smsc_kbc1100_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

@@ -26,7 +26,7 @@
 extern struct chip_operations superio_winbond_w83697hf_ops;
 
 struct superio_winbond_w83697hf_config {
-	struct uart8250 com1, com2;
+	
 };
 
 #endif

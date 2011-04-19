@@ -27,7 +27,7 @@
 extern struct chip_operations superio_fintek_f71859_ops;
 
 struct superio_fintek_f71859_config {
-	struct uart8250 com1, com2;
+	
 };
 
 #endif

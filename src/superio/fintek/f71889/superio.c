@@ -41,21 +41,12 @@ static void pnp_exit_conf_state(device_t dev)
 static void f71889_init(device_t dev)
 {
 	struct superio_fintek_f71889_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
-	case F71889_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case F71889_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case F71889_KBC:
 		pc_keyboard_init(&conf->keyboard);
 		break;

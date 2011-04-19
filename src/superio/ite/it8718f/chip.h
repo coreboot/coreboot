@@ -28,7 +28,7 @@
 extern struct chip_operations superio_ite_it8718f_ops;
 
 struct superio_ite_it8718f_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

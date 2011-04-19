@@ -26,7 +26,7 @@ extern struct chip_operations superio_nsc_pc87392_ops;
 #include <uart8250.h>
 
 struct superio_nsc_pc87392_config {
-	struct uart8250 com1, com2;
+	
 };
 
 #endif

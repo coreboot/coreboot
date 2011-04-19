@@ -19,12 +19,10 @@ chip northbridge/amd/gx1
                io 0x60 = 0x3f8
               irq 0x70 = 4
             end
-            register "com1" = "{115200}"
             device pnp 2e.3 on		# COM2
                io 0x60 = 0x2f8
               irq 0x70 = 3
             end
-            register "com2" = "{115200}"
             device pnp 2e.4 off		# Reserved
             end
             device pnp 2e.5 on		# Keyboard

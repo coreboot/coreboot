@@ -27,7 +27,7 @@
 extern struct chip_operations superio_nsc_pc87309_ops;
 
 struct superio_nsc_pc87309_config {
-	struct uart8250 com1, com2;
+	
 	struct pc_keyboard keyboard;
 };
 

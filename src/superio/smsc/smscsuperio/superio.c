@@ -205,7 +205,6 @@ static void smsc_pnp_enable(device_t dev)
 static void smsc_init(device_t dev)
 {
 	struct superio_smsc_smscsuperio_config *conf = dev->chip_info;
-	struct resource *res0;
 	int i, ld;
 
 	/* Do not initialize disabled devices. */
@@ -223,13 +222,7 @@ static void smsc_init(device_t dev)
 
 	/* A Super I/O was found, so initialize the respective device. */
 	ld = dev->path.pnp.device;
-	if (ld == logical_device_table[i].devs[LD_SP1]) {
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-	} else if (ld == logical_device_table[i].devs[LD_SP2]) {
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-	} else if (ld == logical_device_table[i].devs[LD_KBC]) {
+	if (ld == logical_device_table[i].devs[LD_KBC]) {
 		pc_keyboard_init(&conf->keyboard);
 	}
 }

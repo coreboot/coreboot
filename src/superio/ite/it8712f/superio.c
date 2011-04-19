@@ -46,21 +46,12 @@ static void pnp_exit_ext_func_mode(device_t dev)
 static void it8712f_init(device_t dev)
 {
 	struct superio_ite_it8712f_config *conf = dev->chip_info;
-	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
 	case IT8712F_FDC: /* TODO. */
-		break;
-	case IT8712F_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case IT8712F_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
 		break;
 	case IT8712F_PP: /* TODO. */
 		break;

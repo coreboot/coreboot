@@ -1165,7 +1165,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	if (unbuffered) {
 		if ((has_dualch) && (!is_cpu_pre_d0())) {
 			dcl |= DCL_UnBuffDimm;
-#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
+#if CONFIG_CPU_AMD_SOCKET_939
 			if ((cpuid_eax(1) & 0x30) == 0x30) {
 				/* CS[7:4] is copy of CS[3:0], should be set for 939 socket */
 				dcl |= DCL_UpperCSMap;
@@ -1389,7 +1389,7 @@ static const unsigned char min_cycle_times[] = {
 	[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
 };
 
-#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
+#if CONFIG_CPU_AMD_SOCKET_939
 
 /* return the minimum cycle time and set 2T accordingly */
 static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl, long dimm_mask) {
@@ -1511,14 +1511,14 @@ hw_error:
 	return dloading_cycle_time;
 }
 
-#endif /* #if defined(CONFIG_CPU_AMD_SOCKET_939) */
+#endif /* #if CONFIG_CPU_AMD_SOCKET_939 */
 
 static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, long dimm_mask)
 {
 	/* Compute the minimum cycle time for these dimms */
 	struct spd_set_memclk_result result;
 	unsigned min_cycle_time, min_latency, bios_cycle_time;
-#if defined(CONFIG_CPU_AMD_SOCKET_939)
+#if CONFIG_CPU_AMD_SOCKET_939
 	unsigned dloading_cycle_time;
 #endif
 	int i;
@@ -1674,7 +1674,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 #endif
 #endif
 
-#if defined(CONFIG_CPU_AMD_SOCKET_939) && CONFIG_CPU_AMD_SOCKET_939
+#if CONFIG_CPU_AMD_SOCKET_939
 	dloading_cycle_time = spd_dimm_loading_socket939(ctrl, dimm_mask);
 	if (dloading_cycle_time > min_cycle_time) {
 		min_cycle_time = dloading_cycle_time;

@@ -32,8 +32,6 @@
 
 static void init(device_t dev)
 {
-	struct superio_nsc_pc87382_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 

@@ -93,21 +93,12 @@ static void init_hwm(u16 base)
 
 static void vt1211_init(struct device *dev)
 {
-	struct superio_via_vt1211_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
-	case VT1211_SP1:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
-		break;
-	case VT1211_SP2:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
-		break;
 	case VT1211_HWM:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_hwm(res0->base);

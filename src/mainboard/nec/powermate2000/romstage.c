@@ -37,7 +37,6 @@
 void main(unsigned long bist)
 {
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_smbus();
 	report_bist_failure(bist);

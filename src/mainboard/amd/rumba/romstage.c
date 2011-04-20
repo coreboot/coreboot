@@ -39,7 +39,6 @@ void main(unsigned long bist)
 	SystemPreInit();
 
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 
 	cs5536_early_setup();

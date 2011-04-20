@@ -53,7 +53,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
     post_code(0x31);
     w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-    uart_init();
     console_init();
   }
 	//reg8 = pmio_read(0x24);

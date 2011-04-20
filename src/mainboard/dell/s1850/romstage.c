@@ -261,7 +261,6 @@ static void main(unsigned long bist)
 	mainboard_set_ich5();
 	//bmc_foad();
 	pc8374_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 
 	/* stuff we seem to need */

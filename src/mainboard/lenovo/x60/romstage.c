@@ -239,7 +239,6 @@ void main(unsigned long bist)
 		dock_connect();
 		early_superio_config();
 		/* Set up the console */
-		uart_init();
 	}
 
 	console_init();

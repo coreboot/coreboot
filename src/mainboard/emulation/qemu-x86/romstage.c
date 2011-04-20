@@ -16,7 +16,6 @@ static void main(void)
 	/* init_timer(); */
 	post_code(0x05);
 
-	uart_init();
 	console_init();
 
 	//print_pci_devices();

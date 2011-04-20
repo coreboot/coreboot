@@ -151,7 +151,6 @@ void main(unsigned long bist)
 	 */
 	cs5536_setup_onchipuart(1);
 	mb_gpio_init();
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

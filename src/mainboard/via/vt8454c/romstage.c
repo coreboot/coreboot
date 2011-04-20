@@ -96,7 +96,6 @@ void main(unsigned long bist)
 	enable_smbus();
 
 	enable_cx700_serial();
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

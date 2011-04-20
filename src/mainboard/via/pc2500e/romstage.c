@@ -61,7 +61,6 @@ void main(unsigned long bist)
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
 	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_smbus();
 	smbus_fixup(&ctrl);

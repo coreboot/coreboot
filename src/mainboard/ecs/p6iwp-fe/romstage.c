@@ -37,7 +37,6 @@ void main(unsigned long bist)
 {
 	it8712f_24mhz_clkin();
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE); // Does not use its 1st parameter
-	uart_init();
 	console_init();
 	report_bist_failure(bist);
 	enable_smbus();

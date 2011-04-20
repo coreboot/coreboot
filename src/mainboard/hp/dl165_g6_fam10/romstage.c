@@ -123,12 +123,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	pilot_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-	uart_init();
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	console_init();
 	pilot_early_init(SERIAL_DEV); //config port is being taken from SERIAL_DEV
 
 	val = cpuid_eax(1);

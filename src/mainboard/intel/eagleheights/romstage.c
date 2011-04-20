@@ -145,7 +145,6 @@ void main(unsigned long bist)
 	i3100_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	i3100_configure_uart_clk(SERIAL_DEV, I3100_UART_CLK_PREDIVIDE_26);
 
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

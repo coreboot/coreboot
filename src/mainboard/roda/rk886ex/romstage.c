@@ -270,8 +270,6 @@ void main(unsigned long bist)
 	early_superio_config();
 
 	/* Set up the console */
-	uart_init();
-
 	console_init();
 
 	/* Halt if there was a built in self test failure */

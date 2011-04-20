@@ -36,7 +36,6 @@
 static void main(unsigned long bist)
 {
 	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	report_bist_failure(bist);
 	cs5530_enable_rom();

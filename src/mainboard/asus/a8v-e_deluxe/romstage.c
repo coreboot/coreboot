@@ -159,11 +159,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_rom_decode();
 
-	print_info("now booting... fallback\n");
+	print_info("now booting... romstage\n");
 
 	/* Is this a CPU only reset? Or is this a secondary CPU? */
 	if (!cpu_init_detectedx && boot_cpu()) {
@@ -174,7 +173,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_rom_decode();
 

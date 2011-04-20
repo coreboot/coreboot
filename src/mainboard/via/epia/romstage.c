@@ -76,7 +76,6 @@ static void main(unsigned long bist)
 		early_mtrr_init();
 
 	enable_vt8231_serial();
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

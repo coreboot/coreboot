@@ -159,7 +159,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_rom_decode();
 
@@ -172,11 +171,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		enumerate_ht_chain();
 	}
 
+	// FIXME why is this executed again? --->
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 	enable_rom_decode();
+	// <--- FIXME why is this executed again?
 
 	print_info("now booting... real_main\n");
 

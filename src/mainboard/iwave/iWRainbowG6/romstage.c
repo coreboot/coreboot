@@ -341,7 +341,6 @@ void main(unsigned long bist)
 		enable_lapic();
 
 	sch_enable_lpc();
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

@@ -89,7 +89,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Pistachio used a FPGA to enable serial debug instead of a SIO
 	 * and it doesn't require any special setup. */
-	uart_init();
 
 	console_init();
 

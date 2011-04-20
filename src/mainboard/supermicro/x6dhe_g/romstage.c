@@ -66,7 +66,6 @@ static void main(unsigned long bist)
 
 	w83627hf_set_clksel_48(DUMMY_DEV);
 	w83627hf_enable_serial(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

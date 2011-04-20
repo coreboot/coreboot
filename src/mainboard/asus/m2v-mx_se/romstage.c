@@ -134,7 +134,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	it8712f_enable_3vsbsw();
-	uart_init();
 	console_init();
 	enable_rom_decode();
 

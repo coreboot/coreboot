@@ -112,7 +112,6 @@ static void main(unsigned long bist)
 
 	w83697hf_set_clksel_48(DUMMY_DEV);
 	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 
 	enable_smbus();

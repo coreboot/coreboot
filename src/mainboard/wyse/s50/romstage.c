@@ -62,7 +62,6 @@ void main(unsigned long bist)
 	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
 	cs5536_setup_onchipuart(1);
 
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

@@ -158,7 +158,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	w83627dhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 
 	console_init();
 

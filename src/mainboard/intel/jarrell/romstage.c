@@ -63,7 +63,6 @@ static void main(unsigned long bist)
         /* Enable Serial 2 lines instead of GPIO */
         outb(0x2c, 0x2e);
         outb((inb(0x2f) & (~1<<1)), 0x2f);
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

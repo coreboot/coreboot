@@ -149,7 +149,6 @@ static void main(unsigned long bist)
 		;
 
         setupsc520();
-        uart_init();
         console_init();
 
 

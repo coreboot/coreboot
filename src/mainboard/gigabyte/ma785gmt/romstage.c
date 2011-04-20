@@ -100,10 +100,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8718f_disable_reboot();
-	uart_init();
-
 	console_init();
-	printk(BIOS_DEBUG, "\n");
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 

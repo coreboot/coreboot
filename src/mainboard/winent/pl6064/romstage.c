@@ -72,7 +72,6 @@ void main(unsigned long bist)
 	 */
 	w83627hf_set_clksel_48(SERIAL_DEV);
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -85,5 +84,4 @@ void main(unsigned long bist)
 	sdram_initialize(1, memctrl);
 
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
-	return;
 }

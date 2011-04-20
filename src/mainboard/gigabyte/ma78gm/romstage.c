@@ -104,7 +104,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8718f_disable_reboot();
-	uart_init();
 
 	console_init();
 

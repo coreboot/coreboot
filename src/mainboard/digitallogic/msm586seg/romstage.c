@@ -163,7 +163,6 @@ static void main(unsigned long bist)
 
         setupsc520();
 	irqinit();
-        uart_init();
         console_init();
 		for(i = 0; i < 100; i++)
 	  print_err("fill usart\n");

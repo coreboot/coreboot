@@ -103,7 +103,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb7xx_51xx_lpc_init();
 
 	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
-	uart_init();
 
 	console_init();
 

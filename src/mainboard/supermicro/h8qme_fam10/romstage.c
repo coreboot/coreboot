@@ -184,7 +184,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  	w83627hf_set_clksel_48(DUMMY_DEV);
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-	uart_init();
 	console_init();
 	write_GPIO();
 	printk(BIOS_DEBUG, "\n");

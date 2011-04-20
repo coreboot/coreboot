@@ -22,6 +22,10 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 
+#if CONFIG_CONSOLE_SERIAL8250
+#include <uart8250.h>
+#endif
+
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>
 #endif
@@ -98,6 +102,9 @@ void console_init(void)
 #if CONFIG_USBDEBUG
 	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
+#endif
+#if CONFIG_CONSOLE_SERIAL8250
+	uart_init();
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);

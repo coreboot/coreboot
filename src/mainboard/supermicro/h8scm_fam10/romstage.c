@@ -123,7 +123,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	wpcm450_enable_dev(WPCM450_SP1, 0x164E, CONFIG_TTYS0_BASE);
 
 	sb7xx_51xx_disable_wideio(0);
-	uart_init();
 
 	console_init();
 

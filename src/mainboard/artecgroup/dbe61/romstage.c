@@ -89,7 +89,6 @@ void main(unsigned long bist)
 	msr.lo |= 0x7 << 20;
 	wrmsr(MDD_LEG_IO, msr);
 
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

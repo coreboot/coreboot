@@ -133,7 +133,6 @@ void main(unsigned long bist)
 	 */
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE); // Does not use its 1st parameter
 	mb_gpio_init();
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -156,5 +155,4 @@ void main(unsigned long bist)
 	sdram_initialize(1, memctrl);
 
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
-	return;
 }

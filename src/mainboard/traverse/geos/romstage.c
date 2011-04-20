@@ -70,7 +70,6 @@ void main(unsigned long bist)
 	 */
 	/* If debug. real setup done in chipset init via devicetree.cb. */
 	cs5536_setup_onchipuart(1);
-	uart_init();
 	console_init();
 
 	/* Halt if there was a built in self test failure */

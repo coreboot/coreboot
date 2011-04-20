@@ -387,9 +387,7 @@ void main(unsigned long bist)
 	/* EmbedComInit(); */
 	w83697hf_set_clksel_48(DUMMY_DEV);
 	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
 	/* enable_vx800_serial(); */
-	/* uart_init(); */
 
 	/*
 	 * 1. D15F0

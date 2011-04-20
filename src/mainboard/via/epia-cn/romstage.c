@@ -86,7 +86,6 @@ void main(unsigned long bist)
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
 	enable_vt8235_serial();
-	uart_init();
 	console_init();
 	enable_smbus();
 	smbus_fixup(&ctrl);

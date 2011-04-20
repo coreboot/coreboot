@@ -85,7 +85,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        uart_init();
         console_init();
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);

@@ -237,7 +237,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	it8712f_24mhz_clkin();
 	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
-	uart_init();
 	console_init();
 	enable_rom_decode();
 	m2v_bus_init();

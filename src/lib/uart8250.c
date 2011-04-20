@@ -25,7 +25,6 @@
 #include "option_table.h"
 #endif
 
-
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
 static inline int uart8250_can_tx_byte(unsigned base_port)

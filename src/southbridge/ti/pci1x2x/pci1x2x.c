@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <arch/io.h>
 #include "chip.h"
 
 static void ti_pci1x2y_init(struct device *dev)
@@ -38,16 +39,6 @@ static void ti_pci1x2y_init(struct device *dev)
 		pci_write_config8(dev, 0x1B, conf->cltr);
 		/* Bridge control (offset 0x3E) */
 		pci_write_config16(dev, 0x3E, conf->bcr);
-	}
-	/*
-	 * Enable change sub-vendor ID. Clear the bit 5 to enable to write
-	 * to the sub-vendor/device ids at 40 and 42.
-	 */
-	pci_write_config32(dev, 0x80, 0x10);
-	pci_write_config32(dev, 0x40, PCI_VENDOR_ID_NOKIA);
-
-	if (conf) {
-		/* Now write the correct value for SCR. */
 		/* System control (offset 0x80) */
 		pci_write_config32(dev, 0x80, conf->scr);
 		/* Multifunction routing */
@@ -57,12 +48,29 @@ static void ti_pci1x2y_init(struct device *dev)
 	pci_write_config8(dev, 0x92, pci_read_config8(dev, 0x92) | 0x02);
 }
 
+static void ti_pci1x2y_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	/*
+	 * Enable change sub-vendor ID. Clear the bit 5 to enable to write
+	 * to the sub-vendor/device ids at 40 and 42.
+	 */
+	pci_write_config32(dev, 0x80, pci_read_config32(dev, 0x080) & ~0x10);
+	pci_write_config16(dev, 0x40, vendor);
+	pci_write_config16(dev, 0x42, device);
+	pci_write_config32(dev, 0x80, pci_read_config32(dev, 0x80) | 0x10);
+}
+
+static struct pci_operations ti_pci1x2y_pci_ops = {
+	.set_subsystem = ti_pci1x2y_set_subsystem,
+};
+
 struct device_operations southbridge_ti_pci1x2x_pciops = {
 	.read_resources   = NULL, //pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = ti_pci1x2y_init,
 	.scan_bus         = 0,
+	.ops_pci          = &ti_pci1x2y_pci_ops,
 };
 
 static const struct pci_driver ti_pci1225_driver __pci_driver = {

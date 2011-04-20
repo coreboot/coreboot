@@ -86,23 +86,6 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 	outb(CONFIG_TTYS0_LCS, base_port + UART_LCR);
 }
 
-#ifndef __ROMCC__
-/* Initialize a generic uart */
-void init_uart8250(unsigned base_port, struct uart8250 *uart)
-{
-	int divisor = uart->baud ? (115200/uart->baud) : 1;
-
-	if (base_port == CONFIG_TTYS0_BASE) {
-		/* Don't reinitialize the console serial port,
-		 * This is espeically nasty in SMP.
-		 * NOTE: The first invocation thus always needs to be 
-		 */
-		return;
-	}
-	uart8250_init(base_port, divisor);
-}
-#endif
-
 #if defined(__PRE_RAM__) || defined(__SMM__)
 void uart_init(void)
 {

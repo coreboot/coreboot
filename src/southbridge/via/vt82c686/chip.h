@@ -28,7 +28,6 @@
 extern struct chip_operations superio_via_vt82c686_ops;
 
 struct superio_via_vt82c686_config {
-	struct uart8250 com1, com2;
 	struct pc_keyboard keyboard;
 };
 

@@ -131,11 +131,6 @@
 
 
 #ifndef __ROMCC__
-// Can't we just drop this? It seems silly.
-struct uart8250 {
-	unsigned int baud;
-};
-
 unsigned char uart8250_rx_byte(unsigned base_port);
 int uart8250_can_rx_byte(unsigned base_port);
 void uart8250_tx_byte(unsigned base_port, unsigned char data);
@@ -144,7 +139,6 @@ void uart8250_tx_byte(unsigned base_port, unsigned char data);
  * have three different sets of uart code, so it's an improvement.
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
-void init_uart8250(unsigned base_port, struct uart8250 *uart);
 void uart_init(void);
 #endif
 

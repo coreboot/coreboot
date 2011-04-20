@@ -11,9 +11,14 @@ config BOARD_LENOVO_X60
 
 	    ThinkPad X60s (Model 1703)
 
+config BOARD_LENOVO_T60
+	bool "ThinkPad T60 / T60p"
+	help
+
 endchoice
 
 source "src/mainboard/lenovo/x60/Kconfig"
+source "src/mainboard/lenovo/t60/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

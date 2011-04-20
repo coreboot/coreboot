@@ -1,0 +1,194 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/i945
+
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_mFCPGA478
+			device lapic 0 on end
+		end
+	end
+
+	device pci_domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x17aa 0x2015
+		end
+		device pci 01.0 on # PCI-e
+			device pci 00.0 on # VGA
+				subsystemid 0x17aa 0x20a4
+			end
+		end
+
+		device pci 02.0 on # GMA Graphics controller
+			subsystemid 0x17aa 0x201a
+		end
+		device pci 02.1 on # display controller
+			subsystemid 0x17aa 0x201a
+		end
+
+		chip southbridge/intel/i82801gx
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi13_routing" = "2"
+			register "gpi12_routing" = "2"
+			register "gpi8_routing" = "2"
+
+			register "sata_ahci" = "0x0"
+
+			register "gpe0_en" = "0x11000006"
+
+			device pci 1b.0 on # Audio Cnotroller
+				subsystemid 0x17aa 0x2010
+			end
+			device pci 1c.0 on # Ethernet
+				subsystemid 0x17aa 0x2001
+			end
+			device pci 1c.1 on end # WLAN
+			device pci 1d.0 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.1 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.2 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.3 on # USB UHCI
+				subsystemid 0x17aa 0x200a
+			end
+			device pci 1d.7 on # USB2 EHCI
+				subsystemid 0x17aa 0x200b
+			end
+			device pci 1e.0 on # PCI Bridge
+				chip southbridge/ti/pci1x2x
+					device pci 00.0 on
+						subsystemid 0x17aa 0x2012
+					end
+					register "scr" = "0x0844d070"
+					register "mrr" = "0x01d01002"
+
+				end
+			end
+			device pci 1f.0 on # PCI-LPC bridge
+				subsystemid 0x17aa 0x2009
+				chip ec/lenovo/pmh7
+					device pnp ff.1 on # dummy
+					end
+
+					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
+				end
+				chip ec/lenovo/h8
+					device pnp ff.2 on # dummy
+						io 0x60 = 0x62
+						io 0x62 = 0x66
+						io 0x64 = 0x1600
+						io 0x66 = 0x1604
+					end
+
+
+					register "config0" = "0xa6"
+					register "config1" = "0x05"
+					register "config2" = "0xa0"
+					register "config3" = "0x05"
+
+					register "beepmask0" = "0xfe"
+					register "beepmask1" = "0x96"
+
+					register "event2_enable" = "0xff"
+					register "event3_enable" = "0xff"
+					register "event4_enable" = "0xf4"
+					register "event5_enable" = "0x3c"
+					register "event6_enable" = "0x80"
+
+					register "wlan_enable" = "0x01"
+					register "trackpoint_enable" = "0x03"
+
+				end
+				chip superio/nsc/pc87382
+					device pnp 164e.2 on # IR
+						io 0x60 = 0x2f8
+					end
+
+					device pnp 164e.3 off # Serial Port
+						io 0x60 = 0x3f8
+					end
+
+					device pnp 164e.7 on # GPIO
+						io 0x60 = 0x1680
+					end
+
+					device pnp 164e.19 on # DLPC
+						io 0x60 = 0x164c
+					end
+				end
+
+				chip superio/nsc/pc87384
+					device pnp 2e.0 off #FDC
+					end
+
+					device pnp 2e.1 on # Parallel Port
+						io 0x60 = 0x3bc
+						irq 0x70 = 7
+					end
+
+					device pnp 2e.2 off # Serial Port / IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.3 on # Serial Port
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x1620
+					end
+
+					device pnp 2e.a off # WDT
+					end
+				end
+			end
+			device pci 1f.1 off # IDE
+				subsystemid 0x17aa 0x200c
+			end
+			device pci 1f.2 on # SATA
+				subsystemid 0x17aa 0x200d
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x17aa 0x200f
+			end
+		end
+	end
+end

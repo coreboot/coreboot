@@ -7,7 +7,7 @@ ramstage-y += pci_ops_auto.c
 ramstage-y += exception.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
 
-romstage-y += printk_init.c
+romstage-y += romstage_console.c
 romstage-y += cbfs_and_run.c
 
 $(obj)/arch/x86/lib/console.ramstage.o :: $(obj)/build.h

@@ -30,25 +30,11 @@
 #include "chip.h"
 #include "pc87384.h"
 
-static void init(device_t dev)
-{
-	struct superio_nsc_pc87384_config *conf = dev->chip_info;
-
-	if (!dev->enabled)
-		return;
-
-	switch(dev->path.pnp.device) {
-	case PC87384_GPIO:
-		break;
-	}
-}
-
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_enable,
-	.init             = init,
 };
 
 static struct pnp_info pnp_dev_info[] = {

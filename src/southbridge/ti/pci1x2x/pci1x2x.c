@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/cardbus.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include "chip.h"
@@ -65,9 +66,9 @@ static struct pci_operations ti_pci1x2y_pci_ops = {
 };
 
 struct device_operations southbridge_ti_pci1x2x_pciops = {
-	.read_resources   = NULL, //pci_dev_read_resources,
+	.read_resources   = cardbus_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.enable_resources = cardbus_enable_resources,
 	.init             = ti_pci1x2y_init,
 	.scan_bus         = 0,
 	.ops_pci          = &ti_pci1x2y_pci_ops,

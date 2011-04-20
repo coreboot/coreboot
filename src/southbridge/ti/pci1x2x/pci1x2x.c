@@ -77,6 +77,12 @@ static const struct pci_driver ti_pci1420_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_TI_1420,
 };
 
+static const struct pci_driver ti_pci1510_driver __pci_driver = {
+	.ops    = &southbridge_ti_pci1x2x_pciops,
+	.vendor = PCI_VENDOR_ID_TI,
+	.device = PCI_DEVICE_ID_TI_1510,
+};
+
 static const struct pci_driver ti_pci1520_driver __pci_driver = {
 	.ops    = &southbridge_ti_pci1x2x_pciops,
 	.vendor = PCI_VENDOR_ID_TI,

@@ -28,6 +28,17 @@ chip northbridge/intel/i440bx		# Northbridge
     device pci 0.0 on end		# Host bridge
     device pci 1.0 on end		# PCI/AGP bridge
     chip southbridge/intel/i82371eb	# Southbridge
+      device pci f.0 on
+        chip southbridge/ti/pci1x2x
+	     device pci 00.0 on
+
+	     end
+	     register "cltr" = "0x40"
+	     register "bcr" = "0x7c0"
+	     register "scr" = "0x08449060"
+	     register "mrr" = "0x00007522"
+	end
+      end
       device pci 7.0 on			# ISA bridge
         chip superio/smsc/smscsuperio	# Super I/O (SMSC FDC37B787)
           device pnp 3f0.0 off end	# Floppy (No connector)

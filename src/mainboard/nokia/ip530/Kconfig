@@ -45,29 +45,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 22
 
-## Configuration for the PCMCIA-Cardbus controller.
-config TI_PCMCIA_CARDBUS_CMDR
-	hex
-	default 0x0107
-
-config TI_PCMCIA_CARDBUS_CLSR
-	hex
-	default 0x00
-
-config TI_PCMCIA_CARDBUS_CLTR
-	hex
-	default 0x40
-
-config TI_PCMCIA_CARDBUS_BCR
-	hex
-	default 0x07C0
-
-config TI_PCMCIA_CARDBUS_SCR
-	hex
-	default 0x08449060
-
-config TI_PCMCIA_CARDBUS_MRR
-	hex
-	default 0x00007522
-
 endif # BOARD_NOKIA_IP530

@@ -6,8 +6,5 @@ extern struct chip_operations southbridge_ti_pci1x2x_ops;
 struct southbridge_ti_pci1x2x_config {
 	int scr;
 	int mrr;
-	int clsr;
-	int cltr;
-	int bcr;
 };
 #endif

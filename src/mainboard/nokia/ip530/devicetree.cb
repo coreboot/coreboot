@@ -33,8 +33,6 @@ chip northbridge/intel/i440bx		# Northbridge
 	     device pci 00.0 on
 			subsystemid 0x13b8 0x0000
 	     end
-	     register "cltr" = "0x40"
-	     register "bcr" = "0x7c0"
 	     register "scr" = "0x08449060"
 	     register "mrr" = "0x00007522"
 	end

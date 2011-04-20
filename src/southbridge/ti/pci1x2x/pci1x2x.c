@@ -34,12 +34,6 @@ static void ti_pci1x2y_init(struct device *dev)
 	struct southbridge_ti_pci1x2x_config *conf = dev->chip_info;
 
 	if (conf) {
-		/* Cache Line Size (offset 0x0C) */
-		pci_write_config8(dev, 0x0C, conf->clsr);
-		/* CardBus latency timer (offset 0x1B) */
-		pci_write_config8(dev, 0x1B, conf->cltr);
-		/* Bridge control (offset 0x3E) */
-		pci_write_config16(dev, 0x3E, conf->bcr);
 		/* System control (offset 0x80) */
 		pci_write_config32(dev, 0x80, conf->scr);
 		/* Multifunction routing */

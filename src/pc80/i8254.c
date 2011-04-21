@@ -35,7 +35,7 @@ void setup_i8254(void)
 	outb(0x12, TIMER1_PORT);
 }
 
-#ifdef CONFIG_UDELAY_TIMER2
+#if CONFIG_UDELAY_TIMER2
 static void load_timer2(unsigned int ticks)
 {
         /* Set up the timer gate, turn off the speaker */

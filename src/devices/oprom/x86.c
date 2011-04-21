@@ -296,7 +296,7 @@ void run_bios(struct device *dev, unsigned long addr)
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 }
 
-#if defined(CONFIG_GEODE_VSA) && CONFIG_GEODE_VSA
+#if CONFIG_GEODE_VSA
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/vr.h>
 #include <cbfs.h>

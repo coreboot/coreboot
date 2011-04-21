@@ -49,7 +49,7 @@
 
 #define SMBUS_DELAY()		outb(0x80, 0x80)
 
-#ifdef CONFIG_DEBUG_SMBUS
+#if CONFIG_DEBUG_SMBUS
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #else

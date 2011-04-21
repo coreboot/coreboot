@@ -1111,7 +1111,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	if (read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) == 0)
 		return 0;
 #else
-#if !defined(CONFIG_INTERLEAVE_CHIP_SELECTS) || (CONFIG_INTERLEAVE_CHIP_SELECTS == 0)
+#if !CONFIG_INTERLEAVE_CHIP_SELECTS
 	return 0;
 #endif
 #endif
@@ -2379,7 +2379,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 		dcl &= ~DCL_DimmEccEn;
 	}
 #else // CMOS_VSTART_ECC_memory not defined
-#if defined(CONFIG_ECC_MEMORY) && (CONFIG_ECC_MEMORY == 0)
+#if !CONFIG_ECC_MEMORY
 	dcl &= ~DCL_DimmEccEn;
 #endif
 #endif

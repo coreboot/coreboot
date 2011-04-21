@@ -66,7 +66,7 @@ static inline void set_ci(void) {};
 // set to enable tracing of JMPs in x86emu
 #define DEBUG_JMP 0x2000
 
-#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
+#if CONFIG_X86EMU_DEBUG
 
 #define CHECK_DBG(_flag) if (debug_flags & _flag)
 

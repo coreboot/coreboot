@@ -109,7 +109,7 @@ clear_mtrrs:
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+#if CONFIG_TINY_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
@@ -135,7 +135,7 @@ clear_mtrrs:
 	movl	%eax, %cr0
 
 	/* Set up the stack pointer. */
-#if defined(CONFIG_USBDEBUG) && (CONFIG_USBDEBUG == 1)
+#if CONFIG_USBDEBUG
 	/* Leave some space for the struct ehci_debug_info. */
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
 #else

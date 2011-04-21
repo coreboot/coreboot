@@ -91,7 +91,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 
 // XXX this decision should probably be made elsewhere, and
 // it's the C3, not the EPIA this depends on.
-#if defined(CONFIG_EPIA_VT8237R_INIT) && CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 #define IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 #else
 #define IOAPIC_INTERRUPTS_ON_FSB

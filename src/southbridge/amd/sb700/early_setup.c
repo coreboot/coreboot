@@ -149,7 +149,7 @@ static void sb7xx_51xx_lpc_init(void)
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
-#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_SOUTHBRIDGE_AMD_SP5100
 	post_code(0x66);
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
 	reg8 = pci_read_config8(dev, 0xBB);
@@ -163,7 +163,7 @@ static void sb7xx_51xx_lpc_init(void)
 	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
-#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_SOUTHBRIDGE_AMD_SP5100
 #if CONFIG_TTYS0_BASE == 0x2f8
 	reg8 |= 1 << 7;
 #endif
@@ -369,7 +369,7 @@ static void sb700_devices_por_init(void)
 {
 	device_t dev;
 	u8 byte;
-#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_SOUTHBRIDGE_AMD_SP5100
 	u32 dword;
 #endif
 
@@ -505,7 +505,7 @@ static void sb700_devices_por_init(void)
 	/* Enable PCIB_DUAL_EN_UP will fix potential problem with PCI cards. */
 	pci_write_config8(dev, 0x50, 0x01);
 
-#ifdef CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_SOUTHBRIDGE_AMD_SP5100
 	/* SP5100 default SATA mode is RAID5 MODE */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4393), 0);
 	/* Set SATA Operation Mode, Set to IDE mode */

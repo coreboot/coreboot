@@ -62,7 +62,7 @@ typedef struct {
 typedef struct {
 	u8 bus;
 	u8 devfn;
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	struct device* dev;
 #else
 	u64 puid;
@@ -84,7 +84,7 @@ typedef struct {
 } biosemu_device_t;
 
 typedef struct {
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	unsigned long info;
 #else
 	u8 info;

@@ -1,7 +1,7 @@
 #include <console/console.h>
 #include <string.h>
 
-#if defined(CONFIG_GDB_STUB) && CONFIG_GDB_STUB == 1
+#if CONFIG_GDB_STUB
 
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers.
  * At least NUM_REGBYTES*2 are needed for register packets

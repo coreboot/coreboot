@@ -114,7 +114,7 @@ static int printf_putstr(const char *str, struct printf_spec *ps)
 	size_t count;
 
 	if (str == NULL) {
-		char *nullstr = "(NULL)";
+		const char *nullstr = "(NULL)";
 		return printf_putnchars(nullstr, strlen(nullstr), ps);
 	}
 

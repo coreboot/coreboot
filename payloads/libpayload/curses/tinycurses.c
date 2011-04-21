@@ -971,7 +971,7 @@ int wsetscrreg(WINDOW *win, int top, int bottom)
 }
 // void wsyncdown (WINDOW *) {}
 // void wsyncup (WINDOW *) {}
-/* D */ void wtimeout(WINDOW *win, int delay) { win->_delay = delay; }
+/* D */ void wtimeout(WINDOW *win, int _delay) { win->_delay = _delay; }
 /* D */ int wtouchln(WINDOW *win, int y, int n, int changed)
 {
 	int i;

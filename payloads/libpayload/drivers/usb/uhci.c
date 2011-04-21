@@ -65,7 +65,7 @@ static void
 td_dump (td_t *td)
 {
 	char td_value[3];
-	char *td_type;
+	const char *td_type;
 	switch (td->pid) {
 		case UHCI_SETUP:
 			td_type="SETUP";

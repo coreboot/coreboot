@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+#include <strings.h>
+
 int ffs(int i)
 {
 	int count = 1;

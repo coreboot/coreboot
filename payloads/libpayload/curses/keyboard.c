@@ -71,7 +71,7 @@ static int getkeyseq(char *buffer, int len, int max)
 }
 
 static struct {
-	char *seq;
+	const char *seq;
 	int key;
 } escape_codes[] = {
 	{ "[A", KEY_UP },
@@ -109,7 +109,7 @@ static int handle_escape(void)
 		return 27;
 
 	for(i = 0; escape_codes[i].seq != NULL; i++) {
-		char *p = escape_codes[i].seq;
+		const char *p = escape_codes[i].seq;
 
 		for(t = 0; t < len; t++) {
 			if (!*p || *p != buffer[t])
@@ -144,7 +144,7 @@ static int cook_serial(unsigned char ch)
 
 /* ================ Keyboard ================ */
 
-static int curses_getchar(int delay)
+static int curses_getchar(int _delay)
 {
 #if defined(CONFIG_USB_HID) || defined(CONFIG_PC_KEYBOARD) || defined(CONFIG_SERIAL_CONSOLE)
 	unsigned short c;
@@ -175,12 +175,12 @@ static int curses_getchar(int delay)
 		}
 #endif
 
-		if (delay == 0)
+		if (_delay == 0)
 			break;
 
-		if (delay > 0) {
+		if (_delay > 0) {
 			mdelay(1);
-			delay--;
+			_delay--;
 		}
 
 
@@ -193,14 +193,14 @@ static int curses_getchar(int delay)
 
 int wgetch(WINDOW *win)
 {
-	int delay = -1;
+	int _delay = -1;
 
 	if (_halfdelay)
-		delay = _halfdelay;
+		_delay = _halfdelay;
 	else
-		delay = win->_delay;
+		_delay = win->_delay;
 
-	return curses_getchar(delay);
+	return curses_getchar(_delay);
 }
 
 int nodelay(WINDOW *win, NCURSES_BOOL flag)

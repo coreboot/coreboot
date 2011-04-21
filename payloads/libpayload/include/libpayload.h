@@ -272,6 +272,7 @@ typedef struct {
 void SHA1Init(SHA1_CTX *context);
 void SHA1Transform(u32 state[5], const u8 buffer[SHA1_BLOCK_LENGTH]);
 void SHA1Update(SHA1_CTX *context, const u8 *data, size_t len);
+void SHA1Pad(SHA1_CTX *context);
 void SHA1Final(u8 digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context);
 u8 *sha1(const u8 *data, size_t len, u8 *buf);
 /** @} */

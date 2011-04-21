@@ -73,6 +73,10 @@ config TARGET_POWERPC
 
 endchoice
 
+config MEMMAP_RAM_ONLY
+	bool "Only consider RAM entries in memory map for further processing"
+	default n
+
 config MULTIBOOT
 	bool "Multiboot header support"
 	depends on TARGET_I386

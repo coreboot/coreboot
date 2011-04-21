@@ -41,6 +41,7 @@ char *main_argv[MAX_ARGC_COUNT];
  * This is our C entry function - set up the system
  * and jump into the payload entry point.
  */
+void start_main(void);
 void start_main(void)
 {
 	extern int main(int argc, char **argv);

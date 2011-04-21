@@ -195,7 +195,7 @@ int serial_getchar(void)
 /* A vt100 doesn't do color, setaf/setab below are from xterm-color. */
 #define VT100_SET_COLOR   "\e[3%d;4%dm"
 
-static void serial_putcmd(char *str)
+static void serial_putcmd(const char *str)
 {
 	while(*str)
 		serial_putchar(*(str++));

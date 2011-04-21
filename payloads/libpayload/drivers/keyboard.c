@@ -37,8 +37,8 @@
 #define I8042_MODE_XLATE     0x40
 
 struct layout_maps {
-	char *country;
-	unsigned short map[4][0x57];
+	const char *country;
+	const unsigned short map[4][0x57];
 };
 
 static struct layout_maps *map;
@@ -261,22 +261,22 @@ int keyboard_getchar(void)
 
 static int keyboard_wait_read(void)
 {
-	int timeout = 10000;
+	int retries = 10000;
 
-	while(timeout-- && !(inb(0x64) & 0x01))
+	while(retries-- && !(inb(0x64) & 0x01))
 		udelay(50);
 
-	return (timeout <= 0) ? -1 : 0;
+	return (retries <= 0) ? -1 : 0;
 }
 
 static int keyboard_wait_write(void)
 {
-	int timeout = 10000;
+	int retries = 10000;
 
-	while(timeout-- && (inb(0x64) & 0x02))
+	while(retries-- && (inb(0x64) & 0x02))
 		udelay(50);
 
-	return (timeout <= 0) ? -1 : 0;
+	return (retries <= 0) ? -1 : 0;
 }
 
 static unsigned char keyboard_get_mode(void)

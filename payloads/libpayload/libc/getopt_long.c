@@ -57,10 +57,8 @@
 #include <libpayload.h>
 #include <getopt.h>
 #define warnx(x...) printf(x)
-/*
 #include <stdlib.h>
 #include <string.h>
-*/
 #define	REPLACE_GETOPT		/* use this getopt as the system getopt(3) */
 
 #ifdef REPLACE_GETOPT
@@ -84,7 +82,7 @@ int posixly_correct = 0;
 #define	BADARG		((*options == ':') ? (int)':' : (int)'?')
 #define	INORDER 	(int)1
 
-#define	EMSG		""
+#define	EMSG		(char*)""
 
 static int getopt_internal(int, char * const *, const char *,
 			   const struct option *, int *, int);

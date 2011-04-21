@@ -62,7 +62,7 @@ static int keycount;
 #define KEYBOARD_BUFFER_SIZE 16
 static short keybuffer[KEYBOARD_BUFFER_SIZE];
 
-char *countries[36][2] = {
+const char *countries[36][2] = {
 	{ "not supported", "us" },
 	{ "Arabic", "ae" },
 	{ "Belgian", "be" },
@@ -105,13 +105,13 @@ char *countries[36][2] = {
 
 
 struct layout_maps {
-	char *country;
-	short map[4][0x80];
+	const char *country;
+	const short map[4][0x80];
 };
 
-static struct layout_maps *map;
+static const struct layout_maps *map;
 
-static struct layout_maps keyboard_layouts[] = {
+static const struct layout_maps keyboard_layouts[] = {
 // #ifdef CONFIG_PC_KEYBOARD_LAYOUT_US
 { .country = "us", .map = {
 	{ /* No modifier */
@@ -378,7 +378,7 @@ static struct console_input_driver cons = {
 };
 
 
-int usb_hid_set_layout (char *country)
+static int usb_hid_set_layout (const char *country)
 {
 	/* FIXME should be per keyboard */
 	int i;

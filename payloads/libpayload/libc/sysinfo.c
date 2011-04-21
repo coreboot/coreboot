@@ -30,8 +30,6 @@
 #include <libpayload.h>
 #include <sysinfo.h>
 
-extern struct sysinfo_t lib_sysinfo;
-
 int sysinfo_have_multiboot(unsigned long *addr)
 {
 	*addr = (unsigned long) lib_sysinfo.mbtable;

@@ -57,7 +57,7 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 		struct cb_memory_range *range =
 		    (struct cb_memory_range *)MEM_RANGE_PTR(mem, i);
 
-#if MEMMAP_RAM_ONLY
+#ifdef CONFIG_MEMMAP_RAM_ONLY
 		if (range->type != CB_MEM_RAM)
 			continue;
 #endif

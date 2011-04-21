@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+#include <unistd.h>
 
 unsigned long virtual_offset = 0;
 

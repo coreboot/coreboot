@@ -51,4 +51,14 @@ config DRIVERS_PS2_KEYBOARD
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
 
+# This was a config option for a long time, but it never showed up in Kconfig.
+# It should go away and "tuning" should always be enabled when PCIe is there,
+# or it should be more fine grained (ie. Enable PCIe ASPM)
+config PCIE_TUNING
+	bool
+	default n
+	help
+	  This variable enables certain PCIe optimizations. Right now it's
+	  only ASPM and it's untested.
+
 endmenu

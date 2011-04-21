@@ -19,13 +19,13 @@
 #include <x86emu/x86emu.h>
 #include "io.h"
 
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/resource.h>
 #endif
 
-#ifdef CONFIG_ARCH_X86
+#if CONFIG_ARCH_X86
 #include <arch/io.h>
 #else
 // these are not used, only needed for linking,  must be overridden using X86emu_setupPioFuncs
@@ -76,7 +76,7 @@ inl(u16 port)
 }
 #endif
 
-#if defined(CONFIG_YABEL_DIRECTHW) && (CONFIG_YABEL_DIRECTHW == 1)
+#if CONFIG_YABEL_DIRECTHW
 u8 my_inb(X86EMU_pioAddr addr)
 {
 	u8 val;
@@ -455,7 +455,7 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 			offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
 			DEBUG_PRINTF_INTR("%s(): PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
 				__func__, bus, devfn, offs);
-#if defined(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES) && CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES==1
+#if CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES
 			dev = dev_find_slot(bus, devfn);
 			DEBUG_PRINTF_INTR("%s(): dev_find_slot() returned: %s\n",
 				__func__, dev_path(dev));
@@ -475,7 +475,7 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 				HALT_SYS();
 				return 0;
 			} else {
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 				switch (size) {
 					case 1:
 						rval = pci_read_config8(dev, offs);
@@ -526,7 +526,7 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 				     bus, devfn >> 3, devfn & 7, offs);
 				HALT_SYS();
 			} else {
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 				switch (size) {
 					case 1:
 						pci_write_config8(bios_device.dev, offs, val);

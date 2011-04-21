@@ -1,7 +1,6 @@
 #ifndef CPU_X86_MTRR_H
 #define CPU_X86_MTRR_H
 
-
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE 0
 #define MTRR_TYPE_WRCOMB     1
@@ -64,10 +63,9 @@ void x86_setup_fixed_mtrrs(void);
 # error "CONFIG_XIP_ROM_BASE is not a multiple of CONFIG_XIP_ROM_SIZE"
 #endif
 
-#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
+#if (CONFIG_RAMTOP & (CONFIG_RAMTOP - 1)) != 0
 # error "CONFIG_RAMTOP must be a power of 2"
 #endif
-
 
 #if !defined (__ASSEMBLER__)
 #if defined(CONFIG_XIP_ROM_SIZE)

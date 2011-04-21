@@ -20,14 +20,14 @@
 #include <types.h>
 #include <device/device.h>
 #include <console/console.h>
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include "chip.h"
 
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 static int int15_handler(void)
 {
 #define BOOT_DISPLAY_DEFAULT	0
@@ -221,7 +221,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	/* Install custom int15 handler for VGA OPROM */
 	int15_install();
 #endif

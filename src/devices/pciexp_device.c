@@ -27,7 +27,7 @@
 static void pciexp_tune_dev(device_t dev)
 {
 	unsigned int cap;
-#ifdef CONFIG_PCIE_TUNING
+#if CONFIG_PCIE_TUNING
 	u32 reg32;
 #endif
 
@@ -35,7 +35,7 @@ static void pciexp_tune_dev(device_t dev)
 	if (!cap)
 		return;
 
-#ifdef CONFIG_PCIE_TUNING
+#if CONFIG_PCIE_TUNING
 	printk(BIOS_DEBUG, "PCIe: tuning %s\n", dev_path(dev));
 
 	// TODO make this depending on ASPM.

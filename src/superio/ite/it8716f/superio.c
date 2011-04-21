@@ -46,7 +46,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	pnp_write_config(dev, 0x02, 0x02);
 }
 
-#if !defined(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) || !CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+#if !CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 static void pnp_write_index(u16 port_base, u8 reg, u8 value)
 {
 	outb(reg, port_base);

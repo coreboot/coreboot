@@ -36,7 +36,7 @@
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */
 
-#if defined(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) && CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+#if CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 /* Provided by mainboard, called by IT8716F superio.c. */
 void init_ec(u16 base);
 #endif

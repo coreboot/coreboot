@@ -69,15 +69,15 @@ u8 k8t890_early_setup_ht(void)
 		ldtnr = 2;
 	}
 
-#if defined(CONFIG_SOUTHBRIDGE_VIA_K8M800)
+#if CONFIG_SOUTHBRIDGE_VIA_K8M800
 	print_debug("K8M800 found at LDT ");
-#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T800)
+#elif CONFIG_SOUTHBRIDGE_VIA_K8T800
 	print_debug("K8T800 found at LDT ");
-#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T800PRO)
+#elif CONFIG_SOUTHBRIDGE_VIA_K8T800PRO
 	print_debug("K8T800 Pro found at LDT ");
-#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8M890)
+#elif CONFIG_SOUTHBRIDGE_VIA_K8M890
 	print_debug("K8M890 found at LDT ");
-#elif defined(CONFIG_SOUTHBRIDGE_VIA_K8T890)
+#elif CONFIG_SOUTHBRIDGE_VIA_K8T890
 	print_debug("K8T890 found at LDT ");
 #endif
 	print_debug_hex8(ldtnr);

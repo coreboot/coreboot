@@ -25,7 +25,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cbfs.h>
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
 
@@ -62,7 +62,7 @@ static void vga_init(device_t dev)
 	printk(BIOS_INFO, "Graphics Initialization Complete\n");
 
 	/* Enable TV-Out */
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #define PIPE_A_CRT	(1 << 0)
 #define PIPE_A_LFP	(1 << 1)
 #define PIPE_A_TV	(1 << 3)

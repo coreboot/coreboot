@@ -145,7 +145,7 @@ static void lb_console(struct lb_header *header)
 
 static void lb_framebuffer(struct lb_header *header)
 {
-#if defined(CONFIG_BOOTSPLASH) && CONFIG_BOOTSPLASH && CONFIG_COREBOOT_KEEP_FRAMEBUFFER
+#if CONFIG_BOOTSPLASH && CONFIG_COREBOOT_KEEP_FRAMEBUFFER
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 
 	struct lb_framebuffer *framebuffer;

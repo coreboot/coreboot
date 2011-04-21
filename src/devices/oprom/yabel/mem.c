@@ -19,9 +19,9 @@
 #include "mem.h"
 #include "compat/time.h"
 
-#if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
+#if !CONFIG_YABEL_DIRECTHW || !CONFIG_YABEL_DIRECTHW
 
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/resource.h>
 #endif
 

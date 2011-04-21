@@ -28,12 +28,12 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-$(CONFIG_LIBC) += libc/malloc.o libc/printf.o libc/console.o libc/string.o
-TARGETS-$(CONFIG_LIBC) += libc/memory.o libc/ctype.o libc/ipchecksum.o libc/lib.o
-TARGETS-$(CONFIG_LIBC) += libc/rand.o libc/time.o libc/exec.o
-TARGETS-$(CONFIG_LIBC) += libc/readline.o libc/getopt_long.o libc/sysinfo.o
-TARGETS-$(CONFIG_LIBC) += libc/args.o libc/strings.o
+libc-$(CONFIG_LIBC) += malloc.c printf.c console.c string.c
+libc-$(CONFIG_LIBC) += memory.c ctype.c ipchecksum.c lib.c
+libc-$(CONFIG_LIBC) += rand.c time.c exec.c
+libc-$(CONFIG_LIBC) += readline.c getopt_long.c sysinfo.c
+libc-$(CONFIG_LIBC) += args.c strings.c
 
 # should be moved to coreboot directory
-TARGETS-$(CONFIG_LAR) += libc/lar.o
-#TARGETS-$(CONFIG_CBFS) += libc/cbfs.o
+libc-$(CONFIG_LAR) += lar.c
+#libc-$(CONFIG_CBFS) += cbfs.c

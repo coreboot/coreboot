@@ -27,4 +27,4 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += crypto/sha1.o
+libc-y += sha1.c

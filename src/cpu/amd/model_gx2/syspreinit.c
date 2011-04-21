@@ -13,7 +13,7 @@ static void StartTimer1(void)
 void SystemPreInit(void)
 {
 	/* they want a jump ... */
-#ifndef CONFIG_CACHE_AS_RAM
+#if !CONFIG_CACHE_AS_RAM
 	__asm__ __volatile__("jmp .+2\ninvd\njmp .+2\n");
 #endif
 	StartTimer1();

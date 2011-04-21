@@ -30,7 +30,7 @@
 #include <cbfs.h>
 #include <lib.h>
 
-#ifndef CONFIG_BIG_ENDIAN
+#if !CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
 		((x&0xff0000) >> 8) | ((x&0xff000000) >> 24) )
 #else
@@ -477,7 +477,7 @@ static int load_self_segments(
 						return 0;
 					break;
 				}
-#if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
+#if CONFIG_COMPRESSED_PAYLOAD_NRV2B
 				case CBFS_COMPRESS_NRV2B: {
 					printk(BIOS_DEBUG, "using NRV2B\n");
 					unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);

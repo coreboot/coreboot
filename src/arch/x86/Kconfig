@@ -91,4 +91,12 @@ config CMOS_DEFAULT_FILE
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 
+config BIG_ENDIAN
+	bool
+	default n
+
+config LITTLE_ENDIAN
+	bool
+	default !BIG_ENDIAN
+
 endmenu

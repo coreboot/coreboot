@@ -17,10 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CONFIG_NORTHBRIDGE_AMD_AMDFAM10
-#define CONFIG_NORTHBRIDGE_AMD_AMDFAM10 0
-#endif
-
 #include "rev.h"
 
 #define NBHTIU_INDEX		0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */

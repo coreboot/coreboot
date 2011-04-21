@@ -27,4 +27,4 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += libpci/libpci.o
+libpci-y += libpci.c

@@ -27,6 +27,8 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-$(CONFIG_TINYCURSES) += curses/keyboard.o
-TARGETS-$(CONFIG_TINYCURSES) += curses/tinycurses.o
-TARGETS-$(CONFIG_TINYCURSES) += curses/colors.o
+subdirs-y := libform libpanel libmenu
+
+libcurses-$(CONFIG_TINYCURSES) += keyboard.c
+libcurses-$(CONFIG_TINYCURSES) += tinycurses.c
+libcurses-$(CONFIG_TINYCURSES) += colors.c

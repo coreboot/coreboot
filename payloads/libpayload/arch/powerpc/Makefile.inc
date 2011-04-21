@@ -27,7 +27,8 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += arch/powerpc/head.S.o arch/powerpc/main.o arch/powerpc/sysinfo.o
-TARGETS-y += arch/powerpc/timer.o arch/powerpc/coreboot.o arch/powerpc/util.S.o
-TARGETS-y += arch/powerpc/exec.S.o arch/powerpc/virtual.o
+head.o-y := head.S
+libc-y += main.c sysinfo.c
+libc-y += timer.c coreboot.c util.S.c
+libc-y += exec.S virtual.c
 

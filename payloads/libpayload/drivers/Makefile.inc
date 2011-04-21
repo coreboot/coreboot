@@ -29,45 +29,45 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-$(CONFIG_PCI) += drivers/pci.o
+libc-$(CONFIG_PCI) += pci.c
 
-TARGETS-$(CONFIG_SPEAKER) += drivers/speaker.o
+libc-$(CONFIG_SPEAKER) += speaker.c
 
-TARGETS-$(CONFIG_SERIAL_CONSOLE) += drivers/serial.o
+libc-$(CONFIG_SERIAL_CONSOLE) += serial.c
 
-TARGETS-$(CONFIG_PC_KEYBOARD) += drivers/keyboard.o
+libc-$(CONFIG_PC_KEYBOARD) += keyboard.c
 
-TARGETS-$(CONFIG_NVRAM) += drivers/nvram.o
-TARGETS-$(CONFIG_NVRAM) += drivers/options.o
+libc-$(CONFIG_NVRAM) += nvram.c
+libc-$(CONFIG_NVRAM) += options.c
 
 # Video console drivers
-TARGETS-$(CONFIG_VIDEO_CONSOLE) += drivers/video/video.o
-TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o
+libc-$(CONFIG_VIDEO_CONSOLE) += video/video.c
+libc-$(CONFIG_VGA_VIDEO_CONSOLE) += video/vga.c
 
 # Geode LX console drivers
-TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/geodelx.o
-TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/font8x16.o
+libc-$(CONFIG_GEODELX_VIDEO_CONSOLE) += video/geodelx.c
+libc-$(CONFIG_GEODELX_VIDEO_CONSOLE) += video/font8x16.c
 
 # coreboot generic framebuffer driver
-TARGETS-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += drivers/video/corebootfb.o
-TARGETS-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += drivers/video/font8x16.o
+libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
+libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
 
 # USB stack
-TARGETS-$(CONFIG_USB) += drivers/usb/usbinit.o
-TARGETS-$(CONFIG_USB) += drivers/usb/usb.o
-TARGETS-$(CONFIG_USB) += drivers/usb/usb_dev.o
-TARGETS-$(CONFIG_USB) += drivers/usb/quirks.o
-TARGETS-$(CONFIG_USB_HUB) += drivers/usb/usbhub.o
-TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci.o
-TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci_rh.o
-TARGETS-$(CONFIG_USB_OHCI) += drivers/usb/ohci.o
-TARGETS-$(CONFIG_USB_OHCI) += drivers/usb/ohci_rh.o
-TARGETS-$(CONFIG_USB_EHCI) += drivers/usb/ehci.o
-TARGETS-$(CONFIG_USB_EHCI) += drivers/usb/ehci_rh.o
-TARGETS-$(CONFIG_USB_XHCI) += drivers/usb/xhci.o
-TARGETS-$(CONFIG_USB_XHCI) += drivers/usb/xhci_rh.o
-TARGETS-$(CONFIG_USB_HID) += drivers/usb/usbhid.o
-TARGETS-$(CONFIG_USB_MSC) += drivers/usb/usbmsc.o
+libc-$(CONFIG_USB) += usb/usbinit.c
+libc-$(CONFIG_USB) += usb/usb.c
+libc-$(CONFIG_USB) += usb/usb_dev.c
+libc-$(CONFIG_USB) += usb/quirks.c
+libc-$(CONFIG_USB_HUB) += usb/usbhub.c
+libc-$(CONFIG_USB_UHCI) += usb/uhci.c
+libc-$(CONFIG_USB_UHCI) += usb/uhci_rh.c
+libc-$(CONFIG_USB_OHCI) += usb/ohci.c
+libc-$(CONFIG_USB_OHCI) += usb/ohci_rh.c
+libc-$(CONFIG_USB_EHCI) += usb/ehci.c
+libc-$(CONFIG_USB_EHCI) += usb/ehci_rh.c
+libc-$(CONFIG_USB_XHCI) += usb/xhci.c
+libc-$(CONFIG_USB_XHCI) += usb/xhci_rh.c
+libc-$(CONFIG_USB_HID) += usb/usbhid.c
+libc-$(CONFIG_USB_MSC) += usb/usbmsc.c
 
 # used by both USB HID and keyboard
-TARGETS-y += drivers/hid.o
+libc-y += hid.c

@@ -639,12 +639,24 @@ static void southbridge_init_common(struct device *dev)
 	init_keyboard(dev);
 }
 
+
+static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config16(dev, 0x70, vendor);
+	pci_write_config16(dev, 0x72, device);
+}
+
+static struct pci_operations lops_pci = {
+	.set_subsystem = vt8237_set_subsystem,
+};
+
 static const struct device_operations vt8237r_lpc_ops_s = {
 	.read_resources		= vt8237r_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237s_init,
 	.scan_bus		= scan_static_bus,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations vt8237r_lpc_ops_r = {
@@ -653,6 +665,7 @@ static const struct device_operations vt8237r_lpc_ops_r = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237r_init,
 	.scan_bus		= scan_static_bus,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations vt8237r_lpc_ops_a = {
@@ -661,6 +674,7 @@ static const struct device_operations vt8237r_lpc_ops_a = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= vt8237a_init,
 	.scan_bus		= scan_static_bus,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver lpc_driver_r __pci_driver = {

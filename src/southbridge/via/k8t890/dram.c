@@ -153,12 +153,16 @@ static void dram_init_fb(struct device *dev)
 #endif
 }
 
+static struct pci_operations lops_pci = {
+	.set_subsystem = pci_dev_set_subsystem,
+};
+
 static const struct device_operations dram_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= dram_enable,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations dram_ops_m = {
@@ -167,7 +171,7 @@ static const struct device_operations dram_ops_m = {
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= dram_enable_k8m890,
 	.init			= dram_init_fb,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver northbridge_driver_t800 __pci_driver = {

@@ -158,13 +158,25 @@ static void vt8237_usb_ii_read_resources(struct device *dev)
 	return;
 }
 
+static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x42, pci_read_config32(dev, 0x42) | 0x10);
+	pci_write_config16(dev, 0x2c, vendor);
+	pci_write_config16(dev, 0x2e, device);
+	pci_write_config32(dev, 0x42, pci_read_config32(dev, 0x42) & ~0x10);
+}
+
+static struct pci_operations lops_pci = {
+	.set_subsystem = vt8237_set_subsystem,
+};
+
 static const struct device_operations usb_i_ops = {
 	.read_resources		= vt8237_usb_i_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init				= usb_i_init,
 	.enable				= 0,
-	.ops_pci			= 0,
+	.ops_pci			= &lops_pci,
 };
 
 static const struct device_operations usb_ii_ops = {
@@ -173,7 +185,7 @@ static const struct device_operations usb_ii_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init				= usb_ii_init,
 	.enable				= 0,
-	.ops_pci			= 0,
+	.ops_pci			= &lops_pci,
 };
 
 static const struct pci_driver vt8237r_driver_usbii __pci_driver = {

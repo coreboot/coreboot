@@ -230,7 +230,7 @@ static const struct {
 	{probe_idregs_nsc,	{0x2e, 0x4e, 0x15c, 0x164e, EOT}},
 	/* I/O pairs on Nuvoton EC chips can be configured by firmware in
 	 * addition to the following hardware strapping options. */
-	{probe_idregs_nuvoton, {0x164e, 0x2e, EOT}},
+	{probe_idregs_nuvoton, {0x164e, 0x2e, 0x4e, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 #ifdef PCI_SUPPORT

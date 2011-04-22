@@ -23,20 +23,7 @@
 
 static void ttyS0_init(void)
 {
-	static const unsigned char div[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
-	int b_index = 0;
-	/* TODO the divisor calculation is hard coded to standard UARTs. Some
-	 * UARTs won't work with these values. This should be a property of the
-	 * UART used, worst case a Kconfig variable. For now live with hard
-	 * codes as the only devices that might be different are the iWave
-	 * iRainbowG6 and the OXPCIe952 card (and the latter is memory mapped)
-	 */
-	unsigned int divisor = 115200 / CONFIG_TTYS0_BAUD;
-
-	if (get_option(&b_index, "baud_rate") == 0) {
-		divisor = div[b_index];
-	}
-	uart8250_init(CONFIG_TTYS0_BASE, divisor);
+	uart_init();
 }
 
 static void ttyS0_tx_byte(unsigned char data)

@@ -85,7 +85,6 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 	outb(CONFIG_TTYS0_LCS, base_port + UART_LCR);
 }
 
-#if defined(__PRE_RAM__) || defined(__SMM__)
 void uart_init(void)
 {
 	/* TODO the divisor calculation is hard coded to standard UARTs. Some
@@ -94,16 +93,21 @@ void uart_init(void)
 	 * codes as the only devices that might be different are the iWave
 	 * iRainbowG6 and the OXPCIe952 card (and the latter is memory mapped)
 	 */
-#if CONFIG_USE_OPTION_TABLE && !defined(__SMM__)
-        static const unsigned char divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96 };
-        unsigned ttys0_div, ttys0_index;
-        ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
-        ttys0_index &= 7;
-        ttys0_div = divisor[ttys0_index];
+	unsigned int div = (115200 / CONFIG_TTYS0_BAUD);
 
-	uart8250_init(CONFIG_TTYS0_BASE, ttys0_div);
+#if !defined(__SMM__) && CONFIG_USE_OPTION_TABLE
+	static const unsigned char divisor[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
+	unsigned b_index = 0;
+#if defined(__PRE_RAM__)
+	b_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
+	b_index &= 7;
+	div = divisor[ttys0_index];
 #else
-	uart8250_init(CONFIG_TTYS0_BASE, (115200 / CONFIG_TTYS0_BAUD));
+	if (get_option(&b_index, "baud_rate") == 0) {
+		div = divisor[b_index];
+	}
 #endif
+#endif
+
+	uart8250_init(CONFIG_TTYS0_BASE, div);
 }
-#endif

@@ -28,12 +28,8 @@
 #ifndef CONFIG_TTYS0_BAUD
 #define CONFIG_TTYS0_BAUD 115200
 #endif
-
-#ifndef CONFIG_TTYS0_DIV
 #if ((115200%CONFIG_TTYS0_BAUD) != 0)
 #error Bad ttys0 baud rate
-#endif
-#define CONFIG_TTYS0_DIV	(115200/CONFIG_TTYS0_BAUD)
 #endif
 
 /* Line Control Settings */

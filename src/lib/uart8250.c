@@ -88,6 +88,12 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 #if defined(__PRE_RAM__) || defined(__SMM__)
 void uart_init(void)
 {
+	/* TODO the divisor calculation is hard coded to standard UARTs. Some
+	 * UARTs won't work with these values. This should be a property of the
+	 * UART used, worst case a Kconfig variable. For now live with hard
+	 * codes as the only devices that might be different are the iWave
+	 * iRainbowG6 and the OXPCIe952 card (and the latter is memory mapped)
+	 */
 #if CONFIG_USE_OPTION_TABLE && !defined(__SMM__)
         static const unsigned char divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96 };
         unsigned ttys0_div, ttys0_index;
@@ -97,7 +103,7 @@ void uart_init(void)
 
 	uart8250_init(CONFIG_TTYS0_BASE, ttys0_div);
 #else
-	uart8250_init(CONFIG_TTYS0_BASE, CONFIG_TTYS0_DIV);
+	uart8250_init(CONFIG_TTYS0_BASE, (115200 / CONFIG_TTYS0_BAUD));
 #endif
 }
 #endif

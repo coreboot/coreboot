@@ -37,9 +37,7 @@ config IRQ_SLOT_COUNT
 	int
 	default 10
 
-# WTF, is this 19200?
-config TTYS0_DIV
-	int
-	default 6
+# This mainboard might have a higher clocked UART or might not be able to run
+# serial output at 115200 baud
 
 endif

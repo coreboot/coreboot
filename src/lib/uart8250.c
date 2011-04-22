@@ -101,7 +101,7 @@ void uart_init(void)
 #if defined(__PRE_RAM__)
 	b_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
 	b_index &= 7;
-	div = divisor[ttys0_index];
+	div = divisor[b_index];
 #else
 	if (get_option(&b_index, "baud_rate") == 0) {
 		div = divisor[b_index];

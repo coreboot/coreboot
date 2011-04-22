@@ -122,12 +122,16 @@ void set_cbmem_toc(struct cbmem_entry *toc) {
 		outl((u32) toc, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
 }
 
+static struct pci_operations lops_pci = {
+	.set_subsystem = pci_dev_set_subsystem,
+};
+
 static const struct device_operations host_ctrl_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= host_ctrl_enable_k8t8xx,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations host_ctrl_ops_m = {
@@ -135,7 +139,7 @@ static const struct device_operations host_ctrl_ops_m = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= host_ctrl_enable_k8m8xx,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver northbridge_driver_t800 __pci_driver = {

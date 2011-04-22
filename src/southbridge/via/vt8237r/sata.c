@@ -95,13 +95,24 @@ static void sata_ii_init(struct device *dev)
 	}
 }
 
+
+static void vt8237_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config16(dev, 0xd4, vendor);
+	pci_write_config16(dev, 0xd6, device);
+}
+
+static struct pci_operations lops_pci = {
+	.set_subsystem = vt8237_set_subsystem,
+};
+
 static const struct device_operations sata_i_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sata_i_init,
 	.enable			= 0,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations sata_ii_ops = {
@@ -110,7 +121,7 @@ static const struct device_operations sata_ii_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sata_ii_init,
 	.enable			= 0,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver northbridge_driver_ii __pci_driver = {

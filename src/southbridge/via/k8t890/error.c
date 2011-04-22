@@ -41,12 +41,16 @@ static void error_enable(struct device *dev)
 	dump_south(dev);
 }
 
+static struct pci_operations lops_pci = {
+	.set_subsystem = pci_dev_set_subsystem,
+};
+
 static const struct device_operations error_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= error_enable,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver northbridge_driver_t800 __pci_driver = {

@@ -95,12 +95,16 @@ static const struct device_operations host_ops_old = {
 	.ops_pci		= 0,
 };
 
+static struct pci_operations lops_pci = {
+	.set_subsystem = pci_dev_set_subsystem,
+};
+
 static const struct device_operations host_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= host_enable,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct device_operations host_ops_m = {
@@ -109,7 +113,7 @@ static const struct device_operations host_ops_m = {
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= host_enable,
 	.init			= host_init,
-	.ops_pci		= 0,
+	.ops_pci		= &lops_pci,
 };
 
 static const struct pci_driver northbridge_driver_t800_old __pci_driver = {

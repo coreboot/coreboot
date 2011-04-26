@@ -19,7 +19,7 @@
 
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
 #if CONFIG_USBDEBUG
@@ -34,6 +34,9 @@ static void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	uart8250_mem_tx_byte(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000, byte);
+#endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
 #endif

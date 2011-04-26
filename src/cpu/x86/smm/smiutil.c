@@ -26,7 +26,7 @@
 
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
 #if CONFIG_USBDEBUG
@@ -34,6 +34,10 @@
 #endif
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>
+#endif
+
+#if CONFIG_CONSOLE_SERIAL8250MEM
+static u32 serial8250mem_base_address = 0;
 #endif
 
 void console_tx_flush(void)
@@ -47,6 +51,10 @@ void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	if (serial8250mem_base_address)
+		uart8250_mem_tx_byte(serial8250mem_base_address, byte);
+#endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
 #endif
@@ -64,6 +72,9 @@ void console_init(void)
 	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #if CONFIG_CONSOLE_SERIAL8250
 	uart_init();
+#endif
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	serial8250mem_base_address = uart_mem_init();
 #endif
 #else
 	console_loglevel = 1;

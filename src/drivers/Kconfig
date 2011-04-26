@@ -22,6 +22,7 @@ source src/drivers/dec/Kconfig
 source src/drivers/emulation/Kconfig
 source src/drivers/generic/Kconfig
 source src/drivers/i2c/Kconfig
+source src/drivers/oxford/Kconfig
 source src/drivers/sil/Kconfig
 source src/drivers/trident/Kconfig
 

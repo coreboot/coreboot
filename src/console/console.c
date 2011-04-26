@@ -22,7 +22,7 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
 
@@ -105,6 +105,9 @@ void console_init(void)
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart_init();
+#endif
+#if CONFIG_DRIVERS_OXFORD_OXPCIE && CONFIG_CONSOLE_SERIAL8250MEM
+	oxford_init();
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);

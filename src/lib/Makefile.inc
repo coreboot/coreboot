@@ -9,6 +9,7 @@ romstage-y += lzma.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
+romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
@@ -29,6 +30,7 @@ ramstage-y += gcc.c
 ramstage-y += clog2.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
+ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 
@@ -36,5 +38,6 @@ driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 smm-y += memcpy.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
+smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h

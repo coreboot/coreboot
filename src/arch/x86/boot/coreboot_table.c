@@ -135,6 +135,9 @@ static void lb_console(struct lb_header *header)
 #if CONFIG_CONSOLE_SERIAL8250
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
 #endif
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
+#endif
 #if CONFIG_CONSOLE_LOGBUF
 	add_console(header, LB_TAG_CONSOLE_LOGBUF);
 #endif

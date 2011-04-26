@@ -2,9 +2,16 @@ menu "Console"
 # TODO: Rename to SERIAL_CONSOLE once Kconfig transition is complete.
 config CONSOLE_SERIAL8250
 	bool "Serial port console output"
+	depends on HAVE_UART_IO_MAPPED
 	default y
 	help
-	  Send coreboot debug output to a serial port console.
+	  Send coreboot debug output to an I/O mapped serial port console.
+
+config CONSOLE_SERIAL8250MEM
+	bool "Serial port console output (memory mapped)"
+	depends on HAVE_UART_MEMORY_MAPPED
+	help
+	  Send coreboot debug output to a memory mapped serial port console.
 
 choice
 	prompt "Serial port"
@@ -43,7 +50,7 @@ config TTYS0_BASE
 choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
-	depends on CONSOLE_SERIAL8250
+	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
 
 config CONSOLE_SERIAL_115200
 	bool "115200"
@@ -82,7 +89,7 @@ config TTYS0_BAUD
 config TTYS0_LCS
 	int
 	default 3
-	depends on CONSOLE_SERIAL8250
+	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
 
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG

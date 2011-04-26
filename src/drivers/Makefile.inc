@@ -22,6 +22,7 @@ subdirs-y += dec
 subdirs-y += emulation
 subdirs-y += generic
 subdirs-y += i2c
+subdirs-y += oxford
 subdirs-y += sil
 subdirs-y += trident
 

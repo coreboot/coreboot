@@ -163,6 +163,7 @@ struct lb_console {
 #define LB_TAG_CONSOLE_LOGBUF		3
 #define LB_TAG_CONSOLE_SROM		4 // OBSOLETE
 #define LB_TAG_CONSOLE_EHCI		5
+#define LB_TAG_CONSOLE_SERIAL8250MEM	6
 
 #define LB_TAG_FORWARD		0x0011
 struct lb_forward {

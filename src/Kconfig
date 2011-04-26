@@ -159,6 +159,15 @@ config MMCONF_SUPPORT
 
 source src/console/Kconfig
 
+# This should default to N and be set by SuperI/O drivers that have an UART
+config HAVE_UART_IO_MAPPED
+	bool
+	default y
+
+config HAVE_UART_MEMORY_MAPPED
+	bool
+	default n
+
 config HAVE_ACPI_RESUME
 	bool
 	default n

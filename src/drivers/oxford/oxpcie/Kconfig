@@ -1,0 +1,68 @@
+config DRIVERS_OXFORD_OXPCIE
+	bool "Oxford OXPCIe952"
+	default n
+	select HAVE_UART_MEMORY_MAPPED
+	help
+	  Support for Oxford OXPCIe952 serial port PCIe cards.
+	  Currently only devices with the vendor ID 0x1415 and device ID
+	  0xc158 will work.
+	  NOTE: Right now you have to set the base address of your OXPCIe952
+	  card to exactly the value that the device allocator would set them
+	  later on, or serial console functionality will stop as soon as the
+	  resource allocator assigns a new base address to the device.
+
+config OXFORD_OXPCIE_BRIDGE_BUS
+	hex "OXPCIe's PCIe bridge bus number"
+	default 0x0
+	depends on DRIVERS_OXFORD_OXPCIE
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system. In order to use an
+	  OXPCIe952 based PCIe card, coreboot has to set up the PCIe bridge
+	  that controls the OXPCIe952 controller first.
+
+config OXFORD_OXPCIE_BRIDGE_DEVICE
+	hex "OXPCIe's PCIe bridge device number"
+	default 0x1c
+	depends on DRIVERS_OXFORD_OXPCIE
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system. In order to use an
+	  OXPCIe952 based PCIe card, coreboot has to set up the PCIe bridge
+	  that controls the OXPCIe952 controller first.
+
+config OXFORD_OXPCIE_BRIDGE_FUNCTION
+	hex "OXPCIe's PCIe bridge function number"
+	default 0x2
+	depends on DRIVERS_OXFORD_OXPCIE
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system. In order to use an
+	  OXPCIe952 based PCIe card, coreboot has to set up the PCIe bridge
+	  that controls the OXPCIe952 controller first.
+
+config OXFORD_OXPCIE_BRIDGE_SUBORDINATE
+	hex "OXPCIe's PCIe bridge subordinate bus"
+	default 0x3
+	depends on DRIVERS_OXFORD_OXPCIE
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system. In order to use an
+	  OXPCIe952 based PCIe card, coreboot has to set up the PCIe bridge
+	  that controls the OXPCIe952 controller first.
+
+config OXFORD_OXPCIE_BASE_ADDRESS
+	hex "Base address for rom stage console"
+	default 0xe0400000
+	depends on DRIVERS_OXFORD_OXPCIE
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system. In order to use an
+	  OXPCIe952 based PCIe card, coreboot has to set up a temporary address
+	  for the OXPCIe952 controller.
+

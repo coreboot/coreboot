@@ -124,6 +124,7 @@
 #define   UART_MSR_DCTS		0x01 /* Delta CTS */
 
 #define UART_SCR 0x07
+#define UART_SPR 0x07
 
 
 #ifndef __ROMCC__
@@ -136,6 +137,17 @@ void uart8250_tx_byte(unsigned base_port, unsigned char data);
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
 void uart_init(void);
+
+/* and the same for memory mapped uarts */
+unsigned char uart8250_mem_rx_byte(unsigned base_port);
+int uart8250_mem_can_rx_byte(unsigned base_port);
+void uart8250_mem_tx_byte(unsigned base_port, unsigned char data);
+void uart8250_mem_init(unsigned base_port, unsigned divisor);
+u32 uart_mem_init(void);
+
+/* and special init for OXPCIe based cards */
+void oxford_init(void);
+
 #endif
 
 #endif /* UART8250_H */

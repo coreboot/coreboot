@@ -34,10 +34,11 @@
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
+#include "dock.h"
 
 static void mainboard_enable(device_t dev)
 {
-	device_t dev0;
+	device_t dev0, idedev;
 
 	/* enable Audio */
 	h8_set_audio_mute(0);
@@ -46,6 +47,19 @@ static void mainboard_enable(device_t dev)
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
 	if (dev0 && pci_read_config32(dev0, SKPAD) == 0xcafed00d)
 		ec_write(0x0c, 0xc7);
+
+	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));
+	if (idedev && idedev->chip_info && dock_ultrabay_device_present()) {
+		struct southbridge_intel_i82801gx_config *config = idedev->chip_info;
+		config->ide_enable_primary = 1;
+		/* enable Ultrabay power */
+		outb(inb(0x1628) | 0x01, 0x1628);
+		ec_write(0x0c, 0x84);
+	} else {
+		/* disable Ultrabay power */
+		outb(inb(0x1628) & ~0x01, 0x1628);
+		ec_write(0x0c, 0x04);
+	}
 }
 
 struct chip_operations mainboard_ops = {

@@ -156,7 +156,7 @@ chip northbridge/intel/i945
 					end
 				end
 			end
-			device pci 1f.1 off # IDE
+			device pci 1f.1 on # IDE
 				subsystemid 0x17aa 0x200c
 			end
 			device pci 1f.2 on # SATA

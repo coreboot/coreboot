@@ -247,3 +247,8 @@ int dock_present(void)
 {
 	return !((inb(DEFAULT_GPIOBASE + 0x0c) >> 13) & 1);
 }
+
+int dock_ultrabay_device_present(void)
+{
+	return inb(0x1621) & 0x02 ? 0 : 1;
+}

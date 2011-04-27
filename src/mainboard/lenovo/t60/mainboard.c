@@ -38,7 +38,7 @@
 
 static void mainboard_enable(device_t dev)
 {
-	device_t dev0;
+	device_t dev0, idedev;
 	int touchpad;
 
 	/* enable Audio */
@@ -53,6 +53,17 @@ static void mainboard_enable(device_t dev)
 		touchpad = 1;
 
 	pmh7_touchpad_enable(touchpad);
+
+	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));
+	if (idedev && idedev->chip_info && h8_ultrabay_device_present()) {
+		struct southbridge_intel_i82801gx_config *config = idedev->chip_info;
+		config->ide_enable_primary = 1;
+		pmh7_ultrabay_power_enable(1);
+		ec_write(0x0c, 0x84);
+	} else {
+		pmh7_ultrabay_power_enable(0);
+		ec_write(0x0c, 0x04);
+	}
 }
 
 struct chip_operations mainboard_ops = {

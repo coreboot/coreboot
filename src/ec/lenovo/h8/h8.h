@@ -25,6 +25,7 @@ void h8_wlan_enable(int on);
 void h8_set_audio_mute(int on);
 void h8_enable_event(int event);
 void h8_disable_event(int event);
+int h8_ultrabay_device_present(void);
 
 /* EC registers */
 #define H8_CONFIG0 0x00
@@ -101,6 +102,10 @@ void h8_disable_event(int event);
 #define H8_EVENT_KEYPRESS	0x33
 
 #define H8_EVENT_FN_PRESS	0x39
+
+#define H8_STATUS0		0x46
+#define H8_STATUS1		0x47
+#define H8_STATUS2		0x48
 
 #define H8_EVENT_BAT0		0x4a
 #define H8_EVENT_BAT0_STATE	0x4b

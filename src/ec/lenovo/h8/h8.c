@@ -87,6 +87,11 @@ void h8_disable_event(int event)
 
 }
 
+int h8_ultrabay_device_present(void)
+{
+	return ec_read(H8_STATUS1) & 0x5 ? 0 : 1;
+}
+
 static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;

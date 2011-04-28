@@ -294,3 +294,39 @@ Device (BAT1)
 		}
 	}
 }
+
+/* Battery 0 critical */
+Method(_Q24, 0, NotSerialized)
+{
+	Notify(BAT0, 0x80)
+}
+
+/* Battery 1 critical */
+Method(_Q25, 0, NotSerialized)
+{
+	Notify(BAT1, 0x80)
+}
+
+/* Battery 0 attach/detach */
+Method(_Q4A, 0, NotSerialized)
+{
+	Notify(BAT0, 0x81)
+}
+
+/* Battery 0 state change */
+Method(_Q4B, 0, NotSerialized)
+{
+	Notify(BAT0, 0x80)
+}
+
+/* Battery 1 attach/detach */
+Method(_Q4C, 0, NotSerialized)
+{
+	Notify(BAT1, 0x81)
+}
+
+/* Battery 1 state change */
+Method(_Q4D, 0, NotSerialized)
+{
+	Notify(BAT1, 0x80)
+}

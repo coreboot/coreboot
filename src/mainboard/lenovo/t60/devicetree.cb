@@ -130,6 +130,7 @@ chip northbridge/intel/i945
 					register "event4_enable" = "0xf4"
 					register "event5_enable" = "0x3c"
 					register "event6_enable" = "0x80"
+					register "eventc_enable" = "0x3c"
 
 					register "wlan_enable" = "0x01"
 					register "trackpoint_enable" = "0x03"

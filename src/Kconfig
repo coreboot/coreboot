@@ -98,6 +98,14 @@ config USE_OPTION_TABLE
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard coded values.
 
+config COMPRESS_RAMSTAGE
+	bool "Compress ramstage with LZMA"
+	default y
+	help
+	  Compress ramstage to save memory in the flash image. Note
+	  that decompression might slow down booting if the boot flash
+	  is connected through a slow Link (i.e. SPI)
+
 endmenu
 
 source src/mainboard/Kconfig

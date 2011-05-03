@@ -38,5 +38,10 @@ config USBDEBUG_DEFAULT_PORT
 	int
 	default 1 
 
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+        string
+	default "southbridge/intel/i82801gx/bootblock.c"
+	depends on SOUTHBRIDGE_INTEL_I82801GX
+
 endif
 

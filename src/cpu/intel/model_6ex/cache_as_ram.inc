@@ -201,7 +201,17 @@ clear_mtrrs:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(0), %ecx
-	movl	$(~(1024 * 1024 - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
+	movl	$0x0000000f, %edx	// 36bit address space
+	wrmsr
+
+	/* Enable caching and Speculative Reads for the last 4MB. */
+	movl	$MTRRphysBase_MSR(1), %ecx
+	movl	$(0xffc00000 | MTRR_TYPE_WRPROT), %eax
+	xorl	%edx, %edx
+	wrmsr
+	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$(~(4 * 1024 * 1024 - 1) | MTRRphysMaskValid), %eax
 	movl	$0x0000000f, %edx	// 36bit address space
 	wrmsr
 

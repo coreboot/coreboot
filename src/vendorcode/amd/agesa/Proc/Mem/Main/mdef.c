@@ -89,7 +89,7 @@ RDATA_GROUP (G1_PEICC)
  */
 
 VOID
-memDefRet ()
+memDefRet (VOID)
 {
 }
 
@@ -100,7 +100,7 @@ memDefRet ()
  *
  */
 BOOLEAN
-memDefTrue ()
+memDefTrue (VOID)
 {
   return TRUE;
 }
@@ -112,7 +112,7 @@ memDefTrue ()
  *
  */
 BOOLEAN
-memDefFalse ()
+memDefFalse (VOID)
 {
   return FALSE;
 }
@@ -137,7 +137,7 @@ MemMFlowDef (
  *
  */
 AGESA_STATUS
-memDefRetSuccess ()
+memDefRetSuccess (VOID)
 {
   return AGESA_SUCCESS;
 }

@@ -230,6 +230,7 @@ GetVarMtrrHiMsk (
 
 VOID
 MemUMFenceInstr (
+  VOID
   );
 
 #endif  /* _MU_H_ */

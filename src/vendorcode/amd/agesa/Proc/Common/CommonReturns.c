@@ -70,7 +70,7 @@ RDATA_GROUP (G1_PEICC)
 * @retval TRUE  Default case, no special action
 */
 BOOLEAN
-CommonReturnTrue ()
+CommonReturnTrue (VOID)
 {
   return TRUE;
 }
@@ -83,7 +83,7 @@ CommonReturnTrue ()
 * @retval FALSE  Default case, no special action
 */
 BOOLEAN
-CommonReturnFalse ()
+CommonReturnFalse (VOID)
 {
   return FALSE;
 }
@@ -96,7 +96,7 @@ CommonReturnFalse ()
  * @retval zero    None, or only case zero.
  */
 UINT8
-CommonReturnZero8 ()
+CommonReturnZero8 (VOID)
 {
   return 0;
 }
@@ -109,7 +109,7 @@ CommonReturnZero8 ()
  * @retval zero    None, or only case zero.
  */
 UINT32
-CommonReturnZero32 ()
+CommonReturnZero32 (VOID)
 {
   return 0;
 }
@@ -122,7 +122,7 @@ CommonReturnZero32 ()
  * @retval zero    None, or only case zero.
  */
 UINT64
-CommonReturnZero64 ()
+CommonReturnZero64 (VOID)
 {
   return 0;
 }
@@ -134,7 +134,7 @@ CommonReturnZero64 ()
  * @retval NULL    pointer to nothing
  */
 VOID *
-CommonReturnNULL ()
+CommonReturnNULL (VOID)
 {
   return NULL;
 }
@@ -146,7 +146,7 @@ CommonReturnNULL ()
 * @retval AGESA_SUCCESS Success.
 */
 AGESA_STATUS
-CommonReturnAgesaSuccess ()
+CommonReturnAgesaSuccess (VOID)
 {
   return AGESA_SUCCESS;
 }
@@ -158,7 +158,7 @@ CommonReturnAgesaSuccess ()
  *
  */
 VOID
-CommonVoid ()
+CommonVoid (VOID)
 {
 }
 
@@ -168,7 +168,7 @@ CommonVoid ()
  *
  */
 VOID
-CommonAssert ()
+CommonAssert (VOID)
 {
   ASSERT (FALSE);
 }

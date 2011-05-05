@@ -548,7 +548,7 @@ typedef struct _MEM_NB_BLOCK {
   VOID (*Feature) (struct _MEM_NB_BLOCK *NBPtr); ///< Feature support.
   UINT8 (*GetSocketRelativeChannel) (struct _MEM_NB_BLOCK *NBPtr, UINT8 Dct, UINT8 Channel); ///< Get channel number relative to a socket.
   VOID (*SetDramOdtRec) (struct _MEM_NB_BLOCK *NBPtr, ODT_MODE OdtMode, UINT8 ChipSelect, UINT8 TargetCS); ///< Set Dram ODT.
-  UINT32 (*GetSysAddrRec) (); ///< Get system address for training.
+  UINT32 (*GetSysAddrRec) (VOID); ///< Get system address for training.
   VOID (*SwitchNodeRec) (struct _MEM_NB_BLOCK *NBPtr, UINT8 NodeID); ///< Switch to current node.
   VOID (*TechBlockSwitch) (struct _MEM_NB_BLOCK *NBPtr); ///< Selects appropriate Tech functions for the NB.
   VOID (*SetEccSymbolSize) (struct _MEM_NB_BLOCK *NBPtr); ///< Set Ecc Symbol Size.
@@ -979,6 +979,7 @@ MemRecNCPUMemRecTypingNb (
 
 UINT32
 MemRecNGetMCTSysAddrNb (
+  VOID
   );
 
 UINT32

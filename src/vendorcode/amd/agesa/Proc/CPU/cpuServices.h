@@ -151,14 +151,14 @@ GetCurrentNodeNum (
  *
  */
 UINT32
-GetPlatformNumberOfSockets ();
+GetPlatformNumberOfSockets (VOID);
 
 /**
  * Get the number of Modules to check presence in each Processor.
  *
  */
 UINT32
-GetPlatformNumberOfModules ();
+GetPlatformNumberOfModules (VOID);
 
 BOOLEAN
 IsProcessorPresent (

@@ -150,11 +150,11 @@ MemTSkipChipSelPass2Byte (
 
 UINT8
 STATIC
-MemTMaxByteLanesByte ();
+MemTMaxByteLanesByte (VOID);
 
 UINT8
 STATIC
-MemTDlyTableWidthByte ();
+MemTDlyTableWidthByte (VOID);
 
 VOID
 STATIC
@@ -689,7 +689,7 @@ MemTSkipChipSelPass2Byte (
 
 UINT8
 STATIC
-MemTMaxByteLanesByte ()
+MemTMaxByteLanesByte (VOID)
 {
   return MAX_BYTELANES;
 }
@@ -704,7 +704,7 @@ MemTMaxByteLanesByte ()
 
 UINT8
 STATIC
-MemTDlyTableWidthByte ()
+MemTDlyTableWidthByte (VOID)
 {
   return MAX_DELAYS;
 }

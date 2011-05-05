@@ -984,10 +984,10 @@ AmdMemInitDataStructDefRecovery (
   );
 
 VOID
-MemRecDefRet ();
+MemRecDefRet (VOID);
 
 BOOLEAN
-MemRecDefTrue ();
+MemRecDefTrue (VOID);
 
 VOID
 SetMemRecError (
@@ -996,7 +996,7 @@ SetMemRecError (
   );
 
 AGESA_STATUS
-memDefRetSuccess ();
+memDefRetSuccess (VOID);
 
 #endif  /* _MM_H_ */
 

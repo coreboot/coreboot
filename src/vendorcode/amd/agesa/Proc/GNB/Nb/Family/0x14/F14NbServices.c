@@ -115,6 +115,7 @@ NbFmClumpUnitID (
 
 FUSE_TABLE*
 NbFmGetFuseTranslationTable (
+  VOID
   )
 {
   return  &FuseTable;

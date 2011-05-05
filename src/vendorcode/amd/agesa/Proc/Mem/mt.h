@@ -206,11 +206,11 @@ typedef struct _MEM_TECH_BLOCK {
   VOID (*SkipChipSelPass1) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 *ChipSel); ///< skips odd chip select if training at 800MT or above.
   VOID (*SkipChipSelPass2) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 *ChipSel); ///< skips odd chip select if training at 800MT or above.
   UINT16 (*CompareTestPatternFilter) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 Buffer[], UINT8 Pattern[], UINT16 ByteCount); ///< compare training pattern with filter.
-  UINT8 (*MaxByteLanes) (); ///< return maximum number of bytelanes.
+  UINT8 (*MaxByteLanes) (VOID); ///< return maximum number of bytelanes.
   VOID (*SetDQSDelayCSR) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 ByteLane, UINT8 Dly); ///< Set CSR.
   VOID (*DQSWindowSave) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 ByteLane, UINT8 DlyMin, UINT8 DlyMax); ///< programs the trained DQS delay for the specified byte lane and stores its DQS window for reference.
   BOOLEAN (*FindMaxDlyForMaxRdLat) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 *ChipSel); ///< Find maximum receiver enable delay value.
-  UINT8 (*DlyTableWidth) (); ///< return the width of the delay tables (eg. RcvEnDlys, WrDqsDlys,...) in number of bytes.
+  UINT8 (*DlyTableWidth) (VOID); ///< return the width of the delay tables (eg. RcvEnDlys, WrDqsDlys,...) in number of bytes.
   UINT16 (*Compare1ClPatternOpt) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 Buffer[], UINT8 Pattern[], UINT8 Side, UINT8 Receiver, BOOLEAN Side1En); ///< Compare training pattern of 1 cache line.
   VOID (*LoadRcvrEnDlyOpt) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 Receiver); ///< Load receiver enable delay register value.
   VOID (*SetRcvrEnDlyOpt) (struct _MEM_TECH_BLOCK *TechPtr, UINT8 Receiver, UINT16 RcvEnDly); ///< Set receiver enable delay register value.

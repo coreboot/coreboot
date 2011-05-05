@@ -534,9 +534,8 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, 0x80000003 | ((i+1)<<21));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 }
 
@@ -603,9 +602,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		udelay(16);
 		write32(BAR+DCALCSR, (0x00000000 | ((cs+1)<<21)));
 		write32(BAR+DCALCSR, (0x80000000 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* Apply NOP */
@@ -615,9 +613,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex8(cs);
 		print_debug("\n");
 		write32(BAR + DCALCSR, (0x80000000 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* Precharge all banks */
@@ -628,9 +625,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, 0x04000000);
 		write32(BAR+DCALCSR, (0x80000002 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* EMRS: Enable DLLs, set OCD calibration mode to default */
@@ -641,9 +637,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 	/* MRS: Reset DLLs */
 	udelay(16);
@@ -653,9 +648,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, mode_reg);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* Precharge all banks */
@@ -666,9 +660,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, 0x04000000);
 		write32(BAR+DCALCSR, (0x80000002 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* Do 2 refreshes */
@@ -679,9 +672,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			print_debug_hex8(cs);
 			print_debug("\n");
 			write32(BAR+DCALCSR, (0x80000001 | ((cs+1)<<21)));
-			data32 = read32(BAR+DCALCSR);
-			while (data32 & 0x80000000)
-				data32 = read32(BAR+DCALCSR);
+			do data32 = read32(BAR+DCALCSR);
+			while (data32 & 0x80000000);
 		}
 	}
 
@@ -693,9 +685,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, (mode_reg & ~(1<<24)));
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	/* EMRS: Enable DLLs */
@@ -706,9 +697,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug("\n");
 		write32(BAR+DCALADDR, 0x0b840001);
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
         }
 
 	udelay(16);
@@ -729,9 +719,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex8(cs);
 		print_debug("\n");
 		write32(BAR+DCALCSR, (0x8000000c | ((cs+1)<<21)));
-		data32 = read32(BAR+DCALCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while (data32 & 0x80000000);
 	}
 
 	dump_dcal_regs();
@@ -756,9 +745,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex8(cs);
 		print_debug("\n");
 		write32(BAR+MBCSR, 0xa00000f0 | ((cs+1)<<20) | (0<<16));
-		data32 = read32(BAR+MBCSR);
-		while (data32 & 0x80000000)
-			data32 = read32(BAR+MBCSR);
+		do data32 = read32(BAR+MBCSR);
+		while (data32 & 0x80000000);
 		if (data32 & 0x40000000)
 			print_debug("failed!\n");
 	}

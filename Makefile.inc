@@ -106,15 +106,12 @@ INCLUDES += -Isrc/devices/oprom/include
 # abspath is a workaround for romcc
 INCLUDES += -include $(abspath $(obj)/config.h)
 
-CFLAGS = $(INCLUDES) -Os -pipe -g
+CFLAGS = $(INCLUDES) -Os -pipe -g -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Wshadow
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS += -Werror
-endif
-ifneq ($(CONFIG_AMD_AGESA),y)
-CFLAGS += -nostdinc 
 endif
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 

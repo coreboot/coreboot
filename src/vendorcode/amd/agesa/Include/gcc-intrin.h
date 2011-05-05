@@ -27,8 +27,6 @@
  */
  
 #if defined (__GNUC__)
-#include <pmmintrin.h>
-
 
 /* I/O intrin functions.  */
 static __inline__ __attribute__((always_inline)) unsigned char __inbyte(unsigned short Port)
@@ -558,6 +556,10 @@ static __inline__ __attribute__((always_inline)) unsigned long long __readfsdwor
   return value;
 }
 
+#ifdef __SSE3__
+typedef long long __v2di __attribute__ ((__vector_size__ (16)));
+typedef long long __m128i __attribute__ ((__vector_size__ (16), __may_alias__));
+
 static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs2 (void *__A, __m128i __B)
 {
   __asm__(".byte 0x64"); // fs prefix
@@ -567,14 +569,25 @@ static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs2 (void
 static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs (void *__A, void *__B)
 {
   __m128i data;
-  data = _mm_lddqu_si128 (__B);
+  data = (__m128i) __builtin_ia32_lddqu ((char const *)__B);
   _mm_stream_si128_fs2 (__A, data);
 }
+#endif
 
 static __inline__ __attribute__((always_inline)) void _mm_clflush_fs (void *__A)
 {
   __asm__(".byte 0x64"); // fs prefix
   __builtin_ia32_clflush (__A);
+}
+
+static __inline __attribute__(( __always_inline__)) void _mm_mfence (void)
+{
+  __builtin_ia32_mfence ();
+}
+
+static __inline __attribute__(( __always_inline__)) void _mm_sfence (void)
+{
+  __builtin_ia32_sfence ();
 }
 
 static __inline__ __attribute__((always_inline)) void __stosb(unsigned char *dest, unsigned char data, size_t count)

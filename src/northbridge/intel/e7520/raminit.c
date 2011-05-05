@@ -1128,9 +1128,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 		write32(BAR+0x100, (0x83000000 | (i<<20)));
 
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 
 	}
 
@@ -1139,9 +1138,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	for(cs=0;cs<8;cs++) {
 		write32(BAR + DCALCSR, (0x83000000 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* Precharg all banks */
@@ -1152,9 +1150,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
                 else   /* DDR1  */
                         write32(BAR+DCALADDR, 0x00000000);
 		write32(BAR+DCALCSR, (0x83000002 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* EMRS dll's enabled */
@@ -1166,9 +1163,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
                 else   /* DDR1  */
                         write32(BAR+DCALADDR, 0x00000001);
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 	/* MRS reset dll's */
 	do_delay();
@@ -1187,9 +1183,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALADDR, mode_reg);
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* Precharg all banks */
@@ -1202,25 +1197,22 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
                 else   /* DDR1  */
                         write32(BAR+DCALADDR, 0x00000000);
 		write32(BAR+DCALCSR, (0x83000002 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* Do 2 refreshes */
 	do_delay();
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 	do_delay();
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x83000001 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 	do_delay();
 	/* for good luck do 6 more */
@@ -1253,9 +1245,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALADDR, (mode_reg & ~(1<<24)));
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* Do only if DDR2  EMRS dll's enabled */
@@ -1264,9 +1255,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
                 for(cs=0;cs<8;cs++) {
                         write32(BAR+DCALADDR, (0x0b940001));
                         write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
-			data32 = read32(BAR+DCALCSR);
-			while(data32 & 0x80000000)
-				data32 = read32(BAR+DCALCSR);
+			do data32 = read32(BAR+DCALCSR);
+			while(data32 & 0x80000000);
                 }
         }
 
@@ -1310,9 +1300,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALCSR, (0x830831d8 | (cs<<20)));
-		data32 = read32(BAR+DCALCSR);
-		while(data32 & 0x80000000)
-			data32 = read32(BAR+DCALCSR);
+		do data32 = read32(BAR+DCALCSR);
+		while(data32 & 0x80000000);
 	}
 
 	/* Bring memory subsystem on line */

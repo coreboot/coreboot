@@ -6,6 +6,8 @@ choice
 
 config VENDOR_ABIT
 	bool "Abit"
+config VENDOR_ADVANSUS
+        bool "Advansus"
 config VENDOR_ADVANTECH
 	bool "Advantech"
 config VENDOR_AMD
@@ -119,6 +121,7 @@ endchoice
 
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/abit/Kconfig"
+source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"
 source "src/mainboard/amd/Kconfig"
 source "src/mainboard/arima/Kconfig"

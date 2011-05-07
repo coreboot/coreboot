@@ -142,32 +142,6 @@ static void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void get_cpu_rev(void)
-{
-	u32 eax;
-
-	eax = cpuid_eax(1);
-	printk(BIOS_INFO, "get_cpu_rev EAX=0x%x.\n", eax);
-	if (eax <= 0xfff)
-		printk(BIOS_INFO, "CPU Rev is K8_Cx.\n");
-	else if (eax <= 0x10fff)
-		printk(BIOS_INFO, "CPU Rev is K8_Dx.\n");
-	else if (eax <= 0x20fff)
-		printk(BIOS_INFO, "CPU Rev is K8_Ex.\n");
-	else if (eax <= 0x40fff)
-		printk(BIOS_INFO, "CPU Rev is K8_Fx.\n");
-	else if (eax == 0x60fb1 || eax == 0x60f81)	/*These two IDS are exception, they are G1. */
-		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
-	else if (eax <= 0X60FF0)
-		printk(BIOS_INFO, "CPU Rev is K8_G0.\n");
-	else if (eax <= 0x100000)
-		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
-	else if (eax <= 0x100f00)
-		printk(BIOS_INFO, "CPU Rev is Fam 10.\n");
-	else
-		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
-}
-
 static u8 is_famly10(void)
 {
 	return (cpuid_eax(1) & 0xff00000) != 0;
@@ -630,6 +604,13 @@ static void rs780_por_init(device_t nb_dev)
 
 	/* ATINB_CLKCFG_PORT_TABLE */
 	/* rs780 A11 SB Link full swing? */
+
+	/* SET NB_MISC_REG01 BIT8 to Enable HDMI, reference CIMX_5_9_3 NBPOR_InitPOR(),
+	 * then the accesses to internal graphics IO space 0x60/0x64, are forwarded to
+	 * nbconfig:0x60/0x64
+	 */
+
+	set_nbmisc_enable_bits(nb_dev, 0x01, ~(1 << 8), (1 << 8));
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
@@ -646,8 +627,6 @@ static void rs780_early_setup(void)
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs780_early_setup()\n");
-
-	get_cpu_rev();
 
 	/* The printk(BIOS_INFO, s) below cause the system unstable. */
 	switch (get_nb_rev(nb_dev)) {

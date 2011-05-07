@@ -303,6 +303,43 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 }
 #endif
 
+#define GFX_CONFIG_DDI1		0x04
+#define GFX_CONFIG_DDI2		0x08
+#define GFX_CONFIG_DDI		(GFX_CONFIG_DDI1 | GFX_CONFIG_DDI2)
+
+/**
+ * Force poweron pads for lanes used for DDI
+ * reference CIMx PCIEL_PowerOnDDILanes()
+ *
+ * Inactive    B_PRX_PDNB_FDIS  B_PTX_PDNB_FDIS
+ *  Lanes
+ * Lanes  0-1   Bit  8           Bit 0
+ * Lanes  2-3   Bit  9           Bit 1
+ * Lanes  4-5   Bit 10           Bit 2
+ * Lanes  6-7   Bit 11           Bit 3
+ * Lanes  8-9   Bit 12           Bit 4
+ * Lanes 10-11  Bit 13           Bit 5
+ * Lanes 12-13  Bit 14           Bit 6
+ * Lanes 14-15  Bit 15           Bit 7
+ */
+static void poweron_ddi_lanes(device_t nb_dev)
+{
+	u8 i;
+	u32 gfx_cfg = 0;
+	u32 ddi_pads = 0;
+
+	ddi_pads = ~(nbpcie_ind_read_index(nb_dev, 0x65)); /* save original setting */
+	gfx_cfg = nbmisc_read_index(nb_dev, 0x74);
+	for (i = 0; i < 3 ; i++) {
+		if (gfx_cfg & GFX_CONFIG_DDI) {
+			ddi_pads |= (3 << (i * 2));
+		}
+		gfx_cfg >>= 8;
+	}
+	ddi_pads |= ddi_pads << 8; /* both TX and RX */
+	nbpcie_ind_write_index(nb_dev, 0x65, ~ddi_pads);
+}
+
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
 	unsigned char * bpointer;
@@ -534,6 +571,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 			if (lssel == 0) vgainfo.usUMADataReturnTime = 150;
 		}
 	}
+
+	/* Poweron DDI Lanes */
+	poweron_ddi_lanes(nb_dev);
 
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
@@ -1111,6 +1151,147 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* step 2, TMDS, (only need if CMOS option is enabled) */
 	if (cfg->gfx_tmds) {
+		/**
+		 * PCIe Initialization for DDI.
+		 * The VBIOS/Driver is responsible for DDI programming sequence,
+		 * The SBIOS is responsible for programming the lane and clock muxing specific to each case.
+		 * Refer to RPR Chapter 7: "PCIe Initialization for DDI".
+		 * Note: This programming must be done before hold training is released.
+		 */
+		switch (cfg->gfx_pcie_config) {
+			case 1: /* 1x16 GFX -default case, no programming required */
+				break;
+			case 2: /* 1x8 GFX on Lanes 0-7 */
+			case 5: /* 1x4 GPP on Lanes 0-3 */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 6, 0x1 << 6); /* Disables PCIe mode on PHY Lanes  8-11 */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 7, 0x1 << 7); /* Disables PCIe mode on PHY Lanes 12-15 */
+				break;
+			case 3: /* 1x8 on Lanes 8-15 */
+			case 7: /* 1x4 GPP on Lanes 8-11 */
+				/* TXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 16, 1 << 16);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0xF << 12, 0xF << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 24, 0x2 << 24);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x3 << 0, 0x0 << 0);
+				/* RXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 8, 0x2 << 8);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 10, 0x2 << 10);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 12, 0x2 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 14, 0x2 << 14);
+				/* TX Lane Muxing */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 2, 0x1 << 2);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 3, 0x1 << 3);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 4, 0x1 << 4);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 5, 0x1 << 5);
+				break;
+			case 4:  /* 2x8 */
+			case 10: /* 1x4 GPP on Lanes 0-3 and 1x4 GPP on Lanes 8-11 */
+			case 14: /* 1x8 GFX on Lanes 0-7 and 1x4 GPP on Lanes 8-11 */
+			case 17: /* 1x4 GPP on Lanes 0-3 and 1x8 GFX on Lanes 8-15 */
+				/* Set dual slot configuration */
+				set_nbmisc_enable_bits(nb_dev, 0x08, 0xF << 8, 0x5 << 8);
+				break;
+			case 9: /* PCIe 2x4 GPPs on Lanes 0-7 */
+			case 6: /* PCIe 1x4 GPP on Lanes 4-7 */
+				/* Set dual slot configuration */
+				set_nbmisc_enable_bits(nb_dev, 0x08, 0xF << 8, 0x5 << 8);
+				/* TXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 16, 0 << 16);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0xF << 12, 0x0 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 20, 0x0 << 20);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x1 << 0, 0x0 << 0);
+				/* RXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 8, 0x0 << 8);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 10, 0x1 << 10);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 12, 0x3 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 14, 0x0 << 14);
+				/* TX Lane Muxing */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 1, 0x1 << 1);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 6, 0x1 << 6);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 7, 0x1 << 7);
+				break;
+			case 13: /* 2x4 GPPs on Lanes 8-15 */
+			case 8:  /* 1x4 GPP on Lanes 12-15 */
+				/* Set dual slot configuration */
+				set_nbmisc_enable_bits(nb_dev, 0x08, 0xF << 8, 0x5 << 8);
+				/* TXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 16, 1 << 16);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0xF << 12, 0xF << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 24, 0x2 << 24);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x3 << 0, 0x3 << 0);
+				/* RXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 8, 0x2 << 8);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 10, 0x3 << 10);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 12, 0x1 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 14, 0x2 << 14);
+				/* TX Lane Muxing */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 2, 0x1 << 2);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x1 << 14, 0x1 << 14);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 4, 0x1 << 4);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 5, 0x1 << 5);
+				break;
+			case 15: /* 1x8 GFX on Lanes 0-7 and 1x4 GPP on Lanes 12-15 */
+			case 11: /* 1x4 GPP on Lanes 0-3 and 1x4 GPP on Lanes 12-15 */
+				/* Set dual slot configuration */
+				set_nbmisc_enable_bits(nb_dev, 0x08, 0xF << 8, 0x5 << 8);
+				/* TXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 16, 0 << 16);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0xF << 12, 0x0 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 20, 0x0 << 20);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x3 << 0, 0x1 << 0);
+				/* RXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 8, 0x0 << 8);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 10, 0x0 << 10);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 12, 0x1 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 14, 0x3 << 14);
+				/* TX Lane Muxing */
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x1 << 14, 0x1 << 14);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 6, 0x1 << 6);
+				break;
+			case 16: /* 1x8 GFX on Lanes 8-15 and 1x4 GPP on Lanes 4-7 */
+			case 12: /* 1x4 GPP on Lanes 4-7 and 1x8 GFX on Lanes 8-15 */
+				/* Set dual slot configuration */
+				set_nbmisc_enable_bits(nb_dev, 0x08, 0xF << 8, 0x5 << 8);
+				/* TXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 16, 1 << 16);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0xF << 12, 0xF << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 24, 0x2 << 24);
+				set_nbmisc_enable_bits(nb_dev, 0x07, 0x3 << 22, 0x2 << 22);
+				set_nbmisc_enable_bits(nb_dev, 0x28, 0x3 << 0, 0x2 << 0);
+				/* RXCLK */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 8, 0x2 << 8);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 10, 0x2 << 10);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 12, 0x3 << 12);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x3 << 14, 0x1 << 14);
+				/* TX Lane Muxing */
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 2, 0x1 << 2);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 3, 0x1 << 3);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 1, 0x1 << 1);
+				set_nbmisc_enable_bits(nb_dev, 0x27, 0x1 << 4, 0x1 << 4);
+				break;
+			default:
+				printk(BIOS_INFO, "Incorrect configuration of external GFX slot.\n");
+				break;
+		}
+
+		/* DDI Configuration */
+		switch (cfg->gfx_ddi_config) {
+			case 1: /* DDI_SL lanes0-3 */
+				nbmisc_write_index(nb_dev, 0x74, GFX_CONFIG_DDI);
+				break;
+			case 2: /* DDI_SL lanes4-7 */
+				nbmisc_write_index(nb_dev, 0x74, (GFX_CONFIG_DDI << 8));
+				break;
+			case 5: /* DDI_SL lanes0-4, lanes4-7 */
+				nbmisc_write_index(nb_dev, 0x74, (GFX_CONFIG_DDI << 8) | GFX_CONFIG_DDI);
+				break;
+			case 6: /* DDI_DL lanes0-7 */
+				nbmisc_write_index(nb_dev, 0x74, (GFX_CONFIG_DDI << 8) | GFX_CONFIG_DDI);
+				break;
+			default:
+				printk(BIOS_INFO, "Incorrect configuration of external GFX slot.\n");
+				break;
+		}
 	}
 
 #if 1				/* external clock mode */
@@ -1123,8 +1304,6 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* 5.9.1.3 Selects the GFX REFCLK to be the source for PLL A. */
 	/* 5.9.1.4 Selects the GFX REFCLK to be the source for PLL B. */
 	/* 5.9.1.5 Selects the GFX REFCLK to be the source for PLL C. */
-	set_nbmisc_enable_bits(nb_dev, 0x28, 3 << 6 | 3 << 8 | 3 << 10,
-			       1 << 6 | 1 << 8 | 1 << 10);
 	reg32 = nbmisc_read_index(nb_dev, 0x28);
 	printk(BIOS_DEBUG, "misc 28 = %x\n", reg32);
 

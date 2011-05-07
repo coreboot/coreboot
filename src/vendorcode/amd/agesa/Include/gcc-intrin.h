@@ -572,7 +572,6 @@ static __inline__ __attribute__((always_inline)) void _mm_stream_si128_fs (void 
   data = (__m128i) __builtin_ia32_lddqu ((char const *)__B);
   _mm_stream_si128_fs2 (__A, data);
 }
-#endif
 
 static __inline__ __attribute__((always_inline)) void _mm_clflush_fs (void *__A)
 {
@@ -589,6 +588,7 @@ static __inline __attribute__(( __always_inline__)) void _mm_sfence (void)
 {
   __builtin_ia32_sfence ();
 }
+#endif
 
 static __inline__ __attribute__((always_inline)) void __stosb(unsigned char *dest, unsigned char data, size_t count)
 {

@@ -401,6 +401,8 @@ LibAmdSimNowEnterDebugger (
                                  };
   ((VOID (*)(VOID)) (size_t) opcode) (); // call the function
 }
+
+#ifdef __SSE3__
 VOID F10RevDProbeFilterCritical (
   IN       PCI_ADDR PciAddress,
   IN       UINT32   PciRegister
@@ -416,23 +418,7 @@ VOID F10RevDProbeFilterCritical (
   _mm_mfence ();
   __writemsr (0xC001001F, msrsave); 
 }
-VOID
-IdsOutPort (
-  IN       UINT32 Addr,
-  IN       UINT32 Value,
-  IN       UINT32 Flag
-  )
-{
-  __outdword ((UINT16) Addr, Value);
-}
-VOID 
-StopHere (
-  VOID
-  )
-{
-  VOLATILE UINTN x = 1;
-  while (x);
-}
+
 VOID
 LibAmdCLFlush (
   IN       UINT64 Address,
@@ -450,7 +436,25 @@ LibAmdCLFlush (
   }
   RestoreHwcr (hwcrSave);
 }
+#endif //__SSE3__
 
+VOID
+IdsOutPort (
+  IN       UINT32 Addr,
+  IN       UINT32 Value,
+  IN       UINT32 Flag
+  )
+{
+  __outdword ((UINT16) Addr, Value);
+}
+VOID 
+StopHere (
+  VOID
+  )
+{
+  VOLATILE UINTN x = 1;
+  while (x);
+}
 
 /*---------------------------------------------------------------------------------------*/
 /**

@@ -104,3 +104,14 @@ AGESA_STATUS  AmdSbDispatcher (IN void *pConfig);
  *
  */
 void AmdSbCopyMem (IN void* pDest, IN void* pSource, IN unsigned int Length);
+
+
+/* SB800 CIMx and AGESA V5 can share lib functions */
+unsigned char ReadIo8(IN unsigned short Address);
+unsigned short ReadIo16(IN unsigned short Address);
+unsigned int ReadIo32(IN unsigned short Address);
+void WriteIo8(IN unsigned short Address, IN unsigned char Data);
+void WriteIo16(IN unsigned short Address, IN unsigned short Data);
+void WriteIo32(IN unsigned short Address, IN unsigned int Data);
+void CpuidRead(IN unsigned int CpuidFcnAddress, OUT CPUID_DATA *Value);
+unsigned char ReadNumberOfCpuCores(void);

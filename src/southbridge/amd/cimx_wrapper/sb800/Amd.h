@@ -161,7 +161,7 @@ typedef struct _SB_CPUID_DATA {
   IN OUT   unsigned int          EBX_Reg;                ///< CPUID instruction result in EBX
   IN OUT   unsigned int          ECX_Reg;                ///< CPUID instruction result in ECX
   IN OUT   unsigned int          EDX_Reg;                ///< CPUID instruction result in EDX
-} SB_CPUID_DATA;
+} CPUID_DATA;
 
 #define WARM_RESET 1
 #define COLD_RESET 2      // Cold reset

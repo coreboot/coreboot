@@ -329,7 +329,7 @@ commonInitEarlyBoot (
 {
   UINT32   abValue;
   UINT16   dwTempVar;
-  SB_CPUID_DATA  CpuId;
+  CPUID_DATA  CpuId;
   UINT8   cimNativepciesupport;
   UINT8   cimIrConfig;
   UINT8   Data;

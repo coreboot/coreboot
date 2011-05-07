@@ -226,9 +226,7 @@
   #define VOLATILE volatile
   #define TRUE 1
   #define FALSE 0
-  //#define CONST const - avoid const until the large job of making agesa use it consistently is complete
-#undef CONST
-  #define CONST
+  #define CONST const
   #define ROMDATA
   #define CALLCONV
   #define _16BYTE_ALIGN __attribute__ ((aligned (16)))

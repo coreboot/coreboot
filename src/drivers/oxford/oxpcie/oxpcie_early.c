@@ -31,6 +31,9 @@
 #define OXPCIE_DEVICE \
 	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 0)
 
+#define OXPCIE_DEVICE_3 \
+	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 3)
+
 void oxford_init(void)
 {
 	u16 reg16;
@@ -72,14 +75,31 @@ void oxford_init(void)
 	while ((id == 0) || (id == 0xffffffff))
 		id = pci_read_config32(OXPCIE_DEVICE, PCI_VENDOR_ID);
 
+	u32 device = OXPCIE_DEVICE; /* unknown default */
+	switch (id) {
+	case 0xc1181415: /* e.g. Startech PEX1S1PMINI */
+		/* On this device function 0 is the parallel port, and
+		 * function 3 is the serial port. So let's go look for
+		 * the UART.
+		 */
+		id = pci_read_config32(OXPCIE_DEVICE_3, PCI_VENDOR_ID);
+		if (id != 0xc11b1415)
+			return;
+		device = OXPCIE_DEVICE_3;
+		break;
+	case 0xc1581415: /* e.g. Startech MPEX2S952 */
+		device = OXPCIE_DEVICE;
+		break;
+	}
+
 	/* Setup base address on device */
-	pci_write_config32(OXPCIE_DEVICE, PCI_BASE_ADDRESS_0,
+	pci_write_config32(device, PCI_BASE_ADDRESS_0,
 				CONFIG_OXFORD_OXPCIE_BASE_ADDRESS);
 
 	/* Enable memory on device */
-	reg16 = pci_read_config16(OXPCIE_DEVICE, PCI_COMMAND);
+	reg16 = pci_read_config16(device, PCI_COMMAND);
 	reg16 |= PCI_COMMAND_MEMORY;
-	pci_write_config16(OXPCIE_DEVICE, PCI_COMMAND, reg16);
+	pci_write_config16(device, PCI_COMMAND, reg16);
 
 	/* Now the UART initialization */
 	u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;

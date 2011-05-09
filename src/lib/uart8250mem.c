@@ -117,6 +117,8 @@ u32 uart_mem_init(void)
 
 #if defined(MORE_TESTING) && !defined(__SMM__) && !defined(__PRE_RAM__)
 	device_t dev = dev_find_device(0x1415, 0xc158, NULL);
+	if (!dev)
+		dev = dev_find_device(0x1415, 0xc11b, NULL);
 
 	if (dev) {
 		struct resource *res = find_resource(dev, 0x10);

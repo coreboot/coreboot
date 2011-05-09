@@ -54,3 +54,9 @@ static const struct pci_driver oxford_oxpcie_driver __pci_driver = {
 	.vendor = 0x1415,
 	.device = 0xc158,
 };
+
+static const struct pci_driver oxford_oxpcie_driver_2 __pci_driver = {
+	.ops    = &oxford_oxpcie_ops,
+	.vendor = 0x1415,
+	.device = 0xc11b,
+};

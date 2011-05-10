@@ -276,6 +276,7 @@ int main(int argc, char **argv)
 	int enum_length;
 	int len;
 	char buf[16];
+	char val;
 
         for(i=1;i<argc;i++) {
                 if(argv[i][0]!='-') {
@@ -371,8 +372,9 @@ int main(int argc, char **argv)
 		}
 
 		/* skip commented and blank lines */
-		if(line[0]=='#') continue;
-		if(line[strspn(line," ")]=='\n') continue;
+		val = line[strspn(line," ")];
+		/* takes care of *nix, Mac and Windows line ending formats */
+		if (val=='#' || val=='\n' || val=='\r') continue;
 		/* scan in the input data */
 		sscanf(line,"%d %d %c %d %s",
 			&ce->bit,&ce->length,&uc,&ce->config_id,&ce->name[0]);

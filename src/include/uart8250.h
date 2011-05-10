@@ -20,26 +20,7 @@
 #ifndef UART8250_H
 #define UART8250_H
 
-/* Base Address */
-#ifndef CONFIG_TTYS0_BASE
-#define CONFIG_TTYS0_BASE 0x3f8
-#endif
-
-#ifndef CONFIG_TTYS0_BAUD
-#define CONFIG_TTYS0_BAUD 115200
-#endif
-#if ((115200%CONFIG_TTYS0_BAUD) != 0)
-#error Bad ttys0 baud rate
-#endif
-
-/* Line Control Settings */
-#ifndef CONFIG_TTYS0_LCS
-/* Set 8bit, 1 stop bit, no parity */
-#define CONFIG_TTYS0_LCS	0x3
-#endif
-
-#define UART_LCS	CONFIG_TTYS0_LCS
-
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 
 /* Data */
 #define UART_RBR 0x00
@@ -126,6 +107,12 @@
 #define UART_SCR 0x07
 #define UART_SPR 0x07
 
+#if ((115200 % CONFIG_TTYS0_BAUD) != 0)
+#error Bad ttyS0 baud rate
+#endif
+
+/* Line Control Settings */
+#define UART_LCS	CONFIG_TTYS0_LCS
 
 #ifndef __ROMCC__
 unsigned char uart8250_rx_byte(unsigned base_port);
@@ -151,6 +138,8 @@ u32 uartmem_getbaseaddr(void);
 /* and special init for OXPCIe based cards */
 void oxford_init(void);
 
-#endif
+#endif /* __ROMCC__ */
+
+#endif /* CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM */
 
 #endif /* UART8250_H */

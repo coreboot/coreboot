@@ -22,18 +22,6 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
-#include <uart8250.h>
-#endif
-
-#if CONFIG_CONSOLE_NE2K
-#include <console/ne2k.h>
-#endif
-
-#if CONFIG_USBDEBUG
-#include <usbdebug.h>
-#endif
-
 #ifndef __PRE_RAM__
 #include <string.h>
 #include <pc80/mc146818rtc.h>
@@ -52,14 +40,6 @@ void console_init(void)
 	}
 }
 
-static void __console_tx_byte(unsigned char byte)
-{
-	struct console_driver *driver;
-	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		driver->tx_byte(byte);
-	}
-}
-
 void console_tx_flush(void)
 {
 	struct console_driver *driver;
@@ -67,6 +47,14 @@ void console_tx_flush(void)
 		if (!driver->tx_flush)
 			continue;
 		driver->tx_flush();
+	}
+}
+
+static void __console_tx_byte(unsigned char byte)
+{
+	struct console_driver *driver;
+	for(driver = console_drivers; driver < econsole_drivers; driver++) {
+		driver->tx_byte(byte);
 	}
 }
 

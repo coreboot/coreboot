@@ -23,18 +23,8 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
-#include <uart8250.h>
-#endif
-#if CONFIG_USBDEBUG
-#include <usbdebug.h>
-#endif
-#if CONFIG_CONSOLE_NE2K
-#include <console/ne2k.h>
-#endif
 
 #if CONFIG_CONSOLE_SERIAL8250MEM
 static u32 serial8250mem_base_address = 0;

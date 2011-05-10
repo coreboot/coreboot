@@ -24,15 +24,21 @@
 #include <console/loglevel.h>
 #include <console/post_codes.h>
 
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
+#include <uart8250.h>
+#endif
+#if CONFIG_USBDEBUG
+#include <usbdebug.h>
+#endif
+#if CONFIG_CONSOLE_NE2K
+#include <console/ne2k.h>
+#endif
+
 #ifndef __PRE_RAM__
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-#if CONFIG_USBDEBUG
-#include <usbdebug.h>
-#endif
-
 struct console_driver {
 	void (*init)(void);
 	void (*tx_byte)(unsigned char byte);
@@ -55,9 +61,6 @@ extern int console_loglevel;
  * we could use the same code on all architectures.
  */
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
-#if CONFIG_CONSOLE_SERIAL8250
-#include <uart8250.h>
-#endif
 #endif
 
 #ifndef __ROMCC__

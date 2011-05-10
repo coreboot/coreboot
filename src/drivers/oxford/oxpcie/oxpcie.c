@@ -23,7 +23,6 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <uart8250.h>
 
 static void oxford_oxpcie_enable(device_t dev)
 {
@@ -41,9 +40,20 @@ static void oxford_oxpcie_enable(device_t dev)
 			(read32(res->base + 4) & 3));
 }
 
+
+static void oxford_oxpcie_set_resources(struct device *dev)
+{
+	pci_dev_set_resources(dev);
+
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	/* Re-initialize OXPCIe base address after set_resources */
+	uartmem_init();
+#endif
+}
+
 static struct device_operations oxford_oxpcie_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources    = oxford_oxpcie_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = oxford_oxpcie_enable,
 	.scan_bus         = 0,

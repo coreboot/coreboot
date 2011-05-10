@@ -110,15 +110,16 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 void rtc_init(int invalid);
 #if CONFIG_USE_OPTION_TABLE
 int get_option(void *dest, const char *name);
-unsigned read_option(unsigned start, unsigned size, unsigned def);
+unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
 #else
 static inline int get_option(void *dest __attribute__((unused)),
 	const char *name __attribute__((unused))) { return -2; }
-static inline unsigned read_option(unsigned start, unsigned size, unsigned def)
+static inline unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 	{ return def; }
 #endif
 #else
 #include <pc80/mc146818rtc_early.c>
 #endif
+#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 
 #endif /*  PC80_MC146818RTC_H */

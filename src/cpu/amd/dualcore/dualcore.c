@@ -49,7 +49,7 @@ static inline void start_other_cores(void)
 	unsigned nodes;
 	unsigned nodeid;
 
-	if (read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0))  {
+	if (read_option(multi_core, 0))  {
 		return; // disable multi_core
 	}
 

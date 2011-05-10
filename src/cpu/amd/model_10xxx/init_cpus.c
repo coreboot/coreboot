@@ -72,7 +72,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 	nodes = get_nodes();
 
 	if (!CONFIG_LOGICAL_CPUS ||
-	    read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0) {	// 0 means multi core
+	    read_option(multi_core, 0) != 0) {	// 0 means multi core
 		disable_siblings = 1;
 	} else {
 		disable_siblings = 0;

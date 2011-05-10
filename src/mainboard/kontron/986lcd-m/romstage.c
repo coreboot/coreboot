@@ -59,7 +59,7 @@ void setup_ich7_gpios(void)
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
-	if (read_option(CMOS_VSTART_lpt, CMOS_VLEN_lpt, 0) != 0) {
+	if (read_option(lpt, 0) != 0) {
 		lpt_en = 1<<2; // enable LPT
 	}
 	// Enable Serial IRQ
@@ -228,18 +228,18 @@ static void rcba_config(void)
 	reg32 = FD_ACMOD|FD_ACAUD|FD_PATA;
 	reg32 |= FD_PCIE6|FD_PCIE5|FD_PCIE4;
 
-	if (read_option(CMOS_VSTART_ethernet1, CMOS_VLEN_ethernet1, 0) != 0) {
+	if (read_option(ethernet1, 0) != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 1.\n");
 		reg32 |= FD_PCIE1;
 	}
-	if (read_option(CMOS_VSTART_ethernet2, CMOS_VLEN_ethernet2, 0) != 0) {
+	if (read_option(ethernet2, 0) != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 2.\n");
 		reg32 |= FD_PCIE2;
 	} else {
 		if (reg32 & FD_PCIE1)
 			port_shuffle = 1;
 	}
-	if (read_option(CMOS_VSTART_ethernet3, CMOS_VLEN_ethernet3, 0) != 0) {
+	if (read_option(ethernet3, 0) != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 3.\n");
 		reg32 |= FD_PCIE3;
 	} else {

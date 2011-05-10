@@ -1108,7 +1108,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	 * and if so count them.
 	 */
 #if defined(CMOS_VSTART_interleave_chip_selects)
-	if (read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) == 0)
+	if (read_option(interleave_chip_selects, 1) == 0)
 		return 0;
 #else
 #if !CONFIG_INTERLEAVE_CHIP_SELECTS
@@ -1806,7 +1806,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	bios_cycle_time = min_cycle_times[
 #ifdef CMOS_VSTART_max_mem_clock
-		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)
+		read_option(max_mem_clock, 0)
 #else
 #if defined(CONFIG_MAX_MEM_CLOCK)
 		CONFIG_MAX_MEM_CLOCK
@@ -2375,7 +2375,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 		dcl |= DCL_DimmEccEn;
 	}
 #ifdef CMOS_VSTART_ECC_memory
-	if (read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
+	if (read_option(ECC_memory, 1) == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
 #else // CMOS_VSTART_ECC_memory not defined

@@ -92,7 +92,7 @@ static inline int do_normal_boot(void)
 	return (byte & (1<<1));
 }
 
-unsigned read_option(unsigned start, unsigned size, unsigned def)
+unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {
 #if CONFIG_USE_OPTION_TABLE
 	unsigned byte;

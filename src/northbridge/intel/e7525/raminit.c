@@ -624,7 +624,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	}
 	ecc = 2;
 #if CONFIG_HAVE_OPTION_TABLE
-	if (read_option(CMOS_VSTART_ECC_memory,CMOS_VLEN_ECC_memory,1) == 0) {
+	if (read_option(ECC_memory, 1) == 0) {
 		ecc = 0;  /* ECC off in CMOS so disable it */
 		print_debug("ECC off\n");
 	} else

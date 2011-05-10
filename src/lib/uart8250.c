@@ -99,7 +99,7 @@ void uart_init(void)
 	static const unsigned char divisor[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
 	unsigned b_index = 0;
 #if defined(__PRE_RAM__)
-	b_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
+	b_index = read_option(baud_rate, 0);
 	b_index &= 7;
 	div = divisor[b_index];
 #else

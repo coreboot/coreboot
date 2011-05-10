@@ -36,7 +36,7 @@ void init_timer(void)
 	msr_t fsb_clock_sts;
 
 	/* Set the apic timer to no interrupts and periodic mode */
-	lapic_write(LAPIC_LVTT, (1 << 17) | (1<< 16) | (0 << 12) | (0 << 0));
+	lapic_write(LAPIC_LVTT, (LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED));
 
 	/* Set the divider to 1, no divider */
 	lapic_write(LAPIC_TDCR, LAPIC_TDR_DIV_1);

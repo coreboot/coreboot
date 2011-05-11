@@ -92,6 +92,8 @@ config VENDOR_RCA
 	bool "RCA"
 config VENDOR_RODA
 	bool "Roda"
+config VENDOR_SIEMENS
+	bool "Siemens"
 config VENDOR_SOYO
 	bool "Soyo"
 config VENDOR_SUNW
@@ -163,6 +165,7 @@ source "src/mainboard/nvidia/Kconfig"
 source "src/mainboard/pcengines/Kconfig"
 source "src/mainboard/rca/Kconfig"
 source "src/mainboard/roda/Kconfig"
+source "src/mainboard/siemens/Kconfig"
 source "src/mainboard/soyo/Kconfig"
 source "src/mainboard/sunw/Kconfig"
 source "src/mainboard/supermicro/Kconfig"

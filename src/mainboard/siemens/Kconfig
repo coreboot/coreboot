@@ -1,0 +1,17 @@
+if VENDOR_SIEMENS
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_SIEMENS_SITEMP_G1P1
+	bool "MB SITEMP-G1 (U1P0/U1P1)"
+
+endchoice
+
+source "src/mainboard/siemens/sitemp_g1p1/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Siemens"
+
+endif # VENDOR_SIEMENS

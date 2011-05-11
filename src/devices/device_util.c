@@ -583,6 +583,8 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 					if (subbus->link_num
 					== IOINDEX_SUBTRACTIVE_LINK(res->index))
 						break;
+				if (!subbus) /* Why can subbus be NULL?  */
+					break;
 				search_bus_resources(subbus, type_mask, type,
 						     search, gp);
 				continue;

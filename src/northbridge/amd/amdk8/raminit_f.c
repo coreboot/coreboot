@@ -1111,7 +1111,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	if (read_option(interleave_chip_selects, 1) == 0)
 		return 0;
 #else
-#if !CONFIG_INTERLEAVE_CHIP_SELECTS
+#if !defined(CONFIG_INTERLEAVE_CHIP_SELECTS) || !CONFIG_INTERLEAVE_CHIP_SELECTS
 	return 0;
 #endif
 #endif

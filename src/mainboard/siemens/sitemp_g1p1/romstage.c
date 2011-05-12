@@ -244,7 +244,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog(); 
 
-	uart_init();
 	console_init();
 #if defined(DUMP_CMOS_RAM) && (DUMP_CMOS_RAM == 1)
 	check_cmos();  // rebooting in case of corrupted cmos !!!!!		

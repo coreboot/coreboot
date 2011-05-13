@@ -325,7 +325,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb600_before_pci_init();
 	
 #if CONFIG_USE_OPTION_TABLE	
-	if( read_option(CMOS_VSTART_cmos_defaults_loaded, CMOS_VLEN_cmos_defaults_loaded, 0) )
+	if( read_option(cmos_defaults_loaded, 0) )
 		__WARNING__("WARNING: CMOS DEFAULTS LOADED. PLEASE CHECK CMOS OPTION \"cmos_default_loaded\" !\n"); 
 #endif
 

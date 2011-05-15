@@ -31,7 +31,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/amd/multicore.h>
 #include <cpu/amd/amdfam14.h>
 
 #define MCI_STATUS 0x401
@@ -58,18 +57,14 @@ void wrmsr_amd(u32 index, msr_t msr)
 
 static void model_14_init(device_t dev)
 {
-  printk(BIOS_DEBUG, "Model 14 Init - a no-op.\n");
+  printk(BIOS_DEBUG, "Model 14 Init.\n");
 
   u8 i;
   msr_t msr;
   int msrno;
-  struct node_core_id id;
 #if CONFIG_LOGICAL_CPUS == 1
   u32 siblings;
 #endif
-
-//  id = get_node_core_id(read_nb_cfg_54());  /* nb_cfg_54 can not be set */
-//  printk(BIOS_DEBUG, "nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
 
   disable_cache ();
   /* Enable access to AMD RdDram and WrDram extension bits */
@@ -99,10 +94,6 @@ static void model_14_init(device_t dev)
 
   /* Enable the local cpu apics */
   setup_lapic();
-
-  /* Set the processor name string */
-//  init_processor_name();
-
 
 #if CONFIG_LOGICAL_CPUS == 1
   siblings = cpuid_ecx(0x80000008) & 0xff;

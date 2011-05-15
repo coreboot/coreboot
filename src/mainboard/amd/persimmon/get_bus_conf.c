@@ -42,23 +42,10 @@ u32 pci1234x[] = {
   0x0000ff0,
 };
 
-/*
-* HT Chain device num, actually it is unit id base of every ht device in chain,
-* assume every chain only have 4 ht device at most
-*/
-u32 hcdnx[] = {
-  0x20202020,
-};
-
 u32 bus_type[256];
-
 u32 sbdn_sb800;
 
-//KZ [092110]extern void get_pci1234(void);
-
 static u32 get_bus_conf_done = 0;
-
-
 
 
 void get_bus_conf(void)
@@ -139,8 +126,5 @@ void get_bus_conf(void)
   /* I/O APICs:   APIC ID Version State   Address */
   bus_isa = 10;
   apicid_base = CONFIG_MAX_CPUS;
-//#if CONFIG_LOGICAL_CPUS==1
-//  apicid_base = get_apicid_base(1);
-//#endif
-  apicid_sb800 = apicid_base + 0;
+  apicid_sb800 = apicid_base;
 }

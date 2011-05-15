@@ -849,7 +849,7 @@ static struct device_operations cpu_bus_ops = {
     .set_resources    = cpu_bus_set_resources,
     .enable_resources = NULL,
     .init             = cpu_bus_init,
-    .scan_bus         = 0,
+    .scan_bus         = NULL,
 };
 
 

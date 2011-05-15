@@ -1483,9 +1483,8 @@ DefinitionBlock (
 					0xF300			/* length */
 				)
 
-#if 0
-				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
+#if 0
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 				Memory32Fixed(READONLY, 0x000E0000, 0x00020000, RDBS)   /* BIOS ROM area */
 

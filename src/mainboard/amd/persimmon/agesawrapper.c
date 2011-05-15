@@ -157,13 +157,6 @@ agesawrapper_amdinitmmio (
   PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
   
-
-  /* Set ROM cache onto WP to decrease post time */
-  MsrReg = (0x0100000000 - CONFIG_ROM_SIZE) | 5;
-  LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
-  MsrReg = (0x1000000000 - CONFIG_ROM_SIZE) | 0x800;
-  LibAmdMsrWrite (0x20D, &MsrReg, &StdHeader);
-
   Status = AGESA_SUCCESS;
   return (UINT32)Status;
 }

@@ -116,8 +116,8 @@ typedef union _PCI_ADDR {
 #define cimHpetTimerDefault             TRUE
 #define cimHpetMsiDisDefault            FALSE     // Enable
 #define cimIrConfigDefault              0x00      // Disable
-#define cimSpiFastReadEnableDefault     0x00      // Disable
-#define cimSpiFastReadSpeedDefault      0x00      // NULL
+#define cimSpiFastReadEnableDefault     0x01      // Enable
+#define cimSpiFastReadSpeedDefault      0x01      // 33 MHz
 // GPP/AB Controller 
 #define cimNbSbGen2Default              TRUE
 #define cimAlinkPhyPllPowerDownDefault  TRUE

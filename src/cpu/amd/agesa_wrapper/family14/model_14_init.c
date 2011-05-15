@@ -62,6 +62,7 @@ static void model_14_init(device_t dev)
 
   u8 i;
   msr_t msr;
+  int msrno;
   struct node_core_id id;
 #if CONFIG_LOGICAL_CPUS == 1
   u32 siblings;
@@ -70,12 +71,24 @@ static void model_14_init(device_t dev)
 //  id = get_node_core_id(read_nb_cfg_54());  /* nb_cfg_54 can not be set */
 //  printk(BIOS_DEBUG, "nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
 
-  /* Turn on caching if we haven't already */
-  x86_enable_cache();
-  amd_setup_mtrrs();
-  x86_mtrr_check();
+  disable_cache ();
+  /* Enable access to AMD RdDram and WrDram extension bits */
+  msr = rdmsr(SYSCFG_MSR);
+  msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+  wrmsr(SYSCFG_MSR, msr);
 
-  disable_cache();
+   // BSP: make a0000-bffff UC, c0000-fffff WB, same as OntarioApMtrrSettingsList for APs
+   msr.lo = msr.hi = 0;
+   wrmsr (0x259, msr);
+   msr.lo = msr.hi = 0x1e1e1e1e;
+   for (msrno = 0x268; msrno <= 0x26f; msrno++)
+      wrmsr (msrno, msr);
+
+  /* disable access to AMD RdDram and WrDram extension bits */
+  msr = rdmsr(SYSCFG_MSR);
+  msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+  wrmsr(SYSCFG_MSR, msr);
+  enable_cache ();
 
   /* zero the machine check error status registers */
   msr.lo = 0;
@@ -83,8 +96,6 @@ static void model_14_init(device_t dev)
   for (i = 0; i < 5; i++) {
     wrmsr(MCI_STATUS + (i * 4), msr);
   }
-
-  enable_cache();
 
   /* Enable the local cpu apics */
   setup_lapic();

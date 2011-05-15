@@ -352,6 +352,25 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
+        {
+	    u8 byte;
+	    u32 ioapic_base;
+
+	    printk(BIOS_INFO, "sm_init().\n");
+	    ioapic_base = 0xFEC00000;
+	    clear_ioapic(ioapic_base);
+	    /* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
+	    #if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS < 16)
+	    /* Assign the ioapic ID the next available number after the processor core local APIC IDs */
+	    setup_ioapic(ioapic_base, CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS);
+	    #elif (CONFIG_APIC_ID_OFFSET > 0)
+	    /* Assign the ioapic ID the value 0. Processor APIC IDs follow. */ 
+	    setup_ioapic(ioapic_base, 0);
+	    #else
+	    #error "The processor APIC IDs must be lifted to make room for the I/O APIC ID"
+	    #endif
+        }
+
 		break;
 
 	case (0x14 << 3) | 1: /* 0:14:1 IDE */

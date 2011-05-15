@@ -138,7 +138,8 @@ agesawrapper_amdinitmmio (
    Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
    Address MSR register.
   */
-  MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (8 << 2) | 1;
+
+  MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
   LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
   
   /*

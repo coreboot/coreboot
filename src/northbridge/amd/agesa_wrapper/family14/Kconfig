@@ -41,12 +41,12 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config MMCONF_BASE_ADDRESS
 	hex
-	default 0xe0000000
+	default 0xf8000000
   depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
 
 config MMCONF_BUS_NUMBER
 	int
-	default 256
+ 	default 16
 	depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
 
 config DIMM_DDR3

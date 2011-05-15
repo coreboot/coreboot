@@ -48,7 +48,7 @@
 #ifdef  MOVE_PCIEBAR_TO_F0000000
   #define PCIEX_BASE_ADDRESS           0xF7000000
 #else
-  #define PCIEX_BASE_ADDRESS           0xE0000000
+  #define PCIEX_BASE_ADDRESS           0xF8000000
 #endif
 
 /**

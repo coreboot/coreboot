@@ -109,7 +109,7 @@
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
 #ifndef SATA_MODE
-  #define SATA_MODE			NATIVE_IDE_MODE
+  #define SATA_MODE			AHCI_MODE
 #endif
 
 /**

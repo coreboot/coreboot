@@ -314,6 +314,7 @@
 
 #define PCI_DEVICE_ID_ATI_SB800_LPC             0x439D
 #define PCI_DEVICE_ID_ATI_SB800_SATA            0x4390
+#define PCI_DEVICE_ID_ATI_SB800_SATA_AHCI       0x4391
 #define PCI_DEVICE_ID_ATI_SB800_IDE             0x439C
 #define PCI_DEVICE_ID_ATI_SB800_HDA             0x4383
 #define PCI_DEVICE_ID_ATI_SB800_PCI             0x4384

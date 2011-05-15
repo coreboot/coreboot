@@ -138,9 +138,8 @@ static struct device_operations sata_ops = {
 static const struct pci_driver sata_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_SATA, //SATA IDE Mode 4390
+	.device = PCI_DEVICE_ID_ATI_SB800_SATA_AHCI,
 };
-
 
 #if CONFIG_USBDEBUG
 static void usb_set_resources(struct device *dev)

@@ -83,7 +83,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
   	sb_config->SATAMODE.SataMode.SataController = SATA_CONTROLLER;
 	sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary, 1 -IDE as secondary.
 								//TODO: set to secondary not take effect.
-	sb_config->SATAMODE.SataMode.SataIdeCombinedMode = 0; //IDE controlor exposed and combined mode enabled
+	sb_config->SATAMODE.SataMode.SataIdeCombinedMode = 1; //IDE controllor is hidden
 	sb_config->SATAMODE.SataMode.SATARefClkSel = SATA_CLOCK_SOURCE;
 
   	/* Azalia HDA */

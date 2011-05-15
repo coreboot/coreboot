@@ -315,7 +315,6 @@ static const struct pci_driver PORTD_driver __pci_driver = {
  */
 static void sb800_enable(device_t dev)
 {
-	u8 gpp_port = 0;
 	struct southbridge_amd_cimx_wrapper_sb800_config *sb_chip =
 		(struct southbridge_amd_cimx_wrapper_sb800_config *)(dev->chip_info);
 
@@ -414,15 +413,16 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
+       sb_config->PORTCONFIG[0].PortCfg.PortPresent = dev->enabled;
+       return;
 	case (0x15 << 3) | 1: /* 0:15:1 PCIe PortB */
+       sb_config->PORTCONFIG[1].PortCfg.PortPresent = dev->enabled;
+       return;
 	case (0x15 << 3) | 2: /* 0:15:2 PCIe PortC */
+       sb_config->PORTCONFIG[2].PortCfg.PortPresent = dev->enabled;
+       return;
 	case (0x15 << 3) | 3: /* 0:15:3 PCIe PortD */
-		gpp_port = (dev->path.pci.devfn) & 0x03;
-		if (dev->enabled) {
-			sb_config->PORTCONFIG[gpp_port].PortCfg.PortPresent = ENABLED;
-		} else {
-			sb_config->PORTCONFIG[gpp_port].PortCfg.PortPresent = DISABLED;
-		}
+       sb_config->PORTCONFIG[3].PortCfg.PortPresent = dev->enabled;
 
 		/*
 		 * GPP_CFGMODE_X4000: PortA Lanes[3:0]

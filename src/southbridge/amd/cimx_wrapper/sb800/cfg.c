@@ -99,10 +99,6 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->GppFunctionEnable = GPP_CONTROLLER;
 	sb_config->GppLinkConfig = GPP_CFGMODE;
 	//sb_config->PORTCONFIG[0].PortCfg.PortHotPlug = TRUE;
-	sb_config->PORTCONFIG[0].PortCfg.PortPresent = ENABLED;
-	sb_config->PORTCONFIG[1].PortCfg.PortPresent = ENABLED;
-	sb_config->PORTCONFIG[2].PortCfg.PortPresent = ENABLED;
-	sb_config->PORTCONFIG[3].PortCfg.PortPresent = ENABLED;
 	sb_config->GppUnhidePorts = TRUE; //visable always, even port empty
 	//sb_config->NbSbGen2 = TRUE;
 	//sb_config->GppGen2 = TRUE;

@@ -69,7 +69,7 @@ static void *smp_write_config_table(void *v)
   dword |= (pm_ioread(0x35) & 0xFF) << 8;
   dword |= (pm_ioread(0x36) & 0xFF) << 16;
   dword |= (pm_ioread(0x37) & 0xFF) << 24;
-  smp_write_ioapic(mc, apicid_sb800, 0x11, dword);
+  smp_write_ioapic(mc, apicid_sb800, 0x21, dword);
 
   for (byte = 0x0; byte < sizeof(intr_data); byte ++) {
     outb(byte | 0x80, 0xC00);

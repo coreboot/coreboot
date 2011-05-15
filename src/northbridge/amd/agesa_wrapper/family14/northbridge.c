@@ -788,7 +788,22 @@ static void cpu_bus_set_resources(device_t dev)
  
 static void cpu_bus_init(device_t dev)
 {
+	struct device_path cpu_path;
+	device_t cpu;
+    int apic_id;
+
     initialize_cpus(dev->link_list);
+
+	/* Build the AP cpu device path(s) */
+    for (apic_id = 1; apic_id < CONFIG_MAX_CPUS; apic_id++) {
+	    cpu_path.type = DEVICE_PATH_APIC;
+	    cpu_path.apic.apic_id = apic_id;
+    	cpu = alloc_dev(dev->link_list, &cpu_path);
+        if (!cpu) return;
+        cpu->enabled = 1;
+    	cpu->path.apic.node_id = 0;
+    	cpu->path.apic.core_id = apic_id;
+    }
 }
 
 

@@ -18,16 +18,8 @@
 ##
 config NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
 	bool
-	select HAVE_DEBUG_RAM_SETUP
-	select HAVE_DEBUG_SMBUS
-	select HYPERTRANSPORT_PLUGIN_SUPPORT
 	select MMCONF_SUPPORT
 	select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14_ROOT_COMPLEX
-
-config HT3_SUPPORT
-	bool
-	default y
-	depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -48,30 +40,6 @@ config MMCONF_BUS_NUMBER
 	int
  	default 16
 	depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
-
-config DIMM_DDR3
-	bool
-	default n
-	depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
-
-config DIMM_REGISTERED
-	bool
-	default n
-	depends on NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
-
-if !DIMM_REGISTERED
-	config DIMM_SUPPORT
-		hex
-		default 0x0004
-endif
-
-if DIMM_DDR3
-	if DIMM_REGISTERED
-	  config DIMM_SUPPORT
-		  hex
-		  default 0x0005
-	endif
-endif
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
   string

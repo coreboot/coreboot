@@ -230,3 +230,10 @@ lint:
 	done; \
 	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed." &&  exit 1; }; \
 	rm -f $$LINTLOG
+
+crossgcc: clean-for-update
+	$(MAKE) -C util/crossgcc build
+
+crossgcc-clean: clean-for-update
+	$(MAKE) -C util/crossgcc clean
+

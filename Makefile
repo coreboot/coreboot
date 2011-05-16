@@ -242,12 +242,6 @@ $(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs
 cscope:
 	cscope -bR
 
-crossgcc: clean-for-update
-	$(MAKE) -C util/crossgcc build
-
-crossgcc-clean: clean-for-update
-	$(MAKE) -C util/crossgcc clean
-
 doxy: doxygen
 doxygen:
 	$(DOXYGEN) documentation/Doxyfile.coreboot

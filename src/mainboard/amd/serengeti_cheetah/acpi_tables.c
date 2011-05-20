@@ -191,6 +191,28 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
+	/* FACS */
+	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
+	facs = (acpi_facs_t *) current;
+	current += sizeof(acpi_facs_t);
+	acpi_create_facs(facs);
+
+	/* DSDT */
+	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
+	dsdt = (acpi_header_t *)current;
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
+
+	/* FADT */
+	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
+	fadt = (acpi_fadt_t *) current;
+	current += sizeof(acpi_fadt_t);
+
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
+
 	/*
 	 * We explicitly add these tables later on:
 	 */
@@ -267,28 +289,6 @@ unsigned long write_acpi_tables(unsigned long start)
 		acpi_add_table(rsdp, ssdtx);
 	}
 #endif
-
-	/* FACS */
-	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
-	facs = (acpi_facs_t *) current;
-	current += sizeof(acpi_facs_t);
-	acpi_create_facs(facs);
-
-	/* DSDT */
-	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
-	dsdt = (acpi_header_t *)current;
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
-
-	/* FADT */
-	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-
-	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdp, fadt);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

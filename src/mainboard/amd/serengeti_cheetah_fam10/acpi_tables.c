@@ -197,6 +197,31 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
+	/* DSDT */
+	current	  = ( current + 0x07) & -0x08;
+	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
+	dsdt = (acpi_header_t *)current;
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
+
+	/* FACS */ // it needs 64 bit alignment
+	current	  = ( current + 0x07) & -0x08;
+	printk(BIOS_DEBUG, "ACPI:	* FACS at %lx\n", current);
+	facs = (acpi_facs_t *) current;
+	current += sizeof(acpi_facs_t);
+	acpi_create_facs(facs);
+
+	/* FADT */
+	current	  = ( current + 0x07) & -0x08;
+	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
+	fadt = (acpi_fadt_t *) current;
+	current += sizeof(acpi_fadt_t);
+
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
+
 	/*
 	 * We explicitly add these tables later on:
 	 */
@@ -288,31 +313,6 @@ unsigned long write_acpi_tables(unsigned long start)
 		acpi_add_table(rsdp, ssdtx);
 	}
 #endif
-
-	/* DSDT */
-	current	  = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
-	dsdt = (acpi_header_t *)current;
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
-
-	/* FACS */ // it needs 64 bit alignment
-	current	  = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* FACS at %lx\n", current);
-	facs = (acpi_facs_t *) current;
-	current += sizeof(acpi_facs_t);
-	acpi_create_facs(facs);
-
-	/* FADT */
-	current	  = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-
-	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdp, fadt);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

@@ -74,7 +74,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
   if (boot_cpu())
     {
     __outdword (0xcf8, 0x8000a3b8);
-    __outdword (0xcfc, __indword (0xcfc) | 0 << 24);
+    __outdword (0xcfc, __indword (0xcfc) | 1 << 24);
     }
 
   // early enable of SPI 33 MHz fast mode read

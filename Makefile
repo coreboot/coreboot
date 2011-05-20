@@ -109,7 +109,7 @@ endif
 endif
 
 ifeq ($(CONFIG_CCACHE),y)
-CCACHE:=$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH))))
+CCACHE:=$(word 1,$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH)))))
 ifeq ($(CCACHE),)
 $(error ccache selected, but not found in PATH)
 endif

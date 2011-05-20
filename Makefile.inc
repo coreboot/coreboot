@@ -179,7 +179,7 @@ $(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) -MMD -I$(subst $(objutil)/,util/,$(dir $<)) -I$(dir $<) $(HOSTCFLAGS) -c -o $@ $<
 
-$(obj)/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
+$(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -c -o $@ $<
 

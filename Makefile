@@ -237,7 +237,9 @@ printall:
 
 endif
 
+ifndef NOMKDIR
 $(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
+endif
 
 cscope:
 	cscope -bR

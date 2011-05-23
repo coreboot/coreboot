@@ -21,7 +21,7 @@
 	.section ".romstrap", "a", @progbits
 
 
-	.align 4
+	.align 16
 	.globl __romstrap_start
 __romstrap_start:
 rstables:

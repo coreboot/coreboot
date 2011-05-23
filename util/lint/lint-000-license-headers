@@ -29,6 +29,7 @@ find src util -name .svn -type d -prune -o \
 	-name \*.[18] -prune -o \
 	-name romcc -type d -prune -o \
 	-name crossgcc -type d -prune -o \
+	-name vendorcode -type d -prune -o \
 	-type f -exec \
 		grep -L "51 Franklin St, Fifth Floor, Boston" {} + | \
 	sed -e "s,^.*$,File & has no valid GPL header.,"

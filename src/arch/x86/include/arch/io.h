@@ -6,8 +6,7 @@
 /*
  * This file contains the definitions for the x86 IO instructions
  * inb/inw/inl/outb/outw/outl and the "string versions" of the same
- * (insb/insw/insl/outsb/outsw/outsl). You can also use "pausing"
- * versions of the single-IO instructions (inb_p/inw_p/..).
+ * (insb/insw/insl/outsb/outsw/outsl).
  */
 #if defined(__ROMCC__)
 static inline void outb(uint8_t value, uint16_t port)

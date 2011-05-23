@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 #	select HAVE_MP_TABLE
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
-	select AP_IN_SIPI_WAIT
 	select UDELAY_LAPIC
 	select HAVE_ACPI_TABLES
 	select HAVE_SMI_HANDLER

@@ -120,6 +120,7 @@ void *memalign(size_t align, size_t size);
  */
 long int strtol(const char *s, char **nptr, int base);
 unsigned long int strtoul(const char *s, char **nptr, int base);
+long atol(const char *nptr);
 
 /** @} */
 

@@ -473,6 +473,11 @@ long int strtol(const char *ptr, char **endptr, int base)
         return ret * negative;
 }
 
+long atol(const char *nptr)
+{
+	return strtol(nptr, NULL, 10);
+}
+
 /**
  * Convert the initial portion of a string into an unsigned int
  * @param ptr A pointer to the string to convert

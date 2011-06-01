@@ -100,7 +100,7 @@
  * @breif INCHIP Sata Controller
  */
 #ifndef SATA_CONTROLLER
-  #define SATA_CONTROLLER		ENABLED
+  #define SATA_CONTROLLER		CIMX_OPTION_ENABLED
 #endif
 
 /**
@@ -202,7 +202,7 @@
  * @def GPP_CONTROLLER
  */
 #ifndef GPP_CONTROLLER
-  #define GPP_CONTROLLER		ENABLED
+  #define GPP_CONTROLLER		CIMX_OPTION_ENABLED
 #endif
 
 /**

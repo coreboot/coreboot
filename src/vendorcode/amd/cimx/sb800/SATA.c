@@ -470,7 +470,7 @@ sataInitAfterPciEnum (
 
   if (((pConfig->SataClass) != NATIVE_IDE_MODE) && ((pConfig->SataClass) != LEGACY_IDE_MODE)) {
     // RIAD or AHCI
-    if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == DISABLED) {
+    if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == CIMX_OPTION_DISABLED) {
       RWMEM ((ddBar5 + SB_SATA_BAR5_REG00), AccWidthUint8 | S3_SAVE, ~(BIT2 + BIT1 + BIT0), BIT2 + BIT0);
       RWMEM ((ddBar5 + SB_SATA_BAR5_REG0C), AccWidthUint8 | S3_SAVE, 0xC0, 0x3F);
       // RPR 8.10 Disabling CCC (Command Completion Coalescing) support.
@@ -631,7 +631,7 @@ sataInitLatePost (
   //Enable write access to pci header, pm capabilities
   RWPCI (((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG40), AccWidthUint8 | S3_SAVE, 0xff, BIT0);
 
-//  if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == DISABLED) {
+//  if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == CIMX_OPTION_DISABLED) {
   RWPCI (((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG40 + 1), AccWidthUint8 | S3_SAVE, ~BIT7, BIT7);
 //  }
   sataBar5setting (pConfig, &ddBar5);

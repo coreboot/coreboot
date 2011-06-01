@@ -21,6 +21,7 @@
 #include <device/device.h>	/* device_t */
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
+#include <arch/ioapic.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
 #include <console/console.h>	/* printk */
 #include "lpc.h"		/* lpc_read_resources */
@@ -328,13 +329,13 @@ static void sb800_enable(device_t dev)
 	switch (dev->path.pci.devfn) {
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
 		if (dev->enabled) {
-  			sb_config->SATAMODE.SataMode.SataController = ENABLED;
+  			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary.
 			else if (0 == sb_chip->boot_switch_sata_ide)
 				sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 1; //1 -IDE as secondary.
 		} else {
-  			sb_config->SATAMODE.SataMode.SataController = DISABLED;
+  			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_DISABLED;
 		}
 
 		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
@@ -352,11 +353,10 @@ static void sb800_enable(device_t dev)
 
 	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
         {
-	    u8 byte;
 	    u32 ioapic_base;
 
 	    printk(BIOS_INFO, "sm_init().\n");
-	    ioapic_base = 0xFEC00000;
+	    ioapic_base = IO_APIC_ADDR;
 	    clear_ioapic(ioapic_base);
 	    /* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
 	    #if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS < 16)
@@ -374,9 +374,9 @@ static void sb800_enable(device_t dev)
 
 	case (0x14 << 3) | 1: /* 0:14:1 IDE */
 		if (dev->enabled) {
-			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = ENABLED;
+			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CIMX_OPTION_ENABLED;
 		} else {
-  			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = DISABLED;
+  			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CIMX_OPTION_DISABLED;
 		}
 		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
 		break;

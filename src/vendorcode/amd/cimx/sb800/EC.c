@@ -71,7 +71,7 @@ ecPowerOnInit (
   RWEC8 (0x61, 0x00, (MailBoxPort & 0xFF));  //set LSB of Mailbox port
   RWEC8 (0x30, 0x00, 0x01);               //;Enable Mailbox Registers Interface, bit0=1
 
-  if ( pConfig->BuildParameters.EcKbd == ENABLED) {
+  if ( pConfig->BuildParameters.EcKbd == CIMX_OPTION_ENABLED) {
     //Enable KBRST#, IRQ1 & IRQ12, GateA20 Function signal from IMC
     RWMEM (ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGD6, AccWidthUint8, ~BIT8, BIT0 + BIT1 + BIT2 + BIT3);
 
@@ -83,7 +83,7 @@ ecPowerOnInit (
     RWEC8 (0x30, 0x00, 0x01);
   }
 
-  if ( pConfig->BuildParameters.EcChannel0 == ENABLED) {
+  if ( pConfig->BuildParameters.EcChannel0 == CIMX_OPTION_ENABLED) {
     //Logical device 0x03
     RWEC8 (0x07, 0x00, 0x03);
     RWEC8 (0x60, 0x00, 0x00);

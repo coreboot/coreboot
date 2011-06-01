@@ -43,7 +43,7 @@
  * ***************************************************************************
  *
  */
- 
+
 #include "SBPLATFORM.h"
 #include "cbtypes.h"
 
@@ -317,7 +317,7 @@ sataInitBeforePciEnum (
   }
   if ( ((pConfig->SataClass) == AHCI_MODE) || ((pConfig->SataClass) == IDE_TO_AHCI_MODE) ||
     ((pConfig->SataClass) == AHCI_MODE_4394) || ((pConfig->SataClass) == IDE_TO_AHCI_MODE_4394) ) {
-    if ( pConfig->BuildParameters.SataAHCISsid != NULL ) {    
+    if ( pConfig->BuildParameters.SataAHCISsid != NULL ) {
       ddTempVar = pConfig->BuildParameters.SataAHCISsid;
     }
   }

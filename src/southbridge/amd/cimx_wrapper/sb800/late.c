@@ -27,7 +27,7 @@
 #include "lpc.h"		/* lpc_read_resources */
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
-#include "chip.h" 		/* struct southbridge_amd_cimx_wrapper_sb800_config */
+#include "chip.h"		/* struct southbridge_amd_cimx_wrapper_sb800_config */
 
 
 /*implement in mainboard.c*/
@@ -363,7 +363,7 @@ static void sb800_enable(device_t dev)
 	    /* Assign the ioapic ID the next available number after the processor core local APIC IDs */
 	    setup_ioapic(ioapic_base, CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS);
 	    #elif (CONFIG_APIC_ID_OFFSET > 0)
-	    /* Assign the ioapic ID the value 0. Processor APIC IDs follow. */ 
+	    /* Assign the ioapic ID the value 0. Processor APIC IDs follow. */
 	    setup_ioapic(ioapic_base, 0);
 	    #else
 	    #error "The processor APIC IDs must be lifted to make room for the I/O APIC ID"

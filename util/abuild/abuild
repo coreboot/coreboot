@@ -35,6 +35,9 @@ cpus=1
 # Configure-only mode
 configureonly=0
 
+# Did any board fail to build?
+failed=0
+
 # One might want to adjust these in case of cross compiling
 for i in make gmake gnumake nonexistant_make; do
 	$i --version 2>/dev/null |grep "GNU Make" >/dev/null && break
@@ -294,6 +297,7 @@ function compile_target
 		printf "FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		cd $CURR
+		failed=1
 		return 1
 	fi
 }
@@ -622,3 +626,4 @@ else
 fi
 xml '</abuild>'
 
+exit $failed

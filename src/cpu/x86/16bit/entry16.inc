@@ -45,7 +45,6 @@ _start:
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
 
-
 	/* Invalidating the cache here seems to be a bad idea on
 	 * modern processors.  Don't.
 	 * If we are hyperthreaded or we have multiple cores it is bad,
@@ -54,6 +53,13 @@ _start:
 	 * If you cpu needs it you can write a cpu dependent version of
 	 * entry16.inc.
 	 */
+
+	/* Load an IDT with NULL limit to prevent the 16bit IDT being used
+	 * in protected mode before c_start.S sets up a 32bit IDT when entering
+	 * ram stage.
+	 */
+	movw $nullidt_offset, %bx
+	lidt %cs:(%bx)
 
 	/* Note: gas handles memory addresses in 16 bit code very poorly.
 	 * In particular it doesn't appear to have a directive allowing you
@@ -117,6 +123,13 @@ _start:
 gdtptr16:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
+
+.align	4
+.globl nullidt
+nullidt:
+	.word	0	/* limit */
+	.long	0
+	.word	0
 
 .globl _estart
 _estart:

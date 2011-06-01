@@ -120,6 +120,8 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 #endif
 }
 
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
+    CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
 static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
@@ -129,6 +131,8 @@ static void add_console(struct lb_header *header, u16 consoletype)
 	console->size = sizeof(*console);
 	console->type = consoletype;
 }
+
+#endif
 
 static void lb_console(struct lb_header *header)
 {

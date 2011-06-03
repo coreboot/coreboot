@@ -25,6 +25,7 @@
 #define FAM10_SCAN_PCI_BUS 0
 #define FAM10_ALLOCATE_IO_RANGE 0
 
+#include <lib.h>
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

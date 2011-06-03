@@ -107,6 +107,6 @@ config VGA_BIOS_ID
 
 config WARNINGS_ARE_ERRORS
         bool
-        default n
+        default y
 
 endif #BOARD_ADVANSUS_A785E_I

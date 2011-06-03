@@ -667,23 +667,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 					yy1b = enable with DctSelIntLvAddr set to yyb */
 
 
-#ifndef MAX_NODES_SUPPORTED
-#define MAX_NODES_SUPPORTED	8
-#endif
-
-#ifndef MAX_DIMMS_SUPPORTED
-#define MAX_DIMMS_SUPPORTED	8
-#endif
-
-#ifndef MAX_CS_SUPPORTED
-#define MAX_CS_SUPPORTED	8
-#endif
-
-#ifndef MCT_DIMM_SPARE_NO_WARM
-#define MCT_DIMM_SPARE_NO_WARM	0
-#endif
-
-
 u32 Get_NB32(u32 dev, u32 reg);
 void Set_NB32(u32 dev, u32 reg, u32 val);
 u32 Get_NB32_index(u32 dev, u32 index_reg, u32 index);

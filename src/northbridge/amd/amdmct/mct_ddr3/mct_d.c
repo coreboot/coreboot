@@ -1315,7 +1315,7 @@ static void GetPresetmaxF_D(struct MCTStatStruc *pMCTstat,
 	u16 word;
 
 	/* Get CPU Si Revision defined limit (NPT) */
-	proposedFreq = 533;	 /* Rev F0 programmable max memclock is */
+	proposedFreq = 800;	 /* Rev F0 programmable max memclock is */
 
 	/*Get User defined limit if  "limit" mode */
 	if ( mctGet_NVbits(NV_MCTUSRTMGMODE) == 1) {

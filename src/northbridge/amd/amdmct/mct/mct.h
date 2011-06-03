@@ -496,18 +496,6 @@ struct DCTStatStruc {		/* A per Node structure*/
 					   0=disable
 					   1=enable*/
 
-#ifndef MAX_NODES_SUPPORTED
-#define MAX_NODES_SUPPORTED	8
-#endif
-
-#ifndef MAX_DIMMS_SUPPORTED
-#define MAX_DIMMS_SUPPORTED	8
-#endif
-
-#ifndef MAX_CS_SUPPORTED
-#define MAX_CS_SUPPORTED	8
-#endif
-
 
 /* global function */
 u32 NodePresent(u32 Node);

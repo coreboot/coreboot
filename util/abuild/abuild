@@ -109,6 +109,20 @@ function xmlfile
 	} >> $XMLFILE
 }
 
+function junit
+{
+	test "$mode" == "junit" && printf "$*\n" >> $XMLFILE
+	return 0
+}
+
+function junitfile
+{
+	test "$mode" == "junit" && {
+		printf '<![CDATA[\n'
+		cat $1
+		printf ']]>\n'
+	} >> $XMLFILE
+}
 
 
 function vendors
@@ -281,6 +295,7 @@ function compile_target
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
 	xml "  <buildtime>${duration}s</buildtime>"
+	junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' time='$duration' >"
 
 	xml "  <log>"
 	xmlfile make.log
@@ -288,12 +303,18 @@ function compile_target
 
 	if [ $ret -eq 0 ]; then
 		xml "  <compile>ok</compile>"
+		junit "<system-out>"
+		junitfile make.log
+		junit "</system-out>"
 		printf "ok\n" > compile.status
 		printf "ok. (took ${duration}s)\n"
 		cd $CURR
 		return 0
 	else
 		xml "  <compile>failed</compile>"
+		junit "<failure type='BuildFailed'>"
+		junitfile make.log
+		junit "</failure>"
 		printf "FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		cd $CURR
@@ -385,6 +406,9 @@ function build_target
 			xml ""
 			xml "</mainboard>"
 
+			junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
+			junit "<failure type='NoCrossCompiler'>No cross-compiler for $TARCH found</failure>"
+
 			return 0
 		else
 			printf "$TARCH: ok, $ARCH using ${CROSS_COMPILE}gcc\n"
@@ -408,6 +432,8 @@ function build_target
 		xml "  <status>knownbroken</status>"
 		xml ""
 		xml "</mainboard>"
+		junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
+		junit "<failure type='KnownBroken'>Board is marked as broken</failure>"
 		return 0
 	}
 
@@ -432,6 +458,7 @@ function build_target
 
 	xml ""
 	xml "</mainboard>"
+	junit "</testcase>"
 
 	printf "\n"
 }
@@ -511,6 +538,8 @@ function myhelp
 	printf "    [-h|--help]			  print this help and exit\n"
 	printf "    [-x|--xml]			  write xml log file \n"
 	printf "                                  (defaults to $XMLFILE)\n"
+	printf "    [-J|--junit]		  write JUnit formatted xml log file \n"
+	printf "                                  (defaults to $XMLFILE)\n"
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
@@ -554,11 +583,11 @@ test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:bp:Tc:sxCl:rP:uy -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:bp:Tc:sJxCl:rP:uy -- "$@"`
 	eval set -- $args
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:sxCl:rP:uy $*`
+	args=`getopt Vvhat:bp:Tc:sJxCl:rP:uy $*`
 	set -- $args
 fi
 
@@ -570,6 +599,7 @@ fi
 while true ; do
 	case "$1" in
 		-x|--xml)       shift; mode=xml; rm -f $XMLFILE ;;
+		-J|--junit)     shift; mode=junit; rm -f $XMLFILE ;;
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-b|--broken)	shift; buildbroken=true;;
@@ -602,6 +632,9 @@ debug "ROOT=$ROOT"
 xml '<?xml version="1.0" encoding="utf-8"?>'
 xml '<abuild>'
 
+junit '<?xml version="1.0" encoding="utf-8"?>'
+junit '<testsuite>'
+
 if [ "$target" != "" ]; then
 	# build a single board
 	VENDOR=`printf $target|cut -f1 -d/`
@@ -610,6 +643,7 @@ if [ "$target" != "" ]; then
 	if [ ! -r $ROOT/src/mainboard/$target ]; then
 		printf "No such target: $target\n"
 		xml '</abuild>'
+		junit '</testsuite>'
 		exit 1
 	fi
 	build_target $VENDOR $MAINBOARD $CONFIG
@@ -625,5 +659,6 @@ else
 	done
 fi
 xml '</abuild>'
+junit '</testsuite>'
 
 exit $failed

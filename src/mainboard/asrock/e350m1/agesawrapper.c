@@ -85,38 +85,39 @@ agesawrapper_amdinitcpuio (
   PCI_ADDR                      PciAddress;
   AMD_CONFIG_PARAMS             StdHeader;
   
-  /* Enable MMIO on AMD CPU Address Map Controller */
-  
-  /* Start to set MMIO 0000A0000-0000BFFFF to Node0 Link0 */
+  /* Enable legacy video routing: D18F1xF4 VGA Enable */
+  PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xF4);
+  PciData = 1;
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+
+  /* The platform BIOS needs to ensure the memory ranges of SB800 legacy
+   * devices (TPM, HPET, BIOS RAM, Watchdog Timer, I/O APIC and ACPI) are
+   * set to non-posted regions.
+   */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
-  PciData = 0x00000B00;
+  PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
+  PciData |= 1 << 7;    // set NP (non-posted) bit
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
-  PciData = 0x00000A03;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-  
-  /* Set TOM-DFFFFFFF to Node0 Link0. */
+  PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+   
+  /* Map the remaining PCI hole as posted MMIO */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x8C);
-  PciData = 0x00DFFF00;
+  PciData = 0x00FECF00; // last address before non-posted range
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
   LibAmdMsrRead (0xC001001A, &MsrReg, &StdHeader);
   MsrReg = (MsrReg >> 8) | 3;
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x88);
   PciData = (UINT32)MsrReg;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
-  /* Set E0000000-FFFFFFFF to Node0 Link0 with NP set. */
-  PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xBC);
-  PciData = 0x00FFFF00 | 0x80;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
-  PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xB8);
-  PciData = (PCIE_BASE_ADDRESS >> 8) | 03;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-  /* Start to set PCIIO 0000-FFFF to Node0 Link0 with ISA&VGA set. */
+   
+  /* Send all IO (0000-FFFF) to southbridge. */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xC4);
   PciData = 0x0000F000;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xC0);
-  PciData = 0x00000013;
+  PciData = 0x00000003;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   Status = AGESA_SUCCESS;
   return (UINT32)Status;

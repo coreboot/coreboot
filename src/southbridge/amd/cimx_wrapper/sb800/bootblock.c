@@ -20,9 +20,9 @@
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 
-static void sb800_enable_rom(void)
+static void enable_rom(void)
 {
-	u32 word;
+	u16 word;
 	u32 dword;
 	device_t dev;
 
@@ -56,8 +56,39 @@ static void sb800_enable_rom(void)
 	pci_io_write_config16(dev, 0x6c, word);
 }
 
+static void enable_prefetch(void)
+{
+	u32 dword;
+	device_t dev = PCI_DEV(0, 0x14, 0x03);
+
+	/* Enable PrefetchEnSPIFromHost */
+	dword = pci_io_read_config32(dev, 0xb8);
+	pci_io_write_config32(dev, 0xb8, dword | (1 << 24));
+}
+
+static void enable_spi_fast_mode(void)
+{
+	u8 byte;
+	u32 dword;
+	device_t dev = PCI_DEV(0, 0x14, 0x03);
+
+	// set temp MMIO base
+	volatile u32 *spi_base = (void *)0xa0000000;
+	u32 save = pci_io_read_config32(dev, 0xa0);
+	pci_io_write_config32(dev, 0xa0, (u32) spi_base | 2);
+
+	// early enable of SPI 33 MHz fast mode read
+	byte = spi_base[3];
+	spi_base[3] = (byte & ~(3 << 14)) | (1 << 14);
+	spi_base[0] = spi_base[0] | (1 << 18);	// fast read enable
+
+	pci_io_write_config32(dev, 0xa0, save);
+}
+
 static void bootblock_southbridge_init(void)
 {
 	/* Setup the rom access for 2M */
-	sb800_enable_rom();
+	enable_rom();
+	enable_prefetch();
+	enable_spi_fast_mode();
 }

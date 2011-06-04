@@ -99,12 +99,12 @@ chip northbridge/amd/agesa_wrapper/family14/root_complex
 					end #LPC
   					device pci 14.4 on end # PCI 0x4384
 	  				device pci 14.5 on end # USB 2
-					device pci 15.0 on end # PCIe PortA
-					device pci 15.1 on end # PCIe PortB
-					device pci 15.2 on end # PCIe PortC
-					device pci 15.3 on end # PCIe PortD
-					register "gpp_configuration" = "4" #1:1:1:1
-		  			register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
+					device pci 15.0 off end # PCIe PortA
+					device pci 15.1 off end # PCIe PortB
+					device pci 15.2 off end # PCIe PortC
+					device pci 15.3 off end # PCIe PortD
+					register "gpp_configuration" = "0" #4:0:0:0 (really need to disable all 4 somehow)
+ 		  			register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
 				end	#southbridge/amd/cimx_wrapper/sb800
 #                       end #  device pci 18.0
 # These seem unnecessary

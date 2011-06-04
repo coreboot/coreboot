@@ -22,8 +22,6 @@ if BOARD_ASROCK_E350M1
 config BOARD_SPECIFIC_OPTIONS # dummy
         def_bool y
   select ARCH_X86
-        select DIMM_DDR3
-        select DIMM_UNREGISTERED
   select CPU_AMD_AGESA_WRAPPER_FAMILY14
   select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14_ROOT_COMPLEX
   select NORTHBRIDGE_AMD_AGESA_WRAPPER_FAMILY14
@@ -42,7 +40,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
   select AMDMCT
         select HAVE_ACPI_TABLES
   select BOARD_ROMSIZE_KB_4096
-  select ENABLE_APIC_EXT_ID
   select TINY_BOOTBLOCK
         select GFXUMA
 
@@ -85,18 +82,6 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 config MEM_TRAIN_SEQ
         int
         default 2
-
-config SB_HT_CHAIN_ON_BUS0
-        int
-        default 1
-
-config HT_CHAIN_END_UNITID_BASE
-        hex
-        default 0x1
-
-config HT_CHAIN_UNITID_BASE
-        hex
-        default 0x0
 
 config IRQ_SLOT_COUNT
         int

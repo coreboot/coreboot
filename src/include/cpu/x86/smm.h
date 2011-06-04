@@ -263,4 +263,4 @@ void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_
 void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 
 void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
-
+int __attribute__((weak)) mainboard_apm_cnt(u8 data);

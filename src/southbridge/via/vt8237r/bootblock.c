@@ -33,20 +33,23 @@ static void bootblock_southbridge_init(void)
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 		    PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 
-	if (dev == PCI_DEV_INVALID) {
-		/* Power management controller */
-		dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
-			PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+	if (dev != PCI_DEV_INVALID)
+		goto found;
 
-		if (dev == PCI_DEV_INVALID) {
-			/* Power management controller */
-			dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
-				PCI_DEVICE_ID_VIA_VT8237A_LPC), 0);
+	/* Power management controller */
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
+		PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 
-			if (dev == PCI_DEV_INVALID)
-				return;
-		}
-	}
+	if (dev != PCI_DEV_INVALID)
+		goto found;
 
+	/* Power management controller */
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
+		PCI_DEVICE_ID_VIA_VT8237A_LPC), 0);
+
+	if (dev == PCI_DEV_INVALID)
+		return;
+
+found:
 	pci_write_config8(dev, 0x41, 0x7f);
 }

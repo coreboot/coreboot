@@ -138,7 +138,7 @@ void get_bus_conf(void)
 
   /* I/O APICs:   APIC ID Version State   Address */
   bus_isa = 10;
-  apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
+  apicid_base = CONFIG_MAX_CPUS;
 //#if CONFIG_LOGICAL_CPUS==1
 //  apicid_base = get_apicid_base(1);
 //#endif

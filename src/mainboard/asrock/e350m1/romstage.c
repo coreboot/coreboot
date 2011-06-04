@@ -47,6 +47,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
   u32 val;
   u8 reg8;
 
+  // early enable of SPI 33 MHz fast mode read
+  if (boot_cpu())
+    {
+    volatile u32 *spiBase = (void *) 0xa0000000;
+    u32 save;
+    __outdword (0xcf8, 0x8000a3a0);
+    save = __indword (0xcfc);
+    __outdword (0xcfc, (u32) spiBase | 2); // set temp MMIO base
+    spiBase [3] = (spiBase [3] & ~(3 << 14)) | (1 << 14);
+    spiBase [0] |= 1 << 18; // fast read enable
+    __outdword (0xcfc, save); // clear temp base
+    }
+
   if (!cpu_init_detectedx && boot_cpu()) {
     post_code(0x30);
     sb_poweron_init();

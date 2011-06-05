@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include "pmh7.h"
 #include "chip.h"
+#include <pc80/mc146818rtc.h>
 
 void pmh7_backlight_enable(int onoff)
 {
@@ -94,6 +95,7 @@ static void enable_dev(device_t dev)
 {
 	struct ec_lenovo_pmh7_config *conf = dev->chip_info;
 	struct resource *resource;
+	u8 val;
 
 	resource = new_resource(dev, EC_LENOVO_PMH7_INDEX);
 	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED;
@@ -104,6 +106,9 @@ static void enable_dev(device_t dev)
 
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);
+
+	if (!get_option(&val, "touchpad"))
+		pmh7_touchpad_enable(val);
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

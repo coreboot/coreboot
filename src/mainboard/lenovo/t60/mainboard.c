@@ -34,12 +34,10 @@
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
-#include <pc80/mc146818rtc.h>
 
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0, idedev;
-	u8 touchpad;
 
 	/* enable Audio */
 	h8_set_audio_mute(0);
@@ -48,11 +46,6 @@ static void mainboard_enable(device_t dev)
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
 	if (dev0 && pci_read_config32(dev0, SKPAD) == 0xcafed00d)
 		ec_write(0x0c, 0xc7);
-
-	if (get_option(&touchpad, "touchpad") < 0)
-		touchpad = 1;
-
-	pmh7_touchpad_enable(touchpad);
 
 	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));
 	if (idedev && idedev->chip_info && h8_ultrabay_device_present()) {

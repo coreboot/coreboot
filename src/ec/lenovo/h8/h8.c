@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "h8.h"
 #include "chip.h"
+#include <pc80/mc146818rtc.h>
 
 void h8_trackpoint_enable(int on)
 {

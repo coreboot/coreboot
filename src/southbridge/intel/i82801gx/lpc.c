@@ -341,6 +341,7 @@ static void i82801gx_lock_smm(struct device *dev)
 	u8 reg8;
 #endif
 
+	if (acpi_slp_type != 3) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 		printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_ENABLE, APM_CNT); // Enable ACPI mode
@@ -350,6 +351,10 @@ static void i82801gx_lock_smm(struct device *dev)
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT); // Disable ACPI mode
 		printk(BIOS_DEBUG, "done.\n");
 #endif
+	} else {
+		printk(BIOS_DEBUG, "S3 wakeup, enabling ACPI via APMC\n");
+		outb(APM_CNT_ACPI_ENABLE, APM_CNT);
+	}
 	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:
 	 */

@@ -39,7 +39,7 @@
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0, idedev;
-	int touchpad;
+	char touchpad;
 
 	/* enable Audio */
 	h8_set_audio_mute(0);

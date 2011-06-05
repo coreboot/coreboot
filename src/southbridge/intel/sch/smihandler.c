@@ -28,11 +28,6 @@
 
 #define DEBUG_SMI
 
-#define APM_CNT		0xb2
-#define APM_STS		0xb3
-#define   ACPI_DISABLE	0x1e
-#define   ACPI_ENABLE	0xe1
-
 /* I945 */
 #define SMRAM		0x9d
 #define   D_OPEN	(1 << 6)

@@ -20,17 +20,7 @@
 #include <string.h>
 #include <device/pci.h>
 #include <arch/acpi.h>
-
-/* FIXME: This needs to go into a separate .h file
- * to be included by the ich7 smi handler, ich7 smi init
- * code and the mainboard fadt.
- */
-#define APM_CNT		0xb2
-#define   CST_CONTROL	0x85
-#define   PST_CONTROL	0x80
-#define   ACPI_DISABLE	0x1e
-#define   ACPI_ENABLE	0xe1
-#define   GNVS_UPDATE   0xea
+#include <cpu/x86/smm.h>
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
@@ -39,8 +29,8 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);
- 	header->length = sizeof(acpi_fadt_t);
- 	header->revision = 3;
+	header->length = sizeof(acpi_fadt_t);
+	header->revision = 3;
 	memcpy(header->oem_id, "CORE  ", 6);
 	memcpy(header->oem_table_id, "COREBOOT", 8);
 	memcpy(header->asl_compiler_id, "CORE", 4);
@@ -51,12 +41,12 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->model = 1;
 	fadt->preferred_pm_profile = PM_MOBILE;
 
-  	fadt->sci_int = 0x9;
- 	fadt->smi_cmd = APM_CNT;
- 	fadt->acpi_enable = ACPI_ENABLE;
- 	fadt->acpi_disable = ACPI_DISABLE;
-  	fadt->s4bios_req = 0x0;
- 	fadt->pstate_cnt = PST_CONTROL;
+	fadt->sci_int = 0x9;
+	fadt->smi_cmd = APM_CNT;
+	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	fadt->s4bios_req = 0x0;
+	fadt->pstate_cnt = APM_CNT_PST_CONTROL;
 
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1b_evt_blk = 0x0;
@@ -75,7 +65,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe0_blk_len = 8;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
- 	fadt->cst_cnt = CST_CONTROL;
+	fadt->cst_cnt = APM_CNT_CST_CONTROL;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 85;
 	fadt->flush_size = 1024;
@@ -87,78 +77,78 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->century = 0x00;
 	fadt->iapc_boot_arch = 0x03;
 
- 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
-			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
+	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
+		ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
 
- 	fadt->reset_reg.space_id = 0;
- 	fadt->reset_reg.bit_width = 0;
- 	fadt->reset_reg.bit_offset = 0;
- 	fadt->reset_reg.resv = 0;
- 	fadt->reset_reg.addrl = 0x0;
- 	fadt->reset_reg.addrh = 0x0;
+	fadt->reset_reg.space_id = 0;
+	fadt->reset_reg.bit_width = 0;
+	fadt->reset_reg.bit_offset = 0;
+	fadt->reset_reg.resv = 0;
+	fadt->reset_reg.addrl = 0x0;
+	fadt->reset_reg.addrh = 0x0;
 
- 	fadt->reset_value = 0;
- 	fadt->x_firmware_ctl_l = (unsigned long)facs;
- 	fadt->x_firmware_ctl_h = 0;
- 	fadt->x_dsdt_l = (unsigned long)dsdt;
- 	fadt->x_dsdt_h = 0;
+	fadt->reset_value = 0;
+	fadt->x_firmware_ctl_l = (unsigned long)facs;
+	fadt->x_firmware_ctl_h = 0;
+	fadt->x_dsdt_l = (unsigned long)dsdt;
+	fadt->x_dsdt_h = 0;
 
- 	fadt->x_pm1a_evt_blk.space_id = 1;
- 	fadt->x_pm1a_evt_blk.bit_width = 32;
- 	fadt->x_pm1a_evt_blk.bit_offset = 0;
- 	fadt->x_pm1a_evt_blk.resv = 0;
- 	fadt->x_pm1a_evt_blk.addrl = pmbase;
- 	fadt->x_pm1a_evt_blk.addrh = 0x0;
+	fadt->x_pm1a_evt_blk.space_id = 1;
+	fadt->x_pm1a_evt_blk.bit_width = 32;
+	fadt->x_pm1a_evt_blk.bit_offset = 0;
+	fadt->x_pm1a_evt_blk.resv = 0;
+	fadt->x_pm1a_evt_blk.addrl = pmbase;
+	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
- 	fadt->x_pm1b_evt_blk.space_id = 1;
- 	fadt->x_pm1b_evt_blk.bit_width = 0;
- 	fadt->x_pm1b_evt_blk.bit_offset = 0;
- 	fadt->x_pm1b_evt_blk.resv = 0;
- 	fadt->x_pm1b_evt_blk.addrl = 0x0;
- 	fadt->x_pm1b_evt_blk.addrh = 0x0;
+	fadt->x_pm1b_evt_blk.space_id = 1;
+	fadt->x_pm1b_evt_blk.bit_width = 0;
+	fadt->x_pm1b_evt_blk.bit_offset = 0;
+	fadt->x_pm1b_evt_blk.resv = 0;
+	fadt->x_pm1b_evt_blk.addrl = 0x0;
+	fadt->x_pm1b_evt_blk.addrh = 0x0;
 
- 	fadt->x_pm1a_cnt_blk.space_id = 1;
- 	fadt->x_pm1a_cnt_blk.bit_width = 16;
- 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
- 	fadt->x_pm1a_cnt_blk.resv = 0;
- 	fadt->x_pm1a_cnt_blk.addrl = pmbase + 0x4;
- 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
+	fadt->x_pm1a_cnt_blk.space_id = 1;
+	fadt->x_pm1a_cnt_blk.bit_width = 16;
+	fadt->x_pm1a_cnt_blk.bit_offset = 0;
+	fadt->x_pm1a_cnt_blk.resv = 0;
+	fadt->x_pm1a_cnt_blk.addrl = pmbase + 0x4;
+	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 
- 	fadt->x_pm1b_cnt_blk.space_id = 1;
- 	fadt->x_pm1b_cnt_blk.bit_width = 0;
- 	fadt->x_pm1b_cnt_blk.bit_offset = 0;
- 	fadt->x_pm1b_cnt_blk.resv = 0;
- 	fadt->x_pm1b_cnt_blk.addrl = 0x0;
- 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
+	fadt->x_pm1b_cnt_blk.space_id = 1;
+	fadt->x_pm1b_cnt_blk.bit_width = 0;
+	fadt->x_pm1b_cnt_blk.bit_offset = 0;
+	fadt->x_pm1b_cnt_blk.resv = 0;
+	fadt->x_pm1b_cnt_blk.addrl = 0x0;
+	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
- 	fadt->x_pm2_cnt_blk.space_id = 1;
- 	fadt->x_pm2_cnt_blk.bit_width = 8;
- 	fadt->x_pm2_cnt_blk.bit_offset = 0;
- 	fadt->x_pm2_cnt_blk.resv = 0;
- 	fadt->x_pm2_cnt_blk.addrl = pmbase + 0x20;
- 	fadt->x_pm2_cnt_blk.addrh = 0x0;
+	fadt->x_pm2_cnt_blk.space_id = 1;
+	fadt->x_pm2_cnt_blk.bit_width = 8;
+	fadt->x_pm2_cnt_blk.bit_offset = 0;
+	fadt->x_pm2_cnt_blk.resv = 0;
+	fadt->x_pm2_cnt_blk.addrl = pmbase + 0x20;
+	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
- 	fadt->x_pm_tmr_blk.space_id = 1;
- 	fadt->x_pm_tmr_blk.bit_width = 32;
- 	fadt->x_pm_tmr_blk.bit_offset = 0;
- 	fadt->x_pm_tmr_blk.resv = 0;
- 	fadt->x_pm_tmr_blk.addrl = pmbase + 0x8;
- 	fadt->x_pm_tmr_blk.addrh = 0x0;
+	fadt->x_pm_tmr_blk.space_id = 1;
+	fadt->x_pm_tmr_blk.bit_width = 32;
+	fadt->x_pm_tmr_blk.bit_offset = 0;
+	fadt->x_pm_tmr_blk.resv = 0;
+	fadt->x_pm_tmr_blk.addrl = pmbase + 0x8;
+	fadt->x_pm_tmr_blk.addrh = 0x0;
 
- 	fadt->x_gpe0_blk.space_id = 1;
- 	fadt->x_gpe0_blk.bit_width = 64;
- 	fadt->x_gpe0_blk.bit_offset = 0;
- 	fadt->x_gpe0_blk.resv = 0;
- 	fadt->x_gpe0_blk.addrl = pmbase + 0x28;
- 	fadt->x_gpe0_blk.addrh = 0x0;
+	fadt->x_gpe0_blk.space_id = 1;
+	fadt->x_gpe0_blk.bit_width = 64;
+	fadt->x_gpe0_blk.bit_offset = 0;
+	fadt->x_gpe0_blk.resv = 0;
+	fadt->x_gpe0_blk.addrl = pmbase + 0x28;
+	fadt->x_gpe0_blk.addrh = 0x0;
 
- 	fadt->x_gpe1_blk.space_id = 1;
- 	fadt->x_gpe1_blk.bit_width = 0;
- 	fadt->x_gpe1_blk.bit_offset = 0;
- 	fadt->x_gpe1_blk.resv = 0;
- 	fadt->x_gpe1_blk.addrl = 0x0;
- 	fadt->x_gpe1_blk.addrh = 0x0;
+	fadt->x_gpe1_blk.space_id = 1;
+	fadt->x_gpe1_blk.bit_width = 0;
+	fadt->x_gpe1_blk.bit_offset = 0;
+	fadt->x_gpe1_blk.resv = 0;
+	fadt->x_gpe1_blk.addrl = 0x0;
+	fadt->x_gpe1_blk.addrh = 0x0;
 
 	header->checksum =
 	    acpi_checksum((void *) fadt, header->length);

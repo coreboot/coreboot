@@ -75,4 +75,3 @@ int mainboard_io_trap_handler(int smif)
 	 * On failure, the IO Trap Handler returns a value != 0 */
 	return 0;
 }
-

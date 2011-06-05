@@ -30,15 +30,6 @@
 
 #define DEBUG_SMI
 
-#define APM_CNT		0xb2
-#define   CST_CONTROL	0x85
-#define   PST_CONTROL	0x80
-#define   ACPI_DISABLE	0x1e
-#define   ACPI_ENABLE	0xe1
-#define   GNVS_UPDATE   0xea
-#define   MBI_UPDATE    0xeb
-#define APM_STS		0xb3
-
 /* I830M */
 #define SMRAM		0x90
 #define   D_OPEN	(1 << 6)
@@ -370,33 +361,33 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 
 	reg8 = inb(APM_CNT);
 	switch (reg8) {
-	case CST_CONTROL:
+	case APM_CNT_CST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
 		printk(BIOS_DEBUG, "C-state control\n");
 		break;
-	case PST_CONTROL:
+	case APM_CNT_PST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
 		printk(BIOS_DEBUG, "P-state control\n");
 		break;
-	case ACPI_DISABLE:
+	case APM_CNT_ACPI_DISABLE:
 		pmctrl = inl(pmbase + PM1_CNT);
 		pmctrl &= ~SCI_EN;
 		outl(pmctrl, pmbase + PM1_CNT);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
-	case ACPI_ENABLE:
+	case APM_CNT_ACPI_ENABLE:
 		pmctrl = inl(pmbase + PM1_CNT);
 		pmctrl |= SCI_EN;
 		outl(pmctrl, pmbase + PM1_CNT);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
-	case GNVS_UPDATE:
+	case APM_CNT_GNVS_UPDATE:
 		if (smm_initialized) {
 			printk(BIOS_DEBUG, "SMI#: SMM structures already initialized!\n");
 			return;
@@ -407,7 +398,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 		smm_initialized = 1;
 		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
 		break;
-	case MBI_UPDATE: // FIXME
+	case APM_CNT_MBI_UPDATE: // FIXME
 		if (mbi_initialized) {
 			printk(BIOS_DEBUG, "SMI#: mbi already registered!\n");
 			return;

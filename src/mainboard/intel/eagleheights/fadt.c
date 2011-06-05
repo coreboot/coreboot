@@ -23,6 +23,7 @@
 #include <string.h>
 #include <device/pci.h>
 #include <arch/acpi.h>
+#include <cpu/x86/smm.h>
 
 #define ACPI_PM1_STS        (pmbase + 0x00)
 #define ACPI_PM1_EN         (pmbase + 0x02)
@@ -67,12 +68,12 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->preferred_pm_profile = 7; /* Performance Server */
 	fadt->sci_int = 0x9;
 #if CONFIG_HAVE_SMI_HANDLER == 1
-	fadt->smi_cmd = 0xb2;
+	fadt->smi_cmd = APM_CNT;
 #else
 	fadt->smi_cmd = 0x00;
 #endif
-	fadt->acpi_enable = 0xe1;
-	fadt->acpi_disable = 0x1e;
+	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	fadt->s4bios_req = 0x0;
 	fadt->pstate_cnt = 0xe2;
 

@@ -20,17 +20,7 @@
 #include <string.h>
 #include <device/pci.h>
 #include <arch/acpi.h>
-
-/* FIXME: This needs to go into a separate .h file
- * to be included by the ich7 smi handler, ich7 smi init
- * code and the mainboard fadt.
- */
-#define APM_CNT		0xb2
-#define   CST_CONTROL	0x85
-#define   PST_CONTROL	0x80
-#define   ACPI_DISABLE	0x1e
-#define   ACPI_ENABLE	0xe1
-#define   GNVS_UPDATE   0xea
+#include <cpu/x86/smm.h>
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
@@ -54,10 +44,10 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->sci_int = 0x9;
 	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = ACPI_ENABLE;
-	fadt->acpi_disable = ACPI_DISABLE;
+	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = PST_CONTROL;
+	fadt->pstate_cnt = APM_CNT_PST_CONTROL;
 
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1b_evt_blk = 0x0;
@@ -76,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe0_blk_len = 8;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
-	fadt->cst_cnt = CST_CONTROL;
+	fadt->cst_cnt = APM_CNT_CST_CONTROL;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 85;
 	fadt->flush_size = 1024;

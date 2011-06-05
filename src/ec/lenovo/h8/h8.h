@@ -70,6 +70,9 @@ int h8_ultrabay_device_present(void);
 
 #define H8_FAN_CONTROL			0x2f
 #define H8_FAN_CONTROL_AUTO		0x80
+
+#define H8_VOLUME_CONTROL		0x30
+#define H8_VOLUME_CONTROL_MUTE		0x40
 /* Embedded controller events */
 #define H8_EVENT_FN_F1	0x10
 #define H8_EVENT_FN_F2	0x11

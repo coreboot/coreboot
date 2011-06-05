@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "h8.h"
 #include "chip.h"
+#include <pc80/mc146818rtc.h>
 
 void h8_trackpoint_enable(int on)
 {
@@ -95,6 +96,8 @@ int h8_ultrabay_device_present(void)
 static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
+	u8 val;
+
 	h8_log_ec_version();
 
 	ec_write(H8_CONFIG0, conf->config0);
@@ -127,6 +130,8 @@ static void h8_enable(device_t dev)
 	h8_wlan_enable(conf->wlan_enable);
 	h8_trackpoint_enable(conf->trackpoint_enable);
 
+	if (!get_option(&val, "volume"))
+		ec_write(H8_VOLUME_CONTROL, val);
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

@@ -109,9 +109,11 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 #if !defined(__ROMCC__)
 void rtc_init(int invalid);
 #if CONFIG_USE_OPTION_TABLE
+int set_option(const char *name, void *val);
 int get_option(void *dest, const char *name);
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
 #else
+static inline int set_option(const char *name __attribute__((unused)), void *val __attribute__((unused))) { return -2; };
 static inline int get_option(void *dest __attribute__((unused)),
 	const char *name __attribute__((unused))) { return -2; }
 static inline unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)

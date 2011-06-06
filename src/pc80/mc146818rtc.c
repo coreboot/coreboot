@@ -252,4 +252,74 @@ int get_option(void *dest, const char *name)
 		return(-4);
 	return(0);
 }
+
+static int set_cmos_value(unsigned long bit, unsigned long length, void *vret)
+{
+	unsigned char *ret;
+	unsigned long byte,byte_bit;
+	unsigned long i;
+	unsigned char uchar, mask;
+	unsigned int chksum_update_needed = 0;
+
+	ret = vret;
+	byte = bit / 8;			/* find the byte where the data starts */
+	byte_bit = bit % 8;		/* find the bit in the byte where the data starts */
+	if(length <= 8) {		/* one byte or less */
+		mask = (1 << length) - 1;
+		mask <<= byte_bit;
+
+		uchar = cmos_read(byte);
+		uchar &= ~mask;
+		uchar |= (ret[0] << byte_bit);
+		cmos_write(uchar, byte);
+		if (byte >= PC_CKS_RANGE_START && byte <= PC_CKS_RANGE_END)
+			chksum_update_needed = 1;
+	} else {			/* more that one byte so transfer the whole bytes */
+		for(i=0; length; i++, length-=8, byte++)
+			cmos_write(ret[i], byte);
+			if (byte >= PC_CKS_RANGE_START && byte <= PC_CKS_RANGE_END)
+				chksum_update_needed = 1;
+	}
+
+	if (chksum_update_needed) {
+		rtc_set_checksum(PC_CKS_RANGE_START,
+			PC_CKS_RANGE_END,PC_CKS_LOC);
+	}
+	return 0;
+}
+
+
+int set_option(const char *name, void *value)
+{
+	struct cmos_option_table *ct;
+	struct cmos_entries *ce;
+	size_t namelen;
+	int found=0;
+
+	/* Figure out how long name is */
+	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
+
+	/* find the requested entry record */
+	ct=cbfs_find_file("cmos_layout.bin", CBFS_COMPONENT_CMOS_LAYOUT);
+	if (!ct) {
+		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
+		return(-2);
+	}
+	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
+	for(;ce->tag==LB_TAG_OPTION;
+		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
+		if (memcmp(ce->name, name, namelen) == 0) {
+			found=1;
+			break;
+		}
+	}
+	if(!found) {
+		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
+		return(-2);
+	}
+
+	if(set_cmos_value(ce->bit, ce->length, value))
+		return(-3);
+	return(0);
+}
 #endif /* CONFIG_USE_OPTION_TABLE */

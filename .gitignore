@@ -1,0 +1,9 @@
+.config
+.config.old
+.xcompile
+build/
+coreboot-builds/
+payloads/external/FILO/filo/
+payloads/external/SeaBIOS/seabios/
+util/crossgcc/tarballs/
+util/crossgcc/xgcc/

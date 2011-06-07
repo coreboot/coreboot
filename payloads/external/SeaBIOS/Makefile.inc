@@ -5,12 +5,14 @@ TAG-$(CONFIG_SEABIOS_STABLE)=1efb10b9ea30c45a8c9c6230234fefa10d2886ed
 
 unexport KCONFIG_AUTOCONFIG
 
-all: seabios
+all: build
 
-checkout:
-	echo "    GIT        SeaBIOS $(TAG-y)"
-	test -d seabios && ( cd seabios; git fetch ) || \
-		git clone git://git.seabios.org/seabios.git
+seabios:
+	echo "    Cloning SeaBIOS from Git"
+	git clone git://git.seabios.org/seabios.git
+
+checkout: seabios
+	echo "    Checking out SeaBIOS revision $(TAG-y)"
 	cd seabios; git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
 config: checkout
@@ -25,7 +27,7 @@ config: checkout
 	# This shows how to force a previously set .config option *off*
 	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 
-seabios: config
+build: config
 	echo "    MAKE       SeaBIOS $(TAG-y)"
 	$(MAKE) -C seabios
 
@@ -35,4 +37,4 @@ clean:
 distclean:
 	rm -rf seabios
 
-.PHONY: checkout config seabios clean distclean
+.PHONY: checkout config build clean distclean clone

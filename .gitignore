@@ -1,0 +1,7 @@
+.config
+.config.old
+.xcompile
+build/*
+payloads/external/SeaBIOS/seabios/
+coreboot-builds/
+

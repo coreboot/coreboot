@@ -50,14 +50,14 @@ static u8* uhci_poll_intr_queue (void *queue);
 static void
 uhci_dump (hci_t *controller)
 {
-	printf ("dump:\nUSBCMD: %x\n", uhci_reg_read16 (controller, USBCMD));
-	printf ("USBSTS: %x\n", uhci_reg_read16 (controller, USBSTS));
-	printf ("USBINTR: %x\n", uhci_reg_read16 (controller, USBINTR));
-	printf ("FRNUM: %x\n", uhci_reg_read16 (controller, FRNUM));
-	printf ("FLBASEADD: %x\n", uhci_reg_read32 (controller, FLBASEADD));
-	printf ("SOFMOD: %x\n", uhci_reg_read8 (controller, SOFMOD));
-	printf ("PORTSC1: %x\n", uhci_reg_read16 (controller, PORTSC1));
-	printf ("PORTSC2: %x\n", uhci_reg_read16 (controller, PORTSC2));
+	debug ("dump:\nUSBCMD: %x\n", uhci_reg_read16 (controller, USBCMD));
+	debug ("USBSTS: %x\n", uhci_reg_read16 (controller, USBSTS));
+	debug ("USBINTR: %x\n", uhci_reg_read16 (controller, USBINTR));
+	debug ("FRNUM: %x\n", uhci_reg_read16 (controller, FRNUM));
+	debug ("FLBASEADD: %x\n", uhci_reg_read32 (controller, FLBASEADD));
+	debug ("SOFMOD: %x\n", uhci_reg_read8 (controller, SOFMOD));
+	debug ("PORTSC1: %x\n", uhci_reg_read16 (controller, PORTSC1));
+	debug ("PORTSC2: %x\n", uhci_reg_read16 (controller, PORTSC2));
 }
 #endif
 
@@ -80,21 +80,21 @@ td_dump (td_t *td)
 			sprintf(td_value, "%x", td->pid);
 			td_type=td_value;
 	}
-	printf ("%s packet (at %lx) to %x.%x failed\n", td_type,
+	debug ("%s packet (at %lx) to %x.%x failed\n", td_type,
 		virt_to_phys (td), td->dev_addr, td->endp);
-	printf ("td (counter at %x) returns: ", td->counter);
-	printf (" bitstuff err: %x, ", td->status_bitstuff_err);
-	printf (" CRC err: %x, ", td->status_crc_err);
-	printf (" NAK rcvd: %x, ", td->status_nakrcvd);
-	printf (" Babble: %x, ", td->status_babble);
-	printf (" Data Buffer err: %x, ", td->status_databuf_err);
-	printf (" Stalled: %x, ", td->status_stalled);
-	printf (" Active: %x\n", td->status_active);
+	debug ("td (counter at %x) returns: ", td->counter);
+	debug (" bitstuff err: %x, ", td->status_bitstuff_err);
+	debug (" CRC err: %x, ", td->status_crc_err);
+	debug (" NAK rcvd: %x, ", td->status_nakrcvd);
+	debug (" Babble: %x, ", td->status_babble);
+	debug (" Data Buffer err: %x, ", td->status_databuf_err);
+	debug (" Stalled: %x, ", td->status_stalled);
+	debug (" Active: %x\n", td->status_active);
 	if (td->status_babble)
-		printf (" Babble because of %s\n",
+		debug (" Babble because of %s\n",
 			td->status_bitstuff_err ? "host" : "device");
 	if (td->status_active)
-		printf (" still active - timeout?\n");
+		debug (" still active - timeout?\n");
 }
 
 static void
@@ -112,7 +112,7 @@ uhci_reset (hci_t *controller)
 	uhci_reg_write32 (controller, FLBASEADD,
 			  (u32) virt_to_phys (UHCI_INST (controller)->
 					      framelistptr));
-	//printf ("framelist at %p\n",UHCI_INST(controller)->framelistptr);
+	//debug ("framelist at %p\n",UHCI_INST(controller)->framelistptr);
 
 	/* disable irqs */
 	uhci_reg_write16 (controller, USBINTR, 0);
@@ -367,7 +367,7 @@ uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	if (td == 0) {
 		result = 0;
 	} else {
-		printf ("control packet, req %x\n", req);
+		debug ("control packet, req %x\n", req);
 		td_dump (td);
 		result = 1;
 	}

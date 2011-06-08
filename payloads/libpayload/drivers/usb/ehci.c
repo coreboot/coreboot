@@ -34,9 +34,9 @@
 static void dump_td(u32 addr)
 {
 	qtd_t *td = phys_to_virt(addr);
-	printf("td at phys(%x): active: %x, halted: %x, data_buf_err: %x\n    babble: %x, xact_err: %x, missed_mframe: %x\n    splitxstate: %x, perr: %x\n\n",
+	debug("td at phys(%x): active: %x, halted: %x, data_buf_err: %x\n    babble: %x, xact_err: %x, missed_mframe: %x\n    splitxstate: %x, perr: %x\n\n",
 		addr, td->active, td->halted, td->data_buf_err, td->babble, td->xact_err, td->missed_mframe, td->splitxstate, td->perr);
-	printf("-   cerr: %x, total_len: %x\n\n", td->cerr, td->total_len);
+	debug("-   cerr: %x, total_len: %x\n\n", td->cerr, td->total_len);
 }
 
 static void ehci_start (hci_t *controller)
@@ -122,7 +122,7 @@ int wait_for_tds(qtd_t *head)
 		if (cur->halted) {
 			printf("ERROR with packet\n");
 			dump_td(virt_to_phys(cur));
-			printf("-----------------\n");
+			debug("-----------------\n");
 			return 1;
 		}
 		if (cur->next_qtd & 1) {
@@ -130,7 +130,7 @@ int wait_for_tds(qtd_t *head)
 		}
 		if (0) dump_td(virt_to_phys(cur));
 		/* helps debugging the TD chain */
-		if (0) printf("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
+		if (0) debug("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
 		cur = phys_to_virt(cur->next_qtd);
 	}
 	return result;

@@ -72,38 +72,38 @@ usb_controller_initialize (int bus, int dev, int func)
 			pciid >> 16, pciid & 0xFFFF, func);
 		switch(prog_if) {
 			case 0x00:
-				printf ("UHCI controller\n");
 #ifdef CONFIG_USB_UHCI
+				printf ("UHCI controller\n");
 				uhci_init (addr);
 #else
-				printf ("Not supported.\n");
+				printf ("UHCI controller (not supported)\n");
 #endif
 				break;
 
 			case 0x10:
-				printf ("OHCI controller\n");
 #ifdef CONFIG_USB_OHCI
+				printf ("OHCI controller\n");
 				ohci_init(addr);
 #else
-				printf ("Not supported.\n");
+				printf ("OHCI controller (not supported)\n");
 #endif
 				break;
 
 			case 0x20:
-				printf ("EHCI controller\n");
 #ifdef CONFIG_USB_EHCI
+				printf ("EHCI controller\n");
 				ehci_init(addr);
 #else
-				printf ("Not supported.\n");
+				printf ("EHCI controller (not supported)\n");
 #endif
 				break;
 
 			case 0x30:
-				printf ("xHCI controller\n");
 #ifdef CONFIG_USB_XHCI
+				printf ("xHCI controller\n");
 				xhci_init(addr);
 #else
-				printf ("Not supported.\n");
+				printf ("xHCI controller (not supported)\n");
 #endif
 				break;
 

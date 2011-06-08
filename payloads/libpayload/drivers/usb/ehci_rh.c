@@ -56,7 +56,7 @@ ehci_rh_hand_over_port (usbdev_t *dev, int port)
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
 	volatile portsc_t tmp;
 
-	printf("giving up port %x, it's USB1\n", port+1);
+	debug("giving up port %x, it's USB1\n", port+1);
 
 	/* Lowspeed device. Hand over to companion */
 	tmp = *p;
@@ -76,7 +76,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
 	volatile portsc_t tmp;
 	if (RH_INST(dev)->devices[port]!=-1) {
-		printf("Unregister device at port %x\n", port+1);
+		debug("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
 		RH_INST(dev)->devices[port]=-1;
 	}
@@ -109,7 +109,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
-		printf("port %x hosts a USB2 device\n", port+1);
+		debug("port %x hosts a USB2 device\n", port+1);
 		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
 	}
 	/* RW/C register, so clear it by writing 1 */
@@ -153,7 +153,7 @@ ehci_rh_init (usbdev_t *dev)
 	RH_INST(dev)->n_ports = EHCI_INST(dev->controller)->capabilities->n_ports;
 	RH_INST(dev)->ports = EHCI_INST(dev->controller)->operation->portsc;
 
-	printf("root hub has %x ports\n", RH_INST(dev)->n_ports);
+	debug("root hub has %x ports\n", RH_INST(dev)->n_ports);
 
 	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {

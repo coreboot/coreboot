@@ -91,7 +91,7 @@ void
 init_device_entry (hci_t *controller, int i)
 {
 	if (controller->devices[i] != 0)
-		printf("warning: device %d reassigned?\n", i);
+		debug("warning: device %d reassigned?\n", i);
 	controller->devices[i] = malloc(sizeof(usbdev_t));
 	controller->devices[i]->controller = controller;
 	controller->devices[i]->address = -1;
@@ -145,7 +145,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	dr.wIndex = langID;
 	dr.wLength = 8;
 	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 8, buf)) {
-		printf ("getting descriptor size (type %x) failed\n",
+		debug ("getting descriptor size (type %x) failed\n",
 			descType);
 	}
 
@@ -169,7 +169,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	dr.wLength = size;
 	if (dev->controller->
 	    control (dev, IN, sizeof (dr), &dr, size, result)) {
-		printf ("getting descriptor (type %x, size %x) failed\n",
+		debug ("getting descriptor (type %x, size %x) failed\n",
 			descType, size);
 	}
 
@@ -218,7 +218,7 @@ get_free_address (hci_t *controller)
 		if (controller->devices[i] == 0)
 			return i;
 	}
-	printf ("no free address found\n");
+	debug ("no free address found\n");
 	return -1;		// no free address
 }
 
@@ -251,7 +251,7 @@ set_address (hci_t *controller, int speed)
 	dev->endpoints[0].direction = SETUP;
 	mdelay (50);
 	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0)) {
-		printf ("set_address failed\n");
+		debug ("set_address failed\n");
 		return -1;
 	}
 	mdelay (50);
@@ -260,7 +260,7 @@ set_address (hci_t *controller, int speed)
 		(device_to_host, standard_type, dev_recp), 1, 0, 0);
 	dd = (device_descriptor_t *) dev->descriptor;
 
-	printf ("device 0x%04x:0x%04x is USB %x.%x ",
+	printf ("* found device (0x%04x:0x%04x, USB %x.%x)",
 		 dd->idVendor, dd->idProduct,
 		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
 	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
@@ -364,70 +364,70 @@ set_address (hci_t *controller, int speed)
 		wireless_device   = 0xe0,
 		misc_device       = 0xef,
 	};
-
+	printf(", class: ");
 	switch (class) {
 	case audio_device:
-		printf("(Audio)\n");
+		printf("audio\n");
 		break;
 	case comm_device:
-		printf("(Communication)\n");
+		printf("communication\n");
 		break;
 	case hid_device:
-		printf ("(HID)\n");
+		printf ("HID\n");
 #ifdef CONFIG_USB_HID
 		controller->devices[adr]->init = usb_hid_init;
 #else
-		printf ("NOTICE: USB HID support not compiled in\n");
+		debug ("NOTICE: USB HID support not compiled in\n");
 #endif
 		break;
 	case physical_device:
-		printf("(Physical)\n");
+		printf("physical\n");
 		break;
 	case imaging_device:
-		printf("(Camera)\n");
+		printf("camera\n");
 		break;
 	case printer_device:
-		printf("(Printer)\n");
+		printf("printer\n");
 		break;
 	case msc_device:
-		printf ("(MSC)\n");
+		printf ("MSC\n");
 #ifdef CONFIG_USB_MSC
 		controller->devices[adr]->init = usb_msc_init;
 #else
-		printf ("NOTICE: USB MSC support not compiled in\n");
+		debug ("NOTICE: USB MSC support not compiled in\n");
 #endif
 		break;
 	case hub_device:
-		printf ("(Hub)\n");
+		printf ("hub\n");
 #ifdef CONFIG_USB_HUB
 		controller->devices[adr]->init = usb_hub_init;
 #else
-		printf ("NOTICE: USB hub support not compiled in.\n");
+		debug ("NOTICE: USB hub support not compiled in.\n");
 #endif
 		break;
 	case cdc_device:
-		printf("(CDC)\n");
+		printf("CDC\n");
 		break;
 	case ccid_device:
-		printf ("(Smart Card / CCID)\n");
+		printf("smartcard / CCID\n");
 		break;
 	case security_device:
-		printf("(Content Security)\n");
+		printf("content security\n");
 		break;
 	case video_device:
-		printf("(Video)\n");
+		printf("video\n");
 		break;
 	case healthcare_device:
-		printf("(Healthcare)\n");
+		printf("healthcare\n");
 		break;
 	case diagnostic_device:
-		printf("(Diagnostic)\n");
+		printf("diagnostic\n");
 		break;
 	case wireless_device:
-		printf("(Wireless)\n");
+		printf("wireless\n");
 		break;
 	default:
-		printf ("(unsupported class %x)\n", class);
+		printf("unsupported class %x\n", class);
 		break;
 	}
 	return adr;
@@ -445,7 +445,7 @@ int
 usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 {
 	static const char* speeds[] = { "full", "low", "high" };
-	printf ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
+	debug ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
 	int newdev = set_address (controller, speed);
 	if (newdev == -1)
 		return -1;

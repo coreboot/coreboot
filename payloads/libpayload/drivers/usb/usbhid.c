@@ -37,9 +37,7 @@ typedef enum { hid_proto_boot = 0, hid_proto_report = 1 } hid_proto;
 enum { hid_boot_proto_none = 0, hid_boot_proto_keyboard =
 		1, hid_boot_proto_mouse = 2
 };
-#ifdef USB_DEBUG
 static const char *boot_protos[3] = { "(none)", "keyboard", "mouse" };
-#endif
 enum { GET_REPORT = 0x1, GET_IDLE = 0x2, GET_PROTOCOL = 0x3, SET_REPORT =
 		0x9, SET_IDLE = 0xa, SET_PROTOCOL = 0xb
 };
@@ -394,7 +392,7 @@ static int usb_hid_set_layout (const char *country)
 		return 0;
 	}
 
-	printf("Keyboard layout '%s' not found, using '%s'\n",
+	printf("  Keyboard layout '%s' not found, using '%s'\n",
 			country, map->country);
 
 	/* Nothing found, not changed */
@@ -438,7 +436,7 @@ usb_hid_init (usbdev_t *dev)
 			/* 35 countries defined: */
 			if (countrycode > 35)
 				countrycode = 0;
-			printf ("  Keyboard has %s layout (country code %02x)\n",
+			debug ("  Keyboard has %s layout (country code %02x)\n",
 					countries[countrycode][0], countrycode);
 
 			/* Set keyboard layout accordingly */
@@ -464,7 +462,7 @@ usb_hid_init (usbdev_t *dev)
 			debug ("  configuration done.\n");
 			break;
 		case hid_boot_proto_mouse:
-			printf("NOTICE: USB mice are not supported.\n");
+			debug("NOTICE: USB mice are not supported.\n");
 			break;
 		}
 	}

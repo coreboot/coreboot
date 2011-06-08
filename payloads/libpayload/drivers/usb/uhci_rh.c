@@ -49,7 +49,7 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 	else if (port == 2)
 		port = PORTSC2;
 	else {
-		printf("Invalid port %d\n", port);
+		debug("Invalid port %d\n", port);
 		return;
 	}
 
@@ -94,7 +94,7 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 		portsc = PORTSC2;
 		offset = 1;
 	} else {
-		printf("Invalid port %d\n", port);
+		debug("Invalid port %d\n", port);
 		return;
 	}
 	int devno = RH_INST (dev)->port[offset];

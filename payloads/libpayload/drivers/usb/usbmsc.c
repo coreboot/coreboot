@@ -343,7 +343,7 @@ read_capacity (usbdev_t *dev)
 	cb.command = 0x25;	// read capacity
 	u8 buf[8];
 
-	printf ("Reading capacity of mass storage device.\n");
+	debug ("Reading capacity of mass storage device.\n");
 	int count = 0;
 	while ((count++ < 20)
 	       &&
@@ -352,15 +352,16 @@ read_capacity (usbdev_t *dev)
 		 8) == 1));
 	if (count >= 20) {
 		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably more usable.
-		printf ("Assuming 2TB in 512byte sectors as READ CAPACITY didn't answer.\n");
+		printf ("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
 		MSC_INST (dev)->numblocks = 0xffffffff;
 		MSC_INST (dev)->blocksize = 512;
 	} else {
 		MSC_INST (dev)->numblocks = ntohl (*(u32 *) buf) + 1;
 		MSC_INST (dev)->blocksize = ntohl (*(u32 *) (buf + 4));
 	}
-	printf ("  has %d blocks sized %db\n", MSC_INST (dev)->numblocks,
-		MSC_INST (dev)->blocksize);
+	printf ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
+		MSC_INST (dev)->blocksize,
+		MSC_INST (dev)->numblocks * MSC_INST (dev)->blocksize / 1000 / 1000);
 }
 
 void
@@ -376,9 +377,9 @@ usb_msc_init (usbdev_t *dev)
 	interface_descriptor_t *interface =
 		(interface_descriptor_t *) (((char *) cd) + cd->bLength);
 
-	printf ("  it uses %s command set\n",
+	debug ("  it uses %s command set\n",
 		msc_subclass_strings[interface->bInterfaceSubClass]);
-	printf ("  it uses %s protocol\n",
+	debug ("  it uses %s protocol\n",
 		msc_protocol_strings[interface->bInterfaceProtocol]);
 
 
@@ -420,13 +421,13 @@ usb_msc_init (usbdev_t *dev)
 		fatal ("couldn't find bulk-in endpoint");
 	if (MSC_INST (dev)->bulk_out == 0)
 		fatal ("couldn't find bulk-out endpoint");
-	printf ("  using endpoint %x as in, %x as out\n",
+	debug ("  using endpoint %x as in, %x as out\n",
 		MSC_INST (dev)->bulk_in->endpoint,
 		MSC_INST (dev)->bulk_out->endpoint);
 
-	printf ("  has %d luns\n", get_max_luns (dev) + 1);
+	debug ("  has %d luns\n", get_max_luns (dev) + 1);
 
-	printf ("  Waiting for device to become ready... ");
+	printf ("  Waiting for device to become ready...");
 	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
 	while (test_unit_ready (dev) && --timeout) {
 		mdelay (100);
@@ -439,16 +440,16 @@ usb_msc_init (usbdev_t *dev)
 		printf ("ok.\n");
 	}
 
-	printf ("  spin up");
+	debug ("  spin up");
 	for (i = 0; i < 30; i++) {
-		printf (".");
+		debug (".");
 		if (!spin_up (dev)) {
-			printf (" OK.");
+			debug (" OK.");
 			break;
 		}
 		mdelay (100);
 	}
-	printf ("\n");
+	debug ("\n");
 
 	read_capacity (dev);
 	if (usbdisk_create)

@@ -236,6 +236,9 @@ gitconfig:
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
 crossgcc: clean-for-update
+	$(MAKE) -C util/crossgcc build-without-gdb
+
+crosstools: clean-for-update
 	$(MAKE) -C util/crossgcc build
 
 crossgcc-clean: clean-for-update

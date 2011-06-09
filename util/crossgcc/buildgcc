@@ -59,6 +59,7 @@ W32API_DIR="w32api-${W32API_VERSION}-mingw32"
 MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
 
 SAVETEMPS=0
+SKIPGDB=0
 
 red='\e[0;31m'
 RED='\e[1;31m'
@@ -100,7 +101,7 @@ cleanup()
 
 myhelp()
 {
-	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>]\n"
+	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>] [-G]\n"
 	printf "       $0 [-V|--version]\n"
 	printf "       $0 [-h|--help]\n\n"
 
@@ -116,6 +117,7 @@ myhelp()
 	printf "                                  (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
 	printf "                                  (for RPM builds, default unset)\n\n"
+	printf "    [-G|--skip-gdb]               don't build GNU debugger\n"
 }
 
 myversion()
@@ -147,11 +149,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps Vhcd:p:j:D:t -- "$@"`
+	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb Vhcd:p:j:D:tG -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vhcd:p:j:D:t $*`
+	args=`getopt Vhcd:p:j:D:tG $*`
 	set -- $args
 fi
 
@@ -170,11 +172,18 @@ while true ; do
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
+		-G|--skip-gdb)	shift; SKIPGDB=1;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+
+GDB_PACKAGE="GDB"
+if [ $SKIPGDB -eq 1 ]; then
+	printf "Will skip GDB ... ${green}ok${NC}\n"
+	GDB_PACKAGE=""
+fi
 
 MINGW_ARCHIVES=""
 if [ "$TARGETARCH" = "i386-mingw32" ]; then
@@ -228,7 +237,7 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 fi
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS GDB $MINGW_PACKAGES; do
+for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
@@ -275,7 +284,10 @@ if [ `uname` = "Darwin" ]; then
 	#rm .architecture_check.c .architecture_check.o
 fi
 
-mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc build-gdb
+mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc
+if [ $SKIPGDB -eq 0 ]; then
+	mkdir -p build-gdb
+fi
 if [ -f build-gmp/.success ]; then
 	printf "Skipping GMP as it is already built\n"
 else
@@ -415,6 +427,8 @@ fi
 
 if [ -f build-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
+elif [ $SKIPGDB -eq 1 ]; then
+	printf "Skipping GDB as requested by command line\n"
 else
 printf "Building GDB ${GDB_VERSION} ... "
 (

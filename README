@@ -2,11 +2,20 @@
 coreboot README
 -------------------------------------------------------------------------------
 
-coreboot is a Free Software project aimed at replacing the proprietary
-BIOS you can find in most of today's computers.
+coreboot is a Free Software project aimed at replacing the proprietary BIOS
+(firmware) found in most computers.  coreboot performs a little bit of
+hardware initialization and then executes additional boot logic, called a
+payload.
 
-It performs just a little bit of hardware initialization and then executes
-one of many possible payloads, e.g. a Linux kernel or a bootloader.
+With the separation of hardware initialization and later boot logic,
+coreboot can scale from specialized applications that run directly
+firmware, run operating systems in flash, load custom
+bootloaders, or implement firmware standards, like PC BIOS services or
+UEFI. This allows for systems to only include the features necessary
+in the target application, reducing the amount of code and flash space
+required.
+
+coreboot was formerly known as LinuxBIOS.
 
 
 Payloads

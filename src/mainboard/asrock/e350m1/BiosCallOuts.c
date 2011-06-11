@@ -512,6 +512,8 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       Data8 &= ~(UINT8)BIT6;
       Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
   }
+  // disable memory clear for boot time reduction
+  MemData->ParameterListPtr->EnableMemClr = FALSE;
   return Status;
 }
 /*  Call the host environment interface to provide a user hook opportunity. */

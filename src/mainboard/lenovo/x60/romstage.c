@@ -338,6 +338,4 @@ void main(unsigned long bist)
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_ACPI_S3_MAGIC);
 	}
 #endif
-	/* Set legacy Brightness control to full brightness */
-	pci_write_config8(PCI_DEV(0, 2, 1), 0xf4, 0xff);
 }

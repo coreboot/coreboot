@@ -34,10 +34,12 @@
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
+#include <pc80/mc146818rtc.h>
 
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0, idedev;
+	u8 defaults_loaded = 0;
 
 	/* enable Audio */
 	h8_set_audio_mute(0);
@@ -56,6 +58,18 @@ static void mainboard_enable(device_t dev)
 	} else {
 		pmh7_ultrabay_power_enable(0);
 		ec_write(0x0c, 0x04);
+	}
+
+	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
+		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");
+		defaults_loaded = 0;
+	}
+
+	if (!defaults_loaded) {
+		printk(BIOS_INFO, "Restoring CMOS defaults\n");
+		set_option("tft_brightness", &(u8[]){ 0xff });
+		set_option("volume", &(u8[]){ 0x03 });
+		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
 	}
 }
 

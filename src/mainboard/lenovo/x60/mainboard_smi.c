@@ -24,6 +24,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/nvs.h"
+#include "southbridge/intel/i82801gx/i82801gx.h"
 #include <ec/acpi/ec.h>
 #include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>
@@ -97,4 +98,95 @@ int mainboard_io_trap_handler(int smif)
 	/* On success, the IO Trap Handler returns 1
 	 * On failure, the IO Trap Handler returns a value != 1 */
 	return 1;
+}
+
+static void mainboard_smi_brightness_up(void)
+{
+	u8 value;
+
+	if ((value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4)) < 0xf0)
+		pci_write_config8(PCI_DEV(0, 2, 1), 0xf4, (value + 0x10) | 0xf);
+}
+
+static void mainboard_smi_brightness_down(void)
+{
+	u8 value;
+
+	if ((value = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4)) > 0x10)
+		pci_write_config8(PCI_DEV(0, 2, 1), 0xf4, (value - 0x10) & 0xf0);
+}
+
+static void mainboard_smi_handle_ec_sci(void)
+{
+	u8 status = inb(EC_SC);
+	u8 event;
+
+	if (!(status & EC_SCI_EVT))
+		return;
+
+	event = ec_query();
+	printk(BIOS_DEBUG, "EC event %02x\n", event);
+
+	switch(event) {
+		/* brightness up */
+		case 0x14:
+			mainboard_smi_brightness_up();
+			mainboard_smi_save_cmos();
+			break;
+		/* brightness down */
+		case 0x15:
+			mainboard_smi_brightness_down();
+			mainboard_smi_save_cmos();
+			break;
+		default:
+			break;
+	}
+}
+
+void mainboard_smi_gpi(u16 gpi)
+{
+	if (gpi & (1 << 12))
+		mainboard_smi_handle_ec_sci();
+}
+
+int mainboard_apm_cnt(u8 data)
+{
+	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+	u8 tmp;
+
+	printk(BIOS_DEBUG, "%s: pmbase %04X, data %02X\n", __func__, pmbase, data);
+
+	if (!pmbase)
+		return 0;
+
+	switch(data) {
+		case APM_CNT_ACPI_ENABLE:
+			/* use 0x1600/0x1604 to prevent races with userspace */
+			ec_set_ports(0x1604, 0x1600);
+			/* route H8SCI to SCI */
+			outw(inw(ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
+			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
+			tmp &= ~0x03;
+			tmp |= 0x02;
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			/* discard all events, and enable attention */
+			ec_write(0x80, 0x01);
+			break;
+		case APM_CNT_ACPI_DISABLE:
+			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
+			   provide a EC query function */
+			ec_set_ports(0x66, 0x62);
+			/* route H8SCI# to SMI */
+			outw(inw(pmbase + ALT_GP_SMI_EN) | 0x1000, pmbase + ALT_GP_SMI_EN);
+			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
+			tmp &= ~0x03;
+			tmp |= 0x01;
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			/* discard all events, and enable attention */
+			ec_write(0x80, 0x01);
+			break;
+		default:
+			break;
+	}
+	return 0;
 }

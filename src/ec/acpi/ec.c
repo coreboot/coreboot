@@ -96,7 +96,7 @@ u8 recv_ec_data(void)
 	}
 
 	data = inb(ec_data_reg);
-	printk(BIOS_DEBUG, "recv_ec_data: 0x%02x\n", data);
+	printk(BIOS_SPEW, "recv_ec_data: 0x%02x\n", data);
 
 	return data;
 }

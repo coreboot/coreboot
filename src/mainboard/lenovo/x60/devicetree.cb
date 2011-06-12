@@ -53,13 +53,13 @@ chip northbridge/intel/i945
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
 			register "gpi13_routing" = "2"
-			register "gpi12_routing" = "2"
+			register "gpi12_routing" = "1"
 			register "gpi8_routing" = "2"
 
 			register "sata_ahci" = "0x0"
 
 			register "gpe0_en" = "0x11000006"
-
+			register "alt_gp_smi_en" = "0x1000"
 			device pci 1b.0 on # Audio Cnotroller
 				subsystemid 0x17aa 0x2010
 			end

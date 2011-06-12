@@ -17,6 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c dock.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c dock.c ../../../pc80/mc146818rtc.c ../../../lib/cbfs.c ../../../lib/memcmp.c ../../../lib/memset.c ../../../lib/lzma.c
 romstage-y += dock.c
 ramstage-y += dock.c

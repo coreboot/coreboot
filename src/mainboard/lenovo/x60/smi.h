@@ -3,5 +3,6 @@
 
 #define SMI_DOCK_CONNECT 0x01
 #define SMI_DOCK_DISCONNECT 0x02
+#define SMI_SAVE_CMOS	0x03
 
 #endif

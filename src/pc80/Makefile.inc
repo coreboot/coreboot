@@ -11,3 +11,4 @@ cbfs-files-$(CONFIG_HAVE_CMOS_DEFAULT) += cmos.default
 cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE)
 cmos.default-type = 0xaa
 
+smm-y += mc146818rtc.c

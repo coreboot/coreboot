@@ -21,6 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <pc80/mc146818rtc.h>
 
 static void gma_func0_init(struct device *dev)
 {
@@ -36,11 +37,17 @@ static void gma_func0_init(struct device *dev)
 static void gma_func1_init(struct device *dev)
 {
 	u32 reg32;
+	u8 val;
 
 	/* IGD needs to be Bus Master, also enable IO accesss */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
 			PCI_COMMAND_MASTER | PCI_COMMAND_IO);
+
+	if (!get_option(&val, "tft_brightness"))
+		pci_write_config8(dev, 0xf4, val);
+	else
+		pci_write_config8(dev, 0xf4, 0xff);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

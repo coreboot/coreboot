@@ -25,34 +25,6 @@
 #include <arch/byteorder.h>
 
 
-/**
- * Decompression wrapper for CBFS
- * @param algo
- * @param src
- * @param dst
- * @param len
- * @return 0 on success, -1 on failure
- */
-static int cbfs_decompress(int algo, void *src, void *dst, int len)
-{
-	switch(algo) {
-	case CBFS_COMPRESS_NONE:
-		memcpy(dst, src, len);
-		return 0;
-
-	case CBFS_COMPRESS_LZMA:
-		if (!ulzma(src, dst)) {
-			printk(BIOS_ERR, "CBFS: LZMA decompression failed!\n");
-			return -1;
-		}
-		return 0;
-
-	default:
-		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", algo);
-		return -1;
-	}
-}
-
 static int cbfs_check_magic(struct cbfs_file *file)
 {
 	return !strcmp(file->magic, CBFS_FILE_MAGIC) ? 1 : 0;
@@ -132,6 +104,7 @@ void *cbfs_find_file(const char *name, int type)
 	return (void *) CBFS_SUBHEADER(file);
 }
 
+#ifndef __SMM__
 static inline int tohex4(unsigned int c)
 {
 	return (c<=9)?(c+'0'):(c-10+'a');
@@ -144,6 +117,34 @@ static void tohex16(unsigned int val, char* dest)
 	dest[2]=tohex4((val>>4) & 0xf);
 	dest[3]=tohex4(val & 0xf);
 }
+
+/**
+ * Decompression wrapper for CBFS
+ * @param algo
+ * @param src
+ * @param dst
+ * @param len
+ * @return 0 on success, -1 on failure
+ */
+static int cbfs_decompress(int algo, void *src, void *dst, int len)
+{
+	switch(algo) {
+	case CBFS_COMPRESS_NONE:
+		memcpy(dst, src, len);
+		return 0;
+
+	case CBFS_COMPRESS_LZMA:
+		if (!ulzma(src, dst)) {
+			printk(BIOS_ERR, "CBFS: LZMA decompression failed!\n");
+			return -1;
+		}
+		return 0;
+	default:
+		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", algo);
+		return -1;
+	}
+}
+
 
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 {
@@ -246,4 +247,4 @@ int run_address(void *f)
 	v = f;
 	return v();
 }
-
+#endif

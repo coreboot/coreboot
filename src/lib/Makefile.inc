@@ -36,7 +36,7 @@ ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
-smm-y += memcpy.c
+smm-y += memcpy.c cbfs.c memset.c memcmp.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 

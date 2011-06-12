@@ -68,10 +68,10 @@ int mainboard_io_trap_handler(int smif)
 		break;
 
 	default:
-		return 1;
+		return 0;
 	}
 
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0 */
-	return 0;
+	/* On success, the IO Trap Handler returns 1
+	 * On failure, the IO Trap Handler returns a value != 1 */
+	return 1;
 }

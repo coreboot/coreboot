@@ -18,6 +18,7 @@
  */
 
 struct northbridge_intel_i945_config {
+	int tft_present;
 };
 
 extern struct chip_operations northbridge_intel_i945_ops;

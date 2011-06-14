@@ -1,0 +1,17 @@
+if VENDOR_AAEON
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_AAEON_PFM_540I_REVB
+	bool "PFM-540I_REVB"
+
+endchoice
+
+source "src/mainboard/aaeon/pfm-540i_revb/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Aaeon"
+
+endif # VENDOR_AAEON

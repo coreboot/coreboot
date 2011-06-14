@@ -4,6 +4,8 @@ choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION
 
+config VENDOR_AAEON
+	bool "Aaeon"
 config VENDOR_ABIT
 	bool "Abit"
 config VENDOR_ADVANSUS
@@ -122,6 +124,7 @@ config VENDOR_WYSE
 endchoice
 
 source "src/mainboard/a-trend/Kconfig"
+source "src/mainboard/aaeon/Kconfig"
 source "src/mainboard/abit/Kconfig"
 source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"

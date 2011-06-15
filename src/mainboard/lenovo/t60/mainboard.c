@@ -46,7 +46,7 @@ static void mainboard_enable(device_t dev)
 
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
-	if (dev0 && pci_read_config32(dev0, SKPAD) == 0xcafed00d)
+	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)
 		ec_write(0x0c, 0xc7);
 
 	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));

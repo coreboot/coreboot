@@ -186,7 +186,7 @@ static void i945_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
-	pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_NORMAL_BOOT_MAGIC);
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* Wait for MCH BAR to come up */

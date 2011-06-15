@@ -365,5 +365,7 @@ void enable_usbdebug(unsigned int port);
 #define SS_CNT		0x50
 #define C3_RES		0x54
 
+#define SKPAD_ACPI_S3_MAGIC	0xcafed00d
+#define SKPAD_NORMAL_BOOT_MAGIC	0xcafebabe
 #endif /* __ACPI__ */
 #endif				/* SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H */

@@ -36,61 +36,6 @@ extern const unsigned char AmlCode[];
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
-#define OLD_ACPI 0
-#if OLD_ACPI
-static void acpi_create_gnvs(global_nvs_t *gnvs)
-{
-	memset (gnvs, 0, sizeof(global_nvs_t));
-
-	gnvs->LIDS = 1;
-	gnvs->PWRS = 1;
-
-	gnvs->ACTT = 0x37;
-	gnvs->PSVT = 0x4f;
-
-	gnvs->TC1V = 0x00;
-	gnvs->TC2V = 0x0a;
-	gnvs->TSPV = 0x02;
-
-	gnvs->CRTT = 0x77;
-
-	gnvs->B0SC = 0x54;
-	gnvs->APIC = 0x01;
-	gnvs->MPEN = 0x01;
-
-	gnvs->PPCM = 0x02;
-	gnvs->PCP0 = 0xbf;
-	gnvs->PCP1 = 0xbf;
-
-	gnvs->CMAP = 0x01;
-	gnvs->CMBP = 0x01;
-	gnvs->LT0  = 0x01;
-	gnvs->FDCP = 0x01;
-	gnvs->CMCP = 0x01;
-	gnvs->CMDP = 0x01;
-	gnvs->P2M  = 0x02;
-
-	gnvs->IGDS = 0x01;
-
-	gnvs->CADL = 0x09;
-	gnvs->PADL = 0x09;
-
-	gnvs->NDID = 3;
-	gnvs->DID1 = 0x80000100;
-	gnvs->DID2 = 0x80000240;
-	gnvs->DID3 = 0x80000410;
-	gnvs->DID4 = 0x80000410;
-	gnvs->DID5 = 0x00000005;
-
-	gnvs->ALAF = 0x64;
-	gnvs->LLOW = 0x2c;
-	gnvs->LHIH = 0x01;
-
-        // tolud = pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c);
-	// oemb->topm = tolud;
-}
-#endif
-
 #include "southbridge/intel/i82801gx/nvs.h"
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {

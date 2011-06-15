@@ -30,83 +30,12 @@
 #include <arch/ioapic.h>
 #include "dmi.h"
 
-#define OLD_ACPI 0
-
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
-#if OLD_ACPI
-typedef struct acpi_oemb {
-	acpi_header_t header;
-	u8  ss;
-	u16 iost;
-	u32 topm;
-	u32 roms;
-	u32 mg1b;
-	u32 mg1l;
-	u32 mg2b;
-	u32 mg2l;
-	u8  rsvd;
-	u8  dmax;
-	u32 hpta;
-	u32 cpb0;
-	u32 cpb1;
-	u32 cpb2;
-	u32 cpb3;
-	u8  assb;
-	u8  aotb;
-	u32 aaxb;
-	u8  smif;
-	u8  dtse;
-	u8  dts1;
-	u8  dts2;
-	u8  mpen;
-} __attribute__((packed)) acpi_oemb_t;
-#endif
-
 #include "southbridge/intel/i82801gx/nvs.h"
-
-#if OLD_ACPI
-static void acpi_create_oemb(acpi_oemb_t *oemb)
-{
-	acpi_header_t *header = &(oemb->header);
-	unsigned long tolud;
-
-	memset (oemb, 0, sizeof(*oemb));
-
-	/* fill out header fields */
-	memcpy(header->signature, "OEMB", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, "COREBOOT", 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_oemb_t);
-	header->revision = 1;
-
-	oemb->ss   =   0x09; // ss1 + ss 4
-	oemb->iost = 0x0403; // ??
-
-        tolud = pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c);
-	oemb->topm = tolud;
-
-	oemb->roms = 0xfff00000; // 1M hardcoded
-
-	oemb->mg1b = 0x000d0000;
-	oemb->mg1l = 0x00010000;
-
-	oemb->mg2b = tolud;
-	oemb->mg2l = 0-tolud;
-
-	oemb->dmax = 0x87;
-	oemb->hpta = 0x000e36c0;
-
-	header->checksum =
-	    acpi_checksum((void *) oemb, sizeof(acpi_oemb_t));
-
-};
-#endif
 
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
@@ -202,9 +131,6 @@ unsigned long write_acpi_tables(unsigned long start)
 #if CONFIG_HAVE_ACPI_SLIC
 	acpi_header_t *slic;
 #endif
-#if OLD_ACPI
-	acpi_oemb_t *oemb;
-#endif
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
@@ -256,15 +182,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, mcfg);
 
-#if OLD_ACPI
-	printk(BIOS_DEBUG, "ACPI:    * OEMB\n");
-	oemb=(acpi_oemb_t *)current;
-	current += sizeof(acpi_oemb_t);
-	ALIGN_CURRENT;
-	acpi_create_oemb(oemb);
-	acpi_add_table(rsdp, oemb);
-#endif
-
 	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
@@ -275,16 +192,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
 	current += dsdt->length;
 	memcpy(dsdt, &AmlCode, dsdt->length);
-
-#if OLD_ACPI
-	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBEEF) {
-			printk(BIOS_DEBUG, "ACPI: Patching up DSDT at offset 0x%04x -> 0x%08x\n", i, 0x24 + (u32)oemb);
-			*(u32*)(((u32)dsdt) + i) = 0x24 + (u32)oemb;
-			break;
-		}
-	}
-#endif
 
 	ALIGN_CURRENT;
 

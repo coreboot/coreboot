@@ -40,6 +40,8 @@ Device(EC)
 		Offset (0x3B),
 				    , 1,
 				KBLT, 1,        /* Keyboard Light */
+				    , 2,
+				USPW, 1,	/* USB Power enable */
 		Offset (0x4e),
 		               WAKE, 16,
 		Offset (0x78),
@@ -72,6 +74,12 @@ Device(EC)
 	{
 		Store(Arg0, AMUT)
 	}
+
+	Method (USBP, 1, NotSerialized)
+	{
+		Store(Arg0, USPW)
+	}
+
 
 	/* Sleep Button pressed */
 	Method(_Q13, 0, NotSerialized)

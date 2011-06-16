@@ -23,6 +23,7 @@
 void h8_trackpoint_enable(int on);
 void h8_wlan_enable(int on);
 void h8_set_audio_mute(int on);
+void h8_usb_power_enable(int on);
 void h8_enable_event(int event);
 void h8_disable_event(int event);
 int h8_ultrabay_device_present(void);

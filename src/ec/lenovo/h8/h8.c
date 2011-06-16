@@ -88,6 +88,14 @@ void h8_disable_event(int event)
 
 }
 
+void h8_usb_power_enable(int onoff)
+{
+	if (onoff)
+		ec_set_bit(0x3b, 4);
+	else
+		ec_clr_bit(0x3b, 4);
+}
+
 int h8_ultrabay_device_present(void)
 {
 	return ec_read(H8_STATUS1) & 0x5 ? 0 : 1;
@@ -129,6 +137,7 @@ static void h8_enable(device_t dev)
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
 	h8_wlan_enable(conf->wlan_enable);
 	h8_trackpoint_enable(conf->trackpoint_enable);
+	h8_usb_power_enable(1);
 
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);

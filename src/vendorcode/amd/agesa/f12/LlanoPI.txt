@@ -1,0 +1,48 @@
+             Sabine Platform Initialization (LlanoPI)
+=============================================================================
+
+Version:  1.1.0.0                             Release Date: May 2011
+File:     Llano_1.1.0.0.ZIP
+
+=============================================================================
+LlanoPI 1.1.0.0.
+SVN Path:
+http://svn.amd.com/BIOS/Frameworks/PI/LlanoPI//tags/releases/1_1_0_0_0192
+
+AGESA: http://svn.amd.com/BIOS/Frameworks/AGESA/AGESA-V5/tags/public/Llano/AGESA_V5Llano1100RC4
+CMIX:  http://svn.amd.com/BIOS/Frameworks/CIM/SB/SB900/tags/releases/1_0_0_2_0054
+VBIOS: http://svn.amd.com/BIOS/VBIOS/Llano/tags/public/042A
+Torpedo BIOS: 
+RTP1091B.ROM http://svn.amd.com/BIOS/ATI_Chipsets/Llano/Insyde/branches/public/pi1100RC4
+
+=============================================================================
+
+Version:  1.0.9.1                             Release Date: April 2011
+File:     Llano_1.0.9.1.ZIP
+
+=============================================================================
+LlanoPI 1.0.9.1.
+SVN Path:
+http://svn.amd.com/BIOS/Frameworks/PI/LlanoPI/trunk revsion:50636
+
+AGESA: http://svn.amd.com/BIOS/Frameworks/AGESA/AGESA-V5/tags/public/Llano/AGESA_V5Llano1091RC2 Revison:48866
+CMIX:  http://svn.amd.com/BIOS/Frameworks/CIM/SB/SB900/tags/releases/1_0_0_1_0049  Revison:50448
+VBIOS: http://svn.amd.com/BIOS/VBIOS/Llano/tags/public/041 Revsion:847
+Torpedo BIOS: 
+RTP1091B.ROM http://svn.amd.com/BIOS/ATI_Chipsets/Llano/Insyde/branches/public/pi1091RC2
+
+=============================================================================
+
+Version:  1.0.9.0                             Release Date: March 2011
+File:     Llano_1.0.9.0.ZIP
+
+=============================================================================
+LlanoPI 1.0.9.0.
+SVN Path:
+http://svn.amd.com/BIOS/Frameworks/PI/LlanoPI/trunk revsion:49083
+
+AGESA: http://svn.amd.com/BIOS/Frameworks/AGESA/AGESA-V5/tags/public/Llano/AGESA_V5Llano1090RC3 Revison:48866
+CMIX:  http://svn.amd.com/BIOS/Frameworks/CIM/SB/SB900/tags/releases/1_0_0_0_0047  Revison:48351
+VBIOS: http://svn.amd.com/BIOS/VBIOS/Llano/tags/public/040 Revsion:764
+
+

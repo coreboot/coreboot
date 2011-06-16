@@ -1,0 +1,237 @@
+/**
+ * @file
+ *
+ * ALIB ASL library
+ *
+ *
+ *
+ * @xrefitem bom "File Content Label" "Release Content"
+ * @e project:     AGESA
+ * @e sub-project: GNB
+ * @e \$Revision: 31805 $   @e \$Date: 2010-05-21 17:58:16 -0700 (Fri, 21 May 2010) $
+ *
+ */
+/*
+*****************************************************************************
+*
+* Copyright (c) 2011, Advanced Micro Devices, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
+ *       its contributors may be used to endorse or promote products derived 
+ *       from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* ***************************************************************************
+*
+*/
+
+DefinitionBlock (
+  "F12PcieAlibSsdt.aml",
+  "SSDT",
+  2,
+  "AMD",
+  "ALIB",
+  0x1
+  )
+{
+  Scope(\_SB) {
+
+    Name (varMaxPortIndexNumber, 6)
+
+    include ("PcieAlibCore.asl")
+    include ("PcieSmuLib.asl")
+    include ("PcieAlibPspp.asl")
+    include ("PcieAlibHotplug.asl")
+
+    Name (varBoostState, 0)
+    Name (varPdmState, 0)
+    Name (varIntRateMonitorMaskState, 0)
+    Name (varIsStateInitialized, 0)
+
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  Activate APM/PDM state
+     *
+     *  Arg0  - 0 (AC)   1 (DC)
+     */
+    Method (procApmPdmActivate, 1, NotSerialized) {
+      Store (Or(ShiftLeft (0x18, 3), 4), Local1)
+      if (LEqual (varIsStateInitialized, 0)) {
+        Store (procSmuRcuRead (0x8580), varPdmState)
+        Store (procPciDwordRead (Local1, 0x15C), varBoostState)
+        Store (procPciDwordRead (Local1, 0x1A4), varIntRateMonitorMaskState)
+        Store (1, varIsStateInitialized)
+      }
+      Store (procSmuRcuRead (0x8580), Local0)
+      Store (Or(ShiftLeft (0x18, 3), 4), Local1)
+      Store (procPciDwordRead (Local1, 0x15C), Local2)
+      Store (procPciDwordRead (Local1, 0x1A4), Local3)
+      if (LEqual (Arg0, 1)) {
+        // DC mode --
+        //1. To stall the PDM flow:
+        //Bit SMU0xB_x8580[PdmEn] needs to be cleared (0). The bit needs to be set to 0 and the service routine 12h (SMU) called. This will force the disabling of the PDM flow.
+        //2. To disable the APM: F4x15C[1:0]=00
+        //3. F4x1A4 needs to be set to FFFF_FFFF
+        And (Local0, 0xFFFFFFFE, Local0)
+        And (Local2, 0xFFFFFFFC, Local2)
+        Or (Local3, 0x3, Local3)
+      } else {
+        Or (Local0, And (varPdmState, 1), Local0)
+        // Restore only D18F4x15C[0:1]
+        Or (Local2, And (varBoostState, 0x3), Local2)
+        // Restore only D18F4x1A4[0:1]
+        And (Local3, Or (0xFFFFFFFC, varIntRateMonitorMaskState), Local3)
+      }
+      procPciDwordWrite (Local1, 0x1A4, Local3)
+      procPciDwordWrite (Local1, 0x15C, Local2)
+      procSmuRcuWrite (0x8580, Local0)
+      procNbSmuServiceRequest (0x12, 0x3)
+    }
+
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  Activate ALTVDDNB
+     *
+     *  Arg0 	- 1 - GEN1 2 - GEN2
+     */
+    Method (procNbLclkDpmActivate, 1, NotSerialized) {
+      Store (procPsppGetAcDcState(), varAcDcStateLocal1)
+      Store (procSmuRcuRead (0x8490), Local0)
+      // Patch state only if at least one state is enable
+      if (LNotEqual (And (Local0, 0xF0), 0)) {
+        if (LEqual (Arg0, DEF_LINK_SPEED_GEN2)) {
+            //If AC/DC, & Gen2 supported, activate state DPM0 and DPM2,
+            //set SMUx0B_x8490[LclkDpmValid[5, 7] = 1, set SMUx0B_x8490[LclkDpmValid[6]] = 0
+            //This is a battery ．idle・ state along with a ．perf・ state that will be programmed to the max LCLK achievable at the Gen2 VID
+            And (Local0, 0xFFFFFFA0, Local0)
+            Or (Local0, 0xA0, Local0)
+
+        } else {
+          if (LEqual (varAcDcStateLocal1, DEF_PSPP_STATE_AC)) {
+            //If AC, & if only Gen1 supported, activate state DPM0 and DPM1
+            //set SMUx0B_x8490[LclkDpmValid[6, 5]] = 1, set SMUx0B_x8490[LclkDpmValid[7]] = 0
+            And (Local0, 0xFFFFFF60, Local0)
+            Or (Local0, 0x60, Local0)
+          } else {
+          	//If DC mode & Gen1 supported, activate only state DPM0
+          	//set SMUx0B_x8490[LclkDpmValid[7, 6]] = 0, set SMUx0B_x8490[LclkDpmValid[5]] = 1
+            And (Local0, 0xFFFFFF20, Local0)
+            Or (Local0, 0x20, Local0)
+          }
+        }
+        procSmuRcuWrite (0x8490, Local0)
+      }
+    }
+    Name (AD0A, 1)	
+#ifdef  ALTVDDNB_SUPPORT
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  AltvddNb control
+     *
+     *  Arg0 	- 1 - GEN1 2 - GEN2
+     */
+    Method (procNbAltVddNb, 1, NotSerialized) {
+      if (LEqual (AD0A, 1)) {
+        Store (procPsppGetAcDcState(), varAcDcStateLocal1)
+        Store (procSmuRcuRead (0x842C), Local0)
+        And (Local0, 0xFFFFFFFE, Local0)
+        if (LAnd (LEqual (Arg0, DEF_LINK_SPEED_GEN1), LEqual (varAcDcStateLocal1, DEF_PSPP_STATE_DC))) {
+          Or (Local0, 0x1, Local0)
+        }
+        procSmuRcuWrite (0x842C, Local0)
+        procNbSmuServiceRequest (0x1B, 0x3)
+      }
+    }
+#endif
+
+#ifdef  PCIE_PHY_LANE_POWER_GATE_SUPPORT
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  Power gate PCIe phy lanes (hotplug support)
+     *
+     *  Arg0 - Start Lane ID
+     *  Arg1 - End Lane ID
+     *  Arg2 - Power ON(0) / OFF(1)
+     */
+    Method (procPcieLanePowerControl, 3, NotSerialized) {
+       Store ("PcieLanePowerControl Enter", Debug)
+
+       Store (Concatenate ("  Start Lane ID : ", ToHexString (Arg0), Local6), Debug)
+       Store (Concatenate ("  End Lane ID   : ", ToHexString (Arg1), Local6), Debug)
+       Store (Concatenate ("  Power ON(0) / OFF(1) : ", ToHexString (Arg2), Local6), Debug)
+
+       //Start Arg0, End Arg1, Core 0, Tx 1, Rx 1
+       //[Core, Tx, Rx]=[0, 1, 1] for both plug and unplug, the only difference is ServiceId.
+     	 Or (Or (ShiftLeft (Arg1, 24), ShiftLeft (Arg0, 16)), 0x3, Local0)
+     	 //Store (Local0, Debug)
+
+       procSmuRcuWrite (0x858C, Local0)
+       //Arg2 - Power ON(0) / OFF(1)
+       //Service ID : 0x14 Ungate. 0x13 Gate. So subtract Arg2 to determine SeriveId.
+       procNbSmuServiceRequest (Subtract (0x14, Arg2), 0x3)
+
+       Store ("PcieLanePowerControl Exit", Debug)
+    }
+#endif
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  Pcie Adjust Pll
+     *
+     *  Arg0 	- 1 - GEN1 2 - GEN2
+     *
+     */
+    Method (procPcieAdjustPll, 1, NotSerialized) {
+
+      Store ("PcieAdjustPll Enter", Debug)
+      Store (Arg0, Local0)
+      if (LEqual (Arg0, 0x2)) {
+      	Store (0, Local0)
+      }
+      //GPP
+      //Store ("GPP Lane bit map = ", Debug)
+      //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01308023), Debug)
+      if (LNotEqual (procIndirectRegisterRead (0x0, 0xE0, 0x01308023), 0)) {
+      	//Store ("Before GPP 0x0130_8016 = ", Debug)
+        //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01308016), Debug)
+        procIndirectRegisterRMW (0x0, 0xE0, 0x01308016, Not (0x00001000), ShiftLeft (Local0, 12));
+        //Store ("After GPP 0x0130_8016 = ", Debug)
+        //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01308016), Debug)
+        // Waiting for PLL changing done.
+        while (LNotEqual (AND(procIndirectRegisterRead (0x0, 0xE0, 0x01308016), 0x00002000), ShiftLeft (Local0, 13))) {Stall (10)}
+      }
+      //GFX
+      //Store ("GFX Lane bit map = ", Debug)
+      //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01318023), Debug)
+      if (LNotEqual (procIndirectRegisterRead (0x0, 0xE0, 0x01318023), 0)) {
+      	//Store ("Before GFX 0x0131_8016 = ", Debug)
+        //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01318016), Debug)
+        procIndirectRegisterRMW (0x0, 0xE0, 0x01318016, Not (0x00001000), ShiftLeft (Local0, 12));
+        //Store ("After GFX 0x0131_8016 = ", Debug)
+        //Store (procIndirectRegisterRead (0x0, 0xE0, 0x01318016), Debug)
+        // Waiting for PLL changing done.
+        while (LNotEqual (AND(procIndirectRegisterRead (0x0, 0xE0, 0x01318016), 0x00002000), ShiftLeft (Local0, 13))) {Stall (10)}
+      }
+
+      Store ("PcieAdjustPll Exit", Debug)
+    }
+  } //End of Scope(\_SB)
+}   //End of DefinitionBlock
+
+

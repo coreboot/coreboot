@@ -357,8 +357,9 @@ typedef struct acpi_ecdt {
 	u8 ec_id[];				/* EC ID  */
 } __attribute__ ((packed)) acpi_ecdt_t;
 
-/* These are implemented by the target port or north/southbridge. */
+/* This is implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
+
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current);
@@ -411,6 +412,19 @@ unsigned long acpi_create_slic(unsigned long current);
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_xsdt(acpi_xsdt_t *xsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);
+void acpi_write_dsdt(acpi_header_t *dsdt, const unsigned char AmlCode[], unsigned long *current);
+void acpi_patch_dsdt(acpi_header_t *dsdt, unsigned long *current);
+void acpi_dmi_workaround(unsigned long *current);
+
+void acpi_write_facs(acpi_facs_t *facs, unsigned long *current);
+void acpi_write_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, acpi_header_t *dsdt, acpi_rsdp_t *rsdp, unsigned long *current);
+void acpi_write_hpet(acpi_hpet_t *hpet, acpi_rsdp_t *rsdp, unsigned long *current);
+void acpi_write_madt(acpi_madt_t *madt, acpi_rsdp_t *rsdp, unsigned long *current);
+void acpi_write_srat(acpi_srat_t *srat, acpi_rsdp_t *rsdp, unsigned long *current);
+void acpi_write_slit(acpi_slit_t *slit, acpi_rsdp_t *rsdp, unsigned long *current);
+void acpi_write_ssdt_generated(acpi_header_t *ssdt, acpi_rsdp_t *rsdp,  unsigned long *current);
+void acpi_write_mcfg(acpi_mcfg_t *mcfg, acpi_rsdp_t *rsdp, unsigned long *current);
+unsigned long acpi_write_tables(unsigned long start, const unsigned char AmlCode[]);
 
 #if CONFIG_HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/

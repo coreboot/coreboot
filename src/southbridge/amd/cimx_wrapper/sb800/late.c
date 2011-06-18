@@ -413,16 +413,13 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
-		sb_config->PORTCONFIG[0].PortCfg.PortPresent = dev->enabled;
-		return;
-	case (0x15 << 3) | 1: /* 0:15:1 PCIe PortB */
-		sb_config->PORTCONFIG[1].PortCfg.PortPresent = dev->enabled;
-		return;
-	case (0x15 << 3) | 2: /* 0:15:2 PCIe PortC */
-		sb_config->PORTCONFIG[2].PortCfg.PortPresent = dev->enabled;
-		return;
-	case (0x15 << 3) | 3: /* 0:15:3 PCIe PortD */
-		sb_config->PORTCONFIG[3].PortCfg.PortPresent = dev->enabled;
+		{
+		device_t device;
+		for (device = dev; device; device = device->next) {
+			if (dev->path.type != DEVICE_PATH_PCI) continue;
+			if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
+			sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
+		}
 
 		/*
 		 * GPP_CFGMODE_X4000: PortA Lanes[3:0]
@@ -430,22 +427,16 @@ static void sb800_enable(device_t dev)
 		 * GPP_CFGMODE_X2110: PortA Lanes[1:0], PortB Lane2, PortC Lane3
 		 * GPP_CFGMODE_X1111: PortA Lanes0, PortB Lane1, PortC Lane2, PortD Lane3
 		 */
-		if (sb_config->GppLinkConfig != sb_chip->gpp_configuration) {
-			sb_config->GppLinkConfig = sb_chip->gpp_configuration;
-		}
-
-		sbPcieGppEarlyInit(sb_config);
+		sb_config->GppLinkConfig = sb_chip->gpp_configuration;
+		sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
+		AmdSbDispatcher(sb_config);
 		break;
+		}
 
 	default:
 		break;
 	}
 
-	/* Special setting ABCFG registers before PCI emulation. */
-	abSpecialSetBeforePciEnum(sb_config);
-  	usbDesertPll(sb_config);
-	//sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
-	//AmdSbDispatcher(sb_config);
 }
 
 struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops = {

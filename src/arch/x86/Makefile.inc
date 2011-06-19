@@ -99,6 +99,13 @@ ifeq ($(CONFIG_GEODE_VSA_FILE),y)
 	$(LD) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(obj)/vsa.o -o $(obj)/vsa.elf
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/vsa.elf vsa
 endif
+ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
+	@printf "    CONFIG     $(DOTCONFIG)\n"
+	if [ -f $(DOTCONFIG) ]; then \
+	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
+	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
+	$(CBFSTOOL) $@.tmp add $(obj)/config.tmp config raw; rm -f $(obj)/config.tmp ; fi
+endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print

@@ -106,6 +106,12 @@ config COMPRESS_RAMSTAGE
 	  that decompression might slow down booting if the boot flash
 	  is connected through a slow Link (i.e. SPI)
 
+config INCLUDE_CONFIG_FILE
+  bool "Include the coreboot config file into the ROM image"
+	default y
+  help
+    Include in CBFS the coreboot config file that was used to compile the ROM image
+
 endmenu
 
 source src/mainboard/Kconfig

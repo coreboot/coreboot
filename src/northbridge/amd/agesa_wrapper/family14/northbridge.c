@@ -652,8 +652,8 @@ printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
     d = get_dram_base_mask(0);
 
     if (d.mask & 1) {
-        basek = ((resource_t)(d.base)) << 8;
-        limitk = (resource_t)((d.mask << 8) | 0xFFFFFF);
+        basek = ((resource_t)((u64)d.base)) << 8;
+        limitk = (resource_t)(((u64)d.mask << 8) | 0xFFFFFF);
 printk(BIOS_DEBUG, "adsr: (before) basek = %llx, limitk = %llx.\n",basek,limitk);
 
         /* Convert these values to multiples of 1K for ease of math. */

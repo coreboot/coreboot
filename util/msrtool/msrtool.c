@@ -44,6 +44,13 @@ static struct targetdef alltargets[] = {
 	{ "geodelx", "AMD Geode(tm) LX", geodelx_probe, geodelx_msrs },
 	{ "cs5536", "AMD Geode(tm) CS5536", cs5536_probe, cs5536_msrs },
 	{ "K8", "AMD K8 Family", k8_probe, k8_msrs },
+	{ "intel_pentium3_early", "Intel Pentium III family", intel_pentium3_early_probe, intel_pentium3_early_msrs },
+	{ "intel_pentium3", "Intel Pentium III Xeon Processor, Intel Pentium III Processor", intel_pentium3_probe, intel_pentium3_msrs },
+	{ "intel_core1", "Intel Core Duo, Intel Core Solo processors", intel_core1_probe, intel_core1_msrs },
+	{ "intel_core2_early", "Intel Xeon Processor 3000, 3200, 5100, 5300, 7300 series, Intel Core 2 Quad processor 6000 series, Intel Core 2 Extreme 6000	series, Intel Core 2 Duo 4000, 5000, 6000, 7000 series processors, Intel Pentium dual-core processors", intel_core2_early_probe, intel_core2_early_msrs },
+	{ "intel_core2_later", "Intel Xeon Processor 5200, 5400 series, Intel Core 2 Quad	processors 8000, 9000 series", intel_core2_later_probe, intel_core2_later_msrs },
+	{ "intel_pentium4_early", "Intel Xeon Processor, Intel Xeon Processor MP, Intel Pentium 4 processors", intel_pentium4_early_probe, intel_pentium4_early_msrs },
+	{ "intel_pentium4_later", "Intel Xeon Processor, Intel Xeon Processor MP, Intel Pentium 4, Pentium D processors", intel_pentium4_later_probe, intel_pentium4_later_msrs },
 	{ TARGET_EOT }
 };
 

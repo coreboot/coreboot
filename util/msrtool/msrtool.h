@@ -214,4 +214,32 @@ extern const struct msrdef cs5536_msrs[];
 extern int k8_probe(const struct targetdef *t);
 extern const struct msrdef k8_msrs[];
 
+/* intel_pentium3_early.c */
+extern int intel_pentium3_early_probe(const struct targetdef *t);
+extern const struct msrdef intel_pentium3_early_msrs[];
+
+/* intel_pentium3.c */
+extern int intel_pentium3_probe(const struct targetdef *t);
+extern const struct msrdef intel_pentium3_msrs[];
+
+/* intel_core1.c */
+extern int intel_core1_probe(const struct targetdef *t);
+extern const struct msrdef intel_core1_msrs[];
+
+/* intel_core2_early.c */
+extern int intel_core2_early_probe(const struct targetdef *t);
+extern const struct msrdef intel_core2_early_msrs[];
+
+/* intel_core2_later.c */
+extern int intel_core2_later_probe(const struct targetdef *t);
+extern const struct msrdef intel_core2_later_msrs[];
+
+/* intel_pentium4_early.c */
+extern int intel_pentium4_early_probe(const struct targetdef *t);
+extern const struct msrdef intel_pentium4_early_msrs[];
+
+/* intel_pentium4_later.c */
+extern int intel_pentium4_later_probe(const struct targetdef *t);
+extern const struct msrdef intel_pentium4_later_msrs[];
+
 #endif /* MSRTOOL_H */

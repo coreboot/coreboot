@@ -29,6 +29,8 @@ config BOARD_AMD_INAGUA
 	bool "Inagua"
 config BOARD_AMD_PERSIMMON
 	bool "Persimmon"
+config BOARD_AMD_TORPEDO
+	bool "Torpedo"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -44,6 +46,7 @@ source "src/mainboard/amd/tilapia_fam10/Kconfig"
 source "src/mainboard/amd/bimini_fam10/Kconfig"
 source "src/mainboard/amd/inagua/Kconfig"
 source "src/mainboard/amd/persimmon/Kconfig"
+source "src/mainboard/amd/torpedo/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

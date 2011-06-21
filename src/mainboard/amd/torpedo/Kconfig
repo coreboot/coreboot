@@ -1,0 +1,222 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2010 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+if BOARD_AMD_TORPEDO
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+        def_bool y
+  select ARCH_X86
+        select DIMM_DDR3
+        select DIMM_UNREGISTERED
+  select CPU_AMD_AGESA_FAMILY12
+  select NORTHBRIDGE_AMD_AGESA_FAMILY12_ROOT_COMPLEX
+  select NORTHBRIDGE_AMD_AGESA_FAMILY12
+  select SOUTHBRIDGE_AMD_CIMX_SB900
+  select SUPERIO_SMSC_KBC1100
+  select BOARD_HAS_FADT
+        select HAVE_BUS_CONFIG
+        select HAVE_OPTION_TABLE
+        select HAVE_PIRQ_TABLE
+        select HAVE_MP_TABLE
+        select HAVE_MAINBOARD_RESOURCES
+        select HAVE_HARD_RESET
+        select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+        select LIFT_BSP_APIC_ID
+  select SERIAL_CPU_INIT
+  select AMDMCT
+        select HAVE_ACPI_TABLES
+  select BOARD_ROMSIZE_KB_2048
+  select ENABLE_APIC_EXT_ID
+  select TINY_BOOTBLOCK
+        select GFXUMA
+
+config AMD_AGESA
+        bool
+        default y
+
+config AMD_CIMX_SB900
+        bool
+        default y
+
+config MAINBOARD_DIR
+        string
+        default amd/torpedo
+
+config APIC_ID_OFFSET
+        hex
+        default 0x0
+
+config MAINBOARD_PART_NUMBER
+        string
+        default "Torpedo"
+
+config HW_MEM_HOLE_SIZEK
+        hex
+        default 0x200000
+
+config MAX_CPUS
+        int
+        default 4
+
+config MAX_PHYSICAL_CPUS
+        int
+        default 1
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+        bool
+        default n
+
+config MEM_TRAIN_SEQ
+        int
+        default 2
+
+config SB_HT_CHAIN_ON_BUS0
+        int
+        default 1
+
+config HT_CHAIN_END_UNITID_BASE
+        hex
+        default 0x1
+
+config HT_CHAIN_UNITID_BASE
+        hex
+        default 0x0
+
+config IRQ_SLOT_COUNT
+        int
+        default 11
+
+config RAMTOP
+        hex
+        default 0x1000000
+
+config HEAP_SIZE
+        hex
+        default 0xc0000
+
+config STACK_SIZE
+        hex
+        default 0x10000
+
+config ACPI_SSDTX_NUM
+        int
+        default 0
+
+config RAMBASE
+        hex
+        default 0x200000
+
+config SIO_PORT
+        hex
+        default 0x2e
+
+config DRIVERS_PS2_KEYBOARD
+	bool
+	default y
+
+config WARNINGS_ARE_ERRORS
+	bool
+	default n
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config VGA_BIOS
+	bool
+	default n
+
+#config VGA_BIOS_FILE
+#	string "VGA BIOS path and filename"
+#	depends on VGA_BIOS
+#	default "rom/video/LlanoGenericVbios.bin"
+
+config VGA_BIOS_ID
+	string "VGA device PCI IDs"
+	depends on VGA_BIOS
+	default "1002,9641"
+
+config AHCI_BIOS
+	bool
+	default n
+
+#config AHCI_BIOS_FILE
+#	string "AHCI ROM path and filename"
+#	depends on AHCI_BIOS
+#	default "rom/ahci/sb900.bin"
+
+config AHCI_BIOS_ID
+	string "AHCI device PCI IDs"
+	depends on AHCI_BIOS
+	default "1022,7801"
+
+config XHC_BIOS
+	bool
+	default n
+
+#config XHC_BIOS_FILE
+#	string "XHC BIOS path and filename"
+#	depends on XHC_BIOS
+#	default "rom/xhc/Xhc.rom"
+
+config XHC_BIOS_ID
+	string "XHC device PCI IDs"
+	depends on XHC_BIOS
+	default "1022,7812"
+
+config CONSOLE_POST
+	bool
+	depends on !NO_POST
+	default y
+
+config SATA_CONTROLLER_MODE
+	hex
+	default 0x0
+	depends on SOUTHBRIDGE_AMD_CIMX_SB900
+
+config ONBOARD_LAN
+	bool
+	default y
+
+config ONBOARD_1394
+	bool
+	default y
+
+config ONBOARD_USB30
+	bool
+	default n
+
+config ONBOARD_BLUETOOTH
+	bool
+	default y
+
+config ONBOARD_WEBCAM
+	bool
+	default y
+
+config ONBOARD_TRAVIS
+	bool
+	default y
+
+config ONBOARD_LIGHTSENSOR
+	bool
+	default n
+
+endif # BOARD_AMD_TORPEDO
+

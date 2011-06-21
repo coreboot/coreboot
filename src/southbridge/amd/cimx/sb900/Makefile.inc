@@ -17,5 +17,17 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-source src/cpu/amd/agesa/family12/Kconfig
-source src/cpu/amd/agesa/family14/Kconfig
+subdirs-$(CONFIG_AMD_CIMX_SB900) += ../../../../../src/vendorcode/amd/cimx/sb900
+
+# SB900 Platform Files
+
+romstage-y += early.c
+romstage-y += smbus.c
+
+ramstage-y += late.c
+ramstage-y += early.c
+
+driver-y   += smbus.c
+driver-y   += lpc.c
+
+

@@ -5,4 +5,5 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_GX2) += gx2
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_LX) += lx
 
 subdirs-$(CONFIG_AMD_AGESA) += agesa
-subdirs-$(CONFIG_AMD_AGESA) += ../../vendorcode/amd/agesa/f14
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += ../../vendorcode/amd/agesa/f12
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += ../../vendorcode/amd/agesa/f14

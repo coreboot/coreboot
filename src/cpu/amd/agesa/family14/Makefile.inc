@@ -20,7 +20,7 @@
 ramstage-y += chip_name.c
 driver-y += model_14_init.c
 
-AGESA_ROOT = ../../../../vendorcode/amd/agesa
+AGESA_ROOT = ../../../../vendorcode/amd/agesa/f14
 
 agesa_lib_src  = $(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxConfig/GfxConfigPost.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbGfxConfig/GfxConfigEnv.c

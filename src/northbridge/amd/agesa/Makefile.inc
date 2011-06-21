@@ -16,4 +16,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-subdirs-$(CONFIG_CPU_AMD_AGESA_WRAPPER_FAMILY14) += family14
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14) += family14

@@ -17,7 +17,7 @@
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -25,10 +25,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,7 +39,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * ***************************************************************************
  *
  */
@@ -145,7 +145,7 @@ WriteIo32 (
 {
    __outdword (Address, Data);
 }
-STATIC 
+STATIC
 UINT64 SetFsBase (
   UINT64 address
   )
@@ -156,10 +156,10 @@ UINT64 SetFsBase (
   __writemsr (0xC0000100, address);
   return hwcr;
 }
-STATIC 
+STATIC
 VOID
 RestoreHwcr (
-  UINT64 
+  UINT64
   value
   )
 {
@@ -218,7 +218,7 @@ Write64Mem8 (
 {
   if ((Address >> 32) == 0){
     *(volatile UINT8 *) (UINTN) Address = Data;
-  } 
+  }
   else {
     UINT64 hwcrSave;
     hwcrSave = SetFsBase (Address);
@@ -234,7 +234,7 @@ Write64Mem16 (
 {
  if ((Address >> 32) == 0){
    *(volatile UINT16 *) (UINTN) Address = Data;
- } 
+ }
  else {
    UINT64 hwcrSave;
    hwcrSave = SetFsBase (Address);
@@ -250,7 +250,7 @@ Write64Mem32 (
 {
   if ((Address >> 32) == 0){
     *(volatile UINT32 *) (UINTN) Address = Data;
-  } 
+  }
   else {
     UINT64 hwcrSave;
     hwcrSave = SetFsBase (Address);
@@ -330,7 +330,7 @@ LibAmdHDTBreakPoint (
   )
 {
   __writemsr (0xC001100A, __readmsr (0xC001100A) | 1);
-  __debugbreak (); // do you really need icebp? If so, go back to asm code   
+  __debugbreak (); // do you really need icebp? If so, go back to asm code
 }
 UINT8
 LibAmdBitScanForward (
@@ -387,7 +387,7 @@ ReadTSC (
 {
   return __rdtsc ();
 }
-VOID 
+VOID
 LibAmdSimNowEnterDebugger (
   VOID
   )
@@ -416,7 +416,7 @@ VOID F10RevDProbeFilterCritical (
   _mm_mfence ();
   __outdword (0xCFC, PciRegister | 2);
   _mm_mfence ();
-  __writemsr (0xC001001F, msrsave); 
+  __writemsr (0xC001001F, msrsave);
 }
 
 VOID
@@ -447,7 +447,7 @@ IdsOutPort (
 {
   __outdword ((UINT16) Addr, Value);
 }
-VOID 
+VOID
 StopHere (
   VOID
   )
@@ -765,7 +765,7 @@ LibAmdPciRead (
       LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
     } else {
       LibAmdMsrRead  (NB_CFG, &RMWritePrevious, StdHeader);
-      RMWrite = RMWritePrevious | 0x0000400000000000;
+      RMWrite = RMWritePrevious | 0x0000400000000000ull;
       LibAmdMsrWrite (NB_CFG, &RMWrite, StdHeader);
       LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
       LibAmdIoRead (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
@@ -814,7 +814,7 @@ LibAmdPciWrite (
       LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
     } else {
       LibAmdMsrRead  (NB_CFG, &RMWritePrevious, StdHeader);
-      RMWrite = RMWritePrevious | 0x0000400000000000;
+      RMWrite = RMWritePrevious | 0x0000400000000000ull;
       LibAmdMsrWrite (NB_CFG, &RMWrite, StdHeader);
       LibAmdIoWrite (AccessWidth32, IOCF8, &LegacyPciAccess, StdHeader);
       LibAmdIoWrite (AccessWidth, IOCFC + (UINT16) (PciAddress.Address.Register & 0x3), Value, StdHeader);
@@ -918,7 +918,7 @@ GetPciMmioAddress (
   MmioIsEnabled = FALSE;
   LibAmdMsrRead (MSR_MMIO_Cfg_Base, &MsrReg, StdHeader);
   if ((MsrReg & BIT0) != 0) {
-    *MmioAddress = MsrReg & 0xFFFFFFFFFFF00000;
+    *MmioAddress = MsrReg & 0xFFFFFFFFFFF00000ull;
     EncodedSize = (UINT32) ((MsrReg & 0x3C) >> 2);
     *MmioSize = ((1 << EncodedSize) * 0x100000);
     MmioIsEnabled = TRUE;
@@ -1320,7 +1320,7 @@ LibAmdAccessWidth (
   return Width;
 }
 
-VOID 
+VOID
 CpuidRead (
   IN        UINT32      CpuidFcnAddress,
   OUT       CPUID_DATA  *Value
@@ -1329,12 +1329,12 @@ CpuidRead (
   __cpuid ((int *)Value, CpuidFcnAddress);
 }
 
-UINT8 
+UINT8
 ReadNumberOfCpuCores(
   VOID
   )
 {
   CPUID_DATA  Value;
   CpuidRead (0x80000008, &Value);
-  return   Value.ECX_Reg & 0xff;       
+  return   Value.ECX_Reg & 0xff;
 }

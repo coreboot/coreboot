@@ -20,6 +20,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops = {
-	CHIP_NAME("AMD South Bridge  SB800")
+struct chip_operations cpu_amd_agesa_family14_ops = {
+	CHIP_NAME("AMD CPU Family 14h")
 };

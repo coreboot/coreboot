@@ -27,7 +27,7 @@
 #include "lpc.h"		/* lpc_read_resources */
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
-#include "chip.h"		/* struct southbridge_amd_cimx_wrapper_sb800_config */
+#include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 
 
 /*implement in mainboard.c*/
@@ -316,8 +316,8 @@ static const struct pci_driver PORTD_driver __pci_driver = {
  */
 static void sb800_enable(device_t dev)
 {
-	struct southbridge_amd_cimx_wrapper_sb800_config *sb_chip =
-		(struct southbridge_amd_cimx_wrapper_sb800_config *)(dev->chip_info);
+	struct southbridge_amd_cimx_sb800_config *sb_chip =
+		(struct southbridge_amd_cimx_sb800_config *)(dev->chip_info);
 
 	sb800_cimx_config(sb_config);
 	printk(BIOS_DEBUG, "sb800_enable() ");
@@ -439,7 +439,7 @@ static void sb800_enable(device_t dev)
 
 }
 
-struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops = {
+struct chip_operations southbridge_amd_cimx_sb800_ops = {
 	CHIP_NAME("ATI SB800")
 	.enable_dev = sb800_enable,
 };

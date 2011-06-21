@@ -303,7 +303,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
         }
 
 #if 0
-        // We need to double check if there is speical set on base reg and limit reg 
+        // We need to double check if there is speical set on base reg and limit reg
             // are not continous instead of hole, it will find out it's hole_startk
         if(mem_hole.node_id==-1) {
             resource_t limitk_pri = 0;
@@ -324,7 +324,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
             }
         }
 #endif
-        
+
         return mem_hole;
 }
 #endif
@@ -459,7 +459,7 @@ static void set_resources(device_t dev)
     struct resource *res;
 
     printk(BIOS_DEBUG, "\nFam14h - set_resources.\n");
- 
+
     /* Find the nodeid */
     nodeid = amdfam14_nodeid(dev);
 
@@ -749,11 +749,11 @@ static void domain_enable_resources(device_t dev)
   u32 val;
   /* Must be called after PCI enumeration and resource allocation */
   printk(BIOS_DEBUG, "\nFam14h - domain_enable_resources: AmdInitMid.\n");
-  val = agesawrapper_amdinitmid (); 
+  val = agesawrapper_amdinitmid ();
   if(val) {
     printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
   }
-  
+
   printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
 
@@ -785,7 +785,7 @@ static void cpu_bus_set_resources(device_t dev)
     }
     pci_dev_set_resources(dev);
 }
- 
+
 static void cpu_bus_init(device_t dev)
 {
 	struct device_path cpu_path;
@@ -826,7 +826,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 };
 
 
-struct chip_operations northbridge_amd_agesa_wrapper_family14_ops = {
+struct chip_operations northbridge_amd_agesa_family14_ops = {
     CHIP_NAME("AMD Family 14h Northbridge")
     .enable_dev = 0,
 };
@@ -865,7 +865,7 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 
-struct chip_operations northbridge_amd_agesa_wrapper_family14_root_complex_ops = {
+struct chip_operations northbridge_amd_agesa_family14_root_complex_ops = {
     CHIP_NAME("AMD Family 14h Root Complex")
     .enable_dev = root_complex_enable_dev,
 };

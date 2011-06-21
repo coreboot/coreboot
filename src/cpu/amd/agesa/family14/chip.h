@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_amd_agesa_wrapper_family14_config
-{
-};
+extern struct chip_operations cpu_amd_agesa_family14_ops;
 
-extern struct chip_operations northbridge_amd_agesa_wrapper_family14_ops;
+struct cpu_amd_agesa_family14_config {
+};

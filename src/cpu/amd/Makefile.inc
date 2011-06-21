@@ -14,5 +14,5 @@ subdirs-$(CONFIG_CPU_AMD_LX) += model_lx
 subdirs-$(CONFIG_CPU_AMD_SC520) += sc520
 subdirs-$(CONFIG_CPU_AMD_SOCKET_S1G1) += socket_S1G1
 
-subdirs-$(CONFIG_AMD_AGESA) += agesa_wrapper
+subdirs-$(CONFIG_AMD_AGESA) += agesa
 subdirs-$(CONFIG_AMD_AGESA) += ../../vendorcode/amd/agesa

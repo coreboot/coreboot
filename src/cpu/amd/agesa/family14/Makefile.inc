@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
- 
+
 ramstage-y += chip_name.c
 driver-y += model_14_init.c
 
@@ -279,4 +279,4 @@ subdirs-y += ../../../x86/pae
 subdirs-y += ../../../x86/smm
 
 ramstage-y += apic_timer.c
-cpu_incs += $(src)/cpu/amd/agesa_wrapper/family14/cache_as_ram.inc
+cpu_incs += $(src)/cpu/amd/agesa/family14/cache_as_ram.inc

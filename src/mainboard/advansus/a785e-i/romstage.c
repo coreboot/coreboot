@@ -49,7 +49,7 @@
 #include "southbridge/amd/rs780/early_setup.c"
 #include <SbEarly.h>
 #include <SBPLATFORM.h> /* SB OEM constants */
-#include <southbridge/amd/cimx_wrapper/sb800/smbus.h>
+#include <southbridge/amd/cimx/sb800/smbus.h>
 #include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl)

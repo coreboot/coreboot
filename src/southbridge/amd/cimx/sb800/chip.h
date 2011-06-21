@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _CIMX_WRAPPER_SB800_CHIP_H_
-#define _CIMX_WRAPPER_SB800_CHIP_H_
+#ifndef _CIMX_SB800_CHIP_H_
+#define _CIMX_SB800_CHIP_H_
 
-extern struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops;
+extern struct chip_operations southbridge_amd_cimx_sb800_ops;
 
 /*
  * configuration set in mainboard/devicetree.cb
@@ -33,10 +33,10 @@ extern struct chip_operations southbridge_amd_cimx_wrapper_sb800_ops;
  *   3(GPP_CFGMODE_X2110) -PortA Lanes[1:0], PortB Lane2, PortC Lane3
  *   4(GPP_CFGMODE_X1111) -PortA Lanes0, PortB Lane1, PortC Lane2, PortD Lane3
  */
-struct southbridge_amd_cimx_wrapper_sb800_config
+struct southbridge_amd_cimx_sb800_config
 {
 	u32 boot_switch_sata_ide : 1;
 	u8  gpp_configuration;
 };
 
-#endif /* _CIMX_WRAPPER_SB800_CHIP_H_ */
+#endif /* _CIMX_SB800_CHIP_H_ */

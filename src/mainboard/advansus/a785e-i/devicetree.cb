@@ -34,7 +34,7 @@ chip northbridge/amd/amdfam10/root_complex
 					register "gfx_pcie_config" = "3" # 1x8 GFX on Lanes 8-15
 					register "gfx_ddi_config" = "1"  # Lanes 0-3 DDI_SL
 				end
-				chip southbridge/amd/cimx_wrapper/sb800 # it is under NB/SB Link, but on the same pci bus
+				chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pci bus
 					device pci 11.0 on end # SATA
 					device pci 12.0 on end # USB
 					device pci 12.2 on end # USB
@@ -112,7 +112,7 @@ chip northbridge/amd/amdfam10/root_complex
 					#register "gpp_configuration" = "3" #2:1:1:0
 					register "gpp_configuration" = "4" #1:1:1:1
 					register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
-				end	#southbridge/amd/cimx_wrapper/sb800
+				end	#southbridge/amd/cimx/sb800
 			end #  device pci 18.0
 
 			device pci 18.1 on end

@@ -17,8 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_amd_agesa_wrapper_family14_root_complex_config
-{
-};
+#include <device/device.h>
+#include "chip.h"
 
-extern struct chip_operations northbridge_amd_agesa_wrapper_family14_root_complex_ops;
+struct chip_operations southbridge_amd_cimx_sb800_ops = {
+	CHIP_NAME("AMD South Bridge  SB800")
+};

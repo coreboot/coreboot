@@ -17,9 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <device/device.h>
-#include "chip.h"
-
-struct chip_operations cpu_amd_agesa_wrapper_family14_ops = {
-	CHIP_NAME("AMD CPU Family 14h")
+struct northbridge_amd_agesa_family14_root_complex_config
+{
 };
+
+extern struct chip_operations northbridge_amd_agesa_family14_root_complex_ops;

@@ -16,6 +16,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-
-source src/northbridge/amd/agesa_wrapper/family14/Kconfig
-
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14

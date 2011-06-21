@@ -17,3 +17,4 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += sb900

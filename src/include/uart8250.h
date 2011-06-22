@@ -146,6 +146,7 @@ void uart8250_mem_tx_byte(unsigned base_port, unsigned char data);
 void uart8250_mem_tx_flush(unsigned base_port);
 void uart8250_mem_init(unsigned base_port, unsigned divisor);
 u32 uart_mem_init(void);
+u32 uartmem_getbaseaddr(void);
 
 /* and special init for OXPCIe based cards */
 void oxford_init(void);

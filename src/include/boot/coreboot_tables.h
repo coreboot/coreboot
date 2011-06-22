@@ -146,7 +146,10 @@ struct lb_string {
 struct lb_serial {
 	uint32_t tag;
 	uint32_t size;
-	uint16_t ioport;
+#define LB_SERIAL_TYPE_IO_MAPPED     1
+#define LB_SERIAL_TYPE_MEMORY_MAPPED 2
+	uint32_t type;
+	uint32_t baseaddr;
 	uint32_t baud;
 };
 

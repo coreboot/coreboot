@@ -112,7 +112,19 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	serial = (struct lb_serial *)rec;
 	serial->tag = LB_TAG_SERIAL;
 	serial->size = sizeof(*serial);
-	serial->ioport = CONFIG_TTYS0_BASE;
+	serial->type = LB_SERIAL_TYPE_IO_MAPPED;
+	serial->baseaddr = CONFIG_TTYS0_BASE;
+	serial->baud = CONFIG_TTYS0_BAUD;
+	return serial;
+#elif CONFIG_CONSOLE_SERIAL8250MEM
+	struct lb_record *rec;
+	struct lb_serial *serial;
+	rec = lb_new_record(header);
+	serial = (struct lb_serial *)rec;
+	serial->tag = LB_TAG_SERIAL;
+	serial->size = sizeof(*serial);
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = uartmem_getbaseaddr();
 	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
 #else
@@ -131,7 +143,6 @@ static void add_console(struct lb_header *header, u16 consoletype)
 	console->size = sizeof(*console);
 	console->type = consoletype;
 }
-
 #endif
 
 static void lb_console(struct lb_header *header)

@@ -77,7 +77,9 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 static void cb_parse_serial(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_serial *ser = (struct cb_serial *)ptr;
-	info->ser_ioport = ser->ioport;
+	if (ser->type != CB_SERIAL_TYPE_IO_MAPPED)
+		return;
+	info->ser_ioport = ser->baseaddr;
 }
 
 #ifdef CONFIG_NVRAM

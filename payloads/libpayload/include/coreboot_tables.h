@@ -60,9 +60,13 @@ struct cb_memory_range {
 	u32 type;
 };
 
-#define CB_MEM_RAM      1
-#define CB_MEM_RESERVED 2
-#define CB_MEM_TABLE    16
+#define CB_MEM_RAM          1
+#define CB_MEM_RESERVED     2
+#define CB_MEM_ACPI         3
+#define CB_MEM_NVS          4
+#define CB_MEM_UNUSABLE     5
+#define CB_MEM_VENDOR_RSVD  6
+#define CB_MEM_TABLE       16
 
 struct cb_memory {
 	u32 tag;
@@ -110,7 +114,11 @@ struct cb_string {
 struct cb_serial {
 	u32 tag;
 	u32 size;
-	u16 ioport;
+#define CB_SERIAL_TYPE_IO_MAPPED     1
+#define CB_SERIAL_TYPE_MEMORY_MAPPED 2
+	u32 type;
+	u32 baseaddr;
+	u32 baud;
 };
 
 #define CB_TAG_CONSOLE       0x00010

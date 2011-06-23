@@ -9,11 +9,16 @@ config BOARD_LENOVO_X60
 	  The following X60 series ThinkPad machines have been verified to
 	  work correctly:
 
-	    ThinkPad X60s (Model 1703)
+	    ThinkPad X60s (Model 1702, 1703)
+	    ThinkPad X60  (Model 1709)
 
 config BOARD_LENOVO_T60
 	bool "ThinkPad T60 / T60p"
 	help
+	  The following T60 series ThinkPad machines have been verified to
+          work correctly:
+
+	    Thinkpad T60p (Model 2007)
 
 endchoice
 

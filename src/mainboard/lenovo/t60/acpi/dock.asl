@@ -88,4 +88,11 @@ Scope(\_SB.PCI0.LPCB.EC)
 			Notify(\_SB.DOCK, 3)
 		}
 	}
+
+	Method(_Q50, 0, NotSerialized)
+	{
+		if (\_SB.DOCK._STA()) {
+			Notify(\_SB.DOCK, 1)
+		}
+	}
 }

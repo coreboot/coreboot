@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#include "smi.h"
+
 Device (DSPC)
 {
 	Name (_ADR, 0x00020001)
@@ -31,6 +33,7 @@ Device (DSPC)
 
 	Method(BRTD, 0, NotSerialized)
 	{
+		Trap(SMI_BRIGHTNESS_DOWN)
 		Store(BRTC, Local0)
 		if (LGreater (Local0, 15))
 		{
@@ -41,6 +44,7 @@ Device (DSPC)
 
 	Method(BRTU, 0, NotSerialized)
 	{
+		Trap(SMI_BRIGHTNESS_UP)
 		Store (BRTC, Local0)
 		if (LLess(Local0, 0xff))
 		{

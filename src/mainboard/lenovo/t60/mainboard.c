@@ -61,7 +61,8 @@ static void mainboard_enable(device_t dev)
 	}
 
 	/* set dock status led */
-	ec_write(0x0c, inb(0x164c) & 8 ? 0x88 : 0x08);
+	ec_write(0x0c, 0x08);
+	ec_write(0x0c, inb(0x164c) & 8 ? 0x89 : 0x09);
 
 	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
 		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");

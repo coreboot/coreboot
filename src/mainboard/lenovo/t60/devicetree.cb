@@ -133,6 +133,8 @@ chip northbridge/intel/i945
 					register "event7_enable" = "0x01"
 					register "event8_enable" = "0x01"
 					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0xff"
+					register "eventb_enable" = "0xff"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
 					register "eventc_enable" = "0x3c"

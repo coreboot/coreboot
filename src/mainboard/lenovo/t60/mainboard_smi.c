@@ -24,10 +24,12 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "southbridge/intel/i82801gx/nvs.h"
+#include "southbridge/intel/i82801gx/i82801gx.h"
 #include <ec/acpi/ec.h>
 #include "dock.h"
 #include "smi.h"
 
+#define LVTMA_BL_MOD_LEVEL 0x7af9 /* ATI Radeon backlight level */
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
@@ -38,7 +40,28 @@ static void mainboard_smm_init(void)
 	printk(BIOS_DEBUG, "initializing SMI\n");
 	/* Enable 0x1600/0x1600 register pair */
 	ec_set_bit(0x00, 0x05);
-	ec_set_ports(0x1604, 0x1600);
+}
+
+static void mainboard_smi_brightness_down(void)
+{
+	u8 *bar;
+	if ((bar = (u8 *)pci_read_config32(PCI_DEV(1, 0, 0), 0x18))) {
+		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int)bar, *(bar+LVTMA_BL_MOD_LEVEL));
+		*(bar+LVTMA_BL_MOD_LEVEL) &= 0xf0;
+		if (*(bar+LVTMA_BL_MOD_LEVEL) > 0x10)
+			*(bar+LVTMA_BL_MOD_LEVEL) -= 0x10;
+	}
+}
+
+static void mainboard_smi_brightness_up(void)
+{
+	u8 *bar;
+	if ((bar = (u8 *)pci_read_config32(PCI_DEV(1, 0, 0), 0x18))) {
+		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int )bar, *(bar+LVTMA_BL_MOD_LEVEL));
+		*(bar+LVTMA_BL_MOD_LEVEL) |= 0x0f;
+		if (*(bar+LVTMA_BL_MOD_LEVEL) < 0xf0)
+			*(bar+LVTMA_BL_MOD_LEVEL) += 0x10;
+	}
 }
 
 int mainboard_io_trap_handler(int smif)
@@ -55,16 +78,27 @@ int mainboard_io_trap_handler(int smif)
 		dlpc_init();
 		if (!dock_connect()) {
 			/* set dock LED to indicate status */
-			ec_write(0x0c, 0x88);
+			ec_write(0x0c, 0x08);
+			ec_write(0x0c, 0x89);
 		} else {
 			/* blink dock LED to indicate failure */
 			ec_write(0x0c, 0xc8);
+			ec_write(0x0c, 0x09);
 		}
 		break;
 
 	case SMI_DOCK_DISCONNECT:
 		dock_disconnect();
+		ec_write(0x0c, 0x09);
 		ec_write(0x0c, 0x08);
+		break;
+
+	case SMI_BRIGHTNESS_UP:
+		mainboard_smi_brightness_up();
+		break;
+
+	case SMI_BRIGHTNESS_DOWN:
+		mainboard_smi_brightness_down();
 		break;
 
 	default:
@@ -74,5 +108,86 @@ int mainboard_io_trap_handler(int smif)
 	/* On success, the IO Trap Handler returns 1
 	 * On failure, the IO Trap Handler returns a value != 1 */
 	return 1;
+}
+
+static void mainboard_smi_handle_ec_sci(void)
+{
+	u8 status = inb(EC_SC);
+	u8 event;
+
+	if (!(status & EC_SCI_EVT))
+		return;
+
+	event = ec_query();
+	printk(BIOS_DEBUG, "EC event %02x\n", event);
+
+	switch(event) {
+		/* brightness up */
+		case 0x14:
+			mainboard_smi_brightness_up();
+			break;
+		/* brightness down */
+		case 0x15:
+			mainboard_smi_brightness_down();
+			break;
+		/* Fn-F9 Key */
+		case 0x18:
+		/* power loss */
+		case 0x27:
+		/* undock event */
+		case 0x50:
+			mainboard_io_trap_handler(SMI_DOCK_DISCONNECT);
+			break;
+		/* dock event */
+		case 0x37:
+			mainboard_io_trap_handler(SMI_DOCK_CONNECT);
+			break;
+		default:
+			break;
+	}
+}
+
+void mainboard_smi_gpi(u16 gpi)
+{
+	if (gpi & (1 << 12))
+		mainboard_smi_handle_ec_sci();
+}
+
+int mainboard_apm_cnt(u8 data)
+{
+	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+	u8 tmp;
+
+	printk(BIOS_DEBUG, "%s: pmbase %04X, data %02X\n", __func__, pmbase, data);
+
+	if (!pmbase)
+		return 0;
+
+	switch(data) {
+		case APM_CNT_ACPI_ENABLE:
+			/* use 0x1600/0x1604 to prevent races with userspace */
+			ec_set_ports(0x1604, 0x1600);
+			/* route H8SCI to SCI */
+			outw(inw(ALT_GP_SMI_EN) & ~0x1000, pmbase + ALT_GP_SMI_EN);
+			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
+			tmp &= ~0x03;
+			tmp |= 0x02;
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			break;
+		case APM_CNT_ACPI_DISABLE:
+			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
+			   provide a EC query function */
+			ec_set_ports(0x66, 0x62);
+			/* route H8SCI# to SMI */
+			outw(inw(pmbase + ALT_GP_SMI_EN) | 0x1000, pmbase + ALT_GP_SMI_EN);
+			tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
+			tmp &= ~0x03;
+			tmp |= 0x01;
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xbb, tmp);
+			break;
+		default:
+			break;
+	}
+	return 0;
 }
 

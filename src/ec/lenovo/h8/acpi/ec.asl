@@ -35,6 +35,8 @@ Device(EC)
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
+		Offset (0x2a),
+				EVNT, 8,	/* write will trigger EC event */
 		Offset (0x3a),
 				AMUT, 1,	/* Audio Mute */
 		Offset (0x3B),
@@ -109,6 +111,7 @@ Device(EC)
 	Method(_Q27, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
+		Store(0x50, EVNT)
 	}
 
        Method(_Q2A, 0, NotSerialized)

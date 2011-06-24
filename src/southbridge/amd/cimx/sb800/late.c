@@ -248,6 +248,21 @@ static const struct pci_driver gec_driver __pci_driver = {
         .device = PCI_DEVICE_ID_ATI_SB800_GEC,
 };
 
+/**
+ * @brief Enable PCI Bridge
+ *
+ * PcibConfig [PM_Reg: EAh], PCIDisable [Bit0]
+ * 'PCIDisable' set to 0 to enable P2P bridge.
+ * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
+ *              to function as GPIO {GPIO 35:0}.
+ */
+static void pci_init(device_t dev)
+{
+	/* PCI Bridge SHOULD be enabled by default according to SB800 rrg,
+	 * but actually was disabled in some platform, so I have to enabled it.
+	 */
+	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
+}
 
 static void pcie_init(device_t dev)
 {
@@ -258,7 +273,7 @@ static struct device_operations pci_ops = {
         .read_resources = pci_bus_read_resources,
         .set_resources = pci_dev_set_resources,
         .enable_resources = pci_bus_enable_resources,
-        .init = pcie_init,
+        .init = pci_init,
         .scan_bus = pci_scan_bridge,
         .reset_bus = pci_bus_reset,
         .ops_pci = &lops_pci,

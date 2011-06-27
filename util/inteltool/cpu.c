@@ -26,6 +26,12 @@
 
 #include "inteltool.h"
 
+#ifdef __x86_64__
+# define BREG	"%%rbx"
+#else
+# define BREG	"%%ebx"
+#endif
+
 int fd_msr;
 
 unsigned int cpuid(unsigned int op)
@@ -34,9 +40,9 @@ unsigned int cpuid(unsigned int op)
 
 #if defined(__PIC__) || defined(__DARWIN__) && !defined(__LP64__)
 	asm volatile (
-		"pushl %%ebx\n"
-		"cpuid\n"
-		"popl %%ebx\n"
+		"push " BREG "\n\t"
+		"cpuid\n\t"
+		"pop " BREG "\n\t"
 		: "=a" (ret) : "a" (op) : "%ecx", "%edx"
 	);
 #else

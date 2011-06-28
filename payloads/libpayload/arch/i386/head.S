@@ -70,9 +70,16 @@ _init:
 	movl %esp, %esi
 
 	/* Store EAX and EBX */
-
 	movl %eax,loader_eax
 	movl %ebx,loader_ebx
+
+	/* Clear the bss */
+	cld
+	movl $.bss, %edi
+	movl $_end, %ecx
+	subl %edi, %ecx
+	xor %ax, %ax
+	rep stosb
 
 	/* Setup new stack. */
 	movl $_stack, %ebx

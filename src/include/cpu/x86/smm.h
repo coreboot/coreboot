@@ -20,6 +20,11 @@
 /* AMD64 SMM State-Save Area
  * starts @ 0x7e00
  */
+
+#ifndef CPU_X86_SMM_H
+#define CPU_X86_SMM_H
+
+#include <types.h>
 typedef struct {
 	u16	es_selector;
 	u16	es_attributes;
@@ -273,3 +278,5 @@ void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_
 void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
 int __attribute__((weak)) mainboard_apm_cnt(u8 data);
 void smi_release_lock(void);
+
+#endif

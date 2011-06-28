@@ -46,11 +46,10 @@ static void mainboard_smm_init(void)
 static void mainboard_smi_save_cmos(void)
 {
 	u8 val;
-	u8 tmp70, tmp72, tmpcf8;
+	u8 tmp70, tmp72;
 
 	tmp70 = inb(0x70);
 	tmp72 = inb(0x72);
-	tmpcf8 = inl(0xcf8);
 
 	val = pci_read_config8(PCI_DEV(0, 2, 1), 0xf4);
 	set_option("tft_brightness", &val);
@@ -59,7 +58,6 @@ static void mainboard_smi_save_cmos(void)
 
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);
-	outb(tmpcf8, 0xcf8);
 }
 
 int mainboard_io_trap_handler(int smif)

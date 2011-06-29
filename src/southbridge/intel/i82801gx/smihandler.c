@@ -26,6 +26,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
+#include <pc80/mc146818rtc.h>
 #include "i82801gx.h"
 
 /* I945 */
@@ -422,6 +423,11 @@ static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_
 		u32 reg32;
 		reg32 = (7 << 10) | (1 << 13);
 		outl(reg32, pmbase + PM1_CNT);
+	}
+
+	if (pm1_sts & RTC_STS) {
+		/* read RTC status register to disable the interrupt */
+		printk(BIOS_DEBUG, "RTC IRQ status: %02X\n", cmos_read(RTC_REG_C));
 	}
 }
 

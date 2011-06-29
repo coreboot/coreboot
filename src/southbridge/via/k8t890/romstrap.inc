@@ -52,7 +52,27 @@ tblpointer:
 .long 0x0
 .long 0x0
 
-#elif CONFIG_SOUTHBRIDGE_VIA_K8M890 || CONFIG_SOUTHBRIDGE_VIA_K8T890
+#elif CONFIG_SOUTHBRIDGE_VIA_K8M890
+
+tblpointer:
+.long 0x504400FF, 0x61970FC2	//;200M
+.long 0x504400FF, 0x61970FC2	//;400M
+.long 0x504400FF, 0x61970FC2	//;600M
+.long 0x504400FF, 0x61970FC2	//;800M
+.long 0x504400FF, 0x61970FC2	//;1000M
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+.long 0x0
+
+
+#elif CONFIG_SOUTHBRIDGE_VIA_K8T890
 
 tblpointer:
 .long 0x504400AA, 0x61970FC2	//;200M

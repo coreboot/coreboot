@@ -77,6 +77,8 @@ u8 k8t890_early_setup_ht(void)
 	print_debug("K8T800 Pro found at LDT ");
 #elif CONFIG_SOUTHBRIDGE_VIA_K8M890
 	print_debug("K8M890 found at LDT ");
+	/* K8M890 fix HT delay */
+	pci_write_config8(PCI_DEV(0, 0x0, 2), 0xab, 0x22);
 #elif CONFIG_SOUTHBRIDGE_VIA_K8T890
 	print_debug("K8T890 found at LDT ");
 #endif

@@ -74,10 +74,15 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #define SB_VFSMAF 0
 
-/* this function might fail on some K8 CPUs with errata #181 */
 static void ldtstop_sb(void)
 {
 	print_debug("toggle LDTSTP#\n");
+
+	/* fix errata #181, disable DRAM controller it will get enabled later */
+	u8 tmp = pci_read_config8(PCI_DEV(0, 0x18, 2), 0x94);
+	tmp |= (( 1 << 14) | (1 << 3));
+	pci_write_config8(PCI_DEV(0, 0x18, 2), 0x94, tmp);
+
 	u8 reg = inb (VT8237R_ACPI_IO_BASE + 0x5c);
 	reg = reg ^ (1 << 0);
 	outb(reg, VT8237R_ACPI_IO_BASE + 0x5c);

@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+2: Cristian Măgherușan-Stanciu <cristi.magherusan@gmail.com>
+Code-Review+2: Uwe Hermann <uwe@hermann-uwe.de>
+Submitted-by: Cristian Măgherușan-Stanciu <cristi.magherusan@gmail.com>
+Submitted-at: Fri, 01 Jul 2011 23:33:35 +0200
+Reviewed-on: http://review.coreboot.org/70
+Project: coreboot
+Branch: refs/heads/master

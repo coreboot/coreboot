@@ -376,9 +376,20 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	addr->addrl = HPET_ADDR & 0xffffffff;
 	addr->addrh = HPET_ADDR >> 32;
 
-	hpet->id = 0x102282a0; /* AMD! FIXME */
+	/* XXX: Add other vendors */
+#if CONFIG_VENDOR_INTEL
+	hpet->id = 0x8086a201;
+	hpet->min_tick = 0x80;
+#endif
+#if CONFIG_VENDOR_AMD
+	hpet->id = 0x102282a0;
+	hpet->min_tick = 0x1000;
+#endif
+#if CONFIG_VENDOR_VIA
+	hpet->id = 0x11068201;
+	hpet->min_tick = 0x90;
+#endif
 	hpet->number = 0;
-	hpet->min_tick = 4096;
 
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }

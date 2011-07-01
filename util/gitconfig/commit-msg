@@ -1,5 +1,4 @@
 #!/bin/sh
-# From Gerrit Code Review 2.1.7-rc2
 #
 # Part of Gerrit Code Review (http://code.google.com/p/gerrit/)
 #
@@ -37,56 +36,110 @@ add_ChangeId() {
 		return
 	fi
 
+	# Does Change-Id: already exist? if so, exit (no change).
 	if grep -i '^Change-Id:' "$MSG" >/dev/null
 	then
 		return
 	fi
 
 	id=`_gen_ChangeId`
-	perl -e '
-		$MSG = shift;
-		$id = shift;
-		$CHANGE_ID_AFTER = shift;
+	T="$MSG.tmp.$$"
+	AWK=awk
+	if [ -x /usr/xpg4/bin/awk ]; then
+		# Solaris AWK is just too broken
+		AWK=/usr/xpg4/bin/awk
+	fi
+	$AWK '
+	# Skip lines starting with "#" without any spaces before it.
+	/^#/ { next }
 
-		undef $/;
-		open(I, $MSG); $_ = <I>; close I;
-		s|^diff --git a/.*||ms;
-		s|^#.*$||mg;
-		exit unless $_;
+	# Skip the line starting with the diff command and everything after it,
+	# up to the end of the file, assuming it is only patch data.
+	# If more than one line before the diff was empty, strip all but one.
+	/^diff --git a/ {
+		if (blankLines > 1) {
+			blankLines = 1
+		}
+		while (getline) { }
+		next
+	}
 
-		@message = split /\n/;
-		$haveFooter = 0;
-		$startFooter = @message;
-		for($line = @message - 1; $line >= 0; $line--) {
-			$_ = $message[$line];
+	# Handle comments and continuations in tags ([foo: bar] etc)
+	(caught == 1) && /^[ []/ {
+		if (lines != "") {
+			lines = lines "\n"
+		}
+		lines = lines $0
+		next
+	}
 
-			if (/^[a-zA-Z0-9-]+:/ && !m,^[a-z0-9-]+://,) {
-				$haveFooter++;
-				next;
+	# Handle normal lines (ie. not starting with some tag like "Signed-off-by:").
+	# If normal text appears after tags were "caught", handle them as normal text, too.
+	# Also count blank lines in blankLines.
+	!/^[a-zA-Z0-9-]+:/ || /^[a-zA-Z0-9-]+:\/\// {
+		if ($0 == "") {
+			blankLines++
+			next
+		} else {
+			for (i = 0; i < blankLines; i++) {
+				print ""
 			}
-			next if /^[ []/;
-			$startFooter = $line if ($haveFooter && /^\r?$/);
-			last;
+			blankLines = 0
 		}
-
-		@footer = @message[$startFooter+1..@message];
-		@message = @message[0..$startFooter];
-		push(@footer, "") unless @footer;
-
-		for ($line = 0; $line < @footer; $line++) {
-			$_ = $footer[$line];
-			next if /^($CHANGE_ID_AFTER):/i;
-			last;
+		if (caught == 1) {
+			caught = 0
+			print lines
+			lines = ""
 		}
-		splice(@footer, $line, 0, "Change-Id: I$id");
+		print $0
+		next
+	}
 
-		$_ = join("\n", @message, @footer);
-		open(O, ">$MSG"); print O; close O;
-	' "$MSG" "$id" "$CHANGE_ID_AFTER"
+	# Handle tags.  They are "caught" and collected in the "lines" variable
+	{
+		caught = 1
+		if (lines != "") {
+			lines = lines "\n";
+		}
+		lines = lines $0
+	}
+
+	# Tag handling:
+	# If last line before tags was not blank, there were no tags.
+	# In that case, print everything, plus a blank line, followed by Change-Id.
+	# Otherwise there were tags. Look for the right place to inject Change-Id,
+	# by considering CHANGE_ID_AFTER. Tags listed in it (case insensitive) come first,
+	# then Change-Id, then everything else (eg. Signed-off-by:).
+	END {
+		unprinted = 1
+		if (blankLines == 0) {
+			if (lines == "") {
+				 print ""
+			} else {
+				print lines "\n"
+			}
+		} else {
+			for (i = 0; i < blankLines; i++) {
+				print ""
+			}
+			changeIdAfter = "^(" tolower("'"$CHANGE_ID_AFTER"'") "):"
+			numlines = split(lines, footer, "\n")
+			for (line = 1; line <= numlines; line++) {
+				if (unprinted && match(tolower(footer[line]), changeIdAfter) != 1) {
+					unprinted = 0
+					print "Change-Id: I'"$id"'"
+				}
+				print footer[line]
+			}
+		}
+		if (unprinted) {
+			print "Change-Id: I'"$id"'"
+		}
+	}' "$MSG" > $T && mv $T "$MSG" || rm -f $T
 }
 _gen_ChangeIdInput() {
 	echo "tree `git write-tree`"
-	if parent=`git rev-parse HEAD^0 2>/dev/null`
+	if parent=`git rev-parse "HEAD^0" 2>/dev/null`
 	then
 		echo "parent $parent"
 	fi

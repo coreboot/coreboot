@@ -1,5 +1,5 @@
 ##
-## This file is part of the coreboot project.
+## This file is part of the libpayload project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
 ## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>

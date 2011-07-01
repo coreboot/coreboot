@@ -357,14 +357,15 @@ typedef struct acpi_ecdt {
 	u8 ec_id[];				/* EC ID  */
 } __attribute__ ((packed)) acpi_ecdt_t;
 
-/* These are implemented by the target port or north/southbridge. */
+/* This is implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
+
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current);
 unsigned long acpi_fill_slit(unsigned long current);
 unsigned long acpi_fill_ssdt_generator(unsigned long current,
-				       const char *oem_table_id);
+				const char *oem_table_id);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 
@@ -406,11 +407,28 @@ void acpi_create_facs(acpi_facs_t *facs);
 
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
+acpi_header_t *acpi_write_slic(acpi_rsdp_t *rsdp, unsigned long *current);
 #endif
 
-void acpi_write_rsdt(acpi_rsdt_t *rsdt);
-void acpi_write_xsdt(acpi_xsdt_t *xsdt);
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);
+acpi_rsdt_t *acpi_write_rsdt(unsigned long *current);
+acpi_xsdt_t *acpi_write_xsdt(unsigned long *current);
+acpi_rsdp_t *acpi_write_rsdp(acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt, unsigned long *current);
+acpi_header_t *acpi_write_dsdt(const unsigned char AmlCode[], unsigned long *current);
+void acpi_patch_dsdt(acpi_header_t *dsdt, unsigned long *current);
+void acpi_dmi_workaround(unsigned long *current);
+
+acpi_facs_t *acpi_write_facs(unsigned long *current);
+acpi_fadt_t *acpi_write_fadt(acpi_facs_t *facs, acpi_header_t *dsdt, acpi_rsdp_t *rsdp, unsigned long *current);
+
+acpi_hpet_t *acpi_write_hpet(acpi_rsdp_t *rsdp, unsigned long *current);
+acpi_madt_t *acpi_write_madt(acpi_rsdp_t *rsdp, unsigned long *current);
+acpi_srat_t *acpi_write_srat(acpi_rsdp_t *rsdp, unsigned long *current);
+acpi_slit_t *acpi_write_slit(acpi_rsdp_t *rsdp, unsigned long *current);
+acpi_mcfg_t *acpi_write_mcfg(acpi_rsdp_t *rsdp, unsigned long *current);
+
+acpi_header_t *acpi_write_ssdt_generated(acpi_rsdp_t *rsdp,  unsigned long *current);
+
+unsigned long acpi_write_tables(unsigned long start, const unsigned char AmlCode[]);
 
 #if CONFIG_HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/

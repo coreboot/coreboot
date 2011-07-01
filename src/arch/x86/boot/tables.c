@@ -165,9 +165,9 @@ struct lb_memory *write_tables(void)
 			acpi_rsdp_t *low_rsdp = (acpi_rsdp_t *)rom_table_end,
 				    *high_rsdp = (acpi_rsdp_t *)acpi_start;
 
-			acpi_write_rsdp(low_rsdp,
-				(acpi_rsdt_t *)(high_rsdp->rsdt_address),
-				(acpi_xsdt_t *)((unsigned long)high_rsdp->xsdt_address));
+			unsigned long current = (unsigned long)low_rsdp;
+			acpi_write_rsdp((acpi_rsdt_t *)(high_rsdp->rsdt_address),
+					(acpi_xsdt_t *)((unsigned long)high_rsdp->xsdt_address), &current);
 		} else {
 			printk(BIOS_ERR, "ERROR: Didn't find RSDP in high table.\n");
 		}

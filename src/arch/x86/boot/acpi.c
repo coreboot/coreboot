@@ -16,13 +16,15 @@
  */
 
 /*
- * Each system port implementing ACPI has to provide two functions:
- *
- *   write_acpi_tables()
- *   acpi_dump_apics()
- *
- * See Kontron 986LCD-M port for a good example of an ACPI implementation
- * in coreboot.
+ * Currently each system port implementing ACPI has to provide the following functions:
+ * - acpi_fill_mcfg()
+ * - acpi_fill_madt()
+ * - acpi_fill_slit()
+ * - acpi_fill_srat()
+ * Optional
+ * - acpi_fill_ssdt_generator()
+ * - acpi_patch_dsdt()
+ * - acpi_dmi_workaround()
  */
 
 #include <console/console.h>
@@ -249,6 +251,18 @@ unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(
 	return current;
 }
 
+/* stub functions that might be implemented in the mainboard code, if needed */
+void __attribute__((weak)) acpi_patch_dsdt(
+			acpi_header_t *dsdt, unsigned long *current)
+{
+}
+
+void __attribute__((weak)) acpi_dmi_workaround(unsigned long *current)
+{
+}
+
+
+
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
@@ -409,8 +423,9 @@ void acpi_create_facs(acpi_facs_t *facs)
 	facs->version = 1; /* ACPI 1.0: 0, ACPI 2.0/3.0: 1, ACPI 4.0: 2 */
 }
 
-void acpi_write_rsdt(acpi_rsdt_t *rsdt)
+acpi_rsdt_t *acpi_write_rsdt(unsigned long *current)
 {
+	acpi_rsdt_t *rsdt = (acpi_rsdt_t *)*current;
 	acpi_header_t *header = &(rsdt->header);
 
 	/* Fill out header fields. */
@@ -426,10 +441,14 @@ void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
+	*current += sizeof(acpi_rsdt_t);
+	*current = ALIGN(*current, 64);
+	return rsdt;
 }
 
-void acpi_write_xsdt(acpi_xsdt_t *xsdt)
+acpi_xsdt_t *acpi_write_xsdt(unsigned long *current)
 {
+	acpi_xsdt_t *xsdt = (acpi_xsdt_t *)*current;
 	acpi_header_t *header = &(xsdt->header);
 
 	/* Fill out header fields. */
@@ -445,10 +464,15 @@ void acpi_write_xsdt(acpi_xsdt_t *xsdt)
 
 	/* Fix checksum. */
 	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));
+	*current += sizeof(acpi_xsdt_t);
+	*current = ALIGN(*current, 64);
+	return xsdt;
 }
 
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
+
+acpi_rsdp_t *acpi_write_rsdp(acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt, unsigned long *current)
 {
+	acpi_rsdp_t *rsdp = (acpi_rsdp_t *)*current;
 	memset(rsdp, 0, sizeof(acpi_rsdp_t));
 
 	memcpy(rsdp->signature, RSDP_SIG, 8);
@@ -474,6 +498,229 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
 	/* Calculate checksums. */
 	rsdp->checksum = acpi_checksum((void *)rsdp, 20);
 	rsdp->ext_checksum = acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
+	*current += sizeof(acpi_rsdp_t);
+	*current = ALIGN(*current, 64);
+	return rsdp;
+}
+
+
+
+acpi_header_t *acpi_write_dsdt(const unsigned char *AmlCode, unsigned long *current)
+{
+	acpi_header_t *dsdt = (acpi_header_t *)*current;
+	int len;
+
+	len = ((acpi_header_t *)AmlCode)->length;
+
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p, len %d\n", dsdt, len);
+	memcpy(dsdt, AmlCode, len);
+	*current += len;
+	*current = ALIGN(*current, 64);
+	acpi_patch_dsdt(dsdt, current);
+	return dsdt;
+}
+
+acpi_facs_t *acpi_write_facs(unsigned long *current)
+{
+	acpi_facs_t *facs = (acpi_facs_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:       * FACS at %lx\n", *current);
+	*current += sizeof(acpi_facs_t);
+	*current = ALIGN(*current, 64);
+	acpi_create_facs(facs);
+	return facs;
+}
+
+
+acpi_fadt_t *acpi_write_fadt(acpi_facs_t *facs, acpi_header_t *dsdt, acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_fadt_t *fadt = (acpi_fadt_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", *current);
+	*current += sizeof(acpi_fadt_t);
+	*current = ALIGN(*current, 64);
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
+	return fadt;
+}
+
+acpi_hpet_t *acpi_write_hpet(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_hpet_t *hpet = (acpi_hpet_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:    * HPET at %lx\n", *current);
+	hpet = (acpi_hpet_t *) *current;
+	*current += sizeof(acpi_hpet_t);
+	acpi_create_hpet(hpet);
+	*current = ALIGN(*current, 64);
+	acpi_add_table(rsdp, hpet);
+	return hpet;
+}
+
+acpi_madt_t *acpi_write_madt(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_madt_t *madt = (acpi_madt_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n", *current);
+	acpi_create_madt(madt);
+	*current += madt->header.length;
+	*current = ALIGN(*current, 64);
+	acpi_add_table(rsdp, madt);
+	return madt;
+}
+
+acpi_srat_t *acpi_write_srat(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_srat_t *srat;
+	*current = ALIGN(*current, 64);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", *current);
+	srat = (acpi_srat_t *) *current;
+	acpi_create_srat(srat);
+	*current += srat->header.length;
+	acpi_add_table(rsdp, srat);
+	return srat;
+}
+
+acpi_slit_t *acpi_write_slit(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_slit_t *slit;
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", *current);
+	slit = (acpi_slit_t *) *current;
+	acpi_create_slit(slit);
+	*current += slit->header.length;
+	*current = ALIGN(*current, 64);
+	acpi_add_table(rsdp, slit);
+	return slit;
+}
+
+acpi_mcfg_t *acpi_write_mcfg(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_mcfg_t *mcfg = (acpi_mcfg_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:    * MCFG at %lx\n", *current);
+	acpi_create_mcfg(mcfg);
+	*current += mcfg->header.length;
+	*current = ALIGN(*current, 64);
+	acpi_add_table(rsdp, mcfg);
+	return mcfg;
+}
+
+#if CONFIG_HAVE_ACPI_SLIC
+acpi_header_t *void acpi_write_slic(acpi_rsdp_t *rsdp, unsigned long *current)
+{
+	acpi_header_t *slic = (acpi_header_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:     * SLIC at %lx\n", *current);
+	*current += acpi_create_slic(*current);
+	*current = ALIGN(*current, 64);
+	acpi_add_table(rsdp, slic);
+	return slic;
+}
+#endif
+
+
+acpi_header_t *acpi_write_ssdt_generated(acpi_rsdp_t *rsdp,  unsigned long *current)
+{
+	acpi_header_t *ssdt = (acpi_header_t *)*current;
+	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", *current);
+
+	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	*current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	*current = ALIGN(*current, 64);
+	return ssdt;
+}
+
+
+#if CONFIG_DEBUG_ACPI == 1
+static void dump_mem(void *start, unsigned int cnt)
+{
+	int i;
+	printk(BIOS_DEBUG,"dump_mem: %08x length %d", (int)start, cnt);
+
+	for (i = 0; i < cnt; i++) {
+		if (!(i & 0x0f))
+			printk(BIOS_DEBUG, "\n%08x:", (unsigned int)start + i);
+		if (!(i & 0x03)) {
+			printk(BIOS_DEBUG, " ");
+			if (!(i & 0x07))
+				printk(BIOS_DEBUG, " ");
+		}
+		printk(BIOS_DEBUG, " %02x", ((u8 *)start)[i]);
+	}
+	printk(BIOS_DEBUG,"\n");
+}
+#endif
+
+unsigned long acpi_write_tables(unsigned long start, const unsigned char AmlCode[])
+{
+	unsigned long current;
+	acpi_rsdp_t *rsdp;
+	acpi_srat_t *srat;
+	acpi_rsdt_t *rsdt;
+	acpi_mcfg_t *mcfg;
+	acpi_hpet_t *hpet;
+	acpi_madt_t *madt;
+	acpi_fadt_t *fadt;
+	acpi_facs_t *facs;
+	acpi_xsdt_t *xsdt;
+#if CONFIG_HAVE_ACPI_SLIC
+	acpi_header_t *slic;
+#endif
+	acpi_slit_t *slit;
+	acpi_header_t *ssdt, *dsdt;
+
+	/* Align ACPI tables to 16 bytes */
+	start = ALIGN(start, 16);
+	current = start;
+
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
+
+	rsdt = acpi_write_rsdt(&current);
+	xsdt = acpi_write_xsdt(&current);
+	rsdp = acpi_write_rsdp(rsdt, xsdt, &current);
+	dsdt = acpi_write_dsdt(AmlCode , &current);
+	facs = acpi_write_facs(&current);
+	fadt = acpi_write_fadt(facs, dsdt, rsdp, &current);
+	hpet = acpi_write_hpet(rsdp, &current);
+	madt = acpi_write_madt(rsdp, &current);
+	mcfg = acpi_write_mcfg(rsdp, &current);
+	srat = acpi_write_srat(rsdp, &current);
+	slit = acpi_write_slit(rsdp, &current);
+
+#if CONFIG_HAVE_ACPI_SLIC
+	slic = acpi_write_slic(rsdp, &current);
+#endif
+
+	ssdt = acpi_write_ssdt_generated(rsdp, &current);
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+
+	acpi_dmi_workaround(&current);
+
+#if CONFIG_DEBUG_ACPI == 1
+	printk(BIOS_DEBUG, "RSDP (checksum %s)\n", acpi_checksum((void *)rsdp, rsdp->length) ? "INVALID" : "OK");
+	dump_mem(rsdp, rsdp->length);
+
+	printk(BIOS_DEBUG, "RSDT (checksum %s)\n", acpi_checksum((void *)rsdt, rsdt->header.length) ? "INVALID" : "OK");
+	dump_mem(rsdt, rsdt->header.length);
+
+	printk(BIOS_DEBUG, "MADT (checksum %s)\n", acpi_checksum((void *)madt, madt->header.length) ? "INVALID" : "OK");
+	dump_mem(madt, madt->header.length);
+
+	printk(BIOS_DEBUG, "SRAT (checksum %s)\n", acpi_checksum((void *)srat, srat->header.length) ? "INVALID" : "OK");
+	dump_mem(srat, srat->header.length);
+
+	printk(BIOS_DEBUG, "SLIT (checksum %s)\n", acpi_checksum((void *)slit, slit->header.length) ? "INVALID" : "OK");
+	dump_mem(slit, slit->header.length);
+
+	printk(BIOS_DEBUG, "SSDT (checksum %s)\n", acpi_checksum((void *)ssdt, ssdt->length) ? "INVALID" : "OK");
+	dump_mem(ssdt, ssdt->length);
+
+	printk(BIOS_DEBUG, "FADT (checksum %s)\n", acpi_checksum((void *)fadt, fadt->header.length) ? "INVALID" : "OK");
+	dump_mem(fadt, fadt->header.length);
+
+	printk(BIOS_DEBUG, "DSDT (checksum %s)\n", acpi_checksum((void *)dsdt, dsdt->length) ? "INVALID" : "OK");
+	dump_mem(dsdt, dsdt->length);
+
+#endif
+
+	printk(BIOS_INFO, "ACPI: done.\n");
+	return current;
 }
 
 #if CONFIG_HAVE_ACPI_RESUME == 1

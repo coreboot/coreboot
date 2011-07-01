@@ -29,6 +29,6 @@
 
 head.o-y := head.S
 libc-y += main.c sysinfo.c
-libc-y += timer.c coreboot.c util.S.c
+libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
 

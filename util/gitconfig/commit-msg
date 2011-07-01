@@ -43,46 +43,35 @@ add_ChangeId() {
 	fi
 
 	id=`_gen_ChangeId`
-	perl -e '
-		$MSG = shift;
-		$id = shift;
-		$CHANGE_ID_AFTER = shift;
+	T=`mktemp`
+	cat "$MSG" | awk '
+	!/^[a-zA-Z0-9-]+:/ {
+		print $0;
+		next;
+	};
 
-		undef $/;
-		open(I, $MSG); $_ = <I>; close I;
-		s|^diff --git a/.*||ms;
-		s|^#.*$||mg;
-		exit unless $_;
+	{
+		if (lines != "") {
+			lines = lines "\n";
+		};
+		lines = lines $0
+	};
 
-		@message = split /\n/;
-		$haveFooter = 0;
-		$startFooter = @message;
-		for($line = @message - 1; $line >= 0; $line--) {
-			$_ = $message[$line];
-
-			if (/^[a-zA-Z0-9-]+:/ && !m,^[a-z0-9-]+://,) {
-				$haveFooter++;
-				next;
-			}
-			next if /^[ []/;
-			$startFooter = $line if ($haveFooter && /^\r?$/);
-			last;
+	END {
+		split(lines, footer, "\n");
+		numlines=length(footer);
+		pre=1;
+		for (line = 1; line <= numlines; line++) {
+			if (pre && match(footer[line], "('$CHANGE_ID_AFTER'):") != 1) {
+				pre=0;
+				print "Change-Id: I'$id'";
+			};
+			print footer[line];
 		}
-
-		@footer = @message[$startFooter+1..@message];
-		@message = @message[0..$startFooter];
-		push(@footer, "") unless @footer;
-
-		for ($line = 0; $line < @footer; $line++) {
-			$_ = $footer[$line];
-			next if /^($CHANGE_ID_AFTER):/i;
-			last;
+		if (pre) {
+			print "Change-Id: I'$id'";
 		}
-		splice(@footer, $line, 0, "Change-Id: I$id");
-
-		$_ = join("\n", @message, @footer);
-		open(O, ">$MSG"); print O; close O;
-	' "$MSG" "$id" "$CHANGE_ID_AFTER"
+	}' > $T && mv $T "$MSG" || rm -f $T
 }
 _gen_ChangeIdInput() {
 	echo "tree `git write-tree`"

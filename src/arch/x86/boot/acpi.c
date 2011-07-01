@@ -69,7 +69,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 
 	if (i >= entries_num) {
 		printk(BIOS_ERR, "ACPI: Error: Could not add ACPI table, "
-		       "too many tables.\n");
+			"too many tables.\n");
 		return;
 	}
 
@@ -93,20 +93,20 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 
 		/* Fix XSDT length. */
 		xsdt->header.length = sizeof(acpi_header_t) +
-				      (sizeof(u64) * (i + 1));
+					(sizeof(u64) * (i + 1));
 
 		/* Re-calculate checksum. */
 		xsdt->header.checksum = 0;
 		xsdt->header.checksum = acpi_checksum((u8 *)xsdt,
-						      xsdt->header.length);
+							xsdt->header.length);
 	}
 
 	printk(BIOS_DEBUG, "ACPI: added table %d/%d, length now %d\n",
-	       i + 1, entries_num, rsdt->header.length);
+		i + 1, entries_num, rsdt->header.length);
 }
 
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
-			      u16 seg_nr, u8 start, u8 end)
+				u16 seg_nr, u8 start, u8 end)
 {
 	mmconfig->base_address = base;
 	mmconfig->base_reserved = 0;
@@ -135,7 +135,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled)
@@ -149,7 +149,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 }
 
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
-			    u32 gsi_base)
+				u32 gsi_base)
 {
 	ioapic->type = 1; /* I/O APIC structure */
 	ioapic->length = sizeof(acpi_madt_ioapic_t);
@@ -175,7 +175,7 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 }
 
 int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
-			       u16 flags, u8 lint)
+				u16 flags, u8 lint)
 {
 	lapic_nmi->type = 4; /* Local APIC NMI structure */
 	lapic_nmi->length = sizeof(acpi_madt_lapic_nmi_t);
@@ -287,7 +287,7 @@ int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)
 }
 
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
-			 u32 flags)
+				u32 flags)
 {
 	mem->type = 1; /* Memory affinity structure */
 	mem->length = sizeof(acpi_srat_mem_t);

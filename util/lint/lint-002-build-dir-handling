@@ -33,7 +33,7 @@ fi
 
 # $1: object directory
 run_printall() {
-$MAKE NOMKDIR=1 DOTCONFIG=$TMPCONFIG obj=$1 printall |sed -e "s,^ *,," -e "s, ,\n,g" -e "s,^ramstage-objs:=,," -e "s,mainboard/[^/]*/[^/]*/,.../," |grep "/static.*\.[co]" |sort |tr '\012\015' '  ' |sed -e "s,  *, ,g" -e "s, *$,,"
+$MAKE CONFIG_CCACHE=n CONFIG_SCANBUILD_ENABLE=n NOMKDIR=1 DOTCONFIG=$TMPCONFIG obj=$1 printall |sed -e "s,^ *,," -e "s, ,\n,g" -e "s,^ramstage-objs:=,," -e "s,mainboard/[^/]*/[^/]*/,.../," |grep "/static.*\.[co]" |sort |tr '\012\015' '  ' |sed -e "s,  *, ,g" -e "s, *$,,"
 }
 
 # find GNU make

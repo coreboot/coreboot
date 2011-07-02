@@ -24,6 +24,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/model_fxx_msr.h>
 
@@ -547,6 +548,21 @@ static void model_fxx_init(device_t dev)
 	 */
 	if (id.coreid == 0)
 		init_ecc_memory(id.nodeid);	// only do it for core 0
+
+	/* Set SMM base address for this CPU */
+	msr = rdmsr(SMM_BASE_MSR);
+	msr.lo = SMM_BASE - (lapicid() * 0x400);
+	wrmsr(SMM_BASE_MSR, msr);
+
+	/* Enable the SMM memory window */
+	msr = rdmsr(SMM_MASK_MSR);
+	msr.lo |= (1 << 0); /* Enable ASEG SMRAM Range */
+	wrmsr(SMM_MASK_MSR, msr);
+
+	/* Set SMMLOCK to avoid exploits messing with SMM */
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= (1 << 0);
+	wrmsr(HWCR_MSR, msr);
 }
 
 static struct device_operations cpu_dev_ops = {

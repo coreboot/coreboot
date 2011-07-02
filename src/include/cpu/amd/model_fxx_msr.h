@@ -1,6 +1,10 @@
 #ifndef CPU_AMD_MODEL_FXX_MSR_H
 #define CPU_AMD_MODEL_FXX_MSR_H
 
+#define SMM_BASE_MSR			0xc0010111
+#define SMM_ADDR_MSR			0xc0010112
+#define SMM_MASK_MSR			0xc0010113
+
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 #define LS_CFG_MSR                      0xC0011020

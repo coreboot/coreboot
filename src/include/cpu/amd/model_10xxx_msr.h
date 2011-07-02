@@ -22,6 +22,10 @@
 
 #include <cpu/x86/msr.h>
 
+#define SMM_BASE_MSR			0xC0010111
+#define SMM_ADDR_MSR			0xC0010112
+#define SMM_MASK_MSR			0xC0010113
+
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 #define LS_CFG_MSR			0xC0011020

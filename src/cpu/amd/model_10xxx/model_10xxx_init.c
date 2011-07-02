@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
@@ -118,7 +119,17 @@ static void model_10xxx_init(device_t dev)
 	msr.hi &= ~(1 << (35-32));
 	wrmsr(BU_CFG2_MSR, msr);
 
-	/* Write protect SMM space with SMMLOCK. */
+	/* Set SMM base address for this CPU */
+	msr = rdmsr(SMM_BASE_MSR);
+	msr.lo = SMM_BASE - (lapicid() * 0x400);
+	wrmsr(SMM_BASE_MSR, msr);
+
+	/* Enable the SMM memory window */
+	msr = rdmsr(SMM_MASK_MSR);
+	msr.lo |= (1 << 0); /* Enable ASEG SMRAM Range */
+	wrmsr(SMM_MASK_MSR, msr);
+
+	/* Set SMMLOCK to avoid exploits messing with SMM */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);

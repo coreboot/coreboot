@@ -24,6 +24,9 @@
 #ifndef CPU_X86_SMM_H
 #define CPU_X86_SMM_H
 
+/* used only by C programs so far */
+#define SMM_BASE 0xa0000
+
 #include <types.h>
 typedef struct {
 	u16	es_selector;

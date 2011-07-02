@@ -30,94 +30,56 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 
-#define SMM_BASE_MSR 0xc0010111
-#define SMM_ADDR_MSR 0xc0010112
-#define SMM_MASK_MSR 0xc0010113
-#define SMM_BASE 0xa0000
-
 extern unsigned char _binary_smm_start;
 extern unsigned char _binary_smm_size;
 
-static int smm_handler_copied = 0;
-
 void smm_init(void)
 {
-	msr_t msr;
+	msr_t msr, syscfg_orig, mtrr_aseg_orig;
 
-	msr = rdmsr(HWCR_MSR);
-	if (msr.lo & (1 << 0)) {
-		// This sounds like a bug... ? 
-		printk(BIOS_DEBUG, "SMM is still locked from last boot, using old handler.\n");
-		return;
-	}
+	/* Back up MSRs for later restore */
+	syscfg_orig = rdmsr(SYSCFG_MSR);
+	mtrr_aseg_orig = rdmsr(MTRRfix16K_A0000_MSR);
 
-	/* Only copy SMM handler once, not once per CPU */
-	if (!smm_handler_copied) {
-		msr_t syscfg_orig, mtrr_aseg_orig;
+	/* MTRR changes don't like an enabled cache */
+	disable_cache();
 
-		smm_handler_copied = 1;
+	msr = syscfg_orig;
 
-		/* Back up MSRs for later restore */
-		syscfg_orig = rdmsr(SYSCFG_MSR);
-		mtrr_aseg_orig = rdmsr(MTRRfix16K_A0000_MSR);
+	/* Allow changes to MTRR extended attributes */
+	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	/* turn the extended attributes off until we fix
+	 * them so A0000 is routed to memory
+	 */
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
+	wrmsr(SYSCFG_MSR, msr);
 
-		/* MTRR changes don't like an enabled cache */
-		disable_cache();
+	/* set DRAM access to 0xa0000 */
+	msr.lo = 0x18181818;
+	msr.hi = 0x18181818;
+	wrmsr(MTRRfix16K_A0000_MSR, msr);
 
-		msr = syscfg_orig;
-		/* Allow changes to MTRR extended attributes */
-		msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-		/* turn the extended attributes off until we fix
-		 * them so A0000 is routed to memory
-		 */
-		msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
-		wrmsr(SYSCFG_MSR, msr);
+	/* enable the extended features */
+	msr = syscfg_orig;
+	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
+	wrmsr(SYSCFG_MSR, msr);
 
-		/* set DRAM access to 0xa0000 */
-		/* A0000 is memory */
-		msr.lo = 0x18181818;
-		msr.hi = 0x18181818;
-		wrmsr(MTRRfix16K_A0000_MSR, msr);
+	enable_cache();
+	/* copy the real SMM handler */
+	memcpy((void *)SMM_BASE, &_binary_smm_start, (size_t)&_binary_smm_size);
+	wbinvd();
+	disable_cache();
 
-		/* enable the extended features */
-		msr = syscfg_orig;
-		msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-		msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
-		wrmsr(SYSCFG_MSR, msr);
+	/* Restore SYSCFG and MTRR */
+	wrmsr(SYSCFG_MSR, syscfg_orig);
+	wrmsr(MTRRfix16K_A0000_MSR, mtrr_aseg_orig);
+	enable_cache();
 
-		enable_cache();
-		/* copy the real SMM handler */
-		memcpy((void *)SMM_BASE, &_binary_smm_start, (size_t)&_binary_smm_size);
-		wbinvd();
-
-		/* Restore MTRR */
-		disable_cache();
-
-		/* Restore SYSCFG */
-		wrmsr(SYSCFG_MSR, syscfg_orig);
-
-		wrmsr(MTRRfix16K_A0000_MSR, mtrr_aseg_orig);
-		enable_cache();
-	}
-
-
-	/* But set SMM base address on all CPUs/cores */
-	msr = rdmsr(SMM_BASE_MSR);
-	msr.lo = SMM_BASE - (lapicid() * 0x400);
-	wrmsr(SMM_BASE_MSR, msr);
-
-	/* enable the SMM memory window */
-	msr = rdmsr(SMM_MASK_MSR);
-	msr.lo |= (1 << 0); // Enable ASEG SMRAM Range
-	wrmsr(SMM_MASK_MSR, msr);
-
-	/* Set SMMLOCK to avoid exploits messing with SMM */
-	msr = rdmsr(HWCR_MSR);
-	msr.lo |= (1 << 0);
-	wrmsr(HWCR_MSR, msr);
+	/* CPU MSR are set in CPU init */
 }
 
 void smm_lock(void)
 {
-	/* We lock SMM per CPU core */
+	/* We lock SMM in CPU init */
 }

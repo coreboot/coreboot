@@ -28,7 +28,7 @@
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
-static volatile smi_semaphore smi_handler_status = SMI_UNLOCKED;
+static volatile smi_semaphore smi_handler_status __attribute__ ((aligned (4)))  = SMI_UNLOCKED;
 
 static int smi_obtain_lock(void)
 {
@@ -121,7 +121,11 @@ void smi_handler(u32 smm_revision)
 		/* For security reasons we don't release the other CPUs
 		 * until the CPU with the lock is actually done
 		 */
-		while (smi_handler_status == SMI_LOCKED) /* wait */ ;
+		while (smi_handler_status == SMI_LOCKED) {
+			asm volatile (
+				".byte 0xf3, 0x90\n"  /* hint a CPU we are in spinlock (PAUSE instruction, REP NOP) */
+			);
+		}
 		return;
 	}
 

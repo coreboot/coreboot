@@ -34,6 +34,7 @@ libc-$(CONFIG_LIBC) += rand.c time.c exec.c
 libc-$(CONFIG_LIBC) += readline.c getopt_long.c sysinfo.c
 libc-$(CONFIG_LIBC) += args.c strings.c
 libc-$(CONFIG_LIBC) += strlcpy.c
+libc-$(CONFIG_LIBC) += qsort.c
 
 # should be moved to coreboot directory
 libc-$(CONFIG_LAR) += lar.c

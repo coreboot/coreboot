@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Sat Sep 25 14:01:26 2010
+# Thu Jul  7 13:19:13 2011
 #
 
 #
@@ -16,6 +16,7 @@
 #
 CONFIG_TARGET_I386=y
 # CONFIG_TARGET_POWERPC is not set
+# CONFIG_MEMMAP_RAM_ONLY is not set
 # CONFIG_MULTIBOOT is not set
 
 #

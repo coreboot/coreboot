@@ -39,7 +39,8 @@ real-target: lib
 
 classes-$(CONFIG_PCI) += libpci
 classes-$(CONFIG_LIBC) += libc
-classes-$(CONFIG_TINYCURSES) += libcurses
+classes-$(CONFIG_CURSES) += libcurses
+classes-$(CONFIG_PDCURSES) += libmenu libform libpanel
 libraries := $(classes-y)
 classes-y += head.o
 
@@ -50,7 +51,7 @@ head.o-S-deps = $(obj)/libpayload-config.h
 
 subdirs-y := arch/$(ARCHDIR-y)
 subdirs-y += crypto libc drivers libpci
-subdirs-$(CONFIG_TINYCURSES) += curses
+subdirs-$(CONFIG_CURSES) += curses
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 CFLAGS = $(INCLUDES) -O2 -pipe -g
@@ -63,6 +64,15 @@ $(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER)
 
 library-targets = $(addsuffix .a,$(addprefix $(obj)/,$(libraries))) $(obj)/libpayload.a
 lib: $$(library-targets) $(obj)/head.o
+
+extract_nth=$(word $(1), $(subst |, ,$(2)))
+
+#######################################################################
+# Add handler for special include files 
+$(call add-special-class,includes)
+includes-handler= \
+		$(if $(wildcard $(1)$(call extract_nth,1,$(2))), \
+			$(eval includes += $(1)$(2)))
 
 $(obj)/libpayload.a: $(foreach class,$(libraries),$$($(class)-objs))
 	printf "    AR         $(subst $(shell pwd)/,,$(@))\n"
@@ -92,6 +102,9 @@ install: real-target
 		install -m 644 $$file $(DESTDIR)/libpayload/$$file; \
 	done
 	install -m 644 $(obj)/libpayload-config.h $(DESTDIR)/libpayload/include
+	$(foreach item,$(includes), \
+		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \
+		install -m 644 $(call extract_nth,1,$(item)) $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); )
 	printf "    INSTALL    $(DESTDIR)/libpayload/bin\n"
 	install -m 755 -d $(DESTDIR)/libpayload/bin
 	install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin

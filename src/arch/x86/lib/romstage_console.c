@@ -48,6 +48,19 @@ static void console_tx_byte(unsigned char byte)
 #endif
 }
 
+static void console_tx_flush(void)
+{
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	uart8250_mem_tx_flush(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000);
+#endif
+#if CONFIG_CONSOLE_SERIAL8250
+	uart8250_tx_flush(CONFIG_TTYS0_BASE);
+#endif
+#if CONFIG_CONSOLE_NE2K
+	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
+}
+
 int do_printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;
@@ -60,8 +73,8 @@ int do_printk(int msg_level, const char *fmt, ...)
 	va_start(args, fmt);
 	i = vtxprintf(console_tx_byte, fmt, args);
 	va_end(args);
-#if CONFIG_CONSOLE_NE2K
-	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
+
+	console_tx_flush();
+
 	return i;
 }

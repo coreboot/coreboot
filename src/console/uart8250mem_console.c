@@ -36,6 +36,11 @@ static void uartmem_tx_byte(unsigned char data)
 	uart8250_mem_tx_byte(uart_bar, data);
 }
 
+static void uartmem_tx_flush(void)
+{
+	uart8250_mem_tx_flush(uart_bar);
+}
+
 static unsigned char uartmem_rx_byte(void)
 {
 	if (!uart_bar)
@@ -55,6 +60,7 @@ static int uartmem_tst_byte(void)
 static const struct console_driver uart8250mem_console __console = {
 	.init     = uartmem_init,
 	.tx_byte  = uartmem_tx_byte,
+	.tx_flush = uartmem_tx_flush,
 	.rx_byte  = uartmem_rx_byte,
 	.tst_byte = uartmem_tst_byte,
 };

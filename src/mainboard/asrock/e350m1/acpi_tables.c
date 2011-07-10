@@ -185,6 +185,11 @@ unsigned long write_acpi_tables(unsigned long start)
     memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
     current += ssdt->length;
     memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
+
+    char *position = ssdt;
+    if (memcmp (position + 50, "TOM1", 4) == 0)
+        *(u32 *) (position + 55) = __readmsr (0xc001001a);
+
    /* recalculate checksum */
     ssdt->checksum = 0;
     ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);

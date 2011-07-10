@@ -30,6 +30,7 @@ DefinitionBlock ("SSDT.aml", "SSDT", 1, "AMD-FAM14H", "AMD-ACPI", 0x1000)
 
 	Scope (\_SB.PCI0)
 	{
+		Name (TOM1, 0xaaaaaaaa)
 		Name (BUSN, Package (0x20) /* HC_NUMS */
 		{
 			0x11111111,
@@ -264,7 +265,6 @@ DefinitionBlock ("SSDT.aml", "SSDT", 1, "AMD-FAM14H", "AMD-ACPI", 0x1000)
 			0x44444444
 		})
 		Name (SBLK, 0x11)
-		Name (TOM1, 0xaaaaaaaa)
 		Name (SBDN, 0xbbbbbbbb)
 		Name (HCLK, Package (0x20) /* HC_POSSIBLE_NUM */
 		{

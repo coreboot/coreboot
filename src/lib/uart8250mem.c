@@ -51,7 +51,10 @@ void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
 {
 	uart8250_mem_wait_to_tx_byte(base_port);
 	write8(base_port + UART_TBR, data);
-	/* Make certain the data clears the FIFOs */
+}
+
+void uart8250_mem_tx_flush(unsigned base_port)
+{
 	uart8250_mem_wait_until_sent(base_port);
 }
 

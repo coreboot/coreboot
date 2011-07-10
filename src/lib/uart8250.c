@@ -48,7 +48,10 @@ void uart8250_tx_byte(unsigned base_port, unsigned char data)
 {
 	uart8250_wait_to_tx_byte(base_port);
 	outb(data, base_port + UART_TBR);
-	/* Make certain the data clears the fifos */
+}
+
+void uart8250_tx_flush(unsigned base_port)
+{
 	uart8250_wait_until_sent(base_port);
 }
 

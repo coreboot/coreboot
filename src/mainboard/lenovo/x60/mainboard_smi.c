@@ -71,19 +71,23 @@ int mainboard_io_trap_handler(int smif)
 
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
+		ec_clr_bit(0x03, 2);
 		dlpc_init();
-		if (!dock_connect()) {
+		if (!dlpc_init() && !dock_connect()) {
+			ec_set_bit(0x03, 2);
 			/* set dock LED to indicate status */
+			ec_write(0x0c, 0x09);
 			ec_write(0x0c, 0x88);
 		} else {
 			/* blink dock LED to indicate failure */
-			ec_write(0x0c, 0xc8);
+			ec_write(0x0c, 0x08);
+			ec_write(0x0c, 0xc9);
 		}
 		break;
 
 	case SMI_DOCK_DISCONNECT:
+		ec_clr_bit(0x03, 2);
 		dock_disconnect();
-		ec_write(0x0c, 0x08);
 		break;
 
 	case SMI_SAVE_CMOS:
@@ -135,6 +139,19 @@ static void mainboard_smi_handle_ec_sci(void)
 		case 0x15:
 			mainboard_smi_brightness_down();
 			mainboard_smi_save_cmos();
+			break;
+			/* Fn-F9 key */
+		case 0x18:
+			/* Power loss */
+		case 0x27:
+			/* Undock Key */
+		case 0x50:
+			mainboard_io_trap_handler(SMI_DOCK_DISCONNECT);
+			break;
+			/* Dock Event */
+		case 0x37:
+		case 0x58:
+			mainboard_io_trap_handler(SMI_DOCK_CONNECT);
 			break;
 		default:
 			break;

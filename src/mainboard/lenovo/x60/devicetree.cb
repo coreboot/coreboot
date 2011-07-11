@@ -86,6 +86,7 @@ chip northbridge/intel/i945
 					device pnp ff.1 on # dummy
 					end
 					register "backlight_enable" = "0x01"
+					register "dock_event_enable" = "0x01"
 				end
 				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy
@@ -98,7 +99,7 @@ chip northbridge/intel/i945
 					register "config0" = "0xa6"
 					register "config1" = "0x05"
 					register "config2" = "0xa0"
-					register "config3" = "0x05"
+					register "config3" = "0x01"
 
 					register "beepmask0" = "0xfe"
 					register "beepmask1" = "0x96"
@@ -107,7 +108,15 @@ chip northbridge/intel/i945
 					register "event3_enable" = "0xff"
 					register "event4_enable" = "0xf4"
 					register "event5_enable" = "0x3c"
+					register "event6_enable" = "0x80"
+					register "event7_enable" = "0x01"
 					register "eventc_enable" = "0x3c"
+					register "event8_enable" = "0x01"
+					register "event9_enable" = "0xff"
+					register "eventa_enable" = "0xff"
+					register "eventb_enable" = "0xff"
+					register "eventc_enable" = "0xff"
+					register "eventd_enable" = "0xff"
 
 					register "wlan_enable" = "0x01"
 					register "trackpoint_enable" = "0x03"

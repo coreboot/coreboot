@@ -132,6 +132,8 @@ static int dock_superio_init(void)
 	dock_write_register(0x07, PC87384_GPIO);
 	dock_write_register(0x60, 0x16);
 	dock_write_register(0x61, 0x20);
+	/* enable GPIO */
+	dock_write_register(0x30, 0x01);
 
 	dock_gpio_set_mode(0x00, PC87384_GPIO_PIN_DEBOUNCE |
 			   PC87384_GPIO_PIN_PULLUP, 0x00);
@@ -157,7 +159,6 @@ static int dock_superio_init(void)
 	dock_gpio_set_mode(0x07, PC87384_GPIO_PIN_DEBOUNCE |
 			   PC87384_GPIO_PIN_PULLUP, 0x00);
 
-	outb(0xfd, 0x1620);
 
 	/* no GPIO events enabled for PORT0 */
 	outb(0x00, 0x1622);
@@ -170,8 +171,7 @@ static int dock_superio_init(void)
 	/* clear GPIO events on PORT1*/
 	outb(0xff, 0x1627);
 	outb(0x1F, 0x1628);
-	/* enable GPIO */
-	dock_write_register(0x30, 0x01);
+	outb(0xfd, 0x1620);
 	return 0;
 }
 

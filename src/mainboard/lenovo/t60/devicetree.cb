@@ -121,7 +121,7 @@ chip northbridge/intel/i945
 					register "config0" = "0xa6"
 					register "config1" = "0x05"
 					register "config2" = "0xa0"
-					register "config3" = "0x05"
+					register "config3" = "0x01"
 
 					register "beepmask0" = "0xfe"
 					register "beepmask1" = "0x96"

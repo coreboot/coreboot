@@ -132,9 +132,11 @@ int dock_connect(void)
 
 	/* Assert D_PLTRST# */
 	outb(0xfe, 0x1680);
-	udelay(1000);
+	udelay(100000);
 	/* Deassert D_PLTRST# */
 	outb(0xff, 0x1680);
+
+	udelay(1000);
 
 	/* startup 14.318MHz Clock */
 	dock_write_register(0x29, 0x06);
@@ -232,11 +234,17 @@ int dock_connect(void)
 
 	/* Enable USB and Ultrabay power */
 	outb(0x03, 0x1628);
+
+	dock_write_register(0x07, 0x03);
+	dock_write_register(0x30, 0x01);
+	console_init();
 	return 0;
 }
 
 void dock_disconnect(void)
 {
+	/* disable Ultrabay and USB Power */
+	outb(0x00, 0x1628);
 	/* disconnect LPC bus */
 	outb(0x00, 0x164c);
 	/* Assert PLTRST and DLPCPD */

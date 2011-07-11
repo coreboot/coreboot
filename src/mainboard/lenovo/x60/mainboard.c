@@ -45,6 +45,12 @@ static void mainboard_enable(device_t dev)
 	/* enable Audio */
 	h8_set_audio_mute(0);
 
+	ec_clr_bit(0x03, 2);
+
+	if (inb(0x164c) & 0x08) {
+		ec_set_bit(0x03, 2);
+		ec_write(0x0c, 0x88);
+	}
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
 	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)

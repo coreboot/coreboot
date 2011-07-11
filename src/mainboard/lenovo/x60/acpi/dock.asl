@@ -39,7 +39,6 @@ Scope (\_SB)
 		Method(_DCK, 1, NotSerialized)
 		{
 			if (Arg0) {
-			   Sleep(250)
 			   /* connect dock */
 			   TRAP(SMI_DOCK_CONNECT)
 			} else {
@@ -53,7 +52,7 @@ Scope (\_SB)
 
 		Method(_STA, 0, NotSerialized)
 		{
-		Return (DSTA)
+			Return (DSTA)
 		}
 	}
 }
@@ -64,4 +63,15 @@ Scope(\_SB.PCI0.LPCB.EC)
 	{
 	       Notify(\_SB.DOCK, 3)
 	}
+
+	Method(_Q50, 0, NotSerialized)
+	{
+	       Notify(\_SB.DOCK, 3)
+	}
+
+	Method(_Q58, 0, NotSerialized)
+	{
+	       Notify(\_SB.DOCK, 0)
+	}
+
 }

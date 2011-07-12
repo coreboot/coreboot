@@ -1,0 +1,33 @@
+PDCurses for SDL
+================
+
+This is a port of PDCurses for SDL.
+
+
+Building
+--------
+
+. On *nix (including Linux and Mac OS X), run "make" in the sdl1
+  directory. There is no configure script (yet?) for this port. This
+  assumes a working sdl-config, and GNU make. It builds the library 
+  libpdcurses.a (dynamic lib not implemented).
+
+  With MinGW, run "make -f Makefile.mng". This assumes SDL is installed
+  in the standard directories. The MinGW makefile accepts the optional
+  parameters "DLL=Y" and "DEBUG=Y", as with the console version. (Wide-
+  character support is not yet implemented for SDL.) Both makefiles
+  recognize the optional PDCURSES_SRCDIR environment variable, as with
+  the console ports. Makefile.mng builds libpdcurses.a, along with 
+  pdcurses.dll, if specified.
+
+
+Distribution Status
+-------------------
+
+The files in this directory are released to the Public Domain.
+
+
+Acknowledgements
+----------------
+
+SDL port was provided by William McBrine <wmcbrine@users.sf.net>

@@ -90,9 +90,33 @@ config LIBC
 	bool "Enable C library support"
 	default y
 
-config TINYCURSES
-	bool "Enable tinycurses support"
+config CURSES
+	bool "Build a curses library"
 	default y
+
+choice
+	prompt "Curses implementation"
+	default PDCURSES
+	depends on CURSES
+
+config TINYCURSES
+	bool "Tinycurses"
+	help
+	  Tinycurses was the first curses implementation for libpayload.
+	  It features low memory consumption, static allocation of larger
+	  data structures (so few or no memory allocation calls) and a
+	  reduced feature set.
+
+config PDCURSES
+	bool "PDCurses"
+	default y
+	help
+	  libpayload's PDCurses port provides a full features curses
+	  implementation, including libpanel, libmenu and libform (which
+	  are taken from ncurses).
+	  It requires more system resources, in particularily heap memory.
+
+endchoice
 
 config LAR
 	bool "LAR support"

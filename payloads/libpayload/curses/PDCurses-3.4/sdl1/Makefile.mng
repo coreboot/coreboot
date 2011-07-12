@@ -1,0 +1,105 @@
+# Makefile for PDCurses library for SDL
+
+O = o
+
+ifndef PDCURSES_SRCDIR
+	PDCURSES_SRCDIR	= ..
+endif
+
+include $(PDCURSES_SRCDIR)/libobjs.mif
+
+osdir		= $(PDCURSES_SRCDIR)/sdl1
+
+PDCURSES_SDL_H	= $(osdir)/pdcsdl.h
+
+ifeq ($(DEBUG),Y)
+        CFLAGS  = -g -Wall -DPDCDEBUG
+else
+        CFLAGS  = -O2 -Wall
+endif
+
+CC		= gcc
+BUILD		= $(CC) $(CFLAGS) -I$(PDCURSES_SRCDIR)
+LDFLAGS		= -mwindows $(LIBCURSES)
+
+BASEDEF		= $(PDCURSES_SRCDIR)\exp-base.def
+
+DEFDEPS		= $(BASEDEF)
+
+DEFFILE		= pdcurses.def
+
+ifeq ($(DLL),Y)
+	BUILD += -DPDC_DLL_BUILD
+	LIBEXE = gcc $(DEFFILE)
+	LIBFLAGS = -Wl,--out-implib,libpdcurses.a -shared -o
+	LIBCURSES = pdcurses.dll
+	CLEAN = $(LIBCURSES) *.a $(DEFFILE)
+	POST = -lSDL
+else
+	LIBEXE = ar
+	LIBFLAGS = rcv
+	LIBCURSES = libpdcurses.a
+	CLEAN = *.a
+	LDFLAGS += -lSDL
+endif
+
+DEMOS += sdltest.exe
+
+.PHONY: all libs clean demos
+
+all:	libs demos
+
+libs:	$(LIBCURSES)
+
+clean:
+	-del *.o $(CLEAN) *.exe
+
+demos:	$(DEMOS)
+	strip *.exe
+
+pdcurses.dll: $(DEFFILE)
+
+$(DEFFILE): $(DEFDEPS)
+	echo LIBRARY pdcurses > $@        
+	echo EXPORTS >> $@        
+	type $(BASEDEF) >> $@ 
+	echo pdc_screen >> $@
+	echo pdc_font >> $@
+	echo pdc_icon >> $@
+	echo pdc_back >> $@
+	echo pdc_sheight >> $@
+	echo pdc_swidth >> $@
+	echo pdc_yoffset >> $@
+	echo pdc_xoffset >> $@
+
+$(LIBCURSES) : $(LIBOBJS) $(PDCOBJS)
+	$(LIBEXE) $(LIBFLAGS) $@ $? $(POST)
+
+$(LIBOBJS) $(PDCOBJS) : $(PDCURSES_HEADERS)
+$(PDCOBJS) : $(PDCURSES_SDL_H)
+$(DEMOS) : $(PDCURSES_CURSES_H) $(LIBCURSES)
+tui.o tuidemo.o : $(PDCURSES_CURSES_H)
+terminfo.o: $(TERM_HEADER)
+panel.o ptest.exe: $(PANEL_HEADER)
+
+$(LIBOBJS) : %.o: $(srcdir)/%.c
+	$(BUILD) -c $<
+
+$(PDCOBJS) : %.o: $(osdir)/%.c
+	$(BUILD) -c $<
+
+firework.exe newdemo.exe rain.exe testcurs.exe worm.exe xmas.exe \
+ptest.exe: %.exe: $(demodir)/%.c
+	$(BUILD) -o $@ $< $(LDFLAGS)
+
+tuidemo.exe: tuidemo.o tui.o
+	$(CC) -o $@ tuidemo.o tui.o $(LDFLAGS)
+
+tui.o: $(demodir)/tui.c $(demodir)/tui.h
+	$(BUILD) -c $<
+
+tuidemo.o: $(demodir)/tuidemo.c $(demodir)/tui.h
+	$(BUILD) -c $<
+
+sdltest.exe: $(osdir)/sdltest.c
+	$(BUILD) -o $@ $< -mwindows $(LIBCURSES) -lmingw32 -lSDLmain -lSDL

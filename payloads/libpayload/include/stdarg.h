@@ -30,6 +30,7 @@
 #ifndef _LIBPAYLOAD_STDARG_H
 #define _LIBPAYLOAD_STDARG_H
 
+#include <stddef.h>
 #include_next <stdarg.h>
 
 /**

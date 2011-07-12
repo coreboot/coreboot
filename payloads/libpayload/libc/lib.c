@@ -120,3 +120,9 @@ void exit(int status)
 }
 
 int errno;
+
+char *getenv(const char *name)
+{
+	return NULL;
+}
+

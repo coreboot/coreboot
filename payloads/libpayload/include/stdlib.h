@@ -143,5 +143,5 @@ void exit(int status) __attribute__ ((noreturn));
 /** @} */
 
 void qsort(void *aa, size_t n, size_t es, int (*cmp)(const void *, const void *));
-
+char *getenv(const char*);
 #endif

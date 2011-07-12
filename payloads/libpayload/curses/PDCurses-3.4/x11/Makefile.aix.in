@@ -1,0 +1,234 @@
+# Makefile for PDCurses library for AIX/X11
+
+SHELL		= @SHELL@
+THIS		= Makefile
+
+@SET_MAKE@
+
+PDCURSES_SRCDIR	= ..
+
+osdir		= .
+srcdir		= $(PDCURSES_SRCDIR)/pdcurses
+
+PDCURSES_CONFIG_H	=$(PDCURSES_SRCDIR)/config.h
+PDCURSES_CURSES_H	=$(PDCURSES_SRCDIR)/curses.h
+PDCURSES_CURSPRIV_H	=$(PDCURSES_SRCDIR)/curspriv.h
+PDCURSES_HEADERS	=$(PDCURSES_CONFIG_H) $(PDCURSES_CURSES_H) \
+$(PDCURSES_CURSPRIV_H)
+PDCURSES_X11_H		=$(osdir)/pdcx11.h
+
+MH_EXTRA_LIBS	= @MH_EXTRA_LIBS@
+
+CFLAGS		= @CFLAGS@ @DYN_COMP@
+
+CPPFLAGS	= @DEFS@ -DXCURSES @SYS_DEFS@ -I$(PDCURSES_SRCDIR)
+
+BUILD		= @CC@ -c $(CFLAGS) $(CPPFLAGS) @MH_XINC_DIR@
+
+LINK		= @CC@
+LDFLAGS		= 
+
+LIBCURSES	= libXCurses.a
+
+all :	$(LIBCURSES)
+
+install : 
+	echo Does nothing at the moment
+
+clean :
+	-rm -rf *.o *.sho trace $(LIBCURSES)
+
+distclean: clean
+	-rm -f Makefile
+
+mostlyclean: clean
+
+realclean: distclean
+
+LIBOBJS = addch.o addchstr.o addstr.o attr.o beep.o bkgd.o border.o \
+clear.o color.o delch.o deleteln.o deprec.o getch.o getstr.o getyx.o \
+inch.o inchstr.o initscr.o inopts.o insch.o insstr.o instr.o kernel.o \
+keyname.o mouse.o move.o outopts.o overlay.o pad.o panel.o printw.o \
+refresh.o scanw.o scr_dump.o scroll.o slk.o termattr.o terminfo.o \
+touch.o util.o window.o debug.o
+
+PDCOBJS = pdcclip.o pdcdisp.o pdcgetsc.o pdckbd.o pdcscrn.o pdcsetsc.o \
+pdcutil.o pdcx11.o x11.o sb.o ScrollBox.o
+
+$(LIBCURSES) : $(LIBOBJS) $(PDCOBJS) curses.exp
+	ld -bnoentry -bM:SRE -bE:curses.exp $(MH_LIBS) $(MH_EXTRA_LIBS) \
+$(LIBOBJS) $(PDCOBJS) -o $@
+
+$(LIBOBJS) $(PDCOBJS) : $(PDCURSES_HEADERS)
+$(PDCOBJS) : $(PDCURSES_X11_H)
+terminfo.o: $(TERM_HEADER)
+
+curses.exp: ../exp-base.def
+	cat ../exp-base.def > curses.exp
+	echo Xinitscr >> curses.exp
+	echo XCursesExit >> curses.exp
+	echo sb_init >> curses.exp
+	echo sb_set_horz >> curses.exp
+	echo sb_set_vert >> curses.exp
+	echo sb_get_horz >> curses.exp
+	echo sb_get_vert >> curses.exp
+	echo sb_refresh >> curses.exp
+
+addch.o: $(srcdir)/addch.c
+	$(BUILD) $(srcdir)/addch.c
+
+addchstr.o: $(srcdir)/addchstr.c
+	$(BUILD) $(srcdir)/addchstr.c
+
+addstr.o: $(srcdir)/addstr.c
+	$(BUILD) $(srcdir)/addstr.c
+
+attr.o: $(srcdir)/attr.c
+	$(BUILD) $(srcdir)/attr.c
+
+beep.o: $(srcdir)/beep.c
+	$(BUILD) $(srcdir)/beep.c
+
+bkgd.o: $(srcdir)/bkgd.c
+	$(BUILD) $(srcdir)/bkgd.c
+
+border.o: $(srcdir)/border.c
+	$(BUILD) $(srcdir)/border.c
+
+clear.o: $(srcdir)/clear.c
+	$(BUILD) $(srcdir)/clear.c
+
+color.o: $(srcdir)/color.c
+	$(BUILD) $(srcdir)/color.c
+
+delch.o: $(srcdir)/delch.c
+	$(BUILD) $(srcdir)/delch.c
+
+deleteln.o: $(srcdir)/deleteln.c
+	$(BUILD) $(srcdir)/deleteln.c
+
+deprec.o: $(srcdir)/deprec.c
+	$(BUILD) $(srcdir)/deprec.c
+
+getch.o: $(srcdir)/getch.c
+	$(BUILD) $(srcdir)/getch.c
+
+getstr.o: $(srcdir)/getstr.c
+	$(BUILD) $(srcdir)/getstr.c
+
+getyx.o: $(srcdir)/getyx.c
+	$(BUILD) $(srcdir)/getyx.c
+
+inch.o: $(srcdir)/inch.c
+	$(BUILD) $(srcdir)/inch.c
+
+inchstr.o: $(srcdir)/inchstr.c
+	$(BUILD) $(srcdir)/inchstr.c
+
+initscr.o: $(srcdir)/initscr.c
+	$(BUILD) $(srcdir)/initscr.c
+
+inopts.o: $(srcdir)/inopts.c
+	$(BUILD) $(srcdir)/inopts.c
+
+insch.o: $(srcdir)/insch.c
+	$(BUILD) $(srcdir)/insch.c
+
+insstr.o: $(srcdir)/insstr.c
+	$(BUILD) $(srcdir)/insstr.c
+
+instr.o: $(srcdir)/instr.c
+	$(BUILD) $(srcdir)/instr.c
+
+kernel.o: $(srcdir)/kernel.c
+	$(BUILD) $(srcdir)/kernel.c
+
+keyname.o: $(srcdir)/keyname.c
+	$(BUILD) $(srcdir)/keyname.c
+
+mouse.o: $(srcdir)/mouse.c
+	$(BUILD) $(srcdir)/mouse.c
+
+move.o: $(srcdir)/move.c
+	$(BUILD) $(srcdir)/move.c
+
+outopts.o: $(srcdir)/outopts.c
+	$(BUILD) $(srcdir)/outopts.c
+
+overlay.o: $(srcdir)/overlay.c
+	$(BUILD) $(srcdir)/overlay.c
+
+pad.o: $(srcdir)/pad.c
+	$(BUILD) $(srcdir)/pad.c
+
+panel.o: $(srcdir)/panel.c $(PDCURSES_SRCDIR)/panel.h
+	$(BUILD) $(srcdir)/panel.c
+
+printw.o: $(srcdir)/printw.c
+	$(BUILD) $(srcdir)/printw.c
+
+refresh.o: $(srcdir)/refresh.c
+	$(BUILD) $(srcdir)/refresh.c
+
+scanw.o: $(srcdir)/scanw.c
+	$(BUILD) $(srcdir)/scanw.c
+
+scr_dump.o: $(srcdir)/scr_dump.c
+	$(BUILD) $(srcdir)/scr_dump.c
+
+scroll.o: $(srcdir)/scroll.c
+	$(BUILD) $(srcdir)/scroll.c
+
+slk.o: $(srcdir)/slk.c
+	$(BUILD) $(srcdir)/slk.c
+
+termattr.o: $(srcdir)/termattr.c
+	$(BUILD) $(srcdir)/termattr.c
+
+terminfo.o: $(srcdir)/terminfo.c
+	$(BUILD) $(srcdir)/terminfo.c
+
+touch.o: $(srcdir)/touch.c
+	$(BUILD) $(srcdir)/touch.c
+
+util.o: $(srcdir)/util.c
+	$(BUILD) $(srcdir)/util.c
+
+window.o: $(srcdir)/window.c
+	$(BUILD) $(srcdir)/window.c
+
+debug.o: $(srcdir)/debug.c
+	$(BUILD) $(srcdir)/debug.c
+
+pdcclip.o: $(osdir)/pdcclip.c
+	$(BUILD) $(osdir)/pdcclip.c
+
+pdcdisp.o: $(osdir)/pdcdisp.c
+	$(BUILD) $(osdir)/pdcdisp.c
+
+pdcgetsc.o: $(osdir)/pdcgetsc.c
+	$(BUILD) $(osdir)/pdcgetsc.c
+
+pdckbd.o: $(osdir)/pdckbd.c
+	$(BUILD) $(osdir)/pdckbd.c
+
+pdcscrn.o: $(osdir)/pdcscrn.c
+	$(BUILD) $(osdir)/pdcscrn.c
+
+pdcsetsc.o: $(osdir)/pdcsetsc.c
+	$(BUILD) $(osdir)/pdcsetsc.c
+
+pdcutil.o: $(osdir)/pdcutil.c
+	$(BUILD) $(osdir)/pdcutil.c
+
+pdcx11.o: $(osdir)/pdcx11.c
+	$(BUILD) $(osdir)/pdcx11.c
+
+ScrollBox.o: $(osdir)/ScrollBox.c
+	$(BUILD) $(osdir)/ScrollBox.c
+
+sb.o: $(osdir)/sb.c
+	$(BUILD) $(osdir)/sb.c
+
+x11.o: $(osdir)/x11.c
+	$(BUILD) $(osdir)/x11.c

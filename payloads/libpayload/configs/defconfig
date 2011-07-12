@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Thu Jul  7 13:19:13 2011
+# Tue Jul 12 15:54:09 2011
 #
 
 #
@@ -23,7 +23,7 @@ CONFIG_TARGET_I386=y
 # Standard Libraries
 #
 CONFIG_LIBC=y
-CONFIG_TINYCURSES=y
+CONFIG_PDCURSES=y
 # CONFIG_CBFS is not set
 
 #

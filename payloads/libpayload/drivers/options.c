@@ -93,9 +93,8 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 	return 0;
 }
 
-int get_option(void *dest, char *name)
+int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
 {
-	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
 	struct cb_cmos_entries *cmos_entry;
 	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
@@ -117,4 +116,10 @@ int get_option(void *dest, char *name)
 
 	printf("ERROR: No such CMOS option (%s)\n", name);
 	return 1;
+}
+
+int get_option(void *dest, char *name)
+{
+	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
+	return get_option_from(option_table, dest, name);
 }

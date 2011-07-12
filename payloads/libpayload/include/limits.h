@@ -41,5 +41,6 @@
 #endif
 
 #define UINT_MAX (unsigned int)0xffffffff
+#define INT_MAX (unsigned int)0x7fffffff
 
 #endif

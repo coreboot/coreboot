@@ -32,6 +32,8 @@
 
 #include <stddef.h>
 
+#define EOF (-1)
+
 typedef struct _FILE FILE;
 
 extern FILE *stdout, *stdin, *stderr;

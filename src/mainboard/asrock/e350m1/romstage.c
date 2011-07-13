@@ -55,21 +55,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	// all cores: set pstate 0 (1600 MHz) early to save a few ms of boot time
 	__writemsr(0xc0010062, 0);
 
-	if (boot_cpu()) {
-		u8 reg8;
-		// SB800: Program AcpiMmioEn to enable MMIO access to MiscCntrl register
-		outb(0x24, 0xCD6);
-		reg8 = inb(0xCD7);
-		reg8 |= 1;
-		reg8 &= ~(1 << 1);
-		outb(0x24, 0xCD6);
-		outb(reg8, 0xCD7);
-
-		// Program SB800 MiscCntrl
-		*(volatile u32 *)(0xFED80000 + 0xE00 + 0x40) &= ~((1 << 0) | (1 << 2));	/* 48Mhz */
-		*(volatile u32 *)(0xFED80000 + 0xE00 + 0x40) |= 1 << 1;	/* 48Mhz */
-	}
-
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 		sb_poweron_init();

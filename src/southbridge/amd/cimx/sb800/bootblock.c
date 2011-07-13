@@ -84,10 +84,31 @@ static void enable_spi_fast_mode(void)
 	pci_io_write_config32(dev, 0xa0, save);
 }
 
+static void enable_clocks(void)
+{
+	u8 reg8;
+	u32 reg32;
+	volatile u32 *acpi_mmio = (void *) (0xFED80000 + 0xE00 + 0x40);
+
+	// Program AcpiMmioEn to enable MMIO access to MiscCntrl register
+	outb(0x24, 0xCD6);
+	reg8 = inb(0xCD7);
+	reg8 |= 1;
+	reg8 &= ~(1 << 1);
+	outb(reg8, 0xCD7);
+
+	// Program SB800 MiscCntrl Device_CLK1_sel for 48 MHz (default is 14 MHz)
+	reg32 = *acpi_mmio;
+	reg32 &= ~((1 << 0) | (1 << 2));
+	reg32 |= 1 << 1;
+	*acpi_mmio = reg32;
+}
+
 static void bootblock_southbridge_init(void)
 {
 	/* Setup the rom access for 2M */
 	enable_rom();
 	enable_prefetch();
 	enable_spi_fast_mode();
+	enable_clocks();
 }

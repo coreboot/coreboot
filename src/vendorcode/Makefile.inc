@@ -1,3 +1,4 @@
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += $(src)/vendorcode/amd/agesa/f10
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += $(src)/vendorcode/amd/agesa/f12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += $(src)/vendorcode/amd/agesa/f14
 

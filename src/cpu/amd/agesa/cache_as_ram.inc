@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 /******************************************************************************
  * AMD Generic Encapsulated Software Architecture
  *
@@ -25,8 +25,8 @@
  * Description: cache_as_ram.inc - AGESA Module Entry Point for GCC complier
  *
  ******************************************************************************
- */ 
- 
+ */
+
 #include "gcccar.inc"
 
 /*
@@ -39,60 +39,59 @@
 .globl cache_as_ram_setup, disable_cache_as_ram, cache_as_ram_setup_out
 
 cache_as_ram_setup:
-  
+
   post_code(0xa0)
-  
-  /* enable SSE2 128bit instructions */ 
+
+  /* enable SSE2 128bit instructions */
   /* Turn on OSFXSR [BIT9] and OSXMMEXCPT [BIT10] onto CR4 register */
-  
+
   movl %cr4, %eax
   orl $(3<<9), %eax
-  movl %eax, %cr4 
-  
+  movl %eax, %cr4
+
   /* Get the cpu_init_detected */
   mov $1, %eax
   cpuid
   shr $24, %ebx
-        
+
   /* Save the BIST result */
   cvtsi2sd  %ebp, %xmm0
-  
+
   /* for normal part %ebx already contain cpu_init_detected from fallback call */
-  
+
   /* Save the cpu_init_detected */
   cvtsi2sd  %ebx, %xmm1
-      
+
   post_code(0xa1)
   AMD_ENABLE_STACK
-  
+
   post_code(0xa1)
-  
+
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx
-  
+
   /* Restore the  cpu_init_detected */
   cvtsd2si  %xmm1, %ebx
-  
+
   pushl %ebx  /* init detected */
   pushl %edx  /* bist */
   call  cache_as_ram_main
-  
-  /* Should never see this postcode */ 
-  post_code(0xaf)     
+
+  /* Should never see this postcode */
+  post_code(0xaf)
 stop:
   jmp stop
 
 disable_cache_as_ram:
   /* Save return stack */
-  cvtsi2sd  %esp, %xmm0
-  
+  movd %esp, %xmm0
+
   AMD_DISABLE_STACK
-  
+
   /* Restore the return stack */
-  cvtsd2si  %xmm0, %esp
- 
+  movd %xmm0, %esp
   ret
-    
+
 cache_as_ram_setup_out:
 
 

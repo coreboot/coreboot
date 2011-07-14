@@ -37,8 +37,34 @@
 #define FLADJ 0x61
 #define FLADJ_framelength(x) (((x)-59488)/16)
 
+#define PORT_WKOC_E     (1<<22)
+#define PORT_WKDISC_E   (1<<21)
+#define PORT_WKCONN_E   (1<<20)
+#define PORT_TEST_PKT   (0x4<<16)
+#define PORT_LED_OFF    (0<<14)
+#define PORT_LED_AMBER  (1<<14)
+#define PORT_LED_GREEN  (2<<14)
+#define PORT_LED_MASK   (3<<14)
+#define PORT_OWNER      (1<<13)
+#define PORT_POWER      (1<<12)
+#define PORT_LINESTATUS_MASK   (3<<10)
+#define PORT_LINESTATUS_KSTATE (1<<10)
+#define PORT_RESET      (1<<8)
+#define PORT_SUSPEND    (1<<7)
+#define PORT_RESUME     (1<<6)
+#define PORT_OCC        (1<<5)
+#define PORT_OC         (1<<4)
+#define PORT_PEC        (1<<3)
+#define PORT_PE         (1<<2)
+#define PORT_CSC        (1<<1)
+#define PORT_CONNECT    (1<<0)
+
 typedef union {
-	u32 val;
+	volatile u32 val;
+	// WARNING - some controllers require port_enable and port_reset to
+	// change atomically.  Therefore, using these separate bits is not
+	// recommended.
+#if 0
 	volatile struct {
 		unsigned long current_conn_status:1;
 		unsigned long conn_status_change:1;
@@ -60,6 +86,7 @@ typedef union {
 		unsigned long wake_on_overcurrent_en:1;
 		unsigned long:9;
 	} __attribute__ ((packed));
+#endif
 } __attribute__ ((packed)) portsc_t;
 
 typedef struct {

@@ -54,14 +54,19 @@ static void
 ehci_rh_hand_over_port (usbdev_t *dev, int port)
 {
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
+	volatile u32 tmp;
 
 	printf("giving up port %x, it's USB1\n", port+1);
 
 	/* Lowspeed device. Hand over to companion */
-	p->port_owner = 1;
-	do {} while (!p->conn_status_change);
+	tmp = p->val;
+	tmp |= PORT_OWNER;
+	p->val = tmp;
+	while (!(p->val & PORT_CSC));
 	/* RW/C register, so clear it by writing 1 */
-	p->conn_status_change = 1;
+	tmp = p->val;
+	tmp |= PORT_CSC;
+	p->val = tmp;
 	return;
 }
 
@@ -69,41 +74,54 @@ static void
 ehci_rh_scanport (usbdev_t *dev, int port)
 {
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
+	volatile u32 tmp;
 	if (RH_INST(dev)->devices[port]!=-1) {
 		printf("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
 		RH_INST(dev)->devices[port]=-1;
 	}
 	/* device connected, handle */
-	if (p->current_conn_status) {
+	if (p->val & PORT_CONNECT) {
 		mdelay(100);
-		if (p->line_status == 0x1) {
+		if ((p->val & PORT_LINESTATUS_MASK) == PORT_LINESTATUS_KSTATE) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
-		p->port_enable = 0;
-		p->port_reset = 1;
+
+		/* Remove port_enable, set port_reset.  This must be atomic. */
+		tmp = p->val;
+		tmp &= ~PORT_PE;
+		tmp |= PORT_RESET;
+		p->val = tmp;
+
 		mdelay(50);
-		p->port_reset = 0;
+		tmp &= ~PORT_RESET;
+		p->val = tmp;
+
 		/* Wait for flag change to finish. The controller might take a while */
-		while (p->port_reset) ;
-		if (!p->port_enable) {
+		while(p->val & PORT_RESET) ;
+		if (!(p->val & PORT_PE)) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
 		printf("port %x hosts a USB2 device\n", port+1);
 		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
 	}
+
 	/* RW/C register, so clear it by writing 1 */
-	p->conn_status_change = 1;
+	tmp = p->val;
+	tmp |= PORT_CSC;
+	p->val = tmp;
 }
 
 static int
 ehci_rh_report_port_changes (usbdev_t *dev)
 {
+	volatile portsc_t *p;
 	int i;
 	for (i=0; i<RH_INST(dev)->n_ports; i++) {
-		if (RH_INST(dev)->ports[i].conn_status_change)
+	       	p = &(RH_INST(dev)->ports[i]);
+		if (p->val & PORT_CSC)
 			return i;
 	}
 	return -1;
@@ -121,6 +139,8 @@ ehci_rh_poll (usbdev_t *dev)
 void
 ehci_rh_init (usbdev_t *dev)
 {
+	volatile portsc_t *p;
+	volatile u32 tmp;
 	int i;
 
 	dev->destroy = ehci_rh_destroy;
@@ -135,8 +155,11 @@ ehci_rh_init (usbdev_t *dev)
 
 	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
+		p = &(RH_INST(dev)->ports[i]);
+		tmp = p->val;
+		tmp |= PORT_POWER;
+		p->val = tmp;
 		RH_INST(dev)->devices[i] = -1;
-		RH_INST(dev)->ports[i].pp = 1;
 	}
 
 	dev->address = 0;

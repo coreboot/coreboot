@@ -278,5 +278,3 @@ subdirs-y += ../../../x86/mtrr
 subdirs-y += ../../../x86/pae
 subdirs-y += ../../../x86/smm
 
-ramstage-y += apic_timer.c
-cpu_incs += $(src)/cpu/amd/agesa/family14/cache_as_ram.inc

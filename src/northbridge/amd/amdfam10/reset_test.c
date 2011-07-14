@@ -83,7 +83,8 @@ static u32 warm_reset_detect(u8 nodeid)
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
 }
 
-static void set_bios_reset(void)
+void __attribute__ ((weak)) set_bios_reset(void);
+void __attribute__ ((weak)) set_bios_reset(void)
 {
 
 	u32 nodes;

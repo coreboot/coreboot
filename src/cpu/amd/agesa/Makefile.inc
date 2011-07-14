@@ -16,5 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += family10
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += family12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14
+
+ramstage-y += apic_timer.c
+cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc

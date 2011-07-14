@@ -336,6 +336,7 @@ ehci_init (pcidev_t addr)
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
+	controller->bus_address = addr;
 	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}

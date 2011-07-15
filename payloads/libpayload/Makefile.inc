@@ -33,6 +33,7 @@ export KERNELVERSION      := 0.2.0
 
 ARCHDIR-$(CONFIG_TARGET_I386)    := i386
 ARCHDIR-$(CONFIG_TARGET_POWERPC) := powerpc
+DESTDIR ?= install
 
 real-target: lib
 

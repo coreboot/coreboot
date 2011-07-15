@@ -18,7 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <arch/romcc_io.h>
+#include <device/pnp_def.h>
 #include "wpcm450.h"
 
 static void wpcm450_pnp_set_logical_device(u8 dev, u16 port)
@@ -41,7 +43,7 @@ static void wpcm450_pnp_set_iobase(u8 dev, u16 port, u8 index, u16 iobase)
 	outb(iobase&0xFF, port+1);
 }
 
-static void wpcm450_enable_dev(u8 dev, u16 port, u16 iobase)
+void wpcm450_enable_dev(u8 dev, u16 port, u16 iobase)
 {
 	wpcm450_pnp_set_logical_device(dev, port);
 	wpcm450_pnp_set_enable(dev, port, 0);

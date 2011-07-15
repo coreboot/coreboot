@@ -29,9 +29,6 @@
 #include <southbridge/amd/sr5650/cmn.h>
 #include "chip.h"
 
-#define SMBUS_IO_BASE 0x6000
-
-uint64_t uma_memory_base, uma_memory_size;
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
@@ -95,47 +92,17 @@ static void h8scm_enable(device_t dev)
 	printk
 	    (BIOS_INFO, "%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
 	     __func__, msr2.lo, msr2.hi);
-#if (CONFIG_GFXUMA == 1)
-
-	/* refer to UMA Size Consideration in 780 BDG. */
-	switch (msr.lo) {
-	case 0x10000000:	/* 256M system memory */
-		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
-		break;
-
-	case 0x20000000:	/* 512M system memory */
-		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
-		break;
-
-	default:		/* 1GB and above system memory */
-		uma_memory_size = 0x10000000;	/* 256M recommended UMA */
-		break;
-	}
-#else
-	/* TODO: TOP_MEM2 */
-	uma_memory_size = 0;//0x8000000;	/* 128M recommended UMA */
-#endif
-	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-		    __func__, uma_memory_size, uma_memory_base);
 
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 }
 
+#if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	/* UMA is removed from system memory in the northbridge code, but
-	 * in some circumstances we want the memory mentioned as reserved.
- 	 */
-#if (CONFIG_GFXUMA == 1)
-	printk(BIOS_INFO, "uma_memory_start=0x%llx, uma_memory_size=0x%llx \n",
-		    uma_memory_base, uma_memory_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base,
-			    uma_memory_size);
-#endif
 	return 0;
 }
+#endif
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("AMD H8SCM   Mainboard")

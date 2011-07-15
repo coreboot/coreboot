@@ -6,14 +6,15 @@ ramstage-y += pmio.c
 
 #SB800 CIMx share AGESA V5 lib code
 ifneq ($(CONFIG_AMD_AGESA),y)
- romstage-y += ../../../vendorcode/amd/agesa/f14/Lib/amdlib.c
- ramstage-y += ../../../vendorcode/amd/agesa/f14/Lib/amdlib.c
+ AGESA_ROOT ?= src/vendorcode/amd/agesa/f14
+ romstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
+ ramstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
 
- AGESA_INC := -Isrc/vendorcode/amd/agesa/f14/ \
-	      -Isrc/vendorcode/amd/agesa/f14/Include \
-	      -Isrc/vendorcode/amd/agesa/f14/Proc/IDS/ \
-	      -Isrc/vendorcode/amd/agesa/f14/Proc/CPU/ \
-	      -Isrc/vendorcode/amd/agesa/f14/Proc/CPU/Family
+ AGESA_INC := -I$(AGESA_ROOT)/ \
+	      -I$(AGESA_ROOT)/Include \
+	      -I$(AGESA_ROOT)/Proc/IDS/ \
+	      -I$(AGESA_ROOT)/Proc/CPU/ \
+	      -I$(AGESA_ROOT)/Proc/CPU/Family
 
  CFLAGS += $(AGESA_INC)
 endif

@@ -17,21 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-romstage-y += buildOpts.c
-romstage-y += agesawrapper.c
-romstage-y += dimmSpd.c
-romstage-y += BiosCallOuts.c
-romstage-y += PlatformGnbPcie.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_SP5100) += ../../../southbridge/amd/sb700/early_setup.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_SP5100) += ../../../southbridge/amd/sb700/smbus.c
+romstage-$(CONFIG_SOUTHBRIDGE_AMD_SR5650) += ../../../southbridge/amd/sr5650/early_setup.c
+romstage-y += ../../../superio/nuvoton/wpcm450/early_init.c
 
-ramstage-y += buildOpts.c
-ramstage-y += agesawrapper.c
-ramstage-y += dimmSpd.c
-ramstage-y += BiosCallOuts.c
-ramstage-y += PlatformGnbPcie.c
-
-ramstage-y += reset.c
-ramstage-y += pmio.c
-
-AGESA_ROOT ?= src/vendorcode/amd/agesa/f14
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += ../../../../$(AGESA_ROOT)
-#subdirs-$(CONFIG_AMD_CIMX) += ../../../vendorcode/amd/cimx

@@ -26,14 +26,11 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb700/sb700.h>
+#include "southbridge/amd/sb700/smbus.h"
 #include "chip.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
-
-extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
-extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
-			       u8 val);
 
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
@@ -41,8 +38,6 @@ extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 	do_smbus_read_byte(SMBUS_IO_BASE, ARA_ADDRESS, address)
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
-
-#define SMBUS_IO_BASE 0x6000
 
 uint64_t uma_memory_base, uma_memory_size;
 

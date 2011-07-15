@@ -103,6 +103,10 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add);
 void enable_pcie_bar3(device_t nb_dev);
 void disable_pcie_bar3(device_t nb_dev);
 
+void enable_sr5650_dev8(void);
+void sr5650_htinit(void);
+void sr5650_early_setup(void);
+void sr5650_before_pci_init(void);
 void sr5650_enable(device_t dev);
 void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port);
 void sr5650_gfx_init(device_t nb_dev, device_t dev, u32 port);
@@ -112,8 +116,9 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port);
 u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port);
 void pcie_config_misc_clk(device_t nb_dev);
 void fam10_optimization(void);
-void disable_pcie_bridge(void);
+void sr5650_disable_pcie_bridge(void);
 u32 get_vid_did(device_t dev);
 void sr5650_nb_pci_table(device_t nb_dev);
 void init_gen2(device_t nb_dev, device_t dev, u8 port);
+void sr56x0_lock_hwinitreg(void);
 #endif /* SR5650_H */

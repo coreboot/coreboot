@@ -26,10 +26,9 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include <southbridge/amd/sb700/sb700.h>
+#include "southbridge/amd/sb700/sb700.h"
+#include "southbridge/amd/sb700/smbus.h"
 #include "chip.h"
-
-#define SMBUS_IO_BASE 0x6000
 
 uint64_t uma_memory_base, uma_memory_size;
 

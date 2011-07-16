@@ -54,14 +54,19 @@ static void
 ehci_rh_hand_over_port (usbdev_t *dev, int port)
 {
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
+	volatile portsc_t tmp;
 
 	printf("giving up port %x, it's USB1\n", port+1);
 
 	/* Lowspeed device. Hand over to companion */
-	p->port_owner = 1;
+	tmp = *p;
+	tmp.port_owner = 1;
+	*p = tmp;
 	do {} while (!p->conn_status_change);
 	/* RW/C register, so clear it by writing 1 */
-	p->conn_status_change = 1;
+	tmp = *p;
+	tmp.conn_status_change = 1;
+	*p = tmp;
 	return;
 }
 
@@ -69,6 +74,7 @@ static void
 ehci_rh_scanport (usbdev_t *dev, int port)
 {
 	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
+	volatile portsc_t tmp;
 	if (RH_INST(dev)->devices[port]!=-1) {
 		printf("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
@@ -81,10 +87,22 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
-		p->port_enable = 0;
-		p->port_reset = 1;
+
+		/* Deassert enable, assert reset.  These must change
+		 * atomically.
+		 */
+		tmp = *p;
+		tmp.port_enable = 0;
+		tmp.port_reset = 1;
+		*p = tmp;
+
+		/* Wait a bit while reset is active. */
 		mdelay(50);
-		p->port_reset = 0;
+
+		/* Deassert reset. */
+		tmp.port_reset = 0;
+		*p = tmp;
+
 		/* Wait for flag change to finish. The controller might take a while */
 		while (p->port_reset) ;
 		if (!p->port_enable) {
@@ -95,7 +113,9 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
 	}
 	/* RW/C register, so clear it by writing 1 */
-	p->conn_status_change = 1;
+	tmp = *p;
+	tmp.conn_status_change = 1;
+	*p = tmp;
 }
 
 static int
@@ -122,6 +142,8 @@ void
 ehci_rh_init (usbdev_t *dev)
 {
 	int i;
+	volatile portsc_t *p;
+	volatile portsc_t tmp;
 
 	dev->destroy = ehci_rh_destroy;
 	dev->poll = ehci_rh_poll;
@@ -135,8 +157,11 @@ ehci_rh_init (usbdev_t *dev)
 
 	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
+		p = &(RH_INST(dev)->ports[i]);
 		RH_INST(dev)->devices[i] = -1;
-		RH_INST(dev)->ports[i].pp = 1;
+		tmp = *p;
+		tmp.pp = 1;
+		*p = tmp;
 	}
 
 	dev->address = 0;

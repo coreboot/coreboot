@@ -25,6 +25,11 @@ subdirs-y += boot
 subdirs-y += lib
 subdirs-y += smp
 
+stripped_xhcbios_id = $(call strip_quotes,$(CONFIG_XHC_BIOS_ID))
+cbfs-files-$(CONFIG_XHC_BIOS) += pci$(stripped_xhcbios_id).rom
+pci$(stripped_xhcbios_id).rom-file := $(call strip_quotes,$(CONFIG_XHC_BIOS_FILE))
+pci$(stripped_xhcbios_id).rom-type := optionrom
+
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
 cbfs-files-y += cmos_layout.bin
@@ -114,6 +119,11 @@ stripped_vgabios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_ID))
 cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
 pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
 pci$(stripped_vgabios_id).rom-type := optionrom
+
+stripped_ahcibios_id = $(call strip_quotes,$(CONFIG_AHCI_BIOS_ID))
+cbfs-files-$(CONFIG_AHCI_BIOS) += pci$(stripped_ahcibios_id).rom
+pci$(stripped_ahcibios_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_BIOS_FILE))
+pci$(stripped_ahcibios_id).rom-type := optionrom
 
 cbfs-files-$(CONFIG_INTEL_MBI) += mbi.bin
 mbi.bin-file := $(call strip_quotes,$(CONFIG_MBI_FILE))

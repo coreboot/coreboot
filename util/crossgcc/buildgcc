@@ -88,9 +88,9 @@ searchgnu()
 	exit 1
 }
 
-TAR=`searchgnu tar`
-PATCH=`searchgnu patch`
-MAKE=`searchgnu make`
+TAR=`searchgnu tar` || exit $?
+PATCH=`searchgnu patch` || exit $?
+MAKE=`searchgnu make` || exit $?
 
 cleanup()
 {

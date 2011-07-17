@@ -19,7 +19,7 @@
 
 #######################################################################
 # misleadingly named, this is the coreboot version
-REV=-r$(shell if [ -d $(top)/.svn -a -f "`which svnversion`" ]; then svnversion $(top); else if [ -d $(top)/.git -a -f "`which git`" ]; then git --git-dir=/$(top)/.git log|grep git-svn-id|cut -f 2 -d@|cut -f 1 -d' '|sort -g|tail -1; fi; fi)
+REV=-r$(shell if [ -d $(top)/.git -a -f "`which git`" ]; then git --git-dir=/$(top)/.git show -s --pretty=format:%h; fi)
 export KERNELVERSION      := 4.0$(REV)
 
 #######################################################################

@@ -110,6 +110,26 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 }
 
 /**
+ * Given a Local APIC ID, find the device structure.
+ *
+ * @param apic_id The Local APIC ID number.
+ * @return Pointer to the device structure (if found), 0 otherwise.
+ */
+device_t dev_find_lapic(unsigned apic_id)
+{
+	device_t dev, result = NULL;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if (dev->path.type == DEVICE_PATH_APIC &&
+		    dev->path.apic.apic_id == apic_id) {
+			result = dev;
+			break;
+		}
+	}
+	return result;
+}
+
+/**
  * Find a device of a given vendor and type.
  *
  * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).

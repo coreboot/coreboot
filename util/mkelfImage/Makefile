@@ -14,7 +14,7 @@ pkgdatadir = $(datadir)/$(PACKAGE)
 pkglibdir = $(libdir)/$(PACKAGE)
 pkgincludedir = $(includedir)/$(PACKAGE)
 
-CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"' -I include
+CPPFLAGS=-fno-stack-protector -DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"' -I include $(CFLAGS) $(LDFLAGS)
 HOST_CPPFLAGS=$(CPPFLAGS)
 I386_CPPFLAGS=$(CPPFLAGS) -I arch/i386/include
 IA64_CPPFLAGS=$(CPPFLAGS) -I arch/ia64/include

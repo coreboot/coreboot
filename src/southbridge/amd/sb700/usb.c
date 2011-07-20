@@ -178,6 +178,7 @@ static void usb_init2(struct device *dev)
 		dword |= 1 << 8;
 		dword &= ~(1 << 27); /* 6.23 */
 	}
+	pci_write_config32(dev, 0x50, dword);
 	printk(BIOS_DEBUG, "rpr 6.23, final dword=%x\n", dword);
 }
 

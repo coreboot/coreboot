@@ -266,15 +266,21 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 }
 
 /*
-* Compliant with CIM_33's ATINB_SetToms.
-* Set Top Of Memory below and above 4G.
-*/
+ * Set Top Of Memory below and above 4G.
+ */
 void sr5650_set_tom(device_t nb_dev)
 {
-	extern u64 uma_memory_base;
+	msr_t sysmem;
 
-	/* set TOM */
-	pci_write_config32(nb_dev, 0x90, uma_memory_base);
+	/* The system top memory in SR56X0. */
+	sysmem = rdmsr(0xc001001A);
+	printk(BIOS_DEBUG, "Sysmem TOM = %x_%x\n", sysmem.hi, sysmem.lo);
+	pci_write_config32(nb_dev, 0x90, sysmem.lo);
+
+	sysmem = rdmsr(0xc001001D);
+	printk(BIOS_DEBUG, "Sysmem TOM2 = %x_%x\n", sysmem.hi, sysmem.lo);
+	htiu_write_index(nb_dev, 0x31, sysmem.hi);
+	htiu_write_index(nb_dev, 0x30, sysmem.lo | 1);
 }
 
 u32 get_vid_did(device_t dev)
@@ -308,7 +314,7 @@ void sr5650_nb_pci_table(device_t nb_dev)
 	temp8 &= ~(1<<1);
 	pci_write_config8(nb_dev, 0x8d, temp8);
 
-	/* set temporary NB TOM to 0x40000000. */
+	/* The system top memory in SR56X0. */
 	sr5650_set_tom(nb_dev);
 
 	/* Program NB HTIU table. */
@@ -423,6 +429,11 @@ void sr5650_enable(device_t dev)
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));
+	}
+
+	/* Lock HWInit Register after the last device was done */
+	if (dev_ind == 13) {
+		sr56x0_lock_hwinitreg();
 	}
 }
 

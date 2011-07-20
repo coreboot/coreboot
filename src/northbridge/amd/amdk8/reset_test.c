@@ -44,7 +44,8 @@ static inline void distinguish_cpu_resets(unsigned nodeid)
 	pci_write_config32(device, HT_INIT_CONTROL, htic);
 }
 
-static void set_bios_reset(void)
+void __attribute__ ((weak)) set_bios_reset(void);
+void __attribute__ ((weak)) set_bios_reset(void)
 {
 	u32 htic;
 	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);

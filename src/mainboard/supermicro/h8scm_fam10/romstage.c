@@ -42,13 +42,14 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/nuvoton/wpcm450/early_init.c"
 #include <usbdebug.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
-#include "southbridge/amd/sb700/early_setup.c"
-#include "southbridge/amd/sr5650/early_setup.c"
+#include "southbridge/amd/sb700/sb700.h"
+#include "southbridge/amd/sb700/smbus.h"
+#include "southbridge/amd/sr5650/sr5650.h"
+#include "superio/nuvoton/wpcm450/wpcm450.h"
 #include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
@@ -57,7 +58,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	return smbus_read_byte(device, address);
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"
@@ -102,7 +103,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
 
-		disable_pcie_bridge();
+		/* SR56x0 pcie bridges block pci_locate_device() before pcie training.
+		 * disable all pcie bridges on SR56x0 to work around it
+		 */
+		sr5650_disable_pcie_bridge();
 		sb7xx_51xx_lpc_port80();
 	}
 
@@ -181,7 +185,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* run _early_setup before soft-reset. */
 	sr5650_early_setup();
-	disable_pcie_bridge();
 	sb7xx_51xx_early_setup();
 
 #if CONFIG_SET_FIDVID

@@ -20,12 +20,20 @@
 #ifndef __SR5650_CMN_H__
 #define __SR5650_CMN_H__
 
+#include <arch/io.h>
+
 #define NBMISC_INDEX 	0x60
 #define NBHTIU_INDEX 	0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
 #define NBMC_INDEX 	0xE8
 #define NBPCIE_INDEX  	0xE0
-#define EXT_CONF_BASE_ADDRESS 0xE0000000
+#define EXT_CONF_BASE_ADDRESS	CONFIG_MMCONF_BASE_ADDRESS
 #define	TEMP_MMIO_BASE_ADDRESS	0xC0000000
+
+#define axindxc_reg(reg, mask, val) \
+	alink_ax_indx(0, (reg), (mask), (val))
+
+#define AB_INDX   0xCD8
+#define AB_DATA   (AB_INDX+4)
 
 static inline u32 nb_read_index(device_t dev, u32 index_reg, u32 index)
 {

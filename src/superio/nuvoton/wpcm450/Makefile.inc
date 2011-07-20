@@ -18,5 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+romstage-y += early_init.c
 ramstage-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += superio.c
 

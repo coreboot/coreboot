@@ -31,3 +31,7 @@ ramstage-y += PlatformGnbPcie.c
 
 ramstage-y += reset.c
 ramstage-y += pmio.c
+
+AGESA_ROOT ?= src/vendorcode/amd/agesa/f14
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += ../../../../$(AGESA_ROOT)
+#subdirs-$(CONFIG_AMD_CIMX) += ../../../vendorcode/amd/cimx

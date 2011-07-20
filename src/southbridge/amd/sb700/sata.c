@@ -280,7 +280,7 @@ static void sata_init(struct device *dev)
 }
 
 static struct pci_operations lops_pci = {
-	/* .set_subsystem = pci_dev_set_subsystem, */
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

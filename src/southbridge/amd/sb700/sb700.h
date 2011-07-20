@@ -63,8 +63,11 @@ void sb7xx_51xx_enable(device_t dev);
 #ifdef __PRE_RAM__
 void sb7xx_51xx_lpc_port80(void);
 void sb7xx_51xx_pci_port80(void);
+void sb7xx_51xx_lpc_init(void);
 void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base);
 void sb7xx_51xx_disable_wideio(u8 wio_index);
+void sb7xx_51xx_early_setup(void);
+void sb7xx_51xx_before_pci_init(void);
 #else
 #include <device/pci.h>
 /* allow override in mainboard.c */
@@ -72,8 +75,15 @@ void sb7xx_51xx_setup_sata_phys(struct device *dev);
 
 #endif
 
+#if CONFIG_HAVE_ACPI_RESUME == 1
+int acpi_is_wakeup_early(void);
+#endif
+
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 void enable_usbdebug(unsigned int port);
+
+u32 __attribute__ ((weak)) get_sbdn(u32 bus);
+void __attribute__((weak)) enable_fid_change_on_sb(u32 sbbusn, u32 sbdn);
 #endif /* SB700_H */

@@ -20,6 +20,13 @@
 #ifndef SB700_SMBUS_H
 #define SB700_SMBUS_H
 
+#include <stdint.h>
+#include "stddef.h"
+#include <arch/io.h>
+
+#define SMBUS_IO_BASE 0x6000	/* Is it a temporary SMBus I/O base address? */
+				/*SIZE 0x40 */
+
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1
 #define SMBHSTCTRL 0x2
@@ -56,10 +63,11 @@
 #define axindxp_reg(reg, mask, val)	\
 	alink_ax_indx(1, (reg), (mask), (val))
 
+void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
+void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val);
 int do_smbus_recv_byte(u32 smbus_io_base, u32 device);
 int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val);
 int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
-
 
 #endif

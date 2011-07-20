@@ -267,23 +267,25 @@ void disable_pcie_bar3(device_t nb_dev)
 }
 
 /*
-*/
+ * GEN2 Software Compliance
+ */
 void init_gen2(device_t nb_dev, device_t dev, u8 port)
 {
 	u32 reg, val;
+
 	/* for A11 (0x89 == 0) */
 	reg = 0x34;
-	if (port <= 3){
+	if (port <= 3) {
 		val = 1<<5;
-	}else{
+	} else {
 		val = 1<<31;
-		if (port >= 9 )
+		if (port >= 9)
 			reg = 0x39;
 	}
 
-	/* todo: check for rev > a11
+	/* TODO: check for rev > a11 */
 	switch (port) {
-		case 2;
+		case 2:
 			reg = 0x34;
 			val = 1<<5;
 			break;
@@ -300,7 +302,9 @@ void init_gen2(device_t nb_dev, device_t dev, u8 port)
 			reg = 0x39;
 			val = 1<<31;
 			break;
-		case 7..9:
+		case 7:
+		case 8:
+		case 9:
 			reg = 0x37;
 			val = 1<<port;
 			break;
@@ -312,9 +316,11 @@ void init_gen2(device_t nb_dev, device_t dev, u8 port)
 			reg = 0;
 			break;
 	}
-	*/
+
+	/* Enables GEN2 capability of the device */
 	set_pcie_enable_bits(dev, 0xA4, 0x1, 0x1);
-	pci_ext_write_config32(nb_dev, dev, 0x88, 0xF0, 1<<2); /* LINK_CRTL2*/
+	/* Advertise the link speed to be Gen2 */
+	pci_ext_write_config32(nb_dev, dev, 0x88, 0xF0, 1<<2); /* LINK_CRTL2 */
 	set_nbmisc_enable_bits(nb_dev, reg, val, val);
 }
 
@@ -409,7 +415,7 @@ static void gpp12_cpl_buf_alloc(device_t nb_dev, device_t dev)
 	}
 }
 
-#if 0				/* BTS report error without this function. But some board
+#if 1				/* BTS report error without this function. But some board
 				 * fail to boot. Leave it here for future debug. */
 
 /*
@@ -424,6 +430,7 @@ static void EnableLclkGating(device_t dev)
 	device_t nb_dev = dev_find_slot(0, 0);
 	device_t clk_f1= dev_find_slot(0, 1);
 
+	reg = 0xE8;
 	port = dev->path.pci.devfn >> 3;
 	switch (port) {
  		//PCIE_CORE_INDEX_GPP1
@@ -436,7 +443,6 @@ static void EnableLclkGating(device_t dev)
  		//PCIE_CORE_INDEX_GPP2
 		case 11:
 		case 12:
-			reg = 0xE8;
 			value = 1 << 28;
 			break;
 
@@ -444,13 +450,11 @@ static void EnableLclkGating(device_t dev)
 		case 4 ... 7:
 		case 9:
 		case 10:
-			reg = 0xE8;
 			value = 1 << 31;
 			break;
 
 		//PCIE_CORE_INDEX_GPP3b;
 		case 13:
-			reg = 0xE8;
 			value = 1 << 25;
 			break;
 
@@ -541,6 +545,14 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* 4.4.2.step13.6. Set REGS_LC_ALLOW_TX_L1_CONTROL to allow TX to
 	   prevent LC from going to L1 when there are outstanding completions.*/
 	set_pcie_enable_bits(dev, 0x02, 1 << 15, 1 << 15);
+
+	/* Enables the PLL power down when all lanes are inactive.
+	 * It should be on in GPP.
+	 */
+	if (gpp_sb_sel == PCIE_CORE_INDEX_GPP3a || gpp_sb_sel == PCIE_CORE_INDEX_GPP3b || gpp_sb_sel == PCIE_CORE_INDEX_SB) {
+		set_pcie_enable_bits(nb_dev, 0x02 | gpp_sb_sel, 1 << 3, 1 << 3);
+	}
+
 	/* 4.4.2.step13.7. Set REGS_LC_DONT_GO_TO_L0S_IF_L1_ARMED to prevent
 	   lc to go to from L0 to Rcv_L0s if L1 is armed. */
 	set_pcie_enable_bits(dev, 0xA1, 1 << 11, 1 << 11);
@@ -594,8 +606,11 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	 * RPR typo- it says enable but the bit setting says disable.
 	 * Disable it here and we enable it later. */
 	set_pcie_enable_bits(dev, 0xA4, 1 << 0, 1 << 0);
-	/* 4.4.2.step13.21. */
-	/* 4.4.2.step13.22 */
+
+	/* 4.4.2.step13.21. Legacy Hot Plug  -CMOS Option */
+	/* NOTE: This feature can be enabled only for Hot-Plug slots implemented on SR5690 platform. */
+
+	/* 4.4.2.step13.22. Native PCIe Mode -CMOS Option */
 	/* Enable native PME. */
 	set_pcie_enable_bits(dev, 0x10, 1 << 3, 1 < 3);
 	/* This bit when set indicates that the PCIe Link associated with this port
@@ -607,7 +622,7 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* Enables flushing of TLPs when Data Link is down. */
 	set_pcie_enable_bits(dev, 0x20, 1 << 19, 0 << 19);
 
-	/* 4.4.2.step14. Server Class Hot Plug Feature */
+	/* 4.4.2.step14. Server Class Hot Plug Feature. NOTE: This feature is not supported on SR5670 and SR5650 */
 	/* 4.4.2 step14.1: Advertising Hot Plug Capabilities */
 	/* 4.4.2.step14.2: Firmware Upload */
 	/* 4.4.2.Step14.3: SBIOS Acknowledgment to Firmware of Successful Firmware Upload */
@@ -630,11 +645,13 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	if ( port == 8 )
 		set_pcie_enable_bits(dev, 0xA0, 0, 1 << 23);
 
+#if 0 //SR56x0 pcie Gen2 code is not tested yet, we should enable it again when test finished.
 	/* set automatic Gen2 support, needs mainboard config option as Gen2 can cause issues on some platforms. */
 	init_gen2(nb_dev, dev, port);
 	set_pcie_enable_bits(dev, 0xA4, 1 << 29, 1 << 29);
 	set_pcie_enable_bits(dev, 0xC0, 1 << 15, 0);
 	set_pcie_enable_bits(dev, 0xA2, 1 << 13, 0);
+#endif
 
 	/* Hotplug Support - bit5 + bit6  capable and surprise */
 	pci_ext_write_config32(nb_dev, dev, 0x6c, 0x60, 0x60);
@@ -715,12 +732,13 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* 4.4..7.1 TXCLK Gating in L1, Enables powering down TXCLK clock pads on the receive side. */
 	set_pcie_enable_bits(nb_dev, 0x40 | gpp_sb_sel, 1 << 6, 1 << 6);
 
-	/* Step 21: Register Locking PCIE Misc. Late Core sttting - Must move somewhere do PciInitLate FIXME */
-	/* Lock HWInit Register */
-	//set_pcie_enable_bits(nb_dev, 0x10 | gpp_sb_sel, 1 << 0, 1 << 0);
+	/* Step 20: Disables immediate RCB timeout on link down */
+	if (!((pci_read_config32(dev, 0x6C ) >> 6) & 0x01)) {
+		set_pcie_enable_bits(dev, 0x70, 1 << 19, 0 << 19);
+	}
 
 	/* Step 27: LCLK Gating	*/
-	//EnableLclkGating(dev);
+	EnableLclkGating(dev);
 
 	/* Set Common Clock */
 	/* If dev present, set PcieCapPtr+0x10, BIT6);
@@ -732,6 +750,34 @@ void sr5650_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	if (port == 8){
 		PciePowerOffGppPorts(nb_dev, dev, port); /* , This should be run for all ports that are not hotplug and don't detect devices */
 	}
+}
+
+/**
+ * Step 21: Register Locking
+ * Lock HWInit Register of each pcie core
+ */
+static void lock_hwinitreg(device_t nb_dev)
+{
+	/* Step 21: Register Locking, Lock HWInit Register */
+	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_GPP1, 1 << 0, 1 << 0);
+	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_SB, 1 << 0, 1 << 0);
+	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_GPP2, 1 << 0, 1 << 0);
+	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_GPP3a, 1 << 0, 1 << 0);
+	set_pcie_enable_bits(nb_dev, 0x10 | PCIE_CORE_INDEX_GPP3b, 1 << 0, 1 << 0);
+}
+
+/**
+ * Lock HWInit Register
+ */
+void sr56x0_lock_hwinitreg(void)
+{
+	device_t nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+
+	/* Lock HWInit Register */
+	lock_hwinitreg(nb_dev);
+
+	/* Lock HWInit Register NBMISCIND:0x0 NBCNTL[7] HWINIT_WR_LOCK */
+	set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 7, 1 << 7);
 }
 
 /*****************************************

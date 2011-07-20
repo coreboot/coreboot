@@ -5,8 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,13 +17,39 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef SUPERIO_NUVOTON_WPCM450_WPCM450_H
-#define SUPERIO_NUVOTON_WPCM450_WPCM450_H
 
-#define WPCM450_SP2  0x02 /* Com2 */
-#define WPCM450_SP1  0x03 /* Com1 */
-#define WPCM450_KBCK 0x06 /* Keyboard */
+#include <arch/io.h>	/*inb, outb*/
+#include "pmio.h"
 
-void wpcm450_enable_dev(u8 dev, u16 port, u16 iobase);
+static void pmio_write_index(u16 port_base, u8 reg, u8 value)
+{
+	outb(reg, port_base);
+	outb(value, port_base + 1);
+}
 
-#endif
+static u8 pmio_read_index(u16 port_base, u8 reg)
+{
+	outb(reg, port_base);
+	return inb(port_base + 1);
+}
+
+void pm_iowrite(u8 reg, u8 value)
+{
+	pmio_write_index(PM_INDEX, reg, value);
+}
+
+u8 pm_ioread(u8 reg)
+{
+	return pmio_read_index(PM_INDEX, reg);
+}
+
+void pm2_iowrite(u8 reg, u8 value)
+{
+	pmio_write_index(PM2_INDEX, reg, value);
+}
+
+u8 pm2_ioread(u8 reg)
+{
+	return pmio_read_index(PM2_INDEX, reg);
+}
+

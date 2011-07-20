@@ -30,7 +30,7 @@
 #include <arch/ioapic.h>
 #include <stdlib.h>
 #include "sb700.h"
-#include "smbus.c"
+#include "smbus.h"
 
 #define NMI_OFF 0
 
@@ -94,6 +94,20 @@ static void sm_init(device_t dev)
 	byte &= ~(0xF << 2);
 	byte |= 4 << 2;		/* set NumSerIrqBits=4 */
 	pci_write_config8(dev, 0x69, byte);
+
+	/* Sx State Settings
+	 * Note: These 2 registers need to be set correctly for the S-state
+	 * to work properly. Otherwise the system may hang during resume
+	 * from the S-state.
+	 */
+	/*Use 8us clock for delays in the S-state resume timing sequence.*/
+	byte = pm_ioread(0x65);
+	byte &= ~(1 << 7);
+	pm_iowrite(0x65, byte);
+	/* Delay the APIC interrupt to the CPU until the system has fully resumed from the S-state. */
+	byte = pm_ioread(0x68);
+	byte |= 1 << 2;
+	pm_iowrite(0x68, byte);
 
 	/* IRQ0From8254 */
 	byte = pci_read_config8(dev, 0x41);
@@ -219,10 +233,10 @@ static void sm_init(device_t dev)
 	 *  Transactions for the K8 Platform (for All Revisions) */
 	abcfg_reg(0x10090, 1 << 8, 1 << 8);
 
-	/* ACPI_SOFT_CLOCK_THROTTLE_PERIOD */
+	/* Set ACPI Software clock Throttling Period to 244 us*/
 	byte = pm_ioread(0x68);
 	byte &= ~(3 << 6);
-	byte |= (2 << 6);	/* 224us */
+	byte |= (2 << 6);	/* 244us */
 	pm_iowrite(0x68, byte);
 
 	if (REV_SB700_A15 == rev) {
@@ -367,16 +381,16 @@ static void sb700_sm_read_resources(device_t dev)
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
 	res->gran = 8;
-	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
 
-	/* Linux ACPI crashes when it is 1. For late debugging. */
+	/* HPET */
 	res = new_resource(dev, 0xB4);	/* TODO: test hpet */
 	res->base  = 0xfed00000;	/* reset hpet to widely accepted address */
 	res->size = 0x400;
 	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
 	res->gran = 8;
-	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
 
 	/* dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER; */
 
@@ -387,7 +401,7 @@ static void sb700_sm_read_resources(device_t dev)
 	res->limit = 0xFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;
 	res->gran = 8;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED;
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
 
 	compact_resources(dev);
 }

@@ -551,8 +551,8 @@ LibAmdIoRMW (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   LibAmdIoRead (AccessWidth, IoAddress, &Value, StdHeader);
@@ -584,8 +584,8 @@ LibAmdIoPoll (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {
@@ -688,8 +688,8 @@ LibAmdMemRMW (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   LibAmdMemRead (AccessWidth, MemAddress, &Value, StdHeader);
@@ -721,8 +721,8 @@ LibAmdMemPoll (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {
@@ -849,8 +849,8 @@ LibAmdPciRMW (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   LibAmdPciRead (AccessWidth, PciAddress, &Value, StdHeader);
@@ -882,8 +882,8 @@ LibAmdPciPoll (
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32  TempData;
-  UINT32  TempMask;
+  UINT32  TempData = 0;
+  UINT32  TempMask = 0;
   UINT32  Value;
   LibAmdGetDataFromPtr (AccessWidth, Data,  DataMask, &TempData, &TempMask);
   do {

@@ -22,6 +22,51 @@
 
 #include "smbus.h"
 
+void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
+{
+	u32 tmp;
+
+	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);
+	tmp = inl(AB_DATA);
+	/* rpr 4.2
+	 * For certain revisions of the chip, the ABCFG registers,
+	 * with an address of 0x100NN (where 'N' is any hexadecimal
+	 * number), require an extra programming step.*/
+	reg_addr & 0x10000 ? outl(0, AB_INDX) : NULL;
+
+	tmp &= ~mask;
+	tmp |= val;
+
+	/* printk(BIOS_DEBUG, "about write %x, index=%x", tmp, (reg_space&0x3)<<30 | reg_addr); */
+	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);	/* probably we dont have to do it again. */
+	outl(tmp, AB_DATA);
+	reg_addr & 0x10000 ? outl(0, AB_INDX) : NULL;
+}
+
+/* space = 0: AX_INDXC, AX_DATAC
+ * space = 1: AX_INDXP, AX_DATAP
+ */
+void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
+{
+	u32 tmp;
+
+	/* read axindc to tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	tmp = inl(AB_DATA);
+
+	tmp &= ~mask;
+	tmp |= val;
+
+	/* write tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	outl(tmp, AB_DATA);
+}
+
+
 static inline void smbus_delay(void)
 {
 	outb(inb(0x80), 0x80);
@@ -177,48 +222,4 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 	return 0;
 }
 
-static void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
-{
-	u32 tmp;
-
-	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);
-	tmp = inl(AB_DATA);
-	/* rpr 4.2
-	 * For certain revisions of the chip, the ABCFG registers,
-	 * with an address of 0x100NN (where 'N' is any hexadecimal
-	 * number), require an extra programming step.*/
-	reg_addr & 0x10000 ? outl(0, AB_INDX) : NULL;
-
-	tmp &= ~mask;
-	tmp |= val;
-
-	/* printk(BIOS_DEBUG, "about write %x, index=%x", tmp, (reg_space&0x3)<<30 | reg_addr); */
-	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);	/* probably we dont have to do it again. */
-	outl(tmp, AB_DATA);
-	reg_addr & 0x10000 ? outl(0, AB_INDX) : NULL;
-}
-
-/* space = 0: AX_INDXC, AX_DATAC
- * space = 1: AX_INDXP, AX_DATAP
- */
-static inline void alink_ax_indx(u32 space /*c or p? */ , u32 axindc,
-			  u32 mask, u32 val)
-{
-	u32 tmp;
-
-	/* read axindc to tmp */
-	outl(space << 30 | space << 3 | 0x30, AB_INDX);
-	outl(axindc, AB_DATA);
-	outl(space << 30 | space << 3 | 0x34, AB_INDX);
-	tmp = inl(AB_DATA);
-
-	tmp &= ~mask;
-	tmp |= val;
-
-	/* write tmp */
-	outl(space << 30 | space << 3 | 0x30, AB_INDX);
-	outl(axindc, AB_DATA);
-	outl(space << 30 | space << 3 | 0x34, AB_INDX);
-	outl(tmp, AB_DATA);
-}
 #endif

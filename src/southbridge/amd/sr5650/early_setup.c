@@ -17,20 +17,50 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stdint.h>
+#include <arch/cpu.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <console/console.h>
+#include <cpu/x86/msr.h>
 #include "sr5650.h"
 #include "cmn.h"
 
+/* space = 0: AX_INDXC, AX_DATAC
+ * space = 1: AX_INDXP, AX_DATAP
+ */
+static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
+{
+        u32 tmp;
+
+        /* read axindc to tmp */
+        outl(space << 30 | space << 3 | 0x30, AB_INDX);
+        outl(axindc, AB_DATA);
+        outl(space << 30 | space << 3 | 0x34, AB_INDX);
+        tmp = inl(AB_DATA);
+
+        tmp &= ~mask;
+        tmp |= val;
+
+        /* write tmp */
+        outl(space << 30 | space << 3 | 0x30, AB_INDX);
+        outl(axindc, AB_DATA);
+        outl(space << 30 | space << 3 | 0x34, AB_INDX);
+        outl(tmp, AB_DATA);
+}
+
+
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1
+#if (CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1) || (CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 == 1)
 static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
 	u32 reg_old, reg;
-	reg = reg_old = Get_NB32(fam10_dev, reg_pos);
+	reg = reg_old = pci_read_config32(fam10_dev, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		Set_NB32(fam10_dev, reg_pos, reg);
+		pci_write_config32(fam10_dev, reg_pos, reg);
 	}
 }
 #else
@@ -113,17 +143,19 @@ static const u8 sr5650_ibias[] = {
 	[0xe] = 0xC6,		/* 2.6Ghz HyperTransport 3 only */
 };
 
-static void sr5650_htinit(void)
+void sr5650_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
 	 */
-	device_t cpu_f0, sr5650_f0, clk_f1, cpu1_f0;
+	device_t cpu_f0, sr5650_f0, clk_f1;
 	u32 reg;
-	u8 cpu_ht_freq, ibias;
+	u8 cpu_ht_freq, cpu_htfreq_max, ibias;
+	u8 sbnode;
+	u8 sblink;
+	u16 linkfreq_reg;
+	u16 linkfreqext_reg;
 
-	cpu_f0 = PCI_DEV(0, 0x18, 0);
-	cpu1_f0 = PCI_DEV(0, 0x19, 0);
 	/************************
 	* get cpu's ht freq, in cpu's function 0, offset 0x88
 	* bit11-8, specifics the maximum operation frequency of the link's transmitter clock.
@@ -133,16 +165,36 @@ static void sr5650_htinit(void)
 	* please see the table sr5650_ibias about the value and its corresponding frequency.
 	************************/
 	/* Link0, Link1 are for connection between P0 and P1.
-	 * Link2 should be 0xC8?
 	 * TODO: Check the topology of the MP and NB. Or we just read the nbconfig? */
 	/* NOTE: In most cases, we only have one CPU. In that case, we should read 0x88. */
 
-	reg = pci_read_config32(cpu1_f0, 0x0);
-	reg = pci_read_config32(cpu_f0,
-				reg == 0 || reg == -1 ? 0x88 : 0xC8
-		);
+	/* Find out the node ID and the Link ID that
+	 * connects to the Southbridge (system IO hub).
+	 */
+	sbnode = (pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60) >> 8) & 7;
+	sblink = (pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64) >> 8) & 3; /* bit[10] sublink, bit[9,8] link. */
+	cpu_f0 = PCI_DEV(0, (0x18 + sbnode), 0);
+
+	/*
+	 * link freq reg of Link0, 1, 2, 3 is 0x88, 0xA8, 0xC8, 0xE8 respectively
+	 * link freq ext reg of Link0, 1, 2, 3 is 0x9C, 0xBC, 0xDC, 0xFC respectively
+	 */
+	linkfreq_reg = 0x88 + (sblink << 5);
+	linkfreqext_reg = 0x9C + (sblink << 5);
+	reg = pci_read_config32(cpu_f0, linkfreq_reg);
+
 	cpu_ht_freq = (reg & 0xf00) >> 8;
-	printk(BIOS_INFO, "sr5650_htinit cpu_ht_freq=%x.\n", cpu_ht_freq);
+
+	/* Freq[4] is only valid for revision D and later processors */
+	if (cpuid_eax(1) >= 0x100F80) {
+		cpu_htfreq_max = 0x14;
+		cpu_ht_freq |= ((pci_read_config32(cpu_f0, linkfreqext_reg) & 0x01) << 4);
+	} else {
+		cpu_htfreq_max = 0x0F;
+	}
+
+	printk(BIOS_INFO, "sr5650_htinit: Node %x Link %x, HT freq=%x.\n",
+			sbnode, sblink, cpu_ht_freq);
 	sr5650_f0 = PCI_DEV(0, 0, 0);
 
 	clk_f1 = PCI_DEV(0, 0, 1); /* We need to make sure the F1 is accessible. */
@@ -162,13 +214,13 @@ static void sr5650_htinit(void)
 		set_nbcfg_enable_bits(clk_f1, 0xD8, 0x3FF, ibias);
 		/* Optimizes chipset HT transmitter drive strength */
 		set_htiu_enable_bits(sr5650_f0, 0x2A, 0x3, 0x3);
-	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
+	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < cpu_htfreq_max)) {
 		printk(BIOS_INFO, "sr5650_htinit: HT3 mode\n");
 
 		/* Enable Protocol checker */
 		set_htiu_enable_bits(sr5650_f0, 0x1E, 0xFFFFFFFF, 0x7FFFFFFC);
 
-		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
+#if (CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1) || (CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 == 1) /* save some spaces */
 		/* HT3 mode, RPR 5.4.3 */
 		set_nbcfg_enable_bits(sr5650_f0, 0x9c, 0x3 << 16, 0);
 
@@ -189,83 +241,36 @@ static void sr5650_htinit(void)
 		/* Enables strict TM4 detection */
 		set_htiu_enable_bits(sr5650_f0, 0x15, 0x1 << 22, 0x1 << 22);
 
+		/* Optimizes chipset HT transmitter drive strength */
+		set_htiu_enable_bits(sr5650_f0, 0x2A, 0x3 << 0, 0x1 << 0);
+
 		/* HyperTransport 3 Processor register settings to be done in northbridge */
+
 		/* Enables error-retry mode */
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x130, 1 << 0, 1 << 0);
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x134, 1 << 0, 1 << 0); /* TODO: Check if it is needed to set other node. */
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x138, 1 << 0, 1 << 0);
+		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x130 + (sblink << 2), 1 << 0, 1 << 0);
+
 		/* Enables scrambling */
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x170, 1 << 3, 1 << 3);
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x174, 1 << 3, 1 << 3); /* TODO: Check if it is needed to set other node. */
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x178, 1 << 3, 1 << 3);
+		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x170 + (sblink << 2), 1 << 3, 1 << 3);
+
 		/* Enables transmitter de-emphasis
-		 * This depends on the PCB design and the trace */
+		 * This depends on the PCB design and the trace
+		 */
 		/* Disables command throttling */
 		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x168, 1 << 10, 1 << 10);
+
 		/* Sets Training 0 Time. See T0Time table for encodings */
-		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x20);
+		/* AGESA have set it to recommanded value already
+		 * The recommended values are 14h(2us) if F0x[18C:170][LS2En]=0
+		 * and 26h(12us) if F0x[18C:170][LS2En]=1
+		 */
+		//set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x26);
+
 		/* HT Buffer Allocation for Ganged Links!!! */
-		#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
+#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
 	}
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1		/* save some spaces */
-/*******************************************************
-* Optimize k8 with UMA.
-* See BKDG_NPT_0F guide for details.
-* The processor node is addressed by its Node ID on the HT link and can be
-* accessed with a device number in the PCI configuration space on Bus0.
-* The Node ID 0 is mapped to Device 24 (0x18), the Node ID 1 is mapped
-* to Device 25, and so on.
-* The processor implements configuration registers in PCI configuration
-* space using the following four headers
-*	Function0: HT technology configuration
-*	Function1: Address map configuration
-*	Function2: DRAM and HT technology Trace mode configuration
-*	Function3: Miscellaneous configuration
-*******************************************************/
-static void k8_optimization(void)
-{
-	device_t k8_f0, k8_f2, k8_f3;
-	msr_t msr;
-
-	printk(BIOS_INFO, "k8_optimization()\n");
-	k8_f0 = PCI_DEV(0, 0x18, 0);
-	k8_f2 = PCI_DEV(0, 0x18, 2);
-	k8_f3 = PCI_DEV(0, 0x18, 3);
-
-	pci_write_config32(k8_f0, 0x90, 0x01700169);	/* CIM NPT_Optimization */
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 28, 0 << 28);
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 26 | 1 << 27,
-			      1 << 26 | 1 << 27);
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 11, 1 << 11);
-	/* set_nbcfg_enable_bits(k8_f0, 0x84, 1 << 11 | 1 << 13 | 1 << 15, 1 << 11 | 1 << 13 | 1 << 15); */	/* TODO */
-
-	pci_write_config32(k8_f3, 0x70, 0x51220111);	/* CIM NPT_Optimization */
-	pci_write_config32(k8_f3, 0x74, 0x50404021);
-	pci_write_config32(k8_f3, 0x78, 0x08002A00);
-	if (pci_read_config32(k8_f3, 0xE8) & 0x3<<12)
-		pci_write_config32(k8_f3, 0x7C, 0x0000211A); /* dual core */
-	else
-		pci_write_config32(k8_f3, 0x7C, 0x0000212B); /* single core */
-	set_nbcfg_enable_bits_8(k8_f3, 0xDC, 0xFF, 0x25);
-
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
-	set_nbcfg_enable_bits(k8_f2, 0x94, 0xF << 24, 7 << 24);
-	set_nbcfg_enable_bits(k8_f2, 0x90, 1 << 10, 0 << 10);
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 3 << 2, 3 << 2);
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
-
-	msr = rdmsr(0xC001001F);
-	msr.lo &= ~(1 << 9);
-	msr.hi &= ~(1 << 4);
-	wrmsr(0xC001001F, msr);
-}
-#else
-#define k8_optimization() do{}while(0)
-#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1 */
-
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
+#if (CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1) || (CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 == 1) /* save some spaces */
 void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
@@ -340,13 +345,12 @@ static void sr5650_por_misc_index_init(device_t nb_dev)
 	set_nbmisc_enable_bits(nb_dev, 0x2B, 1 << 15 | 1 << 27, 1 << 15 | 1 << 27);
 	set_nbmisc_enable_bits(nb_dev, 0x2C, 1 << 0 | 1 << 1 | 1 << 5 | 1 << 4 | 1 << 10, 1 << 0 | 1 << 1 | 1 << 5);
 	set_nbmisc_enable_bits(nb_dev, 0x32, 0x3F << 20, 0x2A << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x34, 1 << 7 | 1 << 15 | 1 << 23 | 1 << 31, 0); /* bit31 BTS fail */
+	set_nbmisc_enable_bits(nb_dev, 0x34, 1 << 7 | 1 << 15 | 1 << 23, 0);
 	set_nbmisc_enable_bits(nb_dev, 0x35, 0x3F << 26, 0x2A << 26);
 	set_nbmisc_enable_bits(nb_dev, 0x37, 0xfff << 20, 0xddd << 20);
 	set_nbmisc_enable_bits(nb_dev, 0x37, 7 << 11, 0);
 	/* PCIE CDR setting */
 	set_nbmisc_enable_bits(nb_dev, 0x38, 0xFFFFFFFF, 0xC0C0C0);
-	set_nbmisc_enable_bits(nb_dev, 0x39, 1 << 31, 0); /* bit31 BTS fail */
 	set_nbmisc_enable_bits(nb_dev, 0x22, 0xFFFFFFFF, (1 << 27) | (0x8 << 12) | (0x8 << 16) | (0x8 << 20));
 	set_nbmisc_enable_bits(nb_dev, 0x22, 1 << 1 | 1 << 2 | 1 << 6 | 1 << 7, 1 << 1 | 1 << 2 | 1 << 6 | 1 << 7);
 
@@ -381,7 +385,7 @@ static void sr5650_por_misc_index_init(device_t nb_dev)
 	set_nbmisc_enable_bits(nb_dev, 0x47, 0xFFFFFFFF, 0x0000000B);
 
 	set_nbmisc_enable_bits(nb_dev, 0x12, 0xFFFFFFFF, 0x00FB5555);
-	set_nbmisc_enable_bits(nb_dev, 0x0C, 0xFFFFFFFF, 0x001f37EC);
+	set_nbmisc_enable_bits(nb_dev, 0x0C, 0xFFFFFFFF, 0x001F37FC);
 	set_nbmisc_enable_bits(nb_dev, 0x15, 0xFFFFFFFF, 0x0);
 
 	/* NB_PROG_DEVICE_REMAP */
@@ -478,7 +482,7 @@ static void sr5650_por_init(device_t nb_dev)
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_sr5650_dev8(void)
+void enable_sr5650_dev8(void)
 {
 	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
@@ -486,14 +490,14 @@ static void enable_sr5650_dev8(void)
 /*
 * Compliant with CIM_33's AtiNBInitEarlyPost (AtiInitNBBeforePCIInit).
 */
-static void sr5650_before_pci_init(void)
+void sr5650_before_pci_init(void)
 {
 }
 
 /*
 * The calling sequence is same as CIM.
 */
-static void sr5650_early_setup(void)
+void sr5650_early_setup(void)
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "sr5650_early_setup()\n");
@@ -513,28 +517,24 @@ static void sr5650_early_setup(void)
 		break;
 	}
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1
-
 	fam10_optimization();
-#else
-	k8_optimization();
-#endif
-
 	sr5650_por_init(nb_dev);
 }
 
 /**
- * @brief disable GPP1 Port0,1, GPP3a Port0,1,2,3,4,5
+ * @brief disable GPP1 Port0,1, GPP2, GPP3a Port0,1,2,3,4,5, GPP3b
  *
  */
-void disable_pcie_bridge(void)
+void sr5650_disable_pcie_bridge(void)
 {
 	u32 mask;
 	u32 reg;
 	device_t nb_dev = PCI_DEV(0, 0, 0);
 
-	mask = (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) |
-			(1 << 16) | (1 << 17);
+	mask = (1 << 2) | (1 << 3); /*GPP1*/
+	mask |= (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 16) | (1 << 17); /*GPP3a*/
+	mask |= (1 << 18) | (1 << 19); /*GPP2*/
+	mask |= (1 << 20); /*GPP3b*/
 	reg = mask;
 	set_nbmisc_enable_bits(nb_dev, 0x0c, mask, reg);
 }

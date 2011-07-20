@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Frank Vibrans III <frank.vibrans@amd.com>
+Submitted-by: Patrick Georgi <patrick@georgi-clan.de>
+Submitted-at: Wed, 20 Jul 2011 10:02:19 +0200
+Reviewed-on: http://review.coreboot.org/105
+Project: coreboot
+Branch: refs/heads/master

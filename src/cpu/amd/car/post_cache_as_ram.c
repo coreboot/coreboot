@@ -4,6 +4,7 @@
 #include <string.h>
 #include <arch/stages.h>
 #include <cpu/x86/mtrr.h>
+#include "cbmem.h"
 #include "cpu/amd/car/disable_cache_as_ram.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 

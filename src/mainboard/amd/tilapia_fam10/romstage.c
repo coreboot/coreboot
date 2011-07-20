@@ -48,14 +48,15 @@
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
-#include "southbridge/amd/sb700/early_setup.c"
+#include "southbridge/amd/sb700/sb700.h"
+#include "southbridge/amd/sb700/smbus.h"
 #include "northbridge/amd/amdfam10/debug.c"
 
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static int spd_read_byte(u32 device, u32 address)
 {
-	return smbus_read_byte(device, address);
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 #include "northbridge/amd/amdfam10/amdfam10.h"

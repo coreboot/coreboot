@@ -20,14 +20,19 @@
 #ifndef _SB700_EARLY_SETUP_C_
 #define _SB700_EARLY_SETUP_C_
 
+#include <stdint.h>
+#include <arch/cpu.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <console/console.h>
+#include <cpu/x86/msr.h>
+
 #include <reset.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include "sb700.h"
-#include "smbus.c"
+#include "smbus.h"
 
-#define SMBUS_IO_BASE 0x6000	/* Is it a temporary SMBus I/O base address? */
-	 /*SIZE 0x40 */
 
 static void pmio_write(u8 reg, u8 value)
 {
@@ -129,7 +134,7 @@ static u8 set_sb700_revision(void)
 *	Console output through any port besides 0x3f8 is unsupported.
 *	If you use FWH ROMs, you have to setup IDSEL.
 ***************************************/
-static void sb7xx_51xx_lpc_init(void)
+void sb7xx_51xx_lpc_init(void)
 {
 	u8 reg8;
 	u32 reg32;
@@ -216,7 +221,7 @@ void sb7xx_51xx_disable_wideio(u8 wio_index)
 }
 
 /* what is its usage? */
-static u32 get_sbdn(u32 bus)
+u32 __attribute__ ((weak)) get_sbdn(u32 bus)
 {
 	device_t dev;
 
@@ -233,7 +238,7 @@ static u8 dual_core(void)
 /*
  * RPR 2.4 C-state and VID/FID change for the K8 platform.
  */
-static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
+void __attribute__((weak)) enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 {
 	u8 byte;
 	byte = pmio_read(0x9a);
@@ -282,22 +287,6 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	   While here, enable C states too
 	*/
 	pmio_write(0x67, 0x6);
-}
-
-void hard_reset(void)
-{
-	set_bios_reset();
-
-	/* full reset */
-	outb(0x0a, 0x0cf9);
-	outb(0x0e, 0x0cf9);
-}
-
-void soft_reset(void)
-{
-	set_bios_reset();
-	/* link reset */
-	outb(0x06, 0x0cf9);
 }
 
 void sb7xx_51xx_pci_port80(void)
@@ -681,7 +670,7 @@ static void sb700_por_init(void)
 /*
 * It should be called during early POST after memory detection and BIOS shadowing but before PCI bus enumeration.
 */
-static void sb7xx_51xx_before_pci_init(void)
+void sb7xx_51xx_before_pci_init(void)
 {
 	sb700_pci_cfg();
 }
@@ -689,16 +678,11 @@ static void sb7xx_51xx_before_pci_init(void)
 /*
 * This function should be called after enable_sb700_smbus().
 */
-static void sb7xx_51xx_early_setup(void)
+void sb7xx_51xx_early_setup(void)
 {
 	printk(BIOS_INFO, "sb700_early_setup()\n");
 	sb700_por_init();
 	sb700_acpi_init();
-}
-
-static int smbus_read_byte(u32 device, u32 address)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
@@ -732,7 +716,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
-static int acpi_is_wakeup_early(void)
+int acpi_is_wakeup_early(void)
 {
 	u16 tmp;
 	tmp = inw(ACPI_PM1_CNT_BLK);

@@ -45,7 +45,8 @@
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
-#include "southbridge/amd/sb700/early_setup.c"
+#include "southbridge/amd/sb700/sb700.h"
+#include "southbridge/amd/sb700/smbus.h"
 #include "northbridge/amd/amdk8/debug.c" /* After sb700/early_setup.c! */
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
@@ -56,7 +57,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(u32 device, u32 address)
 {
-	return smbus_read_byte(device, address);
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
 #include "northbridge/amd/amdk8/amdk8.h"
@@ -101,7 +102,7 @@ static void sio_init(void)
 	pnp_write_config(GPIO2345_DEV, 0xe4, 0x0e);	/* data */
 	pnp_write_config(GPIO2345_DEV, 0xe5, 0x00);	/* No inversion */
 
-	/* GPIO30 - unknown output, set to 0 
+	/* GPIO30 - unknown output, set to 0
 	   GPI31 - unknown input NC?
 	   GPI32 - unknown input NC?
 	   GPIO33 - unknown output, set to 0.

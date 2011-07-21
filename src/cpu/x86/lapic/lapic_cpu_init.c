@@ -262,7 +262,7 @@ int start_cpu(device_t cpu)
 
 	if (result) {
 		result = 0;
-		/* Wait 1s or until the new the new cpu calls in */
+		/* Wait 1s or until the new cpu calls in */
 		for(count = 0; count < 100000 ; count++) {
 			if (secondary_stack == 0) {
 				result = 1;
@@ -338,6 +338,26 @@ void stop_this_cpu(void)
 }
 #endif
 
+#ifdef __SSE3__
+static __inline__ __attribute__((always_inline)) unsigned long readcr4(void)
+{
+	unsigned long value;
+	__asm__ __volatile__ (
+			"mov %%cr4, %[value]"
+			: [value] "=a" (value));
+	return value;
+}
+
+static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Data)
+{
+	__asm__ __volatile__ (
+			"mov %%eax, %%cr4"
+			:
+			: "a" (Data)
+			);
+}
+#endif
+
 /* C entry point of secondary cpus */
 void secondary_cpu_init(void)
 {
@@ -346,6 +366,17 @@ void secondary_cpu_init(void)
   #if CONFIG_MAX_CPUS>2
 	spin_lock(&start_cpu_lock);
   #endif
+#endif
+
+#ifdef __SSE3__
+	/*
+	 * Seems that CR4 was cleared when AP start via lapic_start_cpu()
+	 * Turn on CR4.OSFXSR and CR4.OSXMMEXCPT when SSE options enabled
+	 */
+	u32 cr4_val;
+	cr4_val = readcr4();
+	cr4_val |= (1 << 9 | 1 << 10);
+	writecr4(cr4_val);
 #endif
 	cpu_initialize();
 #if CONFIG_SERIAL_CPU_INIT == 1

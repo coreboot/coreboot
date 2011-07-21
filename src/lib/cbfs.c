@@ -24,85 +24,19 @@
 #include <lib.h>
 #include <arch/byteorder.h>
 
+// use CBFS core
+#ifndef __SMM__
+#define CBFS_CORE_WITH_LZMA
+#endif
+#define phys_to_virt(x) (void*)(x)
+#define virt_to_phys(x) (uint32_t)(x)
+#define ERROR(x...) printk(BIOS_ERR, x)
+#define LOG(x...) printk(BIOS_INFO, x)
+// FIXME: romstart/romend are fine on x86, but not on ARM
+#define romstart() 0xffffffff
+#define romend() 0
 
-static int cbfs_check_magic(struct cbfs_file *file)
-{
-	return !strcmp(file->magic, CBFS_FILE_MAGIC) ? 1 : 0;
-}
-
-static struct cbfs_header *cbfs_master_header(void)
-{
-	struct cbfs_header *header;
-
-	void *ptr = (void *)*((unsigned long *) CBFS_HEADPTR_ADDR);
-	printk(BIOS_SPEW, "Check CBFS header at %p\n", ptr);
-	header = (struct cbfs_header *) ptr;
-
-	printk(BIOS_SPEW, "magic is %08x\n", ntohl(header->magic));
-	if (ntohl(header->magic) != CBFS_HEADER_MAGIC) {
-		printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
-		if (header->magic == 0xffffffff) {
-			printk(BIOS_ERR, "Maybe the ROM isn't entirely mapped yet?\n"
-				"See (and report to) http://www.coreboot.org/Infrastructure_Projects#CBFS\n");
-		}
-		return NULL;
-	}
-
-	printk(BIOS_SPEW, "Found CBFS header at %p\n", ptr);
-	return header;
-}
-
-struct cbfs_file *cbfs_find(const char *name)
-{
-	struct cbfs_header *header = cbfs_master_header();
-	unsigned long offset;
-
-	if (header == NULL)
-		return NULL;
-	offset = 0 - ntohl(header->romsize) + ntohl(header->offset);
-
-	int align= ntohl(header->align);
-
-	while(1) {
-		struct cbfs_file *file = (struct cbfs_file *) offset;
-		if (!cbfs_check_magic(file)) return NULL;
-		printk(BIOS_SPEW, "Check %s\n", CBFS_NAME(file));
-		if (!strcmp(CBFS_NAME(file), name))
-			return file;
-
-		int flen = ntohl(file->len);
-		int foffset = ntohl(file->offset);
-		printk(BIOS_SPEW, "CBFS: follow chain: %p + %x + %x + align -> ", (void *)offset, foffset, flen);
-
-		unsigned long oldoffset = offset;
-		offset = ALIGN(offset + foffset + flen, align);
-		printk(BIOS_SPEW, "%p\n", (void *)offset);
-		if (offset <= oldoffset) return NULL;
-
-		if (offset < 0xFFFFFFFF - ntohl(header->romsize))
-			return NULL;
-	}
-}
-
-void *cbfs_find_file(const char *name, int type)
-{
-	struct cbfs_file *file = cbfs_find(name);
-
-	if (file == NULL) {
-		printk(BIOS_INFO,  "CBFS:  Could not find file %s\n",
-		       name);
-		return NULL;
-	}
-
-	if (ntohl(file->type) != type) {
-		printk(BIOS_INFO,  "CBFS:  File %s is of type %x instead of"
-		       "type %x\n", name, file->type, type);
-
-		return NULL;
-	}
-
-	return (void *) CBFS_SUBHEADER(file);
-}
+#include "cbfs_core.c"
 
 #ifndef __SMM__
 static inline int tohex4(unsigned int c)
@@ -117,34 +51,6 @@ static void tohex16(unsigned int val, char* dest)
 	dest[2]=tohex4((val>>4) & 0xf);
 	dest[3]=tohex4(val & 0xf);
 }
-
-/**
- * Decompression wrapper for CBFS
- * @param algo
- * @param src
- * @param dst
- * @param len
- * @return 0 on success, -1 on failure
- */
-static int cbfs_decompress(int algo, void *src, void *dst, int len)
-{
-	switch(algo) {
-	case CBFS_COMPRESS_NONE:
-		memcpy(dst, src, len);
-		return 0;
-
-	case CBFS_COMPRESS_LZMA:
-		if (!ulzma(src, dst)) {
-			printk(BIOS_ERR, "CBFS: LZMA decompression failed!\n");
-			return -1;
-		}
-		return 0;
-	default:
-		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", algo);
-		return -1;
-	}
-}
-
 
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 {

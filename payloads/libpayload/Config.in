@@ -129,7 +129,14 @@ config CBFS
 	bool "CBFS support"
 	default y
 	help
-	  CBFS is the archive format of (obsolete) coreboot v3
+	  CBFS is the archive format of coreboot
+
+config LZMA
+	bool "LZMA decoder"
+	default y
+	help
+	  LZMA decoder implementation, usable eg. by CBFS,
+	  but also externally.
 endmenu
 
 menu "Console Options"

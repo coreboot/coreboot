@@ -119,6 +119,20 @@ config VGA_BIOS_ID
         string
         default "1002,9802"
 
+config AHCI_BIOS
+	bool
+	default n
+
+#config AHCI_BIOS_FILE
+#	string "AHCI ROM path and filename"
+#	depends on AHCI_BIOS
+#	default "rom/ahci/sb900.bin"
+
+config AHCI_BIOS_ID
+	string "AHCI device PCI IDs"
+	depends on AHCI_BIOS
+	default "1002,4391"
+
 config DRIVERS_PS2_KEYBOARD
 	bool
 	default n

@@ -1,8 +1,7 @@
 ##
 ## This file is part of the libpayload project.
 ##
-## Copyright (C) 2008 Advanced Micro Devices, Inc.
-## Copyright (C) 2008 coresystems GmbH
+## Copyright (C) 2011 secunet Security Networks AG
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -28,13 +27,5 @@
 ## SUCH DAMAGE.
 ##
 
-libc-$(CONFIG_LIBC) += malloc.c printf.c console.c string.c
-libc-$(CONFIG_LIBC) += memory.c ctype.c ipchecksum.c lib.c
-libc-$(CONFIG_LIBC) += rand.c time.c exec.c
-libc-$(CONFIG_LIBC) += readline.c getopt_long.c sysinfo.c
-libc-$(CONFIG_LIBC) += args.c strings.c
-libc-$(CONFIG_LIBC) += strlcpy.c
-libc-$(CONFIG_LIBC) += qsort.c
+liblzma-$(CONFIG_LZMA) += lzma.c
 
-# should be moved to coreboot directory
-libc-$(CONFIG_LAR) += lar.c

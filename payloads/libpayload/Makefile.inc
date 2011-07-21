@@ -41,6 +41,8 @@ classes-$(CONFIG_PCI) += libpci
 classes-$(CONFIG_LIBC) += libc
 classes-$(CONFIG_CURSES) += libcurses
 classes-$(CONFIG_PDCURSES) += libmenu libform libpanel
+classes-$(CONFIG_CBFS) += libcbfs
+classes-$(CONFIG_LZMA) += liblzma
 libraries := $(classes-y)
 classes-y += head.o
 
@@ -52,6 +54,8 @@ head.o-S-deps = $(obj)/libpayload-config.h
 subdirs-y := arch/$(ARCHDIR-y)
 subdirs-y += crypto libc drivers libpci
 subdirs-$(CONFIG_CURSES) += curses
+subdirs-$(CONFIG_CBFS) += libcbfs
+subdirs-$(CONFIG_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 CFLAGS = $(INCLUDES) -O2 -pipe -g

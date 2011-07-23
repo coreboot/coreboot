@@ -34,7 +34,8 @@ LIBELF_VERSION=0.8.13
 GCC_VERSION=4.5.2
 BINUTILS_VERSION=2.20.1
 GDB_VERSION=7.2
-W32API_VERSION=3.15
+W32API_VERSION=3.17-2
+W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
 
 # archive locations
@@ -45,7 +46,7 @@ LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -246,6 +247,7 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES; do
 		FLAGS=zxf
 		test ${archive:${#archive}-2:2} = "gz" && FLAGS=zxf
 		test ${archive:${#archive}-3:3} = "bz2" && FLAGS=jxf
+		test ${archive:${#archive}-4:4} = "lzma" && FLAGS="--lzma -xf"
 		$TAR $FLAGS tarballs/`basename $archive`
 		for patch in patches/${!dir}_*.patch; do
 			test -r $patch || continue

@@ -32,6 +32,7 @@
 #include <libpayload.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <errno.h>
 
 /**
@@ -486,9 +487,9 @@ long atol(const char *nptr)
  * @return An unsigned integer representation of the string
  */
 
-unsigned long int strtoul(const char *ptr, char **endptr, int base)
+unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 {
-        int ret = 0;
+        unsigned long long int ret = 0;
 
 	if (endptr != NULL)
 		*endptr = (char *) ptr;
@@ -534,6 +535,14 @@ unsigned long int strtoul(const char *ptr, char **endptr, int base)
 
         return ret;
 }
+
+unsigned long int strtoul(const char *ptr, char **endptr, int base)
+{
+	unsigned long long val = strtoull(ptr, endptr, base);
+	if (val > UINT32_MAX) return UINT32_MAX;
+	return val;
+}
+
 
 /**
  * Determine the number of leading characters in s that match characters in a

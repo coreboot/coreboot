@@ -693,8 +693,8 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	if (link == NULL)
 		return;
 
-	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
-	set_vga_enable_reg(nodeid, link->link_num);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, sysconf.sblk);
+	set_vga_enable_reg(nodeid, sysconf.sblk);
 }
 
 static void amdfam10_set_resources(device_t dev)
@@ -735,11 +735,14 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 	nodeid = amdfam10_nodeid(dev);
 	if (nodeid == 0) {
 		for (link = dev->link_list; link; link = link->next) {
-			if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[3] */
+			if ((link->dev->path.type == DEVICE_PATH_PCI) && (link->dev->path.pci.devfn == PCI_DEVFN(0x18, 0))) {
 				io_hub = link->children;
-				if (!io_hub || !io_hub->enabled) {
+				if (!io_hub) {
+					continue;
+				} else if (!io_hub->enabled) {
 					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
 				}
+
 				/* Now that nothing is overlapping it is safe to scan the children. */
 				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
 			}

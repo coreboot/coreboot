@@ -26,6 +26,7 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/l2_cache.h>
 
 static const uint32_t microcode_updates[] = {
 	/* Include microcode updates here. */
@@ -45,6 +46,9 @@ static void model_67x_init(device_t cpu)
 {
 	/* Update the microcode */
 	intel_update_microcode(microcode_updates);
+
+	/* Initialize L2 cache */
+	p6_configure_l2_cache();
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();

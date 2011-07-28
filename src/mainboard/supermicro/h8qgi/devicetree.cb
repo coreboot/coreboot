@@ -25,10 +25,7 @@ chip northbridge/amd/agesa/family10/root_complex
 	device pci_domain 0 on
 		subsystemid 0x15d9 0xab11 inherit #SuperMicro
 		chip northbridge/amd/agesa/family10 # CPU side of HT root complex
-			device pci 18.0 on end # link 0
-			device pci 18.0 on end # link 1
-			device pci 18.0 on end # link 2
-			device pci 18.0 on # link3 SB on socket0 link 2, on internal Node0 Link 3
+			device pci 18.0 on # IO-HUB on socket0 link 2(internal Node0 Link 3)
 				chip southbridge/amd/sr5650 # Southbridge PCI side of HT Root complex
 					device pci 0.0 on  end # HT Root Complex 0x9600
 					device pci 0.1 off end # CLKCONFIG
@@ -46,8 +43,7 @@ chip northbridge/amd/agesa/family10/root_complex
 					device pci d.0 on  end # GPP3b Port0 (Not for sr5650/sr5670) 0x5A1E, Intel 82576
 					register "gpp1_configuration" = "0"   # Configuration 16:0 default
 					register "gpp2_configuration" = "1"   # Configuration 8:8
-					register "gpp3a_configuration" = "2"   # Configuration 4:1:1:0:0:0
-					#register "gpp3a_configuration" = "11"   # Configuration 1:1:1:1:1:1
+					register "gpp3a_configuration" = "2"   # 2 Configuration 4:1:1:0:0:0, 11 Configuration 1:1:1:1:1:1
 					register "port_enable" = "0x2104"
 				end #southbridge/amd/sr5650
 				chip southbridge/amd/sp5100 # it is under NB/SB Link, but on the same pci bus
@@ -115,61 +111,7 @@ chip northbridge/amd/agesa/family10/root_complex
 					register "boot_switch_sata_ide" = "0"   # 0: boot from SATA. 1: IDE
 				end # southbridge/amd/sp5100
 			end # device pci 18.0
-
 			device pci 18.1 on end
-			device pci 18.2 on end
-			device pci 18.3 on end
-			device pci 18.4 on end
-
-			device pci 19.0 on end
-			device pci 19.1 on end
-			device pci 19.2 on end
-			device pci 19.3 on end
-			device pci 19.4 on end
-
-
-			device pci 1a.0 on end
-			device pci 1a.0 on end
-			device pci 1a.0 on end
-			device pci 1a.0 on # another 56x0 on socket 1 Link 2, internal Node0 link 3
-			end
-			device pci 1a.1 on end
-			device pci 1a.2 on end
-			device pci 1a.3 on end
-			device pci 1a.4 on end
-
-			device pci 1b.0 on end
-			device pci 1b.1 on end
-			device pci 1b.2 on end
-			device pci 1b.3 on end
-			device pci 1b.4 on end
-
-
-			device pci 1c.0 on end
-			device pci 1c.1 on end
-			device pci 1c.2 on end
-			device pci 1c.3 on end
-			device pci 1c.4 on end
-
-			device pci 1d.0 on end
-			device pci 1d.1 on end
-			device pci 1d.2 on end
-			device pci 1d.3 on end
-			device pci 1d.4 on end
-
-
-			device pci 1e.0 on end
-			device pci 1e.1 on end
-			device pci 1e.2 on end
-			device pci 1e.3 on end
-			device pci 1e.4 on end
-
-			device pci 1f.0 on end
-			device pci 1f.1 on end
-			device pci 1f.2 on end
-			device pci 1f.3 on end
-			device pci 1f.4 on end
-
 		end #chip northbridge/amd/agesa/family10 # CPU side of HT root complex
 	end #pci_domain
 end #northbridge/amd/agesa/family10/root_complex

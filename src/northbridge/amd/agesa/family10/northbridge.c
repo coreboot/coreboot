@@ -693,8 +693,8 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	if (link == NULL)
 		return;
 
-	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
-	set_vga_enable_reg(nodeid, link->link_num);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, sysconf.sblk);
+	set_vga_enable_reg(nodeid, sysconf.sblk);
 }
 
 static void amdfam10_set_resources(device_t dev)
@@ -728,14 +728,13 @@ static unsigned amdfam10_scan_chains(device_t dev, unsigned max)
 {
 	unsigned nodeid;
 	struct bus *link;
-	unsigned sblink = sysconf.sblk;
 	device_t io_hub = NULL;
 	u32 next_unitid = 0xff;
 
 	nodeid = amdfam10_nodeid(dev);
 	if (nodeid == 0) {
 		for (link = dev->link_list; link; link = link->next) {
-			if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[3] */
+			if (link->link_num == 0) { /* IO Hub on link_lsit[0] in devicetree */
 				io_hub = link->children;
 				if (!io_hub || !io_hub->enabled) {
 					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");

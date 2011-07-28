@@ -27,6 +27,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
+#include <cpu/intel/l2_cache.h>
 
 static u32 microcode_updates[] = {
 	#include "microcode-410-MU16522d.h"
@@ -63,6 +64,8 @@ static void model_65x_init(device_t dev)
 
 	/* Update the microcode */
 	intel_update_microcode(microcode_updates);
+
+	p6_configure_l2_cache();
 
 	/* Enable the local cpu apics */
 	setup_lapic();

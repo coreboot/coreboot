@@ -43,3 +43,11 @@ smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-$(CONFIG_USBDEBUG) += usbdebug.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
+
+OPTION_TABLE_H:=
+ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
+OPTION_TABLE_H:=$(obj)/option_table.h
+endif
+
+$(obj)/lib/uart8250mem.smm.o : $(OPTION_TABLE_H)
+

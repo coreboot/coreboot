@@ -62,3 +62,40 @@ config SSE2
 	  with more efficient code if SSE2 instructions are available.
 
 endif # ARCH_X86
+
+# The following option lets us know that the CPU initialization code will check
+# for UPDATE_CPU_MICROCODE, and will not include any microcode updates in the
+# image if it detects this option.
+# This must only be selected by CPUs whose microcode update has been adjusted
+# to respect UPDATE_CPU_MICROCODE option.
+config RESPECTS_UPDATE_CPU_MICROCODE_OPTION
+	bool
+	default n
+
+config UPDATE_CPU_MICROCODE
+	bool "Update CPU microcode"
+	default y
+	depends on EXPERT && HAS_OPTION_NO_MICROCODE_UPDATE
+	help
+	  Select this to apply patches to the CPU microcode provided by the
+	  vendor (without source), and distributed with coreboot, to address
+	  issues in the CPU post production.
+
+	  Microcode updates distributed with coreboot are not necessarily the
+	  latest version available. Updates are only applied if they are newer
+	  than the microcode already in the CPU.
+
+	  Unselect this to let CPUs run with microcode as shipped from factory.
+	  No binary microcode patches will be included in the coreboot image in
+	  that case, which can help with creating an image for which complete
+	  source code is available, which in turn might simplify license
+	  compliance.
+
+	  Microcode updates intend to solve issues that have been discovered
+	  after CPU production. The common case is that systems work as intended
+	  with updated microcode, but we have also seen cases where issues were
+	  solved by not applying the microcode updates.
+
+	  Note that some operating system include these same microcode patches,
+	  so you may need to also disable microcode updates in your operating
+	  system in order for this option to matter.

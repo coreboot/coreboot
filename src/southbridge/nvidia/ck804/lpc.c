@@ -28,6 +28,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
+#include <delay.h>
 #include <bitops.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
@@ -104,6 +105,23 @@ static void rom_dummy_write(device_t dev)
 		pci_write_config8(dev, 0x6d, new);
 }
 
+static void lpc_acpi_init(u16 base)
+{
+	u16 word;
+
+	printk(BIOS_SPEW, "%s: base = %x \n", __func__, base);
+
+	/* clear sleep, set SCI_EN */
+	word = inw(base + 4);
+	word &= ~(7 << 10);
+	word |= 1;
+	outw(word, base + 4);
+	udelay(100); /* seems to be needed */
+
+	/* clear ACPI PM1 event status */
+	outw(0xffff, base + 0);
+}
+
 unsigned pm_base = 0;
 
 static void lpc_init(device_t dev)
@@ -168,6 +186,8 @@ static void lpc_init(device_t dev)
 
 	/* Initialize ISA DMA. */
 	isa_dma_init();
+
+	lpc_acpi_init(pm_base);
 
 	rom_dummy_write(dev);
 }

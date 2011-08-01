@@ -48,6 +48,10 @@
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 
+#if CONFIG_HAVE_OPTION_TABLE
+#include "option_table.h"
+#endif
+
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
@@ -65,6 +69,31 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "northbridge/amd/amdk8/early_ht.c"
+
+static void ms7135_set_ram_voltage(void)
+{
+	u8 b;
+	b = read_option(ram_voltage, 0);
+	if (b > 4) /* default if above 2.70v */
+		b = 0;
+	print_debug("setting RAM voltage ");
+	print_debug_hex8(b);
+	print_debug("\n");
+	ck804_smbus_write_byte(1, 0x2f, 0x00, b);
+}
+
+static void ms7135_set_nf4_voltage(void)
+{
+	u8 b;
+	b = read_option(nf4_voltage, 0);
+	if (b > 2) /* default if above 1.60v */
+		b = 0;
+	b |= 0x10;
+	print_debug("setting NF4 voltage ");
+	print_debug_hex8(b);
+	print_debug("\n");
+	ck804_smbus_write_byte(1, 0x2f, 0x02, b);
+}
 
 static void sio_setup(void)
 {
@@ -107,14 +136,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 
 	w83627thg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+#if CONFIG_USBDEBUG
+	ck804_enable_usbdebug(USBDEBUG_DEFAULT_PORT);
+	early_usbdebug_init();
+#endif
 	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-#endif
+	enable_smbus();
+
+	ms7135_set_nf4_voltage();
+	ms7135_set_ram_voltage();
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -138,19 +172,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	//It's the time to set ctrl now;
 	fill_mem_ctrl(nodes, ctrl, spd_addr);
 
-	enable_smbus();
-
-#if 0
+#if CONFIG_DEBUG_SMBUS
 	dump_spd_registers(&ctrl[0]);
 	dump_smbus_registers();
 #endif
 
 	sdram_initialize(nodes, ctrl);
-
-#if 0
-	print_pci_devices();
-	dump_pci_devices();
-#endif
 
 	post_cache_as_ram();
 }

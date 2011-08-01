@@ -43,6 +43,8 @@ entries
 440          4       e       9        slow_cpu
 444          1       e       1        nmi
 445          1       e       1        iommu
+448          4       e      10        ram_voltage
+452          4       e      11        nf4_voltage
 728        256       h       0        user_data
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers
@@ -74,10 +76,10 @@ enumerations
 7     0     Network
 7     1     HDD
 7     2     Floppy
+#7     3     ROM
 7     8     Fallback_Network
 7     9     Fallback_HDD
 7     10    Fallback_Floppy
-#7     3     ROM
 8     0     400Mhz
 8     1     333Mhz
 8     2     266Mhz
@@ -91,8 +93,16 @@ enumerations
 9     6     25.0%
 9     7     12.5%
 
+10    0     2.55
+10    1     2.50
+10    2     2.60
+10    3     2.65
+10    4     2.70
+
+11    0     1.50
+11    1     1.55
+11    2     1.60
+
 checksums
 
 checksum 392 983 984
-
-

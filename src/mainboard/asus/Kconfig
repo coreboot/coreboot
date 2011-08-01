@@ -82,7 +82,7 @@ source "src/mainboard/asus/p2b-ds/Kconfig"
 source "src/mainboard/asus/p2b-f/Kconfig"
 source "src/mainboard/asus/p2b-ls/Kconfig"
 source "src/mainboard/asus/p3b-f/Kconfig"
-source "src/mainboard/asus/dsbf/Kconfig
+source "src/mainboard/asus/dsbf/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

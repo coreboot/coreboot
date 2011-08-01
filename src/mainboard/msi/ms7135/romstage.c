@@ -68,8 +68,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-	uint32_t dword;
-	uint8_t byte;
+	u32 dword;
+	u8 byte;
 
 	/* Subject decoding */
 	byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE + 1, 0), 0x7b);
@@ -85,7 +85,7 @@ static void sio_setup(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	static const uint16_t spd_addr[] = {
+	static const u16 spd_addr[] = {
 		DIMM0, DIMM1, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,

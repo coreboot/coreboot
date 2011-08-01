@@ -52,7 +52,7 @@ static void *smp_write_config_table(void *v)
 	{
 		device_t dev;
 		struct resource *res;
-		uint32_t dword;
+		u32 dword;
 
 		dev = dev_find_slot(bus_ck804[0], PCI_DEVFN(sbdn + 0x1, 0));
 		if (dev) {

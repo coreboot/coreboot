@@ -112,10 +112,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-#endif
-
 	needs_reset = setup_coherent_ht_domain();
 
 	wait_all_core0_started();
@@ -140,17 +136,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-#if 0
+#if CONFIG_DEBUG_SMBUS
 	dump_spd_registers(&ctrl[0]);
 	dump_smbus_registers();
 #endif
 
 	sdram_initialize(nodes, ctrl);
-
-#if 0
-	print_pci_devices();
-	dump_pci_devices();
-#endif
 
 	post_cache_as_ram();
 }

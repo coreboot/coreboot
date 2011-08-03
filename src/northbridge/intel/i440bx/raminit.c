@@ -258,7 +258,7 @@ static const u8 register_values[] = {
 	 * 01        4 KB
 	 * 10        8 KB
 	 * 11        Reserved
-	 * 
+	 *
 	 * RPS bits Corresponding DRB register
 	 * [01:00]  DRB[0], row 0
 	 * [03:02]  DRB[1], row 1
@@ -721,19 +721,23 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
  */
 static void set_dram_row_attributes(void)
 {
-	int i, dra, drb, col, width, value, rps, edosd, ecc, nbxecc;
+	int i, dra, drb, col, width, value, rps;
 	u8 bpr; /* Top 8 bits of PGPOL */
+	u8 nbxecc = 0; /* NBXCFG[31:24] */
+	u8 edo, sd, regsd; /* EDO, SDRAM, registered SDRAM */
 
-	edosd = 0;
+	edo = 0;
+	sd = 0;
+	regsd = 1;
 	rps = 0;
 	drb = 0;
 	bpr = 0;
-	nbxecc = 0xff;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned int device;
 		device = DIMM0 + i;
 		bpr >>= 2;
+		nbxecc >>= 2;
 
 		/* First check if a DIMM is actually present. */
 		value = spd_read_byte(device, SPD_MEMORY_TYPE);
@@ -742,13 +746,13 @@ static void set_dram_row_attributes(void)
 			|| value == SPD_MEMORY_TYPE_SDRAM) {
 
 			if (value == SPD_MEMORY_TYPE_EDO) {
-				edosd |= 0x02;
+				edo = 1;
 			} else if (value == SPD_MEMORY_TYPE_SDRAM) {
-				edosd |= 0x04;
+				sd = 1;
 			}
 			PRINT_DEBUG("Found DIMM in slot %d\n", i);
 
-			if (edosd == 0x06) {
+			if (edo && sd) {
 				print_err("Mixing EDO/SDRAM unsupported!\n");
 				die("HALT\n");
 			}
@@ -764,23 +768,37 @@ static void set_dram_row_attributes(void)
 			 * TODO: Other register than NBXCFG also needs this
 			 * ECC information.
 			 */
-			ecc = spd_read_byte(device, SPD_DIMM_CONFIG_TYPE);
+			value = spd_read_byte(device, SPD_DIMM_CONFIG_TYPE);
 
 			/* Data width */
 			width = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);
 
 			/* Exclude error checking data width from page size calculations */
-			if (ecc) {
+			if (value) {
 				value = spd_read_byte(device,
 					SPD_ERROR_CHECKING_SDRAM_WIDTH);
 				width -= value;
 				/* ### ECC */
 				/* Clear top 2 bits to help set up NBXCFG. */
-				ecc &= 0x3f;
+				nbxecc &= 0x3f;
 			} else {
 				/* Without ECC, top 2 bits should be 11. */
-				ecc |= 0xc0;
+				nbxecc |= 0xc0;
 			}
+
+			/* If any installed DIMM is *not* registered, this system cannot be
+			 * configured for registered SDRAM.
+			 * By registered, only the address and control lines need to be, which
+			 * we can tell by reading SPD byte 21, bit 1.
+			 */
+			value = spd_read_byte(device, SPD_MODULE_ATTRIBUTES);
+
+			PRINT_DEBUG("DIMM is ");
+			if ((value & MODULE_REGISTERED) == 0) {
+				regsd = 0;
+				PRINT_DEBUG("not ");
+			}
+			PRINT_DEBUG("registered\n");
 
 			/* Calculate page size in bits. */
 			value = ((1 << col) * width);
@@ -801,7 +819,6 @@ static void set_dram_row_attributes(void)
 				 * Second bank of 1-bank DIMMs "doesn't have
 				 * ECC" - or anything.
 				 */
-				ecc |= 0x80;
 				if (dra == 2) {
 					dra = 0x0; /* 2KB */
 				} else if (dra == 4) {
@@ -878,7 +895,6 @@ static void set_dram_row_attributes(void)
 
 			/* If there's no DIMM in the slot, set dra to 0x00. */
 			dra = 0x00;
-			ecc = 0xc0;
 			/* Still have to propagate DRB over. */
 			drb &= 0xff;
 			drb |= (drb << 8);
@@ -895,7 +911,6 @@ static void set_dram_row_attributes(void)
 		drb >>= 8;
 
 		rps |= (dra & 0x0f) << (i * 4);
-		nbxecc = (nbxecc >> 2) | (ecc & 0xc0);
 	}
 
 	/* Set paging policy register. */
@@ -910,20 +925,19 @@ static void set_dram_row_attributes(void)
 	pci_write_config8(NB, NBXCFG + 3, nbxecc);
 	PRINT_DEBUG("NBXECC[31:24] has been set to 0x%02x\n", nbxecc);
 
-	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM).
-	 * TODO: Registered SDRAM support.
-	 */
-	edosd &= 0x07;
-	if (edosd & 0x02) {
-		edosd |= 0x00;
-	} else if (edosd & 0x04) {
-		edosd |= 0x08;
-	}
-	edosd &= 0x18;
+	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM/Registered SDRAM). */
 
-	/* edosd is now in the form needed for DRAMC[4:3]. */
+	/* i will be used to set DRAMC[4:3]. */
+	if (regsd && sd) {
+		i = 0x10; // Registered SDRAM
+	} else if (sd) {
+		i = 0x08; // SDRAM
+	} else {
+		i = 0; // EDO
+	}
+
 	value = pci_read_config8(NB, DRAMC) & 0xe7;
-	value |= edosd;
+	value |= i;
 	pci_write_config8(NB, DRAMC, value);
 	PRINT_DEBUG("DRAMC has been set to 0x%02x\n", value);
 }

@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-subdirs-y += wpcm450
+subdirs-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += wpcm450

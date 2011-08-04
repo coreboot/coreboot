@@ -27,8 +27,12 @@
 
 #define TOP_MEM_MSR			0xC001001A
 #define TOP_MEM2_MSR			0xC001001D
-#define TOP_MEM				TOP_MEM_MSR
-#define TOP_MEM2			TOP_MEM2_MSR
+#ifndef TOP_MEM
+  #define TOP_MEM			TOP_MEM_MSR
+#endif
+#ifndef TOP_MEM2
+  #define TOP_MEM2			TOP_MEM2_MSR
+#endif
 
 #define TOP_MEM_MASK			0x007fffff
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)

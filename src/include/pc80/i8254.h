@@ -20,6 +20,8 @@
 #ifndef PC80_I8254_H
 #define PC80_I8254_H
 
+void setup_i8254(void);
+
 /* Ports for the 8254 timer chip */
 #define TIMER0_PORT	0x40
 #define TIMER1_PORT	0x41

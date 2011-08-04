@@ -214,7 +214,7 @@ NbFmInitLclkDpmRcActivity (
         StdHeader
         );
       // Program activity threshold
-     IDS_HDT_CONSOLE (GNB_TRACE, "ActivityThreshold[4] - 0x%x ActivityThreshold[5] - 0x%x ActivityThreshold[6] - 0x%x ActivityThreshold[7] - 0x%x\n",
+     IDS_HDT_CONSOLE (GNB_TRACE, "ActivityThreshold[4] - 0x%lx ActivityThreshold[5] - 0x%lx ActivityThreshold[6] - 0x%lx ActivityThreshold[7] - 0x%lx\n",
        ActivityThreshold[4], ActivityThreshold[5], ActivityThreshold[6], ActivityThreshold [7]
        );
       NbSmuRcuRegisterWrite (

@@ -20,6 +20,8 @@
 # CIMX Root directory
 CIMX_ROOT = $(src)/vendorcode/amd/cimx
 
+#CIMX_INC  = -I$(src)/southbridge/amd/cimx/sb900
+#CIMX_INC  += -I$(src)/mainboard/$(MAINBOARDDIR)
 CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
 CIMX_INC  += -I$(src)/southbridge/amd/cimx/sb900
 CIMX_INC  += -I$(CIMX_ROOT)/sb900

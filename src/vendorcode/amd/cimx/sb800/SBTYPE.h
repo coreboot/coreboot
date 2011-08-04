@@ -1093,13 +1093,13 @@ typedef unsigned int    CIM_STATUS;
 #pragma pack (pop)
 
 /**
- * CIMX_OPTION_DISABLED - Define disable in module
+ * CIMX_DISABLED - Define disable in module
  */
-#define CIMX_OPTION_DISABLED   0
+#define CIMX_DISABLED   0
 /**
- * CIMX_OPTION_ENABLED - Define enable in module
+ * CIMX_ENABLED - Define enable in module
  */
-#define CIMX_OPTION_ENABLED    1
+#define CIMX_ENABLED    1
 
 // mov al, code
 // out 80h, al

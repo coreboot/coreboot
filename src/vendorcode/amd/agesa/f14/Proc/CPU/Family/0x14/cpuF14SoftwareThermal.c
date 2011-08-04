@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/F14
- * @e \$Revision: 34897 $   @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 46836 $   @e \$Date: 2011-02-10 12:22:59 -0700 (Thu, 10 Feb 2011) $
  *
  */
 /*
@@ -50,10 +50,10 @@
  */
 #include "AGESA.h"
 #include "amdlib.h"
-#include "cpuCacheInit.h"
 #include "cpuRegisters.h"
 #include "cpuFamilyTranslation.h"
 #include "cpuF14PowerMgmt.h"
+#include "cpuF14SoftwareThermal.h"
 #include "Filecode.h"
 #define FILECODE PROC_CPU_FAMILY_0X14_CPUF14SOFTWARETHERMAL_FILECODE
 
@@ -95,18 +95,33 @@ F14PmThermalInit (
   IN       AMD_CONFIG_PARAMS     *StdHeader
   )
 {
-  UINT32    PciRegister;
+  UINT32    NbCaps;
+  UINT32    LocalPciRegister;
   PCI_ADDR  PciAddress;
+  CPU_LOGICAL_ID CpuFamilyRevision;
 
   PciAddress.AddressValue = NB_CAPS_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-  if (((NB_CAPS_REGISTER *) &PciRegister)->HtcCapable == 1) {
+  LibAmdPciRead (AccessWidth32, PciAddress, &NbCaps, StdHeader);
+  if (((NB_CAPS_REGISTER *) &NbCaps)->HtcCapable == 1) {
     PciAddress.AddressValue = HTC_PCI_ADDR;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-    if (((HTC_REGISTER *) &PciRegister)->HtcTmpLmt != 0) {
+    LibAmdPciRead (AccessWidth32, PciAddress, &LocalPciRegister, StdHeader);
+    if (((HTC_REGISTER *) &LocalPciRegister)->HtcTmpLmt != 0) {
       // Enable HTC
-      ((HTC_REGISTER *) &PciRegister)->HtcEn = 1;
-      LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+      ((HTC_REGISTER *) &LocalPciRegister)->HtcEn = 1;
+      LibAmdPciWrite (AccessWidth32, PciAddress, &LocalPciRegister, StdHeader);
     }
+  }
+
+  GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
+  if ((CpuFamilyRevision.Revision & AMD_F14_ON_Cx) != 0) {
+    PciAddress.AddressValue = LHTC_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, PciAddress, &LocalPciRegister, StdHeader);
+    if (((NB_CAPS_REGISTER *) &NbCaps)->LHtcCapable == 1) {
+      if (((LHTC_REGISTER *) &LocalPciRegister)->LHtcTmpLmt != 0) {
+        // Enable local HTC
+        ((LHTC_REGISTER *) &LocalPciRegister)->LHtcEn = 1;
+      }
+    }
+    LibAmdPciWrite (AccessWidth32, PciAddress, &LocalPciRegister, StdHeader);
   }
 }

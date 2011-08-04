@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem)
- * @e \$Revision: 38634 $ @e \$Date: 2010-09-27 21:39:01 +0800 (Mon, 27 Sep 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -229,6 +229,7 @@ typedef enum {
   BFSRT,                                ///< Bit field SRT
   BFTcwl,                               ///< Bit field Tcwl
   BFPchgPDModeSel,                      ///< Bit field PchgPDModeSel
+  BFLowPowerDefault,                    ///< Bit field LowPowerDefault
 
   BFTwrDDR3,                            ///< Bit field TwrDDR3
   BFTcl,                                ///< Bit field Tcl
@@ -665,6 +666,12 @@ typedef enum {
 
   BFFixedErrataSkipPorFreqCap,          ///< Bit field FixedErrataSkipPorFreqCap
 
+  BFDllCSRBisaTrimDByte,                ///< Bit field DllCSRBisaTrimDByte
+  BFDllCSRBisaTrimClk,                  ///< Bit field DllCSRBisaTrimClk
+  BFDllCSRBisaTrimCsOdt,                ///< Bit field DllCSRBisaTrimCsOdt
+  BFDllCSRBisaTrimAByte2,               ///< Bit field DllCSRBisaTrimAByte2
+  BFReduceLoop,                         ///< Bit field ReduceLoop
+
   // Reserved
   BFReserved01,                         ///< Reserved 01
   BFReserved02,                         ///< Reserved 02
@@ -983,11 +990,11 @@ AmdMemInitDataStructDefRecovery (
   IN OUT   MEM_DATA_STRUCT *MemPtr
   );
 
-VOID
-MemRecDefRet (VOID);
+//VOID
+//MemRecDefRet (VOID);
 
-BOOLEAN
-MemRecDefTrue (VOID);
+//BOOLEAN
+//MemRecDefTrue (VOID);
 
 VOID
 SetMemRecError (

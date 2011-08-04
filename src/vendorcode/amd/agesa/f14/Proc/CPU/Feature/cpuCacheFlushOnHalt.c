@@ -97,6 +97,14 @@ EnableCacheFlushOnHaltOnSocket (
   IN       AMD_CONFIG_PARAMS *StdHeader,
   IN       AMD_CPU_EARLY_PARAMS *CpuEarlyParams
   );
+
+AGESA_STATUS
+InitializeCacheFlushOnHaltFeature (
+  IN       UINT64                 EntryPoint,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN OUT   AMD_CONFIG_PARAMS      *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          P U B L I C     F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -178,7 +186,7 @@ EnableCacheFlushOnHaltOnSocket (
 {
   CPU_CFOH_FAMILY_SERVICES *FamilyServices;
 
-  GetFeatureServicesOfCurrentCore (&CacheFlushOnHaltFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&CacheFlushOnHaltFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   if (FamilyServices != NULL) {
     FamilyServices->SetCacheFlushOnHaltRegister (FamilyServices, *((UINT64 *) EntryPoint), &CpuEarlyParams->PlatformConfig, StdHeader);
   }

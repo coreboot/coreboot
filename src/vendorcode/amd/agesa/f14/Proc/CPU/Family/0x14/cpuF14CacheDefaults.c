@@ -69,6 +69,14 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetF14CacheInfo (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **CacheInfoPtr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------

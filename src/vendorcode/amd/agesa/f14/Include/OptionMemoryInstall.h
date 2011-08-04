@@ -314,74 +314,65 @@ BOOLEAN MemFS3DefConstructorRet (
    *  based upon the number of processor families that the BIOS will support.
    */
 
+  extern MEM_FLOW_CFG MemMFlowDef;
   #if (OPTION_MEMCTLR_DR == TRUE)
     extern MEM_FLOW_CFG MemMFlowDr;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Dr MemMFlowDr,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Dr MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_DA == TRUE)
     extern MEM_FLOW_CFG MemMFlowDA;
     #define MEM_MAIN_FLOW_CONTROL_PTR_DA MemMFlowDA,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_DA MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_HY == TRUE)
     extern MEM_FLOW_CFG MemMFlowHy;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Hy MemMFlowHy,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Hy MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_OR == TRUE)
     extern MEM_FLOW_CFG MemMFlowOr;
     #define MEM_MAIN_FLOW_CONTROL_PTR_OR MemMFlowOr,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_OR MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_LN == TRUE)
     extern MEM_FLOW_CFG MemMFlowLN;
     #define MEM_MAIN_FLOW_CONTROL_PTR_LN MemMFlowLN,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_LN MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_C32 == TRUE)
     extern MEM_FLOW_CFG MemMFlowC32;
     #define MEM_MAIN_FLOW_CONTROL_PTR_C32 MemMFlowC32,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_C32 MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_ON == TRUE)
     extern MEM_FLOW_CFG MemMFlowON;
     #define MEM_MAIN_FLOW_CONTROL_PTR_ON MemMFlowON,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_ON MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_Ni == TRUE)
     extern MEM_FLOW_CFG MemMFlowDA;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Ni MemMFlowDA,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_Ni MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_RB == TRUE)
     extern MEM_FLOW_CFG MemMFlowRb;
     #define MEM_MAIN_FLOW_CONTROL_PTR_RB MemMFlowRb,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_RB MemMFlowDef,
   #endif
   #if (OPTION_MEMCTLR_PH == TRUE)
     extern MEM_FLOW_CFG MemMFlowPh;
     #define MEM_MAIN_FLOW_CONTROL_PTR_PH MemMFlowPh,
   #else
-    extern MEM_FLOW_CFG MemMFlowDef;
     #define MEM_MAIN_FLOW_CONTROL_PTR_PH MemMFlowDef,
   #endif
 
@@ -464,13 +455,6 @@ BOOLEAN MemFS3DefConstructorRet (
     #define MEM_FEATURE_ECCX8  MemMDefRet
   #endif
 
-  #if (OPTION_EMP == TRUE)
-    extern OPTION_MEM_FEATURE_NB MemFInitEMP;
-    #define MEM_FEATURE_EMP   MemFInitEMP
-  #else
-    #define MEM_FEATURE_EMP   MemFDefRet
-  #endif
-
   extern OPTION_MEM_FEATURE_MAIN MemMMctMemClr;
   #define MEM_MAIN_FEATURE_MEM_CLEAR  MemMMctMemClr
 
@@ -505,11 +489,11 @@ BOOLEAN MemFS3DefConstructorRet (
   extern OPTION_MEM_FEATURE_MAIN MemMUmaAlloc;
   #define MEM_MAIN_FEATURE_UMAALLOC   MemMUmaAlloc
 
+  extern OPTION_MEM_FEATURE_MAIN MemMStandardTraining;
   #if (OPTION_PARALLEL_TRAINING == TRUE)
     extern OPTION_MEM_FEATURE_MAIN MemMParallelTraining;
     #define MEM_MAIN_FEATURE_TRAINING  MemMParallelTraining
   #else
-    extern OPTION_MEM_FEATURE_MAIN MemMStandardTraining;
     #define MEM_MAIN_FEATURE_TRAINING  MemMStandardTraining
   #endif
 
@@ -555,7 +539,7 @@ BOOLEAN MemFS3DefConstructorRet (
       #define  MEM_TECH_FEATURE_HW_DRAMINIT MemTFeatDef
     #endif
     #if (OPTION_SW_DRAM_INIT == TRUE)
-      extern MEM_TECH_FEAT MemTDramInitSw3;
+//      extern MEM_TECH_FEAT MemTDramInitSw3;
       #define MEM_TECH_FEATURE_SW_DRAMINIT  MemTDramInitSw3
     #else
       #define MEM_TECH_FEATURE_SW_DRAMINIT  MemTFeatDef
@@ -956,7 +940,6 @@ BOOLEAN MemFS3DefConstructorRet (
 
     #undef MEM_MAIN_FEATURE_TRAINING
     #undef MEM_FEATURE_TRAINING
-    extern OPTION_MEM_FEATURE_MAIN MemMStandardTraining;
     #define MEM_MAIN_FEATURE_TRAINING  MemMStandardTraining
     extern OPTION_MEM_FEATURE_NB MemFStandardTraining;
     #define MEM_FEATURE_TRAINING  MemFStandardTraining
@@ -2284,9 +2267,9 @@ BOOLEAN MemFS3DefConstructorRet (
         TECH_TRAIN_OPT_SW_RD_WR_POS_DDR3,
         TECH_TRAIN_MAX_RD_LAT_DDR3
       };
-      extern OPTION_MEM_FEATURE_NB MemNDQSTiming3Nb;
+//      extern OPTION_MEM_FEATURE_NB MemNDQSTiming3Nb;
       #define NB_TRAIN_FLOW_DDR3    MemNDQSTiming3Nb
-      extern OPTION_MEM_FEATURE_NB memNSequenceDDR3Nb;
+//      extern OPTION_MEM_FEATURE_NB memNSequenceDDR3Nb;
       #define MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_ON {MEM_TECH_TRAIN_SEQUENCE_STRUCT_VERSION,memNSequenceDDR3Nb, memNEnableTrainSequenceON, &memTechTrainingFeatSequenceDDR3ON },
     #else
       #undef TECH_TRAIN_ENTER_HW_TRN_DDR3
@@ -3253,9 +3236,9 @@ BOOLEAN MemFS3DefConstructorRet (
     NULL
   };
   CONST UINTN SIZE_OF_PLATFORM = (sizeof (memPlatformTypeInstalled) / sizeof (MEM_PLATFORM_CFG*));
-  #if SIZE_OF_PLATFORM > MAX_PLATFORM_TYPES
-    #error   Size of memPlatformTypeInstalled array larger than MAX_PLATFORM_TYPES
-  #endif
+//  #if SIZE_OF_PLATFORM > MAX_PLATFORM_TYPES
+//    #error   Size of memPlatformTypeInstalled array larger than MAX_PLATFORM_TYPES
+//  #endif
 
   /*---------------------------------------------------------------------------------------------------
    * EXTRACTABLE PLATFORM SPECIFIC CONFIGURATION

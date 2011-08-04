@@ -122,7 +122,7 @@ DmiF10GetInfo (
   CpuInfoPtr->BrandId.Model = (UINT8) (CpuId.EBX_Reg >> 4) & 0x7F; // bit 10:4
   CpuInfoPtr->BrandId.String2 = (UINT8) (CpuId.EBX_Reg & 0xF); // bit 3:0
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   CpuInfoPtr->TotalCoreNumber = FamilySpecificServices->GetNumberOfCoresForBrandstring (FamilySpecificServices, StdHeader);
   CpuInfoPtr->TotalCoreNumber--;
 
@@ -239,7 +239,7 @@ DmiF10GetMaxSpeed (
   PSTATE_CPU_FAMILY_SERVICES  *FamilyServices;
 
   FamilyServices = NULL;
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
   NumBoostStates = 0;
   LibAmdCpuidRead (AMD_CPUID_APM, &CpuidData, StdHeader);

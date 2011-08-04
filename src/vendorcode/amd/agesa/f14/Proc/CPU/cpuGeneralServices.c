@@ -577,7 +577,7 @@ ModifyCurrentSocketPci (
   UINT32 Socket;
   UINT32 Module;
   UINT32 Core;
-  UINT32 PciRegister;
+  UINT32 PciReg;
   AGESA_STATUS AgesaStatus;
   PCI_ADDR Reg;
 
@@ -587,10 +587,10 @@ ModifyCurrentSocketPci (
     if (GetPciAddress (StdHeader, Socket, Module, &Reg, &AgesaStatus)) {
       Reg.Address.Function = PciAddress->Address.Function;
       Reg.Address.Register = PciAddress->Address.Register;
-      LibAmdPciRead (AccessWidth32, Reg, &PciRegister, StdHeader);
-      PciRegister &= Mask;
-      PciRegister |= Data;
-      LibAmdPciWrite (AccessWidth32, Reg, &PciRegister, StdHeader);
+      LibAmdPciRead (AccessWidth32, Reg, &PciReg, StdHeader);
+      PciReg &= Mask;
+      PciReg |= Data;
+      LibAmdPciWrite (AccessWidth32, Reg, &PciReg, StdHeader);
     }
   }
 }
@@ -802,7 +802,7 @@ GetCurrentCore (
   CORE_ID_POSITION      InitApicIdCpuIdLo;
   CPU_SPECIFIC_SERVICES *FamilyServices;
 
-  GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
   //  Read CPUID ebx[31:24] to get initial APICID
@@ -951,7 +951,7 @@ GetApMailbox (
     *ApMailboxInfo = ((AP_MAILBOXES *) LocalApMailboxCache.BufferPtr)->ApMailInfo.Info;
   } else if (!IamBsp) {
     // If this is an AP, the hardware register should be good.
-    GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+    GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
     ASSERT (FamilyServices != NULL);
     FamilyServices->GetApMailboxFromHardware (FamilyServices, &ApMailboxes, StdHeader);
     *ApMailboxInfo = ApMailboxes.ApMailInfo.Info;
@@ -980,7 +980,7 @@ CacheApMailbox (
   AP_MAILBOXES ApMailboxes;
   CPU_SPECIFIC_SERVICES *FamilyServices;
 
-  GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
   // Get mailbox from hardware.
@@ -1046,7 +1046,7 @@ WaitMicroseconds (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
   LibAmdMsrRead (TSC, &InitialTsc, StdHeader);
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRateInMhz, StdHeader);
   NumberOfTicks = Microseconds * TscRateInMhz;
   do {
@@ -1116,7 +1116,7 @@ GetComputeUnitMapping (
   Result = MaxComputeUnitMapping;
 
   IdentifyCore (StdHeader, &Socket, &Module, &CurrentCore, &IgnoredSts);
-  GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
   //  Get data block from heap
@@ -1264,14 +1264,14 @@ InitializePciMmio (
   )
 {
   UINT8        EncodedSize;
-  UINT64       MsrRegister;
+  UINT64       MsrReg;
 
   // Make sure that Standard header is valid
   ASSERT (StdHeader != NULL);
 
   if ((UserOptions.CfgPciMmioAddress != 0) && (UserOptions.CfgPciMmioSize != 0)) {
     EncodedSize = LibAmdBitScanForward (UserOptions.CfgPciMmioSize);
-    MsrRegister = ((UserOptions.CfgPciMmioAddress | BIT0) | (EncodedSize << 2));
-    LibAmdMsrWrite (MSR_MMIO_Cfg_Base, &MsrRegister, StdHeader);
+    MsrReg = ((UserOptions.CfgPciMmioAddress | BIT0) | (EncodedSize << 2));
+    LibAmdMsrWrite (MSR_MMIO_Cfg_Base, &MsrReg, StdHeader);
   }
 }

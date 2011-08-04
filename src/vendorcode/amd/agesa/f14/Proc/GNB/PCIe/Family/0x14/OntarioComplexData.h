@@ -52,7 +52,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   {
     DESCRIPTOR_TERMINATE_LIST,
     {0},
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     NULL
   },
   //Gpp Wrapper
@@ -72,9 +72,9 @@ F14_COMPLEX_CONFIG ComplexData = {
       1,  //TxclkGatingPllPowerDown
       1   //PllOffInL1
     },
-    offsetof (F14_COMPLEX_CONFIG, Port4),
-    offsetof (F14_COMPLEX_CONFIG, Silicon),
-    offsetof (F14_COMPLEX_CONFIG, FmGppWrapper)
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, Port4)),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, Silicon)),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, FmGppWrapper))
   },
   //Virtual DDI Wrapper
   {
@@ -93,14 +93,14 @@ F14_COMPLEX_CONFIG ComplexData = {
       1,  //TxclkGatingPllPowerDown
       0   //PllOffInL1
     },
-    offsetof (F14_COMPLEX_CONFIG, Dpa),
-    offsetof (F14_COMPLEX_CONFIG, Silicon),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, Dpa)),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, Silicon)),
     NULL
   },
   //Port 4
   {
     DESCRIPTOR_PCIE_ENGINE,
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     { PciePortEngine, 4, 4},
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -113,7 +113,7 @@ F14_COMPLEX_CONFIG ComplexData = {
         0,
         GPP_CORE_ID,
         1,
-        0,
+		{0},
         FALSE,
         LinkStateResetExit
       },
@@ -122,7 +122,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Port 5
   {
     DESCRIPTOR_PCIE_ENGINE,
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     { PciePortEngine, 5, 5},
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -135,7 +135,7 @@ F14_COMPLEX_CONFIG ComplexData = {
         0,
         GPP_CORE_ID,
         2,
-        0,
+		{0},
         FALSE,
         LinkStateResetExit
       },
@@ -144,7 +144,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Port 6
   {
     DESCRIPTOR_PCIE_ENGINE,
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     { PciePortEngine, 6, 6 },
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -157,7 +157,7 @@ F14_COMPLEX_CONFIG ComplexData = {
         0,
         GPP_CORE_ID,
         3,
-        0,
+		{0},
         FALSE,
         LinkStateResetExit
       },
@@ -166,7 +166,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Port 7
   {
     DESCRIPTOR_PCIE_ENGINE,
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     { PciePortEngine, 7, 7 },
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -179,7 +179,7 @@ F14_COMPLEX_CONFIG ComplexData = {
         0,
         GPP_CORE_ID,
         4,
-        0,
+		{0},
         FALSE,
         LinkStateResetExit
       },
@@ -188,7 +188,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Port 8
   {
     DESCRIPTOR_PCIE_ENGINE | DESCRIPTOR_TERMINATE_LIST,
-    offsetof (F14_COMPLEX_CONFIG, GppWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, GppWrapper)),
     { PciePortEngine, 0, 3 },
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -201,7 +201,7 @@ F14_COMPLEX_CONFIG ComplexData = {
         0,
         GPP_CORE_ID,
         0,
-        MAKE_SBDFO (0, 0, 8, 0, 0),
+		{MAKE_SBDFO (0, 0, 8, 0, 0)},
         TRUE,
         LinkStateTrainingSuccess
       },
@@ -210,7 +210,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Virtual DpA
   {
     DESCRIPTOR_DDI_ENGINE | DESCRIPTOR_VIRTUAL,
-    offsetof (F14_COMPLEX_CONFIG, DdiWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, DdiWrapper)),
     {PcieDdiEngine},
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -218,7 +218,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Virtual DpB
   {
     DESCRIPTOR_DDI_ENGINE | DESCRIPTOR_VIRTUAL,
-    offsetof (F14_COMPLEX_CONFIG, DdiWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, DdiWrapper)),
     {PcieDdiEngine},
     0,                                              //Initialization Status
     0xFF,                                           //Scratch
@@ -226,7 +226,7 @@ F14_COMPLEX_CONFIG ComplexData = {
   //Virtual VGA
   {
     DESCRIPTOR_DDI_ENGINE | DESCRIPTOR_VIRTUAL | DESCRIPTOR_TERMINATE_LIST,
-    offsetof (F14_COMPLEX_CONFIG, DdiWrapper),
+    (VOID *)(offsetof (F14_COMPLEX_CONFIG, DdiWrapper)),
     {PcieDdiEngine},
     0,                                              //Initialization Status
     0xFF,                                           //Scratch

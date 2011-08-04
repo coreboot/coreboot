@@ -94,7 +94,8 @@ UINT16  AspmBrDeviceTable[] = {
  0x10DE, 0x016A, (UINT16) ~(AspmL1 | AspmL0s),
  0x10DE, 0x0392, (UINT16) ~(AspmL1 | AspmL0s),
  0x168C, 0xFFFF, (UINT16) ~(AspmL0s),
- 0x1B4B, 0x91A3, (UINT16) ~(AspmL0s)
+ 0x1B4B, 0x91A3, (UINT16) ~(AspmL0s),
+ 0x1B4B, 0x9123, (UINT16) ~(AspmL0s)
 };
 
 /*----------------------------------------------------------------------------------------*/

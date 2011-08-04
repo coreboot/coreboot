@@ -70,6 +70,14 @@ extern CONST UINT8 ROMDATA CpuF14OnNumberOfMicrocodePatches;
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetF14OnMicroCodePatchesStruct (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **OnUcodePtr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------

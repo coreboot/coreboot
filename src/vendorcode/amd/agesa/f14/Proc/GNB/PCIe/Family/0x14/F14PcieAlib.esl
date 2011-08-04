@@ -97,6 +97,7 @@ DefinitionBlock (
       }
     }
 
+#ifdef  PCIE_PHY_LANE_POWER_GATE_SUPPORT
     /*----------------------------------------------------------------------------------------*/
     /**
      *  Power gate PCIe phy lanes (hotplug support)
@@ -108,10 +109,10 @@ DefinitionBlock (
     Method (procPcieLanePowerControl, 3, NotSerialized) {
        // stub function
     }
-
+#endif
     /*----------------------------------------------------------------------------------------*/
     /**
-     *  Read RCU register
+     *  Adjust PLL settings stub
      *
      *  Arg0 	- 1 - GEN1 2 - GEN2
      *  
@@ -119,7 +120,26 @@ DefinitionBlock (
     Method (procPcieAdjustPll, 1, NotSerialized) {
       //stub function
     }
-	
+    Name (AD0B, 0)
+    /*----------------------------------------------------------------------------------------*/
+    /**
+     *  APM/PDM stub
+     *
+     *  Arg0  - 0 (AC)   1 (DC)
+     *
+     */
+    Method (procApmPdmActivate, 1, NotSerialized) {
+      if (LEqual (AD0B, 1)) {
+        Store (Or(ShiftLeft (0x18, 3), 4), Local1)
+        Store (procPciDwordRead (Local1, 0x15C), Local2)
+        if (LEqual (Arg0, DEF_PSPP_STATE_AC)) {
+          Or (Local2, 0x01, Local2)
+        } else {
+          And (Local2, 0xfffffffc, Local2)
+        }
+        procPciDwordWrite (Local1, 0x15C, Local2)
+      }
+    }
   } //End of Scope(\_SB)
 }   //End of DefinitionBlock
 

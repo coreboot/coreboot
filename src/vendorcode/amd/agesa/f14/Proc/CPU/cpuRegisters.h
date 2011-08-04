@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 37150 $   @e \$Date: 2010-08-31 23:53:37 +0800 (Tue, 31 Aug 2010) $
+ * @e \$Revision: 48588 $   @e \$Date: 2011-03-10 08:57:36 -0700 (Thu, 10 Mar 2011) $
  *
  */
 /*
@@ -176,6 +176,9 @@ typedef struct {
 
 #define MSR_SYS_CFG                 0xC0010010      // SYSCFG - F15 Shared
 #define MSR_TOM2                    0xC001001D      // TOP_MEM2 - F15 Shared
+#define MSR_MC0_CTL_MASK            0xC0010044      // MC0 Control Mask
+#define MSR_MC1_CTL_MASK            0xC0010045      // MC1 Control Mask
+#define MSR_MC2_CTL_MASK            0xC0010046      // MC2 Control Mask
 #define MSR_MC4_CTL_MASK            0xC0010048      // MC4 Control Mask
 
 #define MSR_CPUID_FEATS             0xC0011004      // CPUID Features
@@ -381,27 +384,11 @@ typedef enum {
   REG_EDX                                     ///< EDX
 } CPUID_REG;
 
-/// MSR table entry for DSM workaround
-typedef struct {
-  UINT32 Address;          ///< MSR address to program
-  UINT64 Nand;             ///< Bitwise NAND mask to apply during read-modify-write
-  UINT64 Or;               ///< Bitwise OR mask to apply during read-modify-write
-} MSR_DSM_ENTRY;
-
-/// Interrupt Descriptor Table entry
-typedef struct {
-  UINT16 OffsetLo;     ///< Lower 16 bits of the interrupt handler routine's offset
-  UINT16 Selector;     ///< Interrupt handler routine's selector
-  UINT8  Rsvd;         ///< Reserved
-  UINT8  Flags;        ///< Interrupt flags
-  UINT16 OffsetHi;     ///< Upper 16 bits of the interrupt handler routine's offset
-  UINT32 Offset64;     ///< High order 32 bits of the handler's offset needed when in 64 bit mode
-  UINT32 Rsvd64;       ///< Reserved
-} IDT_DESCRIPTOR;
-
+/// Structure needed to load the IDTR using the lidt instruction
 typedef struct {
   UINT16 Limit;        ///< Interrupt Descriptor Table size
   UINT64 Base;         ///< Interrupt Descriptor Table base address
 } IDT_BASE_LIMIT;
+
 #endif      // _CPU_REGISTERS_H_
 

@@ -324,11 +324,11 @@ F10HookDisableCache (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64  MsrRegister;
+  UINT64  MsrReg;
 
-  LibAmdMsrRead (MSR_BU_CFG2, &MsrRegister, StdHeader);
-  MsrRegister |= BIT42;
-  LibAmdMsrWrite (MSR_BU_CFG2, &MsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_BU_CFG2, &MsrReg, StdHeader);
+  MsrReg |= BIT42;
+  LibAmdMsrWrite (MSR_BU_CFG2, &MsrReg, StdHeader);
 }
 
 

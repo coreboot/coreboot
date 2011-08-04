@@ -7,7 +7,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 37263 $   @e \$Date: 2010-09-01 21:58:26 +0800 (Wed, 01 Sep 2010) $
+ * @e \$Revision: 48588 $   @e \$Date: 2011-03-10 08:57:36 -0700 (Thu, 10 Mar 2011) $
  *
  */
 /*
@@ -77,6 +77,21 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
 //  M S R    T a b l e s
 // ----------------------
 
+// MC0_CTL_MASK (0xC0010044)
+// bit[6] = 1, erratum #628
+  {
+    MsrRegister,
+    {
+      AMD_FAMILY_14,                       // CpuFamily
+      AMD_F14_ON_ALL                       // CpuRevision
+    },
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
+      MSR_MC0_CTL_MASK,                      // MSR Address
+      0x0000000000000040,                    // OR Mask
+      0x0000000000000040,                    // NAND Mask
+     }}
+  },
 // MSR_TOM2 (0xC001001D)
 // bits[63:0] - TOP_MEM2 = 0
   {
@@ -85,12 +100,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                       // CpuFamily
       AMD_F14_ALL                          // CpuRevision
     },
-    AMD_PF_ALL,                            // platformFeatures
-    {
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
       MSR_TOM2,                              // MSR Address
       0x0000000000000000,                    // OR Mask
       0xFFFFFFFFFFFFFFFF,                    // NAND Mask
-    }
+    }}
   },
 // MSR_SYS_CFG (0xC0010010)
 // bit[21] - MtrrTom2En = 1
@@ -100,12 +115,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                       // CpuFamily
       AMD_F14_ALL                          // CpuRevision
     },
-    AMD_PF_ALL,                            // platformFeatures
-    {
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
       MSR_SYS_CFG,                           // MSR Address
       (1 << 21),                             // OR Mask
       (1 << 21),                             // NAND Mask
-    }
+    }}
   },
 // MSR_CPUID_EXT_FEATS (0xC0011005)
 // bit[41] - OSVW = 0
@@ -115,12 +130,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MSR_CPUID_EXT_FEATS,                   // MSR Address
       0x0000000000000000,                    // OR Mask
       0x0000020000000000,                    // NAND Mask
-    }
+    }}
   },
 // MSR_OSVW_ID_Length (0xC0010140)
 // bit[15:0] = 4
@@ -130,12 +145,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MSR_OSVW_ID_Length,                    // MSR Address
       0x0000000000000004,                    // OR Mask
       0x000000000000FFFF,                    // NAND Mask
-    }
+    }}
   },
 // MSR_HWCR (0xC0010015)
 // Do not set bit[24] = 1, it will be set in AmdInitPost.
@@ -149,12 +164,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                       // CpuFamily
       AMD_F14_ALL                          // CpuRevision
     },
-    AMD_PF_ALL,                            // platformFeatures
-    {
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
       MSR_MC0_CTL,                           // MSR Address
       0xFFFFFFFFFFFFFFFF,                    // OR Mask
       0xFFFFFFFFFFFFFFFF,                    // NAND Mask
-    }
+    }}
   },
 // MSR_LS_CFG (0xC0011020)
 // bit[36]  Reserved = 1, workaround for erratum #530
@@ -165,12 +180,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                       // CpuFamily
       AMD_F14_ALL                          // CpuRevision
     },
-    AMD_PF_ALL,                            // platformFeatures
-    {
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
       MSR_LS_CFG,                            // MSR Address
       0x0000001002000000,                    // OR Mask
       0x0000001002000000,                    // NAND Mask
-     }
+     }}
   },
 // MSR_DC_CFG (0xC0011022)
 // bit[57:56]  Reserved = 2
@@ -180,12 +195,12 @@ CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F14MsrRegisters[] =
       AMD_FAMILY_14,                       // CpuFamily
       AMD_F14_ALL                          // CpuRevision
     },
-    AMD_PF_ALL,                            // platformFeatures
-    {
+    {AMD_PF_ALL},                            // platformFeatures
+    {{
       MSR_DC_CFG,                            // MSR Address
       0x0200000000000000,                    // OR Mask
       0x0300000000000000,                    // NAND Mask
-     }
+     }}
   }
 };
 

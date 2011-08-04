@@ -77,14 +77,14 @@ extern OPTION_SLIT_CONFIGURATION OptionSlitConfiguration;  // global user config
 
 STATIC ACPI_TABLE_HEADER  ROMDATA CpuSlitHdrStruct =
 {
-  'S','L','I','T',
+  {'S','L','I','T'},
   0,
   1,
   0,
-  'A','M','D',' ',' ',' ',
-  'A','G','E','S','A',' ',' ',' ',
+  {'A','M','D',' ',' ',' '},
+  {'A','G','E','S','A',' ',' ',' '},
   1,
-  'A','M','D',' ',
+  {'A','M','D',' '},
   1
 };
 
@@ -97,6 +97,21 @@ STATIC ACPI_TABLE_HEADER  ROMDATA CpuSlitHdrStruct =
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+
+AGESA_STATUS
+GetAcpiSlitStub (
+  IN OUT   AMD_CONFIG_PARAMS      *StdHeader,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN OUT   VOID                   **SlitPtr
+  );
+
+AGESA_STATUS
+GetAcpiSlitMain (
+  IN OUT   AMD_CONFIG_PARAMS      *StdHeader,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN OUT   VOID                   **SlitPtr
+   );
+
 VOID
 STATIC
 AcpiSlitHBufferFind (
@@ -104,11 +119,20 @@ AcpiSlitHBufferFind (
   IN       UINT8 **SocketTopologyPtr
   );
 
+AGESA_STATUS
+ReleaseSlitBufferStub (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader
+  );
+
+AGESA_STATUS
+ReleaseSlitBuffer (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *           P R O T O T Y P E S     O F     E X P O R T E D     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
-
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

@@ -112,6 +112,18 @@ CONST UINT16 ROMDATA F14MaxNbFreqAtMinVidFreqTable[] =
  *----------------------------------------------------------------------------------------
  */
 UINT32
+F14GetApCoreNumber (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+CORE_ID_POSITION
+F14CpuAmdCoreIdPositionInInitialApicId (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+UINT32
 STATIC
 RoundedDivision (
   IN       UINT32 Dividend,
@@ -300,6 +312,7 @@ F14NbPstateInit (
   UINT32                TargetNumerator;
   UINT32                TargetDenominator;
   BOOLEAN               ReturnStatus;
+  BOOLEAN               WaitForTransition;
   PCI_ADDR              PciAddress;
   D18F3xD4_STRUCT       Cptc0;
   D18F3xDC_STRUCT       Cptc2;
@@ -313,6 +326,7 @@ F14NbPstateInit (
   // F14 only supports NB P0 and NB P1
   ASSERT (TargetNbPstate < 2);
 
+  WaitForTransition = FALSE;
   ReturnStatus = TRUE;
 
   // Get D18F3xD4[MainPllOpFreqId] frequency
@@ -383,8 +397,11 @@ F14NbPstateInit (
     // Apply the appropriate P0 frequency
     PciAddress.AddressValue = CPTC2_PCI_ADDR;
     LibAmdPciRead (AccessWidth32, PciAddress, &Cptc2.Value, StdHeader);
+    if (Cptc2.Field.NbPs0NclkDiv != EncodedNbPs0NclkDiv) {
+      WaitForTransition = TRUE;
     Cptc2.Field.NbPs0NclkDiv = EncodedNbPs0NclkDiv;
     LibAmdPciWrite (AccessWidth32, PciAddress, &Cptc2.Value, StdHeader);
+    }
     NbP0Cof = RoundedDivision (NbPstateNumerator, EncodedNbPs0NclkDiv);
 
     // Determine NB P1 settings if necessary
@@ -434,6 +451,13 @@ F14NbPstateInit (
       NbP1Cof = 0;
     }
     *CurrentNbFreq = NbP0Cof;
+    if (WaitForTransition) {
+      // Ensure that the frequency has settled before returning to memory code.
+      PciAddress.AddressValue = CPTC2_PCI_ADDR;
+      do {
+        LibAmdPciRead (AccessWidth32, PciAddress, &Cptc2.Value, StdHeader);
+      } while (Cptc2.Field.NclkFreqDone != 1);
+    }
   } else {
     // Get NB P0 COF
     PciAddress.AddressValue = CPTC2_PCI_ADDR;
@@ -457,12 +481,7 @@ F14NbPstateInit (
         NbPsCfgLow.Field.NbPsForceSel = 1;
         LibAmdPciWrite (AccessWidth32, PciAddress, &NbPsCfgLow.Value, StdHeader);
 
-        // Wait for the transition to complete.
-        PciAddress.AddressValue = NB_PSTATE_CTRL_STS_PCI_ADDR;
-        do {
-          LibAmdPciRead (AccessWidth32, PciAddress, &NbPsCtrlSts.Value, StdHeader);
-        } while (NbPsCtrlSts.Field.NbPs1Act != 1);
-
+        WaitForTransition = TRUE;
         *CurrentNbFreq = RoundedDivision (NbPstateNumerator, NbPsCfgLow.Field.NbPs1NclkDiv);
       } else {
         // No NB P-states.  Return FALSE, and set current frequency to P0.
@@ -476,15 +495,17 @@ F14NbPstateInit (
         // Request transition to P0
         NbPsCfgLow.Field.NbPsForceSel = 0;
         LibAmdPciWrite (AccessWidth32, PciAddress, &NbPsCfgLow.Value, StdHeader);
+        WaitForTransition = TRUE;
       }
     }
-  }
-
+    if (WaitForTransition) {
   // Ensure that the frequency has settled before returning to memory code.
-  PciAddress.AddressValue = CPTC2_PCI_ADDR;
+      PciAddress.AddressValue = NB_PSTATE_CTRL_STS_PCI_ADDR;
   do {
-    LibAmdPciRead (AccessWidth32, PciAddress, &Cptc2.Value, StdHeader);
-  } while (Cptc2.Field.NclkFreqDone != 1);
+        LibAmdPciRead (AccessWidth32, PciAddress, &NbPsCtrlSts.Value, StdHeader);
+      } while (NbPsCtrlSts.Field.NbPs1Act != TargetNbPstate);
+    }
+  }
 
   return ReturnStatus;
 }

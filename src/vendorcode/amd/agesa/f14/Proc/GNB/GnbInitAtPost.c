@@ -53,6 +53,7 @@
 #include  "OptionGnb.h"
 #include  "Ids.h"
 #include  "GnbLibFeatures.h"
+#include  "GnbInterface.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GNBINITATPOST_FILECODE
 /*----------------------------------------------------------------------------------------

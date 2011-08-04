@@ -78,7 +78,7 @@ typedef SCAN_STATUS (*GNB_SCAN_CALLBACK) (
 typedef struct _GNB_PCI_SCAN_DATA {
   GNB_SCAN_CALLBACK     GnbScanCallback;  ///< Callback for each found device
   AMD_CONFIG_PARAMS     *StdHeader;       ///< Standard configuration header
-};
+} Unused_GNB_PCI_SCAN_DATA;
 
 #define   PCIE_CAP_ID               0x10
 #define   PCIE_LINK_CAP_REGISTER    0x0C
@@ -114,6 +114,13 @@ UINT8
 GnbLibFindPciCapability (
   IN      UINT32              Address,
   IN      UINT8               CapabilityId,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  );
+
+UINT16
+GnbLibFindPcieExtendedCapability (
+  IN      UINT32              Address,
+  IN      UINT16              ExtendedCapabilityId,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   );
 

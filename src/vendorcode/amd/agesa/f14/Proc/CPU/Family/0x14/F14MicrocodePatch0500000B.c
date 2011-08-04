@@ -63,7 +63,7 @@
 
 // Patch code 0500000B for 5000 and equivalent
 CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch0500000B =
-{
+{{
 0x10,
 0x20,
 0x01,
@@ -1632,7 +1632,7 @@ CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch0500000B =
 0xe9,
 0xb2,
 0x6d
-};
+}};
 
 /*----------------------------------------------------------------------------------------
  *           P R O T O T Y P E S     O F     L O C A L     F U N C T I O N S

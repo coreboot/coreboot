@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/Feat/EXCLUDIMM)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 48496 $ @e \$Date: 2011-03-09 12:26:48 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -81,6 +81,11 @@ RDATA_GROUP (G2_PEI)
  *
  *----------------------------------------------------------------------------
  */
+
+BOOLEAN
+MemFRASExcludeDIMM (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
@@ -163,6 +168,8 @@ MemFRASExcludeDIMM (
       IsCSIntlvEnabled = TRUE;
     }
 
+    Flag = TRUE;
+    NBPtr->FamilySpecificHook[BfAfExcludeDimm] (NBPtr, &Flag);
     for (Dct = 0; Dct < NBPtr->DctCount; Dct++) {
       NBPtr->SwitchDCT (NBPtr, Dct);
       if (!MCTPtr->GangedMode || (MCTPtr->Dct == 0)) {
@@ -179,6 +186,8 @@ MemFRASExcludeDIMM (
         }
       }
     }
+    Flag = FALSE;
+    NBPtr->FamilySpecificHook[BfAfExcludeDimm] (NBPtr, &Flag);
 
     // Re-enable chip select interleaving when remapping is done.
     if (IsCSIntlvEnabled) {

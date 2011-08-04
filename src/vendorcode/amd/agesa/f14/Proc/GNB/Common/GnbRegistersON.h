@@ -17,7 +17,7 @@
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -28,7 +28,7 @@
  *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
  *       its contributors may be used to endorse or promote products derived 
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -1220,36 +1220,36 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D18F2x80_STRUCT;
 
-// **** D18F2x084 Register Definition ****
+// **** D18F2x84 Register Definition ****
 // Address
-#define D18F2x084_ADDRESS                                        0x84
+#define D18F2x84_ADDRESS                                        0x84
 
 // Type
-#define D18F2x084_TYPE                                           TYPE_D18F2
+#define D18F2x84_TYPE                                           TYPE_D18F2
 // Field Data
-#define D18F2x084_BurstCtrl_OFFSET                               0
-#define D18F2x084_BurstCtrl_WIDTH                                2
-#define D18F2x084_BurstCtrl_MASK                                 0x3
-#define D18F2x084_Reserved_3_2_OFFSET                            2
-#define D18F2x084_Reserved_3_2_WIDTH                             2
-#define D18F2x084_Reserved_3_2_MASK                              0xc
-#define D18F2x084_Twr_OFFSET                                     4
-#define D18F2x084_Twr_WIDTH                                      3
-#define D18F2x084_Twr_MASK                                       0x70
-#define D18F2x084_Reserved_19_7_OFFSET                           7
-#define D18F2x084_Reserved_19_7_WIDTH                            13
-#define D18F2x084_Reserved_19_7_MASK                             0xfff80
-#define D18F2x084_Tcwl_OFFSET                                    20
-#define D18F2x084_Tcwl_WIDTH                                     3
-#define D18F2x084_Tcwl_MASK                                      0x700000
-#define D18F2x084_PchgPDModeSel_OFFSET                           23
-#define D18F2x084_PchgPDModeSel_WIDTH                            1
-#define D18F2x084_PchgPDModeSel_MASK                             0x800000
-#define D18F2x084_Reserved_31_24_OFFSET                          24
-#define D18F2x084_Reserved_31_24_WIDTH                           8
-#define D18F2x084_Reserved_31_24_MASK                            0xff000000
+#define D18F2x84_BurstCtrl_OFFSET                               0
+#define D18F2x84_BurstCtrl_WIDTH                                2
+#define D18F2x84_BurstCtrl_MASK                                 0x3
+#define D18F2x84_Reserved_3_2_OFFSET                            2
+#define D18F2x84_Reserved_3_2_WIDTH                             2
+#define D18F2x84_Reserved_3_2_MASK                              0xc
+#define D18F2x84_Twr_OFFSET                                     4
+#define D18F2x84_Twr_WIDTH                                      3
+#define D18F2x84_Twr_MASK                                       0x70
+#define D18F2x84_Reserved_19_7_OFFSET                           7
+#define D18F2x84_Reserved_19_7_WIDTH                            13
+#define D18F2x84_Reserved_19_7_MASK                             0xfff80
+#define D18F2x84_Tcwl_OFFSET                                    20
+#define D18F2x84_Tcwl_WIDTH                                     3
+#define D18F2x84_Tcwl_MASK                                      0x700000
+#define D18F2x84_PchgPDModeSel_OFFSET                           23
+#define D18F2x84_PchgPDModeSel_WIDTH                            1
+#define D18F2x84_PchgPDModeSel_MASK                             0x800000
+#define D18F2x84_Reserved_31_24_OFFSET                          24
+#define D18F2x84_Reserved_31_24_WIDTH                           8
+#define D18F2x84_Reserved_31_24_MASK                            0xff000000
 
-/// D18F2x084
+/// D18F2x84
 typedef union {
   struct {                                                              ///<
     UINT32                                                BurstCtrl:2 ; ///<
@@ -1261,53 +1261,80 @@ typedef union {
     UINT32                                           Reserved_31_24:8 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D18F2x084_STRUCT;
+} D18F2x84_STRUCT;
 
-// **** D18F2x08C Register Definition ****
+// **** D18F2x88 Register Definition ****
 // Address
-#define D18F2x08C_ADDRESS                                        0x8c
+#define D18F2x88_ADDRESS                                        0x88
 
 // Type
-#define D18F2x08C_TYPE                                           TYPE_D18F2
+#define D18F2x88_TYPE                                           TYPE_D18F2
 // Field Data
-#define D18F2x08C_TrwtWB_OFFSET                                  0
-#define D18F2x08C_TrwtWB_WIDTH                                   4
-#define D18F2x08C_TrwtWB_MASK                                    0xf
-#define D18F2x08C_TrwtTO_OFFSET                                  4
-#define D18F2x08C_TrwtTO_WIDTH                                   4
-#define D18F2x08C_TrwtTO_MASK                                    0xf0
-#define D18F2x08C_Reserved_9_8_OFFSET                            8
-#define D18F2x08C_Reserved_9_8_WIDTH                             2
-#define D18F2x08C_Reserved_9_8_MASK                              0x300
-#define D18F2x08C_Twrrd_1_0__OFFSET                              10
-#define D18F2x08C_Twrrd_1_0__WIDTH                               2
-#define D18F2x08C_Twrrd_1_0__MASK                                0xc00
-#define D18F2x08C_Twrwr_1_0__OFFSET                              12
-#define D18F2x08C_Twrwr_1_0__WIDTH                               2
-#define D18F2x08C_Twrwr_1_0__MASK                                0x3000
-#define D18F2x08C_Trdrd_1_0__OFFSET                              14
-#define D18F2x08C_Trdrd_1_0__WIDTH                               2
-#define D18F2x08C_Trdrd_1_0__MASK                                0xc000
-#define D18F2x08C_Tref_OFFSET                                    16
-#define D18F2x08C_Tref_WIDTH                                     2
-#define D18F2x08C_Tref_MASK                                      0x30000
-#define D18F2x08C_DisAutoRefresh_OFFSET                          18
-#define D18F2x08C_DisAutoRefresh_WIDTH                           1
-#define D18F2x08C_DisAutoRefresh_MASK                            0x40000
-#define D18F2x08C_Reserved_19_19_OFFSET                          19
-#define D18F2x08C_Reserved_19_19_WIDTH                           1
-#define D18F2x08C_Reserved_19_19_MASK                            0x80000
-#define D18F2x08C_Trfc0_OFFSET                                   20
-#define D18F2x08C_Trfc0_WIDTH                                    3
-#define D18F2x08C_Trfc0_MASK                                     0x700000
-#define D18F2x08C_Trfc1_OFFSET                                   23
-#define D18F2x08C_Trfc1_WIDTH                                    3
-#define D18F2x08C_Trfc1_MASK                                     0x3800000
-#define D18F2x08C_Reserved_31_26_OFFSET                          26
-#define D18F2x08C_Reserved_31_26_WIDTH                           6
-#define D18F2x08C_Reserved_31_26_MASK                            0xfc000000
+#define D18F2x88_Tcl_OFFSET                                     0
+#define D18F2x88_Tcl_WIDTH                                      4
+#define D18F2x88_Tcl_MASK                                       0xf
+#define D18F2x88_Reserved_23_4_OFFSET                           4
+#define D18F2x88_Reserved_23_4_WIDTH                            20
+#define D18F2x88_Reserved_23_4_MASK                             0xfffff0
+#define D18F2x88_MemClkDis_OFFSET                               24
+#define D18F2x88_MemClkDis_WIDTH                                8
+#define D18F2x88_MemClkDis_MASK                                 0xff000000
 
-/// D18F2x08C
+/// D18F2x88
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                      Tcl:4 ; ///<
+    UINT32                                            Reserved_23_4:20; ///<
+    UINT32                                                MemClkDis:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x88_STRUCT;
+
+// **** D18F2x8C Register Definition ****
+// Address
+#define D18F2x8C_ADDRESS                                        0x8c
+
+// Type
+#define D18F2x8C_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2x8C_TrwtWB_OFFSET                                  0
+#define D18F2x8C_TrwtWB_WIDTH                                   4
+#define D18F2x8C_TrwtWB_MASK                                    0xf
+#define D18F2x8C_TrwtTO_OFFSET                                  4
+#define D18F2x8C_TrwtTO_WIDTH                                   4
+#define D18F2x8C_TrwtTO_MASK                                    0xf0
+#define D18F2x8C_Reserved_9_8_OFFSET                            8
+#define D18F2x8C_Reserved_9_8_WIDTH                             2
+#define D18F2x8C_Reserved_9_8_MASK                              0x300
+#define D18F2x8C_Twrrd_1_0__OFFSET                              10
+#define D18F2x8C_Twrrd_1_0__WIDTH                               2
+#define D18F2x8C_Twrrd_1_0__MASK                                0xc00
+#define D18F2x8C_Twrwr_1_0__OFFSET                              12
+#define D18F2x8C_Twrwr_1_0__WIDTH                               2
+#define D18F2x8C_Twrwr_1_0__MASK                                0x3000
+#define D18F2x8C_Trdrd_1_0__OFFSET                              14
+#define D18F2x8C_Trdrd_1_0__WIDTH                               2
+#define D18F2x8C_Trdrd_1_0__MASK                                0xc000
+#define D18F2x8C_Tref_OFFSET                                    16
+#define D18F2x8C_Tref_WIDTH                                     2
+#define D18F2x8C_Tref_MASK                                      0x30000
+#define D18F2x8C_DisAutoRefresh_OFFSET                          18
+#define D18F2x8C_DisAutoRefresh_WIDTH                           1
+#define D18F2x8C_DisAutoRefresh_MASK                            0x40000
+#define D18F2x8C_Reserved_19_19_OFFSET                          19
+#define D18F2x8C_Reserved_19_19_WIDTH                           1
+#define D18F2x8C_Reserved_19_19_MASK                            0x80000
+#define D18F2x8C_Trfc0_OFFSET                                   20
+#define D18F2x8C_Trfc0_WIDTH                                    3
+#define D18F2x8C_Trfc0_MASK                                     0x700000
+#define D18F2x8C_Trfc1_OFFSET                                   23
+#define D18F2x8C_Trfc1_WIDTH                                    3
+#define D18F2x8C_Trfc1_MASK                                     0x3800000
+#define D18F2x8C_Reserved_31_26_OFFSET                          26
+#define D18F2x8C_Reserved_31_26_WIDTH                           6
+#define D18F2x8C_Reserved_31_26_MASK                            0xfc000000
+
+/// D18F2x8C
 typedef union {
   struct {                                                              ///<
     UINT32                                                   TrwtWB:4 ; ///<
@@ -1324,56 +1351,56 @@ typedef union {
     UINT32                                           Reserved_31_26:6 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D18F2x08C_STRUCT;
+} D18F2x8C_STRUCT;
 
-// **** D18F2x090 Register Definition ****
+// **** D18F2x90 Register Definition ****
 // Address
-#define D18F2x090_ADDRESS                                        0x90
+#define D18F2x90_ADDRESS                                        0x90
 
 // Type
-#define D18F2x090_TYPE                                           TYPE_D18F2
+#define D18F2x90_TYPE                                           TYPE_D18F2
 // Field Data
-#define D18F2x090_Reserved_0_0_OFFSET                            0
-#define D18F2x090_Reserved_0_0_WIDTH                             1
-#define D18F2x090_Reserved_0_0_MASK                              0x1
-#define D18F2x090_ExitSelfRef_OFFSET                             1
-#define D18F2x090_ExitSelfRef_WIDTH                              1
-#define D18F2x090_ExitSelfRef_MASK                               0x2
-#define D18F2x090_Reserved_16_2_OFFSET                           2
-#define D18F2x090_Reserved_16_2_WIDTH                            15
-#define D18F2x090_Reserved_16_2_MASK                             0x1fffc
-#define D18F2x090_EnterSelfRef_OFFSET                            17
-#define D18F2x090_EnterSelfRef_WIDTH                             1
-#define D18F2x090_EnterSelfRef_MASK                              0x20000
-#define D18F2x090_Reserved_19_18_OFFSET                          18
-#define D18F2x090_Reserved_19_18_WIDTH                           2
-#define D18F2x090_Reserved_19_18_MASK                            0xc0000
-#define D18F2x090_DynPageCloseEn_OFFSET                          20
-#define D18F2x090_DynPageCloseEn_WIDTH                           1
-#define D18F2x090_DynPageCloseEn_MASK                            0x100000
-#define D18F2x090_IdleCycInit_OFFSET                             21
-#define D18F2x090_IdleCycInit_WIDTH                              2
-#define D18F2x090_IdleCycInit_MASK                               0x600000
-#define D18F2x090_ForceAutoPchg_OFFSET                           23
-#define D18F2x090_ForceAutoPchg_WIDTH                            1
-#define D18F2x090_ForceAutoPchg_MASK                             0x800000
-#define D18F2x090_Reserved_24_24_OFFSET                          24
-#define D18F2x090_Reserved_24_24_WIDTH                           1
-#define D18F2x090_Reserved_24_24_MASK                            0x1000000
-#define D18F2x090_EnDispAutoPrecharge_OFFSET                     25
-#define D18F2x090_EnDispAutoPrecharge_WIDTH                      1
-#define D18F2x090_EnDispAutoPrecharge_MASK                       0x2000000
-#define D18F2x090_DbeSkidBufDis_OFFSET                           26
-#define D18F2x090_DbeSkidBufDis_WIDTH                            1
-#define D18F2x090_DbeSkidBufDis_MASK                             0x4000000
-#define D18F2x090_DisDllShutdownSR_OFFSET                        27
-#define D18F2x090_DisDllShutdownSR_WIDTH                         1
-#define D18F2x090_DisDllShutdownSR_MASK                          0x8000000
-#define D18F2x090_Reserved_31_28_OFFSET                          28
-#define D18F2x090_Reserved_31_28_WIDTH                           4
-#define D18F2x090_Reserved_31_28_MASK                            0xf0000000
+#define D18F2x90_Reserved_0_0_OFFSET                            0
+#define D18F2x90_Reserved_0_0_WIDTH                             1
+#define D18F2x90_Reserved_0_0_MASK                              0x1
+#define D18F2x90_ExitSelfRef_OFFSET                             1
+#define D18F2x90_ExitSelfRef_WIDTH                              1
+#define D18F2x90_ExitSelfRef_MASK                               0x2
+#define D18F2x90_Reserved_16_2_OFFSET                           2
+#define D18F2x90_Reserved_16_2_WIDTH                            15
+#define D18F2x90_Reserved_16_2_MASK                             0x1fffc
+#define D18F2x90_EnterSelfRef_OFFSET                            17
+#define D18F2x90_EnterSelfRef_WIDTH                             1
+#define D18F2x90_EnterSelfRef_MASK                              0x20000
+#define D18F2x90_Reserved_19_18_OFFSET                          18
+#define D18F2x90_Reserved_19_18_WIDTH                           2
+#define D18F2x90_Reserved_19_18_MASK                            0xc0000
+#define D18F2x90_DynPageCloseEn_OFFSET                          20
+#define D18F2x90_DynPageCloseEn_WIDTH                           1
+#define D18F2x90_DynPageCloseEn_MASK                            0x100000
+#define D18F2x90_IdleCycInit_OFFSET                             21
+#define D18F2x90_IdleCycInit_WIDTH                              2
+#define D18F2x90_IdleCycInit_MASK                               0x600000
+#define D18F2x90_ForceAutoPchg_OFFSET                           23
+#define D18F2x90_ForceAutoPchg_WIDTH                            1
+#define D18F2x90_ForceAutoPchg_MASK                             0x800000
+#define D18F2x90_Reserved_24_24_OFFSET                          24
+#define D18F2x90_Reserved_24_24_WIDTH                           1
+#define D18F2x90_Reserved_24_24_MASK                            0x1000000
+#define D18F2x90_EnDispAutoPrecharge_OFFSET                     25
+#define D18F2x90_EnDispAutoPrecharge_WIDTH                      1
+#define D18F2x90_EnDispAutoPrecharge_MASK                       0x2000000
+#define D18F2x90_DbeSkidBufDis_OFFSET                           26
+#define D18F2x90_DbeSkidBufDis_WIDTH                            1
+#define D18F2x90_DbeSkidBufDis_MASK                             0x4000000
+#define D18F2x90_DisDllShutdownSR_OFFSET                        27
+#define D18F2x90_DisDllShutdownSR_WIDTH                         1
+#define D18F2x90_DisDllShutdownSR_MASK                          0x8000000
+#define D18F2x90_Reserved_31_28_OFFSET                          28
+#define D18F2x90_Reserved_31_28_WIDTH                           4
+#define D18F2x90_Reserved_31_28_MASK                            0xf0000000
 
-/// D18F2x090
+/// D18F2x90
 typedef union {
   struct {                                                              ///<
     UINT32                                             Reserved_0_0:1 ; ///<
@@ -1391,11 +1418,171 @@ typedef union {
     UINT32                                           Reserved_31_28:4 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D18F2x090_STRUCT;
+} D18F2x90_STRUCT;
+
+// **** D18F2x94 Register Definition ****
+// Address
+#define D18F2x94_ADDRESS                                        0x94
+
+// Type
+#define D18F2x94_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2x94_MemClkFreq_OFFSET                              0
+#define D18F2x94_MemClkFreq_WIDTH                               5
+#define D18F2x94_MemClkFreq_MASK                                0x1f
+#define D18F2x94_Reserved_6_5_OFFSET                            5
+#define D18F2x94_Reserved_6_5_WIDTH                             2
+#define D18F2x94_Reserved_6_5_MASK                              0x60
+#define D18F2x94_MemClkFreqVal_OFFSET                           7
+#define D18F2x94_MemClkFreqVal_WIDTH                            1
+#define D18F2x94_MemClkFreqVal_MASK                             0x80
+#define D18F2x94_Reserved_9_8_OFFSET                            8
+#define D18F2x94_Reserved_9_8_WIDTH                             2
+#define D18F2x94_Reserved_9_8_MASK                              0x300
+#define D18F2x94_ZqcsInterval_OFFSET                            10
+#define D18F2x94_ZqcsInterval_WIDTH                             2
+#define D18F2x94_ZqcsInterval_MASK                              0xc00
+#define D18F2x94_Reserved_13_12_OFFSET                          12
+#define D18F2x94_Reserved_13_12_WIDTH                           2
+#define D18F2x94_Reserved_13_12_MASK                            0x3000
+#define D18F2x94_DisDramInterface_OFFSET                        14
+#define D18F2x94_DisDramInterface_WIDTH                         1
+#define D18F2x94_DisDramInterface_MASK                          0x4000
+#define D18F2x94_PowerDownEn_OFFSET                             15
+#define D18F2x94_PowerDownEn_WIDTH                              1
+#define D18F2x94_PowerDownEn_MASK                               0x8000
+#define D18F2x94_PowerDownMode_OFFSET                           16
+#define D18F2x94_PowerDownMode_WIDTH                            1
+#define D18F2x94_PowerDownMode_MASK                             0x10000
+#define D18F2x94_Reserved_19_17_OFFSET                          17
+#define D18F2x94_Reserved_19_17_WIDTH                           3
+#define D18F2x94_Reserved_19_17_MASK                            0xe0000
+#define D18F2x94_SlowAccessMode_OFFSET                          20
+#define D18F2x94_SlowAccessMode_WIDTH                           1
+#define D18F2x94_SlowAccessMode_MASK                            0x100000
+#define D18F2x94_Reserved_21_21_OFFSET                          21
+#define D18F2x94_Reserved_21_21_WIDTH                           1
+#define D18F2x94_Reserved_21_21_MASK                            0x200000
+#define D18F2x94_BankSwizzleMode_OFFSET                         22
+#define D18F2x94_BankSwizzleMode_WIDTH                          1
+#define D18F2x94_BankSwizzleMode_MASK                           0x400000
+#define D18F2x94_ProcOdtDis_OFFSET                              23
+#define D18F2x94_ProcOdtDis_WIDTH                               1
+#define D18F2x94_ProcOdtDis_MASK                                0x800000
+#define D18F2x94_DcqBypassMax_OFFSET                            24
+#define D18F2x94_DcqBypassMax_WIDTH                             4
+#define D18F2x94_DcqBypassMax_MASK                              0xf000000
+#define D18F2x94_FourActWindow_OFFSET                           28
+#define D18F2x94_FourActWindow_WIDTH                            4
+#define D18F2x94_FourActWindow_MASK                             0xf0000000
+
+/// D18F2x94
+typedef union {
+  struct {                                                              ///<
+    UINT32                                               MemClkFreq:5 ; ///<
+    UINT32                                             Reserved_6_5:2 ; ///<
+    UINT32                                            MemClkFreqVal:1 ; ///<
+    UINT32                                             Reserved_9_8:2 ; ///<
+    UINT32                                             ZqcsInterval:2 ; ///<
+    UINT32                                           Reserved_13_12:3 ; ///<
+    UINT32                                         DisDramInterface:1 ; ///<
+    UINT32                                              PowerDownEn:1 ; ///<
+    UINT32                                            PowerDownMode:1 ; ///<
+    UINT32                                           Reserved_19_17:3 ; ///<
+    UINT32                                           SlowAccessMode:1 ; ///<
+    UINT32                                           Reserved_21_21:1 ; ///<
+    UINT32                                          BankSwizzleMode:1 ; ///<
+    UINT32                                               ProcOdtDis:1 ; ///<
+    UINT32                                             DcqBypassMax:4 ; ///<
+    UINT32                                            FourActWindow:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x94_STRUCT;
+
+// **** D18F2x98 Register Definition ****
+// Address
+#define D18F2x98_ADDRESS                                        0x98
+
+// Type
+#define D18F2x98_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2x98_DctOffset_OFFSET                               0
+#define D18F2x98_DctOffset_WIDTH                                30
+#define D18F2x98_DctOffset_MASK                                 0x3fffffff
+#define D18F2x98_DctAccessWrite_OFFSET                          30
+#define D18F2x98_DctAccessWrite_WIDTH                           1
+#define D18F2x98_DctAccessWrite_MASK                            0x40000000
+#define D18F2x98_DctAccessDone_OFFSET                           31
+#define D18F2x98_DctAccessDone_WIDTH                            1
+#define D18F2x98_DctAccessDone_MASK                             0x80000000
+
+/// D18F2x98
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                DctOffset:30; ///<
+    UINT32                                           DctAccessWrite:1 ; ///<
+    UINT32                                            DctAccessDone:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x98_STRUCT;
 
 // **** D18F2x9C Register Definition ****
 // Address
 #define D18F2x9C_ADDRESS                                        0x9c
+
+// Type
+#define D18F2x9C_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2x9C_DctDataPort_OFFSET                             0
+#define D18F2x9C_DctDataPort_WIDTH                              32
+#define D18F2x9C_DctDataPort_MASK                               0xffffffff
+
+/// D18F2x9C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              DctDataPort:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x9C_STRUCT;
+
+// **** D18F2x09C_x0D0FE00A Register Definition ****
+// Address
+#define D18F2x09C_x0D0FE00A_ADDRESS                             0x0D0FE00A
+
+// Type
+#define D18F2x09C_x0D0FE00A_TYPE                                TYPE_D18F2x9C
+// Field Data
+#define D18F2x09C_x0D0FE00A_Reserved_3_0_OFFSET                 0
+#define D18F2x09C_x0D0FE00A_Reserved_3_0_WIDTH                  4
+#define D18F2x09C_x0D0FE00A_Reserved_3_0_MASK                   0xF
+#define D18F2x09C_x0D0FE00A_SkewMemClk_OFFSET                   4
+#define D18F2x09C_x0D0FE00A_SkewMemClk_WIDTH                    1
+#define D18F2x09C_x0D0FE00A_SkewMemClk_MASK                     0x10
+#define D18F2x09C_x0D0FE00A_Reserved_11_5_OFFSET                5
+#define D18F2x09C_x0D0FE00A_Reserved_11_5_WIDTH                 7
+#define D18F2x09C_x0D0FE00A_Reserved_11_5_MASK                  0xFE0
+#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_OFFSET            12
+#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_WIDTH             2
+#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_MASK              0x3000
+#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_OFFSET              14
+#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_WIDTH               1
+#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_MASK                0x4000
+#define D18F2x09C_x0D0FE00A_Reserved_31_15_OFFSET               15
+#define D18F2x09C_x0D0FE00A_Reserved_31_15_WIDTH                17
+#define D18F2x09C_x0D0FE00A_Reserved_31_15_MASK                 0xFFFF8000
+
+/// D18F2x09C_x0D0FE00A
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              Reserved_3_0:4; ///<
+    UINT32                                                SkewMemClk:1; ///<
+    UINT32                                             Reserved_11_5:7; ///<
+    UINT32                                         CsrPhySrPllPdMode:2; ///<
+    UINT32                                           SelCsrPllPdMode:1; ///<
+    UINT32                                            Reserved_31_15:17; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x09C_x0D0FE00A_STRUCT;
 
 // **** D18F2xA0 Register Definition ****
 // Address
@@ -1497,6 +1684,542 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D18F2xAC_STRUCT;
 
+// **** D18F2xB0 Register Definition ****
+// Address
+#define D18F2xB0_ADDRESS                                        0xb0
+
+// Type
+#define D18F2xB0_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xB0_TscLow_OFFSET                                  0
+#define D18F2xB0_TscLow_WIDTH                                   32
+#define D18F2xB0_TscLow_MASK                                    0xffffffff
+
+/// D18F2xB0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   TscLow:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xB0_STRUCT;
+
+// **** D18F2xB4 Register Definition ****
+// Address
+#define D18F2xB4_ADDRESS                                        0xb4
+
+// Type
+#define D18F2xB4_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xB4_TscHigh_OFFSET                                 0
+#define D18F2xB4_TscHigh_WIDTH                                  32
+#define D18F2xB4_TscHigh_MASK                                   0xffffffff
+
+/// D18F2xB4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  TscHigh:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xB4_STRUCT;
+
+// **** D18F2xB8 Register Definition ****
+// Address
+#define D18F2xB8_ADDRESS                                        0xb8
+
+// Type
+#define D18F2xB8_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xB8_TrcBufDramBase_35_24__OFFSET                   0
+#define D18F2xB8_TrcBufDramBase_35_24__WIDTH                    12
+#define D18F2xB8_TrcBufDramBase_35_24__MASK                     0xfff
+#define D18F2xB8_TrcBufDramBase_39_36__OFFSET                   12
+#define D18F2xB8_TrcBufDramBase_39_36__WIDTH                    4
+#define D18F2xB8_TrcBufDramBase_39_36__MASK                     0xf000
+#define D18F2xB8_TrcBufDramLimit_35_24__OFFSET                  16
+#define D18F2xB8_TrcBufDramLimit_35_24__WIDTH                   12
+#define D18F2xB8_TrcBufDramLimit_35_24__MASK                    0xfff0000
+#define D18F2xB8_TrcBufDramLimit_39_36__OFFSET                  28
+#define D18F2xB8_TrcBufDramLimit_39_36__WIDTH                   4
+#define D18F2xB8_TrcBufDramLimit_39_36__MASK                    0xf0000000
+
+/// D18F2xB8
+typedef union {
+  struct {                                                              ///<
+    UINT32                                    TrcBufDramBase_35_24_:12; ///<
+    UINT32                                    TrcBufDramBase_39_36_:4 ; ///<
+    UINT32                                   TrcBufDramLimit_35_24_:12; ///<
+    UINT32                                   TrcBufDramLimit_39_36_:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xB8_STRUCT;
+
+// **** D18F2xBC Register Definition ****
+// Address
+#define D18F2xBC_ADDRESS                                        0xbc
+
+// Type
+#define D18F2xBC_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xBC_TrcBufAdrPtr_35_6__OFFSET                      0
+#define D18F2xBC_TrcBufAdrPtr_35_6__WIDTH                       30
+#define D18F2xBC_TrcBufAdrPtr_35_6__MASK                        0x3fffffff
+#define D18F2xBC_TrcBufAdrPtr_37_36__OFFSET                     30
+#define D18F2xBC_TrcBufAdrPtr_37_36__WIDTH                      2
+#define D18F2xBC_TrcBufAdrPtr_37_36__MASK                       0xc0000000
+
+/// D18F2xBC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                       TrcBufAdrPtr_35_6_:30; ///<
+    UINT32                                      TrcBufAdrPtr_37_36_:2 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xBC_STRUCT;
+
+// **** D18F2xC0 Register Definition ****
+// Address
+#define D18F2xC0_ADDRESS                                        0xc0
+
+// Type
+#define D18F2xC0_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xC0_TraceModeEn_OFFSET                             0
+#define D18F2xC0_TraceModeEn_WIDTH                              1
+#define D18F2xC0_TraceModeEn_MASK                               0x1
+#define D18F2xC0_TcbModeEn_OFFSET                               1
+#define D18F2xC0_TcbModeEn_WIDTH                                1
+#define D18F2xC0_TcbModeEn_MASK                                 0x2
+#define D18F2xC0_Reserved_3_2_OFFSET                            2
+#define D18F2xC0_Reserved_3_2_WIDTH                             2
+#define D18F2xC0_Reserved_3_2_MASK                              0xc
+#define D18F2xC0_ncHTEn0_OFFSET                                 4
+#define D18F2xC0_ncHTEn0_WIDTH                                  1
+#define D18F2xC0_ncHTEn0_MASK                                   0x10
+#define D18F2xC0_ncHTEn1_OFFSET                                 5
+#define D18F2xC0_ncHTEn1_WIDTH                                  1
+#define D18F2xC0_ncHTEn1_MASK                                   0x20
+#define D18F2xC0_Reserved_11_6_OFFSET                           6
+#define D18F2xC0_Reserved_11_6_WIDTH                            6
+#define D18F2xC0_Reserved_11_6_MASK                             0xfc0
+#define D18F2xC0_FlushTcb_OFFSET                                12
+#define D18F2xC0_FlushTcb_WIDTH                                 1
+#define D18F2xC0_FlushTcb_MASK                                  0x1000
+#define D18F2xC0_Reserved_14_13_OFFSET                          13
+#define D18F2xC0_Reserved_14_13_WIDTH                           2
+#define D18F2xC0_Reserved_14_13_MASK                            0x6000
+#define D18F2xC0_TraceCmdMtchReq_OFFSET                         15
+#define D18F2xC0_TraceCmdMtchReq_WIDTH                          1
+#define D18F2xC0_TraceCmdMtchReq_MASK                           0x8000
+#define D18F2xC0_Reserved_17_16_OFFSET                          16
+#define D18F2xC0_Reserved_17_16_WIDTH                           2
+#define D18F2xC0_Reserved_17_16_MASK                            0x30000
+#define D18F2xC0_MultiLevelSingleEvent_OFFSET                   18
+#define D18F2xC0_MultiLevelSingleEvent_WIDTH                    1
+#define D18F2xC0_MultiLevelSingleEvent_MASK                     0x40000
+#define D18F2xC0_MultiLevelMultiEvent_OFFSET                    19
+#define D18F2xC0_MultiLevelMultiEvent_WIDTH                     1
+#define D18F2xC0_MultiLevelMultiEvent_MASK                      0x80000
+#define D18F2xC0_Reserved_20_20_OFFSET                          20
+#define D18F2xC0_Reserved_20_20_WIDTH                           1
+#define D18F2xC0_Reserved_20_20_MASK                            0x100000
+#define D18F2xC0_TraceSrcDstAndEn_OFFSET                        21
+#define D18F2xC0_TraceSrcDstAndEn_WIDTH                         1
+#define D18F2xC0_TraceSrcDstAndEn_MASK                          0x200000
+#define D18F2xC0_TraceFlushOnDbReq_OFFSET                       22
+#define D18F2xC0_TraceFlushOnDbReq_WIDTH                        1
+#define D18F2xC0_TraceFlushOnDbReq_MASK                         0x400000
+#define D18F2xC0_TraceOneShotEn_OFFSET                          23
+#define D18F2xC0_TraceOneShotEn_WIDTH                           1
+#define D18F2xC0_TraceOneShotEn_MASK                            0x800000
+#define D18F2xC0_Reserved_31_24_OFFSET                          24
+#define D18F2xC0_Reserved_31_24_WIDTH                           8
+#define D18F2xC0_Reserved_31_24_MASK                            0xff000000
+
+/// D18F2xC0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              TraceModeEn:1 ; ///<
+    UINT32                                                TcbModeEn:1 ; ///<
+    UINT32                                             Reserved_3_2:2 ; ///<
+    UINT32                                                  ncHTEn0:1 ; ///<
+    UINT32                                                  ncHTEn1:1 ; ///<
+    UINT32                                            Reserved_11_6:6 ; ///<
+    UINT32                                                 FlushTcb:1 ; ///<
+    UINT32                                           Reserved_14_13:2 ; ///<
+    UINT32                                          TraceCmdMtchReq:1 ; ///<
+    UINT32                                           Reserved_17_16:2 ; ///<
+    UINT32                                    MultiLevelSingleEvent:1 ; ///<
+    UINT32                                     MultiLevelMultiEvent:1 ; ///<
+    UINT32                                           Reserved_20_20:1 ; ///<
+    UINT32                                         TraceSrcDstAndEn:1 ; ///<
+    UINT32                                        TraceFlushOnDbReq:1 ; ///<
+    UINT32                                           TraceOneShotEn:1 ; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xC0_STRUCT;
+
+// **** D18F2xC4 Register Definition ****
+// Address
+#define D18F2xC4_ADDRESS                                        0xc4
+
+// Type
+#define D18F2xC4_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xC4_StartCmd0_OFFSET                               0
+#define D18F2xC4_StartCmd0_WIDTH                                1
+#define D18F2xC4_StartCmd0_MASK                                 0x1
+#define D18F2xC4_StartCmd1_OFFSET                               1
+#define D18F2xC4_StartCmd1_WIDTH                                1
+#define D18F2xC4_StartCmd1_MASK                                 0x2
+#define D18F2xC4_Reserved_21_2_OFFSET                           2
+#define D18F2xC4_Reserved_21_2_WIDTH                            20
+#define D18F2xC4_Reserved_21_2_MASK                             0x3ffffc
+#define D18F2xC4_StartDbRdy_OFFSET                              22
+#define D18F2xC4_StartDbRdy_WIDTH                               1
+#define D18F2xC4_StartDbRdy_MASK                                0x400000
+#define D18F2xC4_StartDbReq_OFFSET                              23
+#define D18F2xC4_StartDbReq_WIDTH                               1
+#define D18F2xC4_StartDbReq_MASK                                0x800000
+#define D18F2xC4_StartPerfMon0_OFFSET                           24
+#define D18F2xC4_StartPerfMon0_WIDTH                            1
+#define D18F2xC4_StartPerfMon0_MASK                             0x1000000
+#define D18F2xC4_StartPerfMon1_OFFSET                           25
+#define D18F2xC4_StartPerfMon1_WIDTH                            1
+#define D18F2xC4_StartPerfMon1_MASK                             0x2000000
+#define D18F2xC4_StartPerfMon2_OFFSET                           26
+#define D18F2xC4_StartPerfMon2_WIDTH                            1
+#define D18F2xC4_StartPerfMon2_MASK                             0x4000000
+#define D18F2xC4_StartPerfMon3_OFFSET                           27
+#define D18F2xC4_StartPerfMon3_WIDTH                            1
+#define D18F2xC4_StartPerfMon3_MASK                             0x8000000
+#define D18F2xC4_StartMCE_OFFSET                                28
+#define D18F2xC4_StartMCE_WIDTH                                 1
+#define D18F2xC4_StartMCE_MASK                                  0x10000000
+#define D18F2xC4_Reserved_29_29_OFFSET                          29
+#define D18F2xC4_Reserved_29_29_WIDTH                           1
+#define D18F2xC4_Reserved_29_29_MASK                            0x20000000
+#define D18F2xC4_StartTSC_OFFSET                                30
+#define D18F2xC4_StartTSC_WIDTH                                 1
+#define D18F2xC4_StartTSC_MASK                                  0x40000000
+#define D18F2xC4_StartNow_OFFSET                                31
+#define D18F2xC4_StartNow_WIDTH                                 1
+#define D18F2xC4_StartNow_MASK                                  0x80000000
+
+/// D18F2xC4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                StartCmd0:1 ; ///<
+    UINT32                                                StartCmd1:1 ; ///<
+    UINT32                                            Reserved_21_2:20; ///<
+    UINT32                                               StartDbRdy:1 ; ///<
+    UINT32                                               StartDbReq:1 ; ///<
+    UINT32                                            StartPerfMon0:1 ; ///<
+    UINT32                                            StartPerfMon1:1 ; ///<
+    UINT32                                            StartPerfMon2:1 ; ///<
+    UINT32                                            StartPerfMon3:1 ; ///<
+    UINT32                                                 StartMCE:1 ; ///<
+    UINT32                                           Reserved_29_29:1 ; ///<
+    UINT32                                                 StartTSC:1 ; ///<
+    UINT32                                                 StartNow:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xC4_STRUCT;
+
+// **** D18F2xC8 Register Definition ****
+// Address
+#define D18F2xC8_ADDRESS                                        0xc8
+
+// Type
+#define D18F2xC8_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xC8_StopCmd0_OFFSET                                0
+#define D18F2xC8_StopCmd0_WIDTH                                 1
+#define D18F2xC8_StopCmd0_MASK                                  0x1
+#define D18F2xC8_StopCmd1_OFFSET                                1
+#define D18F2xC8_StopCmd1_WIDTH                                 1
+#define D18F2xC8_StopCmd1_MASK                                  0x2
+#define D18F2xC8_Reserved_21_2_OFFSET                           2
+#define D18F2xC8_Reserved_21_2_WIDTH                            20
+#define D18F2xC8_Reserved_21_2_MASK                             0x3ffffc
+#define D18F2xC8_StopDbRdy_OFFSET                               22
+#define D18F2xC8_StopDbRdy_WIDTH                                1
+#define D18F2xC8_StopDbRdy_MASK                                 0x400000
+#define D18F2xC8_StopDbReq_OFFSET                               23
+#define D18F2xC8_StopDbReq_WIDTH                                1
+#define D18F2xC8_StopDbReq_MASK                                 0x800000
+#define D18F2xC8_StopPerfMon0_OFFSET                            24
+#define D18F2xC8_StopPerfMon0_WIDTH                             1
+#define D18F2xC8_StopPerfMon0_MASK                              0x1000000
+#define D18F2xC8_StopPerfMon1_OFFSET                            25
+#define D18F2xC8_StopPerfMon1_WIDTH                             1
+#define D18F2xC8_StopPerfMon1_MASK                              0x2000000
+#define D18F2xC8_StopPerfMon2_OFFSET                            26
+#define D18F2xC8_StopPerfMon2_WIDTH                             1
+#define D18F2xC8_StopPerfMon2_MASK                              0x4000000
+#define D18F2xC8_StopPerfMon3_OFFSET                            27
+#define D18F2xC8_StopPerfMon3_WIDTH                             1
+#define D18F2xC8_StopPerfMon3_MASK                              0x8000000
+#define D18F2xC8_StopMCE_OFFSET                                 28
+#define D18F2xC8_StopMCE_WIDTH                                  1
+#define D18F2xC8_StopMCE_MASK                                   0x10000000
+#define D18F2xC8_StopTrcBufFull_OFFSET                          29
+#define D18F2xC8_StopTrcBufFull_WIDTH                           1
+#define D18F2xC8_StopTrcBufFull_MASK                            0x20000000
+#define D18F2xC8_StopTSC_OFFSET                                 30
+#define D18F2xC8_StopTSC_WIDTH                                  1
+#define D18F2xC8_StopTSC_MASK                                   0x40000000
+#define D18F2xC8_StopNow_OFFSET                                 31
+#define D18F2xC8_StopNow_WIDTH                                  1
+#define D18F2xC8_StopNow_MASK                                   0x80000000
+
+/// D18F2xC8
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                 StopCmd0:1 ; ///<
+    UINT32                                                 StopCmd1:1 ; ///<
+    UINT32                                            Reserved_21_2:20; ///<
+    UINT32                                                StopDbRdy:1 ; ///<
+    UINT32                                                StopDbReq:1 ; ///<
+    UINT32                                             StopPerfMon0:1 ; ///<
+    UINT32                                             StopPerfMon1:1 ; ///<
+    UINT32                                             StopPerfMon2:1 ; ///<
+    UINT32                                             StopPerfMon3:1 ; ///<
+    UINT32                                                  StopMCE:1 ; ///<
+    UINT32                                           StopTrcBufFull:1 ; ///<
+    UINT32                                                  StopTSC:1 ; ///<
+    UINT32                                                  StopNow:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xC8_STRUCT;
+
+// **** D18F2xCC Register Definition ****
+// Address
+#define D18F2xCC_ADDRESS                                        0xcc
+
+// Type
+#define D18F2xCC_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xCC_TrcCmd0_OFFSET                                 0
+#define D18F2xCC_TrcCmd0_WIDTH                                  1
+#define D18F2xCC_TrcCmd0_MASK                                   0x1
+#define D18F2xCC_TrcCmd1_OFFSET                                 1
+#define D18F2xCC_TrcCmd1_WIDTH                                  1
+#define D18F2xCC_TrcCmd1_MASK                                   0x2
+#define D18F2xCC_Reserved_3_2_OFFSET                            2
+#define D18F2xCC_Reserved_3_2_WIDTH                             2
+#define D18F2xCC_Reserved_3_2_MASK                              0xc
+#define D18F2xCC_TrcRsp0_OFFSET                                 4
+#define D18F2xCC_TrcRsp0_WIDTH                                  1
+#define D18F2xCC_TrcRsp0_MASK                                   0x10
+#define D18F2xCC_TrcRsp1_OFFSET                                 5
+#define D18F2xCC_TrcRsp1_WIDTH                                  1
+#define D18F2xCC_TrcRsp1_MASK                                   0x20
+#define D18F2xCC_Reserved_11_6_OFFSET                           6
+#define D18F2xCC_Reserved_11_6_WIDTH                            6
+#define D18F2xCC_Reserved_11_6_MASK                             0xfc0
+#define D18F2xCC_TrcDat0_OFFSET                                 12
+#define D18F2xCC_TrcDat0_WIDTH                                  1
+#define D18F2xCC_TrcDat0_MASK                                   0x1000
+#define D18F2xCC_TrcDat1_OFFSET                                 13
+#define D18F2xCC_TrcDat1_WIDTH                                  1
+#define D18F2xCC_TrcDat1_MASK                                   0x2000
+#define D18F2xCC_MultiDatXbarSel_OFFSET                         14
+#define D18F2xCC_MultiDatXbarSel_WIDTH                          1
+#define D18F2xCC_MultiDatXbarSel_MASK                           0x4000
+#define D18F2xCC_TrcCmdSrcPtr_OFFSET                            15
+#define D18F2xCC_TrcCmdSrcPtr_WIDTH                             7
+#define D18F2xCC_TrcCmdSrcPtr_MASK                              0x3f8000
+#define D18F2xCC_MultiTscCapture_OFFSET                         22
+#define D18F2xCC_MultiTscCapture_WIDTH                          1
+#define D18F2xCC_MultiTscCapture_MASK                           0x400000
+#define D18F2xCC_TscBase_OFFSET                                 23
+#define D18F2xCC_TscBase_WIDTH                                  1
+#define D18F2xCC_TscBase_MASK                                   0x800000
+#define D18F2xCC_TrcCmdDstPtr_OFFSET                            24
+#define D18F2xCC_TrcCmdDstPtr_WIDTH                             6
+#define D18F2xCC_TrcCmdDstPtr_MASK                              0x3f000000
+#define D18F2xCC_DisTscCapture_OFFSET                           30
+#define D18F2xCC_DisTscCapture_WIDTH                            1
+#define D18F2xCC_DisTscCapture_MASK                             0x40000000
+#define D18F2xCC_TrcDatSrcDst_OFFSET                            31
+#define D18F2xCC_TrcDatSrcDst_WIDTH                             1
+#define D18F2xCC_TrcDatSrcDst_MASK                              0x80000000
+
+/// D18F2xCC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  TrcCmd0:1 ; ///<
+    UINT32                                                  TrcCmd1:1 ; ///<
+    UINT32                                             Reserved_3_2:2 ; ///<
+    UINT32                                                  TrcRsp0:1 ; ///<
+    UINT32                                                  TrcRsp1:1 ; ///<
+    UINT32                                            Reserved_11_6:6 ; ///<
+    UINT32                                                  TrcDat0:1 ; ///<
+    UINT32                                                  TrcDat1:1 ; ///<
+    UINT32                                          MultiDatXbarSel:1 ; ///<
+    UINT32                                             TrcCmdSrcPtr:7 ; ///<
+    UINT32                                          MultiTscCapture:1 ; ///<
+    UINT32                                                  TscBase:1 ; ///<
+    UINT32                                             TrcCmdDstPtr:6 ; ///<
+    UINT32                                            DisTscCapture:1 ; ///<
+    UINT32                                             TrcDatSrcDst:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xCC_STRUCT;
+
+// **** D18F2xD0 Register Definition ****
+// Address
+#define D18F2xD0_ADDRESS                                        0xd0
+
+// Type
+#define D18F2xD0_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xD0_HTCmdLow_OFFSET                                0
+#define D18F2xD0_HTCmdLow_WIDTH                                 32
+#define D18F2xD0_HTCmdLow_MASK                                  0xffffffff
+
+/// D18F2xD0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                 HTCmdLow:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xD0_STRUCT;
+
+// **** D18F2xD4 Register Definition ****
+// Address
+#define D18F2xD4_ADDRESS                                        0xd4
+
+// Type
+#define D18F2xD4_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xD4_HTCmdHigh_OFFSET                               0
+#define D18F2xD4_HTCmdHigh_WIDTH                                32
+#define D18F2xD4_HTCmdHigh_MASK                                 0xffffffff
+
+/// D18F2xD4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                HTCmdHigh:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xD4_STRUCT;
+
+// **** D18F2xD8 Register Definition ****
+// Address
+#define D18F2xD8_ADDRESS                                        0xd8
+
+// Type
+#define D18F2xD8_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xD8_HTMaskLow_OFFSET                               0
+#define D18F2xD8_HTMaskLow_WIDTH                                32
+#define D18F2xD8_HTMaskLow_MASK                                 0xffffffff
+
+/// D18F2xD8
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                HTMaskLow:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xD8_STRUCT;
+
+// **** D18F2xDC Register Definition ****
+// Address
+#define D18F2xDC_ADDRESS                                        0xdc
+
+// Type
+#define D18F2xDC_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xDC_HTMaskHigh_OFFSET                              0
+#define D18F2xDC_HTMaskHigh_WIDTH                               32
+#define D18F2xDC_HTMaskHigh_MASK                                0xffffffff
+
+/// D18F2xDC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                               HTMaskHigh:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xDC_STRUCT;
+
+// **** D18F2xE0 Register Definition ****
+// Address
+#define D18F2xE0_ADDRESS                                        0xe0
+
+// Type
+#define D18F2xE0_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xE0_HTCmdLow_OFFSET                                0
+#define D18F2xE0_HTCmdLow_WIDTH                                 32
+#define D18F2xE0_HTCmdLow_MASK                                  0xffffffff
+
+/// D18F2xE0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                 HTCmdLow:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xE0_STRUCT;
+
+// **** D18F2xE4 Register Definition ****
+// Address
+#define D18F2xE4_ADDRESS                                        0xe4
+
+// Type
+#define D18F2xE4_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xE4_HTCmdHigh_OFFSET                               0
+#define D18F2xE4_HTCmdHigh_WIDTH                                32
+#define D18F2xE4_HTCmdHigh_MASK                                 0xffffffff
+
+/// D18F2xE4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                HTCmdHigh:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xE4_STRUCT;
+
+// **** D18F2xE8 Register Definition ****
+// Address
+#define D18F2xE8_ADDRESS                                        0xe8
+
+// Type
+#define D18F2xE8_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xE8_HTMaskLow_OFFSET                               0
+#define D18F2xE8_HTMaskLow_WIDTH                                32
+#define D18F2xE8_HTMaskLow_MASK                                 0xffffffff
+
+/// D18F2xE8
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                HTMaskLow:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xE8_STRUCT;
+
+// **** D18F2xEC Register Definition ****
+// Address
+#define D18F2xEC_ADDRESS                                        0xec
+
+// Type
+#define D18F2xEC_TYPE                                           TYPE_D18F2
+// Field Data
+#define D18F2xEC_HTMaskHigh_OFFSET                              0
+#define D18F2xEC_HTMaskHigh_WIDTH                               32
+#define D18F2xEC_HTMaskHigh_MASK                                0xffffffff
+
+/// D18F2xEC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                               HTMaskHigh:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2xEC_STRUCT;
+
 // **** D18F2xF0 Register Definition ****
 // Address
 #define D18F2xF0_ADDRESS                                        0xf0
@@ -1528,6 +2251,30 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D18F2xF0_STRUCT;
 
+// **** D18F2x184 Register Definition ****
+// Address
+#define D18F2x184_ADDRESS                                       0x184
+
+// **** D18F2x18C Register Definition ****
+// Address
+#define D18F2x18C_ADDRESS                                       0x18c
+
+// **** D18F2x190 Register Definition ****
+// Address
+#define D18F2x190_ADDRESS                                       0x190
+
+// **** D18F2x194 Register Definition ****
+// Address
+#define D18F2x194_ADDRESS                                       0x194
+
+// **** D18F2x198 Register Definition ****
+// Address
+#define D18F2x198_ADDRESS                                       0x198
+
+// **** D18F2x1F0 Register Definition ****
+// Address
+#define D18F2x1F0_ADDRESS                                       0x1f0
+
 // **** D18F2xF4 Register Definition ****
 // Address
 #define D18F2xF4_ADDRESS                                        0xf4
@@ -1546,6 +2293,92 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D18F2xF4_STRUCT;
+
+// **** D18F2x0F4_x40 Register Definition ****
+// Address
+#define D18F2x0F4_x40_ADDRESS                                   0x40
+
+// Type
+#define D18F2x0F4_x40_TYPE                                      TYPE_D18F2x0F4
+// Field Data
+#define D18F2x0F4_x40_Trcd_OFFSET                               0
+#define D18F2x0F4_x40_Trcd_WIDTH                                4
+#define D18F2x0F4_x40_Trcd_MASK                                 0xf
+#define D18F2x0F4_x40_Reserved_7_4_OFFSET                       4
+#define D18F2x0F4_x40_Reserved_7_4_WIDTH                        4
+#define D18F2x0F4_x40_Reserved_7_4_MASK                         0xf0
+#define D18F2x0F4_x40_Trp_OFFSET                                8
+#define D18F2x0F4_x40_Trp_WIDTH                                 4
+#define D18F2x0F4_x40_Trp_MASK                                  0xf00
+#define D18F2x0F4_x40_Reserved_15_12_OFFSET                     12
+#define D18F2x0F4_x40_Reserved_15_12_WIDTH                      4
+#define D18F2x0F4_x40_Reserved_15_12_MASK                       0xf000
+#define D18F2x0F4_x40_Tras_OFFSET                               16
+#define D18F2x0F4_x40_Tras_WIDTH                                5
+#define D18F2x0F4_x40_Tras_MASK                                 0x1f0000
+#define D18F2x0F4_x40_Reserved_23_21_OFFSET                     21
+#define D18F2x0F4_x40_Reserved_23_21_WIDTH                      3
+#define D18F2x0F4_x40_Reserved_23_21_MASK                       0xe00000
+#define D18F2x0F4_x40_Trc_OFFSET                                24
+#define D18F2x0F4_x40_Trc_WIDTH                                 6
+#define D18F2x0F4_x40_Trc_MASK                                  0x3f000000
+#define D18F2x0F4_x40_Reserved_31_30_OFFSET                     30
+#define D18F2x0F4_x40_Reserved_31_30_WIDTH                      2
+#define D18F2x0F4_x40_Reserved_31_30_MASK                       0xc0000000
+
+/// D18F2x0F4_x40
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                     Trcd:4 ; ///<
+    UINT32                                             Reserved_7_4:4 ; ///<
+    UINT32                                                      Trp:4 ; ///<
+    UINT32                                           Reserved_15_12:4 ; ///<
+    UINT32                                                     Tras:5 ; ///<
+    UINT32                                           Reserved_23_21:3 ; ///<
+    UINT32                                                      Trc:6 ; ///<
+    UINT32                                           Reserved_31_30:2 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x0F4_x40_STRUCT;
+
+// **** D18F2x0F4_x41 Register Definition ****
+// Address
+#define D18F2x0F4_x41_ADDRESS                                   0x41
+
+// Type
+#define D18F2x0F4_x41_TYPE                                      TYPE_D18F2x0F4
+// Field Data
+#define D18F2x0F4_x41_Trtp_OFFSET                               0
+#define D18F2x0F4_x41_Trtp_WIDTH                                3
+#define D18F2x0F4_x41_Trtp_MASK                                 0x7
+#define D18F2x0F4_x41_Reserved_7_3_OFFSET                       3
+#define D18F2x0F4_x41_Reserved_7_3_WIDTH                        5
+#define D18F2x0F4_x41_Reserved_7_3_MASK                         0xf8
+#define D18F2x0F4_x41_Trrd_OFFSET                               8
+#define D18F2x0F4_x41_Trrd_WIDTH                                3
+#define D18F2x0F4_x41_Trrd_MASK                                 0x700
+#define D18F2x0F4_x41_Reserved_15_11_OFFSET                     11
+#define D18F2x0F4_x41_Reserved_15_11_WIDTH                      5
+#define D18F2x0F4_x41_Reserved_15_11_MASK                       0xf800
+#define D18F2x0F4_x41_Twtr_OFFSET                               16
+#define D18F2x0F4_x41_Twtr_WIDTH                                3
+#define D18F2x0F4_x41_Twtr_MASK                                 0x70000
+#define D18F2x0F4_x41_Reserved_31_19_OFFSET                     19
+#define D18F2x0F4_x41_Reserved_31_19_WIDTH                      13
+#define D18F2x0F4_x41_Reserved_31_19_MASK                       0xfff80000
+
+/// D18F2x0F4_x41
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                     Trtp:3 ; ///<
+    UINT32                                             Reserved_7_3:5 ; ///<
+    UINT32                                                     Trrd:3 ; ///<
+    UINT32                                           Reserved_15_11:5 ; ///<
+    UINT32                                                     Twtr:3 ; ///<
+    UINT32                                           Reserved_31_19:13; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F2x0F4_x41_STRUCT;
 
 // **** D18F2x110 Register Definition ****
 // Address
@@ -1785,9 +2618,9 @@ typedef union {
 #define D18F3x7C_Reserved_15_14_OFFSET                          14
 #define D18F3x7C_Reserved_15_14_WIDTH                           2
 #define D18F3x7C_Reserved_15_14_MASK                            0xc000
-#define D18F3x7C_LoPriNPBC_OFFSET                               16
-#define D18F3x7C_LoPriNPBC_WIDTH                                6
-#define D18F3x7C_LoPriNPBC_MASK                                 0x3f0000
+#define D18F3x7C_LoPriNpBC_OFFSET                               16
+#define D18F3x7C_LoPriNpBC_WIDTH                                6
+#define D18F3x7C_LoPriNpBC_MASK                                 0x3f0000
 #define D18F3x7C_Reserved_23_22_OFFSET                          22
 #define D18F3x7C_Reserved_23_22_WIDTH                           2
 #define D18F3x7C_Reserved_23_22_MASK                            0xc00000
@@ -1812,6 +2645,57 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D18F3x7C_STRUCT;
+
+// **** D18F3xD4 Register Definition ****
+// Address
+#define D18F3xD4_ADDRESS                                        0xd4
+
+// Type
+#define D18F3xD4_TYPE                                           TYPE_D18F3
+// Field Data
+#define D18F3xD4_MainPllOpFreqId_OFFSET                         0
+#define D18F3xD4_MainPllOpFreqId_WIDTH                          6
+#define D18F3xD4_MainPllOpFreqId_MASK                           0x3f
+#define D18F3xD4_MainPllOpFreqIdEn_OFFSET                       6
+#define D18F3xD4_MainPllOpFreqIdEn_WIDTH                        1
+#define D18F3xD4_MainPllOpFreqIdEn_MASK                         0x40
+#define D18F3xD4_Reserved_7_7_OFFSET                            7
+#define D18F3xD4_Reserved_7_7_WIDTH                             1
+#define D18F3xD4_Reserved_7_7_MASK                              0x80
+#define D18F3xD4_ClkRampHystSel_OFFSET                          8
+#define D18F3xD4_ClkRampHystSel_WIDTH                           4
+#define D18F3xD4_ClkRampHystSel_MASK                            0xf00
+#define D18F3xD4_NbOutHyst_OFFSET                               12
+#define D18F3xD4_NbOutHyst_WIDTH                                4
+#define D18F3xD4_NbOutHyst_MASK                                 0xf000
+#define D18F3xD4_DisNclkGatingIdle_OFFSET                       16
+#define D18F3xD4_DisNclkGatingIdle_WIDTH                        1
+#define D18F3xD4_DisNclkGatingIdle_MASK                         0x10000
+#define D18F3xD4_ClockGatingEnDram_OFFSET                       17
+#define D18F3xD4_ClockGatingEnDram_WIDTH                        1
+#define D18F3xD4_ClockGatingEnDram_MASK                         0x20000
+#define D18F3xD4_Reserved_18_18_OFFSET                          18
+#define D18F3xD4_Reserved_18_18_WIDTH                           1
+#define D18F3xD4_Reserved_18_18_MASK                            0x40000
+#define D18F3xD4_Reserved_31_19_OFFSET                          19
+#define D18F3xD4_Reserved_31_19_WIDTH                           13
+#define D18F3xD4_Reserved_31_19_MASK                            0xfff80000
+
+/// D18F3xD4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                          MainPllOpFreqId:6 ; ///<
+    UINT32                                        MainPllOpFreqIdEn:1 ; ///<
+    UINT32                                             Reserved_7_7:1 ; ///<
+    UINT32                                           ClkRampHystSel:4 ; ///<
+    UINT32                                                NbOutHyst:4 ; ///<
+    UINT32                                        DisNclkGatingIdle:1 ; ///<
+    UINT32                                        ClockGatingEnDram:1 ; ///<
+    UINT32                                           Reserved_18_18:1 ; ///<
+    UINT32                                           Reserved_31_19:13; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F3xD4_STRUCT;
 
 // **** D18F3xD8 Register Definition ****
 // Address
@@ -1995,6 +2879,41 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D18F4x12C_STRUCT;
+
+// **** D18F4x15C Register Definition ****
+// Address
+#define D18F4x15C_ADDRESS                                       0x15c
+
+// Type
+#define D18F4x15C_TYPE                                          TYPE_D18F4
+// Field Data
+#define D18F4x15C_BoostSrc_OFFSET                               0
+#define D18F4x15C_BoostSrc_WIDTH                                2
+#define D18F4x15C_BoostSrc_MASK                                 0x3
+#define D18F4x15C_NumBoostStates_OFFSET                         2
+#define D18F4x15C_NumBoostStates_WIDTH                          3
+#define D18F4x15C_NumBoostStates_MASK                           0x1c
+#define D18F4x15C_Reserved_28_5_OFFSET                          5
+#define D18F4x15C_Reserved_28_5_WIDTH                           24
+#define D18F4x15C_Reserved_28_5_MASK                            0x1fffffe0
+#define D18F4x15C_BoostEnAllCores_OFFSET                        29
+#define D18F4x15C_BoostEnAllCores_WIDTH                         1
+#define D18F4x15C_BoostEnAllCores_MASK                          0x20000000
+#define D18F4x15C_Reserved_31_30_OFFSET                         30
+#define D18F4x15C_Reserved_31_30_WIDTH                          2
+#define D18F4x15C_Reserved_31_30_MASK                           0xc0000000
+
+/// D18F4x15C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                 BoostSrc:2 ; ///<
+    UINT32                                           NumBoostStates:3 ; ///<
+    UINT32                                            Reserved_28_5:24; ///<
+    UINT32                                          BoostEnAllCores:1 ; ///<
+    UINT32                                           Reserved_31_30:2 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F4x15C_STRUCT;
 
 // **** D18F4x164 Register Definition ****
 // Address
@@ -3744,6 +4663,88 @@ typedef union {
   UINT32 Value;                                                         ///<
 } FCRxFE00_7009_STRUCT;
 
+// **** FCRxFE00_7079 Register Definition ****
+// Address
+#define FCRxFE00_7079_ADDRESS                                   0xfe007079
+
+// Type
+#define FCRxFE00_7079_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_7079_Reserved_4_0_OFFSET                       0
+#define FCRxFE00_7079_Reserved_4_0_WIDTH                        5
+#define FCRxFE00_7079_Reserved_4_0_MASK                         0x1f
+#define FCRxFE00_7079_CoreDis_OFFSET                            5
+#define FCRxFE00_7079_CoreDis_WIDTH                             2
+#define FCRxFE00_7079_CoreDis_MASK                              0x60
+#define FCRxFE00_7079_Reserved_31_7_OFFSET                      7
+#define FCRxFE00_7079_Reserved_31_7_WIDTH                       25
+#define FCRxFE00_7079_Reserved_31_7_MASK                        0xffffff80
+
+/// FCRxFE00_7079
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_4_0:5 ; ///<
+    UINT32                                                  CoreDis:2 ; ///<
+    UINT32                                            Reserved_31_7:25; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_7079_STRUCT;
+
+
+// **** FCRxFF30_0AE6 Register Definition ****
+// Address
+#define FCRxFF30_0AE6_ADDRESS                                   0xff300ae6
+
+// Type
+#define FCRxFF30_0AE6_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFF30_0AE6_RengExecuteNonsecureStartPtr_OFFSET       0
+#define FCRxFF30_0AE6_RengExecuteNonsecureStartPtr_WIDTH        10
+#define FCRxFF30_0AE6_RengExecuteNonsecureStartPtr_MASK         0x3ff
+#define FCRxFF30_0AE6_Reserved_10_10_OFFSET                     10
+#define FCRxFF30_0AE6_Reserved_10_10_WIDTH                      1
+#define FCRxFF30_0AE6_Reserved_10_10_MASK                       0x400
+#define FCRxFF30_0AE6_RengExecuteOnRegUpdate_OFFSET             11
+#define FCRxFF30_0AE6_RengExecuteOnRegUpdate_WIDTH              1
+#define FCRxFF30_0AE6_RengExecuteOnRegUpdate_MASK               0x800
+#define FCRxFF30_0AE6_Reserved_15_12_OFFSET                     12
+#define FCRxFF30_0AE6_Reserved_15_12_WIDTH                      4
+#define FCRxFF30_0AE6_Reserved_15_12_MASK                       0xf000
+#define FCRxFF30_0AE6_StctrlStutterEn_OFFSET                    16
+#define FCRxFF30_0AE6_StctrlStutterEn_WIDTH                     1
+#define FCRxFF30_0AE6_StctrlStutterEn_MASK                      0x10000
+#define FCRxFF30_0AE6_Reserved_23_17_OFFSET                     17
+#define FCRxFF30_0AE6_Reserved_23_17_WIDTH                      7
+#define FCRxFF30_0AE6_Reserved_23_17_MASK                       0xfe0000
+#define FCRxFF30_0AE6_StctrlIgnoreProtectionFault_OFFSET        24
+#define FCRxFF30_0AE6_StctrlIgnoreProtectionFault_WIDTH         1
+#define FCRxFF30_0AE6_StctrlIgnoreProtectionFault_MASK          0x1000000
+#define FCRxFF30_0AE6_Reserved_26_25_OFFSET                     25
+#define FCRxFF30_0AE6_Reserved_26_25_WIDTH                      2
+#define FCRxFF30_0AE6_Reserved_26_25_MASK                       0x6000000
+#define FCRxFF30_0AE6_CriticalRegsLock_OFFSET                   27
+#define FCRxFF30_0AE6_CriticalRegsLock_WIDTH                    1
+#define FCRxFF30_0AE6_CriticalRegsLock_MASK                     0x8000000
+#define FCRxFF30_0AE6_Reserved_31_28_OFFSET                     28
+#define FCRxFF30_0AE6_Reserved_31_28_WIDTH                      4
+#define FCRxFF30_0AE6_Reserved_31_28_MASK                       0xf0000000
+
+/// FCRxFF30_0AE6
+typedef union {
+  struct {                                                              ///<
+    UINT32                             RengExecuteNonsecureStartPtr:10; ///<
+    UINT32                                           Reserved_10_10:1 ; ///<
+    UINT32                                   RengExecuteOnRegUpdate:1 ; ///<
+    UINT32                                           Reserved_15_12:4 ; ///<
+    UINT32                                          StctrlStutterEn:1 ; ///<
+    UINT32                                           Reserved_23_17:7 ; ///<
+    UINT32                              StctrlIgnoreProtectionFault:1 ; ///<
+    UINT32                                           Reserved_26_25:2 ; ///<
+    UINT32                                         CriticalRegsLock:1 ; ///<
+    UINT32                                           Reserved_31_28:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFF30_0AE6_STRUCT;
 
 // **** D0F0x64_x00 Register Definition ****
 // Address
@@ -3927,6 +4928,85 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D0F0x64_x1A_STRUCT;
 
+// **** D0F0x64_x1C Register Definition ****
+// Address
+#define D0F0x64_x1C_ADDRESS                                     0x1c
+
+// Type
+#define D0F0x64_x1C_TYPE                                        TYPE_D0F0x64
+// Field Data
+#define D0F0x64_x1C_WriteDis_OFFSET                             0
+#define D0F0x64_x1C_WriteDis_WIDTH                              1
+#define D0F0x64_x1C_WriteDis_MASK                               0x1
+#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_OFFSET              1
+#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_WIDTH               1
+#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_MASK                0x2
+#define D0F0x64_x1C_F064BarEn_OFFSET                            2
+#define D0F0x64_x1C_F064BarEn_WIDTH                             1
+#define D0F0x64_x1C_F064BarEn_MASK                              0x4
+#define D0F0x64_x1C_MemApSize_OFFSET                            3
+#define D0F0x64_x1C_MemApSize_WIDTH                             3
+#define D0F0x64_x1C_MemApSize_MASK                              0x38
+#define D0F0x64_x1C_RegApSize_OFFSET                            6
+#define D0F0x64_x1C_RegApSize_WIDTH                             1
+#define D0F0x64_x1C_RegApSize_MASK                              0x40
+#define D0F0x64_x1C_Reserved_7_7_OFFSET                         7
+#define D0F0x64_x1C_Reserved_7_7_WIDTH                          1
+#define D0F0x64_x1C_Reserved_7_7_MASK                           0x80
+#define D0F0x64_x1C_AudioEn_OFFSET                              8
+#define D0F0x64_x1C_AudioEn_WIDTH                               1
+#define D0F0x64_x1C_AudioEn_MASK                                0x100
+#define D0F0x64_x1C_MsiDis_OFFSET                               9
+#define D0F0x64_x1C_MsiDis_WIDTH                                1
+#define D0F0x64_x1C_MsiDis_MASK                                 0x200
+#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_OFFSET           10
+#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_WIDTH            1
+#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_MASK             0x400
+#define D0F0x64_x1C_Audio64BarEn_OFFSET                         11
+#define D0F0x64_x1C_Audio64BarEn_WIDTH                          1
+#define D0F0x64_x1C_Audio64BarEn_MASK                           0x800
+#define D0F0x64_x1C_Reserved_15_12_OFFSET                       12
+#define D0F0x64_x1C_Reserved_15_12_WIDTH                        4
+#define D0F0x64_x1C_Reserved_15_12_MASK                         0xf000
+#define D0F0x64_x1C_IoBarDis_OFFSET                             16
+#define D0F0x64_x1C_IoBarDis_WIDTH                              1
+#define D0F0x64_x1C_IoBarDis_MASK                               0x10000
+#define D0F0x64_x1C_F0En_OFFSET                                 17
+#define D0F0x64_x1C_F0En_WIDTH                                  1
+#define D0F0x64_x1C_F0En_MASK                                   0x20000
+#define D0F0x64_x1C_Reserved_22_18_OFFSET                       18
+#define D0F0x64_x1C_Reserved_22_18_WIDTH                        5
+#define D0F0x64_x1C_Reserved_22_18_MASK                         0x7c0000
+#define D0F0x64_x1C_RcieEn_OFFSET                               23
+#define D0F0x64_x1C_RcieEn_WIDTH                                1
+#define D0F0x64_x1C_RcieEn_MASK                                 0x800000
+#define D0F0x64_x1C_Reserved_31_24_OFFSET                       24
+#define D0F0x64_x1C_Reserved_31_24_WIDTH                        8
+#define D0F0x64_x1C_Reserved_31_24_MASK                         0xff000000
+
+/// D0F0x64_x1C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                 WriteDis:1 ; ///<
+    UINT32                                  F0NonlegacyDeviceTypeEn:1 ; ///<
+    UINT32                                                F064BarEn:1 ; ///<
+    UINT32                                                MemApSize:3 ; ///<
+    UINT32                                                RegApSize:1 ; ///<
+    UINT32                                             Reserved_7_7:1 ; ///<
+    UINT32                                                  AudioEn:1 ; ///<
+    UINT32                                                   MsiDis:1 ; ///<
+    UINT32                               AudioNonlegacyDeviceTypeEn:1 ; ///<
+    UINT32                                             Audio64BarEn:1 ; ///<
+    UINT32                                           Reserved_15_12:4 ; ///<
+    UINT32                                                 IoBarDis:1 ; ///<
+    UINT32                                                     F0En:1 ; ///<
+    UINT32                                           Reserved_22_18:5 ; ///<
+    UINT32                                                   RcieEn:1 ; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x64_x1C_STRUCT;
+
 // **** D0F0x64_x1D Register Definition ****
 // Address
 #define D0F0x64_x1D_ADDRESS                                     0x1d
@@ -3988,6 +5068,148 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D0F0x64_x20_STRUCT;
+
+// **** D0F0x64_x22 Register Definition ****
+// Address
+#define D0F0x64_x22_ADDRESS                                     0x22
+
+// Type
+#define D0F0x64_x22_TYPE                                        TYPE_D0F0x64
+// Field Data
+#define D0F0x64_x22_Reserved_3_0_OFFSET                         0
+#define D0F0x64_x22_Reserved_3_0_WIDTH                          4
+#define D0F0x64_x22_Reserved_3_0_MASK                           0xf
+#define D0F0x64_x22_OffHysteresis_OFFSET                        4
+#define D0F0x64_x22_OffHysteresis_WIDTH                         8
+#define D0F0x64_x22_OffHysteresis_MASK                          0xff0
+#define D0F0x64_x22_Reserved_25_12_OFFSET                       12
+#define D0F0x64_x22_Reserved_25_12_WIDTH                        14
+#define D0F0x64_x22_Reserved_25_12_MASK                         0x3fff000
+#define D0F0x64_x22_SoftOverrideClk4_OFFSET                     26
+#define D0F0x64_x22_SoftOverrideClk4_WIDTH                      1
+#define D0F0x64_x22_SoftOverrideClk4_MASK                       0x4000000
+#define D0F0x64_x22_SoftOverrideClk3_OFFSET                     27
+#define D0F0x64_x22_SoftOverrideClk3_WIDTH                      1
+#define D0F0x64_x22_SoftOverrideClk3_MASK                       0x8000000
+#define D0F0x64_x22_SoftOverrideClk2_OFFSET                     28
+#define D0F0x64_x22_SoftOverrideClk2_WIDTH                      1
+#define D0F0x64_x22_SoftOverrideClk2_MASK                       0x10000000
+#define D0F0x64_x22_SoftOverrideClk1_OFFSET                     29
+#define D0F0x64_x22_SoftOverrideClk1_WIDTH                      1
+#define D0F0x64_x22_SoftOverrideClk1_MASK                       0x20000000
+#define D0F0x64_x22_SoftOverrideClk0_OFFSET                     30
+#define D0F0x64_x22_SoftOverrideClk0_WIDTH                      1
+#define D0F0x64_x22_SoftOverrideClk0_MASK                       0x40000000
+#define D0F0x64_x22_Reserved_31_31_OFFSET                       31
+#define D0F0x64_x22_Reserved_31_31_WIDTH                        1
+#define D0F0x64_x22_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x64_x22
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_25_12:14; ///<
+    UINT32                                         SoftOverrideClk4:1 ; ///<
+    UINT32                                         SoftOverrideClk3:1 ; ///<
+    UINT32                                         SoftOverrideClk2:1 ; ///<
+    UINT32                                         SoftOverrideClk1:1 ; ///<
+    UINT32                                         SoftOverrideClk0:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x64_x22_STRUCT;
+
+// **** D0F0x64_x23 Register Definition ****
+// Address
+#define D0F0x64_x23_ADDRESS                                     0x23
+
+// Type
+#define D0F0x64_x23_TYPE                                        TYPE_D0F0x64
+// Field Data
+#define D0F0x64_x23_Reserved_3_0_OFFSET                         0
+#define D0F0x64_x23_Reserved_3_0_WIDTH                          4
+#define D0F0x64_x23_Reserved_3_0_MASK                           0xf
+#define D0F0x64_x23_OffHysteresis_OFFSET                        4
+#define D0F0x64_x23_OffHysteresis_WIDTH                         8
+#define D0F0x64_x23_OffHysteresis_MASK                          0xff0
+#define D0F0x64_x23_Reserved_25_12_OFFSET                       12
+#define D0F0x64_x23_Reserved_25_12_WIDTH                        14
+#define D0F0x64_x23_Reserved_25_12_MASK                         0x3fff000
+#define D0F0x64_x23_SoftOverrideClk4_OFFSET                     26
+#define D0F0x64_x23_SoftOverrideClk4_WIDTH                      1
+#define D0F0x64_x23_SoftOverrideClk4_MASK                       0x4000000
+#define D0F0x64_x23_SoftOverrideClk3_OFFSET                     27
+#define D0F0x64_x23_SoftOverrideClk3_WIDTH                      1
+#define D0F0x64_x23_SoftOverrideClk3_MASK                       0x8000000
+#define D0F0x64_x23_SoftOverrideClk2_OFFSET                     28
+#define D0F0x64_x23_SoftOverrideClk2_WIDTH                      1
+#define D0F0x64_x23_SoftOverrideClk2_MASK                       0x10000000
+#define D0F0x64_x23_SoftOverrideClk1_OFFSET                     29
+#define D0F0x64_x23_SoftOverrideClk1_WIDTH                      1
+#define D0F0x64_x23_SoftOverrideClk1_MASK                       0x20000000
+#define D0F0x64_x23_SoftOverrideClk0_OFFSET                     30
+#define D0F0x64_x23_SoftOverrideClk0_WIDTH                      1
+#define D0F0x64_x23_SoftOverrideClk0_MASK                       0x40000000
+#define D0F0x64_x23_Reserved_31_31_OFFSET                       31
+#define D0F0x64_x23_Reserved_31_31_WIDTH                        1
+#define D0F0x64_x23_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x64_x23
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_25_12:14; ///<
+    UINT32                                         SoftOverrideClk4:1 ; ///<
+    UINT32                                         SoftOverrideClk3:1 ; ///<
+    UINT32                                         SoftOverrideClk2:1 ; ///<
+    UINT32                                         SoftOverrideClk1:1 ; ///<
+    UINT32                                         SoftOverrideClk0:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x64_x23_STRUCT;
+
+// **** D0F0x64_x24 Register Definition ****
+// Address
+#define D0F0x64_x24_ADDRESS                                     0x24
+
+// Type
+#define D0F0x64_x24_TYPE                                        TYPE_D0F0x64
+// Field Data
+#define D0F0x64_x24_Reserved_3_0_OFFSET                         0
+#define D0F0x64_x24_Reserved_3_0_WIDTH                          4
+#define D0F0x64_x24_Reserved_3_0_MASK                           0xf
+#define D0F0x64_x24_OffHysteresis_OFFSET                        4
+#define D0F0x64_x24_OffHysteresis_WIDTH                         8
+#define D0F0x64_x24_OffHysteresis_MASK                          0xff0
+#define D0F0x64_x24_Reserved_28_12_OFFSET                       12
+#define D0F0x64_x24_Reserved_28_12_WIDTH                        17
+#define D0F0x64_x24_Reserved_28_12_MASK                         0x1ffff000
+#define D0F0x64_x24_SoftOverrideClk1_OFFSET                     29
+#define D0F0x64_x24_SoftOverrideClk1_WIDTH                      1
+#define D0F0x64_x24_SoftOverrideClk1_MASK                       0x20000000
+#define D0F0x64_x24_SoftOverrideClk0_OFFSET                     30
+#define D0F0x64_x24_SoftOverrideClk0_WIDTH                      1
+#define D0F0x64_x24_SoftOverrideClk0_MASK                       0x40000000
+#define D0F0x64_x24_Reserved_31_31_OFFSET                       31
+#define D0F0x64_x24_Reserved_31_31_WIDTH                        1
+#define D0F0x64_x24_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x64_x24
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_28_12:17; ///<
+    UINT32                                         SoftOverrideClk1:1 ; ///<
+    UINT32                                         SoftOverrideClk0:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x64_x24_STRUCT;
+
 
 // **** D0F0x64_x46 Register Definition ****
 // Address
@@ -4539,6 +5761,159 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D0F0x98_x2C_STRUCT;
 
+// **** D0F0x98_x49 Register Definition ****
+// Address
+#define D0F0x98_x49_ADDRESS                                     0x49
+
+// Type
+#define D0F0x98_x49_TYPE                                        TYPE_D0F0x98
+// Field Data
+#define D0F0x98_x49_Reserved_3_0_OFFSET                         0
+#define D0F0x98_x49_Reserved_3_0_WIDTH                          4
+#define D0F0x98_x49_Reserved_3_0_MASK                           0xf
+#define D0F0x98_x49_OffHysteresis_OFFSET                        4
+#define D0F0x98_x49_OffHysteresis_WIDTH                         8
+#define D0F0x98_x49_OffHysteresis_MASK                          0xff0
+#define D0F0x98_x49_Reserved_23_12_OFFSET                       12
+#define D0F0x98_x49_Reserved_23_12_WIDTH                        12
+#define D0F0x98_x49_Reserved_23_12_MASK                         0xfff000
+#define D0F0x98_x49_SoftOverrideClk6_OFFSET                     24
+#define D0F0x98_x49_SoftOverrideClk6_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk6_MASK                       0x1000000
+#define D0F0x98_x49_SoftOverrideClk5_OFFSET                     25
+#define D0F0x98_x49_SoftOverrideClk5_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk5_MASK                       0x2000000
+#define D0F0x98_x49_SoftOverrideClk4_OFFSET                     26
+#define D0F0x98_x49_SoftOverrideClk4_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk4_MASK                       0x4000000
+#define D0F0x98_x49_SoftOverrideClk3_OFFSET                     27
+#define D0F0x98_x49_SoftOverrideClk3_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk3_MASK                       0x8000000
+#define D0F0x98_x49_SoftOverrideClk2_OFFSET                     28
+#define D0F0x98_x49_SoftOverrideClk2_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk2_MASK                       0x10000000
+#define D0F0x98_x49_SoftOverrideClk1_OFFSET                     29
+#define D0F0x98_x49_SoftOverrideClk1_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk1_MASK                       0x20000000
+#define D0F0x98_x49_SoftOverrideClk0_OFFSET                     30
+#define D0F0x98_x49_SoftOverrideClk0_WIDTH                      1
+#define D0F0x98_x49_SoftOverrideClk0_MASK                       0x40000000
+#define D0F0x98_x49_Reserved_31_31_OFFSET                       31
+#define D0F0x98_x49_Reserved_31_31_WIDTH                        1
+#define D0F0x98_x49_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x98_x49
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_23_12:12; ///<
+    UINT32                                         SoftOverrideClk6:1 ; ///<
+    UINT32                                         SoftOverrideClk5:1 ; ///<
+    UINT32                                         SoftOverrideClk4:1 ; ///<
+    UINT32                                         SoftOverrideClk3:1 ; ///<
+    UINT32                                         SoftOverrideClk2:1 ; ///<
+    UINT32                                         SoftOverrideClk1:1 ; ///<
+    UINT32                                         SoftOverrideClk0:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x98_x49_STRUCT;
+
+// **** D0F0x98_x4A Register Definition ****
+// Address
+#define D0F0x98_x4A_ADDRESS                                     0x4a
+
+// Type
+#define D0F0x98_x4A_TYPE                                        TYPE_D0F0x98
+// Field Data
+#define D0F0x98_x4A_Reserved_3_0_OFFSET                         0
+#define D0F0x98_x4A_Reserved_3_0_WIDTH                          4
+#define D0F0x98_x4A_Reserved_3_0_MASK                           0xf
+#define D0F0x98_x4A_OffHysteresis_OFFSET                        4
+#define D0F0x98_x4A_OffHysteresis_WIDTH                         8
+#define D0F0x98_x4A_OffHysteresis_MASK                          0xff0
+#define D0F0x98_x4A_Reserved_23_12_OFFSET                       12
+#define D0F0x98_x4A_Reserved_23_12_WIDTH                        12
+#define D0F0x98_x4A_Reserved_23_12_MASK                         0xfff000
+#define D0F0x98_x4A_SoftOverrideClk6_OFFSET                     24
+#define D0F0x98_x4A_SoftOverrideClk6_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk6_MASK                       0x1000000
+#define D0F0x98_x4A_SoftOverrideClk5_OFFSET                     25
+#define D0F0x98_x4A_SoftOverrideClk5_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk5_MASK                       0x2000000
+#define D0F0x98_x4A_SoftOverrideClk4_OFFSET                     26
+#define D0F0x98_x4A_SoftOverrideClk4_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk4_MASK                       0x4000000
+#define D0F0x98_x4A_SoftOverrideClk3_OFFSET                     27
+#define D0F0x98_x4A_SoftOverrideClk3_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk3_MASK                       0x8000000
+#define D0F0x98_x4A_SoftOverrideClk2_OFFSET                     28
+#define D0F0x98_x4A_SoftOverrideClk2_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk2_MASK                       0x10000000
+#define D0F0x98_x4A_SoftOverrideClk1_OFFSET                     29
+#define D0F0x98_x4A_SoftOverrideClk1_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk1_MASK                       0x20000000
+#define D0F0x98_x4A_SoftOverrideClk0_OFFSET                     30
+#define D0F0x98_x4A_SoftOverrideClk0_WIDTH                      1
+#define D0F0x98_x4A_SoftOverrideClk0_MASK                       0x40000000
+#define D0F0x98_x4A_Reserved_31_31_OFFSET                       31
+#define D0F0x98_x4A_Reserved_31_31_WIDTH                        1
+#define D0F0x98_x4A_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x98_x4A
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_23_12:12; ///<
+    UINT32                                         SoftOverrideClk6:1 ; ///<
+    UINT32                                         SoftOverrideClk5:1 ; ///<
+    UINT32                                         SoftOverrideClk4:1 ; ///<
+    UINT32                                         SoftOverrideClk3:1 ; ///<
+    UINT32                                         SoftOverrideClk2:1 ; ///<
+    UINT32                                         SoftOverrideClk1:1 ; ///<
+    UINT32                                         SoftOverrideClk0:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x98_x4A_STRUCT;
+
+// **** D0F0x98_x4B Register Definition ****
+// Address
+#define D0F0x98_x4B_ADDRESS                                     0x4b
+
+// Type
+#define D0F0x98_x4B_TYPE                                        TYPE_D0F0x98
+// Field Data
+#define D0F0x98_x4B_Reserved_3_0_OFFSET                         0
+#define D0F0x98_x4B_Reserved_3_0_WIDTH                          4
+#define D0F0x98_x4B_Reserved_3_0_MASK                           0xf
+#define D0F0x98_x4B_OffHysteresis_OFFSET                        4
+#define D0F0x98_x4B_OffHysteresis_WIDTH                         8
+#define D0F0x98_x4B_OffHysteresis_MASK                          0xff0
+#define D0F0x98_x4B_Reserved_29_12_OFFSET                       12
+#define D0F0x98_x4B_Reserved_29_12_WIDTH                        18
+#define D0F0x98_x4B_Reserved_29_12_MASK                         0x3ffff000
+#define D0F0x98_x4B_SoftOverrideClk_OFFSET                      30
+#define D0F0x98_x4B_SoftOverrideClk_WIDTH                       1
+#define D0F0x98_x4B_SoftOverrideClk_MASK                        0x40000000
+#define D0F0x98_x4B_Reserved_31_31_OFFSET                       31
+#define D0F0x98_x4B_Reserved_31_31_WIDTH                        1
+#define D0F0x98_x4B_Reserved_31_31_MASK                         0x80000000
+
+/// D0F0x98_x4B
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_3_0:4 ; ///<
+    UINT32                                            OffHysteresis:8 ; ///<
+    UINT32                                           Reserved_29_12:18; ///<
+    UINT32                                          SoftOverrideClk:1 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0x98_x4B_STRUCT;
+
 // **** D0F0xE4_WRAP_0080 Register Definition ****
 // Address
 #define D0F0xE4_WRAP_0080_ADDRESS                               0x80
@@ -4661,6 +6036,346 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D0F0xE4_WRAP_8002_STRUCT;
+
+// **** D0F0xE4_WRAP_8011 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_8011_ADDRESS                               0x8011
+
+// Type
+#define D0F0xE4_WRAP_8011_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_OFFSET            0
+#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_WIDTH             6
+#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_MASK              0x3f
+#define D0F0xE4_WRAP_8011_TxclkPermGateEven_OFFSET              6
+#define D0F0xE4_WRAP_8011_TxclkPermGateEven_WIDTH               1
+#define D0F0xE4_WRAP_8011_TxclkPermGateEven_MASK                0x40
+#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_OFFSET             7
+#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_WIDTH              1
+#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_MASK               0x80
+#define D0F0xE4_WRAP_8011_TxclkPermStop_OFFSET                  8
+#define D0F0xE4_WRAP_8011_TxclkPermStop_WIDTH                   1
+#define D0F0xE4_WRAP_8011_TxclkPermStop_MASK                    0x100
+#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_OFFSET            9
+#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_WIDTH             1
+#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_MASK              0x200
+#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_OFFSET           10
+#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_WIDTH            6
+#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_MASK             0xfc00
+#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_OFFSET               16
+#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_WIDTH                1
+#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_MASK                 0x10000
+#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_OFFSET           17
+#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_WIDTH            6
+#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_MASK             0x7e0000
+#define D0F0xE4_WRAP_8011_Reserved_23_23_OFFSET                 23
+#define D0F0xE4_WRAP_8011_Reserved_23_23_WIDTH                  1
+#define D0F0xE4_WRAP_8011_Reserved_23_23_MASK                   0x800000
+#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_OFFSET            24
+#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_WIDTH             1
+#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_MASK              0x1000000
+#define D0F0xE4_WRAP_8011_Reserved_30_25_OFFSET                 25
+#define D0F0xE4_WRAP_8011_Reserved_30_25_WIDTH                  6
+#define D0F0xE4_WRAP_8011_Reserved_30_25_MASK                   0x7e000000
+#define D0F0xE4_WRAP_8011_StrapBifValid_OFFSET                  31
+#define D0F0xE4_WRAP_8011_StrapBifValid_WIDTH                   1
+#define D0F0xE4_WRAP_8011_StrapBifValid_MASK                    0x80000000
+
+/// D0F0xE4_WRAP_8011
+typedef union {
+  struct {                                                              ///<
+    UINT32                                      TxclkDynGateLatency:6 ; ///<
+    UINT32                                        TxclkPermGateEven:1 ; ///<
+    UINT32                                       TxclkDynGateEnable:1 ; ///<
+    UINT32                                            TxclkPermStop:1 ; ///<
+    UINT32                                      TxclkRegsGateEnable:1 ; ///<
+    UINT32                                     TxclkRegsGateLatency:6 ; ///<
+    UINT32                                         RcvrDetClkEnable:1 ; ///<
+    UINT32                                     TxclkPermGateLatency:6 ; ///<
+    UINT32                                           Reserved_23_23:1 ; ///<
+    UINT32                                      TxclkLcntGateEnable:1 ; ///<
+    UINT32                                           Reserved_30_25:6 ; ///<
+    UINT32                                            StrapBifValid:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_8011_STRUCT;
+
+// **** D0F0xE4_WRAP_8012 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_8012_ADDRESS                               0x8012
+
+// Type
+#define D0F0xE4_WRAP_8012_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_OFFSET           0
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_WIDTH            6
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_MASK             0x3f
+#define D0F0xE4_WRAP_8012_Reserved_6_6_OFFSET                   6
+#define D0F0xE4_WRAP_8012_Reserved_6_6_WIDTH                    1
+#define D0F0xE4_WRAP_8012_Reserved_6_6_MASK                     0x40
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_OFFSET            7
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_WIDTH             1
+#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_MASK              0x80
+#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_OFFSET         8
+#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_WIDTH          6
+#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_MASK           0x3f00
+#define D0F0xE4_WRAP_8012_Reserved_15_14_OFFSET                 14
+#define D0F0xE4_WRAP_8012_Reserved_15_14_WIDTH                  2
+#define D0F0xE4_WRAP_8012_Reserved_15_14_MASK                   0xc000
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_OFFSET         16
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_WIDTH          6
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_MASK           0x3f0000
+#define D0F0xE4_WRAP_8012_Reserved_22_22_OFFSET                 22
+#define D0F0xE4_WRAP_8012_Reserved_22_22_WIDTH                  1
+#define D0F0xE4_WRAP_8012_Reserved_22_22_MASK                   0x400000
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_OFFSET          23
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_WIDTH           1
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_MASK            0x800000
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_OFFSET       24
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_WIDTH        6
+#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_MASK         0x3f000000
+#define D0F0xE4_WRAP_8012_Reserved_31_30_OFFSET                 30
+#define D0F0xE4_WRAP_8012_Reserved_31_30_WIDTH                  2
+#define D0F0xE4_WRAP_8012_Reserved_31_30_MASK                   0xc0000000
+
+/// D0F0xE4_WRAP_8012
+typedef union {
+  struct {                                                              ///<
+    UINT32                                     Pif1xIdleGateLatency:6 ; ///<
+    UINT32                                             Reserved_6_6:1 ; ///<
+    UINT32                                      Pif1xIdleGateEnable:1 ; ///<
+    UINT32                                   Pif1xIdleResumeLatency:6 ; ///<
+    UINT32                                           Reserved_15_14:2 ; ///<
+    UINT32                                   Pif2p5xIdleGateLatency:6 ; ///<
+    UINT32                                           Reserved_22_22:1 ; ///<
+    UINT32                                    Pif2p5xIdleGateEnable:1 ; ///<
+    UINT32                                 Pif2p5xIdleResumeLatency:6 ; ///<
+    UINT32                                           Reserved_31_30:2 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_8012_STRUCT;
+
+
+// **** D0F0xE4_WRAP_8013 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_8013_ADDRESS                               0x8013
+
+// Field Data
+#define D0F0xE4_WRAP_8013_MasterPciePllA_OFFSET                 0
+#define D0F0xE4_WRAP_8013_MasterPciePllA_WIDTH                  1
+#define D0F0xE4_WRAP_8013_MasterPciePllA_MASK                   0x1
+#define D0F0xE4_WRAP_8013_Reserved_1_1_OFFSET                   1
+#define D0F0xE4_WRAP_8013_Reserved_1_1_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_1_1_MASK                     0x2
+#define D0F0xE4_WRAP_8013_Reserved_2_2_OFFSET                   2
+#define D0F0xE4_WRAP_8013_Reserved_2_2_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_2_2_MASK                     0x4
+#define D0F0xE4_WRAP_8013_Reserved_3_3_OFFSET                   3
+#define D0F0xE4_WRAP_8013_Reserved_3_3_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_3_3_MASK                     0x8
+#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_OFFSET       4
+#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_WIDTH        1
+#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_MASK         0x10
+#define D0F0xE4_WRAP_8013_Reserved_5_5_OFFSET                   5
+#define D0F0xE4_WRAP_8013_Reserved_5_5_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_5_5_MASK                     0x20
+#define D0F0xE4_WRAP_8013_Reserved_6_6_OFFSET                   6
+#define D0F0xE4_WRAP_8013_Reserved_6_6_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_6_6_MASK                     0x40
+#define D0F0xE4_WRAP_8013_Reserved_7_7_OFFSET                   7
+#define D0F0xE4_WRAP_8013_Reserved_7_7_WIDTH                    1
+#define D0F0xE4_WRAP_8013_Reserved_7_7_MASK                     0x80
+#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_OFFSET           8
+#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_WIDTH            1
+#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_MASK             0x100
+#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_OFFSET           9
+#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_WIDTH            1
+#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_MASK             0x200
+#define D0F0xE4_WRAP_8013_Reserved_10_10_OFFSET                 10
+#define D0F0xE4_WRAP_8013_Reserved_10_10_WIDTH                  1
+#define D0F0xE4_WRAP_8013_Reserved_10_10_MASK                   0x400
+#define D0F0xE4_WRAP_8013_Reserved_11_11_OFFSET                 11
+#define D0F0xE4_WRAP_8013_Reserved_11_11_WIDTH                  1
+#define D0F0xE4_WRAP_8013_Reserved_11_11_MASK                   0x800
+#define D0F0xE4_WRAP_8013_Reserved_12_12_OFFSET                 12
+#define D0F0xE4_WRAP_8013_Reserved_12_12_WIDTH                  1
+#define D0F0xE4_WRAP_8013_Reserved_12_12_MASK                   0x1000
+#define D0F0xE4_WRAP_8013_Reserved_15_13_OFFSET                 13
+#define D0F0xE4_WRAP_8013_Reserved_15_13_WIDTH                  3
+#define D0F0xE4_WRAP_8013_Reserved_15_13_MASK                   0xe000
+#define D0F0xE4_WRAP_8013_Reserved_16_16_OFFSET                 16
+#define D0F0xE4_WRAP_8013_Reserved_16_16_WIDTH                  1
+#define D0F0xE4_WRAP_8013_Reserved_16_16_MASK                   0x10000
+#define D0F0xE4_WRAP_8013_Reserved_19_17_OFFSET                 17
+#define D0F0xE4_WRAP_8013_Reserved_19_17_WIDTH                  3
+#define D0F0xE4_WRAP_8013_Reserved_19_17_MASK                   0xe0000
+#define D0F0xE4_WRAP_8013_Reserved_20_20_OFFSET                 20
+#define D0F0xE4_WRAP_8013_Reserved_20_20_WIDTH                  1
+#define D0F0xE4_WRAP_8013_Reserved_20_20_MASK                   0x100000
+#define D0F0xE4_WRAP_8013_Reserved_31_21_OFFSET                 21
+#define D0F0xE4_WRAP_8013_Reserved_31_21_WIDTH                  11
+#define D0F0xE4_WRAP_8013_Reserved_31_21_MASK                   0xffe00000
+
+/// D0F0xE4_WRAP_8013
+typedef union {
+  struct {                                                              ///<
+    UINT32                                           MasterPciePllA:1 ; ///<
+    UINT32                                           MasterPciePllB:1 ; ///<
+    UINT32                                           MasterPciePllC:1 ; ///<
+    UINT32                                           MasterPciePllD:1 ; ///<
+    UINT32                                 ClkDividerResetOverrideA:1 ; ///<
+    UINT32                                             Reserved_5_5:1 ; ///<
+    UINT32                                             Reserved_6_6:1 ; ///<
+    UINT32                                             Reserved_7_7:1 ; ///<
+    UINT32                                     TxclkSelCoreOverride:1 ; ///<
+    UINT32                                     TxclkSelPifAOverride:1 ; ///<
+    UINT32                                           Reserved_10_10:1 ; ///<
+    UINT32                                           Reserved_11_11:1 ; ///<
+    UINT32                                           Reserved_12_12:1 ; ///<
+    UINT32                                           Reserved_15_13:3 ; ///<
+    UINT32                                           Reserved_16_16:1 ; ///<
+    UINT32                                           Reserved_19_17:3 ; ///<
+    UINT32                                           Reserved_20_20:1 ; ///<
+    UINT32                                           Reserved_31_21:11; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_8013_STRUCT;
+
+// **** D0F0xE4_WRAP_8014 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_8014_ADDRESS                               0x8014
+
+// Field Data
+#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_OFFSET            0
+#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_WIDTH             1
+#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_MASK              0x1
+#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_OFFSET            1
+#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_WIDTH             1
+#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_MASK              0x2
+#define D0F0xE4_WRAP_8014_Reserved_2_2_OFFSET                   2
+#define D0F0xE4_WRAP_8014_Reserved_2_2_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_2_2_MASK                     0x4
+#define D0F0xE4_WRAP_8014_Reserved_3_3_OFFSET                   3
+#define D0F0xE4_WRAP_8014_Reserved_3_3_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_3_3_MASK                     0x8
+#define D0F0xE4_WRAP_8014_Reserved_4_4_OFFSET                   4
+#define D0F0xE4_WRAP_8014_Reserved_4_4_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_4_4_MASK                     0x10
+#define D0F0xE4_WRAP_8014_Reserved_5_5_OFFSET                   5
+#define D0F0xE4_WRAP_8014_Reserved_5_5_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_5_5_MASK                     0x20
+#define D0F0xE4_WRAP_8014_Reserved_6_6_OFFSET                   6
+#define D0F0xE4_WRAP_8014_Reserved_6_6_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_6_6_MASK                     0x40
+#define D0F0xE4_WRAP_8014_Reserved_7_7_OFFSET                   7
+#define D0F0xE4_WRAP_8014_Reserved_7_7_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_7_7_MASK                     0x80
+#define D0F0xE4_WRAP_8014_Reserved_8_8_OFFSET                   8
+#define D0F0xE4_WRAP_8014_Reserved_8_8_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_8_8_MASK                     0x100
+#define D0F0xE4_WRAP_8014_Reserved_9_9_OFFSET                   9
+#define D0F0xE4_WRAP_8014_Reserved_9_9_WIDTH                    1
+#define D0F0xE4_WRAP_8014_Reserved_9_9_MASK                     0x200
+#define D0F0xE4_WRAP_8014_Reserved_10_10_OFFSET                 10
+#define D0F0xE4_WRAP_8014_Reserved_10_10_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_10_10_MASK                   0x400
+#define D0F0xE4_WRAP_8014_Reserved_11_11_OFFSET                 11
+#define D0F0xE4_WRAP_8014_Reserved_11_11_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_11_11_MASK                   0x800
+#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_OFFSET           12
+#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_WIDTH            1
+#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_MASK             0x1000
+#define D0F0xE4_WRAP_8014_Reserved_13_13_OFFSET                 13
+#define D0F0xE4_WRAP_8014_Reserved_13_13_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_13_13_MASK                   0x2000
+#define D0F0xE4_WRAP_8014_Reserved_14_14_OFFSET                 14
+#define D0F0xE4_WRAP_8014_Reserved_14_14_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_14_14_MASK                   0x4000
+#define D0F0xE4_WRAP_8014_Reserved_15_15_OFFSET                 15
+#define D0F0xE4_WRAP_8014_Reserved_15_15_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_15_15_MASK                   0x8000
+#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_OFFSET         16
+#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_WIDTH          1
+#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_MASK           0x10000
+#define D0F0xE4_WRAP_8014_Reserved_17_17_OFFSET                 17
+#define D0F0xE4_WRAP_8014_Reserved_17_17_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_17_17_MASK                   0x20000
+#define D0F0xE4_WRAP_8014_Reserved_18_18_OFFSET                 18
+#define D0F0xE4_WRAP_8014_Reserved_18_18_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_18_18_MASK                   0x40000
+#define D0F0xE4_WRAP_8014_Reserved_19_19_OFFSET                 19
+#define D0F0xE4_WRAP_8014_Reserved_19_19_WIDTH                  1
+#define D0F0xE4_WRAP_8014_Reserved_19_19_MASK                   0x80000
+#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_OFFSET  20
+#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_WIDTH   1
+#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_MASK    0x100000
+#define D0F0xE4_WRAP_8014_Reserved_31_21_OFFSET                 21
+#define D0F0xE4_WRAP_8014_Reserved_31_21_WIDTH                  11
+#define D0F0xE4_WRAP_8014_Reserved_31_21_MASK                   0xffe00000
+
+/// D0F0xE4_WRAP_8014
+typedef union {
+  struct {
+    UINT32                                      TxclkPermGateEnable:1 ; ///<
+    UINT32                                      TxclkPrbsGateEnable:1 ; ///<
+    UINT32                                      DdiGatePifA1xEnable:1 ; ///<
+    UINT32                                      DdiGatePifB1xEnable:1 ; ///<
+    UINT32                                      DdiGatePifC1xEnable:1 ; ///<
+    UINT32                                      DdiGatePifD1xEnable:1 ; ///<
+    UINT32                                        DdiGateDigAEnable:1 ; ///<
+    UINT32                                        DdiGateDigBEnable:1 ; ///<
+    UINT32                                    DdiGatePifA2p5xEnable:1 ; ///<
+    UINT32                                    DdiGatePifB2p5xEnable:1 ; ///<
+    UINT32                                    DdiGatePifC2p5xEnable:1 ; ///<
+    UINT32                                    DdiGatePifD2p5xEnable:1 ; ///<
+    UINT32                                     PcieGatePifA1xEnable:1 ; ///<
+    UINT32                                     PcieGatePifB1xEnable:1 ; ///<
+    UINT32                                     PcieGatePifC1xEnable:1 ; ///<
+    UINT32                                     PcieGatePifD1xEnable:1 ; ///<
+    UINT32                                   PcieGatePifA2p5xEnable:1 ; ///<
+    UINT32                                   PcieGatePifB2p5xEnable:1 ; ///<
+    UINT32                                   PcieGatePifC2p5xEnable:1 ; ///<
+    UINT32                                   PcieGatePifD2p5xEnable:1 ; ///<
+    UINT32                            TxclkPermGateOnlyWhenPllPwrDn:1 ; ///<
+    UINT32                                           Reserved_31_21:11; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_8014_STRUCT;
+
+// **** D0F0xE4_WRAP_8016 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_8016_ADDRESS                               0x8016
+
+// Type
+#define D0F0xE4_WRAP_8016_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_WRAP_8016_CalibAckLatency_OFFSET                0
+#define D0F0xE4_WRAP_8016_CalibAckLatency_WIDTH                 6
+#define D0F0xE4_WRAP_8016_CalibAckLatency_MASK                  0x3f
+#define D0F0xE4_WRAP_8016_Reserved_21_6_OFFSET                  6
+#define D0F0xE4_WRAP_8016_Reserved_21_6_WIDTH                   16
+#define D0F0xE4_WRAP_8016_Reserved_21_6_MASK                    0x3fffc0
+#define D0F0xE4_WRAP_8016_LclkGateFree_OFFSET                   22
+#define D0F0xE4_WRAP_8016_LclkGateFree_WIDTH                    1
+#define D0F0xE4_WRAP_8016_LclkGateFree_MASK                     0x400000
+#define D0F0xE4_WRAP_8016_LclkDynGateEnable_OFFSET              23
+#define D0F0xE4_WRAP_8016_LclkDynGateEnable_WIDTH               1
+#define D0F0xE4_WRAP_8016_LclkDynGateEnable_MASK                0x800000
+#define D0F0xE4_WRAP_8016_Reserved_31_24_OFFSET                 24
+#define D0F0xE4_WRAP_8016_Reserved_31_24_WIDTH                  8
+#define D0F0xE4_WRAP_8016_Reserved_31_24_MASK                   0xff000000
+
+/// D0F0xE4_WRAP_8016
+typedef union {
+  struct {                                                              ///<
+    UINT32                                          CalibAckLatency:6 ; ///<
+    UINT32                                            Reserved_21_6:16; ///<
+    UINT32                                             LclkGateFree:1 ; ///<
+    UINT32                                        LclkDynGateEnable:1 ; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_8016_STRUCT;
 
 // **** D0F0xE4_WRAP_8021 Register Definition ****
 // Address
@@ -4905,9 +6620,18 @@ typedef union {
 #define D0F0xE4_WRAP_8060_ResetComplete_OFFSET                  2
 #define D0F0xE4_WRAP_8060_ResetComplete_WIDTH                   1
 #define D0F0xE4_WRAP_8060_ResetComplete_MASK                    0x4
-#define D0F0xE4_WRAP_8060_Reserved_31_3_OFFSET                  3
-#define D0F0xE4_WRAP_8060_Reserved_31_3_WIDTH                   29
-#define D0F0xE4_WRAP_8060_Reserved_31_3_MASK                    0xfffffff8
+#define D0F0xE4_WRAP_8060_Reserved_15_3_OFFSET                  3
+#define D0F0xE4_WRAP_8060_Reserved_15_3_WIDTH                   13
+#define D0F0xE4_WRAP_8060_Reserved_15_3_MASK                    0xfff8
+#define D0F0xE4_WRAP_8060_BifGlobalReset_OFFSET                 16
+#define D0F0xE4_WRAP_8060_BifGlobalReset_WIDTH                  1
+#define D0F0xE4_WRAP_8060_BifGlobalReset_MASK                   0x10000
+#define D0F0xE4_WRAP_8060_BifCalibrationReset_OFFSET            17
+#define D0F0xE4_WRAP_8060_BifCalibrationReset_WIDTH             1
+#define D0F0xE4_WRAP_8060_BifCalibrationReset_MASK              0x20000
+#define D0F0xE4_WRAP_8060_Reserved_31_18_OFFSET                 18
+#define D0F0xE4_WRAP_8060_Reserved_31_18_WIDTH                  14
+#define D0F0xE4_WRAP_8060_Reserved_31_18_MASK                   0xfffc0000
 
 /// D0F0xE4_WRAP_8060
 typedef union {
@@ -4915,7 +6639,10 @@ typedef union {
     UINT32                                              Reconfigure:1 ; ///<
     UINT32                                             Reserved_1_1:1 ; ///<
     UINT32                                            ResetComplete:1 ; ///<
-    UINT32                                            Reserved_31_3:29; ///<
+    UINT32                                            Reserved_15_3:13; ///<
+    UINT32                                           BifGlobalReset:1 ; ///<
+    UINT32                                      BifCalibrationReset:1 ; ///<
+    UINT32                                           Reserved_31_18:14; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D0F0xE4_WRAP_8060_STRUCT;
@@ -5001,6 +6728,25 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D0F0xE4_WRAP_8062_STRUCT;
+
+// **** D0F0xE4_WRAP_80F0 Register Definition ****
+// Address
+#define D0F0xE4_WRAP_80F0_ADDRESS                               0x80f0
+
+// Type
+#define D0F0xE4_WRAP_80F0_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_WRAP_80F0_MicroSeconds_OFFSET                   0
+#define D0F0xE4_WRAP_80F0_MicroSeconds_WIDTH                    32
+#define D0F0xE4_WRAP_80F0_MicroSeconds_MASK                     0xffffffff
+
+/// D0F0xE4_WRAP_80F0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             MicroSeconds:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_WRAP_80F0_STRUCT;
 
 // **** D0F0xE4_x0108_8071 Register Definition ****
 // Address
@@ -5370,6 +7116,41 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D0F0xE4_CORE_0002_STRUCT;
 
+// **** D0F0xE4_CORE_0010 Register Definition ****
+// Address
+#define D0F0xE4_CORE_0010_ADDRESS                               0x10
+
+// Type
+#define D0F0xE4_CORE_0010_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_CORE_0010_HwInitWrLock_OFFSET                   0
+#define D0F0xE4_CORE_0010_HwInitWrLock_WIDTH                    1
+#define D0F0xE4_CORE_0010_HwInitWrLock_MASK                     0x1
+#define D0F0xE4_CORE_0010_Reserved_8_1_OFFSET                   1
+#define D0F0xE4_CORE_0010_Reserved_8_1_WIDTH                    8
+#define D0F0xE4_CORE_0010_Reserved_8_1_MASK                     0x1fe
+#define D0F0xE4_CORE_0010_UmiNpMemWrite_OFFSET                  9
+#define D0F0xE4_CORE_0010_UmiNpMemWrite_WIDTH                   1
+#define D0F0xE4_CORE_0010_UmiNpMemWrite_MASK                    0x200
+#define D0F0xE4_CORE_0010_RxSbAdjPayloadSize_OFFSET             10
+#define D0F0xE4_CORE_0010_RxSbAdjPayloadSize_WIDTH              3
+#define D0F0xE4_CORE_0010_RxSbAdjPayloadSize_MASK               0x1c00
+#define D0F0xE4_CORE_0010_Reserved_31_13_OFFSET                 13
+#define D0F0xE4_CORE_0010_Reserved_31_13_WIDTH                  19
+#define D0F0xE4_CORE_0010_Reserved_31_13_MASK                   0xffffe000
+
+/// D0F0xE4_CORE_0010
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             HwInitWrLock:1 ; ///<
+    UINT32                                             Reserved_8_1:8 ; ///<
+    UINT32                                            UmiNpMemWrite:1 ; ///<
+    UINT32                                       RxSbAdjPayloadSize:3 ; ///<
+    UINT32                                           Reserved_31_13:19; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_CORE_0010_STRUCT;
+
 // **** D0F0xE4_CORE_0011 Register Definition ****
 // Address
 #define D0F0xE4_CORE_0011_ADDRESS                               0x11
@@ -5424,6 +7205,33 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D0F0xE4_CORE_001C_STRUCT;
 
+// **** D0F0xE4_CORE_0020 Register Definition ****
+// Address
+#define D0F0xE4_CORE_0020_ADDRESS                               0x20
+
+// Type
+#define D0F0xE4_CORE_0020_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_CORE_0020_Reserved_8_0_OFFSET                   0
+#define D0F0xE4_CORE_0020_Reserved_8_0_WIDTH                    9
+#define D0F0xE4_CORE_0020_Reserved_8_0_MASK                     0x1ff
+#define D0F0xE4_CORE_0020_CiRcOrderingDis_OFFSET                9
+#define D0F0xE4_CORE_0020_CiRcOrderingDis_WIDTH                 1
+#define D0F0xE4_CORE_0020_CiRcOrderingDis_MASK                  0x200
+#define D0F0xE4_CORE_0020_Reserved_31_10_OFFSET                 10
+#define D0F0xE4_CORE_0020_Reserved_31_10_WIDTH                  22
+#define D0F0xE4_CORE_0020_Reserved_31_10_MASK                   0xfffffc00
+
+/// D0F0xE4_CORE_0020
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_8_0:9 ; ///<
+    UINT32                                          CiRcOrderingDis:1 ; ///<
+    UINT32                                           Reserved_31_10:22; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_CORE_0020_STRUCT;
+
 // **** D0F0xE4_CORE_0040 Register Definition ****
 // Address
 #define D0F0xE4_CORE_0040_ADDRESS                               0x40
@@ -5450,6 +7258,33 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } D0F0xE4_CORE_0040_STRUCT;
+
+// **** D0F0xE4_CORE_00B0 Register Definition ****
+// Address
+#define D0F0xE4_CORE_00B0_ADDRESS                               0xb0
+
+// Type
+#define D0F0xE4_CORE_00B0_TYPE                                  TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_CORE_00B0_Reserved_1_0_OFFSET                   0
+#define D0F0xE4_CORE_00B0_Reserved_1_0_WIDTH                    2
+#define D0F0xE4_CORE_00B0_Reserved_1_0_MASK                     0x3
+#define D0F0xE4_CORE_00B0_StrapF0MsiEn_OFFSET                   2
+#define D0F0xE4_CORE_00B0_StrapF0MsiEn_WIDTH                    1
+#define D0F0xE4_CORE_00B0_StrapF0MsiEn_MASK                     0x4
+#define D0F0xE4_CORE_00B0_Reserved_31_3_OFFSET                  3
+#define D0F0xE4_CORE_00B0_Reserved_31_3_WIDTH                   29
+#define D0F0xE4_CORE_00B0_Reserved_31_3_MASK                    0xfffffff8
+
+/// D0F0xE4_CORE_00B0
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_1_0:2 ; ///<
+    UINT32                                             StrapF0MsiEn:1 ; ///<
+    UINT32                                            Reserved_31_3:29; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D0F0xE4_CORE_00B0_STRUCT;
 
 // **** D0F0xE4_CORE_00C0 Register Definition ****
 // Address
@@ -5891,6 +7726,53 @@ typedef union {
   UINT32 Value;                                                         ///<
 } DxF0xE4_xA4_STRUCT;
 
+// **** DxF0xE4_xA5 Register Definition ****
+// Address
+#define DxF0xE4_xA5_ADDRESS                                     0xa5
+
+// Type
+#define DxF0xE4_xA5_TYPE                                        TYPE_D4F0xE4
+// Field Data
+#define DxF0xE4_xA5_LcCurrentState_OFFSET                       0
+#define DxF0xE4_xA5_LcCurrentState_WIDTH                        6
+#define DxF0xE4_xA5_LcCurrentState_MASK                         0x3f
+#define DxF0xE4_xA5_Reserved_7_6_OFFSET                         6
+#define DxF0xE4_xA5_Reserved_7_6_WIDTH                          2
+#define DxF0xE4_xA5_Reserved_7_6_MASK                           0xc0
+#define DxF0xE4_xA5_LcPrevState1_OFFSET                         8
+#define DxF0xE4_xA5_LcPrevState1_WIDTH                          6
+#define DxF0xE4_xA5_LcPrevState1_MASK                           0x3f00
+#define DxF0xE4_xA5_Reserved_15_14_OFFSET                       14
+#define DxF0xE4_xA5_Reserved_15_14_WIDTH                        2
+#define DxF0xE4_xA5_Reserved_15_14_MASK                         0xc000
+#define DxF0xE4_xA5_LcPrevState2_OFFSET                         16
+#define DxF0xE4_xA5_LcPrevState2_WIDTH                          6
+#define DxF0xE4_xA5_LcPrevState2_MASK                           0x3f0000
+#define DxF0xE4_xA5_Reserved_23_22_OFFSET                       22
+#define DxF0xE4_xA5_Reserved_23_22_WIDTH                        2
+#define DxF0xE4_xA5_Reserved_23_22_MASK                         0xc00000
+#define DxF0xE4_xA5_LcPrevState3_OFFSET                         24
+#define DxF0xE4_xA5_LcPrevState3_WIDTH                          6
+#define DxF0xE4_xA5_LcPrevState3_MASK                           0x3f000000
+#define DxF0xE4_xA5_Reserved_31_30_OFFSET                       30
+#define DxF0xE4_xA5_Reserved_31_30_WIDTH                        2
+#define DxF0xE4_xA5_Reserved_31_30_MASK                         0xc0000000
+
+/// DxF0xE4_xA5
+typedef union {
+  struct {                                                              ///<
+    UINT32                                           LcCurrentState:6 ; ///<
+    UINT32                                             Reserved_7_6:2 ; ///<
+    UINT32                                             LcPrevState1:6 ; ///<
+    UINT32                                           Reserved_15_14:2 ; ///<
+    UINT32                                             LcPrevState2:6 ; ///<
+    UINT32                                           Reserved_23_22:2 ; ///<
+    UINT32                                             LcPrevState3:6 ; ///<
+    UINT32                                           Reserved_31_30:2 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} DxF0xE4_xA5_STRUCT;
+
 // **** DxF0xE4_xB1 Register Definition ****
 // Address
 #define DxF0xE4_xB1_ADDRESS                                     0xb1
@@ -5921,6 +7803,57 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } DxF0xE4_xB1_STRUCT;
+
+// **** DxF0xE4_xB5 Register Definition ****
+// Address
+#define DxF0xE4_xB5_ADDRESS                                     0xb5
+
+// Type
+#define DxF0xE4_xB5_TYPE                                        TYPE_D4F0xE4
+// Field Data
+#define DxF0xE4_xB5_LcSelectDeemphasis_OFFSET                   0
+#define DxF0xE4_xB5_LcSelectDeemphasis_WIDTH                    1
+#define DxF0xE4_xB5_LcSelectDeemphasis_MASK                     0x1
+#define DxF0xE4_xB5_LcSelectDeemphasisCntl_OFFSET               1
+#define DxF0xE4_xB5_LcSelectDeemphasisCntl_WIDTH                2
+#define DxF0xE4_xB5_LcSelectDeemphasisCntl_MASK                 0x6
+#define DxF0xE4_xB5_LcRcvdDeemphasis_OFFSET                     3
+#define DxF0xE4_xB5_LcRcvdDeemphasis_WIDTH                      1
+#define DxF0xE4_xB5_LcRcvdDeemphasis_MASK                       0x8
+#define DxF0xE4_xB5_Reserved_9_4_OFFSET                         4
+#define DxF0xE4_xB5_Reserved_9_4_WIDTH                          6
+#define DxF0xE4_xB5_Reserved_9_4_MASK                           0x3f0
+#define DxF0xE4_xB5_LcEnhancedHotPlugEn_OFFSET                  10
+#define DxF0xE4_xB5_LcEnhancedHotPlugEn_WIDTH                   1
+#define DxF0xE4_xB5_LcEnhancedHotPlugEn_MASK                    0x400
+#define DxF0xE4_xB5_Reserved_11_11_OFFSET                       11
+#define DxF0xE4_xB5_Reserved_11_11_WIDTH                        1
+#define DxF0xE4_xB5_Reserved_11_11_MASK                         0x800
+#define DxF0xE4_xB5_LcEhpRxPhyCmd_OFFSET                        12
+#define DxF0xE4_xB5_LcEhpRxPhyCmd_WIDTH                         2
+#define DxF0xE4_xB5_LcEhpRxPhyCmd_MASK                          0x3000
+#define DxF0xE4_xB5_LcEhpTxPhyCmd_OFFSET                        14
+#define DxF0xE4_xB5_LcEhpTxPhyCmd_WIDTH                         2
+#define DxF0xE4_xB5_LcEhpTxPhyCmd_MASK                          0xc000
+#define DxF0xE4_xB5_Reserved_31_16_OFFSET                       16
+#define DxF0xE4_xB5_Reserved_31_16_WIDTH                        16
+#define DxF0xE4_xB5_Reserved_31_16_MASK                         0xffff0000
+
+/// DxF0xE4_xB5
+typedef union {
+  struct {                                                              ///<
+    UINT32                                       LcSelectDeemphasis:1 ; ///<
+    UINT32                                   LcSelectDeemphasisCntl:2 ; ///<
+    UINT32                                         LcRcvdDeemphasis:1 ; ///<
+    UINT32                                             Reserved_9_4:6 ; ///<
+    UINT32                                      LcEnhancedHotPlugEn:1 ; ///<
+    UINT32                                           Reserved_11_11:1 ; ///<
+    UINT32                                            LcEhpRxPhyCmd:2 ; ///<
+    UINT32                                            LcEhpTxPhyCmd:2 ; ///<
+    UINT32                                           Reserved_31_16:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} DxF0xE4_xB5_STRUCT;
 
 // **** DxF0xE4_xC0 Register Definition ****
 // Address
@@ -5983,6 +7916,134 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } DxF0xE4_xC1_STRUCT;
+
+// **** SMUx01 Register Definition ****
+// Address
+#define SMUx01_ADDRESS                                          0x1
+
+// Type
+#define SMUx01_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx01_RamSwitch_OFFSET                                 0
+#define SMUx01_RamSwitch_WIDTH                                  1
+#define SMUx01_RamSwitch_MASK                                   0x1
+#define SMUx01_Reset_OFFSET                                     1
+#define SMUx01_Reset_WIDTH                                      1
+#define SMUx01_Reset_MASK                                       0x2
+#define SMUx01_Reserved_17_2_OFFSET                             2
+#define SMUx01_Reserved_17_2_WIDTH                              16
+#define SMUx01_Reserved_17_2_MASK                               0x3fffc
+#define SMUx01_VectorOverride_OFFSET                            18
+#define SMUx01_VectorOverride_WIDTH                             1
+#define SMUx01_VectorOverride_MASK                              0x40000
+#define SMUx01_Reserved_31_19_OFFSET                            19
+#define SMUx01_Reserved_31_19_WIDTH                             13
+#define SMUx01_Reserved_31_19_MASK                              0xfff80000
+
+/// SMUx01
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                RamSwitch:1 ; ///<
+    UINT32                                                    Reset:1 ; ///<
+    UINT32                                            Reserved_17_2:16; ///<
+    UINT32                                           VectorOverride:1 ; ///<
+    UINT32                                           Reserved_31_19:13; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx01_STRUCT;
+
+// **** SMUx03 Register Definition ****
+// Address
+#define SMUx03_ADDRESS                                          0x3
+
+// Type
+#define SMUx03_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx03_IntReq_OFFSET                                    0
+#define SMUx03_IntReq_WIDTH                                     1
+#define SMUx03_IntReq_MASK                                      0x1
+#define SMUx03_IntAck_OFFSET                                    1
+#define SMUx03_IntAck_WIDTH                                     1
+#define SMUx03_IntAck_MASK                                      0x2
+#define SMUx03_IntDone_OFFSET                                   2
+#define SMUx03_IntDone_WIDTH                                    1
+#define SMUx03_IntDone_MASK                                     0x4
+#define SMUx03_ServiceIndex_OFFSET                              3
+#define SMUx03_ServiceIndex_WIDTH                               8
+#define SMUx03_ServiceIndex_MASK                                0x7f8
+#define SMUx03_Reserved_31_11_OFFSET                            11
+#define SMUx03_Reserved_31_11_WIDTH                             21
+#define SMUx03_Reserved_31_11_MASK                              0xfffff800
+
+/// SMUx03
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   IntReq:1 ; ///<
+    UINT32                                                   IntAck:1 ; ///<
+    UINT32                                                  IntDone:1 ; ///<
+    UINT32                                             ServiceIndex:8 ; ///<
+    UINT32                                           Reserved_31_11:21; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx03_STRUCT;
+
+// **** SMUx05 Register Definition ****
+// Address
+#define SMUx05_ADDRESS                                          0x5
+
+// Type
+#define SMUx05_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx05_McuRam_OFFSET                                    0
+#define SMUx05_McuRam_WIDTH                                     32
+#define SMUx05_McuRam_MASK                                      0xffffffff
+
+/// SMUx05
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   McuRam:32; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx05_STRUCT;
+
+// **** SMUx0B_x8580 Register Definition ****
+// Address
+#define SMUx0B_x8580_ADDRESS                                    0x8580
+
+// Type
+#define SMUx0B_x8580_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x8580_Reserved_0_0_OFFSET                        0
+#define SMUx0B_x8580_Reserved_0_0_WIDTH                         1
+#define SMUx0B_x8580_Reserved_0_0_MASK                          0x1
+#define SMUx0B_x8580_Reserved_9_1_OFFSET                        1
+#define SMUx0B_x8580_Reserved_9_1_WIDTH                         9
+#define SMUx0B_x8580_Reserved_9_1_MASK                          0x3fe
+#define SMUx0B_x8580_Reserved_10_10_OFFSET                      10
+#define SMUx0B_x8580_Reserved_10_10_WIDTH                       1
+#define SMUx0B_x8580_Reserved_10_10_MASK                        0x400
+#define SMUx0B_x8580_Reserved_11_11_OFFSET                      11
+#define SMUx0B_x8580_Reserved_11_11_WIDTH                       1
+#define SMUx0B_x8580_Reserved_11_11_MASK                        0x800
+#define SMUx0B_x8580_Reserved_15_12_OFFSET                      12
+#define SMUx0B_x8580_Reserved_15_12_WIDTH                       4
+#define SMUx0B_x8580_Reserved_15_12_MASK                        0xf000
+#define SMUx0B_x8580_Reserved_31_16_OFFSET                      16
+#define SMUx0B_x8580_Reserved_31_16_WIDTH                       16
+#define SMUx0B_x8580_Reserved_31_16_MASK                        0xffff0000
+
+/// SMUx0B_x8580
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                    PdmEn:1 ; ///<
+    UINT32                                             Reserved_9_1:9 ; ///<
+    UINT32                                                 PdmCacEn:1 ; ///<
+    UINT32                                              PdmParamLoc:1 ; ///<
+    UINT32                                                  PdmUnit:4 ; ///<
+    UINT32                                                PdmPeriod:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8580_STRUCT;
 
 // **** SMUx0B_x8600 Register Definition ****
 // Address
@@ -7054,6 +9115,173 @@ typedef union {
   UINT32 Value;                                                         ///<
 } SMUx0B_x86A0_STRUCT;
 
+// **** SMUx1B Register Definition ****
+// Address
+#define SMUx1B_ADDRESS                                          0x1b
+
+// Type
+#define SMUx1B_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx1B_LclkDpSlpDiv_OFFSET                              0
+#define SMUx1B_LclkDpSlpDiv_WIDTH                               3
+#define SMUx1B_LclkDpSlpDiv_MASK                                0x7
+#define SMUx1B_RampDis_OFFSET                                   3
+#define SMUx1B_RampDis_WIDTH                                    1
+#define SMUx1B_RampDis_MASK                                     0x8
+#define SMUx1B_Reserved_7_4_OFFSET                              4
+#define SMUx1B_Reserved_7_4_WIDTH                               4
+#define SMUx1B_Reserved_7_4_MASK                                0xf0
+#define SMUx1B_LclkDpSlpMask_OFFSET                             8
+#define SMUx1B_LclkDpSlpMask_WIDTH                              8
+#define SMUx1B_LclkDpSlpMask_MASK                               0xff00
+
+/// SMUx1B
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             LclkDpSlpDiv:3 ; ///<
+    UINT32                                                  RampDis:1 ; ///<
+    UINT32                                             Reserved_7_4:4 ; ///<
+    UINT32                                            LclkDpSlpMask:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx1B_STRUCT;
+
+// **** SMUx1D Register Definition ****
+// Address
+#define SMUx1D_ADDRESS                                          0x1d
+
+// Type
+#define SMUx1D_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx1D_LclkDpSlpHyst_OFFSET                             0
+#define SMUx1D_LclkDpSlpHyst_WIDTH                              12
+#define SMUx1D_LclkDpSlpHyst_MASK                               0xfff
+#define SMUx1D_LclkDpSlpEn_OFFSET                               12
+#define SMUx1D_LclkDpSlpEn_WIDTH                                1
+#define SMUx1D_LclkDpSlpEn_MASK                                 0x1000
+#define SMUx1D_Reserved_15_13_OFFSET                            13
+#define SMUx1D_Reserved_15_13_WIDTH                             3
+#define SMUx1D_Reserved_15_13_MASK                              0xe000
+
+/// SMUx1D
+typedef union {
+  struct {                                                              ///<
+    UINT32                                            LclkDpSlpHyst:12; ///<
+    UINT32                                              LclkDpSlpEn:1 ; ///<
+    UINT32                                           Reserved_15_13:3 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx1D_STRUCT;
+
+// **** SMUx6F Register Definition ****
+// Address
+#define SMUx6F_ADDRESS                                          0x6f
+
+// Type
+#define SMUx6F_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx6F_OnDelay_OFFSET                                   0
+#define SMUx6F_OnDelay_WIDTH                                    4
+#define SMUx6F_OnDelay_MASK                                     0xf
+#define SMUx6F_OffDelay_OFFSET                                  4
+#define SMUx6F_OffDelay_WIDTH                                   8
+#define SMUx6F_OffDelay_MASK                                    0xff0
+#define SMUx6F_Reserved_20_12_OFFSET                            12
+#define SMUx6F_Reserved_20_12_WIDTH                             9
+#define SMUx6F_Reserved_20_12_MASK                              0x1ff000
+#define SMUx6F_RampDis0_OFFSET                                  21
+#define SMUx6F_RampDis0_WIDTH                                   1
+#define SMUx6F_RampDis0_MASK                                    0x200000
+#define SMUx6F_RampDisReg_OFFSET                                22
+#define SMUx6F_RampDisReg_WIDTH                                 1
+#define SMUx6F_RampDisReg_MASK                                  0x400000
+#define SMUx6F_Reserved_31_23_OFFSET                            23
+#define SMUx6F_Reserved_31_23_WIDTH                             9
+#define SMUx6F_Reserved_31_23_MASK                              0xff800000
+
+/// SMUx6F
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  OnDelay:4 ; ///<
+    UINT32                                                 OffDelay:8 ; ///<
+    UINT32                                           Reserved_20_12:9 ; ///<
+    UINT32                                                 RampDis0:1 ; ///<
+    UINT32                                               RampDisReg:1 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx6F_STRUCT;
+
+// **** SMUx71 Register Definition ****
+// Address
+#define SMUx71_ADDRESS                                          0x71
+
+// Type
+#define SMUx71_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx71_OnDelay_OFFSET                                   0
+#define SMUx71_OnDelay_WIDTH                                    4
+#define SMUx71_OnDelay_MASK                                     0xf
+#define SMUx71_OffDelay_OFFSET                                  4
+#define SMUx71_OffDelay_WIDTH                                   8
+#define SMUx71_OffDelay_MASK                                    0xff0
+#define SMUx71_Reserved_19_12_OFFSET                            12
+#define SMUx71_Reserved_19_12_WIDTH                             8
+#define SMUx71_Reserved_19_12_MASK                              0xff000
+#define SMUx71_RampDis1_OFFSET                                  20
+#define SMUx71_RampDis1_WIDTH                                   1
+#define SMUx71_RampDis1_MASK                                    0x100000
+#define SMUx71_RampDis0_OFFSET                                  21
+#define SMUx71_RampDis0_WIDTH                                   1
+#define SMUx71_RampDis0_MASK                                    0x200000
+#define SMUx71_RampDisReg_OFFSET                                22
+#define SMUx71_RampDisReg_WIDTH                                 1
+#define SMUx71_RampDisReg_MASK                                  0x400000
+#define SMUx71_Reserved_31_23_OFFSET                            23
+#define SMUx71_Reserved_31_23_WIDTH                             9
+#define SMUx71_Reserved_31_23_MASK                              0xff800000
+
+/// SMUx71
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  OnDelay:4 ; ///<
+    UINT32                                                 OffDelay:8 ; ///<
+    UINT32                                           Reserved_19_12:8 ; ///<
+    UINT32                                                 RampDis1:1 ; ///<
+    UINT32                                                 RampDis0:1 ; ///<
+    UINT32                                               RampDisReg:1 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx71_STRUCT;
+
+// **** SMUx73 Register Definition ****
+// Address
+#define SMUx73_ADDRESS                                          0x73
+
+// Type
+#define SMUx73_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx73_DisLclkGating_OFFSET                             0
+#define SMUx73_DisLclkGating_WIDTH                              1
+#define SMUx73_DisLclkGating_MASK                               0x1
+#define SMUx73_DisSclkGating_OFFSET                             1
+#define SMUx73_DisSclkGating_WIDTH                              1
+#define SMUx73_DisSclkGating_MASK                               0x2
+#define SMUx73_Reserved_15_2_OFFSET                             2
+#define SMUx73_Reserved_15_2_WIDTH                              14
+#define SMUx73_Reserved_15_2_MASK                               0xfffc
+
+/// SMUx73
+typedef union {
+  struct {                                                              ///<
+    UINT32                                            DisLclkGating:1 ; ///<
+    UINT32                                            DisSclkGating:1 ; ///<
+    UINT32                                            Reserved_15_2:14; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx73_STRUCT;
+
 // **** GMMx00 Register Definition ****
 // Address
 #define GMMx00_ADDRESS                                          0x0
@@ -7254,6 +9482,53 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } GMMx2018_STRUCT;
+
+// **** GMMx201C Register Definition ****
+// Address
+#define GMMx201C_ADDRESS                                        0x201c
+
+// Type
+#define GMMx201C_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx201C_UvdExt0_OFFSET                                 0
+#define GMMx201C_UvdExt0_WIDTH                                  4
+#define GMMx201C_UvdExt0_MASK                                   0xf
+#define GMMx201C_DrmDma_OFFSET                                  4
+#define GMMx201C_DrmDma_WIDTH                                   4
+#define GMMx201C_DrmDma_MASK                                    0xf0
+#define GMMx201C_Hdp_OFFSET                                     8
+#define GMMx201C_Hdp_WIDTH                                      4
+#define GMMx201C_Hdp_MASK                                       0xf00
+#define GMMx201C_Sem_OFFSET                                     12
+#define GMMx201C_Sem_WIDTH                                      4
+#define GMMx201C_Sem_MASK                                       0xf000
+#define GMMx201C_Umc_OFFSET                                     16
+#define GMMx201C_Umc_WIDTH                                      4
+#define GMMx201C_Umc_MASK                                       0xf0000
+#define GMMx201C_Uvd_OFFSET                                     20
+#define GMMx201C_Uvd_WIDTH                                      4
+#define GMMx201C_Uvd_MASK                                       0xf00000
+#define GMMx201C_UvdExt1_OFFSET                                 24
+#define GMMx201C_UvdExt1_WIDTH                                  4
+#define GMMx201C_UvdExt1_MASK                                   0xf000000
+#define GMMx201C_Reserved_31_28_OFFSET                          28
+#define GMMx201C_Reserved_31_28_WIDTH                           4
+#define GMMx201C_Reserved_31_28_MASK                            0xf0000000
+
+/// GMMx201C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  UvdExt0:4 ; ///<
+    UINT32                                                   DrmDma:4 ; ///<
+    UINT32                                                      Hdp:4 ; ///<
+    UINT32                                                      Sem:4 ; ///<
+    UINT32                                                      Umc:4 ; ///<
+    UINT32                                                      Uvd:4 ; ///<
+    UINT32                                                  UvdExt1:4 ; ///<
+    UINT32                                           Reserved_31_28:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx201C_STRUCT;
 
 // **** GMMx2020 Register Definition ****
 // Address
@@ -7528,6 +9803,854 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } GMMx20EC_STRUCT;
+
+// **** GMMx2160 Register Definition ****
+// Address
+#define GMMx2160_ADDRESS                                        0x2160
+
+// Type
+#define GMMx2160_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2160_Enable_OFFSET                                  0
+#define GMMx2160_Enable_WIDTH                                   1
+#define GMMx2160_Enable_MASK                                    0x1
+#define GMMx2160_Prescale_OFFSET                                1
+#define GMMx2160_Prescale_WIDTH                                 2
+#define GMMx2160_Prescale_MASK                                  0x6
+#define GMMx2160_BlackoutExempt_OFFSET                          3
+#define GMMx2160_BlackoutExempt_WIDTH                           1
+#define GMMx2160_BlackoutExempt_MASK                            0x8
+#define GMMx2160_StallMode_OFFSET                               4
+#define GMMx2160_StallMode_WIDTH                                2
+#define GMMx2160_StallMode_MASK                                 0x30
+#define GMMx2160_StallOverride_OFFSET                           6
+#define GMMx2160_StallOverride_WIDTH                            1
+#define GMMx2160_StallOverride_MASK                             0x40
+#define GMMx2160_MaxBurst_OFFSET                                7
+#define GMMx2160_MaxBurst_WIDTH                                 4
+#define GMMx2160_MaxBurst_MASK                                  0x780
+#define GMMx2160_LazyTimer_OFFSET                               11
+#define GMMx2160_LazyTimer_WIDTH                                4
+#define GMMx2160_LazyTimer_MASK                                 0x7800
+#define GMMx2160_StallOverrideWtm_OFFSET                        15
+#define GMMx2160_StallOverrideWtm_WIDTH                         1
+#define GMMx2160_StallOverrideWtm_MASK                          0x8000
+#define GMMx2160_Reserved_19_16_OFFSET                          16
+#define GMMx2160_Reserved_19_16_WIDTH                           4
+#define GMMx2160_Reserved_19_16_MASK                            0xf0000
+#define GMMx2160_Reserved_31_20_OFFSET                          20
+#define GMMx2160_Reserved_31_20_WIDTH                           12
+#define GMMx2160_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2160
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2160_STRUCT;
+
+// **** GMMx2164 Register Definition ****
+// Address
+#define GMMx2164_ADDRESS                                        0x2164
+
+// Type
+#define GMMx2164_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2164_Enable_OFFSET                                  0
+#define GMMx2164_Enable_WIDTH                                   1
+#define GMMx2164_Enable_MASK                                    0x1
+#define GMMx2164_Prescale_OFFSET                                1
+#define GMMx2164_Prescale_WIDTH                                 2
+#define GMMx2164_Prescale_MASK                                  0x6
+#define GMMx2164_BlackoutExempt_OFFSET                          3
+#define GMMx2164_BlackoutExempt_WIDTH                           1
+#define GMMx2164_BlackoutExempt_MASK                            0x8
+#define GMMx2164_StallMode_OFFSET                               4
+#define GMMx2164_StallMode_WIDTH                                2
+#define GMMx2164_StallMode_MASK                                 0x30
+#define GMMx2164_StallOverride_OFFSET                           6
+#define GMMx2164_StallOverride_WIDTH                            1
+#define GMMx2164_StallOverride_MASK                             0x40
+#define GMMx2164_MaxBurst_OFFSET                                7
+#define GMMx2164_MaxBurst_WIDTH                                 4
+#define GMMx2164_MaxBurst_MASK                                  0x780
+#define GMMx2164_LazyTimer_OFFSET                               11
+#define GMMx2164_LazyTimer_WIDTH                                4
+#define GMMx2164_LazyTimer_MASK                                 0x7800
+#define GMMx2164_StallOverrideWtm_OFFSET                        15
+#define GMMx2164_StallOverrideWtm_WIDTH                         1
+#define GMMx2164_StallOverrideWtm_MASK                          0x8000
+#define GMMx2164_Reserved_19_16_OFFSET                          16
+#define GMMx2164_Reserved_19_16_WIDTH                           4
+#define GMMx2164_Reserved_19_16_MASK                            0xf0000
+#define GMMx2164_Reserved_31_20_OFFSET                          20
+#define GMMx2164_Reserved_31_20_WIDTH                           12
+#define GMMx2164_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2164
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2164_STRUCT;
+
+// **** GMMx2168 Register Definition ****
+// Address
+#define GMMx2168_ADDRESS                                        0x2168
+
+// Type
+#define GMMx2168_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2168_Enable_OFFSET                                  0
+#define GMMx2168_Enable_WIDTH                                   1
+#define GMMx2168_Enable_MASK                                    0x1
+#define GMMx2168_Prescale_OFFSET                                1
+#define GMMx2168_Prescale_WIDTH                                 2
+#define GMMx2168_Prescale_MASK                                  0x6
+#define GMMx2168_BlackoutExempt_OFFSET                          3
+#define GMMx2168_BlackoutExempt_WIDTH                           1
+#define GMMx2168_BlackoutExempt_MASK                            0x8
+#define GMMx2168_StallMode_OFFSET                               4
+#define GMMx2168_StallMode_WIDTH                                2
+#define GMMx2168_StallMode_MASK                                 0x30
+#define GMMx2168_StallOverride_OFFSET                           6
+#define GMMx2168_StallOverride_WIDTH                            1
+#define GMMx2168_StallOverride_MASK                             0x40
+#define GMMx2168_MaxBurst_OFFSET                                7
+#define GMMx2168_MaxBurst_WIDTH                                 4
+#define GMMx2168_MaxBurst_MASK                                  0x780
+#define GMMx2168_LazyTimer_OFFSET                               11
+#define GMMx2168_LazyTimer_WIDTH                                4
+#define GMMx2168_LazyTimer_MASK                                 0x7800
+#define GMMx2168_StallOverrideWtm_OFFSET                        15
+#define GMMx2168_StallOverrideWtm_WIDTH                         1
+#define GMMx2168_StallOverrideWtm_MASK                          0x8000
+#define GMMx2168_Reserved_19_16_OFFSET                          16
+#define GMMx2168_Reserved_19_16_WIDTH                           4
+#define GMMx2168_Reserved_19_16_MASK                            0xf0000
+#define GMMx2168_Reserved_31_20_OFFSET                          20
+#define GMMx2168_Reserved_31_20_WIDTH                           12
+#define GMMx2168_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2168
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2168_STRUCT;
+
+// **** GMMx216C Register Definition ****
+// Address
+#define GMMx216C_ADDRESS                                        0x216c
+
+// Type
+#define GMMx216C_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx216C_Enable_OFFSET                                  0
+#define GMMx216C_Enable_WIDTH                                   1
+#define GMMx216C_Enable_MASK                                    0x1
+#define GMMx216C_Prescale_OFFSET                                1
+#define GMMx216C_Prescale_WIDTH                                 2
+#define GMMx216C_Prescale_MASK                                  0x6
+#define GMMx216C_BlackoutExempt_OFFSET                          3
+#define GMMx216C_BlackoutExempt_WIDTH                           1
+#define GMMx216C_BlackoutExempt_MASK                            0x8
+#define GMMx216C_StallMode_OFFSET                               4
+#define GMMx216C_StallMode_WIDTH                                2
+#define GMMx216C_StallMode_MASK                                 0x30
+#define GMMx216C_StallOverride_OFFSET                           6
+#define GMMx216C_StallOverride_WIDTH                            1
+#define GMMx216C_StallOverride_MASK                             0x40
+#define GMMx216C_MaxBurst_OFFSET                                7
+#define GMMx216C_MaxBurst_WIDTH                                 4
+#define GMMx216C_MaxBurst_MASK                                  0x780
+#define GMMx216C_LazyTimer_OFFSET                               11
+#define GMMx216C_LazyTimer_WIDTH                                4
+#define GMMx216C_LazyTimer_MASK                                 0x7800
+#define GMMx216C_StallOverrideWtm_OFFSET                        15
+#define GMMx216C_StallOverrideWtm_WIDTH                         1
+#define GMMx216C_StallOverrideWtm_MASK                          0x8000
+#define GMMx216C_Reserved_19_16_OFFSET                          16
+#define GMMx216C_Reserved_19_16_WIDTH                           4
+#define GMMx216C_Reserved_19_16_MASK                            0xf0000
+#define GMMx216C_Reserved_31_20_OFFSET                          20
+#define GMMx216C_Reserved_31_20_WIDTH                           12
+#define GMMx216C_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx216C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx216C_STRUCT;
+
+// **** GMMx2170 Register Definition ****
+// Address
+#define GMMx2170_ADDRESS                                        0x2170
+
+// Type
+#define GMMx2170_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2170_Enable_OFFSET                                  0
+#define GMMx2170_Enable_WIDTH                                   1
+#define GMMx2170_Enable_MASK                                    0x1
+#define GMMx2170_Prescale_OFFSET                                1
+#define GMMx2170_Prescale_WIDTH                                 2
+#define GMMx2170_Prescale_MASK                                  0x6
+#define GMMx2170_BlackoutExempt_OFFSET                          3
+#define GMMx2170_BlackoutExempt_WIDTH                           1
+#define GMMx2170_BlackoutExempt_MASK                            0x8
+#define GMMx2170_StallMode_OFFSET                               4
+#define GMMx2170_StallMode_WIDTH                                2
+#define GMMx2170_StallMode_MASK                                 0x30
+#define GMMx2170_StallOverride_OFFSET                           6
+#define GMMx2170_StallOverride_WIDTH                            1
+#define GMMx2170_StallOverride_MASK                             0x40
+#define GMMx2170_MaxBurst_OFFSET                                7
+#define GMMx2170_MaxBurst_WIDTH                                 4
+#define GMMx2170_MaxBurst_MASK                                  0x780
+#define GMMx2170_LazyTimer_OFFSET                               11
+#define GMMx2170_LazyTimer_WIDTH                                4
+#define GMMx2170_LazyTimer_MASK                                 0x7800
+#define GMMx2170_StallOverrideWtm_OFFSET                        15
+#define GMMx2170_StallOverrideWtm_WIDTH                         1
+#define GMMx2170_StallOverrideWtm_MASK                          0x8000
+#define GMMx2170_Reserved_19_16_OFFSET                          16
+#define GMMx2170_Reserved_19_16_WIDTH                           4
+#define GMMx2170_Reserved_19_16_MASK                            0xf0000
+#define GMMx2170_Reserved_31_20_OFFSET                          20
+#define GMMx2170_Reserved_31_20_WIDTH                           12
+#define GMMx2170_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2170
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2170_STRUCT;
+
+// **** GMMx2174 Register Definition ****
+// Address
+#define GMMx2174_ADDRESS                                        0x2174
+
+// Type
+#define GMMx2174_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2174_Enable_OFFSET                                  0
+#define GMMx2174_Enable_WIDTH                                   1
+#define GMMx2174_Enable_MASK                                    0x1
+#define GMMx2174_Prescale_OFFSET                                1
+#define GMMx2174_Prescale_WIDTH                                 2
+#define GMMx2174_Prescale_MASK                                  0x6
+#define GMMx2174_BlackoutExempt_OFFSET                          3
+#define GMMx2174_BlackoutExempt_WIDTH                           1
+#define GMMx2174_BlackoutExempt_MASK                            0x8
+#define GMMx2174_StallMode_OFFSET                               4
+#define GMMx2174_StallMode_WIDTH                                2
+#define GMMx2174_StallMode_MASK                                 0x30
+#define GMMx2174_StallOverride_OFFSET                           6
+#define GMMx2174_StallOverride_WIDTH                            1
+#define GMMx2174_StallOverride_MASK                             0x40
+#define GMMx2174_MaxBurst_OFFSET                                7
+#define GMMx2174_MaxBurst_WIDTH                                 4
+#define GMMx2174_MaxBurst_MASK                                  0x780
+#define GMMx2174_LazyTimer_OFFSET                               11
+#define GMMx2174_LazyTimer_WIDTH                                4
+#define GMMx2174_LazyTimer_MASK                                 0x7800
+#define GMMx2174_StallOverrideWtm_OFFSET                        15
+#define GMMx2174_StallOverrideWtm_WIDTH                         1
+#define GMMx2174_StallOverrideWtm_MASK                          0x8000
+#define GMMx2174_Reserved_19_16_OFFSET                          16
+#define GMMx2174_Reserved_19_16_WIDTH                           4
+#define GMMx2174_Reserved_19_16_MASK                            0xf0000
+#define GMMx2174_Reserved_31_20_OFFSET                          20
+#define GMMx2174_Reserved_31_20_WIDTH                           12
+#define GMMx2174_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2174
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2174_STRUCT;
+
+// **** GMMx2178 Register Definition ****
+// Address
+#define GMMx2178_ADDRESS                                        0x2178
+
+// Type
+#define GMMx2178_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2178_Enable_OFFSET                                  0
+#define GMMx2178_Enable_WIDTH                                   1
+#define GMMx2178_Enable_MASK                                    0x1
+#define GMMx2178_Prescale_OFFSET                                1
+#define GMMx2178_Prescale_WIDTH                                 2
+#define GMMx2178_Prescale_MASK                                  0x6
+#define GMMx2178_BlackoutExempt_OFFSET                          3
+#define GMMx2178_BlackoutExempt_WIDTH                           1
+#define GMMx2178_BlackoutExempt_MASK                            0x8
+#define GMMx2178_StallMode_OFFSET                               4
+#define GMMx2178_StallMode_WIDTH                                2
+#define GMMx2178_StallMode_MASK                                 0x30
+#define GMMx2178_StallOverride_OFFSET                           6
+#define GMMx2178_StallOverride_WIDTH                            1
+#define GMMx2178_StallOverride_MASK                             0x40
+#define GMMx2178_MaxBurst_OFFSET                                7
+#define GMMx2178_MaxBurst_WIDTH                                 4
+#define GMMx2178_MaxBurst_MASK                                  0x780
+#define GMMx2178_LazyTimer_OFFSET                               11
+#define GMMx2178_LazyTimer_WIDTH                                4
+#define GMMx2178_LazyTimer_MASK                                 0x7800
+#define GMMx2178_StallOverrideWtm_OFFSET                        15
+#define GMMx2178_StallOverrideWtm_WIDTH                         1
+#define GMMx2178_StallOverrideWtm_MASK                          0x8000
+#define GMMx2178_Reserved_19_16_OFFSET                          16
+#define GMMx2178_Reserved_19_16_WIDTH                           4
+#define GMMx2178_Reserved_19_16_MASK                            0xf0000
+#define GMMx2178_Reserved_31_20_OFFSET                          20
+#define GMMx2178_Reserved_31_20_WIDTH                           12
+#define GMMx2178_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2178
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2178_STRUCT;
+
+// **** GMMx217C Register Definition ****
+// Address
+#define GMMx217C_ADDRESS                                        0x217c
+
+// Type
+#define GMMx217C_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx217C_Enable_OFFSET                                  0
+#define GMMx217C_Enable_WIDTH                                   1
+#define GMMx217C_Enable_MASK                                    0x1
+#define GMMx217C_Prescale_OFFSET                                1
+#define GMMx217C_Prescale_WIDTH                                 2
+#define GMMx217C_Prescale_MASK                                  0x6
+#define GMMx217C_BlackoutExempt_OFFSET                          3
+#define GMMx217C_BlackoutExempt_WIDTH                           1
+#define GMMx217C_BlackoutExempt_MASK                            0x8
+#define GMMx217C_StallMode_OFFSET                               4
+#define GMMx217C_StallMode_WIDTH                                2
+#define GMMx217C_StallMode_MASK                                 0x30
+#define GMMx217C_StallOverride_OFFSET                           6
+#define GMMx217C_StallOverride_WIDTH                            1
+#define GMMx217C_StallOverride_MASK                             0x40
+#define GMMx217C_MaxBurst_OFFSET                                7
+#define GMMx217C_MaxBurst_WIDTH                                 4
+#define GMMx217C_MaxBurst_MASK                                  0x780
+#define GMMx217C_LazyTimer_OFFSET                               11
+#define GMMx217C_LazyTimer_WIDTH                                4
+#define GMMx217C_LazyTimer_MASK                                 0x7800
+#define GMMx217C_StallOverrideWtm_OFFSET                        15
+#define GMMx217C_StallOverrideWtm_WIDTH                         1
+#define GMMx217C_StallOverrideWtm_MASK                          0x8000
+#define GMMx217C_Reserved_19_16_OFFSET                          16
+#define GMMx217C_Reserved_19_16_WIDTH                           4
+#define GMMx217C_Reserved_19_16_MASK                            0xf0000
+#define GMMx217C_Reserved_31_20_OFFSET                          20
+#define GMMx217C_Reserved_31_20_WIDTH                           12
+#define GMMx217C_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx217C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx217C_STRUCT;
+
+// **** GMMx2180 Register Definition ****
+// Address
+#define GMMx2180_ADDRESS                                        0x2180
+
+// Type
+#define GMMx2180_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2180_Enable_OFFSET                                  0
+#define GMMx2180_Enable_WIDTH                                   1
+#define GMMx2180_Enable_MASK                                    0x1
+#define GMMx2180_Prescale_OFFSET                                1
+#define GMMx2180_Prescale_WIDTH                                 2
+#define GMMx2180_Prescale_MASK                                  0x6
+#define GMMx2180_BlackoutExempt_OFFSET                          3
+#define GMMx2180_BlackoutExempt_WIDTH                           1
+#define GMMx2180_BlackoutExempt_MASK                            0x8
+#define GMMx2180_StallMode_OFFSET                               4
+#define GMMx2180_StallMode_WIDTH                                2
+#define GMMx2180_StallMode_MASK                                 0x30
+#define GMMx2180_StallOverride_OFFSET                           6
+#define GMMx2180_StallOverride_WIDTH                            1
+#define GMMx2180_StallOverride_MASK                             0x40
+#define GMMx2180_MaxBurst_OFFSET                                7
+#define GMMx2180_MaxBurst_WIDTH                                 4
+#define GMMx2180_MaxBurst_MASK                                  0x780
+#define GMMx2180_LazyTimer_OFFSET                               11
+#define GMMx2180_LazyTimer_WIDTH                                4
+#define GMMx2180_LazyTimer_MASK                                 0x7800
+#define GMMx2180_StallOverrideWtm_OFFSET                        15
+#define GMMx2180_StallOverrideWtm_WIDTH                         1
+#define GMMx2180_StallOverrideWtm_MASK                          0x8000
+#define GMMx2180_Reserved_19_16_OFFSET                          16
+#define GMMx2180_Reserved_19_16_WIDTH                           4
+#define GMMx2180_Reserved_19_16_MASK                            0xf0000
+#define GMMx2180_Reserved_31_20_OFFSET                          20
+#define GMMx2180_Reserved_31_20_WIDTH                           12
+#define GMMx2180_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2180
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2180_STRUCT;
+
+// **** GMMx2184 Register Definition ****
+// Address
+#define GMMx2184_ADDRESS                                        0x2184
+
+// Type
+#define GMMx2184_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2184_Enable_OFFSET                                  0
+#define GMMx2184_Enable_WIDTH                                   1
+#define GMMx2184_Enable_MASK                                    0x1
+#define GMMx2184_Prescale_OFFSET                                1
+#define GMMx2184_Prescale_WIDTH                                 2
+#define GMMx2184_Prescale_MASK                                  0x6
+#define GMMx2184_BlackoutExempt_OFFSET                          3
+#define GMMx2184_BlackoutExempt_WIDTH                           1
+#define GMMx2184_BlackoutExempt_MASK                            0x8
+#define GMMx2184_StallMode_OFFSET                               4
+#define GMMx2184_StallMode_WIDTH                                2
+#define GMMx2184_StallMode_MASK                                 0x30
+#define GMMx2184_StallOverride_OFFSET                           6
+#define GMMx2184_StallOverride_WIDTH                            1
+#define GMMx2184_StallOverride_MASK                             0x40
+#define GMMx2184_MaxBurst_OFFSET                                7
+#define GMMx2184_MaxBurst_WIDTH                                 4
+#define GMMx2184_MaxBurst_MASK                                  0x780
+#define GMMx2184_LazyTimer_OFFSET                               11
+#define GMMx2184_LazyTimer_WIDTH                                4
+#define GMMx2184_LazyTimer_MASK                                 0x7800
+#define GMMx2184_StallOverrideWtm_OFFSET                        15
+#define GMMx2184_StallOverrideWtm_WIDTH                         1
+#define GMMx2184_StallOverrideWtm_MASK                          0x8000
+#define GMMx2184_Reserved_19_16_OFFSET                          16
+#define GMMx2184_Reserved_19_16_WIDTH                           4
+#define GMMx2184_Reserved_19_16_MASK                            0xf0000
+#define GMMx2184_Reserved_31_20_OFFSET                          20
+#define GMMx2184_Reserved_31_20_WIDTH                           12
+#define GMMx2184_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2184
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2184_STRUCT;
+
+// **** GMMx2188 Register Definition ****
+// Address
+#define GMMx2188_ADDRESS                                        0x2188
+
+// Type
+#define GMMx2188_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2188_Enable_OFFSET                                  0
+#define GMMx2188_Enable_WIDTH                                   1
+#define GMMx2188_Enable_MASK                                    0x1
+#define GMMx2188_Prescale_OFFSET                                1
+#define GMMx2188_Prescale_WIDTH                                 2
+#define GMMx2188_Prescale_MASK                                  0x6
+#define GMMx2188_BlackoutExempt_OFFSET                          3
+#define GMMx2188_BlackoutExempt_WIDTH                           1
+#define GMMx2188_BlackoutExempt_MASK                            0x8
+#define GMMx2188_StallMode_OFFSET                               4
+#define GMMx2188_StallMode_WIDTH                                2
+#define GMMx2188_StallMode_MASK                                 0x30
+#define GMMx2188_StallOverride_OFFSET                           6
+#define GMMx2188_StallOverride_WIDTH                            1
+#define GMMx2188_StallOverride_MASK                             0x40
+#define GMMx2188_MaxBurst_OFFSET                                7
+#define GMMx2188_MaxBurst_WIDTH                                 4
+#define GMMx2188_MaxBurst_MASK                                  0x780
+#define GMMx2188_LazyTimer_OFFSET                               11
+#define GMMx2188_LazyTimer_WIDTH                                4
+#define GMMx2188_LazyTimer_MASK                                 0x7800
+#define GMMx2188_StallOverrideWtm_OFFSET                        15
+#define GMMx2188_StallOverrideWtm_WIDTH                         1
+#define GMMx2188_StallOverrideWtm_MASK                          0x8000
+#define GMMx2188_ReqLimit_OFFSET                                16
+#define GMMx2188_ReqLimit_WIDTH                                 4
+#define GMMx2188_ReqLimit_MASK                                  0xf0000
+#define GMMx2188_Reserved_31_20_OFFSET                          20
+#define GMMx2188_Reserved_31_20_WIDTH                           12
+#define GMMx2188_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx2188
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                                 ReqLimit:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2188_STRUCT;
+
+// **** GMMx218C Register Definition ****
+// Address
+#define GMMx218C_ADDRESS                                        0x218c
+
+// Type
+#define GMMx218C_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx218C_Enable_OFFSET                                  0
+#define GMMx218C_Enable_WIDTH                                   1
+#define GMMx218C_Enable_MASK                                    0x1
+#define GMMx218C_Prescale_OFFSET                                1
+#define GMMx218C_Prescale_WIDTH                                 2
+#define GMMx218C_Prescale_MASK                                  0x6
+#define GMMx218C_BlackoutExempt_OFFSET                          3
+#define GMMx218C_BlackoutExempt_WIDTH                           1
+#define GMMx218C_BlackoutExempt_MASK                            0x8
+#define GMMx218C_StallMode_OFFSET                               4
+#define GMMx218C_StallMode_WIDTH                                2
+#define GMMx218C_StallMode_MASK                                 0x30
+#define GMMx218C_StallOverride_OFFSET                           6
+#define GMMx218C_StallOverride_WIDTH                            1
+#define GMMx218C_StallOverride_MASK                             0x40
+#define GMMx218C_MaxBurst_OFFSET                                7
+#define GMMx218C_MaxBurst_WIDTH                                 4
+#define GMMx218C_MaxBurst_MASK                                  0x780
+#define GMMx218C_LazyTimer_OFFSET                               11
+#define GMMx218C_LazyTimer_WIDTH                                4
+#define GMMx218C_LazyTimer_MASK                                 0x7800
+#define GMMx218C_StallOverrideWtm_OFFSET                        15
+#define GMMx218C_StallOverrideWtm_WIDTH                         1
+#define GMMx218C_StallOverrideWtm_MASK                          0x8000
+#define GMMx218C_Reserved_19_16_OFFSET                          16
+#define GMMx218C_Reserved_19_16_WIDTH                           4
+#define GMMx218C_Reserved_19_16_MASK                            0xf0000
+#define GMMx218C_Reserved_31_20_OFFSET                          20
+#define GMMx218C_Reserved_31_20_WIDTH                           12
+#define GMMx218C_Reserved_31_20_MASK                            0xfff00000
+
+/// GMMx218C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 Prescale:2 ; ///<
+    UINT32                                           BlackoutExempt:1 ; ///<
+    UINT32                                                StallMode:2 ; ///<
+    UINT32                                            StallOverride:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                         StallOverrideWtm:1 ; ///<
+    UINT32                                           Reserved_19_16:4 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx218C_STRUCT;
+
+// **** GMMx2190 Register Definition ****
+// Address
+#define GMMx2190_ADDRESS                                        0x2190
+
+// Type
+#define GMMx2190_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2190_Enable_OFFSET                                  0
+#define GMMx2190_Enable_WIDTH                                   1
+#define GMMx2190_Enable_MASK                                    0x1
+#define GMMx2190_Reserved_1_1_OFFSET                            1
+#define GMMx2190_Reserved_1_1_WIDTH                             1
+#define GMMx2190_Reserved_1_1_MASK                              0x2
+#define GMMx2190_StallMode_OFFSET                               2
+#define GMMx2190_StallMode_WIDTH                                1
+#define GMMx2190_StallMode_MASK                                 0x4
+#define GMMx2190_MaxBurst_OFFSET                                3
+#define GMMx2190_MaxBurst_WIDTH                                 4
+#define GMMx2190_MaxBurst_MASK                                  0x78
+#define GMMx2190_AskCredits_OFFSET                              7
+#define GMMx2190_AskCredits_WIDTH                               6
+#define GMMx2190_AskCredits_MASK                                0x1f80
+#define GMMx2190_LazyTimer_OFFSET                               13
+#define GMMx2190_LazyTimer_WIDTH                                4
+#define GMMx2190_LazyTimer_MASK                                 0x1e000
+#define GMMx2190_StallThreshold_OFFSET                          17
+#define GMMx2190_StallThreshold_WIDTH                           6
+#define GMMx2190_StallThreshold_MASK                            0x7e0000
+#define GMMx2190_Reserved_31_23_OFFSET                          23
+#define GMMx2190_Reserved_31_23_WIDTH                           9
+#define GMMx2190_Reserved_31_23_MASK                            0xff800000
+
+/// GMMx2190
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                             Reserved_1_1:1 ; ///<
+    UINT32                                                StallMode:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                               AskCredits:6 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                           StallThreshold:6 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2190_STRUCT;
+
+// **** GMMx2194 Register Definition ****
+// Address
+#define GMMx2194_ADDRESS                                        0x2194
+
+// Type
+#define GMMx2194_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2194_Enable_OFFSET                                  0
+#define GMMx2194_Enable_WIDTH                                   1
+#define GMMx2194_Enable_MASK                                    0x1
+#define GMMx2194_Reserved_1_1_OFFSET                            1
+#define GMMx2194_Reserved_1_1_WIDTH                             1
+#define GMMx2194_Reserved_1_1_MASK                              0x2
+#define GMMx2194_StallMode_OFFSET                               2
+#define GMMx2194_StallMode_WIDTH                                1
+#define GMMx2194_StallMode_MASK                                 0x4
+#define GMMx2194_MaxBurst_OFFSET                                3
+#define GMMx2194_MaxBurst_WIDTH                                 4
+#define GMMx2194_MaxBurst_MASK                                  0x78
+#define GMMx2194_AskCredits_OFFSET                              7
+#define GMMx2194_AskCredits_WIDTH                               6
+#define GMMx2194_AskCredits_MASK                                0x1f80
+#define GMMx2194_LazyTimer_OFFSET                               13
+#define GMMx2194_LazyTimer_WIDTH                                4
+#define GMMx2194_LazyTimer_MASK                                 0x1e000
+#define GMMx2194_StallThreshold_OFFSET                          17
+#define GMMx2194_StallThreshold_WIDTH                           6
+#define GMMx2194_StallThreshold_MASK                            0x7e0000
+#define GMMx2194_Reserved_31_23_OFFSET                          23
+#define GMMx2194_Reserved_31_23_WIDTH                           9
+#define GMMx2194_Reserved_31_23_MASK                            0xff800000
+
+/// GMMx2194
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                             Reserved_1_1:1 ; ///<
+    UINT32                                                StallMode:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                               AskCredits:6 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                           StallThreshold:6 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2194_STRUCT;
+
+// **** GMMx2198 Register Definition ****
+// Address
+#define GMMx2198_ADDRESS                                        0x2198
+
+// Type
+#define GMMx2198_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2198_Enable_OFFSET                                  0
+#define GMMx2198_Enable_WIDTH                                   1
+#define GMMx2198_Enable_MASK                                    0x1
+#define GMMx2198_Reserved_1_1_OFFSET                            1
+#define GMMx2198_Reserved_1_1_WIDTH                             1
+#define GMMx2198_Reserved_1_1_MASK                              0x2
+#define GMMx2198_StallMode_OFFSET                               2
+#define GMMx2198_StallMode_WIDTH                                1
+#define GMMx2198_StallMode_MASK                                 0x4
+#define GMMx2198_MaxBurst_OFFSET                                3
+#define GMMx2198_MaxBurst_WIDTH                                 4
+#define GMMx2198_MaxBurst_MASK                                  0x78
+#define GMMx2198_AskCredits_OFFSET                              7
+#define GMMx2198_AskCredits_WIDTH                               6
+#define GMMx2198_AskCredits_MASK                                0x1f80
+#define GMMx2198_LazyTimer_OFFSET                               13
+#define GMMx2198_LazyTimer_WIDTH                                4
+#define GMMx2198_LazyTimer_MASK                                 0x1e000
+#define GMMx2198_StallThreshold_OFFSET                          17
+#define GMMx2198_StallThreshold_WIDTH                           6
+#define GMMx2198_StallThreshold_MASK                            0x7e0000
+#define GMMx2198_Reserved_31_23_OFFSET                          23
+#define GMMx2198_Reserved_31_23_WIDTH                           9
+#define GMMx2198_Reserved_31_23_MASK                            0xff800000
+
+/// GMMx2198
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                             Reserved_1_1:1 ; ///<
+    UINT32                                                StallMode:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                               AskCredits:6 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                           StallThreshold:6 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2198_STRUCT;
+
+// **** GMMx219C Register Definition ****
+// Address
+#define GMMx219C_ADDRESS                                        0x219c
+
+// Type
+#define GMMx219C_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx219C_Enable_OFFSET                                  0
+#define GMMx219C_Enable_WIDTH                                   1
+#define GMMx219C_Enable_MASK                                    0x1
+#define GMMx219C_Reserved_1_1_OFFSET                            1
+#define GMMx219C_Reserved_1_1_WIDTH                             1
+#define GMMx219C_Reserved_1_1_MASK                              0x2
+#define GMMx219C_StallMode_OFFSET                               2
+#define GMMx219C_StallMode_WIDTH                                1
+#define GMMx219C_StallMode_MASK                                 0x4
+#define GMMx219C_MaxBurst_OFFSET                                3
+#define GMMx219C_MaxBurst_WIDTH                                 4
+#define GMMx219C_MaxBurst_MASK                                  0x78
+#define GMMx219C_AskCredits_OFFSET                              7
+#define GMMx219C_AskCredits_WIDTH                               6
+#define GMMx219C_AskCredits_MASK                                0x1f80
+#define GMMx219C_LazyTimer_OFFSET                               13
+#define GMMx219C_LazyTimer_WIDTH                                4
+#define GMMx219C_LazyTimer_MASK                                 0x1e000
+#define GMMx219C_StallThreshold_OFFSET                          17
+#define GMMx219C_StallThreshold_WIDTH                           6
+#define GMMx219C_StallThreshold_MASK                            0x7e0000
+#define GMMx219C_Reserved_31_23_OFFSET                          23
+#define GMMx219C_Reserved_31_23_WIDTH                           9
+#define GMMx219C_Reserved_31_23_MASK                            0xff800000
+
+/// GMMx219C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                             Reserved_1_1:1 ; ///<
+    UINT32                                                StallMode:1 ; ///<
+    UINT32                                                 MaxBurst:4 ; ///<
+    UINT32                                               AskCredits:6 ; ///<
+    UINT32                                                LazyTimer:4 ; ///<
+    UINT32                                           StallThreshold:6 ; ///<
+    UINT32                                           Reserved_31_23:9 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx219C_STRUCT;
 
 // **** GMMx21A4 Register Definition ****
 // Address
@@ -9474,6 +12597,29 @@ typedef union {
   UINT32 Value;                                                         ///<
 } GMMx2898_STRUCT;
 
+// **** GMMx28C8 Register Definition ****
+// Address
+#define GMMx28C8_ADDRESS                                        0x28c8
+
+// Type
+#define GMMx28C8_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx28C8_Delay_OFFSET                                   0
+#define GMMx28C8_Delay_WIDTH                                    4
+#define GMMx28C8_Delay_MASK                                     0xf
+#define GMMx28C8_Reserved_31_4_OFFSET                           4
+#define GMMx28C8_Reserved_31_4_WIDTH                            28
+#define GMMx28C8_Reserved_31_4_MASK                             0xfffffff0
+
+/// GMMx28C8
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                    Delay:4 ; ///<
+    UINT32                                            Reserved_31_4:28; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx28C8_STRUCT;
+
 // **** GMMx28D8 Register Definition ****
 // Address
 #define GMMx28D8_ADDRESS                                        0x28d8
@@ -9578,6 +12724,34 @@ typedef union {
   UINT32 Value;                                                         ///<
 } GMMx2B90_STRUCT;
 
+// **** GMMx2B94 Register Definition ****
+// Address
+#define GMMx2B94_ADDRESS                                        0x2b94
+
+// Type
+#define GMMx2B94_TYPE                                           TYPE_GMM
+// Field Data
+#define GMMx2B94_RengExecuteOnPwrUp_OFFSET                      0
+#define GMMx2B94_RengExecuteOnPwrUp_WIDTH                       1
+#define GMMx2B94_RengExecuteOnPwrUp_MASK                        0x1
+#define GMMx2B94_Reserved_31_1_OFFSET                           1
+#define GMMx2B94_Reserved_31_1_WIDTH                            31
+#define GMMx2B94_Reserved_31_1_MASK                             0xfffffffe
+
+/// GMMx2B94
+typedef union {
+  struct {                                                              ///<
+    UINT32                                       RengExecuteOnPwrUp:1 ; ///<
+    UINT32                                            Reserved_31_1:31; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} GMMx2B94_STRUCT;
+
+// **** GMMx2B98 Register Definition ****
+// Address
+#define GMMx2B98_ADDRESS                                        0x2b98
+// Type
+#define GMMx2B98_TYPE                                           TYPE_GMM
 // **** GMMx2C04 Register Definition ****
 // Address
 #define GMMx2C04_ADDRESS                                        0x2c04
@@ -9647,60 +12821,6 @@ typedef union {
   UINT32 Value;                                                         ///<
 } GMMx5490_STRUCT;
 
-// **** SMUx03 Register Definition ****
-// Address
-#define SMUx03_ADDRESS                                          0x3
-
-// Type
-#define SMUx03_TYPE                                             TYPE_SMU
-// Field Data
-#define SMUx03_IntReq_OFFSET                                    0
-#define SMUx03_IntReq_WIDTH                                     1
-#define SMUx03_IntReq_MASK                                      0x1
-#define SMUx03_IntAck_OFFSET                                    1
-#define SMUx03_IntAck_WIDTH                                     1
-#define SMUx03_IntAck_MASK                                      0x2
-#define SMUx03_IntDone_OFFSET                                   2
-#define SMUx03_IntDone_WIDTH                                    1
-#define SMUx03_IntDone_MASK                                     0x4
-#define SMUx03_ServiceIndex_OFFSET                              3
-#define SMUx03_ServiceIndex_WIDTH                               8
-#define SMUx03_ServiceIndex_MASK                                0x7f8
-#define SMUx03_Reserved_31_11_OFFSET                            11
-#define SMUx03_Reserved_31_11_WIDTH                             21
-#define SMUx03_Reserved_31_11_MASK                              0xfffff800
-
-/// SMUx03
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                   IntReq:1 ; ///<
-    UINT32                                                   IntAck:1 ; ///<
-    UINT32                                                  IntDone:1 ; ///<
-    UINT32                                             ServiceIndex:8 ; ///<
-    UINT32                                           Reserved_31_11:21; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} SMUx03_STRUCT;
-
-// **** SMUx05 Register Definition ****
-// Address
-#define SMUx05_ADDRESS                                          0x5
-
-// Type
-#define SMUx05_TYPE                                             TYPE_SMU
-// Field Data
-#define SMUx05_McuRam_OFFSET                                    0
-#define SMUx05_McuRam_WIDTH                                     32
-#define SMUx05_McuRam_MASK                                      0xffffffff
-
-/// SMUx05
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                   McuRam:32; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} SMUx05_STRUCT;
-
 // **** SMUx0B Register Definition ****
 // Address
 #define SMUx0B_ADDRESS                                          0xb
@@ -9748,69 +12868,6 @@ typedef union {
 } MSRC001_001A_STRUCT;
 
 
-// **** FCRxFF30_0AE6(GMMx2B98) Register Definition ****
-// Address
-#define FCRxFF30_0AE6_ADDRESS                                   0xff300AE6
-
-// Field Data
-#define FCRxFF30_0AE6_RengExecuteNonsecureStartPtr_OFFSET            0
-#define FCRxFF30_0AE6_RengExecuteNonsecureStartPtr_WIDTH             10
-#define FCRxFF30_0AE6_RengExecuteNowMode_OFFSET                      10
-#define FCRxFF30_0AE6_RengExecuteNowMode_WIDTH                       1
-#define FCRxFF30_0AE6_RengExecuteOnRegUpdate_OFFSET                  11
-#define FCRxFF30_0AE6_RengExecuteOnRegUpdate_WIDTH                   1
-#define FCRxFF30_0AE6_RengSrbmCreditsMcd_OFFSET                      12
-#define FCRxFF30_0AE6_RengSrbmCreditsMcd_WIDTH                       4
-#define FCRxFF30_0AE6_StctrlStutterEn_OFFSET                         16
-#define FCRxFF30_0AE6_StctrlStutterEn_WIDTH                          1
-#define FCRxFF30_0AE6_StctrlGmcIdleThreshold_OFFSET                  17
-#define FCRxFF30_0AE6_StctrlGmcIdleThreshold_WIDTH                   2
-#define FCRxFF30_0AE6_StctrlSrbmIdleThreshold_OFFSET                 19
-#define FCRxFF30_0AE6_StctrlSrbmIdleThreshold_WIDTH                  2
-#define FCRxFF30_0AE6_StctrlIgnorePreSr_OFFSET                       21
-#define FCRxFF30_0AE6_StctrlIgnorePreSr_WIDTH                        1
-#define FCRxFF30_0AE6_StctrlIgnoreAllowStop_OFFSET                   22
-#define FCRxFF30_0AE6_StctrlIgnoreAllowStop_WIDTH                    1
-#define FCRxFF30_0AE6_StctrlIgnoreDramOffline_OFFSET                 23
-#define FCRxFF30_0AE6_StctrlIgnoreDramOffline_WIDTH                  1
-#define FCRxFF30_0AE6_StctrlIgnoreProtectionFault_OFFSET             24
-#define FCRxFF30_0AE6_StctrlIgnoreProtectionFault_WIDTH              1
-#define FCRxFF30_0AE6_StctrlDisableAllowSr_OFFSET                    25
-#define FCRxFF30_0AE6_StctrlDisableAllowSr_WIDTH                     1
-#define FCRxFF30_0AE6_StctrlDisableGmcOffline_OFFSET                 26
-#define FCRxFF30_0AE6_StctrlDisableGmcOffline_WIDTH                  1
-#define FCRxFF30_0AE6_CriticalRegsLock_OFFSET                        27
-#define FCRxFF30_0AE6_CriticalRegsLock_WIDTH                         1
-#define FCRxFF30_0AE6_SmuExecuteOnRegUpdate_OFFSET                   28
-#define FCRxFF30_0AE6_SmuExecuteOnRegUpdate_WIDTH                    1
-#define FCRxFF30_0AE6_AllowDeepSleepMode_OFFSET                      29
-#define FCRxFF30_0AE6_AllowDeepSleepMode_WIDTH                       2
-#define FCRxFF30_0AE6_Reserved_31_31_OFFSET                          31
-#define FCRxFF30_0AE6_Reserved_31_31_WIDTH                           1
-
-/// FCRxFF30_0AE6
-typedef union {
-  struct {                                                              ///<
-    UINT32                             RengExecuteNonsecureStartPtr:10; ///<
-    UINT32                                       RengExecuteNowMode:1 ; ///<
-    UINT32                                   RengExecuteOnRegUpdate:1 ; ///<
-    UINT32                                       RengSrbmCreditsMcd:4 ; ///<
-    UINT32                                          StctrlStutterEn:1 ; ///<
-    UINT32                                   StctrlGmcIdleThreshold:2 ; ///<
-    UINT32                                  StctrlSrbmIdleThreshold:2 ; ///<
-    UINT32                                        StctrlIgnorePreSr:1 ; ///<
-    UINT32                                    StctrlIgnoreAllowStop:1 ; ///<
-    UINT32                                  StctrlIgnoreDramOffline:1 ; ///<
-    UINT32                              StctrlIgnoreProtectionFault:1 ; ///<
-    UINT32                                     StctrlDisableAllowSr:1 ; ///<
-    UINT32                                  StctrlDisableGmcOffline:1 ; ///<
-    UINT32                                         CriticalRegsLock:1 ; ///<
-    UINT32                                    SmuExecuteOnRegUpdate:1 ; ///<
-    UINT32                                       AllowDeepSleepMode:2 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
-  } Field;
-  UINT32 Value;
-} FCRxFF30_0AE6_STRUCT;
 
 // **** FCRxFF30_0134(GMMx4D0) Register Definition ****
 // Address
@@ -9852,6 +12909,292 @@ typedef union {
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } FCRxFF30_0134_STRUCT;
+
+// **** FCRxFF30_01F4 Register Definition ****
+// Address
+#define FCRxFF30_01F4_ADDRESS                                   0xff3001f4
+
+// Type
+#define FCRxFF30_01F4_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFF30_01F4_CgRlcCgttSclkOverride_OFFSET              0
+#define FCRxFF30_01F4_CgRlcCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgRlcCgttSclkOverride_MASK                0x1
+#define FCRxFF30_01F4_CgCpCgttSclkOverride_OFFSET               1
+#define FCRxFF30_01F4_CgCpCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F4_CgCpCgttSclkOverride_MASK                 0x2
+#define FCRxFF30_01F4_CgVgtCgttSclkOverride_OFFSET              2
+#define FCRxFF30_01F4_CgVgtCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgVgtCgttSclkOverride_MASK                0x4
+#define FCRxFF30_01F4_CgPaCgttSclkOverride_OFFSET               3
+#define FCRxFF30_01F4_CgPaCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F4_CgPaCgttSclkOverride_MASK                 0x8
+#define FCRxFF30_01F4_CgScCgttSclkOverride_OFFSET               4
+#define FCRxFF30_01F4_CgScCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F4_CgScCgttSclkOverride_MASK                 0x10
+#define FCRxFF30_01F4_CgSpimCgttSclkOverride_OFFSET             5
+#define FCRxFF30_01F4_CgSpimCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F4_CgSpimCgttSclkOverride_MASK               0x20
+#define FCRxFF30_01F4_CgSxmCgttSclkOverride_OFFSET              6
+#define FCRxFF30_01F4_CgSxmCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgSxmCgttSclkOverride_MASK                0x40
+#define FCRxFF30_01F4_CgSxsCgttSclkOverride_OFFSET              7
+#define FCRxFF30_01F4_CgSxsCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgSxsCgttSclkOverride_MASK                0x80
+#define FCRxFF30_01F4_CgCb0CgttSclkOverride_OFFSET              8
+#define FCRxFF30_01F4_CgCb0CgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgCb0CgttSclkOverride_MASK                0x100
+#define FCRxFF30_01F4_CgCb1CgttSclkOverride_OFFSET              9
+#define FCRxFF30_01F4_CgCb1CgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgCb1CgttSclkOverride_MASK                0x200
+#define FCRxFF30_01F4_ReservedCgtt10Override_OFFSET             10
+#define FCRxFF30_01F4_ReservedCgtt10Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt10Override_MASK               0x400
+#define FCRxFF30_01F4_ReservedCgtt11Override_OFFSET             11
+#define FCRxFF30_01F4_ReservedCgtt11Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt11Override_MASK               0x800
+#define FCRxFF30_01F4_CgDb0CgttSclkOverride_OFFSET              12
+#define FCRxFF30_01F4_CgDb0CgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgDb0CgttSclkOverride_MASK                0x1000
+#define FCRxFF30_01F4_CgDb1CgttSclkOverride_OFFSET              13
+#define FCRxFF30_01F4_CgDb1CgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgDb1CgttSclkOverride_MASK                0x2000
+#define FCRxFF30_01F4_ReservedCgtt14Override_OFFSET             14
+#define FCRxFF30_01F4_ReservedCgtt14Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt14Override_MASK               0x4000
+#define FCRxFF30_01F4_ReservedCgtt15Override_OFFSET             15
+#define FCRxFF30_01F4_ReservedCgtt15Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt15Override_MASK               0x8000
+#define FCRxFF30_01F4_CgVcCgttSclkOverride_OFFSET               16
+#define FCRxFF30_01F4_CgVcCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F4_CgVcCgttSclkOverride_MASK                 0x10000
+#define FCRxFF30_01F4_CgAvpCgttSclkOverride_OFFSET              17
+#define FCRxFF30_01F4_CgAvpCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgAvpCgttSclkOverride_MASK                0x20000
+#define FCRxFF30_01F4_CgAvpCgttEclkOverride_OFFSET              18
+#define FCRxFF30_01F4_CgAvpCgttEclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgAvpCgttEclkOverride_MASK                0x40000
+#define FCRxFF30_01F4_CgUvdmCgttSclkOverride_OFFSET             19
+#define FCRxFF30_01F4_CgUvdmCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F4_CgUvdmCgttSclkOverride_MASK               0x80000
+#define FCRxFF30_01F4_CgUvdmCgttVclkOverride_OFFSET             20
+#define FCRxFF30_01F4_CgUvdmCgttVclkOverride_WIDTH              1
+#define FCRxFF30_01F4_CgUvdmCgttVclkOverride_MASK               0x100000
+#define FCRxFF30_01F4_CgUvdmCgttDclkOverride_OFFSET             21
+#define FCRxFF30_01F4_CgUvdmCgttDclkOverride_WIDTH              1
+#define FCRxFF30_01F4_CgUvdmCgttDclkOverride_MASK               0x200000
+#define FCRxFF30_01F4_CgBifCgttSclkOverride_OFFSET              22
+#define FCRxFF30_01F4_CgBifCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgBifCgttSclkOverride_MASK                0x400000
+#define FCRxFF30_01F4_CgRomCgttSclkOverride_OFFSET              23
+#define FCRxFF30_01F4_CgRomCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgRomCgttSclkOverride_MASK                0x800000
+#define FCRxFF30_01F4_CgDrmCgttSclkOverride_OFFSET              24
+#define FCRxFF30_01F4_CgDrmCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgDrmCgttSclkOverride_MASK                0x1000000
+#define FCRxFF30_01F4_CgDcCgttSclkOverride_OFFSET               25
+#define FCRxFF30_01F4_CgDcCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F4_CgDcCgttSclkOverride_MASK                 0x2000000
+#define FCRxFF30_01F4_ReservedCgtt26Override_OFFSET             26
+#define FCRxFF30_01F4_ReservedCgtt26Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt26Override_MASK               0x4000000
+#define FCRxFF30_01F4_CgMcbCgttSclkOverride_OFFSET              27
+#define FCRxFF30_01F4_CgMcbCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F4_CgMcbCgttSclkOverride_MASK                0x8000000
+#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_OFFSET             28
+#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_MASK               0x10000000
+#define FCRxFF30_01F4_ReservedCgtt29Override_OFFSET             29
+#define FCRxFF30_01F4_ReservedCgtt29Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt29Override_MASK               0x20000000
+#define FCRxFF30_01F4_ReservedCgtt30Override_OFFSET             30
+#define FCRxFF30_01F4_ReservedCgtt30Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt30Override_MASK               0x40000000
+#define FCRxFF30_01F4_ReservedCgtt31Override_OFFSET             31
+#define FCRxFF30_01F4_ReservedCgtt31Override_WIDTH              1
+#define FCRxFF30_01F4_ReservedCgtt31Override_MASK               0x80000000
+
+/// FCRxFF30_01F4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                    CgRlcCgttSclkOverride:1 ; ///<
+    UINT32                                     CgCpCgttSclkOverride:1 ; ///<
+    UINT32                                    CgVgtCgttSclkOverride:1 ; ///<
+    UINT32                                     CgPaCgttSclkOverride:1 ; ///<
+    UINT32                                     CgScCgttSclkOverride:1 ; ///<
+    UINT32                                   CgSpimCgttSclkOverride:1 ; ///<
+    UINT32                                    CgSxmCgttSclkOverride:1 ; ///<
+    UINT32                                    CgSxsCgttSclkOverride:1 ; ///<
+    UINT32                                    CgCb0CgttSclkOverride:1 ; ///<
+    UINT32                                    CgCb1CgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt10Override:1 ; ///<
+    UINT32                                   ReservedCgtt11Override:1 ; ///<
+    UINT32                                    CgDb0CgttSclkOverride:1 ; ///<
+    UINT32                                    CgDb1CgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt14Override:1 ; ///<
+    UINT32                                   ReservedCgtt15Override:1 ; ///<
+    UINT32                                     CgVcCgttSclkOverride:1 ; ///<
+    UINT32                                    CgAvpCgttSclkOverride:1 ; ///<
+    UINT32                                    CgAvpCgttEclkOverride:1 ; ///<
+    UINT32                                   CgUvdmCgttSclkOverride:1 ; ///<
+    UINT32                                   CgUvdmCgttVclkOverride:1 ; ///<
+    UINT32                                   CgUvdmCgttDclkOverride:1 ; ///<
+    UINT32                                    CgBifCgttSclkOverride:1 ; ///<
+    UINT32                                    CgRomCgttSclkOverride:1 ; ///<
+    UINT32                                    CgDrmCgttSclkOverride:1 ; ///<
+    UINT32                                     CgDcCgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt26Override:1 ; ///<
+    UINT32                                    CgMcbCgttSclkOverride:1 ; ///<
+    UINT32                                   CgMcdwCgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt29Override:1 ; ///<
+    UINT32                                   ReservedCgtt30Override:1 ; ///<
+    UINT32                                   ReservedCgtt31Override:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFF30_01F4_STRUCT;
+
+// **** FCRxFF30_01F5 Register Definition ****
+// Address
+#define FCRxFF30_01F5_ADDRESS                                   0xff3001f5
+
+// Type
+#define FCRxFF30_01F5_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFF30_01F5_ReservedCgtt32Override_OFFSET             0
+#define FCRxFF30_01F5_ReservedCgtt32Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt32Override_MASK               0x1
+#define FCRxFF30_01F5_ReservedCgtt33Override_OFFSET             1
+#define FCRxFF30_01F5_ReservedCgtt33Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt33Override_MASK               0x2
+#define FCRxFF30_01F5_ReservedCgtt34Override_OFFSET             2
+#define FCRxFF30_01F5_ReservedCgtt34Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt34Override_MASK               0x4
+#define FCRxFF30_01F5_ReservedCgtt35Override_OFFSET             3
+#define FCRxFF30_01F5_ReservedCgtt35Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt35Override_MASK               0x8
+#define FCRxFF30_01F5_CgTaCgttSclkOverride_OFFSET               4
+#define FCRxFF30_01F5_CgTaCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F5_CgTaCgttSclkOverride_MASK                 0x10
+#define FCRxFF30_01F5_CgTdCgttSclkOverride_OFFSET               5
+#define FCRxFF30_01F5_CgTdCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F5_CgTdCgttSclkOverride_MASK                 0x20
+#define FCRxFF30_01F5_CgTcaCgttSclkOverride_OFFSET              6
+#define FCRxFF30_01F5_CgTcaCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgTcaCgttSclkOverride_MASK                0x40
+#define FCRxFF30_01F5_CgTcpCgttSclkOverride_OFFSET              7
+#define FCRxFF30_01F5_CgTcpCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgTcpCgttSclkOverride_MASK                0x80
+#define FCRxFF30_01F5_CgTccCgttSclkOverride_OFFSET              8
+#define FCRxFF30_01F5_CgTccCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgTccCgttSclkOverride_MASK                0x100
+#define FCRxFF30_01F5_CgSqCgttSclkOverride_OFFSET               9
+#define FCRxFF30_01F5_CgSqCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F5_CgSqCgttSclkOverride_MASK                 0x200
+#define FCRxFF30_01F5_CgHdpCgttSclkOverride_OFFSET              10
+#define FCRxFF30_01F5_CgHdpCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgHdpCgttSclkOverride_MASK                0x400
+#define FCRxFF30_01F5_CgVmcCgttSclkOverride_OFFSET              11
+#define FCRxFF30_01F5_CgVmcCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgVmcCgttSclkOverride_MASK                0x800
+#define FCRxFF30_01F5_CgOrbCgttSclkOverride_OFFSET              12
+#define FCRxFF30_01F5_CgOrbCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgOrbCgttSclkOverride_MASK                0x1000
+#define FCRxFF30_01F5_CgOrbCgttLclkOverride_OFFSET              13
+#define FCRxFF30_01F5_CgOrbCgttLclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgOrbCgttLclkOverride_MASK                0x2000
+#define FCRxFF30_01F5_CgIocCgttSclkOverride_OFFSET              14
+#define FCRxFF30_01F5_CgIocCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgIocCgttSclkOverride_MASK                0x4000
+#define FCRxFF30_01F5_CgIocCgttLclkOverride_OFFSET              15
+#define FCRxFF30_01F5_CgIocCgttLclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgIocCgttLclkOverride_MASK                0x8000
+#define FCRxFF30_01F5_CgGrbmCgttSclkOverride_OFFSET             16
+#define FCRxFF30_01F5_CgGrbmCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgGrbmCgttSclkOverride_MASK               0x10000
+#define FCRxFF30_01F5_ReservedCgtt49Override_OFFSET             17
+#define FCRxFF30_01F5_ReservedCgtt49Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt49Override_MASK               0x20000
+#define FCRxFF30_01F5_CgSmuCgttSclkOverride_OFFSET              18
+#define FCRxFF30_01F5_CgSmuCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgSmuCgttSclkOverride_MASK                0x40000
+#define FCRxFF30_01F5_ReservedCgtt51Override_OFFSET             19
+#define FCRxFF30_01F5_ReservedCgtt51Override_WIDTH              1
+#define FCRxFF30_01F5_ReservedCgtt51Override_MASK               0x80000
+#define FCRxFF30_01F5_CgIhCgttSclkOverride_OFFSET               20
+#define FCRxFF30_01F5_CgIhCgttSclkOverride_WIDTH                1
+#define FCRxFF30_01F5_CgIhCgttSclkOverride_MASK                 0x100000
+#define FCRxFF30_01F5_CgDbgCgttSclkOverride_OFFSET              21
+#define FCRxFF30_01F5_CgDbgCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgDbgCgttSclkOverride_MASK                0x200000
+#define FCRxFF30_01F5_CgSemCgttSclkOverride_OFFSET              22
+#define FCRxFF30_01F5_CgSemCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgSemCgttSclkOverride_MASK                0x400000
+#define FCRxFF30_01F5_CgSrbmCgttSclkOverride_OFFSET             23
+#define FCRxFF30_01F5_CgSrbmCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgSrbmCgttSclkOverride_MASK               0x800000
+#define FCRxFF30_01F5_CgDrmdmaCgttSclkOverride_OFFSET           24
+#define FCRxFF30_01F5_CgDrmdmaCgttSclkOverride_WIDTH            1
+#define FCRxFF30_01F5_CgDrmdmaCgttSclkOverride_MASK             0x1000000
+#define FCRxFF30_01F5_CgUvduCgttSclkOverride_OFFSET             25
+#define FCRxFF30_01F5_CgUvduCgttSclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgUvduCgttSclkOverride_MASK               0x2000000
+#define FCRxFF30_01F5_CgUvduCgttVclkOverride_OFFSET             26
+#define FCRxFF30_01F5_CgUvduCgttVclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgUvduCgttVclkOverride_MASK               0x4000000
+#define FCRxFF30_01F5_CgUvduCgttDclkOverride_OFFSET             27
+#define FCRxFF30_01F5_CgUvduCgttDclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgUvduCgttDclkOverride_MASK               0x8000000
+#define FCRxFF30_01F5_CgDcCgttDispclkOverride_OFFSET            28
+#define FCRxFF30_01F5_CgDcCgttDispclkOverride_WIDTH             1
+#define FCRxFF30_01F5_CgDcCgttDispclkOverride_MASK              0x10000000
+#define FCRxFF30_01F5_CgXbrCgttSclkOverride_OFFSET              29
+#define FCRxFF30_01F5_CgXbrCgttSclkOverride_WIDTH               1
+#define FCRxFF30_01F5_CgXbrCgttSclkOverride_MASK                0x20000000
+#define FCRxFF30_01F5_CgSpimCgtsSclkOverride_OFFSET             30
+#define FCRxFF30_01F5_CgSpimCgtsSclkOverride_WIDTH              1
+#define FCRxFF30_01F5_CgSpimCgtsSclkOverride_MASK               0x40000000
+#define FCRxFF30_01F5_CgSpimCgtsSclkLsOverride_OFFSET           31
+#define FCRxFF30_01F5_CgSpimCgtsSclkLsOverride_WIDTH            1
+#define FCRxFF30_01F5_CgSpimCgtsSclkLsOverride_MASK             0x80000000
+
+/// FCRxFF30_01F5
+typedef union {
+  struct {                                                              ///<
+    UINT32                                   ReservedCgtt32Override:1 ; ///<
+    UINT32                                   ReservedCgtt33Override:1 ; ///<
+    UINT32                                   ReservedCgtt34Override:1 ; ///<
+    UINT32                                   ReservedCgtt35Override:1 ; ///<
+    UINT32                                     CgTaCgttSclkOverride:1 ; ///<
+    UINT32                                     CgTdCgttSclkOverride:1 ; ///<
+    UINT32                                    CgTcaCgttSclkOverride:1 ; ///<
+    UINT32                                    CgTcpCgttSclkOverride:1 ; ///<
+    UINT32                                    CgTccCgttSclkOverride:1 ; ///<
+    UINT32                                     CgSqCgttSclkOverride:1 ; ///<
+    UINT32                                    CgHdpCgttSclkOverride:1 ; ///<
+    UINT32                                    CgVmcCgttSclkOverride:1 ; ///<
+    UINT32                                    CgOrbCgttSclkOverride:1 ; ///<
+    UINT32                                    CgOrbCgttLclkOverride:1 ; ///<
+    UINT32                                    CgIocCgttSclkOverride:1 ; ///<
+    UINT32                                    CgIocCgttLclkOverride:1 ; ///<
+    UINT32                                   CgGrbmCgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt49Override:1 ; ///<
+    UINT32                                    CgSmuCgttSclkOverride:1 ; ///<
+    UINT32                                   ReservedCgtt51Override:1 ; ///<
+    UINT32                                     CgIhCgttSclkOverride:1 ; ///<
+    UINT32                                    CgDbgCgttSclkOverride:1 ; ///<
+    UINT32                                    CgSemCgttSclkOverride:1 ; ///<
+    UINT32                                   CgSrbmCgttSclkOverride:1 ; ///<
+    UINT32                                 CgDrmdmaCgttSclkOverride:1 ; ///<
+    UINT32                                   CgUvduCgttSclkOverride:1 ; ///<
+    UINT32                                   CgUvduCgttVclkOverride:1 ; ///<
+    UINT32                                   CgUvduCgttDclkOverride:1 ; ///<
+    UINT32                                  CgDcCgttDispclkOverride:1 ; ///<
+    UINT32                                    CgXbrCgttSclkOverride:1 ; ///<
+    UINT32                                   CgSpimCgtsSclkOverride:1 ; ///<
+    UINT32                                 CgSpimCgtsSclkLsOverride:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFF30_01F5_STRUCT;
 
 // **** FCRxFF30_1B7C(GMMx6DF0) Register Definition ****
 // Address
@@ -10016,191 +13359,6 @@ typedef union {
   UINT32 Value;                                                         ///<
 } SMUx0B_x8498_STRUCT;
 
-// **** D0F0xE4_WRAP_8013 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_8013_ADDRESS                               0x8013
-
-// Field Data
-#define D0F0xE4_WRAP_8013_MasterPciePllA_OFFSET                 0
-#define D0F0xE4_WRAP_8013_MasterPciePllA_WIDTH                  1
-#define D0F0xE4_WRAP_8013_MasterPciePllA_MASK                   0x1
-#define D0F0xE4_WRAP_8013_Reserved_1_1_OFFSET                   1
-#define D0F0xE4_WRAP_8013_Reserved_1_1_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_1_1_MASK                     0x2
-#define D0F0xE4_WRAP_8013_Reserved_2_2_OFFSET                   2
-#define D0F0xE4_WRAP_8013_Reserved_2_2_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_2_2_MASK                     0x4
-#define D0F0xE4_WRAP_8013_Reserved_3_3_OFFSET                   3
-#define D0F0xE4_WRAP_8013_Reserved_3_3_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_3_3_MASK                     0x8
-#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_OFFSET       4
-#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_WIDTH        1
-#define D0F0xE4_WRAP_8013_ClkDividerResetOverrideA_MASK         0x10
-#define D0F0xE4_WRAP_8013_Reserved_5_5_OFFSET                   5
-#define D0F0xE4_WRAP_8013_Reserved_5_5_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_5_5_MASK                     0x20
-#define D0F0xE4_WRAP_8013_Reserved_6_6_OFFSET                   6
-#define D0F0xE4_WRAP_8013_Reserved_6_6_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_6_6_MASK                     0x40
-#define D0F0xE4_WRAP_8013_Reserved_7_7_OFFSET                   7
-#define D0F0xE4_WRAP_8013_Reserved_7_7_WIDTH                    1
-#define D0F0xE4_WRAP_8013_Reserved_7_7_MASK                     0x80
-#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_OFFSET           8
-#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_WIDTH            1
-#define D0F0xE4_WRAP_8013_TxclkSelCoreOverride_MASK             0x100
-#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_OFFSET           9
-#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_WIDTH            1
-#define D0F0xE4_WRAP_8013_TxclkSelPifAOverride_MASK             0x200
-#define D0F0xE4_WRAP_8013_Reserved_10_10_OFFSET                 10
-#define D0F0xE4_WRAP_8013_Reserved_10_10_WIDTH                  1
-#define D0F0xE4_WRAP_8013_Reserved_10_10_MASK                   0x400
-#define D0F0xE4_WRAP_8013_Reserved_11_11_OFFSET                 11
-#define D0F0xE4_WRAP_8013_Reserved_11_11_WIDTH                  1
-#define D0F0xE4_WRAP_8013_Reserved_11_11_MASK                   0x800
-#define D0F0xE4_WRAP_8013_Reserved_12_12_OFFSET                 12
-#define D0F0xE4_WRAP_8013_Reserved_12_12_WIDTH                  1
-#define D0F0xE4_WRAP_8013_Reserved_12_12_MASK                   0x1000
-#define D0F0xE4_WRAP_8013_Reserved_15_13_OFFSET                 13
-#define D0F0xE4_WRAP_8013_Reserved_15_13_WIDTH                  3
-#define D0F0xE4_WRAP_8013_Reserved_15_13_MASK                   0xe000
-#define D0F0xE4_WRAP_8013_Reserved_16_16_OFFSET                 16
-#define D0F0xE4_WRAP_8013_Reserved_16_16_WIDTH                  1
-#define D0F0xE4_WRAP_8013_Reserved_16_16_MASK                   0x10000
-#define D0F0xE4_WRAP_8013_Reserved_19_17_OFFSET                 17
-#define D0F0xE4_WRAP_8013_Reserved_19_17_WIDTH                  3
-#define D0F0xE4_WRAP_8013_Reserved_19_17_MASK                   0xe0000
-#define D0F0xE4_WRAP_8013_Reserved_20_20_OFFSET                 20
-#define D0F0xE4_WRAP_8013_Reserved_20_20_WIDTH                  1
-#define D0F0xE4_WRAP_8013_Reserved_20_20_MASK                   0x100000
-#define D0F0xE4_WRAP_8013_Reserved_31_21_OFFSET                 21
-#define D0F0xE4_WRAP_8013_Reserved_31_21_WIDTH                  11
-#define D0F0xE4_WRAP_8013_Reserved_31_21_MASK                   0xffe00000
-
-/// D0F0xE4_WRAP_8013
-typedef union {
-  struct {                                                              ///<
-    UINT32                                           MasterPciePllA:1 ; ///<
-    UINT32                                           MasterPciePllB:1 ; ///<
-    UINT32                                           MasterPciePllC:1 ; ///<
-    UINT32                                           MasterPciePllD:1 ; ///<
-    UINT32                                 ClkDividerResetOverrideA:1 ; ///<
-    UINT32                                             Reserved_5_5:1 ; ///<
-    UINT32                                             Reserved_6_6:1 ; ///<
-    UINT32                                             Reserved_7_7:1 ; ///<
-    UINT32                                     TxclkSelCoreOverride:1 ; ///<
-    UINT32                                     TxclkSelPifAOverride:1 ; ///<
-    UINT32                                           Reserved_10_10:1 ; ///<
-    UINT32                                           Reserved_11_11:1 ; ///<
-    UINT32                                           Reserved_12_12:1 ; ///<
-    UINT32                                           Reserved_15_13:3 ; ///<
-    UINT32                                           Reserved_16_16:1 ; ///<
-    UINT32                                           Reserved_19_17:3 ; ///<
-    UINT32                                           Reserved_20_20:1 ; ///<
-    UINT32                                           Reserved_31_21:11; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D0F0xE4_WRAP_8013_STRUCT;
-
-// **** D0F0xE4_WRAP_8014 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_8014_ADDRESS                               0x8014
-
-// Field Data
-#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_OFFSET            0
-#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_WIDTH             1
-#define D0F0xE4_WRAP_8014_TxclkPermGateEnable_MASK              0x1
-#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_OFFSET            1
-#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_WIDTH             1
-#define D0F0xE4_WRAP_8014_TxclkPrbsGateEnable_MASK              0x2
-#define D0F0xE4_WRAP_8014_Reserved_2_2_OFFSET                   2
-#define D0F0xE4_WRAP_8014_Reserved_2_2_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_2_2_MASK                     0x4
-#define D0F0xE4_WRAP_8014_Reserved_3_3_OFFSET                   3
-#define D0F0xE4_WRAP_8014_Reserved_3_3_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_3_3_MASK                     0x8
-#define D0F0xE4_WRAP_8014_Reserved_4_4_OFFSET                   4
-#define D0F0xE4_WRAP_8014_Reserved_4_4_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_4_4_MASK                     0x10
-#define D0F0xE4_WRAP_8014_Reserved_5_5_OFFSET                   5
-#define D0F0xE4_WRAP_8014_Reserved_5_5_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_5_5_MASK                     0x20
-#define D0F0xE4_WRAP_8014_Reserved_6_6_OFFSET                   6
-#define D0F0xE4_WRAP_8014_Reserved_6_6_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_6_6_MASK                     0x40
-#define D0F0xE4_WRAP_8014_Reserved_7_7_OFFSET                   7
-#define D0F0xE4_WRAP_8014_Reserved_7_7_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_7_7_MASK                     0x80
-#define D0F0xE4_WRAP_8014_Reserved_8_8_OFFSET                   8
-#define D0F0xE4_WRAP_8014_Reserved_8_8_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_8_8_MASK                     0x100
-#define D0F0xE4_WRAP_8014_Reserved_9_9_OFFSET                   9
-#define D0F0xE4_WRAP_8014_Reserved_9_9_WIDTH                    1
-#define D0F0xE4_WRAP_8014_Reserved_9_9_MASK                     0x200
-#define D0F0xE4_WRAP_8014_Reserved_10_10_OFFSET                 10
-#define D0F0xE4_WRAP_8014_Reserved_10_10_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_10_10_MASK                   0x400
-#define D0F0xE4_WRAP_8014_Reserved_11_11_OFFSET                 11
-#define D0F0xE4_WRAP_8014_Reserved_11_11_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_11_11_MASK                   0x800
-#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_OFFSET           12
-#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_WIDTH            1
-#define D0F0xE4_WRAP_8014_PcieGatePifA1xEnable_MASK             0x1000
-#define D0F0xE4_WRAP_8014_Reserved_13_13_OFFSET                 13
-#define D0F0xE4_WRAP_8014_Reserved_13_13_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_13_13_MASK                   0x2000
-#define D0F0xE4_WRAP_8014_Reserved_14_14_OFFSET                 14
-#define D0F0xE4_WRAP_8014_Reserved_14_14_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_14_14_MASK                   0x4000
-#define D0F0xE4_WRAP_8014_Reserved_15_15_OFFSET                 15
-#define D0F0xE4_WRAP_8014_Reserved_15_15_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_15_15_MASK                   0x8000
-#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_OFFSET         16
-#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_WIDTH          1
-#define D0F0xE4_WRAP_8014_PcieGatePifA2p5xEnable_MASK           0x10000
-#define D0F0xE4_WRAP_8014_Reserved_17_17_OFFSET                 17
-#define D0F0xE4_WRAP_8014_Reserved_17_17_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_17_17_MASK                   0x20000
-#define D0F0xE4_WRAP_8014_Reserved_18_18_OFFSET                 18
-#define D0F0xE4_WRAP_8014_Reserved_18_18_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_18_18_MASK                   0x40000
-#define D0F0xE4_WRAP_8014_Reserved_19_19_OFFSET                 19
-#define D0F0xE4_WRAP_8014_Reserved_19_19_WIDTH                  1
-#define D0F0xE4_WRAP_8014_Reserved_19_19_MASK                   0x80000
-#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_OFFSET  20
-#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_WIDTH   1
-#define D0F0xE4_WRAP_8014_TxclkPermGateOnlyWhenPllPwrDn_MASK    0x100000
-#define D0F0xE4_WRAP_8014_Reserved_31_21_OFFSET                 21
-#define D0F0xE4_WRAP_8014_Reserved_31_21_WIDTH                  11
-#define D0F0xE4_WRAP_8014_Reserved_31_21_MASK                   0xffe00000
-
-/// D0F0xE4_WRAP_8014
-typedef union {
-  struct {
-    UINT32                                      TxclkPermGateEnable:1 ; ///<
-    UINT32                                      TxclkPrbsGateEnable:1 ; ///<
-    UINT32                                      DdiGatePifA1xEnable:1 ; ///<
-    UINT32                                      DdiGatePifB1xEnable:1 ; ///<
-    UINT32                                      DdiGatePifC1xEnable:1 ; ///<
-    UINT32                                      DdiGatePifD1xEnable:1 ; ///<
-    UINT32                                        DdiGateDigAEnable:1 ; ///<
-    UINT32                                        DdiGateDigBEnable:1 ; ///<
-    UINT32                                    DdiGatePifA2p5xEnable:1 ; ///<
-    UINT32                                    DdiGatePifB2p5xEnable:1 ; ///<
-    UINT32                                    DdiGatePifC2p5xEnable:1 ; ///<
-    UINT32                                    DdiGatePifD2p5xEnable:1 ; ///<
-    UINT32                                     PcieGatePifA1xEnable:1 ; ///<
-    UINT32                                     PcieGatePifB1xEnable:1 ; ///<
-    UINT32                                     PcieGatePifC1xEnable:1 ; ///<
-    UINT32                                     PcieGatePifD1xEnable:1 ; ///<
-    UINT32                                   PcieGatePifA2p5xEnable:1 ; ///<
-    UINT32                                   PcieGatePifB2p5xEnable:1 ; ///<
-    UINT32                                   PcieGatePifC2p5xEnable:1 ; ///<
-    UINT32                                   PcieGatePifD2p5xEnable:1 ; ///<
-    UINT32                            TxclkPermGateOnlyWhenPllPwrDn:1 ; ///<
-    UINT32                                           Reserved_31_21:11; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D0F0xE4_WRAP_8014_STRUCT;
 
 // **** SMUx0B_x85B0 Register Definition ****
 // Address
@@ -10262,6 +13420,107 @@ typedef union {
   UINT32 Value;                                                         ///<
 } D0F0x64_x51_STRUCT;
 
+// **** D0F0xE4_PHY_6440 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6440_ADDRESS                                0x6440
+
+// Type
+#define D0F0xE4_PHY_6440_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6440_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6440_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6440_RxInCalForce_MASK                      0x80
+
+// **** D0F0xE4_PHY_6480 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6480_ADDRESS                                0x6480
+
+// Type
+#define D0F0xE4_PHY_6480_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6480_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6480_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6480_RxInCalForce_MASK                      0x80
+
+// **** D0F0xE4_PHY_6500 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6500_ADDRESS                                0x6500
+
+// Type
+#define D0F0xE4_PHY_6500_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6500_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6500_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6500_RxInCalForce_MASK                      0x80
+
+// **** D0F0xE4_PHY_6600 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6600_ADDRESS                                0x6600
+
+// Type
+#define D0F0xE4_PHY_6600_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6600_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6600_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6600_RxInCalForce_MASK                      0x80
+
+
+// **** D0F0xE4_PHY_6840 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6840_ADDRESS                                0x6840
+
+// Type
+#define D0F0xE4_PHY_6840_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6840_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6840_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6840_RxInCalForce_MASK                      0x80
+
+
+// **** D0F0xE4_PHY_6880 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6880_ADDRESS                                0x6880
+
+// Type
+#define D0F0xE4_PHY_6880_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6880_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6880_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6880_RxInCalForce_MASK                      0x80
+
+// **** D0F0xE4_PHY_6900 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6900_ADDRESS                                0x6900
+
+// Type
+#define D0F0xE4_PHY_6900_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6900_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6900_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6900_RxInCalForce_MASK                      0x80
+
+// **** D0F0xE4_PHY_6A00 Register Definition ****
+// Address
+#define D0F0xE4_PHY_6A00_ADDRESS                                0x6a00
+
+// Type
+#define D0F0xE4_PHY_6A00_TYPE                                   TYPE_D0F0xE4
+// Field Data
+#define D0F0xE4_PHY_6A00_RxInCalForce_OFFSET                    7
+#define D0F0xE4_PHY_6A00_RxInCalForce_WIDTH                     1
+#define D0F0xE4_PHY_6A00_RxInCalForce_MASK                      0x80
+
+// **** D0F0x64_x20 Register Definition ****
+// Address
+#define D0F0x64_x20_ADDRESS                                     0x20
+
+// Type
+#define D0F0x64_x20_TYPE                                        TYPE_D0F0x64
+// Field Data
+#define D0F0x64_x20_IocPcieDevRemapDis_OFFSET                   1
+#define D0F0x64_x20_IocPcieDevRemapDis_WIDTH                    1
+#define D0F0x64_x20_IocPcieDevRemapDis_MASK                     0x2
+
 // **** SMUx33 Register Definition ****
 // Address
 #define SMUx33_ADDRESS                                          0x33
@@ -10275,24 +13534,36 @@ typedef union {
 #define SMUx33_LclkActMonUnt_OFFSET                             16
 #define SMUx33_LclkActMonUnt_WIDTH                              4
 #define SMUx33_LclkActMonUnt_MASK                               0xf0000
-#define SMUx33_Reserved_22_20_OFFSET                            20
-#define SMUx33_Reserved_22_20_WIDTH                             3
-#define SMUx33_Reserved_22_20_MASK                              0x700000
+#define SMUx33_TrendMode_OFFSET                                 20
+#define SMUx33_TrendMode_WIDTH                                  1
+#define SMUx33_TrendMode_MASK                                   0x100000
+#define SMUx33_ForceTrend_OFFSET                                21
+#define SMUx33_ForceTrend_WIDTH                                 1
+#define SMUx33_ForceTrend_MASK                                  0x200000
+#define SMUx33_ActMonRst_OFFSET                                 22
+#define SMUx33_ActMonRst_WIDTH                                  1
+#define SMUx33_ActMonRst_MASK                                   0x400000
 #define SMUx33_BusyCntSel_OFFSET                                23
 #define SMUx33_BusyCntSel_WIDTH                                 2
 #define SMUx33_BusyCntSel_MASK                                  0x1800000
-#define SMUx33_Reserved_31_25_OFFSET                            25
-#define SMUx33_Reserved_31_25_WIDTH                             7
-#define SMUx33_Reserved_31_25_MASK                              0xfe000000
+#define SMUx33_AccessCntl_OFFSET                                25
+#define SMUx33_AccessCntl_WIDTH                                 1
+#define SMUx33_AccessCntl_MASK                                  0x2000000
+#define SMUx33_Reserved_31_26_OFFSET                            26
+#define SMUx33_Reserved_31_26_WIDTH                             6
+#define SMUx33_Reserved_31_26_MASK                              0xfc000000
 
 /// SMUx33
 typedef union {
   struct {                                                              ///<
     UINT32                                            LclkActMonPrd:16; ///<
     UINT32                                            LclkActMonUnt:4 ; ///<
-    UINT32                                           Reserved_22_20:3 ; ///<
+    UINT32                                                TrendMode:1 ; ///<
+    UINT32                                               ForceTrend:1 ; ///<
+    UINT32                                                ActMonRst:1 ; ///<
     UINT32                                               BusyCntSel:2 ; ///<
-    UINT32                                           Reserved_31_25:7 ; ///<
+    UINT32                                               AccessCntl:1 ; ///<
+    UINT32                                           Reserved_31_26:6 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } SMUx33_STRUCT;
@@ -10343,9 +13614,12 @@ typedef union {
 // Type
 #define FCRxFF30_01E4_TYPE                                      TYPE_FCR
 // Field Data
-#define FCRxFF30_01E4_Reserved_19_0_OFFSET                      0
-#define FCRxFF30_01E4_Reserved_19_0_WIDTH                       20
-#define FCRxFF30_01E4_Reserved_19_0_MASK                        0xfffff
+#define FCRxFF30_01E4_Fraction_OFFSET                           0
+#define FCRxFF30_01E4_Fraction_WIDTH                            8
+#define FCRxFF30_01E4_Fraction_MASK                             0xff
+#define FCRxFF30_01E4_Hysteresis_OFFSET                         8
+#define FCRxFF30_01E4_Hysteresis_WIDTH                          12
+#define FCRxFF30_01E4_Hysteresis_MASK                           0xfff00
 #define FCRxFF30_01E4_VoltageChangeEn_OFFSET                    20
 #define FCRxFF30_01E4_VoltageChangeEn_WIDTH                     1
 #define FCRxFF30_01E4_VoltageChangeEn_MASK                      0x100000
@@ -10356,46 +13630,148 @@ typedef union {
 /// FCRxFF30_01E4
 typedef union {
   struct {                                                              ///<
-    UINT32                                           Reserved_19_0:20; ///<
+    UINT32                                                 Fraction:8 ; ///<
+    UINT32                                               Hysteresis:12; ///<
     UINT32                                          VoltageChangeEn:1 ; ///<
     UINT32                                           Reserved_31_21:11; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
 } FCRxFF30_01E4_STRUCT;
-
-// **** SMUx0B_x8470 Register Definition ****
+// **** SMUx0B_x84AC Register Definition ****
 // Address
-#define SMUx0B_x8470_ADDRESS                                    0x8470
+#define SMUx0B_x84AC_ADDRESS                                    0x84ac
 
+// Type
+#define SMUx0B_x84AC_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x84AC_FstateCredits_1_OFFSET                     0
+#define SMUx0B_x84AC_FstateCredits_1_WIDTH                      16
+#define SMUx0B_x84AC_FstateCredits_1_MASK                       0xffff
+#define SMUx0B_x84AC_FstateCredits_0_OFFSET                     16
+#define SMUx0B_x84AC_FstateCredits_0_WIDTH                      16
+#define SMUx0B_x84AC_FstateCredits_0_MASK                       0xffff0000
 
-// **** SMUx0B_x8440 Register Definition ****
-// Address
-#define SMUx0B_x8440_ADDRESS                                    0x8440
-
+/// SMUx0B_x84AC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                          FstateCredits_1:16; ///<
+    UINT32                                          FstateCredits_0:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x84AC_STRUCT;
 
 // **** SMUx0B_x848C Register Definition ****
 // Address
 #define SMUx0B_x848C_ADDRESS                                    0x848c
 
+// Type
+#define SMUx0B_x848C_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x848C_FstateDiv_7_OFFSET                         0
+#define SMUx0B_x848C_FstateDiv_7_WIDTH                          7
+#define SMUx0B_x848C_FstateDiv_7_MASK                           0x7f
+#define SMUx0B_x848C_Reserved_7_7_OFFSET                        7
+#define SMUx0B_x848C_Reserved_7_7_WIDTH                         1
+#define SMUx0B_x848C_Reserved_7_7_MASK                          0x80
+#define SMUx0B_x848C_FstateDiv_6_OFFSET                         8
+#define SMUx0B_x848C_FstateDiv_6_WIDTH                          7
+#define SMUx0B_x848C_FstateDiv_6_MASK                           0x7f00
+#define SMUx0B_x848C_Reserved_15_15_OFFSET                      15
+#define SMUx0B_x848C_Reserved_15_15_WIDTH                       1
+#define SMUx0B_x848C_Reserved_15_15_MASK                        0x8000
+#define SMUx0B_x848C_FstateDiv_5_OFFSET                         16
+#define SMUx0B_x848C_FstateDiv_5_WIDTH                          7
+#define SMUx0B_x848C_FstateDiv_5_MASK                           0x7f0000
+#define SMUx0B_x848C_Reserved_23_23_OFFSET                      23
+#define SMUx0B_x848C_Reserved_23_23_WIDTH                       1
+#define SMUx0B_x848C_Reserved_23_23_MASK                        0x800000
+#define SMUx0B_x848C_FstateDiv_4_OFFSET                         24
+#define SMUx0B_x848C_FstateDiv_4_WIDTH                          7
+#define SMUx0B_x848C_FstateDiv_4_MASK                           0x7f000000
+#define SMUx0B_x848C_Reserved_31_31_OFFSET                      31
+#define SMUx0B_x848C_Reserved_31_31_WIDTH                       1
+#define SMUx0B_x848C_Reserved_31_31_MASK                        0x80000000
 
-// **** SMUx35 Register Definition ****
+/// SMUx0B_x848C
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              FstateDiv_7:7 ; ///<
+    UINT32                                             Reserved_7_7:1 ; ///<
+    UINT32                                              FstateDiv_6:7 ; ///<
+    UINT32                                           Reserved_15_15:1 ; ///<
+    UINT32                                              FstateDiv_5:7 ; ///<
+    UINT32                                           Reserved_23_23:1 ; ///<
+    UINT32                                              FstateDiv_4:7 ; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x848C_STRUCT;
+
+// **** SMUx0B_x8470 Register Definition ****
 // Address
-#define SMUx35_ADDRESS                                          0x35
+#define SMUx0B_x8470_ADDRESS                                    0x8470
 
 // Type
-#define SMUx35_TYPE                                             TYPE_SMU
+#define SMUx0B_x8470_TYPE                                       TYPE_SMUx0B
 // Field Data
-#define SMUx35_DownTrendCoef_OFFSET                             0
-#define SMUx35_DownTrendCoef_WIDTH                              10
-#define SMUx35_DownTrendCoef_MASK                               0x3ff
-#define SMUx35_UpTrendCoef_OFFSET                               10
-#define SMUx35_UpTrendCoef_WIDTH                                10
-#define SMUx35_UpTrendCoef_MASK                                 0xffc00
-#define SMUx35_Reserved_31_20_OFFSET                            20
-#define SMUx35_Reserved_31_20_WIDTH                             12
-#define SMUx35_Reserved_31_20_MASK                              0xfff00000
+#define SMUx0B_x8470_Raising_OFFSET                             0
+#define SMUx0B_x8470_Raising_WIDTH                              16
+#define SMUx0B_x8470_Raising_MASK                               0xffff
+#define SMUx0B_x8470_Lowering_OFFSET                            16
+#define SMUx0B_x8470_Lowering_WIDTH                             16
+#define SMUx0B_x8470_Lowering_MASK                              0xffff0000
 
-/// SMUx35
+/// SMUx0B_x8470
+typedef union {
+  struct {                                                              ///<
+    UINT32                                                  Raising:16; ///<
+    UINT32                                                 Lowering:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8470_STRUCT;
+
+// **** SMUx0B_x8440 Register Definition ****
+// Address
+#define SMUx0B_x8440_ADDRESS                                    0x8440
+
+// Type
+#define SMUx0B_x8440_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x8440_FstatePeriod_5_OFFSET                      0
+#define SMUx0B_x8440_FstatePeriod_5_WIDTH                       16
+#define SMUx0B_x8440_FstatePeriod_5_MASK                        0xffff
+#define SMUx0B_x8440_FstatePeriod_4_OFFSET                      16
+#define SMUx0B_x8440_FstatePeriod_4_WIDTH                       16
+#define SMUx0B_x8440_FstatePeriod_4_MASK                        0xffff0000
+
+/// SMUx0B_x8440
+typedef union {
+  struct {                                                              ///<
+    UINT32                                           FstatePeriod_5:16; ///<
+    UINT32                                           FstatePeriod_4:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8440_STRUCT;
+
+
+// **** SMUx51 Register Definition ****
+// Address
+#define SMUx51_ADDRESS                                          0x51
+
+// Type
+#define SMUx51_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx51_DownTrendCoef_OFFSET                             0
+#define SMUx51_DownTrendCoef_WIDTH                              10
+#define SMUx51_DownTrendCoef_MASK                               0x3ff
+#define SMUx51_UpTrendCoef_OFFSET                               10
+#define SMUx51_UpTrendCoef_WIDTH                                10
+#define SMUx51_UpTrendCoef_MASK                                 0xffc00
+#define SMUx51_Reserved_31_20_OFFSET                            20
+#define SMUx51_Reserved_31_20_WIDTH                             12
+#define SMUx51_Reserved_31_20_MASK                              0xfff00000
+
+/// SMUx51
 typedef union {
   struct {                                                              ///<
     UINT32                                            DownTrendCoef:10; ///<
@@ -10403,896 +13779,42 @@ typedef union {
     UINT32                                           Reserved_31_20:12; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} SMUx35_STRUCT;
+} SMUx51_STRUCT;
 
-// **** SMUx37 Register Definition ****
+// **** FCRxFE00_70A2 Register Definition ****
 // Address
-#define SMUx37_ADDRESS                                          0x37
-
-
-// **** SMUx51 Register Definition ****
-// Address
-#define SMUx51_ADDRESS                                          0x51
-
-
-// **** SMUx0B_x8490 Register Definition ****
-// Address
-#define SMUx0B_x8490_ADDRESS                                    0x8490
-
-
-// **** DxF0xE4_xB5 Register Definition ****
-// Address
-#define DxF0xE4_xB5_ADDRESS                                     0xb5
+#define FCRxFE00_70A2_ADDRESS                                   0xfe0070a2
 
 // Type
-#define DxF0xE4_xB5_TYPE                                        TYPE_D4F0xE4
+#define FCRxFE00_70A2_TYPE                                      TYPE_FCR
 // Field Data
-#define DxF0xE4_xB5_Reserved_9_0_OFFSET                         0
-#define DxF0xE4_xB5_Reserved_9_0_WIDTH                          10
-#define DxF0xE4_xB5_Reserved_9_0_MASK                           0x3ff
-#define DxF0xE4_xB5_LcEnhancedHotPlugEn_OFFSET                  10
-#define DxF0xE4_xB5_LcEnhancedHotPlugEn_WIDTH                   1
-#define DxF0xE4_xB5_LcEnhancedHotPlugEn_MASK                    0x400
-#define DxF0xE4_xB5_Reserved_11_11_OFFSET                       11
-#define DxF0xE4_xB5_Reserved_11_11_WIDTH                        1
-#define DxF0xE4_xB5_Reserved_11_11_MASK                         0x800
-#define DxF0xE4_xB5_LcEhpRxPhyCmd_OFFSET                        12
-#define DxF0xE4_xB5_LcEhpRxPhyCmd_WIDTH                         2
-#define DxF0xE4_xB5_LcEhpRxPhyCmd_MASK                          0x3000
-#define DxF0xE4_xB5_LcEhpTxPhyCmd_OFFSET                        14
-#define DxF0xE4_xB5_LcEhpTxPhyCmd_WIDTH                         2
-#define DxF0xE4_xB5_LcEhpTxPhyCmd_MASK                          0xc000
-#define DxF0xE4_xB5_Reserved_31_16_OFFSET                       16
-#define DxF0xE4_xB5_Reserved_31_16_WIDTH                        16
-#define DxF0xE4_xB5_Reserved_31_16_MASK                         0xffff0000
+#define FCRxFE00_70A2_Reserved_6_0_OFFSET                       0
+#define FCRxFE00_70A2_Reserved_6_0_WIDTH                        7
+#define FCRxFE00_70A2_Reserved_6_0_MASK                         0x7f
+#define FCRxFE00_70A2_PPlayTableRev_OFFSET                      7
+#define FCRxFE00_70A2_PPlayTableRev_WIDTH                       4
+#define FCRxFE00_70A2_PPlayTableRev_MASK                        0x780
+#define FCRxFE00_70A2_SclkThermDid_OFFSET                       11
+#define FCRxFE00_70A2_SclkThermDid_WIDTH                        7
+#define FCRxFE00_70A2_SclkThermDid_MASK                         0x3f800
+#define FCRxFE00_70A2_PcieGen2Vid_OFFSET                        18
+#define FCRxFE00_70A2_PcieGen2Vid_WIDTH                         2
+#define FCRxFE00_70A2_PcieGen2Vid_MASK                          0xc0000
+#define FCRxFE00_70A2_Reserved_31_20_OFFSET                     20
+#define FCRxFE00_70A2_Reserved_31_20_WIDTH                      12
+#define FCRxFE00_70A2_Reserved_31_20_MASK                       0xfff00000
 
-/// DxF0xE4_xB5
+/// FCRxFE00_70A2
 typedef union {
   struct {                                                              ///<
-    UINT32                                             Reserved_9_0:10; ///<
-    UINT32                                      LcEnhancedHotPlugEn:1 ; ///<
-    UINT32                                           Reserved_11_11:1 ; ///<
-    UINT32                                            LcEhpRxPhyCmd:2 ; ///<
-    UINT32                                            LcEhpTxPhyCmd:2 ; ///<
-    UINT32                                           Reserved_31_16:16 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} DxF0xE4_xB5_STRUCT;
-
-// **** D0F0xE4_WRAP_80F0 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_80F0_ADDRESS                               0x80f0
-
-// Type
-#define D0F0xE4_WRAP_80F0_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_WRAP_80F0_MicroSeconds_OFFSET                   0
-#define D0F0xE4_WRAP_80F0_MicroSeconds_WIDTH                    32
-#define D0F0xE4_WRAP_80F0_MicroSeconds_MASK                     0xffffffff
-
-/// D0F0xE4_WRAP_80F0
-typedef union {
-  struct {                                                              ///<
-    UINT32                                             MicroSeconds:32; ///<
+    UINT32                                             Reserved_6_0:7 ; ///<
+    UINT32                                            PPlayTableRev:4 ; ///<
+    UINT32                                             SclkThermDid:7 ; ///<
+    UINT32                                              PcieGen2Vid:2 ; ///<
+    UINT32                                           Reserved_31_20:12; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D0F0xE4_WRAP_80F0_STRUCT;
-
-// **** DxF0xE4_xA5 Register Definition ****
-// Address
-#define DxF0xE4_xA5_ADDRESS                                     0xa5
-
-
-// **** D0F0xE4_WRAP_8012 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_8012_ADDRESS                               0x8012
-
-// Type
-#define D0F0xE4_WRAP_8012_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_OFFSET           0
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_WIDTH            6
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateLatency_MASK             0x3f
-#define D0F0xE4_WRAP_8012_Reserved_6_6_OFFSET                   6
-#define D0F0xE4_WRAP_8012_Reserved_6_6_WIDTH                    1
-#define D0F0xE4_WRAP_8012_Reserved_6_6_MASK                     0x40
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_OFFSET            7
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_WIDTH             1
-#define D0F0xE4_WRAP_8012_Pif1xIdleGateEnable_MASK              0x80
-#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_OFFSET         8
-#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_WIDTH          6
-#define D0F0xE4_WRAP_8012_Pif1xIdleResumeLatency_MASK           0x3f00
-#define D0F0xE4_WRAP_8012_Reserved_15_14_OFFSET                 14
-#define D0F0xE4_WRAP_8012_Reserved_15_14_WIDTH                  2
-#define D0F0xE4_WRAP_8012_Reserved_15_14_MASK                   0xc000
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_OFFSET         16
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_WIDTH          6
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateLatency_MASK           0x3f0000
-#define D0F0xE4_WRAP_8012_Reserved_22_22_OFFSET                 22
-#define D0F0xE4_WRAP_8012_Reserved_22_22_WIDTH                  1
-#define D0F0xE4_WRAP_8012_Reserved_22_22_MASK                   0x400000
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_OFFSET          23
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_WIDTH           1
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleGateEnable_MASK            0x800000
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_OFFSET       24
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_WIDTH        6
-#define D0F0xE4_WRAP_8012_Pif2p5xIdleResumeLatency_MASK         0x3f000000
-#define D0F0xE4_WRAP_8012_Reserved_31_30_OFFSET                 30
-#define D0F0xE4_WRAP_8012_Reserved_31_30_WIDTH                  2
-#define D0F0xE4_WRAP_8012_Reserved_31_30_MASK                   0xc0000000
-
-/// D0F0xE4_WRAP_8012
-typedef union {
-  struct {                                                              ///<
-    UINT32                                     Pif1xIdleGateLatency:6 ; ///<
-    UINT32                                             Reserved_6_6:1 ; ///<
-    UINT32                                      Pif1xIdleGateEnable:1 ; ///<
-    UINT32                                   Pif1xIdleResumeLatency:6 ; ///<
-    UINT32                                           Reserved_15_14:2 ; ///<
-    UINT32                                   Pif2p5xIdleGateLatency:6 ; ///<
-    UINT32                                           Reserved_22_22:1 ; ///<
-    UINT32                                    Pif2p5xIdleGateEnable:1 ; ///<
-    UINT32                                 Pif2p5xIdleResumeLatency:6 ; ///<
-    UINT32                                           Reserved_31_30:2 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///< 
-} D0F0xE4_WRAP_8012_STRUCT;
-
-// **** D0F0xE4_WRAP_8011 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_8011_ADDRESS                               0x8011
-
-// Type
-#define D0F0xE4_WRAP_8011_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_OFFSET            0
-#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_WIDTH             6
-#define D0F0xE4_WRAP_8011_TxclkDynGateLatency_MASK              0x3f
-#define D0F0xE4_WRAP_8011_TxclkPermGateEven_OFFSET              6
-#define D0F0xE4_WRAP_8011_TxclkPermGateEven_WIDTH               1
-#define D0F0xE4_WRAP_8011_TxclkPermGateEven_MASK                0x40
-#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_OFFSET             7
-#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_WIDTH              1
-#define D0F0xE4_WRAP_8011_TxclkDynGateEnable_MASK               0x80
-#define D0F0xE4_WRAP_8011_Reserved_8_8_OFFSET                   8
-#define D0F0xE4_WRAP_8011_Reserved_8_8_WIDTH                    1
-#define D0F0xE4_WRAP_8011_Reserved_8_8_MASK                     0x100
-#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_OFFSET            9
-#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_WIDTH             1
-#define D0F0xE4_WRAP_8011_TxclkRegsGateEnable_MASK              0x200
-#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_OFFSET           10
-#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_WIDTH            6
-#define D0F0xE4_WRAP_8011_TxclkRegsGateLatency_MASK             0xfc00
-#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_OFFSET               16
-#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_WIDTH                1
-#define D0F0xE4_WRAP_8011_RcvrDetClkEnable_MASK                 0x10000
-#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_OFFSET           17
-#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_WIDTH            6
-#define D0F0xE4_WRAP_8011_TxclkPermGateLatency_MASK             0x7e0000
-#define D0F0xE4_WRAP_8011_Reserved_23_23_OFFSET                 23
-#define D0F0xE4_WRAP_8011_Reserved_23_23_WIDTH                  1
-#define D0F0xE4_WRAP_8011_Reserved_23_23_MASK                   0x800000
-#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_OFFSET            24
-#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_WIDTH             1
-#define D0F0xE4_WRAP_8011_TxclkLcntGateEnable_MASK              0x1000000
-#define D0F0xE4_WRAP_8011_Reserved_31_25_OFFSET                 25
-#define D0F0xE4_WRAP_8011_Reserved_31_25_WIDTH                  7
-#define D0F0xE4_WRAP_8011_Reserved_31_25_MASK                   0xfe000000
-
-/// D0F0xE4_WRAP_8011
-typedef union {
-  struct {                                                              ///<
-    UINT32                                      TxclkDynGateLatency:6 ; ///<
-    UINT32                                        TxclkPermGateEven:1 ; ///<
-    UINT32                                       TxclkDynGateEnable:1 ; ///<
-    UINT32                                             Reserved_8_8:1 ; ///<
-    UINT32                                      TxclkRegsGateEnable:1 ; ///<
-    UINT32                                     TxclkRegsGateLatency:6 ; ///<
-    UINT32                                         RcvrDetClkEnable:1 ; ///<
-    UINT32                                     TxclkPermGateLatency:6 ; ///<
-    UINT32                                           Reserved_23_23:1 ; ///<
-    UINT32                                      TxclkLcntGateEnable:1 ; ///< 
-    UINT32                                           Reserved_31_25:7 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D0F0xE4_WRAP_8011_STRUCT;
-
-// **** D0F0xE4_WRAP_8016 Register Definition ****
-// Address
-#define D0F0xE4_WRAP_8016_ADDRESS                               0x8016
-
-// Type
-#define D0F0xE4_WRAP_8016_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_WRAP_8016_CalibAckLatency_OFFSET                0
-#define D0F0xE4_WRAP_8016_CalibAckLatency_WIDTH                 6
-#define D0F0xE4_WRAP_8016_CalibAckLatency_MASK                  0x3f
-#define D0F0xE4_WRAP_8016_Reserved_21_6_OFFSET                  6
-#define D0F0xE4_WRAP_8016_Reserved_21_6_WIDTH                   16
-#define D0F0xE4_WRAP_8016_Reserved_21_6_MASK                    0x3fffc0
-#define D0F0xE4_WRAP_8016_LclkGateFree_OFFSET                   22
-#define D0F0xE4_WRAP_8016_LclkGateFree_WIDTH                    1
-#define D0F0xE4_WRAP_8016_LclkGateFree_MASK                     0x400000
-#define D0F0xE4_WRAP_8016_LclkDynGateEnable_OFFSET              23
-#define D0F0xE4_WRAP_8016_LclkDynGateEnable_WIDTH               1
-#define D0F0xE4_WRAP_8016_LclkDynGateEnable_MASK                0x800000
-#define D0F0xE4_WRAP_8016_Reserved_31_24_OFFSET                 24
-#define D0F0xE4_WRAP_8016_Reserved_31_24_WIDTH                  8
-#define D0F0xE4_WRAP_8016_Reserved_31_24_MASK                   0xff000000
-
-/// D0F0xE4_WRAP_8016
-typedef union {
-  struct {                                                              ///<
-    UINT32                                          CalibAckLatency:6 ; ///<
-    UINT32                                            Reserved_21_6:16; ///<
-    UINT32                                             LclkGateFree:1 ; ///<
-    UINT32                                        LclkDynGateEnable:1 ; ///<
-    UINT32                                           Reserved_31_24:8 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D0F0xE4_WRAP_8016_STRUCT;
-
-// **** D18F6x110 Register Definition ****
-// Address
-#define D18F6x110_ADDRESS                                       0x110
-
-// Type
-#define D18F6x110_TYPE                                          TYPE_D18F6
-// Field Data
-#define D18F6x110_NclkFifoOff_OFFSET                            0
-#define D18F6x110_NclkFifoOff_WIDTH                             3
-#define D18F6x110_NclkFifoOff_MASK                              0x7
-#define D18F6x110_Reserved_3_3_OFFSET                           3
-#define D18F6x110_Reserved_3_3_WIDTH                            1
-#define D18F6x110_Reserved_3_3_MASK                             0x8
-#define D18F6x110_LclkFifoOff_OFFSET                            4
-#define D18F6x110_LclkFifoOff_WIDTH                             3
-#define D18F6x110_LclkFifoOff_MASK                              0x70
-#define D18F6x110_Reserved_7_7_OFFSET                           7
-#define D18F6x110_Reserved_7_7_WIDTH                            1
-#define D18F6x110_Reserved_7_7_MASK                             0x80
-#define D18F6x110_PllMult_OFFSET                                8
-#define D18F6x110_PllMult_WIDTH                                 6
-#define D18F6x110_PllMult_MASK                                  0x3f00
-#define D18F6x110_Reserved_14_14_OFFSET                         14
-#define D18F6x110_Reserved_14_14_WIDTH                          1
-#define D18F6x110_Reserved_14_14_MASK                           0x4000
-#define D18F6x110_Enable_OFFSET                                 15
-#define D18F6x110_Enable_WIDTH                                  1
-#define D18F6x110_Enable_MASK                                   0x8000
-#define D18F6x110_LclkFreq_OFFSET                               16
-#define D18F6x110_LclkFreq_WIDTH                                7
-#define D18F6x110_LclkFreq_MASK                                 0x7f0000
-#define D18F6x110_LclkFreqType_OFFSET                           23
-#define D18F6x110_LclkFreqType_WIDTH                            1
-#define D18F6x110_LclkFreqType_MASK                             0x800000
-#define D18F6x110_NclkFreq_OFFSET                               24
-#define D18F6x110_NclkFreq_WIDTH                                7
-#define D18F6x110_NclkFreq_MASK                                 0x7f000000
-#define D18F6x110_NclkFreqType_OFFSET                           31
-#define D18F6x110_NclkFreqType_WIDTH                            1
-#define D18F6x110_NclkFreqType_MASK                             0x80000000
-
-/// D18F6x110
-typedef union {
-  struct {                                                              ///<
-    UINT32                                              NclkFifoOff:3 ; ///<
-    UINT32                                             Reserved_3_3:1 ; ///<
-    UINT32                                              LclkFifoOff:3 ; ///<
-    UINT32                                             Reserved_7_7:1 ; ///<
-    UINT32                                                  PllMult:6 ; ///<
-    UINT32                                           Reserved_14_14:1 ; ///<
-    UINT32                                                   Enable:1 ; ///<
-    UINT32                                                 LclkFreq:7 ; ///<
-    UINT32                                             LclkFreqType:1 ; ///<
-    UINT32                                                 NclkFreq:7 ; ///<
-    UINT32                                             NclkFreqType:1 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D18F6x110_STRUCT;
-
-// **** D18F3xA0 Register Definition ****
-// Address
-#define D18F3xA0_ADDRESS                                        0xa0
-
-// Type
-#define D18F3xA0_TYPE                                           TYPE_D18F3
-// Field Data
-#define D18F3xA0_PsiVid_OFFSET                                  0
-#define D18F3xA0_PsiVid_WIDTH                                   7
-#define D18F3xA0_PsiVid_MASK                                    0x7f
-#define D18F3xA0_PsiVidEn_OFFSET                                7
-#define D18F3xA0_PsiVidEn_WIDTH                                 1
-#define D18F3xA0_PsiVidEn_MASK                                  0x80
-#define D18F3xA0_Reserved_8_8_OFFSET                            8
-#define D18F3xA0_Reserved_8_8_WIDTH                             1
-#define D18F3xA0_Reserved_8_8_MASK                              0x100
-#define D18F3xA0_SviHighFreqSel_OFFSET                          9
-#define D18F3xA0_SviHighFreqSel_WIDTH                           1
-#define D18F3xA0_SviHighFreqSel_MASK                            0x200
-#define D18F3xA0_Reserved_15_10_OFFSET                          10
-#define D18F3xA0_Reserved_15_10_WIDTH                           6
-#define D18F3xA0_Reserved_15_10_MASK                            0xfc00
-#define D18F3xA0_ConfigId_OFFSET                                16
-#define D18F3xA0_ConfigId_WIDTH                                 12
-#define D18F3xA0_ConfigId_MASK                                  0xfff0000
-#define D18F3xA0_Reserved_30_28_OFFSET                          28
-#define D18F3xA0_Reserved_30_28_WIDTH                           3
-#define D18F3xA0_Reserved_30_28_MASK                            0x70000000
-#define D18F3xA0_CofVidProg_OFFSET                              31
-#define D18F3xA0_CofVidProg_WIDTH                               1
-#define D18F3xA0_CofVidProg_MASK                                0x80000000
-
-/// D18F3xA0
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                   PsiVid:7 ; ///<
-    UINT32                                                 PsiVidEn:1 ; ///<
-    UINT32                                             Reserved_8_8:1 ; ///<
-    UINT32                                           SviHighFreqSel:1 ; ///<
-    UINT32                                           Reserved_15_10:6 ; ///<
-    UINT32                                                 ConfigId:12; ///<
-    UINT32                                           Reserved_30_28:3 ; ///<
-    UINT32                                               CofVidProg:1 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D18F3xA0_STRUCT;
-
-// **** FCRxFF30_0398 Register Definition ****
-// Address
-#define FCRxFF30_0398_ADDRESS                                   0xff300398
-
-// Type
-#define FCRxFF30_0398_TYPE                                      TYPE_FCR
-// Field Data
-#define FCRxFF30_0398_Reserved_4_0_OFFSET                       0
-#define FCRxFF30_0398_Reserved_4_0_WIDTH                        5
-#define FCRxFF30_0398_Reserved_4_0_MASK                         0x1f
-#define FCRxFF30_0398_SoftResetDc_OFFSET                        5
-#define FCRxFF30_0398_SoftResetDc_WIDTH                         1
-#define FCRxFF30_0398_SoftResetDc_MASK                          0x20
-#define FCRxFF30_0398_Reserved_6_6_OFFSET                       6
-#define FCRxFF30_0398_Reserved_6_6_WIDTH                        1
-#define FCRxFF30_0398_Reserved_6_6_MASK                         0x40
-#define FCRxFF30_0398_SoftResetGrbm_OFFSET                      8
-#define FCRxFF30_0398_SoftResetGrbm_WIDTH                       1
-#define FCRxFF30_0398_SoftResetGrbm_MASK                        0x100
-#define FCRxFF30_0398_SoftResetMc_OFFSET                        11
-#define FCRxFF30_0398_SoftResetMc_WIDTH                         1
-#define FCRxFF30_0398_SoftResetMc_MASK                          0x800
-#define FCRxFF30_0398_Reserved_12_12_OFFSET                     12
-#define FCRxFF30_0398_Reserved_12_12_WIDTH                      1
-#define FCRxFF30_0398_Reserved_12_12_MASK                       0x1000
-#define FCRxFF30_0398_SoftResetRlc_OFFSET                       13
-#define FCRxFF30_0398_SoftResetRlc_WIDTH                        1
-#define FCRxFF30_0398_SoftResetRlc_MASK                         0x2000
-#define FCRxFF30_0398_Reserved_16_16_OFFSET                     16
-#define FCRxFF30_0398_Reserved_16_16_WIDTH                      1
-#define FCRxFF30_0398_Reserved_16_16_MASK                       0x10000
-#define FCRxFF30_0398_SoftResetUvd_OFFSET                       18
-#define FCRxFF30_0398_SoftResetUvd_WIDTH                        1
-#define FCRxFF30_0398_SoftResetUvd_MASK                         0x40000
-#define FCRxFF30_0398_Reserved_31_19_OFFSET                     19
-#define FCRxFF30_0398_Reserved_31_19_WIDTH                      13
-#define FCRxFF30_0398_Reserved_31_19_MASK                       0xfff80000
-
-/// FCRxFF30_0398
-typedef union {
-  struct {                                                              ///<
-    UINT32                                             Reserved_4_0:5 ; ///<
-    UINT32                                              SoftResetDc:1 ; ///<
-    UINT32                                             Reserved_6_6:1 ; ///<
-    UINT32                                             Reserved_7_7:1 ; ///<
-    UINT32                                            SoftResetGrbm:1 ; ///<
-    UINT32                                             Reserved_9_9:1 ; ///<
-    UINT32                                           Reserved_10_10:1 ; ///<
-    UINT32                                              SoftResetMc:1 ; ///<
-    UINT32                                           Reserved_12_12:1 ; ///<
-    UINT32                                             SoftResetRlc:1 ; ///<
-    UINT32                                           Reserved_14_14:1 ; ///<
-    UINT32                                           Reserved_15_15:1 ; ///<
-    UINT32                                           Reserved_16_16:1 ; ///<
-    UINT32                                           Reserved_17_17:1 ; ///<
-    UINT32                                             SoftResetUvd:1 ; ///<
-    UINT32                                           Reserved_31_19:13; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} FCRxFF30_0398_STRUCT;
-
-// **** SMUx0B_x8504 Register Definition ****
-// Address
-#define SMUx0B_x8504_ADDRESS                                    0x8504
-
-// Type
-#define SMUx0B_x8504_TYPE                                       TYPE_SMUx0B
-// Field Data
-#define SMUx0B_x8504_SaveRestoreWidth_OFFSET                    0
-#define SMUx0B_x8504_SaveRestoreWidth_WIDTH                     8
-#define SMUx0B_x8504_SaveRestoreWidth_MASK                      0xff
-#define SMUx0B_x8504_PsoRestoreTimer_OFFSET                     8
-#define SMUx0B_x8504_PsoRestoreTimer_WIDTH                      8
-#define SMUx0B_x8504_PsoRestoreTimer_MASK                       0xff00
-#define SMUx0B_x8504_Reserved_31_16_OFFSET                      16
-#define SMUx0B_x8504_Reserved_31_16_WIDTH                       16
-#define SMUx0B_x8504_Reserved_31_16_MASK                        0xffff0000
-
-/// SMUx0B_x8504
-typedef union {
-  struct {                                                              ///<
-    UINT32                                         SaveRestoreWidth:8 ; ///<
-    UINT32                                          PsoRestoreTimer:8 ; ///<
-    UINT32                                           Reserved_31_16:16; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} SMUx0B_x8504_STRUCT;
-
-// **** SMUx0B_x8408 Register Definition ****
-// Address
-#define SMUx0B_x8408_ADDRESS                                    0x8408
-
-
-// **** SMUx0B_x8410 Register Definition ****
-// Address
-#define SMUx0B_x8410_ADDRESS                                    0x8410
-
-// Type
-#define SMUx0B_x8410_TYPE                                       TYPE_SMUx0B
-// Field Data
-#define SMUx0B_x8410_PwrGatingEn_OFFSET                         0
-#define SMUx0B_x8410_PwrGatingEn_WIDTH                          1
-#define SMUx0B_x8410_PwrGatingEn_MASK                           0x1
-#define SMUx0B_x8410_Reserved_2_1_OFFSET                        1
-#define SMUx0B_x8410_Reserved_2_1_WIDTH                         2
-#define SMUx0B_x8410_Reserved_2_1_MASK                          0x6
-#define SMUx0B_x8410_PsoControlValidNum_OFFSET                  3
-#define SMUx0B_x8410_PsoControlValidNum_WIDTH                   5
-#define SMUx0B_x8410_PsoControlValidNum_MASK                    0xf8
-#define SMUx0B_x8410_SavePsoDelay_OFFSET                        8
-#define SMUx0B_x8410_SavePsoDelay_WIDTH                         4
-#define SMUx0B_x8410_SavePsoDelay_MASK                          0xf00
-#define SMUx0B_x8410_Reserved_27_12_OFFSET                      12
-#define SMUx0B_x8410_Reserved_27_12_WIDTH                       16
-#define SMUx0B_x8410_Reserved_27_12_MASK                        0xffff000
-#define SMUx0B_x8410_PwrGaterSel_OFFSET                         28
-#define SMUx0B_x8410_PwrGaterSel_WIDTH                          4
-#define SMUx0B_x8410_PwrGaterSel_MASK                           0xf0000000
-
-/// SMUx0B_x8410
-typedef union {
-  struct {                                                              ///<
-    UINT32                                              PwrGatingEn:1 ; ///<
-    UINT32                                             Reserved_2_1:2 ; ///<
-    UINT32                                       PsoControlValidNum:5 ; ///<
-    UINT32                                             SavePsoDelay:4 ; ///<
-    UINT32                                           Reserved_27_12:16; ///<
-    UINT32                                              PwrGaterSel:4 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} SMUx0B_x8410_STRUCT;
-
-// **** SMUx0B_x84A0 Register Definition ****
-// Address
-#define SMUx0B_x84A0_ADDRESS                                    0x84a0
-
-
-// **** D0F0xE4_CORE_0020 Register Definition ****
-// Address
-#define D0F0xE4_CORE_0020_ADDRESS                               0x20
-
-// Type
-#define D0F0xE4_CORE_0020_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_CORE_0020_Reserved_8_0_OFFSET                   0
-#define D0F0xE4_CORE_0020_Reserved_8_0_WIDTH                    9
-#define D0F0xE4_CORE_0020_Reserved_8_0_MASK                     0x1ff
-#define D0F0xE4_CORE_0020_CiSlvOrderingDis_OFFSET               8
-#define D0F0xE4_CORE_0020_CiSlvOrderingDis_WIDTH                1
-#define D0F0xE4_CORE_0020_CiSlvOrderingDis_MASK                 0x100
-#define D0F0xE4_CORE_0020_CiRcOrderingDis_OFFSET                9
-#define D0F0xE4_CORE_0020_CiRcOrderingDis_WIDTH                 1
-#define D0F0xE4_CORE_0020_CiRcOrderingDis_MASK                  0x200
-#define D0F0xE4_CORE_0020_Reserved_31_10_OFFSET                 10
-#define D0F0xE4_CORE_0020_Reserved_31_10_WIDTH                  22
-#define D0F0xE4_CORE_0020_Reserved_31_10_MASK                   0xfffffc00
-
-/// D0F0xE4_CORE_0020
-typedef union {
-  struct {                                                              ///<
-    UINT32                                             Reserved_8_0:9 ; ///<
-    UINT32                                          CiRcOrderingDis:1 ; ///<
-    UINT32                                           Reserved_31_10:22; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D0F0xE4_CORE_0020_STRUCT;
-
-// **** D0F0xE4_CORE_00B0 Register Definition ****
-// Address
-#define D0F0xE4_CORE_00B0_ADDRESS                               0xb0
-
-// Type
-#define D0F0xE4_CORE_00B0_TYPE                                  TYPE_D0F0xE4
-// Field Data
-#define D0F0xE4_CORE_00B0_Reserved_1_0_OFFSET                   0
-#define D0F0xE4_CORE_00B0_Reserved_1_0_WIDTH                    2
-#define D0F0xE4_CORE_00B0_Reserved_1_0_MASK                     0x3
-#define D0F0xE4_CORE_00B0_StrapF0MsiEn_OFFSET                   2
-#define D0F0xE4_CORE_00B0_StrapF0MsiEn_WIDTH                    1
-#define D0F0xE4_CORE_00B0_StrapF0MsiEn_MASK                     0x4
-#define D0F0xE4_CORE_00B0_Reserved_31_3_OFFSET                  3
-#define D0F0xE4_CORE_00B0_Reserved_31_3_WIDTH                   29
-#define D0F0xE4_CORE_00B0_Reserved_31_3_MASK                    0xfffffff8
-
-/// D0F0xE4_CORE_00B0
-typedef union {
-  struct {                                                              ///<
-    UINT32                                             Reserved_1_0:2 ; ///<
-    UINT32                                             StrapF0MsiEn:1 ; ///<
-    UINT32                                            Reserved_31_3:29; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D0F0xE4_CORE_00B0_STRUCT;
-
-// **** D0F0x64_x1C Register Definition ****
-// Address
-#define D0F0x64_x1C_ADDRESS                                     0x1c
-
-// Type
-#define D0F0x64_x1C_TYPE                                        TYPE_D0F0x64
-// Field Data
-#define D0F0x64_x1C_WriteDis_OFFSET                             0
-#define D0F0x64_x1C_WriteDis_WIDTH                              1
-#define D0F0x64_x1C_WriteDis_MASK                               0x1
-#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_OFFSET              1
-#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_WIDTH               1
-#define D0F0x64_x1C_F0NonlegacyDeviceTypeEn_MASK                0x2
-#define D0F0x64_x1C_Reserved_2_2_OFFSET                         2
-#define D0F0x64_x1C_Reserved_2_2_WIDTH                          1
-#define D0F0x64_x1C_Reserved_2_2_MASK                           0x4
-#define D0F0x64_x1C_MemApSize_OFFSET                            3
-#define D0F0x64_x1C_MemApSize_WIDTH                             3
-#define D0F0x64_x1C_MemApSize_MASK                              0x38
-#define D0F0x64_x1C_RegApSize_OFFSET                            6
-#define D0F0x64_x1C_RegApSize_WIDTH                             1
-#define D0F0x64_x1C_RegApSize_MASK                              0x40
-#define D0F0x64_x1C_Reserved_7_7_OFFSET                         7
-#define D0F0x64_x1C_Reserved_7_7_WIDTH                          1
-#define D0F0x64_x1C_Reserved_7_7_MASK                           0x80
-#define D0F0x64_x1C_AudioEn_OFFSET                              8
-#define D0F0x64_x1C_AudioEn_WIDTH                               1
-#define D0F0x64_x1C_AudioEn_MASK                                0x100
-#define D0F0x64_x1C_Reserved_9_9_OFFSET                         9
-#define D0F0x64_x1C_Reserved_9_9_WIDTH                          1
-#define D0F0x64_x1C_Reserved_9_9_MASK                           0x200
-#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_OFFSET           10
-#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_WIDTH            1
-#define D0F0x64_x1C_AudioNonlegacyDeviceTypeEn_MASK             0x400
-#define D0F0x64_x1C_Reserved_16_11_OFFSET                       11
-#define D0F0x64_x1C_Reserved_16_11_WIDTH                        6
-#define D0F0x64_x1C_Reserved_16_11_MASK                         0x1f800
-#define D0F0x64_x1C_F0En_OFFSET                                 17
-#define D0F0x64_x1C_F0En_WIDTH                                  1
-#define D0F0x64_x1C_F0En_MASK                                   0x20000
-#define D0F0x64_x1C_Reserved_22_18_OFFSET                       18
-#define D0F0x64_x1C_Reserved_22_18_WIDTH                        5
-#define D0F0x64_x1C_Reserved_22_18_MASK                         0x7c0000
-#define D0F0x64_x1C_RcieEn_OFFSET                               23
-#define D0F0x64_x1C_RcieEn_WIDTH                                1
-#define D0F0x64_x1C_RcieEn_MASK                                 0x800000
-#define D0F0x64_x1C_Reserved_31_24_OFFSET                       24
-#define D0F0x64_x1C_Reserved_31_24_WIDTH                        8
-#define D0F0x64_x1C_Reserved_31_24_MASK                         0xff000000
-
-/// D0F0x64_x1C
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                 WriteDis:1 ; ///<
-    UINT32                                  F0NonlegacyDeviceTypeEn:1 ; ///<
-    UINT32                                             Reserved_2_2:1 ; ///<
-    UINT32                                                MemApSize:3 ; ///< 
-    UINT32                                                RegApSize:1 ; ///<
-    UINT32                                             Reserved_7_7:1 ; ///<
-    UINT32                                                  AudioEn:1 ; ///<
-    UINT32                                             Reserved_9_9:1 ; ///<
-    UINT32                               AudioNonlegacyDeviceTypeEn:1 ; ///< 
-    UINT32                                           Reserved_16_11:6 ; ///<
-    UINT32                                                     F0En:1 ; ///<
-    UINT32                                           Reserved_22_18:5 ; ///<
-    UINT32                                                   RcieEn:1 ; ///<
-    UINT32                                           Reserved_31_24:8 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D0F0x64_x1C_STRUCT;
-
-// **** D18F2x0F4_x40 Register Definition ****
-// Address
-#define D18F2x0F4_x40_ADDRESS                                   0x40
-
-// Type
-#define D18F2x0F4_x40_TYPE                                      TYPE_D18F2x0F4
-// Field Data
-#define D18F2x0F4_x40_Trcd_OFFSET                               0
-#define D18F2x0F4_x40_Trcd_WIDTH                                4
-#define D18F2x0F4_x40_Trcd_MASK                                 0xf
-#define D18F2x0F4_x40_Reserved_7_4_OFFSET                       4
-#define D18F2x0F4_x40_Reserved_7_4_WIDTH                        4
-#define D18F2x0F4_x40_Reserved_7_4_MASK                         0xf0
-#define D18F2x0F4_x40_Trp_OFFSET                                8
-#define D18F2x0F4_x40_Trp_WIDTH                                 4
-#define D18F2x0F4_x40_Trp_MASK                                  0xf00
-#define D18F2x0F4_x40_Reserved_15_12_OFFSET                     12
-#define D18F2x0F4_x40_Reserved_15_12_WIDTH                      4
-#define D18F2x0F4_x40_Reserved_15_12_MASK                       0xf000
-#define D18F2x0F4_x40_Tras_OFFSET                               16
-#define D18F2x0F4_x40_Tras_WIDTH                                5
-#define D18F2x0F4_x40_Tras_MASK                                 0x1f0000
-#define D18F2x0F4_x40_Reserved_23_21_OFFSET                     21
-#define D18F2x0F4_x40_Reserved_23_21_WIDTH                      3
-#define D18F2x0F4_x40_Reserved_23_21_MASK                       0xe00000
-#define D18F2x0F4_x40_Trc_OFFSET                                24
-#define D18F2x0F4_x40_Trc_WIDTH                                 6
-#define D18F2x0F4_x40_Trc_MASK                                  0x3f000000
-#define D18F2x0F4_x40_Reserved_31_30_OFFSET                     30
-#define D18F2x0F4_x40_Reserved_31_30_WIDTH                      2
-#define D18F2x0F4_x40_Reserved_31_30_MASK                       0xc0000000
-
-/// D18F2x0F4_x40
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                     Trcd:4 ; ///<
-    UINT32                                             Reserved_7_4:4 ; ///<
-    UINT32                                                      Trp:4 ; ///<
-    UINT32                                           Reserved_15_12:4 ; ///<
-    UINT32                                                     Tras:5 ; ///<
-    UINT32                                           Reserved_23_21:3 ; ///<
-    UINT32                                                      Trc:6 ; ///<
-    UINT32                                           Reserved_31_30:2 ; ///<
-  } Field;                                                              ///< 
-  UINT32 Value;                                                         ///<
-} D18F2x0F4_x40_STRUCT;
-
-// **** D18F2x0F4_x41 Register Definition ****
-// Address
-#define D18F2x0F4_x41_ADDRESS                                   0x41
-
-// Type
-#define D18F2x0F4_x41_TYPE                                      TYPE_D18F2x0F4
-// Field Data
-#define D18F2x0F4_x41_Trtp_OFFSET                               0
-#define D18F2x0F4_x41_Trtp_WIDTH                                3
-#define D18F2x0F4_x41_Trtp_MASK                                 0x7
-#define D18F2x0F4_x41_Reserved_7_3_OFFSET                       3
-#define D18F2x0F4_x41_Reserved_7_3_WIDTH                        5
-#define D18F2x0F4_x41_Reserved_7_3_MASK                         0xf8
-#define D18F2x0F4_x41_Trrd_OFFSET                               8
-#define D18F2x0F4_x41_Trrd_WIDTH                                3
-#define D18F2x0F4_x41_Trrd_MASK                                 0x700
-#define D18F2x0F4_x41_Reserved_15_11_OFFSET                     11
-#define D18F2x0F4_x41_Reserved_15_11_WIDTH                      5
-#define D18F2x0F4_x41_Reserved_15_11_MASK                       0xf800
-#define D18F2x0F4_x41_Twtr_OFFSET                               16
-#define D18F2x0F4_x41_Twtr_WIDTH                                3
-#define D18F2x0F4_x41_Twtr_MASK                                 0x70000
-#define D18F2x0F4_x41_Reserved_31_19_OFFSET                     19
-#define D18F2x0F4_x41_Reserved_31_19_WIDTH                      13
-#define D18F2x0F4_x41_Reserved_31_19_MASK                       0xfff80000
-
-/// D18F2x0F4_x41
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                     Trtp:3 ; ///<
-    UINT32                                             Reserved_7_3:5 ; ///<
-    UINT32                                                     Trrd:3 ; ///<
-    UINT32                                           Reserved_15_11:5 ; ///<
-    UINT32                                                     Twtr:3 ; ///<
-    UINT32                                           Reserved_31_19:13; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D18F2x0F4_x41_STRUCT;
-
-// **** D18F2x0F0 Register Definition ****
-// Address
-#define D18F2x0F0_ADDRESS                                       0xf0
-
-
-// **** D18F2x1F0 Register Definition ****
-// Address
-#define D18F2x1F0_ADDRESS                                       0x1f0
-
-
-// **** D18F2x184 Register Definition ****
-// Address
-#define D18F2x184_ADDRESS                                       0x184
-
-
-// **** D18F2x094 Register Definition ****
-// Address
-#define D18F2x094_ADDRESS                                       0x94
-
-// Type
-#define D18F2x094_TYPE                                          TYPE_D18F2
-// Field Data
-#define D18F2x094_MemClkFreq_OFFSET                             0
-#define D18F2x094_MemClkFreq_WIDTH                              5
-#define D18F2x094_MemClkFreq_MASK                               0x1f
-#define D18F2x094_Reserved_6_5_OFFSET                           5
-#define D18F2x094_Reserved_6_5_WIDTH                            2
-#define D18F2x094_Reserved_6_5_MASK                             0x60
-#define D18F2x094_MemClkFreqVal_OFFSET                          7
-#define D18F2x094_MemClkFreqVal_WIDTH                           1
-#define D18F2x094_MemClkFreqVal_MASK                            0x80
-#define D18F2x094_Reserved_9_8_OFFSET                           8
-#define D18F2x094_Reserved_9_8_WIDTH                            2
-#define D18F2x094_Reserved_9_8_MASK                             0x300
-#define D18F2x094_ZqcsInterval_OFFSET                           10
-#define D18F2x094_ZqcsInterval_WIDTH                            2
-#define D18F2x094_ZqcsInterval_MASK                             0xc00
-#define D18F2x094_Reserved_13_12_OFFSET                         12
-#define D18F2x094_Reserved_13_12_WIDTH                          2
-#define D18F2x094_Reserved_13_12_MASK                           0x3000
-#define D18F2x094_DisDramInterface_OFFSET                       14
-#define D18F2x094_DisDramInterface_WIDTH                        1
-#define D18F2x094_DisDramInterface_MASK                         0x4000
-#define D18F2x094_PowerDownEn_OFFSET                            15
-#define D18F2x094_PowerDownEn_WIDTH                             1
-#define D18F2x094_PowerDownEn_MASK                              0x8000
-#define D18F2x094_PowerDownMode_OFFSET                          16
-#define D18F2x094_PowerDownMode_WIDTH                           1
-#define D18F2x094_PowerDownMode_MASK                            0x10000
-#define D18F2x094_Reserved_19_17_OFFSET                         17
-#define D18F2x094_Reserved_19_17_WIDTH                          3
-#define D18F2x094_Reserved_19_17_MASK                           0xe0000
-#define D18F2x094_SlowAccessMode_OFFSET                         20
-#define D18F2x094_SlowAccessMode_WIDTH                          1
-#define D18F2x094_SlowAccessMode_MASK                           0x100000
-#define D18F2x094_Reserved_21_21_OFFSET                         21
-#define D18F2x094_Reserved_21_21_WIDTH                          1
-#define D18F2x094_Reserved_21_21_MASK                           0x200000
-#define D18F2x094_BankSwizzleMode_OFFSET                        22
-#define D18F2x094_BankSwizzleMode_WIDTH                         1
-#define D18F2x094_BankSwizzleMode_MASK                          0x400000
-#define D18F2x094_ProcOdtDis_OFFSET                             23
-#define D18F2x094_ProcOdtDis_WIDTH                              1
-#define D18F2x094_ProcOdtDis_MASK                               0x800000
-#define D18F2x094_DcqBypassMax_OFFSET                           24
-#define D18F2x094_DcqBypassMax_WIDTH                            4
-#define D18F2x094_DcqBypassMax_MASK                             0xf000000
-#define D18F2x094_FourActWindow_OFFSET                          28
-#define D18F2x094_FourActWindow_WIDTH                           4
-#define D18F2x094_FourActWindow_MASK                            0xf0000000
-
-/// D18F2x094
-typedef union {
-  struct {                                                              ///<
-    UINT32                                               MemClkFreq:5 ; ///<
-    UINT32                                             Reserved_6_5:2 ; ///<
-    UINT32                                            MemClkFreqVal:1 ; ///<
-    UINT32                                             Reserved_9_8:2 ; ///<
-    UINT32                                             ZqcsInterval:2 ; ///<
-    UINT32                                           Reserved_13_12:2 ; ///<
-    UINT32                                         DisDramInterface:1 ; ///<
-    UINT32                                              PowerDownEn:1 ; ///<
-    UINT32                                            PowerDownMode:1 ; ///<
-    UINT32                                           Reserved_19_17:3 ; ///<
-    UINT32                                           SlowAccessMode:1 ; ///<
-    UINT32                                           Reserved_21_21:1 ; ///<
-    UINT32                                          BankSwizzleMode:1 ; ///<
-    UINT32                                               ProcOdtDis:1 ; ///<
-    UINT32                                             DcqBypassMax:4 ; ///<
-    UINT32                                            FourActWindow:4 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D18F2x094_STRUCT;
-
-// **** D18F2x194 Register Definition ****
-// Address
-#define D18F2x194_ADDRESS                                       0x194
-
-
-// **** D18F2x18C Register Definition ****
-// Address
-#define D18F2x18C_ADDRESS                                       0x18c
-
-
-// **** D18F2x190 Register Definition ****
-// Address
-#define D18F2x190_ADDRESS                                       0x190
-
-
-// **** D18F2x098 Register Definition ****
-// Address
-#define D18F2x098_ADDRESS                                       0x98
-
-
-// **** D18F2x198 Register Definition ****
-// Address
-#define D18F2x198_ADDRESS                                       0x198
-
-
-// **** D18F2x09C_x0D0FE00A Register Definition ****
-// Address
-#define D18F2x09C_x0D0FE00A_ADDRESS                             0x0D0FE00A
-
-// Type
-#define D18F2x09C_x0D0FE00A_TYPE                                TYPE_D18F2x9C
-// Field Data
-#define D18F2x09C_x0D0FE00A_Reserved_11_0_OFFSET                0
-#define D18F2x09C_x0D0FE00A_Reserved_11_0_WIDTH                 12
-#define D18F2x09C_x0D0FE00A_Reserved_11_0_MASK                  0xfff
-#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_OFFSET            12
-#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_WIDTH             2
-#define D18F2x09C_x0D0FE00A_CsrPhySrPllPdMode_MASK              0x3000
-#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_OFFSET              14
-#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_WIDTH               1
-#define D18F2x09C_x0D0FE00A_SelCsrPllPdMode_MASK                0x4000
-#define D18F2x09C_x0D0FE00A_Reserved_31_15_OFFSET               15
-#define D18F2x09C_x0D0FE00A_Reserved_31_15_WIDTH                17
-#define D18F2x09C_x0D0FE00A_Reserved_31_15_MASK                 0xFFFF8000
-
-/// D18F2x09C_x0D0FE00A
-typedef union {
-  struct {                                                              ///<
-    UINT32                                             Reserved_11_0:12; ///<
-    UINT32                                         CsrPhySrPllPdMode:2; ///<
-    UINT32                                           SelCsrPllPdMode:1; ///<
-    UINT32                                            Reserved_31_15:17; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D18F2x09C_x0D0FE00A_STRUCT;
-
-// **** GMMx201C Register Definition ****
-// Address
-#define GMMx201C_ADDRESS                                        0x201c
-
-
-// **** GMMx217C Register Definition ****
-// Address
-#define GMMx217C_ADDRESS                                        0x217c
-
-
-// **** GMMx2188 Register Definition ****
-// Address
-#define GMMx2188_ADDRESS                                        0x2188
-
-
-// **** GMMx28C8 Register Definition ****
-// Address
-#define GMMx28C8_ADDRESS                                        0x28c8
-
-
-// **** SMUx01 Register Definition ****
-// Address
-#define SMUx01_ADDRESS                                          0x1
-
-// Type
-#define SMUx01_TYPE                                             TYPE_SMU
-// Field Data
-#define SMUx01_RamSwitch_OFFSET                                 0
-#define SMUx01_RamSwitch_WIDTH                                  1
-#define SMUx01_RamSwitch_MASK                                   0x1
-#define SMUx01_Reset_OFFSET                                     1
-#define SMUx01_Reset_WIDTH                                      1
-#define SMUx01_Reset_MASK                                       0x2
-#define SMUx01_Reserved_17_2_OFFSET                             2
-#define SMUx01_Reserved_17_2_WIDTH                              16
-#define SMUx01_Reserved_17_2_MASK                               0x3fffc
-#define SMUx01_VectorOverride_OFFSET                            18
-#define SMUx01_VectorOverride_WIDTH                             1
-#define SMUx01_VectorOverride_MASK                              0x40000
-#define SMUx01_Reserved_31_19_OFFSET                            19
-#define SMUx01_Reserved_31_19_WIDTH                             13
-#define SMUx01_Reserved_31_19_MASK                              0xfff80000
-//
-/// SMUx01
-typedef union {
-  struct {                                                              ///<
-    UINT32                                                RamSwitch:1 ; ///<
-    UINT32                                                    Reset:1 ; ///<
-    UINT32                                            Reserved_17_2:16; ///<
-    UINT32                                           VectorOverride:1 ; ///<
-    UINT32                                           Reserved_31_19:13; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} SMUx01_STRUCT;
+} FCRxFE00_70A2_STRUCT;
 
 // **** FCRxFE00_70A4 Register Definition ****
 // Address
@@ -11855,40 +14377,118 @@ typedef union {
   UINT32 Value;                                                         ///<
 } FCRxFE00_70C7_STRUCT;
 
-// **** FCRxFE00_70A2 Register Definition ****
+// **** SMUx0B_x8490 Register Definition ****
 // Address
-#define FCRxFE00_70A2_ADDRESS                                   0xfe0070a2
+#define SMUx0B_x8490_ADDRESS                                    0x8490
 
 // Type
-#define FCRxFE00_70A2_TYPE                                      TYPE_FCR
+#define SMUx0B_x8490_TYPE                                       TYPE_SMUx0B
 // Field Data
-#define FCRxFE00_70A2_Reserved_6_0_OFFSET                       0
-#define FCRxFE00_70A2_Reserved_6_0_WIDTH                        7
-#define FCRxFE00_70A2_Reserved_6_0_MASK                         0x7f
-#define FCRxFE00_70A2_PPlayTableRev_OFFSET                      7
-#define FCRxFE00_70A2_PPlayTableRev_WIDTH                       4
-#define FCRxFE00_70A2_PPlayTableRev_MASK                        0x780
-#define FCRxFE00_70A2_SclkThermDid_OFFSET                       11
-#define FCRxFE00_70A2_SclkThermDid_WIDTH                        7
-#define FCRxFE00_70A2_SclkThermDid_MASK                         0x3f800
-#define FCRxFE00_70A2_PcieGen2Vid_OFFSET                        18
-#define FCRxFE00_70A2_PcieGen2Vid_WIDTH                         2
-#define FCRxFE00_70A2_PcieGen2Vid_MASK                          0xc0000
-#define FCRxFE00_70A2_Reserved_31_20_OFFSET                     20
-#define FCRxFE00_70A2_Reserved_31_20_WIDTH                      12
-#define FCRxFE00_70A2_Reserved_31_20_MASK                       0xfff00000
+#define SMUx0B_x8490_LclkState0Valid_OFFSET                     0
+#define SMUx0B_x8490_LclkState0Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState0Valid_MASK                       0x1
+#define SMUx0B_x8490_LclkState1Valid_OFFSET                     1
+#define SMUx0B_x8490_LclkState1Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState1Valid_MASK                       0x2
+#define SMUx0B_x8490_LclkState2Valid_OFFSET                     2
+#define SMUx0B_x8490_LclkState2Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState2Valid_MASK                       0x4
+#define SMUx0B_x8490_LclkState3Valid_OFFSET                     3
+#define SMUx0B_x8490_LclkState3Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState3Valid_MASK                       0x8
+#define SMUx0B_x8490_LclkState4Valid_OFFSET                     4
+#define SMUx0B_x8490_LclkState4Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState4Valid_MASK                       0x10
+#define SMUx0B_x8490_LclkState5Valid_OFFSET                     5
+#define SMUx0B_x8490_LclkState5Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState5Valid_MASK                       0x20
+#define SMUx0B_x8490_LclkState6Valid_OFFSET                     6
+#define SMUx0B_x8490_LclkState6Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState6Valid_MASK                       0x40
+#define SMUx0B_x8490_LclkState7Valid_OFFSET                     7
+#define SMUx0B_x8490_LclkState7Valid_WIDTH                      1
+#define SMUx0B_x8490_LclkState7Valid_MASK                       0x80
+#define SMUx0B_x8490_LclkDivTtExit_OFFSET                       8
+#define SMUx0B_x8490_LclkDivTtExit_WIDTH                        8
+#define SMUx0B_x8490_LclkDivTtExit_MASK                         0xff00
+#define SMUx0B_x8490_MinDivAllowed_OFFSET                       16
+#define SMUx0B_x8490_MinDivAllowed_WIDTH                        8
+#define SMUx0B_x8490_MinDivAllowed_MASK                         0xff0000
+#define SMUx0B_x8490_Reserved_31_24_OFFSET                      24
+#define SMUx0B_x8490_Reserved_31_24_WIDTH                       8
+#define SMUx0B_x8490_Reserved_31_24_MASK                        0xff000000
 
-/// FCRxFE00_70A2
+/// SMUx0B_x8490
 typedef union {
   struct {                                                              ///<
-    UINT32                                             Reserved_6_0:7 ; ///<
-    UINT32                                            PPlayTableRev:4 ; ///<
-    UINT32                                             SclkThermDid:7 ; ///<
-    UINT32                                              PcieGen2Vid:2 ; ///<
+    UINT32                                          LclkState0Valid:1 ; ///<
+    UINT32                                          LclkState1Valid:1 ; ///<
+    UINT32                                          LclkState2Valid:1 ; ///<
+    UINT32                                          LclkState3Valid:1 ; ///<
+    UINT32                                          LclkState4Valid:1 ; ///<
+    UINT32                                          LclkState5Valid:1 ; ///<
+    UINT32                                          LclkState6Valid:1 ; ///<
+    UINT32                                          LclkState7Valid:1 ; ///<
+    UINT32                                            LclkDivTtExit:8 ; ///<
+    UINT32                                            MinDivAllowed:8 ; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8490_STRUCT;
+
+// **** SMUx35 Register Definition ****
+// Address
+#define SMUx35_ADDRESS                                          0x35
+
+// Type
+#define SMUx35_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx35_DownTrendCoef_OFFSET                             0
+#define SMUx35_DownTrendCoef_WIDTH                              10
+#define SMUx35_DownTrendCoef_MASK                               0x3ff
+#define SMUx35_UpTrendCoef_OFFSET                               10
+#define SMUx35_UpTrendCoef_WIDTH                                10
+#define SMUx35_UpTrendCoef_MASK                                 0xffc00
+#define SMUx35_Reserved_31_20_OFFSET                            20
+#define SMUx35_Reserved_31_20_WIDTH                             12
+#define SMUx35_Reserved_31_20_MASK                              0xfff00000
+
+/// SMUx35
+typedef union {
+  struct {                                                              ///<
+    UINT32                                            DownTrendCoef:10; ///<
+    UINT32                                              UpTrendCoef:10; ///<
     UINT32                                           Reserved_31_20:12; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} FCRxFE00_70A2_STRUCT;
+} SMUx35_STRUCT;
+
+// **** SMUx37 Register Definition ****
+// Address
+#define SMUx37_ADDRESS                                          0x37
+
+// Type
+#define SMUx37_TYPE                                             TYPE_SMU
+// Field Data
+#define SMUx37_DownTrendCoef_OFFSET                             0
+#define SMUx37_DownTrendCoef_WIDTH                              10
+#define SMUx37_DownTrendCoef_MASK                               0x3ff
+#define SMUx37_UpTrendCoef_OFFSET                               10
+#define SMUx37_UpTrendCoef_WIDTH                                10
+#define SMUx37_UpTrendCoef_MASK                                 0xffc00
+#define SMUx37_Reserved_31_20_OFFSET                            20
+#define SMUx37_Reserved_31_20_WIDTH                             12
+#define SMUx37_Reserved_31_20_MASK                              0xfff00000
+
+/// SMUx37
+typedef union {
+  struct {                                                              ///<
+    UINT32                                            DownTrendCoef:10; ///<
+    UINT32                                              UpTrendCoef:10; ///<
+    UINT32                                           Reserved_31_20:12; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx37_STRUCT;
 
 // **** FCRxFE00_70AA Register Definition ****
 // Address
@@ -11917,150 +14517,410 @@ typedef union {
   UINT32 Value;                                                         ///<
 } FCRxFE00_70AA_STRUCT;
 
-// **** D18F3xD4 Register Definition ****
+// **** FCRxFE00_70C8 Register Definition ****
 // Address
-#define D18F3xD4_ADDRESS                                        0xd4
+#define FCRxFE00_70C8_ADDRESS                                   0xfe0070c8
 
 // Type
-#define D18F3xD4_TYPE                                           TYPE_D18F3
+#define FCRxFE00_70C8_TYPE                                      TYPE_FCR
 // Field Data
-#define D18F3xD4_MainPllOpFreqId_OFFSET                         0
-#define D18F3xD4_MainPllOpFreqId_WIDTH                          6
-#define D18F3xD4_MainPllOpFreqId_MASK                           0x3f
-#define D18F3xD4_MainPllOpFreqIdEn_OFFSET                       6
-#define D18F3xD4_MainPllOpFreqIdEn_WIDTH                        1
-#define D18F3xD4_MainPllOpFreqIdEn_MASK                         0x40
-#define D18F3xD4_Reserved_7_7_OFFSET                            7
-#define D18F3xD4_Reserved_7_7_WIDTH                             1
-#define D18F3xD4_Reserved_7_7_MASK                              0x80
-#define D18F3xD4_ClkRampHystSel_OFFSET                          8
-#define D18F3xD4_ClkRampHystSel_WIDTH                           4
-#define D18F3xD4_ClkRampHystSel_MASK                            0xf00
-#define D18F3xD4_OnionOutHyst_OFFSET                            12
-#define D18F3xD4_OnionOutHyst_WIDTH                             4
-#define D18F3xD4_OnionOutHyst_MASK                              0xf000
-#define D18F3xD4_DisNclkGatingIdle_OFFSET                       16
-#define D18F3xD4_DisNclkGatingIdle_WIDTH                        1
-#define D18F3xD4_DisNclkGatingIdle_MASK                         0x10000
-#define D18F3xD4_ClockGatingEnDram_OFFSET                       17
-#define D18F3xD4_ClockGatingEnDram_WIDTH                        1
-#define D18F3xD4_ClockGatingEnDram_MASK                         0x20000
-#define D18F3xD4_Reserved_31_18_OFFSET                          18
-#define D18F3xD4_Reserved_31_18_WIDTH                           14
-#define D18F3xD4_Reserved_31_18_MASK                            0xfffc0000
+#define FCRxFE00_70C8_Reserved_4_0_OFFSET                       0
+#define FCRxFE00_70C8_Reserved_4_0_WIDTH                        5
+#define FCRxFE00_70C8_Reserved_4_0_MASK                         0x1f
+#define FCRxFE00_70C8_GpuBoostCap_OFFSET                        5
+#define FCRxFE00_70C8_GpuBoostCap_WIDTH                         1
+#define FCRxFE00_70C8_GpuBoostCap_MASK                          0x20
+#define FCRxFE00_70C8_SclkDpmDid5_OFFSET                        6
+#define FCRxFE00_70C8_SclkDpmDid5_WIDTH                         7
+#define FCRxFE00_70C8_SclkDpmDid5_MASK                          0x00001fc0
+#define FCRxFE00_70C8_SclkDpmVid5_OFFSET                        13
+#define FCRxFE00_70C8_SclkDpmVid5_WIDTH                         2
+#define FCRxFE00_70C8_SclkDpmVid5_MASK                          0x00060000
+#define FCRxFE00_70C8_Reserved_31_15_OFFSET                     15
+#define FCRxFE00_70C8_Reserved_31_15_WIDTH                      17
+#define FCRxFE00_70C8_Reserved_31_15_MASK                       0xffff8000
 
-/// D18F3xD4
+/// FCRxFE00_70C8
 typedef union {
   struct {                                                              ///<
-    UINT32                                          MainPllOpFreqId:6 ; ///<
-    UINT32                                        MainPllOpFreqIdEn:1 ; ///<
+    UINT32                                             Reserved_4_0:5 ; ///<
+    UINT32                                              GpuBoostCap:1 ; ///<
+    UINT32                                              SclkDpmDid5:7 ; ///<
+    UINT32                                              SclkDpmVid5:2 ; ///<
+    UINT32                                           Reserved_31_15:17; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70C8_STRUCT;
+
+// **** FCRxFE00_70C9 Register Definition ****
+// Address
+#define FCRxFE00_70C9_ADDRESS                                   0xfe0070c9
+
+// Type
+#define FCRxFE00_70C9_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70C9_Reserved_6_0_OFFSET                       0
+#define FCRxFE00_70C9_Reserved_6_0_WIDTH                        7
+#define FCRxFE00_70C9_Reserved_6_0_MASK                         0x7f
+#define FCRxFE00_70C9_SclkDpmTdpLimit0_OFFSET                   7
+#define FCRxFE00_70C9_SclkDpmTdpLimit0_WIDTH                    12
+#define FCRxFE00_70C9_SclkDpmTdpLimit0_MASK                     0x7ff80
+#define FCRxFE00_70C9_SclkDpmTdpLimit1_OFFSET                   19
+#define FCRxFE00_70C9_SclkDpmTdpLimit1_WIDTH                    12
+#define FCRxFE00_70C9_SclkDpmTdpLimit1_MASK                     0x7ff80000
+#define FCRxFE00_70C9_Reserved_31_31_OFFSET                     31
+#define FCRxFE00_70C9_Reserved_31_31_WIDTH                      1
+#define FCRxFE00_70C9_Reserved_31_31_MASK                       0x80000000
+
+/// FCRxFE00_70C9
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_6_0:7 ; ///<
+    UINT32                                         SclkDpmTdpLimit0:12; ///<
+    UINT32                                         SclkDpmTdpLimit1:12; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70C9_STRUCT;
+
+// **** FCRxFE00_70CC Register Definition ****
+// Address
+#define FCRxFE00_70CC_ADDRESS                                   0xfe0070cc
+
+// Type
+#define FCRxFE00_70CC_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70CC_Reserved_6_0_OFFSET                       0
+#define FCRxFE00_70CC_Reserved_6_0_WIDTH                        7
+#define FCRxFE00_70CC_Reserved_6_0_MASK                         0x7f
+#define FCRxFE00_70CC_SclkDpmTdpLimit2_OFFSET                   7
+#define FCRxFE00_70CC_SclkDpmTdpLimit2_WIDTH                    12
+#define FCRxFE00_70CC_SclkDpmTdpLimit2_MASK                     0x7ff80
+#define FCRxFE00_70CC_SclkDpmTdpLimit3_OFFSET                   19
+#define FCRxFE00_70CC_SclkDpmTdpLimit3_WIDTH                    12
+#define FCRxFE00_70CC_SclkDpmTdpLimit3_MASK                     0x7ff80000
+#define FCRxFE00_70CC_Reserved_31_31_OFFSET                     31
+#define FCRxFE00_70CC_Reserved_31_31_WIDTH                      1
+#define FCRxFE00_70CC_Reserved_31_31_MASK                       0x80000000
+
+/// FCRxFE00_70CC
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_6_0:7 ; ///<
+    UINT32                                         SclkDpmTdpLimit2:12; ///<
+    UINT32                                         SclkDpmTdpLimit3:12; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70CC_STRUCT;
+
+// **** FCRxFE00_70CF Register Definition ****
+// Address
+#define FCRxFE00_70CF_ADDRESS                                   0xfe0070cf
+
+// Type
+#define FCRxFE00_70CF_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70CF_Reserved_6_0_OFFSET                       0
+#define FCRxFE00_70CF_Reserved_6_0_WIDTH                        7
+#define FCRxFE00_70CF_Reserved_6_0_MASK                         0x7f
+#define FCRxFE00_70CF_SclkDpmTdpLimit4_OFFSET                   7
+#define FCRxFE00_70CF_SclkDpmTdpLimit4_WIDTH                    12
+#define FCRxFE00_70CF_SclkDpmTdpLimit4_MASK                     0x7ff80
+#define FCRxFE00_70CF_SclkDpmTdpLimit5_OFFSET                   19
+#define FCRxFE00_70CF_SclkDpmTdpLimit5_WIDTH                    12
+#define FCRxFE00_70CF_SclkDpmTdpLimit5_MASK                     0x7ff80000
+#define FCRxFE00_70CF_Reserved_31_31_OFFSET                     31
+#define FCRxFE00_70CF_Reserved_31_31_WIDTH                      1
+#define FCRxFE00_70CF_Reserved_31_31_MASK                       0x80000000
+
+/// FCRxFE00_70CF
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_6_0:7 ; ///<
+    UINT32                                         SclkDpmTdpLimit4:12; ///<
+    UINT32                                         SclkDpmTdpLimit5:12; ///<
+    UINT32                                           Reserved_31_31:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70CF_STRUCT;
+
+// **** FCRxFE00_70D2 Register Definition ****
+// Address
+#define FCRxFE00_70D2_ADDRESS                                   0xfe0070d2
+
+// Type
+#define FCRxFE00_70D2_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70D2_Reserved_6_0_OFFSET                       0
+#define FCRxFE00_70D2_Reserved_6_0_WIDTH                        7
+#define FCRxFE00_70D2_Reserved_6_0_MASK                         0x7f
+#define FCRxFE00_70D2_SclkDpmTdpLimitPG_OFFSET                  7
+#define FCRxFE00_70D2_SclkDpmTdpLimitPG_WIDTH                   12
+#define FCRxFE00_70D2_SclkDpmTdpLimitPG_MASK                    0x7ff80
+#define FCRxFE00_70D2_Reserved_31_19_OFFSET                     19
+#define FCRxFE00_70D2_Reserved_31_19_WIDTH                      13
+#define FCRxFE00_70D2_Reserved_31_19_MASK                       0xfff80000
+
+/// FCRxFE00_70D2
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_6_0:7 ; ///<
+    UINT32                                        SclkDpmTdpLimitPG:12; ///<
+    UINT32                                           Reserved_31_19:13; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70D2_STRUCT;
+
+// **** FCRxFE00_70D4 Register Definition ****
+// Address
+#define FCRxFE00_70D4_ADDRESS                                   0xfe0070d4
+
+// Type
+#define FCRxFE00_70D4_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70D4_Reserved_2_0_OFFSET                       0
+#define FCRxFE00_70D4_Reserved_2_0_WIDTH                        3
+#define FCRxFE00_70D4_Reserved_2_0_MASK                         0x7
+#define FCRxFE00_70D4_SclkDpmBoostMargin_OFFSET                 3
+#define FCRxFE00_70D4_SclkDpmBoostMargin_WIDTH                  21
+#define FCRxFE00_70D4_SclkDpmBoostMargin_MASK                   0xfffff8
+#define FCRxFE00_70D4_Reserved_31_24_OFFSET                     24
+#define FCRxFE00_70D4_Reserved_31_24_WIDTH                      8
+#define FCRxFE00_70D4_Reserved_31_24_MASK                       0xff000000
+
+/// FCRxFE00_70D4
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_2_0:3 ; ///<
+    UINT32                                       SclkDpmBoostMargin:21; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70D4_STRUCT;
+
+// **** FCRxFE00_70D7 Register Definition ****
+// Address
+#define FCRxFE00_70D7_ADDRESS                                   0xfe0070d7
+
+// Type
+#define FCRxFE00_70D7_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFE00_70D7_SclkDpmThrottleMargin_OFFSET              0
+#define FCRxFE00_70D7_SclkDpmThrottleMargin_WIDTH               21
+#define FCRxFE00_70D7_SclkDpmThrottleMargin_MASK                0x1fffff
+#define FCRxFE00_70D7_Reserved_31_21_OFFSET                     21
+#define FCRxFE00_70D7_Reserved_31_21_WIDTH                      11
+#define FCRxFE00_70D7_Reserved_31_21_MASK                       0xffe00000
+
+/// FCRxFE00_70D7
+typedef union {
+  struct {                                                              ///<
+    UINT32                                    SclkDpmThrottleMargin:21; ///<
+    UINT32                                           Reserved_31_21:11; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} FCRxFE00_70D7_STRUCT;
+
+// **** SMUx0B_x8410 Register Definition ****
+// Address
+#define SMUx0B_x8410_ADDRESS                                    0x8410
+
+// Type
+#define SMUx0B_x8410_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x8410_PwrGatingEn_OFFSET                         0
+#define SMUx0B_x8410_PwrGatingEn_WIDTH                          1
+#define SMUx0B_x8410_PwrGatingEn_MASK                           0x1
+#define SMUx0B_x8410_Reserved_2_1_OFFSET                        1
+#define SMUx0B_x8410_Reserved_2_1_WIDTH                         2
+#define SMUx0B_x8410_Reserved_2_1_MASK                          0x6
+#define SMUx0B_x8410_PsoControlValidNum_OFFSET                  3
+#define SMUx0B_x8410_PsoControlValidNum_WIDTH                   5
+#define SMUx0B_x8410_PsoControlValidNum_MASK                    0xf8
+#define SMUx0B_x8410_SavePsoDelay_OFFSET                        8
+#define SMUx0B_x8410_SavePsoDelay_WIDTH                         4
+#define SMUx0B_x8410_SavePsoDelay_MASK                          0xf00
+#define SMUx0B_x8410_NRestoreIsoDelay_OFFSET                    12
+#define SMUx0B_x8410_NRestoreIsoDelay_WIDTH                     4
+#define SMUx0B_x8410_NRestoreIsoDelay_MASK                      0xf000
+#define SMUx0B_x8410_RstPulseWidth_OFFSET                       16
+#define SMUx0B_x8410_RstPulseWidth_WIDTH                        8
+#define SMUx0B_x8410_RstPulseWidth_MASK                         0xff0000
+#define SMUx0B_x8410_IsoDelay_OFFSET                            24
+#define SMUx0B_x8410_IsoDelay_WIDTH                             4
+#define SMUx0B_x8410_IsoDelay_MASK                              0xf000000
+#define SMUx0B_x8410_PwrGaterSel_OFFSET                         28
+#define SMUx0B_x8410_PwrGaterSel_WIDTH                          4
+#define SMUx0B_x8410_PwrGaterSel_MASK                           0xf0000000
+
+/// SMUx0B_x8410
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              PwrGatingEn:1 ; ///<
+    UINT32                                             Reserved_2_1:2 ; ///<
+    UINT32                                       PsoControlValidNum:5 ; ///<
+    UINT32                                             SavePsoDelay:4 ; ///<
+    UINT32                                         NRestoreIsoDelay:4 ; ///<
+    UINT32                                            RstPulseWidth:8 ; ///<
+    UINT32                                                 IsoDelay:4 ; ///<
+    UINT32                                              PwrGaterSel:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8410_STRUCT;
+
+// **** SMUx0B_x8504 Register Definition ****
+// Address
+#define SMUx0B_x8504_ADDRESS                                    0x8504
+
+// Type
+#define SMUx0B_x8504_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x8504_SaveRestoreWidth_OFFSET                    0
+#define SMUx0B_x8504_SaveRestoreWidth_WIDTH                     8
+#define SMUx0B_x8504_SaveRestoreWidth_MASK                      0xff
+#define SMUx0B_x8504_PsoRestoreTimer_OFFSET                     8
+#define SMUx0B_x8504_PsoRestoreTimer_WIDTH                      8
+#define SMUx0B_x8504_PsoRestoreTimer_MASK                       0xff00
+#define SMUx0B_x8504_Reserved_31_16_OFFSET                      16
+#define SMUx0B_x8504_Reserved_31_16_WIDTH                       16
+#define SMUx0B_x8504_Reserved_31_16_MASK                        0xffff0000
+
+/// SMUx0B_x8504
+typedef union {
+  struct {                                                              ///<
+    UINT32                                         SaveRestoreWidth:8 ; ///<
+    UINT32                                          PsoRestoreTimer:8 ; ///<
+    UINT32                                           Reserved_31_16:16; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8504_STRUCT;
+
+// **** SMUx0B_x8408 Register Definition ****
+// Address
+#define SMUx0B_x8408_ADDRESS                                    0x8408
+
+// Type
+#define SMUx0B_x8408_TYPE                                       TYPE_SMUx0B
+// Field Data
+#define SMUx0B_x8408_PsoControlId0_OFFSET                       0
+#define SMUx0B_x8408_PsoControlId0_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId0_MASK                         0xf
+#define SMUx0B_x8408_PsoControlId1_OFFSET                       4
+#define SMUx0B_x8408_PsoControlId1_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId1_MASK                         0xf0
+#define SMUx0B_x8408_PsoControlId2_OFFSET                       8
+#define SMUx0B_x8408_PsoControlId2_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId2_MASK                         0xf00
+#define SMUx0B_x8408_PsoControlId3_OFFSET                       12
+#define SMUx0B_x8408_PsoControlId3_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId3_MASK                         0xf000
+#define SMUx0B_x8408_PsoControlId4_OFFSET                       16
+#define SMUx0B_x8408_PsoControlId4_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId4_MASK                         0xf0000
+#define SMUx0B_x8408_PsoControlId5_OFFSET                       20
+#define SMUx0B_x8408_PsoControlId5_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId5_MASK                         0xf00000
+#define SMUx0B_x8408_PsoControlId6_OFFSET                       24
+#define SMUx0B_x8408_PsoControlId6_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId6_MASK                         0xf000000
+#define SMUx0B_x8408_PsoControlId7_OFFSET                       28
+#define SMUx0B_x8408_PsoControlId7_WIDTH                        4
+#define SMUx0B_x8408_PsoControlId7_MASK                         0xf0000000
+
+/// SMUx0B_x8408
+typedef union {
+  struct {                                                              ///<
+    UINT32                                            PsoControlId0:4 ; ///<
+    UINT32                                            PsoControlId1:4 ; ///<
+    UINT32                                            PsoControlId2:4 ; ///<
+    UINT32                                            PsoControlId3:4 ; ///<
+    UINT32                                            PsoControlId4:4 ; ///<
+    UINT32                                            PsoControlId5:4 ; ///<
+    UINT32                                            PsoControlId6:4 ; ///<
+    UINT32                                            PsoControlId7:4 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} SMUx0B_x8408_STRUCT;
+
+// **** FCRxFF30_0398 Register Definition ****
+// Address
+#define FCRxFF30_0398_ADDRESS                                   0xff300398
+
+// Type
+#define FCRxFF30_0398_TYPE                                      TYPE_FCR
+// Field Data
+#define FCRxFF30_0398_Reserved_0_0_OFFSET                       0
+#define FCRxFF30_0398_Reserved_0_0_WIDTH                        1
+#define FCRxFF30_0398_Reserved_0_0_MASK                         0x1
+#define FCRxFF30_0398_SoftResetCg_OFFSET                        2
+#define FCRxFF30_0398_SoftResetCg_WIDTH                         1
+#define FCRxFF30_0398_SoftResetCg_MASK                          0x4
+#define FCRxFF30_0398_Reserved_4_3_OFFSET                       3
+#define FCRxFF30_0398_Reserved_4_3_WIDTH                        2
+#define FCRxFF30_0398_Reserved_4_3_MASK                         0x18
+#define FCRxFF30_0398_SoftResetDc_OFFSET                        5
+#define FCRxFF30_0398_SoftResetDc_WIDTH                         1
+#define FCRxFF30_0398_SoftResetDc_MASK                          0x20
+#define FCRxFF30_0398_Reserved_6_6_OFFSET                       6
+#define FCRxFF30_0398_Reserved_6_6_WIDTH                        1
+#define FCRxFF30_0398_Reserved_6_6_MASK                         0x40
+#define FCRxFF30_0398_SoftResetGrbm_OFFSET                      8
+#define FCRxFF30_0398_SoftResetGrbm_WIDTH                       1
+#define FCRxFF30_0398_SoftResetGrbm_MASK                        0x100
+#define FCRxFF30_0398_SoftResetMc_OFFSET                        11
+#define FCRxFF30_0398_SoftResetMc_WIDTH                         1
+#define FCRxFF30_0398_SoftResetMc_MASK                          0x800
+#define FCRxFF30_0398_Reserved_12_12_OFFSET                     12
+#define FCRxFF30_0398_Reserved_12_12_WIDTH                      1
+#define FCRxFF30_0398_Reserved_12_12_MASK                       0x1000
+#define FCRxFF30_0398_SoftResetRlc_OFFSET                       13
+#define FCRxFF30_0398_SoftResetRlc_WIDTH                        1
+#define FCRxFF30_0398_SoftResetRlc_MASK                         0x2000
+#define FCRxFF30_0398_Reserved_16_16_OFFSET                     16
+#define FCRxFF30_0398_Reserved_16_16_WIDTH                      1
+#define FCRxFF30_0398_Reserved_16_16_MASK                       0x10000
+#define FCRxFF30_0398_SoftResetUvd_OFFSET                       18
+#define FCRxFF30_0398_SoftResetUvd_WIDTH                        1
+#define FCRxFF30_0398_SoftResetUvd_MASK                         0x40000
+#define FCRxFF30_0398_Reserved_19_19_OFFSET                     19
+#define FCRxFF30_0398_Reserved_19_19_WIDTH                      1
+#define FCRxFF30_0398_Reserved_19_19_MASK                       0x80000
+
+#define FCRxFF30_0398_Reserved_31_24_OFFSET                     24
+#define FCRxFF30_0398_Reserved_31_24_WIDTH                      8
+#define FCRxFF30_0398_Reserved_31_24_MASK                       0xff000000
+
+/// FCRxFF30_0398
+typedef union {
+  struct {                                                              ///<
+    UINT32                                             Reserved_0_0:1 ; ///<
+    UINT32                                             Reserved_1_1:1 ; ///<
+    UINT32                                              SoftResetCg:1 ; ///<
+    UINT32                                             Reserved_4_3:2 ; ///<
+    UINT32                                              SoftResetDc:1 ; ///<
+    UINT32                                             Reserved_6_6:1 ; ///<
     UINT32                                             Reserved_7_7:1 ; ///<
-    UINT32                                           ClkRampHystSel:4 ; ///<
-    UINT32                                             OnionOutHyst:4 ; ///<
-    UINT32                                        DisNclkGatingIdle:1 ; ///<
-    UINT32                                        ClockGatingEnDram:1 ; ///<
-    UINT32                                           Reserved_31_18:14; ///<
+    UINT32                                            SoftResetGrbm:1 ; ///<
+    UINT32                                             Reserved_9_9:1 ; ///<
+    UINT32                                             Reserved_10_10:1 ; ///<
+    UINT32                                              SoftResetMc:1 ; ///<
+    UINT32                                           Reserved_12_12:1 ; ///<
+    UINT32                                             SoftResetRlc:1 ; ///<
+    UINT32                                           Reserved_14_14:1 ; ///<
+    UINT32                                           Reserved_15_15:1 ; ///<
+    UINT32                                           Reserved_16_16:1 ; ///<
+    UINT32                                           Reserved_17_17:1 ; ///<
+    UINT32                                             SoftResetUvd:1 ; ///<
+    UINT32                                           Reserved_19_19:1 ; ///<
+    UINT32                                           Reserved_20_20:1 ; ///<
+    UINT32                                           Reserved_21_21:1 ; ///<
+    UINT32                                           Reserved_22_22:1 ; ///<
+    UINT32                                           Reserved_23_23:1 ; ///<
+    UINT32                                           Reserved_31_24:8 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D18F3xD4_STRUCT;
-
-// **** FCRxFF30_01F4 Register Definition ****
-// Address
-#define FCRxFF30_01F4_ADDRESS                                   0xff3001f4
-
-// Type
-#define FCRxFF30_01F4_TYPE                                      TYPE_FCR
-// Field Data
-#define FCRxFF30_01F4_ReservedCgttSclk_21_0_OFFSET              0
-#define FCRxFF30_01F4_ReservedCgttSclk_21_0_WIDTH               21
-#define FCRxFF30_01F4_ReservedCgttSclk_21_0_MASK                0x3fffff
-#define FCRxFF30_01F4_CgBifCgttSclkOverride_OFFSET              22
-#define FCRxFF30_01F4_CgBifCgttSclkOverride_WIDTH               1
-#define FCRxFF30_01F4_CgBifCgttSclkOverride_MASK                0x400000
-#define FCRxFF30_01F4_ReservedCgttSclk_24_23_OFFSET             23
-#define FCRxFF30_01F4_ReservedCgttSclk_24_23_WIDTH              2
-#define FCRxFF30_01F4_ReservedCgttSclk_24_23_MASK               0x1800000
-#define FCRxFF30_01F4_CgDcCgttSclkOverride_OFFSET               25
-#define FCRxFF30_01F4_CgDcCgttSclkOverride_WIDTH                1
-#define FCRxFF30_01F4_CgDcCgttSclkOverride_MASK                 0x2000000
-#define FCRxFF30_01F4_ReservedCgttSclk_26_26_OFFSET             26
-#define FCRxFF30_01F4_ReservedCgttSclk_26_26_WIDTH              1
-#define FCRxFF30_01F4_ReservedCgttSclk_26_26_MASK               0x4000000
-#define FCRxFF30_01F4_CgMcbCgttSclkOverride_OFFSET              27
-#define FCRxFF30_01F4_CgMcbCgttSclkOverride_WIDTH               1
-#define FCRxFF30_01F4_CgMcbCgttSclkOverride_MASK                0x8000000
-#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_OFFSET             28
-#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_WIDTH              1
-#define FCRxFF30_01F4_CgMcdwCgttSclkOverride_MASK               0x10000000
-#define FCRxFF30_01F4_ReservedCgttSclk_31_29_OFFSET             29
-#define FCRxFF30_01F4_ReservedCgttSclk_31_29_WIDTH              3
-#define FCRxFF30_01F4_ReservedCgttSclk_31_29_MASK               0xe0000000
-
-/// FCRxFF30_01F4
-typedef union {
-  struct {                                                              ///<
-    UINT32                                    ReservedCgttSclk_21_0:22; ///<
-    UINT32                                    CgBifCgttSclkOverride:1 ; ///<
-    UINT32                                   ReservedCgttSclk_24_23:2 ; ///<
-    UINT32                                     CgDcCgttSclkOverride:1 ; ///<
-    UINT32                                   ReservedCgttSclk_26_26:1 ; ///<
-    UINT32                                    CgMcbCgttSclkOverride:1 ; ///<
-    UINT32                                   CgMcdwCgttSclkOverride:1 ; ///<
-    UINT32                                   ReservedCgttSclk_31_29:3 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} FCRxFF30_01F4_STRUCT;
-
-// **** FCRxFF30_01F5 Register Definition ****
-// Address
-#define FCRxFF30_01F5_ADDRESS                                   0xff3001f5
-
-// Type
-#define FCRxFF30_01F5_TYPE                                      TYPE_FCR
-// Field Data
-#define FCRxFF30_01F5_ReservedCgttSclk_10_0_OFFSET              0
-#define FCRxFF30_01F5_ReservedCgttSclk_10_0_WIDTH               11
-#define FCRxFF30_01F5_ReservedCgttSclk_10_0_MASK                0x7ff
-#define FCRxFF30_01F5_CgVmcCgttSclkOverride_OFFSET              11
-#define FCRxFF30_01F5_CgVmcCgttSclkOverride_WIDTH               1
-#define FCRxFF30_01F5_CgVmcCgttSclkOverride_MASK                0x800
-#define FCRxFF30_01F5_CgOrbCgttSclkOverride_OFFSET              12
-#define FCRxFF30_01F5_CgOrbCgttSclkOverride_WIDTH               1
-#define FCRxFF30_01F5_CgOrbCgttSclkOverride_MASK                0x1000
-#define FCRxFF30_01F5_CgOrbCgttLclkOverride_OFFSET              13
-#define FCRxFF30_01F5_CgOrbCgttLclkOverride_WIDTH               1
-#define FCRxFF30_01F5_CgOrbCgttLclkOverride_MASK                0x2000
-#define FCRxFF30_01F5_CgIocCgttSclkOverride_OFFSET              14
-#define FCRxFF30_01F5_CgIocCgttSclkOverride_WIDTH               1
-#define FCRxFF30_01F5_CgIocCgttSclkOverride_MASK                0x4000
-#define FCRxFF30_01F5_CgIocCgttLclkOverride_OFFSET              15
-#define FCRxFF30_01F5_CgIocCgttLclkOverride_WIDTH               1
-#define FCRxFF30_01F5_CgIocCgttLclkOverride_MASK                0x8000
-#define FCRxFF30_01F5_ReservedCgttSclk_27_16_OFFSET             16
-#define FCRxFF30_01F5_ReservedCgttSclk_27_16_WIDTH              12
-#define FCRxFF30_01F5_ReservedCgttSclk_27_16_MASK               0xfff0000
-#define FCRxFF30_01F5_CgDcCgttDispClkOverride_OFFSET            28
-#define FCRxFF30_01F5_CgDcCgttDispClkOverride_WIDTH             1
-#define FCRxFF30_01F5_CgDcCgttDispClkOverride_MASK              0x10000000
-#define FCRxFF30_01F5_ReservedCgttSclk_31_29_OFFSET             29
-#define FCRxFF30_01F5_ReservedCgttSclk_31_29_WIDTH              3
-#define FCRxFF30_01F5_ReservedCgttSclk_31_29_MASK               0xe0000000
-
-/// FCRxFF30_01F5
-typedef union {
-  struct {                                                              ///<
-    UINT32                                    ReservedCgttSclk_10_0:11; ///<
-    UINT32                                    CgVmcCgttSclkOverride:1 ; ///<
-    UINT32                                    CgOrbCgttSclkOverride:1 ; ///<
-    UINT32                                    CgOrbCgttLclkOverride:1 ; ///<
-    UINT32                                    CgIocCgttSclkOverride:1 ; ///<
-    UINT32                                    CgIocCgttLclkOverride:1 ; ///<
-    UINT32                                   ReservedCgttSclk_27_16:12; ///<
-    UINT32                                  CgDcCgttDispClkOverride:1 ; ///<
-    UINT32                                   ReservedCgttSclk_31_29:3 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} FCRxFF30_01F5_STRUCT;
+} FCRxFF30_0398_STRUCT;
 
 // **** FCRxFF30_1512 Register Definition ****
 // Address
@@ -12085,341 +14945,303 @@ typedef union {
   UINT32 Value;                                                         ///<
 } FCRxFF30_1512_STRUCT;
 
-// **** SMUx1B Register Definition ****
+// **** SMUx0B_x84A0 Register Definition ****
 // Address
-#define SMUx1B_ADDRESS                                          0x1b
+#define SMUx0B_x84A0_ADDRESS                                    0x84a0
 
 // Type
-#define SMUx1B_TYPE                                             TYPE_SMU
+#define SMUx0B_x84A0_TYPE                                       TYPE_SMUx0B
 // Field Data
-#define SMUx1B_LclkDpSlpDiv_OFFSET                              0
-#define SMUx1B_LclkDpSlpDiv_WIDTH                               3
-#define SMUx1B_LclkDpSlpDiv_MASK                                0x7
-#define SMUx1B_RampDis_OFFSET                                   3
-#define SMUx1B_RampDis_WIDTH                                    1
-#define SMUx1B_RampDis_MASK                                     0x8
-#define SMUx1B_Reserved_7_4_OFFSET                              4
-#define SMUx1B_Reserved_7_4_WIDTH                               4
-#define SMUx1B_Reserved_7_4_MASK                                0xf0
-#define SMUx1B_LclkDpSlpMask_OFFSET                             8
-#define SMUx1B_LclkDpSlpMask_WIDTH                              8
-#define SMUx1B_LclkDpSlpMask_MASK                               0xff00
+#define SMUx0B_x84A0_MothPsoPwrup_OFFSET                        0
+#define SMUx0B_x84A0_MothPsoPwrup_WIDTH                         16
+#define SMUx0B_x84A0_MothPsoPwrup_MASK                          0xffff
+#define SMUx0B_x84A0_MothPsoPwrdn_OFFSET                        16
+#define SMUx0B_x84A0_MothPsoPwrdn_WIDTH                         16
+#define SMUx0B_x84A0_MothPsoPwrdn_MASK                          0xffff0000
 
-/// SMUx1B
+/// SMUx0B_x84A0
 typedef union {
   struct {                                                              ///<
-    UINT32                                             LclkDpSlpDiv:3 ; ///<
-    UINT32                                                  RampDis:1 ; ///<
-    UINT32                                             Reserved_7_4:4 ; ///<
-    UINT32                                            LclkDpSlpMask:8 ; ///<
+    UINT32                                             MothPsoPwrup:16; ///<
+    UINT32                                             MothPsoPwrdn:16; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} SMUx1B_STRUCT;
-
-// **** SMUx1D Register Definition ****
+} SMUx0B_x84A0_STRUCT;
+// **** GMMxCAC Register Definition ****
 // Address
-#define SMUx1D_ADDRESS                                          0x1d
+#define GMMxCAC_ADDRESS                                         0xcac
 
 // Type
-#define SMUx1D_TYPE                                             TYPE_SMU
+#define GMMxCAC_TYPE                                            TYPE_GMM
 // Field Data
-#define SMUx1D_LclkDpSlpHyst_OFFSET                             0
-#define SMUx1D_LclkDpSlpHyst_WIDTH                              12
-#define SMUx1D_LclkDpSlpHyst_MASK                               0xfff
-#define SMUx1D_LclkDpSlpEn_OFFSET                               12
-#define SMUx1D_LclkDpSlpEn_WIDTH                                1
-#define SMUx1D_LclkDpSlpEn_MASK                                 0x1000
-#define SMUx1D_Reserved_15_13_OFFSET                            13
-#define SMUx1D_Reserved_15_13_WIDTH                             3
-#define SMUx1D_Reserved_15_13_MASK                              0xe000
+#define GMMxCAC_NbPstateChangeEnable_OFFSET                     0
+#define GMMxCAC_NbPstateChangeEnable_WIDTH                      1
+#define GMMxCAC_NbPstateChangeEnable_MASK                       0x1
+#define GMMxCAC_Reserved_3_1_OFFSET                             1
+#define GMMxCAC_Reserved_3_1_WIDTH                              3
+#define GMMxCAC_Reserved_3_1_MASK                               0xe
+#define GMMxCAC_NbPstateChangeUrgentDuringRequest_OFFSET        4
+#define GMMxCAC_NbPstateChangeUrgentDuringRequest_WIDTH         1
+#define GMMxCAC_NbPstateChangeUrgentDuringRequest_MASK          0x10
+#define GMMxCAC_Reserved_7_5_OFFSET                             5
+#define GMMxCAC_Reserved_7_5_WIDTH                              3
+#define GMMxCAC_Reserved_7_5_MASK                               0xe0
+#define GMMxCAC_NbPstateChangeNotSelfRefreshDuringRequest_OFFSET 8
+#define GMMxCAC_NbPstateChangeNotSelfRefreshDuringRequest_WIDTH 1
+#define GMMxCAC_NbPstateChangeNotSelfRefreshDuringRequest_MASK  0x100
+#define GMMxCAC_NbPstateChangeForceOn_OFFSET                    9
+#define GMMxCAC_NbPstateChangeForceOn_WIDTH                     1
+#define GMMxCAC_NbPstateChangeForceOn_MASK                      0x200
+#define GMMxCAC_Reserved_11_10_OFFSET                           10
+#define GMMxCAC_Reserved_11_10_WIDTH                            2
+#define GMMxCAC_Reserved_11_10_MASK                             0xc00
+#define GMMxCAC_NbPstateChangeWatermarkMask_OFFSET              12
+#define GMMxCAC_NbPstateChangeWatermarkMask_WIDTH               2
+#define GMMxCAC_NbPstateChangeWatermarkMask_MASK                0x3000
+#define GMMxCAC_Reserved_15_14_OFFSET                           14
+#define GMMxCAC_Reserved_15_14_WIDTH                            2
+#define GMMxCAC_Reserved_15_14_MASK                             0xc000
+#define GMMxCAC_NbPstateChangeWatermark_OFFSET                  16
+#define GMMxCAC_NbPstateChangeWatermark_WIDTH                   16
+#define GMMxCAC_NbPstateChangeWatermark_MASK                    0xffff0000
 
-/// SMUx1D
+/// GMMxCAC
 typedef union {
   struct {                                                              ///<
-    UINT32                                            LclkDpSlpHyst:12; ///<
-    UINT32                                              LclkDpSlpEn:1 ; ///<
-    UINT32                                           Reserved_15_13:3 ; ///<
+    UINT32                                     NbPstateChangeEnable:1 ; ///<
+    UINT32                                             Reserved_3_1:3 ; ///<
+    UINT32                        NbPstateChangeUrgentDuringRequest:1 ; ///<
+    UINT32                                             Reserved_7_5:3 ; ///<
+    UINT32                NbPstateChangeNotSelfRefreshDuringRequest:1 ; ///<
+    UINT32                                    NbPstateChangeForceOn:1 ; ///<
+    UINT32                                           Reserved_11_10:2 ; ///<
+    UINT32                              NbPstateChangeWatermarkMask:2 ; ///<
+    UINT32                                           Reserved_15_14:2 ; ///<
+    UINT32                                  NbPstateChangeWatermark:16; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} SMUx1D_STRUCT;
+} GMMxCAC_STRUCT;
 
-// **** SMUx6F Register Definition ****
+// **** GMMxCCC Register Definition ****
 // Address
-#define SMUx6F_ADDRESS                                          0x6f
-
-
-// **** SMUx71 Register Definition ****
-// Address
-#define SMUx71_ADDRESS                                          0x71
-
-
-// **** SMUx73 Register Definition ****
-// Address
-#define SMUx73_ADDRESS                                          0x73
+#define GMMxCCC_ADDRESS                                         0xccc
 
 // Type
-#define SMUx73_TYPE                                             TYPE_SMU
+#define GMMxCCC_TYPE                                            TYPE_GMM
 // Field Data
-#define SMUx73_DisLclkGating_OFFSET                             0
-#define SMUx73_DisLclkGating_WIDTH                              1
-#define SMUx73_DisLclkGating_MASK                               0x1
-#define SMUx73_DisSclkGating_OFFSET                             1
-#define SMUx73_DisSclkGating_WIDTH                              1
-#define SMUx73_DisSclkGating_MASK                               0x2
-#define SMUx73_Reserved_15_2_OFFSET                             2
-#define SMUx73_Reserved_15_2_WIDTH                              14
-#define SMUx73_Reserved_15_2_MASK                               0xfffc
+#define GMMxCCC_NbPstateChangeEnable_OFFSET                     0
+#define GMMxCCC_NbPstateChangeEnable_WIDTH                      1
+#define GMMxCCC_NbPstateChangeEnable_MASK                       0x1
+#define GMMxCCC_Reserved_3_1_OFFSET                             1
+#define GMMxCCC_Reserved_3_1_WIDTH                              3
+#define GMMxCCC_Reserved_3_1_MASK                               0xe
+#define GMMxCCC_NbPstateChangeUrgentDuringRequest_OFFSET        4
+#define GMMxCCC_NbPstateChangeUrgentDuringRequest_WIDTH         1
+#define GMMxCCC_NbPstateChangeUrgentDuringRequest_MASK          0x10
+#define GMMxCCC_Reserved_7_5_OFFSET                             5
+#define GMMxCCC_Reserved_7_5_WIDTH                              3
+#define GMMxCCC_Reserved_7_5_MASK                               0xe0
+#define GMMxCCC_NbPstateChangeNotSelfRefreshDuringRequest_OFFSET 8
+#define GMMxCCC_NbPstateChangeNotSelfRefreshDuringRequest_WIDTH 1
+#define GMMxCCC_NbPstateChangeNotSelfRefreshDuringRequest_MASK  0x100
+#define GMMxCCC_NbPstateChangeForceOn_OFFSET                    9
+#define GMMxCCC_NbPstateChangeForceOn_WIDTH                     1
+#define GMMxCCC_NbPstateChangeForceOn_MASK                      0x200
+#define GMMxCCC_Reserved_11_10_OFFSET                           10
+#define GMMxCCC_Reserved_11_10_WIDTH                            2
+#define GMMxCCC_Reserved_11_10_MASK                             0xc00
+#define GMMxCCC_NbPstateChangeWatermarkMask_OFFSET              12
+#define GMMxCCC_NbPstateChangeWatermarkMask_WIDTH               2
+#define GMMxCCC_NbPstateChangeWatermarkMask_MASK                0x3000
+#define GMMxCCC_Reserved_15_14_OFFSET                           14
+#define GMMxCCC_Reserved_15_14_WIDTH                            2
+#define GMMxCCC_Reserved_15_14_MASK                             0xc000
+#define GMMxCCC_NbPstateChangeWatermark_OFFSET                  16
+#define GMMxCCC_NbPstateChangeWatermark_WIDTH                   16
+#define GMMxCCC_NbPstateChangeWatermark_MASK                    0xffff0000
 
-/// SMUx73
+/// GMMxCCC
 typedef union {
   struct {                                                              ///<
-    UINT32                                            DisLclkGating:1 ; ///<
-    UINT32                                            DisSclkGating:1 ; ///<
-    UINT32                                            Reserved_15_2:14; ///<
+    UINT32                                     NbPstateChangeEnable:1 ; ///<
+    UINT32                                             Reserved_3_1:3 ; ///<
+    UINT32                        NbPstateChangeUrgentDuringRequest:1 ; ///<
+    UINT32                                             Reserved_7_5:3 ; ///<
+    UINT32                NbPstateChangeNotSelfRefreshDuringRequest:1 ; ///<
+    UINT32                                    NbPstateChangeForceOn:1 ; ///<
+    UINT32                                           Reserved_11_10:2 ; ///<
+    UINT32                              NbPstateChangeWatermarkMask:2 ; ///<
+    UINT32                                           Reserved_15_14:2 ; ///<
+    UINT32                                  NbPstateChangeWatermark:16; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} SMUx73_STRUCT;
+} GMMxCCC_STRUCT;
 
-// **** D0F0x98_x49 Register Definition ****
+// **** GMMx6B30 Register Definition ****
 // Address
-#define D0F0x98_x49_ADDRESS                                     0x49
+#define GMMx6B30_ADDRESS                                        0x6b30
 
 // Type
-#define D0F0x98_x49_TYPE                                        TYPE_D0F0x98
+#define GMMx6B30_TYPE                                           TYPE_GMM
 // Field Data
-#define D0F0x98_x49_Reserved_23_0_OFFSET                        0
-#define D0F0x98_x49_Reserved_23_0_WIDTH                         24
-#define D0F0x98_x49_Reserved_23_0_MASK                          0xffffff
-#define D0F0x98_x49_SoftOverrideClk6_OFFSET                     24
-#define D0F0x98_x49_SoftOverrideClk6_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk6_MASK                       0x1000000
-#define D0F0x98_x49_SoftOverrideClk5_OFFSET                     25
-#define D0F0x98_x49_SoftOverrideClk5_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk5_MASK                       0x2000000
-#define D0F0x98_x49_SoftOverrideClk4_OFFSET                     26
-#define D0F0x98_x49_SoftOverrideClk4_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk4_MASK                       0x4000000
-#define D0F0x98_x49_SoftOverrideClk3_OFFSET                     27
-#define D0F0x98_x49_SoftOverrideClk3_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk3_MASK                       0x8000000
-#define D0F0x98_x49_SoftOverrideClk2_OFFSET                     28
-#define D0F0x98_x49_SoftOverrideClk2_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk2_MASK                       0x10000000
-#define D0F0x98_x49_SoftOverrideClk1_OFFSET                     29
-#define D0F0x98_x49_SoftOverrideClk1_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk1_MASK                       0x20000000
-#define D0F0x98_x49_SoftOverrideClk0_OFFSET                     30
-#define D0F0x98_x49_SoftOverrideClk0_WIDTH                      1
-#define D0F0x98_x49_SoftOverrideClk0_MASK                       0x40000000
-#define D0F0x98_x49_Reserved_31_31_OFFSET                       31
-#define D0F0x98_x49_Reserved_31_31_WIDTH                        1
-#define D0F0x98_x49_Reserved_31_31_MASK                         0x80000000
+#define GMMx6B30_DcAllowNbPstatesForceOne_OFFSET                25
+#define GMMx6B30_DcAllowNbPstatesForceOne_WIDTH                 1
+#define GMMx6B30_DcAllowNbPstatesForceOne_MASK                  0x2000000
 
-/// D0F0x98_x49
+/// GMMx6B30
 typedef union {
   struct {                                                              ///<
-    UINT32                                            Reserved_23_0:24; ///<
-    UINT32                                         SoftOverrideClk6:1 ; ///<
-    UINT32                                         SoftOverrideClk5:1 ; ///<
-    UINT32                                         SoftOverrideClk4:1 ; ///<
-    UINT32                                         SoftOverrideClk3:1 ; ///<
-    UINT32                                         SoftOverrideClk2:1 ; ///<
-    UINT32                                         SoftOverrideClk1:1 ; ///<
-    UINT32                                         SoftOverrideClk0:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
+    UINT32                                           Reserved_0_24:25 ; ///<
+    UINT32                                 DcAllowNbPstatesForceOne:1 ; ///<
+    UINT32                                           Reserved_31_26:6 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D0F0x98_x49_STRUCT;
+} GMMx6B30_STRUCT;
 
-// **** D0F0x98_x4A Register Definition ****
+// **** GMMx7730 Register Definition ****
 // Address
-#define D0F0x98_x4A_ADDRESS                                     0x4a
+#define GMMx7730_ADDRESS                                        0x7730
 
 // Type
-#define D0F0x98_x4A_TYPE                                        TYPE_D0F0x98
+#define GMMx7730_TYPE                                           TYPE_GMM
 // Field Data
-#define D0F0x98_x4A_Reserved_23_0_OFFSET                        0
-#define D0F0x98_x4A_Reserved_23_0_WIDTH                         24
-#define D0F0x98_x4A_Reserved_23_0_MASK                          0xffffff
-#define D0F0x98_x4A_SoftOverrideClk6_OFFSET                     24
-#define D0F0x98_x4A_SoftOverrideClk6_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk6_MASK                       0x1000000
-#define D0F0x98_x4A_SoftOverrideClk5_OFFSET                     25
-#define D0F0x98_x4A_SoftOverrideClk5_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk5_MASK                       0x2000000
-#define D0F0x98_x4A_SoftOverrideClk4_OFFSET                     26
-#define D0F0x98_x4A_SoftOverrideClk4_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk4_MASK                       0x4000000
-#define D0F0x98_x4A_SoftOverrideClk3_OFFSET                     27
-#define D0F0x98_x4A_SoftOverrideClk3_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk3_MASK                       0x8000000
-#define D0F0x98_x4A_SoftOverrideClk2_OFFSET                     28
-#define D0F0x98_x4A_SoftOverrideClk2_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk2_MASK                       0x10000000
-#define D0F0x98_x4A_SoftOverrideClk1_OFFSET                     29
-#define D0F0x98_x4A_SoftOverrideClk1_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk1_MASK                       0x20000000
-#define D0F0x98_x4A_SoftOverrideClk0_OFFSET                     30
-#define D0F0x98_x4A_SoftOverrideClk0_WIDTH                      1
-#define D0F0x98_x4A_SoftOverrideClk0_MASK                       0x40000000
-#define D0F0x98_x4A_Reserved_31_31_OFFSET                       31
-#define D0F0x98_x4A_Reserved_31_31_WIDTH                        1
-#define D0F0x98_x4A_Reserved_31_31_MASK                         0x80000000
 
-/// D0F0x98_x4A
+#define GMMx7730_DcAllowNbPstatesForceOne_OFFSET                25
+#define GMMx7730_DcAllowNbPstatesForceOne_WIDTH                 1
+#define GMMx7730_DcAllowNbPstatesForceOne_MASK                  0x2000000
+
+/// GMMx7730
 typedef union {
   struct {                                                              ///<
-    UINT32                                            Reserved_23_0:24; ///<
-    UINT32                                         SoftOverrideClk6:1 ; ///<
-    UINT32                                         SoftOverrideClk5:1 ; ///<
-    UINT32                                         SoftOverrideClk4:1 ; ///<
-    UINT32                                         SoftOverrideClk3:1 ; ///<
-    UINT32                                         SoftOverrideClk2:1 ; ///<
-    UINT32                                         SoftOverrideClk1:1 ; ///<
-    UINT32                                         SoftOverrideClk0:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
+    UINT32                                         Reserved_0_24:25 ;   ///<
+    UINT32                                 DcAllowNbPstatesForceOne:1 ; ///<
+    UINT32                                           Reserved_31_26:6 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D0F0x98_x4A_STRUCT;
-
-// **** D0F0x98_x4B Register Definition ****
+} GMMx7730_STRUCT;
+// **** GMMx2854 Register Definition ****
 // Address
-#define D0F0x98_x4B_ADDRESS                                     0x4b
+#define GMMx2854_ADDRESS                                        0x2854
 
 // Type
-#define D0F0x98_x4B_TYPE                                        TYPE_D0F0x98
-// Field Data
-#define D0F0x98_x4B_Reserved_29_0_OFFSET                        0
-#define D0F0x98_x4B_Reserved_29_0_WIDTH                         30
-#define D0F0x98_x4B_Reserved_29_0_MASK                          0x3fffffff
-#define D0F0x98_x4B_SoftOverrideClk_OFFSET                      30
-#define D0F0x98_x4B_SoftOverrideClk_WIDTH                       1
-#define D0F0x98_x4B_SoftOverrideClk_MASK                        0x40000000
-#define D0F0x98_x4B_Reserved_31_31_OFFSET                       31
-#define D0F0x98_x4B_Reserved_31_31_WIDTH                        1
-#define D0F0x98_x4B_Reserved_31_31_MASK                         0x80000000
-
-/// D0F0x98_x4B
-typedef union {
-  struct {                                                              ///<
-    UINT32                                            Reserved_29_0:30; ///<
-    UINT32                                          SoftOverrideClk:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D0F0x98_x4B_STRUCT;
-
-// **** D0F0x64_x22 Register Definition ****
+#define GMMx2854_TYPE                                           TYPE_GMM
+// **** D0F0x98_x0C Register Definition ****
 // Address
-#define D0F0x64_x22_ADDRESS                                     0x22
+#define D0F0x98_x0C_ADDRESS                                     0xc
 
 // Type
-#define D0F0x64_x22_TYPE                                        TYPE_D0F0x64
-// Field Data
-#define D0F0x64_x22_Reserved_25_0_OFFSET                        0
-#define D0F0x64_x22_Reserved_25_0_WIDTH                         26
-#define D0F0x64_x22_Reserved_25_0_MASK                          0x3ffffff
-#define D0F0x64_x22_SoftOverrideClk4_OFFSET                     26
-#define D0F0x64_x22_SoftOverrideClk4_WIDTH                      1
-#define D0F0x64_x22_SoftOverrideClk4_MASK                       0x4000000
-#define D0F0x64_x22_SoftOverrideClk3_OFFSET                     27
-#define D0F0x64_x22_SoftOverrideClk3_WIDTH                      1
-#define D0F0x64_x22_SoftOverrideClk3_MASK                       0x8000000
-#define D0F0x64_x22_SoftOverrideClk2_OFFSET                     28
-#define D0F0x64_x22_SoftOverrideClk2_WIDTH                      1
-#define D0F0x64_x22_SoftOverrideClk2_MASK                       0x10000000
-#define D0F0x64_x22_SoftOverrideClk1_OFFSET                     29
-#define D0F0x64_x22_SoftOverrideClk1_WIDTH                      1
-#define D0F0x64_x22_SoftOverrideClk1_MASK                       0x20000000
-#define D0F0x64_x22_SoftOverrideClk0_OFFSET                     30
-#define D0F0x64_x22_SoftOverrideClk0_WIDTH                      1
-#define D0F0x64_x22_SoftOverrideClk0_MASK                       0x40000000
-#define D0F0x64_x22_Reserved_31_31_OFFSET                       31
-#define D0F0x64_x22_Reserved_31_31_WIDTH                        1
-#define D0F0x64_x22_Reserved_31_31_MASK                         0x80000000
-
-/// D0F0x64_x22
-typedef union {
-  struct {                                                              ///<
-    UINT32                                            Reserved_25_0:26; ///<
-    UINT32                                         SoftOverrideClk4:1 ; ///<
-    UINT32                                         SoftOverrideClk3:1 ; ///<
-    UINT32                                         SoftOverrideClk2:1 ; ///<
-    UINT32                                         SoftOverrideClk1:1 ; ///<
-    UINT32                                         SoftOverrideClk0:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D0F0x64_x22_STRUCT;
-
-// **** D0F0x64_x23 Register Definition ****
+#define D0F0x98_x0C_TYPE                                        TYPE_D0F0x98
+#define D0F0x98_x0C_IntrHiPriClr_OFFSET                         31
+#define D0F0x98_x0C_IntrHiPriClr_WIDTH                          1
+#define D0F0x98_x0C_IntrHiPriClr_MASK                           0x80000000
+// **** D0F0x98_x0D Register Definition ****
 // Address
-#define D0F0x64_x23_ADDRESS                                     0x23
+#define D0F0x98_x0D_ADDRESS                                     0xd
 
 // Type
-#define D0F0x64_x23_TYPE                                        TYPE_D0F0x64
-// Field Data
-#define D0F0x64_x23_Reserved_26_0_OFFSET                        0
-#define D0F0x64_x23_Reserved_26_0_WIDTH                         27
-#define D0F0x64_x23_Reserved_26_0_MASK                          0x7ffffff
-#define D0F0x64_x23_SoftOverrideClk3_OFFSET                     27
-#define D0F0x64_x23_SoftOverrideClk3_WIDTH                      1
-#define D0F0x64_x23_SoftOverrideClk3_MASK                       0x8000000
-#define D0F0x64_x23_SoftOverrideClk2_OFFSET                     28
-#define D0F0x64_x23_SoftOverrideClk2_WIDTH                      1
-#define D0F0x64_x23_SoftOverrideClk2_MASK                       0x10000000
-#define D0F0x64_x23_SoftOverrideClk1_OFFSET                     29
-#define D0F0x64_x23_SoftOverrideClk1_WIDTH                      1
-#define D0F0x64_x23_SoftOverrideClk1_MASK                       0x20000000
-#define D0F0x64_x23_SoftOverrideClk0_OFFSET                     30
-#define D0F0x64_x23_SoftOverrideClk0_WIDTH                      1
-#define D0F0x64_x23_SoftOverrideClk0_MASK                       0x40000000
-#define D0F0x64_x23_Reserved_31_31_OFFSET                       31
-#define D0F0x64_x23_Reserved_31_31_WIDTH                        1
-#define D0F0x64_x23_Reserved_31_31_MASK                         0x80000000
-
-/// D0F0x64_x23
-typedef union {
-  struct {                                                              ///<
-    UINT32                                            Reserved_26_0:27; ///<
-    UINT32                                         SoftOverrideClk3:1 ; ///<
-    UINT32                                         SoftOverrideClk2:1 ; ///<
-    UINT32                                         SoftOverrideClk1:1 ; ///<
-    UINT32                                         SoftOverrideClk0:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
-  } Field;                                                              ///<
-  UINT32 Value;                                                         ///<
-} D0F0x64_x23_STRUCT;
-
-// **** D0F0x64_x24 Register Definition ****
+#define D0F0x98_x0D_TYPE                                        TYPE_D0F0x98
+// **** D18F3xA0 Register Definition ****
 // Address
-#define D0F0x64_x24_ADDRESS                                     0x24
+#define D18F3xA0_ADDRESS                                        0xa0
 
 // Type
-#define D0F0x64_x24_TYPE                                        TYPE_D0F0x64
+#define D18F3xA0_TYPE                                           TYPE_D18F3
 // Field Data
-#define D0F0x64_x24_Reserved_28_0_OFFSET                       0
-#define D0F0x64_x24_Reserved_28_0_WIDTH                        29
-#define D0F0x64_x24_Reserved_28_0_MASK                         0x1fffffff
-#define D0F0x64_x24_SoftOverrideClk1_OFFSET                     29
-#define D0F0x64_x24_SoftOverrideClk1_WIDTH                      1
-#define D0F0x64_x24_SoftOverrideClk1_MASK                       0x20000000
-#define D0F0x64_x24_SoftOverrideClk0_OFFSET                     30
-#define D0F0x64_x24_SoftOverrideClk0_WIDTH                      1
-#define D0F0x64_x24_SoftOverrideClk0_MASK                       0x40000000
-#define D0F0x64_x24_Reserved_31_31_OFFSET                       31
-#define D0F0x64_x24_Reserved_31_31_WIDTH                        1
-#define D0F0x64_x24_Reserved_31_31_MASK                         0x80000000
+#define D18F3xA0_PsiVid_OFFSET                                  0
+#define D18F3xA0_PsiVid_WIDTH                                   7
+#define D18F3xA0_PsiVid_MASK                                    0x7f
+#define D18F3xA0_PsiVidEn_OFFSET                                7
+#define D18F3xA0_PsiVidEn_WIDTH                                 1
+#define D18F3xA0_PsiVidEn_MASK                                  0x80
+#define D18F3xA0_Reserved_8_8_OFFSET                            8
+#define D18F3xA0_Reserved_8_8_WIDTH                             1
+#define D18F3xA0_Reserved_8_8_MASK                              0x100
+#define D18F3xA0_SviHighFreqSel_OFFSET                          9
+#define D18F3xA0_SviHighFreqSel_WIDTH                           1
+#define D18F3xA0_SviHighFreqSel_MASK                            0x200
+#define D18F3xA0_Reserved_15_10_OFFSET                          10
+#define D18F3xA0_Reserved_15_10_WIDTH                           6
+#define D18F3xA0_Reserved_15_10_MASK                            0xfc00
+#define D18F3xA0_ConfigId_OFFSET                                16
+#define D18F3xA0_ConfigId_WIDTH                                 12
+#define D18F3xA0_ConfigId_MASK                                  0xfff0000
+#define D18F3xA0_Reserved_30_28_OFFSET                          28
+#define D18F3xA0_Reserved_30_28_WIDTH                           3
+#define D18F3xA0_Reserved_30_28_MASK                            0x70000000
+#define D18F3xA0_CofVidProg_OFFSET                              31
+#define D18F3xA0_CofVidProg_WIDTH                               1
+#define D18F3xA0_CofVidProg_MASK                                0x80000000
 
-/// D0F0x64_x24
+/// D18F3xA0
 typedef union {
   struct {                                                              ///<
-    UINT32                                            Reserved_28_0:29; ///<
-    UINT32                                         SoftOverrideClk1:1 ; ///<
-    UINT32                                         SoftOverrideClk0:1 ; ///<
-    UINT32                                           Reserved_31_31:1 ; ///<
+    UINT32                                                   PsiVid:7 ; ///<
+    UINT32                                                 PsiVidEn:1 ; ///<
+    UINT32                                             Reserved_8_8:1 ; ///<
+    UINT32                                           SviHighFreqSel:1 ; ///<
+    UINT32                                           Reserved_15_10:6 ; ///<
+    UINT32                                                 ConfigId:12; ///<
+    UINT32                                           Reserved_30_28:3 ; ///<
+    UINT32                                               CofVidProg:1 ; ///<
   } Field;                                                              ///<
   UINT32 Value;                                                         ///<
-} D0F0x64_x24_STRUCT;
+} D18F3xA0_STRUCT;
+// **** D18F6x110 Register Definition ****
+// Address
+#define D18F6x110_ADDRESS                                       0x110
 
+// Type
+#define D18F6x110_TYPE                                          TYPE_D18F6
+// Field Data
+#define D18F6x110_NclkFifoOff_OFFSET                            0
+#define D18F6x110_NclkFifoOff_WIDTH                             3
+#define D18F6x110_NclkFifoOff_MASK                              0x7
+#define D18F6x110_Reserved_3_3_OFFSET                           3
+#define D18F6x110_Reserved_3_3_WIDTH                            1
+#define D18F6x110_Reserved_3_3_MASK                             0x8
+#define D18F6x110_LclkFifoOff_OFFSET                            4
+#define D18F6x110_LclkFifoOff_WIDTH                             3
+#define D18F6x110_LclkFifoOff_MASK                              0x70
+#define D18F6x110_Reserved_7_7_OFFSET                           7
+#define D18F6x110_Reserved_7_7_WIDTH                            1
+#define D18F6x110_Reserved_7_7_MASK                             0x80
+#define D18F6x110_PllMult_OFFSET                                8
+#define D18F6x110_PllMult_WIDTH                                 6
+#define D18F6x110_PllMult_MASK                                  0x3f00
+#define D18F6x110_Reserved_14_14_OFFSET                         14
+#define D18F6x110_Reserved_14_14_WIDTH                          1
+#define D18F6x110_Reserved_14_14_MASK                           0x4000
+#define D18F6x110_Enable_OFFSET                                 15
+#define D18F6x110_Enable_WIDTH                                  1
+#define D18F6x110_Enable_MASK                                   0x8000
+#define D18F6x110_LclkFreq_OFFSET                               16
+#define D18F6x110_LclkFreq_WIDTH                                7
+#define D18F6x110_LclkFreq_MASK                                 0x7f0000
+#define D18F6x110_LclkFreqType_OFFSET                           23
+#define D18F6x110_LclkFreqType_WIDTH                            1
+#define D18F6x110_LclkFreqType_MASK                             0x800000
+#define D18F6x110_NclkFreq_OFFSET                               24
+#define D18F6x110_NclkFreq_WIDTH                                7
+#define D18F6x110_NclkFreq_MASK                                 0x7f000000
+#define D18F6x110_NclkFreqType_OFFSET                           31
+#define D18F6x110_NclkFreqType_WIDTH                            1
+#define D18F6x110_NclkFreqType_MASK                             0x80000000
+
+/// D18F6x110
+typedef union {
+  struct {                                                              ///<
+    UINT32                                              NclkFifoOff:3 ; ///<
+    UINT32                                             Reserved_3_3:1 ; ///<
+    UINT32                                              LclkFifoOff:3 ; ///<
+    UINT32                                             Reserved_7_7:1 ; ///<
+    UINT32                                                  PllMult:6 ; ///<
+    UINT32                                           Reserved_14_14:1 ; ///<
+    UINT32                                                   Enable:1 ; ///<
+    UINT32                                                 LclkFreq:7 ; ///<
+    UINT32                                             LclkFreqType:1 ; ///<
+    UINT32                                                 NclkFreq:7 ; ///<
+    UINT32                                             NclkFreqType:1 ; ///<
+  } Field;                                                              ///<
+  UINT32 Value;                                                         ///<
+} D18F6x110_STRUCT;
 #endif

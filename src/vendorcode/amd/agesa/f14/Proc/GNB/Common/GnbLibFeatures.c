@@ -52,6 +52,7 @@
 #include  "AMD.h"
 #include  "Gnb.h"
 #include  "OptionGnb.h"
+#include  "GnbLibFeatures.h"
 #include  "Filecode.h"
 #define  FILECODE PROC_GNB_COMMON_GNBLIBFEATURES_FILECODE
 /*----------------------------------------------------------------------------------------
@@ -71,6 +72,10 @@
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+GnbCommonFeatureStub (
+  IN      AMD_CONFIG_PARAMS         *StdHeader
+  );
 
 
 

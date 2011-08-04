@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/Ps/ON)
- * @e \$Revision: 38634 $ @e \$Date: 2010-09-27 21:39:01 +0800 (Mon, 27 Sep 2010) $
+ * @e \$Revision: 46937 $ @e \$Date: 2011-02-11 08:50:58 -0700 (Fri, 11 Feb 2011) $
  *
  **/
 /*
@@ -132,7 +132,14 @@ MemPConstructPsUON3 (
     return AGESA_UNSUPPORTED;
   }
   PsPtr->MemPDoPs = MemPDoPsUON3;
+
+  if ((ChannelPtr->MCTPtr->LogicalCpuid.Revision & AMD_F14_ON_Cx) == 0) {
   PsPtr->MemPGetPORFreqLimit = MemPGetPORFreqLimitUON3;
+  } else {
+    // Do not force frequency limit for Rev C
+    PsPtr->MemPGetPORFreqLimit = (VOID (*) (MEM_NB_BLOCK *)) memDefRet;
+  }
+
   return AGESA_SUCCESS;
 }
 

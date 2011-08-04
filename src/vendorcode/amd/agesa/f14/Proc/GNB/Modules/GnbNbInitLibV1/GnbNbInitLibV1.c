@@ -53,6 +53,7 @@
 #include  "amdlib.h"
 #include  "Gnb.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
+#include  "GnbNbInitLibV1.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBNBINITLIBV1_GNBNBINITLIBV1_FILECODE

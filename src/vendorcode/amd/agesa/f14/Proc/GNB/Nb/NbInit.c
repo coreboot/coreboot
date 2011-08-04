@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 41506 $   @e \$Date: 2010-11-05 22:31:30 +0800 (Fri, 05 Nov 2010) $
+ * @e \$Revision: 48955 $   @e \$Date: 2011-03-14 18:31:17 -0600 (Mon, 14 Mar 2011) $
  *
  */
 /*
@@ -56,6 +56,7 @@
 #include  "GfxLib.h"
 #include  "NbSmuLib.h"
 #include  "NbConfigData.h"
+#include  "NbInit.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_NB_NBINIT_FILECODE
@@ -84,12 +85,12 @@ CONST NB_REGISTER_ENTRY NbPciInitTable [] = {
   },
   {
    D0F0x4C_ADDRESS,
-   ~(0x3ull << D0F0x4C_CfgRdTime_OFFSET),
+   ~(UINT32)(0x3 << D0F0x4C_CfgRdTime_OFFSET),
    0x2 << D0F0x4C_CfgRdTime_OFFSET
   },
   {
    D0F0x84_ADDRESS,
-   ~(0x1ull << D0F0x84_Ev6Mode_OFFSET),
+   ~(UINT32)(0x1 << D0F0x84_Ev6Mode_OFFSET),
     0x1 << D0F0x84_Ev6Mode_OFFSET
   }
 };
@@ -97,7 +98,7 @@ CONST NB_REGISTER_ENTRY NbPciInitTable [] = {
 CONST NB_REGISTER_ENTRY  NbMiscInitTable [] = {
   {
     D0F0x64_x46_ADDRESS,
-    ~(0x3ull <<  D0F0x64_x46_P2PMode_OFFSET),
+    ~(UINT32)(0x3 <<  D0F0x64_x46_P2PMode_OFFSET),
     1 << D0F0x64_x46_Msi64bitEn_OFFSET
   }
 };
@@ -113,12 +114,12 @@ CONST NB_REGISTER_ENTRY  NbOrbInitTable [] = {
   },
   {
     D0F0x98_x08_ADDRESS,
-    ~(0xffull << D0F0x98_x08_NpWrrLenC_OFFSET),
+    ~(UINT32)(0xff << D0F0x98_x08_NpWrrLenC_OFFSET),
     1 << D0F0x98_x08_NpWrrLenC_OFFSET
   },
   {
     D0F0x98_x09_ADDRESS,
-    ~(0xffull << D0F0x98_x09_PWrrLenD_OFFSET),
+    ~(UINT32)(0xff << D0F0x98_x09_PWrrLenD_OFFSET),
     1 << D0F0x98_x09_PWrrLenD_OFFSET
   },
   {
@@ -158,6 +159,8 @@ NbInitOnPowerOn (
 {
   UINTN                   Index;
   FCRxFF30_0398_STRUCT    FCRxFF30_0398;
+  UINT32                  Value;
+
   // Init NBCONFIG
   for (Index = 0; Index < (sizeof (NbPciInitTable) / sizeof (NB_REGISTER_ENTRY)); Index++) {
     GnbLibPciRMW (
@@ -198,6 +201,33 @@ NbInitOnPowerOn (
                           (1 << FCRxFF30_0398_SoftResetUvd_OFFSET);
     NbSmuSrbmRegisterWrite (FCRxFF30_0398_ADDRESS, &FCRxFF30_0398.Value, FALSE, Gnb->StdHeader);
   }
+
+  Value = 0;
+  for (Index = 0x8400; Index <= 0x85AC; Index = Index + 4) {
+    NbSmuRcuRegisterWrite (
+      (UINT16) Index,
+      &Value,
+      1,
+      FALSE,
+      Gnb->StdHeader
+      );
+  }
+
+  NbSmuRcuRegisterWrite (
+    0x9000,
+    &Value,
+    1,
+    FALSE,
+    Gnb->StdHeader
+    );
+
+  NbSmuRcuRegisterWrite (
+    0x9004,
+    &Value,
+    1,
+    FALSE,
+    Gnb->StdHeader
+    );
 
   return  AGESA_SUCCESS;
 }

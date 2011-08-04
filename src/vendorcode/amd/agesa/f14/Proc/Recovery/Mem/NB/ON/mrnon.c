@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 38303 $ @e \$Date: 2010-09-22 00:22:47 +0800 (Wed, 22 Sep 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -56,6 +56,7 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include "Ids.h"
+#include "OptionMemory.h"
 #include "mrport.h"
 #include "cpuFamRegisters.h"
 #include "cpuRegisters.h"
@@ -77,12 +78,15 @@
 #define MAX_DELAYS    9   /* 8 data bytes + 1 ECC byte */
 #define MAX_DIMMS     4   /* 4 DIMMs per channel */
 
+#define PHY_DIRECT_ADDRESS_MASK   0x0D000000
+
+STATIC CONST UINT8 RecInstancesPerTypeON[8] = {8, 2, 1, 0, 2, 0, 1, 1};
 /*----------------------------------------------------------------------------
  *                           TYPEDEFS AND STRUCTURES
  *
  *----------------------------------------------------------------------------
  */
-CONST MEM_FREQ_CHANGE_PARAM RecFreqChangeParamON = {0x1838, NULL, 3, 10, 2};
+CONST MEM_FREQ_CHANGE_PARAM RecFreqChangeParamON = {0x1838, NULL, 3, 10, 2, 9, NULL, 1000};
 
 /*----------------------------------------------------------------------------
  *                        PROTOTYPES OF LOCAL FUNCTIONS
@@ -105,16 +109,6 @@ MemRecNCmnGetSetFieldON (
   IN       UINT32 Field
   );
 
-UINT32
-STATIC
-MemRecNcmnGetSetTrainDlyON (
-  IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       UINT8 IsSet,
-  IN       TRN_DLY_TYPE TrnDly,
-  IN       DRBN DrbnVar,
-  IN       UINT16 Field
-  );
-
 BOOLEAN
 STATIC
 MemRecNIsIdSupportedON (
@@ -127,6 +121,19 @@ MemRecNIsIdSupportedON (
  *
  *----------------------------------------------------------------------------
  */
+STATIC CONST UINT32 RecModeDefRegArrayON[] = {
+  BFDramBankAddrReg, 0x00000011,
+  BFDramTimingLoReg, 0x000A0092,
+  BFDramTiming0,     0x0A000101,
+  BFDramTiming1,     0x04100415,
+  BFDramTimingHiReg, 0x02D218FF,
+  BFDramMRSReg,      0x000400A5,
+  BFDramControlReg,  0x04802A03,
+  BFDramConfigLoReg, 0x06600000,
+  BFDramConfigHiReg, 0x1E000000,
+  BFPhyFence,        0x000056B5,
+  NULL
+};
 /* -----------------------------------------------------------------------------*/
 /**
  *
@@ -170,13 +177,16 @@ MemRecConstructNBBlockON (
   //
   // Allocate buffer for DCT_STRUCTs and CH_DEF_STRUCTs
   //
-  AllocHeapParams.RequestedBufferSize = (sizeof (DCT_STRUCT) + sizeof (CH_DEF_STRUCT) + sizeof (MEM_PS_BLOCK));
+  AllocHeapParams.RequestedBufferSize = (sizeof (DCT_STRUCT) + sizeof (CH_DEF_STRUCT) + sizeof (MEM_PS_BLOCK)) + (MAX_DIMMS * MAX_DELAYS * NUMBER_OF_DELAY_TABLES);
   AllocHeapParams.BufferHandle = GENERATE_MEM_HANDLE (ALLOC_DCT_STRUCT_HANDLE, NodeID, 0, 0);
   AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
   if (HeapAllocateBuffer (&AllocHeapParams, &MemPtr->StdHeader) != AGESA_SUCCESS) {
     ASSERT(FALSE); // Could not allocate buffer for DCT_STRUCTs and CH_DEF_STRUCTs
     return FALSE;
   }
+
+  NBPtr->SPDPtr = MemPtr->SpdDataStructure;
+  NBPtr->AllNodeSPDPtr = MemPtr->SpdDataStructure;
 
   MemPtr->DieCount = 1;
   MCTPtr->Dct = 0;
@@ -187,6 +197,11 @@ MemRecConstructNBBlockON (
   MCTPtr->DctData->ChData = (CH_DEF_STRUCT *) AllocHeapParams.BufferPtr;
   AllocHeapParams.BufferPtr += sizeof (CH_DEF_STRUCT);
   NBPtr->PSBlock = (MEM_PS_BLOCK *) AllocHeapParams.BufferPtr;
+  AllocHeapParams.BufferPtr += sizeof (MEM_PS_BLOCK);
+
+  MCTPtr->DctData->ChData->RcvEnDlys = (UINT16 *) AllocHeapParams.BufferPtr;
+  AllocHeapParams.BufferPtr += (MAX_DIMMS * MAX_DELAYS) * 2;
+  MCTPtr->DctData->ChData->WrDqsDlys = AllocHeapParams.BufferPtr;
 
   //
   //  Initialize NB block's variables
@@ -211,6 +226,8 @@ MemRecConstructNBBlockON (
 
   NBPtr->InitRecovery = MemRecNMemInitON;
 
+  NBPtr->RecModeDefRegArray = RecModeDefRegArrayON;
+
   NBPtr->SwitchNodeRec = (VOID (*) (MEM_NB_BLOCK *, UINT8)) MemRecDefRet;
   NBPtr->SwitchDCT = (VOID (*) (MEM_NB_BLOCK *, UINT8)) MemRecDefRet;
   NBPtr->SwitchChannel = (VOID (*) (MEM_NB_BLOCK *, UINT8)) MemRecDefRet;
@@ -226,13 +243,12 @@ MemRecConstructNBBlockON (
   NBPtr->SetTrainDly = MemRecNSetTrainDlyNb;
 
   NBPtr->MemRecNCmnGetSetFieldNb = MemRecNCmnGetSetFieldON;
-  NBPtr->MemRecNcmnGetSetTrainDlyNb = MemRecNcmnGetSetTrainDlyON;
+  NBPtr->MemRecNcmnGetSetTrainDlyNb = MemRecNcmnGetSetTrainDlyClientNb;
   NBPtr->MemRecNSwitchDctNb = (VOID (*) (MEM_NB_BLOCK *, UINT8)) MemRecDefRet;
-  NBPtr->MemRecNInitializeMctNb = MemRecNInitializeMctON;
-  NBPtr->MemRecNFinalizeMctNb = MemRecNFinalizeMctON;
-  NBPtr->IsSupported[DramModeAfterDimmPres] = TRUE;
   NBPtr->TrainingFlow = MemNRecTrainingFlowClientNb;
   NBPtr->ReadPattern = MemRecNContReadPatternClientNb;
+  NBPtr->IsSupported[DramModeAfterDimmPres] = TRUE;
+  NBPtr->FamilySpecificHook[OverrideRcvEnSeed] = MemRecNOverrideRcvEnSeedON;
 
   return TRUE;
 }
@@ -242,119 +258,6 @@ MemRecConstructNBBlockON (
  *
  *----------------------------------------------------------------------------
  */
-
-/* -----------------------------------------------------------------------------*/
-/**
- *
- *   This function gets or set DQS timing during training.
- *
- *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
- *     @param[in]   TrnDly - type of delay to be set
- *     @param[in]   DrbnVar - encoding of Dimm-Rank-Byte-Nibble to be accessed
- *                  (use either DIMM_BYTE_ACCESS(dimm,byte) or CS_NBBL_ACCESS(cs,nibble) to use this encoding
- *     @param[in]   Field - Value to be programmed
- *     @param[in]   IsSet - Indicates if the function will set or get
- *
- *     @return      value read, if the function is used as a "get"
- */
-
-UINT32
-STATIC
-MemRecNcmnGetSetTrainDlyON (
-  IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       UINT8 IsSet,
-  IN       TRN_DLY_TYPE TrnDly,
-  IN       DRBN DrbnVar,
-  IN       UINT16 Field
-  )
-{
-  UINT16 Index;
-  UINT16 Offset;
-  UINT32 Value;
-  UINT32 Address;
-  UINT8 Dimm;
-  UINT8 Byte;
-
-  Dimm = DRBN_DIMM (DrbnVar);
-  Byte = DRBN_BYTE (DrbnVar);
-
-  ASSERT (Dimm < 1);
-  ASSERT (Byte <= 8);
-
-  switch (TrnDly) {
-  case AccessRcvEnDly:
-    Index = 0x10;
-    break;
-  case AccessWrDqsDly:
-    Index = 0x30;
-    break;
-  case AccessWrDatDly:
-    Index = 0x01;
-    break;
-  case AccessRdDqsDly:
-    Index = 0x05;
-    break;
-  case AccessPhRecDly:
-    Index = 0x50;
-    break;
-  default:
-    Index = 0;
-    IDS_ERROR_TRAP;
-  }
-
-  switch (TrnDly) {
-  case AccessRcvEnDly:
-  case AccessWrDqsDly:
-    if ((Byte & 0x04) != 0) {
-      // if byte 4,5,6,7
-      Index += 0x10;
-    }
-    if ((Byte & 0x02) != 0) {
-      // if byte 2,3,6,7
-      Index++;
-    }
-    Offset = 16 * (Byte % 2);
-    break;
-
-  case AccessRdDqsDly:
-    Field &= ~ 0x0001;
-  case AccessWrDatDly:
-    Index += (Dimm * 0x100);
-    // break is not being used here because AccessRdDqsDly and AccessWrDatDly also need
-    // to run AccessPhRecDly sequence.
-  case AccessPhRecDly:
-    Index += (Byte / 4);
-    Offset = 8 * (Byte % 4);
-    break;
-  default:
-    Offset = 0;
-    IDS_ERROR_TRAP;
-  }
-
-  Address = Index;
-  MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
-  Value = MemRecNGetBitFieldNb (NBPtr, BFDctAddlDataReg);
-
-  if (IsSet != 0) {
-    if (TrnDly == AccessPhRecDly) {
-      Value = NBPtr->DctCachePtr->PhRecReg[Index & 0x03];
-    }
-
-    Value = ((UINT32)Field << Offset) | (Value & (~((UINT32)0xFF << Offset)));
-    MemRecNSetBitFieldNb (NBPtr, BFDctAddlDataReg, Value);
-    Address |= DCT_ACCESS_WRITE;
-    MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
-
-    if (TrnDly == AccessPhRecDly) {
-      NBPtr->DctCachePtr->PhRecReg[Index & 0x03] = Value;
-    }
-  } else {
-    Value = (Value >> Offset) & 0xFF;
-  }
-
-  return Value;
-}
-
 /* -----------------------------------------------------------------------------*/
 /**
  *
@@ -376,51 +279,90 @@ MemRecNCmnGetSetFieldON (
   IN       UINT32 Field
   )
 {
-  SBDFO Address;
+  TSEFO Address;
   PCI_ADDR PciAddr;
   UINT8 Type;
+  UINT8 IsLinked;
   UINT32 Value;
   UINT32 Highbit;
   UINT32 Lowbit;
   UINT32 Mask;
+  UINT8  IsPhyDirectAccess;
+  UINT8  IsWholeRegAccess;
+  UINT8  NumOfInstances;
+  UINT8  Instance;
 
   Value = 0;
-  if ((FieldName == BFDctAccessDone) || (FieldName == BFDctExtraAccessDone)) {
-    Value = 1;
-  } else if ((FieldName < BFEndOfList) && (FieldName >= 0)) {
+  if ((FieldName < BFEndOfList) && (FieldName >= 0)) {
     Address = NBPtr->NBRegTable[FieldName];
-    if (Address != 0) {
+    if (Address) {
       Lowbit = TSEFO_END (Address);
       Highbit = TSEFO_START (Address);
-      Type = TSEFO_TYPE (Address);
+      Type = (UINT8) TSEFO_TYPE (Address);
+      IsLinked = (UINT8) TSEFO_LINKED (Address);
+      IsPhyDirectAccess = (UINT8) TSEFO_DIRECT_EN (Address);
+      IsWholeRegAccess = (UINT8) TSEFO_WHOLE_REG_ACCESS (Address);
 
-      if ((Address >> 29) == ((DCT_PHY_ACCESS << 1) | 1)) {
-        // Special DCT Phy access
-        Address &= 0x0FFFFFFF;
+      ASSERT ((Address & ((UINT32) 1) << 29) == 0);   // Old Phy direct access method is not supported
+
+      Address = TSEFO_OFFSET (Address);
+
+      // By default, a bit field has only one instance
+      NumOfInstances = 1;
+
+      if ((Type == DCT_PHY_ACCESS) && IsPhyDirectAccess) {
+        Address |= PHY_DIRECT_ADDRESS_MASK;
+        if (IsWholeRegAccess) {
+          // In the case of whole regiter access (bit 0 to 15),
+          // HW broadcast and nibble mask will be used.
+          Address |= Lowbit << 16;
         Lowbit = 0;
-        Highbit = 16;
+          Highbit = 15;
       } else {
-        // Normal DCT Phy access
-        Address = TSEFO_OFFSET (Address);
+          // In the case only some bits on a register is accessed,
+          // BIOS will do read-mod-write to all chiplets manually.
+          // And nibble mask will be 1111b always.
+          Address |= 0x000F0000;
+          Field >>= Lowbit;
+          if ((Address & 0x0F00) == 0x0F00) {
+            // Broadcast mode
+            // Find out how many instances to write to
+            NumOfInstances = RecInstancesPerTypeON[(Address >> 13) & 0x7];
+            if (!IsSet) {
+              // For read, only read from instance 0 in broadcast mode
+              NumOfInstances = 1;
+            }
+          }
+        }
       }
 
+      ASSERT (NumOfInstances > 0);
 
+      for (Instance = 0; Instance < NumOfInstances; Instance++) {
       if (Type == NB_ACCESS) {
         Address |= (((UINT32) (24 + 0)) << 15);
         PciAddr.AddressValue = Address;
         LibAmdPciRead (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
+          if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) &&
+              (FieldName != BFDctExtraDataReg) && (FieldName != BFDctExtraOffsetReg)) {
+            IDS_HDT_CONSOLE (MEM_GETREG, "~Fn%d_%03x = %x\n", (Address >> 12) & 0xF, Address & 0xFFF, Value);
+          }
       } else if (Type == DCT_PHY_ACCESS) {
+          if (IsPhyDirectAccess && (NumOfInstances > 1)) {
+            Address = (Address & 0x0FFFF0FF) | (((UINT32) Instance) << 8);
+          }
         MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
-
         Value = MemRecNGetBitFieldNb (NBPtr, BFDctAddlDataReg);
+          IDS_HDT_CONSOLE (MEM_GETREG, "~Fn2_%d9C_%x = %x\n", NBPtr->Dct, Address & 0x0FFFFFFF, Value);
       } else if (Type == DCT_EXTRA) {
         MemRecNSetBitFieldNb (NBPtr, BFDctExtraOffsetReg, Address);
         Value = MemRecNGetBitFieldNb (NBPtr, BFDctExtraDataReg);
+          IDS_HDT_CONSOLE (MEM_GETREG, "~Fn2_%dF4_%x = %x\n", NBPtr->Dct, Address & 0x0FFFFFFF, Value);
       } else {
         IDS_ERROR_TRAP;
       }
 
-      if (IsSet != 0) {
+        if (IsSet) {
         // A 1<<32 == 1<<0 due to x86 SHL instruction, so skip if that is the case
         if ((Highbit - Lowbit) != 31) {
           Mask = (((UINT32)1 << (Highbit - Lowbit + 1)) - 1);
@@ -433,23 +375,39 @@ MemRecNCmnGetSetFieldON (
         if (Type == NB_ACCESS) {
           PciAddr.AddressValue = Address;
           LibAmdPciWrite (AccessWidth32, PciAddr , &Value, &NBPtr->MemPtr->StdHeader);
+            if ((FieldName != BFDctAddlDataReg) && (FieldName != BFDctAddlOffsetReg) &&
+                (FieldName != BFDctExtraDataReg) && (FieldName != BFDctExtraOffsetReg)) {
+              IDS_HDT_CONSOLE (MEM_SETREG, "~Fn%d_%03x [%d:%d] = %x\n", (Address >> 12) & 0xF, Address & 0xFFF, Highbit, Lowbit, Field);
+            }
         } else if (Type == DCT_PHY_ACCESS) {
           MemRecNSetBitFieldNb (NBPtr, BFDctAddlDataReg, Value);
           Address |= DCT_ACCESS_WRITE;
-
           MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
+            IDS_HDT_CONSOLE (MEM_SETREG, "~Fn2_%d9C_%x [%d:%d] = %x\n", NBPtr->Dct, Address & 0x0FFFFFFF, Highbit, Lowbit, Field);
         } else if (Type == DCT_EXTRA) {
           MemRecNSetBitFieldNb (NBPtr, BFDctExtraDataReg, Value);
           Address |= DCT_ACCESS_WRITE;
           MemRecNSetBitFieldNb (NBPtr, BFDctExtraOffsetReg, Address);
+            IDS_HDT_CONSOLE (MEM_SETREG, "~Fn2_%dF4_%x [%d:%d] = %x\n", NBPtr->Dct, Address & 0x0FFFFFFF, Highbit, Lowbit, Field);
         } else {
           IDS_ERROR_TRAP;
         }
+          if (IsLinked) {
+            MemRecNCmnGetSetFieldON (NBPtr, 1, FieldName + 1, Field >> (Highbit - Lowbit + 1));
+          }
       } else {
         Value = Value >> Lowbit;  // Shift
         // A 1<<32 == 1<<0 due to x86 SHL instruction, so skip if that is the case
         if ((Highbit - Lowbit) != 31) {
           Value &= (((UINT32)1 << (Highbit - Lowbit + 1)) - 1);
+        }
+          if (IsLinked) {
+            Value |= MemRecNCmnGetSetFieldON (NBPtr, 0, FieldName + 1, 0) << (Highbit - Lowbit + 1);
+          }
+          // For direct phy access, shift the bit back for compatibility reason.
+          if ((Type == DCT_PHY_ACCESS) && IsPhyDirectAccess) {
+            Value <<= Lowbit;
+          }
         }
       }
     }
@@ -476,7 +434,7 @@ MemRecNInitNBRegTableON (
   )
 {
   UINT16 i;
-  for (i = 0; i <= BFEndOfList; i++) {
+  for (i = 0; i < BFEndOfList; i++) {
     NBRegTable[i] = 0;
   }
 
@@ -507,7 +465,11 @@ MemRecNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x98), 31,  0, BFDctAddlOffsetReg);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x9C), 31,  0, BFDctAddlDataReg);
 
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78),  3,  0, BFRdPtrInit);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78),  6,  6, BFRxPtrInitReq);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78), 18, 18, BFDqsRcvEnTrain);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78), 17, 17, BFAddrCmdTriEn);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78), 21, 21, BFDisCutThroughMode);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x78), 31, 22, BFMaxLatency);
 
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x7C), 15,  0, BFMrsAddress);
@@ -536,8 +498,11 @@ MemRecNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x94),  9,  9, BFLegacyBiosMode);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x94), 11, 10, BFZqcsInterval);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x94), 14, 14, BFDisDramInterface);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x94), 15, 15, BFPowerDownEn);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x94), 22, 22, BFBankSwizzleMode);
 
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0xA8), 22, 21, BFDbeGskMemClkAlignMode);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0xC0),  0,  0, BFTraceModeEn);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0xF0), 31,  0, BFDctExtraOffsetReg);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0xF4), 31,  0, BFDctExtraDataReg);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x110),  8, 8, BFDramEnabled);
@@ -579,10 +544,20 @@ MemRecNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x08, 27, 24, BFPllDiv);
 
   MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x0B, 31,  0, BFDramPhyStatusReg);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x0C, 20, 16, BFPhyFence);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x0C, 31, 16, BFPhyFence);
 
+  MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x0D, 19, 16, BFRxMaxDurDllNoLock);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x0D,  3,  0, BFTxMaxDurDllNoLock);
+
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F10, 12, 12, BFEnRxPadStandby);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FE003, 14, 13, BFDisablePredriverCal);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FE006, 15,  0, BFPllLockTime);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FE013, 15,  0, BFPllRegWaitTime);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F812F, 15,  0, BFAddrCmdTri);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F0F, 14, 12, BFAlwaysEnDllClks);
+
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F1C00, 15,  0, BFPNOdtCal);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F1D00, 15,  0, BFPNDrvCal);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D081E00, 15,  0, BFCalVal);
 
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F1F,  4,  3, BFDataRxVioLvl);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F2F1F,  4,  3, BFClkRxVioLvl);
@@ -590,29 +565,9 @@ MemRecNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8F1F,  4,  3, BFCmdRxVioLvl);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC01F,  4,  3, BFAddrRxVioLvl);
 
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F31, 14,  0, BFDataFence2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F2F31,  4,  0, BFClkFence2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8F31,  4,  0, BFCmdFence2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC031,  4,  0, BFAddrFence2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F0F, 14, 12, BFAlwaysEnDllClks);
-
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FE003, 14, 13, BFDisablePredriverCal);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F02, 15,  0, BFDataByteTxPreDriverCal);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F06, 15,  0, BFDataByteTxPreDriverCal2Pad1);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F0A, 15,  0, BFDataByteTxPreDriverCal2Pad2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8006, 15,  0, BFCmdAddr0TxPreDriverCal2Pad1);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F800A, 15,  0, BFCmdAddr0TxPreDriverCal2Pad2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8106, 15,  0, BFCmdAddr1TxPreDriverCal2Pad1);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F810A, 15,  0, BFCmdAddr1TxPreDriverCal2Pad2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC006, 15,  0, BFAddrTxPreDriverCal2Pad1);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC00A, 15,  0, BFAddrTxPreDriverCal2Pad2);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC00E, 15,  0, BFAddrTxPreDriverCal2Pad3);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC012, 15,  0, BFAddrTxPreDriverCal2Pad4);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8002, 15,  0, BFCmdAddr0TxPreDriverCalPad0);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8102, 15,  0, BFCmdAddr1TxPreDriverCalPad0);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC002, 15,  0, BFAddrTxPreDriverCalPad0);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F2002, 15,  0, BFClock0TxPreDriverCalPad0);
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F2102, 15,  0, BFClock1TxPreDriverCalPad0);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x06, 11,  8, BFTwrrdSD);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x06,  3,  0, BFTrdrdSD);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x16,  3,  0, BFTwrwrSD);
 
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x30, 12,  0, BFDbeGskFifoNumerator);
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x31, 12,  0, BFDbeGskFifoDenominator);
@@ -623,7 +578,14 @@ MemRecNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x32, 15, 15, BFDataTxFifoSchedDlyNegSlot1);
 
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x40, 31,  0, BFDramTiming0);
-  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x41, 31,  0, BFDramTiming1);
+
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x83,  2,  0, BFRdOdtTrnOnDly);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x83,  6,  4, BFRdOdtOnDuration);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x83,  8,  8, BFWrOdtTrnOnDly);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x83, 14, 12, BFWrOdtOnDuration);
+
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x180, 31,  0, BFPhyRODTCSLow);
+  MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x182, 31,  0, BFPhyWODTCSLow);
 }
 
 /*-----------------------------------------------------------------------------*/

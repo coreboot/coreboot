@@ -57,6 +57,7 @@
 #include "S3.h"
 #include "mfs3.h"
 #include "CommonInits.h"
+#include "CreateStruct.h"
 #include "Filecode.h"
 #include "heapManager.h"
 #include "Topology.h"
@@ -225,9 +226,9 @@ AmdS3Save (
         BufferPointer = AllocParams.BufferPtr;
         AmdS3SaveParams->S3DataBlock.VolatileStorage = &(BufferPointer[EarlyBufferSize]);
 
-        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapOffset = NULL;
+        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapOffset = 0;
         ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapSize = HeapSize;
-        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataOffset = NULL;
+        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataOffset = 0;
         ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataSize = LateContextSize;
 
         if (HeapSize != 0) {

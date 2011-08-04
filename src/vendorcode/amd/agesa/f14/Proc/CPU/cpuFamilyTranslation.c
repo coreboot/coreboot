@@ -249,7 +249,7 @@ GetLogicalIdFromCpuid (
       NumberOfLogicalSubFamilies = ImageSupportedId[i].Elements;
       SubFamilyIdPtr = ImageSupportedId[i].SubFamilyIdTable;
       for (j = 0; j < NumberOfLogicalSubFamilies && IdNotFound; j++) {
-        SubFamilyIdPtr[j] (&CpuLogicalIdAndRevPtr, &LogicalIdEntries, &LogicalFamily, StdHeader);
+        SubFamilyIdPtr[j] ((const CPU_LOGICAL_ID_XLAT **)&CpuLogicalIdAndRevPtr, &LogicalIdEntries, &LogicalFamily, StdHeader);
         ASSERT (CpuLogicalIdAndRevPtr != NULL);
         for (k = 0; k < LogicalIdEntries; k++) {
           if (CpuLogicalIdAndRevPtr[k].RawId == CpuModelAndExtendedModel) {
@@ -284,7 +284,7 @@ GetCpuServicesOfSocket (
 {
   GetFeatureServicesOfSocket (&CpuSupportedFamiliesTable,
                               Socket,
-                              FunctionTable,
+                              (const VOID **)FunctionTable,
                               StdHeader);
   if (*FunctionTable == NULL) {
     *FunctionTable = &cpuNullServices;
@@ -334,7 +334,7 @@ GetCpuServicesOfCurrentCore (
   )
 {
   GetFeatureServicesOfCurrentCore (&CpuSupportedFamiliesTable,
-                                   FunctionTable,
+                                   (const VOID **)FunctionTable,
                                    StdHeader);
   if (*FunctionTable == NULL) {
     *FunctionTable = &cpuNullServices;
@@ -386,7 +386,7 @@ GetCpuServicesFromLogicalId (
 {
   GetFeatureServicesFromLogicalId (&CpuSupportedFamiliesTable,
                                    LogicalId,
-                                   FunctionTable,
+                                   (const VOID **)FunctionTable,
                                    StdHeader);
   if (*FunctionTable == NULL) {
     *FunctionTable = &cpuNullServices;

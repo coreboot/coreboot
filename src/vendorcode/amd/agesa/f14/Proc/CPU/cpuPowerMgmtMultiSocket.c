@@ -86,6 +86,11 @@ GetNextEvent (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
+AGESA_STATUS
+GetEarlyPmErrorsMulti (
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -114,7 +119,7 @@ RunCodeOnAllSystemCore0sMulti (
 {
   UINT32 BscSocket;
   UINT32 BscModule;
-  UINT32 BscCore;
+  UINT32 BscCoreNum;
   UINT8  Socket;
   UINT32 NumberOfSockets;
   AGESA_STATUS DummyStatus;
@@ -123,7 +128,7 @@ RunCodeOnAllSystemCore0sMulti (
 
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
-  IdentifyCore (StdHeader, &BscSocket, &BscModule, &BscCore, &DummyStatus);
+  IdentifyCore (StdHeader, &BscSocket, &BscModule, &BscCoreNum, &DummyStatus);
 
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (Socket != BscSocket) {
@@ -166,8 +171,8 @@ GetNumberOfSystemPmStepsPtrMulti (
 
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetCpuServicesOfSocket (Socket, &FamilySpecificServices, StdHeader);
-      FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, &Ignored, &NumberOfSteps, StdHeader);
+      GetCpuServicesOfSocket (Socket, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+      FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, (const VOID **)&Ignored, &NumberOfSteps, StdHeader);
       if (NumberOfSteps > *NumSystemSteps) {
         *NumSystemSteps = NumberOfSteps;
       }
@@ -230,7 +235,7 @@ GetSystemNbCofMulti (
   NbPstateDisabled = FALSE;
   for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetCpuServicesOfSocket (Socket, &FamilySpecificServices, StdHeader);
+      GetCpuServicesOfSocket (Socket, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
       for (Module = 0; Module < GetPlatformNumberOfModules (); Module++) {
         if (GetPciAddress (StdHeader, Socket, Module, &PciAddress, &Ignored)) {
           break;
@@ -308,7 +313,7 @@ GetSystemNbCofVidUpdateMulti (
   AtLeast1RequiresUpdate = FALSE;
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetCpuServicesOfSocket (Socket, &FamilySpecificServices, StdHeader);
+      GetCpuServicesOfSocket (Socket, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
       for (Module = 0; Module < GetPlatformNumberOfModules (); Module++) {
         if (GetPciAddress (StdHeader, (UINT8) Socket, Module, &PciAddress, &Ignored)) {
           break;
@@ -348,7 +353,7 @@ GetEarlyPmErrorsMulti (
   UINT16 i;
   UINT32 BscSocket;
   UINT32 BscModule;
-  UINT32 BscCore;
+  UINT32 BscCoreNum;
   UINT32 Socket;
   UINT32 NumberOfSockets;
   AP_TASK      TaskPtr;
@@ -367,7 +372,7 @@ GetEarlyPmErrorsMulti (
   EventLogEntry.DataParam4 = 0;
 
   NumberOfSockets = GetPlatformNumberOfSockets ();
-  IdentifyCore (StdHeader, &BscSocket, &BscModule, &BscCore, &DummyStatus);
+  IdentifyCore (StdHeader, &BscSocket, &BscModule, &BscCoreNum, &DummyStatus);
 
   TaskPtr.FuncAddress.PfApTaskI = GetNextEvent;
   TaskPtr.DataTransfer.DataSizeInDwords = SIZE_IN_DWORDS (AGESA_EVENT);

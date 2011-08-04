@@ -121,7 +121,7 @@ IsSwC1eFeatureEnabled (
         if (GetNumberOfProcessors (StdHeader) == 1) {
           GetApMailbox (&ApMailboxes.ApMailInfo.Info, StdHeader);
           if (ApMailboxes.ApMailInfo.Fields.ModuleType == 0) {
-            GetFeatureServicesOfCurrentCore (&SwC1eFamilyServiceTable, &SwFamilyServices, StdHeader);
+            GetFeatureServicesOfCurrentCore (&SwC1eFamilyServiceTable, (const VOID **)&SwFamilyServices, StdHeader);
             if (SwFamilyServices != NULL) {
               IsEnabled = SwFamilyServices->IsSwC1eSupported (SwFamilyServices, StdHeader);
             }
@@ -160,7 +160,7 @@ InitializeSwC1eFeature (
   IDS_HDT_CONSOLE (CPU_TRACE, "    SW C1e is enabled\n");
 
   if (IsWarmReset (StdHeader)) {
-    GetFeatureServicesOfCurrentCore (&SwC1eFamilyServiceTable, &FamilyServices, StdHeader);
+    GetFeatureServicesOfCurrentCore (&SwC1eFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
     AgesaStatus = FamilyServices->InitializeSwC1e (FamilyServices, EntryPoint, PlatformConfig, StdHeader);
   }
 

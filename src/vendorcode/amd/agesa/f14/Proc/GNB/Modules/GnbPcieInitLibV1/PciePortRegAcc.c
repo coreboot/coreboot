@@ -55,6 +55,7 @@
 #include  "GnbPcie.h"
 #include  "GnbPcieFamServices.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
+#include  "PciePortRegAcc.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBPCIEINITLIBV1_PCIEPORTREGACC_FILECODE
 /*----------------------------------------------------------------------------------------

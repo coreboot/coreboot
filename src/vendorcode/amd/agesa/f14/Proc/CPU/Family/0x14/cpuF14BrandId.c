@@ -70,6 +70,22 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetF14BrandIdString1 (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **BrandString1Ptr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+VOID
+GetF14BrandIdString2 (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **BrandString2Ptr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------

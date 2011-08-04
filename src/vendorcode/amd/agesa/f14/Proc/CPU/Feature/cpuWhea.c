@@ -85,6 +85,20 @@ CreateHestBank (
   IN       AMD_WHEA_INIT_DATA *WheaInitDataPtr
   );
 
+AGESA_STATUS
+GetAcpiWheaStub (
+  IN OUT   AMD_CONFIG_PARAMS    *StdHeader,
+  IN OUT   VOID                 **WheaMcePtr,
+  IN OUT   VOID                 **WheaCmcPtr
+  );
+
+AGESA_STATUS
+GetAcpiWheaMain (
+  IN OUT   AMD_CONFIG_PARAMS    *StdHeader,
+  IN OUT   VOID                 **WheaMcePtr,
+  IN OUT   VOID                 **WheaCmcPtr
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -178,8 +192,8 @@ GetAcpiWheaMain (
     return AGESA_ERROR;
   }
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetWheaInitData (FamilySpecificServices, &WheaInitDataPtr, &Entries, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetWheaInitData (FamilySpecificServices, (const VOID **)&WheaInitDataPtr, &Entries, StdHeader);
 
   ASSERT (WheaInitDataPtr->HestBankNum <= BankNum);
 

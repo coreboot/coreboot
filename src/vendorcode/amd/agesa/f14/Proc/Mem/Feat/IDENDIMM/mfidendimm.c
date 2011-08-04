@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/Feat)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 46495 $ @e \$Date: 2011-02-03 14:10:56 -0700 (Thu, 03 Feb 2011) $
  *
  **/
 /*
@@ -160,6 +160,7 @@ AmdIdentifyDimm (
     // NB block has already been constructed by main block.
     // No need to construct it here.
     NBPtr = (MEM_NB_BLOCK *)LocHeap.BufferPtr;
+    mmData.NBPtr = NBPtr;
   } else {
     AllocHeapParams.RequestedBufferSize = (DieCount * (sizeof (MEM_NB_BLOCK)));
     AllocHeapParams.BufferHandle = AMD_MEM_AUTO_HANDLE;

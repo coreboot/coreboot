@@ -73,6 +73,35 @@
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+PcieFmPhyLetPllPersonalityInit (
+  IN      PCIe_WRAPPER_CONFIG   *Wrapper,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieFmPhyChannelCharacteristic (
+  IN      PCIe_ENGINE_CONFIG    *Engine,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieFmAvertClockPickers (
+  IN      PCIe_WRAPPER_CONFIG   *Wrapper,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieFmPhyApplyGanging (
+  IN      PCIe_WRAPPER_CONFIG   *Wrapper,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieFmPifSetRxDetectPowerMode (
+  IN      PCIe_WRAPPER_CONFIG   *Wrapper,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
 
 /*----------------------------------------------------------------------------------------*/
 /**

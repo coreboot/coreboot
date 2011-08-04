@@ -91,18 +91,126 @@ typedef struct {
   BOOLEAN   Valid;                                  ///< State valid
   UINT32    Sclk;                                   ///< Sclk in kHz
   UINT8     Vid;                                    ///< VID index
+  UINT16    Tdp;                                    ///< Tdp limit
 } DPM_STATE;
 
 /*----------------------------------------------------------------------------------------
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+UINT16
+GfxPowerPlayLocateTdp (
+  IN      PP_FUSE_ARRAY                 *PpFuses,
+  IN      UINT32                        Sclk,
+  IN      AMD_CONFIG_PARAMS             *StdHeader
+  );
+
+SW_STATE*
+GfxPowerPlayCreateSwState (
+  IN OUT   SW_STATE                     *SwStateArray
+  );
+
+UINT8
+GfxPowerPlayCreateDpmState (
+  IN      DPM_STATE                     *DpmStateArray,
+  IN      UINT32                        Sclk,
+  IN      UINT8                         Vid,
+  IN      UINT16                        Tdp
+  );
+
+UINT8
+GfxPowerPlayAddDpmState (
+  IN      DPM_STATE                     *DpmStateArray,
+  IN      UINT32                        Sclk,
+  IN      UINT8                         Vid,
+  IN      UINT16                        Tdp
+  );
+
+VOID
+GfxPowerPlayAddDpmStateToSwState (
+  IN OUT   SW_STATE                     *SwStateArray,
+  IN       UINT8                        DpmStateIndex
+  );
+
+UINT32
+GfxPowerPlayCopyStateInfo (
+  IN OUT   STATE_ARRAY                   *StateArray,
+  IN       SW_STATE                      *SwStateArray,
+  IN       AMD_CONFIG_PARAMS             *StdHeader
+  );
+
+UINT32
+GfxPowerPlayCopyClockInfo (
+  IN      CLOCK_INFO_ARRAY              *ClockInfoArray,
+  IN      DPM_STATE                     *DpmStateArray,
+  IN      AMD_CONFIG_PARAMS             *StdHeader
+  );
+
+UINT32
+GfxPowerPlayCopyNonClockInfo (
+  IN      NON_CLOCK_INFO_ARRAY          *NonClockInfoArray,
+  IN      SW_STATE                      *SwStateArray,
+  IN      AMD_CONFIG_PARAMS             *StdHeader
+  );
+
+BOOLEAN
+GfxPowerPlayIsFusedStateValid (
+  IN      UINT8                         Index,
+  IN      PP_FUSE_ARRAY                 *PpFuses,
+  IN      GFX_PLATFORM_CONFIG           *Gfx
+  );
+
+UINT16
+GfxPowerPlayGetClassificationFromFuses (
+  IN      UINT8                         Index,
+  IN      PP_FUSE_ARRAY                 *PpFuses,
+  IN      GFX_PLATFORM_CONFIG           *Gfx
+  );
 
 VOID
 GfxIntegratedDebugDumpPpTable (
   IN       ATOM_PPLIB_POWERPLAYTABLE3   *PpTable,
   IN       GFX_PLATFORM_CONFIG          *Gfx
   );
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Locate existing tdp
+ *
+ *
+ * @param[in     ]  PpFuses          Pointer to  PP_FUSE_ARRAY
+ * @param[in]       Sclk             Sclk in 10kHz
+ * @param[in]       StdHeader        Standard configuration header
+ * @retval                           Tdp limit in DPM state array
+ */
+
+UINT16
+GfxPowerPlayLocateTdp (
+  IN      PP_FUSE_ARRAY                 *PpFuses,
+  IN      UINT32                        Sclk,
+  IN      AMD_CONFIG_PARAMS             *StdHeader
+  )
+{
+  UINT8   Index;
+  UINT32  DpmIndex;
+  UINT32  DpmSclk;
+  UINT32  DeltaSclk;
+  UINT32  MinDeltaSclk;
+
+  DpmIndex = 0;
+  MinDeltaSclk = 0xFFFFFFFF;
+  for (Index = 0; Index < MAX_NUM_OF_FUSED_DPM_STATES; Index++) {
+    if (PpFuses->SclkDpmDid[Index] != 0) {
+      DpmSclk = GfxFmCalculateClock (PpFuses->SclkDpmDid[Index], StdHeader);
+      DeltaSclk = (DpmSclk > Sclk) ? (DpmSclk - Sclk) : (Sclk - DpmSclk);
+      if (DeltaSclk < MinDeltaSclk) {
+        MinDeltaSclk = MinDeltaSclk;
+        DpmIndex = Index;
+      }
+    }
+  }
+  return PpFuses->SclkDpmTdpLimit[DpmIndex];
+}
 
 /*----------------------------------------------------------------------------------------*/
 /**
@@ -136,6 +244,7 @@ GfxPowerPlayCreateSwState (
  * @param[in, out]  DpmStateArray    Pointer to DPM state array
  * @param[in]       Sclk             SCLK in kHz
  * @param[in]       Vid              Vid index
+ * @param[in]       Tdp              Tdp limit
  * @retval                           Index of state entry in DPM state array
  */
 
@@ -143,7 +252,8 @@ UINT8
 GfxPowerPlayCreateDpmState (
   IN      DPM_STATE                     *DpmStateArray,
   IN      UINT32                        Sclk,
-  IN      UINT8                         Vid
+  IN      UINT8                         Vid,
+  IN      UINT16                        Tdp
   )
 {
   UINT8 Index;
@@ -152,6 +262,7 @@ GfxPowerPlayCreateDpmState (
       DpmStateArray[Index].Sclk = Sclk;
       DpmStateArray[Index].Vid = Vid;
       DpmStateArray[Index].Valid = TRUE;
+      DpmStateArray[Index].Tdp = Tdp;
       return Index;
     }
   }
@@ -166,6 +277,7 @@ GfxPowerPlayCreateDpmState (
  * @param[in, out]  DpmStateArray    Pointer to DPM state array
  * @param[in]       Sclk             SCLK in kHz
  * @param[in]       Vid              Vid index
+ * @param[in]       Tdp              Tdp limit
  * @retval                           Index of state entry in DPM state array
  */
 
@@ -173,7 +285,8 @@ UINT8
 GfxPowerPlayAddDpmState (
   IN      DPM_STATE                     *DpmStateArray,
   IN      UINT32                        Sclk,
-  IN      UINT8                         Vid
+  IN      UINT8                         Vid,
+  IN      UINT16                        Tdp
   )
 {
   UINT8 Index;
@@ -182,7 +295,7 @@ GfxPowerPlayAddDpmState (
       return Index;
     }
   }
-  return GfxPowerPlayCreateDpmState (DpmStateArray, Sclk, Vid);
+  return GfxPowerPlayCreateDpmState (DpmStateArray, Sclk, Vid, Tdp);
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -250,7 +363,6 @@ GfxPowerPlayCopyStateInfo (
  * @param[in]       DpmStateArray     Pointer to DPM state array
  * @param[in]       StdHeader         Standard configuration header
  */
-
 UINT32
 GfxPowerPlayCopyClockInfo (
   IN      CLOCK_INFO_ARRAY              *ClockInfoArray,
@@ -266,6 +378,7 @@ GfxPowerPlayCopyClockInfo (
       ClockInfoArray->ClockInfo[ClkStateIndex].ucEngineClockHigh = (UINT8) (DpmStateArray[Index].Sclk  >> 16);
       ClockInfoArray->ClockInfo[ClkStateIndex].usEngineClockLow = (UINT16) (DpmStateArray[Index].Sclk);
       ClockInfoArray->ClockInfo[ClkStateIndex].vddcIndex = DpmStateArray[Index].Vid;
+      ClockInfoArray->ClockInfo[ClkStateIndex].tdpLimit = DpmStateArray[Index].Tdp;
       ClkStateIndex++;
     }
   }
@@ -346,7 +459,6 @@ GfxPowerPlayIsFusedStateValid (
  * @param[in]       Gfx               Gfx configuration info
  * @retval                            State classification
  */
-
 UINT16
 GfxPowerPlayGetClassificationFromFuses (
   IN      UINT8                         Index,
@@ -416,6 +528,7 @@ GfxPowerPlayBuildTable (
   UINT32                      NonClockArrayLength;
   SW_STATE                    *State;
   PP_FUSE_ARRAY               *PpFuses;
+  UINT32                      Sclk;
 
   PpFuses = GnbLocateHeapBuffer (AMD_PP_FUSE_TABLE_HANDLE, GnbLibGetHeader (Gfx));
   ASSERT (PpFuses != NULL);
@@ -446,10 +559,9 @@ GfxPowerPlayBuildTable (
       }
       for (DpmFuseIndex = 0; DpmFuseIndex < MAX_NUM_OF_FUSED_DPM_STATES; DpmFuseIndex++) {
         if ((PpFuses->SclkDpmValid[Index] & (1 << DpmFuseIndex)) != 0 ) {
-          UINT32  Sclk;
           Sclk = (PpFuses->SclkDpmDid[DpmFuseIndex] != 0) ? GfxFmCalculateClock (PpFuses->SclkDpmDid[DpmFuseIndex], GnbLibGetHeader (Gfx)) : 0;
           if (Sclk != 0) {
-            ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, Sclk, PpFuses->SclkDpmVid[DpmFuseIndex]);
+            ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, Sclk, PpFuses->SclkDpmVid[DpmFuseIndex], PpFuses->SclkDpmTdpLimit[DpmFuseIndex]);
             GfxPowerPlayAddDpmStateToSwState (State, ClkStateIndex);
           }
         }
@@ -459,13 +571,15 @@ GfxPowerPlayBuildTable (
   // Create Boot State
   State = GfxPowerPlayCreateSwState (SwStateArray);
   State->Classification = ATOM_PPLIB_CLASSIFICATION_BOOT;
-  ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, 200 * 100, 0);
+  Sclk = 200 * 100;
+  ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, Sclk, 0, GfxPowerPlayLocateTdp (PpFuses, Sclk, GnbLibGetHeader (Gfx)));
   GfxPowerPlayAddDpmStateToSwState (State, ClkStateIndex);
 
   // Create Thermal State
   State = GfxPowerPlayCreateSwState (SwStateArray);
   State->Classification = ATOM_PPLIB_CLASSIFICATION_THERMAL;
-  ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, 200 * 100, 0);
+  Sclk = GfxFmCalculateClock (PpFuses->SclkThermDid, GnbLibGetHeader (Gfx));
+  ClkStateIndex = GfxPowerPlayAddDpmState (DpmStateArray, Sclk, 0, GfxPowerPlayLocateTdp (PpFuses, Sclk, GnbLibGetHeader (Gfx)));
   GfxPowerPlayAddDpmStateToSwState (State, ClkStateIndex);
 
   //Copy state info to actual PP table
@@ -562,11 +676,11 @@ GfxIntegratedDebugDumpPpTable (
     IDS_HDT_CONSOLE (GFX_MISC, "    SCLK = %d\n",
       ClockInfoArrayPtr->ClockInfo[Index].usEngineClockLow | (ClockInfoArrayPtr->ClockInfo[Index].ucEngineClockHigh << 16)
       );
-    IDS_HDT_CONSOLE (GFX_MISC, "    Cac  = %d\n",
-      ClockInfoArrayPtr->ClockInfo[Index].leakage
-      );
     IDS_HDT_CONSOLE (GFX_MISC, "    VID index = %d\n",
       ClockInfoArrayPtr->ClockInfo[Index].vddcIndex
+      );
+    IDS_HDT_CONSOLE (GFX_MISC, "    tdpLimit  = %d\n",
+      ClockInfoArrayPtr->ClockInfo[Index].tdpLimit
       );
   }
 }

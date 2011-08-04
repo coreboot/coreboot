@@ -52,6 +52,7 @@
 #include "AGESA.h"
 #include "Ids.h"
 #include "Options.h"
+#include "CreateStruct.h"
 #include "Filecode.h"
 CODE_GROUP (G3_DXE)
 RDATA_GROUP (G3_DXE)

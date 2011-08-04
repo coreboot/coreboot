@@ -204,7 +204,7 @@ RunLateApTaskOnAllAPs (
   UINT8                   ApicId;
   UINT32                  BscSocket;
   UINT32                  Ignored;
-  UINT32                  BscCore;
+  UINT32                  BscCoreNum;
   AGESA_STATUS            CalledStatus;
   AGESA_STATUS            IgnoredStatus;
   AGESA_STATUS            AgesaStatus;
@@ -213,13 +213,13 @@ RunLateApTaskOnAllAPs (
 
   AgesaStatus = AGESA_SUCCESS;
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredStatus);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredStatus);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != BscSocket) || (Core != BscCore)) {
+        if ((Socket != BscSocket) || (Core != BscCoreNum)) {
           GetApicId (StdHeader, Socket, Core, &ApicId, &IgnoredStatus);
           AGESA_TESTPOINT (TpIfBeforeRunApFromAllAps, StdHeader);
           CalledStatus = AgesaRunFcnOnAp ((UINTN) ApicId, ApParams);

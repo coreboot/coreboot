@@ -167,7 +167,7 @@ typedef struct {
   IN       UINT32          AltImageBasePtr;  ///< Alternate Image location
   IN       CALLOUT_ENTRY   CalloutPtr;       ///< For Callout from AGESA
   IN       UINT8           HeapStatus;       ///< For heap status from boot time slide.
-  IN       UINT64          HeapBasePtr;      ///< Location of the heap
+  IN       VOID           *HeapBasePtr;      ///< Location of the heap
   IN OUT   UINT8           Reserved[7];      ///< This space is reserved for future use.
 } AMD_CONFIG_PARAMS;
 

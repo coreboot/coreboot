@@ -135,7 +135,7 @@ IsHtAssistEnabled (
     if (IsEnabled) {
       for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
         if (IsProcessorPresent (Socket, StdHeader)) {
-          GetFeatureServicesOfSocket (&HtAssistFamilyServiceTable, Socket, &FamilyServices, StdHeader);
+          GetFeatureServicesOfSocket (&HtAssistFamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
           if ((FamilyServices == NULL) || !FamilyServices->IsHtAssistSupported (FamilyServices, Socket, StdHeader)) {
             IsEnabled = FALSE;
             break;
@@ -197,7 +197,7 @@ InitializeHtAssistFeature (
   // cache is still enabled.
   for (Socket = 0; Socket < MAX_SOCKETS_SUPPORTED; Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetFeatureServicesOfSocket (&HtAssistFamilyServiceTable, Socket, &FamilyServices[Socket], StdHeader);
+      GetFeatureServicesOfSocket (&HtAssistFamilyServiceTable, Socket, (const VOID **)&FamilyServices[Socket], StdHeader);
     } else {
       FamilyServices[Socket] = NULL;
     }
@@ -303,7 +303,7 @@ DisableAllCaches (
   UINT32   CR0Data;
   HT_ASSIST_FAMILY_SERVICES  *FamilyServices;
 
-  GetFeatureServicesOfCurrentCore (&HtAssistFamilyServiceTable, &FamilyServices, &ApExeParams->StdHeader);
+  GetFeatureServicesOfCurrentCore (&HtAssistFamilyServiceTable, (const VOID **)&FamilyServices, &ApExeParams->StdHeader);
 
   FamilyServices->HookDisableCache (FamilyServices, &ApExeParams->StdHeader);
 
@@ -341,7 +341,7 @@ EnableAllCaches (
   CR0Data &= ~(0x60000000);
   LibAmdWriteCpuReg (0, CR0Data);
 
-  GetFeatureServicesOfCurrentCore (&HtAssistFamilyServiceTable, &FamilyServices, &ApExeParams->StdHeader);
+  GetFeatureServicesOfCurrentCore (&HtAssistFamilyServiceTable, (const VOID **)&FamilyServices, &ApExeParams->StdHeader);
 
   FamilyServices->HookEnableCache (FamilyServices, &ApExeParams->StdHeader);
 

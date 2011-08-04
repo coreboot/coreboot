@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB/ON)
- * @e \$Revision: 37169 $ @e \$Date: 2010-09-01 05:35:27 +0800 (Wed, 01 Sep 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -149,7 +149,7 @@ MemNAutoConfigON (
     MemNSetBitFieldNb (NBPtr, BFPowerDownMode, 1);
   }
 
-  MemNSetBitFieldNb (NBPtr, BFPchgPDModeSel, 1);
+  MemNSetBitFieldNb (NBPtr, BFPchgPDModeSel, (((MemNGetBitFieldNb (NBPtr, BFLowPowerDefault)) == 1) && (NBPtr->MemPtr->PlatFormConfig->PlatformProfile.PlatformPowerPolicy == BatteryLife)) ? 0 : 1);
 
   MemNSetBitFieldNb (NBPtr, BFDcqBypassMax, 0xE);
 
@@ -459,7 +459,7 @@ MemNChangeNbFrequencyWrapON (
   if (Status) {
     // When NB frequency change succeeds, TSC rate may have changed.
     // We need to update TSC rate
-    GetCpuServicesOfCurrentCore (&FamilySpecificServices, &NBPtr->MemPtr->StdHeader);
+    GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &NBPtr->MemPtr->StdHeader);
     FamilySpecificServices->GetTscRate (FamilySpecificServices, &NBPtr->MemPtr->TscRate, &NBPtr->MemPtr->StdHeader);
   }
   return Status;
@@ -485,6 +485,35 @@ MemNSetDqsODTON (
   if ((NBPtr->DCTPtr->Timings.Speed == DDR1333_FREQUENCY) && (NBPtr->ChannelPtr->Dimms == 1)) {
     MemNSetBitFieldNb (NBPtr, BFDQOdt03, 0x20);
     MemNSetBitFieldNb (NBPtr, BFDQOdt47, 0x20);
+  }
+  return TRUE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *      This function sets reduceloop and trim value for DDR-1333 for C0
+ *
+ *     @param[in,out]  *NBPtr     - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]  OptParam   - Optional parameter
+ *
+ *     @return    TRUE
+ *
+ */
+
+BOOLEAN
+MemNBeforeMemClkFreqValON (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *OptParam
+  )
+{
+  if ((NBPtr->DCTPtr->Timings.Speed == DDR1333_FREQUENCY) && ((NBPtr->MCTPtr->LogicalCpuid.Revision & AMD_F14_ON_Cx) != 0)) {
+    MemNBrdcstSetNb (NBPtr, BFDllCSRBisaTrimDByte, 0x7000);
+    MemNBrdcstSetNb (NBPtr, BFDllCSRBisaTrimClk, 0x7000);
+    MemNBrdcstSetNb (NBPtr, BFDllCSRBisaTrimCsOdt, 0x7000);
+    MemNBrdcstSetNb (NBPtr, BFDllCSRBisaTrimAByte2, 0x7000);
+    MemNBrdcstSetNb (NBPtr, BFReduceLoop, 0x6000);
   }
   return TRUE;
 }

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 46946 $   @e \$Date: 2011-02-11 11:53:30 -0700 (Fri, 11 Feb 2011) $
  *
  */
 /*
@@ -50,6 +50,13 @@
  */
 #include "AGESA.h"
 #include "Ids.h"
+#include  "heapManager.h"
+#include  "Gnb.h"
+//#include  "GnbPcieFamServices.h"
+#include  "GnbFuseTable.h"
+#include  "GnbRegistersON.h"
+#include  "cpuLateInit.h"
+#include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  "F14PcieAlibSsdt.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X14_F14PCIEALIB_FILECODE
@@ -69,4 +76,63 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+AGESA_STATUS
+PcieFmAlibBuildAcpiTable (
+  IN       VOID                          *AlibSsdtPtr,
+  IN       AMD_CONFIG_PARAMS             *StdHeader
+  );
 
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Build ALIB ACPI table
+ *
+ *
+ *
+ * @param[in,out] AlibSsdtPtr     Pointer to ALIB SSDT table
+ * @param[in]     StdHeader       Standard Configuration Header
+ * @retval        AGESA_SUCCESS
+ * @retval        AGESA_FATAL
+ */
+
+AGESA_STATUS
+PcieFmAlibBuildAcpiTable (
+  IN       VOID                          *AlibSsdtPtr,
+  IN       AMD_CONFIG_PARAMS             *StdHeader
+  )
+{
+  AGESA_STATUS          AgesaStatus;
+  D18F4x15C_STRUCT      D18F4x15C;
+  PP_FUSE_ARRAY         *PpFuseArray;
+  UINT32                AmlObjName;
+  VOID                  *AmlObjPtr;
+
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieFmAlibBuildAcpiTable Enter\n");
+  AgesaStatus = AGESA_SUCCESS;
+  // Set voltage configuration
+  PpFuseArray = GnbLocateHeapBuffer (AMD_PP_FUSE_TABLE_HANDLE, StdHeader);
+  ASSERT (PpFuseArray != NULL);
+  if (PpFuseArray != NULL) {
+    GnbLibPciRead (
+      MAKE_SBDFO (0, 0, 0x18, 0x4, D18F4x15C_ADDRESS),
+      AccessWidth32,
+      &D18F4x15C.Value,
+      StdHeader
+      );
+    if (D18F4x15C.Field.BoostSrc != 0 || PpFuseArray->GpuBoostCap != 0) {
+//      AmlObjName = 'B0DA';
+      AmlObjName = Int32FromChar ('B', '0', 'D', 'A');
+      AmlObjPtr = GnbLibFind (AlibSsdtPtr, ((ACPI_TABLE_HEADER*) &AlibSsdt[0])->TableLength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
+      ASSERT (AmlObjPtr != NULL);
+      if (AmlObjPtr != NULL) {
+        *(UINT8*)((UINT8*) AmlObjPtr + 5) = 1;
+      } else {
+        AgesaStatus = AGESA_FATAL;
+      }
+    }
+  } else {
+    AgesaStatus = AGESA_FATAL;
+  }
+  
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieFmAlibBuildAcpiTable Exit[0x%x]\n", AgesaStatus);
+  return AgesaStatus;
+}

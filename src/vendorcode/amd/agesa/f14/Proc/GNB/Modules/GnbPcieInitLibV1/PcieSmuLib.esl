@@ -130,7 +130,7 @@
       }
     }
     // Clear IRQ register
-    procNbSmuIndirectRegisterWrite (0x3, 0, 0)
+    procNbSmuIndirectRegisterWrite (0x3, 0, 1)
     Store ("NbSmuServiceRequest Exit", Debug)
   }
 

@@ -81,7 +81,12 @@ typedef struct {
   BOOLEAN              LclkDpmEn;               ///< Default for LCLK DPM
   BOOLEAN              GmcPowerGateStutterOnly; ///< Force GMC power gate to stutter only
   BOOLEAN              SmuSclkClockGatingEnable;///< Control SMU SCLK gating
-  BOOLEAN              PcieAspmBlackListEnable;       ///< Control Pcie Aspm Black List
+  BOOLEAN              PcieAspmBlackListEnable;      ///< Control Pcie Aspm Black List
+  UINT32               LinkReceiverDetectionPooling; ///< Receiver pooling detection time in us.
+  UINT32               LinkL0Pooling;                ///< Pooling for link to get to L0 in us
+  UINT32               LinkGpioResetAssertionTime;   ///< Gpio reset assertion time in us
+  UINT32               LinkResetToTrainingTime;      ///< Time duration between deassert GPIO reset and release training in us                                                      ///
+  UINT8                TrainingAlgorithm;            ///< Training algorithm (see PCIE_TRAINING_ALGORITHM)
 } GNB_BUILD_OPTIONS;
 
 /*----------------------------------------------------------------------------------------

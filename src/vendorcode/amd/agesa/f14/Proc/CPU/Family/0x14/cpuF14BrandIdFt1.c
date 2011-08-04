@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 40034 $   @e \$Date: 2010-10-19 04:03:22 +0800 (Tue, 19 Oct 2010) $
+ * @e \$Revision: 45203 $   @e \$Date: 2011-01-13 12:36:39 -0700 (Thu, 13 Jan 2011) $
  *
  */
 /*
@@ -77,6 +77,7 @@
 CONST CHAR8 ROMDATA str_AMD_C[] = "AMD C-";
 CONST CHAR8 ROMDATA str_AMD_E[] = "AMD E-";
 CONST CHAR8 ROMDATA str_AMD_G_T[] = "AMD G-T";
+CONST CHAR8 ROMDATA str_AMD_Z[] = "AMD Z-";
 
 // String2
 CONST CHAR8 ROMDATA str___Processor[] = " Processor";
@@ -88,6 +89,11 @@ CONST CHAR8 ROMDATA str_x_Processor[] = "x Processor";
 CONST CHAR8 ROMDATA str_L_Processor[] = "L Processor";
 CONST CHAR8 ROMDATA str_N_Processor[] = "N Processor";
 CONST CHAR8 ROMDATA str_R_Processor[] = "R Processor";
+CONST CHAR8 ROMDATA str_E_Processor[] = "E Processor";
+CONST CHAR8 ROMDATA str_0D_APU[] = "0D APU with Radeon(tm) HD Graphics";
+CONST CHAR8 ROMDATA str_0_APU[] = "0 APU with Radeon(tm) HD Graphics";
+CONST CHAR8 ROMDATA str_5_APU[] = "5 APU with Radeon(tm) HD Graphics";
+CONST CHAR8 ROMDATA str_APU[] = " APU with Radeon(tm) HD Graphics";
 
 /*---------------------------------------------------------------------------------------
  *               T Y P E D E F S,   S T R U C T U R E S,    E N U M S
@@ -101,6 +107,7 @@ CONST AMD_CPU_BRAND ROMDATA CpuF14OnBrandIdString1ArrayFt1[] =
   {2, 0, 1, ON_SOCKET_FT1, str_AMD_C, sizeof (str_AMD_C)},
   {1, 0, 2, ON_SOCKET_FT1, str_AMD_E, sizeof (str_AMD_E)},
   {2, 0, 2, ON_SOCKET_FT1, str_AMD_E, sizeof (str_AMD_E)},
+  {2, 0, 3, ON_SOCKET_FT1, str_AMD_Z, sizeof (str_AMD_Z)},
   {1, 0, 4, ON_SOCKET_FT1, str_AMD_G_T, sizeof (str_AMD_G_T)},
   {2, 0, 4, ON_SOCKET_FT1, str_AMD_G_T, sizeof (str_AMD_G_T)}
 };    //Cores, page, index, socket, stringstart, stringlength
@@ -126,6 +133,15 @@ CONST AMD_CPU_BRAND ROMDATA CpuF14OnBrandIdString2ArrayFt1[] =
   {1, 0, 0x08, ON_SOCKET_FT1, str_N_Processor, sizeof (str_N_Processor)},
   {2, 0, 0x08, ON_SOCKET_FT1, str_N_Processor, sizeof (str_N_Processor)},
   {1, 0, 0x09, ON_SOCKET_FT1, str_R_Processor, sizeof (str_R_Processor)},
+  {2, 0, 0x09, ON_SOCKET_FT1, str_0_APU, sizeof (str_0_APU)},
+  {1, 0, 0x0A, ON_SOCKET_FT1, str_0_APU, sizeof (str_0_APU)},
+  {2, 0, 0x0A, ON_SOCKET_FT1, str_5_APU, sizeof (str_5_APU)},
+  {1, 0, 0x0B, ON_SOCKET_FT1, str_5_APU, sizeof (str_5_APU)},
+  {2, 0, 0x0B, ON_SOCKET_FT1, str_APU, sizeof (str_APU)},
+  {1, 0, 0x0C, ON_SOCKET_FT1, str_APU, sizeof (str_APU)},
+  {2, 0, 0x0C, ON_SOCKET_FT1, str_E_Processor, sizeof (str_E_Processor)},
+  {1, 0, 0x0D, ON_SOCKET_FT1, str_0D_APU, sizeof (str_0D_APU)},
+  {2, 0, 0x0D, ON_SOCKET_FT1, str_0D_APU, sizeof (str_0D_APU)},
   {1, 0, 0x0F, ON_SOCKET_FT1, 0, 0},    //Size 0 for no suffix
   {2, 0, 0x0F, ON_SOCKET_FT1, 0, 0},    //Size 0 for no suffix
  };    //Cores, page, index, socket, stringstart, stringlength

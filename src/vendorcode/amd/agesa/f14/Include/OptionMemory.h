@@ -320,10 +320,22 @@ BOOLEAN MemFDefRet (
 BOOLEAN MemMDefRet (
   IN MEM_MAIN_DATA_BLOCK *MMPtr
   );
+
+BOOLEAN MemMDefRetFalse (
+  IN   MEM_MAIN_DATA_BLOCK *MMPtr
+  );
+
 /* Table Feature Default Return */
 UINT8 MemFTableDefRet (
   IN OUT   MEM_TABLE_ALIAS **MTPtr
   );
+
+BOOLEAN MemNIdentifyDimmConstructorRetDef (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   MEM_DATA_STRUCT *MemPtr,
+  IN       UINT8 NodeID
+  );
+
 /* S3 Feature Default Return */
 BOOLEAN MemFS3DefConstructorRet (
   IN OUT   VOID *S3NBPtr,

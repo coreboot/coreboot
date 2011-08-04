@@ -75,6 +75,11 @@ RDATA_GROUP (G2_PEI)
  *----------------------------------------------------------------------------
  */
 BOOLEAN
+MemFInitEMP (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+BOOLEAN
 STATIC
 IsPowerOfTwo (
   IN       UINT32 TestNumber

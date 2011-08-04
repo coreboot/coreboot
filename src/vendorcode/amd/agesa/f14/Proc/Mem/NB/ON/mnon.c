@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB/ON)
- * @e \$Revision: 40406 $ @e \$Date: 2010-10-22 00:02:12 +0800 (Fri, 22 Oct 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -251,7 +251,7 @@ MemConstructNBBlockON (
   NBPtr->GetSocketRelativeChannel = MemNGetSocketRelativeChannelNb;
   NBPtr->TechBlockSwitch = MemNTechBlockSwitchON;
   NBPtr->SetEccSymbolSize = (VOID (*) (MEM_NB_BLOCK *)) memDefRet;
-  NBPtr->TrainingFlow = memNTrainFlowControl[DDR3_TRAIN_FLOW];
+  NBPtr->TrainingFlow = (VOID (*) (MEM_NB_BLOCK *)) memNTrainFlowControl[DDR3_TRAIN_FLOW];
   NBPtr->MinDataEyeWidth = MemNMinDataEyeWidthNb;
   NBPtr->PollBitField = MemNPollBitFieldNb;
   NBPtr->BrdcstCheck = MemNBrdcstCheckON;
@@ -301,13 +301,21 @@ MemConstructNBBlockON (
   NBPtr->IsSupported[AdjustTwr] = TRUE;
   NBPtr->IsSupported[UnifiedNbFence] = TRUE;
   NBPtr->IsSupported[ChannelPDMode] = TRUE;   // Erratum 435
+  if ((NBPtr->MCTPtr->LogicalCpuid.Revision & AMD_F14_ON_C0) != 0) {
+    NBPtr->IsSupported[AdjustTrc] = TRUE;
+  }
 
   NBPtr->FamilySpecificHook[OverrideRcvEnSeed] = MemNOverrideRcvEnSeedON;
   NBPtr->FamilySpecificHook[BeforePhyFenceTraining] = MemNBeforePhyFenceTrainingClientNb;
   NBPtr->FamilySpecificHook[AdjustTxpdll] = MemNAdjustTxpdllClientNb;
+  if ((NBPtr->MCTPtr->LogicalCpuid.Revision & AMD_F14_ON_Cx) == 0) {
+    // Do not do phase B enforcement for Rev C
   NBPtr->FamilySpecificHook[ForceRdDqsPhaseB] = MemNForceRdDqsPhaseBON;
+  }
   NBPtr->FamilySpecificHook[SetDqsODT] = MemNSetDqsODTON;
   NBPtr->FamilySpecificHook[ResetRxFifoPtr] = MemNResetRxFifoPtrON;
+  NBPtr->FamilySpecificHook[BfAfExcludeDimm] = MemNBfAfExcludeDimmClientNb;
+  NBPtr->FamilySpecificHook[BeforeMemClkFreqVal] = MemNBeforeMemClkFreqValON;
 
   FeatPtr->InitCPG (NBPtr);
   FeatPtr->InitEarlySampleSupport (NBPtr);

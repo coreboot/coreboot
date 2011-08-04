@@ -116,7 +116,7 @@ IsLowPwrPstateFeatureSupported (
   IsSupported = FALSE;
   for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetFeatureServicesOfSocket (&LowPwrPstateFamilyServiceTable, Socket, &FamilyServices, StdHeader);
+      GetFeatureServicesOfSocket (&LowPwrPstateFamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
       if (FamilyServices != NULL) {
         if (FamilyServices->IsLowPwrPstateSupported (FamilyServices, PlatformConfig, Socket, StdHeader)) {
           IsSupported = TRUE;
@@ -189,7 +189,7 @@ EnableLowPwrPstateOnSocket (
 {
   LOW_PWR_PSTATE_FAMILY_SERVICES *FamilyServices;
 
-  GetFeatureServicesOfCurrentCore (&LowPwrPstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&LowPwrPstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   FamilyServices->EnableLowPwrPstate (FamilyServices,
                                          &CpuEarlyParams->PlatformConfig,
                                          *((UINT64 *) EntryPoint),

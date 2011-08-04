@@ -320,7 +320,7 @@ F10CommonRevCGetNbPstateInfo (
   UINT32   NbVid;
   UINT32   PciRegister;
   UINT32   ProductInfoRegister;
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   BOOLEAN  PstateIsValid;
 
   PstateIsValid = TRUE;
@@ -339,8 +339,8 @@ F10CommonRevCGetNbPstateInfo (
       PciAddress->Address.Register = CPTC0_REG;
       LibAmdPciRead (AccessWidth32, *PciAddress, &PciRegister, StdHeader);
       NbFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->NbFid;
-      LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-      NbVid = (UINT32) ((COFVID_STS_MSR *) &MsrRegister)->CurNbVid;
+      LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+      NbVid = (UINT32) ((COFVID_STS_MSR *) &MsrReg)->CurNbVid;
     } else {
       NbFid = ((PRODUCT_INFO_REGISTER *) &ProductInfoRegister)->SinglePlaneNbFid;
       NbVid = ((PRODUCT_INFO_REGISTER *) &ProductInfoRegister)->SinglePlaneNbVid;

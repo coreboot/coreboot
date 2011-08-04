@@ -183,7 +183,7 @@ F10CpuAmdPmPwrPlaneInit (
   UINT32    AndMask;
   UINT32    OrMask;
   UINT32    ProcessorPackageType;
-  UINT64    MsrRegister;
+  UINT64    MsrReg;
   AP_TASK   TaskPtr;
   AGESA_STATUS  IgnoredSts;
   PLATFORM_FEATS Features;
@@ -266,10 +266,10 @@ F10CpuAmdPmPwrPlaneInit (
     OrMask = 0x00000000;
     ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupEn = 0;
     ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupPstate = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->PstateMaxVal;
-    LibAmdMsrRead ((((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->PstateMaxVal + PS_REG_BASE), &MsrRegister, StdHeader);
-    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuVid = (UINT32) ((PSTATE_MSR *) &MsrRegister)->CpuVid;
-    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuFid = (UINT32) ((PSTATE_MSR *) &MsrRegister)->CpuFid;
-    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuDid = (UINT32) ((PSTATE_MSR *) &MsrRegister)->CpuDid;
+    LibAmdMsrRead ((((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->PstateMaxVal + PS_REG_BASE), &MsrReg, StdHeader);
+    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuVid = (UINT32) ((PSTATE_MSR *) &MsrReg)->CpuVid;
+    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuFid = (UINT32) ((PSTATE_MSR *) &MsrReg)->CpuFid;
+    ((POPUP_PSTATE_REGISTER *) &OrMask)->PopupCpuDid = (UINT32) ((PSTATE_MSR *) &MsrReg)->CpuDid;
     PciAddress.Address.Register = POPUP_PSTATE_REG;
     ModifyCurrentSocketPci (&PciAddress, AndMask, OrMask, StdHeader);
 
@@ -278,7 +278,7 @@ F10CpuAmdPmPwrPlaneInit (
     AndMask = 0xFFFFFFFF;
     ((CLK_PWR_TIMING_CTRL1_REGISTER *) &AndMask)->AltVidStart = 0;
     OrMask = 0x00000000;
-    ((CLK_PWR_TIMING_CTRL1_REGISTER *) &OrMask)->AltVidStart = (UINT32) ((PSTATE_MSR *) &MsrRegister)->CpuVid;
+    ((CLK_PWR_TIMING_CTRL1_REGISTER *) &OrMask)->AltVidStart = (UINT32) ((PSTATE_MSR *) &MsrReg)->CpuVid;
     ModifyCurrentSocketPci (&PciAddress, AndMask, OrMask, StdHeader);
 
     // Set up Altvid slam time
@@ -323,20 +323,20 @@ F10PmPwrPlaneInitPviCore (
   UINT32 MsrAddr;
   UINT32 NbVid;
   UINT32 CpuVid;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   for (MsrAddr = PS_REG_BASE; MsrAddr <= PS_MAX_REG; MsrAddr++) {
-    LibAmdMsrRead (MsrAddr, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == (UINT64) 1) {
-      NbVid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->NbVid);
-      CpuVid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
+    LibAmdMsrRead (MsrAddr, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->PsEnable == (UINT64) 1) {
+      NbVid = (UINT32) (((PSTATE_MSR *) &MsrReg)->NbVid);
+      CpuVid = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuVid);
       if (NbVid != CpuVid) {
         if (NbVid > CpuVid) {
           NbVid = CpuVid;
         }
-        ((PSTATE_MSR *) &MsrRegister)->NbVid = NbVid;
-        ((PSTATE_MSR *) &MsrRegister)->CpuVid = NbVid;
-        LibAmdMsrWrite (MsrAddr, &MsrRegister, StdHeader);
+        ((PSTATE_MSR *) &MsrReg)->NbVid = NbVid;
+        ((PSTATE_MSR *) &MsrReg)->CpuVid = NbVid;
+        LibAmdMsrWrite (MsrAddr, &MsrReg, StdHeader);
       }
     }
   }
@@ -375,7 +375,7 @@ F10CalculateAltvidVSSlamTimeOnCore (
   UINT8     PminVidCode;
   UINT32    MsrAddr;
   UINT32    PciRegister;
-  UINT64    MsrRegister;
+  UINT64    MsrReg;
   PCI_ADDR  LocalPciAddress;
 
   // Calculate Slam Time
@@ -384,17 +384,17 @@ F10CalculateAltvidVSSlamTimeOnCore (
   //   decimals.
 
   // Get Pmin's index
-  LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &MsrRegister, StdHeader);
-  MsrAddr = (UINT32) ((((PSTATE_CURLIM_MSR *) &MsrRegister)->PstateMaxVal) + PS_REG_BASE);
+  LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &MsrReg, StdHeader);
+  MsrAddr = (UINT32) ((((PSTATE_CURLIM_MSR *) &MsrReg)->PstateMaxVal) + PS_REG_BASE);
 
   // Get Pmin's VID
-  LibAmdMsrRead (MsrAddr, &MsrRegister, StdHeader);
-  PminVidCode = (UINT8) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
+  LibAmdMsrRead (MsrAddr, &MsrReg, StdHeader);
+  PminVidCode = (UINT8) (((PSTATE_MSR *) &MsrReg)->CpuVid);
 
   // If SVI, we only care about CPU VID.
   // If PVI, determine the higher voltage b/t NB and CPU
   if (PviModeFlag) {
-    NbVid = (UINT8) (((PSTATE_MSR *) &MsrRegister)->NbVid);
+    NbVid = (UINT8) (((PSTATE_MSR *) &MsrReg)->NbVid);
     if (PminVidCode > NbVid) {
       PminVidCode = NbVid;
     }

@@ -81,14 +81,14 @@ extern OPTION_SRAT_CONFIGURATION OptionSratConfiguration;  // global user config
  */
 STATIC CPU_SRAT_HEADER  ROMDATA CpuSratHdrStruct =
 {
-  'S','R','A','T',
+  {'S','R','A','T'},
   0,
   2,
   0,
-  'A','M','D',' ',' ',' ',
-  'A','G','E','S','A',' ',' ',' ',
+  {'A','M','D',' ',' ',' '},
+  {'A','G','E','S','A',' ',' ',' '},
   1,
-  'A','M','D',' ',
+  {'A','M','D',' '},
   1,
   1,
   {0, 0, 0, 0, 0, 0, 0, 0}
@@ -98,6 +98,18 @@ STATIC CPU_SRAT_HEADER  ROMDATA CpuSratHdrStruct =
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+AGESA_STATUS
+GetAcpiSratStub (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader,
+  IN OUT   VOID                  **SratPtr
+  );
+
+AGESA_STATUS
+GetAcpiSratMain (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader,
+  IN OUT   VOID                  **SratPtr
+  );
+
 UINT8
 STATIC
 *MakeApicEntry (

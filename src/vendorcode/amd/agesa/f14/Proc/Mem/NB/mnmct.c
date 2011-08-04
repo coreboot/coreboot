@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB)
- * @e \$Revision: 39420 $ @e \$Date: 2010-10-12 00:52:49 +0800 (Tue, 12 Oct 2010) $
+ * @e \$Revision: 48496 $ @e \$Date: 2011-03-09 12:26:48 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -130,7 +130,6 @@ MemNSyncTargetSpeedNb (
 {
   CONST UINT16 DdrMaxRateTab[] = {
     UNSUPPORTED_DDR_FREQUENCY,
-    DDR1866_FREQUENCY,
     DDR1600_FREQUENCY,
     DDR1333_FREQUENCY,
     DDR1066_FREQUENCY,
@@ -185,8 +184,8 @@ MemNSyncTargetSpeedNb (
           Mode[Dct] = ChnlTmgMod[0];
           // Check if input clock value is valid or not
           ASSERT ((NBPtr->ChannelPtr->TechType == DDR3_TECHNOLOGY) ?
-            (ChnlTmgMod[1] >= DDR667_FREQUENCY) :
-            (ChnlTmgMod[1] <= DDR1066_FREQUENCY));
+            ((MEMORY_BUS_SPEED)(ChnlTmgMod[1]) >= DDR667_FREQUENCY) :
+            ((MEMORY_BUS_SPEED)(ChnlTmgMod[1]) <= DDR1066_FREQUENCY));
           MemClkFreq = ChnlTmgMod[1];
         }
       }
@@ -1182,3 +1181,39 @@ MemNGetMaxDdrRateUnb (
   * (UINT16 * ) DdrMaxRate = MemNGetMemClkFreqUnb (NBPtr, (UINT8) MemNGetBitFieldNb (NBPtr, BFDdrMaxRate));
   return TRUE;
 }
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *      This function performs the action before and after excluding dimms on CNB
+ *
+ *     @param[in,out]  *NBPtr     - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]  *IsBefore   - If the function is called before excluding dimms
+ *
+ *     @return    TRUE
+ *
+ */
+
+BOOLEAN
+MemNBfAfExcludeDimmClientNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *IsBefore
+  )
+{
+  if (*(BOOLEAN *) IsBefore == TRUE) {
+    NBPtr->BrdcstSet (NBPtr, BFEnterSelfRef, 1);
+    NBPtr->PollBitField (NBPtr, BFEnterSelfRef, 0, PCI_ACCESS_TIMEOUT, TRUE);
+  } else {
+    NBPtr->BrdcstSet (NBPtr, BFExitSelfRef, 1);
+    NBPtr->PollBitField (NBPtr, BFExitSelfRef, 0, PCI_ACCESS_TIMEOUT, TRUE);
+  }
+
+  return TRUE;
+}
+
+/*----------------------------------------------------------------------------
+ *                              LOCAL FUNCTIONS
+ *
+ *----------------------------------------------------------------------------
+ */

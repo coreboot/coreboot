@@ -108,19 +108,19 @@ F10InitializeIoCstate (
   IN       AMD_CONFIG_PARAMS         *StdHeader
   )
 {
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   AP_TASK  TaskPtr;
 
   if ((EntryPoint & CPU_FEAT_AFTER_PM_INIT) != 0) {
     // Initialize MSRC001_0073[CstateAddr] on each core to a region of
     // the IO address map with 8 consecutive available addresses.
-    MsrRegister = 0;
+    MsrReg = 0;
 
-    ((CSTATE_ADDRESS_MSR *) &MsrRegister)->CstateAddr = PlatformConfig->CStateIoBaseAddress;
+    ((CSTATE_ADDRESS_MSR *) &MsrReg)->CstateAddr = PlatformConfig->CStateIoBaseAddress;
 
     TaskPtr.FuncAddress.PfApTaskI = F10InitializeIoCstateOnCore;
     TaskPtr.DataTransfer.DataSizeInDwords = 2;
-    TaskPtr.DataTransfer.DataPtr = &MsrRegister;
+    TaskPtr.DataTransfer.DataPtr = &MsrReg;
     TaskPtr.DataTransfer.DataTransferFlags = 0;
     TaskPtr.ExeFlags = WAIT_FOR_CORE;
     ApUtilRunCodeOnAllLocalCoresAtEarly (&TaskPtr, StdHeader, NULL);
@@ -264,7 +264,7 @@ F10IsIoCstateFeatureSupported (
   IN       AMD_CONFIG_PARAMS         *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   CPUID_DATA     CpuId;
   CPU_LOGICAL_ID LogicalId;
 
@@ -274,8 +274,8 @@ F10IsIoCstateFeatureSupported (
   if ((LogicalId.Revision & AMD_F10_Ex) != 0) {
     LibAmdCpuidRead (AMD_CPUID_APM, &CpuId, StdHeader);
     if (((CpuId.EDX_Reg & 0x00000200) >> 9) == 1) {
-      LibAmdMsrRead (MSR_PATCH_LEVEL, &MsrRegister, StdHeader);
-      if ((MsrRegister & 0xffffffff) >= 0x010000BF) {
+      LibAmdMsrRead (MSR_PATCH_LEVEL, &MsrReg, StdHeader);
+      if ((MsrReg & 0xffffffff) >= 0x010000BF) {
         return TRUE;
       }
     }

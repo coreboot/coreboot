@@ -303,7 +303,7 @@ PcieUtilGetEngineLaneBitMap (
   if ((IncludeLaneType & LANE_TYPE_DDI_LANES) && Engine->EngineData.EngineType == PcieDdiEngine) {
     if (PcieLibIsEngineAllocated (Engine)) {
       if (IncludeLaneType & (LANE_TYPE_DDI_ALLOCATED | LANE_TYPE_DDI_ALL)) {
-        LaneOffset = PcieUtilGetLoPhyLane (Engine) - PcieEngineGetParentWrapper (Engine)->StartPhyLane;
+        LaneOffset = PcieLibGetLoPhyLane (Engine) - PcieEngineGetParentWrapper (Engine)->StartPhyLane;
         LaneBitmap |= ((1 << PcieConfigGetNumberOfPhyLane (Engine)) - 1) << LaneOffset;
       }
       if (IncludeLaneType & LANE_TYPE_DDI_ACTIVE) {

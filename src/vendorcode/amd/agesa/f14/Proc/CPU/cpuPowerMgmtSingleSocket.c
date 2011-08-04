@@ -77,6 +77,11 @@ RDATA_GROUP (G1_PEICC)
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+GetEarlyPmErrorsSingle (
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -125,8 +130,8 @@ GetNumberOfSystemPmStepsPtrSingle (
   SYS_PM_TBL_STEP *Ignored;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, &Ignored, NumSystemSteps, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, (const VOID **)&Ignored, NumSystemSteps, StdHeader);
 }
 
 
@@ -166,7 +171,7 @@ GetSystemNbCofSingle (
 
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 24, 0, 0);
   *SystemNbCofsMatch = TRUE;
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   *NbPstateIsEnabledOnAllCPUs = FamilySpecificServices->GetNbPstateInfo (FamilySpecificServices,
                                                                          PlatformConfig,
                                                                          &PciAddress,
@@ -203,7 +208,7 @@ GetSystemNbCofVidUpdateSingle (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 24, 0, 0);
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   return (FamilySpecificServices->IsNbCofInitNeeded (FamilySpecificServices, &PciAddress, &Ignored, StdHeader));
 }
 

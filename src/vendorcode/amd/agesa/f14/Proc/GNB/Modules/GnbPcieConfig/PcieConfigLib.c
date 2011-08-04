@@ -158,7 +158,7 @@ PcieConfigGetEnginePhyLaneBitMap (
   UINT32  LaneBitMap;
   LaneBitMap = 0;
   if (PcieLibIsEngineAllocated (Engine)) {
-    LaneBitMap = ((1 << PcieConfigGetNumberOfPhyLane (Engine)) - 1) <<  (PcieUtilGetLoPhyLane (Engine) - PcieEngineGetParentWrapper (Engine)->StartPhyLane);
+    LaneBitMap = ((1 << PcieConfigGetNumberOfPhyLane (Engine)) - 1) <<  (PcieLibGetLoPhyLane (Engine) - PcieEngineGetParentWrapper (Engine)->StartPhyLane);
   }
   return LaneBitMap;
 }

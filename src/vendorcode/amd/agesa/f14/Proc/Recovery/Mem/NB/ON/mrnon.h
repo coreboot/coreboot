@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 34897 $ @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -87,16 +87,6 @@ MemRecNMemInitON (
   );
 
 VOID
-MemRecNFinalizeMctON (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  );
-
-VOID
-MemRecNInitializeMctON (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  );
-
-VOID
 MemRecNSetMaxLatencyON (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN       UINT16 MaxRcvEnDly
@@ -120,6 +110,11 @@ MemRecNAutoConfigON (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );
 
+BOOLEAN
+MemRecNOverrideRcvEnSeedON (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *SeedPtr
+  );
 #endif  /* _MRNON_H_ */
 
 

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -124,7 +124,7 @@ MemRecTTrainRcvrEnHw (
 {
   UINT8  TempBuffer[64];
   UINT8  Count;
-  UINT32 TestAddrRJ16;
+  UINT32 TestAddr;
   UINT8  ChipSel;
   UINT16 MaxRcvrDly;
   MEM_NB_BLOCK  *NBPtr;
@@ -132,12 +132,18 @@ MemRecTTrainRcvrEnHw (
   NBPtr = TechPtr->NBPtr;
 
   AGESA_TESTPOINT (TpProcMemReceiverEnableTraining , &(NBPtr->MemPtr->StdHeader));
+  IDS_HDT_CONSOLE (MEM_STATUS, "\nStart HW RxEn training\n");
 
   // Set environment settings before training
   MemRecTBeginTraining (TechPtr);
 
   ChipSel = NBPtr->DimmToBeUsed << 1;
-  TestAddrRJ16 = 1 << 21;
+  TestAddr = 1 << 21;
+
+  IDS_HDT_CONSOLE (MEM_STATUS, "\tDct %d\n", TechPtr->NBPtr->Dct);
+  IDS_HDT_CONSOLE (MEM_STATUS, "\t\tCS %d\n", ChipSel);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\tTestAddr %x\n", TestAddr);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\t     Byte:  00  01  02  03  04  05  06  07  ECC\n");
 
   // 1.Prepare the DIMMs for training
   NBPtr->SetBitField (NBPtr, BFTrDimmSel, ChipSel >> 1);
@@ -151,7 +157,7 @@ MemRecTTrainRcvrEnHw (
   // 4.BIOS begins sending out of back-to-back reads to create
   //   a continuous stream of DQS edges on the DDR interface.
   for (Count = 0; Count < 3; Count++) {
-    NBPtr->ReadPattern (NBPtr, TempBuffer, TestAddrRJ16, 64);
+    NBPtr->ReadPattern (NBPtr, TempBuffer, TestAddr, 64);
   }
 
   // 6.Wait 200 MEMCLKs.
@@ -169,6 +175,7 @@ MemRecTTrainRcvrEnHw (
 
   // Restore environment settings after training
   MemRecTEndTraining (TechPtr);
+  IDS_HDT_CONSOLE (MEM_FLOW, "End HW RxEn training\n\n");
 }
 
 
@@ -196,7 +203,11 @@ MemRecTPrepareRcvrEnDlySeed (
   UINT16 SeedPreGross;
   UINT16 DiffSeedGrossSeedPreGross;
   UINT8  ByteLane;
+  UINT16 PlatEst;
   UINT16 *PlatEstSeed;
+  UINT16 SeedValue[8];
+  UINT16 SeedTtl[8];
+  UINT16 SeedPre[8];
 
   NBPtr = TechPtr->NBPtr;
   ChannelPtr = TechPtr->NBPtr->ChannelPtr;
@@ -207,9 +218,14 @@ MemRecTPrepareRcvrEnDlySeed (
   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
     // For Pass1, BIOS starts with the delay value obtained from the first pass of write
     // levelization training that was done in DDR3 Training and add a delay value of 3Bh.
-    SeedTotal = ChannelPtr->WrDqsDlys[((ChipSel >> 1) * MAX_BYTELANES) + ByteLane] + (PlatEstSeed != NULL) ? PlatEstSeed[ByteLane] : 0x3B;
+    PlatEst = 0x3B;
+    NBPtr->FamilySpecificHook[OverrideRcvEnSeed] (NBPtr, &PlatEst);
+    PlatEst = ((PlatEstSeed != NULL) ? PlatEstSeed[ByteLane] : PlatEst);
+    SeedTotal = ChannelPtr->WrDqsDlys[((ChipSel >> 1) * MAX_BYTELANES) + ByteLane] + PlatEst;
+    SeedValue[ByteLane] = PlatEst;
+    SeedTtl[ByteLane] = SeedTotal;
     // SeedGross = SeedTotal DIV 32.
-    SeedGross = (SeedTotal & 0x60) >> 5;
+    SeedGross = SeedTotal >> 5;
     // SeedFine = SeedTotal MOD 32.
     SeedFine = SeedTotal & 0x1F;
 
@@ -233,10 +249,28 @@ MemRecTPrepareRcvrEnDlySeed (
     //BIOS programs registers F2x[1, 0]9C_x[51:50] and F2x[1, 0]9C_x52) with SeedPreGrossPass1
     //and SeedFinePass1 from the preceding steps.
     NBPtr->SetTrainDly (NBPtr, AccessPhRecDly, DIMM_BYTE_ACCESS (ChipSel >> 1, ByteLane), (SeedPreGross << 5) | SeedFine);
+    SeedPre[ByteLane] = (SeedPreGross << 5) | SeedFine;
 
     // 202688: Program seed value to RcvEnDly also.
     NBPtr->SetTrainDly (NBPtr, AccessRcvEnDly, DIMM_BYTE_ACCESS (ChipSel >> 1, ByteLane), SeedGross << 5);
   }
+  IDS_HDT_CONSOLE_DEBUG_CODE (
+   IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\tSeedValue: ");
+   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
+     IDS_HDT_CONSOLE (MEM_FLOW, "%03x ", SeedValue[ByteLane]);
+   }
+   IDS_HDT_CONSOLE (MEM_FLOW, "\n");
+
+   IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\tSeedTotal: ");
+   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
+     IDS_HDT_CONSOLE (MEM_FLOW, "%03x ", SeedTtl[ByteLane]);
+   }
+   IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\t\t  SeedPRE: ");
+   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
+     IDS_HDT_CONSOLE (MEM_FLOW, "%03x ", SeedPre[ByteLane]);
+   }
+   IDS_HDT_CONSOLE (MEM_FLOW, "\n");
+  );
 }
 
 /* -----------------------------------------------------------------------------*/
@@ -263,17 +297,21 @@ MemRecTProgramRcvrEnDly (
   UINT8  ByteLane;
   UINT16 RcvEnDly;
   UINT16 MaxDly;
+  UINT16 RankRcvEnDly[8];
   NBPtr = TechPtr->NBPtr;
   ChannelPtr = TechPtr->NBPtr->ChannelPtr;
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\t      PRE: ");
   MaxDly = 0;
   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
     DiffSeedGrossSeedPreGross = (ChannelPtr->RcvEnDlys[(ChipSel * MAX_BYTELANES) + ByteLane]) & 0x1E0;
     RcvEnDly = (UINT8) NBPtr->GetTrainDly (NBPtr, AccessPhRecDly, DIMM_BYTE_ACCESS (ChipSel >> 1, ByteLane));
+    IDS_HDT_CONSOLE (MEM_FLOW, "%03x ", RcvEnDly);
 
     RcvEnDly = RcvEnDly + DiffSeedGrossSeedPreGross;
 
     // Add 1 UI to get to the midpoint of preamble
     RcvEnDly += 0x20;
+    RankRcvEnDly[ByteLane] = RcvEnDly;
 
     if (RcvEnDly > MaxDly) {
       MaxDly = RcvEnDly;
@@ -281,7 +319,13 @@ MemRecTProgramRcvrEnDly (
 
     NBPtr->SetTrainDly (NBPtr, AccessRcvEnDly, DIMM_BYTE_ACCESS ((ChipSel >> 1), ByteLane), RcvEnDly);
   }
-
+  IDS_HDT_CONSOLE_DEBUG_CODE (
+   IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\t\t     RxEn: ");
+   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
+     IDS_HDT_CONSOLE (MEM_FLOW, "%03x ", RankRcvEnDly[ByteLane]);
+   }
+   IDS_HDT_CONSOLE (MEM_FLOW, "\n\n");
+  );
   return MaxDly;
 }
 

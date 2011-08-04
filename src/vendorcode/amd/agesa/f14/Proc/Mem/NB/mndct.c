@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB)
- * @e \$Revision: 38442 $ @e \$Date: 2010-09-24 06:39:57 +0800 (Fri, 24 Sep 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -978,6 +978,10 @@ MemNProgramCycTimingsClientNb (
       Value8 = (Value8 >= 10) ? (((Value8 + 1) / 2) + 4) : Value8;
     }
 
+    if ((BitField == BFTrc) && NBPtr->IsSupported[AdjustTrc]) {
+      Value8 -= 5;
+    }
+
     Value8 = Value8 - TmgAdjTab[j].Bias;
     Value8 = (Value8 * TmgAdjTab[j].Ratio_x2) >> 1;
 
@@ -986,7 +990,7 @@ MemNProgramCycTimingsClientNb (
             (BitField == BFTrp ) ? (Value8 <= 9) :
             (BitField == BFTrtp) ? (Value8 <= 4) :
             (BitField == BFTras) ? (Value8 <= 21) :
-            (BitField == BFTrc ) ? ((Value8 >= 9) && (Value8 <= 38)) :
+            (BitField == BFTrc ) ? (NBPtr->IsSupported[AdjustTrc] ? ((Value8 >= 4) && (Value8 <= 38)) : ((Value8 >= 9) && (Value8 <= 38))) :
             (BitField == BFTrrd) ? (Value8 <= 4) :
             (BitField == BFTwtr) ? (Value8 <= 4) :
             (BitField == BFTwrDDR3) ? (Value8 <= 7) :
@@ -1857,6 +1861,7 @@ MemNChangeFrequencyUnb (
     //                                                                         THEN 2 ELSE 3 ENDIF (Ontario)
     NBPtr->ProgramNbPsDependentRegs (NBPtr);
 
+    NBPtr->FamilySpecificHook[BeforeMemClkFreqVal] (NBPtr, NBPtr);
     IDS_OPTION_HOOK (IDS_BEFORE_MEM_FREQ_CHG, NBPtr, &(NBPtr->MemPtr->StdHeader));
     // 7. Program D18F2x[1,0]94[MemClkFreqVal] = 1.
     MemNBrdcstSetNb (NBPtr, BFMemClkFreqVal, 1);

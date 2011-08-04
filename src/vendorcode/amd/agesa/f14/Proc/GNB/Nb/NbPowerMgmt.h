@@ -48,11 +48,6 @@
 #define _NBPOWERMGMT_H_
 
 
-AGESA_STATUS
-NbInitPowerManagement (
-  IN      GNB_PLATFORM_CONFIG *Gnb
-  );
-
 ///Control structure for clock gating feature
 typedef struct {
   BOOLEAN Smu_Sclk_Gating;    ///<Control Smu SClk gating 1 Enable 0 Disable
@@ -66,5 +61,52 @@ typedef struct {
   BOOLEAN Dce_Sclk_Gating;    ///<Control DCE SClk gating 1 Enable 0 Disable
   BOOLEAN Dce_Dispclk_Gating;    ///<Control DCE dispaly gating 1 Enable 0 Disable
 } NB_CLK_GATING_CTRL;
+
+AGESA_STATUS
+NbInitPowerManagement (
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitSmuClockGating (
+  IN      NB_CLK_GATING_CTRL  *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitOrbClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitIocClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitBifClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitGmcClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitDceSclkClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
+
+VOID
+NbInitDceDisplayClockGating (
+  IN      NB_CLK_GATING_CTRL *NbClkGatingCtrl,
+  IN      GNB_PLATFORM_CONFIG *Gnb
+  );
 
 #endif

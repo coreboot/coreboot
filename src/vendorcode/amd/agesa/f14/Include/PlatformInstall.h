@@ -11,7 +11,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Core
- * @e \$Revision: 41504 $   @e \$Date: 2010-11-05 21:59:13 +0800 (Fri, 05 Nov 2010) $
+ * @e \$Revision: 47417 $   @e \$Date: 2011-02-18 12:48:20 -0700 (Fri, 18 Feb 2011) $
  */
 /*
  *****************************************************************************
@@ -79,7 +79,7 @@
 VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
   //ModuleHeaderSignature
   // Remove 'DOM$' as temp solution before update BinUtil.exe ,
-  '0000',
+  Int32FromChar ('0', '0', '0', '0'),
   //ModuleIdentifier[8]
   AGESA_ID,
   //ModuleVersion[12]
@@ -1015,6 +1015,8 @@ VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
     #define OPTION_GFX_RECOVERY  TRUE
     #undef OPTION_C6_STATE
     #define OPTION_C6_STATE  TRUE
+    #undef OPTION_CPB
+    #define OPTION_CPB TRUE
     #undef OPTION_IO_CSTATE
     #define OPTION_IO_CSTATE TRUE
     #undef OPTION_S3SCRIPT
@@ -1937,6 +1939,12 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
   #define CFG_GFX_LVDS_SPREAD_SPECTRUM_RATE               0
 #endif
 
+#ifdef BLDCFG_PCIE_REFCLK_SPREAD_SPECTRUM
+  #define CFG_PCIE_REFCLK_SPREAD_SPECTRUM               BLDCFG_PCIE_REFCLK_SPREAD_SPECTRUM
+#else
+  #define CFG_PCIE_REFCLK_SPREAD_SPECTRUM               0
+#endif
+
 #ifdef BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS
   #define CFG_TEMP_PCIE_MMIO_BASE_ADDRESS    BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS
 #else
@@ -1963,6 +1971,35 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
   #endif
 #endif
 
+#ifdef BLDCFG_LVDS_MISC_888_FPDI_MODE
+  #define CFG_LVDS_MISC_888_FPDI_MODE                 BLDCFG_LVDS_MISC_888_FPDI_MODE
+#else
+  #define CFG_LVDS_MISC_888_FPDI_MODE                 FALSE
+#endif
+
+#ifdef BLDCFG_LVDS_MISC_DL_CH_SWAP
+  #define CFG_LVDS_MISC_DL_CH_SWAP                 BLDCFG_LVDS_MISC_DL_CH_SWAP
+#else
+  #define CFG_LVDS_MISC_DL_CH_SWAP                 FALSE
+#endif
+
+#ifdef BLDCFG_LVDS_MISC_VSYNC_ACTIVE_LOW
+  #define CFG_LVDS_MISC_VSYNC_ACTIVE_LOW                 BLDCFG_LVDS_MISC_VSYNC_ACTIVE_LOW
+#else
+  #define CFG_LVDS_MISC_VSYNC_ACTIVE_LOW                 FALSE
+#endif
+
+#ifdef BLDCFG_LVDS_MISC_HSYNC_ACTIVE_LOW
+  #define CFG_LVDS_MISC_HSYNC_ACTIVE_LOW                 BLDCFG_LVDS_MISC_HSYNC_ACTIVE_LOW
+#else
+  #define CFG_LVDS_MISC_HSYNC_ACTIVE_LOW                 FALSE
+#endif
+
+#ifdef BLDCFG_LVDS_MISC_BLON_ACTIVE_LOW
+  #define CFG_LVDS_MISC_BLON_ACTIVE_LOW                 BLDCFG_LVDS_MISC_BLON_ACTIVE_LOW
+#else
+  #define CFG_LVDS_MISC_BLON_ACTIVE_LOW                 FALSE
+#endif
 /*---------------------------------------------------------------------------
  *       Processing the options:  Third, perform the option cross checks
  *--------------------------------------------------------------------------*/
@@ -2281,6 +2318,14 @@ BUILD_OPT_CFG UserOptions = {
   CFG_GFX_LVDS_SPREAD_SPECTRUM,         // CfgLvdsSpreadSpectrum
   CFG_GFX_LVDS_SPREAD_SPECTRUM_RATE,    // CfgLvdsSpreadSpectrumRate
 
+  {{
+	CFG_LVDS_MISC_888_FPDI_MODE,          // CfgLvdsMiscControl
+	CFG_LVDS_MISC_DL_CH_SWAP,             // CfgLvdsMiscControl
+	CFG_LVDS_MISC_VSYNC_ACTIVE_LOW,       // CfgLvdsMiscControl
+	CFG_LVDS_MISC_HSYNC_ACTIVE_LOW,       // CfgLvdsMiscControl
+	CFG_LVDS_MISC_BLON_ACTIVE_LOW,        // CfgLvdsMiscControl
+  }},
+  CFG_PCIE_REFCLK_SPREAD_SPECTRUM,      // CfgPcieRefClkSpreadSpectrum
   0,                                    //reserved...
 };
 
@@ -2384,7 +2429,7 @@ CONST FUNCTION_PARAMS_INFO ROMDATA FuncParamsInfo[] =
       AMD_LATE_RUN_AP_TASK_HANDLE
     },
   #endif
-  { 0, NULL }
+  { 0, 0, NULL }
 };
 
 CONST UINTN InitializerCount = ((sizeof (FuncParamsInfo)) / (sizeof (FuncParamsInfo[0])));
@@ -2591,6 +2636,12 @@ CONST DISPATCH_TABLE ROMDATA ApDispatchTable[] =
 
           MAKE_DBG_STR (\nCfgLvdsSpreadSpectrum  , CFG_GFX_LVDS_SPREAD_SPECTRUM),
           MAKE_DBG_STR (\nCfgLvdsSpreadSpectrumRate , CFG_GFX_LVDS_SPREAD_SPECTRUM_RATE),
+          MAKE_DBG_STR (\nCfgLvdsMiscControl.FpdiMode   , CFG_LVDS_MISC_888_FPDI_MODE),
+          MAKE_DBG_STR (\nCfgLvdsMiscControl.DlChSwap           , CFG_LVDS_MISC_DL_CH_SWAP),
+          MAKE_DBG_STR (\nCfgLvdsMiscControl.VsyncActiveLow     , CFG_LVDS_MISC_VSYNC_ACTIVE_LOW),
+          MAKE_DBG_STR (\nCfgLvdsMiscControl.HsyncActiveLow     , CFG_LVDS_MISC_HSYNC_ACTIVE_LOW),
+          MAKE_DBG_STR (\nCfgLvdsMiscControl.BLONActiveLow      , CFG_LVDS_MISC_BLON_ACTIVE_LOW),
+          MAKE_DBG_STR (\nCfgPcieRefClkSpreadSpectrum   , CFG_PCIE_REFCLK_SPREAD_SPECTRUM),
         #endif
         NULL
       };

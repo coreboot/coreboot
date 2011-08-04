@@ -54,10 +54,15 @@ GfxFmMapEngineToDisplayPath (
   IN       GFX_PLATFORM_CONFIG         *Gfx
   );
 
-AGESA_STATUS
+UINT32
 GfxFmCalculateClock (
   IN       UINT8                       Did,
   IN       AMD_CONFIG_PARAMS          *StdHeader
+  );
+
+VOID
+GfxFmSetIdleVoltageMode (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
   );
 
 #endif

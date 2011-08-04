@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 35136 $   @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -98,6 +98,23 @@ typedef VOID F_CPU_AMD_NMI_HANDLER (
   );
 typedef F_CPU_AMD_NMI_HANDLER *PF_CPU_AMD_NMI_HANDLER;
 
+/// Interrupt Descriptor Table entry
+typedef struct {
+  UINT16 OffsetLo;     ///< Lower 16 bits of the interrupt handler routine's offset
+  UINT16 Selector;     ///< Interrupt handler routine's selector
+  UINT8  Rsvd;         ///< Reserved
+  UINT8  Flags;        ///< Interrupt flags
+  UINT16 OffsetHi;     ///< Upper 16 bits of the interrupt handler routine's offset
+  UINT32 Offset64;     ///< High order 32 bits of the handler's offset needed when in 64 bit mode
+  UINT32 Rsvd64;       ///< Reserved
+} IDT_DESCRIPTOR;
+
+/// Structure needed to load the IDTR using the lidt instruction
+//typedef struct {
+//  UINT16 Limit;        ///< Interrupt Descriptor Table size
+//  UINT64 Base;         ///< Interrupt Descriptor Table base address
+//} IDT_BASE_LIMIT;
+
 /*----------------------------------------------------------------------------------------
  *           P R O T O T Y P E S     O F     L O C A L     F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -178,6 +195,19 @@ VOID
 STATIC
 PerformFinalHalt (
   IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+VOID
+LocalApicInitialization (
+  IN       AMD_CPU_EARLY_PARAMS *CpuEarlyParamsPtr,
+  IN       AMD_CONFIG_PARAMS    *StdHeader
+  );
+
+VOID
+LocalApicInitializationAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
   );
 
 /*----------------------------------------------------------------------------------------
@@ -830,9 +860,9 @@ ApUtilSetupIdtForHlt (
     DescSize = 8;
   }
 
-  HandlerOffset = (UINT64) NmiHandler;
-  NmiIdtDescPtr->OffsetLo = (UINT16) HandlerOffset & 0xFFFF;
-  NmiIdtDescPtr->OffsetHi = (UINT16) (HandlerOffset >> 16);
+  HandlerOffset = (UINT64)&NmiHandler;
+  NmiIdtDescPtr->OffsetLo = (UINT16) (HandlerOffset & 0xFFFF);
+  NmiIdtDescPtr->OffsetHi = (UINT16) ((HandlerOffset >> 16) & 0xFFFF);
   GetCsSelector (&NmiIdtDescPtr->Selector, StdHeader);
   NmiIdtDescPtr->Flags = SEG_DESC_PRESENT | SEG_DESC_TYPE_INT32;
   NmiIdtDescPtr->Rsvd = 0;
@@ -1109,7 +1139,7 @@ RelinquishControlOfAllAPs (
 {
   UINT32        BscSocket;
   UINT32        Ignored;
-  UINT32        BscCore;
+  UINT32        BscCoreNum;
   UINT32        Core;
   UINT32        Socket;
   UINT32        NumberOfSockets;
@@ -1122,13 +1152,13 @@ RelinquishControlOfAllAPs (
   TaskPtr.DataTransfer.DataSizeInDwords = 0;
   TaskPtr.ExeFlags = WAIT_FOR_CORE;
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &Core, StdHeader)) {
       while (Core-- > 0) {
-        if ((Socket != BscSocket) || (Core != BscCore)) {
+        if ((Socket != BscSocket) || (Core != BscCoreNum)) {
           ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
         }
       }
@@ -1162,7 +1192,7 @@ PerformFinalHalt (
   UINT32 CacheEnDis;
   CPU_SPECIFIC_SERVICES *FamilyServices;
 
-  GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
   // CacheEnDis is a family specific flag, that lets the code to decide whether to
   // keep the cache control bits set or cleared.

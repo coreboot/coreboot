@@ -250,16 +250,16 @@ PmNbCofVidInitP0P1Core (
   )
 {
   UINT32 MsrAddress;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-  MsrAddress = (UINT32) ((((COFVID_STS_MSR *) &MsrRegister)->StartupPstate) + PS_REG_BASE);
-  LibAmdMsrRead (MsrAddress, &MsrRegister, StdHeader);
-  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + 1), &MsrRegister, StdHeader);
-  ((PSTATE_MSR *) &MsrRegister)->NbVid = *(UINT8 *) NewNbVid;
-  LibAmdMsrWrite (PS_REG_BASE, &MsrRegister, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+  MsrAddress = (UINT32) ((((COFVID_STS_MSR *) &MsrReg)->StartupPstate) + PS_REG_BASE);
+  LibAmdMsrRead (MsrAddress, &MsrReg, StdHeader);
+  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + 1), &MsrReg, StdHeader);
+  ((PSTATE_MSR *) &MsrReg)->NbVid = *(UINT8 *) NewNbVid;
+  LibAmdMsrWrite (PS_REG_BASE, &MsrReg, StdHeader);
   FamilySpecificServices->TransitionPstate (FamilySpecificServices, (UINT8) 1, (BOOLEAN) FALSE, StdHeader);
 }
 
@@ -283,16 +283,16 @@ PmNbCofVidInitWarmCore (
   )
 {
   UINT32 MsrAddress;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   for (MsrAddress = PS_REG_BASE; MsrAddress <= PS_MAX_REG; MsrAddress++) {
-    LibAmdMsrRead (MsrAddress, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->IddValue != 0) {
-      if ((((PSTATE_MSR *) &MsrRegister)->NbDid == 0) || ((NB_COF_VID_INIT_WARM *) FunctionData)->NbVidUpdateAll) {
-        ((PSTATE_MSR *) &MsrRegister)->NbVid = ((NB_COF_VID_INIT_WARM *) FunctionData)->NewNbVid;
-        LibAmdMsrWrite (MsrAddress, &MsrRegister, StdHeader);
+    LibAmdMsrRead (MsrAddress, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->IddValue != 0) {
+      if ((((PSTATE_MSR *) &MsrReg)->NbDid == 0) || ((NB_COF_VID_INIT_WARM *) FunctionData)->NbVidUpdateAll) {
+        ((PSTATE_MSR *) &MsrReg)->NbVid = ((NB_COF_VID_INIT_WARM *) FunctionData)->NewNbVid;
+        LibAmdMsrWrite (MsrAddress, &MsrReg, StdHeader);
       }
     }
   }

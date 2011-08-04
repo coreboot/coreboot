@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 48507 $   @e \$Date: 2011-03-09 13:25:11 -0700 (Wed, 09 Mar 2011) $
  *
  */
 /*
@@ -52,6 +52,7 @@
 #include  "AGESA.h"
 #include  "amdlib.h"
 #include  "Ids.h"
+#include  "heapManager.h"
 #include  "GeneralServices.h"
 #include  "Gnb.h"
 #include  "GnbPcie.h"
@@ -60,8 +61,12 @@
 #include  "GfxIntegratedInfoTableInit.h"
 #include  "GfxRegisterAcc.h"
 #include  "GfxLib.h"
+#include  "GnbFuseTable.h"
 #include  GNB_MODULE_DEFINITIONS (GnbGfxInitLibV1)
-#include  "GnbRegistersON.h"
+#include  "GnbCommonLib.h"
+#include  "GnbCommonLib.h"
+#include  "GnbGfxFamServices.h"
+#include  "GfxFamilyServices.h"
 #include  "F14NbPowerGate.h"
 #include  "cpuFamilyTranslation.h"
 #include  "Filecode.h"
@@ -118,6 +123,8 @@ GfxFmMapEngineToDisplayPath (
   UINT8             PrimaryDisplayPathId;
   UINT8             SecondaryDisplayPathId;
   UINTN             DisplayPathIndex;
+  UINT32            D18F3x1FC;
+
   PrimaryDisplayPathId = 0xff;
   SecondaryDisplayPathId = 0xff;
   for (DisplayPathIndex = 0; DisplayPathIndex <  (sizeof (DdiLaneConfigArray) / 4); DisplayPathIndex++) {
@@ -133,6 +140,21 @@ GfxFmMapEngineToDisplayPath (
     // Display config invalid for ON
     PrimaryDisplayPathId = 0xff;
   }
+
+  GnbLibPciRead (
+    MAKE_SBDFO ( 0, 0, 0x18, 3, 0x1FC),
+    AccessWidth32,
+    &D18F3x1FC,
+    GnbLibGetHeader (Gfx)
+    );
+
+  if ((D18F3x1FC & BIT4) == BIT4) {
+    if (Engine->Type.Ddi.DdiData.ConnectorType == ConnectorTypeAutoDetect ||
+       (Engine->Type.Ddi.DdiData.ConnectorType == ConnectorTypeLvds)) {
+      PrimaryDisplayPathId = 0xff;
+    }
+  }
+
   if (PrimaryDisplayPathId != 0xff) {
     ASSERT (Engine->Type.Ddi.DdiData.AuxIndex <= Aux3);
     IDS_HDT_CONSOLE (GFX_MISC, "  Allocate Display Connector at Primary sPath[%d]\n", PrimaryDisplayPathId);
@@ -187,6 +209,31 @@ GfxFmIntegratedInfoTableInit (
   IN       GFX_PLATFORM_CONFIG              *Gfx
   )
 {
+  PP_FUSE_ARRAY                   *PpFuseArray;
+  D18F4x15C_STRUCT                D18F4x15C;
+
+  PpFuseArray = GnbLocateHeapBuffer (AMD_PP_FUSE_TABLE_HANDLE, GnbLibGetHeader (Gfx));
+  ASSERT (PpFuseArray != NULL);
+  if (PpFuseArray != NULL) {
+    if (PpFuseArray->GpuBoostCap == 1) {
+      GnbLibPciRead (
+        MAKE_SBDFO ( 0, 0, 0x18, 4, D18F4x15C_ADDRESS),
+        AccessWidth32,
+        &D18F4x15C.Value,
+        GnbLibGetHeader (Gfx)
+        );
+
+      D18F4x15C.Field.BoostSrc = 1;
+
+      GnbLibPciWrite (
+        MAKE_SBDFO ( 0, 0, 0x18, 4, D18F4x15C_ADDRESS),
+        AccessS3SaveWidth32,
+        &D18F4x15C.Value,
+        GnbLibGetHeader (Gfx)
+        );
+    }
+  }
+
   IntegratedInfoTable->ulDDR_DLL_PowerUpTime = 2380;
   IntegratedInfoTable->ulDDR_PLL_PowerUpTime = 30000;
   IntegratedInfoTable->ulGMCRestoreResetTime = F14NbPowerGateGmcRestoreLatency (GnbLibGetHeader (Gfx));
@@ -221,6 +268,49 @@ GfxFmGmcAddressSwizzel (
 
 /*----------------------------------------------------------------------------------------*/
 /**
+ * Initialize Allow_Nb_Pstate High
+ *
+ *
+ *
+ * @param[in] Gfx         Graphics configuration
+ */
+
+VOID
+GfxFmGmcAllowPstateHigh (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  )
+{
+  GMMxCAC_STRUCT                GMMxCAC;
+  GMMxCCC_STRUCT                GMMxCCC;
+  GMMx6B30_STRUCT               GMMx6B30;
+  GMMx7730_STRUCT               GMMx7730;
+  CPU_LOGICAL_ID                LogicalId;
+
+  GetLogicalIdOfCurrentCore (&LogicalId, GnbLibGetHeader (Gfx));
+  //
+  //A workaround for F14 A0. This has be fixed in the future vesions.
+  //
+  if ((LogicalId.Revision & AMD_F14_ON_A0) != 0) {
+
+    //For PCIE Enhanced Mode
+    GMMx6B30.Value = GmmRegisterRead (GMMx6B30_ADDRESS, Gfx);
+    GMMx7730.Value = GmmRegisterRead (GMMx7730_ADDRESS, Gfx);
+    GMMx6B30.Field.DcAllowNbPstatesForceOne = 1;
+    GMMx7730.Field.DcAllowNbPstatesForceOne = 1;
+    GmmRegisterWrite (GMMx6B30_ADDRESS, GMMx6B30.Value, TRUE, Gfx);
+    GmmRegisterWrite (GMMx7730_ADDRESS, GMMx7730.Value, TRUE, Gfx);
+    //For Legacy mode
+    GMMxCAC.Value =  GmmRegisterRead (GMMxCAC_ADDRESS, Gfx);
+    GMMxCCC.Value = GmmRegisterRead (GMMxCCC_ADDRESS, Gfx);
+    GMMxCAC.Field.NbPstateChangeForceOn = 1;
+    GMMxCCC.Field.NbPstateChangeForceOn = 1;
+    GmmRegisterWrite (GMMxCAC_ADDRESS, GMMxCAC.Value, TRUE, Gfx);
+    GmmRegisterWrite (GMMxCCC_ADDRESS, GMMxCCC.Value, TRUE, Gfx);
+  }
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
  * Calculate COF for DFS out of Main PLL
  *
  *
@@ -230,7 +320,7 @@ GfxFmGmcAddressSwizzel (
  * @retval                COF in 10khz
  */
 
-AGESA_STATUS
+UINT32
 GfxFmCalculateClock (
   IN       UINT8                       Did,
   IN       AMD_CONFIG_PARAMS          *StdHeader
@@ -240,19 +330,36 @@ GfxFmCalculateClock (
   MainPllFreq10kHz = GfxLibGetMainPllFreq (StdHeader) * 100;
   return GfxLibCalculateClk (Did, MainPllFreq10kHz);
 }
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Set idle voltage mode for GFX
+ *
+ *
+ * @param[in] Gfx             Pointer to global GFX configuration
+ */
+
+VOID
+GfxFmSetIdleVoltageMode (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  )
+{
+
+}
+
 /*----------------------------------------------------------------------------------------
  *           GMC Disable Clock Gating
  *----------------------------------------------------------------------------------------
  */
 
 GMM_REG_ENTRY  GmcDisableClockGating[] = {
-  { 0x20C0, 0x00000C80 },
-  { 0x20B8, 0x00000400 },
-  { 0x20BC, 0x00000400 },
-  { 0x2640, 0x00000400 },
-  { 0x263C, 0x00000400 },
-  { 0x2638, 0x00000400 },
-  { 0x15C0, 0x00081401 }
+  { GMMx20C0_ADDRESS, 0x00000C80 },
+  { GMMx20B8_ADDRESS, 0x00000400 },
+  { GMMx20BC_ADDRESS, 0x00000400 },
+  { GMMx2640_ADDRESS, 0x00000400 },
+  { GMMx263C_ADDRESS, 0x00000400 },
+  { GMMx2638_ADDRESS, 0x00000400 },
+  { GMMx15C0_ADDRESS, 0x00081401 }
 };
 
 TABLE_INDIRECT_PTR GmcDisableClockGatingPtr = {
@@ -265,13 +372,13 @@ TABLE_INDIRECT_PTR GmcDisableClockGatingPtr = {
  *----------------------------------------------------------------------------------------
  */
 GMM_REG_ENTRY  GmcEnableClockGating[] = {
-  { 0x20C0, 0x00040C80 },
-  { 0x20B8, 0x00040400 },
-  { 0x20BC, 0x00040400 },
-  { 0x2640, 0x00040400 },
-  { 0x263C, 0x00040400 },
-  { 0x2638, 0x00040400 },
-  { 0x15C0, 0x000C1401 }
+  { GMMx20C0_ADDRESS, 0x00040C80 },
+  { GMMx20B8_ADDRESS, 0x00040400 },
+  { GMMx20BC_ADDRESS, 0x00040400 },
+  { GMMx2640_ADDRESS, 0x00040400 },
+  { GMMx263C_ADDRESS, 0x00040400 },
+  { GMMx2638_ADDRESS, 0x00040400 },
+  { GMMx15C0_ADDRESS, 0x000C1401 }
 };
 
 
@@ -318,7 +425,7 @@ TABLE_INDIRECT_PTR GmcPerformanceTuningTablePtr = {
 GMM_REG_ENTRY  GmcMiscInitTable [] = {
   { GMMx25C8_ADDRESS, 0x007F605F },
   { GMMx25CC_ADDRESS, 0x00007F7E },
-  { 0x20B4, 0x00000000 },
+  { GMMx20B4_ADDRESS, 0x00000000 },
   { GMMx28C8_ADDRESS, 0x00000003 },
   { GMMx202C_ADDRESS, 0x0003FFFF }
 };
@@ -334,8 +441,8 @@ TABLE_INDIRECT_PTR GmcMiscInitTablePtr = {
  */
 GMM_REG_ENTRY  GmcRemoveBlackoutTable [] = {
   { GMMx25C0_ADDRESS, 0x00000000 },
-  { 0x20EC, 0x000001FC },
-  { 0x20D4, 0x00000016 }
+  { GMMx20EC_ADDRESS, 0x000001FC },
+  { GMMx20D4_ADDRESS, 0x00000016 }
 };
 
 TABLE_INDIRECT_PTR GmcRemoveBlackoutTablePtr = {
@@ -410,8 +517,8 @@ GMM_REG_ENTRY GmcRegisterEngineInitTable [] = {
   { GMMx2B90_ADDRESS, 0x002e09d7 },
   { GMMx2B8C_ADDRESS, 0x0000015e },
   { GMMx2B90_ADDRESS, 0x00170a26 },
-  { 0x2B94, 0x5d976000 },
-  { 0x2B98, 0x410af020 }
+  { GMMx2B94_ADDRESS, 0x5d976000 },
+  { GMMx2B98_ADDRESS, 0x410af020 }
 };
 
 TABLE_INDIRECT_PTR GmcRegisterEngineInitTablePtr = {
@@ -483,10 +590,10 @@ REGISTER_COPY_ENTRY CnbToGncRegisterCopyTable [] = {
     GMMx284C_Dimm0AddrMap_WIDTH + GMMx284C_Dimm1AddrMap_WIDTH
   },
   {
-    MAKE_SBDFO (0, 0, 0x18, 2, D18F2x094_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, D18F2x94_ADDRESS),
     GMMx284C_ADDRESS,
-    D18F2x094_BankSwizzleMode_OFFSET,
-    D18F2x094_BankSwizzleMode_WIDTH,
+    D18F2x94_BankSwizzleMode_OFFSET,
+    D18F2x94_BankSwizzleMode_WIDTH,
     GMMx284C_BankSwizzleMode_OFFSET,
     GMMx284C_BankSwizzleMode_WIDTH
   },
@@ -497,6 +604,14 @@ REGISTER_COPY_ENTRY CnbToGncRegisterCopyTable [] = {
     D18F2xA8_BankSwap_WIDTH,
     GMMx284C_BankSwap_OFFSET,
     GMMx284C_BankSwap_WIDTH
+  },
+  {
+    MAKE_SBDFO (0, 0, 0x18, 2, D18F2x110_ADDRESS),
+    GMMx2854_ADDRESS,
+    0,
+    31,
+    0,
+    31
   },
   {
     MAKE_SBDFO (0, 0, 0x18, 2, D18F2x114_ADDRESS),

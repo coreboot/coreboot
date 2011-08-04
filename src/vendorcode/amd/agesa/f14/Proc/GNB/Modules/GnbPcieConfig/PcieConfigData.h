@@ -47,6 +47,10 @@
 #ifndef _PCIECONFIGDATA_H_
 #define _PCIECONFIGDATA_H_
 
+AGESA_STATUS
+PcieConfigurationInit (
+  IN       AMD_CONFIG_PARAMS               *StdHeader
+  );
 
 AGESA_STATUS
 PcieLocateConfigurationData (

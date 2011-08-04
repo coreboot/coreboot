@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 34897 $ @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -73,18 +73,12 @@
  *
  *----------------------------------------------------------------------------
  */
-#define RECDEF_DRAM_CONTROL_REG   0x14042A03
-#define RECDEF_DRAM_MRSREG        0x000400A5
-#define RECDEF_DRAM_TIMING_LO     0x000A0092
-#define RECDEF_DRAM_TIMING_HI     0x001218FF
 #define RECDEF_CSMASK_REG         0x00003FE0
-#define RECDEF_DRAM_CONFIG_LO_REG 0x30000000
-#define RECDEF_DRAM_CONFIG_HI_REG 0x1E000000
 #define RECDEF_DRAM_BASE_REG      0x00000003
-#define RECDEF_DRAM_TIMING_0      0x0A000101
-#define RECDEF_DRAM_TIMING_1      0
 
 #define MAX_RD_DQS_DLY  0x1F
+#define DEFAULT_WR_ODT_ON_ON 6
+#define DEFAULT_RD_ODT_ON_ON 6
 /*----------------------------------------------------------------------------
  *                           TYPEDEFS AND STRUCTURES
  *
@@ -126,6 +120,8 @@ MemRecNPlatformSpecON (
 {
   UINT32 AddrTmgValue;
   UINT32 DrvStrValue;
+  UINT32 RODTCSLow;
+  UINT32 WODTCSLow;
   CH_DEF_STRUCT *ChannelPtr;
 
   ChannelPtr = NBPtr->ChannelPtr;
@@ -133,10 +129,10 @@ MemRecNPlatformSpecON (
     // SODIMM
     if (ChannelPtr->Dimms == 2) {
       AddrTmgValue = 0x00000039;
-      DrvStrValue = 0x30222323;
+      DrvStrValue = 0x20222323;
     } else {
       AddrTmgValue = 0;
-      DrvStrValue = 0x00002222;
+      DrvStrValue = 0x00002223;
     }
   } else {
     // UDIMM
@@ -153,6 +149,23 @@ MemRecNPlatformSpecON (
   }
   MemRecNSetBitFieldNb (NBPtr, BFODCControl, DrvStrValue);
   MemRecNSetBitFieldNb (NBPtr, BFAddrTmgControl, AddrTmgValue);
+  RODTCSLow = 0;
+  if (ChannelPtr->Dimms == 2) {
+    RODTCSLow = 0x01010404;
+    WODTCSLow = 0x09050605;
+  } else if (NBPtr->ChannelPtr->DimmDrPresent != 0) {
+    WODTCSLow = 0x00000201;
+    if (NBPtr->DimmToBeUsed == 1) {
+      WODTCSLow = 0x08040000;
+    }
+  } else {
+    WODTCSLow = 0x00000001;
+    if (NBPtr->DimmToBeUsed == 1) {
+      WODTCSLow = 0x00040000;
+    }
+  }
+  MemRecNSetBitFieldNb (NBPtr, BFPhyRODTCSLow, RODTCSLow);
+  MemRecNSetBitFieldNb (NBPtr, BFPhyWODTCSLow, WODTCSLow);
 
   return TRUE;
 }
@@ -239,7 +252,9 @@ MemRecNSetDramOdtON (
 
   if (OdtMode == WRITE_LEVELING_MODE) {
     if (ChipSelect == TargetCS) {
+      if (Dimms >= 2) {
       DramTerm = DramTermDyn;
+      }
 
       MaxDimmsPerChannel = RecGetMaxDimmsPerChannel (NBPtr->RefPtr->PlatformMemoryConfiguration, 0, NBPtr->ChannelPtr->ChannelID);
 
@@ -249,7 +264,7 @@ MemRecNSetDramOdtON (
         } else {
           // Dimms = 1
           if (TargetCS == 0) {
-            WrLvOdt = 0xF;
+            WrLvOdt = 1;
           } else {
             // TargetCS = 2
             WrLvOdt = 4;
@@ -286,6 +301,7 @@ MemRecNAutoConfigON (
   UINT8 ChipSel;
   UINT32 CSBase;
   UINT32 NBClkFreq;
+  UINT8 i;
   DCT_STRUCT *DCTPtr;
   CH_DEF_STRUCT *ChannelPtr;
 
@@ -298,7 +314,6 @@ MemRecNAutoConfigON (
                           0,
                           &NBClkFreq,
                           &(NBPtr->MemPtr->StdHeader));
-  NBPtr->NBClkFreq = NBClkFreq;
   MemRecNSetBitFieldNb (NBPtr, BFNbPsCtrlDis, 1);
 
   //Prepare variables for future usage.
@@ -331,29 +346,74 @@ MemRecNAutoConfigON (
   }
   MemRecNSetBitFieldNb (NBPtr, BFDramBaseReg0, RECDEF_DRAM_BASE_REG);
   MemRecNSetBitFieldNb (NBPtr, BFDramLimitReg0, 0x70000);
-  MemRecNSetBitFieldNb (NBPtr, BFDramBankAddrReg, 0x00000011);
 
-  // Set timing registers
-  MemRecNSetBitFieldNb (NBPtr, BFDramTiming0, RECDEF_DRAM_TIMING_0);
-  MemRecNSetBitFieldNb (NBPtr, BFDramTiming1, RECDEF_DRAM_TIMING_1);
-  MemRecNSetBitFieldNb (NBPtr, BFDramTimingLoReg, RECDEF_DRAM_TIMING_LO);
-  MemRecNSetBitFieldNb (NBPtr, BFDramTimingHiReg, RECDEF_DRAM_TIMING_HI);
-  MemRecNSetBitFieldNb (NBPtr, BFDramMRSReg, RECDEF_DRAM_MRSREG);
-  MemRecNSetBitFieldNb (NBPtr, BFDramControlReg, RECDEF_DRAM_CONTROL_REG);
-  // Set DRAM Config Low Register
-  MemRecNSetBitFieldNb (NBPtr, BFDramConfigLoReg, RECDEF_DRAM_CONFIG_LO_REG);
+  // Use default values for common registers
+  i = 0;
+  while (NBPtr->RecModeDefRegArray[i] != NULL) {
+    MemRecNSetBitFieldNb (NBPtr, NBPtr->RecModeDefRegArray[i], NBPtr->RecModeDefRegArray[i + 1]);
+    i += 2;
+  }
 
-  // Set DRAM Config High Register
-  MemRecNSetBitFieldNb (NBPtr, BFDramConfigHiReg, RECDEF_DRAM_CONFIG_HI_REG);
+  //======================================================================
+  // Build Dram Config Misc Register Value
+  //======================================================================
+  //
+  // Max out Non-SPD timings
+  MemRecNSetBitFieldNb (NBPtr, BFTwrrdSD, 0xA);
+  MemRecNSetBitFieldNb (NBPtr, BFTrdrdSD, 0x8);
+  MemRecNSetBitFieldNb (NBPtr, BFTwrwrSD, 0x9);
 
-  // DctWrLimit = 0x1F
+  MemRecNSetBitFieldNb (NBPtr, BFWrOdtOnDuration, DEFAULT_WR_ODT_ON_ON);
+  MemRecNSetBitFieldNb (NBPtr, BFRdOdtOnDuration, DEFAULT_RD_ODT_ON_ON);
+  MemRecNSetBitFieldNb (NBPtr, BFWrOdtTrnOnDly, 0);
+
+  MemRecNSetBitFieldNb (NBPtr, BFRdOdtTrnOnDly, 6 - 5);
+  //======================================================================
+  // DRAM MRS Register, set ODT
+  //======================================================================
+  MemRecNSetBitFieldNb (NBPtr, BFBurstCtrl, 1);
+
+  //
+  // Recommended registers setting BEFORE DRAM device initialization and training
+  //
+  MemRecNSetBitFieldNb (NBPtr, BFDisAutoRefresh, 1);
+  MemRecNSetBitFieldNb (NBPtr, BFZqcsInterval, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFRxMaxDurDllNoLock, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFTxMaxDurDllNoLock, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFEnRxPadStandby, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFPrefCpuDis, 1);
   MemRecNSetBitFieldNb (NBPtr, BFDctWrLimit, 0x1F);
-  // EnCpuSerRdBehindNpIoWr = 1
   MemRecNSetBitFieldNb (NBPtr, BFEnCpuSerRdBehindNpIoWr, 1);
+  MemRecNSetBitFieldNb (NBPtr, BFDbeGskMemClkAlignMode, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFMaxLatency, 0x12);
+  MemRecNSetBitFieldNb (NBPtr, BFTraceModeEn, 0);
+
+  // Enable cut through mode for NB P0
+  MemRecNSetBitFieldNb (NBPtr, BFDisCutThroughMode, 0);
 
   return TRUE;
 }
 
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *     This function overrides the seed for hardware based RcvEn training of Ontario.
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]   *SeedPtr - Pointer to the seed value.
+ *
+ *     @return    TRUE
+ */
+
+BOOLEAN
+MemRecNOverrideRcvEnSeedON (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *SeedPtr
+  )
+{
+  *(UINT16*) SeedPtr = 0x5B;
+  return TRUE;
+}
 /*----------------------------------------------------------------------------
  *                              LOCAL FUNCTIONS
  *

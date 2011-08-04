@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 40151 $   @e \$Date: 2010-10-20 06:38:17 +0800 (Wed, 20 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -69,12 +69,15 @@
   #endif
 #endif
 
+#ifndef MIN
 #define MIN(x, y) (((x) > (y))? (y):(x))
+#endif
+
+#ifndef MAX
 #define MAX(x, y) (((x) > (y))? (x):(y))
+#endif
 
 #define OFF 0
-
-#define PVOID UINT64
 
 #define GnbLibGetHeader(x)  ((AMD_CONFIG_PARAMS*) (x)->StdHeader)
 

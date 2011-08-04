@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 38902 $   @e \$Date: 2010-10-02 02:01:38 +0800 (Sat, 02 Oct 2010) $
+ * @e \$Revision: 47437 $   @e \$Date: 2011-02-20 15:32:39 -0700 (Sun, 20 Feb 2011) $
  *
  */
 /*
@@ -52,13 +52,14 @@
 
 #define PP_FUSE_MAX_NUM_DPM_STATE 5
 #define PP_FUSE_MAX_NUM_SW_STATE  6
+
 /// Fuse definition structure
 typedef struct  {
   UINT8                       PPlayTableRev;              ///< PP table revision
   UINT8                       SclkDpmValid[6];            ///< Valid DPM states
-  UINT8                       SclkDpmDid[5];              ///< Sclk DPM DID
-  UINT8                       SclkDpmVid[5];              ///< Sclk DPM VID
-  UINT8                       SclkDpmCac[5];              ///< Sclk DPM Cac
+  UINT8                       SclkDpmDid[6];              ///< Sclk DPM DID
+  UINT8                       SclkDpmVid[6];              ///< Sclk DPM VID
+  UINT8                       SclkDpmCac[6];              ///< Sclk DPM Cac
   UINT8                       PolicyFlags[6];             ///< State policy flags
   UINT8                       PolicyLabel[6];             ///< State policy label
   UINT8                       VclkDid[4];                 ///< VCLK DID
@@ -72,6 +73,11 @@ typedef struct  {
   UINT8                       PcieGen2Vid;                ///< Pcie Gen 2 VID
   UINT8                       MainPllId;                  ///< Main PLL Id from fuses
   UINT8                       WrCkDid;                    ///< WRCK SMU clock Divisor
+  UINT8                       GpuBoostCap;                ///< GPU boost cap
+  UINT16                      SclkDpmTdpLimit[6];         ///< Sclk DPM TDP limit
+  UINT16                      SclkDpmTdpLimitPG;          ///< TDP limit PG
+  UINT32                      SclkDpmBoostMargin;         ///< Boost margin
+  UINT32                      SclkDpmThrottleMargin;      ///< Throttle margin
 } PP_FUSE_ARRAY;
 
 #pragma pack (pop)

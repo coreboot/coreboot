@@ -122,7 +122,7 @@ IsC6FeatureEnabled (
     IsEnabled = TRUE;
     for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
       if (IsProcessorPresent (Socket, StdHeader)) {
-        GetFeatureServicesOfSocket (&C6FamilyServiceTable, Socket, &FamilyServices, StdHeader);
+        GetFeatureServicesOfSocket (&C6FamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
         if ((FamilyServices == NULL) || !FamilyServices->IsC6Supported (FamilyServices, Socket, StdHeader)) {
           IsEnabled = FALSE;
           break;
@@ -154,7 +154,7 @@ InitializeC6Feature (
 {
   UINT32  BscSocket;
   UINT32  Ignored;
-  UINT32  BscCore;
+  UINT32  BscCoreNum;
   UINT32  Core;
   UINT32  Socket;
   UINT32  NumberOfSockets;
@@ -175,8 +175,8 @@ InitializeC6Feature (
 
   if ((EntryPoint & (CPU_FEAT_AFTER_POST_MTRR_SYNC | CPU_FEAT_AFTER_RESUME_MTRR_SYNC)) != 0) {
     // Load any required microcode patches on both normal boot and resume from S3.
-    IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
-    GetFeatureServicesOfSocket (&C6FamilyServiceTable, BscSocket, &C6FamilyServices, StdHeader);
+    IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
+    GetFeatureServicesOfSocket (&C6FamilyServiceTable, BscSocket, (const VOID **)&C6FamilyServices, StdHeader);
     if (C6FamilyServices != NULL) {
       C6FamilyServices->ReloadMicrocodePatchAfterMemInit (StdHeader);
     }
@@ -189,13 +189,13 @@ InitializeC6Feature (
 
     for (Socket = 0; Socket < NumberOfSockets; Socket++) {
       if (IsProcessorPresent (Socket, StdHeader)) {
-        GetFeatureServicesOfSocket (&C6FamilyServiceTable, Socket, &C6FamilyServices, StdHeader);
+        GetFeatureServicesOfSocket (&C6FamilyServiceTable, Socket, (const VOID **)&C6FamilyServices, StdHeader);
         if (C6FamilyServices != NULL) {
           // run code on all APs
           TaskPtr.FuncAddress.PfApTask = C6FamilyServices->ReloadMicrocodePatchAfterMemInit;
           if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
             for (Core = 0; Core < NumberOfCores; Core++) {
-              if ((Socket != BscSocket) || (Core != BscCore)) {
+              if ((Socket != BscSocket) || (Core != BscCoreNum)) {
                 ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
               }
             }
@@ -230,7 +230,7 @@ EnableC6OnSocket (
 
   IDS_HDT_CONSOLE (CPU_TRACE, "    C6 is enabled\n");
 
-  GetFeatureServicesOfCurrentCore (&C6FamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&C6FamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   FamilyServices->InitializeC6 (FamilyServices,
                                 *((UINT64 *) EntryPoint),
                                 &CpuEarlyParams->PlatformConfig,

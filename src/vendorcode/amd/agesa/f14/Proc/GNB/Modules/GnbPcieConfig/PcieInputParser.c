@@ -52,6 +52,7 @@
 #include  "Ids.h"
 #include  "Gnb.h"
 #include  "GnbPcie.h"
+#include  "PcieInputParser.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBPCIECONFIG_PCIEINPUTPARSER_FILECODE
 /*----------------------------------------------------------------------------------------
@@ -70,7 +71,15 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+UINTN
+PcieInputParserGetLengthOfPcieEnginesList (
+  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  );
 
+UINTN
+PcieInputParserGetLengthOfDdiEnginesList (
+  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  );
 
 
 /*----------------------------------------------------------------------------------------*/

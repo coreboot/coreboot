@@ -54,6 +54,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
+#include "AdvancedApi.h"
 #include "mu.h"
 #include "OptionMemory.h"
 #include "Ids.h"

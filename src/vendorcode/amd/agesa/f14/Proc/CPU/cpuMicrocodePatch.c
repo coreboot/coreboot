@@ -109,6 +109,13 @@ GetMicrocodeVersion (
   IN OUT   AMD_CONFIG_PARAMS  *StdHeader
   );
 
+VOID
+LoadMicrocodePatchAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -144,8 +151,8 @@ LoadMicrocodePatch (
 
   if (IsCorePairPrimary (FirstCoreIsComputeUnitPrimary, StdHeader)) {
     // Get the patch pointer
-    GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-    FamilySpecificServices->GetMicroCodePatchesStruct (FamilySpecificServices, (VOID **) &MicrocodePatchPtr, &TotalPatches, StdHeader);
+    GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+    FamilySpecificServices->GetMicroCodePatchesStruct (FamilySpecificServices, (const VOID **) &MicrocodePatchPtr, &TotalPatches, StdHeader);
 
     IDS_OPTION_HOOK (IDS_UCODE, &TotalPatches, StdHeader);
 
@@ -258,10 +265,10 @@ GetPatchEquivalentId (
   //
   // find the equivalent ID for microcode purpose using the equivalence table
   //
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   FamilySpecificServices->GetMicrocodeEquivalenceTable (FamilySpecificServices,
-                                                        &MicrocodeEquivalenceTable,
+                                                        (const VOID **) &MicrocodeEquivalenceTable,
                                                         &EquivalencyEntries,
                                                         StdHeader);
 

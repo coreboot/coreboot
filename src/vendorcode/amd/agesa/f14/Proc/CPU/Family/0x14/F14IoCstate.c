@@ -115,28 +115,28 @@ F14InitializeIoCstate (
   UINT32   i;
   UINT32   MaxEnabledPstate;
   UINT32   PciRegister;
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   AP_TASK  TaskPtr;
   PCI_ADDR PciAddress;
 
   if ((EntryPoint & CPU_FEAT_AFTER_PM_INIT) != 0) {
     for (i = MSR_PSTATE_7; i > MSR_PSTATE_0; i--) {
-      LibAmdMsrRead (i, &MsrRegister, StdHeader);
-      if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+      LibAmdMsrRead (i, &MsrReg, StdHeader);
+      if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
         break;
       }
     }
     MaxEnabledPstate = i - MSR_PSTATE_0;
     // Initialize MSRC001_0073[CstateAddr] on each core to a region of
     // the IO address map with 8 consecutive available addresses.
-    MsrRegister = 0;
-    ((CSTATE_ADDRESS_MSR *) &MsrRegister)->CstateAddr = PlatformConfig->CStateIoBaseAddress;
-    ASSERT ((((CSTATE_ADDRESS_MSR *) &MsrRegister)->CstateAddr != 0) &&
-            (((CSTATE_ADDRESS_MSR *) &MsrRegister)->CstateAddr <= 0xFFF8));
+    MsrReg = 0;
+    ((CSTATE_ADDRESS_MSR *) &MsrReg)->CstateAddr = PlatformConfig->CStateIoBaseAddress;
+    ASSERT ((((CSTATE_ADDRESS_MSR *) &MsrReg)->CstateAddr != 0) &&
+            (((CSTATE_ADDRESS_MSR *) &MsrReg)->CstateAddr <= 0xFFF8));
 
     TaskPtr.FuncAddress.PfApTaskI = F14InitializeIoCstateOnCore;
     TaskPtr.DataTransfer.DataSizeInDwords = 2;
-    TaskPtr.DataTransfer.DataPtr = &MsrRegister;
+    TaskPtr.DataTransfer.DataPtr = &MsrReg;
     TaskPtr.DataTransfer.DataTransferFlags = 0;
     TaskPtr.ExeFlags = WAIT_FOR_CORE;
     ApUtilRunCodeOnAllLocalCoresAtEarly (&TaskPtr, StdHeader, NULL);

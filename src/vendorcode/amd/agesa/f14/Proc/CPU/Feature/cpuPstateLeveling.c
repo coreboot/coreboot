@@ -107,6 +107,24 @@ PutCoreInPState0 (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
+AGESA_STATUS
+PStateLevelingStub (
+  IN OUT   S_CPU_AMD_PSTATE   *PStateStrucPtr,
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+AGESA_STATUS
+PStateLevelingMain (
+  IN OUT   S_CPU_AMD_PSTATE   *PStateStrucPtr,
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+VOID
+CorePstateRegModify (
+  IN       VOID               *CpuAmdPState,
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
 
 /**
  *---------------------------------------------------------------------------------------
@@ -874,7 +892,7 @@ PutAllCoreInPState0 (
   AP_TASK                 TaskPtr;
   UINT32                  BscSocket;
   UINT32                  Ignored;
-  UINT32                  BscCore;
+  UINT32                  BscCoreNum;
   UINT32                  Core;
   UINT32                  Socket;
   UINT32                  NumberOfSockets;
@@ -887,7 +905,7 @@ PutAllCoreInPState0 (
   TaskPtr.DataTransfer.DataPtr = PStateBufferPtr;
   TaskPtr.DataTransfer.DataTransferFlags = DATA_IN_MEMORY;
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   PutCoreInPState0 (PStateBufferPtr, StdHeader);
@@ -895,7 +913,7 @@ PutAllCoreInPState0 (
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != (UINT32) BscSocket) || (Core != (UINT32) BscCore)) {
+        if ((Socket != (UINT32) BscSocket) || (Core != (UINT32) BscCoreNum)) {
           ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
         }
       }
@@ -931,7 +949,7 @@ CorePstateRegModify (
   PSTATE_CPU_FAMILY_SERVICES   *FamilySpecificServices;
   FamilySpecificServices = NULL;
 
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilySpecificServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilySpecificServices, StdHeader);
   ASSERT (FamilySpecificServices != NULL)
   FamilySpecificServices->SetPStateLevelReg  (FamilySpecificServices, (S_CPU_AMD_PSTATE *) CpuAmdPState, StdHeader);
 }
@@ -956,7 +974,7 @@ StartPstateMsrModify (
   AP_TASK                 TaskPtr;
   UINT32                  BscSocket;
   UINT32                  Ignored;
-  UINT32                  BscCore;
+  UINT32                  BscCoreNum;
   UINT32                  Core;
   UINT32                  Socket;
   UINT32                  NumberOfSockets;
@@ -969,7 +987,7 @@ StartPstateMsrModify (
   TaskPtr.DataTransfer.DataPtr = CpuAmdPState;
   TaskPtr.DataTransfer.DataTransferFlags = DATA_IN_MEMORY;
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   CorePstateRegModify (CpuAmdPState, StdHeader);
@@ -977,7 +995,7 @@ StartPstateMsrModify (
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != (UINT32) BscSocket) || (Core != (UINT32) BscCore)) {
+        if ((Socket != (UINT32) BscSocket) || (Core != (UINT32) BscCoreNum)) {
           ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
         }
       }
@@ -1067,7 +1085,7 @@ PutCoreInPState0 (
     return;
   }
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   FamilySpecificServices->TransitionPstate  (FamilySpecificServices, (UINT8) 0, (BOOLEAN) FALSE, StdHeader);
 }

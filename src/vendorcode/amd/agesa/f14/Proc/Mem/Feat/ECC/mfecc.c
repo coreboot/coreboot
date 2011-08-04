@@ -75,11 +75,18 @@ RDATA_GROUP (G2_PEI)
  *----------------------------------------------------------------------------
  */
 
+BOOLEAN
+MemFCheckECC (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+/*
 UINT32
 STATIC
 MemFGetScrubAddr (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );
+*/
 
 VOID
 STATIC
@@ -296,6 +303,7 @@ InitECCOverriedeStruct (
  *     @return          Scrubber Address
  */
 
+/*
 UINT32
 STATIC
 MemFGetScrubAddr (
@@ -318,4 +326,4 @@ MemFGetScrubAddr (
   }
   return ((ScrubAddrHi << 16) | (ScrubAddrLo >> 16));
 }
-
+*/

@@ -10,7 +10,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/F14
- * @e \$Revision: 39744 $   @e \$Date: 2010-10-15 02:18:02 +0800 (Fri, 15 Oct 2010) $
+ * @e \$Revision: 46951 $   @e \$Date: 2011-02-11 12:37:59 -0700 (Fri, 11 Feb 2011) $
  *
  */
 /*
@@ -51,7 +51,6 @@
  */
 #include "AGESA.h"
 #include "amdlib.h"
-#include "cpuCacheInit.h"
 #include "cpuF14PowerMgmt.h"
 #include "cpuRegisters.h"
 #include "cpuApicUtilities.h"
@@ -60,7 +59,6 @@
 #include "cpuEarlyInit.h"
 #include "cpuFamilyTranslation.h"
 #include "cpuF14PowerCheck.h"
-#include "cpuF14Utilities.h"
 #include "Filecode.h"
 #define FILECODE PROC_CPU_FAMILY_0X14_CPUF14POWERCHECK_FILECODE
 
@@ -100,18 +98,18 @@ F14PmPwrChkCopyPstate (
 
 /*---------------------------------------------------------------------------------------*/
 /**
- * Family 14h core 0 entry point for performing the family 14h Processor-
+ * Family 14h Ontario core 0 entry point for performing the family 14h Ontario Processor-
  * Systemboard Power Delivery Check.
  *
  * The steps are as follows:
- *    1. Starting with P0, loop through all P-states until a passing state is
+ *    1. Starting with hardware P0, loop through all P-states until a passing state is
  *       found.  A passing state is one in which the current required by the
  *       CPU is less than the maximum amount of current that the system can
  *       provide to the CPU.  If P0 is under the limit, no further action is
  *       necessary.
  *    2. If at least one P-State is under the limit & at least one P-State is
  *       over the limit, the BIOS must:
- *       a. Clear both D18F4x15C[BoostSrc] and D18F4x15C[NumBoostStates] to 0.
+ *       a. Program D18F4x15C[BoostSrc]=0.
  *       b. If the processor's current P-State is disabled by the power check,
  *          then the BIOS must request a transition to an enabled P-state
  *          using MSRC001_0062[PstateCmd] and wait for MSRC001_0063[CurPstate]
@@ -126,7 +124,7 @@ F14PmPwrChkCopyPstate (
  *          1. D18F3x64[HtcPstateLimit]
  *          2. D18F3xDC[PstateMaxVal]
  *    3. If all P-States are over the limit, the BIOS must:
- *       a. Clear both D18F4x15C[BoostSrc] and D18F4x15C[NumBoostStates] to 0.
+ *       a. Program D18F4x15C[BoostSrc]=0.
  *       b. If the processor's current P-State is != D18F3xDC[PstateMaxVal], then
  *          write D18F3xDC[PstateMaxVal] to MSRC001_0062[PstateCmd] and wait for
  *          MSRC001_0063[CurPstate] to reflect the new value.
@@ -151,17 +149,24 @@ F14PmPwrCheck (
   IN       AMD_CONFIG_PARAMS     *StdHeader
   )
 {
-  UINT8       DisPsNum;
+  UINT8       DisHwPsNum;
+  UINT8       DisSwPsNum;
   UINT8       PsMaxVal;
   UINT8       Pstate;
+  UINT8       PstateLimit;
+  UINT8       NumberBoostStates;
   UINT32      ProcIddMax;
-  UINT32      PciRegister;
   UINT32      Socket;
   UINT32      Module;
   UINT32      Core;
-  UINT32      PstateLimit;
   PCI_ADDR    PciAddress;
-  UINT64      MsrRegister;
+  UINT64      LocalMsrRegister;
+  BOOLEAN     ThermalPstateEn;
+  NB_CAPS_REGISTER              NbCaps;
+  HTC_REGISTER                  HtcReg;
+  CLK_PWR_TIMING_CTRL2_REGISTER ClkPwrTimingCtrl2;
+  CPB_CTRL_REGISTER             CpbCtrl;
+  CPU_LOGICAL_ID                CpuFamilyRevision;
   AP_TASK     TaskPtr;
   AGESA_STATUS IgnoredSts;
   PWRCHK_ERROR_DATA ErrorData;
@@ -172,17 +177,53 @@ F14PmPwrCheck (
 
   ASSERT (Core == 0);
 
+  // save ThermalPstateEn
+  //   TRUE if the P-state indicated by D18F3x64[HtcPstateLimit] is enabled;
+  //   FALSE otherwise.
+  PciAddress.AddressValue = HTC_PCI_ADDR;
+  LibAmdPciRead (AccessWidth32, PciAddress, &HtcReg, StdHeader); // D18F3x64
+  LibAmdMsrRead (PS_REG_BASE + HtcReg.HtcPstateLimit, &LocalMsrRegister, StdHeader);
+  if (((PSTATE_MSR *) &LocalMsrRegister)->PsEnable == 1) {
+    ThermalPstateEn = TRUE;
+  } else {
+    ThermalPstateEn = FALSE;
+  }
+
   // get the Max P-state value
   for (PsMaxVal = NM_PS_REG - 1; PsMaxVal != 0; --PsMaxVal) {
-    LibAmdMsrRead (PS_REG_BASE + PsMaxVal, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+    LibAmdMsrRead (PS_REG_BASE + PsMaxVal, &LocalMsrRegister, StdHeader);
+    if (((PSTATE_MSR *) &LocalMsrRegister)->PsEnable == 1) {
       break;
     }
   }
 
   ErrorData.HwPstateNumber = (UINT8) (PsMaxVal + 1);
 
-  DisPsNum = 0;
+  // get NumberBoostStates
+  GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
+  if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) != 0) {
+    NumberBoostStates = 0;
+  } else {
+    PciAddress.AddressValue = CPB_CTRL_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, PciAddress, &CpbCtrl, StdHeader);  // D18F4x15C
+    NumberBoostStates = (UINT8) CpbCtrl.NumBoostStates;
+  }
+
+  // update PstateMaxVal if warranted by HtcPstateLimit
+  PciAddress.AddressValue = NB_CAPS_PCI_ADDR;
+  LibAmdPciRead (AccessWidth32, PciAddress, &NbCaps, StdHeader);
+  if (NbCaps.HtcCapable == 1) {
+    if (HtcReg.HtcTmpLmt != 0) {
+      PciAddress.AddressValue = CPTC2_PCI_ADDR;
+      LibAmdPciRead (AccessWidth32, PciAddress, &ClkPwrTimingCtrl2, StdHeader); // D18F3xDC
+      if (HtcReg.HtcPstateLimit > ClkPwrTimingCtrl2.PstateMaxVal) {
+        ClkPwrTimingCtrl2.PstateMaxVal = HtcReg.HtcPstateLimit;
+        LibAmdPciWrite (AccessWidth32, PciAddress, &ClkPwrTimingCtrl2, StdHeader); // D18F3xDC
+      }
+    }
+  }
+
+  DisHwPsNum = 0;
   for (Pstate = 0; Pstate < ErrorData.HwPstateNumber; Pstate++) {
     if (FamilySpecificServices->GetProcIddMax (FamilySpecificServices, Pstate, &ProcIddMax, StdHeader)) {
       if (ProcIddMax > CpuEarlyParams->PlatformConfig.VrmProperties[CoreVrm].CurrentLimit) {
@@ -190,17 +231,23 @@ F14PmPwrCheck (
         PutEventLog (AGESA_WARNING,
                      CPU_EVENT_PM_PSTATE_OVERCURRENT,
                      Socket, Pstate, 0, 0, StdHeader);
-        DisPsNum++;
+        DisHwPsNum++;
       } else {
         break;
       }
     }
   }
 
+  // get the number of software Pstate that is disabled by delivery check
+  if (NumberBoostStates < DisHwPsNum) {
+    DisSwPsNum = DisHwPsNum - NumberBoostStates;
+  } else {
+    DisSwPsNum = 0;
+  }
   // If all P-state registers are disabled, move P[PsMaxVal] to P0
   // and transition to P0, then wait for CurPstate = 0
 
-  ErrorData.AllowablePstateNumber = ((PsMaxVal + 1) - DisPsNum);
+  ErrorData.AllowablePstateNumber = ((PsMaxVal + 1) - DisHwPsNum);
 
   // We only need to log this event on the BSC
   if (ErrorData.AllowablePstateNumber == 0) {
@@ -209,7 +256,15 @@ F14PmPwrCheck (
                  Socket, 0, 0, 0, StdHeader);
   }
 
-  if (DisPsNum != 0) {
+  if (DisHwPsNum != 0) {
+    // Program F4x15C[BoostSrc] = 0
+    if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) == 0) {
+      PciAddress.AddressValue = CPB_CTRL_PCI_ADDR;
+      LibAmdPciRead (AccessWidth32, PciAddress, &CpbCtrl, StdHeader);  // D18F4x15C
+      CpbCtrl.BoostSrc = 0;
+      LibAmdPciWrite (AccessWidth32, PciAddress, &CpbCtrl, StdHeader);  // D18F4x15C
+    }
+
     TaskPtr.FuncAddress.PfApTaskI = F14PmPwrCheckCore;
     TaskPtr.DataTransfer.DataSizeInDwords = SIZE_IN_DWORDS (PWRCHK_ERROR_DATA);
     TaskPtr.DataTransfer.DataPtr = &ErrorData;
@@ -220,28 +275,32 @@ F14PmPwrCheck (
     // Final Step
     //    D18F3x64[HtPstatelimit] -= disPsNum
     //    D18F3xDC[PstateMaxVal]-= disPsNum
-
     PciAddress.AddressValue = HTC_PCI_ADDR;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader); // D18F3x64
-    PstateLimit = ((HTC_REGISTER *) &PciRegister)->HtcPstateLimit;
-    if (PstateLimit > DisPsNum) {
-      PstateLimit -= DisPsNum;
+    LibAmdPciRead (AccessWidth32, PciAddress, &HtcReg, StdHeader); // D18F3x64
+    PciAddress.AddressValue = NB_CAPS_PCI_ADDR; // D18F3xE8
+    LibAmdPciRead (AccessWidth32, PciAddress, &NbCaps, StdHeader);
+    if (ThermalPstateEn || HtcReg.HtcTmpLmt == 0 || NbCaps.HtcCapable == 0) {
+      PstateLimit = (UINT8) HtcReg.HtcPstateLimit;
+      if (PstateLimit > DisHwPsNum) {
+        PstateLimit = (UINT8) (PstateLimit - DisSwPsNum);
     } else {
-      PstateLimit = 0;
+        PstateLimit = NumberBoostStates;
     }
-    ((HTC_REGISTER *) &PciRegister)->HtcPstateLimit = PstateLimit;
-    LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader); // D18F3x64
+      HtcReg.HtcPstateLimit = PstateLimit;
+      PciAddress.AddressValue = HTC_PCI_ADDR;
+      LibAmdPciWrite (AccessWidth32, PciAddress, &HtcReg, StdHeader); // D18F3x64
 
     PciAddress.AddressValue = CPTC2_PCI_ADDR;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader); // D18F3xDC
-    PstateLimit = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->PstateMaxVal;
-    if (PstateLimit > DisPsNum) {
-      PstateLimit -= DisPsNum;
+      LibAmdPciRead (AccessWidth32, PciAddress, &ClkPwrTimingCtrl2, StdHeader); // D18F3xDC
+      PstateLimit = (UINT8) ClkPwrTimingCtrl2.PstateMaxVal;
+      if (PstateLimit > DisHwPsNum) {
+        PstateLimit = (UINT8) (PstateLimit - DisSwPsNum);
     } else {
-      PstateLimit = 0;
+        PstateLimit = NumberBoostStates;
+      }
+      ClkPwrTimingCtrl2.PstateMaxVal = PstateLimit;
+      LibAmdPciWrite (AccessWidth32, PciAddress, &ClkPwrTimingCtrl2, StdHeader); // D18F3xDC
     }
-    ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->PstateMaxVal = PstateLimit;
-    LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader); // D18F3xDC
   }
 }
 
@@ -265,37 +324,64 @@ F14PmPwrCheckCore (
   )
 {
   UINT8  i;
-  UINT8  PsMaxVal;
-  UINT8  DisPsNum;
-  UINT8  CurrentPs;
-  UINT64 MsrRegister;
+  UINT8  HardwarePsMaxVal;
+  UINT8  DisHwPsNum;
+  UINT8  DisSwPsNum;
+  UINT8  CurrentSoftwarePs;
+  UINT8  CurrentHardwarePs;
+  UINT8  NumberBoostStates;
+  UINT64 LocalMsrRegister;
+  CPU_LOGICAL_ID        CpuFamilyRevision;
+  PCI_ADDR              PciAddress;
+  CPB_CTRL_REGISTER     CpbCtrl;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
 
-  PsMaxVal = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber - 1);
-  DisPsNum = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber -
+  HardwarePsMaxVal = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber - 1);
+  DisHwPsNum = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber -
              ((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber);
 
-  LibAmdMsrRead (MSR_PSTATE_STS, &MsrRegister, StdHeader);
-  CurrentPs = (UINT8) (((PSTATE_STS_MSR *) &MsrRegister)->CurPstate);
+  LibAmdMsrRead (MSR_PSTATE_STS, &LocalMsrRegister, StdHeader);
+  CurrentSoftwarePs = (UINT8) (((PSTATE_STS_MSR *) &LocalMsrRegister)->CurPstate);
+
+  if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) != 0) {
+    NumberBoostStates = 0;
+  } else {
+    PciAddress.AddressValue = CPB_CTRL_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, PciAddress, &CpbCtrl, StdHeader);  // D18F4x15C
+    NumberBoostStates = (UINT8) CpbCtrl.NumBoostStates;
+  }
+
+  CurrentHardwarePs = CurrentSoftwarePs + NumberBoostStates;
+
+  if (NumberBoostStates < DisHwPsNum) {
+    DisSwPsNum = DisHwPsNum - NumberBoostStates;
+  } else {
+    DisSwPsNum = 0;
+  }
 
   if (((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber == 0) {
 
     // Step 1
     // Transition to Pstate Max if not there already
 
-    if (CurrentPs != PsMaxVal) {
-      FamilySpecificServices->TransitionPstate (FamilySpecificServices, PsMaxVal, (BOOLEAN) TRUE, StdHeader);
+    if (CurrentHardwarePs != HardwarePsMaxVal) {
+      FamilySpecificServices->TransitionPstate (FamilySpecificServices, (HardwarePsMaxVal - NumberBoostStates), (BOOLEAN) TRUE, StdHeader);
+      CurrentSoftwarePs = HardwarePsMaxVal - NumberBoostStates;
     }
 
 
     // Step 2
-    // If Pstate Max is not P0, copy Pstate max contents to P0 and switch
+    // If CurrentSoftwarePs is not P0, copy CurrentSoftwarePs contents to Software P0 and switch
     // to P0.
 
-    if (PsMaxVal != 0) {
-      F14PmPwrChkCopyPstate (0, PsMaxVal, StdHeader);
+    if (CurrentSoftwarePs != 0) {
+      F14PmPwrChkCopyPstate (NumberBoostStates, CurrentSoftwarePs, StdHeader);
+      LibAmdMsrRead ((PS_REG_BASE + NumberBoostStates), &LocalMsrRegister, StdHeader);
+      ((PSTATE_MSR *) &LocalMsrRegister)->PsEnable = 1;
+      LibAmdMsrWrite ((PS_REG_BASE + NumberBoostStates), &LocalMsrRegister, StdHeader);
       FamilySpecificServices->TransitionPstate (FamilySpecificServices, (UINT8) 0, (BOOLEAN) TRUE, StdHeader);
     }
   } else {
@@ -304,29 +390,39 @@ F14PmPwrCheckCore (
     // Step 1
     // Transition to a valid Pstate if current Pstate has been disabled
 
-    if (CurrentPs < DisPsNum) {
-      FamilySpecificServices->TransitionPstate (FamilySpecificServices, DisPsNum, (BOOLEAN) TRUE, StdHeader);
-      CurrentPs = DisPsNum;
+    if (CurrentHardwarePs < DisHwPsNum) {
+      FamilySpecificServices->TransitionPstate (FamilySpecificServices, (HardwarePsMaxVal - NumberBoostStates), (BOOLEAN) TRUE, StdHeader);
+      CurrentSoftwarePs = HardwarePsMaxVal - NumberBoostStates;
     }
 
+    if (DisSwPsNum != 0) {
     // Step 2
     // Move enabled Pstates up and disable the remainder
 
-    for (i = 0; (i + DisPsNum) <= PsMaxVal; ++i) {
-      F14PmPwrChkCopyPstate (i, (i + DisPsNum), StdHeader);
+      for (i = 0; (i + DisHwPsNum) <= HardwarePsMaxVal; ++i) {
+        F14PmPwrChkCopyPstate ((i + NumberBoostStates), (i + DisHwPsNum), StdHeader);
     }
-
     // Step 3
     // Transition to current COF/VID at shifted location
 
-    CurrentPs = (CurrentPs - DisPsNum);
-    FamilySpecificServices->TransitionPstate (FamilySpecificServices, CurrentPs, (BOOLEAN) TRUE, StdHeader);
+      CurrentSoftwarePs = (CurrentSoftwarePs - DisSwPsNum);
+      FamilySpecificServices->TransitionPstate (FamilySpecificServices, CurrentSoftwarePs, (BOOLEAN) TRUE, StdHeader);
+    }
   }
-  i = ((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber;
-  if (i == 0) {
-    i++;
+
+  if (((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber == 0) {
+    // only software P0 should be enabled.
+    i = NumberBoostStates + 1;
+  } else {
+    if (DisSwPsNum == 0) {
+      // No software Pstate is disabed, set i = HardwarePsMaxVal + 1 to skip below 'while loop'.
+      i = HardwarePsMaxVal + 1;
+    } else {
+      // get the first software Pstate that should be disabled.
+      i = HardwarePsMaxVal - DisSwPsNum + 1;
   }
-  while (i <= PsMaxVal) {
+  }
+  while (i <= HardwarePsMaxVal) {
     FamilySpecificServices->DisablePstate (FamilySpecificServices, i, StdHeader);
     i++;
   }
@@ -350,9 +446,9 @@ F14PmPwrChkCopyPstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 LocalMsrRegister;
 
-  LibAmdMsrRead ((UINT32) (PS_REG_BASE + Src), &MsrRegister, StdHeader);
-  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + Dest), &MsrRegister, StdHeader);
+  LibAmdMsrRead ((UINT32) (PS_REG_BASE + Src), &LocalMsrRegister, StdHeader);
+  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + Dest), &LocalMsrRegister, StdHeader);
 }
 

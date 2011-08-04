@@ -69,7 +69,7 @@ extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14BrandIdString2;
 extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14CacheInfo;
 extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14SysPmTable;
 extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14WheaInitData;
-extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetEmptyArray;
+//extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetEmptyArray;
 extern F_CPU_GET_PLATFORM_TYPE_SPECIFIC_INFO F14GetPlatformTypeSpecificInfo;
 extern F_CPU_GET_IDD_MAX F14GetProcIddMax;
 extern CONST REGISTER_TABLE ROMDATA F14PciRegisterTable;
@@ -90,6 +90,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
   #if OPTION_FAMILY14H_ON == TRUE
     extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14OnMicroCodePatchesStruct;
     extern F_CPU_GET_FAMILY_SPECIFIC_ARRAY GetF14OnMicrocodeEquivalenceTable;
+    extern CONST REGISTER_TABLE ROMDATA F14OnPciRegisterTable;
 
     #if USES_REGISTER_TABLES == TRUE
       CONST REGISTER_TABLE ROMDATA *F14OnRegisterTables[] =
@@ -105,6 +106,9 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
           #if OPTION_EARLY_SAMPLES == TRUE
             &F14EarlySampleMsrRegisterTable,
           #endif
+        #endif
+        #if MODEL_SPECIFIC_PCI == TRUE
+          &F14OnPciRegisterTable,
         #endif
         // the end.
         NULL
@@ -325,7 +329,8 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
     #if GET_PATCHES == TRUE
       #define F14_ON_UCODE_0B
       #define F14_ON_UCODE_1A
-      #define F14_ON_UCODE_25
+      #define F14_ON_UCODE_28
+      #define F14_ON_UCODE_101
 
       // If a patch is required for recovery mode to function properly, add a
       // conditional for AGESA_ENTRY_INIT_RECOVERY, and pull it in.
@@ -339,16 +344,21 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
           #undef F14_ON_UCODE_1A
           #define F14_ON_UCODE_1A &CpuF14MicrocodePatch0500001A,
         #endif
-        extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000025;
-        #undef F14_ON_UCODE_25
-        #define F14_ON_UCODE_25 &CpuF14MicrocodePatch05000025,
+        extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000028;
+        #undef F14_ON_UCODE_28
+        #define F14_ON_UCODE_28 &CpuF14MicrocodePatch05000028,
+
+	extern  CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch05000101;
+        #undef F14_ON_UCODE_101
+        #define F14_ON_UCODE_101 &CpuF14MicrocodePatch05000101,
       #endif
 
       CONST MICROCODE_PATCHES ROMDATA *CpuF14OnMicroCodePatchArray[] =
       {
+        F14_ON_UCODE_101
+        F14_ON_UCODE_28
         F14_ON_UCODE_0B
         F14_ON_UCODE_1A
-        F14_ON_UCODE_25
         NULL
       };
 

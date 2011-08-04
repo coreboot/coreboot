@@ -71,6 +71,11 @@ extern MEM_FEAT_BLOCK_MAIN MemFeatMain;
 *-----------------------------------------------------------------------------
 */
 
+BOOLEAN
+MemMInterleaveNodes (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
+
 /* -----------------------------------------------------------------------------*/
 /**
  *

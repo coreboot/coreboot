@@ -56,6 +56,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
+#include  "PcieMiscLib.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_PCIE_PCIEMISCLIB_FILECODE

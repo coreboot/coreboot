@@ -54,6 +54,7 @@
 #include  "GnbPcie.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
+#include  "PcieFamilyServices.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X14_F14PCIEPIFSERVICES_FILECODE

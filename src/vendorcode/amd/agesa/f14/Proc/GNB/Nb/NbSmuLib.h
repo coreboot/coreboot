@@ -104,11 +104,26 @@ NbSmuIndirectPoll (
   );
 
 VOID
+NbSmuIndirectWriteEx (
+  IN      UINT8               Address,
+  IN      ACCESS_WIDTH        Width,
+  IN      VOID                *Value,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  );
+
+VOID
 NbSmuIndirectWrite (
   IN      UINT8               Address,
   IN      ACCESS_WIDTH        Width,
   IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
+  );
+
+VOID
+NbSmuIndirectWriteS3Script (
+  IN      AMD_CONFIG_PARAMS   *StdHeader,
+  IN      UINT16              ContextLength,
+  IN      VOID*               Context
   );
 
 VOID
@@ -167,6 +182,14 @@ NbSmuServiceRequestS3Script (
 UINT32
 NbSmuReadEfuse (
   IN      UINT32              Address,
+  IN      AMD_CONFIG_PARAMS   *StdHeader
+  );
+
+UINT32
+NbSmuReadEfuseField (
+  IN      UINT8               Chain,
+  IN      UINT16              Offset,
+  IN      UINT8               Length,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   );
 

@@ -52,11 +52,13 @@
 #include  "Ids.h"
 #include  "amdlib.h"
 #include  "heapManager.h"
+#include  "OptionGnb.h"
 #include  "Gnb.h"
 #include  "GnbPcie.h"
 #include  "GnbPcieFamServices.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
+#include  "PcieConfigData.h"
 #include  "PcieMapTopology.h"
 #include  "PcieInputParser.h"
 #include  "Filecode.h"
@@ -70,6 +72,7 @@
 #define REBASE_PTR( Ptr, OldBase, NewBase)  *(UINTN *)Ptr = (*(UINTN *)Ptr + (UINTN) NewBase - (UINTN) OldBase);
 
 extern BUILD_OPT_CFG UserOptions;
+extern GNB_BUILD_OPTIONS ROMDATA GnbBuildOptions;
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
@@ -139,7 +142,7 @@ PcieConfigurationInit (
     return AGESA_FATAL;
   }
   LibAmdMemFill (Pcie, 0x00, sizeof (PCIe_PLATFORM_CONFIG) + ComplexesDataLength, StdHeader);
-  Pcie->StdHeader = (PVOID) StdHeader;
+  Pcie->StdHeader = StdHeader;
   Pcie->This = (UINTN) (Pcie);
   Buffer = (UINT8 *) (Pcie) + sizeof (PCIe_PLATFORM_CONFIG);
   ComplexIndex = 0;
@@ -150,7 +153,7 @@ PcieConfigurationInit (
         IDS_ERROR_TRAP;
         return AGESA_FATAL;
       }
-      Pcie->ComplexList[ComplexIndex].SiliconList = (PPCIe_SILICON_CONFIG) Buffer;
+      Pcie->ComplexList[ComplexIndex].SiliconList = (PCIe_SILICON_CONFIG *) &Buffer;
       PcieFmBuildComplexConfiguration (Buffer, StdHeader);
       for (Index = 0; Index < NumberOfComplexes; Index++) {
         ComplexDescriptor = PcieInputParserGetComplexDescriptor (ComplexList, Index);
@@ -165,11 +168,13 @@ PcieConfigurationInit (
     }
   }
   Pcie->ComplexList[ComplexIndex - 1].Flags |= DESCRIPTOR_TERMINATE_LIST;
-  Pcie->LinkReceiverDetectionPooling = PCIE_LINK_RECEIVER_DETECTION_POOLING;
-  Pcie->LinkL0Pooling = PCIE_LINK_L0_POOLING;
-  Pcie->LinkGpioResetAssertionTime = PCIE_LINK_GPIO_RESET_ASSERT_TIME;
-  Pcie->LinkResetToTrainingTime = PCIE_LINK_RESET_TO_TRAINING_TIME;
+  Pcie->LinkReceiverDetectionPooling = GnbBuildOptions.LinkReceiverDetectionPooling;
+  Pcie->LinkL0Pooling = GnbBuildOptions.LinkL0Pooling;
+  Pcie->LinkGpioResetAssertionTime = GnbBuildOptions.LinkGpioResetAssertionTime;
+  Pcie->LinkResetToTrainingTime = GnbBuildOptions.LinkResetToTrainingTime;
   Pcie->GfxCardWorkaround = GfxWorkaroundEnable;
+  Pcie->TrainingExitState = LinkStateTrainingCompleted;
+  Pcie->TrainingAlgorithm = GnbBuildOptions.TrainingAlgorithm;
   if ((UserOptions.CfgAmdPlatformType  & AMD_PLATFORM_MOBILE) != 0) {
     Pcie->GfxCardWorkaround = GfxWorkaroundDisable;
   }
@@ -217,7 +222,7 @@ PcieLocateConfigurationData (
     }
     (*Pcie)->This = (UINTN)(*Pcie);
   }
-  (*Pcie)->StdHeader = (PVOID) StdHeader;
+  (*Pcie)->StdHeader = StdHeader;
   return  AGESA_SUCCESS;
 }
 

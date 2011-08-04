@@ -50,6 +50,7 @@
  */
 #include  "AGESA.h"
 #include  "Gnb.h"
+#include  "GnbInterface.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GNBINITATRESET_FILECODE
 /*----------------------------------------------------------------------------------------

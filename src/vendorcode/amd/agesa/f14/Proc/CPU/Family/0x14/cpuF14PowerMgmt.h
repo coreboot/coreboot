@@ -7,7 +7,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/F14
- * @e \$Revision: 34897 $   @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 46836 $   @e \$Date: 2011-02-10 12:22:59 -0700 (Thu, 10 Feb 2011) $
  *
  */
 /*
@@ -108,6 +108,20 @@ typedef struct {
   UINT64 :21;                        ///< Reserved
   UINT64 PsEnable:1;                 ///< P-state Enable
 } PSTATE_MSR;
+
+
+/* COFVID Control Register 0xC0010070 */
+#define MSR_COFVID_CTL 0xC0010070
+
+/// COFVID Control MSR Register
+typedef struct {
+  UINT64 CpuDid:4;                   ///< CPU core divisor identifier
+  UINT64 CpuDidMSD:5;                ///< CPU core frequency identifier
+  UINT64 CpuVid:7;                   ///< CPU core VID
+  UINT64 PstateId:3;                 ///< P-state identifier
+  UINT64 IgnoreFidVidDid:1;          ///< Ignore FID, VID, and DID
+  UINT64 :44;                        ///< Reserved
+} COFVID_CTRL_MSR;
 
 
 /* COFVID Status Register 0xC0010071 */
@@ -301,6 +315,36 @@ typedef struct {
   UINT32 :16;                        ///< Reserved
 } CLK_PWR_TIMING_CTRL3_REGISTER;
 
+/* Local hardware thermal control register D18F3x138 */
+#define LHTC_REG 0x138
+#define LHTC_PCI_ADDR (MAKE_SBDFO (0, 0, 0x18, FUNC_3, LHTC_REG))
+
+/// Local Hardware Thermal Control PCI Register
+typedef struct {
+  UINT32 LHtcEn:1;                   ///< Local HTC Enable
+  UINT32 :7;                         ///< Reserved
+  UINT32 LHtcAct:2;                  ///< Local HTC Active State
+  UINT32 :2;                         ///< Reserved
+  UINT32 LHtcActSts:2;               ///< Local HTC Active Status
+  UINT32 :2;                         ///< Reserved
+  UINT32 LHtcTmpLmt:7;               ///< Local HTC temperature limit
+  UINT32 LHtcSlewSel:1;              ///< Local HTC slew-controlled temp select
+  UINT32 LHtcHystLmt:4;              ///< Local HTC hysteresis
+  UINT32 LHtcPstateLimit:3;          ///< Local HTC P-state limit select
+  UINT32 LHtcLock:1;                 ///< HTC lock
+} LHTC_REGISTER;
+
+/* Product Information Register D18F3x1FC */
+#define PRODUCT_INFO_REG 0x1FC
+#define PRODUCT_INFO_PCI_ADDR (MAKE_SBDFO (0, 0, 0x18, FUNC_3, PRODUCT_INFO_REG))
+
+/// Product Information PCI Register
+typedef struct {
+  UINT32 :2;                         ///< Reserved
+  UINT32 LowPowerDefault:1;          ///< Low Power Default
+  UINT32 :29;                        ///< Reserved
+} PRODUCT_INFO_REGISTER;
+
 
 /* C-state Control 1 Register D18F4x118 */
 #define CSTATE_CTRL1_REG 0x118
@@ -335,6 +379,33 @@ typedef struct {
   UINT32 :5;                         ///< Reserved
 } CSTATE_CTRL2_REGISTER;
 
+
+/* C-state Monitor Control 3 Register D18F4x134 */
+#define CSTATE_MON_CTRL3_REG 0x134
+#define CSTATE_MON_CTRL3_PCI_ADDR (MAKE_SBDFO (0, 0, 0x18, FUNC_4, CSTATE_MON_CTRL3_REG))
+
+/// C-state Monitor Control 3 Register
+typedef struct {
+  UINT32 IntRatePkgC6MaxDepth:4;     ///< Interrupt rate monitor PC6 maximum counter depth
+  UINT32 IntRatePkgC6Threshold:4;    ///< Interrupt rate monitor PC6 threshold
+  UINT32 IntRatePkgC6BurstLen:3;     ///< Interrupt rate monitor PC6 burst length
+  UINT32 IntRatePkgC6DecrRate:5;     ///< Interrupt rate monitor PC6 decrement rate
+  UINT32 IntRateCC6MaxDepth:4;       ///< Interrupt rate monitor CC6 maximum counter depth
+  UINT32 IntRateCC6Threshold:4;      ///< Interrupt rate monitor CC6 threshold
+  UINT32 IntRateCC6BurstLen:3;       ///< Interrupt rate monitor CC6 burst length
+  UINT32 IntRateCC6DecrRate:5;       ///< Interrupt rate monitor CC6 decrement rate
+} CSTATE_MON_CTRL3_REGISTER;
+
+/* LPMV Scalar 2 Register D18F4x14C */
+#define LPMV_SCALAR2_REG 0x14C
+#define LPMV_SCALAR2_PCI_ADDR (MAKE_SBDFO (0, 0, 0x18, FUNC_4, LPMV_SCALAR2_REG))
+
+/// LPMV Scalar 2 Register
+typedef struct {
+  UINT32 :24;                        ///< Reserved
+  UINT32 ApmCstExtPol:2;             ///< Number of boosted states
+  UINT32 :6;                         ///< Reserved
+} LPMV_SCALAR2_REGISTER;
 
 /* Core Performance Boost Control Register D18F4x15C */
 #define CPB_CTRL_REG 0x15C

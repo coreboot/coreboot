@@ -285,7 +285,7 @@ F10CommonRevEGetNbPstateInfo (
   )
 {
   UINT32   PciRegister;
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   BOOLEAN  PstateIsValid;
 
   PstateIsValid = FALSE;
@@ -295,8 +295,8 @@ F10CommonRevEGetNbPstateInfo (
     LibAmdPciRead (AccessWidth32, *PciAddress, &PciRegister, StdHeader);
     *FreqNumeratorInMHz = ((((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->NbFid + 4) * 200);
     *FreqDivisor = 1;
-    LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-    *VoltageInuV = (1550000 - (12500 * ((UINT32) ((COFVID_STS_MSR *) &MsrRegister)->CurNbVid)));
+    LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+    *VoltageInuV = (1550000 - (12500 * ((UINT32) ((COFVID_STS_MSR *) &MsrReg)->CurNbVid)));
     PstateIsValid = TRUE;
   }
   return PstateIsValid;

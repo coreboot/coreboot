@@ -77,6 +77,18 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+PcieSlotPowerLimit (
+  IN      PCIe_ENGINE_CONFIG    *Engine,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+AGESA_STATUS
+PciePortLateInit (
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+
 PCIE_PORT_REGISTER_ENTRY PortLateInitTable [] = {
   {
     DxF0xE4_xA2_ADDRESS,

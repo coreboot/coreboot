@@ -51,6 +51,7 @@
 #include  "Porting.h"
 #include  "AMD.h"
 #include  "GnbLibPciAcc.h"
+#include  "GnbLibCpuAcc.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBCOMMONLIB_GNBLIBCPUACC_FILECODE
 /*----------------------------------------------------------------------------------------

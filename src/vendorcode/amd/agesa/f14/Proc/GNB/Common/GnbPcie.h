@@ -65,36 +65,32 @@
 #define DESCRIPTOR_ALL_ENGINES                 (DESCRIPTOR_DDI_ENGINE | DESCRIPTOR_PCIE_ENGINE)
 
 #define UNUSED_LANE_ID                         128
-#define PCIE_LINK_RECEIVER_DETECTION_POOLING   (60 * 1000)
-#define PCIE_LINK_L0_POOLING                   (60 * 1000)
-#define PCIE_LINK_GPIO_RESET_ASSERT_TIME       (2  * 1000)
-#define PCIE_LINK_RESET_TO_TRAINING_TIME       (2  * 1000)
 
-#define IS_LAST_DESCRIPTOR(x) (x->Flags & DESCRIPTOR_TERMINATE_LIST) == 0
-#define IS_VALID_DESCRIPTOR(x) ((x->Flags & DESCRIPTOR_ALLOCATED) != 0)
+#define IS_LAST_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) == 0) : (1==1))
+#define IS_VALID_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_ALLOCATED) != 0) : (1==0))
 
-// Get lowes phy lane on engine
-#define PcieUtilGetLoPhyLane(Engine) ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.EndLane : Engine->EngineData.StartLane)
-// Get highest phy lane on engine
-#define PcieUtilGetHiPhyLane(Engine) ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.StartLane : Engine->EngineData.EndLane)
+// Get lowest PHY lane on engine
+#define PcieLibGetLoPhyLane(Engine) (Engine != NULL ? ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.EndLane : Engine->EngineData.StartLane) : 0xFF)
+// Get highest PHY lane on engine
+#define PcieLibGetHiPhyLane(Engine) (Engine != NULL ? ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.StartLane : Engine->EngineData.EndLane) : 0xFF)
 // Get number of lanes on wrapper
-#define PcieLibWrapperNumberOfLanes(Wrapper) ((UINT8)(Wrapper->EndPhyLane - Wrapper->StartPhyLane + 1))
+#define PcieLibWrapperNumberOfLanes(Wrapper) (Wrapper != NULL ? ((UINT8)(Wrapper->EndPhyLane - Wrapper->StartPhyLane + 1)) : 0)
 // Check if virtual descriptor
-#define PcieLibIsVirtualDesciptor(Descriptor) ((Descriptor->Flags & DESCRIPTOR_VIRTUAL) != 0)
+#define PcieLibIsVirtualDesciptor(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_VIRTUAL) != 0) : (1==0))
 // Check if it is allocated descriptor
-#define PcieLibIsEngineAllocated(Descriptor) ((Descriptor->Flags & DESCRIPTOR_ALLOCATED) != 0)
+#define PcieLibIsEngineAllocated(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_ALLOCATED) != 0) : (1==0))
 // Check if it is last descriptor in list
-#define PcieLibIsLastDescriptor(Descriptor) ((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0)
+#define PcieLibIsLastDescriptor(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0) : (1==1))
 // Check if descriptor a PCIe engine
-#define PcieLibIsPcieEngine(Descriptor) ((Descriptor->Flags & DESCRIPTOR_PCIE_ENGINE) != 0)
+#define PcieLibIsPcieEngine(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_PCIE_ENGINE) != 0) : (1==0))
 // Check if descriptor a DDI engine
-#define PcieLibIsDdiEngine(Descriptor) ((Descriptor->Flags & DESCRIPTOR_DDI_ENGINE) != 0)
+#define PcieLibIsDdiEngine(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_DDI_ENGINE) != 0) : (1==0))
 // Check if descriptor a DDI wrapper
-#define PcieLibIsDdiWrapper(Descriptor) ((Descriptor->Flags & DESCRIPTOR_DDI_WRAPPER) != 0)
+#define PcieLibIsDdiWrapper(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_DDI_WRAPPER) != 0) : (1==0))
 // Check if descriptor a PCIe wrapper
-#define PcieLibIsPcieWrapper(Descriptor) ((Descriptor->Flags & DESCRIPTOR_PCIE_WRAPPER) != 0)
+#define PcieLibIsPcieWrapper(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_PCIE_WRAPPER) != 0) : (1==0))
 // Check if descriptor a PCIe wrapper
-#define PcieLibGetNextDescriptor(Descriptor) ((((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : (++Descriptor)))
+#define PcieLibGetNextDescriptor(Descriptor) (Descriptor != NULL ? (((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : ((++Descriptor) != NULL ? Descriptor : NULL)) : NULL)
 
 
 
@@ -116,9 +112,9 @@
 #define LANE_TYPE_ACTIVE                      (LANE_TYPE_PCIE_ACTIVE | LANE_TYPE_DDI_ACTIVE)
 #define LANE_TYPE_ALLOCATED                   (LANE_TYPE_PCIE_ALLOCATED | LANE_TYPE_DDI_ALLOCATED)
 
-typedef UINT64 PPCIe_ENGINE_CONFIG;
-typedef UINT64 PPCIe_WRAPPER_CONFIG;
-typedef UINT64 PPCIe_SILICON_CONFIG;
+//typedef UINT64 PPCIe_ENGINE_CONFIG;
+//typedef UINT64 PPCIe_WRAPPER_CONFIG;
+//typedef UINT64 PPCIe_SILICON_CONFIG;
 
 #define INIT_STATUS_PCIE_PORT_GEN2_RECOVERY          0x00000001ull
 #define INIT_STATUS_PCIE_PORT_BROKEN_LANE_RECOVERY   0x00000002ull
@@ -134,6 +130,15 @@ typedef UINT64 PPCIe_SILICON_CONFIG;
 #define PCIE_GLOBAL_GEN_CAP_ALL_PORTS                0x00000010
 #define PCIE_GLOBAL_GEN_CAP_TRAINED_PORTS            0x00000011
 #define PCIE_GLOBAL_GEN_CAP_HOTPLUG_PORTS            0x00000012
+
+/// PCIe Link Training State
+typedef enum {
+  PcieTrainingStandard,                                 ///< Standard training algorithm. Training contained to AmdEarlyInit.
+                                                        ///< PCIe device accessible after AmdEarlyInit complete
+  PcieTrainingDistributed,                              ///< Distribute training algorithm. Training distributed across AmdEarlyInit/AmdPostInit/AmdS3LateRestore
+                                                        ///< PCIe device accessible after AmdPostInit complete.
+                                                        ///< Algorithm potentially save up to 60ms in S3 resume time by skipping training empty slots.
+} PCIE_TRAINING_ALGORITHM;
 
 /// PCIe port configuration info
 typedef struct {
@@ -165,7 +170,7 @@ typedef struct {
                                                          * @li @b Bit31 - last descriptor on wrapper
                                                          * @li @b Bit30 - Descriptor allocated for PCIe port or DDI
                                                          */
-  PPCIe_WRAPPER_CONFIG    Wrapper;                      ///< Pointer to parent wrapper
+  VOID                   *Wrapper;                      ///< Pointer to parent wrapper
   PCIe_ENGINE_DATA        EngineData;                   ///< Engine Data
   UINT32                  InitStatus;                   ///< Initialization Status
   UINT8                   Scratch;                      ///< Scratch pad
@@ -196,9 +201,9 @@ typedef struct {
     UINT8                 TxclkGatingPllPowerDown:1;    ///< TXCLK clock gating PLL power down
     UINT8                 PllOffInL1:1;                 ///< PLL off in L1
   } Features;
-  PPCIe_ENGINE_CONFIG     EngineList;                   ///< Pointer to Engine list
-  PPCIe_SILICON_CONFIG    Silicon;                      ///< Pointer to parent silicon
-  PVOID                   FmWrapper;                    ///< Pointer to family Specific configuration data
+  VOID                   *EngineList;                   ///< Pointer to Engine list
+  VOID                   *Silicon;                      ///< Pointer to parent silicon
+  VOID                   *FmWrapper;                    ///< Pointer to family Specific configuration data
 } PCIe_WRAPPER_CONFIG;
 
 
@@ -211,8 +216,8 @@ typedef struct  {
                                                          * @li @b Bit31 - last descriptor on complex
                                                          */
   PCI_ADDR                Address;                      ///< PCI address of GNB host bridge
-  PPCIe_WRAPPER_CONFIG    WrapperList;                  ///< Pointer to wrapper list
-  PVOID                   FmSilicon;                    ///< Pointer to family Specific configuration data
+  VOID                   *WrapperList;                  ///< Pointer to wrapper list
+  VOID                   *FmSilicon;                    ///< Pointer to family Specific configuration data
 } PCIe_SILICON_CONFIG;
 
 #define PcieSiliconGetWrapperList(mSiliconPtr) ((PCIe_WRAPPER_CONFIG *) (mSiliconPtr->WrapperList))
@@ -223,14 +228,14 @@ typedef struct {
                                                          * @li @b Bit31 - last descriptor on platform
                                                          */
   UINT8                   SocketId;                     ///< Processor socket ID
-  PPCIe_SILICON_CONFIG    SiliconList;                  ///< Pointer to silicon list
+  VOID                   *SiliconList;                  ///< Pointer to silicon list
 } PCIe_COMPLEX_CONFIG;
 
 #define PcieComplexGetSiliconList(mComplexPtr) ((PCIe_SILICON_CONFIG *)(UINTN)((mComplexPtr)->SiliconList))
 
 /// PCIe platform configuration info
 typedef struct {
-  PVOID                   StdHeader;                    ///< Standard configuration header
+  AMD_CONFIG_PARAMS      *StdHeader;                    ///< Standard configuration header
   UINT64                  This;                         ///< base structure Base
   UINT32                  LinkReceiverDetectionPooling; ///< Receiver pooling detection time in us.
   UINT32                  LinkL0Pooling;                ///< Pooling for link to get to L0 in us
@@ -238,6 +243,8 @@ typedef struct {
   UINT32                  LinkResetToTrainingTime;      ///< Time duration between deassert GPIO reset and release training in us                                                      ///
   UINT8                   GfxCardWorkaround;            ///< GFX Card Workaround
   UINT8                   PsppPolicy;                   ///< PSPP policy
+  UINT8                   TrainingExitState;            ///< State at which training should exit (see PCIE_LINK_TRAINING_STATE)
+  UINT8                   TrainingAlgorithm;            ///< Training algorithm (see PCIE_TRAINING_ALGORITHM)
   PCIe_COMPLEX_CONFIG     ComplexList[MAX_NUMBER_OF_COMPLEXES]; ///<
 } PCIe_PLATFORM_CONFIG;
 

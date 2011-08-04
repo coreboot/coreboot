@@ -82,6 +82,12 @@ extern MEM_FEAT_BLOCK_MAIN MemFeatMain;
 *
 *-----------------------------------------------------------------------------
 */
+
+BOOLEAN
+MemMParallelTraining (
+  IN OUT   MEM_MAIN_DATA_BLOCK *mmPtr
+  );
+
 /* -----------------------------------------------------------------------------*/
 /**
  *

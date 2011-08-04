@@ -101,7 +101,7 @@
     #error  BLDOPT: Option not defined: "OPTION_ACPI_PSTATES"
   #endif
   #if (OPTION_ACPI_PSTATES == TRUE)
-    OPTION_SSDT_FEATURE               GenerateSsdt;
+//    OPTION_SSDT_FEATURE               GenerateSsdt;
     #define USER_SSDT_MAIN            GenerateSsdt
     #ifndef OPTION_MULTISOCKET
       #error  BLDOPT: Option not defined: "OPTION_MULTISOCKET"

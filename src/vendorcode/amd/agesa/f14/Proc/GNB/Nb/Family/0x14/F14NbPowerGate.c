@@ -61,6 +61,7 @@
 #include  "NbSmuLib.h"
 #include  "NbConfigData.h"
 #include  "NbFamilyServices.h"
+#include  "F14NbPowerGate.h"
 #include  "GfxLib.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_NB_FAMILY_0x14_F14NBPOWERGATE_FILECODE

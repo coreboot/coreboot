@@ -703,7 +703,7 @@ MemFS3Wait10ns (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
   ASSERT (Count <= 1000000);
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, &MemPtr->StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &MemPtr->StdHeader);
   FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRate, &MemPtr->StdHeader);
 
   LibAmdMsrRead (TSC, &CurrentTsc, &MemPtr->StdHeader);

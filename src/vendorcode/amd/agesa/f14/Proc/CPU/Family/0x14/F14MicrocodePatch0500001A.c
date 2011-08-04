@@ -63,7 +63,7 @@
 
 // Patch code 0500001A for 5001 and equivalent
 CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch0500001A =
-{
+{{
 0x10,
 0x20,
 0x08,
@@ -1632,7 +1632,7 @@ CONST MICROCODE_PATCHES ROMDATA CpuF14MicrocodePatch0500001A =
 0x73,
 0x52,
 0x3b
-};
+}};
 
 /*----------------------------------------------------------------------------------------
  *           P R O T O T Y P E S     O F     L O C A L     F U N C T I O N S

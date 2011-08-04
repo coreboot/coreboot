@@ -47,10 +47,6 @@
 #ifndef _GNBGFX_H_
 #define _GNBGFX_H_
 
-//#ifndef PVOID
-//  typedef UINT64 PVOID;
-//#endif
-
 #define DEVICE_DFP                                0x1
 #define DEVICE_CRT                                0x2
 #define DEVICE_LCD                                0x3
@@ -119,7 +115,7 @@ typedef enum {
 
 /// Graphics Platform Configuration
 typedef struct {
-  PVOID                       StdHeader;                ///< Standard Header
+  AMD_CONFIG_PARAMS*          StdHeader;                ///< Standard Header
   PCI_ADDR                    GfxPciAddress;            ///< Graphics PCI Address
   UMA_INFO                    UmaInfo;                  ///< UMA Information
   UINT32                      GmmBase;                  ///< GMM Base
@@ -144,6 +140,8 @@ typedef struct {
   GFX_CONTROLLER_MODE         GfxControllerMode;        ///< Gfx controller mode
   UINT16                      LvdsSpreadSpectrum;       ///< Spread spectrum value in 0.01 %
   UINT16                      LvdsSpreadSpectrumRate;   ///< Spread spectrum frequency used by SS hardware logic in unit of 10Hz, 0 - default frequency 40kHz
+  LVDS_MISC_CONTROL           LvdsMiscControl;          ///< This item configures LVDS swap/Hsync/Vsync/BLON
+  UINT16                      PcieRefClkSpreadSpectrum;   ///< Spread spectrum value in 0.01 %
 } GFX_PLATFORM_CONFIG;
 
 
@@ -275,7 +273,15 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V6 {
   USHORT                      usHDMISSpreadRateIn10Hz;       ///< usHDMISSpreadRateIn10Hz
   USHORT                      usDVISSPercentage;             ///< usDVISSPercentage
   USHORT                      usDVISSpreadRateIn10Hz;        ///< usDVISSpreadRateIn10Hz
-  ULONG                       ulReserved3[21];               ///< Reserved
+  ULONG                       SclkDpmBoostMargin;            ///< SclkDpmBoostMargin
+  ULONG                       SclkDpmThrottleMargin;         ///< SclkDpmThrottleMargin
+  USHORT                      SclkDpmTdpLimitPG;             ///< SclkDpmTdpLimitPG
+  USHORT                      SclkDpmTdpLimitBoost;          ///< SclkDpmTdpLimitBoost
+  ULONG                       ulBoostEngineCLock;            ///< ulBoostEngineCLock
+  UCHAR                       ulBoostVid_2bit;               ///< ulBoostVid_2bit
+  UCHAR                       EnableBoost;                   ///< EnableBoost
+  USHORT                      GnbTdpLimit;                   ///< GnbTdpLimit
+  ULONG                       ulReserved3[16];               ///< Reserved
   ATOM_EXTERNAL_DISPLAY_CONNECTION_INFO sExtDispConnInfo;    ///< Display connector definition
 } ATOM_INTEGRATED_SYSTEM_INFO_V6;
 

@@ -80,24 +80,18 @@
 
 // Family 12h equates
 #define AMD_FAMILY_12_LN  0x0000000000000020ull
-#define AMD_FAMILY_12     (AMD_FAMILY_12_LN)
-#define AMD_FAMILY_LN     (AMD_FAMILY_12_LN)
+#define AMD_FAMILY_12   (AMD_FAMILY_12_LN)
+#define AMD_FAMILY_LN   (AMD_FAMILY_12_LN)
 
 // Family 14h equates
 #define AMD_FAMILY_14_ON  0x0000000000000040ull
-#define AMD_FAMILY_ON     (AMD_FAMILY_14_ON)
-#define AMD_FAMILY_14_KR  0x0000000000000080ull
-#define AMD_FAMILY_KR     (AMD_FAMILY_14_KR)
-#define AMD_FAMILY_14     (AMD_FAMILY_14_ON | AMD_FAMILY_14_KR)
+#define AMD_FAMILY_14   (AMD_FAMILY_14_ON)
+#define AMD_FAMILY_ON   (AMD_FAMILY_14_ON)
 
 // Family 15h equates
 #define AMD_FAMILY_15_OR  0x0000000000000100ull
 #define AMD_FAMILY_OR     (AMD_FAMILY_15_OR)
-#define AMD_FAMILY_15_TN  0x0000000000000200ull
-#define AMD_FAMILY_TN     (AMD_FAMILY_15_TN)
-#define AMD_FAMILY_15_KM  0x0000000000000400ull
-#define AMD_FAMILY_KM     (AMD_FAMILY_15_KM)
-#define AMD_FAMILY_15     (AMD_FAMILY_15_OR | AMD_FAMILY_15_TN | AMD_FAMILY_15_KM)
+#define AMD_FAMILY_15     (AMD_FAMILY_15_OR)
 
 // Family 16h equates
 #define AMD_FAMILY_16     0x0000000000000800ull
@@ -203,11 +197,7 @@
 #define AMD_F14_ON_Cx    (AMD_F14_ON_C0)
 #define AMD_F14_ON_ALL   (AMD_F14_ON_Ax | AMD_F14_ON_Bx | AMD_F14_ON_Cx)
 
-#define AMD_F14_KR_Ax    (AMD_F14_KR_A0 | AMD_F14_KR_A1)
-#define AMD_F14_KR_Bx    AMD_F14_KR_B0
-#define AMD_F14_KR_ALL   (AMD_F14_KR_Ax | AMD_F14_KR_Bx)
-
-#define AMD_F14_ALL      (AMD_F14_ON_ALL | AMD_F14_KR_ALL | AMD_F14_UNKNOWN)
+#define AMD_F14_ALL      (AMD_F14_ON_ALL | AMD_F14_UNKNOWN)
 
 // Family 15h CPU_LOGICAL_ID.Revision equates
 // -------------------------------------
@@ -227,10 +217,7 @@
 #define AMD_F15_OR_LT_B1 (AMD_F15_OR_Ax | AMD_F15_OR_B0)
 #define AMD_F15_OR_ALL   (AMD_F15_OR_Ax | AMD_F15_OR_Bx)
 
-#define AMD_F15_TN_Ax    (AMD_F15_TN_A0)
-#define AMD_F15_TN_ALL   (AMD_F15_TN_Ax)
-
-#define AMD_F15_ALL      (AMD_F15_OR_ALL | AMD_F15_TN_ALL | AMD_F15_UNKNOWN)
+#define AMD_F15_ALL      (AMD_F15_OR_ALL | AMD_F15_UNKNOWN)
 
 // Family 16h CPU_LOGICAL_ID.Revision equates
 // TBD

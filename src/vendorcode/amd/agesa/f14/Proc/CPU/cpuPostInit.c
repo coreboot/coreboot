@@ -86,6 +86,18 @@ SyncVariableMTRR (
   IN       AMD_CONFIG_PARAMS  *StdHeader
   );
 
+AGESA_STATUS
+GetPstateGatherDataAddressAtPost (
+     OUT   UINT64            **Ptr,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+VOID
+SyncAllApMtrrToBsc (
+  IN       VOID *MtrrTable,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -190,11 +202,11 @@ GetPstateGatherDataAddressAtPost (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 AddressValue;
+  VOID *AddressValue;
 
-  AddressValue = P_STATE_DATA_GATHER_TEMP_ADDR;
+  AddressValue = (VOID *)P_STATE_DATA_GATHER_TEMP_ADDR;
 
-  *Ptr = (UINT64 *)(AddressValue);
+  *Ptr = AddressValue;
 
   return AGESA_SUCCESS;
 }
@@ -309,7 +321,7 @@ SyncApMsrsToBsc (
   UINT16                  i;
   UINT32                  BscSocket;
   UINT32                  Ignored;
-  UINT32                  BscCore;
+  UINT32                  BscCoreNum;
   UINT32                  Core;
   UINT32                  Socket;
   UINT32                  NumberOfSockets;
@@ -318,7 +330,7 @@ SyncApMsrsToBsc (
 
   ASSERT (IsBsp (StdHeader, &IgnoredSts));
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   //
@@ -337,7 +349,7 @@ SyncApMsrsToBsc (
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != BscSocket) || (Core != BscCore)) {
+        if ((Socket != BscSocket) || (Core != BscCoreNum)) {
           ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
         }
       }
@@ -425,7 +437,7 @@ SetTscFreqSel (
 
   FamilyServices = NULL;
 
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   if (FamilyServices != NULL) {
     FamilyServices->CpuSetTscFreqSel (FamilyServices, StdHeader);
   }
@@ -449,7 +461,7 @@ SetCoresTscFreqSel (
   AP_TASK                 TaskPtr;
   UINT32                  BscSocket;
   UINT32                  Ignored;
-  UINT32                  BscCore;
+  UINT32                  BscCoreNum;
   UINT32                  Core;
   UINT32                  Socket;
   UINT32                  NumberOfSockets;
@@ -458,7 +470,7 @@ SetCoresTscFreqSel (
 
   ASSERT (IsBsp (StdHeader, &IgnoredSts));
 
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   SetTscFreqSel (StdHeader);
@@ -472,7 +484,7 @@ SetCoresTscFreqSel (
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != BscSocket) || (Core != BscCore)) {
+        if ((Socket != BscSocket) || (Core != BscCoreNum)) {
           ApUtilRunCodeOnSocketCore ((UINT8) Socket, (UINT8) Core, &TaskPtr, StdHeader);
         }
       }

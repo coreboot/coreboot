@@ -52,6 +52,7 @@
 #include  "AMD.h"
 #include  "heapManager.h"
 #include  "GnbLibPciAcc.h"
+#include  "GnbLibHeap.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBCOMMONLIB_GNBLIBHEAP_FILECODE
 /*----------------------------------------------------------------------------------------

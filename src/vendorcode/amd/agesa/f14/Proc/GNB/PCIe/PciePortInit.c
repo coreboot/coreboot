@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -58,6 +58,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieTrainingV1)
+#include  "PciePortInit.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_PCIE_PCIEPORTINIT_FILECODE
@@ -156,6 +157,7 @@ PciePortInitCallback (
     ASSERT (Engine->Type.Port.IsSB == FALSE);
     PcieTrainingSetPortState (Engine, LinkStateDeviceNotPresent, FALSE, Pcie);
   }
+  // Train port that forced to compliance in last stage of training
   if (Engine->Type.Port.PortData.MiscControls.LinkComplianceMode == 0x1) {
     PcieTrainingSetPortState (Engine, LinkStateTrainingCompleted, FALSE, Pcie);
   }
@@ -180,6 +182,10 @@ PciePortInit (
 {
   AGESA_STATUS  Status;
   Status = AGESA_SUCCESS;
+  // Leave all device in Presence Detect Presence state for distributed training will be completed at PciePortPostEarlyInit
+  if (Pcie->TrainingAlgorithm == PcieTrainingDistributed) {
+    Pcie->TrainingExitState = LinkStateResetExit;
+  }
   PcieConfigRunProcForAllEngines (
     DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
     PciePortInitCallback,
@@ -217,10 +223,12 @@ PciePortPostInitCallback (
   }
   LinkSpeedCapability = PcieFmGetLinkSpeedCap (PCIE_PORT_GEN_CAP_BOOT, Engine, Pcie);
   PcieSetLinkSpeedCap (LinkSpeedCapability, Engine, Pcie);
+  // Retrain only present port to Gen2
   if (PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS) && (LinkSpeedCapability > PcieGen1) && !Engine->Type.Port.IsSB) {
     PcieTrainingSetPortState (Engine, LinkStateRetrain, FALSE, Pcie);
     PcieConfigUpdatePortStatus (Engine, 0, INIT_STATUS_PCIE_TRAINING_SUCCESS);
   }
+  // Train ports forced to compliance
   if (Engine->Type.Port.PortData.MiscControls.LinkComplianceMode == 0x1) {
     PcieForceCompliance (Engine, Pcie);
     PcieTrainingSetPortState (Engine, LinkStateResetExit, FALSE, Pcie);
@@ -252,5 +260,103 @@ PciePortPostInit (
     NULL,
     Pcie
     );
+  return Status;
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Callback to init various features on all ports on S3 resume path
+ *
+ *
+ *
+ *
+ * @param[in]       Engine          Pointer to engine config descriptor
+ * @param[in, out]  Buffer          Not used
+ * @param[in]       Pcie            Pointer to global PCIe configuration
+ *
+ */
+
+VOID
+STATIC
+PciePortPostS3InitCallback (
+  IN       PCIe_ENGINE_CONFIG    *Engine,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  )
+{
+  PCIE_LINK_SPEED_CAP LinkSpeedCapability;
+  ASSERT (Engine->EngineData.EngineType == PciePortEngine);
+  LinkSpeedCapability = PcieFmGetLinkSpeedCap (PCIE_PORT_GEN_CAP_BOOT, Engine, Pcie);
+  PcieSetLinkSpeedCap (LinkSpeedCapability, Engine, Pcie);
+  if (Engine->Type.Port.PortData.MiscControls.LinkSafeMode == PcieGen1) {
+    PcieLinkSafeMode (Engine, Pcie);
+  }
+  if (Engine->Type.Port.PortData.MiscControls.LinkComplianceMode == 0x1) {
+    PcieForceCompliance (Engine, Pcie);
+  }
+  if (!Engine->Type.Port.IsSB) {
+    if ((PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS) ||
+      ((Engine->Type.Port.PortData.LinkHotplug != HotplugDisabled) && (Engine->Type.Port.PortData.LinkHotplug != HotplugInboard)) ||
+      (Engine->Type.Port.PortData.MiscControls.LinkComplianceMode == 0x1))) {
+      PcieTrainingSetPortState (Engine, LinkStateResetExit, FALSE, Pcie);
+    } else {
+      PcieTrainingSetPortState (Engine, LinkStateDeviceNotPresent, FALSE, Pcie);
+    }
+    PcieConfigUpdatePortStatus (Engine, 0, INIT_STATUS_PCIE_TRAINING_SUCCESS);
+  } else {
+    PcieTrainingSetPortState (Engine, LinkStateTrainingSuccess, FALSE, Pcie);
+  }
+}
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Init port on S3 resume during destributed training
+ *
+ *
+ *
+ *
+ * @param[in]   Pcie            Pointer to global PCIe configuration
+ * @retval      AGESA_STATUS
+ *
+ */
+
+AGESA_STATUS
+PciePortPostS3Init (
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  )
+{
+  AGESA_STATUS  Status;
+  Status = AGESA_SUCCESS;
+  PcieConfigRunProcForAllEngines (
+    DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
+    PciePortPostS3InitCallback,
+    NULL,
+    Pcie
+    );
+  return Status;
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Master procedure to init various features on all active ports
+ *
+ *
+ *
+ *
+ * @param[in]   Pcie            Pointer to global PCIe configuration
+ * @retval      AGESA_STATUS
+ *
+ */
+
+AGESA_STATUS
+PciePortPostEarlyInit (
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  )
+{
+  AGESA_STATUS  Status;
+  Status = AGESA_SUCCESS;
+  // Distributed Training started at PciePortInit complete it now to get access to PCIe devices
+  if (Pcie->TrainingAlgorithm == PcieTrainingDistributed) {
+    Pcie->TrainingExitState = LinkStateTrainingCompleted;
+  }
   return Status;
 }

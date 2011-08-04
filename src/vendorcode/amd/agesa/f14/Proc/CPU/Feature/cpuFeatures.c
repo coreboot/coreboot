@@ -178,7 +178,7 @@ IsNonCoherentHt1 (
 
   for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetCpuServicesOfSocket (Socket, &CpuServices, StdHeader);
+      GetCpuServicesOfSocket (Socket, (const CPU_SPECIFIC_SERVICES **)&CpuServices, StdHeader);
       for (Module = 0; Module < GetPlatformNumberOfModules (); Module++) {
         if (GetPciAddress (StdHeader, Socket, Module, &PciAddress, &AgesaStatus)) {
           HtHostFeats.HtHostValue = 0;

@@ -81,14 +81,14 @@ extern CPU_FAMILY_SUPPORT_TABLE            IoCstateFamilyServiceTable;
 
 STATIC ACPI_TABLE_HEADER  ROMDATA CpuSsdtHdrStruct =
 {
-  'S','S','D','T',
+  {'S','S','D','T'},
   0,
   1,
   0,
-  'A','M','D',' ',' ',' ',
-  'P','O','W','E','R','N','O','W',
+  {'A','M','D',' ',' ',' '},
+  {'P','O','W','E','R','N','O','W'},
   1,
-  'A','M','D',' ',
+  {'A','M','D',' '},
   1
 };
 
@@ -104,6 +104,47 @@ STATIC ACPI_TABLE_HEADER  ROMDATA CpuSsdtHdrStruct =
  *
  *----------------------------------------------------------------------------
  */
+
+UINT32
+CalAcpiTablesSize (
+  IN       S_CPU_AMD_PSTATE       *AmdPstatePtr,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+AGESA_STATUS
+GenerateSsdtStub (
+  IN       AMD_CONFIG_PARAMS      *StdHeader,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN OUT   VOID                   **SsdtPtr
+  );
+
+UINT32
+CreateAcpiTablesStub (
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       PSTATE_LEVELING        *PStateLevelingBuffer,
+  IN OUT   VOID                   **SsdtPtr,
+  IN       UINT8                  LocalApicId,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+UINT32
+CreatePStateAcpiTables (
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       PSTATE_LEVELING        *PStateLevelingBuffer,
+  IN OUT   VOID                   **SsdtPtr,
+  IN       UINT8                  LocalApicId,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+UINT32
+CreateCStateAcpiTables (
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       PSTATE_LEVELING        *PStateLevelingBuffer,
+  IN OUT   VOID                   **SsdtPtr,
+  IN       UINT8                  LocalApicId,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
 
 /**
  *---------------------------------------------------------------------------------------
@@ -147,7 +188,7 @@ CalAcpiTablesSize (
   MaxSocketNumberInSystem = AmdPstatePtr->TotalSocketInSystem;
 
   if (IsFeatureEnabled (IoCstate, PlatformConfig, StdHeader)) {
-    GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, &IoCstateFamilyServices, StdHeader);
+    GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, (const VOID **)&IoCstateFamilyServices, StdHeader);
     // If we're supporting multiple families, only proceed when IO Cstate family services are available
     if (IoCstateFamilyServices != NULL) {
       CstateAcpiObjSize = IoCstateFamilyServices->GetAcpiCstObj (IoCstateFamilyServices, PlatformConfig, StdHeader);
@@ -333,8 +374,8 @@ GenerateSsdt (
       }
       ScopeAcpiTablesStructPtr->ScopeNamePt1b__  = SCOPE_NAME__;
       ASSERT ((PlatformConfig->ProcessorScopeName0 >= 'A') && (PlatformConfig->ProcessorScopeName0 <= 'Z'))
-      ASSERT ((PlatformConfig->ProcessorScopeName1 >= 'A') && (PlatformConfig->ProcessorScopeName1 <= 'Z') || \
-              (PlatformConfig->ProcessorScopeName1 >= '0') && (PlatformConfig->ProcessorScopeName1 <= '9') || \
+      ASSERT (((PlatformConfig->ProcessorScopeName1 >= 'A') && (PlatformConfig->ProcessorScopeName1 <= 'Z')) || \
+              ((PlatformConfig->ProcessorScopeName1 >= '0') && (PlatformConfig->ProcessorScopeName1 <= '9')) || \
               (PlatformConfig->ProcessorScopeName1 == '_'))
 
       ScopeAcpiTablesStructPtr->ScopeNamePt2a_C  = PlatformConfig->ProcessorScopeName0;
@@ -555,7 +596,7 @@ CreatePStateAcpiTables (
       // Calculate PCI address for socket only
       GetPciAddress (StdHeader, (UINT32) PStateLevelingBuffer->SocketNumber, 0, &PciAddress, &IgnoredStatus);
       TransAndBusMastLatency = 0;
-      GetFeatureServicesOfSocket (&PstateFamilyServiceTable, (UINT32) PStateLevelingBuffer->SocketNumber, &FamilyServices, StdHeader);
+      GetFeatureServicesOfSocket (&PstateFamilyServiceTable, (UINT32) PStateLevelingBuffer->SocketNumber, (const VOID **)&FamilyServices, StdHeader);
       ASSERT (FamilyServices != NULL)
       FamilyServices->GetPstateLatency (  FamilyServices,
                                           PStateLevelingBuffer,
@@ -698,7 +739,7 @@ CreatePStateAcpiTables (
     pPsdBodyAcpiTables = (PSD_BODY *)     pXpssBodyAcpiTables;
     // Get Total Cores Per Node
     if (GetActiveCoresInGivenSocket ((UINT32) PStateLevelingBuffer->SocketNumber, &CoreCount1, StdHeader)) {
-      GetFeatureServicesOfSocket (&PstateFamilyServiceTable, (UINT32) PStateLevelingBuffer->SocketNumber, &FamilyServices, StdHeader);
+      GetFeatureServicesOfSocket (&PstateFamilyServiceTable, (UINT32) PStateLevelingBuffer->SocketNumber, (const VOID **)&FamilyServices, StdHeader);
       ASSERT (FamilyServices != NULL)
       if ((CoreCount1 != 1) && (OptionPstateLateConfiguration.CfgPstatePsd) &&
           FamilyServices->IsPstatePsdNeeded (FamilyServices, PlatformConfig, StdHeader)) {
@@ -819,7 +860,7 @@ CreateCStateAcpiTables (
   ObjSize = 0;
 
   if (IsFeatureEnabled (IoCstate, PlatformConfig, StdHeader)) {
-    GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, &IoCstateFamilyServices, StdHeader);
+    GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, (const VOID **)&IoCstateFamilyServices, StdHeader);
     // If we're supporting multiple families, only proceed when IO Cstate family services are available
     if (IoCstateFamilyServices != NULL) {
       IoCstateFamilyServices->CreateAcpiCstObj (IoCstateFamilyServices, LocalApicId, SsdtPtr, StdHeader);

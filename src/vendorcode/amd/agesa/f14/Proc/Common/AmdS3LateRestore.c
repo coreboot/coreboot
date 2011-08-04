@@ -56,6 +56,7 @@
 #include "cpuFeatures.h"
 #include "S3SaveState.h"
 #include "CommonInits.h"
+#include "CreateStruct.h"
 #include "Filecode.h"
 CODE_GROUP (G2_PEI)
 RDATA_GROUP (G2_PEI)
@@ -120,7 +121,7 @@ AmdS3LateRestore (
   ASSERT (S3LateParams != NULL);
 
   BufferPointer = (UINT8 *) S3LateParams->S3DataBlock.VolatileStorage;
-  S3LateParams->StdHeader.HeapBasePtr = (UINT64) &BufferPointer[((S3_VOLATILE_STORAGE_HEADER *) S3LateParams->S3DataBlock.VolatileStorage)->HeapOffset];
+  S3LateParams->StdHeader.HeapBasePtr = &BufferPointer[((S3_VOLATILE_STORAGE_HEADER *) S3LateParams->S3DataBlock.VolatileStorage)->HeapOffset];
   ASSERT (S3LateParams->StdHeader.HeapBasePtr != NULL);
 
   IDS_OPTION_HOOK (IDS_PLATFORMCFG_OVERRIDE, &S3LateParams->PlatformConfig, &S3LateParams->StdHeader);

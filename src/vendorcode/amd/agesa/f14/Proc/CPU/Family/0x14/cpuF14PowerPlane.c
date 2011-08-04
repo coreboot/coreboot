@@ -57,6 +57,7 @@
 #include "cpuFamilyTranslation.h"
 #include "cpuServices.h"
 #include "cpuF14PowerMgmt.h"
+#include "cpuF14PowerPlane.h"
 #include "OptionFamily14hEarlySample.h"
 #include "NbSmuLib.h"
 #include "GnbRegistersON.h"
@@ -129,7 +130,7 @@ F14PmPwrPlaneInit (
   )
 {
   UINT32                SystemSlewRate;
-  UINT32                PciRegister;
+  UINT32                PciReg;
   UINT32                WaitTime;
   UINT32                VSRampSlamTime;
   PCI_ADDR              PciAddress;
@@ -166,9 +167,9 @@ F14PmPwrPlaneInit (
 
   // Lastly, program D18F3xD8[VSRampSlamTime] with the appropriate encoded value.
   PciAddress.AddressValue = CPTC1_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-  ((CLK_PWR_TIMING_CTRL1_REGISTER *) &PciRegister)->VSRampSlamTime = VSRampSlamTime;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
+  ((CLK_PWR_TIMING_CTRL1_REGISTER *) &PciReg)->VSRampSlamTime = VSRampSlamTime;
+  LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
 
   // Step 2 - Configure D18F3xA0[PsiVidEn & PsiVid] and D18F3x128[NbPsiVidEn & NbPsiVid].
   F14PmVrmLowPowerModeEnable (FamilySpecificServices, CpuEarlyParams, StdHeader);
@@ -180,11 +181,11 @@ F14PmPwrPlaneInit (
   F14EarlySampleCoreSupport.F14PowerPlaneInitHook (&FCRxFE00_6000, StdHeader);
 
   PciAddress.AddressValue = CPTC2_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-  ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->NbPs0Vid = FCRxFE00_6000.Field.NbPs0Vid - 1;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-  ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->NbPs0Vid = FCRxFE00_6000.Field.NbPs0Vid;
-  LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
+  ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciReg)->NbPs0Vid = FCRxFE00_6000.Field.NbPs0Vid - 1;
+  LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
+  ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciReg)->NbPs0Vid = FCRxFE00_6000.Field.NbPs0Vid;
+  LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -211,7 +212,7 @@ F14PmVrmLowPowerModeEnable (
   UINT32    PstateCurrent;
   UINT32    NextPstateCurrent;
   UINT32    NextPstateCurrentRaw;
-  UINT32    PciRegister;
+  UINT32    PciReg;
   UINT32    PreviousVid;
   UINT32    CurrentVid;
   UINT64    PstateMsr;
@@ -249,24 +250,24 @@ F14PmVrmLowPowerModeEnable (
     }
   }
   PciAddress.AddressValue = PW_CTL_MISC_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
   if (IsPsiEnabled) {
-    ((POWER_CTRL_MISC_REGISTER *) &PciRegister)->PsiVid = CurrentVid;
-    ((POWER_CTRL_MISC_REGISTER *) &PciRegister)->PsiVidEn = 1;
+    ((POWER_CTRL_MISC_REGISTER *) &PciReg)->PsiVid = CurrentVid;
+    ((POWER_CTRL_MISC_REGISTER *) &PciReg)->PsiVidEn = 1;
   } else {
-    ((POWER_CTRL_MISC_REGISTER *) &PciRegister)->PsiVidEn = 0;
+    ((POWER_CTRL_MISC_REGISTER *) &PciReg)->PsiVidEn = 0;
   }
-  LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
 
 
   // Set up NBPSI_L for VDDNB
   PciAddress.AddressValue = CPTC3_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
   if (CpuEarlyParams->PlatformConfig.VrmProperties[NbVrm].LowPowerThreshold != 0) {
-    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciRegister)->NbPsiVid = 0;
-    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciRegister)->NbPsiVidEn = 1;
+    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciReg)->NbPsiVid = 0;
+    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciReg)->NbPsiVidEn = 1;
   } else {
-    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciRegister)->NbPsiVidEn = 0;
+    ((CLK_PWR_TIMING_CTRL3_REGISTER *) &PciReg)->NbPsiVidEn = 0;
   }
-  LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
 }

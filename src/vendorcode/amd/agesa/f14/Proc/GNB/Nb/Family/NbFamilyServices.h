@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 40044 $   @e \$Date: 2010-10-19 06:43:22 +0800 (Tue, 19 Oct 2010) $
+ * @e \$Revision: 47490 $   @e \$Date: 2011-02-22 08:34:28 -0700 (Tue, 22 Feb 2011) $
  *
  */
 /*
@@ -77,6 +77,12 @@ typedef struct {
   POWER_GATE_DATA   Gmc;                  ///< Gmc Power gating Data
   POWER_GATE_DATA   Uvd;                  ///< Uvd Power gating Data
 } NB_POWERGATE_CONFIG;
+
+VOID
+NbFmNbClockGating (
+  IN OUT   VOID  *NbClkGatingCtrl,
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  );
 
 VOID
 NbFmClumpUnitID (

@@ -646,7 +646,7 @@ GetVarMtrrHiMsk (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
   CACHE_INFO *CacheInfoPtr;
 
-  GetCpuServicesFromLogicalId (LogicalIdPtr, &FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, &CacheInfoPtr, &TempNotCare, StdHeader);
+  GetCpuServicesFromLogicalId (LogicalIdPtr, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (const VOID **)&CacheInfoPtr, &TempNotCare, StdHeader);
   return (UINT32) (CacheInfoPtr->VariableMtrrMask >> 32);
 }

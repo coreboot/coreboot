@@ -101,7 +101,7 @@ SetWarmResetFlag (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
   FamilySpecificServices = NULL;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->SetWarmResetFlag (FamilySpecificServices, StdHeader, Request);
 }
 
@@ -127,7 +127,7 @@ GetWarmResetFlag (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
   FamilySpecificServices = NULL;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetWarmResetFlag (FamilySpecificServices, StdHeader, Request);
 
   switch (StdHeader->Func) {
@@ -189,7 +189,7 @@ IsWarmReset (
     break;
   }
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetWarmResetFlag (FamilySpecificServices, StdHeader, &Request);
 
   if (Request.StateBits >= PostStage) {

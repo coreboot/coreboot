@@ -83,6 +83,13 @@ extern OPTION_MULTISOCKET_CONFIGURATION OptionMultiSocketConfiguration;
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+SetRegistersFromTablesAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -123,7 +130,7 @@ STATIC
   TABLE_ENTRY_FIELDS *Entries;
 
   ASSERT ((FamilySpecificServices != NULL) && (StdHeader != NULL));
-  ASSERT (Selector < TableEntryTypeMax);
+  ASSERT (Selector < TableCoreSelectorMax);
 
   NextTable = *RegisterTableHandle;
   if (NextTable == NULL) {
@@ -239,7 +246,7 @@ GetPerformanceFeatures (
   }
 
   // Get some family, model specific performance type info.
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   ASSERT (FamilySpecificServices != NULL);
 
   // Is the Northbridge P-State feature enabled
@@ -400,7 +407,7 @@ SetRegisterForHtPhyEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   Link = 0;
   while (FamilySpecificServices->NextLinkHasHtPhyFeats (
            FamilySpecificServices,
@@ -461,7 +468,7 @@ SetRegisterForHtPhyRangeEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   Link = 0;
   while (FamilySpecificServices->NextLinkHasHtPhyFeats (
            FamilySpecificServices,
@@ -646,7 +653,7 @@ SetRegisterForDeemphasisEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   Link = 0;
   while (FamilySpecificServices->NextLinkHasHtPhyFeats (
            FamilySpecificServices,
@@ -726,7 +733,7 @@ SetRegisterForHtPhyFreqEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   Link = 0;
   while (FamilySpecificServices->NextLinkHasHtPhyFeats (
            FamilySpecificServices,
@@ -903,7 +910,7 @@ SetRegisterForHtHostEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   Link = 0;
   while (FamilySpecificServices->GetNextHtLinkFeatures (FamilySpecificServices, &Link, &CapabilitySet, &HtHostFeats, StdHeader)) {
     if (DoesEntryTypeSpecificInfoMatch (HtHostFeats.HtHostValue, Entry->HtHostEntry.TypeFeats.HtHostValue)) {
@@ -1008,7 +1015,7 @@ SetRegisterForHtLinkTokenEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   // Check if the actual processor count and SystemDegree are in either range.
   ProcessorCount = GetNumberOfProcessors (StdHeader);
@@ -1259,7 +1266,7 @@ SetRegisterForHtFeaturePciEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   ASSERT ((Entry->HtFeatPciEntry.PackageType.PackageTypeValue & ~(PACKAGE_TYPE_ALL)) == 0);
 
@@ -1323,7 +1330,7 @@ SetRegisterForHtLinkPciEntry (
   IdentifyCore (StdHeader, &MySocket, &MyModule, &Ignored, &IgnoredStatus);
   GetPciAddress (StdHeader, MySocket, MyModule, &CapabilitySet, &IgnoredStatus);
   GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuFamilyRevision, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuFamilyRevision, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   Link = 0;
   while (FamilySpecificServices->GetNextHtLinkFeatures (FamilySpecificServices, &Link, &CapabilitySet, &HtHostFeats, StdHeader)) {
@@ -1424,7 +1431,7 @@ GetPlatformFeatures (
   //
   // Get some specific platform type info, VC...etc.
   //
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   ASSERT (FamilySpecificServices != NULL);
   FamilySpecificServices->GetPlatformTypeSpecificInfo (FamilySpecificServices, Features, StdHeader);
 
@@ -1601,7 +1608,7 @@ SetRegistersFromTables (
   PlatformFeatures.PlatformValue = 0;
   GetLogicalIdOfCurrentCore (&CpuLogicalId, StdHeader);
   GetPlatformFeatures (&PlatformFeatures, PlatformConfig, StdHeader);
-  GetCpuServicesFromLogicalId (&CpuLogicalId, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&CpuLogicalId, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
 
   // Build a non-sparse table of implementer methods, so we don't have to keep searching.
   // It is a bug to not include a descriptor for a type that is in the table (but the

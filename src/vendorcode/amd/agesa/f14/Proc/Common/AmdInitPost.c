@@ -57,6 +57,7 @@
 #include "cpuServices.h"
 #include "cpuPostInit.h"
 #include "AdvancedApi.h"
+#include "CreateStruct.h"
 #include "heapManager.h"
 #include "CommonInits.h"
 #include "cpuServices.h"
@@ -83,6 +84,11 @@ RDATA_GROUP (G1_PEICC)
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+AmdPostPlatformConfigInit (
+  IN OUT   PLATFORM_CONFIGURATION    *PlatformConfig,
+  IN OUT   AMD_CONFIG_PARAMS         *StdHeader
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

@@ -58,6 +58,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  "PcieWorkarounds.h"
+#include  "PcieTraining.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBPCIETRAININGV1_PCIETRAINING_FILECODE
@@ -77,14 +78,45 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+VOID
+PcieSetResetStateOnEngines (
+  IN       PCIe_ENGINE_CONFIG    *Engine,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  );
 
 VOID
-STATIC
-PcieTrainingDebugDumpPortState (
+PcieTrainingCheckResetDuration (
   IN      PCIe_ENGINE_CONFIG    *CurrentEngine,
   IN      PCIe_PLATFORM_CONFIG  *Pcie
   );
 
+VOID
+PcieTrainingDeassertReset (
+  IN      PCIe_ENGINE_CONFIG    *CurrentEngine,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieTrainingBrokenLine (
+  IN      PCIe_ENGINE_CONFIG    *CurrentEngine,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+PcieTrainingGen2Fail (
+  IN      PCIe_ENGINE_CONFIG    *CurrentEngine,
+  IN      PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+GNB_DEBUG_CODE (
+  VOID
+  STATIC
+  PcieTrainingDebugDumpPortState (
+	IN      PCIe_ENGINE_CONFIG    *CurrentEngine,
+	IN      PCIe_PLATFORM_CONFIG  *Pcie
+	);
+)
 
 /*----------------------------------------------------------------------------------------*/
 /**
@@ -114,6 +146,7 @@ PcieTrainingSetPortState (
   GNB_DEBUG_CODE (
     PcieTrainingDebugDumpPortState (CurrentEngine, Pcie)
     );
+
 }
 
 
@@ -372,7 +405,7 @@ PcieTrainingBrokenLine (
   UINT8 LinkTrainingState;
   CurrentLinkWidth = PcieUtilGetLinkWidth (CurrentEngine, Pcie);
   if (CurrentLinkWidth < PcieConfigGetNumberOfPhyLane (CurrentEngine) && CurrentLinkWidth > 0) {
-    CurrentEngine->InitStatus |= INIT_STATUS_PCIE_PORT_GEN2_RECOVERY;
+    CurrentEngine->InitStatus |= INIT_STATUS_PCIE_PORT_BROKEN_LANE_RECOVERY;
     PcieTopologyReduceLinkWidth (CurrentLinkWidth, CurrentEngine, Pcie);
     LinkTrainingState = LinkStateResetAssert;
     PutEventLog (
@@ -684,8 +717,10 @@ PcieTrainingPortCallback (
 {
   BOOLEAN *TrainingComplete;
   TrainingComplete = (BOOLEAN *) Buffer;
-  if (Engine->Type.Port.State != LinkStateTrainingCompleted) {
+  if (Engine->Type.Port.State < Pcie->TrainingExitState) {
     *TrainingComplete = FALSE;
+  } else {
+    return;
   }
   switch (Engine->Type.Port.State) {
   case LinkStateResetAssert:
@@ -793,6 +828,7 @@ PcieTraining (
  *
  */
 
+GNB_DEBUG_CODE (
 VOID
 STATIC
 PcieTrainingDebugDumpPortState (
@@ -826,3 +862,4 @@ PcieTrainingDebugDumpPortState (
     CurrentEngine->Type.Port.TimeStamp
     );
 }
+)

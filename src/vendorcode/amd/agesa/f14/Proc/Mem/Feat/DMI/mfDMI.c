@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/Main)
- * @e \$Revision: 39742 $ @e \$Date: 2010-10-15 02:11:58 +0800 (Fri, 15 Oct 2010) $
+ * @e \$Revision: 46495 $ @e \$Date: 2011-02-03 14:10:56 -0700 (Thu, 03 Feb 2011) $
  *
  **/
 /*
@@ -83,6 +83,16 @@ RDATA_GROUP (G2_PEI)
  *
  *----------------------------------------------------------------------------
  */
+
+BOOLEAN
+MemFDMISupport3 (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
+
+BOOLEAN
+MemFDMISupport2 (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
@@ -505,7 +515,7 @@ MemFDMISupport2 (
 
           // Form Factor (offset 0Eh)
           FormFactor = (UINT8) SpdDataStructure[DimmIndex].Data[20];
-          if ((FormFactor & 0x20) == 4) {
+          if ((FormFactor & 0x04) == 4) {
             DmiTable[DimmIndex].FormFactor = 0x0D;       // SO-DIMM
           } else {
             DmiTable[DimmIndex].FormFactor = 0x09;       // RDIMM or UDIMM

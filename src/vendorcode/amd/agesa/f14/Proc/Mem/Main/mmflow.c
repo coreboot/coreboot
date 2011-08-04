@@ -60,6 +60,7 @@
 #include "GeneralServices.h"
 #include "cpuFamilyTranslation.h"
 #include "OptionMemory.h"
+#include "AdvancedApi.h"
 #include "mm.h"
 #include "mn.h"
 #include "mt.h"
@@ -174,7 +175,7 @@ AmdMemAuto (
   //----------------------------------------------------------------------------
   // Get TSC rate, which will be used later in Wait10ns routine
   //----------------------------------------------------------------------------
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, &MemPtr->StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &MemPtr->StdHeader);
   FamilySpecificServices->GetTscRate (FamilySpecificServices, &MemPtr->TscRate, &MemPtr->StdHeader);
 
   //----------------------------------------------------------------------------
@@ -375,7 +376,7 @@ MemSPDDataProcess (
       }
     }
   } else {
-    PutEventLog (AGESA_FATAL, MEM_ERROR_HEAP_ALLOCATE_FOR_SPD, NULL, NULL, NULL, NULL, &MemPtr->StdHeader);
+    PutEventLog (AGESA_FATAL, MEM_ERROR_HEAP_ALLOCATE_FOR_SPD, 0, 0, 0, 0, &MemPtr->StdHeader);
     //
     // Assert here if unable to allocate heap for SPDs
     //

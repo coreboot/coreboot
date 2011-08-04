@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -270,6 +270,7 @@ MemRecSPDDataProcess (
             AgesaStatus = AgesaReadSpdRecovery (0, &SpdParam);
             if (AgesaStatus == AGESA_SUCCESS) {
               DimmSPDPtr->DimmPresent = TRUE;
+              IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %08x\n", Socket, Channel, Dimm, SpdParam.Buffer);
               if (!FindSocketWithMem) {
                 FindSocketWithMem = TRUE;
               }

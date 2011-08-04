@@ -52,12 +52,14 @@
 #include  "amdlib.h"
 #include  "Ids.h"
 #include  "Gnb.h"
+#include  "GnbPcie.h"
 #include  "GnbGfx.h"
 #include  GNB_MODULE_DEFINITIONS (GnbGfxConfig)
 #include  "GfxConfigData.h"
 #include  "GfxStrapsInit.h"
 #include  "GfxGmcInit.h"
 #include  "GfxInitAtMidPost.h"
+#include  "GnbGfxFamServices.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GFX_GFXINITATMIDPOST_FILECODE
 /*----------------------------------------------------------------------------------------
@@ -76,7 +78,6 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
-
 
 
 /*----------------------------------------------------------------------------------------*/
@@ -124,7 +125,7 @@ GfxInitAtMidPost (
         AGESA_STATUS_UPDATE (Status, AgesaStatus);
       }
     }
-    GfxSetIdleVoltageMode (Gfx);
+    GfxFmSetIdleVoltageMode (Gfx);
   }
   IDS_HDT_CONSOLE (GNB_TRACE, "GfxInitAtMidPost Exit [0x%x]\n", AgesaStatus);
   return  AgesaStatus;

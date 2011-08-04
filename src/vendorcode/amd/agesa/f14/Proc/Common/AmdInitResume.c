@@ -60,6 +60,7 @@
 #include "cpuRegisters.h"
 #include "cpuApicUtilities.h"
 #include "cpuPostInit.h"
+#include "CreateStruct.h"
 #include "CommonInits.h"
 #include "cpuFeatures.h"
 CODE_GROUP (G1_PEICC)

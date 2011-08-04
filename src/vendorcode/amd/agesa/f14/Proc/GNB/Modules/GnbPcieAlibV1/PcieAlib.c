@@ -74,6 +74,8 @@
  */
 
 extern UINT8  AlibSsdt[];
+extern AGESA_STATUS PcieFmAlibBuildAcpiTable (VOID *AlibSsdtPtr, AMD_CONFIG_PARAMS *StdHeader);
+;
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
@@ -88,7 +90,15 @@ extern UINT8  AlibSsdt[];
 
 VOID
 STATIC
-PcieAlibSetPortGenCapabilityCallback (
+PcieAlibSetPortMaxSpeedCallback (
+  IN       PCIe_ENGINE_CONFIG    *Engine,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
+VOID
+STATIC
+PcieAlibSetPortOverrideSpeedCallback (
   IN       PCIe_ENGINE_CONFIG    *Engine,
   IN OUT   VOID                  *Buffer,
   IN       PCIe_PLATFORM_CONFIG  *Pcie
@@ -177,13 +187,14 @@ PcieAlibBuildAcpiTable (
   // Copy template to buffer
   LibAmdMemCopy (AlibSsdtBuffer, &AlibSsdt[0], AlibSsdtlength, StdHeader);
   // Set PCI MMIO configuration
-  AmlObjName = '10DA';
+//  AmlObjName = '10DA';
+  AmlObjName = Int32FromChar ('1', '0', 'D', 'A');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   if (AmlObjPtr != NULL) {
-    UINT64  MsrRegister;
-    LibAmdMsrRead (MSR_MMIO_Cfg_Base, &MsrRegister, StdHeader);
-    if ((MsrRegister & BIT0) != 0 && (MsrRegister & 0xFFFFFFFF00000000) == 0) {
-      *(UINT32*)((UINT8*)AmlObjPtr + 5) = (UINT32)(MsrRegister & 0xFFFFF00000);
+    UINT64  MsrReg;
+    LibAmdMsrRead (MSR_MMIO_Cfg_Base, &MsrReg, StdHeader);
+    if ((MsrReg & BIT0) != 0 && (MsrReg & 0xFFFFFFFF00000000) == 0) {
+      *(UINT32*)((UINT8*)AmlObjPtr + 5) = (UINT32)(MsrReg & 0xFFFFF00000);
     } else {
       Status = AGESA_ERROR;
     }
@@ -193,7 +204,8 @@ PcieAlibBuildAcpiTable (
   // Set voltage configuration
   PpFuseArray = GnbLocateHeapBuffer (AMD_PP_FUSE_TABLE_HANDLE, StdHeader);
   if (PpFuseArray != NULL) {
-    AmlObjName = '30DA';
+//    AmlObjName = '30DA';
+    AmlObjName = Int32FromChar ('3', '0', 'D', 'A');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -222,7 +234,8 @@ PcieAlibBuildAcpiTable (
       BootUpVidIndex = (UINT8) Index;
     }
   }
-  AmlObjName = '40DA';
+//  AmlObjName = '40DA';
+  AmlObjName = Int32FromChar ('4', '0', 'D', 'A');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   ASSERT (AmlObjPtr != NULL);
   if (AmlObjPtr != NULL) {
@@ -230,7 +243,8 @@ PcieAlibBuildAcpiTable (
   } else {
     Status = AGESA_ERROR;
   }
-  AmlObjName = '50DA';
+//  AmlObjName = '50DA';
+  AmlObjName = Int32FromChar ('5', '0', 'D', 'A');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   ASSERT (AmlObjPtr != NULL);
   if (AmlObjPtr != NULL) {
@@ -240,7 +254,8 @@ PcieAlibBuildAcpiTable (
   }
   // Set PCIe configuration
   if (PcieLocateConfigurationData (StdHeader, &Pcie) == AGESA_SUCCESS) {
-    AmlObjName = '20DA';
+//    AmlObjName = '20DA';
+  AmlObjName = Int32FromChar ('2', '0', 'D', 'A');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -248,20 +263,36 @@ PcieAlibBuildAcpiTable (
     } else {
       Status = AGESA_ERROR;
     }
-    AmlObjName = '60DA';
+//    AmlObjName = '60DA';
+    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
       PcieConfigRunProcForAllEngines (
         DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
-        PcieAlibSetPortGenCapabilityCallback,
+        PcieAlibSetPortMaxSpeedCallback,
         (UINT8*)((UINT8*)AmlObjPtr + 7),
         Pcie
         );
     } else {
       Status = AGESA_ERROR;
     }
-    AmlObjName = '70DA';
+//    AmlObjName = '80DA';
+    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
+    AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
+    ASSERT (AmlObjPtr != NULL);
+    if (AmlObjPtr != NULL) {
+      PcieConfigRunProcForAllEngines (
+        DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
+        PcieAlibSetPortOverrideSpeedCallback,
+        (UINT8*)((UINT8*)AmlObjPtr + 7),
+        Pcie
+        );
+    } else {
+      Status = AGESA_ERROR;
+    }
+//    AmlObjName = '70DA';
+    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -278,7 +309,10 @@ PcieAlibBuildAcpiTable (
     ASSERT (FALSE);
     Status = AGESA_ERROR;
   }
-  if (Status == AGESA_ERROR) {
+  if (Status == AGESA_SUCCESS) {
+    Status = PcieFmAlibBuildAcpiTable (AlibSsdtBuffer, StdHeader);
+  }
+  if (Status != AGESA_SUCCESS) {
     //Shrink table length to size of the header
     ((ACPI_TABLE_HEADER*) AlibSsdtBuffer)->TableLength = sizeof (ACPI_TABLE_HEADER);
   }
@@ -288,7 +322,7 @@ PcieAlibBuildAcpiTable (
 
 /*----------------------------------------------------------------------------------------*/
 /**
- * Callback to init max port Gen capability
+ * Callback to init max port speed capability
  *
  *
  *
@@ -301,16 +335,47 @@ PcieAlibBuildAcpiTable (
 
 VOID
 STATIC
-PcieAlibSetPortGenCapabilityCallback (
+PcieAlibSetPortMaxSpeedCallback (
   IN       PCIe_ENGINE_CONFIG    *Engine,
   IN OUT   VOID                  *Buffer,
   IN       PCIe_PLATFORM_CONFIG  *Pcie
   )
 {
-  UINT8   *PsppMaxPortCapbilityArray;
-  PsppMaxPortCapbilityArray = (UINT8*) Buffer;
+  UINT8   *PsppMaxPortSpeedPackage;
+  PsppMaxPortSpeedPackage = (UINT8*) Buffer;
   if (Engine->Type.Port.PortData.LinkHotplug != HotplugDisabled || PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS)) {
-    PsppMaxPortCapbilityArray[(Engine->Type.Port.Address.Address.Device - 2) * 2 + 1] = (UINT8) PcieFmGetLinkSpeedCap (PCIE_PORT_GEN_CAP_MAX, Engine, Pcie) + 1;
+    PsppMaxPortSpeedPackage[(Engine->Type.Port.Address.Address.Device - 2) * 2 + 1] = (UINT8) PcieFmGetLinkSpeedCap (PCIE_PORT_GEN_CAP_MAX, Engine, Pcie);
+  }
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Callback to init max port speed capability
+ *
+ *
+ *
+ *
+ * @param[in]       Engine          Pointer to engine config descriptor
+ * @param[in, out]  Buffer          Not used
+ * @param[in]       Pcie            Pointer to global PCIe configuration
+ *
+ */
+
+VOID
+STATIC
+PcieAlibSetPortOverrideSpeedCallback (
+  IN       PCIe_ENGINE_CONFIG    *Engine,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  )
+{
+  UINT8   *PsppOverridePortSpeedPackage;
+  PsppOverridePortSpeedPackage = (UINT8*) Buffer;
+  if (Engine->Type.Port.PortData.LinkHotplug != HotplugDisabled || PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS)) {
+    PsppOverridePortSpeedPackage[(Engine->Type.Port.Address.Address.Device - 2) * 2 + 1] = Engine->Type.Port.PortData.MiscControls.LinkSafeMode;
+  }
+  if (Engine->Type.Port.PortData.LinkHotplug == HotplugBasic && !PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS)) {
+    PsppOverridePortSpeedPackage[(Engine->Type.Port.Address.Address.Device - 2) * 2 + 1] = PcieGen1;
   }
 }
 
@@ -344,7 +409,8 @@ PcieAlibSetPortInfoCallback (
   PortInfoPackage->PortInfo[PortIndex].StartCoreLane = (UINT8) Engine->Type.Port.StartCoreLane;
   PortInfoPackage->PortInfo[PortIndex].EndCoreLane = (UINT8) Engine->Type.Port.EndCoreLane;
   PortInfoPackage->PortInfo[PortIndex].PortId = Engine->Type.Port.PortId;
-  PortInfoPackage->PortInfo[PortIndex].WrapperId = 0x0130 | (PcieEngineGetParentWrapper (Engine)->WrapId);
+//  PortInfoPackage->PortInfo[PortIndex].WrapperId = 0x0130 | (PcieEngineGetParentWrapper (Engine)->WrapId);
+  PortInfoPackage->PortInfo[PortIndex].WrapperId = 0x0130u | (PcieEngineGetParentWrapper (Engine)->WrapId);
   PortInfoPackage->PortInfo[PortIndex].LinkHotplug = Engine->Type.Port.PortData.LinkHotplug;
   PortInfoPackage->PortInfo[PortIndex].MaxSpeedCap = (UINT8) PcieFmGetLinkSpeedCap (PCIE_PORT_GEN_CAP_MAX, Engine, Pcie);
 }

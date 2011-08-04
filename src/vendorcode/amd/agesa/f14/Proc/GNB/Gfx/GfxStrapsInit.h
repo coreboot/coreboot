@@ -69,10 +69,5 @@ GfxSetBootUpVoltage (
   IN      GFX_PLATFORM_CONFIG   *Gfx
   );
 
-VOID
-GfxSetIdleVoltageMode (
-  IN      GFX_PLATFORM_CONFIG   *Gfx
-  );
-
 #endif
 

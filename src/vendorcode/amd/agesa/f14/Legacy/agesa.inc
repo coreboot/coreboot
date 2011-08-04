@@ -9,7 +9,7 @@
 ; * @xrefitem bom "File Content Label" "Release Content"
 ; * @e project:      AGESA
 ; * @e sub-project:  Include
-; * @e \$Revision: 41505 $   @e \$Date: 2010-11-05 22:06:20 +0800 (Fri, 05 Nov 2010) $
+; * @e \$Revision: 47417 $   @e \$Date: 2011-02-18 12:48:20 -0700 (Fri, 18 Feb 2011) $
 ;
 ;*****************************************************************************
 ; 
@@ -714,6 +714,23 @@ PCIE_HDP_TYPE TEXTEQU  <DWORD>
 ;----------------------------------------------------------------------------
 ;
 
+; LVDS Misc Control Field
+LVDS_MISC_CONTROL_FIELD         STRUCT
+  FpdiMode          UINT8       ?
+    ;IN  UINT8     FpdiMode:1;
+    ;IN  UINT8     DlChSwap:1;
+    ;IN  UINT8     VsyncActiveLow:1;
+    ;IN  UINT8     HsyncActiveLow:1;
+    ;IN  UINT8     BLONActiveLow:1;
+    ;IN  UINT8     Reserved:3;
+LVDS_MISC_CONTROL_FIELD         ENDS
+
+; LVDS Misc Control
+LVDS_MISC_CONTROL           UNION
+  Field        LVDS_MISC_CONTROL_FIELD   {}
+  Value        UINT8  ?
+LVDS_MISC_CONTROL           ENDS
+
 ; Configuration settings for GNB.
 GNB_ENV_CONFIGURATION          STRUCT
   Gnb3dStereoPinIndex          UINT8  ?       ;< 3D Stereo Pin ID.
@@ -726,6 +743,8 @@ GNB_ENV_CONFIGURATION          STRUCT
                                               ;  @li 6 = Use processor pin HPD6
   LvdsSpreadSpectrum           UINT16  ?      ; Spread spectrum value in 0.01 %
   LvdsSpreadSpectrumRate       UINT16  ?      ; Spread spectrum frequency used by SS hardware logic in unit of 10Hz, 0 - default frequency 40kHz
+  LvdsMiscControl              LVDS_MISC_CONTROL   {}      ; This item configures LVDS swap/Hsync/Vsync/BLON
+  PcieRefClkSpreadSpectrum     UINT16  ?      ; Spread spectrum value in 0.01 %
 GNB_ENV_CONFIGURATION          ENDS
 
 ; GNB configuration info
@@ -1916,6 +1935,8 @@ BUILD_OPT_CFG    STRUCT
   CfgGnbPcieSSID                UINT32 ?        ; < Gnb PCIe SSID
   CfgLvdsSpreadSpectrum         UINT16  ?       ; < Lvds Spread Spectrum. Build-time customizable only
   CfgLvdsSpreadSpectrumRate     UINT16  ?       ; < Lvds Spread Spectrum Rate. Build-time customizable only
+  CfgLvdsMiscControl            LVDS_MISC_CONTROL   {}; THe LVDS Misc control
+  CfgPcieRefClkSpreadSpectrum   UINT16  ?       ; PCIe Reference Clock Spread Spectrum
   Reserved                      BOOLEAN ?       ; < reserved...
 BUILD_OPT_CFG    ENDS
 
@@ -2143,6 +2164,7 @@ TYPE17_DMI_INFO    STRUCT
   PartNumber                    CHAR8 (19) DUP (?)      ; < Part Number.
   Attributes                    UINT8 ?                 ; < Bits 7-4: Reserved, Bits 3-0: rank.
   ExtSize                       UINT32 ?                ; < Extended Size.
+  ConfigSpeed                   UINT16 ?                ; < Configured memory clock speed
 TYPE17_DMI_INFO    ENDS
 
  ; Memory DMI Type 17 and 20 - for memory use
@@ -2169,6 +2191,7 @@ MEM_DMI_INFO    STRUCT
   EndingAddr                    UINT32 ?              ; ///< The handle, or instance number, associated with
                                                       ; ///< the Memory Device structure to which this address
                                                       ; ///< range is mapped.
+  ConfigSpeed                   UINT16 ?              ; ///< Configured memory clock speed
 MEM_DMI_INFO    ENDS
 
  ; DMI Type 19 - Memory Array Mapped Address

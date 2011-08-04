@@ -76,6 +76,11 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+UINT8
+PcieTopologyLocateMuxIndex (
+  IN OUT   UINT8 *LaneMuxSelectorArrayPtr,
+  IN       UINT8  LaneMuxValue
+  );
 
 
 /*----------------------------------------------------------------------------------------*/
@@ -199,7 +204,7 @@ PcieTopologyApplyLaneMux (
       );
     while (EngineList != NULL) {
       if (PcieLibIsPcieEngine (EngineList) && PcieLibIsEngineAllocated (EngineList)) {
-        CurrentPhyLane = (UINT8) PcieUtilGetLoPhyLane (EngineList) - Wrapper->StartPhyLane;
+        CurrentPhyLane = (UINT8) PcieLibGetLoPhyLane (EngineList) - Wrapper->StartPhyLane;
         NumberOfPhyLane = (UINT8) PcieConfigGetNumberOfPhyLane (EngineList);
         CurrentCoreLane = (UINT8) EngineList->Type.Port.StartCoreLane;
         if (PcieUtilIsLinkReversed (FALSE, EngineList, Pcie)) {
@@ -505,7 +510,7 @@ PcieTopologyLaneControl (
     Wrapper,
     WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8023_ADDRESS),
     D0F0xE4_WRAP_8023.Value,
-    FALSE,
+    TRUE,
     Pcie
     );
 }

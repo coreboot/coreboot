@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 41504 $   @e \$Date: 2010-11-05 21:59:13 +0800 (Fri, 05 Nov 2010) $
+ * @e \$Revision: 47417 $   @e \$Date: 2011-02-18 12:48:20 -0700 (Fri, 18 Feb 2011) $
  *
  */
 /*
@@ -52,6 +52,7 @@
 #include  "Gnb.h"
 #include  "OptionGnb.h"
 #include  "GnbLibFeatures.h"
+#include  "GnbInterface.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GNBINITATENV_FILECODE
 /*----------------------------------------------------------------------------------------
@@ -89,6 +90,9 @@ GnbInitDataStructAtEnvDef (
   GnbEnvConfigPtr->Gnb3dStereoPinIndex = UserOptions.CfgGnb3dStereoPinIndex;
   GnbEnvConfigPtr->LvdsSpreadSpectrum = UserOptions.CfgLvdsSpreadSpectrum;
   GnbEnvConfigPtr->LvdsSpreadSpectrumRate = UserOptions.CfgLvdsSpreadSpectrumRate;
+  GnbEnvConfigPtr->LvdsMiscControl.Value = 0;
+  GnbEnvConfigPtr->LvdsMiscControl.Value = UserOptions.CfgLvdsMiscControl.Value;
+  GnbEnvConfigPtr->PcieRefClkSpreadSpectrum = UserOptions.CfgPcieRefClkSpreadSpectrum;
 }
 
 /*----------------------------------------------------------------------------------------*/

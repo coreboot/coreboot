@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Include
- * @e \$Revision: 41504 $   @e \$Date: 2010-11-05 21:59:13 +0800 (Fri, 05 Nov 2010) $
+ * @e \$Revision: 47417 $   @e \$Date: 2011-02-18 12:48:20 -0700 (Fri, 18 Feb 2011) $
  */
 /*
  *****************************************************************************
@@ -822,6 +822,38 @@ typedef enum {
  *   GNB configuration info
  *----------------------------------------------------------------------------
  */
+
+/// LVDS Misc Control Field
+typedef struct {
+  IN  UINT8     FpdiMode:1;          ///< This item configures LVDS 888bit panel mode
+                                     ///< @li FALSE = LVDS 888 panel in LDI mode
+                                     ///< @li TRUE =  LVDS 888 panel in FPDI mode
+                                     ///< @BldCfgItem{BLDCFG_LVDS_MISC_888_FPDI_MODE}
+  IN  UINT8     DlChSwap:1;          ///< This item configures LVDS panel lower and upper link mapping
+                                     ///< @li FALSE = Lower link and upper link not swap
+                                     ///< @li TRUE = Lower link and upper link are swapped
+                                     ///< @BldCfgItem{BLDCFG_LVDS_MISC_DL_CH_SWAP}
+  IN  UINT8     VsyncActiveLow:1;    ///< This item configures polarity of frame pulse encoded in lvds data stream
+                                     ///< @li FALSE = Active high Frame Pulse/Vsync
+                                     ///< @li TRUE = Active low Frame Pulse/Vsync
+                                     ///< @BldCfgItem{BLDCFG_LVDS_MISC_VSYNC_ACTIVE_LOW}
+  IN  UINT8     HsyncActiveLow:1;    ///< This item configures polarity of line pulse encoded in lvds data
+                                     ///< @li FALSE = Active high Line Pulse
+                                     ///< @li TRUE = Active low Line Pulse / Hsync
+                                     ///< @BldCfgItem{BLDCFG_LVDS_MISC_HSYNC_ACTIVE_LOW}
+  IN  UINT8     BLONActiveLow:1;     ///< This item configures polarity of signal sent to digital BLON output pin
+                                     ///< @li FALSE = Not inverted(active high)
+                                     ///< @li TRUE = Inverted (active low)
+                                     ///< @BldCfgItem{BLDCFG_LVDS_MISC_BLON_ACTIVE_LOW}
+  IN  UINT8     Reserved:3;          ///< Reserved
+} LVDS_MISC_CONTROL_FIELD;
+
+/// LVDS Misc Control
+typedef union _LVDS_MISC_CONTROL {
+  IN LVDS_MISC_CONTROL_FIELD Field;  ///< LVDS_MISC_CONTROL_FIELD
+  IN UINT8   Value;                  ///< LVDS Misc Control Value
+} LVDS_MISC_CONTROL;
+
 /// Configuration settings for GNB.
 typedef struct {
   IN  UINT8     Gnb3dStereoPinIndex;      ///< 3D Stereo Pin ID.
@@ -837,6 +869,9 @@ typedef struct {
                                           ///< BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM}
   IN  UINT16     LvdsSpreadSpectrumRate;  ///< Spread spectrum frequency used by SS hardware logic in unit of 10Hz, 0 - default frequency 40kHz
                                           ///< BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM_RATE}
+  IN  LVDS_MISC_CONTROL      LvdsMiscControl;///< This item configures LVDS swap/Hsync/Vsync/BLON
+  IN  UINT16     PcieRefClkSpreadSpectrum;   ///< Spread spectrum value in 0.01 %
+                                             ///< @BldCfgItem{BLDCFG_PCIE_REFCLK_SPREAD_SPECTRUM}
 } GNB_ENV_CONFIGURATION;
 
 /// GNB configuration info
@@ -2240,6 +2275,9 @@ typedef struct {
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM}
   IN UINT16  CfgLvdsSpreadSpectrumRate;           ///< Lvds Spread Spectrum Rate
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM_RATE}
+  IN LVDS_MISC_CONTROL CfgLvdsMiscControl;        ///< The LVDS Misc control
+  IN UINT16     CfgPcieRefClkSpreadSpectrum;      ///< PCIe Reference Clock Spread Spectrum
+                                                  ///< Build-time customizable only - @BldCfgItem{BLDCFG_PCIE_REFCLK_SPREAD_SPECTRUM}
   IN BOOLEAN Reserved;                            ///< reserved...
 } BUILD_OPT_CFG;
 

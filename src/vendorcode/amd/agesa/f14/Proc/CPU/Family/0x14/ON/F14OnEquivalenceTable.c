@@ -7,7 +7,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/Family/0x14
- * @e \$Revision: 36418 $   @e \$Date: 2010-08-18 17:00:58 +0800 (Wed, 18 Aug 2010) $
+ * @e \$Revision: 48589 $   @e \$Date: 2011-03-10 09:27:00 -0700 (Thu, 10 Mar 2011) $
  *
  */
 /*
@@ -68,6 +68,14 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetF14OnMicrocodeEquivalenceTable (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **OnEquivalenceTablePtr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -77,7 +85,8 @@ STATIC CONST UINT16 ROMDATA CpuF14MicrocodeEquivalenceTable[] =
 {
   0x5000, 0x5000,
   0x5001, 0x5001,
-  0x5010, 0x5010
+  0x5010, 0x5010,
+  0x5020, 0x5020
 };
 
 // Unencrypted equivalent
@@ -85,7 +94,8 @@ STATIC CONST UINT16 ROMDATA CpuF14UnEncryptedMicrocodeEquivalenceTable[] =
 {
   0x5000, 0x5800,
   0x5001, 0x5801,
-  0x5010, 0x5810
+  0x5010, 0x5810,
+  0x5020, 0x5820
 };
 
 

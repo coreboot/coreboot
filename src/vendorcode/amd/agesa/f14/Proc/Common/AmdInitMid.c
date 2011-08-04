@@ -53,6 +53,7 @@
 #include "Ids.h"
 #include "cpuFeatures.h"
 #include "CommonInits.h"
+#include "CreateStruct.h"
 #include "GnbInterface.h"
 #include "Filecode.h"
 CODE_GROUP (G1_PEICC)

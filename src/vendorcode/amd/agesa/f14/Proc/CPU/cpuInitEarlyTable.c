@@ -74,6 +74,14 @@ RDATA_GROUP (G1_PEICC)
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetCommonEarlyInitOnCoreTable (
+  IN       CPU_SPECIFIC_SERVICES                *FamilyServices,
+     OUT   CONST S_PERFORM_EARLY_INIT_ON_CORE   **Table,
+  IN       AMD_CPU_EARLY_PARAMS                 *EarlyParams,
+  IN       AMD_CONFIG_PARAMS                    *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------

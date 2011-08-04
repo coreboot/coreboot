@@ -85,6 +85,13 @@ CONST AMD_CPU_BRAND ROMDATA Dflt_Str2 = {0, 0, 0, SOCKET_IGNORE, DR_NO_STRING, D
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+SetBrandIdRegistersAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -133,7 +140,7 @@ SetBrandIdRegisters (
   SocketTablePtr = NULL;
   SocketTableEntry = NULL;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   // Step1: Allocate 48 bytes from Heap space
   AllocHeapParams.RequestedBufferSize = CPU_BRAND_ID_LENGTH;
   AllocHeapParams.BufferHandle = AMD_BRAND_ID_BUFFER_HANDLE;
@@ -180,7 +187,7 @@ SetBrandIdRegisters (
     }
 
     // Step5: Search for String1 (there can be only 1)
-    FamilySpecificServices->GetBrandString1 (FamilySpecificServices, (VOID **) &SocketTableEntry, &TableEntryCount, StdHeader);
+    FamilySpecificServices->GetBrandString1 (FamilySpecificServices, (const VOID **) &SocketTableEntry, &TableEntryCount, StdHeader);
     SocketTableEntry1 = (CPU_BRAND_TABLE **) SocketTableEntry;
     for (TableEntryIndex = 0; ((TableEntryIndex < TableEntryCount)
          && (SuffixStatus == 0)); TableEntryIndex++, SocketTableEntry1++) {
@@ -242,7 +249,7 @@ SetBrandIdRegisters (
 
     // Step9: Search for String2
     SuffixStatus = 0;
-    FamilySpecificServices->GetBrandString2 (FamilySpecificServices, (VOID **) &SocketTableEntry, &TableEntryCount, StdHeader);
+    FamilySpecificServices->GetBrandString2 (FamilySpecificServices, (const VOID **) &SocketTableEntry, &TableEntryCount, StdHeader);
     SocketTableEntry1 = (CPU_BRAND_TABLE **) SocketTableEntry;
     for (TableEntryIndex = 0; ((TableEntryIndex < TableEntryCount)
          && (SuffixStatus == 0)); TableEntryIndex++, SocketTableEntry1++) {

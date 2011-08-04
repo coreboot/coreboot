@@ -11,10 +11,9 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Core
- * @e \$Revision: 40817 $   @e \$Date: 2010-10-28 03:28:12 +0800 (Thu, 28 Oct 2010) $
+ * @e \$Revision: 53801 $   @e \$Date: 2011-05-25 12:03:55 -0600 (Wed, 25 May 2011) $
  */
-/*
- *****************************************************************************
+/*****************************************************************************
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
@@ -41,7 +40,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
- * ***************************************************************************
+ ****************************************************************************
  *
  */
 
@@ -77,7 +76,7 @@
 
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
-#define AGESA_VERSION_STRING  {'V', '1', '.', '0', '.', '0', '.', '1', ' ', ' ', ' ', ' '}
+#define AGESA_VERSION_STRING  {'V', '1', '.', '1', '.', '0', '.', '0', ' ', ' ', ' ', ' '}
 
 
 // The Brazos solution is defined to be family 0x14 in the FT1 socket.

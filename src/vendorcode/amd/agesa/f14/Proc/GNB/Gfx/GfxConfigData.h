@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 46545 $   @e \$Date: 2011-02-04 13:42:42 -0700 (Fri, 04 Feb 2011) $
  *
  */
 /*
@@ -46,19 +46,6 @@
 
 #ifndef _GFXCONFIGDATA_H_
 #define _GFXCONFIGDATA_H_
-
-AGESA_STATUS
-GfxAllocateConfigData (
-  IN       AMD_CONFIG_PARAMS          *StdHeader,
-  IN OUT   GFX_PLATFORM_CONFIG        **Gfx,
-  IN       PLATFORM_CONFIGURATION     *PlatformConfig
-  );
-
-AGESA_STATUS
-GfxLocateConfigData (
-  IN       AMD_CONFIG_PARAMS          *StdHeader,
-     OUT   GFX_PLATFORM_CONFIG        **Gfx
-  );
 
 AGESA_STATUS
 GfxEnableGmmAccess (

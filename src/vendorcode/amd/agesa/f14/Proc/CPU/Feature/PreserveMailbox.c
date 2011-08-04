@@ -157,7 +157,7 @@ PreserveMailboxes (
     for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
       for (Module = 0; Module < GetPlatformNumberOfModules (); Module++) {
         if (GetPciAddress (StdHeader, Socket, Module, &BaseAddress, &IgnoredStatus)) {
-          GetFeatureServicesOfSocket (&PreserveMailboxFamilyServiceTable, Socket, &FamilySpecificServices, StdHeader);
+          GetFeatureServicesOfSocket (&PreserveMailboxFamilyServiceTable, Socket, (const VOID **)&FamilySpecificServices, StdHeader);
           ASSERT (FamilySpecificServices != NULL);
           NextRegister = FamilySpecificServices->RegisterList;
           while (NextRegister->AddressValue != ILLEGAL_SBDFO) {
@@ -187,7 +187,7 @@ PreserveMailboxes (
     for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
       for (Module = 0; Module < GetPlatformNumberOfModules (); Module++) {
         if (GetPciAddress (StdHeader, Socket, Module, &BaseAddress, &IgnoredStatus)) {
-          GetFeatureServicesOfSocket (&PreserveMailboxFamilyServiceTable, Socket, &FamilySpecificServices, StdHeader);
+          GetFeatureServicesOfSocket (&PreserveMailboxFamilyServiceTable, Socket, (const VOID **)&FamilySpecificServices, StdHeader);
           NextRegister = FamilySpecificServices->RegisterList;
           while (NextRegister->AddressValue != ILLEGAL_SBDFO) {
             ASSERT (RegisterEntryIndex <

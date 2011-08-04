@@ -53,6 +53,7 @@
 #include  "amdlib.h"
 #include  "Gnb.h"
 #include  "GnbPcie.h"
+#include  "GnbPcieFamServices.h"
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  "OntarioDefinitions.h"
 #include  "OntarioComplexData.h"

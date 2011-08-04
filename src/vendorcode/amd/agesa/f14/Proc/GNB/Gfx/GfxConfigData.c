@@ -56,6 +56,7 @@
 #include  "GnbGfx.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  "GfxStrapsInit.h"
+#include  "GfxConfigData.h"
 #include  "OptionGnb.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GFX_GFXCONFIGDATA_FILECODE

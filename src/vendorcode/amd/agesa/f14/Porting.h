@@ -226,6 +226,7 @@
   #define VOLATILE volatile
   #define TRUE 1
   #define FALSE 0
+//  #undef CONST
   #define CONST const
   #define ROMDATA
   #define CALLCONV
@@ -267,10 +268,6 @@
 #ifndef NULL
   #define NULL              (void *)0
 #endif
-#ifdef ROMDATA
-//#undef ROMDATA
-#endif
-//#define ROMDATA __attribute__ ((section("rom.data"))
 
 #else
   // -----------------------------------------------------------------------

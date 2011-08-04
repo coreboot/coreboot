@@ -117,7 +117,7 @@ IsHwC1eFeatureEnabled (
         if (GetNumberOfProcessors (StdHeader) == 1) {
           GetApMailbox (&ApMailboxes.ApMailInfo.Info, StdHeader);
           if (ApMailboxes.ApMailInfo.Fields.ModuleType == 0) {
-            GetFeatureServicesOfCurrentCore (&HwC1eFamilyServiceTable, &FamilyServices, StdHeader);
+            GetFeatureServicesOfCurrentCore (&HwC1eFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
             if (FamilyServices != NULL) {
               IsEnabled = FamilyServices->IsHwC1eSupported (FamilyServices, StdHeader);
             }
@@ -157,7 +157,7 @@ InitializeHwC1eFeature (
   IDS_HDT_CONSOLE (CPU_TRACE, "    HW C1e is enabled\n");
 
   if (IsWarmReset (StdHeader)) {
-    GetFeatureServicesOfCurrentCore (&HwC1eFamilyServiceTable, &FamilyServices, StdHeader);
+    GetFeatureServicesOfCurrentCore (&HwC1eFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
     CalledStatus = FamilyServices->InitializeHwC1e (FamilyServices, EntryPoint, PlatformConfig, StdHeader);
     if (CalledStatus > AgesaStatus) {
       AgesaStatus = CalledStatus;

@@ -78,6 +78,7 @@
       Buffer () {0,0,0,0,0,0,0,0,0,0},    //dev6
       Buffer () {0,0,0,0,0,0,0,0,0,0},    //dev7
       Buffer () {0,0,0,0,0,0,0,0,0,0},    //dev8
+      Buffer () {0,0,0,0,0,0,0,0,0,0},    //dev9
     }
   )
 
@@ -85,6 +86,9 @@
     AD07,
     varPortInfo
   )
+
+
+  Name (varStringBuffer, Buffer (256) {})
 
   /*----------------------------------------------------------------------------------------*/
   /**
@@ -128,20 +132,12 @@
 
   /*----------------------------------------------------------------------------------------*/
   /**
-   *  Read PCI config register
-   *
-   *  Arg0 - Port Index
-   *
-   */
-
-  /*----------------------------------------------------------------------------------------*/
-  /**
    *  Read PCI config register through MMIO
    *
    *  Arg0 - PCI address Bus/device/func
    *  Arg1 - Register offset
    */
-  Method (procPciDwordRead, 2, NotSerialized) {
+  Method (procPciDwordRead, 2, Serialized) {
     Add (varPcieBase, ShiftLeft (Arg0, 12), Local0)
     Add (Arg1, Local0, Local0)
     OperationRegion(varOperationRegionMmio, SystemMemory, Local0, 0x4)
@@ -159,7 +155,7 @@
    *  Arg1 - Register offset
    *  Arg2 - Value
    */
-  Method (procPciDwordWrite, 3, NotSerialized) {
+  Method (procPciDwordWrite, 3, Serialized) {
     Add (varPcieBase, ShiftLeft (Arg0, 12), Local0)
     Add (Arg1, Local0, Local0)
     OperationRegion(varOperationRegionMmio, SystemMemory, Local0, 0x4)
@@ -178,7 +174,7 @@
    *  Arg2 - AND mask
    *  Arg3 - OR mask
    */
-  Method (procPciDwordRMW, 4, NotSerialized) {
+  Method (procPciDwordRMW, 4, Serialized) {
     Store (procPciDwordRead (Arg0, Arg1), Local0)
     Or (And (Local0, Arg2), Arg3, Local0)
     procPciDwordWrite (Arg0, Arg1, Local0)
@@ -310,14 +306,15 @@
     Store (1, Local0)
     while (LEqual (Local0, 1)) {
       Store (And (procPciDwordRead (Arg0, Local1), 0xFF), Local1)
-      if (LNotEqual (Local1, 0)) {
+      if (LEqual (Local1, 0)) {
+        break
+      }
         if (LEqual (And (procPciDwordRead (Arg0, Local1), 0xFF), Arg1)) {
         	Store (0, Local0)
         } else {
         	Increment (Local1)
         }
       }
-    }
     return (Local1)
   }
 
@@ -328,7 +325,7 @@
    *  Arg0 	- Aspm
    *  Arg1 	- 0: Read, 1: Write
    */
-  Method (procPcieSbAspmControl, 2, NotSerialized) {
+  Method (procPcieSbAspmControl, 2, Serialized) {
 	  // Create an opregion for PM IO Registers
 	  OperationRegion (PMIO, SystemIO, 0xCD6, 0x2)
 	  Field (PMIO, ByteAcc, NoLock, Preserve)
@@ -359,15 +356,5 @@
       Or (And (Local0, 0xfffffffc), Arg0, Local0)
       Store (Local0, ABDA)
     }
-    
   }
-
-#ifdef  ALIB_DEBUG
-  Name (ABUF, Buffer (256) {})
-  Name (AFUN, 0xff)
-  Method (ADBG, 0, Serialized) {
-    ALIB (AFUN, ABUF);
-  }
-  Alias (procPciDwordRead, AXPR)
-#endif
 

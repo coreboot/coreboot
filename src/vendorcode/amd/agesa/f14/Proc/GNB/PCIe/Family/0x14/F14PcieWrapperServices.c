@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -56,6 +56,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  "PcieMiscLib.h"
+#include  "GnbPcieFamServices.h"
 #include  "OntarioDefinitions.h"
 #include  "GnbRegistersON.h"
 #include  "NbSmuLib.h"
@@ -97,11 +98,57 @@ PcieFmExecuteNativeGen1Reconfig (
   IN      PCIe_PLATFORM_CONFIG  *Pcie
   );
 
+AGESA_STATUS
+PcieOnGetGppConfigurationValue (
+  IN       UINT64    ConfigurationSignature,
+     OUT   UINT8     *ConfigurationValue
+  );
+
 /*----------------------------------------------------------------------------------------
  *           T A B L E S
  *----------------------------------------------------------------------------------------
  */
 PCIE_HOST_REGISTER_ENTRY PcieInitTable [] = {
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6440_ADDRESS),
+    D0F0xE4_PHY_6440_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6440_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6480_ADDRESS),
+    D0F0xE4_PHY_6480_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6480_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6500_ADDRESS),
+    D0F0xE4_PHY_6500_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6500_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6600_ADDRESS),
+    D0F0xE4_PHY_6600_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6600_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6840_ADDRESS),
+    D0F0xE4_PHY_6840_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6840_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6880_ADDRESS),
+    D0F0xE4_PHY_6880_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6880_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6900_ADDRESS),
+    D0F0xE4_PHY_6900_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6900_RxInCalForce_OFFSET
+  },
+  {
+    PHY_SPACE (0, 0, D0F0xE4_PHY_6A00_ADDRESS),
+    D0F0xE4_PHY_6A00_RxInCalForce_MASK,
+    0x1 << D0F0xE4_PHY_6A00_RxInCalForce_OFFSET
+  },
   {
     WRAP_SPACE (0, D0F0xE4_WRAP_8016_ADDRESS),
     D0F0xE4_WRAP_8016_CalibAckLatency_MASK,
@@ -168,22 +215,22 @@ PcieFmConfigureEnginesLaneAllocation (
 
 CONST UINT8 GppLaneConfigurationTable [][NUMBER_OF_GPP_PORTS * 2] = {
 //4     5                                6                               7                                8 (SB)
-  4, 7, UNUSED_LANE_ID, UNUSED_LANE_ID,  UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3,
-  4, 5, 6,              7,               UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3,
-  4, 5, UNUSED_LANE_ID, UNUSED_LANE_ID,  6,              7,              UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3,
-  4, 5, 6,              6,               7,              7,              UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3,
-  4, 5, UNUSED_LANE_ID, UNUSED_LANE_ID,  6,              6,              7,              7,               0, 3,
-  4, 4, 5,              5,               6,              6,              7,              7,               0, 3
+  {4, 7, UNUSED_LANE_ID, UNUSED_LANE_ID,  UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3},
+  {4, 5, 6,              7,               UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3},
+  {4, 5, UNUSED_LANE_ID, UNUSED_LANE_ID,  6,              7,              UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3},
+  {4, 5, 6,              6,               7,              7,              UNUSED_LANE_ID, UNUSED_LANE_ID,  0, 3},
+  {4, 5, UNUSED_LANE_ID, UNUSED_LANE_ID,  6,              6,              7,              7,               0, 3},
+  {4, 4, 5,              5,               6,              6,              7,              7,               0, 3}
 };
 
 CONST UINT8 GppPortIdConfigurationTable [][NUMBER_OF_GPP_PORTS] = {
 //4  5  6  7  8 (SB)
-  1, 2, 3, 4, 0,
-  1, 2, 3, 4, 0,
-  1, 3, 2, 4, 0,
-  1, 2, 3, 4, 0,
-  1, 4, 2, 3, 0,
-  1, 2, 3, 4, 0
+  {1, 2, 3, 4, 0},
+  {1, 2, 3, 4, 0},
+  {1, 3, 2, 4, 0},
+  {1, 2, 3, 4, 0},
+  {1, 4, 2, 3, 0},
+  {1, 2, 3, 4, 0}
 };
 
 /*----------------------------------------------------------------------------------------*/
@@ -227,7 +274,7 @@ PcieOnConfigureGppEnginesLaneAllocation (
 
 
 CONST UINT8 DdiLaneConfigurationTable [][NUMBER_OF_DDIS * 2] = {
-  0,  3,   4,   7,  8,  11
+  {0,  3,   4,   7,  8,  11}
 };
 
 /*----------------------------------------------------------------------------------------*/
@@ -391,7 +438,7 @@ PcieFmGetLinkSpeedCap (
     LinkSpeedCapability = Engine->Type.Port.PortData.LinkSpeedCapability;
   }
   if ((Flags & PCIE_PORT_GEN_CAP_BOOT) != 0) {
-    if (Pcie->PsppPolicy == PsppBalanceLow) {
+    if (Pcie->PsppPolicy == PsppBalanceLow || Engine->Type.Port.PortData.MiscControls.LinkSafeMode == PcieGen1) {
       LinkSpeedCapability = PcieGen1;
     }
   }
@@ -491,17 +538,17 @@ PcieFmDebugGetCoreConfigurationString (
 {
   switch (ConfigurationValue) {
   case 4:
-    return "1x4, 4x1";
+    return (CONST CHAR8*)"1x4, 4x1";
   case 3:
-    return "1x4, 1x2, 2x1";
+    return (CONST CHAR8*)"1x4, 1x2, 2x1";
   case 2:
-    return "1x4, 2x2";
+    return (CONST CHAR8*)"1x4, 2x2";
   case 1:
-    return "1x4, 1x4";
+    return (CONST CHAR8*)"1x4, 1x4";
   default:
     break;
   }
-  return " !!! Something Wrong !!!";
+  return (CONST CHAR8*)" !!! Something Wrong !!!";
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -521,13 +568,13 @@ PcieFmDebugGetWrapperNameString (
 {
   switch (Wrapper->WrapId) {
   case  GPP_WRAP_ID:
-    return "GPPSB";
+    return (CONST CHAR8*)"GPPSB";
   case  DDI_WRAP_ID:
-    return "Virtual DDI";
+    return (CONST CHAR8*)"Virtual DDI";
   default:
     break;
   }
-  return " !!! Something Wrong !!!";
+  return (CONST CHAR8*)" !!! Something Wrong !!!";
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -546,17 +593,17 @@ PcieFmDebugGetHostRegAddressSpaceString (
 {
   switch (AddressFrame) {
   case  0x130:
-    return "GPP WRAP";
+    return (CONST CHAR8*)"GPP WRAP";
   case  0x110:
-    return "GPP PIF0";
+    return (CONST CHAR8*)"GPP PIF0";
   case  0x120:
-    return "GPP PHY0";
+    return (CONST CHAR8*)"GPP PHY0";
   case  0x101:
-    return "GPP CORE";
+    return (CONST CHAR8*)"GPP CORE";
   default:
     break;
   }
-  return " !!! Something Wrong !!!";
+  return (CONST CHAR8*)" !!! Something Wrong !!!";
 }
 
 

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -71,9 +71,9 @@
 
 /// DCT channel information
 typedef struct {
-  D18F2x094_STRUCT      D18F2x094;          ///< Register 0x94
-  D18F2x084_STRUCT      D18F2x084;          ///< Register 0x84
-  D18F2x08C_STRUCT      D18F2x08C;          ///< Register 0x8C
+  D18F2x94_STRUCT      D18F2x094;          ///< Register 0x94
+  D18F2x84_STRUCT      D18F2x084;          ///< Register 0x84
+  D18F2x8C_STRUCT      D18F2x08C;          ///< Register 0x8C
   D18F2x0F4_x40_STRUCT  D18F2x0F4_x40;      ///< Register 0x40
   D18F2x0F4_x41_STRUCT  D18F2x0F4_x41;      ///< Register 0x41
 } DCT_CHANNEL_INFO;
@@ -89,6 +89,88 @@ typedef struct {
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+
+VOID
+GfxGmcSetMemoryAddressTranslation (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcDisableClockGating (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcInitializeRegisterEngine (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcDctMemoryChannelInfo (
+  IN       UINT8                 Channel,
+     OUT   DCT_CHANNEL_INFO      *DctChannelInfo,
+  IN       GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcInitializeSequencerModel (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcInitializeFbLocation (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcSecureGarlicAccess (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcPerformanceTuning (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcMiscInit (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcLockCriticalRegisters (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcRemoveBlackout (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcEnableClockGating (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcUmaSteering (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcInitializeC6Aperture (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+VOID
+GfxGmcInitializePowerGating (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
+
+AGESA_STATUS
+GfxGmcInit (
+  IN      GFX_PLATFORM_CONFIG   *Gfx
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
@@ -205,35 +287,35 @@ GfxGmcDctMemoryChannelInfo (
   )
 {
   GnbLibCpuPciIndirectRead (
-    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x0F0_ADDRESS : D18F2x1F0_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2xF0_ADDRESS : D18F2x1F0_ADDRESS),
     D18F2x0F4_x40_ADDRESS,
     &DctChannelInfo->D18F2x0F4_x40.Value,
     GnbLibGetHeader (Gfx)
     );
 
   GnbLibCpuPciIndirectRead (
-    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x0F0_ADDRESS : D18F2x1F0_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2xF0_ADDRESS : D18F2x1F0_ADDRESS),
     D18F2x0F4_x41_ADDRESS,
     &DctChannelInfo->D18F2x0F4_x41.Value,
     GnbLibGetHeader (Gfx)
     );
 
   GnbLibPciRead (
-    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x084_ADDRESS : D18F2x184_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x84_ADDRESS : D18F2x184_ADDRESS),
     AccessWidth32,
     &DctChannelInfo->D18F2x084.Value,
     GnbLibGetHeader (Gfx)
     );
 
   GnbLibPciRead (
-    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x094_ADDRESS : D18F2x194_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x94_ADDRESS : D18F2x194_ADDRESS),
     AccessWidth32,
     &DctChannelInfo->D18F2x094.Value,
     GnbLibGetHeader (Gfx)
     );
 
   GnbLibPciRead (
-    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x08C_ADDRESS : D18F2x18C_ADDRESS),
+    MAKE_SBDFO (0, 0, 0x18, 2, (Channel == 0) ? D18F2x8C_ADDRESS : D18F2x18C_ADDRESS),
     AccessWidth32,
     &DctChannelInfo->D18F2x08C.Value,
     GnbLibGetHeader (Gfx)
@@ -717,6 +799,8 @@ GfxGmcInit (
     GfxGmcEnableClockGating (Gfx);
   }
   GfxGmcInitializePowerGating (Gfx);
+  GfxFmGmcAllowPstateHigh (Gfx);
   IDS_HDT_CONSOLE (GNB_TRACE, "GfxGmcInit Exit\n");
   return  Status;
 }
+

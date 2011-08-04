@@ -187,8 +187,8 @@ PerformThisPmStep (
   SYS_PM_TBL_STEP *FamilyTablePtr;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, &FamilyTablePtr, &MyNumberOfSteps, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetSysPmTableStruct (FamilySpecificServices, (const VOID **)&FamilyTablePtr, &MyNumberOfSteps, StdHeader);
 
   if (*(UINT8 *)Step < MyNumberOfSteps) {
     if (FamilyTablePtr[*(UINT8 *)Step].FuncPtr != NULL) {
@@ -248,6 +248,6 @@ GoToMemInitPstateCore (
 {
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->TransitionPstate (FamilySpecificServices, CpuEarlyParamsPtr->MemInitPState, (BOOLEAN) FALSE, StdHeader);
 }

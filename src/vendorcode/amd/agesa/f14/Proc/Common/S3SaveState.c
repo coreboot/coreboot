@@ -77,6 +77,12 @@ extern S3_SCRIPT_CONFIGURATION OptionS3ScriptConfiguration;
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+S3SaveStateExtendTableLenth (
+  IN       AMD_CONFIG_PARAMS     *StdHeader,
+  IN OUT   S3_SAVE_TABLE_HEADER  **S3SaveTable
+  );
+
 /*----------------------------------------------------------------------------------------*/
 /**
  * Initialize S3 Script framework
@@ -570,31 +576,31 @@ S3SaveDebugOpcodeString (
 {
   switch (Op) {
   case SAVE_STATE_IO_WRITE_OPCODE:
-    return "IO WR";
+    return (CHAR8*)"IO WR";
   case SAVE_STATE_IO_READ_WRITE_OPCODE:
-    return "IO RD/WR";
+    return (CHAR8*)"IO RD/WR";
   case SAVE_STATE_IO_POLL_OPCODE:
-    return "IO POLL";
+    return (CHAR8*)"IO POLL";
   case SAVE_STATE_MEM_WRITE_OPCODE:
-    return "MEM WR";
+    return (CHAR8*)"MEM WR";
   case SAVE_STATE_MEM_READ_WRITE_OPCODE:
-    return "MEM RD/WR";
+    return (CHAR8*)"MEM RD/WR";
   case SAVE_STATE_MEM_POLL_OPCODE:
-    return "MEM POLL";
+    return (CHAR8*)"MEM POLL";
   case SAVE_STATE_PCI_CONFIG_WRITE_OPCODE:
-    return "PCI WR";
+    return (CHAR8*)"PCI WR";
   case SAVE_STATE_PCI_CONFIG_READ_WRITE_OPCODE:
-    return "PCI RD/WR";
+    return (CHAR8*)"PCI RD/WR";
   case SAVE_STATE_PCI_CONFIG_POLL_OPCODE:
-    return "PCI POLL";
+    return (CHAR8*)"PCI POLL";
   case SAVE_STATE_STALL_OPCODE:
-    return "STALL";
+    return (CHAR8*)"STALL";
   case SAVE_STATE_DISPATCH_OPCODE:
-    return "DISPATCH";
+    return (CHAR8*)"DISPATCH";
   default:
     IDS_ERROR_TRAP;
   }
-  return "!!! Unrecognize opcode !!!";
+  return (CHAR8*)"!!! Unrecognize opcode !!!";
 }
 
 

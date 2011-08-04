@@ -84,6 +84,38 @@ F14ConvertEnabledBitsIntoCount (
   IN       UINT8 EnabledCores
   );
 
+BOOLEAN
+F14GetNbPstateInfo (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       PCI_ADDR               *PciAddress,
+  IN       UINT32                 NbPstate,
+     OUT   UINT32                 *FreqNumeratorInMHz,
+     OUT   UINT32                 *FreqDivisor,
+     OUT   UINT32                 *VoltageInuV,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+BOOLEAN
+F14IsNbPstateEnabled (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+BOOLEAN
+F14GetProcIddMax (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       UINT8                  Pstate,
+     OUT   UINT32                 *ProcIddMax,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+UINT8
+F14GetNumberOfCoresForBrandstring (
+  IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
@@ -132,12 +164,12 @@ F14DisablePstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ((PSTATE_MSR *) &MsrRegister)->PsEnable = 0;
-  LibAmdMsrWrite (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ((PSTATE_MSR *) &MsrReg)->PsEnable = 0;
+  LibAmdMsrWrite (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
   return (AGESA_SUCCESS);
 }
 
@@ -162,18 +194,18 @@ F14TransitionPstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
-  LibAmdMsrRead (MSR_PSTATE_CTL, &MsrRegister, StdHeader);
-  ((PSTATE_CTRL_MSR *) &MsrRegister)->PstateCmd = (UINT64) StateNumber;
-  LibAmdMsrWrite (MSR_PSTATE_CTL, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
+  LibAmdMsrRead (MSR_PSTATE_CTL, &MsrReg, StdHeader);
+  ((PSTATE_CTRL_MSR *) &MsrReg)->PstateCmd = (UINT64) StateNumber;
+  LibAmdMsrWrite (MSR_PSTATE_CTL, &MsrReg, StdHeader);
   if (WaitForTransition) {
     do {
-      LibAmdMsrRead (MSR_PSTATE_STS, &MsrRegister, StdHeader);
-    } while (((PSTATE_STS_MSR *) &MsrRegister)->CurPstate != (UINT64) StateNumber);
+      LibAmdMsrRead (MSR_PSTATE_STS, &MsrReg, StdHeader);
+    } while (((PSTATE_STS_MSR *) &MsrReg)->CurPstate != (UINT64) StateNumber);
   }
   return (AGESA_SUCCESS);
 }
@@ -198,15 +230,15 @@ F14GetTscRate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   PSTATE_CPU_FAMILY_SERVICES  *FamilyServices;
 
   FamilyServices = NULL;
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
-  LibAmdMsrRead (0xC0010015, &MsrRegister, StdHeader);
-  if ((MsrRegister & 0x01000000) != 0) {
+  LibAmdMsrRead (0xC0010015, &MsrReg, StdHeader);
+  if ((MsrReg & 0x01000000) != 0) {
     return (FamilyServices->GetPstateFrequency (FamilyServices, 0, FrequencyInMHz, StdHeader));
   } else {
     return (FamilySpecificServices->GetCurrentNbFrequency (FamilySpecificServices, FrequencyInMHz, StdHeader));
@@ -232,15 +264,15 @@ F14GetCurrentNbFrequency (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT32 PciRegister;
+  UINT32 PciReg;
   UINT32 MainPllFid;
   PCI_ADDR PciAddress;
 
   PciAddress.AddressValue = CPTC0_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
 
-  if (((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->MainPllOpFreqIdEn == 1) {
-    MainPllFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->MainPllOpFreqId;
+  if (((CLK_PWR_TIMING_CTRL_REGISTER *) &PciReg)->MainPllOpFreqIdEn == 1) {
+    MainPllFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciReg)->MainPllOpFreqId;
   } else {
     MainPllFid = 0;
   }
@@ -283,7 +315,7 @@ F14GetNbPstateInfo (
   )
 {
   UINT32   NbVid;
-  UINT32   PciRegister;
+  UINT32   PciReg;
   UINT32   MainPllFreq;
   BOOLEAN  PstateIsValid;
 
@@ -294,15 +326,15 @@ F14GetNbPstateInfo (
     if (NbPstate == 0) {
       PciAddress->Address.Function = FUNC_3;
       PciAddress->Address.Register = CPTC2_REG;
-      LibAmdPciRead (AccessWidth32, *PciAddress, &PciRegister, StdHeader);
-      *FreqDivisor = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->NbPs0NclkDiv;
-      NbVid = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciRegister)->NbPs0Vid;
+      LibAmdPciRead (AccessWidth32, *PciAddress, &PciReg, StdHeader);
+      *FreqDivisor = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciReg)->NbPs0NclkDiv;
+      NbVid = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &PciReg)->NbPs0Vid;
     } else {
       PciAddress->Address.Function = FUNC_6;
       PciAddress->Address.Register = NB_PSTATE_CFG_LOW_REG;
-      LibAmdPciRead (AccessWidth32, *PciAddress, &PciRegister, StdHeader);
-      *FreqDivisor = ((NB_PSTATE_CFG_LOW_REGISTER *) &PciRegister)->NbPs1NclkDiv;
-      NbVid = ((NB_PSTATE_CFG_LOW_REGISTER *) &PciRegister)->NbPs1Vid;
+      LibAmdPciRead (AccessWidth32, *PciAddress, &PciReg, StdHeader);
+      *FreqDivisor = ((NB_PSTATE_CFG_LOW_REGISTER *) &PciReg)->NbPs1NclkDiv;
+      NbVid = ((NB_PSTATE_CFG_LOW_REGISTER *) &PciReg)->NbPs1Vid;
     }
     *VoltageInuV = (1550000 - (12500 * NbVid));
     PstateIsValid = TRUE;
@@ -330,12 +362,12 @@ F14IsNbPstateEnabled (
   IN       AMD_CONFIG_PARAMS      *StdHeader
   )
 {
-  UINT32         PciRegister;
+  UINT32         PciReg;
   PCI_ADDR       PciAddress;
 
   PciAddress.AddressValue = NB_PSTATE_CFG_LOW_PCI_ADDR;
-  LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-  return ((BOOLEAN) (((NB_PSTATE_CFG_LOW_REGISTER *) &PciRegister)->NbPsCap == 1));
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
+  return ((BOOLEAN) (((NB_PSTATE_CFG_LOW_REGISTER *) &PciReg)->NbPsCap == 1));
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -391,7 +423,7 @@ F14LaunchApCore (
   )
 {
   UINT32    NodeRelativeCoreNum;
-  UINT32    PciRegister;
+  UINT32    PciReg;
   PCI_ADDR  PciAddress;
   BOOLEAN   LaunchFlag;
 
@@ -403,10 +435,10 @@ F14LaunchApCore (
   switch (NodeRelativeCoreNum) {
   case 1:
     PciAddress.Address.Register = HT_TRANS_CTRL;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
-    if ((PciRegister & HT_TRANS_CTRL_CPU1_EN) == 0) {
-      PciRegister |= HT_TRANS_CTRL_CPU1_EN;
-      LibAmdPciWrite (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+    LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
+    if ((PciReg & HT_TRANS_CTRL_CPU1_EN) == 0) {
+      PciReg |= HT_TRANS_CTRL_CPU1_EN;
+      LibAmdPciWrite (AccessWidth32, PciAddress, &PciReg, StdHeader);
       LaunchFlag = TRUE;
     } else {
       LaunchFlag = FALSE;
@@ -471,7 +503,7 @@ F14GetProcIddMax (
 {
   UINT32       IddDiv;
   UINT32       CmpCap;
-  UINT32       PciRegister;
+  UINT32       PciReg;
   UINT32       MsrAddress;
   UINT64       PstateMsr;
   BOOLEAN      IsPstateEnabled;
@@ -486,8 +518,8 @@ F14GetProcIddMax (
   LibAmdMsrRead (MsrAddress, &PstateMsr, StdHeader);
   if (((PSTATE_MSR *) &PstateMsr)->PsEnable == 1) {
     PciAddress.AddressValue = NB_CAPS_PCI_ADDR;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader); // F3xE8
-    CmpCap = (UINT32) (((NB_CAPS_REGISTER *) &PciRegister)->CmpCap);
+    LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader); // F3xE8
+    CmpCap = (UINT32) (((NB_CAPS_REGISTER *) &PciReg)->CmpCap);
     CmpCap++;
 
     switch (((PSTATE_MSR *) &PstateMsr)->IddDiv) {

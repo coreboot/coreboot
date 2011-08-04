@@ -12,7 +12,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Include
- * @e \$Revision: 40742 $   @e \$Date: 2010-10-27 04:04:08 +0800 (Wed, 27 Oct 2010) $
+ * @e \$Revision: 46485 $   @e \$Date: 2011-02-03 09:03:14 -0700 (Thu, 03 Feb 2011) $
  */
 /*
  *****************************************************************************
@@ -426,12 +426,15 @@
 #define PROC_CPU_FAMILY_0X14_CPUF14PSTATE_FILECODE                       (0xCA0D)
 #define PROC_CPU_FAMILY_0X14_F14C6STATE_FILECODE                         (0xCA0E)
 #define PROC_CPU_FAMILY_0X14_F14IOCSTATE_FILECODE                        (0xCA0F)
+#define PROC_CPU_FAMILY_0X14_CPUF14PERCOREPCITABLES_FILECODE             (0xCA10)
+#define PROC_CPU_FAMILY_0X14_CPUF14LOWPOWERINIT_FILECODE                 (0xCA11)
 #define PROC_CPU_FAMILY_0X14_ON_F14ONLOGICALIDTABLES_FILECODE            (0xCA21)
 #define PROC_CPU_FAMILY_0X14_ON_F14ONMICROCODEPATCHTABLES_FILECODE       (0xCA22)
 #define PROC_CPU_FAMILY_0X14_ON_F14ONEQUIVALENCETABLE_FILECODE           (0xCA23)
 #define PROC_CPU_FAMILY_0X14_ON_F14ONINITEARLYTABLE_FILECODE             (0xCA24)
-#define PROC_CPU_FAMILY_0X14_CPUF14PERCOREPCITABLES_FILECODE             (0xCA25)
 #define PROC_CPU_FAMILY_0X14_ON_F14ONEARLYSAMPLES_FILECODE               (0xCA26)
+#define PROC_CPU_FAMILY_0X14_ON_F14ONCPB_FILECODE                        (0xCA2C)
+#define PROC_CPU_FAMILY_0X14_ON_F14ONPCITABLES_FILECODE                  (0xCA2D)
 
 // Family 15h
 #define PROC_CPU_FAMILY_0X15_CPUCOMMONF15UTILITIES_FILECODE              (0xCB01)

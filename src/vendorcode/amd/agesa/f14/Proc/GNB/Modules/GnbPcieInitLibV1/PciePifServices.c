@@ -399,7 +399,7 @@ PciePifSetPllModeForL1 (
       D0F0xE4_PIF_0012.Field.TxPowerStateInTxs2 = PifPowerStateLS2;
       D0F0xE4_PIF_0012.Field.PllPowerStateInTxs2 = PifPowerStateOff;
       D0F0xE4_PIF_0012.Field.PllPowerStateInOff = PifPowerStateOff;
-      D0F0xE4_PIF_0012.Field.PllRampUpTime = 0x0;
+      D0F0xE4_PIF_0012.Field.PllRampUpTime = 0x1;
       PcieRegisterWrite (
         Wrapper,
         PIF_SPACE (Wrapper->WrapId, (Nibble >> 1), D0F0xE4_PIF_0012_ADDRESS + (Nibble & 0x1)),

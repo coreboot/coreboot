@@ -60,6 +60,7 @@
 #include "cpuServices.h"
 #include "CommonInits.h"
 #include "GnbInterface.h"
+//#include "GnbInitAtEarly.h"
 #include "Filecode.h"
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)
@@ -87,6 +88,23 @@ EXECUTION_CACHE_REGION InitExeCacheMap[] =
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+AmdEarlyPlatformConfigInit (
+  IN OUT   PLATFORM_CONFIGURATION    *PlatformConfig,
+  IN OUT   AMD_CONFIG_PARAMS         *StdHeader
+  );
+
+AGESA_STATUS
+AllocateExecutionCacheInitializer (
+  IN       AMD_CONFIG_PARAMS      *StdHeader,
+  IN       EXECUTION_CACHE_REGION *AmdExeAddrMapPtr
+  );
+
+AGESA_STATUS
+AmdInitEarlyInitializer (
+  IN       AMD_CONFIG_PARAMS *StdHeader,
+  IN OUT   AMD_EARLY_PARAMS  *EarlyParams
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

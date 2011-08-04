@@ -127,7 +127,7 @@ IsMsgBasedC1eFeatureEnabled (
       } else {
         for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
           if (IsProcessorPresent (Socket, StdHeader)) {
-            GetFeatureServicesOfSocket (&MsgBasedC1eFamilyServiceTable, Socket, &FamilyServices, StdHeader);
+            GetFeatureServicesOfSocket (&MsgBasedC1eFamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
             if ((FamilyServices == NULL) || !FamilyServices->IsMsgBasedC1eSupported (FamilyServices, Socket, StdHeader)) {
               IsEnabled = FALSE;
               break;
@@ -197,7 +197,7 @@ EnableMsgC1eOnSocket (
 {
   MSG_BASED_C1E_FAMILY_SERVICES *FamilyServices;
 
-  GetFeatureServicesOfCurrentCore (&MsgBasedC1eFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&MsgBasedC1eFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   FamilyServices->InitializeMsgBasedC1e (FamilyServices,
                                          *((UINT64 *) EntryPoint),
                                          &CpuEarlyParams->PlatformConfig,

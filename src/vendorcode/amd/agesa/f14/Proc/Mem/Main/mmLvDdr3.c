@@ -58,6 +58,7 @@
 #include "OptionMemory.h"
 #include "mm.h"
 #include "mn.h"
+#include "mmlvddr3.h"
 #include "Filecode.h"
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)
@@ -70,6 +71,11 @@ extern MEM_FEAT_BLOCK_MAIN MemFeatMain;
 *
 *-----------------------------------------------------------------------------
 */
+
+BOOLEAN
+MemMLvDdr3 (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
 
 /* -----------------------------------------------------------------------------*/
 /**

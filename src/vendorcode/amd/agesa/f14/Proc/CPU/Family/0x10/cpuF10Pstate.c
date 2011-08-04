@@ -308,13 +308,13 @@ F10GetPstateFrequency (
   UINT8 TempValue;
   UINT32 CpuDid;
   UINT32 CpuFid;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
-  CpuDid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuDid);
-  CpuFid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuFid);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
+  CpuDid = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuDid);
+  CpuFid = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuFid);
 
   switch (CpuDid) {
   case 0:
@@ -380,7 +380,7 @@ F10PstateLevelingCoreMsrModify (
   PCI_ADDR           PciAddress;
   CPU_SPECIFIC_SERVICES   *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   ASSERT (FamilySpecificServices != NULL);
 
   Ignored = 0;
@@ -521,15 +521,15 @@ F10GetPstatePower (
   UINT32  Power;
   PCI_ADDR PciAddress;
   UINT32  TempVar_a;
-  UINT64  MsrRegister;
+  UINT64  MsrReg;
   AGESA_STATUS IgnoredSts;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
-  CpuVid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
-  IddValue = (UINT32) (((PSTATE_MSR *) &MsrRegister)->IddValue);
-  IddDiv = (UINT32) (((PSTATE_MSR *) &MsrRegister)->IddDiv);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
+  CpuVid = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuVid);
+  IddValue = (UINT32) (((PSTATE_MSR *) &MsrReg)->IddValue);
+  IddDiv = (UINT32) (((PSTATE_MSR *) &MsrReg)->IddDiv);
 
   IdentifyCore (StdHeader, &Socket, &Module, &Ignored, &IgnoredSts);
   GetPciAddress (StdHeader, Socket, Module, &PciAddress, &IgnoredSts);
@@ -654,7 +654,7 @@ F10GetPstateRegisterInfo (
   IN       AMD_CONFIG_PARAMS   *StdHeader
   )
 {
-  UINT64               MsrRegister;
+  UINT64               MsrReg;
   UINT32               PciRegister;
   PCI_ADDR             PciAddress;
   CPUID_DATA           CpuidData;
@@ -672,9 +672,9 @@ F10GetPstateRegisterInfo (
   *SwPstateNumber = PState;
 
   // Read PSTATE MSRs
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) PState, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) PState, &MsrReg, StdHeader);
 
-  if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+  if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
     // PState enable = bit 63
     *PStateEnabled = TRUE;
     // Check input pstate belongs to Boosted-Pstate, if yes, return *PStateEnabled = FALSE.
@@ -688,9 +688,9 @@ F10GetPstateRegisterInfo (
   }
 
   // Bits 39:32 (high 32 bits [7:0])
-  *IddVal = (UINT32) ((PSTATE_MSR *) &MsrRegister)->IddValue;
+  *IddVal = (UINT32) ((PSTATE_MSR *) &MsrReg)->IddValue;
   // Bits 41:40 (high 32 bits [9:8])
-  *IddDiv = (UINT32) ((PSTATE_MSR *) &MsrRegister)->IddDiv;
+  *IddDiv = (UINT32) ((PSTATE_MSR *) &MsrReg)->IddDiv;
 
   return (AGESA_SUCCESS);
 }

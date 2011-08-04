@@ -55,6 +55,8 @@
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  "OntarioDefinitions.h"
+#include  "GnbPcieFamServices.h"
+#include  "PcieFamilyServices.h"
 #include  "GnbRegistersON.h"
 #include  "NbSmuLib.h"
 #include  "Filecode.h"

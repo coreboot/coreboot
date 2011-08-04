@@ -156,8 +156,8 @@ HeapManagerInit (
     return AGESA_FATAL;
   }
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, &CacheInfoPtr, &Ignored, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (const VOID **)&CacheInfoPtr, &Ignored, StdHeader);
   HeapBufferPtr = (UINT8 *) StdHeader->HeapBasePtr;
 
   // Check whether the heap manager is already initialized
@@ -655,8 +655,8 @@ HeapLocateBuffer (
  * @return         Heap base address of the executing core's heap.
  *
  */
-UINT64
-HeapGetBaseAddress (
+VOID
+*HeapGetBaseAddress (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -787,7 +787,7 @@ InsertFreeSpaceNode (
   HEAP_MANAGER *HeapManager;
   BUFFER_NODE *CurrentFreeSpaceNode;
   BUFFER_NODE *PreviousFreeSpaceNode;
-  BUFFER_NODE *InsertFreeSpaceNode;
+  BUFFER_NODE *FreeSpaceInsertNode;
 
   BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
@@ -795,14 +795,14 @@ InsertFreeSpaceNode (
   OffsetOfPreviousNode = AMD_HEAP_INVALID_HEAP_OFFSET;
   OffsetOfCurrentNode = HeapManager->FirstFreeSpaceOffset;
   CurrentFreeSpaceNode = (BUFFER_NODE *) (BaseAddress + OffsetOfCurrentNode);
-  InsertFreeSpaceNode = (BUFFER_NODE *) (BaseAddress + OffsetOfInsertNode);
+  FreeSpaceInsertNode = (BUFFER_NODE *) (BaseAddress + OffsetOfInsertNode);
   while ((OffsetOfCurrentNode != AMD_HEAP_INVALID_HEAP_OFFSET) &&
-         (CurrentFreeSpaceNode->BufferSize < InsertFreeSpaceNode->BufferSize)) {
+         (CurrentFreeSpaceNode->BufferSize < FreeSpaceInsertNode->BufferSize)) {
     OffsetOfPreviousNode = OffsetOfCurrentNode;
     OffsetOfCurrentNode = CurrentFreeSpaceNode->OffsetOfNextNode;
     CurrentFreeSpaceNode = (BUFFER_NODE *) (BaseAddress + OffsetOfCurrentNode);
   }
-  InsertFreeSpaceNode->OffsetOfNextNode = OffsetOfCurrentNode;
+  FreeSpaceInsertNode->OffsetOfNextNode = OffsetOfCurrentNode;
   if (OffsetOfPreviousNode == AMD_HEAP_INVALID_HEAP_OFFSET) {
     HeapManager->FirstFreeSpaceOffset = OffsetOfInsertNode;
   } else {
@@ -838,7 +838,7 @@ HeapGetCurrentBase (
   if (IsBsp (StdHeader, &IgnoredStatus)) {
     ReturnPtr = AMD_HEAP_START_ADDRESS;
   } else {
-    GetCpuServicesOfCurrentCore (&FamilyServices, StdHeader);
+    GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilyServices, StdHeader);
     ASSERT (FamilyServices != NULL);
 
     SystemCoreNumber = FamilyServices->GetApCoreNumber (FamilyServices, StdHeader);

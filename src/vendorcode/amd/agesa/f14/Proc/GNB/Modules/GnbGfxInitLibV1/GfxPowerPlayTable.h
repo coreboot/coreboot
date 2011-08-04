@@ -106,8 +106,7 @@ typedef struct _ATOM_PPLIB_SUMO_CLOCK_INFO {
   USHORT                      usEngineClockLow;   ///< Sclk [15:0] (Sclk in 10khz)
   UCHAR                       ucEngineClockHigh;  ///< Sclk [23:16](Sclk in 10khz)
   UCHAR                       vddcIndex;          ///< 2-bit VDDC index;
-  UCHAR                       leakage;            ///< Absolute Cac value;
-  UCHAR                       rsv;                ///< Reserved
+  USHORT                      tdpLimit;           ///< TDP Limit
   USHORT                      rsv1;               ///< Reserved
   ULONG                       rsv2[2];            ///< Reserved
 } ATOM_PPLIB_SUMO_CLOCK_INFO;

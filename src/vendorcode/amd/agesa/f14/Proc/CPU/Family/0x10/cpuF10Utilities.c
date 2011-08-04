@@ -119,7 +119,7 @@ F10PmSwVoltageTransition (
   UINT32    Socket;
   UINT32    Module;
   UINT32    Ignored;
-  UINT64    MsrRegister;
+  UINT64    MsrReg;
   PCI_ADDR  PciAddress;
   AGESA_STATUS IgnoredSts;
 
@@ -130,9 +130,9 @@ F10PmSwVoltageTransition (
   PciAddress.Address.Register = PW_CTL_MISC_REG;
   LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
   if (((POWER_CTRL_MISC_REGISTER *) &PciRegister)->SlamVidMode == 1) {
-    LibAmdMsrRead (MSR_COFVID_CTL, &MsrRegister, StdHeader);
-    ((COFVID_CTRL_MSR *) &MsrRegister)->CpuVid = VidCode;
-    LibAmdMsrWrite (MSR_COFVID_CTL, &MsrRegister, StdHeader);
+    LibAmdMsrRead (MSR_COFVID_CTL, &MsrReg, StdHeader);
+    ((COFVID_CTRL_MSR *) &MsrReg)->CpuVid = VidCode;
+    LibAmdMsrWrite (MSR_COFVID_CTL, &MsrReg, StdHeader);
     F10WaitOutVoltageTransition  (TRUE, StdHeader);
   } else
     return;
@@ -270,22 +270,22 @@ F10SwVoltageTransitionServerNbCore (
   )
 {
   UINT32 VidCode;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   if (((SW_VOLT_TRANS_NB *) InputData)->SlamMode) {
     VidCode = ((SW_VOLT_TRANS_NB *) InputData)->VidCode;
   } else {
-    LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-    VidCode = (UINT32) (((COFVID_STS_MSR *) &MsrRegister)->CurNbVid);
+    LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+    VidCode = (UINT32) (((COFVID_STS_MSR *) &MsrReg)->CurNbVid);
     if (VidCode > ((SW_VOLT_TRANS_NB *) InputData)->VidCode) {
       --VidCode;
     } else if (VidCode < ((SW_VOLT_TRANS_NB *) InputData)->VidCode) {
       ++VidCode;
     }
   }
-  LibAmdMsrRead (MSR_COFVID_CTL, &MsrRegister, StdHeader);
-  ((COFVID_CTRL_MSR *) &MsrRegister)->NbVid = VidCode;
-  LibAmdMsrWrite (MSR_COFVID_CTL, &MsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_COFVID_CTL, &MsrReg, StdHeader);
+  ((COFVID_CTRL_MSR *) &MsrReg)->NbVid = VidCode;
+  LibAmdMsrWrite (MSR_COFVID_CTL, &MsrReg, StdHeader);
 
   if (VidCode == ((SW_VOLT_TRANS_NB *) InputData)->VidCode) {
     return 0;
@@ -323,7 +323,7 @@ F10ProgramVSSlamTimeOnSocket (
   UINT32   MsrAddr;
   UINT32   OrMask;
   UINT32   PciRegister;
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   BOOLEAN  IsPviMode;
   PCI_ADDR LocalPciAddress;
 
@@ -339,30 +339,30 @@ F10ProgramVSSlamTimeOnSocket (
   }
 
   // Get P0's voltage
-  LibAmdMsrRead (PS_REG_BASE, &MsrRegister, StdHeader);
-  P0VidCode = (UINT8) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
+  LibAmdMsrRead (PS_REG_BASE, &MsrReg, StdHeader);
+  P0VidCode = (UINT8) (((PSTATE_MSR *) &MsrReg)->CpuVid);
 
   // If SVI, we only care about CPU VID.
   // If PVI, determine the higher voltage between NB and CPU
   if (IsPviMode) {
-    NbVid = (UINT8) (((PSTATE_MSR *) &MsrRegister)->NbVid);
+    NbVid = (UINT8) (((PSTATE_MSR *) &MsrReg)->NbVid);
     if (P0VidCode > NbVid) {
       P0VidCode = NbVid;
     }
   }
 
   // Get Pmin's index
-  LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &MsrRegister, StdHeader);
-  MsrAddr = (UINT32) ((((PSTATE_CURLIM_MSR *) &MsrRegister)->PstateMaxVal) + PS_REG_BASE);
+  LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &MsrReg, StdHeader);
+  MsrAddr = (UINT32) ((((PSTATE_CURLIM_MSR *) &MsrReg)->PstateMaxVal) + PS_REG_BASE);
 
   // Get Pmin's VID
-  LibAmdMsrRead (MsrAddr, &MsrRegister, StdHeader);
-  PminVidCode = (UINT8) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
+  LibAmdMsrRead (MsrAddr, &MsrReg, StdHeader);
+  PminVidCode = (UINT8) (((PSTATE_MSR *) &MsrReg)->CpuVid);
 
   // If SVI, we only care about CPU VID.
   // If PVI, determine the higher voltage b/t NB and CPU
   if (IsPviMode) {
-    NbVid = (UINT8) (((PSTATE_MSR *) &MsrRegister)->NbVid);
+    NbVid = (UINT8) (((PSTATE_MSR *) &MsrReg)->NbVid);
     if (PminVidCode > NbVid) {
       PminVidCode = NbVid;
     }
@@ -459,12 +459,12 @@ F10DisablePstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ((PSTATE_MSR *) &MsrRegister)->PsEnable = 0;
-  LibAmdMsrWrite (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ((PSTATE_MSR *) &MsrReg)->PsEnable = 0;
+  LibAmdMsrWrite (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
   return (AGESA_SUCCESS);
 }
 
@@ -489,18 +489,18 @@ F10TransitionPstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
-  LibAmdMsrRead (MSR_PSTATE_CTL, &MsrRegister, StdHeader);
-  ((PSTATE_CTRL_MSR *) &MsrRegister)->PstateCmd = (UINT64) StateNumber;
-  LibAmdMsrWrite (MSR_PSTATE_CTL, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
+  LibAmdMsrRead (MSR_PSTATE_CTL, &MsrReg, StdHeader);
+  ((PSTATE_CTRL_MSR *) &MsrReg)->PstateCmd = (UINT64) StateNumber;
+  LibAmdMsrWrite (MSR_PSTATE_CTL, &MsrReg, StdHeader);
   if (WaitForTransition) {
     do {
-      LibAmdMsrRead (MSR_PSTATE_STS, &MsrRegister, StdHeader);
-    } while (((PSTATE_STS_MSR *) &MsrRegister)->CurPstate != (UINT64) StateNumber);
+      LibAmdMsrRead (MSR_PSTATE_STS, &MsrReg, StdHeader);
+    } while (((PSTATE_STS_MSR *) &MsrReg)->CurPstate != (UINT64) StateNumber);
   }
   return (AGESA_SUCCESS);
 }
@@ -525,15 +525,15 @@ F10GetTscRate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   PSTATE_CPU_FAMILY_SERVICES  *FamilyServices;
 
   FamilyServices = NULL;
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
-  LibAmdMsrRead (0xC0010015, &MsrRegister, StdHeader);
-  if ((MsrRegister & 0x01000000) != 0) {
+  LibAmdMsrRead (0xC0010015, &MsrReg, StdHeader);
+  if ((MsrReg & 0x01000000) != 0) {
     return (FamilyServices->GetPstateFrequency (FamilyServices, 0, FrequencyInMHz, StdHeader));
   } else {
     return (FamilySpecificServices->GetCurrentNbFrequency (FamilySpecificServices, FrequencyInMHz, StdHeader));
@@ -564,7 +564,7 @@ F10GetCurrentNbFrequency (
   UINT32  Core;
   UINT32  NbFid;
   UINT32  PciRegister;
-  UINT64  MsrRegister;
+  UINT64  MsrReg;
   PCI_ADDR PciAddress;
   AGESA_STATUS ReturnCode;
 
@@ -577,8 +577,8 @@ F10GetCurrentNbFrequency (
       PciAddress.Address.Register = CPTC0_REG;
       LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
       NbFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->NbFid;
-      LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-      if (((COFVID_STS_MSR *) &MsrRegister)->CurNbDid == 0) {
+      LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+      if (((COFVID_STS_MSR *) &MsrReg)->CurNbDid == 0) {
         *FrequencyInMHz = ((NbFid + 4) * 200);
       } else {
         *FrequencyInMHz = (((NbFid + 4) * 200) / 2);

@@ -118,7 +118,7 @@ IsIoCstateFeatureSupported (
   if ((PlatformConfig->CStateIoBaseAddress != 0) && (PlatformConfig->CStateIoBaseAddress <= 0xFFF8)) {
     for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
       if (IsProcessorPresent (Socket, StdHeader)) {
-        GetFeatureServicesOfSocket (&IoCstateFamilyServiceTable, Socket, &IoCstateServices, StdHeader);
+        GetFeatureServicesOfSocket (&IoCstateFamilyServiceTable, Socket, (const VOID **)&IoCstateServices, StdHeader);
         if (IoCstateServices != NULL) {
           if (IoCstateServices->IsIoCstateSupported (IoCstateServices, Socket, StdHeader)) {
             IsSupported = TRUE;
@@ -193,7 +193,7 @@ EnableIoCstateOnSocket (
 {
   IO_CSTATE_FAMILY_SERVICES *FamilyServices;
 
-  GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&IoCstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   FamilyServices->InitializeIoCstate (FamilyServices,
                                      *((UINT64 *) EntryPoint),
                                      &CpuEarlyParams->PlatformConfig,

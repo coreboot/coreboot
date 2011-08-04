@@ -108,7 +108,7 @@ IsCpbFeatureEnabled (
   if (PlatformConfig->CpbMode == CpbModeAuto) {
     for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
       if (IsProcessorPresent (Socket, StdHeader)) {
-        GetFeatureServicesOfSocket (&CpbFamilyServiceTable, Socket, &FamilyServices, StdHeader);
+        GetFeatureServicesOfSocket (&CpbFamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
         if (FamilyServices != NULL) {
           if (FamilyServices->IsCpbSupported (FamilyServices, PlatformConfig, Socket, StdHeader)) {
             IsEnabled = TRUE;
@@ -152,7 +152,7 @@ InitializeCpbFeature (
 
   for (Socket = 0; Socket < GetPlatformNumberOfSockets (); Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetFeatureServicesOfSocket (&CpbFamilyServiceTable, Socket, &FamilyServices, StdHeader);
+      GetFeatureServicesOfSocket (&CpbFamilyServiceTable, Socket, (const VOID **)&FamilyServices, StdHeader);
       if (FamilyServices != NULL) {
         if (FamilyServices->IsCpbSupported (FamilyServices, PlatformConfig, Socket, StdHeader)) {
           CalledStatus = FamilyServices->EnableCpbOnSocket (FamilyServices, PlatformConfig, EntryPoint, Socket, StdHeader);

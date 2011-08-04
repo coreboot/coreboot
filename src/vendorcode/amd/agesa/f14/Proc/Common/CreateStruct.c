@@ -136,7 +136,7 @@ AmdCreateStruct (
     if (!IsBsp (&InterfaceParams->StdHeader, &IgnoredSts)) {
       // APs must transfer their system core number from the mailbox to
       // a local register while it is still valid.
-      GetCpuServicesOfCurrentCore (&FamilySpecificServices, &InterfaceParams->StdHeader);
+      GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &InterfaceParams->StdHeader);
       FamilySpecificServices->TransferApCoreNumber (FamilySpecificServices, &InterfaceParams->StdHeader);
     }
     InterfaceParams->StdHeader.HeapStatus = HEAP_DO_NOT_EXIST_YET;

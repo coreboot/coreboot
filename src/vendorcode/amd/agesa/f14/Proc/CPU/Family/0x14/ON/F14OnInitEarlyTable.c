@@ -87,6 +87,14 @@ extern F14_ES_CORE_SUPPORT F14EarlySampleCoreSupport;
  *----------------------------------------------------------------------------------------
  */
 VOID
+GetF14OnEarlyInitOnCoreTable (
+  IN       CPU_SPECIFIC_SERVICES                *FamilyServices,
+     OUT   CONST S_PERFORM_EARLY_INIT_ON_CORE   **Table,
+  IN       AMD_CPU_EARLY_PARAMS                 *EarlyParams,
+  IN       AMD_CONFIG_PARAMS                    *StdHeader
+  );
+
+VOID
 F14OnLoadMicrocodePatchAtEarly (
   IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
   IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
@@ -144,7 +152,7 @@ GetF14OnEarlyInitOnCoreTable (
 {
   *Table = F14OnEarlyInitOnCoreTable;
 
-  F14EarlySampleCoreSupport.F14GetEarlyInitTableHook (Table, StdHeader);
+  F14EarlySampleCoreSupport.F14GetEarlyInitTableHook ((const VOID **)Table, StdHeader);
 }
 
 /*---------------------------------------------------------------------------------------*/

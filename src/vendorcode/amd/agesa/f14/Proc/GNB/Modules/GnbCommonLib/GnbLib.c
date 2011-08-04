@@ -74,6 +74,15 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+VOID
+GnbLibPciIndirectReadField (
+  IN       UINT32       Address,
+  IN       UINT32       IndirectAddress,
+  IN       UINT8        FieldOffset,
+  IN       UINT8        FieldWidth,
+     OUT   UINT32       *Value,
+  IN       VOID         *Config
+  );
 
 
 /*----------------------------------------------------------------------------------------*/

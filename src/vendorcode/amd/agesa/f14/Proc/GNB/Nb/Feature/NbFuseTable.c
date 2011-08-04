@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 48498 $   @e \$Date: 2011-03-09 12:44:53 -0700 (Wed, 09 Mar 2011) $
  *
  */
 /*
@@ -220,9 +220,18 @@ NbFuseLoadFuseTableFromFcr (
                   );
     for (FieldIndex = 0; FieldIndex < FuseRegisterTableLength;  FieldIndex++) {
       FUSE_REGISTER_ENTRY   RegisterEntry;
+      UINT8                 *FuseArrayPtr;
+      UINT32                FuseArrauValue;
       RegisterEntry = FuseTable->FuseTable[RegisterIndex].FuseRegisterTable[FieldIndex];
-      *((UINT8 *) PpFuseArray + RegisterEntry.FuseOffset) = (UINT8) ((FuseValue >> RegisterEntry.FieldOffset) &
-                                                            ((1 << RegisterEntry.FieldWidth) - 1));
+      FuseArrayPtr = (UINT8*) PpFuseArray + RegisterEntry.FuseOffset;
+      FuseArrauValue = (FuseValue >> RegisterEntry.FieldOffset) & ((1 << RegisterEntry.FieldWidth) - 1);
+      if (RegisterEntry.FieldWidth > 16) {
+        *((UINT32 *) FuseArrayPtr) = FuseArrauValue;
+      } else if (RegisterEntry.FieldWidth > 8) {
+        *((UINT16 *) FuseArrayPtr) = (UINT16) FuseArrauValue;
+      } else {
+        *((UINT8 *) FuseArrayPtr) = (UINT8) FuseArrauValue;
+      }
     }
   }
 }
@@ -291,6 +300,8 @@ NbFuseAdjustFuseTableToCurrentMainPllVco (
   FusedMainPllFreq10KHz = (PpFuseArray->MainPllId + 0x10) * 100 * 100;
   if (FusedMainPllFreq10KHz != EffectiveMainPllFreq10KHz) {
     IDS_HDT_CONSOLE (NB_MISC, "  WARNING! Adjusting fuse table for reprogrammed VCO\n");
+    IDS_HDT_CONSOLE (NB_MISC, "  Actual main Freq %d \n", EffectiveMainPllFreq10KHz);
+    IDS_HDT_CONSOLE (NB_MISC, "  Fused  main Freq %d \n", FusedMainPllFreq10KHz);
     for (Index = 0; Index < 5; Index++) {
       if (PpFuseArray->SclkDpmDid[Index] != 0) {
         TempVco = GfxLibCalculateClk (PpFuseArray->SclkDpmDid[Index], FusedMainPllFreq10KHz);
@@ -378,13 +389,19 @@ NbFuseDebugDump (
       (PpFuseArray->DisplclkDid[Index] != 0) ? (GfxLibCalculateClk (PpFuseArray->DisplclkDid[Index], EffectiveMainPllFreq10KHz) / 100) : 0
       );
   }
-  for (Index = 0; Index < 5; Index++) {
+  for (Index = 0; Index < 6; Index++) {
     IDS_HDT_CONSOLE (
       NB_MISC,
       "  SCLK DID[%d] - 0x%02x (%dMHz)\n",
       Index,
       PpFuseArray->SclkDpmDid[Index],
       (PpFuseArray->SclkDpmDid[Index] != 0) ? (GfxLibCalculateClk (PpFuseArray->SclkDpmDid[Index], EffectiveMainPllFreq10KHz) / 100) : 0
+    );
+    IDS_HDT_CONSOLE (
+      NB_MISC,
+      "  SCLK TDP[%d] - 0x%x \n",
+      Index,
+      PpFuseArray->SclkDpmTdpLimit[Index]
     );
     IDS_HDT_CONSOLE (NB_MISC, "  SCLK VID[%d] - 0x%02x\n", Index, PpFuseArray->SclkDpmVid[Index]);
   }
@@ -397,5 +414,14 @@ NbFuseDebugDump (
   }
   IDS_HDT_CONSOLE (NB_MISC, "  GEN2 VID - 0x%x\n", PpFuseArray->PcieGen2Vid);
   IDS_HDT_CONSOLE (NB_MISC, "  Main PLL Id - 0x%x\n", PpFuseArray->MainPllId);
+  IDS_HDT_CONSOLE (NB_MISC, "  GpuBoostCap  - %x\n", PpFuseArray->GpuBoostCap);
+  IDS_HDT_CONSOLE (NB_MISC, "  SclkDpmBoostMargin    - %x\n", PpFuseArray->SclkDpmBoostMargin);
+  IDS_HDT_CONSOLE (NB_MISC, "  SclkDpmThrottleMargin - %x\n", PpFuseArray->SclkDpmThrottleMargin);
+  IDS_HDT_CONSOLE (NB_MISC, "  SclkDpmTdpLimitPG     - %x\n", PpFuseArray->SclkDpmTdpLimitPG);
+  IDS_HDT_CONSOLE (
+    NB_MISC, "  SclkThermDid          - %x(%dMHz)\n",
+    PpFuseArray->SclkThermDid,
+    (PpFuseArray->SclkThermDid != 0) ? (GfxLibCalculateClk (PpFuseArray->SclkThermDid, EffectiveMainPllFreq10KHz) / 100) : 0
+    );
   IDS_HDT_CONSOLE (NB_MISC, "<------------ GNB FUSE END-------------->\n");
 }

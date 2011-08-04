@@ -98,7 +98,7 @@ typedef struct {
                                                    ///  Do NOT include a config params header!
      OUT   PF_AGESA_FUNCTION   AgesaFunction;      ///< The constructor function
      OUT   PF_AGESA_DESTRUCTOR AgesaDestructor;    ///< The destructor function.
-  IN       AGESA_BUFFER_HANDLE BufferHandle;       ///< The buffer handle id for the service.
+  IN       UINT32              BufferHandle;       ///< The buffer handle id for the service.
 } FUNCTION_PARAMS_INFO;
 
 /**

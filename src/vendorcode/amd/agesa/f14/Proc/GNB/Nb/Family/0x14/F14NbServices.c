@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 41363 $   @e \$Date: 2010-11-04 03:24:17 +0800 (Thu, 04 Nov 2010) $
+ * @e \$Revision: 48498 $   @e \$Date: 2011-03-09 12:44:53 -0700 (Wed, 09 Mar 2011) $
  *
  */
 /*
@@ -58,9 +58,11 @@
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbGfxInitLibV1)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
+#include  "NbConfigData.h"
 #include  "OptionGnb.h"
 #include  "NbLclkDpm.h"
 #include  "NbFamilyServices.h"
+#include  "NbPowerMgmt.h"
 #include  "GfxLib.h"
 #include  "GnbRegistersON.h"
 #include  "cpuFamilyTranslation.h"
@@ -85,6 +87,29 @@ FUSE_TABLE  FuseTable;
  *----------------------------------------------------------------------------------------
  */
 
+/*----------------------------------------------------------------------------------------*/
+/**
+ * NB family specific clock gating
+ *
+ *
+ * @param[in, out] NbClkGatingCtrl    Pointer to NB_CLK_GATING_CTRL
+ * @param[in] StdHeader               Pointer to AMD_CONFIG_PARAMS
+ */
+VOID
+NbFmNbClockGating (
+  IN OUT   VOID  *NbClkGatingCtrl,
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  )
+{
+  NB_CLK_GATING_CTRL  *NbClkGatingCtrlPtr;
+  CPU_LOGICAL_ID  LogicalId;
+
+  NbClkGatingCtrlPtr = (NB_CLK_GATING_CTRL *)NbClkGatingCtrl;
+  GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
+  if ((LogicalId.Revision & AMD_F14_ON_Cx) != 0) {
+    NbClkGatingCtrlPtr->Smu_Sclk_Gating = FALSE;
+  }
+}
 
 /*----------------------------------------------------------------------------------------*/
 /**
@@ -184,7 +209,7 @@ NbFmFuseAdjustFuseTablePatch (
     if (GfxLibIsControllerPresent (StdHeader)) {
       //VID index = VID index associated with highest SCLK DPM state in the Powerplay state where Label_Performance=1 // This would ignore the UVD case (where Label_Performance would be 0).
       for (SwSatateIndex = 0 ; SwSatateIndex < PP_FUSE_MAX_NUM_SW_STATE; SwSatateIndex++) {
-        if (PpFuseArray->PolicyLabel[SwSatateIndex] == 1) {
+        if (PpFuseArray->PolicyLabel[SwSatateIndex] == POLICY_LABEL_PERFORMANCE) {
           break;
         }
       }
@@ -206,9 +231,13 @@ NbFmFuseAdjustFuseTablePatch (
     }
     // - use fused values for LclkDpmDid[0,1,2] and appropriate voltage
     //Keep using actual fusing
-    IDS_HDT_CONSOLE (NB_MISC, "  LCLK DPM use actaul fusing.\n");
+    IDS_HDT_CONSOLE (NB_MISC, "  LCLK DPM use actual fusing.\n");
   }
 
+  //Patch SclkThermDid to 175Mhz if not fused
+  if (PpFuseArray->SclkThermDid == 0) {
+    PpFuseArray->SclkThermDid = GfxLibCalculateDid (175 * 100, GfxLibGetMainPllFreq (StdHeader) * 100);
+  }
 }
 
 
@@ -434,7 +463,6 @@ FUSE_REGISTER_ENTRY FCRxFE00_70B9_TABLE [] = {
   }
 };
 
-
 FUSE_REGISTER_ENTRY FCRxFE00_70BC_TABLE [] = {
   {
     FCRxFE00_70BC_SclkDpmValid0_OFFSET,
@@ -575,8 +603,86 @@ FUSE_REGISTER_ENTRY FCRxFE00_70C7_TABLE [] = {
   },
 };
 
+FUSE_REGISTER_ENTRY FCRxFE00_70C8_TABLE [] = {
+  {
+    FCRxFE00_70C8_GpuBoostCap_OFFSET,
+    FCRxFE00_70C8_GpuBoostCap_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, GpuBoostCap)
+  },
+  {
+    FCRxFE00_70C8_SclkDpmVid5_OFFSET,
+    FCRxFE00_70C8_SclkDpmVid5_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmVid[5])
+  },
+  {
+    FCRxFE00_70C8_SclkDpmDid5_OFFSET,
+    FCRxFE00_70C8_SclkDpmDid5_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmDid[5])
+  },
+};
 
+FUSE_REGISTER_ENTRY FCRxFE00_70C9_TABLE [] = {
+  {
+    FCRxFE00_70C9_SclkDpmTdpLimit0_OFFSET,
+    FCRxFE00_70C9_SclkDpmTdpLimit0_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[0])
+  },
+  {
+    FCRxFE00_70C9_SclkDpmTdpLimit1_OFFSET,
+    FCRxFE00_70C9_SclkDpmTdpLimit1_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[1])
+  }
+};
 
+FUSE_REGISTER_ENTRY FCRxFE00_70CC_TABLE [] = {
+  {
+    FCRxFE00_70CC_SclkDpmTdpLimit2_OFFSET,
+    FCRxFE00_70CC_SclkDpmTdpLimit2_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[2])
+  },
+  {
+    FCRxFE00_70CC_SclkDpmTdpLimit3_OFFSET,
+    FCRxFE00_70CC_SclkDpmTdpLimit3_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[3])
+  }
+};
+
+FUSE_REGISTER_ENTRY FCRxFE00_70CF_TABLE [] = {
+  {
+    FCRxFE00_70CF_SclkDpmTdpLimit4_OFFSET,
+    FCRxFE00_70CF_SclkDpmTdpLimit4_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[4])
+  },
+  {
+    FCRxFE00_70CF_SclkDpmTdpLimit5_OFFSET,
+    FCRxFE00_70CF_SclkDpmTdpLimit5_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimit[5])
+  }
+};
+
+FUSE_REGISTER_ENTRY FCRxFE00_70D2_TABLE [] = {
+  {
+    FCRxFE00_70D2_SclkDpmTdpLimitPG_OFFSET,
+    FCRxFE00_70D2_SclkDpmTdpLimitPG_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmTdpLimitPG)
+  }
+};
+
+FUSE_REGISTER_ENTRY FCRxFE00_70D4_TABLE [] = {
+  {
+    FCRxFE00_70D4_SclkDpmBoostMargin_OFFSET,
+    FCRxFE00_70D4_SclkDpmBoostMargin_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmBoostMargin)
+  }
+};
+
+FUSE_REGISTER_ENTRY FCRxFE00_70D7_TABLE [] = {
+  {
+    FCRxFE00_70D7_SclkDpmThrottleMargin_OFFSET,
+    FCRxFE00_70D7_SclkDpmThrottleMargin_WIDTH,
+    (UINT8) offsetof (PP_FUSE_ARRAY, SclkDpmThrottleMargin)
+  }
+};
 
 FUSE_TABLE_ENTRY  FuseRegisterTable [] = {
   {
@@ -669,7 +775,41 @@ FUSE_TABLE_ENTRY  FuseRegisterTable [] = {
     sizeof (FCRxFE00_70C7_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
     FCRxFE00_70C7_TABLE
   },
-
+  {
+    FCRxFE00_70C8_ADDRESS,
+    sizeof (FCRxFE00_70C8_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70C8_TABLE
+  },
+  {
+    FCRxFE00_70C9_ADDRESS,
+    sizeof (FCRxFE00_70C9_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70C9_TABLE
+  },
+  {
+    FCRxFE00_70CC_ADDRESS,
+    sizeof (FCRxFE00_70CC_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70CC_TABLE
+  },
+  {
+    FCRxFE00_70CF_ADDRESS,
+    sizeof (FCRxFE00_70CF_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70CF_TABLE
+  },
+  {
+    FCRxFE00_70D2_ADDRESS,
+    sizeof (FCRxFE00_70D2_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70D2_TABLE
+  },
+  {
+    FCRxFE00_70D4_ADDRESS,
+    sizeof (FCRxFE00_70D4_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70D4_TABLE
+  },
+  {
+    FCRxFE00_70D7_ADDRESS,
+    sizeof (FCRxFE00_70D7_TABLE) / sizeof (FUSE_REGISTER_ENTRY),
+    FCRxFE00_70D7_TABLE
+  },
 };
 
 FUSE_TABLE  FuseTable = {

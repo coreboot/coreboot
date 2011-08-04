@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 34897 $ @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -80,7 +80,11 @@
  *
  *----------------------------------------------------------------------------
  */
-
+VOID
+STATIC
+MemRecNFinalizeMctON (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
@@ -134,6 +138,8 @@ MemRecNMemInitON (
     }
   }
 
+  MemRecNFinalizeMctON (NBPtr);
+
   return Status;
 }
 
@@ -147,6 +153,7 @@ MemRecNMemInitON (
  */
 
 VOID
+STATIC
 MemRecNFinalizeMctON (
   IN OUT   MEM_NB_BLOCK *NBPtr
   )
@@ -154,35 +161,15 @@ MemRecNFinalizeMctON (
   //
   // Recommended registers setting after DRAM device initialization and training
   //
-  // PrefCpuDis = 0
+  MemRecNSetBitFieldNb (NBPtr, BFAddrCmdTriEn, 1);
+  MemRecNSetBitFieldNb (NBPtr, BFDisAutoRefresh, 0);
+  MemRecNSetBitFieldNb (NBPtr, BFZqcsInterval, 2);
+  MemRecNSetBitFieldNb (NBPtr, BFEnRxPadStandby, 0x1000);
   MemRecNSetBitFieldNb (NBPtr, BFPrefCpuDis, 0);
-  // DctWrLimit = 0x1C
   MemRecNSetBitFieldNb (NBPtr, BFDctWrLimit, 0x1C);
-  // DramTrainPdbDis = 1
   MemRecNSetBitFieldNb (NBPtr, BFDramTrainPdbDis, 1);
-  // EnCpuSerRdBehindNpIoWr = 0
   MemRecNSetBitFieldNb (NBPtr, BFEnCpuSerRdBehindNpIoWr, 0);
 }
-
-/* -----------------------------------------------------------------------------*/
-/**
- *
- *   This function sets initial values in BUCFG2
- *
- *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
- *
- */
-
-VOID
-MemRecNInitializeMctON (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  )
-{
-}
-
-/* -----------------------------------------------------------------------------*/
-/**
- *
 
 /*----------------------------------------------------------------------------
  *                              LOCAL FUNCTIONS

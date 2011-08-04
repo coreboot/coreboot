@@ -89,12 +89,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_0, 0x68),  // Address
       0x002E0800,                           // regData
       0x006E0800,                           // regMask
-    }
+    }}
   },
 
 // Function 2 - DRAM Controller
@@ -106,12 +106,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_2, 0xB8),  // Address
       0x00000000,                           // regData
       0xF000F000,                           // regMask
-    }
+    }}
   },
 // D18F2xBC
   {
@@ -120,12 +120,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_2, 0xBC),  // Address
       0x00000000,                           // regData
       0xC0000000,                           // regMask
-    }
+    }}
   },
 // D18F2x118 - Memory Controller Configuration Low
 // bits[7:6], MctPriHiWr = 10b
@@ -135,12 +135,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_2, 0x118),  // Address
       0x00000080,                           // regData
       0x000000C0,                           // regMask
-    }
+    }}
   },
 // D18F2x11C - Memory Controller Configuration High
 // bits[24:22], PrefConf = 1
@@ -150,12 +150,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_2, 0x11C),  // Address
       0x00400000,                           // regData
       0x01C00000,                           // regMask
-    }
+    }}
   },
 
 // Function 3 - Misc. Control
@@ -168,12 +168,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x40),  // Address
       0x00000100,                           // regData
       0x00000100,                           // regMask
-    }
+    }}
   },
 // D18F3x44 - MCA NB Configuration
 // bit[27]     NbMcaToMstCpuEn = 1
@@ -189,12 +189,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x44),  // Address
       0x0A300040,                           // regData
       0x0A303E40,                           // regMask
-    }
+    }}
   },
 // D18F3x84 - ACPI Power State Control High
 // bit[18] Smaf6DramMemClkTri = 1
@@ -207,12 +207,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x84),  // Address
       0x00060006,                           // regData
       0x00060006,                           // regMask
-    }
+    }}
   },
 // D18F3x8C - NB Configuration High
 // bit[26] EnConvertToNonIsoc = 1
@@ -222,12 +222,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x8C),  // Address
       0x04000000,                           // regData
       0x04000000,                           // regMask
-    }
+    }}
   },
 // D18F3xA0 - Power Control Miscellaneous
 // bit[9] SviHighFreqSel = 1
@@ -237,12 +237,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0xA0),  // Address
       0x00000200,                           // regData
       0x00000200,                           // regMask
-    }
+    }}
   },
 // D18F3xA4 - Reported Temperature Control
 // bits[12:8] PerStepTimeDn = 0xF
@@ -256,12 +256,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0xA4),  // Address
       0x00000FEF,                           // regData
       0x00001FFF,                           // regMask
-    }
+    }}
   },
 // D18F3xD4 - Clock Power Timing Control 0
 // bits[11:8]  ClkRampHystSel = 0xF
@@ -273,16 +273,16 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0xD4),  // Address
       0x00024F00,                           // regData
       0x0002FF00,                           // regMask
-    }
+    }}
   },
 // D18F3xDC - Clock Power Timing Control 2
 // bits[29:27] NbClockGateHyst = 3
-// bit[30]     NbClockGateEn = 1
+// bit[30]     NbClockGateEn = 0 - erratum #596
 // bit[31]     CnbCifClockGateEn = 1
   {
     PciRegister,
@@ -290,12 +290,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0xDC),  // Address
-      0xD8000000,                           // regData
+      0x98000000,                           // regData
       0xF8000000,                           // regMask
-    }
+    }}
   },
 // D18F3x180 - Extended NB MCA Configuration
 // bit[2]   WDTCntSel[3] = 0
@@ -307,12 +307,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x180), // Address
       0x00200020,                           // regData
       0x00200024,                           // regMask
-    }
+    }}
   },
 // D18F3x188 - NB Extended Configuration
 // bit[21]      EnCpuSerWrBehindIoRd = 0
@@ -325,12 +325,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x188), // Address
       0x1B000000,                           // regData
       0xFFA00000,                           // regMask
-    }
+    }}
   },
 
 // Function 4 - Extended Misc. Control
@@ -344,12 +344,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x118), // Address
       0x00000000,                           // regData
       0x00000707,                           // regMask
-    }
+    }}
   },
 // D18F4x124 - C-state Monitor Control 1
 // bit[15]      TimerTickIntvlScale = 1
@@ -364,12 +364,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x124), // Address
       0x05138000,                           // regData
       0x07FF8000,                           // regMask
-    }
+    }}
   },
 // D18F4x134 - C-state Monitor Control 3
 // bits[3:0]    IntRatePkgC6MaxDepth = 0
@@ -379,19 +379,18 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
 // bits[19:16]  IntRateCC6MaxDepth = 5
 // bits[23:20]  IntRateCC6Threshold = 4
 // bits[26:24]  IntRateCC6BurstLen = 5
-// bits[31:27]  IntRateCC6DecrRate = 0x08
   {
     PciRegister,
     {
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x134), // Address
-      0x45455100,                           // regData
-      0xFFFFFFFF,                           // regMask
-    }
+      0x05455100,                           // regData
+      0x07FFFFFF,                           // regMask
+    }}
   },
 // D18F4x13C - SMAF Code DID 1
 // bits[4:0]    Smaf4Did = 0x0F
@@ -402,12 +401,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x13C), // Address
       0x000F000F,                           // regData
       0x001F001F,                           // regMask
-    }
+    }}
   },
 // D18F4x1A4 - C-state Monitor Mask
 // bits[7:0]    IntRateMonMask = 0xFC
@@ -420,12 +419,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x1A4), // Address
       0xFFFFFFFC,                           // regData
       0xFFFFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F4x1A8 - CPU State Power Management Dynamic Control 0
 // bits[4:0]   SingleHaltCpuDid = 0x1E
@@ -439,12 +438,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x1A8), // Address
       0x009003FE,                           // regData
       0x00F083FF,                           // regMask
-    }
+    }}
   },
 // D18F4x1AC - CPU State Power Management Dynamic Control 1
 // bits[9:5]  C6Did = 0x1F
@@ -456,12 +455,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_4, 0x1AC), // Address
       0x300003E0,                           // regData
       0x300003E0,                           // regMask
-    }
+    }}
   },
 // D18F6x50 - Configuration Register Access Control
 // bit[1]  CfgAccAddrMode = 0
@@ -471,12 +470,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x50),  // Address
       0x00000000,                           // regData
       0x00000002,                           // regMask
-    }
+    }}
   },
 // D18F6x54 - DRAM Arbitration Control FEQ Collision
 // bits[7:0]    FeqLoPrio = 0x20
@@ -489,12 +488,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x54),  // Address
       0x00081020,                           // regData
       0x80FFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x58 - DRAM Arbitration Control Display Collision
 // bits[7:0]    DispLoPrio = 0x40
@@ -507,12 +506,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x58),  // Address
       0x00102040,                           // regData
       0xFFFFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x5C - DRAM Arbitration Control FEQ Write Protect
 // bits[7:0]    FeqLoPrio = 0x20
@@ -525,12 +524,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x5C),  // Address
       0x00081020,                           // regData
       0x80FFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x60 - DRAM Arbitration Control Display Write Protect
 // bits[7:0]    DispLoPri = 0x20
@@ -543,12 +542,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x60),  // Address
       0x00081020,                           // regData
       0xFFFFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x64 - DRAM Arbitration Control FEQ Read Protect
 // bits[7:0]    FeqLoPrio = 0x10
@@ -561,12 +560,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x64),  // Address
       0x00040810,                           // regData
       0x80FFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x68 - DRAM Arbitration Control Display  Read Protect
 // bits[7:0]    DispLoPrio = 0x10
@@ -579,12 +578,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x68),  // Address
       0x00040810,                           // regData
       0xFFFFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x6C - DRAM Arbitration Control FEQ Fairness Timer
 // bits[7:0]    FeqLoPrio = 0x80
@@ -596,12 +595,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x6C),  // Address
       0x00204080,                           // regData
       0x00FFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x70 - DRAM Arbitration Control Display Fairness Timer
 // bits[7:0]    DispLoPrio = 0x80
@@ -614,12 +613,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x70),  // Address
       0x00204080,                           // regData
       0xFFFFFFFF,                           // regMask
-    }
+    }}
   },
 // D18F6x74 - Dram Idle Page Close Limit
 // bits[40]    IdleLimit = 0x1E
@@ -629,12 +628,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x74),  // Address
       0x0000001E,                           // regData
       0x0000001F,                           // regMask
-    }
+    }}
   },
 // D18F6x78 - Dram Prioritization and Arbitration Control
 // bits[1:0]    DispDbePrioEn = 3
@@ -648,12 +647,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x78),  // Address
       0x00000037,                           // regData
       0x0000007F,                           // regMask
-    }
+    }}
   },
 // D18F6x90 - NB P-state Config Low
 // As part of BIOS Requirements for NB P-state Initialization
@@ -666,16 +665,14 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x90),  // Address
       0x50000000,                           // regData
       0x70000000,                           // regMask
-    }
+    }}
   },
 // D18F6x94 - NB P-state Config High
-// bits[2:0]    CpuPstateThr = 1
-// bit[3]       CpuPstateThrEn = 1
 // bits[25:23]  NbPsC0Timer = 4
   {
     PciRegister,
@@ -683,12 +680,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x94),  // Address
-      0x02000009,                           // regData
-      0x0380000F,                           // regMask
-    }
+      0x02000000,                           // regData
+      0x03800000,                           // regMask
+    }}
   },
 // D18F6x9C - NCLK Reduction Control
 // bits[6:0]   NclkRedDiv = 0x60
@@ -700,12 +697,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_6, 0x9C),  // Address
       0x000001E0,                           // regData
       0x000001FF,                           // regMask
-    }
+    }}
   }
 };
 

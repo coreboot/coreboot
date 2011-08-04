@@ -65,7 +65,7 @@
 #define AMD_HEAP_REGION_END_ADDRESS 0xBFFFFF
 #define AMD_HEAP_SIZE_PER_CORE  0x010000
 #define AMD_HEAP_INVALID_HEAP_OFFSET 0xFFFFFFFF
-#define AMD_HEAP_MTRR_MASK ((0xFFFFFFFFFFFFF800 & ((AMD_HEAP_SIZE_PER_CORE ^ (-1)) + 1) | 0x800))
+#define AMD_HEAP_MTRR_MASK (0xFFFFFFFFFFFFF800ull & (((AMD_HEAP_SIZE_PER_CORE ^ (-1)) + 1) | 0x800))
 #define AMD_HEAP_SIZE_DWORD_PER_CORE  (AMD_HEAP_SIZE_PER_CORE / 4)
 
 #define AMD_TEMP_TOM            0x20000000  // Set TOM to 512 MB (temporary value)
@@ -144,7 +144,7 @@ typedef struct _HEAP_MANAGER {
 } HEAP_MANAGER;
 
 /// AGESA Buffer Handles (These are reserved)
-typedef enum {
+typedef enum _AGESA_BUFFER_HANDLE {
   AMD_INIT_RESET_HANDLE = 0x000A000,              ///< Assign 0x000A000 buffer handle to AmdInitReset routine.
   AMD_INIT_EARLY_HANDLE,                          ///< Assign 0x000A001 buffer handle to AmdInitEarly routine.
   AMD_INIT_POST_HANDLE,                           ///< Assign 0x000A002 buffer handle to AmdInitPost routine.
@@ -218,8 +218,8 @@ HeapLocateBuffer (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
-UINT64
-HeapGetBaseAddress (
+VOID
+*HeapGetBaseAddress (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 

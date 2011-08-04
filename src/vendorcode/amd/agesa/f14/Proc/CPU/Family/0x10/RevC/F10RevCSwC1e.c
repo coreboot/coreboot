@@ -126,19 +126,19 @@ F10InitializeSwC1e (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   AP_TASK TaskPtr;
 
-  MsrRegister = 0;
-  ((INTPEND_MSR *) &MsrRegister)->IoMsgAddr = PlatformConfig->C1ePlatformData1;
-  ((INTPEND_MSR *) &MsrRegister)->IoMsgData = PlatformConfig->C1ePlatformData2;
-  ((INTPEND_MSR *) &MsrRegister)->IoRd = 0;
-  ((INTPEND_MSR *) &MsrRegister)->C1eOnCmpHalt = 0;
-  ((INTPEND_MSR *) &MsrRegister)->SmiOnCmpHalt = 1;
+  MsrReg = 0;
+  ((INTPEND_MSR *) &MsrReg)->IoMsgAddr = PlatformConfig->C1ePlatformData1;
+  ((INTPEND_MSR *) &MsrReg)->IoMsgData = PlatformConfig->C1ePlatformData2;
+  ((INTPEND_MSR *) &MsrReg)->IoRd = 0;
+  ((INTPEND_MSR *) &MsrReg)->C1eOnCmpHalt = 0;
+  ((INTPEND_MSR *) &MsrReg)->SmiOnCmpHalt = 1;
 
   TaskPtr.FuncAddress.PfApTaskI = F10InitializeSwC1eOnCore;
   TaskPtr.DataTransfer.DataSizeInDwords = 2;
-  TaskPtr.DataTransfer.DataPtr = &MsrRegister;
+  TaskPtr.DataTransfer.DataPtr = &MsrReg;
   TaskPtr.DataTransfer.DataTransferFlags = 0;
   TaskPtr.ExeFlags = WAIT_FOR_CORE;
   ApUtilRunCodeOnAllLocalCoresAtEarly (&TaskPtr, StdHeader, NULL);
@@ -161,16 +161,16 @@ F10InitializeSwC1eOnCore (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64  MsrRegister;
+  UINT64  MsrReg;
 
   // Enable C1e
   LibAmdMsrWrite (MSR_INTPEND, (UINT64 *) IntPendMsr, StdHeader);
 
   // Set OS Visible Workaround Status BIT1 to indicate that C1e
   // is enabled.
-  LibAmdMsrRead (MSR_OSVW_Status, &MsrRegister, StdHeader);
-  MsrRegister |= BIT1;
-  LibAmdMsrWrite (MSR_OSVW_Status, &MsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_OSVW_Status, &MsrReg, StdHeader);
+  MsrReg |= BIT1;
+  LibAmdMsrWrite (MSR_OSVW_Status, &MsrReg, StdHeader);
 }
 
 

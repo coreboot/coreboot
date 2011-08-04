@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -129,6 +129,7 @@ MemRecTTrainDQSWriteHw3 (
 
   NBPtr = TechPtr->NBPtr;
 
+  IDS_HDT_CONSOLE (MEM_STATUS, "\nStart write leveling\n");
   //  Disable auto refresh by configuring F2x[1, 0]8C[DisAutoRefresh] = 1.
   NBPtr->SetBitField (NBPtr, BFDisAutoRefresh, 1);
   //  Disable ZQ calibration short command by configuring F2x[1, 0]94[ZqcsInterval] = 00b.
@@ -136,6 +137,7 @@ MemRecTTrainDQSWriteHw3 (
 
   // 1. Specify the target Dimm that is to be trained by programming
   //     F2x[1, 0]9C_x08[TrDimmSel].
+  IDS_HDT_CONSOLE (MEM_STATUS, "\t\tCS %d\n", NBPtr->DimmToBeUsed << 1);
   NBPtr->SetBitField (NBPtr, BFTrDimmSel, NBPtr->DimmToBeUsed);
 
   // 2. Prepare the DIMMs for write levelization using DDR3-defined
@@ -167,6 +169,7 @@ MemRecTTrainDQSWriteHw3 (
   //  14.Program F2x[1, 0]94[ZqcsInterval] to the proper interval for the current memory configuration.
   NBPtr->SetBitField (NBPtr, BFZqcsInterval, 2);
 
+  IDS_HDT_CONSOLE (MEM_FLOW, "End write leveling\n\n");
 }
 
 /*----------------------------------------------------------------------------
@@ -266,6 +269,8 @@ MemRecTProcConfig3 (
   // Wait 10 MEMCLKs to allow for ODT signal settling.
   MemRecUWait10ns (3, NBPtr->MemPtr);
 
+  IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\t\t Byte: 00 01 02 03 04 05 06 07 ECC\n");
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\tSeeds: ");
   //  Program an initialization Value to registers F2x[1, 0]9C_x[51:50] and F2x[1, 0]9C_x52 to set
   //  the gross and fine delay for all the byte lane fields. If the target frequency is different than 400MHz,
   //  BIOS must execute two training passes for each Dimm. For pass 1 at a 400MHz MEMCLK frequency,
@@ -284,17 +289,21 @@ MemRecTProcConfig3 (
   //  Get platform override seed
   Seed = (UINT8 *) MemRecFindPSOverrideEntry (NBPtr->RefPtr->PlatformMemoryConfiguration, PSO_WL_SEED, NBPtr->MCTPtr->SocketId, ChannelPtr->ChannelID);
 
+  IDS_HDT_CONSOLE (MEM_FLOW, "Seeds: ");
   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
     // This includes ECC as byte 8
     CurrentSeed = ((Seed != NULL) ? Seed[ByteLane] : DefaultSeed);
     NBPtr->SetTrainDly (NBPtr, AccessPhRecDly, DIMM_BYTE_ACCESS (Dimm, ByteLane), CurrentSeed);
     ChannelPtr->WrDqsDlys[Dimm * MAX_BYTELANES + ByteLane] = CurrentSeed;
+    IDS_HDT_CONSOLE (MEM_FLOW, "%02x ", CurrentSeed);
   }
+  IDS_HDT_CONSOLE (MEM_FLOW, "\n");
 
   // Program F2x[1, 0]9C_x08[WrtLvTrMode]=0 for phy assisted training.
 
   // Program F2x[1, 0]9C_x08[TrNibbleSel]=0
 
+  IDS_HDT_CONSOLE (MEM_FLOW, "\n");
 }
 
 /* -----------------------------------------------------------------------------*/
@@ -321,6 +330,7 @@ MemRecTBeginWLTrain3 (
   NBPtr = TechPtr->NBPtr;
 
   Dimm = NBPtr->DimmToBeUsed;
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\tWrtLvTrEn = 1\n");
   // Program F2x[1, 0]9C_x08[WrtLlTrEn]=1.
   NBPtr->SetBitField (NBPtr, BFWrtLvTrEn, 1);
 
@@ -332,10 +342,12 @@ MemRecTBeginWLTrain3 (
 
   //  Read from registers F2x[1, 0]9C_x[51:50] and F2x[1, 0]9C_x52 to get the gross and fine Delay settings
   //   for the target Dimm and save these values.
+  IDS_HDT_CONSOLE (MEM_FLOW, " PRE WrDqs\n");
   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
     // This includes ECC as byte 8
     Seed = NBPtr->ChannelPtr->WrDqsDlys[(Dimm * MAX_BYTELANES) + ByteLane];
     Delay = (UINT8)NBPtr->GetTrainDly (NBPtr, AccessPhRecDly, DIMM_BYTE_ACCESS (Dimm, ByteLane));
+    IDS_HDT_CONSOLE (MEM_FLOW, "  %02x ", Delay);
     if (((Seed >> 5) == 0) && ((Delay >> 5) == 3)) {
       // If seed has gross delay of 0 and PRE has gross delay of 3,
       // then round the total delay of TxDqs to 0.
@@ -343,5 +355,14 @@ MemRecTBeginWLTrain3 (
     }
     NBPtr->SetTrainDly (NBPtr, AccessWrDqsDly, DIMM_BYTE_ACCESS (Dimm, ByteLane), Delay);
     NBPtr->ChannelPtr->WrDqsDlys[(Dimm * MAX_BYTELANES) + ByteLane] = Delay;
+    IDS_HDT_CONSOLE (MEM_FLOW, "  %02x\n", Delay);
   }
+
+  IDS_HDT_CONSOLE_DEBUG_CODE (
+    IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\t\tWrDqs: ");
+    for (ByteLane = 0; ByteLane < 8; ByteLane++) {
+      IDS_HDT_CONSOLE (MEM_FLOW, "%02x ", NBPtr->ChannelPtr->WrDqsDlys[ByteLane]);
+    }
+    IDS_HDT_CONSOLE (MEM_FLOW, "\n\n");
+  );
 }

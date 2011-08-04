@@ -225,22 +225,22 @@ F10InitializeMsgBasedC1eOnCore (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   // Set MSRC001_0055[SmiOnCmpHalt] = 0, MSRC001_0055[C1eOnCmpHalt] = 0
-  LibAmdMsrRead (MSR_INTPEND, &MsrRegister, StdHeader);
-  ((INTPEND_MSR *) &MsrRegister)->SmiOnCmpHalt = 0;
-  ((INTPEND_MSR *) &MsrRegister)->C1eOnCmpHalt = 0;
-  ((INTPEND_MSR *) &MsrRegister)->BmStsClrOnHltEn = 1;
-  ((INTPEND_MSR *) &MsrRegister)->IntrPndMsgDis = 0;
-  ((INTPEND_MSR *) &MsrRegister)->IntrPndMsg = 0;
-  ((INTPEND_MSR *) &MsrRegister)->IoMsgAddr = (UINT64) *((UINT32 *) BmStsAddress);
-  LibAmdMsrWrite (MSR_INTPEND, &MsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_INTPEND, &MsrReg, StdHeader);
+  ((INTPEND_MSR *) &MsrReg)->SmiOnCmpHalt = 0;
+  ((INTPEND_MSR *) &MsrReg)->C1eOnCmpHalt = 0;
+  ((INTPEND_MSR *) &MsrReg)->BmStsClrOnHltEn = 1;
+  ((INTPEND_MSR *) &MsrReg)->IntrPndMsgDis = 0;
+  ((INTPEND_MSR *) &MsrReg)->IntrPndMsg = 0;
+  ((INTPEND_MSR *) &MsrReg)->IoMsgAddr = (UINT64) *((UINT32 *) BmStsAddress);
+  LibAmdMsrWrite (MSR_INTPEND, &MsrReg, StdHeader);
 
   // Set MSRC001_0015[HltXSpCycEn] = 1
-  LibAmdMsrRead (MSR_HWCR, &MsrRegister, StdHeader);
-  MsrRegister |= BIT12;
-  LibAmdMsrWrite (MSR_HWCR, &MsrRegister, StdHeader);
+  LibAmdMsrRead (MSR_HWCR, &MsrReg, StdHeader);
+  MsrReg |= BIT12;
+  LibAmdMsrWrite (MSR_HWCR, &MsrReg, StdHeader);
 }
 
 /*---------------------------------------------------------------------------------------*/

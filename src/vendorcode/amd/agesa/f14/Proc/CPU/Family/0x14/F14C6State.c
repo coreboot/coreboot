@@ -144,12 +144,12 @@ F14InitializeC6 (
   UINT32   i;
   UINT32   MaxEnabledPstate;
   UINT32   PciRegister;
-  UINT64   MsrRegister;
+  UINT64   MsrReg;
   PCI_ADDR PciAddress;
 
   for (i = MSR_PSTATE_7; i > MSR_PSTATE_0; i--) {
-    LibAmdMsrRead (i, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+    LibAmdMsrRead (i, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
       break;
     }
   }

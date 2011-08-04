@@ -7,7 +7,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU
- * @e \$Revision: 37018 $   @e \$Date: 2010-08-28 05:46:16 +0800 (Sat, 28 Aug 2010) $
+ * @e \$Revision: 45626 $   @e \$Date: 2011-01-19 09:58:02 -0700 (Wed, 19 Jan 2011) $
  *
  */
 /*
@@ -55,6 +55,7 @@
 #include "cpuF14SoftwareThermal.h"
 #include "cpuF14PowerPlane.h"
 #include "cpuF14PowerCheck.h"
+#include "cpuF14LowPowerInit.h"
 #include "Filecode.h"
 #define FILECODE PROC_CPU_FAMILY_0X14_CPUF14POWERMGMTSYSTEMTABLES_FILECODE
 
@@ -72,6 +73,14 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+
+VOID
+GetF14SysPmTable (
+  IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
+     OUT   CONST VOID **SysPmTblPtr,
+     OUT   UINT8 *NumberOfElements,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
@@ -91,6 +100,13 @@ CONST SYS_PM_TBL_STEP ROMDATA CpuF14SysPmTableArray[] =
     F14PmPwrPlaneInit                           // Function Pointer
   },
 
+  // Step x - Optimizations for lower power
+  //   Execute both cold & warm
+  {
+    0,                                                // ExeFlags
+    F14OptimizeForLowPowerInit                // Function Pointer
+  },
+
   // Step 2 - Current Delivery Check
   //   Execute both cold & warm
   {
@@ -103,7 +119,7 @@ CONST SYS_PM_TBL_STEP ROMDATA CpuF14SysPmTableArray[] =
   {
     0,                                                // ExeFlags
     F14PmThermalInit                            // Function Pointer
-  },
+  }
 };
 
 

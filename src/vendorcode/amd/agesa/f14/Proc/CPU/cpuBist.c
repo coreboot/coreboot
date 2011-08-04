@@ -96,7 +96,7 @@ CheckBistStatus (
   UINT32                Socket;
   UINT32                Core;
   UINT32                BscSocket;
-  UINT32                BscCore;
+  UINT32                BscCoreNum;
   UINT32                NumberOfSockets;
   UINT32                NumberOfCores;
   UINT32                Ignored;
@@ -111,8 +111,8 @@ CheckBistStatus (
 
   AgesaStatus = AGESA_SUCCESS;
 
-  // Get the BscSocket, BscCore and NumberOfSockets in the system
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  // Get the BscSocket, BscCoreNum and NumberOfSockets in the system
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   // Setup TaskPtr struct to execute routine on APs
@@ -123,7 +123,7 @@ CheckBistStatus (
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
       for (Core = 0; Core < NumberOfCores; Core++) {
-        if ((Socket != BscSocket) || (Core != BscCore)) {
+        if ((Socket != BscSocket) || (Core != BscCoreNum)) {
           ReturnCode = ApUtilRunCodeOnSocketCore ((UINT8)Socket, (UINT8)Core, &TaskPtr, StdHeader);
         } else {
           ReturnCode = TaskPtr.FuncAddress.PfApTaskO (StdHeader);

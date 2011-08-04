@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -56,6 +56,11 @@ GfxFmIntegratedInfoTableInit (
 VOID
 GfxFmGmcAddressSwizzel (
   IN       GFX_PLATFORM_CONFIG              *Gfx
+  );
+
+VOID
+GfxFmGmcAllowPstateHigh (
+  IN      GFX_PLATFORM_CONFIG               *Gfx
   );
 
 #endif

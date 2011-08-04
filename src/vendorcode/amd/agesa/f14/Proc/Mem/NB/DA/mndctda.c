@@ -405,7 +405,7 @@ MemNCapSpeedBatteryLifeDA (
   FamilySpecificServices = NULL;
   DdrFreq = DDR800_FREQUENCY; // Set Default to be 400Mhz
   ProcessorPackageType = LibAmdGetPackageType (&(NBPtr->MemPtr->StdHeader));
-  GetCpuServicesOfSocket (NBPtr->MCTPtr->SocketId, &FamilySpecificServices, &(NBPtr->MemPtr->StdHeader));
+  GetCpuServicesOfSocket (NBPtr->MCTPtr->SocketId, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &(NBPtr->MemPtr->StdHeader));
   if (FamilySpecificServices->IsNbPstateEnabled (FamilySpecificServices, NBPtr->MemPtr->PlatFormConfig, &(NBPtr->MemPtr->StdHeader))) {
     NBFreq = (MemNGetBitFieldNb (NBPtr, BFNbFid) + 4) * 100;  // Calculate the Nb P1 frequency (NbFreq / 2)
     for (j = 0; j < GET_SIZE_OF (SupportedFreq); j++) {

@@ -220,8 +220,8 @@ AllocateExecutionCache (
   IDS_HDT_CONSOLE (CPU_TRACE, "  Cache size available for execution cache: 0x%x\n", AmdGetExeSize.AvailableExeCacheSize);
   RemainingExecutionCacheSize = AmdGetExeSize.AvailableExeCacheSize - CurrentAllocatedExeCacheSize;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
-  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, &CacheInfoPtr, &Ignored, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
+  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (const VOID **)&CacheInfoPtr, &Ignored, StdHeader);
 
   // Process each request entry 0 to 2
   for (i = 0; i < 3; i++) {
@@ -451,8 +451,8 @@ AmdGetAvailableExeCacheSize (
   AGESA_STATUS IgnoredStatus;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, &AmdGetExeSizeParams->StdHeader);
-  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, &CacheInfoPtr, &Ignored, &AmdGetExeSizeParams->StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdGetExeSizeParams->StdHeader);
+  FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (const VOID **)&CacheInfoPtr, &Ignored, &AmdGetExeSizeParams->StdHeader);
   // CAR_EXE mode is either "Limited by L2 size" or "Infinite Execution space"
   ASSERT (CacheInfoPtr->CarExeType < MaxCarExeMode);
   if (CacheInfoPtr->CarExeType == InfiniteExe) {

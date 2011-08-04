@@ -154,15 +154,18 @@ PcieSbAgetAlinkIoAddress (
   )
 {
   UINT8 AlinkPortIndex;
+  if (AlinkPort == NULL) {
+    return AGESA_UNSUPPORTED;
+  }
   AlinkPortIndex = 0xE0;
   GnbLibIoWrite (0xCD6, AccessWidth8, &AlinkPortIndex, StdHeader);
   GnbLibIoRead (0xCD7, AccessWidth8, AlinkPort, StdHeader);
   AlinkPortIndex = 0xE1;
   GnbLibIoWrite (0xCD6, AccessWidth8, &AlinkPortIndex, StdHeader);
   GnbLibIoRead (0xCD7, AccessWidth8, (VOID*) ((UINT8*) AlinkPort + 1), StdHeader);
-  if (&AlinkPort == 0) {
-    return AGESA_UNSUPPORTED;
-  }
+//  if (&AlinkPort == 0) {
+//    return AGESA_UNSUPPORTED;
+//  }
   return  AGESA_SUCCESS;
 }
 
@@ -192,7 +195,7 @@ PcieNbAspmEnable (
     GnbLibPciRMW (
       Function.AddressValue | (PcieCapPtr + PCIE_LINK_CTRL_REGISTER) ,
       AccessS3SaveWidth8,
-      ~(BIT0 | BIT1),
+      ~(UINT32)(BIT0 | BIT1),
       Aspm,
       StdHeader
       );

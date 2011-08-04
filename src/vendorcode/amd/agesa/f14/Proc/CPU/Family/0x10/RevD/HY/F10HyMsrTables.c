@@ -87,12 +87,12 @@ STATIC CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F10HyMsrRegisters[] =
       AMD_FAMILY_10,                      // CpuFamily
       AMD_F10_GT_B0                       // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MSR_LS_CFG,                           // MSR Address
       0x0000000000000000,                   // OR Mask
       (1 << 1)                              // NAND Mask
-    }
+    }}
   },
 
 // MSR_BU_CFG (0xC0011023)
@@ -103,12 +103,12 @@ STATIC CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F10HyMsrRegisters[] =
       AMD_FAMILY_10,                      // CpuFamily
       AMD_F10_GT_B0                       // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MSR_BU_CFG,                           // MSR Address
       (1 << 21),                            // OR Mask
       (1 << 21),                            // NAND Mask
-    }
+    }}
   },
 
 // MSR_BU_CFG2 (0xC001102A)
@@ -120,12 +120,12 @@ STATIC CONST MSR_TYPE_ENTRY_INITIALIZER ROMDATA F10HyMsrRegisters[] =
       AMD_FAMILY_10,                      // CpuFamily
       AMD_F10_GT_C0                       // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
       MSR_BU_CFG2,                          // MSR Address
       0x0004000000000000,                   // OR Mask
       0x0004000000000000,                   // NAND Mask
-    }
+    }}
   }
 };
 

@@ -75,6 +75,11 @@ RDATA_GROUP (G1_PEICC)
  *
  *----------------------------------------------------------------------------
  */
+VOID
+MemMContextSave (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
+
 BOOLEAN
 STATIC
 MemMRestoreDqsTimings (
@@ -97,6 +102,12 @@ MemMCreateS3NbBlock (
   IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr,
      OUT   S3_MEM_NB_BLOCK **S3NBPtr
   );
+
+BOOLEAN
+MemMContextRestore (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
+
 /*-----------------------------------------------------------------------------
 *                                EXPORTED FUNCTIONS
 *
@@ -125,7 +136,7 @@ MemMContextSave (
   DEVICE_BLOCK_HEADER *DeviceList;
   AMD_CONFIG_PARAMS *StdHeader;
   UINT32 BufferSize;
-  UINT64 BufferOffset;
+  VOID *BufferOffset;
   MEM_NB_BLOCK  *NBArray;
   S3_MEM_NB_BLOCK *S3NBPtr;
   DESCRIPTOR_GROUP DeviceDescript[MAX_NODES_SUPPORTED];
@@ -160,30 +171,31 @@ MemMContextSave (
           DeviceList->RelativeOrMaskOffset = (UINT16) AllocHeapParams.RequestedBufferSize;
 
           // Copy device list on the stack to the heap.
-          BufferOffset = sizeof (DEVICE_BLOCK_HEADER) + (UINT64) AllocHeapParams.BufferPtr;
+//          BufferOffset = sizeof (DEVICE_BLOCK_HEADER) + (UINT64) AllocHeapParams.BufferPtr;
+          BufferOffset = AllocHeapParams.BufferPtr + sizeof (DEVICE_BLOCK_HEADER);
           for (Node = 0; Node < MemMainPtr->DieCount; Node ++) {
             for (i = PRESELFREF; i <= POSTSELFREF; i ++) {
               // Copy PCI device descriptor to the heap if it exists.
               if (DeviceDescript[Node].PCIDevice[i].RegisterListID != 0xFFFFFFFF) {
-                LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Node].PCIDevice[i]), sizeof (PCI_DEVICE_DESCRIPTOR), StdHeader);
+                LibAmdMemCopy (BufferOffset, &(DeviceDescript[Node].PCIDevice[i]), sizeof (PCI_DEVICE_DESCRIPTOR), StdHeader);
                 DeviceList->NumDevices ++;
                 BufferOffset += sizeof (PCI_DEVICE_DESCRIPTOR);
               }
               // Copy conditional PCI device descriptor to the heap if it exists.
               if (DeviceDescript[Node].CPCIDevice[i].RegisterListID != 0xFFFFFFFF) {
-                LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Node].CPCIDevice[i]), sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR), StdHeader);
+                LibAmdMemCopy (BufferOffset, &(DeviceDescript[Node].CPCIDevice[i]), sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR), StdHeader);
                 DeviceList->NumDevices ++;
                 BufferOffset += sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR);
               }
               // Copy MSR device descriptor to the heap if it exists.
               if (DeviceDescript[Node].MSRDevice[i].RegisterListID != 0xFFFFFFFF) {
-                LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Node].MSRDevice[i]), sizeof (MSR_DEVICE_DESCRIPTOR), StdHeader);
+                LibAmdMemCopy ( BufferOffset, &(DeviceDescript[Node].MSRDevice[i]), sizeof (MSR_DEVICE_DESCRIPTOR), StdHeader);
                 DeviceList->NumDevices ++;
                 BufferOffset += sizeof (MSR_DEVICE_DESCRIPTOR);
               }
               // Copy conditional MSR device descriptor to the heap if it exists.
               if (DeviceDescript[Node].CMSRDevice[i].RegisterListID != 0xFFFFFFFF) {
-                LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Node].PCIDevice[i]), sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR), StdHeader);
+                LibAmdMemCopy ( BufferOffset, &(DeviceDescript[Node].PCIDevice[i]), sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR), StdHeader);
                 DeviceList->NumDevices ++;
                 BufferOffset += sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR);
               }

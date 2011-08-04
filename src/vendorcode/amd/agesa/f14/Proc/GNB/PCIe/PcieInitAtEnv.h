@@ -44,8 +44,8 @@
  *
  */
 
-#ifndef _PCIEINITATPOST_H_
-#define _PCIEINITATPOST_H_
+#ifndef _PCIEINITATENV_H_
+#define _PCIEINITATENV_H_
 
 AGESA_STATUS
 PcieInitAtEnv (

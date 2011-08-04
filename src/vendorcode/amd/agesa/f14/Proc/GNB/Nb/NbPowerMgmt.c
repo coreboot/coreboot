@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 47490 $   @e \$Date: 2011-02-22 08:34:28 -0700 (Tue, 22 Feb 2011) $
  *
  */
 /*
@@ -52,9 +52,11 @@
 #include  "amdlib.h"
 #include  "Ids.h"
 #include  "Gnb.h"
+#include  "GnbFuseTable.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  "NbConfigData.h"
 #include  "NbSmuLib.h"
+#include  "NbFamilyServices.h"
 #include  "NbPowerMgmt.h"
 #include  "OptionGnb.h"
 #include  "GfxLib.h"
@@ -524,7 +526,7 @@ NbInitDceDisplayClockGating (
 
 //FCRxFF30_01F5[CgDcCgttDispclkOverride]
   NbSmuSrbmRegisterRead (FCRxFF30_01F5_ADDRESS, &FCRxFF30_01F5.Value, Gnb->StdHeader);
-  FCRxFF30_01F5.Field.CgDcCgttDispClkOverride = 0;
+  FCRxFF30_01F5.Field.CgDcCgttDispclkOverride = 0;
   NbSmuSrbmRegisterWrite (FCRxFF30_01F5_ADDRESS, &FCRxFF30_01F5.Value, TRUE, Gnb->StdHeader);
 
 }
@@ -556,6 +558,8 @@ NbInitClockGating (
   NbClkGatingCtrl.Gmc_Sclk_Gating = TRUE;
   NbClkGatingCtrl.Dce_Sclk_Gating = TRUE;
   NbClkGatingCtrl.Dce_Dispclk_Gating = TRUE;
+
+  NbFmNbClockGating (&NbClkGatingCtrl, Gnb->StdHeader);
 
   IDS_OPTION_HOOK (IDS_GNB_CLOCK_GATING, &NbClkGatingCtrl, Gnb->StdHeader);
 

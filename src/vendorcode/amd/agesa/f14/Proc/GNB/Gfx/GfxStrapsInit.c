@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 40151 $   @e \$Date: 2010-10-20 06:38:17 +0800 (Wed, 20 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -297,19 +297,4 @@ GfxSetBootUpVoltage (
   } while (GMMx774.Field.VoltageChangeAck != GMMx770.Field.VoltageChangeReq);
   IDS_HDT_CONSOLE (GNB_TRACE, "GfxSetBootUpVoltage Exit\n");
   return AGESA_SUCCESS;
-}
-
-/*----------------------------------------------------------------------------------------*/
-/**
- * Set idle voltage mode for GFX
- *
- *
- * @param[in] Gfx             Pointer to global GFX configuration
- */
-
-VOID
-GfxSetIdleVoltageMode (
-  IN      GFX_PLATFORM_CONFIG   *Gfx
-  )
-{
 }

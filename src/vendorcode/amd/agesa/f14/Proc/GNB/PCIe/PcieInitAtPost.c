@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 39275 $   @e \$Date: 2010-10-09 08:22:05 +0800 (Sat, 09 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -74,6 +74,65 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+AGESA_STATUS
+PcieInitAtPostEarly (
+  IN      AMD_CONFIG_PARAMS               *StdHeader
+  );
+
+AGESA_STATUS
+PcieInitAtPost (
+  IN      AMD_CONFIG_PARAMS               *StdHeader
+  );
+
+AGESA_STATUS
+PcieInitAtPostS3 (
+  IN      AMD_CONFIG_PARAMS               *StdHeader
+  );
+
+VOID
+PcieLateRestoreS3Script (
+  IN      AMD_CONFIG_PARAMS               *StdHeader,
+  IN      UINT16                          ContextLength,
+  IN      VOID*                           Context
+  );
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * PCIe Post Init prior DRAM init
+ *
+ *
+ *
+ * @param[in]  StdHeader  Standard configuration header
+ * @retval     AGESA_STATUS
+ */
+AGESA_STATUS
+PcieInitAtPostEarly (
+  IN      AMD_CONFIG_PARAMS               *StdHeader
+  )
+{
+  AGESA_STATUS          AgesaStatus;
+  AGESA_STATUS          Status;
+  PCIe_PLATFORM_CONFIG  *Pcie;
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieInitAtPostEarly Enter\n");
+  AgesaStatus = AGESA_SUCCESS;
+  Status = PcieLocateConfigurationData (StdHeader, &Pcie);
+  AGESA_STATUS_UPDATE (Status, AgesaStatus);
+  if (Status == AGESA_SUCCESS) {
+    PciePortsVisibilityControl (UnhidePorts, Pcie);
+
+    Status = PciePortPostEarlyInit (Pcie);
+    AGESA_STATUS_UPDATE (Status, AgesaStatus);
+    ASSERT (Status == AGESA_SUCCESS);
+
+    Status = PcieTraining (Pcie);
+    AGESA_STATUS_UPDATE (Status, AgesaStatus);
+    ASSERT (Status == AGESA_SUCCESS);
+
+    PciePortsVisibilityControl (HidePorts, Pcie);
+  }
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieInitAtPostEarly Exit [0x%x]\n", AgesaStatus);
+  return  AgesaStatus;
+}
 
 /*----------------------------------------------------------------------------------------*/
 /**
@@ -120,6 +179,52 @@ PcieInitAtPost (
 
 /*----------------------------------------------------------------------------------------*/
 /**
+ * PCIe Post Init
+ *
+ *
+ *
+ * @param[in]  StdHeader  Standard configuration header
+ * @retval     AGESA_STATUS
+ */
+AGESA_STATUS
+PcieInitAtPostS3 (
+  IN      AMD_CONFIG_PARAMS               *StdHeader
+  )
+{
+  AGESA_STATUS          AgesaStatus;
+  AGESA_STATUS          Status;
+  PCIe_PLATFORM_CONFIG  *Pcie;
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieInitAtPostS3 Enter\n");
+  AgesaStatus = AGESA_SUCCESS;
+  Status = PcieLocateConfigurationData (StdHeader, &Pcie);
+  AGESA_STATUS_UPDATE (Status, AgesaStatus);
+  if (Status == AGESA_SUCCESS) {
+    PciePortsVisibilityControl (UnhidePorts, Pcie);
+
+    Status = PciePostInit (Pcie);
+    AGESA_STATUS_UPDATE (Status, AgesaStatus);
+    ASSERT (Status == AGESA_SUCCESS);
+
+    if (Pcie->TrainingAlgorithm == PcieTrainingDistributed) {
+      Status = PciePortPostS3Init (Pcie);
+    } else {
+      Status = PciePortPostInit (Pcie);
+    }
+    AGESA_STATUS_UPDATE (Status, AgesaStatus);
+    ASSERT (Status == AGESA_SUCCESS);
+
+    Status = PcieTraining (Pcie);
+    AGESA_STATUS_UPDATE (Status, AgesaStatus);
+    ASSERT (Status == AGESA_SUCCESS);
+
+    PciePortsVisibilityControl (HidePorts, Pcie);
+  }
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieInitAtPostS3 Exit [0x%x]\n", AgesaStatus);
+  return  AgesaStatus;
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
  * PCIe S3 restore
  *
  *
@@ -135,5 +240,5 @@ PcieLateRestoreS3Script (
   IN      VOID*                           Context
   )
 {
- PcieInitAtPost (StdHeader);
+ PcieInitAtPostS3 (StdHeader);
 }

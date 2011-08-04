@@ -9,14 +9,14 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  IDS
- * @e \$Revision: 38634 $   @e \$Date: 2010-09-27 21:39:01 +0800 (Mon, 27 Sep 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  */
 /*
  *****************************************************************************
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -27,7 +27,7 @@
  *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
  *       its contributors may be used to endorse or promote products derived 
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -38,7 +38,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * ***************************************************************************
  *
  */
@@ -568,12 +568,12 @@ typedef enum {                        //vv- for debug reference only
         #define IDS_HDT_CONSOLE(f, s, ...)
       #endif
     #else
-      #pragma warning(disable: 4127)
-      #ifdef __GNUC__
+      #ifndef __GNUC__	
+        #pragma warning(disable: 4127)
         #define IDS_HDT_CONSOLE(f, s, ...)
-      #else
-        #define IDS_HDT_CONSOLE(f, s, ...)
-      #endif
+	  #else
+		#define IDS_HDT_CONSOLE(f, s, ...)        printk (BIOS_DEBUG, s, ##__VA_ARGS__);
+      #endif                                            	
     #endif
 
     #define IDS_HDT_CONSOLE_FLUSH_BUFFER(x)
@@ -625,7 +625,7 @@ typedef enum {                        //vv- for debug reference only
 #endif
 
 ///For IDS feat use
-#define IDS_FAMILY_ALL  0x0ull
+#define IDS_FAMILY_ALL  0xFFFFFFFFFFFFFFFFull
 #define IDS_BSP_ONLY    TRUE
 #define IDS_ALL_CORES   FALSE
 

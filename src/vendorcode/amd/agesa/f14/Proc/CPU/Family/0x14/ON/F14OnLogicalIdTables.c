@@ -66,6 +66,14 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+GetF14OnLogicalIdAndRev (
+     OUT   CONST CPU_LOGICAL_ID_XLAT **OnIdPtr,
+     OUT   UINT8 *NumberOfElements,
+     OUT   UINT64 *LogicalFamily,
+  IN OUT   AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -84,6 +92,10 @@ STATIC CONST CPU_LOGICAL_ID_XLAT ROMDATA CpuF14OnLogicalIdAndRevArray[] =
   {
     0x5010,
     AMD_F14_ON_B0
+  },
+  {
+    0x5020,
+    AMD_F14_ON_C0
   }
 };
 

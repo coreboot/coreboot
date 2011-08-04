@@ -88,11 +88,31 @@ GetPerformEarlyFlag (
   IN       AMD_CONFIG_PARAMS      *StdHeader
   );
 
+VOID
+McaInitialization (
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+VOID
+McaInitializationAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 /*------------------------------------------------------------------------------------*/
+
+VOID
+AmdCpuEarlyInitializer (
+  IN       AMD_CONFIG_PARAMS      *StdHeader,
+  IN       PLATFORM_CONFIGURATION *PlatformConfig,
+  IN OUT   AMD_CPU_EARLY_PARAMS   *CpuEarlyParamsPtr
+  );
+
 /**
  * Initializer routine that will be invoked by AmdCpuEarly to initialize the input
  * structure for the Cpu Init @ Early routine.
@@ -172,9 +192,9 @@ AmdCpuEarly (
 
   IDS_OPTION_HOOK (IDS_CPU_Early_Override, &CpuEarlyParams, StdHeader);
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   EarlyTableOnCore = NULL;
-  FamilySpecificServices->GetEarlyInitOnCoreTable (FamilySpecificServices, &EarlyTableOnCore, &CpuEarlyParams, StdHeader);
+  FamilySpecificServices->GetEarlyInitOnCoreTable (FamilySpecificServices, (const S_PERFORM_EARLY_INIT_ON_CORE **) &EarlyTableOnCore, &CpuEarlyParams, StdHeader);
   if (EarlyTableOnCore != NULL) {
     GetPerformEarlyFlag (&CurrentPerformEarlyFlag, StdHeader);
     for (i = 0; EarlyTableOnCore[i].PerformEarlyInitOnCore != NULL; i++) {
@@ -194,7 +214,7 @@ AmdCpuEarly (
     // Even though the bsc does not need to send itself a heap index, this sequence performs other important initialization.
     // Use '0' as a dummy heap index value.
     GetSocketModuleOfNode (0, &SocketNum, &ModuleNum, StdHeader);
-    GetCpuServicesOfSocket (SocketNum, &FamilySpecificServices, StdHeader);
+    GetCpuServicesOfSocket (SocketNum, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
     FamilySpecificServices->SetApCoreNumber (FamilySpecificServices, SocketNum, ModuleNum, 0, StdHeader);
     FamilySpecificServices->TransferApCoreNumber (FamilySpecificServices, StdHeader);
 
@@ -205,7 +225,7 @@ AmdCpuEarly (
     ApHeapIndex = 1;
     while (NodeNum < MAX_NODES &&
           GetSocketModuleOfNode (NodeNum, &SocketNum, &ModuleNum, StdHeader)) {
-      GetCpuServicesOfSocket (SocketNum, &FamilySpecificServices, StdHeader);
+      GetCpuServicesOfSocket (SocketNum, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
       GetGivenModuleCoreRange (SocketNum, ModuleNum, &PrimaryCore, &HighCore, StdHeader);
       if (NodeNum == 0) {
         StartCore = (UINT8) PrimaryCore + 1;

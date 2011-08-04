@@ -52,6 +52,7 @@
 
 #include "AGESA.h"
 #include "Ids.h"
+#include "CommonReturns.h"
 #include "Filecode.h"
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)

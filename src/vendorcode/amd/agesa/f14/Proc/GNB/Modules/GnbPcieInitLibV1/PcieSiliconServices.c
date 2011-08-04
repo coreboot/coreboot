@@ -185,7 +185,7 @@ PcieSiliconUnHidePorts (
     Silicon->Address.AddressValue | D0F0x60_ADDRESS,
     D0F0x64_x0C_ADDRESS | IOC_WRITE_ENABLE,
     AccessS3SaveWidth32,
-    ~(BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7),
+    ~(UINT32)(BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7),
     0x0,
     GnbLibGetHeader (Pcie)
     );
@@ -193,7 +193,7 @@ PcieSiliconUnHidePorts (
     Silicon->Address.AddressValue | D0F0x60_ADDRESS,
     D0F0x64_x00_ADDRESS | IOC_WRITE_ENABLE,
     AccessS3SaveWidth32,
-    ~BIT6,
+    ~(UINT32)BIT6,
     BIT6,
     GnbLibGetHeader (Pcie)
     );
@@ -239,7 +239,7 @@ PcieSiliconHidePorts (
     Silicon->Address.AddressValue | D0F0x60_ADDRESS,
     D0F0x64_x0C_ADDRESS | IOC_WRITE_ENABLE,
     AccessS3SaveWidth32,
-    ~(BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7),
+    ~(UINT32)(BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7),
     D0F0x64_x0C.Value,
     GnbLibGetHeader (Pcie)
     );
@@ -247,7 +247,7 @@ PcieSiliconHidePorts (
     Silicon->Address.AddressValue | D0F0x60_ADDRESS,
     D0F0x64_x00_ADDRESS | IOC_WRITE_ENABLE,
     AccessS3SaveWidth32,
-    ~BIT6,
+    ~(UINT32)BIT6,
     0x0,
     GnbLibGetHeader (Pcie)
     );

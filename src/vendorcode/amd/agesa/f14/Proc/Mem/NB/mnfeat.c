@@ -87,6 +87,21 @@ RDATA_GROUP (G1_PEICC)
  */
 
 VOID
+MemNInitCPGNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+VOID
+MemNInitDqsTrainRcvrEnHwNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+VOID
+MemNDisableDqsTrainRcvrEnHwNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+VOID
 STATIC
 MemNContWritePatternNb (
   IN OUT   MEM_NB_BLOCK *NBPtr,
@@ -201,6 +216,16 @@ MemNContWritePatternUnb (
   IN       UINT32 Address,
   IN       UINT8 Pattern[],
   IN       UINT16 ClCount
+  );
+
+VOID
+MemNInitCPGClientNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+VOID
+MemNInitCPGUnb (
+  IN OUT   MEM_NB_BLOCK *NBPtr
   );
 
 /*----------------------------------------------------------------------------
@@ -924,7 +949,7 @@ MemNGenHwRcvEnReadsUnb (
   //
   // Issue Stream of Reads from the Target Rank
   //
-  NBPtr->ReadPattern (NBPtr, DummyPtr, NULL, NBPtr->TechPtr->PatternLength);
+  NBPtr->ReadPattern (NBPtr, DummyPtr, 0, NBPtr->TechPtr->PatternLength);
 }
 
 /* -----------------------------------------------------------------------------*/

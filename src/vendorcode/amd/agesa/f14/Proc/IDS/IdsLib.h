@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  IDS
- * @e \$Revision: 35777 $   @e \$Date: 2010-07-30 17:41:05 +0800 (Fri, 30 Jul 2010) $
+ * @e \$Revision: 44324 $   @e \$Date: 2010-12-22 02:16:51 -0700 (Wed, 22 Dec 2010) $
  */
 /*
  *****************************************************************************

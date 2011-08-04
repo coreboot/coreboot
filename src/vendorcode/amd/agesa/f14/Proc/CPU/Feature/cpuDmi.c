@@ -92,6 +92,28 @@ IntToString (
   IN       UINT8 SizeInByte
 );
 
+AGESA_STATUS
+GetDmiInfoStub (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader,
+  IN OUT   DMI_INFO              **DmiTable
+  );
+
+AGESA_STATUS
+GetDmiInfoMain (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader,
+  IN OUT   DMI_INFO              **DmiTable
+  );
+
+AGESA_STATUS
+ReleaseDmiBufferStub (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader
+  );
+
+AGESA_STATUS
+ReleaseDmiBuffer (
+  IN OUT   AMD_CONFIG_PARAMS     *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -183,7 +205,7 @@ GetDmiInfoMain (
   UINT16 NumberOfDimm;
   UINT32 SocketNum;
   UINT64 MsrData;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   BOOLEAN FamilyNotFound;
   AGESA_STATUS Flag;
   AGESA_STATUS CalledStatus;
@@ -357,12 +379,12 @@ GetDmiInfoMain (
     // TYPE 19
     DmiBufferPtr->T19.StartingAddr = 0;
 
-    LibAmdMsrRead (TOP_MEM2, &MsrRegister, StdHeader);
-    if (MsrRegister == 0) {
-      LibAmdMsrRead (TOP_MEM, &MsrRegister, StdHeader);
-      DmiBufferPtr->T19.EndingAddr = (UINT32) (MsrRegister >> 10);
-    } else if (MsrRegister != 0) {
-      DmiBufferPtr->T19.EndingAddr = (UINT32) (MsrRegister >> 10);
+    LibAmdMsrRead (TOP_MEM2, &MsrReg, StdHeader);
+    if (MsrReg == 0) {
+      LibAmdMsrRead (TOP_MEM, &MsrReg, StdHeader);
+      DmiBufferPtr->T19.EndingAddr = (UINT32) (MsrReg >> 10);
+    } else if (MsrReg != 0) {
+      DmiBufferPtr->T19.EndingAddr = (UINT32) (MsrReg >> 10);
     }
 
     DmiBufferPtr->T19.PartitionWidth = 0xFF;

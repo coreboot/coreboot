@@ -219,7 +219,7 @@ MemConstructRemoteNBBlockDA (
   //----------------------------------------------------------------------------
   // Get TSC rate of the this AP
   //----------------------------------------------------------------------------
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, &NBPtr->MemPtr->StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &NBPtr->MemPtr->StdHeader);
   FamilySpecificServices->GetTscRate (FamilySpecificServices, &NBPtr->MemPtr->TscRate, &NBPtr->MemPtr->StdHeader);
 
   return TRUE;

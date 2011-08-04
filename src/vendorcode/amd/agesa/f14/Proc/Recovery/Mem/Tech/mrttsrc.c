@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 38442 $ @e \$Date: 2010-09-24 06:39:57 +0800 (Fri, 24 Sep 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -263,7 +263,7 @@ MemRecTSetWrDatRdDqs (
   for (ByteLane = 0; ByteLane < 8; ByteLane++) {
     WrDqs = NBPtr->ChannelPtr->WrDqsDlys[(Dimm * MAX_BYTELANES) + ByteLane];
     NBPtr->SetTrainDly (NBPtr, AccessWrDatDly, DIMM_BYTE_ACCESS (Dimm, ByteLane), WrDqs + WrDatDly);
-    RdDqs = (WrDatDly == 0) ? 0x2F : 0x0F;
+    RdDqs = (WrDatDly == 0) ? 0x2F : 0x012;
     NBPtr->SetTrainDly (NBPtr, AccessRdDqsDly, DIMM_BYTE_ACCESS (Dimm, ByteLane), RdDqs);
   }
 }

@@ -51,6 +51,7 @@
  */
 #include "AGESA.h"
 #include "Ids.h"
+#include "CommonInits.h"
 #include "Filecode.h"
 #include "heapManager.h"
 CODE_GROUP (G1_PEICC)

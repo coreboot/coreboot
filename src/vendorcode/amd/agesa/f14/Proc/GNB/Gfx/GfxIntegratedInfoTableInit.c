@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:     AGESA
  * @e sub-project: GNB
- * @e \$Revision: 41507 $   @e \$Date: 2010-11-05 23:13:47 +0800 (Fri, 05 Nov 2010) $
+ * @e \$Revision: 48924 $   @e \$Date: 2011-03-14 12:45:15 -0600 (Mon, 14 Mar 2011) $
  *
  */
 /*
@@ -65,6 +65,7 @@
 #include  "GfxConfigData.h"
 #include  "GfxRegisterAcc.h"
 #include  "GfxFamilyServices.h"
+#include  "GnbGfxFamServices.h"
 #include  "GfxIntegratedInfoTableInit.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
@@ -78,14 +79,6 @@
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
- *----------------------------------------------------------------------------------------
- */
-
-
-
-
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
@@ -130,6 +123,29 @@ ULONG ulCSR_M3_ARB_CNTL_FS3D[] = {
   0x00000000
 };
 
+
+
+/*----------------------------------------------------------------------------------------
+ *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *----------------------------------------------------------------------------------------
+ */
+
+UINT32
+GfxLibGetCsrPhySrPllPdMode (
+  IN       UINT8       Channel,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+AGESA_STATUS
+GfxIntegratedInfoTableEntry (
+  IN      AMD_CONFIG_PARAMS       *StdHeader
+  );
+
+UINT32
+GfxLibGetDisDllShutdownSR (
+  IN       UINT8       Channel,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
 
 VOID
 GfxIntegratedInfoInitDispclkTable (
@@ -199,7 +215,7 @@ GfxLibGetCsrPhySrPllPdMode (
   D18F2x09C_x0D0FE00A_STRUCT     D18F2x09C_x0D0FE00A;
 
   GnbLibCpuPciIndirectRead (
-    MAKE_SBDFO ( 0, 0, 0x18, 2, (Channel == 0) ? D18F2x098_ADDRESS : D18F2x198_ADDRESS),
+    MAKE_SBDFO ( 0, 0, 0x18, 2, (Channel == 0) ? D18F2x98_ADDRESS : D18F2x198_ADDRESS),
     D18F2x09C_x0D0FE00A_ADDRESS,
     &D18F2x09C_x0D0FE00A.Value,
     StdHeader
@@ -223,10 +239,10 @@ GfxLibGetDisDllShutdownSR (
   IN       AMD_CONFIG_PARAMS      *StdHeader
   )
 {
-  D18F2x090_STRUCT D18F2x090;
+  D18F2x90_STRUCT D18F2x090;
 
   GnbLibPciRead (
-    MAKE_SBDFO ( 0, 0, 0x18, 2, (Channel == 0) ? D18F2x090_ADDRESS : D18F2x190_ADDRESS),
+    MAKE_SBDFO ( 0, 0, 0x18, 2, (Channel == 0) ? D18F2x90_ADDRESS : D18F2x190_ADDRESS),
     AccessWidth32,
     &D18F2x090.Value,
     StdHeader
@@ -308,6 +324,8 @@ GfxIntegratedInfoTableInit (
 
   SystemInfoV1Table.sIntegratedSysInfo.usLvdsSSPercentage = Gfx->LvdsSpreadSpectrum;
   SystemInfoV1Table.sIntegratedSysInfo.usLvdsSSpreadRateIn10Hz = Gfx->LvdsSpreadSpectrumRate;
+  SystemInfoV1Table.sIntegratedSysInfo.usPCIEClkSSPercentage = Gfx->PcieRefClkSpreadSpectrum;
+//  SystemInfoV1Table.sIntegratedSysInfo.ucLvdsMisc = Gfx->LvdsMiscControl.Value;
 
   //Locate PCIe configuration data to get definitions of display connectors
   SystemInfoV1Table.sIntegratedSysInfo.sExtDispConnInfo.sHeader.usStructureSize = sizeof (ATOM_EXTERNAL_DISPLAY_CONNECTION_INFO);
@@ -424,6 +442,9 @@ GfxIntegratedInfoInitSclkTable (
   )
 {
   UINTN                       Index;
+  UINTN                       TargetIndex;
+  UINTN                       ValidSclkStateMask;
+  UINT8                       TempDID;
   UINT8                       SclkVidArray[4];
   UINTN                       AvailSclkIndex;
   ATOM_AVAILABLE_SCLK_LIST    *AvailSclkList;
@@ -466,6 +487,33 @@ GfxIntegratedInfoInitSclkTable (
       }
     }
   } while (Sorting);
+
+  if (PpFuseArray->GpuBoostCap == 1) {
+    IntegratedInfoTable->SclkDpmThrottleMargin = PpFuseArray->SclkDpmThrottleMargin;
+    IntegratedInfoTable->SclkDpmTdpLimitPG = PpFuseArray->SclkDpmTdpLimitPG;
+    IntegratedInfoTable->EnableBoost = PpFuseArray->GpuBoostCap;
+    IntegratedInfoTable->SclkDpmBoostMargin = PpFuseArray->SclkDpmBoostMargin;
+    IntegratedInfoTable->SclkDpmTdpLimitBoost = (PpFuseArray->SclkDpmTdpLimit)[5];
+    IntegratedInfoTable->ulBoostEngineCLock = GfxFmCalculateClock ((PpFuseArray->SclkDpmDid)[5], GnbLibGetHeader (Gfx));
+    IntegratedInfoTable->ulBoostVid_2bit = (PpFuseArray->SclkDpmVid)[5];
+
+    ValidSclkStateMask = 0;
+    TargetIndex = 0;
+    for (Index = 0; Index < 6; Index++) {
+      ValidSclkStateMask |= (PpFuseArray->SclkDpmValid)[Index];
+    }
+    TempDID = 0x7F;
+    for (Index = 0; Index < 6; Index++) {
+      if ((ValidSclkStateMask & ((UINTN)1 << Index)) != 0) {
+        if ((PpFuseArray->SclkDpmDid)[Index] <= TempDID) {
+          TempDID = (PpFuseArray->SclkDpmDid)[Index];
+          TargetIndex = Index;
+        }
+      }
+    }
+    IntegratedInfoTable->GnbTdpLimit = (PpFuseArray->SclkDpmTdpLimit)[TargetIndex];
+  }
+
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -491,8 +539,8 @@ GfxFillHtcData (
     &D18F3x64.Value,
     GnbLibGetHeader (Gfx)
     );
-  IntegratedInfoTable->ucHtcTmpLmt = (UCHAR)D18F3x64.Field.HtcTmpLmt;
-  IntegratedInfoTable->ucHtcHystLmt = (UCHAR)D18F3x64.Field.HtcHystLmt;
+  IntegratedInfoTable->ucHtcTmpLmt = (UCHAR) (D18F3x64.Field.HtcTmpLmt / 2 + 52);
+  IntegratedInfoTable->ucHtcHystLmt = (UCHAR) (D18F3x64.Field.HtcHystLmt / 2);
 }
 
 /*----------------------------------------------------------------------------------------*/

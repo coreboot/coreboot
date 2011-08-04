@@ -77,6 +77,12 @@
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+PcieEnginesToWrapper (
+  IN      PCIE_ENGINE_TYPE            EngineType,
+  IN      PCIe_COMPLEX_DESCRIPTOR     *ComplexDescriptor,
+  IN      PCIe_WRAPPER_CONFIG         *Wrapper
+  );
 
 AGESA_STATUS
 STATIC

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB/ON)
- * @e \$Revision: 39747 $ @e \$Date: 2010-10-15 02:58:08 +0800 (Fri, 15 Oct 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -348,6 +348,7 @@ MemNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (1, 0xF0), 31, 24, BFDramHoleBase);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (1, 0xF0), 15,  7, BFDramHoleOffset);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (1, 0xF0),  0,  0, BFDramHoleValid);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (1, 0xF0), 31,  0, BFDramHoleAddrReg);
 
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x40), 31,  0, BFCSBaseAddr0Reg);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (2, 0x44), 31,  0, BFCSBaseAddr1Reg);
@@ -486,6 +487,7 @@ MemNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (4, 0x1A8), 25, 25, BFMemTriStateEn);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (4, 0x1A8), 24, 24, BFDramSrEn);
   MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (3, 0x84), 31,  0, BFAcpiPwrStsCtrlHi);
+  MAKE_TSEFO (NBRegTable, NB_ACCESS, _FN (3, 0x1FC), 2, 2,  BFLowPowerDefault);
 
   MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x00,  2,  0, BFCkeDrvStren);
   MAKE_TSEFO (NBRegTable, DCT_PHY_ACCESS, 0x00,  6,  4, BFCsOdtDrvStren);
@@ -561,9 +563,14 @@ MemNInitNBRegTableON (
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8F1F,  4,  3, BFCmdRxVioLvl);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FC01F,  4,  3, BFAddrRxVioLvl);
 
-  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D080F0C, 15,  0, BFPhy0x0D080F0C);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F00,  6,  4, BFDQOdt03);
   MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F08,  6,  4, BFDQOdt47);
+
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F1E, 14, 12, BFDllCSRBisaTrimDByte);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F2F1E, 14, 12, BFDllCSRBisaTrimClk);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F8F1E, 14, 12, BFDllCSRBisaTrimCsOdt);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0FCF1E, 14, 12, BFDllCSRBisaTrimAByte2);
+  MAKE_TSEFO (NBRegTable, DCT_PHY_DIRECT, 0x0D0F0F38, 14, 13, BFReduceLoop);
 
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x06, 11,  8, BFTwrrdSD);
   MAKE_TSEFO (NBRegTable, DCT_EXTRA, 0x06,  3,  0, BFTrdrdSD);

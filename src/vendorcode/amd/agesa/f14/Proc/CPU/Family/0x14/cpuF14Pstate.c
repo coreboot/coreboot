@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  CPU/F14
- * @e \$Revision: 37010 $   @e \$Date: 2010-08-28 03:10:12 +0800 (Sat, 28 Aug 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -74,6 +74,49 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+
+AGESA_STATUS
+F14GetPstateTransLatency (
+  IN       PSTATE_CPU_FAMILY_SERVICES *PstateCpuServices,
+  IN       PSTATE_LEVELING        *PStateLevelingBufferStructPtr,
+  IN       PCI_ADDR               *PciAddress,
+     OUT   UINT32                 *TransitionLatency,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  );
+
+AGESA_STATUS
+F14GetPstateFrequency (
+  IN       PSTATE_CPU_FAMILY_SERVICES *PstateCpuServices,
+  IN       UINT8 StateNumber,
+     OUT   UINT32 *FrequencyInMHz,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+AGESA_STATUS
+F14GetPstatePower (
+  IN       PSTATE_CPU_FAMILY_SERVICES *PstateCpuServices,
+  IN       UINT8 StateNumber,
+     OUT   UINT32 *PowerInMw,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
+AGESA_STATUS
+F14GetPstateMaxState (
+  IN       PSTATE_CPU_FAMILY_SERVICES *PstateCpuServices,
+     OUT   UINT32              *MaxPStateNumber,
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  );
+
+AGESA_STATUS
+F14GetPstateRegisterInfo (
+  IN       PSTATE_CPU_FAMILY_SERVICES *PstateCpuServices,
+  IN       UINT32              PState,
+     OUT   BOOLEAN             *PStateEnabled,
+  IN OUT   UINT32              *IddVal,
+  IN OUT   UINT32              *IddDiv,
+     OUT   UINT32              *SwPstateNumber,
+  IN       AMD_CONFIG_PARAMS   *StdHeader
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
@@ -154,8 +197,8 @@ F14GetPstateFrequency (
   UINT32 CpuDidLSD;
   UINT32 CpuDidMSD;
   UINT32 CoreClkDivisor;
-  UINT32 PciRegister;
-  UINT64 MsrRegister;
+  UINT32 PciReg;
+  UINT64 MsrReg;
   BOOLEAN FrequencyCalculated;
   BOOLEAN ClockDivisorCalculated;
   PCI_ADDR PciAddress;
@@ -164,11 +207,11 @@ F14GetPstateFrequency (
 
   ASSERT (StateNumber < NM_PS_REG);
 
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
 
-  CpuDidLSD = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuDidLSD);
-  CpuDidMSD = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuDidMSD);
+  CpuDidLSD = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuDidLSD);
+  CpuDidMSD = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuDidMSD);
 
   FrequencyCalculated = FALSE;
   ClockDivisorCalculated = FALSE;
@@ -194,10 +237,10 @@ F14GetPstateFrequency (
   if (!FrequencyCalculated) {
     // Get D18F3xD4[MainPllOpFreqId] frequency
     PciAddress.AddressValue = CPTC0_PCI_ADDR;
-    LibAmdPciRead (AccessWidth32, PciAddress, &PciRegister, StdHeader);
+    LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader);
 
-    if (((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->MainPllOpFreqIdEn == 1) {
-      MainPllFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciRegister)->MainPllOpFreqId;
+    if (((CLK_PWR_TIMING_CTRL_REGISTER *) &PciReg)->MainPllOpFreqIdEn == 1) {
+      MainPllFid = ((CLK_PWR_TIMING_CTRL_REGISTER *) &PciReg)->MainPllOpFreqId;
     } else {
       MainPllFid = 0;
     }
@@ -234,14 +277,14 @@ F14GetPstatePower (
   UINT32  IddDiv;
   UINT32  V_x10000;
   UINT32  Power;
-  UINT64  MsrRegister;
+  UINT64  MsrReg;
 
   ASSERT (StateNumber < NM_PS_REG);
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrRegister, StdHeader);
-  ASSERT (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1);
-  CpuVid = (UINT32) (((PSTATE_MSR *) &MsrRegister)->CpuVid);
-  IddValue = (UINT32) (((PSTATE_MSR *) &MsrRegister)->IddValue);
-  IddDiv = (UINT32) (((PSTATE_MSR *) &MsrRegister)->IddDiv);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) StateNumber, &MsrReg, StdHeader);
+  ASSERT (((PSTATE_MSR *) &MsrReg)->PsEnable == 1);
+  CpuVid = (UINT32) (((PSTATE_MSR *) &MsrReg)->CpuVid);
+  IddValue = (UINT32) (((PSTATE_MSR *) &MsrReg)->IddValue);
+  IddDiv = (UINT32) (((PSTATE_MSR *) &MsrReg)->IddDiv);
 
   if (CpuVid >= 0x7C) {
     V_x10000 = 0;
@@ -289,13 +332,19 @@ F14GetPstateMaxState (
   )
 {
   UINT64              MsrValue;
+  UINT32              PciReg;
+  PCI_ADDR            PciAddress;
+
+  // For F14 CPU, skip boosted p-state. The boosted p-state number = D18F4x15C[NumBoostStates].
+  PciAddress.AddressValue = CPB_CTRL_PCI_ADDR;
+  LibAmdPciRead (AccessWidth32, PciAddress, &PciReg, StdHeader); // D18F4x15C
 
   //
   // Read PstateMaxVal [6:4] from MSR C001_0061
   // So, we will know the max pstate state in this socket.
   //
   LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &MsrValue, StdHeader);
-  *MaxPStateNumber = (UINT32) (((PSTATE_CURLIM_MSR *) &MsrValue)->PstateMaxVal);
+  *MaxPStateNumber = (UINT32) (((PSTATE_CURLIM_MSR *) &MsrValue)->PstateMaxVal) + (UINT32) (((CPB_CTRL_REGISTER *) &PciReg)->NumBoostStates);
 
   return (AGESA_SUCCESS);
 }
@@ -325,25 +374,44 @@ F14GetPstateRegisterInfo (
   IN       AMD_CONFIG_PARAMS   *StdHeader
   )
 {
-  UINT64              MsrRegister;
+  UINT64              LocalMsrReg;
+  UINT32              LocalPciReg;
+  PCI_ADDR            PciAddress;
+  CPU_LOGICAL_ID      CpuFamilyRevision;
 
   ASSERT (PState < NM_PS_REG);
 
   // Read PSTATE MSRs
-  LibAmdMsrRead (PS_REG_BASE + (UINT32) PState, &MsrRegister, StdHeader);
+  LibAmdMsrRead (PS_REG_BASE + (UINT32) PState, &LocalMsrReg, StdHeader);
 
-  if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+  *SwPstateNumber = PState;
+
+  if (((PSTATE_MSR *) &LocalMsrReg)->PsEnable == 1) {
     // PState enable = bit 63
     *PStateEnabled = TRUE;
+    // For F14 CPU, skip boosted p-state. The boosted p-state number = D18F4x15C[NumBoostStates].
+    GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
+    if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) == 0) {
+      // ON_Ax & ON_Bx don't have boosted p-state function
+      PciAddress.AddressValue = CPB_CTRL_PCI_ADDR;
+      LibAmdPciRead (AccessWidth32, PciAddress, &LocalPciReg, StdHeader); // D18F4x15C
+      //
+      // Check input pstate belongs to Boosted-Pstate, if yes, return *PStateEnabled = FALSE.
+      //
+      if (PState < ((CPB_CTRL_REGISTER *) &LocalPciReg)->NumBoostStates) {
+        *PStateEnabled = FALSE;
+      } else {
+        *SwPstateNumber = PState - ((CPB_CTRL_REGISTER *) &LocalPciReg)->NumBoostStates;
+      }
+    }
   } else {
     *PStateEnabled = FALSE;
   }
 
-  *SwPstateNumber = PState;
   // Bits 39:32 (high 32 bits [7:0])
-  *IddVal = (UINT32) ((PSTATE_MSR *) &MsrRegister)->IddValue;
+  *IddVal = (UINT32) ((PSTATE_MSR *) &LocalMsrReg)->IddValue;
   // Bits 41:40 (high 32 bits [9:8])
-  *IddDiv = (UINT32) ((PSTATE_MSR *) &MsrRegister)->IddDiv;
+  *IddDiv = (UINT32) ((PSTATE_MSR *) &LocalMsrReg)->IddDiv;
 
   return (AGESA_SUCCESS);
 }

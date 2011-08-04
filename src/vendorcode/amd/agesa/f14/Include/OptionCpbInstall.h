@@ -56,10 +56,11 @@
 #define OPTION_CPB_FEAT
 #define F10_CPB_SUPPORT
 #define F12_CPB_SUPPORT
+#define F14_ON_CPB_SUPPORT
 #define F15_CPB_SUPPORT
 
 #if OPTION_CPB == TRUE
-  #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE)
+  #if (AGESA_ENTRY_INIT_EARLY == TRUE) || (AGESA_ENTRY_INIT_LATE == TRUE) || (AGESA_ENTRY_INIT_LATE_RESTORE == TRUE)
     // Family 10h
     #ifdef OPTION_FAMILY10H
       #if OPTION_FAMILY10H == TRUE
@@ -88,6 +89,20 @@
       #endif
     #endif
 
+    // Family 14h
+    #ifdef OPTION_FAMILY14H
+      #if OPTION_FAMILY14H == TRUE
+        #if OPTION_FAMILY14H_ON == TRUE
+          extern CONST CPU_FEATURE_DESCRIPTOR ROMDATA CpuFeatureCpb;
+          #undef OPTION_CPB_FEAT
+          #define OPTION_CPB_FEAT &CpuFeatureCpb,
+          extern CONST CPB_FAMILY_SERVICES ROMDATA F14OnCpbSupport;
+          #undef F14_ON_CPB_SUPPORT
+          #define F14_ON_CPB_SUPPORT {AMD_FAMILY_14_ON, &F14OnCpbSupport},
+        #endif
+      #endif
+    #endif
+
     // Family 15h
     #ifdef OPTION_FAMILY15H
       #if OPTION_FAMILY15H == TRUE
@@ -109,6 +124,7 @@ CONST CPU_SPECIFIC_SERVICES_XLAT ROMDATA CpbFamilyServiceArray[] =
 {
   F10_CPB_SUPPORT
   F12_CPB_SUPPORT
+  F14_ON_CPB_SUPPORT
   F15_CPB_SUPPORT
   {0, NULL}
 };

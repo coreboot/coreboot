@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem)
- * @e \$Revision: 37115 $ @e \$Date: 2010-08-31 07:10:42 +0800 (Tue, 31 Aug 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -236,6 +236,12 @@ MemNForceRdDqsPhaseBON (
 
 BOOLEAN
 MemNSetDqsODTON (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *OptParam
+  );
+
+BOOLEAN
+MemNBeforeMemClkFreqValON (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN OUT   VOID *OptParam
   );

@@ -76,6 +76,33 @@ extern CPU_FAMILY_SUPPORT_TABLE            PstateFamilyServiceTable;
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+DmiF14GetInfo (
+  IN OUT   CPU_TYPE_INFO *CpuInfoPtr,
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+UINT8
+DmiF14GetVoltage (
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+UINT16
+DmiF14GetMaxSpeed (
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+UINT16
+DmiF14GetExtClock (
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
+VOID
+DmiF14GetMemInfo (
+  IN OUT   CPU_GET_MEM_INFO  *CpuGetMemInfoPtr,
+  IN       AMD_CONFIG_PARAMS  *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -147,15 +174,24 @@ DmiF14GetVoltage (
 {
   UINT8     MaxVid;
   UINT8     Voltage;
+  UINT8     NumberBoostStates;
   UINT64    MsrData;
+  PCI_ADDR  TempAddr;
+  CPU_LOGICAL_ID    CpuFamilyRevision;
+  CPB_CTRL_REGISTER CpbCtrl;
 
   // Voltage = 0x80 + (voltage at boot time * 10)
-  LibAmdMsrRead (MSR_COFVID_STS, &MsrData, StdHeader);
-  MaxVid = (UINT8) (((COFVID_STS_MSR *)&MsrData)->MaxVid);
-  if (MaxVid == 0) {
-    LibAmdMsrRead (MSR_PSTATE_0, &MsrData, StdHeader);
-    MaxVid = (UINT8) (((PSTATE_MSR *)&MsrData)->CpuVid);
+  GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
+  if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) == 0) {
+    TempAddr.AddressValue = CPB_CTRL_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, TempAddr, &CpbCtrl, StdHeader);  // F4x15C
+    NumberBoostStates = (UINT8) CpbCtrl.NumBoostStates;
+  } else {
+    NumberBoostStates = 0;
   }
+
+  LibAmdMsrRead ((MSR_PSTATE_0 + NumberBoostStates), &MsrData, StdHeader);
+    MaxVid = (UINT8) (((PSTATE_MSR *)&MsrData)->CpuVid);
 
   if ((MaxVid >= 0x7C) && (MaxVid <= 0x7F)) {
     Voltage = 0;
@@ -184,14 +220,27 @@ DmiF14GetMaxSpeed (
   IN       AMD_CONFIG_PARAMS  *StdHeader
   )
 {
+  UINT8  NumBoostStates;
   UINT32 P0Frequency;
+  UINT32 PciData;
+  PCI_ADDR PciAddress;
   PSTATE_CPU_FAMILY_SERVICES  *FamilyServices;
+  CPU_LOGICAL_ID  CpuFamilyRevision;
 
   FamilyServices = NULL;
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
-  FamilyServices->GetPstateFrequency (FamilyServices, (UINT8) 0x00, &P0Frequency, StdHeader);
+  GetLogicalIdOfCurrentCore (&CpuFamilyRevision, StdHeader);
+  if ((CpuFamilyRevision.Revision & (AMD_F14_ON_Ax | AMD_F14_ON_Bx)) == 0) {
+    PciAddress.AddressValue = MAKE_SBDFO (0, 0 , PCI_DEV_BASE, FUNC_4, 0x15C);
+    LibAmdPciRead (AccessWidth32, PciAddress, &PciData, StdHeader);
+    NumBoostStates = (UINT8) ((PciData >> 2) & 7);
+  } else {
+    NumBoostStates = 0;
+  }
+
+  FamilyServices->GetPstateFrequency (FamilyServices, NumBoostStates, &P0Frequency, StdHeader);
   return ((UINT16) P0Frequency);
 }
 
@@ -242,6 +291,10 @@ DmiF14GetMemInfo (
  * Processor Family Table
  *
  * Note: 'x' means we don't care this field
+ *       046h = "AMD C-Series Processor"
+ *       047h = "AMD E-Series Processor"
+ *       048h = "AMD S-Series Processor"
+ *       049h = "AMD G-Series Processor"
  *       002h = "Unknown"
  *-------------------------------------------------------------------------------------*/
 CONST DMI_BRAND_ENTRY ROMDATA Family14BrandList[] =
@@ -250,6 +303,7 @@ CONST DMI_BRAND_ENTRY ROMDATA Family14BrandList[] =
   // PackageType, PgOfBrandId, NumberOfCores, String1ofBrandId, ValueSetToDmiTable
   {0, 0, 'x', 1, 0x46},
   {0, 0, 'x', 2, 0x47},
+  {0, 0, 'x', 4, 0x49},
   {'x', 'x', 'x', 'x', 0x02}
 };
 

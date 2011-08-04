@@ -88,6 +88,20 @@ PcieAspmCallback (
   );
 
 VOID
+PcieAspmEnableOnFunction (
+  IN       PCI_ADDR             Function,
+  IN       PCIE_ASPM_TYPE       Aspm,
+  IN       AMD_CONFIG_PARAMS    *StdHeader
+  );
+
+VOID
+PcieAspmEnableOnDevice (
+  IN       PCI_ADDR             Device,
+  IN       PCIE_ASPM_TYPE       Aspm,
+  IN       AMD_CONFIG_PARAMS    *StdHeader
+  );
+
+VOID
 PcieAspmEnableOnLink (
   IN       PCI_ADDR                 Downstream,
   IN       PCI_ADDR                 Upstream,
@@ -217,7 +231,7 @@ PcieAspmEnableOnFunction (
     GnbLibPciRMW (
       Function.AddressValue | (PcieCapPtr + PCIE_LINK_CTRL_REGISTER) ,
       AccessS3SaveWidth8,
-      ~(BIT0 & BIT1),
+      ~(UINT32)(BIT0 & BIT1),
       Aspm,
       StdHeader
       );

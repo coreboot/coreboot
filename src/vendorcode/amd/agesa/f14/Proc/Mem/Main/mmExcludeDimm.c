@@ -73,6 +73,11 @@ extern MEM_FEAT_BLOCK_MAIN MemFeatMain;
 *-----------------------------------------------------------------------------
 */
 
+BOOLEAN
+MemMRASExcludeDIMM (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
+
 /* -----------------------------------------------------------------------------*/
 /**
  *
@@ -184,7 +189,7 @@ MemMRASExcludeDIMM (
 
     LibAmdMsrRead (TOP_MEM, (UINT64 *)&SMsr, &NBPtr->MemPtr->StdHeader);
     // Only when TOM is set can CpuMemTyping be re-run
-    if (SMsr.hi == SMsr.lo == 0) {
+    if ((SMsr.hi == 0) && (SMsr.lo == 0)) {
       if (RefPtr->SysLimit != 0) {
         NBPtr[BSP_DIE].CpuMemTyping (&NBPtr[BSP_DIE]);
       }

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB)
- * @e \$Revision: 34897 $ @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -115,12 +115,24 @@ MemNRecTrainingFlowClientNb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   )
 {
+  IDS_HDT_CONSOLE (MEM_STATUS, "\nStart serial training\n");
+  IDS_HDT_CONSOLE (MEM_STATUS, "Node %d\n", NBPtr->MCTPtr->DieId);
   MemRecTTrainDQSWriteHw3 (NBPtr->TechPtr);
 
   MemRecTTrainRcvrEnHw (NBPtr->TechPtr);
 
   // Clear DisableCal and set DisablePredriverCal
   NBPtr->FamilySpecificHook[ReEnablePhyComp] (NBPtr, NBPtr);
+  NBPtr->SetBitField (NBPtr, BFRxPtrInitReq, 1);
+  while (NBPtr->GetBitField (NBPtr, BFRxPtrInitReq) != 0) {}
+  NBPtr->SetBitField (NBPtr, BFDisDllShutdownSR, 1);
+  NBPtr->SetBitField (NBPtr, BFEnterSelfRef, 1);
+  while (NBPtr->GetBitField (NBPtr, BFEnterSelfRef) != 0) {}
+  IDS_HDT_CONSOLE (MEM_FLOW, "\tMemClkAlign = 2\n");
+  NBPtr->SetBitField (NBPtr, BFDbeGskMemClkAlignMode, 2);
+  NBPtr->SetBitField (NBPtr, BFExitSelfRef, 1);
+  while (NBPtr->GetBitField (NBPtr, BFExitSelfRef) != 0) {}
+  NBPtr->SetBitField (NBPtr, BFDisDllShutdownSR, 0);
 
   MemRecTTrainDQSPosSw (NBPtr->TechPtr);
 }

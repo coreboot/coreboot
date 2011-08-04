@@ -10,7 +10,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  HyperTransport
- * @e \$Revision: 34897 $   @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  *
  */
 /*
@@ -126,14 +126,3 @@ Fam14GetNodeCount (
   return (1);
 }
 
-AP_MAIL_INFO
-Fam14RetrieveMailbox (
-  IN       UINT8        Node,
-  IN       NORTHBRIDGE *Nb
-  )
-{
-  AP_MAIL_INFO  NodeApMailBox;
-  ASSERT (Nb != NULL);
-  NodeApMailBox.Info = 0;
-  return NodeApMailBox;
-}

@@ -59,6 +59,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbPcieInitLibV1)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  "GnbGfxFamServices.h"
+#include  "GfxEnumConnectors.h"
 #include  "GnbRegistersON.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBGFXINITLIBV1_GFXENUMCONNECTORS_FILECODE
@@ -103,6 +104,17 @@ typedef struct {
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+
+EXT_CONNECTOR_INFO*
+GfxIntegratedExtConnectorInfo (
+  IN       UINT8                         ConnectorType
+  );
+
+EXT_DISPLAY_DEVICE_INFO*
+GfxIntegratedExtDisplayDeviceInfo (
+  IN       UINT8                         DisplayDeviceEnum,
+  IN       UINT8                         DisplayDeviceIndex
+  );
 
 AGESA_STATUS
 GfxIntegratedEnumConnectorsForDevice (

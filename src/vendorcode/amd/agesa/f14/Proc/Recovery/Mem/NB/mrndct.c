@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem/NB)
- * @e \$Revision: 38303 $ @e \$Date: 2010-09-22 00:22:47 +0800 (Wed, 22 Sep 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -123,12 +123,6 @@ MemRecNProgNbPstateDependentRegClientNb (
 VOID
 STATIC
 MemRecNTrainPhyFenceNb (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  );
-
-VOID
-STATIC
-MemRecNInitPhyCompClientNb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );
 
@@ -338,6 +332,8 @@ MemRecNStartupDCTClientNb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   )
 {
+  IDS_HDT_CONSOLE (MEM_STATUS, "\tDct %d\n", NBPtr->Dct);
+
   // Program D18F2x[1,0]9C_x0000_000B = 80000000h. #109999.
   MemRecNSetBitFieldNb (NBPtr, BFDramPhyStatusReg, 0x80000000);
 
@@ -354,18 +350,15 @@ MemRecNStartupDCTClientNb (
   MemRecNSetBitFieldNb (NBPtr, BFMemClkFreqVal, 1);
   MemRecNSetBitFieldNb (NBPtr, BFPllLockTime, 0x000F);
 
+  IDS_HDT_CONSOLE (MEM_FLOW, "\tMemClkAlign=0\n");
+  IDS_HDT_CONSOLE (MEM_FLOW, "\tEnDramInit = 1 for DCT%d\n", NBPtr->Dct);
   MemRecNSetBitFieldNb (NBPtr, BFDbeGskMemClkAlignMode, 0);
   MemRecNSetBitFieldNb (NBPtr, BFEnDramInit, 1);
-
-  // Phy fence programming
-  MemRecNPhyFenceTrainingNb (NBPtr);
-
-  // Phy Compensation Initialization
-  MemRecNInitPhyCompClientNb (NBPtr);
 
   // Run DramInit sequence
   AGESA_TESTPOINT (TpProcMemDramInit, &(NBPtr->MemPtr->StdHeader));
   NBPtr->TechPtr->DramInit (NBPtr->TechPtr);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\nMemClkFreq: %d MHz\n", DDR800_FREQUENCY);
 }
 
 /* -----------------------------------------------------------------------------*/
@@ -640,15 +633,6 @@ MemRecNTotalSyncComponentsClientNb (
 
   AGESA_TESTPOINT (TpProcMemRcvrCalcLatency , &(NBPtr->MemPtr->StdHeader));
 
-  // Before calculating MaxRdLatecny, program a number of registers.
-  MemRecNSetBitFieldNb (NBPtr, BFDisDllShutdownSR, 1);
-  MemRecNSetBitFieldNb (NBPtr, BFEnterSelfRef, 1);
-  while (MemRecNGetBitFieldNb (NBPtr, BFEnterSelfRef) != 0) {}
-  MemRecNSetBitFieldNb (NBPtr, BFDbeGskMemClkAlignMode, 2);
-  MemRecNSetBitFieldNb (NBPtr, BFExitSelfRef, 1);
-  while (MemRecNGetBitFieldNb (NBPtr, BFExitSelfRef) != 0) {}
-  MemRecNSetBitFieldNb (NBPtr, BFDisDllShutdownSR, 0);
-
   // P = P + ((16 + RdPtrInitMin - D18F2x[1,0]78[RdPtrInit]) MOD 16) where RdPtrInitMin = RdPtrInit
   P = 0;
 
@@ -862,8 +846,6 @@ MemRecNTrainPhyFenceNb (
 }
 
 /* -----------------------------------------------------------------------------*/
-CONST UINT16 RecPllDivTab[10] = {1, 2, 4, 8, 16, 128, 256, 1, 3, 6};
-
 /**
  *
  *  This function calculates and programs NB P-state dependent registers
@@ -883,22 +865,37 @@ MemRecNProgNbPstateDependentRegClientNb (
   UINT16 MemClkDid;
   UINT8 PllMult;
   UINT8 NclkDiv;
+  UINT8 RdPtrInit;
   UINT32 NclkPeriod;
   UINT32 MemClkPeriod;
   INT32 PartialSum2x;
   INT32 PartialSumSlotI2x;
+  INT32 RdPtrInitRmdr2x;
 
   NclkFid = (UINT8) (MemRecNGetBitFieldNb (NBPtr, BFMainPllOpFreqId) + 0x10);
-  MemClkDid = RecPllDivTab[MemRecNGetBitFieldNb (NBPtr, BFPllDiv)];
-  PllMult = (UINT8) MemRecNGetBitFieldNb (NBPtr, BFPllMult);
+  MemClkDid = 2; //BKDG recommended value for DDR800
+  PllMult = 16;  //BKDG recommended value for DDR800
   NclkDiv = (UINT8) MemRecNGetBitFieldNb (NBPtr, BFNbPs0NclkDiv);
 
   NclkPeriod = (2500 * NclkDiv) / NclkFid;
   MemClkPeriod = 1000000 / DDR800_FREQUENCY;
+  NBPtr->NBClkFreq = ((UINT32) NclkFid * 400) / NclkDiv;
+
+  IDS_HDT_CONSOLE (MEM_FLOW, "\n\tNB P%d  Freq: %dMHz\n", 0, NBPtr->NBClkFreq);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\tMemClk Freq: %dMHz\n", DDR800_FREQUENCY);
+
+  // D18F2x[1,0]78[RdPtrInit] = IF (D18F2x[1,0]94[MemClkFreq] >= 667 MHz) THEN 7 ELSE 8 ENDIF (Llano)
+  //                                                                      THEN 2 ELSE 3 ENDIF (Ontario)
+  RdPtrInit = NBPtr->FreqChangeParam->RdPtrInitLower667;
+  MemRecNSetBitFieldNb (NBPtr, BFRdPtrInit, RdPtrInit);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\tRdPtr: %d\n", RdPtrInit);
 
   // Program D18F2x[1,0]F4_x30[DbeGskFifoNumerator] and D18F2x[1,0]F4_x31[DbeGskFifoDenominator].
   MemRecNSetBitFieldNb (NBPtr, BFDbeGskFifoNumerator, NclkFid * MemClkDid * 16);
   MemRecNSetBitFieldNb (NBPtr, BFDbeGskFifoDenominator, PllMult * NclkDiv);
+
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\tDbeGskFifoNumerator: %d\n", NclkFid * MemClkDid * 16);
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\tDbeGskFifoDenominator: %d\n", PllMult * NclkDiv);
 
   // Program D18F2x[1,0]F4_x32[DataTxFifoSchedDlyNegSlot1, DataTxFifoSchedDlySlot1,
   // DataTxFifoSchedDlyNegSlot0, DataTxFifoSchedDlySlot0].
@@ -909,6 +906,9 @@ MemRecNProgNbPstateDependentRegClientNb (
   PartialSum2x = NBPtr->FreqChangeParam->NclkPeriodMul2x * NclkPeriod;
   PartialSum2x += NBPtr->FreqChangeParam->MemClkPeriodMul2x * MemClkPeriod;
   PartialSum2x += 520 * 2;
+  RdPtrInitRmdr2x = ((NBPtr->FreqChangeParam->SyncTimeMul4x * MemClkPeriod) / 2) - 2 * (NBPtr->FreqChangeParam->TDataPropLower800 + 520);
+  RdPtrInitRmdr2x %= MemClkPeriod;
+  PartialSum2x -= RdPtrInitRmdr2x;
   PartialSum2x = (PartialSum2x + MemClkPeriod - 1) / MemClkPeriod;  // round-up here
   PartialSum2x -= 2 * 5;  //Tcwl + 5
   if ((MemRecNGetBitFieldNb (NBPtr, BFAddrTmgControl) & 0x0202020) == 0) {
@@ -916,8 +916,6 @@ MemRecNProgNbPstateDependentRegClientNb (
   } else {
     PartialSum2x -= 2;
   }
-  // ((16 + RdPtrInitMin - D18F2x78[RdPtrInit]) MOD 16)/2 where RdPtrInitMin = RdPtrInit
-  PartialSum2x -= 0;
   PartialSum2x -= 2;
 
   // If PartialSumSlotN is positive:
@@ -928,14 +926,18 @@ MemRecNProgNbPstateDependentRegClientNb (
   //   DataTxFifoSchedDlyNegSlotN=1.
   for (i = 0; i < 2; i++) {
     PartialSumSlotI2x = PartialSum2x;
+    if (i == 0) {
     PartialSumSlotI2x += 2;
+    }
     if (PartialSumSlotI2x > 0) {
       MemRecNSetBitFieldNb (NBPtr, BFDataTxFifoSchedDlyNegSlot0 + i, 0);
       MemRecNSetBitFieldNb (NBPtr, BFDataTxFifoSchedDlySlot0 + i, (PartialSumSlotI2x + 1) / 2);
+      IDS_HDT_CONSOLE (MEM_FLOW, "\t\tDataTxFifoSchedDlySlot%d: %d\n", i, (PartialSumSlotI2x + 1) / 2);
     } else {
       MemRecNSetBitFieldNb (NBPtr, BFDataTxFifoSchedDlyNegSlot0 + i, 1);
       PartialSumSlotI2x = ((-PartialSumSlotI2x) * MemClkPeriod) / (2 * NclkPeriod);
       MemRecNSetBitFieldNb (NBPtr, BFDataTxFifoSchedDlySlot0 + i, PartialSumSlotI2x);
+      IDS_HDT_CONSOLE (MEM_FLOW, "\t\tDataTxFifoSchedDlySlot%d: -%d\n", i, PartialSumSlotI2x);
     }
   }
   // Program ProcOdtAdv
@@ -1416,87 +1418,111 @@ MemRecNGetPsRankType (
   return DIMMRankType;
 }
 
-/* -----------------------------------------------------------------------------*/
-/**
- *
- *
- *   This function initializes the DDR phy compensation logic
- *
- *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
- *
- */
-
-VOID
-STATIC
-MemRecNInitPhyCompClientNb (
-  IN OUT   MEM_NB_BLOCK *NBPtr
+UINT32
+MemRecNcmnGetSetTrainDlyClientNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN       UINT8 IsSet,
+  IN       TRN_DLY_TYPE TrnDly,
+  IN       DRBN DrbnVar,
+  IN       UINT16 Field
   )
 {
-  // Slew rate table array [x]
-  // array[0]: slew rate for VDDIO 1.5V
-  // array[1]: slew rate for VDDIO 1.35V
-  CONST STATIC UINT16 RecTxPrePNDataDqs[2][4] = {
-    //{TxPreP, TxPreN}[VDDIO][Drive Strength]
-    {0x924, 0x924, 0x924, 0x924},
-    {0xFF6, 0xB6D, 0xB6D, 0x924}
-  };
+  UINT16 Index;
+  UINT16 Offset;
+  UINT32 Value;
+  UINT32 Address;
+  UINT8 Dimm;
+  UINT8 Byte;
 
-  CONST STATIC UINT16 RecTxPrePNCmdAddr[2][4] = {
-    //{TxPreP, TxPreN}[VDDIO][Drive Strength]
-    {0x492, 0x492, 0x492, 0x492},
-    {0x492, 0x492, 0x492, 0x492}
-  };
-  CONST STATIC UINT16 RecTxPrePNClock[2][4] = {
-    //{TxPreP, TxPreN}[VDDIO][Drive Strength]
-    {0x924, 0x924, 0x924, 0x924},
-    {0xDAD, 0xDAD, 0x924, 0x924}
-  };
+  Dimm = DRBN_DIMM (DrbnVar);
+  Byte = DRBN_BYTE (DrbnVar);
 
-  //
-  // Tables to describe the relationship between drive strength bit fields, PreDriver Calibration bit fields and also
-  // the extra value that needs to be written to specific PreDriver bit fields
-  //
-  CONST REC_PHY_COMP_INIT_CLIENTNB RecPhyCompInitBitField[] = {
-    // 3. Program TxPreP/TxPreN for Data and DQS according toTable 14 if VDDIO is 1.5V or Table 15 if 1.35V.
-    //    A. Program D18F2x[1,0]9C_x0D0F_0[F,7:0]0[A,6]={0000b, TxPreP, TxPreN}.
-    //    B. Program D18F2x[1,0]9C_x0D0F_0[F,7:0]02={1000b, TxPreP, TxPreN}.
-    {BFDqsDrvStren, BFDataByteTxPreDriverCal2Pad1, BFDataByteTxPreDriverCal2Pad1, 0, RecTxPrePNDataDqs},
-    {BFDataDrvStren, BFDataByteTxPreDriverCal2Pad2, BFDataByteTxPreDriverCal2Pad2, 0, RecTxPrePNDataDqs},
-    {BFDataDrvStren, BFDataByteTxPreDriverCal, BFDataByteTxPreDriverCal, 8, RecTxPrePNDataDqs},
-    // 4. Program TxPreP/TxPreN for Cmd/Addr according toTable 16 if VDDIO is 1.5V or Table 17 if 1.35V.
-    //    A. Program D18F2x[1,0]9C_x0D0F_[C,8][1:0][12,0E,0A,06]={0000b, TxPreP, TxPreN}.
-    //    B. Program D18F2x[1,0]9C_x0D0F_[C,8][1:0]02={1000b, TxPreP, TxPreN}.
-    {BFCsOdtDrvStren, BFCmdAddr0TxPreDriverCal2Pad1, BFCmdAddr0TxPreDriverCal2Pad2, 0, RecTxPrePNCmdAddr},
-    {BFAddrCmdDrvStren, BFCmdAddr1TxPreDriverCal2Pad1, BFAddrTxPreDriverCal2Pad4, 0, RecTxPrePNCmdAddr},
-    {BFCsOdtDrvStren, BFCmdAddr0TxPreDriverCalPad0, BFCmdAddr0TxPreDriverCalPad0, 8, RecTxPrePNCmdAddr},
-    {BFCkeDrvStren, BFAddrTxPreDriverCalPad0, BFAddrTxPreDriverCalPad0, 8, RecTxPrePNCmdAddr},
-    {BFAddrCmdDrvStren, BFCmdAddr1TxPreDriverCalPad0, BFCmdAddr1TxPreDriverCalPad0, 8, RecTxPrePNCmdAddr},
-    // 5. Program TxPreP/TxPreN for Clock according toTable 18 if VDDIO is 1.5V or Table 19 if 1.35V.
-    //    A. Program D18F2x[1,0]9C_x0D0F_2[1:0]02={1000b, TxPreP, TxPreN}.
-    {BFClkDrvStren, BFClock0TxPreDriverCalPad0, BFClock1TxPreDriverCalPad0, 8, RecTxPrePNClock}
-  };
+  ASSERT (Dimm < 2);
+  ASSERT (Byte <= ECC_DLY);
 
-  BIT_FIELD_NAME CurrentBitField;
-  CONST UINT16 *TxPrePNArray;
-  UINT8 Voltage;
-  UINT8 CurDct;
-  UINT8 i;
-  UINT8 j;
-
-  CurDct = NBPtr->Dct;
-  NBPtr->SwitchDCT (NBPtr, 0);
-  // 1. Program D18F2x[1,0]9C_x0D0F_E003[DisAutoComp, DisalbePredriverCal]={1b, 1b}
-  MemRecNSetBitFieldNb (NBPtr, BFDisablePredriverCal, 0x6000);
-
-  NBPtr->SwitchDCT (NBPtr, CurDct);
-
-  Voltage = (UINT8) NBPtr->RefPtr->DDR3Voltage;
-
-  for (j = 0; j < GET_SIZE_OF (RecPhyCompInitBitField); j ++) {
-    i = (UINT8) MemRecNGetBitFieldNb (NBPtr, RecPhyCompInitBitField[j].IndexBitField);
-    TxPrePNArray = RecPhyCompInitBitField[j].TxPrePN[Voltage];
-    for (CurrentBitField = RecPhyCompInitBitField[j].StartTargetBitField; CurrentBitField <= RecPhyCompInitBitField[j].EndTargetBitField; CurrentBitField ++) {
-      MemRecNSetBitFieldNb (NBPtr, CurrentBitField, ((RecPhyCompInitBitField[j].ExtraValue << 12) | TxPrePNArray[i]));
+  if ((Byte > 7)) {
+    // LN and ON do not support ECC delay, so:
+    if (IsSet) {
+      // On write, ignore
+      return 0;
+    } else {
+      // On read, redirect to byte 0 to correct fence averaging
+      Byte = 0;
     }
   }
+
+  switch (TrnDly) {
+  case AccessRcvEnDly:
+    Index = 0x10;
+    break;
+  case AccessWrDqsDly:
+    Index = 0x30;
+    break;
+  case AccessWrDatDly:
+    Index = 0x01;
+    break;
+  case AccessRdDqsDly:
+    Index = 0x05;
+    break;
+  case AccessPhRecDly:
+    Index = 0x50;
+    break;
+  default:
+    Index = 0;
+    IDS_ERROR_TRAP;
+  }
+
+  switch (TrnDly) {
+  case AccessRcvEnDly:
+  case AccessWrDqsDly:
+    Index += (Dimm * 3);
+    if (Byte & 0x04) {
+      // if byte 4,5,6,7
+      Index += 0x10;
+    }
+    if (Byte & 0x02) {
+      // if byte 2,3,6,7
+      Index++;
+    }
+    Offset = 16 * (Byte % 2);
+    break;
+
+  case AccessRdDqsDly:
+  case AccessWrDatDly:
+    Index += (Dimm * 0x100);
+    // break is not being used here because AccessRdDqsDly and AccessWrDatDly also need
+    // to run AccessPhRecDly sequence.
+  case AccessPhRecDly:
+    Index += (Byte / 4);
+    Offset = 8 * (Byte % 4);
+    break;
+  default:
+    Offset = 0;
+    IDS_ERROR_TRAP;
+  }
+
+  Address = Index;
+  MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
+  Value = MemRecNGetBitFieldNb (NBPtr, BFDctAddlDataReg);
+
+  if (IsSet) {
+    if (TrnDly == AccessPhRecDly) {
+      Value = NBPtr->DctCachePtr->PhRecReg[Index & 0x03];
+    }
+
+    Value = ((UINT32)Field << Offset) | (Value & (~((UINT32) ((TrnDly == AccessRcvEnDly) ? 0x1FF : 0xFF) << Offset)));
+    MemRecNSetBitFieldNb (NBPtr, BFDctAddlDataReg, Value);
+    Address |= DCT_ACCESS_WRITE;
+    MemRecNSetBitFieldNb (NBPtr, BFDctAddlOffsetReg, Address);
+
+    if (TrnDly == AccessPhRecDly) {
+      NBPtr->DctCachePtr->PhRecReg[Index & 0x03] = Value;
+    }
+    // Gross WrDatDly and WrDqsDly cannot be larger than 4
+    ASSERT (((TrnDly == AccessWrDatDly) || (TrnDly == AccessWrDqsDly)) ? (NBPtr->IsSupported[WLNegativeDelay] || (Field < 0xA0)) : TRUE);
+  } else {
+    Value = (Value >> Offset) & (UINT32) ((TrnDly == AccessRcvEnDly) ? 0x1FF : 0xFF);
+  }
+
+  return Value;
 }

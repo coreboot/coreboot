@@ -80,6 +80,17 @@ extern BUILD_OPT_CFG UserOptions;
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+AmdInitResetExecutionCacheAllocateInitializer (
+  IN       AMD_CONFIG_PARAMS      *StdHeader,
+  IN       EXECUTION_CACHE_REGION *AmdExeAddrMapPtr
+  );
+
+AGESA_STATUS
+AmdInitResetConstructor (
+  IN       AMD_CONFIG_PARAMS    *StdHeader,
+  IN       AMD_RESET_PARAMS     *AmdResetParams
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

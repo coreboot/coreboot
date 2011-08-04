@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Proc/Recovery/Mem)
- * @e \$Revision: 35136 $ @e \$Date: 2010-07-16 11:29:48 +0800 (Fri, 16 Jul 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -56,6 +56,7 @@
 
 #include "AGESA.h"
 #include "OptionMemory.h"
+#include "Ids.h"
 #include "mm.h"
 #include "mn.h"
 #include "mru.h"
@@ -114,6 +115,8 @@ MemRecTDramInitSw3 (
   NBPtr = TechPtr->NBPtr;
   MemPtr = NBPtr->MemPtr;
 
+  IDS_HDT_CONSOLE (MEM_STATUS, "\nStart Dram Init\n");
+  IDS_HDT_CONSOLE (MEM_FLOW, "\tEnDramInit = 1 for DCT%d\n", NBPtr->Dct);
   // 3.Program F2x[1,0]7C[EnDramInit]=1
   NBPtr->SetBitField (NBPtr, BFEnDramInit, 1);
 
@@ -177,7 +180,7 @@ MemRecTDramInitSw3 (
 
   // 18.Program F2x[1,0]7C[EnDramInit]=0
   NBPtr->SetBitField (NBPtr, BFEnDramInit, 0);
-
+  IDS_HDT_CONSOLE (MEM_FLOW, "End Dram Init\n\n");
 }
 
 /* -----------------------------------------------------------------------------*/

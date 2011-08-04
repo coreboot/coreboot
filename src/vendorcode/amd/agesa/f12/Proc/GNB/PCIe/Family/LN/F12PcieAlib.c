@@ -110,7 +110,7 @@ PcieFmAlibBuildAcpiTable (
   AgesaStatus = AGESA_SUCCESS;
   AltVddNbSupport = TRUE;
 //  AmlObjName = 'A0DA';
-  AmlObjName = 0x41304441;
+  AmlObjName = Int32FromChar ('A', '0', 'D', 'A');
   AmlObjPtr = GnbLibFind (AlibSsdtPtr, ((ACPI_TABLE_HEADER*) &AlibSsdt[0])->TableLength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   ASSERT (AmlObjPtr != NULL);
   if (AmlObjPtr != NULL) {

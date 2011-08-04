@@ -53,6 +53,7 @@
 #include "Ids.h"
 #include "cpuEnvInit.h"
 #include "heapManager.h"
+#include "CreateStruct.h"
 #include "GnbInterface.h"
 #include "CommonInits.h"
 #include "S3SaveState.h"

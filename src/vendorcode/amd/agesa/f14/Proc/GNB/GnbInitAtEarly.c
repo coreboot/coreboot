@@ -54,6 +54,7 @@
 
 #include  "OptionGnb.h"
 #include  "GnbLibFeatures.h"
+#include  "GnbInterface.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_GNBINITATEARLY_FILECODE
 

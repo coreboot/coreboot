@@ -54,7 +54,9 @@
 #include  "heapManager.h"
 #include  "Gnb.h"
 #include  "GnbGfx.h"
+#include  "GnbGfxConfig.h"
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
+#include  "GfxConfigData.h"
 #include  "GfxConfigPost.h"
 #include  "OptionGnb.h"
 #include  "Filecode.h"
@@ -77,6 +79,10 @@ extern GNB_BUILD_OPTIONS  GnbBuildOptions;
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
+AGESA_STATUS
+GfxConfigEnvInterface (
+  IN       AMD_CONFIG_PARAMS        *StdHeader
+  );
 
 
 
@@ -133,7 +139,7 @@ GfxLocateConfigData (
     IDS_ERROR_TRAP;
     return  AGESA_FATAL;
   }
-  (*Gfx)->StdHeader = (PVOID) StdHeader;
+  (*Gfx)->StdHeader = StdHeader;
   return AGESA_SUCCESS;
 }
 
@@ -166,6 +172,8 @@ GfxConfigEnvInterface (
     Gfx->Gnb3dStereoPinIndex = EnvParamsPtr->GnbEnvConfiguration.Gnb3dStereoPinIndex;
     Gfx->LvdsSpreadSpectrum = EnvParamsPtr->GnbEnvConfiguration.LvdsSpreadSpectrum;
     Gfx->LvdsSpreadSpectrumRate = EnvParamsPtr->GnbEnvConfiguration.LvdsSpreadSpectrumRate;
+    Gfx->LvdsMiscControl.Value = EnvParamsPtr->GnbEnvConfiguration.LvdsMiscControl.Value;
+    Gfx->PcieRefClkSpreadSpectrum = EnvParamsPtr->GnbEnvConfiguration.PcieRefClkSpreadSpectrum;
     GfxGetUmaInfo (&Gfx->UmaInfo, StdHeader);
   }
   GNB_DEBUG_CODE (

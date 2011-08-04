@@ -174,14 +174,14 @@ PmNbPstateInitCore (
   )
 {
   UINT32 MsrAddress;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
   for (MsrAddress = (PS_REG_BASE + ((NB_PSTATE_INIT *) NbPstateParams)->NbPstate); MsrAddress <= PS_MAX_REG; MsrAddress++) {
-    LibAmdMsrRead (MsrAddress, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
-      ((PSTATE_MSR *) &MsrRegister)->NbDid = 1;
-      ((PSTATE_MSR *) &MsrRegister)->NbVid = ((NB_PSTATE_INIT *) NbPstateParams)->NbVid1;
-      LibAmdMsrWrite (MsrAddress, &MsrRegister, StdHeader);
+    LibAmdMsrRead (MsrAddress, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
+      ((PSTATE_MSR *) &MsrReg)->NbDid = 1;
+      ((PSTATE_MSR *) &MsrReg)->NbVid = ((NB_PSTATE_INIT *) NbPstateParams)->NbVid1;
+      LibAmdMsrWrite (MsrAddress, &MsrReg, StdHeader);
     }
   }
 }

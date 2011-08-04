@@ -240,7 +240,6 @@ PcieLinkSafeMode (
   IN      PCIe_PLATFORM_CONFIG  *Pcie
   )
 {
-  Engine->Type.Port.PortData.LinkSpeedCapability = PcieGen1;
   PcieSetLinkSpeedCap (PcieGen1, Engine, Pcie);
   PciePortRegisterRMW (
     Engine,

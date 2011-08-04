@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem/NB/ON)
- * @e \$Revision: 38639 $ @e \$Date: 2010-09-27 21:55:34 +0800 (Mon, 27 Sep 2010) $
+ * @e \$Revision: 48511 $ @e \$Date: 2011-03-09 13:53:13 -0700 (Wed, 09 Mar 2011) $
  *
  **/
 /*
@@ -120,6 +120,14 @@ MemNS3GetConPCIMaskON (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN OUT   DESCRIPTOR_GROUP *DescriptPtr
   );
+
+BOOLEAN
+MemS3ResumeConstructNBBlockON (
+  IN OUT   VOID *S3NBPtr,
+  IN OUT   MEM_DATA_STRUCT *MemPtr,
+  IN       UINT8 NodeID
+  );
+
 /*----------------------------------------------------------------------------
  *                          DEFINITIONS AND MACROS
  *
@@ -176,6 +184,11 @@ PCI_REG_DESCRIPTOR ROMDATA S3PciPreSelfRefDescriptorON[] = {
   {{1, 1, 1}, DCT0,   BFAddrRxVioLvl, 0x00000018},
   // 4. Frequency Change
   {{4, 3, 1}, DCT0,   BFPllLockTime, 0},
+  {{1, 2, 1}, DCT0,   BFDllCSRBisaTrimDByte, 0x7000},
+  {{1, 2, 1}, DCT0,   BFDllCSRBisaTrimClk, 0x7000},
+  {{1, 2, 1}, DCT0,   BFDllCSRBisaTrimCsOdt, 0x7000},
+  {{1, 2, 1}, DCT0,   BFDllCSRBisaTrimAByte2, 0x7000},
+  {{1, 2, 1}, DCT0,   BFReduceLoop, 0x6000},
   {{0, 0, 0}, FUNC_2, 0x94,  0xFFD1CC1F},
   //    NB Pstate Related Register for Pstate 0
   {{0, 0, 0}, FUNC_2, 0x78,  0xFFF63FCF},

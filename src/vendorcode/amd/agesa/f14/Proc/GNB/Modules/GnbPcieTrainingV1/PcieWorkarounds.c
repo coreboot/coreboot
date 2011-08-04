@@ -56,6 +56,7 @@
 #include  GNB_MODULE_DEFINITIONS (GnbCommonLib)
 #include  GNB_MODULE_DEFINITIONS (GnbPcieConfig)
 #include  "GnbRegistersON.h"
+#include  "PcieWorkarounds.h"
 #include  "Filecode.h"
 #define FILECODE PROC_GNB_MODULES_GNBPCIETRAININGV1_PCIEWORKAROUNDS_FILECODE
 /*----------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ PcieDeskewWorkaround (
     return GFX_WORKAROUND_SUCCESS;
   }
   GnbLibPciWrite (Device.AddressValue | 0x18, AccessWidth32, &MmioBase, StdHeader);
-  GnbLibPciRMW (Device.AddressValue | 0x04, AccessWidth8 , ~BIT1, BIT1, StdHeader);
+  GnbLibPciRMW (Device.AddressValue | 0x04, AccessWidth8 , ~(UINT32)BIT1, BIT1, StdHeader);
   GnbLibMemRMW (MmioBase + 0x120, AccessWidth16, 0, 0xb700, StdHeader);
   GnbLibMemRead (MmioBase + 0x120, AccessWidth16, &MmioData1, StdHeader);
   if (MmioData1 == 0xb700) {
@@ -203,7 +204,7 @@ PcieDeskewWorkaround (
       }
     }
   }
-  GnbLibPciRMW (Device.AddressValue | 0x04, AccessWidth8, ~BIT1, 0x0, StdHeader);
+  GnbLibPciRMW (Device.AddressValue | 0x04, AccessWidth8, ~(UINT32)BIT1, 0x0, StdHeader);
   GnbLibPciRMW (Device.AddressValue | 0x18, AccessWidth32, 0x0, 0x0, StdHeader);
 
   return GFX_WORKAROUND_SUCCESS;

@@ -9,7 +9,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project: AGESA
  * @e sub-project: (Mem)
- * @e \$Revision: 38303 $ @e \$Date: 2010-09-22 00:22:47 +0800 (Wed, 22 Sep 2010) $
+ * @e \$Revision: 48803 $ @e \$Date: 2011-03-10 20:18:28 -0700 (Thu, 10 Mar 2011) $
  *
  **/
 /*
@@ -394,6 +394,7 @@ typedef enum {
   WLNegativeDelay,                 ///< Check to determine if the NB can tolerate a negtive WL delay value
   SchedDlySlot1Extra,              ///< Check to determine if DataTxSchedDly Slot1 equation in slowMode to subtract an extra MEMCLK
   TwoStageDramInit,                ///< Check to determine if we need to seperate Draminit into 2 stages. The first one processes info on all nodes. The second one does Dram Init.
+  AdjustTrc,                       ///< Check to determine if we need to adjust Trc
 
   EnumSize                         ///< Size of list
 } NB_SUPPORTED;
@@ -401,6 +402,7 @@ typedef enum {
 /// List for family specific functions that are supported
 typedef enum {
   BeforePhyFenceTraining,          ///< Family specific tasks before Phy Fence Training
+  BeforeMemClkFreqVal,             ///< hook before setting MemClkFreqVal bit
   AfterMemClkFreqVal,              ///< Override PllMult and PllDiv
   OverridePllMult,                 ///< Override PllMult
   OverridePllDiv,                  ///< Override PllDiv
@@ -439,6 +441,7 @@ typedef enum {
   ResetRxFifoPtr,                  ///< Reset RxFifo pointer during Read DQS training
   EnableParityAfterMemRst,         ///< Enable DRAM Address Parity after memory reset.
   FinalizeVDDIO,                   ///< Finalize VDDIO
+  BfAfExcludeDimm,                 ///< Workaround before and after excluding dimms
 
   NumberOfHooks                    ///< Size of list
 } FAMILY_SPECIFIC_FUNC_INDEX;
@@ -502,6 +505,7 @@ typedef struct _MEM_NB_BLOCK {
   BOOLEAN   ClToNbFlag;        ///< is used to restore ClLinesToNbDis bit after memory
   UINT8     NbFreqChgState;    ///< is used as a state index in NB frequency change state machine
   UINT32    NbPsCtlReg;        ///< is used to save/restore NB Pstate control register
+  CONST UINT32 *RecModeDefRegArray;   ///< points to an array of default register values that are set for recovery mode
 
   ///< Determines if code should be executed on a give NB
   BOOLEAN IsSupported[EnumSize];
@@ -1345,6 +1349,15 @@ MemRecNReEnablePhyCompNb (
   IN OUT   VOID *OptParam
   );
 
+UINT32
+MemRecNcmnGetSetTrainDlyClientNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN       UINT8 IsSet,
+  IN       TRN_DLY_TYPE TrnDly,
+  IN       DRBN DrbnVar,
+  IN       UINT16 Field
+  );
+
 VOID
 MemNSetTxpNb (
   IN OUT   MEM_NB_BLOCK *NBPtr
@@ -1367,6 +1380,12 @@ MemNGetTrainDlyParmsUnb (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN       TRN_DLY_TYPE TrnDly,
   IN OUT   TRN_DLY_PARMS *Parms
+  );
+
+BOOLEAN
+MemNBfAfExcludeDimmClientNb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *IsBefore
   );
 
 #endif  /* _MN_H_ */

@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2011, Advanced Micro Devices, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -13,7 +13,7 @@
 #     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
 #       its contributors may be used to endorse or promote products derived 
 #       from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,7 +24,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*****************************************************************************
 
 # AGESA V5 Files
@@ -36,19 +36,16 @@ AGESA_INC += -I$(AGESA_ROOT)/Include
 AGESA_INC += -I$(AGESA_ROOT)/Lib
 AGESA_INC += -I$(AGESA_ROOT)/Legacy
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Common
-AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
-AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x14
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family/0x14/ON
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
-AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/ON
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Family
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Family/0x14
+AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature 
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Common
+AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx
+AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx/Family
+AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbCommonLib
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Nb/Family/0x14
@@ -57,8 +54,10 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Family/0x14
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/PCIe/Feature
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx
-AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Gfx/Family
+AGESA_INC += -I$(AGESA_ROOT)/Proc/HT
+AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
+AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem
+AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/ON
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/GNB
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/CPU
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Recovery/Mem

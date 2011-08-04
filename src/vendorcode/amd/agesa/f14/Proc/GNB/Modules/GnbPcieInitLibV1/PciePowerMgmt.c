@@ -258,6 +258,7 @@ PciePwrClockGating (
                               WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8014_ADDRESS),
                               Pcie
                               );
+
   D0F0xE4_WRAP_8012.Value = PcieRegisterRead (
                               Wrapper,
                               WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8012_ADDRESS),

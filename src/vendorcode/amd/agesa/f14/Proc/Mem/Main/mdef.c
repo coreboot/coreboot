@@ -53,6 +53,7 @@
  */
 
 #include "AGESA.h"
+#include "AdvancedApi.h"
 #include "Filecode.h"
 #include "mm.h"
 CODE_GROUP (G1_PEICC)
@@ -76,6 +77,11 @@ RDATA_GROUP (G1_PEICC)
  *
  *----------------------------------------------------------------------------
  */
+
+AGESA_STATUS
+MemMFlowDef (
+  IN OUT   MEM_MAIN_DATA_BLOCK *MemMainPtr
+  );
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS

@@ -130,7 +130,7 @@ FeatureLeveling (
 {
   UINT32 BscSocket;
   UINT32 Ignored;
-  UINT32 BscCore;
+  UINT32 BscCoreNum;
   UINT32 Socket;
   UINT32 Core;
   UINT32 NumberOfSockets;
@@ -151,7 +151,7 @@ FeatureLeveling (
   *NeedLeveling = FALSE;
 
   LibAmdMemFill (globalCpuFeatureList, 0xFF, sizeof (CPU_FEATURES_LIST), StdHeader);
-  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCore, &IgnoredSts);
+  IdentifyCore (StdHeader, &BscSocket, &Ignored, &BscCoreNum, &IgnoredSts);
   NumberOfSockets = GetPlatformNumberOfSockets ();
 
   TaskPtr.FuncAddress.PfApTaskI = SaveFeatures;
@@ -174,7 +174,7 @@ FeatureLeveling (
     for (Socket = 0; Socket < NumberOfSockets; Socket++) {
       if (GetActiveCoresInGivenSocket (Socket, &NumberOfCores, StdHeader)) {
         for (Core = 0; Core < NumberOfCores; Core++) {
-          if ((Socket != BscSocket) || (Core != BscCore)) {
+          if ((Socket != BscSocket) || (Core != BscCoreNum)) {
             ApUtilRunCodeOnSocketCore ((UINT8)Socket, (UINT8)Core, &TaskPtr, StdHeader);
           }
         }
@@ -210,7 +210,7 @@ SaveFeatures (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
   FamilySpecificServices = NULL;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->SaveFeatures (FamilySpecificServices, cpuFeatureListPtr, StdHeader);
 }
 
@@ -235,7 +235,7 @@ WriteFeatures (
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
   FamilySpecificServices = NULL;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->WriteFeatures (FamilySpecificServices, cpuFeatureListPtr, StdHeader);
 }
 
@@ -258,9 +258,9 @@ GetGlobalCpuFeatureListAddress (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 AddressValue;
+  VOID *AddressValue;
 
-  AddressValue = GLOBAL_CPU_FEATURE_LIST_TEMP_ADDR;
+  AddressValue = (VOID *)GLOBAL_CPU_FEATURE_LIST_TEMP_ADDR;
 
   *Address = (UINT64 *)(AddressValue);
 }

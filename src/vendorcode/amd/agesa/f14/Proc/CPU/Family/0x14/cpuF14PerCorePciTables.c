@@ -86,12 +86,12 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F14PerCorePciRegisters[] =
       AMD_FAMILY_14,                      // CpuFamily
       AMD_F14_ALL                         // CpuRevision
     },
-    AMD_PF_ALL,                           // platformFeatures
-    {
+	{AMD_PF_ALL},                           // platformFeatures
+    {{
       MAKE_SBDFO (0, 0, 24, FUNC_3, 0x1CC),  // Address
       0x00000100,                           // regData
       0x0000010F,                           // regMask
-    }
+    }}
   }
 };
 

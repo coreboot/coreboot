@@ -86,6 +86,11 @@ MemFDctInterleaveBanks (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );
 
+BOOLEAN
+MemFUndoInterleaveBanks (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
 VOID
 STATIC
 CsIntSwap (

@@ -318,7 +318,7 @@ CoreLevelingAtEarly (
   // Set down core register
   for (Socket = 0; Socket < NumberOfSockets; Socket++) {
     if (IsProcessorPresent (Socket, StdHeader)) {
-      GetFeatureServicesOfSocket (&CoreLevelingFamilyServiceTable, Socket, &FamilySpecificServices, StdHeader);
+      GetFeatureServicesOfSocket (&CoreLevelingFamilyServiceTable, Socket, (const VOID **)&FamilySpecificServices, StdHeader);
       if (FamilySpecificServices != NULL) {
         for (Module = 0; Module < NumberOfModules; Module++) {
           RegUpdated = FamilySpecificServices->SetDownCoreRegister (FamilySpecificServices, &Socket, &Module, &LeveledCores, CoreLevelMode, StdHeader);

@@ -78,6 +78,18 @@
  *----------------------------------------------------------------------------------------
  */
 
+VOID
+PciePwrPowerDownPllInL1 (
+  IN       PCIe_WRAPPER_CONFIG    *Wrapper,
+  IN       PCIe_PLATFORM_CONFIG   *Pcie
+  );
+
+AGESA_STATUS
+PcieLateInitCallback (
+  IN       PCIe_WRAPPER_CONFIG           *Wrapper,
+  IN OUT   VOID                          *Buffer,
+  IN       PCIe_PLATFORM_CONFIG          *Pcie
+  );
 
 /*----------------------------------------------------------------------------------------*/
 /**

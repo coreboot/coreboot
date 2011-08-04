@@ -83,6 +83,23 @@ extern OPTION_PSTATE_LATE_CONFIGURATION OptionPstateLateConfiguration;
  *----------------------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+AmdLatePlatformConfigInit (
+  IN OUT   PLATFORM_CONFIGURATION    *PlatformConfig,
+  IN OUT   AMD_CONFIG_PARAMS         *StdHeader
+  );
+
+AGESA_STATUS
+AmdInitLateInitializer (
+  IN       AMD_CONFIG_PARAMS *StdHeader,
+  IN OUT   AMD_LATE_PARAMS   *LateParamsPtr
+  );
+
+AGESA_STATUS
+AmdInitLateDestructor (
+  IN   AMD_CONFIG_PARAMS *StdHeader,
+  IN   AMD_LATE_PARAMS   *LateParamsPtr
+  );
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

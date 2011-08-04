@@ -55,6 +55,7 @@
 #include  "GnbPcie.h"
 #include  "GnbGfx.h"
 #include  GNB_MODULE_DEFINITIONS (GnbGfxInitLibV1)
+#include  GNB_MODULE_DEFINITIONS (GnbGfxConfig)
 #include  "GfxStrapsInit.h"
 #include  "GfxLib.h"
 #include  "GfxConfigData.h"

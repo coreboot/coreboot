@@ -10,7 +10,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  Options
- * @e \$Revision: 40151 $   @e \$Date: 2010-10-20 06:38:17 +0800 (Wed, 20 Oct 2010) $
+ * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
  */
 /*
  *****************************************************************************
@@ -58,6 +58,9 @@
 #define GNB_TYPE_KR FALSE
 #define GNB_TYPE_TN FALSE
 
+#include "Gnb.h"
+#include "GnbPcie.h"
+
 #ifndef CFG_IGFX_AS_PCIE_EP
   #define CFG_IGFX_AS_PCIE_EP     TRUE
 #endif
@@ -94,13 +97,40 @@
   #define CFG_PCIE_ASPM_BLACK_LIST_ENABLE     TRUE
 #endif
 
+#ifndef CFG_GNB_PCIE_LINK_RECEIVER_DETECTION_POOLING
+  #define CFG_GNB_PCIE_LINK_RECEIVER_DETECTION_POOLING  (60 * 1000)
+#endif
+
+#ifndef CFG_GNB_PCIE_LINK_L0_POOLING
+  #define CFG_GNB_PCIE_LINK_L0_POOLING                  (60 * 1000)
+#endif
+
+#ifndef CFG_GNB_PCIE_LINK_GPIO_RESET_ASSERT_TIME
+  #define CFG_GNB_PCIE_LINK_GPIO_RESET_ASSERT_TIME      (2 * 1000)
+#endif
+
+#ifndef CFG_GNB_PCIE_LINK_RESET_TO_TRAINING_TIME
+  #define CFG_GNB_PCIE_LINK_RESET_TO_TRAINING_TIME      (2 * 1000)
+#endif
+
+#ifdef BLDCFG_PCIE_TRAINING_ALGORITHM
+  #define CFG_GNB_PCIE_TRAINING_ALGORITHM               BLDCFG_PCIE_TRAINING_ALGORITHM
+#else
+  #define CFG_GNB_PCIE_TRAINING_ALGORITHM               PcieTrainingStandard
+#endif
+
 GNB_BUILD_OPTIONS  GnbBuildOptions = {
   CFG_IGFX_AS_PCIE_EP,
   CFG_LCLK_DEEP_SLEEP_EN,
   CFG_LCLK_DPM_EN,
   CFG_GMC_POWER_GATE_STUTTER_ONLY,
   CFG_SMU_SCLK_CLOCK_GATING_ENABLE,
-  CFG_PCIE_ASPM_BLACK_LIST_ENABLE
+  CFG_PCIE_ASPM_BLACK_LIST_ENABLE,
+  CFG_GNB_PCIE_LINK_RECEIVER_DETECTION_POOLING,
+  CFG_GNB_PCIE_LINK_L0_POOLING,
+  CFG_GNB_PCIE_LINK_GPIO_RESET_ASSERT_TIME,
+  CFG_GNB_PCIE_LINK_RESET_TO_TRAINING_TIME,
+  CFG_GNB_PCIE_TRAINING_ALGORITHM
 };
 
 
@@ -204,6 +234,16 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
     #define OPTION_NBINITATPOST_ENTRY
   #endif
 //---------------------------------------------------------------------------------------------------
+  #ifndef OPTION_PCIE_POST_EALRY_INIT
+    #define OPTION_PCIE_POST_EALRY_INIT TRUE
+  #endif
+  #if (OPTION_PCIE_POST_EALRY_INIT == TRUE) && (GNB_TYPE_LN == TRUE || GNB_TYPE_ON == TRUE)
+    OPTION_GNB_FEATURE                                  PcieInitAtPostEarly;
+    #define OPTION_PCIEINITATPOSTEARLY_ENTRY            {AMD_FAMILY_LN | AMD_FAMILY_ON, PcieInitAtPostEarly},
+  #else
+    #define OPTION_PCIEINITATPOSTEARLY_ENTRY
+  #endif
+//---------------------------------------------------------------------------------------------------
   #ifndef OPTION_PCIE_POST_INIT
     #define OPTION_PCIE_POST_INIT TRUE
   #endif
@@ -215,6 +255,7 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
   #endif
 //---------------------------------------------------------------------------------------------------
   OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
+    OPTION_PCIEINITATPOSTEARLY_ENTRY
     OPTION_GFXCONFIGPOSTINTERFACE_ENTRY
     OPTION_GFXINITATPOST_ENTRY
     {0, NULL}

@@ -89,6 +89,18 @@ extern CPU_FAMILY_SUPPORT_TABLE            PstateFamilyServiceTable;
  *----------------------------------------------------------------------------
  */
 
+AGESA_STATUS
+PStateGatherStub (
+  IN       AMD_CONFIG_PARAMS *StdHeader,
+  IN OUT   S_CPU_AMD_PSTATE  *PStateStrucPtr
+  );
+
+AGESA_STATUS
+PStateGatherMain (
+  IN       AMD_CONFIG_PARAMS *StdHeader,
+  IN OUT   S_CPU_AMD_PSTATE  *PStateStrucPtr
+  );
+
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
  *
@@ -204,7 +216,7 @@ PStateGatherMain (
   ASSERT (IsBsp (StdHeader, &IgnoredSts));
 
   FamilyServices = NULL;
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
   PopulatedSockets = 1;
@@ -306,7 +318,7 @@ PStateGather (
   FamilyServices = NULL;
   PStateEnabled = FALSE;
 
-  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, &FamilyServices, StdHeader);
+  GetFeatureServicesOfCurrentCore (&PstateFamilyServiceTable, (const VOID **)&FamilyServices, StdHeader);
   ASSERT (FamilyServices != NULL);
 
   //

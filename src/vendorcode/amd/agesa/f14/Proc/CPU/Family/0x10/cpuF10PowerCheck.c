@@ -168,7 +168,7 @@ F10PmPwrCheck (
   UINT32      OrMask;
   UINT32      PstateLimit;
   PCI_ADDR    PciAddress;
-  UINT64      MsrRegister;
+  UINT64      MsrReg;
   AP_TASK     TaskPtr;
   CPUID_DATA  CpuidData;
   AGESA_STATUS IgnoredSts;
@@ -182,8 +182,8 @@ F10PmPwrCheck (
 
   // get the Max P-state value
   for (PsMaxVal = NM_PS_REG - 1; PsMaxVal != 0; --PsMaxVal) {
-    LibAmdMsrRead (PS_REG_BASE + PsMaxVal, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+    LibAmdMsrRead (PS_REG_BASE + PsMaxVal, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
       break;
     }
   }
@@ -331,17 +331,17 @@ F10PmPwrCheckCore (
   UINT8  DisPsNum;
   UINT8  CurrentPs;
   UINT8  EnBsNum;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
-  GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
+  GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   PsMaxVal = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber - 1);
   DisPsNum = (((PWRCHK_ERROR_DATA *) ErrorData)->HwPstateNumber -
              ((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber);
   EnBsNum = ((PWRCHK_ERROR_DATA *) ErrorData)->NumberofBoostStates;
 
-  LibAmdMsrRead (MSR_PSTATE_STS, &MsrRegister, StdHeader);
-  CurrentPs = (UINT8) (((PSTATE_STS_MSR *) &MsrRegister)->CurPstate);
+  LibAmdMsrRead (MSR_PSTATE_STS, &MsrReg, StdHeader);
+  CurrentPs = (UINT8) (((PSTATE_STS_MSR *) &MsrReg)->CurPstate);
 
   if (((PWRCHK_ERROR_DATA *) ErrorData)->AllowablePstateNumber == 0) {
 
@@ -413,9 +413,9 @@ F10PmPwrChkCopyPstate (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
 
-  LibAmdMsrRead ((UINT32) (PS_REG_BASE + Src), &MsrRegister, StdHeader);
-  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + Dest), &MsrRegister, StdHeader);
+  LibAmdMsrRead ((UINT32) (PS_REG_BASE + Src), &MsrReg, StdHeader);
+  LibAmdMsrWrite ((UINT32) (PS_REG_BASE + Dest), &MsrReg, StdHeader);
 }
 

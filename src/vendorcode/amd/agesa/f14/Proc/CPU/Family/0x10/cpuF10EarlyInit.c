@@ -165,7 +165,7 @@ F10PmAfterReset (
   UINT32    Core;
   UINT32    AndMask;
   UINT32    OrMask;
-  UINT64    MsrRegister;
+  UINT64    MsrReg;
   PCI_ADDR  PciAddress;
   AP_TASK   TaskPtr;
   AGESA_STATUS IgnoredSts;
@@ -179,8 +179,8 @@ F10PmAfterReset (
   // Step 1 Modify F3xDC[PstateMaxVal] to reflect the lowest performance
   //        P-state supported, as indicated in MSRC001_00[68:64][PstateEn]
   for (MsrAddr = PS_MAX_REG; MsrAddr > PS_REG_BASE; --MsrAddr) {
-    LibAmdMsrRead (MsrAddr, &MsrRegister, StdHeader);
-    if (((PSTATE_MSR *) &MsrRegister)->PsEnable == 1) {
+    LibAmdMsrRead (MsrAddr, &MsrReg, StdHeader);
+    if (((PSTATE_MSR *) &MsrReg)->PsEnable == 1) {
       break;
     }
   }
@@ -227,7 +227,7 @@ F10PmAfterResetCore (
   UINT32 Ignored;
   UINT32 PsMaxVal;
   UINT32 PciRegister;
-  UINT64 MsrRegister;
+  UINT64 MsrReg;
   UINT64 SavedMsr;
   UINT64 CurrentLimitMsr;
   PCI_ADDR PciAddress;
@@ -238,13 +238,13 @@ F10PmAfterResetCore (
 
   // Step 2 If MSR C001_0071[CurNbDid] = 0, set MSR C001_001F[GfxNbPstateDis]
   GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
-  GetCpuServicesFromLogicalId (&LogicalId, &FamilySpecificServices, StdHeader);
+  GetCpuServicesFromLogicalId (&LogicalId, (const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   if ((LogicalId.Revision & (AMD_F10_C3 | AMD_F10_DA_C2)) != 0) {
-    LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-    if (((COFVID_STS_MSR *) &MsrRegister)->CurNbDid == 0) {
-      LibAmdMsrRead (NB_CFG, &MsrRegister, StdHeader);
-      MsrRegister |= BIT62;
-      LibAmdMsrWrite (NB_CFG, &MsrRegister, StdHeader);
+    LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+    if (((COFVID_STS_MSR *) &MsrReg)->CurNbDid == 0) {
+      LibAmdMsrRead (NB_CFG, &MsrReg, StdHeader);
+      MsrReg |= BIT62;
+      LibAmdMsrWrite (NB_CFG, &MsrReg, StdHeader);
     }
   }
 
@@ -254,8 +254,8 @@ F10PmAfterResetCore (
   PsMaxVal = (UINT32) (((PSTATE_CURLIM_MSR *) &CurrentLimitMsr)->PstateMaxVal);
 
   // Step 3 If MSRC001_0071[CurPstate] != F3xDC[PstateMaxVal], go to step 20
-  LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-  if (((COFVID_STS_MSR *) &MsrRegister)->CurPstate !=
+  LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+  if (((COFVID_STS_MSR *) &MsrReg)->CurPstate !=
       ((PSTATE_CURLIM_MSR *) &CurrentLimitMsr)->PstateMaxVal) {
     GoToStep = STEP20;
   } else {
@@ -282,8 +282,8 @@ F10PmAfterResetCore (
 
     // Step 7 Copy the P-state register pointed to by F3xDC[PstateMaxVal] to the P-state
     //        register pointed to by F3xDC[PstateMaxVal]+1
-    LibAmdMsrRead ((MSR_PSTATE_0 + PsMaxVal), &MsrRegister, StdHeader);
-    LibAmdMsrWrite ((MSR_PSTATE_0 + (PsMaxVal + 1)), &MsrRegister, StdHeader);
+    LibAmdMsrRead ((MSR_PSTATE_0 + PsMaxVal), &MsrReg, StdHeader);
+    LibAmdMsrWrite ((MSR_PSTATE_0 + (PsMaxVal + 1)), &MsrReg, StdHeader);
 
     // Step 8 Write F3xDC[PstateMaxVal]+1 to F3xDC[PstateMaxVal]
     IdentifyCore (StdHeader, &Socket, &Module, &Ignored, &IgnoredSts);
@@ -310,11 +310,11 @@ F10PmAfterResetCore (
 
     // Step 13 If MSRC001_0071[CurNbDid] = 1, set MSRC001_001F[GfxNbPstateDis]
     if ((LogicalId.Revision & (AMD_F10_C3 | AMD_F10_DA_C2)) != 0) {
-      LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-      if (((COFVID_STS_MSR *) &MsrRegister)->CurNbDid == 1) {
-        LibAmdMsrRead (NB_CFG, &MsrRegister, StdHeader);
-        MsrRegister |= BIT62;
-        LibAmdMsrWrite (NB_CFG, &MsrRegister, StdHeader);
+      LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+      if (((COFVID_STS_MSR *) &MsrReg)->CurNbDid == 1) {
+        LibAmdMsrRead (NB_CFG, &MsrReg, StdHeader);
+        MsrReg |= BIT62;
+        LibAmdMsrWrite (NB_CFG, &MsrReg, StdHeader);
       }
     }
 
@@ -343,11 +343,11 @@ F10PmAfterResetCore (
 
     // Step 19 If MSR C001_0071[CurNbDid] = 0, set MSR C001_001F[GfxNbPstateDis]
     if ((LogicalId.Revision & (AMD_F10_C3 | AMD_F10_DA_C2)) != 0) {
-      LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-      if (((COFVID_STS_MSR *) &MsrRegister)->CurNbDid == 0) {
-        LibAmdMsrRead (NB_CFG, &MsrRegister, StdHeader);
-        MsrRegister |= BIT62;
-        LibAmdMsrWrite (NB_CFG, &MsrRegister, StdHeader);
+      LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+      if (((COFVID_STS_MSR *) &MsrReg)->CurNbDid == 0) {
+        LibAmdMsrRead (NB_CFG, &MsrReg, StdHeader);
+        MsrReg |= BIT62;
+        LibAmdMsrWrite (NB_CFG, &MsrReg, StdHeader);
       }
     }
 
@@ -363,11 +363,11 @@ F10PmAfterResetCore (
     // Step 22 If MSR C001_0071[CurNbDid] = 1, set MSR C001_001F[GfxNbPstateDis] and exit
     //         the sequence
     if ((LogicalId.Revision & (AMD_F10_C3 | AMD_F10_DA_C2)) != 0) {
-      LibAmdMsrRead (MSR_COFVID_STS, &MsrRegister, StdHeader);
-      if (((COFVID_STS_MSR *) &MsrRegister)->CurNbDid == 1) {
-        LibAmdMsrRead (NB_CFG, &MsrRegister, StdHeader);
-        MsrRegister |= BIT62;
-        LibAmdMsrWrite (NB_CFG, &MsrRegister, StdHeader);
+      LibAmdMsrRead (MSR_COFVID_STS, &MsrReg, StdHeader);
+      if (((COFVID_STS_MSR *) &MsrReg)->CurNbDid == 1) {
+        LibAmdMsrRead (NB_CFG, &MsrReg, StdHeader);
+        MsrReg |= BIT62;
+        LibAmdMsrWrite (NB_CFG, &MsrReg, StdHeader);
         break;
       }
     }

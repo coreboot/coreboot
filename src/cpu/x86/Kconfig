@@ -19,6 +19,10 @@ config UDELAY_TSC
 	bool
 	default n
 
+config UDELAY_TIMER2
+	bool
+	default n
+
 config TSC_CALIBRATE_WITH_IO
 	bool
 	default n

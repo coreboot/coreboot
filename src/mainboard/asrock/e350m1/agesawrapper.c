@@ -437,32 +437,33 @@ agesawrapper_amdinitlate (
   )
 {
   AGESA_STATUS Status;
-  AMD_INTERFACE_PARAMS AmdParamStruct = {0};
-  AMD_LATE_PARAMS *AmdLateParams;
+  AMD_LATE_PARAMS AmdLateParams;
 
-  return 0; // this causes bad ACPI SSDT, need to debug
+  LibAmdMemFill (&AmdLateParams,
+                 0,
+                 sizeof (AMD_LATE_PARAMS),
+                 &(AmdLateParams.StdHeader));
 
-  AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
-  AmdParamStruct.AllocationMethod = PostMemDram;
-  AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
-  AmdCreateStruct (&AmdParamStruct);
-  AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
-  Status = AmdInitLate (AmdLateParams);
+  AmdLateParams.StdHeader.AltImageBasePtr = 0;
+  AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+  AmdLateParams.StdHeader.Func = 0;
+  AmdLateParams.StdHeader.ImageBasePtr = 0;
+
+  Status = AmdInitLate (&AmdLateParams);
   if (Status != AGESA_SUCCESS) {
     agesawrapper_amdreadeventlog();
     ASSERT(Status == AGESA_SUCCESS);
   }
 
-  DmiTable    = AmdLateParams->DmiTable;
-  AcpiPstate  = AmdLateParams->AcpiPState;
-  AcpiSrat    = AmdLateParams->AcpiSrat;
-  AcpiSlit    = AmdLateParams->AcpiSlit;
+  DmiTable       = AmdLateParams.DmiTable;
+  AcpiPstate     = AmdLateParams.AcpiPState;
+  AcpiSrat       = AmdLateParams.AcpiSrat;
+  AcpiSlit       = AmdLateParams.AcpiSlit;
 
-  AcpiWheaMce = AmdLateParams->AcpiWheaMce;
-  AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
-  AcpiAlib    = AmdLateParams->AcpiAlib;
+  AcpiWheaMce    = AmdLateParams.AcpiWheaMce;
+  AcpiWheaCmc    = AmdLateParams.AcpiWheaCmc;
+  AcpiAlib       = AmdLateParams.AcpiAlib;
 
-  AmdReleaseStruct (&AmdParamStruct);
   return (UINT32)Status;
 }
 

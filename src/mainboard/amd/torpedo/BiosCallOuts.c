@@ -525,6 +525,7 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   UINT32            GpioMmioAddr;
   UINT8             Data8;
   UINT16            Data16;
+  UINT8             TempData8;
 
   FcnData = Data;
   MemData = ConfigPtr;
@@ -539,25 +540,30 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   Data16  |= Data8;
   AcpiMmioAddr = (UINT32)Data16 << 16;
   GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
-  if(MemData->ParameterListPtr->DDR3Voltage == VOLT1_5) {
-  Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
-    Data8 |= BIT6;
-    Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-  } else if(MemData->ParameterListPtr->DDR3Voltage == VOLT1_35) {
+
+  switch(MemData->ParameterListPtr->DDR3Voltage){
+    case VOLT1_35:
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
       Data8 &= ~(UINT8)BIT6;
       Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-    Data8 |= BIT6;
+      Data8 |= (UINT8)BIT6;
       Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
-  } else if(MemData->ParameterListPtr->DDR3Voltage == VOLT1_25) {
+      break;
+    case VOLT1_25:
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
       Data8 &= ~(UINT8)BIT6;
       Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
       Data8 &= ~(UINT8)BIT6;
       Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
-  } else {}
+      break;
+    case VOLT1_5:
+    default:
+      Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
+      Data8 |= (UINT8)BIT6;
+      Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
+  }
   return Status;
 }
 
@@ -597,7 +603,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
 
   if (ResetInfo->ResetControl == DeassertSlotReset) {
-    if (ResetInfo->ResetId & (BIT2+BIT3)) {    //de-assert
+    if (ResetInfo->ResetId & BIT2+BIT3) {    //de-assert
       // [GPIO] GPIO45: PE_GPIO1 MXM_POWER_ENABLE, SET HIGH
       Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG45);
       if (Data8 & BIT7) {

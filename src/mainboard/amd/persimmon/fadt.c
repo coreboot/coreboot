@@ -28,7 +28,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
-//#include "../../../southbridge/amd/sb800/sb800.h"
+#include "pmio.h"
 
 /*extern*/ u16 pm_base = 0x800;
 /* pm_base should be set in sb acpi */

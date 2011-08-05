@@ -20,8 +20,12 @@
 #ifndef _PMIO_H_
 #define _PMIO_H_
 
-#define PM_INDEX	0xCD6
-#define PM_DATA		0xCD7
+#ifndef PM_INDEX
+  #define PM_INDEX	0xCD6
+#endif
+#ifndef PM_DATA
+  #define PM_DATA	0xCD7
+#endif
 #define PM2_INDEX	0xCD0
 #define PM2_DATA	0xCD1
 

@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include "smbus.h"
+#include <console/console.h>	/* printk */
 
 static inline void smbus_delay(void)
 {
@@ -71,9 +72,11 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_recv_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_recv_byte - Start.\n");
 	/* set the device I'm talking too */
 	outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBHSTADDR);
 
@@ -90,6 +93,7 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 	/* read results of transaction */
 	byte = inb(smbus_io_base + SMBHSTCMD);
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_recv_byte - End.\n");
 	return byte;
 }
 
@@ -98,9 +102,11 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_send_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_send_byte - Start.\n");
 	/* set the command... */
 	outb(val, smbus_io_base + SMBHSTCMD);
 
@@ -117,6 +123,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 		return -3;	/* timeout or error */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_send_byte - End.\n");
 	return 0;
 }
 
@@ -125,9 +132,11 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_read_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_read_byte - Start.\n");
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
@@ -147,6 +156,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address)
 	/* read results of transaction */
 	byte = inb(smbus_io_base + SMBHSTDAT0);
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_read_byte - End.\n");
 	return byte;
 }
 
@@ -155,9 +165,11 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_write_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_write_byte - Start.\n");
 	/* set the command/address... */
 	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 
@@ -177,6 +189,7 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 		return -3;	/* timeout or error */
 	}
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_write_byte - End.\n");
 	return 0;
 }
 
@@ -184,6 +197,7 @@ void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 {
 	u32 tmp;
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_ab_indx - Start.\n");
 	outl((reg_space & 0x7) << 29 | reg_addr, AB_INDX);
 	tmp = inl(AB_DATA);
 	/* rpr 4.2
@@ -199,12 +213,14 @@ void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 	outl((reg_space & 0x7) << 29 | reg_addr, AB_INDX);	/* probably we dont have to do it again. */
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_ab_indx - End.\n");
 }
 
 void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val)
 {
 	u32 tmp;
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_rc_indx - Start.\n");
 	outl((reg_space & 0x7) << 29 | (port & 3) << 24 | reg_addr, AB_INDX);
 	tmp = inl(AB_DATA);
 	/* rpr 4.2
@@ -220,6 +236,7 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val)
 	outl((reg_space & 0x7) << 29 | (port & 3) << 24 | reg_addr, AB_INDX);	/* probably we dont have to do it again. */
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_rc_indx - End.\n");
 }
 
 /* space = 0: AX_INDXC, AX_DATAC
@@ -229,6 +246,7 @@ void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val)
 {
 	u32 tmp;
 
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_ax_indx - Start.\n");
 	/* read axindc to tmp */
 	outl(space << 29 | space << 3 | 0x30, AB_INDX);
 	outl(axindc, AB_DATA);
@@ -247,5 +265,6 @@ void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val)
 	outl(space << 29 | space << 3 | 0x34, AB_INDX);
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);
+    printk(BIOS_DEBUG, "SB800 - Smbus.c - alink_ax_indx - End.\n");
 }
 

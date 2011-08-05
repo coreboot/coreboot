@@ -156,7 +156,7 @@ typedef struct _AMD_MODULE_HEADER {
 #define ILLEGAL_SBDFO 0xFFFFFFFF
 
 /// CPUID data received registers format
-typedef struct _SB_CPUID_DATA {
+typedef struct _CPUID_DATA {
   IN OUT   unsigned int          EAX_Reg;                ///< CPUID instruction result in EAX
   IN OUT   unsigned int          EBX_Reg;                ///< CPUID instruction result in EBX
   IN OUT   unsigned int          ECX_Reg;                ///< CPUID instruction result in ECX

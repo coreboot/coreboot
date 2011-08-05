@@ -21,6 +21,21 @@
 #ifndef _CIMX_SB_EARLY_H_
 #define _CIMX_SB_EARLY_H_
 
+#define PM_INDEX	0xcd6
+#define PM_DATA	0xcd7
+
+#define SB800_ACPI_IO_BASE 0x800
+
+#define ACPI_PM_EVT_BLK		(SB800_ACPI_IO_BASE + 0x00) /* 4 bytes */
+#define ACPI_PM1_CNT_BLK	(SB800_ACPI_IO_BASE + 0x04) /* 2 bytes */
+#define ACPI_PMA_CNT_BLK	(SB800_ACPI_IO_BASE + 0x0F) /* 1 byte */
+#define ACPI_PM_TMR_BLK		(SB800_ACPI_IO_BASE + 0x08) /* 4 bytes */
+#define ACPI_GPE0_BLK		(SB800_ACPI_IO_BASE + 0x20) /* 8 bytes */
+#define ACPI_CPU_CONTROL	(SB800_ACPI_IO_BASE + 0x10) /* 6 bytes */
+
+#define REV_SB800_A11	0x11
+#define REV_SB800_A12	0x12
+
 /**
  * @brief Get SouthBridge device number, called by finalize_node_setup()
  * @param[in] bus target bus number
@@ -32,6 +47,7 @@ u32 get_sbdn(u32 bus);
  * South Bridge CIMx romstage entry, sbPowerOnInit entry point wrapper.
  */
 void sb_poweron_init(void);
-//void sb_before_pci_init(void);
+void sb800_early_setup(void);
+void sb800_before_pci_init(void);
 
 #endif

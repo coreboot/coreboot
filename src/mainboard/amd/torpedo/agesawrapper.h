@@ -118,7 +118,6 @@ typedef struct {
  *---------------------------------------------------------------------------------------
  */
 
-//void brazos_platform_stage(void);
 UINT32 agesawrapper_amdinitreset (void);
 UINT32 agesawrapper_amdinitearly (void);
 UINT32 agesawrapper_amdinitenv (void);

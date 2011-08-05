@@ -58,6 +58,7 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 {
 	u32 ret = 0;
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - sb900_callout_entry - Start.\n");
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
 		//set_pcie_assert();
@@ -76,6 +77,7 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 		break;
 	}
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - sb900_callout_entry - End.\n");
 	return ret;
 }
 
@@ -87,14 +89,18 @@ static struct pci_operations lops_pci = {
 static void lpc_enable_resources(device_t dev)
 {
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_enable_resources - Start.\n");
 	pci_dev_enable_resources(dev);
 	//lpc_enable_childrens_resources(dev);
+	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_enable_resources - End.\n");
 }
 
 static void lpc_init(device_t dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - Start.\n");
 	/* SB Configure HPET base and enable bit */
 	hpetInit(sb_config, &(sb_config->BuildParameters));
+	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - End.\n");
 }
 
 static struct device_operations lpc_ops = {
@@ -115,16 +121,20 @@ static const struct pci_driver lpc_driver __pci_driver = {
 
 static void sata_enable_resources(struct device *dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - sata_enable_resources - Start.\n");
 	sataInitAfterPciEnum(sb_config);
 	pci_dev_enable_resources(dev);
+	printk(BIOS_DEBUG, "SB800 - Late.c - sata_enable_resources - End.\n");
 }
 
 static void sata_init(struct device *dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - sata_init - Start.\n");
 	sb_config->StdHeader.Func = SB_MID_POST_INIT;
 	AmdSbDispatcher(sb_config); //sataInitMidPost only
 	commonInitLateBoot(sb_config);
 	sataInitLatePost(sb_config);
+	printk(BIOS_DEBUG, "SB800 - Late.c - sata_init - End.\n");
 }
 
 static struct device_operations sata_ops = {
@@ -140,6 +150,7 @@ static const struct pci_driver sata_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB800_SATA_AHCI,
+/*	.device = PCI_DEVICE_ID_ATI_SB800_SATA, //SATA IDE Mode 4390 */
 };
 
 #if CONFIG_USBDEBUG
@@ -149,6 +160,7 @@ static void usb_set_resources(struct device *dev)
 	u32 base;
 	u32 old_debug;
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - usb_set_resources - Start.\n");
 	old_debug = get_ehci_debug();
 	set_ehci_debug(0);
 
@@ -161,13 +173,16 @@ static void usb_set_resources(struct device *dev)
 	base = res->base;
 	set_ehci_base(base);
 	report_resource_stored(dev, res, "");
+	printk(BIOS_DEBUG, "SB800 - Late.c - usb_set_resources - End.\n");
 }
 #endif
 
 static void usb_init(struct device *dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - usb_init - Start.\n");
 	usbInitAfterPciInit(sb_config);
 	commonInitLateBoot(sb_config);
+	printk(BIOS_DEBUG, "SB800 - Late.c - usb_init - End.\n");
 }
 
 static struct device_operations usb_ops = {
@@ -207,7 +222,9 @@ static const struct pci_driver usb_ohci4_driver __pci_driver = {
 
 static void azalia_init(struct device *dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - azalia_init - Start.\n");
 	azaliaInitAfterPciEnum(sb_config); //Detect and configure High Definition Audio
+	printk(BIOS_DEBUG, "SB800 - Late.c - azalia_init - End.\n");
 }
 
 static struct device_operations azalia_ops = {
@@ -228,9 +245,10 @@ static const struct pci_driver azalia_driver __pci_driver = {
 
 static void gec_init(struct device *dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - gec_init - Start.\n");
 	gecInitAfterPciEnum(sb_config);
 	gecInitLatePost(sb_config);
-	printk(BIOS_DEBUG, "gec hda enabled\n");
+	printk(BIOS_DEBUG, "SB800 - Late.c - gec_init - End.\n");
 }
 
 static struct device_operations gec_ops = {
@@ -266,7 +284,9 @@ static void pci_init(device_t dev)
 
 static void pcie_init(device_t dev)
 {
+	printk(BIOS_DEBUG, "SB800 - Late.c - pcie_init - Start.\n");
 	sbPcieGppLateInit(sb_config);
+	printk(BIOS_DEBUG, "SB800 - Late.c - pcie_init - End.\n");
 }
 
 static struct device_operations pci_ops = {
@@ -452,6 +472,11 @@ static void sb800_enable(device_t dev)
 		break;
 	}
 
+	/* Special setting ABCFG registers before PCI emulation. */
+	abSpecialSetBeforePciEnum(sb_config);
+  	usbDesertPll(sb_config);
+	//sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
+	//AmdSbDispatcher(sb_config);
 }
 
 struct chip_operations southbridge_amd_cimx_sb800_ops = {

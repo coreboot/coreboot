@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/amdfam12.h>
+#include "SbEarly.h"
 #include "agesawrapper.h"
 
 

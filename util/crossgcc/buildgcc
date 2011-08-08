@@ -4,6 +4,8 @@
 # written by Patrick Georgi <patrick.georgi@coresystems.de> and
 #            Stefan Reinauer <stefan.reinauer@coresystems.de>
 #
+# Copyright (C) 2011 by Sage Electronic Engineering
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -18,8 +20,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="December 16th, 2010"
-CROSSGCC_VERSION="1.03"
+CROSSGCC_DATE="August 8th, 2011"
+CROSSGCC_VERSION="1.04"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -37,6 +39,7 @@ GDB_VERSION=7.2
 W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
+IASL_VERSION=20110623
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -48,6 +51,7 @@ BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.t
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
+IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
@@ -58,6 +62,7 @@ BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
 W32API_DIR="w32api-${W32API_VERSION}-mingw32"
 MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
+IASL_DIR="acpica-unix-${IASL_VERSION}"
 
 SAVETEMPS=0
 SKIPGDB=0
@@ -96,7 +101,7 @@ MAKE=`searchgnu make` || exit $?
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-*
+	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-* acpica-*
 	printf "${green}ok${NC}\n"
 }
 
@@ -127,6 +132,7 @@ myversion()
 
 	cat << EOF
 Copyright (C) 2008-2010 by coresystems GmbH
+Copyright (C) 2011 by Sage Electronic Engineering
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -217,7 +223,7 @@ fi
 
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES; do
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES $IASL_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
 	test -f tarballs/$FILE && printf "(cached)" || (
@@ -238,7 +244,7 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 fi
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES; do
+for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IASL; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
@@ -447,6 +453,23 @@ test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok$
 test -r build-gdb/.failed && exit 1
 fi
 
+if [ -f $IASL_DIR/compiler/.success ]; then
+	printf "Skipping IASL as it is already built\n"
+else
+printf "Building IASL ${IASL_VERSION} ... "
+(
+	cd $IASL_DIR/compiler
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	rm -f .failed
+	CFLAGS="$HOSTCFLAGS"
+	$MAKE || touch .failed
+	cp --remove-destination iasl* $DESTDIR$TARGETDIR/bin || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> $IASL_DIR/compiler/crossgcc-build.log
+test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r $IASL_DIR/compiler.failed && exit 1
+fi
+
 if [ $SAVETEMPS -eq 0 ]; then
 	printf "Cleaning up... "
 	rm -rf ${GMP_DIR} build-gmp
@@ -456,6 +479,7 @@ if [ $SAVETEMPS -eq 0 ]; then
 	rm -rf ${BINUTILS_DIR} build-binutils
 	rm -rf ${GCC_DIR} build-gcc
 	rm -rf ${GDB_DIR} build-gdb
+	rm -rf ${IASL_DIR}
 	printf "${green}ok${NC}\n"
 else
 	printf "Leaving temporary files around... ${green}ok${NC}\n"

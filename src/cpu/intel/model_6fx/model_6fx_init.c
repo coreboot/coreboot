@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
+#include <cpu/intel/acpi.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
@@ -156,6 +157,19 @@ static void configure_misc(void)
 
 	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
+
+	// set maximum CPU speed
+	msr = rdmsr(IA32_PERF_STS);
+	int busratio_max=(msr.hi >> (40-32)) & 0x1f;
+
+	msr = rdmsr(IA32_PLATFORM_ID);
+	int vid_max=msr.lo & 0x3f;
+
+	msr.lo &= ~0xffff;
+	msr.lo |= busratio_max << 8;
+	msr.lo |= vid_max;
+
+	wrmsr(IA32_PERF_CTL, msr);
 }
 
 #define PIC_SENS_CFG	0x1aa

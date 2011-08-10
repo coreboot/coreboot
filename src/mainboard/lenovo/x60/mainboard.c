@@ -80,6 +80,10 @@ static void mainboard_enable(device_t dev)
 		set_option("volume", &(u8[]){ 0x03 });
 		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
 	}
+
+	/* Enable Dummy DCC ON# for DVI */
+	printk(BIOS_DEBUG, "Laptop handling...\n");
+	outb(inb(0x60f) & ~(1 << 5), 0x60f);
 }
 
 struct chip_operations mainboard_ops = {

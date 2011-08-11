@@ -463,7 +463,8 @@ printf "Building IASL ${IASL_VERSION} ... "
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
 	$MAKE || touch .failed
-	cp --remove-destination iasl* $DESTDIR$TARGETDIR/bin || touch .failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
+	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> $IASL_DIR/compiler/crossgcc-build.log
 test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"

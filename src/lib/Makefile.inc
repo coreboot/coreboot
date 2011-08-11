@@ -52,4 +52,5 @@ OPTION_TABLE_H:=$(obj)/option_table.h
 endif
 
 $(obj)/lib/uart8250mem.smm.o : $(OPTION_TABLE_H)
+$(obj)/lib/uart8250.smm.o : $(OPTION_TABLE_H)
 

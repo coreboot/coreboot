@@ -33,6 +33,10 @@
 #include <option_table.h>
 #include <cbfs.h>
 #endif
+#if (CONFIG_ADD_FDT == 1)
+#include <fdt/fdt.h>
+#include <fdt/libfdt_env.h>
+#endif
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -173,6 +177,34 @@ static void lb_framebuffer(struct lb_header *header)
 	fill_lb_framebuffer(framebuffer);
 #endif
 }
+
+#ifdef CONFIG_ADD_FDT
+static void lb_fdt(struct lb_header *header)
+{
+	struct lb_fdt *fdt_record;
+	struct fdt_header *fdt_header;
+	u32 magic, fdt_size;
+
+	fdt_header = cbfs_find_file(CONFIG_FDT_FILE_NAME, CBFS_TYPE_FDT);
+	if (!fdt_header) {
+		printk(BIOS_ERR, "Can't find FDT (%s)\n", CONFIG_FDT_FILE_NAME);
+		return;
+	}
+
+	magic = fdt32_to_cpu(fdt_header->magic);
+	if (magic != FDT_MAGIC) {
+		printk(BIOS_ERR, "FDT header corrupted (0x%x)\n", magic);
+		return;
+	}
+
+	fdt_size = fdt32_to_cpu(fdt_header->totalsize);
+	fdt_record = (struct lb_fdt *) lb_new_record(header);
+	fdt_record->tag = LB_TAG_FDT;
+	fdt_record->size = sizeof(*fdt_record) + fdt_size;
+	memcpy(fdt_record + 1, fdt_header, fdt_size);
+	printk(BIOS_SPEW, "FDT of %d bytes added\n", fdt_size);
+}
+#endif
 
 static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
@@ -617,7 +649,13 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
-
+#ifdef CONFIG_ADD_FDT
+	/*
+	 * Copy FDT from CBFS into the coreboot table possibly augmenting it
+	 * along the way.
+	 */
+	lb_fdt(head);
+#endif
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);
 

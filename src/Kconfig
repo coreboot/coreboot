@@ -112,6 +112,22 @@ config INCLUDE_CONFIG_FILE
   help
     Include in CBFS the coreboot config file that was used to compile the ROM image
 
+config ADD_FDT
+	bool "Add FDT to the coreboot table"
+	default n
+	help
+	  Make coreboot look for the Flat Device Tree (FDT) in CBFS and once
+	  found insert the device tree into the coreboot table (potentially
+	  modifying the tree as needed). The FDT is used by the payload.
+
+config FDT_FILE_NAME
+	depends on ADD_FDT
+	string "Name of the CBFS file containing the compiled FDT"
+	default "u-boot.dtb"
+	help
+	  Name of the CBFS file containing the binary representation of the
+	  device tree to be optionally modified and passed to the payload.
+
 endmenu
 
 source src/mainboard/Kconfig

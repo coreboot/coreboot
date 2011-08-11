@@ -195,6 +195,31 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_size;
 };
 
+#define LB_TAG_GPIO	0x0013
+
+struct lb_gpio {
+	uint32_t port;
+	uint32_t polarity;
+	uint32_t value;
+#define GPIO_MAX_NAME_LENGTH 16
+        uint8_t name[GPIO_MAX_NAME_LENGTH];
+};
+
+struct lb_gpios {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t count;
+	struct lb_gpio gpios[0];
+};
+
+#define LB_TAG_FDT	0x0014
+struct lb_fdt {
+	uint32_t tag;
+	uint32_t size;		     /* size of the entire entry */
+	/* the actual FDT gets placed here */
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

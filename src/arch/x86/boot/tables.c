@@ -202,7 +202,7 @@ struct lb_memory *write_tables(void)
 	}
 #endif
 
-#define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
+#define MAX_COREBOOT_TABLE_SIZE (32 * 1024)
 	post_code(0x9d);
 
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);

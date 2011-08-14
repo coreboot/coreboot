@@ -87,7 +87,7 @@ config SCONFIG_GENPARSER
 	help
 	  Enable this option if you are working on the sconfig
 	  device tree parser and made changes to sconfig.l and
-	  sconfig.y. 
+	  sconfig.y.
 	  Otherwise, say N.
 
 config USE_OPTION_TABLE
@@ -304,6 +304,10 @@ config GENERATE_PIRQ_TABLE
 	bool
 	default HAVE_PIRQ_TABLE
 
+config GENERATE_SMBIOS_TABLES
+	bool
+	default y
+
 menu "System tables"
 
 config WRITE_HIGH_TABLES
@@ -339,6 +343,15 @@ config GENERATE_PIRQ_TABLE
 	default y
 	help
 	  Generate a PIRQ table for this board.
+
+	  If unsure, say Y.
+
+config GENERATE_SMBIOS_TABLES
+	depends on ARCH_X86
+	bool "Generate SMBIOS tables"
+	default y
+	help
+	  Generate SMBIOS tables for this board.
 
 	  If unsure, say Y.
 

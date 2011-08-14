@@ -31,6 +31,7 @@
 #include <cpu/x86/multiboot.h>
 #include <cbmem.h>
 #include <lib.h>
+#include <smbios.h>
 
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
@@ -120,7 +121,7 @@ struct lb_memory *write_tables(void)
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
 #if CONFIG_GENERATE_ACPI_TABLES == 1
-#define MAX_ACPI_SIZE (47 * 1024)
+#define MAX_ACPI_SIZE (45 * 1024)
 	post_code(0x9c);
 
 	/* Write ACPI tables to F segment and high tables area */
@@ -178,7 +179,28 @@ struct lb_memory *write_tables(void)
 	}
 
 #endif
+#define MAX_SMBIOS_SIZE 2048
+#if CONFIG_GENERATE_SMBIOS_TABLES
+	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_SMBIOS, MAX_SMBIOS_SIZE);
+	if (high_table_pointer) {
+		unsigned long new_high_table_pointer;
 
+		new_high_table_pointer = smbios_write_tables(high_table_pointer);
+		rom_table_end = ALIGN(rom_table_end, 16);
+		memcpy((void *)rom_table_end, (void *)high_table_pointer, sizeof(struct smbios_entry));
+		rom_table_end += sizeof(struct smbios_entry);
+
+		if (new_high_table_pointer > ( high_table_pointer + MAX_SMBIOS_SIZE)) {
+			printk(BIOS_ERR, "ERROR: Increase SMBIOS size\n");
+		}
+                printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n",
+				new_high_table_pointer - high_table_pointer);
+	} else {
+		unsigned long new_rom_table_end = smbios_write_tables(rom_table_end);
+		printk(BIOS_DEBUG, "SMBIOS size %ld bytes\n", new_rom_table_end - rom_table_end);
+		rom_table_end = ALIGN(new_rom_table_end, 16);
+	}
+#endif
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 	post_code(0x9d);

@@ -38,6 +38,7 @@ extern uint64_t high_tables_base, high_tables_size;
 #define CBMEM_ID_PIRQ		0x49525154
 #define CBMEM_ID_MPTABLE	0x534d5054
 #define CBMEM_ID_RESUME		0x5245534d
+#define CBMEM_ID_SMBIOS         0x534d4254
 #define CBMEM_ID_NONE		0x00000000
 
 void cbmem_initialize(void);

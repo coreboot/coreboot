@@ -26,7 +26,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "dmi.h"
 
 extern const unsigned char AmlCode[];
 
@@ -194,10 +193,6 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
-
-	printk(BIOS_DEBUG, "ACPI:     * DMI (Linux workaround)\n");
-	memcpy((void *)0xfff80, dmi_table, DMI_TABLE_SIZE);
-
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }

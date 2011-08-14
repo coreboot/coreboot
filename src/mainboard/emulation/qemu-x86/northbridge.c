@@ -9,6 +9,7 @@
 #include <bitops.h>
 #include "chip.h"
 #include <delay.h>
+#include <smbios.h>
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 #include <cbmem.h>
@@ -19,18 +20,24 @@
 #define HIGH_RAM_ADDR 0x35
 #define LOW_RAM_ADDR 0x34
 
+static unsigned long qemu_get_memory_size(void)
+{
+	unsigned long tomk;
+	outb (HIGH_RAM_ADDR, CMOS_ADDR_PORT);
+	tomk = ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
+	outb (LOW_RAM_ADDR, CMOS_ADDR_PORT);
+	tomk |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
+	tomk += 16 * 1024;
+	return tomk;
+}
+
 static void cpu_pci_domain_set_resources(device_t dev)
 {
 	u32 pci_tolm = find_pci_tolm(dev->link_list);
 	unsigned long tomk = 0, tolmk;
 	int idx;
 
-	outb (HIGH_RAM_ADDR, CMOS_ADDR_PORT);
-	tomk = ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
-	outb (LOW_RAM_ADDR, CMOS_ADDR_PORT);
-	tomk |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
-	tomk += 16 * 1024;
-
+	tomk = qemu_get_memory_size();
 	printk(BIOS_DEBUG, "Detected %lu Kbytes (%lu MiB) RAM.\n",
 	       tomk, tomk / 1024);
 
@@ -80,12 +87,67 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED;
 }
 
+#if CONFIG_GENERATE_SMBIOS_TABLES
+static int qemu_get_smbios_data16(int handle, unsigned long *current)
+{
+	struct smbios_type16 *t = (struct smbios_type16 *)*current;
+	int len = sizeof(struct smbios_type16);
+
+	memset(t, 0, sizeof(struct smbios_type16));
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->handle = handle;
+	t->length = len - 2;
+	t->location = 3; /* Location: System Board */
+	t->use = 3; /* System memory */
+	t->memory_error_correction = 3; /* No error correction */
+	t->maximum_capacity = qemu_get_memory_size();
+	*current += len;
+	return len;
+}
+
+static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *current)
+{
+	struct smbios_type17 *t = (struct smbios_type17 *)*current;
+	int len;
+
+	memset(t, 0, sizeof(struct smbios_type17));
+	t->type = SMBIOS_MEMORY_DEVICE;
+	t->handle = handle;
+	t->phys_memory_array_handle = parent_handle;
+	t->length = sizeof(struct smbios_type17) - 2;
+	t->size = qemu_get_memory_size() / 1024;
+	t->data_width = 64;
+	t->total_width = 64;
+	t->form_factor = 9; /* DIMM */
+	t->device_locator = smbios_add_string(t->eos, "Virtual");
+	t->memory_type = 0x12; /* DDR */
+	t->type_detail = 0x80; /* Synchronous */
+	t->speed = 200;
+	t->clock_speed = 200;
+	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	return len;
+}
+
+static int qemu_get_smbios_data(device_t dev, int *handle, unsigned long *current)
+{
+	int len;
+	len = qemu_get_smbios_data16(*handle, current);
+	len += qemu_get_smbios_data17(*handle+1, *handle, current);
+	*handle += 2;
+	return len;
+}
+#endif
 static struct device_operations pci_domain_ops = {
 	.read_resources		= cpu_pci_domain_read_resources,
 	.set_resources		= cpu_pci_domain_set_resources,
 	.enable_resources	= NULL,
 	.init			= NULL,
 	.scan_bus		= pci_domain_scan_bus,
+#if CONFIG_GENERATE_SMBIOS_TABLES
+	.get_smbios_data	= qemu_get_smbios_data,
+#endif
 };
 
 static void enable_dev(struct device *dev)

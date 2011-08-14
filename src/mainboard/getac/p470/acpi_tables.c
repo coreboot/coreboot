@@ -29,7 +29,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "dmi.h"
 
 extern unsigned char AmlCode[];
 
@@ -355,15 +354,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
-
-	printk(BIOS_DEBUG, "ACPI:     * DMI (Linux workaround)\n");
-	memcpy((void *)0xfff80, dmi_table, DMI_TABLE_SIZE);
-#if CONFIG_WRITE_HIGH_TABLES == 1
-	memcpy((void *)current, dmi_table, DMI_TABLE_SIZE);
-	current += DMI_TABLE_SIZE;
-	ALIGN_CURRENT;
-#endif
-
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }

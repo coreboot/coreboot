@@ -15,6 +15,7 @@ struct smbus_bus_operations;
 /* Chip operations */
 struct chip_operations {
 	void (*enable_dev)(struct device *dev);
+	int (*get_smbios_data)(device_t dev, int *handle, unsigned long *current);
 	const char *name;
 };
 
@@ -31,6 +32,7 @@ struct device_operations {
 	void (*enable)(device_t dev);
 	void (*set_link)(device_t dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
+	int (*get_smbios_data)(device_t dev, int *handle, unsigned long *current);
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pci_bus_operations *ops_pci_bus;

@@ -229,6 +229,7 @@ void cbmem_list(void)
 		case CBMEM_ID_PIRQ:	 printk(BIOS_DEBUG, "IRQ TABLE  "); break;
 		case CBMEM_ID_MPTABLE:	 printk(BIOS_DEBUG, "SMP TABLE  "); break;
 		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
+		case CBMEM_ID_SMBIOS:    printk(BIOS_DEBUG, "SMBIOS     "); break;
 		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
 		}
 		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);

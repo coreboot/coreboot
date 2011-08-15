@@ -29,11 +29,11 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
-#if (CONFIG_USE_OPTION_TABLE == 1)
+#if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #include <cbfs.h>
 #endif
-#if (CONFIG_ADD_FDT == 1)
+#if CONFIG_ADD_FDT
 #include <fdt/fdt.h>
 #include <fdt/libfdt_env.h>
 #endif
@@ -178,7 +178,7 @@ static void lb_framebuffer(struct lb_header *header)
 #endif
 }
 
-#ifdef CONFIG_ADD_FDT
+#if CONFIG_ADD_FDT
 static void lb_fdt(struct lb_header *header)
 {
 	struct lb_fdt *fdt_record;
@@ -230,7 +230,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-#if (CONFIG_USE_OPTION_TABLE == 1)
+#if CONFIG_USE_OPTION_TABLE
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -544,7 +544,7 @@ static void add_lb_reserved(struct lb_memory *mem)
 		lb_add_rsvd_range, mem);
 }
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
@@ -555,7 +555,7 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
@@ -591,7 +591,7 @@ unsigned long write_coreboot_table(
 	rom_table_end &= ~0xffff;
 	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
 
-#if (CONFIG_USE_OPTION_TABLE == 1)
+#if CONFIG_USE_OPTION_TABLE
 	{
 		struct cmos_option_table *option_table = cbfs_find_file("cmos_layout.bin", 0x1aa);
 		if (option_table) {
@@ -616,7 +616,7 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		rom_table_start, rom_table_end-rom_table_start);
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Adding high table area\n");
 	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,
@@ -626,7 +626,7 @@ unsigned long write_coreboot_table(
 	/* Add reserved regions */
 	add_lb_reserved(mem);
 
-#if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
+#if CONFIG_HAVE_MAINBOARD_RESOURCES
 	add_mainboard_resources(mem);
 #endif
 
@@ -649,7 +649,8 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
-#ifdef CONFIG_ADD_FDT
+
+#if CONFIG_ADD_FDT
 	/*
 	 * Copy FDT from CBFS into the coreboot table possibly augmenting it
 	 * along the way.

@@ -29,9 +29,9 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
+#include <cbfs.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
-#include <cbfs.h>
 #endif
 #if CONFIG_ADD_FDT
 #include <fdt/fdt.h>

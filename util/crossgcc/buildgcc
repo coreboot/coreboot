@@ -40,6 +40,8 @@ W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
 IASL_VERSION=20110623
+PYTHON_VERSION=2.7
+EXPAT_VERSION=2.0.1
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -52,6 +54,8 @@ GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
+PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
+EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
@@ -63,6 +67,8 @@ GDB_DIR="gdb-${GDB_VERSION}"
 W32API_DIR="w32api-${W32API_VERSION}-mingw32"
 MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
 IASL_DIR="acpica-unix-${IASL_VERSION}"
+PYTHON_DIR="Python-${PYTHON_VERSION}"
+EXPAT_DIR="expat-${EXPAT_VERSION}"
 
 SAVETEMPS=0
 SKIPGDB=0
@@ -101,7 +107,7 @@ MAKE=`searchgnu make` || exit $?
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-* acpica-*
+	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-* acpica-* python-* expat-*
 	printf "${green}ok${NC}\n"
 }
 
@@ -187,9 +193,13 @@ while true ; do
 done
 
 GDB_PACKAGE="GDB"
+PYTHON_PACKAGE="PYTHON"
+EXPAT_PACKAGE="EXPAT"
 if [ $SKIPGDB -eq 1 ]; then
 	printf "Will skip GDB ... ${green}ok${NC}\n"
 	GDB_PACKAGE=""
+	PYTHON_PACKAGE=""
+	EXPAT_PACKAGE=""
 fi
 
 MINGW_ARCHIVES=""
@@ -223,7 +233,7 @@ fi
 
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES $IASL_ARCHIVE; do
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
 	test -f tarballs/$FILE && printf "(cached)" || (
@@ -244,7 +254,7 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 fi
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IASL; do
+for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE $EXPAT_PACKAGE $GDB_PACKAGE $MINGW_PACKAGES IASL; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
@@ -258,7 +268,7 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IAS
 		for patch in patches/${!dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
-			$PATCH -s -N -p0 < `echo $patch`
+			$PATCH -s -N -p0 < `echo $patch` || printf "\n${RED}Failed $patch.${red}\n"
 		done
 	)
 done
@@ -292,7 +302,7 @@ if [ `uname` = "Darwin" ]; then
 	#rm .architecture_check.c .architecture_check.o
 fi
 
-mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc
+mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc build-python build-expat
 if [ $SKIPGDB -eq 0 ]; then
 	mkdir -p build-gdb
 fi
@@ -345,6 +355,10 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-mpfr/.failed && exit 1
 fi
+
+# Remove -pedantic. It is used by GMP and MPFR, but causes warning and
+# errors for C98/C99 stuff in GCC, GDB, and etc.
+HOSTCFLAGS=$(echo $HOSTCFLAGS | sed -e 's/-pedantic//')
 
 if [ -f build-mpc/.success ]; then
 	printf "Skipping MPC as it is already built\n"
@@ -433,6 +447,47 @@ test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok$
 test -r build-gcc/.failed && exit 1
 fi
 
+if [ -f build-expat/.success ]; then
+	printf "Skipping EXPAT as it is already built\n"
+elif [ $SKIPGDB -eq 1 ]; then
+	printf "Skipping EXPAT as requested by command line (skip GDB)\n"
+else
+printf "Building EXPAT ${EXPAT_VERSION} ... "
+(
+	cd build-expat
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	rm -f .failed
+	CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
+		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-expat/crossgcc-build.log
+test -r build-expat/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-expat/.failed && exit 1
+fi
+
+
+if [ -f build-python/.success ]; then
+	printf "Skipping PYTHON as it is already built\n"
+elif [ $SKIPGDB -eq 1 ]; then
+	printf "Skipping PYTHON as requested by command line (skip GDB)\n"
+else
+printf "Building PYTHON ${PYTHON_VERSION} ... "
+(
+	cd build-python
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	rm -f .failed
+	CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-gdb/crossgcc-build.log
+test -r build-python/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-python/.failed && exit 1
+fi
+
 if [ -f build-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
 elif [ $SKIPGDB -eq 1 ]; then
@@ -441,10 +496,13 @@ else
 printf "Building GDB ${GDB_VERSION} ... "
 (
 	cd build-gdb
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	export PATH=$DESTDIR$TARGETDIR/bin:$PATH
+	export PYTHONHOME=$DESTDIR$TARGETDIR
 	rm -f .failed
-	CFLAGS="$HOSTCFLAGS" ../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
-		--without-python --disable-werror --disable-nls
+	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib -lpthread -ldl -lutil"\
+		CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" ../gdb-${GDB_VERSION}/configure \
+		--prefix=$TARGETDIR --target=${TARGETARCH} \
+		--disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
@@ -480,6 +538,8 @@ if [ $SAVETEMPS -eq 0 ]; then
 	rm -rf ${BINUTILS_DIR} build-binutils
 	rm -rf ${GCC_DIR} build-gcc
 	rm -rf ${GDB_DIR} build-gdb
+	rm -rf ${EXPAT_DIR} build-expat
+	rm -rf ${PYTHON_DIR} build-python
 	rm -rf ${IASL_DIR}
 	printf "${green}ok${NC}\n"
 else
@@ -487,5 +547,3 @@ else
 fi
 
 printf "\n${green}You can now run your $TARGETARCH cross toolchain from $TARGETDIR.${NC}\n"
-
-

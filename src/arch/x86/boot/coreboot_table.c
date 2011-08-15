@@ -29,9 +29,9 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
+#include <cbfs.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
-#include <cbfs.h>
 #endif
 
 static struct lb_header *lb_table_init(unsigned long addr)

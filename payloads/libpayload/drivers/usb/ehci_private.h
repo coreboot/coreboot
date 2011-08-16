@@ -37,7 +37,7 @@
 #define FLADJ 0x61
 #define FLADJ_framelength(x) (((x)-59488)/16)
 
-typedef union {
+typedef volatile union {
 	u32 val;
 	volatile struct {
 		unsigned long current_conn_status:1;
@@ -62,7 +62,7 @@ typedef union {
 	} __attribute__ ((packed));
 } __attribute__ ((packed)) portsc_t;
 
-typedef struct {
+typedef volatile struct {
 	u8 caplength;
 	u8 res1;
 	u16 hciversion;
@@ -117,7 +117,7 @@ typedef struct {
 	};
 } __attribute__ ((packed)) hc_cap_t;
 
-typedef struct {
+typedef volatile struct {
 	union {
 		u32 usbcmd;
 		volatile struct {
@@ -174,7 +174,7 @@ typedef struct {
 	portsc_t portsc[0];
 } hc_op_t;
 
-typedef struct {
+typedef volatile struct {
 	union {
 		u32 next_qtd;
 		struct {
@@ -223,7 +223,7 @@ typedef struct {
 	u32 bufptrs64[5];
 } __attribute__ ((packed)) qtd_t;
 
-typedef struct {
+typedef volatile struct {
 	union {
 		u32 horiz_link_ptr;
 		struct {

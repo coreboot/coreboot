@@ -320,9 +320,10 @@ static unsigned long lb_table_fini(struct lb_header *head, int fixup)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk(BIOS_DEBUG, "Wrote coreboot table at: %p - %p  checksum %x\n",
-		head, rec, head->table_checksum);
-	return (unsigned long)rec;
+	printk(BIOS_DEBUG,
+	       "Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
+	       head, head->table_bytes, head->table_checksum);
+	return (unsigned long)rec + rec->size;
 }
 
 static void lb_cleanup_memory_ranges(struct lb_memory *mem)

@@ -55,7 +55,7 @@
 
 
 /* returns pointer to master header or 0xffffffff if not found */
-static struct cbfs_header *get_cbfs_header(void)
+struct cbfs_header *get_cbfs_header(void)
 {
 	struct cbfs_header *header;
 

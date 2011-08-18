@@ -87,6 +87,14 @@
 #endif
 
 /**
+ * SIO_HWM_BASE_ADDRESS - Super IO HWM base address
+ *
+ */
+#ifndef SIO_HWM_BASE_ADDRESS
+  #define SIO_HWM_BASE_ADDRESS         0x290
+#endif
+
+/**
  * SPI_BASE_ADDRESS - SPI controller (ROM) base address
  *
  */

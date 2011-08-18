@@ -219,4 +219,9 @@
  */
 #define GEC_CONFIG			0
 
+/**
+ * @def SIO_HWM_BASE_ADDRESS  Super IO HWM base address
+ */
+#define SIO_HWM_BASE_ADDRESS		0x290
+
 #endif

@@ -27,5 +27,9 @@ if SOUTHBRIDGE_AMD_CIMX_SB800
 config BOOTBLOCK_SOUTHBRIDGE_INIT
         string
         default "southbridge/amd/cimx/sb800/bootblock.c"
+
+config SB_SUPERIO_HWM
+        bool
+        default n
 endif #SOUTHBRIDGE_AMD_CIMX_SB800
 

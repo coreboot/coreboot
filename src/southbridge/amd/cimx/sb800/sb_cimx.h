@@ -18,17 +18,30 @@
  */
 
 
-#ifndef _PMIO_H_
-#define _PMIO_H_
+#ifndef _CIMX_H_
+#define _CIMX_H_
 
-#define PM_INDEX	0xCD6
-#define PM_DATA		0xCD7
-#define PM2_INDEX	0xCD0
-#define PM2_DATA	0xCD1
+/**
+ * AMD South Bridge CIMx entry point wrapper
+ */
+void sb_Poweron_Init(void);
+void sb_Before_Pci_Init(void);
+void sb_After_Pci_Init(void);
+void sb_Mid_Post_Init(void);
+void sb_Late_Post(void);
 
-void pm_iowrite(u8 reg, u8 value);
-u8 pm_ioread(u8 reg);
-void pm2_iowrite(u8 reg, u8 value);
-u8 pm2_ioread(u8 reg);
+/**
+ * CIMX not set the clock to 48Mhz until sbBeforePciInit,
+ * coreboot may need to set this even more earlier
+ */
+void sb800_clk_output_48Mhz(void);
 
+#if CONFIG_RAMINIT_SYSINFO == 1
+/**
+ * @brief Get SouthBridge device number, called by finalize_node_setup()
+ * @param[in] bus target bus number
+ * @return southbridge device number
+ */
+u32 get_sbdn(u32 bus);
+#endif
 #endif

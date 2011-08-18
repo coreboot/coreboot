@@ -25,7 +25,7 @@
 #include <arch/romcc_io.h>	/* device_t */
 #include "SbPlatform.h"
 #include "SbEarly.h"
-#include "cfg.h"		/*sb900_cimx_config*/
+#include "platform_cfg.h"	/*sb900_cimx_config*/
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "smbus.h"

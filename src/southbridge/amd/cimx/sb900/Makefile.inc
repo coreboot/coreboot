@@ -17,15 +17,17 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-subdirs-$(CONFIG_AMD_CIMX_SB900) += ../../../../../src/vendorcode/amd/cimx/sb900
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += ../../../../../src/vendorcode/amd/cimx/sb900
 
 # SB900 Platform Files
 
+romstage-y += cfg.c
 romstage-y += early.c
 romstage-y += smbus.c
 
-ramstage-y += late.c
+ramstage-y += cfg.c
 ramstage-y += early.c
+ramstage-y += late.c
 
 driver-y   += smbus.c
 driver-y   += lpc.c

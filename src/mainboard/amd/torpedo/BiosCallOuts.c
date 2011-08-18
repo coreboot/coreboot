@@ -525,7 +525,6 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   UINT32            GpioMmioAddr;
   UINT8             Data8;
   UINT16            Data16;
-  UINT8             TempData8;
 
   FcnData = Data;
   MemData = ConfigPtr;
@@ -598,14 +597,14 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
 
   if (ResetInfo->ResetControl == DeassertSlotReset) {
-    if (ResetInfo->ResetId & BIT2+BIT3) {    //de-assert
+    if (ResetInfo->ResetId & (BIT2+BIT3)) {    //de-assert
       // [GPIO] GPIO45: PE_GPIO1 MXM_POWER_ENABLE, SET HIGH
       Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG45);
       if (Data8 & BIT7) {
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG28);
         while (!(Data8 & BIT7)) {
           Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG28);
-        } 						
+        }
         // GPIO44: PE_GPIO0 MXM Reset
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG44);
         Data8 |= BIT6 ;

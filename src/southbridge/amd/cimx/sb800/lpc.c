@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <console/console.h>
 #include <device/pci.h>
 #include "lpc.h"
 
@@ -25,6 +26,7 @@ void lpc_read_resources(device_t dev)
 {
 	struct resource *res;
 
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_read_resources - Start.\n");
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
@@ -49,18 +51,20 @@ void lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	compact_resources(dev);
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_read_resources - End.\n");
 }
 
 void lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
 
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - Start.\n");
 	pci_dev_set_resources(dev);
 
 	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
 	res = find_resource(dev, SPIROM_BASE_ADDRESS);
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS, res->base | 1 << 1);
-
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - End.\n");
 }
 
 /**
@@ -76,6 +80,7 @@ void lpc_enable_childrens_resources(device_t dev)
 	int var_num = 0;
 	u16 reg_var[3];
 
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_enable_childrens_resources - Start.\n");
 	reg = pci_read_config32(dev, 0x44);
 	reg_x = pci_read_config32(dev, 0x48);
 
@@ -170,4 +175,5 @@ void lpc_enable_childrens_resources(device_t dev)
 		//pci_write_config16(dev, 0x64, reg_var[0]); //cause filo can not find sata
 		break;
 	}
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_enable_childrens_resources - End.\n");
 }

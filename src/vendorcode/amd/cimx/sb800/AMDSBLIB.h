@@ -113,5 +113,6 @@ unsigned int ReadIo32(IN unsigned short Address);
 void WriteIo8(IN unsigned short Address, IN unsigned char Data);
 void WriteIo16(IN unsigned short Address, IN unsigned short Data);
 void WriteIo32(IN unsigned short Address, IN unsigned int Data);
-void CpuidRead(IN unsigned int CpuidFcnAddress, OUT CPUID_DATA *Value);
+//void CpuidRead(IN unsigned int CpuidFcnAddress, OUT CPUID_DATA *Value);
+void CpuidRead(unsigned int CpuidFcnAddress, CPUID_DATA *Value);
 unsigned char ReadNumberOfCpuCores(void);

@@ -47,10 +47,6 @@ config AMD_AGESA
         bool
         default y
 
-config AMD_CIMX_SB800
-        bool
-        default y
-
 config MAINBOARD_DIR
         string
         default asrock/e350m1

@@ -27,7 +27,9 @@
 ; 
 ;*********************************************************************************/
 
-#define BIOS_SIZE                      0x04   //04 - 1MB
+#ifndef BIOS_SIZE
+  #define BIOS_SIZE                      0x04   //04 - 1MB
+#endif
 #define LEGACY_FREE                    0x00
 #define ACPI_SLEEP_TRAP                0x01
 //#define SPREAD_SPECTRUM_EPROM_LOAD     0x01

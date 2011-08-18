@@ -50,10 +50,6 @@ config AMD_AGESA
         bool
         default y
 
-config AMD_CIMX_SB900
-        bool
-        default y
-
 config MAINBOARD_DIR
         string
         default amd/torpedo

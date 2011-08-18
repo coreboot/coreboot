@@ -24,10 +24,11 @@
 #include <arch/io.h>		/* inl, outl */
 #include <arch/romcc_io.h>	/* device_t */
 #include "SBPLATFORM.h"
-#include "SbEarly.h"
+#include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
 
 
+#if CONFIG_RAMINIT_SYSINFO == 1
 /**
  * @brief Get SouthBridge device number
  * @param[in] bus target bus number
@@ -37,20 +38,23 @@ u32 get_sbdn(u32 bus)
 {
 	device_t dev;
 
+	printk(BIOS_DEBUG, "SB800 - %s - %s - Start.\n", __FILE__, __func__);
 	//dev = PCI_DEV(bus, 0x14, 0);
 	dev = pci_locate_device_on_bus(
 			PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB800_SM),
 			bus);
 
+	printk(BIOS_DEBUG, "SB800 - %s - %s - End.\n", __FILE__, __func__);
 	return (dev >> 15) & 0x1f;
 }
+#endif
 
 
 /**
  * @brief South Bridge CIMx romstage entry,
  *        wrapper of sbPowerOnInit entry point.
  */
-void sb_poweron_init(void)
+void sb_Poweron_Init(void)
 {
 	AMDSBCFG sb_early_cfg;
 
@@ -62,3 +66,17 @@ void sb_poweron_init(void)
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbPowerOnInit(&sb_early_cfg);
 }
+
+/**
+ * CIMX not set the clock to 48Mhz until sbBeforePciInit,
+ * coreboot may need to set this even more earlier
+ */
+void sb800_clk_output_48Mhz(void)
+{
+	/* AcpiMMioDecodeEn */
+	RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0 + BIT1), BIT0);
+
+        *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
+        *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
+}
+

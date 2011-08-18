@@ -47,6 +47,9 @@
 #endif
 
 #include <cpu/amd/amdfam10_sysconf.h>
+#if CONFIG_AMD_SB_CIMX
+#include <sb_cimx.h>
+#endif
 
 struct amdfam10_sysconf_t sysconf;
 
@@ -1445,6 +1448,10 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 static void cpu_bus_init(device_t dev)
 {
 	initialize_cpus(dev->link_list);
+#if CONFIG_AMD_SB_CIMX
+	sb_After_Pci_Init();
+	sb_Mid_Post_Init();
+#endif
 }
 
 static void cpu_bus_noop(device_t dev)

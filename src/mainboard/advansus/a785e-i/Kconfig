@@ -33,10 +33,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_DEBUG_CAR
 	select SET_FIDVID
 
-config AMD_CIMX_SB800
-        bool
-        default y
-
 config MAINBOARD_DIR
 	string
 	default advansus/a785e-i

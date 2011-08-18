@@ -31,8 +31,10 @@
 void sb800_cimx_config(AMDSBCFG *sb_config)
 {
 	if (!sb_config) {
+		printk(BIOS_DEBUG, "SB800 - Cfg.c - sb800_cimx_config - No sb_config.\n");
 		return;
 	}
+	printk(BIOS_INFO, "SB800 - Cfg.c - sb800_cimx_config - Start.\n");
 	//memset(sb_config, 0, sizeof(AMDSBCFG));
 
 	/* header */
@@ -73,7 +75,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->HpetTimer = HPET_TIMER;
 
 	/* USB */
-	sb_config->USBMODE.UsbModeReg = USB_CINFIG;
+	sb_config->USBMODE.UsbModeReg = USB_CONFIG;
   	sb_config->SbUsbPll = 0;
 
 	/* SATA */
@@ -99,25 +101,28 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->GppFunctionEnable = GPP_CONTROLLER;
 	sb_config->GppLinkConfig = GPP_CFGMODE;
 	//sb_config->PORTCONFIG[0].PortCfg.PortHotPlug = TRUE;
+	sb_config->PORTCONFIG[0].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
+	sb_config->PORTCONFIG[1].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
+	sb_config->PORTCONFIG[2].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
+	sb_config->PORTCONFIG[3].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
 	sb_config->GppUnhidePorts = TRUE; //visable always, even port empty
-	//sb_config->NbSbGen2 = TRUE;
-	//sb_config->GppGen2 = TRUE;
+	sb_config->NbSbGen2 = NB_SB_GEN2;
+	sb_config->GppGen2 = SB_GPP_GEN2;
 
 	//cimx BTS fix
 	sb_config->GppMemWrImprove = TRUE;
 	sb_config->SbPcieOrderRule = TRUE;
 	sb_config->AlinkPhyPllPowerDown = TRUE;
 	sb_config->GppPhyPllPowerDown = TRUE; //GPP power saving
-	sb_config->SBGecPwr = 0x03;//11b << 5, rpr BDF: 00:20:06, PLATFORM.H default define 0x11 was wrong
-	sb_config->GecConfig = 0; //ENABLE GEC controller
+	sb_config->SBGecPwr = 0x03;//11b << 5, rpr BDF: 00:20:06
+	sb_config->GecConfig = GEC_CONFIG;
 
 #ifndef __PRE_RAM__
 	/* ramstage cimx config here */
 	if (!sb_config->StdHeader.CALLBACK.CalloutPtr) {
 		sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
 	}
-
-	//sb_config->
 #endif //!__PRE_RAM__
+	printk(BIOS_INFO, "SB800 - Cfg.c - sb800_cimx_config - End.\n");
 }
 

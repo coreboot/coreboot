@@ -23,8 +23,8 @@
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
-#include "pmio.h"
 #include <cpu/amd/amdfam10_sysconf.h>
+#include <SBPLATFORM.h>
 
 extern int bus_isa;
 extern u8 bus_rs780[11];
@@ -61,12 +61,8 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 	/* I/O APICs:   APIC ID Version State   Address */
-
-	dword = 0;
-	dword = pm_ioread(0x34) & 0xF0;
-	dword |= (pm_ioread(0x35) & 0xFF) << 8;
-	dword |= (pm_ioread(0x36) & 0xFF) << 16;
-	dword |= (pm_ioread(0x37) & 0xFF) << 24;
+	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
+	dword &= 0xFFFFFFF0;
 	smp_write_ioapic(mc, apicid_sb800, 0x11, dword);
 
 	for (byte = 0x0; byte < sizeof(intr_data); byte ++) {

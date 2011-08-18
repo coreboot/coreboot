@@ -33,6 +33,9 @@
 
 #include "chip.h"
 #include "northbridge.h"
+#if CONFIG_AMD_SB_CIMX
+#include <sb_cimx.h>
+#endif
 
 
 //#define FX_DEVS NODE_NUMS
@@ -747,6 +750,12 @@ printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 static void domain_enable_resources(device_t dev)
 {
   u32 val;
+
+#if CONFIG_AMD_SB_CIMX
+  sb_After_Pci_Init();
+  sb_Mid_Post_Init();
+#endif
+
   /* Must be called after PCI enumeration and resource allocation */
   printk(BIOS_DEBUG, "\nFam14h - domain_enable_resources: AmdInitMid.\n");
   val = agesawrapper_amdinitmid ();

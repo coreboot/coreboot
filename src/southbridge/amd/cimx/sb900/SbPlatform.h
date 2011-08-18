@@ -57,6 +57,7 @@ typedef union _PCI_ADDR {
 #endif
 #define FIXUP_PTR(ptr)  ptr
 
+#include <console/console.h>
 #include "AmdSbLib.h"
 #include "Amd.h"
 #include "Hudson-2.h"
@@ -65,7 +66,8 @@ typedef union _PCI_ADDR {
 #include "SbDef.h"
 #include "AmdSbLib.h"
 #include "SbSubFun.h"
-#include "Oem.h"
+#include "platform_cfg.h"	/* mainboard specific configuration */
+#include "Oem.h"		/* platform default configuration */
 #include "AMD.h"
 #include "SbBiosRamUsage.h"
 #include "EcFan.h"

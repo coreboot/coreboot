@@ -28,18 +28,14 @@
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
+#include "sb_cimx.h"		/* AMD CIMX wrapper entries */
 
 
 /*implement in mainboard.c*/
-//void set_pcie_assert(void);
-//void set_pcie_deassert(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
 
-#ifndef _RAMSTAGE_
-#define _RAMSTAGE_
-#endif
 static AMDSBCFG sb_late_cfg; //global, init in sb800_cimx_config
 static AMDSBCFG *sb_config = &sb_late_cfg;
 
@@ -57,15 +53,13 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
 u32 sb800_callout_entry(u32 func, u32 data, void* config)
 {
 	u32 ret = 0;
-
+	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
 	switch (func) {
 	case CB_SBGPP_RESET_ASSERT:
-		//set_pcie_assert();
 		set_pcie_reset();
 		break;
 
 	case CB_SBGPP_RESET_DEASSERT:
-		//set_pcie_deassert();
 		set_pcie_dereset();
 		break;
 
@@ -76,32 +70,20 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 		break;
 	}
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - %s - End.\n", __func__);
 	return ret;
 }
 
 
 static struct pci_operations lops_pci = {
-	.set_subsystem = 0,
+	.set_subsystem = pci_dev_set_subsystem,
 };
-
-static void lpc_enable_resources(device_t dev)
-{
-
-	pci_dev_enable_resources(dev);
-	//lpc_enable_childrens_resources(dev);
-}
-
-static void lpc_init(device_t dev)
-{
-	/* SB Configure HPET base and enable bit */
-	hpetInit(sb_config, &(sb_config->BuildParameters));
-}
 
 static struct device_operations lpc_ops = {
         .read_resources = lpc_read_resources,
         .set_resources = lpc_set_resources,
-        .enable_resources = lpc_enable_resources,
-        .init = lpc_init,
+        .enable_resources = pci_dev_enable_resources,
+        .init = 0,
         .scan_bus = scan_static_bus,
         .ops_pci = &lops_pci,
 };
@@ -112,26 +94,11 @@ static const struct pci_driver lpc_driver __pci_driver = {
         .device = PCI_DEVICE_ID_ATI_SB800_LPC,
 };
 
-
-static void sata_enable_resources(struct device *dev)
-{
-	sataInitAfterPciEnum(sb_config);
-	pci_dev_enable_resources(dev);
-}
-
-static void sata_init(struct device *dev)
-{
-	sb_config->StdHeader.Func = SB_MID_POST_INIT;
-	AmdSbDispatcher(sb_config); //sataInitMidPost only
-	commonInitLateBoot(sb_config);
-	sataInitLatePost(sb_config);
-}
-
 static struct device_operations sata_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
-	.enable_resources = sata_enable_resources, //pci_dev_enable_resources,
-	.init = sata_init,
+	.enable_resources = pci_dev_enable_resources,
+	.init = 0,
 	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
@@ -142,13 +109,14 @@ static const struct pci_driver sata_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_ATI_SB800_SATA_AHCI,
 };
 
-#if CONFIG_USBDEBUG
+#if CONFIG_USBDEBUG == 1
 static void usb_set_resources(struct device *dev)
 {
 	struct resource *res;
 	u32 base;
 	u32 old_debug;
 
+	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
 	old_debug = get_ehci_debug();
 	set_ehci_debug(0);
 
@@ -161,14 +129,9 @@ static void usb_set_resources(struct device *dev)
 	base = res->base;
 	set_ehci_base(base);
 	report_resource_stored(dev, res, "");
+	printk(BIOS_DEBUG, "SB800 - Late.c - %s - End.\n", __func__);
 }
 #endif
-
-static void usb_init(struct device *dev)
-{
-	usbInitAfterPciInit(sb_config);
-	commonInitLateBoot(sb_config);
-}
 
 static struct device_operations usb_ops = {
 	.read_resources = pci_dev_read_resources,
@@ -178,7 +141,7 @@ static struct device_operations usb_ops = {
 	.set_resources = pci_dev_set_resources,
 #endif
 	.enable_resources = pci_dev_enable_resources,
-	.init = usb_init,
+	.init = 0,
 	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
@@ -205,16 +168,11 @@ static const struct pci_driver usb_ohci4_driver __pci_driver = {
 };
 
 
-static void azalia_init(struct device *dev)
-{
-	azaliaInitAfterPciEnum(sb_config); //Detect and configure High Definition Audio
-}
-
 static struct device_operations azalia_ops = {
         .read_resources = pci_dev_read_resources,
         .set_resources = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
-        .init = azalia_init,
+        .init = 0,
         .scan_bus = 0,
         .ops_pci = &lops_pci,
 };
@@ -226,18 +184,11 @@ static const struct pci_driver azalia_driver __pci_driver = {
 };
 
 
-static void gec_init(struct device *dev)
-{
-	gecInitAfterPciEnum(sb_config);
-	gecInitLatePost(sb_config);
-	printk(BIOS_DEBUG, "gec hda enabled\n");
-}
-
 static struct device_operations gec_ops = {
         .read_resources = pci_dev_read_resources,
         .set_resources = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
-        .init = gec_init,
+        .init = 0,
         .scan_bus = 0,
         .ops_pci = &lops_pci,
 };
@@ -264,10 +215,6 @@ static void pci_init(device_t dev)
 	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
 }
 
-static void pcie_init(device_t dev)
-{
-	sbPcieGppLateInit(sb_config);
-}
 
 static struct device_operations pci_ops = {
         .read_resources = pci_bus_read_resources,
@@ -290,7 +237,7 @@ struct device_operations bridge_ops = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = pcie_init,
+	.init             = 0,
 	.scan_bus         = pci_scan_bridge,
 	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
@@ -327,6 +274,34 @@ static const struct pci_driver PORTD_driver __pci_driver = {
 
 
 /**
+ * South Bridge CIMx ramstage entry point wrapper.
+ */
+void sb_Before_Pci_Init(void)
+{
+	sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
+	AmdSbDispatcher(sb_config);
+}
+
+void sb_After_Pci_Init(void)
+{
+	sb_config->StdHeader.Func = SB_AFTER_PCI_INIT;
+	AmdSbDispatcher(sb_config);
+}
+
+void sb_Mid_Post_Init(void)
+{
+	sb_config->StdHeader.Func = SB_MID_POST_INIT;
+	AmdSbDispatcher(sb_config);
+}
+
+void sb_Late_Post(void)
+{
+	sb_config->StdHeader.Func = SB_LATE_POST_INIT;
+	AmdSbDispatcher(sb_config);
+}
+
+
+/**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
  */
 static void sb800_enable(device_t dev)
@@ -334,15 +309,13 @@ static void sb800_enable(device_t dev)
 	struct southbridge_amd_cimx_sb800_config *sb_chip =
 		(struct southbridge_amd_cimx_sb800_config *)(dev->chip_info);
 
-	sb800_cimx_config(sb_config);
 	printk(BIOS_DEBUG, "sb800_enable() ");
-
-	/* Config SouthBridge SMBUS/ACPI/IDE/LPC/PCIB.*/
-	commonInitEarlyBoot(sb_config);
-	commonInitEarlyPost(sb_config);
 
 	switch (dev->path.pci.devfn) {
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
+		/* the first sb800 device */
+		sb800_cimx_config(sb_config);
+
 		if (dev->enabled) {
   			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_ENABLED;
 			if (1 == sb_chip->boot_switch_sata_ide)
@@ -352,39 +325,21 @@ static void sb800_enable(device_t dev)
 		} else {
   			sb_config->SATAMODE.SataMode.SataController = CIMX_OPTION_DISABLED;
 		}
-
-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
-		break;
-
-	case (0x12 << 3) | 0: /* 0:12:0 OHCI-USB1 */
-	case (0x12 << 3) | 2: /* 0:12:2 EHCI-USB1 */
-	case (0x13 << 3) | 0: /* 0:13:0 OHCI-USB2 */
-	case (0x13 << 3) | 2: /* 0:13:2 EHCI-USB2 */
-	case (0x14 << 3) | 5: /* 0:14:5 OHCI-USB4 */
-	case (0x16 << 3) | 0: /* 0:16:0 OHCI-USB3 */
-	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
-		usbInitBeforePciEnum(sb_config);  // USB POST TIME Only
 		break;
 
 	case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
-        {
-	    u32 ioapic_base;
-
-	    printk(BIOS_INFO, "sm_init().\n");
-	    ioapic_base = IO_APIC_ADDR;
-	    clear_ioapic(ioapic_base);
-	    /* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
-	    #if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS < 16)
-	    /* Assign the ioapic ID the next available number after the processor core local APIC IDs */
-	    setup_ioapic(ioapic_base, CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS);
-	    #elif (CONFIG_APIC_ID_OFFSET > 0)
-	    /* Assign the ioapic ID the value 0. Processor APIC IDs follow. */
-	    setup_ioapic(ioapic_base, 0);
-	    #else
-	    #error "The processor APIC IDs must be lifted to make room for the I/O APIC ID"
-	    #endif
-        }
-
+		printk(BIOS_INFO, "sm_init().\n");
+		clear_ioapic(IO_APIC_ADDR);
+		/* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
+#if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS < 16)
+		/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
+		setup_ioapic(IO_APIC_ADDR, CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS);
+#elif (CONFIG_APIC_ID_OFFSET > 0)
+		/* Assign the ioapic ID the value 0. Processor APIC IDs follow. */
+		setup_ioapic(IO_APIC_ADDR, 0);
+#else
+#error "The processor APIC IDs must be lifted to make room for the I/O APIC ID"
+#endif
 		break;
 
 	case (0x14 << 3) | 1: /* 0:14:1 IDE */
@@ -393,7 +348,6 @@ static void sb800_enable(device_t dev)
 		} else {
   			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CIMX_OPTION_DISABLED;
 		}
-		sataInitBeforePciEnum(sb_config); // Init SATA class code and PHY
 		break;
 
 	case (0x14 << 3) | 2: /* 0:14:2 HDA */
@@ -406,7 +360,6 @@ static void sb800_enable(device_t dev)
   			sb_config->AzaliaController = AZALIA_DISABLE;
 			printk(BIOS_DEBUG, "hda disabled\n");
 		}
-  		azaliaInitBeforePciEnum(sb_config); // Detect and configure High Definition Audio
 		break;
 
 
@@ -424,34 +377,55 @@ static void sb800_enable(device_t dev)
 			sb_config->GecConfig = 1;
 			printk(BIOS_DEBUG, "gec disabled\n");
 		}
-  		gecInitBeforePciEnum(sb_config); // Init GEC
 		break;
 
 	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
 		{
-		device_t device;
-		for (device = dev; device; device = device->next) {
-			if (dev->path.type != DEVICE_PATH_PCI) continue;
-			if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
-			sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
-		}
+			device_t device;
+			for (device = dev; device; device = device->next) {
+				if (dev->path.type != DEVICE_PATH_PCI) continue;
+				if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
+				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
+			}
 
-		/*
-		 * GPP_CFGMODE_X4000: PortA Lanes[3:0]
-		 * GPP_CFGMODE_X2200: PortA Lanes[1:0], PortB Lanes[3:2]
-		 * GPP_CFGMODE_X2110: PortA Lanes[1:0], PortB Lane2, PortC Lane3
-		 * GPP_CFGMODE_X1111: PortA Lanes0, PortB Lane1, PortC Lane2, PortD Lane3
-		 */
-		sb_config->GppLinkConfig = sb_chip->gpp_configuration;
-		sb_config->StdHeader.Func = SB_BEFORE_PCI_INIT;
-		AmdSbDispatcher(sb_config);
-		break;
+			/*
+			 * GPP_CFGMODE_X4000: PortA Lanes[3:0]
+			 * GPP_CFGMODE_X2200: PortA Lanes[1:0], PortB Lanes[3:2]
+			 * GPP_CFGMODE_X2110: PortA Lanes[1:0], PortB Lane2, PortC Lane3
+			 * GPP_CFGMODE_X1111: PortA Lanes0, PortB Lane1, PortC Lane2, PortD Lane3
+			 */
+			sb_config->GppLinkConfig = sb_chip->gpp_configuration;
 		}
+		break;
+
+	case (0x12 << 3) | 0: /* 0:12:0 OHCI-USB1 */
+		sb_config->USBMODE.UsbMode.Ohci1 = dev->enabled;
+		break;
+	case (0x12 << 3) | 2: /* 0:12:2 EHCI-USB1 */
+		sb_config->USBMODE.UsbMode.Ehci1 = dev->enabled;
+		break;
+	case (0x13 << 3) | 0: /* 0:13:0 OHCI-USB2 */
+		sb_config->USBMODE.UsbMode.Ohci2 = dev->enabled;
+		break;
+	case (0x13 << 3) | 2: /* 0:13:2 EHCI-USB2 */
+		sb_config->USBMODE.UsbMode.Ehci2 = dev->enabled;
+		break;
+	case (0x14 << 3) | 5: /* 0:14:5 OHCI-USB4 */
+		sb_config->USBMODE.UsbMode.Ohci4 = dev->enabled;
+		break;
+	case (0x16 << 3) | 0: /* 0:16:0 OHCI-USB3 */
+		sb_config->USBMODE.UsbMode.Ohci3 = dev->enabled;
+		break;
+	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
+		sb_config->USBMODE.UsbMode.Ehci3 = dev->enabled;
+
+		/* the last sb800 device */
+		sb_Before_Pci_Init();
+		break;
 
 	default:
 		break;
 	}
-
 }
 
 struct chip_operations southbridge_amd_cimx_sb800_ops = {

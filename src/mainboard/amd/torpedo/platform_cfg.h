@@ -39,7 +39,6 @@
 #define BIOS_SIZE_4M			3
 #define BIOS_SIZE_8M			7
 
-#ifndef BIOS_SIZE
 #if CONFIG_COREBOOT_ROMSIZE_KB_1024 == 1
   #define BIOS_SIZE BIOS_SIZE_1M
 #elif CONFIG_COREBOOT_ROMSIZE_KB_2048 == 1
@@ -48,7 +47,6 @@
   #define BIOS_SIZE BIOS_SIZE_4M
 #elif CONFIG_COREBOOT_ROMSIZE_KB_8192 == 1
   #define BIOS_SIZE BIOS_SIZE_8M
-#endif
 #endif
 
 /**

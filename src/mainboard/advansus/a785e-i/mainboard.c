@@ -25,8 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-//#include <southbridge/amd/sb800/sb800.h>
-#include "pmio.h"
+#include "SBPLATFORM.h"
 #include "chip.h"
 
 uint64_t uma_memory_base, uma_memory_size;
@@ -39,26 +38,21 @@ void enable_int_gfx(void);
 /* GPIO6. */
 void enable_int_gfx(void)
 {
-	u8 byte;
-
 	volatile u8 *gpio_reg;
 
-	pm_iowrite(0xEA, 0x01);	/* diable the PCIB */
-	/* Disable Gec */
-	byte = pm_ioread(0xF6);
-	byte |= 1;
-	pm_iowrite(0xF6, byte);
-	/* make sure the fed80000 is accessible */
-	byte = pm_ioread(0x24);
-	byte |= 1;
-	pm_iowrite(0x24, byte);
+#ifdef UNUSED_CODE
+	RWPMIO(SB_PMIOA_REGEA, AccWidthUint8, ~(BIT0), BIT0); /* Disable the PCIB */
+	RWPMIO(SB_PMIOA_REGF6, AccWidthUint8, ~(BIT0), BIT0); /* Disable Gec */
+#endif
+	/* make sure the Acpi MMIO(fed80000) is accessible */
+        RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0), BIT0);
 
-	gpio_reg = (volatile u8 *)0xFED80000 + 0xD00; /* IoMux Register */
+	gpio_reg = (volatile u8 *)ACPI_MMIO_BASE + 0xD00; /* IoMux Register */
 
 	*(gpio_reg + 0x6) = 0x1; /* Int_vga_en */
 	*(gpio_reg + 170) = 0x1; /* gpio_gate */
 
-	gpio_reg = (volatile u8 *)0xFED80000 + 0x100; /* GPIO Registers */
+	gpio_reg = (volatile u8 *)ACPI_MMIO_BASE + 0x100; /* GPIO Registers */
 
 	*(gpio_reg + 0x6) = 0x8;
 	*(gpio_reg + 170) = 0x0;

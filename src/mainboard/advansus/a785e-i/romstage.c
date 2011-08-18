@@ -47,7 +47,7 @@
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
-#include <SbEarly.h>
+#include <sb_cimx.h>
 #include <SBPLATFORM.h> /* SB OEM constants */
 #include <southbridge/amd/cimx/sb800/smbus.h>
 #include "northbridge/amd/amdfam10/debug.c"
@@ -82,21 +82,6 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-//FIXME copyed from sb800
-#include <pmio.h>
-static void sb800_clk_output_48Mhz(void)
-{
-        /* AcpiMMioDecodeEn */
-        u8 reg8;
-        reg8 = pm_ioread(0x24);
-        reg8 |= 1;
-        reg8 &= ~(1 << 1);
-        pm_iowrite(0x24, reg8);
-
-        *(volatile u32 *)(0xFED80000+0xE00+0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
-        *(volatile u32 *)(0xFED80000+0xE00+0x40) |= 1 << 1; /* 48Mhz */
-}
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
@@ -112,7 +97,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		enumerate_ht_chain();
 
 		//enable port80 decoding and southbridge poweron init
-		sb_poweron_init();
+		sb_Poweron_Init();
 	}
 
 	post_code(0x30);

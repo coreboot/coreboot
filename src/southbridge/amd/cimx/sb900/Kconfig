@@ -19,7 +19,9 @@
 
 config SOUTHBRIDGE_AMD_CIMX_SB900
 	bool
+	default n
 	select IOAPIC
+	select AMD_SB_CIMX
 
 if SOUTHBRIDGE_AMD_CIMX_SB900
 config SATA_CONTROLLER_MODE

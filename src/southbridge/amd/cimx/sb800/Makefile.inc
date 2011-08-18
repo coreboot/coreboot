@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-subdirs-$(CONFIG_AMD_CIMX_SB800) += ../../../../../src/vendorcode/amd/cimx/sb800
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += ../../../../../src/vendorcode/amd/cimx/sb800
 
 # SB800 Platform Files
 

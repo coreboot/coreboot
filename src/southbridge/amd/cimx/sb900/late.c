@@ -25,7 +25,6 @@
 #include <console/console.h>	/* printk */
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h" 	/* Platfrom Specific Definitions */
-#include "cfg.h"		/* sb900 Cimx configuration */
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
 
 

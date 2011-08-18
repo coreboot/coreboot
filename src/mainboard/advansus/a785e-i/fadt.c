@@ -26,27 +26,14 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
-#include "pmio.h"
-
-/*extern*/ u16 pm_base = 0x800;
-/* pm_base should be set in sb acpi */
-/* pm_base should be got from bar2 of rs780. Here I compact ACPI
- * registers into 32 bytes limit.
- * */
-
-#define ACPI_PM_EVT_BLK		(pm_base + 0x00) /* 4 bytes */
-#define ACPI_PM1_CNT_BLK	(pm_base + 0x04) /* 2 bytes */
-#define ACPI_PMA_CNT_BLK	(pm_base + 0x0F) /* 1 byte */
-#define ACPI_PM_TMR_BLK		(pm_base + 0x18) /* 4 bytes */
-#define ACPI_GPE0_BLK		(pm_base + 0x10) /* 8 bytes */
-#define ACPI_CPU_CONTORL	(pm_base + 0x08) /* 6 bytes */
+#include "SBPLATFORM.h"
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
+	u16 val;
 	acpi_header_t *header = &(fadt->header);
 
-	pm_base &= 0xFFFF;
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", pm_base);
+	printk(BIOS_DEBUG, "ACPI_BLK_BASE: 0x%04x\n", ACPI_BLK_BASE);
 
 	/* Prepare the header */
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
@@ -70,39 +57,39 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->s4bios_req = 0x0;
 	fadt->pstate_cnt = 0xe2;
 
-	pm_iowrite(0x60, ACPI_PM_EVT_BLK & 0xFF);
-	pm_iowrite(0x61, ACPI_PM_EVT_BLK >> 8);
-	pm_iowrite(0x62, ACPI_PM1_CNT_BLK & 0xFF);
-	pm_iowrite(0x63, ACPI_PM1_CNT_BLK >> 8);
-	pm_iowrite(0x64, ACPI_PM_TMR_BLK & 0xFF);
-	pm_iowrite(0x65, ACPI_PM_TMR_BLK >> 8);
-	pm_iowrite(0x68, ACPI_GPE0_BLK & 0xFF);
-	pm_iowrite(0x69, ACPI_GPE0_BLK >> 8);
+	val = PM1_EVT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG60, AccWidthUint16, &val);
+	val = PM1_CNT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG62, AccWidthUint16, &val);
+	val = PM1_TMR_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG64, AccWidthUint16, &val);
+	val = GPE0_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG68, AccWidthUint16, &val);
 
 	/* CpuControl is in \_PR.CPU0, 6 bytes */
-	pm_iowrite(0x66, ACPI_CPU_CONTORL & 0xFF);
-	pm_iowrite(0x67, ACPI_CPU_CONTORL >> 8);
+	val = CPU_CNT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG66, AccWidthUint16, &val);
+	val = 0;
+	WritePMIO(SB_PMIOA_REG6A, AccWidthUint16, &val);
+	val = ACPI_PMA_CNT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG6C, AccWidthUint16, &val);
 
-	pm_iowrite(0x6A, 0);	/* AcpiSmiCmdLo */
-	pm_iowrite(0x6B, 0);	/* AcpiSmiCmdHi */
+	/* AcpiDecodeEnable, When set, SB uses the contents of the
+	 * PM registers at index 60-6B to decode ACPI I/O address.
+	 * AcpiSmiEn & SmiCmdEn*/
+	val = BIT0 | BIT1 | BIT2 | BIT4;
+	WritePMIO(SB_PMIOA_REG74, AccWidthUint16, &val);
 
-	pm_iowrite(0x6C, ACPI_PMA_CNT_BLK & 0xFF);
-	pm_iowrite(0x6D, ACPI_PMA_CNT_BLK >> 8);
-
-	pm_iowrite(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
-					* the contents of the PM registers at
-					* index 60-6B to decode ACPI I/O address.
-					* AcpiSmiEn & SmiCmdEn*/
 	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
-	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
+	outl(0x1, PM1_CNT_BLK_ADDRESS);		  /* set SCI_EN */
 
-	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
+	fadt->pm1a_evt_blk = PM1_EVT_BLK_ADDRESS;
 	fadt->pm1b_evt_blk = 0x0000;
-	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;
+	fadt->pm1a_cnt_blk = PM1_CNT_BLK_ADDRESS;
 	fadt->pm1b_cnt_blk = 0x0000;
-	fadt->pm2_cnt_blk = ACPI_PMA_CNT_BLK;
-	fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;
-	fadt->gpe0_blk = ACPI_GPE0_BLK;
+	fadt->pm2_cnt_blk = ACPI_PMA_CNT_BLK_ADDRESS;
+	fadt->pm_tmr_blk = PM1_TMR_BLK_ADDRESS;
+	fadt->gpe0_blk = GPE0_BLK_ADDRESS;
 	fadt->gpe1_blk = 0x0000;	/* we dont have gpe1 block, do we? */
 
 	fadt->pm1_evt_len = 4;
@@ -145,7 +132,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1a_evt_blk.bit_width = 32;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
 	fadt->x_pm1a_evt_blk.resv = 0;
-	fadt->x_pm1a_evt_blk.addrl = ACPI_PM_EVT_BLK;
+	fadt->x_pm1a_evt_blk.addrl = PM1_EVT_BLK_ADDRESS;
 	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
 	fadt->x_pm1b_evt_blk.space_id = 1;
@@ -159,7 +146,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1a_cnt_blk.bit_width = 16;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
 	fadt->x_pm1a_cnt_blk.resv = 0;
-	fadt->x_pm1a_cnt_blk.addrl = ACPI_PM1_CNT_BLK;
+	fadt->x_pm1a_cnt_blk.addrl = PM1_CNT_BLK_ADDRESS;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm1b_cnt_blk.space_id = 1;
@@ -173,21 +160,21 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm2_cnt_blk.bit_width = 0;
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
 	fadt->x_pm2_cnt_blk.resv = 0;
-	fadt->x_pm2_cnt_blk.addrl = ACPI_PMA_CNT_BLK;
+	fadt->x_pm2_cnt_blk.addrl = ACPI_PMA_CNT_BLK_ADDRESS;
 	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm_tmr_blk.space_id = 1;
 	fadt->x_pm_tmr_blk.bit_width = 32;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
 	fadt->x_pm_tmr_blk.resv = 0;
-	fadt->x_pm_tmr_blk.addrl = ACPI_PM_TMR_BLK;
+	fadt->x_pm_tmr_blk.addrl = PM1_TMR_BLK_ADDRESS;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	fadt->x_gpe0_blk.space_id = 1;
 	fadt->x_gpe0_blk.bit_width = 32;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.resv = 0;
-	fadt->x_gpe0_blk.addrl = ACPI_GPE0_BLK;
+	fadt->x_gpe0_blk.addrl = GPE0_BLK_ADDRESS;
 	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = 1;

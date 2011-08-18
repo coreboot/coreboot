@@ -20,8 +20,7 @@
 
 #include <string.h>
 #include "SbPlatform.h"
-#include "cfg.h"
-#include <console/console.h>	/* printk */
+#include "platform_cfg.h"
 
 
 /**

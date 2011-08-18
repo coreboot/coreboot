@@ -50,6 +50,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->BuildParameters.AcpiPm1CntBlkAddr = PM1_CNT_BLK_ADDRESS;
 	sb_config->BuildParameters.AcpiPm1EvtBlkAddr = PM1_EVT_BLK_ADDRESS;
 	sb_config->BuildParameters.SioPmeBaseAddress = SIO_PME_BASE_ADDRESS;
+	sb_config->BuildParameters.SioHwmBaseAddress = SIO_HWM_BASE_ADDRESS;
 	sb_config->BuildParameters.SpiRomBaseAddress = SPI_BASE_ADDRESS;
 	sb_config->BuildParameters.GecShadowRomBase = GEC_BASE_ADDRESS;
 	sb_config->BuildParameters.Smbus0BaseAddress = SMBUS0_BASE_ADDRESS;
@@ -93,6 +94,10 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->AzaliaPinCfg = AZALIA_PIN_CONFIG;
 	sb_config->AZALIACONFIG.AzaliaSdinPin = AZALIA_SDIN_PIN;
 	sb_config->AZOEMTBL.pAzaliaOemCodecTablePtr = NULL;
+
+	/* LPC */
+	/* SuperIO hardware monitor register access */
+	sb_config->SioHwmPortEnable = CONFIG_SB_SUPERIO_HWM;
 
 	/*
 	 * GPP. default configure only enable port0 with 4 lanes,

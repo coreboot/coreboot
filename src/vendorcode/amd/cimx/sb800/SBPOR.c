@@ -144,6 +144,7 @@ sbPowerOnInit (
   UINT8  cimSataMode;
   UINT8  cimSpiFastReadEnable;
   UINT8  cimSpiFastReadSpeed;
+  UINT8  cimSioHwmPortEnable;
   UINT8  SataPortNum;
 
   cimNbSbGen2 = pConfig->NbSbGen2;
@@ -155,12 +156,14 @@ sbPowerOnInit (
     cimSpiFastReadEnable = cimSpiFastReadEnableDefault;
   }
   cimSpiFastReadSpeed = (UINT8) pConfig->BuildParameters.SpiFastReadSpeed;
+  cimSioHwmPortEnable = pConfig->SioHwmPortEnable;
 #if  SB_CIMx_PARAMETER == 0
   cimNbSbGen2 = cimNbSbGen2Default;
   cimSataMode = (UINT8) ((cimSataMode & 0xFB) | cimSataSetMaxGen2Default);
     cimSataMode = (UINT8) ((cimSataMode & 0x0F) | (cimSATARefClkSelDefault + cimSATARefDivSelDefault));
   cimSpiFastReadEnable = cimSpiFastReadEnableDefault;
   cimSpiFastReadSpeed = cimSpiFastReadSpeedDefault;
+  cimSioHwmPortEnable = cimSioHwmPortEnableDefault;
 #endif
 
 // SB800 Only Enabled (Mmio_mem_enablr)  // Default value is correct
@@ -200,6 +203,12 @@ sbPowerOnInit (
 
 // Set Build option into SB
   WritePCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG64, AccWidthUint16 | S3_SAVE, &(pConfig->BuildParameters.SioPmeBaseAddress));
+  if (cimSioHwmPortEnable) {
+    // Use Wide IO Port 1 to provide access to the superio HWM registers.
+    WritePCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG66 , AccWidthUint16 | S3_SAVE, &(pConfig->BuildParameters.SioHwmBaseAddress));
+    RWPCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG48 + 3, AccWidthUint8  | S3_SAVE, 0xFF, BIT0); // Wide IO Port 1: enable
+    RWPCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG74    , AccWidthUint8  | S3_SAVE, 0xFF, BIT2); // set width 0:512, 1:16 bytes
+  }
   RWPCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REGA0, AccWidthUint32 | S3_SAVE, 0x001F, (pConfig->BuildParameters.SpiRomBaseAddress));
   RWPCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG9C, AccWidthUint32 | S3_SAVE, 0, (pConfig->BuildParameters.GecShadowRomBase + 1));
 // Enabled SMBUS0/SMBUS1 (ASF) Base Address

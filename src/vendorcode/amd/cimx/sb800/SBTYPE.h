@@ -156,6 +156,10 @@ typedef struct _BUILDPARAM {
                                    *   @par
                                    * SIO PME BASE Address
                                    */
+  unsigned int   SioHwmBaseAddress; /**< SioHwmBaseAddress
+                                      *   @par
+                                      * SIO HWM BASE Address
+                                      */
   unsigned int   WatchDogTimerBase;    /**< WatchDogTimerBase
                                    *   @par
                                    *  Watch Dog Timer Address
@@ -911,6 +915,7 @@ typedef struct _AMDSBCFG {
   unsigned int   MTC1e:1;                     //29
 /** MiscDummy - Reserved */
   unsigned int   MiscDummy:2;                 //31:30
+  unsigned int   SioHwmPortEnable:1;          // Enable SuperIO HWM access via LPC
 
   //DebugOptions                     //offset 4 bytes (146-149)
 /** PcibAutoClkCtrlLow - Debug function Reserved */

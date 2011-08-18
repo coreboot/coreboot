@@ -130,6 +130,7 @@ static struct cpu_device_id cpu_table[] = {
   { X86_VENDOR_AMD, 0x500f00 },   /* ON-A0 */
   { X86_VENDOR_AMD, 0x500f01 },   /* ON-A1 */
   { X86_VENDOR_AMD, 0x500f10 },   /* ON-B0 */
+  { X86_VENDOR_AMD, 0x500f20 },   /* ON-C0 */
   { 0, 0 },
 };
 

@@ -30,6 +30,5 @@ ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
 
 ramstage-y += reset.c
-ramstage-y += pmio.c
 
 subdirs-$(CONFIG_AMD_AGESA) += ../../../vendorcode/amd/agesa/f14

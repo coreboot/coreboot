@@ -35,6 +35,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "pc80/i8254.c"
 #include "pc80/i8259.c"
+//#include "sb_cimx.h"
 #include "SbEarly.h"
 #include "SBPLATFORM.h"
 
@@ -58,6 +59,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 		sb_poweron_init();
+//		sb_Poweron_init();
 
 		post_code(0x31);
 		w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

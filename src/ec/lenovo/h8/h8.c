@@ -141,6 +141,8 @@ static void h8_enable(device_t dev)
 
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
+
+	h8_set_audio_mute(0);
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

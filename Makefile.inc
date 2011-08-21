@@ -19,8 +19,7 @@
 
 #######################################################################
 # misleadingly named, this is the coreboot version
-REV=-r$(shell if [ -d $(top)/.git -a -f "`which git`" ]; then git --git-dir=/$(top)/.git show -s --pretty=format:%h; fi)
-export KERNELVERSION      := 4.0$(REV)
+export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; then git describe; else echo unknown; fi)
 
 #######################################################################
 # Basic component discovery

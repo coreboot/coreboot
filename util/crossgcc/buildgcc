@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (C) 2008-2010 by coresystems GmbH
 # written by Patrick Georgi <patrick.georgi@coresystems.de> and
@@ -153,8 +153,8 @@ export PATH=$PATH:.
 getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 
 # parse parameters.. try to find out whether we're running GNU getopt
-getoptbrand="`getopt -V`"
-if [ "${getoptbrand:0:6}" == "getopt" ]; then
+getoptbrand="`getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,'`"
+if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
 	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb Vhcd:p:j:D:tG -- "$@"`
 	eval set "$args"
@@ -197,14 +197,14 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
 fi
 
-if [ ${GCC_VERSION} == "4.5.0" -o ${GCC_VERSION} == "4.6.0" ]; then
+if [ ${GCC_VERSION} = "4.5.0" -o ${GCC_VERSION} = "4.6.0" ]; then
   # coreboot does not like the GOLD linker
   # USE_GOLD="--enable-gold"
   USE_GOLD=""
   GCC_OPTIONS="--enable-lto"
 fi
 
-if [ ${GCC_VERSION} == "4.6.0" ]; then
+if [ ${GCC_VERSION} = "4.6.0" ]; then
   if [ ! -r tarballs/gcc-core-${GCC_VERSION}.tar.bz2 ]; then
     printf "Pre-Release GCC ${GCC_VERSION}, checking out subversion trunk\n"
     mkdir -p tarballs/.tmp
@@ -246,16 +246,18 @@ fi
 printf "Unpacking and patching ... \n"
 for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IASL; do
 	archive=$PACKAGE"_ARCHIVE"
-	archive=${!archive}
+	archive="`eval echo '$'$archive`"
 	dir=$PACKAGE"_DIR"
-	test -d ${!dir} || (
+	dir="`eval echo '$'${dir}`"
+	test -d ${dir} || (
 		printf " * `basename $archive`\n"
 		FLAGS=zxf
-		test ${archive:${#archive}-2:2} = "gz" && FLAGS=zxf
-		test ${archive:${#archive}-3:3} = "bz2" && FLAGS=jxf
-		test ${archive:${#archive}-4:4} = "lzma" && FLAGS="--lzma -xf"
+		suffix=`echo $archive | sed 's,.*\.,,'`
+		test "$suffix" = "gz" && FLAGS=zxf
+		test "$suffix" = "bz2" && FLAGS=jxf
+		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
 		$TAR $FLAGS tarballs/`basename $archive`
-		for patch in patches/${!dir}_*.patch; do
+		for patch in patches/${dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
 			$PATCH -s -N -p0 < `echo $patch`
@@ -308,7 +310,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-gmp/crossgcc-build.log
+) > build-gmp/crossgcc-build.log 2>&1
 test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-gmp/.failed && exit 1
 fi
@@ -341,7 +343,7 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	fi
 
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-mpfr/crossgcc-build.log
+) > build-mpfr/crossgcc-build.log 2>&1
 test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-mpfr/.failed && exit 1
 fi
@@ -361,7 +363,7 @@ printf "Building MPC ${MPC_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-mpc/crossgcc-build.log
+) > build-mpc/crossgcc-build.log 2>&1
 test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-mpc/.failed && exit 1
 fi
@@ -380,7 +382,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-libelf/crossgcc-build.log
+) > build-libelf/crossgcc-build.log 2>&1
 test -r build-libelf/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-libelf/.failed && exit 1
 fi
@@ -398,7 +400,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-binutils/crossgcc-build.log
+) > build-binutils/crossgcc-build.log 2>&1
 test -r build-binutils/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-binutils/.failed && exit 1
 fi
@@ -416,7 +418,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
-	CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+	CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" CFLAGS_FOR_BUILD="$HOSTCFLAGS" `readlink -f ../gcc-${GCC_VERSION}/configure` \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--disable-libssp --disable-bootstrap --disable-nls \
@@ -428,7 +430,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-gcc/crossgcc-build.log
+) > build-gcc/crossgcc-build.log 2>&1
 test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-gcc/.failed && exit 1
 fi
@@ -448,7 +450,7 @@ printf "Building GDB ${GDB_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-gdb/crossgcc-build.log
+) > build-gdb/crossgcc-build.log 2>&1
 test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r build-gdb/.failed && exit 1
 fi
@@ -466,7 +468,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
 	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> $IASL_DIR/compiler/crossgcc-build.log
+) > $IASL_DIR/compiler/crossgcc-build.log 2>&1
 test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
 test -r $IASL_DIR/compiler/.failed && exit 1
 fi

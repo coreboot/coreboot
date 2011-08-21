@@ -468,7 +468,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> $IASL_DIR/compiler/crossgcc-build.log
 test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
-test -r $IASL_DIR/compiler.failed && exit 1
+test -r $IASL_DIR/compiler/.failed && exit 1
 fi
 
 if [ $SAVETEMPS -eq 0 ]; then

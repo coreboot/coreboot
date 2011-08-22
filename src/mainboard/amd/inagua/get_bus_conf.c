@@ -136,4 +136,8 @@ void get_bus_conf(void)
 
   /* I/O APICs:   APIC ID Version State   Address */
   bus_isa = 10;
+
+#if CONFIG_AMD_CIMX == 1
+  sb_Late_Post();
+#endif
 }

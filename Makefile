@@ -158,7 +158,7 @@ endif
 # must come rather early
 .SECONDEXPANSION:
 
-$(obj)/config.h:
+$(obj)/config.h: .config
 	$(MAKE) oldconfig
 
 # Add a new class of source/object files to the build system

@@ -96,8 +96,6 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-
-
 /*
  * justify the dev3 is exist or not
  */
@@ -125,7 +123,6 @@ int is_dev3_present(void)
 		return 1;
 	}
 }
-
 
 /*
  * set gpio40 gfx
@@ -253,7 +250,7 @@ static void set_thermal_config(void)
 *************************************************/
 static void ma785gmt_enable(device_t dev)
 {
-	printk(BIOS_INFO, "Mainboard Gigabyte ma785gmt Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard MA785GMT-UD2H Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
@@ -315,6 +312,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("GIGABYTE MA785GMT   Mainboard")
+	CHIP_NAME("GIGABYTE MA785GMT-UD2H   Mainboard")
 	.enable_dev = ma785gmt_enable,
 };

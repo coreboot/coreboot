@@ -22,8 +22,8 @@ DefinitionBlock (
 	"DSDT.AML",           /* Output filename */
 	"DSDT",                 /* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"AMD   ",               /* OEMID */
-	"TILAPIA ",	     /* TABLE ID */
+	"ASUS   ",               /* OEMID */
+	"M4A785-M ",	     /* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */

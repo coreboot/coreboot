@@ -24,6 +24,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/amdfam14.h>
+#include "agesawrapper.h"
+//#if CONFIG_AMD_CIMX == 1
+//#include "sb_cimx.h"
+//#endif
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
@@ -127,4 +131,8 @@ void get_bus_conf(void)
   bus_isa = 10;
   apicid_base = CONFIG_MAX_CPUS;
   apicid_sb800 = apicid_base;
+
+//#if CONFIG_AMD_CIMX == 1
+//  sb_Late_Post();
+//#endif
 }

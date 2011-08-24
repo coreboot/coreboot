@@ -93,7 +93,6 @@ chip northbridge/amd/agesa/family14/root_complex
 #                       end #  device pci 18.0
 # These seem unnecessary
                         device pci 18.0 on end
-                        #device pci 18.0 on end
                         device pci 18.1 on end
                         device pci 18.2 on end
                         device pci 18.3 on end

@@ -35,6 +35,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "pc80/i8254.c"
 #include "pc80/i8259.c"
+//#include "sb_cimx.h"
 #include "SbEarly.h"
 #include "SBPLATFORM.h"
 
@@ -45,7 +46,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
   u32 val;
-  u8 reg8;
 
   // all cores: allow caching of flash chip code and data
   // (there are no cache-as-ram reliability concerns with family 14h)
@@ -57,6 +57,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
   if (!cpu_init_detectedx && boot_cpu()) {
     post_code(0x30);
+//    sb_Poweron_Init();
     sb_poweron_init();
 
     post_code(0x31);

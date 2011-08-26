@@ -7,3 +7,10 @@ payloads/external/FILO/filo/
 payloads/external/SeaBIOS/seabios/
 util/crossgcc/tarballs/
 util/crossgcc/xgcc/
+*.o
+*.elf
+*.debug
+*.out
+*.\#
+*.swp
+*.bin

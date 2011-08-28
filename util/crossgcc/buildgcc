@@ -189,6 +189,7 @@ done
 GDB_PACKAGE="GDB"
 if [ $SKIPGDB -eq 1 ]; then
 	printf "Will skip GDB ... ${green}ok${NC}\n"
+	GDB_ARCHIVE=""
 	GDB_PACKAGE=""
 fi
 

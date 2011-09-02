@@ -14,7 +14,16 @@ pkgdatadir = $(datadir)/$(PACKAGE)
 pkglibdir = $(libdir)/$(PACKAGE)
 pkgincludedir = $(includedir)/$(PACKAGE)
 
-CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"' -I include
+# $1 CC
+# $2 flag to test
+# $3 make statement to evaluate
+testcc=$(if $(shell echo "_start(void) {}" | \
+	$(1) -x c -nostdlib $(2) - -o /dev/null > /dev/null 2> /dev/null && echo success),\
+	$(eval $(3)))
+
+CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"' -I include $(CFLAGS) $(LDFLAGS)
+$(call testcc,$(CC),-f-nostack-protector,CPPFLAGS+=-fno-stack-protector)
+
 HOST_CPPFLAGS=$(CPPFLAGS)
 I386_CPPFLAGS=$(CPPFLAGS) -I arch/i386/include
 IA64_CPPFLAGS=$(CPPFLAGS) -I arch/ia64/include

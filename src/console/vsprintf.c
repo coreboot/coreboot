@@ -22,6 +22,7 @@
 #include <string.h>
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
+#include <trace.h>
 
 DECLARE_SPIN_LOCK(vsprintf_lock)
 
@@ -37,6 +38,7 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int i;
 
+	DISABLE_TRACE;
 	spin_lock(&vsprintf_lock);
 
 	str_buf = buf;
@@ -44,6 +46,7 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 	*str_buf = '\0';
 
 	spin_unlock(&vsprintf_lock);
+	ENABLE_TRACE;
 
 	return i;
 }

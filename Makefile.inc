@@ -51,6 +51,10 @@ classes-y := ramstage romstage driver smm
 
 romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-D__PRE_RAM__
+ifeq ($(CONFIG_TRACE),y)
+ramstage-c-ccopts:= -finstrument-functions
+endif
+
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 

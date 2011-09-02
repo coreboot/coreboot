@@ -845,6 +845,15 @@ config LLSHELL
 	  Put llshell() in your (romstage) code to start the shell.
 	  See src/arch/x86/llshell/llshell.inc for details.
 
+config TRACE
+	bool "Trace function calls"
+	default n
+	help
+	  If enabled, every function will print information to console once
+	  the function is entered. The syntax is ~0xaaaabbbb(0xccccdddd)
+	  the 0xaaaabbbb is the actual function and 0xccccdddd is EIP
+	  of calling function. Please note some printk releated functions
+	  are omitted from trace to have good looking console dumps.
 endmenu
 
 config LIFT_BSP_APIC_ID

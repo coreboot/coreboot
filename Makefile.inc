@@ -45,6 +45,8 @@ subdirs-y += src/mainboard/$(MAINBOARDDIR)
 
 subdirs-$(CONFIG_ARCH_X86) += src/pc80
 
+subdirs-y += site-local
+
 #######################################################################
 # Add source classes and their build options
 classes-y := ramstage romstage driver smm

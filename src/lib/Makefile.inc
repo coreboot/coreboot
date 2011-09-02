@@ -14,6 +14,7 @@ romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
+ramstage-y += trace.c
 ramstage-y += memset.c
 ramstage-y += memcpy.c
 ramstage-y += memcmp.c

@@ -8,6 +8,7 @@
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
 #include <console/console.h>
+#include <trace.h>
 
 int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 int default_console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
@@ -23,6 +24,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 		return 0;
 	}
 
+	DISABLE_TRACE;
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
@@ -32,6 +34,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	console_tx_flush();
 
 	spin_unlock(&console_lock);
+	ENABLE_TRACE;
 
 	return i;
 }

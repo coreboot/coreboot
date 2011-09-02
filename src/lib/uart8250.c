@@ -21,6 +21,8 @@
 #include <arch/io.h>
 #include <uart8250.h>
 #include <pc80/mc146818rtc.h>
+#include <trace.h>
+
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
 #endif
@@ -69,6 +71,7 @@ unsigned char uart8250_rx_byte(unsigned base_port)
 
 void uart8250_init(unsigned base_port, unsigned divisor)
 {
+	DISABLE_TRACE;
 	/* Disable interrupts */
 	outb(0x0, base_port + UART_IER);
 	/* Enable FIFOs */
@@ -86,6 +89,7 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 
 	/* Set to 3 for 8N1 */
 	outb(CONFIG_TTYS0_LCS, base_port + UART_LCR);
+	ENABLE_TRACE;
 }
 
 void uart_init(void)

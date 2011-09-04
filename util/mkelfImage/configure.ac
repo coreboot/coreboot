@@ -186,6 +186,27 @@ IA64_ASFLAGS='-mconstant-gp -mauto-pic'
 IA64_LDFLAGS='-static --warn-multiple-gp --warn-common'
 
 AC_SUBST([HOST_CC])
+
+AC_CACHE_CHECK(for -fno-stack-protector, libc_cv_fno_stack_protector, [
+cat > conftest.c <<EOF
+int foo;
+main () { return 0;}
+EOF
+if AC_TRY_COMMAND([$I386_CC -fno-stack-protector
+                           -o conftest conftest.c 1>&AS_MESSAGE_LOG_FD])
+then
+  libc_cv_fno_stack_protector=yes
+else
+  libc_cv_fno_stack_protector=no
+fi
+rm -f conftest*])
+if test $libc_cv_fno_stack_protector = yes; then
+  I386_CFLAGS="$I386_CFLAGS -fno-stack-protector"
+  IA64_CFLAGS="$IA64_CFLAGS -fno-stack-protector"
+  
+fi
+AC_SUBST(libc_cv_fno_stack_protector)
+
 AC_SUBST([HOST_CFLAGS])
 
 AC_SUBST([I386_CC])

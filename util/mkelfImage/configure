@@ -690,6 +690,7 @@ IA64_LD
 IA64_AS
 IA64_OBJCOPY
 HOST_CC
+libc_cv_fno_stack_protector
 HOST_CFLAGS
 I386_CFLAGS
 I386_ASFLAGS
@@ -4963,6 +4964,40 @@ IA64_LDFLAGS='-static --warn-multiple-gp --warn-common'
 
 
 
+{ echo "$as_me:$LINENO: checking for -fno-stack-protector" >&5
+echo $ECHO_N "checking for -fno-stack-protector... $ECHO_C" >&6; }
+if test "${libc_cv_fno_stack_protector+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+cat > conftest.c <<EOF
+int foo;
+main () { return 0;}
+EOF
+if { ac_try='$I386_CC -fno-stack-protector
+                           -o conftest conftest.c 1>&5'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }
+then
+  libc_cv_fno_stack_protector=yes
+else
+  libc_cv_fno_stack_protector=no
+fi
+rm -f conftest*
+fi
+{ echo "$as_me:$LINENO: result: $libc_cv_fno_stack_protector" >&5
+echo "${ECHO_T}$libc_cv_fno_stack_protector" >&6; }
+if test $libc_cv_fno_stack_protector = yes; then
+  I386_CFLAGS="$I386_CFLAGS -fno-stack-protector"
+  IA64_CFLAGS="$IA64_CFLAGS -fno-stack-protector"
+
+fi
+
+
+
 
 
 
@@ -5689,6 +5724,7 @@ IA64_LD!$IA64_LD$ac_delim
 IA64_AS!$IA64_AS$ac_delim
 IA64_OBJCOPY!$IA64_OBJCOPY$ac_delim
 HOST_CC!$HOST_CC$ac_delim
+libc_cv_fno_stack_protector!$libc_cv_fno_stack_protector$ac_delim
 HOST_CFLAGS!$HOST_CFLAGS$ac_delim
 I386_CFLAGS!$I386_CFLAGS$ac_delim
 I386_ASFLAGS!$I386_ASFLAGS$ac_delim
@@ -5700,7 +5736,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 86; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 87; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

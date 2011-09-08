@@ -26,6 +26,8 @@ config VENDOR_ASUS
 	bool "ASUS"
 config VENDOR_A_TREND
 	bool "A-Trend"
+config VENDOR_AVALUE
+	bool "AVALUE"
 config VENDOR_AXUS
 	bool "AXUS"
 config VENDOR_AZZA
@@ -134,6 +136,7 @@ source "src/mainboard/artecgroup/Kconfig"
 source "src/mainboard/asi/Kconfig"
 source "src/mainboard/asrock/Kconfig"
 source "src/mainboard/asus/Kconfig"
+source "src/mainboard/avalue/Kconfig"
 source "src/mainboard/axus/Kconfig"
 source "src/mainboard/azza/Kconfig"
 source "src/mainboard/bcom/Kconfig"

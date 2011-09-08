@@ -1009,6 +1009,7 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 			set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 3, 1 << 3);
 		}
 	} else {		/* step 13.b Link Training was successful */
+		AtiPcieCfg.PortDetect |= 1 << 2; /* Port 2 */
 		set_pcie_enable_bits(dev, 0xA2, 0xFF, 0x1);
 		reg32 = nbpcie_p_read_index(dev, 0x29);
 		width = reg32 & 0xFF;
@@ -1064,6 +1065,7 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind, 1 << dev_ind);
 
 	} else {		/* step 16.b Link Training was successful */
+		AtiPcieCfg.PortDetect |= 1 << dev_ind;
 		reg32 = nbpcie_p_read_index(dev, 0xa2);
 		width = (reg32 >> 4) & 0x7;
 		printk(BIOS_DEBUG, "GFX LC_LINK_WIDTH = 0x%x.\n", width);

@@ -390,3 +390,23 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 		switching_gpp_configurations(nb_dev, sb_dev);
 	ValidatePortEn(nb_dev);
 }
+
+/**
+ * Hide unused Gpp port
+ */
+void pcie_hide_unused_ports(device_t nb_dev)
+{
+	u8 port = 2;
+	u16 hide = 0x6FC;
+
+	for (port = 2; port <= 10; port++) {
+		if (port == 8)
+			continue;
+		hide &= ~((AtiPcieCfg.PortDetect & (1 << port)) |
+				(AtiPcieCfg.PortHp & (1 << port)));
+	}
+	printk(BIOS_INFO, "rs780 unused GPP ports bitmap=0x%03x, force disabled\n", hide);
+	set_nbmisc_enable_bits(nb_dev, 0x0C, 0xFC, (hide & 0xFC)); /* bridge 2-7 */
+	set_nbmisc_enable_bits(nb_dev, 0x0C, 0x30000, ((hide >> 9) & 0x3) << 16); /* bridge 9-a */
+}
+

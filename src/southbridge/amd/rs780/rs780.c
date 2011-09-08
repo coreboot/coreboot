@@ -362,7 +362,10 @@ void rs780_enable(device_t dev)
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
 
-		if (dev_ind == 10) disable_pcie_bar3(nb_dev);
+		if (dev_ind == 10) {
+			disable_pcie_bar3(nb_dev);
+			pcie_hide_unused_ports(nb_dev);
+		}
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));

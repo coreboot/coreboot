@@ -46,6 +46,7 @@
 #define	AMD_RB_C3	0x08000000	/* ??? C3 */
 #define	AMD_DA_C3	0x10000000	/* XXXX C3 */
 #define	AMD_HY_D1	0x20000000	/* Istanbul D1 */
+#define	AMD_PH_E0	0x40000000	/* Phenom II X4 X6 */
 
 /*
  * Groups - Create as many as you wish, from the above public values
@@ -64,7 +65,7 @@
 #define	AMD_DR_GT_B0	(AMD_DR_ALL & ~(AMD_DR_B0))
 #define	AMD_DR_GT_Bx	(AMD_DR_ALL & ~(AMD_DR_Ax | AMD_DR_Bx))
 #define	AMD_DR_ALL	(AMD_DR_Bx)
-#define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 | AMD_HY_D1)
+#define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2 | AMD_HY_D0 | AMD_DA_C3 | AMD_DA_C2 | AMD_RB_C3 | AMD_HY_D1 | AMD_PH_E0)
 #define AMD_FAM10_LT_D  (AMD_FAM10_ALL & ~(AMD_HY_D0))
 #define	AMD_FAM10_GT_B0	(AMD_FAM10_ALL & ~(AMD_DR_B0))
 #define	AMD_DA_Cx       (AMD_DA_C2 | AMD_DA_C3)

@@ -437,42 +437,6 @@ agesawrapper_amdinitlate (
   )
 {
   AGESA_STATUS Status;
-  AMD_INTERFACE_PARAMS AmdParamStruct = {0};
-  AMD_LATE_PARAMS *AmdLateParams;
-
-  return 0; // this causes bad ACPI SSDT, need to debug
-
-  AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
-  AmdParamStruct.AllocationMethod = PostMemDram;
-  AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
-  AmdCreateStruct (&AmdParamStruct);
-  AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
-  Status = AmdInitLate (AmdLateParams);
-  if (Status != AGESA_SUCCESS) {
-    agesawrapper_amdreadeventlog();
-    ASSERT(Status == AGESA_SUCCESS);
-  }
-
-  DmiTable    = AmdLateParams->DmiTable;
-  AcpiPstate  = AmdLateParams->AcpiPState;
-  AcpiSrat    = AmdLateParams->AcpiSrat;
-  AcpiSlit    = AmdLateParams->AcpiSlit;
-
-  AcpiWheaMce = AmdLateParams->AcpiWheaMce;
-  AcpiWheaCmc = AmdLateParams->AcpiWheaCmc;
-  AcpiAlib    = AmdLateParams->AcpiAlib;
-
-  AmdReleaseStruct (&AmdParamStruct);
-  return (UINT32)Status;
-}
-
-UINT32 
-agesawrapper_amdlaterunaptask (
-  UINT32 Data, 
-  VOID *ConfigPtr
-  )
-{
-  AGESA_STATUS Status;
   AMD_LATE_PARAMS AmdLateParams;
 
   LibAmdMemFill (&AmdLateParams,
@@ -485,20 +449,52 @@ agesawrapper_amdlaterunaptask (
   AmdLateParams.StdHeader.Func = 0;
   AmdLateParams.StdHeader.ImageBasePtr = 0;
 
-  Status = AmdLateRunApTask (&AmdLateParams);
+  Status = AmdInitLate (&AmdLateParams);
   if (Status != AGESA_SUCCESS) {
     agesawrapper_amdreadeventlog();
     ASSERT(Status == AGESA_SUCCESS);
   }
 
-  DmiTable       = AmdLateParams.DmiTable;
-  AcpiPstate     = AmdLateParams.AcpiPState;
-  AcpiSrat       = AmdLateParams.AcpiSrat;
-  AcpiSlit       = AmdLateParams.AcpiSlit;
+  DmiTable    = AmdLateParams.DmiTable;
+  AcpiPstate  = AmdLateParams.AcpiPState;
+  AcpiSrat    = AmdLateParams.AcpiSrat;
+  AcpiSlit    = AmdLateParams.AcpiSlit;
 
-  AcpiWheaMce    = AmdLateParams.AcpiWheaMce;
-  AcpiWheaCmc    = AmdLateParams.AcpiWheaCmc;
-  AcpiAlib       = AmdLateParams.AcpiAlib;
+  AcpiWheaMce = AmdLateParams.AcpiWheaMce;
+  AcpiWheaCmc = AmdLateParams.AcpiWheaCmc;
+  AcpiAlib    = AmdLateParams.AcpiAlib;
+
+  return (UINT32)Status;
+}
+
+UINT32 
+agesawrapper_amdlaterunaptask (
+  UINT32 Func, 
+  UINT32 Data, 
+  VOID *ConfigPtr
+  )
+{
+  AGESA_STATUS Status;
+  AP_EXE_PARAMS ApExeParams;
+
+  LibAmdMemFill (&ApExeParams,
+                 0,
+                 sizeof (AP_EXE_PARAMS),
+                 &(ApExeParams.StdHeader));
+
+  ApExeParams.StdHeader.AltImageBasePtr = 0;
+  ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+  ApExeParams.StdHeader.Func = 0;
+  ApExeParams.StdHeader.ImageBasePtr = 0;
+  ApExeParams.StdHeader.ImageBasePtr = 0;
+  ApExeParams.FunctionNumber = Func;
+  ApExeParams.RelatedDataBlock = ConfigPtr;
+
+  Status = AmdLateRunApTask (&ApExeParams);
+  if (Status != AGESA_SUCCESS) {
+    agesawrapper_amdreadeventlog();
+    ASSERT(Status == AGESA_SUCCESS);
+  }
 
   return (UINT32)Status;
 }

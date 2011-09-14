@@ -213,4 +213,5 @@ u32 extractbits(u32 source, int lsb, int msb);
 int cpuidFamily(void);
 int is_family0Fh(void);
 int is_family10h(void);
+void pcie_hide_unused_ports(device_t nb_dev);
 #endif				/* RS780_H */

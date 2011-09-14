@@ -188,7 +188,7 @@ PcieAlibBuildAcpiTable (
   LibAmdMemCopy (AlibSsdtBuffer, &AlibSsdt[0], AlibSsdtlength, StdHeader);
   // Set PCI MMIO configuration
 //  AmlObjName = '10DA';
-  AmlObjName = Int32FromChar ('1', '0', 'D', 'A');
+  AmlObjName = Int32FromChar ('A', 'D', '0', '1');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   if (AmlObjPtr != NULL) {
     UINT64  MsrReg;
@@ -205,7 +205,7 @@ PcieAlibBuildAcpiTable (
   PpFuseArray = GnbLocateHeapBuffer (AMD_PP_FUSE_TABLE_HANDLE, StdHeader);
   if (PpFuseArray != NULL) {
 //    AmlObjName = '30DA';
-    AmlObjName = Int32FromChar ('3', '0', 'D', 'A');
+    AmlObjName = Int32FromChar ('A', 'D', '0', '3');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -235,7 +235,7 @@ PcieAlibBuildAcpiTable (
     }
   }
 //  AmlObjName = '40DA';
-  AmlObjName = Int32FromChar ('4', '0', 'D', 'A');
+  AmlObjName = Int32FromChar ('A', 'D', '0', '4');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   ASSERT (AmlObjPtr != NULL);
   if (AmlObjPtr != NULL) {
@@ -244,7 +244,7 @@ PcieAlibBuildAcpiTable (
     Status = AGESA_ERROR;
   }
 //  AmlObjName = '50DA';
-  AmlObjName = Int32FromChar ('5', '0', 'D', 'A');
+  AmlObjName = Int32FromChar ('A', 'D', '0', '5');
   AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
   ASSERT (AmlObjPtr != NULL);
   if (AmlObjPtr != NULL) {
@@ -255,7 +255,7 @@ PcieAlibBuildAcpiTable (
   // Set PCIe configuration
   if (PcieLocateConfigurationData (StdHeader, &Pcie) == AGESA_SUCCESS) {
 //    AmlObjName = '20DA';
-  AmlObjName = Int32FromChar ('2', '0', 'D', 'A');
+    AmlObjName = Int32FromChar ('A', 'D', '0', '2');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -264,7 +264,7 @@ PcieAlibBuildAcpiTable (
       Status = AGESA_ERROR;
     }
 //    AmlObjName = '60DA';
-    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
+    AmlObjName = Int32FromChar ('A', 'D', '0', '6');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -278,7 +278,7 @@ PcieAlibBuildAcpiTable (
       Status = AGESA_ERROR;
     }
 //    AmlObjName = '80DA';
-    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
+    AmlObjName = Int32FromChar ('A', 'D', '0', '8');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {
@@ -292,7 +292,7 @@ PcieAlibBuildAcpiTable (
       Status = AGESA_ERROR;
     }
 //    AmlObjName = '70DA';
-    AmlObjName = Int32FromChar ('6', '0', 'D', 'A');
+    AmlObjName = Int32FromChar ('A', 'D', '0', '7');
     AmlObjPtr = GnbLibFind (AlibSsdtBuffer, AlibSsdtlength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
     ASSERT (AmlObjPtr != NULL);
     if (AmlObjPtr != NULL) {

@@ -153,7 +153,7 @@ PcieConfigurationInit (
         IDS_ERROR_TRAP;
         return AGESA_FATAL;
       }
-      Pcie->ComplexList[ComplexIndex].SiliconList = (PCIe_SILICON_CONFIG *) &Buffer;
+      Pcie->ComplexList[ComplexIndex].SiliconList = (PCIe_SILICON_CONFIG *) Buffer;
       PcieFmBuildComplexConfiguration (Buffer, StdHeader);
       for (Index = 0; Index < NumberOfComplexes; Index++) {
         ComplexDescriptor = PcieInputParserGetComplexDescriptor (ComplexList, Index);

@@ -7,7 +7,7 @@
  * @xrefitem bom "File Content Label" "Release Content"
  * @e project:      AGESA
  * @e sub-project:  HyperTransport
- * @e \$Revision: 44325 $   @e \$Date: 2010-12-22 03:29:53 -0700 (Wed, 22 Dec 2010) $
+ * @e \$Revision: 34897 $   @e \$Date: 2010-07-14 10:07:10 +0800 (Wed, 14 Jul 2010) $
  *
  */
 /*
@@ -128,7 +128,7 @@ CONST NORTHBRIDGE ROMDATA HtFam14Nb =
   (PF_MAKE_LINK_BASE)CommonReturnZero32,
   (PF_GET_MODULE_INFO)CommonVoid,
   (PF_POST_MAILBOX)CommonVoid,
-  (PF_RETRIEVE_MAILBOX)CommonReturnZero32,
+  Fam14RetrieveMailbox,
   (PF_GET_SOCKET)CommonReturnZero8,
   (PF_GET_ENABLED_COMPUTE_UNITS)CommonReturnZero8,
   (PF_GET_DUALCORE_COMPUTE_UNITS)CommonReturnZero8,

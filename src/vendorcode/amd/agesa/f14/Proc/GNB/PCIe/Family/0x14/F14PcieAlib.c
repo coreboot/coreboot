@@ -120,7 +120,7 @@ PcieFmAlibBuildAcpiTable (
       );
     if (D18F4x15C.Field.BoostSrc != 0 || PpFuseArray->GpuBoostCap != 0) {
 //      AmlObjName = 'B0DA';
-      AmlObjName = Int32FromChar ('B', '0', 'D', 'A');
+      AmlObjName = Int32FromChar ('A', 'D', '0', 'B');
       AmlObjPtr = GnbLibFind (AlibSsdtPtr, ((ACPI_TABLE_HEADER*) &AlibSsdt[0])->TableLength, (UINT8*) &AmlObjName, sizeof (AmlObjName));
       ASSERT (AmlObjPtr != NULL);
       if (AmlObjPtr != NULL) {

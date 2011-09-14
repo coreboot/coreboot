@@ -31,10 +31,8 @@
 void sb800_cimx_config(AMDSBCFG *sb_config)
 {
 	if (!sb_config) {
-		printk(BIOS_DEBUG, "SB800 - Cfg.c - sb800_cimx_config - No sb_config.\n");
 		return;
 	}
-	printk(BIOS_INFO, "SB800 - Cfg.c - sb800_cimx_config - Start.\n");
 	//memset(sb_config, 0, sizeof(AMDSBCFG));
 
 	/* header */
@@ -128,6 +126,5 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 		sb_config->StdHeader.CALLBACK.CalloutPtr = sb800_callout_entry;
 	}
 #endif //!__PRE_RAM__
-	printk(BIOS_INFO, "SB800 - Cfg.c - sb800_cimx_config - End.\n");
 }
 

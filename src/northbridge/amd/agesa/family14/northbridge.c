@@ -31,6 +31,7 @@
 
 #include <cpu/x86/lapic.h>
 
+#include "agesawrapper.h"
 #include "chip.h"
 #include "northbridge.h"
 #if CONFIG_AMD_SB_CIMX
@@ -289,7 +290,6 @@ struct hw_mem_hole_info {
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
         struct hw_mem_hole_info mem_hole;
-        int i;
 
         mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
         mem_hole.node_id = -1;
@@ -420,7 +420,7 @@ static void set_resource(device_t dev, struct resource *resource,
 }
 
 
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_CONSOLE_VGA_MULTI
 extern device_t vga_pri;    // the primary vga device, defined in device.c
 #endif
 
@@ -434,7 +434,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
      * we only deal with the 'first' vga card */
     for (link = dev->link_list; link; link = link->next) {
         if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_CONSOLE_VGA_MULTI
             printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
                 link->secondary,link->subordinate);
             /* We need to make sure the vga_pri is under the link */
@@ -548,7 +548,7 @@ static void domain_read_resources(device_t dev)
 static void domain_set_resources(device_t dev)
 {
     printk(BIOS_DEBUG, "\nFam14h - domain_set_resources.\n");
-    printk(BIOS_DEBUG, "  amsr - incoming dev = %08lx\n",dev);
+    printk(BIOS_DEBUG, "  amsr - incoming dev = %08x\n",(u32)dev);
 
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
     struct resource *io, *mem1, *mem2;
@@ -556,7 +556,7 @@ static void domain_set_resources(device_t dev)
 #endif
     unsigned long mmio_basek;
     u32 pci_tolm;
-    int i, idx;
+    int idx;
     struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
     struct hw_mem_hole_info mem_hole;
@@ -574,9 +574,9 @@ printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
         mem2 = find_resource(dev, 2|(link->link_num<<2));
 
         printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem1->base, mem1->limit, mem1->size, mem1->align);
+            (u32)(mem1->base), (u32)(mem1->limit), (u32)(mem1->size), u32)(mem1->align));
         printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem2->base, mem2->limit, mem2->size, mem2->align);
+            (u32)(mem2->base), (u32)(mem2->limit), (u32)(mem2->size), (u32)(mem2->align));
 
         /* See if both resources have roughly the same limits */
         if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
@@ -676,7 +676,7 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
         }
 
 
-printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_basek, basek, limitk);
+printk(BIOS_DEBUG, "adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",  mmio_basek, basek, limitk);
 
         /* split the region to accomodate pci memory space */
         if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
@@ -722,7 +722,7 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_bas
         /* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
             high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
-            printk(BIOS_DEBUG, "  adsr - uma_memory_base = %x.\n",uma_memory_base);
+            printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx.\n",uma_memory_base);
 #else
             high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
 #endif
@@ -730,8 +730,8 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_bas
         }
 #endif
     }
-printk(BIOS_DEBUG, "  adsr - mmio_basek = %x.\n",mmio_basek);
-printk(BIOS_DEBUG, "  adsr - high_tables_size = %x.\n",high_tables_size);
+printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n",mmio_basek);
+printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",high_tables_size);
 
 #if CONFIG_GFXUMA == 1
     printk(BIOS_DEBUG, "adsr - adding uma resource.\n");

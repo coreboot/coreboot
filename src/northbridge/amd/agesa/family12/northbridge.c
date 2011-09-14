@@ -33,6 +33,7 @@
 
 #include "chip.h"
 #include "northbridge.h"
+#include "SbEarly.h"
 #include "agesawrapper.h"
 
 //#define FX_DEVS NODE_NUMS
@@ -427,7 +428,7 @@ static void set_resource(device_t dev, struct resource *resource,
 }
 
 
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_CONSOLE_VGA_MULTI
 extern device_t vga_pri;    // the primary vga device, defined in device.c
 #endif
 
@@ -441,7 +442,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
      * we only deal with the 'first' vga card */
     for (link = dev->link_list; link; link = link->next) {
         if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_CONSOLE_VGA_MULTI == 1
+#if CONFIG_CONSOLE_VGA_MULTI
             printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
                 link->secondary,link->subordinate);
             /* We need to make sure the vga_pri is under the link */

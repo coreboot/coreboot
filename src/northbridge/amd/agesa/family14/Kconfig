@@ -37,7 +37,7 @@ config MMCONF_BASE_ADDRESS
 
 config MMCONF_BUS_NUMBER
 	int
- 	default 16
+	default 16
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
   string

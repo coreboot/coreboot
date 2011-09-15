@@ -123,17 +123,44 @@ config SIO_PORT
         default 0x2e
 
 config DRIVERS_PS2_KEYBOARD
-	bool
-	default y
+        bool
+        default y
 
 config WARNINGS_ARE_ERRORS
-	bool
-	default n
+        bool
+        default n
 
-config FALLBACK_VGA_BIOS_ID
-	string "VGA device PCI IDs"
-	depends on VGA_BIOS
-	default "1002,9802"
+config ONBOARD_VGA_IS_PRIMARY
+        bool
+        default y
+
+config VGA_BIOS
+        bool
+        default n
+
+#config VGA_BIOS_FILE
+#        string "VGA BIOS path and filename"
+#        depends on VGA_BIOS
+#        default "rom/video/OntarioGenericVBios.bin"
+
+config VGA_BIOS_ID
+        string "VGA device PCI IDs"
+        depends on VGA_BIOS
+        default "1002,9802"
+
+config AHCI_ROM
+        bool
+        default n
+
+#config AHCI_ROM_FILE
+#        string "AHCI ROM path and filename"
+#        depends on AHCI_ROM
+#        default "rom/ahci/sb800.bin"
+
+config AHCI_ROM_ID
+        string "AHCI device PCI IDs"
+        depends on AHCI_ROM
+        default "1002,4391"
 
 endif # BOARD_AMD_INAGUA
 

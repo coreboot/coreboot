@@ -263,12 +263,13 @@ PcieOnConfigureGppEnginesLaneAllocation (
   CoreLaneIndex = 0;
   PortIdIndex = 0;
   do {
+    if (PortIdIndex > 0) EnginesList++;
     EnginesList->Flags &= ~DESCRIPTOR_ALLOCATED;
     EnginesList->Type.Port.PortId = GppPortIdConfigurationTable [ConfigurationId][PortIdIndex++];
     EnginesList->Type.Port.StartCoreLane = GppLaneConfigurationTable [ConfigurationId][CoreLaneIndex++];
     EnginesList->Type.Port.EndCoreLane = GppLaneConfigurationTable [ConfigurationId][CoreLaneIndex++];
 
-  } while (IS_LAST_DESCRIPTOR (EnginesList++));
+  } while (IS_LAST_DESCRIPTOR (EnginesList));
   return  AGESA_SUCCESS;
 }
 
@@ -305,12 +306,13 @@ PcieOnConfigureDdiEnginesLaneAllocation (
   }
   LaneIndex = 0;
   do {
+    if (LaneIndex > 0) EnginesList++;
     EnginesList->Flags &= ~DESCRIPTOR_ALLOCATED;
     EnginesList->EngineData.StartLane = DdiLaneConfigurationTable [ConfigurationId][LaneIndex++] +
                                         Wrapper->StartPhyLane;
     EnginesList->EngineData.EndLane = DdiLaneConfigurationTable [ConfigurationId][LaneIndex++] +
                                       Wrapper->StartPhyLane;
-  } while (IS_LAST_DESCRIPTOR (EnginesList++));
+  } while (IS_LAST_DESCRIPTOR (EnginesList));
   return  AGESA_SUCCESS;
 }
 

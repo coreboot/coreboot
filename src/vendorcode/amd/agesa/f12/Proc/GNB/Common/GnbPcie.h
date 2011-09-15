@@ -74,9 +74,6 @@
 //#define PCIE_LINK_GPIO_RESET_ASSERT_TIME       (2  * 1000)
 //#define PCIE_LINK_RESET_TO_TRAINING_TIME       (2  * 1000)
 
-#define IS_LAST_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_TERMINATE_LIST) == 0) : (1==1))
-#define IS_VALID_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_ALLOCATED) != 0) : (1==0))
-
 // Get lowest PHY lane on engine
 #define PcieLibGetLoPhyLane(Engine) (Engine != NULL ? ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.EndLane : Engine->EngineData.StartLane) : 0xFF)
 // Get highest PHY lane on engine

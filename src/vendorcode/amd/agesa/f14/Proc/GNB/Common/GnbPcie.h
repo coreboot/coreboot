@@ -66,8 +66,7 @@
 
 #define UNUSED_LANE_ID                         128
 
-#define IS_LAST_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) == 0) : (1==1))
-#define IS_VALID_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_ALLOCATED) != 0) : (1==0))
+#define IS_LAST_DESCRIPTOR(Descriptor) (Descriptor != NULL ? ((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) == 0) : (1==0))
 
 // Get lowest PHY lane on engine
 #define PcieLibGetLoPhyLane(Engine) (Engine != NULL ? ((Engine->EngineData.StartLane > Engine->EngineData.EndLane) ? Engine->EngineData.EndLane : Engine->EngineData.StartLane) : 0xFF)

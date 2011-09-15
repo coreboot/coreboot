@@ -33,8 +33,6 @@
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
-#include "AGESA.h"
-#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
@@ -124,29 +122,6 @@
 #define AGESA_ENTRY_INIT_RESUME                   TRUE
 #define AGESA_ENTRY_INIT_LATE_RESTORE             FALSE
 #define AGESA_ENTRY_INIT_GENERAL_SERVICES         FALSE
-
-/* 
- * Agesa configuration values selection.  
- * Uncomment and specify the value for the configuration options
- * needed by the system. 
- */
-
-/* The fixed MTRR values to be set after memory initialization. */
-CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
-{
-  { AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000 },
-  { AMD_AP_MTRR_FIX4k_C0000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_C8000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_D0000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_D8000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_E0000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_E8000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_F0000, 0x1E1E1E1E1E1E1E1E },
-  { AMD_AP_MTRR_FIX4k_F8000, 0x1E1E1E1E1E1E1E1E },
-  { CPU_LIST_TERMINAL }
-};
 
 #define BLDCFG_PCI_MMIO_BASE                    CONFIG_MMCONF_BASE_ADDRESS
 #define BLDCFG_PCI_MMIO_SIZE                    CONFIG_MMCONF_BUS_NUMBER
@@ -244,7 +219,33 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define BLDCFG_HEAP_DRAM_ADDRESS                0xB0000
 #define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS  0xD0000000
 
+/* 
+ * Agesa configuration values selection.  
+ * Uncomment and specify the value for the configuration options
+ * needed by the system. 
+ */
+#include "AGESA.h"
+#include "CommonReturns.h"
+
+/* The fixed MTRR values to be set after memory initialization. */
+CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
+{
+  { AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000ull },
+  { AMD_AP_MTRR_FIX4k_C0000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_C8000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_D0000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_D8000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_E0000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_E8000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_F0000, 0x1E1E1E1E1E1E1E1Eull },
+  { AMD_AP_MTRR_FIX4k_F8000, 0x1E1E1E1E1E1E1E1Eull },
+  { CPU_LIST_TERMINAL }
+};
+
 /*  Include the files that instantiate the configuration definitions.  */
+
 #include "cpuRegisters.h"
 #include "cpuFamRegisters.h"
 #include "cpuFamilyTranslation.h"
@@ -253,7 +254,6 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #include "CreateStruct.h"
 #include "cpuFeatures.h"
 #include "Table.h"
-#include "CommonReturns.h"
 #include "cpuEarlyInit.h"
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
@@ -277,7 +277,31 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
-#define AGESA_VERSION_STRING  {'V', '0', '.', '0', '.', '0', '.', '1', ' ', ' ', ' ', ' '}
+#define AGESA_VERSION_STRING  {'V', '1', '.', '1', '.', '0', '.', '3', ' ', ' ', ' ', ' '}
+
+/* MEMORY_BUS_SPEED */
+#define DDR400_FREQUENCY              200 ///< DDR 400
+#define DDR533_FREQUENCY              266 ///< DDR 533
+#define DDR667_FREQUENCY              333 ///< DDR 667
+#define DDR800_FREQUENCY              400 ///< DDR 800
+#define DDR1066_FREQUENCY             533 ///< DDR 1066
+#define DDR1333_FREQUENCY             667 ///< DDR 1333
+#define DDR1600_FREQUENCY             800 ///< DDR 1600
+#define DDR1866_FREQUENCY             933 ///< DDR 1866
+#define UNSUPPORTED_DDR_FREQUENCY     934 ///< Highest limit of DDR frequency
+
+/* QUANDRANK_TYPE*/
+#define QUADRANK_REGISTERED             0 ///< Quadrank registered DIMM
+#define QUADRANK_UNBUFFERED             1 ///< Quadrank unbuffered DIMM
+
+/* USER_MEMORY_TIMING_MODE */
+#define TIMING_MODE_AUTO                0 ///< Use best rate possible
+#define TIMING_MODE_LIMITED             1 ///< Set user top limit
+#define TIMING_MODE_SPECIFIC            2 ///< Set user specified speed
+
+/* POWER_DOWN_MODE */
+#define POWER_DOWN_BY_CHANNEL           0 ///< Channel power down mode
+#define POWER_DOWN_BY_CHIP_SELECT       1 ///< Chip select power down mode
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product

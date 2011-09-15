@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
+#include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
 
 extern u8 bus_sb800[2];
@@ -61,7 +62,6 @@ static void *smp_write_config_table(void *v)
 
   /* I/O APICs:   APIC ID Version State   Address */
   
-  device_t dev;
   u32 dword;
   u8 byte;
     

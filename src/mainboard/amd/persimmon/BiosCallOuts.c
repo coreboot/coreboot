@@ -16,19 +16,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 #include "agesawrapper.h"
 #include "amdlib.h"
+#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "heapManager.h"
 #include "SB800.h"
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  UINTN i;
-  AGESA_STATUS CalloutStatus;
-
-CONST BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
+STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
   {AGESA_ALLOCATE_BUFFER,
    BiosAllocateBuffer
@@ -58,36 +54,44 @@ CONST BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
    BiosRunFuncOnAp
   },
 
-  {AGESA_HOOKBEFORE_DQS_TRAINING,
-   BiosHookBeforeDQSTraining
-  },
-  
-  {AGESA_HOOKBEFORE_DRAM_INIT,
-   BiosHookBeforeDramInit
-  },
-  {AGESA_HOOKBEFORE_EXIT_SELF_REF,
-   BiosHookBeforeExitSelfRefresh
-  },
   {AGESA_GNB_PCIE_SLOT_RESET,
    BiosGnbPcieSlotReset
   },
+
+  {AGESA_HOOKBEFORE_DRAM_INIT,
+   BiosHookBeforeDramInit
+  },
+
+  {AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,
+   BiosHookBeforeDramInitRecovery
+  },
+
+  {AGESA_HOOKBEFORE_DQS_TRAINING,
+   BiosHookBeforeDQSTraining
+  },
+
+  {AGESA_HOOKBEFORE_EXIT_SELF_REF,
+   BiosHookBeforeExitSelfRefresh
+  },
 };
 
-  for (i = 0; i < REQUIRED_CALLOUTS; i++)
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+  UINTN i;
+  AGESA_STATUS CalloutStatus;
+  UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
+
+  CalloutStatus = AGESA_UNSUPPORTED;
+
+  for (i = 0; i < CallOutCount; i++)
   {
     if (BiosCallouts[i].CalloutName == Func)
     {
-      break;
+      CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
+      return CalloutStatus;
     }
   }
-
-  if(i >= REQUIRED_CALLOUTS)
-  {
-    return AGESA_UNSUPPORTED;
-  }
-
-  CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
-
+ 
   return CalloutStatus;
 }
 
@@ -149,7 +153,7 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       /* If BufferHandle has not been allocated on the heap, CurrNodePtr here points
        to the end of the allocated nodes list.
       */
-       
+
     }
     /* Find the node that best fits the requested buffer size */
     FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
@@ -199,7 +203,7 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
       /* If BestFitNode is the first buffer in the list, then update
          StartOfFreedNodes to reflect the new free node
-      */         
+      */
       if (BestFitNodeOffset == BiosHeapBasePtr->StartOfFreedNodes) {
         BiosHeapBasePtr->StartOfFreedNodes = NextFreeOffset;
       } else {
@@ -284,10 +288,10 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       FreedNodePtr->NextNodeOffset = 0;
 
     } else {
-      /* Otherwise, add freed node to the start of the list 
+      /* Otherwise, add freed node to the start of the list
          Update NextNodeOffset and BufferSize to include the 
          size of BIOS_BUFFER_NODE
-      */   
+      */
       AllocNodePtr->NextNodeOffset = FreedNodeOffset;
     }
     /* Update StartOfFreedNodes to the new first node */
@@ -295,7 +299,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   } else {
     /* Traverse list of freed nodes to find where the deallocated node
        should be place
-    */   
+    */
     NextNodeOffset = FreedNodeOffset;
     NextNodePtr = FreedNodePtr;
     while (AllocNodeOffset > NextNodeOffset) {
@@ -309,7 +313,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
     /* If deallocated node is adjacent to the next node,
        concatenate both nodes
-    */   
+    */
     if (NextNodeOffset == EndNodeOffset) {
       NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
       AllocNodePtr->BufferSize += NextNodePtr->BufferSize;
@@ -323,7 +327,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
     }
     /* If deallocated node is adjacent to the previous node,
        concatenate both nodes
-    */   
+    */
     PrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + PrevNodeOffset);
     EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize;
     if (AllocNodeOffset == EndNodeOffset) {
@@ -377,7 +381,7 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS        Status;
 
-  Status = agesawrapper_amdlaterunaptask (Data, ConfigPtr);
+  Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
   return Status;
 }
 
@@ -387,10 +391,10 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   UINT8                 Value;
   UINTN               ResetType;
   AMD_CONFIG_PARAMS   *StdHeader;
-  
+
   ResetType = Data;
   StdHeader = ConfigPtr;
-    
+
   //
   // Perform the RESET based upon the ResetType. In case of
   // WARM_RESET_WHENVER and COLD_RESET_WHENEVER, the request will go to
@@ -402,17 +406,17 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   case WARM_RESET_WHENEVER:
   case COLD_RESET_WHENEVER:
     break;
-    
+
   case WARM_RESET_IMMEDIATELY:
   case COLD_RESET_IMMEDIATELY:
       Value = 0x06;
       LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
     break;
-    
+
   default:
     break;
   }
-  
+
   Status = 0;
   return Status;
 }
@@ -420,7 +424,7 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS Status;
-  Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+  Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
 
   return Status;
 }
@@ -445,12 +449,12 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   UINT8             Data8;
   UINT16            Data16;
   UINT8             TempData8;
-    
+
   FcnData = Data;
   MemData = ConfigPtr;
-  
+
   Status  = AGESA_SUCCESS;
-  /* Get SB800 MMIO Base (AcpiMmioAddr) */
+  /* Get SB MMIO Base (AcpiMmioAddr) */
   WriteIo8 (0xCD6, 0x27);
   Data8   = ReadIo8(0xCD7);
   Data16  = Data8<<8;
@@ -459,7 +463,7 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   Data16  |= Data8;
   AcpiMmioAddr = (UINT32)Data16 << 16;
   GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
-  
+
   Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
   Data8 &= ~BIT5;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
@@ -473,19 +477,21 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   TempData8 &= 0x23;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
+
   Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
   Data8 &= ~BIT5;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
   TempData8 &= 0x03;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
+
   Data8 |= BIT2+BIT3;
   Data8 &= ~BIT4;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
   TempData8 &= 0x23;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
-  
+
   switch(MemData->ParameterListPtr->DDR3Voltage){
     case VOLT1_35:
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
@@ -514,6 +520,13 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   }
   return Status;
 }
+
+/*  Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+  return AGESA_SUCCESS;
+}
+
 /*  Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -525,12 +538,12 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   AGESA_STATUS Status;
   UINTN                 FcnData;
   PCIe_SLOT_RESET_INFO  *ResetInfo;
-  
+
   UINT32  GpioMmioAddr;
   UINT32  AcpiMmioAddr;
   UINT8   Data8;
   UINT16  Data16;
-  
+
   FcnData   = Data;
   ResetInfo = ConfigPtr;
   // Get SB800 MMIO Base (AcpiMmioAddr)

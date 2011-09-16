@@ -103,7 +103,7 @@
  * @breif INCHIP Sata Controller Mode
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
-#define SATA_MODE			NATIVE_IDE_MODE
+#define SATA_MODE			AHCI_MODE
 
 /**
  * @breif INCHIP Sata IDE Controller Mode

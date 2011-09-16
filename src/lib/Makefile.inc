@@ -1,6 +1,7 @@
 
 
 romstage-y += memset.c
+romstage-y += memchr.c
 romstage-y += memcpy.c
 romstage-y += memcmp.c
 romstage-y += cbfs.c
@@ -15,6 +16,7 @@ romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
 ramstage-y += memset.c
+ramstage-y += memchr.c
 ramstage-y += memcpy.c
 ramstage-y += memcmp.c
 ramstage-y += memmove.c

@@ -49,6 +49,8 @@
 #ifndef _CBFS_CORE_H_
 #define _CBFS_CORE_H_
 
+#include <arch/byteorder.h>
+
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and
     payloads.  Of course, other CBFS users can use whatever

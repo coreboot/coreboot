@@ -32,6 +32,6 @@ void post_code(uint8_t value)
 	print_emerg_hex8(value);
 	print_emerg("\n");
 #endif
-	outb(value, 0x80);
+	outb(value, CONFIG_POST_PORT);
 #endif
 }

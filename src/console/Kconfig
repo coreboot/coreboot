@@ -333,6 +333,10 @@ config NO_POST
 	bool "Don't show any POST codes"
 	default n
 
+config POST_PORT
+	int
+	default 0x80
+
 config CONSOLE_POST
 	bool "Show POST codes on the debug console"
 	depends on !NO_POST

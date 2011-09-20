@@ -112,6 +112,14 @@ config INCLUDE_CONFIG_FILE
   help
     Include in CBFS the coreboot config file that was used to compile the ROM image
 
+config EARLY_CBMEM_INIT
+	bool "Initialize CBMEM while in ROM stage"
+	default n
+	help
+	  Make coreboot initialize the cbmem structures while running in rom
+	  stage. This could be useful when the rom stage wants to communicate
+	  some, for instance, execution timestamps.
+
 endmenu
 
 source src/mainboard/Kconfig

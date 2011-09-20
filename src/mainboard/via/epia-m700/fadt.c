@@ -31,9 +31,9 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->signature, "FACP", 4);
 	header->length = 244;
 	header->revision = 3;
-	memcpy(header->oem_id, "VX800 ", 6);
-	memcpy(header->oem_table_id, "LNXBACPI", 8);
-	memcpy(header->asl_compiler_id, "LXB", 8);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
 	header->asl_compiler_revision = 0;
 
 	fadt->firmware_ctrl = (u32)facs;

@@ -5,7 +5,7 @@
  *
  */
 
-DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
+DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 {
 	/*
 	 * Define the main processor

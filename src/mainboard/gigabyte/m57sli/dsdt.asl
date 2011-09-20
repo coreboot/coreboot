@@ -23,7 +23,7 @@
  * ISA portions taken from QEMU acpi-dsdt.dsl.
  */
 
-DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
+DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 {
 	#include "northbridge/amd/amdk8/util.asl"
 

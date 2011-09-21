@@ -112,6 +112,14 @@ config INCLUDE_CONFIG_FILE
   help
     Include in CBFS the coreboot config file that was used to compile the ROM image
 
+config FDT_FILE_NAME
+	depends on ADD_FDT
+	string "Name of the CBFS file containing the compiled FDT"
+	default "u-boot.dtb"
+	help
+	  Name of the CBFS file containing the binary representation of the
+	  device tree to be optionally modified and passed to the payload.
+
 config EARLY_CBMEM_INIT
 	bool "Initialize CBMEM while in ROM stage"
 	default n
@@ -120,6 +128,13 @@ config EARLY_CBMEM_INIT
 	  stage. This could be useful when the rom stage wants to communicate
 	  some, for instance, execution timestamps.
 
+config COLLECT_TIMESTAMPS
+	bool "Create a table of timestamps collected during boot"
+	depends on EARLY_CBMEM_INIT
+	help
+	  Make coreboot create a table of timer id/timer value pairs to
+	  allow measuring time spent at different phases of the boot
+	  process.
 endmenu
 
 source src/mainboard/Kconfig

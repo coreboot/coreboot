@@ -22,7 +22,9 @@
 
 /* Reserve 128k for ACPI and other tables */
 #define HIGH_MEMORY_DEF_SIZE	( 128 * 1024 )
+#ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
+#endif
 
 #if CONFIG_HAVE_ACPI_RESUME
 #define HIGH_MEMORY_SIZE	((CONFIG_RAMTOP - CONFIG_RAMBASE) + HIGH_MEMORY_DEF_SIZE)
@@ -41,7 +43,7 @@ extern uint64_t high_tables_base, high_tables_size;
 #define CBMEM_ID_SMBIOS         0x534d4254
 #define CBMEM_ID_NONE		0x00000000
 
-void cbmem_initialize(void);
+int cbmem_initialize(void);
 
 void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);

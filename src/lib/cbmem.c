@@ -118,6 +118,22 @@ void *cbmem_add(u32 id, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
+	void *p;
+
+	/*
+	 * This could be a restart, check if the section is there already. It
+	 * is remotely possible that the dram contents persisted over the
+	 * bootloader upgrade AND the same section now needs more room, but
+	 * this is quite a remote possibility and it is ignored here.
+	 */
+	p = cbmem_find(id);
+	if (p) {
+		printk(BIOS_NOTICE,
+		       "CBMEM section %x: using existing location at %p.\n",
+		       id, p);
+		return p;
+	}
+
 	cbmem_toc = get_cbmem_toc();
 
 	if (cbmem_toc == NULL) {
@@ -240,6 +256,7 @@ void cbmem_list(void)
 		case CBMEM_ID_MPTABLE:	 printk(BIOS_DEBUG, "SMP TABLE  "); break;
 		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
 		case CBMEM_ID_SMBIOS:    printk(BIOS_DEBUG, "SMBIOS     "); break;
+		case CBMEM_ID_TIMESTAMP: printk(BIOS_DEBUG, "TIME STAMP "); break;
 		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
 		}
 		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);

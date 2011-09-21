@@ -120,6 +120,13 @@ config EARLY_CBMEM_INIT
 	  stage. This could be useful when the rom stage wants to communicate
 	  some, for instance, execution timestamps.
 
+config COLLECT_TIMESTAMPS
+	bool "Create a table of timestamps collected during boot"
+	depends on EARLY_CBMEM_INIT
+	help
+	  Make coreboot create a table of timer id/timer value pairs to
+	  allow measuring time spent at different phases of the boot
+	  process.
 endmenu
 
 source src/mainboard/Kconfig

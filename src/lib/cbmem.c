@@ -183,30 +183,38 @@ void *cbmem_find(u32 id)
 	return (void *)NULL;
 }
 
-#ifndef __PRE_RAM__
-#if CONFIG_HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 extern u8 acpi_slp_type;
 #endif
 
-void cbmem_initialize(void)
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
+/* Returns True if it was not intialized before. */
+int cbmem_initialize(void)
 {
-#if CONFIG_HAVE_ACPI_RESUME
-	printk(BIOS_DEBUG, "%s: acpi_slp_type=%d\n", __func__, acpi_slp_type);
-	if (acpi_slp_type == 3 || acpi_slp_type == 2) {
-		if (!cbmem_reinit(high_tables_base)) {
-			printk(BIOS_DEBUG, "cbmem_reinit failed\n");
-			/* Something went wrong, our high memory area got wiped */
-			acpi_slp_type = 0;
-			cbmem_init(high_tables_base, high_tables_size);
-		}
-	} else {
-		cbmem_init(high_tables_base, high_tables_size);
-	}
-#else
-	cbmem_init(high_tables_base, high_tables_size);
+	int rv = 0;
+
+#ifdef __PRE_RAM__
+	extern unsigned long get_top_of_ram(void);
+	uint64_t high_tables_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
+	uint64_t high_tables_size = HIGH_MEMORY_SIZE;
 #endif
+
+	/* We expect the romstage to always initialize it. */
+	if (!cbmem_reinit(high_tables_base)) {
+#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
+		/* Something went wrong, our high memory area got wiped */
+		if (acpi_slp_type == 3 || acpi_slp_type == 2)
+			acpi_slp_type = 0;
+#endif
+		cbmem_init(high_tables_base, high_tables_size);
+		rv = 1;
+	}
+#ifndef __PRE_RAM__
 	cbmem_arch_init();
+#endif
+	return rv;
 }
+#endif
 
 #ifndef __PRE_RAM__
 void cbmem_list(void)
@@ -240,5 +248,4 @@ void cbmem_list(void)
 }
 #endif
 
-#endif
 

@@ -634,6 +634,9 @@ static void amdfam10_domain_read_resources(device_t dev)
 {
 	unsigned reg;
 
+#if CONFIG_AMD_SB_CIMX
+	sb_Before_Pci_Init();
+#endif
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
 	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {

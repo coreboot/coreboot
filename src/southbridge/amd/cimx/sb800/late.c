@@ -343,11 +343,6 @@ static void sb800_enable(device_t dev)
 		break;
 
 	case (0x14 << 3) | 1: /* 0:14:1 IDE */
-		if (dev->enabled) {
-			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CIMX_OPTION_ENABLED;
-		} else {
-  			sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CIMX_OPTION_DISABLED;
-		}
 		break;
 
 	case (0x14 << 3) | 2: /* 0:14:2 HDA */

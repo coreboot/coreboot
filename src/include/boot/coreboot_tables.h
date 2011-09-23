@@ -195,6 +195,14 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_size;
 };
 
+#define LB_TAG_TIMESTAMPS	0x0016
+struct lb_tstamp {
+	uint32_t tag;
+	uint32_t size;
+
+	void	*tstamp_tab;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

@@ -21,6 +21,9 @@
 #include <string.h>
 #include <cbmem.h>
 #include <console/console.h>
+#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
+#include <arch/acpi.h>
+#endif
 
 // The CBMEM TOC reserves 512 bytes to keep
 // the other entries somewhat aligned.
@@ -198,10 +201,6 @@ void *cbmem_find(u32 id)
 
 	return (void *)NULL;
 }
-
-#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
-extern u8 acpi_slp_type;
-#endif
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 /* Returns True if it was not intialized before. */

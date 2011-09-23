@@ -30,6 +30,7 @@
 #include <device/device.h>
 #include <stdlib.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #endif
@@ -177,6 +178,23 @@ static void lb_framebuffer(struct lb_header *header)
 	fill_lb_framebuffer(framebuffer);
 #endif
 }
+
+#if CONFIG_COLLECT_TIMESTAMPS
+static void lb_tsamp(struct lb_header *header)
+{
+	struct lb_tstamp *tstamp;
+	void *tstamp_table = cbmem_find(CBMEM_ID_TIMESTAMP);
+
+	if (!tstamp_table)
+		return;
+
+	tstamp = (struct lb_tstamp *)lb_new_record(header);
+	tstamp->tag = LB_TAG_TIMESTAMPS;
+	tstamp->size = sizeof(*tstamp);
+	tstamp->tstamp_tab = tstamp_table;
+
+}
+#endif
 
 static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
@@ -517,10 +535,6 @@ static void add_lb_reserved(struct lb_memory *mem)
 		lb_add_rsvd_range, mem);
 }
 
-#if CONFIG_WRITE_HIGH_TABLES
-extern uint64_t high_tables_base, high_tables_size;
-#endif
-
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
@@ -623,6 +637,9 @@ unsigned long write_coreboot_table(
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
+#if CONFIG_COLLECT_TIMESTAMPS
+	lb_tsamp(head);
+#endif
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);
 

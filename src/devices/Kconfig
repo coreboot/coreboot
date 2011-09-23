@@ -33,6 +33,13 @@ config VGA_ROM_RUN
 	  Execute VGA option ROMs, if found. This is required to enable
 	  PCI/AGP/PCI-E video cards.
 
+config S3_VGA_ROM_RUN
+	bool "Re-run VGA option ROMs on S3 resume"
+	default y
+	depends on VGA_ROM_RUN && HAVE_ACPI_RESUME
+	help
+	  Execute VGA option ROMs when coming out of an S3 resume.
+
 config PCI_ROM_RUN
 	bool "Run non-VGA option ROMs"
 	default y

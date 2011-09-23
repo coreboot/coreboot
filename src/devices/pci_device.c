@@ -51,6 +51,9 @@
 #if CONFIG_PC80_SYSTEM == 1
 #include <pc80/i8259.h>
 #endif
+#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
+#include <arch/acpi.h>
+#endif
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -672,6 +675,14 @@ void pci_dev_init(struct device *dev)
 	if (ram == NULL)
 		return;
 
+#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
+	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
+	 * ROMs when coming out of an S3 resume.
+	 */
+	if ((acpi_slp_type == 3) &&
+		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
+		return;
+#endif
 	run_bios(dev, (unsigned long)ram);
 #endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }

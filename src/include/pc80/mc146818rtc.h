@@ -104,6 +104,22 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 	outb(addr, RTC_BASE_PORT + offs + 0);
 	outb(val, RTC_BASE_PORT + offs + 1);
 }
+
+static inline u32 cmos_read32(u8 offset)
+{
+	u32 value = 0;
+	u8 i;
+	for (i = 0; i < sizeof(value); ++i)
+		value |= cmos_read(offset + i) << (i << 3);
+	return value;
+}
+
+static inline void cmos_write32(u8 offset, u32 value)
+{
+	u8 i;
+	for (i = 0; i < sizeof(value); ++i)
+		cmos_write((value >> (i << 3)) & 0xff, offset + i);
+}
 #endif
 
 #if !defined(__ROMCC__)

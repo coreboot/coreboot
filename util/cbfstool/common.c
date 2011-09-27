@@ -436,8 +436,9 @@ static int in_segment(int addr, int size, int gran)
 	return ((addr & ~(gran - 1)) == ((addr + size) & ~(gran - 1)));
 }
 
-uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
-			    const char *filename, uint32_t alignment)
+uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
+			    const char *filename, uint32_t alignment,
+			    uint32_t offset)
 {
 	void *rom = loadrom(romfile);
 	int filename_size = strlen(filename);
@@ -446,6 +447,13 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 	    sizeof(struct cbfs_file) + ALIGN(filename_size + 1,
 					     16) + sizeof(struct cbfs_stage);
 	int totalsize = headersize + filesize;
+
+	if (offset > phys_end - phys_start) {
+		fprintf(stderr, "Offset outside of ROM boundaries\n");
+		exit(1);
+	}
+
+	if (offset) offset = ALIGN(phys_start + offset, align);
 
 	uint32_t current = phys_start;
 	while (current < phys_end) {
@@ -458,10 +466,19 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 
 		uint32_t top =
 		    current + ntohl(thisfile->len) + ntohl(thisfile->offset);
-		if (((ntohl(thisfile->type) == 0x0)
-		     || (ntohl(thisfile->type) == 0xffffffff))
-		    && (ntohl(thisfile->len) + ntohl(thisfile->offset) >=
-			totalsize)) {
+
+		uint32_t off_rel = 0;
+		if (current < offset && offset <= top) {
+			off_rel = offset - current;
+			current = offset;
+		}
+
+		if (current >= offset
+		    && ((ntohl(thisfile->type) == 0x0)
+		        || (ntohl(thisfile->type) == 0xffffffff))
+		    && (ntohl(thisfile->len) + ntohl(thisfile->offset)
+			- off_rel >= totalsize)) {
+
 			if (in_segment
 			    (current + headersize, filesize, alignment))
 				return current + headersize;
@@ -482,6 +499,56 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
+	}
+	return 0;
+}
+
+uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
+			    const char *filename, uint32_t offset)
+{
+	void *rom = loadrom(romfile);
+	int filename_size = strlen(filename);
+
+	int headersize =
+		sizeof(struct cbfs_file) + ALIGN(filename_size + 1, 16);
+
+	int totalsize = headersize + filesize;
+
+	if (offset > phys_end - phys_start) {
+		fprintf(stderr, "Offset outside of ROM boundaries\n");
+		exit(1);
+	}
+
+	if (offset) offset = ALIGN(phys_start + offset, align);
+
+	uint32_t current = phys_start;
+	while (current < phys_end) {
+		if (!cbfs_file_header(current)) {
+			current += align;
+			continue;
+		}
+		struct cbfs_file *thisfile =
+		    (struct cbfs_file *)phys_to_virt(current);
+
+		uint32_t top =
+		    current + ntohl(thisfile->len) + ntohl(thisfile->offset);
+
+		uint32_t off_rel = 0;
+		if (current < offset && offset <= top) {
+			off_rel = offset - current;
+			current = offset;
+		}
+
+		if (current >= offset
+		    && ((ntohl(thisfile->type) == 0x0)
+		        || (ntohl(thisfile->type) == 0xffffffff))
+		    && (ntohl(thisfile->len) + ntohl(thisfile->offset)
+			- off_rel >= totalsize))
+			return current + headersize;
+
+		current = ALIGN(current + (ntohl(thisfile->len) +
+					ntohl(thisfile->offset) - off_rel),
+				align);
 	}
 	return 0;
 }

@@ -78,7 +78,11 @@ static int cbfs_add(int argc, char **argv)
 	else
 		type = strtoul(argv[5], NULL, 0);
 	if (argc > 6) {
-		base = strtoul(argv[6], NULL, 0);
+		if (*argv[6] == '+')
+			base = cbfs_find_location(rom, filesize, filename,
+					strtoul(argv[6]+1, NULL, 0));
+		else
+			base = strtoul(argv[6], NULL, 0);
 	}
 	cbfsfile = create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
 	if (add_file_to_cbfs(cbfsfile, filesize, base))
@@ -118,15 +122,20 @@ static int cbfs_add_payload(int argc, char **argv)
 	void *cbfsfile = NULL;
 
 	comp_algo algo = CBFS_COMPRESS_NONE;
-	if (argc > 5) {
-		if (argv[5][0] == 'l')
+	if (argc > 5 && argv[5][0] == 'l')
 			algo = CBFS_COMPRESS_LZMA;
-	}
-	if (argc > 6) {
-		base = strtoul(argv[6], NULL, 0);
-	}
+
+
 	unsigned char *payload;
 	filesize = parse_elf_to_payload(filedata, &payload, algo);
+
+	if (argc > 6)
+		if (*argv[6] == '+')
+			base = cbfs_find_location(rom, filesize, filename,
+					strtoul(argv[6]+1, NULL, 0));
+		else
+			base = strtoul(argv[6], NULL, 0);
+
 	cbfsfile =
 	    create_cbfs_file(cbfsname, payload, &filesize,
 			     CBFS_COMPONENT_PAYLOAD, &base);
@@ -171,11 +180,27 @@ static int cbfs_add_stage(int argc, char **argv)
 		if (argv[5][0] == 'l')
 			algo = CBFS_COMPRESS_LZMA;
 	}
-	if (argc > 6) {
-		base = strtoul(argv[6], NULL, 0);
-	}
 	unsigned char *stage;
+
+	/* Careful here:
+	 *
+	 * - when the location is specified exactly, we want parse_elf_to_stage
+	 *   to use this information for the romstage to execute correctly. See
+	 *   src/arch/x86/Makefile.bootblock.inc
+	 *
+	 * - the +offset syntax can only be used when parse_elf_to_stage
+	 *   doesn't need this information
+	 */
+
+	if (argc > 6 && *argv[6] != '+')
+			base = strtoul(argv[6], NULL, 0);
+
 	filesize = parse_elf_to_stage(filedata, &stage, algo, &base);
+
+	if (argc > 6 && *argv[6] == '+')
+			base = cbfs_find_location(rom, filesize, filename,
+					strtoul(argv[6]+1, NULL, 0));
+
 	cbfsfile =
 	    create_cbfs_file(cbfsname, stage, &filesize,
 			     CBFS_COMPONENT_STAGE, &base);
@@ -225,8 +250,11 @@ static int cbfs_locate(int argc, char **argv)
 	uint32_t filesize = getfilesize(file);
 	const char *filename = argv[4];
 	int align = strtoul(argv[5], NULL, 0);
+	uint32_t offset = argc > 6 ? strtoul(argv[6], NULL, 0) : 0;
+	uint32_t loc = cbfs_find_stage_location(romname, filesize, filename, align,
+	                                  offset);
 
-	printf("%x\n", cbfs_find_location(romname, filesize, filename, align));
+	printf("%x\n", loc);
 	return 0;
 }
 
@@ -287,7 +315,8 @@ void usage(void)
 	     " add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
 	     " add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
 	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
-	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
+	     " locate FILE NAME ALIGN OFFSET        Find a place for a file of that size\n"
+	     "                                      OFFSET is relative to the ROM start.\n"
 	     " print                                Show the contents of the ROM\n"
 	     " extract NAME FILE                    Extracts a raw payload from ROM\n"
 	     "\n"

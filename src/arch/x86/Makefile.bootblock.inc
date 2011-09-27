@@ -80,7 +80,9 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
 	printf "CONFIG_ROMBASE = 0x" > $(obj)/location.ld
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin \
+		$(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) \
+		$(CONFIG_ROMSTAGE_OFFSET) > $(obj)/location.txt
 	cat $(obj)/location.txt >> $(obj)/location.ld
 	printf ';\nAUTO_XIP_ROM_BASE = CONFIG_ROMBASE & ~(CONFIG_XIP_ROM_SIZE - 1);\n' >> $(obj)/location.ld
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)

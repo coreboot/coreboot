@@ -55,6 +55,12 @@ config X86_BOOTBLOCK_NORMAL
 
 endchoice
 
+
+config ROMSTAGE_OFFSET
+	hex "Romstage offset in ROM: "
+	depends on TINY_BOOTBLOCK
+	default '0x0'
+
 config BOOTBLOCK_SOURCE
 	string
 	default "bootblock_simple.c" if X86_BOOTBLOCK_SIMPLE

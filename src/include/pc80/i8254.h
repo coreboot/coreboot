@@ -20,8 +20,6 @@
 #ifndef PC80_I8254_H
 #define PC80_I8254_H
 
-void setup_i8254(void);
-
 /* Ports for the 8254 timer chip */
 #define TIMER0_PORT	0x40
 #define TIMER1_PORT	0x41
@@ -60,4 +58,7 @@ void setup_i8254(void);
 #define PPCB_SPKR       0x02    /* Bit 1 */
 #define PPCB_T2GATE     0x01    /* Bit 0 */
 
+#ifndef __ROMCC__
+void setup_i8254(void);
+#endif
 #endif

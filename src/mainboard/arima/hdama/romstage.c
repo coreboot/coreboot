@@ -4,7 +4,6 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
@@ -13,7 +12,6 @@
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/nsc/pc87360/early_serial.c"
@@ -66,7 +64,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
-#include "northbridge/amd/amdk8/early_ht.c"
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -82,12 +79,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset;
 	unsigned bsp_apicid = 0, nodes;
 	struct mem_controller ctrl[8];
-
-	if (!cpu_init_detectedx && boot_cpu()) {
-		/* Nothing special needs to be done to find bus 0 */
-		/* Allow the HT devices to be found */
-		enumerate_ht_chain();
-	}
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);

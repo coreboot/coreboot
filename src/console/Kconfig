@@ -190,6 +190,33 @@ config CONSOLE_NE2K_IO_PORT
 	  32 bytes of IO spaces will be used (and align on 32 bytes
 	  boundary, qemu needs broader align)
 
+config CONSOLE_CBMEM
+	depends on EARLY_CBMEM_INIT
+	bool "Send console output to a CBMEM buffer"
+	default n
+	help
+	  Enable this to save the console output in a CBMEM buffer. This would
+	  allow to see coreboot console output from Linux space.
+
+config CONSOLE_CBMEM_BUFFER_SIZE
+	depends on CONSOLE_CBMEM
+	hex "Room allocated for console output in CBMEM"
+	default 0xae00
+	help
+	  Space allocated for console output storage in CBMEM. The default
+	  value (almost 45K or 0xaeoo bytes) is large enough to accommodate
+	  even the BIOS_SPEW level.
+
+config CONSOLE_CAR_BUFFER_SIZE
+	depends on CONSOLE_CBMEM
+	hex "Room allocated for console output in cash as RAM"
+	default 0xc00
+	help
+	  Console is used before RAM is initialized. This is the room reserved
+	  in the DCACHE based RAM to keep console output before it can be
+	  saved in a CBMEM buffer. 3K bytes should be enough even for the
+	  BIOS_SPEW level.
+
 
 choice
 	prompt "Maximum console log level"

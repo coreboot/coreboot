@@ -87,7 +87,7 @@ int console_tst_byte(void)
 	return 0;
 }
 
-#else
+#else // __PRE_RAM__   ^^^ NOT defined   vvv defined
 
 void console_init(void)
 {
@@ -103,6 +103,9 @@ void console_init(void)
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
+#if CONFIG_CONSOLE_CBMEM
+	cbmemc_init();
 #endif
 	static const char console_test[] =
 		"\n\ncoreboot-"

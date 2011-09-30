@@ -33,6 +33,9 @@
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>
 #endif
+#if CONFIG_CONSOLE_CBMEM
+#include <console/cbmem_console.h>
+#endif
 
 #ifndef __PRE_RAM__
 void console_tx_byte(unsigned char byte);

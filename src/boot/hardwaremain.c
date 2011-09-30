@@ -92,6 +92,9 @@ void hardwaremain(int boot_complete)
 
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	cbmem_initialize();
+#if CONFIG_CONSOLE_CBMEM
+	cbmemc_reinit();
+#endif
 #endif
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	suspend_resume();

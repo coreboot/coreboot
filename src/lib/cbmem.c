@@ -256,6 +256,7 @@ void cbmem_list(void)
 		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
 		case CBMEM_ID_SMBIOS:    printk(BIOS_DEBUG, "SMBIOS     "); break;
 		case CBMEM_ID_TIMESTAMP: printk(BIOS_DEBUG, "TIME STAMP "); break;
+		case CBMEM_ID_CONSOLE:   printk(BIOS_DEBUG, "CONSOLE    "); break;
 		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
 		}
 		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);

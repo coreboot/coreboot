@@ -18,6 +18,8 @@ driver-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem_console.c
 driver-$(CONFIG_USBDEBUG) += usbdebug_console.c
 driver-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.c
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
+driver-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h
 $(obj)/console/console.romstage.o : $(obj)/build.h

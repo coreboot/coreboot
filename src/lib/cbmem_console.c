@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/x86/car.h>
 #include <string.h>
 
 /*
@@ -39,7 +40,9 @@ struct cbmem_console {
  * ram space is used for the console buffer storage. The size and location of
  * the area are defined in the config.
  */
-#define cbmem_console_p ((struct cbmem_console *)CONFIG_DCACHE_RAM_BASE)
+
+static struct cbmem_console car_cbmem_console CAR_CBMEM;
+#define cbmem_console_p (&car_cbmem_console)
 
 /*
  * Once DRAM is initialized and the cache as ram mode is disabled, while still
@@ -92,7 +95,7 @@ void cbmemc_tx_byte(unsigned char data)
 	 * DCACHE_RAM_BASE), use the redirect pointer to find out where the
 	 * actual console buffer is.
 	 */
-	if ((u32)&cursor < (u32)CONFIG_DCACHE_RAM_BASE)
+	if ((uintptr_t)&cursor < (uintptr_t)&car_cbmem_console)
 		cbm_cons_p = CBMEM_CONSOLE_REDIRECT;
 #endif
 	if (!cbm_cons_p)

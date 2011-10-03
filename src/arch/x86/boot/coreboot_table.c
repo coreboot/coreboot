@@ -179,22 +179,39 @@ static void lb_framebuffer(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_COLLECT_TIMESTAMPS
-static void lb_tsamp(struct lb_header *header)
+static void add_cbmem_pointers(struct lb_header *header)
 {
-	struct lb_tstamp *tstamp;
-	void *tstamp_table = cbmem_find(CBMEM_ID_TIMESTAMP);
+	/*
+	 * These CBMEM sections' addresses are included in the coreboot table
+	 * with the appropriate tags.
+	 */
+	const struct section_id {
+		int cbmem_id;
+		int table_tag;
+	} section_ids[] = {
+		{CBMEM_ID_TIMESTAMP, LB_TAG_TIMESTAMPS},
+		{CBMEM_ID_CONSOLE, LB_TAG_CBMEM_CONSOLE}
+	};
+	int i;
 
-	if (!tstamp_table)
-		return;
+	for (i = 0; i < ARRAY_SIZE(section_ids); i++) {
+		const struct section_id *sid = section_ids + i;
+		struct lb_cbmem_ref *cbmem_ref;
+		void *cbmem_addr = cbmem_find(sid->cbmem_id);
 
-	tstamp = (struct lb_tstamp *)lb_new_record(header);
-	tstamp->tag = LB_TAG_TIMESTAMPS;
-	tstamp->size = sizeof(*tstamp);
-	tstamp->tstamp_tab = tstamp_table;
+		if (!cbmem_addr)
+			continue;  /* This section is not present */
 
+		cbmem_ref = (struct lb_cbmem_ref *)lb_new_record(header);
+		if (!cbmem_ref) {
+			printk(BIOS_ERR, "No more room in coreboot table!\n");
+			break;
+		}
+		cbmem_ref->tag = sid->table_tag;
+		cbmem_ref->size = sizeof(*cbmem_ref);
+		cbmem_ref->cbmem_addr = cbmem_addr;
+	}
 }
-#endif
 
 static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
@@ -637,9 +654,8 @@ unsigned long write_coreboot_table(
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	lb_tsamp(head);
-#endif
+	add_cbmem_pointers(head);
+
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);
 

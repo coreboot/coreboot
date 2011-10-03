@@ -196,11 +196,13 @@ struct lb_framebuffer {
 };
 
 #define LB_TAG_TIMESTAMPS	0x0016
-struct lb_tstamp {
+#define LB_TAG_CBMEM_CONSOLE	0x0017
+#define LB_TAG_MRC_CACHE	0x0018
+struct lb_cbmem_ref {
 	uint32_t tag;
 	uint32_t size;
 
-	void	*tstamp_tab;
+	void	*cbmem_addr;
 };
 
 /* The following structures are for the cmos definitions table */

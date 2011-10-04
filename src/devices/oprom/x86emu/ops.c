@@ -3562,7 +3562,7 @@ Handles opcode 0xcc
 ****************************************************************************/
 static void x86emuOp_int3(u8 X86EMU_UNUSED(op1))
 {
-    u16 tmp;
+    u16 X86EMU_UNUSED(tmp);
 
     START_OF_INSTR();
     DECODE_PRINTF("INT 3\n");
@@ -3590,7 +3590,7 @@ Handles opcode 0xcd
 ****************************************************************************/
 static void x86emuOp_int_IMM(u8 X86EMU_UNUSED(op1))
 {
-    u16 tmp;
+    u16 X86EMU_UNUSED(tmp);
     u8 intnum;
 
     START_OF_INSTR();
@@ -3620,7 +3620,7 @@ Handles opcode 0xce
 ****************************************************************************/
 static void x86emuOp_into(u8 X86EMU_UNUSED(op1))
 {
-    u16 tmp;
+    u16 X86EMU_UNUSED(tmp);
 
     START_OF_INSTR();
     DECODE_PRINTF("INTO\n");
@@ -4034,7 +4034,7 @@ Handles opcode 0xd5
 ****************************************************************************/
 static void x86emuOp_aad(u8 X86EMU_UNUSED(op1))
 {
-    u8 a;
+    u8 X86EMU_UNUSED(a);
 
     START_OF_INSTR();
     DECODE_PRINTF("AAD\n");

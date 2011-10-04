@@ -21,7 +21,12 @@
 #define _CBMEM_H_
 
 /* Reserve 128k for ACPI and other tables */
+#if CONFIG_CONSOLE_CBMEM
+#define HIGH_MEMORY_DEF_SIZE	( 256 * 1024 )
+#else
 #define HIGH_MEMORY_DEF_SIZE	( 128 * 1024 )
+#endif
+
 #ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
 #endif

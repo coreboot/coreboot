@@ -201,7 +201,7 @@ config CONSOLE_CBMEM
 config CONSOLE_CBMEM_BUFFER_SIZE
 	depends on CONSOLE_CBMEM
 	hex "Room allocated for console output in CBMEM"
-	default 0xae00
+	default 0x10000
 	help
 	  Space allocated for console output storage in CBMEM. The default
 	  value (almost 45K or 0xaeoo bytes) is large enough to accommodate
@@ -209,7 +209,7 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 
 config CONSOLE_CAR_BUFFER_SIZE
 	depends on CONSOLE_CBMEM
-	hex "Room allocated for console output in cash as RAM"
+	hex "Room allocated for console output in Cache as RAM"
 	default 0xc00
 	help
 	  Console is used before RAM is initialized. This is the room reserved

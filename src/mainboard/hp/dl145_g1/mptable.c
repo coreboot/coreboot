@@ -5,17 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <cpu/amd/amdk8_sysconf.h>
-
-extern  unsigned char bus_8131_0;
-extern  unsigned char bus_8131_1;
-extern  unsigned char bus_8131_2;
-extern  unsigned char bus_8111_0;
-extern  unsigned char bus_8111_1;
-extern  unsigned apicid_8111;
-extern  unsigned apicid_8131_1;
-extern  unsigned apicid_8131_2;
-
-extern  unsigned sbdn3;
+#include "mb_sysconf.h"
 
 static void *smp_write_config_table(void *v)
 {
@@ -30,31 +20,33 @@ static void *smp_write_config_table(void *v)
 
 	get_bus_conf();
 
+	struct mb_sysconf_t *m = sysconf.mb;
+
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-	smp_write_ioapic(mc, apicid_8111, 0x20, IO_APIC_ADDR);
+	smp_write_ioapic(mc, m->apicid_8111, 0x20, IO_APIC_ADDR);
         {
                 device_t dev;
                 struct resource *res;
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,1));
+                dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3,1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
-                                smp_write_ioapic(mc, apicid_8131_1, 0x20, res->base);
+                                smp_write_ioapic(mc, m->apicid_8131_1, 0x20, res->base);
                         }
                 }
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,1));
+                dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3+1,1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
-                                smp_write_ioapic(mc, apicid_8131_2, 0x20, res->base);
+                                smp_write_ioapic(mc, m->apicid_8131_2, 0x20, res->base);
                         }
                 }
 
 	}
 
-	mptable_add_isa_interrupts(mc, bus_isa, apicid_8111, 0);
+	mptable_add_isa_interrupts(mc, bus_isa, m->apicid_8111, 0);
 
 	//
 	// The commented-out lines are auto-detected on my servers.
@@ -66,18 +58,18 @@ static void *smp_write_config_table(void *v)
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ( 0x4 <<2)|1, apicid_8111  , 0x11);
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ( 0x4 <<2)|2, apicid_8111  , 0x12);
 	// Integrated AMD USB
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, ( 0x4 <<2)|0, apicid_8111  , 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, ( 0x0 <<2)|3, apicid_8111  , 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, ( 0x4 <<2)|0, m->apicid_8111  , 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, ( 0x0 <<2)|3, m->apicid_8111  , 0x13);
 	// On board ATI Rage XL
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, ( 0x5 <<2)|0, apicid_8111  , 0x14);
 	// On board Broadcom nics
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, ( 0x3 <<2)|0, apicid_8131_2, 0x03);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, ( 0x3 <<2)|1, apicid_8131_2, 0x00);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_2, ( 0x3 <<2)|0, m->apicid_8131_2, 0x03);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_2, ( 0x3 <<2)|1, m->apicid_8131_2, 0x00);
 	// On board LSI SCSI
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, ( 0x2 <<2)|0, apicid_8131_2, 0x02);
 
 	// PCIX-133 Slot
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|0, apicid_8131_1, 0x01);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_1, ( 0x1 <<2)|0, m->apicid_8131_1, 0x01);
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|1, apicid_8131_1, 0x02);
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|2, apicid_8131_1, 0x03);
 	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|3, apicid_8131_1, 0x04);

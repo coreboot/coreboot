@@ -21,7 +21,7 @@
 PROGRAM = superiotool
 
 CC      = gcc
-INSTALL = /usr/bin/install
+INSTALL = install
 PREFIX  = /usr/local
 
 # Set the superiotool version string from the highest revision number

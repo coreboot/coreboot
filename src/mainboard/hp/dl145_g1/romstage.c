@@ -1,17 +1,17 @@
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
-#include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "northbridge/amd/amdk8/amdk8.h"
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
-#include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627hf/early_serial.c"
@@ -55,7 +55,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
   do {
     ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
   } while ((ret!=0) && (i-->0));
-
   smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
@@ -77,6 +76,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "resourcemap.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -86,8 +86,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#define RC0 ((1<<1)<<8) // Not sure about these values
-#define RC1 ((1<<2)<<8) // Not sure about these values
+#define RC0 ((1<<1)<<8)
+#define RC1 ((1<<2)<<8)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -101,13 +101,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		RC1|DIMM1, RC1|DIMM3, 0, 0,
 #endif
 	};
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
-        int needs_reset;
-        unsigned bsp_apicid = 0, nodes;
-        struct mem_controller ctrl[8];
+	int needs_reset = 0;
+	unsigned bsp_apicid = 0;
 
         if (bist == 0)
-                bsp_apicid = init_cpus(cpu_init_detectedx);
+                bsp_apicid = init_cpus(cpu_init_detectedx,sysinfo);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         console_init();
@@ -115,47 +116,53 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
+        printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
+
 	setup_dl145g1_resource_map();
 	//setup_default_resource_map();
 
-	needs_reset = setup_coherent_ht_domain();
-
-        wait_all_core0_started();
+#if CONFIG_MEM_TRAIN_SEQ == 1
+	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
+#endif
+	setup_coherent_ht_domain();
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
         start_other_cores();
         wait_all_other_cores_started(bsp_apicid);
 #endif
 
-        needs_reset |= ht_setup_chains_x();
+        ht_setup_chains_x(sysinfo);
 
-       	if (needs_reset) {
-               	print_info("ht reset -\n");
-               	soft_reset();
-       	}
+	needs_reset |= optimize_link_coherent_ht();
+	needs_reset |= optimize_link_incoherent_ht(sysinfo);
+
+	if (needs_reset) {
+		print_info("ht reset -\n");
+		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
+	}
 
 	enable_smbus();
 
 	int i;
 	for(i=0;i<2;i++) {
-		activate_spd_rom(&ctrl[i]);
+		activate_spd_rom(&sysinfo->ctrl[i]);
 	}
-	for(i=2;i<8;i<<=1) {
+	for(i=RC0;i<=RC1;i<<=1) {
 		change_i2c_mux(i);
 	}
 
-	//dump_spd_registers(&ctrl[0]);
-	//dump_spd_registers(&ctrl[1]);
+	//dump_spd_registers(&sysinfo->ctrl[0]);
+	//dump_spd_registers(&sysinfo->ctrl[1]);
 	//dump_smbus_registers();
 
         allow_all_aps_stop(bsp_apicid);
 
-        nodes = get_nodes();
         //It's the time to set ctrl now;
-        fill_mem_ctrl(nodes, ctrl, spd_addr);
+        fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
         memreset_setup();
-        sdram_initialize(nodes, ctrl);
+        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	//dump_pci_devices();
 

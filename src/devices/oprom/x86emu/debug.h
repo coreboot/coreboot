@@ -198,6 +198,12 @@
 #define	DB(x)
 #endif
 
+#ifdef DEBUG
+#define X86EMU_DEBUG_ONLY(x) x
+#else
+#define X86EMU_DEBUG_ONLY(x) X86EMU_UNUSED(x)
+#endif
+
 /*-------------------------- Function Prototypes --------------------------*/
 
 #ifdef  __cplusplus

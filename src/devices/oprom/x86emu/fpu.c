@@ -50,6 +50,12 @@ void x86emuOp_esc_coprocess_d8(u8 X86EMU_UNUSED(op1))
     END_OF_INSTR_NO_TRACE();
 }
 
+#ifdef X86EMU_FPU_PRESENT
+#define X86EMU_FPU_ONLY(x) x
+#else
+#define X86EMU_FPU_ONLY(x) X86EMU_UNUSED(x)
+#endif
+
 #ifdef DEBUG
 
 static const char *x86emu_fpu_op_d9_tab[] = {
@@ -95,8 +101,8 @@ static const char *x86emu_fpu_op_d9_tab1[] = {
 void x86emuOp_esc_coprocess_d9(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -322,8 +328,8 @@ static const char *x86emu_fpu_op_da_tab[] = {
 void x86emuOp_esc_coprocess_da(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -403,7 +409,7 @@ static const char *x86emu_fpu_op_db_tab[] = {
 void x86emuOp_esc_coprocess_db(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
+    uint X86EMU_FPU_ONLY(destoffset);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -530,8 +536,8 @@ static const char *x86emu_fpu_op_dc_tab[] = {
 void x86emuOp_esc_coprocess_dc(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -640,8 +646,8 @@ static const char *x86emu_fpu_op_dd_tab[] = {
 void x86emuOp_esc_coprocess_dd(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -747,8 +753,8 @@ static const char *x86emu_fpu_op_de_tab[] =
 void x86emuOp_esc_coprocess_de(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
@@ -866,8 +872,8 @@ static const char *x86emu_fpu_op_df_tab[] = {
 void x86emuOp_esc_coprocess_df(u8 X86EMU_UNUSED(op1))
 {
     int mod, rl, rh;
-    uint destoffset;
-    u8 stkelem;
+    uint X86EMU_FPU_ONLY(destoffset);
+    u8 X86EMU_FPU_ONLY(stkelem);
 
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);

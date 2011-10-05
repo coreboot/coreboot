@@ -117,16 +117,20 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
 #elif CONFIG_CONSOLE_SERIAL8250MEM
-	struct lb_record *rec;
-	struct lb_serial *serial;
-	rec = lb_new_record(header);
-	serial = (struct lb_serial *)rec;
-	serial->tag = LB_TAG_SERIAL;
-	serial->size = sizeof(*serial);
-	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial->baseaddr = uartmem_getbaseaddr();
-	serial->baud = CONFIG_TTYS0_BAUD;
-	return serial;
+	if (uartmem_getbaseaddr()) {
+		struct lb_record *rec;
+		struct lb_serial *serial;
+		rec = lb_new_record(header);
+		serial = (struct lb_serial *)rec;
+		serial->tag = LB_TAG_SERIAL;
+		serial->size = sizeof(*serial);
+		serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+		serial->baseaddr = uartmem_getbaseaddr();
+		serial->baud = CONFIG_TTYS0_BAUD;
+		return serial;
+	} else {
+		return NULL;
+	}
 #else
 	return NULL;
 #endif

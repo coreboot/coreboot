@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
+#include <cpu/x86/car.h>
+#include <delay.h>
 #include <uart8250.h>
 #include <device/pci_def.h>
 
@@ -34,9 +36,13 @@
 #define OXPCIE_DEVICE_3 \
 	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 3)
 
+#if defined(__PRE_RAM__)
+int oxford_oxpcie_present CAR_GLOBAL;
+
 void oxford_init(void)
 {
 	u16 reg16;
+	oxford_oxpcie_present = 1;
 
 	/* First we reset the secondary bus */
 	reg16 = pci_read_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL);
@@ -69,11 +75,14 @@ void oxford_init(void)
 	reg16 |= PCI_COMMAND_MEMORY;
 	pci_write_config16(PCIE_BRIDGE, PCI_COMMAND, reg16);
 
-	// FIXME Add a timeout or this will hang forever if
-	// no device is in the slot.
+	u32 timeout = 20000; // Timeout in 10s of microseconds.
 	u32 id = 0;
-	while ((id == 0) || (id == 0xffffffff))
+	for (;;) {
 		id = pci_read_config32(OXPCIE_DEVICE, PCI_VENDOR_ID);
+		if (!timeout-- || (id != 0 && id != 0xffffffff))
+			break;
+		udelay(10);
+	}
 
 	u32 device = OXPCIE_DEVICE; /* unknown default */
 	switch (id) {
@@ -90,6 +99,10 @@ void oxford_init(void)
 	case 0xc1581415: /* e.g. Startech MPEX2S952 */
 		device = OXPCIE_DEVICE;
 		break;
+	default:
+		/* No UART here. */
+		oxford_oxpcie_present = 0;
+		return;
 	}
 
 	/* Setup base address on device */
@@ -107,3 +120,4 @@ void oxford_init(void)
 	uart8250_mem_init(uart0_base, (4000000 / CONFIG_TTYS0_BAUD));
 }
 
+#endif

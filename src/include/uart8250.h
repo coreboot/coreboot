@@ -135,8 +135,13 @@ void uart8250_mem_init(unsigned base_port, unsigned divisor);
 u32 uart_mem_init(void);
 u32 uartmem_getbaseaddr(void);
 
+#if defined(__PRE_RAM__) && CONFIG_DRIVERS_OXFORD_OXPCIE && \
+	CONFIG_CONSOLE_SERIAL8250MEM
 /* and special init for OXPCIe based cards */
+extern int oxford_oxpcie_present;
+
 void oxford_init(void);
+#endif
 
 #endif /* __ROMCC__ */
 

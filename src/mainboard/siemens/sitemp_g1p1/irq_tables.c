@@ -117,6 +117,11 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info++;
 	slot_num++;
 
+	/* ide */
+	write_pirq_info(pirq_info, bus_sb600[0], ((sbdn_sb600 + 0x14) << 3) | 1, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 1,	0);
+	pirq_info++;
+	slot_num++;
+
 	pirq->size = 32 + 16 * slot_num;
 
 	for (i = 0; i < pirq->size; i++)

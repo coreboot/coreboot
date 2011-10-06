@@ -38,10 +38,7 @@
  * change anything.
  */
 _entry:
-	call _init
-
-	/* We're back - go back to the bootloader. */
-	ret
+	jmp _init
 
 	.align 4
 
@@ -66,6 +63,9 @@ _init:
 	/* No interrupts, please. */
 	cli
 
+	/* There is a bunch of stuff missing here to take arguments on the stack
+	 * See http://www.coreboot.org/Payload_API and exec.S.
+	 */
 	/* Store current stack pointer. */
 	movl %esp, %esi
 

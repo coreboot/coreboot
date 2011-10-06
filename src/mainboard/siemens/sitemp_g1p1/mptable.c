@@ -26,13 +26,11 @@
 
 #include <cpu/amd/amdk8_sysconf.h>
 
-extern u8 bus_isa;
 extern u8 bus_rs690[8];
 extern u8 bus_sb600[2];
 
 extern u32 apicid_sb600;
 
-extern u32 bus_type[256];
 extern u32 sbdn_rs690;
 extern u32 sbdn_sb600;
 
@@ -46,12 +44,9 @@ static void *smp_write_config_table(void *v)
 	smp_write_processors(mc);
 
 	get_bus_conf();
-	printk(BIOS_DEBUG, "%s: bus_isa=%d, apic_id=0x%x\n", __func__, bus_isa, apicid_sb600);
+	printk(BIOS_DEBUG, "%s: apic_id=0x%x\n", __func__, apicid_sb600);
 
 	mptable_write_buses(mc, NULL, &isa_bus);
-	if (isa_bus != bus_isa) {
-		printk(BIOS_ERR, "ISA bus numbering schemes differ! Please fix mptable.c\n");
-	}
 	/* I/O APICs:   APIC ID Version State   Address */
 	{
 		device_t dev;
@@ -63,9 +58,10 @@ static void *smp_write_config_table(void *v)
 			smp_write_ioapic(mc, apicid_sb600, 0x20, res->base);
 		}
 	}
-	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb600, 0);
+	mptable_add_isa_interrupts(mc, isa_bus, apicid_sb600, 0);
+
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
-	mptable_lintsrc(mc, bus_isa);
+	mptable_lintsrc(mc, isa_bus);
 
 	/* Compute the checksums */
 	return mptable_finalize(mc);

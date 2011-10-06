@@ -49,6 +49,19 @@ config PCI_ROM_RUN
 	  Examples include IDE/SATA controller option ROMs and option ROMs
 	  for network cards (NICs).
 
+config ON_DEVICE_ROM_RUN
+	bool "Run option ROMs on PCI devices"
+	default y
+	help
+	  Execute option ROMs that are stored on PCI/PCIe/AGP devices.
+
+	  If disabled, only option ROMs stored in CBFS will be executed. If
+	  you are concerned about security, you might want to disable this
+	  option, but it might leave your system in a state of degraded
+	  functionality.
+
+	  If unsure, say Y
+
 choice
 	prompt "Option ROM execution type"
 	default PCI_OPTION_ROM_RUN_YABEL if !ARCH_X86

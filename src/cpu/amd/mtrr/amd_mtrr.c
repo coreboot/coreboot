@@ -113,7 +113,6 @@ void amd_setup_mtrrs(void)
 	unsigned long i;
 	msr_t msr, sys_cfg;
 
-
 	/* Enable the access to AMD RdDram and WrDram extension bits */
 	disable_cache();
 	sys_cfg = rdmsr(SYSCFG_MSR);
@@ -168,7 +167,10 @@ void amd_setup_mtrrs(void)
 		msr.hi = state.tomk >> 22;
 		msr.lo = state.tomk << 10;
 		wrmsr(TOP_MEM2, msr);
-		sys_cfg.lo |= SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB;
+		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
+#if CONFIG_K8_REV_F_SUPPORT == 1
+		sys_cfg.lo |= SYSCFG_MSR_TOM2WB;
+#endif
 	}
 
 	/* zero the IORR's before we enable to prevent
@@ -201,5 +203,13 @@ void amd_setup_mtrrs(void)
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.
 	 */
+
+	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and dont need
+	// variable MTRR to span memory above 4GB
+	// Lower revisions K8 need variable MTRR over 4GB
+#if CONFIG_K8_REV_F_SUPPORT == 1
 	x86_setup_var_mtrrs(address_bits, 0);
+#else
+	x86_setup_var_mtrrs(address_bits, 1);
+#endif
 }

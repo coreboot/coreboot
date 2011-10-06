@@ -347,13 +347,17 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	u32 fid_max;
 	int loop;
 
+	if((cpuid_edx(0x80000007)&0x06)!=0x06) {
+		return; /* FID/VID change not supported */
+	}
+
 	msr = rdmsr(0xc0010042);
 	fid_max = ((msr.lo >> 16) & 0x3f);	/* max fid */
 #if FX_SUPPORT
 	if (fid_max >= ((25 - 4) * 2)) {	/* FX max fid is 5G */
 		fid_max = ((msr.lo >> 8) & 0x3f) + 5 * 2;	/* maxFID = minFID + 1G */
 		if (fid_max >= ((25 - 4) * 2)) {
-			fid_max = (10 - 4) * 2;	// hard set to 2G
+			fid_max = (10 - 4) * 2;	/* hard set to 2G */
 		}
 	}
 #endif

@@ -586,15 +586,27 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 cmp_cap;
 	struct cpuentry *data = NULL;
 	uint32_t control;
-	int i = 0, index, len = 0, Pstate_num = 0;
+	int i = 0, index = 0, len = 0, Pstate_num = 0, dev = 0;
 	msr_t msr;
-	u8 Pstate_fid[10];
-	u16 Pstate_feq[10];
-	u8 Pstate_vid[10];
-	u32 Pstate_power[10];
+	u8 Pstate_fid[MAXP+1];
+	u16 Pstate_feq[MAXP+1];
+	u8 Pstate_vid[MAXP+1];
+	u32 Pstate_power[MAXP+1];
 	u8 Max_fid, Start_fid, Start_vid, Max_vid;
-	struct cpuid_result cpuid1 = cpuid(0x80000001);
+	struct cpuid_result cpuid1;
 
+	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
+	cpuid1 = cpuid(0x80000007);
+	if((cpuid1.edx & 0x6)!=0x6) {
+		printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
+		return 0;
+	}
+
+	cpuid1 = cpuid(0x80000001);
+
+	/* It has been said that we can safely assume that all CPU's
+	 * in the system have the same SYSCONF values
+	 */
 	msr = rdmsr(0xc0010042);
 	Max_fid = (msr.lo & 0x3F0000) >> 16;
 	Max_vid = (msr.hi & 0x3F0000) >> 16;
@@ -620,24 +632,51 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		return 0;
 	}
 
-	/* IRT 80us, PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
-	control = (3 << 30) | (2 << 20) | (0 << 18) | (5 << 11) | (1 << 29);
+#if CONFIG_MAX_PHYSICAL_CPUS==1
+	/* IRT 80us RVO = 50mV PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
+	control = (3 << 30) | (2 << 28) | (2 << 20) | (0 << 18) | (5 << 11);
+#else
+	/* MP-systems should default to RVO=0mV (no ramp voltage) */
+	/* IRT 80us RVO = 0mV PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
+
+	control = (3 << 30) | (0 << 28) | (2 << 20) | (0 << 18) | (5 << 11);
+#endif
+	/* RVO (Ramp Voltage Offset)
+	 *   00   0mV (default for MP-systems)
+	 *   01  25mV
+	 *   10  50mV (default)
+	 *   11  75mV
+	 * IRT (Isochronous Release Time)
+	 *   00  10uS
+	 *   01  20uS
+	 *   10  40uS
+	 *   11  80uS (default)
+	 * MVS (Maximum Voltage Step)
+	 *   00  25mV (default)
+	 *   01  50mV (reserved)
+	 *   10 100mV (reserved)
+	 *   11 200mV (reserved)
+	 * VST (Voltage Stabilization Time)
+	 *   time = value*20uS  (default value: 5 => 100uS)
+	 * PLL_LOCK_TIME
+	 *   time = value*1uS (often seen value: 2uS)
+	 */
+
 	len = 0;
-	Pstate_num = 0;
 
-	Pstate_fid[Pstate_num] = Max_fid;
-	Pstate_feq[Pstate_num] = fid_to_freq(Max_fid);
-	Pstate_vid[Pstate_num] = Max_vid;
-	Pstate_power[Pstate_num] = data->pwr * 100;
-	Pstate_num++;
+	Pstate_fid[0] = Max_fid;
+	Pstate_feq[0] = fid_to_freq(Max_fid);
+	Pstate_vid[0] = Max_vid;
+	Pstate_power[0] = data->pwr * 100;
 
-	do {
+	for(Pstate_num = 1;
+	    (Pstate_num <= MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0);
+	    Pstate_num++) {
 		Pstate_fid[Pstate_num] = freq_to_fid(data->pstates[Pstate_num - 1].freqMhz) & 0x3f;
 		Pstate_feq[Pstate_num] = data->pstates[Pstate_num - 1].freqMhz;
 		Pstate_vid[Pstate_num] = vid_to_reg(data->pstates[Pstate_num - 1].voltage);
 		Pstate_power[Pstate_num] = data->pstates[Pstate_num - 1].tdp * 100;
-		Pstate_num++;
-	} while ((Pstate_num < MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0));
+	}
 
 	for (i=0;i<Pstate_num;i++)
 		printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,
@@ -645,11 +684,19 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		       vid_from_reg(Pstate_vid[i]),
 		       Pstate_power[i]);
 
-	for (index = 0; index < (cmp_cap + 1); index++) {
-		len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
-				Pstate_fid, Pstate_power, index,
-				pcontrol_blk, plen, onlyBSP, control);
+	/* Loop over all CPU's */
+	for (dev = 0x18; dev < 0x1c; dev++) {
+		if(dev_find_slot(0, PCI_DEVFN(dev, 0)) == NULL)
+			continue;
+
+		for (i = 0; i < (cmp_cap + 1); i++) {
+			len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
+					Pstate_fid, Pstate_power, index+i,
+					pcontrol_blk, plen, onlyBSP, control);
+		}
+		index += i;
 	}
+	printk(BIOS_DEBUG,"%d Processor objects emitted to SSDT\n",index);
 
 	return len;
 }

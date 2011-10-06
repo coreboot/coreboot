@@ -27,27 +27,40 @@ config VGA_BRIDGE_SETUP
 
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
-	bool "Run VGA option ROMs"
+	bool "Run VGA Option ROMs"
 	default y
 	help
-	  Execute VGA option ROMs, if found. This is required to enable
+	  Execute VGA Option ROMs, if found. This is required to enable
 	  PCI/AGP/PCI-E video cards.
 
 config S3_VGA_ROM_RUN
-	bool "Re-run VGA option ROMs on S3 resume"
+	bool "Re-run VGA Option ROMs on S3 resume"
 	default y
 	depends on VGA_ROM_RUN && HAVE_ACPI_RESUME
 	help
-	  Execute VGA option ROMs when coming out of an S3 resume.
+	  Execute VGA Option ROMs when coming out of an S3 resume.
 
 config PCI_ROM_RUN
-	bool "Run non-VGA option ROMs"
+	bool "Run non-VGA Option ROMs"
 	default y
 	help
-	  Execute non-VGA PCI option ROMs, if found.
+	  Execute non-VGA PCI Option ROMs, if found.
 
-	  Examples include IDE/SATA controller option ROMs and option ROMs
+	  Examples include IDE/SATA controller Option ROMs and Option ROMs
 	  for network cards (NICs).
+
+config ON_DEVICE_ROM_RUN
+	bool "Run Option ROMs on PCI devices"
+	default y
+	help
+	  Execute Option ROMs that are stored on PCI/PCIe/AGP devices.
+
+	  If disabled, only Option ROMs stored in CBFS will be executed. If
+	  you are concerned about security, you might want to disable this
+	  option, but it might leave your system in a state of degraded
+	  functionality.
+
+	  If unsure, say Y
 
 choice
 	prompt "Option ROM execution type"
@@ -60,7 +73,7 @@ config PCI_OPTION_ROM_RUN_REALMODE
 	bool
 	depends on ARCH_X86
 	help
-	  If you select this option, PCI option ROMs will be executed
+	  If you select this option, PCI Option ROMs will be executed
 	  natively on the CPU in real mode. No CPU emulation is involved,
 	  so this is the fastest, but also the least secure option.
 	  (only works on x86/x64 systems)
@@ -71,11 +84,11 @@ config PCI_OPTION_ROM_RUN_YABEL
 	depends on !GEODE_VSA
 	help
 	  If you select this option, the x86emu CPU emulator will be used to
-	  execute PCI option ROMs.
+	  execute PCI Option ROMs.
 
-	  This option prevents option ROMs from doing dirty tricks with the
+	  This option prevents Option ROMs from doing dirty tricks with the
 	  system (such as installing SMM modules or hypervisors), but it is
-	  also significantly slower than the native option ROM initialization
+	  also significantly slower than the native Option ROM initialization
 	  method.
 
 	  This is the default choice for non-x86 systems.
@@ -83,13 +96,13 @@ config PCI_OPTION_ROM_RUN_YABEL
 endchoice
 
 config YABEL_PCI_ACCESS_OTHER_DEVICES
-	prompt "Allow option ROMs to access other devices"
+	prompt "Allow Option ROMs to access other devices"
 	bool
 	depends on PCI_OPTION_ROM_RUN_YABEL
 	help
-	  Per default, YABEL only allows option ROMs to access the PCI device
+	  Per default, YABEL only allows Option ROMs to access the PCI device
 	  that they are associated with. However, this causes trouble for some
-	  onboard graphics chips whose option ROM needs to reconfigure the
+	  onboard graphics chips whose Option ROM needs to reconfigure the
 	  north bridge.
 
 config YABEL_VIRTMEM_LOCATION
@@ -118,7 +131,7 @@ config YABEL_DIRECTHW
 
 	  When choosing this option, x86emu will pass through all hardware
 	  accesses to memory and I/O devices to the underlying memory and I/O
-	  addresses. While this option prevents option ROMs from doing dirty
+	  addresses. While this option prevents Option ROMs from doing dirty
 	  tricks with the CPU (such as installing SMM modules or hypervisors),
 	  they can still access all devices in the system.
 	  Enable this option for a good compromise between security and speed.

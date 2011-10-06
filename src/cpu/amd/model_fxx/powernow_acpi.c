@@ -586,70 +586,121 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 cmp_cap;
 	struct cpuentry *data = NULL;
 	uint32_t control;
-	int i = 0, index, len = 0, Pstate_num = 0;
+	int i = 0, index = 0, len = 0, Pstate_num = 0, isock = 0, nsock = 0;
 	msr_t msr;
-	u8 Pstate_fid[10];
-	u16 Pstate_feq[10];
-	u8 Pstate_vid[10];
-	u32 Pstate_power[10];
+	u8 Pstate_fid[MAXP+1];
+	u16 Pstate_feq[MAXP+1];
+	u8 Pstate_vid[MAXP+1];
+	u32 Pstate_power[MAXP+1];
 	u8 Max_fid, Start_fid, Start_vid, Max_vid;
 	struct cpuid_result cpuid1 = cpuid(0x80000001);
+	unsigned sockets[] = { 0x18, 0x19, 0x1a, 0x1b };
+	struct cpuentry entr_dummy = {.pstates[0].freqMhz = 0 };
 
-	msr = rdmsr(0xc0010042);
-	Max_fid = (msr.lo & 0x3F0000) >> 16;
-	Max_vid = (msr.hi & 0x3F0000) >> 16;
-	Start_fid = (msr.lo & 0x3F00) >> 8;
-	Start_vid = (msr.hi & 0x3F00) >> 8;
+	// Count number of populated sockets
+	for (isock = 0,nsock = 0; isock < ARRAY_SIZE(sockets); isock++) {
+		if(dev_find_slot(0, PCI_DEVFN(sockets[isock], 0))!=NULL)
+			nsock++;
+	}
+		
+	for (isock = 0; isock < ARRAY_SIZE(sockets); isock++) {
+		if(dev_find_slot(0, PCI_DEVFN(sockets[isock], 0))==NULL)
+			continue;
+		// TODO: We should read msr from the right CPU here
+		// The following only works if fid/vid values are identical on
+		// all CPU's
+		msr = rdmsr(0xc0010042);
+		Max_fid = (msr.lo & 0x3F0000) >> 16;
+		Max_vid = (msr.hi & 0x3F0000) >> 16;
+		Start_fid = (msr.lo & 0x3F00) >> 8;
+		Start_vid = (msr.hi & 0x3F00) >> 8;
 
-	cmp_cap =
-	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &
-	     0x3000) >> 12;
+		cmp_cap =
+		    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(sockets[isock], 3)), 0xE8) &
+		     0x3000) >> 12;
 
-	for (i = 0; i < ARRAY_SIZE(entr); i++) {
-		if ((entr[i].cpuid == cpuid1.eax)
-		    && (entr[i].startFID == Start_fid)
-		    && (entr[i].maxFID == Max_fid)
-		    && (entr[i].brandID == ((u8 )((cpuid1.ebx >> 6) & 0xff)))) {
-			data = &entr[i];
+		for (i = 0; i < ARRAY_SIZE(entr); i++) {
+			if ((entr[i].cpuid == cpuid1.eax)
+			    && (entr[i].startFID == Start_fid)
+			    && (entr[i].maxFID == Max_fid)
+			    && (entr[i].brandID == ((u8 )((cpuid1.ebx >> 6) & 0xff)))) {
+				data = &entr[i];
+				break;
+			}
+		}
+
+		if (data == NULL) {
+			printk(BIOS_WARNING, "Unknown CPU in socket %d, please update powernow_acpi.c\n",isock);
+			data = &entr_dummy;
+		}
+		/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
+		cpuid1 = cpuid(0x80000007);
+		switch ((cpuid1.edx & 0x6)) {
+		case 0x6:
+			break;
+		case 0x0:
+			printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
+			data = &entr_dummy;
+			break;
+		default:
+			printk(BIOS_WARNING, "Capability of performing P-state transitions unknown\n");
 			break;
 		}
-	}
 
-	if (data == NULL) {
-		printk(BIOS_WARNING, "Unknown CPU, please update the powernow_acpi.c\n");
-		return 0;
-	}
+		if(nsock==1)
+			// IRT 80us, PLL_LOCK_TIME 2us, MVS 25mv, VST 100us RVO = 50mV
+			control = (3 << 30) | (2 << 20) | (0 << 18) | (5 << 11) | (1 << 29);
+		else
+			// MP-systems should default to RVO=0mV (no ramp voltage)
+			// IRT 80us, PLL_LOCK_TIME 2us, MVS 25mv, VST 100us RVO = 0mV
+			control = (3 << 30) | (2 << 20) | (0 << 18) | (5 << 11) | (0 << 29);
+		// RVO:  00   0mV (default for MP-systems)
+		//       01  25mV
+		//       10  50mV (default)
+		//       11  75mV
+		// IRT:  00  10uS
+		//       01  20uS
+		//       10  40uS
+		//       11  80uS (default)
+		// MVS:  00  25mV (default)
+		//       01  50mV (reserved)
+		//       10 100mV (reserved)
+		//       11 200mV (reserved)
+		// VST:  time is value*20uS  (default value: 5 => 100uS)
+		// PLL_LOCK_TIME: time is value*1uS (often seen value: 2uS)
+		//
+		
+		len = 0;
+		Pstate_num = 0;
 
-	/* IRT 80us, PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
-	control = (3 << 30) | (2 << 20) | (0 << 18) | (5 << 11) | (1 << 29);
-	len = 0;
-	Pstate_num = 0;
-
-	Pstate_fid[Pstate_num] = Max_fid;
-	Pstate_feq[Pstate_num] = fid_to_freq(Max_fid);
-	Pstate_vid[Pstate_num] = Max_vid;
-	Pstate_power[Pstate_num] = data->pwr * 100;
-	Pstate_num++;
-
-	do {
-		Pstate_fid[Pstate_num] = freq_to_fid(data->pstates[Pstate_num - 1].freqMhz) & 0x3f;
-		Pstate_feq[Pstate_num] = data->pstates[Pstate_num - 1].freqMhz;
-		Pstate_vid[Pstate_num] = vid_to_reg(data->pstates[Pstate_num - 1].voltage);
-		Pstate_power[Pstate_num] = data->pstates[Pstate_num - 1].tdp * 100;
+		Pstate_fid[Pstate_num] = Max_fid;
+		Pstate_feq[Pstate_num] = fid_to_freq(Max_fid);
+		Pstate_vid[Pstate_num] = Max_vid;
+		Pstate_power[Pstate_num] = data->pwr * 100;
 		Pstate_num++;
-	} while ((Pstate_num < MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0));
 
-	for (i=0;i<Pstate_num;i++)
-		printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,
-		       Pstate_feq[i],
-		       vid_from_reg(Pstate_vid[i]),
-		       Pstate_power[i]);
+		while ((Pstate_num <= MAXP) && (data->pstates[Pstate_num - 1].freqMhz != 0)) {
+			Pstate_fid[Pstate_num] = freq_to_fid(data->pstates[Pstate_num - 1].freqMhz) & 0x3f;
+			Pstate_feq[Pstate_num] = data->pstates[Pstate_num - 1].freqMhz;
+			Pstate_vid[Pstate_num] = vid_to_reg(data->pstates[Pstate_num - 1].voltage);
+			Pstate_power[Pstate_num] = data->pstates[Pstate_num - 1].tdp * 100;
+			Pstate_num++;
+		}
 
-	for (index = 0; index < (cmp_cap + 1); index++) {
-		len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
-				Pstate_fid, Pstate_power, index,
-				pcontrol_blk, plen, onlyBSP, control);
+		for (i=0;i<Pstate_num;i++)
+			printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,
+			       Pstate_feq[i],
+			       vid_from_reg(Pstate_vid[i]),
+			       Pstate_power[i]);
+
+		for (i = 0; i < cmp_cap + 1; i++) {
+			len += write_pstates_for_core(Pstate_num, Pstate_feq, Pstate_vid,
+					Pstate_fid, Pstate_power, index+i,
+					pcontrol_blk, plen, onlyBSP, control);
+		}
+		index += i;
 	}
+	printk(BIOS_DEBUG,"%d Processor objects will be emitted to SSDT\n",index);
 
 	return len;
 }

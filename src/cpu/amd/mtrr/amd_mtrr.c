@@ -112,7 +112,14 @@ void amd_setup_mtrrs(void)
 	struct mem_state state;
 	unsigned long i;
 	msr_t msr, sys_cfg;
-
+	// Test if this CPU is a Fam 0Fh rev. F or later
+	const int cpu_id = cpuid_eax(0x80000001);
+	const int has_tom2wb =
+		 (((cpu_id>>8 )&0xf)  > 0xf) || // Family > 0F
+		((((cpu_id>>8 )&0xf) == 0xf) && // Family == 0F
+		 (((cpu_id>>16)&0xf) >= 0x4));  // Rev>=F deduced from rev tables
+	if(has_tom2wb)
+		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later, using TOM2WB instead of MTRR above 4GB\n");
 
 	/* Enable the access to AMD RdDram and WrDram extension bits */
 	disable_cache();
@@ -168,7 +175,9 @@ void amd_setup_mtrrs(void)
 		msr.hi = state.tomk >> 22;
 		msr.lo = state.tomk << 10;
 		wrmsr(TOP_MEM2, msr);
-		sys_cfg.lo |= SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB;
+		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
+		if(has_tom2wb)
+			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;
 	}
 
 	/* zero the IORR's before we enable to prevent
@@ -201,5 +210,9 @@ void amd_setup_mtrrs(void)
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.
 	 */
-	x86_setup_var_mtrrs(address_bits, 0);
+
+	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and dont need
+	// variable MTRR to span memory above 4GB
+	// Lower revisions K8 need variable MTRR over 4GB
+	x86_setup_var_mtrrs(address_bits, has_tom2wb ? 0 : 1);
 }

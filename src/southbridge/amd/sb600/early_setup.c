@@ -53,11 +53,11 @@ static u8 get_sb600_revision(void)
 
 /***************************************
 * Legacy devices are mapped to LPC space.
-*	Serial port 0
+*	Serial port 0, 1
 *	KBC Port
 *	ACPI Micro-controller port
 *	This function does not change port 0x80 decoding.
-*	Console output through any port besides 0x3f8 is unsupported.
+*	Console output through any port besides 0x2f8/0x3f8 is unsupported.
 *	If you use FWH ROMs, you have to setup IDSEL.
 * Reviewed-by: Carl-Daniel Hailfinger
 * Reviewed against AMD SB600 Register Reference Manual rev. 3.03, section 3.1
@@ -84,10 +84,9 @@ static void sb600_lpc_init(void)
 	pci_write_config32(dev, 0x64, reg32);
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438d), 0);	/* LPC Controller */
-	/* Decode port 0x3f8-0x3ff (Serial 0) */
-	// XXX Serial port decode on LPC is hardcoded to 0x3f8
+	/* Decode port 0x3f8-0x3ff (Serial 0), 0x2f8-0x2ff (Serial 1) */
 	reg8 = pci_read_config8(dev, 0x44);
-	reg8 |= 1 << 6;
+	reg8 |= (1 << 6) | (1 << 7);
 	pci_write_config8(dev, 0x44, reg8);
 
 	/* Decode port 0x60 & 0x64 (PS/2 keyboard) and port 0x62 & 0x66 (ACPI)*/

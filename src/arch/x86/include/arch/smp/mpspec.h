@@ -267,13 +267,13 @@ void smp_write_bus_hierarchy(struct mp_config_table *mc,
 void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	unsigned char busid, unsigned char address_modifier,
 	unsigned int range_list);
-unsigned char smp_compute_checksum(void *v, int len);
 void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire);
 unsigned long write_smp_table(unsigned long addr);
 
 void mptable_lintsrc(struct mp_config_table *mc, unsigned long bus_isa);
 void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_isa, unsigned long apicid, int external);
 void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus, int *isa_bus);
+void *mptable_finalize(struct mp_config_table *mc);
 
 #endif
 

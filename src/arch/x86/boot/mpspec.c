@@ -40,7 +40,7 @@ void mptable_init(struct mp_config_table *mc, u32 lapic_addr)
 		mc->mpc_productid[i] = ' ';
 }
 
-unsigned char smp_compute_checksum(void *v, int len)
+static unsigned char smp_compute_checksum(void *v, int len)
 {
 	unsigned char *bytes;
 	unsigned char checksum;
@@ -396,3 +396,10 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus, int *isa_
 	smp_write_bus(mc, *isa_bus, "ISA   ");
 }
 
+void *mptable_finalize(struct mp_config_table *mc)
+{
+	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
+	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n", mc, smp_next_mpe_entry(mc));
+	return smp_next_mpe_entry(mc);
+}

@@ -53,14 +53,7 @@ unsigned char smp_compute_checksum(void *v, int len)
 	return checksum;
 }
 
-void *smp_write_floating_table(unsigned long addr)
-{
-	/* 16 byte align the table address */
-	addr = (addr + 0xf) & (~0xf);
-	return smp_write_floating_table_physaddr(addr, addr + SMP_FLOATING_TABLE_LEN);
-}
-
-void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr)
+static void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr, unsigned int virtualwire)
 {
         struct intel_mp_floating *mf;
         void *v;
@@ -76,12 +69,19 @@ void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_ph
         mf->mpf_specification = 4;
         mf->mpf_checksum = 0;
         mf->mpf_feature1 = 0;
-        mf->mpf_feature2 = 0;
+        mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
         mf->mpf_feature3 = 0;
         mf->mpf_feature4 = 0;
         mf->mpf_feature5 = 0;
         mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
         return v;
+}
+
+void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire)
+{
+	/* 16 byte align the table address */
+	addr = (addr + 0xf) & (~0xf);
+	return smp_write_floating_table_physaddr(addr, addr + SMP_FLOATING_TABLE_LEN, virtualwire);
 }
 
 void *smp_next_mpc_entry(struct mp_config_table *mc)

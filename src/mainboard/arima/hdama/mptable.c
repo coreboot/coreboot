@@ -309,7 +309,7 @@ unsigned long write_smp_table(unsigned long addr)
 	void *v;
 	reboot_if_hotswap();
 
-	v = smp_write_floating_table(addr);
+	v = smp_write_floating_table(addr, 0);
 	return (unsigned long)smp_write_config_table(v);
 }
 

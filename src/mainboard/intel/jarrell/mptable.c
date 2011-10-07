@@ -167,10 +167,7 @@ static void *smp_write_config_table(void *v)
 		bus_isa, 0x0a, 0x08, 0x10);
 
 	/* Standard local interrupt assignments */
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, MP_APIC_ALL, 0x00);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, MP_APIC_ALL, 0x01);
+	mptable_lintsrc(mc, bus_isa);
 
 	/* FIXME verify I have the irqs handled for all of the risers */
 

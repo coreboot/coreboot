@@ -164,10 +164,7 @@ static void *smp_write_config_table(void *v)
 		(bus_isa - 1), 0x04, 0x02, 0x10);
 
 	/* Standard local interrupt assignments */
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x00, MP_APIC_ALL, 0x00);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
-		bus_isa, 0x00, MP_APIC_ALL, 0x01);
+	mptable_lintsrc(mc, bus_isa);
 
 	/* There is no extension information... */
 

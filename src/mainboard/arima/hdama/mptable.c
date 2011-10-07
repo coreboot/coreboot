@@ -198,10 +198,7 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_8111, 0);
 
 	/* Standard local interrupt assignments */
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, MP_APIC_ALL, 0x00);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, MP_APIC_ALL, 0x01);
+	mptable_lintsrc(mc, bus_isa);
 
 	/* PCI Ints:	     Type    Trigger                Polarity                 Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
 	/* On board nics */

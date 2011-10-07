@@ -50,8 +50,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc,  mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  0x0,     0x18, ioapic_id,   0x13);
 
 	/* Local Ints:        Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE |  MP_IRQ_POLARITY_HIGH, 0x1,     0x0,  MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI,    MP_IRQ_TRIGGER_EDGE |  MP_IRQ_POLARITY_HIGH, 0x1,     0x0,  MP_APIC_ALL, 0x1);
+	mptable_lintsrc(mc, 0x1);
 
 	/* Compute the checksums. */
 	mc->mpe_checksum =

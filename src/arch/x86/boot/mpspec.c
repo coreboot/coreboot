@@ -335,6 +335,12 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	smp_add_mpe_entry(mc, (mpe_t)mpe);
 }
 
+void mptable_lintsrc(struct mp_config_table *mc, unsigned long bus_isa)
+{
+	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
+	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
+}
+
 void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_isa, unsigned long apicid, int external_int2)
 {
 /*I/O Ints:                   Type         Trigger            Polarity         Bus ID   IRQ  APIC ID   PIN# */

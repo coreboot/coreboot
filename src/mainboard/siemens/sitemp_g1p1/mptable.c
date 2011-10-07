@@ -65,8 +65,7 @@ static void *smp_write_config_table(void *v)
 	}
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb600, 0);
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
+	mptable_lintsrc(mc, bus_isa);
 
 	/* Compute the checksums */
 	mc->mpe_checksum =

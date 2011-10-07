@@ -132,8 +132,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc_pci(mc, 7, (9 << 2) | 3, VT8237R_APIC_ID, 0x12);
 
 	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
-	smp_write_lintsrc(mc, mp_ExtINT,	MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0, 0x0, MP_APIC_ALL, 0x0);
-	smp_write_lintsrc(mc, mp_NMI,	MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0, 0x0, MP_APIC_ALL, 0x1);
+	mptable_lintsrc(mc, 0);
 	/* There is no extension information... */
 
 	/* Compute the checksums. */

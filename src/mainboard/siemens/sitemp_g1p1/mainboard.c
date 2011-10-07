@@ -661,34 +661,6 @@ static void patch_mmio_nonposted( void )
  * @param
  */
 
-static void wait_pepp( void ) {
-
-	int boot_delay = 0;
-
-	if( get_option(&boot_delay, "boot_delay") < 0)
-		boot_delay = 5;
-
-	printk(BIOS_DEBUG, "boot_delay = %d sec\n", boot_delay);
-	if ( boot_delay > 0 ) {
-		init_timer();
-		// wait for PEPP-Board
-		printk(BIOS_INFO, "Give PEPP-Board %d sec(s) time to coming up ", boot_delay);
-		while ( boot_delay ) {
-			lapic_write(LAPIC_TMICT, 0xffffffff);
-			udelay(1000000); // delay time approx. 1 sec
-			printk(BIOS_INFO, ".");
-			boot_delay--;
-		}
-		printk(BIOS_INFO, "\n");
-	}
-}
-
- /**
- * @brief
- *
- * @param
- */
-
 struct {
 	unsigned int bus;
 	unsigned int devfn;
@@ -926,7 +898,6 @@ static void enable_dev(device_t dev)
 	uma_memory_base = 0;
 #endif
 
-	wait_pepp();
 	dev->ops->init = init;  // rest of mainboard init later
 }
 

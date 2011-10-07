@@ -35,7 +35,8 @@ for make in make gmake gnumake; do
 done
 
 GCCPREFIX=invalid
-XGCCPATH="`pwd`/util/crossgcc/xgcc/bin/"
+XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
+echo '#XGCCPATH='${XGCCPATH}
 TMPFILE=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
 touch $TMPFILE
 

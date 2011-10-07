@@ -34,7 +34,7 @@ ifeq ($(INNER_SCANBUILD),y)
 CC_real:=$(CC)
 endif
 
-$(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
+$(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
 include .xcompile
 
 ifeq ($(INNER_SCANBUILD),y)

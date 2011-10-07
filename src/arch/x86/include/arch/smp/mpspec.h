@@ -268,9 +268,7 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	unsigned char busid, unsigned char address_modifier,
 	unsigned int range_list);
 unsigned char smp_compute_checksum(void *v, int len);
-void *smp_write_floating_table(unsigned long addr);
-void *smp_write_floating_table_physaddr(unsigned long addr,
-		unsigned long mpf_physptr);
+void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire);
 unsigned long write_smp_table(unsigned long addr);
 
 void mptable_lintsrc(struct mp_config_table *mc, unsigned long bus_isa);

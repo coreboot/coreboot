@@ -130,26 +130,9 @@ static void *smp_write_config_table(void *v)
 	return smp_next_mpe_entry(mc);
 }
 
-/* MP table generation in coreboot is not very well designed;
- * One of the issues is that it knows nothing about Virtual
- * Wire mode, which everyone uses since a decade or so. This
- * function fixes up our floating table. This spares us doing
- * a half-baked fix of adding a new parameter to 200+ calls
- * to smp_write_floating_table()
- */
-static void fixup_virtual_wire(void *v)
-{
-        struct intel_mp_floating *mf = v;
-
-        mf->mpf_checksum = 0;
-        mf->mpf_feature2 = MP_FEATURE_VIRTUALWIRE;
-        mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
-}
-
 unsigned long write_smp_table(unsigned long addr)
 {
 	void *v;
-	v = smp_write_floating_table(addr);
-	fixup_virtual_wire(v);
+	v = smp_write_floating_table(addr, 1);
 	return (unsigned long)smp_write_config_table(v);
 }

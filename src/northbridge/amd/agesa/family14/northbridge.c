@@ -488,6 +488,9 @@ static void domain_read_resources(device_t dev)
     unsigned reg;
 
     printk(BIOS_DEBUG, "\nFam14h - domain_read_resources.\n");
+#if CONFIG_AMD_SB_CIMX
+    sb_Before_Pci_Init();
+#endif
 
     /* Find the already assigned resource pairs */
     get_fx_devs();

@@ -418,9 +418,6 @@ static void sb800_enable(device_t dev)
 		break;
 	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
 		sb_config->USBMODE.UsbMode.Ehci3 = dev->enabled;
-
-		/* the last sb800 device */
-		sb_Before_Pci_Init();
 		break;
 
 	default:

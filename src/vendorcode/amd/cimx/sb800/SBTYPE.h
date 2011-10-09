@@ -1106,6 +1106,16 @@ typedef unsigned int    CIM_STATUS;
  */
 #define CIMX_OPTION_ENABLED    1
 
+/**
+ * SATA_IDE_COMBINE_ENABLE  -Define  Enable Combined Mode
+ */
+#define SATA_IDE_COMBINE_ENABLE   0
+
+/**
+ * SATA_IDE_COMBINE_DISABLE  -Define  Disable Combined Mode
+ */
+#define SATA_IDE_COMBINE_DISABLE  1
+
 // mov al, code
 // out 80h, al
 // jmp $

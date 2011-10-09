@@ -28,6 +28,22 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
         string
         default "southbridge/amd/cimx/sb800/bootblock.c"
 
+config ENABLE_IDE_COMBINED_MODE
+	bool "Enable SATA IDE combined mode"
+	default n
+	help
+	  If Combined Mode is enabled. IDE controller is exposed and
+	  SATA controller has control over Port0 through Port3,
+	  IDE controller has control over Port4 and Port5.
+
+	  If Combined Mode is disabled, IDE controller is hidden and
+	  SATA controller has full control of all 6 Ports when operating in non-IDE mode.
+
+config IDE_COMBINED_MODE
+	hex
+	default "0x0" if ENABLE_IDE_COMBINED_MODE
+	default "0x1" if !ENABLE_IDE_COMBINED_MODE
+
 choice
 	prompt "SATA Mode"
 	default SB800_SATA_IDE

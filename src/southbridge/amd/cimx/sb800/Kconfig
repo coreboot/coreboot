@@ -28,8 +28,74 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
         string
         default "southbridge/amd/cimx/sb800/bootblock.c"
 
+choice
+	prompt "SATA Mode"
+	default SB800_SATA_IDE
+	help
+	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
+	  The default is NATIVE.
+
+config SB800_SATA_IDE
+	bool "NATIVE"
+	help
+	  NATIVE is the default mode and does not require a ROM.
+
+config SB800_SATA_AHCI
+	bool "AHCI"
+	help
+	  AHCI may work with or without AHCI ROM. It depends on the payload support.
+	  For example, seabios does not require the AHCI ROM.
+
+config SB800_SATA_RAID
+	bool "RAID"
+	help
+	  sb800 RAID mode must have the two required ROM files.
+
+endchoice
+
+config SB800_SATA_MODE
+        hex
+	depends on (SB800_SATA_IDE || SB800_SATA_RAID || SB800_SATA_AHCI)
+	default "0x0" if SB800_SATA_IDE
+	default "0x1" if SB800_SATA_RAID
+	default "0x2" if SB800_SATA_AHCI
+
 config SB_SUPERIO_HWM
         bool
         default n
+
+if SB800_SATA_AHCI
+config AHCI_ROM_ID
+	string "AHCI device PCI IDs"
+	default "1002,4391"
+
+config SB800_AHCI_ROM
+	bool "Add a AHCI ROM"
+
+config AHCI_ROM_FILE
+	string "AHCI ROM path and filename"
+	depends on SB800_AHCI_ROM
+	default "site-local/sb800/ahci.bin"
+endif
+
+if SB800_SATA_RAID
+config RAID_ROM_ID
+	string "RAID device PCI IDs"
+	default "1002,4393"
+        help
+          1002,4392 for SATA NON-RAID5 module, 1002,4393 for SATA RAID5 mode
+
+config RAID_ROM_FILE
+	string "RAID ROM path and filename"
+	depends on SB800_SATA_RAID
+	default "site-local/sb800/raid.bin"
+
+config RAID_MISC_ROM_FILE
+        string "RAID Misc ROM path and filename"
+        default "site-local/sb800/misc.bin"
+	depends on SB800_SATA_RAID
+
+endif
+
 endif #SOUTHBRIDGE_AMD_CIMX_SB800
 

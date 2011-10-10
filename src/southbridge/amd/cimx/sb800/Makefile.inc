@@ -31,4 +31,22 @@ ramstage-y += late.c
 driver-y   += smbus.c
 driver-y   += lpc.c
 
+ifeq ($(CONFIG_SB800_SATA_AHCI), y)
+ifdef CONFIG_SB800_AHCI_ROM
+	stripped_ahci_rom_id = $(call strip_quotes,$(CONFIG_AHCI_ROM_ID))
+	cbfs-files-y += pci$(stripped_ahci_rom_id).rom
+	pci$(stripped_ahci_rom_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_ROM_FILE))
+	pci$(stripped_ahci_rom_id).rom-type := optionrom
+endif
+endif
 
+ifeq ($(CONFIG_SB800_SATA_RAID), y)
+	stripped_raid_rom_id = $(call strip_quotes,$(CONFIG_RAID_ROM_ID))
+	cbfs-files-y += pci$(stripped_raid_rom_id).rom
+	pci$(stripped_raid_rom_id).rom-file := $(call strip_quotes,$(CONFIG_RAID_ROM_FILE))
+	pci$(stripped_raid_rom_id).rom-type := optionrom
+
+	cbfs-files-y += raid/misc.bin
+	raid/misc.bin-file := $(call strip_quotes,$(CONFIG_RAID_MISC_ROM_FILE))
+	raid/misc.bin-type := raw
+endif

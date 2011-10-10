@@ -595,6 +595,13 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u8 Max_fid, Start_fid, Start_vid, Max_vid;
 	struct cpuid_result cpuid1 = cpuid(0x80000001);
 
+	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
+	cpuid1 = cpuid(0x80000007);
+	if((cpuid1.edx & 0x6)!=0x6) {
+		printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
+		return 0;
+	}
+
 	// Because I don't know how to read msr registers from
 	// other CPU's I assume they all have the same SYSCONF values
 	msr = rdmsr(0xc0010042);
@@ -619,12 +626,6 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	if (data == NULL) {
 		printk(BIOS_WARNING, "Unknown CPU, please update the powernow_acpi.c\n");
-		return 0;
-	}
-	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
-	cpuid1 = cpuid(0x80000007);
-	if((cpuid1.edx & 0x6)!=0x6) {
-		printk(BIOS_INFO, "Processor not capable of performing P-state transitions\n");
 		return 0;
 	}
 

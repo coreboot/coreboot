@@ -419,7 +419,9 @@ static void sb800_enable(device_t dev)
 	case (0x16 << 3) | 2: /* 0:16:2 EHCI-USB3 */
 		sb_config->USBMODE.UsbMode.Ehci3 = dev->enabled;
 
-		/* the last sb800 device */
+		/* call the CIMX entry at the last sb800 device,
+		 * so make sure the mainboard devicetree is complete
+		 */
 		sb_Before_Pci_Init();
 		break;
 

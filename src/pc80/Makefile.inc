@@ -4,6 +4,7 @@ ramstage-y += i8254.c
 ramstage-y += i8259.c
 ramstage-$(CONFIG_UDELAY_IO) += udelay_io.c
 ramstage-y += keyboard.c
+ramstage-$(CONFIG_TPM) += tpm.c
 
 romstage-$(CONFIG_USE_OPTION_TABLE) += mc146818rtc_early.c
 subdirs-y += vga

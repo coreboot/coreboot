@@ -48,5 +48,6 @@ ifeq ($(CONFIG_SB800_SATA_RAID), y)
 
 	cbfs-files-y += raid/misc.bin
 	raid/misc.bin-file := $(call strip_quotes,$(CONFIG_RAID_MISC_ROM_FILE))
+	raid/misc.bin-position := $(CONFIG_RAID_MISC_ROM_POSITION)
 	raid/misc.bin-type := raw
 endif

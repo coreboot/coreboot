@@ -436,16 +436,18 @@ static int in_segment(int addr, int size, int gran)
 	return ((addr & ~(gran - 1)) == ((addr + size) & ~(gran - 1)));
 }
 
-uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
-			    const char *filename, uint32_t alignment,
-			    uint32_t offset)
+static uint32_t cbfs_find_location_(const char *romfile, uint32_t filesize,
+		const char *filename, uint32_t offset,
+		int is_stage, uint32_t alignment)
 {
 	void *rom = loadrom(romfile);
 	int filename_size = strlen(filename);
 
 	int headersize =
-	    sizeof(struct cbfs_file) + ALIGN(filename_size + 1,
-					     16) + sizeof(struct cbfs_stage);
+	    sizeof(struct cbfs_file) +
+	    ALIGN(filename_size + 1, 16) +
+	    (is_stage ? sizeof(struct cbfs_stage) : 0);
+
 	int totalsize = headersize + filesize;
 
 	if (offset > phys_end - phys_start) {
@@ -479,6 +481,8 @@ uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
 		    && (ntohl(thisfile->len) + ntohl(thisfile->offset)
 			- off_rel >= totalsize)) {
 
+			if (!is_stage) return current + headersize;
+
 			if (in_segment
 			    (current + headersize, filesize, alignment))
 				return current + headersize;
@@ -496,9 +500,9 @@ uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
 					  filesize, alignment))
 				return ALIGN(current, alignment) + alignment;
 		}
-		current =
-		    ALIGN(current + ntohl(thisfile->len) +
-			  ntohl(thisfile->offset), align);
+		current = ALIGN(current + (ntohl(thisfile->len) +
+					ntohl(thisfile->offset) - off_rel),
+				align);
 	}
 	return 0;
 }
@@ -506,49 +510,14 @@ uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
 uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t offset)
 {
-	void *rom = loadrom(romfile);
-	int filename_size = strlen(filename);
+	return cbfs_find_location_(romfile, filesize, filename, offset, 0,
+			0);
+}
 
-	int headersize =
-		sizeof(struct cbfs_file) + ALIGN(filename_size + 1, 16);
-
-	int totalsize = headersize + filesize;
-
-	if (offset > phys_end - phys_start) {
-		fprintf(stderr, "Offset outside of ROM boundaries\n");
-		exit(1);
-	}
-
-	if (offset) offset = ALIGN(phys_start + offset, align);
-
-	uint32_t current = phys_start;
-	while (current < phys_end) {
-		if (!cbfs_file_header(current)) {
-			current += align;
-			continue;
-		}
-		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
-
-		uint32_t top =
-		    current + ntohl(thisfile->len) + ntohl(thisfile->offset);
-
-		uint32_t off_rel = 0;
-		if (current < offset && offset <= top) {
-			off_rel = offset - current;
-			current = offset;
-		}
-
-		if (current >= offset
-		    && ((ntohl(thisfile->type) == 0x0)
-		        || (ntohl(thisfile->type) == 0xffffffff))
-		    && (ntohl(thisfile->len) + ntohl(thisfile->offset)
-			- off_rel >= totalsize))
-			return current + headersize;
-
-		current = ALIGN(current + (ntohl(thisfile->len) +
-					ntohl(thisfile->offset) - off_rel),
-				align);
-	}
-	return 0;
+uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
+			    const char *filename, uint32_t alignment,
+			    uint32_t offset)
+{
+	return cbfs_find_location_(romfile, filesize, filename, offset, 1,
+			alignment);
 }

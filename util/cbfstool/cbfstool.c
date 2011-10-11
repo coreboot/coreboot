@@ -251,11 +251,10 @@ static int cbfs_locate(int argc, char **argv)
 	const char *filename = argv[4];
 	int align = strtoul(argv[5], NULL, 0);
 	uint32_t offset = argc > 6 ? strtoul(argv[6], NULL, 0) : 0;
-	uint32_t loc = cbfs_find_stage_location(romname, filesize, filename, align,
-	                                  offset);
+	uint32_t loc = cbfs_find_stage_location(romname, filesize, filename,
+								align, offset);
 
 	printf("%x\n", loc);
-	fprintf(stderr, "%x\n", loc);
 	return 0;
 }
 

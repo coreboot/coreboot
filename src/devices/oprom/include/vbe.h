@@ -104,9 +104,11 @@ typedef struct {
 
 struct lb_framebuffer;
 
-void vbe_set_graphics(void); // yabel only
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+void vbe_set_graphics(void);
 void vbe_textmode_console(void);
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 
+#define VESA_GET_INFO		0x4f00
+#define VESA_GET_MODE_INFO	0x4f01
+#define VESA_SET_MODE		0x4f02
 

@@ -516,13 +516,42 @@ config MBI_FILE
 
 endmenu
 
-menu "Bootsplash"
-	depends on PCI_OPTION_ROM_RUN_YABEL
+menu "Display"
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+
+config FRAMEBUFFER_SET_VESA_MODE
+	prompt "Set VESA framebuffer mode"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  Set VESA framebuffer mode (needed for bootsplash)
+
+# TODO: Turn this into a "choice".
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA framebuffer video mode"
+	hex
+	default 0x117
+	depends on FRAMEBUFFER_SET_VESA_MODE
+	help
+	  This option sets the resolution used for the coreboot framebuffer (and
+	  bootsplash screen). Set to 0x117 for 1024x768x16. A diligent soul will
+	  some day make this a "choice".
+
+config FRAMEBUFFER_KEEP_VESA_MODE
+	prompt "Keep VESA framebuffer"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a
+	  framebuffer entry in its coreboot table and the payload will need a
+	  framebuffer driver. If this option is disabled, coreboot will switch
+	  back to text mode before handing control to a payload.
 
 config BOOTSPLASH
 	prompt "Show graphical bootsplash"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL
+	depends on FRAMEBUFFER_SET_VESA_MODE
 	help
 	  This option shows a graphical bootsplash screen. The grapics are
 	  loaded from the CBFS file bootsplash.jpg.
@@ -534,29 +563,6 @@ config BOOTSPLASH_FILE
 	help
 	  The path and filename of the file to use as graphical bootsplash
 	  screen. The file format has to be jpg.
-
-# TODO: Turn this into a "choice".
-config FRAMEBUFFER_VESA_MODE
-	prompt "VESA framebuffer video mode"
-	hex
-	default 0x117
-	depends on BOOTSPLASH
-	help
-	  This option sets the resolution used for the coreboot framebuffer and
-	  bootsplash screen. Set to 0x117 for 1024x768x16. A diligent soul will
-	  some day make this a "choice".
-
-config COREBOOT_KEEP_FRAMEBUFFER
-	prompt "Keep VESA framebuffer"
-	bool
-	depends on BOOTSPLASH
-	help
-	  This option keeps the framebuffer mode set after coreboot finishes
-	  execution. If this option is enabled, coreboot will pass a
-	  framebuffer entry in its coreboot table and the payload will need a
-	  framebuffer driver. If this option is disabled, coreboot will switch
-	  back to text mode before handing control to a payload.
-
 endmenu
 
 menu "Debugging"

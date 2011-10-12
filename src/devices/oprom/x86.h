@@ -30,6 +30,7 @@ void x86_exception(struct eregs *info);
 extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
 extern unsigned char __realmode_call, __realmode_interrupt;
+extern unsigned char __buffer;
 
 extern void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0)));

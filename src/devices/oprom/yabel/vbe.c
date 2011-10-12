@@ -13,7 +13,7 @@
 
 #include <string.h>
 #include <types.h>
-#if CONFIG_BOOTSPLASH
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 #include <boot/coreboot_tables.h>
 #endif
 
@@ -64,7 +64,7 @@ vbe_prepare(void)
 	return 0;		// successfull init
 }
 
-#if CONFIG_BOOTSPLASH
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 // VBE Function 00h
 static u8
 vbe_info(vbe_info_t * info)
@@ -704,10 +704,12 @@ void vbe_set_graphics(void)
 
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
 	vbe_get_mode_info(&mode_info);
+	vbe_set_mode(&mode_info);
+
+#if CONFIG_BOOTSPLASH
 	unsigned char *framebuffer =
 		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
 	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);
-	vbe_set_mode(&mode_info);
 
 	struct jpeg_decdata *decdata;
 	decdata = malloc(sizeof(*decdata));
@@ -728,6 +730,7 @@ void vbe_set_graphics(void)
 	DEBUG_PRINTF_VBE("Decompressing boot splash screen...\n");
 	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
 	DEBUG_PRINTF_VBE("returns %x\n", ret);
+#endif
 }
 
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)

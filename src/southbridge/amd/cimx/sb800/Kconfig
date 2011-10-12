@@ -111,6 +111,15 @@ config RAID_MISC_ROM_FILE
         default "site-local/sb800/misc.bin"
 	depends on SB800_SATA_RAID
 
+config RAID_MISC_ROM_POSITION
+	hex "RAID Misc ROM Position"
+	default 0xFFF00000
+	depends on SB800_SATA_RAID
+	help
+	  The RAID ROM requires that the MISC ROM is located between the range
+	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
+	  The CONFIG_ROM_SIZE must larger than 0x100000.
+
 endif
 
 endif #SOUTHBRIDGE_AMD_CIMX_SB800

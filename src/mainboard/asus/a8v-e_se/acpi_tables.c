@@ -31,6 +31,8 @@
 #include <device/pci_ids.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
 #include "southbridge/via/k8t890/k8t890.h"
+#include "northbridge/amd/amdk8/acpi.h"
+#include <cpu/amd/model_fxx_powernow.h>
 
 extern const unsigned char AmlCode[];
 
@@ -81,6 +83,14 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
+{
+	k8acpi_write_vars();
+	amd_model_fxx_generate_powernow(0, 0, 0);
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+	return (unsigned long) (acpigen_get_current());
+}
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -91,6 +101,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_mcfg_t *mcfg;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
+	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
 	/* Align ACPI tables to 16 byte. */
@@ -150,6 +161,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_srat(srat);
 	current += srat->header.length;
 	acpi_add_table(rsdp, srat);
+
+	/* SSDT */
+	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
+	ssdt = (acpi_header_t *)current;
+
+	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
 
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;

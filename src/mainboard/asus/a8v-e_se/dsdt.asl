@@ -24,12 +24,7 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 {
-	/* Define the main processor.*/
-	Scope (\_PR)
-	{
-		Processor (\_PR.CPU0, 0x00, 0x000000, 0x00) {}
-		Processor (\_PR.CPU1, 0x01, 0x000000, 0x00) {}
-	}
+	 #include "northbridge/amd/amdk8/util.asl"
 
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on
@@ -50,8 +45,44 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			Name (_UID, 0x00)
 			Name (_BBN, 0x00)
 
+		    External (BUSN)
+		    External (MMIO)
+		    External (PCIO)
+		    External (SBLK)
+		    External (TOM1)
+		    External (HCLK)
+		    External (SBDN)
+		    External (HCDN)
+
+		    Method (_CRS, 0, NotSerialized)
+			{
+			    Name (BUF0, ResourceTemplate ()
+			    {
+				IO (Decode16,
+				0x0CF8,             // Address Range Minimum
+				0x0CF8,             // Address Range Maximum
+				0x01,               // Address Alignment
+				0x08,               // Address Length
+				)
+				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
+				0x0000,             // Address Space Granularity
+				0x0000,             // Address Range Minimum
+				0x0CF7,             // Address Range Maximum
+				0x0000,             // Address Translation Offset
+				0x0CF8,             // Address Length
+				,, , TypeStatic)
+			    })
+				/* Methods bellow use SSDT to get actual MMIO regs
+				   The IO ports are from 0xd00, optionally an VGA,
+				   otherwise the info from MMIO is used.
+				 */
+				Concatenate (\_SB.GMEM (0x00, \_SB.PCI0.SBLK), BUF0, Local1)
+				Concatenate (\_SB.GIOR (0x00, \_SB.PCI0.SBLK), Local1, Local2)
+				Concatenate (\_SB.GWBN (0x00, \_SB.PCI0.SBLK), Local2, Local3)
+				Return (Local3)
+			}
+
 			/* PCI Routing Table */
-			/* aaa */
 			Name (_PRT, Package () {
 				Package (0x04) { 0x000BFFFF, 0x00, 0x00, 0x10 }, /* Slot 0xB */
 				Package (0x04) { 0x000BFFFF, 0x01, 0x00, 0x11 },
@@ -206,6 +237,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					}
 				}
 			}
+			/* Dummy device to hold auto generated reserved resources */
+			Device(MBRS) {
+				Name (_HID, EisaId ("PNP0C02"))
+				Name (_UID, 0x01)
+				External(_CRS) /* Resource Template in SSDT */
+			}
+
 		}
 	}
 }

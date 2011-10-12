@@ -26,17 +26,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/registers.h>
-
-enum {
-	PCIBIOS_CHECK = 0xb101,
-	PCIBIOS_FINDDEV = 0xb102,
-	PCIBIOS_READCONFBYTE = 0xb108,
-	PCIBIOS_READCONFWORD = 0xb109,
-	PCIBIOS_READCONFDWORD = 0xb10a,
-	PCIBIOS_WRITECONFBYTE = 0xb10b,
-	PCIBIOS_WRITECONFWORD = 0xb10c,
-	PCIBIOS_WRITECONFDWORD = 0xb10d
-};
+#include "x86.h"
 
 // errors go in AH. Just set these up so that word assigns
 // will work. KISS.
@@ -48,14 +38,79 @@ enum {
 	PCIBIOS_BADREG = 0x8700
 };
 
-int int12_handler(struct eregs *regs);
-int int1a_handler(struct eregs *regs);
-int int15_handler(struct eregs *regs);
+int int10_handler(struct eregs *regs)
+{
+	int res=-1;
+	static u8 cursor_row=0, cursor_col=0;
+	switch((regs->eax & 0xff00)>>8) {
+	case 0x01: // Set cursor shape
+		res = 0;
+		break;
+	case 0x02: // Set cursor position
+		if (cursor_row != ((regs->edx >> 8) & 0xff) ||
+		    cursor_col >= (regs->edx & 0xff)) {
+			printk(BIOS_INFO, "\n");
+		}
+		cursor_row = (regs->edx >> 8) & 0xff;
+		cursor_col = regs->edx & 0xff;
+		res = 0;
+		break;
+	case 0x03: // Get cursor position
+		regs->eax &= 0x00ff;
+		regs->ecx = 0x0607;
+		regs->edx = (cursor_row << 8) | cursor_col;
+		res = 0;
+		break;
+	case 0x06: // Scroll up
+		printk(BIOS_INFO, "\n");
+		res = 0;
+		break;
+	case 0x08: // Get Character and Mode at Cursor Position
+		regs->eax = 0x0f00 | 'A'; // White on black 'A'
+		res = 0;
+		break;
+	case 0x09: // Write Character and attribute
+	case 0x10: // Write Character
+		printk(BIOS_INFO, "%c", regs->eax & 0xff);
+		res = 0;
+		break;
+	case 0x0f: // Get video mode
+		regs->eax = 0x5002; //80x25
+		regs->ebx &= 0x00ff;
+		res = 0;
+		break;
+        default:
+		printk(BIOS_WARNING, "Unknown INT10 function %04x!\n",
+				regs->eax & 0xffff);
+		break;
+	}
+	return res;
+}
 
 int int12_handler(struct eregs *regs)
 {
 	regs->eax = 64 * 1024;
 	return 0;
+}
+
+int int16_handler(struct eregs *regs)
+{
+	int res=-1;
+	switch((regs->eax & 0xff00)>>8) {
+	case 0x00: // Check for Keystroke
+		regs->eax = 0x6120; // Space Bar, Space
+		res = 0;
+		break;
+	case 0x01: // Check for Keystroke
+		regs->eflags |= 1<<6; // Zero Flag set (no key available)
+		res = 0;
+		break;
+        default:
+		printk(BIOS_WARNING, "Unknown INT16 function %04x!\n",
+				regs->eax & 0xffff);
+		break;
+	}
+	return res;
 }
 
 #define PCI_CONFIG_SPACE_TYPE1	(1 << 0)
@@ -77,7 +132,7 @@ int int1a_handler(struct eregs *regs)
 	u8 byte, reg;
 
 	switch (func) {
-	case PCIBIOS_CHECK:
+	case 0xb101: /* PCIBIOS Check */
 		regs->edx = 0x20494350;	/* ' ICP' */
 		regs->eax &= 0xffff0000; /* Clear AH / AL */
 		regs->eax |= PCI_CONFIG_SPACE_TYPE1 | PCI_SPECIAL_CYCLE_TYPE1;
@@ -87,7 +142,7 @@ int int1a_handler(struct eregs *regs)
 		regs->edi = 0x00000000;	/* protected mode entry */
 		retval = 0;
 		break;
-	case PCIBIOS_FINDDEV:
+	case 0xb102: /* Find Device */
 		devid = regs->ecx;
 		vendorid = regs->edx;
 		devindex = regs->esi;
@@ -114,12 +169,12 @@ int int1a_handler(struct eregs *regs)
 			retval = -1;
 		}
 		break;
-	case PCIBIOS_READCONFDWORD:
-	case PCIBIOS_READCONFWORD:
-	case PCIBIOS_READCONFBYTE:
-	case PCIBIOS_WRITECONFDWORD:
-	case PCIBIOS_WRITECONFWORD:
-	case PCIBIOS_WRITECONFBYTE:
+	case 0xb10a: /* Read Config Dword */
+	case 0xb109: /* Read Config Word */
+	case 0xb108: /* Read Config Byte */
+	case 0xb10d: /* Write Config Dword */
+	case 0xb10c: /* Write Config Word */
+	case 0xb10b: /* Write Config Byte */
 		devfn = regs->ebx & 0xff;
 		bus = regs->ebx >> 8;
 		reg = regs->edi;
@@ -133,27 +188,27 @@ int int1a_handler(struct eregs *regs)
 			return retval;
 		}
 		switch (func) {
-		case PCIBIOS_READCONFBYTE:
+		case 0xb108: /* Read Config Byte */
 			byte = pci_read_config8(dev, reg);
 			regs->ecx = byte;
 			break;
-		case PCIBIOS_READCONFWORD:
+		case 0xb109: /* Read Config Word */
 			word = pci_read_config16(dev, reg);
 			regs->ecx = word;
 			break;
-		case PCIBIOS_READCONFDWORD:
+		case 0xb10a: /* Read Config Dword */
 			dword = pci_read_config32(dev, reg);
 			regs->ecx = dword;
 			break;
-		case PCIBIOS_WRITECONFBYTE:
+		case 0xb10b: /* Write Config Byte */
 			byte = regs->ecx;
 			pci_write_config8(dev, reg, byte);
 			break;
-		case PCIBIOS_WRITECONFWORD:
+		case 0xb10c: /* Write Config Word */
 			word = regs->ecx;
 			pci_write_config16(dev, reg, word);
 			break;
-		case PCIBIOS_WRITECONFDWORD:
+		case 0xb10d: /* Write Config Dword */
 			dword = regs->ecx;
 			pci_write_config32(dev, reg, dword);
 			break;
@@ -176,44 +231,5 @@ int int1a_handler(struct eregs *regs)
 	}
 
 	return retval;
-}
-
-int int15_handler(struct eregs *regs)
-{
-	int res = -1;
-
-	/* This int15 handler is Intel IGD. specific. Other chipsets need other
-	 * handlers. The right way to do this is to move this handler code into
-	 * the mainboard or northbridge code.
-	 * TODO: completely move to mainboards / chipsets.
-	 */
-	switch (regs->eax & 0xffff) {
-	/* And now Intel IGD code */
-#define BOOT_DISPLAY_DEFAULT    0
-#define BOOT_DISPLAY_CRT        (1 << 0)
-#define BOOT_DISPLAY_TV         (1 << 1)
-#define BOOT_DISPLAY_EFP        (1 << 2)
-#define BOOT_DISPLAY_LCD        (1 << 3)
-#define BOOT_DISPLAY_CRT2       (1 << 4)
-#define BOOT_DISPLAY_TV2        (1 << 5)
-#define BOOT_DISPLAY_EFP2       (1 << 6)
-#define BOOT_DISPLAY_LCD2       (1 << 7)
-	case 0x5f35:
-		regs->eax = 0x5f;
-		regs->ecx = BOOT_DISPLAY_DEFAULT;
-		res = 0;
-		break;
-	case 0x5f40:
-		regs->eax = 0x5f;
-		regs->ecx = 3; // This is mainboard specific
-		printk(BIOS_DEBUG, "DISPLAY=%x\n", regs->ecx);
-		res = 0;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
-	}
-
-	return res;
 }
 

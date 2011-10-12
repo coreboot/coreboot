@@ -1,0 +1,19 @@
+--- acpica-unix-20110922/compiler/Makefile	2011-09-22 08:59:34.000000000 -0700
++++ acpica-unix-20110922/compiler/Makefile	2011-10-11 23:47:29.000000000 -0700
+@@ -245,15 +245,11 @@
+     -Waggregate-return \
+     -Wchar-subscripts \
+     -Wempty-body \
+-    -Wlogical-op \
+     -Wmissing-declarations \
+     -Wmissing-field-initializers \
+-    -Wmissing-parameter-type \
+     -Wnested-externs \
+-    -Wold-style-declaration \
+     -Wold-style-definition \
+-    -Wredundant-decls \
+-    -Wtype-limits
++    -Wredundant-decls
+ 
+ #
+ # Bison/Flex configuration

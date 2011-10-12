@@ -25,6 +25,7 @@
 #endif
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
+#include <arch/interrupt.h>
 #include "chip.h"
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
@@ -69,6 +70,53 @@ static void int15_install(void)
 	yabel_intFuncArray[0x15] = int15_handler;
 }
 #endif
+
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+static int int15_handler(struct eregs *regs)
+{
+	int res = -1;
+
+	/* This int15 handler is Intel IGD. specific. Other chipsets need other
+	 * handlers. The right way to do this is to move this handler code into
+	 * the mainboard or northbridge code.
+	 * TODO: completely move to mainboards / chipsets.
+	 */
+	switch (regs->eax & 0xffff) {
+	/* And now Intel IGD code */
+#define BOOT_DISPLAY_DEFAULT    0
+#define BOOT_DISPLAY_CRT        (1 << 0)
+#define BOOT_DISPLAY_TV         (1 << 1)
+#define BOOT_DISPLAY_EFP        (1 << 2)
+#define BOOT_DISPLAY_LCD        (1 << 3)
+#define BOOT_DISPLAY_CRT2       (1 << 4)
+#define BOOT_DISPLAY_TV2        (1 << 5)
+#define BOOT_DISPLAY_EFP2       (1 << 6)
+#define BOOT_DISPLAY_LCD2       (1 << 7)
+	case 0x5f35:
+		regs->eax = 0x5f;
+		regs->ecx = BOOT_DISPLAY_DEFAULT;
+		res = 0;
+		break;
+	case 0x5f40:
+		regs->eax = 0x5f;
+		regs->ecx = 3; // This is mainboard specific
+		printk(BIOS_DEBUG, "DISPLAY=%x\n", regs->ecx);
+		res = 0;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
+				regs->eax & 0xffff);
+	}
+
+	return res;
+}
+
+static void int15_install(void)
+{
+	mainboard_interrupt_handlers(0x15, &int15_handler);
+}
+#endif
+
 
 /* Hardware Monitor */
 
@@ -221,7 +269,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	/* Install custom int15 handler for VGA OPROM */
 	int15_install();
 #endif

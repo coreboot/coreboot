@@ -74,6 +74,46 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 	return ret;
 }
 
+#define HOST_CAP                  0x00 /* host capabilities */
+#define HOST_CTL                  0x04 /* global host control */
+#define HOST_IRQ_STAT             0x08 /* interrupt status */
+#define HOST_PORTS_IMPL           0x0c /* bitmap of implemented ports */
+
+#define HOST_CTL_AHCI_EN          (1 << 31) /* AHCI enabled */
+static void ahci_raid_init(struct device *dev)
+{
+	u8 irq = 0;
+	u32 bar5, caps, ports, val;
+
+	val = pci_read_config16(dev, PCI_CLASS_DEVICE);
+	if (val == PCI_CLASS_STORAGE_SATA) {
+		printk(BIOS_DEBUG, "AHCI controller ");
+	} else if (val == PCI_CLASS_STORAGE_RAID) {
+		printk(BIOS_DEBUG, "RAID controller ");
+	} else {
+		printk(BIOS_WARNING, "device class:%x, neither in ahci or raid mode\n", val);
+		return;
+	}
+
+	irq = pci_read_config8(dev, PCI_INTERRUPT_LINE);
+	bar5 = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	printk(BIOS_DEBUG, "IOMEM base: 0x%X, IRQ: 0x%X\n", bar5, irq);
+
+	caps = *(volatile u32 *)(bar5 + HOST_CAP);
+	caps = (caps & 0x1F) + 1;
+	ports= *(volatile u32 *)(bar5 + HOST_PORTS_IMPL);
+	printk(BIOS_DEBUG, "Number of Ports: 0x%x, Port implemented(bit map): 0x%x\n", caps, ports);
+
+	/* make sure ahci is enabled */
+	val = *(volatile u32 *)(bar5 + HOST_CTL);
+	if (!(val & HOST_CTL_AHCI_EN)) {
+		*(volatile u32 *)(bar5 + HOST_CTL) = val | HOST_CTL_AHCI_EN;
+	}
+
+	dev->command |= PCI_COMMAND_MASTER;
+	pci_write_config8(dev, PCI_COMMAND, dev->command);
+	printk(BIOS_DEBUG, "AHCI/RAID controller initialized\n");
+}
 
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
@@ -98,15 +138,26 @@ static struct device_operations sata_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = 0,
+	.init = ahci_raid_init,
 	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 
-static const struct pci_driver sata_driver __pci_driver = {
+static const struct pci_driver ahci_driver __pci_driver = {
 	.ops = &sata_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB800_SATA_AHCI,
+};
+
+static const struct pci_driver raid_driver __pci_driver = {
+	.ops = &sata_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_SATA_RAID,
+};
+static const struct pci_driver raid5_driver __pci_driver = {
+	.ops = &sata_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_SATA_RAID5,
 };
 
 #if CONFIG_USBDEBUG == 1

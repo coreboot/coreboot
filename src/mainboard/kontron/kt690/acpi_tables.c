@@ -149,7 +149,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
 
-	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
 

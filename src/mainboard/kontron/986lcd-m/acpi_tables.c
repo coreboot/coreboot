@@ -65,7 +65,7 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	/* fill out header fields */
 	memcpy(header->signature, "HPET", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, "COREBOOT", 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->length = sizeof(acpi_hpet_t);
@@ -251,7 +251,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *)current;
-	acpi_create_ssdt_generator(ssdt, "COREBOOT");
+	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
 	ALIGN_CURRENT;

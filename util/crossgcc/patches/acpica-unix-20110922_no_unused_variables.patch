@@ -1,0 +1,48 @@
+diff -x '*.o' -ur acpica-unix-20110922.orig//compiler/aslcompiler.l acpica-unix-20110922/compiler/aslcompiler.l
+--- acpica-unix-20110922.orig//compiler/aslcompiler.l	2011-10-28 23:24:17.333274002 +0200
++++ acpica-unix-20110922/compiler/aslcompiler.l	2011-10-28 23:24:56.669274001 +0200
+@@ -550,7 +550,6 @@
+     void)
+ {
+     ASL_FILE_NODE           *Fnode;
+-    FILE                    *InputFile = NULL;
+ 
+ 
+     Fnode = InputStack;
+@@ -569,7 +568,6 @@
+     /* Update the top-of-stack */
+ 
+     InputStack = Fnode->Next;
+-    InputFile = Fnode->File;
+ 
+     /* Reset global line counter and filename */
+ 
+diff -x '*.o' -ur acpica-unix-20110922.orig//os_specific/service_layers/osunixxf.c acpica-unix-20110922/os_specific/service_layers/osunixxf.c
+--- acpica-unix-20110922.orig//os_specific/service_layers/osunixxf.c	2011-10-28 23:24:17.345274002 +0200
++++ acpica-unix-20110922/os_specific/service_layers/osunixxf.c	2011-10-28 23:56:13.629274002 +0200
+@@ -349,7 +349,6 @@
+     const char              *Fmt,
+     va_list                 Args)
+ {
+-    INT32                   Count = 0;
+     UINT8                   Flags;
+ 
+ 
+@@ -362,7 +361,7 @@
+         {
+             /* Output file is open, send the output there */
+ 
+-            Count = vfprintf (AcpiGbl_DebugFile, Fmt, Args);
++            vfprintf (AcpiGbl_DebugFile, Fmt, Args);
+         }
+         else
+         {
+@@ -374,7 +373,7 @@
+ 
+     if (Flags & ACPI_DB_CONSOLE_OUTPUT)
+     {
+-        Count = vfprintf (AcpiGbl_OutputFile, Fmt, Args);
++        vfprintf (AcpiGbl_OutputFile, Fmt, Args);
+     }
+ }
+ 

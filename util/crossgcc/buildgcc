@@ -20,8 +20,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 #
 
-CROSSGCC_DATE="August 8th, 2011"
-CROSSGCC_VERSION="1.04"
+CROSSGCC_DATE="October 10th, 2011"
+CROSSGCC_VERSION="1.05"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -29,17 +29,18 @@ TARGETARCH=i386-elf
 DESTDIR=
 
 # version numbers
-GMP_VERSION=5.0.1
-MPFR_VERSION=3.0.0
-MPC_VERSION=0.8.2
+GMP_VERSION=5.0.2
+MPFR_VERSION=3.1.0
+MPC_VERSION=0.9
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.5.2
-BINUTILS_VERSION=2.20.1
+GCC_VERSION=4.6.1
+GCC_AUTOCONF_VERSION=2.64
+BINUTILS_VERSION=2.21.1
 GDB_VERSION=7.3.1
 W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
-IASL_VERSION=20110623
+IASL_VERSION=20110922
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -146,7 +147,7 @@ GNU General Public License for more details.
 EOF
 }
 
-printf "${blue}Welcome to the ${red}coresystems${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
+printf "${blue}Welcome to the ${red}coreboot${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
 
 # Look if we have getopt. If not, build it.
 export PATH=$PATH:.
@@ -198,14 +199,12 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
 fi
 
-if [ ${GCC_VERSION} = "4.5.0" -o ${GCC_VERSION} = "4.6.0" ]; then
-  # coreboot does not like the GOLD linker
-  # USE_GOLD="--enable-gold"
-  USE_GOLD=""
-  GCC_OPTIONS="--enable-lto"
-fi
+# coreboot does not like the GOLD linker
+# USE_GOLD="--enable-gold"
+USE_GOLD=""
+GCC_OPTIONS="--enable-lto"
 
-if [ ${GCC_VERSION} = "4.6.0" ]; then
+if [ ${GCC_VERSION} = "4.6.2" ]; then
   if [ ! -r tarballs/gcc-core-${GCC_VERSION}.tar.bz2 ]; then
     printf "Pre-Release GCC ${GCC_VERSION}, checking out subversion trunk\n"
     mkdir -p tarballs/.tmp
@@ -273,6 +272,7 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* $TARGETDIR/i386-mingw32/sys-include
 fi
 
+CC=cc
 if [ `uname` = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 
@@ -286,13 +286,14 @@ if [ `uname` = "Darwin" ]; then
 	else
 		OPTIONS="ABI=32"
 	fi
-	# old check:
-	#OPTIONS="ABI=32"
-	#touch .architecture_check.c
-	#gcc .architecture_check.c -c -o .architecture_check.o
-	#ARCH=`file .architecture_check.o |cut -f5 -d\ `
-	#test  "$ARCH" = "x86_64" && OPTIONS="ABI=64"
-	#rm .architecture_check.c .architecture_check.o
+
+	# In Xcode 4 the default compiler was switched to gcc-llvm.
+	# However, this compiler fails to compile gcc 4.6.x. As a
+	# workaround it's possible to compile gcc with gcc-4.2 or
+	# clang.
+	if $CC -v 2>&1 | grep -q LLVM; then
+		CC=clang
+	fi
 fi
 
 mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc
@@ -321,8 +322,10 @@ fi
 #	ln -s $DESTDIR$TARGETDIR $TARGETDIR
 #fi
 
-# Now set CFLAGS to match GMP CFLAGS.
-HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2`
+# Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
+# as GCC 4.6.x fails if it's there.
+HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
+	    sed s,-pedantic,,`
 
 if [ -f build-mpfr/.success ]; then
 	printf "Skipping MPFR as it is already built\n"
@@ -393,6 +396,12 @@ if [ -f build-binutils/.success ]; then
 else
 printf "Building binutils ${BINUTILS_VERSION} ... "
 (
+	# What a pain: binutils don't come with configure
+	# script anymore. Create it:
+	cd binutils-${BINUTILS_VERSION}/
+	autoconf
+	cd ..
+	# Now build binutils
 	cd build-binutils
 	rm -f .failed
 	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
@@ -411,6 +420,19 @@ if [ -f build-gcc/.success ]; then
 else
 printf "Building GCC ${GCC_VERSION} ... "
 (
+	# Even worse than binutils: GCC does not come with configure
+	# script anymore, but also enforces an obsolete autoconf version
+	# to create it. This is a poster child of how autotools help make
+	# software portable.
+	cd gcc-${GCC_VERSION}
+	sed '/dnl Ensure exactly this Autoconf version is used/d' \
+		config/override.m4 > config/override.m4.new
+	autoconf_version=`autoconf -V | grep "autoconf" | tr ' ' '\n' | tail -1`
+	sed "s/${GCC_AUTOCONF_VERSION}/${autoconf_version}/g" \
+		config/override.m4.new > config/override.m4
+	autoconf
+	cd ..
+	# Now, finally, we can build gcc:
 	cd build-gcc
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
@@ -419,10 +441,12 @@ printf "Building GCC ${GCC_VERSION} ... "
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
 	# but it does not seem to work properly. At least the host library
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
-	CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" CFLAGS_FOR_BUILD="$HOSTCFLAGS" `readlink -f ../gcc-${GCC_VERSION}/configure` \
+	CC="$CC" CFLAGS_FOR_TARGET="-O2" CFLAGS="$HOSTCFLAGS" \
+		CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--disable-libssp --disable-bootstrap --disable-nls \
+		--disable-libquadmath \
 		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \

@@ -213,6 +213,12 @@
  */
 #define SB_GPP_GEN2			TRUE
 
+/**
+ * @def SB_GPP_UNHIDE_PORTS
+ *    TRUE   - ports visable always, even port empty
+ *    FALSE  - ports invisable if port empty
+ */
+#define SB_GPP_UNHIDE_PORTS		FALSE
 
 /**
  * @def   GEC_CONFIG

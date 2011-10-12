@@ -27,6 +27,7 @@
 #include <arch/interrupt.h>
 #include <cbfs.h>
 #include <delay.h>
+#include <pc80/i8259.h>
 #include "x86.h"
 #include "vbe.h"
 #include "../../src/lib/jpeg.h"
@@ -70,14 +71,9 @@ static int intXX_exception_handler(struct eregs *regs)
 {
 	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n",
 			regs->vector);
-#if 0
-	// Odd: The i945GM VGA oprom chokes on a pushl %eax and will
-	// die with an exception #6 if we run the coreboot exception 
-	// handler. Just continue, as it executes fine.
 	x86_exception(regs);	// Call coreboot exception handler
-#endif
 
-	return 0;		// Never returns?
+	return 0;		// Never really returns
 }
 
 static int intXX_unknown_handler(struct eregs *regs)
@@ -186,17 +182,20 @@ static void setup_realmode_idt(void)
 #if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 static u8 vbe_get_mode_info(vbe_mode_info_t * mode_info)
 {
+	printk(BIOS_DEBUG, "Getting information about VESA mode %04x\n",
+		mode_info->video_mode);
 	char *buffer = (char *)&__buffer;
 	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
 	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
 	realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
 			mode_info->video_mode, 0x0000, buffer_seg, buffer_adr);
-	memcpy(mode_info, buffer, sizeof(vbe_mode_info_t));
+	memcpy(mode_info->mode_info_block, buffer, sizeof(vbe_mode_info_t));
 	return 0;
 }
 
 static u8 vbe_set_mode(vbe_mode_info_t * mode_info)
 {
+	printk(BIOS_DEBUG, "Setting VESA mode %04x\n", mode_info->video_mode);
 	// request linear framebuffer mode
 	mode_info->video_mode |= (1 << 14);
 	// request clearing of framebuffer
@@ -216,9 +215,8 @@ void vbe_set_graphics(void)
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
 	vbe_get_mode_info(&mode_info);
 	unsigned char *framebuffer =
-		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
+		(unsigned char *)mode_info.vesa.phys_base_ptr;
 	printk(BIOS_DEBUG, "framebuffer: %p\n", framebuffer);
-	printk(BIOS_DEBUG, "framebuffer: %x\n", mode_info.vesa.phys_base_ptr);
 	vbe_set_mode(&mode_info);
 #if CONFIG_BOOTSPLASH
 	struct jpeg_decdata *decdata;
@@ -242,8 +240,7 @@ void vbe_textmode_console(void)
 
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
-	framebuffer->physical_address =
-				le32_to_cpu(mode_info.vesa.phys_base_ptr);
+	framebuffer->physical_address = mode_info.vesa.phys_base_ptr;
 
 	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
 	framebuffer->y_resolution = le16_to_cpu(mode_info.vesa.y_resolution);
@@ -268,6 +265,12 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 void run_bios(struct device *dev, unsigned long addr)
 {
 	u32 num_dev = (dev->bus->secondary << 8) | dev->path.pci.devfn;
+
+	/* Setting up required hardware.
+	 * Removing this will cause random illegal instruction exceptions
+	 * in some option roms.
+	 */
+	setup_i8259();
 
 	/* Set up BIOS Data Area */
 	setup_bda();

@@ -247,7 +247,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDD
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
 	@printf "    POST       romstage.inc\n"
-	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $^ > $@.tmp
+	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
+		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
 	mv $@.tmp $@
 endif
 

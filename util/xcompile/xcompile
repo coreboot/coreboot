@@ -79,6 +79,10 @@ CC="${GCCPREFIX}gcc"
 testcc "$CC" "$CFLAGS-Wa,--divide " && CFLAGS="$CFLAGS-Wa,--divide "
 testcc "$CC" "$CFLAGS-fno-stack-protector " && CFLAGS="$CFLAGS-fno-stack-protector "
 testcc "$CC" "$CFLAGS-Wl,--build-id=none " && CFLAGS="$CFLAGS-Wl,--build-id=none "
+# GCC 4.6 is much more picky about unused variables. Turn off it's warnings for
+# now:
+testcc "$CC" "$CFLAGS-Wno-unused-but-set-variable " && \
+	       CFLAGS="$CFLAGS-Wno-unused-but-set-variable "
 
 if which gcc 2>/dev/null >/dev/null; then
 	HOSTCC=gcc

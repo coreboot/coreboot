@@ -364,6 +364,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		pci_ds.device_id = in16le(&pci_ds.device_id);
 		pci_ds.img_length = in16le(&pci_ds.img_length);
 		pci_ds.pci_ds_length = in16le(&pci_ds.pci_ds_length);
+#ifdef DO_THIS_TEST_TWICE
 		if (pci_ds.vendor_id != bios_device.pci_vendor_id) {
 			printf
 			    ("Image has invalid Vendor ID: %04x, expected: %04x\n",
@@ -376,6 +377,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 			     pci_ds.device_id, bios_device.pci_device_id);
 			break;
 		}
+#endif
 		DEBUG_PRINTF("Image Length: %d\n", pci_ds.img_length * 512);
 		DEBUG_PRINTF("Image Code Type: %d\n", pci_ds.code_type);
 		if (pci_ds.code_type == 0) {

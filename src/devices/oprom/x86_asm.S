@@ -66,6 +66,11 @@ __registers = RELOCATED(.)
 	.long 0 /* 16 - ESI */
 	.long 0 /* 20 - EDI */
 
+/* 256 byte buffer, used by int10 */
+	.globl __buffer
+__buffer = RELOCATED(.)
+	.skip 256
+
 	.code32
 	.globl __realmode_call
 __realmode_call = RELOCATED(.)

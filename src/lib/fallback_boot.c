@@ -28,7 +28,7 @@ void set_boot_successful(void)
 
 void boot_successful(void)
 {
-#if CONFIG_BOOTSPLASH && !CONFIG_COREBOOT_KEEP_FRAMEBUFFER
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE && !CONFIG_FRAMEBUFFER_KEEP_VESA_MODE
 	void vbe_textmode_console(void);
 
 	vbe_textmode_console();

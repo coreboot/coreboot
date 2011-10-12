@@ -25,14 +25,19 @@
 #include <arch/registers.h>
 #include <console/console.h>
 #include <arch/interrupt.h>
-
+#include <cbfs.h>
+#include <delay.h>
 #include "x86.h"
+#include "vbe.h"
+#include "../../src/lib/jpeg.h"
 
 void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) __attribute__((regparm(0))) = (void *)&__realmode_call;
+		u32 esi, u32 edi) __attribute__((regparm(0))) =
+						(void *)&__realmode_call;
 
 void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx, 
-		u32 esi, u32 edi) __attribute__((regparm(0))) = (void *)&__realmode_interrupt;
+		u32 esi, u32 edi) __attribute__((regparm(0))) =
+						(void *)&__realmode_interrupt;
 
 static void setup_bda(void)
 {
@@ -107,9 +112,9 @@ static void setup_interrupt_handlers(void)
 		if(!intXX_handler[i])
 		{
 			/* Now set the default functions that are actually
-			 * needed to initialize the option roms. This is very
-			 * slick, as it allows us to implement mainboard specific
-			 * interrupt handlers, such as the int15
+			 * needed to initialize the option roms. This is
+			 * very slick, as it allows us to implement mainboard
+			 * specific interrupt handlers, such as the int15.
 			 */
 			switch (i) {
 			case 0x10:
@@ -178,6 +183,88 @@ static void setup_realmode_idt(void)
 	write_idt_stub((void *)0xffe6e, 0x1a);
 }
 
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+static u8 vbe_get_mode_info(vbe_mode_info_t * mode_info)
+{
+	char *buffer = (char *)&__buffer;
+	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
+	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
+	realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
+			mode_info->video_mode, 0x0000, buffer_seg, buffer_adr);
+	memcpy(mode_info, buffer, sizeof(vbe_mode_info_t));
+	return 0;
+}
+
+static u8 vbe_set_mode(vbe_mode_info_t * mode_info)
+{
+	// request linear framebuffer mode
+	mode_info->video_mode |= (1 << 14);
+	// request clearing of framebuffer
+	mode_info->video_mode &= ~(1 << 15);
+	realmode_interrupt(0x10, VESA_SET_MODE, mode_info->video_mode,
+			0x0000, 0x0000, 0x0000, 0x0000);
+	return 0;
+}
+
+vbe_mode_info_t mode_info;
+
+/* These two functions could probably even be generic between
+ * yabel and x86 native. TBD later.
+ */
+void vbe_set_graphics(void)
+{
+	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
+	vbe_get_mode_info(&mode_info);
+	unsigned char *framebuffer =
+		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
+	printk(BIOS_DEBUG, "framebuffer: %p\n", framebuffer);
+	printk(BIOS_DEBUG, "framebuffer: %x\n", mode_info.vesa.phys_base_ptr);
+	vbe_set_mode(&mode_info);
+#if CONFIG_BOOTSPLASH
+	struct jpeg_decdata *decdata;
+	decdata = malloc(sizeof(*decdata));
+	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg",
+						CBFS_TYPE_BOOTSPLASH);
+	if (!jpeg) {
+		return;
+	}
+	int ret = 0;
+	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
+#endif
+}
+
+void vbe_textmode_console(void)
+{
+	delay(2);
+	realmode_interrupt(0x10, 0x0003, 0x0000, 0x0000,
+				0x0000, 0x0000, 0x0000);
+}
+
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+{
+	framebuffer->physical_address =
+				le32_to_cpu(mode_info.vesa.phys_base_ptr);
+
+	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
+	framebuffer->y_resolution = le16_to_cpu(mode_info.vesa.y_resolution);
+	framebuffer->bytes_per_line =
+				le16_to_cpu(mode_info.vesa.bytes_per_scanline);
+	framebuffer->bits_per_pixel = mode_info.vesa.bits_per_pixel;
+
+	framebuffer->red_mask_pos = mode_info.vesa.red_mask_pos;
+	framebuffer->red_mask_size = mode_info.vesa.red_mask_size;
+
+	framebuffer->green_mask_pos = mode_info.vesa.green_mask_pos;
+	framebuffer->green_mask_size = mode_info.vesa.green_mask_size;
+
+	framebuffer->blue_mask_pos = mode_info.vesa.blue_mask_pos;
+	framebuffer->blue_mask_size = mode_info.vesa.blue_mask_size;
+
+	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
+	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
+}
+#endif
+
 void run_bios(struct device *dev, unsigned long addr)
 {
 	u32 num_dev = (dev->bus->secondary << 8) | dev->path.pci.devfn;
@@ -203,6 +290,10 @@ void run_bios(struct device *dev, unsigned long addr)
 	/* Option ROM entry point is at OPROM start + 3 */
 	realmode_call(addr + 0x0003, num_dev, 0xffff, 0x0000, 0xffff, 0x0, 0x0);
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
+
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+	vbe_set_graphics();
+#endif
 }
 
 #if CONFIG_GEODE_VSA

@@ -148,7 +148,7 @@ static void lb_console(struct lb_header *header)
 
 static void lb_framebuffer(struct lb_header *header)
 {
-#if CONFIG_BOOTSPLASH && CONFIG_COREBOOT_KEEP_FRAMEBUFFER
+#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 
 	struct lb_framebuffer *framebuffer;

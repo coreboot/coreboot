@@ -38,7 +38,7 @@ void run_bios(struct device * dev, unsigned long addr)
 
 	biosemu(vmem, VMEM_SIZE, dev, addr);
 
-#if CONFIG_BOOTSPLASH
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 	vbe_set_graphics();
 #endif
 }

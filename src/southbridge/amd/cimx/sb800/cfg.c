@@ -108,7 +108,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->PORTCONFIG[1].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
 	sb_config->PORTCONFIG[2].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
 	sb_config->PORTCONFIG[3].PortCfg.PortPresent = CIMX_OPTION_ENABLED;
-	sb_config->GppUnhidePorts = TRUE; //visable always, even port empty
+	sb_config->GppUnhidePorts = SB_GPP_UNHIDE_PORTS;
 	sb_config->NbSbGen2 = NB_SB_GEN2;
 	sb_config->GppGen2 = SB_GPP_GEN2;
 

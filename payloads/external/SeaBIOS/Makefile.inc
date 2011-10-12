@@ -1,7 +1,7 @@
 
 
 TAG-$(CONFIG_SEABIOS_MASTER)=origin/master
-TAG-$(CONFIG_SEABIOS_STABLE)=1efb10b9ea30c45a8c9c6230234fefa10d2886ed
+TAG-$(CONFIG_SEABIOS_STABLE)=e66fb31eac3e6be6aaab548c229af9bb1ba55c33
 
 unexport KCONFIG_AUTOCONFIG
 
@@ -24,6 +24,7 @@ config: checkout
 	$(MAKE) -C seabios defconfig
 	echo "CONFIG_COREBOOT=y" >> seabios/.config
 	echo "CONFIG_DEBUG_SERIAL=y" >> seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_PORT=0x3f8" >> seabios/.config
 	echo "CONFIG_COREBOOT_FLASH=y" >> seabios/.config
 	echo "CONFIG_LZMA=y" >> seabios/.config
 	echo "CONFIG_FLASH_FLOPPY=y" >> seabios/.config

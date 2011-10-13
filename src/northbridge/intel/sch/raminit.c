@@ -70,6 +70,9 @@ static u32 detect_softstrap_base(void)
 	case 4:
 		base_addr = 0xFFFE0000;
 		break;
+	default:
+		base_addr = 0;
+		die("No valid softstrap base found.\n");
 	}
 	return base_addr;
 }

@@ -132,12 +132,14 @@ void rtc_init(int invalid)
 	checksum_invalid = !rtc_checksum_valid(PC_CKS_RANGE_START,
 			PC_CKS_RANGE_END,PC_CKS_LOC);
 
+#define CLEAR_CMOS 0
 	if (invalid || cmos_invalid || checksum_invalid) {
-		printk(BIOS_WARNING, "RTC:%s%s%s zeroing cmos\n",
+		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
 			invalid?" Clear requested":"",
 			cmos_invalid?" Power Problem":"",
-			checksum_invalid?" Checksum invalid":"");
-#if 0
+			checksum_invalid?" Checksum invalid":"",
+			CLEAR_CMOS?" zeroing cmos":"");
+#if CLEAR_CMOS
 		cmos_write(0, 0x01);
 		cmos_write(0, 0x03);
 		cmos_write(0, 0x05);
@@ -169,7 +171,7 @@ void rtc_init(int invalid)
 	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
 			LB_CKS_RANGE_END,LB_CKS_LOC);
 	if(checksum_invalid)
-		printk(BIOS_DEBUG, "Invalid CMOS LB checksum\n");
+		printk(BIOS_DEBUG, "RTC: coreboot checksum invalid\n");
 
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
@@ -229,7 +231,8 @@ int get_option(void *dest, const char *name)
 	/* find the requested entry record */
 	ct=cbfs_find_file("cmos_layout.bin", CBFS_COMPONENT_CMOS_LAYOUT);
 	if (!ct) {
-		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
+		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
+						"Options are disabled\n");
 		return(-2);
 	}
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);

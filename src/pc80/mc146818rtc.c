@@ -98,7 +98,6 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 	for(i = range_start; i <= range_end; i++) {
 		sum += cmos_read(i);
 	}
-	sum = ~(sum & 0x0ffff);
 	cmos_write(((sum >> 8) & 0x0ff), cks_loc);
 	cmos_write(((sum >> 0) & 0x0ff), cks_loc+1);
 }

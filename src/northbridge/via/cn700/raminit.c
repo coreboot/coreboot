@@ -179,12 +179,20 @@ static void sdram_set_size(const struct mem_controller *ctrl)
 	case 0x01:
 		result = 0x10;	/* 1GB */
 		break;
+	default:
+		result = 0;
 	}
 
-	if (result == 0xff)
+	switch (result) {
+	case 0xff:
 		die("DRAM module size too big, not supported by CN700\n");
-	else
+		break;
+	case 0:
+		die("DRAM module has unknown density\n");
+		break;
+	default:
 		printk(BIOS_DEBUG, "Found %iMB of ram\n", result * ranks * 64);
+	}
 
 	pci_write_config8(ctrl->d0f3, 0x40, result);
 	pci_write_config8(ctrl->d0f3, 0x48, 0x00);

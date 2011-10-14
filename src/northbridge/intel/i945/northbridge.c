@@ -29,6 +29,7 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
+#include <arch/acpi.h>
 #include "chip.h"
 #include "i945.h"
 
@@ -252,8 +253,6 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-extern u8 acpi_slp_type;
-
 static void northbridge_init(struct device *dev)
 {
 	switch (pci_read_config32(dev, SKPAD)) {

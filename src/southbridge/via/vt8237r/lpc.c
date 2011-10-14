@@ -32,6 +32,7 @@
 #include <pc80/keyboard.h>
 #include <pc80/i8259.h>
 #include <stdlib.h>
+#include <arch/acpi.h>
 #include "vt8237r.h"
 #include "chip.h"
 
@@ -146,9 +147,6 @@ static void pci_routing_fixup(struct device *dev)
  * Set up the power management capabilities directly into ACPI mode.
  * This avoids having to handle any System Management Interrupts (SMIs).
  */
-
-extern u8 acpi_slp_type;
-
 
 static void setup_pm(device_t dev)
 {

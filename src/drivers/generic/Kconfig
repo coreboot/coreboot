@@ -1,2 +1,3 @@
 source src/drivers/generic/debug/Kconfig
+source src/drivers/generic/generic/Kconfig
 

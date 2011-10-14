@@ -134,6 +134,7 @@ void smp_write_processor(struct mp_config_table *mc,
 void smp_write_processors(struct mp_config_table *mc)
 {
 	int boot_apic_id;
+	int order_id;
 	unsigned apic_version;
 	unsigned cpu_features;
 	unsigned cpu_feature_flags;
@@ -145,6 +146,8 @@ void smp_write_processors(struct mp_config_table *mc)
 	result = cpuid(1);
 	cpu_features = result.eax;
 	cpu_feature_flags = result.edx;
+	/* order the output of the cpus to fix a bug in kernel 2.6.11 */
+	for(order_id = 0;order_id <256; order_id++) {
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		unsigned long cpu_flag;
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
@@ -159,10 +162,14 @@ void smp_write_processors(struct mp_config_table *mc)
 		if (boot_apic_id == cpu->path.apic.apic_id) {
 			cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 		}
-		smp_write_processor(mc,
-			cpu->path.apic.apic_id, apic_version,
-			cpu_flag, cpu_features, cpu_feature_flags
-		);
+		if(cpu->path.apic.apic_id == order_id) {
+			smp_write_processor(mc,
+				cpu->path.apic.apic_id, apic_version,
+				cpu_flag, cpu_features, cpu_feature_flags
+			);
+			break;
+		}
+            }
 	}
 }
 

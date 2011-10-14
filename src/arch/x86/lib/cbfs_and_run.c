@@ -21,7 +21,7 @@
 #include <cbfs.h>
 #include <arch/stages.h>
 
-void cbfs_and_run_core(const char *filename, unsigned ebp)
+static void cbfs_and_run_core(const char *filename, unsigned ebp)
 {
 	u8 *dst;
 

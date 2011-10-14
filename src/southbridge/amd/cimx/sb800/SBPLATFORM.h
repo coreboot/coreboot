@@ -155,4 +155,7 @@ typedef union _PCI_ADDR {
 #define cimEhciTrafficHandingDefault    FALSE
 #define cimFusionMsgCMultiCoreDefault   FALSE
 #define cimFusionMsgCStageDefault       FALSE
+
+#include "vendorcode/amd/cimx/sb800/AMDSBLIB.h"
+
 #endif // _AMD_SBPLATFORM_H_

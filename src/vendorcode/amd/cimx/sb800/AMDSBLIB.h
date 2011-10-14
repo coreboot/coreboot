@@ -43,6 +43,8 @@
  *
  */
 
+#ifndef __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
+#define __VENDORCODE_AMD_CIMX_SB800_AMDSBLIB_H__
 
 //AMDSBLIB Routines
 
@@ -116,3 +118,5 @@ void WriteIo32(IN unsigned short Address, IN unsigned int Data);
 //void CpuidRead(IN unsigned int CpuidFcnAddress, OUT CPUID_DATA *Value);
 void CpuidRead(unsigned int CpuidFcnAddress, CPUID_DATA *Value);
 unsigned char ReadNumberOfCpuCores(void);
+
+#endif

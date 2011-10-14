@@ -11,54 +11,6 @@
 #define HT_INIT_CONTROL 0x6c
 #define HTIC_BIOSR_Detect  (1<<5)
 
-/* If we assume a symmetric processor configuration we can
- * get all of the information we need to write the processor
- * entry from the bootstrap processor.
- * Plus I don't think linux really even cares.
- * Having the proper apicid's in the table so the non-bootstrap
- *  processors can be woken up should be enough.  Linux-2.6.11 work-around.
- */
-static void smp_write_processors_inorder(struct mp_config_table *mc)
-{
-        int boot_apic_id;
-	int order_id;
-        unsigned apic_version;
-        unsigned cpu_features;
-        unsigned cpu_feature_flags;
-        struct cpuid_result result;
-        device_t cpu;
-
-        boot_apic_id = lapicid();
-        apic_version = lapic_read(LAPIC_LVR) & 0xff;
-        result = cpuid(1);
-        cpu_features = result.eax;
-        cpu_feature_flags = result.edx;
-	/* order the output of the cpus to fix a bug in kernel 6 11 */
-	for(order_id = 0;order_id <256; order_id++) {
-            for(cpu = all_devices; cpu; cpu = cpu->next) {
-                unsigned long cpu_flag;
-                if ((cpu->path.type != DEVICE_PATH_APIC) ||
-                        (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-                {
-                        continue;
-                }
-                if (!cpu->enabled) {
-                        continue;
-                }
-                cpu_flag = MPC_CPU_ENABLED;
-                if (boot_apic_id == cpu->path.apic.apic_id) {
-                        cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
-                }
-		if(cpu->path.apic.apic_id == order_id) {
-                    smp_write_processor(mc,
-                        cpu->path.apic.apic_id, apic_version,
-                        cpu_flag, cpu_features, cpu_feature_flags);
-		    break;
-		}
-            }
-	}
-}
-
 static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
 	device_t dev;
@@ -125,7 +77,7 @@ static void *smp_write_config_table(void *v)
 
 	mptable_init(mc, LAPIC_ADDR);
 
-	smp_write_processors_inorder(mc);
+	smp_write_processors(mc);
 
 	apicid_base = max_apicid() + 1;
 	apicid_8111 = apicid_base;

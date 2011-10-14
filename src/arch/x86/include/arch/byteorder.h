@@ -3,12 +3,17 @@
 
 #define __LITTLE_ENDIAN 1234
 
+#include <stdint.h>
 #include <swab.h>
 
-#define cpu_to_le32(x) ((unsigned int)(x))
-#define le32_to_cpu(x) ((unsigned int)(x))
-#define cpu_to_le16(x) ((unsigned short)(x))
-#define le16_to_cpu(x) ((unsigned short)(x))
+#define cpu_to_le64(x) ((uint64_t)(x))
+#define le64_to_cpu(x) ((uint64_t)(x))
+#define cpu_to_le32(x) ((uint32_t)(x))
+#define le32_to_cpu(x) ((uint32_t)(x))
+#define cpu_to_le16(x) ((uint16_t)(x))
+#define le16_to_cpu(x) ((uint16_t)(x))
+#define cpu_to_be64(x) swab64(x)
+#define be64_to_cpu(x) swab64(x)
 #define cpu_to_be32(x) swab32((x))
 #define be32_to_cpu(x) swab32((x))
 #define cpu_to_be16(x) swab16((x))

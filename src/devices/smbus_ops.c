@@ -124,7 +124,7 @@ int smbus_process_call(device_t dev, u8 cmd, u16 data)
 	return ops_smbus_bus(get_pbus_smbus(dev))->process_call(dev, cmd, data);
 }
 
-int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
+int smbus_block_read(device_t dev, u8 cmd, u8 *bytes, u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd,
 							      bytes, buffer);

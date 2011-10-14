@@ -485,7 +485,7 @@ performance:
 
 static void GeodeLinkPriority(void)
 {
-	msr_t msr;
+	msr_t msr = { 0, 0 };
 	struct msrinit *prio = GeodeLinkPriorityTable;
 	int i;
 
@@ -526,7 +526,7 @@ static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
 	/* ok this is whacky bit translation time. */
 	int bit;
 	uint8_t shadowByte;
-	msr_t msr;
+	msr_t msr = { 0, 0 };
 	shadowByte = (uint8_t) (shadowLo >> 16);
 
 	/* load up D000 settings in edx. */

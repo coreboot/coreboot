@@ -39,7 +39,6 @@ SECTIONS
 		*(.rodata);
 		*(.rodata.*);
 		*(.rom.data.*);
-		*(.eh_frame);
 		. = ALIGN(16);
 		_erom = .;
 	}
@@ -49,6 +48,7 @@ SECTIONS
 		*(.note)
 		*(.comment.*)
 		*(.note.*)
+		*(.eh_frame);
 	}
 
 	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0 || CONFIG_AMD_AGESA, "Do not use global variables in romstage");

@@ -66,6 +66,29 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
+static int lsmbus_block_read(device_t dev, uint8_t cmd, u8 bytes, u8 *buffer)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.i2c.device;
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
+
+	return do_smbus_block_read(res->base, device, cmd, bytes, buffer);
+}
+
+static int lsmbus_block_write(device_t dev, uint8_t cmd, u8 bytes, const u8 *buffer)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.i2c.device;
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
+
+	return do_smbus_block_write(res->base, device, cmd, bytes, buffer);
+}
+
+
 #if CONFIG_GENERATE_ACPI_TABLES == 1
 unsigned pm_base;
 #endif
@@ -191,6 +214,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.send_byte  = lsmbus_send_byte,
 	.read_byte  = lsmbus_read_byte,
 	.write_byte = lsmbus_write_byte,
+	.block_read = lsmbus_block_read,
+	.block_write= lsmbus_block_write,
 };
 
 static struct pci_operations lops_pci = {

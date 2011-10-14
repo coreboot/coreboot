@@ -190,7 +190,7 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 {
 	/* NB_InitGFXStraps */
 	u32 MMIOBase, apc04, apc18, apc24, romstrap2;
-	msr_t pcie_mmio_save;
+	msr_t pcie_mmio_save = { 0, 0 };
 	volatile u32 * strap;
 
 	// disable processor pcie mmio, if enabled

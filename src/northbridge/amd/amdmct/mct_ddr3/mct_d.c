@@ -1353,7 +1353,7 @@ static void SPDGetTCL_D(struct MCTStatStruc *pMCTstat,
 	u16 tCKproposed16x;
 	u8 CLactual, CLdesired, CLT_Fail;
 
-	u8 smbaddr, byte, bytex;
+	u8 smbaddr, byte = 0, bytex = 0;
 
 	CASLatLow = 0xFF;
 	CASLatHigh = 0xFF;
@@ -2768,7 +2768,7 @@ static void Get_DqsRcvEnGross_Diff(struct DCTStatStruc *pDCTstat,
 static void Get_WrDatGross_Diff(struct DCTStatStruc *pDCTstat,
 					u8 dct, u32 dev, u32 index_reg)
 {
-	u8 Smallest, Largest;
+	u8 Smallest = 0, Largest = 0;
 	u32 val;
 	u8 byte, bytex;
 

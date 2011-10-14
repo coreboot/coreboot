@@ -849,7 +849,7 @@ static u16 CompareDQSTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStat
 	u32 value;
 	u8 j;
 	u32 value_test;
-	u32 value_r, value_r_test;
+	u32 value_r = 0, value_r_test = 0;
 	u8 pattern, channel, BeatCnt;
 	struct DCTStatStruc *ptrAddr;
 

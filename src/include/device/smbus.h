@@ -17,7 +17,7 @@ struct smbus_bus_operations {
 	int (*read_word)   (device_t dev, u8 addr);
 	int (*write_word)  (device_t dev, u8 addr, u16 value);
 	int (*process_call)(device_t dev, u8 cmd, u16 data);
-	int (*block_read)  (device_t dev, u8 cmd, u8 bytes, u8 *buffer);
+	int (*block_read)  (device_t dev, u8 cmd, u8 *bytes, u8 *buffer);
 	int (*block_write) (device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
 };
 
@@ -44,7 +44,7 @@ int smbus_write_byte(device_t dev, u8 addr, u8 val);
 int smbus_read_word(device_t dev, u8 addr);
 int smbus_write_word(device_t dev, u8 addr, u16 val);
 int smbus_process_call(device_t dev, u8 cmd, u16 data);
-int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer);
+int smbus_block_read(device_t dev, u8 cmd, u8 *bytes, u8 *buffer);
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
 
 #endif /* DEVICE_SMBUS_H */

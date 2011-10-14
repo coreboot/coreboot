@@ -81,8 +81,10 @@ static int cbfs_add(int argc, char **argv)
 		base = strtoul(argv[6], NULL, 0);
 	}
 	cbfsfile = create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
-	if (add_file_to_cbfs(cbfsfile, filesize, base))
+	if (add_file_to_cbfs(cbfsfile, filesize, base)) {
+		printf("Adding file '%s' failed.\n", filename);
 		return 1;
+	}
 	if (writerom(romname, rom, romsize))
 		return 1;
 	return 0;
@@ -130,8 +132,10 @@ static int cbfs_add_payload(int argc, char **argv)
 	cbfsfile =
 	    create_cbfs_file(cbfsname, payload, &filesize,
 			     CBFS_COMPONENT_PAYLOAD, &base);
-	if (add_file_to_cbfs(cbfsfile, filesize, base))
+	if (add_file_to_cbfs(cbfsfile, filesize, base)) {
+		printf("Adding payload '%s' failed.\n", filename);
 		return 1;
+	}
 	if (writerom(romname, rom, romsize))
 		return 1;
 	return 0;
@@ -180,8 +184,10 @@ static int cbfs_add_stage(int argc, char **argv)
 	    create_cbfs_file(cbfsname, stage, &filesize,
 			     CBFS_COMPONENT_STAGE, &base);
 
-	if (add_file_to_cbfs(cbfsfile, filesize, base))
+	if (add_file_to_cbfs(cbfsfile, filesize, base)) {
+		printf("Adding stage '%s' failed.\n", filename);
 		return 1;
+	}
 	if (writerom(romname, rom, romsize))
 		return 1;
 	return 0;

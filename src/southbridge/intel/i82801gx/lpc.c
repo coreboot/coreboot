@@ -27,6 +27,7 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include "i82801gx.h"
 #include <cpu/x86/smm.h>
@@ -169,8 +170,6 @@ static void i82801gx_gpi_routing(device_t dev)
 
 	pci_write_config32(dev, 0xb8, reg32);
 }
-
-extern u8 acpi_slp_type;
 
 static void i82801gx_power_options(device_t dev)
 {

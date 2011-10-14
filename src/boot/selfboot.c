@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <arch/byteorder.h>
 #include <console/console.h>
 #include <fallback.h>
 #include <boot/elf.h>
@@ -29,13 +30,6 @@
 #include <string.h>
 #include <cbfs.h>
 #include <lib.h>
-
-#if !CONFIG_BIG_ENDIAN
-#define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
-		((x&0xff0000) >> 8) | ((x&0xff000000) >> 24) )
-#else
-#define ntohl(x) (x)
-#endif
 
 /* Maximum physical address we can use for the coreboot bounce buffer.
  */

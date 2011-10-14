@@ -305,8 +305,8 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	//let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
-	unsigned real_last_unitid;
-	uint8_t real_last_pos;
+	unsigned real_last_unitid = 0;
+	uint8_t real_last_pos = 0;
 	int ht_dev_num = 0;
 	uint8_t end_used = 0;
 #endif

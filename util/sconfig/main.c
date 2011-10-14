@@ -131,6 +131,13 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 
 	struct stat st;
 	char *chip_h = malloc(strlen(path)+12);
+	sprintf(chip_h, "src/%s", path);
+	if ((stat(chip_h, &st) == -1) && (errno == ENOENT)) {
+		fprintf(stderr, "ERROR: Chip component %s does not exist.\n",
+				path);
+		exit(1);
+	}
+
 	sprintf(chip_h, "src/%s/chip.h", path);
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
 		new_chip->chiph_exists = 0;

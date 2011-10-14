@@ -62,7 +62,7 @@ static void *smp_write_config_table(void *v)
 #if CONFIG_MAX_CPUS >= 16
 	apicid_sp5100 = 0x0;
 #else
-	apicid_sp5100 = CONFIG_MAX_CPUS + 1
+	apicid_sp5100 = CONFIG_MAX_CPUS + 1;
 #endif
 	apicid_sr5650 = apicid_sp5100 + 1;
 

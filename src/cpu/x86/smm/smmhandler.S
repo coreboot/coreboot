@@ -83,13 +83,15 @@ smm_handler_start:
 	andl    $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
 	orl     $0x60000001, %eax /* CD, NW, PE = 1 */
 	movl    %eax, %cr0
-	wbinvd
 
 	/* Enable protected mode */
 	data32  ljmp    $0x08, $1f
 
 .code32
 1:
+	/* flush the cache after disabling it */
+	wbinvd
+
 	/* Use flat data segment */
 	movw    $0x10, %ax
 	movw    %ax, %ds

@@ -38,6 +38,7 @@
 
 static void mainboard_enable(device_t dev)
 {
+	struct southbridge_intel_i82801gx_config *config;
 	device_t dev0, idedev;
 	u8 defaults_loaded = 0;
 
@@ -50,8 +51,14 @@ static void mainboard_enable(device_t dev)
 		ec_write(0x0c, 0xc7);
 
 	idedev = dev_find_slot(0, PCI_DEVFN(0x1f,1));
-	if (idedev && idedev->chip_info && h8_ultrabay_device_present()) {
-		struct southbridge_intel_i82801gx_config *config = idedev->chip_info;
+
+	if (!(inb(DEFAULT_GPIOBASE + 0x0c) & 0x40)) {
+		/* legacy I/O connected */
+		pmh7_ultrabay_power_enable(1);
+		ec_write(0x0c, 0x84);
+	} else if (idedev && idedev->chip_info &&
+		   h8_ultrabay_device_present()) {
+		config = idedev->chip_info;
 		config->ide_enable_primary = 1;
 		pmh7_ultrabay_power_enable(1);
 		ec_write(0x0c, 0x84);

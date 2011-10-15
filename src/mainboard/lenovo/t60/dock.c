@@ -28,7 +28,10 @@
 #include "dock.h"
 #include "superio/nsc/pc87384/pc87384.h"
 #include "ec/acpi/ec.h"
+#include "ec/lenovo/pmh7/pmh7.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
+
+#define DLPC_CONTROL 0x164c
 
 static void dlpc_write_register(int reg, int value)
 {
@@ -102,11 +105,14 @@ int dlpc_init(void)
 
 	/* Select DLPC module */
 	dlpc_write_register(0x07, 0x19);
-	/* DLPC Base Address 0x164c */
-	dlpc_write_register(0x60, 0x16);
-	dlpc_write_register(0x61, 0x4c);
+	/* DLPC Base Address */
+	dlpc_write_register(0x60, (DLPC_CONTROL >> 8) & 0xff);
+	dlpc_write_register(0x61, DLPC_CONTROL & 0xff);
 	/* Activate DLPC */
 	dlpc_write_register(0x30, 0x01);
+
+	/* Reset docking state */
+	outb(0x00, DLPC_CONTROL);
 
 	dlpc_gpio_init();
 	return 0;
@@ -127,7 +133,7 @@ static int dock_superio_init(void)
 	/* set GPIO pins to Serial/Parallel Port
 	 * functions
 	 */
-	dock_write_register(0x22, 0xeb);
+	dock_write_register(0x22, 0xa9);
 
 	dock_write_register(0x07, PC87384_GPIO);
 	dock_write_register(0x60, 0x16);
@@ -179,16 +185,16 @@ int dock_connect(void)
 {
 	int timeout = 1000;
 
-	outb(0x07, 0x164c);
+	outb(0x07, DLPC_CONTROL);
 
 	timeout = 1000;
 
-	while(!(inb(0x164c) & 8) && timeout--)
+	while(!(inb(DLPC_CONTROL) & 8) && timeout--)
 		udelay(1000);
 
 	if (!timeout) {
 		/* docking failed, disable DLPC switch */
-		outb(0x00, 0x164c);
+		outb(0x00, DLPC_CONTROL);
 		dlpc_write_register(0x30, 0x00);
 		return 1;
 	}
@@ -206,14 +212,25 @@ int dock_connect(void)
 void dock_disconnect(void)
 {
 	/* disconnect LPC bus */
-	outb(0x00, 0x164c);
+	outb(0x00, DLPC_CONTROL);
 	/* Assert PLTRST and DLPCPD */
 	outb(0xfc, 0x1680);
 }
 
 int dock_present(void)
 {
-	outb(0x61, 0x15ec);
-	return inb(0x15ee) & 1;
+	return pmh7_register_read(0x61) & 1;
 }
 
+int legacy_io_present(void)
+{
+	return !(inb(DEFAULT_GPIOBASE + 0x0c) & 0x40);
+}
+
+void legacy_io_init(void)
+{
+	/* Enable Power for Ultrabay slot */
+	pmh7_ultrabay_power_enable(1);
+	udelay(100000);
+	dock_superio_init();
+}

@@ -210,7 +210,7 @@ static void early_ich7_init(void)
 void main(unsigned long bist)
 {
 	u32 reg32;
-	int boot_mode = 0;
+	int boot_mode = 0, dock_err;
 	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x52, 0x51, 0x53 };
 
 	if (bist == 0)
@@ -223,15 +223,21 @@ void main(unsigned long bist)
 
 	ich7_enable_lpc();
 
+	/* We want early GPIO setup, to be able to detect legacy I/O module */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
+	/* Enable GPIOs */
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);
+	setup_ich7_gpios();
 
-	/* dock_init initializes the DLPC switch on
-	 *  thinpad side, so this is required even
-	 *  if we're undocked.
-	 */
-	if (!dlpc_init() && dock_present()) {
+	dock_err = dlpc_init();
+
+	/* We prefer Legacy I/O module over docking */
+	if (legacy_io_present()) {
+		legacy_io_init();
+		early_superio_config();
+	} else if (!dock_err && dock_present()) {
 		dock_connect();
 		early_superio_config();
-		/* Set up the console */
 	}
 
 #if CONFIG_USBDEBUG
@@ -239,6 +245,7 @@ void main(unsigned long bist)
 	early_usbdebug_init();
 #endif
 
+	/* Setup the console */
 	console_init();
 
 	/* Halt if there was a built in self test failure */

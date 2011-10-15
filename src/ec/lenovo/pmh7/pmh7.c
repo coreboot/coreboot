@@ -91,6 +91,8 @@ void pmh7_register_write(int reg, int val)
 	outb(val, EC_LENOVO_PMH7_DATA);
 }
 
+#ifndef __PRE_RAM__
+#ifndef __SMM__
 static void enable_dev(device_t dev)
 {
 	struct ec_lenovo_pmh7_config *conf = dev->chip_info;
@@ -115,3 +117,5 @@ struct chip_operations ec_lenovo_pmh7_ops = {
 	CHIP_NAME("Lenovo Power Management Hardware Hub 7")
 	.enable_dev = enable_dev,
 };
+#endif
+#endif

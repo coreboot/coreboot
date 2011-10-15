@@ -75,7 +75,13 @@ int mainboard_io_trap_handler(int smif)
 
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
-		dlpc_init();
+		/* If there's an legacy I/O module present, we're not
+		 * allowed to connect the Docking LPC Bus, as both Super I/O
+		 * chips are using 0x2e as base address.
+		 */
+		if (legacy_io_present())
+			break;
+
 		if (!dock_connect()) {
 			/* set dock LED to indicate status */
 			ec_write(0x0c, 0x08);

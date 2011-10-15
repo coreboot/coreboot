@@ -28,6 +28,7 @@
 #include "dock.h"
 #include "superio/nsc/pc87384/pc87384.h"
 #include "ec/acpi/ec.h"
+#include "ec/lenovo/pmh7/pmh7.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
 
 static void dlpc_write_register(int reg, int value)
@@ -108,6 +109,9 @@ int dlpc_init(void)
 	/* Activate DLPC */
 	dlpc_write_register(0x30, 0x01);
 
+	/* Reset docking state */
+	outb(0x00, 0x164c);
+
 	dlpc_gpio_init();
 	return 0;
 }
@@ -127,7 +131,7 @@ static int dock_superio_init(void)
 	/* set GPIO pins to Serial/Parallel Port
 	 * functions
 	 */
-	dock_write_register(0x22, 0xeb);
+	dock_write_register(0x22, 0xa9);
 
 	dock_write_register(0x07, PC87384_GPIO);
 	dock_write_register(0x60, 0x16);
@@ -217,3 +221,27 @@ int dock_present(void)
 	return inb(0x15ee) & 1;
 }
 
+static void pmh7_write(int reg, u8 val)
+{
+	outb(reg, EC_LENOVO_PMH7_ADDR);
+	outb(val, EC_LENOVO_PMH7_DATA);
+}
+
+static u8 pmh7_read(int reg)
+{
+	outb(reg, EC_LENOVO_PMH7_ADDR);
+	return inb(EC_LENOVO_PMH7_DATA);
+}
+
+int legacy_io_present(void)
+{
+	return !(inb(DEFAULT_GPIOBASE + 0x0c) & 0x40);
+}
+
+void legacy_io_init(void)
+{
+	/* Enable Power for Ultrabay slot */
+	pmh7_write(0x62, pmh7_read(0x62) & ~0x01);
+	udelay(100000);
+	dock_superio_init();
+}

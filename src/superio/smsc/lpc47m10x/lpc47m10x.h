@@ -30,7 +30,7 @@
 #define LPC47M10X2_KBC              7   /* Keyboard & Mouse */
 #define LPC47M10X2_GAME             9   /* GAME */
 #define LPC47M10X2_PME             10   /* PME  reg*/
-#define LPC47M10X2_MPU             10   /* MPE -- who knows --   reg*/ // FIXME
+#define LPC47M10X2_MPU             11   /* MPU-401 MIDI */
 
 #define LPC47M10X2_MAX_CONFIG_REGISTER	0x5F
 

@@ -116,7 +116,7 @@ void * cbfs_load_stage(const char *name)
 	printk(BIOS_DEBUG, "Stage: done loading.\n");
 
 	entry = stage->entry;
-	// entry = ntohl((u32) stage->entry);
+	// entry = ntohll(stage->entry);
 
 	return (void *) entry;
 }
@@ -137,7 +137,7 @@ int cbfs_execute_stage(const char *name)
 
 	/* FIXME: This isn't right */
 	printk(BIOS_INFO,  "CBFS: run @ %p\n", (void *) ntohl((u32) stage->entry));
-	return run_address((void *) ntohl((u32) stage->entry));
+	return run_address((void *) (intptr_t)ntohll(stage->entry));
 }
 
 /**

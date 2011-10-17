@@ -349,11 +349,12 @@ static int build_self_segment_list(
 					segment->type == PAYLOAD_SEGMENT_CODE ?  "code" : "data",
 					ntohl(segment->compression));
 			new = malloc(sizeof(*new));
-			new->s_dstaddr = ntohl((u32) segment->load_addr);
+			new->s_dstaddr = ntohll(segment->load_addr);
 			new->s_memsz = ntohl(segment->mem_len);
 			new->compression = ntohl(segment->compression);
 
-			new->s_srcaddr = (u32) ((unsigned char *) first_segment) + ntohl(segment->offset);
+			new->s_srcaddr = (u32) ((unsigned char *)first_segment)
+						+ ntohl(segment->offset);
 			new->s_filesz = ntohl(segment->len);
 			printk(BIOS_DEBUG, "  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
 				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
@@ -366,17 +367,18 @@ static int build_self_segment_list(
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:
-			printk(BIOS_DEBUG, "  BSS 0x%p (%d byte)\n", (void *) ntohl((u32) segment->load_addr),
-				 ntohl(segment->mem_len));
+			printk(BIOS_DEBUG, "  BSS 0x%p (%d byte)\n", (void *)
+					(intptr_t)ntohll(segment->load_addr),
+				 	ntohl(segment->mem_len));
 			new = malloc(sizeof(*new));
 			new->s_filesz = 0;
-			new->s_dstaddr = ntohl((u32) segment->load_addr);
+			new->s_dstaddr = ntohll(segment->load_addr);
 			new->s_memsz = ntohl(segment->mem_len);
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
 			printk(BIOS_DEBUG, "  Entry Point 0x%p\n", (void *) ntohl((u32) segment->load_addr));
-			*entry =  ntohl((u32) segment->load_addr);
+			*entry =  ntohll(segment->load_addr);
 			/* Per definition, a payload always has the entry point
 			 * as last segment. Thus, we use the occurence of the
 			 * entry point as break condition for the loop.
@@ -396,7 +398,7 @@ static int build_self_segment_list(
 
 		// FIXME: Explain what this is
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
-			if (new->s_srcaddr < ntohl((u32) segment->load_addr))
+			if (new->s_srcaddr < ntohll(segment->load_addr))
 				break;
 		}
 

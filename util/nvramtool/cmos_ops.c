@@ -210,7 +210,7 @@ uint16_t cmos_checksum_compute(void)
 	for (i = cmos_checksum_start; i <= cmos_checksum_end; i++)
 		sum += cmos_read_byte(i);
 
-	return ~((uint16_t) (sum & 0xffff));
+	return (uint16_t)(sum & 0xffff);
 }
 
 /****************************************************************************

@@ -68,9 +68,10 @@ static struct device_operations cpu_dev_ops = {
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f22 },
 	{ X86_VENDOR_INTEL, 0x0f24 },
+	{ X86_VENDOR_INTEL, 0x0f25 },
+	{ X86_VENDOR_INTEL, 0x0f26 },
 	{ X86_VENDOR_INTEL, 0x0f27 },
 	{ X86_VENDOR_INTEL, 0x0f29 },
-//	{ X86_VENDOR_INTEL, 0x0f25 }, /* I don't have a microcode update for this cpu */
 	{ 0, 0 },
 };
 

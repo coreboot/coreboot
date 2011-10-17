@@ -18,7 +18,6 @@
 #endif
 
 #include <arch/byteorder.h>
-#define ntohl(x) be32_to_cpu(x)
 
 #include "debug.h"
 

@@ -41,7 +41,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	printk(BIOS_DEBUG, "SMBus controller enabled\n");
+	print_debug("SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	/* Set smbus enable */
@@ -117,9 +117,9 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	/* printk(BIOS_ERR, "smbus_read_byte\n"); */
+	/* print_err("smbus_read_byte\n"); */
 	if (smbus_wait_until_ready() < 0) {
-		printk(BIOS_ERR, "SMBUS not ready (%02x)\n", -2);
+		print_err("SMBUS not ready (-2)\n");
 		return -2;
 	}
 
@@ -145,13 +145,13 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	     SMBUS_IO_BASE + SMBHSTCTL);
 	/* poll for it to start */
 	if (smbus_wait_until_active() < 0) {
-		printk(BIOS_ERR, "SMBUS not active (%02x)\n", -4);
+		print_err("SMBUS not active (-4)\n");
 		return -4;
 	}
 
 	/* poll for transaction completion */
 	if (smbus_wait_until_done() < 0) {
-		printk(BIOS_ERR, "SMBUS not completed (%02x)\n", -3);
+		print_err("SMBUS not completed (-3)\n");
 		return -3;
 	}
 
@@ -161,10 +161,10 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
 
 	if (global_status_register != 2) {
-		//printk(BIOS_SPEW, "%s: no device (%02x, %02x)\n", __func__, device, address);
+		//print_spew("%s: no device (%02x, %02x)\n", __func__, device, address);
 		return -1;
 	}
-	//printk(BIOS_DEBUG, "%s: %02x@%02x = %02x\n", __func__, device, address, byte);
+	//print_debug("%s: %02x@%02x = %02x\n", __func__, device, address, byte);
 	return byte;
 }
 

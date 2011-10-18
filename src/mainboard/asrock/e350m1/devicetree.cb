@@ -90,7 +90,7 @@ chip northbridge/amd/agesa/family14/root_complex
 							end
 							device pnp 2e.8 off end #  GPIO2
 							device pnp 2e.9 off end #  GPIO3
-							device pnp 2e.a off end #  ACPI
+							device pnp 2e.a on end #  ACPI
 							device pnp 2e.b on #  HW Monitor
 								io 0x60 = 0x290
 								irq 0x70 = 5

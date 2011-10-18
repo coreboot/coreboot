@@ -938,3 +938,4 @@ config POWER_BUTTON_IS_OPTIONAL
 	  Internal option that controls ENABLE_POWER_BUTTON visibility.
 
 source src/Kconfig.deprecated_options
+source src/vendorcode/Kconfig

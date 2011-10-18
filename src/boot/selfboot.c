@@ -146,6 +146,11 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 		}
 	}
 	if (i == mem_entries) {
+		if (start < (1024*1024) && end <=(1024*1024)) {
+			printk(BIOS_DEBUG, "Payload (probably SeaBIOS) loaded"
+				" into a reserved area in the lower 1MB\n");
+			return 1;
+		}
 		printk(BIOS_ERR, "No matching ram area found for range:\n");
 		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
 		printk(BIOS_ERR, "Ram areas\n");

@@ -1,0 +1,4 @@
+config NORTHBRIDGE_INTEL_E7505
+	bool
+	select HAVE_HIGH_TABLES
+

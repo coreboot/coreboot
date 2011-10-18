@@ -47,6 +47,77 @@ static void phys_memory_barrier(void)
 #endif
 }
 
+/**
+ * Simple rotate ones test pattern for 128bit wide memory bus.
+ * See console debug output for any dislocated bytes.
+ *
+ *  for (i=0; i<8; i++)
+ *    for (j=0; j<16; j++)
+ *      *(start + i<<4 + j) = 1<<i;
+ *
+ * @start   System memory offset, aligned to 128bytes
+ */
+static void ram_bitset(unsigned long start)
+{
+	unsigned long value, value2;
+	unsigned long addr;
+	uint8_t i;
+	uint8_t verbose = 0;
+	/*
+	 * Fill.
+	 */
+#if CONFIG_CACHE_AS_RAM
+	printk(BIOS_DEBUG, "DRAM bitset write: 0x%08lx\n", start);
+#else
+	print_debug("DRAM bitset write: 0x");
+	print_debug_hex32(start);
+	print_debug("\n");
+#endif
+	value  = 0x01010101;
+	for(addr = start; addr < (start + 0x80) ; addr += 4) {
+
+		if ((addr & 0xf0) && (! (addr & 0x0f)))
+			value <<= 1;
+		write_phys(addr, value);
+	};
+	phys_memory_barrier();
+#if CONFIG_CACHE_AS_RAM
+	printk(BIOS_DEBUG, "DRAM bitset verify: 0x%08lx\n", start);
+#else
+	print_debug("DRAM bitset verify: 0x");
+	print_debug_hex32(start);
+	print_debug("\n");
+#endif
+	value  = 0x01010101;
+	for(addr = start; addr < (start + 0x80) ; addr += 4) {
+
+		if ((addr & 0xf0) && (! (addr & 0x0f)))
+			value <<= 1;
+
+		value2 = read_phys(addr);
+		i = (value2 != value);
+
+		if  ( i || verbose ) {
+#if CONFIG_CACHE_AS_RAM
+			printk(BIOS_ERR, "0x%08lx wr: 0x%08lx rd: 0x%08lx\n",
+					 addr, value, value2);
+#else
+			print_err_hex32(addr);
+			print_err(" wr: 0x");
+			print_err_hex32(value);
+			print_err(" rd: 0x");
+			print_err_hex32(value2);
+#endif
+		}
+		if (i)
+			print_err(" FAIL\n");
+		else if (verbose)
+			print_err("\n");
+	};
+
+}
+
+
 static void ram_fill(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
@@ -174,6 +245,7 @@ void ram_check(unsigned long start, unsigned long stop)
 	print_debug_hex32(stop);
 	print_debug("\n");
 #endif
+	ram_bitset(start);
 	ram_fill(start, stop);
 	/* Make sure we don't read before we wrote */
 	phys_memory_barrier();

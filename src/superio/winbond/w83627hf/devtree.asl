@@ -1503,5 +1503,22 @@ Scope (\_SB)
 			}
 		}
 		#endif
+
+		/* Returns the wake source register.
+		   It is cleared after reading.
+		   Bit 0: Keyboard wake-up event
+		   Bit 1: Mouse wake-up event
+		   Bit 2: Power button event
+		   Bit 3: CIR wake-up event
+		   Bit 4: Power loss event
+		   Bit 5: VSB power loss status
+		*/
+		Method (WAKS) {
+			ENCM ()
+			Store (0x0A, LDN)
+			Store (CRE3, Local0)
+			EXCM ()
+			Return (Local0)
+		}
 	}
 }

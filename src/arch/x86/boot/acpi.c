@@ -32,6 +32,9 @@
 #include <device/pci.h>
 #include <cbmem.h>
 #include <cpu/x86/lapic_def.h>
+#if CONFIG_COLLECT_TIMESTAMPS
+#include <timestamp.h>
+#endif
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
@@ -609,6 +612,10 @@ void acpi_jump_to_wakeup(void *vector)
 
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, (size_t)&__wakeup_size);
+
+#if CONFIG_COLLECT_TIMESTAMPS
+	timestamp_add_now(TS_ACPI_WAKE_JUMP);
+#endif
 
 	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE,
 		       HIGH_MEMORY_SAVE);

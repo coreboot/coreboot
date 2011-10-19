@@ -40,5 +40,6 @@
 
 void setup_ioapic(u32 ioapic_base, u8 ioapic_id);
 void clear_ioapic(u32 ioapic_base);
+void setup_ioapic_NOVECTORS(u32 ioapic_base, u8 new_id);
 
 #endif

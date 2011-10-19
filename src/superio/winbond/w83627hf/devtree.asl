@@ -74,7 +74,7 @@ Scope (\_SB)
 			ADDR,   8,
 			DATA,   8
 		}
-		IndexField (CREG, DATA, ByteAcc, NoLock, Preserve)
+		IndexField (ADDR, DATA, ByteAcc, NoLock, Preserve)
 		{
 			Offset (0x02),
 			RST,    1,     /* Soft reset */
@@ -84,7 +84,6 @@ Scope (\_SB)
 			Offset (0x20),
 			DID,    8,     /* Device ID */
 			DREV,   8,     /* Device Revision */
-			POWC,   8,
 			FDPW,   1,     /* FDC Power Down */
 			,       2,
 			PRPW,   1,     /* PRT Power Down */
@@ -258,7 +257,6 @@ Scope (\_SB)
 				Store (One, FDPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_DIS)
 			{
@@ -470,7 +468,6 @@ Scope (\_SB)
 				Store (One, PRPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_DIS) {
 				ENCM ()
@@ -650,7 +647,6 @@ Scope (\_SB)
 				Store (One, UAPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_DIS)
 			{
@@ -783,7 +779,6 @@ Scope (\_SB)
 				Store (One, UBPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_DIS)
 			{
@@ -916,7 +911,6 @@ Scope (\_SB)
 				Store (One, UBPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_DIS)
 			{
@@ -1479,7 +1473,6 @@ Scope (\_SB)
 				Store (One, HWPW)
 				EXCM ()
 			}
-			Name (_PR0, Package () { ^^ })
 
 			Method (_CRS)
 			{

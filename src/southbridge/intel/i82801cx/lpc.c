@@ -24,34 +24,43 @@
 #define MAINBOARD_POWER_ON  1
 
 
-static void i82801cx_enable_ioapic( struct device *dev)
+/**
+ * enable_acpi(dev)
+ *
+ * @dev PCI device with ACPI and PM BAR's
+ */
+static void i82801cx_enable_acpi(struct device *dev)
 {
-	uint32_t dword;
-    volatile uint32_t* ioapic_index = (volatile uint32_t*)IO_APIC_ADDR;
-    volatile uint32_t* ioapic_data = (volatile uint32_t*)(IO_APIC_ADDR + 0x10);
+    // Set ACPI base address to 0x1100 (I/O space)
+    pci_write_config32(dev, PMBASE, 0x00001101);
 
-    dword = pci_read_config32(dev, GEN_CNTL);
-    dword |= (3 << 7); /* enable ioapic & disable SMBus interrupts */
-    dword |= (1 <<13); /* coprocessor error enable */
-    dword |= (1 << 1); /* delay transaction enable */
-    dword |= (1 << 2); /* DMA collection buf enable */
-    pci_write_config32(dev, GEN_CNTL, dword);
-    printk(BIOS_DEBUG, "ioapic southbridge enabled %x\n",dword);
+    // Enable ACPI I/O and power management
+    pci_write_config8(dev, ACPI_CNTL, 0x10);
 
-    // Must program the APIC's ID before using it
+    // Set GPIO base address to 0x1180 (I/O space)
+    pci_write_config32(dev, GPIO_BASE, 0x00001181);
 
-    *ioapic_index = 0;		// Select APIC ID register
-    *ioapic_data = (2<<24);
+    // Enable GPIO
+    pci_write_config8(dev, GPIO_CNTL, 0x10);
+}
 
-    // Hang if the ID didn't take (chip not present?)
-    *ioapic_index = 0;
-    dword = *ioapic_data;
-    printk(BIOS_DEBUG, "Southbridge apic id = %x\n", (dword>>24) & 0xF);
-    if(dword != (2<<24))
-		die("");
+/**
+ * general_cntl()
+ *
+ * @dev PCI device with I/O APIC control registers
+ */
+static void i82801cx_general_cntl(struct device *dev)
+{
+	u32 reg32;
 
-	*ioapic_index = 3;		// Select Boot Configuration register
-	*ioapic_data = 1;		// Use Processor System Bus to deliver interrupts
+	reg32 = pci_read_config32(dev, GEN_CNTL);
+	reg32 |= (1 << 13);	/* Coprocessor error enable (COPR_ERR_EN) */
+	reg32 |= (3 << 7);	/* IOAPIC enable (APIC_EN) */
+	reg32 |= (1 << 2);	/* DMA collection buffer enable (DCB_EN) */
+	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
+	pci_write_config32(dev, GEN_CNTL, reg32);
+	printk(BIOS_DEBUG, "Southbridge GEN_CNTL 0x%08x\n", reg32);
+
 }
 
 // This is how interrupts are received from the Super I/O chip
@@ -118,20 +127,6 @@ static void i82801cx_rtc_init(struct device *dev)
 
 static void i82801cx_1f0_misc(struct device *dev)
 {
-	// Prevent LPC disabling, enable parity errors, and SERR# (System Error)
-    pci_write_config16(dev, PCI_COMMAND, 0x014f);
-
-    // Set ACPI base address to 0x1100 (I/O space)
-    pci_write_config32(dev, PMBASE, 0x00001101);
-
-    // Enable ACPI I/O and power management
-    pci_write_config8(dev, ACPI_CNTL, 0x10);
-
-    // Set GPIO base address to 0x1180 (I/O space)
-    pci_write_config32(dev, GPIO_BASE, 0x00001181);
-
-    // Enable GPIO
-    pci_write_config8(dev, GPIO_CNTL, 0x10);
 
     // Route PIRQA to IRQ11, PIRQB to IRQ3, PIRQC to IRQ5, PIRQD to IRQ10
     pci_write_config32(dev, PIRQA_ROUT, 0x0A05030B);
@@ -160,8 +155,9 @@ static void lpc_init(struct device *dev)
 	int pwr_on=-1;
 	int nmi_option;
 
+	i82801cx_general_cntl(dev);
 	/* IO APIC initialization */
-	i82801cx_enable_ioapic(dev);
+	setup_ioapic_NOVECTORS(IO_APIC_ADDR, 0x02);
 
 	i82801cx_enable_serial_irqs(dev);
 
@@ -229,13 +225,28 @@ static void i82801cx_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
+static void i82801cx_lpc_enable_resources(device_t dev)
+{
+	/* Enable the normal pci resources */
+	pci_dev_enable_resources(dev);
+
+	/* Enable ACPI and GPIO BARs */
+	i82801cx_enable_acpi(dev);
+
+	/* Set features ( most important: IOAPIC ) */
+	i82801cx_general_cntl(dev);
+	
+	/* Prevent LPC disabling, enable parity errors, and SERR# (System Error) */
+	pci_write_config16(dev, PCI_COMMAND, 0x014f);
+}
+
 static struct device_operations lpc_ops  = {
-	.read_resources   = i82801cx_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = 0,
+	.read_resources   	= i82801cx_lpc_read_resources,
+	.set_resources    	= pci_dev_set_resources,
+	.enable_resources 	= i82801cx_lpc_enable_resources,
+	.init             	= lpc_init,
+	.scan_bus         	= scan_static_bus,
+	.enable           	= 0,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {

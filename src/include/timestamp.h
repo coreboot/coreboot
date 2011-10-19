@@ -37,6 +37,8 @@ struct timestamp_table {
 enum timestamp_id {
 	TS_BEFORE_INITRAM = 1,
 	TS_AFTER_INITRAM = 2,
+	TS_ACPI_WAKE_JUMP = 98,
+	TS_SELFBOOT_JUMP = 99,
 };
 
 void timestamp_init(tsc_t base);

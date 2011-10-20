@@ -138,6 +138,7 @@ void uart8250_tx_flush(unsigned base_port);
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
 void uart_init(void);
+int uart8250_dcd(unsigned base_port);
 
 /* and the same for memory mapped uarts */
 unsigned char uart8250_mem_rx_byte(unsigned base_port);

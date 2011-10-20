@@ -61,6 +61,13 @@ static void console_tx_flush(void)
 #endif
 }
 
+#if CONFIG_TTYS0_DCD_HOOK
+int console_dcd(void)
+{
+	return uart8250_dcd(CONFIG_TTYS0_BASE);
+}
+#endif
+
 int do_printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;

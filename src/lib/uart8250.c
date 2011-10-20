@@ -62,6 +62,11 @@ int uart8250_can_rx_byte(unsigned base_port)
 	return inb(base_port + UART_LSR) & UART_LSR_DR;
 }
 
+int uart8250_dcd(unsigned base_port)
+{
+	return inb(base_port + UART_MSR) & UART_MSR_DCD;
+}
+
 unsigned char uart8250_rx_byte(unsigned base_port)
 {
 	while(!uart8250_can_rx_byte(base_port))

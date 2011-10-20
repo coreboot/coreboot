@@ -46,6 +46,19 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+config DUAL_RAMSTAGE
+	bool
+	default y if TTYS0_DCD_HOOK
+	default n
+
+config CBFS_ALT_PREFIX
+       string "Alternative CBFS prefix to use"
+       depends on DUAL_RAMSTAGE
+       default "normal"
+       help
+          Select the prefix for an alternative coreboot RAM stage.
+          You need some hardware bootstrap to make this choice at boottime.
+
 choice
 	prompt "Compiler"
 	default COMPILER_GCC

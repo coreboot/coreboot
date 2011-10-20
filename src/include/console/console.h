@@ -62,6 +62,7 @@ extern int console_loglevel;
 
 #ifndef __ROMCC__
 void console_init(void);
+int console_dcd(void);
 void post_code(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));

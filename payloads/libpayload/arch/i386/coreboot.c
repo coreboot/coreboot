@@ -82,6 +82,12 @@ static void cb_parse_serial(unsigned char *ptr, struct sysinfo_t *info)
 	info->ser_ioport = ser->baseaddr;
 }
 
+static void cb_parse_version(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_string *ver = (struct cb_string *)ptr;
+	info->cb_version = (char *)ver->string;
+}
+
 #ifdef CONFIG_NVRAM
 static void cb_parse_optiontable(unsigned char *ptr, struct sysinfo_t *info)
 {
@@ -147,6 +153,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_SERIAL:
 			cb_parse_serial(ptr, info);
+			break;
+		case CB_TAG_VERSION:
+			cb_parse_version(ptr, info);
 			break;
 #ifdef CONFIG_NVRAM
 		case CB_TAG_CMOS_OPTION_TABLE:

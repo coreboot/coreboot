@@ -51,6 +51,8 @@ struct sysinfo_t {
 	u32 cmos_range_end;
 	u32 cmos_checksum_location;
 
+	char *cb_version;
+
 	struct cb_framebuffer *framebuffer;
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */

@@ -1,9 +1,10 @@
 obj ?= $(shell pwd)
 
-HOSTCXX ?= g++
-HOSTCC ?= gcc
-CFLAGS ?= -g
-
+HOSTCXX  ?= g++
+HOSTCC   ?= gcc
+CFLAGS   ?= -g -Wall
+CXXFLAGS ?=-DCOMPACT $(CFLAGS)
+LDFLAGS  ?= -g
 
 BINARY:=$(obj)/cbfstool
 
@@ -43,10 +44,6 @@ clean:
 
 tags:
 	ctags *.[ch]
-
-CXXFLAGS=-DCOMPACT -g
-CFLAGS=-g
-LDFLAGS=-g
 
 $(obj)/cbfstool:$(COMMON)
 	$(HOSTCXX) $(LDFLAGS) -o $@ $^

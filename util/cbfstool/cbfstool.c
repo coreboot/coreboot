@@ -19,7 +19,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "common.h"
 #include "cbfs.h"
 
@@ -196,7 +198,6 @@ static int cbfs_add_stage(int argc, char **argv)
 static int cbfs_create(int argc, char **argv)
 {
 	char *romname = argv[1];
-	char *cmd = argv[2];
 	if (argc < 5) {
 		printf("not enough arguments to 'create'.\n");
 		return 1;
@@ -239,7 +240,6 @@ static int cbfs_locate(int argc, char **argv)
 static int cbfs_print(int argc, char **argv)
 {
 	char *romname = argv[1];
-	char *cmd = argv[2];
 	void *rom = loadrom(romname);
 
 	if (rom == NULL) {
@@ -254,7 +254,6 @@ static int cbfs_print(int argc, char **argv)
 static int cbfs_extract(int argc, char **argv)
 {
 	char *romname = argv[1];
-	char *cmd = argv[2];
 	void *rom = loadrom(romname);
 
 	if (rom == NULL) {
@@ -271,7 +270,7 @@ static int cbfs_extract(int argc, char **argv)
 	return extract_file_from_cbfs(romname, argv[3], argv[4]);
 }
 
-struct command commands[] = {
+static const struct command commands[] = {
 	{CMD_ADD, "add", cbfs_add},
 	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
 	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
@@ -281,7 +280,7 @@ struct command commands[] = {
 	{CMD_EXTRACT, "extract", cbfs_extract},
 };
 
-void usage(void)
+static void usage(void)
 {
 	printf
 	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
@@ -302,6 +301,20 @@ void usage(void)
 	print_supported_filetypes();
 }
 
+/* Small, OS/libc independent runtime check
+ * for endianess
+ */
+int host_bigendian = 0;
+
+static void which_endian(void)
+{
+	char test[4] = "1234";
+	uint32_t inttest = *(uint32_t *) test;
+	if (inttest == 0x31323334) {
+		host_bigendian = 1;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int i;
@@ -310,6 +323,8 @@ int main(int argc, char **argv)
 		usage();
 		return 1;
 	}
+
+	which_endian();
 
 	char *cmd = argv[2];
 

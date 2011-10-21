@@ -29,7 +29,7 @@ struct cbfs_header {
 } __attribute__ ((packed));
 
 struct cbfs_file {
-	char magic[8];
+	uint8_t magic[8];
 	uint32_t len;
 	uint32_t type;
 	uint32_t checksum;
@@ -37,11 +37,11 @@ struct cbfs_file {
 } __attribute__ ((packed));
 
 struct cbfs_stage {
-	unsigned int compression;
-	unsigned long long entry;
-	unsigned long long load;
-	unsigned int len;
-	unsigned int memlen;
+	uint32_t compression;
+	uint64_t entry;
+	uint64_t load;
+	uint32_t len;
+	uint32_t memlen;
 } __attribute__ ((packed));
 
 #define PAYLOAD_SEGMENT_CODE	0x45444F43
@@ -51,12 +51,12 @@ struct cbfs_stage {
 #define PAYLOAD_SEGMENT_ENTRY	0x52544E45
 
 struct cbfs_payload_segment {
-	unsigned int type;
-	unsigned int compression;
-	unsigned int offset;
-	unsigned long long load_addr;
-	unsigned int len;
-	unsigned int mem_len;
+	uint32_t type;
+	uint32_t compression;
+	uint32_t offset;
+	uint64_t load_addr;
+	uint32_t len;
+	uint32_t mem_len;
 } __attribute__ ((packed));
 
 struct cbfs_payload {

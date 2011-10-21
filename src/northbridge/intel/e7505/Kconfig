@@ -1,0 +1,4 @@
+config NORTHBRIDGE_INTEL_E7501
+	bool
+	select HAVE_DEBUG_RAM_SETUP
+

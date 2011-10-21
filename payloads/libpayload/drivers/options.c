@@ -41,7 +41,6 @@ static int options_checksum_valid(void)
 	for(i = range_start; i <= range_end; i++) {
 		checksum += nvram_read(i);
 	}
-	checksum = (~checksum)&0xffff;
 
 	checksum_old = ((nvram_read(checksum_location)<<8) | nvram_read(checksum_location+1));
 
@@ -59,7 +58,6 @@ void fix_options_checksum(void)
 	for(i = range_start; i <= range_end; i++) {
 		checksum += nvram_read(i);
 	}
-	checksum = (~checksum)&0xffff;
 
 	nvram_write((checksum >> 8), checksum_location);
 	nvram_write((checksum & 0xff), checksum_location + 1);

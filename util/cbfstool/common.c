@@ -26,7 +26,7 @@
 #include "cbfs.h"
 #include "elf.h"
 
-#define dprintf
+#define dprintf(x...)
 
 uint32_t getfilesize(const char *filename)
 {
@@ -118,7 +118,7 @@ int cbfs_file_header(uint32_t physaddr)
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size)
 {
 	struct cbfs_file *nextfile = (struct cbfs_file *)phys_to_virt(physaddr);
-	strncpy(nextfile->magic, "LARCHIVE", 8);
+	strncpy((char *)(nextfile->magic), "LARCHIVE", 8);
 	nextfile->len = htonl(size);
 	nextfile->type = htonl(0xffffffff);
 	nextfile->checksum = 0;	// FIXME?
@@ -231,6 +231,7 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 		uint32_t length = ntohl(thisfile->len);
 		// Locate the file name
 		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+
 		// It's not the file we are looking for..
 		if (strcmp(fname, payloadname) != 0)
 		{
@@ -267,7 +268,8 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 		// We'll only dump one file.
 		return 0;
 	}
-
+	printf("File %s not found.\n", payloadname);
+	return 1;
 }
 
 
@@ -332,8 +334,7 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 					thisfile->len =
 					    htonl(location - current -
 						  ntohl(thisfile->offset));
-					struct cbfs_file *nextfile =
-					    cbfs_create_empty_file(location,
+					cbfs_create_empty_file(location,
 								   length -
 								   (location -
 								    current));
@@ -376,7 +377,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 	}
 	memset(newdata, 0xff, *datasize + headersize);
 	struct cbfs_file *nextfile = (struct cbfs_file *)newdata;
-	strncpy(nextfile->magic, "LARCHIVE", 8);
+	strncpy((char *)(nextfile->magic), "LARCHIVE", 8);
 	nextfile->len = htonl(*datasize);
 	nextfile->type = htonl(type);
 	nextfile->checksum = 0;	// FIXME?
@@ -421,8 +422,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 
 	recalculate_rom_geometry(romarea);
 
-	struct cbfs_file *one_empty_file =
-	    cbfs_create_empty_file((0 - romsize) & 0xffffffff,
+	cbfs_create_empty_file((0 - romsize) & 0xffffffff,
 				   romsize - bootblocksize -
 				   sizeof(struct cbfs_header) -
 				   sizeof(struct cbfs_file) - 16);
@@ -439,7 +439,7 @@ static int in_segment(int addr, int size, int gran)
 uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t alignment)
 {
-	void *rom = loadrom(romfile);
+	loadrom(romfile);
 	int filename_size = strlen(filename);
 
 	int headersize =

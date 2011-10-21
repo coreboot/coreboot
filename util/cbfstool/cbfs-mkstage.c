@@ -36,10 +36,12 @@ unsigned int idemp(unsigned int x)
 	return x;
 }
 
-unsigned int swap32(unsigned int x)
+/* This is a wrapper around the swab32() macro to make it 
+ * usable for the current implementation of parse_elf_to_stage()
+ */
+static unsigned int swap32(unsigned int x)
 {
-	return ((x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) |
-		(x << 24));
+	return swab32(x);
 }
 
 unsigned int (*elf32_to_native) (unsigned int) = idemp;
@@ -59,7 +61,6 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	unsigned int data_start, data_end, mem_end;
 
 	int elf_bigendian = 0;
-	int host_bigendian = 0;
 
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
@@ -72,11 +73,6 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 
 	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 		elf_bigendian = 1;
-	}
-	char test[4] = "1234";
-	uint32_t inttest = *(uint32_t *) test;
-	if (inttest == 0x31323334) {
-		host_bigendian = 1;
 	}
 	if (elf_bigendian != host_bigendian) {
 		elf32_to_native = swap32;
@@ -171,10 +167,10 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 
 	stage = (struct cbfs_stage *)out;
 
-	stage->load = data_start;
+	stage->load = data_start; /* FIXME: htonll */
 	stage->memlen = mem_end - data_start;
 	stage->compression = algo;
-	stage->entry = ehdr->e_entry;
+	stage->entry = ehdr->e_entry; /* FIXME: htonll */
 
 	compress(buffer, data_end - data_start,
 		 (char *)(out + sizeof(struct cbfs_stage)), (int *)&stage->len);

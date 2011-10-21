@@ -384,6 +384,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 		cur->delay_interrupt = 7;
 		cur->condition_code = 0xf;
 		cur->direction = (ep->direction==IN)?OHCI_IN:OHCI_OUT;
+		cur->current_buffer_pointer = virt_to_phys(data);
 		pages--;
 		if (dalen == 0) {
 			/* magic TD for empty packet transfer */

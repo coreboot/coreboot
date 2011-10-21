@@ -374,6 +374,41 @@ int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	return len + lenh;
 }
 
+static int acpigen_write_CST_package_entry(struct cst_entry *entry)
+{
+	int len, len0;
+	char *start, *end;
+
+	len0 = acpigen_write_package(4);
+	len = acpigen_write_resourcetemplate_header();
+	start = acpigen_get_current();
+	acpigen_write_register(entry->type, entry->width, entry->offset, entry->addrsize, entry->address);
+	end = acpigen_get_current();
+	len += end-start;
+	len += acpigen_write_resourcetemplate_footer(len);
+	len += len0;
+	len += acpigen_write_dword(entry->ctype);
+	len += acpigen_write_dword(entry->latency);
+	len += acpigen_write_dword(entry->power);
+	acpigen_patch_len(len - 1);
+	return len;
+}
+
+int acpigen_write_CST_package(struct cst_entry *entry, int nentries)
+{
+	int len, lenh, lenp, i;
+	lenh = acpigen_write_name("_CST");
+	lenp = acpigen_write_package(nentries+1);
+	len = acpigen_write_dword(nentries);
+
+	for (i = 0; i < nentries; i++)
+		len += acpigen_write_CST_package_entry(entry + i);
+
+	len += lenp;
+	acpigen_patch_len(len - 1);
+	return len + lenh;
+}
+
 int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 {
 	/*
@@ -397,6 +432,28 @@ int acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 	acpigen_emit_byte((size >> 16) & 0xff);
 	acpigen_emit_byte((size >> 24) & 0xff);
 	return 12;
+}
+
+int acpigen_write_register(int type, int width, int offset, int addrsize, u64 address)
+{
+	acpigen_emit_byte(0x82);
+	/* Byte 1+2: length (0x000c) */
+	acpigen_emit_byte(0x0c);
+	acpigen_emit_byte(0x00);
+	/* bit1-7 are ignored */
+	acpigen_emit_byte(type); /* FFixedHW */
+	acpigen_emit_byte(width); /* register width */
+	acpigen_emit_byte(offset); /* register offset */
+	acpigen_emit_byte(addrsize); /* register address size */
+	acpigen_emit_byte(address & 0xff); /* register address 0-7 */
+	acpigen_emit_byte((address >> 8) & 0xff); /* register address 8-15 */
+	acpigen_emit_byte((address >> 16) & 0xff); /* register address 16-23 */
+	acpigen_emit_byte((address >> 24) & 0xff); /* register address 24-31 */
+	acpigen_emit_byte((address >> 32) & 0xff); /* register address 32-39 */
+	acpigen_emit_byte((address >> 40) & 0xff); /* register address 40-47 */
+	acpigen_emit_byte((address >> 48) & 0xff); /* register address 48-55 */
+	acpigen_emit_byte((address >> 56) & 0xff); /* register address 56-63 */
+	return 15;
 }
 
 int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)

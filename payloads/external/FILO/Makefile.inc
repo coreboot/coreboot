@@ -1,6 +1,6 @@
 TAG-$(CONFIG_FILO_MASTER)=
 NAME-$(CONFIG_FILO_MASTER)=HEAD
-TAG-$(CONFIG_FILO_STABLE)=-r 139
+TAG-$(CONFIG_FILO_STABLE)=4dbb31a64fe5b1c7e3025ab34619220609897646
 NAME-$(CONFIG_FILO_STABLE)=STABLE
 
 unexport KCONFIG_AUTOCONFIG
@@ -8,10 +8,15 @@ unexport KCONFIG_AUTOCONFIG
 all: filo
 
 checkout:
-	echo "    SVN        FILO $(NAME-y)"
+	echo "    GIT        FILO $(NAME-y)"
 	test -d filo || \
-		svn co svn://coreboot.org/filo/trunk/filo $(TAG-y)
-	cd filo; svn update $(TAG-y)
+		git clone http://review.coreboot.org/p/filo.git
+	cd filo && \
+		git checkout master && \
+		git pull; \
+		test -n $(TAG-y) && \
+			git branch -f $(NAME-y) $(TAG-y) && \
+			git checkout $(NAME-y)
 
 config: libpayload
 	echo "    CONFIG     FILO $(NAME-y)"

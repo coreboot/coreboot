@@ -20,7 +20,7 @@ checkout:
 
 config: libpayload
 	echo "    CONFIG     FILO $(NAME-y)"
-	$(MAKE) -C filo defconfig
+	$(MAKE) -C filo defconfig LIBCONFIG_PATH=../../../libpayload
 	echo "CONFIG_COREBOOT=y" >> filo/.config
 	echo "CONFIG_DEBUG_SERIAL=y" >> filo/.config
 	echo "CONFIG_COREBOOT_FLASH=y" >> filo/.config

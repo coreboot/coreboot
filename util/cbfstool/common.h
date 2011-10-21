@@ -17,23 +17,23 @@
  */
 
 #include <stdint.h>
-#ifndef WIN32
-#include <arpa/inet.h>
-#else
-#define ntohl(x) (((x)>>24) | ((x)<<24) | (((x)>>8)&0xff00) | (((x)<<8)&0xff0000))
-#define htonl ntohl
-#endif
+#include "swab.h"
+#define ntohl(x)  (host_bigendian?(x):swab32(x))
+#define htonl(x)  (host_bigendian?(x):swab32(x))
+#define ntohll(x) (host_bigendian?(x):swab64(x))
+#define htonll(x) (host_bigendian?(x):swab64(x))
 
 extern void *offset;
 extern struct cbfs_header *master_header;
 extern uint32_t phys_start, phys_end, align, romsize;
+extern int host_bigendian;
 
-static void *phys_to_virt(uint32_t addr)
+static inline void *phys_to_virt(uint32_t addr)
 {
 	return offset + addr;
 }
 
-static uint32_t virt_to_phys(void *addr)
+static inline uint32_t virt_to_phys(void *addr)
 {
 	return (unsigned long)(addr - offset) & 0xffffffff;
 }

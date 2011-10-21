@@ -152,9 +152,9 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 		if (phdr[i].p_filesz == 0) {
 			segs[segments].type = PAYLOAD_SEGMENT_BSS;
 			segs[segments].load_addr =
-			    (unsigned long long)htonl(phdr[i].p_paddr);
+			    (uint64_t)htonll(phdr[i].p_paddr);
 			segs[segments].mem_len =
-			    (unsigned int)htonl(phdr[i].p_memsz);
+			    (uint32_t)htonl(phdr[i].p_memsz);
 			segs[segments].offset = htonl(doffset);
 
 			segments++;
@@ -162,8 +162,8 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 		}
 
 		segs[segments].type = PAYLOAD_SEGMENT_DATA;
-		segs[segments].load_addr = (unsigned int)htonl(phdr[i].p_paddr);
-		segs[segments].mem_len = (unsigned int)htonl(phdr[i].p_memsz);
+		segs[segments].load_addr = (uint64_t)htonll(phdr[i].p_paddr);
+		segs[segments].mem_len = (uint32_t)htonl(phdr[i].p_memsz);
 		segs[segments].compression = htonl(algo);
 		segs[segments].offset = htonl(doffset);
 
@@ -190,7 +190,7 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	}
 
 	segs[segments].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[segments++].load_addr = (unsigned long long)htonl(ehdr->e_entry);
+	segs[segments++].load_addr = (uint64_t)htonll(ehdr->e_entry);
 
 	*output = sptr;
 

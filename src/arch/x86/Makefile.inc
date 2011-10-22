@@ -180,18 +180,8 @@ endif
 crt0s = $(src)/arch/x86/init/prologue.inc
 ldscripts =
 ldscripts += $(src)/arch/x86/init/bootblock.ld
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(src)/cpu/x86/16bit/entry16.inc
-ldscripts += $(src)/cpu/x86/16bit/entry16.lds
-endif
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
 ldscripts += $(src)/cpu/x86/32bit/entry32.lds
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(src)/cpu/x86/16bit/reset16.inc
-ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-crt0s += $(src)/arch/x86/lib/id.inc
-ldscripts += $(src)/arch/x86/lib/id.lds
-endif
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
 ifeq ($(CONFIG_SSE),y)
@@ -218,11 +208,6 @@ crt0s += $(src)/cpu/x86/sse_disable.inc
 endif
 ifeq ($(CONFIG_MMX),y)
 crt0s += $(src)/cpu/x86/mmx_disable.inc
-endif
-
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(chipset_bootblock_inc)
-ldscripts += $(chipset_bootblock_lds)
 endif
 
 ifeq ($(CONFIG_ROMCC),y)
@@ -285,11 +270,7 @@ ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
-ifeq ($(CONFIG_TINY_BOOTBLOCK),y)
 include $(src)/arch/x86/Makefile.bootblock.inc
-else
-include $(src)/arch/x86/Makefile.bigbootblock.inc
-endif
 
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \

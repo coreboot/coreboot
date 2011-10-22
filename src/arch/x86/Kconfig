@@ -44,6 +44,13 @@ config TINY_BOOTBLOCK
 	default n if MAYBE_TINY_BOOTBLOCK
 	default y
 
+# Really a synonym for TINY_BOOTBLOCK now
+config USE_CACHE_AS_RAM
+	bool
+	default n if NO_TINY_BOOTBLOCK
+	default n if MAYBE_TINY_BOOTBLOCK
+	default y
+
 config BIG_BOOTBLOCK
 	bool
 	default n if TINY_BOOTBLOCK

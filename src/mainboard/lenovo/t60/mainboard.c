@@ -35,6 +35,19 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/x86/include/arch/acpigen.h>
+
+static struct cst_entry cst_entries[] = {
+	{ 0x7f, 1, 2, 0, 1, 1, 1, 1000 },
+	{ 0x01, 8, 0, 0, DEFAULT_PMBASE + LV2, 2, 1, 500 },
+	{ 0x01, 8, 0, 0, DEFAULT_PMBASE + LV3, 2, 17, 250 },
+};
+
+int get_cst_entries(struct cst_entry **entries)
+{
+	*entries = cst_entries;
+	return ARRAY_SIZE(cst_entries);
+}
 
 static void mainboard_enable(device_t dev)
 {

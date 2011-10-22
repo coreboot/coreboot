@@ -200,13 +200,6 @@ endif
 
 crt0s += $(cpu_incs)
 
-#
-# FIXME move to CPU_INTEL_SOCKET_MPGA604
-#
-ifeq ($(CONFIG_BOARD_TYAN_S2735),y)
-crt0s += $(src)/cpu/intel/car/cache_as_ram.inc
-endif
-
 ifeq ($(CONFIG_LLSHELL),y)
 crt0s += $(src)/arch/x86/llshell/llshell.inc
 endif

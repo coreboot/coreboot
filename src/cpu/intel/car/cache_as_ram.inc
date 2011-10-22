@@ -231,12 +231,6 @@ clear_fixed_var_mtrr_out:
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 
-#if CONFIG_TINY_BOOTBLOCK
-#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-#else
-#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-#endif
-
 	/*
 	 * Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
@@ -245,10 +239,10 @@ clear_fixed_var_mtrr_out:
 	xorl	%edx, %edx
 	/*
 	 * IMPORTANT: The two lines below can _not_ be written like this:
-	 *   movl $(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	 *   movl $(AUTO_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$REAL_XIP_ROM_BASE, %eax
+	movl	$AUTO_XIP_ROM_BASE, %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 

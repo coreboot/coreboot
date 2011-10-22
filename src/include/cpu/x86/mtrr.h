@@ -68,13 +68,8 @@ void x86_setup_fixed_mtrrs(void);
 #endif
 
 #if !defined (__ASSEMBLER__)
-#if defined(CONFIG_XIP_ROM_SIZE)
-# if CONFIG_TINY_BOOTBLOCK
-   extern unsigned long AUTO_XIP_ROM_BASE;
-#  define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-# else
-#  define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-# endif
+#if defined(CONFIG_XIP_ROM_SIZE) && !defined(__ROMCC__)
+extern unsigned long AUTO_XIP_ROM_BASE;
 #endif
 
 #endif

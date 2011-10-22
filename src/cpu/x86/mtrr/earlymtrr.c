@@ -53,7 +53,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	set_var_mtrr(1, REAL_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+	set_var_mtrr(1, AUTO_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
 	/* Set the default memory type and enable fixed and variable MTRRs

@@ -62,6 +62,11 @@ static int get_fsb(void)
 	return 200;
 }
 
+int get_cst_entries(struct cst_entry **entries __attribute__((unused)))
+{
+	return 0;
+}
+
 void generate_cpu_entries(void)
 {
 	int len_pr, len_ps;
@@ -70,6 +75,9 @@ void generate_cpu_entries(void)
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; // this assumes that all CPUs share the same layout
+	int count;
+	struct cst_entry *cst_entries;
+
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n", numcpus, cores_per_package);
 
 	for (cpuID=1; cpuID <=numcpus; cpuID++) {
@@ -81,6 +89,8 @@ void generate_cpu_entries(void)
 		len_pr = acpigen_write_processor((cpuID-1)*cores_per_package+coreID-1, pcontrol_blk, plen);
 			len_pr += acpigen_write_empty_PCT();
 			len_pr += acpigen_write_PSD_package(cpuID-1,cores_per_package,SW_ANY);
+			if ((count = get_cst_entries(&cst_entries)) > 0)
+				len_pr += acpigen_write_CST_package(cst_entries, count);
 			len_pr += acpigen_write_name("_PSS");
 
 			int max_states=8;

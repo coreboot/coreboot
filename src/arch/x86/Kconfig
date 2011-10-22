@@ -30,9 +30,19 @@ config MAX_REBOOT_CNT
 	int
 	default 3
 
-config TINY_BOOTBLOCK
+config NO_TINY_BOOTBLOCK
 	bool
 	default n
+
+config MAYBE_TINY_BOOTBLOCK
+	bool
+	default n
+
+config TINY_BOOTBLOCK
+	bool
+	default n if NO_TINY_BOOTBLOCK
+	default n if MAYBE_TINY_BOOTBLOCK
+	default y
 
 config BIG_BOOTBLOCK
 	bool

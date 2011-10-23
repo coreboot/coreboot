@@ -109,7 +109,7 @@ clear_mtrrs:
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-#if CONFIG_CACHE_AS_RAM
+#if !CONFIG_BIG_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE

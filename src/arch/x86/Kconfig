@@ -38,6 +38,23 @@ config MAYBE_CACHE_AS_RAM
 	bool
 	default n
 
+config USES_BIG_BOOTBLOCK
+	bool
+	default n
+
+config SWITCH_TO_TINY_BOOTBLOCK
+	bool "Switch setup to tiny bootblock (experimental)"
+	default n
+	depends on EXPERT
+	depends on USES_BIG_BOOTBLOCK
+	help
+           Your mainboard has been converted to use Cache-As-Ram, but
+           for some reason it still uses big bootblock.
+           Make sure you have CBFS_PREFIX=fallback. While other
+           prefixes worked for big bootblock, they don't for tiny one.
+
+	   Beware: This may leave your system non-bootable!
+
 config CACHE_AS_RAM_OVERRIDE
 	bool "Enable Cache-As-Ram (experimental)"
 	default n
@@ -47,6 +64,7 @@ config CACHE_AS_RAM_OVERRIDE
 	   Your mainboard has been converted to use Cache-As-Ram, but
 	   we have not yet received any confirmation that it actually
 	   works for this setup.
+
 	   Beware: This may leave your system non-bootable!
 
 config CACHE_AS_RAM
@@ -58,8 +76,13 @@ config CACHE_AS_RAM
 
 config BIG_BOOTBLOCK
 	bool
+	default n if BOARD_EMULATION_QEMU_X86
+	default n if SWITCH_TO_TINY_BOOTBLOCK
+	default y if USES_BIG_BOOTBLOCK
 	default n if CACHE_AS_RAM
 	default y
+
+if !BIG_BOOTBLOCK
 
 # We had to rename the choice options under arch/ because otherwise
 # the options would conflict between different architectures despite
@@ -67,7 +90,6 @@ config BIG_BOOTBLOCK
 choice
 	prompt "Bootblock behaviour"
 	default X86_BOOTBLOCK_SIMPLE
-	depends on CACHE_AS_RAM
 
 config X86_BOOTBLOCK_SIMPLE
 	bool "Always load fallback"
@@ -85,12 +107,13 @@ config BOOTBLOCK_SOURCE
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
 	default n
-	depends on CACHE_AS_RAM
 	help
 	  If this option is enabled, no new coreboot.rom file
 	  is created. Instead it is expected that there already
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
+
+endif
 
 config PC80_SYSTEM
 	bool

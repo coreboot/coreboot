@@ -198,7 +198,6 @@ ifeq ($(CONFIG_SSE),y)
 crt0s += $(src)/cpu/x86/sse_enable.inc
 endif
 
-
 # When some mainboards with a specific socket have been converted
 # to cache-as-ram, but others haven't, cache_as_ram.inc is
 # included only conditionally
@@ -283,10 +282,10 @@ ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
-ifeq ($(CONFIG_BIG_BOOTBLOCK),n)
-include $(src)/arch/x86/Makefile.bootblock.inc
-else
+ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 include $(src)/arch/x86/Makefile.bigbootblock.inc
+else
+include $(src)/arch/x86/Makefile.bootblock.inc
 endif
 
 seabios:

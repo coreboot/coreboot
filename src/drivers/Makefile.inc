@@ -25,4 +25,4 @@ subdirs-y += i2c
 subdirs-y += oxford
 subdirs-y += sil
 subdirs-y += trident
-
+subdirs-y += ics

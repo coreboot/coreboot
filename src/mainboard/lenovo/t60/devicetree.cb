@@ -68,6 +68,8 @@ chip northbridge/intel/i945
 			register "gpe0_en" = "0x11000006"
 			register "alt_gp_smi_en" = "0x1000"
 
+			register "c4onc3_enable" = "1"
+
 			device pci 1b.0 on # Audio Cnotroller
 				subsystemid 0x17aa 0x2010
 			end

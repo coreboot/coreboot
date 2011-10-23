@@ -243,6 +243,10 @@ static void i82801gx_power_options(device_t dev)
 	reg16 |= (1 << 2);	// CLKRUN_EN - Mobile/Ultra only
 	reg16 |= (1 << 3);	// Speedstep Enable - Mobile/Ultra only
 	reg16 |= (1 << 5);	// CPUSLP_EN Desktop only
+
+	if (config->c4onc3_enable)
+		reg16 |= (1 << 7);
+
 	// another laptop wants this?
 	// reg16 &= ~(1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
 	reg16 |= (1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only

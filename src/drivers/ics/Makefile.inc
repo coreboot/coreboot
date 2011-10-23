@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_DRIVERS_ICS_954309) += 954309

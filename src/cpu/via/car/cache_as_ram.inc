@@ -110,7 +110,7 @@ clear_fixed_var_mtrr_out:
 	movl	$(~(CacheSize - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
-#if CONFIG_TINY_BOOTBLOCK
+#if CONFIG_CACHE_AS_RAM
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE

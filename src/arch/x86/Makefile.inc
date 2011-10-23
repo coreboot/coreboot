@@ -198,7 +198,12 @@ ifeq ($(CONFIG_SSE),y)
 crt0s += $(src)/cpu/x86/sse_enable.inc
 endif
 
+
+# When some mainboards with a specific socket have been converted
+# to cache-as-ram, but others haven't, cache_as_ram.inc is
+# included only conditionally
 crt0s += $(cpu_incs)
+crt0s += $(cpu_incs-y)
 
 ifeq ($(CONFIG_LLSHELL),y)
 crt0s += $(src)/arch/x86/llshell/llshell.inc
@@ -218,11 +223,11 @@ crt0s += $(chipset_bootblock_inc)
 ldscripts += $(chipset_bootblock_lds)
 endif
 
-ifeq ($(CONFIG_ROMCC),y)
+ifeq ($(CONFIG_CACHE_AS_RAM),n)
 crt0s += $(src)/arch/x86/init/crt0_romcc_epilogue.inc
 endif
 
-ifeq ($(CONFIG_ROMCC),y)
+ifeq ($(CONFIG_CACHE_AS_RAM),n)
 ROMCCFLAGS ?= -mcpu=p2 -O2
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
@@ -278,7 +283,7 @@ ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
-ifeq ($(CONFIG_TINY_BOOTBLOCK),y)
+ifeq ($(CONFIG_BIG_BOOTBLOCK),n)
 include $(src)/arch/x86/Makefile.bootblock.inc
 else
 include $(src)/arch/x86/Makefile.bigbootblock.inc

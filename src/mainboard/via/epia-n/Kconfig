@@ -3,7 +3,7 @@ if BOARD_VIA_EPIA_N
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
-	select NO_TINY_BOOTBLOCK
+	select NO_CACHE_AS_RAM
 	select CPU_VIA_C3
 	select NORTHBRIDGE_VIA_CN400
 	select SOUTHBRIDGE_VIA_VT8237R
@@ -15,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select EPIA_VT8237R_INIT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
-	select ROMCC
 
 config MAINBOARD_DIR
 	string

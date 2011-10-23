@@ -281,7 +281,7 @@ clear_fixed_var_mtrr_out:
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 
-#if CONFIG_TINY_BOOTBLOCK
+#if CONFIG_CACHE_AS_RAM
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE

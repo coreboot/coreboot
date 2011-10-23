@@ -30,11 +30,11 @@ config MAX_REBOOT_CNT
 	int
 	default 3
 
-config NO_TINY_BOOTBLOCK
+config NO_CACHE_AS_RAM
 	bool
 	default n
 
-config MAYBE_TINY_BOOTBLOCK
+config MAYBE_CACHE_AS_RAM
 	bool
 	default n
 
@@ -42,31 +42,23 @@ config CACHE_AS_RAM_OVERRIDE
 	bool "Enable Cache-As-Ram (experimental)"
 	default n
 	depends on EXPERT
-	depends on MAYBE_TINY_BOOTBLOCK
+	depends on MAYBE_CACHE_AS_RAM
 	help
 	   Your mainboard has been converted to use Cache-As-Ram, but
 	   we have not yet received any confirmation that it actually
 	   works for this setup.
 	   Beware: This may leave your system non-bootable!
 
-config TINY_BOOTBLOCK
+config CACHE_AS_RAM
 	bool
 	default y if CACHE_AS_RAM_OVERRIDE
-	default n if NO_TINY_BOOTBLOCK
-	default n if MAYBE_TINY_BOOTBLOCK
-	default y
-
-# Really a synonym for TINY_BOOTBLOCK now
-config USE_CACHE_AS_RAM
-	bool
-	default y if CACHE_AS_RAM_OVERRIDE
-	default n if NO_TINY_BOOTBLOCK
-	default n if MAYBE_TINY_BOOTBLOCK
+	default n if NO_CACHE_AS_RAM
+	default n if MAYBE_CACHE_AS_RAM
 	default y
 
 config BIG_BOOTBLOCK
 	bool
-	default n if TINY_BOOTBLOCK
+	default n if CACHE_AS_RAM
 	default y
 
 # We had to rename the choice options under arch/ because otherwise
@@ -75,7 +67,7 @@ config BIG_BOOTBLOCK
 choice
 	prompt "Bootblock behaviour"
 	default X86_BOOTBLOCK_SIMPLE
-	depends on TINY_BOOTBLOCK
+	depends on CACHE_AS_RAM
 
 config X86_BOOTBLOCK_SIMPLE
 	bool "Always load fallback"
@@ -93,17 +85,12 @@ config BOOTBLOCK_SOURCE
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
 	default n
-	depends on TINY_BOOTBLOCK
+	depends on CACHE_AS_RAM
 	help
 	  If this option is enabled, no new coreboot.rom file
 	  is created. Instead it is expected that there already
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
-
-config ROMCC
-	bool
-	default n if USE_CACHE_AS_RAM
-	default y
 
 config PC80_SYSTEM
 	bool

@@ -29,19 +29,6 @@
 #include "i82801gx.h"
 #include "smbus.h"
 
-#define SMB_BASE 0x20
-static void smbus_init(struct device *dev)
-{
-	u32 smb_base;
-
-	smb_base = pci_read_config32(dev, SMB_BASE);
-	printk(BIOS_DEBUG, "Initializing SMBus device:\n");
-	printk(BIOS_DEBUG, "  Old SMBUS Base Address: 0x%04x\n", smb_base);
-	pci_write_config32(dev, SMB_BASE, 0x00000401);
-	smb_base = pci_read_config32(dev, SMB_BASE);
-	printk(BIOS_DEBUG, "  New SMBUS Base Address: 0x%04x\n", smb_base);
-}
-
 static int lsmbus_read_byte(device_t dev, u8 address)
 {
 	u16 device;
@@ -74,11 +61,20 @@ static struct pci_operations smbus_pci_ops = {
 	.set_subsystem    = smbus_set_subsystem,
 };
 
+static void smbus_read_resources(device_t dev)
+{
+	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
+	res->base = SMBUS_IO_BASE;
+	res->size = 32;
+	res->limit = res->base + res->size - 1;
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
+		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+}
+
 static struct device_operations smbus_ops = {
-	.read_resources		= pci_dev_read_resources,
+	.read_resources		= smbus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= smbus_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,
 	.ops_smbus_bus		= &lops_smbus_bus,

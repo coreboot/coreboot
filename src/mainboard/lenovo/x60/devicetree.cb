@@ -60,6 +60,8 @@ chip northbridge/intel/i945
 
 			register "gpe0_en" = "0x11000006"
 			register "alt_gp_smi_en" = "0x1000"
+
+			register "c4onc3_enable" = "1"
 			device pci 1b.0 on # Audio Cnotroller
 				subsystemid 0x17aa 0x2010
 			end
@@ -174,6 +176,22 @@ chip northbridge/intel/i945
 			end
 			device pci 1f.3 on # SMBUS
 				subsystemid 0x17aa 0x200f
+				chip drivers/ics/954309
+					register "reg0" = "0x2e"
+					register "reg1" = "0xf7"
+					register "reg2" = "0x3c"
+					register "reg3" = "0x20"
+					register "reg4" = "0x01"
+					register "reg5" = "0x00"
+					register "reg6" = "0x1b"
+					register "reg7" = "0x01"
+					register "reg8" = "0x54"
+					register "reg9" = "0xff"
+					register "reg10" = "0xff"
+					register "reg11" = "0x07"
+					device i2c 69 on end
+				end
+
 			end
 		end
 		chip southbridge/ricoh/rl5c476

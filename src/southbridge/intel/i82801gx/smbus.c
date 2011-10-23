@@ -42,8 +42,191 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
+static int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned address, unsigned data)
+{
+	unsigned char global_status_register;
+
+	if (smbus_wait_until_ready(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	/* Setup transaction */
+	/* Disable interrupts */
+	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
+	/* Set the device I'm talking too */
+	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
+	/* Set the command/address... */
+	outb(address & 0xff, smbus_base + SMBHSTCMD);
+	/* Set up for a byte data read */
+	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x2 << 2),
+	     (smbus_base + SMBHSTCTL));
+	/* Clear any lingering errors, so the transaction will run */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Clear the data byte... */
+	outb(data, smbus_base + SMBHSTDAT0);
+
+	/* Start the command */
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
+	     smbus_base + SMBHSTCTL);
+
+	/* Poll for transaction completion */
+	if (smbus_wait_until_done(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
+
+	global_status_register = inb(smbus_base + SMBHSTSTAT);
+
+	/* Ignore the "In Use" status... */
+	global_status_register &= ~(3 << 5);
+
+	/* Read results of transaction */
+	if (global_status_register != (1 << 1))
+		return SMBUS_ERROR;
+	return 0;
+}
+
+static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+	return do_smbus_write_byte(res->base, device, address, data);
+}
+
+static int do_smbus_block_write(unsigned smbus_base, unsigned device,
+			      unsigned cmd, unsigned bytes, const u8 *buf)
+{
+	u8 status;
+
+	if (smbus_wait_until_ready(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	/* Setup transaction */
+	/* Disable interrupts */
+	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
+	/* Set the device I'm talking too */
+	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
+	/* Set the command/address... */
+	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
+	/* Set up for a block data write */
+	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x5 << 2),
+	     (smbus_base + SMBHSTCTL));
+	/* Clear any lingering errors, so the transaction will run */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* set number of bytes to transfer */
+	outb(bytes, smbus_base + SMBHSTDAT0);
+
+	outb(*buf++, smbus_base + SMBBLKDAT);
+	bytes--;
+
+	/* Start the command */
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
+	     smbus_base + SMBHSTCTL);
+
+	while(!(inb(smbus_base + SMBHSTSTAT) & 1));
+	/* Poll for transaction completion */
+	do {
+		status = inb(smbus_base + SMBHSTSTAT);
+		if (status & ((1 << 4) | /* FAILED */
+			      (1 << 3) | /* BUS ERR */
+			      (1 << 2))) /* DEV ERR */
+			return SMBUS_ERROR;
+
+		if (status & 0x80) { /* Byte done */
+			outb(*buf++, smbus_base + SMBBLKDAT);
+			outb(status, smbus_base + SMBHSTSTAT);
+		}
+	} while(status & 0x01);
+
+	return 0;
+}
+
+
+
+static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
+}
+
+static int do_smbus_block_read(unsigned smbus_base, unsigned device,
+			      unsigned cmd, unsigned bytes, u8 *buf)
+{
+	u8 status;
+	int bytes_read = 0;
+	if (smbus_wait_until_ready(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	/* Setup transaction */
+	/* Disable interrupts */
+	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
+	/* Set the device I'm talking too */
+	outb(((device & 0x7f) << 1) | 1, smbus_base + SMBXMITADD);
+	/* Set the command/address... */
+	outb(cmd & 0xff, smbus_base + SMBHSTCMD);
+	/* Set up for a block data read */
+	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x5 << 2),
+	     (smbus_base + SMBHSTCTL));
+	/* Clear any lingering errors, so the transaction will run */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Start the command */
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
+	     smbus_base + SMBHSTCTL);
+
+	while(!(inb(smbus_base + SMBHSTSTAT) & 1));
+	/* Poll for transaction completion */
+	do {
+		status = inb(smbus_base + SMBHSTSTAT);
+		if (status & ((1 << 4) | /* FAILED */
+			      (1 << 3) | /* BUS ERR */
+			      (1 << 2))) /* DEV ERR */
+			return SMBUS_ERROR;
+
+		if (status & 0x80) { /* Byte done */
+			*buf = inb(smbus_base + SMBBLKDAT);
+			buf++;
+			bytes_read++;
+			outb(status, smbus_base + SMBHSTSTAT);
+			if (--bytes == 1) {
+				/* indicate that next byte is the last one */
+				outb(inb(smbus_base + SMBHSTCTL) | 0x20,
+					 smbus_base + SMBHSTCTL);
+			}
+		}
+	} while(status & 0x01);
+
+	return bytes_read;
+}
+
+static int lsmbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buf)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+	return do_smbus_block_read(res->base, device, cmd, bytes, buf);
+}
+
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
+	.write_byte     = lsmbus_write_byte,
+	.block_read     = lsmbus_block_read,
+	.block_write    = lsmbus_block_write,
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)

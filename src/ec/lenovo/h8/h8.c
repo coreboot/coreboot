@@ -63,12 +63,12 @@ static void h8_log_ec_version(void)
 	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
 }
 
-void h8_set_audio_mute(int on)
+void h8_set_audio_mute(int mute)
 {
-	if (on)
-		ec_clr_bit(0x3a, 0);
+	if (mute)
+		ec_set_bit(0x3a, 0);
 	else
-		ec_set_bit(0x3a, 1);
+		ec_clr_bit(0x3a, 0);
 }
 
 void h8_enable_event(int event)

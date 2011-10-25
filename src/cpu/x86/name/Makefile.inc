@@ -17,5 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifneq ($(CPU_X86_NAME_INCLUDED),y)
+CPU_X86_NAME_INCLUDED:=y
+
 ramstage-y += name.c
 
+endif

@@ -205,7 +205,7 @@ subdirs:=$(TOPLEVEL)
 $(eval $(call evaluate_subdirs))
 
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
-$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
+$(foreach class,$(classes),$(eval $(class)-objs:=$(sort $(call src-to-obj,$(class)))))
 
 allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))

@@ -60,13 +60,15 @@
  */
 void speaker_enable(u16 freq)
 {
+	u16 reg16 = 1193180 / freq;
+
 	/* Select counter 2. Read/write LSB first, then MSB. Use mode 3
 	   (square wave generator). Use a 16bit binary counter. */
 	outb(0xb6, I82C54_CONTROL_WORD_REGISTER);
 
 	/* Set the desired tone frequency. */
-	outb((u8)(freq & 0x00ff), I82C54_COUNTER2);	/* LSB. */
-	outb((u8)(freq >> 8), I82C54_COUNTER2);		/* MSB. */
+	outb((u8)(reg16 & 0x00ff), I82C54_COUNTER2);	/* LSB. */
+	outb((u8)(reg16 >> 8), I82C54_COUNTER2);	/* MSB. */
 
 	/* Enable the PC speaker (set bits 0 and 1). */
 	outb(inb(PC_SPEAKER_PORT) | 0x03, PC_SPEAKER_PORT);

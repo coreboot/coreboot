@@ -204,6 +204,9 @@ evaluate_subdirs= \
 subdirs:=$(TOPLEVEL)
 $(eval $(call evaluate_subdirs))
 
+# Eliminate duplicate mentions of source files in a class
+$(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
+
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
 

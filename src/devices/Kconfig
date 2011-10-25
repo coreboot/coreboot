@@ -163,3 +163,17 @@ config AGP_PLUGIN_SUPPORT
 config CARDBUS_PLUGIN_SUPPORT
 	bool
 	default y
+
+config PCIEXP_COMMON_CLOCK
+	prompt "Enable PCIe Common Clock"
+	bool
+	default n
+	help
+	  Detect and enable Common Clock on PCIe links.
+
+config PCIEXP_ASPM
+	prompt "Enable PCIe ASPM"
+	bool
+	default n
+	help
+	  Detect and enable ASPM on PCIe links.

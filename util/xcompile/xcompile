@@ -21,7 +21,7 @@
 testcc()
 {
 	echo "_start(void) {}" > .$$$$.c
-	$1 -nostdlib $2 .$$$$.c -o .$$$$.tmp 2>/dev/null >/dev/null
+	$1 -nostdlib -Werror $2 .$$$$.c -o .$$$$.tmp 2>/dev/null >/dev/null
 	ret=$?
 	rm -f .$$$$.c .$$$$.tmp
 	return $ret

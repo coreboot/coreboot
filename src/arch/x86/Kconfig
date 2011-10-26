@@ -76,6 +76,10 @@ config CMOS_DEFAULT_FILE
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 
+config HAVE_ARCH_MEMSET
+	bool
+	default y
+
 config HAVE_ARCH_MEMCPY
 	bool
 	default y

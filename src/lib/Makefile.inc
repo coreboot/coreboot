@@ -1,6 +1,8 @@
 
 
+ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 romstage-y += memset.c
+endif
 romstage-y += memchr.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 romstage-y += memcpy.c
@@ -19,7 +21,9 @@ romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
+ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 ramstage-y += memset.c
+endif
 ramstage-y += memchr.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 ramstage-y += memcpy.c

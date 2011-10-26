@@ -39,7 +39,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select AMDMCT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_2048
-	select TINY_BOOTBLOCK
 	#select MMCONF_SUPPORT_DEFAULT #TODO enable it to resolve Multicore IO conflict
 
 config AMD_AGESA

@@ -100,11 +100,17 @@ static void ich5_watchdog_on(void)
 	unsigned long value, base;
 	unsigned char byte;
 
+#if 0
+	/* FIXME */
 	/* check cmos options */
 	byte = cmos_read(RTC_BOOT_BYTE-1);
 	if(!(byte & 1)) return; /* no boot watchdog */
 	byte = cmos_read(RTC_BOOT_BYTE);
 	if(!(byte & 2)) return; /* fallback so ignore */
+#else
+	/* boot watchdog disabled */
+	return;
+#endif
 
 	dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
 	if (dev == PCI_DEV_INVALID) {

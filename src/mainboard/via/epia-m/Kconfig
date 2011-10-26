@@ -3,6 +3,8 @@ if BOARD_VIA_EPIA_M
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select USES_BIG_BOOTBLOCK
+	select NO_CACHE_AS_RAM
 	select CPU_VIA_C3
 	select NORTHBRIDGE_VIA_VT8623
 	select SOUTHBRIDGE_VIA_VT8235
@@ -13,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_256
-	select ROMCC
 
 config MAINBOARD_DIR
 	string

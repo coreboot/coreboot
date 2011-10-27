@@ -35,6 +35,7 @@
 #include <arch/byteorder.h>
 #include <console/console.h>
 #include <pc80/tpm.h>
+#include <cpu/x86/car.h>
 
 #ifdef DEBUG
 #define TPM_DEBUG_ON	1
@@ -130,10 +131,10 @@ struct device_name {
 struct vendor_name {
 	u16 vendor_id;
 	const char * vendor_name;
-	struct device_name* dev_names;
+	const struct device_name* dev_names;
 };
 
-static struct device_name infineon_devices[] = {
+static const struct device_name infineon_devices[] = {
 	{0xb, "SLB9635 TT 1.2"},
 	{0}
 };
@@ -146,7 +147,7 @@ static const struct vendor_name vendor_names[] = {
  * Cached vendor/device ID pair to indicate that the device has been already
  * discovered
  */
-static u32 vendor_dev_id;
+static u32 vendor_dev_id CAR_GLOBAL;
 
 static int is_byte_reg(u32 reg)
 {

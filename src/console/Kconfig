@@ -91,6 +91,15 @@ config TTYS0_LCS
 	default 3
 	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
 
+config TTYS0_DCD_HOOK
+	bool "DCD line is bootstrap to select romstage"
+	default n
+	depends on CONSOLE_SERIAL8250
+	help
+	  Status of DCD line on the selected serial debug console
+	  port is read at boot-time, and is used to choose from
+	  the two romstage prefixes.
+
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
 	def_bool n

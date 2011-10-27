@@ -1,4 +1,5 @@
 #include <bootblock_common.h>
+#include "bootstrap_dcd.h"
 
 static void main(unsigned long bist)
 {
@@ -12,10 +13,21 @@ static void main(unsigned long bist)
 	sanitize_cmos();
 #endif
 
-	const char* target1 = "fallback/romstage";
 	unsigned long entry;
-	entry = findstage(target1);
+	int boot_mode = 0;
+
+#if CONFIG_TTYS0_DCD_HOOK
+	/* DCD high selects normal */
+	boot_mode = early_dcd_hook();
+#endif
+	if (boot_mode)
+		entry = findstage("normal/romstage");
+	else
+		entry = findstage("fallback/romstage");
+
 	if (entry) call(entry, bist);
+
+	/* duh. we're stuck */
 	asm volatile ("1:\n\thlt\n\tjmp 1b\n\t");
 }
 

@@ -1,5 +1,6 @@
 #include <bootblock_common.h>
 #include <pc80/mc146818rtc.h>
+#include "bootstrap_dcd.h"
 
 static void main(unsigned long bist)
 {
@@ -14,7 +15,13 @@ static void main(unsigned long bist)
 #endif
 
 	unsigned long entry;
-	if (do_normal_boot())
+	int boot_mode = do_normal_boot();
+
+#if CONFIG_TTYS0_DCD_HOOK
+	/* high DCD overrides to fallback */
+	boot_mode &= !early_dcd_hook();
+#endif
+	if (boot_mode)
 		entry = findstage("normal/romstage");
 	else
 		entry = findstage("fallback/romstage");

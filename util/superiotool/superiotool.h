@@ -182,6 +182,10 @@ void print_vendor_chips(const char *vendor,
 void probe_idregs_ali(uint16_t port);
 void print_ali_chips(void);
 
+/* amd.c */
+void probe_idregs_amd(uint16_t port);
+void print_amd_chips(void);
+
 /* serverengines.c */
 void probe_idregs_serverengines(uint16_t port);
 void print_serverengines_chips(void);
@@ -235,6 +239,8 @@ static const struct {
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 #ifdef PCI_SUPPORT
 	{probe_idregs_via,	{0x3f0, EOT}},
+	/* in fact read the BASE from HW */
+	{probe_idregs_amd,	{0xaa, EOT}},
 #endif
 	{probe_idregs_serverengines,	{0x2e, EOT}},
 };
@@ -252,6 +258,7 @@ static const struct {
 	{print_winbond_chips},
 #ifdef PCI_SUPPORT
 	{print_via_chips},
+	{print_amd_chips},
 #endif
 	{print_serverengines_chips},
 };

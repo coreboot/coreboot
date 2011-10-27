@@ -30,6 +30,8 @@ static void sata_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
+	u32 *ahci_bar;
+
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -106,8 +108,13 @@ static void sata_init(struct device *dev)
 		/* Set Sata Controller Mode. */
 		pci_write_config8(dev, 0x90, 0x40); // 40=AHCI
 
-		/* Port 0 & 1 enable */
+		/* In ACHI mode, bit[3:0] must always be set
+		 * (Port status is controlled through AHCI BAR)
+		 */
 		pci_write_config8(dev, 0x92, 0x0f);
+
+		ahci_bar = (u32 *)(pci_read_config32(dev, 0x27) & ~0x3ff);
+		ahci_bar[3] = config->sata_ports_implemented;
 
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94, 0x1a000180);

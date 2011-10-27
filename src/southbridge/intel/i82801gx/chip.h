@@ -68,6 +68,7 @@ struct southbridge_intel_i82801gx_config {
 	uint32_t ide_enable_primary;
 	uint32_t ide_enable_secondary;
 	uint32_t sata_ahci;
+	uint32_t sata_ports_implemented;
 
 	int c4onc3_enable:1;
 };

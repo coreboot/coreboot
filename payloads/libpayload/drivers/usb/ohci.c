@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#define USB_DEBUG
+//#define USB_DEBUG
 
 #include <arch/virtual.h>
 #include <usb/usb.h>
@@ -141,9 +141,6 @@ ohci_init (pcidev_t addr)
 
 	OHCI_INST (controller)->opreg->HcHCCA = virt_to_phys(OHCI_INST (controller)->hcca);
 	OHCI_INST (controller)->opreg->HcControl &= ~IsochronousEnable; // unused by this driver
-	OHCI_INST (controller)->opreg->HcControl |= BulkListEnable; // always enabled. OHCI still sleeps on BulkListFilled
-	OHCI_INST (controller)->opreg->HcControl |= ControlListEnable; // dito
-	OHCI_INST (controller)->opreg->HcControl |= PeriodicListEnable; // FIXME: setup interrupt data structures and enable all the time
 	// disable everything, contrary to what OHCI spec says in 5.1.1.4, as we don't need IRQs
 	OHCI_INST (controller)->opreg->HcInterruptEnable = 1<<31;
 	OHCI_INST (controller)->opreg->HcInterruptDisable = ~(1<<31);
@@ -191,9 +188,9 @@ dump_td(td_t *cur, int level)
 #ifdef USB_DEBUG
 	static const char *spaces="          ";
 	const char *spc=spaces+(10-level);
-#endif
 	debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[cur->direction], completion_codes[cur->condition_code & 0xf]);
 	debug("%s toggle: %x\n", spc, cur->toggle);
+#endif
 }
 
 static int
@@ -215,6 +212,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 			((td_t*)phys_to_virt(head->head_pointer & ~3))->condition_code);
 		mdelay(1);
 	}
+	mdelay(5);
 	if (OHCI_INST(dev->controller)->opreg->HcInterruptStatus & WritebackDoneHead) {
 		debug("done queue:\n");
 		debug("%x, %x\n", OHCI_INST(dev->controller)->hcca->HccaDoneHead, phys_to_virt(OHCI_INST(dev->controller)->hcca->HccaDoneHead));
@@ -223,7 +221,6 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 		}
 		td_t *done_queue = NULL;
 		td_t *done_head = (td_t*)phys_to_virt(OHCI_INST(dev->controller)->hcca->HccaDoneHead);
-		OHCI_INST(dev->controller)->opreg->HcInterruptStatus = WritebackDoneHead;
 		while (1) {
 			td_t *oldnext = (td_t*)phys_to_virt(done_head->next_td);
 			if (oldnext == done_queue) break; /* last element refers to second to last, ie. endless loop */
@@ -236,6 +233,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 		for (cur = done_queue; cur != 0; cur = (td_t*)cur->next_td) {
 			dump_td(cur, 1);
 		}
+		OHCI_INST(dev->controller)->opreg->HcInterruptStatus &= ~WritebackDoneHead;
 	}
 
 	if (head->head_pointer & 1) {
@@ -340,9 +338,11 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	/* activate schedule */
 	OHCI_INST(dev->controller)->opreg->HcControlHeadED = virt_to_phys(head);
+	OHCI_INST(dev->controller)->opreg->HcControl |= ControlListEnable;
 	OHCI_INST(dev->controller)->opreg->HcCommandStatus = ControlListFilled;
 
 	int failure = wait_for_ed(dev, head);
+	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
 
 	/* free memory */
 	free((void*)tds);
@@ -430,9 +430,11 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 
 	/* activate schedule */
 	OHCI_INST(ep->dev->controller)->opreg->HcBulkHeadED = virt_to_phys(head);
+	OHCI_INST(ep->dev->controller)->opreg->HcControl |= BulkListEnable;
 	OHCI_INST(ep->dev->controller)->opreg->HcCommandStatus = BulkListFilled;
 
 	int failure = wait_for_ed(ep->dev, head);
+	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;
 
 	ep->toggle = head->toggle;
 

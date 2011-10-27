@@ -57,7 +57,7 @@ CONFIG_PCI = yes
 ifeq ($(CONFIG_PCI), yes)
 CFLAGS += -DPCI_SUPPORT
 LIBS += -lpci
-OBJS += pci.o via.o
+OBJS += pci.o via.o amd.o
 endif
 
 all: $(PROGRAM)

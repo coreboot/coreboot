@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
 #if CONFIG_USE_OPTION_TABLE
@@ -23,13 +24,12 @@ static int cmos_chksum_valid(void)
 {
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char addr;
-	unsigned long sum, old_sum;
+	u16 sum, old_sum;
 	sum = 0;
-	/* Comput the cmos checksum */
+	/* Compute the cmos checksum */
 	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
 		sum += cmos_read(addr);
 	}
-	sum = (sum & 0xffff) ^ 0xffff;
 
 	/* Read the stored checksum */
 	old_sum = cmos_read(LB_CKS_LOC) << 8;

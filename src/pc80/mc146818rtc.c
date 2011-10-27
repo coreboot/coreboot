@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
@@ -80,12 +81,11 @@
 static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
 	int i;
-	unsigned sum, old_sum;
+	u16 sum, old_sum;
 	sum = 0;
 	for(i = range_start; i <= range_end; i++) {
 		sum += cmos_read(i);
 	}
-	sum = (~sum)&0x0ffff;
 	old_sum = ((cmos_read(cks_loc)<<8) | cmos_read(cks_loc+1))&0x0ffff;
 	return sum == old_sum;
 }
@@ -93,7 +93,7 @@ static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 {
 	int i;
-	unsigned sum;
+	u16 sum;
 	sum = 0;
 	for(i = range_start; i <= range_end; i++) {
 		sum += cmos_read(i);

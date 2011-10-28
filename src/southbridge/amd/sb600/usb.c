@@ -119,6 +119,11 @@ static void usb_init2(struct device *dev)
 	dword &= ~(1 << 28);
 	pci_write_config32(dev, 0x50, dword);
 
+	/* EHCI Erratum (adapted from Linux) */
+	dword = pci_read_config32(dev, 0x53);
+	dword |= (1 << 3);
+	pci_write_config32(dev, 0x53, dword);
+
 	/* RPR5.14 Disable USB PHY PLL Reset signal to come from ACPI */
 	byte = pci_read_config8(dev, 0x54);
 	byte &= ~(1 << 0);

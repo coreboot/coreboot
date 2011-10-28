@@ -23,6 +23,11 @@
 CROSSGCC_DATE="October 10th, 2011"
 CROSSGCC_VERSION="1.05"
 
+# To enable colors on dash(1)
+if [ -x /usr/bin/printf ]; then
+alias printf=/usr/bin/printf
+fi
+
 # default settings
 TARGETDIR=`pwd`/xgcc
 TARGETARCH=i386-elf

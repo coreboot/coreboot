@@ -53,7 +53,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 	/*
 	 * Fill.
 	 */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "DRAM fill: 0x%08lx-0x%08lx\n", start, stop);
 #else
 	print_debug("DRAM fill: ");
@@ -65,7 +65,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 	for(addr = start; addr < stop ; addr += 4) {
 		/* Display address being filled */
 		if (!(addr & 0xfffff)) {
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "%08lx \r", addr);
 #else
 			print_debug_hex32(addr);
@@ -75,7 +75,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 		write_phys(addr, (u32)addr);
 	};
 	/* Display final address */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "%08lx\nDRAM filled\n", addr);
 #else
 	print_debug_hex32(addr);
@@ -90,7 +90,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 	/*
 	 * Verify.
 	 */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "DRAM verify: 0x%08lx-0x%08lx\n", start, stop);
 #else
 	print_debug("DRAM verify: ");
@@ -103,7 +103,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		unsigned long value;
 		/* Display address being tested */
 		if (!(addr & 0xfffff)) {
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "%08lx \r", addr);
 #else
 			print_debug_hex32(addr);
@@ -113,7 +113,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		value = read_phys(addr);
 		if (value != addr) {
 			/* Display address with error */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 			printk(BIOS_ERR, "Fail: @0x%08lx Read value=0x%08lx\n", addr, value);
 #else
 			print_err("Fail: @0x");
@@ -124,7 +124,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 #endif
 			i++;
 			if(i>256) {
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 				printk(BIOS_DEBUG, "Aborting.\n");
 #else
 				print_debug("Aborting.\n");
@@ -134,14 +134,14 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		}
 	}
 	/* Display final address */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "%08lx", addr);
 #else
 	print_debug_hex32(addr);
 #endif
 
 	if (i) {
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
 #else
 		print_debug("\nDRAM did _NOT_ verify!\n");
@@ -149,7 +149,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		die("DRAM ERROR");
 	}
 	else {
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
 #else
 		print_debug("\nDRAM range verified.\n");
@@ -165,7 +165,7 @@ void ram_check(unsigned long start, unsigned long stop)
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
 	 * are tested.   -Tyson
 	 */
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Testing DRAM : %08lx - %08lx\n", start, stop);
 #else
 	print_debug("Testing DRAM : ");
@@ -178,7 +178,7 @@ void ram_check(unsigned long start, unsigned long stop)
 	/* Make sure we don't read before we wrote */
 	phys_memory_barrier();
 	ram_verify(start, stop);
-#if CONFIG_CACHE_AS_RAM
+#if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
 #else
 	print_debug("Done.\n");

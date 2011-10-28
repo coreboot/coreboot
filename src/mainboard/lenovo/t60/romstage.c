@@ -240,11 +240,6 @@ void main(unsigned long bist)
 		early_superio_config();
 	}
 
-#if CONFIG_USBDEBUG
-	i82801gx_enable_usbdebug(1);
-	early_usbdebug_init();
-#endif
-
 	/* Setup the console */
 	console_init();
 

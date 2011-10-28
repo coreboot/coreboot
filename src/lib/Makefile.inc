@@ -32,6 +32,7 @@ ramstage-y += cbmem.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
+smm-$(CONFIG_USBDEBUG) += usbdebug.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 

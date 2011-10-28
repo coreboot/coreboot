@@ -40,5 +40,6 @@ unsigned get_ehci_debug(void);
 void set_debug_port(unsigned port);
 int early_usbdebug_init(void);
 void usbdebug_tx_byte(unsigned char data);
+void enable_usbdebug(unsigned int port);
 
 #endif

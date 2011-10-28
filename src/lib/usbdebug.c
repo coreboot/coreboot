@@ -575,6 +575,7 @@ int early_usbdebug_init(void)
 
 	return usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
+#endif
 
 void usbdebug_tx_byte(unsigned char data)
 {
@@ -588,4 +589,3 @@ void usbdebug_tx_byte(unsigned char data)
 		dbgp_bulk_write_x(dbg_info, (char*)&data, 1);
 	}
 }
-#endif

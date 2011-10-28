@@ -29,6 +29,9 @@
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>
 #endif
+#ifdef CONFIG_USBDEBUG
+#include <usbdebug.h>
+#endif
 
 #ifndef __PRE_RAM__
 #include <string.h>

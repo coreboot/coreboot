@@ -29,6 +29,8 @@ static void cache_lbmem(int type)
 	enable_cache();
 }
 
+const int addr_det = 0;
+
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */
@@ -52,8 +54,11 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 #if defined(CONFIG_XIP_ROM_SIZE)
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
+	 * Determine address by calculating the XIP_ROM_SIZE sized area with
+	 * XIP_ROM_SIZE alignment that contains the global variable defined above;
 	 */
-	set_var_mtrr(1, REAL_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+        unsigned long f = (unsigned long)&addr_det & ~(CONFIG_XIP_ROM_SIZE - 1);
+	set_var_mtrr(1, f, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
 	/* Set the default memory type and enable fixed and variable MTRRs

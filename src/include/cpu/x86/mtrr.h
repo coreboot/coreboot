@@ -67,16 +67,4 @@ void x86_setup_fixed_mtrrs(void);
 # error "CONFIG_RAMTOP must be a power of 2"
 #endif
 
-#if !defined (__ASSEMBLER__)
-#if defined(CONFIG_XIP_ROM_SIZE)
-# if CONFIG_TINY_BOOTBLOCK
-   extern unsigned long AUTO_XIP_ROM_BASE;
-#  define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-# else
-#  define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-# endif
-#endif
-
-#endif
-
 #endif /* CPU_X86_MTRR_H */

@@ -102,17 +102,12 @@ clear_mtrrs:
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-#if CONFIG_TINY_BOOTBLOCK
-#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-#else
-#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-#endif
 	/*
-	 * IMPORTANT: The two lines below can _not_ be written like this:
-	 *   movl $(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$REAL_XIP_ROM_BASE, %eax
+	movl	copy_and_run, %eax
+	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 

@@ -110,12 +110,6 @@ clear_fixed_var_mtrr_out:
 	movl	$(~(CacheSize - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
-#if CONFIG_TINY_BOOTBLOCK
-#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-#else
-#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-#endif
-
 	/*
 	 * Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
@@ -123,11 +117,11 @@ clear_fixed_var_mtrr_out:
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
 	/*
-	 * IMPORTANT: The two lines below can _not_ be written like this:
-	 *   movl $(REAL_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	$REAL_XIP_ROM_BASE, %eax
+	movl	copy_and_run, %eax
+	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
@@ -168,7 +162,12 @@ clear_fixed_var_mtrr_out:
 	rep	stosl
 
 #ifdef CARTEST
-	movl	REAL_XIP_ROM_BASE, %esi
+	/*
+	 * IMPORTANT: The following calculation _must_ be done at runtime. See
+	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 */
+	movl	copy_and_run, %esi
+	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %ei
 	movl	%esi, %edi
 	movl	$(CONFIG_XIP_ROM_SIZE >> 2), %ecx
 	rep	lodsl
@@ -244,7 +243,12 @@ testok:
 	/* Cache XIP_ROM_BASE-SIZE to speedup coreboot code. */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
-	movl	$REAL_XIP_ROM_BASE, %eax
+	/*
+	 * IMPORTANT: The following calculation _must_ be done at runtime. See
+	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
+	 */
+	movl	copy_and_run, %eax
+	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr
 

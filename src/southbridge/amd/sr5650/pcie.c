@@ -370,8 +370,8 @@ static void gpp3a_cpl_buf_alloc(device_t nb_dev, device_t dev)
 		slave_cpl = (u8 *)&pGpp111111;
 		break;
 	default:  /* shouldn't be here. */
-		printk(BIOS_DEBUG, "buggy gpp3a_configuration\n");
-		break;
+		printk(BIOS_WARNING, "buggy gpp3a_configuration\n");
+		return;
 	}
 
 	value = slave_cpl[dev_index - 4];

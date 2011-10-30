@@ -33,7 +33,6 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include <usbdebug.h>
 #include <lib.h>
 #include <spd.h>
 #include <cpu/amd/model_fxx_rev.h>

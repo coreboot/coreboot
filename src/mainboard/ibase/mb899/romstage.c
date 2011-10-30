@@ -30,7 +30,6 @@
 #include "superio/winbond/w83627ehg/w83627ehg.h"
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include <usbdebug.h>
 #include <cpu/x86/bist.h>
 #include "superio/winbond/w83627ehg/early_serial.c"
 #include "northbridge/intel/i945/i945.h"

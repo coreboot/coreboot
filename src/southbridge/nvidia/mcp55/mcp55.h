@@ -35,7 +35,6 @@ extern struct pci_operations mcp55_pci_ops;
 #else
 #if !defined(__ROMCC__)
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
-void enable_usbdebug(unsigned int port);
 #endif
 #endif
 

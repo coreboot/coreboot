@@ -224,7 +224,7 @@ static void switching_gpp3a_configurations(device_t nb_dev, device_t sb_dev)
 		reg |= 0xFF0BAA0;
 		break;
 	default:	/* shouldn't be here. */
-		printk(BIOS_DEBUG, "Warning:gpp3a_configuration is not correct. Check you devicetree.cb\n");
+		printk(BIOS_ERROR, "Warning:gpp3a_configuration is not correct. Check you devicetree.cb\n");
 		break;
 	}
 	nbmisc_write_index(nb_dev, 0x26, reg);
@@ -340,7 +340,7 @@ const u8 pGpp111111[] = {0x0E, 0x0E, 0x0E, 0x0E, 0, 0x0E, 0x0E};
 static void gpp3a_cpl_buf_alloc(device_t nb_dev, device_t dev)
 {
 	u8 dev_index;
-	u8 *slave_cpl;
+	u8 *slave_cpl = &pGpp111111;
 	u8 value;
 	struct southbridge_amd_sr5650_config *cfg =
 	    (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
@@ -370,7 +370,7 @@ static void gpp3a_cpl_buf_alloc(device_t nb_dev, device_t dev)
 		slave_cpl = (u8 *)&pGpp111111;
 		break;
 	default:  /* shouldn't be here. */
-		printk(BIOS_DEBUG, "buggy gpp3a_configuration\n");
+		printk(BIOS_ERROR, "buggy gpp3a_configuration\n");
 		break;
 	}
 
@@ -411,7 +411,7 @@ static void gpp12_cpl_buf_alloc(device_t nb_dev, device_t dev)
 		set_pcie_enable_bits(dev, 0x10, 0x3f << 8, value << 8);
 		set_pcie_enable_bits(dev, 0x20, 1 << 11, 1 << 11);
 	} else {
-		printk(BIOS_DEBUG, "buggy gpp configuration\n");
+		printk(BIOS_ERROR, "buggy gpp configuration\n");
 	}
 }
 

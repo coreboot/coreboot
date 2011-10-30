@@ -50,15 +50,7 @@ unsigned get_ehci_debug(void)
 
 static void dbgp_init(void)
 {
-	struct ehci_debug_info *dbg_infox;
-
-	/* At this point, all we have to do is copy the fixed address
-	 * debug_info data structure to our version defined above. */
-
-	dbg_infox = (struct ehci_debug_info *)
-		((CONFIG_RAMTOP) - sizeof(struct ehci_debug_info));
-
-	memcpy(&dbg_info, dbg_infox, sizeof(struct ehci_debug_info));
+	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, &dbg_info);
 }
 
 static void dbgp_tx_byte(unsigned char data)

@@ -238,7 +238,6 @@ int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 			dbg_info->endpoint_in, data, size);
 }
 
-#ifdef __PRE_RAM__
 static void dbgp_mdelay(int ms)
 {
 	int i;
@@ -356,7 +355,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 }
 
 
-static int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
+int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
@@ -566,8 +565,6 @@ next_debug_port:
 	return -10;
 }
 
-// **** This part is probably x86 specific and used by romstage.c **** //
-
 int early_usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
@@ -588,4 +585,3 @@ void usbdebug_tx_byte(unsigned char data)
 		dbgp_bulk_write_x(dbg_info, (char*)&data, 1);
 	}
 }
-#endif

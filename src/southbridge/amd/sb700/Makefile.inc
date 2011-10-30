@@ -10,7 +10,9 @@ driver-y += pci.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 romstage-y += reset.c
 ramstage-y += reset.c
-romstage-y += enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+smm-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
 romstage-y += early_setup.c
 romstage-y += smbus.c

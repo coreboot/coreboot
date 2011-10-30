@@ -9,7 +9,10 @@ driver-y += sata.c
 driver-y += pcie.c
 driver-y += aza.c
 ramstage-y += reset.c
-romstage-y += enable_usbdebug.c
+
+romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+smm-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 
 chipset_bootblock_inc += $(src)/southbridge/sis/sis966/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/sis/sis966/romstrap.lds

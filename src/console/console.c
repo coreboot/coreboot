@@ -30,6 +30,10 @@
 #include <console/ne2k.h>
 #endif
 
+#if CONFIG_USBDEBUG
+#include <usbdebug.h>
+#endif
+
 #ifndef __PRE_RAM__
 #include <string.h>
 #include <pc80/mc146818rtc.h>

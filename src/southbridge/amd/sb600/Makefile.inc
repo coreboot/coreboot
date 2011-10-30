@@ -8,4 +8,6 @@ driver-y += hda.c
 driver-y += ac97.c
 driver-y += pci.c
 ramstage-y += reset.c
-romstage-y += enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+smm-$(CONFIG_USBDEBUG) += enable_usbdebug.c

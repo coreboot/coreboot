@@ -35,7 +35,6 @@
 #include <console/console.h>
 #include <lib.h>
 #include <spd.h>
-#include <usbdebug.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"

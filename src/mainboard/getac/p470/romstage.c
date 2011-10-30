@@ -27,7 +27,6 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <lib.h>
-#include <usbdebug.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>

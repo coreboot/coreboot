@@ -550,6 +550,51 @@ static const io_register_t i82371xx_pm_registers[] = {
 	{ 0x37, 1, "GPOREG 3" },
 };
 
+static const io_register_t i63xx_pm_registers[] = {
+	{ 0x00, 2, "PM1_STS" },
+	{ 0x02, 2, "PM1_EN" },
+	{ 0x04, 4, "PM1_CNT" },
+	{ 0x08, 4, "PM1_TMR" },
+	{ 0x0c, 4, "RESERVED" },
+	{ 0x10, 4, "PROC_CNT" },
+#if DANGEROUS_REGISTERS
+	/* This register returns 0 on read, but reading it may cause
+	 * the system to enter C2 state, which might hang the system.
+	 */
+	{ 0x14, 1, "LV2" },
+	{ 0x15, 1, "RESERVED" },
+	{ 0x16, 2, "RESERVED" },
+#endif
+	{ 0x18, 4, "RESERVED" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 4, "GPE0_STS" },
+	{ 0x2C, 4, "GPE0_EN" },
+	{ 0x30, 4, "SMI_EN" },
+	{ 0x34, 4, "SMI_STS" },
+	{ 0x38, 2, "ALT_GP_SMI_EN" },
+	{ 0x3a, 2, "ALT_GP_SMI_STS" },
+	{ 0x3c, 4, "RESERVED" },
+	{ 0x40, 4, "RESERVED" },
+	{ 0x44, 2, "DEVACT_STS" },
+	{ 0x46, 2, "RESERVED" },
+	{ 0x48, 4, "RESERVED" },
+	{ 0x4c, 4, "RESERVED" },
+	{ 0x50, 4, "RESERVED" },
+	{ 0x54, 4, "C3_RES" },
+	{ 0x58, 4, "RESERVED" },
+	{ 0x5c, 4, "RESERVED" },
+	{ 0x60, 1, "RESERVED" },
+	{ 0x64, 4, "RESERVED" },
+	{ 0x68, 4, "RESERVED" },
+	{ 0x6c, 4, "RESERVED" },
+	{ 0x70, 4, "RESERVED" },
+	{ 0x74, 4, "RESERVED" },
+	{ 0x78, 4, "RESERVED" },
+	{ 0x7c, 4, "RESERVED" },
+};
+
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
 	int i, size;
@@ -625,6 +670,13 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pm_registers = i82371xx_pm_registers;
 		size = ARRAY_SIZE(i82371xx_pm_registers);
 		break;
+
+	case PCI_DEVICE_ID_INTEL_I63XX:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = i63xx_pm_registers;
+		size = ARRAY_SIZE(i63xx_pm_registers);
+		break;
+
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This southbridge does not have PMBASE.\n");
 		return 1;

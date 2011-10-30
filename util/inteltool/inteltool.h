@@ -84,7 +84,7 @@
 #define PCI_DEVICE_ID_INTEL_X58			0x3405
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO		0x8100
 #define PCI_DEVICE_ID_INTEL_ATOM_DXXX		0xa000
-
+#define PCI_DEVICE_ID_INTEL_I63XX		0x2670
 /* untested, but almost identical to D-series */
 #define PCI_DEVICE_ID_INTEL_ATOM_NXXX		0xa010
 

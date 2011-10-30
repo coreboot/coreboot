@@ -34,7 +34,6 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include <usbdebug.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"

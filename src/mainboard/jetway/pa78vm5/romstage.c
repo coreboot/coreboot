@@ -44,7 +44,6 @@
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
 #include "superio/fintek/f71863fg/early_serial.c"
-#include <usbdebug.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"

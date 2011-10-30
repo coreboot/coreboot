@@ -113,7 +113,7 @@ clear_mtrrs:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl	copy_and_run, %eax
+	movl	$copy_and_run, %eax
 	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRBACK, %eax
 	wrmsr

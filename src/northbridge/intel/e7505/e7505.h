@@ -19,7 +19,7 @@
  */
 
 /*
- * e7501.h: PCI configuration space for the Intel E7501 memory controller
+ * e7505.h: PCI configuration space for the Intel E7501 memory controller
  */
 
 /************  D0:F0 ************/

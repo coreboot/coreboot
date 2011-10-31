@@ -36,7 +36,7 @@ void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0))) =
 						(void *)&__realmode_call;
 
-void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx, 
+void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0))) =
 						(void *)&__realmode_interrupt;
 
@@ -361,7 +361,7 @@ void do_vsmbios(void)
 	printk(BIOS_DEBUG, "Calling VSA module...\n");
 
 	/* ECX gets SMM, EDX gets SYSMEM */
-	realmode_call(VSA2_ENTRY_POINT, 0x0, 0x0, MSR_GLIU0_SMM, 
+	realmode_call(VSA2_ENTRY_POINT, 0x0, 0x0, MSR_GLIU0_SMM,
 			MSR_GLIU0_SYSMEM, 0x0, 0x0);
 
 	printk(BIOS_DEBUG, "... VSA module returned.\n");

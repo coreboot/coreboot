@@ -142,7 +142,7 @@ void sb_Late_Post(void)
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbLatePost(&sb_early_cfg);
-	
+
 	//Set ACPI SCI IRQ to 0x9.
 	data = CONFIG_ACPI_SCI_IRQ;
 	outb(0x10, 0xC00);

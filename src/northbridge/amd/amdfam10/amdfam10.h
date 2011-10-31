@@ -958,7 +958,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 //           byte 1 - fid_max
 //           byte 2 - nb_cof_vid_update
 //           byte 3 - apic id
-   
+
 #define LAPIC_MSG_REG 0x380
 #define F10_APSTATE_STARTED 0x13  // start of AP execution
 #define F10_APSTATE_STOPPED 0x14  // allow AP to stop

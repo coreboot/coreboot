@@ -140,13 +140,13 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "Couldn't stat '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);
 		}
-		
+
 		if (fd_stat.st_size < 128) {
 			lseek(fd, 127, SEEK_SET);
 			write(fd, "\0", 1);
 			fsync(fd);
 		}
-		
+
 		cmos_default = mmap(NULL, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (cmos_default == MAP_FAILED) {
 			fprintf(stderr, "Couldn't map '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);

@@ -34,7 +34,7 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	u8 regm, regm3;
 
 	device_t devfun3;
-	
+
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T800_DRAM, 0);
 
@@ -45,7 +45,7 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
-		
+
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T890CF_3, 0);
@@ -53,12 +53,12 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
-	
+
 	if(!devfun3)
 		die("\n vt8237r_cfg: Unable to find K8x8xx bridge via PCI scan. Stopping.\n");
 
 	pci_write_config8(dev, 0x70, 0xc2);
-	
+
 	/* PCI Control */
 	pci_write_config8(dev, 0x72, 0xee);
 	pci_write_config8(dev, 0x73, 0x01);
@@ -157,7 +157,7 @@ static void vt8237r_vlink_init(struct device *dev)
 	pci_write_config8(dev, 0x48, 0xa3);
 }
 
-static void ctrl_init(struct device *dev) 
+static void ctrl_init(struct device *dev)
 {
 
 	print_debug("K8x8xx: Initializing V-Link to VT8237R sb: ");

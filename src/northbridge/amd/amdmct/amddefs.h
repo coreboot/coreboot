@@ -140,7 +140,7 @@
 #define BU_CFG2		0xC001102A
 
 /*
- * Processor package types 
+ * Processor package types
  */
 #define AMD_PKGTYPE_FrX_1207 0
 #define AMD_PKGTYPE_AM3_2r2 1

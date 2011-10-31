@@ -36,7 +36,7 @@ static void error_enable(struct device *dev)
 
 	print_debug("Done\n");
 	/* TODO: enable AGP errors reporting on K8M890 */
-	
+
 	print_debug(" VIA_X_1 device dump:\n");
 	dump_south(dev);
 }

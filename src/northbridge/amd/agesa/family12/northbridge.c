@@ -311,7 +311,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
         }
 
 #if 0
-        // We need to double check if there is speical set on base reg and limit reg 
+        // We need to double check if there is speical set on base reg and limit reg
             // are not continous instead of hole, it will find out it's hole_startk
         if(mem_hole.node_id==-1) {
             resource_t limitk_pri = 0;
@@ -332,7 +332,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
             }
         }
 #endif
-        
+
         return mem_hole;
 }
 #endif
@@ -471,7 +471,7 @@ static void set_resources(device_t dev)
     struct resource *res;
 
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - set_resources - Start.\n");
- 
+
     /* Find the nodeid */
     nodeid = amdfam12_nodeid(dev);
 
@@ -782,7 +782,7 @@ static void domain_enable_resources(device_t dev)
   /* Must be called after PCI enumeration and resource allocation */
 //  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_enable_resources - agesawrapper_amdinitmid - Start.\n");
   printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_enable_resources - Start.\n");
-//  val = agesawrapper_amdinitmid (); 
+//  val = agesawrapper_amdinitmid ();
 //  if(val) {
 //    printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
 //  }
@@ -819,7 +819,7 @@ static void cpu_bus_set_resources(device_t dev)
     pci_dev_set_resources(dev);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_set_resources - End.\n");
 }
- 
+
 static void cpu_bus_init(device_t dev)
 {
     u32 val;
@@ -830,20 +830,20 @@ static void cpu_bus_init(device_t dev)
 #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
     /* Must be called after PCI enumeration and resource allocation */
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - sb_After_Pci_Init - Start.\n");
-    sb_After_Pci_Init (); 
+    sb_After_Pci_Init ();
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - sb_After_Pci_Init - End.\n");
 #endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
 
 #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
     /* Must be called after PCI enumeration and resource allocation */
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - sb_Mid_Post_Init - Start.\n");
-    sb_Mid_Post_Init (); 
+    sb_Mid_Post_Init ();
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - sb_Mid_Post_Init - End.\n");
 #endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
 
     /* Must be called after PCI enumeration and resource allocation */
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - agesawrapper_amdinitmid - Start.\n");
-    val = agesawrapper_amdinitmid (); 
+    val = agesawrapper_amdinitmid ();
     if(val) {
         printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
     }

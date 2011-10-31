@@ -30,7 +30,7 @@ static void dec_21143_enable(device_t dev)
 
 	// The resource allocator should do this. If not, it needs to be fixed
 	// differently.
-#if 0 
+#if 0
 	/* Command and status configuration (offset 0x04) */
 	pci_write_config32(dev, 0x04, 0x02800107);
 	printk(BIOS_DEBUG, "0x04 = %08x (07 01 80 02)\n",

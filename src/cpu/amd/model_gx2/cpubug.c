@@ -280,7 +280,7 @@ static void bug118339(void)
 
 	/* Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled
 	 * As per Todd Roberts in PBz1094 and PBz1095
-	 * Moved from CPUREG to CPUBUG per Tom Sylla 
+	 * Moved from CPUREG to CPUBUG per Tom Sylla
 	 */
 	msrnum =  0x04C000042;		/*  GLCP SETMCTL Register */
 	msr = rdmsr(msrnum);

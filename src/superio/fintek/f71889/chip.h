@@ -28,7 +28,7 @@
 extern struct chip_operations superio_fintek_f71889_ops;
 
 struct superio_fintek_f71889_config {
-	
+
 	struct pc_keyboard keyboard;
 };
 

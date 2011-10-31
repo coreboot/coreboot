@@ -28,7 +28,7 @@ extern struct chip_operations superio_nuvoton_wpcm450_ops;
 #include <uart8250.h>
 
 struct superio_nuvoton_wpcm450_config {
-	
+
 	struct pc_keyboard keyboard;
 };
 

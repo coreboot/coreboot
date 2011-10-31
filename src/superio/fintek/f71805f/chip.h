@@ -29,7 +29,7 @@
 extern struct chip_operations superio_fintek_f71805f_ops;
 
 struct superio_fintek_f71805f_config {
-	
+
 };
 
 #endif

@@ -265,7 +265,7 @@ static void init_ecc_memory(unsigned node_id)
 
 	/* See if we scrubbing should be enabled */
 	enable_scrubbing = 1;
-	if( get_option(&enable_scrubbing, "hw_scrubber") < 0 ) 
+	if( get_option(&enable_scrubbing, "hw_scrubber") < 0 )
 	{
 		enable_scrubbing = CONFIG_HW_SCRUBBER;
 	}
@@ -443,7 +443,7 @@ static inline void k8_errata(void)
 #endif
 	{
 		msr = rdmsr(NB_CFG_MSR);
-		
+
 #if CONFIG_K8_REV_F_SUPPORT == 0
 		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
 			/* D0 later don't need it */
@@ -461,11 +461,11 @@ static inline void k8_errata(void)
 		 */
 		msr.lo |= 1 << 3;
 		/* Erratum 169 */
-		/* This supersedes erratum 131; 131 should not be applied with 169 
+		/* This supersedes erratum 131; 131 should not be applied with 169
 		 * We also need to set some bits in the northbridge, handled in src/northbridge/amdk8/
 		 */
 		msr.hi |= 1;
-		
+
 		wrmsr(NB_CFG_MSR, msr);
 	}
 	/* Erratum 122 */

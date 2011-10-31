@@ -86,11 +86,11 @@ agesawrapper_amdinitcpuio (
   UINT32                        PciData;
   PCI_ADDR                      PciAddress;
   AMD_CONFIG_PARAMS             StdHeader;
-  
+
   /* Enable legacy video routing: D18F1xF4 VGA Enable */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xF4);
   PciData = 1;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
   /* The platform BIOS needs to ensure the memory ranges of SB800 legacy
    * devices (TPM, HPET, BIOS RAM, Watchdog Timer, I/O APIC and ACPI) are
@@ -99,21 +99,21 @@ agesawrapper_amdinitcpuio (
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
   PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
   PciData |= 1 << 7;    // set NP (non-posted) bit
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
   PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
-   
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
   /* Map the remaining PCI hole as posted MMIO */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x8C);
   PciData = 0x00FECF00; // last address before non-posted range
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   LibAmdMsrRead (0xC001001A, &MsrReg, &StdHeader);
   MsrReg = (MsrReg >> 8) | 3;
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x88);
   PciData = (UINT32)MsrReg;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
-   
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
   /* Send all IO (0000-FFFF) to southbridge. */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xC4);
   PciData = 0x0000F000;
@@ -135,7 +135,7 @@ agesawrapper_amdinitmmio (
   UINT32                        PciData;
   PCI_ADDR                      PciAddress;
   AMD_CONFIG_PARAMS             StdHeader;
-  
+
   UINT8                         BusRangeVal = 0;
   UINT8                         BusNum;
   UINT8                         Index;
@@ -166,10 +166,10 @@ agesawrapper_amdinitmmio (
   /* Set Ontario Link Data */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE0);
   PciData = 0x01308002;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE4);
   PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
   Status = AGESA_SUCCESS;
   return (UINT32)Status;
@@ -313,7 +313,7 @@ agesawrapper_amdinitenv (
   /* Initialize Subordinate Bus Number and Secondary Bus Number
    * In platform BIOS this address is allocated by PCI enumeration code
      Modify D1F0x18
-   */  
+   */
   PciAddress.Address.Bus = 0;
   PciAddress.Address.Device = 1;
   PciAddress.Address.Function = 0;
@@ -480,10 +480,10 @@ agesawrapper_amdinitlate (
   return (UINT32)Status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdlaterunaptask (
-  UINT32 Func, 
-  UINT32 Data, 
+  UINT32 Func,
+  UINT32 Data,
   VOID *ConfigPtr
   )
 {

@@ -21,8 +21,8 @@
  *                             M O D U L E S    U S E D
  *----------------------------------------------------------------------------------------
  */
- 
-  
+
+
 #ifndef _GPIO_H_
 #define _GPIO_H_
 
@@ -121,8 +121,8 @@
 #define GPIO_18_SELECT      FUNCTION0+NonGpio   // NOT USED
 #define GPIO_19_SELECT      FUNCTION1           // For LASSO_DET# detection when Gevent14# is asserted.
 #define GPIO_20_SELECT      FUNCTION1           // PX_MUX for DOCKING card, PX MUX selection in mux mode. dGPU enable with high(option)
-#define GPIO_21_SELECT      FUNCTION1           // DOCK_MUX for DCKING card, MUX selection output. Docking display enabled when high(option) 
-#define GPIO_22_SELECT      FUNCTION1           // SB_PWR_LV, INDICATE TO THE MXM THE SYSTEM IS IN LOW BATTERY MODE 
+#define GPIO_21_SELECT      FUNCTION1           // DOCK_MUX for DCKING card, MUX selection output. Docking display enabled when high(option)
+#define GPIO_22_SELECT      FUNCTION1           // SB_PWR_LV, INDICATE TO THE MXM THE SYSTEM IS IN LOW BATTERY MODE
                                                 //      1:BATTERY IS FINE(DEFAULT)
                                                 //      0:BATTERY IS LOW
 #define GPIO_23_SELECT      FUNCTION1	        // CODEC_ON.1: CODEC ON (default)0: CODEC OFF
@@ -143,7 +143,7 @@
                                                 //      0:USB3.0 I/F in Express CARD
                                                 //      1:PCIE I/F  in Express CARD detection
 #define GPIO_34_SELECT      FUNCTION1           // WEBCAM_ON#. 0: ON (default) 1: OFF
-#define GPIO_35_SELECT      FUNCTION1           // ODD_DA_INTH# 
+#define GPIO_35_SELECT      FUNCTION1           // ODD_DA_INTH#
 #define GPIO_36_SELECT      FUNCTION0+NonGpio   // PCICLK FOR KBC
 #define GPIO_37_SELECT      FUNCTION0+NonGpio   // NOT USED
 #define GPIO_38_SELECT      FUNCTION0+NonGpio   // NOT USED
@@ -152,7 +152,7 @@
 #define GPIO_41_SELECT      FUNCTION1+NonGpio   // 1394 CLK REQ#
 #define GPIO_42_SELECT      FUNCTION1+NonGpio   // X4 GPP CLK REQ#
 #define GPIO_43_SELECT      FUNCTION0+NonGpio   // SMBUS0, CLOCK
-#define GPIO_44_SELECT      FUNCTION1+NonGpio   // PEGPIO0, RESET THE MXM MODULE 
+#define GPIO_44_SELECT      FUNCTION1+NonGpio   // PEGPIO0, RESET THE MXM MODULE
 #define GPIO_45_SELECT      FUNCTION2+NonGpio   // PEGPIO1, 1:MXM IS POWER ON; 0:MXM IS OFF
 #define GPIO_46_SELECT      FUNCTION1+NonGpio   // USB3.0_CLKREQ#
 #define GPIO_47_SELECT      FUNCTION0+NonGpio   // SMBUS0, DATA
@@ -215,7 +215,7 @@
 #define GPIO_101_SELECT     FUNCTION1           // LPC_PD#/GEVENT5# -> hotplug of express card, low active
 #define GPIO_102_SELECT     FUNCTION0+NonGpio   // USB_OC6#/IR_TX1/ GEVENT6# -> NOT USED,
                                                 // there is a confliction to IR function when this pin is as a GEVENT.
-#define GPIO_103_SELECT     FUNCTION0+NonGpio   // DDR3_RST#/GEVENT7#/VGA_PD -> VGA_PD, 
+#define GPIO_103_SELECT     FUNCTION0+NonGpio   // DDR3_RST#/GEVENT7#/VGA_PD -> VGA_PD,
                                                 // special pin difination for SB900 VGA OUTPUT, high active,
                                                 // VGA power for Hudson-M2 will be down when it was asserted.
 #define GPIO_104_SELECT     FUNCTION0           // WAKE#/GEVENT8# -> WAKEUP, low active
@@ -223,7 +223,7 @@
 #define GPIO_106_SELECT     FUNCTION0           // GBE_LED2/GEVENT10# -> GBE_LED2
 #define GPIO_107_SELECT     FUNCTION0+NonGpio   // GBE_STAT0/GEVENT11# -> GBE_STAT0
 #define GPIO_108_SELECT     FUNCTION2           // USB_OC0#/TRST#/GEVENT12# -> SMBALERT# (Light Sensor), low active
-                                                // [option for SPI_TPM_CS# in Hudson-M2 A12)] 
+                                                // [option for SPI_TPM_CS# in Hudson-M2 A12)]
 #define GPIO_109_SELECT     FUNCTION0           // USB_OC1#/TDI/GEVENT13# - USB OC for 0, 1,2,3 & USB_OC expresscard (usb4) &
                                                 //  USB3.0 PORT0,1:low active,disable all usb ports and new card power at a same time
 #define GPIO_110_SELECT     FUNCTION2           // USB_OC2#/TCK/GEVENT14# -> Lasso detect or Dock detect,
@@ -238,7 +238,7 @@
 #define GPIO_115_SELECT     FUNCTION0           // SYS_RESET#/GEVENT19# -> SYS_RST#
 #define GPIO_116_SELECT     FUNCTION0           // R_RX1/GEVENT20# -> IR INPUT
 #define GPIO_117_SELECT     FUNCTION1+NonGpio   // SPI_CS3#/GBE_STAT1/GEVENT21# -> GBE_STAT1
-#define GPIO_118_SELECT     FUNCTION1           // RI#/GEVENT22# -> LID_CLOSED# 
+#define GPIO_118_SELECT     FUNCTION1           // RI#/GEVENT22# -> LID_CLOSED#
 #define GPIO_119_SELECT     FUNCTION0           // LPC_SMI#/GEVENT23# -> EC_SMI
 #define GPIO_120_SELECT     FUNCTION0+NonGpio
 #define GPIO_121_SELECT     FUNCTION0+NonGpio
@@ -287,7 +287,7 @@
 #define GPIO_162_SELECT     FUNCTION0+NonGpio   // SPI ROM
 #define GPIO_163_SELECT     FUNCTION0+NonGpio   // SPI ROM
 #define GPIO_164_SELECT     FUNCTION0+NonGpio   // SPI ROM
-#define GPIO_165_SELECT     FUNCTION0+NonGpio   // SPI ROM 
+#define GPIO_165_SELECT     FUNCTION0+NonGpio   // SPI ROM
 #define GPIO_166_SELECT     FUNCTION1+NonGpio   // GBE_STAT2
 #define GPIO_167_SELECT     FUNCTION0+NonGpio   // AZ_SDATA_IN0
 #define GPIO_168_SELECT     FUNCTION0+NonGpio   // AZ_SDATA_IN1
@@ -357,18 +357,18 @@
 
 #define TYPE_GPI  (1<<5)
 #define TYPE_GPO  (0<<5)
-                    
-#define GPIO_00_TYPE        TYPE_GPO 
+
+#define GPIO_00_TYPE        TYPE_GPO
 #define GPIO_01_TYPE        TYPE_GPO
 #define GPIO_02_TYPE        TYPE_GPO
 #define GPIO_03_TYPE        TYPE_GPO
 #define GPIO_04_TYPE        TYPE_GPO
-#define GPIO_05_TYPE        TYPE_GPO 
+#define GPIO_05_TYPE        TYPE_GPO
 #define GPIO_06_TYPE        TYPE_GPO
 #define GPIO_07_TYPE        TYPE_GPO
 #define GPIO_08_TYPE        TYPE_GPO
 #define GPIO_09_TYPE        TYPE_GPI
-#define GPIO_10_TYPE        TYPE_GPI 
+#define GPIO_10_TYPE        TYPE_GPI
 #define GPIO_11_TYPE        TYPE_GPO
 #define GPIO_12_TYPE        TYPE_GPO
 #define GPIO_13_TYPE        TYPE_GPO
@@ -397,33 +397,33 @@
 #define GPIO_36_TYPE        TYPE_GPO
 #define GPIO_37_TYPE        TYPE_GPO
 #define GPIO_38_TYPE        TYPE_GPO
-#define GPIO_39_TYPE        TYPE_GPO 
+#define GPIO_39_TYPE        TYPE_GPO
 #define GPIO_40_TYPE        TYPE_GPO
-#define GPIO_41_TYPE        TYPE_GPI 
+#define GPIO_41_TYPE        TYPE_GPI
 #define GPIO_42_TYPE        TYPE_GPI
 #define GPIO_43_TYPE        TYPE_GPO
 #define GPIO_44_TYPE        TYPE_GPO
 #define GPIO_45_TYPE        TYPE_GPO
 #define GPIO_46_TYPE        TYPE_GPI
 #define GPIO_47_TYPE        TYPE_GPO
-#define GPIO_48_TYPE        TYPE_GPO 
-#define GPIO_49_TYPE        TYPE_GPO 
+#define GPIO_48_TYPE        TYPE_GPO
+#define GPIO_49_TYPE        TYPE_GPO
 #define GPIO_50_TYPE        TYPE_GPO
 #define GPIO_51_TYPE        TYPE_GPO
 #define GPIO_52_TYPE        TYPE_GPO
-#define GPIO_53_TYPE        TYPE_GPO 
-#define GPIO_54_TYPE        TYPE_GPO 
-#define GPIO_55_TYPE        TYPE_GPO 
+#define GPIO_53_TYPE        TYPE_GPO
+#define GPIO_54_TYPE        TYPE_GPO
+#define GPIO_55_TYPE        TYPE_GPO
 #define GPIO_56_TYPE        TYPE_GPI
 #define GPIO_57_TYPE        TYPE_GPO
-#define GPIO_58_TYPE        TYPE_GPO 
+#define GPIO_58_TYPE        TYPE_GPO
 #define GPIO_59_TYPE        TYPE_GPO
 #define GPIO_60_TYPE        TYPE_GPI
 #define GPIO_61_TYPE        TYPE_GPI
 #define GPIO_62_TYPE        TYPE_GPI
 #define GPIO_63_TYPE        TYPE_GPI
 #define GPIO_64_TYPE        TYPE_GPI
-#define GPIO_65_TYPE        TYPE_GPI  
+#define GPIO_65_TYPE        TYPE_GPI
 #define GPIO_66_TYPE        TYPE_GPO
 #define GPIO_67_TYPE        TYPE_GPO
 #define GPIO_68_TYPE        TYPE_GPO
@@ -460,17 +460,17 @@
 #define GPIO_97_TYPE        TYPE_GPI
 #define GPIO_98_TYPE        TYPE_GPI
 #define GPIO_99_TYPE        TYPE_GPI
-#define GPIO_100_TYPE       TYPE_GPI 
+#define GPIO_100_TYPE       TYPE_GPI
 #define GPIO_101_TYPE       TYPE_GPI
 #define GPIO_102_TYPE       TYPE_GPO
 #define GPIO_103_TYPE       TYPE_GPO
 #define GPIO_104_TYPE       TYPE_GPI
-#define GPIO_105_TYPE       TYPE_GPI 
+#define GPIO_105_TYPE       TYPE_GPI
 #define GPIO_106_TYPE       TYPE_GPO
 #define GPIO_107_TYPE       TYPE_GPI
 #define GPIO_108_TYPE       TYPE_GPI
 #define GPIO_109_TYPE       TYPE_GPI
-#define GPIO_110_TYPE       TYPE_GPI 
+#define GPIO_110_TYPE       TYPE_GPI
 #define GPIO_111_TYPE       TYPE_GPI
 #define GPIO_112_TYPE       TYPE_GPI
 #define GPIO_113_TYPE       TYPE_GPI
@@ -500,33 +500,33 @@
 #define GPIO_136_TYPE       TYPE_GPO
 #define GPIO_137_TYPE       TYPE_GPO
 #define GPIO_138_TYPE       TYPE_GPO
-#define GPIO_139_TYPE       TYPE_GPO 
+#define GPIO_139_TYPE       TYPE_GPO
 #define GPIO_140_TYPE       TYPE_GPO
-#define GPIO_141_TYPE       TYPE_GPO 
+#define GPIO_141_TYPE       TYPE_GPO
 #define GPIO_142_TYPE       TYPE_GPO
 #define GPIO_143_TYPE       TYPE_GPO
 #define GPIO_144_TYPE       TYPE_GPO
 #define GPIO_145_TYPE       TYPE_GPO
 #define GPIO_146_TYPE       TYPE_GPO
 #define GPIO_147_TYPE       TYPE_GPO
-#define GPIO_148_TYPE       TYPE_GPO 
-#define GPIO_149_TYPE       TYPE_GPO 
+#define GPIO_148_TYPE       TYPE_GPO
+#define GPIO_149_TYPE       TYPE_GPO
 #define GPIO_150_TYPE       TYPE_GPO
 #define GPIO_151_TYPE       TYPE_GPO
 #define GPIO_152_TYPE       TYPE_GPO
-#define GPIO_153_TYPE       TYPE_GPO 
-#define GPIO_154_TYPE       TYPE_GPO 
-#define GPIO_155_TYPE       TYPE_GPO 
+#define GPIO_153_TYPE       TYPE_GPO
+#define GPIO_154_TYPE       TYPE_GPO
+#define GPIO_155_TYPE       TYPE_GPO
 #define GPIO_156_TYPE       TYPE_GPO
 #define GPIO_157_TYPE       TYPE_GPO
-#define GPIO_158_TYPE       TYPE_GPO 
+#define GPIO_158_TYPE       TYPE_GPO
 #define GPIO_159_TYPE       TYPE_GPO
 #define GPIO_160_TYPE       TYPE_GPO
 #define GPIO_161_TYPE       TYPE_GPO
 #define GPIO_162_TYPE       TYPE_GPO
 #define GPIO_163_TYPE       TYPE_GPO
 #define GPIO_164_TYPE       TYPE_GPI
-#define GPIO_165_TYPE       TYPE_GPO  
+#define GPIO_165_TYPE       TYPE_GPO
 #define GPIO_166_TYPE       TYPE_GPI
 #define GPIO_167_TYPE       TYPE_GPI
 #define GPIO_168_TYPE       TYPE_GPI
@@ -561,17 +561,17 @@
 #define GPIO_197_TYPE       TYPE_GPO
 #define GPIO_198_TYPE       TYPE_GPO
 #define GPIO_199_TYPE       TYPE_GPI
-#define GPIO_200_TYPE       TYPE_GPO 
+#define GPIO_200_TYPE       TYPE_GPO
 #define GPIO_201_TYPE       TYPE_GPI
 #define GPIO_202_TYPE       TYPE_GPI
 #define GPIO_203_TYPE       TYPE_GPI
 #define GPIO_204_TYPE       TYPE_GPI
-#define GPIO_205_TYPE       TYPE_GPI 
+#define GPIO_205_TYPE       TYPE_GPI
 #define GPIO_206_TYPE       TYPE_GPI
 #define GPIO_207_TYPE       TYPE_GPI
 #define GPIO_208_TYPE       TYPE_GPI
 #define GPIO_209_TYPE       TYPE_GPO
-#define GPIO_210_TYPE       TYPE_GPO 
+#define GPIO_210_TYPE       TYPE_GPO
 #define GPIO_211_TYPE       TYPE_GPO
 #define GPIO_212_TYPE       TYPE_GPO
 #define GPIO_213_TYPE       TYPE_GPO
@@ -595,17 +595,17 @@
 #define GPO_LOW   (0<<6)
 #define GPO_HI    (1<<6)
 
-#define GPO_00_LEVEL        GPO_HI 
+#define GPO_00_LEVEL        GPO_HI
 #define GPO_01_LEVEL        GPO_HI
 #define GPO_02_LEVEL        GPO_HI
 #define GPO_03_LEVEL        GPO_HI
 #define GPO_04_LEVEL        GPO_HI
-#define GPO_05_LEVEL        GPO_HI  
+#define GPO_05_LEVEL        GPO_HI
 #define GPO_06_LEVEL        GPO_HI
 #define GPO_07_LEVEL        GPO_HI
 #define GPO_08_LEVEL        GPO_HI
 #define GPO_09_LEVEL        GPO_LOW
-#define GPO_10_LEVEL        GPO_LOW 
+#define GPO_10_LEVEL        GPO_LOW
 #define GPO_11_LEVEL        GPO_HI
 #define GPO_12_LEVEL        GPO_HI
 #define GPO_13_LEVEL        GPO_HI
@@ -634,16 +634,16 @@
 #define GPO_36_LEVEL        GPO_LOW
 #define GPO_37_LEVEL        GPO_HI
 #define GPO_38_LEVEL        GPO_HI
-#define GPO_39_LEVEL        GPO_HI  
+#define GPO_39_LEVEL        GPO_HI
 #define GPO_40_LEVEL        GPO_LOW
-#define GPO_41_LEVEL        GPO_LOW 
+#define GPO_41_LEVEL        GPO_LOW
 #define GPO_42_LEVEL        GPO_LOW
 #define GPO_43_LEVEL        GPO_LOW
 #define GPO_44_LEVEL        GPO_HI
 #define GPO_45_LEVEL        GPO_HI
 #define GPO_46_LEVEL        GPO_LOW
 #define GPO_47_LEVEL        GPO_LOW
-#define GPO_48_LEVEL        GPO_LOW 
+#define GPO_48_LEVEL        GPO_LOW
 #define GPO_49_LEVEL        GPO_HI
 #define GPO_50_LEVEL        GPO_HI
 #define GPO_51_LEVEL        GPO_LOW
@@ -667,7 +667,7 @@
 #define GPO_69_LEVEL        GPO_LOW
 #define GPO_70_LEVEL        GPO_LOW
 #define GPO_71_LEVEL        GPO_LOW
-#define GPO_72_LEVEL        GPO_LOW 
+#define GPO_72_LEVEL        GPO_LOW
 #define GPO_73_LEVEL        GPO_LOW
 #define GPO_74_LEVEL        GPO_LOW
 #define GPO_75_LEVEL        GPO_LOW
@@ -695,17 +695,17 @@
 #define GPO_97_LEVEL        GPO_LOW
 #define GPO_98_LEVEL        GPO_LOW
 #define GPO_99_LEVEL        GPO_LOW
-#define GPO_100_LEVEL       GPO_LOW 
+#define GPO_100_LEVEL       GPO_LOW
 #define GPO_101_LEVEL       GPO_LOW
 #define GPO_102_LEVEL       GPO_LOW
 #define GPO_103_LEVEL       GPO_LOW
 #define GPO_104_LEVEL       GPO_LOW
-#define GPO_105_LEVEL       GPO_LOW  
+#define GPO_105_LEVEL       GPO_LOW
 #define GPO_106_LEVEL       GPO_LOW
 #define GPO_107_LEVEL       GPO_LOW
 #define GPO_108_LEVEL       GPO_HI
 #define GPO_109_LEVEL       GPO_LOW
-#define GPO_110_LEVEL       GPO_HI 
+#define GPO_110_LEVEL       GPO_HI
 #define GPO_111_LEVEL       GPO_HI
 #define GPO_112_LEVEL       GPO_HI
 #define GPO_113_LEVEL       GPO_LOW
@@ -734,16 +734,16 @@
 #define GPO_136_LEVEL       GPO_LOW
 #define GPO_137_LEVEL       GPO_LOW
 #define GPO_138_LEVEL       GPO_LOW
-#define GPO_139_LEVEL       GPO_LOW  
+#define GPO_139_LEVEL       GPO_LOW
 #define GPO_140_LEVEL       GPO_LOW
-#define GPO_141_LEVEL       GPO_LOW 
+#define GPO_141_LEVEL       GPO_LOW
 #define GPO_142_LEVEL       GPO_LOW
 #define GPO_143_LEVEL       GPO_LOW
 #define GPO_144_LEVEL       GPO_LOW
 #define GPO_145_LEVEL       GPO_LOW
 #define GPO_146_LEVEL       GPO_LOW
 #define GPO_147_LEVEL       GPO_LOW
-#define GPO_148_LEVEL       GPO_LOW 
+#define GPO_148_LEVEL       GPO_LOW
 #define GPO_149_LEVEL       GPO_LOW
 #define GPO_150_LEVEL       GPO_LOW
 #define GPO_151_LEVEL       GPO_LOW
@@ -795,17 +795,17 @@
 #define GPO_197_LEVEL       GPO_LOW
 #define GPO_198_LEVEL       GPO_LOW
 #define GPO_199_LEVEL       GPO_LOW
-#define GPO_200_LEVEL       GPO_HI 
+#define GPO_200_LEVEL       GPO_HI
 #define GPO_201_LEVEL       GPO_LOW
 #define GPO_202_LEVEL       GPO_LOW
 #define GPO_203_LEVEL       GPO_LOW
 #define GPO_204_LEVEL       GPO_LOW
-#define GPO_205_LEVEL       GPO_LOW  
+#define GPO_205_LEVEL       GPO_LOW
 #define GPO_206_LEVEL       GPO_LOW
 #define GPO_207_LEVEL       GPO_LOW
 #define GPO_208_LEVEL       GPO_LOW
 #define GPO_209_LEVEL       GPO_LOW
-#define GPO_210_LEVEL       GPO_LOW 
+#define GPO_210_LEVEL       GPO_LOW
 #define GPO_211_LEVEL       GPO_LOW
 #define GPO_212_LEVEL       GPO_LOW
 #define GPO_213_LEVEL       GPO_LOW
@@ -2278,9 +2278,9 @@ typedef struct _GEVENT_SETTINGS
     u8 SciLevl;          // 0: Edge trigger, 1: Level Trigger
     u8 SmiSciEn;         // 0: Not send SMI, 1: Send SMI
     u8 SciS0En;          // 0: Disable, 1: Enable
-    u8 SciMap;           // 0000b->1111b 
+    u8 SciMap;           // 0000b->1111b
     u8 SmiTrig;          // 0: Active Low, 1: Active High
-    u8 SmiControl;       // 0: Disable, 1: SMI 2: NMI 3: IRQ13     
+    u8 SmiControl;       // 0: Disable, 1: SMI 2: NMI 3: IRQ13
 } GEVENT_SETTINGS;
 
 GEVENT_SETTINGS gevent_table[] =
@@ -2315,15 +2315,15 @@ GEVENT_SETTINGS gevent_table[] =
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*---------------------------------------------------------------------------------------
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
- 
+
 #endif

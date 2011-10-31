@@ -90,7 +90,7 @@ uint16_t detect_ec(void)
 		return 0;
 
 	ec_port = pci_read_word(dev, 0xa4);
-	
+
 	if (!(ec_port & 0x1))
 		return 0;
 

@@ -21,7 +21,7 @@
  *                             M O D U L E S    U S E D
  *----------------------------------------------------------------------------------------
  */
- 
+
 #include <stdint.h>
 #include <string.h>
 #include "agesawrapper.h"
@@ -52,8 +52,8 @@ VOID *AcpiSlit    = NULL;
 
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib    = NULL; 
- 
+VOID *AcpiAlib    = NULL;
+
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
@@ -64,17 +64,17 @@ VOID *AcpiAlib    = NULL;
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*---------------------------------------------------------------------------------------
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
-UINT32 
+UINT32
 agesawrapper_amdinitcpuio (
   VOID
   )
@@ -84,30 +84,30 @@ agesawrapper_amdinitcpuio (
   UINT32                        PciData;
   PCI_ADDR                      PciAddress;
   AMD_CONFIG_PARAMS             StdHeader;
-  
+
   /* Enable MMIO on AMD CPU Address Map Controller */
-  
+
   /* Start to set MMIO 0000A0000-0000BFFFF to Node0 Link0 */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
   PciData = 0x00000B00;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
   PciData = 0x00000A03;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-  
+
   /* Set TOM-DFFFFFFF to Node0 Link0. */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x8C);
   PciData = 0x00DFFF00;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   LibAmdMsrRead (0xC001001A, &MsrReg, &StdHeader);
   MsrReg = (MsrReg >> 8) | 3;
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x88);
   PciData = (UINT32)MsrReg;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   /* Set E0000000-FFFFFFFF to Node0 Link0 with NP set. */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xBC);
   PciData = 0x00FFFF00 | 0x80;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xB8);
   PciData = (PCIE_BASE_ADDRESS >> 8) | 03;
   LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
@@ -121,8 +121,8 @@ agesawrapper_amdinitcpuio (
   Status = AGESA_SUCCESS;
   return (UINT32)Status;
 }
- 
-UINT32 
+
+UINT32
 agesawrapper_amdinitmmio (
   VOID
   )
@@ -132,29 +132,29 @@ agesawrapper_amdinitmmio (
   UINT32                        PciData;
   PCI_ADDR                      PciAddress;
   AMD_CONFIG_PARAMS             StdHeader;
-  
+
   /*
    Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
    Address MSR register.
   */
   MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (8 << 2) | 1;
   LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
-  
+
   /*
    Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
   */
   LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
   MsrReg = MsrReg | 0x0000400000000000;
   LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
-  
+
   /* Set Ontario Link Data */
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE0);
   PciData = 0x01308002;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
   PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0, 0, 0xE4);
   PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
-  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader); 
-  
+  LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
+
 
   /* Set ROM cache onto WP to decrease post time */
   MsrReg = (0x0100000000 - CONFIG_ROM_SIZE) | 5;
@@ -166,7 +166,7 @@ agesawrapper_amdinitmmio (
   return (UINT32)Status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdinitreset (
   VOID
   )
@@ -174,7 +174,7 @@ agesawrapper_amdinitreset (
   AGESA_STATUS status;
   AMD_INTERFACE_PARAMS AmdParamStruct;
   AMD_RESET_PARAMS AmdResetParams;
-  
+
   LibAmdMemFill (&AmdParamStruct,
                  0,
                  sizeof (AMD_INTERFACE_PARAMS),
@@ -196,14 +196,14 @@ agesawrapper_amdinitreset (
   AmdParamStruct.StdHeader.ImageBasePtr = 0;
   AmdCreateStruct (&AmdParamStruct);
   AmdResetParams.HtConfig.Depth = 0;
-  
+
   status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
   if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
   AmdReleaseStruct (&AmdParamStruct);
   return (UINT32)status;
- }  
-  
-UINT32 
+ }
+
+UINT32
 agesawrapper_amdinitearly (
   VOID
   )
@@ -211,7 +211,7 @@ agesawrapper_amdinitearly (
   AGESA_STATUS status;
   AMD_INTERFACE_PARAMS AmdParamStruct;
   AMD_EARLY_PARAMS     *AmdEarlyParamsPtr;
-  
+
   LibAmdMemFill (&AmdParamStruct,
                  0,
                  sizeof (AMD_INTERFACE_PARAMS),
@@ -224,10 +224,10 @@ agesawrapper_amdinitearly (
   AmdParamStruct.StdHeader.Func = 0;
   AmdParamStruct.StdHeader.ImageBasePtr = 0;
   AmdCreateStruct (&AmdParamStruct);
-  
+
   AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
   OemCustomizeInitEarly (AmdEarlyParamsPtr);
-  
+
   status = AmdInitEarly ((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
   if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
   AmdReleaseStruct (&AmdParamStruct);
@@ -235,7 +235,7 @@ agesawrapper_amdinitearly (
   return (UINT32)status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdinitpost (
   VOID
   )
@@ -277,7 +277,7 @@ agesawrapper_amdinitpost (
   return (UINT32)status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdinitenv (
   VOID
   )
@@ -304,7 +304,7 @@ agesawrapper_amdinitenv (
   /* Initialize Subordinate Bus Number and Secondary Bus Number
    * In platform BIOS this address is allocated by PCI enumeration code
      Modify D1F0x18
-   */  
+   */
   PciAddress.Address.Bus = 0;
   PciAddress.Address.Device = 1;
   PciAddress.Address.Function = 0;
@@ -407,17 +407,17 @@ agesawrapper_getlateinitptr (
   }
 }
 
-UINT32 
+UINT32
 agesawrapper_amdinitmid (
   VOID
   )
 {
   AGESA_STATUS status;
   AMD_INTERFACE_PARAMS AmdParamStruct;
-  
+
   /* Enable MMIO on AMD CPU Address Map Controller */
   agesawrapper_amdinitcpuio ();
-  
+
   LibAmdMemFill (&AmdParamStruct,
                  0,
                  sizeof (AMD_INTERFACE_PARAMS),
@@ -439,7 +439,7 @@ agesawrapper_amdinitmid (
   return (UINT32)status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdinitlate (
   VOID
   )
@@ -475,9 +475,9 @@ agesawrapper_amdinitlate (
   return (UINT32)Status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdlaterunaptask (
-  UINT32 Data, 
+  UINT32 Data,
   VOID *ConfigPtr
   )
 {
@@ -512,7 +512,7 @@ agesawrapper_amdlaterunaptask (
   return (UINT32)Status;
 }
 
-UINT32 
+UINT32
 agesawrapper_amdreadeventlog (
   VOID
   )

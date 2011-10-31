@@ -57,7 +57,7 @@ void hardwaremain(int ret_addr)
 	train_ram(id.nodeid, sysinfo, sysinfox);
 
 	/*
-	 * go back, but can not use stack any more, because we 
+	 * go back, but can not use stack any more, because we
 	 * only keep ret_addr and can not restore esp, and ebp.
 	 */
 

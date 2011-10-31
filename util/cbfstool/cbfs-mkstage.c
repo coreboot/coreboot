@@ -36,7 +36,7 @@ unsigned int idemp(unsigned int x)
 	return x;
 }
 
-/* This is a wrapper around the swab32() macro to make it 
+/* This is a wrapper around the swab32() macro to make it
  * usable for the current implementation of parse_elf_to_stage()
  */
 static unsigned int swap32(unsigned int x)

@@ -27,7 +27,7 @@
 extern struct chip_operations superio_smsc_fdc37n972_ops;
 
 struct superio_smsc_fdc37n972_config {
-	
+
 	struct pc_keyboard keyboard;
 };
 

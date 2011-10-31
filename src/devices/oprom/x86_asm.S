@@ -255,7 +255,7 @@ __realmode_interrupt = RELOCATED(.)
 	data32 ljmp	$0, $RELOCATED(1f)
 1:
 
-	/* put the stack at the end of page zero.  That way we can easily 
+	/* put the stack at the end of page zero.  That way we can easily
 	 * share it between real mode and protected mode, because %esp and
 	 * %ss:%sp point to the same memory.
 	 */

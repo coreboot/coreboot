@@ -73,8 +73,8 @@ static void sb900_enable_rom(void)
   pci_io_write_config32(dev, 0x44, dword);
 
   /* SB900 LPC Bridge 0:20:3:48h.
-   * BIT0: Port Enable for SuperIO 0x2E-0x2F 
-   * BIT1: Port Enable for SuperIO 0x4E-0x4F 
+   * BIT0: Port Enable for SuperIO 0x2E-0x2F
+   * BIT1: Port Enable for SuperIO 0x4E-0x4F
    * BIT4: Port Enable for LPC ROM Address Arrage2 (0x68-0x6C)
    * BIT6: Port Enable for RTC IO 0x70-0x73
    * BIT21: Port Enable for Port 0x80
@@ -86,7 +86,7 @@ static void sb900_enable_rom(void)
   /* Enable 4MB rom access at 0xFFE00000 - 0xFFFFFFFF */
   /* Set the 4MB enable bits */
   word = pci_io_read_config16(dev, 0x6c);
-  word = 0xFFC0; 
+  word = 0xFFC0;
   pci_io_write_config16(dev, 0x6c, word);
 }
 

@@ -167,7 +167,7 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 		bytes[i] = (hi >> (8*(i - 4))) & 0xff;
 }
 
-static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, 
+static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 		unsigned devnum, unsigned endpoint, const char *bytes, int size)
 {
 	u32 pids, addr, ctrl;
@@ -234,7 +234,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 {
-	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum, 
+	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum,
 			dbg_info->endpoint_in, data, size);
 }
 
@@ -373,7 +373,7 @@ int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *in
 	int playtimes = 3;
 
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
-	ehci_regs  = (struct ehci_regs *)(ehci_bar + 
+	ehci_regs  = (struct ehci_regs *)(ehci_bar +
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
 	info->ehci_debug = (void *)0;

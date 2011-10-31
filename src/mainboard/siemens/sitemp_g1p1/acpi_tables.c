@@ -128,13 +128,13 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	struct resource *res;
 	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS; // default
-	
+
 	device_t dev = dev_find_slot(0,PCI_DEVFN(0,0));
 	// we report mmconf base
 	res = probe_resource(dev, 0x1C);
 	if( res )
 		mmconf_base = res->base;
-		
+
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current, mmconf_base, 0x0, 0x0, 0x1f); // Fix me: should i reserve 255 busses ?
 
 	return current;
@@ -180,7 +180,7 @@ unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
 	int i;
-	
+
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_srat_t *srat;
@@ -192,7 +192,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
-	
+
 	get_bus_conf();		/* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* Align ACPI tables to 16byte */
@@ -204,14 +204,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
 	current += sizeof(acpi_rsdp_t);
-	ALIGN_CURRENT;	
+	ALIGN_CURRENT;
 	rsdt = (acpi_rsdt_t *) current;
 	current += sizeof(acpi_rsdt_t);
 	ALIGN_CURRENT;
 	xsdt = (acpi_xsdt_t *) current;
 	current += sizeof(acpi_xsdt_t);
 	ALIGN_CURRENT;
-	
+
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
 
@@ -234,7 +234,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_my_hpet(hpet);
 	current += sizeof(acpi_hpet_t);
 	acpi_add_table(rsdp, hpet);
-	
+
 	/* If we want to use HPET Timers Linux wants an MADT */
 	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
@@ -247,15 +247,15 @@ unsigned long write_acpi_tables(unsigned long start)
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
-	acpi_add_table(rsdp, mcfg);	
-	
+	acpi_add_table(rsdp, mcfg);
+
 	/* SSDT */
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
 	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
 	current += ssdt->length;
-	acpi_add_table(rsdp, ssdt);	
-	
+	acpi_add_table(rsdp, ssdt);
+
 	/* DSDT */
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
 	dsdt = (acpi_header_t *)current;
@@ -267,7 +267,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xBADEAFFE) {
 			printk(BIOS_DEBUG, "ACPI: Patching up globals in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
-			*(u32*)(((u32)dsdt) + i) = current; 
+			*(u32*)(((u32)dsdt) + i) = current;
 			break;
 		}
 	}
@@ -277,8 +277,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += GLOBAL_VARS_SIZE;
 	/* We patched up the DSDT, so we need to recalculate the checksum */
 	dsdt->checksum = 0;
-	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);	
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);	
+	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 
 	/* FADT */
 	printk(BIOS_DEBUG, "ACPI:    * FADT\n");

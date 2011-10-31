@@ -381,7 +381,7 @@ u32 extractbits(u32 source, int lsb, int msb)
 int cpuidFamily(void)
 {
 	u32 baseFamily, extendedFamily, fms;
-	
+
 	fms = cpuid_eax (1);
 	baseFamily = extractbits (fms, 8, 11);
 	extendedFamily = extractbits (fms, 20, 27);

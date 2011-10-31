@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2006 Indrek Kruusa <indrek.kruusa@artecdesign.ee>
  * Copyright (C) 2006 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
@@ -83,7 +83,7 @@ static const struct delay_controls {
  * hardware is not an exact science. And, finally, if an FS2 (JTAG debugger)
  * is hooked up, then just don't do anything. This code was written by a master
  * of the Dark Arts at AMD and should not be modified in any way.
- * 
+ *
  * [1] (http://www.thefreedictionary.com/juju)
  *
  * @param dimm0 The SMBus address of DIMM 0 (mainboard dependent).

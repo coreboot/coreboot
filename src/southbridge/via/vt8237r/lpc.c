@@ -297,7 +297,7 @@ static void vt8237r_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x48, 0x0c);
 #else
-	
+
   #if CONFIG_SOUTHBRIDGE_VIA_K8T800
 	/* It seems that when we pair with the K8T800, we need to disable
 	 * the A2 mask
@@ -310,7 +310,7 @@ static void vt8237r_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x48, 0x8c);
   #endif
-	
+
 #endif
 
 	southbridge_init_common(dev);
@@ -327,7 +327,7 @@ static void vt8237r_init(struct device *dev)
 
 	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 	printk(BIOS_SPEW, "And taking a dump:\n");
-	dump_south(dev);	
+	dump_south(dev);
 }
 
 static void vt8237a_init(struct device *dev)

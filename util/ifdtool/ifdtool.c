@@ -311,7 +311,7 @@ void inject_region(char *filename, char *image, int size, int region_type,
 		exit(EXIT_FAILURE);
 	frba_t *frba =
 	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-	
+
 	region_t region = get_region(frba, region_type);
 	if (region.size <= 0xfff) {
 		fprintf(stderr, "Region %s is disabled in target. Not injecting.\n",

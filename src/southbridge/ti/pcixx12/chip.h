@@ -24,7 +24,7 @@ extern struct chip_operations southbridge_ti_pcixx12_ops;
 
 struct southbridge_ti_pcixx12_config {
 	int dummy;
-	
+
 };
 
 #endif /* _SOUTHBRIDGE_TI_PCIXX12 */

@@ -58,7 +58,7 @@ void main(unsigned long bist)
 	SystemPreInit();
 
 	cs5536_early_setup();
-	
+
 	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
 	cs5536_setup_onchipuart(1);
 

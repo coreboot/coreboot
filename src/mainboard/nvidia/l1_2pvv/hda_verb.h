@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2004 Tyan Computer
  * Copyright (C) 2006-2007 AMD
  * Copyright (C) 2007-2009 coresystems GmbH

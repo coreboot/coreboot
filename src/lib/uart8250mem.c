@@ -120,7 +120,7 @@ u32 uart_mem_init(void)
 
 	if (dev) {
 		struct resource *res = find_resource(dev, 0x10);
-	
+
 		if (res) {
 			uart_bar = res->base + 0x1000; // for 1st UART
 			// uart_bar = res->base + 0x2000; // for 2nd UART
@@ -131,7 +131,7 @@ u32 uart_mem_init(void)
 #endif
 	uart_bar = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000; // 1st UART
 	// uart_bar = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x2000; // 2nd UART
-	
+
 	div = 4000000 / uart_baud;
 #endif
 

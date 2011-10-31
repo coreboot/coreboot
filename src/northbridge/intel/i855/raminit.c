@@ -831,12 +831,12 @@ static void spd_set_dram_throttle_control(void)
 	 */
 	dtc_reg |= (3 << 28);
 
-	/* Read Counter Based Power Throttle Control (RCTC): 
+	/* Read Counter Based Power Throttle Control (RCTC):
 	 *   0 = 85%
 	 */
 	dtc_reg |= (0 << 24);
 
-	/* Write Counter Based Power Throttle Control (WCTC): 
+	/* Write Counter Based Power Throttle Control (WCTC):
 	 *   0 = 85%
 	 */
 	dtc_reg |= (0 << 20);
@@ -879,7 +879,7 @@ static void spd_update(u8 reg, u32 new_value)
 	u32 value2 = pci_read_config32(NORTHBRIDGE_MMC, reg);
 	PRINTK_DEBUG("update reg %02x, old: %08x, new: %08x, read back: %08x\n", reg, value1, new_value, value2);
 #endif
-}	
+}
 
 /* if ram still doesn't work do this function */
 static void spd_set_undocumented_registers(void)
@@ -967,7 +967,7 @@ static void sdram_set_spd_registers(void)
 	if (dimm_mask == 0) {
 		print_debug("No usable memory for this controller\n");
 	} else {
-		PRINTK_DEBUG("DIMM MASK: %02x\n", dimm_mask);	
+		PRINTK_DEBUG("DIMM MASK: %02x\n", dimm_mask);
 
 		spd_set_row_attributes(dimm_mask);
 		spd_set_dram_controller_mode(dimm_mask);

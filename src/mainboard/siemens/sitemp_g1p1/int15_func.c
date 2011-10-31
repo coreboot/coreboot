@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <console/console.h>
@@ -80,7 +80,7 @@ int sbios_INT15_handler(struct eregs *regs)
 			regs->eax &= ~(0xff);
 			regs->ebx &= ~(0xff);
 			printk(BIOS_DEBUG, "Integrated System Information = %x:%x\n", regs->edx, regs->edi);
-			vgainfo_addr = (regs->edx * 16) + regs->edi; 
+			vgainfo_addr = (regs->edx * 16) + regs->edi;
 			res = 0;
 			break;
 		case 0x89:

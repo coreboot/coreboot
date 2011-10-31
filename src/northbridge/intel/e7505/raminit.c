@@ -15,7 +15,7 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <stdlib.h>
-#include "e7501.h"
+#include "e7505.h"
 
 /*-----------------------------------------------------------------------------
 Definitions:
@@ -176,7 +176,8 @@ static const long constant_register_values[] = {
 	//               without jumping through 36-bit adddressing hoops, even if the
 	//               total memory is > 4 GB. Changing these values may break do_ram_command()!
 	0x60, 0x00000000, (0x01 << 0) | (0x02 << 8) | (0x03 << 16) | (0x04 << 24),
-	0x64, 0x00000000, (0x05 << 0) | (0x06 << 8) | (0x07 << 16) | (0x08 << 24),
+//	0x64, 0x00000000, (0x05 << 0) | (0x06 << 8) | (0x07 << 16) | (0x08 << 24),
+	0x64, 0x00000000, (0x04 << 0) | (0x04 << 8) | (0x04 << 16) | (0x04 << 24),
 
 	/* DRA - DRAM Row Attribute Register
 	 * 0x70 Row 0,1
@@ -260,7 +261,8 @@ static const long constant_register_values[] = {
 
 	// The only things we need to set here are DRAM idle timer, Back-to-Back Read Turnaround, and
 	// Back-to-Back Write-Read Turnaround. All others are configured based on SPD.
-	0x78, 0xD7F8FFFF, (1 << 29) | (1 << 27) | (1 << 16),
+//	0x78, 0xD7F8FFFF, (1 << 29) | (1 << 27) | (1 << 16),
+	0x78, 0xC7F8FFFF, (0x03<<16)|(0x28<<24),
 
 	/* FIXME why was I attempting to set a reserved bit? */
 	/* 0x0100040f */
@@ -314,7 +316,8 @@ static const long constant_register_values[] = {
 
 	// Default to dual-channel mode, ECC, 1-clock address/cmd hold
 	// NOTE: configure_e7501_dram_controller_mode() configures further
-	0x7c, 0xff8ef8ff, (1 << 22) | (2 << 20) | (1 << 16) | (0 << 8),
+//	0x7c, 0xff8ef8ff, (1 << 22) | (2 << 20) | (1 << 16) | (0 << 8),
+	0x7c, 0xffcef8f7, 0x00210008,
 
 	/* Another Intel undocumented register
 	 * 0x88 - 0x8B
@@ -400,7 +403,8 @@ static const long constant_register_values[] = {
 	 */
 
 	// Enable D0:D1, disable D2:F1, D3:F1, D4:F1
-	0xe0, 0xffffffe2, (1 << 4) | (1 << 3) | (1 << 2) | (0 << 0),
+//	0xe0, 0xffffffe2, (1 << 4) | (1 << 3) | (1 << 2) | (0 << 0),
+	0xe0, 0xfffffffa, 0x0,
 
 	// Undocumented
 	0xd8, 0xffff9fff, 0x00000000,
@@ -422,7 +426,7 @@ static const long constant_register_values[] = {
 	 * [00:00] Unknown - not used?
 	 */
 
-	0xf4, 0x3f8ffffd, 0x40300002,
+//	0xf4, 0x3f8ffffd, 0x40300002,
 
 #ifdef SUSPICIOUS_LOOKING_CODE
 	// SJM: Undocumented.
@@ -432,12 +436,13 @@ static const long constant_register_values[] = {
 };
 
 	/* DDR RECOMP tables */
-
+#if 0
 // Slew table for 1x drive?
 static const uint32_t maybe_1x_slew_table[] = {
 	0x44332211, 0xc9776655, 0xffffffff, 0xffffffff,
 	0x22111111, 0x55444332, 0xfffca876, 0xffffffff,
 };
+#endif
 
 // Slew table for 2x drive?
 static const uint32_t maybe_2x_slew_table[] = {
@@ -478,15 +483,63 @@ static void do_delay(void)
 
 #define EXTRA_DELAY DO_DELAY
 
-static void die_on_spd_error(int spd_return_value)
+/*-----------------------------------------------------------------------------
+Handle (undocumented) control bits in device 0:6.0
+-----------------------------------------------------------------------------*/
+
+/**
+ *
+ */
+static void ram_handle_d060_1(void)
 {
-	if (spd_return_value < 0)
-		die("Error reading SPD info\n");
+	uint32_t dword;
+
+	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword |= 0x02;
+	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+
+	dword = pci_read_config32(PCI_DEV(0,6,0), 0xf0);
+	dword |= 0x04;
+	pci_write_config32(PCI_DEV(0,6,0), 0xf0, dword);
+
+	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword &= ~0x02;
+	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+}
+
+/**
+ *
+ */
+static void ram_handle_d060_2(void)
+{
+	uint32_t dword;
+	uint8_t revision;
+
+	revision = pci_read_config8(PCI_DEV(0,0,0), 0x08);
+	if (revision >= 3) {
+		dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+		dword |= 0x02;
+		pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+
+		dword = pci_read_config32(PCI_DEV(0,6,0), 0xf0);
+		dword |= 0x18000000;
+		pci_write_config32(PCI_DEV(0,6,0), 0xf0, dword);
+
+		dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+		dword &= ~0x02;
+		pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+	}
 }
 
 /*-----------------------------------------------------------------------------
 Serial presence detect (SPD) functions:
 -----------------------------------------------------------------------------*/
+
+static void die_on_spd_error(int spd_return_value)
+{
+	if (spd_return_value < 0)
+		die("Error reading SPD info\n");
+}
 
 /**
  * Calculate the page size for each physical bank of the DIMM:
@@ -843,10 +896,10 @@ SDRAM configuration functions:
  */
 static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 {
-	int i;
+	uint8_t dimm_start_64M_multiple;
+	uint32_t dimm_start_address;
 	uint32_t dram_controller_mode;
-	uint8_t dimm_start_64M_multiple = 0;
-	uint16_t e7501_mode_bits = jedec_mode_bits;
+	uint8_t i;
 
 	// Configure the RAM command
 	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
@@ -856,58 +909,43 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 	// RAM_COMMAND_NORMAL is an exception.
 	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
+	if (command == RAM_COMMAND_NORMAL)
+		return;
 
-	if (command != RAM_COMMAND_NORMAL) {
+	// NOTE: for mode select commands, some of the location address bits are part of the command
+	// Map JEDEC mode bits to E7505
+	if (command == RAM_COMMAND_MRS) {
+		// Host address lines [25:18] map to DIMM address lines [7:0]
+		// Host address lines [17:16] map to DIMM address lines [9:8]
+		// Host address lines [15:4] map to DIMM address lines [11:0]
+		dimm_start_address = (jedec_mode_bits & 0x00ff) << 18;
+		dimm_start_address |= (jedec_mode_bits & 0x0300) << 8;
+		dimm_start_address |= (jedec_mode_bits & 0x0fff) << 4;
+	} else if (command == RAM_COMMAND_EMRS) {
+		// Host address lines [15:4] map to DIMM address lines [11:0]
+		dimm_start_address = (jedec_mode_bits << 4);
+	} else {
+		ASSERT(jedec_mode_bits == 0);
+		dimm_start_address = 0;
+	}
 
-		// Send the command to all DIMMs by accessing a memory location within each
-		// NOTE: for mode select commands, some of the location address bits
-		// are part of the command
+	// Send the command to all DIMMs by accessing a memory location within each
 
-		// Map JEDEC mode bits to E7501
-		if (command == RAM_COMMAND_MRS) {
-			// Host address lines [15:5] map to DIMM address lines [12:11, 9:1]
-			// The E7501 hard-sets DIMM address lines 10 & 0 to zero
+	dimm_start_64M_multiple = 0;
 
-			ASSERT(!(jedec_mode_bits & 0x0401));
+	for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
 
-			e7501_mode_bits = ((jedec_mode_bits & 0x1800) << (15 - 12)) |	// JEDEC bits 11-12 move to bits 14-15
-			    ((jedec_mode_bits & 0x03FE) << (13 - 9));	// JEDEC bits 1-9 move to bits 5-13
+		uint8_t dimm_end_64M_multiple = pci_read_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + i);
 
-		} else if (command == RAM_COMMAND_EMRS) {
-			// Host address lines [15:3] map to DIMM address lines [12:0]
-			e7501_mode_bits = jedec_mode_bits <<= 3;
-		} else
-			ASSERT(jedec_mode_bits == 0);
-
-		dimm_start_64M_multiple = 0;
-
-		for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
-
-			uint8_t dimm_end_64M_multiple =
-			    pci_read_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + i);
-			if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
-
-				// This code assumes DRAM row boundaries are all set below 4 GB
-				// NOTE: 0x40 * 64 MB == 4 GB
-				ASSERT(dimm_start_64M_multiple < 0x40);
-
-				// NOTE: 2^26 == 64 MB
-
-				uint32_t dimm_start_address =
-				    dimm_start_64M_multiple << 26;
-
-				RAM_DEBUG_MESSAGE("    Sending RAM command to 0x");
-				RAM_DEBUG_HEX32(dimm_start_address + e7501_mode_bits);
-				RAM_DEBUG_MESSAGE("\n");
-
-				read32(dimm_start_address + e7501_mode_bits);
-
+		if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
+			dimm_start_address &= 0x3ffffff;
+			dimm_start_address |= dimm_start_64M_multiple << 26;
+			read32(dimm_start_address);
 				// Set the start of the next DIMM
-				dimm_start_64M_multiple =
-				    dimm_end_64M_multiple;
-			}
+			dimm_start_64M_multiple = dimm_end_64M_multiple;
 		}
 	}
+
 }
 
 /**
@@ -1136,13 +1174,10 @@ static void initialize_ecc(void)
 	dram_controller_mode >>= 20;
 	dram_controller_mode &= 3;
 	if (dram_controller_mode == 2) {
-
 		uint8_t byte;
 
 		RAM_DEBUG_MESSAGE("Initializing ECC state...\n");
-		/* Initialize ECC bits , use ECC zero mode (new to 7501) */
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x06);
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x07);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x01);
 
 		// Wait for scrub cycle to complete
 		do {
@@ -1150,7 +1185,7 @@ static void initialize_ecc(void)
 			    pci_read_config8(PCI_DEV(0, 0, 0), MCHCFGNS);
 		} while ((byte & 0x08) == 0);
 
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, byte & 0xfc);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, (byte & 0xfc) | 0x04);
 		RAM_DEBUG_MESSAGE("ECC state initialized.\n");
 
 		/* Clear the ECC error bits */
@@ -1160,9 +1195,6 @@ static void initialize_ecc(void)
 		// Clear DRAM Interface error bits (write-one-clear)
 		pci_write_config32(PCI_DEV(0, 0, 1), FERR_GLOBAL, 1 << 18);
 		pci_write_config32(PCI_DEV(0, 0, 1), NERR_GLOBAL, 1 << 18);
-
-		// Start normal ECC scrub
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 5);
 	}
 
 }
@@ -1403,11 +1435,11 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 
 	maybe_dram_read_timing =
 	    pci_read_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL);
-	maybe_dram_read_timing &= 0xF00C;
+	maybe_dram_read_timing &= 0xF000;
 
 	if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_0) {
 		dram_timing |= DRT_CAS_2_0;
-		maybe_dram_read_timing |= 0xBB1;
+		maybe_dram_read_timing |= 0x0222;
 	} else if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_5) {
 
 		uint32_t dram_row_attributes =
@@ -1438,22 +1470,22 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);
 	dword |= (1 << 26);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
-
-	dword &= 0x0c0007ff;	/* patch try register 88 is undocumented tnz */
-	dword |= 0xd2109800;
-
+	/* patch try register 88 is undocumented tnz */
+	dword &= 0x0ca17fff;
+	dword |= 0xd14a5000;
 	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
 
 	pci_write_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL,
 			   maybe_dram_read_timing);
 
-	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);	/* reset master DLL reset */
+	/* clear master DLL reset */
+	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);
 	dword &= ~(1 << 26);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
 
 	return;
 
-      hw_err:
+hw_err:
 	die(SPD_ERROR);
 }
 
@@ -1627,6 +1659,8 @@ static void enable_e7501_clocks(uint8_t dimm_mask)
 	int i;
 	uint8_t clock_disable = pci_read_config8(PCI_DEV(0, 0, 0), CKDIS);
 
+	pci_write_config8(PCI_DEV(0,0,0), 0x8e, 0xb0);
+
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
 
 		uint8_t socket_mask = 1 << i;
@@ -1727,7 +1761,7 @@ static void write_8dwords(const uint32_t *src_addr, uint32_t dst_addr)
 static void ram_set_rcomp_regs(void)
 {
 	uint32_t dword;
-	uint8_t maybe_strength_control;
+	uint8_t maybe_strength_control, revision;
 
 	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\n");
 
@@ -1745,81 +1779,105 @@ static void ram_set_rcomp_regs(void)
 	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
 
 	/* Begin to write the RCOMP registers */
+	write8(RCOMP_MMIO + 0x2c, 0x0);
 
 	// Set CMD and DQ/DQS strength to 2x (?)
 	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_DQCMDSTR) & 0x88;
-	maybe_strength_control |= 0x44;
+	maybe_strength_control |= 0x40;
 	write8(RCOMP_MMIO + MAYBE_DQCMDSTR, maybe_strength_control);
-
 	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x80);
 	write16(RCOMP_MMIO + 0x42, 0);
 
-	write_8dwords(maybe_1x_slew_table, RCOMP_MMIO + 0x60);
-
-	// NOTE: some factory BIOS set 0x9088 here. Seems to work either way.
+	// Set CMD and DQ/DQS strength to 2x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_DQCMDSTR) & 0xF8;
+	maybe_strength_control |= 0x04;
+	write8(RCOMP_MMIO + MAYBE_DQCMDSTR, maybe_strength_control);
+	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x60);
 	write16(RCOMP_MMIO + 0x40, 0);
 
 	// Set RCVEnOut# strength to 2x (?)
 	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_RCVENSTR) & 0xF8;
-	maybe_strength_control |= 4;
+	maybe_strength_control |= 0x04;
 	write8(RCOMP_MMIO + MAYBE_RCVENSTR, maybe_strength_control);
-
 	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x1c0);
 	write16(RCOMP_MMIO + 0x50, 0);
 
 	// Set CS# strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CSBSTR) & 0xF8;
-	maybe_strength_control |= 4;
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CSBSTR) & 0x88;
+	maybe_strength_control |= 0x04;
 	write8(RCOMP_MMIO + MAYBE_CSBSTR, maybe_strength_control);
-
 	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x140);
 	write16(RCOMP_MMIO + 0x48, 0);
 
-	// Set CKE strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKESTR) & 0xF8;
-	maybe_strength_control |= 4;
-	write8(RCOMP_MMIO + MAYBE_CKESTR, maybe_strength_control);
+	// Set CS# strength for x4 SDRAM to 2x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CSBSTR) & 0x8F;
+	maybe_strength_control |= 0x40;
+	write8(RCOMP_MMIO + MAYBE_CSBSTR, maybe_strength_control);
+	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x160);
+	write16(RCOMP_MMIO + 0x4a, 0);
 
+	// Set CKE strength for x4 SDRAM to 2x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKESTR) & 0x88;
+	maybe_strength_control |= 0x04;
+	write8(RCOMP_MMIO + MAYBE_CKESTR, maybe_strength_control);
 	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0xa0);
 	write16(RCOMP_MMIO + 0x44, 0);
 
-	// Set CK strength for x4 SDRAM to 1x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKSTR) & 0xF8;
-	maybe_strength_control |= 1;
-	write8(RCOMP_MMIO + MAYBE_CKSTR, maybe_strength_control);
+	// Set CKE strength for x4 SDRAM to 2x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKESTR) & 0x8F;
+	maybe_strength_control |= 0x40;
+	write8(RCOMP_MMIO + MAYBE_CKESTR, maybe_strength_control);
+	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0xc0);
+	write16(RCOMP_MMIO + 0x46, 0);
 
+	// Set CK strength for x4 SDRAM to 1x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKSTR) & 0x88;
+	maybe_strength_control |= 0x01;
+	write8(RCOMP_MMIO + MAYBE_CKSTR, maybe_strength_control);
 	write_8dwords(maybe_pull_updown_offset_table, RCOMP_MMIO + 0x180);
 	write16(RCOMP_MMIO + 0x4c, 0);
 
-	write8(RCOMP_MMIO + 0x2c, 0xff);
+	// Set CK strength for x4 SDRAM to 1x (?)
+	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKSTR) & 0x8F;
+	maybe_strength_control |= 0x10;
+	write8(RCOMP_MMIO + MAYBE_CKSTR, maybe_strength_control);
+	write_8dwords(maybe_pull_updown_offset_table, RCOMP_MMIO + 0x1a0);
+	write16(RCOMP_MMIO + 0x4e, 0);
 
-	// Set the digital filter length to 8 (?)
+
+	dword = read32(RCOMP_MMIO + 0x400);
+	dword &= 0x7f7fffff;
+	write32(RCOMP_MMIO + 0x400, dword);
+
+	dword = read32(RCOMP_MMIO + 0x408);
+	dword &= 0x7f7fffff;
+	write32(RCOMP_MMIO + 0x408, dword);
+
+	ram_handle_d060_1();
+
+	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword &= 0x3fffffff;
+	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+
+	revision = pci_read_config8(PCI_DEV(0,0,0), 0x08);
+	if (revision >= 3) {
+		dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+		dword &= ~0x100;
+		write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
+		dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+		dword |= 0x500;
+		write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
+	}
 	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
-
-	// NOTE: Some factory BIOS don't do this.
-	//               Doesn't seem to matter either way.
-	dword &= ~2;
-
-	dword |= 1;
+	dword &= ~0x203;
+	dword |= 0x401;
 	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
 
 	/* Wait 40 usec */
 	SLOW_DOWN_IO;
 
-	/* unblock updates */
-	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
-	dword &= ~(1 << 9);
-	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
-
-	// Force a RCOMP measurement cycle?
-	dword |= (1 << 8);
-	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
-	dword &= ~(1 << 8);
-	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
-
-	/* Wait 40 usec */
-	SLOW_DOWN_IO;
-
+	// Clear the RCOMP MMIO base address
+	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE, 0);
 	/*disable access to the rcomp bar */
 	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
 	dword &= ~(1 << 22);
@@ -2004,4 +2062,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	ram_set_rcomp_regs();
 	ram_set_d0f0_regs();
+	ram_handle_d060_2();
 }
+

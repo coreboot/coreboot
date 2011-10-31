@@ -15,9 +15,9 @@
      $Id: ScrollBoxP.h,v 1.5 2008/07/14 04:24:52 wmcbrine Exp $
  */
 
-/* 
+/*
  * scrollBoxP.h - Private definitions for scrollBox widget
- * 
+ *
  */
 
 #ifndef _XORAscrollBoxP_h

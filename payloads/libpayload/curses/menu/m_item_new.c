@@ -47,9 +47,9 @@
 MODULE_ID("$Id: m_item_new.c,v 1.30 2010/01/23 21:20:11 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  bool Is_Printable_String(const char *s)
-|   
+|
 |   Description   :  Checks whether or not the string contains only printable
 |                    characters.
 |
@@ -97,9 +97,9 @@ Is_Printable_String(const char *s)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  ITEM *new_item(char *name, char *description)
-|   
+|
 |   Description   :  Create a new item with name and description. Return
 |                    a pointer to this new item.
 |                    N.B.: an item must(!) have a name.
@@ -149,15 +149,15 @@ new_item(const char *name, const char *description)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int free_item(ITEM *item)
-|   
-|   Description   :  Free the allocated storage for this item. 
+|
+|   Description   :  Free the allocated storage for this item.
 |                    N.B.: a connected item can't be freed.
 |
 |   Return Values :  E_OK              - success
 |                    E_BAD_ARGUMENT    - invalid value has been passed
-|                    E_CONNECTED       - item is still connected to a menu    
+|                    E_CONNECTED       - item is still connected to a menu
 +--------------------------------------------------------------------------*/
 NCURSES_EXPORT(int)
 free_item(ITEM * item)
@@ -176,16 +176,16 @@ free_item(ITEM * item)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_mark( MENU *menu, const char *mark )
-|   
+|
 |   Description   :  Set the mark string used to indicate the current
 |                    item (single-valued menu) or the selected items
 |                    (multi-valued menu).
-|                    The mark argument may be NULL, in which case no 
+|                    The mark argument may be NULL, in which case no
 |                    marker is used.
-|                    This might be a little bit tricky, because this may 
-|                    affect the geometry of the menu, which we don't allow 
+|                    This might be a little bit tricky, because this may
+|                    affect the geometry of the menu, which we don't allow
 |                    if it is already posted.
 |
 |   Return Values :  E_OK               - success
@@ -258,9 +258,9 @@ set_menu_mark(MENU * menu, const char *mark)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  char *menu_mark(const MENU *menu)
-|   
+|
 |   Description   :  Return a pointer to the marker string
 |
 |   Return Values :  The marker string pointer or NULL if no marker defined

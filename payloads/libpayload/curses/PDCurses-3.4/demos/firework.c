@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     seed = time((time_t *)0);
     srand(seed);
     flag = 0;
-       
+
     while (getch() == ERR)      /* loop until a key is hit */
     {
         do {

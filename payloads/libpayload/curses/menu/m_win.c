@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_win.c,v 1.17 2010/01/23 21:20:11 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_win(MENU *menu, WINDOW *win)
-|   
+|
 |   Description   :  Sets the window of the menu.
 |
 |   Return Values :  E_OK               - success
@@ -81,9 +81,9 @@ set_menu_win(MENU * menu, WINDOW *win)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  WINDOW* menu_win(const MENU*)
-|   
+|
 |   Description   :  Returns pointer to the window of the menu
 |
 |   Return Values :  NULL on error, otherwise pointer to window

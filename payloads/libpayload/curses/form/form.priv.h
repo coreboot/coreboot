@@ -190,12 +190,12 @@ extern NCURSES_EXPORT(FIELDTYPE *) _nc_TYPE_REGEXP(void);
 extern NCURSES_EXPORT(FIELDTYPE *) _nc_TYPE_IPV4(void);
 
 extern NCURSES_EXPORT(FIELDTYPE *)
-_nc_generic_fieldtype(bool (*const field_check) (FORM*, 
-						 FIELD *, 
+_nc_generic_fieldtype(bool (*const field_check) (FORM*,
+						 FIELD *,
 						 const void *),
-		      bool (*const char_check)  (int, 
-						 FORM*, 
-						 FIELD*, 
+		      bool (*const char_check)  (int,
+						 FORM*,
+						 FIELD*,
 						 const void *),
 		      bool (*const next)(FORM*,FIELD*,const void*),
 		      bool (*const prev)(FORM*,FIELD*,const void*),

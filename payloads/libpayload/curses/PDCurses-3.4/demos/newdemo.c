@@ -1,5 +1,5 @@
 /*
- *  newdemo.c   -   A demo program using PDCurses. The program 
+ *  newdemo.c   -   A demo program using PDCurses. The program
  *          illustrates the use of colors for text output.
  *
  *  Hacks by jbuhler@cs.washington.edu on 12/29/96
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 #endif
     noecho();
 
-    /* refresh stdscr so that reading from it will not cause it to 
+    /* refresh stdscr so that reading from it will not cause it to
        overwrite the other windows that are being created */
 
     refresh();
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
         wattrset(win, COLOR_PAIR(2));
         box(win, ' ', ' ');
         wrefresh(win);
-      
+
         wattrset(win, 0);
 
         /* Do random output of a character */

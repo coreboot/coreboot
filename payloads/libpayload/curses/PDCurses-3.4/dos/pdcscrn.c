@@ -84,10 +84,10 @@ static int _get_font(void)
     return retval;
 }
 
-/* _set_font() - Sets the current font size, if the adapter allows such a 
-   change. It is an error to attempt to change the font size on a 
-   "bogus" adapter. The reason for this is that we have a known video 
-   adapter identity problem. e.g. Two adapters report the same identifying 
+/* _set_font() - Sets the current font size, if the adapter allows such a
+   change. It is an error to attempt to change the font size on a
+   "bogus" adapter. The reason for this is that we have a known video
+   adapter identity problem. e.g. Two adapters report the same identifying
    characteristics. */
 
 static void _set_font(int size)
@@ -154,7 +154,7 @@ static void _set_font(int size)
     pdc_font = _get_font();
 }
 
-/* _set_80x25() - force a known screen state: 80x25 text mode. Forces the 
+/* _set_80x25() - force a known screen state: 80x25 text mode. Forces the
    appropriate 80x25 alpha mode given the display adapter. */
 
 static void _set_80x25(void)
@@ -193,7 +193,7 @@ static int _get_scrn_mode(void)
     return (int)regs.h.al;
 }
 
-/* _set_scrn_mode() - Sets the BIOS Video Mode Number only if it is 
+/* _set_scrn_mode() - Sets the BIOS Video Mode Number only if it is
    different from the current video mode. */
 
 static void _set_scrn_mode(int new_mode)
@@ -213,7 +213,7 @@ static void _set_scrn_mode(int new_mode)
     COLS = PDC_get_columns();
 }
 
-/* _sanity_check() - A video adapter identification sanity check. This 
+/* _sanity_check() - A video adapter identification sanity check. This
    routine will force sane values for various control flags. */
 
 static int _sanity_check(int adapter)
@@ -230,7 +230,7 @@ static int _sanity_check(int adapter)
         switch (rows)
         {
         case 25:
-        case 43:    
+        case 43:
             break;
         default:
             pdc_bogus_adapter = TRUE;
@@ -445,7 +445,7 @@ static int _query_adapter_type(void)
     return _sanity_check(retval);
 }
 
-/* close the physical screen -- may restore the screen to its state 
+/* close the physical screen -- may restore the screen to its state
    before PDC_scr_open(); miscellaneous cleanup */
 
 void PDC_scr_close(void)
@@ -503,7 +503,7 @@ void PDC_scr_free(void)
     pdc_atrtab = (unsigned char *)NULL;
 }
 
-/* open the physical screen -- allocate SP, miscellaneous intialization, 
+/* open the physical screen -- allocate SP, miscellaneous intialization,
    and may save the existing screen for later restoration */
 
 int PDC_scr_open(int argc, char **argv)
@@ -543,7 +543,7 @@ int PDC_scr_open(int argc, char **argv)
     SP->mouse_wait = PDC_CLICK_PERIOD;
     SP->audible = TRUE;
 
-    /* If the environment variable PDCURSES_BIOS is set, the DOS int10() 
+    /* If the environment variable PDCURSES_BIOS is set, the DOS int10()
        BIOS calls are used in place of direct video memory access. */
 
     if (getenv("PDCURSES_BIOS"))
@@ -596,7 +596,7 @@ int PDC_resize_screen(int nlines, int ncols)
     PDC_LOG(("PDC_resize_screen() - called. Lines: %d Cols: %d\n",
              nlines, ncols));
 
-    /* Trash the stored value of orig_cursor -- it's only good if the 
+    /* Trash the stored value of orig_cursor -- it's only good if the
        video mode doesn't change */
 
     SP->orig_cursor = 0x0607;

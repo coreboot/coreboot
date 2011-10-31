@@ -17,26 +17,26 @@ RCSID("$Id: touch.c,v 1.29 2008/07/13 16:08:18 wmcbrine Exp $")
         bool is_wintouched(WINDOW *win);
 
   Description:
-        touchwin() and touchline() throw away all information about 
-        which parts of the window have been touched, pretending that the 
-        entire window has been drawn on.  This is sometimes necessary 
-        when using overlapping windows, since a change to one window 
-        will affect the other window, but the records of which lines 
-        have been changed in the other window will not reflect the 
+        touchwin() and touchline() throw away all information about
+        which parts of the window have been touched, pretending that the
+        entire window has been drawn on.  This is sometimes necessary
+        when using overlapping windows, since a change to one window
+        will affect the other window, but the records of which lines
+        have been changed in the other window will not reflect the
         change.
 
-        untouchwin() marks all lines in the window as unchanged since 
+        untouchwin() marks all lines in the window as unchanged since
         the last call to wrefresh().
 
-        wtouchln() makes n lines in the window, starting at line y, look 
-        as if they have (changed == 1) or have not (changed == 0) been 
+        wtouchln() makes n lines in the window, starting at line y, look
+        as if they have (changed == 1) or have not (changed == 0) been
         changed since the last call to wrefresh().
 
-        is_linetouched() returns TRUE if the specified line in the 
-        specified window has been changed since the last call to 
+        is_linetouched() returns TRUE if the specified line in the
+        specified window has been changed since the last call to
         wrefresh().
 
-        is_wintouched() returns TRUE if the specified window 
+        is_wintouched() returns TRUE if the specified window
         has been changed since the last call to wrefresh().
 
   Return Value:
@@ -125,7 +125,7 @@ int wtouchln(WINDOW *win, int y, int n, int changed)
             win->_firstch[i] = 0;
             win->_lastch[i] = win->_maxx - 1;
         }
-        else 
+        else
         {
             win->_firstch[i] = _NO_CHANGE;
             win->_lastch[i] = _NO_CHANGE;

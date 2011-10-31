@@ -40,11 +40,11 @@
 MODULE_ID("$Id: m_scale.c,v 1.10 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int scale_menu(const MENU *menu)
-|   
+|
 |   Description   :  Returns the minimum window size necessary for the
-|                    subwindow of menu.  
+|                    subwindow of menu.
 |
 |   Return Values :  E_OK                  - success
 |                    E_BAD_ARGUMENT        - invalid menu pointer

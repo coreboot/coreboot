@@ -22,7 +22,7 @@ short curstoreal[16], realtocurs[16] =
     COLOR_MAGENTA + 8, COLOR_YELLOW + 8, COLOR_WHITE + 8
 };
 
-/* close the physical screen -- may restore the screen to its state 
+/* close the physical screen -- may restore the screen to its state
    before PDC_scr_open(); miscellaneous cleanup */
 
 void PDC_scr_close(void)
@@ -49,7 +49,7 @@ void PDC_scr_free(void)
     pdc_atrtab = (unsigned char *)NULL;
 }
 
-/* open the physical screen -- allocate SP, miscellaneous intialization, 
+/* open the physical screen -- allocate SP, miscellaneous intialization,
    and may save the existing screen for later restoration */
 
 int PDC_scr_open(int argc, char **argv)

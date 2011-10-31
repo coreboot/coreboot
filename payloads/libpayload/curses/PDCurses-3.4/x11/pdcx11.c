@@ -99,7 +99,7 @@ int XC_read_socket(int sock_num, void *buf, int len)
                 SP->resized = FALSE;
 
             memcpy(buf, &rc, sizeof(int));
-         
+
             return 0;
         }
 
@@ -178,7 +178,7 @@ static int _setup_curses(void)
     if (wait_value != CURSES_CHILD)
         return ERR;
 
-    /* Set LINES and COLS now so that the size of the shared memory 
+    /* Set LINES and COLS now so that the size of the shared memory
        segment can be allocated */
 
     if ((shmidSP = shmget(shmkeySP, sizeof(SCREEN) + XCURSESSHMMIN, 0700)) < 0)
@@ -226,13 +226,13 @@ int XCursesInitscr(int argc, char *argv[])
     XC_LOG(("XCursesInitscr() - called\n"));
 
     shmkeySP = getpid();
-            
+
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, xc_display_sockets) < 0)
     {
         fprintf(stderr, "ERROR: cannot create display socketpair\n");
         return ERR;
     }
-            
+
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, xc_key_sockets) < 0)
     {
         fprintf(stderr, "ERROR: cannot create key socketpair\n");

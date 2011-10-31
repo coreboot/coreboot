@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_item_opt.c,v 1.18 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
-|   Function      :  int set_item_opts(ITEM *item, Item_Options opts)  
-|   
+|   Facility      :  libnmenu
+|   Function      :  int set_item_opts(ITEM *item, Item_Options opts)
+|
 |   Description   :  Set the options of the item. If there are relevant
 |                    changes, the item is connected and the menu is posted,
 |                    the menu will be redisplayed.
@@ -85,9 +85,9 @@ set_item_opts(ITEM * item, Item_Options opts)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
-|   Function      :  int item_opts_off(ITEM *item, Item_Options opts)   
-|   
+|   Facility      :  libnmenu
+|   Function      :  int item_opts_off(ITEM *item, Item_Options opts)
+|
 |   Description   :  Switch of the options for this item.
 |
 |   Return Values :  E_OK            - success
@@ -113,9 +113,9 @@ item_opts_off(ITEM * item, Item_Options opts)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
-|   Function      :  int item_opts_on(ITEM *item, Item_Options opts)   
-|   
+|   Facility      :  libnmenu
+|   Function      :  int item_opts_on(ITEM *item, Item_Options opts)
+|
 |   Description   :  Switch on the options for this item.
 |
 |   Return Values :  E_OK            - success
@@ -142,9 +142,9 @@ item_opts_on(ITEM * item, Item_Options opts)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
-|   Function      :  Item_Options item_opts(const ITEM *item)   
-|   
+|   Facility      :  libnmenu
+|   Function      :  Item_Options item_opts(const ITEM *item)
+|
 |   Description   :  Switch of the options for this item.
 |
 |   Return Values :  Items options

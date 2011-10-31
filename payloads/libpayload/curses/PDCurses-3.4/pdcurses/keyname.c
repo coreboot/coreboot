@@ -16,13 +16,13 @@ RCSID("$Id: keyname.c,v 1.8 2008/07/13 16:08:18 wmcbrine Exp $")
         bool has_key(int key);
 
   Description:
-        keyname() returns a string corresponding to the argument key. 
+        keyname() returns a string corresponding to the argument key.
         key may be any key returned by wgetch().
 
-        key_name() is the wide-character version. It takes a wchar_t 
+        key_name() is the wide-character version. It takes a wchar_t
         parameter, but still returns a char *.
 
-        has_key() returns TRUE for recognized keys, FALSE otherwise. 
+        has_key() returns TRUE for recognized keys, FALSE otherwise.
         This function is an ncurses extension.
 
   Portability                                X/Open    BSD    SYS V

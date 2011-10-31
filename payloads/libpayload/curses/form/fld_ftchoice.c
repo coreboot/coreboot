@@ -35,7 +35,7 @@
 MODULE_ID("$Id: fld_ftchoice.c,v 1.12 2010/01/23 21:14:35 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_fieldtype_choice(
 |                          FIELDTYPE *typ,
 |                          bool (* const next_choice)(FIELD *,const void *),

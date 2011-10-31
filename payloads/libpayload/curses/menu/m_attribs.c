@@ -72,69 +72,69 @@ NCURSES_IMPEXP chtype NCURSES_API menu_ ## name (const MENU * menu)\
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_fore(MENU *menu, chtype attr)
-|   
+|
 |   Description   :  Set the attribute for selectable items. In single-
 |                    valued menus this is used to highlight the current
 |                    item ((i.e. where the cursor is), in multi-valued
 |                    menus this is used to highlight the selected items.
 |
 |   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - an invalid value has been passed   
+|                    E_BAD_ARGUMENT    - an invalid value has been passed
 +--------------------------------------------------------------------------*/
 GEN_MENU_ATTR_SET_FCT(fore)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  chtype menu_fore(const MENU* menu)
-|   
+|
 |   Description   :  Return the attribute used for selectable items that
 |                    are current (single-valued menu) or selected (multi-
-|                    valued menu).   
+|                    valued menu).
 |
 |   Return Values :  Attribute value
 +--------------------------------------------------------------------------*/
 GEN_MENU_ATTR_GET_FCT(fore)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_back(MENU *menu, chtype attr)
-|   
+|
 |   Description   :  Set the attribute for selectable but not yet selected
 |                    items.
 |
-|   Return Values :  E_OK             - success  
+|   Return Values :  E_OK             - success
 |                    E_BAD_ARGUMENT   - an invalid value has been passed
 +--------------------------------------------------------------------------*/
 GEN_MENU_ATTR_SET_FCT(back)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  chtype menu_back(const MENU *menu)
-|   
+|
 |   Description   :  Return the attribute used for selectable but not yet
-|                    selected items. 
+|                    selected items.
 |
 |   Return Values :  Attribute value
 +--------------------------------------------------------------------------*/
 GEN_MENU_ATTR_GET_FCT(back)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_grey(MENU *menu, chtype attr)
-|   
+|
 |   Description   :  Set the attribute for unselectable items.
 |
 |   Return Values :  E_OK             - success
-|                    E_BAD_ARGUMENT   - an invalid value has been passed    
+|                    E_BAD_ARGUMENT   - an invalid value has been passed
 +--------------------------------------------------------------------------*/
 GEN_MENU_ATTR_SET_FCT(grey)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  chtype menu_grey(const MENU *menu)
-|   
+|
 |   Description   :  Return the attribute used for non-selectable items
 |
 |   Return Values :  Attribute value

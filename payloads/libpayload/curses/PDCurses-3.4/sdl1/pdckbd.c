@@ -12,7 +12,7 @@ RCSID("$Id: pdckbd.c,v 1.20 2008/07/14 04:24:52 wmcbrine Exp $")
         unsigned long PDC_get_input_fd(void);
 
   Description:
-        PDC_get_input_fd() returns the file descriptor that PDCurses 
+        PDC_get_input_fd() returns the file descriptor that PDCurses
         reads its input from. It can be used for select().
 
   Portability                                X/Open    BSD    SYS V
@@ -111,7 +111,7 @@ bool PDC_check_key(void)
     Uint32 current = SDL_GetTicks();
     int haveevent = SDL_PollEvent(&event);
 
-    /* if we have an event, or 30 ms have passed without a screen 
+    /* if we have an event, or 30 ms have passed without a screen
        update, or the timer has wrapped, update now */
 
     if (haveevent ||

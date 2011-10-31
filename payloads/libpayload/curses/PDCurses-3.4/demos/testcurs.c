@@ -343,7 +343,7 @@ void inputTest(WINDOW *win)
     sw = w / 3;
     sh = h / 3;
 
-    if ((subWin = subwin(win, sh, sw, by + h - sh - 2, bx + w - sw - 2)) 
+    if ((subWin = subwin(win, sh, sw, by + h - sh - 2, bx + w - sw - 2))
         == NULL)
         return;
 
@@ -424,11 +424,11 @@ void inputTest(WINDOW *win)
             else if (BUTTON_CHANGED(3))
                 button = 3;
 
-            if (button && (BUTTON_STATUS(button) & 
+            if (button && (BUTTON_STATUS(button) &
                 BUTTON_MODIFIER_MASK))
             {
                 waddstr(win, " Modifier(s):");
-             
+
                 if (BUTTON_STATUS(button) & BUTTON_SHIFT)
                     waddstr(win, " SHIFT");
 
@@ -611,7 +611,7 @@ void outputTest(WINDOW *win)
         wmove(win1, 8, 26);
         wrefresh(win1);
         wgetch(win1);
-       
+
         wclear(win1);
 
         wattron(win1, A_BLINK);
@@ -892,7 +892,7 @@ void acsTest(WINDOW *win)
         "ACS_LARROW", "ACS_RARROW", "ACS_UARROW", "ACS_DARROW",
         "ACS_BOARD", "ACS_LANTERN", "ACS_BLOCK"
 #ifdef ACS_S3
-        , "ACS_S3", "ACS_S7", "ACS_LEQUAL", "ACS_GEQUAL", 
+        , "ACS_S3", "ACS_S7", "ACS_LEQUAL", "ACS_GEQUAL",
         "ACS_PI", "ACS_NEQUAL", "ACS_STERLING"
 #endif
     };
@@ -902,17 +902,17 @@ void acsTest(WINDOW *win)
 #if HAVE_WIDE
     cchar_t *wacs_values[] =
     {
-        WACS_ULCORNER, WACS_URCORNER, WACS_LLCORNER, WACS_LRCORNER, 
-        WACS_LTEE, WACS_RTEE, WACS_TTEE, WACS_BTEE, WACS_HLINE, 
+        WACS_ULCORNER, WACS_URCORNER, WACS_LLCORNER, WACS_LRCORNER,
+        WACS_LTEE, WACS_RTEE, WACS_TTEE, WACS_BTEE, WACS_HLINE,
         WACS_VLINE, WACS_PLUS,
 
-        WACS_S1, WACS_S9, WACS_DIAMOND, WACS_CKBOARD, WACS_DEGREE, 
+        WACS_S1, WACS_S9, WACS_DIAMOND, WACS_CKBOARD, WACS_DEGREE,
         WACS_PLMINUS, WACS_BULLET,
 
-        WACS_LARROW, WACS_RARROW, WACS_UARROW, WACS_DARROW, WACS_BOARD, 
+        WACS_LARROW, WACS_RARROW, WACS_UARROW, WACS_DARROW, WACS_BOARD,
         WACS_LANTERN, WACS_BLOCK
 # ifdef WACS_S3
-        , WACS_S3, WACS_S7, WACS_LEQUAL, WACS_GEQUAL, WACS_PI, 
+        , WACS_S3, WACS_S7, WACS_LEQUAL, WACS_GEQUAL, WACS_PI,
         WACS_NEQUAL, WACS_STERLING
 # endif
     };
@@ -923,7 +923,7 @@ void acsTest(WINDOW *win)
     static const wchar_t greek[] = {0x0395, 0x03bb, 0x03bb, 0x03b7,
         0x03bd, 0x03b9, 0x03ba, 0x03ac, 0};
 
-    static const wchar_t georgian[] = {0x10e5, 0x10d0, 0x10e0, 0x10d7, 
+    static const wchar_t georgian[] = {0x10e5, 0x10d0, 0x10e0, 0x10d7,
         0x10e3, 0x10da, 0x10d8, L' ', 0x10d4, 0x10dc, 0x10d0, 0};
 #endif
 
@@ -993,13 +993,13 @@ void colorTest(WINDOW *win)
 {
     static const short colors[] =
     {
-        COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_BLUE, 
+        COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_BLUE,
         COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW, COLOR_WHITE
     };
 
     static const char *colornames[] =
     {
-        "COLOR_BLACK", "COLOR_RED", "COLOR_GREEN", "COLOR_BLUE", 
+        "COLOR_BLACK", "COLOR_RED", "COLOR_GREEN", "COLOR_BLUE",
         "COLOR_CYAN", "COLOR_MAGENTA", "COLOR_YELLOW", "COLOR_WHITE"
     };
 

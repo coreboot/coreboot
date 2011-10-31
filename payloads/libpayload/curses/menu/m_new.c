@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_new.c,v 1.21 2010/01/23 21:20:11 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  MENU* _nc_new_menu(SCREEN*, ITEM **items)
-|   
+|
 |   Description   :  Creates a new menu connected to the item pointer
 |                    array items and returns a pointer to the new menu.
 |                    The new menu is initialized with the values from the
@@ -90,9 +90,9 @@ NCURSES_SP_NAME(new_menu) (NCURSES_SP_DCLx ITEM ** items)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  MENU *new_menu(ITEM **items)
-|   
+|
 |   Description   :  Creates a new menu connected to the item pointer
 |                    array items and returns a pointer to the new menu.
 |                    The new menu is initialized with the values from the
@@ -109,10 +109,10 @@ new_menu(ITEM ** items)
 #endif
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
-|   Function      :  int free_menu(MENU *menu)  
-|   
-|   Description   :  Disconnects menu from its associated item pointer 
+|   Facility      :  libnmenu
+|   Function      :  int free_menu(MENU *menu)
+|
+|   Description   :  Disconnects menu from its associated item pointer
 |                    array and frees the storage allocated for the menu.
 |
 |   Return Values :  E_OK               - success

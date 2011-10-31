@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_item_nam.c,v 1.15 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  char *item_name(const ITEM *item)
-|   
+|
 |   Description   :  Return name of menu item
 |
 |   Return Values :  See above; returns NULL if item is invalid
@@ -55,9 +55,9 @@ item_name(const ITEM * item)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  char *item_description(const ITEM *item)
-|   
+|
 |   Description   :  Returns description of item
 |
 |   Return Values :  See above; Returns NULL if item is invalid

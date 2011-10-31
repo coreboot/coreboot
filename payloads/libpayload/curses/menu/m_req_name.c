@@ -63,9 +63,9 @@ static const char *request_names[MAX_MENU_COMMAND - MIN_MENU_COMMAND + 1] =
 #define A_SIZE (sizeof(request_names)/sizeof(request_names[0]))
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  const char * menu_request_name (int request);
-|   
+|
 |   Description   :  Get the external name of a menu request.
 |
 |   Return Values :  Pointer to name      - on success
@@ -85,9 +85,9 @@ menu_request_name(int request)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int menu_request_by_name (const char *str);
-|   
+|
 |   Description   :  Search for a request with this name.
 |
 |   Return Values :  Request Id       - on success

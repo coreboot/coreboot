@@ -57,9 +57,9 @@ NCURSES_IMPEXP Menu_Hook NCURSES_API typ ## _ ## name ( const MENU *menu )\
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_init(MENU *menu, void (*f)(MENU *))
-|   
+|
 |   Description   :  Set user-exit which is called when menu is posted
 |                    or just after the top row changes.
 |
@@ -68,11 +68,11 @@ NCURSES_IMPEXP Menu_Hook NCURSES_API typ ## _ ## name ( const MENU *menu )\
 GEN_HOOK_SET_FUNCTION(menu, init)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void (*)(MENU *) menu_init(const MENU *menu)
-|   
+|
 |   Description   :  Return address of user-exit function which is called
-|                    when a menu is posted or just after the top row 
+|                    when a menu is posted or just after the top row
 |                    changes.
 |
 |   Return Values :  Menu init function address or NULL
@@ -80,9 +80,9 @@ GEN_HOOK_SET_FUNCTION(menu, init)
 GEN_HOOK_GET_FUNCTION(menu, init)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_term (MENU *menu, void (*f)(MENU *))
-|   
+|
 |   Description   :  Set user-exit which is called when menu is unposted
 |                    or just before the top row changes.
 |
@@ -91,11 +91,11 @@ GEN_HOOK_GET_FUNCTION(menu, init)
 GEN_HOOK_SET_FUNCTION(menu, term)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void (*)(MENU *) menu_term(const MENU *menu)
-|   
+|
 |   Description   :  Return address of user-exit function which is called
-|                    when a menu is unposted or just before the top row 
+|                    when a menu is unposted or just before the top row
 |                    changes.
 |
 |   Return Values :  Menu finalization function address or NULL
@@ -103,9 +103,9 @@ GEN_HOOK_SET_FUNCTION(menu, term)
 GEN_HOOK_GET_FUNCTION(menu, term)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_item_init (MENU *menu, void (*f)(MENU *))
-|   
+|
 |   Description   :  Set user-exit which is called when menu is posted
 |                    or just after the current item changes.
 |
@@ -114,11 +114,11 @@ GEN_HOOK_GET_FUNCTION(menu, term)
 GEN_HOOK_SET_FUNCTION(item, init)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void (*)(MENU *) item_init (const MENU *menu)
-|   
+|
 |   Description   :  Return address of user-exit function which is called
-|                    when a menu is posted or just after the current item 
+|                    when a menu is posted or just after the current item
 |                    changes.
 |
 |   Return Values :  Item init function address or NULL
@@ -126,9 +126,9 @@ GEN_HOOK_SET_FUNCTION(item, init)
 GEN_HOOK_GET_FUNCTION(item, init)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_item_term (MENU *menu, void (*f)(MENU *))
-|   
+|
 |   Description   :  Set user-exit which is called when menu is unposted
 |                    or just before the current item changes.
 |
@@ -137,11 +137,11 @@ GEN_HOOK_GET_FUNCTION(item, init)
 GEN_HOOK_SET_FUNCTION(item, term)
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void (*)(MENU *) item_init (const MENU *menu)
-|   
+|
 |   Description   :  Return address of user-exit function which is called
-|                    when a menu is unposted or just before the current item 
+|                    when a menu is unposted or just before the current item
 |                    changes.
 |
 |   Return Values :  Item finalization function address or NULL

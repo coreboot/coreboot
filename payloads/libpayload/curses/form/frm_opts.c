@@ -35,9 +35,9 @@
 MODULE_ID("$Id: frm_opts.c,v 1.15 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_form_opts(FORM *form, Form_Options opts)
-|   
+|
 |   Description   :  Turns on the named options and turns off all the
 |                    remaining options for that form.
 |
@@ -60,9 +60,9 @@ set_form_opts(FORM *form, Form_Options opts)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  Form_Options form_opts(const FORM *)
-|   
+|
 |   Description   :  Retrieves the current form options.
 |
 |   Return Values :  The option flags.
@@ -75,13 +75,13 @@ form_opts(const FORM *form)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int form_opts_on(FORM *form, Form_Options opts)
-|   
-|   Description   :  Turns on the named options; no other options are 
+|
+|   Description   :  Turns on the named options; no other options are
 |                    changed.
 |
-|   Return Values :  E_OK            - success 
+|   Return Values :  E_OK            - success
 |                    E_BAD_ARGUMENT  - invalid options
 +--------------------------------------------------------------------------*/
 NCURSES_EXPORT(int)
@@ -100,13 +100,13 @@ form_opts_on(FORM *form, Form_Options opts)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int form_opts_off(FORM *form, Form_Options opts)
-|   
-|   Description   :  Turns off the named options; no other options are 
+|
+|   Description   :  Turns off the named options; no other options are
 |                    changed.
 |
-|   Return Values :  E_OK            - success 
+|   Return Values :  E_OK            - success
 |                    E_BAD_ARGUMENT  - invalid options
 +--------------------------------------------------------------------------*/
 NCURSES_EXPORT(int)

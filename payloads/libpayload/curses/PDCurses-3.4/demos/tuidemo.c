@@ -31,7 +31,7 @@
 
 void address(void)
 {
-    char *fieldname[6] = 
+    char *fieldname[6] =
     {
         "Name", "Street", "City", "State", "Country", (char *)0
     };

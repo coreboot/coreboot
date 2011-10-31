@@ -34,19 +34,19 @@
  *                                                                      *
  ************************************************************************/
 
-static XtResource resources[] = 
+static XtResource resources[] =
 {
     { XtNhSpace, XtCHSpace, XtRDimension, sizeof(Dimension),
-        XtOffset(ScrollBoxWidget, scrollBox.h_space), 
+        XtOffset(ScrollBoxWidget, scrollBox.h_space),
         XtRImmediate, (XtPointer)4 },
     { XtNvSpace, XtCVSpace, XtRDimension, sizeof(Dimension),
-        XtOffset(ScrollBoxWidget, scrollBox.v_space), 
+        XtOffset(ScrollBoxWidget, scrollBox.v_space),
         XtRImmediate, (XtPointer)4 },
     { XtNheightInc, XtCHeightInc, XtRDimension, sizeof(Dimension),
-        XtOffset(ScrollBoxWidget, scrollBox.increment_height), 
+        XtOffset(ScrollBoxWidget, scrollBox.increment_height),
         XtRImmediate, (XtPointer)13 },
     { XtNwidthInc, XtCWidthInc, XtRDimension, sizeof(Dimension),
-        XtOffset(ScrollBoxWidget, scrollBox.increment_width), 
+        XtOffset(ScrollBoxWidget, scrollBox.increment_width),
         XtRImmediate, (XtPointer)7 },
 };
 
@@ -123,7 +123,7 @@ WidgetClass scrollBoxWidgetClass = (WidgetClass)&scrollBoxClassRec;
  *                                                                      *
  ************************************************************************/
 
-/* Do a layout, either actually assigning positions, or just 
+/* Do a layout, either actually assigning positions, or just
    calculating size. */
 
 static void DoLayout(Widget w, Boolean doit)
@@ -141,16 +141,16 @@ static void DoLayout(Widget w, Boolean doit)
         XtAppError(XtWidgetToApplicationContext(w),
             "ScrollBox: must manage exactly three widgets.");
 
-    for (i = 0; i < sbw->composite.num_children; i++) 
+    for (i = 0; i < sbw->composite.num_children; i++)
     {
         child = sbw->composite.children[i];
 
-        if (!XtIsManaged(child)) 
+        if (!XtIsManaged(child))
             XtAppError(XtWidgetToApplicationContext(w),
                 "ScrollBox: all three widgets must be managed.");
     }
 
-    /* Child one is the main window, two is the vertical scrollbar, 
+    /* Child one is the main window, two is the vertical scrollbar,
        and three is the horizontal scrollbar. */
 
     wmain = sbw->composite.children[0];
@@ -176,11 +176,11 @@ static void DoLayout(Widget w, Boolean doit)
         sbw->scrollBox.increment_height) +
         sbw->scrollBox.increment_height;
 
-    vx = wmain->core.x + mw + sbw->scrollBox.h_space + 
-        wmain->core.border_width + vscroll->core.border_width; 
+    vx = wmain->core.x + mw + sbw->scrollBox.h_space +
+        wmain->core.border_width + vscroll->core.border_width;
 
-    hy = wmain->core.y + mh + sbw->scrollBox.v_space + 
-        wmain->core.border_width + hscroll->core.border_width; 
+    hy = wmain->core.y + mh + sbw->scrollBox.v_space +
+        wmain->core.border_width + hscroll->core.border_width;
 
     vh = mh;   /* scrollbars are always same length as main window */
     hw = mw;
@@ -230,12 +230,12 @@ static void RefigureLocations(Widget w)
 }
 
 /* Calculate preferred size.  We can't just use the current sizes
-   of the children, because that calculation would always end up with 
-   our current size.  Could query each child, and use that size to 
-   recalculate a size for us, then if it ends up being larger than width 
-   and height passed in, accept bounding box. However, we know our 
-   children and they don't have any particular preferred geometry, 
-   except the bigger the better. Therefore, if the parent suggested a 
+   of the children, because that calculation would always end up with
+   our current size.  Could query each child, and use that size to
+   recalculate a size for us, then if it ends up being larger than width
+   and height passed in, accept bounding box. However, we know our
+   children and they don't have any particular preferred geometry,
+   except the bigger the better. Therefore, if the parent suggested a
    size, we'll take it. */
 
 static XtGeometryResult QueryGeometry(Widget w, XtWidgetGeometry *request,
@@ -253,9 +253,9 @@ static XtGeometryResult QueryGeometry(Widget w, XtWidgetGeometry *request,
     /* if proposed size is large enough, accept it.  Otherwise, suggest
        our arbitrary initial size. */
 
-    if (request->request_mode & CWHeight) 
+    if (request->request_mode & CWHeight)
     {
-        if (request->height < INITIAL_HEIGHT) 
+        if (request->height < INITIAL_HEIGHT)
         {
             result = XtGeometryAlmost;
             reply_return->height = INITIAL_HEIGHT;
@@ -265,9 +265,9 @@ static XtGeometryResult QueryGeometry(Widget w, XtWidgetGeometry *request,
             result = XtGeometryYes;
     }
 
-    if (request->request_mode & CWWidth) 
+    if (request->request_mode & CWWidth)
     {
-        if (request->width < INITIAL_WIDTH) 
+        if (request->width < INITIAL_WIDTH)
         {
             result = XtGeometryAlmost;
             reply_return->width = INITIAL_WIDTH;
@@ -305,7 +305,7 @@ static void Initialize(Widget request, Widget new,
 
 }
 
-static Boolean SetValues(Widget current, Widget request, Widget new, 
+static Boolean SetValues(Widget current, Widget request, Widget new,
                          ArgList args, Cardinal *num_args)
 {
     ScrollBoxWidget sbwcurrent = (ScrollBoxWidget)current;

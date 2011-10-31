@@ -36,8 +36,8 @@ RCSID("$Id: window.c,v 1.62 2008/07/13 16:08:18 wmcbrine Exp $")
         LINES - begy; ncols to COLS - begx. Create a new full-screen
         window by calling newwin(0, 0, 0, 0).
 
-        delwin() deletes the named window, freeing all associated 
-        memory. In the case of overlapping windows, subwindows should be 
+        delwin() deletes the named window, freeing all associated
+        memory. In the case of overlapping windows, subwindows should be
         deleted before the main window.
 
         mvwin() moves the window so that the upper left-hand corner is
@@ -78,12 +78,12 @@ RCSID("$Id: window.c,v 1.62 2008/07/13 16:08:18 wmcbrine Exp $")
         wsyncdown() causes a touchwin() of the current window if any of
         its parent's windows have been touched.
 
-        resize_window() allows the user to resize an existing window. It 
+        resize_window() allows the user to resize an existing window. It
         returns the pointer to the new window, or NULL on failure.
 
         wresize() is an ncurses-compatible wrapper for resize_window().
         Note that, unlike ncurses, it will NOT process any subwindows of
-        the window. (However, you still can call it _on_ subwindows.) It 
+        the window. (However, you still can call it _on_ subwindows.) It
         returns OK or ERR.
 
         PDC_makenew() allocates all data for a new WINDOW * except the

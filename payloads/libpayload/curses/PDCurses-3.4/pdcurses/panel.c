@@ -44,61 +44,61 @@ RCSID("$Id: panel.c,v 1.8 2008/07/14 12:35:23 wmcbrine Exp $")
         panels, fetch and set their associated windows, shuffle panels
         in the deck, and manipulate panels in other ways.
 
-        bottom_panel() places pan at the bottom of the deck. The size, 
+        bottom_panel() places pan at the bottom of the deck. The size,
         location and contents of the panel are unchanged.
 
         del_panel() deletes pan, but not its associated winwow.
 
-        hide_panel() removes a panel from the deck and thus hides it 
+        hide_panel() removes a panel from the deck and thus hides it
         from view.
 
-        move_panel() moves the curses window associated with pan, so 
-        that its upper lefthand corner is at the supplied coordinates. 
+        move_panel() moves the curses window associated with pan, so
+        that its upper lefthand corner is at the supplied coordinates.
         (Do not use mvwin() on the window.)
 
-        new_panel() creates a new panel associated with win and returns 
-        the panel pointer. The new panel is placed at the top of the 
+        new_panel() creates a new panel associated with win and returns
+        the panel pointer. The new panel is placed at the top of the
         deck.
 
-        panel_above() returns a pointer to the panel in the deck above 
-        pan, or NULL if pan is the top panel. If the value of pan passed 
-        is NULL, this function returns a pointer to the bottom panel in 
+        panel_above() returns a pointer to the panel in the deck above
+        pan, or NULL if pan is the top panel. If the value of pan passed
+        is NULL, this function returns a pointer to the bottom panel in
         the deck.
 
-        panel_below() returns a pointer to the panel in the deck below 
-        pan, or NULL if pan is the bottom panel. If the value of pan 
-        passed is NULL, this function returns a pointer to the top panel 
+        panel_below() returns a pointer to the panel in the deck below
+        pan, or NULL if pan is the bottom panel. If the value of pan
+        passed is NULL, this function returns a pointer to the top panel
         in the deck.
 
         panel_hidden() returns OK if pan is hidden and ERR if it is not.
 
-        panel_userptr() - Each panel has a user pointer available for 
-        maintaining relevant information. This function returns a 
-        pointer to that information previously set up by 
+        panel_userptr() - Each panel has a user pointer available for
+        maintaining relevant information. This function returns a
+        pointer to that information previously set up by
         set_panel_userptr().
 
-        panel_window() returns a pointer to the curses window associated 
+        panel_window() returns a pointer to the curses window associated
         with the panel.
 
         replace_panel() replaces the current window of pan with win.
 
-        set_panel_userptr() - Each panel has a user pointer available 
-        for maintaining relevant information. This function sets the 
+        set_panel_userptr() - Each panel has a user pointer available
+        for maintaining relevant information. This function sets the
         value of that information.
 
-        show_panel() makes a previously hidden panel visible and places 
+        show_panel() makes a previously hidden panel visible and places
         it back in the deck on top.
 
-        top_panel() places pan on the top of the deck. The size, 
+        top_panel() places pan on the top of the deck. The size,
         location and contents of the panel are unchanged.
 
-        update_panels() refreshes the virtual screen to reflect the 
-        depth relationships between the panels in the deck. The user 
+        update_panels() refreshes the virtual screen to reflect the
+        depth relationships between the panels in the deck. The user
         must use doupdate() to refresh the physical screen.
 
   Return Value:
-        Each routine that returns a pointer to an object returns NULL if 
-        an error occurs. Each panel routine that returns an integer, 
+        Each routine that returns a pointer to an object returns NULL if
+        an error occurs. Each panel routine that returns an integer,
         returns OK if it executes successfully and ERR if it does not.
 
   Portability                                X/Open    BSD    SYS V
@@ -617,7 +617,7 @@ void update_panels(void)
 
     if (is_wintouched(stdscr))
         Wnoutrefresh(&_stdscr_pseudo_panel);
-    
+
     pan = _bottom_panel;
 
     while (pan)

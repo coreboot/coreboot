@@ -12,7 +12,7 @@ RCSID("$Id: pdckbd.c,v 1.62 2008/07/14 04:24:52 wmcbrine Exp $")
         unsigned long PDC_get_input_fd(void);
 
   Description:
-        PDC_get_input_fd() returns the file descriptor that PDCurses 
+        PDC_get_input_fd() returns the file descriptor that PDCurses
         reads its input from. It can be used for select().
 
   Portability                                X/Open    BSD    SYS V
@@ -32,7 +32,7 @@ bool PDC_check_key(void)
     FD_ZERO(&xc_readfds);
     FD_SET(xc_key_sock, &xc_readfds);
 
-    if ((s = select(FD_SETSIZE, (FD_SET_CAST)&xc_readfds, NULL, 
+    if ((s = select(FD_SETSIZE, (FD_SET_CAST)&xc_readfds, NULL,
         NULL, &socket_timeout)) < 0)
         XCursesExitCursesProcess(3, "child - exiting from "
                                     "PDC_check_key select failed");

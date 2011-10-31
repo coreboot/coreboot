@@ -14,12 +14,12 @@ RCSID("$Id: debug.c,v 1.7 2008/07/13 16:08:18 wmcbrine Exp $")
         void PDC_debug(const char *, ...);
 
   Description:
-        traceon() and traceoff() toggle the recording of debugging 
-        information to the file "trace". Although not standard, similar 
+        traceon() and traceoff() toggle the recording of debugging
+        information to the file "trace". Although not standard, similar
         functions are in some other curses implementations.
 
-        PDC_debug() is the function that writes to the file, based on 
-        whether traceon() has been called. It's used from the PDC_LOG() 
+        PDC_debug() is the function that writes to the file, based on
+        whether traceon() has been called. It's used from the PDC_LOG()
         macro.
 
   Portability                                X/Open    BSD    SYS V
@@ -43,7 +43,7 @@ void PDC_debug(const char *fmt, ...)
     time_t now;
 
     if (!pdc_trace_on)
-        return; 
+        return;
 
     /* open debug log file append */
 

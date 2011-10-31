@@ -32,7 +32,7 @@
 
 /* decompresses the data stream at src to dst, determining its length from
  * the data stream itself.
- * 
+ *
  * returns the decompressed size, or 0 on error
  */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);

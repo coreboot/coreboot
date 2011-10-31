@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_item_top.c,v 1.11 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_top_row(MENU *menu, int row)
-|   
+|
 |   Description   :  Makes the specified row the top row in the menu
 |
 |   Return Values :  E_OK             - success
@@ -84,9 +84,9 @@ set_top_row(MENU * menu, int row)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int top_row(const MENU *)
-|   
+|
 |   Description   :  Return the top row of the menu
 |
 |   Return Values :  The row number or ERR if there is no row

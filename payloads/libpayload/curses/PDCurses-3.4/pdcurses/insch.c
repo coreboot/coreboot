@@ -25,20 +25,20 @@ RCSID("$Id: insch.c,v 1.44 2008/07/13 16:08:18 wmcbrine Exp $")
         int mvwins_wch(WINDOW *win, int y, int x, const cchar_t *wch);
 
   Description:
-        The insch() functions insert a chtype into the window at the 
-        current or specified cursor position. The cursor is NOT 
-        advanced. A newline is equivalent to clrtoeol(); tabs are 
-        expanded; other control characters are converted as with 
+        The insch() functions insert a chtype into the window at the
+        current or specified cursor position. The cursor is NOT
+        advanced. A newline is equivalent to clrtoeol(); tabs are
+        expanded; other control characters are converted as with
         unctrl().
 
         The ins_wch() functions are the wide-character
         equivalents, taking cchar_t pointers rather than chtypes.
 
         Video attributes can be combined with a character by ORing
-        them into the parameter. Text, including attributes, can be 
+        them into the parameter. Text, including attributes, can be
         copied from one place to another using inch() and insch().
 
-        insrawch() etc. are PDCurses-specific wrappers for insch() etc. 
+        insrawch() etc. are PDCurses-specific wrappers for insch() etc.
         that disable the translation of control characters.
 
   Return Value:

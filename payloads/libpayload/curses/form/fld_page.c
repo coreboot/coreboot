@@ -35,10 +35,10 @@
 MODULE_ID("$Id: fld_page.c,v 1.10 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_new_page(FIELD *field, bool new_page_flag)
-|   
-|   Description   :  Marks the field as the beginning of a new page of 
+|
+|   Description   :  Marks the field as the beginning of a new page of
 |                    the form.
 |
 |   Return Values :  E_OK         - success
@@ -62,9 +62,9 @@ set_new_page(FIELD *field, bool new_page_flag)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  bool new_page(const FIELD *field)
-|   
+|
 |   Description   :  Retrieve the info whether or not the field starts a
 |                    new page on the form.
 |

@@ -32,12 +32,12 @@ RCSID("$Id: insstr.c,v 1.46 2008/07/13 16:08:18 wmcbrine Exp $")
         at the current cursor position, by repeatedly calling winsch().
         When PDCurses is built with wide-character support enabled, the
         narrow-character functions treat the string as a multibyte
-        string in the current locale, and convert it first. All 
-        characters to the right of the cursor are moved to the right, 
-        with the possibility of the rightmost characters on the line 
-        being lost.  The cursor position does not change (after moving 
-        to y, x, if specified).  The routines with n as the last 
-        argument insert at most n characters; if n is negative, then the 
+        string in the current locale, and convert it first. All
+        characters to the right of the cursor are moved to the right,
+        with the possibility of the rightmost characters on the line
+        being lost.  The cursor position does not change (after moving
+        to y, x, if specified).  The routines with n as the last
+        argument insert at most n characters; if n is negative, then the
         entire string is inserted.
 
   Return Value:

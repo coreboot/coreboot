@@ -35,9 +35,9 @@
 MODULE_ID("$Id: frm_post.c,v 1.10 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int post_form(FORM * form)
-|   
+|
 |   Description   :  Writes the form into its associated subwindow.
 |
 |   Return Values :  E_OK              - success
@@ -87,9 +87,9 @@ post_form(FORM *form)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int unpost_form(FORM * form)
-|   
+|
 |   Description   :  Erase form from its associated subwindow.
 |
 |   Return Values :  E_OK            - success

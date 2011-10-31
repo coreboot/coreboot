@@ -64,11 +64,11 @@ static FORM default_form =
 NCURSES_EXPORT_VAR(FORM *) _nc_Default_Form = &default_form;
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static FIELD *Insert_Field_By_Position(
-|                                     FIELD *new_field, 
+|                                     FIELD *new_field,
 |                                     FIELD *head )
-|   
+|
 |   Description   :  Insert new_field into sorted fieldlist with head "head"
 |                    and return new head of sorted fieldlist. Sorting
 |                    criteria is (row,column). This is a circular list.
@@ -112,9 +112,9 @@ Insert_Field_By_Position(FIELD *newfield, FIELD *head)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static void Disconnect_Fields(FORM *form)
-|   
+|
 |   Description   :  Break association between form and array of fields.
 |
 |   Return Values :  -
@@ -142,9 +142,9 @@ Disconnect_Fields(FORM *form)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static int Connect_Fields(FORM *form, FIELD **fields)
-|   
+|
 |   Description   :  Set association between form and array of fields.
 |
 |   Return Values :  E_OK            - no error
@@ -249,10 +249,10 @@ Connect_Fields(FORM *form, FIELD **fields)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static int Associate_Fields(FORM *form, FIELD **fields)
-|   
-|   Description   :  Set association between form and array of fields. 
+|
+|   Description   :  Set association between form and array of fields.
 |                    If there are fields, position to first active field.
 |
 |   Return Values :  E_OK            - success
@@ -282,9 +282,9 @@ Associate_Fields(FORM *form, FIELD **fields)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  FORM *new_form_sp(SCREEN* sp, FIELD** fields )
-|   
+|
 |   Description   :  Create new form with given array of fields.
 |
 |   Return Values :  Pointer to form. NULL if error occurred.
@@ -330,9 +330,9 @@ NCURSES_SP_NAME(new_form) (NCURSES_SP_DCLx FIELD **fields)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  FORM* new_form(FIELD** fields )
-|   
+|
 |   Description   :  Create new form with given array of fields.
 |
 |   Return Values :  Pointer to form. NULL if error occurred.
@@ -351,9 +351,9 @@ new_form(FIELD **fields)
 #endif
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int free_form( FORM *form )
-|   
+|
 |   Description   :  Release internal memory associated with form.
 |
 |   Return Values :  E_OK           - no error
@@ -380,9 +380,9 @@ free_form(FORM *form)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_form_fields( FORM *form, FIELD **fields )
-|   
+|
 |   Description   :  Set a new association of an array of fields to a form
 |
 |   Return Values :  E_OK            - no error
@@ -415,9 +415,9 @@ set_form_fields(FORM *form, FIELD **fields)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  FIELD **form_fields( const FORM *form )
-|   
+|
 |   Description   :  Retrieve array of fields
 |
 |   Return Values :  Pointer to field array
@@ -430,9 +430,9 @@ form_fields(const FORM *form)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int field_count( const FORM *form )
-|   
+|
 |   Description   :  Retrieve number of fields
 |
 |   Return Values :  Number of fields, -1 if none are defined

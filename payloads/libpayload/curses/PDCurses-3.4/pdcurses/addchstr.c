@@ -29,15 +29,15 @@ RCSID("$Id: addchstr.c,v 1.43 2008/07/13 16:08:17 wmcbrine Exp $")
                 int n);
 
   Description:
-        These routines write a chtype or cchar_t string directly into 
-        the window structure, starting at the current or specified 
-        position. The four routines with n as the last argument copy at 
-        most n elements, but no more than will fit on the line. If n = 
-        -1 then the whole string is copied, up to the maximum number 
+        These routines write a chtype or cchar_t string directly into
+        the window structure, starting at the current or specified
+        position. The four routines with n as the last argument copy at
+        most n elements, but no more than will fit on the line. If n =
+        -1 then the whole string is copied, up to the maximum number
         that will fit on the line.
 
-        The cursor position is not advanced. These routines do not check 
-        for newline or other special characters, nor does any line 
+        The cursor position is not advanced. These routines do not check
+        for newline or other special characters, nor does any line
         wrapping occur.
 
   Return Value:
@@ -97,7 +97,7 @@ int waddchnstr(WINDOW *win, const chtype *ch, int n)
 
             PDC_LOG(("y %d x %d minx %d maxx %d *ptr %x *ch"
                      " %x firstch: %d lastch: %d\n",
-                     y, x, minx, maxx, *ptr, *ch, 
+                     y, x, minx, maxx, *ptr, *ch,
                      win->_firstch[y], win->_lastch[y]));
 
             *ptr = *ch;

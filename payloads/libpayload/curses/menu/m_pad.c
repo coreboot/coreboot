@@ -48,11 +48,11 @@ MODULE_ID("$Id: m_pad.c,v 1.12 2010/01/23 21:20:10 tom Exp $")
    }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_pad(MENU* menu, int pad)
-|   
+|
 |   Description   :  Set the character to be used to separate the item name
-|                    from its description. This must be a printable 
+|                    from its description. This must be a printable
 |                    character.
 |
 |   Return Values :  E_OK              - success
@@ -78,9 +78,9 @@ set_menu_pad(MENU * menu, int pad)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int menu_pad(const MENU *menu)
-|   
+|
 |   Description   :  Return the value of the padding character
 |
 |   Return Values :  The pad character

@@ -117,7 +117,7 @@ typedef union
     struct
     {
         unsigned short di, di_hi, si, si_hi, bp, bp_hi, res, res_hi,
-                       bx, bx_hi, dx, dx_hi, cx, cx_hi, ax, ax_hi, 
+                       bx, bx_hi, dx, dx_hi, cx, cx_hi, ax, ax_hi,
                        flags, es, ds, fs, gs, ip, cs, sp, ss;
     } w;
 

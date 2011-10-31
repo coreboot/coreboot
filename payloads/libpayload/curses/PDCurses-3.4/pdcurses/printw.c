@@ -17,13 +17,13 @@ RCSID("$Id: printw.c,v 1.40 2008/07/13 16:08:18 wmcbrine Exp $")
         int vw_printw(WINDOW *win, const char *fmt, va_list varglist);
 
   Description:
-        The printw() functions add a formatted string to the window at 
-        the current or specified cursor position. The format strings are 
-        the same as used in the standard C library's printf(). (printw() 
+        The printw() functions add a formatted string to the window at
+        the current or specified cursor position. The format strings are
+        the same as used in the standard C library's printf(). (printw()
         can be used as a drop-in replacement for printf().)
 
   Return Value:
-        All functions return the number of characters printed, or 
+        All functions return the number of characters printed, or
         ERR on error.
 
   Portability                                X/Open    BSD    SYS V

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <bitops.h>
 #include "chip.h"
+#include "e7505.h"
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 #include <cbmem.h>
@@ -65,17 +66,17 @@ static void pci_domain_set_resources(device_t dev)
 		/* Write the ram configuration registers,
 		 * preserving the reserved bits.
 		 */
-		tolm_r = pci_read_config16(mc_dev, 0xc4);
+		tolm_r = pci_read_config16(mc_dev, TOLM);
 		tolm_r = ((tolmk >> 17) << 11) | (tolm_r & 0x7ff);
-		pci_write_config16(mc_dev, 0xc4, tolm_r);
+		pci_write_config16(mc_dev, TOLM, tolm_r);
 
-		remapbase_r = pci_read_config16(mc_dev, 0xc6);
+		remapbase_r = pci_read_config16(mc_dev, REMAPBASE);
 		remapbase_r = (remapbasek >> 16) | (remapbase_r & 0xfc00);
-		pci_write_config16(mc_dev, 0xc6, remapbase_r);
+		pci_write_config16(mc_dev, REMAPBASE, remapbase_r);
 
-		remaplimit_r = pci_read_config16(mc_dev, 0xc8);
+		remaplimit_r = pci_read_config16(mc_dev, REMAPLIMIT);
 		remaplimit_r = (remaplimitk >> 16) | (remaplimit_r & 0xfc00);
-		pci_write_config16(mc_dev, 0xc8, remaplimit_r);
+		pci_write_config16(mc_dev, REMAPLIMIT, remaplimit_r);
 
 		/* Report the memory regions */
 		idx = 10;
@@ -98,12 +99,23 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(dev->link_list);
 }
 
+static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+static struct pci_operations intel_pci_ops = {
+	.set_subsystem = intel_set_subsystem,
+};
+
 static struct device_operations pci_domain_ops = {
         .read_resources   = pci_domain_read_resources,
         .set_resources    = pci_domain_set_resources,
         .enable_resources = NULL,
         .init             = NULL,
         .scan_bus         = pci_domain_scan_bus,
+	.ops_pci          = &intel_pci_ops,
 	.ops_pci_bus      = &pci_cf8_conf1,
 };
 
@@ -135,7 +147,8 @@ static void enable_dev(struct device *dev)
         }
 }
 
-struct chip_operations northbridge_intel_e7501_ops = {
-	CHIP_NAME("Intel E7501 Northbridge")
+struct chip_operations northbridge_intel_e7505_ops = {
+	CHIP_NAME("Intel E7505 Northbridge")
 	.enable_dev = enable_dev,
 };
+

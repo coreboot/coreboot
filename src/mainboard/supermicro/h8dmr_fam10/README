@@ -21,8 +21,3 @@ See also this thread: http://www.coreboot.org/pipermail/coreboot/2009-September/
 
 Ward, 2009-09-22
 
-mansoor@iwavesystems.com said, about the last issue:
-
-  Try enabling CONFIG_XIP_ROM_BASE.  It solved the same problem for me in my board.
-
-So, that's a todo.

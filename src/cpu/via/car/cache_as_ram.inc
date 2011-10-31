@@ -240,7 +240,7 @@ testok:
 	movl	$(~(CONFIG_RAMTOP - CONFIG_RAMBASE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
-	/* Cache XIP_ROM_BASE-SIZE to speedup coreboot code. */
+	/* Cache XIP_ROM area to speedup coreboot code. */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
 	/*

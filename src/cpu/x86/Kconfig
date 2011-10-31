@@ -27,10 +27,6 @@ config TSC_CALIBRATE_WITH_IO
 	bool
 	default n
 
-config XIP_ROM_BASE
-	hex
-	default 0xffff0000
-
 config XIP_ROM_SIZE
 	hex
 	default 0x10000

@@ -23,11 +23,6 @@
 CROSSGCC_DATE="October 10th, 2011"
 CROSSGCC_VERSION="1.05"
 
-# To enable colors on dash(1)
-if [ -x /usr/bin/printf ]; then
-alias printf=/usr/bin/printf
-fi
-
 # default settings
 TARGETDIR=`pwd`/xgcc
 TARGETARCH=i386-elf
@@ -73,15 +68,15 @@ IASL_DIR="acpica-unix-${IASL_VERSION}"
 SAVETEMPS=0
 SKIPGDB=0
 
-red='\e[0;31m'
-RED='\e[1;31m'
-green='\e[0;32m'
-GREEN='\e[1;32m'
-blue='\e[0;34m'
-BLUE='\e[1;34m'
-cyan='\e[0;36m'
-CYAN='\e[1;36m'
-NC='\e[0m' # No Color
+red='\033[0;31m'
+RED='\033[1;31m'
+green='\033[0;32m'
+GREEN='\033[1;32m'
+blue='\033[0;34m'
+BLUE='\033[1;34m'
+cyan='\033[0;36m'
+CYAN='\033[1;36m'
+NC='\033[0m' # No Color
 
 searchgnu()
 {

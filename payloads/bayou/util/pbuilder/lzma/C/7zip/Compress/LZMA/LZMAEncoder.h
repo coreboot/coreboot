@@ -39,11 +39,11 @@ struct COptimal
   bool Prev2;
 
   UInt32 PosPrev2;
-  UInt32 BackPrev2;     
+  UInt32 BackPrev2;
 
-  UInt32 Price;    
+  UInt32 Price;
   UInt32 PosPrev;         // posNext;
-  UInt32 BackPrev;     
+  UInt32 BackPrev;
   UInt32 Backs[kNumRepDistances];
   void MakeAsChar() { BackPrev = UInt32(-1); Prev1IsChar = false; }
   void MakeAsShortRep() { BackPrev = 0; ; Prev1IsChar = false; }
@@ -99,7 +99,7 @@ public:
   CLiteralEncoder(): _coders(0) {}
   ~CLiteralEncoder()  { Free(); }
   void Free()
-  { 
+  {
     MyFree(_coders);
     _coders = 0;
   }
@@ -172,7 +172,7 @@ public:
 
 }
 
-class CEncoder : 
+class CEncoder :
   public ICompressCoder,
   public ICompressSetOutStream,
   public ICompressSetCoderProperties,
@@ -195,7 +195,7 @@ class CEncoder :
 
   CMyBitEncoder _posEncoders[kNumFullDistances - kEndPosModelIndex];
   NRangeCoder::CBitTreeEncoder<kNumMoveBits, kNumAlignBits> _posAlignEncoder;
-  
+
   NLength::CPriceTableEncoder _lenEncoder;
   NLength::CPriceTableEncoder _repMatchLenEncoder;
 
@@ -206,7 +206,7 @@ class CEncoder :
   bool _fastMode;
   // bool _maxMode;
   UInt32 _numFastBytes;
-  UInt32 _longestMatchLength;    
+  UInt32 _longestMatchLength;
   UInt32 _numDistancePairs;
 
   UInt32 _additionalOffset;
@@ -217,7 +217,7 @@ class CEncoder :
   bool _longestMatchWasFound;
 
   UInt32 _posSlotPrices[kNumLenToPosStates][kDistTableSizeMax];
-  
+
   UInt32 _distancesPrices[kNumLenToPosStates][kNumFullDistances];
 
   UInt32 _alignPrices[kAlignTableSize];
@@ -257,7 +257,7 @@ class CEncoder :
     setMfPasses = 0;
     _matchFinder.Release();
   }
-  
+
   HRESULT ReadMatchDistances(UInt32 &len, UInt32 &numDistancePairs);
 
   HRESULT MovePos(UInt32 num);
@@ -266,7 +266,7 @@ class CEncoder :
     return _isRepG0[state.Index].GetPrice0() +
         _isRep0Long[state.Index][posState].GetPrice0();
   }
-  
+
   UInt32 GetPureRepPrice(UInt32 repIndex, CState state, UInt32 posState) const
   {
     UInt32 price;
@@ -307,7 +307,7 @@ class CEncoder :
     if (pos < kNumFullDistances)
       price = _distancesPrices[lenToPosState][pos];
     else
-      price = _posSlotPrices[lenToPosState][GetPosSlot2(pos)] + 
+      price = _posSlotPrices[lenToPosState][GetPosSlot2(pos)] +
           _alignPrices[pos & kAlignMask];
     return price + _lenEncoder.GetPrice(len - kMatchMinLen, posState);
   }
@@ -319,7 +319,7 @@ class CEncoder :
     if (pos < kNumFullDistances)
       price = _distancesPrices[lenToPosState][pos];
     else
-      price = _posSlotPrices[lenToPosState][GetPosSlot2(pos)] + 
+      price = _posSlotPrices[lenToPosState][GetPosSlot2(pos)] +
           _alignPrices[pos & kAlignMask];
     return price + _lenEncoder.GetPrice(len - kMatchMinLen, posState);
   }
@@ -330,7 +330,7 @@ class CEncoder :
 
   void FillDistancesPrices();
   void FillAlignPrices();
-    
+
   void ReleaseMFStream()
   {
     if (_matchFinder && _needReleaseMFStream)
@@ -373,9 +373,9 @@ public:
       ICompressSetCoderProperties,
       ICompressWriteCoderProperties
       )
-    
+
   HRESULT Init();
-  
+
   // ICompressCoder interface
   HRESULT SetStreams(ISequentialInStream *inStream,
       ISequentialOutStream *outStream,
@@ -383,20 +383,20 @@ public:
   HRESULT CodeOneBlock(UInt64 *inSize, UInt64 *outSize, Int32 *finished);
 
   HRESULT CodeReal(ISequentialInStream *inStream,
-      ISequentialOutStream *outStream, 
+      ISequentialOutStream *outStream,
       const UInt64 *inSize, const UInt64 *outSize,
       ICompressProgressInfo *progress);
 
   // ICompressCoder interface
   STDMETHOD(Code)(ISequentialInStream *inStream,
-      ISequentialOutStream *outStream, 
+      ISequentialOutStream *outStream,
       const UInt64 *inSize, const UInt64 *outSize,
       ICompressProgressInfo *progress);
 
   // ICompressSetCoderProperties2
-  STDMETHOD(SetCoderProperties)(const PROPID *propIDs, 
+  STDMETHOD(SetCoderProperties)(const PROPID *propIDs,
       const PROPVARIANT *properties, UInt32 numProperties);
-  
+
   // ICompressWriteCoderProperties
   STDMETHOD(WriteCoderProperties)(ISequentialOutStream *outStream);
 

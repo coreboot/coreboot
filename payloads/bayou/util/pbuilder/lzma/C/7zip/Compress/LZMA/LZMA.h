@@ -27,10 +27,10 @@ public:
   bool IsCharState() const { return Index < 7; }
 };
 
-const int kNumPosSlotBits = 6; 
-const int kDicLogSizeMin = 0; 
-const int kDicLogSizeMax = 32; 
-const int kDistTableSizeMax = kDicLogSizeMax * 2; 
+const int kNumPosSlotBits = 6;
+const int kDicLogSizeMin = 0;
+const int kDicLogSizeMax = 32;
+const int kDistTableSizeMax = kDicLogSizeMax * 2;
 
 const UInt32 kNumLenToPosStates = 4;
 

@@ -9,7 +9,7 @@
 #if (_WIN32_WCE > 300)
 #include <basetyps.h>
 #else
-#define MIDL_INTERFACE(x) struct 
+#define MIDL_INTERFACE(x) struct
 #endif
 #else
 #include <basetyps.h>
@@ -17,8 +17,8 @@
 
 #include <unknwn.h>
 
-#else 
+#else
 #include "MyWindows.h"
 #endif
-  
+
 #endif

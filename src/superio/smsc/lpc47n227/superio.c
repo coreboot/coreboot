@@ -85,7 +85,7 @@ static void enable_dev(device_t dev)
  *
  * NOTE: Cannot use pnp_set_resources() here because it assumes chip
  * support for logical devices, which the LPC47N227 doesn't have.
- * 
+ *
  * @param dev Pointer to structure describing a Super I/O device.
  */
 void lpc47n227_pnp_set_resources(device_t dev)

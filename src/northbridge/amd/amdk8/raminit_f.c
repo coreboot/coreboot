@@ -1815,7 +1815,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 #endif
 #endif
 	];
-	
+
 	if (bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
 	}

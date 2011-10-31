@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
@@ -20,32 +20,32 @@
 
 /**
  * @file post_codes.h
- * 
+ *
  * This aims to be a central point for POST codes used throughout coreboot.
  * All POST codes should be declared here as macros, and post_code() should
  * be used with the macros instead of hardcoded values. This allows us to
  * quicly reference POST codes when nothing is working
- * 
+ *
  * The format for a POST code macro is
  * #define POST_WHAT_WE_COMMUNICATE_IS_HAPPENING_WHEN_THIS_CODE_IS_POSTED
  * Lets's keep it at POST_* instead of POST_CODE_*
- * 
+ *
  * This file is also included by early assembly files. Only use #define s;
  * no function prototypes allowed here
- * 
+ *
  * DOCUMENTATION:
- * Please document any and all post codes using Doxygen style comments. We 
+ * Please document any and all post codes using Doxygen style comments. We
  * want to be able to generate a verbose enough documentation that is useful
  * during debugging. Failure to do so will result in your patch being rejected
  * without any explanation or effort on part of the maintainers.
- * 
+ *
  */
 #ifndef POST_CODES_H
 #define POST_CODES_H
 
 /**
  * \brief  Entry into 'crt0.s'. reset code jumps to here
- * 
+ *
  * First instruction that gets executed after the reset vector jumps.
  * This indicates that the reset vector points to the correct code segment.
  */
@@ -53,7 +53,7 @@
 
 /**
  * \brief Entry into protected mode
- * 
+ *
  * Preparing to enter protected mode. This is POSTed right before changing to
  * protected mode.
  */
@@ -61,14 +61,14 @@
 
 /**
  * \brief Start copying coreboot to RAM with decompression if compressed
- * 
+ *
  * POSTed before ramstage is about to be loaded into memory
  */
 #define POST_PREPARE_RAMSTAGE 			0x11
 
 /**
  * \brief Copy/decompression finished; jumping to RAM
- * 
+ *
  * This is called after ramstage is loaded in memory, and before
  * the code jumps there. This represents the end of romstage.
  */
@@ -77,14 +77,14 @@
 
 /**
  * \brief Entry into c_start
- * 
+ *
  * c_start.S is the first code executing in ramstage.
  */
 #define POST_ENTRY_C_START			0x13
 
 /**
  * \brief Entry into coreboot in hardwaremain (RAM)
- * 
+ *
  * This is the first call in hardwaremain.c. If this code is POSTed, then
  * ramstage has succesfully loaded and started executing.
  */
@@ -92,14 +92,14 @@
 
 /**
  * \brief Console is initialized
- * 
+ *
  * The console is initialized and is ready for usage
  */
 #define POST_CONSOLE_READY			0x39
 
 /**
  * \brief Console boot message succeeded
- * 
+ *
  * First console message has been succesfully sent through the console backend
  * driver.
  */
@@ -107,28 +107,28 @@
 
 /**
  * \brief Devices have been enumerated
- * 
+ *
  * Bus scan, and device enumeration has completed.
  */
 #define POST_DEVICE_ENUMERATION_COMPLETE	0x66
 
 /**
  * \brief Devices have been configured
- * 
+ *
  * Device confgration has completed.
  */
 #define POST_DEVICE_CONFIGURATION_COMPLETE	0x88
 
 /**
  * \brief Devices have been enabled
- * 
+ *
  * Devices have been enabled.
  */
 #define POST_DEVICES_ENABLED			0x89
 
 /**
  * \brief Entry into elf boot
- * 
+ *
  * This POST code is called right before invoking jmp_to_elf_entry()
  * jmp_to_elf_entry() invokes the payload, and should never return
  */
@@ -136,7 +136,7 @@
 
 /**
  * \brief Jumping to payload
- * 
+ *
  * Called right before jumping to a payload. If the boot sequence stops with
  * this code, chances are the payload freezes.
  */
@@ -144,16 +144,16 @@
 
 /**
  * \brief Not supposed to get here
- * 
+ *
  * A function that should not have returned, returned
- * 
+ *
  * Check the console output for details.
  */
 #define POST_DEAD_CODE				0xee
 
 /**
  * \brief Pre call to hardwaremain()
- * 
+ *
  * POSTed right before hardwaremain is called from c_start.S
  * TODO: Change this code to a lower number
  */
@@ -161,9 +161,9 @@
 
 /**
  * \brief Elfload fail or die() called
- * 
+ *
  * Coreboot was not able to load the payload, no payload was detected
- * or die() was called. 
+ * or die() was called.
  * \n
  * If this code appears before entering ramstage, then most likely
  * ramstage is corrupted, and reflashing of the ROM chip is needed.
@@ -182,7 +182,7 @@
  * They overlap with previous codes, and most are not even used
  * Some maiboards still require them, but they are deprecated. We want to consolidate
  * our own POST code structure with the codes above.
- * 
+ *
  * standard AMD post definitions for the AMD Geode
  */
 #define POST_Output_Port			(0x080)	/*	port to write post codes to*/

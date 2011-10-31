@@ -196,7 +196,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			}
 
 			mbi_header = (mbi_header_t *)&mbi[i];
-			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + ALIGN(mbi_header->name_len, 16), 16); 
+			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + ALIGN(mbi_header->name_len, 16), 16);
 
 			if (obj_header->objnum == count) {
 #ifdef DEBUG_SMI_I82830

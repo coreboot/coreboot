@@ -28,7 +28,7 @@
 extern struct chip_operations superio_ite_it8671f_ops;
 
 struct superio_ite_it8671f_config {
-	
+
 	struct pc_keyboard keyboard;
 };
 

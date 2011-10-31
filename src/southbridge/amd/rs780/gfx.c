@@ -511,7 +511,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 			vgainfo.ucUMAChannelNumber = 2;
 		}
 	}
-      
+
 	// processor type
 	if (is_family0Fh())
 		vgainfo.ulCPUCapInfo = 3;
@@ -539,9 +539,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* HT width. */
 	value = pci_read_config8(nb_dev, 0xcb);
-	vgainfo.usMinDownStreamHTLinkWidth = 
-	vgainfo.usMaxDownStreamHTLinkWidth = 
-	vgainfo.usMinUpStreamHTLinkWidth = 
+	vgainfo.usMinDownStreamHTLinkWidth =
+	vgainfo.usMaxDownStreamHTLinkWidth =
+	vgainfo.usMinUpStreamHTLinkWidth =
 	vgainfo.usMaxUpStreamHTLinkWidth =
 	vgainfo.usMinHTLinkWidth =
 	vgainfo.usMaxHTLinkWidth = ht_width_lookup [extractbits(value, 0, 2)];

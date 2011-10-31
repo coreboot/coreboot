@@ -20,7 +20,7 @@
  * ***************************************************************************
  *
  */
- 
+
 #ifndef  _AMD_SBPLATFORM_H_
 #define  _AMD_SBPLATFORM_H_
 
@@ -112,7 +112,7 @@ typedef union _PCI_ADDR {
  */
 #define SB_CIMx_PARAMETER  0x02
 
-// Generic 
+// Generic
 #define cimSpreadSpectrumDefault        TRUE
 #define cimSpreadSpectrumTypeDefault	0x00      // Normal
 #define cimHpetTimerDefault             TRUE
@@ -121,7 +121,7 @@ typedef union _PCI_ADDR {
 #define cimSpiFastReadEnableDefault     0x01      // Enable
 #define cimSpiFastReadSpeedDefault      0x01      // 33 MHz
 #define cimSioHwmPortEnableDefault      FALSE
-// GPP/AB Controller 
+// GPP/AB Controller
 #define cimNbSbGen2Default              TRUE
 #define cimAlinkPhyPllPowerDownDefault  TRUE
 #define cimResetCpuOnSyncFloodDefault   TRUE
@@ -129,13 +129,13 @@ typedef union _PCI_ADDR {
 #define cimGppMemWrImproveDefault       TRUE
 #define cimGppPortAspmDefault           FALSE
 #define cimGppLaneReversalDefault       FALSE
-#define cimGppPhyPllPowerDownDefault    TRUE 
+#define cimGppPhyPllPowerDownDefault    TRUE
 // USB Controller
 #define cimUsbPhyPowerDownDefault       FALSE
 // GEC Controller
 #define cimSBGecDebugBusDefault         FALSE
 #define cimSBGecPwrDefault              0x03
-// Sata Controller 
+// Sata Controller
 #define cimSataSetMaxGen2Default        0x00
 #define cimSATARefClkSelDefault         0x10
 #define cimSATARefDivSelDefault         0x80
@@ -143,11 +143,11 @@ typedef union _PCI_ADDR {
 #define cimSataPortMultCapDefault       TRUE
 #define cimSataPscCapDefault            0x00      // Enable
 #define cimSataSscCapDefault            0x00      // Enable
-#define cimSataFisBasedSwitchingDefault FALSE 
+#define cimSataFisBasedSwitchingDefault FALSE
 #define cimSataCccSupportDefault        FALSE
 #define cimSataClkAutoOffDefault        FALSE
 #define cimNativepciesupportDefault     FALSE
-// Fusion Related 
+// Fusion Related
 #define cimAcDcMsgDefault               FALSE
 #define cimTimerTickTrackDefault        FALSE
 #define cimClockInterruptTagDefault     FALSE

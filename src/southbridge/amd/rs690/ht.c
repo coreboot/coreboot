@@ -28,25 +28,25 @@
 static void ht_dev_set_resources(device_t dev)
 {
 #if CONFIG_EXT_CONF_SUPPORT == 1
-	unsigned reg;		
+	unsigned reg;
 	device_t k8_f1;
 	resource_t rbase, rend;
 	u32 base, limit;
 	struct resource *resource;
-	
+
 	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);
-	
+
 	resource = probe_resource(dev, 0x1C);
 	if (resource) {
-		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 0 << 3); // make bar3 visible	
+		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 0 << 3); // make bar3 visible
 		set_nbcfg_enable_bits(dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
-		set_nbcfg_enable_bits(dev, 0x84, 7 << 16, 0 << 16); // program bus range: 255 busses 
+		set_nbcfg_enable_bits(dev, 0x84, 7 << 16, 0 << 16); // program bus range: 255 busses
 		pci_write_config32(dev, 0x1C, resource->base);
 		/* Enable MMCONFIG decoding. */
 		set_htiu_enable_bits(dev, 0x32, 1 << 28, 1 << 28);	/* PCIEMiscInit */
 		set_nbcfg_enable_bits(dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3 register. */
 		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3); // hide bar 3
-		
+
 		// setup resource nonposted in k8 mmio
 		/* Get the base address */
 		rbase = resource->base;
@@ -74,9 +74,9 @@ static void ht_dev_set_resources(device_t dev)
 			limit &= 0x00000048;
 			limit |= ((rend >> 8) & 0xffffff00);
 			limit |= (sblk << 4);
-			limit |= (1 << 7); 
+			limit |= (1 << 7);
 			printk(BIOS_INFO, "%s <- index %x base %04x limit %04x\n", dev_path(k8_f1), reg, base, limit);
-			pci_write_config32(k8_f1, reg+4, limit); 
+			pci_write_config32(k8_f1, reg+4, limit);
 			pci_write_config32(k8_f1, reg, base);
 		}
 	}
@@ -88,13 +88,13 @@ static void ht_dev_read_resources(device_t dev)
 {
 #if CONFIG_EXT_CONF_SUPPORT == 1
 	struct resource *res;
-	
-	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);	
-	set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3); // hide bar 3	
+
+	printk(BIOS_DEBUG,"%s %s\n", dev_path(dev), __func__);
+	set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3); // hide bar 3
 #endif
 
 	pci_dev_read_resources(dev);
-	
+
 #if CONFIG_EXT_CONF_SUPPORT == 1
 	/* Add an MMCONFIG resource. */
 	res = new_resource(dev, 0x1C);
@@ -104,9 +104,9 @@ static void ht_dev_read_resources(device_t dev)
 	res->gran = log2(res->size);
 	res->limit = 0xffffffffffffffffULL;	/* 64bit */
 	res->flags = IORESOURCE_FIXED | IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED;
-	
+
 	compact_resources(dev);
-#endif	
+#endif
 }
 
 /* for UMA internal graphics */

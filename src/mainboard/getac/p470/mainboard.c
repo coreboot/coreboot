@@ -32,7 +32,7 @@
 
 #define MAX_LCD_BRIGHTNESS	0xd8
 
-static void ec_enable(void) 
+static void ec_enable(void)
 {
 	u16 keymap;
 	/* Enable Hotkey SCI */
@@ -59,11 +59,11 @@ static void pcie_limit_power(void)
 {
 #if 0
 	// This piece of code needs further debugging as it crashes the
-	// machine. It should set the slot numbers and enable power 
+	// machine. It should set the slot numbers and enable power
 	// limitation for the PCIe slots.
 
 	device_t dev;
-	
+
 	dev = dev_find_slot(0, PCI_DEVFN(28,0));
 	if (dev) pci_write_config32(dev, 0x54, 0x0010a0e0);
 
@@ -89,9 +89,9 @@ static void mainboard_init(device_t dev)
 	ec_enable();
 }
 
-// mainboard_enable is executed as first thing after 
+// mainboard_enable is executed as first thing after
 // enumerate_buses(). Is there no mainboard_init()?
-static void mainboard_enable(device_t dev) 
+static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	pcie_limit_power();

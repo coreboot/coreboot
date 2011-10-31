@@ -62,18 +62,18 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-  
+
   /* create all subtables for processors */
   current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 0);
   current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 1);
-  
+
   /* Write SB800 IOAPIC, only one */
   current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, apicid_sb800,
              IO_APIC_ADDR, 0);
 
   current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
             current, 0, 0, 2, 0);
-  
+
   /* 0: mean bus 0--->ISA */
   /* 0: PIC 0 */
   /* 2: APIC 2 */

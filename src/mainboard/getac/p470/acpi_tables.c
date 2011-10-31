@@ -1,6 +1,6 @@
 /*
  * This file is part of the coreboot project.
- * 
+ *
  * Copyright (C) 2007-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -87,7 +87,7 @@ static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 
 static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 {
-	/* Attention: Make sure these match the values from 
+	/* Attention: Make sure these match the values from
 	 * the DSDT's ec.asl
 	 */
 	static const char ec_id[] = "\\_SB.PCI0.LPCB.EC0";
@@ -120,7 +120,7 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 	ecdt->ec_data.addrh = 0;
 
 	ecdt->uid = 1; // Must match _UID of the EC0 node.
-	
+
 	ecdt->gpe_bit = 23; // SCI interrupt within GPEx_STS
 
 	strncpy((char *)ecdt->ec_id, ec_id, strlen(ec_id));
@@ -260,7 +260,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += dsdt->length;
 	memcpy(dsdt, &AmlCode, dsdt->length);
 
-	/* Fix up global NVS region for SMI handler. The GNVS region lives 
+	/* Fix up global NVS region for SMI handler. The GNVS region lives
 	 * in the (high) table area. The low memory map looks like this:
 	 *
 	 * 0x00000000 - 0x000003ff	Real Mode IVT
@@ -313,7 +313,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	current += 0x100;
 	ALIGN_CURRENT;
-	
+
 	/* And tell SMI about it */
 	smm_setup_structures(gnvs, NULL, smi1);
 

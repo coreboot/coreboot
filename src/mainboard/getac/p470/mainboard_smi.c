@@ -30,7 +30,7 @@
 
 #define MAX_LCD_BRIGHTNESS 0xd8
 
-/* The southbridge SMI handler checks whether gnvs has a 
+/* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
 extern global_nvs_t *gnvs;

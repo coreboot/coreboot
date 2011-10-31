@@ -23,7 +23,7 @@ typedef struct msr_struct
 	unsigned hi;
 } msr_t;
 
-typedef struct msrinit_struct 
+typedef struct msrinit_struct
 {
         unsigned index;
         msr_t msr;

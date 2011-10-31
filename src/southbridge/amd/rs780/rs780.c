@@ -223,7 +223,7 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 #if (CONFIG_GFXUMA == 1)
 	extern uint64_t uma_memory_size;
 	// bits 7-9: aperture size
-	// 0-7: 128mb, 256mb, 64mb, 32mb, 512mb, 1g, 2g, 4g 
+	// 0-7: 128mb, 256mb, 64mb, 32mb, 512mb, 1g, 2g, 4g
 	if (uma_memory_size == 0x02000000) romstrap2 |= 3 << 7;
 	if (uma_memory_size == 0x04000000) romstrap2 |= 2 << 7;
 	if (uma_memory_size == 0x08000000) romstrap2 |= 0 << 7;

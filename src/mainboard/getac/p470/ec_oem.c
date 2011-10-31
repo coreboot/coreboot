@@ -36,7 +36,7 @@ int send_ec_oem_command(u8 command)
 			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk(BIOS_DEBUG, "Timeout while sending OEM command 0x%02x to EC!\n", 
+		printk(BIOS_DEBUG, "Timeout while sending OEM command 0x%02x to EC!\n",
 				command);
 		// return -1;
 	}
@@ -124,7 +124,7 @@ int ec_oem_dump_status(void)
 	if (ec_sc & (1 << 1)) printk(BIOS_DEBUG, "IBF ");
 	if (ec_sc & (1 << 0)) printk(BIOS_DEBUG, "OBF ");
 	printk(BIOS_DEBUG, "\n");
-	
+
 	return ec_sc;
 }
 

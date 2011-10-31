@@ -4,7 +4,7 @@
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
  * Copyright (C) 2010 Siemens AG, Inc.
  * (Written by Josef Kellermann <joseph.kellermann@heitec.de> for Siemens AG, Inc.)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -172,7 +172,7 @@ static u32 adt7475_address = ADT7475_ADDRESS;
 
 #define adt7475_write_byte(reg, val) \
 	do_smbus_write_byte(smbus_io_base, adt7475_address, reg, val)
-	
+
 #define TWOS_COMPL 1
 
 struct __table__{
@@ -284,9 +284,9 @@ static void int15_install(void)
 /* ############################################################################################# */
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
 
 static u8 calc_trange(u8 t_min, u8 t_max) {
@@ -294,7 +294,7 @@ static u8 calc_trange(u8 t_min, u8 t_max) {
 	u8 prev;
 	int i;
 	int diff = t_max - t_min;
-	
+
 	// walk through the trange table
 	for(i = 0, prev = 0; i < sizeof(trange)/sizeof(int); i++) {
 		if( trange[i] < diff ) {
@@ -304,7 +304,7 @@ static u8 calc_trange(u8 t_min, u8 t_max) {
 		if( diff == trange[i] ) return i;
 		if( (diff - trange[prev]) < (trange[i] - diff) ) break; // return with last val index
 		return i;
-	}		
+	}
 	return prev;
 }
 
@@ -319,7 +319,7 @@ static void cable_detect(void)
 	u8 byte;
 	struct device *sm_dev;
 	struct device *ide_dev;
-	
+
 	/* SMBus Module and ACPI Block (Device 20, Function 0) on SB600 */
 	printk(BIOS_DEBUG, "%s.\n", __func__);
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -327,7 +327,7 @@ static void cable_detect(void)
 	byte = pci_read_config8(sm_dev, 0xA9);
 	byte |= (1 << 5);	/* Set Gpio9 as input */
 	pci_write_config8(sm_dev, 0xA9, byte);
-	
+
 	/* IDE Controller (Device 20, Function 1) on SB600 */
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
 
@@ -347,14 +347,14 @@ static void cable_detect(void)
 /**
  * @brief Detect the ADT7475 device
  *
- * @param 
+ * @param
  */
- 
+
 static const char * adt7475_detect( void ) {
 
         int vendid, devid, devid2;
         const char *name = NULL;
-		
+
         vendid = adt7475_read_byte(REG_VENDID);
         devid2 = adt7475_read_byte(REG_DEVID2);
         if (vendid != 0x41 ||           /* Analog Devices */
@@ -371,7 +371,7 @@ static const char * adt7475_detect( void ) {
                 name = "adt7476";
         else if ((devid2 & 0xfc) == 0x6c)
                 name = "adt7490";
- 
+
         return name;
 }
 
@@ -396,7 +396,7 @@ const struct fan_control case_fan_control_defaults = {
 static void pm_init( void )
 {
 	u16 word;
-	u8 byte; 
+	u8 byte;
 	device_t sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
 	/* set SB600 GPIO 64 to GPIO with pull-up */
@@ -423,7 +423,7 @@ static void pm_init( void )
 	byte = pm_ioread(0x3c);
 	byte &= 0xf3;
 	pm_iowrite(0x3c, byte);
-	
+
 	/* set GPM5 to not wake from s5 */
 	byte = pm_ioread(0x77);
 	byte &= ~(1 << 5);
@@ -433,7 +433,7 @@ static void pm_init( void )
  /**
  * @brief Setup thermal config on SINA Mainboard
  *
- * @param 
+ * @param
  */
 
 static void set_thermal_config(void)
@@ -443,17 +443,17 @@ static void set_thermal_config(void)
 	device_t sm_dev;
 	struct fan_control cpu_fan_control, case_fan_control;
 	const char *name = NULL;
-	
-		
+
+
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	smbus_io_base = pci_read_config32(sm_dev, 0x10) & ~(0xf); // get BAR0-Address which holds the SMBUS_IO_BASE
-	
+
 	if( (name = adt7475_detect()) == NULL ) {
 		printk(BIOS_NOTICE, "Couldn't detect an ADT7473/75/76/90 part at %x:%x\n", smbus_io_base, adt7475_address);
 		return;
 	}
 	printk(BIOS_DEBUG, "Found %s part at %x:%x\n", name, smbus_io_base, adt7475_address);
-	
+
 	cpu_fan_control = cpu_fan_control_defaults;
 	case_fan_control = case_fan_control_defaults;
 
@@ -463,7 +463,7 @@ static void set_thermal_config(void)
 		// get all the options needed
 		if( get_option(&byte, "cpu_fan_control") == 0 )
 			cpu_fan_control.enable = byte ? 1 : 0;
-			
+
 		get_option(&cpu_fan_control.polarity, "cpu_fan_polarity");
 		get_option(&cpu_fan_control.t_min, "cpu_t_min");
 		get_option(&cpu_fan_control.t_max, "cpu_t_max");
@@ -471,13 +471,13 @@ static void set_thermal_config(void)
 		get_option(&cpu_fan_control.pwm_max, "cpu_dutycycle_max");
 
 		if( get_option(&byte, "chassis_fan_control") == 0)
-			case_fan_control.enable = byte ? 1 : 0;		
-		get_option(&case_fan_control.polarity, "chassis_fan_polarity");	
+			case_fan_control.enable = byte ? 1 : 0;
+		get_option(&case_fan_control.polarity, "chassis_fan_polarity");
 		get_option(&case_fan_control.t_min, "chassis_t_min");
 		get_option(&case_fan_control.t_max, "chassis_t_max");
 		get_option(&case_fan_control.pwm_min, "chassis_dutycycle_min");
 		get_option(&case_fan_control.pwm_max, "chassis_dutycycle_max");
-	
+
 	}
 
 	printk(BIOS_DEBUG, "cpu_fan_control:%s", cpu_fan_control.enable ? "enable" : "disable");
@@ -485,50 +485,50 @@ static void set_thermal_config(void)
 
 	printk(BIOS_DEBUG, " cpu_t_min:%s", TEMPERATURE_INFO(cpu_fan_control.t_min));
 	cpu_fan_control.t_min = TEMPERATURE(cpu_fan_control.t_min, cpu_fan_control_defaults.t_min);
-	
+
 	printk(BIOS_DEBUG, " cpu_t_max:%s", TEMPERATURE_INFO(cpu_fan_control.t_max));
 	cpu_fan_control.t_max = TEMPERATURE(cpu_fan_control.t_max, cpu_fan_control_defaults.t_max);
-	
+
 	printk(BIOS_DEBUG, " cpu_pwm_min:%s", DUTYCYCLE_INFO(cpu_fan_control.pwm_min));
 	cpu_fan_control.pwm_min = DUTYCYCLE(cpu_fan_control.pwm_min, cpu_fan_control_defaults.pwm_min);
-	
+
 	printk(BIOS_DEBUG, " cpu_pwm_max:%s", DUTYCYCLE_INFO(cpu_fan_control.pwm_max));
 	cpu_fan_control.pwm_max = DUTYCYCLE(cpu_fan_control.pwm_max, cpu_fan_control_defaults.pwm_max);
-	
+
 	cpu_fan_control.t_range = calc_trange(cpu_fan_control.t_min, cpu_fan_control.t_max);
 	printk(BIOS_DEBUG, " cpu_t_range:0x%02x\n", cpu_fan_control.t_range);
 	cpu_fan_control.t_range <<= 4;
 	cpu_fan_control.t_range |= (4 << 0); // 35.3Hz
-	
+
 	printk(BIOS_DEBUG, "chassis_fan_control:%s", case_fan_control.enable ? "enable" : "disable");
 	printk(BIOS_DEBUG, " chassis_fan_polarity:%s", case_fan_control.polarity ? "low" : "high");
 
 	printk(BIOS_DEBUG, " chassis_t_min:%s", TEMPERATURE_INFO(case_fan_control.t_min));
 	case_fan_control.t_min = TEMPERATURE(case_fan_control.t_min, case_fan_control_defaults.t_min);
-	
+
 	printk(BIOS_DEBUG, " chassis_t_max:%s", TEMPERATURE_INFO(case_fan_control.t_max));
 	case_fan_control.t_max = TEMPERATURE(case_fan_control.t_max, case_fan_control_defaults.t_max);
-	
+
 	printk(BIOS_DEBUG, " chassis_pwm_min:%s", DUTYCYCLE_INFO(case_fan_control.pwm_min));
 	case_fan_control.pwm_min = DUTYCYCLE(case_fan_control.pwm_min, case_fan_control_defaults.pwm_min);
-	
+
 	printk(BIOS_DEBUG, " chassis_pwm_max:%s", DUTYCYCLE_INFO(case_fan_control.pwm_max));
 	case_fan_control.pwm_max = DUTYCYCLE(case_fan_control.pwm_max, case_fan_control_defaults.pwm_max);
-	
+
 	case_fan_control.t_range = calc_trange(case_fan_control.t_min, case_fan_control.t_max);
 	printk(BIOS_DEBUG, " case_t_range:0x%02x\n", case_fan_control.t_range);
 	case_fan_control.t_range <<= 4;
 	case_fan_control.t_range |= (4 << 0); // 35.3Hz
-	
+
 	cpu_pwm_conf = (((cpu_fan_control.polarity & 0x1) << 4) | 0x2); // bit 4 control polarity of PWMx output
 	case_pwm_conf = (((case_fan_control.polarity & 0x1) << 4) | 0x2); // bit 4 control polarity of PWMx output
-	cpu_pwm_conf |= cpu_fan_control.enable ? (0 << 5) : (7 << 5);  // manual control 
+	cpu_pwm_conf |= cpu_fan_control.enable ? (0 << 5) : (7 << 5);  // manual control
 	case_pwm_conf |= case_fan_control.enable ? (1 << 5) : (7 << 5); // local temp
-	
+
 	/* set adt7475 */
 
 	adt7475_write_byte(REG_CONFIG1, 0x04);  // clear register, bit 2 is read only
-	
+
 	/* Config Register 6:  */
 	adt7475_write_byte(REG_CONFIG6, 0x00);
 	/* Config Register 7 */
@@ -536,14 +536,14 @@ static void set_thermal_config(void)
 
 	/* Config Register 5: */
 	/* set Offset 64 format, enable THERM on Remote 1& Local */
-	adt7475_write_byte(REG_CONFIG5, TWOS_COMPL ? 0x61 : 0x60); 
+	adt7475_write_byte(REG_CONFIG5, TWOS_COMPL ? 0x61 : 0x60);
 	/* No offset for remote 1 */
 	adt7475_write_byte(TEMP_OFFSET_REG(0), 0x00);
 	/* No offset for local */
 	adt7475_write_byte(TEMP_OFFSET_REG(1), 0x00);
 	/* No offset for remote 2 */
 	adt7475_write_byte(TEMP_OFFSET_REG(2), 0x00);
-	
+
 	/* remote 1 low temp limit */
 	adt7475_write_byte(TEMP_MIN_REG(0), 0x00);
 	/* remote 1 High temp limit    (90C) */
@@ -558,7 +558,7 @@ static void set_thermal_config(void)
 	adt7475_write_byte(TEMP_THERM_REG(0), 0x9f);
 	/* local therm temp limit    (95C) */
 	adt7475_write_byte(TEMP_THERM_REG(1), 0x9f);
-	
+
 	/* PWM 1 configuration register    CPU fan controlled by CPU Thermal Diode */
 	adt7475_write_byte(PWM_CONFIG_REG(0), cpu_pwm_conf);
 	/* PWM 3 configuration register    Case fan controlled by ADTxxxx temp */
@@ -576,7 +576,7 @@ static void set_thermal_config(void)
 	} else {
 		adt7475_write_byte(PWM_REG(0), cpu_fan_control.pwm_max);
 	}
-	
+
 	if( case_fan_control.enable ) {
 		/* PWM 2 minimum duty cycle     (37%) */
 		adt7475_write_byte(PWM_MIN_REG(2), case_fan_control.pwm_min);
@@ -597,10 +597,10 @@ static void set_thermal_config(void)
 	adt7475_write_byte(0x7d, 0x09);
 	/* Interrupt Mask Register 2 - Mask SMB alert for Therm Conditions, Fan 3 fault, SmbAlert Fan for Therm Timer event */
 	adt7475_write_byte(0x75, 0x2e);
-	
+
 	/* Config Register 1 Set Start bit */
 	adt7475_write_byte(0x40, 0x05);
-	
+
 	/* Read status register to clear any old errors */
 	byte2 = adt7475_read_byte(0x42);
 	byte = adt7475_read_byte(0x41);
@@ -611,20 +611,20 @@ static void set_thermal_config(void)
 }
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
 
 static void patch_mmio_nonposted( void )
 {
-	unsigned reg, index;		
+	unsigned reg, index;
 	resource_t rbase, rend;
 	u32 base, limit;
 	struct resource *resource;
 	device_t dev;
 	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18,1));
-	
+
 	printk(BIOS_DEBUG,"%s ...\n", __func__);
 
 	dev = dev_find_slot(1, PCI_DEVFN(5,0));
@@ -637,7 +637,7 @@ static void patch_mmio_nonposted( void )
 		rbase = (resource->base >> 8) & ~(0xff);
 		/* Get the limit (rounded up) */
 		rend  = (resource_end(resource) >> 8) & ~(0xff);
-	
+
 		printk(BIOS_DEBUG,"%s %x base = %0llx limit = %0llx\n", dev_path(dev), index, rbase, rend);
 
 		for( reg = 0xb8; reg >= 0x80; reg -= 8 ) {
@@ -645,9 +645,9 @@ static void patch_mmio_nonposted( void )
 			limit = pci_read_config32(k8_f1,reg+4);
 			printk(BIOS_DEBUG," %02x[%08x] %02x[%08x]", reg, base, reg+4, limit);
 			if( ((base & ~(0xff)) == rbase) && ((limit & ~(0xff)) == rend) ) {
-				limit |= (1 << 7); 
+				limit |= (1 << 7);
 				printk(BIOS_DEBUG, "\nPatching %s %x <- %08x", dev_path(k8_f1), reg, limit);
-				pci_write_config32(k8_f1, reg+4, limit); 
+				pci_write_config32(k8_f1, reg+4, limit);
 				break;
 			}
 		}
@@ -656,22 +656,22 @@ static void patch_mmio_nonposted( void )
 }
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
- 
+
 static void wait_pepp( void ) {
 
 	int boot_delay = 0;
-	
+
 	if( get_option(&boot_delay, "boot_delay") < 0)
 		boot_delay = 5;
-		
+
 	printk(BIOS_DEBUG, "boot_delay = %d sec\n", boot_delay);
 	if ( boot_delay > 0 ) {
 		init_timer();
-		// wait for PEPP-Board 
+		// wait for PEPP-Board
 		printk(BIOS_INFO, "Give PEPP-Board %d sec(s) time to coming up ", boot_delay);
 		while ( boot_delay ) {
 			lapic_write(LAPIC_TMICT, 0xffffffff);
@@ -684,9 +684,9 @@ static void wait_pepp( void ) {
 }
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
 
 struct {
@@ -700,13 +700,13 @@ struct {
 	{0, PCI_DEVFN(5,0)},{0, PCI_DEVFN(5,2)},
 	{255,0},
 };
- 
+
 
 static void update_subsystemid( device_t dev ) {
 
 	int i;
 	struct mainboard_config *mb = dev->chip_info;
-	
+
 	dev->subsystem_vendor = 0x110a;
 	if( mb->plx_present ){
 		dev->subsystem_device = 0x4076; // U1P1 = 0x4076, U1P0 = 0x4077
@@ -725,9 +725,9 @@ static void update_subsystemid( device_t dev ) {
 }
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
 
 static void detect_hw_variant( device_t dev ) {
@@ -736,7 +736,7 @@ static void detect_hw_variant( device_t dev ) {
 	struct southbridge_amd_rs690_config *cfg;
 	u32 lc_state, id = 0;
 	struct mainboard_config *mb = dev->chip_info;
-	
+
 	printk(BIOS_INFO, "Scan for PLX device ...\n");
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
@@ -769,19 +769,19 @@ static void detect_hw_variant( device_t dev ) {
 		struct device dummy;
 		u32 pci_primary_bus, buses;
 		u16 secondary, subordinate;
-		
-		printk(BIOS_DEBUG, "Scan for PLX bridge behind %s[%x]\n", dev_path(dev2), pci_read_config32(dev2, PCI_VENDOR_ID));		
+
+		printk(BIOS_DEBUG, "Scan for PLX bridge behind %s[%x]\n", dev_path(dev2), pci_read_config32(dev2, PCI_VENDOR_ID));
 		// save the existing primary/secondary/subordinate bus number configuration.
 		secondary = dev2->bus->secondary;
 		subordinate = dev2->bus->subordinate;
 		buses = pci_primary_bus = pci_read_config32(dev2, PCI_PRIMARY_BUS);
 
 		// Configure the bus numbers for this bridge
-		// bus number 1 is for internal gfx device, so we start with busnumber 2 
+		// bus number 1 is for internal gfx device, so we start with busnumber 2
 
 		buses &= 0xff000000;
 		buses |= ((2 << 8) | (0xff << 16));
-		// setup the buses in device 2		
+		// setup the buses in device 2
 		pci_write_config32(dev2,PCI_PRIMARY_BUS, buses);
 
 		// fake a device descriptor for a device behind device 2
@@ -795,7 +795,7 @@ static void detect_hw_variant( device_t dev ) {
 		/* Have we found something?
 		 * Some broken boards return 0 if a slot is empty, but
 		 * the expected answer is 0xffffffff
-		 */	
+		 */
 		if ((id == 0xffffffff) || (id == 0x00000000) || (id == 0x0000ffff) || (id == 0xffff0000)) {
 			printk(BIOS_DEBUG, "%s, bad id 0x%x\n", dev_path(&dummy), id);
 		} else {
@@ -810,8 +810,8 @@ static void detect_hw_variant( device_t dev ) {
 	default:
 		break;
 	}
-	
-	mb->plx_present = 0;	
+
+	mb->plx_present = 0;
 	if( id == PLX_VIDDID ){
 		printk(BIOS_INFO, "found PLX device\n");
 		mb->plx_present = 1;
@@ -822,7 +822,7 @@ static void detect_hw_variant( device_t dev ) {
 			cfg->gfx_link_width = 4;
 		}
 		return;
-	} 
+	}
 }
 
 static void smm_lock( void )
@@ -841,16 +841,16 @@ static void smm_lock( void )
  *
  * @param the root device
  */
- 
+
 static void init(device_t dev)
 {
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL == 0
 	INT15_function_extensions int15_func;
 #endif
-	
+
 	printk(BIOS_DEBUG, "%s %s[%x/%x] %s\n",
 		dev->chip_ops->name, dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
-	
+
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL == 0
 	if(	get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") < 0 )
 		int15_func.regs.func00_LCD_panel_id = PANEL_TABLE_ID_NO;
@@ -870,7 +870,7 @@ static void init(device_t dev)
 *************************************************/
 static void enable_dev(device_t dev)
 {
-	
+
 	printk(BIOS_INFO, "%s %s[%x/%x] %s\n",
 		dev->chip_ops->name, dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
@@ -880,19 +880,19 @@ static void enable_dev(device_t dev)
 
 	detect_hw_variant(dev);
 	update_subsystemid(dev);
-	
+
 #if (CONFIG_GFXUMA == 1)
 	{
 	msr_t msr, msr2;
-	
+
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
 	printk(BIOS_DEBUG, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 		    __func__, msr.lo, msr.hi);
-	
+
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
-	
+
 	printk(BIOS_DEBUG, "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 		    __func__, msr2.lo, msr2.hi);
 
@@ -915,7 +915,7 @@ static void enable_dev(device_t dev)
 	}
 
 	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	
+
 	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
 
@@ -927,20 +927,20 @@ static void enable_dev(device_t dev)
 #endif
 
 	wait_pepp();
-	dev->ops->init = init;  // rest of mainboard init later   
+	dev->ops->init = init;  // rest of mainboard init later
 }
 
  /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  */
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
 	device_t dev;
 	struct resource *res;
-	
+
 	dev = dev_find_slot(0, PCI_DEVFN(0,0));
 	res = probe_resource(dev, 0x1C);
 	if( res ) {

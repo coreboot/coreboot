@@ -257,7 +257,7 @@ void probe_idregs_nuvoton(uint16_t port)
 		chip_found = 1;
 		dump_superio("Nuvoton", reg_table, port, chip_id, LDN_SEL);
 		return;
-	} 
+	}
 
 	if (verbose)
 		printf(NOTFOUND "chip_id=0x%04x\n", chip_id);

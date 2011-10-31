@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// arch/io.h is pulled in in many places but it could 
+// arch/io.h is pulled in in many places but it could
 // also be pulled in here for all romcc/romstage code.
 // #include <arch/io.h>
 

@@ -673,7 +673,7 @@ static void setup_uniprocessor(void)
 }
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-static int optimize_connection_group(const u8 *opt_conn, int num) 
+static int optimize_connection_group(const u8 *opt_conn, int num)
 {
 	int needs_reset = 0;
 	int i;
@@ -1709,7 +1709,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 		}
 #endif
 
-		
+
 #if CONFIG_K8_REV_F_SUPPORT == 0
 		/* I can't touch this msr on early buggy cpus, and cannot apply either 169 or 131 */
 		if (!is_cpu_pre_b3())

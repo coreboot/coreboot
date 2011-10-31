@@ -38,7 +38,7 @@ static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	int isa_bus;
-	
+
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	mptable_init(mc, LAPIC_ADDR);
 	smp_write_processors(mc);

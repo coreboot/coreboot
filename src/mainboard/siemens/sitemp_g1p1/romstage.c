@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 #define RC0 (6<<8)
 #define RC1 (7<<8)
 
@@ -177,7 +177,7 @@ static inline void check_cmos( void ) {
 			outb(0x0a,0x72);
 			i = inb(0x73);
 			i &= ~(1 << 4);
-			outb(i,0x73);					
+			outb(i,0x73);
 
 			for (i = 14; i < 128; i++) {
 #if DUMP_CMOS_RAM
@@ -198,7 +198,7 @@ static inline void check_cmos( void ) {
 			/* Now reboot to run with default cmos. */
 			outb(0x06, 0xcf9);
 			for (;;) asm("hlt"); /* Wait for reset! */
-		} 
+		}
 	}
 
 	// update altcentury
@@ -221,7 +221,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	msr_t msr;
 	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-			
+
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
@@ -237,19 +237,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_rs690_dev8(); // enable CFG access to Dev8, which is the SB P2P Bridge
 	sb600_lpc_init();
-#if defined(DUMP_CMOS_RAM) && (DUMP_CMOS_RAM == 0)	
-	check_cmos();  // rebooting in case of corrupted cmos !!!!!	
-#endif	
+#if defined(DUMP_CMOS_RAM) && (DUMP_CMOS_RAM == 0)
+	check_cmos();  // rebooting in case of corrupted cmos !!!!!
+#endif
 	/* it8712f_enable_serial does not use its 1st parameter. */
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
-	it8712f_kill_watchdog(); 
+	it8712f_kill_watchdog();
 
 	console_init();
 #if defined(DUMP_CMOS_RAM) && (DUMP_CMOS_RAM == 1)
-	check_cmos();  // rebooting in case of corrupted cmos !!!!!		
+	check_cmos();  // rebooting in case of corrupted cmos !!!!!
 #endif
 	post_code(0x03);
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 	__DEBUG__("bsp_apicid=0x%x\n", bsp_apicid);
@@ -270,9 +270,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* run _early_setup before soft-reset. */
 	rs690_early_setup();
 	sb600_early_setup();
-	
+
 	post_code(0x04);
-	
+
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	cpuid1 = cpuid(0x80000007);
@@ -293,16 +293,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	} else {
 		__DEBUG__("Changing FIDVID not supported\n");
 	}
-	
+
 	post_code(0x05);
-	
+
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	rs690_htinit();
 	__DEBUG__("needs_reset=0x%x\n", needs_reset);
-	
+
 	post_code(0x06);
-	
+
 	if (needs_reset) {
 		__INFO__("ht reset -\n");
 		soft_reset();
@@ -314,19 +314,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	__DEBUG__("sysinfo->nodes: %2x  sysinfo->ctrl: %p  spd_addr: %p\n",
 		     sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
-	
+
 	post_code(0x07);
-	
+
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	
+
 	post_code(0x08);
-	
+
 	rs690_before_pci_init(); // does nothing
 	sb600_before_pci_init();
-	
-#if CONFIG_USE_OPTION_TABLE	
+
+#if CONFIG_USE_OPTION_TABLE
 	if( read_option(cmos_defaults_loaded, 0) )
-		__WARNING__("WARNING: CMOS DEFAULTS LOADED. PLEASE CHECK CMOS OPTION \"cmos_default_loaded\" !\n"); 
+		__WARNING__("WARNING: CMOS DEFAULTS LOADED. PLEASE CHECK CMOS OPTION \"cmos_default_loaded\" !\n");
 #endif
 
 	post_cache_as_ram();

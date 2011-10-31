@@ -123,8 +123,8 @@ static void sata_init(struct device *dev)
 		// no cmos option
 		i = CONFIG_SATA_MODE;
 	}
-	printk(BIOS_INFO, "%s: setting sata mode = %s\n", __func__, (i == SATA_MODE_IDE)?"ide":"ahci" );	
-	
+	printk(BIOS_INFO, "%s: setting sata mode = %s\n", __func__, (i == SATA_MODE_IDE)?"ide":"ahci" );
+
 	dword = pci_read_config32(dev, 0x8);
 	dword &= 0xff0000ff;
 	if (i == SATA_MODE_IDE)

@@ -29,7 +29,7 @@
 		CONFIG_OXFORD_OXPCIE_BRIDGE_FUNCTION)
 
 #define OXPCIE_DEVICE \
-	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 0) 
+	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 0)
 
 void oxford_init(void)
 {
@@ -57,7 +57,7 @@ void oxford_init(void)
 
 	/* Memory window for the OXPCIe952 card */
 	// XXX is the calculation of base and limit corect?
-	pci_write_config32(PCIE_BRIDGE, PCI_MEMORY_BASE, 
+	pci_write_config32(PCIE_BRIDGE, PCI_MEMORY_BASE,
 			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS & 0xffff0000) |
 			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS >> 16) & 0xff00)));
 
@@ -66,7 +66,7 @@ void oxford_init(void)
 	reg16 |= PCI_COMMAND_MEMORY;
 	pci_write_config16(PCIE_BRIDGE, PCI_COMMAND, reg16);
 
-	// FIXME Add a timeout or this will hang forever if 
+	// FIXME Add a timeout or this will hang forever if
 	// no device is in the slot.
 	u32 id = 0;
 	while ((id == 0) || (id == 0xffffffff))

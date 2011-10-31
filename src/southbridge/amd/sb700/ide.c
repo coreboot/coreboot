@@ -51,8 +51,8 @@ static void ide_init(struct device *dev)
 
 	/* set ide as primary, if you want to boot from IDE, you'd better set it
 	 * in $vendor/$mainboard/devicetree.cb */
-	 
-	
+
+
 	if (conf->boot_switch_sata_ide == 1) {
 		struct device *sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 		byte = pci_read_config8(sm_dev, 0xAD);

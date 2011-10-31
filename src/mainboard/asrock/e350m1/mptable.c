@@ -60,11 +60,11 @@ static void *smp_write_config_table(void *v)
   mptable_write_buses(mc, NULL, &bus_isa);
 
   /* I/O APICs:   APIC ID Version State   Address */
-  
+
   device_t dev;
   u32 dword;
   u8 byte;
-    
+
   ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
   dword &= 0xFFFFFFF0;
   smp_write_ioapic(mc, apicid_sb800, 0x21, dword);
@@ -108,7 +108,7 @@ static void *smp_write_config_table(void *v)
   /* PCI_INT(0x0, 0x14, 0x2, 0x12); */
 
   /* on board NIC & Slot PCIE.  */
-  
+
   /* PCI slots */
   /* PCI_SLOT 0. */
   PCI_INT(bus_sb800[1], 0x5, 0x0, 0x14);

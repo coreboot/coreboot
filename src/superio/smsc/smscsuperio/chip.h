@@ -28,7 +28,7 @@
 extern struct chip_operations superio_smsc_smscsuperio_ops;
 
 struct superio_smsc_smscsuperio_config {
-	
+
 	struct pc_keyboard keyboard;
 };
 

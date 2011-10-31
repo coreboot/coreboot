@@ -18,7 +18,7 @@
 #include <DirectHW/DirectHW.h>
 #endif
 #if defined(__NetBSD__)
-#if defined(__i386__) || defined(__x86_64__) 
+#if defined(__i386__) || defined(__x86_64__)
 #include <machine/sysarch.h>
 
 static inline void outb(uint8_t value, uint16_t port)

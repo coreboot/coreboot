@@ -33,7 +33,7 @@ static void verb_setup(void)
 	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
-static void mainboard_enable(device_t dev) 
+static void mainboard_enable(device_t dev)
 {
 	verb_setup();
 }

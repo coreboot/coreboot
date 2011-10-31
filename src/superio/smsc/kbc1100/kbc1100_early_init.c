@@ -40,11 +40,11 @@ static inline void kbc1100_early_init(unsigned port)
   dev = PNP_DEV (port, KBC1100_KBC);
 
   pnp_enter_conf_state(dev);
-  
+
   /* Serial IRQ enabled */
   outb(0x25, port);
   outb(0x04, port + 1);
-  
+
   /* Enable SMSC UART 0 */
   dev = PNP_DEV (port, SMSCSUPERIO_SP1);
   pnp_set_logical_device(dev);
@@ -70,6 +70,6 @@ static inline void kbc1100_early_init(unsigned port)
   pnp_exit_conf_state(dev);
 
   /* disable the 1s timer */
-  outb(0xE7, 0x64);  
+  outb(0xE7, 0x64);
 }
 

@@ -126,7 +126,7 @@ int ec_ext_write(uint16_t addr, uint8_t data)
 	send_ec_data(addr & 0xff);
 	send_ec_command(WX_EC);
 	send_ec_data(addr >> 8);
-    
+
 	return send_ec_data(data);
 }
 

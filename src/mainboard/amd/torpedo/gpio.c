@@ -21,7 +21,7 @@
  *                             M O D U L E S    U S E D
  *----------------------------------------------------------------------------------------
  */
- 
+
 #include "Filecode.h"
 #include "Hudson-2.h"
 #include "AmdSbLib.h"
@@ -63,12 +63,12 @@
  *----------------------------------------------------------------------------------------
  */
 	void gpioEarlyInit (void);
- 
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*---------------------------------------------------------------------------------------
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ gpioEarlyInit(
 	Data8 |= BIT0;
 	WritePMIO (SB_PMIOA_REG24, AccWidthUint8, &Data8);
 	// Get HUDSON MMIO Base (AcpiMmioAddr)
-	ReadPMIO (SB_PMIOA_REG24 + 3, AccWidthUint8, &Data8);  
+	ReadPMIO (SB_PMIOA_REG24 + 3, AccWidthUint8, &Data8);
 	Data16 = Data8 << 8;
 	ReadPMIO (SB_PMIOA_REG24 + 2, AccWidthUint8, &Data8);
 	Data16 |= Data8;
@@ -113,14 +113,14 @@ gpioEarlyInit(
 	Data8 = Mmio8_G (GpioMmioAddr, GPIO_30);
 	StripInfo = (Data8 & BIT7) >> 7;
 	Data8 = Mmio8_G (GpioMmioAddr, GPIO_31);
-	StripInfo |= (Data8 & BIT7) >> 6;	  
-	if (StripInfo < boardRevC) { 		// for old board. Rev B 
+	StripInfo |= (Data8 & BIT7) >> 6;
+	if (StripInfo < boardRevC) { 		// for old board. Rev B
 		Mmio8_And_Or (IoMuxMmioAddr, GPIO_111, 0x00, 3);		// function 3
-		Mmio8_And_Or (IoMuxMmioAddr, GPIO_113, 0x00, 0);		// function 0	 
+		Mmio8_And_Or (IoMuxMmioAddr, GPIO_113, 0x00, 0);		// function 0
 	}
 	for (Index = 0; Index < MAX_GPIO_NO; Index++) {
 		if (!(((Index >= GPIO_RSVD_ZONE0_S) && (Index <= GPIO_RSVD_ZONE0_E)) || ((Index >= GPIO_RSVD_ZONE1_S) && (Index <= GPIO_RSVD_ZONE1_E)))) {
-			if ((StripInfo >= boardRevC) || ((Index != GPIO_111) && (Index != GPIO_113))) {  
+			if ((StripInfo >= boardRevC) || ((Index != GPIO_111) && (Index != GPIO_113))) {
 				// Configure multi-funtion
 				Mmio8_And_Or (IoMuxMmioAddr, Index, 0x00, (gpio_table[Index].select & ~NonGpio));
 			}
@@ -138,7 +138,7 @@ gpioEarlyInit(
 		// Configure GEVENT
 		if ((Index >= GEVENT_00) && (Index <= GEVENT_23) && ((gevent_table[Index - GEVENT_00].EventEnable))) {
 			SmiMmioAddr = AcpiMmioAddr + SMI_BASE;
-    
+
 			andMask32 = ~(1 << (Index - GEVENT_00));
 
 			//EventEnable: 0-Disable, 1-Enable
@@ -159,12 +159,12 @@ gpioEarlyInit(
 			//SciMap: 00000b ~ 11111b
 			RegIndex8=(u8)((Index - GEVENT_00) >> 2);
 			Data8=(u8)(((Index - GEVENT_00) & 0x3) * 8);
-			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCIMAP0+RegIndex8, ~(GEVENT_SCIMASK << Data8), (gevent_table[Index - GEVENT_00].SciMap << Data8));        
-      
+			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SCIMAP0+RegIndex8, ~(GEVENT_SCIMASK << Data8), (gevent_table[Index - GEVENT_00].SciMap << Data8));
+
 			//SmiTrig: 0-Active Low, 1-Active High
 			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SMITRIG, ~(gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)), (gevent_table[Index - GEVENT_00].SmiTrig << (Index - GEVENT_00)));
-    
-			//SmiControl: 0-Disable, 1-SMI, 2-NMI, 3-IRQ13 
+
+			//SmiControl: 0-Disable, 1-SMI, 2-NMI, 3-IRQ13
 			RegIndex8=(u8)((Index - GEVENT_00) >> 4);
 			Data8=(u8)(((Index - GEVENT_00) & 0xF) * 2);
 			Mmio32_And_Or     (SmiMmioAddr, SMIREG_SMICONTROL0+RegIndex8, ~(SMICONTROL_MASK << Data8), (gevent_table[Index - GEVENT_00].SmiControl << Data8));
@@ -180,7 +180,7 @@ gpioEarlyInit(
 	//	GPIO45: Output for MXM Power Enable, active HIGH
 	//	GPIO55: Output for MXM_PWR_EN, 1 - Enable, 0 - Disable
 	//	GPIO32: Output for PCIE_SW, 1 - MXM, 0 - LASSO
-	//	
+	//
 		// set INTE#/GPIO32 as GPO for PCIE_SW
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG32, AccWidthUint8, 00, 0x1);      // GPIO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG32, AccWidthUint8, 0x03, 0);       // GPO
@@ -224,7 +224,7 @@ gpioEarlyInit(
 		//Fusion_Llano BLWriteNBMISC_Dword (ATI_MISC_REG42, (BLReadNBMISC_Dword (ATI_MISC_REG42) | BIT20));
 		//Fusion_Llano BLWriteNBMISC_Dword (ATI_MISC_REG40, (BLReadNBMISC_Dword (ATI_MISC_REG40) & (~BIT20)));
 
-		// check if there any GFX card		
+		// check if there any GFX card
 		Flags = 0;
 		// Value32 = MmPci32 (0, SB_ISA_BUS, SB_ISA_DEV, SB_ISA_FUNC, R_SB_ISA_GPIO_CONTROL);
 		// Data8 = Mmio8 (GpioMmioAddr, SB_GPIO_REG09);
@@ -244,13 +244,13 @@ gpioEarlyInit(
 			RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, 0);
 
 			// [GPIO] GPIO45: PE_GPIO1 MXM_POWER_ENABLE, SET HIGH
-			RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0xFF, BIT6);	
-		    
-			//PeiStall (PeiServices, NULL, 100); //delay 100 ms (should be >1ms)	
+			RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0xFF, BIT6);
+
+			//PeiStall (PeiServices, NULL, 100); //delay 100 ms (should be >1ms)
 			SbStall (10000);
 
 			// Write the GPIO55(MXM_PWR_EN) to enable the integrated power module
-			RWMEM (GpioMmioAddr + SB_GPIO_REG55, AccWidthUint8, 0xFF, BIT6);	
+			RWMEM (GpioMmioAddr + SB_GPIO_REG55, AccWidthUint8, 0xFF, BIT6);
 
 			//PeiStall (PeiServices, NULL, 100); //delay 100 ms (should be >1ms)
 			// WAIT POWER READY: GPIO28 (MXM_PWRGD)
@@ -261,7 +261,7 @@ gpioEarlyInit(
 				ReadMEM (GpioMmioAddr + SB_GPIO_REG28, AccWidthUint8, &Data8);
 			}
 			// [GPIO] GPIO44: PE_GPIO0 MXM Reset set to 1 for reset
-		    //	RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, BIT6);	
+		    //	RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0xBF, BIT6);
 		}
 		else
 		{
@@ -270,9 +270,9 @@ gpioEarlyInit(
 
 			//PeiStall (PeiServices, NULL, 100); //delay 100 ms (should be >1ms)
 			SbStall (10000);
-	
+
 			// [GPIO] GPIO45: PE_GPIO1 MXM_POWER_ENABLE down
-			RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0xBF, 0); 			  						
+			RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0xBF, 0);
 		}
 
 	//
@@ -288,7 +288,7 @@ gpioEarlyInit(
 		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x03, BIT6);       // output HIGH
 		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x63, BIT3);       // pullup DISABLE
 
-		// Setup AD25/GPIO25 as GPO for PCIE_RST#_LAN: 
+		// Setup AD25/GPIO25 as GPO for PCIE_RST#_LAN:
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG25, AccWidthUint8, 00, 0x1);          // GPIO
 //		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, 0);           // GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, BIT6);        // output HIGH
@@ -298,7 +298,7 @@ gpioEarlyInit(
 		// set CLK_REQ3#/SATA_IS1#/GPIO63 as CLK_REQ for LAN_CLKREQ#
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG63, AccWidthUint8, 00, 0x0);          // CLK_REQ3#
 		RWMEM (MiscMmioAddr + SB_MISC_REG00+1, AccWidthUint8, 0x0F, 0xF0);       // Enable GPP_CLK3
-		
+
 	//
 	// APU GPP1: WUSB
 	//	GPIO1: MPCIE_RST2#, LOW active
@@ -354,7 +354,7 @@ gpioEarlyInit(
 	//	GPIO41: CLKREQ#
 	//	Clock: GPP_CLK8
 	//
-		// Setup SATA_IS5#/FANIN3/GPIO59 as GPO for 1394_ON: 
+		// Setup SATA_IS5#/FANIN3/GPIO59 as GPO for 1394_ON:
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG59, AccWidthUint8, 00, 0x2);         // GPIO
 //		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, 0);          // GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, BIT6);       // output HIGH
@@ -382,8 +382,8 @@ gpioEarlyInit(
 		if (!CONFIG_ONBOARD_LAN)
 		{ // 1 - DISABLED
 			RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0xBF, 0);      // LOM_POWER off
-			RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0xBF, 0);	
-			RWMEM (GpioMmioAddr + SB_GPIO_REG63, AccWidthUint8, 0xFF, BIT3);    // PULL UP - DISABLED	
+			RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0xBF, 0);
+			RWMEM (GpioMmioAddr + SB_GPIO_REG63, AccWidthUint8, 0xFF, BIT3);    // PULL UP - DISABLED
 			RWMEM (MiscMmioAddr + SB_MISC_REG00+1, AccWidthUint8, 0x0F, 0);     // Disable GPP_CLK3
 		}
 //		else
@@ -409,11 +409,11 @@ gpioEarlyInit(
 //		else
 //		{ // 0 - AUTO
 //			// set BIT3=1 (PULLUP disable), BIT4=0 (PULLDOWN Disable), BIT6=1 (output HIGH)
-//			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, BIT6); 
+//			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, BIT6);
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x63, BIT3);
 //
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, BIT6);
-//			RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x63, BIT3);	
+//			RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x63, BIT3);
 //		}
 
 //
@@ -430,7 +430,7 @@ gpioEarlyInit(
 		RWMEM (GpioMmioAddr + SB_GPIO_REG200, AccWidthUint8, 0xBF, 0);
 		RWMEM (GpioMmioAddr + SB_GPIO_REG26, AccWidthUint8, 0xBF, 0);
 		RWMEM (GpioMmioAddr + SB_GPIO_REG46, AccWidthUint8, 0xFF, BIT3);   // PULL_UP DISABLE
-		RWMEM (MiscMmioAddr + SB_MISC_REG00+3, AccWidthUint8, 0x0F, 0);    // DISABLE GPP_CLK7 	
+		RWMEM (MiscMmioAddr + SB_MISC_REG00+3, AccWidthUint8, 0x0F, 0);    // DISABLE GPP_CLK7
 		RWMEM (GpioMmioAddr + SB_GPIO_REG172, AccWidthUint8, 0xBF, 0);  // FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
 		}
 //	}
@@ -447,25 +447,25 @@ if (!CONFIG_ONBOARD_BLUETOOTH) {
 }
 
 //
-// WebCam control: 
+// WebCam control:
 //    amdWebCam: CMOS, 0 - AUTO, 1 - DISABLE
 //       GPIO34: WEBCAM_ON#, 0 - ON, 1 - OFF
 //
 if (!CONFIG_ONBOARD_WEBCAM) {
 //-	if (SystemConfiguration.amdWebCam == 1) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG34, AccWidthUint8, 0xBF, BIT6);
-//-	}  
+//-	}
 }
 
 //
-// Travis enable: 
+// Travis enable:
 //    amdTravisCtrl: CMOS, 0 - DISABLE, 1 - ENABLE
 //           GPIO66: TRAVIS_EN#, 0 - ENABLE, 1 - DISABLE
 //
 if (!CONFIG_ONBOARD_TRAVIS) {
 //-	if (SystemConfiguration.amdTravisCtrl == 0) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG66, AccWidthUint8, 0xBF, BIT6);
-//-	} 
+//-	}
 }
 
 //

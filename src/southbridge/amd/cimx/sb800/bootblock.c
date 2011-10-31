@@ -39,8 +39,8 @@ static void enable_rom(void)
 	pci_io_write_config32(dev, 0x44, dword);
 
 	/* SB800 LPC Bridge 0:20:3:48h.
-	 * BIT0: Port Enable for SuperIO 0x2E-0x2F 
-	 * BIT1: Port Enable for SuperIO 0x4E-0x4F 
+	 * BIT0: Port Enable for SuperIO 0x2E-0x2F
+	 * BIT1: Port Enable for SuperIO 0x4E-0x4F
 	 * BIT4: Port Enable for LPC ROM Address Arrage2 (0x68-0x6C)
 	 * BIT6: Port Enable for RTC IO 0x70-0x73
 	 * BIT21: Port Enable for Port 0x80

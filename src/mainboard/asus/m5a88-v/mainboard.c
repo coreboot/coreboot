@@ -43,7 +43,7 @@ void enable_int_gfx(void)
 #ifdef UNUSED_CODE
 	RWPMIO(SB_PMIOA_REGEA, AccWidthUint8, ~(BIT0), BIT0); /* Disable the PCIB */
 	RWPMIO(SB_PMIOA_REGF6, AccWidthuint8, ~(BIT0), BIT0); /* Disable Gec */
-#endif	
+#endif
 	/* make sure the MMIO(fed80000) is accessible */
 	RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0), BIT0);
 

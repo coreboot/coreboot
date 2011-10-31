@@ -98,7 +98,7 @@ clear_mtrrs:
 	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
 
-#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
+#if CONFIG_XIP_ROM_SIZE
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	xorl	%edx, %edx
@@ -115,7 +115,7 @@ clear_mtrrs:
 	xorl	%edx, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
-#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE */
 
 	/* Enable cache. */
 	movl	%cr0, %eax

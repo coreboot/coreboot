@@ -30,11 +30,6 @@ config CDB
 	default 0x18
 	depends on CPU_AMD_SOCKET_AM2R2
 
-config XIP_ROM_BASE
-	hex
-	default 0xfff80000
-	depends on CPU_AMD_SOCKET_AM2R2
-
 config XIP_ROM_SIZE
 	hex
 	default 0x80000

@@ -279,7 +279,7 @@ clear_fixed_var_mtrr_out:
 	movl	$(((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
 
-#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
+#if CONFIG_XIP_ROM_SIZE
 
 	/* Enable write base caching so we can do execute in place (XIP)
 	 * on the flash ROM.
@@ -302,7 +302,7 @@ clear_fixed_var_mtrr_out:
 wbcache_post_fam10_setup:
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
-#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE */
 
 	/* Set the default memory type and enable fixed and variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx

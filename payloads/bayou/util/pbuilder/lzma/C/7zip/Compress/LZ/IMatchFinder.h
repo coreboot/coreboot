@@ -15,10 +15,10 @@ struct IInWindowStream: public IUnknown
   STDMETHOD_(Int32, NeedChangeBufferPos)(UInt32 numCheckBytes) PURE;
   STDMETHOD_(void, ChangeBufferPos)() PURE;
 };
- 
+
 struct IMatchFinder: public IInWindowStream
 {
-  STDMETHOD(Create)(UInt32 historySize, UInt32 keepAddBufferBefore, 
+  STDMETHOD(Create)(UInt32 historySize, UInt32 keepAddBufferBefore,
       UInt32 matchMaxLen, UInt32 keepAddBufferAfter) PURE;
   STDMETHOD(GetMatches)(UInt32 *distances) PURE;
   STDMETHOD(Skip)(UInt32 num) PURE;

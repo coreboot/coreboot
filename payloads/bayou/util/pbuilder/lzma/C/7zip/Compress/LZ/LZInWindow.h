@@ -56,7 +56,7 @@ public:
   // index + limit have not to exceed _keepSizeAfter;
   // -2G <= index < 2G
   UInt32 GetMatchLen(Int32 index, UInt32 distance, UInt32 limit) const
-  {  
+  {
     if(_streamEndWasReached)
       if ((_pos + index) + limit > _streamPos)
         limit = _streamPos - (_pos + index);

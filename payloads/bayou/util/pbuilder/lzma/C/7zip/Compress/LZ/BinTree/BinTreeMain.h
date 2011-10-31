@@ -25,7 +25,7 @@ namespace BT_NAMESPACE {
   static const UInt32 kMinMatchCheck = kNumHashBytes;
   static const UInt32 kStartMaxLen = 1;
 #else
-  #ifdef HASH_ZIP 
+  #ifdef HASH_ZIP
     #define kNumHashDirectBytes 0
     static const UInt32 kNumHashBytes = 3;
     static const UInt32 kHashSize = 1 << 16;
@@ -73,11 +73,11 @@ void CMatchFinder::FreeMemory()
 }
 
 CMatchFinder::~CMatchFinder()
-{ 
+{
   FreeMemory();
 }
 
-STDMETHODIMP CMatchFinder::Create(UInt32 historySize, UInt32 keepAddBufferBefore, 
+STDMETHODIMP CMatchFinder::Create(UInt32 historySize, UInt32 keepAddBufferBefore,
     UInt32 matchMaxLen, UInt32 keepAddBufferAfter)
 {
   if (historySize > kMaxValForNormalize - 256)
@@ -85,15 +85,15 @@ STDMETHODIMP CMatchFinder::Create(UInt32 historySize, UInt32 keepAddBufferBefore
     FreeMemory();
     return E_INVALIDARG;
   }
-  _cutValue = 
+  _cutValue =
   #ifdef _HASH_CHAIN
     8 + (matchMaxLen >> 2);
   #else
     16 + (matchMaxLen >> 1);
   #endif
-  UInt32 sizeReserv = (historySize + keepAddBufferBefore + 
+  UInt32 sizeReserv = (historySize + keepAddBufferBefore +
       matchMaxLen + keepAddBufferAfter) / 2 + 256;
-  if (CLZInWindow::Create(historySize + keepAddBufferBefore, 
+  if (CLZInWindow::Create(historySize + keepAddBufferBefore,
       matchMaxLen + keepAddBufferAfter, sizeReserv))
   {
     _matchMaxLen = matchMaxLen;
@@ -161,8 +161,8 @@ STDMETHODIMP CMatchFinder::Init()
 }
 
 STDMETHODIMP_(void) CMatchFinder::ReleaseStream()
-{ 
-  // ReleaseStream(); 
+{
+  // ReleaseStream();
 }
 
 #ifdef HASH_ARRAY_2
@@ -173,7 +173,7 @@ STDMETHODIMP_(void) CMatchFinder::ReleaseStream()
   hash2Value = temp & (kHash2Size - 1); \
   hash3Value = (temp ^ (UInt32(cur[2]) << 8)) & (kHash3Size - 1); \
   hashValue = (temp ^ (UInt32(cur[2]) << 8) ^ (CCRC::Table[cur[3]] << 5)) & _hashMask; }
-  
+
 #else // no HASH_ARRAY_3
 #define HASH_CALC { \
   UInt32 temp = CCRC::Table[cur[0]] ^ cur[1]; \
@@ -181,12 +181,12 @@ STDMETHODIMP_(void) CMatchFinder::ReleaseStream()
   hashValue = (temp ^ (UInt32(cur[2]) << 8)) & _hashMask; }
 #endif // HASH_ARRAY_3
 #else // no HASH_ARRAY_2
-#ifdef HASH_ZIP 
+#ifdef HASH_ZIP
 inline UInt32 Hash(const Byte *pointer)
 {
   return ((UInt32(pointer[0]) << 8) ^ CCRC::Table[pointer[1]] ^ pointer[2]) & (kHashSize - 1);
 }
-#else // no HASH_ZIP 
+#else // no HASH_ZIP
 inline UInt32 Hash(const Byte *pointer)
 {
   return pointer[0] ^ (UInt32(pointer[1]) << 8);
@@ -205,7 +205,7 @@ STDMETHODIMP CMatchFinder::GetMatches(UInt32 *distances)
     if(lenLimit < kMinMatchCheck)
     {
       distances[0] = 0;
-      return MovePos(); 
+      return MovePos();
     }
   }
 
@@ -298,17 +298,17 @@ STDMETHODIMP CMatchFinder::GetMatches(UInt32 *distances)
     UInt32 cyclicPos = (delta <= _cyclicBufferPos) ?
         (_cyclicBufferPos - delta):
         (_cyclicBufferPos - delta + _cyclicBufferSize);
-    CIndex *pair = son + 
+    CIndex *pair = son +
     #ifdef _HASH_CHAIN
       cyclicPos;
     #else
       (cyclicPos << 1);
     #endif
-    
+
     // _mm_prefetch((const char *)pair, _MM_HINT_T0);
-    
+
     const Byte *pb = _buffer + curMatch;
-    UInt32 len = 
+    UInt32 len =
     #ifdef _HASH_CHAIN
     kNumHashDirectBytes;
     if (pb[maxLen] == cur[maxLen])
@@ -369,7 +369,7 @@ STDMETHODIMP CMatchFinder::Skip(UInt32 num)
   #ifdef _HASH_CHAIN
   if (_streamPos - _pos < kNumHashBytes)
   {
-    RINOK(MovePos()); 
+    RINOK(MovePos());
     continue;
   }
   #else
@@ -425,18 +425,18 @@ STDMETHODIMP CMatchFinder::Skip(UInt32 num)
       *ptr0 = *ptr1 = kEmptyHashValue;
       break;
     }
-    
+
     UInt32 delta = _pos - curMatch;
     UInt32 cyclicPos = (delta <= _cyclicBufferPos) ?
       (_cyclicBufferPos - delta):
       (_cyclicBufferPos - delta + _cyclicBufferSize);
     CIndex *pair = son + (cyclicPos << 1);
-    
+
     // _mm_prefetch((const char *)pair, _MM_HINT_T0);
-    
+
     const Byte *pb = _buffer + curMatch;
     UInt32 len = MyMin(len0, len1);
-    
+
     if (pb[len] == cur[len])
     {
       while(++len != lenLimit)
@@ -479,7 +479,7 @@ void CMatchFinder::Normalize()
 {
   UInt32 subValue = _pos - _cyclicBufferSize;
   CIndex *items = _hash;
-  UInt32 numItems = (_hashSizeSum + _cyclicBufferSize 
+  UInt32 numItems = (_hashSizeSum + _cyclicBufferSize
     #ifndef _HASH_CHAIN
      * 2
     #endif
@@ -509,7 +509,7 @@ HRESULT CMatchFinder::MovePos()
 STDMETHODIMP_(Byte) CMatchFinder::GetIndexByte(Int32 index)
   { return CLZInWindow::GetIndexByte(index); }
 
-STDMETHODIMP_(UInt32) CMatchFinder::GetMatchLen(Int32 index, 
+STDMETHODIMP_(UInt32) CMatchFinder::GetMatchLen(Int32 index,
     UInt32 back, UInt32 limit)
   { return CLZInWindow::GetMatchLen(index, back, limit); }
 
@@ -527,5 +527,5 @@ STDMETHODIMP_(void) CMatchFinder::ChangeBufferPos()
 
 #undef HASH_CALC
 #undef kNumHashDirectBytes
- 
+
 }

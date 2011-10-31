@@ -36,7 +36,7 @@ public:
 
   COutBuffer(): _buffer(0), _pos(0), _stream(0), _buffer2(0) {}
   ~COutBuffer() { Free(); }
-  
+
   bool Create(UInt32 bufferSize);
   void Free();
 

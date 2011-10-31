@@ -2,13 +2,13 @@
 
 #include "../LZInWindow.h"
 #include "../IMatchFinder.h"
- 
+
 namespace BT_NAMESPACE {
 
 typedef UInt32 CIndex;
 const UInt32 kMaxValForNormalize = (UInt32(1) << 31) - 1;
 
-class CMatchFinder: 
+class CMatchFinder:
   public IMatchFinder,
   public CLZInWindow,
   public CMyUnknownImp,
@@ -40,7 +40,7 @@ class CMatchFinder:
   STDMETHOD_(Int32, NeedChangeBufferPos)(UInt32 numCheckBytes);
   STDMETHOD_(void, ChangeBufferPos)();
 
-  STDMETHOD(Create)(UInt32 historySize, UInt32 keepAddBufferBefore, 
+  STDMETHOD(Create)(UInt32 historySize, UInt32 keepAddBufferBefore,
       UInt32 matchMaxLen, UInt32 keepAddBufferAfter);
   STDMETHOD(GetMatches)(UInt32 *distances);
   STDMETHOD(Skip)(UInt32 num);

@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_item_vis.c,v 1.16 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  bool item_visible(const ITEM *item)
-|   
+|
 |   Description   :  A item is visible if it currently appears in the
 |                    subwindow of a posted menu.
 |

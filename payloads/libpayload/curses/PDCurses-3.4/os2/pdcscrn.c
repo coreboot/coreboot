@@ -260,9 +260,9 @@ static bool _screen_mode_equals(VIOMODEINFO *oldmode)
 
     return ((current.cb == oldmode->cb) &&
             (current.fbType == oldmode->fbType) &&
-            (current.color == oldmode->color) && 
+            (current.color == oldmode->color) &&
             (current.col == oldmode->col) &&
-            (current.row == oldmode->row) && 
+            (current.row == oldmode->row) &&
             (current.hres == oldmode->vres) &&
             (current.vres == oldmode->vres));
 }

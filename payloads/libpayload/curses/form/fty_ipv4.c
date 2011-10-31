@@ -37,11 +37,11 @@
 MODULE_ID("$Id: fty_ipv4.c,v 1.10 2009/11/07 20:17:58 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static bool Check_IPV4_Field(
 |                                      FIELD * field,
 |                                      const void * argp)
-|   
+|
 |   Description   :  Validate buffer content to be a valid IP number (Ver. 4)
 |
 |   Return Values :  TRUE  - field is valid
@@ -69,11 +69,11 @@ Check_IPV4_Field(FIELD *field, const void *argp GCC_UNUSED)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  static bool Check_IPV4_Character(
-|                                      int c, 
+|                                      int c,
 |                                      const void *argp )
-|   
+|
 |   Description   :  Check a character for unsigned type or period.
 |
 |   Return Values :  TRUE  - character is valid

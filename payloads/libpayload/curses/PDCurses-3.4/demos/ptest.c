@@ -9,7 +9,7 @@ WINDOW *w4, *w5;
 
 long nap_msec = 1;
 
-char *mod[] = 
+char *mod[] =
 {
     "test ", "TEST ", "(**) ", "*()* ", "<--> ", "LAST "
 };
@@ -84,7 +84,7 @@ void fill_panel(PANEL *pan)
     char num = *((char *)pan->user + 1);
     int y, x, maxy, maxx;
 
-    box(win, 0, 0);  
+    box(win, 0, 0);
     mvwprintw(win, 1, 1, "-pan%c-", num);
     getmaxyx(win, maxy, maxx);
 

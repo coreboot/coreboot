@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_pattern.c,v 1.16 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  char *menu_pattern(const MENU *menu)
-|   
+|
 |   Description   :  Return the value of the pattern buffer.
 |
 |   Return Values :  NULL          - if there is no pattern buffer allocated
@@ -60,9 +60,9 @@ menu_pattern(const MENU * menu)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_pattern(MENU *menu, const char *p)
-|   
+|
 |   Description   :  Set the match pattern for a menu and position to the
 |                    first item that matches.
 |

@@ -1,5 +1,5 @@
 /* Public Domain Curses */
-                          
+
 #include "lppdc.h"
 #include <usb/usb.h>
 
@@ -173,7 +173,7 @@ int PDC_get_key(void)
     return c;
 }
 
-/* discard any pending keyboard input -- this is the core 
+/* discard any pending keyboard input -- this is the core
    routine for flushinp() */
 
 void PDC_flushinp(void)

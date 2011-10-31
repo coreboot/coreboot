@@ -62,7 +62,7 @@ void PDC_update_rects(void)
 {
     if (rectcount)
     {
-        /* if the maximum number of rects has been reached, we're 
+        /* if the maximum number of rects has been reached, we're
            probably better off doing a full screen update */
 
         if (rectcount == MAXRECT)
@@ -102,7 +102,7 @@ static void _set_attr(chtype ch)
 
         if (newfg != foregr)
         {
-            SDL_SetPalette(pdc_font, SDL_LOGPAL, 
+            SDL_SetPalette(pdc_font, SDL_LOGPAL,
                            pdc_color + newfg, pdc_flastc, 1);
             foregr = newfg;
         }
@@ -151,8 +151,8 @@ void PDC_gotoyx(int row, int col)
     if (!SP->visibility)
         return;
 
-    /* draw a new cursor by overprinting the existing character in 
-       reverse, either the full cell (when visibility == 2) or the 
+    /* draw a new cursor by overprinting the existing character in
+       reverse, either the full cell (when visibility == 2) or the
        lowest quarter of it (when visibility == 1) */
 
     ch = curscr->_y[row][col] ^ A_REVERSE;
@@ -270,7 +270,7 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
         else
             if (lastrect.y != dest.y)
                 uprect[rectcount++] = dest;
-    } 
+    }
     else
         uprect[rectcount++] = dest;
 

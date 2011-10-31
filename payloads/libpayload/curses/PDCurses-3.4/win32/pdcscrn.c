@@ -29,8 +29,8 @@ static short curstoreal[16], realtocurs[16] =
 
 enum { PDC_RESTORE_NONE, PDC_RESTORE_BUFFER, PDC_RESTORE_WINDOW };
 
-/* Struct for storing console registry keys, and for use with the 
-   undocumented WM_SETCONSOLEINFO message. Originally by James Brown, 
+/* Struct for storing console registry keys, and for use with the
+   undocumented WM_SETCONSOLEINFO message. Originally by James Brown,
    www.catch22.net. */
 
 static struct
@@ -51,13 +51,13 @@ static struct
     ULONG    QuickEdit;
     ULONG    AutoPosition;
     ULONG    InsertMode;
-    
+
     USHORT   ScreenColors;
     USHORT   PopupColors;
     ULONG    HistoryNoDup;
     ULONG    HistoryBufferSize;
     ULONG    NumberOfHistoryBuffers;
-    
+
     COLORREF ColorTable[16];
 
     ULONG    CodePage;
@@ -96,8 +96,8 @@ static HWND _find_console_handle(void)
 
 #define WM_SETCONSOLEINFO (WM_USER + 201)
 
-/* Wrapper around WM_SETCONSOLEINFO. We need to create the necessary 
-   section (file-mapping) object in the context of the process which 
+/* Wrapper around WM_SETCONSOLEINFO. We need to create the necessary
+   section (file-mapping) object in the context of the process which
    owns the console, before posting the message. Originally by JB. */
 
 static void _set_console_info(void)
@@ -126,7 +126,7 @@ static void _set_console_info(void)
     /* Open the process which "owns" the console */
 
     GetWindowThreadProcessId(console_info.Hwnd, &dwConsoleOwnerPid);
-    
+
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwConsoleOwnerPid);
 
     /* Create a SECTION object backed by page-file, then map a view of
@@ -178,7 +178,7 @@ static void _init_console_info(void)
     console_info.AutoPosition = 0x10000;
     console_info.ScreenColors = SP->orig_back << 4 | SP->orig_fore;
     console_info.PopupColors = 0xf5;
-    
+
     console_info.HistoryNoDup = FALSE;
     console_info.HistoryBufferSize = 50;
     console_info.NumberOfHistoryBuffers = 4;
@@ -247,7 +247,7 @@ void PDC_scr_close(void)
 
         origin.X = origin.Y = 0;
 
-        if (!WriteConsoleOutput(pdc_con_out, ci_save, orig_scr.dwSize, 
+        if (!WriteConsoleOutput(pdc_con_out, ci_save, orig_scr.dwSize,
                                 origin, &rect))
             return;
     }
@@ -367,7 +367,7 @@ int PDC_scr_open(int argc, char **argv)
 
         if (!ReadConsoleOutput(pdc_con_out, ci_save, bufsize, origin, &rect))
         {
-            /* We can't save the complete buffer, so try and save just 
+            /* We can't save the complete buffer, so try and save just
                the displayed window */
 
             free(ci_save);
@@ -392,14 +392,14 @@ int PDC_scr_open(int argc, char **argv)
             rect.Bottom = orig_scr.srWindow.Bottom;
             rect.Right = orig_scr.srWindow.Right;
 
-            if (!ReadConsoleOutput(pdc_con_out, ci_save, bufsize, 
+            if (!ReadConsoleOutput(pdc_con_out, ci_save, bufsize,
                                    origin, &rect))
             {
 #ifdef PDCDEBUG
                 CHAR LastError[256];
 
-                FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, 
-                              GetLastError(), MAKELANGID(LANG_NEUTRAL, 
+                FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+                              GetLastError(), MAKELANGID(LANG_NEUTRAL,
                               SUBLANG_DEFAULT), LastError, 256, NULL);
 
                 PDC_LOG(("PDC_scr_open() - %s\n", LastError));
@@ -425,8 +425,8 @@ int PDC_scr_open(int argc, char **argv)
     return OK;
 }
 
- /* Calls SetConsoleWindowInfo with the given parameters, but fits them 
-    if a scoll bar shrinks the maximum possible value. The rectangle 
+ /* Calls SetConsoleWindowInfo with the given parameters, but fits them
+    if a scoll bar shrinks the maximum possible value. The rectangle
     must at least fit in a half-sized window. */
 
 static BOOL _fit_console_window(HANDLE con_out, CONST SMALL_RECT *rect)

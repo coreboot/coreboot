@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_items.c,v 1.17 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_items(MENU *menu, ITEM **items)
-|   
+|
 |   Description   :  Sets the item pointer array connected to menu.
 |
 |   Return Values :  E_OK           - success
@@ -77,9 +77,9 @@ set_menu_items(MENU * menu, ITEM ** items)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  ITEM **menu_items(const MENU *menu)
-|   
+|
 |   Description   :  Returns a pointer to the item pointer array of the menu
 |
 |   Return Values :  NULL on error
@@ -92,11 +92,11 @@ menu_items(const MENU * menu)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int item_count(const MENU *menu)
-|   
+|
 |   Description   :  Get the number of items connected to the menu. If the
-|                    menu pointer is NULL we return -1.         
+|                    menu pointer is NULL we return -1.
 |
 |   Return Values :  Number of items or -1 to indicate error.
 +--------------------------------------------------------------------------*/

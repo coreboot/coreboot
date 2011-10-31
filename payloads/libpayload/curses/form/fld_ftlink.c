@@ -35,14 +35,14 @@
 MODULE_ID("$Id: fld_ftlink.c,v 1.14 2010/01/23 21:14:35 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  FIELDTYPE *link_fieldtype(
 |                                FIELDTYPE *type1,
 |                                FIELDTYPE *type2)
-|   
+|
 |   Description   :  Create a new fieldtype built from the two given types.
 |                    They are connected by an logical 'OR'.
-|                    If an error occurs, errno is set to                    
+|                    If an error occurs, errno is set to
 |                       E_BAD_ARGUMENT  - invalid arguments
 |                       E_SYSTEM_ERROR  - system error (no memory)
 |

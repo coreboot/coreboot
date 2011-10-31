@@ -35,12 +35,12 @@
 MODULE_ID("$Id: fld_info.c,v 1.11 2010/01/23 21:14:35 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int field_info(const FIELD *field,
 |                                   int *rows, int *cols,
 |                                   int *frow, int *fcol,
 |                                   int *nrow, int *nbuf)
-|   
+|
 |   Description   :  Retrieve infos about the fields creation parameters.
 |
 |   Return Values :  E_OK           - success
@@ -77,11 +77,11 @@ field_info(const FIELD *field,
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int dynamic_field_info(const FIELD *field,
 |                                           int *drows, int *dcols,
 |                                           int *maxgrow)
-|   
+|
 |   Description   :  Retrieve informations about a dynamic fields current
 |                    dynamic parameters.
 |

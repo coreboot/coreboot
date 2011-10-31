@@ -180,8 +180,8 @@ typedef struct
 #define BUTTON3_TRIPLE_CLICKED  0x00004000L
 #define BUTTON3_MOVED           0x00004000L /* PDCurses */
 
-/* For the ncurses-compatible functions only, BUTTON4_PRESSED and 
-   BUTTON5_PRESSED are returned for mouse scroll wheel up and down; 
+/* For the ncurses-compatible functions only, BUTTON4_PRESSED and
+   BUTTON5_PRESSED are returned for mouse scroll wheel up and down;
    otherwise PDCurses doesn't support buttons 4 and 5 */
 
 #define BUTTON4_RELEASED        0x00008000L
@@ -261,7 +261,7 @@ typedef struct _win       /* definition of a window */
     struct _win *_parent; /* subwin's pointer to parent win */
 } WINDOW;
 
-/* Avoid using the SCREEN struct directly -- use the corresponding 
+/* Avoid using the SCREEN struct directly -- use the corresponding
    functions if possible. This struct may eventually be made private. */
 
 typedef struct
@@ -287,12 +287,12 @@ typedef struct
     unsigned long _trap_mbe;       /* trap these mouse button events */
     unsigned long _map_mbe_to_key; /* map mouse buttons to slk */
     int   mouse_wait;              /* time to wait (in ms) for a
-                                      button release after a press, in 
+                                      button release after a press, in
                                       order to count it as a click */
     int   slklines;                /* lines in use by slk_init() */
     WINDOW *slk_winptr;            /* window for slk */
     int   linesrippedoff;          /* lines ripped off via ripoffline() */
-    int   linesrippedoffontop;     /* lines ripped off on 
+    int   linesrippedoffontop;     /* lines ripped off on
                                       top via ripoffline() */
     int   delaytenths;             /* 1/10ths second to wait block
                                       getch() for */
@@ -352,13 +352,13 @@ PDCEX  char         ttytype[];    /* terminal name/description */
 PDCurses Text Attributes
 ========================
 
-Originally, PDCurses used a short (16 bits) for its chtype. To include 
-color, a number of things had to be sacrificed from the strict Unix and 
-System V support. The main problem was fitting all character attributes 
+Originally, PDCurses used a short (16 bits) for its chtype. To include
+color, a number of things had to be sacrificed from the strict Unix and
+System V support. The main problem was fitting all character attributes
 and color into an unsigned char (all 8 bits!).
 
-Today, PDCurses by default uses a long (32 bits) for its chtype, as in 
-System V. The short chtype is still available, by undefining CHTYPE_LONG 
+Today, PDCurses by default uses a long (32 bits) for its chtype, as in
+System V. The short chtype is still available, by undefining CHTYPE_LONG
 and rebuilding the library.
 
 The following is the structure of a win->_attrs chtype:
@@ -370,9 +370,9 @@ short form:
 -------------------------------------------------
   color number |  attrs |   character eg 'a'
 
-The available non-color attributes are bold, reverse and blink. Others 
-have no effect. The high order char is an index into an array of 
-physical colors (defined in color.c) -- 32 foreground/background color 
+The available non-color attributes are bold, reverse and blink. Others
+have no effect. The high order char is an index into an array of
+physical colors (defined in color.c) -- 32 foreground/background color
 pairs (5 bits) plus 3 bits for other attributes.
 
 long form:
@@ -382,8 +382,8 @@ long form:
 ----------------------------------------------------------------------------
       color number      |     modifiers         |      character eg 'a'
 
-The available non-color attributes are bold, underline, invisible, 
-right-line, left-line, protect, reverse and blink. 256 color pairs (8 
+The available non-color attributes are bold, underline, invisible,
+right-line, left-line, protect, reverse and blink. 256 color pairs (8
 bits), 8 bits for other attributes, and 16 bits for character data.
 
 **man-end****************************************************************/
@@ -440,7 +440,7 @@ bits), 8 bits for other attributes, and 16 bits for character data.
 #define ATR_MSK       A_ATTRIBUTES         /* Obsolete */
 #define ATR_NRM       A_NORMAL             /* Obsolete */
 
-/* For use with attr_t -- X/Open says, "these shall be distinct", so 
+/* For use with attr_t -- X/Open says, "these shall be distinct", so
    this is a non-conforming implementation. */
 
 #define WA_ALTCHARSET A_ALTCHARSET
@@ -463,7 +463,7 @@ bits), 8 bits for other attributes, and 16 bits for character data.
 /*** Alternate character set macros ***/
 
 /* 'w' = 32-bit chtype; acs_map[] index | A_ALTCHARSET
-   'n' = 16-bit chtype; it gets the fallback set because no bit is 
+   'n' = 16-bit chtype; it gets the fallback set because no bit is
          available for A_ALTCHARSET */
 
 #ifdef CHTYPE_LONG
@@ -888,7 +888,7 @@ void    bkgdset(chtype);
 int     border(chtype, chtype, chtype, chtype, chtype, chtype, chtype, chtype);
 int     box(WINDOW *, chtype, chtype);
 bool    can_change_color(void);
-int     cbreak(void); 
+int     cbreak(void);
 int     chgat(int, attr_t, short, const void *);
 int     clearok(WINDOW *, bool);
 int     clear(void);
@@ -903,7 +903,7 @@ int     def_shell_mode(void);
 int     delay_output(int);
 int     delch(void);
 int     deleteln(void);
-void    delscreen(SCREEN *); 
+void    delscreen(SCREEN *);
 int     delwin(WINDOW *);
 WINDOW *derwin(WINDOW *, int, int, int, int);
 int     doupdate(void);
@@ -1141,8 +1141,8 @@ int     addwstr(const wchar_t *);
 int     add_wch(const cchar_t *);
 int     add_wchnstr(const cchar_t *, int);
 int     add_wchstr(const cchar_t *);
-int     border_set(const cchar_t *, const cchar_t *, const cchar_t *, 
-                   const cchar_t *, const cchar_t *, const cchar_t *, 
+int     border_set(const cchar_t *, const cchar_t *, const cchar_t *,
+                   const cchar_t *, const cchar_t *, const cchar_t *,
                    const cchar_t *, const cchar_t *);
 int     box_set(WINDOW *, const cchar_t *, const cchar_t *);
 int     echo_wchar(const cchar_t *);
@@ -1212,7 +1212,7 @@ int     wadd_wchstr(WINDOW *, const cchar_t *);
 int     wbkgrnd(WINDOW *, const cchar_t *);
 void    wbkgrndset(WINDOW *, const cchar_t *);
 int     wborder_set(WINDOW *, const cchar_t *, const cchar_t *,
-                    const cchar_t *, const cchar_t *, const cchar_t *, 
+                    const cchar_t *, const cchar_t *, const cchar_t *,
                     const cchar_t *, const cchar_t *, const cchar_t *);
 int     wecho_wchar(WINDOW *, const cchar_t *);
 int     wgetbkgrnd(WINDOW *, cchar_t *);

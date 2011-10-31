@@ -33,57 +33,57 @@ RCSID("$Id: inopts.c,v 1.43 2008/07/13 16:08:18 wmcbrine Exp $")
         int nocrmode(void);
 
   Description:
-        cbreak() and nocbreak() toggle cbreak mode. In cbreak mode, 
-        characters typed by the user are made available immediately, and 
-        erase/kill character processing is not performed.  In nocbreak 
-        mode, typed characters are buffered until a newline or carriage 
-        return. Interrupt and flow control characters are unaffected by 
+        cbreak() and nocbreak() toggle cbreak mode. In cbreak mode,
+        characters typed by the user are made available immediately, and
+        erase/kill character processing is not performed.  In nocbreak
+        mode, typed characters are buffered until a newline or carriage
+        return. Interrupt and flow control characters are unaffected by
         this mode. PDCurses always starts in cbreak mode.
 
-        echo() and noecho() control whether typed characters are echoed 
-        by the input routine.  Initially, input characters are echoed.  
+        echo() and noecho() control whether typed characters are echoed
+        by the input routine.  Initially, input characters are echoed.
         Subsequent calls to echo() and noecho() do not flush type-ahead.
 
-        halfdelay() is similar to cbreak(), but allows for a time limit 
-        to be specified, in tenths of a second. This causes getch() to 
-        block for that period before returning ERR if no key has been 
+        halfdelay() is similar to cbreak(), but allows for a time limit
+        to be specified, in tenths of a second. This causes getch() to
+        block for that period before returning ERR if no key has been
         received.  tenths must be between 1 and 255.
 
-        keypad() controls whether getch() returns function/special keys 
-        as single key codes (e.g., the left arrow key as KEY_LEFT). Per 
-        X/Open, the default for keypad mode is OFF. You'll probably want 
-        it on. With keypad mode off, if a special key is pressed, 
+        keypad() controls whether getch() returns function/special keys
+        as single key codes (e.g., the left arrow key as KEY_LEFT). Per
+        X/Open, the default for keypad mode is OFF. You'll probably want
+        it on. With keypad mode off, if a special key is pressed,
         getch() does nothing or returns ERR.
 
-        nodelay() controls whether wgetch() is a non-blocking call. If 
-        the option is enabled, and no input is ready, wgetch() will 
-        return ERR. If disabled, wgetch() will hang until input is 
+        nodelay() controls whether wgetch() is a non-blocking call. If
+        the option is enabled, and no input is ready, wgetch() will
+        return ERR. If disabled, wgetch() will hang until input is
         ready.
 
-        nl() enables the translation of a carriage return into a newline 
-        on input. nonl() disables this. Initially, the translation does 
+        nl() enables the translation of a carriage return into a newline
+        on input. nonl() disables this. Initially, the translation does
         occur.
 
-        raw() and noraw() toggle raw mode. Raw mode is similar to cbreak 
-        mode, in that characters typed are immediately passed through to 
-        the user program.  The difference is that in raw mode, the INTR, 
-        QUIT, SUSP, and STOP characters are passed through without being 
+        raw() and noraw() toggle raw mode. Raw mode is similar to cbreak
+        mode, in that characters typed are immediately passed through to
+        the user program.  The difference is that in raw mode, the INTR,
+        QUIT, SUSP, and STOP characters are passed through without being
         interpreted, and without generating a signal.
 
         In PDCurses, the meta() function sets raw mode on or off.
 
-        timeout() and wtimeout() set blocking or non-blocking reads for 
-        the specified window. The delay is measured in milliseconds. If 
-        it's negative, a blocking read is used; if zero, then non- 
-        blocking reads are done -- if no input is waiting, ERR is 
-        returned immediately. If the delay is positive, the read blocks 
+        timeout() and wtimeout() set blocking or non-blocking reads for
+        the specified window. The delay is measured in milliseconds. If
+        it's negative, a blocking read is used; if zero, then non-
+        blocking reads are done -- if no input is waiting, ERR is
+        returned immediately. If the delay is positive, the read blocks
         for the delay period; if the period expires, ERR is returned.
 
         intrflush(), notimeout(), noqiflush(), qiflush() and typeahead()
-        do nothing in PDCurses, but are included for compatibility with 
+        do nothing in PDCurses, but are included for compatibility with
         other curses implementations.
 
-        crmode() and nocrmode() are archaic equivalents to cbreak() and 
+        crmode() and nocrmode() are archaic equivalents to cbreak() and
         nocbreak(), respectively.
 
   Return Value:
@@ -274,7 +274,7 @@ void wtimeout(WINDOW *win, int delay)
 
     if (delay < 0)
     {
-        /* This causes a blocking read on the window, so turn on delay 
+        /* This causes a blocking read on the window, so turn on delay
            mode */
 
         win->_nodelay = FALSE;
@@ -282,7 +282,7 @@ void wtimeout(WINDOW *win, int delay)
     }
     else if (!delay)
     {
-        /* This causes a non-blocking read on the window, so turn off 
+        /* This causes a non-blocking read on the window, so turn off
            delay mode */
 
         win->_nodelay = TRUE;
@@ -290,8 +290,8 @@ void wtimeout(WINDOW *win, int delay)
     }
     else
     {
-        /* This causes the read on the window to delay for the number of 
-           milliseconds. Also forces the window into non-blocking read 
+        /* This causes the read on the window to delay for the number of
+           milliseconds. Also forces the window into non-blocking read
            mode */
 
         /*win->_nodelay = TRUE;*/

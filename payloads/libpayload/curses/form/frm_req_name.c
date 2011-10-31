@@ -107,9 +107,9 @@ static const char *request_names[MAX_FORM_COMMAND - MIN_FORM_COMMAND + 1] =
 #define A_SIZE (sizeof(request_names)/sizeof(request_names[0]))
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  const char * form_request_name (int request);
-|   
+|
 |   Description   :  Get the external name of a form request.
 |
 |   Return Values :  Pointer to name      - on success
@@ -130,9 +130,9 @@ form_request_name(int request)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int form_request_by_name (const char *str);
-|   
+|
 |   Description   :  Search for a request with this name.
 |
 |   Return Values :  Request Id       - on success

@@ -16,9 +16,9 @@ RCSID("$Id: pdcsetsc.c,v 1.39 2008/07/13 16:08:17 wmcbrine Exp $")
         PDC_set_blink() toggles whether the A_BLINK attribute sets an
         actual blink mode (TRUE), or sets the background color to high
         intensity (FALSE). The default is platform-dependent (FALSE in
-        most cases). It returns OK if it could set the state to match 
-        the given parameter, ERR otherwise. Current platforms also 
-        adjust the value of COLORS according to this function -- 16 for 
+        most cases). It returns OK if it could set the state to match
+        the given parameter, ERR otherwise. Current platforms also
+        adjust the value of COLORS according to this function -- 16 for
         FALSE, and 8 for TRUE.
 
         PDC_set_title() sets the title of the window in which the curses
@@ -59,7 +59,7 @@ int PDC_curs_set(int visibility)
     /* if scrnmode is not set, some BIOSes hang */
 
     regs.h.ah = 0x01;
-    regs.h.al = (unsigned char)pdc_scrnmode; 
+    regs.h.al = (unsigned char)pdc_scrnmode;
     regs.h.ch = (unsigned char)start;
     regs.h.cl = (unsigned char)end;
     PDCINT(0x10, regs);

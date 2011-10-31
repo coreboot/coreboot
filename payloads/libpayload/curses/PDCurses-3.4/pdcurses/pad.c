@@ -31,13 +31,13 @@ RCSID("$Id: pad.c,v 1.50 2008/07/14 12:22:13 wmcbrine Exp $")
         to specify the part of the pad to be displayed, and the location
         to use on the screen.
 
-        newpad() creates a new pad data structure.  
+        newpad() creates a new pad data structure.
 
         subpad() creates a new sub-pad within a pad, at position (begy,
-        begx), with dimensions of nlines lines and ncols columns. This 
-        position is relative to the pad, and not to the screen as with 
-        subwin.  Changes to either the parent pad or sub-pad will affect 
-        both.  When using sub-pads, you may need to call touchwin() 
+        begx), with dimensions of nlines lines and ncols columns. This
+        position is relative to the pad, and not to the screen as with
+        subwin.  Changes to either the parent pad or sub-pad will affect
+        both.  When using sub-pads, you may need to call touchwin()
         before calling prefresh().
 
         pnoutrefresh() copies the specified pad to the virtual screen.
@@ -46,7 +46,7 @@ RCSID("$Id: pad.c,v 1.50 2008/07/14 12:22:13 wmcbrine Exp $")
 
         These routines are analogous to wnoutrefresh() and wrefresh().
         (py, px) specifies the upper left corner of the part of the pad
-        to be displayed; (sy1, sx1) and (sy2, sx2) describe the screen 
+        to be displayed; (sy1, sx1) and (sy2, sx2) describe the screen
         rectangle that will contain the selected part of the pad.
 
         pechochar() is functionally equivalent to addch() followed by
@@ -87,7 +87,7 @@ WINDOW *newpad(int nlines, int ncols)
 
     win->_flags = _PAD;
 
-    /* save default values in case pechochar() is the first call to 
+    /* save default values in case pechochar() is the first call to
        prefresh(). */
 
     save_pminrow = 0;
@@ -120,10 +120,10 @@ WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begy, int begx)
         (begx + ncols)  > (orig->_begx + orig->_maxx))
         return (WINDOW *)NULL;
 
-    if (!nlines) 
+    if (!nlines)
         nlines = orig->_maxy - 1 - j;
 
-    if (!ncols) 
+    if (!ncols)
         ncols = orig->_maxx - 1 - k;
 
     if ( !(win = PDC_makenew(nlines, ncols, begy, begx)) )
@@ -199,7 +199,7 @@ int pnoutrefresh(WINDOW *w, int py, int px, int sy1, int sx1, int sy2, int sx2)
             memcpy(curscr->_y[sline] + sx1, w->_y[pline] + px,
                    num_cols * sizeof(chtype));
 
-            if ((curscr->_firstch[sline] == _NO_CHANGE) 
+            if ((curscr->_firstch[sline] == _NO_CHANGE)
                 || (curscr->_firstch[sline] > sx1))
                 curscr->_firstch[sline] = sx1;
 
@@ -220,8 +220,8 @@ int pnoutrefresh(WINDOW *w, int py, int px, int sy1, int sx1, int sy2, int sx2)
         curscr->_clear = TRUE;
     }
 
-    /* position the cursor to the pad's current position if possible -- 
-       is the pad current position going to end up displayed? if not, 
+    /* position the cursor to the pad's current position if possible --
+       is the pad current position going to end up displayed? if not,
        then don't move the cursor; if so, move it to the correct place */
 
     if (!w->_leaveit && w->_cury >= py && w->_curx >= px &&
@@ -241,7 +241,7 @@ int pechochar(WINDOW *pad, chtype ch)
     if (waddch(pad, ch) == ERR)
         return ERR;
 
-    return prefresh(pad, save_pminrow, save_pmincol, save_sminrow, 
+    return prefresh(pad, save_pminrow, save_pmincol, save_sminrow,
                     save_smincol, save_smaxrow, save_smaxcol);
 }
 
@@ -253,7 +253,7 @@ int pecho_wchar(WINDOW *pad, const cchar_t *wch)
     if (!wch || (waddch(pad, *wch) == ERR))
         return ERR;
 
-    return prefresh(pad, save_pminrow, save_pmincol, save_sminrow, 
+    return prefresh(pad, save_pminrow, save_pmincol, save_sminrow,
                     save_smincol, save_smaxrow, save_smaxcol);
 }
 #endif

@@ -9,7 +9,7 @@ RCSID("$Id: pdcgetsc.c,v 1.36 2008/07/14 04:24:52 wmcbrine Exp $")
 int PDC_get_cursor_mode(void)
 {
     CONSOLE_CURSOR_INFO ci;
-    
+
     PDC_LOG(("PDC_get_cursor_mode() - called\n"));
 
     GetConsoleCursorInfo(pdc_con_out, &ci);

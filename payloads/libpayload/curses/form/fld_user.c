@@ -35,9 +35,9 @@
 MODULE_ID("$Id: fld_user.c,v 1.16 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_field_userptr(FIELD *field, void *usrptr)
-|   
+|
 |   Description   :  Set the pointer that is reserved in any field to store
 |                    application relevant informations
 |
@@ -53,9 +53,9 @@ set_field_userptr(FIELD *field, void *usrptr)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  void *field_userptr(const FIELD *field)
-|   
+|
 |   Description   :  Return the pointer that is reserved in any field to
 |                    store application relevant informations.
 |

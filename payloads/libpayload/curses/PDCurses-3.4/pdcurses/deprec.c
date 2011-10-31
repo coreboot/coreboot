@@ -4,8 +4,8 @@
 
 RCSID("$Id: deprec.c,v 1.6 2008/07/13 16:08:18 wmcbrine Exp $")
 
-/* Deprecated functions. These should not be used, and will eventually 
-   be removed. They're here solely for the benefit of applications that 
+/* Deprecated functions. These should not be used, and will eventually
+   be removed. They're here solely for the benefit of applications that
    linked to them in older versions of PDCurses. */
 
 bool PDC_check_bios_key(void)

@@ -17,32 +17,32 @@ RCSID("$Id: scr_dump.c,v 1.30 2008/07/13 16:08:18 wmcbrine Exp $")
         int scr_set(const char *filename);
 
   Description:
-        getwin() reads window-related data previously stored in a file 
-        by putwin(). It then creates and initialises a new window using 
+        getwin() reads window-related data previously stored in a file
+        by putwin(). It then creates and initialises a new window using
         that data.
 
-        putwin() writes all data associated with a window into a file, 
-        using an unspecified format. This information can be retrieved 
+        putwin() writes all data associated with a window into a file,
+        using an unspecified format. This information can be retrieved
         later using getwin().
 
-        scr_dump() writes the current contents of the virtual screen to 
+        scr_dump() writes the current contents of the virtual screen to
         the file named by filename in an unspecified format.
 
-        scr_restore() function sets the virtual screen to the contents 
-        of the file named by filename, which must have been written 
-        using scr_dump(). The next refresh operation restores the screen 
+        scr_restore() function sets the virtual screen to the contents
+        of the file named by filename, which must have been written
+        using scr_dump(). The next refresh operation restores the screen
         to the way it looked in the dump file.
 
-        In PDCurses, scr_init() does nothing, and scr_set() is a synonym 
-        for scr_restore(). Also, scr_dump() and scr_restore() save and 
-        load from curscr. This differs from some other implementations, 
-        where scr_init() works with curscr, and scr_restore() works with 
-        newscr; but the effect should be the same. (PDCurses has no 
+        In PDCurses, scr_init() does nothing, and scr_set() is a synonym
+        for scr_restore(). Also, scr_dump() and scr_restore() save and
+        load from curscr. This differs from some other implementations,
+        where scr_init() works with curscr, and scr_restore() works with
+        newscr; but the effect should be the same. (PDCurses has no
         newscr.)
 
   Return Value:
-        On successful completion, getwin() returns a pointer to the 
-        window it created. Otherwise, it returns a null pointer. Other 
+        On successful completion, getwin() returns a pointer to the
+        window it created. Otherwise, it returns a null pointer. Other
         functions return OK or ERR.
 
   Portability                                X/Open    BSD    SYS V

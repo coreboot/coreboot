@@ -67,18 +67,18 @@ typedef struct
   unsigned short length;
 } TEXT;
 
-typedef struct tagITEM 
+typedef struct tagITEM
 {
   TEXT           name;        /* name of menu item                         */
-  TEXT           description; /* description of item, optional in display  */ 
+  TEXT           description; /* description of item, optional in display  */
   struct tagMENU *imenu;      /* Pointer to parent menu                    */
-  void           *userptr;    /* Pointer to user defined per item data     */ 
-  Item_Options   opt;         /* Item options                              */ 
+  void           *userptr;    /* Pointer to user defined per item data     */
+  Item_Options   opt;         /* Item options                              */
   short          index;       /* Item number if connected to a menu        */
   short          y;           /* y and x location of item in menu          */
   short          x;
   bool           value;       /* Selection value                           */
-                             
+
   struct tagITEM *left;       /* neighbor items                            */
   struct tagITEM *right;
   struct tagITEM *up;
@@ -88,7 +88,7 @@ typedef struct tagITEM
 
 typedef void (*Menu_Hook)(struct tagMENU *);
 
-typedef struct tagMENU 
+typedef struct tagMENU
 {
   short          height;                /* Nr. of chars high               */
   short          width;                 /* Nr. of chars wide               */
@@ -103,14 +103,14 @@ typedef struct tagMENU
   short          itemlen;               /* Length of one item              */
   short          spc_desc;              /* Spacing for descriptor          */
   short          spc_cols;              /* Spacing for columns             */
-  short          spc_rows;              /* Spacing for rows                */ 
+  short          spc_rows;              /* Spacing for rows                */
   char          *pattern;               /* Buffer to store match chars     */
   short          pindex;                /* Index into pattern buffer       */
   WINDOW        *win;                   /* Window containing menu          */
   WINDOW        *sub;                   /* Subwindow for menu display      */
   WINDOW        *userwin;               /* User's window                   */
   WINDOW        *usersub;               /* User's subwindow                */
-  ITEM          **items;                /* array of items                  */ 
+  ITEM          **items;                /* array of items                  */
   short          nitems;                /* Nr. of items in menu            */
   ITEM          *curitem;               /* Current item                    */
   short          toprow;                /* Top row of menu                 */

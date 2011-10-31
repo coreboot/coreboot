@@ -71,7 +71,7 @@ int PDC_resize_screen(int nlines, int ncols)
     XCursesCOLS = SP->cols;
 
     PDC_LOG(("%s:shmid_Xcurscr %d shmkey_Xcurscr %d SP->lines %d "
-             "SP->cols %d\n", XCLOGMSG, shmid_Xcurscr, 
+             "SP->cols %d\n", XCLOGMSG, shmid_Xcurscr,
              shmkey_Xcurscr, SP->lines, SP->cols));
 
     Xcurscr = (unsigned char*)shmat(shmid_Xcurscr, 0, 0);

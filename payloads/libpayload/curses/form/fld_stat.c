@@ -35,9 +35,9 @@
 MODULE_ID("$Id: fld_stat.c,v 1.12 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_field_status(FIELD *field, bool status)
-|   
+|
 |   Description   :  Set or clear the 'changed' indication flag for that
 |                    fields primary buffer.
 |
@@ -59,11 +59,11 @@ set_field_status(FIELD *field, bool status)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  bool field_status(const FIELD *field)
-|   
+|
 |   Description   :  Retrieve the value of the 'changed' indication flag
-|                    for that fields primary buffer. 
+|                    for that fields primary buffer.
 |
 |   Return Values :  TRUE  - buffer has been changed
 |                    FALSE - buffer has not been changed

@@ -35,9 +35,9 @@
 MODULE_ID("$Id: frm_scale.c,v 1.10 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int scale_form( const FORM *form, int *rows, int *cols )
-|   
+|
 |   Description   :  Retrieve size of form
 |
 |   Return Values :  E_OK              - no error

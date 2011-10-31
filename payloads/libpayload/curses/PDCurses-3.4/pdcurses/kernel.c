@@ -45,17 +45,17 @@ RCSID("$Id: kernel.c,v 1.78 2008/07/15 17:13:26 wmcbrine Exp $")
         0 makes it disappear; 1 makes it appear "normal" (usually an
         underline) and 2 makes it "highly visible" (usually a block).
 
-        ripoffline() reduces the size of stdscr by one line.  If the 
-        "line" parameter is positive, the line is removed from the top 
-        of the screen; if negative, from the bottom. Up to 5 lines can 
-        be ripped off stdscr by calling ripoffline() repeatedly. The 
-        function argument, init, is called from within initscr() or 
-        newterm(), so ripoffline() must be called before either of these 
-        functions.  The init function receives a pointer to a one-line 
-        WINDOW, and the width of the window. Calling ripoffline() with a 
+        ripoffline() reduces the size of stdscr by one line.  If the
+        "line" parameter is positive, the line is removed from the top
+        of the screen; if negative, from the bottom. Up to 5 lines can
+        be ripped off stdscr by calling ripoffline() repeatedly. The
+        function argument, init, is called from within initscr() or
+        newterm(), so ripoffline() must be called before either of these
+        functions.  The init function receives a pointer to a one-line
+        WINDOW, and the width of the window. Calling ripoffline() with a
         NULL init function pointer is an error.
 
-        napms() suspends the program for the specified number of 
+        napms() suspends the program for the specified number of
         milliseconds. draino() is an archaic equivalent.
 
         resetterm(), fixterm() and saveterm() are archaic equivalents
@@ -193,7 +193,7 @@ int curs_set(int visibility)
 
     ret_vis = PDC_curs_set(visibility);
 
-    /* If the cursor is changing from invisible to visible, update 
+    /* If the cursor is changing from invisible to visible, update
        its position */
 
     if (visibility && !ret_vis)

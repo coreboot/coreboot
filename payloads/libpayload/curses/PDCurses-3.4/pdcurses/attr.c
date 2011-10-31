@@ -45,24 +45,24 @@ RCSID("$Id: attr.c,v 1.41 2008/07/13 16:08:17 wmcbrine Exp $")
         chtype getattrs(WINDOW *win);
 
   Description:
-        These functions manipulate the current attributes and/or colors 
-        of the named window.  These attributes can be any combination 
+        These functions manipulate the current attributes and/or colors
+        of the named window.  These attributes can be any combination
         of A_STANDOUT, A_REVERSE, A_BOLD, A_DIM, A_BLINK, A_UNDERLINE.
 
         These constants are defined in <curses.h> and can be combined
         with the bitwise-OR operator (|).
 
-        The current attributes of a window are applied to all chtypes 
-        that are written into the window with waddch(). Attributes are 
-        a property of the chtype, and move with the character through 
+        The current attributes of a window are applied to all chtypes
+        that are written into the window with waddch(). Attributes are
+        a property of the chtype, and move with the character through
         any scrolling or insert/delete operations.
 
-        attrset() sets the current attributes of the given window to 
-        attrs. attroff() turns off the named attributes without 
-        affecting any other attributes; attron() turns them on. 
+        attrset() sets the current attributes of the given window to
+        attrs. attroff() turns off the named attributes without
+        affecting any other attributes; attron() turns them on.
         color_set() sets the window color to the value of color_pair.
 
-        standout() is the same as attron(A_STANDOUT). standend() is the 
+        standout() is the same as attron(A_STANDOUT). standend() is the
         same as attrset(A_NORMAL); that is, it turns off all attributes.
 
   Return Value:
@@ -125,7 +125,7 @@ int wattron(WINDOW *win, chtype attrs)
     if (!win)
         return ERR;
 
-    if ((win->_attrs & A_COLOR) && (attrs & A_COLOR)) 
+    if ((win->_attrs & A_COLOR) && (attrs & A_COLOR))
     {
         oldcolr = win->_attrs & A_COLOR;
         oldattr = win->_attrs ^ oldcolr;

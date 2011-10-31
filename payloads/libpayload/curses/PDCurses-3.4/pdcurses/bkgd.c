@@ -39,7 +39,7 @@ RCSID("$Id: bkgd.c,v 1.39 2008/07/13 16:08:18 wmcbrine Exp $")
         there is a conflict (e.g., different color pairs).
 
   Return Value:
-        bkgd() and wbkgd() return OK, unless the window is NULL, in 
+        bkgd() and wbkgd() return OK, unless the window is NULL, in
         which case they return ERR.
 
   Portability                                X/Open    BSD    SYS V
@@ -86,7 +86,7 @@ int wbkgd(WINDOW *win, chtype ch)
 
     newch = win->_bkgd & A_CHARTEXT;
 
-    /* what follows is what seems to occur in the System V 
+    /* what follows is what seems to occur in the System V
        implementation of this routine */
 
     for (y = 0; y < win->_maxy; y++)
@@ -97,26 +97,26 @@ int wbkgd(WINDOW *win, chtype ch)
 
             ch = *winptr;
 
-            /* determine the colors and attributes of the character read 
+            /* determine the colors and attributes of the character read
                from the window */
 
             colr = ch & A_COLOR;
             attr = ch & (A_ATTRIBUTES ^ A_COLOR);
 
-            /* if the color is the same as the old background color, 
+            /* if the color is the same as the old background color,
                then make it the new background color, otherwise leave it */
 
             if (colr == oldcolr)
                 colr = newcolr;
 
-            /* remove any attributes (non color) from the character that 
-               were part of the old background, then combine the 
+            /* remove any attributes (non color) from the character that
+               were part of the old background, then combine the
                remaining ones with the new background */
 
             attr ^= oldattr;
             attr |= newattr;
 
-            /* change character if it is there because it was the old 
+            /* change character if it is there because it was the old
                background character */
 
             ch &= A_CHARTEXT;

@@ -35,9 +35,9 @@
 MODULE_ID("$Id: frm_page.c,v 1.11 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_form_page(FORM * form,int  page)
-|   
+|
 |   Description   :  Set the page number of the form.
 |
 |   Return Values :  E_OK              - success
@@ -87,9 +87,9 @@ set_form_page(FORM *form, int page)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int form_page(const FORM * form)
-|   
+|
 |   Description   :  Return the current page of the form.
 |
 |   Return Values :  >= 0  : current page number

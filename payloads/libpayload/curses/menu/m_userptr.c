@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_userptr.c,v 1.17 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_userptr(MENU *menu, void *userptr)
-|   
+|
 |   Description   :  Set the pointer that is reserved in any menu to store
 |                    application relevant informations.
 |
@@ -57,9 +57,9 @@ set_menu_userptr(MENU * menu, void *userptr)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void *menu_userptr(const MENU *menu)
-|   
+|
 |   Description   :  Return the pointer that is reserved in any menu to
 |                    store application relevant informations.
 |

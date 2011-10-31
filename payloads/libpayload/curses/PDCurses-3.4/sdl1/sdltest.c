@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* You could #include pdcsdl.h, or just add the relevant declarations 
+/* You could #include pdcsdl.h, or just add the relevant declarations
    here: */
 
 PDCEX SDL_Surface *pdc_screen;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         dest.w = i;
         dest.h = j;
 
-        SDL_FillRect(pdc_screen, &dest, 
+        SDL_FillRect(pdc_screen, &dest,
                      SDL_MapRGB(pdc_screen->format, rand() % 256,
                                 rand() % 256, rand() % 256));
     }

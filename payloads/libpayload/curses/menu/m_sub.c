@@ -40,9 +40,9 @@
 MODULE_ID("$Id: m_sub.c,v 1.12 2010/01/23 21:20:11 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_menu_sub(MENU *menu, WINDOW *win)
-|   
+|
 |   Description   :  Sets the subwindow of the menu.
 |
 |   Return Values :  E_OK           - success
@@ -81,9 +81,9 @@ set_menu_sub(MENU * menu, WINDOW *win)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  WINDOW* menu_sub(const MENU *menu)
-|   
+|
 |   Description   :  Returns a pointer to the subwindow of the menu
 |
 |   Return Values :  NULL on error, otherwise a pointer to the window

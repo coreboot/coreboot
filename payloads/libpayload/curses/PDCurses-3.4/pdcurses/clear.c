@@ -19,14 +19,14 @@ RCSID("$Id: clear.c,v 1.35 2008/07/13 16:08:18 wmcbrine Exp $")
         int wclrtoeol(WINDOW *win);
 
   Description:
-        erase() and werase() copy blanks (i.e. the background chtype) to 
+        erase() and werase() copy blanks (i.e. the background chtype) to
         every cell of the window.
 
         clear() and wclear() are similar to erase() and werase(), but
-        they also call clearok() to ensure that the the window is 
+        they also call clearok() to ensure that the the window is
         cleared on the next wrefresh().
 
-        clrtobot() and wclrtobot() clear the window from the current 
+        clrtobot() and wclrtobot() clear the window from the current
         cursor position to the end of the window.
 
         clrtoeol() and wclrtoeol() clear the window from the current

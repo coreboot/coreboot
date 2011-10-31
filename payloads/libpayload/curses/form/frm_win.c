@@ -35,10 +35,10 @@
 MODULE_ID("$Id: frm_win.c,v 1.16 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_form_win(FORM *form,WINDOW *win)
-|   
-|   Description   :  Set the window of the form to win. 
+|
+|   Description   :  Set the window of the form to win.
 |
 |   Return Values :  E_OK       - success
 |                    E_POSTED   - form is posted
@@ -65,9 +65,9 @@ set_form_win(FORM *form, WINDOW *win)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  WINDOW *form_win(const FORM *)
-|   
+|
 |   Description   :  Retrieve the window of the form.
 |
 |   Return Values :  The pointer to the Window or stdscr if there is none.

@@ -35,14 +35,14 @@
 MODULE_ID("$Id: fld_link.c,v 1.12 2010/01/23 21:14:35 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
-|   Function      :  FIELD *link_field(FIELD *field, int frow, int fcol)  
-|   
+|   Facility      :  libnform
+|   Function      :  FIELD *link_field(FIELD *field, int frow, int fcol)
+|
 |   Description   :  Duplicates the field at the specified position. The
 |                    new field shares its buffers with the original one,
 |                    the attributes are independent.
 |                    If an error occurs, errno is set to
-|                    
+|
 |                    E_BAD_ARGUMENT - invalid argument
 |                    E_SYSTEM_ERROR - system error
 |

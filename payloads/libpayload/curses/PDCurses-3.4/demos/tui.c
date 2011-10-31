@@ -65,7 +65,7 @@ static bool incurses = FALSE;
 #ifndef PDCURSES
 static char wordchar(void)
 {
-    return 0x17;    /* ^W */ 
+    return 0x17;    /* ^W */
 }
 #endif
 
@@ -110,13 +110,13 @@ static void initcolor(void)
 
     /* foreground, background */
 
-    init_pair(TITLECOLOR       & ~A_ATTR, COLOR_BLACK, COLOR_CYAN);      
-    init_pair(MAINMENUCOLOR    & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);    
+    init_pair(TITLECOLOR       & ~A_ATTR, COLOR_BLACK, COLOR_CYAN);
+    init_pair(MAINMENUCOLOR    & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);
     init_pair(MAINMENUREVCOLOR & ~A_ATTR, COLOR_WHITE, COLOR_BLACK);
-    init_pair(SUBMENUCOLOR     & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);    
-    init_pair(SUBMENUREVCOLOR  & ~A_ATTR, COLOR_WHITE, COLOR_BLACK);   
-    init_pair(BODYCOLOR        & ~A_ATTR, COLOR_WHITE, COLOR_BLUE);      
-    init_pair(STATUSCOLOR      & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);   
+    init_pair(SUBMENUCOLOR     & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);
+    init_pair(SUBMENUREVCOLOR  & ~A_ATTR, COLOR_WHITE, COLOR_BLACK);
+    init_pair(BODYCOLOR        & ~A_ATTR, COLOR_WHITE, COLOR_BLUE);
+    init_pair(STATUSCOLOR      & ~A_ATTR, COLOR_WHITE, COLOR_CYAN);
     init_pair(INPUTBOXCOLOR    & ~A_ATTR, COLOR_BLACK, COLOR_CYAN);
     init_pair(EDITBOXCOLOR     & ~A_ATTR, COLOR_WHITE, COLOR_BLACK);
 #endif
@@ -152,7 +152,7 @@ static void colorbox(WINDOW *win, chtype color, int hasbox)
 #endif
         wbkgd(win, attr);
 
-    werase(win); 
+    werase(win);
 
 #ifdef PDCURSES
     maxy = getmaxy(win);
@@ -181,7 +181,7 @@ static void idle(void)
             tp->tm_hour, tp->tm_min, tp->tm_sec);
 
     mvwaddstr(wtitl, 0, bw - strlen(buf) - 2, buf);
-    wrefresh(wtitl); 
+    wrefresh(wtitl);
 }
 
 static void menudim(menu *mp, int *lines, int *columns)
@@ -264,7 +264,7 @@ static void mainmenu(menu *mp)
         {
             if (old != -1)
             {
-                mvwaddstr(wmain, 0, old * barlen, 
+                mvwaddstr(wmain, 0, old * barlen,
                           prepad(padstr(mp[old].name, barlen - 1), 1));
 
                 statusmsg(mp[cur].desc);
@@ -274,7 +274,7 @@ static void mainmenu(menu *mp)
 
             setcolor(wmain, MAINMENUREVCOLOR);
 
-            mvwaddstr(wmain, 0, cur * barlen, 
+            mvwaddstr(wmain, 0, cur * barlen,
                       prepad(padstr(mp[cur].name, barlen - 1), 1));
 
             setcolor(wmain, MAINMENUCOLOR);
@@ -472,7 +472,7 @@ void domenu(menu *mp)
         if (cur != old)
         {
             if (old != -1)
-                mvwaddstr(wmenu, old + 1, 1, 
+                mvwaddstr(wmenu, old + 1, 1,
                           prepad(padstr(mp[old].name, barlen - 1), 1));
 
             setcolor(wmenu, SUBMENUREVCOLOR);
@@ -596,7 +596,7 @@ static void repainteditbox(WINDOW *win, int x, char *buf)
     werase(win);
     mvwprintw(win, 0, 0, "%s", padstr(buf, maxx));
     wmove(win, 0, x);
-    wrefresh(win); 
+    wrefresh(win);
 }
 
 /*
@@ -605,15 +605,15 @@ static void repainteditbox(WINDOW *win, int x, char *buf)
 
   Description:
     The initial value of 'str' with a maximum length of 'field' - 1,
-    which is supplied by the calling routine, is editted. The user's 
-    erase (^H), kill (^U) and delete word (^W) chars are interpreted. 
+    which is supplied by the calling routine, is editted. The user's
+    erase (^H), kill (^U) and delete word (^W) chars are interpreted.
     The PC insert or Tab keys toggle between insert and edit mode.
     Escape aborts the edit session, leaving 'str' unchanged.
     Enter, Up or Down Arrow are used to accept the changes to 'str'.
     NOTE: editstr(), mveditstr(), and mvweditstr() are macros.
 
   Return Value:
-    Returns the input terminating character on success (Escape, 
+    Returns the input terminating character on success (Escape,
     Enter, Up or Down Arrow) and ERR on error.
 
   Errors:
@@ -707,9 +707,9 @@ int weditstr(WINDOW *win, char *buf, int field)
             {
                 tp = bp;
 
-                while ((bp > buf) && (*(bp - 1) == ' ')) 
+                while ((bp > buf) && (*(bp - 1) == ' '))
                     bp--;
-                while ((bp > buf) && (*(bp - 1) != ' ')) 
+                while ((bp > buf) && (*(bp - 1) != ' '))
                     bp--;
 
                 memmove((void *)bp, (const void *)tp, strlen(tp) + 1);
@@ -739,7 +739,7 @@ int weditstr(WINDOW *win, char *buf, int field)
 
                     if (!*bp)
                         bp[1] = '\0';
-            
+
                     *bp++ = c;
                 }
             }
@@ -784,7 +784,7 @@ int getstrings(char *desc[], char *buf[], int field)
     getyx(wbody, oldy, oldx);
     getmaxyx(wbody, maxy, maxx);
 
-    winput = mvwinputbox(wbody, (maxy - nlines) / 2, (maxx - ncols) / 2, 
+    winput = mvwinputbox(wbody, (maxy - nlines) / 2, (maxx - ncols) / 2,
         nlines, ncols);
 
     for (i = 0; i < n; i++)

@@ -35,10 +35,10 @@
 MODULE_ID("$Id: frm_sub.c,v 1.12 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_form_sub(FORM *form, WINDOW *win)
-|   
-|   Description   :  Set the subwindow of the form to win. 
+|
+|   Description   :  Set the subwindow of the form to win.
 |
 |   Return Values :  E_OK       - success
 |                    E_POSTED   - form is posted
@@ -65,9 +65,9 @@ set_form_sub(FORM *form, WINDOW *win)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  WINDOW *form_sub(const FORM *)
-|   
+|
 |   Description   :  Retrieve the window of the form.
 |
 |   Return Values :  The pointer to the Subwindow.

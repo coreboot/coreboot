@@ -9,9 +9,9 @@ RCSID("$Id: border.c,v 1.53 2008/07/13 16:08:18 wmcbrine Exp $")
   Name:                                                         border
 
   Synopsis:
-        int border(chtype ls, chtype rs, chtype ts, chtype bs, chtype tl, 
+        int border(chtype ls, chtype rs, chtype ts, chtype bs, chtype tl,
                    chtype tr, chtype bl, chtype br);
-        int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, 
+        int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts,
                     chtype bs, chtype tl, chtype tr, chtype bl, chtype br);
         int box(WINDOW *win, chtype verch, chtype horch);
         int hline(chtype ch, int n);
@@ -42,8 +42,8 @@ RCSID("$Id: border.c,v 1.53 2008/07/13 16:08:18 wmcbrine Exp $")
         int mvwvline_set(WINDOW *win, int y, int x, const cchar_t *wch, int n);
 
   Description:
-        border(), wborder(), and box() draw a border around the edge of 
-        the window. If any argument is zero, an appropriate default is 
+        border(), wborder(), and box() draw a border around the edge of
+        the window. If any argument is zero, an appropriate default is
         used:
 
                 ls      left side of border             ACS_VLINE
@@ -55,14 +55,14 @@ RCSID("$Id: border.c,v 1.53 2008/07/13 16:08:18 wmcbrine Exp $")
                 bl      bottom left corner of border    ACS_LLCORNER
                 br      bottom right corner of border   ACS_LRCORNER
 
-        hline() and whline() draw a horizontal line, using ch, starting 
-        from the current cursor position. The cursor position does not 
-        change. The line is at most n characters long, or as many as 
+        hline() and whline() draw a horizontal line, using ch, starting
+        from the current cursor position. The cursor position does not
+        change. The line is at most n characters long, or as many as
         will fit in the window.
 
-        vline() and wvline() draw a vertical line, using ch, starting 
-        from the current cursor position. The cursor position does not 
-        change. The line is at most n characters long, or as many as 
+        vline() and wvline() draw a vertical line, using ch, starting
+        from the current cursor position. The cursor position does not
+        change. The line is at most n characters long, or as many as
         will fit in the window.
 
   Return Value:
@@ -94,28 +94,28 @@ RCSID("$Id: border.c,v 1.53 2008/07/13 16:08:18 wmcbrine Exp $")
 
 **man-end****************************************************************/
 
-/* _attr_passthru() -- Takes a single chtype 'ch' and checks if the 
-   current attribute of window 'win', as set by wattrset(), and/or the 
-   current background of win, as set by wbkgd(), should by combined with 
+/* _attr_passthru() -- Takes a single chtype 'ch' and checks if the
+   current attribute of window 'win', as set by wattrset(), and/or the
+   current background of win, as set by wbkgd(), should by combined with
    it. Attributes set explicitly in ch take precedence. */
 
 static chtype _attr_passthru(WINDOW *win, chtype ch)
 {
     chtype attr;
 
-    /* If the incoming character doesn't have its own attribute, then 
-       use the current attributes for the window. If the incoming 
-       character has attributes, but not a color component, OR the 
-       attributes to the current attributes for the window. If the 
-       incoming character has a color component, use only the attributes 
+    /* If the incoming character doesn't have its own attribute, then
+       use the current attributes for the window. If the incoming
+       character has attributes, but not a color component, OR the
+       attributes to the current attributes for the window. If the
+       incoming character has a color component, use only the attributes
        from the incoming character. */
 
     attr = ch & A_ATTRIBUTES;
     if (!(attr & A_COLOR))
         attr |= win->_attrs;
 
-    /* wrs (4/10/93) -- Apply the same sort of logic for the window 
-       background, in that it only takes precedence if other color 
+    /* wrs (4/10/93) -- Apply the same sort of logic for the window
+       background, in that it only takes precedence if other color
        attributes are not there. */
 
     if (!(attr & A_COLOR))
@@ -128,7 +128,7 @@ static chtype _attr_passthru(WINDOW *win, chtype ch)
     return ch;
 }
 
-int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs, 
+int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs,
             chtype tl, chtype tr, chtype bl, chtype br)
 {
     int i, ymax, xmax;

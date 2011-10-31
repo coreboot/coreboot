@@ -35,9 +35,9 @@
 MODULE_ID("$Id: frm_cursor.c,v 1.10 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int pos_form_cursor(FORM * form)
-|   
+|
 |   Description   :  Moves the form window cursor to the location required
 |                    by the form driver to resume form processing. This may
 |                    be needed after the application calls a curses library

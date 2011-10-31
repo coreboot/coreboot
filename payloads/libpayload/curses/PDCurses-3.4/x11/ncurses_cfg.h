@@ -2,9 +2,9 @@
  *
  * This file is only used with the ncurses test programs.
  *
- * Have ncurses-5.6 unpacked in your $(HOME) (you don't need to build 
- * it), or edit ncurses_testdir appropriately in the Makefile. Configure 
- * and build PDCurses for X11. (Sorry, other ports won't work yet.) 
+ * Have ncurses-5.6 unpacked in your $(HOME) (you don't need to build
+ * it), or edit ncurses_testdir appropriately in the Makefile. Configure
+ * and build PDCurses for X11. (Sorry, other ports won't work yet.)
  * Change to this directory, and:
  *
  * "make ncurses_tests" to start.
@@ -40,7 +40,7 @@
 # define USE_WIDEC_SUPPORT 1
 #endif
 
-/* Fool ncurses.c so it gives us all the tests, and doesn't redefine 
+/* Fool ncurses.c so it gives us all the tests, and doesn't redefine
    ACS_ chars
 */
 

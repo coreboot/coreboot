@@ -28,12 +28,12 @@ RCSID("$Id: inchstr.c,v 1.34 2008/07/13 16:08:18 wmcbrine Exp $")
         int mvwin_wchnstr(WINDOW *win, int y, int x, cchar_t *wch, int n);
 
   Description:
-        These routines read a chtype or cchar_t string from the window, 
-        starting at the current or specified position, and ending at the 
+        These routines read a chtype or cchar_t string from the window,
+        starting at the current or specified position, and ending at the
         right margin, or after n elements, whichever is less.
 
   Return Value:
-        All functions return the number of elements read, or ERR on 
+        All functions return the number of elements read, or ERR on
         error.
 
   Portability                                X/Open    BSD    SYS V

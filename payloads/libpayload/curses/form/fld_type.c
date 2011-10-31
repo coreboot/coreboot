@@ -35,9 +35,9 @@
 MODULE_ID("$Id: fld_type.c,v 1.16 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int set_field_type(FIELD *field, FIELDTYPE *type,...)
-|   
+|
 |   Description   :  Associate the specified fieldtype with the field.
 |                    Certain field types take additional arguments. Look
 |                    at the spec of the field types !
@@ -80,9 +80,9 @@ set_field_type(FIELD *field, FIELDTYPE *type,...)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  FIELDTYPE *field_type(const FIELD *field)
-|   
+|
 |   Description   :  Retrieve the associated fieldtype for this field.
 |
 |   Return Values :  Pointer to fieldtype of NULL if none is defined.

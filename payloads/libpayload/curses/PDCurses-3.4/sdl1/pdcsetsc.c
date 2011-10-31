@@ -16,9 +16,9 @@ RCSID("$Id: pdcsetsc.c,v 1.7 2008/07/14 04:24:52 wmcbrine Exp $")
         PDC_set_blink() toggles whether the A_BLINK attribute sets an
         actual blink mode (TRUE), or sets the background color to high
         intensity (FALSE). The default is platform-dependent (FALSE in
-        most cases). It returns OK if it could set the state to match 
-        the given parameter, ERR otherwise. Current platforms also 
-        adjust the value of COLORS according to this function -- 16 for 
+        most cases). It returns OK if it could set the state to match
+        the given parameter, ERR otherwise. Current platforms also
+        adjust the value of COLORS according to this function -- 16 for
         FALSE, and 8 for TRUE.
 
         PDC_set_title() sets the title of the window in which the curses

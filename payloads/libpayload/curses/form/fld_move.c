@@ -35,9 +35,9 @@
 MODULE_ID("$Id: fld_move.c,v 1.10 2010/01/23 21:14:36 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnform  
+|   Facility      :  libnform
 |   Function      :  int move_field(FIELD *field,int frow, int fcol)
-|   
+|
 |   Description   :  Moves the disconnected field to the new location in
 |                    the forms subwindow.
 |

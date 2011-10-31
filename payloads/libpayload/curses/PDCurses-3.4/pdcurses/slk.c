@@ -34,17 +34,17 @@ RCSID("$Id: slk.c,v 1.61 2008/07/13 16:08:18 wmcbrine Exp $")
         wchar_t *slk_wlabel(int labnum)
 
   Description:
-        These functions manipulate a window that contain Soft Label Keys 
-        (SLK). To use the SLK functions, a call to slk_init() must be 
-        made BEFORE initscr() or newterm(). slk_init() removes 1 or 2 
+        These functions manipulate a window that contain Soft Label Keys
+        (SLK). To use the SLK functions, a call to slk_init() must be
+        made BEFORE initscr() or newterm(). slk_init() removes 1 or 2
         lines from the useable screen, depending on the format selected.
 
-        The line(s) removed from the screen are used as a separate 
+        The line(s) removed from the screen are used as a separate
         window, in which SLKs are displayed.
 
-        slk_init() requires a single parameter which describes the 
+        slk_init() requires a single parameter which describes the
         format of the SLKs as follows:
- 
+
                 0       3-2-3 format
                 1       4-4 format
                 2       4-4-4 format (ncurses extension)
@@ -116,7 +116,7 @@ int slk_init(int fmt)
     if (SP)
         return ERR;
 
-    switch (fmt) 
+    switch (fmt)
     {
     case 0:  /* 3 - 2 - 3 */
         labels = LABEL_NORMAL;
@@ -218,7 +218,7 @@ int slk_set(int labnum, const char *label, int justify)
 
     labnum--;
 
-    if (!label || !(*label)) 
+    if (!label || !(*label))
     {
         /* Clear the label */
 
@@ -433,7 +433,7 @@ static void _slk_calc(void)
             col += label_length;
 
             if (i == 3)
-                col = COLS - (label_length * 4) + 1; 
+                col = COLS - (label_length * 4) + 1;
         }
 
         break;
@@ -497,7 +497,7 @@ void PDC_slk_initialize(void)
 
         if (!SP->slk_winptr)
         {
-            if ( !(SP->slk_winptr = newwin(SP->slklines, COLS, 
+            if ( !(SP->slk_winptr = newwin(SP->slklines, COLS,
                                            LINES - SP->slklines, 0)) )
                 return;
 
@@ -555,7 +555,7 @@ int PDC_mouse_in_slk(int y, int x)
 
     PDC_LOG(("PDC_mouse_in_slk() - called: y->%d x->%d\n", y, x));
 
-    /* If the line on which the mouse was clicked is NOT the last line 
+    /* If the line on which the mouse was clicked is NOT the last line
        of the screen, we are not interested in it. */
 
     if (!slk || !SP->slk_winptr || (y != SP->slk_winptr->_begy + label_line))
@@ -578,7 +578,7 @@ int slk_wset(int labnum, const wchar_t *label, int justify)
 
     labnum--;
 
-    if (!label || !(*label)) 
+    if (!label || !(*label))
     {
         /* Clear the label */
 

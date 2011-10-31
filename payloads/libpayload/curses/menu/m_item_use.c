@@ -40,11 +40,11 @@
 MODULE_ID("$Id: m_item_use.c,v 1.17 2010/01/23 21:20:10 tom Exp $")
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  int set_item_userptr(ITEM *item, void *userptr)
-|   
+|
 |   Description   :  Set the pointer that is reserved in any item to store
-|                    application relevant informations.  
+|                    application relevant informations.
 |
 |   Return Values :  E_OK               - success
 +--------------------------------------------------------------------------*/
@@ -57,9 +57,9 @@ set_item_userptr(ITEM * item, void *userptr)
 }
 
 /*---------------------------------------------------------------------------
-|   Facility      :  libnmenu  
+|   Facility      :  libnmenu
 |   Function      :  void *item_userptr(const ITEM *item)
-|   
+|
 |   Description   :  Return the pointer that is reserved in any item to store
 |                    application relevant informations.
 |

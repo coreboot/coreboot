@@ -421,6 +421,9 @@ static void vt8237s_init(struct device *dev)
 static void vt8237_common_init(struct device *dev)
 {
 	u8 enables, byte;
+#if !CONFIG_EPIA_VT8237R_INIT
+	unsigned char pwr_on;
+#endif
 
 	/* Enable addr/data stepping. */
 	byte = pci_read_config8(dev, PCI_COMMAND);
@@ -507,6 +510,15 @@ static void vt8237_common_init(struct device *dev)
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
 	 */
 	pci_write_config8(dev, 0x5b, 0xb);
+
+	/* configure power state of the board after loss of power */
+	if (get_option(&pwr_on, "power_on_after_fail") < 0)
+		pwr_on = 1;
+	enables = pci_read_config8(dev, 0x58);
+	pci_write_config8(dev, 0x58, enables & ~0x02);
+	outb(0x0d, 0x70);
+	outb(pwr_on ? 0x00 : 0x80, 0x71);
+	pci_write_config8(dev, 0x58, enables);
 
 	/* Set 0x58 to 0x43 APIC and RTC. */
 	pci_write_config8(dev, 0x58, 0x43);

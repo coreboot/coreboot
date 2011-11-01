@@ -33,7 +33,7 @@ __romstrap_start:
  * Below are some Dev0 Func2 HT control registers values,
  * depending on strap pin, one of below lines is used.
  */
-#if CONFIG_SOUTHBRIDGE_VIA_K8M800 || CONFIG_SOUTHBRIDGE_VIA_K8T800
+#if CONFIG_SOUTHBRIDGE_VIA_K8M800 || CONFIG_SOUTHBRIDGE_VIA_K8T800 || CONFIG_SOUTHBRIDGE_VIA_K8T800_OLD
 
 tblpointer:
 .long 0x50220000, 0X619707C2

@@ -37,10 +37,9 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 	if (!lpc_dev)
 		return 0;
 
-	acpi_io_base = pci_read_config16(lpc_dev, 0x88);
-	if (!acpi_io_base || (acpi_io_base & ~1) == 0)
+	acpi_io_base = pci_read_config16(lpc_dev, 0x88) & ~1;
+	if (!acpi_io_base)
 		return 0;
-	acpi_io_base &= ~1;
 
 	gpio_in = inl(acpi_io_base + 0x48);
 	/* bit 9 for primary port, clear if unconnected or 80-pin cable */
@@ -49,9 +48,9 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 	res |= gpio_in & (1<<4) ? 0 : VT8237R_IDE1_80PIN_CABLE;
 
 	printk(BIOS_INFO, "Cable on %s PATA port: %d pin\n", "primary",
-		gpio_in & (1<<9) ? 40 : 80);
+		res & VT8237R_IDE0_80PIN_CABLE ? 80 : 40);
 	printk(BIOS_INFO, "Cable on %s PATA port: %d pin\n", "secondary",
-		gpio_in & (1<<4) ? 40 : 80);
+		res & VT8237R_IDE1_80PIN_CABLE ? 80 : 40);
 
 	return res;
 }

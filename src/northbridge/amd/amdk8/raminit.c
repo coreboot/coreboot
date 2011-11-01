@@ -1399,7 +1399,7 @@ static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl
 #define DDR333 (NBCAP_MEMCLK_166MHZ + 1)
 #define DDR400 (NBCAP_MEMCLK_200MHZ + 1)
 #define DDR_2T 0x80
-#define DDR_MASK 0x3
+#define DDR_MASK 0x7
 
 #define DDR200_2T (DDR_2T | DDR200)
 #define DDR333_2T (DDR_2T | DDR333)

@@ -1230,8 +1230,8 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		17,	/* *Logical Banks */
 		18,	/* *Supported CAS Latencies */
 		21,	/* *SDRAM Module Attributes */
-		23,	/* *Cycle time at CAS Latnecy (CLX - 0.5) */
-		26,	/* *Cycle time at CAS Latnecy (CLX - 1.0) */
+		23,	/* *Cycle time at CAS Latency (CLX - 0.5) */
+		25,	/* *Cycle time at CAS Latency (CLX - 1.0) */
 		27,	/* *tRP Row precharge time */
 		28,	/* *Minimum Row Active to Row Active Delay (tRRD) */
 		29,	/* *tRCD RAS to CAS */
@@ -1301,11 +1301,11 @@ struct mem_param {
 	char name[9];
 };
 
-static const struct mem_param *get_mem_param(unsigned min_cycle_time)
+static const struct mem_param *get_mem_param(int freq)
 {
 	static const struct mem_param speed[] = {
-		{
-			.name	    = "100Mhz",
+		[NBCAP_MEMCLK_100MHZ] = {
+			.name	    = "100MHz",
 			.cycle_time = 0xa0,
 			.divisor    = (10 <<1),
 			.tRC	    = 0x46,
@@ -1318,8 +1318,8 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dtl_trwt   = { { 2, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
 			.rdpreamble = { ((9 << 1) + 0), ((9 << 1) + 0), ((9 << 1) + 0), ((9 << 1) + 0) }
 		},
-		{
-			.name	    = "133Mhz",
+		[NBCAP_MEMCLK_133MHZ] = {
+			.name	    = "133MHz",
 			.cycle_time = 0x75,
 			.divisor    = (7<<1)+1,
 			.tRC	    = 0x41,
@@ -1332,8 +1332,8 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dtl_trwt   = { { 2, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
 			.rdpreamble = { ((8 << 1) + 0), ((7 << 1) + 0), ((7 << 1) + 1), ((7 << 1) + 0) }
 		},
-		{
-			.name	    = "166Mhz",
+		[NBCAP_MEMCLK_166MHZ] = {
+			.name	    = "166MHz",
 			.cycle_time = 0x60,
 			.divisor    = (6<<1),
 			.tRC	    = 0x3C,
@@ -1346,8 +1346,8 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dtl_trwt   = { { 3, 2, 3 }, { 3, 3, 4 }, { 4, 3, 4 }},
 			.rdpreamble = { ((7 << 1) + 1), ((6 << 1) + 0), ((6 << 1) + 1), ((6 << 1) + 0) }
 		},
-		{
-			.name	    = "200Mhz",
+		[NBCAP_MEMCLK_200MHZ] = {
+			.name	    = "200MHz",
 			.cycle_time = 0x50,
 			.divisor    = (5<<1),
 			.tRC	    = 0x37,
@@ -1359,20 +1359,11 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dtl_twtr   = 2,
 			.dtl_trwt   = { { 0, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
 			.rdpreamble = { ((7 << 1) + 0), ((5 << 1) + 0), ((5 << 1) + 1), ((5 << 1) + 1) }
-		},
-		{
-			.cycle_time = 0x00,
-		},
+		}
 	};
 	const struct mem_param *param;
-	for (param = &speed[0]; param->cycle_time ; param++) {
-		if (min_cycle_time > (param+1)->cycle_time) {
-			break;
-		}
-	}
-	if (!param->cycle_time) {
-		die("min_cycle_time to low");
-	}
+
+	param = speed + freq;
 	printk(BIOS_SPEW, "%s\n", param->name);
 	return param;
 }
@@ -1382,17 +1373,10 @@ struct spd_set_memclk_result {
 	long dimm_mask;
 };
 
-static const unsigned char min_cycle_times[] = {
-	[NBCAP_MEMCLK_200MHZ] = 0x50, /* 5ns */
-	[NBCAP_MEMCLK_166MHZ] = 0x60, /* 6ns */
-	[NBCAP_MEMCLK_133MHZ] = 0x75, /* 7.5ns */
-	[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
-};
+static int spd_dimm_loading_socket(const struct mem_controller *ctrl, long dimm_mask, int *freq_1t)
+{
 
 #if CONFIG_CPU_AMD_SOCKET_939
-
-/* return the minimum cycle time and set 2T accordingly */
-static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl, long dimm_mask) {
 
 /* + 1 raise so we detect 0 as bad field */
 #define DDR200 (NBCAP_MEMCLK_100MHZ + 1)
@@ -1457,7 +1441,7 @@ static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl
 	};
 	/*The dpos matches channel positions defined in BKDG and above arrays
 	  The rpos is bitmask of dual rank dimms in same order as dpos */
-	unsigned int dloading = 0, dloading_cycle_time, i, rpos = 0, dpos =0;
+	unsigned int dloading = 0, i, rpos = 0, dpos = 0;
 	const unsigned char (*dimm_loading_config)[16] = dimm_loading_config_revE;
 	int rank;
 	uint32_t dcl;
@@ -1491,8 +1475,6 @@ static unsigned int spd_dimm_loading_socket939(const struct mem_controller *ctrl
 #endif
 hw_error:
 	if (dloading != 0) {
-		/* map it back to cycle load times */
-		dloading_cycle_time = min_cycle_times[dloading - 1];
 		/* we have valid combination check the restrictions */
 		dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 		dcl |= (dimm_loading_config[dpos][rpos] & DDR_2T) ? (DCL_En2T) : 0;
@@ -1502,189 +1484,190 @@ hw_error:
 			dcl |= DCL_DualDIMMen;
 		}
 		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
+		return dloading - 1;
 	} else {
 		/* if we don't find it we se it to DDR400 */
 		printk(BIOS_WARNING, "Detected strange DIMM configuration, may not work! (or bug)\n");
-		dloading_cycle_time = min_cycle_times[NBCAP_MEMCLK_200MHZ];
+		return NBCAP_MEMCLK_200MHZ;
 	}
 
-	return dloading_cycle_time;
-}
+#elif CONFIG_CPU_AMD_SOCKET_754
 
-#endif /* #if CONFIG_CPU_AMD_SOCKET_939 */
+#define CFGIDX(DIMM1,DIMM2,DIMM3) ((DIMM3)*9+(DIMM2)*3+(DIMM1))
+
+#define EMPTY 0
+#define X8S_X16 1
+#define X8D 2
+
+#define DDR200 NBCAP_MEMCLK_100MHZ
+#define DDR333 NBCAP_MEMCLK_166MHZ
+#define DDR400 NBCAP_MEMCLK_200MHZ
+
+	/* this is table 42 from the BKDG, ignoring footnote 4,
+	 * with the EMPTY, EMPTY, EMPTY row added */
+	static const unsigned char cfgtable[][2] = {
+		[CFGIDX(EMPTY,		EMPTY,		EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(X8S_X16,	EMPTY,		EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(EMPTY,		X8S_X16,	EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(EMPTY,		EMPTY,		X8S_X16	)] = { DDR400, DDR400 },
+		[CFGIDX(X8D,		EMPTY,		EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(EMPTY,		X8D,		EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(EMPTY,		EMPTY,		X8D	)] = { DDR400, DDR400 },
+		[CFGIDX(X8S_X16,	X8S_X16,	EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(X8S_X16,	X8D,		EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(X8S_X16,	EMPTY,		X8S_X16	)] = { DDR400, DDR400 },
+		[CFGIDX(X8S_X16,	EMPTY,		X8D	)] = { DDR400, DDR400 },
+		[CFGIDX(X8D,		X8S_X16,	EMPTY	)] = { DDR400, DDR400 },
+		[CFGIDX(X8D,		X8D,		EMPTY	)] = { DDR333, DDR333 },
+		[CFGIDX(X8D,		EMPTY,		X8S_X16	)] = { DDR400, DDR400 },
+		[CFGIDX(X8D,		EMPTY,		X8D	)] = { DDR333, DDR333 },
+		[CFGIDX(EMPTY,		X8S_X16,	X8S_X16	)] = { DDR333, DDR400 },
+		[CFGIDX(EMPTY,		X8S_X16,	X8D	)] = { DDR200, DDR400 },
+		[CFGIDX(EMPTY,		X8D,		X8S_X16	)] = { DDR200, DDR400 },
+		[CFGIDX(EMPTY,		X8D,		X8D	)] = { DDR200, DDR333 },
+		[CFGIDX(X8S_X16,	X8S_X16,	X8S_X16	)] = { DDR333, DDR400 },
+		[CFGIDX(X8S_X16,	X8S_X16,	X8D	)] = { DDR200, DDR333 },
+		[CFGIDX(X8S_X16,	X8D,		X8S_X16	)] = { DDR200, DDR333 },
+		[CFGIDX(X8S_X16,	X8D,		X8D	)] = { DDR200, DDR333 },
+		[CFGIDX(X8D,		X8S_X16,	X8S_X16	)] = { DDR333, DDR333 },
+		[CFGIDX(X8D,		X8S_X16,	X8D	)] = { DDR200, DDR333 },
+		[CFGIDX(X8D,		X8D,		X8S_X16	)] = { DDR200, DDR333 },
+		[CFGIDX(X8D,		X8D,		X8D	)] = { DDR200, DDR333 }
+	};
+
+	int i, rank, width, dimmtypes[3];
+	const unsigned char *cfg;
+
+	for (i = 0; i < 3; i++) {
+		if (dimm_mask & (1 << i)) {
+			rank = spd_read_byte(ctrl->channel0[i], 5);
+			width = spd_read_byte(ctrl->channel0[i], 13);
+			if (rank < 0 || width < 0) die("failed to read SPD");
+			width &= 0x7f;
+			/* this is my guess as to how the criteria in the table
+			 * are to be understood:
+			 */
+			dimmtypes[i] = width >= (rank == 1 ? 8 : 16) ? X8S_X16 : X8D;
+		} else {
+			dimmtypes[i] = EMPTY;
+		}
+	}
+	cfg = cfgtable[CFGIDX(dimmtypes[0], dimmtypes[1], dimmtypes[2])];
+	*freq_1t = cfg[0];
+	return is_cpu_c0() ? cfg[0] : cfg[1];
+
+#else /* CONFIG_CPU_AMD_SOCKET_* */
+
+/* well, there are socket 940 boards supported which obviously fail to
+ * compile with this */
+//	#error load dependent memory clock limiting is not implemented for this socket
+
+	/* see BKDG 4.1.3--if you just want to test a setup that doesn't
+	 * require limiting, you may use the following code */
+
+	*freq_1t = NBCAP_MEMCLK_200MHZ;
+	return NBCAP_MEMCLK_200MHZ;
+
+#endif /* CONFIG_CPU_AMD_SOCKET_* */
+
+}
 
 static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, long dimm_mask)
 {
-	/* Compute the minimum cycle time for these dimms */
 	struct spd_set_memclk_result result;
-	unsigned min_cycle_time, min_latency, bios_cycle_time;
-#if CONFIG_CPU_AMD_SOCKET_939
-	unsigned dloading_cycle_time;
-#endif
-	int i;
+	unsigned char cl_at_freq[NBCAP_MEMCLK_MASK + 1];
+	int dimm, freq, max_freq_bios, max_freq_dloading, max_freq_1t;
 	uint32_t value;
 
-	static const uint8_t latency_indicies[] = { 26, 23, 9 };
+	static const uint8_t spd_min_cycle_time_indices[] = { 9, 23, 25 };
+	static const unsigned char cycle_time_at_freq[] = {
+		[NBCAP_MEMCLK_200MHZ] = 0x50, /* 5ns */
+		[NBCAP_MEMCLK_166MHZ] = 0x60, /* 6ns */
+		[NBCAP_MEMCLK_133MHZ] = 0x75, /* 7.5ns */
+		[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
+	};
 
-	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
-
-	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
-	bios_cycle_time = min_cycle_times[
-		read_option(max_mem_clock, 0)];
-	if (bios_cycle_time > min_cycle_time) {
-		min_cycle_time = bios_cycle_time;
-	}
-	min_latency = 2;
-
-	/* Compute the least latency with the fastest clock supported
-	 * by both the memory controller and the dimms.
+	/* BEWARE that the constants for frequencies order in reverse of what
+	 * would be intuitive. 200 MHz has the lowest constant, 100 MHz the
+	 * highest. Thus, all comparisons and traversal directions having to
+	 * do with frequencies are/have to be the opposite of what would be
+	 * intuitive.
 	 */
-	for (i = 0; i < DIMM_SOCKETS; i++) {
-		int new_cycle_time, new_latency;
-		int index;
-		int latencies;
-		int latency;
 
-		if (!(dimm_mask & (1 << i))) {
+	/* the CLs supported by the controller: */
+	memset(cl_at_freq, 0x1c, sizeof(cl_at_freq));
+	memset(cl_at_freq, 0x00,
+		(pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP) >>
+		 NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK);
+	max_freq_bios = read_option(max_mem_clock, 0);
+	if (max_freq_bios <= NBCAP_MEMCLK_100MHZ)
+		memset(cl_at_freq, 0x00, max_freq_bios);
+	for (dimm = 0; dimm < DIMM_SOCKETS; dimm++) {
+		int x,i,spd_cls,cl,spd_min_cycle_time;
+		unsigned char cl_at_freq_mask[sizeof(cl_at_freq)];
+
+		if (!(dimm_mask & (1 << dimm)))
 			continue;
-		}
-
-		/* First find the supported CAS latencies
-		 * Byte 18 for DDR SDRAM is interpreted:
+		/* Byte 18 for DDR SDRAM is interpreted:
 		 * bit 0 == CAS Latency = 1.0
 		 * bit 1 == CAS Latency = 1.5
 		 * bit 2 == CAS Latency = 2.0
 		 * bit 3 == CAS Latency = 2.5
 		 * bit 4 == CAS Latency = 3.0
 		 * bit 5 == CAS Latency = 3.5
-		 * bit 6 == TBD
+		 * bit 6 == CAS Latency = 4.0
 		 * bit 7 == TBD
 		 */
-		new_cycle_time = 0xa0;
-		new_latency = 5;
-
-		latencies = spd_read_byte(ctrl->channel0[i], 18);
-		if (latencies <= 0) continue;
-
-		/* Compute the lowest cas latency supported */
-		latency = log2(latencies) -2;
-
-		/* Loop through and find a fast clock with a low latency */
-		for (index = 0; index < 3; index++, latency++) {
-			int spd_value;
-			if ((latency < 2) || (latency > 4) ||
-				(!(latencies & (1 << latency)))) {
+		spd_cls = spd_read_byte(ctrl->channel0[dimm], 18);
+		if (spd_cls <= 0)
+			goto hw_error;
+		memset(cl_at_freq_mask, 0x00, sizeof(cl_at_freq_mask));
+		for (cl = 1 << log2(spd_cls), i = 0; i < 3; cl >>= 1, i++) {
+			if (!(spd_cls & cl))
 				continue;
-			}
-			spd_value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
-			if (spd_value < 0) {
+			spd_min_cycle_time = spd_read_byte(ctrl->channel0[dimm],
+					spd_min_cycle_time_indices[i]);
+			if (spd_min_cycle_time < 0)
 				goto hw_error;
-			}
-
-			/* Only increase the latency if we decreas the clock */
-			if ((spd_value >= min_cycle_time) && (spd_value < new_cycle_time)) {
-				new_cycle_time = spd_value;
-				new_latency = latency;
-			}
-		}
-		if (new_latency > 4){
-			continue;
-		}
-		/* Does min_latency need to be increased? */
-		if (new_cycle_time > min_cycle_time) {
-			min_cycle_time = new_cycle_time;
-		}
-		/* Does min_cycle_time need to be increased? */
-		if (new_latency > min_latency) {
-			min_latency = new_latency;
-		}
-	}
-	/* Make a second pass through the dimms and disable
-	 * any that cannot support the selected memclk and cas latency.
-	 */
-
-	for (i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
-		int latencies;
-		int latency;
-		int index;
-		int spd_value;
-		if (!(dimm_mask & (1 << i))) {
-			continue;
-		}
-
-		latencies = spd_read_byte(ctrl->channel0[i], 18);
-		if (latencies < 0) goto hw_error;
-		if (latencies == 0) {
-			goto dimm_err;
-		}
-
-		/* Compute the lowest cas latency supported */
-		latency = log2(latencies) -2;
-
-		/* Walk through searching for the selected latency */
-		for (index = 0; index < 3; index++, latency++) {
-			if (!(latencies & (1 << latency))) {
+			if ((!spd_min_cycle_time) || (spd_min_cycle_time & 0x0f) > 9)
 				continue;
-			}
-			if (latency == min_latency)
-				break;
+			for (x = 0; x < sizeof(cl_at_freq_mask); x++)
+				if (cycle_time_at_freq[x] >= spd_min_cycle_time)
+					cl_at_freq_mask[x] |= cl;
 		}
-		/* If I can't find the latency or my index is bad error */
-		if ((latency != min_latency) || (index >= 3)) {
-			goto dimm_err;
-		}
-
-		/* Read the min_cycle_time for this latency */
-		spd_value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
-		if (spd_value < 0) goto hw_error;
-
-		/* All is good if the selected clock speed
-		 * is what I need or slower.
-		 */
-		if (spd_value <= min_cycle_time) {
-			continue;
-		}
-		/* Otherwise I have an error, disable the dimm */
-	dimm_err:
-		dimm_mask = disable_dimm(ctrl, i, dimm_mask);
+		for (x = 0; x < sizeof(cl_at_freq_mask); x++)
+			cl_at_freq[x] &= cl_at_freq_mask[x];
 	}
-#if 0
-//down speed for full load 4 rank support
-#if CONFIG_QRANK_DIMM_SUPPORT
-	if (dimm_mask == (3|(3<<DIMM_SOCKETS)) ) {
-		int ranks = 4;
-		for (i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
-			int val;
-			if (!(dimm_mask & (1 << i))) {
-				continue;
-			}
-			val = spd_read_byte(ctrl->channel0[i], 5);
-			if (val!=ranks) {
-				ranks = val;
-				break;
-			}
-		}
-		if (ranks==4) {
-			if (min_cycle_time <= 0x50 ) {
-				min_cycle_time = 0x60;
-			}
-		}
 
-	}
-#endif
-#endif
+	freq = NBCAP_MEMCLK_200MHZ;
+	while (freq < sizeof(cl_at_freq) && !cl_at_freq[freq])
+		freq++;
 
-#if CONFIG_CPU_AMD_SOCKET_939
-	dloading_cycle_time = spd_dimm_loading_socket939(ctrl, dimm_mask);
-	if (dloading_cycle_time > min_cycle_time) {
-		min_cycle_time = dloading_cycle_time;
+	max_freq_dloading = spd_dimm_loading_socket(ctrl, dimm_mask, &max_freq_1t);
+	if (max_freq_dloading > freq) {
 		printk(BIOS_WARNING, "Memory speed reduced due to signal loading conditions\n");
+		freq = max_freq_dloading;
+		while (freq < sizeof(cl_at_freq) && !cl_at_freq[freq])
+			freq++;
+	}
+
+	/* if the next lower frequency gives a CL at least one whole cycle
+	 * shorter, select that (see end of BKDG 4.1.1.1) */
+	if (freq < sizeof(cl_at_freq)-1 && cl_at_freq[freq+1] &&
+		log2f(cl_at_freq[freq]) - log2f(cl_at_freq[freq+1]) >= 2)
+			freq++;
+
+	if (freq == sizeof(cl_at_freq))
+		goto hw_error;
+
+#if CONFIG_CPU_AMD_SOCKET_754
+	if (freq < max_freq_1t) {
+		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW,
+			pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW) | DCL_En2T);
 	}
 #endif
 
-
-	/* Now that I know the minimum cycle time lookup the memory parameters */
-	result.param = get_mem_param(min_cycle_time);
+	result.param = get_mem_param(freq);
 
 	/* Update DRAM Config High with our selected memory speed */
 	value = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
@@ -1706,7 +1689,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* Update DRAM Timing Low with our selected cas latency */
 	value = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	value &= ~(DTL_TCL_MASK << DTL_TCL_SHIFT);
-	value |= latencies[min_latency - 2] << DTL_TCL_SHIFT;
+	value |= latencies[log2f(cl_at_freq[freq]) - 2] << DTL_TCL_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, value);
 
 	result.dimm_mask = dimm_mask;

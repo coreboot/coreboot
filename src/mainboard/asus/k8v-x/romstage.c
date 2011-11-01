@@ -40,7 +40,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-#include "superio/winbond/w83627ehg/early_serial.c"
+#include "superio/winbond/w83697hf/early_serial.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include "cpu/x86/mtrr/earlymtrr.c"
@@ -48,9 +48,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED_V)
-#define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
+#define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
@@ -105,52 +103,25 @@ static void sio_init(void)
 	u8 reg;
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
-	/* We have 24MHz input. */
 	reg = pnp_read_config(SERIAL_DEV, 0x24);
-	pnp_write_config(SERIAL_DEV, 0x24, (reg & ~0x40));
-	/* We have GPIO for KB/MS pin. */
-	reg = pnp_read_config(SERIAL_DEV, 0x2a);
-	pnp_write_config(SERIAL_DEV, 0x2a, (reg | 1));
-	/* We have all RESTOUT and even some reserved bits, too. */
-	reg = pnp_read_config(SERIAL_DEV, 0x2c);
-	pnp_write_config(SERIAL_DEV, 0x2c, (reg | 0xf0));
-	pnp_exit_ext_func_mode(SERIAL_DEV);
-
-	pnp_enter_ext_func_mode(ACPI_DEV);
-	pnp_set_logical_device(ACPI_DEV);
-	/*
-	 * Set the delay rising time from PWROK_LP to PWROK_ST to
-	 * 300 - 600ms, and 0 to vice versa.
-	 */
-	reg = pnp_read_config(ACPI_DEV, 0xe6);
-	pnp_write_config(ACPI_DEV, 0xe6, (reg & 0xf0));
-	/* 1 Use external suspend clock source 32.768KHz. Undocumented?? */
-	reg = pnp_read_config(ACPI_DEV, 0xe4);
-	pnp_write_config(ACPI_DEV, 0xe4, (reg | 0x10));
-	pnp_exit_ext_func_mode(ACPI_DEV);
-
-	pnp_enter_ext_func_mode(GPIO_DEV);
-	pnp_set_logical_device(GPIO_DEV);
-	/* Set memory voltage to 2.75V, vcore offset + 100mV, 1.5V chipset voltage. */
-	pnp_write_config(GPIO_DEV, 0x30, 0x09);	/* Enable GPIO 2 & GPIO 5. */
-	pnp_write_config(GPIO_DEV, 0xe2, 0x00);	/* No inversion */
-	pnp_write_config(GPIO_DEV, 0xe5, 0x00);	/* No inversion */
-	pnp_write_config(GPIO_DEV, 0xe3, 0x03);	/* 0000 0011, 0=output 1=input */
-	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101 1110, 0=output 1=input */
-	pnp_write_config(GPIO_DEV, 0xe1, 0x01);	/* Set output val. */
-	pnp_write_config(GPIO_DEV, 0xe4, 0xb4);	/* Set output val (1011 0100). */
-	pnp_exit_ext_func_mode(GPIO_DEV);
+	/* 4 Mbit flash */
+	reg = (reg & ~0x30) | 0x20;
+	/* We have 24MHz input. */
+	reg &= ~0x40;
+	/* enable MEMW#, so flash can be written */
+	reg |= 0x08;
+	pnp_write_config(SERIAL_DEV, 0x24, reg);
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 		// Node 0
-		DIMM0, DIMM2, 0, 0,
-		DIMM1, DIMM3, 0, 0,
+		DIMM0, DIMM1, DIMM2, 0,
+		0, 0, 0, 0,
 		// Node 1
-		DIMM4, DIMM6, 0, 0,
-		DIMM5, DIMM7, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
 	};
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
@@ -158,7 +129,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_rom_decode();
 
@@ -173,7 +144,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// FIXME why is this executed again? --->
 	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_rom_decode();
 	// <--- FIXME why is this executed again?
@@ -209,7 +180,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		soft_reset();
 	}
 
-	/* the HT settings needs to be OK, because link freq chnage may cause HT disconnect */
+	/* the HT settings needs to be OK, because link freq change may cause HT disconnect */
+	vt8237_sb_enable_fid_vid();
 	enable_fid_change();
 	init_fidvid_bsp(bsp_apicid);
 
@@ -220,6 +192,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	enable_smbus();
+
+	/* this seems to be some GPIO on the SMBus--in any case, setting these
+	 * two bits reduces the pullup impedance of the bus lines and is required
+	 * in order to be able to read SPD info */
+	smbus_write_byte(0x48, 0x07, smbus_read_byte(0x48, 0x07) | 0x80);
+	smbus_write_byte(0x4a, 0x07, smbus_read_byte(0x4a, 0x07) | 0x10);
+
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }

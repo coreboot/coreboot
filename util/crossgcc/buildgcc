@@ -21,7 +21,7 @@
 #
 
 CROSSGCC_DATE="November 1st, 2011"
-CROSSGCC_VERSION="1.06"
+CROSSGCC_VERSION="1.07"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -33,7 +33,7 @@ GMP_VERSION=5.0.2
 MPFR_VERSION=3.1.0
 MPC_VERSION=0.9
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.6.1
+GCC_VERSION=4.6.2
 GCC_AUTOCONF_VERSION=2.64
 BINUTILS_VERSION=2.21.1
 GDB_VERSION=7.3.1
@@ -225,7 +225,7 @@ fi
 USE_GOLD=""
 GCC_OPTIONS="--enable-lto"
 
-if [ ${GCC_VERSION} = "4.6.2" ]; then
+if [ ${GCC_VERSION} = "trunk" ]; then
   if [ ! -r tarballs/gcc-core-${GCC_VERSION}.tar.bz2 ]; then
     printf "Pre-Release GCC ${GCC_VERSION}, checking out subversion trunk\n"
     mkdir -p tarballs/.tmp
@@ -499,8 +499,8 @@ fi
 
 if [ -f build-expat/.success ]; then
 	printf "Skipping Expat as it is already built\n"
-elif [ $SKIPGDB -eq 1 ]; then
-	printf "Skipping Expat as requested by command line (skip GDB)\n"
+elif [ $SKIPPYTHON -eq 1 ]; then
+	printf "Skipping Expat (Python scripting not enabled)\n"
 else
 printf "Building Expat ${EXPAT_VERSION} ... "
 (
@@ -521,8 +521,8 @@ fi
 
 if [ -f build-python/.success ]; then
 	printf "Skipping Python as it is already built\n"
-elif [ $SKIPGDB -eq 1 ]; then
-	printf "Skipping Python as requested by command line (skip GDB)\n"
+elif [ $SKIPPYTHON -eq 1 ]; then
+	printf "Skipping Python (Python scripting not enabled)\n"
 else
 printf "Building Python ${PYTHON_VERSION} ... "
 (
@@ -544,7 +544,7 @@ fi
 if [ -f build-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
 elif [ $SKIPGDB -eq 1 ]; then
-	printf "Skipping GDB as requested by command line\n"
+	printf "Skipping GDB (GDB support not enabled)\n"
 else
 printf "Building GDB ${GDB_VERSION} ... "
 (

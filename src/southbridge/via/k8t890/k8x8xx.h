@@ -23,6 +23,9 @@
 
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#ifndef __PRE_RAM__
+#include <device/device.h>
+#endif
 #include "k8t890.h"
 
 struct k8x8xx_vt8237_mirrored_regs {
@@ -47,5 +50,9 @@ static inline void k8x8xx_vt8237_mirrored_regs_fill(struct k8x8xx_vt8237_mirrore
 	regs->shadow_mem_ctrl = msr.lo >> 24;
 	regs->low_top_address = msr.lo >> 16;
 }
+
+#ifndef __PRE_RAM__
+void k8x8xx_vt8237r_cfg(struct device *, struct device *);
+#endif
 
 #endif /* SOUTHBRIDGE_VIA_K8T890_K8X8XX_H */

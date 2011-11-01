@@ -30,14 +30,15 @@
 
 static void dram_enable(struct device *dev)
 {
-	msr_t msr;
 	u16 reg;
+	struct k8x8xx_vt8237_mirrored_regs mregs;
 
+	k8x8xx_vt8237_mirrored_regs_fill(&mregs);
 	/*
 	 * Enable Lowest Interrupt arbitration for APIC, enable NB APIC
 	 * decoding, MSI support, no SMRAM, compatible SMM.
 	 */
-	pci_write_config8(dev, 0x86, 0x19);
+	pci_write_config8(dev, 0x86, mregs.smm_apic_decoding);
 
 	/*
 	 * We want to use the 0xC0000-0xEFFFF as RAM mark area as RW, even if
@@ -48,23 +49,22 @@ static void dram_enable(struct device *dev)
 	/* For CC000-CFFFF, bits 7:6 (10 = REn, 01 = WEn) bits 1:0 for
 	 * C0000-C3FFF etc.
 	 */
-	pci_write_config8(dev, 0x80, 0xff);
+	pci_write_config8(dev, 0x80, mregs.rom_shadow_ctrl_pg_c);
 	/* For page D0000-DFFFF */
-	pci_write_config8(dev, 0x81, 0xff);
+	pci_write_config8(dev, 0x81, mregs.rom_shadow_ctrl_pg_d);
 	/* For page E0000-EFFFF */
-	pci_write_config8(dev, 0x82, 0xff);
-	pci_write_config8(dev, 0x83, 0x30);
+	pci_write_config8(dev, 0x82, mregs.rom_shadow_ctrl_pg_e_memhole_smi_decoding);
+	pci_write_config8(dev, 0x83, mregs.rom_shadow_ctrl_pg_f_memhole);
 
-	msr = rdmsr(TOP_MEM);
 	reg = pci_read_config16(dev, 0x84);
 	reg &= 0xf;
-	pci_write_config16(dev, 0x84, (msr.lo >> 16) | reg);
+	pci_write_config16(dev, 0x84, mregs.low_top_address | reg);
 
 	reg = pci_read_config16(dev, 0x88);
 	reg &= 0xf800;
 
 	/* The Address Next to the Last Valid DRAM Address */
-	pci_write_config16(dev, 0x88, (msr.lo >> 24) | reg);
+	pci_write_config16(dev, 0x88, reg | mregs.shadow_mem_ctrl);
 
 	print_debug(" VIA_X_3 device dump:\n");
 	dump_south(dev);

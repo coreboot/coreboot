@@ -157,6 +157,12 @@
 #define	  DCH_RDPREAMBLE_BASE ((2<<1)+0) /* 2.0 ns */
 #define	  DCH_RDPREAMBLE_MIN  ((2<<1)+0) /* 2.0 ns */
 #define	  DCH_RDPREAMBLE_MAX  ((9<<1)+1) /* 9.5 ns */
+#define	 DCH_DQ_DRV_STRENGTH_SHIFT 13
+#define	 DCH_DQ_DRV_STRENGTH_MASK 3
+#define	  DCH_DQ_DRV_STRENGTH_0 0
+#define	  DCH_DQ_DRV_STRENGTH_15 1
+#define	  DCH_DQ_DRV_STRENGTH_30 2
+#define	  DCH_DQ_DRV_STRENGTH_50 3
 #define	 DCH_IDLE_LIMIT_SHIFT 16
 #define	 DCH_IDLE_LIMIT_MASK  0x7
 #define	  DCH_IDLE_LIMIT_0    0

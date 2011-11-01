@@ -32,4 +32,6 @@
 #define W83697HF_ACPI           10   /* ACPI */
 #define W83697HF_HWM            11   /* Hardware monitor */
 
+void w83697hf_set_clksel_48(device_t);
+
 #endif

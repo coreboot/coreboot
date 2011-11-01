@@ -35,7 +35,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, port);
 }
 
-static void w83697hf_set_clksel_48(device_t dev)
+void w83697hf_set_clksel_48(device_t dev)
 {
 	u8 reg8;
 

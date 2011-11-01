@@ -447,7 +447,10 @@ static void vt8237_common_init(struct device *dev)
 	 *   0 FFC00000h-FFC7FFFFh
 	 * So 0x7f here sets ROM decode to FFC00000-FFFFFFFF or 4Mbyte.
 	 */
-	pci_write_config8(dev, 0x41, 0x7f);
+#if CONFIG_ROM_SIZE > 0x400000
+#error ROMs larger than 4MB are not supported by VT8237
+#endif
+	pci_write_config8(dev, 0x41, (~(0xff>>((CONFIG_ROM_SIZE+(512*1024-1))/(512*1024))))&0x7f);
 #endif
 
 	/*

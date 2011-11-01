@@ -41,10 +41,44 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
+static void hwmon_set_fan_divisor(unsigned int base, int num, unsigned int divisor) {
+	unsigned char enc, buf;
+
+	if (divisor) {
+		enc = log2(divisor);
+		if (1 << enc != divisor || enc > 7)
+			die("invalid fan divisor");
+		outb(0x4e, base + 5);
+		outb(0x00, base + 6);
+		outb(0x47, base + 5);
+		outb((inb(base + 6) & ~(0x30 << (num * 2))) | ((enc & 3) << (4 + num * 2)), base + 6);
+		outb(0x5d, base + 5);
+		buf = inb(base + 6);
+		/* the above inb() auto-increments the address pointer ... */
+		outb(0x5d, base + 5);
+		outb((buf & ~(0x20 << num)) | ((enc & 4) << (3 + num)), base + 6);
+	}
+}
+
 static void w83697hf_init(device_t dev)
 {
+	struct resource *res0;
+	struct superio_winbond_w83697hf_config *cfg;
+
 	if (!dev->enabled)
 		return;
+
+	cfg = dev->chip_info;
+
+	switch (dev->path.pnp.device) {
+	case W83697HF_HWM:
+		if (cfg) {
+			res0 = find_resource(dev, PNP_IDX_IO0);
+			hwmon_set_fan_divisor(res0->base, 0, cfg->hwmon_fan1_divisor);
+			hwmon_set_fan_divisor(res0->base, 1, cfg->hwmon_fan2_divisor);
+		}
+		break;
+	}
 }
 
 static void w83697hf_pnp_set_resources(device_t dev)

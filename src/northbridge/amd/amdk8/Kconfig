@@ -45,6 +45,15 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
 
+config K8_DQ_DRIVE_STRENGTH_0
+	bool
+config K8_DQ_DRIVE_STRENGTH_15
+	bool
+config K8_DQ_DRIVE_STRENGTH_30
+	bool
+config K8_DQ_DRIVE_STRENGTH_50
+	bool
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
         string
         default "northbridge/amd/amdk8/bootblock.c"

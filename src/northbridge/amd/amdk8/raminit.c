@@ -2192,6 +2192,27 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 		printk(BIOS_DEBUG, "No memory for this cpu\n");
 		return;
 	}
+
+#if CONFIG_K8_DQ_DRIVE_STRENGTH_0 || CONFIG_K8_DQ_DRIVE_STRENGTH_15 || CONFIG_K8_DQ_DRIVE_STRENGTH_30 || CONFIG_K8_DQ_DRIVE_STRENGTH_50
+	if (!is_cpu_pre_e0()) {
+		uint32_t dch, strength;
+
+#if CONFIG_K8_DQ_DRIVE_STRENGTH_0
+		strength = DCH_DQ_DRV_STRENGTH_0;
+#elif CONFIG_K8_DQ_DRIVE_STRENGTH_15
+		strength = DCH_DQ_DRV_STRENGTH_15;
+#elif CONFIG_K8_DQ_DRIVE_STRENGTH_30
+		strength = DCH_DQ_DRV_STRENGTH_30;
+#elif CONFIG_K8_DQ_DRIVE_STRENGTH_50
+		strength = DCH_DQ_DRV_STRENGTH_50;
+#endif
+		dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
+		dch &= ~(DCH_DQ_DRV_STRENGTH_MASK << DCH_DQ_DRV_STRENGTH_SHIFT);
+		dch |= strength << DCH_DQ_DRV_STRENGTH_SHIFT;
+		pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
+	}
+#endif
+
 	dimm_mask = spd_enable_2channels(ctrl, dimm_mask);
 	if (dimm_mask < 0)
 		goto hw_spd_err;

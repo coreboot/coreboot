@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "chip.h"
 #include "vt8237r.h"
 
 #if CONFIG_EPIA_VT8237R_INIT
@@ -94,6 +95,7 @@ static void vt8237_usb_i_read_resources(struct device *dev)
 
 static void usb_ii_init(struct device *dev)
 {
+	struct southbridge_via_vt8237r_config *cfg;
 #if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
@@ -112,6 +114,28 @@ static void usb_ii_init(struct device *dev)
 	pci_write_config16(dev, 0x06, 0x7A10);
 #endif
 
+	cfg = dev->chip_info;
+
+	if (cfg) {
+		if (cfg->usb2_termination_set) {
+			/* High Speed Port Pad Termination Resistor Fine Tune */
+			pci_write_config8(dev, 0x5a, cfg->usb2_termination_c |
+				(cfg->usb2_termination_d << 4));
+			pci_write_config8(dev, 0x5b, cfg->usb2_termination_a |
+				(cfg->usb2_termination_b << 4));
+			pci_write_config8(dev, 0x5d, cfg->usb2_termination_e |
+				(cfg->usb2_termination_f << 4));
+			pci_write_config8(dev, 0x5e, cfg->usb2_termination_g |
+				(cfg->usb2_termination_h << 4));
+		}
+
+		if (cfg->usb2_dpll_set) {
+			/* Delay DPLL Input Data Control */
+			pci_write_config8(dev, 0x5c,
+				(pci_read_config8(dev, 0x5c) & ~0x70) |
+				(cfg->usb2_dpll_delay << 4));
+		}
+	}
 }
 
 static void vt8237_usb_ii_read_resources(struct device *dev)

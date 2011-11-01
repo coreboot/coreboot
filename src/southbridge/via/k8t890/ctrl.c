@@ -31,31 +31,8 @@
 
 static void vt8237r_cfg(struct device *dev, struct device *devsb)
 {
-	u8 regm, regm3;
-
-	device_t devfun3;
-
-	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8T800_DRAM, 0);
-
-	if (!devfun3)
-		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
-
-	if (!devfun3)
-		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
-
-	if (!devfun3)
-		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8T890CF_3, 0);
-
-	if (!devfun3)
-		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
-
-	if(!devfun3)
-		die("\n vt8237r_cfg: Unable to find K8x8xx bridge via PCI scan. Stopping.\n");
+	u8 regm3;
+	struct k8x8xx_vt8237_mirrored_regs mregs;
 
 	pci_write_config8(dev, 0x70, 0xc2);
 
@@ -71,21 +48,14 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 	pci_write_config8(dev, 0x7c, 0x7f);
 	pci_write_config8(dev, 0x7f, 0x02);
 
-	/* WARNING: Need to copy some registers from NB (D0F3) to SB (D0F7). */
+	k8x8xx_vt8237_mirrored_regs_fill(&mregs);
 
-	regm = pci_read_config8(devfun3, 0x88);	/* Shadow mem CTRL */
-	pci_write_config8(dev, 0x57, regm);
+	pci_write_config8(dev, 0x57, mregs.shadow_mem_ctrl);		/* Shadow mem CTRL */
+	pci_write_config8(dev, 0x61, mregs.rom_shadow_ctrl_pg_c);	/* Shadow page C */
+	pci_write_config8(dev, 0x62, mregs.rom_shadow_ctrl_pg_d);	/* Shadow page D */
+	pci_write_config8(dev, 0xe6, mregs.smm_apic_decoding);		/* SMM and APIC decoding */
 
-	regm = pci_read_config8(devfun3, 0x80);	/* Shadow page C */
-	pci_write_config8(dev, 0x61, regm);
-
-	regm = pci_read_config8(devfun3, 0x81);	/* Shadow page D */
-	pci_write_config8(dev, 0x62, regm);
-
-	regm = pci_read_config8(devfun3, 0x86);	/* SMM and APIC decoding */
-	pci_write_config8(dev, 0xe6, regm);
-
-	regm3 = pci_read_config8(devfun3, 0x82);/* Shadow page E */
+	regm3 = mregs.rom_shadow_ctrl_pg_e_memhole_smi_decoding;	/* Shadow page E */
 
 	/*
 	 * All access bits for 0xE0000-0xEFFFF encode as just 2 bits!
@@ -98,8 +68,7 @@ static void vt8237r_cfg(struct device *dev, struct device *devsb)
 		regm3 = 0x0;
 
 	/* Shadow page F + memhole copy */
-	regm = pci_read_config8(devfun3, 0x83);
-	pci_write_config8(dev, 0x63, regm3 | (regm & 0x3F));
+	pci_write_config8(dev, 0x63, regm3 | (mregs.rom_shadow_ctrl_pg_f_memhole & 0x3F));
 
 }
 

@@ -17,11 +17,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+# Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA  02110-1335, USA
 #
 
-CROSSGCC_DATE="October 10th, 2011"
-CROSSGCC_VERSION="1.05"
+CROSSGCC_DATE="November 1st, 2011"
+CROSSGCC_VERSION="1.06"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -41,6 +41,8 @@ W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
 IASL_VERSION=20110922
+PYTHON_VERSION=2.7.2
+EXPAT_VERSION=2.0.1
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -53,6 +55,8 @@ GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
+PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
+EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
@@ -64,9 +68,12 @@ GDB_DIR="gdb-${GDB_VERSION}"
 W32API_DIR="w32api-${W32API_VERSION}-mingw32"
 MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
 IASL_DIR="acpica-unix-${IASL_VERSION}"
+PYTHON_DIR="Python-${PYTHON_VERSION}"
+EXPAT_DIR="expat-${EXPAT_VERSION}"
 
 SAVETEMPS=0
-SKIPGDB=0
+SKIPGDB=1
+SKIPPYTHON=1
 
 red='\033[0;31m'
 RED='\033[1;31m'
@@ -85,7 +92,8 @@ searchgnu()
 	#         or no output if no GNU version was found
 	for i in "$1" "g$1" "gnu$1"; do
 		if test -x "`which $i 2>/dev/null`"; then
-			if test `$i --version 2>/dev/null |grep -c GNU` -gt 0; then
+			if test `$i --version 2>/dev/null |grep -c GNU` \
+			    -gt 0; then
 				echo $i
 				return
 			fi
@@ -102,13 +110,14 @@ MAKE=`searchgnu make` || exit $?
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-* gdb-* w32api-* mingwrt-* acpica-*
+	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-*
+	rm -rf gdb-* w32api-* mingwrt-* acpica-* python-* expat-*
 	printf "${green}ok${NC}\n"
 }
 
 myhelp()
 {
-	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>] [-G]\n"
+	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>] [-G] [-S]\n"
 	printf "       $0 [-V|--version]\n"
 	printf "       $0 [-h|--help]\n\n"
 
@@ -123,8 +132,9 @@ myhelp()
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
 	printf "                                  (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
-	printf "                                  (for RPM builds, default unset)\n\n"
-	printf "    [-G|--skip-gdb]               don't build GNU debugger\n"
+	printf "                                  (for RPM builds, default unset)\n"
+	printf "    [-G|--gdb]                    build GNU debugger\n"
+	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
 }
 
 myversion()
@@ -180,7 +190,8 @@ while true ; do
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
-		-G|--skip-gdb)	shift; SKIPGDB=1;;
+		-G|--gdb)	shift; SKIPGDB=0;;
+		-S|--scripting) shift; SKIPPYTHON=0;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
@@ -188,10 +199,20 @@ while true ; do
 done
 
 GDB_PACKAGE="GDB"
+PYTHON_PACKAGE="PYTHON"
+EXPAT_PACKAGE="EXPAT"
 if [ $SKIPGDB -eq 1 ]; then
 	printf "Will skip GDB ... ${green}ok${NC}\n"
 	GDB_ARCHIVE=""
 	GDB_PACKAGE=""
+	if [ $SKIPPYTHON -eq 0 ]; then
+		printf "Python scripting needs GDB ... disabling ... ${green}ok${NC}\n"
+		SKIPPYTHON=1
+	fi
+fi
+if [ $SKIPPYTHON -eq 1 ]; then
+	PYTHON_PACKAGE=""
+	EXPAT_PACKAGE=""
 fi
 
 MINGW_ARCHIVES=""
@@ -223,7 +244,9 @@ fi
 
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES $IASL_ARCHIVE; do
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
+	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES \
+	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
 	test -f tarballs/$FILE && printf "(cached)" || (
@@ -231,7 +254,8 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE $GCC_ARCH
 		cd tarballs
 		wget -q $ARCHIVE
 	)
-	test -f tarballs/$FILE || printf "\n${RED}Failed to download $FILE.${red}\n"
+	test -f tarballs/$FILE || \
+		printf "\n${RED}Failed to download $FILE.${red}\n"
 	test -f tarballs/$FILE || exit 1
 	printf "\n"
 done
@@ -244,7 +268,8 @@ if [ "$TARGETARCH" = "i386-mingw32" ]; then
 fi
 
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IASL; do
+for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
+	    $EXPAT_PACKAGE $GDB_PACKAGE $MINGW_PACKAGES IASL; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive="`eval echo '$'$archive`"
 	dir=$PACKAGE"_DIR"
@@ -260,7 +285,8 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $GDB_PACKAGE $MINGW_PACKAGES IAS
 		for patch in patches/${dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
-			$PATCH -s -N -p0 < `echo $patch`
+			$PATCH -s -N -p0 < `echo $patch` || \
+				printf "\n${RED}Failed $patch.${red}\n"
 		done
 	)
 done
@@ -269,7 +295,8 @@ printf "${green}ok${NC}\n"
 
 if [ "$TARGETARCH" = "i386-mingw32" ]; then
 	mkdir -p $TARGETDIR/i386-mingw32/sys-include
-	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* $TARGETDIR/i386-mingw32/sys-include
+	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* \
+				  $TARGETDIR/i386-mingw32/sys-include
 fi
 
 CC=cc
@@ -296,7 +323,8 @@ if [ `uname` = "Darwin" ]; then
 	fi
 fi
 
-mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils build-gcc
+mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils \
+		build-gcc build-python build-expat
 if [ $SKIPGDB -eq 0 ]; then
 	mkdir -p build-gdb
 fi
@@ -313,7 +341,8 @@ printf "Building GMP ${GMP_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-gmp/crossgcc-build.log 2>&1
-test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || \
+	printf "${green}ok${NC}\n"
 test -r build-gmp/.failed && exit 1
 fi
 
@@ -337,7 +366,8 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	rm -f .failed
 	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || touch .failed
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+		touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
@@ -348,7 +378,8 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-mpfr/crossgcc-build.log 2>&1
-test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-mpfr/.failed && exit 1
 fi
 
@@ -362,13 +393,15 @@ printf "Building MPC ${MPC_VERSION} ... "
 	rm -f .failed
 	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
-		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || touch .failed
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
+		touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-mpc/crossgcc-build.log 2>&1
-test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-mpc/.failed && exit 1
 fi
 
@@ -380,14 +413,16 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	cd build-libelf
 	rm -f .failed
 	echo "$HOSTCFLAGS"
-	CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no ../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
+	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-libelf/crossgcc-build.log 2>&1
-test -r build-libelf/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-libelf/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-libelf/.failed && exit 1
 fi
 
@@ -404,14 +439,15 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	# Now build binutils
 	cd build-binutils
 	rm -f .failed
-	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
-		--disable-werror --disable-nls $USE_GOLD \
-		CFLAGS="$HOSTCFLAGS" || touch .failed
+	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} --disable-werror --disable-nls \
+		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-binutils/crossgcc-build.log 2>&1
-test -r build-binutils/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-binutils/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-binutils/.failed && exit 1
 fi
 
@@ -456,9 +492,54 @@ printf "Building GCC ${GCC_VERSION} ... "
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-gcc/crossgcc-build.log 2>&1
-test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-gcc/.failed && exit 1
 fi
+
+if [ -f build-expat/.success ]; then
+	printf "Skipping Expat as it is already built\n"
+elif [ $SKIPGDB -eq 1 ]; then
+	printf "Skipping Expat as requested by command line (skip GDB)\n"
+else
+printf "Building Expat ${EXPAT_VERSION} ... "
+(
+	cd build-expat
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	rm -f .failed
+	CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
+		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-expat/crossgcc-build.log
+test -r build-expat/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
+test -r build-expat/.failed && exit 1
+fi
+
+
+if [ -f build-python/.success ]; then
+	printf "Skipping Python as it is already built\n"
+elif [ $SKIPGDB -eq 1 ]; then
+	printf "Skipping Python as requested by command line (skip GDB)\n"
+else
+printf "Building Python ${PYTHON_VERSION} ... "
+(
+	cd build-python
+	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	rm -f .failed
+	CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} || touch .failed
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-gdb/crossgcc-build.log
+test -r build-python/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
+test -r build-python/.failed && exit 1
+fi
+
 
 if [ -f build-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
@@ -469,14 +550,19 @@ printf "Building GDB ${GDB_VERSION} ... "
 (
 	cd build-gdb
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
+	export PYTHONHOME=$DESTDIR$TARGETDIR
 	rm -f .failed
-	CFLAGS="$HOSTCFLAGS" ../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
-		--without-python --disable-werror --disable-nls
+	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
+		 -lpthread -ldl -lutil" \
+	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
+	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
+		--target=${TARGETARCH} --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-gdb/crossgcc-build.log 2>&1
-test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r build-gdb/.failed && exit 1
 fi
 
@@ -494,7 +580,8 @@ printf "Building IASL ${IASL_VERSION} ... "
 	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > $IASL_DIR/compiler/crossgcc-build.log 2>&1
-test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || \
+	     printf "${green}ok${NC}\n"
 test -r $IASL_DIR/compiler/.failed && exit 1
 fi
 
@@ -507,6 +594,8 @@ if [ $SAVETEMPS -eq 0 ]; then
 	rm -rf ${BINUTILS_DIR} build-binutils
 	rm -rf ${GCC_DIR} build-gcc
 	rm -rf ${GDB_DIR} build-gdb
+	rm -rf ${EXPAT_DIR} build-expat
+	rm -rf ${PYTHON_DIR} build-python
 	rm -rf ${IASL_DIR}
 	printf "${green}ok${NC}\n"
 else

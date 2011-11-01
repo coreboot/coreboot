@@ -1,0 +1,27 @@
+diff -ur gdb-7.3.1.orig/gdb/python/python.c gdb-7.3.1/gdb/python/python.c
+--- gdb-7.3.1.orig/gdb/python/python.c	2011-07-02 21:33:10.000000000 +0200
++++ gdb-7.3.1/gdb/python/python.c	2011-11-01 21:07:25.000000000 +0100
+@@ -33,6 +33,7 @@
+ #include "python.h"
+ 
+ #include <ctype.h>
++#include <libgen.h>
+ 
+ /* True if we should print the stack when catching a Python error,
+    false otherwise.  */
+@@ -1010,6 +1011,15 @@
+ 			     SLASH_STRING, "python", NULL));
+ #endif
+ 
++  char readlinkbuffer[BUFSIZ];
++  int readlinks = readlink("/proc/self/exe", readlinkbuffer, BUFSIZ - 1);
++  readlinkbuffer[readlinks] = 0;
++  char *executeablepath = dirname(readlinkbuffer);
++  char *pythonhome = malloc(strlen(executeablepath) + strlen("/../") + 2);
++  strcpy(pythonhome, executeablepath);
++  strcat(pythonhome, "/../");
++  setenv("PYTHONHOME", pythonhome, 1);
++
+   Py_Initialize ();
+   PyEval_InitThreads ();
+ 

@@ -2201,6 +2201,18 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 		printk(BIOS_DEBUG, "No memory for this cpu\n");
 		return;
 	}
+
+	if (!is_cpu_pre_e0()) {
+		uint32_t dch;
+
+		// see also erratum 114, essentially: never ever
+		// set to anything but 0
+		dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
+		dch &= ~(DCH_DQ_DRV_STRENGTH_MASK << DCH_DQ_DRV_STRENGTH_SHIFT);
+		dch |= DCH_DQ_DRV_STRENGTH_0 << DCH_DQ_DRV_STRENGTH_SHIFT;
+		pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
+	}
+
 	dimm_mask = spd_enable_2channels(ctrl, dimm_mask);
 	if (dimm_mask < 0)
 		goto hw_spd_err;

@@ -1446,7 +1446,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 		18,	/* *Supported CAS Latencies */
 		9,	/* *Cycle time at highest CAS Latency CL=X */
 		23,	/* *Cycle time at CAS Latency (CLX - 1) */
-		26,	/* *Cycle time at CAS Latency (CLX - 2) */
+		25,	/* *Cycle time at CAS Latency (CLX - 2) */
 	};
 	u32 dcl, dcm;
 	u8 common_cl;

@@ -66,11 +66,21 @@ void dump_south(device_t dev)
 
 static void vt8237r_enable(struct device *dev)
 {
+	u16 vid, did;
 	struct southbridge_via_vt8237r_config *sb =
 	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
-	pci_write_config8(dev, 0x50, sb->fn_ctrl_lo);
-	pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);
+	if (dev->path.type == DEVICE_PATH_PCI) {
+		vid = pci_read_config16(dev, PCI_VENDOR_ID);
+		did = pci_read_config16(dev, PCI_DEVICE_ID);
+		if (vid == PCI_VENDOR_ID_VIA &&
+			(did == PCI_DEVICE_ID_VIA_VT8237R_LPC ||
+			 did == PCI_DEVICE_ID_VIA_VT8237A_LPC ||
+			 did == PCI_DEVICE_ID_VIA_VT8237S_LPC)) {
+			pci_write_config8(dev, 0x50, sb->fn_ctrl_lo);
+			pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);
+		}
+	}
 
 	/* TODO: If SATA is disabled, move IDE to fn0 to conform PCI specs. */
 }

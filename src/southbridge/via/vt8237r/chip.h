@@ -56,6 +56,19 @@ struct southbridge_via_vt8237r_config {
 	/* 1 = 80-pin cable, 0 = 40-pin cable */
 	u8 ide0_80pin_cable;
 	u8 ide1_80pin_cable;
+
+	u8 usb2_termination_set;
+	u8 usb2_termination_a;
+	u8 usb2_termination_b;
+	u8 usb2_termination_c;
+	u8 usb2_termination_d;
+	u8 usb2_termination_e;
+	u8 usb2_termination_f;
+	u8 usb2_termination_g;
+	u8 usb2_termination_h;
+
+	u8 usb2_dpll_set;
+	u8 usb2_dpll_delay;
 };
 
 #endif /* SOUTHBRIDGE_VIA_VT8237R_CHIP_H */

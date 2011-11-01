@@ -69,8 +69,10 @@ static void vt8237r_enable(struct device *dev)
 	struct southbridge_via_vt8237r_config *sb =
 	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
-	pci_write_config8(dev, 0x50, sb->fn_ctrl_lo);
-	pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);
+	if (dev->path.type == DEVICE_PATH_PCI && dev->path.pci.devfn == PCI_DEVFN(0x11,0)) {
+		pci_write_config8(dev, 0x50, sb->fn_ctrl_lo);
+		pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);
+	}
 
 	/* TODO: If SATA is disabled, move IDE to fn0 to conform PCI specs. */
 }

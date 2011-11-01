@@ -22,7 +22,7 @@
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
-#include "southbridge/via/k8t890/k8t890.h"
+#include "southbridge/via/k8t890/k8x8xx.h"
 
 static void *smp_write_config_table(void *v)
 {

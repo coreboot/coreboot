@@ -1,26 +1,24 @@
-if BOARD_ASUS_A8V_E_SE
+if BOARD_ASUS_K8V_X
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
-	select CPU_AMD_SOCKET_939
-	select K8_HT_FREQ_1G_SUPPORT
+	select CPU_AMD_SOCKET_754
 	select NORTHBRIDGE_AMD_AMDK8
 	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
 	select SOUTHBRIDGE_VIA_VT8237R
-	select SOUTHBRIDGE_VIA_K8T890
-	select SUPERIO_WINBOND_W83627EHG
+	select SOUTHBRIDGE_VIA_K8T800_OLD
+	select SUPERIO_WINBOND_W83697HF
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_TABLES
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_512
 	select RAMINIT_SYSINFO
-	select QRANK_DIMM_SUPPORT
 	select SET_FIDVID
 
 config MAINBOARD_DIR
 	string
-	default asus/a8v-e_se
+	default asus/k8v-x
 
 config DCACHE_RAM_BASE
 	hex
@@ -44,7 +42,11 @@ config SB_HT_CHAIN_ON_BUS0
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "A8V-E SE"
+	default "K8V-X"
+
+config AGP_APERTURE_SIZE
+	hex
+	default 0x10000000
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -70,4 +72,4 @@ config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
 
-endif # BOARD_ASUS_A8V_E_SE
+endif # BOARD_ASUS_K8V_X

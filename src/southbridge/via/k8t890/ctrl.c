@@ -29,7 +29,7 @@
  * PCI device 0:11.7, but it is mapped to PCI 0:0.7 (0x70-0x7c for PCI1)
  */
 
-static void vt8237r_cfg(struct device *dev, struct device *devsb)
+void k8x8xx_vt8237r_cfg(struct device *dev, struct device *devsb)
 {
 	u8 regm3;
 	struct k8x8xx_vt8237_mirrored_regs mregs;
@@ -145,7 +145,7 @@ static void ctrl_init(struct device *dev)
 					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
 	if (devsb) {
 		vt8237r_vlink_init(dev);
-		vt8237r_cfg(dev, devsb);
+		k8x8xx_vt8237r_cfg(dev, devsb);
 	} else {
 		print_debug("VT8237R LPC not found !\n");
 		return;

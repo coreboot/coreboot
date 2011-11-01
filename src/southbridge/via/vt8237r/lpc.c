@@ -151,6 +151,10 @@ static void pci_routing_fixup(struct device *dev)
 static void setup_pm(device_t dev)
 {
 	u16 tmp;
+	struct southbridge_via_vt8237r_config *cfg;
+
+	cfg = dev->chip_info;
+
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
 	pci_write_config8(dev, 0x80, 0x20);
 
@@ -179,7 +183,10 @@ static void setup_pm(device_t dev)
 	 * 5 = Internal PLL reset from susp disabled
 	 * 2 = GPO2 is SUSA#
 	 */
-	pci_write_config8(dev, 0x94, 0xa0);
+	tmp = 0xa0;
+	if (cfg && cfg->enable_gpo3)
+		tmp |= 0x10;
+	pci_write_config8(dev, 0x94, tmp);
 
 	/*
 	 * 7 = stp to sust delay 1msec
@@ -195,7 +202,14 @@ static void setup_pm(device_t dev)
 #if CONFIG_EPIA_VT8237R_INIT
 	pci_write_config8(dev, 0x95, 0xc2);
 #else
-	pci_write_config8(dev, 0x95, 0xcc);
+	tmp = 0xcc;
+	if (cfg) {
+		if (cfg->disable_gpo26_gpo27)
+			tmp &= ~0x08;
+		if (cfg->enable_aol_2_smb_slave)
+			tmp &= ~0x04;
+	}
+	pci_write_config8(dev, 0x95, tmp);
 #endif
 
 	/* Disable GP3 timer. */
@@ -247,6 +261,9 @@ static void setup_pm(device_t dev)
 static void vt8237r_init(struct device *dev)
 {
 	u8 enables;
+	struct southbridge_via_vt8237r_config *cfg;
+
+	cfg = dev->chip_info;
 
 #if CONFIG_EPIA_VT8237R_INIT
 	printk(BIOS_SPEW, "Entering vt8237r_init, for EPIA.\n");
@@ -282,8 +299,15 @@ static void vt8237r_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0xe5, 0x09);
 
+	enables = 0x4;
+	if (cfg) {
+		if (cfg->enable_gpo5)
+			enables |= 0x01;
+		if (cfg->gpio15_12_dir_output)
+			enables |= 0x10;
+	}
 	/* REQ5 as PCI request input - should be together with INTE-INTH. */
-	pci_write_config8(dev, 0xe4, 0x4);
+	pci_write_config8(dev, 0xe4, enables);
 #endif
 
 	/* Set bit 3 of 0x4f (use INIT# as CPU reset). */

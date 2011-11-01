@@ -508,6 +508,15 @@ static void vt8237_common_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x5b, 0xb);
 
+#if CONFIG_VT8237R_ON_AFTER_POWER_LOSS
+	/* make it so the board unconditionally powers on after loss of power */
+	enables = pci_read_config8(dev, 0x58);
+	pci_write_config8(dev, 0x58, enables & ~0x02);
+	outb(0x0d, 0x70);
+	outb(0x00, 0x71);
+	pci_write_config8(dev, 0x58, enables);
+#endif
+
 	/* Set 0x58 to 0x43 APIC and RTC. */
 	pci_write_config8(dev, 0x58, 0x43);
 

@@ -148,6 +148,7 @@ __attribute__ ((packed))
 #ifdef __PRE_RAM__
 #ifndef __ROMCC__
 u8 smbus_read_byte(u8 dimm, u8 offset);
+void smbus_write_byte(u8 dimm, u8 offset, u8 data);
 void enable_smbus(void);
 void smbus_fixup(const struct mem_controller *ctrl);
 // these are in vt8237_early_smbus.c - do they really belong there?

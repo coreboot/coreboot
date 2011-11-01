@@ -87,17 +87,12 @@ static void smbus_reset(void)
 	PRINT_DEBUG("\n");
 }
 
-/**
- * Read a byte from the SMBus.
- *
- * @param dimm The address location of the DIMM on the SMBus.
- * @param offset The offset the data is located at.
- */
-u8 smbus_read_byte(u8 dimm, u8 offset)
+static u8 smbus_transaction(u8 dimm, u8 offset, u8 data, int do_read)
 {
 	u8 val;
 
-	PRINT_DEBUG("DIMM ");
+	PRINT_DEBUG(do_read ? "RD: " : "WR: ");
+	PRINT_DEBUG("ADDR ");
 	PRINT_DEBUG_HEX16(dimm);
 	PRINT_DEBUG(" OFFSET ");
 	PRINT_DEBUG_HEX16(offset);
@@ -106,13 +101,13 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 	smbus_reset();
 
 	/* Clear host data port. */
-	outb(0x00, SMBHSTDAT0);
+	outb(do_read ? 0x00 : data, SMBHSTDAT0);
 	SMBUS_DELAY();
 	smbus_wait_until_ready();
 
 	/* Actual addr to reg format. */
 	dimm = (dimm << 1);
-	dimm |= 1;
+	dimm |= !!do_read;
 	outb(dimm, SMBXMITADD);
 	outb(offset, SMBHSTCMD);
 
@@ -130,6 +125,22 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 	smbus_reset();
 
 	return val;
+}
+
+/**
+ * Read a byte from the SMBus.
+ *
+ * @param dimm The address location of the DIMM on the SMBus.
+ * @param offset The offset the data is located at.
+ */
+u8 smbus_read_byte(u8 dimm, u8 offset)
+{
+	return smbus_transaction(dimm, offset, 0, 1);
+}
+
+void smbus_write_byte(u8 dimm, u8 offset, u8 data)
+{
+	smbus_transaction(dimm, offset, data, 0);
 }
 
 #define PSONREADY_TIMEOUT 0x7fffffff

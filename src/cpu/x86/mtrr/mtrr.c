@@ -36,7 +36,9 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
+#include <arch/acpi.h>
 
 #if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
@@ -47,7 +49,6 @@ static unsigned int mtrr_msr[] = {
 	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,
 	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
 };
-
 
 void enable_fixed_mtrr(void)
 {
@@ -456,6 +457,17 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	while(var_state.reg < MTRRS) {
 		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
+
+#if CONFIG_CACHE_ROM
+	/* Enable Caching and speculative Reads for the
+	 * complete ROM now that we actually have RAM.
+	 */
+	if (boot_cpu() && (acpi_slp_type != 3)) {
+		set_var_mtrr(7, (4096-4)*1024, 4*1024,
+			MTRR_TYPE_WRPROT, address_bits);
+	}
+#endif
+
 	printk(BIOS_SPEW, "call enable_var_mtrr()\n");
 	enable_var_mtrr();
 	printk(BIOS_SPEW, "Leave %s\n", __func__);

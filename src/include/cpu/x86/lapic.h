@@ -1,6 +1,7 @@
 #ifndef CPU_X86_LAPIC_H
 #define CPU_X86_LAPIC_H
 
+#ifndef __ROMCC__
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <arch/hlt.h>
@@ -155,5 +156,8 @@ int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */
 
 #endif /* !__PRE_RAM__ */
+
+int boot_cpu(void);
+#endif
 
 #endif /* CPU_X86_LAPIC_H */

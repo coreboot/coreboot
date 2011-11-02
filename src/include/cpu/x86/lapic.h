@@ -27,8 +27,6 @@ static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)
 	do { } while ( lapic_read( LAPIC_ICR ) & LAPIC_ICR_BUSY );
 }
 
-
-
 static inline void enable_lapic(void)
 {
 
@@ -53,7 +51,7 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 	return lapic_read(LAPIC_ID) >> 24;
 }
 
-
+#ifndef __ROMCC__
 #if CONFIG_AP_IN_SIPI_WAIT != 1
 /* If we need to go back to sipi wait, we use the long non-inlined version of
  * this function in lapic_cpu_init.c
@@ -155,5 +153,8 @@ int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */
 
 #endif /* !__PRE_RAM__ */
+
+int boot_cpu(void);
+#endif
 
 #endif /* CPU_X86_LAPIC_H */

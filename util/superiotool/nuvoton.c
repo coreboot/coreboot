@@ -255,7 +255,9 @@ void probe_idregs_nuvoton(uint16_t port)
 		printf("Found Nuvoton %s (id=0x%02x) at 0x%x\n",
 		       get_superio_name(reg_table, chip_id), chip_id, port);
 		chip_found = 1;
+		enter_conf_mode_winbond_fintek_ite_8787(port);
 		dump_superio("Nuvoton", reg_table, port, chip_id, LDN_SEL);
+		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}
 

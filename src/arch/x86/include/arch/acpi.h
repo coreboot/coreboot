@@ -422,7 +422,8 @@ void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);
-
+#else
+#define acpi_slp_type 0
 #endif
 
 /* northbridge/amd/amdfam10/amdfam10_acpi.c */
@@ -434,6 +435,7 @@ void generate_cpu_entries(void);
 #else // CONFIG_GENERATE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)
+#define acpi_slp_type 0
 
 #endif
 

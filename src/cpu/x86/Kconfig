@@ -39,4 +39,6 @@ config LOGICAL_CPUS
 	bool
 	default y
 
-
+config CACHE_ROM
+	bool
+	default n

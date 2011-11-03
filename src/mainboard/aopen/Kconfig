@@ -1,0 +1,17 @@
+if VENDOR_AOPEN
+
+choice
+        prompt "Mainboard model"
+
+config BOARD_AOPEN_DXPLPLUSU
+	bool "DXPL Plus-U"
+
+endchoice
+
+source "src/mainboard/aopen/dxplplusu/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "AOpen"
+	
+endif # VENDOR_AOPEN

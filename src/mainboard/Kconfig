@@ -14,6 +14,8 @@ config VENDOR_ADVANTECH
 	bool "Advantech"
 config VENDOR_AMD
 	bool "AMD"
+config VENDOR_AOPEN
+	bool "AOpen"
 config VENDOR_ARIMA
 	bool "Arima"
 config VENDOR_ARTECGROUP
@@ -131,6 +133,7 @@ source "src/mainboard/abit/Kconfig"
 source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"
 source "src/mainboard/amd/Kconfig"
+source "src/mainboard/aopen/Kconfig"
 source "src/mainboard/arima/Kconfig"
 source "src/mainboard/artecgroup/Kconfig"
 source "src/mainboard/asi/Kconfig"

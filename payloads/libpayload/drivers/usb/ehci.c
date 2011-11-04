@@ -56,7 +56,7 @@ static void ehci_reset (hci_t *controller)
 
 static void ehci_shutdown (hci_t *controller)
 {
-
+	EHCI_INST(controller)->operation->configflag = 0;
 }
 
 enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };

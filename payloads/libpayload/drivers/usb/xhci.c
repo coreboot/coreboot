@@ -57,11 +57,11 @@ xhci_init (pcidev_t addr)
 	hci_t *controller = new_controller ();
 
 	if (!controller)
-		usb_fatal("Could not create USB controller instance.\n");
+		fatal("Could not create USB controller instance.\n");
 
 	controller->instance = malloc (sizeof (xhci_t));
 	if(!controller->instance)
-		usb_fatal("Not enough memory creating USB controller instance.\n");
+		fatal("Not enough memory creating USB controller instance.\n");
 
 	controller->start = xhci_start;
 	controller->stop = xhci_stop;
@@ -82,7 +82,7 @@ xhci_init (pcidev_t addr)
 	controller->reg_base = (u32)phys_to_virt(pci_read_config32 (controller->bus_address, 0x10) & ~0xf);
 	//controller->reg_base = pci_read_config32 (controller->bus_address, 0x14) & ~0xf;
 	if (pci_read_config32 (controller->bus_address, 0x14) > 0) {
-		usb_fatal("We don't do 64bit addressing.\n");
+		fatal("We don't do 64bit addressing.\n");
 	}
 	debug("regbase: %lx\n", controller->reg_base);
 
@@ -94,7 +94,7 @@ xhci_init (pcidev_t addr)
 	debug("caplength: %x\n", XHCI_INST (controller)->capreg->caplength);
 	debug("hciversion: %x.%x\n", XHCI_INST (controller)->capreg->hciver_hi, XHCI_INST (controller)->capreg->hciver_lo);
 	if ((XHCI_INST (controller)->capreg->hciversion < 0x96) || (XHCI_INST (controller)->capreg->hciversion > 0x100)) {
-		usb_fatal("Unsupported xHCI version\n");
+		fatal("Unsupported xHCI version\n");
 	}
 	debug("maxslots: %x\n", XHCI_INST (controller)->capreg->MaxSlots);
 	debug("maxports: %x\n", XHCI_INST (controller)->capreg->MaxPorts);
@@ -233,7 +233,7 @@ xhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 {
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
-		usb_fatal ("MaxPacketSize == 0!!!");
+		fatal("MaxPacketSize == 0!!!");
 	return 1;
 }
 

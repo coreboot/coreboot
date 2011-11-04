@@ -459,9 +459,3 @@ usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 	return newdev;
 }
 
-void
-usb_fatal (const char *message)
-{
-	printf(message);
-	for (;;) ;
-}

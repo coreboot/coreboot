@@ -20,16 +20,19 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <arch/stages.h>
+#include <timestamp.h>
 
 static void cbfs_and_run_core(const char *filename, unsigned ebp)
 {
 	u8 *dst;
 
+	timestamp_add_now(TS_START_COPYRAM);
 	print_debug("Loading image.\n");
 	dst = cbfs_load_stage(filename);
 	if ((void *)dst == (void *) -1)
 		die("FATAL: Essential component is missing.\n");
 
+	timestamp_add_now(TS_END_COPYRAM);
 	print_debug("Jumping to image.\n");
 	__asm__ volatile (
 		"movl %%eax, %%ebp\n"

@@ -35,14 +35,32 @@ struct timestamp_table {
 } __attribute__((packed));
 
 enum timestamp_id {
-	TS_BEFORE_INITRAM = 1,
-	TS_AFTER_INITRAM = 2,
+	TS_START_ROMSTAGE = 1,
+	TS_BEFORE_INITRAM = 2,
+	TS_AFTER_INITRAM = 3,
+	TS_END_ROMSTAGE = 4,
+	TS_START_COPYRAM = 8,
+	TS_END_COPYRAM = 9,
+	TS_START_RAMSTAGE = 10,
+	TS_DEVICE_ENUMERATE = 30,
+	TS_DEVICE_CONFIGURE = 40,
+	TS_DEVICE_ENABLE = 50,
+	TS_DEVICE_INITIALIZE = 60,
+	TS_DEVICE_DONE = 70,
+	TS_WRITE_TABLES = 80,
+	TS_LOAD_PAYLOAD = 90,
 	TS_ACPI_WAKE_JUMP = 98,
 	TS_SELFBOOT_JUMP = 99,
 };
 
+#if CONFIG_COLLECT_TIMESTAMPS
 void timestamp_init(tsc_t base);
 void timestamp_add(enum timestamp_id id, tsc_t ts_time);
 void timestamp_add_now(enum timestamp_id id);
+#else
+#define timestamp_init(base)
+#define timestamp_add(id, time)
+#define timestamp_add_now(id)
+#endif
 
 #endif

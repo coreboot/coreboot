@@ -68,6 +68,22 @@ detach_controller (hci_t *controller)
 }
 
 /**
+ * Shut down all controllers
+ */
+int
+usb_exit (void)
+{
+	if (usb_hcs == 0)
+		return 0;
+	hci_t *controller = usb_hcs;
+	while (controller != 0) {
+		controller->shutdown(controller);
+		controller = controller->next;
+	}
+	return 0;
+}
+
+/**
  * Polls all hubs on all USB controllers, to find out about device changes
  */
 void

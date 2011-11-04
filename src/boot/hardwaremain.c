@@ -41,6 +41,7 @@ it with the version available from LANL.
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
+#include <timestamp.h>
 
 /**
  * @brief Main function of the RAM part of coreboot.
@@ -56,7 +57,9 @@ void hardwaremain(int boot_complete);
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+	tsc_t timestamps[6];
 
+	timestamps[0] = rdtsc();
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* console_init() MUST PRECEDE ALL printk()! */
@@ -78,18 +81,26 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
+	timestamps[1] = rdtsc();
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
+
+	timestamps[2] = rdtsc();
 	/* Now compute and assign the bus resources. */
 	dev_configure();
 	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
+
+	timestamps[3] = rdtsc();
 	/* Now actually enable devices on the bus */
 	dev_enable();
+
+	timestamps[4] = rdtsc();
 	/* And of course initialize devices on the bus */
 	dev_initialize();
 	post_code(POST_DEVICES_ENABLED);
 
+	timestamps[5] = rdtsc();
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
@@ -101,10 +112,20 @@ void hardwaremain(int boot_complete)
 	post_code(0x8a);
 #endif
 
+	timestamp_add(TS_START_RAMSTAGE, timestamps[0]);
+	timestamp_add(TS_DEVICE_ENUMERATE, timestamps[1]);
+	timestamp_add(TS_DEVICE_CONFIGURE, timestamps[2]);
+	timestamp_add(TS_DEVICE_ENABLE, timestamps[3]);
+	timestamp_add(TS_DEVICE_INITIALIZE, timestamps[4]);
+	timestamp_add(TS_DEVICE_DONE, timestamps[5]);
+	timestamp_add_now(TS_WRITE_TABLES);
+
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
+
+	timestamp_add_now(TS_LOAD_PAYLOAD);
 	cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
 	printk(BIOS_ERR, "Boot failed.\n");
 }

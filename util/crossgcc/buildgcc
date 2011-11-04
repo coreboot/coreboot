@@ -126,6 +126,7 @@ myhelp()
 	printf "    [-h|--help]                   print this help and exit\n"
 	printf "    [-c|--clean]                  remove temporary files before build\n"
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
+	printf "    [-y|--ccache]                 Use ccache when building cross compiler\n"
 	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
@@ -167,11 +168,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="`getopt -V | sed -e '1!d' -e 's,^\(......\).*,\1,'`"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb Vhcd:p:j:D:tG -- "$@"`
+	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps,skip-gdb,ccache Vhcd:p:j:D:tGy -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vhcd:p:j:D:tG $*`
+	args=`getopt Vhcd:p:j:D:tGy $*`
 	set -- $args
 fi
 
@@ -192,6 +193,7 @@ while true ; do
 		-j|--jobs)	shift; JOBS="-j $1"; shift;;
 		-G|--gdb)	shift; SKIPGDB=0;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
+		-y|--ccache)	shift; USECCACHE=1;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
@@ -323,6 +325,10 @@ if [ `uname` = "Darwin" ]; then
 	if $CC -v 2>&1 | grep -q LLVM; then
 		CC=clang
 	fi
+fi
+
+if [ "$USECCACHE" = 1 ]; then
+	CC="ccache $CC"
 fi
 
 mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils \

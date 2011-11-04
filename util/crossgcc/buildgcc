@@ -335,7 +335,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 (
 	cd build-gmp
 	rm -f .failed
-	../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
+	CC="$CC" ../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -364,7 +364,7 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	cd build-mpfr
 	rm -f .failed
-	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -391,7 +391,7 @@ printf "Building MPC ${MPC_VERSION} ... "
 	#test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	cd build-mpc
 	rm -f .failed
-	../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || \
 		touch .failed
@@ -413,7 +413,7 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	cd build-libelf
 	rm -f .failed
 	echo "$HOSTCFLAGS"
-	CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
+	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
 	../${LIBELF_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
@@ -439,7 +439,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	# Now build binutils
 	cd build-binutils
 	rm -f .failed
-	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
+	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls \
 		$USE_GOLD CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
@@ -507,7 +507,7 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 	cd build-expat
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
-	CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
+	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
 		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -529,7 +529,7 @@ printf "Building Python ${PYTHON_VERSION} ... "
 	cd build-python
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
-	CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
+	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
@@ -554,7 +554,7 @@ printf "Building GDB ${GDB_VERSION} ... "
 	rm -f .failed
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
 		 -lpthread -ldl -lutil" \
-	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
+	CC="$CC" CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
 	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls
 	$MAKE $JOBS || touch .failed
@@ -575,7 +575,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE || touch .failed
+	$MAKE CC="$CC" || touch .failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
 	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi

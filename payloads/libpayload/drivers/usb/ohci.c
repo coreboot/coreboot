@@ -88,11 +88,11 @@ ohci_init (pcidev_t addr)
 	hci_t *controller = new_controller ();
 
 	if (!controller)
-		usb_fatal("Could not create USB controller instance.\n");
+		fatal("Could not create USB controller instance.\n");
 
 	controller->instance = malloc (sizeof (ohci_t));
 	if(!controller->instance)
-		usb_fatal("Not enough memory creating USB controller instance.\n");
+		fatal("Not enough memory creating USB controller instance.\n");
 
 	controller->start = ohci_start;
 	controller->stop = ohci_stop;

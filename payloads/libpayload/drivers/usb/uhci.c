@@ -134,11 +134,11 @@ uhci_init (pcidev_t addr)
 	hci_t *controller = new_controller ();
 
 	if (!controller)
-		usb_fatal("Could not create USB controller instance.\n");
+		fatal("Could not create USB controller instance.\n");
 
 	controller->instance = malloc (sizeof (uhci_t));
 	if(!controller->instance)
-		usb_fatal("Not enough memory creating USB controller instance.\n");
+		fatal("Not enough memory creating USB controller instance.\n");
 
 	controller->start = uhci_start;
 	controller->stop = uhci_stop;
@@ -168,7 +168,7 @@ uhci_init (pcidev_t addr)
 
 	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t *));	/* 4kb aligned to 4kb */
 	if (! UHCI_INST (controller)->framelistptr)
-		usb_fatal("Not enough memory for USB frame list pointer.\n");
+		fatal("Not enough memory for USB frame list pointer.\n");
 
 	memset (UHCI_INST (controller)->framelistptr, 0,
 		1024 * sizeof (flistp_t));
@@ -182,7 +182,7 @@ uhci_init (pcidev_t addr)
 	   */
 	td_t *antiberserk = memalign(16, sizeof(td_t));
 	if (!antiberserk)
-		usb_fatal("Not enough memory for chipset workaround.\n");
+		fatal("Not enough memory for chipset workaround.\n");
 	memset(antiberserk, 0, sizeof(td_t));
 
 	UHCI_INST (controller)->qh_prei = memalign (16, sizeof (qh_t));
@@ -194,7 +194,7 @@ uhci_init (pcidev_t addr)
 	    ! UHCI_INST (controller)->qh_intr ||
 	    ! UHCI_INST (controller)->qh_data ||
 	    ! UHCI_INST (controller)->qh_last)
-		usb_fatal ("Not enough memory for USB controller queues.\n");
+		fatal("Not enough memory for USB controller queues.\n");
 
 	UHCI_INST (controller)->qh_prei->headlinkptr.ptr =
 		virt_to_phys (UHCI_INST (controller)->qh_intr);
@@ -443,7 +443,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 {
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
-		usb_fatal ("MaxPacketSize == 0!!!");
+		fatal("MaxPacketSize == 0!!!");
 	int numpackets = (size + maxpsize - 1 + finalize) / maxpsize;
 	if (numpackets == 0)
 		return 0;
@@ -486,7 +486,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 	qh_t *qh = memalign(16, sizeof(qh_t));
 
 	if (!data || !tds || !qh)
-		usb_fatal ("Not enough memory to create USB intr queue prerequisites.\n");
+		fatal("Not enough memory to create USB intr queue prerequisites.\n");
 
 	qh->elementlinkptr.ptr = virt_to_phys(tds);
 	qh->elementlinkptr.queue_head = 0;
@@ -494,7 +494,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 
 	intr_q *q = malloc(sizeof(intr_q));
 	if (!q)
-		usb_fatal ("Not enough memory to create USB intr queue.\n");
+		fatal("Not enough memory to create USB intr queue.\n");
 	q->qh = qh;
 	q->tds = tds;
 	q->data = data;

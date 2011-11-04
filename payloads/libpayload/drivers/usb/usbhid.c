@@ -421,7 +421,7 @@ usb_hid_init (usbdev_t *dev)
 		case hid_boot_proto_keyboard:
 			dev->data = malloc (sizeof (usbhid_inst_t));
 			if (!dev->data)
-				usb_fatal("Not enough memory for USB HID device.\n");
+				fatal("Not enough memory for USB HID device.\n");
 			debug ("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);

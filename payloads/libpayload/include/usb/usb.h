@@ -257,5 +257,4 @@ int usb_interface_check(u16 vendor, u16 device);
 # define debug(fmt, ...)	while (0) { printf(fmt, ##__VA_ARGS__); }
 #endif
 
-void usb_fatal(const char *message) __attribute__ ((noreturn));
 #endif

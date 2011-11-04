@@ -112,7 +112,7 @@ xhci_rh_init (usbdev_t *dev)
 
 	dev->data = malloc (sizeof (rh_inst_t));
 	if (!dev->data)
-		usb_fatal ("Not enough memory for XHCI RH.\n");
+		fatal("Not enough memory for XHCI RH.\n");
 
 	RH_INST (dev)->numports = XHCI_INST (dev->controller)->capreg->MaxPorts;
 	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);

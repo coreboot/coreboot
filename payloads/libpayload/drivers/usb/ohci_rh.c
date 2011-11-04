@@ -143,7 +143,7 @@ ohci_rh_init (usbdev_t *dev)
 
 	dev->data = malloc (sizeof (rh_inst_t));
 	if (!dev->data)
-		usb_fatal ("Not enough memory for OHCI RH.\n");
+		fatal("Not enough memory for OHCI RH.\n");
 
 	RH_INST (dev)->numports = OHCI_INST (dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
 	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);

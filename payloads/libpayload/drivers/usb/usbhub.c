@@ -135,7 +135,7 @@ usb_hub_init (usbdev_t *dev)
 	dev->data = malloc (sizeof (usbhub_inst_t));
 
 	if (!dev->data)
-		usb_fatal("Not enough memory for USB hub.\n");
+		fatal("Not enough memory for USB hub.\n");
 
 	HUB_INST (dev)->descriptor = (hub_descriptor_t *) get_descriptor(dev,
 		gen_bmRequestType(device_to_host, class_type, dev_recp), 0x29, 0, 0);
@@ -143,7 +143,7 @@ usb_hub_init (usbdev_t *dev)
 	HUB_INST (dev)->ports =
 		malloc (sizeof (int) * (HUB_INST (dev)->num_ports + 1));
 	if (! HUB_INST (dev)->ports)
-		usb_fatal("Not enough memory for USB hub ports.\n");
+		fatal("Not enough memory for USB hub ports.\n");
 
 	for (i = 1; i <= HUB_INST (dev)->num_ports; i++)
 		HUB_INST (dev)->ports[i] = -1;

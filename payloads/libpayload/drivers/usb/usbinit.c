@@ -139,8 +139,3 @@ usb_initialize (void)
 	return 0;
 }
 
-int
-usb_exit (void)
-{
-	return 0;
-}

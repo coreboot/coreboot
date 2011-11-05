@@ -251,3 +251,5 @@ crosstools: clean-for-update
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
+tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/options/build_opt_tbl $(objutil)/romcc/romcc $(objutil)/sconfig/sconfig
+

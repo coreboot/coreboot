@@ -1,11 +1,11 @@
 all: build
 
 build:
-	bash ./buildgcc
+	bash ./buildgcc -G
 
 .PHONY: build-without-gdb
 build-without-gdb:
-	bash ./buildgcc --skip-gdb
+	bash ./buildgcc
 
 clean:
 	rm -rf xgcc

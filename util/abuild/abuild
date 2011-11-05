@@ -573,6 +573,9 @@ test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 export PATH=$PATH:util/abuild
 getopt - > /dev/null 2>/dev/null || gcc -o util/abuild/getopt util/abuild/getopt.c
 
+# command line for xargs parallelization. Thus overwrite -c X
+cmdline="$* -c 1"
+
 # parse parameters.. try to find out whether we're running GNU getopt
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
@@ -618,8 +621,48 @@ while true ; do
 	esac
 done
 
+USE_XARGS=0
 if [ "$cpus" != "1" ]; then
-	export MAKEFLAGS="-j $cpus"
+	if [ "$target" = "" ]; then
+		# Test if xargs supports the non-standard -P flag
+		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
+	fi
+fi
+
+if [ "$USE_XARGS" = "0" ]; then
+export MAKEFLAGS="-j $cpus"
+build_all_targets()
+{
+	for VENDOR in $( vendors ); do
+		for MAINBOARD in $( mainboards $VENDOR ); do
+			build_target $VENDOR $MAINBOARD
+			test_target $VENDOR $MAINBOARD
+			remove_target $VENDOR $MAINBOARD
+		done
+	done
+}
+else
+# Limit to 32 parallel builds for now.
+# Thrashing all caches because we run
+# 160 abuilds in parallel is no fun.
+if [ "$cpus" = "" ]; then
+	cpus=32
+fi
+build_all_targets()
+{
+	# seed shared utils
+	TMPCFG=`mktemp`
+	if [ "$enable_blobs" = "true" ]; then
+		echo "CONFIG_USE_BLOBS=y" > $TMPCFG
+	fi
+	make -j $cpus DOTCONFIG=$TMPCFG obj=coreboot-builds/temp objutil=coreboot-builds/sharedutils tools
+	rm -rf coreboot-builds/temp $TMPCFG
+	for VENDOR in $( vendors ); do
+		for MAINBOARD in $( mainboards $VENDOR ); do
+			echo $VENDOR/$MAINBOARD
+		done
+	done | xargs -P 0$cpus -n 1 $0 $cmdline -t
+}
 fi
 
 # /path/to/freebios2/
@@ -640,23 +683,21 @@ if [ "$target" != "" ]; then
 	CONFIG=`printf $target|cut -f3 -d/`
 	if [ ! -r $ROOT/src/mainboard/$target ]; then
 		printf "No such target: $target\n"
-		xml '</abuild>'
-		junit '</testsuite>'
-		exit 1
+		failed=1
+	else
+		build_target $VENDOR $MAINBOARD $CONFIG
+		test_target $VENDOR $MAINBOARD
+		test "$mode" != "text" && cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
+		XMLFILE=$REAL_XMLFILE
 	fi
-	build_target $VENDOR $MAINBOARD $CONFIG
-	test_target $VENDOR $MAINBOARD
-	test "$mode" != "text" && cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
-	XMLFILE=$REAL_XMLFILE
 else
-	# build all boards per default
-	for VENDOR in $( vendors ); do
-		for MAINBOARD in $( mainboards $VENDOR ); do
-			build_target $VENDOR $MAINBOARD
-			test_target $VENDOR $MAINBOARD
-			remove_target $VENDOR $MAINBOARD
-		done
-	done
+	build_all_targets
+	rm -f $REAL_XMLFILE
+	xml '<?xml version="1.0" encoding="utf-8"?>'
+	xml '<abuild>'
+
+	junit '<?xml version="1.0" encoding="utf-8"?>'
+	junit '<testsuite>'
 	if [ "$mode" != "text" ]; then
 		for xmlfile in $TARGET/*_*/abuild.xml; do
 			cat $xmlfile >> $REAL_XMLFILE

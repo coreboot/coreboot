@@ -1,0 +1,49 @@
+chip northbridge/intel/i865
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_mPGA478
+			device lapic 0 on end
+		end
+	end
+	device pci_domain 0 on
+		device pci 0.0 on end # northbridge
+		device pci 0.1 off end # agp
+		device pci 0.2 on end # igd
+		device pnp 0.3 off end # csa
+		device pci 0.6 on end # overflow device
+		
+		chip southbridge/intel/i82801ex
+			device pci 1d.0 on end # uhci #1
+			device pci 1d.1 on end # uhci #2
+			device pci 1d.2 on end # uhci #3
+			device pci 1d.3 on end # uhci #4
+			device pci 1d.7 on end # ehci
+			device pci 1e.0 on # pci bridge
+				# 01:05.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. RTL-8139/8139C/8139C+ [10ec:8139] (rev 10)
+				device pci 05.0 on end
+			end
+			
+			device pci 1f.0 on # lpc bridge
+				chip superio/winbond/w83627hf
+					device pnp 2e.0 off end # floppy
+					device pnp 2e.1 off end # parallel
+					device pnp 2e.2 on
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end # com1
+					device pnp 2e.3 off end # com2
+					device pnp 2e.5 on end # keyboard
+					device pnp 2e.6 off end # ir
+					device pnp 2e.7 on end # game/gpio 1
+					device pnp 2e.8 on end # gpio 2
+					device pnp 2e.9 on end # gpio 3
+					device pnp 2e.a on end # acpi
+					device pnp 2e.b on end # hardware monitor
+				end # superio
+			end # 1f.0
+			device pci 1f.1 on end # pata
+			device pci 1f.2 on end # sata
+			device pci 1f.3 on end # smbus
+			device pci 1f.5 off end # ac97
+		end # southbridge
+	end # pci_domain
+end # northbridge

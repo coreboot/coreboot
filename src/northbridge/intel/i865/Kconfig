@@ -1,0 +1,25 @@
+config NORTHBRIDGE_INTEL_I865
+	bool
+	select HAVE_DEBUG_RAM_SETUP
+choice
+prompt "Onboard graphics"
+	default I865_VIDEO_MB_8MB
+	depends on NORTHBRIDGE_INTEL_I865
+
+config I865_VIDEO_MB_OFF
+	bool "Disabled, 0KB"
+config I865_VIDEO_MB_1MB
+	bool "Enabled, 1MB"
+config I865_VIDEO_MB_8MB
+	bool "Enabled, 8MB"
+config I865_VIDEO_MB_16MB
+	bool "Enabled, 16MB"
+endchoice
+
+config VIDEO_MB
+	int
+	default 0	if I865_VIDEO_MB_OFF
+	default 1	if I865_VIDEO_MB_1MB
+	default 8	if I865_VIDEO_MB_8MB
+	default 16	if I865_VIDEO_MB_16MB
+	depends on NORTHBRIDGE_INTEL_I865

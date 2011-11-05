@@ -682,6 +682,7 @@ int conf_write_autoconf(void)
 	FILE *out, *out_h;
 	time_t now;
 	int i, l;
+	char tmpname[128], tmpname_h[128];
 
 	sym_clear_all_valid();
 
@@ -692,11 +693,13 @@ int conf_write_autoconf(void)
 		return 1;
 #endif
 
-	out = fopen(".tmpconfig", "w");
+	sprintf(tmpname, ".tmpconfig.%d", (int)getpid());
+	out = fopen(tmpname, "w");
 	if (!out)
 		return 1;
 
-	out_h = fopen(".tmpconfig.h", "w");
+	sprintf(tmpname_h, ".tmpconfig.h.%d", (int)getpid());
+	out_h = fopen(tmpname_h, "w");
 	if (!out_h) {
 		fclose(out);
 		return 1;
@@ -791,7 +794,7 @@ int conf_write_autoconf(void)
 	if (!name)
 		name = "include/linux/autoconf.h";
 	UNLINK_IF_NECESSARY(name);
-	if (rename(".tmpconfig.h", name))
+	if (rename(tmpname_h, name))
 		return 1;
 	name = getenv("KCONFIG_AUTOCONFIG");
 	if (!name)
@@ -801,7 +804,7 @@ int conf_write_autoconf(void)
 	 * and this marks the successful completion of the previous steps.
 	 */
 	UNLINK_IF_NECESSARY(name);
-	if (rename(".tmpconfig", name))
+	if (rename(tmpname, name))
 		return 1;
 
 	return 0;

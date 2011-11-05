@@ -55,7 +55,8 @@ config BOARD_ASUS_P2B_LS
 	bool "P2B-LS"
 config BOARD_ASUS_P3B_F
 	bool "P3B-F"
-
+config BOARD_ASUS_P4P800_VM
+	bool "P4P800-VM"
 endchoice
 
 source "src/mainboard/asus/a8n_e/Kconfig"
@@ -75,6 +76,7 @@ source "src/mainboard/asus/p2b-ds/Kconfig"
 source "src/mainboard/asus/p2b-f/Kconfig"
 source "src/mainboard/asus/p2b-ls/Kconfig"
 source "src/mainboard/asus/p3b-f/Kconfig"
+source "src/mainboard/asus/p4p800-vm/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

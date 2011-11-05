@@ -1,6 +1,6 @@
 #include "smbus.h"
 
-#define SMBUS_IO_BASE 0x0f00
+//#define SMBUS_IO_BASE 0x0f00
 
 static void enable_smbus(void)
 {
@@ -9,7 +9,7 @@ static void enable_smbus(void)
 	print_spew("SMBus controller enabled\n");
 
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
-	print_debug_hex32(pci_read_config32(dev, 0x20));
+	printk(BIOS_DEBUG, "SMB_BASE = 0x%x\n", pci_read_config32(dev, SMB_BASE));
 	/* Set smbus enable */
 	pci_write_config8(dev, 0x40, 1);
 	/* Set smbus iospace enable */

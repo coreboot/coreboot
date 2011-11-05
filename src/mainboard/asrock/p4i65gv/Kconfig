@@ -1,0 +1,53 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify it under the terms of the GNU General 
+## Public License as published by the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+## implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+## for more details.
+##
+## You should have received a copy of the GNU General Public License along with this program; if not, write to 
+## the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+if BOARD_ASROCK_P4I65GV
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA478
+	select NORTHBRIDGE_INTEL_I865
+	select SOUTHBRIDGE_INTEL_I82801EX
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_HARD_RESET
+#	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	select BOARD_ROMSIZE_KB_512
+	select USE_WATCHDOG_ON_BOOT
+#	select HAVE_ACPI_TABLES
+#	select CACHE_AS_RAM # inherited from the socket option
+
+config MAINBOARD_DIR
+	string
+	default asrock/p4i65gv
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P4i65GV"
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfff00000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000 # ok?
+
+config IRQ_SLOT_COUNT
+	int
+	default 6 # no idea
+
+endif # BOARD_ASROCK_P4I65GV

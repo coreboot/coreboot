@@ -1,0 +1,16 @@
+TODO (probably incomplete)
+
+raminit.c:
+	* re-use the mchbar macro from i945 and read/write from/to it like its raminit code does
+	* GPL headers everywhere
+	* includes (is assert.h really needed?)
+	* set TOUD (from northbridge.c?)
+	* set SMFREQ and FSBFREQ (in GMCHCFG) (from northbridge.c?)?
+	* AGP (device 1) code
+	* VGA/IGD (device 2) code
+	* CSA (device 3) code?
+	* clean up/trim northbridge_set_registers()
+	* dual-channel code (and don't forget romstage.c)
+
+DONE
+* raise bits 0 (IOAE, I/O access enable) and 1 (MAE, memory access enable) in PCICMD6 (from northbridge.c?)

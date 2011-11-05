@@ -51,6 +51,9 @@
  * NO_W83627HF_MIDI:     don't expose the MIDI port
  * NO_W83627HF_HWMON:    don't expose the hardware monitor as
  *                       PnP "Motherboard Ressource"
+ * W83627HF_KBC_COMPAT:  show the keyboard controller and the PS/2 mouse as
+ *                       enabled if it is disabled but an address is assigned
+ *                       to it. This may be neccessary in some cases.
  *
  * Datasheet: "W83627HF/F WINBOND I/O" rev. 6.0
  * http://www.itox.com/pages/support/wdt/W83627HF.pdf
@@ -146,19 +149,27 @@ Device(SIO) {
 		OPTA,   8
 	}
 
-	Name (_CRS, ResourceTemplate () {
+	Method (_CRS)
+	{
+		Return (ResourceTemplate () {
 		IO (Decode16, 0x002E, 0x002E, 0x02, 0x01) /* Announce the used I/O ports to the OS */
 		IO (Decode16, 0x004E, 0x004E, 0x01, 0x01) /* this port is used in some configurations, so announce it to be sure */
-	})
+		})
+	}
 
 	/* Enter configuration mode (and aquire mutex)
 	   Method must be run before accesssing the configuration region.
+	   Parameter is the LDN which should be accessed. Values >= 0xFF mean
+	   no LDN switch should be done.
 	*/
-	Method (ENCM)
+	Method (ENCM, 1)
 	{
 		Acquire (CRMX, 0xFFFF)
 		Store (0x87, ADDR)
 		Store (0x87, ADDR)
+		If (LLess(Arg0, 0xFF)) {
+			Store(Arg0, LDN)
+		}
 	}
 
 	/* Exit configuration mode (and release mutex)
@@ -166,13 +177,13 @@ Device(SIO) {
 	*/
 	Method (EXCM)
 	{
-		Release (CRMX)
 		Store (0xAA, ADDR)
+		Release (CRMX)
 	}
 
 	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D2 */
 	Method (_PSC) {
-		ENCM ()
+		ENCM (0xFF)
 		Store (IPD, Local0)
 		EXCM ()
 		If (Local0) { Return (2) }
@@ -181,14 +192,14 @@ Device(SIO) {
 
 	/* PM: Switch to D0 by setting IPD low  */
 	Method (_PS0) {
-		ENCM ()
+		ENCM (0xFF)
 		Store (Zero, IPD)
 		EXCM ()
 	}
 
 	/* PM: Switch to D2 by setting IPD high  */
 	Method (_PS2) {
-		ENCM ()
+		ENCM (0xFF)
 		Store (One, IPD)
 		EXCM ()
 	}
@@ -204,8 +215,7 @@ Device(SIO) {
 		/* Initialization method: Should be run once on boot
 		   If FDC is active, enumerate all connected devices */
 		Method (_INI) {
-			ENCM ()
-			Store (0x00, LDN)
+			ENCM (0)
 			Store (ACTR, Local0)
 			Store (IO1H, Local1)
 			Store (IO1L, Local2)
@@ -222,8 +232,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x00, LDN)
+			ENCM (0)
 			If (ACTR) {
 				Store (0x0F, Local0)
 			}
@@ -235,30 +244,34 @@ Device(SIO) {
 			Return (Local0)
 		}
 
+		/* Current power state (Returns 1 if LDN in power saving mode,
+		 * 2 if whole chip is powered down), 0 else
+		 */
 		Method (_PSC) {
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (FDPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
+		/* Disable power saving mode */
 		Method (_PS0) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (Zero, FDPW)
 			EXCM ()
 		}
+		/* Enable power saving mode */
 		Method (_PS1) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (One, FDPW)
 			EXCM ()
 		}
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x00, LDN)
+			ENCM (0)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -266,38 +279,41 @@ Device(SIO) {
 		Method (_CRS)
 		{
 			Name (CRS, ResourceTemplate () {
-				IO (Decode16, 0x0000, 0x0000, 0x01, 0x06, IO0)
-				IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
+				IO (Decode16, 0x0000, 0x0000, 0x01, 0x07, IO0)
 				IRQNoFlags () {6}
 				DMA (Compatibility, NotBusMaster, Transfer8) {2}
 			})
-			ENCM ()
-			Store (0x00, LDN)
-			Store(IO1H, Local0)
-			Store(IO1L, Local1)
+
+			/* Get IO port info */
+			ENCM (0)
+			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local0)
 
+			/* Calculate full IO port address */
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
+
+			/* Modify the resource template and return it */
 			CreateWordField (CRS, IO0._MIN, IMIN)
-			Store (Local0, IMIN)
 			CreateWordField (CRS, IO0._MAX, IMAX)
+			Store (Local0, IMIN)
 			Store (Local0, IMAX)
-
 			Return (CRS)
 		}
 
-		Name (_PRS, ResourceTemplate ()
+		Method (_PRS)
 		{
-			StartDependentFnNoPri ()
+			Return (ResourceTemplate ()
 			{
-				IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
-				IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
-				IRQNoFlags () {6}
-				DMA (Compatibility, NotBusMaster, Transfer8) {2}
-			}
-			EndDependentFn ()
-		})
+				StartDependentFnNoPri ()
+				{
+					IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x07)
+					IRQNoFlags () {6}
+					DMA (Compatibility, NotBusMaster, Transfer8) {2}
+				}
+				EndDependentFn ()
+			})
+		}
 
 		#ifndef NO_W83627HF_FDC_ENUM
 		Name(_FDE, Buffer(){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
@@ -371,23 +387,19 @@ Device(SIO) {
 		Method (_SRS, 1, Serialized)
 		{
 			Name (TMPL, ResourceTemplate () {
-				IO (Decode16, 0, 0, 1, 6, IO0)
-				IO (Decode16, 0, 0, 1, 1, IO1)
+				IO (Decode16, 0, 0, 1, 7, IO0)
 				IRQNoFlags (IRQ0) {}
 				DMA (Compatibility, NotBusMaster, Transfer8, DMA0) {}
 			})
 			CreateWordField (Arg0, IO0._MIN, IOA0)
-			CreateWordField (Arg0, IO1._MIN, IOA1)
 			CreateByteField (Arg0, IRQ0._INT, IRQL)
 			CreateByteField (Arg0, DMA0._DMA, DMCH)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			ENCM ()
-			Store (0, LDN)
-			Store (Local1, IO1H)
+			ENCM (0)
 			Store (Local0, IO1L)
+			Store (Local1, IO1H)
 			Store (One, ACTR)
 			EXCM ()
 
@@ -407,8 +419,7 @@ Device(SIO) {
 
 		Method (MODE, 1) {
 			And(Arg0, 0x07, Local0)
-			ENCM ()
-			Store (0x01, LDN)
+			ENCM (1)
 			And(OPT1, 0x3, Local1)
 			Or(Local1, Local0, OPT1)
 			EXCM()
@@ -419,8 +430,7 @@ Device(SIO) {
 			/* Deactivate DMA, even if set by BIOS. We don't announce it
 			   through _CRS and it's only useful in ECP mode which we
 			   don't support at the moment. */
-			ENCM ()
-			Store (0x01, LDN)
+			ENCM (1)
 			Store (0x04, DMA0)
 			EXCM ()
 		}
@@ -428,8 +438,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x01, LDN)
+			ENCM (1)
 			And(OPT1, 0x3, Local1)
 			If (ACTR) {
 				If (LNotEqual(Local1, 2)) {
@@ -449,26 +458,25 @@ Device(SIO) {
 		Method (_PSC) {
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (PRPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (Zero, PRPW)
 			EXCM ()
 		}
 		Method (_PS1) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (One, PRPW)
 			EXCM ()
 		}
 
 		Method (_DIS) {
-			ENCM ()
-			Store (0x01, LDN)
+			ENCM (1)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -486,25 +494,24 @@ Device(SIO) {
 			CreateByteField (CRS, IO0._LEN, IOLE)
 			CreateWordField (CRS, IRQX._INT, IRQW)
 
-			ENCM ()
-			Store (0x01, LDN)
+			/* Get device settings */
+			ENCM (1)
 			Store (IO1L, Local0)
 			Store (IO1H, Local1)
 			Store (OPT1, Local2)
 			Store (IRQ0, Local5)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local1)
+			/* Calculate IO port and modify template */
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
+			Store(Local1, IOP0)
+			Store(Local1, IOR0)
 
+			/* Set align and length based on active parallel port mode */
 			And(Local2, 0x3, Local3)
 			And(Local2, 0x4, Local4)
 			If (Local4) {
 				Store(0x04, IOAL)
 			}
-
-			Store(Local1, IOP0)
-			Store(Local1, IOR0)
-
 			If (LEqual (Local0, 0xBC))
 			{
 				Store (0x04, IOLE)
@@ -513,10 +520,10 @@ Device(SIO) {
 			{
 				Store (0x08, IOLE)
 			}
-
+			/* Calculate IRQ bitmap */
 			Store (One, Local0)
 			ShiftLeft (Local0, Local5, IRQW)
-
+			/* Return resource template */
 			Return (CRS)
 		}
 
@@ -579,23 +586,20 @@ Device(SIO) {
 			}
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			ENCM ()
-			Store (0x01, LDN)
-			Store (Local1, IO1H)
+			ENCM (1)
+			/* IO port */
 			Store (Local0, IO1L)
-			/*Mode*/
+			Store (Local1, IO1H)
+			/* Mode */
 			Store (OPT1, Local3)
 			And (Local3, 0xF8, Local3)
 			Or (Local2, Local3, OPT1)
-			/*DMA off*/
+			/* DMA off */
 			Store (0x04, DMA0)
-			/*IRQ*/
-			FindSetLeftBit (IRQL, Local3)
-			Subtract (Local3, 0x01, Local3)
-			Store (Local3, IRQ0)
-			/*Activate*/
+			/* IRQ */
+			Subtract(FindSetLeftBit (IRQL), 1, IRQ0)
+			/* Activate */
 			Store (One, ACTR)
 			EXCM ()
 		}
@@ -612,8 +616,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x02, LDN)
+			ENCM (2)
 			If (ACTR) {
 				Store (0x0F, Local0)
 			}
@@ -628,27 +631,26 @@ Device(SIO) {
 		Method (_PSC) {
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (UAPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (Zero, UAPW)
 			EXCM ()
 		}
 		Method (_PS1) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (One, UAPW)
 			EXCM ()
 		}
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x02, LDN)
+			ENCM (2)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -659,14 +661,12 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x08, IO0)
 				IRQNoFlags (IRQX) {6}
 			})
-			ENCM ()
-			Store (0x02, LDN)
-			Store(IO1H, Local1)
+			ENCM (2)
 			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			Store(IRQ0, Local2)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local0)
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
 			Store (Local0, IMIN)
@@ -715,15 +715,12 @@ Device(SIO) {
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			FindSetLeftBit (IRQL, Local3)
-			Subtract (Local3, 0x01, Local3)
+			Subtract(FindSetLeftBit (IRQL), 1, Local3)
 
-			ENCM ()
-			Store (2, LDN)
-			Store (Local1, IO1H)
+			ENCM (2)
 			Store (Local0, IO1L)
+			Store (Local1, IO1H)
 			Store (Local3, IRQ0)
 			Store (One, ACTR)
 			EXCM ()
@@ -741,8 +738,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x03, LDN)
+			ENCM (3)
 			If (LNot(And(OPT2, 0x30)))
 			{
 				If (ACTR) {
@@ -760,27 +756,26 @@ Device(SIO) {
 		Method (_PSC) {
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (UBPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (Zero, UBPW)
 			EXCM ()
 		}
 		Method (_PS1) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (One, UBPW)
 			EXCM ()
 		}
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x03, LDN)
+			ENCM (3)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -791,14 +786,12 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x08, IO0)
 				IRQNoFlags (IRQX) {6}
 			})
-			ENCM ()
-			Store (0x03, LDN)
-			Store(IO1H, Local1)
+			ENCM (3)
 			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			Store(IRQ0, Local2)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local0)
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
 			Store (Local0, IMIN)
@@ -847,15 +840,12 @@ Device(SIO) {
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			FindSetLeftBit (IRQL, Local3)
-			Subtract (Local3, 0x01, Local3)
+			Subtract(FindSetLeftBit (IRQL), 1, Local3)
 
-			ENCM ()
-			Store (3, LDN)
-			Store (Local1, IO1H)
+			ENCM (3)
 			Store (Local0, IO1L)
+			Store (Local1, IO1H)
 			Store (Local3, IRQ0)
 			Store (One, ACTR)
 			EXCM ()
@@ -873,8 +863,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x03, LDN)
+			ENCM (3)
 			If (And(OPT2, 0x30))
 			{
 				If (ACTR) {
@@ -892,27 +881,26 @@ Device(SIO) {
 		Method (_PSC) {
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (UBPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (Zero, UBPW)
 			EXCM ()
 		}
 		Method (_PS1) {
-			ENCM ()
+			ENCM (0xFF)
 			Store (One, UBPW)
 			EXCM ()
 		}
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x03, LDN)
+			ENCM (3)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -923,14 +911,12 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x08, IO0)
 				IRQNoFlags (IRQX) {6}
 			})
-			ENCM ()
-			Store (0x03, LDN)
+			ENCM (3)
 			Store(IO1H, Local1)
 			Store(IO1L, Local0)
 			Store(IRQ0, Local2)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local0)
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
 			Store (Local0, IMIN)
@@ -979,15 +965,12 @@ Device(SIO) {
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			FindSetLeftBit (IRQL, Local3)
-			Subtract (Local3, 0x01, Local3)
+			Subtract(FindSetLeftBit (IRQL), 1, Local3)
 
-			ENCM ()
-			Store (3, LDN)
-			Store (Local1, IO1H)
+			ENCM (3)
 			Store (Local0, IO1L)
+			Store (Local1, IO1H)
 			Store (Local3, IRQ0)
 			Store (One, ACTR)
 			EXCM ()
@@ -997,7 +980,8 @@ Device(SIO) {
 
 	#ifndef NO_W83627HF_CIR
 	/* ========================= Consumer IR ========================= */
-	Device (CIR0) {
+	Device (CIR0)
+	{
 		Name (_HID, EisaId ("WEC1022")) /* Should be the correct one */
 		Name (_UID, "w83627hf-cir")
 		Name (_STR, Unicode("Winbond Consumer Infrared Transceiver"))
@@ -1005,8 +989,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x06, LDN)
+			ENCM (6)
 			If (ACTR) {
 				Store (0x0F, Local0)
 			}
@@ -1020,8 +1003,7 @@ Device(SIO) {
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x06, LDN)
+			ENCM (6)
 			Store (Zero, ACTR)
 			EXCM ()
 		}
@@ -1032,14 +1014,12 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x08, IO0)
 				IRQNoFlags (IRQX) {6}
 			})
-			ENCM ()
-			Store (0x03, LDN)
-			Store(IO1H, Local1)
+			ENCM (6)
 			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			Store(IRQ0, Local2)
 			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or (Local1, Local0, Local0)
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
 			Store (Local0, IMIN)
@@ -1072,15 +1052,12 @@ Device(SIO) {
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
 
-			FindSetLeftBit (IRQL, Local3)
-			Subtract (Local3, 0x01, Local3)
+			Subtract(FindSetLeftBit (IRQL), 1, Local3)
 
-			ENCM ()
-			Store (6, LDN)
-			Store (Local1, IO1H)
+			ENCM (6)
 			Store (Local0, IO1L)
+			Store (Local1, IO1H)
 			Store (Local3, IRQ0)
 			Store (One, ACTR)
 			EXCM ()
@@ -1090,22 +1067,25 @@ Device(SIO) {
 
 	#ifndef NO_W83627HF_KBC
 	/* ===================== Keyboard Controller ===================== */
-	Device (KBD0) {
+	Device (KBD0)
+	{
 		Name (_HID, EisaId ("PNP0303"))
-		Name (_CID, 0x0B03D041)
 		Name (_UID, "w83627hf-kbc")
 
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x05, LDN)
+			ENCM (5)
 			If (ACTR) {
 				Store (0x0F, Local0)
 			}
 			ElseIf (Lor(LOr (IO1H, IO1L), LOr (IO2H, IO2L)))
 			{
+				#ifdef W83627HF_KBC_COMPAT
+				Store (0x0F, Local0)
+				#else
 				Store (0x0D, Local0)
+				#endif
 			}
 			EXCM ()
 			Return (Local0)
@@ -1113,8 +1093,7 @@ Device(SIO) {
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x05, LDN)
+			ENCM (5)
 			Store (Zero, ACTR)
 			EXCM ()
 			Notify(PS2M, 1)
@@ -1123,23 +1102,20 @@ Device(SIO) {
 		Method (_CRS)
 		{
 			Name (CRS, ResourceTemplate () {
+				IRQNoFlags (IRQX) {}
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO0)
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO1)
-				IRQNoFlags (IRQX) {}
 			})
-			ENCM ()
-			Store (0x05, LDN)
-			Store(IO1H, Local0)
-			Store(IO1L, Local1)
-			Store(IO2H, Local2)
-			Store(IO2L, Local3)
+			ENCM (5)
+			Store(IO1L, Local0)
+			Store(IO1H, Local1)
+			Store(IO2L, Local2)
+			Store(IO2H, Local3)
 			Store(IRQ0, Local4)
 			EXCM ()
-			ShiftLeft(Local0, 8, Local0)
-			Or (Local1, Local0, Local0)
 
-			ShiftLeft(Local2, 8, Local2)
-			Or (Local1, Local0, Local0)
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
+			Or(ShiftLeft(Local3, 8), Local2, Local2)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
 			Store (Local0, IMIN)
@@ -1161,9 +1137,9 @@ Device(SIO) {
 		Name (_PRS, ResourceTemplate ()
 		{
 			StartDependentFn (0,0) {
+				IRQNoFlags () {1}
 				IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
 				IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
-				IRQNoFlags () {1}
 			}
 			EndDependentFn()
 		})
@@ -1171,50 +1147,50 @@ Device(SIO) {
 		Method (_SRS, 1, Serialized)
 		{
 			Name (TMPL, ResourceTemplate () {
+				IRQNoFlags (IRQX) {}
 				IO (Decode16, 0, 0, 1, 1, IO0)
 				IO (Decode16, 0, 0, 1, 1, IO1)
-				IRQNoFlags (IRQX) {}
 			})
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateWordField (Arg0, IO1._MIN, IOA1)
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
-			ShiftRight(Local1, 8, Local1)
-
 			Divide(IOA1, 256, Local2, Local3)
-			ShiftRight(Local1, 8, Local1)
 
-			FindSetLeftBit (IRQL, Local4)
-			Subtract (Local4, 0x01, Local4)
+			Subtract(FindSetLeftBit (IRQL), 1, Local4)
 
-			ENCM ()
-			Store (5, LDN)
-			Store (Local1, IO1H)
+			ENCM (5)
 			Store (Local0, IO1L)
-			Store (Local3, IO2H)
+			Store (Local1, IO1H)
 			Store (Local2, IO2L)
-			Store (Local3, IRQ0)
+			Store (Local3, IO2H)
+			Store (Local4, IRQ0)
 			Store (One, ACTR)
 			EXCM ()
+			Notify(PS2M, 1)
 		}
 	}
 	#ifndef NO_W83627HF_PS2M
-	Device (PS2M) {
+	Device (PS2M)
+	{
 		Name (_HID, EisaId ("PNP0F13"))
 		Name (_UID, "w83627hf-ps2m")
 
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x05, LDN)
+			ENCM (5)
 			If (LAnd(ACTR, IRQ1) ) {
 				Store (0x0F, Local0)
 			}
 			ElseIf (Lor(LOr (IO1H, IO1L), LOr (IO2H, IO2L)))
 			{
+				#ifdef W83627HF_KBC_COMPAT
+				Store (0x0F, Local0)
+				#else
 				Store (0x0D, Local0)
+				#endif
 			}
 			EXCM ()
 			Return (Local0)
@@ -1222,8 +1198,7 @@ Device(SIO) {
 
 		Method (_DIS)
 		{
-			ENCM ()
-			Store (0x05, LDN)
+			ENCM (5)
 			Store (Zero, IRQ1)
 			EXCM ()
 		}
@@ -1232,32 +1207,10 @@ Device(SIO) {
 		{
 			Name (CRS, ResourceTemplate () {
 				IRQNoFlags (IRQX) {}
-				IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO0)
-				IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO1)
 			})
-			ENCM ()
-			Store (0x05, LDN)
-			Store(IO1H, Local0)
-			Store(IO1L, Local1)
-			Store(IO2H, Local2)
-			Store(IO2L, Local3)
+			ENCM (5)
 			Store(IRQ1, Local4)
 			EXCM ()
-			ShiftLeft(Local0, 8, Local0)
-			Or (Local1, Local0, Local0)
-
-			ShiftLeft(Local2, 8, Local2)
-			Or (Local1, Local0, Local0)
-
-			CreateWordField (CRS, IO0._MIN, IMIN)
-			Store (Local0, IMIN)
-			CreateWordField (CRS, IO0._MAX, IMAX)
-			Store (Local0, IMAX)
-
-			CreateWordField (CRS, IO1._MIN, I1MI)
-			Store (Local2, I1MI)
-			CreateWordField (CRS, IO1._MAX, I1MA)
-			Store (Local2, I1MA)
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Store (One, Local5)
@@ -1272,7 +1225,7 @@ Device(SIO) {
 				IRQNoFlags () {12}
 			}
 			StartDependentFn (2,0) {
-				IRQNoFlags () {1,3,4,5,6,7,9,10,11,12}
+				IRQNoFlags () {1,3,4,5,6,7,9,10,11}
 			}
 			EndDependentFn()
 		})
@@ -1284,14 +1237,11 @@ Device(SIO) {
 			})
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
-			FindSetLeftBit (IRQL, Local0)
-			Subtract (Local0, 0x01, Local0)
+			Subtract(FindSetLeftBit (IRQL), 1, Local0)
 
-			ENCM ()
-			Store (5, LDN)
+			ENCM (5)
 			Store (Local0, IRQ1)
 			/* Only activates if KBD is active */
-			Store (One, ACTR)
 			EXCM ()
 		}
 	}
@@ -1300,15 +1250,15 @@ Device(SIO) {
 
 	#ifndef NO_W83627HF_GAME
 	/* ========================== Game Port ========================== */
-	Device (GAME) {
+	Device (GAME)
+	{
 		Name (_HID, EisaId ("PNPB02F"))
 		Name (_STR, Unicode ("Joystick/Game Port"))
 		Name (_UID, "w83627hf-game")
 
 		Method (_STA) {
-			ENCM ()
 			Store(0, Local0)
-			Store (0x07, LDN)
+			ENCM (7)
 			If (LOr(IO1L, IO1H)) {
 				If (LOr(ACTR, ACT1)) {
 					Store (0x0F, Local0)
@@ -1327,18 +1277,17 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x01, IO0)
 				IRQNoFlags (IRQX) {}
 			})
-			ENCM ()
-			Store (0x07, LDN)
-			Store(IO1H, Local0)
-			Store(IO1L, Local1)
+			ENCM (7)
+			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			Store(IRQ0, Local2)
 			EXCM ()
-			ShiftLeft(Local0, 8, Local0)
-			Or (Local1, Local0, Local0)
+
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
-			Store (Local0, IMIN)
 			CreateWordField (CRS, IO0._MAX, IMAX)
+			Store (Local0, IMIN)
 			Store (Local0, IMAX)
 
 			If (Local2) {
@@ -1355,15 +1304,16 @@ Device(SIO) {
 
 	#ifndef NO_W83627HF_MIDI
 	/* ========================== MIDI Port ========================== */
-	Device (MIDI) {
+	Device (MIDI)
+	{
 		Name (_HID, EisaId ("PNPB006"))
 		Name (_STR, Unicode ("MPU-401 Compatible MIDI Port"))
 		Name (_UID, "w83627hf-midi")
 
-		Method (_STA) {
-			ENCM ()
+		Method (_STA)
+		{
 			Store(0, Local0)
-			Store (0x07, LDN)
+			ENCM (7)
 			If (LOr(IO2L, IO2H)) {
 				If (LOr(ACTR, ACT2)) {
 					Store (0x0F, Local0)
@@ -1382,18 +1332,17 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x02, 0x02, IO0)
 				IRQNoFlags (IRQX) {}
 			})
-			ENCM ()
-			Store (0x07, LDN)
-			Store(IO2H, Local0)
-			Store(IO2L, Local1)
+			ENCM (7)
+			Store(IO2L, Local0)
+			Store(IO2H, Local1)
 			Store(IRQ1, Local2)
 			EXCM ()
-			ShiftLeft(Local0, 8, Local0)
-			Or (Local1, Local0, Local0)
+
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
-			Store (Local0, IMIN)
 			CreateWordField (CRS, IO0._MAX, IMAX)
+			Store (Local0, IMIN)
 			Store (Local0, IMAX)
 
 			If (Local2) {
@@ -1409,9 +1358,9 @@ Device(SIO) {
 	#endif
 
 	/* ==== Suspend LED control if it is connected to the SuperIO ==== */
-	Method (SLED, 1) {
-		ENCM ()
-		Store (9, LDN)
+	Method (SLED, 1)
+	{
+		ENCM (9)
 		Store(OPT4, Local0)
 		And(Local0, 63, Local0)
 		Or(Local0, ShiftLeft(And(Arg0, 0x03), 6), OPT4)
@@ -1419,9 +1368,9 @@ Device(SIO) {
 	}
 
 	/* ===== Power LED control if it is connected to the SuperIO ===== */
-	Method (PLED, 1) {
-		ENCM ()
-		Store (8, LDN)
+	Method (PLED, 1)
+	{
+		ENCM (8)
 		Store(OPT4, Local0)
 		And(Local0, 63, Local0)
 		Or(Local0, ShiftLeft(And(Arg0, 0x03), 6), OPT4)
@@ -1430,7 +1379,8 @@ Device(SIO) {
 
 	#ifndef NO_W83627HF_HWMON
 	/* ====================== Hardware Monitor ======================= */
-	Device (HMON) {
+	Device (HMON)
+	{
 		Name (_HID, EisaId ("PNP0C02")) // TODO: find better matching ID
 		Name (_STR, Unicode("W83627 Hardware Monitor"))
 		Name (_UID, "w83627hf-hwmon")
@@ -1438,8 +1388,7 @@ Device(SIO) {
 		Method (_STA)
 		{
 			Store (0x00, Local0)
-			ENCM ()
-			Store (0x0B, LDN)
+			ENCM (11)
 			If (ACTR) {
 				Store (0x0F, Local0)
 			}
@@ -1451,22 +1400,27 @@ Device(SIO) {
 			Return (Local0)
 		}
 
-		Method (_PSC) {
+		Method (_PSC)
+		{
 			Store(^^_PSC (), Local0)
 			If (Local0) { Return (Local0) }
-			ENCM ()
+			ENCM (0xFF)
 			Store (HWPW, Local0)
 			EXCM ()
 			If (Local0) { Return (1) }
 			Else { Return (0) }
 		}
-		Method (_PS0) {
-			ENCM ()
+
+		Method (_PS0)
+		{
+			ENCM (0xFF)
 			Store (Zero, HWPW)
 			EXCM ()
 		}
-		Method (_PS1) {
-			ENCM ()
+
+		Method (_PS1)
+		{
+			ENCM (0xFF)
 			Store (One, HWPW)
 			EXCM ()
 		}
@@ -1477,18 +1431,17 @@ Device(SIO) {
 				IO (Decode16, 0x0000, 0x0000, 0x08, 0x02, IO0)
 				IRQNoFlags (IRQX) {}
 			})
-			ENCM ()
-			Store (0x0B, LDN)
-			Store(IO1H, Local0)
-			Store(IO1L, Local1)
+			ENCM (11)
+			Store(IO1L, Local0)
+			Store(IO1H, Local1)
 			Store(IRQ1, Local2)
 			EXCM ()
-			ShiftLeft(Local0, 8, Local0)
-			Or (Local1, Local0, Local0)
+
+			Or(ShiftLeft(Local1, 8), Local0, Local0)
 
 			CreateWordField (CRS, IO0._MIN, IMIN)
-			Store (Local0, IMIN)
 			CreateWordField (CRS, IO0._MAX, IMAX)
+			Store (Local0, IMIN)
 			Store (Local0, IMAX)
 
 			If (Local2) {
@@ -1510,9 +1463,9 @@ Device(SIO) {
 	   Bit 4: Power loss event
 	   Bit 5: VSB power loss status
 	*/
-	Method (WAKS) {
-		ENCM ()
-		Store (0x0A, LDN)
+	Method (WAKS)
+	{
+		ENCM (10)
 		Store (CRE3, Local0)
 		EXCM ()
 		Return (Local0)

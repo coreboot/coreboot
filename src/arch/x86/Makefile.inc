@@ -58,13 +58,15 @@ extract_nth=$(word $(1), $(subst |, ,$(2)))
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
-		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
+	$(CBFSTOOL) $@.tmp add $(call extract_nth,1,$(file)) \
+	$(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) \
+	$(call extract_nth,4,$(file)) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
-	rm -f $@
-	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
-	$(prebuild-files)
+	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+	$(prebuild-files) true
+	mv $@.tmp $@
 else
 .PHONY: $(obj)/coreboot.pre1
 $(obj)/coreboot.pre1: $(CBFSTOOL)
@@ -269,10 +271,10 @@ endif
 
 $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	cp $(obj)/coreboot.pre1 $@
-	$(CBFSTOOL) $@ add-stage $(obj)/romstage.elf \
+	cp $(obj)/coreboot.pre1 $@.tmp
+	$(CBFSTOOL) $@.tmp add-stage $(obj)/romstage.elf \
 	    $(CONFIG_CBFS_PREFIX)/romstage x 0x$(shell cat $(obj)/location.txt)
+	mv $@.tmp $@
 #FIXME: location.txt might require an offset of header size
 
 #######################################################################

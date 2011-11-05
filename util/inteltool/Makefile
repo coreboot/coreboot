@@ -22,7 +22,7 @@
 PROGRAM = inteltool
 
 CC      = gcc
-INSTALL = /usr/bin/install
+INSTALL = $(shell which install)
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -W
 LDFLAGS = -lpci -lz

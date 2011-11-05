@@ -289,7 +289,7 @@ function compile_target
 	eval $MAKE $silent -j $cpus DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
-	mv .xcompile ${build_dir}/xcompile.build
+	cp .xcompile ${build_dir}/xcompile.build
 	cd $TARGET/${VENDOR}_${MAINBOARD}
 
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`

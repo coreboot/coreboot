@@ -222,7 +222,7 @@ function create_config
 		fi
 	fi
 
-	#yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
+	#yes "" | $MAKE oldconfig obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	yes "" | $MAKE oldconfig DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
@@ -286,7 +286,7 @@ function compile_target
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
-	eval $MAKE $silent -j $cpus DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
+	eval $MAKE $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
 	cp .xcompile ${build_dir}/xcompile.build
@@ -623,6 +623,10 @@ while true ; do
 		*)		break;;
 	esac
 done
+
+if [ "$cpus" != "1" ]; then
+	export MAKEFLAGS="-j $cpus"
+fi
 
 # /path/to/freebios2/
 test -z "$1" || ROOT=$1

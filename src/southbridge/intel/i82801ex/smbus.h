@@ -1,5 +1,9 @@
 #include <device/smbus_def.h>
 
+//#define SMBUS_IO_BASE 0x0f00
+#define SMBUS_IO_BASE 0x400
+#define SMB_BASE 0x20
+
 #define SMBHSTSTAT 0x0
 #define SMBHSTCTL  0x2
 #define SMBHSTCMD  0x3

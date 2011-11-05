@@ -17,9 +17,12 @@
 ABUILD_DATE="December 10th, 2010"
 ABUILD_VERSION="0.9.1"
 
+TOP=$PWD
+
 # Where shall we place all the build trees?
 TARGET=coreboot-builds
-XMLFILE=$( pwd )/abuild.xml
+XMLFILE=$TOP/abuild.xml
+REAL_XMLFILE=$XMLFILE
 
 # path to payload. Should be more generic
 PAYLOAD=/dev/null
@@ -363,6 +366,7 @@ function build_target
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
+	XMLFILE=$TOP/$TARGET/${VENDOR}_${MAINBOARD}/abuild.xml
 
 	xml "<mainboard>"
 	xml ""
@@ -652,6 +656,8 @@ if [ "$target" != "" ]; then
 	fi
 	build_target $VENDOR $MAINBOARD $CONFIG
 	test_target $VENDOR $MAINBOARD
+	cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
+	XMLFILE=$REAL_XMLFILE
 else
 	# build all boards per default
 	for VENDOR in $( vendors ); do
@@ -661,6 +667,10 @@ else
 			remove_target $VENDOR $MAINBOARD
 		done
 	done
+	for xmlfile in $TARGET/*_*/abuild.xml; do
+		cat $xmlfile >> $REAL_XMLFILE
+	done
+	XMLFILE=$REAL_XMLFILE
 fi
 xml '</abuild>'
 junit '</testsuite>'

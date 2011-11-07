@@ -211,7 +211,9 @@ if [ $SKIPGDB -eq 1 ]; then
 	fi
 fi
 if [ $SKIPPYTHON -eq 1 ]; then
+	PYTHON_ARCHIVE=""
 	PYTHON_PACKAGE=""
+	EXPAT_ARCHIVE=""
 	EXPAT_PACKAGE=""
 fi
 

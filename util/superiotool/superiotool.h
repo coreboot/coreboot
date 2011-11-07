@@ -195,6 +195,10 @@ void probe_idregs_fintek(uint16_t port);
 void probe_idregs_fintek_alternative(uint16_t port);
 void print_fintek_chips(void);
 
+/* infineon.c */
+void probe_idregs_infineon(uint16_t port);
+void print_infineon_chips(void);
+
 /* ite.c */
 void probe_idregs_ite(uint16_t port);
 void print_ite_chips(void);
@@ -243,6 +247,7 @@ static const struct {
 	{probe_idregs_amd,	{0xaa, EOT}},
 #endif
 	{probe_idregs_serverengines,	{0x2e, EOT}},
+	{probe_idregs_infineon,	{0x2e, 0x4e}},
 };
 
 /** Table of functions to print out supported Super I/O chips. */
@@ -261,6 +266,7 @@ static const struct {
 	{print_amd_chips},
 #endif
 	{print_serverengines_chips},
+	{print_infineon_chips},
 };
 
 #endif

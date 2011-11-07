@@ -12,33 +12,32 @@
 #include <arch/ioapic.h>
 #include "i82801ex.h"
 
-#define ACPI_BAR 0x40
-#define GPIO_BAR 0x58
+#define ACPI_BAR	0x40
+#define GPIO_BAR	0x58
+#define PIRQ_ABCD_OUT	0x60
+#define PIRQ_EFGH_OUT	0x68
 
-#define NMI_OFF 0
-#define MAINBOARD_POWER_OFF 0
-#define MAINBOARD_POWER_ON  1
+#define NMI_OFF			0
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
 
 #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
-#define SERIRQ_CNTL 0x64
 static void i82801ex_enable_serial_irqs(device_t dev)
 {
 	/* set packet length and toggle silent mode bit */
-	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(1 << 6)|((21 - 17) << 2)|(0 << 0));
-	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(0 << 6)|((21 - 17) << 2)|(0 << 0));
+	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
+	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 }
 
-#define PCI_DMA_CFG 0x90
 static void i82801ex_pci_dma_cfg(device_t dev)
 {
 	/* Set PCI DMA CFG to lpc I/F DMA */
 	pci_write_config16(dev, PCI_DMA_CFG, 0xfcff);
 }
 
-#define LPC_EN 0xe6
 static void i82801ex_enable_lpc(device_t dev)
 {
         /* lpc i/f enable */
@@ -169,10 +168,10 @@ static void i82801ex_pirq_init(device_t dev)
 	config = dev->chip_info;
 
 	if(config->pirq_a_d) {
-		pci_write_config32(dev, 0x60, config->pirq_a_d);
+		pci_write_config32(dev, PIRQ_ABCD_OUT, config->pirq_a_d);
 	}
 	if(config->pirq_e_h) {
-		pci_write_config32(dev, 0x68, config->pirq_e_h);
+		pci_write_config32(dev, PIRQ_EFGH_OUT, config->pirq_e_h);
 	}
 }
 
@@ -230,25 +229,25 @@ static void enable_hpet(struct device *dev)
 	 */
 
 	dword &= ~(3 << 15); /* clear it */
-	dword |= (code<<15);
+	dword |= (code << 15);
 	pci_write_config32(dev, GEN_CNTL, dword);
 
-	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address | (code <<12) );
+	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address | (code << 12) );
 }
 
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint32_t value;
-	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/* IO APIC initialization */
-	value = pci_read_config32(dev, 0xd0);
-	value |= (1 << 8)|(1<<7)|(1<<1);
-	pci_write_config32(dev, 0xd0, value);
-	value = pci_read_config32(dev, 0xd4);
-	value |= (1<<1);
-	pci_write_config32(dev, 0xd4, value);
+	value = pci_read_config32(dev, GEN_CNTL);
+	value |= (1 << 8) | (1 << 7) | (1 << 1);
+	pci_write_config32(dev, GEN_CNTL, value);
+	value = pci_read_config32(dev, GEN_STA);
+	value |= (1 << 1);
+	pci_write_config32(dev, GEN_STA, value);
 	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IO APIC ID.
 
 	i82801ex_enable_serial_irqs(dev);
@@ -258,16 +257,16 @@ static void lpc_init(struct device *dev)
 	i82801ex_enable_lpc(dev);
 
 	/* Clear SATA to non raid */
-	pci_write_config8(dev, 0xae, 0x00);
+	pci_write_config8(dev, SATA_RD_CFG, 0x00);
 
         get_option(&pwr_on, "power_on_after_fail");
-	byte = pci_read_config8(dev, 0xa4);
+	byte = pci_read_config8(dev, GEN_PMCON_3);
 	byte &= 0xfe;
 	if (!pwr_on) {
 		byte |= 1;
 	}
-	pci_write_config8(dev, 0xa4, byte);
-	printk(BIOS_INFO, "set power %s after power fail\n", pwr_on?"on":"off");
+	pci_write_config8(dev, GEN_PMCON_3, byte);
+	printk(BIOS_INFO, "set power %s after power fail\n", pwr_on ? "on" : "off");
 
 	/* Set up the PIRQ */
 	i82801ex_pirq_init(dev);
@@ -282,7 +281,7 @@ static void lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Disable IDE (needed when sata is enabled) */
-	pci_write_config8(dev, 0xf2, 0x60);
+	pci_write_config8(dev, FUNC_DIS, 0x60);
 
 	enable_hpet(dev);
 }
@@ -327,14 +326,14 @@ static void i82801ex_lpc_enable_resources(device_t dev)
 	pci_dev_enable_resources(dev);
 
 	/* Enable the ACPI bar */
-	acpi_cntl = pci_read_config8(dev, 0x44);
+	acpi_cntl = pci_read_config8(dev, ACPI_CNTL);
 	acpi_cntl |= (1 << 4);
-	pci_write_config8(dev, 0x44, acpi_cntl);
+	pci_write_config8(dev, ACPI_CNTL, acpi_cntl);
 
 	/* Enable the GPIO bar */
-	gpio_cntl = pci_read_config8(dev, 0x5c);
+	gpio_cntl = pci_read_config8(dev, GPIO_CNTL);
 	gpio_cntl |= (1 << 4);
-	pci_write_config8(dev, 0x5c, gpio_cntl);
+	pci_write_config8(dev, GPIO_CNTL, gpio_cntl);
 }
 
 static struct pci_operations lops_pci = {

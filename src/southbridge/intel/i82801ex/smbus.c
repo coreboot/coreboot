@@ -16,7 +16,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, SMB_BASE);
 
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -46,4 +46,3 @@ static const struct pci_driver smbus_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_SMB,
 };
-

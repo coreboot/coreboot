@@ -12,13 +12,13 @@ void i82801ex_enable(device_t dev)
 
 	/* See if we are behind the i82801ex pci bridge */
 	lpc_dev = dev_find_slot(dev->bus->secondary, PCI_DEVFN(0x1f, 0));
-	if((dev->path.pci.devfn &0xf8)== 0xf8) {
+	if((dev->path.pci.devfn & 0xf8) == 0xf8) {
 		index = dev->path.pci.devfn & 7;
 	}
-	else if((dev->path.pci.devfn &0xf8)== 0xe8) {
-		index = (dev->path.pci.devfn & 7) +8;
+	else if((dev->path.pci.devfn & 0xf8) == 0xe8) {
+		index = (dev->path.pci.devfn & 7) + 8;
 	}
-	if ((!lpc_dev) || (index >= 16) || ((1<<index)&0x3091)) {
+	if ((!lpc_dev) || (index >= 16) || ((1 << index) & 0x3091)) {
 		return;
 	}
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_INTEL) ||
@@ -31,13 +31,13 @@ void i82801ex_enable(device_t dev)
 		}
 	}
 
-	reg = reg_old = pci_read_config16(lpc_dev, 0xf2);
+	reg = reg_old = pci_read_config16(lpc_dev, FUNC_DIS);
 	reg &= ~(1 << index);
 	if (!dev->enabled) {
 		reg |= (1 << index);
 	}
 	if (reg != reg_old) {
-		pci_write_config16(lpc_dev, 0xf2, reg);
+		pci_write_config16(lpc_dev, FUNC_DIS, reg);
 	}
 
 }

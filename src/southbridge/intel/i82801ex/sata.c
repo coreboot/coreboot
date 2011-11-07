@@ -5,35 +5,41 @@
 #include <device/pci_ops.h>
 #include "i82801ex.h"
 
+#define SATA_PI		0x9
+#define SATA_MAP	0x90
+#define SATA_PCS	0x92
+#define SATA_SRI	0xa0
+#define SATA_SRD	0xa4
+
 static void sata_init(struct device *dev)
 {
   	printk(BIOS_DEBUG, "SATA init\n");
 	/* SATA configuration */
-	pci_write_config8(dev, 0x04, 0x07);
-	pci_write_config8(dev, 0x09, 0x8f);
+	pci_write_config8(dev, PCICMD, 0x07);
+	pci_write_config8(dev, SATA_PI, 0x8f);
 
-	/* Set timmings */
-	pci_write_config16(dev, 0x40, 0x0a307);
-	pci_write_config16(dev, 0x42, 0x0a307);
+	/* Set timings */
+	pci_write_config16(dev, IDE_TIMP, 0x0a307);
+	pci_write_config16(dev, IDE_TIMS, 0x0a307);
 
 	/* Sync DMA */
-	pci_write_config16(dev, 0x48, 0x000f);
-	pci_write_config16(dev, 0x4a, 0x1111);
+	pci_write_config16(dev, SDMA_CNT, 0x000f);
+	pci_write_config16(dev, SDMA_TIM, 0x1111);
 
 	/* 66 mhz */
-	pci_write_config16(dev, 0x54, 0xf00f);
+	pci_write_config16(dev, IDE_CONFIG, 0xf00f);
 
 	/* Combine ide - sata configuration */
-	pci_write_config8(dev, 0x90, 0x0);
+	pci_write_config8(dev, SATA_MAP, 0x0);
 
 	/* port 0 & 1 enable */
-	pci_write_config8(dev, 0x92, 0x33);
+	pci_write_config8(dev, SATA_PCS, 0x33);
 
 	/* initialize SATA  */
-	pci_write_config16(dev, 0xa0, 0x0018);
-	pci_write_config32(dev, 0xa4, 0x00000264);
-	pci_write_config16(dev, 0xa0, 0x0040);
-	pci_write_config32(dev, 0xa4, 0x00220043);
+	pci_write_config16(dev, SATA_SRI, 0x0018);
+	pci_write_config32(dev, SATA_SRD, 0x00000264);
+	pci_write_config16(dev, SATA_SRI, 0x0040);
+	pci_write_config32(dev, SATA_SRD, 0x00220043);
 
 }
 
@@ -57,4 +63,3 @@ static const struct pci_driver sata_driver_nr __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801EB_SATA,
 };
-

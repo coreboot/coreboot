@@ -1,5 +1,10 @@
 #include <device/smbus_def.h>
 
+#define SMBUS_IO_BASE	0xf00
+#define SMB_BASE 	0x20
+#define SLV_CMD		0x11
+#define HOSTC		0x40
+
 #define SMBHSTSTAT 0x0
 #define SMBHSTCTL  0x2
 #define SMBHSTCMD  0x3
@@ -102,4 +107,3 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	}
 	return byte;
 }
-

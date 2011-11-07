@@ -5,27 +5,30 @@
 #include <device/pci_ops.h>
 #include "i82801ex.h"
 
+#define PCISTS 0x6
+#define SECSTS 0x1e
+
 static void pci_init(struct device *dev)
 {
 	uint16_t word;
 
 	/* Clear system errors */
-	word = pci_read_config16(dev, 0x06);
+	word = pci_read_config16(dev, PCISTS);
 	word |= 0xf900; /* Clear possible errors */
-	pci_write_config16(dev, 0x06, word);
+	pci_write_config16(dev, PCISTS, word);
 
 #if 0
 	/* System error enable */
 	uint32_t dword;
-	dword = pci_read_config32(dev, 0x04);
-	dword |= (1<<8); /* SERR# Enable */
-	dword |= (1<<6); /* Parity Error Response */
-	pci_write_config32(dev, 0x04, dword);
+	dword = pci_read_config32(dev, PCICMD);
+	dword |= (1 << 8); /* SERR# Enable */
+	dword |= (1 << 6); /* Parity Error Response */
+	pci_write_config32(dev, PCICMD, dword);
 #endif
 
-	word = pci_read_config16(dev, 0x1e);
+	word = pci_read_config16(dev, SECSTS);
 	word |= 0xf800; /* Clear possible errors */
-	pci_write_config16(dev, 0x1e, word);
+	pci_write_config16(dev, SECSTS, word);
 }
 
 static struct device_operations pci_ops  = {
@@ -42,4 +45,3 @@ static const struct pci_driver pci_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_PCI,
 };
-

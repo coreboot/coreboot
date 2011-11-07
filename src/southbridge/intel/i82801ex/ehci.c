@@ -5,6 +5,8 @@
 #include <device/pci_ops.h>
 #include "i82801ex.h"
 
+#define ACCESS_CNTL 0x80
+
 static void ehci_init(struct device *dev)
 {
 	uint32_t cmd;
@@ -20,14 +22,14 @@ static void ehci_init(struct device *dev)
 static void ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	uint8_t access_cntl;
-	access_cntl = pci_read_config8(dev, 0x80);
+	access_cntl = pci_read_config8(dev, ACCESS_CNTL);
 	/* Enable writes to protected registers */
-	pci_write_config8(dev, 0x80, access_cntl | 1);
+	pci_write_config8(dev, ACCESS_CNTL, access_cntl | 1);
 	/* Write the subsystem vendor and device id */
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 	/* Restore protection */
-	pci_write_config8(dev, 0x80, access_cntl);
+	pci_write_config8(dev, ACCESS_CNTL, access_cntl);
 }
 
 static struct pci_operations lops_pci = {

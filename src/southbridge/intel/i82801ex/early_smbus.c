@@ -1,6 +1,5 @@
+#include "i82801ex.h"
 #include "smbus.h"
-
-#define SMBUS_IO_BASE 0x0f00
 
 static void enable_smbus(void)
 {
@@ -8,14 +7,19 @@ static void enable_smbus(void)
 
 	print_spew("SMBus controller enabled\n");
 
-	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
-	print_debug_hex32(pci_read_config32(dev, 0x20));
+	/* bit 0 is read only and hardwired to 1 */
+	pci_write_config32(dev, SMB_BASE, SMBUS_IO_BASE);
+	print_debug("SMB_BASE = 0x");
+	/* don't show bit 0 */
+	print_debug_hex32(pci_read_config32(dev, SMB_BASE) & 0xfffffffe);
+	print_debug("\n");
+
 	/* Set smbus enable */
-	pci_write_config8(dev, 0x40, 1);
+	pci_write_config8(dev, HOSTC, 1);
 	/* Set smbus iospace enable */
-	pci_write_config8(dev, 0x4, 1);
+	pci_write_config8(dev, PCICMD, 1);
 	/* SMBALERT_DIS */
-	pci_write_config8(dev, 0x11, 4);
+	pci_write_config8(dev, SLV_CMD, 4);
 
 	/* Disable interrupt generation */
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
@@ -81,7 +85,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	/* setup transaction */
 	/* Obtain ownership */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	for(stat=0;(stat&0x40)==0;) {
+	for (stat = 0; (stat & 0x40) == 0;) {
 	stat = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 	/* clear the done bit */
@@ -99,13 +103,13 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	outb(length & 0xFF, SMBUS_IO_BASE + SMBHSTDAT0);
 
 	/* try sending out the first byte of data here */
-	byte=(data1>>(0))&0x0ff;
-	outb(byte,SMBUS_IO_BASE + SMBBLKDAT);
+	byte = (data1 >> (0) ) & 0x0ff;
+	outb(byte, SMBUS_IO_BASE + SMBBLKDAT);
 	/* issue a block write command */
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x5 << 2) | 0x40,
 			SMBUS_IO_BASE + SMBHSTCTL);
 
-	for(i=0;i<length;i++) {
+	for(i = 0; i < length; i++) {
 
 		/* poll for transaction completion */
 		if (smbus_wait_until_blk_done(SMBUS_IO_BASE) < 0) {
@@ -113,10 +117,10 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 		}
 
 		/* load the next byte */
-		if(i>3)
-			byte=(data2>>(i%4))&0x0ff;
+		if(i > 3)
+			byte= (data2 >> (i % 4)) & 0x0ff;
 		else
-			byte=(data1>>(i))&0x0ff;
+			byte=(data1 >> (i)) & 0x0ff;
 		outb(byte,SMBUS_IO_BASE + SMBBLKDAT);
 
 		/* clear the done bit */

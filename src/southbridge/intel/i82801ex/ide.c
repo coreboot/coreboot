@@ -7,18 +7,18 @@
 
 static void ide_init(struct device *dev)
 {
-	/* Enable IDE devices and timmings */
-	pci_write_config16(dev, 0x40, 0x0a307); // IDE0
-	pci_write_config16(dev, 0x42, 0x0a307); // IDE1
-	pci_write_config8(dev, 0x48, 0x05);
-	pci_write_config16(dev, 0x4a, 0x0101);
-	pci_write_config16(dev, 0x54, 0x5055);
+	/* Enable IDE devices and timings */
+	pci_write_config16(dev, IDE_TIMP, 0x0a307);
+	pci_write_config16(dev, IDE_TIMS, 0x0a307);
+	pci_write_config8(dev, SDMA_CNT, 0x05);
+	pci_write_config16(dev, SDMA_TIM, 0x0101);
+	pci_write_config16(dev, IDE_CONFIG, 0x5055);
 	printk(BIOS_DEBUG, "IDE Enabled\n");
 }
 
 static void i82801ex_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	/* This value is also visible in uchi[0-2] and smbus functions */
+	/* This value is also visible in uhci[0-2] and smbus functions */
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
@@ -40,4 +40,3 @@ static const struct pci_driver ide_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_IDE,
 };
-

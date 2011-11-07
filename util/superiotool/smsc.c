@@ -844,6 +844,19 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 		return;
 	}
 
+	/* Infineon TPM causes false match of FDC37N972 */
+	if (idreg == DEVICE_ID_REG && revreg == DEVICE_REV_REG &&
+	    id == 0x0b && rev == 0x00) {
+		/* Infineon sets config port in 0x27:0x26, but SMSC does not */
+		if (((regval(port, 0x27)<<8)|regval(port, 0x26)) == port) {
+			if (verbose)
+				printf(NOTFOUND "id=0x%02x, rev=0x%02x\n",
+					id, rev);
+			exit_conf_mode_smsc(port);
+			return;
+		}
+	}
+
 	printf("Found %s %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
 	       (id == 0x77 ? "ASUS" : "SMSC"), get_superio_name(reg_table, id),
 	       id, rev, port);

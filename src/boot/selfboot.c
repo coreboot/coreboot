@@ -31,14 +31,17 @@
 #include <cbfs.h>
 #include <lib.h>
 
-/* Maximum physical address we can use for the coreboot bounce buffer.
- */
+/* Maximum physical address we can use for the coreboot bounce buffer. */
 #ifndef MAX_ADDR
 #define MAX_ADDR -1UL
 #endif
 
+/* from coreboot_ram.ld: */
 extern unsigned char _ram_seg;
 extern unsigned char _eram_seg;
+
+static const unsigned long lb_start = (unsigned long)&_ram_seg;
+static const unsigned long lb_end = (unsigned long)&_eram_seg;
 
 struct segment {
 	struct segment *next;
@@ -51,36 +54,6 @@ struct segment {
 	unsigned long s_filesz;
 	int compression;
 };
-
-struct verify_callback {
-	struct verify_callback *next;
-	int (*callback)(struct verify_callback *vcb,
-		Elf_ehdr *ehdr, Elf_phdr *phdr, struct segment *head);
-	unsigned long desc_offset;
-	unsigned long desc_addr;
-};
-
-struct ip_checksum_vcb {
-	struct verify_callback data;
-	unsigned short ip_checksum;
-};
-
-static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
-
-void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
-{
-	struct cbfs_payload *payload;
-
-	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
-	if (payload == NULL)
-		return (void *) -1;
-	printk(BIOS_DEBUG, "Got a payload\n");
-
-	selfboot(lb_mem, payload);
-	printk(BIOS_EMERG, "SELFBOOT RETURNED!\n");
-
-	return (void *) -1;
-}
 
 /* The problem:
  * Static executables all want to share the same addresses
@@ -100,7 +73,6 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
  * - Coreboot is preserved, so it can be returned to.
  * - The implementation is still relatively simple,
  *   and much simpler than the general case implemented in kexec.
- *
  */
 
 static unsigned long bounce_size, bounce_buffer;
@@ -111,10 +83,12 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 	unsigned long mem_entries;
 	unsigned long buffer;
 	int i;
-	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
-	/* Double coreboot size so I have somewhere to place a copy to return to */
+	lb_size = lb_end - lb_start;
+	/* Plus coreboot size so I have somewhere
+	 * to place a copy to return to.
+	 */
 	lb_size = req_size + lb_size;
-	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	mem_entries = (mem->size - sizeof(*mem)) / sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
 		unsigned long mstart, mend;
@@ -149,7 +123,8 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	 */
 	int i;
 	unsigned long end = start + len;
-	unsigned long mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	unsigned long mem_entries = (mem->size - sizeof(*mem)) /
+		sizeof(mem->map[0]);
 
 	/* See if I conflict with the bounce buffer */
 	if (end >= buffer) {
@@ -194,8 +169,6 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	return 1;
 }
 
-static const unsigned long lb_start = (unsigned long)&_ram_seg;
-static const unsigned long lb_end = (unsigned long)&_eram_seg;
 
 static int overlaps_coreboot(struct segment *seg)
 {
@@ -211,7 +184,8 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	 * to load onto the bounce buffer instead.
 	 */
 	/* ret:  1 : A new segment is inserted before the seg.
-	 *       0 : A new segment is inserted after the seg, or no new one. */
+	 *       0 : A new segment is inserted after the seg, or no new one.
+	 */
 	unsigned long start, middle, end, ret = 0;
 
 	printk(BIOS_SPEW, "lb: [0x%016lx, 0x%016lx)\n",
@@ -557,5 +531,20 @@ static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 
  out:
 	return 0;
+}
+
+void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
+{
+	struct cbfs_payload *payload;
+
+	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
+	if (payload == NULL)
+		return (void *) -1;
+	printk(BIOS_DEBUG, "Got a payload\n");
+
+	selfboot(lb_mem, payload);
+	printk(BIOS_EMERG, "SELFBOOT RETURNED!\n");
+
+	return (void *) -1;
 }
 

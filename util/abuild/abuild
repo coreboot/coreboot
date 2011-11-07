@@ -656,7 +656,7 @@ if [ "$target" != "" ]; then
 	fi
 	build_target $VENDOR $MAINBOARD $CONFIG
 	test_target $VENDOR $MAINBOARD
-	cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
+	test "$mode" != "text" && cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
 	XMLFILE=$REAL_XMLFILE
 else
 	# build all boards per default
@@ -667,9 +667,11 @@ else
 			remove_target $VENDOR $MAINBOARD
 		done
 	done
-	for xmlfile in $TARGET/*_*/abuild.xml; do
-		cat $xmlfile >> $REAL_XMLFILE
-	done
+	if [ "$mode" != "text" ]; then
+		for xmlfile in $TARGET/*_*/abuild.xml; do
+			cat $xmlfile >> $REAL_XMLFILE
+		done
+	fi
 	XMLFILE=$REAL_XMLFILE
 fi
 xml '</abuild>'

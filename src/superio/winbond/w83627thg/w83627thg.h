@@ -34,4 +34,6 @@
 #define W83627THG_ACPI            10
 #define W83627THG_HWM             11   /* Hardware monitor */
 
+void w83627thg_set_clksel_48(device_t dev);
+
 #endif

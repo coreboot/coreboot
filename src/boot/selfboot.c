@@ -140,10 +140,10 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 		mtype = mem->map[i].type;
 		mstart = unpack_lb64(mem->map[i].start);
 		mend = mstart + unpack_lb64(mem->map[i].size);
-		if ((mtype == LB_MEM_RAM) && (start < mend) && (end > mstart)) {
+		if ((mtype == LB_MEM_RAM) && (start >= mstart) && (end < mend)) {
 			break;
 		}
-		if ((mtype == LB_MEM_TABLE) && (start < mend) && (end > mstart)) {
+		if ((mtype == LB_MEM_TABLE) && (start >= mstart) && (end < mend)) {
 			printk(BIOS_ERR, "Payload is overwriting coreboot tables.\n");
 			break;
 		}

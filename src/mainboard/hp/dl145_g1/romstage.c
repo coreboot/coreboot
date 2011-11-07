@@ -23,52 +23,52 @@
 
 static void memreset_setup(void)
 {
-   if (is_cpu_pre_c0()) {
-      /* Set the memreset low. */
-      outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
-      /* Ensure the BIOS has control of the memory lines. */
-      outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
-   } else {
-      /* Ensure the CPU has control of the memory lines. */
-      outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
-   }
+	if (is_cpu_pre_c0()) {
+		/* Set the memreset low. */
+		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
+		/* Ensure the BIOS has control of the memory lines. */
+		outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	} else {
+		/* Ensure the CPU has control of the memory lines. */
+		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	}
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-   if (is_cpu_pre_c0()) {
-      udelay(800);
-      /* Set memreset high. */
-      outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
-      udelay(90);
-   }
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		/* Set memreset high. */
+		outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
+		udelay(90);
+	}
 }
 
 #define SMBUS_HUB 0x18
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-  int ret,i;
-  unsigned device=(ctrl->channel0[0])>>8;
-  /* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-  i=2;
-  do {
-    ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-  } while ((ret!=0) && (i-->0));
-  smbus_write_byte(SMBUS_HUB, 0x03, 0);
+	int ret,i;
+	unsigned device=(ctrl->channel0[0])>>8;
+	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
+	i=2;
+	do {
+		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
+	} while ((ret!=0) && (i-->0));
+	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
 static inline void change_i2c_mux(unsigned device)
 {
-  int ret, i;
-  print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
-  i=2;
-  do {
-    ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-    print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
-  } while ((ret!=0) && (i-->0));
-  ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
-  print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
+	int ret, i;
+	print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
+	i=2;
+	do {
+		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
+		print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
+	} while ((ret!=0) && (i-->0));
+	ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
+	print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -107,16 +107,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;
 
-        if (bist == 0)
-                bsp_apicid = init_cpus(cpu_init_detectedx,sysinfo);
+	if (bist == 0)
+		bsp_apicid = init_cpus(cpu_init_detectedx,sysinfo);
 
- 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
+	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	setup_dl145g1_resource_map();
 	//setup_default_resource_map();
@@ -127,12 +127,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
-        wait_all_other_cores_started(bsp_apicid);
+	// It is said that we should start core1 after all core0 launched
+	start_other_cores();
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
-        ht_setup_chains_x(sysinfo);
+	ht_setup_chains_x(sysinfo);
 
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
@@ -156,13 +156,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	//dump_spd_registers(&sysinfo->ctrl[1]);
 	//dump_smbus_registers();
 
-        allow_all_aps_stop(bsp_apicid);
+	allow_all_aps_stop(bsp_apicid);
 
-        //It's the time to set ctrl now;
-        fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
+	//It's the time to set ctrl now;
+	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
-        memreset_setup();
-        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
+	memreset_setup();
+	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	//dump_pci_devices();
 

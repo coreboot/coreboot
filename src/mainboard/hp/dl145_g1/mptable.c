@@ -9,14 +9,14 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	int bus_isa;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LAPIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	get_bus_conf();
 
@@ -26,23 +26,23 @@ static void *smp_write_config_table(void *v)
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, m->apicid_8111, 0x20, IO_APIC_ADDR);
-        {
-                device_t dev;
-                struct resource *res;
-                dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3,1));
-                if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-                                smp_write_ioapic(mc, m->apicid_8131_1, 0x20, res->base);
-                        }
-                }
-                dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3+1,1));
-                if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-                                smp_write_ioapic(mc, m->apicid_8131_2, 0x20, res->base);
-                        }
-                }
+	{
+		device_t dev;
+		struct resource *res;
+		dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3,1));
+		if (dev) {
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				smp_write_ioapic(mc, m->apicid_8131_1, 0x20, res->base);
+			}
+		}
+		dev = dev_find_slot(m->bus_8131_0, PCI_DEVFN(m->sbdn3+1,1));
+		if (dev) {
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				smp_write_ioapic(mc, m->apicid_8131_2, 0x20, res->base);
+			}
+		}
 
 	}
 

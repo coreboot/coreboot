@@ -25,6 +25,20 @@
 #include <console/console.h>
 #include "k8x8xx.h"
 
+void k8x8xx_vt8237_mirrored_regs_fill(struct k8x8xx_vt8237_mirrored_regs *regs)
+{
+	msr_t msr;
+
+	regs->rom_shadow_ctrl_pg_c = 0xff;
+	regs->rom_shadow_ctrl_pg_d = 0xff;
+	regs->rom_shadow_ctrl_pg_e_memhole_smi_decoding = 0xff;
+	regs->rom_shadow_ctrl_pg_f_memhole = 0x30;
+	regs->smm_apic_decoding = 0x19;
+	msr = rdmsr(TOP_MEM);
+	regs->shadow_mem_ctrl = msr.lo >> 24;
+	regs->low_top_address = msr.lo >> 16;
+}
+
 /* We support here K8M890/K8T890 and VT8237R PCI1/Vlink which setup is not in separate
  * PCI device 0:11.7, but it is mapped to PCI 0:0.7 (0x70-0x7c for PCI1)
  */

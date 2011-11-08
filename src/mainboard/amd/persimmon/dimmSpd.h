@@ -50,10 +50,10 @@
 
 AGESA_STATUS
 AmdMemoryReadSPD (
-  IN UINT32 Func,
-  IN UINT32 Data,
-  IN OUT AGESA_READ_SPD_PARAMS *SpdData
-  );
+	IN UINT32 Func,
+	IN UINT32 Data,
+	IN OUT AGESA_READ_SPD_PARAMS *SpdData
+	);
 
 /*---------------------------------------------------------------------------------------
  *                          L O C A L    F U N C T I O N S

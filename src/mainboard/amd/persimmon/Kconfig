@@ -9,132 +9,130 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301 USA
 #
 
 if BOARD_AMD_PERSIMMON
 
 config BOARD_SPECIFIC_OPTIONS # dummy
-        def_bool y
-  select ARCH_X86
-  select CPU_AMD_AGESA_FAMILY14
-  select NORTHBRIDGE_AMD_AGESA_FAMILY14_ROOT_COMPLEX
-  select NORTHBRIDGE_AMD_AGESA_FAMILY14
-  select SOUTHBRIDGE_AMD_CIMX_SB800
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_AGESA_FAMILY14
+	select NORTHBRIDGE_AMD_AGESA_FAMILY14_ROOT_COMPLEX
+	select NORTHBRIDGE_AMD_AGESA_FAMILY14
+	select SOUTHBRIDGE_AMD_CIMX_SB800
 	select SUPERIO_FINTEK_F81865F
-  select BOARD_HAS_FADT
-        select HAVE_BUS_CONFIG
-        select HAVE_OPTION_TABLE
-        select HAVE_PIRQ_TABLE
-        select HAVE_MP_TABLE
-        select HAVE_MAINBOARD_RESOURCES
-        select HAVE_HARD_RESET
-        select SB_HT_CHAIN_UNITID_OFFSET_ONLY
-        select LIFT_BSP_APIC_ID
-  select SERIAL_CPU_INIT
-  select AMDMCT
-        select HAVE_ACPI_TABLES
-  select BOARD_ROMSIZE_KB_4096
-        select GFXUMA
+	select BOARD_HAS_FADT
+	select HAVE_BUS_CONFIG
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_MAINBOARD_RESOURCES
+	select HAVE_HARD_RESET
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select LIFT_BSP_APIC_ID
+	select SERIAL_CPU_INIT
+	select AMDMCT
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_4096
+	select GFXUMA
 
 config AMD_AGESA
-        bool
-        default y
+	bool
+	default y
 
 config MAINBOARD_DIR
-        string
-        default amd/persimmon
+	string
+	default amd/persimmon
 
 config APIC_ID_OFFSET
-        hex
-        default 0x0
+	hex
+	default 0x0
 
 config MAINBOARD_PART_NUMBER
-        string
-        default "Persimmon"
+	string
+	default "Persimmon"
 
 config HW_MEM_HOLE_SIZEK
-        hex
-        default 0x200000
+	hex
+	default 0x200000
 
 config MAX_CPUS
-        int
-        default 2
+	int
+	default 2
 
 config MAX_PHYSICAL_CPUS
-        int
-        default 1
+	int
+	default 1
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
-        bool
-        default n
+	bool
+	default n
 
 config MEM_TRAIN_SEQ
-        int
-        default 2
+	int
+	default 2
 
 config IRQ_SLOT_COUNT
-        int
-        default 11
+	int
+	default 11
 
 config RAMTOP
-        hex
-        default 0x1000000
+	hex
+	default 0x1000000
 
 config HEAP_SIZE
-        hex
-        default 0xc0000
+	hex
+	default 0xc0000
 
 config STACK_SIZE
-        hex
-        default 0x10000
+	hex
+	default 0x10000
 
 config ACPI_SSDTX_NUM
-        int
-        default 0
+	int
+	default 0
 
 config RAMBASE
-        hex
-        default 0x200000
+	hex
+	default 0x200000
 
 config SIO_PORT
-        hex
-        default 0x4e
+	hex
+	default 0x4e
 
 config ONBOARD_VGA_IS_PRIMARY
-        bool
-        default y
+	bool
+	default y
 
 config VGA_BIOS
-       bool
-       default n
+	bool
+	default n
 
 #config VGA_BIOS_FILE
-#        string "VGA BIOS path and filename"
-#        depends on VGA_BIOS
-#        default "rom/video/OntarioGenericVbios.bin"
+#	string "VGA BIOS path and filename"
+#	depends on VGA_BIOS
+#	default "rom/video/OntarioGenericVbios.bin"
 
 config VGA_BIOS_ID
-        string
-        default "1002,9802"
-
+	string
+	default "1002,9802"
 
 config SB800_AHCI_ROM
-        bool
-        default n
+	bool
+	default n
 
 config DRIVERS_PS2_KEYBOARD
-        bool
-        default n
+	bool
+	default n
 
 config WARNINGS_ARE_ERRORS
-        bool
-        default n
+	bool
+	default n
 
 endif # BOARD_AMD_PERSIMMON
-

@@ -28,6 +28,7 @@
 #endif
 #include "k8t890.h"
 
+#ifndef __PRE_RAM__
 struct k8x8xx_vt8237_mirrored_regs {
 	u16 low_top_address;
 	u8 rom_shadow_ctrl_pg_c,
@@ -38,20 +39,7 @@ struct k8x8xx_vt8237_mirrored_regs {
 		shadow_mem_ctrl;
 };
 
-static inline void k8x8xx_vt8237_mirrored_regs_fill(struct k8x8xx_vt8237_mirrored_regs *regs){
-	msr_t msr;
-
-	regs->rom_shadow_ctrl_pg_c = 0xff;
-	regs->rom_shadow_ctrl_pg_d = 0xff;
-	regs->rom_shadow_ctrl_pg_e_memhole_smi_decoding = 0xff;
-	regs->rom_shadow_ctrl_pg_f_memhole = 0x30;
-	regs->smm_apic_decoding = 0x19;
-	msr = rdmsr(TOP_MEM);
-	regs->shadow_mem_ctrl = msr.lo >> 24;
-	regs->low_top_address = msr.lo >> 16;
-}
-
-#ifndef __PRE_RAM__
+void k8x8xx_vt8237_mirrored_regs_fill(struct k8x8xx_vt8237_mirrored_regs *regs);
 void k8x8xx_vt8237r_cfg(struct device *, struct device *);
 #endif
 

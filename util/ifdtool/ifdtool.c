@@ -334,7 +334,7 @@ void inject_region(char *filename, char *image, int size, int region_type,
 	printf("File %s is %d bytes\n", region_fname, region_size);
 
 	if ( (region_size > region.size) || ((region_type != 1) &&
-		(region_size != region.size))) {
+		(region_size > region.size))) {
 		fprintf(stderr, "Region %s is %d(0x%x) bytes. File is %d(0x%x)"
 				" bytes. Not injecting.\n",
 				region_name(region_type), region.size,

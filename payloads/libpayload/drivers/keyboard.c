@@ -166,11 +166,13 @@ static struct layout_maps keyboard_layouts[] = {
 
 static void keyboard_cmd(unsigned char cmd, unsigned char val)
 {
+	while (inb(0x64) & 2);
 	outb(cmd, 0x60);
-	/* wait until keyboard controller accepts cmds: */
+	mdelay(20);
+
 	while (inb(0x64) & 2);
 	outb(val, 0x60);
-	while (inb(0x64) & 2);
+	mdelay(20);
 }
 
 int keyboard_havechar(void)

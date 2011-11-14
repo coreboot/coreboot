@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "inteltool.h"
 
 /*
@@ -72,7 +73,7 @@ int print_epbar(struct pci_dev *nb)
 		exit(1);
 	}
 
-	printf("EPBAR = 0x%08llx (MEM)\n\n", epbar_phys);
+	printf("EPBAR = 0x%08" PRIx64 " (MEM)\n\n", epbar_phys);
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(epbar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(epbar+i));
@@ -135,7 +136,7 @@ int print_dmibar(struct pci_dev *nb)
 		exit(1);
 	}
 
-	printf("DMIBAR = 0x%08llx (MEM)\n\n", dmibar_phys);
+	printf("DMIBAR = 0x%08" PRIx64 " (MEM)\n\n", dmibar_phys);
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(dmibar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
@@ -213,7 +214,7 @@ int print_pciexbar(struct pci_dev *nb)
 		return 1;
 	}
 
-	printf("PCIEXBAR: 0x%08llx\n", pciexbar_phys);
+	printf("PCIEXBAR: 0x%08" PRIx64 "\n", pciexbar_phys);
 
 	pciexbar = map_physical(pciexbar_phys, (max_busses * 1024 * 1024));
 

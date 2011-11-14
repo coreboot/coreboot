@@ -57,7 +57,7 @@ int msr_readerror = 0;
 
 msr_t rdmsr(int addr)
 {
-	uint8_t buf[8];
+	uint32_t buf[2];
 	msr_t msr = { 0xffffffff, 0xffffffff };
 
 	if (lseek(fd_msr, (off_t) addr, SEEK_SET) == -1) {
@@ -67,9 +67,8 @@ msr_t rdmsr(int addr)
 	}
 
 	if (read(fd_msr, buf, 8) == 8) {
-		msr.lo = *(uint32_t *)buf;
-		msr.hi = *(uint32_t *)(buf + 4);
-
+		msr.lo = buf[0];
+		msr.hi = buf[1];
 		return msr;
 	}
 

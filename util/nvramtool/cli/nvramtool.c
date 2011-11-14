@@ -143,7 +143,11 @@ int main(int argc, char *argv[])
 
 		if (fd_stat.st_size < 128) {
 			lseek(fd, 127, SEEK_SET);
-			write(fd, "\0", 1);
+			if (write(fd, "\0", 1) != 1) {
+				fprintf(stderr, "Unable to extended '%s' to its full size.\n",
+						nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
+				exit(1);
+			}
 			fsync(fd);
 		}
 

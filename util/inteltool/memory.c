@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "inteltool.h"
 
 /*
@@ -130,9 +131,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	}
 
 	if (nb->device_id == PCI_DEVICE_ID_INTEL_82865)
-		printf("BAR6 = 0x%08llx (MEM)\n\n", mchbar_phys);
+		printf("BAR6 = 0x%08" PRIx64 " (MEM)\n\n", mchbar_phys);
 	else
-		printf("MCHBAR = 0x%08llx (MEM)\n\n", mchbar_phys);
+		printf("MCHBAR = 0x%08" PRIx64 " (MEM)\n\n", mchbar_phys);
 
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(mchbar + i))

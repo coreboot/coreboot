@@ -67,8 +67,10 @@ msr_t rdmsr(int addr)
 	}
 
 	if (read(fd_msr, buf, 8) == 8) {
-		msr.lo = *(uint32_t *)buf;
-		msr.hi = *(uint32_t *)(buf + 4);
+		msr.lo = buf[0] | (buf[1] << 8) |
+			 (buf[2] << 16) | (buf[3] << 24);
+		msr.hi = buf[4] | (buf[5] << 8) |
+			 (buf[6] << 16) | (buf[7] << 24);
 
 		return msr;
 	}

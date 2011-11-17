@@ -27,7 +27,6 @@
  * Infineon slb9635), so this driver provides access to locality 0 only.
  */
 
-/* #define DEBUG */
 #include <stdlib.h>
 #include <string.h>
 #include <delay.h>
@@ -37,17 +36,11 @@
 #include <pc80/tpm.h>
 #include <cpu/x86/car.h>
 
-#ifdef DEBUG
-#define TPM_DEBUG_ON	1
-#else
-#define TPM_DEBUG_ON	0
-#endif
-
 #define PREFIX "lpc_tpm: "
 
 /* coreboot wrapper for TPM driver (start) */
 #define	TPM_DEBUG(fmt, args...)		\
-	if (TPM_DEBUG_ON) {		\
+	if (CONFIG_DEBUG_TPM) {		\
 		printk(BIOS_DEBUG, PREFIX);		\
 		printk(BIOS_DEBUG, fmt , ##args);	\
 	}

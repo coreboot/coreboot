@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+#if CONFIG_PCI_CONF2
 /*
  * Before we decide to use direct hardware access mechanisms, we try to do some
  * trivial checks to ensure it at least _seems_ to be working -- we just test
@@ -41,7 +42,7 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 	return 0;
 }
 
-struct pci_bus_operations *pci_bus_fallback_ops = NULL;
+static struct pci_bus_operations *pci_bus_fallback_ops = NULL;
 
 static const struct pci_bus_operations *pci_check_direct(void)
 {
@@ -89,6 +90,12 @@ const struct pci_bus_operations *pci_remember_direct(void)
 		pci_bus_fallback_ops = (struct pci_bus_operations *)pci_check_direct();
 	return pci_bus_fallback_ops;
 }
+#else
+const struct pci_bus_operations *pci_remember_direct(void)
+{
+	return &pci_cf8_conf1;
+}
+#endif
 
 /** Set the method to be used for PCI, type I or type II
  */

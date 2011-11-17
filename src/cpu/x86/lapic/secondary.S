@@ -47,7 +47,7 @@ _secondary_start:
 1:	hlt
 	jmp	1b
 
-	gdtaddr:
+gdtaddr:
 	.word   gdt_limit	/* the table limit */
 	.long   gdt             /* we know the offset */
 

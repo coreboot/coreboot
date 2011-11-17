@@ -100,4 +100,8 @@ config IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	bool
 	default n
 
+config PCI_CONF2
+	bool
+	default n
+
 endmenu

@@ -96,4 +96,8 @@ config LITTLE_ENDIAN
 	bool
 	default !BIG_ENDIAN
 
+config PCI_CONF2
+	bool
+	default n
+
 endmenu

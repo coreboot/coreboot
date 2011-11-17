@@ -862,6 +862,13 @@ config X86EMU_DEBUG_IO
 
 	  If unsure, say N.
 
+config DEBUG_TPM
+	bool "Output verbose TPM debug messages"
+	default n
+	depends on TPM
+	help
+	  This option enables additional TPM related debug messages.
+
 config LLSHELL
 	bool "Built-in low-level shell"
 	default n

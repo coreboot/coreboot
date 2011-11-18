@@ -53,14 +53,18 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 		return;
 	}
 
-	uhci_reg_mask16 (controller, port, ~(1 << 12), 0);	/* wakeup */
+	uhci_reg_write16(controller, port,
+			 uhci_reg_read16(controller, port) & ~(1 << 12));	/* wakeup */
 
-	uhci_reg_mask16 (controller, port, ~0, 1 << 9);	/* reset */
+	uhci_reg_write16(controller, port,
+			 uhci_reg_read16(controller, port) | 1 << 9);	/* reset */
 	mdelay (30);		// >10ms
-	uhci_reg_mask16 (controller, port, ~(1 << 9), 0);
+	uhci_reg_write16(controller, port,
+			 uhci_reg_read16(controller, port) & ~(1 << 9));
 	mdelay (1);		// >5.3us per spec, <3ms because some devices make trouble
 
-	uhci_reg_mask16 (controller, port, ~0, 1 << 2);	/* enable */
+	uhci_reg_write16(controller, port,
+			 uhci_reg_read16(controller, port) | 1 << 2);	/* enable */
 	do {
 		value = uhci_reg_read16 (controller, port);
 		mdelay (1);
@@ -75,7 +79,8 @@ uhci_rh_disable_port (usbdev_t *dev, int port)
 	port = PORTSC2;
 	if (port == 1)
 		port = PORTSC1;
-	uhci_reg_mask16 (controller, port, ~4, 0);
+	uhci_reg_write16(controller, port,
+			 uhci_reg_read16(controller, port) & ~4);
 	int value;
 	do {
 		value = uhci_reg_read16 (controller, port);
@@ -102,7 +107,8 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 		usb_detach_device(dev->controller, devno);
 		RH_INST (dev)->port[offset] = -1;
 	}
-	uhci_reg_mask16 (dev->controller, portsc, ~0, (1 << 3) | (1 << 2));	// clear port state change, enable port
+	uhci_reg_write16(dev->controller, portsc,
+			 uhci_reg_read16(dev->controller, portsc) | (1 << 3) | (1 << 2));	// clear port state change, enable port
 
 	mdelay(100); // wait for signal to stabilize
 

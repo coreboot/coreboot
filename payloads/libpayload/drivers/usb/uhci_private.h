@@ -104,9 +104,6 @@ typedef struct {
      u16 uhci_reg_read16 (hci_t *ctrl, usbreg reg);
      void uhci_reg_write8 (hci_t *ctrl, usbreg reg, u8 value);
      u8 uhci_reg_read8 (hci_t *ctrl, usbreg reg);
-     void uhci_reg_mask32 (hci_t *ctrl, usbreg reg, u32 andmask, u32 ormask);
-     void uhci_reg_mask16 (hci_t *ctrl, usbreg reg, u16 andmask, u16 ormask);
-     void uhci_reg_mask8 (hci_t *ctrl, usbreg reg, u8 andmask, u8 ormask);
 
      typedef struct uhci {
 	     flistp_t *framelistptr;

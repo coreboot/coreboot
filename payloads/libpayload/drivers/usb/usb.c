@@ -76,7 +76,7 @@ usb_exit (void)
 	if (usb_hcs == 0)
 		return 0;
 	hci_t *controller = usb_hcs;
-	while (controller != 0) {
+	while (controller != NULL) {
 		controller->shutdown(controller);
 		controller = controller->next;
 	}
@@ -92,7 +92,7 @@ usb_poll (void)
 	if (usb_hcs == 0)
 		return;
 	hci_t *controller = usb_hcs;
-	while (controller != 0) {
+	while (controller != NULL) {
 		int i;
 		for (i = 0; i < 128; i++) {
 			if (controller->devices[i] != 0) {

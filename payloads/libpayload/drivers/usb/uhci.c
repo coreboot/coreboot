@@ -120,7 +120,8 @@ uhci_reset (hci_t *controller)
 	/* reset framelist index */
 	uhci_reg_write16 (controller, FRNUM, 0);
 
-	uhci_reg_mask16 (controller, USBCMD, ~0, 0xc0);	// max packets, configure flag
+	uhci_reg_write16(controller, USBCMD,
+			 uhci_reg_read16(controller, USBCMD) | 0xc0);	// max packets, configure flag
 
 	uhci_start (controller);
 }
@@ -240,7 +241,8 @@ uhci_shutdown (hci_t *controller)
 	detach_controller (controller);
 	UHCI_INST (controller)->roothub->destroy (UHCI_INST (controller)->
 						  roothub);
-	uhci_reg_mask16 (controller, USBCMD, 0, 0);	// stop work
+	uhci_reg_write16(controller, USBCMD,
+			 uhci_reg_read16(controller, USBCMD) & 0);	// stop work
 	free (UHCI_INST (controller)->framelistptr);
 	free (UHCI_INST (controller)->qh_prei);
 	free (UHCI_INST (controller)->qh_intr);
@@ -253,13 +255,15 @@ uhci_shutdown (hci_t *controller)
 static void
 uhci_start (hci_t *controller)
 {
-	uhci_reg_mask16 (controller, USBCMD, ~0, 1);	// start work on schedule
+	uhci_reg_write16(controller, USBCMD,
+			 uhci_reg_read16(controller, USBCMD) | 1);	// start work on schedule
 }
 
 static void
 uhci_stop (hci_t *controller)
 {
-	uhci_reg_mask16 (controller, USBCMD, ~1, 0);	// stop work on schedule
+	uhci_reg_write16(controller, USBCMD,
+			 uhci_reg_read16(controller, USBCMD) & ~1);	// stop work on schedule
 }
 
 #define GET_TD(x) ((void*)(((unsigned int)(x))&~0xf))
@@ -274,7 +278,8 @@ wait_for_completed_qh (hci_t *controller, qh_t *qh)
 			current = GET_TD (qh->elementlinkptr.ptr);
 			timeout = 1000000;
 		}
-		uhci_reg_mask16 (controller, USBSTS, ~0, 0);	// clear resettable registers
+		uhci_reg_write16(controller, USBSTS,
+				 uhci_reg_read16(controller, USBSTS) | 0);	// clear resettable registers
 		udelay (30);
 	}
 	return (GET_TD (qh->elementlinkptr.ptr) ==
@@ -635,25 +640,4 @@ u8
 uhci_reg_read8 (hci_t *ctrl, usbreg reg)
 {
 	return inb (ctrl->reg_base + reg);
-}
-
-void
-uhci_reg_mask32 (hci_t *ctrl, usbreg reg, u32 andmask, u32 ormask)
-{
-	uhci_reg_write32 (ctrl, reg,
-			  (uhci_reg_read32 (ctrl, reg) & andmask) | ormask);
-}
-
-void
-uhci_reg_mask16 (hci_t *ctrl, usbreg reg, u16 andmask, u16 ormask)
-{
-	uhci_reg_write16 (ctrl, reg,
-			  (uhci_reg_read16 (ctrl, reg) & andmask) | ormask);
-}
-
-void
-uhci_reg_mask8 (hci_t *ctrl, usbreg reg, u8 andmask, u8 ormask)
-{
-	uhci_reg_write8 (ctrl, reg,
-			 (uhci_reg_read8 (ctrl, reg) & andmask) | ormask);
 }

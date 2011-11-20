@@ -204,3 +204,14 @@ void setup_ioapic(u32 ioapic_base, u8 new_id)
 	load_vectors(ioapic_base, bsp_lapicid);
 }
 
+void setup_ioapic_novectors(u32 ioapic_base, u8 new_id)
+{
+	u8 ioapic_dt = CONFIG_IOAPIC_DELIVERY_TYPE;
+
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
+	       ioapic_base);
+	init_ioapic(ioapic_base, new_id, ioapic_dt);
+
+	printk(BIOS_CRIT, "IOAPIC: Interrupt Vectors were not initialized\n");
+}
+

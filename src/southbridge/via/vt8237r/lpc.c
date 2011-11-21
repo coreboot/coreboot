@@ -67,6 +67,8 @@ static void pci_routing_fixup(struct device *dev)
 {
 #if CONFIG_EPIA_VT8237R_INIT
 	device_t pdev;
+#else
+	struct southbridge_via_vt8237r_config *cfg;
 #endif
 
 	/* PCI PNP Interrupt Routing INTE/F - disable */
@@ -124,8 +126,14 @@ static void pci_routing_fixup(struct device *dev)
 	pci_write_config8(pdev, PCI_INTERRUPT_LINE, 0xFF);
 
 #else
-	/* Route INTE-INTH through registers above, no map to INTA-INTD. */
-	pci_write_config8(dev, 0x46, 0x10);
+	cfg = dev->chip_info;
+
+	if (cfg && cfg->no_int_efgh) {
+		pci_write_config8(dev, 0x46, 0x00);
+	} else {
+		/* Route INTE-INTH through registers above, no map to INTA-INTD. */
+		pci_write_config8(dev, 0x46, 0x10);
+	}
 
 	/* PCI Interrupt Polarity */
 	pci_write_config8(dev, 0x54, 0x00);
@@ -422,6 +430,9 @@ static void vt8237_common_init(struct device *dev)
 {
 	u8 enables, byte;
 	unsigned char pwr_on;
+	struct southbridge_via_vt8237r_config *cfg;
+
+	cfg = dev->chip_info;
 
 	/* Enable addr/data stepping. */
 	byte = pci_read_config8(dev, PCI_COMMAND);
@@ -507,7 +518,11 @@ static void vt8237_common_init(struct device *dev)
 	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
 	 */
-	pci_write_config8(dev, 0x5b, 0xb);
+	if (cfg && cfg->no_int_efgh) {
+		pci_write_config8(dev, 0x5b, 0x9);
+	} else {
+		pci_write_config8(dev, 0x5b, 0xb);
+	}
 
 	/* configure power state of the board after loss of power */
 	if (get_option(&pwr_on, "power_on_after_fail") < 0)

@@ -39,12 +39,22 @@ config LOCALVERSION
 	  the coreboot version number, so that you can easily distinguish
 	  boot logs of different boards from each other.
 
+choice
+	prompt "CBFS prefix to use"
+	default CBFS_PREFIX_FALLBACK
+
+config CBFS_PREFIX_FALLBACK
+	bool "fallback"
+
+config CBFS_PREFIX_NORMAL
+	bool "normal"
+
+endchoice
+
 config CBFS_PREFIX
-	string "CBFS prefix to use"
-	default "fallback"
-	help
-	  Select the prefix to all files put into the image. It's "fallback"
-	  by default, "normal" is a common alternative.
+	string
+	default "fallback" if CBFS_PREFIX_FALLBACK
+	default "normal" if CBFS_PREFIX_NORMAL
 
 choice
 	prompt "Compiler"

@@ -36,6 +36,7 @@ config MAX_REBOOT_CNT
 choice
 	prompt "Bootblock behaviour"
 	default X86_BOOTBLOCK_SIMPLE
+	depends on !UPDATE_IMAGE
 
 config X86_BOOTBLOCK_SIMPLE
 	bool "Always load fallback"
@@ -51,13 +52,7 @@ config BOOTBLOCK_SOURCE
 	default "bootblock_normal.c" if X86_BOOTBLOCK_NORMAL
 
 config UPDATE_IMAGE
-	bool "Update existing coreboot.rom image"
-	default n
-	help
-	  If this option is enabled, no new coreboot.rom file
-	  is created. Instead it is expected that there already
-	  is a suitable file for further processing.
-	  The bootblock will not be modified.
+	def_bool !CBFS_PREFIX_FALLBACK
 
 config ROMCC
 	bool

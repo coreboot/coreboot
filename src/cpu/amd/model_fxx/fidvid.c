@@ -44,11 +44,16 @@ static void enable_fid_change(void)
 		dword = 0x04e2a707;
 		pci_write_config32(PCI_DEV(0, 0x18 + i, 3), 0xd4, dword);
 
+#if 0
+/* It is unknown what exactly this code was intended to do, but as it stands,
+ * it sets Memory DQ Drive Strength to be reduced by 30%, which is a bad idea
+ * because of erratum 114, so the code is just commented out for now. */
 		/* disable the DRAM interface at first, it will be enabled
 		 * by raminit again */
 		dword = pci_read_config32(PCI_DEV(0, 0x18 + i, 2), 0x94);
 		dword |= (1 << 14);
 		pci_write_config32(PCI_DEV(0, 0x18 + i, 2), 0x94, dword);
+#endif
 
 		dword = 0x23070700;	/* enable FID/VID change */
 //              dword = 0x00070000; /* enable FID/VID change */

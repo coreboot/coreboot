@@ -36,6 +36,8 @@ _start:
 	/* Save the BIST result */
 	movl	%eax, %ebp
 
+	post_code(POST_RESET_VECTOR_CORRECT)
+
 /* thanks to kmliu@sis.tw.com for this TBL fix ... */
 /**/
 /* IMMEDIATELY invalidate the translation lookaside buffer before executing*/

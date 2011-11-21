@@ -23,7 +23,3 @@
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
-/* This is the entry code. The code in the .reset section jumps here. */
-
-	post_code(POST_RESET_VECTOR_CORRECT)
-

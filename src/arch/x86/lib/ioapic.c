@@ -179,15 +179,6 @@ static void load_vectors(u32 ioapic_base, u8 bsp_lapicid)
 	}
 }
 
-// XXX this decision should probably be made elsewhere, and
-// it's the C3, not the EPIA this depends on.
-
-#if CONFIG_EPIA_VT8237R_INIT
-#define CONFIG_IOAPIC_DELIVERY_TYPE 0
-#else
-#define CONFIG_IOAPIC_DELIVERY_TYPE 1
-#endif
-
 /**
  * Assign IOAPIC with an ID
  *

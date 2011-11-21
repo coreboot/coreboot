@@ -239,6 +239,11 @@ config IOAPIC
 	bool
 	default n
 
+# Boards with CPU_VIA_C3 may need to override delivery type.
+config IOAPIC_DELIVERY_TYPE
+	int
+	default 1
+
 # TODO: Can probably be removed once all chipsets have kconfig options for it.
 config VIDEO_MB
 	int

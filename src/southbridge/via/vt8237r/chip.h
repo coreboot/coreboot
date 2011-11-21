@@ -69,6 +69,8 @@ struct southbridge_via_vt8237r_config {
 
 	u8 usb2_dpll_set;
 	u8 usb2_dpll_delay;
+
+	u8 int_efgh_as_gpio;
 };
 
 #endif /* SOUTHBRIDGE_VIA_VT8237R_CHIP_H */

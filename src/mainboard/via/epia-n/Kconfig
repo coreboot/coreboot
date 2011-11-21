@@ -28,4 +28,9 @@ config IRQ_SLOT_COUNT
 	int
 	default 7
 
+# IRQ delivery on APIC bus may be a Via C3 CPU requirement.
+config IOAPIC_DELIVERY_TYPE
+	int
+	default 0
+
 endif # BOARD_VIA_EPIA_N

@@ -1,9 +1,4 @@
-#if CONFIG_LOGICAL_CPUS && \
- (defined(CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT) || defined(CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT))
 #include <cpu/x86/lapic/boot_cpu.c>
-#else
-#define boot_cpu(x) 1
-#endif
 
 #ifdef CONFIG_BOOTBLOCK_CPU_INIT
 #include CONFIG_BOOTBLOCK_CPU_INIT

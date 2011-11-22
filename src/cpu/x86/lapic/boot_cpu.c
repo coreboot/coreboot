@@ -1,5 +1,6 @@
 #include <cpu/x86/msr.h>
 
+#if CONFIG_SMP
 static int boot_cpu(void)
 {
 	int bsp;
@@ -8,3 +9,7 @@ static int boot_cpu(void)
 	bsp = !!(msr.lo & (1 << 8));
 	return bsp;
 }
+#else
+#define boot_cpu(x) 1
+#endif
+

@@ -316,16 +316,16 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 
 		outl(0, pmbase + GPE0_EN);
 
-		/* Should we keep the power state after a power loss?
-		 * In case the setting is "ON" or "OFF" we don't have
-		 * to do anything. But if it's "KEEP" we have to switch
-		 * to "OFF" before entering S5.
+		/* Always set the flag in case CMOS was changed on runtime. For
+		 * "KEEP", switch to "OFF" - KEEP is software emulated
 		 */
-		if (s5pwr == MAINBOARD_POWER_KEEP) {
-			reg8 = pcie_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+		reg8 = pcie_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+		if (s5pwr == MAINBOARD_POWER_ON) {
+			reg8 &= ~1;
+		} else {
 			reg8 |= 1;
-			pcie_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 		}
+		pcie_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);

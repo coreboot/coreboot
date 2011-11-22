@@ -6,11 +6,11 @@ static void main(unsigned long bist)
 		bootblock_northbridge_init();
 		bootblock_southbridge_init();
 		bootblock_cpu_init();
-	}
 
 #if CONFIG_USE_OPTION_TABLE
-	sanitize_cmos();
+		sanitize_cmos();
 #endif
+	}
 
 	const char* target1 = "fallback/romstage";
 	unsigned long entry;

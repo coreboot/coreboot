@@ -68,7 +68,7 @@ int coreboot_module_redraw(WINDOW *win)
 
 	if (cb_info.serial.tag != 0x0) {
 		mvwprintw(win, row++, 1, "Serial Port I/O base: 0x%x",
-			  cb_info.serial.ioport);
+			  cb_info.serial.baseaddr);
 	}
 
 	if (cb_info.console.tag != 0x0) {

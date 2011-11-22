@@ -279,11 +279,15 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	u8 reg8;
 	u32 reg32;
 	u8 slp_typ;
-	/* FIXME: the power state on boot should be read from
-	 * CMOS or even better from GNVS. Right now it's hard
-	 * coded at compile time.
-	 */
 	u8 s5pwr = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+
+	// save and recover RTC port values
+	u8 tmp70, tmp72;
+	tmp70 = inb(0x70);
+	tmp72 = inb(0x72);
+	get_option(&s5pwr, "power_on_after_fail");
+	outb(tmp70, 0x70);
+	outb(tmp72, 0x72);
 
 	/* First, disable further SMIs */
 	reg8 = inb(pmbase + SMI_EN);

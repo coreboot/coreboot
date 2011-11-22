@@ -91,7 +91,36 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 	return 0;
 }
 
-int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
+static int set_cmos_value(u32 bitnum, u32 len, void *valptr)
+{
+	u8 *value = (u8 *)valptr;
+	int offs = 0;
+	u32 addr, bit;
+	u8 reg8;
+
+	/* Convert to byte borders */
+	addr=(bitnum / 8);
+	bit=(bitnum % 8);
+
+	/* Handle single byte or less */
+	if (len <= 8) {
+		reg8 = nvram_read(addr);
+		reg8 &= ~(((1 << len) - 1) << bit);
+		reg8 |= (value[0] & ((1 << len) - 1)) << bit;
+		nvram_write(reg8, addr);
+		return 0;
+	}
+
+	/* When handling more than a byte, copy whole bytes */
+	while (len > 0) {
+		len -= 8;
+		nvram_write(value[offs++], addr++);
+	}
+
+	return 0;
+}
+
+static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *option_table, char *name)
 {
 	struct cb_cmos_entries *cmos_entry;
 	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
@@ -103,6 +132,17 @@ int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char 
 		cmos_entry = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size)) {
 		if (memcmp((const char*)cmos_entry->name, name, len))
 			continue;
+		return cmos_entry;
+	}
+
+	printf("ERROR: No such CMOS option (%s)\n", name);
+	return NULL;
+}
+
+int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
+{
+	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
+	if (cmos_entry) {
 		if(get_cmos_value(cmos_entry->bit, cmos_entry->length, dest))
 			return 1;
 
@@ -111,8 +151,6 @@ int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char 
 
 		return 0;
 	}
-
-	printf("ERROR: No such CMOS option (%s)\n", name);
 	return 1;
 }
 
@@ -121,3 +159,16 @@ int get_option(void *dest, char *name)
 	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
 	return get_option_from(option_table, dest, name);
 }
+
+int set_option(void *value, char *name)
+{
+	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
+	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
+	if (cmos_entry) {
+		set_cmos_value(cmos_entry->bit, cmos_entry->length, value);
+		fix_options_checksum();
+		return 0;
+	}
+	return 1;
+}
+

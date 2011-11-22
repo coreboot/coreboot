@@ -197,6 +197,7 @@ void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
 void fix_options_checksum(void);
 int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name);
 int get_option(void *dest, char *name);
+int set_option(void *value, char *name);
 
 /**
  * @defgroup console Console functions

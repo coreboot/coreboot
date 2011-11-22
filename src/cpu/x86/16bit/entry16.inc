@@ -1,31 +1,32 @@
 /*
-This software and ancillary information (herein called SOFTWARE )
-called LinuxBIOS          is made available under the terms described
-here.  The SOFTWARE has been approved for release with associated
-LA-CC Number 00-34   .  Unless otherwise indicated, this SOFTWARE has
-been authored by an employee or employees of the University of
-California, operator of the Los Alamos National Laboratory under
-Contract No. W-7405-ENG-36 with the U.S. Department of Energy.  The
-U.S. Government has rights to use, reproduce, and distribute this
-SOFTWARE.  The public may copy, distribute, prepare derivative works
-and publicly display this SOFTWARE without charge, provided that this
-Notice and any statement of authorship are reproduced on all copies.
-Neither the Government nor the University makes any warranty, express
-or implied, or assumes any liability or responsibility for the use of
-this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
-such modified SOFTWARE should be clearly marked, so as not to confuse
-it with the version available from LANL.
- */
-/* Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
- * rminnich@lanl.gov
- */
-
-
-/** Start code to put an i386 or later processor into 32-bit
- * protected mode.
+ * This software and ancillary information (herein called SOFTWARE)
+ * called LinuxBIOS is made available under the terms described here.
+ *
+ * The SOFTWARE has been approved for release with associated
+ * LA-CC Number 00-34. Unless otherwise indicated, this SOFTWARE has
+ * been authored by an employee or employees of the University of
+ * California, operator of the Los Alamos National Laboratory under
+ * Contract No. W-7405-ENG-36 with the U.S. Department of Energy.
+ *
+ * The U.S. Government has rights to use, reproduce, and distribute this
+ * SOFTWARE. The public may copy, distribute, prepare derivative works
+ * and publicly display this SOFTWARE without charge, provided that this
+ * Notice and any statement of authorship are reproduced on all copies.
+ *
+ * Neither the Government nor the University makes any warranty, express
+ * or implied, or assumes any liability or responsibility for the use of
+ * this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
+ * such modified SOFTWARE should be clearly marked, so as not to confuse
+ * it with the version available from LANL.
+ *
+ * Copyright (C) 2000, Ron Minnich rminnich@lanl.gov
+ *                     Advanced Computing Lab, LANL
  */
 
-/* .section ".rom.text" */
+
+/* Start code to put an i386 or later processor into 32-bit protected mode.
+ */
+
 #include <arch/rom_segs.h>
 .code16
 .globl _start
@@ -38,12 +39,12 @@ _start:
 
 	post_code(POST_RESET_VECTOR_CORRECT)
 
-/* thanks to kmliu@sis.tw.com for this TBL fix ... */
-/**/
-/* IMMEDIATELY invalidate the translation lookaside buffer before executing*/
-/* any further code.  Even though paging is disabled we could still get*/
-/*false address translations due to the TLB if we didn't invalidate it.*/
-/**/
+	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
+	 * executing any further code. Even though paging is disabled we
+	 * could still get false address translations due to the TLB if we
+	 * didn't invalidate it. Thanks to kmliu@sis.com.tw for this TLB fix.
+	 */
+
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
 

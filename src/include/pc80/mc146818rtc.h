@@ -116,8 +116,7 @@ unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
 static inline int set_option(const char *name __attribute__((unused)), void *val __attribute__((unused))) { return -2; };
 static inline int get_option(void *dest __attribute__((unused)),
 	const char *name __attribute__((unused))) { return -2; }
-static inline unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
-	{ return def; }
+#define read_option_lowlevel(start, size, def) def
 #endif
 #else
 #include <pc80/mc146818rtc_early.c>

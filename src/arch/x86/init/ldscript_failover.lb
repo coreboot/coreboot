@@ -29,6 +29,14 @@ MEMORY {
 TARGET(binary)
 SECTIONS
 {
+	/* Align .rom to next 4 byte boundary so no pad byte appears
+	 * between _rom and _start.
+	 */
+	.bogus ROMLOC_MIN : {
+		. = ALIGN(4);
+		ROMLOC = .;
+	} >rom = 0xff
+
 	/* This section might be better named .setup */
 	.rom ROMLOC : {
 		_rom = .;
@@ -39,7 +47,11 @@ SECTIONS
 		_erom = .;
 	} >rom = 0xff
 
-	ROMLOC = 0xffffff00 - (_erom - _rom) + 1;
+	/* Allocation reserves extra 16 bytes here. Alignment requirements
+	 * may cause the total size of a section to change when the start
+	 * address gets applied.
+	 */
+	ROMLOC_MIN = 0xffffff00 - (_erom - _rom + 16);
 
 	/DISCARD/ : {
 		*(.comment)

@@ -90,19 +90,17 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 };
 
 PCIe_DDI_DESCRIPTOR DdiList [] = {
-        // Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...)
+        /* Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...) DP1 HDMI */
         {
-          0,   //Descriptor flags
-          PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-          //PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
-          {ConnectorTypeDP, Aux1, Hdp1}
-        },
-        // Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...)
-        {
-          DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+          0,
           PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-          //PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
-          {ConnectorTypeDP, Aux2, Hdp2}
+          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
+        },
+        /* Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...) DP0 VGA */
+        {
+          DESCRIPTOR_TERMINATE_LIST,
+          PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
+          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeCrt, Aux1, Hdp1)
         }
 };
 

@@ -188,7 +188,8 @@ dump_td(td_t *cur, int level)
 #ifdef USB_DEBUG
 	static const char *spaces="          ";
 	const char *spc=spaces+(10-level);
-	debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[cur->direction], completion_codes[cur->condition_code & 0xf]);
+	debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[(cur->config & TD_DIRECTION_MASK) >> TD_DIRECTION_SHIFT],
+		completion_codes[(cur->config & TD_CC_MASK) >> TD_CC_SHIFT]);
 	debug("%s toggle: %x\n", spc, cur->toggle);
 #endif
 }
@@ -201,7 +202,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 	/* wait for results */
 	while (((head->head_pointer & ~3) != head->tail_pointer) &&
 		!(head->head_pointer & 1) &&
-		((((td_t*)phys_to_virt(head->head_pointer & ~3))->condition_code & 0xf)>=0xe)) {
+		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >= TD_CC_NOACCESS)) {
 		debug("intst: %x; ctrl: %x; cmdst: %x; head: %x -> %x, tail: %x, condition: %x\n",
 			OHCI_INST(dev->controller)->opreg->HcInterruptStatus,
 			OHCI_INST(dev->controller)->opreg->HcControl,
@@ -209,7 +210,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 			head->head_pointer,
 			((td_t*)phys_to_virt(head->head_pointer & ~3))->next_td,
 			head->tail_pointer,
-			((td_t*)phys_to_virt(head->head_pointer & ~3))->condition_code);
+			(((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >> TD_CC_SHIFT);
 		mdelay(1);
 	}
 	mdelay(5);
@@ -266,12 +267,11 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	}
 	tds[td_count + 3].next_td = 0;
 
-	tds[0].direction = OHCI_SETUP;
-	tds[0].toggle_from_td = 1;
-	tds[0].toggle = 0;
-	tds[0].error_count = 0;
-	tds[0].delay_interrupt = 7;
-	tds[0].condition_code = 0xf;
+	tds[0].config = TD_DIRECTION_SETUP |
+		TD_DELAY_INTERRUPT_NODELAY |
+		TD_TOGGLE_FROM_TD |
+		TD_TOGGLE_DATA0 |
+		TD_CC_NOACCESS;
 	tds[0].current_buffer_pointer = virt_to_phys(devreq);
 	tds[0].buffer_end = virt_to_phys(devreq + drlen - 1);
 
@@ -279,12 +279,10 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	while (pages > 0) {
 		cur++;
-		cur->direction = (dir==IN)?OHCI_IN:OHCI_OUT;
-		cur->toggle_from_td = 0;
-		cur->toggle = 1;
-		cur->error_count = 0;
-		cur->delay_interrupt = 7;
-		cur->condition_code = 0xf;
+		cur->config = (dir==IN)?TD_DIRECTION_IN:TD_DIRECTION_OUT |
+			TD_DELAY_INTERRUPT_NODELAY |
+			TD_TOGGLE_FROM_ED |
+			TD_CC_NOACCESS;
 		cur->current_buffer_pointer = virt_to_phys(data);
 		pages--;
 		int consumed = (4096 - ((unsigned long)data % 4096));
@@ -308,12 +306,11 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	}
 
 	cur++;
-	cur->direction = (dir==IN)?OHCI_OUT:OHCI_IN;
-	cur->toggle_from_td = 1;
-	cur->toggle = 1;
-	cur->error_count = 0;
-	cur->delay_interrupt = 7;
-	cur->condition_code = 0xf;
+	cur->config = (dir==IN)?TD_DIRECTION_OUT:TD_DIRECTION_IN |
+		TD_DELAY_INTERRUPT_NODELAY |
+		TD_TOGGLE_FROM_TD |
+		TD_TOGGLE_DATA1 |
+		TD_CC_NOACCESS;
 	cur->current_buffer_pointer = 0;
 	cur->buffer_end = 0;
 
@@ -323,18 +320,15 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	/* Data structures */
 	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
 	memset((void*)head, 0, sizeof(*head));
-	head->function_address = dev->address;
-	head->endpoint_number = 0;
-	head->direction = OHCI_FROM_TD;
-	head->lowspeed = dev->speed;
-	head->format = 0;
-	head->maximum_packet_size = dev->endpoints[0].maxpacketsize;
+	head->config = (dev->address << ED_FUNC_SHIFT) |
+		(0 << ED_EP_SHIFT) |
+		(OHCI_FROM_TD << ED_DIR_SHIFT) |
+		(dev->speed?ED_LOWSPEED:0) |
+		(dev->endpoints[0].maxpacketsize << ED_MPS_SHIFT);
 	head->tail_pointer = virt_to_phys(cur);
 	head->head_pointer = virt_to_phys(tds);
-	head->halted = 0;
-	head->toggle = 0;
 
-	debug("doing control transfer with %x. first_td at %x\n", head->function_address, virt_to_phys(tds));
+	debug("doing control transfer with %x. first_td at %x\n", head->config & ED_FUNC_MASK, virt_to_phys(tds));
 
 	/* activate schedule */
 	OHCI_INST(dev->controller)->opreg->HcControlHeadED = virt_to_phys(head);
@@ -379,11 +373,10 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	}
 
 	for (cur = tds; cur->next_td != 0; cur++) {
-		cur->toggle_from_td = 0;
-		cur->error_count = 0;
-		cur->delay_interrupt = 7;
-		cur->condition_code = 0xf;
-		cur->direction = (ep->direction==IN)?OHCI_IN:OHCI_OUT;
+		cur->config =  (ep->direction==IN)?TD_DIRECTION_IN:TD_DIRECTION_OUT |
+                        TD_DELAY_INTERRUPT_NODELAY |
+                        TD_TOGGLE_FROM_ED |
+                        TD_CC_NOACCESS;
 		cur->current_buffer_pointer = virt_to_phys(data);
 		pages--;
 		if (dalen == 0) {
@@ -415,18 +408,16 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	/* Data structures */
 	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
 	memset((void*)head, 0, sizeof(*head));
-	head->function_address = ep->dev->address;
-	head->endpoint_number = ep->endpoint & 0xf;
-	head->direction = (ep->direction==IN)?OHCI_IN:OHCI_OUT;
-	head->lowspeed = ep->dev->speed;
-	head->format = 0;
-	head->maximum_packet_size = ep->maxpacketsize;
+	head->config = (ep->dev->address << ED_FUNC_SHIFT) |
+		((ep->endpoint & 0xf) << ED_EP_SHIFT) |
+		(((ep->direction==IN)?OHCI_IN:OHCI_OUT) << ED_DIR_SHIFT) |
+		(ep->dev->speed?ED_LOWSPEED:0) |
+		(ep->maxpacketsize << ED_MPS_SHIFT);
 	head->tail_pointer = virt_to_phys(cur);
-	head->head_pointer = virt_to_phys(tds);
-	head->halted = 0;
-	head->toggle = ep->toggle;
+	head->head_pointer = virt_to_phys(tds) | (ep->toggle?ED_TOGGLE:0);
 
-	debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n", head->function_address, head->endpoint_number, virt_to_phys(tds), virt_to_phys(cur));
+	debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n", head->config & ED_FUNC_MASK,
+		(head->config & ED_EP_MASK) >> ED_EP_SHIFT, virt_to_phys(tds), virt_to_phys(cur));
 
 	/* activate schedule */
 	OHCI_INST(ep->dev->controller)->opreg->HcBulkHeadED = virt_to_phys(head);
@@ -436,7 +427,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	int failure = wait_for_ed(ep->dev, head);
 	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;
 
-	ep->toggle = head->toggle;
+	ep->toggle = head->head_pointer & ED_TOGGLE;
 
 	/* free memory */
 	free((void*)tds);

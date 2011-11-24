@@ -48,8 +48,7 @@ config SET_FIDVID_CORE_RANGE
 	int
 	default 0
 
-endif
-endif
+endif	# SET_FIDVID
 
 config UPDATE_CPU_MICROCODE
 	bool
@@ -82,3 +81,7 @@ config UPDATE_CPU_MICROCODE
 	  Note that some operating system include these same microcode
 	  patches, so you may need to also disable microcode updates in
 	  your operating system in order for this option to matter.
+
+select MMCONF_SUPPORT_DEFAULT
+
+endif	# CPU_AMD_MODEL_10XXX

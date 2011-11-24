@@ -32,55 +32,38 @@
 
 typedef enum { UHCI_SETUP = 0x2d, UHCI_IN = 0x69, UHCI_OUT = 0xe1 } uhci_pid_t;
 
-typedef union {
-	struct {
-		unsigned long terminate:1;
-		unsigned long queue_head:1;
-		unsigned long:2;
-		unsigned long ptr_part:28;
-	};
-	u32 ptr;
-} __attribute__ ((packed)) flistp_t;
+typedef u32 flistp_t;
+#define FLISTP_TERMINATE 1
+#define FLISTP_QH 2
 
 typedef struct {
-	union {
-		struct {
-			unsigned long terminate:1;
-			unsigned long queue_head:1;
-			unsigned long depth_first:1;
-			unsigned long:29;
-		} __attribute__ ((packed));
-		u32 ptr;
-	} __attribute__ ((packed));
+	u32 ptr;
+#define TD_TERMINATE 1
+#define TD_QH 2
+#define TD_DEPTH_FIRST 4
 
-	volatile unsigned long actlen:11;
-	volatile unsigned long:5;
-	union {
-		struct {
-			unsigned long:1;	// bit 0
-			unsigned long status_bitstuff_err:1;
-			unsigned long status_crc_err:1;
-			unsigned long status_nakrcvd:1;
-			unsigned long status_babble:1;
-			unsigned long status_databuf_err:1;
-			unsigned long status_stalled:1;
-			unsigned long status_active:1;	// bit 7
-		} __attribute__ ((packed));
-		unsigned char status;
-	} __attribute__ ((packed));
-	volatile unsigned long ioc:1;	/* interrupt on complete */
-	volatile unsigned long isochronous:1;
-	volatile unsigned long lowspeed:1;
-	volatile unsigned long counter:2;
-	volatile unsigned long shortpck:1;
-	volatile unsigned long:2;
+	u32 ctrlsts;
+#define TD_STATUS_MASK (0xff << 16)
+#define TD_STATUS_BITSTUFF_ERR (1 << 17)
+#define TD_STATUS_CRC_ERR (1 << 18)
+#define TD_STATUS_NAK_RCVD (1 << 19)
+#define TD_STATUS_BABBLE (1 << 20)
+#define TD_STATUS_DATABUF_ERR (1 << 21)
+#define TD_STATUS_STALLED (1 << 22)
+#define TD_STATUS_ACTIVE (1 << 23)
+#define TD_LOWSPEED (1 << 26)
+#define TD_COUNTER_SHIFT 27
 
-	unsigned long pid:8;
-	unsigned long dev_addr:7;
-	unsigned long endp:4;
-	unsigned long data_toggle:1;
-	unsigned long:1;
-	unsigned long maxlen:11;
+	u32 token;
+#define TD_PID_MASK 0xff
+#define TD_DEVADDR_SHIFT 8
+#define TD_DEVADDR_MASK (((1<<7)-1) << TD_DEVADDR_SHIFT)
+#define TD_EP_SHIFT 15
+#define TD_EP_MASK (0xf << TD_EP_SHIFT)
+#define TD_TOGGLE_SHIFT 19
+#define TD_MAXLEN_SHIFT 21
+#define TD_TOGGLE_DATA0 0
+#define TD_TOGGLE_DATA1 (1 << TD_TOGGLE_SHIFT)
 
 	u32 bufptr;
 

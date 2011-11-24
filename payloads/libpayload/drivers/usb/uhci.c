@@ -66,7 +66,7 @@ td_dump (td_t *td)
 {
 	char td_value[3];
 	const char *td_type;
-	switch (td->pid) {
+	switch (td->token & TD_PID_MASK) {
 		case UHCI_SETUP:
 			td_type="SETUP";
 			break;
@@ -77,23 +77,24 @@ td_dump (td_t *td)
 			td_type="OUT";
 			break;
 		default:
-			sprintf(td_value, "%x", td->pid);
+			sprintf(td_value, "%x", td->token & TD_PID_MASK);
 			td_type=td_value;
 	}
 	debug ("%s packet (at %lx) to %x.%x failed\n", td_type,
-		virt_to_phys (td), td->dev_addr, td->endp);
-	debug ("td (counter at %x) returns: ", td->counter);
-	debug (" bitstuff err: %x, ", td->status_bitstuff_err);
-	debug (" CRC err: %x, ", td->status_crc_err);
-	debug (" NAK rcvd: %x, ", td->status_nakrcvd);
-	debug (" Babble: %x, ", td->status_babble);
-	debug (" Data Buffer err: %x, ", td->status_databuf_err);
-	debug (" Stalled: %x, ", td->status_stalled);
-	debug (" Active: %x\n", td->status_active);
-	if (td->status_babble)
+		virt_to_phys (td), (td->token & TD_DEVADDR_MASK) >> TD_DEVADDR_SHIFT,
+		(td->token & TD_EP_MASK) >> TD_EP_SHIFT);
+	debug ("td (counter at %x) returns: ", td->ctrlsts >> TD_COUNTER_SHIFT);
+	debug (" bitstuff err: %x, ", !!(td->ctrlsts & TD_STATUS_BITSTUFF_ERR));
+	debug (" CRC err: %x, ", !!(td->ctrlsts & TD_STATUS_CRC_ERR));
+	debug (" NAK rcvd: %x, ", !!(td->ctrlsts & TD_STATUS_NAK_RCVD));
+	debug (" Babble: %x, ", !!(td->ctrlsts & TD_STATUS_BABBLE));
+	debug (" Data Buffer err: %x, ", !!(td->ctrlsts & TD_STATUS_DATABUF_ERR));
+	debug (" Stalled: %x, ", !!(td->ctrlsts & TD_STATUS_STALLED));
+	debug (" Active: %x\n", !!(td->ctrlsts & TD_STATUS_ACTIVE));
+	if (td->ctrlsts & TD_STATUS_BABBLE)
 		debug (" Babble because of %s\n",
-			td->status_bitstuff_err ? "host" : "device");
-	if (td->status_active)
+			(td->ctrlsts & TD_STATUS_BITSTUFF_ERR) ? "host" : "device");
+	if (td->ctrlsts & TD_STATUS_ACTIVE)
 		debug (" still active - timeout?\n");
 }
 
@@ -197,34 +198,24 @@ uhci_init (pcidev_t addr)
 	    ! UHCI_INST (controller)->qh_last)
 		fatal("Not enough memory for USB controller queues.\n");
 
-	UHCI_INST (controller)->qh_prei->headlinkptr.ptr =
-		virt_to_phys (UHCI_INST (controller)->qh_intr);
-	UHCI_INST (controller)->qh_prei->headlinkptr.queue_head = 1;
-	UHCI_INST (controller)->qh_prei->elementlinkptr.ptr = 0;
-	UHCI_INST (controller)->qh_prei->elementlinkptr.terminate = 1;
+	UHCI_INST (controller)->qh_prei->headlinkptr =
+		virt_to_phys (UHCI_INST (controller)->qh_intr) | FLISTP_QH;
+	UHCI_INST (controller)->qh_prei->elementlinkptr = 0 | FLISTP_TERMINATE;
 
-	UHCI_INST (controller)->qh_intr->headlinkptr.ptr =
-		virt_to_phys (UHCI_INST (controller)->qh_data);
-	UHCI_INST (controller)->qh_intr->headlinkptr.queue_head = 1;
-	UHCI_INST (controller)->qh_intr->elementlinkptr.ptr = 0;
-	UHCI_INST (controller)->qh_intr->elementlinkptr.terminate = 1;
+	UHCI_INST (controller)->qh_intr->headlinkptr =
+		virt_to_phys (UHCI_INST (controller)->qh_data) | FLISTP_QH;
+	UHCI_INST (controller)->qh_intr->elementlinkptr = 0 | FLISTP_TERMINATE;
 
-	UHCI_INST (controller)->qh_data->headlinkptr.ptr =
-		virt_to_phys (UHCI_INST (controller)->qh_last);
-	UHCI_INST (controller)->qh_data->headlinkptr.queue_head = 1;
-	UHCI_INST (controller)->qh_data->elementlinkptr.ptr = 0;
-	UHCI_INST (controller)->qh_data->elementlinkptr.terminate = 1;
+	UHCI_INST (controller)->qh_data->headlinkptr =
+		virt_to_phys (UHCI_INST (controller)->qh_last) | FLISTP_QH;
+	UHCI_INST (controller)->qh_data->elementlinkptr = 0 | FLISTP_TERMINATE;
 
-	UHCI_INST (controller)->qh_last->headlinkptr.ptr = virt_to_phys (UHCI_INST (controller)->qh_data);
-	UHCI_INST (controller)->qh_last->headlinkptr.terminate = 1;
-	UHCI_INST (controller)->qh_last->elementlinkptr.ptr = virt_to_phys (antiberserk);
-	UHCI_INST (controller)->qh_last->elementlinkptr.terminate = 1;
+	UHCI_INST (controller)->qh_last->headlinkptr = virt_to_phys (UHCI_INST (controller)->qh_data) | FLISTP_TERMINATE;
+	UHCI_INST (controller)->qh_last->elementlinkptr = virt_to_phys (antiberserk) | FLISTP_TERMINATE;
 
 	for (i = 0; i < 1024; i++) {
-		UHCI_INST (controller)->framelistptr[i].ptr =
-			virt_to_phys (UHCI_INST (controller)->qh_prei);
-		UHCI_INST (controller)->framelistptr[i].terminate = 0;
-		UHCI_INST (controller)->framelistptr[i].queue_head = 1;
+		UHCI_INST (controller)->framelistptr[i] =
+			virt_to_phys (UHCI_INST (controller)->qh_prei) | FLISTP_QH;
 	}
 	controller->devices[0]->controller = controller;
 	controller->devices[0]->init = uhci_rh_init;
@@ -272,18 +263,18 @@ static td_t *
 wait_for_completed_qh (hci_t *controller, qh_t *qh)
 {
 	int timeout = 1000000;	/* max 30 ms. */
-	void *current = GET_TD (qh->elementlinkptr.ptr);
-	while ((qh->elementlinkptr.terminate == 0) && (timeout-- > 0)) {
-		if (current != GET_TD (qh->elementlinkptr.ptr)) {
-			current = GET_TD (qh->elementlinkptr.ptr);
+	void *current = GET_TD (qh->elementlinkptr);
+	while (((qh->elementlinkptr & FLISTP_TERMINATE) == 0) && (timeout-- > 0)) {
+		if (current != GET_TD (qh->elementlinkptr)) {
+			current = GET_TD (qh->elementlinkptr);
 			timeout = 1000000;
 		}
 		uhci_reg_write16(controller, USBSTS,
 				 uhci_reg_read16(controller, USBSTS) | 0);	// clear resettable registers
 		udelay (30);
 	}
-	return (GET_TD (qh->elementlinkptr.ptr) ==
-		0) ? 0 : GET_TD (phys_to_virt (qh->elementlinkptr.ptr));
+	return (GET_TD (qh->elementlinkptr) ==
+		0) ? 0 : GET_TD (phys_to_virt (qh->elementlinkptr));
 }
 
 static int
@@ -314,57 +305,51 @@ uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	memset (tds, 0, sizeof (td_t) * count);
 	count--;		/* to compensate for 0-indexed array */
 	for (i = 0; i < count; i++) {
-		tds[i].ptr = virt_to_phys (&tds[i + 1]);
-		tds[i].depth_first = 1;
-		tds[i].terminate = 0;
+		tds[i].ptr = virt_to_phys (&tds[i + 1]) | TD_DEPTH_FIRST;
 	}
-	tds[count].ptr = 0;
-	tds[count].depth_first = 1;
-	tds[count].terminate = 1;
+	tds[count].ptr = 0 | TD_DEPTH_FIRST | TD_TERMINATE;
 
-	tds[0].pid = UHCI_SETUP;
-	tds[0].dev_addr = dev->address;
-	tds[0].endp = endp;
-	tds[0].maxlen = maxlen (drlen);
-	tds[0].counter = 3;
-	tds[0].data_toggle = 0;
-	tds[0].lowspeed = dev->speed;
+	tds[0].token = UHCI_SETUP |
+		dev->address << TD_DEVADDR_SHIFT |
+		endp << TD_EP_SHIFT |
+		TD_TOGGLE_DATA0 |
+		maxlen(drlen) << TD_MAXLEN_SHIFT;
 	tds[0].bufptr = virt_to_phys (devreq);
-	tds[0].status_active = 1;
+	tds[0].ctrlsts = (3 << TD_COUNTER_SHIFT) |
+		(dev->speed?TD_LOWSPEED:0) |
+		TD_STATUS_ACTIVE;
 
 	int toggle = 1;
 	for (i = 1; i < count; i++) {
 		switch (dir) {
-			case SETUP: tds[i].pid = UHCI_SETUP; break;
-			case IN:    tds[i].pid = UHCI_IN;    break;
-			case OUT:   tds[i].pid = UHCI_OUT;   break;
+			case SETUP: tds[i].token = UHCI_SETUP; break;
+			case IN:    tds[i].token = UHCI_IN;    break;
+			case OUT:   tds[i].token = UHCI_OUT;   break;
 		}
-		tds[i].dev_addr = dev->address;
-		tds[i].endp = endp;
-		tds[i].maxlen = maxlen (min (mlen, dalen));
-		tds[i].counter = 3;
-		tds[i].data_toggle = toggle;
-		tds[i].lowspeed = dev->speed;
+		tds[i].token |= dev->address << TD_DEVADDR_SHIFT |
+			endp << TD_EP_SHIFT |
+			maxlen (min (mlen, dalen)) << TD_MAXLEN_SHIFT |
+			toggle << TD_TOGGLE_SHIFT;
 		tds[i].bufptr = virt_to_phys (data);
-		tds[i].status_active = 1;
+		tds[i].ctrlsts = (3 << TD_COUNTER_SHIFT) |
+			(dev->speed?TD_LOWSPEED:0) |
+			TD_STATUS_ACTIVE;
 		toggle ^= 1;
 		dalen -= mlen;
 		data += mlen;
 	}
 
-	tds[count].pid = (dir == OUT) ? UHCI_IN : UHCI_OUT;
-	tds[count].dev_addr = dev->address;
-	tds[count].endp = endp;
-	tds[count].maxlen = maxlen (0);
-	tds[count].counter = 0;	/* as per linux 2.4.10 */
-	tds[count].data_toggle = 1;
-	tds[count].lowspeed = dev->speed;
+	tds[count].token = (dir == OUT) ? UHCI_IN : UHCI_OUT |
+		dev->address << TD_DEVADDR_SHIFT |
+		endp << TD_EP_SHIFT |
+		maxlen(0) << TD_MAXLEN_SHIFT |
+		TD_TOGGLE_DATA1;
 	tds[count].bufptr = 0;
-	tds[count].status_active = 1;
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.ptr =
-		virt_to_phys (tds);
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.queue_head = 0;
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.terminate = 0;
+	tds[0].ctrlsts = (0 << TD_COUNTER_SHIFT) | /* as Linux 2.4.10 does */
+		(dev->speed?TD_LOWSPEED:0) |
+		TD_STATUS_ACTIVE;
+	UHCI_INST (dev->controller)->qh_data->elementlinkptr =
+		virt_to_phys (tds) & ~(FLISTP_QH | FLISTP_TERMINATE);
 	td_t *td = wait_for_completed_qh (dev->controller,
 					  UHCI_INST (dev->controller)->
 					  qh_data);
@@ -389,15 +374,9 @@ create_schedule (int numpackets)
 	memset (tds, 0, sizeof (td_t) * numpackets);
 	int i;
 	for (i = 0; i < numpackets; i++) {
-		tds[i].ptr = virt_to_phys (&tds[i + 1]);
-		tds[i].terminate = 0;
-		tds[i].queue_head = 0;
-		tds[i].depth_first = 1;
+		tds[i].ptr = virt_to_phys (&tds[i + 1]) | TD_DEPTH_FIRST;
 	}
-	tds[numpackets - 1].ptr = 0;
-	tds[numpackets - 1].terminate = 1;
-	tds[numpackets - 1].queue_head = 0;
-	tds[numpackets - 1].depth_first = 0;
+	tds[numpackets - 1].ptr = 0 | TD_TERMINATE;
 	return tds;
 }
 
@@ -406,32 +385,26 @@ fill_schedule (td_t *td, endpoint_t *ep, int length, unsigned char *data,
 	       int *toggle)
 {
 	switch (ep->direction) {
-		case IN: td->pid = UHCI_IN; break;
-		case OUT: td->pid = UHCI_OUT; break;
-		case SETUP: td->pid = UHCI_SETUP; break;
+		case IN: td->token = UHCI_IN; break;
+		case OUT: td->token = UHCI_OUT; break;
+		case SETUP: td->token = UHCI_SETUP; break;
 	}
-	td->dev_addr = ep->dev->address;
-	td->endp = ep->endpoint & 0xf;
-	td->maxlen = maxlen (length);
-	if (ep->direction == SETUP)
-		td->counter = 3;
-	else
-		td->counter = 0;
-	td->data_toggle = *toggle & 1;
-	td->lowspeed = ep->dev->speed;
+	td->token |= ep->dev->address << TD_DEVADDR_SHIFT |
+		(ep->endpoint & 0xf) << TD_EP_SHIFT |
+		maxlen (length) << TD_MAXLEN_SHIFT |
+		(*toggle & 1) << TD_TOGGLE_SHIFT;
 	td->bufptr = virt_to_phys (data);
-
-	td->status_active = 1;
+	td->ctrlsts = ((ep->direction == SETUP?3:0) << TD_COUNTER_SHIFT) |
+		ep->dev->speed?TD_LOWSPEED:0 |
+		TD_STATUS_ACTIVE;
 	*toggle ^= 1;
 }
 
 static int
 run_schedule (usbdev_t *dev, td_t *td)
 {
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.ptr =
-		virt_to_phys (td);
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.queue_head = 0;
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.terminate = 0;
+	UHCI_INST (dev->controller)->qh_data->elementlinkptr =
+		virt_to_phys (td) | ~(FLISTP_QH | FLISTP_TERMINATE);
 	td = wait_for_completed_qh (dev->controller,
 				    UHCI_INST (dev->controller)->qh_data);
 	if (td == 0) {
@@ -493,9 +466,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 	if (!data || !tds || !qh)
 		fatal("Not enough memory to create USB intr queue prerequisites.\n");
 
-	qh->elementlinkptr.ptr = virt_to_phys(tds);
-	qh->elementlinkptr.queue_head = 0;
-	qh->elementlinkptr.terminate = 0;
+	qh->elementlinkptr = virt_to_phys(tds);
 
 	intr_q *q = malloc(sizeof(intr_q));
 	if (!q)
@@ -512,37 +483,28 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 	int i;
 	for (i = 0; i < reqcount; i++) {
 		tds[i].ptr = virt_to_phys (&tds[i + 1]);
-		tds[i].terminate = 0;
-		tds[i].queue_head = 0;
-		tds[i].depth_first = 0;
 
 		switch (ep->direction) {
-			case IN: tds[i].pid = UHCI_IN; break;
-			case OUT: tds[i].pid = UHCI_OUT; break;
-			case SETUP: tds[i].pid = UHCI_SETUP; break;
+			case IN: tds[i].token = UHCI_IN; break;
+			case OUT: tds[i].token = UHCI_OUT; break;
+			case SETUP: tds[i].token = UHCI_SETUP; break;
 		}
-		tds[i].dev_addr = ep->dev->address;
-		tds[i].endp = ep->endpoint & 0xf;
-		tds[i].maxlen = maxlen (reqsize);
-		tds[i].counter = 0;
-		tds[i].data_toggle = ep->toggle & 1;
-		tds[i].lowspeed = ep->dev->speed;
+		tds[i].token |= ep->dev->address << TD_DEVADDR_SHIFT |
+			(ep->endpoint & 0xf) << TD_EP_SHIFT |
+			maxlen (reqsize) << TD_MAXLEN_SHIFT |
+			(ep->toggle & 1) << TD_TOGGLE_SHIFT;
 		tds[i].bufptr = virt_to_phys (data);
-		tds[i].status_active = 1;
+		tds[i].ctrlsts = (0 << TD_COUNTER_SHIFT) |
+			ep->dev->speed?TD_LOWSPEED:0 |
+			TD_STATUS_ACTIVE;
 		ep->toggle ^= 1;
 		data += reqsize;
 	}
-	tds[reqcount - 1].ptr = 0;
-	tds[reqcount - 1].terminate = 1;
-	tds[reqcount - 1].queue_head = 0;
-	tds[reqcount - 1].depth_first = 0;
+	tds[reqcount - 1].ptr = 0 | TD_TERMINATE;
 	for (i = reqtiming; i < 1024; i += reqtiming) {
 		/* FIXME: wrap in another qh, one for each occurance of the qh in the framelist */
-		qh->headlinkptr.ptr = UHCI_INST (ep->dev->controller)->framelistptr[i].ptr;
-		qh->headlinkptr.terminate = 0;
-		UHCI_INST (ep->dev->controller)->framelistptr[i].ptr = virt_to_phys(qh);
-		UHCI_INST (ep->dev->controller)->framelistptr[i].terminate = 0;
-		UHCI_INST (ep->dev->controller)->framelistptr[i].queue_head = 1;
+		qh->headlinkptr = UHCI_INST (ep->dev->controller)->framelistptr[i] & ~FLISTP_TERMINATE;
+		UHCI_INST (ep->dev->controller)->framelistptr[i] = virt_to_phys(qh) | FLISTP_QH;
 	}
 	return q;
 }
@@ -557,15 +519,15 @@ uhci_destroy_intr_queue (endpoint_t *ep, void *q_)
 	int i;
 	for (i=0; i<1024; i++) {
 		u32 oldptr = 0;
-		u32 ptr = UHCI_INST (ep->dev->controller)->framelistptr[i].ptr;
+		u32 ptr = UHCI_INST (ep->dev->controller)->framelistptr[i];
 		while (ptr != end) {
-			if (((qh_t*)phys_to_virt(ptr))->elementlinkptr.ptr == val) {
-				((qh_t*)phys_to_virt(oldptr))->headlinkptr.ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr.ptr;
+			if (((qh_t*)phys_to_virt(ptr))->elementlinkptr == val) {
+				((qh_t*)phys_to_virt(oldptr))->headlinkptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr;
 				free(phys_to_virt(ptr));
 				break;
 			}
 			oldptr = ptr;
-			ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr.ptr;
+			ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr;
 		}
 	}
 	free(q->data);
@@ -582,7 +544,7 @@ static u8*
 uhci_poll_intr_queue (void *q_)
 {
 	intr_q *q = (intr_q*)q_;
-	if (q->tds[q->lastread].status_active == 0) {
+	if ((q->tds[q->lastread].ctrlsts & TD_STATUS_ACTIVE) == 0) {
 		/* FIXME: handle errors */
 		int current = q->lastread;
 		int previous;
@@ -591,15 +553,13 @@ uhci_poll_intr_queue (void *q_)
 		} else {
 			previous = q->lastread - 1;
 		}
-		q->tds[previous].status = 0;
-		q->tds[previous].ptr = 0;
-		q->tds[previous].terminate = 1;
+		q->tds[previous].ctrlsts &= ~TD_STATUS_MASK;
+		q->tds[previous].ptr = 0 | TD_TERMINATE;
 		if (q->last_td != &q->tds[previous]) {
-			q->last_td->ptr = virt_to_phys(&q->tds[previous]);
-			q->last_td->terminate = 0;
+			q->last_td->ptr = virt_to_phys(&q->tds[previous]) & ~TD_TERMINATE;
 			q->last_td = &q->tds[previous];
 		}
-		q->tds[previous].status_active = 1;
+		q->tds[previous].ctrlsts |= TD_STATUS_ACTIVE;
 		q->lastread = (q->lastread + 1) % q->total;
 		return &q->data[current*q->reqsize];
 	}

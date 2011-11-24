@@ -206,49 +206,43 @@
 	typedef enum { OHCI_SETUP=0, OHCI_OUT=1, OHCI_IN=2, OHCI_FROM_TD=3 } ohci_pid_t;
 
 	typedef volatile struct {
-		union {
-			u32 dword0;
-			struct {
-				unsigned long function_address:7;
-				unsigned long endpoint_number:4;
-				unsigned long direction:2;
-				unsigned long lowspeed:1;
-				unsigned long skip:1;
-				unsigned long format:1;
-				unsigned long maximum_packet_size:11;
-				unsigned long:5;
-			} __attribute__ ((packed));
-		};
+		u32 config;
 		u32 tail_pointer;
-		union {
-			u32 head_pointer;
-			struct {
-				unsigned long halted:1;
-				unsigned long toggle:1;
-				unsigned long:30;
-			} __attribute__ ((packed));
-		};
+		u32 head_pointer;
 		u32 next_ed;
 	} __attribute__ ((packed)) ed_t;
+#define ED_HALTED 1
+#define ED_TOGGLE 2
+
+#define ED_FUNC_SHIFT 0
+#define ED_FUNC_MASK MASK(7, 0)
+#define ED_EP_SHIFT 7
+#define ED_EP_MASK MASK(4, 7)
+#define ED_DIR_SHIFT 11
+#define ED_DIR_MASK MASK(2, 11)
+#define ED_LOWSPEED (1 << 13)
+#define ED_MPS_SHIFT 16
 
 	typedef volatile struct {
-		union {
-			u32 dword0;
-			struct {
-				unsigned long:18;
-				unsigned long buffer_rounding:1;
-				unsigned long direction:2;
-				unsigned long delay_interrupt:3;
-				unsigned long toggle:1;
-				unsigned long toggle_from_td:1;
-				unsigned long error_count:2;
-				unsigned long condition_code:4;
-			} __attribute__ ((packed));
-		};
+		u32 config;
 		u32 current_buffer_pointer;
 		u32 next_td;
 		u32 buffer_end;
 	} __attribute__ ((packed)) td_t;
+#define TD_DIRECTION_SHIFT 19
+#define TD_DIRECTION_MASK MASK(2, TD_DIRECTION_SHIFT)
+#define TD_DIRECTION_SETUP OHCI_SETUP << TD_DIRECTION_SHIFT
+#define TD_DIRECTION_IN OHCI_IN << TD_DIRECTION_SHIFT
+#define TD_DIRECTION_OUT OHCI_OUT << TD_DIRECTION_SHIFT
+#define TD_DELAY_INTERRUPT_NODELAY (7 << 21)
+#define TD_TOGGLE_DATA0 0
+#define TD_TOGGLE_DATA1 (1 << 24)
+#define TD_TOGGLE_FROM_ED 0
+#define TD_TOGGLE_FROM_TD (1 << 25)
+#define TD_CC_SHIFT 28
+#define TD_CC_MASK MASK(4, TD_CC_SHIFT)
+#define TD_CC_NOERR 0
+#define TD_CC_NOACCESS (14 << TD_CC_SHIFT) /* the lower of the two values, so "no access" can be tested with >= */
 
 #define OHCI_INST(controller) ((ohci_t*)((controller)->instance))
 

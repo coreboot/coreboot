@@ -82,3 +82,7 @@ config UPDATE_CPU_MICROCODE
 	  Note that some operating system include these same microcode
 	  patches, so you may need to also disable microcode updates in
 	  your operating system in order for this option to matter.
+
+config MMCONF_SUPPORT_DEFAULT
+	bool
+	default y

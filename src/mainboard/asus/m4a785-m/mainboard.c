@@ -242,6 +242,10 @@ static void m4a785m_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
+#ifdef CONFIG_BOARD_ASUS_M4A785TM
+	CHIP_NAME("ASUS M4A785T-M Mainboard")
+#else
 	CHIP_NAME("ASUS M4A785-M Mainboard")
+#endif
 	.enable_dev = m4a785m_enable,
 };

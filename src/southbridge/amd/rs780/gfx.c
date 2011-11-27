@@ -575,6 +575,86 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	/* Poweron DDI Lanes */
 	poweron_ddi_lanes(nb_dev);
 
+	printk(BIOS_DEBUG,"vgainfo:\n"
+			"  ulBootUpEngineClock:%lu \n"
+			"  ulBootUpUMAClock:%lu \n"
+			"  ulBootUpSidePortClock:%lu \n"
+			"  ulMinSidePortClock:%lu \n"
+			"  ulSystemConfig:%lu \n"
+			"  ulBootUpReqDisplayVector:%lu \n"
+			"  ulOtherDisplayMisc:%lu \n"
+			"  ulDDISlot1Config:%lu \n"
+			"  ulDDISlot2Config:%lu \n"
+
+			"  ucMemoryType:%u \n"
+			"  ucUMAChannelNumber:%u \n"
+			"  ucDockingPinBit:%u \n"
+			"  ucDockingPinPolarity:%u \n"
+
+			"  ulDockingPinCFGInfo:%lu \n"
+			"  ulCPUCapInfo: %lu \n"
+
+			"  usNumberOfCyclesInPeriod:%hu \n"
+			"  usMaxNBVoltage:%hu \n"
+			"  usMinNBVoltage:%hu \n"
+			"  usBootUpNBVoltage:%hu \n"
+
+			"  ulHTLinkFreq:%lu \n"
+
+			"  usMinHTLinkWidth:%hu \n"
+			"  usMaxHTLinkWidth:%hu \n"
+			"  usUMASyncStartDelay:%hu \n"
+			"  usUMADataReturnTime:%hu \n"
+			"  usLinkStatusZeroTime:%hu \n"
+
+			"  ulHighVoltageHTLinkFreq:%lu \n"
+			"  ulLowVoltageHTLinkFreq:%lu \n"
+
+			"  usMaxUpStreamHTLinkWidth:%hu \n"
+			"  usMaxDownStreamHTLinkWidth:%hu \n"
+			"  usMinUpStreamHTLinkWidth:%hu \n"
+			"  usMinDownStreamHTLinkWidth:%hu \n",
+
+			(unsigned long)vgainfo.ulBootUpEngineClock,
+			(unsigned long)vgainfo.ulBootUpUMAClock,
+			(unsigned long)vgainfo.ulBootUpSidePortClock,
+			(unsigned long)vgainfo.ulMinSidePortClock,
+			(unsigned long)vgainfo.ulSystemConfig,
+			(unsigned long)vgainfo.ulBootUpReqDisplayVector,
+			(unsigned long)vgainfo.ulOtherDisplayMisc,
+			(unsigned long)vgainfo.ulDDISlot1Config,
+			(unsigned long)vgainfo.ulDDISlot2Config,
+
+			vgainfo.ucMemoryType,
+			vgainfo.ucUMAChannelNumber,
+			vgainfo.ucDockingPinBit,
+			vgainfo.ucDockingPinPolarity,
+
+			(unsigned long)vgainfo.ulDockingPinCFGInfo,
+			(unsigned long)vgainfo.ulCPUCapInfo,
+
+			vgainfo.usNumberOfCyclesInPeriod,
+			vgainfo.usMaxNBVoltage,
+			vgainfo.usMinNBVoltage,
+			vgainfo.usBootUpNBVoltage,
+
+			(unsigned long)vgainfo.ulHTLinkFreq,
+
+			vgainfo.usMinHTLinkWidth,
+			vgainfo.usMaxHTLinkWidth,
+			vgainfo.usUMASyncStartDelay,
+			vgainfo.usUMADataReturnTime,
+			vgainfo.usLinkStatusZeroTime,
+
+			(unsigned long)vgainfo.ulHighVoltageHTLinkFreq,
+			(unsigned long)vgainfo.ulLowVoltageHTLinkFreq,
+
+			vgainfo.usMaxUpStreamHTLinkWidth,
+			vgainfo.usMaxDownStreamHTLinkWidth,
+			vgainfo.usMinUpStreamHTLinkWidth,
+			vgainfo.usMinDownStreamHTLinkWidth);
+
+
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
 	for(i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4)

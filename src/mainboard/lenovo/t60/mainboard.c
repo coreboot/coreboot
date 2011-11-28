@@ -90,6 +90,10 @@ static void mainboard_enable(device_t dev)
 		printk(BIOS_INFO, "Restoring CMOS defaults\n");
 		set_option("tft_brightness", &(u8[]){ 0xff });
 		set_option("volume", &(u8[]){ 0x03 });
+		/* set baudrate to 115200 baud */
+		set_option("baud_rate", &(u8[]){ 0x05 });
+		/* set default debug_level (DEFAULT_CONSOLE_LOGLEVEL starts at 1) */
+		set_option("debug_level", &(u8[]) { CONFIG_DEFAULT_CONSOLE_LOGLEVEL+1 });
 		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
 	}
 }

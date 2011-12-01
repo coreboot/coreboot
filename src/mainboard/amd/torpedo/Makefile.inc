@@ -47,4 +47,3 @@ ramstage-y += PlatformGnbPcie.c
 ramstage-y += reset.c
 ramstage-y += pmio.c
 
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += $(src)/vendorcode/amd/agesa/f12

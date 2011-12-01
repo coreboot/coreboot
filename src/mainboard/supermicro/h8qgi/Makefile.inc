@@ -29,5 +29,3 @@ ramstage-y += dimmSpd.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += platform_oem.c
 
-AGESA_ROOT ?= $(src)/vendorcode/amd/agesa/f10/
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += ../../../../$(AGESA_ROOT)

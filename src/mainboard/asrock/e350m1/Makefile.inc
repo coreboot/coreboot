@@ -31,4 +31,3 @@ ramstage-y += PlatformGnbPcie.c
 
 ramstage-y += reset.c
 
-subdirs-$(CONFIG_AMD_AGESA) += ../../../vendorcode/amd/agesa/f14

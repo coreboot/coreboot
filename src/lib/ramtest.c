@@ -83,7 +83,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 #endif
 }
 
-static void ram_verify(unsigned long start, unsigned long stop)
+static int ram_verify_nodie(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
 	int i = 0;
@@ -146,15 +146,17 @@ static void ram_verify(unsigned long start, unsigned long stop)
 #else
 		print_debug("\nDRAM did _NOT_ verify!\n");
 #endif
-		die("DRAM ERROR");
+		return 1;
 	}
 	else {
 #if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
 #else
 		print_debug("\nDRAM range verified.\n");
+		return 0;
 #endif
 	}
+	return 0;
 }
 
 
@@ -177,12 +179,44 @@ void ram_check(unsigned long start, unsigned long stop)
 	ram_fill(start, stop);
 	/* Make sure we don't read before we wrote */
 	phys_memory_barrier();
-	ram_verify(start, stop);
+	if (ram_verify_nodie(start, stop))
+		die("DRAM ERROR");
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
 #else
 	print_debug("Done.\n");
 #endif
+}
+
+
+int ram_check_nodie(unsigned long start, unsigned long stop)
+{
+	int ret;
+	/*
+	 * This is much more of a "Is my DRAM properly configured?"
+	 * test than a "Is my DRAM faulty?" test.  Not all bits
+	 * are tested.   -Tyson
+	 */
+#if !defined(__ROMCC__)
+	printk(BIOS_DEBUG, "Testing DRAM : %08lx - %08lx\n", start, stop);
+#else
+	print_debug("Testing DRAM : ");
+	print_debug_hex32(start);
+	print_debug("-");
+	print_debug_hex32(stop);
+	print_debug("\n");
+#endif
+	ram_fill(start, stop);
+	/* Make sure we don't read before we wrote */
+	phys_memory_barrier();
+	ret = ram_verify_nodie(start, stop);
+
+#if !defined(__ROMCC__)
+	printk(BIOS_DEBUG, "Done.\n");
+#else
+	print_debug("Done.\n");
+#endif
+	return ret;
 }
 
 void quick_ram_check(void)

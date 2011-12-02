@@ -16,6 +16,7 @@ subdirs-$(CONFIG_CPU_INTEL_SOCKET_MPGA604) += socket_mPGA604
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_PGA370) += socket_PGA370
 subdirs-$(CONFIG_CPU_INTEL_SLOT_2) += slot_2
 subdirs-$(CONFIG_CPU_INTEL_SLOT_1) += slot_1
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA771) += socket_LGA771
 
 #socket_mPGA604_533Mhz
 #socket_mPGA604_800Mhz

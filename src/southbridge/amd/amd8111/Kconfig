@@ -22,7 +22,3 @@ config SOUTHBRIDGE_AMD_AMD8111
 	select IOAPIC
 	select HAVE_HARD_RESET
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/amd8111/bootblock.c"
-	depends on SOUTHBRIDGE_AMD_AMD8111

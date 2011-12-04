@@ -23,11 +23,6 @@ config SOUTHBRIDGE_AMD_SB800
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/sb800/bootblock.c"
-	depends on SOUTHBRIDGE_AMD_SB800
-
 config SOUTHBRIDGE_AMD_SB800_SKIP_ISA_DMA_INIT
 	bool
 	default n

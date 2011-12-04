@@ -28,11 +28,6 @@ config SOUTHBRIDGE_AMD_SP5100
 	select IOAPIC
 	select HAVE_USBDEBUG
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/sb700/bootblock.c"
-	depends on (SOUTHBRIDGE_AMD_SB700 || SOUTHBRIDGE_AMD_SP5100)
-
 config SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
 	bool
 	default n

@@ -4,9 +4,9 @@ config SOUTHBRIDGE_SIS_SIS966
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/sis/sis966/bootblock.c" if SOUTHBRIDGE_SIS_SIS966
+config ID_SECTION_OFFSET
+	hex
+	default 0x80 if SOUTHBRIDGE_SIS_SIS966
 
 config EHCI_BAR
 	hex
@@ -15,3 +15,4 @@ config EHCI_BAR
 config EHCI_DEBUG_OFFSET
 	hex
 	default 0x98 if SOUTHBRIDGE_SIS_SIS966
+

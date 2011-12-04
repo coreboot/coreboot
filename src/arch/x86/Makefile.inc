@@ -324,11 +324,16 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S $(obj
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/bootblock -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
+$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(obj)/mainboard/$(MAINBOARDDIR)/bootblock_autogen.h $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
-	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
+	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) -I$(@D) $< -o $@
+
+$(obj)/mainboard/$(MAINBOARDDIR)/bootblock_autogen.h: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb $(objutil)/sconfig/sconfig
+	@printf "    SCONFIG    $(subst $(src)/,,$(<)) (bootblock)\n"
+	mkdir -p $(@D)
+	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(@D) -b $(@F)
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

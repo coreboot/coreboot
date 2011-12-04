@@ -53,7 +53,7 @@ static void mcp55_enable_rom(void)
 	pci_write_config16(addr, 0x90, word);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_nvidia_mcp55(void)
 {
 	mcp55_enable_rom();
 }

@@ -67,8 +67,8 @@ config PC80_SYSTEM
 	bool
 	default y
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
+config HAS_MAINBOARD_BOOTBLOCK
+	def_bool n
 
 config HAVE_CMOS_DEFAULT
 	def_bool n
@@ -76,9 +76,6 @@ config HAVE_CMOS_DEFAULT
 config CMOS_DEFAULT_FILE
 	string
 	depends on HAVE_CMOS_DEFAULT
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
 
 config BIG_ENDIAN
 	bool

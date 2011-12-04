@@ -41,7 +41,7 @@ static void amd8111_enable_rom(void)
 	pci_io_write_config8(dev, 0x43, byte);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_amd_amd8111(void)
 {
 	amd8111_enable_rom();
 }

@@ -16,6 +16,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select HAVE_HARD_RESET
+	select HAS_MAINBOARD_BOOTBLOCK
 	select LIFT_BSP_APIC_ID
 	select BOARD_ROMSIZE_KB_1024
 	select RAMINIT_SYSINFO
@@ -90,10 +91,6 @@ config RAMTOP
 config HEAP_SIZE
 	hex
 	default 0xc0000
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "mainboard/hp/dl165_g6_fam10/bootblock.c"
 
 config MMCONF_SUPPORT_DEFAULT
 	bool

@@ -2,15 +2,15 @@
 
 static void main(unsigned long bist)
 {
-	if (boot_cpu()) {
-		bootblock_northbridge_init();
-		bootblock_southbridge_init();
-		bootblock_cpu_init();
+	int bsp_cpu = boot_cpu();
+
+	/* Mainboard-specific early init. */
+	init_mainboard(bsp_cpu);
 
 #if CONFIG_USE_OPTION_TABLE
+	if (bsp_cpu)
 		sanitize_cmos();
 #endif
-	}
 
 	const char* target1 = "fallback/romstage";
 	unsigned long entry;

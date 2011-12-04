@@ -28,6 +28,7 @@ struct device *head, *lastdev;
 struct header headers;
 
 static int devcount = 0;
+static int scan_mode = 0;
 
 static struct device root;
 static struct device mainboard = {
@@ -116,21 +117,28 @@ void postprocess_devtree(void) {
 	}
 }
 
+void translate_name(char *str, int uppercase)
+{
+	char *c;
+	for (c = str; *c; c++) {
+		if (*c == '/') *c = '_';
+		if (*c == '-') *c = '_';
+		if (uppercase)
+			*c = toupper(*c);
+	}
+}
+
 struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 	struct device *new_chip = new_dev(parent, bus);
 	new_chip->chiph_exists = 1;
 	new_chip->name = path;
 	new_chip->name_underscore = strdup(new_chip->name);
-	char *c;
-	for (c = new_chip->name_underscore; *c; c++) {
-		if (*c == '/') *c = '_';
-		if (*c == '-') *c = '_';
-	}
+	translate_name(new_chip->name_underscore, 0);
 	new_chip->type = chip;
 	new_chip->chip = new_chip;
 
 	struct stat st;
-	char *chip_h = malloc(strlen(path)+12);
+	char *chip_h = malloc(strlen(path)+18);
 	sprintf(chip_h, "src/%s", path);
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT)) {
 		fprintf(stderr, "ERROR: Chip component %s does not exist.\n",
@@ -138,10 +146,16 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 		exit(1);
 	}
 
-	sprintf(chip_h, "src/%s/chip.h", path);
-	if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
-		new_chip->chiph_exists = 0;
+	if (scan_mode == 0)
+		sprintf(chip_h, "src/%s/chip.h", path);
+	else if (scan_mode == 1)
+		sprintf(chip_h, "src/%s/bootblock.c", path);
 
+	if ((scan_mode == 0) || (scan_mode == 1)) {
+		if ((stat(chip_h, &st) == -1) && (errno == ENOENT))
+			new_chip->chiph_exists = 0;
+	}
+	
 	if (parent->latestchild) {
 		parent->latestchild->next_sibling = new_chip;
 		parent->latestchild->sibling = new_chip;
@@ -153,7 +167,7 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 }
 
 void add_header(struct device *dev) {
-	if (dev->chiph_exists) {
+	if ((dev->chiph_exists) || (scan_mode==2)){
 		int include_exists = 0;
 		struct header *h = &headers;
 		while (h->next) {
@@ -399,7 +413,8 @@ static void pass1(FILE *fil, struct device *ptr) {
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {
-			fprintf(fil, "struct %s_config %s_info_%d\t= {\n", ptr->name_underscore, ptr->name_underscore, ptr->id);
+			fprintf(fil, "struct %s_config %s_info_%d\t= {\n",
+				ptr->name_underscore, ptr->name_underscore, ptr->id);
 			struct reg *r = ptr->reg;
 			while (r) {
 				fprintf(fil, "\t.%s = %s,\n", r->key, r->value);
@@ -407,7 +422,8 @@ static void pass1(FILE *fil, struct device *ptr) {
 			}
 			fprintf(fil, "};\n\n");
 		} else {
-			fprintf(fil, "struct %s_config %s_info_%d;\n", ptr->name_underscore, ptr->name_underscore, ptr->id);
+			fprintf(fil, "struct %s_config %s_info_%d;\n",
+				ptr->name_underscore, ptr->name_underscore, ptr->id);
 		}
 	}
 }
@@ -441,23 +457,61 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 	}
 }
 
+static void usage(void)
+{
+	printf("usage: sconfig vendor/mainboard outputdir [-{s|b|k} outputfile]\n");
+	printf("\t-s file\tcreate ramstage static device map\n");
+	printf("\t-b file\tcreate bootblock init_mainboard()\n");
+	printf("\t-k file\tcreate Kconfig devicetree section\n");
+	printf("\nDefaults to \"-s static.c\" if no {s|b|k} specified.\n");
+	exit (1);
+}
+
+
 int main(int argc, char** argv) {
-	if (argc != 3) {
-		printf("usage: sconfig vendor/mainboard outputdir\n");
-		return 1;
-	}
+	if (argc < 3)
+		usage();
+
 	char *mainboard=argv[1];
 	char *outputdir=argv[2];
 	char *devtree=malloc(strlen(mainboard)+30);
-	char *outputc=malloc(strlen(outputdir)+10);
 	sprintf(devtree, "src/mainboard/%s/devicetree.cb", mainboard);
-	sprintf(outputc, "%s/static.c", outputdir);
+	char *outputc;
+	
+	if (argc == 3) {
+		scan_mode = 0;
+		outputc=malloc(strlen(outputdir)+20);
+		sprintf(outputc, "%s/static.c", outputdir);
+	} else if ((argc == 5) && (argv[3][0] == '-') && (argv[3][2] == 0)) {
 
-	headers.next = malloc(sizeof(struct header));
-	headers.next->name = malloc(strlen(mainboard)+12);
-	headers.next->next = 0;
-	sprintf(headers.next->name, "mainboard/%s", mainboard);
+		switch (argv[3][1]) {
+		case 's':
+			scan_mode = 0;
+			break;
+		case 'b':
+			scan_mode = 1;
+			break;
+		case 'k':
+			scan_mode = 2;
+			break;
+		default:
+			usage();
+			break;
+		}
+		char *outputfile=argv[4];
 
+		outputc=malloc(strlen(outputdir)+strlen(outputfile)+2);
+		sprintf(outputc, "%s/%s", outputdir, outputfile);
+	}
+
+	headers.next = 0;
+	if (scan_mode == 0) {
+		headers.next = malloc(sizeof(struct header));
+		headers.next->name = malloc(strlen(mainboard)+12);
+		headers.next->next = 0;
+		sprintf(headers.next->name, "mainboard/%s", mainboard);
+	}
+	
 	FILE *filec = fopen(devtree, "r");
 	if (!filec) {
 		fprintf(stderr, "Could not open file '%s' for reading: ", devtree);
@@ -479,29 +533,67 @@ int main(int argc, char** argv) {
 		while (head->next != tmp) head = head->next;
 	}
 
-	FILE *staticc = fopen(outputc, "w");
-	if (!staticc) {
+	FILE *autogen = fopen(outputc, "w");
+	if (!autogen) {
 		fprintf(stderr, "Could not open file '%s' for writing: ", outputc);
 		perror(NULL);
 		exit(1);
 	}
 
-	fprintf(staticc, "#include <device/device.h>\n");
-	fprintf(staticc, "#include <device/pci.h>\n");
-	struct header *h = &headers;
-	while (h->next) {
-		h = h->next;
-		fprintf(staticc, "#include \"%s/chip.h\"\n", h->name);
+	struct header *h;
+	if (scan_mode == 0) {
+
+		fprintf(autogen, "#include <device/device.h>\n");
+		fprintf(autogen, "#include <device/pci.h>\n");
+		h = &headers;
+		while (h->next) {
+			h = h->next;
+			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
+		}
+
+		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
+		fprintf(autogen, "\n/* pass 0 */\n");
+		walk_device_tree(autogen, &root, pass0, NULL);
+		fprintf(autogen, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\n"
+						"struct device *last_dev = &%s;\n", lastdev->name);
+		walk_device_tree(autogen, &root, pass1, NULL);
+
+	} else if (scan_mode == 1) {
+		h = &headers;
+		while (h->next) {
+			h = h->next;
+			fprintf(autogen, "#include \"%s/bootblock.c\"\n", h->name);
+		}
+
+		fprintf(autogen, "\n#if CONFIG_HAS_MAINBOARD_BOOTBLOCK\n");
+		fprintf(autogen, "#include \"mainboard/%s/bootblock.c\"\n", mainboard);
+		fprintf(autogen, "#else\n");
+		fprintf(autogen, "static unsigned long init_mainboard(int bsp_cpu)\n{\n");
+		fprintf(autogen, "\tif (! bsp_cpu) return 0;\n");
+		h = &headers;
+		while (h->next) {
+			h = h->next;
+			translate_name(h->name, 0);
+			fprintf(autogen, "\tinit_%s();\n", h->name);
+		}
+		
+		fprintf(autogen, "\treturn 0;\n}\n");
+		fprintf(autogen, "#endif\n");
+
+	} else if (scan_mode == 2) {
+		fprintf(autogen, "\nconfig MAINBOARD_DIR\n\tstring\n"); 
+		fprintf(autogen, "\tdefault %s\n", mainboard); 
+
+		fprintf(autogen, "\nconfig MAINBOARD_DEVTREE\n\tdef_bool y\n"); 
+		h = &headers;
+		while (h->next) {
+			h = h->next;
+			translate_name(h->name, 1);
+			fprintf(autogen, "\tselect %s\n", h->name);
+		}
 	}
 
-	walk_device_tree(staticc, &root, inherit_subsystem_ids, NULL);
-
-	fprintf(staticc, "\n/* pass 0 */\n");
-	walk_device_tree(staticc, &root, pass0, NULL);
-	fprintf(staticc, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\nstruct device *last_dev = &%s;\n", lastdev->name);
-	walk_device_tree(staticc, &root, pass1, NULL);
-
-	fclose(staticc);
+	fclose(autogen);
 
 	return 0;
 }

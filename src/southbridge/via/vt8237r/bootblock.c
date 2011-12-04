@@ -21,7 +21,7 @@
 #include <arch/romcc_io.h>
 #include <device/pci_ids.h>
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_via_vt8237r(void)
 {
 	device_t dev;
 	/* don't walk other busses, HT is not enabled */

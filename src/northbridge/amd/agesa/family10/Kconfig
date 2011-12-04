@@ -41,9 +41,6 @@ config MMCONF_BASE_ADDRESS
 config MMCONF_BUS_NUMBER
 	int
 	default 256
-config BOOTBLOCK_NORTHBRIDGE_INIT
-  string
-  default "northbridge/amd/agesa/family10/bootblock.c"
 endif #NORTHBRIDGE_AMD_AGESA_FAMILY10
 
 source "src/northbridge/amd/agesa/family10/root_complex/Kconfig"

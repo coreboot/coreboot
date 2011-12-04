@@ -38,7 +38,7 @@ static void bcm5785_enable_rom(void)
 	pci_write_config8(dev, 0x41, byte);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_broadcom_bcm5785(void)
 {
 	bcm5785_enable_rom();
 }

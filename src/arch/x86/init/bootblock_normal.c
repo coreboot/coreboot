@@ -4,13 +4,13 @@
 static void main(unsigned long bist)
 {
 	unsigned long entry;
+	int bsp_cpu = boot_cpu();
 	int boot_mode;
 
-	if (boot_cpu()) {
-		bootblock_northbridge_init();
-		bootblock_southbridge_init();
-		bootblock_cpu_init();
+	/* Mainboard-specific early init. */
+	init_mainboard(bsp_cpu);
 
+	if (bsp_cpu) {
 #if CONFIG_USE_OPTION_TABLE
 		sanitize_cmos();
 #endif

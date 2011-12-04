@@ -33,7 +33,7 @@ static void enable_spi_prefetch(void)
         pci_write_config8(dev, 0xdc, reg8);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_intel_i82801gx(void)
 {
         enable_spi_prefetch();
 }

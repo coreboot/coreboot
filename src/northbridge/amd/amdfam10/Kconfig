@@ -59,10 +59,6 @@ config MMCONF_BUS_NUMBER
 	int
 	default 256
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-        string
-        default "northbridge/amd/amdfam10/bootblock.c"
-
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n

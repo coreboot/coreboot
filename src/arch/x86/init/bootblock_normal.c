@@ -3,18 +3,28 @@
 
 static void main(unsigned long bist)
 {
+	unsigned long entry;
+	int boot_mode;
+
 	if (boot_cpu()) {
 		bootblock_northbridge_init();
 		bootblock_southbridge_init();
 		bootblock_cpu_init();
-	}
 
 #if CONFIG_USE_OPTION_TABLE
-	sanitize_cmos();
+		sanitize_cmos();
 #endif
+		boot_mode = do_normal_boot();
+	} else {
 
-	unsigned long entry;
-	if (do_normal_boot())
+		/* Questionable single byte read from CMOS.
+		 * Do not add any other CMOS access in the
+		 * bootblock for AP CPUs.
+		 */
+		boot_mode = last_boot_normal();
+	}
+
+	if (boot_mode)
 		entry = findstage("normal/romstage");
 	else
 		entry = findstage("fallback/romstage");

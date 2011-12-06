@@ -9161,8 +9161,7 @@ static void decompose_compound_types(struct compile_state *state)
 {
 	struct triple *ins, *next, *first;
 #if DEBUG_DECOMPOSE_HIRES
-	FILE *fp;
-	fp = state->dbgout;
+	FILE *fp = state->dbgout;
 #endif
 	first = state->first;
 	ins = first;

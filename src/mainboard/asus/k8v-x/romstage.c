@@ -199,6 +199,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	smbus_write_byte(0x48, 0x07, smbus_read_byte(0x48, 0x07) | 0x80);
 	smbus_write_byte(0x4a, 0x07, smbus_read_byte(0x4a, 0x07) | 0x10);
 
+	unsigned char mask;
+
+	mask = 0;
+//	mask |= 1 /* AGP voltage 1.7 V (not verified, just vendor BIOS value) */
+//	mask |= 2 /* V-Link voltage 2.6 V (not verified either) */
+	smbus_write_byte(0x4a, 0x00, (smbus_read_byte(0x4a, 0x00) & ~0x0f) | (0x0f ^ (mask << 2)));
+	smbus_write_byte(0x4a, 0x01, (smbus_read_byte(0x4a, 0x01) & ~0x03) | (0x03 ^ mask));
+
+	mask = 25; /* RAM voltage in decivolts, valid range from 25 to 28 */
+	mask = 3 - (mask - 25);
+	smbus_write_byte(0x4a, 0x02, 0x4f | (mask << 4));
+	smbus_write_byte(0x4a, 0x03, 0x04 | mask);
+
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }

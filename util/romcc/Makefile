@@ -1,7 +1,7 @@
 # Move the configuration defines to makefile.conf
 CC=gcc
 CPPFLAGS=
-CFLAGS= -g -Wall $(CPPFLAGS)
+CFLAGS= -g -Wall -Werror $(CPPFLAGS)
 CPROF_FLAGS=-pg -fprofile-arcs
 
 all: romcc test

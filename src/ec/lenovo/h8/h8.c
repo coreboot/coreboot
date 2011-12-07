@@ -104,7 +104,7 @@ int h8_ultrabay_device_present(void)
 static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
-	u8 val;
+	u8 val, tmp;
 
 	h8_log_ec_version();
 
@@ -142,6 +142,13 @@ static void h8_enable(device_t dev)
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
 
+
+	if (!get_option(&val, "first_battery")) {
+		tmp = ec_read(H8_CONFIG3);
+		tmp &= ~(1 << 4);
+		tmp |= (val & 1)<< 4;
+		ec_write(H8_CONFIG3, tmp);
+	}
 	h8_set_audio_mute(0);
 }
 

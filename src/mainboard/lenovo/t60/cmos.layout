@@ -109,6 +109,7 @@ entries
 
 1060         1       e       1        touchpad
 1064         8       h       0        volume
+1072         1       e       9        first_battery
 # -----------------------------------------------------------------
 
 enumerations
@@ -142,7 +143,8 @@ enumerations
 7     2     Keep
 8     0     No
 8     1     Yes
-
+9     0	    Secondary
+9     1	    Primary
 # -----------------------------------------------------------------
 checksums
 

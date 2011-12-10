@@ -1477,7 +1477,7 @@ hw_error:
 	if (dloading != 0) {
 		/* we have valid combination check the restrictions */
 		dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-		dcl |= (dimm_loading_config[dpos][rpos] & DDR_2T) ? (DCL_En2T) : 0;
+		dcl |= ((dimm_loading_config[dpos][rpos] & DDR_2T) || CONFIG_K8_FORCE_2T_DRAM_TIMING) ? (DCL_En2T) : 0;
 		/* Set DuallDimm is second channel is completely empty (revD+) */
 		if (((cpuid_eax(1) & 0xfff0f) >= 0x10f00) && ((dpos & 0x5) == 0)) {
 			printk(BIOS_DEBUG, "Setting DualDIMMen\n");
@@ -1661,7 +1661,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		goto hw_error;
 
 #if CONFIG_CPU_AMD_SOCKET_754
-	if (freq < max_freq_1t) {
+	if (freq < max_freq_1t || CONFIG_K8_FORCE_2T_DRAM_TIMING) {
 		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW,
 			pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW) | DCL_En2T);
 	}

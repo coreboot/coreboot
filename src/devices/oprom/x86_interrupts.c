@@ -70,7 +70,7 @@ int int10_handler(struct eregs *regs)
 		res = 0;
 		break;
 	case 0x09: // Write Character and attribute
-	case 0x10: // Write Character
+	case 0x0e: // Write Character
 		printk(BIOS_INFO, "%c", regs->eax & 0xff);
 		res = 0;
 		break;

@@ -98,7 +98,7 @@ agesawrapper_amdinitcpuio (
 	 */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
 	PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
-	PciData |= 1 << 7;		// set NP (non-posted) bit
+	PciData |= 1 << 7;	// set NP (non-posted) bit
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
 	PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
@@ -275,8 +275,7 @@ agesawrapper_amdinitpost (
 	BiosManagerPtr = (BIOS_HEAP_MANAGER *)BIOS_HEAP_START_ADDRESS;
 
 	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
-	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++)
-	{
+	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
 		*HeadPtr = 0x00000000;
 		HeadPtr++;
 	}
@@ -450,32 +449,44 @@ agesawrapper_amdinitlate (
 	)
 {
 	AGESA_STATUS Status;
-	AMD_LATE_PARAMS AmdLateParams;
+	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
-	LibAmdMemFill (&AmdLateParams,
-					0,
-					sizeof (AMD_LATE_PARAMS),
-					&(AmdLateParams.StdHeader));
+	LibAmdMemFill (&AmdParamStruct,
+		       0,
+		       sizeof (AMD_INTERFACE_PARAMS),
+		       &(AmdParamStruct.StdHeader));
 
-	AmdLateParams.StdHeader.AltImageBasePtr = 0;
-	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
-	AmdLateParams.StdHeader.Func = 0;
-	AmdLateParams.StdHeader.ImageBasePtr = 0;
+	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
+	AmdParamStruct.AllocationMethod = PostMemDram;
+	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
+	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdParamStruct.StdHeader.Func = 0;
+	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	Status = AmdInitLate (&AmdLateParams);
+	AmdCreateStruct (&AmdParamStruct);
+	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
+
+	printk (BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
+
+	Status = AmdInitLate (AmdLateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	DmiTable		= AmdLateParams.DmiTable;
-	AcpiPstate		= AmdLateParams.AcpiPState;
-	AcpiSrat		= AmdLateParams.AcpiSrat;
-	AcpiSlit		= AmdLateParams.AcpiSlit;
+	DmiTable    = AmdLateParamsPtr->DmiTable;
+	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
+	AcpiSrat    = AmdLateParamsPtr->AcpiSrat;
+	AcpiSlit    = AmdLateParamsPtr->AcpiSlit;
 
-	AcpiWheaMce		= AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc		= AmdLateParams.AcpiWheaCmc;
-	AcpiAlib		= AmdLateParams.AcpiAlib;
+	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
+	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
+	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
+
+	/* Don't release the structure until coreboot has copied the ACPI tables.
+	 * AmdReleaseStruct (&AmdLateParams);
+	 */
 
 	return (UINT32)Status;
 }

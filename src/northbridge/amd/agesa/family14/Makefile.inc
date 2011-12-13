@@ -18,5 +18,3 @@
 #
  
 driver-y += northbridge.c
-
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt.asl

@@ -36,6 +36,7 @@
 #include "amdlib.h"
 #include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
+#include <arch/io.h>
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
@@ -44,6 +45,7 @@
  *------------------------------------------------------------------------------
  */
 
+#define MMCONF_ENABLE 1
 
 /* ACPI table pointers returned by AmdInitLate */
 VOID *DmiTable		= NULL;
@@ -96,7 +98,7 @@ agesawrapper_amdinitcpuio (
 	 */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
 	PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
-	PciData |= 1 << 7;		// set NP (non-posted) bit
+	PciData |= 1 << 7;	// set NP (non-posted) bit
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
 	PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
@@ -128,25 +130,37 @@ agesawrapper_amdinitmmio (
 	VOID
 	)
 {
-	AGESA_STATUS		Status;
-	UINT64				MsrReg;
-	UINT32				PciData;
-	PCI_ADDR			PciAddress;
-	AMD_CONFIG_PARAMS	StdHeader;
+	AGESA_STATUS				Status;
+	UINT64						MsrReg;
+	UINT32						PciData;
+	PCI_ADDR					PciAddress;
+	AMD_CONFIG_PARAMS			StdHeader;
+
+	UINT8						BusRangeVal = 0;
+	UINT8						BusNum;
+	UINT8						Index;
 
 	/*
-	Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
-	Address MSR register.
+	 Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
+	 Address MSR register.
 	*/
 
-	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse (CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
+	for (Index = 0; Index < 8; Index++) {
+		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
+		if (BusNum == 1) {
+			BusRangeVal = Index;
+			break;
+		}
+	}
+
+	MsrReg = (CONFIG_MMCONF_BASE_ADDRESS | (UINT64)(BusRangeVal << 2) | MMCONF_ENABLE);
 	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
 
 	/*
-	Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
+	 Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
 	*/
 	LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
-	MsrReg = MsrReg | 0x0000400000000000;
+	MsrReg = MsrReg | 0x0000400000000000ull;
 	LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
 
 	/* Set Ontario Link Data */
@@ -261,10 +275,9 @@ agesawrapper_amdinitpost (
 	BiosManagerPtr = (BIOS_HEAP_MANAGER *)BIOS_HEAP_START_ADDRESS;
 
 	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
-	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++)
-	{
-	*HeadPtr = 0x00000000;
-	HeadPtr++;
+	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
+		*HeadPtr = 0x00000000;
+		HeadPtr++;
 	}
 	BiosManagerPtr->StartOfAllocatedNodes = 0;
 	BiosManagerPtr->StartOfFreedNodes = 0;
@@ -436,32 +449,44 @@ agesawrapper_amdinitlate (
 	)
 {
 	AGESA_STATUS Status;
-	AMD_LATE_PARAMS AmdLateParams;
+	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
-	LibAmdMemFill (&AmdLateParams,
-					0,
-					sizeof (AMD_LATE_PARAMS),
-					&(AmdLateParams.StdHeader));
+	LibAmdMemFill (&AmdParamStruct,
+		       0,
+		       sizeof (AMD_INTERFACE_PARAMS),
+		       &(AmdParamStruct.StdHeader));
 
-	AmdLateParams.StdHeader.AltImageBasePtr = 0;
-	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
-	AmdLateParams.StdHeader.Func = 0;
-	AmdLateParams.StdHeader.ImageBasePtr = 0;
+	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
+	AmdParamStruct.AllocationMethod = PostMemDram;
+	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
+	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdParamStruct.StdHeader.Func = 0;
+	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	Status = AmdInitLate (&AmdLateParams);
+	AmdCreateStruct (&AmdParamStruct);
+	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
+
+	printk (BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
+
+	Status = AmdInitLate (AmdLateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	DmiTable		= AmdLateParams.DmiTable;
-	AcpiPstate		= AmdLateParams.AcpiPState;
-	AcpiSrat		= AmdLateParams.AcpiSrat;
-	AcpiSlit		= AmdLateParams.AcpiSlit;
+	DmiTable    = AmdLateParamsPtr->DmiTable;
+	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
+	AcpiSrat    = AmdLateParamsPtr->AcpiSrat;
+	AcpiSlit    = AmdLateParamsPtr->AcpiSlit;
 
-	AcpiWheaMce		= AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc		= AmdLateParams.AcpiWheaCmc;
-	AcpiAlib		= AmdLateParams.AcpiAlib;
+	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
+	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
+	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
+
+	/* Don't release the structure until coreboot has copied the ACPI tables.
+	 * AmdReleaseStruct (&AmdLateParams);
+	 */
 
 	return (UINT32)Status;
 }
@@ -517,10 +542,10 @@ agesawrapper_amdreadeventlog (
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	Status = AmdReadEventLog (&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
-	printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
-	printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
-	printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
-	Status = AmdReadEventLog (&AmdEventParams);
+		printk(BIOS_DEBUG,"\nEventLog:	EventClass = %lx, EventInfo = %lx.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
+		printk(BIOS_DEBUG,"	Param1 = %lx, Param2 = %lx.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
+		printk(BIOS_DEBUG,"	Param3 = %lx, Param4 = %lx.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
+		Status = AmdReadEventLog (&AmdEventParams);
 	}
 
 	return (UINT32)Status;

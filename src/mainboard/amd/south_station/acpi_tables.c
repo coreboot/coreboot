@@ -130,6 +130,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
 	acpi_header_t *ssdt2;
+	acpi_header_t *alib;
 
 	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
 
@@ -224,6 +225,20 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SSDT */
 	current	 = ( current + 0x0f) & -0x10;
+	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
+	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
+	if (alib != NULL) {
+		memcpy((void *)current, alib, alib->length);
+		ssdt = (acpi_header_t *) current;
+		current += alib->length;
+		acpi_add_table(rsdp,alib);
+	}
+	else {
+		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
+	}
+
+#if 0 // The DSDT needs additional work for the AGESA SSDT Pstate table
+	current	 = ( current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
 	if (ssdt != NULL) {
@@ -235,6 +250,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		printk(BIOS_DEBUG, "  AGESA SSDT table NULL. Skipping.\n");
 	}
 	acpi_add_table(rsdp,ssdt);
+#endif
 
 	current	 = ( current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:  * coreboot TOM SSDT2 at %lx\n", current);

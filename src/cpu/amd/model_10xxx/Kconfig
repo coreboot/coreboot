@@ -2,6 +2,7 @@ config CPU_AMD_MODEL_10XXX
 	bool
 	select SSE
 	select SSE2
+	select MMCONF_SUPPORT_DEFAULT
 
 if CPU_AMD_MODEL_10XXX
 config CPU_ADDR_BITS
@@ -81,7 +82,5 @@ config UPDATE_CPU_MICROCODE
 	  Note that some operating system include these same microcode
 	  patches, so you may need to also disable microcode updates in
 	  your operating system in order for this option to matter.
-
-select MMCONF_SUPPORT_DEFAULT
 
 endif	# CPU_AMD_MODEL_10XXX

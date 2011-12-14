@@ -73,4 +73,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
+config VGA_BIOS_ID
+	string
+	default "1002,9615"
+
 endif # BOARD_AMD_MAHOGANY

@@ -14,3 +14,12 @@ util/crossgcc/xgcc/
 *.\#
 *.swp
 *.bin
+util/ectool/ectool
+util/inteltool/.dependencies
+util/inteltool/inteltool
+util/msrtool/Makefile
+util/msrtool/Makefile.deps
+util/msrtool/msrtool
+util/nvramtool/.dependencies
+util/nvramtool/nvramtool
+util/superiotool/superiotool

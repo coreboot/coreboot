@@ -227,4 +227,33 @@
  */
 #define GEC_CONFIG			0
 
+const static CODECENTRY persimmon_codec_alc269[] =
+{
+	/* NID, PinConfig */
+	{0x12, 0x411111F0},
+	{0x14, 0x99130110},
+	{0x21, 0x0121401F},
+	{0x17, 0x411111F0},
+	{0x18, 0x01A19820},
+	{0x19, 0x411111F0},
+	{0x1A, 0x0181302F},
+	{0x1B, 0x411111F0},
+	{0x1D, 0x40069E05},
+	{0x1E, 0x411111F0},
+	{0x20, 0x0001FFFF},
+	{0xff, 0xffffffff} /* end of table */
+};
+
+const static CODECTBLLIST persimmon_codec_tablelist[] =
+{
+	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},
+	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}
+};
+
+/**
+ * @def AZALIA_OEM_VERB_TABLE
+ *  Mainboard specific cocec verb table list
+ */
+#define AZALIA_OEM_VERB_TABLE		(&persimmon_codec_tablelist[0])
+
 #endif

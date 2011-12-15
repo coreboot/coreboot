@@ -363,9 +363,7 @@ void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
 #if CONFIG_SERIAL_CPU_INIT == 1
-  #if CONFIG_MAX_CPUS>2
 	spin_lock(&start_cpu_lock);
-  #endif
 #endif
 
 #ifdef __SSE3__
@@ -380,9 +378,7 @@ void secondary_cpu_init(void)
 #endif
 	cpu_initialize();
 #if CONFIG_SERIAL_CPU_INIT == 1
-  #if CONFIG_MAX_CPUS>2
 	spin_unlock(&start_cpu_lock);
-  #endif
 #endif
 
 	atomic_dec(&active_cpus);
@@ -419,9 +415,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 				cpu->path.apic.apic_id);
 		}
 #if CONFIG_SERIAL_CPU_INIT == 1
-  #if CONFIG_MAX_CPUS>2
 		udelay(10);
-  #endif
 #endif
 	}
 

@@ -338,8 +338,8 @@ $(objk)/zconf.tab.c: $(srck)/zconf.tab.c_shipped
 
 $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 			   $(patsubst %,$(objk)/lxdialog/%,$(lxdialog))
-	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) \
-		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) -o $@
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) \
+		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) $(HOST_LOADLIBES) -o $@
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
 

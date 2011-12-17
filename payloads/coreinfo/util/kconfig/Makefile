@@ -298,7 +298,7 @@ $(objk)/qconf: $(patsubst %,$(objk)/%,$(qconf-cxxobjs)) \
 $(objk)/gconf: $(patsubst %,$(objk)/%,$(gconf-objs))
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOSTLOADLIBES_gconf) -o $@ $^
 $(objk)/mconf: $(patsubst %,$(objk)/%,$(mconf-objs))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) -o $@ $^
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^ $(HOST_LOADLIBES)
 $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
 
@@ -330,8 +330,8 @@ $(objk)/zconf.tab.c: $(srck)/zconf.tab.c_shipped
 
 $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 			   $(patsubst %,$(objk)/lxdialog/%,$(lxdialog))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) \
-		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) -o $@
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) \
+		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) $(HOST_LOADLIBES) -o $@
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
 

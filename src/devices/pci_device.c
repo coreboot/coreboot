@@ -494,6 +494,21 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			dev->command |= PCI_COMMAND_IO;
 		if (resource->flags & IORESOURCE_PCI_BRIDGE)
 			dev->command |= PCI_COMMAND_MASTER;
+
+		/* It isn't safe to enable multiple VGA cards.
+		 * Windows will report resource conflict when more than one
+		 * VGA-compatible legacy graphic card in the system.
+		 */
+#if CONFIG_VGA_BRIDGE_SETUP == 1
+		extern device_t vga_pri;
+		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
+			(dev != vga_pri)) {
+			if (((vga_pri->class >> 8) == PCI_CLASS_DISPLAY_VGA) &&
+				((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)) {
+				dev->command &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
+			}
+		}
+#endif
 	}
 
 	/* Get the base address. */

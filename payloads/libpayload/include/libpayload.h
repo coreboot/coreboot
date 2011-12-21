@@ -369,7 +369,7 @@ int sysinfo_have_multiboot(unsigned long *addr);
 int get_coreboot_info(struct sysinfo_t *info);
 int get_multiboot_info(struct sysinfo_t *info);
 
-void lib_get_sysinfo(void);
+int lib_get_sysinfo(void);
 
 /* Timer functions - defined by each architecture. */
 unsigned int get_cpu_speed(void);

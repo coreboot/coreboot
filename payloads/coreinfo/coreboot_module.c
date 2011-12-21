@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <coreboot_tables.h>
 #include "coreinfo.h"
+#include <coreboot_tables.h>
 
 #ifdef CONFIG_MODULE_COREBOOT
 
@@ -112,9 +112,9 @@ int coreboot_module_redraw(WINDOW *win)
 		}
 
 		wprintw(win, "%16.16llx - %16.16llx",
-			UNPACK_CB64(cb_info.range[i].start),
-			UNPACK_CB64(cb_info.range[i].start) +
-			UNPACK_CB64(cb_info.range[i].size) - 1);
+			cb_unpack64(cb_info.range[i].start),
+			cb_unpack64(cb_info.range[i].start) +
+			cb_unpack64(cb_info.range[i].size) - 1);
 	}
 
 	return 0;
@@ -142,8 +142,8 @@ static void parse_mainboard(unsigned char *ptr)
 {
 	struct cb_mainboard *mb = (struct cb_mainboard *)ptr;
 
-	strncpy(cb_info.vendor, (const char *)MB_VENDOR_STRING(mb), 31);
-	strncpy(cb_info.part, (const char *)MB_PART_STRING(mb), 31);
+	strncpy(cb_info.vendor, (const char *)cb_mb_vendor_string(mb), 31);
+	strncpy(cb_info.part, (const char *)cb_mb_part_string(mb), 31);
 }
 
 static void parse_strings(unsigned char *ptr)

@@ -216,22 +216,33 @@ struct	cb_cmos_checksum {
 	u32 type;
 };
 
+static inline u16 cb_checksum(const void *ptr, unsigned len)
+{
+	return ipchksum(ptr, len);
+}
+
+static inline const u8 *cb_mb_vendor_string(const struct cb_mainboard *cbm)
+{
+	return cbm->strings + cbm->vendor_idx;
+}
+
+static inline const u8 *cb_mb_part_string(const struct cb_mainboard *cbm)
+{
+	return cbm->strings + cbm->part_number_idx;
+}
+
+static inline u64 cb_unpack64(struct cbuint64 val)
+{
+	return (((u64) val.hi) << 32) | val.lo;
+}
+
 /* Helpful macros */
 
 #define MEM_RANGE_COUNT(_rec) \
 	(((_rec)->size - sizeof(*(_rec))) / sizeof((_rec)->map[0]))
 
 #define MEM_RANGE_PTR(_rec, _idx) \
-	(((u8 *) (_rec)) + sizeof(*(_rec)) \
-	+ (sizeof((_rec)->map[0]) * (_idx)))
-
-#define MB_VENDOR_STRING(_mb) \
-	(((unsigned char *) ((_mb)->strings)) + (_mb)->vendor_idx)
-
-#define MB_PART_STRING(_mb) \
-	(((unsigned char *) ((_mb)->strings)) + (_mb)->part_number_idx)
-
-#define UNPACK_CB64(_in) \
-	( (((u64) _in.hi) << 32) | _in.lo )
+	(void *)(((u8 *) (_rec)) + sizeof(*(_rec)) \
+		 + (sizeof((_rec)->map[0]) * (_idx)))
 
 #endif

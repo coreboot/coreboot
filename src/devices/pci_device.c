@@ -494,6 +494,26 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			dev->command |= PCI_COMMAND_IO;
 		if (resource->flags & IORESOURCE_PCI_BRIDGE)
 			dev->command |= PCI_COMMAND_MASTER;
+
+		/* It isn't safe to enable multiple VGA cards.
+		 * See PCI spec section 3.10.
+		 * The palette snoop bit will be set by the system firmware
+		 * when it detects both a VGA device and a graphics accelerator
+		 * device that are on separate add-in cards on the same bus or
+		 * on the same path but on different buses.
+		 * Either device can be set to snoop and the other will be set
+		 * to positively respond.
+		 */
+#if CONFIG_VGA_BRIDGE_SETUP == 1
+		extern device_t vga_pri;
+		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
+			(dev != vga_pri)) {
+			if (((vga_pri->class >> 8) == PCI_CLASS_DISPLAY_VGA) &&
+				((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)) {
+				dev->command &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
+			}
+		}
+#endif
 	}
 
 	/* Get the base address. */

@@ -56,6 +56,9 @@ struct sysinfo_t {
 	struct cb_framebuffer *framebuffer;
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */
+
+	struct cb_header *header;
+	struct cb_mainboard *mainboard;
 };
 
 extern struct sysinfo_t lib_sysinfo;

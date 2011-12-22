@@ -166,11 +166,15 @@ static void *smp_write_config_table(void *v)
 #define PCI_INT(bus, dev, int_sign, pin) \
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_sb800, (pin))
 
+  /* APU Internal Graphic Device*/
+  PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
+  PCI_INT(0x0, 0x01, 0x1, intr_data[0x03]);
+
   /* SMBUS */
   PCI_INT(0x0, 0x14, 0x0, 0x10);
 
-  /* HD Audio */
-  PCI_INT(0x0, 0x14, 0x0, intr_data[0x13]);
+  /* Southbridge HD Audio */
+  PCI_INT(0x0, 0x14, 0x2, intr_data[0x13]);
 
   /* USB */
   PCI_INT(0x0, 0x12, 0x0, intr_data[0x30]);
@@ -179,7 +183,7 @@ static void *smp_write_config_table(void *v)
   PCI_INT(0x0, 0x13, 0x1, intr_data[0x33]);
   PCI_INT(0x0, 0x16, 0x0, intr_data[0x34]);
   PCI_INT(0x0, 0x16, 0x1, intr_data[0x35]);
-  PCI_INT(0x0, 0x14, 0x2, intr_data[0x36]);
+  PCI_INT(0x0, 0x14, 0x5, intr_data[0x36]);
 
   /* sata */
   PCI_INT(0x0, 0x11, 0x0, intr_data[0x40]);

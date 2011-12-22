@@ -90,9 +90,13 @@ static void *smp_write_config_table(void *v)
 #define PCI_INT(bus, dev, fn, pin)
 #endif
 
+	/* APU Internal Graphic Device*/
+	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
+	PCI_INT(0x0, 0x01, 0x1, intr_data[0x03]);
+
 	//PCI_INT(0x0, 0x14, 0x1, 0x11); /* IDE. */
 	PCI_INT(0x0, 0x14, 0x0, 0x10);
-	/* HD Audio: */
+	/* Southbridge HD Audio: */
 	PCI_INT(0x0, 0x14, 0x2, 0x12);
 
 	PCI_INT(0x0, 0x12, 0x0, intr_data[0x30]); /* USB */
@@ -104,8 +108,6 @@ static void *smp_write_config_table(void *v)
 
 	/* sata */
 	PCI_INT(0x0, 0x11, 0x0, intr_data[0x41]);
-
-	/* PCI_INT(0x0, 0x14, 0x2, 0x12); */
 
 	/* on board NIC & Slot PCIE.	*/
 

@@ -179,6 +179,18 @@ static inline unsigned int fls(unsigned int x)
 #endif
 #define MTRRS        (BIOS_MTRRS + OS_MTRRS)
 
+static int total_mtrrs = MTRRS;
+static int bios_mtrrs = BIOS_MTRRS;
+
+static void detect_var_mtrrs(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MTRRcap_MSR);
+
+	total_mtrrs = msr.lo & 0xff;
+	bios_mtrrs = total_mtrrs - 2;
+}
 
 static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char type)
 {
@@ -235,6 +247,8 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	unsigned long next_range_startk, unsigned char type,
 	unsigned int address_bits, unsigned int above4gb)
 {
+	unsigned long hole_startk = 0, hole_sizek = 0;
+
 	if (!range_sizek) {
 		/* If there's no MTRR hole, this function will bail out
 		 * here when called for the hole.
@@ -243,12 +257,22 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		return reg;
 	}
 
-	if (reg >= BIOS_MTRRS) {
+	if (reg >= bios_mtrrs) {
 		printk(BIOS_ERR, "Warning: Out of MTRRs for base: %4ldMB, range: %ldMB, type %s\n",
 				range_startk >>10, range_sizek >> 10,
 				(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 				   ((type==MTRR_TYPE_WRBACK)?"WB":"Other") );
 		return reg;
+	}
+
+	if (above4gb == 2 && type == MTRR_TYPE_WRBACK && range_sizek % 0x4000) {
+		/*
+		 * If this range is not divisible by 16MB then instead
+		 * make a larger range and carve out an uncached hole.
+		 */
+		hole_startk = range_startk + range_sizek;
+		hole_sizek = 0x4000 - (range_sizek % 0x4000);
+		range_sizek += hole_sizek;
 	}
 
 	while(range_sizek) {
@@ -274,11 +298,20 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
 		range_startk += sizek;
 		range_sizek -= sizek;
-		if (reg >= BIOS_MTRRS) {
+		if (reg >= bios_mtrrs) {
 			printk(BIOS_ERR, "Running out of variable MTRRs!\n");
 			break;
 		}
 	}
+
+	if (hole_sizek) {
+		printk(BIOS_DEBUG, "Adding hole at %ldMB-%ldMB\n",
+		       hole_startk, hole_startk + hole_sizek);
+		reg = range_to_mtrr(reg, hole_startk, hole_sizek,
+			      next_range_startk, MTRR_TYPE_UNCACHEABLE,
+			      address_bits, above4gb);
+	}
+
 	return reg;
 }
 
@@ -325,7 +358,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 {
 	struct var_mtrr_state *state = gp;
 	unsigned long basek, sizek;
-	if (state->reg >= BIOS_MTRRS)
+	if (state->reg >= bios_mtrrs)
 		return;
 	basek = resk(res->base);
 	sizek = resk(res->size);
@@ -341,7 +374,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	/* Write the range mtrrs */
 	if (state->range_sizek != 0) {
 #if CONFIG_VAR_MTRR_HOLE
-		if (state->hole_sizek == 0) {
+		if (state->hole_sizek == 0 && state->above4gb != 2) {
 			/* We need to put that on to hole */
 			unsigned long endk = basek + sizek;
 			state->hole_startk = state->range_startk + state->range_sizek;
@@ -424,6 +457,10 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	var_state.address_bits = address_bits;
 	var_state.above4gb = above4gb;
 
+	/* Detect number of variable MTRRs */
+	if (above4gb == 2)
+		detect_var_mtrrs();
+
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
@@ -435,7 +472,8 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	} else {
 #if CONFIG_VAR_MTRR_HOLE
 		// Increase the base range and set up UMA as an UC hole instead
-		var_state.range_sizek += (uma_memory_size >> 10);
+		if (above4gb != 2)
+			var_state.range_sizek += (uma_memory_size >> 10);
 
 		var_state.hole_startk = (uma_memory_base >> 10);
 		var_state.hole_sizek = (uma_memory_size >> 10);
@@ -454,7 +492,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	printk(BIOS_DEBUG, "DONE variable MTRRs\n");
 	printk(BIOS_DEBUG, "Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */
-	while(var_state.reg < MTRRS) {
+	while(var_state.reg < total_mtrrs) {
 		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
 
@@ -463,7 +501,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	 * complete ROM now that we actually have RAM.
 	 */
 	if (boot_cpu() && (acpi_slp_type != 3)) {
-		set_var_mtrr(7, (4096-4)*1024, 4*1024,
+		set_var_mtrr(total_mtrrs-1, (4096-4)*1024, 4*1024,
 			MTRR_TYPE_WRPROT, address_bits);
 	}
 #endif

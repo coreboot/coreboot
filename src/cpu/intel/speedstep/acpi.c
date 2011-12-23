@@ -62,7 +62,7 @@ static int get_fsb(void)
 	return 200;
 }
 
-int get_cst_entries(struct cst_entry **entries __attribute__((unused)))
+int __attribute__((weak)) get_cst_entries(struct cst_entry **entries __attribute__((unused)))
 {
 	return 0;
 }

@@ -62,11 +62,6 @@ static int get_fsb(void)
 	return 200;
 }
 
-int get_cst_entries(struct cst_entry **entries __attribute__((unused)))
-{
-	return 0;
-}
-
 void generate_cpu_entries(void)
 {
 	int len_pr, len_ps;
@@ -89,7 +84,7 @@ void generate_cpu_entries(void)
 		len_pr = acpigen_write_processor((cpuID-1)*cores_per_package+coreID-1, pcontrol_blk, plen);
 			len_pr += acpigen_write_empty_PCT();
 			len_pr += acpigen_write_PSD_package(cpuID-1,cores_per_package,SW_ANY);
-			if ((count = get_cst_entries(&cst_entries)) > 0)
+			if (get_cst_entries && (count = get_cst_entries(&cst_entries)) > 0)
 				len_pr += acpigen_write_CST_package(cst_entries, count);
 			len_pr += acpigen_write_name("_PSS");
 

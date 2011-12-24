@@ -223,6 +223,11 @@ static inline u64 cb_unpack64(struct cbuint64 val)
 	return (((u64) val.hi) << 32) | val.lo;
 }
 
+static inline u16 cb_checksum(const void *ptr, unsigned len)
+{
+	return ipchksum(ptr, len);
+}
+
 /* Helpful macros */
 
 #define MEM_RANGE_COUNT(_rec) \

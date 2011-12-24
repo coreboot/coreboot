@@ -45,8 +45,10 @@ struct sysinfo_t lib_sysinfo = {
 #endif
 };
 
-void lib_get_sysinfo(void)
+int lib_get_sysinfo(void)
 {
+	int ret;
+
 	/* Get the CPU speed (for delays). */
 	lib_sysinfo.cpu_khz = get_cpu_speed();
 
@@ -59,7 +61,7 @@ void lib_get_sysinfo(void)
 	/* Get information from the coreboot tables,
 	 * if they exist */
 
-	get_coreboot_info(&lib_sysinfo);
+	ret = get_coreboot_info(&lib_sysinfo);
 
 	if (!lib_sysinfo.n_memranges) {
 		/* If we can't get a good memory range, use the default. */
@@ -73,4 +75,6 @@ void lib_get_sysinfo(void)
 		lib_sysinfo.memrange[1].size = 31 * 1024 * 1024;
 		lib_sysinfo.memrange[1].type = CB_MEM_RAM;
 	}
+
+	return ret;
 }

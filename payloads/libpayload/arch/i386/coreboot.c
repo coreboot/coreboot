@@ -113,6 +113,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
 	unsigned char *ptr = addr;
+	void *forward;
 	int i;
 
 	for (i = 0; i < len; i += 16, ptr += 16) {
@@ -145,7 +146,8 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		/* We only care about a few tags here (maybe more later). */
 		switch (rec->tag) {
 		case CB_TAG_FORWARD:
-			return cb_parse_header((void *)(unsigned long)((struct cb_forward *)rec)->forward, len, info);
+			forward = phys_to_virt((void *)(unsigned long)((struct cb_forward *)rec)->forward);
+			return cb_parse_header(forward, len, info);
 			continue;
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);

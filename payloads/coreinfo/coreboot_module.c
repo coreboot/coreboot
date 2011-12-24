@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <coreboot_tables.h>
 #include "coreinfo.h"
+#include <coreboot_tables.h>
 
 #ifdef CONFIG_MODULE_COREBOOT
 
@@ -189,10 +189,10 @@ static int parse_header(void *addr, int len)
 
 	/* FIXME: Check the checksum. */
 
-	if (ipchksum((uint16_t *) header, sizeof(*header)))
+	if (cb_checksum(header, sizeof(*header)))
 		return -1;
 
-	if (ipchksum((uint16_t *) (ptr + sizeof(*header)), header->table_bytes)
+	if (cb_checksum((ptr + sizeof(*header)), header->table_bytes)
 	    != header->table_checksum)
 		return -1;
 

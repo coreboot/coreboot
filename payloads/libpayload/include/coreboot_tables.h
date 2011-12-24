@@ -234,8 +234,8 @@ static inline u16 cb_checksum(const void *ptr, unsigned len)
 	(((_rec)->size - sizeof(*(_rec))) / sizeof((_rec)->map[0]))
 
 #define MEM_RANGE_PTR(_rec, _idx) \
-	(((u8 *) (_rec)) + sizeof(*(_rec)) \
-	+ (sizeof((_rec)->map[0]) * (_idx)))
+	(void *)(((u8 *) (_rec)) + sizeof(*(_rec)) \
+		+ (sizeof((_rec)->map[0]) * (_idx)))
 
 #define MB_VENDOR_STRING(_mb) \
 	(((unsigned char *) ((_mb)->strings)) + (_mb)->vendor_idx)

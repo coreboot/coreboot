@@ -216,6 +216,13 @@ struct	cb_cmos_checksum {
 	u32 type;
 };
 
+/* Helpful inlines */
+
+static inline u64 cb_unpack64(struct cbuint64 val)
+{
+	return (((u64) val.hi) << 32) | val.lo;
+}
+
 /* Helpful macros */
 
 #define MEM_RANGE_COUNT(_rec) \
@@ -230,8 +237,5 @@ struct	cb_cmos_checksum {
 
 #define MB_PART_STRING(_mb) \
 	(((unsigned char *) ((_mb)->strings)) + (_mb)->part_number_idx)
-
-#define UNPACK_CB64(_in) \
-	( (((u64) _in.hi) << 32) | _in.lo )
 
 #endif

@@ -42,9 +42,9 @@
 /* === Parsing code === */
 /* This is the generic parsing code. */
 
-static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_memory *mem = (struct cb_memory *)ptr;
+	struct cb_memory *mem = ptr;
 	int count = MEM_RANGE_COUNT(mem);
 	int i;
 
@@ -54,8 +54,7 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 	info->n_memranges = 0;
 
 	for (i = 0; i < count; i++) {
-		struct cb_memory_range *range =
-		    (struct cb_memory_range *)MEM_RANGE_PTR(mem, i);
+		struct cb_memory_range *range = MEM_RANGE_PTR(mem, i);
 
 #ifdef CONFIG_MEMMAP_RAM_ONLY
 		if (range->type != CB_MEM_RAM)
@@ -74,29 +73,29 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 	}
 }
 
-static void cb_parse_serial(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_serial *ser = (struct cb_serial *)ptr;
+	struct cb_serial *ser = ptr;
 	if (ser->type != CB_SERIAL_TYPE_IO_MAPPED)
 		return;
 	info->ser_ioport = ser->baseaddr;
 }
 
-static void cb_parse_version(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_version(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_string *ver = (struct cb_string *)ptr;
+	struct cb_string *ver = ptr;
 	info->cb_version = (char *)ver->string;
 }
 
 #ifdef CONFIG_NVRAM
-static void cb_parse_optiontable(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
-	info->option_table = (struct cb_cmos_option_table *)ptr;
+	info->option_table = ptr;
 }
 
-static void cb_parse_checksum(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_cmos_checksum *cmos_cksum = (struct cb_cmos_checksum *)ptr;
+	struct cb_cmos_checksum *cmos_cksum = ptr;
 	info->cmos_range_start = cmos_cksum->range_start;
 	info->cmos_range_end = cmos_cksum->range_end;
 	info->cmos_checksum_location = cmos_cksum->location;
@@ -104,16 +103,16 @@ static void cb_parse_checksum(unsigned char *ptr, struct sysinfo_t *info)
 #endif
 
 #ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
-static void cb_parse_framebuffer(unsigned char *ptr, struct sysinfo_t *info)
+static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 {
-	info->framebuffer = (struct cb_framebuffer *)ptr;
+	info->framebuffer = ptr;
 }
 #endif
 
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
-	unsigned char *ptr = (unsigned char *)addr;
+	unsigned char *ptr = addr;
 	int i;
 
 	for (i = 0; i < len; i += 16, ptr += 16) {

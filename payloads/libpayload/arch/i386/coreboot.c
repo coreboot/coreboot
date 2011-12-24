@@ -109,21 +109,21 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 }
 #endif
 
-static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
+static int cb_parse_header(void *addr, void *end, struct sysinfo_t *info)
 {
 	struct cb_header *header;
-	unsigned char *ptr = addr;
+	unsigned char *ptr;
 	void *forward;
 	int i;
 
-	for (i = 0; i < len; i += 16, ptr += 16) {
+	for (ptr = addr; (void *)ptr < end; ptr += 16) {
 		header = (struct cb_header *)ptr;
 		if (!strncmp((const char *)header->signature, "LBIO", 4))
 			break;
 	}
 
 	/* We walked the entire space and didn't find anything. */
-	if (i >= len)
+	if ((void *)ptr >= end)
 		return -1;
 
 	if (!header->table_bytes)
@@ -147,7 +147,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		switch (rec->tag) {
 		case CB_TAG_FORWARD:
 			forward = phys_to_virt((void *)(unsigned long)((struct cb_forward *)rec)->forward);
-			return cb_parse_header(forward, len, info);
+			return cb_parse_header(forward, forward + 0x1000, info);
 			continue;
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);
@@ -176,6 +176,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		}
 
 		ptr += rec->size;
+
+		if ((void *)ptr >= end)
+			return -1;
 	}
 
 	return 1;
@@ -186,10 +189,13 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
+	void *base = phys_to_virt(0x00000000);
+	int ret = cb_parse_header(base, base + 0x1000, info);
 
-	if (ret != 1)
-		ret = cb_parse_header(phys_to_virt(0x000f0000), 0x1000, info);
+	if (ret != 1) {
+		base = phys_to_virt(0x000f0000);
+		ret = cb_parse_header(base, base + 0x1000, info);
+	}
 
 	return (ret == 1) ? 0 : -1;
 }

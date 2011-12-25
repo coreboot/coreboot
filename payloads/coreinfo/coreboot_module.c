@@ -142,8 +142,8 @@ static void parse_mainboard(unsigned char *ptr)
 {
 	struct cb_mainboard *mb = (struct cb_mainboard *)ptr;
 
-	strncpy(cb_info.vendor, (const char *)MB_VENDOR_STRING(mb), 31);
-	strncpy(cb_info.part, (const char *)MB_PART_STRING(mb), 31);
+	strncpy(cb_info.vendor, cb_mb_vendor_part(mb), 31);
+	strncpy(cb_info.part, cb_mb_part_string(mb), 31);
 }
 
 static void parse_strings(unsigned char *ptr)

@@ -228,6 +228,16 @@ static inline u16 cb_checksum(const void *ptr, unsigned len)
 	return ipchksum(ptr, len);
 }
 
+static inline const char *cb_mb_vendor_string(const struct cb_mainboard *cbm)
+{
+	return (char *)(cbm->strings + cbm->vendor_idx);
+}
+
+static inline const char *cb_mb_part_string(const struct cb_mainboard *cbm)
+{
+	return (char *)(cbm->strings + cbm->part_number_idx);
+}
+
 /* Helpful macros */
 
 #define MEM_RANGE_COUNT(_rec) \
@@ -236,11 +246,5 @@ static inline u16 cb_checksum(const void *ptr, unsigned len)
 #define MEM_RANGE_PTR(_rec, _idx) \
 	(void *)(((u8 *) (_rec)) + sizeof(*(_rec)) \
 		+ (sizeof((_rec)->map[0]) * (_idx)))
-
-#define MB_VENDOR_STRING(_mb) \
-	(((unsigned char *) ((_mb)->strings)) + (_mb)->vendor_idx)
-
-#define MB_PART_STRING(_mb) \
-	(((unsigned char *) ((_mb)->strings)) + (_mb)->part_number_idx)
 
 #endif

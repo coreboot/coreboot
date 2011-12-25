@@ -334,7 +334,7 @@ config NO_POST
 	default n
 
 config POST_PORT
-	int
+	hex
 	default 0x80
 
 config CONSOLE_POST

@@ -137,6 +137,8 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		     header->table_bytes) != header->table_checksum)
 		return -1;
 
+	info->header = header;
+
 	/* Now, walk the tables. */
 	ptr += header->header_bytes;
 
@@ -173,6 +175,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_framebuffer(ptr, info);
 			break;
 #endif
+		case CB_TAG_MAINBOARD:
+			info->mainboard = (struct cb_mainboard *)ptr;
+			break;
 		}
 
 		ptr += rec->size;

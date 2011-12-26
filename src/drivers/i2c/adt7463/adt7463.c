@@ -91,10 +91,10 @@ static void adt7463_noop(device_t dummy)
 }
 
 static struct device_operations adt7463_operations = {
-	.read_resources		= adt7463_noop,
-	.set_resources		= adt7463_noop,
-	.enable_resources	= adt7463_noop,
-	.init			= adt7463_init,
+	.read_resources = adt7463_noop,
+	.set_resources = adt7463_noop,
+	.enable_resources = adt7463_noop,
+	.init = adt7463_init,
 };
 
 static void enable_dev(struct device *dev)

@@ -9,32 +9,30 @@
 
 static void i2cmux_set_link(device_t dev, unsigned int link)
 {
-	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
-	{
-		if(ops_smbus_bus(get_pbus_smbus(dev))) {
-			smbus_write_byte(dev, 0x01, 1<<link); // output value
-			smbus_write_byte(dev, 0x03, 0); // all output
+	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
+		if (ops_smbus_bus(get_pbus_smbus(dev))) {
+			smbus_write_byte(dev, 0x01, 1 << link);	// output value
+			smbus_write_byte(dev, 0x03, 0);	// all output
 		}
-
 	}
-
 }
+
 static void i2cmux_noop(device_t dummy)
 {
 }
 
 static struct device_operations i2cmux_operations = {
-        .read_resources   = i2cmux_noop,
-        .set_resources    = i2cmux_noop,
-        .enable_resources = i2cmux_noop,
-        .init             = i2cmux_noop,
-	.scan_bus         = scan_static_bus,
-	.set_link	  = i2cmux_set_link,
+	.read_resources = i2cmux_noop,
+	.set_resources = i2cmux_noop,
+	.enable_resources = i2cmux_noop,
+	.init = i2cmux_noop,
+	.scan_bus = scan_static_bus,
+	.set_link = i2cmux_set_link,
 };
 
 static void enable_dev(struct device *dev)
 {
-	if(dev->link_list != NULL)
+	if (dev->link_list != NULL)
 		dev->ops = &i2cmux_operations;
 }
 

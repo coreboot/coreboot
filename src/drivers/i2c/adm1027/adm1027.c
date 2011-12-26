@@ -47,7 +47,6 @@ static void adm1027_init(device_t dev)
 				smbus_set_link(dev);	// it is under mux
 			adm1027_enable_monitoring(dev);
 		}
-
 	}
 }
 
@@ -56,10 +55,10 @@ static void adm1027_noop(device_t dummy)
 }
 
 static struct device_operations adm1027_operations = {
-	.read_resources		= adm1027_noop,
-	.set_resources		= adm1027_noop,
-	.enable_resources	= adm1027_noop,
-	.init			= adm1027_init,
+	.read_resources = adm1027_noop,
+	.set_resources = adm1027_noop,
+	.enable_resources = adm1027_noop,
+	.init = adm1027_init,
 };
 
 static void enable_dev(struct device *dev)

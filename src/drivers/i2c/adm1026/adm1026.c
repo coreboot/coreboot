@@ -7,7 +7,7 @@
 #include <cpu/x86/msr.h>
 #include "chip.h"
 
-#define ADM1026_DEVICE 0x2d /* Either 0x2c or 0x2d or 0x2e */
+#define ADM1026_DEVICE 0x2d	/* Either 0x2c or 0x2d or 0x2e */
 #define ADM1026_REG_CONFIG1 0x00
 #define CFG1_MONITOR     0x01
 #define CFG1_INT_ENABLE  0x02
@@ -24,38 +24,38 @@ static void adm1026_enable_monitoring(device_t dev);
 
 static void adm1026_init(device_t dev)
 {
-	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
-	{
-		if(ops_smbus_bus(get_pbus_smbus(dev))) {
-			if( dev->bus->dev->path.type == DEVICE_PATH_I2C) smbus_set_link(dev); // it is under mux
+	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
+		if (ops_smbus_bus(get_pbus_smbus(dev))) {
+			if (dev->bus->dev->path.type == DEVICE_PATH_I2C)
+				smbus_set_link(dev);	// it is under mux
 			adm1026_enable_monitoring(dev);
 		}
-
 	}
-
 }
+
 static void adm1026_enable_monitoring(device_t dev)
 {
-        int result;
-        result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
+	int result;
+	result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
 
-        result = (result | CFG1_MONITOR) & ~(CFG1_INT_CLEAR | CFG1_RESET);
-        result = smbus_write_byte(dev, ADM1026_REG_CONFIG1, result);
+	result = (result | CFG1_MONITOR) & ~(CFG1_INT_CLEAR | CFG1_RESET);
+	result = smbus_write_byte(dev, ADM1026_REG_CONFIG1, result);
 
-        result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
-        if (!(result & CFG1_MONITOR)) {
-                printk(BIOS_DEBUG, "ADM1026: monitoring would not enable");
-        }
+	result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
+	if (!(result & CFG1_MONITOR)) {
+		printk(BIOS_DEBUG, "ADM1026: monitoring would not enable");
+	}
 }
+
 static void adm1026_noop(device_t dummy)
 {
 }
 
 static struct device_operations adm1026_operations = {
-        .read_resources   = adm1026_noop,
-        .set_resources    = adm1026_noop,
-        .enable_resources = adm1026_noop,
-        .init             = adm1026_init,
+	.read_resources = adm1026_noop,
+	.set_resources = adm1026_noop,
+	.enable_resources = adm1026_noop,
+	.init = adm1026_init,
 };
 
 static void enable_dev(struct device *dev)

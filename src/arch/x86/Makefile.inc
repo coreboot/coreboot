@@ -396,3 +396,8 @@ filo:
 			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
 			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
 
+gpl_vsa_lx_102.bin.gz:
+	@wget -q http://marcjonesconsulting.com/gplvsa/gpl_vsa_lx_102.bin.gz
+
+gpl_vsa_lx_102.bin: gpl_vsa_lx_102.bin.gz
+	@gunzip $^

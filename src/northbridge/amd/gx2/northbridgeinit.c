@@ -1,3 +1,23 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010 Nils Jacobs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -12,8 +32,6 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
-
-/* put this here for now, we are not sure where it belongs */
 
 struct gliutable
 {
@@ -100,9 +118,6 @@ struct msrinit GeodeLinkPriorityTable[] = {
 	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/* END */
 };
 
-/* do we have dmi or not? assume NO per AMD */
-int havedmi = 0;
-
 static void writeglmsr(struct gliutable *gl)
 {
 	msr_t msr;
@@ -110,10 +125,7 @@ static void writeglmsr(struct gliutable *gl)
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	/* MSR - see table above */
-	printk(BIOS_DEBUG, "%s: write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
-	/* they do this, so we do this */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void ShadowInit(struct gliutable *gl)
@@ -127,88 +139,31 @@ static void ShadowInit(struct gliutable *gl)
 	}
 }
 
-/* NOTE: transcribed from assembly code. There is the usual redundant assembly nonsense in here.
- * CLEAN ME UP
- */
-/* yes, this duplicates later code, but it seems that is how they want it done. */
 static void SysmemInit(struct gliutable *gl)
 {
 	msr_t msr;
 	int sizembytes, sizebytes;
 
 	/* Figure out how much RAM is in the machine and alocate all to the
-	 * system. We will adjust for SMM and DMM now and Frame Buffer later.
+	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
-	printk(BIOS_DEBUG, "%s: enable for %dm bytes\n", __func__, sizembytes);
+	printk(BIOS_DEBUG, "%s: enable for %dMBytes\n", __func__, sizembytes);
 	sizebytes = sizembytes << 20;
 
-	sizebytes -= SMM_SIZE * 1024 + 1;
+	sizebytes -= ((SMM_SIZE * 1024) + 1);
 
-	if (havedmi)
-		sizebytes -= DMM_SIZE * 1024 + 1;
-
-	sizebytes -= 1;
+	/* 20 bit address The bottom 12 bits go into bits 20-31 in msr.lo
+	   The top 8 bits go into 0-7 of msr.hi. */
+	sizebytes --;
 	msr.hi = (gl->hi & 0xFFFFFF00) | (sizebytes >> 24);
-	/* set up sizebytes to fit into msr.lo */
-	sizebytes <<= 8; /* what? well, we want bits 23:12 in bits 31:20. */
+	sizebytes <<= 8;	/* move bits 23:12 in bits 31:20. */
 	sizebytes &= 0xfff00000;
-	sizebytes |= 0x100;
+	sizebytes |= 0x100;	/* start at 1MB */
 	msr.lo = sizebytes;
 	wrmsr(gl->desc_name, msr);	/* MSR - see table above */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 				gl->desc_name, msr.hi, msr.lo);
-}
-
-static void DMMGL0Init(struct gliutable *gl)
-{
-	msr_t msr;
-	int sizebytes = sizeram()<<20;
-	long offset;
-
-	if (! havedmi)
-		return;
-
-	printk(BIOS_DEBUG, "%s: %d bytes\n", __func__, sizebytes);
-
-	sizebytes -= DMM_SIZE*1024;
-	offset = sizebytes - DMM_OFFSET;
-	printk(BIOS_DEBUG, "%s: offset is 0x%08lx\n", __func__, offset);
-	offset >>= 12;
-	msr.hi = (gl->hi) | (offset << 8);
-	/* I don't think this is needed */
-	msr.hi &= 0xffffff00;
-	msr.hi |= (DMM_OFFSET >> 24);
-	msr.lo = DMM_OFFSET << 8;
-	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-
-	wrmsr(gl->desc_name, msr);	/* MSR - See table above */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
-}
-
-static void DMMGL1Init(struct gliutable *gl)
-{
-	msr_t msr;
-
-	if (! havedmi)
-		return;
-
-	printk(BIOS_DEBUG, "%s:\n", __func__ );
-
-	msr.hi = gl->hi;
-	/* I don't think this is needed */
-	msr.hi &= 0xffffff00;
-	msr.hi |= (DMM_OFFSET >> 24);
-	msr.lo = DMM_OFFSET << 8;
-	/* hmm. AMD source has SMM here ... SMM, not DMM? We think DMM */
-	printk(BIOS_ERR, "%s: warning, using DMM_SIZE even though AMD used SMM_SIZE\n", __func__);
-	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-
-	wrmsr(gl->desc_name, msr);	/* MSR - See table above */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void SMMGL0Init(struct gliutable *gl)
@@ -217,43 +172,38 @@ static void SMMGL0Init(struct gliutable *gl)
 	int sizebytes = sizeram() << 20;
 	long offset;
 
-	sizebytes -= SMM_SIZE * 1024;
-
-	if (havedmi)
-		sizebytes -= DMM_SIZE * 1024;
+	sizebytes -= (SMM_SIZE * 1024);
 
 	printk(BIOS_DEBUG, "%s: %d bytes\n", __func__, sizebytes);
 
 	offset = sizebytes - SMM_OFFSET;
-	printk(BIOS_DEBUG, "%s: offset is 0x%08lx\n", __func__, offset);
-	offset >>= 12;
+	offset = (offset >> 12) & 0x000fffff;
+	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __func__, SMM_OFFSET);
 
-	msr.hi = offset << 8;
+	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET >> 24;
 
 	msr.lo = SMM_OFFSET << 8;
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	/* MSR - See table above */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void SMMGL1Init(struct gliutable *gl)
 {
 	msr_t msr;
-	printk(BIOS_DEBUG, "%s:\n", __func__ );
+	printk(BIOS_DEBUG, "%s:\n", __func__);
 
 	msr.hi = gl->hi;
 	/* I don't think this is needed */
 	msr.hi &= 0xffffff00;
 	msr.hi |= (SMM_OFFSET >> 24);
-	msr.lo = SMM_OFFSET << 8;
+	msr.lo = (SMM_OFFSET << 8) & 0xfff00000;
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	/* MSR - See table above */
-	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void GLIUInit(struct gliutable *gl)
@@ -261,7 +211,6 @@ static void GLIUInit(struct gliutable *gl)
 	while (gl->desc_type != GL_END) {
 		switch (gl->desc_type) {
 		default:
-			/* For Unknown types: Write then read MSR */
 			writeglmsr(gl);
 		case SC_SHADOW: /* Check for a Shadow entry */
 			ShadowInit(gl);
@@ -269,14 +218,6 @@ static void GLIUInit(struct gliutable *gl)
 
 		case R_SYSMEM: /* check for a SYSMEM entry */
 			SysmemInit(gl);
-			break;
-
-		case BMO_DMM: /* check for a DMM entry */
-			DMMGL0Init(gl);
-			break;
-
-		case BM_DMM: /* check for a DMM entry */
-			DMMGL1Init(gl);
 			break;
 
 		case BMO_SMM: /* check for a SMM entry */
@@ -333,8 +274,7 @@ static void GLPCIInit(void)
 		 * so we need a high page aligned addresss (pah) and low page aligned address (pal)
 		 * pah is from msr.hi << 12 | msr.low >> 20. pal is msr.lo << 12
 		 */
-		printk(BIOS_DEBUG, "GLPCI r1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
-		pah = ((msr.hi &0xff) << 12) | ((msr.lo >> 20) & 0xfff);
+		pah = ((msr.hi & 0xff) << 12) | ((msr.lo >> 20) & 0xfff);
 		/* we have the page address. Now make it a page-aligned address */
 		pah <<= 12;
 
@@ -342,7 +282,7 @@ static void GLPCIInit(void)
 		msr.hi = pah;
 		msr.lo = pal;
 		msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET | GLPCI_RC_LOWER_WC_SET;
-		printk(BIOS_DEBUG, "GLPCI r1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
+		printk(BIOS_DEBUG, "GLPCI R1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
 		msrnum = GLPCI_RC1;
 		wrmsr(msrnum, msr);
 	}
@@ -351,6 +291,7 @@ static void GLPCIInit(void)
 	msr.hi = ((SMM_OFFSET + (SMM_SIZE * 1024 - 1)) >> 12) << GLPCI_RC_UPPER_TOP_SHIFT;
 	msr.lo = (SMM_OFFSET >> 12) << GLPCI_RC_LOWER_BASE_SHIFT;
 	msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET;
+	printk(BIOS_DEBUG, "GLPCI R2: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
 	msrnum = GLPCI_RC2;
 	wrmsr(msrnum, msr);
 
@@ -393,7 +334,9 @@ static void GLPCIInit(void)
 
 	/* we are ignoring the 5530 case for now, and perhaps forever. */
 
-	/* 5535 NB Init */
+	/* 553X NB Init */
+	
+	/* Arbiter setup */
 	msrnum = GLPCI_ARB;
 	msr = rdmsr(msrnum);
 	msr.hi |= GLPCI_ARB_UPPER_PRE0_SET | GLPCI_ARB_UPPER_PRE1_SET;
@@ -449,33 +392,10 @@ static void ClockGatingInit(void)
 	struct msrinit *gating = ClockGatingDefault;
 	int i;
 
-#if 0
-	mov	cx, TOKEN_CLK_GATE
-	NOSTACK	bx, GetNVRAMValueBX
-	cmp	al, TVALUE_CG_OFF
-	je	gatingdone
-
-	cmp	al, TVALUE_CG_DEFAULT
-	jb	allon
-	ja	performance
-	lea	si, ClockGatingDefault
-	jmp	nextdevice
-
-allon:
-	lea	si, ClockGatingAllOn
-	jmp	nextdevice
-
-performance:
-	lea	si, ClockGatingPerformance
-#endif
-
-	for(i = 0; gating->msrnum != 0xffffffff; i++) {
+	for (i = 0; gating->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(gating->msrnum);
-		printk(BIOS_DEBUG, "%s: MSR 0x%08lx is 0x%08x:0x%08x\n", __func__, gating->msrnum, msr.hi, msr.lo);
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
-		printk(BIOS_DEBUG, "%s: MSR 0x%08lx will be set to  0x%08x:0x%08x\n", __func__,
-			gating->msrnum, msr.hi, msr.lo);
 		wrmsr(gating->msrnum, msr);	/* MSR - See the table above */
 		gating += 1;
 	}
@@ -484,17 +404,15 @@ performance:
 static void GeodeLinkPriority(void)
 {
 	msr_t msr = { 0, 0 };
+	
 	struct msrinit *prio = GeodeLinkPriorityTable;
 	int i;
 
 	for (i = 0; prio->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(prio->msrnum);
-		printk(BIOS_DEBUG, "%s: MSR 0x%08lx is 0x%08x:0x%08x\n", __func__, prio->msrnum, msr.hi, msr.lo);
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
-		printk(BIOS_DEBUG, "%s: MSR 0x%08lx will be set to 0x%08x:0x%08x\n", __func__,
-			prio->msrnum, msr.hi, msr.lo);
 		wrmsr(prio->msrnum, msr);	/* MSR - See the table above */
 		prio += 1;
 	}
@@ -507,8 +425,8 @@ static void GeodeLinkPriority(void)
  */
 static uint64_t getShadow(void)
 {
-	msr_t msr;
-
+	msr_t msr = { 0, 0 };
+	
 	msr = rdmsr(GLIU0_P2D_SC_0);
 	return ( ( (uint64_t) msr.hi ) << 32 ) | msr.lo;
 }
@@ -614,8 +532,7 @@ static void setShadow(uint64_t shadowSettings)
 	}
 }
 
-/* Set up a stack for ease of further testing. */
-static void shadowRom(void)
+static void rom_shadow_settings(void)
 {
 	uint64_t shadowSettings = getShadow();
 	shadowSettings &= (uint64_t) 0xFFFF00000000FFFFULL;	/* Disable read & writes */
@@ -637,7 +554,7 @@ static void shadowRom(void)
 #define ROMBASE_RCONF_DEFAULT 0xFFFC0000
 #define ROMRC_RCONF_DEFAULT 0x25
 
-static void RCONFInit(void)
+static void enable_L_cache(void)
 {
 	struct gliutable *gl = 0;
 	int i;
@@ -657,7 +574,6 @@ static void RCONFInit(void)
 	}
 
 /* sysdescfound: */
-	/* found the descriptor... get its contents */
 	msr = rdmsr(gl->desc_name);
 
 	/* 20 bit address -  The bottom 12 bits go into bits 20-31 in eax, the
@@ -668,10 +584,10 @@ static void RCONFInit(void)
 	msr.lo <<= RCONF_DEFAULT_LOWER_SYSTOP_SHIFT;	/* 8 */
 
 	/* Set Default SYSMEM region properties */
-	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	/* 8 (or ~8) */
+	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	/* NOT writethrough == writeback 8 (or ~8) */
 
 	/* Set PCI space cache properties */
-	msr.hi = (DEVRC_RCONF_DEFAULT >> 4);	/* only need the bottom bits and lets clean the rest of edx */
+	msr.hi = (DEVRC_RCONF_DEFAULT >> 4);	/* setting is split betwwen hi and lo... */
 	msr.lo |= (DEVRC_RCONF_DEFAULT << 28);
 
 	/* Set the ROMBASE. This is usually FFFC0000h */
@@ -682,14 +598,33 @@ static void RCONFInit(void)
 
 	/* now program RCONF_DEFAULT */
 	wrmsr(CPU_RCONF_DEFAULT, msr);
+	printk(BIOS_DEBUG, "CPU_RCONF_DEFAULT (1808): 0x%08X:0x%08X\n", msr.hi, msr.lo);
 
-	/* RCONF_BYPASS: Cache tablewalk properties and SMM/DMM header access properties. */
+	/* RCONF_BYPASS: Cache tablewalk properties and SMM header access properties. */
 	/* Set to match system memory cache properties. */
 	msr = rdmsr(CPU_RCONF_DEFAULT);
 	SysMemCacheProp = (uint8_t) (msr.lo & 0xFF);
 	msr = rdmsr(CPU_RCONF_BYPASS);
 	msr.lo = (msr.lo & 0xFFFF0000) | (SysMemCacheProp << 8) | SysMemCacheProp;
 	wrmsr(CPU_RCONF_BYPASS, msr);
+	printk(BIOS_DEBUG, "CPU_RCONF_BYPASS (180A): 0x%08x : 0x%08x\n", msr.hi, msr.lo);
+}
+
+static void setup_gx2_cache(void)
+{
+	msr_t msr;
+
+	enable_L_cache();
+
+	/* Make sure all INVD instructions are treated as WBINVD.  We do this
+	 * because we've found some programs which require this behavior.
+	 */
+	msr = rdmsr(CPU_DM_CONFIG0);
+	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
+	wrmsr(CPU_DM_CONFIG0, msr);
+
+	x86_enable_cache();
+	wbinvd();
 }
 
 uint32_t get_systop(void)
@@ -719,36 +654,27 @@ uint32_t get_systop(void)
 /* Core Logic initialization: Host bridge. */
 void northbridge_init_early(void)
 {
-	msr_t msr;
 	int i;
 	printk(BIOS_DEBUG, "Enter %s\n", __func__);
 
 	for (i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
 
-	GeodeLinkPriority();
-
-	shadowRom();
-
-	RCONFInit();
-
-	/* The cacheInit function in GeodeROM tests cache and, among other things,
-	 * makes sure all INVD instructions are treated as WBINVD.  We do this
-	 * because we've found some programs which require this behavior.
-	 * That subset of cacheInit() is implemented here:
-	 */
-	msr = rdmsr(CPU_DM_CONFIG0);
-	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
-	wrmsr(CPU_DM_CONFIG0, msr);
-
 	/* Now that the descriptor to memory is set up. */
 	/* The memory controller needs one read to synch its lines before it can be used. */
 	i = *(int *) 0;
 
+	GeodeLinkPriority();
+
+	setup_gx2_cache();
+
+	rom_shadow_settings();
+
 	GLPCIInit();
+
 	ClockGatingInit();
-	__asm__("FINIT\n");
-	/* CPUBugsFix -- called elsewhere */
+
+	__asm__ __volatile__("FINIT\n");
 	printk(BIOS_DEBUG, "Exit %s\n", __func__);
 }
 

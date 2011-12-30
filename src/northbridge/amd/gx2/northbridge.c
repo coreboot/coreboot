@@ -215,92 +215,6 @@ int sizeram(void)
 	return sizem;
 }
 
-/* these are the 8-bit attributes for controlling RCONF registers */
-#define CACHE_DISABLE (1<<0)
-#define WRITE_ALLOCATE (1<<1)
-#define WRITE_PROTECT (1<<2)
-#define WRITE_THROUGH (1<<3)
-#define WRITE_COMBINE (1<<4)
-#define WRITE_SERIALIZE (1<<5)
-
-/* ram has none of this stuff */
-#define RAM_PROPERTIES (0)
-#define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
-#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_PROTECT|CACHE_DISABLE)
-
-/* setup_gx2_cache
- *
- * Returns the amount of memory (in KB) available to the system.  This is the
- * total amount of memory less the amount of memory reserved for SMM use.
- */
-static int setup_gx2_cache(void)
-{
-	msr_t msr;
-	unsigned long long val;
-	int sizekbytes, sizereg;
-
-	sizekbytes = sizeram() * 1024;
-	printk(BIOS_DEBUG, "setup_gx2_cache: enable for %d KB\n", sizekbytes);
-	/* build up the rconf word. */
-	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
-	/* set romrp */
-	val = ((unsigned long long) ROM_PROPERTIES) << 56;
-	/* make rom base useful for 1M roms */
-	/* Flash base address -- sized for 1M for now */
-	val |= ((unsigned long long) 0xfff00)<<36;
-	/* set the devrp properties */
-	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
-	/* Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
-	/* yank off memory for the SMM handler */
-	sizekbytes -= SMM_SIZE;
-	sizereg = sizekbytes;
-	sizereg *= 1024;	/* convert to bytes */
-	sizereg >>= 12;
-	sizereg <<= 8;
-	val |= sizereg;
-	val |= RAM_PROPERTIES;
-	msr.lo = val;
-	msr.hi = (val >> 32);
-	printk(BIOS_DEBUG, "msr 0x%08X will be set to %08x:%08x\n", CPU_RCONF_DEFAULT, msr.hi, msr.lo);
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	enable_cache();
-	wbinvd();
-	return sizekbytes;
-}
-
-/* we have to do this here. We have not found a nicer way to do it */
-static void setup_gx2(void)
-{
-	unsigned long tmp, tmp2;
-	msr_t msr;
-	unsigned long size_kb, membytes;
-
-	size_kb = setup_gx2_cache();
-
-	membytes = size_kb * 1024;
-	/* NOTE! setup_gx2_cache returns the SIZE OF RAM - RAMADJUST!
-	 * so it is safe to use. You should NOT at this point call
-	 * sizeram() directly.
-	 */
-
-	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
-	/* calculate the OFFSET field */
-	tmp = membytes - SMM_OFFSET;
-	tmp >>= 12;
-	tmp <<= 8;
-	tmp |= 0x20000000;
-	tmp |= (SMM_OFFSET >> 24);
-
-	/* calculate the PBASE and PMASK fields */
-	tmp2 = (SMM_OFFSET << 8) & 0xFFF00000; /* shift right 12 then left 20  == left 8 */
-	tmp2 |= (((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%lx:0x%lx\n", 0x10000026, tmp, tmp2);
-	msr.hi = tmp;
-	msr.lo = tmp2;
-	wrmsr(0x10000026, msr);
-}
-
 static void enable_shadow(device_t dev)
 {
 
@@ -398,7 +312,6 @@ static void pci_domain_enable(device_t dev)
 	northbridge_init_early();
 	cpubug();
 	chipsetinit();
-	setup_gx2();
 	print_conf();
 	do_vsmbios();
 	graphics_init();

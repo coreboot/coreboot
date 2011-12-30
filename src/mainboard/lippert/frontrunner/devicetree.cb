@@ -5,7 +5,6 @@ chip northbridge/amd/gx2
     end
   end
 
-  #register "irqmap" = "0xaa5b"
   device pci_domain 0 on
     device pci 0.0 on end
       chip southbridge/amd/cs5535

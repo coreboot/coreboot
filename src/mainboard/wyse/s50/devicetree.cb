@@ -20,18 +20,10 @@
 ##
 
 chip northbridge/amd/gx2
-	register "irqmap" = "0xaa5b"
-
-	device lapic_cluster 0 on
-		chip cpu/amd/model_gx2
-			device lapic 0 on end
-		end
-	end
-  	device pci_domain 0 on 
-		subsystemid 102d 0 inherit
-    		device pci 1.0 on end
-		device pci 1.1 on end
-      		chip southbridge/amd/cs5536
+	device pci_domain 0 on 
+		device pci 1.0 on end	# Geode GX2 Host Bridge
+		device pci 1.1 on end	# Geode GX2 Graphics Processor
+		chip southbridge/amd/cs5536
 			register "enable_gpio_int_route" = "0x0D0C0700"
 			register "enable_ide_nand_flash" = "0" # 0:ide mode, 1:flash
 			register "enable_USBP4_device" = "0"	#0: host, 1:device
@@ -42,13 +34,19 @@ chip northbridge/amd/gx2
 			register "com2_enable" = "0"
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
-        		device pci e.0 on end	# Realtek 8139 LAN
-        		device pci f.0 on end	# ISA Bridge
-        		device pci f.2 on end	# IDE Controller
-        		device pci f.3 on end 	# Audio
-        		device pci f.4 on end	# OHCI
+			device pci e.0 on end	# Realtek 8139 LAN
+			device pci f.0 on end	# ISA Bridge
+			device pci f.2 on end	# IDE Controller
+			device pci f.3 on end 	# Audio
+			device pci f.4 on end	# OHCI
 			device pci f.5 on end	# EHCI
-      		end
-    	end
+		end
+	end
+	# APIC cluster is late CPU init.
+	device lapic_cluster 0 on
+		chip cpu/amd/model_gx2
+			device lapic 0 on end
+		end
+	end
 end
 

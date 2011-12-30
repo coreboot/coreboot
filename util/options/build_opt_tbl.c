@@ -174,48 +174,20 @@ static unsigned long get_number(char *line, char **ptr, int base)
 	return value;
 }
 
-static int is_ident_digit(int c)
+static inline int is_ident_digit(int c)
 {
-	int result;
-	switch(c) {
-	case '0':	case '1':	case '2':	case '3':
-	case '4':	case '5':	case '6':	case '7':
-	case '8':	case '9':
-		result = 1;
-		break;
-	default:
-		result = 0;
-		break;
-	}
-	return result;
+	if(c >= '0' && c <= '9')
+		return 1;
+	else
+		return 0;
 }
 
-static int is_ident_nondigit(int c)
+static inline int is_ident_nondigit(int c)
 {
-	int result;
-	switch(c) {
-	case 'A':	case 'B':	case 'C':	case 'D':
-	case 'E':	case 'F':	case 'G':	case 'H':
-	case 'I':	case 'J':	case 'K':	case 'L':
-	case 'M':	case 'N':	case 'O':	case 'P':
-	case 'Q':	case 'R':	case 'S':	case 'T':
-	case 'U':	case 'V':	case 'W':	case 'X':
-	case 'Y':	case 'Z':
-	case 'a':	case 'b':	case 'c':	case 'd':
-	case 'e':	case 'f':	case 'g':	case 'h':
-	case 'i':	case 'j':	case 'k':	case 'l':
-	case 'm':	case 'n':	case 'o':	case 'p':
-	case 'q':	case 'r':	case 's':	case 't':
-	case 'u':	case 'v':	case 'w':	case 'x':
-	case 'y':	case 'z':
-	case '_':
-		result = 1;
-		break;
-	default:
-		result = 0;
-		break;
-	}
-	return result;
+	if((c >= 'A' && c <= 'Z') || (c == '_') || (c >= 'a' && c <= 'z'))
+		return 1;
+	else
+		return 0;
 }
 
 static int is_ident(char *str)

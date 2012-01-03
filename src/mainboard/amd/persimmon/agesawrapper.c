@@ -9,17 +9,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/*----------------------------------------------------------------------------------------
- *							 M O D U L E S	U S E D
- *----------------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
+ *						M O D U L E S		U S E D
+ *-----------------------------------------------------------------------------
  */
 
 #include <stdint.h>
@@ -40,52 +40,52 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-/*----------------------------------------------------------------------------------------
- *					 D E F I N I T I O N S	A N D	M A C R O S
- *----------------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+ *					D E F I N I T I O N S		A N D		M A C R O S
+ *------------------------------------------------------------------------------
  */
 
 #define MMCONF_ENABLE 1
 
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable	= NULL;
+VOID *DmiTable		= NULL;
 VOID *AcpiPstate	= NULL;
-VOID *AcpiSrat	= NULL;
-VOID *AcpiSlit	= NULL;
+VOID *AcpiSrat		= NULL;
+VOID *AcpiSlit		= NULL;
 
-VOID *AcpiWheaMce = NULL;
-VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib	= NULL;
+VOID *AcpiWheaMce	= NULL;
+VOID *AcpiWheaCmc	= NULL;
+VOID *AcpiAlib		= NULL;
 
-/*----------------------------------------------------------------------------------------
- *					T Y P E D E F S	 A N D	 S T R U C T U	R E S
- *----------------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+ *				T Y P E D E F S		 A N D		 S T R U C T U R E S
+ *------------------------------------------------------------------------------
  */
 
-/*----------------------------------------------------------------------------------------
- *			 P R O T O T Y P E S	 O F	 L O C A L	 F U	N C T I O N S
- *----------------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+ *	P R O T O T Y P E S		 O F		 L O C A L		 F U N C T I O N S
+ *------------------------------------------------------------------------------
  */
 
-/*----------------------------------------------------------------------------------------
- *							E X P O R T E D	F U N C T I O N S
- *----------------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+ *						E X P O R T E D		F U N C T I O N S
+ *------------------------------------------------------------------------------
  */
 
-/*---------------------------------------------------------------------------------------
- *							L O C A L	F U N C T I O N S
- *---------------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+ *						L O C A L		F U N C T I O N S
+ *------------------------------------------------------------------------------
  */
 UINT32
 agesawrapper_amdinitcpuio (
 	VOID
 	)
 {
-	AGESA_STATUS				Status;
-	UINT64						MsrReg;
-	UINT32						PciData;
-	PCI_ADDR					PciAddress;
-	AMD_CONFIG_PARAMS			StdHeader;
+	AGESA_STATUS		Status;
+	UINT64				MsrReg;
+	UINT32				PciData;
+	PCI_ADDR			PciAddress;
+	AMD_CONFIG_PARAMS	StdHeader;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xF4);
@@ -98,7 +98,7 @@ agesawrapper_amdinitcpuio (
 	 */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x84);
 	PciData = 0x00FEDF00; // last address before processor local APIC at FEE00000
-	PciData |= 1 << 7;	// set NP (non-posted) bit
+	PciData |= 1 << 7;		// set NP (non-posted) bit
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0x80);
 	PciData = (0xFED00000 >> 8) | 3; // lowest NP address is HPET at FED00000
@@ -130,15 +130,15 @@ agesawrapper_amdinitmmio (
 	VOID
 	)
 {
-	AGESA_STATUS				Status;
-	UINT64						MsrReg;
-	UINT32						PciData;
-	PCI_ADDR					PciAddress;
-	AMD_CONFIG_PARAMS			StdHeader;
+	AGESA_STATUS		Status;
+	UINT64				MsrReg;
+	UINT32				PciData;
+	PCI_ADDR			PciAddress;
+	AMD_CONFIG_PARAMS	StdHeader;
 
-	UINT8						BusRangeVal = 0;
-	UINT8						BusNum;
-	UINT8						Index;
+	UINT8				BusRangeVal = 0;
+	UINT8				BusNum;
+	UINT8				Index;
 
 	/*
 	 Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
@@ -185,14 +185,14 @@ agesawrapper_amdinitreset (
 	AMD_RESET_PARAMS AmdResetParams;
 
 	LibAmdMemFill (&AmdParamStruct,
-				 0,
-				 sizeof (AMD_INTERFACE_PARAMS),
-				 &(AmdParamStruct.StdHeader));
+					0,
+					sizeof (AMD_INTERFACE_PARAMS),
+					&(AmdParamStruct.StdHeader));
 
 	LibAmdMemFill (&AmdResetParams,
-				 0,
-				 sizeof (AMD_RESET_PARAMS),
-				 &(AmdResetParams.StdHeader));
+					0,
+					sizeof (AMD_RESET_PARAMS),
+					&(AmdResetParams.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
 	AmdParamStruct.AllocationMethod = ByHost;
@@ -218,12 +218,12 @@ agesawrapper_amdinitearly (
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_EARLY_PARAMS	 *AmdEarlyParamsPtr;
+	AMD_EARLY_PARAMS		 *AmdEarlyParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-				 0,
-				 sizeof (AMD_INTERFACE_PARAMS),
-				 &(AmdParamStruct.StdHeader));
+					0,
+					sizeof (AMD_INTERFACE_PARAMS),
+					&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -250,14 +250,14 @@ agesawrapper_amdinitpost (
 {
 	AGESA_STATUS status;
 	UINT16					i;
-	UINT32			*HeadPtr;
+	UINT32					*HeadPtr;
 	AMD_INTERFACE_PARAMS	AmdParamStruct;
-	BIOS_HEAP_MANAGER	*BiosManagerPtr;
+	BIOS_HEAP_MANAGER		*BiosManagerPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-				 0,
-				 sizeof (AMD_INTERFACE_PARAMS),
-				 &(AmdParamStruct.StdHeader));
+					0,
+					sizeof (AMD_INTERFACE_PARAMS),
+					&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -275,7 +275,8 @@ agesawrapper_amdinitpost (
 	BiosManagerPtr = (BIOS_HEAP_MANAGER *)BIOS_HEAP_START_ADDRESS;
 
 	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
-	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
+	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++)
+	{
 		*HeadPtr = 0x00000000;
 		HeadPtr++;
 	}
@@ -296,9 +297,9 @@ agesawrapper_amdinitenv (
 	UINT32				 PciValue;
 
 	LibAmdMemFill (&AmdParamStruct,
-				 0,
-				 sizeof (AMD_INTERFACE_PARAMS),
-				 &(AmdParamStruct.StdHeader));
+					0,
+					sizeof (AMD_INTERFACE_PARAMS),
+					&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -311,7 +312,7 @@ agesawrapper_amdinitenv (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
-	 Modify D1F0x18
+		 Modify D1F0x18
 	 */
 	PciAddress.Address.Bus = 0;
 	PciAddress.Address.Device = 1;
@@ -423,9 +424,9 @@ agesawrapper_amdinitmid (
 	agesawrapper_amdinitcpuio ();
 
 	LibAmdMemFill (&AmdParamStruct,
-				 0,
-				 sizeof (AMD_INTERFACE_PARAMS),
-				 &(AmdParamStruct.StdHeader));
+					0,
+					sizeof (AMD_INTERFACE_PARAMS),
+					&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -452,9 +453,9 @@ agesawrapper_amdinitlate (
 	AMD_LATE_PARAMS AmdLateParams;
 
 	LibAmdMemFill (&AmdLateParams,
-				 0,
-				 sizeof (AMD_LATE_PARAMS),
-				 &(AmdLateParams.StdHeader));
+					0,
+					sizeof (AMD_LATE_PARAMS),
+					&(AmdLateParams.StdHeader));
 
 	AmdLateParams.StdHeader.AltImageBasePtr = 0;
 	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -467,14 +468,14 @@ agesawrapper_amdinitlate (
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	DmiTable	= AmdLateParams.DmiTable;
-	AcpiPstate	= AmdLateParams.AcpiPState;
-	AcpiSrat	= AmdLateParams.AcpiSrat;
-	AcpiSlit	= AmdLateParams.AcpiSlit;
+	DmiTable		= AmdLateParams.DmiTable;
+	AcpiPstate		= AmdLateParams.AcpiPState;
+	AcpiSrat		= AmdLateParams.AcpiSrat;
+	AcpiSlit		= AmdLateParams.AcpiSlit;
 
-	AcpiWheaMce = AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc = AmdLateParams.AcpiWheaCmc;
-	AcpiAlib	= AmdLateParams.AcpiAlib;
+	AcpiWheaMce		= AmdLateParams.AcpiWheaMce;
+	AcpiWheaCmc		= AmdLateParams.AcpiWheaCmc;
+	AcpiAlib		= AmdLateParams.AcpiAlib;
 
 	return (UINT32)Status;
 }
@@ -490,9 +491,9 @@ agesawrapper_amdlaterunaptask (
 	AP_EXE_PARAMS ApExeParams;
 
 	LibAmdMemFill (&ApExeParams,
-				 0,
-				 sizeof (AP_EXE_PARAMS),
-				 &(ApExeParams.StdHeader));
+					0,
+					sizeof (AP_EXE_PARAMS),
+					&(ApExeParams.StdHeader));
 
 	ApExeParams.StdHeader.AltImageBasePtr = 0;
 	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -520,9 +521,9 @@ agesawrapper_amdreadeventlog (
 	EVENT_PARAMS AmdEventParams;
 
 	LibAmdMemFill (&AmdEventParams,
-				 0,
-				 sizeof (EVENT_PARAMS),
-				 &(AmdEventParams.StdHeader));
+					0,
+					sizeof (EVENT_PARAMS),
+					&(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
 	AmdEventParams.StdHeader.CalloutPtr = NULL;

@@ -247,7 +247,7 @@ static const struct {
 	{probe_idregs_amd,	{0xaa, EOT}},
 #endif
 	{probe_idregs_serverengines,	{0x2e, EOT}},
-	{probe_idregs_infineon,	{0x2e, 0x4e}},
+	{probe_idregs_infineon,	{0x2e, 0x4e, EOT}},
 };
 
 /** Table of functions to print out supported Super I/O chips. */

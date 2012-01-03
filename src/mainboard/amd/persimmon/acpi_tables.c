@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,  MA 02110-1301 USA
  */
 
 #include <console/console.h>
@@ -130,23 +130,23 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* DSDT */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* DSDT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * DSDT at %lx\n", current);
 	dsdt = (acpi_header_t *)current; // it will used by fadt
 	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
 	current += dsdt->length;
 	memcpy(dsdt, &AmlCode, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:	* DSDT @ %p Length %x\n",dsdt,dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:  * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FACS */ // it needs 64 bit alignment
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI: * FACS at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * FACS at %lx\n", current);
 	facs = (acpi_facs_t *) current; // it will be used by fadt
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
 	/* FDAT */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* FADT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 
@@ -157,7 +157,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	 * We explicitly add these tables later on:
 	 */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* HPET at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * HPET at %lx\n", current);
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
@@ -165,7 +165,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* MADT at %lx\n",current);
+	printk(BIOS_DEBUG, "ACPI:  * MADT at %lx\n",current);
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
@@ -173,31 +173,31 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SRAT */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	* SRAT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
 	if (srat != NULL) {
-	memcpy((void *)current, srat, srat->header.length);
-	srat = (acpi_srat_t *) current;
-	//acpi_create_srat(srat);
-	current += srat->header.length;
-	acpi_add_table(rsdp, srat);
+		memcpy((void *)current, srat, srat->header.length);
+		srat = (acpi_srat_t *) current;
+		//acpi_create_srat(srat);
+		current += srat->header.length;
+		acpi_add_table(rsdp, srat);
 	}
 
 	/* SLIT */
 	current	 = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:	 * SLIT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
 	if (slit != NULL) {
-	memcpy((void *)current, slit, slit->header.length);
-	slit = (acpi_slit_t *) current;
-	//acpi_create_slit(slit);
-	current += slit->header.length;
-	acpi_add_table(rsdp, slit);
+		memcpy((void *)current, slit, slit->header.length);
+		slit = (acpi_slit_t *) current;
+		//acpi_create_slit(slit);
+		current += slit->header.length;
+		acpi_add_table(rsdp, slit);
 	}
 
 	/* SSDT */
 	current	 = ( current + 0x0f) & -0x10;
-	printk(BIOS_DEBUG, "ACPI:	* SSDT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * SSDT at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
 	if (ssdt != NULL) {
 		memcpy((void *)current, ssdt, ssdt->length);
@@ -215,7 +215,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 	acpi_add_table(rsdp,ssdt);
 
-	printk(BIOS_DEBUG, "ACPI:	* SSDT for PState at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * SSDT for PState at %lx\n", current);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

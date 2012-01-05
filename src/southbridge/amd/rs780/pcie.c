@@ -72,7 +72,7 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 	state = ~state;
 	state &= (1 << 4) + (1 << 5) + (1 << 6) + (1 << 7);
 	state_save = state << 17;
-	state &= !(AtiPcieCfg.PortHp);
+	state &= ~(AtiPcieCfg.PortHp);
 	reg = nbmisc_read_index(nb_dev, 0x0c);
 	reg |= state;
 	nbmisc_write_index(nb_dev, 0x0c, reg);

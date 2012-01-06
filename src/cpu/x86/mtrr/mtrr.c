@@ -306,7 +306,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 
 	if (hole_sizek) {
 		printk(BIOS_DEBUG, "Adding hole at %ldMB-%ldMB\n",
-		       hole_startk, hole_startk + hole_sizek);
+		       hole_startk >> 10, (hole_startk + hole_sizek) >> 10);
 		reg = range_to_mtrr(reg, hole_startk, hole_sizek,
 			      next_range_startk, MTRR_TYPE_UNCACHEABLE,
 			      address_bits, above4gb);

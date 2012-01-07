@@ -33,29 +33,46 @@ console sections.
 '''
 
 import mmap
-import re
 import struct
 import sys
-import time
 
-# These definitions follow src/include/cbmem.h
-CBMEM_MAGIC = 0x434f5245
-CBMEM_MAX_ENTRIES = 16
+def get_phys_mem(addr, size):
+    '''Read size bytes from address addr by mmaping /dev/mem'''
 
-CBMEM_ENTRY_FORMAT = '@LLQQ'
-CONSOLE_HEADER_FORMAT = '@LL'
-TIMESTAMP_HEADER_FORMAT = '@QLL'
-TIMESTAMP_ENTRY_FORMAT = '@LQ'
+    mf = open("/dev/mem")
+    delta = addr % 4096
+    mm = mmap.mmap(mf.fileno(), size + delta,
+                   mmap.MAP_PRIVATE, offset=(addr - delta))
+    buf = mm.read(size + delta)
+    mf.close()
+    return buf[delta:]
 
-mf_fileno = 0  # File number of the file providing access to memory.
+# This class and metaclass make it easier to define and access structures
+# which live in physical memory. To use them, inherit from CStruct and define
+# a class member called struct_members which is a tuple of pairs. The first
+# item in the pair is the type format specifier that should be used with
+# struct.unpack to read that member from memory. The second item is the name
+# that member should have in the resulting object.
 
-def align_up(base, alignment):
-    '''Increment to the alignment boundary.
+class MetaCStruct(type):
+    def __init__(cls, name, bases, dct):
+        struct_members = dct["struct_members"]
+        cls.struct_fmt = "@"
+        for char, name in struct_members:
+            cls.struct_fmt += char
+        cls.struct_len = struct.calcsize(cls.struct_fmt)
+        super(MetaCStruct, cls).__init__(name, bases, dct)
 
-    Return the next integer larger than 'base' and divisible by 'alignment'.
-    '''
+class CStruct(object):
+    __metaclass__ = MetaCStruct
+    struct_members = ()
 
-    return base + alignment - base % alignment
+    def __init__(self, addr):
+        self.raw_memory = get_phys_mem(addr, self.struct_len)
+        values = struct.unpack(self.struct_fmt, self.raw_memory)
+        names = (name for char, name in self.struct_members)
+        for name, value in zip(names, values):
+            setattr(self, name, value)
 
 def normalize_timer(value, freq):
     '''Convert timer reading into microseconds.
@@ -96,109 +113,141 @@ def get_cpu_freq():
     # Convert reading into Hertz
     return float(freq_str) * 1000.0
 
-def get_mem_size():
-    '''Retrieve amount of memory available to the CPU from /proc/meminfo.'''
-    mult = {
-        'kB': 1024
-        }
-    meminfo = open('/proc/meminfo').read()
-    m = re.search('MemTotal:.*\n', meminfo)
-    mem_string = re.search('MemTotal:.*\n', meminfo).group(0)
-    (_, size, mult_name) = mem_string.split()
-    return int(size) * mult[mult_name]
-
-def parse_mem_at(addr, format):
-    '''Read and parse a memory location.
-
-    This function reads memory at the passed in address, parses it according
-    to the passed in format specification and returns a list of values.
-
-    The first value in the list is the size of data matching the format
-    expression, and the rest of the elements of the list are the actual values
-    retrieved using the format.
-    '''
-
-    size = struct.calcsize(format)
-    delta = addr % 4096   # mmap requires the offset to be page size aligned.
-    mm = mmap.mmap(mf_fileno, size + delta,
-                   mmap.MAP_PRIVATE, offset=(addr - delta))
-    buf = mm.read(size + delta)
-    mm.close()
-    rv = [size,] + list(struct.unpack(format, buf[delta:size + delta + 1]))
-    return rv
-
-def dprint(text):
-    '''Debug print function.
-
-    Edit it to get the debug output.
-    '''
-
-    if False:
-        print text
-
 def process_timers(base):
     '''Scan the array of timestamps found in CBMEM at address base.
 
     For each timestamp print the timer ID and the value in microseconds.
     '''
 
-    (step, base_time, max_entr, entr) = parse_mem_at(
-        base, TIMESTAMP_HEADER_FORMAT)
+    class TimestampHeader(CStruct):
+        struct_members = (
+            ("Q", "base_time"),
+            ("L", "max_entr"),
+            ("L", "entr")
+        )
 
-    print('\ntime base %d, total entries %d' % (base_time, entr))
+    class TimestampEntry(CStruct):
+        struct_members = (
+            ("L", "timer_id"),
+            ("Q", "timer_value")
+        )
+
+    header = TimestampHeader(base)
+    print('\ntime base %d, total entries %d' % (header.base_time, header.entr))
     clock_freq = get_cpu_freq()
-    base = base + step
-    for i in range(entr):
-        (step, timer_id, timer_value) = parse_mem_at(
-            base, TIMESTAMP_ENTRY_FORMAT)
-        print '%d:%s ' % (timer_id, normalize_timer(timer_value, clock_freq)),
-        base = base + step
+    base = base + header.struct_len
+    for i in range(header.entr):
+        timestamp = TimestampEntry(base)
+        print '%d:%s ' % (timestamp.timer_id,
+            normalize_timer(timestamp.timer_value, clock_freq)),
+        base = base + timestamp.struct_len
     print
 
 def process_console(base):
     '''Dump the console log buffer contents found at address base.'''
 
-    (step, size, cursor) = parse_mem_at(base, CONSOLE_HEADER_FORMAT)
-    print 'cursor at %d\n' % cursor
+    class ConsoleHeader(CStruct):
+        struct_members = (
+            ("L", "size"),
+            ("L", "cursor")
+        )
 
-    cons_string_format = '%ds' % min(cursor, size)
-    (_, cons_text) = parse_mem_at(base + step, cons_string_format)
+    header = ConsoleHeader(base)
+    print 'cursor at %d\n' % header.cursor
+
+    cons_addr = base + header.struct_len
+    cons_length = min(header.cursor, header.size)
+    cons_text = get_phys_mem(cons_addr, cons_length)
     print cons_text
     print '\n'
 
-mem_alignment = 1024 * 1024 * 1024 # 1 GBytes
-table_alignment = 128 * 1024
+def ipchksum(buf):
+    '''Checksumming function used on the coreboot tables. The buffer being
+    checksummed is summed up as if it was an array of 16 bit unsigned
+    integers. If there are an odd number of bytes, the last element is zero
+    extended.'''
 
-mem_size = get_mem_size()
+    size = len(buf)
+    odd = size % 2
+    fmt = "<%dH" % ((size - odd) / 2)
+    if odd:
+        fmt += "B"
+    shorts = struct.unpack(fmt, buf)
+    checksum = sum(shorts)
+    checksum = (checksum >> 16) + (checksum & 0xffff)
+    checksum += (checksum >> 16)
+    checksum = ~checksum & 0xffff
+    return checksum
 
-# start at memory address aligned at 128K.
-offset = align_up(mem_size, table_alignment)
+def parse_tables(base, length):
+    '''Find the coreboot tables in memory and process whatever we can.'''
 
-dprint('mem_size %x offset %x' %(mem_size, offset))
-mf = open("/dev/mem")
-mf_fileno = mf.fileno()
+    class CBTableHeader(CStruct):
+        struct_members = (
+            ("4s", "signature"),
+            ("I", "header_bytes"),
+            ("I", "header_checksum"),
+            ("I", "table_bytes"),
+            ("I", "table_checksum"),
+            ("I", "table_entries")
+        )
 
-while offset % mem_alignment: # do not cross the 1G boundary while searching
-    (step, magic, mid, base, size) = parse_mem_at(offset, CBMEM_ENTRY_FORMAT)
-    if magic == CBMEM_MAGIC:
-        offset = offset + step
-        break
-    offset += table_alignment
-else:
-    print 'Did not find the CBMEM'
-    sys.exit(0)
+    class CBTableEntry(CStruct):
+        struct_members = (
+            ("I", "tag"),
+            ("I", "size")
+        )
 
-for i in (range(1, CBMEM_MAX_ENTRIES)):
-    (_, magic, mid, base, size) = parse_mem_at(offset, CBMEM_ENTRY_FORMAT)
-    if mid == 0:
-        break
+    class CBTableForward(CBTableEntry):
+        struct_members = CBTableEntry.struct_members + (
+            ("Q", "forward"),
+        )
 
-    print '%x, %x, %x' % (mid, base, size)
-    if mid == 0x54494d45:
-        process_timers(base)
-    if mid == 0x434f4e53:
-        process_console(base)
+    class CBMemTab(CBTableEntry):
+        struct_members = CBTableEntry.struct_members + (
+            ("L", "cbmem_tab"),
+        )
 
-    offset = offset + step
+    for addr in range(base, base + length, 16):
+        header = CBTableHeader(addr)
+        if header.signature == "LBIO":
+            break
+    else:
+        return -1
 
-mf.close()
+    if header.header_bytes == 0:
+        return -1
+
+    if ipchksum(header.raw_memory) != 0:
+        print "Bad header checksum"
+        return -1
+
+    addr += header.header_bytes
+    table = get_phys_mem(addr, header.table_bytes)
+    if ipchksum(table) != header.table_checksum:
+        print "Bad table checksum"
+        return -1
+
+    for i in range(header.table_entries):
+        entry = CBTableEntry(addr)
+        if entry.tag == 0x11: # Forwarding entry
+            return parse_tables(CBTableForward(addr).forward, length)
+        elif entry.tag == 0x16: # Timestamps
+            process_timers(CBMemTab(addr).cbmem_tab)
+        elif entry.tag == 0x17: # CBMEM console
+            process_console(CBMemTab(addr).cbmem_tab)
+
+        addr += entry.size
+
+    return 0
+
+def main():
+    for base, length in (0x00000000, 0x1000), (0x000f0000, 0x1000):
+        if parse_tables(base, length):
+            break
+    else:
+        print "Didn't find the coreboot tables"
+        return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

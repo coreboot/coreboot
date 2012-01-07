@@ -191,7 +191,7 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 	reg = nbmisc_read_index(nb_dev, 0x22);
 	reg |= 1 << 14;
 	nbmisc_write_index(nb_dev, 0x22, reg);
-	/* 5.6.2.2. sets desired GPPSB configurations, bit4-7 */
+	/* 5.6.2.2. sets desired GPP configurations, bit7-10 */
 	reg = nbmisc_read_index(nb_dev, 0x2D);
 	reg &= ~(0xF << 7);		/* clean */
 	reg |= cfg->gpp_configuration << 7;

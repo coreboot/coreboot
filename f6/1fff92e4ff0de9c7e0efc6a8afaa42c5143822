@@ -1,0 +1,9 @@
+Code-Review+1: Patrick Georgi <patrick@georgi-clan.de>
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Ronald G. Minnich <rminnich@gmail.com>
+Submitted-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Submitted-at: Sun, 08 Jan 2012 20:42:08 +0100
+Reviewed-on: http://review.coreboot.org/522
+Project: coreboot
+Branch: refs/heads/master

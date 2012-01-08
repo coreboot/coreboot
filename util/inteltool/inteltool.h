@@ -85,6 +85,11 @@
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO		0x8100
 #define PCI_DEVICE_ID_INTEL_ATOM_DXXX		0xa000
 #define PCI_DEVICE_ID_INTEL_I63XX		0x2670
+
+#define PCI_DEVICE_ID_INTEL_I5000X		0x25d0
+#define PCI_DEVICE_ID_INTEL_I5000Z		0x25d4
+#define PCI_DEVICE_ID_INTEL_I5000P		0x25d8
+
 /* untested, but almost identical to D-series */
 #define PCI_DEVICE_ID_INTEL_ATOM_NXXX		0xa010
 
@@ -125,3 +130,4 @@ int print_gpios(struct pci_dev *sb);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
+int print_ambs(struct pci_dev *nb, struct pci_access *pacc);

@@ -83,6 +83,9 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_X44, "82X38/X48" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_32X0, "3200/3210" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I63XX, "Intel 63xx I/O Controller Hub" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000P, "Intel i5000P Memory Controller Hub" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000X, "Intel i5000X Memory Controller Hub" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000Z, "Intel i5000Z Memory Controller Hub" },
 };
 
 #ifndef __DARWIN__
@@ -139,6 +142,7 @@ void print_usage(const char *name)
 	     "   -d | --dmibar:                    dump northbridge DMIBAR registers\n"
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
+	     "   -A | --ambs:                      dump AMB registers\n"
 	     "   -a | --all:                       dump all known registers\n"
 	     "\n");
 	exit(1);
@@ -155,7 +159,7 @@ int main(int argc, char *argv[])
 
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
-	int dump_pciexbar = 0, dump_coremsrs = 0;
+	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
@@ -168,11 +172,12 @@ int main(int argc, char *argv[])
 		{"dmibar", 0, 0, 'd'},
 		{"pciexpress", 0, 0, 'P'},
 		{"msrs", 0, 0, 'M'},
+		{"ambs", 0, 0, 'A'},
 		{"all", 0, 0, 'a'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?grpmedPMa",
+	while ((opt = getopt_long(argc, argv, "vh?grpmedPMaA",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -212,6 +217,10 @@ int main(int argc, char *argv[])
 			dump_dmibar = 1;
 			dump_pciexbar = 1;
 			dump_coremsrs = 1;
+			dump_ambs = 1;
+			break;
+		case 'A':
+			dump_ambs = 1;
 			break;
 		case 'h':
 		case '?':
@@ -356,6 +365,9 @@ int main(int argc, char *argv[])
 		printf("\n\n");
 	}
 
+	if (dump_ambs) {
+		print_ambs(nb, pacc);
+	}
 	/* Clean up */
 	pci_free_dev(nb);
 	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"

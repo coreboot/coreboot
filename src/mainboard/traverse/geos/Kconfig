@@ -16,6 +16,10 @@ config MAINBOARD_DIR
 	string
 	default traverse/geos
 
+config MAINBOARD_VENDOR
+	string
+	default "Traverse Technologies"
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "Geos"

@@ -22,10 +22,10 @@
 
 static const msrinit_t msr_table[] =
 {
-	{CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, /* Setup access to cache under 1MB.
+	{CPU_RCONF_DEFAULT, {.hi = 0x24fffc00,.lo = 0x0000A000}}, /* Setup access to cache under 1MB.
 								   * Rom Properties: Write Serialize, WriteProtect.
 								   * RomBase: 0xFFFC0
-								   * SysTop to RomBase Properties: Write Serialize, Cache Disable.
+								   * SysTop to RomBase Properties: Write Back.
 								   * SysTop: 0x000A0
 								   * System Memory Properties:  (Write Back) */
 	{CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xA0000-0xBFFFF : (Write Back) */

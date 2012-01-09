@@ -11,6 +11,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_1024
 	select POWER_BUTTON_DEFAULT_DISABLE
+	select GEODE_VSA
+	select GEODE_VSA_FILE
 
 config MAINBOARD_DIR
 	string

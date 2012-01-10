@@ -28,6 +28,7 @@
 #include <ec/acpi/ec.h>
 #include <pc80/mc146818rtc.h>
 #include <ec/lenovo/h8/h8.h>
+#include <delay.h>
 #include "dock.h"
 #include "smi.h"
 
@@ -72,8 +73,8 @@ int mainboard_io_trap_handler(int smif)
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
 		ec_clr_bit(0x03, 2);
-		dlpc_init();
-		if (!dlpc_init() && !dock_connect()) {
+		udelay(250000);
+		if (!dock_connect()) {
 			ec_set_bit(0x03, 2);
 			/* set dock LED to indicate status */
 			ec_write(0x0c, 0x09);

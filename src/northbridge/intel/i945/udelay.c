@@ -78,7 +78,7 @@ void udelay(u32 us)
 
 	do {
 		tsc = rdtsc();
-	} while ((tsc.hi > tsc1.hi)
-		 || ((tsc.hi == tsc1.hi) && (tsc.lo > tsc1.lo)));
+	} while ((tsc.hi < tsc1.hi)
+		 || ((tsc.hi == tsc1.hi) && (tsc.lo < tsc1.lo)));
 
 }

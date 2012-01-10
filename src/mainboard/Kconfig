@@ -16,7 +16,7 @@ config VENDOR_AMD
 	bool "AMD"
 config VENDOR_ARIMA
 	bool "Arima"
-config VENDOR_ARTEC_GROUP
+config VENDOR_ARTECGROUP
 	bool "Artec Group"
 config VENDOR_ASI
 	bool "ASI"
@@ -42,7 +42,7 @@ config VENDOR_COMPAQ
 	bool "Compaq"
 config VENDOR_DELL
 	bool "Dell"
-config VENDOR_DIGITAL_LOGIC
+config VENDOR_DIGITALLOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
 	bool "EagleLion"

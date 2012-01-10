@@ -1,4 +1,4 @@
-if VENDOR_ARTEC_GROUP
+if VENDOR_ARTECGROUP
 
 choice
 	prompt "Mainboard model"
@@ -14,4 +14,4 @@ config MAINBOARD_VENDOR
 	string
 	default "Artec Group"
 
-endif # VENDOR_ARTEC_GROUP
+endif # VENDOR_ARTECGROUP

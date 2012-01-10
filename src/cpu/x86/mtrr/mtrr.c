@@ -36,6 +36,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <arch/cpu.h>
 
 #if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
@@ -462,10 +463,13 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 }
 
 
-void x86_setup_mtrrs(unsigned address_bits)
+void x86_setup_mtrrs(void)
 {
+	int address_size;
 	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(address_bits, 1);
+	address_size = cpu_phys_address_size();
+	printk(BIOS_DEBUG, "CPU physical address size: %d bits\n", address_size);
+	x86_setup_var_mtrrs(address_size, 1);
 }
 
 

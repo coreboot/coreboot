@@ -1,0 +1,7 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Submitted-by: Sven Schnelle <svens@stackframe.org>
+Submitted-at: Tue, 10 Jan 2012 21:51:40 +0100
+Reviewed-on: http://review.coreboot.org/529
+Project: coreboot
+Branch: refs/heads/master

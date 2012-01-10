@@ -338,12 +338,6 @@ function build_target
 	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
-	# Allow architecture override in an abuild.info file.
-	# This is used for the Motorola Sandpoint, which is not a real target
-	# but a skeleton target for the Sandpoint X3.
-	[ -r "$ROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info" ] && \
-		source $ROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info
-
 	# default setting
 
 	CC="${CROSS_COMPILE}gcc"

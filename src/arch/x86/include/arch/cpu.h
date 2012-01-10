@@ -36,12 +36,36 @@ static inline struct cpuid_result cpuid(int op)
 {
 	struct cpuid_result result;
 	asm volatile(
-		"cpuid"
+		"mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%ebx, %%esi;"
+		"mov %%edi, %%ebx;"
 		: "=a" (result.eax),
-		  "=b" (result.ebx),
+		  "=S" (result.ebx),
 		  "=c" (result.ecx),
 		  "=d" (result.edx)
-		: "0" (op));
+		: "0" (op)
+		: "edi");
+	return result;
+}
+
+/*
+ * Generic Extended CPUID function
+ */
+static inline struct cpuid_result cpuid_ext(int op, unsigned ecx)
+{
+	struct cpuid_result result;
+	asm volatile(
+		"mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%ebx, %%esi;"
+		"mov %%edi, %%ebx;"
+		: "=a" (result.eax),
+		  "=S" (result.ebx),
+		  "=c" (result.ecx),
+		  "=d" (result.edx)
+		: "0" (op), "2" (ecx)
+		: "edi");
 	return result;
 }
 
@@ -52,10 +76,12 @@ static inline unsigned int cpuid_eax(unsigned int op)
 {
 	unsigned int eax;
 
-	__asm__("cpuid"
+	__asm__("mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%edi, %%ebx;"
 		: "=a" (eax)
 		: "0" (op)
-		: "ebx", "ecx", "edx");
+		: "ecx", "edx", "edi");
 	return eax;
 }
 
@@ -63,10 +89,13 @@ static inline unsigned int cpuid_ebx(unsigned int op)
 {
 	unsigned int eax, ebx;
 
-	__asm__("cpuid"
-		: "=a" (eax), "=b" (ebx)
+	__asm__("mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%edi, %%ebx;"
+		"mov %%edi, %%esi;"
+		: "=a" (eax), "=S" (ebx)
 		: "0" (op)
-		: "ecx", "edx" );
+		: "ecx", "edx", "edi");
 	return ebx;
 }
 
@@ -74,10 +103,12 @@ static inline unsigned int cpuid_ecx(unsigned int op)
 {
 	unsigned int eax, ecx;
 
-	__asm__("cpuid"
+	__asm__("mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%edi, %%ebx;"
 		: "=a" (eax), "=c" (ecx)
 		: "0" (op)
-		: "ebx", "edx" );
+		: "edx", "edi");
 	return ecx;
 }
 
@@ -85,10 +116,12 @@ static inline unsigned int cpuid_edx(unsigned int op)
 {
 	unsigned int eax, edx;
 
-	__asm__("cpuid"
+	__asm__("mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%edi, %%ebx;"
 		: "=a" (eax), "=d" (edx)
 		: "0" (op)
-		: "ebx", "ecx");
+		: "ecx", "edi");
 	return edx;
 }
 

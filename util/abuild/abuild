@@ -326,14 +326,6 @@ function compile_target
 	fi
 }
 
-function build_broken
-{
-	CURR=`pwd`
-	status="yes"
-	[ -r "$ROOT/src/mainboard/${VENDOR}/${MAINBOARD}/BROKEN" ] && status="no"
-	[ "$buildbroken" == "true" -o "$status" == "yes" ]
-}
-
 function build_target
 {
 	VENDOR=$1
@@ -430,17 +422,6 @@ function build_target
 		CC="$CC -fno-stack-protector"
 	fi
 
-	build_broken $VENDOR $MAINBOARD || \
-	{
-		printf " ( broken mainboard/$VENDOR/$MAINBOARD skipped )\n\n"
-		xml "  <status>knownbroken</status>"
-		xml ""
-		xml "</mainboard>"
-		junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
-		junit "<failure type='KnownBroken'>Board is marked as broken</failure>"
-		return 0
-	}
-
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
@@ -534,7 +515,6 @@ function myhelp
 	printf "Options:\n"
 	printf "    [-v|--verbose]		  print more messages\n"
 	printf "    [-a|--all]			  build previously succeeded ports as well\n"
-	printf "    [-b|--broken]		  attempt to build ports that are known broken\n"
 	printf "    [-r|--remove]                 remove output dir after build\n"
 	printf "    [-t|--target <vendor/board>]  attempt to build target vendor/board only\n"
 	printf "    [-p|--payloads <dir>]         use payloads in <dir> to build images\n"
@@ -587,7 +567,7 @@ test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:bp:Tc:sJxCl:rP:uy -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:p:Tc:sJxCl:rP:uy -- "$@"`
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -606,7 +586,6 @@ while true ; do
 		-J|--junit)     shift; mode=junit; rm -f $XMLFILE ;;
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
-		-b|--broken)	shift; buildbroken=true;;
 		-r|--remove)	shift; remove=true;;
 		-v|--verbose)	shift; verbose=true; silent='V=1';;
 		-V|--version)	shift; myversion; exit 0;;

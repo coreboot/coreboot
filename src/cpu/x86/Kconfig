@@ -42,3 +42,11 @@ config LOGICAL_CPUS
 config CACHE_ROM
 	bool
 	default n
+
+config SMM_TSEG
+	bool
+	default n
+
+config SMM_TSEG_SIZE
+	hex
+	default 0

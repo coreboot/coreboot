@@ -265,13 +265,16 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		return reg;
 	}
 
-	if (above4gb == 2 && type == MTRR_TYPE_WRBACK && range_sizek % 0x4000) {
+#define MIN_ALIGN 0x10000 /* 64MB */
+
+	if (above4gb == 2 && type == MTRR_TYPE_WRBACK &&
+	    range_sizek > MIN_ALIGN && range_sizek % MIN_ALIGN) {
 		/*
-		 * If this range is not divisible by 16MB then instead
+		 * If this range is not divisible then instead
 		 * make a larger range and carve out an uncached hole.
 		 */
 		hole_startk = range_startk + range_sizek;
-		hole_sizek = 0x4000 - (range_sizek % 0x4000);
+		hole_sizek = MIN_ALIGN - (range_sizek % MIN_ALIGN);
 		range_sizek += hole_sizek;
 	}
 

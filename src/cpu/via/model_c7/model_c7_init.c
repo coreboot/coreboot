@@ -202,7 +202,7 @@ static void model_c7_init(device_t dev)
 	x86_enable_cache();
 
 	/* Set up Memory Type Range Registers */
-	x86_setup_mtrrs(36);
+	x86_setup_mtrrs();
 	x86_mtrr_check();
 
 	/* Enable the local cpu apics */

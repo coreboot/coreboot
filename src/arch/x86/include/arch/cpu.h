@@ -22,6 +22,7 @@
 #define X86_EFLAGS_VIP	0x00100000 /* Virtual Interrupt Pending */
 #define X86_EFLAGS_ID	0x00200000 /* CPUID detection flag */
 
+
 struct cpuid_result {
 	uint32_t eax;
 	uint32_t ebx;
@@ -107,6 +108,8 @@ static inline unsigned int cpuid_edx(unsigned int op)
 
 #if !defined(__PRE_RAM__)
 #include <device/device.h>
+
+int cpu_phys_address_size(void);
 
 struct cpu_device_id {
 	unsigned vendor;

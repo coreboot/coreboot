@@ -29,7 +29,7 @@
 static void model_c3_init(device_t dev)
 {
 	x86_enable_cache();
-	x86_setup_mtrrs(36);
+	x86_setup_mtrrs();
 	x86_mtrr_check();
 
 	/* Enable the local cpu apics */

@@ -229,12 +229,12 @@ void main(unsigned long bist)
 
 	ich7_enable_lpc();
 
-
+	dlpc_init();
 	/* dock_init initializes the DLPC switch on
 	 *  thinpad side, so this is required even
 	 *  if we're undocked.
 	 */
-	if (!dlpc_init() && dock_present()) {
+	if (dock_present()) {
 		dock_connect();
 		early_superio_config();
 		/* Set up the console */

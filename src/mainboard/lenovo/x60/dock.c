@@ -107,6 +107,15 @@ int dlpc_init(void)
 	/* Activate DLPC */
 	dlpc_write_register(0x30, 0x01);
 
+	dlpc_gpio_init();
+
+	return 0;
+}
+
+int dock_connect(void)
+{
+	int timeout = 1000;
+
 	outb(0x07, 0x164c);
 
 	timeout = 1000;
@@ -121,26 +130,18 @@ int dlpc_init(void)
 		return 1;
 	}
 
-	dlpc_gpio_init();
-
-	return 0;
-}
-
-int dock_connect(void)
-{
-	int timeout = 1000;
-
 	/* Assert D_PLTRST# */
 	outb(0xfe, 0x1680);
 	udelay(100000);
 	/* Deassert D_PLTRST# */
 	outb(0xff, 0x1680);
 
-	udelay(1000);
+	udelay(100000);
 
 	/* startup 14.318MHz Clock */
 	dock_write_register(0x29, 0x06);
 	/* wait until clock is settled */
+	timeout = 1000;
 	while(!(dock_read_register(0x29) & 0x08) && timeout--)
 		udelay(1000);
 
@@ -243,12 +244,20 @@ int dock_connect(void)
 
 void dock_disconnect(void)
 {
-	/* disable Ultrabay and USB Power */
-	outb(0x00, 0x1628);
+	printk(BIOS_DEBUG, "%s enter\n", __func__);
 	/* disconnect LPC bus */
 	outb(0x00, 0x164c);
+	udelay(10000);
+
 	/* Assert PLTRST and DLPCPD */
 	outb(0xfc, 0x1680);
+	udelay(10000);
+
+	/* disable Ultrabay and USB Power */
+	outb(0x00, 0x1628);
+	udelay(10000);
+
+	printk(BIOS_DEBUG, "%s finish\n", __func__);
 }
 
 int dock_present(void)

@@ -197,7 +197,7 @@ static void model_1067x_init(device_t cpu)
 #endif
 
 	/* Setup MTRRs */
-	x86_setup_mtrrs(36);
+	x86_setup_mtrrs();
 	x86_mtrr_check();
 
 #if CONFIG_USBDEBUG

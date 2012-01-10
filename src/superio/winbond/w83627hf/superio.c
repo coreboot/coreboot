@@ -57,20 +57,6 @@ static u8 pnp_read_index(u16 port, u8 reg)
 	return inb(port + 1);
 }
 
-#if CONFIG_EXPERT
-static void w83627hf_16_bit_addr_qual(device_t dev)
-{
-	u8 reg8;
-
-	/* Enable 16 bit address qualification. */
-	pnp_enter_ext_func_mode(dev);
-	reg8 = pnp_read_config(dev, 0x24);
-	reg8 |= (1 << 7);
-	pnp_write_config(dev, 0x24, reg8);
-	pnp_exit_ext_func_mode(dev);
-}
-#endif
-
 static void enable_hwm_smbus(device_t dev)
 {
 	u8 reg8;

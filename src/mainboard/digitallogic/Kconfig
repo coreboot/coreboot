@@ -1,4 +1,4 @@
-if VENDOR_DIGITAL_LOGIC
+if VENDOR_DIGITALLOGIC
 
 choice
 	prompt "Mainboard model"
@@ -20,4 +20,4 @@ config MAINBOARD_VENDOR
 	string
 	default "DIGITAL-LOGIC"
 
-endif # VENDOR_DIGITAL_LOGIC
+endif # VENDOR_DIGITALLOGIC

@@ -161,7 +161,10 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			continue;
 		}
 
-		segs[segments].type = PAYLOAD_SEGMENT_DATA;
+		if (phdr[i].p_flags & PF_X)
+			segs[segments].type = PAYLOAD_SEGMENT_CODE;
+		else
+			segs[segments].type = PAYLOAD_SEGMENT_DATA;
 		segs[segments].load_addr = (uint64_t)htonll(phdr[i].p_paddr);
 		segs[segments].mem_len = (uint32_t)htonl(phdr[i].p_memsz);
 		segs[segments].compression = htonl(algo);

@@ -48,8 +48,6 @@ static const unsigned long lb_end = (unsigned long)&_eram_seg;
 struct segment {
 	struct segment *next;
 	struct segment *prev;
-	struct segment *phdr_next;
-	struct segment *phdr_prev;
 	unsigned long s_dstaddr;
 	unsigned long s_srcaddr;
 	unsigned long s_memsz;
@@ -234,11 +232,6 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			new->prev = seg->prev;
 			seg->prev->next = new;
 			seg->prev = new;
-			/* Order by original program header order */
-			new->phdr_next = seg;
-			new->phdr_prev = seg->phdr_prev;
-			seg->phdr_prev->phdr_next = new;
-			seg->phdr_prev = new;
 
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
@@ -274,11 +267,6 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			new->prev = seg;
 			seg->next->prev = new;
 			seg->next = new;
-			/* Order by original program header order */
-			new->phdr_next = seg->phdr_next;
-			new->phdr_prev = seg;
-			seg->phdr_next->phdr_prev = new;
-			seg->phdr_next = new;
 
 			printk(BIOS_SPEW, "   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
@@ -312,7 +300,6 @@ static int build_self_segment_list(
 	struct segment *ptr;
 	struct cbfs_payload_segment *segment, *first_segment;
 	memset(head, 0, sizeof(*head));
-	head->phdr_next = head->phdr_prev = head;
 	head->next = head->prev = head;
 	first_segment = segment = &payload->segments;
 
@@ -375,9 +362,10 @@ static int build_self_segment_list(
 			return -1;
 		}
 
+		/* We have found another CODE, DATA or BSS segment */
 		segment++;
 
-		// FIXME: Explain what this is
+		/* Find place where to insert our segment */
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_srcaddr < ntohll(segment->load_addr))
 				break;
@@ -388,12 +376,6 @@ static int build_self_segment_list(
 		new->prev = ptr->prev;
 		ptr->prev->next = new;
 		ptr->prev = new;
-
-		/* Order by original program header order */
-		new->phdr_next = head;
-		new->phdr_prev = head->phdr_prev;
-		head->phdr_prev->phdr_next  = new;
-		head->phdr_prev = new;
 	}
 
 	return 1;
@@ -408,7 +390,8 @@ static int load_self_segments(
 
 	unsigned long bounce_high = lb_end;
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		if (!overlaps_coreboot(ptr)) continue;
+		if (!overlaps_coreboot(ptr))
+			continue;
 		if (ptr->s_dstaddr + ptr->s_memsz > bounce_high)
 			bounce_high = ptr->s_dstaddr + ptr->s_memsz;
 	}

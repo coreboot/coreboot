@@ -6,6 +6,8 @@
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2005 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2005-2007 Stefan Reinauer <stepan@openbios.org>
+ * Copyright (C) 2012 Sage Electronic Engineering, LLC
+ * (Written by Martin Roth <martin@se-eng.com> for Sage)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +37,14 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	struct pci_data *rom_data;
 
 	/* If it's in FLASH, then don't check device for ROM. */
+
+#if CONFIG_VGA_BIOS
+	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
+		rom_header = cbfs_load_optionrom(dev->vendor,
+			(dev->device & CONFIG_VGA_BIOS_ID_MASK), NULL);
+	else
+#endif
+
 	rom_header = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
 
 	if (rom_header) {
@@ -78,6 +88,20 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	printk(BIOS_SPEW, "PCI ROM image, vendor ID %04x, device ID %04x,\n",
 	       rom_data->vendor, rom_data->device);
+
+#if CONFIG_VGA_BIOS
+	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA) {
+		if (dev->vendor != rom_data->vendor
+		    || ((dev->device & CONFIG_VGA_BIOS_ID_MASK) !=
+			(rom_data->device & CONFIG_VGA_BIOS_ID_MASK))) {
+			printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
+			       "device ID %04x\n", rom_data->vendor,
+			       rom_data->device);
+			return NULL;
+		}
+	} else
+#endif
+
 	if (dev->vendor != rom_data->vendor
 	    || dev->device != rom_data->device) {
 		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "

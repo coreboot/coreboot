@@ -2,6 +2,8 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009-2010 coresystems GmbH
+## Copyright (C) 2012 Sage Electronic Engineering, LLC
+## (Written by Martin Roth <martin@se-eng.com> for Sage)
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -496,6 +498,26 @@ config VGA_BIOS_ID
 	  In the above example 1106 is the PCI vendor ID (in hex, but without
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
 	  video card (also in hex, without "0x" prefix).
+
+config VGA_BIOS_ID_MASKda02d261343849f764ddc5a41ce4b40acdb7027e
+	hex "VGA device PCI device ID mask"
+	depends on VGA_BIOS
+	default 0xffff
+	help
+	  This is an AND mask that is applied to the PCI device ID that
+	  would associate your VGA BIOS to your video card when deciding
+	  to apply the rom to the PCI device.
+
+	  Example: 0xFFF0
+
+	  In the above example, the lower nibble of the device ID would not
+	  be included when comparing the ROM's programmed device ID with
+	  the device ID of the actual PCI device.  This allows a rom with
+	  a device ID of 3230 to match against any PCI devices with ids
+	  in the range of 3230 to 323F
+
+	  Note: The device ID portion of the VGA_BIOS_ID should have any
+	  masked bits set to zero as well.
 
 config INTEL_MBI
 	bool "Add an MBI image"

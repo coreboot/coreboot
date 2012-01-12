@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009-2010 coresystems GmbH
+## Copyright (C) 2012 Sage Electronic Engineering, LLC
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -465,6 +466,13 @@ config COMPRESSED_PAYLOAD_NRV2B
 
 endmenu
 
+# This options is here to avoid "undefined" warnings.
+# The actual selection and help texts are in the following menu.
+
+config VGA_BIOS_DEVICEID_MASK
+	hex
+	default 0xffff
+
 menu "VGA BIOS"
 
 config VGA_BIOS
@@ -496,6 +504,30 @@ config VGA_BIOS_ID
 	  In the above example 1106 is the PCI vendor ID (in hex, but without
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
 	  video card (also in hex, without "0x" prefix).
+
+config VGA_BIOS_DEVICEID_MASK
+	hex "VGA device PCI device ID mask"
+	depends on VGA_BIOS
+	default 0xffff
+	help
+	  This is an AND mask that is applied to the PCI device ID that
+	  would associate your VGA BIOS to your video card when deciding
+	  to apply the rom to the PCI device.
+
+	  Example: 0xFFF8
+
+	  In the above example, the lowest 3 bits of the device ID would not
+	  be included when comparing the ROM's programmed device ID with
+	  the device ID of the actual PCI device.  This allows a rom with
+	  a device ID of 3230 to match against any PCI devices with ids
+	  in the range of 3230 to 3237
+
+	  WARNING: This mask should be kept as narrow as possible to avoid
+	  loading an incorrect rom for a device out of CBFS.  If you're
+	  using a mask of 0x0000, you're *probably* doing something wrong.
+
+	  Note: The device ID portion of the VGA_BIOS_ID should have any
+	  masked bits set to zero in the above entry.
 
 config INTEL_MBI
 	bool "Add an MBI image"

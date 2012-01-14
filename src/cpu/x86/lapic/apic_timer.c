@@ -27,10 +27,10 @@
  * memory init.
  */
 
-#define FSB_CLOCK_STS 0xCD
+#define FSB_CLOCK_STS 0xcd
 #define FSB_FREQ_MASK 0x07
 
-static u32 timer_fsb = 200;	// default to 200MHz
+static u32 timer_fsb = 200; // default to 200MHz
 
 void init_timer(void)
 {
@@ -43,26 +43,16 @@ void init_timer(void)
 	lapic_write(LAPIC_TDCR, LAPIC_TDR_DIV_1);
 
 	/* Set the initial counter to 0xffffffff */
-	lapic_write(LAPIC_TMICT, ~0UL);
+	lapic_write(LAPIC_TMICT, 0xffffffff);
 
 	/* Set FSB frequency to a reasonable value */
 	fsb_clock_sts = rdmsr(FSB_CLOCK_STS);
 	switch (fsb_clock_sts.lo & FSB_FREQ_MASK) {
-	case 0:
-		timer_fsb = 266;
-		break;
-	case 1:
-		timer_fsb = 133;
-		break;
-	case 2:
-		timer_fsb = 200;
-		break;
-	case 3:
-		timer_fsb = 166;
-		break;
-	case 5:
-		timer_fsb = 100;
-		break;
+	case 0: timer_fsb = 266; break;
+	case 1: timer_fsb = 133; break;
+	case 2: timer_fsb = 200; break;
+	case 3: timer_fsb = 166; break;
+	case 5: timer_fsb = 100; break;
 	}
 }
 
@@ -74,5 +64,5 @@ void udelay(u32 usecs)
 	start = lapic_read(LAPIC_TMCCT);
 	do {
 		value = lapic_read(LAPIC_TMCCT);
-	} while ((start - value) < ticks);
+	} while((start - value) < ticks);
 }

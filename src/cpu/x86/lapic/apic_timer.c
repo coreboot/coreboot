@@ -28,6 +28,7 @@
  */
 
 #define FSB_CLOCK_STS 0xcd
+#define FSB_FREQ_MASK 0x07
 
 static u32 timer_fsb = 200; // default to 200MHz
 
@@ -46,7 +47,7 @@ void init_timer(void)
 
 	/* Set FSB frequency to a reasonable value */
 	fsb_clock_sts = rdmsr(FSB_CLOCK_STS);
-	switch ((fsb_clock_sts.lo >> 4) & 0x07) {
+	switch (fsb_clock_sts.lo & FSB_FREQ_MASK) {
 	case 0: timer_fsb = 266; break;
 	case 1: timer_fsb = 133; break;
 	case 2: timer_fsb = 200; break;

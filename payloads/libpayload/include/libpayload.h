@@ -199,7 +199,8 @@ struct nvram_accessor {
 	void (*write)(u8 val, u8 reg);
 };
 
-extern struct nvram_accessor *use_nvram;
+extern u8 *mem_accessor_base;
+extern struct nvram_accessor *use_nvram, *use_mem;
 
 struct cb_cmos_option_table *get_system_option_table(void);
 void fix_options_checksum_with(const struct nvram_accessor *nvram);

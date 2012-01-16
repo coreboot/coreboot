@@ -210,6 +210,8 @@ int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char 
 int get_option(void *dest, char *name);
 int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *value, char *name);
 int set_option(void *value, char *name);
+int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, char *name);
+int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char *value, char *name);
 
 /**
  * @defgroup console Console functions

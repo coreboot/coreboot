@@ -171,6 +171,20 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 	return NULL;
 }
 
+struct cb_cmos_entries *first_cmos_entry(struct cb_cmos_option_table *option_table)
+{
+	return lookup_cmos_entry(option_table, "");
+}
+
+struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cmos_entry)
+{
+	struct cb_cmos_entries *next = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size);
+	if (next->tag == CB_TAG_OPTION)
+		return next;
+	else
+		return NULL;
+}
+
 /* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
 static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, u8 *value, char *text)
 {

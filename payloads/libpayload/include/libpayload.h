@@ -203,6 +203,7 @@ extern u8 *mem_accessor_base;
 extern struct nvram_accessor *use_nvram, *use_mem;
 
 struct cb_cmos_option_table *get_system_option_table(void);
+int options_checksum_valid(const struct nvram_accessor *nvram);
 void fix_options_checksum_with(const struct nvram_accessor *nvram);
 void fix_options_checksum(void);
 int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name);

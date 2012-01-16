@@ -57,7 +57,7 @@ struct cb_cmos_option_table *get_system_option_table(void)
 	return phys_to_virt(lib_sysinfo.option_table);
 }
 
-static int options_checksum_valid(const struct nvram_accessor *nvram)
+int options_checksum_valid(const struct nvram_accessor *nvram)
 {
 	int i;
 	int range_start = lib_sysinfo.cmos_range_start / 8;

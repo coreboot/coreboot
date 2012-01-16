@@ -30,7 +30,17 @@
 #include <libpayload.h>
 #include <coreboot_tables.h>
 
-static int options_checksum_valid(void)
+struct nvram_accessor *use_nvram = &(struct nvram_accessor) {
+	nvram_read,
+	nvram_write
+};
+
+struct cb_cmos_option_table *get_system_option_table(void)
+{
+	return phys_to_virt(lib_sysinfo.option_table);
+}
+
+static int options_checksum_valid(const struct nvram_accessor *nvram)
 {
 	int i;
 	int range_start = lib_sysinfo.cmos_range_start / 8;
@@ -39,15 +49,15 @@ static int options_checksum_valid(void)
 	u16 checksum = 0, checksum_old;
 
 	for(i = range_start; i <= range_end; i++) {
-		checksum += nvram_read(i);
+		checksum += nvram->read(i);
 	}
 
-	checksum_old = ((nvram_read(checksum_location)<<8) | nvram_read(checksum_location+1));
+	checksum_old = ((nvram->read(checksum_location)<<8) | nvram->read(checksum_location+1));
 
 	return (checksum_old == checksum);
 }
 
-void fix_options_checksum(void)
+void fix_options_checksum_with(const struct nvram_accessor *nvram)
 {
 	int i;
 	int range_start = lib_sysinfo.cmos_range_start / 8;
@@ -56,14 +66,19 @@ void fix_options_checksum(void)
 	u16 checksum = 0;
 
 	for(i = range_start; i <= range_end; i++) {
-		checksum += nvram_read(i);
+		checksum += nvram->read(i);
 	}
 
-	nvram_write((checksum >> 8), checksum_location);
-	nvram_write((checksum & 0xff), checksum_location + 1);
+	nvram->write((checksum >> 8), checksum_location);
+	nvram->write((checksum & 0xff), checksum_location + 1);
 }
 
-static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
+void fix_options_checksum(void)
+{
+	fix_options_checksum_with(use_nvram);
+}
+
+static int get_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 len, void *valptr)
 {
 	u8 *value = (u8 *)valptr;
 	int offs = 0;
@@ -76,7 +91,7 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 
 	/* Handle single byte or less */
 	if(len <= 8) {
-		reg8 = nvram_read(addr);
+		reg8 = nvram->read(addr);
 		reg8 >>= bit;
 		value[0] = reg8 & ((1 << len) -1);
 		return 0;
@@ -85,13 +100,13 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 	/* When handling more than a byte, copy whole bytes */
 	while (len > 0) {
 		len -= 8;
-		value[offs++]=nvram_read(addr++);
+		value[offs++]=nvram->read(addr++);
 	}
 
 	return 0;
 }
 
-static int set_cmos_value(u32 bitnum, u32 len, void *valptr)
+static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 len, void *valptr)
 {
 	u8 *value = (u8 *)valptr;
 	int offs = 0;
@@ -104,17 +119,17 @@ static int set_cmos_value(u32 bitnum, u32 len, void *valptr)
 
 	/* Handle single byte or less */
 	if (len <= 8) {
-		reg8 = nvram_read(addr);
+		reg8 = nvram->read(addr);
 		reg8 &= ~(((1 << len) - 1) << bit);
 		reg8 |= (value[0] & ((1 << len) - 1)) << bit;
-		nvram_write(reg8, addr);
+		nvram->write(reg8, addr);
 		return 0;
 	}
 
 	/* When handling more than a byte, copy whole bytes */
 	while (len > 0) {
 		len -= 8;
-		nvram_write(value[offs++], addr++);
+		nvram->write(value[offs++], addr++);
 	}
 
 	return 0;
@@ -139,36 +154,43 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 	return NULL;
 }
 
-int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
+int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name)
 {
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
 	if (cmos_entry) {
-		if(get_cmos_value(cmos_entry->bit, cmos_entry->length, dest))
+		if(get_cmos_value(nvram, cmos_entry->bit, cmos_entry->length, dest))
 			return 1;
 
-		if(!options_checksum_valid())
+		if(!options_checksum_valid(nvram))
 			return 1;
 
 		return 0;
 	}
 	return 1;
+}
+
+int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
+{
+	return get_option_with(use_nvram, option_table, dest, name);
 }
 
 int get_option(void *dest, char *name)
 {
-	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
-	return get_option_from(option_table, dest, name);
+	return get_option_from(get_system_option_table(), dest, name);
 }
 
-int set_option(void *value, char *name)
+int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *value, char *name)
 {
-	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
 	if (cmos_entry) {
-		set_cmos_value(cmos_entry->bit, cmos_entry->length, value);
-		fix_options_checksum();
+		set_cmos_value(nvram, cmos_entry->bit, cmos_entry->length, value);
+		fix_options_checksum_with(nvram);
 		return 0;
 	}
 	return 1;
 }
 
+int set_option(void *value, char *name)
+{
+	return set_option_with(use_nvram, get_system_option_table(), value, name);
+}

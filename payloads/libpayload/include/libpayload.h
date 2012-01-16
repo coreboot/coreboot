@@ -194,9 +194,20 @@ void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
 /** @} */
 
 /* drivers/option.c */
+struct nvram_accessor {
+	u8 (*read)(u8 reg);
+	void (*write)(u8 val, u8 reg);
+};
+
+extern struct nvram_accessor *use_nvram;
+
+struct cb_cmos_option_table *get_system_option_table(void);
+void fix_options_checksum_with(const struct nvram_accessor *nvram);
 void fix_options_checksum(void);
+int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name);
 int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name);
 int get_option(void *dest, char *name);
+int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *value, char *name);
 int set_option(void *value, char *name);
 
 /**

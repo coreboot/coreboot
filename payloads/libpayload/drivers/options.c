@@ -171,6 +171,42 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 	return NULL;
 }
 
+/* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
+static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, u8 *value, char *text)
+{
+	struct cb_cmos_entries *cmos_entry;
+	int len = strnlen(text, CMOS_MAX_TEXT_LENGTH);
+
+	/* cmos entries are located right after the option table. Skip them */
+	cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
+	while (cmos_entry->tag == CB_TAG_OPTION)
+		cmos_entry = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size);
+
+	/* cmos enums are located after cmos entries. */
+	struct cb_cmos_enums *cmos_enum;
+	for (   cmos_enum = (struct cb_cmos_enums*)cmos_entry;
+		cmos_enum->tag == CB_TAG_OPTION_ENUM;
+		cmos_enum = (struct cb_cmos_enums*)((unsigned char *)cmos_enum + cmos_enum->size)) {
+		if ((cmos_enum->config_id == config_id)
+		   && ((value == NULL) || (cmos_enum->value == *value))
+		   && ((text == NULL) || (memcmp((const char*)cmos_enum->text, text, len)))) {
+			return cmos_enum;
+		}
+	}
+
+	return NULL;
+}
+
+static struct cb_cmos_enums *lookup_cmos_enum_by_value(struct cb_cmos_option_table *option_table, int config_id, u8 *value)
+{
+	return lookup_cmos_enum_core(option_table, config_id, value, NULL);
+}
+
+static struct cb_cmos_enums *lookup_cmos_enum_by_label(struct cb_cmos_option_table *option_table, int config_id, char *label)
+{
+	return lookup_cmos_enum_core(option_table, config_id, NULL, label);
+}
+
 int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name)
 {
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
@@ -210,4 +246,71 @@ int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_ta
 int set_option(void *value, char *name)
 {
 	return set_option_with(use_nvram, get_system_option_table(), value, name);
+}
+
+int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, char *name)
+{
+	void *raw;
+	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
+	if (!cmos_entry)
+		return 1;
+	int cmos_length = (cmos_entry->length+7)/8;
+
+	/* extra byte to ensure 0-terminated strings */
+	raw = malloc(cmos_length+1);
+	memset(raw, 0, cmos_length+1);
+
+	int ret = get_option_with(nvram, option_table, raw, name);
+
+	struct cb_cmos_enums *cmos_enum;
+	switch (cmos_entry->config) {
+		case 'h':
+			/* only works on little endian.
+			   26 bytes is enough for a 64bit value in decimal */
+			*dest = malloc(26);
+			sprintf(*dest, "%ull", *(u64*)raw);
+			break;
+		case 's':
+			*dest = strdup(raw);
+			break;
+		case 'e':
+			cmos_enum = lookup_cmos_enum_by_value(option_table, cmos_entry->config_id, (u8*)raw);
+			*dest = strdup((const char*)cmos_enum->text);
+			break;
+		default: /* fail */
+			return 1;
+	}
+	free(raw);
+	return ret;
+}
+
+int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char *value, char *name)
+{
+	void *raw;
+	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
+	if (!cmos_entry)
+		return 1;
+
+	struct cb_cmos_enums *cmos_enum;
+	switch (cmos_entry->config) {
+		case 'h':
+			/* only works on little endian */
+			raw = malloc(8);
+			*(u64*)raw = strtoull(value, NULL, 0);
+			break;
+		case 's':
+			raw = strdup(value);
+			break;
+		case 'e':
+			cmos_enum = lookup_cmos_enum_by_label(option_table, cmos_entry->config_id, value);
+			raw = malloc(sizeof(u32));
+			*(u32*)raw = cmos_enum->value;
+			break;
+		default: /* fail */
+			return 1;
+	}
+
+	int ret = set_option_with(nvram, option_table, raw, name);
+	free(raw);
+	return ret;
 }

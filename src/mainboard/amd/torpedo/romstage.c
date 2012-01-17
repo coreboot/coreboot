@@ -40,88 +40,91 @@
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-  u32 val;
+	u32 val;
 
-  post_code(0x35);
-  val = agesawrapper_amdinitmmio();
-  if(val) {
-	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitmmio\n");
+	post_code(0x35);
+	val = agesawrapper_amdinitmmio();
+	if (val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitmmio failed: %x \n",
+		       val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitmmio\n");
 
-  if (!cpu_init_detectedx && boot_cpu()) {
-    post_code(0x30);
-	gpioEarlyInit();
-    sb_poweron_init();
+	if (!cpu_init_detectedx && boot_cpu()) {
+		post_code(0x30);
+		gpioEarlyInit();
+		sb_poweron_init();
 
-    post_code(0x31);
+		post_code(0x31);
 
-    kbc1100_early_init(CONFIG_SIO_PORT);
+		kbc1100_early_init(CONFIG_SIO_PORT);
 
-    post_code(0x32);
-    uart_init();
-    post_code(0x33);
-    console_init();
-  }
+		post_code(0x32);
+		uart_init();
+		post_code(0x33);
+		console_init();
+	}
 
-  /* Halt if there was a built in self test failure */
-  post_code(0x34);
-  report_bist_failure(bist);
+	/* Halt if there was a built in self test failure */
+	post_code(0x34);
+	report_bist_failure(bist);
 
-  // Load MPB
-  val = cpuid_eax(1);
-  printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
-  printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
+	// Load MPB
+	val = cpuid_eax(1);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
-  post_code(0x36);
-  val = agesawrapper_amdinitreset();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitreset\n");
+	post_code(0x36);
+	val = agesawrapper_amdinitreset();
+	if (val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n",
+		       val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitreset\n");
 
-  post_code(0x37);
-  val = agesawrapper_amdinitearly ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
+	post_code(0x37);
+	val = agesawrapper_amdinitearly();
+	if (val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n",
+		       val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
 
-  post_code(0x38);
-  val = agesawrapper_amdinitpost ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
+	post_code(0x38);
+	val = agesawrapper_amdinitpost();
+	if (val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n",
+		       val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
 
-  post_code(0x39);
-  sb_before_pci_init ();
-  printk(BIOS_DEBUG, "Got past sb_before_pci_init\n");
+	post_code(0x39);
+	sb_before_pci_init();
+	printk(BIOS_DEBUG, "Got past sb_before_pci_init\n");
 
-  post_code(0x40);
-  val = agesawrapper_amdinitenv ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
+	post_code(0x40);
+	val = agesawrapper_amdinitenv();
+	if (val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n",
+		       val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
 
-  /* Initialize i8259 pic */
-  post_code(0x41);
-  setup_i8259 ();
-  printk(BIOS_DEBUG, "Got past setup_i8259\n");
+	/* Initialize i8259 pic */
+	post_code(0x41);
+	setup_i8259();
+	printk(BIOS_DEBUG, "Got past setup_i8259\n");
 
-  /* Initialize i8254 timers */
-  post_code(0x42);
-  setup_i8254 ();
-  printk(BIOS_DEBUG, "Got past setup_i8254\n");
+	/* Initialize i8254 timers */
+	post_code(0x42);
+	setup_i8254();
+	printk(BIOS_DEBUG, "Got past setup_i8254\n");
 
-  post_code(0x43);
-  copy_and_run(0);
-  printk(BIOS_DEBUG, "Got past copy_and_run\n");
+	post_code(0x43);
+	copy_and_run(0);
+	printk(BIOS_DEBUG, "Got past copy_and_run\n");
 
-  post_code(0x44);  // Should never see this post code.
+	post_code(0x44);	// Should never see this post code.
 }
-

@@ -27,7 +27,6 @@
 #include "SbEarly.h"
 #include "agesawrapper.h"
 
-
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
@@ -40,7 +39,7 @@ u8 bus_sb900[3];
 * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 */
 u32 pci1234x[] = {
-  0x0000ff0,
+	0x0000ff0,
 };
 
 /*
@@ -48,7 +47,7 @@ u32 pci1234x[] = {
 * assume every chain only have 4 ht device at most
 */
 u32 hcdnx[] = {
-  0x20202020,
+	0x20202020,
 };
 
 u32 bus_type[256];
@@ -59,22 +58,20 @@ u32 sbdn_sb900;
 
 static u32 get_bus_conf_done = 0;
 
-
-
-
 void get_bus_conf(void)
 {
-  u32 status;
+	u32 status;
 
-  device_t dev;
-  int i, j;
+	device_t dev;
+	int i, j;
 
-  if (get_bus_conf_done == 1)
-    return;   /* do it only once */
+	if (get_bus_conf_done == 1)
+		return;		/* do it only once */
 
-  get_bus_conf_done = 1;
+	get_bus_conf_done = 1;
 
-  printk(BIOS_DEBUG, "Mainboard - Get_bus_conf.c - get_bus_conf - Start.\n");
+	printk(BIOS_DEBUG,
+	       "Mainboard - Get_bus_conf.c - get_bus_conf - Start.\n");
 /*
  * This is the call to AmdInitLate.  It is really in the wrong place, conceptually,
  * but functionally within the coreboot model, this is the best place to make the
@@ -90,57 +87,58 @@ void get_bus_conf(void)
  * of each of the write functions called prior to the ACPI write functions, so this
  * becomes the best place for this call.
  */
-  status = agesawrapper_amdinitlate();
-  if(status) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitlate\n");
+	status = agesawrapper_amdinitlate();
+	if (status) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n",
+		       status);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitlate\n");
 
-  sbdn_sb900 = 0;
+	sbdn_sb900 = 0;
 
-  for (i = 0; i < 3; i++) {
-    bus_sb900[i] = 0;
-  }
+	for (i = 0; i < 3; i++) {
+		bus_sb900[i] = 0;
+	}
 
-  for (i = 0; i < 256; i++) {
-    bus_type[i] = 0; /* default ISA bus. */
-  }
+	for (i = 0; i < 256; i++) {
+		bus_type[i] = 0;	/* default ISA bus. */
+	}
 
-
-  bus_type[0] = 1;  /* pci */
+	bus_type[0] = 1;	/* pci */
 
 //  bus_sb900[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-  bus_sb900[0] = (pci1234x[0] >> 16) & 0xff;
+	bus_sb900[0] = (pci1234x[0] >> 16) & 0xff;
 
-  /* sb900 */
-  dev = dev_find_slot(bus_sb900[0], PCI_DEVFN(sbdn_sb900 + 0x14, 4));
+	/* sb900 */
+	dev = dev_find_slot(bus_sb900[0], PCI_DEVFN(sbdn_sb900 + 0x14, 4));
 
+	if (dev) {
+		bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
+		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+		bus_isa++;
+		for (j = bus_sb900[1]; j < bus_isa; j++)
+			bus_type[j] = 1;
+	}
 
-  if (dev) {
-    bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+	for (i = 0; i < 4; i++) {
+		dev =
+		    dev_find_slot(bus_sb900[0],
+				  PCI_DEVFN(sbdn_sb900 + 0x14, i));
+		if (dev) {
+			bus_sb900[2 + i] =
+			    pci_read_config8(dev, PCI_SECONDARY_BUS);
+			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+			bus_isa++;
+		}
+	}
+	for (j = bus_sb900[2]; j < bus_isa; j++)
+		bus_type[j] = 1;
 
-    bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-    bus_isa++;
-    for (j = bus_sb900[1]; j < bus_isa; j++)
-      bus_type[j] = 1;
-  }
+	/* I/O APICs:   APIC ID Version State   Address */
+	bus_isa = 10;
 
-  for (i = 0; i < 4; i++) {
-    dev = dev_find_slot(bus_sb900[0], PCI_DEVFN(sbdn_sb900 + 0x14, i));
-    if (dev) {
-      bus_sb900[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-      bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-      bus_isa++;
-    }
-  }
-  for (j = bus_sb900[2]; j < bus_isa; j++)
-    bus_type[j] = 1;
-
-
-  /* I/O APICs:   APIC ID Version State   Address */
-  bus_isa = 10;
-
-  sb_Late_Post();
-  printk(BIOS_DEBUG, "Mainboard - Get_bus_conf.c - get_bus_conf - End.\n");
+	sb_Late_Post();
+	printk(BIOS_DEBUG,
+	       "Mainboard - Get_bus_conf.c - get_bus_conf - End.\n");
 }

@@ -41,6 +41,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>
+#if CONFIG_ARCH_X86
+#include <arch/ebda.h>
+#endif
 
 /** Linked list of ALL devices */
 struct device *all_devices = &dev_root;
@@ -1101,6 +1104,11 @@ void dev_initialize(void)
 	struct bus *link;
 
 	printk(BIOS_INFO, "Initializing devices...\n");
+
+#if CONFIG_ARCH_X86
+	/* Ensure EBDA is prepared before Option ROMs. */
+	setup_default_ebda();
+#endif
 
 	/* First call the mainboard init. */
 	init_dev(&dev_root);

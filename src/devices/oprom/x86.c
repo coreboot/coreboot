@@ -40,19 +40,6 @@ void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0))) =
 						(void *)&__realmode_interrupt;
 
-static void setup_bda(void)
-{
-	/* clear BIOS DATA AREA */
-	memset((void *)0x400, 0, 0x200);
-
-	write16(0x413, FAKE_MEMORY_SIZE / 1024);
-	write16(0x40e, INITIAL_EBDA_SEGMENT);
-
-	/* Set up EBDA */
-	memset((void *)(INITIAL_EBDA_SEGMENT << 4), 0, INITIAL_EBDA_SIZE);
-	write16((INITIAL_EBDA_SEGMENT << 4) + 0x0, INITIAL_EBDA_SIZE / 1024);
-}
-
 static void setup_rombios(void)
 {
 	const char date[] = "06/11/99";
@@ -271,9 +258,6 @@ void run_bios(struct device *dev, unsigned long addr)
 	 * in some option roms.
 	 */
 	setup_i8259();
-
-	/* Set up BIOS Data Area */
-	setup_bda();
 
 	/* Set up some legacy information in the F segment */
 	setup_rombios();

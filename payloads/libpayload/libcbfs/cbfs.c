@@ -40,18 +40,18 @@
 #define ERROR(x...) printf(x)
 #define LOG(x...)
 
-uint32_t host_virt_to_phys(void *addr);
-void *host_phys_to_virt(uint32_t addr);
+static uint32_t host_virt_to_phys(void *addr);
+static void *host_phys_to_virt(uint32_t addr);
 
 uint32_t romstart(void);
 uint32_t romend(void);
 
 #include <arch/virtual.h>
-uint32_t host_virt_to_phys(void *addr) {
+static uint32_t host_virt_to_phys(void *addr) {
 	return virt_to_phys(addr);
 }
 
-void *host_phys_to_virt(uint32_t addr) {
+static void *host_phys_to_virt(uint32_t addr) {
 	return phys_to_virt(addr);
 }
 #undef virt_to_phys
@@ -76,3 +76,26 @@ uint32_t romend(void)
 
 #include "cbfs_core.c"
 
+static uint32_t ram_cbfs_offset;
+
+static uint32_t ram_virt_to_phys(void *addr) {
+	return (uint32_t)addr - ram_cbfs_offset;
+}
+
+static void *ram_phys_to_virt(uint32_t addr) {
+	return (void*)addr + ram_cbfs_offset;
+}
+
+void setup_cbfs_from_ram(void* start, uint32_t size)
+{
+	/* assumes rollover */
+	ram_cbfs_offset = (uint32_t)start + size;
+	virt_to_phys = ram_virt_to_phys;
+	phys_to_virt = ram_phys_to_virt;
+}
+
+void setup_cbfs_from_flash()
+{
+	virt_to_phys = host_virt_to_phys;
+	phys_to_virt = host_phys_to_virt;
+}

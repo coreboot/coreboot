@@ -8,6 +8,7 @@ ramstage-y += exception.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
 ramstage-y += memset.c
 ramstage-y += memcpy.c
+ramstage-y += ebda.c
 
 romstage-y += romstage_console.c
 romstage-y += cbfs_and_run.c

@@ -45,12 +45,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 val;
 
 	post_code(0x35);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio ");
 	val = agesawrapper_amdinitmmio();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmmio failed: %x \n",
-		       val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitmmio\n");
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
@@ -77,54 +77,56 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
 	post_code(0x36);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
 	val = agesawrapper_amdinitreset();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n",
-		       val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitreset\n");
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x37);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitearly ");
 	val = agesawrapper_amdinitearly();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n",
-		       val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x38);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
 	val = agesawrapper_amdinitpost();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n",
-		       val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x39);
+	printk(BIOS_DEBUG, "sb_before_pci_init ");
 	sb_before_pci_init();
-	printk(BIOS_DEBUG, "Got past sb_before_pci_init\n");
+	printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x40);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
 	val = agesawrapper_amdinitenv();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n",
-		       val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	/* Initialize i8259 pic */
 	post_code(0x41);
+	printk(BIOS_DEBUG, "setup_i8259\n");
 	setup_i8259();
-	printk(BIOS_DEBUG, "Got past setup_i8259\n");
 
 	/* Initialize i8254 timers */
 	post_code(0x42);
+	printk(BIOS_DEBUG, "setup_i8254\n");
 	setup_i8254();
-	printk(BIOS_DEBUG, "Got past setup_i8254\n");
+
 
 	post_code(0x43);
 	copy_and_run(0);
-	printk(BIOS_DEBUG, "Got past copy_and_run\n");
+	printk(BIOS_ERR, "Error: copy_and_run returned!\n");
 
 	post_code(0x44);	// Should never see this post code.
 }

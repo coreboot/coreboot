@@ -54,7 +54,6 @@ u32 bus_type[256];
 
 u32 sbdn_sb900;
 
-//KZ [092110]extern void get_pci1234(void);
 
 static u32 get_bus_conf_done = 0;
 
@@ -70,8 +69,7 @@ void get_bus_conf(void)
 
 	get_bus_conf_done = 1;
 
-	printk(BIOS_DEBUG,
-	       "Mainboard - Get_bus_conf.c - get_bus_conf - Start.\n");
+	printk(BIOS_DEBUG, "Mainboard - %s - %s - Start.\n", __FILE__, __func__);
 /*
  * This is the call to AmdInitLate.  It is really in the wrong place, conceptually,
  * but functionally within the coreboot model, this is the best place to make the
@@ -87,12 +85,12 @@ void get_bus_conf(void)
  * of each of the write functions called prior to the ACPI write functions, so this
  * becomes the best place for this call.
  */
+	printk(BIOS_DEBUG, "agesawrapper_amdinitlate ");
 	status = agesawrapper_amdinitlate();
-	if (status) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n",
-		       status);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitlate\n");
+	if (status)
+		printk(BIOS_DEBUG, "error level: %x \n", status);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
 
 	sbdn_sb900 = 0;
 
@@ -106,7 +104,6 @@ void get_bus_conf(void)
 
 	bus_type[0] = 1;	/* pci */
 
-//  bus_sb900[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 	bus_sb900[0] = (pci1234x[0] >> 16) & 0xff;
 
 	/* sb900 */
@@ -114,7 +111,6 @@ void get_bus_conf(void)
 
 	if (dev) {
 		bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
 		for (j = bus_sb900[1]; j < bus_isa; j++)
@@ -122,8 +118,7 @@ void get_bus_conf(void)
 	}
 
 	for (i = 0; i < 4; i++) {
-		dev =
-		    dev_find_slot(bus_sb900[0],
+		dev = dev_find_slot(bus_sb900[0],
 				  PCI_DEVFN(sbdn_sb900 + 0x14, i));
 		if (dev) {
 			bus_sb900[2 + i] =
@@ -139,6 +134,5 @@ void get_bus_conf(void)
 	bus_isa = 10;
 
 	sb_Late_Post();
-	printk(BIOS_DEBUG,
-	       "Mainboard - Get_bus_conf.c - get_bus_conf - End.\n");
+	printk(BIOS_DEBUG, "Mainboard - %s - %s - End.\n", __FILE__, __func__);
 }

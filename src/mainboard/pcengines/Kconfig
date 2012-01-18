@@ -1,4 +1,4 @@
-if VENDOR_PC_ENGINES
+if VENDOR_PCENGINES
 
 choice
 	prompt "Mainboard model"
@@ -17,4 +17,4 @@ config MAINBOARD_VENDOR
 	string
 	default "PC Engines"
 
-endif # VENDOR_PC_ENGINES
+endif # VENDOR_PCENGINES

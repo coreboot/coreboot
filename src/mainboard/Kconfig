@@ -90,7 +90,7 @@ config VENDOR_NOKIA
 	bool "Nokia"
 config VENDOR_NVIDIA
 	bool "NVIDIA"
-config VENDOR_PC_ENGINES
+config VENDOR_PCENGINES
 	bool "PC Engines"
 config VENDOR_RCA
 	bool "RCA"

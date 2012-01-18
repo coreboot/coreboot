@@ -7,10 +7,6 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/sis/sis966/bootblock.c" if SOUTHBRIDGE_SIS_SIS966
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x80 if SOUTHBRIDGE_SIS_SIS966
-
 config EHCI_BAR
 	hex
 	default 0xfef00000 if SOUTHBRIDGE_SIS_SIS966

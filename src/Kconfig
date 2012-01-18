@@ -883,10 +883,6 @@ config WARNINGS_ARE_ERRORS
 	bool
 	default y
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x10
-
 # The four POWER_BUTTON_DEFAULT_ENABLE, POWER_BUTTON_DEFAULT_DISABLE,
 # POWER_BUTTON_FORCE_ENABLE and POWER_BUTTON_FORCE_DISABLE options are
 # mutually exclusive. One of these options must be selected in the

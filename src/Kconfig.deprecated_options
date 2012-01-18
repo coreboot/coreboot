@@ -61,4 +61,8 @@ config PCIE_TUNING
 	  This variable enables certain PCIe optimizations. Right now it's
 	  only ASPM and it's untested.
 
+config ID_SECTION_OFFSET
+	hex
+	default 0x80
+
 endmenu

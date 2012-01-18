@@ -22,7 +22,6 @@
  *----------------------------------------------------------------------------------------
  */
 
-
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
@@ -39,7 +38,6 @@
 #define AMD_APU_SSID    0x1234
 #define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
 
-
 enum {
   PICK_DMI,       /* DMI Interface */
   PICK_PSTATE,    /* Acpi Pstate SSDT Table */
@@ -49,8 +47,6 @@ enum {
   PICK_WHEA_CMC,  /* WHEA CMV table */
   PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 };
-
-
 
 /*----------------------------------------------------------------------------------------
  *                  T Y P E D E F S     A N D     S T R U C T U  R E S
@@ -77,15 +73,18 @@ typedef struct {
  *---------------------------------------------------------------------------------------
  */
 
-//void brazos_platform_stage(void);
 UINT32 agesawrapper_amdinitreset (void);
 UINT32 agesawrapper_amdinitearly (void);
 UINT32 agesawrapper_amdinitenv (void);
 UINT32 agesawrapper_amdinitlate (void);
 UINT32 agesawrapper_amdinitpost (void);
 UINT32 agesawrapper_amdinitmid (void);
+
 UINT32 agesawrapper_amdreadeventlog (void);
+
+UINT32 agesawrapper_amdinitcpuio (void);
 UINT32 agesawrapper_amdinitmmio (void);
+UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 void *agesawrapper_getlateinitptr (int pick);
 
 #endif

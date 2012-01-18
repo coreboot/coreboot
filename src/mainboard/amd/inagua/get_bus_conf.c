@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/amdfam14.h>
+#include "agesawrapper.h"
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
@@ -34,6 +35,7 @@
 */
 u8 bus_isa;
 u8 bus_sb800[3];
+u32 apicid_sb800;
 
 /*
 * Here you only need to set value in pci1234 for HT-IO that could be installed or not
@@ -44,27 +46,15 @@ u32 pci1234x[] = {
   0x0000ff0,
 };
 
-/*
-* HT Chain device num, actually it is unit id base of every ht device in chain,
-* assume every chain only have 4 ht device at most
-*/
-u32 hcdnx[] = {
-  0x20202020,
-};
-
 u32 bus_type[256];
-
 u32 sbdn_sb800;
-
-//KZ [092110]extern void get_pci1234(void);
 
 static u32 get_bus_conf_done = 0;
 
 
-
-
 void get_bus_conf(void)
 {
+	u32 apicid_base;
   u32 status;
 
   device_t dev;
@@ -105,7 +95,6 @@ void get_bus_conf(void)
     bus_type[i] = 0; /* default ISA bus. */
   }
 
-
   bus_type[0] = 1;  /* pci */
 
 //  bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
@@ -113,8 +102,6 @@ void get_bus_conf(void)
 
   /* sb800 */
   dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
-
-
 
   if (dev) {
     bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
@@ -133,12 +120,14 @@ void get_bus_conf(void)
       bus_isa++;
     }
   }
+
   for (j = bus_sb800[2]; j < bus_isa; j++)
     bus_type[j] = 1;
 
-
   /* I/O APICs:   APIC ID Version State   Address */
   bus_isa = 10;
+	apicid_base = CONFIG_MAX_CPUS;
+	apicid_sb800 = apicid_base;
 
 #if CONFIG_AMD_SB_CIMX
   sb_Late_Post();

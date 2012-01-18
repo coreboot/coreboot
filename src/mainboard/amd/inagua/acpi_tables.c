@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -245,9 +246,10 @@ unsigned long write_acpi_tables(unsigned long start)
 		memcpy((void *)current, ssdt, ssdt->length);
 		ssdt = (acpi_header_t *) current;
 		current += ssdt->length;
+		acpi_add_table(rsdp,ssdt);
 	}
 	else {
-		printk(BIOS_DEBUG, "  AGESA SSDT table NULL. Skipping.\n");
+		printk(BIOS_DEBUG, "  AGESA SSDT Pstate table NULL. Skipping.\n");
 	}
 	acpi_add_table(rsdp,ssdt);
 #endif
@@ -274,6 +276,9 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "slit\n");
 	dump_mem(slit, ((void *)slit) + slit->header.length);
+
+	printk(BIOS_DEBUG, "alib\n");
+	dump_mem(ssdt, ((void *)alib) + alib->length);
 
 	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);

@@ -57,7 +57,6 @@ VOID *AcpiWheaMce	= NULL;
 VOID *AcpiWheaCmc	= NULL;
 VOID *AcpiAlib		= NULL;
 
-
 /*------------------------------------------------------------------------------
  *				T Y P E D E F S		 A N D		 S T R U C T U R E S
  *------------------------------------------------------------------------------
@@ -189,7 +188,6 @@ agesawrapper_amdinitreset (
 					0,
 					sizeof (AMD_INTERFACE_PARAMS),
 					&(AmdParamStruct.StdHeader));
-
 
 	LibAmdMemFill (&AmdResetParams,
 					0,
@@ -484,6 +482,12 @@ agesawrapper_amdinitlate (
 	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
 	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
 	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
+
+	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
+		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
+		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
+		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 
 	/* Don't release the structure until coreboot has copied the ACPI tables.
 	 * AmdReleaseStruct (&AmdLateParams);

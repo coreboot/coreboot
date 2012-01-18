@@ -27,7 +27,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include "../../../arch/x86/acpi/debug.asl" */	/* Include global debug methods if needed */
+	/* #include "../../../arch/i386/acpi/debug.asl" */		/* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
 	/* FIXME the patching is not done yet! */
@@ -36,7 +36,7 @@ DefinitionBlock (
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
 	Name(PBLN, 0x0)	/* Length of BIOS area */
 
-	Name(PCBA, 0xE0000000)	/* Base address of PCIe config space */
+	Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 
 	Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
@@ -1379,7 +1379,7 @@ DefinitionBlock (
 
 				/* Real Time Clock Device */
 				Device(RTC0) {
-					Name(_HID, EISAID("PNP0B01"))	/* AT Real Time Clock */
+					Name(_HID, EISAID("PNP0B00"))   /* AT Real Time Clock (not PIIX4 compatible) */
 					Name(_CRS, ResourceTemplate() {
 						IRQNoFlags(){8}
 						IO(Decode16,0x0070, 0x0070, 0, 2)
@@ -1483,9 +1483,8 @@ DefinitionBlock (
 					0xF300			/* length */
 				)
 
-#if 0
-				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
+#if 0
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 				Memory32Fixed(READONLY, 0x000E0000, 0x00020000, RDBS)   /* BIOS ROM area */
 

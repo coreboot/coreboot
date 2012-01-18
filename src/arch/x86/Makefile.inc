@@ -204,13 +204,6 @@ endif
 
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
-ifeq ($(CONFIG_SSE),y)
-crt0s += $(src)/cpu/x86/sse_disable.inc
-endif
-ifeq ($(CONFIG_MMX),y)
-crt0s += $(src)/cpu/x86/mmx_disable.inc
-endif
-
 ifeq ($(CONFIG_ROMCC),y)
 crt0s += $(src)/arch/x86/init/crt0_romcc_epilogue.inc
 endif

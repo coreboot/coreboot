@@ -39,13 +39,13 @@
 #define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
 
 enum {
-  PICK_DMI,       /* DMI Interface */
-  PICK_PSTATE,    /* Acpi Pstate SSDT Table */
-  PICK_SRAT,      /* SRAT Table */
-  PICK_SLIT,      /* SLIT Table */
-  PICK_WHEA_MCE,  /* WHEA MCE table */
-  PICK_WHEA_CMC,  /* WHEA CMV table */
-  PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
+	PICK_DMI,       /* DMI Interface */
+	PICK_PSTATE,    /* Acpi Pstate SSDT Table */
+	PICK_SRAT,      /* SRAT Table */
+	PICK_SLIT,      /* SLIT Table */
+	PICK_WHEA_MCE,  /* WHEA MCE table */
+	PICK_WHEA_CMC,  /* WHEA CMV table */
+	PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 };
 
 /*----------------------------------------------------------------------------------------
@@ -54,8 +54,8 @@ enum {
  */
 
 typedef struct {
-  UINT32 CalloutName;
-  AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
+	UINT32 CalloutName;
+	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
 } BIOS_CALLOUT_STRUCT;
 
 /*----------------------------------------------------------------------------------------

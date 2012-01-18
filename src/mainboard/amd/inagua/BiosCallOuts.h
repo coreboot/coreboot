@@ -28,15 +28,15 @@
 #define BIOS_HEAP_SIZE       0x20000   /* 64MB */
 
 typedef struct _BIOS_HEAP_MANAGER {
-  //UINT32 AvailableSize;
-  UINT32 StartOfAllocatedNodes;
-  UINT32 StartOfFreedNodes;
+	//UINT32 AvailableSize;
+	UINT32 StartOfAllocatedNodes;
+	UINT32 StartOfFreedNodes;
 } BIOS_HEAP_MANAGER;
 
 typedef struct _BIOS_BUFFER_NODE {
-  UINT32 BufferHandle;
-  UINT32 BufferSize;
-  UINT32 NextNodeOffset;
+	UINT32 BufferHandle;
+	UINT32 BufferSize;
+	UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 /*
  * CALLOUTS

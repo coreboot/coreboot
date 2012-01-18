@@ -43,7 +43,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-  u32 val;
+	u32 val;
 
 	// all cores: allow caching of flash chip code and data
 	// (there are no cache-as-ram reliability concerns with family 14h)
@@ -53,68 +53,68 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	// all cores: set pstate 0 (1600 MHz) early to save a few ms of boot time
 	__writemsr (0xc0010062, 0);
 
-  if (!cpu_init_detectedx && boot_cpu()) {
-    post_code(0x30);
-    sb_Poweron_Init();
+	if (!cpu_init_detectedx && boot_cpu()) {
+		post_code(0x30);
+		sb_Poweron_Init();
 
-    post_code(0x31);
-	kbc1100_early_init(CONFIG_SIO_PORT);
+		post_code(0x31);
+		kbc1100_early_init(CONFIG_SIO_PORT);
 
-    console_init();
-  }
+		console_init();
+	}
 
-  /* Halt if there was a built in self test failure */
-  post_code(0x34);
-  report_bist_failure(bist);
+	/* Halt if there was a built in self test failure */
+	post_code(0x34);
+	report_bist_failure(bist);
 
-  // Load MPB
-  val = cpuid_eax(1);
-  printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
-  printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
+	// Load MPB
+	val = cpuid_eax(1);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
-  post_code(0x35);
-  val = agesawrapper_amdinitmmio();
+	post_code(0x35);
+	val = agesawrapper_amdinitmmio();
 
-  post_code(0x37);
-  val = agesawrapper_amdinitreset();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
-  }
+	post_code(0x37);
+	val = agesawrapper_amdinitreset();
+	if(val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
+	}
 
-  post_code(0x38);
-  printk(BIOS_DEBUG, "Got past sb800_early_setup\n");
+	post_code(0x38);
+	printk(BIOS_DEBUG, "Got past sb800_early_setup\n");
 
-  post_code(0x39);
-  val = agesawrapper_amdinitearly ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
+	post_code(0x39);
+	val = agesawrapper_amdinitearly ();
+	if(val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
 
-  post_code(0x40);
-  val = agesawrapper_amdinitpost ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
+	post_code(0x40);
+	val = agesawrapper_amdinitpost ();
+	if(val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
 
-  post_code(0x41);
-  val = agesawrapper_amdinitenv ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n", val);
-  }
-  printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
+	post_code(0x41);
+	val = agesawrapper_amdinitenv ();
+	if(val) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n", val);
+	}
+	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
 
-  /* Initialize i8259 pic */
-  post_code(0x41);
-  setup_i8259 ();
+	/* Initialize i8259 pic */
+	post_code(0x41);
+	setup_i8259 ();
 
-  /* Initialize i8254 timers */
-  post_code(0x42);
-  setup_i8254 ();
+	/* Initialize i8254 timers */
+	post_code(0x42);
+	setup_i8254 ();
 
-  post_code(0x50);
-  copy_and_run(0);
+	post_code(0x50);
+	copy_and_run(0);
 
-  post_code(0x54);  // Should never see this post code.
+	post_code(0x54);  // Should never see this post code.
 }

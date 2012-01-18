@@ -511,7 +511,6 @@ agesawrapper_amdlaterunaptask (
 	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	ApExeParams.StdHeader.Func = 0;
 	ApExeParams.StdHeader.ImageBasePtr = 0;
-	ApExeParams.StdHeader.ImageBasePtr = 0;
 	ApExeParams.FunctionNumber = Func;
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 

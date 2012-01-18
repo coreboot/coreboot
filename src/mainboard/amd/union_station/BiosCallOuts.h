@@ -23,7 +23,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#define REQUIRED_CALLOUTS     12
 #define BIOS_HEAP_START_ADDRESS  0x00010000
 #define BIOS_HEAP_SIZE       0x20000   /* 64MB */
 

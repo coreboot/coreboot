@@ -10,10 +10,6 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/nvidia/ck804/bootblock.c"
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x80
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

@@ -87,8 +87,4 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x80
-
 endif # BOARD_AMD_SERENGETI_CHEETAH_FAM10

@@ -170,10 +170,6 @@ config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000096.h"
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x80
-
 config HT3_SUPPORT
 	bool
 	default y

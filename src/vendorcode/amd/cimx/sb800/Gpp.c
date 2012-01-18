@@ -396,6 +396,7 @@ CheckGppLinkStatus (
         SbStall (1000);                          // Delay 400us
         abIndex = SB_RCINDXP_REGA5 | (UINT32) (RCINDXP << 29) | (portId << 24);
         Data32 = readAlink (abIndex) & 0x3F3F3F3F;
+	printk(BIOS_DEBUG, "SB800 GPP port 0x%x training status=0x%x\n", portId, Data32);
 
         if ( (UINT8) (Data32) == 0x10 ) {
           portCfg->PortDetected = TRUE;

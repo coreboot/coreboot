@@ -26,6 +26,34 @@
 
 #define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 
+/*---------------------------------------------------------------------------------------*/
+/**
+ *	OemCustomizeInitEarly
+ *
+ *	Description:
+ *	This is the stub function will call the host environment through the binary block
+ *	interface (call-out port) to provide a user hook opportunity
+ *
+ *	Parameters:
+ *	@param[in]		**PeiServices
+ *	@param[in]		*InitEarly
+ *
+ *	@retval		 VOID
+ *
+ **/
+/*---------------------------------------------------------------------------------------*/
+VOID
+OemCustomizeInitEarly (
+	IN	OUT AMD_EARLY_PARAMS	*InitEarly
+	)
+{
+	AGESA_STATUS		 Status;
+	VOID				 *BrazosPcieComplexListPtr;
+	VOID				 *BrazosPciePortPtr;
+	VOID				 *BrazosPcieDdiPtr;
+
+	ALLOCATE_HEAP_PARAMS AllocHeapParams;
+
 PCIe_PORT_DESCRIPTOR PortList [] = {
         // Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
         {
@@ -83,34 +111,6 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
         &DdiList[0]
 };
 
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This is the stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      **PeiServices
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-  IN  OUT AMD_EARLY_PARAMS    *InitEarly
-  )
-{
-  AGESA_STATUS         Status;
-  VOID                 *BrazosPcieComplexListPtr;
-  VOID                 *BrazosPciePortPtr;
-  VOID                 *BrazosPcieDdiPtr;
-
-  ALLOCATE_HEAP_PARAMS AllocHeapParams;
-
   // GNB PCIe topology Porting
 
   //
@@ -126,7 +126,7 @@ OemCustomizeInitEarly (
   if ( Status!= AGESA_SUCCESS) {
     // Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
     ASSERT(FALSE);
-    return Status;
+	return;
   }
 
   BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;

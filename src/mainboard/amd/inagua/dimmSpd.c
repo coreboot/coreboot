@@ -20,6 +20,7 @@
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
+#include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info);
 #define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
@@ -30,13 +31,12 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 * SPD address table - porting required
 */
 
-#define SMBUS_BASE_ADDR		0xB00
-static const UINT8 spdAddressLookup [1] [2] [1] =  // socket, channel, dimm
+static const UINT8 spdAddressLookup [1] [2] [2] =  // socket, channel, dimm
    {
    // socket 0
       {
-         {0xA0},  // channel 0 dimms
-         {0xA2},  // channel 1 dimms
+         {0xA0, 0xA2},  // channel 0 dimms
+         {0x00, 0x00},  // channel 1 dimms
       },
    };
 
@@ -46,7 +46,7 @@ static const UINT8 spdAddressLookup [1] [2] [1] =  // socket, channel, dimm
  */
 
 static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
-   {
+{
    unsigned int status;
    UINT64 limit;
 
@@ -60,8 +60,7 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
 
    // time limit to avoid hanging for unexpected error status (should never happen)
    limit = __rdtsc () + 2000000000 / 10;
-   for (;;)
-      {
+	for (;;) {
       status = __inbyte (iobase);
       if (__rdtsc () > limit) break;
       if ((status & 2) == 0) continue;               // SMBusInterrupt not set, keep waiting
@@ -72,7 +71,7 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
    buffer [0] = __inbyte (iobase + 5);
    if (status == 2) status = 0;                      // check for done with no errors
    return status;
-   }
+}
 
 /*-----------------------------------------------------------------------------
  *
@@ -81,7 +80,7 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
  */
 
 static int readSmbusByte (int iobase, int address, char *buffer)
-   {
+{
    unsigned int status;
    UINT64 limit;
 
@@ -90,8 +89,7 @@ static int readSmbusByte (int iobase, int address, char *buffer)
 
    // time limit to avoid hanging for unexpected error status
    limit = __rdtsc () + 2000000000 / 10;
-   for (;;)
-      {
+	for (;;) {
       status = __inbyte (iobase);
       if (__rdtsc () > limit) break;
       if ((status & 2) == 0) continue;               // SMBusInterrupt not set, keep waiting
@@ -102,7 +100,7 @@ static int readSmbusByte (int iobase, int address, char *buffer)
    buffer [0] = __inbyte (iobase + 5);
    if (status == 2) status = 0;                      // check for done with no errors
    return status;
-   }
+}
 
 /*---------------------------------------------------------------------------
  *
@@ -114,7 +112,7 @@ static int readSmbusByte (int iobase, int address, char *buffer)
  */
 
 static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
-   {
+{
    int index, error;
 
    /* read the first byte using offset zero */
@@ -122,14 +120,13 @@ static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
    if (error) return error;
 
    /* read the remaining bytes using auto-increment for speed */
-   for (index = 1; index < count; index++)
-      {
+	for (index = 1; index < count; index++) {
       error = readSmbusByte (iobase, SmbusSlaveAddress, &buffer [index]);
       if (error) return error;
       }
 
    return 0;
-   }
+}
 
 static void writePmReg (int reg, int data)
    {
@@ -138,16 +135,16 @@ static void writePmReg (int reg, int data)
    }
 
 static void setupFch (int ioBase)
-   {
+{
    writePmReg (0x2D, ioBase >> 8);
    writePmReg (0x2C, ioBase | 1);
    writePmReg (0x29, 0x80);
    writePmReg (0x28, 0x61);
    __outbyte (ioBase + 0x0E, 66000000 / 400000 / 4); // set SMBus clock to 400 KHz
-   }
+}
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
-   {
+{
    int spdAddress, ioBase;
 
    if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
@@ -156,7 +153,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 
    spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
    if (spdAddress == 0) return AGESA_ERROR;
-   ioBase = SMBUS_BASE_ADDR;
+	ioBase = SMBUS0_BASE_ADDRESS;
    setupFch (ioBase);
    return readspd (ioBase, spdAddress, (void *) info->Buffer, 128);
-   }
+}

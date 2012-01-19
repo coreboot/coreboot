@@ -28,7 +28,8 @@
 //#include <southbridge/amd/sb800/sb800.h>
 #include "chip.h"
 
-//#define SMBUS_IO_BASE 0x6000
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
 
 /**
  * TODO
@@ -49,11 +50,12 @@ void set_pcie_dereset(void)
 uint64_t uma_memory_base, uma_memory_size;
 
 /*************************************************
-* enable the dedicated function in inagua board.
+* enable the dedicated function in INAGUA    board.
 *************************************************/
 static void inagua_enable(device_t dev)
 {
-	printk(BIOS_INFO, "Mainboard Inagua Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
 	uint32_t sys_mem;
@@ -78,11 +80,11 @@ static void inagua_enable(device_t dev)
 	else {
 	  if (sys_mem >= 0x40000000) {
 		  uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
-	  }
-	  else {
+		} else {
 		  uma_memory_size = 0x4000000;	/* <1G memory, 64M recommended UMA */
 	  }
 	}
+
 	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
 	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
@@ -109,6 +111,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 	return 0;
 }
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD INAGUA Mainboard")
+	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = inagua_enable,
 };

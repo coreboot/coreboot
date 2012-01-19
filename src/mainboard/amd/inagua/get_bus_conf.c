@@ -31,19 +31,19 @@
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
-* and acpi_tables busnum is default.
-*/
+ * and acpi_tables busnum is default.
+ */
 u8 bus_isa;
 u8 bus_sb800[3];
 u32 apicid_sb800;
 
 /*
-* Here you only need to set value in pci1234 for HT-IO that could be installed or not
-* You may need to preset pci1234 for HTIO board,
-* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-*/
+ * Here you only need to set value in pci1234 for HT-IO that could be installed or not
+ * You may need to preset pci1234 for HTIO board,
+ * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
+ */
 u32 pci1234x[] = {
-  0x0000ff0,
+	0x0000ff0,
 };
 
 u32 bus_type[256];
@@ -55,81 +55,81 @@ static u32 get_bus_conf_done = 0;
 void get_bus_conf(void)
 {
 	u32 apicid_base;
-  u32 status;
+	u32 status;
 
-  device_t dev;
-  int i, j;
+	device_t dev;
+	int i, j;
 
-  if (get_bus_conf_done == 1)
-    return;   /* do it only once */
+	if (get_bus_conf_done == 1)
+		return;   /* do it only once */
 
-  get_bus_conf_done = 1;
+	get_bus_conf_done = 1;
 
-/*
- * This is the call to AmdInitLate.  It is really in the wrong place, conceptually,
- * but functionally within the coreboot model, this is the best place to make the
- * call.  The logically correct place to call AmdInitLate is after PCI scan is done,
- * after the decision about S3 resume is made, and before the system tables are
- * written into RAM.  The routine that is responsible for writing the tables is
- * "write_tables", called near the end of "hardwaremain".  There is no platform
- * specific entry point between the S3 resume decision point and the call to
- * "write_tables", and the next platform specific entry points are the calls to
- * the ACPI table write functions.  The first of ose would seem to be the right
- * place, but other table write functions, e.g. the PIRQ table write function, are
- * called before the ACPI tables are written.  This routine is called at the beginning
- * of each of the write functions called prior to the ACPI write functions, so this
- * becomes the best place for this call.
- */
-  status = agesawrapper_amdinitlate();
-  if(status) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
-  }
+	/*
+	 * This is the call to AmdInitLate.  It is really in the wrong place, conceptually,
+	 * but functionally within the coreboot model, this is the best place to make the
+	 * call.  The logically correct place to call AmdInitLate is after PCI scan is done,
+	 * after the decision about S3 resume is made, and before the system tables are
+	 * written into RAM.  The routine that is responsible for writing the tables is
+	 * "write_tables", called near the end of "hardwaremain".  There is no platform
+	 * specific entry point between the S3 resume decision point and the call to
+	 * "write_tables", and the next platform specific entry points are the calls to
+	 * the ACPI table write functions.  The first of ose would seem to be the right
+	 * place, but other table write functions, e.g. the PIRQ table write function, are
+	 * called before the ACPI tables are written.  This routine is called at the beginning
+	 * of each of the write functions called prior to the ACPI write functions, so this
+	 * becomes the best place for this call.
+	 */
+	status = agesawrapper_amdinitlate();
+	if(status) {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
+	}
 
-  sbdn_sb800 = 0;
+	sbdn_sb800 = 0;
 
-  for (i = 0; i < 3; i++) {
-    bus_sb800[i] = 0;
-  }
+	for (i = 0; i < 3; i++) {
+		bus_sb800[i] = 0;
+	}
 
-  for (i = 0; i < 256; i++) {
-    bus_type[i] = 0; /* default ISA bus. */
-  }
+	for (i = 0; i < 256; i++) {
+		bus_type[i] = 0; /* default ISA bus. */
+	}
 
-  bus_type[0] = 1;  /* pci */
+	bus_type[0] = 1;  /* pci */
 
-//  bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-  bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
+	//  bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
+	bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
 
-  /* sb800 */
-  dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
+	/* sb800 */
+	dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
 
-  if (dev) {
-    bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+	if (dev) {
+		bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
-    bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-    bus_isa++;
-    for (j = bus_sb800[1]; j < bus_isa; j++)
-      bus_type[j] = 1;
-  }
+		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+		bus_isa++;
+		for (j = bus_sb800[1]; j < bus_isa; j++)
+			bus_type[j] = 1;
+	}
 
-  for (i = 0; i < 4; i++) {
-    dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
-    if (dev) {
-      bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-      bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-      bus_isa++;
-    }
-  }
+	for (i = 0; i < 4; i++) {
+		dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
+		if (dev) {
+			bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+			bus_isa++;
+		}
+	}
 
-  for (j = bus_sb800[2]; j < bus_isa; j++)
-    bus_type[j] = 1;
+	for (j = bus_sb800[2]; j < bus_isa; j++)
+		bus_type[j] = 1;
 
-  /* I/O APICs:   APIC ID Version State   Address */
-  bus_isa = 10;
+	/* I/O APICs:   APIC ID Version State   Address */
+	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_sb800 = apicid_base;
 
 #if CONFIG_AMD_SB_CIMX
-  sb_Late_Post();
+	sb_Late_Post();
 #endif
 }

@@ -78,8 +78,8 @@ VOID *AcpiAlib		= NULL;
  */
 UINT32
 agesawrapper_amdinitcpuio (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS				Status;
 	UINT64						MsrReg;
@@ -127,8 +127,8 @@ agesawrapper_amdinitcpuio (
 
 UINT32
 agesawrapper_amdinitmmio (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS				Status;
 	UINT64						MsrReg;
@@ -141,9 +141,9 @@ agesawrapper_amdinitmmio (
 	UINT8						Index;
 
 	/*
-	 Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
-	 Address MSR register.
-	*/
+	   Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
+	   Address MSR register.
+	   */
 
 	for (Index = 0; Index < 8; Index++) {
 		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
@@ -157,8 +157,8 @@ agesawrapper_amdinitmmio (
 	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
 
 	/*
-	 Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
-	*/
+	   Set the NB_CFG MSR register. Enable CF8 extended configuration cycles.
+	   */
 	LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
 	MsrReg = MsrReg | 0x0000400000000000ull;
 	LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
@@ -177,22 +177,22 @@ agesawrapper_amdinitmmio (
 
 UINT32
 agesawrapper_amdinitreset (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESET_PARAMS AmdResetParams;
 
 	LibAmdMemFill (&AmdParamStruct,
-					0,
-					sizeof (AMD_INTERFACE_PARAMS),
-					&(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	LibAmdMemFill (&AmdResetParams,
-					0,
-					sizeof (AMD_RESET_PARAMS),
-					&(AmdResetParams.StdHeader));
+			0,
+			sizeof (AMD_RESET_PARAMS),
+			&(AmdResetParams.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
 	AmdParamStruct.AllocationMethod = ByHost;
@@ -209,21 +209,21 @@ agesawrapper_amdinitreset (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 	return (UINT32)status;
- }
+}
 
 UINT32
 agesawrapper_amdinitearly (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_EARLY_PARAMS	 *AmdEarlyParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-					0,
-					sizeof (AMD_INTERFACE_PARAMS),
-					&(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -245,8 +245,8 @@ agesawrapper_amdinitearly (
 
 UINT32
 agesawrapper_amdinitpost (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS status;
 	UINT16					i;
@@ -255,9 +255,9 @@ agesawrapper_amdinitpost (
 	BIOS_HEAP_MANAGER		*BiosManagerPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-					0,
-					sizeof (AMD_INTERFACE_PARAMS),
-					&(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -287,8 +287,8 @@ agesawrapper_amdinitpost (
 
 UINT32
 agesawrapper_amdinitenv (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -296,9 +296,9 @@ agesawrapper_amdinitenv (
 	UINT32				 PciValue;
 
 	LibAmdMemFill (&AmdParamStruct,
-					0,
-					sizeof (AMD_INTERFACE_PARAMS),
-					&(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -311,7 +311,7 @@ agesawrapper_amdinitenv (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	/* Initialize Subordinate Bus Number and Secondary Bus Number
 	 * In platform BIOS this address is allocated by PCI enumeration code
-		 Modify D1F0x18
+	 Modify D1F0x18
 	 */
 	PciAddress.Address.Bus = 0;
 	PciAddress.Address.Device = 1;
@@ -323,8 +323,8 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize GMM Base Address for Legacy Bridge Mode
-	*	Modify B1D5F0x18
-	*/
+	 *	Modify B1D5F0x18
+	 */
 	PciAddress.Address.Bus = 1;
 	PciAddress.Address.Device = 5;
 	PciAddress.Address.Function = 0;
@@ -335,16 +335,16 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize FB Base Address for Legacy Bridge Mode
-	* Modify B1D5F0x10
-	*/
+	 * Modify B1D5F0x10
+	 */
 	PciAddress.Address.Register = 0x10;
 	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	PciValue |= 0x80000000;
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize GMM Base Address for Pcie Mode
-	*	Modify B0D1F0x18
-	*/
+	 *	Modify B0D1F0x18
+	 */
 	PciAddress.Address.Bus = 0;
 	PciAddress.Address.Device = 1;
 	PciAddress.Address.Function = 0;
@@ -355,16 +355,16 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize FB Base Address for Pcie Mode
-	*	Modify B0D1F0x10
-	*/
+	 *	Modify B0D1F0x10
+	 */
 	PciAddress.Address.Register = 0x10;
 	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	PciValue |= 0x80000000;
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize MMIO Base and Limit Address
-	*	Modify B0D1F0x20
-	*/
+	 *	Modify B0D1F0x20
+	 */
 	PciAddress.Address.Bus = 0;
 	PciAddress.Address.Device = 1;
 	PciAddress.Address.Function = 0;
@@ -375,8 +375,8 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
 	/* Initialize MMIO Prefetchable Memory Limit and Base
-	*	Modify B0D1F0x24
-	*/
+	 *	Modify B0D1F0x24
+	 */
 	PciAddress.Address.Register = 0x24;
 	LibAmdPciRead (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	PciValue |= 0x8FF18001;
@@ -388,8 +388,8 @@ agesawrapper_amdinitenv (
 
 VOID *
 agesawrapper_getlateinitptr (
-	int pick
-	)
+		int pick
+		)
 {
 	switch (pick) {
 		case PICK_DMI:
@@ -413,8 +413,8 @@ agesawrapper_getlateinitptr (
 
 UINT32
 agesawrapper_amdinitmid (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -423,9 +423,9 @@ agesawrapper_amdinitmid (
 	agesawrapper_amdinitcpuio ();
 
 	LibAmdMemFill (&AmdParamStruct,
-					0,
-					sizeof (AMD_INTERFACE_PARAMS),
-					&(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -445,17 +445,17 @@ agesawrapper_amdinitmid (
 
 UINT32
 agesawrapper_amdinitlate (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS Status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			0,
+			sizeof (AMD_INTERFACE_PARAMS),
+			&(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -484,10 +484,10 @@ agesawrapper_amdinitlate (
 	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
 
 	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
-		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
-		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
-		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
-		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
+			"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
+			"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+			__func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
+			AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 
 	/* Don't release the structure until coreboot has copied the ACPI tables.
 	 * AmdReleaseStruct (&AmdLateParams);
@@ -498,18 +498,18 @@ agesawrapper_amdinitlate (
 
 UINT32
 agesawrapper_amdlaterunaptask (
-	UINT32 Func,
-	UINT32 Data,
-	VOID *ConfigPtr
-	)
+		UINT32 Func,
+		UINT32 Data,
+		VOID *ConfigPtr
+		)
 {
 	AGESA_STATUS Status;
 	AP_EXE_PARAMS ApExeParams;
 
 	LibAmdMemFill (&ApExeParams,
-				 0,
-				 sizeof (AP_EXE_PARAMS),
-				 &(ApExeParams.StdHeader));
+			0,
+			sizeof (AP_EXE_PARAMS),
+			&(ApExeParams.StdHeader));
 
 	ApExeParams.StdHeader.AltImageBasePtr = 0;
 	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -529,16 +529,16 @@ agesawrapper_amdlaterunaptask (
 
 UINT32
 agesawrapper_amdreadeventlog (
-	VOID
-	)
+		VOID
+		)
 {
 	AGESA_STATUS Status;
 	EVENT_PARAMS AmdEventParams;
 
 	LibAmdMemFill (&AmdEventParams,
-					0,
-					sizeof (EVENT_PARAMS),
-					&(AmdEventParams.StdHeader));
+			0,
+			sizeof (EVENT_PARAMS),
+			&(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
 	AmdEventParams.StdHeader.CalloutPtr = NULL;

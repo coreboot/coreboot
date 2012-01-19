@@ -64,6 +64,8 @@ AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPt
 /*  Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /*  Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+/*	Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

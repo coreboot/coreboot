@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <lib.h>
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -25,9 +26,11 @@
 #include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
+#include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
+#include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/kbc1100/kbc1100_early_init.c"
 #include "cpu/x86/lapic/boot_cpu.c"
@@ -35,20 +38,20 @@
 #include "pc80/i8259.c"
 #include "sb_cimx.h"
 #include "SBPLATFORM.h"
-#include <arch/cpu.h>
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
-u32 agesawrapper_amdinitmmio(void);
-u32 agesawrapper_amdinitreset(void);
-u32 agesawrapper_amdinitearly(void);
-u32 agesawrapper_amdinitenv(void);
-u32 agesawrapper_amdinitlate(void);
-u32 agesawrapper_amdinitpost(void);
-u32 agesawrapper_amdinitmid(void);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
+
+	/* all cores: allow caching of flash chip code and data
+	 * (there are no cache-as-ram reliability concerns with family 14h)
+	 */
+	__writemsr (0x20c, (0x0100000000ull - CONFIG_ROM_SIZE) | 5);
+	__writemsr (0x20d, (0x1000000000ull - CONFIG_ROM_SIZE) | 0x800);
+
+	/* all cores: set pstate 0 (1600 MHz) early to save a few ms of boot time
+	 */
+	__writemsr (0xc0010062, 0);
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);

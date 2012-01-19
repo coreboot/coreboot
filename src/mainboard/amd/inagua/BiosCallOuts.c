@@ -19,13 +19,12 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
+#include "dimmSpd.h"
 #include "BiosCallOuts.h"
-#include "Ids.h"
-#include "OptionsIds.h"
 #include "heapManager.h"
 #include "SB800.h"
 
-STATIC BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
+STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
   {AGESA_ALLOCATE_BUFFER,
    BiosAllocateBuffer
@@ -55,22 +54,24 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
    BiosRunFuncOnAp
   },
 
-  {AGESA_GET_IDS_INIT_DATA,
-   BiosGetIdsInitData
+	{AGESA_GNB_PCIE_SLOT_RESET,
+	 BiosGnbPcieSlotReset
+	},
+
+	{AGESA_HOOKBEFORE_DRAM_INIT,
+	 BiosHookBeforeDramInit
+	},
+
+	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,
+	 BiosHookBeforeDramInitRecovery
   },
 
   {AGESA_HOOKBEFORE_DQS_TRAINING,
    BiosHookBeforeDQSTraining
   },
 
-  {AGESA_HOOKBEFORE_DRAM_INIT,
-   BiosHookBeforeDramInit
-  },
   {AGESA_HOOKBEFORE_EXIT_SELF_REF,
    BiosHookBeforeExitSelfRefresh
-  },
-  {AGESA_GNB_PCIE_SLOT_RESET,
-   BiosGnbPcieSlotReset
   },
 };
 
@@ -78,79 +79,19 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   UINTN i;
   AGESA_STATUS CalloutStatus;
+	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
 
-  for (i = 0; i < REQUIRED_CALLOUTS; i++)
-  {
-    if (BiosCallouts[i].CalloutName == Func)
-    {
-      break;
-    }
-  }
+	CalloutStatus = AGESA_UNSUPPORTED;
 
-  if(i >= REQUIRED_CALLOUTS)
-  {
-    return AGESA_UNSUPPORTED;
-  }
-
+	for (i = 0; i < CallOutCount; i++) {
+		if (BiosCallouts[i].CalloutName == Func) {
   CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
-
   return CalloutStatus;
-}
-
-
-CONST IDS_NV_ITEM IdsData[] =
-{
-  /*{
-    AGESA_IDS_NV_MAIN_PLL_CON,
-    0x1
-  },
-  {
-    AGESA_IDS_NV_MAIN_PLL_FID_EN,
-    0x1
-  },
-  {
-    AGESA_IDS_NV_MAIN_PLL_FID,
-    0x8
-  },
-
-  {
-    AGESA_IDS_NV_CUSTOM_NB_PSTATE,
-  },
-  {
-    AGESA_IDS_NV_CUSTOM_NB_P0_DIV_CTRL,
-  },
-  {
-    AGESA_IDS_NV_CUSTOM_NB_P1_DIV_CTRL,
-  },
-  {
-    AGESA_IDS_NV_FORCE_NB_PSTATE,
-  },
-*/
-  {
-    0xFFFF,
-    0xFFFF
-  }
-};
-
-#define   NUM_IDS_ENTRIES    (sizeof (IdsData) / sizeof (IDS_NV_ITEM))
-
-
-AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  UINTN   i;
-  IDS_NV_ITEM *IdsPtr;
-
-  IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
-
-  if (Data == IDS_CALLOUT_INIT) {
-    for (i = 0; i < NUM_IDS_ENTRIES; i++) {
-      IdsPtr[i].IdsNvValue = IdsData[i].IdsNvValue;
-      IdsPtr[i].IdsNvId = IdsData[i].IdsNvId;
     }
   }
-  return AGESA_SUCCESS;
-}
 
+	return CalloutStatus;
+}
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -210,7 +151,6 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       /* If BufferHandle has not been allocated on the heap, CurrNodePtr here points
        to the end of the allocated nodes list.
       */
-
     }
     /* Find the node that best fits the requested buffer size */
     FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
@@ -343,7 +283,6 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       /* Clear the BufferSize and NextNodeOffset of the previous first node */
       FreedNodePtr->BufferSize = 0;
       FreedNodePtr->NextNodeOffset = 0;
-
     } else {
       /* Otherwise, add freed node to the start of the list
          Update NextNodeOffset and BufferSize to include the
@@ -390,7 +329,6 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
     if (AllocNodeOffset == EndNodeOffset) {
       PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
       PrevNodePtr->BufferSize += AllocNodePtr->BufferSize;
-
       AllocNodePtr->BufferSize = 0;
       AllocNodePtr->NextNodeOffset = 0;
     } else {
@@ -438,7 +376,7 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS        Status;
 
-  Status = agesawrapper_amdlaterunaptask (Data, ConfigPtr);
+	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
   return Status;
 }
 
@@ -481,7 +419,7 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS Status;
-  Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+	Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
 
   return Status;
 }
@@ -511,7 +449,7 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   MemData = ConfigPtr;
 
   Status  = AGESA_SUCCESS;
-  /* Get SB800 MMIO Base (AcpiMmioAddr) */
+	/* Get SB MMIO Base (AcpiMmioAddr) */
   WriteIo8 (0xCD6, 0x27);
   Data8   = ReadIo8(0xCD7);
   Data16  = Data8<<8;
@@ -534,12 +472,14 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   TempData8 &= 0x23;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
+
   Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
   Data8 &= ~BIT5;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
   TempData8 &= 0x03;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
+
   Data8 |= BIT2+BIT3;
   Data8 &= ~BIT4;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
@@ -575,6 +515,13 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   }
   return Status;
 }
+
+/*	Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	return AGESA_SUCCESS;
+}
+
 /*  Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -607,8 +554,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   switch (ResetInfo->ResetId)
   {
   case 4:
-      switch (ResetInfo->ResetControl)
-      {
+		switch (ResetInfo->ResetControl) {
       case AssertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
         Data8 &= ~(UINT8)BIT6 ;
@@ -624,8 +570,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       }
       break;
   case 6:
-      switch (ResetInfo->ResetControl)
-      {
+		switch (ResetInfo->ResetControl) {
       case AssertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
         Data8 &= ~(UINT8)BIT6 ;
@@ -641,8 +586,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       }
       break;
   case 7:
-      switch (ResetInfo->ResetControl)
-      {
+		switch (ResetInfo->ResetControl) {
       case AssertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
         Data8 &= ~(UINT8)BIT6 ;

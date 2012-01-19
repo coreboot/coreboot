@@ -55,25 +55,19 @@ OemCustomizeInitEarly (
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
 PCIe_PORT_DESCRIPTOR PortList [] = {
-        // Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
+        // Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...) MXM
         {
           0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
+          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 5),
           PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 4)
         },
-        // Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
-        {
-          0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 5)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
+        // Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...) PCIE LAN
         {
           0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
           PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
           PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 6)
         },
-        // Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
+        // Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...) MINIPCIE SLOT1
         {
           0,
           PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
@@ -88,19 +82,17 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 };
 
 PCIe_DDI_DESCRIPTOR DdiList [] = {
-        // Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...)
+        // Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...) DP0 to LVDS
         {
           0,   //Descriptor flags
           PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-          //PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
-          {ConnectorTypeDP, Aux1, Hdp1}
+          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeLvds, Aux1, Hdp1)
         },
-        // Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...)
+        // Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...) DP1 to VGA
         {
           DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
           PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-          //PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
-          {ConnectorTypeDP, Aux2, Hdp2}
+          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeAutoDetect, Aux2, Hdp2)
         }
 };
 

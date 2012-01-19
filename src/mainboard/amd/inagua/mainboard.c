@@ -26,6 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 //#include <southbridge/amd/sb800/sb800.h>
+#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "chip.h"
 
 void set_pcie_reset(void);
@@ -40,11 +41,34 @@ void set_pcie_reset(void)
 }
 
 /**
- * TODO
  * mainboard specific SB CIMx callback
  */
 void set_pcie_dereset(void)
 {
+	/**
+	 * GPIO32 Pcie Device DeAssert for APU
+	 * GPIO25 Pcie LAN,       APU GPP2
+	 * GPIO02 MINIPCIE SLOT1, APU GPP3
+	 * GPIO50 Pcie Device DeAssert for Hudson Southbridge
+	 * GPIO05 Express Card,     SB  GPP0
+	 * GPIO26 NEC USB3.0GPPUSB, SB  GPP1
+	 * GPIO00 MINIPCIE SLOT2,   SB  GPP2
+	 * GPIO05 Pcie X1 Slot,     SB  GPP3
+	 */
+
+	/* Multi-function pins switch to GPIO0-35, these pins are shared with
+	 * PCI pins, make sure Husson PCI device is disabled.
+	 */
+	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 1);
+
+	/* select IOMux to function1/2, corresponds to GPIO */
+	RWMEM(ACPI_MMIO_BASE + IOMUX_BASE + SB_GPIO_REG32, AccWidthUint8, ~(BIT0 | BIT1), 1);
+	RWMEM(ACPI_MMIO_BASE + IOMUX_BASE + SB_GPIO_REG50, AccWidthUint8, ~(BIT0 | BIT1), 2);
+
+
+	/* output low */
+	RWMEM(ACPI_MMIO_BASE + GPIO_BASE + SB_GPIO_REG32, AccWidthUint8, ~(0xFF), 0x48);
+	RWMEM(ACPI_MMIO_BASE + GPIO_BASE + SB_GPIO_REG50, AccWidthUint8, ~(0xFF), 0x48);
 }
 
 uint64_t uma_memory_base, uma_memory_size;
@@ -95,6 +119,8 @@ static void inagua_enable(device_t dev)
 	uma_memory_base = 0x30000000;	/* 1GB  system memory supported */
 #endif
 
+	/* Inagua mainboard specific setting */
+	set_pcie_dereset();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

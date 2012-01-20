@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,14 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
  */
 static void sp5100_set_gpio(u8 reg, u8 out, u8 enable)
 {
-        u8 value;
-        device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
+	u8 value;
+	device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
 
-        value = pci_read_config8(sm_dev, reg);
-        value &= ~(enable);
-        value |= out;
-        value &= ~(enable << 4);
-        pci_write_config8(sm_dev, reg, value);
+	value = pci_read_config8(sm_dev, reg);
+	value &= ~(enable);
+	value |= out;
+	value &= ~(enable << 4);
+	pci_write_config8(sm_dev, reg, value);
 }
 
 /*-----------------------------------------------------------------------------
@@ -55,31 +55,31 @@ static void sp5100_set_gpio(u8 reg, u8 out, u8 enable)
 static const UINT8 spdAddressLookup [8] [4] [2] = { // socket, channel, dimm
 	/* socket 0 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 1 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 2 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 3 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 };
 

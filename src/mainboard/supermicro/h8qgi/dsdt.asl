@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include "../../../arch/x86/acpi/debug.asl" */		/* Include global debug methods if needed */
+	/* #include "../../../arch/x86/acpi/debug.asl"*/ /* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
 	/* FIXME the patching is not done yet! */
@@ -988,73 +988,58 @@ DefinitionBlock (
 
 	Scope(\_GPE) {	/* Start Scope GPE */
 		/*  General event 0  */
-		/* Method(_L00) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
+		Method(_L00) {
+		      //DBGO("\\_GPE\\_L00\n")
+		}
 
 		/*  General event 1  */
-		/* Method(_L01) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
+		Method(_L01) {
+		      //DBGO("\\_GPE\\_L01\n")
+		}
 
 		/*  General event 2  */
-		/* Method(_L02) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
+		Method(_L02) {
+		      //DBGO("\\_GPE\\_L02\n")
+		}
 
 		/*  General event 3  */
 		Method(_L03) {
-			/* DBGO("\\_GPE\\_L00\n") */
+			//DBGO("\\_GPE\\_L00\n")
 			Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 		}
 
 		/*  General event 4  */
-		/* Method(_L04) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
+		Method(_L04) {
+		      //DBGO("\\_GPE\\_L04\n")
+		}
 
 		/*  General event 5  */
-		/* Method(_L05) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
+		Method(_L05) {
+		      //DBGO("\\_GPE\\_L05\n")
+		}
 
-		/*  General event 6 - Used for GPM6, moved to USB.asl */
-		/* Method(_L06) {
-		*	DBGO("\\_GPE\\_L00\n")
-		* }
-		*/
-
-		/*  General event 7 - Used for GPM7, moved to USB.asl */
-		/* Method(_L07) {
-		*	DBGO("\\_GPE\\_L07\n")
-		* }
-		*/
+		/* _L06 General event 6 - Used for GPM6, moved to USB.asl */
+		/* _L07 General event 7 - Used for GPM7, moved to USB.asl */
 
 		/*  Legacy PM event  */
 		Method(_L08) {
-			/* DBGO("\\_GPE\\_L08\n") */
+			//DBGO("\\_GPE\\_L08\n")
 		}
 
 		/*  Temp warning (TWarn) event  */
 		Method(_L09) {
-			/* DBGO("\\_GPE\\_L09\n") */
+			//DBGO("\\_GPE\\_L09\n")
 			Notify (\_TZ.TZ00, 0x80)
 		}
 
 		/*  Reserved  */
-		/* Method(_L0A) {
-		*	DBGO("\\_GPE\\_L0A\n")
-		* }
-		*/
+		Method(_L0A) {
+		      //DBGO("\\_GPE\\_L0A\n")
+		}
 
 		/*  USB controller PME#  */
 		Method(_L0B) {
-			/* DBGO("\\_GPE\\_L0B\n") */
+			//DBGO("\\_GPE\\_L0B\n")
 			Notify(\_SB.PCI0.UOH1, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PCI0.UOH2, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PCI0.UOH3, 0x02) /* NOTIFY_DEVICE_WAKE */
@@ -1065,126 +1050,81 @@ DefinitionBlock (
 		}
 
 		/*  AC97 controller PME#  */
-		/* Method(_L0C) {
-		*	DBGO("\\_GPE\\_L0C\n")
-		* }
-		*/
+		Method(_L0C) {
+		      //DBGO("\\_GPE\\_L0C\n")
+		}
 
 		/*  OtherTherm PME#  */
-		/* Method(_L0D) {
-		*	DBGO("\\_GPE\\_L0D\n")
-		* }
-		*/
+		Method(_L0D) {
+		      //DBGO("\\_GPE\\_L0D\n")
+		}
 
-		/*  GPM9 SCI event - Moved to USB.asl */
-		/* Method(_L0E) {
-		*	DBGO("\\_GPE\\_L0E\n")
-		* }
-		*/
+		/* _L0E GPM9 SCI event - Moved to USB.asl */
 
 		/*  PCIe HotPlug event  */
-		/* Method(_L0F) {
-		* 	DBGO("\\_GPE\\_L0F\n")
-		* }
-		*/
+		Method(_L0F) {
+			//DBGO("\\_GPE\\_L0F\n")
+		}
 
 		/*  ExtEvent0 SCI event  */
 		Method(_L10) {
-			/* DBGO("\\_GPE\\_L10\n") */
+			//DBGO("\\_GPE\\_L10\n")
 		}
 
 
 		/*  ExtEvent1 SCI event  */
 		Method(_L11) {
-			/* DBGO("\\_GPE\\_L11\n") */
+			//DBGO("\\_GPE\\_L11\n")
 		}
 
 		/*  PCIe PME# event  */
-		/* Method(_L12) {
-		*	DBGO("\\_GPE\\_L12\n")
-		* }
-		*/
+		Method(_L12) {
+		      //DBGO("\\_GPE\\_L12\n")
+		}
 
-		/*  GPM0 SCI event - Moved to USB.asl */
-		/* Method(_L13) {
-		* 	DBGO("\\_GPE\\_L13\n")
-		* }
-		*/
-
-		/*  GPM1 SCI event - Moved to USB.asl */
-		/* Method(_L14) {
-		* 	DBGO("\\_GPE\\_L14\n")
-		* }
-		*/
-
-		/*  GPM2 SCI event - Moved to USB.asl */
-		/* Method(_L15) {
-		* 	DBGO("\\_GPE\\_L15\n")
-		* }
-		*/
-
-		/*  GPM3 SCI event - Moved to USB.asl */
-		/* Method(_L16) {
-		*	DBGO("\\_GPE\\_L16\n")
-		* }
-		*/
-
-		/*  GPM8 SCI event - Moved to USB.asl */
-		/* Method(_L17) {
-		* 	DBGO("\\_GPE\\_L17\n")
-		* }
-		*/
+		/* _L13 GPM0 SCI event - Moved to USB.asl */
+		/* _L14 GPM1 SCI event - Moved to USB.asl */
+		/* _L15 GPM2 SCI event - Moved to USB.asl */
+		/* _L16 GPM3 SCI event - Moved to USB.asl */
+		/* _L17 GPM8 SCI event - Moved to USB.asl */
 
 		/*  GPIO0 or GEvent8 event  */
 		Method(_L18) {
-			/* DBGO("\\_GPE\\_L18\n") */
+			//DBGO("\\_GPE\\_L18\n")
 			Notify(\_SB.PCI0.PBR2, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PCI0.PBR4, 0x02) /* NOTIFY_DEVICE_WAKE */
+			Notify(\_SB.PCI0.PBRb, 0x02) /* NOTIFY_DEVICE_WAKE */
+			Notify(\_SB.PCI0.PBRc, 0x02) /* NOTIFY_DEVICE_WAKE */
+			Notify(\_SB.PCI0.PBRd, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 		}
 
-		/*  GPM4 SCI event - Moved to USB.asl */
-		/* Method(_L19) {
-		* 	DBGO("\\_GPE\\_L19\n")
-		* }
-		*/
-
-		/*  GPM5 SCI event - Moved to USB.asl */
-		/* Method(_L1A) {
-		*	DBGO("\\_GPE\\_L1A\n")
-		* }
-		*/
+		/* _L19 GPM4 SCI event - Moved to USB.asl */
+		/* _L1A GPM5 SCI event - Moved to USB.asl */
 
 		/*  Azalia SCI event  */
 		Method(_L1B) {
-			/* DBGO("\\_GPE\\_L1B\n") */
+			//DBGO("\\_GPE\\_L1B\n")
 			Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 		}
 
 		/*  GPM6 SCI event - Reassigned to _L06 */
-		/* Method(_L1C) {
-		*	DBGO("\\_GPE\\_L1C\n")
-		* }
-		*/
+		Method(_L1C) {
+		      //DBGO("\\_GPE\\_L1C\n")
+		}
 
 		/*  GPM7 SCI event - Reassigned to _L07 */
-		/* Method(_L1D) {
-		*	DBGO("\\_GPE\\_L1D\n")
-		* }
-		*/
+		Method(_L1D) {
+		      //DBGO("\\_GPE\\_L1D\n")
+		}
 
 		/*  GPIO2 or GPIO66 SCI event  */
-		/* Method(_L1E) {
-		* 	DBGO("\\_GPE\\_L1E\n")
-		* }
-		*/
+		Method(_L1E) {
+			//DBGO("\\_GPE\\_L1E\n")
+		}
 
-		/*  SATA SCI event - Moved to sata.asl */
-		/* Method(_L1F) {
-		*	 DBGO("\\_GPE\\_L1F\n")
-		* }
-		*/
+		/* _L1F SATA SCI event - Moved to sata.asl */
 
 	} 	/* End Scope GPE */
 
@@ -1569,7 +1509,7 @@ DefinitionBlock (
 					0x0CF8,             // Range Maximum
 					0x01,               // Alignment
 					0x08,               // Length
-				   	)
+					)
 
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 					0x0000,             // Granularity
@@ -1602,10 +1542,10 @@ DefinitionBlock (
 					,, , TypeStatic)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 					0x0000,             // Granularity
-					0x9000,             // Range Minimum
-					0xefff,             // Range Maximum
+					0x0D00,             // Range Minimum
+					0xFFFF,             // Range Maximum
 					0x0000,             // Translation Offset
-					0x6000,             // Length
+					0xF300,             // Length
 					,, , TypeStatic)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	// VGA memory space
 
@@ -1613,21 +1553,26 @@ DefinitionBlock (
 						0xE0000000,         // Address Base
 						0x10000000,         // Address Length, (1MB each Bus, 256 Buses by default)
 						MMIO)
-				DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-						0x00000000,         // Granularity
-						0xF0000000,         // Range Minimum
-						0xFFFFFFFF,         // Range Maximum
-						0x00000000,         // Translation Offset
-						0x10000000,         // Length
-						,, , AddressRangeMemory, TypeStatic)
 			})
 
 			Method (_CRS, 0, NotSerialized)
 			{
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._BAS, BAS1)
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._LEN, LEN1)
-				Store (PCBA, BAS1)
-				Store (PCLN, LEN1)
+
+                                /*
+                                 * Declare memory between TOM1 and 4GB as available
+                                 * for PCI MMIO.
+                                 * Use ShiftLeft to avoid 64bit constant (for XP).
+                                 * This will work even if the OS does 32bit arithmetic, as
+                                 * 32bit (0x00000000 - TOM1) will wrap and give the same
+                                 * result as 64bit (0x100000000 - TOM1).
+                                 */
+				Store(TOM1, BAS1)
+                                ShiftLeft(0x10000000, 4, Local0)
+                                Subtract(Local0, TOM1, Local0)
+                                Store(Local0, LEN1)
+				//DBGO(TOM1)
 
 				Return (CRS)
 			}

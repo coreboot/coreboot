@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,16 @@ extern u8 bus_sp5100[2];
 extern u32 bus_type[256];
 extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
+extern u8 bus_isa;
 
 
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	int bus_isa;
 	u32 apicid_sp5100;
 	u32 apicid_sr5650;
 	device_t dev;
 	u32 dword;
-	u8 byte;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	mptable_init(mc, LAPIC_ADDR);
@@ -62,17 +61,18 @@ static void *smp_write_config_table(void *v)
 #if CONFIG_MAX_CPUS >= 16
 	apicid_sp5100 = 0x0;
 #else
-	apicid_sp5100 = CONFIG_MAX_CPUS + 1;
+	apicid_sp5100 = CONFIG_MAX_CPUS + 1
 #endif
 	apicid_sr5650 = apicid_sp5100 + 1;
 
-	//bus_sp5100[0], TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
 	dev = dev_find_slot(0, PCI_DEVFN(sbdn_sp5100 + 0x14, 0));
 	if (dev) {
 		/* Set SP5100 IOAPIC ID */
 		dword = pci_read_config32(dev, 0x74) & 0xfffffff0;
 		smp_write_ioapic(mc, apicid_sp5100, 0x20, dword);
 
+#ifdef UNUSED_CODE
+		u8 byte;
 		/* Initialize interrupt mapping */
 		/* aza */
 		byte = pci_read_config8(dev, 0x63);
@@ -85,6 +85,7 @@ static void *smp_write_config_table(void *v)
 		dword |= 6 << 26; /* 0: INTA, ...., 7: INTH */
 		/* dword |= 1<<22; PIC and APIC co exists */
 		pci_write_config32(dev, 0xAC, dword);
+#endif
 
 		/*
 		 * 00:12.0: PROG SATA : INT F
@@ -102,11 +103,11 @@ static void *smp_write_config_table(void *v)
 
 		/* Set RS5650 IOAPIC ID */
 		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
-                if (dev) {
-                        pci_write_config32(dev, 0xF8, 0x1);
-                        dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
-                        smp_write_ioapic(mc, apicid_sr5650, 0x20, dword);
-                }
+		if (dev) {
+			pci_write_config32(dev, 0xF8, 0x1);
+			dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+			smp_write_ioapic(mc, apicid_sr5650, 0x20, dword);
+		}
 
 	}
 
@@ -155,27 +156,27 @@ static void *smp_write_config_table(void *v)
 	 * PCI_INT(bus_sr5650[0x7], 0x0, 0x0, 0x13);
 	 */
 
-        //smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 28); /* dev d */
-        //smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[13], (((0)<<2)|(1)), apicid_sr5650, 0); /* card behind dev13 */
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 28); /* dev d */
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[13], (((0)<<2)|(1)), apicid_sr5650, 0); /* card behind dev13 */
 
 	/* PCI slots */
-        /* PCI_SLOT 0. */
-        PCI_INT(bus_sp5100[1], 0x5, 0x0, 0x14);
-        PCI_INT(bus_sp5100[1], 0x5, 0x1, 0x15);
-        PCI_INT(bus_sp5100[1], 0x5, 0x2, 0x16);
-        PCI_INT(bus_sp5100[1], 0x5, 0x3, 0x17);
+	/* PCI_SLOT 0. */
+	PCI_INT(bus_sp5100[1], 0x5, 0x0, 0x14);
+	PCI_INT(bus_sp5100[1], 0x5, 0x1, 0x15);
+	PCI_INT(bus_sp5100[1], 0x5, 0x2, 0x16);
+	PCI_INT(bus_sp5100[1], 0x5, 0x3, 0x17);
 
-        /* PCI_SLOT 1. */
-        PCI_INT(bus_sp5100[1], 0x6, 0x0, 0x15);
-        PCI_INT(bus_sp5100[1], 0x6, 0x1, 0x16);
-        PCI_INT(bus_sp5100[1], 0x6, 0x2, 0x17);
-        PCI_INT(bus_sp5100[1], 0x6, 0x3, 0x14);
+	/* PCI_SLOT 1. */
+	PCI_INT(bus_sp5100[1], 0x6, 0x0, 0x15);
+	PCI_INT(bus_sp5100[1], 0x6, 0x1, 0x16);
+	PCI_INT(bus_sp5100[1], 0x6, 0x2, 0x17);
+	PCI_INT(bus_sp5100[1], 0x6, 0x3, 0x14);
 
-        /* PCI_SLOT 2. */
-        PCI_INT(bus_sp5100[1], 0x7, 0x0, 0x16);
-        PCI_INT(bus_sp5100[1], 0x7, 0x1, 0x17);
-        PCI_INT(bus_sp5100[1], 0x7, 0x2, 0x14);
-        PCI_INT(bus_sp5100[1], 0x7, 0x3, 0x15);
+	/* PCI_SLOT 2. */
+	PCI_INT(bus_sp5100[1], 0x7, 0x0, 0x16);
+	PCI_INT(bus_sp5100[1], 0x7, 0x1, 0x17);
+	PCI_INT(bus_sp5100[1], 0x7, 0x2, 0x14);
+	PCI_INT(bus_sp5100[1], 0x7, 0x3, 0x15);
 
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */

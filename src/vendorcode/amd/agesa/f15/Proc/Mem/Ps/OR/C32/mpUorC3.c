@@ -1,0 +1,343 @@
+/* $NoKeywords:$ */
+/**
+ * @file
+ *
+ * mpUorC3.c
+ *
+ * Platform specific settings for OR C32 DDR3 U-DIMM system
+ *
+ * @xrefitem bom "File Content Label" "Release Content"
+ * @e project: AGESA
+ * @e sub-project: (Mem/Ps/OR/C32)
+ * @e \$Revision: 55134 $ @e \$Date: 2011-06-16 15:27:02 -0600 (Thu, 16 Jun 2011) $
+ *
+ **/
+/*****************************************************************************
+  *
+ * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  * ***************************************************************************
+  *
+ */
+
+#include "AGESA.h"
+#include "AdvancedApi.h"
+#include "PlatformMemoryConfiguration.h"
+#include "mport.h"
+#include "ma.h"
+#include "Ids.h"
+#include "cpuFamRegisters.h"
+#include "cpuRegisters.h"
+#include "mm.h"
+#include "mn.h"
+#include "mp.h"
+#include "GeneralServices.h"
+#include "Filecode.h"
+CODE_GROUP (G2_PEI)
+RDATA_GROUP (G2_PEI)
+
+#define FILECODE PROC_MEM_PS_OR_C32_MPUORC3_FILECODE
+/*----------------------------------------------------------------------------
+ *                          DEFINITIONS AND MACROS
+ *
+ *----------------------------------------------------------------------------
+ */
+
+/*----------------------------------------------------------------------------
+ *                           TYPEDEFS AND STRUCTURES
+ *
+ *----------------------------------------------------------------------------
+ */
+
+/*----------------------------------------------------------------------------
+ *                        PROTOTYPES OF LOCAL FUNCTIONS
+ *
+ *----------------------------------------------------------------------------
+ */
+/*
+ *-----------------------------------------------------------------------------
+ *                                EXPORTED FUNCTIONS
+ *
+ *-----------------------------------------------------------------------------
+ */
+// Slow mode, Address timing and Output drive compensation
+// Format :
+// DimmPerCh,   DDRrate,   VDDIO,   Dimm0,   Dimm1,   Dimm2,   SlowMode,   AddTmgCtl,  ODC
+//
+STATIC CONST PSCFG_SAO_ENTRY OrC32UDdr3SAO[] = {
+  {1, DDR667, VOLT_ALL, DIMM_SR, NP, NP, 0, 0x00000000, 0x00112222},
+  {1, DDR667, VOLT_ALL, DIMM_DR, NP, NP, 0, 0x003B0000, 0x00112222},
+  {1, DDR800, VOLT_ALL, DIMM_SR, NP, NP, 0, 0x00000000, 0x10112222},
+  {1, DDR800, VOLT_ALL, DIMM_DR, NP, NP, 0, 0x003B0000, 0x10112222},
+  {1, DDR1066, VOLT_ALL, DIMM_SR + DIMM_DR, NP, NP, 0, 0x00383837, 0x20112222},
+  {1, DDR1333, VOLT_ALL, DIMM_SR + DIMM_DR, NP, NP, 0, 0x00363635, 0x30112222},
+  {1, DDR1600, V1_5, DIMM_SR, NP, NP, 0, 0x00353533, 0x30112222},
+  {1, DDR1600, V1_5, DIMM_DR, NP, NP, 1, 0x00003533, 0x30112222},
+  {1, DDR1600, V1_35, DIMM_SR, NP, NP, 0, 0x00353533, 0x30112222},
+  {1, DDR1600, V1_35, DIMM_DR, NP, NP, 1, 0x00003533, 0x30112222},
+  {1, DDR1866, V1_5, DIMM_SR, NP, NP, 0, 0x00333330, 0x30332222},
+  {1, DDR1866, V1_5, DIMM_DR, NP, NP, 1, 0x00003330, 0x30332222},
+  {2, DDR667, VOLT_ALL, NP, DIMM_SR, NP, 0, 0x00000000, 0x00112222},
+  {2, DDR667, VOLT_ALL, NP, DIMM_DR, NP, 0, 0x003B0000, 0x00112222},
+  {2, DDR667, VOLT_ALL, DIMM_SR + DIMM_DR, DIMM_SR + DIMM_DR, NP, 0, 0x00390039, 0x10222222},
+  {2, DDR800, VOLT_ALL, NP, DIMM_SR, NP, 0, 0x00000000, 0x10112222},
+  {2, DDR800, VOLT_ALL, NP, DIMM_DR, NP, 0, 0x003B0000, 0x10112222},
+  {2, DDR800, VOLT_ALL, DIMM_SR + DIMM_DR, DIMM_SR + DIMM_DR, NP, 0, 0x00390039, 0x20222222},
+  {2, DDR1066, VOLT_ALL, NP, DIMM_SR + DIMM_DR, NP, 0, 0x00383837, 0x20112222},
+  {2, DDR1066, VOLT_ALL, DIMM_SR + DIMM_DR, DIMM_SR + DIMM_DR, NP, 0, 0x003A3A3A, 0x30222222},
+  {2, DDR1333, VOLT_ALL, NP, DIMM_SR + DIMM_DR, NP, 0, 0x00363635, 0x30112222},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_SR, NP, 1, 0x00003939, 0x30222222},
+  {2, DDR1600, V1_5, NP, DIMM_SR, NP, 0, 0x00353533, 0x30112222},
+  {2, DDR1600, V1_5, NP, DIMM_DR, NP, 1, 0x00003533, 0x30112222},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_DR, NP, 1, 0x00003938, 0x30222222},
+  {2, DDR1333, V1_5 + V1_35, DIMM_DR, DIMM_SR + DIMM_DR, NP, 1, 0x00003938, 0x30222222},
+  {2, DDR1333, V1_25, DIMM_SR, DIMM_SR, NP, 1, 0x00003939, 0x30222222},
+  {3, DDR667, VOLT_ALL, NP, NP, DIMM_SR, 0, 0x00000000, 0x00332222},
+  {3, DDR667, VOLT_ALL, NP, NP, DIMM_DR, 0, 0x003B0000, 0x00332222},
+  {3, DDR667, VOLT_ALL, DIMM_SR + DIMM_DR, NP, DIMM_SR + DIMM_DR, 0, 0x00390039, 0x10222222},
+  {3, DDR800, VOLT_ALL, NP, NP, DIMM_SR, 0, 0x00000000, 0x10332222},
+  {3, DDR800, VOLT_ALL, NP, NP, DIMM_DR, 0, 0x003B0000, 0x10332222},
+  {3, DDR800, VOLT_ALL, DIMM_SR + DIMM_DR, NP, DIMM_SR + DIMM_DR, 0, 0x00390039, 0x20222222},
+  {3, DDR1066, VOLT_ALL, NP, NP, DIMM_SR + DIMM_DR, 0, 0x00383837, 0x20332222},
+  {3, DDR1066, VOLT_ALL, DIMM_SR + DIMM_DR, NP, DIMM_SR + DIMM_DR, 0, 0x003A3A3A, 0x30222222},
+  {3, DDR1333, VOLT_ALL, NP, NP, DIMM_SR + DIMM_DR, 0, 0x00363635, 0x30332222},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_SR, 1, 0x00003939, 0x30222222},
+  {3, DDR1600, V1_5, NP, NP, DIMM_SR, 0, 0x00353533, 0x30332222},
+  {3, DDR1600, V1_5, NP, NP, DIMM_DR, 1, 0x00003533, 0x30332222},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_DR, 1, 0x00003938, 0x30222222},
+  {3, DDR1333, V1_5 + V1_35, DIMM_DR, NP, DIMM_SR + DIMM_DR, 1, 0x00003938, 0x30222222},
+  {3, DDR1333, V1_25, DIMM_SR, NP, DIMM_SR, 1, 0x00003939, 0x30222222},
+};
+CONST PSC_TBL_ENTRY SAOTblEntUC32 = {
+   {PSCFG_SAO, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (OrC32UDdr3SAO) / sizeof (PSCFG_SAO_ENTRY),
+   (VOID *)&OrC32UDdr3SAO
+};
+// training configuratrions
+// Format :
+// DimmPerCh,   DDRrate,   VDDIO,   Dimm0,   Dimm1,   Dimm2,   2D
+//
+STATIC CONST PSCFG_S___ENTRY OrC32UDdr3S__[] = {
+  // DimmPerCh,Frequency,VDDIO,DIMM0,DIMM1,DIMM2,Enable__Training
+  {1, DDR667 + DDR800 + DDR1066 + DDR1333, VOLT_ALL, DIMM_SR + DIMM_DR, NP, NP, 1},
+  {1, DDR1600, V1_5, DIMM_SR + DIMM_DR, NP, NP, 1},
+  {1, DDR1600, V1_35, DIMM_SR + DIMM_DR, NP, NP, 1},
+  {1, DDR1866, V1_5, DIMM_SR + DIMM_DR, NP, NP, 1},
+  // DimmPerCh,Frequency,VDDIO,DIMM0,DIMM1,DIMM2,Enable__Training
+  {2, DDR667 + DDR800 + DDR1066, VOLT_ALL, NP + DIMM_SR + DIMM_DR, DIMM_SR + DIMM_DR, NP, 1},
+  {2, DDR1333, VOLT_ALL, NP, DIMM_SR + DIMM_DR, NP, 1},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_SR, NP, 1},
+  {2, DDR1600, V1_5, NP, DIMM_SR + DIMM_DR, NP, 1},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_DR, NP, 1},
+  {2, DDR1333, V1_5 + V1_35, DIMM_DR, DIMM_SR + DIMM_DR, NP, 1},
+  {2, DDR1333, V1_25, DIMM_SR, DIMM_SR, NP, 1},
+  // DimmPerCh,Frequency,VDDIO,DIMM0,DIMM1,DIMM2,Enable__Training
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, NP + DIMM_SR + DIMM_DR, NP, DIMM_SR + DIMM_DR, 1},
+  {3, DDR1333, VOLT_ALL, NP, NP, DIMM_SR + DIMM_DR, 1},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_SR, 1},
+  {3, DDR1600, V1_5, NP, NP, DIMM_SR + DIMM_DR, 1},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_DR, 1},
+  {3, DDR1333, V1_5 + V1_35, DIMM_DR, NP, DIMM_SR + DIMM_DR, 1},
+  {3, DDR1333, V1_25, DIMM_SR, NP, DIMM_SR, 1},  };
+CONST PSC_TBL_ENTRY S__TblEntUC32 = {
+   {PSCFG_S__, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (OrC32UDdr3S__) / sizeof (PSCFG_S___ENTRY),
+   (VOID *)&OrC32UDdr3S__
+};
+// ODT pattern for 1 DPC
+// Format:
+//  Dimm0,   RdODTCSHigh,   RdODTCSLow,   WrODTCSHigh,   WrODTCSLow
+//
+STATIC CONST PSCFG_1D_ODTPAT_ENTRY Or1UDdr3OdtPat[] = {
+  {DIMM_SR, 0x00000000, 0x00000000, 0x00000000, 0x00000001},
+  {DIMM_DR, 0x00000000, 0x00000000, 0x00000000, 0x00000401}
+};
+CONST PSC_TBL_ENTRY OdtPat1DTblEntUC32 = {
+   {PSCFG_ODT_PAT_1D, UDIMM_TYPE, _1DIMM, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (Or1UDdr3OdtPat) / sizeof (PSCFG_1D_ODTPAT_ENTRY),
+   (VOID *)&Or1UDdr3OdtPat
+};
+
+// ODT pattern for 2 DPC
+// Format:
+//  Dimm0,   Dimm1,   RdODTCSHigh,   RdODTCSLow,   WrODTCSHigh,   WrODTCSLow
+//
+STATIC CONST PSCFG____ODTPAT_ENTRY Or2UDdr3OdtPat[] = {
+  {NP, DIMM_SR, 0x00000000, 0x00000000, 0x00000000, 0x00020000},
+  {NP, DIMM_DR, 0x00000000, 0x00000000, 0x00000000, 0x08020000},
+  {DIMM_SR + DIMM_DR, DIMM_SR + DIMM_DR, 0x00000000, 0x01010202, 0x00000000, 0x09030603}
+};
+CONST PSC_TBL_ENTRY OdtPat2DTblEntUC32 = {
+   {PSCFG_ODT_PAT___, UDIMM_TYPE, _2DIMM, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (Or2UDdr3OdtPat) / sizeof (PSCFG____ODTPAT_ENTRY),
+   (VOID *)&Or2UDdr3OdtPat
+};
+
+// ODT pattern for 3 DPC
+// Format:
+//  Dimm0,   Dimm1,   Dimm2,   RdODTCSHigh,   RdODTCSLow,   WrODTCSHigh,   WrODTCSLow
+//
+STATIC CONST PSCFG_3D_ODTPAT_ENTRY Or3UDdr3OdtPat[] = {
+  {NP, NP, DIMM_SR + DIMM_DR, 0x00000000, 0x00000000, 0x00000004, 0x00000000},
+  {DIMM_SR + DIMM_DR, NP, DIMM_SR + DIMM_DR, 0x00000101, 0x00000404, 0x00000105, 0x00000405}
+};
+CONST PSC_TBL_ENTRY OdtPat3DTblEntUC32 = {
+   {PSCFG_ODT_PAT_3D, UDIMM_TYPE, _3DIMM, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (Or3UDdr3OdtPat) / sizeof (PSCFG_3D_ODTPAT_ENTRY),
+   (VOID *)&Or3UDdr3OdtPat
+};
+
+// Dram Term and Dynamic Dram Term
+// Format :
+// DimmPerCh,   DDRrate,   VDDIO,   Dimm0,   Dimm1,   Dimm2,   Dimm,   Rank,   RttNom,    RttWr
+//
+STATIC CONST PSCFG_RTT_ENTRY DramTermOrC32UDIMM[] = {
+  {1, DDR667 + DDR800, VOLT_ALL, DIMM_SR, NP, NP, DIMM_SR, R0, 2, 0},
+  {1, DDR667 + DDR800, VOLT_ALL, DIMM_DR, NP, NP, DIMM_DR, R0 + R1, 2, 0},
+  {1, DDR1066 + DDR1333, VOLT_ALL, DIMM_SR, NP, NP, DIMM_SR, R0, 1, 0},
+  {1, DDR1066 + DDR1333, VOLT_ALL, DIMM_DR, NP, NP, DIMM_DR, R0 + R1, 1, 0},
+  {1, DDR1600, V1_5, DIMM_SR, NP, NP, DIMM_SR, R0, 3, 0},
+  {1, DDR1600, V1_5, DIMM_DR, NP, NP, DIMM_DR, R0 + R1, 3, 0},
+  {1, DDR1600, V1_35, DIMM_SR, NP, NP, DIMM_SR, R0, 3, 0},
+  {1, DDR1600, V1_35, DIMM_DR, NP, NP, DIMM_DR, R0 + R1, 3, 0},
+  {1, DDR1866, V1_5, DIMM_SR, NP, NP, DIMM_SR, R0, 3, 0},
+  {1, DDR1866, V1_5, DIMM_DR, NP, NP, DIMM_DR, R0 + R1, 3, 0},
+  {2, DDR667 + DDR800, VOLT_ALL, NP, DIMM_SR, NP, DIMM_SR, R0, 2, 0},
+  {2, DDR667 + DDR800, VOLT_ALL, NP, DIMM_DR, NP, DIMM_DR, R0 + R1, 2, 0},
+  {2, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_SR, DIMM_SR + DIMM_DR, NP, DIMM_SR, R0, 3, 2},
+  {2, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_SR, DIMM_DR, NP, DIMM_DR, R0 + R1, 3, 2},
+  {2, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_DR, DIMM_SR, NP, DIMM_SR, R0, 3, 2},
+  {2, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_DR, DIMM_SR + DIMM_DR, NP, DIMM_DR, R0 + R1, 3, 2},
+  {2, DDR1066 + DDR1333, VOLT_ALL, NP, DIMM_SR, NP, DIMM_SR, R0, 1, 0},
+  {2, DDR1066 + DDR1333, VOLT_ALL, NP, DIMM_DR, NP, DIMM_DR, R0 + R1, 1, 0},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_SR, NP, DIMM_SR, R0, 5, 2},
+  {2, DDR1600, V1_5, NP, DIMM_SR, NP, DIMM_SR, R0, 3, 0},
+  {2, DDR1600, V1_5, NP, DIMM_DR, NP, DIMM_DR, R0 + R1, 3, 0},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_DR, NP, DIMM_SR, R0, 5, 2},
+  {2, DDR1333, V1_5 + V1_35, DIMM_SR, DIMM_DR, NP, DIMM_DR, R0 + R1, 5, 2},
+  {2, DDR1333, V1_5 + V1_35, DIMM_DR, DIMM_SR, NP, DIMM_SR, R0, 5, 2},
+  {2, DDR1333, V1_5 + V1_35, DIMM_DR, DIMM_SR + DIMM_DR, NP, DIMM_DR, R0 + R1, 5, 2},
+  {2, DDR1333, V1_25, DIMM_SR, DIMM_SR, NP, DIMM_SR, R0, 5, 2},
+  {3, DDR667 + DDR800, VOLT_ALL, NP, NP, DIMM_SR, DIMM_SR, R0, 0, 2},
+  {3, DDR667 + DDR800, VOLT_ALL, NP, NP, DIMM_DR, DIMM_DR, R0 + R1, 0, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_SR, NP, DIMM_SR, DIMM_SR, R0, 3, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_SR, NP, DIMM_DR, DIMM_SR + DIMM_DR, R0, 3, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_SR, NP, DIMM_DR, DIMM_DR, R1, 0, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_DR, NP, DIMM_SR, DIMM_SR + DIMM_DR, R0, 3, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_DR, NP, DIMM_SR + DIMM_DR, DIMM_DR, R1, 0, 2},
+  {3, DDR667 + DDR800 + DDR1066, VOLT_ALL, DIMM_DR, NP, DIMM_DR, DIMM_DR, R0, 3, 2},
+  {3, DDR1066 + DDR1333, VOLT_ALL, NP, NP, DIMM_SR, DIMM_SR, R0, 0, 1},
+  {3, DDR1066 + DDR1333, VOLT_ALL, NP, NP, DIMM_DR, DIMM_DR, R0 + R1, 0, 1},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_SR, DIMM_SR, R0, 5, 2},
+  {3, DDR1600, V1_5, NP, NP, DIMM_SR, DIMM_SR, R0, 0, 1},
+  {3, DDR1600, V1_5, NP, NP, DIMM_DR, DIMM_DR, R0 + R1, 0, 1},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_DR, DIMM_SR + DIMM_DR, R0, 5, 2},
+  {3, DDR1333, V1_5 + V1_35, DIMM_SR, NP, DIMM_DR, DIMM_DR, R1, 0, 2},
+  {3, DDR1333, V1_5 + V1_35, DIMM_DR, NP, DIMM_SR, DIMM_SR + DIMM_DR, R0, 5, 2},
+  {3, DDR1333, V1_5 + V1_35, DIMM_DR, NP, DIMM_SR + DIMM_DR, DIMM_DR, R1, 0, 2},
+  {3, DDR1333, V1_5 + V1_35, DIMM_DR, NP, DIMM_DR, DIMM_DR, R0, 5, 2},
+  {3, DDR1333, V1_25, DIMM_SR, NP, DIMM_SR, DIMM_SR, R0, 5, 2},
+};
+CONST PSC_TBL_ENTRY DramTermTblEntUC32 = {
+   {PSCFG_RTT, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (DramTermOrC32UDIMM) / sizeof (PSCFG_RTT_ENTRY),
+   (VOID *)&DramTermOrC32UDIMM
+};
+
+// Max Freq.
+// Format :
+// DimmPerCh,   Dimms,   SR,   DR,   QR,   Speed1_5V,   Speed1_35V,   Speed1_25V
+//
+STATIC CONST PSCFG_MAXFREQ_ENTRY ROMDATA MaxFreqOrC32UDIMM[] = {
+  {{1, 1, 1, 0, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{1, 1, 0, 1, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{2, 1, 1, 0, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{2, 1, 0, 1, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{2, 2, 2, 0, 0, DDR1333_FREQUENCY, DDR1333_FREQUENCY, DDR1066_FREQUENCY}},
+  {{2, 2, 1, 1, 0, DDR1066_FREQUENCY, DDR1066_FREQUENCY, DDR1066_FREQUENCY}},
+  {{2, 2, 0, 2, 0, DDR1066_FREQUENCY, DDR1066_FREQUENCY, DDR1066_FREQUENCY}},
+  {{3, 1, 1, 0, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{3, 1, 0, 1, 0, DDR1600_FREQUENCY, DDR1333_FREQUENCY, DDR1333_FREQUENCY}},
+  {{3, 2, 2, 0, 0, DDR1333_FREQUENCY, DDR1333_FREQUENCY, DDR1066_FREQUENCY}},
+  {{3, 2, 1, 1, 0, DDR1066_FREQUENCY, DDR1066_FREQUENCY, DDR1066_FREQUENCY}},
+  {{3, 2, 0, 2, 0, DDR1066_FREQUENCY, DDR1066_FREQUENCY, DDR1066_FREQUENCY}}
+};
+CONST PSC_TBL_ENTRY MaxFreqTblEntUC32 = {
+   {PSCFG_MAXFREQ, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (MaxFreqOrC32UDIMM) / sizeof (PSCFG_MAXFREQ_ENTRY),
+   (VOID *)&MaxFreqOrC32UDIMM
+};
+
+//
+// MemClkDis [1DPC & 2DPC]
+//
+STATIC CONST UINT8 ROMDATA OrUDdr3CLKDis[] = {0x01, 0x04, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00};
+CONST PSC_TBL_ENTRY ClkDisMapEntUC32 = {
+   {PSCFG_CLKDIS, UDIMM_TYPE, _1DIMM + _2DIMM, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (OrUDdr3CLKDis) / sizeof (UINT8),
+   (VOID *)&OrUDdr3CLKDis
+};
+
+//
+// MemClkDis [3DPC]
+//
+STATIC CONST UINT8 ROMDATA Or3UDdr3CLKDis[] = {0x01, 0x02, 0x10, 0x20, 0x00, 0x00, 0x00, 0x00};
+CONST PSC_TBL_ENTRY ClkDisMap3DEntUC32 = {
+   {PSCFG_CLKDIS, UDIMM_TYPE, _3DIMM, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (Or3UDdr3CLKDis) / sizeof (UINT8),
+   (VOID *)&Or3UDdr3CLKDis
+};
+
+//
+// WL pass1 seed
+//
+// Format :
+// DimmPerCh in bit map,   Channel #,   Seed value
+STATIC CONST PSCFG_SEED_ENTRY ROMDATA WLPas1SeedOrC32UDIMM[] = {
+  {_1DIMM + _2DIMM + _3DIMM, CH_ALL, 0x12}
+};
+CONST PSC_TBL_ENTRY WLPass1SeedEntUC32 = {
+   {PSCFG_WL_PASS1_SEED, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (WLPas1SeedOrC32UDIMM) / sizeof (PSCFG_SEED_ENTRY),
+   (VOID *)&WLPas1SeedOrC32UDIMM
+};
+
+//
+// HW RxEn pass1 seed
+//
+// Format :
+// DimmPerCh in bit map,   Channel #,   Seed value
+STATIC CONST PSCFG_SEED_ENTRY ROMDATA HWRxEnPas1SeedOrC32UDIMM[] = {
+  {_1DIMM + _2DIMM, CH_A, 0x39},
+  {_1DIMM + _2DIMM, CH_B, 0x32},
+  {_3DIMM, CH_A, 0x45},
+  {_3DIMM, CH_B, 0x37}
+};
+CONST PSC_TBL_ENTRY HWRxEnPass1SeedEntUC32 = {
+   {PSCFG_HWRXEN_PASS1_SEED, UDIMM_TYPE, NOD_DONT_CARE, {AMD_FAMILY_15_OR, AMD_F15_ALL}, OR_SOCKET_C32, DDR3_TECHNOLOGY},
+   sizeof (HWRxEnPas1SeedOrC32UDIMM) / sizeof (PSCFG_SEED_ENTRY),
+   (VOID *)&HWRxEnPas1SeedOrC32UDIMM
+};

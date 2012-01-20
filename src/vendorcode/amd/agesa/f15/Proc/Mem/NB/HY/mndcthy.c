@@ -1,0 +1,456 @@
+/* $NoKeywords:$ */
+/**
+ * @file
+ *
+ * mndctHy.c
+ *
+ * Northbridge DCT support for Hydra
+ *
+ * @xrefitem bom "File Content Label" "Release Content"
+ * @e project: AGESA
+ * @e sub-project: (Mem/NB/HY)
+ * @e \$Revision: 56279 $ @e \$Date: 2011-07-11 13:11:28 -0600 (Mon, 11 Jul 2011) $
+ *
+ **/
+/*****************************************************************************
+*
+* Copyright (C) 2012 Advanced Micro Devices, Inc.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+*       its contributors may be used to endorse or promote products derived
+*       from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* ***************************************************************************
+*
+*/
+
+
+/*
+ *----------------------------------------------------------------------------
+ *                                MODULES USED
+ *
+ *----------------------------------------------------------------------------
+ */
+
+
+
+#include "AGESA.h"
+#include "amdlib.h"
+#include "Ids.h"
+#include "mm.h"
+#include "mn.h"
+#include "mt.h"
+#include "mu.h"
+#include "OptionMemory.h"       // need def for MEM_FEAT_BLOCK_NB
+#include "mnhy.h"
+#include "merrhdl.h"
+#include "cpuFamRegisters.h"
+#include "Filecode.h"
+CODE_GROUP (G1_PEICC)
+RDATA_GROUP (G2_PEI)
+
+#define FILECODE PROC_MEM_NB_HY_MNDCTHY_FILECODE
+
+/*----------------------------------------------------------------------------
+ *                          DEFINITIONS AND MACROS
+ *
+ *----------------------------------------------------------------------------
+ */
+#define UNUSED_CLK 4
+/*----------------------------------------------------------------------------
+ *                           TYPEDEFS AND STRUCTURES
+ *
+ *----------------------------------------------------------------------------
+ */
+
+/*----------------------------------------------------------------------------
+ *                        PROTOTYPES OF LOCAL FUNCTIONS
+ *
+ *----------------------------------------------------------------------------
+ */
+
+/*----------------------------------------------------------------------------
+ *                            EXPORTED FUNCTIONS
+ *
+ *----------------------------------------------------------------------------
+ */
+
+extern BUILD_OPT_CFG UserOptions;
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *      This function programs the memory controller with configuration parameters
+ *
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *
+ *     @return          TRUE - An Error value lower than AGESA_FATAL may have occurred
+ *     @return          FALSE - An Error value greater than or equal to AGESA_FATAL may have occurred
+ *     @return          NBPtr->MCTPtr->ErrCode - Contains detailed AGESA_STATUS value
+ */
+
+BOOLEAN
+MemNAutoConfigHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  )
+{
+  UINT8 PowerDownMode;
+  UINT32 Value32;
+  DIE_STRUCT *MCTPtr;
+  DCT_STRUCT *DCTPtr;
+  MEM_PARAMETER_STRUCT *RefPtr;
+
+  RefPtr = NBPtr->RefPtr;
+  MCTPtr = NBPtr->MCTPtr;
+  DCTPtr = NBPtr->DCTPtr;
+  //======================================================================
+  // Build Dram Control Register Value (F2x78)
+  //======================================================================
+  //
+  //It is recommended that these bits remain in the default state.
+  //MemNSetBitFieldNb (NBPtr, BFRdPtrInit, 5);
+
+  MemNSetBitFieldNb (NBPtr, BFEarlyArbEn, 1);
+
+  //======================================================================
+  // Build Dram Config Lo Register Value
+  //======================================================================
+  //
+
+  if (MCTPtr->Status[SbParDimms]) {
+    //
+    // SbParDimms should be set for all DDR3 RDIMMS
+    // Cannot turn off ParEn for DDR3
+    //
+    //@attention - add debug option for parity control
+    MemNSetBitFieldNb (NBPtr, BFParEn, 1);
+  }
+
+
+  if (MCTPtr->GangedMode) {
+    MemNSetBitFieldNb (NBPtr, BFWidth128, 1);
+  }
+
+  MemNSetBitFieldNb (NBPtr, BFX4Dimm, DCTPtr->Timings.Dimmx4Present & 0xF);
+
+  if (!MCTPtr->Status[SbRegistered]) {
+    MemNSetBitFieldNb (NBPtr, BFUnBuffDimm, 1);
+  }
+
+  if (MCTPtr->Status[SbEccDimms]) {
+    MemNSetBitFieldNb (NBPtr, BFDimmEccEn, 1);
+  }
+
+  //======================================================================
+  // Build Dram Config Hi Register Value
+  //======================================================================
+  //
+
+  MemNSetBitFieldNb (NBPtr, BFMemClkFreq, MemNGetMemClkFreqIdNb (NBPtr, DCTPtr->Timings.Speed));
+
+  if (MCTPtr->Status[SbRegistered]) {
+    if ((DCTPtr->Timings.Dimmx4Present != 0) && (DCTPtr->Timings.Dimmx8Present != 0)) {
+      MemNSetBitFieldNb (NBPtr, BFRDqsEn, 1);
+    }
+  }
+
+  if (RefPtr->EnableBankSwizzle) {
+    MemNSetBitFieldNb (NBPtr, BFBankSwizzleMode, 1);
+  }
+
+  if (DCTPtr->Timings.DimmQrPresent) {
+    if (UserOptions.CfgMemoryQuadrankType == QUADRANK_UNBUFFERED) {
+      MemNSetBitFieldNb (NBPtr, BFFourRankSoDimm, 1);
+    } else if (UserOptions.CfgMemoryQuadrankType == QUADRANK_REGISTERED) {
+      MemNSetBitFieldNb (NBPtr, BFFourRankRDimm, 1);
+    }
+  }
+
+  MemNSetBitFieldNb (NBPtr, BFDcqBypassMax, 0xF);
+  MemNSetBitFieldNb (NBPtr, BFDcqArbBypassEn, 1);
+  //======================================================================
+  // Build Dram Config Misc Register Value
+  //======================================================================
+  //
+  if (MCTPtr->Status[SbRegistered]) {
+    if (MemNGetBitFieldNb (NBPtr, BFDdr3Mode)!= 0) {
+      MemNSetBitFieldNb (NBPtr, BFSubMemclkRegDly, 1);
+    }
+  }
+  //======================================================================
+  // Build Dram Config Misc 2 Register Value
+  //======================================================================
+  //
+  //
+  // Ddr3FourSocketCh - Must be the same for both DCTs if either of them have > 2 Dimms
+  //
+  if ((GetMaxDimmsPerChannel (RefPtr->PlatformMemoryConfiguration, MCTPtr->SocketId, NBPtr->ChannelPtr->ChannelID)) > 2) {
+    MemNBrdcstSetNb (NBPtr, BFDdr3FourSocketCh, 1);
+  }
+  //
+  // DTaxTxFifpWrDly
+  //
+  Value32 = MemNGetBitFieldNb (NBPtr, BFRdPtrInit);
+  if ((Value32 >= 2) && (Value32 <= 5)) {
+    MemNSetBitFieldNb (NBPtr, BFDataTxFifoWrDly, (6 - Value32));
+  }
+
+  //
+  // ProgOdtEn
+  //
+  if (MemNGetBitFieldNb (NBPtr, BFDdr3Mode) == 1) {
+    MemNSetBitFieldNb (NBPtr, BFProgOdtEn, 1);
+  } else {
+    MemNSetBitFieldNb (NBPtr, BFProgOdtEn, 0);
+  }
+  //
+  // OdtSwizzle
+  //
+  if ((MemNGetBitFieldNb (NBPtr, BFDdr3Mode) == 0) && (MemNGetBitFieldNb (NBPtr, BFFourRankRDimm) == 0) && (RefPtr->EnablePowerDown)) {
+    PowerDownMode = (UINT8) ((UserOptions.CfgPowerDownMode == POWER_DOWN_MODE_AUTO) ? POWER_DOWN_BY_CHANNEL : UserOptions.CfgPowerDownMode);
+    IDS_OPTION_HOOK (IDS_POWERDOWN_MODE, &PowerDownMode, &(NBPtr->MemPtr->StdHeader));
+    if (PowerDownMode == 1) {
+      MemNSetBitFieldNb (NBPtr, BFOdtSwizzle, 1);
+    }
+  }
+
+
+  return (BOOLEAN) (MCTPtr->ErrCode < AGESA_FATAL);
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function sends an MRS command
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *
+ */
+
+VOID
+MemNSendMrsCmdHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  )
+{
+  MemNSwapBitsNb (NBPtr);
+
+  IDS_HDT_CONSOLE (MEM_FLOW, "\t\t\tCS%d MR%d %04x\n",
+              (MemNGetBitFieldNb (NBPtr, BFDramInitRegReg) >> 20) & 0xF,
+              (MemNGetBitFieldNb (NBPtr, BFDramInitRegReg) >> 16) & 0xF,
+              (MemNGetBitFieldNb (NBPtr, BFDramInitRegReg) & 0xFFFF));
+
+  // 1.Set SendMrsCmd=1
+  MemNSetBitFieldNb (NBPtr, BFSendMrsCmd, 1);
+
+  // 2.Wait for SendMrsCmd=0
+  MemNPollBitFieldNb (NBPtr, BFSendMrsCmd, 0, PCI_ACCESS_TIMEOUT, FALSE);
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This function sends an MRS command to all CS of all channels
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]   *DummyPtr - Unused pointer
+ *
+ *     @return    TRUE
+ */
+
+BOOLEAN
+MemNSendMrsCmdPerCsHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *DummyPtr
+  )
+{
+  UINT8 Dct;
+  UINT8 ChipSel;
+  UINT32 Dummy;
+
+  if (!NBPtr->MCTPtr->Status[SbRegistered]) {
+    for (Dct = 0; Dct < NBPtr->DctCount; Dct++) {
+      NBPtr->SwitchDCT (NBPtr, Dct);
+      if (NBPtr->DCTPtr->Timings.DctMemSize != 0) {
+        IDS_HDT_CONSOLE (MEM_STATUS, "\tDct %d\n", Dct);
+        for (ChipSel = 0; ChipSel < MAX_CS_PER_CHANNEL; ChipSel++) {
+          if (NBPtr->GetSysAddr (NBPtr, ChipSel, &Dummy)) {
+            IDS_HDT_CONSOLE (MEM_STATUS, "\t\tCS %d\n", ChipSel);
+            // if chip select present
+            NBPtr->TechPtr->SendAllMRCmds (NBPtr->TechPtr, ChipSel);
+            // NOTE: wait 512 clocks for DLL-relock
+            MemUWait10ns (50000, NBPtr->MemPtr);  // wait 500us
+          }
+        }
+      }
+    }
+  }
+  return TRUE;
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   This is a general purpose function that executes before DRAM init
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *
+ */
+
+VOID
+MemNBeforeDramInitHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  )
+{
+  UINT8 Dct;
+  for (Dct = 0; Dct < NBPtr->DctCount; Dct ++) {
+    MemNSwitchDCTNb (NBPtr, Dct);
+    if (NBPtr->DCTPtr->Timings.DctMemSize != 0) {
+      //Set PllLockTime and DllLockTime to default.
+      MemNSetBitFieldNb (NBPtr, BFPhyPLLLockTime, 0x000007D0);
+      MemNSetBitFieldNb (NBPtr, BFPhyDLLLockTime, 0x00000190);
+      MemNSetBitFieldNb (NBPtr, BFDisDllShutdownSR, 1);
+    }
+  }
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   Enable DLL Shut down
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *
+ */
+VOID
+MemNEnDLLShutDownHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  )
+{
+  UINT8 Dct;
+  BOOLEAN DllShutDownEn;
+
+  DllShutDownEn = TRUE;
+  IDS_OPTION_HOOK (IDS_DLL_SHUT_DOWN, &DllShutDownEn, &(NBPtr->MemPtr->StdHeader));
+
+  if (DllShutDownEn && NBPtr->IsSupported[SetDllShutDown]) {
+    if ((NBPtr->ChannelPtr->MCTPtr->LogicalCpuid.Revision & AMD_F10_D1) != 0) {
+      for (Dct = 0; Dct < NBPtr->DctCount; Dct++) {
+        MemNSwitchDCTNb (NBPtr, Dct);
+        if (NBPtr->DCTPtr->Timings.DctMemSize != 0) {
+          MemNSetBitFieldNb (NBPtr, BFPhyPLLLockTime, 0x0000001C);
+          MemNSetBitFieldNb (NBPtr, BFPhyDLLLockTime, 0x0000013D);
+          MemNSetBitFieldNb (NBPtr, BFDisDllShutdownSR, 0);
+        }
+      }
+    }
+  }
+}
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *   Workaround for erratum 322 and 263
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *
+ */
+VOID
+MemNBeforePlatformSpecHy (
+  IN OUT   MEM_NB_BLOCK *NBPtr
+  )
+{
+  // Errata 263
+  if ((NBPtr->DCTPtr->Timings.Speed == DDR533_FREQUENCY) || (NBPtr->DCTPtr->Timings.Speed == DDR667_FREQUENCY)) {
+    MemNSetBitFieldNb (NBPtr, BFErr263, 0x0800);
+  } else {
+    MemNSetBitFieldNb (NBPtr, BFErr263, 0);
+  }
+
+  // Errata 322
+  // 1.Write 00000000h to F2x[1,0]9C_xD08E000
+  MemNSetBitFieldNb (NBPtr, BFErr322I, 0);
+  // 2.If DRAM Configuration Register[MemClkFreq] (F2x[1,0]94[2:0]) is
+  //    greater than or equal to 011b (DDR-800 and higher),
+  //    then write 00000080h to F2x[1,0]9C_xD02E001,
+  //    else write 00000090h to F2x[1,0]9C_xD02E001.
+  MemNSetBitFieldNb (NBPtr, BFErr322II, (NBPtr->DCTPtr->Timings.Speed >= DDR800_FREQUENCY) ? 0x80 : 0x90);
+}
+
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *    Initializes extended MMIO address space
+ *
+ *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]   OptParam - Optional parameter
+ *
+ *     @return    TRUE
+ */
+BOOLEAN
+MemNInitExtMMIOAddrHy  (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *OptParam
+  )
+{
+  UINT8  Index;
+  UINT32 Value;
+  PCI_ADDR PciAddr;
+
+  if (NBPtr->RefPtr->SysLimit >= _1TB_RJ16) {
+    // Initialize all indices of F1x114_x2 and F1x114_x3.
+    for (Index = 0; Index < 32; Index++) {
+      PciAddr = NBPtr->PciAddr;
+      PciAddr.Address.Function = 1;
+
+      PciAddr.Address.Register = 0x110;
+      Value = 0x20000000 | Index;
+      LibAmdPciWrite (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
+
+      PciAddr.Address.Register = 0x114;
+      Value = 0;
+      LibAmdPciWrite (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
+
+      PciAddr.Address.Register = 0x110;
+      Value = 0x30000000 | Index;
+      LibAmdPciWrite (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
+
+      PciAddr.Address.Register = 0x114;
+      Value = 0;
+      LibAmdPciWrite (AccessWidth32, PciAddr, &Value, &NBPtr->MemPtr->StdHeader);
+    }
+  }
+  return TRUE;
+}
+
+/*----------------------------------------------------------------------------
+ *                              LOCAL FUNCTIONS
+ *
+ *----------------------------------------------------------------------------
+ */

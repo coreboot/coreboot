@@ -7,39 +7,39 @@ unexport KCONFIG_AUTOCONFIG
 
 all: build
 
-seabios:
+$(OUT)/seabios:
 	echo "    Cloning SeaBIOS from Git"
-	git clone git://git.seabios.org/seabios.git
+	git clone git://git.seabios.org/seabios.git $(OUT)/seabios
 
-fetch: seabios
-	cd seabios; git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ]; \
+fetch: $(OUT)/seabios
+	cd $(OUT)/seabios; git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ]; \
 	then echo "    Fetching new commits from the SeaBIOS git repo"; git fetch; fi
 
 checkout: fetch
 	echo "    Checking out SeaBIOS revision $(TAG-y)"
-	cd seabios; git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
+	cd $(OUT)/seabios; git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
 config: checkout
 	echo "    CONFIG     SeaBIOS $(TAG-y)"
-	$(MAKE) -C seabios defconfig
-	echo "CONFIG_COREBOOT=y" >> seabios/.config
-	echo "CONFIG_DEBUG_SERIAL=y" >> seabios/.config
-	echo "CONFIG_DEBUG_SERIAL_PORT=0x3f8" >> seabios/.config
-	echo "CONFIG_COREBOOT_FLASH=y" >> seabios/.config
-	echo "CONFIG_LZMA=y" >> seabios/.config
-	echo "CONFIG_FLASH_FLOPPY=y" >> seabios/.config
-	echo "CONFIG_VGAHOOKS=y" >> seabios/.config
+	$(MAKE) -C $(OUT)/seabios defconfig OUT=$(OUT)/seabios/out/
+	echo "CONFIG_COREBOOT=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_DEBUG_SERIAL=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_PORT=0x3f8" >> $(OUT)/seabios/.config
+	echo "CONFIG_COREBOOT_FLASH=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_LZMA=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_FLASH_FLOPPY=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_VGAHOOKS=y" >> $(OUT)/seabios/.config
 	# This shows how to force a previously set .config option *off*
-	#echo "# CONFIG_SMBIOS is not set" >> seabios/.config
+	#echo "# CONFIG_SMBIOS is not set" >> $(OUT)/seabios/.config
 
 build: config
 	echo "    MAKE       SeaBIOS $(TAG-y)"
-	$(MAKE) -C seabios
+	$(MAKE) -C $(OUT)/seabios OUT=$(OUT)/seabios/out/
 
 clean:
-	test -d seabios && $(MAKE) -C seabios clean || exit 0
+	test -d $(OUT)/seabios && $(MAKE) -C $(OUT)/seabios clean OUT=$(OUT)/seabios/out/ || exit 0
 
 distclean:
-	rm -rf seabios
+	rm -rf $(OUT)/seabios
 
 .PHONY: checkout config build clean distclean clone fetch

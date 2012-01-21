@@ -444,7 +444,7 @@ config PAYLOAD_FILE
 
 config PAYLOAD_FILE
 	depends on PAYLOAD_SEABIOS
-	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+	default "$(obj)/seabios/out/bios.bin.elf"
 
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO

@@ -20,19 +20,6 @@
 #define ADM1026_REG_CONFIG2 0x01
 #define ADM1026_REG_CONFIG3 0x07
 
-static void adm1026_enable_monitoring(device_t dev);
-
-static void adm1026_init(device_t dev)
-{
-	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
-		if (ops_smbus_bus(get_pbus_smbus(dev))) {
-			if (dev->bus->dev->path.type == DEVICE_PATH_I2C)
-				smbus_set_link(dev);	// it is under mux
-			adm1026_enable_monitoring(dev);
-		}
-	}
-}
-
 static void adm1026_enable_monitoring(device_t dev)
 {
 	int result;
@@ -44,6 +31,17 @@ static void adm1026_enable_monitoring(device_t dev)
 	result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
 	if (!(result & CFG1_MONITOR)) {
 		printk(BIOS_DEBUG, "ADM1026: monitoring would not enable");
+	}
+}
+
+static void adm1026_init(device_t dev)
+{
+	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C) {
+		if (ops_smbus_bus(get_pbus_smbus(dev))) {
+			if (dev->bus->dev->path.type == DEVICE_PATH_I2C)
+				smbus_set_link(dev);	// it is under mux
+			adm1026_enable_monitoring(dev);
+		}
 	}
 }
 

@@ -70,7 +70,7 @@ _start:
 	 *
 	 * This means that anything except cs:ip relative offsets are
 	 * a real pain in 16 bit mode.  And explains why it is almost
-	 * imposible to get gas to do lgdt correctly.
+	 * impossible to get gas to do lgdt correctly.
 	 *
 	 * One way to work around this is to have the linker do the
 	 * math instead of the assembler.  This solves the very
@@ -94,7 +94,7 @@ _start:
 	 * The restrictions in reset16.inc mean that _start initially
 	 * must be loaded at or above 0xffff0000 or below 0x100000.
 	 *
-	 * The linker scripts computs gdtptr16_offset by simply returning
+	 * The linker scripts computes gdtptr16_offset by simply returning
 	 * the low 16 bits.  This means that the intial segment used
 	 * when start is called must be 64K aligned.  This should not
 	 * restrict the address as the ip address can be anything.

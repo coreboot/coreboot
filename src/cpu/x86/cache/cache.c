@@ -3,8 +3,7 @@
 
 void x86_enable_cache(void)
 {
-	post_code(0x60);
+	post_code(POST_ENABLING_CACHE);
 	printk(BIOS_INFO, "Enabling cache\n");
 	enable_cache();
 }
-

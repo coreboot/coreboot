@@ -106,6 +106,13 @@
 #define POST_CONSOLE_BOOT_MSG			0x40
 
 /**
+ * \brief Before enabling the cache
+ *
+ * Going to enable the cache
+ */
+#define POST_ENABLING_CACHE			0x60
+
+/**
  * \brief Devices have been enumerated
  *
  * Bus scan, and device enumeration has completed.

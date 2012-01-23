@@ -37,6 +37,19 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	/* If it's in FLASH, then don't check device for ROM. */
 	rom_header = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
 
+	u32 vendev = dev->vendor | (dev->device << 16);
+	u32 mapped_vendev = vendev;
+
+	if (map_oprom_vendev)
+		mapped_vendev = map_oprom_vendev(vendev);
+
+	if (!rom_header) {
+		if (vendev != mapped_vendev) {
+			rom_header = cbfs_load_optionrom(mapped_vendev &
+					0xffff, mapped_vendev >> 16, NULL);
+		}
+	}
+
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);
@@ -78,8 +91,10 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	printk(BIOS_SPEW, "PCI ROM image, vendor ID %04x, device ID %04x,\n",
 	       rom_data->vendor, rom_data->device);
-	if (dev->vendor != rom_data->vendor
-	    || dev->device != rom_data->device) {
+	/* If the device id is mapped, a mismatch is expected */
+	if ((dev->vendor != rom_data->vendor
+	    || dev->device != rom_data->device)
+	    && (vendev == mapped_vendev)) {
 		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
 		       "device ID %04x\n", rom_data->vendor, rom_data->device);
 		return NULL;

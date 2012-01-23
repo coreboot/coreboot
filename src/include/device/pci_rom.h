@@ -35,5 +35,6 @@ struct  pci_data {
 
 struct rom_header *pci_rom_probe(struct device *dev);
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header);
+u32 __attribute__((weak)) map_oprom_vendev(u32 vendev);
 
 #endif

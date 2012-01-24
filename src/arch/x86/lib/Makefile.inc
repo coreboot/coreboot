@@ -2,7 +2,11 @@ ramstage-y += c_start.S
 ramstage-y += cpu.c
 ramstage-y += pci_ops_conf1.c
 ramstage-y += pci_ops_conf2.c
+
+ifeq ($(CONFIG_MMCONF_SUPPORT),y)
 ramstage-y += pci_ops_mmconf.c
+endif
+
 ramstage-y += pci_ops_auto.c
 ramstage-y += exception.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c

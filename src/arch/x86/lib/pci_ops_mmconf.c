@@ -1,5 +1,3 @@
-#if CONFIG_MMCONF_SUPPORT
-
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/pciconf.h>
@@ -63,5 +61,3 @@ const struct pci_bus_operations pci_ops_mmconf = {
 	.write16 = pci_mmconf_write_config16,
 	.write32 = pci_mmconf_write_config32,
 };
-
-#endif

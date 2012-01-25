@@ -52,8 +52,8 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("eccsta is 0x%x\n", val(mmcr, memregs.eccsta));
 	printf("ckbpos is 0x%x\n", val(mmcr, memregs.eccckbpos));
 	printf("cktest is 0x%x\n", val(mmcr, memregs.ecccktest));
-	printf("sbadd is 0x%x\n", val(mmcr, memregs.eccsbadd));
-	printf("mbadd is 0x%x\n", val(mmcr, memregs.eccmbadd));
+	printf("sbadd is 0x%lx\n", val(mmcr, memregs.eccsbadd));
+	printf("mbadd is 0x%lx\n", val(mmcr, memregs.eccmbadd));
 
 	printf("\n");
 	printf("dbctl is 0x%x\n", val(mmcr, dbctl.dbctl));
@@ -69,20 +69,20 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("hbtgtirqsta is 0x%x\n",  val(mmcr, hostbridge.tgtirqsta));
 	printf("hbmstirqctl is 0x%x\n",  val(mmcr, hostbridge.mstirqctl));
 	printf("hbmstirqsta is 0x%x\n",  val(mmcr, hostbridge.mstirqsta));
-	printf("mstintadd is 0x%x\n",  val(mmcr, hostbridge.mstintadd));
+	printf("mstintadd is 0x%lx\n",  val(mmcr, hostbridge.mstintadd));
 
 
 	printf("\n");
 	printf("sysarbctl is 0x%x\n", val(mmcr, sysarb.ctl));
 	printf("pciarbsta is 0x%x\n", val(mmcr, sysarb.sta));
 	printf("sysarbmenb is 0x%x\n", val(mmcr, sysarb.menb));
-	printf("arbprictl is 0x%x\n", val(mmcr, sysarb.prictl));
+	printf("arbprictl is 0x%lx\n", val(mmcr, sysarb.prictl));
 
 	printf("\n");
 	printf("adddecctl is 0x%x\n", val(mmcr, sysmap.adddecctl));
 	printf("wpvsta is 0x%x\n", val(mmcr, sysmap.wpvsta));
 	for (i=0; i<16; i++)
-		printf("par %d is 0x%x\n", i, val(mmcr, sysmap.par[i]));
+		printf("par %d is 0x%lx\n", i, val(mmcr, sysmap.par[i]));
 
 	printf("\n");
 	printf("gpecho is 0x%x\n", val(mmcr, gpctl.gpecho));

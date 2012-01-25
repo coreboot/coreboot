@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Ronald G. Minnich <rminnich@gmail.com>
+Submitted-by: Marc Jones <marcj303@gmail.com>
+Submitted-at: Wed, 25 Jan 2012 07:42:58 +0100
+Reviewed-on: http://review.coreboot.org/575
+Project: coreboot
+Branch: refs/heads/master

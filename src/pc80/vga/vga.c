@@ -20,6 +20,7 @@
 #include <pc80/vga_io.h>
 
 #include <string.h>
+#include "vga.h"
 
 /*
  * pci io enable should've happened before
@@ -68,8 +69,6 @@ vga_fb_clear(void)
 {
 	memset((void *)VGA_FB, 0x00, 0x8000);
 }
-
-#include "vga_palette.c"
 
 /*
  *
@@ -180,8 +179,6 @@ vga_mode_set(int hdisplay, int hblankstart, int hsyncstart, int hsyncend,
 
 	vga_cr_mask(0x09, 0x00, 0x80); /* disable doublescan */
 }
-
-#include "vga_font_8x16.c"
 
 static void
 vga_font_8x16_load(void)

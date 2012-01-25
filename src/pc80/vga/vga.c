@@ -20,7 +20,7 @@
 #include <pc80/vga_io.h>
 
 #include <string.h>
-
+#include "vga_palette.h"
 /*
  * pci io enable should've happened before
  */
@@ -68,8 +68,6 @@ vga_fb_clear(void)
 {
 	memset((void *)VGA_FB, 0x00, 0x8000);
 }
-
-#include "vga_palette.c"
 
 /*
  *

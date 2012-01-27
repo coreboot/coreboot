@@ -29,6 +29,7 @@ typedef enum {
 	CMD_ADD,
 	CMD_ADD_PAYLOAD,
 	CMD_ADD_STAGE,
+	CMD_REMOVE,
 	CMD_CREATE,
 	CMD_LOCATE,
 	CMD_PRINT,
@@ -195,6 +196,33 @@ static int cbfs_add_stage(int argc, char **argv)
 	return 0;
 }
 
+static int cbfs_remove(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
+
+	if (argc < 4) {
+		printf("not enough arguments to '%s'.\n", cmd);
+		return 1;
+	}
+
+	char *cbfsname = argv[3];
+
+	if (remove_file_from_cbfs(cbfsname)) {
+		printf("Removing file '%s' failed.\n", cbfsname);
+		return 1;
+	}
+	if (writerom(romname, rom, romsize))
+		return 1;
+	return 0;
+}
+
 static int cbfs_create(int argc, char **argv)
 {
 	char *romname = argv[1];
@@ -275,6 +303,7 @@ static const struct command commands[] = {
 	{CMD_ADD, "add", cbfs_add},
 	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
 	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
+	{CMD_REMOVE, "remove", cbfs_remove},
 	{CMD_CREATE, "create", cbfs_create},
 	{CMD_LOCATE, "locate", cbfs_locate},
 	{CMD_PRINT, "print", cbfs_print},
@@ -292,6 +321,7 @@ static void usage(void)
 	     " add FILE NAME TYPE [base address]    Add a component\n"
 	     " add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
 	     " add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
+	     " remove FILE NAME                     Remove a component\n"
 	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
 	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
 	     " print                                Show the contents of the ROM\n"

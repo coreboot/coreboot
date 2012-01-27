@@ -350,6 +350,62 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 	return 1;
 }
 
+
+static struct cbfs_file *merge_adjacent_files(struct cbfs_file *first,
+					      struct cbfs_file *second)
+{
+	uint32_t new_length =
+	    ntohl(first->len) + ntohl(second->len) + ntohl(second->offset);
+	first->len = htonl(new_length);
+	first->checksum = 0; // FIXME?
+	return first;
+}
+
+static struct cbfs_file *next_file(struct cbfs_file *prev)
+{
+	uint32_t pos = (prev == NULL) ? phys_start :
+	    ALIGN(virt_to_phys(prev) + ntohl(prev->len) + ntohl(prev->offset),
+		  align);
+
+	for (; pos < phys_end; pos += align) {
+		if (cbfs_file_header(pos))
+			return (struct cbfs_file *)phys_to_virt(pos);
+	}
+	return NULL;
+}
+
+
+int remove_file_from_cbfs(const char *filename)
+{
+	struct cbfs_file *prev = NULL;
+	struct cbfs_file *cur = next_file(prev);
+	struct cbfs_file *next = next_file(cur);
+	for (; cur; prev = cur, cur = next, next = next_file(next)) {
+
+		/* Check if this is the file to remove. */
+		char *name = (char *)cur + sizeof(*cur);
+		if (strcmp(name, filename))
+			continue;
+
+		/* Mark the file as free space and erase its name. */
+		cur->type = CBFS_COMPONENT_NULL;
+		name[0] = '\0';
+
+		/* Merge it with the previous file if possible. */
+		if (prev && prev->type == CBFS_COMPONENT_NULL)
+			cur = merge_adjacent_files(prev, cur);
+
+		/* Merge it with the next file if possible. */
+		if (next && next->type == CBFS_COMPONENT_NULL)
+			merge_adjacent_files(cur, next);
+
+		return 0;
+	}
+	printf("CBFS file %s not found.\n", filename);
+	return 1;
+}
+
+
 /* returns new data block with cbfs_file header, suitable to dump into the ROM. location returns
    the new location that points to the cbfs_file header */
 void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,

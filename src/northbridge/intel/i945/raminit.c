@@ -294,8 +294,8 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	reg8 |= (1<<7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
-	/* clear self refresh if not wake-up from suspend */
-	if (sysinfo->boot_path != 2) {
+	/* clear self refresh status if check is disabled or not a resume */
+	if (!CONFIG_CHECK_SLFRCS_ON_RESUME || sysinfo->boot_path != 2) {
 		MCHBAR8(0xf14) |= 3;
 	} else {
 		/* Validate self refresh config */

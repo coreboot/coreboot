@@ -114,12 +114,13 @@ void amd_setup_mtrrs(void)
 	msr_t msr, sys_cfg;
 	// Test if this CPU is a Fam 0Fh rev. F or later
 	const int cpu_id = cpuid_eax(0x80000001);
+	printk(BIOS_SPEW, "CPU ID 0x80000001: %x\n", cpu_id);
 	const int has_tom2wb =
-		 (((cpu_id>>8 )&0xf)  > 0xf) || // Family > 0F
+		 (((cpu_id>>20 )&0xf) > 0) || // ExtendedFamily > 0
 		((((cpu_id>>8 )&0xf) == 0xf) && // Family == 0F
 		 (((cpu_id>>16)&0xf) >= 0x4));  // Rev>=F deduced from rev tables
 	if(has_tom2wb)
-		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later, using TOM2WB instead of MTRR above 4GB\n");
+		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later. We can use TOM2WB for any memory above 4GB\n");
 
 	/* Enable the access to AMD RdDram and WrDram extension bits */
 	disable_cache();

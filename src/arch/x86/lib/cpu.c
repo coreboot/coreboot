@@ -144,7 +144,7 @@ int cpu_phys_address_size(void)
 	if (!(have_cpuid_p()))
 		return 32;
 
-	if (cpu_cpuid_extended_level() > 0x80000008)
+	if (cpu_cpuid_extended_level() >= 0x80000008)
 		return cpuid_eax(0x80000008) & 0xff;
 
 	if (cpuid_eax(1) & (CPUID_FEATURE_PAE | CPUID_FEATURE_PSE36))

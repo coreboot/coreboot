@@ -53,31 +53,28 @@ ehci_rh_destroy (usbdev_t *dev)
 static void
 ehci_rh_hand_over_port (usbdev_t *dev, int port)
 {
-	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
-
 	debug("giving up port %x, it's USB1\n", port+1);
 
 	/* Lowspeed device. Hand over to companion */
-	*p |= P_PORT_OWNER;
-	do {} while (!(*p & P_CONN_STATUS_CHANGE));
+	RH_INST(dev)->ports[port] |= P_PORT_OWNER;
+	do {} while (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE));
 	/* RW/C register, so clear it by writing 1 */
-	*p |= P_CONN_STATUS_CHANGE;
+	RH_INST(dev)->ports[port] |= P_CONN_STATUS_CHANGE;
 	return;
 }
 
 static void
 ehci_rh_scanport (usbdev_t *dev, int port)
 {
-	volatile portsc_t *p = &(RH_INST(dev)->ports[port]);
 	if (RH_INST(dev)->devices[port]!=-1) {
 		debug("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
 		RH_INST(dev)->devices[port]=-1;
 	}
 	/* device connected, handle */
-	if (*p & P_CURR_CONN_STATUS) {
+	if (RH_INST(dev)->ports[port] & P_CURR_CONN_STATUS) {
 		mdelay(100);
-		if ((*p & P_LINE_STATUS) == P_LINE_STATUS_LOWSPEED) {
+		if ((RH_INST(dev)->ports[port] & P_LINE_STATUS) == P_LINE_STATUS_LOWSPEED) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
@@ -85,17 +82,17 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		/* Deassert enable, assert reset.  These must change
 		 * atomically.
 		 */
-		*p = (*p & ~P_PORT_ENABLE) | P_PORT_RESET;
+		RH_INST(dev)->ports[port] = (RH_INST(dev)->ports[port] & ~P_PORT_ENABLE) | P_PORT_RESET;
 
 		/* Wait a bit while reset is active. */
 		mdelay(50);
 
 		/* Deassert reset. */
-		*p &= ~P_PORT_RESET;
+		RH_INST(dev)->ports[port] &= ~P_PORT_RESET;
 
 		/* Wait for flag change to finish. The controller might take a while */
-		while (*p & P_PORT_RESET) ;
-		if (!(*p & P_PORT_ENABLE)) {
+		while (RH_INST(dev)->ports[port] & P_PORT_RESET) ;
+		if (!(RH_INST(dev)->ports[port] & P_PORT_ENABLE)) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
@@ -103,7 +100,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
 	}
 	/* RW/C register, so clear it by writing 1 */
-	*p |= P_CONN_STATUS_CHANGE;
+	RH_INST(dev)->ports[port] |= P_CONN_STATUS_CHANGE;
 }
 
 static int
@@ -130,8 +127,6 @@ void
 ehci_rh_init (usbdev_t *dev)
 {
 	int i;
-	volatile portsc_t *p;
-
 	dev->destroy = ehci_rh_destroy;
 	dev->poll = ehci_rh_poll;
 
@@ -144,9 +139,8 @@ ehci_rh_init (usbdev_t *dev)
 
 	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
-		p = &(RH_INST(dev)->ports[i]);
 		RH_INST(dev)->devices[i] = -1;
-		*p |= P_PP;
+		RH_INST(dev)->ports[i] |= P_PP;
 		ehci_rh_scanport(dev, i);
 	}
 

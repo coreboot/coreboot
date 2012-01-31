@@ -81,8 +81,8 @@ typedef volatile struct {
 	u32 alt_next_qtd;
 	u32 token;
 #define QTD_STATUS_MASK 0xff
-#define QTD_HALTED (1 << 14)
-#define QTD_ACTIVE (1 << 15)
+#define QTD_HALTED (1 << 6)
+#define QTD_ACTIVE (1 << 7)
 #define QTD_PID_SHIFT 8
 #define QTD_PID_MASK (3 << QTD_PID_SHIFT)
 #define QTD_CERR_SHIFT 10

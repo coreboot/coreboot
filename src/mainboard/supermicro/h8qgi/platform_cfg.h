@@ -17,7 +17,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef _PLATFORM_CFG_H_
+#define _PLATFORM_CFG_H_
 
-extern struct chip_operations mainboard_ops;
 
-struct mainboard_config {};
+/* northbridge customize options */
+/**
+ * Max number of northbridges in the system
+ */
+#define MAX_NB_COUNT		1 //TODO: only 1 NB tested
+
+/**
+ *  Enable check for PCIe endpoint to be ready for PCI enumeration.
+ *
+ */
+//#define  EPREADY_WORKAROUND_DISABLED
+
+/**
+ *  Enable IOMMU support. Initialize IOMMU subsystem, generate IVRS ACPI table.
+ *
+ */
+#define  IOMMU_SUPPORT_DISABLE //TODO: enable it
+
+/**
+ *  Disable server PCIe hotplug support.
+ */
+
+//#define HOTPLUG_SUPPORT_DISABLED
+
+/**
+ *  Disable support for device number remapping for PCIe portsserver PCIe hotplug support.
+ */
+
+//#define DEVICE_REMAP_DISABLE
+
+#endif //_PLATFORM_CFG_H_

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2011 Advanced Micro Devices, Inc.
+## Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,6 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-romstage-y += early_init.c
+romstage-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += early_init.c
 ramstage-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += superio.c
 

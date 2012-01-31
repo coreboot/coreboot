@@ -74,11 +74,9 @@ void clear_ioapic(u32 ioapic_base)
 	}
 }
 
-void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
+void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 {
 	u32 bsp_lapicid = lapicid();
-	u32 low, high;
-	u32 i, ioapic_interrupts;
 
 	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
 	       ioapic_base);
@@ -92,6 +90,13 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 			(io_apic_read(ioapic_base, 0x00) & 0xf0ffffff) |
 			(ioapic_id << 24));
 	}
+}
+
+static void load_vectors(u32 ioapic_base)
+{
+	u32 bsp_lapicid = lapicid();
+	u32 low, high;
+	u32 i, ioapic_interrupts;
 
 	ioapic_interrupts = ioapic_interrupt_count(ioapic_base);
 
@@ -123,10 +128,8 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 
 	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
 	       0, high, low);
-
 	low = DISABLED;
 	high = NONE;
-
 	for (i = 1; i < ioapic_interrupts; i++) {
 		io_apic_write(ioapic_base, i * 2 + 0x10, low);
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
@@ -134,4 +137,10 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
 		       i, high, low);
 	}
+}
+
+void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
+{
+	set_ioapic_id(ioapic_base, ioapic_id);
+	load_vectors(ioapic_base);
 }

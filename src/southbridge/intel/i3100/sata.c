@@ -31,7 +31,14 @@ typedef struct southbridge_intel_i3100_config config_t;
 
 static void sata_init(struct device *dev)
 {
-        u8 ahci;
+	u8 ahci;
+	u32 *ahci_bar;
+	config_t *config = dev->chip_info;
+
+	if (config == NULL) {
+	   printk(BIOS_ERR, "i3100_sata: error: device not in devicetree.cb!\n");
+	   return;
+	}
 
 	/* Get the chip configuration */
 	ahci = (pci_read_config8(dev, SATA_MAP) >> 6) & 0x03;
@@ -58,6 +65,8 @@ static void sata_init(struct device *dev)
 	  /* IDE I/O configuration */
 	  pci_write_config32(dev, SATA_IIOC, 0);
 
+	  ahci_bar = (u32 *)(pci_read_config32(dev, 0x27) & ~0x3ff);
+	  ahci_bar[3] = config->sata_ports_implemented;
 	} else {
 	  /* SATA configuration */
 	  pci_write_config8(dev, SATA_CMD, 0x07);

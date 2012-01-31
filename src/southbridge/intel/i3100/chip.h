@@ -43,6 +43,7 @@ struct southbridge_intel_i3100_config
 
 	/* GPIO use select */
 	u8 gpio[64];
+	int sata_ports_implemented;
 	u32 pirq_a_d;
 	u32 pirq_e_h;
 };

@@ -39,6 +39,7 @@
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 
+void set_ioapic_id(u32 ioapic_base, u8 ioapic_id);
 void setup_ioapic(u32 ioapic_base, u8 ioapic_id);
 void clear_ioapic(u32 ioapic_base);
 #endif

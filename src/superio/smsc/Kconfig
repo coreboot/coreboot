@@ -40,5 +40,7 @@ config SUPERIO_SMSC_KBC1100
 	bool
 config SUPERIO_SMSC_SMSCSUPERIO
 	bool
+config SUPERIO_SMSC_SIO1036
+	bool
 config SUPERIO_SMSC_SCH4037
 	bool

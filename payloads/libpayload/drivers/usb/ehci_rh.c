@@ -147,6 +147,7 @@ ehci_rh_init (usbdev_t *dev)
 		p = &(RH_INST(dev)->ports[i]);
 		RH_INST(dev)->devices[i] = -1;
 		*p |= P_PP;
+		ehci_rh_scanport(dev, i);
 	}
 
 	dev->address = 0;

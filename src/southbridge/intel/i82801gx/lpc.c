@@ -39,37 +39,38 @@
 
 typedef struct southbridge_intel_i82801gx_config config_t;
 
-static void i82801gx_enable_apic(struct device *dev)
+/**
+ * Enable ACPI I/O range.
+ *
+ * @param dev PCI device with ACPI and PM BAR's
+ */
+static void i82801gx_enable_acpi(struct device *dev)
 {
-	int i;
-	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
+#if 0
+	/* many i82801's set pmbase here */
+	/* Set ACPI base address (I/O space). */
+	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
+#endif
 
-	/* Enable ACPI I/O and power management.
-	 * Set SCI IRQ to IRQ9
+	/* Enable ACPI I/O range decode and ACPI power management.
+	 * Select SCI IRQ as IRQ9.
 	 */
-	pci_write_config8(dev, ACPI_CNTL, 0x80);
+	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
+}
 
-	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
+/**
+ * Set miscellanous static southbridge features.
+ *
+ * @param dev PCI device with I/O APIC configuration registers
+ */
+static void i82801gx_general_cntl(struct device *dev)
+{
+	u32 reg32 = 0xABADBEEF;
 
-	*ioapic_index = 0;
-	reg32 = *ioapic_data;
-	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
-	if (reg32 != (1 << 25))
-		die("APIC Error\n");
+	/* FIXME: Who sets OIC register @ 0x3155 ??
+	 */
+	printk(BIOS_DEBUG, "Southbridge OIC 0x%08x.\n", reg32);
 
-	printk(BIOS_SPEW, "Dumping IOAPIC registers\n");
-	for (i=0; i<3; i++) {
-		*ioapic_index = i;
-		printk(BIOS_SPEW, "  reg 0x%04x:", i);
-		reg32 = *ioapic_data;
-		printk(BIOS_SPEW, " 0x%08x\n", reg32);
-	}
-
-	*ioapic_index = 3; /* Select Boot Configuration register. */
-	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
 }
 
 static void i82801gx_enable_serial_irqs(struct device *dev)
@@ -418,11 +419,8 @@ static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "i82801gx: lpc_init\n");
 
-	/* Set the value for PCI command register. */
-	pci_write_config16(dev, PCI_COMMAND, 0x000f);
-
 	/* IO APIC initialization. */
-	i82801gx_enable_apic(dev);
+	setup_ioapic_novectors(IO_APIC_ADDR, 0x02);
 
 	i82801gx_enable_serial_irqs(dev);
 
@@ -502,6 +500,21 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+static void i82801gx_lpc_enable_resources(device_t dev)
+{
+	/* Enable the normal PCI resources. */
+	pci_dev_enable_resources(dev);
+
+	/* Enable ACPI and GPIO BARs. */
+	i82801gx_enable_acpi(dev);
+
+	/* Set features (most important: IOAPIC). */
+	i82801gx_general_cntl(dev);
+
+	/* Set the value for PCI command register. */
+	pci_write_config16(dev, PCI_COMMAND, 0x000f);
+}
+
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
@@ -509,7 +522,7 @@ static struct pci_operations pci_ops = {
 static struct device_operations device_ops = {
 	.read_resources		= i82801gx_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
+	.enable_resources 	= i82801gx_lpc_enable_resources,
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,

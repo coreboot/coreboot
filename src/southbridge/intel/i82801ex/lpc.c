@@ -12,8 +12,6 @@
 #include <arch/ioapic.h>
 #include "i82801ex.h"
 
-#define ACPI_BAR 0x40
-#define GPIO_BAR 0x58
 
 #define NMI_OFF 0
 #define MAINBOARD_POWER_OFF 0
@@ -22,6 +20,52 @@
 #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
+
+typedef struct southbridge_intel_i82801ex_config config_t;
+
+/**
+ * Enable ACPI I/O range.
+ *
+ * @param dev PCI device with ACPI and PM BAR's
+ */
+static void i82801ex_enable_acpi(struct device *dev)
+{
+	u8 gpio_cntl;
+#if 0
+	/* many i82801's set pmbase here */
+	/* Set ACPI base address (I/O space). */
+	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
+#endif
+
+	/* Enable ACPI I/O range decode and ACPI power management. */
+	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
+
+	/* Enable the GPIO bar */
+	gpio_cntl = pci_read_config8(dev, GPIO_CNTL);
+	gpio_cntl |= GPIO_EN;
+	pci_write_config8(dev, GPIO_CNTL, gpio_cntl);
+}
+
+/**
+ * Set miscellanous static southbridge features.
+ *
+ * @param dev PCI device with I/O APIC configuration registers
+ */
+static void i82801ex_general_cntl(struct device *dev)
+{
+	u32 reg32;
+
+	reg32 = pci_read_config32(dev, GEN_CNTL);
+	reg32 |= (3 << 7);	/* IOAPIC enable (APIC_EN) */
+	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
+	pci_write_config32(dev, GEN_CNTL, reg32);
+	printk(BIOS_DEBUG, "Southbridge GEN_CNTL 0x%08x\n", reg32);
+
+	reg32 = pci_read_config32(dev, GEN_STS);
+	reg32 |= (1<<1);
+	pci_write_config32(dev, GEN_STS, reg32);
+
+}
 
 #define SERIRQ_CNTL 0x64
 static void i82801ex_enable_serial_irqs(device_t dev)
@@ -45,7 +89,6 @@ static void i82801ex_enable_lpc(device_t dev)
         pci_write_config8(dev, LPC_EN, 0x0d);
 }
 
-typedef struct southbridge_intel_i82801ex_config config_t;
 
 static void set_i82801ex_gpio_use_sel(
 	device_t dev, struct resource *res, config_t *config)
@@ -193,7 +236,7 @@ static void i82801ex_gpio_init(device_t dev)
 	/* Get the chip configuration */
 	config = dev->chip_info;
 	/* Find the GPIO bar */
-	res = find_resource(dev, GPIO_BAR);
+	res = find_resource(dev, GPIO_BASE);
 	if (!res) {
 		return;
 	}
@@ -239,17 +282,10 @@ static void enable_hpet(struct device *dev)
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
-	uint32_t value;
 	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
-	/* IO APIC initialization */
-	value = pci_read_config32(dev, 0xd0);
-	value |= (1 << 8)|(1<<7)|(1<<1);
-	pci_write_config32(dev, 0xd0, value);
-	value = pci_read_config32(dev, 0xd4);
-	value |= (1<<1);
-	pci_write_config32(dev, 0xd4, value);
-	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IO APIC ID.
+	/* IO APIC initialization. */
+	setup_ioapic(IO_APIC_ADDR, 0); /* No APIC ID ?? */
 
 	i82801ex_enable_serial_irqs(dev);
 
@@ -295,10 +331,10 @@ static void i82801ex_lpc_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* Add the ACPI BAR */
-	res = pci_get_resource(dev, ACPI_BAR);
+	res = pci_get_resource(dev, PMBASE);
 
 	/* Add the GPIO BAR */
-	res = pci_get_resource(dev, GPIO_BAR);
+	res = pci_get_resource(dev, GPIO_BASE);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -321,20 +357,14 @@ static void i82801ex_lpc_read_resources(device_t dev)
 
 static void i82801ex_lpc_enable_resources(device_t dev)
 {
-	uint8_t acpi_cntl, gpio_cntl;
-
-	/* Enable the normal pci resources */
+	/* Enable the normal PCI resources. */
 	pci_dev_enable_resources(dev);
 
-	/* Enable the ACPI bar */
-	acpi_cntl = pci_read_config8(dev, 0x44);
-	acpi_cntl |= (1 << 4);
-	pci_write_config8(dev, 0x44, acpi_cntl);
+	/* Enable ACPI and GPIO BARs. */
+	i82801ex_enable_acpi(dev);
 
-	/* Enable the GPIO bar */
-	gpio_cntl = pci_read_config8(dev, 0x5c);
-	gpio_cntl |= (1 << 4);
-	pci_write_config8(dev, 0x5c, gpio_cntl);
+	/* Set features (most important: IOAPIC). */
+	i82801ex_general_cntl(dev);
 }
 
 static struct pci_operations lops_pci = {

@@ -27,6 +27,14 @@
 #include "chip.h"
 #include <pc80/mc146818rtc.h>
 
+static void h8_bluetooth_enable(int on)
+{
+	if (on)
+		ec_set_bit(0x3a, 4);
+	else
+		ec_clr_bit(0x3a, 4);
+}
+
 void h8_trackpoint_enable(int on)
 {
 	ec_write(H8_TRACKPOINT_CTRL,
@@ -142,6 +150,9 @@ static void h8_enable(device_t dev)
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
 
+
+	if (!get_option(&val, "bluetooth"))
+		h8_bluetooth_enable(val);
 
 	if (!get_option(&val, "first_battery")) {
 		tmp = ec_read(H8_CONFIG3);

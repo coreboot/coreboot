@@ -81,6 +81,24 @@ static void sata_init(struct device *dev)
 	  pci_write_config8(dev, SATA_PCS + 1, 0x0f);
 
 	}
+
+	/* secret init sequence, required */
+	pci_write_config32(dev, 0x94, 0x00400180);
+	pci_write_config32(dev, 0xa0, 0x18);
+	pci_write_config32(dev, 0xa4, 0x224);
+	pci_write_config32(dev, 0xa0, 0x42);
+	pci_write_config32(dev, 0xa4, 0x22006d);
+	pci_write_config32(dev, 0xa0, 0x84);
+	pci_write_config32(dev, 0xa4, 0x24);
+	pci_write_config32(dev, 0xa0, 0x7a);
+	pci_write_config32(dev, 0xa4, 0x220000);
+	pci_write_config32(dev, 0xa0, 0x9c);
+	pci_write_config32(dev, 0xa4, 0x24);
+	pci_write_config32(dev, 0xa0, 0x90);
+	pci_write_config32(dev, 0xa4, 0x220000);
+	pci_write_config32(dev, 0xa0, 0xa0);
+	pci_write_config32(dev, 0xa4, 0x12492aa);
+
 	printk(BIOS_DEBUG, "SATA Enabled\n");
 }
 

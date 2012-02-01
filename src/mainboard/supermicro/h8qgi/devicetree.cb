@@ -84,8 +84,8 @@ chip northbridge/amd/agesa/family15/root_complex
 								irq 0x70 = 0x01 #keyboard
 								irq 0x72 = 0x0C #mouse
 							end
-							#device pnp 2e.6 off #  SPI
-							#end
+							device pnp 2e.6 off #  SPI
+							end
 							device pnp 2e.307 off #  GPIO6
 							end
 							device pnp 2e.8 off #  WDTO#, PLED
@@ -106,6 +106,10 @@ chip northbridge/amd/agesa/family15/root_complex
 							device pnp 2e.c off # PECI, SST
 							end
 						end #superio/winbond/w83627dhg
+						chip drivers/i2c/w83795
+							device pnp 5e on #hwm
+							end
+						end #drivers/i2c/w83795
 					end # LPC
 					device pci 14.4 on end # PCI 0x4384
 					device pci 14.5 on end # USB 3

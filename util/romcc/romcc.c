@@ -4080,12 +4080,10 @@ static void raw_next_token(struct compile_state *state,
 	}
 	/* string constants */
 	else if ((c == '"') || ((c == 'L') && (c1 == '"'))) {
-		int wchar, multiline;
+		int multiline;
 
-		wchar = 0;
 		multiline = 0;
 		if (c == 'L') {
-			wchar = 1;
 			tokp = next_char(file, tokp, 1);
 		}
 		while((c = get_char(file, tokp)) != -1) {
@@ -4113,12 +4111,10 @@ static void raw_next_token(struct compile_state *state,
 	}
 	/* character constants */
 	else if ((c == '\'') || ((c == 'L') && (c1 == '\''))) {
-		int wchar, multiline;
+		int multiline;
 
-		wchar = 0;
 		multiline = 0;
 		if (c == 'L') {
-			wchar = 1;
 			tokp = next_char(file, tokp, 1);
 		}
 		while((c = get_char(file, tokp)) != -1) {
@@ -4897,13 +4893,11 @@ static void raw_token(struct compile_state *state, struct token *tk)
 
 static void pp_token(struct compile_state *state, struct token *tk)
 {
-	struct file_state *file;
 	int rescan;
 
 	raw_token(state, tk);
 	do {
 		rescan = 0;
-		file = state->file;
 		if (tk->tok == TOK_SPACE) {
 			raw_token(state, tk);
 			rescan = 1;
@@ -7509,7 +7503,6 @@ static struct triple *write_expr(
 	struct compile_state *state, struct triple *dest, struct triple *rval)
 {
 	struct triple *def;
-	int op;
 
 	def = 0;
 	if (!rval) {
@@ -7532,7 +7525,6 @@ static struct triple *write_expr(
 	}
 
 	/* Now figure out which assignment operator to use */
-	op = -1;
 	if (is_in_reg(state, dest)) {
 		def = triple(state, OP_WRITE, dest->type, rval, dest);
 		if (MISC(def, 0) != dest) {
@@ -9168,8 +9160,10 @@ static struct triple *decompose_index(struct compile_state *state,
 static void decompose_compound_types(struct compile_state *state)
 {
 	struct triple *ins, *next, *first;
+#if DEBUG_DECOMPOSE_HIRES
 	FILE *fp;
 	fp = state->dbgout;
+#endif
 	first = state->first;
 	ins = first;
 
@@ -10462,7 +10456,7 @@ static void register_builtin_function(struct compile_state *state,
 	const char *name, int op, struct type *rtype, ...)
 {
 	struct type *ftype, *atype, *ctype, *crtype, *param, **next;
-	struct triple *def, *arg, *result, *work, *last, *first, *retvar, *ret;
+	struct triple *def, *result, *work, *first, *retvar, *ret;
 	struct hash_entry *ident;
 	struct file_state file;
 	int parameters;
@@ -10530,7 +10524,7 @@ static void register_builtin_function(struct compile_state *state,
 		} else {
 			atype = param;
 		}
-		arg = flatten(state, first, variable(state, atype));
+		flatten(state, first, variable(state, atype));
 		param = param->right;
 	}
 	work = new_triple(state, op, rtype, -1, parameters);
@@ -10542,7 +10536,7 @@ static void register_builtin_function(struct compile_state *state,
 		work = write_expr(state, deref_index(state, result, 1), work);
 	}
 	work = flatten(state, first, work);
-	last = flatten(state, first, label(state));
+	flatten(state, first, label(state));
 	ret  = flatten(state, first, ret);
 	name_len = strlen(name);
 	ident = lookup(state, name, name_len);
@@ -13309,7 +13303,7 @@ static void resolve_branches(struct compile_state *state, struct triple *first)
 static struct triple *function_definition(
 	struct compile_state *state, struct type *type)
 {
-	struct triple *def, *tmp, *first, *end, *retvar, *result, *ret;
+	struct triple *def, *tmp, *first, *end, *retvar, *ret;
 	struct triple *fname;
 	struct type *fname_type;
 	struct hash_entry *ident;
@@ -13365,7 +13359,7 @@ static struct triple *function_definition(
 		/* Remove all type qualifiers from the return type */
 		new_type(TYPE_PRODUCT, ctype, clone_type(0, type->left)), 0);
 	crtype->elements = 2;
-	result = flatten(state, end, variable(state, crtype));
+	flatten(state, end, variable(state, crtype));
 
 	/* Allocate a variable for the return address */
 	retvar = flatten(state, end, variable(state, &void_ptr_type));
@@ -14326,8 +14320,7 @@ static void expand_function_call(
 	struct triple *func, *func_first, *func_last, *retvar;
 	struct triple *first;
 	struct type *ptype, *rtype;
-	struct triple *jmp;
-	struct triple *ret_addr, *ret_loc, *ret_set;
+	struct triple *ret_addr, *ret_loc;
 	struct triple_reg_set *enclose, *set;
 	int closure_idx, pvals, i;
 
@@ -14429,8 +14422,8 @@ static void expand_function_call(
 	}
 
 	ret_addr      = flatten(state, ret_loc, ret_addr);
-	ret_set       = flatten(state, ret_loc, write_expr(state, retvar, ret_addr));
-	jmp           = flatten(state, ret_loc,
+	flatten(state, ret_loc, write_expr(state, retvar, ret_addr));
+	flatten(state, ret_loc,
 		call(state, retvar, ret_addr, func_first, func_last));
 
 	/* Find the result */
@@ -14745,7 +14738,7 @@ struct triple *output_asm(struct compile_state *state)
 
 static void join_functions(struct compile_state *state)
 {
-	struct triple *jmp, *start, *end, *call, *in, *out, *func;
+	struct triple *start, *end, *call, *in, *out, *func;
 	struct file_state file;
 	struct type *pnext, *param;
 	struct type *result_type, *args_type;
@@ -14870,7 +14863,7 @@ static void join_functions(struct compile_state *state)
 	walk_functions(state, insert_function, end);
 
 	if (start->next != end) {
-		jmp = flatten(state, start, branch(state, end, 0));
+		flatten(state, start, branch(state, end, 0));
 	}
 
 	/* OK now the functions have been joined. */
@@ -17911,10 +17904,9 @@ static void awaken(
 
 static void eliminate_inefectual_code(struct compile_state *state)
 {
-	struct block *block;
 	struct dead_triple *dtriple, *work_list, **work_list_tail, *dt;
 	int triples, i;
-	struct triple *first, *final, *ins;
+	struct triple *first, *ins;
 
 	if (!(state->compiler->flags & COMPILER_ELIMINATE_INEFECTUAL_CODE)) {
 		return;
@@ -17925,7 +17917,6 @@ static void eliminate_inefectual_code(struct compile_state *state)
 	work_list_tail = &work_list;
 
 	first = state->first;
-	final = state->first->prev;
 
 	/* Count how many triples I have */
 	triples = count_triples(state);
@@ -17935,7 +17926,6 @@ static void eliminate_inefectual_code(struct compile_state *state)
 
 	ins = first;
 	i = 1;
-	block = 0;
 	do {
 		dtriple[i].triple = ins;
 		dtriple[i].block  = block_of_triple(state, ins);
@@ -18293,8 +18283,6 @@ static void print_interference_block(
 	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
 		struct live_range *lr;
 		unsigned id;
-		int op;
-		op = ptr->op;
 		done = (ptr == block->last);
 		lr = rstate->lrd[ptr->id].lr;
 
@@ -20085,7 +20073,6 @@ static void allocate_registers(struct compile_state *state)
 
 	do {
 		struct live_range **point, **next;
-		int conflicts;
 		int tangles;
 		int coalesced;
 
@@ -20105,7 +20092,7 @@ static void allocate_registers(struct compile_state *state)
 		rstate.blocks = compute_variable_lifetimes(state, &state->bb);
 
 		/* Fix invalid mandatory live range coalesce conflicts */
-		conflicts = correct_coalesce_conflicts(state, rstate.blocks);
+		correct_coalesce_conflicts(state, rstate.blocks);
 
 		/* Fix two simultaneous uses of the same register.
 		 * In a few pathlogical cases a partial untangle moves
@@ -23186,13 +23173,12 @@ struct reg_info arch_reg_rhs(struct compile_state *state, struct triple *ins, in
 static struct triple *mod_div(struct compile_state *state,
 	struct triple *ins, int div_op, int index)
 {
-	struct triple *div, *piece0, *piece1;
+	struct triple *div, *piece1;
 
 	/* Generate the appropriate division instruction */
 	div = post_triple(state, ins, div_op, ins->type, 0, 0);
 	RHS(div, 0) = RHS(ins, 0);
 	RHS(div, 1) = RHS(ins, 1);
-	piece0 = LHS(div, 0);
 	piece1 = LHS(div, 1);
 	div->template_id  = TEMPLATE_DIV32;
 	use_triple(RHS(div, 0), div);
@@ -24393,11 +24379,10 @@ static void print_op_move(struct compile_state *state,
 	if ((size_of(state, src->type) < size_of(state, dst->type)) &&
 		(is_signed(src->type)))
 	{
-		int bits, reg_bits, shift_bits;
+		int reg_bits, shift_bits;
 		int dst_reg;
 		int dst_regcm;
 
-		bits = size_of(state, src->type);
 		reg_bits = reg_size(state, dst);
 		if (reg_bits > 32) {
 			reg_bits = 32;

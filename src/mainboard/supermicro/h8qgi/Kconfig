@@ -123,5 +123,19 @@ config VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "102b,0532"
 
+config XIP_ROM_BASE
+	hex
+	default 0xfff00000
+
+config XIP_ROM_SIZE
+	hex
+	default 0x100000
+	help
+	  Overwride the default write through caching size as 1M Bytes.
+	  On some AMD paltform, one socket support 2 kinds of processor family,
+	  Compiling 2 cpu families agesa code will increase the romstage size.
+	  In order to execute romstage in place on the flash rom,
+	  more space is required to be set as write through caching.
+
 endif # BOARD_SUPERMICRO_H8QGI
 

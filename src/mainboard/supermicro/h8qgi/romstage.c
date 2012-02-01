@@ -33,6 +33,7 @@
 #include <sb_cimx.h>
 #include "superio/nuvoton/wpcm450/wpcm450.h"
 #include "superio/winbond/w83627dhg/w83627dhg.h"
+#include "w83795.h"
 
 extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
 
@@ -119,6 +120,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x3C);
+	/* W83627DHG pin89,90 function select is RSTOUT3#, RSTOUT2# by default.
+	 * In order to access W83795G/ADG HWM using I2C protocol,
+	 * we select function to SDA, SCL function (or GP33, GP32 function).
+	 */
+	w83627dhg_enable_i2c(PNP_DEV(0x2E, W83627DHG_SPI));
+	w83795_init(THERMAL_CRUISE_MODE, DTS_SRC_AMD_SBTSI);
+	w83627dhg_enable_serial(PNP_DEV(0x2E, W83627DHG_SP1), CONFIG_TTYS0_BASE);
+
 	nb_Ht_Init();
 	post_code(0x3D);
 	/* Reset for HT, FIDVID, PLL and ucode patch(errata) changes to take affect. */

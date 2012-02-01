@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
+romstage-y += w83795.c
 romstage-$(CONFIG_NORTHBRIDGE_AMD_CIMX_RD890) += rd890_cfg.c
 romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700_cfg.c
 romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += reset.c

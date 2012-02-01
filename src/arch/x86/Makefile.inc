@@ -338,6 +338,11 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@
 
+$(obj)/bootblock_map.h: $(obj)/bootblock.elf
+	printf '#define CONFIG_AP_SIPI_VECTOR 0x' > $@
+	grep ap_sipi_vector $(obj)/bootblock.map | colrm 9 >> $@
+	printf '\n' >> $@
+
 #######################################################################
 # Build the romstage
 $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage/ldscript.ld
@@ -370,9 +375,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDI
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S $(obj)/config.h $(obj)/build.h
+$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S $(obj)/config.h $(obj)/build.h $(obj)/bootblock_map.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -include $(obj)/build.h -include $(obj)/bootblock_map.h -I. -I$(src) $< -o $@
 
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \

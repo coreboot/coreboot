@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2012 Kyösti Mälkki <kyosti.malkki@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,22 +22,22 @@
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/lapic_def.h>
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
+#define lapic(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
+#define START_IPI_VECTOR	((CONFIG_AP_SIPI_VECTOR >> 12) & 0xff)
+
+	.code32
+
 	/* Save the BIST result. */
 	movl	%eax, %ebp
 
-cache_as_ram:
-	post_code(0x20)
-
-	/* Send INIT IPI to all excluding ourself. */
-	movl	$0x000C4500, %eax
-	movl	$0xFEE00300, %esi
-	movl	%eax, (%esi)
-
-	/* Zero out all fixed range and variable range MTRRs. */
+	/* Zero out all fixed range and variable range MTRRs.
+	 * For hyper-threaded CPU MTRRs are shared so we actually
+	 * clear them more than once, but we don't care. */
 	movl	$mtrr_table, %esi
 	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
 	xorl	%eax, %eax
@@ -55,6 +56,98 @@ clear_mtrrs:
 	andl	$(~0x00000cff), %eax
 	wrmsr
 
+	/* For a hyper-threading processor, cache must not be disabled
+	 * on an AP on the same physical package with the BSP.
+	 */
+	movl	$01, %eax
+	cpuid
+	btl	$28, %edx
+	jnc	cache_as_ram
+	bswapl	%ebx
+	cmpb	$01, %bh
+	jbe	cache_as_ram
+
+hyper_threading_cpu:
+	/* Enable local apic. */
+	movl	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	andl	$(~0x0F), %edx		/* MAXPHYWID = 36 */
+	andl	$(~LAPIC_BASE_MSR_ADDR_MASK), %eax
+	orl	$(LAPIC_DEFAULT_BASE | LAPIC_BASE_MSR_ENABLE), %eax
+	wrmsr
+	andl	$LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
+	jnz	bsp_init
+
+ap_init:
+	/* Do not disable cache (so BSP can enable it). */
+        movl	%cr0, %eax
+	andl	$(~((1 << 30) | (1 << 29))), %eax
+	movl	%eax, %cr0
+
+	/* MTRR registers are shared between HT siblings. */
+	movl	$0x300, %ecx
+	rdmsr
+	inc	%eax
+	wrmsr
+
+ap_halt:
+	cli
+1:	hlt
+	jnz	1b
+
+
+bsp_init:
+	/* Send INIT IPI to all excluding ourself. */
+	movl	lapic(ICR), %edi
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT), %eax
+1:	movl	%eax, (%edi)
+	movl	$0x30, %ecx
+2:	pause
+	dec	%ecx
+	jnz	2b
+	movl	(%edi), %ecx
+	andl	$LAPIC_ICR_BUSY, %ecx
+	jnz	1b
+
+	/* delay 10 ms */
+	movl	$10000, %ecx
+1:	inb	$0x80, %al
+	dec	%ecx
+	jnz	1b
+
+	/* Send Start IPI to all excluding ourself. */
+	movl	lapic(ICR), %edi
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_DM_STARTUP | START_IPI_VECTOR), %eax
+1:	movl	%eax, (%edi)
+	movl	$0x30, %ecx
+2:	pause
+	dec	%ecx
+	jnz	2b
+	movl	(%edi), %ecx
+	andl	$LAPIC_ICR_BUSY, %ecx
+	jnz	1b
+
+	/* delay 250 us */
+	movl	$250, %ecx
+1:	inb	$0x80, %al
+	dec	%ecx
+	jnz	1b
+
+	/* Wait for sibling CPU to start. */
+1:	movl	$0x300, %ecx
+	rdmsr
+	andl	%eax, %eax
+	jnz	sipi_complete
+
+	movl	$0x30, %ecx
+2:	pause
+	dec	%ecx
+	jnz	2b
+	jmp	1b
+
+sipi_complete:
+
+cache_as_ram:
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRRphysBase_MSR(0)), %ecx
 	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
@@ -67,36 +160,34 @@ clear_mtrrs:
 	movl	$0x0000000f, %edx
 	wrmsr
 
-	/* Enable MTRR. */
+	/* Enable variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
 	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
-	/* Enable L2 cache. */
-	movl	$0x11e, %ecx
-	rdmsr
-	orl	$(1 << 8), %eax
-	wrmsr
-
-	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
+	/* Enable cache. */
         movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	invd
 	movl	%eax, %cr0
+	invd
 
-	/* Clear the cache memory reagion. */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
-	// movl	$0x23322332, %eax
+	/* Clear memory for stack. */
+	cld
 	xorl	%eax, %eax
+	movl	$(CACHE_AS_RAM_BASE), %edi
+	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
 	rep	stosl
 
+#if 0
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$(1 << 30), %eax
+	wbinvd
 	movl	%eax, %cr0
+	wbinvd
+#endif
 
 #if CONFIG_XIP_ROM_SIZE
 	/* Enable cache for our code in Flash because we do XIP here */
@@ -117,31 +208,59 @@ clear_mtrrs:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
 
-	/* Enable cache. */
-	movl	%cr0, %eax
+#if 0
+	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
+        movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
+#endif
 
-	/* Set up the stack pointer. */
 #if CONFIG_USBDEBUG
 	/* Leave some space for the struct ehci_debug_info. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 128), %esp
 #else
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE), %esp
 #endif
-	movl	%eax, %esp
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 	movl	%esp, %ebp
 	pushl	%eax
 
-	post_code(0x23)
+	post_code(0x23);
 
-	/* Call romstage.c main function. */
 	call	main
+	addl	$4, %esp
 
 	post_code(0x2f)
+
+#if CONFIG_MAIN_WITHOUT_XIP
+	/* With Intel e7505 memory controller, hardware ECC scrub
+	 * halts and/or flushes call stack if run with XIP enabled.
+	 */
+
+	/* Disable cache. */
+	movl	%cr0, %eax
+	orl	$(1 << 30), %eax
+	movl	%eax, %cr0
+
+	/* Disable Flash XIP. */
+	movl	$MTRRphysMask_MSR(1), %ecx
+	movl	$0x0, %edx
+	movl	$0x0, %eax
+	wrmsr
+	invd
+
+	/* Enable cache. */
+	movl	%cr0, %eax
+	andl	$~((1 << 30) | (1 << 29)), %eax
+	movl	%eax, %cr0
+
+	pushl	$0x0
+	call	main_no_xip
+	addl	$4, %esp
+	movl	%esp, %ebp
+#endif
 
 	post_code(0x30)
 
@@ -159,20 +278,7 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x31)
-
 	invd
-#if 0
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRRphysBase_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysBase_MSR(1), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(1), %ecx
-	wrmsr
-#endif
 
 	post_code(0x33)
 

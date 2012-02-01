@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,34 +29,54 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "agesawrapper.h"
 #include "northbridge/amd/agesa/family10/reset_test.h"
-#include "southbridge/amd/sr5650/sr5650.h"
-#include "southbridge/amd/sb700/sb700.h"
+#include <nb_cimx.h>
+#include <sb_cimx.h>
 #include "superio/nuvoton/wpcm450/wpcm450.h"
+#include "superio/winbond/w83627dhg/w83627dhg.h"
 
 extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
+
+//TODO: should not put here
+static void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base)
+{
+	/* TODO: Now assume wio_index=0 */
+	device_t dev;
+	u8 reg8;
+
+	//dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
+	dev = PCI_DEV(0, 0x14, 3);	/* LPC Controller */
+	pci_write_config32(dev, 0x64, base);
+	reg8 = pci_read_config8(dev, 0x48);
+	reg8 |= 1 << 2;
+	pci_write_config8(dev, 0x48, reg8);
+}
+
+static void sb7xx_51xx_disable_wideio(u8 wio_index)
+{
+	/* TODO: Now assume wio_index=0 */
+	device_t dev;
+	u8 reg8;
+
+	//dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
+	dev = PCI_DEV(0, 0x14, 3);	/* LPC Controller */
+	pci_write_config32(dev, 0x64, 0);
+	reg8 = pci_read_config8(dev, 0x48);
+	reg8 &= ~(1 << 2);
+	pci_write_config8(dev, 0x48, reg8);
+}
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
+	post_code(0x30);
 	agesawrapper_amdinitmmio();
-	if (!cpu_init_detectedx && boot_cpu()) {
-		post_code(0x30);
-		/* SR56x0 pcie bridges block pci_locate_device() before pcie training.
-		 * disable all pcie bridges on SR56x0 to work around it
-		 */
-		sr5650_disable_pcie_bridge();
-		post_code(0x31);
-		sb7xx_51xx_lpc_port80();
-		post_code(0x32);
-	}
+	post_code(0x31);
 
 	/* Halt if there was a built in self test failure */
 	post_code(0x33);
 	report_bist_failure(bist);
 
-	enable_sr5650_dev8();
-	sb7xx_51xx_lpc_init();
 	sb7xx_51xx_enable_wideio(0, 0x1600); /* though UARTs are on the NUVOTON BMC */
 	wpcm450_enable_dev(WPCM450_SP1, CONFIG_SIO_PORT, CONFIG_TTYS0_BASE);
 	sb7xx_51xx_disable_wideio(0);
@@ -78,7 +98,19 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitreset passed\n");
 	}
 
-	post_code(0x38);
+	if (!cpu_init_detectedx && boot_cpu()) {
+		post_code(0x38);
+		/*
+		 * SR5650/5670/5690 RD890 chipset, read pci config space hang at POR,
+		 * Disable all Pcie Bridges to work around It.
+		 */
+		sr56x0_rd890_disable_pcie_bridge();
+		post_code(0x39);
+		nb_Poweron_Init();
+		post_code(0x3A);
+		sb_Poweron_Init();
+	}
+	post_code(0x3B);
 	val = agesawrapper_amdinitearly();
 	if(val) {
 		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
@@ -86,12 +118,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitearly passed\n");
 	}
 
-	sr5650_early_setup();
-	post_code(0x39);
-
-	sb7xx_51xx_early_setup();
-	sr5650_htinit();
-	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
+	post_code(0x3C);
+	nb_Ht_Init();
+	post_code(0x3D);
+	/* Reset for HT, FIDVID, PLL and ucode patch(errata) changes to take affect. */
 	if (!warm_reset_detect(0)) {
 		print_info("...WARM RESET...\n\n\n");
 		distinguish_cpu_resets(0);
@@ -103,8 +133,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	val = agesawrapper_amdinitpost();
 	if (val) {
 		printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
+	} else {
+		printk(BIOS_DEBUG, "agesawrapper_amdinitpost passed\n");
 	}
-	printk(BIOS_DEBUG, "agesawrapper_amdinitpost passed\n");
 
 	post_code(0x41);
 	val = agesawrapper_amdinitenv();
@@ -114,8 +145,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitenv passed\n");
 
 	post_code(0x42);
-	sr5650_before_pci_init();
-	sb7xx_51xx_before_pci_init();
 
 	post_code(0x50);
 	print_debug("Disabling cache as ram ");

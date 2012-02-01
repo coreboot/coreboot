@@ -28,6 +28,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
+#include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include "i3100.h"
@@ -196,17 +197,51 @@ static void set_i3100_gpio_inv(
 
 static void i3100_pirq_init(device_t dev)
 {
+	device_t irq_dev;
 	config_t *config;
 
 	/* Get the chip configuration */
 	config = dev->chip_info;
 
-	if(config->pirq_a_d) {
+	if(config->pirq_a_d)
 		pci_write_config32(dev, 0x60, config->pirq_a_d);
-	}
-	if(config->pirq_e_h) {
+
+	if(config->pirq_e_h)
 		pci_write_config32(dev, 0x68, config->pirq_e_h);
-	}
+
+        for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+                u8 int_pin=0, int_line=0;
+
+                if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+                        continue;
+
+                int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
+                switch (int_pin) {
+                case 1: /* INTA# */
+			int_line = config->pirq_a_d & 0xff;
+			break;
+
+                case 2: /* INTB# */
+			int_line = (config->pirq_a_d >> 8) & 0xff;
+			break;
+
+		case 3: /* INTC# */
+			int_line = (config->pirq_a_d >> 16) & 0xff;
+			break;
+
+                case 4: /* INTD# */
+			int_line = (config->pirq_a_d >> 24) & 0xff;
+			break;
+                }
+
+                if (!int_line)
+                        continue;
+
+		printk(BIOS_DEBUG, "%s: irq pin %d, irq line %d\n", dev_path(irq_dev), int_pin, int_line);
+                pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+        }
+
+
 }
 
 static void i3100_power_options(device_t dev) {
@@ -343,6 +378,9 @@ static void lpc_init(struct device *dev)
 
 	/* Initialize isa dma */
 	isa_dma_init();
+
+	setup_i8259();
+	i8259_configure_irq_trigger(9, 1);
 }
 
 static void i3100_lpc_read_resources(device_t dev)

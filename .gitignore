@@ -44,3 +44,6 @@ util/msrtool/msrtool
 util/nvramtool/.dependencies
 util/nvramtool/nvramtool
 util/superiotool/superiotool
+util/romcc/romcc
+util/romcc/tests/*.S-O2-mmmx
+util/romcc/tests/fail_test*.S

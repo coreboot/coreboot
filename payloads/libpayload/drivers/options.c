@@ -30,9 +30,26 @@
 #include <libpayload.h>
 #include <coreboot_tables.h>
 
+u8 *mem_accessor_base;
+
+static u8 mem_read(u8 reg)
+{
+	return mem_accessor_base[reg];
+}
+
+static void mem_write(u8 val, u8 reg)
+{
+	mem_accessor_base[reg] = val;
+}
+
 struct nvram_accessor *use_nvram = &(struct nvram_accessor) {
 	nvram_read,
 	nvram_write
+};
+
+struct nvram_accessor *use_mem = &(struct nvram_accessor) {
+	mem_read,
+	mem_write
 };
 
 struct cb_cmos_option_table *get_system_option_table(void)

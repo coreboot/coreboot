@@ -91,7 +91,7 @@ static void get_cpu_rev(void)
 		printk(BIOS_INFO, "CPU Rev is K8_G0.\n");
 	else if (eax <= 0x100000)
 		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
-	else if (eax <= 0x100f00)
+	else if (eax <= 0x100fa0)
 		printk(BIOS_INFO, "CPU Rev is Fam 10.\n");
 	else
 		printk(BIOS_INFO, "CPU Rev is not recognized.\n");

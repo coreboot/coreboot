@@ -36,7 +36,7 @@ DefinitionBlock (
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
 	Name(PBLN, 0x0)	/* Length of BIOS area */
 
-	Name(PCBA, 0xE0000000)	/* Base address of PCIe config space */
+	Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 
 	Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
@@ -1168,7 +1168,7 @@ DefinitionBlock (
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
 			External (TOM1)
-			External (TOM2) /* (<real tom2> >> 20) to make it fit into 32 bit for XP */
+			External (TOM2)
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1421,7 +1421,7 @@ DefinitionBlock (
 						IRQNoFlags(){13}
 					})
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
-
+#if 0 /* defined by HPET table? */
 				Device(HPTM) {
 					Name(_HID,EISAID("PNP0103"))
 					Name(CRS,ResourceTemplate()	{
@@ -1436,6 +1436,7 @@ DefinitionBlock (
 						Return(CRS)
 					}
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
+#endif
 			} /* end LIBR */
 
 			Device(HPBR) {
@@ -1450,7 +1451,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00140006)
 			} /* end Ac97modem */
 
-			/* SIO Support */
+			/* f71859 Support */
 			OperationRegion (IOID, SystemIO, 0x2E, 0x02)	/* sometimes it is 0x4E */
 				Field (IOID, ByteAcc, NoLock, Preserve)
 				{
@@ -1546,6 +1547,7 @@ DefinitionBlock (
 
 				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
+#if 0
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 				Memory32Fixed(READONLY, 0x000E0000, 0x00020000, RDBS)   /* BIOS ROM area */
 
@@ -1585,12 +1587,14 @@ DefinitionBlock (
 					,,
 					PEBM
 				)
-
+#endif
+				/* memory space for PCI BARs below 4GB */
+				Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
 			}) /* End Name(_SB.PCI0.CRES) */
 
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
-
+#if 0
 				CreateDWordField(CRES, ^EMM1._BAS, EM1B)
 				CreateDWordField(CRES, ^EMM1._LEN, EM1L)
 				CreateDWordField(CRES, ^DMLO._BAS, DMLB)
@@ -1614,8 +1618,7 @@ DefinitionBlock (
 				/*
 				* If(LNotEqual(TOM2, 0x00000000)){
 				*	Store(0x100000000,DMHB)			DRAM from 4GB to TopMem2
-				*	ShiftLeft(TOM2, 20, Local0)
-				*	Subtract(Local0, 0x100000000, DMHL)
+				*	Subtract(TOM2, 0x100000000, DMHL)
 				* }
 				*/
 
@@ -1628,6 +1631,21 @@ DefinitionBlock (
 					ShiftLeft(PBAD,16,EBMB)		/* Reserve the "BIOS" space */
 					Store(PBLN,EBML)
 				}
+#endif
+				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
+				Store(TOM1, MM1B)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, MM1L)
 
 				Return(CRES) /* note to change the Name buffer */
 			}  /* end of Method(_SB.PCI0._CRS) */

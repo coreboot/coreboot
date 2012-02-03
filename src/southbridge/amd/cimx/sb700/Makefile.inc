@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700
-subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
-subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += sb900
+
+
+# SB700 Platform Files
+
+romstage-y += early.c
+romstage-y += smbus.c
+
+ramstage-y += late.c
+
+driver-y   += smbus.c
+driver-y   += lpc.c
+
+

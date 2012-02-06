@@ -1,0 +1,15 @@
+/if VENDOR_/ b choice
+/if BOARD_/ b choice
+/config MAINBOARD_VENDOR/,+3b name
+/config MAINBOARD_PART_NUMBER/,+3b name
+/^/ D
+: choice
+{
+s/if/config/ p
+/^/ D
+}
+: name
+{
+s/default/bool/ p
+/^/ D
+}

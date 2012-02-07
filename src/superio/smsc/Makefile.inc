@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2012 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,3 +29,4 @@ subdirs-y += lpc47n227
 subdirs-y += sio10n268
 subdirs-y += kbc1100
 subdirs-y += smscsuperio
+subdirs-y += sch4037

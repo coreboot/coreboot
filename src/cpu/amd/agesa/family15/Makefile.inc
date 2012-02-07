@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,11 +17,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-config AMD_AGESA
-        bool
-        default n
+subdirs-y += ../../mtrr
+subdirs-y += ../../../x86/tsc
+subdirs-y += ../../../x86/lapic
+subdirs-y += ../../../x86/cache
+subdirs-y += ../../../x86/mtrr
+subdirs-y += ../../../x86/pae
+subdirs-y += ../../../x86/smm
 
-source src/cpu/amd/agesa/family10/Kconfig
-source src/cpu/amd/agesa/family12/Kconfig
-source src/cpu/amd/agesa/family14/Kconfig
-source src/cpu/amd/agesa/family15/Kconfig
+ramstage-y += chip_name.c
+driver-y += model_15_init.c
+

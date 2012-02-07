@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 Advanced Micro Devices, Inc.
+# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += family10
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += family12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15) += family15
 
 ramstage-y += apic_timer.c
 cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cpu/amd/amdfam10_sysconf.h>
 #include "agesawrapper.h"
+#if CONFIG_AMD_SB_CIMX
+#include <sb_cimx.h>
+#endif
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
@@ -34,22 +36,6 @@ u8 bus_isa;
 u8 bus_sp5100[2];
 u8 bus_sr5650[14];
 
-/*
- * Here you only need to set value in pci1234 for HT-IO that could be installed or not
- * You may need to preset pci1234 for HTIO board,
- * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
- */
-u32 pci1234x[] = {
-	0x0000ff0,
-};
-
-/*
- * HT Chain device num, actually it is unit id base of every ht device in chain,
- * assume every chain only have 4 ht device at most
- */
-u32 hcdnx[] = {
-	0x20202020,
-};
 
 u32 bus_type[256];
 
@@ -106,8 +92,7 @@ void get_bus_conf(void)
 
 	bus_type[0] = 1;  /* pci */
 
-	bus_sr5650[0] = (pci1234x[0] >> 16) & 0xff;
-	//  bus_sp5100[0] = (sysconf.pci1234[0] >> 16) & 0xff;
+	bus_sr5650[0] = 0;
 	bus_sp5100[0] = bus_sr5650[0];
 
 	/* sp5100 */
@@ -151,4 +136,9 @@ void get_bus_conf(void)
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;
+
+#if CONFIG_AMD_SB_CIMX
+	sb_After_Pci_Init();
+	sb_Late_Post();
+#endif
 }

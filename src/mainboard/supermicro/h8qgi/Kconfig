@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 Advanced Micro Devices, Inc.
+# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,13 +22,15 @@ if BOARD_SUPERMICRO_H8QGI
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_X86
-	select CPU_AMD_AGESA_FAMILY10
-	select NORTHBRIDGE_AMD_AGESA_FAMILY10_ROOT_COMPLEX
-	select NORTHBRIDGE_AMD_AGESA_FAMILY10
-	select SOUTHBRIDGE_AMD_SR5650
-	select SOUTHBRIDGE_AMD_SP5100
+	select CPU_AMD_AGESA_FAMILY15
+	select CPU_AMD_SOCKET_G34
+	select NORTHBRIDGE_AMD_AGESA_FAMILY15_ROOT_COMPLEX
+	select NORTHBRIDGE_AMD_AGESA_FAMILY15
+	select NORTHBRIDGE_AMD_CIMX_RD890
+	select SOUTHBRIDGE_AMD_CIMX_SB700
 	select SUPERIO_WINBOND_W83627DHG
 	select SUPERIO_NUVOTON_WPCM450
+	select UDELAY_TSC
 	select BOARD_HAS_FADT
 	select HAVE_BUS_CONFIG
 	select HAVE_OPTION_TABLE
@@ -36,14 +38,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_MP_TABLE
 	select HAVE_HARD_RESET
 	select SERIAL_CPU_INIT
-	select AMDMCT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_2048
+	select TINY_BOOTBLOCK
 	#select MMCONF_SUPPORT_DEFAULT #TODO enable it to resolve Multicore IO conflict
-
-config AMD_AGESA
-	bool
-	default y
 
 config MAINBOARD_DIR
 	string

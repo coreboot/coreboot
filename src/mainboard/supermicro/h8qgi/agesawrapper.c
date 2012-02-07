@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include "Dispatcher.h"
 #include "cpuCacheInit.h"
 #include "amdlib.h"
-#include "platform_oem.h"
 #include "Filecode.h"
 #include "heapManager.h"
 #include <cpuFamilyTranslation.h> /* CPU_SPECIFIC_SERVICES */
@@ -54,7 +53,7 @@ VOID *AcpiSlit    = NULL;
 
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
-//VOID *AcpiAlib    = NULL;
+VOID *AcpiAlib    = NULL;
 
 
 /*----------------------------------------------------------------------------------------
@@ -76,6 +75,7 @@ VOID *AcpiWheaCmc = NULL;
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
+extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
 
 static UINT32 agesawrapper_amdinitcpuio(VOID)
 {
@@ -87,6 +87,7 @@ static UINT32 agesawrapper_amdinitcpuio(VOID)
 	UINT32			node;
 	UINT32			sblink;
 	UINT32			i;
+	UINT32			TOM;
 
 	/* get the number of coherent nodes in the system */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB, FUNC_0, 0x60);
@@ -130,12 +131,13 @@ static UINT32 agesawrapper_amdinitcpuio(VOID)
 		PciData = 0x00000A03;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
-		/* Set F0000000-FFFFFFFF to Node0 sbLink. */
+		/* Set TOM1-FFFFFFFF to Node0 sbLink. */
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x8C);
 		PciData = 0x00FFFF00;
 		PciData |= sblink << 4;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-		PciData = 0x00F00000 | 0x03;
+		TOM = (UINT32)MsrRead(TOP_MEM);
+		PciData = (TOM >> 8) | 0x03;
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0x88);
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
@@ -155,13 +157,13 @@ static UINT32 agesawrapper_amdinitcpuio(VOID)
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 
-		/* Start to set IO 0x9000-0xEFFF to Node0 sbLink with ISA&VGA set. */
+		/* Set PCIO: 0x0 - 0xFFF000 to Node0 sbLink  and enabled VGA IO*/
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC4);
-		PciData = 0x0000E000;
+		PciData = 0x00FFF000;
 		PciData |= sblink << 4;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xC0);
-		PciData = 0x00009033;
+		PciData = 0x00000033;
 		LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	}
 
@@ -190,9 +192,9 @@ UINT32 agesawrapper_amdinitmmio(VOID)
 	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
-	MsrReg = (0x0100000000ull - CONFIG_ROM_SIZE) | 5;
+	MsrReg = (0x0100000000 - CONFIG_ROM_SIZE) | 5;
 	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
-	MsrReg = (0x1000000000ull - CONFIG_ROM_SIZE) | 0x800;
+	MsrReg = (0x1000000000 - CONFIG_ROM_SIZE) | 0x800;
 	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
 
 	Status = AGESA_SUCCESS;
@@ -223,7 +225,10 @@ UINT32 agesawrapper_amdinitreset(VOID)
 	AmdParamStruct.StdHeader.CalloutPtr = NULL;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	AmdCreateStruct(&AmdParamStruct);
+	status = AmdCreateStruct(&AmdParamStruct);
+	if (status != AGESA_SUCCESS) {
+		return (UINT32)status;
+	}
 	AmdResetParams.HtConfig.Depth = 0;
 
 	//MARG34PI disabled AGESA_ENTRY_INIT_RESET by default
@@ -257,16 +262,19 @@ UINT32 agesawrapper_amdinitearly(VOID)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	AmdCreateStruct(&AmdParamStruct);
+	status = AmdCreateStruct(&AmdParamStruct);
+	if (status != AGESA_SUCCESS) {
+		return (UINT32)status;
+	}
 
 	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
 	OemCustomizeInitEarly(AmdEarlyParamsPtr);
 
-	status = AmdInitEarly((AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr);
+	status = AmdInitEarly(AmdEarlyParamsPtr);
 	if (status != AGESA_SUCCESS)
 		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 
-	GetCpuServicesOfCurrentCore(&FamilySpecificServices, &AmdParamStruct.StdHeader);
+	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdParamStruct.StdHeader);
 	FamilySpecificServices->GetTscRate(FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
 	printk(BIOS_DEBUG, "BSP Frequency: %luMHz\n", TscRateInMhz);
 
@@ -280,6 +288,7 @@ UINT32 agesawrapper_amdinitpost(VOID)
 	UINT16 i;
 	UINT32 *HeadPtr;
 	AMD_INTERFACE_PARAMS  AmdParamStruct;
+	AMD_POST_PARAMS *PostParams;
 	BIOS_HEAP_MANAGER    *BiosManagerPtr;
 	UINT32 TscRateInMhz;
 	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
@@ -296,10 +305,15 @@ UINT32 agesawrapper_amdinitpost(VOID)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	AmdCreateStruct(&AmdParamStruct);
-	status = AmdInitPost((AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr);
-	if (status != AGESA_SUCCESS)
-		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
+	status = AmdCreateStruct(&AmdParamStruct);
+	if (status != AGESA_SUCCESS) {
+		return (UINT32)status;
+	}
+	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
+	status = AmdInitPost(PostParams);
+	if (status != AGESA_SUCCESS) {
+		agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
+	}
 	AmdReleaseStruct(&AmdParamStruct);
 
 	/* Initialize heap space */
@@ -313,7 +327,7 @@ UINT32 agesawrapper_amdinitpost(VOID)
 	BiosManagerPtr->StartOfAllocatedNodes = 0;
 	BiosManagerPtr->StartOfFreedNodes = 0;
 
-	GetCpuServicesOfCurrentCore (&FamilySpecificServices, &AmdParamStruct.StdHeader);
+	GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdParamStruct.StdHeader);
 	FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
 	printk(BIOS_DEBUG, "BSP Frequency: %luMHz\n", TscRateInMhz);
 
@@ -324,6 +338,7 @@ UINT32 agesawrapper_amdinitenv(VOID)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_ENV_PARAMS *EnvParams;
 
 	LibAmdMemFill(&AmdParamStruct,
 			0,
@@ -336,10 +351,15 @@ UINT32 agesawrapper_amdinitenv(VOID)
 	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
-	AmdCreateStruct(&AmdParamStruct);
-	status = AmdInitEnv((AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr);
+
+	status = AmdCreateStruct(&AmdParamStruct);
+	if (status != AGESA_SUCCESS) {
+		return (UINT32)status;
+	}
+	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
+	status = AmdInitEnv(EnvParams);
 	if (status != AGESA_SUCCESS)
-		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
+		agesawrapper_amdreadeventlog(EnvParams->StdHeader.HeapStatus);
 
 	AmdReleaseStruct(&AmdParamStruct);
 	return (UINT32)status;
@@ -363,10 +383,8 @@ VOID * agesawrapper_getlateinitptr(int pick)
 			return AcpiWheaMce;
 		case PICK_WHEA_CMC:
 			return AcpiWheaCmc;
-/*
 		case PICK_ALIB:
 			return AcpiAlib;
-*/
 		default:
 			return NULL;
 	}
@@ -394,7 +412,10 @@ UINT32 agesawrapper_amdinitmid(VOID)
 	AmdParamStruct.StdHeader.Func = 0;
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	AmdCreateStruct(&AmdParamStruct);
+	status = AmdCreateStruct(&AmdParamStruct);
+	if (status != AGESA_SUCCESS) {
+		return (UINT32)status;
+	}
 	status = AmdInitMid((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS)
 		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
@@ -405,34 +426,49 @@ UINT32 agesawrapper_amdinitmid(VOID)
 
 UINT32 agesawrapper_amdinitlate(VOID)
 {
-	AGESA_STATUS Status;
-	AMD_LATE_PARAMS AmdLateParams;
+	AGESA_STATUS		Status;
+	AMD_INTERFACE_PARAMS	AmdParamStruct;
+	AMD_LATE_PARAMS		*AmdLateParamsPtr;
 
-	LibAmdMemFill(&AmdLateParams,
-			0,
-			sizeof(AMD_LATE_PARAMS),
-			&(AmdLateParams.StdHeader));
+	LibAmdMemFill(&AmdParamStruct,
+		       0,
+		       sizeof (AMD_INTERFACE_PARAMS),
+		       &(AmdParamStruct.StdHeader));
 
-	AmdLateParams.StdHeader.AltImageBasePtr = 0;
-	AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
-	AmdLateParams.StdHeader.Func = 0;
-	AmdLateParams.StdHeader.ImageBasePtr = 0;
-	AmdLateParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
+	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
+	AmdParamStruct.AllocationMethod = PostMemDram;
+	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
+	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdParamStruct.StdHeader.Func = 0;
+	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 
-	Status = AmdInitLate(&AmdLateParams);
+	AmdCreateStruct (&AmdParamStruct);
+	AmdLateParamsPtr = (AMD_LATE_PARAMS *) AmdParamStruct.NewStructPtr;
+
+	printk(BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
+
+	Status = AmdInitLate(AmdLateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
-		agesawrapper_amdreadeventlog(AmdLateParams.StdHeader.HeapStatus);
+		agesawrapper_amdreadeventlog(AmdLateParamsPtr->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);
 	}
+	DmiTable    = AmdLateParamsPtr->DmiTable;
+	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
+	AcpiSrat    = AmdLateParamsPtr->AcpiSrat;
+	AcpiSlit    = AmdLateParamsPtr->AcpiSlit;
+	AcpiWheaMce = AmdLateParamsPtr->AcpiWheaMce;
+	AcpiWheaCmc = AmdLateParamsPtr->AcpiWheaCmc;
+	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
 
-	DmiTable       = AmdLateParams.DmiTable;
-	AcpiPstate     = AmdLateParams.AcpiPState;
-	AcpiSrat       = AmdLateParams.AcpiSrat;
-	AcpiSlit       = AmdLateParams.AcpiSlit;
+	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
+		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
+		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
+		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 
-	AcpiWheaMce    = AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc    = AmdLateParams.AcpiWheaCmc;
-	//AcpiAlib       = AmdLateParams.AcpiAlib;
+	/* Don't release the structure until coreboot has copied the ACPI tables.
+	 * AmdReleaseStruct (&AmdLateParams);
+	 */
 
 	return (UINT32)Status;
 }
@@ -463,15 +499,6 @@ UINT32 agesawrapper_amdlaterunaptask(UINT32 Data, VOID *ConfigPtr)
 		agesawrapper_amdreadeventlog(AmdLateParams.StdHeader.HeapStatus);
 		ASSERT(Status <= AGESA_UNSUPPORTED);
 	}
-
-	DmiTable       = AmdLateParams.DmiTable;
-	AcpiPstate     = AmdLateParams.AcpiPState;
-	AcpiSrat       = AmdLateParams.AcpiSrat;
-	AcpiSlit       = AmdLateParams.AcpiSlit;
-
-	AcpiWheaMce    = AmdLateParams.AcpiWheaMce;
-	AcpiWheaCmc    = AmdLateParams.AcpiWheaCmc;
-	//  AcpiAlib       = AmdLateParams.AcpiAlib;
 
 	return (UINT32)Status;
 }
@@ -782,10 +809,6 @@ static void agesa_error(EVENT_PARAMS *event)
 
 		case MEM_ERROR_SMALL_DQS_POS_WR_WINDOW:
 			printk(BIOS_DEBUG, "Small DQS Position window for WR DQS\n");
-			break;
-
-		case MEM_ERROR_ECC_DIS:
-			printk(BIOS_DEBUG, "ECC has been disabled as a result of an internal issue\n");
 			break;
 
 		case MEM_ERROR_DIMM_SPARING_NOT_ENABLED:
@@ -1141,6 +1164,7 @@ static void interpret_agesa_eventlog(EVENT_PARAMS *event)
  */
 UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 {
+	printk(BIOS_DEBUG, "enter in %s\n", __func__);
 	AGESA_STATUS Status;
 	EVENT_PARAMS AmdEventParams;
 
@@ -1164,6 +1188,7 @@ UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 		Status = AmdReadEventLog(&AmdEventParams);
 	}
 
+	printk(BIOS_DEBUG, "exit %s \n", __func__);
 	return (UINT32)Status;
 }
 

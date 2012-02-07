@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,10 @@
 ////#define BLDOPT_REMOVE_SLIT                     TRUE
 //#define BLDOPT_REMOVE_WHEA                     TRUE
 //#define BLDOPT_REMOVE_DMI                      TRUE
-//#define BLDOPT_REMOVE_EARLY_SAMPLES            FALSE
+
+/*f15 Rev A1 ucode patch CpuF15OrMicrocodePatch0600011F */
+#define BLDOPT_REMOVE_EARLY_SAMPLES		FALSE
+
 //#define BLDOPT_REMOVE_HT_ASSIST                TRUE
 //#define BLDOPT_REMOVE_MSG_BASED_C1E            TRUE
 //#define BLDCFG_REMOVE_ACPI_PSTATES_PPC               TRUE
@@ -107,7 +110,7 @@
 #define BLDCFG_ONLINE_SPARE                       FALSE
 #define BLDCFG_BANK_SWIZZLE                       TRUE
 #define BLDCFG_TIMING_MODE_SELECT                 TIMING_MODE_AUTO
-#define BLDCFG_MEMORY_CLOCK_SELECT                DDR800_FREQUENCY
+#define BLDCFG_MEMORY_CLOCK_SELECT                DDR1333_FREQUENCY //DDR800_FREQUENCY
 #define BLDCFG_DQS_TRAINING_CONTROL               TRUE
 #define BLDCFG_IGNORE_SPD_CHECKSUM                FALSE
 #define BLDCFG_USE_BURST_MODE                     FALSE
@@ -297,6 +300,27 @@ CONST CPU_HT_DEEMPHASIS_LEVEL ROMDATA h8qgi_deemphasis_list[] =
 	{0, 2, HT_FREQUENCY_2400M, HT_FREQUENCY_2400M, DeemphasisLevelMinus8, DcvLevelMinus7},
 	{0, 2, HT_FREQUENCY_2600M, HT_FREQUENCY_2600M, DeemphasisLevelMinus11pre8, DcvLevelMinus9},
 
+	{1, 2, HT3_FREQUENCY_MIN, HT_FREQUENCY_1600M, DeemphasisLevelNone, DcvLevelNone},
+	{1, 2, HT_FREQUENCY_1800M, HT_FREQUENCY_1800M, DeemphasisLevelMinus3, DcvLevelMinus5},
+	{1, 2, HT_FREQUENCY_2000M, HT_FREQUENCY_2000M, DeemphasisLevelMinus6, DcvLevelMinus5},
+	{1, 2, HT_FREQUENCY_2200M, HT_FREQUENCY_2200M, DeemphasisLevelMinus6, DcvLevelMinus7},
+	{1, 2, HT_FREQUENCY_2400M, HT_FREQUENCY_2400M, DeemphasisLevelMinus8, DcvLevelMinus7},
+	{1, 2, HT_FREQUENCY_2600M, HT_FREQUENCY_2600M, DeemphasisLevelMinus11pre8, DcvLevelMinus9},
+
+	{2, 0, HT3_FREQUENCY_MIN, HT_FREQUENCY_1600M, DeemphasisLevelNone, DcvLevelNone},
+	{2, 0, HT_FREQUENCY_1800M, HT_FREQUENCY_1800M, DeemphasisLevelMinus3, DcvLevelMinus5},
+	{2, 0, HT_FREQUENCY_2000M, HT_FREQUENCY_2000M, DeemphasisLevelMinus6, DcvLevelMinus5},
+	{2, 0, HT_FREQUENCY_2200M, HT_FREQUENCY_2200M, DeemphasisLevelMinus6, DcvLevelMinus7},
+	{2, 0, HT_FREQUENCY_2400M, HT_FREQUENCY_2400M, DeemphasisLevelMinus8, DcvLevelMinus7},
+	{2, 0, HT_FREQUENCY_2600M, HT_FREQUENCY_2600M, DeemphasisLevelMinus11pre8, DcvLevelMinus9},
+
+	{3, 0, HT3_FREQUENCY_MIN, HT_FREQUENCY_1600M, DeemphasisLevelNone, DcvLevelNone},
+	{3, 0, HT_FREQUENCY_1800M, HT_FREQUENCY_1800M, DeemphasisLevelMinus3, DcvLevelMinus5},
+	{3, 0, HT_FREQUENCY_2000M, HT_FREQUENCY_2000M, DeemphasisLevelMinus6, DcvLevelMinus5},
+	{3, 0, HT_FREQUENCY_2200M, HT_FREQUENCY_2200M, DeemphasisLevelMinus6, DcvLevelMinus7},
+	{3, 0, HT_FREQUENCY_2400M, HT_FREQUENCY_2400M, DeemphasisLevelMinus8, DcvLevelMinus7},
+	{3, 0, HT_FREQUENCY_2600M, HT_FREQUENCY_2600M, DeemphasisLevelMinus11pre8, DcvLevelMinus9},
+
 	/* Coherent link deemphasis. */
 	{HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT3_FREQUENCY_MIN, HT_FREQUENCY_1600M, DeemphasisLevelNone, DcvLevelNone},
 	{HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_FREQUENCY_1800M, HT_FREQUENCY_1800M, DeemphasisLevelMinus3, DcvLevelMinus3},
@@ -373,22 +397,21 @@ CONST SYSTEM_PHYSICAL_SOCKET_MAP ROMDATA h8qgi_socket_map[] =
 	{HT_SOCKET3, HT_LINK1B, HT_SOCKET0},
 	{HT_SOCKET3, HT_LINK3A, HT_SOCKET0},
 	{HT_SOCKET3, HT_LINK3B, HT_SOCKET2},
-
 };
 
 CONST AP_MTRR_SETTINGS ROMDATA h8qgi_ap_mtrr_list[] =
 {
-	{AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull},
-	{AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull},
-	{AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000ull},
-	{AMD_AP_MTRR_FIX4k_C0000,  0x0000000000000000ull},
-	{AMD_AP_MTRR_FIX4k_C8000,  0x0000000000000000ull},
-	{AMD_AP_MTRR_FIX4k_D0000,  0x0000000000000000ull},
-	{AMD_AP_MTRR_FIX4k_D8000,  0x0000000000000000ull},
-	{AMD_AP_MTRR_FIX4k_E0000,  0x1818181818181818ull},
-	{AMD_AP_MTRR_FIX4k_E8000,  0x1818181818181818ull},
-	{AMD_AP_MTRR_FIX4k_F0000,  0x1818181818181818ull},
-	{AMD_AP_MTRR_FIX4k_F8000,  0x1818181818181818ull},
+	{AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1E},
+	{AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1E},
+	{AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000},
+	{AMD_AP_MTRR_FIX4k_C0000,  0x0000000000000000},
+	{AMD_AP_MTRR_FIX4k_C8000,  0x0000000000000000},
+	{AMD_AP_MTRR_FIX4k_D0000,  0x0000000000000000},
+	{AMD_AP_MTRR_FIX4k_D8000,  0x0000000000000000},
+	{AMD_AP_MTRR_FIX4k_E0000,  0x1818181818181818},
+	{AMD_AP_MTRR_FIX4k_E8000,  0x1818181818181818},
+	{AMD_AP_MTRR_FIX4k_F0000,  0x1818181818181818},
+	{AMD_AP_MTRR_FIX4k_F8000,  0x1818181818181818},
 	{CPU_LIST_TERMINAL}
 };
 
@@ -403,7 +426,7 @@ CONST AP_MTRR_SETTINGS ROMDATA h8qgi_ap_mtrr_list[] =
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
-#define AGESA_ENTRY_INIT_RESET                    FALSE//TRUE
+#define AGESA_ENTRY_INIT_RESET                    TRUE//FALSE
 #define AGESA_ENTRY_INIT_RECOVERY                 FALSE
 #define AGESA_ENTRY_INIT_EARLY                    TRUE
 #define AGESA_ENTRY_INIT_POST                     TRUE
@@ -415,13 +438,32 @@ CONST AP_MTRR_SETTINGS ROMDATA h8qgi_ap_mtrr_list[] =
 #define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
 #define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
 
-#include "GnbInterface.h"     /*prototype for GnbInterfaceStub*/
+/*
+#if (CONFIG_CPU_AMD_AGESA_FAMILY15 == 1)
+  #define BLDOPT_REMOVE_FAMILY_10_SUPPORT         TRUE
+#endif
+#if (CONFIG_CPU_AMD_AGESA_FAMILY10 == 1)
+  #define BLDOPT_REMOVE_FAMILY_15_SUPPORT         TRUE
+#endif
+*/
+
+//#include "GnbInterface.h"     /*prototype for GnbInterfaceStub*/
 #include "MaranelloInstall.h"
 
 /*----------------------------------------------------------------------------------------
  *                        CUSTOMER OVERIDES MEMORY TABLE
  *----------------------------------------------------------------------------------------
  */
+
+//reference BKDG Table87: works
+#define F15_WL_SEED 0x3B //family15 BKDG recommand 3B RDIMM, 1A UDIMM.
+#define SEED_A 0x54
+#define SEED_B 0x4D
+#define SEED_C 0x45
+#define SEED_D 0x40
+
+#define F10_WL_SEED 0x3B //family10 BKDG recommand 3B RDIMM, 1A UDIMM.
+//4B 41 51
 
 /*
  *  Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
@@ -486,6 +528,40 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	//      Byte6Seed, Byte7Seed, ByteEccSeed)
 	//      Specifies the write leveling seed for a channel of a socket.
 	//
+
+	/* Specifies the write leveling seed for a channel of a socket.
+	 * WRITE_LEVELING_SEED(SocketID, ChannelID, DimmID,
+	 *                     Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
+	 *                     Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed,
+	 *                     ByteEccSeed)
+	 */
+	WRITE_LEVELING_SEED(
+			ANY_SOCKET, ANY_CHANNEL, ALL_DIMMS,
+			F15_WL_SEED, F15_WL_SEED, F15_WL_SEED, F15_WL_SEED,
+			F15_WL_SEED, F15_WL_SEED, F15_WL_SEED, F15_WL_SEED,
+			F15_WL_SEED),
+
+	/* HW_RXEN_SEED(SocketID, ChannelID, DimmID,
+	 *              Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
+	 *              Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed, ByteEccSeed)
+	 */
+	HW_RXEN_SEED(
+		ANY_SOCKET, CHANNEL_A, ALL_DIMMS,
+		SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A,
+		SEED_A),
+	HW_RXEN_SEED(
+		ANY_SOCKET, CHANNEL_B, ALL_DIMMS,
+		SEED_B, SEED_B, SEED_B, SEED_B, SEED_B, SEED_B, SEED_B, SEED_B,
+		SEED_B),
+	HW_RXEN_SEED(
+		ANY_SOCKET, CHANNEL_C, ALL_DIMMS,
+		SEED_C, SEED_C, SEED_C, SEED_C, SEED_C, SEED_C, SEED_C, SEED_C,
+		SEED_C),
+	HW_RXEN_SEED(
+		ANY_SOCKET, CHANNEL_D, ALL_DIMMS,
+		SEED_D, SEED_D, SEED_D, SEED_D, SEED_D, SEED_D, SEED_D, SEED_D,
+		SEED_D),
+
 	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2), //max 3
 	PSO_END
 };
@@ -493,7 +569,6 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 /*
  * These tables are optional and may be used to adjust memory timing settings
  */
-
 //HY Customer table
 UINT8 AGESA_MEM_TABLE_HY[][sizeof (MEM_TABLE_ALIAS)] =
 {

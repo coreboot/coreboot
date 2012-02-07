@@ -7,6 +7,8 @@ config BOARD_AMD_DB800
 	bool "DB800 (Salsa)"
 config BOARD_AMD_DBM690T
 	bool "DBM690T (Herring)"
+config BOARD_AMD_DINAR
+	bool "Dinar"
 config BOARD_AMD_MAHOGANY
 	bool "Mahogany"
 config BOARD_AMD_MAHOGANY_FAM10
@@ -39,6 +41,7 @@ endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
 source "src/mainboard/amd/dbm690t/Kconfig"
+source "src/mainboard/amd/dinar/Kconfig"
 source "src/mainboard/amd/mahogany/Kconfig"
 source "src/mainboard/amd/mahogany_fam10/Kconfig"
 source "src/mainboard/amd/norwich/Kconfig"

@@ -17,4 +17,3 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ramstage-y += ../../../drivers/i2c/i2cmux/i2cmux.c

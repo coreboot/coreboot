@@ -19,4 +19,3 @@
 ##
 
 ROMCCFLAGS=-mcpu=p4 -O2
-ramstage-y += ../../../drivers/generic/debug/debug_dev.c

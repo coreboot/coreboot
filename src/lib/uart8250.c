@@ -29,21 +29,30 @@
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
+/* Expected character delay at 1200bps is 9ms for a working UART
+ * and no flow-control. Assume UART as stuck if shift register
+ * or FIFO takes more than 50ms per character to appear empty.
+ *
+ * Estimated that inb() from UART takes 1 microsecond.
+ */
+#define SINGLE_CHAR_TIMEOUT	(50 * 1000)
+#define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
+
 static inline int uart8250_can_tx_byte(unsigned base_port)
 {
-	return inb(base_port + UART_LSR) & UART_MSR_DSR;
+	return inb(base_port + UART_LSR) & UART_LSR_THRE;
 }
 
 static inline void uart8250_wait_to_tx_byte(unsigned base_port)
 {
-	while(!uart8250_can_tx_byte(base_port))
-		;
+	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	while (i-- && !uart8250_can_tx_byte(base_port));
 }
 
 static inline void uart8250_wait_until_sent(unsigned base_port)
 {
-	while(!(inb(base_port + UART_LSR) & UART_LSR_TEMT))
-		;
+	unsigned long int i = FIFO_TIMEOUT;
+	while (i-- && !(inb(base_port + UART_LSR) & UART_LSR_TEMT));
 }
 
 void uart8250_tx_byte(unsigned base_port, unsigned char data)
@@ -64,9 +73,13 @@ int uart8250_can_rx_byte(unsigned base_port)
 
 unsigned char uart8250_rx_byte(unsigned base_port)
 {
-	while(!uart8250_can_rx_byte(base_port))
-		;
-	return inb(base_port + UART_RBR);
+	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	while (i-- && !uart8250_can_rx_byte(base_port));
+	
+	if (i)
+		return inb(base_port + UART_RBR);
+	else
+		return 0x0;
 }
 
 void uart8250_init(unsigned base_port, unsigned divisor)
@@ -83,7 +96,7 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 	/* DLAB on */
 	outb(UART_LCR_DLAB | CONFIG_TTYS0_LCS, base_port + UART_LCR);
 
-	/* Set Baud Rate Divisor. 12 ==> 115200 Baud */
+	/* Set Baud Rate Divisor. 12 ==> 9600 Baud */
 	outb(divisor & 0xFF,   base_port + UART_DLL);
 	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
 

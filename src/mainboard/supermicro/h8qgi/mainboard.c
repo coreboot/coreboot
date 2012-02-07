@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,36 +25,48 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include "southbridge/amd/sr5650/cmn.h"
+#include <NbPlatform.h>
 #include "chip.h"
 
-void set_pcie_dereset(void);
-void set_pcie_reset(void);
+void set_pcie_dereset(void *nbconfig);
+void set_pcie_reset(void *nbconfig);
 
 /**
  *
  */
-void set_pcie_reset(void)
+void set_pcie_reset(void *nbconfig)
 {
 }
 
 /**
+ * Mainboard specific RD890 CIMx callback
  * Release Resets to PCIe Links
- * PCIE_RESET_GPIO1,2,4,5
+ * For Both SR56X0 chips, PCIE_RESET_GPIO1 to reset pcie
  */
-void set_pcie_dereset(void)
+void set_pcie_dereset(void *nbconfig)
 {
-	device_t pcie_core_dev;
+	//u32 nb_dev = MAKE_SBDFO(0, 0x0, 0x0, 0x0, 0x0);
+	u32 i;
+	u32 val;
+	u32 nb_addr;
 
-	pcie_core_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
-	set_htiu_enable_bits(pcie_core_dev, 0xA8, 0x07000707, 0x07000707);
-	set_htiu_enable_bits(pcie_core_dev, 0xA9, 0x00000007, 0x00000007);
+	val = 0x00000007UL;
+	AMD_NB_CONFIG_BLOCK *pConfig = (AMD_NB_CONFIG_BLOCK*)nbconfig;
+	for (i = 0; i < MAX_NB_COUNT; i ++) {
+		nb_addr = pConfig->Northbridges[i].NbPciAddress.AddressValue | NB_HTIU_INDEX;
+		LibNbPciIndexRMW(nb_addr,
+				NB_HTIU_REGA8,
+				AccessS3SaveWidth32,
+				~val,
+				val,
+				 &(pConfig->Northbridges[i]));
+	}
 }
 
 
 /*************************************************
-* enable the dedicated function in h8qgi board.
-*************************************************/
+ * enable the dedicated function in h8qgi board.
+ *************************************************/
 static void h8qgi_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
@@ -69,5 +81,5 @@ int add_mainboard_resources(struct lb_memory *mem)
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
-	.enable_dev = h8qgi_enable,
+		.enable_dev = h8qgi_enable,
 };

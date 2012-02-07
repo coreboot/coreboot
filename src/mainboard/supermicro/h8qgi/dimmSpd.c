@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,27 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
  * @param reg -GPIO Cntrl Register
  * @param out -GPIO bitmap
  * @param out -GPIO enable bitmap
+ * @return  old setting
  */
-static void sp5100_set_gpio(u8 reg, u8 out, u8 enable)
+static u8 sp5100_set_gpio(u8 reg, u8 out, u8 enable)
 {
-        u8 value;
-        device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
+	u8 value, ret;
+	device_t sm_dev = PCI_DEV(0, 0x14, 0); //SMBUS
 
-        value = pci_read_config8(sm_dev, reg);
-        value &= ~(enable);
-        value |= out;
-        value &= ~(enable << 4);
-        pci_write_config8(sm_dev, reg, value);
+	value = pci_read_config8(sm_dev, reg);
+	ret = value;
+	value &= ~(enable);
+	value |= out;
+	value &= ~(enable << 4);
+	pci_write_config8(sm_dev, reg, value);
+
+	return ret;
+}
+
+static void sp5100_restore_gpio(u8 reg, u8 value)
+{
+	device_t sm_dev = PCI_DEV(0, 0x14, 0);
+	pci_write_config8(sm_dev, reg, value);
 }
 
 /*-----------------------------------------------------------------------------
@@ -55,31 +65,31 @@ static void sp5100_set_gpio(u8 reg, u8 out, u8 enable)
 static const UINT8 spdAddressLookup [8] [4] [2] = { // socket, channel, dimm
 	/* socket 0 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 1 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 2 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 	/* socket 3 */
 	{
-		{0xAE, 0xAC},
-		{0xAA, 0xA8},
-		{0xA6, 0xA4},
-		{0xA2, 0xA0},
+		{0xAC, 0xAE},
+		{0xA8, 0xAA},
+		{0xA4, 0xA6},
+		{0xA0, 0xA2},
 	},
 };
 
@@ -177,25 +187,17 @@ static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
 	return 0;
 }
 
-static void writePmReg (int reg, int data)
-{
-	outb(reg, 0xCD6);
-	outb(data, 0xCD7);
-}
-
 static void setupFch (int ioBase)
 {
-	writePmReg (0x2D, ioBase >> 8);
-	writePmReg (0x2C, ioBase | 1);
-	writePmReg (0x29, 0x80);
-	writePmReg (0x28, 0x61);
-	outb(66000000 / 400000 / 4, ioBase + 0x0E); // set SMBus clock to 400 KHz
+	outb(66000000 / 400000 / 4, ioBase + 0x0E); /* set SMBus clock to 400 KHz */
 }
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
+	AGESA_STATUS status;
 	int spdAddress, ioBase;
 	u8 i2c_channel;
+	u8 backup;
 	device_t sm_dev;
 
 	if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
@@ -211,7 +213,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 	 *   1  0   channel 3 (Socket3)
 	 *   1  1   channel 4 (Socket4)
 	 */
-	sp5100_set_gpio(SP5100_GPIO53_56, i2c_channel, 0x03);
+	backup = sp5100_set_gpio(SP5100_GPIO53_56, i2c_channel, 0x03);
 
 	spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
 	if (spdAddress == 0)
@@ -219,11 +221,14 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 
 	/*
 	 * SMBus Base Address was set during southbridge early setup.
-	 * e.g. sb700 IO mapped SMBUS_IO_BASE 0x6000
+	 * e.g. sb700 IO mapped SMBUS_IO_BASE 0x6000, CIMX using 0xB00 as default
 	 */
 	sm_dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SB700_SM), 0);
 	ioBase = pci_read_config32(sm_dev, 0x90) & (0xFFFFFFF0);
 	setupFch(ioBase);
 
-	return readspd(ioBase, spdAddress, (void *)info->Buffer, 256);
+	status = readspd(ioBase, spdAddress, (void *)info->Buffer, 256);
+	sp5100_restore_gpio(SP5100_GPIO53_56, backup);
+
+	return status;
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/io.h>
 #include <device/pci.h>
@@ -48,7 +49,6 @@ static void dump_mem(u32 start, u32 end)
 #endif
 
 extern const unsigned char AmlCode[];
-extern const unsigned char AmlCode_ssdt[];
 
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -77,7 +77,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 #else
 	apicid_sp5100 = CONFIG_MAX_CPUS + 1
 #endif
-	apicid_sr5650 = apicid_sp5100 + 1;
+		apicid_sr5650 = apicid_sp5100 + 1;
 
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
@@ -89,18 +89,18 @@ unsigned long acpi_fill_madt(unsigned long current)
 			0
 			);
 
-        /* IOAPIC on rs5690 */
-        gsi_base += IO_APIC_INTERRUPTS;  /* SP5100 has 24 IOAPIC entries. */
-        dev = dev_find_slot(0, PCI_DEVFN(0, 0));
-        if (dev) {
-                pci_write_config32(dev, 0xF8, 0x1);
-                dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+	/* IOAPIC on rs5690 */
+	gsi_base += IO_APIC_INTERRUPTS;  /* SP5100 has 24 IOAPIC entries. */
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (dev) {
+		pci_write_config32(dev, 0xF8, 0x1);
+		dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
 		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
 				apicid_sr5650,
 				dword,
 				gsi_base
 				);
-        }
+	}
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *) current,
 			0, //BUS
@@ -134,6 +134,29 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
+{
+	int lens;
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+
+	lens = acpigen_write_scope(pscope);
+	msr = rdmsr(TOP_MEM);
+	lens += acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_patch_len(lens - 1);
+	return (unsigned long) (acpigen_get_current());
+}
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -146,7 +169,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
-	//acpi_header_t *ssdt;
+	acpi_header_t *ssdt;
+	acpi_header_t *ssdt2;
+	acpi_header_t *alib;
 
 	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
 
@@ -234,38 +259,38 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	/* SSDT */
-	/* NOTE: we not update_ssdt, so ssdt only contain initialize value from ssdt.asl */
-#ifdef UNUSED_CODE
-	current   = ( current + 0x0f) & -0x10;
-	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
+	current	 = (current + 0x0f) & -0x10;
+	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
+	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
+	if (alib != NULL) {
+		memcpy((void *)current, alib, alib->length);
+		ssdt = (acpi_header_t *) current;
+		current += alib->length;
+		acpi_add_table(rsdp,alib);
+	} else {
+		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
+	}
+
+#if 0 // The DSDT needs additional work for the AGESA SSDT Pstate table
+	current	 = ( current + 0x0f) & -0x10;
+	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
 	if (ssdt != NULL) {
-		memcpy(current, ssdt, ssdt->length);
+		memcpy((void *)current, ssdt, ssdt->length);
 		ssdt = (acpi_header_t *) current;
 		current += ssdt->length;
-	}
-	else {
-		ssdt = (acpi_header_t *) current;
-		memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
-		current += ssdt->length;
-		memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
-		/* recalculate checksum */
-		ssdt->checksum = 0;
-		ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
+	} else {
+		printk(BIOS_DEBUG, "  AGESA SSDT table NULL. Skipping.\n");
 	}
 	acpi_add_table(rsdp,ssdt);
-
-	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
 #endif
 
-	/* DSDT */
-	current   = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
-	dsdt = (acpi_header_t *)current; // it will used by fadt
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
+	current	 = ( current + 0x0f) & -0x10;
+	printk(BIOS_DEBUG, "ACPI:  * coreboot TOM SSDT2 at %lx\n", current);
+	ssdt2 = (acpi_header_t *) current;
+	acpi_create_ssdt_generator(ssdt2, ACPI_TABLE_CREATOR);
+	current += ssdt2->length;
+	acpi_add_table(rsdp,ssdt2);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

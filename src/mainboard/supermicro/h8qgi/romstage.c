@@ -90,6 +90,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x3C);
+	/* W83627DHG pin89,90 function select is RSTOUT3#, RSTOUT2# by default.
+	 * In order to access W83795G/ADG HWM using I2C protocol,
+	 * we select function to SDA, SCL function (or GP33, GP32 function).
+	 */
+	w83627dhg_enable_i2c(PNP_DEV(0x2E, W83627DHG_SPI));
+
 	nb_Ht_Init();
 	post_code(0x3D);
 	/* Reset for HT, FIDVID, PLL and ucode patch(errata) changes to take affect. */

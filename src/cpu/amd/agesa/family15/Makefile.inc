@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,10 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += family10
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += family12
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15) += family15
 
-ramstage-y += apic_timer.c
-cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc
+subdirs-y += ../../mtrr
+subdirs-y += ../../../x86/tsc
+subdirs-y += ../../../x86/lapic
+subdirs-y += ../../../x86/cache
+subdirs-y += ../../../x86/mtrr
+subdirs-y += ../../../x86/pae
+subdirs-y += ../../../x86/smm
+
+ramstage-y += chip_name.c
+driver-y += model_15_init.c
+

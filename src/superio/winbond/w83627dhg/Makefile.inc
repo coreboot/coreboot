@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2012 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,5 +19,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+romstage-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83627DHG) += superio.c
 

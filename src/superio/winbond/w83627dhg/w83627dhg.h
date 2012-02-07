@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2012 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,5 +51,10 @@
 #define W83627DHG_GPIO5	((3 << 8) | W83627DHG_GPIO2345_V)
 
 /* Note: There is no GPIO1 on the W83627DHG as per datasheet. */
+
+void pnp_enter_ext_func_mode(device_t dev);
+void pnp_exit_ext_func_mode(device_t dev);
+void w83627dhg_enable_serial(device_t dev, u16 iobase);
+void w83627dhg_enable_i2c(device_t dev);
 
 #endif

@@ -17,7 +17,3 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-# FIXME drivers should be selected through Kconfig
-ramstage-y += ../../../drivers/i2c/i2cmux2/i2cmux2.c
-ramstage-y += ../../../drivers/i2c/adm1027/adm1027.c
-

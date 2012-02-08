@@ -309,7 +309,7 @@ int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_op
 	switch (cmos_entry->config) {
 		case 'h':
 			/* only works on little endian */
-			raw = malloc(8);
+			raw = malloc(sizeof(u64));
 			*(u64*)raw = strtoull(value, NULL, 0);
 			break;
 		case 's':

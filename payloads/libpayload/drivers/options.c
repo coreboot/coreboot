@@ -292,7 +292,7 @@ int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_opti
 			*dest = strdup((const char*)cmos_enum->text);
 			break;
 		default: /* fail */
-			return 1;
+			ret = 1;
 	}
 	free(raw);
 	return ret;

@@ -1,4 +1,0 @@
-config CPU_VIA_C3
-	bool
-	select UDELAY_TSC
-	select MMX

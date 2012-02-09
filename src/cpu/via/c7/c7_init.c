@@ -147,7 +147,7 @@ static void set_c7_speed(int model) {
 	printk(BIOS_INFO, "Current CPU multiplier: %dx\n", (int)((msr.lo >> 8) & 0xff));
 }
 
-static void model_c7_init(device_t dev)
+static void c7_init(device_t dev)
 {
 	u8 brand;
 	struct cpuinfo_x86 c;
@@ -210,7 +210,7 @@ static void model_c7_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init = model_c7_init,
+	.init = c7_init,
 };
 
 /* Look in arch/x86/lib/cpu.c:cpu_initialize. If there is no CPU with an exact

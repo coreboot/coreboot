@@ -1,6 +1,6 @@
 chip northbridge/via/cx700
 	device lapic_cluster 0 on
-		chip cpu/via/model_c7
+		chip cpu/via/c7
 			device lapic 0 on end
 		end
 	end

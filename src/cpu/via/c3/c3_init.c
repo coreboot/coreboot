@@ -26,7 +26,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 
-static void model_c3_init(device_t dev)
+static void c3_init(device_t dev)
 {
 	x86_enable_cache();
 	x86_setup_mtrrs();
@@ -37,7 +37,7 @@ static void model_c3_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_c3_init,
+	.init     = c3_init,
 };
 
 static struct cpu_device_id cpu_table[] = {

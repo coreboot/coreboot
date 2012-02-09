@@ -17,10 +17,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config CPU_AMD_GX2
+config CPU_AMD_GEODE_GX2
 	bool
 
-if CPU_AMD_GX2
+if CPU_AMD_GEODE_GX2
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -55,5 +55,4 @@ config VSA_FILENAME
 	help
 	  The path and filename of the file to use as VSA.
 
-endif # CPU_AMD_GX2
-
+endif # CPU_AMD_GEODE_GX2

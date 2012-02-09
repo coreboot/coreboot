@@ -73,7 +73,7 @@ unsigned long addr;
 }
 #endif
 
-static void model_gx1_init(device_t dev)
+static void geode_gx1_init(device_t dev)
 {
 #if 0
 	gx1_cpu_setup();
@@ -87,7 +87,7 @@ static void model_gx1_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init	= model_gx1_init,
+	.init	= geode_gx1_init,
 };
 
 static struct cpu_device_id cpu_table[] = {

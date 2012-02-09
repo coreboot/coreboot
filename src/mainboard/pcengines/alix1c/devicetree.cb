@@ -77,7 +77,7 @@ chip northbridge/amd/lx
 
 	# APIC cluster is late CPU init.
 	device lapic_cluster 0 on
-		chip cpu/amd/model_lx
+		chip cpu/amd/geode_lx
 			device lapic 0 on end
 		end
 	end

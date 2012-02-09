@@ -1,7 +1,7 @@
-config CPU_AMD_LX
+config CPU_AMD_GEODE_LX
 	bool
 
-if CPU_AMD_LX
+if CPU_AMD_GEODE_LX
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -36,4 +36,4 @@ config VSA_FILENAME
 	help
 	  The path and filename of the file to use as VSA.
 
-endif # CPU_AMD_LX
+endif # CPU_AMD_GEODE_LX

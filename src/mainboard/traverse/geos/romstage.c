@@ -47,9 +47,9 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
 #include "lib/generic_sdram.c"
-#include "cpu/amd/model_lx/cpureginit.c"
-#include "cpu/amd/model_lx/syspreinit.c"
-#include "cpu/amd/model_lx/msrinit.c"
+#include "cpu/amd/geode_lx/cpureginit.c"
+#include "cpu/amd/geode_lx/syspreinit.c"
+#include "cpu/amd/geode_lx/msrinit.c"
 
 void main(unsigned long bist)
 {

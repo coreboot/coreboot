@@ -77,9 +77,9 @@ static int smc_send_config(unsigned char config_data)
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
 #include "lib/generic_sdram.c"
-#include "cpu/amd/model_lx/cpureginit.c"
-#include "cpu/amd/model_lx/syspreinit.c"
-#include "cpu/amd/model_lx/msrinit.c"
+#include "cpu/amd/geode_lx/cpureginit.c"
+#include "cpu/amd/geode_lx/syspreinit.c"
+#include "cpu/amd/geode_lx/msrinit.c"
 
 static const u16 sio_init_table[] = { // hi=data, lo=index
 	0x0707,		// select LDN 7 (GPIO, SPI, watchdog, ...)

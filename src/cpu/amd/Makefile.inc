@@ -8,9 +8,9 @@ subdirs-$(CONFIG_CPU_AMD_SOCKET_AM2R2) += socket_AM2r2
 subdirs-$(CONFIG_CPU_AMD_SOCKET_AM3) += socket_AM3
 subdirs-$(CONFIG_CPU_AMD_SOCKET_ASB2) += socket_ASB2
 subdirs-$(CONFIG_CPU_AMD_SOCKET_C32) += socket_C32
-subdirs-$(CONFIG_CPU_AMD_GX1) += model_gx1
-subdirs-$(CONFIG_CPU_AMD_GX2) += model_gx2
-subdirs-$(CONFIG_CPU_AMD_LX) += model_lx
+subdirs-$(CONFIG_CPU_AMD_GEODE_GX1) += geode_gx1
+subdirs-$(CONFIG_CPU_AMD_GEODE_GX2) += geode_gx2
+subdirs-$(CONFIG_CPU_AMD_GEODE_LX) += geode_lx
 subdirs-$(CONFIG_CPU_AMD_SC520) += sc520
 subdirs-$(CONFIG_CPU_AMD_SOCKET_S1G1) += socket_S1G1
 

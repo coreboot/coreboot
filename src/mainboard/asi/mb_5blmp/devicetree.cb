@@ -42,7 +42,7 @@ chip northbridge/amd/gx1		# Northbridge
       register "ide1_enable" = "1"
     end
   end
-  chip cpu/amd/model_gx1		# CPU
+  chip cpu/amd/geode_gx1		# CPU
   end
 end
 

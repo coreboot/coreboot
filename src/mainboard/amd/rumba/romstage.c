@@ -26,9 +26,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "northbridge/amd/gx2/raminit.c"
 #include "lib/generic_sdram.c"
-#include "cpu/amd/model_gx2/cpureginit.c"
-#include "cpu/amd/model_gx2/syspreinit.c"
-#include "cpu/amd/model_lx/msrinit.c"
+#include "cpu/amd/geode_gx2/cpureginit.c"
+#include "cpu/amd/geode_gx2/syspreinit.c"
+#include "cpu/amd/geode_lx/msrinit.c"
 
 void main(unsigned long bist)
 {

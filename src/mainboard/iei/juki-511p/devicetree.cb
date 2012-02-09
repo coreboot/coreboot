@@ -50,7 +50,7 @@ chip northbridge/amd/gx1
     end
   end
 
-  chip cpu/amd/model_gx1
+  chip cpu/amd/geode_gx1
   end
 
 end

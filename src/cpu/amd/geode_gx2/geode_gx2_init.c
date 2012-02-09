@@ -16,9 +16,9 @@ static void vsm_end_post_smi(void)
 			  );
 }
 
-static void model_gx2_init(device_t dev)
+static void geode_gx2_init(device_t dev)
 {
-	printk(BIOS_DEBUG, "model_gx2_init\n");
+	printk(BIOS_DEBUG, "geode_gx2_init\n");
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -28,11 +28,11 @@ static void model_gx2_init(device_t dev)
 
 	vsm_end_post_smi();
 
-	printk(BIOS_DEBUG, "model_gx2_init DONE\n");
+	printk(BIOS_DEBUG, "geode_gx2_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init	= model_gx2_init,
+	.init	= geode_gx2_init,
 };
 
 static struct cpu_device_id cpu_table[] = {

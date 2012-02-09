@@ -44,7 +44,7 @@ chip northbridge/amd/gx2
 	end
 	# APIC cluster is late CPU init.
 	device lapic_cluster 0 on
-		chip cpu/amd/model_gx2
+		chip cpu/amd/geode_gx2
 			device lapic 0 on end
 		end
 	end

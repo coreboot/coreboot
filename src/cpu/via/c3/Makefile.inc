@@ -5,6 +5,4 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../../intel/microcode
 
-driver-y += model_c7_init.c
-
-cpu_incs += $(src)/cpu/via/car/cache_as_ram.inc
+driver-y += c3_init.c

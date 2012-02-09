@@ -1,0 +1,11 @@
+config CPU_VIA_C3
+	bool
+
+if CPU_VIA_C3
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select UDELAY_TSC
+	select MMX
+
+endif # CPU_VIA_C3

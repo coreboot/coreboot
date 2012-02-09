@@ -19,3 +19,4 @@
 
 driver-y += northbridge.c
 romstage-y += raminit.c udelay.c
+cpu_incs += src/northbridge/intel/i5000/halt_second_bsp.S

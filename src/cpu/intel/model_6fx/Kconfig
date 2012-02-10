@@ -1,4 +1,4 @@
-config CPU_INTEL_CORE2
+config CPU_INTEL_MODEL_6FX
 	bool
 	select SMP
 	select SSE2

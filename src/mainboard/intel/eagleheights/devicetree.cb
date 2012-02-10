@@ -65,7 +65,7 @@ chip northbridge/intel/i3100
                 end
         end
         device lapic_cluster 0 on
-                chip cpu/intel/bga956
+                chip cpu/intel/socket_BGA956
                         device lapic 0 on end
                 end
         end

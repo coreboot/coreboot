@@ -28,7 +28,6 @@
 #include <console/console.h>
 #include <spd.h>
 #include <types.h>
-#include <southbridge/intel/i63xx/early_smbus.c>
 #include <string.h>
 #include <cbmem.h>
 #include <stdlib.h>

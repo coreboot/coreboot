@@ -1,4 +1,4 @@
-ramstage-y += bga956.c
+ramstage-y += socket_BGA956.c
 subdirs-y += ../model_1067x
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

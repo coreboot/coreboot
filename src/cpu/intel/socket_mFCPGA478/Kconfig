@@ -5,8 +5,8 @@ if CPU_INTEL_SOCKET_MFCPGA478
 
 config SOCKET_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select CPU_INTEL_CORE
-	select CPU_INTEL_CORE2
+	select CPU_INTEL_MODEL_6EX
+	select CPU_INTEL_MODEL_6FX
 	select MMX
 	select SSE
 	select CACHE_AS_RAM

@@ -474,6 +474,8 @@ void suspend_resume(void)
 	wake_vec = acpi_find_wakeup_vector();
 	if (wake_vec)
 		acpi_jump_to_wakeup(wake_vec);
+	else
+		die("Error: No Wake Vector Found!\n   Reset for normal boot path.");
 }
 
 /* This is to be filled by SB code - startup value what was found. */

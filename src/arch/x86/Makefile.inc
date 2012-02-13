@@ -107,6 +107,16 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
 	$(CBFSTOOL) $@.tmp add $(obj)/config.tmp config raw; rm -f $(obj)/config.tmp ; fi
 endif
+ifeq ($(CONFIG_HAVE_ACPI_RESUME),y)
+# This S3 storage area in flash is a bit tricky. The location is set and used
+# by the southbridge ROM access functions. This should probably be
+# connected with the #define somehow...
+	@printf "    S3 NVRAM   0xffff0000 (S3 storage area)\n"
+	rm -f $(obj)/s3.rom
+	dd if=/dev/zero of=$(obj)/fill.rom bs=20k count=1 2> /dev/null
+	$(CBFSTOOL) $@.tmp add $(obj)/fill.rom "s3nv" raw 0xffff0000
+	rm -f $(obj)/s3.rom
+endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print

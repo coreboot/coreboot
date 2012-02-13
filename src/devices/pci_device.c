@@ -650,6 +650,10 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
+#if CONFIG_HAVE_ACPI_RESUME == 1
+extern u8 acpi_slp_type;
+#endif
+
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
@@ -663,6 +667,12 @@ void pci_dev_init(struct device *dev)
 	if (CONFIG_VGA_ROM_RUN != 1 && /* Only execute non-VGA ROMs. */
 	    ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return;
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	/* Don't re-run roms on s3 resume. */
+	if (acpi_slp_type == 3)
+		return;
+#endif
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)

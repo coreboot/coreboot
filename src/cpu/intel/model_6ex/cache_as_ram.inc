@@ -21,6 +21,27 @@
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/lapic_def.h>
+
+/* Macro to access Local APIC registers at default base. */
+#define lapic(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
+
+/* Code for CORE (from model_6ex), not for family<6? */
+#define CORE_L2CACHE_MSR 1
+
+/* Code for CORE2 (from model_6fx), not built. */
+#define CORE2_PREFETCH_DISABLE 0
+
+/* MAXPHYADDR for Atom (model_106cx) is 32. */
+#if CONFIG_CPU_INTEL_MODEL_106CX
+#define CPU_MAXPHYADDR 32
+#else
+#define CPU_MAXPHYADDR 36
+#endif
+#define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYADDR - 32) - 1)
+
+#define ENABLE_BOOTROM_CACHE	1
+#define SPURIOUS_CACHE_CTRL	1
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
@@ -32,9 +53,18 @@ cache_as_ram:
 	post_code(0x20)
 
 	/* Send INIT IPI to all excluding ourself. */
-	movl	$0x000C4500, %eax
-	movl	$0xFEE00300, %esi
-	movl	%eax, (%esi)
+	movl	lapic(ICR), %edi
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT), %eax
+	movl	%eax, (%edi)
+
+#if CORE2_PREFETCH_DISABLE
+	/* Disable prefetchers */
+	movl	$0x01a0, %ecx
+	rdmsr
+	orl	$((1 << 9) | (1 << 19)), %eax
+	orl	$((1 << 5) | (1 << 7)), %edx
+	wrmsr
+#endif
 
 	/* Zero out all fixed range and variable range MTRRs. */
 	movl	$mtrr_table, %esi
@@ -64,39 +94,43 @@ clear_mtrrs:
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRRphysMask_MSR(0)), %ecx
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
-	/* Enable MTRR. */
+	/* Enable variable MTRRs. */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
 	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
+#if CORE_L2CACHE_MSR
 	/* Enable L2 cache. */
 	movl	$0x11e, %ecx
 	rdmsr
 	orl	$(1 << 8), %eax
 	wrmsr
+#endif
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
-        movl	%cr0, %eax
+	movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	invd
 	movl	%eax, %cr0
+	invd
 
 	/* Clear the cache memory reagion. */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
-	// movl	$0x23322332, %eax
+	cld
 	xorl	%eax, %eax
+	movl	$CACHE_AS_RAM_BASE, %edi
+	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
 	rep	stosl
 
+#if SPURIOUS_CACHE_CTRL
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
+#endif
 
 #if CONFIG_XIP_ROM_SIZE
 	/* Enable cache for our code in Flash because we do XIP here */
@@ -112,24 +146,25 @@ clear_mtrrs:
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$0x0000000f, %edx
+	movl	$CPU_PHYSMASK_HI, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
 
+#if SPURIOUS_CACHE_CTRL
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	movl	%eax, %cr0
+#endif
 
 	/* Set up the stack pointer. */
 #if CONFIG_USBDEBUG
 	/* Leave some space for the struct ehci_debug_info. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %esp
 #else
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %esp
 #endif
-	movl	%eax, %esp
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
@@ -138,8 +173,9 @@ clear_mtrrs:
 
 	post_code(0x23)
 
-	/* Call romstage.c main function. */
+	/* Call mainboard/romstage.c: main(). */
 	call	main
+	addl	$4, %esp
 
 	post_code(0x2f)
 
@@ -161,18 +197,6 @@ clear_mtrrs:
 	post_code(0x31)
 
 	invd
-#if 0
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRRphysBase_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysBase_MSR(1), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(1), %ecx
-	wrmsr
-#endif
 
 	post_code(0x33)
 
@@ -190,16 +214,19 @@ clear_mtrrs:
 
 	post_code(0x38)
 
-	/* Enable Write Back and Speculative Reads for the first 1MB. */
+#if CONFIG_RAMTOP
+	/* Enable Write Back and Speculative Reads for low RAM. */
 	movl	$MTRRphysBase_MSR(0), %ecx
 	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(0), %ecx
 	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx	// 36bit address space
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
+#endif
 
+#if ENABLE_BOOTROM_CACHE
 	/* Enable caching and Speculative Reads for the last 4MB. */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	movl	$(0xffc00000 | MTRR_TYPE_WRPROT), %eax
@@ -207,8 +234,9 @@ clear_mtrrs:
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$(~(4 * 1024 * 1024 - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx	// 36bit address space
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
+#endif
 
 	post_code(0x39)
 
@@ -226,6 +254,15 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x3b)
+
+#if CORE2_PREFETCH_DISABLE
+	/* Enable prefetchers */
+	movl	$0x01a0, %ecx
+	rdmsr
+	andl	$~((1 << 9) | (1 << 19)), %eax
+	andl	$~((1 << 5) | (1 << 7)), %edx
+	wrmsr
+#endif
 
 	/* Invalidate the cache again. */
 	invd

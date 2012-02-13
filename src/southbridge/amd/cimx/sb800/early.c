@@ -23,9 +23,11 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>		/* inl, outl */
 #include <arch/romcc_io.h>	/* device_t */
+#include <arch/acpi.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
+#include "cbmem.h"
 
 
 #if CONFIG_RAMINIT_SYSINFO == 1
@@ -80,3 +82,22 @@ void sb800_clk_output_48Mhz(void)
         *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
 }
 
+struct cbmem_entry *get_cbmem_toc(void)
+{
+	uint32_t xdata = 0;
+	int xnvram_pos = 0xf8, xi;
+	for (xi = 0; xi<4; xi++) {
+		outb(xnvram_pos, /* BIOSRAM_INDEX */0xCD4);
+		xdata &= ~(0xff << (xi * 8));
+		xdata |= inb(/* BIOSRAM_DATA */0xCD5) << (xi *8);
+		xnvram_pos++;
+	}
+	return (struct cbmem_entry *) xdata;
+}
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+int acpi_is_wakeup_early(void)
+{
+	return (acpi_get_sleep_type() == 3);
+}
+#endif

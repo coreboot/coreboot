@@ -17,10 +17,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
+#include <console/console.h>
 #include "SBPLATFORM.h"
 #include "cfg.h"
 
+#include <arch/io.h>
+#include <arch/acpi.h>
+
+#define SB800_ACPI_IO_BASE 0x800
+
+#define ACPI_PM_EVT_BLK		(SB800_ACPI_IO_BASE + 0x00) /* 4 bytes */
+#define ACPI_PM1_CNT_BLK	(SB800_ACPI_IO_BASE + 0x04) /* 2 bytes */
+#define ACPI_PMA_CNT_BLK	(SB800_ACPI_IO_BASE + 0x0E) /* 1 byte */
+#define ACPI_PM_TMR_BLK		(SB800_ACPI_IO_BASE + 0x18) /* 4 bytes */
+#define ACPI_GPE0_BLK		(SB800_ACPI_IO_BASE + 0x10) /* 8 bytes */
+#define ACPI_CPU_CONTROL	(SB800_ACPI_IO_BASE + 0x08) /* 6 bytes */
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+int acpi_get_sleep_type(void)
+{
+	u16 tmp = inw(ACPI_PM1_CNT_BLK);
+	tmp = ((tmp & (7 << 10)) >> 10);
+	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp);
+	return (int)tmp;
+}
+#endif
 
 /**
  * @brief South Bridge CIMx configuration
@@ -30,10 +51,13 @@
  */
 void sb800_cimx_config(AMDSBCFG *sb_config)
 {
-	if (!sb_config) {
+	if (!sb_config)
 		return;
-	}
-	//memset(sb_config, 0, sizeof(AMDSBCFG));
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (acpi_get_sleep_type() == 3)
+		sb_config->S3Resume = 1;
+#endif
 
 	/* header */
 	sb_config->StdHeader.PcieBasePtr = PCIEX_BASE_ADDRESS;
@@ -132,4 +156,3 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	}
 #endif //!__PRE_RAM__
 }
-

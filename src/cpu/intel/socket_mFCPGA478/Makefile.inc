@@ -12,3 +12,4 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
 
+cpu_incs += $(src)/cpu/intel/model_6ex/cache_as_ram.inc

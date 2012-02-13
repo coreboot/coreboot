@@ -81,6 +81,10 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AGESA_STATUS CalloutStatus;
 	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
 
+	/*
+	 * printk(BIOS_SPEW,"%s function: %x\n", __func__, (u32) Func);
+	 */
+
 	CalloutStatus = AGESA_UNSUPPORTED;
 
 	for (i = 0; i < CallOutCount; i++) {
@@ -95,28 +99,30 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32				AvailableHeapSize;
-	UINT8				*BiosHeapBaseAddr;
-	UINT32				CurrNodeOffset;
-	UINT32				PrevNodeOffset;
-	UINT32				FreedNodeOffset;
-	UINT32				BestFitNodeOffset;
-	UINT32				BestFitPrevNodeOffset;
-	UINT32				NextFreeOffset;
-	BIOS_BUFFER_NODE	*CurrNodePtr;
-	BIOS_BUFFER_NODE	*FreedNodePtr;
-	BIOS_BUFFER_NODE	*BestFitNodePtr;
-	BIOS_BUFFER_NODE	*BestFitPrevNodePtr;
-	BIOS_BUFFER_NODE	*NextFreePtr;
-	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
+	UINT32              AvailableHeapSize;
+	UINT8               *BiosHeapBaseAddr;
+	UINT32              CurrNodeOffset;
+	UINT32              PrevNodeOffset;
+	UINT32              FreedNodeOffset;
+	UINT32              BestFitNodeOffset;
+	UINT32              BestFitPrevNodeOffset;
+	UINT32              NextFreeOffset;
+	BIOS_BUFFER_NODE   *CurrNodePtr;
+	BIOS_BUFFER_NODE   *FreedNodePtr;
+	BIOS_BUFFER_NODE   *BestFitNodePtr;
+	BIOS_BUFFER_NODE   *BestFitPrevNodePtr;
+	BIOS_BUFFER_NODE   *NextFreePtr;
+	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
 
 	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
+
+	printk(BIOS_SPEW, "%s BiosHeapBaseAddr: %x\n", __func__, (u32) BiosHeapBaseAddr);
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
 		/* First allocation */
@@ -224,32 +230,33 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
-	UINT8				 *BiosHeapBaseAddr;
-	UINT32				AllocNodeOffset;
-	UINT32				PrevNodeOffset;
-	UINT32				NextNodeOffset;
-	UINT32				FreedNodeOffset;
-	UINT32				EndNodeOffset;
-	BIOS_BUFFER_NODE	 *AllocNodePtr;
-	BIOS_BUFFER_NODE	 *PrevNodePtr;
-	BIOS_BUFFER_NODE	 *FreedNodePtr;
-	BIOS_BUFFER_NODE	 *NextNodePtr;
-	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
+	UINT8               *BiosHeapBaseAddr;
+	UINT32              AllocNodeOffset;
+	UINT32              PrevNodeOffset;
+	UINT32              NextNodeOffset;
+	UINT32              FreedNodeOffset;
+	UINT32              EndNodeOffset;
+	BIOS_BUFFER_NODE   *AllocNodePtr;
+	BIOS_BUFFER_NODE   *PrevNodePtr;
+	BIOS_BUFFER_NODE   *FreedNodePtr;
+	BIOS_BUFFER_NODE   *NextNodePtr;
+	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
-
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
+
+
 	/* Find target node to deallocate in list of allocated nodes.
-	 Return AGESA_BOUNDS_CHK if the BufferHandle is not found
+	   Return AGESA_BOUNDS_CHK if the BufferHandle is not found
 	*/
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
 	PrevNodeOffset = AllocNodeOffset;
 
-	while (AllocNodePtr->BufferHandle !=	AllocParams->BufferHandle) {
+	while (AllocNodePtr->BufferHandle !=  AllocParams->BufferHandle) {
 		if (AllocNodePtr->NextNodeOffset == 0) {
 			return AGESA_BOUNDS_CHK;
 		}
@@ -348,8 +355,8 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);

@@ -38,6 +38,12 @@ config SMP
 	  This option is used to enable certain functions to make coreboot
 	  work correctly on symmetric multi processor (SMP) systems.
 
+config AP_SIPI_VECTOR
+	hex
+	default 0xfffff000
+	help
+	  This must equal address of ap_sipi_vector from bootblock build.
+	  	  
 config	MMX
 	bool
 	help

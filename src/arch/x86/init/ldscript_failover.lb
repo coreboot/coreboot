@@ -29,17 +29,18 @@ MEMORY {
 TARGET(binary)
 SECTIONS
 {
-	/* Align .rom to next 4 byte boundary so no pad byte appears
-	 * between _rom and _start.
+	/* Symbol ap_sipi_vector must be aligned to 4kB to start AP CPUs
+	 * with Startup IPI message without RAM.
 	 */
 	.bogus ROMLOC_MIN : {
-		. = ALIGN(4);
+		. = ALIGN(4096);
 		ROMLOC = .;
 	} >rom = 0xff
 
 	/* This section might be better named .setup */
 	.rom ROMLOC : {
 		_rom = .;
+		ap_sipi_vector = .;
 		*(.rom.text);
 		*(.rom.data);
 		*(.rom.data.*);
@@ -51,7 +52,11 @@ SECTIONS
 	 * may cause the total size of a section to change when the start
 	 * address gets applied.
 	 */
-	ROMLOC_MIN = 0xffffff00 - (_erom - _rom + 16);
+	ROMLOC_MIN = 0xffffff00 - (_erom - _rom + 16) - 4096;
+
+	/* Post-check proper SIPI vector. */
+	_bogus = ASSERT(((ap_sipi_vector & 0x0fff) == 0x0), "Bad SIPI vector alignment");
+	_bogus = ASSERT((ap_sipi_vector == CONFIG_AP_SIPI_VECTOR), "Address mismatch on AP_SIPI_VECTOR");
 
 	/DISCARD/ : {
 		*(.comment)

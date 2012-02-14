@@ -31,6 +31,9 @@
 #define ONE_MB  0x100000
 //#define SMBUS_IO_BASE 0x6000
 
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
+
 /**
  * TODO
  * SB CIMx callback
@@ -54,7 +57,7 @@ uint64_t uma_memory_base, uma_memory_size;
 *************************************************/
 static void torpedo_enable(device_t dev)
 {
-  printk(BIOS_INFO, "Mainboard Torpedo Enable. dev=0x%p\n", dev);
+  printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable. dev=0x%p\n", dev);
 #if (CONFIG_GFXUMA == 1)
   msr_t msr, msr2;
   uint32_t sys_mem;
@@ -79,14 +82,13 @@ static void torpedo_enable(device_t dev)
    *     >=1G                  256M
    *     <1G                    64M
    */
-  sys_mem = msr.lo;
-  sys_mem = msr.lo + 16 * ONE_MB;   // Ignore 16MB allocated for C6 when finding UMA size
-  if (sys_mem >= 2048 * ONE_MB) {
-    uma_memory_size = 512 * ONE_MB;
-  } else if (sys_mem >= 1024 * ONE_MB) {
-    uma_memory_size = 256 * ONE_MB;
+  sys_mem = msr.lo + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size
+  if ((msr.hi & 0x0000000F) || (sys_mem >= 0x80000000)) {
+    uma_memory_size = 0x20000000;	/* >= 2G memory, 512M recommended UMA */
+  } else if (sys_mem >= 0x40000000) {
+    uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
   } else {
-    uma_memory_size = 64 * ONE_MB;
+    uma_memory_size = 0x4000000; 	/* <1G memory, 64M recommended UMA */
   }
   uma_memory_base = msr.lo - uma_memory_size; /* TOP_MEM1 */
   printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
@@ -114,6 +116,6 @@ int add_mainboard_resources(struct lb_memory *mem)
   return 0;
 }
 struct chip_operations mainboard_ops = {
-  CHIP_NAME("AMD TORPEDO Mainboard")
+	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
   .enable_dev = torpedo_enable,
 };

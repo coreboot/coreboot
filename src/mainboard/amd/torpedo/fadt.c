@@ -28,7 +28,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
-//#include "../../../southbridge/amd/sb900/sb900.h"
+#include "SbPlatform.h"
 
 /*extern*/ u16 pm_base = 0x800;
 /* pm_base should be set in sb acpi */
@@ -44,6 +44,7 @@
 #define ACPI_CPU_CONTORL	(pm_base + 0x10) /* 6 bytes */
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
+	u16 val = 0;
 	acpi_header_t *header = &(fadt->header);
 
 	pm_base &= 0xFFFF;
@@ -71,29 +72,30 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->s4bios_req = 0x0;
 	fadt->pstate_cnt = 0xe2;
 
-	pm_iowrite(0x60, ACPI_PM_EVT_BLK & 0xFF);
-	pm_iowrite(0x61, ACPI_PM_EVT_BLK >> 8);
-	pm_iowrite(0x62, ACPI_PM1_CNT_BLK & 0xFF);
-	pm_iowrite(0x63, ACPI_PM1_CNT_BLK >> 8);
-	pm_iowrite(0x64, ACPI_PM_TMR_BLK & 0xFF);
-	pm_iowrite(0x65, ACPI_PM_TMR_BLK >> 8);
-	pm_iowrite(0x68, ACPI_GPE0_BLK & 0xFF);
-	pm_iowrite(0x69, ACPI_GPE0_BLK >> 8);
+	val = PM1_EVT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG60, AccWidthUint16, &val);
+	val = PM1_CNT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG62, AccWidthUint16, &val);
+	val = PM1_TMR_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG64, AccWidthUint16, &val);
+	val = GPE0_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG68, AccWidthUint16, &val);
 
 	/* CpuControl is in \_PR.CPU0, 6 bytes */
-	pm_iowrite(0x66, ACPI_CPU_CONTORL & 0xFF);
-	pm_iowrite(0x67, ACPI_CPU_CONTORL >> 8);
+	val = CPU_CNT_BLK_ADDRESS;
+	WritePMIO(SB_PMIOA_REG66, AccWidthUint16, &val);
+	val = 0;
+	WritePMIO(SB_PMIOA_REG6A, AccWidthUint16, &val);
 
-	pm_iowrite(0x6A, 0);	/* AcpiSmiCmdLo */
-	pm_iowrite(0x6B, 0);	/* AcpiSmiCmdHi */
+	val = ACPI_PM2_CNT_BLK;
+	WritePMIO(SB_PMIOA_REG6E, AccWidthUint16, &val);
 
-	pm_iowrite(0x6E, ACPI_PM2_CNT_BLK & 0xFF);
-	pm_iowrite(0x6F, ACPI_PM2_CNT_BLK >> 8);
+	/* AcpiDecodeEnable, When set, SB uses the contents of the
+	 * PM registers at index 60-6B to decode ACPI I/O address.
+	 * AcpiSmiEn & SmiCmdEn */
+	val = BIT0 | BIT1 | BIT2 | BIT4;
+	WritePMIO(SB_PMIOA_REG74, AccWidthUint16, &val);
 
-	pm_iowrite(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
-					* the contents of the PM registers at
-					* index 60-6B to decode ACPI I/O address.
-					* AcpiSmiEn & SmiCmdEn*/
 	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
 	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;

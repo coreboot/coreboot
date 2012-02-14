@@ -25,9 +25,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
-
 #include "agesawrapper.h"
+#include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdfam12.h>
 
 #define DUMP_ACPI_TABLES 0
 extern u32 apicid_sb900;
@@ -110,7 +110,9 @@ unsigned long write_acpi_tables(unsigned long start)
   unsigned long current;
   acpi_rsdp_t *rsdp;
   acpi_rsdt_t *rsdt;
+#if 0 // Don't need HPET table.
   acpi_hpet_t *hpet;
+#endif
   acpi_madt_t *madt;
   acpi_srat_t *srat;
   acpi_slit_t *slit;
@@ -164,7 +166,7 @@ unsigned long write_acpi_tables(unsigned long start)
   printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
   srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
   if (srat != NULL) {
-    memcpy(current, srat, srat->header.length);
+    memcpy((void *)current, srat, srat->header.length);
     srat = (acpi_srat_t *) current;
     //acpi_create_srat(srat);
     current += srat->header.length;
@@ -176,7 +178,7 @@ unsigned long write_acpi_tables(unsigned long start)
   printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
   slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
   if (slit != NULL) {
-    memcpy(current, slit, slit->header.length);
+    memcpy((void *)current, slit, slit->header.length);
     slit = (acpi_slit_t *) current;
     //acpi_create_slit(slit);
     current += slit->header.length;
@@ -188,7 +190,7 @@ unsigned long write_acpi_tables(unsigned long start)
   printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
   ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
   if (ssdt != NULL) {
-    memcpy(current, ssdt, ssdt->length);
+    memcpy((void *)current, ssdt, ssdt->length);
     ssdt = (acpi_header_t *) current;
     current += ssdt->length;
   }

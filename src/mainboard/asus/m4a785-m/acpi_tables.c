@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -49,12 +50,35 @@ static void dump_mem(u32 start, u32 end)
 extern const unsigned char AmlCode[];
 extern const unsigned char AmlCode_ssdt[];
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-extern const unsigned char AmlCode_ssdt2[];
-extern const unsigned char AmlCode_ssdt3[];
-extern const unsigned char AmlCode_ssdt4[];
-extern const unsigned char AmlCode_ssdt5[];
-#endif
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
+{
+	int lens;
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+
+	lens = acpigen_write_scope(pscope);
+	msr = rdmsr(TOP_MEM);
+	lens += acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_patch_len(lens - 1);
+
+	/* TODO: More HT and other tables need to go into this table generation.
+	 * This should also be moved out to the silicon level if it can.
+	 */
+
+	return (unsigned long) (acpigen_get_current());
+}
+
+
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -68,8 +92,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* Write SB700 IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
-					   IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+                               CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
@@ -100,11 +124,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-	acpi_header_t *ssdtx;
-	void *p;
-	int i;
-#endif
 
 	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
 
@@ -161,62 +180,12 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, slit);
 
 	/* SSDT */
-	current	  = ( current + 0x0f) & -0x10;
-	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
-	ssdt = (acpi_header_t *)current;
-	memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
+	current  = ( current + 0x0f) & -0x10;
+	printk(BIOS_DEBUG, "ACPI:  * coreboot PSTATE/TOM SSDT at %lx\n", current);
+	ssdt = (acpi_header_t *) current;
+	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
 	current += ssdt->length;
-	memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
-	//Here you need to set value in pci1234, sblk and sbdn in get_bus_conf.c
-	update_ssdt((void*)ssdt);
-	/* recalculate checksum */
-	ssdt->checksum = 0;
-	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
 	acpi_add_table(rsdp,ssdt);
-
-	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
-	current = acpi_add_ssdt_pstates(rsdp, current);
-
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-
-	/* same htio, but different position? We may have to copy,
-	change HCIN, and recalculate the checknum and add_table */
-
-	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
-		if((sysconf.pci1234[i] & 1) != 1 ) continue;
-		u8 c;
-		if (i < 7) {
-			c = (u8) ('4' + i - 1);
-		} else {
-			c = (u8) ('A' + i - 1 - 6);
-		}
-		current	  = ( current + 0x07) & -0x08;
-		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
-		ssdtx = (acpi_header_t *)current;
-		switch (sysconf.hcid[i]) {
-		case 1:
-			p = &AmlCode_ssdt2;
-			break;
-		case 2:
-			p = &AmlCode_ssdt3;
-			break;
-		case 3:	/* 8131 */
-			p = &AmlCode_ssdt4;
-			break;
-		default:
-			/* HTX no io apic */
-			p = &AmlCode_ssdt5;
-			break;
-		}
-		memcpy(ssdtx, p, sizeof(acpi_header_t));
-		current += ssdtx->length;
-		memcpy(ssdtx, p, ssdtx->length);
-		update_ssdtx((void *)ssdtx, i);
-		ssdtx->checksum = 0;
-		ssdtx->checksum = acpi_checksum((u8 *)ssdtx, ssdtx->length);
-		acpi_add_table(rsdp, ssdtx);
-	}
-#endif
 
 	/* DSDT */
 	current	  = ( current + 0x07) & -0x08;

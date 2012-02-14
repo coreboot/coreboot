@@ -20,7 +20,25 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include "lpc.h"
+#include <bitops.h>
+#include <arch/io.h>
+#include <cbmem.h>
 
+#define BIOSRAM_INDEX   0xcd4
+#define BIOSRAM_DATA    0xcd5
+
+void set_cbmem_toc(struct cbmem_entry *toc)
+{
+	u32 dword = (u32) toc;
+	int nvram_pos = 0xf8, i; /* temp */
+	printk(BIOS_DEBUG, "dword=%x\n", dword);
+	for (i = 0; i<4; i++) {
+		printk(BIOS_DEBUG, "nvram_pos=%x, dword>>(8*i)=%x\n", nvram_pos, (dword >>(8 * i)) & 0xff);
+		outb(nvram_pos, BIOSRAM_INDEX);
+		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		nvram_pos++;
+	}
+}
 
 void lpc_read_resources(device_t dev)
 {

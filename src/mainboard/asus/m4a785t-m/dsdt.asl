@@ -36,7 +36,7 @@ DefinitionBlock (
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
 	Name(PBLN, 0x0)	/* Length of BIOS area */
 
-	Name(PCBA, 0xE0000000)	/* Base address of PCIe config space */
+	Name(PCBA,CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
 	Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 
 	Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
@@ -1421,21 +1421,6 @@ DefinitionBlock (
 						IRQNoFlags(){13}
 					})
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
-
-				Device(HPTM) {
-					Name(_HID,EISAID("PNP0103"))
-					Name(CRS,ResourceTemplate()	{
-						Memory32Fixed(ReadOnly,0xFED00000, 0x00000400, HPT)	/* 1kb reserved space */
-					})
-					Method(_STA, 0) {
-						Return(0x0F) /* sata is visible */
-					}
-					Method(_CRS, 0)	{
-						CreateDwordField(CRS, ^HPT._BAS, HPBA)
-						Store(HPBA, HPBA)
-						Return(CRS)
-					}
-				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
 			} /* end LIBR */
 
 			Device(HPBR) {
@@ -1546,88 +1531,26 @@ DefinitionBlock (
 
 				Memory32Fixed(READWRITE, 0, 0xA0000, BSMM)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
-				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
-				Memory32Fixed(READONLY, 0x000E0000, 0x00020000, RDBS)   /* BIOS ROM area */
-
-				/* DRAM Memory from 1MB to TopMem */
-				Memory32Fixed(READWRITE, 0x00100000, 0, DMLO)	/* 1MB to TopMem */
-
-				/* BIOS space just below 4GB */
-				DWORDMemory(
-					ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-					0x00,			/* Granularity */
-					0x00000000,		/* Min */
-					0x00000000,		/* Max */
-					0x00000000,		/* Translation */
-					0x00000001,		/* Max-Min, RLEN */
-					,,
-					PCBM
-				)
-
-				/* DRAM memory from 4GB to TopMem2 */
-				QWORDMemory(ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-					0x00000000,		/* Granularity */
-					0x00000000,		/* Min */
-					0x00000000,		/* Max */
-					0x00000000,		/* Translation */
-					0x00000001,		/* Max-Min, RLEN */
-					,,
-					DMHI
-				)
-
-				/* BIOS space just below 16EB */
-				QWORDMemory(ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-					0x00000000,		/* Granularity */
-					0x00000000,		/* Min */
-					0x00000000,		/* Max */
-					0x00000000,		/* Translation */
-					0x00000001,		/* Max-Min, RLEN */
-					,,
-					PEBM
-				)
-
+				/* memory space for PCI BARs below 4GB */
+				Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
 			}) /* End Name(_SB.PCI0.CRES) */
 
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
-
-				CreateDWordField(CRES, ^EMM1._BAS, EM1B)
-				CreateDWordField(CRES, ^EMM1._LEN, EM1L)
-				CreateDWordField(CRES, ^DMLO._BAS, DMLB)
-				CreateDWordField(CRES, ^DMLO._LEN, DMLL)
-				CreateDWordField(CRES, ^PCBM._MIN, PBMB)
-				CreateDWordField(CRES, ^PCBM._LEN, PBML)
-
-				CreateQWordField(CRES, ^DMHI._MIN, DMHB)
-				CreateQWordField(CRES, ^DMHI._LEN, DMHL)
-				CreateQWordField(CRES, ^PEBM._MIN, EBMB)
-				CreateQWordField(CRES, ^PEBM._LEN, EBML)
-
-				If(LGreater(LOMH, 0xC0000)){
-					Store(0xC0000, EM1B)	/* Hole above C0000 and below E0000 */
-					Subtract(LOMH, 0xC0000, EM1L)	/* subtract start, assumes allocation from C0000 going up */
-				}
-
-				/* Set size of memory from 1MB to TopMem */
-				Subtract(TOM1, 0x100000, DMLL)
-
+				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
 				/*
-				* If(LNotEqual(TOM2, 0x00000000)){
-				*	Store(0x100000000,DMHB)			DRAM from 4GB to TopMem2
-				*	ShiftLeft(TOM2, 20, Local0)
-				*	Subtract(Local0, 0x100000000, DMHL)
-				* }
+				* Declare memory between TOM1 and 4GB as available
+				* for PCI MMIO.
+				* Use ShiftLeft to avoid 64bit constant (for XP).
+				* This will work even if the OS does 32bit arithmetic, as
+				* 32bit (0x00000000 - TOM1) will wrap and give the same
+				* result as 64bit (0x100000000 - TOM1).
 				*/
-
-				/* If there is no memory above 4GB, put the BIOS just below 4GB */
-				If(LEqual(TOM2, 0x00000000)){
-					Store(PBAD,PBMB)			/* Reserve the "BIOS" space */
-					Store(PBLN,PBML)
-				}
-				Else {  /* Otherwise, put the BIOS just below 16EB */
-					ShiftLeft(PBAD,16,EBMB)		/* Reserve the "BIOS" space */
-					Store(PBLN,EBML)
-				}
+				Store(TOM1, MM1B)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, MM1L)
 
 				Return(CRES) /* note to change the Name buffer */
 			}  /* end of Method(_SB.PCI0._CRS) */

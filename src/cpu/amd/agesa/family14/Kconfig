@@ -67,3 +67,11 @@ config HAVE_INIT_TIMER
 	default y
 	depends on CPU_AMD_AGESA_FAMILY14
 
+config RESUME_SCRATCH_MEMORY_SIZE
+# This is derived from AGESA gccar.inc
+# BSP_STACK_SIZE + CORE0_STACK_SIZE * 8 + CORE1_STACK_SIZE * 64 + HEAP_SIZE
+# For 2 core Fam14: BSP_STACK_SIZE + CORE1_STACK_SIZE + HEAP_SIZE
+# 0x10000 + 0x1000 + 20000
+	hex
+	default 0x31000
+	depends on CPU_AMD_AGESA_FAMILY14

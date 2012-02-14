@@ -13,22 +13,6 @@ static inline void print_debug_pcar(const char *strval, uint32_t val)
 	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
-/* from linux kernel 2.6.32 asm/string_32.h */
-
-static void inline __attribute__((always_inline))  memcopy(void *dest, const void *src, unsigned long bytes)
-{
-	int d0, d1, d2;
-	asm volatile("cld ; rep ; movsl\n\t"
-			"movl %4,%%ecx\n\t"
-			"andl $3,%%ecx\n\t"
-			"jz 1f\n\t"
-			"rep ; movsb\n\t"
-			"1:"
-			: "=&c" (d0), "=&D" (d1), "=&S" (d2)
-			: "0" (bytes / 4), "g" (bytes), "1" ((long)dest), "2" ((long)src)
-			: "memory", "cc");
-}
-
 #if CONFIG_HAVE_ACPI_RESUME == 1
 
 static inline void *backup_resume(void) {
@@ -58,7 +42,7 @@ static inline void *backup_resume(void) {
 	if (resume_backup_memory) {
 		print_debug_pcar("Will copy coreboot region to: ", (uint32_t) resume_backup_memory);
 		/* copy only backup only memory used for CAR */
-		memcopy(resume_backup_memory+HIGH_MEMORY_SAVE-CONFIG_DCACHE_RAM_SIZE,
+		memcopy_fast(resume_backup_memory+HIGH_MEMORY_SAVE-CONFIG_DCACHE_RAM_SIZE,
 			(void *)((CONFIG_RAMTOP)-CONFIG_DCACHE_RAM_SIZE),
 			 CONFIG_DCACHE_RAM_SIZE); //inline
 	}

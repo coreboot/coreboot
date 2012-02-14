@@ -28,6 +28,7 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
+#include <cbmem.h>
 
 #include <cpu/x86/lapic.h>
 
@@ -330,11 +331,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
         return mem_hole;
 }
-#endif
-
-#if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64 // maximum size of high tables in KB
-extern uint64_t high_tables_base, high_tables_size;
 #endif
 
 #if CONFIG_GFXUMA == 1
@@ -691,12 +687,12 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",  mmi
                     if (high_tables_base==0) {
                     /* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-                        high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
+                        high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
-                        high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
+                        high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
 #endif
-                        high_tables_size = HIGH_TABLES_SIZE * 1024;
-                        printk(BIOS_DEBUG, " split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
+                        high_tables_size = HIGH_MEMORY_SIZE;
+                        printk(BIOS_DEBUG, " split: %dK table at =%08llx\n", (u32)high_tables_size,
                                  high_tables_base);
                     }
 #endif
@@ -721,17 +717,18 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",  mmi
         if (high_tables_base==0) {
         /* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-            high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
-            printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx.\n",uma_memory_base);
+		high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
+		printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx, ",uma_memory_base);
 #else
-            high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
+		high_tables_base = (limitk * 1024)- HIGH_MEMORY_SIZE;
 #endif
-            high_tables_size = HIGH_TABLES_SIZE * 1024;
-        }
+		high_tables_size = HIGH_MEMORY_SIZE;
+		}
 #endif
     }
 printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n",mmio_basek);
 printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",high_tables_size);
+printk(BIOS_DEBUG, "  adsr - high_tables_base=%x%x\n", (u32) (high_tables_base >> 32), (u32) high_tables_base);
 
 #if CONFIG_GFXUMA == 1
     printk(BIOS_DEBUG, "adsr - adding uma resource.\n");
@@ -746,22 +743,46 @@ printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",high_tables_size);
 printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 }
 
+extern u8 acpi_slp_type;
 
 static void domain_enable_resources(device_t dev)
 {
   u32 val;
 
 #if CONFIG_AMD_SB_CIMX
+  #if CONFIG_HAVE_ACPI_RESUME == 1
+  if (acpi_slp_type != 3) {
+	  sb_After_Pci_Init();
+	  sb_Mid_Post_Init();
+  } else {
+	  sb_After_Pci_Restore_Init();
+  }
+  #else
   sb_After_Pci_Init();
   sb_Mid_Post_Init();
+  #endif
 #endif
 
   /* Must be called after PCI enumeration and resource allocation */
   printk(BIOS_DEBUG, "\nFam14h - domain_enable_resources: AmdInitMid.\n");
-  val = agesawrapper_amdinitmid ();
-  if(val) {
-    printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+  if (acpi_slp_type != 3) {
+	printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
+	val = agesawrapper_amdinitmid ();
+	if (val)
+		printk(BIOS_DEBUG, "error level: %x \n", val);
+	else
+		printk(BIOS_DEBUG, "passed.\n");
   }
+#else
+  printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
+  val = agesawrapper_amdinitmid ();
+  if (val)
+	  printk(BIOS_DEBUG, "error level: %x \n", val);
+  else
+	  printk(BIOS_DEBUG, "passed.\n");
+#endif
 
   printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }
@@ -795,24 +816,41 @@ static void cpu_bus_set_resources(device_t dev)
     pci_dev_set_resources(dev);
 }
 
+static u32 cpu_bus_scan(device_t dev, u32 max)
+{
+	device_t cpu;
+	struct device_path cpu_path;
+	int apic_id, cores_found;
+
+	/* There is only one node for fam14, but there may be multiple cores. */
+	cpu = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	if (!cpu)
+		printk(BIOS_ERR, "ERROR: %02x:%02x.0 not found", 0, 0x18);
+
+	cores_found = (pci_read_config32(dev_find_slot(0,PCI_DEVFN(0x18,0x3)), 0xe8) >> 12) & 3;
+	printk(BIOS_DEBUG, "  AP siblings=%d\n", cores_found);
+
+
+	for (apic_id = 0; apic_id <= cores_found; apic_id++) {
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.apic.apic_id = apic_id;
+		cpu = alloc_find_dev(dev->link_list, &cpu_path);
+		if (cpu) {
+			cpu->enabled = 1;
+			cpu->path.apic.node_id = 0;
+			cpu->path.apic.core_id = apic_id;
+			printk(BIOS_DEBUG, "CPU: %s %s\n",
+					dev_path(cpu), cpu->enabled?"enabled":"disabled");
+		} else {
+			cpu->enabled = 0;
+		}
+	}
+	return max;
+}
+
 static void cpu_bus_init(device_t dev)
 {
-	struct device_path cpu_path;
-	device_t cpu;
-    int apic_id;
-
-    initialize_cpus(dev->link_list);
-
-	/* Build the AP cpu device path(s) */
-    for (apic_id = 1; apic_id < CONFIG_MAX_CPUS; apic_id++) {
-	    cpu_path.type = DEVICE_PATH_APIC;
-	    cpu_path.apic.apic_id = apic_id;
-    	cpu = alloc_dev(dev->link_list, &cpu_path);
-        if (!cpu) return;
-        cpu->enabled = 1;
-    	cpu->path.apic.node_id = 0;
-    	cpu->path.apic.core_id = apic_id;
-    }
+	initialize_cpus(dev->link_list);
 }
 
 
@@ -858,7 +896,7 @@ static struct device_operations cpu_bus_ops = {
     .set_resources    = cpu_bus_set_resources,
     .enable_resources = NULL,
     .init             = cpu_bus_init,
-    .scan_bus         = NULL,
+    .scan_bus         = cpu_bus_scan,
 };
 
 

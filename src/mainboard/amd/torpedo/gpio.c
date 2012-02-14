@@ -23,9 +23,9 @@
  */
 
 #include "Filecode.h"
-#include "Hudson-2.h"
-#include "AmdSbLib.h"
+#include "SbPlatform.h"
 #include "gpio.h"
+#include "vendorcode/amd/cimx/sb900/AmdSbLib.h"
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
@@ -62,7 +62,6 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
-	void gpioEarlyInit (void);
 
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S

@@ -26,6 +26,8 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/amdfam12.h>
+#include "SbPlatform.h"
 
 //-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS
@@ -113,15 +115,11 @@ static void *smp_write_config_table(void *v)
 
   /* I/O APICs:   APIC ID Version State   Address */
 
-  device_t dev;
   u32 dword;
   u8 byte;
 
-  dword = 0;
-  dword = pm_ioread(0x34) & 0xF0;
-  dword |= (pm_ioread(0x35) & 0xFF) << 8;
-  dword |= (pm_ioread(0x36) & 0xFF) << 16;
-  dword |= (pm_ioread(0x37) & 0xFF) << 24;
+	ReadPMIO(SB_PMIOA_REG34, AccWidthUint32, &dword);
+	dword &= 0xFFFFFFF0;
   /* Set IO APIC ID onto IO_APIC_ID */
   write32 (dword, 0x00);
   write32 (dword + 0x10, IO_APIC_ID << 24);
@@ -166,8 +164,12 @@ static void *smp_write_config_table(void *v)
   /* PCI interrupts are level triggered, and are
    * associated with a specific bus/device/function tuple.
    */
+#if CONFIG_GENERATE_ACPI_TABLES == 0
 #define PCI_INT(bus, dev, int_sign, pin) \
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_sb900, (pin))
+#else
+#define PCI_INT(bus, dev, fn, pin)
+#endif
 
   /* Internal VGA */
   PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
@@ -214,9 +216,9 @@ static void *smp_write_config_table(void *v)
   PCI_INT(bus_sb900[1], 0x7, 0x2, 0x14);
   PCI_INT(bus_sb900[1], 0x7, 0x3, 0x15);
 
-  PCI_INT(bus_sb900[2], 0x0, 0x0, 0x12);
-  PCI_INT(bus_sb900[2], 0x0, 0x1, 0x13);
-  PCI_INT(bus_sb900[2], 0x0, 0x2, 0x14);
+  PCI_INT(bus_sb900[1], 0x0, 0x0, 0x12);
+  PCI_INT(bus_sb900[1], 0x0, 0x1, 0x13);
+  PCI_INT(bus_sb900[1], 0x0, 0x2, 0x14);
 
   /* PCIe Lan*/
   PCI_INT(0x0, 0x06, 0x0, 0x13);

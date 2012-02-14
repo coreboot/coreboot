@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-
-#define BIOS_SIZE                      0x04   //04 - 1MB
+#ifndef BIOS_SIZE
+	#define BIOS_SIZE                      0x04   //04 - 1MB
+#endif
 #define LEGACY_FREE                    0x00
 #if CONFIG_ONBOARD_USB30 == 0
   #define XHCI_SUPPORT                 0x01

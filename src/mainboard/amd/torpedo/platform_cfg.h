@@ -1237,4 +1237,7 @@ void SbPowerOnInit_Config(AMDSBCFG *sb_cfg);
  */
 u32 sb900_callout_entry(u32 func, u32 data, void* sb_cfg);
 
+// definition for function in gpio.c
+void gpioEarlyInit (void);
+
 #endif

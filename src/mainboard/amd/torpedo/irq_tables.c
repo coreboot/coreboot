@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-//#include <cpu/amd/amdfam10_sysconf.h>
+#include <cpu/amd/amdfam12.h>
 
 
 

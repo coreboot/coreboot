@@ -121,6 +121,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 #endif
 	return 0;
 }
+
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = persimmon_enable,

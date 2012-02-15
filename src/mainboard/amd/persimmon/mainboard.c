@@ -23,10 +23,13 @@
 #include <arch/io.h>
 #include <boot/tables.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-//#include <southbridge/amd/sb800/sb800.h>
+#include <southbridge/amd/sb800/sb800.h>
+#include <arch/acpi.h>
 #include "chip.h"
+#include "BiosCallOuts.h"
+#include <cpu/amd/agesa/s3_resume.h>
+#include <cpu/amd/mtrr.h>
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
@@ -55,6 +58,14 @@ uint64_t uma_memory_base, uma_memory_size;
 static void persimmon_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+
+/*
+ * The mainboard is the first place that we get control in ramstage. Check
+ * for S3 resume and call the approriate AGESA/CIMx resume functions.
+ */
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	acpi_slp_type = acpi_get_sleep_type();
+#endif
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
@@ -110,6 +121,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 #endif
 	return 0;
 }
+
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = persimmon_enable,

@@ -176,6 +176,8 @@ void *cbmem_find(u32 id)
 		return NULL;
 
 	for (i = 0; i < MAX_CBMEM_ENTRIES; i++) {
+		printk(BIOS_SPEW, "CBMEM TOC ID %d is: %x base: %x%x\n", i,
+		      (u32) cbmem_toc[i].id, (u32) (cbmem_toc[i].base >> 32), (u32) cbmem_toc[i].base);
 		if (cbmem_toc[i].id == id)
 			return (void *)(unsigned long)cbmem_toc[i].base;
 	}

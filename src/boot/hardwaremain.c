@@ -35,7 +35,7 @@ it with the version available from LANL.
 #include <boot/tables.h>
 #include <boot/elf.h>
 #include <cbfs.h>
-#if CONFIG_HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
 #endif
 #if CONFIG_WRITE_HIGH_TABLES
@@ -94,7 +94,8 @@ void hardwaremain(int boot_complete)
 	cbmem_initialize();
 #endif
 #if CONFIG_HAVE_ACPI_RESUME == 1
-	suspend_resume();
+	if (acpi_slp_type == 3)
+		suspend_resume();
 	post_code(0x8a);
 #endif
 

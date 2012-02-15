@@ -230,13 +230,12 @@ struct lb_memory *write_tables(void)
 	}
 
 	post_code(0x9e);
-
 #if CONFIG_HAVE_ACPI_RESUME
 	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
 	 * it begin there during reboot time. We don't need the pointer, nor
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
-	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
+	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE + HIGH_SCRATCH_MEMORY_SIZE);
 #endif
 
 #if CONFIG_MULTIBOOT

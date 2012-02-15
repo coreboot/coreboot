@@ -22,6 +22,9 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
 
+#define CPU_MAXPHYADDR 36
+#define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYADDR - 32) - 1)
+
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
@@ -64,7 +67,7 @@ clear_mtrrs:
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRRphysMask_MSR(0)), %ecx
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	/* Enable MTRR. */
@@ -112,7 +115,7 @@ clear_mtrrs:
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$0x0000000f, %edx
+	movl	$CPU_PHYSMASK_HI, %edx
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
@@ -197,7 +200,7 @@ clear_mtrrs:
 	wrmsr
 	movl	$MTRRphysMask_MSR(0), %ecx
 	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx	// 36bit address space
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	/* Enable caching and Speculative Reads for the last 4MB. */
@@ -207,7 +210,7 @@ clear_mtrrs:
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
 	movl	$(~(4 * 1024 * 1024 - 1) | MTRRphysMaskValid), %eax
-	movl	$0x0000000f, %edx	// 36bit address space
+	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	post_code(0x39)

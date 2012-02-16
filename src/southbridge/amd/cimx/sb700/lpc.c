@@ -21,6 +21,7 @@
 #include "lpc.h"
 #include <bitops.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <console/console.h>	/* printk */
 #include <cbmem.h>
 
@@ -61,8 +62,8 @@ void lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = 0xfec00000;
+	res = new_resource(dev, 3);
+	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

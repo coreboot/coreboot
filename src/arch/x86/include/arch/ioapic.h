@@ -23,6 +23,7 @@
 #define IO_APIC_ADDR	0xfec00000
 #define IO_APIC_INTERRUPTS 24
 
+#ifndef __ACPI__
 #define ALL		(0xff << 24)
 #define NONE		(0)
 #define DISABLED	(1 << 16)
@@ -38,7 +39,6 @@
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 
-#ifndef __ACPI__
 void setup_ioapic(u32 ioapic_base, u8 ioapic_id);
 void clear_ioapic(u32 ioapic_base);
 #endif

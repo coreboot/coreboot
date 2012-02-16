@@ -82,7 +82,7 @@ clear_mtrrs:
 	wrmsr
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
-        movl	%cr0, %eax
+	movl	%cr0, %eax
 	andl	$(~((1 << 30) | (1 << 29))), %eax
 	invd
 	movl	%eax, %cr0
@@ -163,18 +163,6 @@ clear_mtrrs:
 	post_code(0x31)
 
 	invd
-#if 0
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRRphysBase_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(0), %ecx
-	wrmsr
-	movl	$MTRRphysBase_MSR(1), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(1), %ecx
-	wrmsr
-#endif
 
 	post_code(0x33)
 
@@ -192,7 +180,7 @@ clear_mtrrs:
 
 	post_code(0x38)
 
-	/* Enable Write Back and Speculative Reads for the first 1MB. */
+	/* Enable Write Back and Speculative Reads for low RAM. */
 	movl	$MTRRphysBase_MSR(0), %ecx
 	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
 	xorl	%edx, %edx

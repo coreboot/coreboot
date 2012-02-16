@@ -51,7 +51,7 @@ Device (LPCB)
 		RCBA,	18,
 	}
 
-	#include "../../../southbridge/intel/i82801gx/acpi/irqlinks.asl"
+	#include "irqlinks.asl"
 
 	#include "acpi/ec.asl"
 

@@ -2,6 +2,8 @@
 #define __ASM_MPSPEC_H
 
 #include <device/device.h>
+#include <cpu/x86/lapic_def.h>
+
 /*
  * Structure definitions for SMP machines following the
  * Intel Multiprocessing Specification 1.1 and 1.4.
@@ -228,9 +230,6 @@ struct mp_exten_compatibility_address_space {
 	 * XFC0 - XCDF
 	 */
 } __attribute__((packed));
-
-/* Default local apic addr */
-#define LAPIC_ADDR 0xFEE00000
 
 void mptable_init(struct mp_config_table *mc, u32 lapic_addr);
 

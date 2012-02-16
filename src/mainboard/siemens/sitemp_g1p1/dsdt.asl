@@ -418,8 +418,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
                     CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._LEN, ML02)
                     If (PCIF)
                     {
-                        Store (0xFEC00000, MB01)
-                        Store (0xFEE00000, MB02)
+                        Store (IO_APIC_ADDR, MB01)
+                        Store (LOCAL_APIC_ADDR, MB02)
                         Store (0x1000, ML01)
                         Store (0x1000, ML02)
                     }

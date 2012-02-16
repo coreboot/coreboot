@@ -75,7 +75,7 @@ unsigned char uart8250_rx_byte(unsigned base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_rx_byte(base_port));
-	
+
 	if (i)
 		return inb(base_port + UART_RBR);
 	else

@@ -15,7 +15,7 @@ chip northbridge/amd/amdk8/root_complex
 		end
 	end
 	device pci_domain 0 on
-		subsystemid 0x110a 0x4076 inherit	
+		subsystemid 0x110a 0x4076 inherit
 		chip northbridge/amd/amdk8
 			device pci 18.0 on #  southbridge
 				chip southbridge/amd/rs690
@@ -24,7 +24,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 1.0 on  # Internal Graphics P2P bridge 0x7912
 						device pci 5.0 on # Internal Graphics 0x791F
 						end
-						device pci 5.2 on # 
+						device pci 5.2 on #
 						end
 					end
 					device pci 2.0 on  #  PCIE P2P bridge 0x7913  (external GFX-port0)

@@ -91,7 +91,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       return CalloutStatus;
     }
   }
- 
+
   return CalloutStatus;
 }
 
@@ -289,7 +289,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
     } else {
       /* Otherwise, add freed node to the start of the list
-         Update NextNodeOffset and BufferSize to include the 
+         Update NextNodeOffset and BufferSize to include the
          size of BIOS_BUFFER_NODE
       */
       AllocNodePtr->NextNodeOffset = FreedNodeOffset;
@@ -470,7 +470,7 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   TempData8 &= 0x03;
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
-   
+
   Data8 |= BIT2+BIT3;
   Data8 &= ~BIT4;
   TempData8  = Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
@@ -563,13 +563,13 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
       {
       case AssertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
-        Data8 &= ~(UINT8)BIT6 ; 
+        Data8 &= ~(UINT8)BIT6 ;
         Write64Mem8(GpioMmioAddr+SB_GPIO_REG21, Data8);   // MXM_GPIO0. GPIO21
         Status = AGESA_SUCCESS;
         break;
       case DeassertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
-        Data8 |= BIT6 ; 
+        Data8 |= BIT6 ;
         Write64Mem8 (GpioMmioAddr+SB_GPIO_REG21, Data8);       // MXM_GPIO0. GPIO21
         Status = AGESA_SUCCESS;
         break;
@@ -586,7 +586,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
         break;
       case DeassertSlotReset:
         Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
-        Data8 |= BIT6 ; 
+        Data8 |= BIT6 ;
         Write64Mem8 (GpioMmioAddr+SB_GPIO_REG25, Data8);       // PCIE_RST#_LAN, GPIO25
         Status = AGESA_SUCCESS;
         break;

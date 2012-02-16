@@ -260,7 +260,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 						Store (ETBA, HPT)
 						Return (CRS)
 					}
-						
+
 				}
 #endif
 			}

@@ -1066,7 +1066,7 @@ DefinitionBlock (
 						}
 					}
 				}
-			
+
 				Device (PS2K) {
 					Name (_HID, EisaId ("PNP0303"))
 					Name (_CRS, ResourceTemplate () {

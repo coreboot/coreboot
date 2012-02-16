@@ -182,7 +182,7 @@ clear_fixed_var_mtrr_out:
 	movl	%eax, %esp
 
 #ifdef CARTEST
-testok:	
+testok:
 	post_code(0x40)
 	xorl	%edx, %edx
 	xorl	%eax, %eax

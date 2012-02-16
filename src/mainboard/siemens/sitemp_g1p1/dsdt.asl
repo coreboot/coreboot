@@ -37,8 +37,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 	Name(UOM7, 2)
 	Name(UOM8, 6)
 	Name(UOM9, 6)
-	
-	Name(DSEN, 1)		// Display Output Switching Enable 
+
+	Name(DSEN, 1)		// Display Output Switching Enable
 	// Power notification
 
 	/* PIC IRQ mapping registers, C00h-C01h */
@@ -252,13 +252,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 		PCBA,   32,
 		MPEN,	8
 	}
-	
+
 	Name (IOLM,0xe0000000)
-	
-#include "acpi/platform.asl"	
+
+#include "acpi/platform.asl"
 
 	Scope(\_SB) {
-	
+
 		/* PCIe Configuration Space for 16 busses */
 		OperationRegion(PCFG, SystemMemory, PCBA, 0x2000000) /* PCIe reserved space for 31 busses */
 			Field(PCFG, ByteAcc, NoLock, Preserve) {
@@ -286,7 +286,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			,14,
 			P92E, 1,		/* Port92 decode enable */
 		}
-		
+
 		OperationRegion(BAR5, SystemMemory, STB5, 0x1000)
 			Field(BAR5, AnyAcc, NoLock, Preserve)
 			{
@@ -359,7 +359,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			P3PR, 1,
 		}
 	}
-#include "acpi/event.asl"	
+#include "acpi/event.asl"
 #include "acpi/routing.asl"
 #include "acpi/usb.asl"
 
@@ -367,7 +367,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 	Scope(\_SB)
 	{
 		/* Start \_SB scope */
-	
+
 #include "acpi/globutil.asl"
 
 		Device(PWRB) {	/* Start Power button device */
@@ -386,16 +386,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
-			
+
 			Method(_BBN, 0) { /* Bus number = 0 */
 				Return(0)
-			}			
+			}
 
 			Method(_STA, 0) {
 				/* DBGO("\\_SB\\PCI0\\_STA\n") */
 				Return(0x0B)     /* Status is visible */
 			}
-	
+
             Device (MEMR)
             {
                 Name (_HID, EisaId ("PNP0C02"))
@@ -432,18 +432,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				If(PCIF){ Return(APR0) }   /* APIC mode */
 				Return (PR0)                  /* PIC Mode */
 			} /* end _PRT */
-		
+
             OperationRegion (BAR1, PCI_Config, 0x14, 0x04)
             Field (BAR1, ByteAcc, NoLock, Preserve)
             {
                 Z009,   32
             }
-			
+
 			/* Describe the Northbridge devices */
 			Device(AMRT) {
 				Name(_ADR, 0x00000000)
 			} /* end AMRT */
-			
+
 			/* The internal GFX bridge */
 			Device(AGPB) {
 				Name(_ADR, 0x00010000)
@@ -494,7 +494,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
 					If(PCIF){ Return(APS5) }   /* APIC mode */
-					Return (PS5)                  /* PIC Mode */  
+					Return (PS5)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR5 */
 
@@ -520,7 +520,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			/* PCI slot 1 */
 			Device(PIBR) {
 				Name(_ADR, 0x00140004)
-				Name(_PRW, Package() {4, 5}) //  Phoenix doeas it so 
+				Name(_PRW, Package() {4, 5}) //  Phoenix doeas it so
 				Method(_PRT, 0) {
 					If(PCIF){ Return(AP2P) }  /* APIC Mode */
 					Return (PCIB)             /* PIC Mode */
@@ -530,7 +530,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			/* Describe the Southbridge devices */
 			Device(SATA) {
 				Name(_ADR, 0x00120000)
-#include "acpi/sata.asl" 
+#include "acpi/sata.asl"
 			} /* end SATA */
 
 			Device(UOH1) {
@@ -608,18 +608,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				}
 			} /* end AZHD */
 
-			Device(LPC0) 
+			Device(LPC0)
 			{
                 Name (_ADR, 0x00140003)
                 Mutex (PSMX, 0x00)
-				
+
 				/* PIC IRQ mapping registers, C00h-C01h */
 				OperationRegion(PRQM, SystemIO, 0x00000C00, 0x00000002)
 				Field(PRQM, ByteAcc, NoLock, Preserve) {
 					PRQI, 0x00000008,
 					PRQD, 0x00000008,  /* Offset: 1h */
 				}
-	
+
 				IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 					PINA, 0x00000008,	/* Index 0  */
 					PINB, 0x00000008,	/* Index 1 */
@@ -632,7 +632,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 					PING, 0x00000008,	/* Index B */
 					PINH, 0x00000008,	/* Index C */
 				}
-				
+
 				Method(CIRQ, 0x00, NotSerialized)
 				{
 					Store(0, PINA)
@@ -653,11 +653,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Name(IRQP, ResourceTemplate(){
 					IRQ(Level,ActiveLow,Exclusive){3, 4, 5, 7}
 				})
-				
+
 				Name(PITF, ResourceTemplate(){
 					IRQ(Level,ActiveLow,Exclusive){9}
-				})	
-				
+				})
+
 				Device(INTA) {
 					Name(_HID, EISAID("PNP0C0F"))
 					Name(_UID, 1)
@@ -679,7 +679,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 					} /* Method(_SB.INTA._PRS) */
 
 					Method(_CRS ,0) {
-						Store (IRQB, Local0) // 
+						Store (IRQB, Local0) //
 						CreateWordField(Local0, 0x1, IRQ0)
 						ShiftLeft(1, PINA, IRQ0)
 						Return(Local0)
@@ -725,7 +725,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						/* Use lowest available IRQ */
 						FindSetRightBit(IRQ0, Local0)
 						Decrement(Local0)
-						Store(Local0, PINB)                    
+						Store(Local0, PINB)
 					} /* End Method(_SB.INTB._SRS) */
 				} /* End Device(INTB)  */
 
@@ -761,7 +761,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						/* Use lowest available IRQ */
 						FindSetRightBit(IRQ0, Local0)
 						Decrement(Local0)
-						Store(Local0, PINC)    
+						Store(Local0, PINC)
 					} /* End Method(_SB.INTC._SRS) */
 				} /* End Device(INTC)  */
 
@@ -804,7 +804,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Device(INTE) {
 					Name(_HID, EISAID("PNP0C0F"))
 					Name(_UID, 5)
-					
+
 					Method(_STA, 0) {
 						if (PINE) {
 							Return(0x0B) /* sata is invisible */
@@ -817,7 +817,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						Store(0, PINE)
 					} /* End Method(_SB.INTE._DIS) */
 
-					Method(_PRS ,0) { 
+					Method(_PRS ,0) {
 						Return(IRQB) // Return(IRQP)
 					}
 
@@ -944,7 +944,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						Store(Local0, PINH)
 					} /* End Method(_SB.INTH._SRS)  */
 				} /* End Device(INTH)   */
-		
+
 
 				/* Real Time Clock Device */
 				Device(RTC0) {
@@ -1000,7 +1000,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 					Name(_HID,EISAID("PNP0C04"))	/* Math Coprocessor */
 					Name(_CRS, ResourceTemplate() {
 						IO(Decode16, 0x00F0, 0x00F0, 1, 0x10)
-						IRQ (Edge, ActiveHigh, Exclusive, ) {13} 
+						IRQ (Edge, ActiveHigh, Exclusive, ) {13}
 					})
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
 
@@ -1018,7 +1018,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 						Return(CRS)
 					}
                 }
-				
+
                 Device (KBC0)
                 {
                     Name (_HID, EisaId ("PNP0303"))
@@ -1039,7 +1039,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
                         IRQ (Edge, ActiveHigh, Exclusive, ) {1}
                     })
 				}
-				
+
                 Device (MSE0)
                 {
                     Name (_HID, EisaId ("PNP0F13"))
@@ -1054,7 +1054,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Name(_ADR, 0x00140005)
 				Name (_PRW, Package (0x02)
                 {
-                    0x0C, 
+                    0x0C,
                     0x04
                 })
 			} /* end Ac97audio */
@@ -1063,7 +1063,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				Name(_ADR, 0x00140006)
 				Name (_PRW, Package (0x02)
                 {
-                    0x0C, 
+                    0x0C,
                     0x04
                 })
 			} /* end Ac97modem */
@@ -1183,7 +1183,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				CreateDWordField(CRES, ^EMM2._MIN, EM2B)
 				CreateDWordField(CRES, ^EMM2._MAX, EM2E)
 				CreateDWordField(CRES, ^EMM2._LEN, EM2L)
-				
+
 				Store(TOM1, EM2B)
 				Subtract(IOLM, 1, EM2E)
 				Subtract(IOLM, TOM1, EM2L)
@@ -1223,9 +1223,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			SCMD,   8,  /* SMBUS shaow cmd */
 			SEVT,   8,  /* SMBUS slave event */
 			SDAT,   8,  /* SMBUS slave data */
-			SMK1,   8, 
-            SLMC,   8, 
-            RADD,   8, 
+			SMK1,   8,
+            SLMC,   8,
+            RADD,   8,
             SADD,   8
 	}
 

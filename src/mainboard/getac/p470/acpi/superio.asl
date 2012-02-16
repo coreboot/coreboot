@@ -136,7 +136,7 @@ Device (SIO1)
 			CreateByteField(RSRC, 0x05, IORH) // Why?
 			CreateByteField(RSRC,
 				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IRA._INT, IRQL)
-			
+
 			Store (READ(0, 0x24, 0xff), Local0)
 			And (Local0, 0xc0, Local1)
 			ShiftRight(Local1, 0x06, Local1)
@@ -291,7 +291,7 @@ Device (SIO1)
 			CreateByteField(RSRC, 0x05, IORH)
 			CreateByteField(RSRC,
 				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IRB._INT, IRQL)
-			
+
 			Store (READ(0, 0x25, 0xff), Local0)
 			And (Local0, 0xc0, Local1)
 			ShiftRight(Local1, 0x06, Local1)
@@ -445,7 +445,7 @@ Device (SIO1)
 			CreateByteField(RSRC, 0x05, IORH) // Why?
 			CreateByteField(RSRC,
 				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IRA._INT, IRQL)
-			
+
 			Store (READ(0, 0x1b, 0xff), Local0)
 			And (Local0, 0xc0, Local1)
 			ShiftRight(Local1, 0x06, Local1)
@@ -597,7 +597,7 @@ Device (SIO1)
 			CreateByteField(RSRC, 0x05, IORH) // Why?
 			CreateByteField(RSRC,
 				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IRA._INT, IRQL)
-			
+
 			Store (READ(0, 0x1c, 0xff), Local0)
 			And (Local0, 0xc0, Local1)
 			ShiftRight(Local1, 0x06, Local1)

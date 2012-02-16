@@ -23,12 +23,12 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select QRANK_DIMM_SUPPORT
 	select SET_FIDVID
 	select GFXUMA
-	select EXT_CONF_SUPPORT	
-	
+	select EXT_CONF_SUPPORT
+
 config MAINBOARD_DIR
 	string
 	default siemens/sitemp_g1p1
-	
+
 config LINT01_CONVERSION
 	bool
 	default y
@@ -48,7 +48,7 @@ config MAX_CPUS
 config MAX_PHYSICAL_CPUS
 	int
 	default 1
-	
+
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
@@ -68,13 +68,13 @@ config IRQ_SLOT_COUNT
 config IOMMU
 	bool
 	default n
-	
+
 config HW_SCRUBBER
 	bool
 	default n
-	
+
 config ECC_MEMORY
 	bool
 	default n
-	
+
 endif # BOARD_SIEMENS_SITEMP_G1P1

@@ -36,7 +36,7 @@ config EHCI_DEBUG_OFFSET
 
 config USBDEBUG_DEFAULT_PORT
 	int
-	default 1 
+	default 1
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
         string

@@ -335,7 +335,7 @@ static void GLPCIInit(void)
 	/* we are ignoring the 5530 case for now, and perhaps forever. */
 
 	/* 553X NB Init */
-	
+
 	/* Arbiter setup */
 	msrnum = GLPCI_ARB;
 	msr = rdmsr(msrnum);
@@ -404,7 +404,7 @@ static void ClockGatingInit(void)
 static void GeodeLinkPriority(void)
 {
 	msr_t msr = { 0, 0 };
-	
+
 	struct msrinit *prio = GeodeLinkPriorityTable;
 	int i;
 
@@ -426,7 +426,7 @@ static void GeodeLinkPriority(void)
 static uint64_t getShadow(void)
 {
 	msr_t msr = { 0, 0 };
-	
+
 	msr = rdmsr(GLIU0_P2D_SC_0);
 	return ( ( (uint64_t) msr.hi ) << 32 ) | msr.lo;
 }

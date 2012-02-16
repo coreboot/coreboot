@@ -32,12 +32,12 @@ Scope(\_SB) {
 		/* Bus 0, Dev 0 - RS780 Host Controller */
 		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics */
 		/* Bus 0, Dev 2 - PCIe Bridge for x8 PCIe Slot (GFX0) */
-		
+
 		Package(){0x0002FFFF, 0, INTC, 0 },
 		Package(){0x0002FFFF, 1, INTD, 0 },
 		Package(){0x0002FFFF, 2, INTA, 0 },
 		Package(){0x0002FFFF, 3, INTB, 0 },
-		
+
 		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
 
 		/* SB devices */
@@ -83,7 +83,7 @@ Scope(\_SB) {
 		Package(){0x0009FFFF, 1, 0, 18 },
 		Package(){0x0009FFFF, 2, 0, 19 },
 		Package(){0x0009FFFF, 3, 0, 10 },
-		
+
 		/* Bus 0, Dev A - PCIe internal ethernet */
 		Package(){0x000AFFFF, 0, 0, 18 },
 		Package(){0x000AFFFF, 1, 0, 19 },
@@ -146,7 +146,7 @@ Scope(\_SB) {
 		Package(){0x0000FFFF, 2, 0, 16 },
 		Package(){0x0000FFFF, 3, 0, 17 },
 	})
-	
+
 	Name(PS9, Package(){
 		/* PCIe slot - Hooked to PCIe x1 */
 		Package(){0x0000FFFF, 0, INTD, 0 },

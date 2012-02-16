@@ -86,7 +86,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
           DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
           PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
           PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
-        }       
+        }
 };
 
 PCIe_DDI_DESCRIPTOR DdiList [] = {
@@ -118,8 +118,8 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   //
   // Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
   //
-  AllocHeapParams.RequestedBufferSize = (sizeof (PCIe_COMPLEX_DESCRIPTOR)  + 
-                                         sizeof (PCIe_PORT_DESCRIPTOR) * 5 + 
+  AllocHeapParams.RequestedBufferSize = (sizeof (PCIe_COMPLEX_DESCRIPTOR)  +
+                                         sizeof (PCIe_PORT_DESCRIPTOR) * 5 +
                                          sizeof (PCIe_DDI_DESCRIPTOR)) * 2;
 
   AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
@@ -127,10 +127,10 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
   if ( Status!= AGESA_SUCCESS) {
     // Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
-    ASSERT(FALSE); 
+    ASSERT(FALSE);
     return;
   }
-  
+
   BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   AllocHeapParams.BufferPtr += sizeof (PCIe_COMPLEX_DESCRIPTOR);
@@ -138,7 +138,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 
   AllocHeapParams.BufferPtr += sizeof (PCIe_PORT_DESCRIPTOR) * 5;
   BrazosPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
- 
+
   LibAmdMemFill (BrazosPcieComplexListPtr,
                    0,
                    sizeof (PCIe_COMPLEX_DESCRIPTOR),
@@ -148,7 +148,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
                    0,
                    sizeof (PCIe_PORT_DESCRIPTOR) * 5,
                    &InitEarly->StdHeader);
-     
+
   LibAmdMemFill (BrazosPcieDdiPtr,
                    0,
                    sizeof (PCIe_DDI_DESCRIPTOR) * 2,
@@ -162,7 +162,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   ((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)BrazosPciePortPtr;
   ((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)BrazosPcieDdiPtr;
 
-  InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr; 
-  InitEarly->GnbConfig.PsppPolicy      = 0; 
+  InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
+  InitEarly->GnbConfig.PsppPolicy      = 0;
 }
 

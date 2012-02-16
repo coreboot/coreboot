@@ -6,8 +6,8 @@
 	.code32
 
 
-	/* This is the GDT for the ROM stage part of coreboot. It 
-	 * is different from the RAM stage GDT which is defined in 
+	/* This is the GDT for the ROM stage part of coreboot. It
+	 * is different from the RAM stage GDT which is defined in
 	 * c_start.S
 	 */
 

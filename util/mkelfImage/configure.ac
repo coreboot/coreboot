@@ -203,7 +203,7 @@ rm -f conftest*])
 if test $libc_cv_fno_stack_protector = yes; then
   I386_CFLAGS="$I386_CFLAGS -fno-stack-protector"
   IA64_CFLAGS="$IA64_CFLAGS -fno-stack-protector"
-  
+
 fi
 AC_SUBST(libc_cv_fno_stack_protector)
 

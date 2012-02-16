@@ -17,6 +17,9 @@
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 //
 
+#include <arch/ioapic.h>
+#include <cpu/x86/lapic_def.h>
+
 //AMD8111 isa
 
 	Device (ISA)
@@ -141,9 +144,9 @@
 				{
 					Memory32Fixed (ReadWrite, 0x000E0000, 0x00020000) // BIOS E4000-FFFFF
 					Memory32Fixed (ReadWrite, 0x000C0000, 0x00010000) // video BIOS c0000-c8404
-					Memory32Fixed (ReadWrite, 0xFEC00000, 0x00001000) // I/O APIC
+					Memory32Fixed (ReadWrite, IO_APIC_ADDR, 0x00001000)
 					Memory32Fixed (ReadWrite, 0xFFC00000, 0x00380000) // LPC forwarded, 4 MB w/ROM
-					Memory32Fixed (ReadWrite, 0xFEE00000, 0x00001000) // Local APIC
+					Memory32Fixed (ReadWrite, LOCAL_APIC_ADDR, 0x00001000)
 					Memory32Fixed (ReadWrite, 0xFFF80000, 0x00080000) // Overlay BIOS
 					Memory32Fixed (ReadWrite, 0x00000000, 0x00000000) // Overlay BIOS
 					Memory32Fixed (ReadWrite, 0x00000000, 0x00000000) // Overlay BIOS

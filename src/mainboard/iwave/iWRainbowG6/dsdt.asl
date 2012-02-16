@@ -30,7 +30,7 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 
 	// global NVS and variables
-	#include "../../../southbridge/intel/sch/acpi/globalnvs.asl"
+	#include <southbridge/intel/sch/acpi/globalnvs.asl>
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
@@ -40,11 +40,11 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include "../../../northbridge/intel/sch/acpi/sch.asl"
-			#include "../../../southbridge/intel/sch/acpi/sch.asl"
+			#include <northbridge/intel/sch/acpi/sch.asl>
+			#include <southbridge/intel/sch/acpi/sch.asl>
 		}
 	}
 
 	/* Chipset specific sleep states */
-	#include "../../../southbridge/intel/sch/acpi/sleepstates.asl"
+	#include <southbridge/intel/sch/acpi/sleepstates.asl>
 }

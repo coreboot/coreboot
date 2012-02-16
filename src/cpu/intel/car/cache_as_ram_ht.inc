@@ -83,11 +83,40 @@ clear_mtrrs:
 	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
-	/* Enable L2 cache. */
+	/* Enable L2 cache Write-Back (WBINVD and FLUSH#).
+	 *
+	 * MSR is set when DisplayFamily_DisplayModel is one of:
+	 * 06_0x, 06_17, 06_1C
+	 *
+	 * Description says this bit enables use of WBINVD and FLUSH#.
+	 * Should this be set only after the system bus and/or memory
+	 * controller can successfully handle write cycles?
+	 */
+
+#define EAX_FAMILY(a)	(a << 8)	/* for family <= 0fH */
+#define EAX_MODEL(a)	(((a & 0xf0) << 12) | ((a & 0xf) << 4))
+
+	movl	$1, %eax
+	cpuid
+	movl	%eax, %ebx
+	andl	$EAX_FAMILY(0x0f), %eax
+	cmpl	$EAX_FAMILY(0x06), %eax
+	jne	no_msr_11e
+	movl	%ebx, %eax
+	andl	$EAX_MODEL(0xff), %eax
+	cmpl	$EAX_MODEL(0x17), %eax
+	je	has_msr_11e
+	cmpl	$EAX_MODEL(0x1c), %eax
+	je	has_msr_11e
+	andl	$EAX_MODEL(0xf0), %eax
+	cmpl	$EAX_MODEL(0x00), %eax
+	jne	no_msr_11e
+has_msr_11e:
 	movl	$0x11e, %ecx
 	rdmsr
 	orl	$(1 << 8), %eax
 	wrmsr
+no_msr_11e:
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax

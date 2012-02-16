@@ -1,0 +1,39 @@
+#!/bin/sh
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2011 Patrick Georgi <patrick@georgi-clan.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# DESCR: Check for superfluous whitespace in the tree
+
+LC_ALL=C export LC_ALL
+find src util -name .svn -type d -prune -o \
+	-name .git -type d -prune -o \
+	-name README -prune -o \
+	-name LICENSE -prune -o \
+	-name TODO -prune -o \
+	-name COPYING -prune -o \
+	-name \*.txt -prune -o \
+	-name microcode-\*.h -prune -o \
+	-name \*.?_shipped -prune -o \
+	-name \*.[18] -prune -o \
+	-name kconfig -type d -prune -o \
+	-name romcc -type d -prune -o \
+	-name crossgcc -type d -prune -o \
+	-name vendorcode -type d -prune -o \
+	-type f -exec \
+		grep -l "[[:space:]][[:space:]]*$" {} + | \
+	sed -e "s,^.*$,File & has lines ending with whitespace.,"
+

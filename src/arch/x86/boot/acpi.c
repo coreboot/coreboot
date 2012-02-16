@@ -31,6 +31,7 @@
 #include <arch/acpigen.h>
 #include <device/pci.h>
 #include <cbmem.h>
+#include <cpu/x86/lapic_def.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -188,8 +189,6 @@ int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 
 void acpi_create_madt(acpi_madt_t *madt)
 {
-#define LOCAL_APIC_ADDR	0xfee00000ULL
-
 	acpi_header_t *header = &(madt->header);
 	unsigned long current = (unsigned long)madt + sizeof(acpi_madt_t);
 

@@ -18,6 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#include <arch/ioapic.h>
+#include <cpu/x86/lapic_def.h>
 
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 {
@@ -418,8 +420,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
                     CreateDWordField (MEM1, \_SB.PCI0.MEMR._Y1B._LEN, ML02)
                     If (PCIF)
                     {
-                        Store (0xFEC00000, MB01)
-                        Store (0xFEE00000, MB02)
+                        Store (IO_APIC_ADDR, MB01)
+                        Store (LOCAL_APIC_ADDR, MB02)
                         Store (0x1000, ML01)
                         Store (0x1000, ML02)
                     }

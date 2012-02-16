@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-#include "../../../northbridge/intel/i945/acpi/i945_hostbridge.asl"
+#include "../../../northbridge/intel/i945/acpi/hostbridge.asl"
 #include "../../../northbridge/intel/i945/i945.h"
 
 /* PCI Device Resource Consumption */
@@ -77,10 +77,10 @@ Device (PDRC)
 }
 
 // PCIe graphics port 0:1.0
-#include "../../../northbridge/intel/i945/acpi/i945_peg.asl"
+#include "../../../northbridge/intel/i945/acpi/peg.asl"
 
 // Integrated graphics 0:2.0
-#include "../../../northbridge/intel/i945/acpi/i945_igd.asl"
+#include "../../../northbridge/intel/i945/acpi/igd.asl"
 
 Scope (\)
 {

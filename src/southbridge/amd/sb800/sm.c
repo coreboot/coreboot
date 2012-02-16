@@ -84,16 +84,14 @@
 static void sm_init(device_t dev)
 {
 	u8 byte;
-	u32 ioapic_base;
 
 	printk(BIOS_INFO, "sm_init().\n");
 
-	ioapic_base = 0xFEC00000;//pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
 	/* Don't rename APIC ID */
 	/* TODO: We should call setup_ioapic() here. But kernel hangs if cpu is K8.
 	 * We need to check out why and change back. */
-	clear_ioapic(ioapic_base);
-	//setup_ioapic(ioapic_base, 0);
+	clear_ioapic(IO_APIC_ADDR);
+	//setup_ioapic(IO_APIC_ADDR, 0);
 
 	/* enable serial irq */
 	byte = pm_ioread(0x54);
@@ -277,7 +275,7 @@ static void sb800_sm_read_resources(device_t dev)
 
 	/* apic */
 	res = new_resource(dev, 0x74);
-	res->base  = 0xfec00000;
+	res->base  = IO_APIC_ADDR;
 	res->size = 256 * 0x10;
 	res->limit = 0xFEFFFFFUL;	/* res->base + res->size -1; */
 	res->align = 8;

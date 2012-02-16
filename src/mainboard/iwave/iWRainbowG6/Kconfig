@@ -18,7 +18,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_1024
 	select USE_DCACHE_RAM
 	select GFXUMA
-	select HAVE_HARD_RESET
 
 config MAINBOARD_DIR
 	string

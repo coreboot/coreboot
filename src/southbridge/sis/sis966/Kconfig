@@ -2,6 +2,7 @@ config SOUTHBRIDGE_SIS_SIS966
 	bool
 	select IOAPIC
 	select HAVE_USBDEBUG
+	select HAVE_HARD_RESET
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string

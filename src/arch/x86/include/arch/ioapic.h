@@ -20,7 +20,7 @@
 #ifndef __I386_ARCH_IOAPIC_H
 #define __I386_ARCH_IOAPIC_H
 
-#define IO_APIC_ADDR	0xfec00000UL
+#define IO_APIC_ADDR	0xfec00000
 #define IO_APIC_INTERRUPTS 24
 
 #define ALL		(0xff << 24)
@@ -38,7 +38,9 @@
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 
+#ifndef __ACPI__
 void setup_ioapic(u32 ioapic_base, u8 ioapic_id);
 void clear_ioapic(u32 ioapic_base);
+#endif
 
 #endif

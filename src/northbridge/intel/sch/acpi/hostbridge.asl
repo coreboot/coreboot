@@ -19,6 +19,7 @@
  * MA 02110-1301 USA
  */
 
+#include <arch/ioapic.h>
 
 Name(_HID,EISAID("PNP0A08"))	// PCIe
 Name(_CID,EISAID("PNP0A03"))	// PCI
@@ -211,7 +212,7 @@ Method (_CRS, 0, Serialized)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
 				0x00000000, 0x00000000, 0xfebfffff, 0x00000000,
-				0xfec00000,,, PM01)
+				IO_APIC_ADDR,,, PM01)
 
 		// TPM Area (0xfed40000-0xfed44fff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,

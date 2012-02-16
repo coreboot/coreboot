@@ -137,7 +137,7 @@
  *   @section WatchDogTimerBase
  */
 // #ifndef WATCHDOG_TIMER_BASE_ADDRESS
-//   #define WATCHDOG_TIMER_BASE_ADDRESS 0xFEC00000
+//   #define WATCHDOG_TIMER_BASE_ADDRESS IO_APIC_ADDR
 // #endif
 
 /**

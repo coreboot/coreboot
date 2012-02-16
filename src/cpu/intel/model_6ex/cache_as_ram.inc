@@ -21,6 +21,10 @@
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/lapic_def.h>
+
+/* Macro to access Local APIC registers at default base. */
+#define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
 
 #define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_MAXPHYADDR - 32) - 1)
 
@@ -37,9 +41,9 @@ cache_as_ram:
 	post_code(0x20)
 
 	/* Send INIT IPI to all excluding ourself. */
-	movl	$0x000C4500, %eax
-	movl	$0xFEE00300, %esi
-	movl	%eax, (%esi)
+	movl	LAPIC(ICR), %edi
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT), %eax
+	movl	%eax, (%edi)
 
 	/* Zero out all fixed range and variable range MTRRs. */
 	movl	$mtrr_table, %esi
@@ -91,11 +95,10 @@ clear_mtrrs:
 	movl	%eax, %cr0
 
 	/* Clear the cache memory reagion. */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
-	// movl	$0x23322332, %eax
+	cld
 	xorl	%eax, %eax
+	movl	$CACHE_AS_RAM_BASE, %edi
+	movl	$(CACHE_AS_RAM_SIZE / 4), %ecx
 	rep	stosl
 
 	/* Enable Cache-as-RAM mode by disabling cache. */
@@ -130,11 +133,10 @@ clear_mtrrs:
 	/* Set up the stack pointer. */
 #if CONFIG_USBDEBUG
 	/* Leave some space for the struct ehci_debug_info. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %esp
 #else
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %esp
 #endif
-	movl	%eax, %esp
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
@@ -145,6 +147,7 @@ clear_mtrrs:
 
 	/* Call romstage.c main function. */
 	call	main
+	addl	$4, %esp
 
 	post_code(0x2f)
 

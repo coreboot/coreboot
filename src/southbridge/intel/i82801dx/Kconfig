@@ -22,3 +22,4 @@
 config SOUTHBRIDGE_INTEL_I82801DX
 	bool
 	select IOAPIC
+	select HAVE_HARD_RESET

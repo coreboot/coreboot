@@ -22,8 +22,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
 
-#define CPU_MAXPHYADDR 36
-#define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYADDR - 32) - 1)
+#define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_MAXPHYADDR - 32) - 1)
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE

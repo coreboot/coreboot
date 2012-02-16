@@ -1,6 +1,17 @@
 config CPU_INTEL_MODEL_106CX
 	bool
+
+if CPU_INTEL_MODEL_106CX
+
+config CPU_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select SMP
 	select SSE2
 	select UDELAY_LAPIC
 	select AP_IN_SIPI_WAIT
+
+config CPU_MAXPHYADDR
+	int
+	default 32
+
+endif # CPU_INTEL_MODEL_106CX

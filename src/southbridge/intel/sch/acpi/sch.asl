@@ -139,27 +139,27 @@ Scope(\)
 }
 
 // 0:1b.0 High Definition Audio (Azalia)
-#include "../../../southbridge/intel/sch/acpi/audio.asl"
+#include "audio.asl"
 
 // PCI Express Ports
-#include "../../../southbridge/intel/sch/acpi/pcie.asl"
+#include "pcie.asl"
 
 // USB
-#include "../../../southbridge/intel/sch/acpi/usb.asl"
+#include "usb.asl"
 
 // PCI Bridge
-#include "../../../southbridge/intel/sch/acpi/pci.asl"
+#include "pci.asl"
 
 // AC97 Audio and Modem
-#include "../../../southbridge/intel/sch/acpi/ac97.asl"
+#include "ac97.asl"
 
 // LPC Bridge
-#include "../../../southbridge/intel/sch/acpi/lpc.asl"
+#include "lpc.asl"
 
 // PATA
-#include "../../../southbridge/intel/sch/acpi/pata.asl"
+#include "pata.asl"
 
 // SMBus
-#include "../../../southbridge/intel/sch/acpi/smbus.asl"
+#include "smbus.asl"
 
 

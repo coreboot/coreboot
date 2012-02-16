@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-#include "../../../northbridge/intel/sch/acpi/hostbridge.asl"
+#include "hostbridge.asl"
 
 /* PCI Device Resource Consumption */
 Device (PDRC)
@@ -76,10 +76,10 @@ Device (PDRC)
 }
 
 // PCIe graphics port 0:1.0
-#include "../../../northbridge/intel/sch/acpi/peg.asl"
+#include "peg.asl"
 
 // Integrated graphics 0:2.0
-#include "../../../northbridge/intel/sch/acpi/igd.asl"
+#include "igd.asl"
 
 Scope (\)
 {

@@ -165,30 +165,30 @@ Scope(\)
 }
 
 // 0:1b.0 High Definition Audio (Azalia)
-#include "../../../southbridge/intel/i82801gx/acpi/audio.asl"
+#include "audio.asl"
 
 // PCI Express Ports
-#include "../../../southbridge/intel/i82801gx/acpi/pcie.asl"
+#include "pcie.asl"
 
 // USB
-#include "../../../southbridge/intel/i82801gx/acpi/usb.asl"
+#include "usb.asl"
 
 // PCI Bridge
-#include "../../../southbridge/intel/i82801gx/acpi/pci.asl"
+#include "pci.asl"
 
 // AC97 Audio and Modem
-#include "../../../southbridge/intel/i82801gx/acpi/ac97.asl"
+#include "ac97.asl"
 
 // LPC Bridge
-#include "../../../southbridge/intel/i82801gx/acpi/lpc.asl"
+#include "lpc.asl"
 
 // PATA
-#include "../../../southbridge/intel/i82801gx/acpi/pata.asl"
+#include "pata.asl"
 
 // SATA
-#include "../../../southbridge/intel/i82801gx/acpi/sata.asl"
+#include "sata.asl"
 
 // SMBus
-#include "../../../southbridge/intel/i82801gx/acpi/smbus.asl"
+#include "smbus.asl"
 
 

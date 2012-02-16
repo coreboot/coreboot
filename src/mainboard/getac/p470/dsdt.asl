@@ -42,7 +42,7 @@ DefinitionBlock(
 
 	// mainboard specific devices
 	#include "acpi/mainboard.asl"
-	
+
 	// Thermal Zone
 	#include "acpi/thermal.asl"
 

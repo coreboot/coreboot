@@ -146,7 +146,7 @@ CAR_FAM10_out:
    #elif (CONFIG_MMCONF_BUS_NUMBER == 2)
 	orl	$(1 << 2), %eax
    #elif (CONFIG_MMCONF_BUS_NUMBER == 4)
-	orl	$(2 << 2), %eax	
+	orl	$(2 << 2), %eax
    #elif (CONFIG_MMCONF_BUS_NUMBER == 8)
 	orl	$(3 << 2), %eax
    #elif (CONFIG_MMCONF_BUS_NUMBER == 16)

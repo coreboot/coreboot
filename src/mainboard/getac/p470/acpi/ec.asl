@@ -151,7 +151,7 @@ Device(EC0)
 			TRAP(0xc1)
 		}
 	}
-	
+
 	Method (_Q09, 0)
 	{
 		Notify(BAT0, 0x80)
@@ -162,7 +162,7 @@ Device(EC0)
 	{
 		Notify(\_TZ.THRM, 0x80)
 	}
-	
+
 	Method (_Q20, 0)
 	{
 		Notify(\_SB.ECO, 0x81)
@@ -668,8 +668,8 @@ Scope(\_SB)
 			}
 			Return (0)
 		}
-		
-	
+
+
 
 	}
 }

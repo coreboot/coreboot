@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
@@ -55,7 +55,7 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
    UINT64 limit;
 
    address |= 1; // set read bit
-   
+
    __outbyte (iobase + 0, 0xFF);                // clear error status
    __outbyte (iobase + 1, 0x1F);                // clear error status
    __outbyte (iobase + 3, offset);              // offset in eeprom
@@ -112,7 +112,7 @@ static int readSmbusByte (int iobase, int address, char *buffer)
  *
  * readspd - Read one or more SPD bytes from a DIMM.
  *           Start with offset zero and read sequentially.
- *           Optimization relies on autoincrement to avoid 
+ *           Optimization relies on autoincrement to avoid
  *           sending offset for every byte.
  *          Reads 128 bytes in 7-8 ms at 400 KHz.
  */
@@ -131,7 +131,7 @@ static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
       error = readSmbusByte (iobase, SmbusSlaveAddress, &buffer [index]);
       if (error) return error;
       }
-   
+
    return 0;
    }
 
@@ -154,11 +154,11 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
    {
    int spdAddress, ioBase;
 
-   if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR; 
-   if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]   )) return AGESA_ERROR; 
+   if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
+   if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]   )) return AGESA_ERROR;
    if (info->DimmId       >= DIMENSION (spdAddressLookup[0][0])) return AGESA_ERROR;
-   
-   spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId]; 
+
+   spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
    if (spdAddress == 0) return AGESA_ERROR;
    ioBase = 0xB00;
    setupFch (ioBase);

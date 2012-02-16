@@ -53,9 +53,9 @@ Field(SMI1, AnyAcc, NoLock, Preserve)
 	INFO, 1024
 }
 
-/* The _PIC method is called by the OS to choose between interrupt 
+/* The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.
- * 
+ *
  * _PIC is called with a parameter of 0 for i8259 configuration and
  * with a parameter of 1 for Local Apic/IOAPIC configuration.
  */
@@ -119,7 +119,7 @@ Method(_WAK,1)
 
 	// Notify PCI Express slots in case a card
 	// was inserted while a sleep state was active.
-	
+
 	If (LEqual(RP1D, 0)) {
 		Notify(\_SB.PCI0.RP01, 0)
 	}
@@ -132,13 +132,13 @@ Method(_WAK,1)
 		Notify(\_SB.PCI0.RP04, 0)
 	}
 
-	// Are we coming from S3? 
+	// Are we coming from S3?
 	If (LEqual(Arg0, 3)) {
 		TRAP(0xeb)
 		TRAP(0x46)
 	}
 
-	// Are we coming from S4? 
+	// Are we coming from S4?
 	If (LEqual(Arg0, 4)) {
 		Notify(SLPB, 0x02)
 		If (DTSE) {

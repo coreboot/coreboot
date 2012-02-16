@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
- 
+
 driver-y += northbridge.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt.asl

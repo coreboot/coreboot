@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 /* Supported sleep states: */
 Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */
 Name(\_S1, Package () {0x01, 0x01, 0x00, 0x00} )	/* (S1) - sleeping w/CPU context */

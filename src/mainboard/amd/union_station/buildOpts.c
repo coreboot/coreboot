@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
+
 /**
  * @file
  *
@@ -55,13 +55,13 @@
 #define INSTALL_FT1_SOCKET_SUPPORT  TRUE
 #define INSTALL_AM3_SOCKET_SUPPORT  FALSE
 
-/* 
- * Agesa optional capabilities selection.  
+/*
+ * Agesa optional capabilities selection.
  * Uncomment and mark FALSE those features you wish to include in the build.
  * Comment out or mark TRUE those features you want to REMOVE from the build.
  */
 
-#define BLDOPT_REMOVE_FAMILY_10_SUPPORT       TRUE    
+#define BLDOPT_REMOVE_FAMILY_10_SUPPORT       TRUE
 #define BLDOPT_REMOVE_FAMILY_12_SUPPORT       TRUE
 #define BLDOPT_REMOVE_FAMILY_14_SUPPORT       FALSE
 #define BLDOPT_REMOVE_FAMILY_15_SUPPORT       TRUE
@@ -102,7 +102,7 @@
 #define BLDOPT_REMOVE_HT_ASSIST         TRUE
 #define BLDOPT_REMOVE_ATM_MODE          TRUE
 //#define BLDOPT_REMOVE_MSG_BASED_C1E       TRUE
-//#define BLDOPT_REMOVE_LOW_POWER_STATE_FOR_PROCHOT TRUE  
+//#define BLDOPT_REMOVE_LOW_POWER_STATE_FOR_PROCHOT TRUE
 #define BLDOPT_REMOVE_MEM_RESTORE_SUPPORT     FALSE
 //#define BLDOPT_REMOVE_C6_STATE          TRUE
 #define BLDOPT_REMOVE_GFX_RECOVERY        TRUE
@@ -219,10 +219,10 @@
 #define BLDCFG_HEAP_DRAM_ADDRESS                0xB0000
 #define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS  0xD0000000
 
-/* 
- * Agesa configuration values selection.  
+/*
+ * Agesa configuration values selection.
  * Uncomment and specify the value for the configuration options
- * needed by the system. 
+ * needed by the system.
  */
 #include "AGESA.h"
 #include "CommonReturns.h"

@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
- 
+
 /* THERMAL */
 Scope(\_TZ) {
 	Name (KELV, 2732)
@@ -51,7 +51,7 @@ Scope(\_TZ) {
 				/* DBGO("\\_TZ\\TZ00\\FAN0 _OFF\n") */
 			}
 		}
-		
+
 		// Processors used for active cooling
 		Method (_PSL, 0, Serialized)
 		{
@@ -60,7 +60,7 @@ Scope(\_TZ) {
 			}
 			Return (Package() {\_PR.CPU0})
 		}
-		
+
 		Method(_HOT,0) {	/* return hot temp in tenths degree Kelvin */
 			/* DBGO("\\_TZ\\TZ00\\_HOT\n") */
 			Return (Add (THOT, KELV))

@@ -18,11 +18,11 @@
 
 rm -rf out
 mkdir out
- 
+
 # walk through all ACPI tables with their addresses
-# example: 
+# example:
 #    RSDT @ 0xcf6794ba
-# we can not just dump the tables by their names because some 
+# we can not just dump the tables by their names because some
 # machines have double ACPI tables
 
 acpidump | grep "@ 0x" | while read line

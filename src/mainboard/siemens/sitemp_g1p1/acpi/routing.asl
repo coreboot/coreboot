@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-	
+
 /* Routing is in System Bus scope */
 Scope(\_SB)
 {
@@ -55,7 +55,7 @@ Scope(\_SB)
 		Package(){0x0013FFFF, 3, 0, 19 },
 
 		/* Bus 0, Dev 20 - F0:SMBus/ACPI, F1:IDE; F2:HDAudio; F3:LPC; F4:PCIBridge; F5:AC97 Audio; F6:AC97 Modem */
-		Package(){0x0014FFFF, 0, 0, 16 }, 
+		Package(){0x0014FFFF, 0, 0, 16 },
 		Package(){0x0014FFFF, 1, 0, 17 },
 		Package(){0x0014FFFF, 2, 0, 18 },
 		Package(){0x0014FFFF, 3, 0, 19 },
@@ -162,9 +162,9 @@ Scope(\_SB)
 		Package(){0x004FFFF, 0, \_SB.PCI0.LPC0.INTE, 0 },
 		Package(){0x004FFFF, 1, \_SB.PCI0.LPC0.INTF, 0 },
 		Package(){0x004FFFF, 2, \_SB.PCI0.LPC0.INTG, 0 },
-		Package(){0x004FFFF, 3, \_SB.PCI0.LPC0.INTH, 0 },	
+		Package(){0x004FFFF, 3, \_SB.PCI0.LPC0.INTH, 0 },
 	})
-	
+
 	Name(AP2P, Package(){
 		/* PCI slots: slot 0 behind Dev14, Fun4. */
 		Package(){0x0005FFFF, 0, 0, 21 }, // Phoenix does it
@@ -174,5 +174,5 @@ Scope(\_SB)
 		Package(){0x0004FFFF, 2, 0, 22 },
 		Package(){0x0004FFFF, 3, 0, 23 },
 	})
-			
+
 }

@@ -119,5 +119,5 @@ config SVI_HIGH_FREQ
         help
           Select this for boards with a Voltage Regulator able to operate
           at 3.4 MHz in SVI mode. Ignored unless the AMD CPU is rev C3.
- 
+
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

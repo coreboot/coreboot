@@ -23,7 +23,7 @@ CC      = gcc
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -W
-LDFLAGS = 
+LDFLAGS =
 
 OBJS = ifdtool.o
 
@@ -47,7 +47,7 @@ install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
 	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
-.PHONY: all clean distclean dep 
+.PHONY: all clean distclean dep
 
 -include .dependencies
 

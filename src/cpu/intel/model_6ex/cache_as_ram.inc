@@ -82,11 +82,19 @@ clear_mtrrs:
 	orl	$MTRRdefTypeEn, %eax
 	wrmsr
 
-	/* Enable L2 cache. */
+#if !CONFIG_INTEL_NETBURST
+	/* Enable L2 cache Write-Back (WBINVD and FLUSH#).
+	 * This MSR does not exist on NetBurst architecture.
+	 *
+	 * Description says this bit enables use of WBINVD and FLUSH#.
+	 * Should this be set only after the system bus and/or memory
+	 * controller can successfully handle write cycles?
+	 */
 	movl	$0x11e, %ecx
 	rdmsr
 	orl	$(1 << 8), %eax
 	wrmsr
+#endif
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax

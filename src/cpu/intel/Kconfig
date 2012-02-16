@@ -1,3 +1,11 @@
+
+config INTEL_NETBURST
+	bool
+	default n
+	help
+	  Select Y to bypass MSR 0x11e during CAR.
+	  FIXME: Runtime CPUID check instead.
+
 # CPU models
 source src/cpu/intel/model_6xx/Kconfig
 source src/cpu/intel/model_67x/Kconfig

@@ -232,9 +232,10 @@ static int cbfs_locate(int argc, char **argv)
 	uint32_t filesize = getfilesize(file);
 	const char *filename = argv[4];
 	int align = strtoul(argv[5], NULL, 0);
+	uint32_t location = cbfs_find_location(romname, filesize, filename, align);
 
-	printf("%x\n", cbfs_find_location(romname, filesize, filename, align));
-	return 0;
+	printf("%x\n", location);
+	return location == 0 ? 1 : 0;
 }
 
 static int cbfs_print(int argc, char **argv)

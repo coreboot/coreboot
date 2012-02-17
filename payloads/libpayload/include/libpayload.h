@@ -208,13 +208,13 @@ void fix_options_checksum_with(const struct nvram_accessor *nvram);
 void fix_options_checksum(void);
 struct cb_cmos_entries *first_cmos_entry(struct cb_cmos_option_table *option_table);
 struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cur);
-int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name);
-int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name);
-int get_option(void *dest, char *name);
-int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *value, char *name);
-int set_option(void *value, char *name);
-int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, char *name);
-int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char *value, char *name);
+int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, const char *name);
+int get_option_from(struct cb_cmos_option_table *option_table, void *dest, const char *name);
+int get_option(void *dest, const char *name);
+int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, const void *value, const char *name);
+int set_option(const void *value, const char *name);
+int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, const char *name);
+int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, const char *value, const char *name);
 
 /**
  * @defgroup console Console functions

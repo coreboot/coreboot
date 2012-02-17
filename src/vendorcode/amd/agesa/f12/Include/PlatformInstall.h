@@ -42,6 +42,10 @@
  *
  ***************************************************************************/
 
+#ifndef RUN_BROKEN_AGESA_TESTS
+	#define RUN_BROKEN_AGESA_TESTS 0
+#endif
+
 /*****************************************************************************
  *
  * Start processing the user options:  First, set default settings
@@ -76,7 +80,7 @@
 VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
   //ModuleHeaderSignature
   // Remove 'DOM$' as temp solution before update BinUtil.exe ,
-  '0000',
+  Int32FromChar ('0', '0', '0', '0'),
   //ModuleIdentifier[8]
   AGESA_ID,
   //ModuleVersion[12]
@@ -2150,6 +2154,10 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
     #error    No Dram init option has been selected
   #endif
 #endif
+/* As an ENUM, DDRXXX_FREQUENCY is not defined when the c preprocessor runs.
+ * Removing this test for coreboot.
+ */
+#if RUN_BROKEN_AGESA_TESTS
 // Ensure the frequency limit is valid
 #if (CFG_MEMORY_BUS_FREQUENCY_LIMIT != DDR1866_FREQUENCY) && (CFG_MEMORY_BUS_FREQUENCY_LIMIT != 933)
   #if (CFG_MEMORY_BUS_FREQUENCY_LIMIT != DDR1600_FREQUENCY) && (CFG_MEMORY_BUS_FREQUENCY_LIMIT != 800)
@@ -2168,6 +2176,13 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
     #endif
   #endif
 #endif
+
+#endif
+/* As an ENUM, TIMING_MODE_XXX is not defined when the c preprocessor runs.
+ * Removing this test for coreboot.
+ */
+#if RUN_BROKEN_AGESA_TESTS
+
 // Ensure timing mode is valid
 #if CFG_TIMING_MODE_SELECT != TIMING_MODE_SPECIFIC
   #if CFG_TIMING_MODE_SELECT != TIMING_MODE_LIMITED
@@ -2175,6 +2190,8 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
       #error    BLDCFG: Invalid timing mode is set
     #endif
   #endif
+#endif
+
 #endif
 // Ensure the scrub rate is valid
 #if ((CFG_SCRUB_DRAM_RATE > 0x16) && (CFG_SCRUB_DRAM_RATE != 0xFF))
@@ -2192,11 +2209,18 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #if CFG_SCRUB_DC_RATE > 0x16
   #error   BLDCFG: Unsupported Dcache scrub rate set
 #endif
+/* As an ENUM, QUADRANK_XXX is not defined when the c preprocessor runs.
+ * Removing this test for coreboot.
+ */
+#if RUN_BROKEN_AGESA_TESTS
+
 // Ensure Quad rank dimm type is valid
 #if CFG_MEMORY_QUADRANK_TYPE != QUADRANK_UNBUFFERED
   #if CFG_MEMORY_QUADRANK_TYPE != QUADRANK_REGISTERED
     #error     BLDCFG: Invalid quad rank dimm type set
   #endif
+#endif
+
 #endif
 // Ensure ECC symbol size is valid
 #if CFG_ECC_SYMBOL_SIZE != ECCSYMBOLSIZE_USE_BKDG
@@ -2206,6 +2230,11 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
     #endif
   #endif
 #endif
+/* As an ENUM, POWER_DOWN_BY_XXX is not defined when the c preprocessor runs.
+ * Removing this test for coreboot.
+ */
+#if RUN_BROKEN_AGESA_TESTS
+
 // Ensure power down mode is valid
 #if CFG_POWER_DOWN_MODE != POWER_DOWN_BY_CHIP_SELECT
   #if CFG_POWER_DOWN_MODE != POWER_DOWN_BY_CHANNEL
@@ -2213,6 +2242,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
   #endif
 #endif
 
+#endif
 /*****************************************************************************
  *
  * Process the option logic, setting local control variables

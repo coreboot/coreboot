@@ -190,7 +190,7 @@ dump_td(td_t *cur, int level)
 	const char *spc=spaces+(10-level);
 	debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[(cur->config & TD_DIRECTION_MASK) >> TD_DIRECTION_SHIFT],
 		completion_codes[(cur->config & TD_CC_MASK) >> TD_CC_SHIFT]);
-	debug("%s toggle: %x\n", spc, cur->toggle);
+	debug("%s toggle: %x\n", spc, !!(cur->config & TD_TOGGLE_DATA1));
 #endif
 }
 

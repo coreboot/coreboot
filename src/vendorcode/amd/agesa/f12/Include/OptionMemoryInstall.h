@@ -44,6 +44,10 @@
 #ifndef _OPTION_MEMORY_INSTALL_H_
 #define _OPTION_MEMORY_INSTALL_H_
 
+#ifndef RUN_BROKEN_AGESA_TESTS
+	#define RUN_BROKEN_AGESA_TESTS 0
+#endif
+
 /*-------------------------------------------------------------------------------
  *  This option file is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.
@@ -3395,9 +3399,14 @@ BOOLEAN MemFS3DefConstructorRet (
     NULL
   };
   CONST UINTN SIZE_OF_PLATFORM = (sizeof (memPlatformTypeInstalled) / sizeof (MEM_PLATFORM_CFG*));
+/* SIZE_OF_PLATFORM is not defined when the preprocessor runs
+ * Removing this test for coreboot.
+ */
+#if RUN_BROKEN_AGESA_TESTS
   #if SIZE_OF_PLATFORM > MAX_PLATFORM_TYPES
     #error   Size of memPlatformTypeInstalled array larger than MAX_PLATFORM_TYPES
   #endif
+#endif
 
   /*---------------------------------------------------------------------------------------------------
    * EXTRACTABLE PLATFORM SPECIFIC CONFIGURATION

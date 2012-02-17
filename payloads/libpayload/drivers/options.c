@@ -155,7 +155,7 @@ static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 le
 static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *option_table, char *name)
 {
 	struct cb_cmos_entries *cmos_entry;
-	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
+	int len = name ? strnlen(name, CMOS_MAX_NAME_LENGTH) : 0;
 
 	/* cmos entries are located right after the option table */
 
@@ -173,7 +173,7 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 
 struct cb_cmos_entries *first_cmos_entry(struct cb_cmos_option_table *option_table)
 {
-	return lookup_cmos_entry(option_table, "");
+	return lookup_cmos_entry(option_table, NULL);
 }
 
 struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cmos_entry)

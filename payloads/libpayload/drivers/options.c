@@ -97,7 +97,7 @@ void fix_options_checksum(void)
 
 static int get_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 len, void *valptr)
 {
-	u8 *value = (u8 *)valptr;
+	u8 *value = valptr;
 	int offs = 0;
 	u32 addr, bit;
 	u8 reg8;
@@ -123,9 +123,9 @@ static int get_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 le
 	return 0;
 }
 
-static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 len, void *valptr)
+static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 len, const void *valptr)
 {
-	u8 *value = (u8 *)valptr;
+	const u8 *value = valptr;
 	int offs = 0;
 	u32 addr, bit;
 	u8 reg8;
@@ -152,7 +152,7 @@ static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 le
 	return 0;
 }
 
-static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *option_table, char *name)
+static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *option_table, const char *name)
 {
 	struct cb_cmos_entries *cmos_entry;
 	int len = name ? strnlen(name, CMOS_MAX_NAME_LENGTH) : 0;
@@ -186,7 +186,7 @@ struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cmos_entry)
 }
 
 /* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
-static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, u8 *value, char *text)
+static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, const u8 *value, const char *text)
 {
 	struct cb_cmos_entries *cmos_entry;
 	int len = strnlen(text, CMOS_MAX_TEXT_LENGTH);
@@ -211,17 +211,17 @@ static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *
 	return NULL;
 }
 
-static struct cb_cmos_enums *lookup_cmos_enum_by_value(struct cb_cmos_option_table *option_table, int config_id, u8 *value)
+static struct cb_cmos_enums *lookup_cmos_enum_by_value(struct cb_cmos_option_table *option_table, int config_id, const u8 *value)
 {
 	return lookup_cmos_enum_core(option_table, config_id, value, NULL);
 }
 
-static struct cb_cmos_enums *lookup_cmos_enum_by_label(struct cb_cmos_option_table *option_table, int config_id, char *label)
+static struct cb_cmos_enums *lookup_cmos_enum_by_label(struct cb_cmos_option_table *option_table, int config_id, const char *label)
 {
 	return lookup_cmos_enum_core(option_table, config_id, NULL, label);
 }
 
-int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, char *name)
+int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, const char *name)
 {
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
 	if (cmos_entry) {
@@ -236,17 +236,17 @@ int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_ta
 	return 1;
 }
 
-int get_option_from(struct cb_cmos_option_table *option_table, void *dest, char *name)
+int get_option_from(struct cb_cmos_option_table *option_table, void *dest, const char *name)
 {
 	return get_option_with(use_nvram, option_table, dest, name);
 }
 
-int get_option(void *dest, char *name)
+int get_option(void *dest, const char *name)
 {
 	return get_option_from(get_system_option_table(), dest, name);
 }
 
-int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *value, char *name)
+int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, const void *value, const char *name)
 {
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
 	if (cmos_entry) {
@@ -257,12 +257,12 @@ int set_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_ta
 	return 1;
 }
 
-int set_option(void *value, char *name)
+int set_option(const void *value, const char *name)
 {
 	return set_option_with(use_nvram, get_system_option_table(), value, name);
 }
 
-int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, char *name)
+int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char **dest, const char *name)
 {
 	void *raw;
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);
@@ -298,7 +298,7 @@ int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_opti
 	return ret;
 }
 
-int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, char *value, char *name)
+int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, const char *value, const char *name)
 {
 	void *raw;
 	struct cb_cmos_entries *cmos_entry = lookup_cmos_entry(option_table, name);

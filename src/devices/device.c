@@ -932,6 +932,10 @@ void dev_configure(void)
 	struct device *root;
 	struct device *child;
 
+#if CONFIG_VGA_BRIDGE_SETUP == 1
+	set_vga_bridge_bits();
+#endif
+
 	printk(BIOS_INFO, "Allocating resources...\n");
 
 	root = &dev_root;
@@ -1023,10 +1027,6 @@ void dev_configure(void)
 	assign_resources(root->link_list);
 	printk(BIOS_INFO, "Done setting resources.\n");
 	print_resource_tree(root, BIOS_SPEW, "After assigning values.");
-
-#if CONFIG_VGA_BRIDGE_SETUP == 1
-	set_vga_bridge_bits();
-#endif
 
 	printk(BIOS_INFO, "Done allocating resources.\n");
 }

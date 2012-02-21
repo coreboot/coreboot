@@ -68,7 +68,7 @@ config IRQ_SLOT_COUNT
 
 config AMD_UCODE_PATCH_FILE
 	string
-	default "mc_patch_010000c4.h"
+	default "mc_patch_0100009f.h"
 
 config RAMTOP
 	hex

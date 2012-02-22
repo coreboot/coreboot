@@ -36,14 +36,19 @@ done
 
 GCCPREFIX=invalid
 XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
-echo '#XGCCPATH='${XGCCPATH}
+echo '# XGCCPATH='${XGCCPATH}
 TMPFILE=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
 touch $TMPFILE
 
-# This should be a loop over all supported architectures
-TARCH=i386
+# This loops over all supported architectures in TARCH
+TARCH=('i386' 'x86_64')
 TWIDTH=32
-for gccprefixes in ${XGCCPATH}${TARCH}-elf- ${TARCH}-elf- ""; do
+for search_for in "${TARCH[@]}"; do
+	TARCH_SEARCH=("${TARCH_SEARCH[@]}" ${XGCCPATH}${search_for}-elf- ${search_for}-elf-)
+done
+echo '# TARCH_SEARCH='${TARCH_SEARCH[@]}
+
+for gccprefixes in "${TARCH_SEARCH[@]}" ""; do
 	if ! which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		continue
 	fi

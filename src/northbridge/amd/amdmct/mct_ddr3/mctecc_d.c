@@ -127,7 +127,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					LDramECC = isDramECCEn_D(pDCTstat);
 					if(pDCTstat->ErrCode != SC_RunningOK) {
 						pDCTstat->Status &=  ~(1 << SB_ECCDIMMs);
-						if (OB_NBECC) {
+						if (!OB_NBECC) {
 							pDCTstat->ErrStatus |= (1 << SB_DramECCDis);
 						}
 						AllECC = 0;
@@ -146,6 +146,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 						Set_NB32(dev, reg, val);
 						DCTMemClr_Init_D(pMCTstat, pDCTstat);
 						MemClrECC = 1;
+						print_tx("  ECC enabled on node: ", Node);
 					}
 				}	/* this node has ECC enabled dram */
 			} else {
@@ -207,6 +208,17 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 		setSyncOnUnEccEn_D(pMCTstat, pDCTstatA);
 
 	mctHookAfterECC();
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+		if (NodePresent_D(Node)) {
+			print_tx("ECCInit: Node ", Node);
+			print_tx("ECCInit: Status ", pDCTstat->Status);
+			print_tx("ECCInit: ErrStatus ", pDCTstat->ErrStatus);
+			print_tx("ECCInit: ErrCode ", pDCTstat->ErrCode);
+			print_t("ECCInit: Done\n");
+		}
+	}
 	return MemClrECC;
 }
 

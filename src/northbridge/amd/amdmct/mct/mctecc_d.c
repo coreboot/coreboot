@@ -115,7 +115,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 
 	AllECC = 1;
 	MemClrECC = 0;
-	print_t(" ECCInit 0 \n");
 	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 		struct DCTStatStruc *pDCTstat;
 		pDCTstat = pDCTstatA + Node;
@@ -133,7 +132,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					LDramECC = isDramECCEn_D(pDCTstat);
 					if(pDCTstat->ErrCode != SC_RunningOK) {
 						pDCTstat->Status &=  ~(1 << SB_ECCDIMMs);
-						if (OB_NBECC) {
+						if (!OB_NBECC) {
 							pDCTstat->ErrStatus |= (1 << SB_DramECCDis);
 						}
 						AllECC = 0;
@@ -164,14 +163,11 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			}
 		}	/* if Node present */
 	}
-	print_t(" ECCInit 1 \n");
 
 	if(AllECC)
 		pMCTstat->GStatus |= 1<<GSB_ECCDIMMs;
 	else
 		pMCTstat->GStatus &= ~(1<<GSB_ECCDIMMs);
-
-	print_t(" ECCInit 2 \n");
 
 	/* Program the Dram BKScrub CTL to the proper (user selected) value.*/
 	/* Reset MC4_STS. */
@@ -212,12 +208,22 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 			}	/*Node has Dram */
 		}	/*if Node present */
 	}
-	print_t(" ECCInit 3 \n");
 
 	if(mctGet_NVbits(NV_SyncOnUnEccEn))
 		setSyncOnUnEccEn_D(pMCTstat, pDCTstatA);
 
 	mctHookAfterECC();
+	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		struct DCTStatStruc *pDCTstat;
+		pDCTstat = pDCTstatA + Node;
+		if (NodePresent_D(Node)) {
+			print_tx("ECCInit: Node ", Node);
+			print_tx("ECCInit: Status ", pDCTstat->Status);
+			print_tx("ECCInit: ErrStatus ", pDCTstat->ErrStatus);
+			print_tx("ECCInit: ErrCode ", pDCTstat->ErrCode);
+			print_t("ECCInit: Done\n");
+		}
+	}
 	return MemClrECC;
 }
 

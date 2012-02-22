@@ -343,7 +343,7 @@ restartinit:
 	}
 
 	mct_FinalMCT_D(pMCTstat, pDCTstatA);
-	printk(BIOS_DEBUG, "All Done\n");
+	printk(BIOS_DEBUG, "mctAutoInitMCT_D Done: Global Status: %x\n", pMCTstat->GStatus);
 	return;
 
 fatalexit:

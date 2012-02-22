@@ -300,7 +300,7 @@ restartinit:
 	}
 
 	mct_FinalMCT_D(pMCTstat, (pDCTstatA + 0) );	// Node 0
-	print_t("All Done\n");
+	print_tx("mctAutoInitMCT_D Done: Global Status: ", pMCTstat->GStatus);
 	return;
 
 fatalexit:

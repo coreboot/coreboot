@@ -544,7 +544,7 @@ static void usage(void)
 {
 	printf("usage: sconfig vendor/mainboard outputdir [-{s|b|k} outputfile]\n");
 	printf("\t-s file\tcreate ramstage static device map\n");
-	printf("\t-b file\tcreate bootblock init_mainboard()\n");
+	printf("\t-b file\tcreate bootblock initialisation\n");
 	printf("\t-k file\tcreate Kconfig devicetree section\n");
 	printf("Defaults to \"-s static.c\" if no {s|b|k} specified.\n");
 	exit (1);
@@ -662,25 +662,27 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
+			if (!h->chiph_exists)
+				continue;
 			fprintf(autogen, "#include \"%s/bootblock.c\"\n", h->name);
 		}
 
 		fprintf(autogen, "\n#if CONFIG_HAS_MAINBOARD_BOOTBLOCK\n");
 		fprintf(autogen, "#include \"mainboard/%s/bootblock.c\"\n", mainboard);
 		fprintf(autogen, "#else\n");
-		fprintf(autogen, "static unsigned long init_mainboard(int bsp_cpu)\n{\n");
-		fprintf(autogen, "\tif (! bsp_cpu) return 0;\n");
+		fprintf(autogen, "static void bootblock_mainboard_init(void)\n{\n");
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			char * buf = translate_name(h->name, UNSLASH);
+			if (!h->chiph_exists)
+				continue;
+			char * buf = translate_name(h->name, SPLIT_1ST);
 			if (buf) {
-				fprintf(autogen, "\tinit_%s();\n", buf);
+				fprintf(autogen, "\tbootblock_%s_init();\n", buf);
 				free(buf);
 			}
 		}
-
-		fprintf(autogen, "\treturn 0;\n}\n");
+		fprintf(autogen, "}\n");
 		fprintf(autogen, "#endif\n");
 
 	} else if (scan_mode == KCONFIG_MODE) {

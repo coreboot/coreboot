@@ -70,6 +70,9 @@ config PC80_SYSTEM
 	bool
 	default y
 
+config HAS_MAINBOARD_BOOTBLOCK
+	def_bool n
+
 config BOOTBLOCK_MAINBOARD_INIT
 	string
 

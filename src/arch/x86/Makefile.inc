@@ -326,6 +326,11 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
+$(objgenerated)/bootblock_devices.h: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb $(objutil)/sconfig/sconfig
+	@printf "    SCONFIG    $(subst $(src)/,,$(<)) (bootblock)\n"
+	mkdir -p $(dir $@)
+	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(dir $@) -b $(notdir $@)
+
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)

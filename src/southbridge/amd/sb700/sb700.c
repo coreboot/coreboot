@@ -226,8 +226,8 @@ void sb7xx_51xx_enable(device_t dev)
 	}
 }
 
-#if CONFIG_SOUTHBRIDGE_AMD_SP5100
-struct chip_operations southbridge_amd_sp5100_ops = {
+#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
+struct chip_operations southbridge_amd_sb700_ops = {
 	CHIP_NAME("ATI SP5100")
 	.enable_dev = sb7xx_51xx_enable,
 };

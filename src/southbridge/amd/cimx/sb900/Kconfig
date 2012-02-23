@@ -49,8 +49,5 @@ config ACPI_SCI_IRQ
 	help
 		Set SCI IRQ to 9.
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/cimx/sb900/bootblock.c"
 endif #SOUTHBRIDGE_AMD_CIMX_SB900
 

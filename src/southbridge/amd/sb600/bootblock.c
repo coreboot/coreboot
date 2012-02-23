@@ -64,7 +64,7 @@ static void sb600_enable_rom(void)
 	pci_io_write_config16(dev, 0x6e, 0xffff);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_amd_sb600(void)
 {
 	sb600_enable_rom();
 }

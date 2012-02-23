@@ -36,7 +36,7 @@ chip northbridge/amd/amdfam10/root_complex
 					register "gpp3a_configuration" = "11"   # Configuration 1:1:1:1:1:1
 					register "port_enable" = "0x1ffc"
 				end
-				chip southbridge/amd/sp5100 # it is under NB/SB Link, but on the same pri bus
+				chip southbridge/amd/sb700 # (model:sp5100) it is under NB/SB Link, but on the same pri bus
 					device pci 11.0 on end # SATA
 					device pci 12.0 on end # USB
 					device pci 12.1 on end # USB
@@ -92,7 +92,7 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 14.4 on end # PCI 0x4384
 					device pci 14.5 on end # USB 2
 					register "boot_switch_sata_ide" = "0"   # 0: boot from SATA. 1: IDE
-				end	#southbridge/amd/sp5100
+				end	#southbridge/amd/sb700
 			end #  device pci 18.0
 			device pci 18.1 on end
 			device pci 18.2 on end

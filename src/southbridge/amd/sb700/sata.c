@@ -86,9 +86,6 @@ static void sata_init(struct device *dev)
 	u16 sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
 	int i, j;
 
-	struct southbridge_ati_sb700_config *conf;
-	conf = dev->chip_info;
-
 	device_t sm_dev;
 	/* SATA SMBus Disable */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
@@ -189,7 +186,7 @@ static void sata_init(struct device *dev)
 	byte |= 7 << 0;
 	pci_write_config8(dev, 0x4, byte);
 
-#if CONFIG_SOUTHBRIDGE_AMD_SP5100
+#if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 	/* Master Latency Timer */
 	pci_write_config32(dev, 0xC, 0x00004000);
 #endif

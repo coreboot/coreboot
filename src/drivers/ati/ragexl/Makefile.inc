@@ -1,1 +1,1 @@
-driver-$(CONFIG_ATI_RAGE_XL) += xlinit.c
+driver-$(CONFIG_DRIVERS_ATI_RAGEXL) += xlinit.c

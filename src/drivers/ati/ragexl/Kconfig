@@ -1,2 +1,2 @@
-config ATI_RAGE_XL
+config DRIVERS_ATI_RAGEXL
 	bool

@@ -20,7 +20,3 @@
 config SOUTHBRIDGE_RDC_R8610
 	bool
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/rdc/r8610/bootblock.c"
-	depends on SOUTHBRIDGE_RDC_R8610

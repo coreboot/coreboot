@@ -24,9 +24,6 @@ config SOUTHBRIDGE_AMD_SB600
 	select HAVE_HARD_RESET
 
 if SOUTHBRIDGE_AMD_SB600
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/sb600/bootblock.c"
 
 config EHCI_BAR
 	hex

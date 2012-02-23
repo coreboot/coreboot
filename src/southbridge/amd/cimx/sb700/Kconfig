@@ -47,9 +47,6 @@ config ACPI_SCI_IRQ
 	default 0x9
 	help
 		Set SCI IRQ to 9.
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/cimx/sb700/bootblock.c"
 
 config REDIRECT_SBCIMX_TRACE_TO_SERIAL
 	bool "Redirect AMD Southbridge CIMX Trace to serial console"

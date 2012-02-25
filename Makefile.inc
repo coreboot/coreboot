@@ -239,7 +239,7 @@ lint lint-stable:
 	rm -f $$LINTLOG
 
 gitconfig:
-	if ! [ -x .git/hooks/commit-msg ]; then cp util/gitconfig/commit-msg .git/hooks/commit-msg; chmod +x .git/hooks/commit-msg; fi
+	for hook in commit-msg pre-commit; do if ! [ -x .git/hooks/$$hook ]; then cp util/gitconfig/$$hook .git/hooks/$$hook; chmod +x .git/hooks/$$hook; fi; done
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
 crossgcc: clean-for-update

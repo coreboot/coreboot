@@ -47,7 +47,7 @@ if [ "$MAKE" = "" ]; then
 fi
 
 # prepare a config to use
-TMPCONFIG=`mktemp`
+TMPCONFIG=`mktemp .tmpconfig.XXXXXX`
 rm -f $TMPCONFIG
 $MAKE NOMKDIR=1 DOTCONFIG=$TMPCONFIG allyesconfig >/dev/null
 

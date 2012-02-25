@@ -29,6 +29,35 @@ struct cpuid_result {
 	uint32_t edx;
 };
 
+/* Standard macro to see if a specific flag is changeable */
+static inline int flag_is_changeable_p(uint32_t flag)
+{
+	uint32_t f1, f2;
+
+	asm(
+		"pushfl\n\t"
+		"pushfl\n\t"
+		"popl %0\n\t"
+		"movl %0,%1\n\t"
+		"xorl %2,%0\n\t"
+		"pushl %0\n\t"
+		"popfl\n\t"
+		"pushfl\n\t"
+		"popl %0\n\t"
+		"popfl\n\t"
+		: "=&r" (f1), "=&r" (f2)
+		: "ir" (flag));
+	return ((f1^f2) & flag) != 0;
+}
+
+
+/* Probe for the CPUID instruction */
+static int have_cpuid_p(void)
+{
+	return flag_is_changeable_p(X86_EFLAGS_ID);
+}
+
+
 /*
  * Generic CPUID function
  */

@@ -76,34 +76,41 @@ int smbios_string_table_len(char *start)
 
 static int smbios_cpu_vendor(char *start)
 {
-	char tmp[13];
+	char tmp[13] = "Unknown";
 	u32 *_tmp = (u32 *)tmp;
-	struct cpuid_result res = cpuid(0);
+	struct cpuid_result res;
 
-	_tmp[0] = res.ebx;
-	_tmp[1] = res.edx;
-	_tmp[2] = res.ecx;
-	tmp[12] = '\0';
+	if (have_cpuid_p()) {
+		res = cpuid(0);
+		_tmp[0] = res.ebx;
+		_tmp[1] = res.edx;
+		_tmp[2] = res.ecx;
+		tmp[12] = '\0';
+	}
+
 	return smbios_add_string(start, tmp);
-
 }
 
 static int smbios_processor_name(char *start)
 {
-	char tmp[49];
+	char tmp[49] = "Unknown Processor Name";
 	u32  *_tmp = (u32 *)tmp;
 	struct cpuid_result res;
 	int i;
 
-	for (i = 0; i < 3; i++) {
-		res = cpuid(0x80000002 + i);
-		_tmp[i * 4 + 0] = res.eax;
-		_tmp[i * 4 + 1] = res.ebx;
-		_tmp[i * 4 + 2] = res.ecx;
-		_tmp[i * 4 + 3] = res.edx;
+	if (have_cpuid_p()) {
+		res = cpuid(0x80000000);
+		if (res.eax >= 0x80000004) {
+			for (i = 0; i < 3; i++) {
+				res = cpuid(0x80000002 + i);
+				_tmp[i * 4 + 0] = res.eax;
+				_tmp[i * 4 + 1] = res.ebx;
+				_tmp[i * 4 + 2] = res.ecx;
+				_tmp[i * 4 + 3] = res.edx;
+			}
+			tmp[48] = 0;
+		}
 	}
-
-	tmp[48] = 0;
 	return smbios_add_string(start, tmp);
 }
 
@@ -184,7 +191,13 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
 	int len = sizeof(struct smbios_type4);
 
-	res = cpuid(1);
+	/* Provide sane defaults even for CPU without CPUID */
+	res.eax = res.edx = 0;
+	res.ebx = 0x10000;
+
+	if (have_cpuid_p()) {
+		res = cpuid(1);
+	}
 
 	memset(t, 0, sizeof(struct smbios_type4));
 	t->type = SMBIOS_PROCESSOR_INFORMATION;
@@ -194,7 +207,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_id[1] = res.edx;
 	t->processor_manufacturer = smbios_cpu_vendor(t->eos);
 	t->processor_version = smbios_processor_name(t->eos);
-	t->processor_family = 0x0c;
+	t->processor_family = (res.eax > 0) ? 0x0c : 0x6;
 	t->processor_type = 3; /* System Processor */
 	t->processor_upgrade = 0x06;
 	t->core_count = (res.ebx >> 16) & 0xff;

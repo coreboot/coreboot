@@ -35,7 +35,7 @@
 /* AMD K8 LDT0, LDT1, LDT2 Link Control Registers */
 static u8 ldtreg[3] = {0x86, 0xa6, 0xc6};
 
-#if CONFIG_SOUTHBRIDGE_VIA_K8T800_OLD
+#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
 #define K8X8XX_HT_CFG_BASE 0xc0
 #else
 #define K8X8XX_HT_CFG_BASE 0x60
@@ -53,7 +53,7 @@ u8 k8t890_early_setup_ht(void)
 	u8 cldtwidth_in, cldtwidth_out, vldtwidth_in, vldtwidth_out, ldtnr, width;
 	u16 vldtcaps;
 
-#if !CONFIG_SOUTHBRIDGE_VIA_K8T800_OLD
+#if !CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
 	u8 reg;
 
 	/* hack, enable NVRAM in chipset */
@@ -79,21 +79,21 @@ u8 k8t890_early_setup_ht(void)
 		ldtnr = 2;
 	}
 
-#if CONFIG_SOUTHBRIDGE_VIA_K8M800
+#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M800
 	print_debug("K8M800 found at LDT ");
-#elif CONFIG_SOUTHBRIDGE_VIA_K8T800
+#elif CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800
 	print_debug("K8T800 found at LDT ");
-#elif CONFIG_SOUTHBRIDGE_VIA_K8T800_OLD
+#elif CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD
 	print_debug("K8T800_OLD found at LDT ");
 	pci_write_config8(PCI_DEV(0, 0x0, 0), 0x64, 0x00);
 	pci_write_config8(PCI_DEV(0, 0x0, 0), 0xdd, 0x50);
-#elif CONFIG_SOUTHBRIDGE_VIA_K8T800PRO
+#elif CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T800PRO
 	print_debug("K8T800 Pro found at LDT ");
-#elif CONFIG_SOUTHBRIDGE_VIA_K8M890
+#elif CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890
 	print_debug("K8M890 found at LDT ");
 	/* K8M890 fix HT delay */
 	pci_write_config8(PCI_DEV(0, 0x0, 2), 0xab, 0x22);
-#elif CONFIG_SOUTHBRIDGE_VIA_K8T890
+#elif CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8T890
 	print_debug("K8T890 found at LDT ");
 #endif
 	print_debug_hex8(ldtnr);

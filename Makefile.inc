@@ -34,7 +34,7 @@ coreboot: $(obj)/coreboot.rom
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot
+PHONY+= clean-abuild coreboot lint lint-stable
 
 #######################################################################
 # root source directories of coreboot
@@ -218,9 +218,9 @@ printcrt0s:
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
-lint:
+lint lint-stable:
 	FAILED=0; LINTLOG=`mktemp`; \
-	for script in util/lint/lint-*; do \
+	for script in util/lint/$@-*; do \
 		echo; echo `basename $$script`; \
 		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
 		echo ========; \

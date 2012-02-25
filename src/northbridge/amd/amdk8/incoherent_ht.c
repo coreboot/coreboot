@@ -149,10 +149,10 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 
 	printk(BIOS_SPEW, "pos=0x%x, filtered freq_cap=0x%x\n", pos, freq_cap);
 
-	#if CONFIG_SOUTHBRIDGE_VIA_K8M890 == 1
+#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890 == 1
 	freq_cap &= 0x3f;
 	printk(BIOS_INFO, "Limiting HT to 800/600/400/200 MHz until K8M890 HT1000 is fixed.\n");
-	#endif
+#endif
 	return freq_cap;
 }
 

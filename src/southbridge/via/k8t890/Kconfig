@@ -1,25 +1,26 @@
-config SOUTHBRIDGE_VIA_K8M800 #K8M800 not tested
-	bool
-
-config SOUTHBRIDGE_VIA_K8T800_OLD # not tested
-	bool
-
-config SOUTHBRIDGE_VIA_K8T800
-	bool
-
-config SOUTHBRIDGE_VIA_K8T800PRO
-	bool
-
-config SOUTHBRIDGE_VIA_K8M890
-	bool
 
 config SOUTHBRIDGE_VIA_K8T890
 	bool
 
+if SOUTHBRIDGE_VIA_K8T890
+
+config SOUTHBRIDGE_VIA_SUBTYPE_K8M800     # not tested
+	def_bool n
+config SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD # not tested, lspci lists B188 and 3188
+	def_bool n
+config SOUTHBRIDGE_VIA_SUBTYPE_K8T800     # lspci lists 0282, 1282, 2282, 3282, and 7282
+	def_bool n
+config SOUTHBRIDGE_VIA_SUBTYPE_K8T800PRO  # lspci lists 0282, 1282, 2282, 3282, and 7282
+	def_bool n
+config SOUTHBRIDGE_VIA_SUBTYPE_K8M890
+	def_bool n
+config SOUTHBRIDGE_VIA_SUBTYPE_K8T890
+	def_bool n
+
 config SOUTHBRIDGE_VIA_K8M890_VGA_EN
 	bool "Enable onboard K8M890 graphics"
 	default y
-	depends on SOUTHBRIDGE_VIA_K8M890
+	depends on SOUTHBRIDGE_VIA_SUBTYPE_K8M890
 	select VGA
 	select GFXUMA
 
@@ -50,3 +51,4 @@ config VIDEO_MB
 	default -1  if K8M890_VIDEO_MB_CMOS
 	depends on SOUTHBRIDGE_VIA_K8M890_VGA_EN
 
+endif # SOUTHBRIDGE_K8T890

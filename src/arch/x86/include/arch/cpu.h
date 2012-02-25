@@ -109,6 +109,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #include <device/device.h>
 
 int cpu_phys_address_size(void);
+int cpu_have_cpuid(void);
 
 struct cpu_device_id {
 	unsigned vendor;

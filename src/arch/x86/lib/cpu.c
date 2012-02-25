@@ -31,9 +31,8 @@ static inline int flag_is_changeable_p(uint32_t flag)
 	return ((f1^f2) & flag) != 0;
 }
 
-
 /* Probe for the CPUID instruction */
-static int have_cpuid_p(void)
+int cpu_have_cpuid(void)
 {
 	return flag_is_changeable_p(X86_EFLAGS_ID);
 }
@@ -141,7 +140,7 @@ static int cpu_cpuid_extended_level(void)
 
 int cpu_phys_address_size(void)
 {
-	if (!(have_cpuid_p()))
+	if (!(cpu_have_cpuid()))
 		return 32;
 
 	if (cpu_cpuid_extended_level() >= 0x80000008)
@@ -159,7 +158,7 @@ static void identify_cpu(struct device *cpu)
 	vendor_name[0] = '\0'; /* Unset */
 
 	/* Find the id and vendor_name */
-	if (!have_cpuid_p()) {
+	if (!cpu_have_cpuid()) {
 		/* Its a 486 if we can modify the AC flag */
 		if (flag_is_changeable_p(X86_EFLAGS_AC)) {
 			cpu->device = 0x00000400; /* 486 */
@@ -175,7 +174,7 @@ static void identify_cpu(struct device *cpu)
 			memcpy(vendor_name, "NexGenDriven", 13);
 		}
 	}
-	if (have_cpuid_p()) {
+	if (cpu_have_cpuid()) {
 		int  cpuid_level;
 		struct cpuid_result result;
 		result = cpuid(0x00000000);

@@ -25,6 +25,9 @@
 #define CPU_MAXPHYADDR 36
 #define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYADDR - 32) - 1)
 
+/* Base address to cache all of Flash ROM, just below 4GB. */
+#define CACHE_ROM_BASE	((1<<22 - CONFIG_CACHE_ROM_SIZE>>10)<<10)
+
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
@@ -203,13 +206,13 @@ clear_mtrrs:
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
-	/* Enable caching and Speculative Reads for the last 4MB. */
+	/* Enable caching and Speculative Reads for Flash ROM device. */
 	movl	$MTRRphysBase_MSR(1), %ecx
-	movl	$(0xffc00000 | MTRR_TYPE_WRPROT), %eax
+	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$(~(4 * 1024 * 1024 - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 

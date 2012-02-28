@@ -1,5 +1,10 @@
 config CPU_INTEL_SOCKET_MPGA604
 	bool
+
+if CPU_INTEL_SOCKET_MPGA604
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
 	select CPU_INTEL_MODEL_F2X
 	select CPU_INTEL_MODEL_F3X
 	select CPU_INTEL_MODEL_F4X
@@ -13,4 +18,14 @@ config CPU_INTEL_SOCKET_MPGA604
 config SSE2
 	bool
 	default n
-	depends on CPU_INTEL_SOCKET_MPGA604
+
+config DCACHE_RAM_BASE
+	hex
+	default 0x0ffafc000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x4000
+
+endif # CPU_INTEL_SOCKET_MPGA604
+

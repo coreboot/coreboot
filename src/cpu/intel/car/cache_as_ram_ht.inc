@@ -29,9 +29,6 @@
 #define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
 #define START_IPI_VECTOR	((CONFIG_AP_SIPI_VECTOR >> 12) & 0xff)
 
-#define CPU_MAXPHYADDR 36
-#define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYADDR - 32) - 1)
-
 /* Base address to cache all of Flash ROM, just below 4GB. */
 #define CACHE_ROM_BASE	((1<<22 - CONFIG_CACHE_ROM_SIZE>>10)<<10)
 
@@ -44,9 +41,14 @@
 cache_as_ram:
 	post_code(0x20)
 
+	movl	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	andl	$LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
+	jz	ap_init
+
 	/* Zero out all fixed range and variable range MTRRs.
-	 * For hyper-threaded CPU MTRRs are shared so we actually
-	 * clear them more than once, but we don't care. */
+	 * For hyper-threaded CPUs these are shared.
+	 */
 	movl	$mtrr_table, %esi
 	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
 	xorl	%eax, %eax
@@ -69,15 +71,45 @@ clear_mtrrs:
 
 	post_code(0x22)
 
-	/* Enable local apic. */
+	/* Determine CPU_ADDR_BITS and load PHYSMASK high
+	 * word to %edx.
+	 */
+	movl	$0x80000000, %eax
+	cpuid
+	cmpl	$0x80000008, %eax
+	jc	addrsize_no_MSR
+	movl	$0x80000008, %eax
+	cpuid
+	movb	%al, %cl
+	sub	$32, %cl
+	movl	$1, %edx
+	shl	%cl, %edx
+	subl	$1, %edx
+	jmp	addrsize_set_high
+addrsize_no_MSR:
+	movl	$1, %eax
+	cpuid
+	andl	$(1<<6 | 1<<17), %edx	/* PAE or PSE36 */
+	jz	addrsize_set_high
+	movl	$0x0f, %edx
+
+	/* Preload high word of address mask (in %edx) for Variable
+	 * MTRRs 0 and 1 and enable local apic at default base.
+	 */
+addrsize_set_high:
+	xorl	%eax, %eax
+	movl	$MTRRphysMask_MSR(0), %ecx
+	wrmsr
+	movl	$MTRRphysMask_MSR(1), %ecx
+	wrmsr
 	movl	$LAPIC_BASE_MSR, %ecx
+	not	%edx
+	movl	%edx, %ebx
 	rdmsr
-	andl	$(~CPU_PHYSMASK_HI), %edx
+	andl	%ebx, %edx
 	andl	$(~LAPIC_BASE_MSR_ADDR_MASK), %eax
 	orl	$(LAPIC_DEFAULT_BASE | LAPIC_BASE_MSR_ENABLE), %eax
 	wrmsr
-	andl	$LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
-	jz	ap_init
 
 bsp_init:
 
@@ -188,8 +220,8 @@ sipi_complete:
 
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRRphysMask_MSR(0)), %ecx
+	rdmsr
 	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRRphysMaskValid), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	/* Enable MTRR. */
@@ -271,7 +303,7 @@ no_msr_11e:
 	wrmsr
 
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$CPU_PHYSMASK_HI, %edx
+	rdmsr
 	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE */
@@ -343,8 +375,8 @@ no_msr_11e:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(0), %ecx
+	rdmsr
 	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	/* Enable caching and Speculative Reads for Flash ROM device. */
@@ -353,8 +385,8 @@ no_msr_11e:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
+	rdmsr
 	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
 	post_code(0x39)

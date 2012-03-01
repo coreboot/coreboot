@@ -73,11 +73,9 @@ static int heap_initialized = 0;
 static int minimal_free = 0;
 #endif
 
-static void setup(void)
+static void setup(hdrtype_t volatile *start, int size)
 {
-	int size = (unsigned int)(&_eheap - &_heap) - HDRSIZE;
-
-	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
+	*start = FREE_BLOCK(size);
 
 #ifdef CONFIG_DEBUG_MALLOC
 	heap_initialized = 1;
@@ -88,7 +86,7 @@ static void setup(void)
 static void *alloc(int len)
 {
 	hdrtype_t header;
-	void *ptr = hstart;
+	hdrtype_t volatile *ptr = (hdrtype_t volatile *) hstart;
 
 	/* Align the size. */
 	len = (len + 3) & ~3;
@@ -97,12 +95,12 @@ static void *alloc(int len)
 		return (void *)NULL;
 
 	/* Make sure the region is setup correctly. */
-	if (!HAS_MAGIC(*((hdrtype_t *) ptr)))
-		setup();
+	if (!HAS_MAGIC(*ptr))
+		setup(ptr, len);
 
 	/* Find some free space. */
 	do {
-		header = *((hdrtype_t *) ptr);
+		header = *ptr;
 		int size = SIZE(header);
 
 		if (!HAS_MAGIC(header) || size == 0) {
@@ -114,7 +112,7 @@ static void *alloc(int len)
 
 		if (header & FLAG_FREE) {
 			if (len <= size) {
-				void *nptr = ptr + (HDRSIZE + len);
+				hdrtype_t volatile *nptr = ptr + (HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
 				/* If there is still room in this block,
@@ -124,14 +122,13 @@ static void *alloc(int len)
 
 				if (nsize > 0) {
 					/* Mark the block as used. */
-					*((hdrtype_t *) ptr) = USED_BLOCK(len);
+					*ptr = USED_BLOCK(len);
 
 					/* Create a new free block. */
-					*((hdrtype_t *) nptr) =
-					    FREE_BLOCK(nsize);
+					*nptr = FREE_BLOCK(nsize);
 				} else {
 					/* Mark the block as used. */
-					*((hdrtype_t *) ptr) = USED_BLOCK(size);
+					*ptr = USED_BLOCK(size);
 				}
 
 				return (void *)(ptr + HDRSIZE);
@@ -140,7 +137,7 @@ static void *alloc(int len)
 
 		ptr += HDRSIZE + size;
 
-	} while (ptr < hend);
+	} while (ptr < (hdrtype_t *) hend);
 
 	/* Nothing available. */
 	return (void *)NULL;

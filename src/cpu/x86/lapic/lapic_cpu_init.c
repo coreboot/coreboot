@@ -277,6 +277,19 @@ int start_cpu(device_t cpu)
 }
 
 #if CONFIG_AP_IN_SIPI_WAIT == 1
+
+/**
+ * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of delay.
+ * An undefined number of instruction cycles will complete. All global locks
+ * must be released before INIT IPI and no printk is allowed after this.
+ * De-asserting INIT IPI is a no-op on later Intel CPUs.
+ *
+ * If you set DEBUG_HALT_SELF to 1, printk's after INIT IPI are enabled
+ * but running thread may halt without releasing the lock and effectively
+ * deadlock other CPUs.
+ */
+#define DEBUG_HALT_SELF 0
+
 /**
  * Normally this function is defined in lapic.h as an always inline function
  * that just keeps the CPU in a hlt() loop. This does not work on all CPUs.
@@ -298,38 +311,46 @@ void stop_this_cpu(void)
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT);
 
 	/* wait for the ipi send to finish */
-#if 0
-	// When these two printk(BIOS_SPEW, ...) calls are not removed, the
-	// machine will hang when log level is SPEW. Why?
+#if DEBUG_HALT_SELF
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 #endif
 	timeout = 0;
 	do {
-#if 0
+#if DEBUG_HALT_SELF
 		printk(BIOS_SPEW, "+");
 #endif
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
+#if DEBUG_HALT_SELF
 		printk(BIOS_ERR, "timed out\n");
+#endif
 	}
 	mdelay(10);
 
+#if DEBUG_HALT_SELF
 	printk(BIOS_SPEW, "Deasserting INIT.\n");
+#endif
 	/* Deassert the LAPIC INIT */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
+#if DEBUG_HALT_SELF
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
+#endif
 	timeout = 0;
 	do {
+#if DEBUG_HALT_SELF
 		printk(BIOS_SPEW, "+");
+#endif
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
+#if DEBUG_HALT_SELF
 		printk(BIOS_ERR, "timed out\n");
+#endif
 	}
 
 	while(1) {

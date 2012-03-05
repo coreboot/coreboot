@@ -57,13 +57,6 @@ _start:
 	 * entry16.inc.
 	 */
 
-	/* Load an IDT with NULL limit to prevent the 16bit IDT being used
-	 * in protected mode before c_start.S sets up a 32bit IDT when entering
-	 * ram stage.
-	 */
-	movw $nullidt_offset, %bx
-	lidt %cs:(%bx)
-
 	/* Note: gas handles memory addresses in 16 bit code very poorly.
 	 * In particular it doesn't appear to have a directive allowing you
 	 * associate a section or even an absolute offset with a segment register.
@@ -98,10 +91,18 @@ _start:
 	 * the low 16 bits.  This means that the intial segment used
 	 * when start is called must be 64K aligned.  This should not
 	 * restrict the address as the ip address can be anything.
+	 *
+	 * Also load an IDT with NULL limit to prevent the 16bit IDT being used
+	 * in protected mode before c_start.S sets up a 32bit IDT when entering
+	 * ram stage. In practise: CPU will shutdown on any exception.
+	 * See IA32 manual Vol 3A 19.26 Interrupts.
 	 */
 
 	movw	%cs, %ax
 	shlw	$4, %ax
+	movw	$nullidt_offset, %bx
+	subw	%ax, %bx
+	lidt	%cs:(%bx)
 	movw	$gdtptr16_offset, %bx
 	subw	%ax, %bx
 	data32  lgdt %cs:(%bx)

@@ -46,11 +46,11 @@ void start_main(void)
 {
 	extern int main(int argc, char **argv);
 
-	/* Set up the consoles. */
-	console_init();
-
 	/* Gather system information. */
 	lib_get_sysinfo();
+
+	/* Set up the consoles. */
+	console_init();
 
 	/*
 	 * Any other system init that has to happen before the

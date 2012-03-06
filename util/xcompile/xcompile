@@ -87,7 +87,7 @@ testcc "$CC" "$CFLAGS-Wno-unused-but-set-variable " && \
 # Use bfd linker instead of gold if available:
 testcc "$CC" "$CFLAGS-fuse-ld=bfd " && CFLAGS="$CFLAGS-fuse-ld=bfd " && LINKER_SUFFIX='.bfd'
 # Prevent SSE instructions sneaking in:
-testcc "$CC" "$CFLAGS-mno-sse " && CFLAGS="$CFLAGS-mno-sse "
+testcc "$CC" "$CFLAGS-march=i486 " && CFLAGS="$CFLAGS-march=i486 "
 
 if which gcc 2>/dev/null >/dev/null; then
 	HOSTCC=gcc

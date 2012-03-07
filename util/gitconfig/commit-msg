@@ -49,7 +49,25 @@ add_ChangeId() {
 		# Solaris AWK is just too broken
 		AWK=/usr/xpg4/bin/awk
 	fi
+
+	# How this works:
+	# - parse the commit message as (textLine+ blankLine*)*
+	# - assume textLine+ to be a footer until proven otherwise
+	# - exception: the first block is not footer (as it is the title)
+	# - read textLine+ into a variable
+	# - then count blankLines
+	# - once the next textLine appears, print textLine+ blankLine* as these
+	#   aren't footer
+	# - in END, the last textLine+ block is available for footer parsing
 	$AWK '
+	BEGIN {
+		# while we start with the assumption that textLine+
+		# is a footer, the first block is not.
+		isFooter = 0
+		footerComment = 0
+		blankLines = 0
+	}
+
 	# Skip lines starting with "#" without any spaces before it.
 	/^#/ { next }
 
@@ -57,80 +75,78 @@ add_ChangeId() {
 	# up to the end of the file, assuming it is only patch data.
 	# If more than one line before the diff was empty, strip all but one.
 	/^diff --git a/ {
-		if (blankLines > 1) {
-			blankLines = 1
-		}
+		blankLines = 0
 		while (getline) { }
 		next
 	}
 
-	# Handle comments and continuations in tags ([foo: bar] etc)
-	(caught == 1) && /^[ []/ {
-		if (lines != "") {
-			lines = lines "\n"
-		}
-		lines = lines $0
+	# Count blank lines outside footer comments
+	/^$/ && (footerComment == 0) {
+		blankLines++
 		next
 	}
 
-	# Handle normal lines (ie. not starting with some tag like "Signed-off-by:").
-	# If normal text appears after tags were "caught", handle them as normal text, too.
-	# Also count blank lines in blankLines.
-	!/^[a-zA-Z0-9-]+:/ || /^[a-zA-Z0-9-]+:\/\// {
-		if ($0 == "") {
-			blankLines++
-			next
-		} else {
-			for (i = 0; i < blankLines; i++) {
-				print ""
-			}
-			blankLines = 0
-		}
-		if (caught == 1) {
-			caught = 0
-			print lines
-			lines = ""
-		}
-		print $0
-		next
+	# Catch footer comment
+	/^\[[a-zA-Z0-9-]+:/ && (isFooter == 1) {
+		footerComment = 1
 	}
 
-	# Handle tags.  They are "caught" and collected in the "lines" variable
+	/]$/ && (footerComment == 1) {
+		footerComment = 2
+	}
+
+	# We have a non-blank line after blank lines. Handle this.
+	(blankLines > 0) {
+		print lines
+		for (i = 0; i < blankLines; i++) {
+			print ""
+		}
+
+		lines = ""
+		blankLines = 0
+		isFooter = 1
+		footerComment = 0
+	}
+
+	# Detect that the current block is not the footer
+	(footerComment == 0) && (!/^\[?[a-zA-Z0-9-]+:/ || /^[a-zA-Z0-9-]+:\/\//) {
+		isFooter = 0
+	}
+
 	{
-		caught = 1
+		# We need this information about the current last comment line
+		if (footerComment == 2) {
+			footerComment = 0
+		}
 		if (lines != "") {
 			lines = lines "\n";
 		}
 		lines = lines $0
 	}
 
-	# Tag handling:
-	# If last line before tags was not blank, there were no tags.
-	# In that case, print everything, plus a blank line, followed by Change-Id.
-	# Otherwise there were tags. Look for the right place to inject Change-Id,
-	# by considering CHANGE_ID_AFTER. Tags listed in it (case insensitive) come first,
+	# Footer handling:
+	# If the last block is considered a footer, splice in the Change-Id at the
+	# right place.
+	# Look for the right place to inject Change-Id by considering
+	# CHANGE_ID_AFTER. Keys listed in it (case insensitive) come first,
 	# then Change-Id, then everything else (eg. Signed-off-by:).
+	#
+	# Otherwise just print the last block, a new line and the Change-Id as a
+	# block of its own.
 	END {
 		unprinted = 1
-		if (blankLines == 0) {
-			if (lines == "") {
-				 print ""
-			} else {
-				print lines "\n"
+		if (isFooter == 0) {
+			print lines "\n"
+			lines = ""
+		}
+		changeIdAfter = "^(" tolower("'"$CHANGE_ID_AFTER"'") "):"
+		numlines = split(lines, footer, "\n")
+		for (line = 1; line <= numlines; line++) {
+			if (unprinted && match(tolower(footer[line]), changeIdAfter) != 1) {
+				unprinted = 0
+				print "Change-Id: I'"$id"'"
 			}
-		} else {
-			for (i = 0; i < blankLines; i++) {
-				print ""
-			}
-			changeIdAfter = "^(" tolower("'"$CHANGE_ID_AFTER"'") "):"
-			numlines = split(lines, footer, "\n")
-			for (line = 1; line <= numlines; line++) {
-				if (unprinted && match(tolower(footer[line]), changeIdAfter) != 1) {
-					unprinted = 0
-					print "Change-Id: I'"$id"'"
-				}
-				print footer[line]
-			}
+			print footer[line]
 		}
 		if (unprinted) {
 			print "Change-Id: I'"$id"'"

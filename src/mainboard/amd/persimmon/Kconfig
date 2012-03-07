@@ -41,10 +41,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_4096
 	select GFXUMA
-
-config AMD_AGESA
-	bool
-	default y
+	select CPU_AMD_AGESA
 
 config MAINBOARD_DIR
 	string

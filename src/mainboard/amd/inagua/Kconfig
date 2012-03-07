@@ -42,10 +42,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_2048
 	select ENABLE_APIC_EXT_ID
 	select GFXUMA
-
-config AMD_AGESA
-	bool
-	default y
+	select CPU_AMD_AGESA
 
 config MAINBOARD_DIR
 	string

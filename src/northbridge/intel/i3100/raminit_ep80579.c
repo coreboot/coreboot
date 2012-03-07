@@ -126,7 +126,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
  hw_err:
 	sz.side1 = 0;
 	sz.side2 = 0;
- out:
+out:
 	print_debug("dimm ");
 	print_debug_hex8(device);
 	print_debug(" size = ");

@@ -166,7 +166,7 @@ int xmodemReceive(unsigned char *dest, int destsz)
 			_outbyte(ACK);
 			continue;
 		}
-	reject:
+reject:
 		flushinput();
 		_outbyte(NAK);
 	}

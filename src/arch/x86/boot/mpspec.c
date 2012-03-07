@@ -267,7 +267,7 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 				smp_write_intsrc_pci_bridge(mc, irqtype, irqflag, child, dstapic, dstirq_x);
 			}
 
-		next:
+next:
 			child = child->sibling;
 		}
 

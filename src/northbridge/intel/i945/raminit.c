@@ -1478,7 +1478,7 @@ static struct dimm_size sdram_get_dimm_size(struct sys_info *sysinfo, u16 dimmno
 	 */
 	sz.side1 = 0;
 	sz.side2 = 0;
- out:
+out:
 	return sz;
 }
 

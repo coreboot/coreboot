@@ -227,7 +227,7 @@ static void set_cpu_ops(struct device *cpu)
 		}
 	}
 	return;
- found:
+found:
 	cpu->ops = driver->ops;
 }
 

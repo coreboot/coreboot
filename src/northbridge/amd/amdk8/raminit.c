@@ -681,7 +681,7 @@ hw_err:
 #if CONFIG_QRANK_DIMM_SUPPORT
 	sz.rank = 0;
 #endif
- out:
+out:
 	return sz;
 }
 

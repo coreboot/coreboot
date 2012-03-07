@@ -267,7 +267,7 @@ void pmm_handleInt()
 		rval = 0xFFFFFFFF;
 		goto exit;
 	}
-      exit:
+exit:
 	/* exit handler of this function, restore registers, put return value in DX:AX */
 	M.x86 = backup_regs;
 	M.x86.R_DX = (u16) ((rval >> 16) & 0xFFFF);

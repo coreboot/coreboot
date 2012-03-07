@@ -419,7 +419,7 @@ static void do_test2(int i)
 
 	raminit_main();
 
- done:
+done:
 	memcpy(&end_buf, &tmp_buf, sizeof(end_buf));
 }
 

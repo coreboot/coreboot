@@ -194,7 +194,7 @@ static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 
 	return smbus_get_result(smbus_io_base);
 
-      err:
+err:
 	print_debug("SMBUS READ ERROR:");
 	print_debug_hex8(error);
 	print_debug(" device:");

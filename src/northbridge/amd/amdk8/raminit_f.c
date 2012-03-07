@@ -49,7 +49,7 @@
 	/* for PCI_ADDR(0, 0x18, 2, 0x98) index,
 	 and PCI_ADDR(0x, 0x18, 2, 0x9c) data */
 	/*
-		index:
+index:
 		[29: 0] DctOffset (Dram Controller Offset)
 		[30:30] DctAccessWrite (Dram Controller Read/Write Select)
 			0 = read access
@@ -659,7 +659,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	/* for PCI_ADDR(0, 0x18, 2, 0x98) index,
 	 and PCI_ADDR(0x, 0x18, 2, 0x9c) data */
 	/*
-		index:
+index:
 		[29: 0] DctOffset (Dram Controller Offset)
 		[30:30] DctAccessWrite (Dram Controller Read/Write Select)
 			0 = read access
@@ -820,7 +820,7 @@ static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 	sz->col = 0;
 	sz->bank = 0;
 	sz->rank = 0;
- out:
+out:
 	return;
 }
 

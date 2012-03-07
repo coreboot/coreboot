@@ -154,7 +154,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
  hw_err:
 	sz.side1 = 0;
 	sz.side2 = 0;
- out:
+out:
 	return sz;
 
 }
@@ -281,7 +281,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 	/* If an hw_error occurs report that I have no memory */
  hw_err:
 	dra = 0;
- out:
+out:
 	return dra;
 
 }
@@ -597,7 +597,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	/* If an hw_error occurs report that I have no memory */
  hw_err:
 	drc = 0;
- out:
+out:
 	return drc;
 }
 

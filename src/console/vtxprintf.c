@@ -123,7 +123,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 
 		/* process flags */
 		flags = 0;
-		repeat:
+repeat:
 			++fmt;		/* this also skips first '%' */
 			switch (*fmt) {
 				case '-': flags |= LEFT; goto repeat;

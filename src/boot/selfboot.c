@@ -511,7 +511,7 @@ static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	jmp_to_elf_entry((void*)entry, bounce_buffer, bounce_size);
 	return 1;
 
- out:
+out:
 	return 0;
 }
 

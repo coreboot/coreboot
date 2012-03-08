@@ -225,7 +225,7 @@ lint lint-stable:
 		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \
 		echo ========; \
 		$$script > $$LINTLOG; \
-		if [ `wc -l $$LINTLOG | cut -d' ' -f1` -eq 0 ]; then \
+		if [ `echo $$( wc -l $$LINTLOG ) | cut -d' ' -f1` -eq 0 ]; then \
 			printf "success\n\n"; \
 		else \
 			echo test failed: ; \

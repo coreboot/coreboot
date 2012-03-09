@@ -33,10 +33,10 @@
 #define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))
 
 static void *cbfs_mapped;
-static u32 cbfs_offset;
+static void *cbfs_offset;
 static void* virt_to_phys(u32 virt)
 {
-	return (void*)(virt+cbfs_offset);
+	return cbfs_offset + virt;
 }
 
 #ifdef DEBUG
@@ -71,11 +71,11 @@ static struct cbfs_header *cbfs_master_header(void)
 struct cbfs_file *cbfs_find(const char *name)
 {
 	struct cbfs_header *header = cbfs_master_header();
-	unsigned long offset;
+	void *offset;
 
 	if (header == NULL)
 		return NULL;
-	offset = (u32)virt_to_phys(0 - ntohl(header->romsize) + ntohl(header->offset));
+	offset = virt_to_phys(0 - ntohl(header->romsize) + ntohl(header->offset));
 
 	int align= ntohl(header->align);
 
@@ -88,14 +88,14 @@ struct cbfs_file *cbfs_find(const char *name)
 
 		int flen = ntohl(file->len);
 		int foffset = ntohl(file->offset);
-		debug("CBFS: follow chain: %p + %x + %x + align -> ", (void *)offset, foffset, flen);
+		debug("CBFS: follow chain: %p + %x + %x + align -> ", offset, foffset, flen);
 
-		unsigned long oldoffset = offset;
-		offset = ALIGN(offset + foffset + flen, align);
+		void *oldoffset = offset;
+		offset = (void*)ALIGN((uintptr_t)(offset + foffset + flen), align);
 		debug("%p\n", (void *)offset);
 		if (offset <= oldoffset) return NULL;
 
-		if (offset < (u32)virt_to_phys(0xFFFFFFFF - ntohl(header->romsize)))
+		if (offset < virt_to_phys(0xFFFFFFFF - ntohl(header->romsize)))
 			return NULL;
 	}
 }
@@ -141,6 +141,6 @@ void open_cbfs(const char *filename)
 		printf("Couldn't map '%s'\n", filename);
 		exit(-1);
 	}
-	cbfs_offset = (uint32_t)cbfs_mapped-(0xffffffff-cbfs_stat.st_size+1);
+	cbfs_offset = cbfs_mapped-(0xffffffff-cbfs_stat.st_size+1);
 }
 

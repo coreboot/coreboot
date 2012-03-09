@@ -5,6 +5,11 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
+#include <assert.h>
+
+#if CONFIG_SERIAL_CPU_INIT==0
+#error Intel hyper-threading requires serialized cpu init
+#endif
 
 static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
@@ -30,11 +35,9 @@ void intel_sibling_init(device_t cpu)
 		siblings = 1;
 	}
 
-#if 1
 	printk(BIOS_DEBUG, "CPU: %u %d siblings\n",
 		cpu->path.apic.apic_id,
 		siblings);
-#endif
 
 	/* See if I am a sibling cpu */
 	if (cpu->path.apic.apic_id & (siblings -1)) {
@@ -53,25 +56,18 @@ void intel_sibling_init(device_t cpu)
 		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i;
 
 
-		/* Allocate the new cpu device structure */
-		new = alloc_dev(cpu->bus, &cpu_path);
+		/* Allocate new cpu device structure iff sibling CPU
+		 * was not in static device tree.
+		 */
+		new = alloc_find_dev(cpu->bus, &cpu_path);
 
 		if (!new) {
 			continue;
 		}
 
-#if 1
 		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n",
 			cpu->path.apic.apic_id,
 			new->path.apic.apic_id);
-#endif
-		/* Start the new cpu */
-		if (!start_cpu(new)) {
-			/* Record the error in cpu? */
-			printk(BIOS_ERR, "CPU %u would not start!\n",
-				new->path.apic.apic_id);
-		}
 	}
-
 }
 

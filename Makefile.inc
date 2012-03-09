@@ -79,12 +79,26 @@ $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 endef
 
 #######################################################################
+# Parse plaintext cmos defaults into binary format
+# arg1: source file
+# arg2: binary file name
+cbfs-files-processor-nvramtool= \
+	$(eval $(2): $(1) $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout | $(objutil)/nvramtool/nvramtool ; \
+		printf "    CREATE     $(2) (from $(1))\n"; $(objutil)/nvramtool/nvramtool -y $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout -D $(2).tmp -p $(1) && mv $(2).tmp $(2))
+
+#######################################################################
 # Add handler for arbitrary files in CBFS
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
+		$(eval tmp-cbfs-method:=$(word 2, $(subst :, ,$($(2)-file)))) \
+		$(eval $(2)-file:=$(word 1, $(subst :, ,$($(2)-file)))) \
 		$(if $(wildcard $(1)$($(2)-file)), \
 			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
 			$(eval tmp-cbfs-file:= $($(2)-file))) \
+		$(if $(tmp-cbfs-method), \
+			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
+			$(eval tmp-cbfs-file:=$(shell mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
+			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
 		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-position)) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \

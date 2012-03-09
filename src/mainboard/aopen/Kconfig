@@ -13,5 +13,5 @@ source "src/mainboard/aopen/dxplplusu/Kconfig"
 config MAINBOARD_VENDOR
 	string
 	default "AOpen"
-	
+
 endif # VENDOR_AOPEN

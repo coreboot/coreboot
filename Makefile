@@ -113,7 +113,7 @@ include $(HAVE_DOTCONFIG)
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-CC:=clang -m32
+CC:=clang -m32 -mno-mmx -mno-sse
 HOSTCC:=clang
 endif
 endif

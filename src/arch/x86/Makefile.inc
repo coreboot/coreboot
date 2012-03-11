@@ -326,7 +326,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S $(obj
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
+	$(CC) $(INCLUDES) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 

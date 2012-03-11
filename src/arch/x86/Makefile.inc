@@ -149,11 +149,19 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 
 $(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+	$(LD) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/coreboot_ram.ld
+else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $<
+endif
 
 $(objgenerated)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+	$(LD) -m elf_i386 -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME) --end-group
+else
 	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+endif
 
 $(objgenerated)/ramstage.a: $$(ramstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
@@ -311,18 +319,30 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+	$(LD) -m elf_i386 -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
+else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
+endif
 
 #######################################################################
 # Build the romstage
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_null.ld
+else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld $(romstage-objs)
+endif
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_xip.ld
+else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld $(romstage-objs)
+endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

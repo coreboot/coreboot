@@ -17,10 +17,6 @@ void *malloc(size_t size)
 
 	MALLOCDBG("%s Enter, size %ld, free_mem_ptr %p\n", __func__, size, free_mem_ptr);
 
-	/* Checking arguments */
-	if (size < 0)
-		die("Error! malloc: size < 0");
-
 	/* Overzealous linker check */
 	if (free_mem_ptr <= 0)
 		die("Error! malloc: Free_mem_ptr <= 0");

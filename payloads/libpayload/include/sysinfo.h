@@ -32,6 +32,10 @@
 
 /* Allow a maximum of 16 memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 16
+/* Allow a maximum of 8 GPIOs */
+#define SYSINFO_MAX_GPIOS 8
+
+#include <coreboot_tables.h>
 
 struct cb_serial;
 
@@ -53,15 +57,43 @@ struct sysinfo_t {
 	u32 cmos_range_start;
 	u32 cmos_range_end;
 	u32 cmos_checksum_location;
+#if CONFIG_CHROMEOS
+	u32 vbnv_start;
+	u32 vbnv_size;
+#endif
+
+	char *version;
+	char *extra_version;
+	char *build;
+	char *compile_time;
+	char *compile_by;
+	char *compile_host;
+	char *compile_domain;
+	char *compiler;
+	char *linker;
+	char *assembler;
 
 	char *cb_version;
 
 	struct cb_framebuffer *framebuffer;
 
+#if CONFIG_CHROMEOS
+	int num_gpios;
+	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
+#endif
+
 	unsigned long *mbtable; /** Pointer to the multiboot table */
 
 	struct cb_header *header;
 	struct cb_mainboard *mainboard;
+
+#if CONFIG_CHROMEOS
+	void	*vdat_addr;
+	u32	vdat_size;
+#endif
+	void	*tstamp_table;
+	void	*cbmem_cons;
+	void	*mrc_cache;
 };
 
 extern struct sysinfo_t lib_sysinfo;

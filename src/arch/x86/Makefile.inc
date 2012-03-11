@@ -318,7 +318,7 @@ $(obj)/bootblock/bootblock.S: $$(bootblock_inc)
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
+	$(CC) $(romstage-s-ccopts) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -368,7 +368,7 @@ $(obj)/romstage/crt0.S: $$(crt0s)
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
+	$(CC) $(romstage-s-ccopts) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

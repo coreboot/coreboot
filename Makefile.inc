@@ -58,6 +58,12 @@ ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
 
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+romstage-s-ccopts:=-no-integrated-as
+ramstage-S-ccopts:=-no-integrated-as
+ramstage-s-ccopts:=-no-integrated-as
+endif
+
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 

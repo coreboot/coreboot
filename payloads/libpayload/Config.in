@@ -53,6 +53,12 @@ config DEVELOPER
 	  Prompt for developer options. These options are only interesting for
 	  libpayload developers.
 
+config CHROMEOS
+	bool "ChromeOS specific features"
+	default n
+	help
+	  Enable ChromeOS specific features.
+
 endmenu
 
 menu "Architecture Options"

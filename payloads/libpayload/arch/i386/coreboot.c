@@ -87,6 +87,51 @@ static void cb_parse_version(void *ptr, struct sysinfo_t *info)
 	info->cb_version = (char *)ver->string;
 }
 
+#if CONFIG_CHROMEOS
+static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_vbnv *vbnv = (struct cb_vbnv *)ptr;
+
+	info->vbnv_start = vbnv->vbnv_start;
+	info->vbnv_size = vbnv->vbnv_size;
+}
+
+static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
+{
+	int i;
+	struct cb_gpios *gpios = (struct cb_gpios *)ptr;
+
+	info->num_gpios = (gpios->count < SYSINFO_MAX_GPIOS) ?
+				(gpios->count) : SYSINFO_MAX_GPIOS;
+
+	for (i = 0; i < info->num_gpios; i++)
+		info->gpios[i] = gpios->gpios[i];
+}
+
+static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_vdat *vdat = (struct cb_vdat *) ptr;
+
+	info->vdat_addr = vdat->vdat_addr;
+	info->vdat_size = vdat->vdat_size;
+}
+#endif
+
+static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->tstamp_table = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+}
+
+static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->cbmem_cons = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+}
+
+static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->mrc_cache = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+}
+
 #ifdef CONFIG_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
@@ -108,6 +153,11 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 	info->framebuffer = ptr;
 }
 #endif
+
+static void cb_parse_string(unsigned char *ptr, char **info)
+{
+	*info = (char *)((struct cb_string *)ptr)->string;
+}
 
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
@@ -160,6 +210,33 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_VERSION:
 			cb_parse_version(ptr, info);
 			break;
+		case CB_TAG_EXTRA_VERSION:
+			cb_parse_string(ptr, &info->extra_version);
+			break;
+		case CB_TAG_BUILD:
+			cb_parse_string(ptr, &info->build);
+			break;
+		case CB_TAG_COMPILE_TIME:
+			cb_parse_string(ptr, &info->compile_time);
+			break;
+		case CB_TAG_COMPILE_BY:
+			cb_parse_string(ptr, &info->compile_by);
+			break;
+		case CB_TAG_COMPILE_HOST:
+			cb_parse_string(ptr, &info->compile_host);
+			break;
+		case CB_TAG_COMPILE_DOMAIN:
+			cb_parse_string(ptr, &info->compile_domain);
+			break;
+		case CB_TAG_COMPILER:
+			cb_parse_string(ptr, &info->compiler);
+			break;
+		case CB_TAG_LINKER:
+			cb_parse_string(ptr, &info->linker);
+			break;
+		case CB_TAG_ASSEMBLER:
+			cb_parse_string(ptr, &info->assembler);
+			break;
 #ifdef CONFIG_NVRAM
 		case CB_TAG_CMOS_OPTION_TABLE:
 			cb_parse_optiontable(ptr, info);
@@ -177,6 +254,25 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 #endif
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
+#if CONFIG_CHROMEOS
+		case CB_TAG_GPIO:
+			cb_parse_gpios(ptr, info);
+			break;
+		case CB_TAG_VDAT:
+			cb_parse_vdat(ptr, info);
+			break;
+		case CB_TAG_VBNV:
+			cb_parse_vbnv(ptr, info);
+			break;
+#endif
+		case CB_TAG_TIMESTAMPS:
+			cb_parse_tstamp(ptr, info);
+			break;
+		case CB_TAG_CBMEM_CONSOLE:
+			cb_parse_cbmem_cons(ptr, info);
+			break;
+		case CB_TAG_MRC_CACHE:
+			cb_parse_mrc_cache(ptr, info);
 			break;
 		}
 

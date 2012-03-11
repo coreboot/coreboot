@@ -144,7 +144,7 @@ $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src
 
 $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
+	$(LD) -m elf_i386 -o $@ -L$(obj) $(obj)/coreboot_ram.o -T $(src)/arch/x86/coreboot_ram.ld
 	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
 	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ram.debug
 	$(OBJCOPY) --strip-debug $@
@@ -152,7 +152,7 @@ $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldop
 
 $(obj)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(LD) -m elf_i386 -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) --end-group
 
 $(obj)/coreboot.a: $$(ramstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
@@ -332,7 +332,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
+	$(LD) -m elf_i386 -static -o $@ -L$(obj) $< -T $(obj)/bootblock/ldscript.ld
 	$(NM) -n $(obj)/bootblock.elf | sort > $(obj)/bootblock.map
 	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
 	$(OBJCOPY) --strip-debug $@
@@ -343,13 +343,13 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	printf "CONFIG_ROMBASE = 0x0;\n" > $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
+	$(LD) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) $(romstage-objs) -T $(obj)/romstage/ldscript.ld
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
 	printf "CONFIG_ROMBASE = 0x" > $(obj)/location.ld
 	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	cat $(obj)/location.txt >> $(obj)/location.ld
 	printf ';\n' >> $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
+	$(LD) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) $(romstage-objs) -T $(obj)/romstage/ldscript.ld
 	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
 	$(OBJCOPY) --only-keep-debug $(obj)/romstage.elf $(obj)/romstage.debug
 	$(OBJCOPY) --strip-debug $(obj)/romstage.elf

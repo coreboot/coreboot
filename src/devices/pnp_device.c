@@ -107,7 +107,7 @@ void pnp_read_resources(device_t dev)
 static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx "
+		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
 		       "not assigned\n", dev_path(dev), resource->index,
 		       resource_type(resource), resource->size);
 		return;

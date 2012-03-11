@@ -322,7 +322,7 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 		    (resource->flags & IORESOURCE_ASSIGNED)) {
 			printk(BIOS_ERR,
 			       "Resource limit looks wrong! (no APIC?)\n");
-			printk(BIOS_ERR, "%s %02lx limit %08Lx\n",
+			printk(BIOS_ERR, "%s %02lx limit %08llx\n",
 			       dev_path(dev), resource->index, resource->limit);
 		}
 
@@ -627,7 +627,7 @@ static void avoid_fixed_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next) {
 		if ((res->flags & IORESOURCE_FIXED))
 			continue;
-		printk(BIOS_SPEW, "%s:@%s %02lx limit %08Lx\n", __func__,
+		printk(BIOS_SPEW, "%s:@%s %02lx limit %08llx\n", __func__,
 		       dev_path(dev), res->index, res->limit);
 		if ((res->flags & MEM_MASK) == PREF_TYPE &&
 		    (res->limit < limits.pref.limit))
@@ -660,9 +660,9 @@ static void avoid_fixed_resources(struct device *dev)
 		else
 			continue;
 
-		printk(BIOS_SPEW, "%s2: %s@%02lx limit %08Lx\n", __func__,
+		printk(BIOS_SPEW, "%s2: %s@%02lx limit %08llx\n", __func__,
 			     dev_path(dev), res->index, res->limit);
-		printk(BIOS_SPEW, "\tlim->base %08Lx lim->limit %08Lx\n",
+		printk(BIOS_SPEW, "\tlim->base %08llx lim->limit %08llx\n",
 			     lim->base, lim->limit);
 
 		/* Is the resource outside the limits? */

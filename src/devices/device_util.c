@@ -571,7 +571,7 @@ void report_resource_stored(device_t dev, struct resource *resource,
 		sprintf(buf, "bus %02x ", dev->link_list->secondary);
 #endif
 	}
-	printk(BIOS_DEBUG, "%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx "
+	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "
 	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
 		base, end, resource->size, resource->gran, buf,
 		resource_type(resource), comment);
@@ -786,7 +786,7 @@ void show_one_resource(int debug_level, struct device *dev,
 */
 
 	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
-		  "size 0x%08Lx gran 0x%02x %s%s%s\n", dev_path(dev),
+		  "size 0x%08llx gran 0x%02x %s%s%s\n", dev_path(dev),
 		  resource->index, base, end, resource->size, resource->gran,
 		  buf, resource_type(resource), comment);
 }

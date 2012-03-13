@@ -32,7 +32,6 @@
 #include <console/loglevel.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/fintek/f81865f/f81865f_early_serial.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "sb_cimx.h"
 #include "SBPLATFORM.h"
@@ -55,7 +54,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
-		f81865f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

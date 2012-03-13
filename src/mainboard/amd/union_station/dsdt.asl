@@ -1166,13 +1166,14 @@ DefinitionBlock (
 			} /* end AMRT */
 
 			/* The internal GFX bridge */
-			Device(AGPB) {
+			Device(HDMI) {
 				Name(_ADR, 0x00010000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					Return (APR1)
+					If(PMOD){ Return(APR1) }   /* APIC mode */
+					Return (PR1)                  /* PIC Mode */
 				}
-			}  /* end AGPB */
+			}  /* end HDMI */
 
 			/* The external GFX bridge */
 			Device(PBR2) {

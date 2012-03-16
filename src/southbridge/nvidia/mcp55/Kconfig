@@ -6,10 +6,6 @@ config SOUTHBRIDGE_NVIDIA_MCP55
 
 if SOUTHBRIDGE_NVIDIA_MCP55
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/nvidia/mcp55/bootblock.c"
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

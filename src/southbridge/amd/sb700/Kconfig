@@ -33,10 +33,6 @@ config SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 	bool
 	default n
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/sb700/bootblock.c"
-
 config SOUTHBRIDGE_AMD_SB700_SKIP_ISA_DMA_INIT
 	bool
 	default n

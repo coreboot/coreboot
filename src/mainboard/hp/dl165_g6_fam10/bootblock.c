@@ -18,6 +18,9 @@ static inline void shc4307_exit_ext_func_mode(device_t dev)
 #define DBG_DEV  PNP_DEV(SCH4307_CONFIG_PORT, 0x3)
 #define REGS_DEV PNP_DEV(SCH4307_CONFIG_PORT, 0xa)
 
+/* FIXME: This appears to be a super-io initialisation,
+ *        placed in the mainboard directory.
+ */
 void shc4307_init(void)
 {
 	shc4307_enter_ext_func_mode(CMOS_DEV);
@@ -43,6 +46,11 @@ void shc4307_init(void)
 	shc4307_exit_ext_func_mode(CMOS_DEV);
 }
 
-static void bootblock_southbridge_init(void) {
+static unsigned long init_mainboard(int bsp_cpu)
+{
+	if (!bsp_cpu) return 0;
+	bootblock_northbridge_init();
+	//bootblock_southbridge_init();
 	shc4307_init();
+	return 0;
 }

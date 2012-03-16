@@ -43,10 +43,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select GFXUMA
 	select UDELAY_LAPIC
 
-config AMD_AGESA
-	bool
-	default y
-
 config MAINBOARD_DIR
 	string
 	default amd/south_station

@@ -1,7 +1,7 @@
 ramstage-y += reset.c
 
 #SB800 CIMx share AGESA V5 lib code
-ifneq ($(CONFIG_AMD_AGESA),y)
+ifneq ($(CONFIG_CPU_AMD_AGESA),y)
  AGESA_ROOT ?= src/vendorcode/amd/agesa/f14
  romstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
  ramstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c

@@ -20,7 +20,6 @@
 config CPU_AMD_AGESA_FAMILY15
 	bool
 	select PCI_IO_CFG_EXT
-	select AMD_AGESA
 
 if CPU_AMD_AGESA_FAMILY15
 
@@ -57,10 +56,6 @@ config CBB
 config CDB
 	hex
 	default 0x18
-
-config XIP_ROM_BASE
-	hex
-	default 0xfff80000
 
 config XIP_ROM_SIZE
 	hex

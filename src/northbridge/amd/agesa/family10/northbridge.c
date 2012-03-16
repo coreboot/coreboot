@@ -29,6 +29,7 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
+#include <cbmem.h>
 
 #if CONFIG_LOGICAL_CPUS==1
 #include <pc80/mc146818rtc.h>
@@ -907,11 +908,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
-extern uint64_t high_tables_base, high_tables_size;
-#endif
-
 #if CONFIG_GFXUMA == 1
 extern uint64_t uma_memory_base, uma_memory_size;
 
@@ -1062,13 +1058,13 @@ static void amdfam10_domain_set_resources(device_t dev)
 					if (high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-						high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
+						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
-						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
+						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
 #endif
-						high_tables_size = HIGH_TABLES_SIZE * 1024;
-						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
-							     high_tables_base);
+						high_tables_size = HIGH_MEMORY_SIZE;
+						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n",
+							     (u32)(high_tables_size / 1024), high_tables_base);
 					}
 #endif
 				}
@@ -1096,11 +1092,11 @@ static void amdfam10_domain_set_resources(device_t dev)
 		if (high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-			high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
+			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
-			high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
+			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
 #endif
-			high_tables_size = HIGH_TABLES_SIZE * 1024;
+			high_tables_size = HIGH_MEMORY_SIZE;
 		}
 #endif
 	}

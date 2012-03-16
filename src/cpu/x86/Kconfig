@@ -29,6 +29,7 @@ config TSC_CALIBRATE_WITH_IO
 
 config XIP_ROM_SIZE
 	hex
+	default ROM_SIZE if ROMCC
 	default 0x10000
 
 config CPU_ADDR_BITS

@@ -88,4 +88,12 @@ config LITTLE_ENDIAN
 	bool
 	default !BIG_ENDIAN
 
+config IOAPIC_INTERRUPTS_ON_FSB
+	bool
+	default y if !IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
+
+config IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
+	bool
+	default n
+
 endmenu

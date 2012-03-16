@@ -7,5 +7,6 @@ config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select UDELAY_TSC
 	select MMX
+	select IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 
 endif # CPU_VIA_C3

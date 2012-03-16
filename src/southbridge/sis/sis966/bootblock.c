@@ -41,7 +41,7 @@ static void sis966_enable_rom(void)
 	pci_write_config8(addr, 0x40, pci_read_config8(addr, 0x40) | 0x11);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_sis_sis966(void)
 {
 	sis966_enable_rom();
 }

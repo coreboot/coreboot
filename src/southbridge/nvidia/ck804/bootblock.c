@@ -42,7 +42,7 @@ static void ck804_enable_rom(void)
 	pci_write_config8(addr, 0x88, byte);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_nvidia_ck804(void)
 {
 	ck804_enable_rom();
 }

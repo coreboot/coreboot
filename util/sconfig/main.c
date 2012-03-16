@@ -595,9 +595,9 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			char * buf = translate_name(h->name, SPLIT_1ST);
+			char * buf = translate_name(h->name, TO_LOWER);
 			if (buf) {
-				fprintf(autogen, "\tbootblock_%s_init();\n", buf);
+				fprintf(autogen, "\tinit_%s();\n", buf);
 				free(buf);
 			}
 		}

@@ -104,7 +104,7 @@ static void enable_clocks(void)
 	*acpi_mmio = reg32;
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_amd_cimx_sb800(void)
 {
 	/* Setup the rom access for 2M */
 	enable_rom();

@@ -109,6 +109,7 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
+	if [ -f $(obj)/no_xip ]; then echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE.\n" ; fi
 	$(CBFSTOOL) $@ print
 
 stripped_vgabios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_ID))
@@ -346,7 +347,11 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
 	printf "CONFIG_ROMBASE = 0x" > $(obj)/location.ld
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
+	rm -f $(obj)/no_xip
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt || touch $(obj)/no_xip
+	if [ -f $(obj)/no_xip ]; then \
+		$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_ROM_SIZE) > $(obj)/location.txt || exit 1 ; \
+	fi
 	cat $(obj)/location.txt >> $(obj)/location.ld
 	printf ';\n' >> $(obj)/location.ld
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)

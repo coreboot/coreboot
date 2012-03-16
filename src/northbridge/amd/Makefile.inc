@@ -3,6 +3,6 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AMDK8) += amdk8
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_GX1) += gx1
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_GX2) += gx2
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_LX) += lx
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA) += agesa
 
-subdirs-$(CONFIG_AMD_AGESA) += agesa
 subdirs-$(CONFIG_AMD_NB_CIMX) += cimx

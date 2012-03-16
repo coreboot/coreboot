@@ -73,7 +73,3 @@ if DIMM_DDR3
 	endif
 endif
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-  string
-  default "northbridge/amd/agesa/family12/bootblock.c"
-	depends on NORTHBRIDGE_AMD_AGESA_FAMILY12

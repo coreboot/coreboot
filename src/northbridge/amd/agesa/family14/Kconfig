@@ -39,8 +39,4 @@ config MMCONF_BUS_NUMBER
 	int
 	default 16
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-  string
-  default "northbridge/amd/agesa/family14/bootblock.c"
-
 endif

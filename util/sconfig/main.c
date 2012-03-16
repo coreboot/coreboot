@@ -581,7 +581,14 @@ int main(int argc, char** argv) {
 		while (h->next) {
 			h = h->next;
 			translate_name(h->name, 0);
+#if 0
 			fprintf(autogen, "\tinit_%s();\n", h->name);
+#else
+			char *s = h->name;
+			while (*s && (*s != '_')) s++;
+			*s = 0;
+			fprintf(autogen, "\tbootblock_%s_init();\n", h->name);
+#endif
 		}
 
 		fprintf(autogen, "\treturn 0;\n}\n");

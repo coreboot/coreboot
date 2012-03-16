@@ -45,10 +45,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
   select ENABLE_APIC_EXT_ID
         select GFXUMA
 
-config AMD_AGESA
-        bool
-        default y
-
 config MAINBOARD_DIR
         string
         default amd/torpedo

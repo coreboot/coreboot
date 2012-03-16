@@ -17,12 +17,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-config AMD_AGESA
+config CPU_AMD_AGESA
         bool
+        default y if CPU_AMD_AGESA_FAMILY10
+        default y if CPU_AMD_AGESA_FAMILY12
+        default y if CPU_AMD_AGESA_FAMILY14
         default y if CPU_AMD_AGESA_FAMILY15
         default n
 
-if AMD_AGESA
+if CPU_AMD_AGESA
 
 config XIP_ROM_SIZE
 	hex
@@ -40,5 +43,5 @@ source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig
 source src/cpu/amd/agesa/family15/Kconfig
 
-endif # AMD_AGESA
+endif # CPU_AMD_AGESA
 

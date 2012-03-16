@@ -51,5 +51,5 @@ SECTIONS
 		*(.eh_frame);
 	}
 
-	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0 || CONFIG_AMD_AGESA, "Do not use global variables in romstage");
+	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0 || CONFIG_CPU_AMD_AGESA, "Do not use global variables in romstage");
 }

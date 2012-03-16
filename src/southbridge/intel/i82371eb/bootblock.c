@@ -48,7 +48,7 @@ static void i82371eb_enable_rom(void)
 	pci_write_config16(dev, XBCS, reg16);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_intel_i82371eb(void)
 {
 	i82371eb_enable_rom();
 }

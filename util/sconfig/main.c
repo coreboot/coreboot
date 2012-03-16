@@ -677,9 +677,9 @@ int main(int argc, char** argv) {
 			h = h->next;
 			if (!h->chiph_exists)
 				continue;
-			char * buf = translate_name(h->name, SPLIT_1ST);
+			char * buf = translate_name(h->name, TO_LOWER);
 			if (buf) {
-				fprintf(autogen, "\tbootblock_%s_init();\n", buf);
+				fprintf(autogen, "\tinit_%s();\n", buf);
 				free(buf);
 			}
 		}

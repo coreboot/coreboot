@@ -90,7 +90,7 @@ static void sb700_enable_rom(void)
 	pci_io_write_config16(dev, 0x6c, word);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_amd_cimx_sb700(void)
 {
 	/* Setup the rom access for 2M */
 	sb700_enable_rom();

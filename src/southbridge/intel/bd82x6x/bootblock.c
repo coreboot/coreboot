@@ -85,7 +85,7 @@ static void set_spi_speed(void)
 	RCBA8(0x3893) = ssfc;
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_intel_bd82x6x(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS
 	store_initial_timestamp();

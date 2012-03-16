@@ -3,7 +3,7 @@
 #include <device/pci_def.h>
 #include "northbridge/amd/amdfam10/early_ht.c"
 
-static void bootblock_northbridge_init(void) {
+static void init_northbridge_amd_amdfam10(void) {
 	/* Nothing special needs to be done to find bus 0 */
 	/* Allow the HT devices to be found */
 	/* mov bsp to bus 0xff when > 8 nodes */

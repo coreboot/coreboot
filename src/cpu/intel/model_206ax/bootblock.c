@@ -114,7 +114,7 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	asm("hlt");
 }
 
-static void bootblock_cpu_init(void)
+static void init_cpu_intel_model_206ax(void)
 {
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();

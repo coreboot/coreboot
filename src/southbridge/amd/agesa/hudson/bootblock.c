@@ -62,7 +62,7 @@ static void hudson_enable_rom(void)
 	pci_write_config16(dev, 0x6e, 0xffff);
 }
 
-static void bootblock_southbridge_init(void)
+static void init_southbridge_amd_agesa_hudson(void)
 {
 	hudson_enable_rom();
 }

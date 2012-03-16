@@ -21,7 +21,7 @@
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>
 
-static void bootblock_southbridge_init(void) {
+static void init_southbridge_rdc_r8610(void) {
         uint32_t tmp;
 	tmp = pci_read_config32(PCI_DEV(0,7,0), 0x40);
 	/* decode all flash ranges */

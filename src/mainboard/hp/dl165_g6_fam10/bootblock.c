@@ -49,8 +49,8 @@ void shc4307_init(void)
 static unsigned long init_mainboard(int bsp_cpu)
 {
 	if (!bsp_cpu) return 0;
-	bootblock_northbridge_init();
-	bootblock_southbridge_init();
+	init_northbridge_amd_amdfam10();
+	init_southbridge_broadcom_bcm5785();
 	shc4307_init();
 	return 0;
 }

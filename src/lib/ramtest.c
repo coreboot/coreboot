@@ -47,100 +47,114 @@ static void phys_memory_barrier(void)
 #endif
 }
 
-static void ram_fill(unsigned long start, unsigned long stop)
+/**
+ * Rotate ones test pattern that access every bit on a 128bit wide
+ * memory bus. To test most address lines, addresses are scattered
+ * using 256B, 4kB and 64kB increments.
+ *
+ * @idx		Index to test pattern (0=<idx<0x400)
+ * @addr	Memory to access on @idx
+ * @value	Value to write or read at @addr
+ */
+static inline void test_pattern(unsigned short int idx,
+	unsigned long *addr, unsigned long *value)
 {
-	unsigned long addr;
-	/*
-	 * Fill.
-	 */
-#if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "DRAM fill: 0x%08lx-0x%08lx\n", start, stop);
-#else
-	print_debug("DRAM fill: ");
-	print_debug_hex32(start);
-	print_debug("-");
-	print_debug_hex32(stop);
-	print_debug("\n");
-#endif
-	for(addr = start; addr < stop ; addr += 4) {
-		/* Display address being filled */
-		if (!(addr & 0xfffff)) {
-#if !defined(__ROMCC__)
-			printk(BIOS_DEBUG, "%08lx \r", addr);
-#else
-			print_debug_hex32(addr);
-			print_debug(" \r");
-#endif
-		}
-		write_phys(addr, (u32)addr);
-	};
-	/* Display final address */
-#if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "%08lx\nDRAM filled\n", addr);
-#else
-	print_debug_hex32(addr);
-	print_debug("\nDRAM filled\n");
-#endif
+	uint8_t j, k;
+
+	k = (idx >> 8) + 1;
+	j = (idx >> 4) & 0x0f;
+	*addr = idx & 0x0f;
+	*addr |= j << (4*k);
+	*value = 0x01010101 << (j & 7);
+	if (j & 8)
+		*value = ~(*value);
 }
 
-static int ram_verify_nodie(unsigned long start, unsigned long stop)
+/**
+ * Simple write-read-verify memory test. See console debug output for
+ * any dislocated bytes.
+ *
+ * @start   System memory offset, aligned to 128bytes
+ */
+static int ram_bitset_nodie(unsigned long start)
 {
-	unsigned long addr;
-	int i = 0;
-	/*
-	 * Verify.
-	 */
+	unsigned long addr, value, value2;
+	unsigned short int idx;
+	unsigned char failed, failures;
+	uint8_t verbose = 0;
+
 #if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "DRAM verify: 0x%08lx-0x%08lx\n", start, stop);
+	printk(BIOS_DEBUG, "DRAM bitset write: 0x%08lx\n", start);
 #else
-	print_debug("DRAM verify: ");
+	print_debug("DRAM bitset write: 0x");
 	print_debug_hex32(start);
-	print_debug_char('-');
-	print_debug_hex32(stop);
 	print_debug("\n");
 #endif
-	for(addr = start; addr < stop ; addr += 4) {
-		unsigned long value;
-		/* Display address being tested */
-		if (!(addr & 0xfffff)) {
+	for (idx=0; idx<0x400; idx+=4) {
+		test_pattern(idx, &addr, &value);
+		write_phys(start + addr, value);
+	}
+
+	/* Make sure we don't read before we wrote */
+	phys_memory_barrier();
+
 #if !defined(__ROMCC__)
-			printk(BIOS_DEBUG, "%08lx \r", addr);
+	printk(BIOS_DEBUG, "DRAM bitset verify: 0x%08lx\n", start);
 #else
-			print_debug_hex32(addr);
-			print_debug(" \r");
+	print_debug("DRAM bitset verify: 0x");
+	print_debug_hex32(start);
+	print_debug("\n");
+#endif
+	failures = 0;
+	for (idx=0; idx<0x400; idx+=4) {
+		test_pattern(idx, &addr, &value);
+		value2 = read_phys(start + addr);
+
+		failed = (value2 != value);
+		failures |= failed;
+		if  (failed && !verbose) {
+#if !defined(__ROMCC__)
+			printk(BIOS_ERR, "0x%08lx wr: 0x%08lx rd: 0x%08lx FAIL\n",
+				 start + addr, value, value2);
+#else
+			print_err_hex32(start + addr);
+			print_err(" wr: 0x");
+			print_err_hex32(value);
+			print_err(" rd: 0x");
+			print_err_hex32(value2);
+			print_err(" FAIL\n");
 #endif
 		}
-		value = read_phys(addr);
-		if (value != addr) {
-			/* Display address with error */
+		if (verbose) {
 #if !defined(__ROMCC__)
-			printk(BIOS_ERR, "Fail: @0x%08lx Read value=0x%08lx\n", addr, value);
+			if ((addr & 0x0f) == 0)
+				printk(BIOS_DEBUG, "%08lx wr: %08lx rd:",
+					start + addr, value);
+			if (failed)
+				printk(BIOS_DEBUG, " %08lx!", value2);
+			else
+				printk(BIOS_DEBUG, " %08lx ", value2);
+			if ((addr & 0x0f) == 0xc)
+				printk(BIOS_DEBUG, "\n");
 #else
-			print_err("Fail: @0x");
-			print_err_hex32(addr);
-			print_err(" Read value=0x");
-			print_err_hex32(value);
-			print_err("\n");
-#endif
-			i++;
-			if(i>256) {
-#if !defined(__ROMCC__)
-				printk(BIOS_DEBUG, "Aborting.\n");
-#else
-				print_debug("Aborting.\n");
-#endif
-				break;
+			if ((addr & 0x0f) == 0) {
+				print_dbg_hex32(start + addr);
+				print_dbg(" wr: ");
+				print_dbg_hex32(value);
+				print_dbg(" rd: ");
 			}
+			print_dbg_hex32(value2);
+			if (failed)
+				print_dbg("! ");
+			else
+				print_dbg("  ");
+			if ((addr & 0x0f) == 0xc)
+				print_dbg("\n");
+#endif
 		}
 	}
-	/* Display final address */
-#if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "%08lx", addr);
-#else
-	print_debug_hex32(addr);
-#endif
-
-	if (i) {
+	if (failures) {
+		post_code(0xea);
 #if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
 #else
@@ -168,18 +182,13 @@ void ram_check(unsigned long start, unsigned long stop)
 	 * are tested.   -Tyson
 	 */
 #if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "Testing DRAM : %08lx - %08lx\n", start, stop);
+	printk(BIOS_DEBUG, "Testing DRAM at: %08lx\n", start);
 #else
-	print_debug("Testing DRAM : ");
+	print_debug("Testing DRAM at: ");
 	print_debug_hex32(start);
-	print_debug("-");
-	print_debug_hex32(stop);
 	print_debug("\n");
 #endif
-	ram_fill(start, stop);
-	/* Make sure we don't read before we wrote */
-	phys_memory_barrier();
-	if (ram_verify_nodie(start, stop))
+	if (ram_bitset_nodie(start))
 		die("DRAM ERROR");
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
@@ -198,19 +207,14 @@ int ram_check_nodie(unsigned long start, unsigned long stop)
 	 * are tested.   -Tyson
 	 */
 #if !defined(__ROMCC__)
-	printk(BIOS_DEBUG, "Testing DRAM : %08lx - %08lx\n", start, stop);
+	printk(BIOS_DEBUG, "Testing DRAM at : %08lx\n", start);
 #else
-	print_debug("Testing DRAM : ");
+	print_debug("Testing DRAM at : ");
 	print_debug_hex32(start);
-	print_debug("-");
-	print_debug_hex32(stop);
 	print_debug("\n");
 #endif
-	ram_fill(start, stop);
-	/* Make sure we don't read before we wrote */
-	phys_memory_barrier();
-	ret = ram_verify_nodie(start, stop);
 
+	(void)ram_bitset(start);
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
 #else
@@ -248,4 +252,3 @@ void quick_ram_check(void)
 	}
 	phys_memory_barrier();
 }
-

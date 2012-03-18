@@ -38,6 +38,13 @@ typedef enum {
 
 static scan_t scan_mode = STATIC_MODE;
 
+typedef enum {
+	UNSLASH,
+	SPLIT_1ST,
+	TO_LOWER,
+	TO_UPPER,
+} translate_t;
+
 static struct device root;
 static struct device mainboard = {
 	.name = "mainboard",
@@ -129,23 +136,31 @@ void postprocess_devtree(void) {
 	}
 }
 
-void translate_name(char *str, int uppercase)
+char * translate_name(const char *str, translate_t mode)
 {
-	char *c;
-	for (c = str; *c; c++) {
+	char *b, *c;
+	b = c = strdup(str);
+	while (c && *c) {
+		if ((mode == SPLIT_1ST) && (*c == '/')) {
+			*c = 0;
+			break;
+		}
 		if (*c == '/') *c = '_';
 		if (*c == '-') *c = '_';
-		if (uppercase)
+		if (mode == TO_UPPER)
 			*c = toupper(*c);
+		if (mode == TO_LOWER)
+			*c = tolower(*c);
+		c++;
 	}
+	return b;
 }
 
 struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 	struct device *new_chip = new_dev(parent, bus);
 	new_chip->chiph_exists = 1;
 	new_chip->name = path;
-	new_chip->name_underscore = strdup(new_chip->name);
-	translate_name(new_chip->name_underscore, 0);
+	new_chip->name_underscore = translate_name(new_chip->name, UNSLASH);
 	new_chip->type = chip;
 	new_chip->chip = new_chip;
 
@@ -625,8 +640,7 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			char *name_underscore = strdup(h->name);
-			translate_name(name_underscore, 0);
+			char *name_underscore = translate_name(h->name, UNSLASH);
 			fprintf(autogen, "extern struct chip_operations %s_ops;\n", name_underscore);
 			free(name_underscore);
 		}
@@ -648,6 +662,8 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
+			if (!h->chiph_exists)
+				continue;
 			fprintf(autogen, "#include \"%s/bootblock.c\"\n", h->name);
 		}
 
@@ -659,8 +675,13 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			translate_name(h->name, 0);
-			fprintf(autogen, "\tinit_%s();\n", h->name);
+			if (!h->chiph_exists)
+				continue;
+			char * buf = translate_name(h->name, SPLIT_1ST);
+			if (buf) {
+				fprintf(autogen, "\tbootblock_%s_init();\n", buf);
+				free(buf);
+			}
 		}
 
 		fprintf(autogen, "\treturn 0;\n}\n");
@@ -674,8 +695,11 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			translate_name(h->name, 1);
-			fprintf(autogen, "\tselect %s\n", h->name);
+			char * buf = translate_name(h->name, TO_UPPER);
+			if (buf) {
+				fprintf(autogen, "\tselect %s\n", buf);
+				free(buf);
+			}
 		}
 	}
 

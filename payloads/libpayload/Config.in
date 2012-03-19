@@ -377,3 +377,12 @@ config DEBUG_MALLOC
 
 endmenu
 
+config BIG_ENDIAN
+	default n
+	bool
+
+config LITTLE_ENDIAN
+	default n
+	bool
+
+source "arch/Config.in"

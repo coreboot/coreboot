@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/endian.h>
+#include <endian.h>
 #include <usb/usb.h>
 #include <usb/usbmsc.h>
 #include <usb/usbdisk.h>

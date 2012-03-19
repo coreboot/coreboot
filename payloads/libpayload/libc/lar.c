@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
+#include <endian.h>
 #include <libpayload.h>
-#include <arch/endian.h>
 
 #define ROM_RESET_VECTOR 0xFFFFFFF0
 

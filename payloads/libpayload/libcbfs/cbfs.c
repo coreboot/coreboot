@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/endian.h>
+#include <endian.h>
 #include <stdio.h>
 #include <string.h>
 #include <cbfs.h>

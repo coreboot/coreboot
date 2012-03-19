@@ -30,7 +30,7 @@
 #ifndef _ARPA_INET_H
 #define _ARPA_INET_H
 
-// arch/endian.h already provides ?to?[lwb]
-#include <arch/endian.h>
+// endian.h already provides ?to?[lwb]
+#include <endian.h>
 
 #endif

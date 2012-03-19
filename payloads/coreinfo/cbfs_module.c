@@ -18,7 +18,7 @@
  */
 
 #include "coreinfo.h"
-#include "arch/endian.h"
+#include "endian.h"
 
 #ifdef CONFIG_MODULE_CBFS
 

@@ -25,13 +25,8 @@ OUTPUT_ARCH(i386)
 TARGET(binary)
 SECTIONS
 {
-	. = CONFIG_ROMBASE;
+	. = ROMSTAGE_BASE;
 
-	/* cut _start into last 64k */
-	_x = .;
-	. = (_x < CONFIG_ROMBASE) ? (CONFIG_ROMBASE) : _x;
-
-	/* This section might be better named .setup */
 	.rom . : {
 		_rom = .;
 		*(.rom.text);

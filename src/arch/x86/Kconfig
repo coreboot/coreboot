@@ -8,10 +8,6 @@ config AP_IN_SIPI_WAIT
 	default n
 	depends on ARCH_X86
 
-config ROMBASE
-	hex
-	default 0xffff0000
-
 config RAMBASE
 	hex
 	default 0x100000

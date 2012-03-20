@@ -96,7 +96,7 @@ static void *alloc(int len)
 
 	/* Make sure the region is setup correctly. */
 	if (!HAS_MAGIC(*ptr))
-		setup(ptr, len);
+		setup(ptr, (int)((&_eheap - &_heap) - HDRSIZE));
 
 	/* Find some free space. */
 	do {
@@ -112,7 +112,7 @@ static void *alloc(int len)
 
 		if (header & FLAG_FREE) {
 			if (len <= size) {
-				hdrtype_t volatile *nptr = ptr + (HDRSIZE + len);
+				hdrtype_t volatile *nptr = (hdrtype_t volatile *)((int)ptr + HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
 				/* If there is still room in this block,
@@ -131,11 +131,11 @@ static void *alloc(int len)
 					*ptr = USED_BLOCK(size);
 				}
 
-				return (void *)(ptr + HDRSIZE);
+				return (void *)((int)ptr + HDRSIZE);
 			}
 		}
 
-		ptr += HDRSIZE + size;
+		ptr = (hdrtype_t volatile *)((int)ptr + HDRSIZE + size);
 
 	} while (ptr < (hdrtype_t *) hend);
 
@@ -422,7 +422,7 @@ void print_malloc_map(void)
 
 	if (free_memory && (minimal_free > free_memory))
 		minimal_free = free_memory;
-	printf("Maximum memory consumption: %d bytes",
+	printf("Maximum memory consumption: %d bytes\n",
 		(unsigned int)(&_eheap - &_heap) - HDRSIZE - minimal_free);
 }
 #endif

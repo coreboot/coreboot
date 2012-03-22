@@ -23,6 +23,7 @@
 #include "heapManager.h"
 #include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
+#include "BiosCallOuts.h"
 
 #define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 
@@ -165,4 +166,3 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 	InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
 	InitEarly->GnbConfig.PsppPolicy		= 0;
 }
-

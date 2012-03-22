@@ -29,6 +29,10 @@ void sb_Before_Pci_Init(void);
 void sb_After_Pci_Init(void);
 void sb_Mid_Post_Init(void);
 void sb_Late_Post(void);
+void sb_Before_Pci_Restore_Init(void);
+void sb_After_Pci_Restore_Init(void);
+
+int acpi_is_wakeup_early(void);
 
 /**
  * CIMX not set the clock to 48Mhz until sbBeforePciInit,

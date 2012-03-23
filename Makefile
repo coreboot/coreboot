@@ -276,7 +276,7 @@ clean: clean-for-update clean-target
 clean-cscope:
 	rm -f cscope.out
 
-distclean: clean-cscope
+distclean:
 	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 

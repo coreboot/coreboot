@@ -2,7 +2,9 @@
 
 romstage-y += memset.c
 romstage-y += memchr.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 romstage-y += memcpy.c
+endif
 romstage-y += memcmp.c
 romstage-y += cbfs.c
 romstage-y += lzma.c
@@ -17,7 +19,9 @@ romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 
 ramstage-y += memset.c
 ramstage-y += memchr.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 ramstage-y += memcpy.c
+endif
 ramstage-y += memcmp.c
 ramstage-y += memmove.c
 ramstage-y += malloc.c
@@ -39,7 +43,10 @@ ramstage-$(CONFIG_TRACE) += trace.c
 
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
-smm-y += memcpy.c cbfs.c memset.c memcmp.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
+smm-y += memcpy.c
+endif
+smm-y += cbfs.c memset.c memcmp.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-$(CONFIG_USBDEBUG) += usbdebug.c

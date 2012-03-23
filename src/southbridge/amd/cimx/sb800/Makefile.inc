@@ -27,6 +27,8 @@ romstage-y += smbus.c
 ramstage-y += cfg.c
 ramstage-y += late.c
 
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
+
 driver-y   += smbus.c
 driver-y   += lpc.c
 

@@ -1,0 +1,2 @@
+subdirs-$(CONFIG_NORTHBRIDGE_RDC_R8610) += r8610
+

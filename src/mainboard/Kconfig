@@ -188,6 +188,8 @@ source "src/mainboard/via/Kconfig"
 source "src/mainboard/winent/Kconfig"
 source "src/mainboard/wyse/Kconfig"
 
+config BOARD_ROMSIZE_KB_64
+	bool
 config BOARD_ROMSIZE_KB_128
 	bool
 config BOARD_ROMSIZE_KB_256
@@ -208,6 +210,7 @@ config BOARD_ROMSIZE_KB_16384
 # TODO: No help text possible for choice fields?
 choice
 	prompt "ROM chip size"
+	default COREBOOT_ROMSIZE_KB_64 if BOARD_ROMSIZE_KB_64
 	default COREBOOT_ROMSIZE_KB_128 if BOARD_ROMSIZE_KB_128
 	default COREBOOT_ROMSIZE_KB_256 if BOARD_ROMSIZE_KB_256
 	default COREBOOT_ROMSIZE_KB_512 if BOARD_ROMSIZE_KB_512
@@ -221,6 +224,11 @@ choice
 
 	  The build system will take care of creating a coreboot.rom file
 	  of the matching size.
+
+config COREBOOT_ROMSIZE_KB_64
+	bool "64 KB"
+	help
+	  Choose this option if you have a 64 KB ROM chip.
 
 config COREBOOT_ROMSIZE_KB_128
 	bool "128 KB"
@@ -267,6 +275,7 @@ endchoice
 # Map the config names to an integer (KB).
 config COREBOOT_ROMSIZE_KB
 	int
+	default 64 if COREBOOT_ROMSIZE_KB_64
 	default 128 if COREBOOT_ROMSIZE_KB_128
 	default 256 if COREBOOT_ROMSIZE_KB_256
 	default 512 if COREBOOT_ROMSIZE_KB_512
@@ -279,6 +288,7 @@ config COREBOOT_ROMSIZE_KB
 # Map the config names to a hex value (bytes).
 config ROM_SIZE
 	hex
+	default 0x10000 if COREBOOT_ROMSIZE_KB_64
 	default 0x20000 if COREBOOT_ROMSIZE_KB_128
 	default 0x40000 if COREBOOT_ROMSIZE_KB_256
 	default 0x80000 if COREBOOT_ROMSIZE_KB_512

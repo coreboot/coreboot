@@ -570,7 +570,7 @@ menu "Debugging"
 # TODO: Better help text and detailed instructions.
 config GDB_STUB
 	bool "GDB debugging support"
-	default y
+	default n
 	help
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/x86/lib/c_start.S for details.

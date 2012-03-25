@@ -58,13 +58,15 @@ extract_nth=$(word $(1), $(subst |, ,$(2)))
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
-		$(CBFSTOOL) $@ add $(call extract_nth,1,$(file)) $(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) $(call extract_nth,4,$(file)); )
+	$(CBFSTOOL) $@.tmp add $(call extract_nth,1,$(file)) \
+	$(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) \
+	$(call extract_nth,4,$(file)) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
-	rm -f $@
-	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
-	$(prebuild-files)
+	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+	$(prebuild-files) true
+	mv $@.tmp $@
 else
 .PHONY: $(obj)/coreboot.pre1
 $(obj)/coreboot.pre1: $(CBFSTOOL)
@@ -144,11 +146,12 @@ $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src
 
 $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
-	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ram.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ram.debug $@
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
+	$(NM) -n $@.tmp | sort > $@.map
+	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
+	mv $@.tmp $@
 
 $(obj)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -166,12 +169,12 @@ ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 
 $(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ap.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ap.debug $@
-	$(NM) -n $(obj)/coreboot_ap | sort > $(obj)/coreboot_ap.map
-
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
+	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
+	$(NM) -n $@.tmp | sort > $@.map
+	mv $@.tmp $@
 
 endif
 
@@ -269,10 +272,10 @@ endif
 
 $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	cp $(obj)/coreboot.pre1 $@
-	$(CBFSTOOL) $@ add-stage $(obj)/romstage.elf \
+	cp $(obj)/coreboot.pre1 $@.tmp
+	$(CBFSTOOL) $@.tmp add-stage $(obj)/romstage.elf \
 		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(obj)/location.txt)
+	mv $@.tmp $@
 
 #######################################################################
 # Build the bootblock
@@ -331,11 +334,12 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
-	$(NM) -n $(obj)/bootblock.elf | sort > $(obj)/bootblock.map
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
+	$(NM) -n $@.tmp | sort > $(obj)/bootblock.map
+	$(OBJCOPY) --only-keep-debug $@.tmp $(obj)/bootblock.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@.tmp
+	mv $@.tmp $@
 
 #######################################################################
 # Build the romstage

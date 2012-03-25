@@ -36,6 +36,8 @@ config VENDOR_AZZA
 	bool "AZZA"
 config VENDOR_BCOM
 	bool "BCOM"
+config VENDOR_BIFFEROS
+	bool "Bifferos"
 config VENDOR_BIOSTAR
 	bool "Biostar"
 config VENDOR_BROADCOM
@@ -143,6 +145,7 @@ source "src/mainboard/avalue/Kconfig"
 source "src/mainboard/axus/Kconfig"
 source "src/mainboard/azza/Kconfig"
 source "src/mainboard/bcom/Kconfig"
+source "src/mainboard/bifferos/Kconfig"
 source "src/mainboard/biostar/Kconfig"
 source "src/mainboard/broadcom/Kconfig"
 source "src/mainboard/compaq/Kconfig"

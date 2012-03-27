@@ -115,8 +115,10 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
+
+	printk(BIOS_SPEW, "%s BiosHeapBaseAddr: %x\n", __func__, (u32) BiosHeapBaseAddr);
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
 		/* First allocation */
@@ -237,9 +239,6 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
 
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
-
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
 	/* Find target node to deallocate in list of allocated nodes.
@@ -247,6 +246,10 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	*/
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
+
+
 	PrevNodeOffset = AllocNodeOffset;
 
 	while (AllocNodePtr->BufferHandle !=	AllocParams->BufferHandle) {
@@ -348,8 +351,8 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);

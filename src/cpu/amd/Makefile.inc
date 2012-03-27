@@ -15,3 +15,15 @@ subdirs-$(CONFIG_CPU_AMD_SC520) += sc520
 subdirs-$(CONFIG_CPU_AMD_SOCKET_S1G1) += socket_S1G1
 
 subdirs-$(CONFIG_CPU_AMD_AGESA) += agesa
+
+$(obj)/s3.rom:
+	echo "    S3 NVRAM   0xffff0000 (S3 storage area)"
+	echo -ne '\xFF' > $@
+	for ((i=0;i<20479;i++)) do echo -ne '\xFF' >> $@ ; done
+
+ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
+cbfs-files-y += s3nv
+s3nv-file := $(obj)/s3.rom
+s3nv-position := 0xffff0000
+s3nv-type := raw
+endif

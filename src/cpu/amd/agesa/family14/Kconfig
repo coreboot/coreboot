@@ -66,4 +66,8 @@ config HAVE_INIT_TIMER
 	bool
 	default y
 	depends on CPU_AMD_AGESA_FAMILY14
-
+config HIGH_SCRATCH_MEMORY_SIZE
+# Now we can assume the statck as (0xA0000 - 0x30000 + 0x1000) which is max
+	hex
+	default 0x71000
+	depends on CPU_AMD_AGESA_FAMILY14

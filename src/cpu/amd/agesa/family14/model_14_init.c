@@ -32,6 +32,8 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam14.h>
+#include <arch/acpi.h>
+#include <cpu/amd/agesa/s3_resume.h>
 
 #define MCI_STATUS 0x401
 
@@ -57,69 +59,84 @@ void wrmsr_amd(u32 index, msr_t msr)
 
 static void model_14_init(device_t dev)
 {
-  printk(BIOS_DEBUG, "Model 14 Init.\n");
-
-  u8 i;
-  msr_t msr;
-  int msrno;
+	u32 i;
+	msr_t msr;
 #if CONFIG_LOGICAL_CPUS == 1
-  u32 siblings;
+	u32 siblings;
+#endif
+	printk(BIOS_DEBUG, "Model 14 Init.\n");
+
+	disable_cache ();
+	/*
+	 * AGESA sets the MTRRs main MTRRs. The shadow area needs to be set
+	 * by coreboot. The amd_setup_mtrrs should work, but needs debug on fam14.
+	 * TODO:
+	 * amd_setup_mtrrs();
+	 */
+
+	/* Enable access to AMD RdDram and WrDram extension bits */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
+	wrmsr(SYSCFG_MSR, msr);
+
+	/* Set shadow WB, RdMEM, WrMEM */
+	msr.lo = msr.hi = 0;
+	wrmsr (0x259, msr);
+	msr.hi = msr.lo = 0x1e1e1e1e;
+	wrmsr(0x250, msr);
+	wrmsr(0x258, msr);
+	for (i = 0x268; i <= 0x26f; i++)
+		wrmsr(i, msr);
+
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
+	wrmsr(SYSCFG_MSR, msr);
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (acpi_slp_type == 3)
+		restore_mtrr();
 #endif
 
-  disable_cache ();
-  /* Enable access to AMD RdDram and WrDram extension bits */
-  msr = rdmsr(SYSCFG_MSR);
-  msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-  wrmsr(SYSCFG_MSR, msr);
+	x86_mtrr_check();
+	x86_enable_cache();
 
-   // BSP: make a0000-bffff UC, c0000-fffff WB, same as OntarioApMtrrSettingsList for APs
-   msr.lo = msr.hi = 0;
-   wrmsr (0x259, msr);
-   msr.lo = msr.hi = 0x1e1e1e1e;
-   for (msrno = 0x268; msrno <= 0x26f; msrno++)
-      wrmsr (msrno, msr);
+	/* zero the machine check error status registers */
+	msr.lo = 0;
+	msr.hi = 0;
+	for (i = 0; i < 6; i++) {
+		wrmsr(MCI_STATUS + (i * 4), msr);
+	}
 
-  /* disable access to AMD RdDram and WrDram extension bits */
-  msr = rdmsr(SYSCFG_MSR);
-  msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-  wrmsr(SYSCFG_MSR, msr);
-  enable_cache ();
-
-  /* zero the machine check error status registers */
-  msr.lo = 0;
-  msr.hi = 0;
-  for (i = 0; i < 6; i++) {
-    wrmsr(MCI_STATUS + (i * 4), msr);
-  }
-
-  /* Enable the local cpu apics */
-  setup_lapic();
+	/* Enable the local cpu apics */
+	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS == 1
-  siblings = cpuid_ecx(0x80000008) & 0xff;
+	siblings = cpuid_ecx(0x80000008) & 0xff;
 
-  if (siblings > 0) {
-    msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
-    msr.lo |= 1 << 28;
-    wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+	if (siblings > 0) {
+		msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+		msr.lo |= 1 << 28;
+		wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
 
-    msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-    msr.hi |= 1 << (33 - 32);
-    wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
-  }
-  printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
+		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+		msr.hi |= 1 << (33 - 32);
+		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+	}
 #endif
 
-  /* DisableCf8ExtCfg */
-  msr = rdmsr(NB_CFG_MSR);
-  msr.hi &= ~(1 << (46 - 32));
-  wrmsr(NB_CFG_MSR, msr);
+	/* DisableCf8ExtCfg */
+	msr = rdmsr(NB_CFG_MSR);
+	msr.hi &= ~(1 << (46 - 32));
+	wrmsr(NB_CFG_MSR, msr);
 
+	/* Write protect SMM space with SMMLOCK. */
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= (1 << 0);
+	wrmsr(HWCR_MSR, msr);
 
-  /* Write protect SMM space with SMMLOCK. */
-  msr = rdmsr(HWCR_MSR);
-  msr.lo |= (1 << 0);
-  wrmsr(HWCR_MSR, msr);
+	printk(BIOS_SPEW, "%s done.\n", __func__);
 }
 
 static struct device_operations cpu_dev_ops = {

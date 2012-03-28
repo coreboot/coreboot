@@ -347,10 +347,12 @@ static void northbridge_dmi_init(struct device *dev)
 	DMIBAR32(0x1d0) = 0xffffffff;
 
 	/* Steps prior to DMI ASPM */
-	reg32 = DMIBAR32(0x250);
-	reg32 &= ~((1 << 22)|(1 << 20));
-	reg32 |= (1 << 21);
-	DMIBAR32(0x250) = reg32;
+	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
+		reg32 = DMIBAR32(0x250);
+		reg32 &= ~((1 << 22)|(1 << 20));
+		reg32 |= (1 << 21);
+		DMIBAR32(0x250) = reg32;
+	}
 
 	reg32 = DMIBAR32(0x238);
 	reg32 |= (1 << 29);
@@ -372,9 +374,11 @@ static void northbridge_dmi_init(struct device *dev)
 	}
 
 	/* Enable ASPM on SNB link, should happen before PCH link */
-	reg32 = DMIBAR32(0xd04);
-	reg32 |= (1 << 4);
-	DMIBAR32(0xd04) = reg32;
+	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
+		reg32 = DMIBAR32(0xd04);
+		reg32 |= (1 << 4);
+		DMIBAR32(0xd04) = reg32;
+	}
 
 	reg32 = DMIBAR32(0x88);
 	reg32 |= (1 << 1) | (1 << 0);

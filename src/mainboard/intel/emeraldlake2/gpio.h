@@ -34,6 +34,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
         .gpio12 = GPIO_MODE_GPIO,
         .gpio15 = GPIO_MODE_GPIO,
         .gpio21 = GPIO_MODE_GPIO,
+	.gpio22 = GPIO_MODE_GPIO,
         .gpio24 = GPIO_MODE_GPIO,
         .gpio27 = GPIO_MODE_GPIO,
         .gpio28 = GPIO_MODE_GPIO,
@@ -49,6 +50,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
         .gpio12 = GPIO_DIR_INPUT,
         .gpio15 = GPIO_DIR_INPUT,
         .gpio21 = GPIO_DIR_INPUT,
+	.gpio22 = GPIO_DIR_INPUT,
         .gpio27 = GPIO_DIR_INPUT,
 };
 
@@ -60,11 +62,13 @@ const struct pch_gpio_set1 pch_gpio_set1_invert = {
 
 const struct pch_gpio_set2 pch_gpio_set2_mode = {
         .gpio36 = GPIO_MODE_GPIO,
+	.gpio48 = GPIO_MODE_GPIO,
         .gpio57 = GPIO_MODE_GPIO,
         .gpio60 = GPIO_MODE_GPIO,
 };
 
 const struct pch_gpio_set2 pch_gpio_set2_direction = {
+	.gpio48 = GPIO_DIR_INPUT,
         .gpio57 = GPIO_DIR_INPUT,
 };
 

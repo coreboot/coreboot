@@ -45,36 +45,30 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	if (!gpio_base)
 		return;
 
-#if 0 // Dev mode is hardcoded on, so we don't need to read these GPIOs.
 	u32 gp_lvl = inl(gpio_base + 0x0c);
-#endif
 	u32 gp_lvl2 = inl(gpio_base + 0x38);
-	u32 gp_lvl3 = inl(gpio_base + 0x48);
+	/* u32 gp_lvl3 = inl(gpio_base + 0x48); */
 
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
 	gpios->count = GPIO_COUNT;
 
-	/* Write Protect: GPIO68 = CHP3_SPI_WP */
-	gpios->gpios[0].port = 68;
-	gpios->gpios[0].polarity = ACTIVE_HIGH;
-	gpios->gpios[0].value = (gp_lvl3 >> (68-64)) & 1;
+	/* Write Protect: GPIO48 */
+	gpios->gpios[0].port = 48;
+	gpios->gpios[0].polarity = ACTIVE_LOW;
+	gpios->gpios[0].value = (gp_lvl2 >> (48-32)) & 1;
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
-	/* Recovery: GPIO42 = CHP3_REC_MODE# */
-	gpios->gpios[1].port = 42;
+	/* Recovery: GPIO22 */
+	gpios->gpios[1].port = 22;
 	gpios->gpios[1].polarity = ACTIVE_LOW;
-	gpios->gpios[1].value = (gp_lvl2 >> (42-32)) & 1;
+	gpios->gpios[1].value = (gp_lvl >> 22) & 1;
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: GPIO17 = KBC3_DVP_MODE */
-	gpios->gpios[2].port = 17;
+	/* Developer: GPIO57 */
+	gpios->gpios[2].port = 57;
 	gpios->gpios[2].polarity = ACTIVE_HIGH;
-#if 0 // Dev mode is hardcoded on.
-	gpios->gpios[2].value = (gp_lvl >> 17) & 1;
-#else
-	gpios->gpios[2].value = 1;
-#endif
+	gpios->gpios[2].value = (gp_lvl2 >> (57-32)) & 1;
 	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
 
 	/* Hard code the lid switch GPIO to open. */
@@ -93,7 +87,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-#if 0 // Dev mode is hardcoded on.
 	device_t dev;
 #ifdef __PRE_RAM__
 	dev = PCI_DEV(0, 0x1f, 0);
@@ -101,13 +94,10 @@ int get_developer_mode_switch(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 #endif
 	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl = inl(gpio_base + 0x0c);
+	u32 gp_lvl2 = inl(gpio_base + 0x38);
 
-	/* Developer: GPIO17 = KBC3_DVP_MODE, active high */
-	return (gp_lvl >> 17) & 1;
-#else
-	return 1;
-#endif
+	/* Developer: GPIO17, active high */
+	return (gp_lvl2 >> (57-32)) & 1;
 }
 
 int get_recovery_mode_switch(void)
@@ -119,9 +109,9 @@ int get_recovery_mode_switch(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 #endif
 	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl2 = inl(gpio_base + 0x38);
+	u32 gp_lvl = inl(gpio_base + 0x0c);
 
-	/* Recovery: GPIO42 = CHP3_REC_MODE#, active low */
-	return !((gp_lvl2 >> (42-32)) & 1);
+	/* Recovery: GPIO22, active low */
+	return !((gp_lvl >> 22) & 1);
 }
 

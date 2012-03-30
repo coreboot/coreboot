@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef LINK_THERMAL_H
-#define LINK_THERMAL_H
+#ifndef EMERALDLAKE2_THERMAL_H
+#define EMERALDLAKE2_THERMAL_H
 
 /* Fan is OFF */
 #define FAN4_THRESHOLD_OFF	0

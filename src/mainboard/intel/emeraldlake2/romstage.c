@@ -242,7 +242,7 @@ void main(unsigned long bist)
 	/* Enable GPIOs */
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	setup_pch_gpios(&link_gpio_map);
+	setup_pch_gpios(&emeraldlake2_gpio_map);
 	setup_sio_gpios();
 
 	/* Early SuperIO setup */

@@ -9160,10 +9160,6 @@ static struct triple *decompose_index(struct compile_state *state,
 static void decompose_compound_types(struct compile_state *state)
 {
 	struct triple *ins, *next, *first;
-#if DEBUG_DECOMPOSE_HIRES
-	FILE *fp;
-	fp = state->dbgout;
-#endif
 	first = state->first;
 	ins = first;
 

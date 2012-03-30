@@ -17,9 +17,10 @@ romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
-romstage-$(CONFIG_CONSOLE_NE2K) += compute_ip_checksum.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-y += compute_ip_checksum.c
+romstage-y += memmove.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 ramstage-y += memset.c
@@ -51,10 +52,13 @@ ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
+ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
+smm-y += memset.c
+endif
 ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 smm-y += memcpy.c
 endif
-smm-y += cbfs.c memset.c memcmp.c
+smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-$(CONFIG_USBDEBUG) += usbdebug.c

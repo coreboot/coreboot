@@ -24,6 +24,7 @@
 #include <arch/ioapic.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
 #include <console/console.h>	/* printk */
+#include <arch/acpi.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */
@@ -351,6 +352,17 @@ void sb_Late_Post(void)
 	AmdSbDispatcher(sb_config);
 }
 
+void sb_Before_Pci_Restore_Init(void)
+{
+	sb_config->StdHeader.Func = SB_BEFORE_PCI_RESTORE_INIT;
+	AmdSbDispatcher(sb_config);
+}
+
+void sb_After_Pci_Restore_Init(void)
+{
+	sb_config->StdHeader.Func = SB_AFTER_PCI_RESTORE_INIT;
+	AmdSbDispatcher(sb_config);
+}
 
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper
@@ -468,7 +480,14 @@ static void sb800_enable(device_t dev)
 		/* call the CIMX entry at the last sb800 device,
 		 * so make sure the mainboard devicetree is complete
 		 */
+#if CONFIG_HAVE_ACPI_RESUME == 1
+		if (acpi_slp_type != 3)
+			sb_Before_Pci_Init();
+		else
+			sb_Before_Pci_Restore_Init();
+#else
 		sb_Before_Pci_Init();
+#endif
 		break;
 
 	default:

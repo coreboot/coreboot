@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef LINK_GPIO_H
-#define LINK_GPIO_H
+#ifndef EMERALDLAKE2_GPIO_H
+#define EMERALDLAKE2_GPIO_H
 
 #include "southbridge/intel/bd82x6x/gpio.h"
 
@@ -84,7 +84,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 const struct pch_gpio_set3 pch_gpio_set3_level = {
 };
 
-const struct pch_gpio_map link_gpio_map = {
+const struct pch_gpio_map emeraldlake2_gpio_map = {
 	.set1 = {
 		.mode      = &pch_gpio_set1_mode,
 		.direction = &pch_gpio_set1_direction,

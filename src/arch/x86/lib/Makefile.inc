@@ -15,6 +15,7 @@ romstage-y += cbfs_and_run.c
 romstage-y += memset.c
 romstage-y += memcpy.c
 
+smm-y += memset.c
 smm-y += memcpy.c
 
 $(obj)/arch/x86/lib/console.ramstage.o :: $(obj)/build.h

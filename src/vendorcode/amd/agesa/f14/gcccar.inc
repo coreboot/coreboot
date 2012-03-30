@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -9,10 +9,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -23,9 +23,9 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
- 
+
 /******************************************************************************
 * AMD Generic Encapsulated Software Architecture
 *
@@ -144,28 +144,28 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
  *                      CPU MACROS - PUBLIC
  *
  ****************************************************************************/
-.macro   _WRMSR 
-        .byte 0x0f, 0x30        
+.macro   _WRMSR
+        .byte 0x0f, 0x30
 .endm
 
-.macro  _RDMSR  
-        .byte   0x0F, 0x32      
+.macro  _RDMSR
+        .byte   0x0F, 0x32
 .endm
 
 .macro AMD_CPUID arg0
-  .ifb \arg0                                             
-    mov   $0x1, %eax    
+  .ifb \arg0
+    mov   $0x1, %eax
     .byte 0x0F, 0x0A2                     /* Execute instruction */
-    bswap %eax                          
+    bswap %eax
     xchg  %ah, %al                        /* Ext model in al now */
     rol   $0x08, %eax                     /* Ext model in ah, model in al */
     and   $0x0FFCF, ax                    /* Keep 23:16, 7:6, 3:0 */
   .else
-    mov   \arg0, %eax    
-    .byte 0x0F, 0x0A2   
+    mov   \arg0, %eax
+    .byte 0x0F, 0x0A2
   .endif
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_ENABLE_STACK_FAMILY_HOOK Macro - Stackless
@@ -180,12 +180,12 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
  ****************************************************************************/
 .macro  AMD_ENABLE_STACK_FAMILY_HOOK
 
-    AMD_ENABLE_STACK_FAMILY_HOOK_F10    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F12    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F14    
-    AMD_ENABLE_STACK_FAMILY_HOOK_F15    
+    AMD_ENABLE_STACK_FAMILY_HOOK_F10
+    AMD_ENABLE_STACK_FAMILY_HOOK_F12
+    AMD_ENABLE_STACK_FAMILY_HOOK_F14
+    AMD_ENABLE_STACK_FAMILY_HOOK_F15
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_DISABLE_STACK_FAMILY_HOOK Macro - Stackless
@@ -206,7 +206,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
     AMD_DISABLE_STACK_FAMILY_HOOK_F15
 
 .endm
-  
+
 /****************************************************************************
 *
 * GET_NODE_ID_CORE_ID Macro - Stackless
@@ -238,9 +238,9 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
      */
     cmp     $-1, %si                      # Has family (node/core) already been discovered?
     jnz     node_core_exit              # Br if yes
-    
+
    mov     $((1 << FLAG_UNKNOWN_FAMILY)+(1 << FLAG_IS_PRIMARY)), %esi # No, Set error code, Only let BSP continue
-	
+
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax               # Is this the BSC?
@@ -249,7 +249,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
 node_core_exit:
 
 .endm
-  
+
 /****************************************************************************
 ##                      Family 10h MACROS
 ##***************************************************************************
@@ -277,7 +277,7 @@ node_core_exit:
 #   * MSRC001_102A[ClLinesToNbDis]=1
 #   * No INVD or WBINVD, no exceptions, page faults or interrupts
 ****************************************************************************/
-.macro AMD_ENABLE_STACK_FAMILY_HOOK_F10 
+.macro AMD_ENABLE_STACK_FAMILY_HOOK_F10
     LOCAL   fam10_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
@@ -310,7 +310,7 @@ node_core_exit:
     jc      fam10_skipClearingBit4
     btr     $INVD_WBINVD, %eax             # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam10_skipClearingBit4:
     mov %esi, %eax                         # load core#
     or %al, %al                       # If (BSP)
@@ -333,7 +333,7 @@ fam10_skipClearingBit4:
 
 fam10_enable_stack_hook_exit:
 .endm
-  
+
 /****************************************************************************
 *
 * AMD_DISABLE_STACK_FAMILY_HOOK_F10 Macro - Stackless
@@ -357,7 +357,7 @@ fam10_enable_stack_hook_exit:
 *   * MSRC001_102A[IcDisSpecTlbWr]=0
 *   * MSRC001_102A[ClLinesToNbDis]=0
 *****************************************************************************/
-     
+
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F10
     LOCAL   fam10_disable_stack_hook_exit
 
@@ -413,7 +413,7 @@ fam10_enable_stack_hook_exit:
     _WRMSR                              # Disable the event
 
 fam10_disable_stack_hook_exit:
-.endm   
+.endm
 
 /****************************************************************************
 *
@@ -575,7 +575,7 @@ node_core_f10_exit:
     jc      fam12_skipClearingBit4
     btr     $INVD_WBINVD, %eax            # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam12_skipClearingBit4:
     mov     $DE_CFG, %ecx                 # MSR:C001_1029
     _RDMSR
@@ -879,7 +879,7 @@ node_core_f14_exit:
     _RDMSR
     btr     $INVD_WBINVD, %eax            # disable INVD -> WBINVD conversion
     _WRMSR
-    
+
 fam15_skipClearingBit4:
     mov     $LS_CFG, %ecx                 # MSR:C001_1020
     _RDMSR
@@ -959,7 +959,7 @@ fam15_enable_stack_hook_exit:
     btr     $DIS_HW_PF, %eax              # Turn on hardware prefetches
     #.endif                              # End workaround for erratum 498
     0:
-    _WRMSR	
+    _WRMSR
     #--------------------------------------------------------------------------
     # Begin critical sequence in which EAX, BX, ECX, and EDX must be preserved.
     #--------------------------------------------------------------------------
@@ -1121,7 +1121,7 @@ node_core_f15_shared:
                 #.break .if (ch == bl)   # Does 2nd match MyCore#?
                 cmp     %bl, %ch
                 je      9f
-                jmp     2f   
+                jmp     2f
             #.else                       # No 2nd core
             4:
                 #.break .if (ch == bl)   # Does 1st match MyCore#?
@@ -1226,7 +1226,7 @@ node_core_f15_exit:
 *     | >|MA|IN| B|IO|S |RA|NG|E |  |  |  |  |  |  |< | >|EX|TE|ND|ED| B|IO|S |ZO|NE|  |  |  |  |  |< |
 *     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 *****************************************************************************/
-.macro  AMD_ENABLE_STACK 
+.macro  AMD_ENABLE_STACK
 
 # These are local labels. Declared so linker doesn't cause 'redefined label' errors
     LOCAL   SetupStack
@@ -1294,7 +1294,7 @@ SetupStack:
         #.if (carry?)                    #     Families using shared groups do not need to clear the MTRRs since that is done at power-on reset
             #  Note: Relying on MSRs to be cleared to 0's at reset for families w/shared cores
             # Clear all variable and Fixed MTRRs for non-shared cores
-        jnc 0f    
+        jnc 0f
         mov     $AMD_MTRR_VARIABLE_BASE0, %ecx
         xor     %eax, %eax
         xor     %edx, %edx
@@ -1330,20 +1330,20 @@ SetupStack:
         _WRMSR
         #.endif                          #   End Is_Primary
     #.endif                              # End Stack_ReEntry
-    0:    
+    0:
     # Clear IORRs (C001_0016-19) and TOM2(C001_001D) for all cores
     xor     %eax, %eax
     xor     %edx, %edx
     mov     $IORR_BASE, %ecx              # MSR:C001_0016 - 0019
     #.while (cl != 1Ah)
     jmp  1f
-    2:   
+    2:
         _WRMSR
         inc     %cl
     #.endw
-    1:  
+    1:
     cmp $0x1A, %cl
-    jne  2b   
+    jne  2b
     mov     $TOP_MEM2, %ecx               # MSR:C001_001D
     _WRMSR
 
@@ -1414,7 +1414,7 @@ SetupStack:
         mov     %eax, %ebp
     #.endif
     0:
-        
+
     # Now set the MTRR. Add this to already existing settings (don't clear any MTRR)
     mov     $WB_DRAM_TYPE, %edi           # Load Cache type in 1st slot
     mov     %bh, %cl                      # ShiftCount =  ((slot#   ...
@@ -1570,7 +1570,7 @@ ClearTheStack:                          # Stack base is in SS, stack pointer is 
 *   Destroyed:
 *       eax, ecx, edx, esp
 *****************************************************************************/
-.macro  AMD_DISABLE_STACK 
+.macro  AMD_DISABLE_STACK
 
     mov     %ebx, %esp                    # Save return address
 

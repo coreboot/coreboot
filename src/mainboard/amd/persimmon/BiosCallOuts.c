@@ -81,6 +81,10 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AGESA_STATUS CalloutStatus;
 	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
 
+	/*
+	 * printk(BIOS_SPEW,"%s function: %x\n", __func__, (u32) Func);
+	 */
+
 	CalloutStatus = AGESA_UNSUPPORTED;
 
 	for (i = 0; i < CallOutCount; i++) {
@@ -95,20 +99,20 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32				AvailableHeapSize;
-	UINT8				*BiosHeapBaseAddr;
-	UINT32				CurrNodeOffset;
-	UINT32				PrevNodeOffset;
-	UINT32				FreedNodeOffset;
-	UINT32				BestFitNodeOffset;
-	UINT32				BestFitPrevNodeOffset;
-	UINT32				NextFreeOffset;
-	BIOS_BUFFER_NODE	*CurrNodePtr;
-	BIOS_BUFFER_NODE	*FreedNodePtr;
-	BIOS_BUFFER_NODE	*BestFitNodePtr;
-	BIOS_BUFFER_NODE	*BestFitPrevNodePtr;
-	BIOS_BUFFER_NODE	*NextFreePtr;
-	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
+	UINT32              AvailableHeapSize;
+	UINT8               *BiosHeapBaseAddr;
+	UINT32              CurrNodeOffset;
+	UINT32              PrevNodeOffset;
+	UINT32              FreedNodeOffset;
+	UINT32              BestFitNodeOffset;
+	UINT32              BestFitPrevNodeOffset;
+	UINT32              NextFreeOffset;
+	BIOS_BUFFER_NODE   *CurrNodePtr;
+	BIOS_BUFFER_NODE   *FreedNodePtr;
+	BIOS_BUFFER_NODE   *BestFitNodePtr;
+	BIOS_BUFFER_NODE   *BestFitPrevNodePtr;
+	BIOS_BUFFER_NODE   *NextFreePtr;
+	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
 
 	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
@@ -149,8 +153,9 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 			}
 			CurrNodeOffset = CurrNodePtr->NextNodeOffset;
 			/* If BufferHandle has not been allocated on the heap, CurrNodePtr here points
-			 to the end of the allocated nodes list.
+			   to the end of the allocated nodes list.
 			*/
+
 		}
 		/* Find the node that best fits the requested buffer size */
 		FreedNodeOffset = BiosHeapBasePtr->StartOfFreedNodes;
@@ -199,7 +204,7 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 			}
 
 			/* If BestFitNode is the first buffer in the list, then update
-			 StartOfFreedNodes to reflect the new free node
+			   StartOfFreedNodes to reflect the new free node
 			*/
 			if (BestFitNodeOffset == BiosHeapBasePtr->StartOfFreedNodes) {
 				BiosHeapBasePtr->StartOfFreedNodes = NextFreeOffset;
@@ -249,7 +254,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);
 	PrevNodeOffset = AllocNodeOffset;
 
-	while (AllocNodePtr->BufferHandle !=	AllocParams->BufferHandle) {
+	while (AllocNodePtr->BufferHandle !=  AllocParams->BufferHandle) {
 		if (AllocNodePtr->NextNodeOffset == 0) {
 			return AGESA_BOUNDS_CHK;
 		}
@@ -283,10 +288,11 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 			/* Clear the BufferSize and NextNodeOffset of the previous first node */
 			FreedNodePtr->BufferSize = 0;
 			FreedNodePtr->NextNodeOffset = 0;
+
 		} else {
 			/* Otherwise, add freed node to the start of the list
-			 Update NextNodeOffset and BufferSize to include the
-			 size of BIOS_BUFFER_NODE
+			   Update NextNodeOffset and BufferSize to include the
+			   size of BIOS_BUFFER_NODE
 			*/
 			AllocNodePtr->NextNodeOffset = FreedNodeOffset;
 		}
@@ -294,21 +300,21 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		BiosHeapBasePtr->StartOfFreedNodes = AllocNodeOffset;
 	} else {
 		/* Traverse list of freed nodes to find where the deallocated node
-			 should be place
+		   should be place
 		*/
 		NextNodeOffset = FreedNodeOffset;
 		NextNodePtr = FreedNodePtr;
 		while (AllocNodeOffset > NextNodeOffset) {
 			PrevNodeOffset = NextNodeOffset;
 			if (NextNodePtr->NextNodeOffset == 0) {
-			break;
+				break;
 			}
 			NextNodeOffset = NextNodePtr->NextNodeOffset;
 			NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
 		}
 
 		/* If deallocated node is adjacent to the next node,
-			 concatenate both nodes
+		   concatenate both nodes
 		*/
 		if (NextNodeOffset == EndNodeOffset) {
 			NextNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + NextNodeOffset);
@@ -322,13 +328,14 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 			AllocNodePtr->NextNodeOffset = NextNodeOffset;
 		}
 		/* If deallocated node is adjacent to the previous node,
-			 concatenate both nodes
+		   concatenate both nodes
 		*/
 		PrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + PrevNodeOffset);
 		EndNodeOffset = PrevNodeOffset + PrevNodePtr->BufferSize;
 		if (AllocNodeOffset == EndNodeOffset) {
 			PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
 			PrevNodePtr->BufferSize += AllocNodePtr->BufferSize;
+
 			AllocNodePtr->BufferSize = 0;
 			AllocNodePtr->NextNodeOffset = 0;
 		} else {
@@ -398,17 +405,17 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	// 0xCF9 (Reset Port).
 	//
 	switch (ResetType) {
-		case WARM_RESET_WHENEVER:
-		case COLD_RESET_WHENEVER:
+	case WARM_RESET_WHENEVER:
+	case COLD_RESET_WHENEVER:
 		break;
 
-		case WARM_RESET_IMMEDIATELY:
-		case COLD_RESET_IMMEDIATELY:
-			Value = 0x06;
-			LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
+	case WARM_RESET_IMMEDIATELY:
+	case COLD_RESET_IMMEDIATELY:
+		Value = 0x06;
+		LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
 		break;
 
-		default:
+	default:
 		break;
 	}
 
@@ -555,13 +562,13 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	{
 	case 4:
 		switch (ResetInfo->ResetControl) {
-			case AssertSlotReset:
+		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
 			Data8 &= ~(UINT8)BIT6 ;
 			Write64Mem8(GpioMmioAddr+SB_GPIO_REG21, Data8);	 // MXM_GPIO0. GPIO21
 			Status = AGESA_SUCCESS;
 			break;
-			case DeassertSlotReset:
+		case DeassertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
 			Data8 |= BIT6 ;
 			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG21, Data8);		 // MXM_GPIO0. GPIO21
@@ -571,13 +578,13 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		break;
 	case 6:
 		switch (ResetInfo->ResetControl) {
-			case AssertSlotReset:
+		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
 			Data8 &= ~(UINT8)BIT6 ;
 			Write64Mem8(GpioMmioAddr+SB_GPIO_REG25, Data8);	 // PCIE_RST#_LAN, GPIO25
 			Status = AGESA_SUCCESS;
 			break;
-			case DeassertSlotReset:
+		case DeassertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
 			Data8 |= BIT6 ;
 			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG25, Data8);		 // PCIE_RST#_LAN, GPIO25
@@ -587,13 +594,13 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		break;
 	case 7:
 		switch (ResetInfo->ResetControl) {
-			case AssertSlotReset:
+		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
 			Data8 &= ~(UINT8)BIT6 ;
 			Write64Mem8(GpioMmioAddr+SB_GPIO_REG02, Data8);	 // MPCIE_RST0, GPIO02
 			Status = AGESA_SUCCESS;
 			break;
-			case DeassertSlotReset:
+		case DeassertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
 			Data8 |= BIT6 ;
 			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG02, Data8);		 // MPCIE_RST0, GPIO02

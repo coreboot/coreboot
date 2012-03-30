@@ -37,22 +37,22 @@
 
 msr_t rdmsr_amd(u32 index)
 {
-  msr_t result;
-  __asm__ __volatile__(
-    "rdmsr"
-    :"=a"(result.lo), "=d"(result.hi)
-    :"c"(index), "D"(0x9c5a203a)
-  );
-  return result;
+	msr_t result;
+	__asm__ __volatile__(
+		"rdmsr"
+		:"=a"(result.lo), "=d"(result.hi)
+		:"c"(index), "D"(0x9c5a203a)
+		);
+	return result;
 }
 
 void wrmsr_amd(u32 index, msr_t msr)
 {
-  __asm__ __volatile__(
-    "wrmsr"
-    : /* No outputs */
-    :"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
-  );
+	__asm__ __volatile__(
+		"wrmsr"
+		: /* No outputs */
+		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
+		);
 }
 
 static void model_14_init(device_t dev)
@@ -123,18 +123,18 @@ static void model_14_init(device_t dev)
 }
 
 static struct device_operations cpu_dev_ops = {
-  .init = model_14_init,
+	.init = model_14_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
-  { X86_VENDOR_AMD, 0x500f00 },   /* ON-A0 */
-  { X86_VENDOR_AMD, 0x500f01 },   /* ON-A1 */
-  { X86_VENDOR_AMD, 0x500f10 },   /* ON-B0 */
-  { X86_VENDOR_AMD, 0x500f20 },   /* ON-C0 */
-  { 0, 0 },
+	{ X86_VENDOR_AMD, 0x500f00 },   /* ON-A0 */
+	{ X86_VENDOR_AMD, 0x500f01 },   /* ON-A1 */
+	{ X86_VENDOR_AMD, 0x500f10 },   /* ON-B0 */
+	{ X86_VENDOR_AMD, 0x500f20 },   /* ON-C0 */
+	{ 0, 0 },
 };
 
 static const struct cpu_driver model_14 __cpu_driver = {
-  .ops      = &cpu_dev_ops,
-  .id_table = cpu_table,
+	.ops      = &cpu_dev_ops,
+	.id_table = cpu_table,
 };

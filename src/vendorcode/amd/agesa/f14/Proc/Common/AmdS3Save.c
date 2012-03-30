@@ -245,7 +245,7 @@ AmdS3Save (
 
           HeapStatus = AmdS3SaveParams->StdHeader.HeapStatus;
           AmdS3SaveParams->StdHeader.HeapStatus = HEAP_S3_RESUME;
-          AmdS3SaveParams->StdHeader.HeapBasePtr = (UINT64) HeapPtr;
+          AmdS3SaveParams->StdHeader.HeapBasePtr = (VOID *) HeapPtr;
 
           for (i = 0; i < S3LATE_TABLE_SIZE; i++) {
             if (HeapPtrs[i] != NULL) {

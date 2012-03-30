@@ -113,6 +113,7 @@ agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Gfx/GfxInitAtMidPost.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/Family/0x14/cpuF14CacheDefaults.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/Mem/Ps/ON/mpuon3.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/cahalt.c
+agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/cahaltasm.S
 agesa_lib_src += $(AGESA_ROOT)/Proc/Mem/Tech/mt.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/Family/0x14/ON/F14OnMicrocodePatchTables.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/CPU/Family/0x14/ON/F14OnPciTables.c

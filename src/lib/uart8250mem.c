@@ -27,24 +27,34 @@
 #if !defined(__SMM__) && !defined(__PRE_RAM__)
 #include <device/device.h>
 #endif
+#include <delay.h>
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
+/* Expected character delay at 1200bps is 9ms for a working UART
+ * and no flow-control. Assume UART as stuck if shift register
+ * or FIFO takes more than 50ms per character to appear empty.
+ */
+#define SINGLE_CHAR_TIMEOUT	(50 * 1000)
+#define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
+
 static inline int uart8250_mem_can_tx_byte(unsigned base_port)
 {
-	return read8(base_port + UART_LSR) & UART_MSR_DSR;
+	return read8(base_port + UART_LSR) & UART_LSR_THRE;
 }
 
 static inline void uart8250_mem_wait_to_tx_byte(unsigned base_port)
 {
-	while(!uart8250_mem_can_tx_byte(base_port))
-		;
+	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	while(i-- && !uart8250_mem_can_tx_byte(base_port))
+		udelay(1);
 }
 
 static inline void uart8250_mem_wait_until_sent(unsigned base_port)
 {
-	while(!(read8(base_port + UART_LSR) & UART_LSR_TEMT))
-		;
+	unsigned long int i = FIFO_TIMEOUT;
+	while(i-- && !(read8(base_port + UART_LSR) & UART_LSR_TEMT))
+		udelay(1);
 }
 
 void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
@@ -65,9 +75,13 @@ int uart8250_mem_can_rx_byte(unsigned base_port)
 
 unsigned char uart8250_mem_rx_byte(unsigned base_port)
 {
-	while(!uart8250_mem_can_rx_byte(base_port))
-		;
-	return read8(base_port + UART_RBR);
+	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	while(i-- && !uart8250_mem_can_rx_byte(base_port))
+		udelay(1);
+	if (i)
+		return read8(base_port + UART_RBR);
+	else
+		return 0x0;
 }
 
 void uart8250_mem_init(unsigned base_port, unsigned divisor)
@@ -83,7 +97,7 @@ void uart8250_mem_init(unsigned base_port, unsigned divisor)
 	/* DLAB on */
 	write8(base_port + UART_LCR, UART_LCR_DLAB | CONFIG_TTYS0_LCS);
 
-	/* Set Baud Rate Divisor. 12 ==> 115200 Baud */
+	/* Set Baud Rate Divisor. 12 ==> 9600 Baud */
 	write8(base_port + UART_DLL, divisor & 0xFF);
 	write8(base_port + UART_DLM, (divisor >> 8) & 0xFF);
 

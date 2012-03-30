@@ -25,3 +25,4 @@ subdirs-y += it8712f
 subdirs-y += it8716f
 subdirs-y += it8718f
 subdirs-y += it8721f
+subdirs-y += it8772f

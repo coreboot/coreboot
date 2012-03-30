@@ -21,6 +21,9 @@
 #define _SB800_LPC_H_
 
 
+#define BIOSRAM_INDEX	0xcd4
+#define BIOSRAM_DATA	0xcd5
+
 #define SPIROM_BASE_ADDRESS	0xA0 /* SPI ROM base address */
 
 void lpc_read_resources(device_t dev);

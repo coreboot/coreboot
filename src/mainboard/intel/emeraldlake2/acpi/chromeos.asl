@@ -65,9 +65,9 @@ Device (CRHW)
 	Method(GPIO, 0, Serialized)
 	{
 		Name(OIPG, Package() {
-			Package() { 0x001, 0, 42, "CougarPoint" }, // recovery button
-			Package() { 0x002, 1, 17, "CougarPoint" }, // developer switch
-			Package() { 0x003, 1, 68, "CougarPoint" }, // firmware write protect
+			Package() { 0x001, 0, 22, "CougarPoint" }, // recovery button
+			Package() { 0x002, 1, 57, "CougarPoint" }, // developer switch
+			Package() { 0x003, 0, 48, "CougarPoint" }, // firmware write protect
 			Package() { 0x100, 0,  9, "CougarPoint" }, // debug header gpio
 			Package() { 0x101, 0, 10, "CougarPoint" }, // debug header gpio 1
 			Package() { 0x102, 0, 12, "CougarPoint" }, // debug header gpio 2

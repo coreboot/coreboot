@@ -850,3 +850,21 @@ u32 find_pci_tolm(struct bus *bus)
 
 	return tolm;
 }
+
+/* Count of enabled CPUs */
+int dev_count_cpu(void)
+{
+	device_t cpu;
+	int count = 0;
+
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+			continue;
+		if (!cpu->enabled)
+			continue;
+		count++;
+	}
+
+	return count;
+}

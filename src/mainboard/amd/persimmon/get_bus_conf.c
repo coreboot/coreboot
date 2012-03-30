@@ -51,6 +51,9 @@ u32 sbdn_sb800;
 
 static u32 get_bus_conf_done = 0;
 
+#if CONFIG_HAVE_ACPI_RESUME == 1
+extern u8 acpi_slp_type;
+#endif
 
 void get_bus_conf(void)
 {
@@ -80,11 +83,20 @@ void get_bus_conf(void)
  * of each of the write functions called prior to the ACPI write functions, so this
  * becomes the best place for this call.
  */
-	status = agesawrapper_amdinitlate();
-	if(status) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (acpi_slp_type != 3) {
+		status = agesawrapper_amdinitlate();
+		if(status)
+			printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
+		status = agesawrapper_amdS3Save();
+		if(status)
+			printk(BIOS_DEBUG, "agesawrapper_amds3save failed: %x \n", status);
 	}
-
+#else
+	status = agesawrapper_amdinitlate();
+	if(status)
+		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
+#endif
 	sbdn_sb800 = 0;
 
 	for (i = 0; i < 3; i++) {
@@ -124,7 +136,8 @@ void get_bus_conf(void)
 	for (j = bus_sb800[2]; j < bus_isa; j++)
 		bus_type[j] = 1;
 
-	/* I/O APICs:	 APIC ID Version State	 Address */
+
+	/* I/O APICs:    APIC ID Version State   Address */
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_sb800 = apicid_base;

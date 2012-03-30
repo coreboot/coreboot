@@ -23,6 +23,7 @@
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
+#include <cpu/amd/agesa/s3_resume.h>
 
 //GNB GPP Port4
 #define GNB_GPP_PORT4_PORT_PRESENT		1	//0:Disable 1:Enable

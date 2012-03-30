@@ -22,7 +22,34 @@ config CHROMEOS
 	select TPM
 	select CACHE_ROM
 	help
-	  Enable ChromeOS specific features
+	  Enable ChromeOS specific features like the GPIO sub table in
+	  the coreboot table. NOTE: Enabling this option on an unsupported
+	  board will most likely break your build.
 
+config VBNV_OFFSET
+	hex
+	default 0x26
+	help
+	  CMOS offset for VbNv data. This value must match cmos.layout
+	  in the mainboard directory, minus 14 bytes for the RTC.
 
+config VBNV_SIZE
+	hex
+	default 0x10
+	help
+	  CMOS storage size for VbNv data. This value must match cmos.layout
+	  in the mainboard directory.
 
+config CHROMEOS_RAMOOPS
+	bool "Reserve space for Chrome OS ramoops"
+	default y
+
+config CHROMEOS_RAMOOPS_RAM_START
+	hex "Physical address of preserved RAM"
+	default 0x00f00000
+	depends on CHROMEOS_RAMOOPS
+
+config CHROMEOS_RAMOOPS_RAM_SIZE
+	hex "Size of preserved RAM"
+	default 0x00100000
+	depends on CHROMEOS_RAMOOPS

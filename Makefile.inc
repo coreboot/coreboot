@@ -43,6 +43,7 @@ subdirs-y += src/northbridge src/superio src/drivers src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig
 subdirs-y += src/arch/$(ARCHDIR-y)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
+subdirs-y += src/vendorcode
 
 subdirs-$(CONFIG_ARCH_X86) += src/pc80
 

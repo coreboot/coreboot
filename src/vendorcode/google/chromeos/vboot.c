@@ -21,9 +21,11 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <pc80/tpm.h>
+#include <reset.h>
 #include "chromeos.h"
 
 //#define EXTRA_LOGGING
+#define UBOOT_DOES_TPM_STARTUP
 
 #define TPM_LARGE_ENOUGH_COMMAND_SIZE 256	/* saves space in the firmware */
 
@@ -41,6 +43,12 @@ static const struct {
 	u8 buffer[12];
 } tpm_resume_cmd = {
 	{ 0x0, 0xc1, 0x0, 0x0, 0x0, 0xc, 0x0, 0x0, 0x0, 0x99, 0x0, 0x2 }
+};
+
+static const struct {
+	u8 buffer[12];
+} tpm_startup_cmd = {
+	{0x0, 0xc1, 0x0, 0x0, 0x0, 0xc, 0x0, 0x0, 0x0, 0x99, 0x0, 0x1 }
 };
 
 static const struct {
@@ -169,33 +177,60 @@ static u32 TlclSendReceive(const u8 * request, u8 * response, int max_length)
 	return result;
 }
 
-void init_vboot(void)
+static void init_vboot(int bootmode)
 {
 	u32 result;
 	u8 response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 
-	printk(BIOS_DEBUG, "TPM: Init\n");
+#ifdef UBOOT_DOES_TPM_STARTUP
+	/* Doing TPM startup when we're not coming in on the S3 resume path
+	 * saves us roughly 20ms in boot time only. This does not seem to
+	 * be worth an API change to vboot_reference-firmware right now, so
+	 * let's keep the code around, but just bail out early:
+	 */
+	if (bootmode != 2)
+		return;
+#endif
+
+	printk(BIOS_DEBUG, "Verified boot TPM initialization.\n");
+
+	printk(BIOS_SPEW, "TPM: Init\n");
 	if (tis_init())
 		return;
 
-	printk(BIOS_DEBUG, "TPM: Open\n");
+	printk(BIOS_SPEW, "TPM: Open\n");
 	if (tis_open())
 		return;
 
-	printk(BIOS_DEBUG, "TPM: Resume\n");
 
-	result =
-	    TlclSendReceive(tpm_resume_cmd.buffer, response, sizeof(response));
-
-	if (result == TPM_E_INVALID_POSTINIT) {
-		/* We're on a platform where the TPM maintains power in S3, so
-		 * it's already initialized. */
-		printk(BIOS_DEBUG, "TPM: Already initialized.\n");
-		return;
+	if (bootmode == 2) {
+		/* S3 Resume */
+		printk(BIOS_SPEW, "TPM: Resume\n");
+		result = TlclSendReceive(tpm_resume_cmd.buffer,
+					response, sizeof(response));
+		if (result == TPM_E_INVALID_POSTINIT) {
+			/* We're on a platform where the TPM maintains power
+			 * in S3, so it's already initialized.
+			 */
+			printk(BIOS_DEBUG, "TPM: Already initialized.\n");
+			return;
+		}
+	} else {
+		printk(BIOS_SPEW, "TPM: Startup\n");
+		result = TlclSendReceive(tpm_startup_cmd.buffer,
+					response, sizeof(response));
 	}
+
 	if (result == TPM_SUCCESS) {
-		printk(BIOS_DEBUG, "TPM: OK.\n");
+		printk(BIOS_SPEW, "TPM: OK.\n");
 		return;
 	}
-	// TODO(reinauer) hard reboot?
+
+	printk(BIOS_ERR, "TPM: Error code 0x%x. Hard reset!\n", result);
+	hard_reset();
+}
+
+void init_chromeos(int bootmode)
+{
+	init_vboot(bootmode);
 }

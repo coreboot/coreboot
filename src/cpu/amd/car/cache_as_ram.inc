@@ -19,6 +19,7 @@
  */
 
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
@@ -320,7 +321,7 @@ wbcache_post_fam10_setup:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	jmp_if_k8(fam10_end_part1)

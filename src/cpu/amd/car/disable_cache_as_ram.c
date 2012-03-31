@@ -21,12 +21,14 @@
  * be warned, this file will be used other cores and core 0 / node 0
  */
 
+#include <cpu/x86/cache.h>
+
 static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 {
 	msr_t msr;
 
 	/* disable cache */
-	write_cr0(read_cr0() | (1 << 30));
+	write_cr0(read_cr0() | CR0_CacheDisable);
 
 	msr.lo = 0;
 	msr.hi = 0;

@@ -128,7 +128,7 @@ bsp_init:
 	jnz	1b
 
 	post_code(0x24)
-	
+
 	/* For a hyper-threading processor, cache must not be disabled
 	 * on an AP on the same physical package with the BSP.
 	 */

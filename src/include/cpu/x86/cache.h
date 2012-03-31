@@ -20,6 +20,11 @@
 #ifndef CPU_X86_CACHE
 #define CPU_X86_CACHE
 
+#define CR0_CacheDisable	(1 << 30)
+#define CR0_NoWriteThrough	(1 << 29)
+
+#if !defined(__ASSEMBLER__)
+
 /*
  * Need two versions because ROMCC chokes on certain clobbers:
  * cache.h:29.71: cache.h:60.24: earlymtrr.c:117.23: romstage.c:144.33:
@@ -107,4 +112,5 @@ static inline __attribute__((always_inline)) void disable_cache(void)
 void x86_enable_cache(void);
 #endif
 
+#endif /* !__ASSEMBLER__ */
 #endif /* CPU_X86_CACHE */

@@ -27,6 +27,7 @@
 
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
 #include <console/post_codes.h>
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
@@ -39,7 +40,7 @@ CacheAsRam:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 	invd
 
@@ -139,7 +140,7 @@ clear_fixed_var_mtrr_out:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
@@ -219,7 +220,7 @@ testok:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
 	/* Set the default memory type and enable variable MTRRs. */
@@ -259,7 +260,7 @@ testok:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 	invd
 

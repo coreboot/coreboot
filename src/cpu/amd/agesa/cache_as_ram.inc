@@ -28,6 +28,7 @@
  */
 
 #include "gcccar.inc"
+#include <cpu/x86/cache.h>
 
 /*
  * XMM map:
@@ -88,7 +89,7 @@ disable_cache_as_ram:
 
   /* Disable cache */
   movl	%cr0, %eax
-  orl	$(1 << 30), %eax
+  orl	$CR0_CacheDisable, %eax
   movl	%eax, %cr0
 
   invd

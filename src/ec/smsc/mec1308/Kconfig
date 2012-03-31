@@ -1,0 +1,4 @@
+config EC_SMSC_MEC1308
+	bool
+	help
+	Shared memory mailbox interface to SMSC MEC1308 Embedded Controller.

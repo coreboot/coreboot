@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_EC_SMSC_MEC1308) += mec1308

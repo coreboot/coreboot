@@ -23,6 +23,7 @@
 
 #include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
 
@@ -254,7 +255,7 @@ clear_fixed_var_mtrr_out:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
@@ -328,7 +329,7 @@ lout:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
 	/* Clear sth. */
@@ -353,7 +354,7 @@ lout:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	/* Clear boot_complete flag. */

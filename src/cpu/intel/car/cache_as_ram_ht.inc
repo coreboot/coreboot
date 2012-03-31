@@ -188,7 +188,7 @@ ap_init:
 
 	/* Do not disable cache (so BSP can enable it). */
         movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	post_code(0x28)
@@ -271,7 +271,7 @@ no_msr_11e:
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	invd
 	movl	%eax, %cr0
 
@@ -284,7 +284,7 @@ no_msr_11e:
 
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	post_code(0x2d)
@@ -310,7 +310,7 @@ no_msr_11e:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	post_code(0x2e)
@@ -338,7 +338,7 @@ no_msr_11e:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	post_code(0x34)
@@ -357,14 +357,14 @@ no_msr_11e:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
+	andl	$~(MTRRdefCacheDisable | MTRRdefNoWriteThrough), %eax
 	movl	%eax, %cr0
 
 	post_code(0x37)
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	post_code(0x38)
@@ -393,7 +393,7 @@ no_msr_11e:
 
 	/* And enable cache again after setting MTRRs. */
 	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
+	andl	$~(MTRRdefCacheDisable | MTRRdefNoWriteThrough), %eax
 	movl	%eax, %cr0
 
 	post_code(0x3a)

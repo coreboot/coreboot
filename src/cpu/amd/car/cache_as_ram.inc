@@ -320,7 +320,7 @@ wbcache_post_fam10_setup:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	jmp_if_k8(fam10_end_part1)

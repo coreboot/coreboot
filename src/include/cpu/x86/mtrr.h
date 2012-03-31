@@ -14,6 +14,8 @@
 #define MTRRcap_MSR     0x0fe
 #define MTRRdefType_MSR 0x2ff
 
+#define MTRRdefCacheDisable	(1 << 30)
+#define MTRRdefNoWriteThrough	(1 << 29)
 #define MTRRdefTypeEn		(1 << 11)
 #define MTRRdefTypeFixEn	(1 << 10)
 

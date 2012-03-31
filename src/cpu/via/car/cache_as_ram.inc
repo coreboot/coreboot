@@ -39,7 +39,7 @@ CacheAsRam:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 	invd
 
@@ -139,7 +139,7 @@ clear_fixed_var_mtrr_out:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	/* Read the range with lodsl. */
@@ -219,7 +219,7 @@ testok:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	/* Set the default memory type and enable variable MTRRs. */
@@ -259,7 +259,7 @@ testok:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 	invd
 

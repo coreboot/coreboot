@@ -84,7 +84,7 @@ clear_mtrrs:
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
         movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	invd
 	movl	%eax, %cr0
 
@@ -98,7 +98,7 @@ clear_mtrrs:
 
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 #if CONFIG_XIP_ROM_SIZE
@@ -122,7 +122,7 @@ clear_mtrrs:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$(~((1 << 30) | (1 << 29))), %eax
+	andl	$(~(MTRRdefCacheDisable | MTRRdefNoWriteThrough)), %eax
 	movl	%eax, %cr0
 
 	/* Set up the stack pointer. */
@@ -150,7 +150,7 @@ clear_mtrrs:
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	post_code(0x31)
@@ -181,14 +181,14 @@ clear_mtrrs:
 
 	/* Enable cache. */
 	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
+	andl	$~(MTRRdefCacheDisable | MTRRdefNoWriteThrough), %eax
 	movl	%eax, %cr0
 
 	post_code(0x36)
 
 	/* Disable cache. */
 	movl	%cr0, %eax
-	orl	$(1 << 30), %eax
+	orl	$MTRRdefCacheDisable, %eax
 	movl	%eax, %cr0
 
 	post_code(0x38)
@@ -207,7 +207,7 @@ clear_mtrrs:
 
 	/* And enable cache again after setting MTRRs. */
 	movl	%cr0, %eax
-	andl	$~((1 << 30) | (1 << 29)), %eax
+	andl	$~(MTRRdefCacheDisable | MTRRdefNoWriteThrough), %eax
 	movl	%eax, %cr0
 
 	post_code(0x3a)

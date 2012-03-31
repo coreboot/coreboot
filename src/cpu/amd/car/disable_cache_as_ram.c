@@ -26,7 +26,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 	msr_t msr;
 
 	/* disable cache */
-	write_cr0(read_cr0() | (1 << 30));
+	write_cr0(read_cr0() | MTRRdefCacheDisable);
 
 	msr.lo = 0;
 	msr.hi = 0;

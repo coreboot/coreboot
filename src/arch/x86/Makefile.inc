@@ -146,11 +146,12 @@ $(objutil)/options/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src
 
 $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
-	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ram.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ram.debug $@
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
+	$(NM) -n $@.tmp | sort > $@.map
+	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
+	mv $@.tmp $@
 
 $(obj)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -168,12 +169,12 @@ ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 
 $(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/coreboot_ap.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/coreboot_ap.debug $@
-	$(NM) -n $(obj)/coreboot_ap | sort > $(obj)/coreboot_ap.map
-
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
+	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
+	$(NM) -n $@.tmp | sort > $@.map
+	mv $@.tmp $@
 
 endif
 
@@ -334,11 +335,12 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
-	$(NM) -n $(obj)/bootblock.elf | sort > $(obj)/bootblock.map
-	$(OBJCOPY) --only-keep-debug $@ $(obj)/bootblock.debug
-	$(OBJCOPY) --strip-debug $@
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@
+	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
+	$(NM) -n $@.tmp | sort > $(obj)/bootblock.map
+	$(OBJCOPY) --only-keep-debug $@.tmp $(obj)/bootblock.debug
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@.tmp
+	mv $@.tmp $@
 
 #######################################################################
 # Build the romstage

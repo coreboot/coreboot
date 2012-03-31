@@ -54,6 +54,9 @@
 #if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
 #include <arch/acpi.h>
 #endif
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/chromeos.h>
+#endif
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -666,6 +669,15 @@ void pci_dev_init(struct device *dev)
 	if (CONFIG_VGA_ROM_RUN != 1 && /* Only execute non-VGA ROMs. */
 	    ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return;
+
+#if CONFIG_CHROMEOS
+	/* In ChromeOS we want to boot blazingly fast. Therefore
+	 * we don't run (VGA) option ROMs, unless we have to print
+	 * something on the screen before the kernel is loaded.
+	 */
+	if (!developer_mode_enabled() && !recovery_mode_enabled())
+		return;
+#endif
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)

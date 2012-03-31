@@ -1,13 +1,15 @@
 #include <string.h>
 
-void *memcpy(void *__restrict __dest,
-	     __const void *__restrict __src, size_t __n)
+void *memcpy(void *dest, const void *src, size_t n)
 {
-	asm("cld\n"
-	    "rep\n"
-	    "movsb"
-	    :	/* no input (?) */
-	    :"S"(__src), "D"(__dest), "c"(__n)
-	);
-	return __dest;
+	unsigned long d0, d1, d2;
+
+	asm volatile(
+		"rep movsb"
+		: "=S"(d0), "=D"(d1), "=c"(d2)
+		: "0"(src), "1"(dest), "2"(n)
+		: "memory"
+		);
+
+	return dest;
 }

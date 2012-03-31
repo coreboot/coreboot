@@ -274,9 +274,8 @@ $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/romstage.elf \
-	    $(CONFIG_CBFS_PREFIX)/romstage x 0x$(shell cat $(obj)/location.txt)
+		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(obj)/location.txt)
 	mv $@.tmp $@
-#FIXME: location.txt might require an offset of header size
 
 #######################################################################
 # Build the bootblock
@@ -344,26 +343,42 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 
 #######################################################################
 # Build the romstage
-$(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(romstage-objs) $(obj)/romstage/ldscript.ld
+
+$(obj)/romstage.bin: $$(romstage-objs) $(obj)/romstage/link1st.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	printf "ROMSTAGE_BASE = 0x0;\n" > $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
-	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
-	printf "ROMSTAGE_BASE = 0x" > $(obj)/location.ld
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	cat $(obj)/location.txt >> $(obj)/location.ld
-	printf ';\n' >> $(obj)/location.ld
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(romstage-objs)
+	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/link1st.ld $(romstage-objs)
+	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
+
+$(obj)/coreboot.romstage: $$(romstage-objs) $(obj)/romstage/link2nd.ld
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/link2nd.ld $(romstage-objs)
 	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
 	$(OBJCOPY) --only-keep-debug $(obj)/romstage.elf $(obj)/romstage.debug
 	$(OBJCOPY) --strip-debug $(obj)/romstage.elf
 	$(OBJCOPY) --add-gnu-debuglink=$(obj)/romstage.debug $(obj)/romstage.elf
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
 
-$(obj)/romstage/ldscript.ld: $$(ldscripts) $(obj)/ldoptions
+$(obj)/romstage/link1st.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
-	printf '$(foreach ldscript,ldoptions location.ld $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' > $@
+	rm -f $@
+	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
+	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
+	mv $@.tmp $@
+
+$(obj)/romstage/link2nd.ld: $(obj)/romstage/link1st.ld $(obj)/location.txt
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	rm -f $@
+	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(obj)/location.txt > $@.tmp
+	sed -e '/ROMSTAGE_BASE/d' $(obj)/romstage/link1st.ld >> $@.tmp
+	mv $@.tmp $@
+
+$(obj)/location.txt: $(obj)/coreboot.pre1 $(obj)/romstage.bin
+	rm -f $@
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
+	sed -i -e 's/^/0x/g' $@.tmp
+	mv $@.tmp $@
 
 $(obj)/romstage/crt0.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

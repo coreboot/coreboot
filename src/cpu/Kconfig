@@ -36,7 +36,7 @@ config AP_SIPI_VECTOR
 	default 0xfffff000
 	help
 	  This must equal address of ap_sipi_vector from bootblock build.
-	  	  
+
 config	MMX
 	bool
 	help

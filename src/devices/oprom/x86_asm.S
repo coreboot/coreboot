@@ -75,35 +75,36 @@ __buffer = RELOCATED(.)
 	.globl __realmode_call
 __realmode_call = RELOCATED(.)
 	/* save all registers to the stack */
-	pushal
+	pusha
+	pushf
 
-	/* Move the protected mode stack to a safe place */
+	/* Move the protected mode stack pointer to a safe place */
 	movl	%esp, __stack
-	movl    %esp, %ebp
+	movl	%esp, %ebp
 
-	/* This function is called with regparm=0 and we have
-	 * to skip the 32 byte from pushal. Hence start at 36.
+	/* This function is called with regparm=0 and we have to
+	 * skip the 36 byte from pushf+pusha. Hence start at 40.
 	 */
 
 	/* entry point */
-	movl    36(%ebp), %eax
+	movl	40(%ebp), %eax
 	mov	%ax, __lcall_instr + 1
 	andl	$0xffff0000, %eax
 	shrl	$4, %eax
 	mov	%ax, __lcall_instr + 3
 
 	/* initial register values */
-	movl	40(%ebp), %eax
-	movl	%eax, __registers +  0 /* eax */
 	movl	44(%ebp), %eax
-	movl	%eax, __registers +  4 /* ebx */
+	movl	%eax, __registers +  0 /* eax */
 	movl	48(%ebp), %eax
-	movl	%eax, __registers +  8 /* ecx */
+	movl	%eax, __registers +  4 /* ebx */
 	movl	52(%ebp), %eax
-	movl	%eax, __registers + 12 /* edx */
+	movl	%eax, __registers +  8 /* ecx */
 	movl	56(%ebp), %eax
-	movl	%eax, __registers + 16 /* esi */
+	movl	%eax, __registers + 12 /* edx */
 	movl	60(%ebp), %eax
+	movl	%eax, __registers + 16 /* esi */
+	movl	64(%ebp), %eax
 	movl	%eax, __registers + 20 /* edi */
 
 	/* Activate the right segment descriptor real mode. */
@@ -193,41 +194,45 @@ __lcall_instr = RELOCATED(.)
 	/* restore proper idt */
 	lidt	idtarg
 
-	/* and exit */
+	/* restore stack pointer, eflags and register values */
 	movl	__stack, %esp
-	popal
+	popf
+	popa
 
+	/* and exit */
 	// TODO return AX from OPROM call
 	ret
 
 	.globl __realmode_interrupt
 __realmode_interrupt = RELOCATED(.)
 	/* save all registers to the stack */
-	pushal
-	/* save the stack */
-	movl	%esp, __stack
-	movl    %esp, %ebp
+	pusha
+	pushf
 
-	/* This function is called with regparm=0 and we have
-	 * to skip the 32 byte from pushal. Hence start at 36.
+	/* save the stack pointer */
+	movl	%esp, __stack
+	movl	%esp, %ebp
+
+	/* This function is called with regparm=0 and we have to
+	 * skip the 36 byte from pushf+pusha. Hence start at 40.
 	 */
 
 	/* prepare interrupt calling code */
-	movl    36(%ebp), %eax
+	movl	40(%ebp), %eax
 	movb	%al, __intXX_instr + 1 /* intno */
 
 	/* initial register values */
-	movl	40(%ebp), %eax
-	movl	%eax, __registers +  0 /* eax */
 	movl	44(%ebp), %eax
-	movl	%eax, __registers +  4 /* ebx */
+	movl	%eax, __registers +  0 /* eax */
 	movl	48(%ebp), %eax
-	movl	%eax, __registers +  8 /* ecx */
+	movl	%eax, __registers +  4 /* ebx */
 	movl	52(%ebp), %eax
-	movl	%eax, __registers + 12 /* edx */
+	movl	%eax, __registers +  8 /* ecx */
 	movl	56(%ebp), %eax
-	movl	%eax, __registers + 16 /* esi */
+	movl	%eax, __registers + 12 /* edx */
 	movl	60(%ebp), %eax
+	movl	%eax, __registers + 16 /* esi */
+	movl	64(%ebp), %eax
 	movl	%eax, __registers + 20 /* edi */
 
 	/*  This configures CS properly for real mode. */
@@ -309,9 +314,10 @@ __intXX_instr = RELOCATED(.)
 	/* restore coreboot's 32-bit IDT */
 	lidt	idtarg
 
-	/* Exit */
+	/* restore stack pointer, eflags and register values and exit */
 	movl	__stack, %esp
-	popal
+	popf
+	popa
 	ret
 
 /* This is the 16-bit interrupt entry point called by the IDT stub code.
@@ -326,6 +332,9 @@ __interrupt_handler_16bit = RELOCATED(.)
 	push	%es
 	push	%fs
 	push	%gs
+
+	/* Clear DF to not break ABI assumptions */
+	cld
 
 	/* Clean up the interrupt number. We could have done this in the stub,
 	 * but it would have cost 2 more bytes per stub entry.

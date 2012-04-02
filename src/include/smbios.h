@@ -32,6 +32,7 @@ typedef enum {
 	SMBIOS_MEMORY_DEVICE=17,
 	SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS=19,
 	SMBIOS_SYSTEM_BOOT_INFORMATION=32,
+	SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION=41,
 	SMBIOS_END_OF_TABLE=127,
 } smbios_struct_type_t;
 
@@ -185,6 +186,34 @@ struct smbios_type32 {
 	u8 reserved[6];
 	u8 boot_status;
 	u8 eos[2];
+} __attribute__((packed));
+
+typedef enum {
+	SMBIOS_DEVICE_TYPE_OTHER = 0x01,
+	SMBIOS_DEVICE_TYPE_UNKNOWN,
+	SMBIOS_DEVICE_TYPE_VIDEO,
+	SMBIOS_DEVICE_TYPE_SCSI,
+	SMBIOS_DEVICE_TYPE_ETHERNET,
+	SMBIOS_DEVICE_TYPE_TOKEN_RING,
+	SMBIOS_DEVICE_TYPE_SOUND,
+	SMBIOS_DEVICE_TYPE_PATA,
+	SMBIOS_DEVICE_TYPE_SATA,
+	SMBIOS_DEVICE_TYPE_SAS,
+} smbios_onboard_device_type;
+
+struct smbios_type41 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 reference_designation;
+	u8 device_type: 7;
+	u8 device_status: 1;
+	u8 device_type_instance;
+	u16 segment_group_number;
+	u8 bus_number;
+	u8 function_number: 3;
+	u8 device_number: 5;
+	char eos[2];
 } __attribute__((packed));
 
 struct smbios_type127 {

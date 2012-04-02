@@ -22,15 +22,25 @@ ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap
 endif
 
+# Use TSEG specific entry point and linker script
+ifeq ($(CONFIG_SMM_TSEG),y)
+smm-y += smmhandler_tseg.S
+SMM_LDFLAGS  := $(LDFLAGS) -pie
+SMM_LDSCRIPT := smm_tseg.ld
+else
 smm-y += smmhandler.S
+SMM_LDFLAGS  := $(LDFLAGFS)
+SMM_LDSCRIPT := smm.ld
+endif
+
 smm-y += smihandler.c
 smm-y += smiutil.c
 
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
-$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
-	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
+$(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/ldoptions
+	$(CC) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
 	$(NM) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 

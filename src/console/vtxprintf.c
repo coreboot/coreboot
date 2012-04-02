@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <div64.h>
+#include <console/console.h>
 #include <console/vtxprintf.h>
 
 /* haha, don't need ctype.c */
@@ -114,6 +115,11 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 	int qualifier;		/* 'h', 'l', or 'L' for integer fields */
 
 	int count;
+
+#if defined(__SMM__) && CONFIG_SMM_TSEG
+	/* Fix pointer in TSEG */
+	tx_byte = console_tx_byte;
+#endif
 
 	for (count=0; *fmt ; ++fmt) {
 		if (*fmt != '%') {

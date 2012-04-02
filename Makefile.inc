@@ -62,6 +62,11 @@ endif
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 
+# SMM TSEG base is dynamic
+ifeq ($(CONFIG_SMM_TSEG),y)
+smm-c-ccopts += -fpic
+endif
+
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 

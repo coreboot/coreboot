@@ -25,10 +25,11 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 
+#if !CONFIG_SMM_TSEG /* TSEG handler locks in assembly */
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
-static volatile smi_semaphore smi_handler_status __attribute__ ((aligned (4)))  = SMI_UNLOCKED;
+static volatile smi_semaphore smi_handler_status __attribute__ ((aligned (4))) = SMI_UNLOCKED;
 
 static int smi_obtain_lock(void)
 {
@@ -56,6 +57,7 @@ void smi_release_lock(void)
 		: "eax"
 	);
 }
+#endif
 
 #define LAPIC_ID 0xfee00020
 static inline __attribute__((always_inline)) unsigned long nodeid(void)
@@ -116,6 +118,7 @@ void smi_handler(u32 smm_revision)
 	unsigned int node;
 	smm_state_save_area_t state_save;
 
+#if !CONFIG_SMM_TSEG
 	/* Are we ok to execute the handler? */
 	if (!smi_obtain_lock()) {
 		/* For security reasons we don't release the other CPUs
@@ -128,6 +131,7 @@ void smi_handler(u32 smm_revision)
 		}
 		return;
 	}
+#endif
 
 	smi_backup_pci_address();
 
@@ -145,6 +149,7 @@ void smi_handler(u32 smm_revision)
 			(0xa8000 + 0x7e00 - (node * 0x400));
 		break;
 	case 0x00030100:
+	case 0x00030101: /* SandyBridge */
 		state_save.type = EM64T;
 		state_save.em64t_state_save = (em64t_smm_state_save_area_t *)
 			(0xa8000 + 0x7d00 - (node * 0x400));
@@ -173,7 +178,9 @@ void smi_handler(u32 smm_revision)
 
 	smi_restore_pci_address();
 
+#if !CONFIG_SMM_TSEG
 	smi_release_lock();
+#endif
 
 	/* De-assert SMI# signal to allow another SMI */
 	smi_set_eos();

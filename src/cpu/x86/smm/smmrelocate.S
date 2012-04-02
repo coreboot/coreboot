@@ -39,6 +39,12 @@
 #error "Southbridge needs SMM handler support."
 #endif
 
+#if CONFIG_SMM_TSEG
+
+#include <cpu/x86/mtrr.h>
+
+#endif /* CONFIG_SMM_TSEG */
+
 #define LAPIC_ID 0xfee00020
 
 .global smm_relocation_start
@@ -100,6 +106,7 @@ smm_relocation_start:
 	/* Check revision to see if AMD64 style SMM_BASE
 	 *   Intel Core Solo/Duo:  0x30007
 	 *   Intel Core2 Solo/Duo: 0x30100
+	 *   Intel SandyBridge:    0x30101
 	 *   AMD64:                0x3XX64
 	 * This check does not make much sense, unless someone ports
 	 * SMI handling to AMD64 CPUs.
@@ -127,11 +134,53 @@ smm_relocate:
 	movl %ecx, %edx
 	shl $10, %edx
 
+#if CONFIG_SMM_TSEG
+	movl	$(TSEG_BAR), %ecx	/* Get TSEG base from PCIE */
+	addr32	movl (%ecx), %eax	/* Save TSEG_BAR in %eax */
+	andl	$~1, %eax		/* Remove lock bit */
+#else
 	movl $0xa0000, %eax
+#endif
 	subl %edx, %eax	/* subtract offset, see above */
 
 	addr32 movl %eax, (%ebx)
 
+#if CONFIG_SMM_TSEG
+	/* Check for SMRR capability in MTRRCAP[11] */
+	movl	$MTRRcap_MSR, %ecx
+	rdmsr
+	bt	$11, %eax
+	jnc	skip_smrr
+
+	/* TSEG base */
+	movl	$(TSEG_BAR), %ecx	/* Get TSEG base from PCIE */
+	addr32	movl (%ecx), %eax	/* Save TSEG_BAR in %eax */
+	andl	$~1, %eax		/* Remove lock bit */
+	movl	%eax, %ebx
+
+	/* Set SMRR base address. */
+	movl	$SMRRphysBase_MSR, %ecx
+	orl	$MTRR_TYPE_WRBACK, %eax
+	xorl	%edx, %edx
+	wrmsr
+
+	/* Set SMRR mask. */
+	movl	$SMRRphysMask_MSR, %ecx
+	movl	$(~(CONFIG_SMM_TSEG_SIZE - 1) | MTRRphysMaskValid), %eax
+	xorl	%edx, %edx
+	wrmsr
+
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
+	/*
+	 * IED base is top 4M of TSEG
+	 */
+	addl	$(CONFIG_SMM_TSEG_SIZE - IED_SIZE), %ebx
+	movl	$(0x30000 + 0x8000 + 0x7eec), %eax
+	addr32	movl %ebx, (%eax)
+#endif
+
+skip_smrr:
+#endif
 
 	/* The next section of code is potentially southbridge specific */
 

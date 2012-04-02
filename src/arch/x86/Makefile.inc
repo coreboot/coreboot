@@ -47,7 +47,7 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 COREBOOT_ROM_DEPENDENCIES+=filo
 endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
-COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
+COREBOOT_ROM_DEPENDENCIES+=$(obj)/ramstage/ramstage_ap.elf
 endif
 ifeq ($(CONFIG_GEODE_VSA_FILE),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VSA_FILENAME)
@@ -76,9 +76,9 @@ endif
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/ramstage/ramstage.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	if [ -f $(obj)/coreboot_ap ]; \
+	if [ -f $(obj)/ramstage/ramstage_ap.elf ]; \
 	then \
-		$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ap $(CONFIG_CBFS_PREFIX)/coreboot_ap $(CBFS_COMPRESS_FLAG); \
+		$(CBFSTOOL) $@.tmp add-stage $(obj)/ramstage/ramstage_ap.elf $(CONFIG_CBFS_PREFIX)/coreboot_ap $(CBFS_COMPRESS_FLAG); \
 	fi
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/ramstage/ramstage.elf $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
@@ -164,20 +164,16 @@ $(obj)/ramstage/coreboot.a: $$(ramstage-objs)
 	$(AR) cr $@ $^
 
 #######################################################################
-# coreboot_ap.rom
+# Ramstage for AP CPU (AMD K8, obsolete?)
 
-ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
-
-$(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
+$(obj)/ramstage/ramstage_ap.elf: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $^
-	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
+	$(OBJCOPY) --only-keep-debug $@.tmp $(basename $@).debug
 	$(OBJCOPY) --strip-debug $@.tmp
-	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$(basename $@).debug $@.tmp
 	$(NM) -n $@.tmp | sort > $@.map
 	mv $@.tmp $@
-
-endif
 
 #######################################################################
 # done

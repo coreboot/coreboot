@@ -280,6 +280,8 @@ void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_
 
 void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
 int __attribute__((weak)) mainboard_apm_cnt(u8 data);
+#if !CONFIG_SMM_TSEG
 void smi_release_lock(void);
+#endif
 
 #endif

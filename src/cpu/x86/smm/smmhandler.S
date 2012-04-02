@@ -89,9 +89,6 @@ smm_handler_start:
 
 .code32
 1:
-	/* flush the cache after disabling it */
-	wbinvd
-
 	/* Use flat data segment */
 	movw    $0x10, %ax
 	movw    %ax, %ds

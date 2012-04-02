@@ -63,8 +63,8 @@ prebuild-files = \
 	$(call extract_nth,4,$(file)) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+$(obj)/coreboot.pre1: $(obj)/bootblock/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
+	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/bootblock/bootblock.bin
 	$(prebuild-files) true
 	mv $@.tmp $@
 else
@@ -280,7 +280,7 @@ $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 #######################################################################
 # Build the bootblock
 
-$(obj)/coreboot.bootblock: $(obj)/bootblock.elf
+$(obj)/bootblock/bootblock.bin: $(obj)/bootblock/bootblock.elf
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -O binary $< $@
 
@@ -332,13 +332,13 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
+$(obj)/bootblock/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
-	$(NM) -n $@.tmp | sort > $(obj)/bootblock.map
-	$(OBJCOPY) --only-keep-debug $@.tmp $(obj)/bootblock.debug
+	$(NM) -n $@.tmp | sort > $(basename $@).map
+	$(OBJCOPY) --only-keep-debug $@.tmp $(basename $@).debug
 	$(OBJCOPY) --strip-debug $@.tmp
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$(basename $@).debug $@.tmp
 	mv $@.tmp $@
 
 #######################################################################

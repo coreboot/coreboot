@@ -211,23 +211,27 @@ static void identify_cpu(struct device *cpu)
 	}
 }
 
-static void set_cpu_ops(struct device *cpu)
+struct cpu_driver *find_cpu_driver(struct device *cpu)
 {
 	struct cpu_driver *driver;
-	cpu->ops = 0;
 	for (driver = cpu_drivers; driver < ecpu_drivers; driver++) {
 		struct cpu_device_id *id;
-		for(id = driver->id_table; id->vendor != X86_VENDOR_INVALID; id++) {
+		for (id = driver->id_table;
+		     id->vendor != X86_VENDOR_INVALID; id++) {
 			if ((cpu->vendor == id->vendor) &&
 				(cpu->device == id->device))
 			{
-				goto found;
+				return driver;
 			}
 		}
 	}
-	return;
-found:
-	cpu->ops = driver->ops;
+	return NULL;
+}
+
+static void set_cpu_ops(struct device *cpu)
+{
+	struct cpu_driver *driver = find_cpu_driver(cpu);
+	cpu->ops = driver ? driver->ops : NULL;
 }
 
 void cpu_initialize(void)

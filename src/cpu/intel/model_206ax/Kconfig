@@ -1,0 +1,53 @@
+config CPU_INTEL_MODEL_206AX
+	bool
+
+config CPU_INTEL_MODEL_306AX
+	bool
+
+if CPU_INTEL_MODEL_206AX || CPU_INTEL_MODEL_306AX
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select SMP
+	select SSE2
+	select UDELAY_LAPIC
+	select SMM_TSEG
+	#select AP_IN_SIPI_WAIT
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/intel/model_206ax/bootblock.c"
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default n
+
+endif
+
+if CPU_INTEL_MODEL_206AX
+   config CPU_MODEL_NAME
+	string
+	default "Intel SandyBridge CPU"
+
+   config CPU_MODEL_INDEX
+	hex
+	default 0x2a
+endif
+
+if CPU_INTEL_MODEL_306AX
+   config CPU_MODEL_NAME
+	string
+	default "Intel IvyBridge CPU"
+
+   config CPU_MODEL_INDEX
+	hex
+	default 0x3a
+endif

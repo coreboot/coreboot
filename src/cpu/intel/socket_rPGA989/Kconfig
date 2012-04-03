@@ -1,0 +1,16 @@
+config CPU_INTEL_SOCKET_RPGA989
+	bool
+
+if CPU_INTEL_SOCKET_RPGA989
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select MMX
+	select SSE
+	select CACHE_AS_RAM
+
+config CACHE_MRC_BIN
+	bool
+	default n
+
+endif

@@ -19,6 +19,9 @@
  * MA 02110-1301 USA
  */
 
+/* Magic value used to locate speedstep configuration in the device tree */
+#define SPEEDSTEP_APIC_MAGIC 0xACAC
+
 /* MWAIT coordination I/O base address. This must match
  * the \_PR_.CPU0 PM base address.
  */

@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <delay.h>
+#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 
@@ -27,14 +28,40 @@
  * memory init.
  */
 
-#define FSB_CLOCK_STS 0xcd
+static u32 timer_fsb = 0;
 
-static u32 timer_fsb = 200; // default to 200MHz
+static int set_timer_fsb(void)
+{
+	struct cpuinfo_x86 c;
+	int core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
+	int core2_fsb[8] = { 266, 133, 200, 166, -1, 100, -1, -1 };
+
+	get_fms(&c, cpuid_eax(1));
+	if (c.x86 != 6)
+		return -1;
+
+	switch (c.x86_model) {
+	case 0xe:  /* Core Solo/Duo */
+	case 0x1c: /* Atom */
+		timer_fsb = core_fsb[rdmsr(0xcd).lo & 7];
+		break;
+	case 0xf:  /* Core 2*/
+	case 0x17: /* Enhanced Core */
+		timer_fsb = core2_fsb[rdmsr(0xcd).lo & 7];
+		break;
+	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
+		timer_fsb = 100;
+		break;
+	default:
+		timer_fsb = 200;
+		break;
+	}
+
+	return 0;
+}
 
 void init_timer(void)
 {
-	msr_t fsb_clock_sts;
-
 	/* Set the apic timer to no interrupts and periodic mode */
 	lapic_write(LAPIC_LVTT, (LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED));
 
@@ -45,19 +72,16 @@ void init_timer(void)
 	lapic_write(LAPIC_TMICT, 0xffffffff);
 
 	/* Set FSB frequency to a reasonable value */
-	fsb_clock_sts = rdmsr(FSB_CLOCK_STS);
-	switch ((fsb_clock_sts.lo >> 4) & 0x07) {
-	case 0: timer_fsb = 266; break;
-	case 1: timer_fsb = 133; break;
-	case 2: timer_fsb = 200; break;
-	case 3: timer_fsb = 166; break;
-	case 5: timer_fsb = 100; break;
-	}
+	set_timer_fsb();
 }
 
 void udelay(u32 usecs)
 {
 	u32 start, value, ticks;
+
+	if (!timer_fsb)
+		init_timer();
+
 	/* Calculate the number of ticks to run, our FSB runs at timer_fsb Mhz */
 	ticks = usecs * timer_fsb;
 	start = lapic_read(LAPIC_TMCCT);

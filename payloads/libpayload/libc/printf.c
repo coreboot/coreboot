@@ -85,8 +85,8 @@ typedef enum {
 	PrintfQualifierPointer,
 } qualifier_t;
 
-static char digits_small[] = "0123456789abcdef";
-static char digits_big[] = "0123456789ABCDEF";
+static const char digits_small[] = "0123456789abcdef";
+static const char digits_big[] = "0123456789ABCDEF";
 
 /**
  * Print one or more characters without adding newline.
@@ -109,18 +109,9 @@ static int printf_putnchars(const char *buf, size_t count,
  * @param ps	Write function specification and support data.
  * @return	Number of characters printed.
  */
-static int printf_putstr(const char *str, struct printf_spec *ps)
+static inline int printf_putstr(const char *str, struct printf_spec *ps)
 {
-	size_t count;
-
-	if (str == NULL) {
-		const char *nullstr = "(NULL)";
-		return printf_putnchars(nullstr, strlen(nullstr), ps);
-	}
-
-	count = strlen(str);
-
-	return ps->write((void *)str, count, ps->data);
+	return printf_putnchars(str, strlen(str), ps);
 }
 
 /**
@@ -228,7 +219,7 @@ static int print_string(char *s, int width, unsigned int precision,
 static int print_number(uint64_t num, int width, int precision, int base,
 			uint64_t flags, struct printf_spec *ps)
 {
-	char *digits = digits_small;
+	const char *digits = digits_small;
 	char d[PRINT_NUMBER_BUFFER_SIZE];
 	char *ptr = &d[PRINT_NUMBER_BUFFER_SIZE - 1];
 	int size = 0;		/* Size of number with all prefixes and signs. */

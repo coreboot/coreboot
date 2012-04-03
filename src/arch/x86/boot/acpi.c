@@ -35,9 +35,6 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -529,11 +526,6 @@ void *acpi_find_wakeup_vector(void)
 
 	if (!acpi_is_wakeup())
 		return NULL;
-
-#if CONFIG_CHROMEOS
-	printk(BIOS_DEBUG, "Verified boot TPM initialization.\n");
-	init_vboot();
-#endif
 
 	printk(BIOS_DEBUG, "Trying to find the wakeup vector...\n");
 

@@ -474,8 +474,12 @@ void suspend_resume(void)
 
 	/* If we happen to be resuming find wakeup vector and jump to OS. */
 	wake_vec = acpi_find_wakeup_vector();
-	if (wake_vec)
+	if (wake_vec) {
+		/* Call mainboard resume handler first, if defined. */
+		if (mainboard_suspend_resume)
+			mainboard_suspend_resume();
 		acpi_jump_to_wakeup(wake_vec);
+	}
 }
 
 /* This is to be filled by SB code - startup value what was found. */

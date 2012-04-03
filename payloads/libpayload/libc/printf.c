@@ -46,7 +46,7 @@ FILE *stderr = &_stderr;
 /** Structure for specifying output methods for different printf clones. */
 struct printf_spec {
 	/* Output function, returns count of printed characters or EOF. */
-	int (*write) (void *, size_t, void *);
+	int (*write) (const char *, size_t, void *);
 	/* Support data - output stream specification, its state, locks, ... */
 	void *data;
 };
@@ -99,7 +99,7 @@ static const char digits_big[] = "0123456789ABCDEF";
 static int printf_putnchars(const char *buf, size_t count,
 			    struct printf_spec *ps)
 {
-	return ps->write((void *)buf, count, ps->data);
+	return ps->write(buf, count, ps->data);
 }
 
 /**
@@ -123,9 +123,9 @@ static inline int printf_putstr(const char *str, struct printf_spec *ps)
  */
 static int printf_putchar(int c, struct printf_spec *ps)
 {
-	unsigned char ch = c;
+	char ch = c;
 
-	return ps->write((void *)&ch, 1, ps->data);
+	return ps->write(&ch, 1, ps->data);
 }
 
 /**
@@ -752,13 +752,13 @@ struct vsnprintf_data {
  *
  * @param str	Source string to print.
  * @param count	Size of source string.
- * @param data	Structure with destination string, counter of used space
+ * @param _data	Structure with destination string, counter of used space
  *              and total string size.
  * @return Number of characters to print (not characters really printed!).
  */
-static int vsnprintf_write(const char *str, size_t count,
-			   struct vsnprintf_data *data)
+static int vsnprintf_write(const char *str, size_t count, void *_data)
 {
+	struct vsnprintf_data *data = _data;
 	size_t i;
 
 	i = data->size - data->len;
@@ -798,8 +798,7 @@ static int vsnprintf_write(const char *str, size_t count,
 int vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 {
 	struct vsnprintf_data data = { size, 0, str };
-	struct printf_spec ps =
-	    { (int (*)(void *, size_t, void *))vsnprintf_write, &data };
+	struct printf_spec ps = { vsnprintf_write, &data };
 
 	/* Print 0 at end of string - fix case that nothing will be printed. */
 	if (size > 0)
@@ -838,8 +837,7 @@ static int vprintf_write(const char *str, size_t count, void *unused)
 
 int vprintf(const char *fmt, va_list ap)
 {
-	struct printf_spec ps =
-	    { (int (*)(void *, size_t, void *))vprintf_write, NULL };
+	struct printf_spec ps = { vprintf_write, NULL };
 
 	return printf_core(fmt, &ps, ap);
 }

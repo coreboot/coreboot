@@ -869,6 +869,16 @@ config DEBUG_TPM
 	help
 	  This option enables additional TPM related debug messages.
 
+if SOUTHBRIDGE_INTEL_BD82X6X && DEFAULT_CONSOLE_LOGLEVEL_8
+# Only visible with the right southbridge and loglevel.
+config DEBUG_INTEL_ME
+	bool "Verbose logging for Intel Management Engine"
+	default n
+	help
+	  Enable verbose logging for Intel Management Engine driver that
+	  is present on Intel 6-series chipsets.
+endif
+
 config LLSHELL
 	bool "Built-in low-level shell"
 	default n

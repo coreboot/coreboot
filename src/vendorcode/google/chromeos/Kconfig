@@ -26,6 +26,9 @@ config CHROMEOS
 	  the coreboot table. NOTE: Enabling this option on an unsupported
 	  board will most likely break your build.
 
+menu "ChromeOS"
+	depends on CHROMEOS
+
 config VBNV_OFFSET
 	hex
 	default 0x26
@@ -53,3 +56,5 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 	hex "Size of preserved RAM"
 	default 0x00100000
 	depends on CHROMEOS_RAMOOPS
+
+endmenu

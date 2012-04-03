@@ -154,6 +154,9 @@ struct cpu_driver {
 	struct cpu_device_id *id_table;
 };
 
+struct device;
+struct cpu_driver *find_cpu_driver(struct device *cpu);
+
 struct cpu_info {
 	device_t cpu;
 	unsigned long index;

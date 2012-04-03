@@ -27,13 +27,15 @@
 #define HIGH_MEMORY_DEF_SIZE	( 128 * 1024 )
 #endif
 
-#ifndef __PRE_RAM__
-extern uint64_t high_tables_base, high_tables_size;
-#endif
-
 #if CONFIG_HAVE_ACPI_RESUME
 #define HIGH_MEMORY_SIZE	((CONFIG_RAMTOP - CONFIG_RAMBASE) + HIGH_MEMORY_DEF_SIZE)
 #define HIGH_MEMORY_SAVE	( HIGH_MEMORY_SIZE - HIGH_MEMORY_DEF_SIZE )
+
+/* Delegation of resume backup memory so we don't have to
+ * (slowly) handle backing up OS memory in romstage.c
+ */
+#define CBMEM_BOOT_MODE		0x610
+#define CBMEM_RESUME_BACKUP	0x614
 #else
 #define HIGH_MEMORY_SIZE	HIGH_MEMORY_DEF_SIZE
 #endif
@@ -47,8 +49,14 @@ extern uint64_t high_tables_base, high_tables_size;
 #define CBMEM_ID_RESUME		0x5245534d
 #define CBMEM_ID_SMBIOS         0x534d4254
 #define CBMEM_ID_TIMESTAMP	0x54494d45
+#define CBMEM_ID_MRCDATA	0x4d524344
 #define CBMEM_ID_CONSOLE	0x434f4e53
 #define CBMEM_ID_NONE		0x00000000
+
+#ifndef __ASSEMBLER__
+#ifndef __PRE_RAM__
+extern uint64_t high_tables_base, high_tables_size;
+#endif
 
 int cbmem_initialize(void);
 
@@ -63,5 +71,6 @@ extern struct cbmem_entry *get_cbmem_toc(void);
 
 #ifndef __PRE_RAM__
 void set_cbmem_toc(struct cbmem_entry *);
+#endif
 #endif
 #endif

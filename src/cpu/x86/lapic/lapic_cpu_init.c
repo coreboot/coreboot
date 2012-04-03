@@ -14,6 +14,7 @@
 #include <smp/atomic.h>
 #include <smp/spinlock.h>
 #include <cpu/cpu.h>
+#include <cpu/intel/speedstep.h>
 
 #if CONFIG_SMP == 1
 /* This is a lot more paranoid now, since Linux can NOT handle
@@ -108,7 +109,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !defined (CONFIG_CPU_AMD_MODEL_10XXX) && !defined (CONFIG_CPU_AMD_MODEL_14XXX)
+#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX
 	mdelay(10);
 #endif
 
@@ -136,7 +137,7 @@ static int lapic_start_cpu(unsigned long apicid)
 
 	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 
-#if !defined (CONFIG_CPU_AMD_MODEL_10XXX) && !defined (CONFIG_CPU_AMD_MODEL_14XXX)
+#if !CONFIG_CPU_AMD_MODEL_10XXX
 	num_starts = 2;
 #else
 	num_starts = 1;
@@ -269,7 +270,7 @@ int start_cpu(device_t cpu)
 				break;
 			}
 			udelay(10);
-		}
+	}
 	}
 	secondary_stack = 0;
 	spin_unlock(&start_cpu_lock);
@@ -446,6 +447,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 {
 	device_t cpu;
 	int old_active_count, active_count;
+	long loopcount = 0;
+
 	/* Now loop until the other cpus have finished initializing */
 	old_active_count = 1;
 	active_count = atomic_read(&active_cpus);
@@ -456,9 +459,13 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 		udelay(10);
 		active_count = atomic_read(&active_cpus);
+		loopcount++;
 	}
 	for(cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
+			continue;
+		}
+		if (cpu->path.apic.apic_id == SPEEDSTEP_APIC_MAGIC) {
 			continue;
 		}
 		if (!cpu->initialized) {
@@ -466,7 +473,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 				cpu->path.apic.apic_id);
 		}
 	}
-	printk(BIOS_DEBUG, "All AP CPUs stopped\n");
+	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 }
 
 #else /* CONFIG_SMP */

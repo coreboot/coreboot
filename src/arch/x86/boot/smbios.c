@@ -29,6 +29,9 @@
 #include <cpu/x86/name.h>
 #include <cbfs_core.h>
 #include <arch/byteorder.h>
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/gnvs.h>
+#endif
 
 static u8 smbios_checksum(u8 *p, u32 length)
 {
@@ -126,8 +129,18 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->length = len - 2;
 
 	t->vendor = smbios_add_string(t->eos, "coreboot");
+#if !CONFIG_CHROMEOS
 	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
 	t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
+#else
+#define SPACES \
+	"                                                                  "
+	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
+	u32 version_offset = (u32)smbios_string_table_len(t->eos);
+	t->bios_version = smbios_add_string(t->eos, SPACES);
+	/* SMBIOS offsets start at 1 rather than 0 */
+	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
+#endif
 
 	if ((hdr = get_cbfs_header()) != (struct cbfs_header *)0xffffffff)
 		t->bios_rom_size = (ntohl(hdr->romsize) / 65535) - 1;
@@ -160,6 +173,8 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->length = len - 2;
 	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
 	t->product_name = smbios_add_string(t->eos, CONFIG_MAINBOARD_PART_NUMBER);
+	t->serial_number = smbios_add_string(t->eos, "123456789");
+	t->version = smbios_add_string(t->eos, "1.0");
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;

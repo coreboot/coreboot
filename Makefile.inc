@@ -27,14 +27,17 @@ ARCHDIR-$(CONFIG_ARCH_X86) := x86
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 
+export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+export objsec := $(obj)/mainboard/$(MAINBOARDDIR)
+
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot
-coreboot: $(obj)/coreboot.rom
+coreboot: build-dirs $(obj)/coreboot.rom
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot lint lint-stable
+PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 
 #######################################################################
 # root source directories of coreboot
@@ -163,6 +166,9 @@ $(obj)/build.h: .xcompile
 
 $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
+
+build-dirs:
+	mkdir -p $(objcbfs) $(objsec)
 
 #######################################################################
 # Build the tools

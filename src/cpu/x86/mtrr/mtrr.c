@@ -50,6 +50,24 @@ static unsigned int mtrr_msr[] = {
 	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
 };
 
+/* 2 MTRRS are reserved for the operating system */
+#define BIOS_MTRRS 6
+#define OS_MTRRS   2
+#define MTRRS      (BIOS_MTRRS + OS_MTRRS)
+
+static int total_mtrrs = MTRRS;
+static int bios_mtrrs = BIOS_MTRRS;
+
+static void detect_var_mtrrs(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MTRRcap_MSR);
+
+	total_mtrrs = msr.lo & 0xff;
+	bios_mtrrs = total_mtrrs - OS_MTRRS;
+}
+
 void enable_fixed_mtrr(void)
 {
 	msr_t msr;
@@ -76,8 +94,8 @@ static void set_var_mtrr(
 	msr_t base, mask;
 	unsigned address_mask_high;
 
-        if (reg >= 8)
-                return;
+        if (reg >= total_mtrrs)
+               return;
 
         // it is recommended that we disable and enable cache when we
         // do this.
@@ -169,28 +187,6 @@ static inline unsigned int fls(unsigned int x)
  * or a 156MB (128MB + 32MB - 4MB SMA) example:
  *	ramsize = 156MB == 128MB WB (at 0MB) + 32MB WB (at 128MB) + 4MB UC (at 156MB)
  */
-/* 2 MTRRS are reserved for the operating system */
-#if 1
-#define BIOS_MTRRS 6
-#define OS_MTRRS   2
-#else
-#define BIOS_MTRRS 8
-#define OS_MTRRS   0
-#endif
-#define MTRRS        (BIOS_MTRRS + OS_MTRRS)
-
-static int total_mtrrs = MTRRS;
-static int bios_mtrrs = BIOS_MTRRS;
-
-static void detect_var_mtrrs(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(MTRRcap_MSR);
-
-	total_mtrrs = msr.lo & 0xff;
-	bios_mtrrs = total_mtrrs - 2;
-}
 
 static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char type)
 {
@@ -504,7 +500,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	 * complete ROM now that we actually have RAM.
 	 */
 	if (boot_cpu() && (acpi_slp_type != 3)) {
-		set_var_mtrr(total_mtrrs-1, (4096-4)*1024, 4*1024,
+		set_var_mtrr(total_mtrrs - 1, (4096 - 8)*1024, 8 * 1024,
 			MTRR_TYPE_WRPROT, address_bits);
 	}
 #endif

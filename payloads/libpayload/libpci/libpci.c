@@ -96,7 +96,7 @@ void pci_filter_init(struct pci_access* pacc, struct pci_filter* pf)
 	pf->device = -1;
 }
 
-static char *invalid_pci_device_string = (char *)"invalid pci device string";
+static char invalid_pci_device_string[] = "invalid pci device string";
 
 /* parse domain:bus:dev.func (with all components but "dev" optional)
  * into filter.

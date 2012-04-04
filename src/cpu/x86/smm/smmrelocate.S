@@ -54,12 +54,21 @@
 .code16
 
 /**
- * This trampoline code relocates SMBASE to 0xa0000 - ( lapicid * 0x400 )
+ * When starting up, x86 CPUs have their SMBASE set to 0x30000. However,
+ * this is not a good place for the SMM handler to live, so it needs to
+ * be relocated.
+ * Traditionally SMM handlers used to live in the A segment (0xa0000).
+ * With growing SMM handlers, more CPU cores, etc. CPU vendors started
+ * allowing to relocate the handler to the end of physical memory, which
+ * they refer to as TSEG.
+ * This trampoline code relocates SMBASE to base address - ( lapicid * 0x400 )
  *
  * Why 0x400? It is a safe value to cover the save state area per CPU. On
  * current AMD CPUs this area is _documented_ to be 0x200 bytes. On Intel
  * Core 2 CPUs the _documented_ parts of the save state area is 48 bytes
  * bigger, effectively sizing our data structures 0x300 bytes.
+ *
+ * Example (with SMM handler living at 0xa0000):
  *
  * LAPICID	SMBASE		SMM Entry 	SAVE STATE
  *    0		0xa0000		0xa8000		0xafd00
@@ -88,13 +97,7 @@
  * at 0xa8000-0xa8100 (example for core 0). That is not enough.
  *
  * This means we're basically limited to 16 cpu cores before
- * we need to use the TSEG/HSEG for the actual SMM handler plus stack.
- * When we exceed 32 cores, we also need to put SMBASE to TSEG/HSEG.
- *
- * If we figure out the documented values above are safe to use,
- * we could pack the structure above even more, so we could use the
- * scheme to pack save state areas for 63 AMD CPUs or 58 Intel CPUs
- * in the ASEG.
+ * we need to move the SMM handler to TSEG. 
  *
  * Note: Some versions of Pentium M need their SMBASE aligned to 32k.
  * On those the above only works for up to 2 cores. But for now we only

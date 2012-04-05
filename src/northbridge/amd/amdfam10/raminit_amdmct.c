@@ -211,6 +211,9 @@ u32 mctGetLogicalCPUID(u32 Node)
 	case 0x10081:
 		ret = AMD_HY_D1;
 		break;
+	case 0x100a0:
+		ret = AMD_PH_E0;
+		break;
 	default:
 		/* FIXME: mabe we should die() here. */
 		print_err("FIXME! CPU Version unknown or not supported! \n");

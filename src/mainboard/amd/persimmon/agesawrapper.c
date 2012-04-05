@@ -33,10 +33,12 @@
 #include "cpuLateInit.h"
 #include "Dispatcher.h"
 #include "cpuCacheInit.h"
+#include "heapManager.h"
 #include "amdlib.h"
 #include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
 #include <arch/io.h>
+#include <cpu/amd/agesa/s3_resume.h>
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
@@ -243,6 +245,35 @@ agesawrapper_amdinitearly (
 	return (UINT32)status;
 }
 
+
+UINT32 GetHeapBase(
+	AMD_CONFIG_PARAMS *StdHeader
+	)
+{
+	UINT64			MsrReg;
+	UINT32			sys_mem, uma_base, uma_size;
+
+	/* TOP_MEM: the top of DRAM below 4G */
+	LibAmdMsrRead(TOP_MEM, &MsrReg, StdHeader);
+
+	/* refer to UMA Size Consideration in Family14h BKDG. */
+	sys_mem = (UINT32)(MsrReg & 0xFFFFFFFFUL) + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size, refer MemNGetUmaSizeON()
+	if ((MsrReg & 0x0000000F00000000) || (sys_mem >= 0x80000000)) {
+		uma_size = 0x18000000;	/* >= 2G memory, 384M recommended UMA */
+	}
+	else {
+	  if (sys_mem >= 0x40000000) {
+		  uma_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
+	  }
+	  else {
+		  uma_size = 0x4000000;	/* <1G memory, 64M recommended UMA */
+	  }
+	}
+
+	uma_base =  (UINT32)(MsrReg & 0xFFFFFFFFUL) - uma_size ;	/* TOP_MEM1 */
+	return uma_base  - BIOS_HEAP_SIZE;
+}
+
 UINT32
 agesawrapper_amdinitpost (
 	VOID
@@ -272,7 +303,7 @@ agesawrapper_amdinitpost (
 	AmdReleaseStruct (&AmdParamStruct);
 
 	/* Initialize heap space */
-	BiosManagerPtr = (BIOS_HEAP_MANAGER *)BIOS_HEAP_START_ADDRESS;
+	BiosManagerPtr = (BIOS_HEAP_MANAGER *)GetHeapBase(&AmdParamStruct.StdHeader);
 
 	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
 	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
@@ -495,6 +526,148 @@ agesawrapper_amdinitlate (
 
 	return (UINT32)Status;
 }
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+UINT32
+agesawrapper_amdinitresume (
+  VOID
+  )
+{
+	AGESA_STATUS status;
+	AMD_INTERFACE_PARAMS AmdParamStruct;
+	AMD_RESUME_PARAMS     *AmdResumeParamsPtr;
+	S3_DATA_TYPE            S3DataType;
+
+	LibAmdMemFill (&AmdParamStruct,
+		       0,
+		       sizeof (AMD_INTERFACE_PARAMS),
+		       &(AmdParamStruct.StdHeader));
+
+	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
+	AmdParamStruct.AllocationMethod = PreMemHeap;
+	AmdParamStruct.StdHeader.AltImageBasePtr = 0;
+	AmdParamStruct.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdParamStruct.StdHeader.Func = 0;
+	AmdParamStruct.StdHeader.ImageBasePtr = 0;
+	AmdCreateStruct (&AmdParamStruct);
+
+	AmdResumeParamsPtr = (AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr;
+
+	AmdResumeParamsPtr->S3DataBlock.NvStorageSize = 0;
+	AmdResumeParamsPtr->S3DataBlock.VolatileStorageSize = 0;
+	S3DataType = S3DataTypeNonVolatile;
+
+	OemAgesaGetS3Info (S3DataType,
+			   (u32 *) &AmdResumeParamsPtr->S3DataBlock.NvStorageSize,
+			   (void **) &AmdResumeParamsPtr->S3DataBlock.NvStorage);
+
+	status = AmdInitResume ((AMD_RESUME_PARAMS *)AmdParamStruct.NewStructPtr);
+
+	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
+	AmdReleaseStruct (&AmdParamStruct);
+
+	return (UINT32)status;
+}
+
+UINT32
+agesawrapper_amds3laterestore (
+  VOID
+  )
+{
+	AGESA_STATUS Status;
+	AMD_INTERFACE_PARAMS    AmdInterfaceParams;
+	AMD_S3LATE_PARAMS       AmdS3LateParams;
+	AMD_S3LATE_PARAMS       *AmdS3LateParamsPtr;
+	S3_DATA_TYPE          S3DataType;
+
+	LibAmdMemFill (&AmdS3LateParams,
+		       0,
+		       sizeof (AMD_S3LATE_PARAMS),
+		       &(AmdS3LateParams.StdHeader));
+	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
+	AmdInterfaceParams.AllocationMethod = ByHost;
+	AmdInterfaceParams.AgesaFunctionName = AMD_S3LATE_RESTORE;
+	AmdInterfaceParams.NewStructPtr = &AmdS3LateParams;
+	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdS3LateParamsPtr = &AmdS3LateParams;
+	AmdInterfaceParams.NewStructSize = sizeof (AMD_S3LATE_PARAMS);
+
+	AmdCreateStruct (&AmdInterfaceParams);
+
+	AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize = 0;
+	S3DataType = S3DataTypeVolatile;
+
+	OemAgesaGetS3Info (S3DataType,
+			   (u32 *) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize,
+			   (void **) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
+
+	Status = AmdS3LateRestore (AmdS3LateParamsPtr);
+	if (Status != AGESA_SUCCESS) {
+		agesawrapper_amdreadeventlog();
+		ASSERT(Status == AGESA_SUCCESS);
+	}
+
+	return (UINT32)Status;
+}
+
+#ifndef __PRE_RAM__
+UINT32
+agesawrapper_amdS3Save (
+	VOID
+	)
+{
+	AGESA_STATUS Status;
+	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
+	AMD_INTERFACE_PARAMS  AmdInterfaceParams;
+	S3_DATA_TYPE          S3DataType;
+
+	LibAmdMemFill (&AmdInterfaceParams,
+		       0,
+		       sizeof (AMD_INTERFACE_PARAMS),
+		       &(AmdInterfaceParams.StdHeader));
+
+	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
+	AmdInterfaceParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
+	AmdInterfaceParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
+	AmdInterfaceParams.AllocationMethod = PostMemDram;
+	AmdInterfaceParams.AgesaFunctionName = AMD_S3_SAVE;
+	AmdInterfaceParams.StdHeader.AltImageBasePtr = 0;
+	AmdInterfaceParams.StdHeader.Func = 0;
+	AmdCreateStruct(&AmdInterfaceParams);
+
+	AmdS3SaveParamsPtr = (AMD_S3SAVE_PARAMS *)AmdInterfaceParams.NewStructPtr;
+	AmdS3SaveParamsPtr->StdHeader = AmdInterfaceParams.StdHeader;
+
+	Status = AmdS3Save (AmdS3SaveParamsPtr);
+	if (Status != AGESA_SUCCESS) {
+		agesawrapper_amdreadeventlog();
+		ASSERT(Status == AGESA_SUCCESS);
+	}
+
+	S3DataType = S3DataTypeNonVolatile;
+
+	Status = OemAgesaSaveS3Info (
+		S3DataType,
+		AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
+		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
+
+	if (AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize != 0) {
+		S3DataType = S3DataTypeVolatile;
+
+		Status = OemAgesaSaveS3Info (
+			S3DataType,
+			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
+			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage
+			);
+	}
+
+	OemAgesaSaveMtrr();
+	AmdReleaseStruct (&AmdInterfaceParams);
+
+	return (UINT32)Status;
+}
+#endif	/* #ifndef __PRE_RAM__ */
+#endif	/* CONFIG_HAVE_ACPI_RESUME */
 
 UINT32
 agesawrapper_amdlaterunaptask (

@@ -179,6 +179,39 @@ static void lb_framebuffer(struct lb_header *header)
 #endif
 }
 
+#if CONFIG_CHROMEOS
+static void lb_gpios(struct lb_header *header)
+{
+	struct lb_gpios *gpios;
+	gpios = (struct lb_gpios *)lb_new_record(header);
+	gpios->tag = LB_TAG_GPIO;
+	gpios->size = sizeof(*gpios);
+	gpios->count = 0;
+	fill_lb_gpios(gpios);
+}
+
+static void lb_vdat(struct lb_header *header)
+{
+	struct lb_vdat* vdat;
+
+	vdat = (struct lb_vdat *)lb_new_record(header);
+	vdat->tag = LB_TAG_VDAT;
+	vdat->size = sizeof(*vdat);
+	acpi_get_vdat_info(&vdat->vdat_addr, &vdat->vdat_size);
+}
+
+static void lb_vbnv(struct lb_header *header)
+{
+	struct lb_vbnv* vbnv;
+
+	vbnv = (struct lb_vbnv *)lb_new_record(header);
+	vbnv->tag = LB_TAG_VBNV;
+	vbnv->size = sizeof(*vbnv);
+	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
+	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
+}
+#endif
+
 static void add_cbmem_pointers(struct lb_header *header)
 {
 	/*
@@ -654,6 +687,16 @@ unsigned long write_coreboot_table(
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
+#if CONFIG_CHROMEOS
+	/* Record our GPIO settings (ChromeOS specific) */
+	lb_gpios(head);
+
+	/* pass along the VDAT buffer adress */
+	lb_vdat(head);
+
+	/* pass along VBNV offsets in CMOS */
+	lb_vbnv(head);
+#endif
 	add_cbmem_pointers(head);
 
 	/* Remember where my valid memory ranges are */

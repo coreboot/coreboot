@@ -26,6 +26,7 @@ find src util -name .svn -type d -prune -o \
 	-name TODO -prune -o \
 	-name COPYING -prune -o \
 	-name \*.txt -prune -o \
+	-name \*.exe -prune -o \
 	-name microcode-\*.h -prune -o \
 	-name \*.?_shipped -prune -o \
 	-name \*.[18] -prune -o \

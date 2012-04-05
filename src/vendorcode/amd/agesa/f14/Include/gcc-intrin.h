@@ -305,7 +305,9 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr0(void)
   unsigned long value;
   __asm__ __volatile__ (
     "mov %%cr0, %[value]" 
-    : [value] "=a" (value));
+    : [value] "=a" (value)
+    :
+    : "memory");
   return value;
 }
 
@@ -379,6 +381,7 @@ static __inline__ __attribute__((always_inline)) void __writecr0(unsigned long D
     "mov %%eax, %%cr0"
     : 
     : "a" (Data)
+    : "memory"
     );
 }
  
@@ -508,12 +511,15 @@ static __inline__ __attribute__((always_inline)) void __debugbreak(void)
   __asm__ __volatile__ ("int3");
 }
 
+static __inline__ __attribute__((always_inline)) void __invd(void)
+{
+  __asm__ __volatile__ ("invd");
+}
 
 static __inline__ __attribute__((always_inline)) void __wbinvd(void)
 {
   __asm__ __volatile__ ("wbinvd");
 }
-
 
 static __inline__ __attribute__((always_inline)) void __lidt(void *Source)
 {

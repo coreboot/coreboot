@@ -162,4 +162,7 @@ typedef union _PCI_ADDR {
 #include "spi.h"
 #endif
 
+#define BIOSRAM_INDEX   0xcd4
+#define BIOSRAM_DATA    0xcd5
+
 #endif // _AMD_SBPLATFORM_H_

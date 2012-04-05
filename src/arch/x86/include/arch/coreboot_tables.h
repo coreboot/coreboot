@@ -20,4 +20,6 @@ struct lb_memory *get_lb_mem(void);
 int add_mainboard_resources(struct lb_memory *mem);
 int add_northbridge_resources(struct lb_memory *mem);
 
+void fill_lb_gpios(struct lb_gpios *gpios);
+
 #endif /* COREBOOT_TABLE_H */

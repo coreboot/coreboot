@@ -195,6 +195,33 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_size;
 };
 
+#define LB_TAG_GPIO	0x0013
+
+struct lb_gpio {
+	uint32_t port;
+	uint32_t polarity;
+	uint32_t value;
+#define GPIO_MAX_NAME_LENGTH 16
+        uint8_t name[GPIO_MAX_NAME_LENGTH];
+};
+
+struct lb_gpios {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t count;
+	struct lb_gpio gpios[0];
+};
+
+#define LB_TAG_VDAT	0x0015
+struct lb_vdat {
+	uint32_t tag;
+	uint32_t size;
+
+	void	*vdat_addr;
+	uint32_t vdat_size;
+};
+
 #define LB_TAG_TIMESTAMPS	0x0016
 #define LB_TAG_CBMEM_CONSOLE	0x0017
 #define LB_TAG_MRC_CACHE	0x0018
@@ -203,6 +230,15 @@ struct lb_cbmem_ref {
 	uint32_t size;
 
 	void	*cbmem_addr;
+};
+
+#define LB_TAG_VBNV		0x0019
+struct lb_vbnv {
+	uint32_t tag;
+	uint32_t size;
+
+	uint32_t vbnv_start;
+	uint32_t vbnv_size;
 };
 
 /* The following structures are for the cmos definitions table */

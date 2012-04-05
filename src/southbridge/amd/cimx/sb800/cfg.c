@@ -17,10 +17,52 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
+#include <console/console.h>
 #include "SBPLATFORM.h"
 #include "cfg.h"
+#include "OEM.h"
+#include <cbmem.h>
 
+#include <arch/io.h>
+#include <arch/acpi.h>
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+int acpi_get_sleep_type(void)
+{
+	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
+	tmp = ((tmp & (7 << 10)) >> 10);
+	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp);
+	return (int)tmp;
+}
+#endif
+
+#ifndef __PRE_RAM__
+void set_cbmem_toc(struct cbmem_entry *toc)
+{
+	u32 dword = (u32) toc;
+	int nvram_pos = 0xf8, i; /* temp */
+	printk(BIOS_DEBUG, "dword=%x\n", dword);
+	for (i = 0; i<4; i++) {
+		printk(BIOS_DEBUG, "nvram_pos=%x, dword>>(8*i)=%x\n", nvram_pos, (dword >>(8 * i)) & 0xff);
+		outb(nvram_pos, BIOSRAM_INDEX);
+		outb((dword >>(8 * i)) & 0xff , BIOSRAM_DATA);
+		nvram_pos++;
+	}
+}
+#endif
+
+struct cbmem_entry *get_cbmem_toc(void)
+{
+	u32 xdata = 0;
+	int xnvram_pos = 0xf8, xi;
+	for (xi = 0; xi<4; xi++) {
+		outb(xnvram_pos, BIOSRAM_INDEX);
+		xdata &= ~(0xff << (xi * 8));
+		xdata |= inb(BIOSRAM_DATA) << (xi *8);
+		xnvram_pos++;
+	}
+	return (struct cbmem_entry *) xdata;
+}
 
 /**
  * @brief South Bridge CIMx configuration
@@ -30,10 +72,13 @@
  */
 void sb800_cimx_config(AMDSBCFG *sb_config)
 {
-	if (!sb_config) {
+	if (!sb_config)
 		return;
-	}
-	//memset(sb_config, 0, sizeof(AMDSBCFG));
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (acpi_get_sleep_type() == 3)
+		sb_config->S3Resume = 1;
+#endif
 
 	/* header */
 	sb_config->StdHeader.PcieBasePtr = PCIEX_BASE_ADDRESS;
@@ -75,19 +120,19 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 
 	/* USB */
 	sb_config->USBMODE.UsbModeReg = USB_CONFIG;
-  	sb_config->SbUsbPll = 0;
+	sb_config->SbUsbPll = 0;
 
 	/* SATA */
 	sb_config->SataClass = SATA_MODE;
 	sb_config->SataIdeMode = SATA_IDE_MODE;
 	sb_config->SataPortMultCap = SATA_PORT_MULT_CAP_RESERVED;
-  	sb_config->SATAMODE.SataMode.SataController = SATA_CONTROLLER;
+	sb_config->SATAMODE.SataMode.SataController = SATA_CONTROLLER;
 	sb_config->SATAMODE.SataMode.SataIdeCombMdPriSecOpt = 0; //0 -IDE as primary, 1 -IDE as secondary.
 								//TODO: set to secondary not take effect.
 	sb_config->SATAMODE.SataMode.SataIdeCombinedMode = CONFIG_IDE_COMBINED_MODE;
 	sb_config->SATAMODE.SataMode.SATARefClkSel = SATA_CLOCK_SOURCE;
 
-  	/* Azalia HDA */
+	/* Azalia HDA */
 	sb_config->AzaliaController = AZALIA_CONTROLLER;
 	sb_config->AzaliaPinCfg = AZALIA_PIN_CONFIG;
 	sb_config->AZALIACONFIG.AzaliaSdinPin = AZALIA_SDIN_PIN;
@@ -97,7 +142,6 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 #else
 	sb_config->AZOEMTBL.pAzaliaOemCodecTablePtr = NULL;
 #endif
-
 	/* LPC */
 	/* SuperIO hardware monitor register access */
 	sb_config->SioHwmPortEnable = CONFIG_SB_SUPERIO_HWM;
@@ -132,4 +176,3 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	}
 #endif //!__PRE_RAM__
 }
-

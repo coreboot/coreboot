@@ -35,12 +35,20 @@
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_SCH
 #include "../../../southbridge/intel/sch/sch.h"
+#elif CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216
+#include "../../../southbridge/intel/bd82x6x/pch.h"
 #else
 #error "Southbridge needs SMM handler support."
 #endif
 
 #if CONFIG_SMM_TSEG
 
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
+#include <northbridge/intel/sandybridge/sandybridge.h>
+#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#else
+#error "Northbridge must define TSEG_BAR."
+#endif
 #include <cpu/x86/mtrr.h>
 
 #endif /* CONFIG_SMM_TSEG */

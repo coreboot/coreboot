@@ -234,7 +234,7 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-void cpu_initialize(void)
+void cpu_initialize(struct cpu_info *info)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -242,12 +242,9 @@ void cpu_initialize(void)
 	 * disabled.
 	 */
 	struct device *cpu;
-	struct cpu_info *info;
 	struct cpuinfo_x86 c;
 
-	info = cpu_info();
-
-	printk(BIOS_INFO, "Initializing CPU #%ld\n", info->index);
+	printk(BIOS_INFO, "cpu_initialize: CPU #%ld\n", info->index);
 
 	cpu = info->cpu;
 	if (!cpu) {
@@ -287,5 +284,26 @@ void cpu_initialize(void)
 	printk(BIOS_INFO, "CPU #%ld initialized\n", info->index);
 
 	return;
+}
+
+void cpu_work(struct cpu_info *info)
+{
+	workfunc f;
+	volatile workfunc *ptr = &info->work;
+	volatile u32 *params = info->params;
+
+	printk(BIOS_INFO, "CPU #%ld ready to work\n", info->index);
+
+	while (!*ptr)
+		;
+	f = *ptr;
+
+	printk(BIOS_SPEW, "CPU #%ld is asked to do %p\n", info->index, f);
+	info->result = f(params[0], params[1], params[2]);
+
+	printk(BIOS_SPEW, "CPU #%ld finishes %p, mark %p\n", info->index, f, ptr);
+	*ptr = 0;
+
+	printk(BIOS_INFO, "CPU #%ld leaving cpu_work()\n", info->index);
 }
 

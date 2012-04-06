@@ -5,9 +5,13 @@ struct device;
 struct bus;
 #include <arch/cpu.h>
 
-void cpu_initialize(void);
+void cpu_initialize(struct cpu_info *info);
 void initialize_cpus(struct bus *cpu_bus);
-void secondary_cpu_init(void);
+void secondary_cpu_init(struct cpu_info *info);
+int run_work(unsigned int core, workfunc f, u32 a, u32 b, u32 c, u32 *retval,
+	unsigned int timeout);
+void cpu_work(struct cpu_info *info);
+
 
 #if !CONFIG_WAIT_BEFORE_CPUS_INIT
 	#define cpus_ready_for_init() do {} while(0)

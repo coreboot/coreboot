@@ -42,6 +42,8 @@ _secondary_start:
 	xorl	%eax, %eax
 	movl	secondary_stack, %esp
 	movl	%eax, secondary_stack
+	movl	secondary_cpu_info, %eax
+	pushl	%eax
 
 	call	secondary_cpu_init
 1:	hlt

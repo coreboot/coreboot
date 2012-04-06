@@ -17,6 +17,21 @@
 #include <cpu/intel/speedstep.h>
 
 #if CONFIG_SMP == 1
+
+/* we do not want this struct visible outside this file.
+ * The external interface is via functions.
+ */
+
+struct apcore {
+	u32 stack[1024 - sizeof(struct cpu_info)];
+	struct cpu_info info;
+};
+
+#define TOS(x) (&apcores[(x)].stack[ARRAY_SIZE(apcores[x].stack)-1])
+typedef struct apcore apcore_t;
+
+apcore_t apcores[CONFIG_MAX_CPUS];
+
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -221,13 +236,16 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
  * start_cpu returns.
  */
 
+/* N.B. if we move to serial smp init we don't need this spin lock. 
+ * Consider for the future. 
+ */
+
 static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
 static unsigned last_cpu_index = 0;
 volatile unsigned long secondary_stack;
 
 int start_cpu(device_t cpu)
 {
-	extern unsigned char _estack[];
 	struct cpu_info *info;
 	unsigned long stack_end;
 	unsigned long apicid;
@@ -241,19 +259,26 @@ int start_cpu(device_t cpu)
 	apicid = cpu->path.apic.apic_id;
 
 	/* Get an index for the new processor */
+	if ((last_cpu_index+1) >= CONFIG_MAX_CPUS){
+		printk(BIOS_ERR, "CONFIG_MAX_CPUS(%d) too small!\n", CONFIG_MAX_CPUS);
+		spin_unlock(&start_cpu_lock);
+		return 0;
+	}
+
 	index = ++last_cpu_index;
 
 	/* Find end of the new processors stack */
-	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
+	stack_end = (unsigned long) TOS(index);
 
 	/* Record the index and which cpu structure we are using */
-	info = (struct cpu_info *)stack_end;
+	info = &apcores[index].info;
 	info->index = index;
 	info->cpu   = cpu;
 
 	/* Advertise the new stack to start_cpu */
 	secondary_stack = stack_end;
-
+	printk(BIOS_SPEW, "start_cpu CPU %ld secondary_stack %#lx info %p\n",
+		index, secondary_stack, info);
 	/* Until the cpu starts up report the cpu is not enabled */
 	cpu->enabled = 0;
 	cpu->initialized = 0;
@@ -381,8 +406,11 @@ static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Dat
 #endif
 
 /* C entry point of secondary cpus */
-void secondary_cpu_init(void)
+void secondary_cpu_init(u32 infoptr)
 {
+	/* note: we tried (((u32 *)&infoptr)[1]) but that failed. Compiler? */
+	struct cpu_info *info = (struct cpu_info *)(((u8*)&infoptr)+sizeof(u32));
+
 	atomic_inc(&active_cpus);
 #if CONFIG_SERIAL_CPU_INIT == 1
 	spin_lock(&start_cpu_lock);
@@ -398,11 +426,11 @@ void secondary_cpu_init(void)
 	cr4_val |= (1 << 9 | 1 << 10);
 	writecr4(cr4_val);
 #endif
-	cpu_initialize();
+	cpu_initialize(info);
 #if CONFIG_SERIAL_CPU_INIT == 1
 	spin_unlock(&start_cpu_lock);
 #endif
-
+	cpu_work(info);
 	atomic_dec(&active_cpus);
 
 	stop_this_cpu();
@@ -476,8 +504,6 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 }
 
-#else /* CONFIG_SMP */
-#define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
 
 void initialize_cpus(struct bus *cpu_bus)
@@ -505,6 +531,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
 #if CONFIG_SMP == 1
+	memset(apcores, 0, sizeof(*apcores));
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 
@@ -522,7 +549,7 @@ void initialize_cpus(struct bus *cpu_bus)
 #endif
 
 	/* Initialize the bootstrap processor */
-	cpu_initialize();
+	cpu_initialize(info);
 
 #if CONFIG_SMP == 1
 	#if CONFIG_SERIAL_CPU_INIT == 1
@@ -534,3 +561,93 @@ void initialize_cpus(struct bus *cpu_bus)
 #endif
 }
 
+#if CONFIG_SMP == 1
+/* work primitives */
+
+/* start_work is only intended to be called by the bsp. */
+/* A built in assumption of this code is that you know what 
+ * you're doing. This is firmware, not pthreads. You should 
+ * not call this function for a core if:
+ * - the core does not exist
+ * - the core is not initialized
+ * - the core is busy
+ * Any of these return a -1, else the core is started and
+ * 0 is returned. 
+ */
+int start_work(unsigned int core, workfunc f, u32 a, u32 b, u32 c)
+{
+	struct cpu_info *info;
+	volatile workfunc *ptr;
+	volatile u32 *params;
+
+	if (core >= CONFIG_MAX_CPUS){
+		printk(BIOS_EMERG, "start_work: invalid core %d\n", core);
+		return -1;
+	}
+	info = &apcores[core].info;
+	if (! info->cpu->initialized){
+		printk(BIOS_EMERG, "start_work: core not initialized %d\n", core);
+		return -1;
+	}
+	ptr = &info->work;
+	if (*ptr){
+		printk(BIOS_EMERG, "start_work: core is busy %d\n", core);
+		return -1;
+	}
+	params = (u32 *)&info->params;
+	params[0] = a;
+	params[1] = b;
+	params[2] = c;
+	printk(BIOS_INFO, "BSP starts work on core %d\n", core);
+	*ptr = f;
+	return 0;
+}
+
+/* wait for the work to finish and return the result. Wait at
+ * most maxusec microseconds. 
+ */
+int wait_work(unsigned int core, u32 *retval, unsigned int maxusec)
+{
+	unsigned int usec;
+	struct cpu_info *info;
+	volatile workfunc *ptr;
+	volatile u32 *result;
+
+	if (core >= CONFIG_MAX_CPUS){
+		printk(BIOS_EMERG, "start_work: invalid core %d\n", core);
+		return -1;
+	}
+	info = &apcores[core].info;
+	if (! info->cpu->initialized){
+		printk(BIOS_EMERG, "start_work: core not initialized %d\n", core);
+		return -1;
+	}
+	ptr = &info->work;
+	for(usec = 0; usec < maxusec && *ptr; usec++)
+		udelay(1);
+
+	/* N.B. since only the BSP starts cores, there is not 
+	 * problem checking the pointer since access to it is 
+	 * serialized by the single-threaded BSP code. 
+	 */
+	if (*ptr){
+		printk(BIOS_INFO, "core %d still running after %d microseconds\n",
+			core, usec);
+		return -1;
+	}
+	result = &info->result;
+	printk(BIOS_INFO, "info->work after result is %#lx\n", (unsigned long)*result);
+	if (retval)
+		*retval = *result;
+	return 0;
+}
+
+/* start the work and wait for it to finish */
+int run_work(unsigned int core, workfunc f, u32 a, u32 b, u32 c, u32 *retval,
+	unsigned int timeout)
+{
+	if (start_work(core, f, a, b, c))
+		return -1;
+	return wait_work(core, retval, timeout);
+}
+#endif /* CONFIG_SMP == 1 */

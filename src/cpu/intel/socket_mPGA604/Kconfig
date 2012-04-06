@@ -11,6 +11,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select MMX
 	select SSE
 	select UDELAY_TSC
+	select SIPI_VECTOR_IN_ROM
 
 # mPGA604 are usually Intel Netburst CPUs which should have SSE2
 # but the ramtest.c code on the Dell S1850 seems to choke on

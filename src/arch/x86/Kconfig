@@ -8,6 +8,13 @@ config AP_IN_SIPI_WAIT
 	default n
 	depends on ARCH_X86
 
+# Aligns 16bit entry code in bootblock so that hyper-threading CPUs
+# can boot AP CPUs to enable their shared caches.
+config SIPI_VECTOR_IN_ROM
+	bool
+	default n
+	depends on ARCH_X86
+
 config RAMBASE
 	hex
 	default 0x100000

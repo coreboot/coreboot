@@ -157,9 +157,14 @@ struct cpu_driver {
 struct device;
 struct cpu_driver *find_cpu_driver(struct device *cpu);
 
+typedef u32 (*workfunc)(u32, u32, u32);
+
 struct cpu_info {
 	device_t cpu;
 	unsigned long index;
+	workfunc work;
+	u32 params[3];
+	u32 result;
 };
 
 static inline struct cpu_info *cpu_info(void)

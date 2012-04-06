@@ -44,8 +44,6 @@ config VENDOR_BROADCOM
 	bool "Broadcom"
 config VENDOR_COMPAQ
 	bool "Compaq"
-config VENDOR_DELL
-	bool "Dell"
 config VENDOR_DIGITALLOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
@@ -149,7 +147,6 @@ source "src/mainboard/bifferos/Kconfig"
 source "src/mainboard/biostar/Kconfig"
 source "src/mainboard/broadcom/Kconfig"
 source "src/mainboard/compaq/Kconfig"
-source "src/mainboard/dell/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
 source "src/mainboard/ecs/Kconfig"

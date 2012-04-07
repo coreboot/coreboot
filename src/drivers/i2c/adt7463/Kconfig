@@ -1,2 +1,5 @@
 config DRIVERS_I2C_ADT7463
-	bool
+	bool "ADT7463"
+	default n
+	help
+	  Support for ADT7463-Remote Thermal Controller and Voltage Monitor

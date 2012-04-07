@@ -1,2 +1,5 @@
 config DRIVERS_I2C_ADM1026
 	bool
+	default n
+	help
+	  Support for ADM1026-Thermal System Management Fan Controller IC

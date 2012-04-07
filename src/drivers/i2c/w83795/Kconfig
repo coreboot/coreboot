@@ -1,2 +1,5 @@
 config DRIVERS_I2C_W83795
 	bool
+	default n
+	help
+	  Support for Nuvoton W83795G

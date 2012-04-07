@@ -1,2 +1,5 @@
 config DRIVERS_I2C_I2CMUX
 	bool
+	default n
+	help
+	  Support for PCA9556 SMBus IC

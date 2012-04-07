@@ -1,2 +1,5 @@
 config DRIVERS_I2C_LM63
 	bool
+	default n
+	help
+	  Support for National Semiconductor LM63

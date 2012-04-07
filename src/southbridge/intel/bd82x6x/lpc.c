@@ -676,3 +676,8 @@ static const struct pci_driver c216_lpc __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x1e55,
 };
+static const struct pci_driver hm75_lpc __pci_driver = {
+	.ops	= &device_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x1e5d,
+};

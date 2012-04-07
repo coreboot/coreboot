@@ -83,10 +83,10 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 			bytes_left >= format->bytes_per_line;
 			bytes_left -= format->bytes_per_line) {
 		/* print start address for current line */
-		fprintf(outfile, format->indent);
+		fprintf(outfile, "%s", format->indent);
 		addrprint(outfile, addrprint_start + index,
 			  format->addrprint_width);
-		fprintf(outfile, format->sep1);
+		fprintf(outfile, "%s", format->sep1);
 
 		/* display the bytes in hex */
 		for (i = 0;;) {
@@ -95,11 +95,11 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 			if (++i >= format->bytes_per_line)
 				break;
 
-			fprintf(outfile, format->sep2);
+			fprintf(outfile, "%s", format->sep2);
 		}
 
 		index -= format->bytes_per_line;
-		fprintf(outfile, format->sep3);
+		fprintf(outfile, "%s", format->sep3);
 
 		/* display the bytes as characters */
 		for (i = 0; i < format->bytes_per_line; i++, index++)
@@ -112,14 +112,14 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 		return;
 
 	/* print start address for last line */
-	fprintf(outfile, format->indent);
+	fprintf(outfile, "%s", format->indent);
 	addrprint(outfile, addrprint_start + index, format->addrprint_width);
-	fprintf(outfile, format->sep1);
+	fprintf(outfile, "%s", format->sep1);
 
 	/* display bytes for last line in hex */
 	for (i = 0; i < bytes_left; i++) {
 		fprintf(outfile, "%02x", p[index++]);
-		fprintf(outfile, format->sep2);
+		fprintf(outfile, "%s", format->sep2);
 	}
 
 	index -= bytes_left;
@@ -131,10 +131,10 @@ void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
 		if (++i >= format->bytes_per_line)
 			break;
 
-		fprintf(outfile, format->sep2);
+		fprintf(outfile, "%s", format->sep2);
 	}
 
-	fprintf(outfile, format->sep3);
+	fprintf(outfile, "%s", format->sep3);
 
 	/* display bytes for last line as characters */
 	for (i = 0; i < bytes_left; i++)

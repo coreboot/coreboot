@@ -91,8 +91,8 @@ static inline unsigned int cpuid_ebx(unsigned int op)
 
 	__asm__("mov %%ebx, %%edi;"
 		"cpuid;"
+		"mov %%ebx, %%esi;"
 		"mov %%edi, %%ebx;"
-		"mov %%edi, %%esi;"
 		: "=a" (eax), "=S" (ebx)
 		: "0" (op)
 		: "ecx", "edx", "edi");

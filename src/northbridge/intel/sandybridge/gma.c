@@ -27,6 +27,169 @@
 #include "chip.h"
 #include "sandybridge.h"
 
+struct gt_powermeter {
+	u16 reg;
+	u32 value;
+};
+
+struct gt_powermeter snb_pm_gt1[] = {
+	{ 0xa200, 0xcc000000 },
+	{ 0xa204, 0x07000040 },
+	{ 0xa208, 0x0000fe00 },
+	{ 0xa20c, 0x00000000 },
+	{ 0xa210, 0x17000000 },
+	{ 0xa214, 0x00000021 },
+	{ 0xa218, 0x0817fe19 },
+	{ 0xa21c, 0x00000000 },
+	{ 0xa220, 0x00000000 },
+	{ 0xa224, 0xcc000000 },
+	{ 0xa228, 0x07000040 },
+	{ 0xa22c, 0x0000fe00 },
+	{ 0xa230, 0x00000000 },
+	{ 0xa234, 0x17000000 },
+	{ 0xa238, 0x00000021 },
+	{ 0xa23c, 0x0817fe19 },
+	{ 0xa240, 0x00000000 },
+	{ 0xa244, 0x00000000 },
+	{ 0xa248, 0x8000421e },
+	{ 0 }
+};
+
+struct gt_powermeter snb_pm_gt2[] = {
+	{ 0xa200, 0x330000a6 },
+	{ 0xa204, 0x402d0031 },
+	{ 0xa208, 0x00165f83 },
+	{ 0xa20c, 0xf1000000 },
+	{ 0xa210, 0x00000000 },
+	{ 0xa214, 0x00160016 },
+	{ 0xa218, 0x002a002b },
+	{ 0xa21c, 0x00000000 },
+	{ 0xa220, 0x00000000 },
+	{ 0xa224, 0x330000a6 },
+	{ 0xa228, 0x402d0031 },
+	{ 0xa22c, 0x00165f83 },
+	{ 0xa230, 0xf1000000 },
+	{ 0xa234, 0x00000000 },
+	{ 0xa238, 0x00160016 },
+	{ 0xa23c, 0x002a002b },
+	{ 0xa240, 0x00000000 },
+	{ 0xa244, 0x00000000 },
+	{ 0xa248, 0x8000421e },
+	{ 0 }
+};
+
+struct gt_powermeter ivb_pm_gt1[] = {
+	{ 0xa800, 0x10000000 },
+	{ 0xa804, 0x00033800 },
+	{ 0xa808, 0x00000902 },
+	{ 0xa80c, 0x0c002f00 },
+	{ 0xa810, 0x12000400 },
+	{ 0xa814, 0x00000000 },
+	{ 0xa818, 0x00d20800 },
+	{ 0xa81c, 0x00000002 },
+	{ 0xa820, 0x03004b02 },
+	{ 0xa824, 0x00000600 },
+	{ 0xa828, 0x07000773 },
+	{ 0xa82c, 0x00000000 },
+	{ 0xa830, 0x00010032 },
+	{ 0xa834, 0x1520040d },
+	{ 0xa838, 0x00020105 },
+	{ 0xa83c, 0x00083700 },
+	{ 0xa840, 0x0000151d },
+	{ 0xa844, 0x00000000 },
+	{ 0xa848, 0x20001b00 },
+	{ 0xa84c, 0x0a000010 },
+	{ 0xa850, 0x00000000 },
+	{ 0xa854, 0x00000008 },
+	{ 0xa858, 0x00000008 },
+	{ 0xa85c, 0x00000000 },
+	{ 0xa860, 0x00020000 },
+	{ 0xa248, 0x0000221e },
+	{ 0xa900, 0x00000000 },
+	{ 0xa904, 0x00003500 },
+	{ 0xa908, 0x00000000 },
+	{ 0xa90c, 0x0c000000 },
+	{ 0xa910, 0x12000500 },
+	{ 0xa914, 0x00000000 },
+	{ 0xa918, 0x00b20000 },
+	{ 0xa91c, 0x00000000 },
+	{ 0xa920, 0x08004b02 },
+	{ 0xa924, 0x00000200 },
+	{ 0xa928, 0x07000820 },
+	{ 0xa92c, 0x00000000 },
+	{ 0xa930, 0x00030000 },
+	{ 0xa934, 0x050f020d },
+	{ 0xa938, 0x00020300 },
+	{ 0xa93c, 0x00903900 },
+	{ 0xa940, 0x00000000 },
+	{ 0xa944, 0x00000000 },
+	{ 0xa948, 0x20001b00 },
+	{ 0xa94c, 0x0a000010 },
+	{ 0xa950, 0x00000000 },
+	{ 0xa954, 0x00000008 },
+	{ 0xa960, 0x00110000 },
+	{ 0xaa3c, 0x00003900 },
+	{ 0xaa54, 0x00000008 },
+	{ 0xaa60, 0x00110000 },
+	{ 0 }
+};
+
+struct gt_powermeter ivb_pm_gt2[] = {
+	{ 0xa800, 0x20000000 },
+	{ 0xa804, 0x000e3800 },
+	{ 0xa808, 0x00000806 },
+	{ 0xa80c, 0x0c002f00 },
+	{ 0xa810, 0x0c000800 },
+	{ 0xa814, 0x00000000 },
+	{ 0xa818, 0x00d20d00 },
+	{ 0xa81c, 0x000000ff },
+	{ 0xa820, 0x03004b02 },
+	{ 0xa824, 0x00000600 },
+	{ 0xa828, 0x07000773 },
+	{ 0xa82c, 0x00000000 },
+	{ 0xa830, 0x00020032 },
+	{ 0xa834, 0x1520040d },
+	{ 0xa838, 0x00020105 },
+	{ 0xa83c, 0x00083700 },
+	{ 0xa840, 0x000016ff },
+	{ 0xa844, 0x00000000 },
+	{ 0xa848, 0xff000000 },
+	{ 0xa84c, 0x0a000010 },
+	{ 0xa850, 0x00000004 },
+	{ 0xa854, 0x00000008 },
+	{ 0xa858, 0x00000018 },
+	{ 0xa85c, 0x00000000 },
+	{ 0xa860, 0x00020000 },
+	{ 0xa248, 0x0000221e },
+	{ 0xa900, 0x00000000 },
+	{ 0xa904, 0x00003800 },
+	{ 0xa908, 0x00000000 },
+	{ 0xa90c, 0x0c000000 },
+	{ 0xa910, 0x12000500 },
+	{ 0xa914, 0x00000000 },
+	{ 0xa918, 0x00b20000 },
+	{ 0xa91c, 0x00000000 },
+	{ 0xa920, 0x08004b02 },
+	{ 0xa924, 0x00000200 },
+	{ 0xa928, 0x07000820 },
+	{ 0xa92c, 0x00000000 },
+	{ 0xa930, 0x00030000 },
+	{ 0xa934, 0x050f020d },
+	{ 0xa938, 0x00020300 },
+	{ 0xa93c, 0x00903900 },
+	{ 0xa940, 0x00000000 },
+	{ 0xa944, 0x00000000 },
+	{ 0xa948, 0x20001b00 },
+	{ 0xa94c, 0x0a000010 },
+	{ 0xa950, 0x00000000 },
+	{ 0xa954, 0x00000008 },
+	{ 0xa960, 0x00110000 },
+	{ 0xaa3c, 0x00003900 },
+	{ 0xaa54, 0x00000008 },
+	{ 0xaa60, 0x00110000 },
+	{ 0 }
+};
+
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
  * the mapping ourselfes
@@ -61,6 +224,12 @@ static inline u32 gtt_read(u32 reg)
 static inline void gtt_write(u32 reg, u32 data)
 {
 	write32(gtt_res->base + reg, data);
+}
+
+static inline void gtt_write_powermeter(struct gt_powermeter *pm)
+{
+	for (; pm && pm->reg; pm++)
+		gtt_write(pm->reg, pm->value);
 }
 
 #define GTT_RETRY 1000
@@ -98,7 +267,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	} else {
 		gtt_write(0xa180, 1 << 5);
 		gtt_write(0xa188, 0xffff0001);
-		if (!gtt_poll(0x130090, (1 << 0), (1 << 0)))
+		if (!gtt_poll(0x130040, (1 << 0), (1 << 0)))
 			return;
 	}
 
@@ -111,112 +280,35 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 
 	if (bridge_silicon_revision() >= IVB_STEP_A0) {
 		/* Display Reset Acknowledge Settings */
-		gtt_write(0xa18c, 0x00000001);
 		reg32 = gtt_read(0x45010);
 		reg32 |= (1 << 1) | (1 << 0);
 		gtt_write(0x45010, reg32);
 	}
 
 	/* 2: Get GT SKU from GTT+0x911c[13] */
+	reg32 = gtt_read(0x911c);
 	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
-		reg32 = gtt_read(0x911c);
 		if (reg32 & (1 << 13)) {
-			printk(BIOS_DEBUG, "GT1 Power Meter Weights\n");
-			gtt_write(0xa200, 0xcc000000);
-			gtt_write(0xa204, 0x07000040);
-			gtt_write(0xa208, 0x0000fe00);
-			gtt_write(0xa20c, 0x00000000);
-			gtt_write(0xa210, 0x17000000);
-			gtt_write(0xa214, 0x00000021);
-			gtt_write(0xa218, 0x0817fe19);
-			gtt_write(0xa21c, 0x00000000);
-			gtt_write(0xa220, 0x00000000);
-			gtt_write(0xa224, 0xcc000000);
-			gtt_write(0xa228, 0x07000040);
-			gtt_write(0xa22c, 0x0000fe00);
-			gtt_write(0xa230, 0x00000000);
-			gtt_write(0xa234, 0x17000000);
-			gtt_write(0xa238, 0x00000021);
-			gtt_write(0xa23c, 0x0817fe19);
-			gtt_write(0xa240, 0x00000000);
-			gtt_write(0xa244, 0x00000000);
-			gtt_write(0xa248, 0x8000421e);
+			printk(BIOS_DEBUG, "SNB GT1 Power Meter Weights\n");
+			gtt_write_powermeter(snb_pm_gt1);
 		} else {
-			printk(BIOS_DEBUG, "GT2 Power Meter Weights\n");
-			gtt_write(0xa200, 0x330000a6);
-			gtt_write(0xa204, 0x402d0031);
-			gtt_write(0xa208, 0x00165f83);
-			gtt_write(0xa20c, 0xf1000000);
-			gtt_write(0xa210, 0x00000000);
-			gtt_write(0xa214, 0x00160016);
-			gtt_write(0xa218, 0x002a002b);
-			gtt_write(0xa21c, 0x00000000);
-			gtt_write(0xa220, 0x00000000);
-			gtt_write(0xa224, 0x330000a6);
-			gtt_write(0xa228, 0x402d0031);
-			gtt_write(0xa22c, 0x00165f83);
-			gtt_write(0xa230, 0xf1000000);
-			gtt_write(0xa234, 0x00000000);
-			gtt_write(0xa238, 0x00160016);
-			gtt_write(0xa23c, 0x002a002b);
-			gtt_write(0xa240, 0x00000000);
-			gtt_write(0xa244, 0x00000000);
-			gtt_write(0xa248, 0x8000421e);
+			printk(BIOS_DEBUG, "SNB GT2 Power Meter Weights\n");
+			gtt_write_powermeter(snb_pm_gt2);
 		}
 	} else {
-		printk(BIOS_DEBUG, "IVB GT Power Meter Weights\n");
-		gtt_write(0xa800, 0x00000000);
-		gtt_write(0xa804, 0x00023800);
-		gtt_write(0xa808, 0x00000902);
-		gtt_write(0xa80c, 0x0c002f00);
-		gtt_write(0xa810, 0x12000500);
-		gtt_write(0xa814, 0x00000000);
-		gtt_write(0xa818, 0x00b20000);
-		gtt_write(0xa81c, 0x00000002);
-		gtt_write(0xa820, 0x03004b02);
-		gtt_write(0xa824, 0x00000600);
-		gtt_write(0xa828, 0x07000773);
-		gtt_write(0xa82c, 0x00000000);
-		gtt_write(0xa830, 0x00010000);
-		gtt_write(0xa834, 0x0510020d);
-		gtt_write(0xa838, 0x00020100);
-		gtt_write(0xa83c, 0x00103700);
-		gtt_write(0xa840, 0x0000001d);
-		gtt_write(0xa844, 0x00000000);
-		gtt_write(0xa848, 0x20001b00);
-		gtt_write(0xa84c, 0x0a000010);
-		gtt_write(0xa850, 0x00000000);
-		gtt_write(0xa854, 0x00000008);
-		gtt_write(0xa858, 0x00000000);
-		gtt_write(0xa85c, 0x00000000);
-		gtt_write(0xa860, 0x00040000);
-		gtt_write(0xa248, 0x0000221e);
-		gtt_write(0xa900, 0x00000000);
-		gtt_write(0xa904, 0x00003500);
-		gtt_write(0xa908, 0x00000000);
-		gtt_write(0xa90c, 0x0c000000);
-		gtt_write(0xa910, 0x12000500);
-		gtt_write(0xa914, 0x00000000);
-		gtt_write(0xa918, 0x00b20000);
-		gtt_write(0xa91c, 0x00000000);
-		gtt_write(0xa920, 0x08004b02);
-		gtt_write(0xa924, 0x00000400);
-		gtt_write(0xa928, 0x07000820);
-		gtt_write(0xa92c, 0x00000000);
-		gtt_write(0xa930, 0x00030000);
-		gtt_write(0xa934, 0x050f020d);
-		gtt_write(0xa938, 0x00020300);
-		gtt_write(0xa93c, 0x00903900);
-		gtt_write(0xa940, 0x00000000);
-		gtt_write(0xa944, 0x00000000);
-		gtt_write(0xa948, 0x20001b00);
-		gtt_write(0xa94c, 0x0a000010);
-		gtt_write(0xa950, 0x00000000);
-		gtt_write(0xa954, 0x00000008);
-		gtt_write(0xa960, 0x00110000);
-		gtt_write(0xaa3c, 0x00003900);
-		gtt_write(0xaa54, 0x00000008);
-		gtt_write(0xaa60, 0x00110000);
+		u32 unit = MCHBAR32(0x5938) & 0xf;
+		u32 tdp = MCHBAR32(0x5930) & 0x7fff;
+		tdp /= (1 << unit);
+
+		if ((tdp <= 17) && !(reg32 & (1 << 13))) {
+			/* <=17W ULV and GT2 SKU */
+			printk(BIOS_DEBUG, "IVB GT2 Power Meter Weights\n");
+			gtt_write_powermeter(ivb_pm_gt2);
+		} else {
+			/* GT1 SKU */
+			printk(BIOS_DEBUG, "IVB GT1 Power Meter Weights\n");
+			gtt_write_powermeter(ivb_pm_gt1);
+		}
 	}
 
 	/* 3: Gear ratio map */
@@ -339,9 +431,18 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
 
 	/* 15: Deassert Force Wake */
-	gtt_write(0xa18c, gtt_read(0xa18c) & ~1);
-	if (!gtt_poll(0x130090, (1 << 0), (0 << 0)))
-		return;
+	if (bridge_silicon_revision() < IVB_STEP_C0) {
+		gtt_write(0xa18c, gtt_read(0xa18c) & ~1);
+		if (!gtt_poll(0x130090, (1 << 0), (0 << 0))) {
+			return;
+		}
+	} else {
+		gtt_write(0xa188, 0x1fffe);
+		if (!gtt_poll(0x130040, (1 << 0), (0 << 0))) {
+			return;
+		}
+		gtt_write(0xa188, gtt_read(0xa188) | 1);
+	}
 
 	/* 16: SW RC Control */
 	gtt_write(0xa094, 0x00060000);
@@ -378,6 +479,16 @@ static void gma_pm_init_post_vbios(struct device *dev)
 		reg32 &= ~0xff;
 		reg32 |= conf->gpu_panel_power_cycle_delay & 0xff;
 		gtt_write(0xc7210, reg32);
+	}
+
+	/* Enable Backlight if needed */
+	if (conf->gpu_cpu_backlight) {
+		gtt_write(0x48250, (1 << 31));
+		gtt_write(0x48254, conf->gpu_cpu_backlight);
+	}
+	if (conf->gpu_pch_backlight) {
+		gtt_write(0xc8250, (1 << 31));
+		gtt_write(0xc8254, conf->gpu_pch_backlight);
 	}
 }
 

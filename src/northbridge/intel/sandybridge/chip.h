@@ -35,6 +35,9 @@ struct northbridge_intel_sandybridge_config {
 	u16 gpu_panel_power_down_delay;          /* T3 time sequence */
 	u16 gpu_panel_power_backlight_on_delay;  /* T5 time sequence */
 	u16 gpu_panel_power_backlight_off_delay; /* Tx time sequence */
+
+	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
+	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
 };
 
 extern struct chip_operations northbridge_intel_sandybridge_ops;

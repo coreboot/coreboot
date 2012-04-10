@@ -44,8 +44,8 @@ Name (PBRS, ResourceTemplate ()
 
 	/* Top Of Lowmemory to IOAPIC */
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, Cacheable, ReadWrite,
-		0x00000000, 0x02000000, 0xFEBFFFFF,
-		0x00000000, 0xFCC00000, ,, _Y08, AddressRangeMemory, TypeStatic)
+		0x00000000, 0x00000000, 0xFEBFFFFF,
+		0x00000000, IO_APIC_ADDR, ,, _Y08, AddressRangeMemory, TypeStatic)
 })
 
 
@@ -54,11 +54,13 @@ Method (_CRS, 0, NotSerialized)
 
 	/* Top Of Lowmemory to IOAPIC */
 	CreateDWordField (PBRS, \_SB.PCI0._Y08._MIN, MEML)
+	CreateDWordField (PBRS, \_SB.PCI0._Y08._MAX, MEMH)
 	CreateDWordField (PBRS, \_SB.PCI0._Y08._LEN, LENM)
 	And (\_SB.PCI0.TOLM, 0xF800, Local1)
 	ShiftRight (Local1, 0x04, Local1)
 	ShiftLeft (Local1, 0x14, MEML)
-	Subtract (0xFEC00000, MEML, LENM)
+	Subtract (IO_APIC_ADDR, 0x01, MEMH)
+	Subtract (IO_APIC_ADDR, MEML, LENM)
 
 	Return (PBRS)
 }

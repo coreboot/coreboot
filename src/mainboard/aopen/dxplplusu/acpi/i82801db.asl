@@ -96,7 +96,7 @@ Device (ICH0)
 	Name (MSBF, ResourceTemplate ()
 	{
 		/* IOAPIC 0  */
-		Memory32Fixed (ReadWrite, 0xFEC00000, 0x00001000,)
+		Memory32Fixed (ReadWrite, IO_APIC_ADDR, 0x00001000,)
 
 		IO (Decode16, 0x0, 0x0, 0x80, 0x0, PMIO)
 		IO (Decode16, 0x0, 0x0, 0x40, 0x0, GPIO)

@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
+#include <cpu/x86/bist.h>
+#include <spd.h>
 
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "southbridge/intel/i82801dx/early_smbus.c"
@@ -35,13 +37,6 @@
 #include "northbridge/intel/e7505/debug.c"
 #include "superio/smsc/lpc47m10x/early_serial.c"
 
-#if !CONFIG_CACHE_AS_RAM
-#include "cpu/x86/lapic/boot_cpu.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
-#endif
-#include "cpu/x86/bist.h"
-
-#include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M10X2_SP1)
 
@@ -50,21 +45,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* Cache-As-Ram compiles for this board, but with the CPUs I have,
- * it halts on boot while in Local Apic ID negotiation.
- */
-
-#if CONFIG_CACHE_AS_RAM
-#define BOARD_MAIN(x) void main(x)
-#define early_mtrr_init()   do {} while (0)
-#else
-#define BOARD_MAIN(x) static void main(x)
-#endif
-
 #include "northbridge/intel/e7505/raminit.c"
 
-// This function MUST appear last (ROMCC limitation)
-BOARD_MAIN(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
@@ -74,12 +57,6 @@ BOARD_MAIN(unsigned long bist)
 			.channel1 = { 0x51, 0x53, 0, 0 },
 		},
 	};
-
-	if (bist == 0) 	{
-		// Skip this if there was a built in self test failure
-		early_mtrr_init();
-	        enable_lapic();
-	}
 
 	// Get the serial port running and print a welcome banner
 	lpc47m10x_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
@@ -94,8 +71,5 @@ BOARD_MAIN(unsigned long bist)
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 	}
 
-	// NOTE: ROMCC dies with an internal compiler error
-	//		 if the following line is removed.
-	print_debug("SDRAM is up.\r\n");
-
+	print_debug("SDRAM is up.\n");
 }

@@ -30,7 +30,7 @@ Definitions:
 #define RAM_DEBUG_MESSAGE(x)	print_debug(x)
 #define RAM_DEBUG_HEX32(x)	print_debug_hex32(x)
 #define RAM_DEBUG_HEX8(x)	print_debug_hex8(x)
-#define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
+#define DUMPNORTH()		dump_pci_device(MCHDEV)
 #else
 #define RAM_DEBUG_MESSAGE(x)
 #define RAM_DEBUG_HEX32(x)
@@ -40,6 +40,10 @@ Definitions:
 
 #define E7501_SDRAM_MODE	(SDRAM_BURST_INTERLEAVED | SDRAM_BURST_4)
 #define SPD_ERROR		"Error reading SPD info\n"
+
+#define MCHDEV		PCI_DEV(0,0,0)
+#define RASDEV		PCI_DEV(0,0,1)
+#define D060DEV		PCI_DEV(0,6,0)
 
 // NOTE: This used to be 0x100000.
 //       That doesn't work on systems where A20M# is asserted, because
@@ -438,20 +442,20 @@ static const long constant_register_values[] = {
 	/* DDR RECOMP tables */
 #if 0
 // Slew table for 1x drive?
-static const uint32_t maybe_1x_slew_table[] = {
+static const uint32_t 1x_slew_table[] = {
 	0x44332211, 0xc9776655, 0xffffffff, 0xffffffff,
 	0x22111111, 0x55444332, 0xfffca876, 0xffffffff,
 };
 #endif
 
 // Slew table for 2x drive?
-static const uint32_t maybe_2x_slew_table[] = {
+static const uint32_t slew_2x[] = {
 	0x00000000, 0x76543210, 0xffffeca8, 0xffffffff,
 	0x21000000, 0xa8765432, 0xffffffec, 0xffffffff,
 };
 
 // Pull Up / Pull Down offset table, if analogous to IXP2800?
-static const uint32_t maybe_pull_updown_offset_table[] = {
+static const uint32_t pull_updown_offset_table[] = {
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
 	0x88888888, 0x88888888, 0x88888888, 0x88888888,
 };
@@ -494,17 +498,17 @@ static void ram_handle_d060_1(void)
 {
 	uint32_t dword;
 
-	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword = pci_read_config32(MCHDEV, MCHTST);
 	dword |= 0x02;
-	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+	pci_write_config32(MCHDEV, MCHTST, dword);
 
-	dword = pci_read_config32(PCI_DEV(0,6,0), 0xf0);
+	dword = pci_read_config32(D060DEV, 0xf0);
 	dword |= 0x04;
-	pci_write_config32(PCI_DEV(0,6,0), 0xf0, dword);
+	pci_write_config32(D060DEV, 0xf0, dword);
 
-	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword = pci_read_config32(MCHDEV, MCHTST);
 	dword &= ~0x02;
-	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+	pci_write_config32(MCHDEV, MCHTST, dword);
 }
 
 /**
@@ -515,19 +519,19 @@ static void ram_handle_d060_2(void)
 	uint32_t dword;
 	uint8_t revision;
 
-	revision = pci_read_config8(PCI_DEV(0,0,0), 0x08);
+	revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3) {
-		dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+		dword = pci_read_config32(MCHDEV, MCHTST);
 		dword |= 0x02;
-		pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+		pci_write_config32(MCHDEV, MCHTST, dword);
 
-		dword = pci_read_config32(PCI_DEV(0,6,0), 0xf0);
+		dword = pci_read_config32(D060DEV, 0xf0);
 		dword |= 0x18000000;
-		pci_write_config32(PCI_DEV(0,6,0), 0xf0, dword);
+		pci_write_config32(D060DEV, 0xf0, dword);
 
-		dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+		dword = pci_read_config32(MCHDEV, MCHTST);
 		dword &= ~0x02;
-		pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+		pci_write_config32(MCHDEV, MCHTST, dword);
 	}
 }
 
@@ -902,10 +906,10 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 	uint8_t i;
 
 	// Configure the RAM command
-	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
+	dram_controller_mode = pci_read_config32(MCHDEV, DRC);
 	dram_controller_mode &= 0xFFFFFF8F;
 	dram_controller_mode |= command;
-	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
+	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
 
 	// RAM_COMMAND_NORMAL is an exception.
 	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
@@ -935,7 +939,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 	for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
 
-		uint8_t dimm_end_64M_multiple = pci_read_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + i);
+		uint8_t dimm_end_64M_multiple = pci_read_config8(MCHDEV, DRB_ROW_0 + i);
 
 		if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
 			dimm_start_address &= 0x3ffffff;
@@ -962,7 +966,7 @@ static void set_ram_mode(uint16_t jedec_mode_bits)
 	ASSERT(!(jedec_mode_bits & SDRAM_CAS_MASK));
 
 	uint32_t dram_cas_latency =
-	    pci_read_config32(PCI_DEV(0, 0, 0), DRT) & DRT_CAS_MASK;
+	    pci_read_config32(MCHDEV, DRT) & DRT_CAS_MASK;
 
 	switch (dram_cas_latency) {
 	case DRT_CAS_2_5:
@@ -1024,7 +1028,7 @@ static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits
 	total_dram_64M_multiple += (1 << (dimm_log2_num_bits.side1 - 29));
 
 	// Configure the boundary address for the row on side 1
-	pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + (dimm_index << 1),
+	pci_write_config8(MCHDEV, DRB_ROW_0 + (dimm_index << 1),
 			  total_dram_64M_multiple);
 
 	// If the DIMMs are double-sided, add the capacity of side 2 this DIMM pair
@@ -1034,16 +1038,16 @@ static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits
 		    (1 << (dimm_log2_num_bits.side2 - 29));
 
 	// Configure the boundary address for the row (if any) on side 2
-	pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_1 + (dimm_index << 1),
+	pci_write_config8(MCHDEV, DRB_ROW_1 + (dimm_index << 1),
 			  total_dram_64M_multiple);
 
 	// Update boundaries for rows subsequent to these.
 	// These settings will be overridden by a subsequent call if a populated physical slot exists
 
 	for (i = dimm_index + 1; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-		pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + (i << 1),
+		pci_write_config8(MCHDEV, DRB_ROW_0 + (i << 1),
 				  total_dram_64M_multiple);
-		pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_1 + (i << 1),
+		pci_write_config8(MCHDEV, DRB_ROW_1 + (i << 1),
 				  total_dram_64M_multiple);
 	}
 
@@ -1068,8 +1072,8 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 
 	// Configure the E7501's DRAM row boundaries
 	// Start by zeroing out the temporary initial configuration
-	pci_write_config32(PCI_DEV(0, 0, 0), DRB_ROW_0, 0);
-	pci_write_config32(PCI_DEV(0, 0, 0), DRB_ROW_4, 0);
+	pci_write_config32(MCHDEV, DRB_ROW_0, 0);
+	pci_write_config32(MCHDEV, DRB_ROW_4, 0);
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
 
@@ -1127,7 +1131,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 		uint16_t top_of_low_memory =
 		    total_dram_128M_multiple << 11;
 
-		pci_write_config16(PCI_DEV(0, 0, 0), TOLM,
+		pci_write_config16(MCHDEV, TOLM,
 				   top_of_low_memory);
 
 	} else {
@@ -1140,7 +1144,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 
 		// Put TOLM at 3 GB
 
-		pci_write_config16(PCI_DEV(0, 0, 0), TOLM, 0xc000);
+		pci_write_config16(MCHDEV, TOLM, 0xc000);
 
 		// Define a remap window to make the RAM that would appear from 3 GB - 4 GB
 		// visible just beyond 4 GB or the end of physical memory, whichever is larger
@@ -1154,9 +1158,9 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 			    0x40 + (total_dram_64M_multiple - 0x30) - 1;
 		}
 
-		pci_write_config16(PCI_DEV(0, 0, 0), REMAPBASE,
+		pci_write_config16(MCHDEV, REMAPBASE,
 				   remap_base);
-		pci_write_config16(PCI_DEV(0, 0, 0), REMAPLIMIT,
+		pci_write_config16(MCHDEV, REMAPLIMIT,
 				   remap_limit);
 	}
 }
@@ -1170,31 +1174,31 @@ static void initialize_ecc(void)
 	uint32_t dram_controller_mode;
 
 	/* Test to see if ECC support is enabled */
-	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
+	dram_controller_mode = pci_read_config32(MCHDEV, DRC);
 	dram_controller_mode >>= 20;
 	dram_controller_mode &= 3;
 	if (dram_controller_mode == 2) {
 		uint8_t byte;
 
 		RAM_DEBUG_MESSAGE("Initializing ECC state...\n");
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x01);
+		pci_write_config8(MCHDEV, MCHCFGNS, 0x01);
 
 		// Wait for scrub cycle to complete
 		do {
 			byte =
-			    pci_read_config8(PCI_DEV(0, 0, 0), MCHCFGNS);
+			    pci_read_config8(MCHDEV, MCHCFGNS);
 		} while ((byte & 0x08) == 0);
 
-		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, (byte & 0xfc) | 0x04);
+		pci_write_config8(MCHDEV, MCHCFGNS, (byte & 0xfc) | 0x04);
 		RAM_DEBUG_MESSAGE("ECC state initialized.\n");
 
 		/* Clear the ECC error bits */
-		pci_write_config8(PCI_DEV(0, 0, 1), DRAM_FERR, 0x03);
-		pci_write_config8(PCI_DEV(0, 0, 1), DRAM_NERR, 0x03);
+		pci_write_config8(RASDEV, DRAM_FERR, 0x03);
+		pci_write_config8(RASDEV, DRAM_NERR, 0x03);
 
 		// Clear DRAM Interface error bits (write-one-clear)
-		pci_write_config32(PCI_DEV(0, 0, 1), FERR_GLOBAL, 1 << 18);
-		pci_write_config32(PCI_DEV(0, 0, 1), NERR_GLOBAL, 1 << 18);
+		pci_write_config32(RASDEV, FERR_GLOBAL, 1 << 18);
+		pci_write_config32(RASDEV, NERR_GLOBAL, 1 << 18);
 	}
 
 }
@@ -1218,7 +1222,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 	uint8_t slowest_ras_cas_delay = 0;
 	uint8_t slowest_active_to_precharge_delay = 0;
 	uint32_t current_cas_latency =
-	    pci_read_config32(PCI_DEV(0, 0, 0), DRT) & DRT_CAS_MASK;
+	    pci_read_config32(MCHDEV, DRT) & DRT_CAS_MASK;
 
 	// CAS# latency must be programmed beforehand
 	ASSERT((current_cas_latency == DRT_CAS_2_0)
@@ -1267,7 +1271,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 	//              At 133 MHz, 1 clock == 7.52 ns
 
 	/* Read the initial state */
-	dram_timing = pci_read_config32(PCI_DEV(0, 0, 0), DRT);
+	dram_timing = pci_read_config32(MCHDEV, DRT);
 
 	/* Trp */
 
@@ -1326,7 +1330,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 	if (current_cas_latency == DRT_CAS_2_0)
 		dram_timing |= (1 << 28);	// 4 clocks
 
-	pci_write_config32(PCI_DEV(0, 0, 0), DRT, dram_timing);
+	pci_write_config32(MCHDEV, DRT, dram_timing);
 
 	return;
 
@@ -1348,7 +1352,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 	int i;
 	int value;
 	uint32_t dram_timing;
-	uint16_t maybe_dram_read_timing;
+	uint16_t dram_read_timing;
 	uint32_t dword;
 
 	// CAS# latency bitmasks in SPD_ACCEPTABLE_CAS_LATENCIES format
@@ -1430,20 +1434,20 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 	 * cas latency I can use.
 	 */
 
-	dram_timing = pci_read_config32(PCI_DEV(0, 0, 0), DRT);
+	dram_timing = pci_read_config32(MCHDEV, DRT);
 	dram_timing &= ~(DRT_CAS_MASK);
 
-	maybe_dram_read_timing =
-	    pci_read_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL);
-	maybe_dram_read_timing &= 0xF000;
+	dram_read_timing =
+	    pci_read_config16(MCHDEV, DRDCTL);
+	dram_read_timing &= 0xF000;
 
 	if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_0) {
 		dram_timing |= DRT_CAS_2_0;
-		maybe_dram_read_timing |= 0x0222;
+		dram_read_timing |= 0x0222;
 	} else if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_5) {
 
 		uint32_t dram_row_attributes =
-		    pci_read_config32(PCI_DEV(0, 0, 0), DRA);
+		    pci_read_config32(MCHDEV, DRA);
 
 		dram_timing |= DRT_CAS_2_5;
 
@@ -1456,32 +1460,32 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 		    && (dram_row_attributes & 0xff000000)) {
 
 			// All slots populated
-			maybe_dram_read_timing |= 0x0882;
+			dram_read_timing |= 0x0882;
 		} else {
 			// Some unpopulated slots
-			maybe_dram_read_timing |= 0x0662;
+			dram_read_timing |= 0x0662;
 		}
 	} else
 		die("No CAS# latencies compatible with all DIMMs!!\n");
 
-	pci_write_config32(PCI_DEV(0, 0, 0), DRT, dram_timing);
+	pci_write_config32(MCHDEV, DRT, dram_timing);
 
 	/* set master DLL reset */
-	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);
+	dword = pci_read_config32(MCHDEV, 0x88);
 	dword |= (1 << 26);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
+	pci_write_config32(MCHDEV, 0x88, dword);
 	/* patch try register 88 is undocumented tnz */
 	dword &= 0x0ca17fff;
 	dword |= 0xd14a5000;
-	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
+	pci_write_config32(MCHDEV, 0x88, dword);
 
-	pci_write_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL,
-			   maybe_dram_read_timing);
+	pci_write_config16(MCHDEV, DRDCTL,
+			   dram_read_timing);
 
 	/* clear master DLL reset */
-	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);
+	dword = pci_read_config32(MCHDEV, 0x88);
 	dword &= ~(1 << 26);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
+	pci_write_config32(MCHDEV, 0x88, dword);
 
 	return;
 
@@ -1506,7 +1510,7 @@ static void configure_e7501_dram_controller_mode(const struct
 
 	// Initial settings
 	uint32_t controller_mode =
-	    pci_read_config32(PCI_DEV(0, 0, 0), DRC);
+	    pci_read_config32(MCHDEV, DRC);
 	uint32_t system_refresh_mode = (controller_mode >> 8) & 7;
 
 	// Code below assumes that most aggressive settings are in
@@ -1592,7 +1596,7 @@ static void configure_e7501_dram_controller_mode(const struct
 	controller_mode |= (system_refresh_mode << 8);
 
 	// Configure the E7501
-	pci_write_config32(PCI_DEV(0, 0, 0), DRC, controller_mode);
+	pci_write_config32(MCHDEV, DRC, controller_mode);
 }
 
 /**
@@ -1645,7 +1649,7 @@ static void configure_e7501_row_attributes(const struct mem_controller
 	}
 
 	/* Write the new row attributes register */
-	pci_write_config32(PCI_DEV(0, 0, 0), DRA, row_attributes);
+	pci_write_config32(MCHDEV, DRA, row_attributes);
 }
 
 /*
@@ -1657,9 +1661,9 @@ static void configure_e7501_row_attributes(const struct mem_controller
 static void enable_e7501_clocks(uint8_t dimm_mask)
 {
 	int i;
-	uint8_t clock_disable = pci_read_config8(PCI_DEV(0, 0, 0), CKDIS);
+	uint8_t clock_disable = pci_read_config8(MCHDEV, CKDIS);
 
-	pci_write_config8(PCI_DEV(0,0,0), 0x8e, 0xb0);
+	pci_write_config8(MCHDEV, 0x8e, 0xb0);
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
 
@@ -1671,7 +1675,7 @@ static void enable_e7501_clocks(uint8_t dimm_mask)
 			clock_disable |= socket_mask;	// DIMM absent, disable clock
 	}
 
-	pci_write_config8(PCI_DEV(0, 0, 0), CKDIS, clock_disable);
+	pci_write_config8(MCHDEV, CKDIS, clock_disable);
 }
 
 /* DIMM-dedependent configuration functions */
@@ -1682,13 +1686,13 @@ static void enable_e7501_clocks(uint8_t dimm_mask)
 static void RAM_RESET_DDR_PTR(void)
 {
 	uint8_t byte;
-	byte = pci_read_config8(PCI_DEV(0, 0, 0), 0x88);
+	byte = pci_read_config8(MCHDEV, 0x88);
 	byte |= (1 << 4);
-	pci_write_config8(PCI_DEV(0, 0, 0), 0x88, byte);
+	pci_write_config8(MCHDEV, 0x88, byte);
 
-	byte = pci_read_config8(PCI_DEV(0, 0, 0), 0x88);
+	byte = pci_read_config8(MCHDEV, 0x88);
 	byte &= ~(1 << 4);
-	pci_write_config8(PCI_DEV(0, 0, 0), 0x88, byte);
+	pci_write_config8(MCHDEV, 0x88, byte);
 }
 
 /**
@@ -1723,11 +1727,11 @@ static void ram_set_d0f0_regs(void)
 		ASSERT((bits_to_mask & bits_to_set) == 0);
 
 		register_value =
-		    pci_read_config32(PCI_DEV(0, 0, 0), register_offset);
+		    pci_read_config32(MCHDEV, register_offset);
 		register_value &= bits_to_mask;
 		register_value |= bits_to_set;
 
-		pci_write_config32(PCI_DEV(0, 0, 0), register_offset,
+		pci_write_config32(MCHDEV, register_offset,
 				   register_value);
 	}
 }
@@ -1761,87 +1765,87 @@ static void write_8dwords(const uint32_t *src_addr, uint32_t dst_addr)
 static void ram_set_rcomp_regs(void)
 {
 	uint32_t dword;
-	uint8_t maybe_strength_control, revision;
+	uint8_t strength_control, revision;
 
 	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\n");
 
 	/*enable access to the rcomp bar */
-	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
+	dword = pci_read_config32(MCHDEV, MCHTST);
 	dword |= (1 << 22);
-	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST, dword);
+	pci_write_config32(MCHDEV, MCHTST, dword);
 
 	// Set the RCOMP MMIO base address
-	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE, RCOMP_MMIO);
+	pci_write_config32(MCHDEV, SMRBASE, RCOMP_MMIO);
 
 	// Block RCOMP updates while we configure the registers
-	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+	dword = read32(RCOMP_MMIO + SMRCTL);
 	dword |= (1 << 9);
-	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
+	write32(RCOMP_MMIO + SMRCTL, dword);
 
 	/* Begin to write the RCOMP registers */
 	write8(RCOMP_MMIO + 0x2c, 0x0);
 
 	// Set CMD and DQ/DQS strength to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_DQCMDSTR) & 0x88;
-	maybe_strength_control |= 0x40;
-	write8(RCOMP_MMIO + MAYBE_DQCMDSTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x80);
+	strength_control = read8(RCOMP_MMIO + DQCMDSTR) & 0x88;
+	strength_control |= 0x40;
+	write8(RCOMP_MMIO + DQCMDSTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0x80);
 	write16(RCOMP_MMIO + 0x42, 0);
 
 	// Set CMD and DQ/DQS strength to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_DQCMDSTR) & 0xF8;
-	maybe_strength_control |= 0x04;
-	write8(RCOMP_MMIO + MAYBE_DQCMDSTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x60);
+	strength_control = read8(RCOMP_MMIO + DQCMDSTR) & 0xF8;
+	strength_control |= 0x04;
+	write8(RCOMP_MMIO + DQCMDSTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0x60);
 	write16(RCOMP_MMIO + 0x40, 0);
 
 	// Set RCVEnOut# strength to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_RCVENSTR) & 0xF8;
-	maybe_strength_control |= 0x04;
-	write8(RCOMP_MMIO + MAYBE_RCVENSTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x1c0);
+	strength_control = read8(RCOMP_MMIO + RCVENSTR) & 0xF8;
+	strength_control |= 0x04;
+	write8(RCOMP_MMIO + RCVENSTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0x1c0);
 	write16(RCOMP_MMIO + 0x50, 0);
 
 	// Set CS# strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CSBSTR) & 0x88;
-	maybe_strength_control |= 0x04;
-	write8(RCOMP_MMIO + MAYBE_CSBSTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x140);
+	strength_control = read8(RCOMP_MMIO + CSBSTR) & 0x88;
+	strength_control |= 0x04;
+	write8(RCOMP_MMIO + CSBSTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0x140);
 	write16(RCOMP_MMIO + 0x48, 0);
 
 	// Set CS# strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CSBSTR) & 0x8F;
-	maybe_strength_control |= 0x40;
-	write8(RCOMP_MMIO + MAYBE_CSBSTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0x160);
+	strength_control = read8(RCOMP_MMIO + CSBSTR) & 0x8F;
+	strength_control |= 0x40;
+	write8(RCOMP_MMIO + CSBSTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0x160);
 	write16(RCOMP_MMIO + 0x4a, 0);
 
 	// Set CKE strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKESTR) & 0x88;
-	maybe_strength_control |= 0x04;
-	write8(RCOMP_MMIO + MAYBE_CKESTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0xa0);
+	strength_control = read8(RCOMP_MMIO + CKESTR) & 0x88;
+	strength_control |= 0x04;
+	write8(RCOMP_MMIO + CKESTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0xa0);
 	write16(RCOMP_MMIO + 0x44, 0);
 
 	// Set CKE strength for x4 SDRAM to 2x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKESTR) & 0x8F;
-	maybe_strength_control |= 0x40;
-	write8(RCOMP_MMIO + MAYBE_CKESTR, maybe_strength_control);
-	write_8dwords(maybe_2x_slew_table, RCOMP_MMIO + 0xc0);
+	strength_control = read8(RCOMP_MMIO + CKESTR) & 0x8F;
+	strength_control |= 0x40;
+	write8(RCOMP_MMIO + CKESTR, strength_control);
+	write_8dwords(slew_2x, RCOMP_MMIO + 0xc0);
 	write16(RCOMP_MMIO + 0x46, 0);
 
 	// Set CK strength for x4 SDRAM to 1x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKSTR) & 0x88;
-	maybe_strength_control |= 0x01;
-	write8(RCOMP_MMIO + MAYBE_CKSTR, maybe_strength_control);
-	write_8dwords(maybe_pull_updown_offset_table, RCOMP_MMIO + 0x180);
+	strength_control = read8(RCOMP_MMIO + CKSTR) & 0x88;
+	strength_control |= 0x01;
+	write8(RCOMP_MMIO + CKSTR, strength_control);
+	write_8dwords(pull_updown_offset_table, RCOMP_MMIO + 0x180);
 	write16(RCOMP_MMIO + 0x4c, 0);
 
 	// Set CK strength for x4 SDRAM to 1x (?)
-	maybe_strength_control = read8(RCOMP_MMIO + MAYBE_CKSTR) & 0x8F;
-	maybe_strength_control |= 0x10;
-	write8(RCOMP_MMIO + MAYBE_CKSTR, maybe_strength_control);
-	write_8dwords(maybe_pull_updown_offset_table, RCOMP_MMIO + 0x1a0);
+	strength_control = read8(RCOMP_MMIO + CKSTR) & 0x8F;
+	strength_control |= 0x10;
+	write8(RCOMP_MMIO + CKSTR, strength_control);
+	write_8dwords(pull_updown_offset_table, RCOMP_MMIO + 0x1a0);
 	write16(RCOMP_MMIO + 0x4e, 0);
 
 
@@ -1855,33 +1859,33 @@ static void ram_set_rcomp_regs(void)
 
 	ram_handle_d060_1();
 
-	dword = pci_read_config32(PCI_DEV(0,0,0), MAYBE_MCHTST);
+	dword = pci_read_config32(MCHDEV, MCHTST);
 	dword &= 0x3fffffff;
-	pci_write_config32(PCI_DEV(0,0,0), MAYBE_MCHTST, dword);
+	pci_write_config32(MCHDEV, MCHTST, dword);
 
-	revision = pci_read_config8(PCI_DEV(0,0,0), 0x08);
+	revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3) {
-		dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+		dword = read32(RCOMP_MMIO + SMRCTL);
 		dword &= ~0x100;
-		write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
-		dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+		write32(RCOMP_MMIO + SMRCTL, dword);
+		dword = read32(RCOMP_MMIO + SMRCTL);
 		dword |= 0x500;
-		write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
+		write32(RCOMP_MMIO + SMRCTL, dword);
 	}
-	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
+	dword = read32(RCOMP_MMIO + SMRCTL);
 	dword &= ~0x203;
 	dword |= 0x401;
-	write32(RCOMP_MMIO + MAYBE_SMRCTL, dword);
+	write32(RCOMP_MMIO + SMRCTL, dword);
 
 	/* Wait 40 usec */
 	SLOW_DOWN_IO;
 
 	// Clear the RCOMP MMIO base address
-	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE, 0);
+	pci_write_config32(MCHDEV, SMRBASE, 0);
 	/*disable access to the rcomp bar */
-	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
+	dword = pci_read_config32(MCHDEV, MCHTST);
 	dword &= ~(1 << 22);
-	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST, dword);
+	pci_write_config32(MCHDEV, MCHTST, dword);
 
 }
 
@@ -1901,7 +1905,7 @@ Public interface:
 static void sdram_enable(int controllers,
 			 const struct mem_controller *ctrl)
 {
-	uint8_t dimm_mask = pci_read_config16(PCI_DEV(0, 0, 0), SKPD);
+	uint8_t dimm_mask = pci_read_config16(MCHDEV, SKPD);
 	uint32_t dram_controller_mode;
 
 	if (dimm_mask == 0)
@@ -1988,15 +1992,15 @@ static void sdram_enable(int controllers,
 	configure_e7501_ram_addresses(ctrl, dimm_mask);
 
 	/* Finally enable refresh */
-	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
+	dram_controller_mode = pci_read_config32(MCHDEV, DRC);
 	dram_controller_mode |= (1 << 29);
-	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
+	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
 	EXTRA_DELAY;
 	initialize_ecc();
 
-	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);	/* FCS_EN */
+	dram_controller_mode = pci_read_config32(MCHDEV, DRC);	/* FCS_EN */
 	dram_controller_mode |= (1 << 17);	// NOTE: undocumented reserved bit
-	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
+	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
 
 	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
@@ -2045,7 +2049,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	 * configure_e7501_ram_addresses() without having to regenerate the bitmask
 	 * of usable DIMMs.
 	 */
-	pci_write_config16(PCI_DEV(0, 0, 0), SKPD, dimm_mask);
+	pci_write_config16(MCHDEV, SKPD, dimm_mask);
 }
 
 /**

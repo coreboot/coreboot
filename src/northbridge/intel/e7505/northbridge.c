@@ -38,7 +38,7 @@ static void pci_domain_set_resources(device_t dev)
 		 * the physical memory.  The units are ticks of 64MB
 		 * i.e. 1 means 64MB.
 		 */
-		tomk = ((unsigned long)pci_read_config8(mc_dev, 0x67)) << 16;
+		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB_ROW_7)) << 16;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {

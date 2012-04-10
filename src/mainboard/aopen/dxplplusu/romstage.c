@@ -62,8 +62,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #endif
 
 #include "northbridge/intel/e7505/raminit.c"
-#include "northbridge/intel/e7505/reset_test.c"
-#include "lib/generic_sdram.c"
 
 // This function MUST appear last (ROMCC limitation)
 BOARD_MAIN(unsigned long bist)

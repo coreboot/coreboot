@@ -464,27 +464,25 @@ static const uint32_t pull_updown_offset_table[] = {
 Delay functions:
 -----------------------------------------------------------------------------*/
 
+/* Estimate that SLOW_DOWN_IO takes about 1 us */
 #define SLOW_DOWN_IO inb(0x80)
-//#define SLOW_DOWN_IO udelay(40);
-
-	/* Estimate that SLOW_DOWN_IO takes about 50&76us */
-	/* delay for 200us */
-
-#if 1
-static void do_delay(void)
+static inline void local_udelay(int i)
 {
-	int i;
-	for (i = 0; i < 16; i++) {
+	while (i--) {
 		SLOW_DOWN_IO;
 	}
 }
 
-#define DO_DELAY do_delay()
-#else
-#define DO_DELAY \
-	udelay(200)
-#endif
+static inline void local_mdelay(int i)
+{
+	i *= 1000;
+	while (i--) {
+		SLOW_DOWN_IO;
+	}
+}
 
+/* delay for 200us */
+#define DO_DELAY local_udelay(200)
 #define EXTRA_DELAY DO_DELAY
 
 /*-----------------------------------------------------------------------------
@@ -913,8 +911,10 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 	// RAM_COMMAND_NORMAL is an exception.
 	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
-	if (command == RAM_COMMAND_NORMAL)
+	if (command == RAM_COMMAND_NORMAL) {
+		EXTRA_DELAY;
 		return;
+	}
 
 	// NOTE: for mode select commands, some of the location address bits are part of the command
 	// Map JEDEC mode bits to E7505
@@ -949,7 +949,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 			dimm_start_64M_multiple = dimm_end_64M_multiple;
 		}
 	}
-
+	EXTRA_DELAY;
 }
 
 /**
@@ -1898,12 +1898,10 @@ Public interface:
  * refresh and initialize ECC and memory to zero. Upon exit, SDRAM is up
  * and running.
  *
- * @param controllers Not used.
  * @param ctrl PCI addresses of memory controller functions, and SMBus
  *             addresses of DIMM slots on the mainboard.
  */
-static void sdram_enable(int controllers,
-			 const struct mem_controller *ctrl)
+static void sdram_enable(const struct mem_controller *ctrl)
 {
 	uint8_t dimm_mask = pci_read_config16(MCHDEV, SKPD);
 	uint32_t dram_controller_mode;
@@ -1921,12 +1919,10 @@ static void sdram_enable(int controllers,
 	/* 3. Apply NOP */
 	RAM_DEBUG_MESSAGE("Ram Enable 3\n");
 	do_ram_command(RAM_COMMAND_NOP, 0);
-	EXTRA_DELAY;
 
 	/* 4 Precharge all */
 	RAM_DEBUG_MESSAGE("Ram Enable 4\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
-	EXTRA_DELAY;
 	/* wait until the all banks idle state... */
 
 	/* 5. Issue EMRS to enable DLL */
@@ -1934,7 +1930,6 @@ static void sdram_enable(int controllers,
 	do_ram_command(RAM_COMMAND_EMRS,
 		       SDRAM_EXTMODE_DLL_ENABLE |
 		       SDRAM_EXTMODE_DRIVE_NORMAL);
-	EXTRA_DELAY;
 
 	/* 6. Reset DLL */
 	RAM_DEBUG_MESSAGE("Ram Enable 6\n");
@@ -1949,33 +1944,17 @@ static void sdram_enable(int controllers,
 	/* 7 Precharge all */
 	RAM_DEBUG_MESSAGE("Ram Enable 7\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
-	EXTRA_DELAY;
 
 	/* 8 Now we need 2 AUTO REFRESH / CBR cycles to be performed */
-	RAM_DEBUG_MESSAGE("Ram Enable 8\n");
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-
 	/* And for good luck 6 more CBRs */
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
-	do_ram_command(RAM_COMMAND_CBR, 0);
-	EXTRA_DELAY;
+	RAM_DEBUG_MESSAGE("Ram Enable 8\n");
+	int i;
+	for(i=0; i<8; i++)
+		do_ram_command(RAM_COMMAND_CBR, 0);
 
 	/* 9 mode register set */
 	RAM_DEBUG_MESSAGE("Ram Enable 9\n");
 	set_ram_mode(E7501_SDRAM_MODE | SDRAM_MODE_NORMAL);
-	EXTRA_DELAY;
 
 	/* 10 DDR Receive FIFO RE-Sync */
 	RAM_DEBUG_MESSAGE("Ram Enable 10\n");
@@ -1985,7 +1964,6 @@ static void sdram_enable(int controllers,
 	/* 11 normal operation */
 	RAM_DEBUG_MESSAGE("Ram Enable 11\n");
 	do_ram_command(RAM_COMMAND_NORMAL, 0);
-	EXTRA_DELAY;
 
 	// Reconfigure the row boundaries and Top of Low Memory
 	// to match the true size of the DIMMs
@@ -1996,7 +1974,11 @@ static void sdram_enable(int controllers,
 	dram_controller_mode |= (1 << 29);
 	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
 	EXTRA_DELAY;
+
+#if 0
+	/* Problems with cache-as-ram, disable for now */
 	initialize_ecc();
+#endif
 
 	dram_controller_mode = pci_read_config32(MCHDEV, DRC);	/* FCS_EN */
 	dram_controller_mode |= (1 << 17);	// NOTE: undocumented reserved bit
@@ -2069,3 +2051,22 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	ram_handle_d060_2();
 }
 
+/**
+ *
+ *
+ */
+void sdram_initialize(int controllers, const struct mem_controller *memctrl)
+{
+	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\n");
+	DUMPNORTH();
+
+	sdram_set_registers(memctrl);
+	sdram_set_spd_registers(memctrl);
+	sdram_enable(memctrl);
+}
+
+static int bios_reset_detected(void)
+{
+	uint32_t dword = pci_read_config32(MCHDEV, DRC);
+	return !!(dword & DRC_DONE);
+}

@@ -476,8 +476,6 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
 }
 
-#else /* CONFIG_SMP */
-#define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
 
 void initialize_cpus(struct bus *cpu_bus)

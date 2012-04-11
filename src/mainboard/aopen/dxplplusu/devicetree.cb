@@ -24,6 +24,7 @@ chip northbridge/intel/e7505
 	device lapic_cluster 0 on
 		chip cpu/intel/socket_mPGA604
 			device lapic 0 on end
+			device lapic 6 on end
 		end
 	end
 
@@ -79,6 +80,8 @@ chip northbridge/intel/e7505
 				end
 			end
 			device pci 1f.1 on end # IDE
+			register "ide0_enable" = "1"
+			register "ide1_enable" = "1"
 			device pci 1f.3 on end # SMBus
 			device pci 1f.5 on end # AC97 Audio
 			device pci 1f.6 off end # AC97 Modem

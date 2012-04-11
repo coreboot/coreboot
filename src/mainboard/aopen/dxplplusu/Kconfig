@@ -8,8 +8,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOUTHBRIDGE_INTEL_I82870
 	select SOUTHBRIDGE_INTEL_I82801DX
 	select SUPERIO_SMSC_LPC47M10X
-	select ROMCC
-	select HAVE_HARD_RESET
 #	select HAVE_PIRQ_TABLE
 #	select PIRQ_ROUTE
 	select UDELAY_TSC
@@ -24,14 +22,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "DXPL Plus-U"
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xcf000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x1000
-
 config IRQ_SLOT_COUNT
 	int
 	default 12
@@ -40,17 +30,9 @@ config BOARD_HAS_FADT
 	bool
 	default y
 
-config LOGICAL_CPUS
-	bool
-	default n
-
 config MAX_CPUS
 	int
 	default 4
-
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex

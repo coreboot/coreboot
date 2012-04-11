@@ -64,21 +64,33 @@ DefinitionBlock (
 	 */
 	Scope (\_PR) {		/* define processor scope */
 		Processor(
-			CPU0,		/* name space name */
+			C000,		/* name space name, align with BLDCFG_PROCESSOR_SCOPE_NAME[01] */
 			0,		/* Unique number for this processor */
-			0x808,		/* PBLK system I/O address !hardcoded! */
+			0x810,		/* PBLK system I/O address !hardcoded! */
 			0x06		/* PBLKLEN for boot processor */
 			) {
-			#include "acpi/cpstate.asl"
 		}
 
 		Processor(
-			CPU1,		/* name space name */
+			C001,		/* name space name */
 			1,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
 			0x00		/* PBLKLEN for boot processor */
 			) {
-			#include "acpi/cpstate.asl"
+		}
+		Processor(
+			C002,		/* name space name */
+			2,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
+		}
+		Processor(
+			C003,		/* name space name */
+			3,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
 		}
 	} /* End _PR scope */
 

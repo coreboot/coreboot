@@ -133,7 +133,7 @@ int iself(unsigned char *input)
 	return !memcmp(ehdr->e_ident, ELFMAG, 4);
 }
 
-struct filetypes_t {
+static struct filetypes_t {
 	uint32_t type;
 	const char *name;
 } filetypes[] = {
@@ -146,6 +146,7 @@ struct filetypes_t {
 	{CBFS_COMPONENT_MBI, "mbi"},
 	{CBFS_COMPONENT_MICROCODE, "microcode"},
 	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos default"},
+	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos layout"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"}
 };

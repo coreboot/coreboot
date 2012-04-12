@@ -486,51 +486,109 @@ static inline void local_mdelay(int i)
 #define EXTRA_DELAY DO_DELAY
 
 /*-----------------------------------------------------------------------------
-Handle (undocumented) control bits in device 0:6.0
+Handle (undocumented) control bits MCHTST and PCI_DEV(0,6,0)
 -----------------------------------------------------------------------------*/
+typedef enum {
+	MCHTST_CMD_0,
+	D060_ENABLE,
+	D060_DISABLE,
+	RCOMP_BAR_ENABLE,
+	RCOMP_BAR_DISABLE,
+} mchtst_cc;
+
+typedef enum {
+	D060_CMD_0,
+	D060_CMD_1,
+} d060_cc;
+
+typedef enum {
+	RCOMP_HOLD,
+	RCOMP_RELEASE,
+	RCOMP_SMR_00,
+	RCOMP_SMR_01,
+} rcomp_smr_cc;
+
+/**
+ * MCHTST - 0xF4 - 0xF7     --   Based on similarity to 855PM
+ *
+ * [31:31] Purpose unknown
+ * [30:30] Purpose unknown
+ * [29:23] Unknown - not used?
+ * [22:22] System Memory MMR Enable
+ *         0 == Disable: mem space and BAR at 0x14 are not accessible
+ *         1 == Enable: mem space and BAR at 0x14 are accessible
+ * [21:20] Purpose unknown
+ * [19:02] Unknown - not used?
+ * [01:01] D6EN (Device #6 enable)
+ *         0 == Disable
+ *         1 == Enable
+ * [00:00] Unknown - not used?
+ */
+static inline void mchtest_control(mchtst_cc cmd)
+{
+	uint32_t dword = pci_read_config32(MCHDEV, MCHTST);
+	switch (cmd) {
+	case MCHTST_CMD_0:
+		dword &= ~(3 << 30);
+		break;
+	case RCOMP_BAR_ENABLE:
+		dword |= (1 << 22);
+		break;
+	case RCOMP_BAR_DISABLE:
+		dword &= ~(1 << 22);
+		break;
+	case D060_ENABLE:
+		dword |= (1 << 1);
+		break;
+	case D060_DISABLE:
+		dword &= ~(1 << 1);
+		break;
+	};
+	pci_write_config32(MCHDEV, MCHTST, dword);
+}
+
 
 /**
  *
  */
-static void ram_handle_d060_1(void)
+static inline void d060_control(d060_cc cmd)
 {
-	uint32_t dword;
-
-	dword = pci_read_config32(MCHDEV, MCHTST);
-	dword |= 0x02;
-	pci_write_config32(MCHDEV, MCHTST, dword);
-
-	dword = pci_read_config32(D060DEV, 0xf0);
-	dword |= 0x04;
+	mchtest_control(D060_ENABLE);
+	uint32_t dword = pci_read_config32(D060DEV, 0xf0);
+	switch (cmd) {
+	case D060_CMD_0:
+		dword |= (1 << 2);
+		break;
+	case D060_CMD_1:
+		dword |= (3 << 27);
+		break;
+	}
 	pci_write_config32(D060DEV, 0xf0, dword);
-
-	dword = pci_read_config32(MCHDEV, MCHTST);
-	dword &= ~0x02;
-	pci_write_config32(MCHDEV, MCHTST, dword);
+	mchtest_control(D060_DISABLE);
 }
 
 /**
  *
  */
-static void ram_handle_d060_2(void)
+static inline void rcomp_smr_control(rcomp_smr_cc cmd)
 {
-	uint32_t dword;
-	uint8_t revision;
-
-	revision = pci_read_config8(MCHDEV, 0x08);
-	if (revision >= 3) {
-		dword = pci_read_config32(MCHDEV, MCHTST);
-		dword |= 0x02;
-		pci_write_config32(MCHDEV, MCHTST, dword);
-
-		dword = pci_read_config32(D060DEV, 0xf0);
-		dword |= 0x18000000;
-		pci_write_config32(D060DEV, 0xf0, dword);
-
-		dword = pci_read_config32(MCHDEV, MCHTST);
-		dword &= ~0x02;
-		pci_write_config32(MCHDEV, MCHTST, dword);
+	uint32_t dword = read32(RCOMP_MMIO + SMRCTL);
+	switch (cmd) {
+	case RCOMP_HOLD:
+		dword |= (1 << 9);
+		break;
+	case RCOMP_RELEASE:
+		dword &= ~((1 << 9) | (3 << 0));
+		dword |= (1 << 10) | (1 << 0);
+		break;
+	case RCOMP_SMR_00:
+		dword &= ~(1 << 8);
+		break;
+	case RCOMP_SMR_01:
+		dword |= (1 << 10) | (1 << 8);
+		break;
 	}
+	write32(RCOMP_MMIO + SMRCTL, dword);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1771,18 +1829,12 @@ static void ram_set_rcomp_regs(void)
 
 	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\n");
 
-	/*enable access to the rcomp bar */
-	dword = pci_read_config32(MCHDEV, MCHTST);
-	dword |= (1 << 22);
-	pci_write_config32(MCHDEV, MCHTST, dword);
-
-	// Set the RCOMP MMIO base address
+	/* Set the RCOMP MMIO base address */
+	mchtest_control(RCOMP_BAR_ENABLE);
 	pci_write_config32(MCHDEV, SMRBASE, RCOMP_MMIO);
 
-	// Block RCOMP updates while we configure the registers
-	dword = read32(RCOMP_MMIO + SMRCTL);
-	dword |= (1 << 9);
-	write32(RCOMP_MMIO + SMRCTL, dword);
+	/* Block RCOMP updates while we configure the registers */
+	rcomp_smr_control(RCOMP_HOLD);
 
 	/* Begin to write the RCOMP registers */
 	write8(RCOMP_MMIO + 0x2c, 0x0);
@@ -1859,36 +1911,23 @@ static void ram_set_rcomp_regs(void)
 	dword &= 0x7f7fffff;
 	write32(RCOMP_MMIO + 0x408, dword);
 
-	ram_handle_d060_1();
-
-	dword = pci_read_config32(MCHDEV, MCHTST);
-	dword &= 0x3fffffff;
-	pci_write_config32(MCHDEV, MCHTST, dword);
+	d060_control(D060_CMD_0);
+	mchtest_control(MCHTST_CMD_0);
 
 	revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3) {
-		dword = read32(RCOMP_MMIO + SMRCTL);
-		dword &= ~0x100;
-		write32(RCOMP_MMIO + SMRCTL, dword);
-		dword = read32(RCOMP_MMIO + SMRCTL);
-		dword |= 0x500;
-		write32(RCOMP_MMIO + SMRCTL, dword);
+		rcomp_smr_control(RCOMP_SMR_00);
+		rcomp_smr_control(RCOMP_SMR_01);
 	}
-	dword = read32(RCOMP_MMIO + SMRCTL);
-	dword &= ~0x203;
-	dword |= 0x401;
-	write32(RCOMP_MMIO + SMRCTL, dword);
+	rcomp_smr_control(RCOMP_RELEASE);
+
 
 	/* Wait 40 usec */
 	SLOW_DOWN_IO;
 
-	// Clear the RCOMP MMIO base address
+	/* Clear the RCOMP MMIO base address */
 	pci_write_config32(MCHDEV, SMRBASE, 0);
-	/*disable access to the rcomp bar */
-	dword = pci_read_config32(MCHDEV, MCHTST);
-	dword &= ~(1 << 22);
-	pci_write_config32(MCHDEV, MCHTST, dword);
-
+	mchtest_control(RCOMP_BAR_DISABLE);
 }
 
 /*-----------------------------------------------------------------------------
@@ -2050,7 +2089,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	ram_set_rcomp_regs();
 	ram_set_d0f0_regs();
-	ram_handle_d060_2();
+
+	uint8_t revision = pci_read_config8(MCHDEV, 0x08);
+	if (revision >= 3)
+		d060_control(D060_CMD_1);
 }
 
 /**

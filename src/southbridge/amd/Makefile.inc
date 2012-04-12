@@ -17,8 +17,9 @@ subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx
 
 $(obj)/s3.rom:
 	echo "    S3 NVRAM   0xffff0000 (S3 storage area)"
-	echo -ne '\xFF' > $@
-	for ((i=0;i<20479;i++)) do echo -ne '\xFF' >> $@ ; done
+	# create 20480 bytes of 0xff
+	printf '11111111'|sed -e "s,1,11111111,g" -e "s,1,11111111,g" -e "s,1,11111111,g" -e "s,1,11111,g" |tr '1' '\377' > $@.tmp
+	mv $@.tmp $@
 
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 cbfs-files-y += s3nv

@@ -16,6 +16,7 @@ xconfig: $(objk)/qconf
 	$(objk)/qconf $(Kconfig)
 
 gconfig: $(objk)/gconf
+	cp -f $(srck)/gconf.glade $(objk)/gconf.glade
 	$(objk)/gconf $(Kconfig)
 
 menuconfig: $(objk)/mconf

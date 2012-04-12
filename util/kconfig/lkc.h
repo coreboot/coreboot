@@ -29,7 +29,7 @@ extern "C" {
 #include "lkc_proto.h"
 #undef P
 
-#define SRCTREE "src"
+#define SRCTREE "."
 
 #define PACKAGE "coreboot"
 #define LOCALEDIR "/usr/share/locale"

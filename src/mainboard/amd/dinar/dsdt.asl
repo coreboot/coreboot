@@ -51,37 +51,61 @@ DefinitionBlock (
          */
         Scope (\_PR) {          /* define processor scope */
                 Processor(
-                        CPU0,           /* name space name */
+                        C000,           /* name space name, align with BLDCFG_PROCESSOR_SCOPE_NAME[01] */
                         0,              /* Unique number for this processor */
                         0x810,          /* PBLK system I/O address !hardcoded! */
                         0x06            /* PBLKLEN for boot processor */
                         ) {
-                        #include "acpi/cpstate.asl"
                 }
                 Processor(
-                        CPU1,           /* name space name */
+                        C001,           /* name space name */
                         1,              /* Unique number for this processor */
-                        0x0000,         /* PBLK system I/O address !hardcoded! */
-                        0x00            /* PBLKLEN for boot processor */
+                        0x810,         /* PBLK system I/O address !hardcoded! */
+                        0x0            /* PBLKLEN for boot processor */
                         ) {
-                        #include "acpi/cpstate.asl"
                 }
                 Processor(
-                        CPU2,           /* name space name */
+                        C002,           /* name space name */
                         2,              /* Unique number for this processor */
-                        0x0000,         /* PBLK system I/O address !hardcoded! */
+                        0x810,         /* PBLK system I/O address !hardcoded! */
                         0x00            /* PBLKLEN for boot processor */
                         ) {
-                        #include "acpi/cpstate.asl"
                 }
                 Processor(
-                        CPU3,           /* name space name */
+                        C003,           /* name space name */
                         3,              /* Unique number for this processor */
-                        0x0000,         /* PBLK system I/O address !hardcoded! */
+                        0x810,         /* PBLK system I/O address !hardcoded! */
                         0x00            /* PBLKLEN for boot processor */
                         ) {
-                        #include "acpi/cpstate.asl"
                 }
+		Processor(
+			C004,		/* name space name */
+			4,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
+		}
+		Processor(
+			C005,		/* name space name */
+			5,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
+		}
+		Processor(
+			C006,		/* name space name */
+			6,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
+		}
+		Processor(
+			C007,		/* name space name */
+			7,		/* Unique number for this processor */
+			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x00		/* PBLKLEN for boot processor */
+			) {
+		}
         } /* End _PR scope */
 
         /* PIC IRQ mapping registers, C00h-C01h. */

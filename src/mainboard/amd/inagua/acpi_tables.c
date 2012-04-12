@@ -264,7 +264,8 @@ unsigned long write_acpi_tables(unsigned long start)
 		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
 	}
 
-#if 0 // The DSDT needs additional work for the AGESA SSDT Pstate table
+	/* The DSDT needs additional work for the AGESA SSDT Pstate table */
+	/* Keep the comment for a while. */
 	current = (current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
@@ -273,12 +274,9 @@ unsigned long write_acpi_tables(unsigned long start)
 		ssdt = (acpi_header_t *) current;
 		current += ssdt->length;
 		acpi_add_table(rsdp,ssdt);
-	}
-	else {
+	} else {
 		printk(BIOS_DEBUG, "  AGESA SSDT Pstate table NULL. Skipping.\n");
 	}
-	acpi_add_table(rsdp,ssdt);
-#endif
 
 	current = (current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:  * coreboot TOM SSDT2 at %lx\n", current);

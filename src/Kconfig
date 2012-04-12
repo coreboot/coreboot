@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-mainmenu "Coreboot Configuration"
+mainmenu "coreboot configuration"
 
 menu "General setup"
 
@@ -47,7 +47,7 @@ config CBFS_PREFIX
 	  by default, "normal" is a common alternative.
 
 choice
-	prompt "Compiler"
+	prompt "Compiler to use"
 	default COMPILER_GCC
 	help
 	  This option allows you to select the compiler used for building
@@ -55,39 +55,61 @@ choice
 
 config COMPILER_GCC
 	bool "GCC"
+	help
+	  Use the GNU Compiler Collection (GCC) to build coreboot.
+
+	  For details see http://gcc.gnu.org.
+
 config COMPILER_LLVM_CLANG
 	bool "LLVM/clang"
+	help
+	  Use LLVM/clang to build coreboot.
+
+	  For details see http://clang.llvm.org.
+
 endchoice
 
 config SCANBUILD_ENABLE
-	bool "Build with scan-build for static analysis"
+	bool "Build with scan-build for static code analysis"
 	default n
 	help
-	  Changes the build process to scan-build is used.
-	  Requires scan-build in path.
+	  Changes the build process to use scan-build (a utility for
+	  running the clang static code analyzer from the command line).
+
+	  Requires the scan-build utility in your system $PATH.
+
+	  For details see http://clang-analyzer.llvm.org/scan-build.html.
 
 config SCANBUILD_REPORT_LOCATION
-	string "Directory to put scan-build report in"
+	string "Directory for the scan-build report(s)"
 	default ""
 	depends on SCANBUILD_ENABLE
 	help
-	  Where the scan-build report should be stored
+	  Directory where the scan-build reports should be stored in. The
+	  reports are stored in subdirectories of the form 'yyyy-mm-dd-*'
+	  in the specified directory.
+
+	  If this setting is left empty, the coreboot top-level directory
+	  will be used to store the report subdirectories.
 
 config CCACHE
-	bool "ccache"
+	bool "Use ccache to speed up (re)compilation"
 	default n
 	help
 	  Enables the use of ccache for faster builds.
-	  Requires ccache in path.
+
+	  Requires the ccache utility in your system $PATH.
+
+	  For details see https://ccache.samba.org.
 
 config SCONFIG_GENPARSER
 	bool "Generate SCONFIG parser using flex and bison"
 	default n
 	depends on EXPERT
 	help
-	  Enable this option if you are working on the sconfig
-	  device tree parser and made changes to sconfig.l and
-	  sconfig.y.
+	  Enable this option if you are working on the sconfig device tree
+	  parser and made changes to sconfig.l and sconfig.y.
+
 	  Otherwise, say N.
 
 config USE_OPTION_TABLE
@@ -96,7 +118,7 @@ config USE_OPTION_TABLE
 	depends on HAVE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
-	  NVRAM instead of using hard coded values.
+	  NVRAM instead of using hard-coded values.
 
 config COMPRESS_RAMSTAGE
 	bool "Compress ramstage with LZMA"
@@ -104,29 +126,55 @@ config COMPRESS_RAMSTAGE
 	help
 	  Compress ramstage to save memory in the flash image. Note
 	  that decompression might slow down booting if the boot flash
-	  is connected through a slow Link (i.e. SPI)
+	  is connected through a slow link (i.e. SPI).
 
 config INCLUDE_CONFIG_FILE
-  bool "Include the coreboot config file into the ROM image"
+	bool "Include the coreboot .config file into the ROM image"
 	default y
-  help
-    Include in CBFS the coreboot config file that was used to compile the ROM image
+	help
+	  Include the .config file that was used to compile coreboot
+	  in the (CBFS) ROM image. This is useful if you want to know which
+	  options were used to build a specific coreboot.rom image.
+
+	  Saying Y here will increase the image size by 2-3kB.
+
+	  You can use the following command to easily list the options:
+
+	    grep -a CONFIG_ coreboot.rom
+
+	  Alternatively, you can also use cbfstool to print the image
+	  contents (including the raw 'config' item we're looking for).
+
+	  Example:
+
+	    $ cbfstool coreboot.rom print
+	    coreboot.rom: 4096 kB, bootblocksize 1008, romsize 4194304,
+	                                               offset 0x0
+	    Alignment: 64 bytes
+	
+	    Name                           Offset     Type         Size
+	    cmos_layout.bin                0x0        cmos layout  1159
+	    fallback/romstage              0x4c0      stage        339756
+	    fallback/coreboot_ram          0x53440    stage        186664
+	    fallback/payload               0x80dc0    payload      51526
+	    config                         0x8d740    raw          3324
+	    (empty)                        0x8e480    null         3610440
 
 config EARLY_CBMEM_INIT
 	bool "Initialize CBMEM while in ROM stage"
 	default n
 	help
-	  Make coreboot initialize the cbmem structures while running in rom
-	  stage. This could be useful when the rom stage wants to communicate
+	  Make coreboot initialize the cbmem structures while running in ROM
+	  stage. This could be useful when the ROM stage wants to communicate
 	  some, for instance, execution timestamps.
 
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
 	depends on EARLY_CBMEM_INIT
 	help
-	  Make coreboot create a table of timer id/timer value pairs to
-	  allow measuring time spent at different phases of the boot
-	  process.
+	  Make coreboot create a table of timer-ID/timer-value pairs to
+	  allow measuring time spent at different phases of the boot process.
+
 endmenu
 
 source src/mainboard/Kconfig

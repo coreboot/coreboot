@@ -237,6 +237,7 @@ struct lb_memory *write_tables(void)
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
 	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
+	cbmem_add(CBMEM_ID_RESUME_SCRATCH, CONFIG_HIGH_SCRATCH_MEMORY_SIZE);
 #endif
 
 #if CONFIG_MULTIBOOT

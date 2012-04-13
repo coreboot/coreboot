@@ -27,6 +27,10 @@ config CONSOLE_VGA_MULTI
 	bool
 	default n
 
+config S3_VGA_ROM_RUN
+	bool
+	default n
+
 source src/northbridge/amd/agesa/family10/Kconfig
 source src/northbridge/amd/agesa/family12/Kconfig
 source src/northbridge/amd/agesa/family14/Kconfig

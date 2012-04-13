@@ -230,11 +230,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
 	if (alib != NULL) {
 		memcpy((void *)current, alib, alib->length);
-		ssdt = (acpi_header_t *) current;
+		alib = (acpi_header_t *) current;
 		current += alib->length;
-		acpi_add_table(rsdp,alib);
-	}
-	else {
+		acpi_add_table(rsdp, (void *)alib);
+	} else {
 		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
 	}
 

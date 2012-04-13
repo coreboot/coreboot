@@ -357,6 +357,37 @@ typedef struct acpi_ecdt {
 	u8 ec_id[];				/* EC ID  */
 } __attribute__ ((packed)) acpi_ecdt_t;
 
+/* HEST (Hardware Error Source Table) */
+typedef struct acpi_hest {
+	struct acpi_table_header header;
+	u32 error_source_count;
+	/* error_source_struct(s) */
+} __attribute__ ((packed)) acpi_hest_t;
+
+/* Error Source Descriptors */
+typedef struct acpi_hest_esd {
+	u16 type;
+	u16 source_id;
+	u16 resv;
+	u8 flags;
+	u8 enabled;
+	u32 prealloc_erecords;			/* The number of error records to pre-allocate for this error source. */
+	u32 max_section_per_record;
+} __attribute__ ((packed)) acpi_hest_esd_t;
+
+/* Hardware Error Notification */
+typedef struct acpi_hest_hen {
+	u8 type;
+	u8 length;
+	u16 conf_we;		/* Configuration Write Enable */
+	u32 poll_interval;
+	u32 vector;
+	u32 sw2poll_threshold_val;
+	u32 sw2poll_threshold_win;
+	u32 error_threshold_val;
+	u32 error_threshold_win;
+} __attribute__ ((packed)) acpi_hest_hen_t;
+
 /* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
@@ -411,6 +442,10 @@ unsigned long acpi_create_slic(unsigned long current);
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_xsdt(acpi_xsdt_t *xsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);
+
+void acpi_write_hest(acpi_hest_t *hest);
+unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
+unsigned long acpi_fill_hest(acpi_hest_t *hest);
 
 #if CONFIG_HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/

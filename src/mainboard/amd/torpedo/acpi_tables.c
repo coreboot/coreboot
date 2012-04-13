@@ -93,6 +93,24 @@ unsigned long acpi_fill_madt(unsigned long current)
   return current;
 }
 
+unsigned long acpi_fill_hest(acpi_hest_t *hest)
+{
+	void *addr, *current;
+
+	/* Skip the HEST header. */
+	current = (void *)(hest + 1);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	return (unsigned long)current;
+}
+
 unsigned long acpi_fill_slit(unsigned long current)
 {
   // Not implemented
@@ -120,6 +138,7 @@ unsigned long write_acpi_tables(unsigned long start)
   acpi_facs_t *facs;
   acpi_header_t *dsdt;
   acpi_header_t *ssdt;
+  acpi_hest_t *hest;
 
   get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
 
@@ -160,6 +179,13 @@ unsigned long write_acpi_tables(unsigned long start)
   acpi_create_madt(madt);
   current += madt->header.length;
   acpi_add_table(rsdp, madt);
+
+  /* HEST */
+  current = (current + 0x07) & -0x08;
+  hest = (acpi_hest_t *)current;
+  acpi_write_hest((void *)current);
+  acpi_add_table(rsdp, (void *)current);
+  current += ((acpi_header_t *)current)->length;
 
   /* SRAT */
   current   = ( current + 0x07) & -0x08;

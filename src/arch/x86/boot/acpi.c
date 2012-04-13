@@ -467,6 +467,89 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
 	rsdp->ext_checksum = acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
 
+unsigned long __attribute__((weak)) acpi_fill_hest(acpi_hest_t *hest)
+{
+	return (unsigned long)hest;
+}
+
+unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 data_len)
+{
+	acpi_header_t *header = &(hest->header);
+	acpi_hest_hen_t *hen;
+	void *pos;
+	u16 len;
+
+	pos = esd;
+	memset(pos, 0, sizeof(acpi_hest_esd_t));
+	len = 0;
+	esd->type = type;		/* MCE */
+	esd->source_id = hest->error_source_count;
+	esd->flags = 0;		/* FIRMWARE_FIRST */
+	esd->enabled = 1;
+	esd->prealloc_erecords = 1;
+	esd->max_section_per_record = 0x1;
+
+	len += sizeof(acpi_hest_esd_t);
+	pos = esd + 1;
+
+	switch (type) {
+	case 0:			/* MCE */
+		break;
+	case 1:			/* CMC */
+		hen = (acpi_hest_hen_t *) (pos);
+		memset(pos, 0, sizeof(acpi_hest_hen_t));
+		hen->type = 3;		/* SCI? */
+		hen->length = sizeof(acpi_hest_hen_t);
+		hen->conf_we = 0;		/* Configuration Write Enable. */
+		hen->poll_interval = 0;
+		hen->vector = 0;
+		hen->sw2poll_threshold_val = 0;
+		hen->sw2poll_threshold_win = 0;
+		hen->error_threshold_val = 0;
+		hen->error_threshold_win = 0;
+		len += sizeof(acpi_hest_hen_t);
+		pos = hen + 1;
+		break;
+	case 2:			/* NMI */
+	case 6:			/* AER Root Port */
+	case 7:			/* AER Endpoint */
+	case 8:			/* AER Bridge */
+	case 9:			/* Generic Hardware Error Source. */
+		/* TODO: */
+		break;
+	default:
+		printk(BIOS_DEBUG, "Invalid type of Error Source.");
+		break;
+	}
+	hest->error_source_count ++;
+
+	memcpy(pos, data, data_len);
+	len += data_len;
+	header->length += len;
+
+	return len;
+}
+
+/* ACPI 4.0 */
+void acpi_write_hest(acpi_hest_t *hest)
+{
+	acpi_header_t *header = &(hest->header);
+
+	memset(hest, 0, sizeof(acpi_hest_t));
+
+	memcpy(header->signature, "HEST", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->length += sizeof(acpi_hest_t);
+	header->revision = 1;
+
+	acpi_fill_hest(hest);
+
+	/* Calculate checksums. */
+	header->checksum = acpi_checksum((void *)hest, header->length);
+}
+
 #if CONFIG_HAVE_ACPI_RESUME == 1
 void suspend_resume(void)
 {

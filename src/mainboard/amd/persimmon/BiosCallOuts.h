@@ -23,8 +23,8 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#define BIOS_HEAP_START_ADDRESS		0x00010000
-#define BIOS_HEAP_SIZE				0x20000		/* 64MB */
+#define BIOS_HEAP_SIZE				0x20000
+#define BSP_STACK_BASE_ADDR			0x30000
 
 typedef struct _BIOS_HEAP_MANAGER {
 	//UINT32 AvailableSize;

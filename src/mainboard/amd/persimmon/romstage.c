@@ -35,9 +35,14 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "pc80/i8254.c"
 #include "pc80/i8259.c"
+#include <cpu/x86/cache.h>
 #include "sb_cimx.h"
 #include "SBPLATFORM.h"
+#include "cbmem.h"
+#include "cpu/amd/mtrr.h"
+#include "cpu/amd/agesa/s3_resume.h"
 
+void disable_cache_as_ram(void); /* cache_as_ram.inc */
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 #define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
@@ -45,6 +50,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	void *resume_backup_memory;
+#endif
 
 	/*
 	 * All cores: allow caching of flash chip code and data
@@ -98,28 +107,75 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
-	post_code(0x40);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
-	val = agesawrapper_amdinitpost ();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (!acpi_is_wakeup_early()) { /* Check for S3 resume */
+#endif
+		post_code(0x40);
+		printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
+		val = agesawrapper_amdinitpost ();
+		if (val)
+			printk(BIOS_DEBUG, "error level: %x \n", val);
+		else
+			printk(BIOS_DEBUG, "passed.\n");
 
-	post_code(0x41);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
-	val = agesawrapper_amdinitenv ();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+		post_code(0x42);
+		printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
+		val = agesawrapper_amdinitenv ();
+		if (val)
+			printk(BIOS_DEBUG, "error level: %x \n", val);
+		else
+			printk(BIOS_DEBUG, "passed.\n");
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	} else { 			/* S3 detect */
+		printk(BIOS_INFO, "S3 detected\n");
+
+		post_code(0x60);
+		printk(BIOS_DEBUG, "agesawrapper_amdinitresume ");
+		val = agesawrapper_amdinitresume();
+		if (val)
+			printk(BIOS_DEBUG, "error level: %x \n", val);
+		else
+			printk(BIOS_DEBUG, "passed.\n");
+
+		printk(BIOS_DEBUG, "agesawrapper_amds3laterestore ");
+		val = agesawrapper_amds3laterestore ();
+		if (val)
+			printk(BIOS_DEBUG, "error level: %x \n", val);
+		else
+			printk(BIOS_DEBUG, "passed.\n");
+
+		post_code(0x61);
+		printk(BIOS_DEBUG, "Find resume memory location\n");
+		resume_backup_memory = backup_resume();
+
+		post_code(0x62);
+		printk(BIOS_DEBUG, "Move CAR stack.\n");
+		move_stack_high_mem();
+		printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
+
+		post_code(0x63);
+		disable_cache_as_ram();
+		printk(BIOS_DEBUG, "CAR disabled.\n");
+		set_resume_cache();
+
+		/*
+		 * Copy the system memory that is in the ramstage area to the
+		 * reserved area.
+		 */
+		if (resume_backup_memory)
+			memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
+
+		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
+	}
+#endif
 
 	/* Initialize i8259 pic */
-	post_code(0x41);
+	post_code(0x43);
 	setup_i8259 ();
 
 	/* Initialize i8254 timers */
-	post_code(0x42);
+	post_code(0x44);
 	setup_i8254 ();
 
 	post_code(0x50);

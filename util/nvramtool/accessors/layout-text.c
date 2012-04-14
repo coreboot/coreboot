@@ -149,7 +149,7 @@ static const char enums_line_regex[] =
     /* followed by one or more whitespace characters */
     "[[:space:]]+"
     /* followed by a chunk of nonwhitespace for text field */
-    "([^[:space:]]+)"
+    "([[:print:]]*[^[:space:]])"
     /* followed by optional whitespace */
     "[[:space:]]*$";
 

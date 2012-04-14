@@ -98,6 +98,8 @@ void usage(FILE * outfile)
 		"VALUE.\n"
 		"       -l [ARG]:       Show coreboot table info for ARG, or "
 		"all ARG choices.\n"
+		"       -L OUTPUT_BIN   Write CMOS layout file in binary format\n"
+		"       -H OUTPUT_HDR   Write CMOS layout file in header format\n"
 		"       -d:             Show low-level dump of coreboot table.\n"
 		"       -Y:             Show CMOS layout info.\n"
 		"       -b OUTPUT_FILE: Dump CMOS memory contents to file.\n"

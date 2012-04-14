@@ -1,6 +1,12 @@
 /*****************************************************************************\
  * lbtable.c
  *****************************************************************************
+ *  Copyright (C) 2012, Vikram Narayanan
+ *  	Unified build_opt_tbl and nvramtool
+ *  	build_opt_tbl.c
+ *  	Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
+ *  	Copyright (C) 2007-2010 coresystems GmbH
+ *
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
  *  Written by Dave Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>
@@ -40,6 +46,7 @@
 #include "cmos_lowlevel.h"
 #include "hexdump.h"
 #include "cbfs.h"
+#include "layout-text.h"
 
 static void process_cmos_table(void);
 static void get_cmos_checksum_info(void);
@@ -61,6 +68,8 @@ static const struct lb_record *next_cmos_rec(const struct lb_record *last,
  */
 static const struct cmos_option_table *cmos_table = NULL;
 
+#define ROUNDUP4(x)	(x += (4 - (x % 4)))
+
 void process_layout(void)
 {
 	if ((cmos_table) == NULL) {
@@ -81,6 +90,130 @@ void get_layout_from_cbfs_file(void)
 	uint32_t len;
 	cmos_table = cbfs_find_file("cmos_layout.bin", CBFS_COMPONENT_CMOS_LAYOUT, &len);
 	process_layout();
+}
+
+int write_cmos_layout_bin(FILE *f)
+{
+	const cmos_entry_t *cmos_entry;
+	const cmos_enum_t *cmos_enum;
+	cmos_checksum_layout_t layout;
+	struct cmos_option_table table;
+	struct cmos_entries entry;
+	struct cmos_enums cenum;
+	struct cmos_checksum csum;
+	size_t sum = 0;
+	int len;
+
+	for (cmos_entry = first_cmos_entry(); cmos_entry != NULL;
+			cmos_entry = next_cmos_entry(cmos_entry)) {
+
+		if (cmos_entry == first_cmos_entry()) {
+			sum += sizeof(table);
+			table.header_length = sizeof(table);
+			table.tag = LB_TAG_CMOS_OPTION_TABLE;
+
+			if (fwrite((char *)&table, sizeof(table), 1, f) != 1) {
+				perror("Error writing image file");
+				goto err;
+			}
+		}
+
+		memset(&entry, 0, sizeof(entry));
+		entry.tag = LB_TAG_OPTION;
+		entry.config = cmos_entry->config;
+		entry.config_id = (uint32_t)cmos_entry->config_id;
+		entry.bit = cmos_entry->bit;
+		entry.length = cmos_entry->length;
+
+		if (!is_ident((char *)cmos_entry->name)) {
+			fprintf(stderr,
+				"Error - Name %s is an invalid identifier\n",
+				cmos_entry->name);
+			goto err;
+		}
+
+		memcpy(entry.name, cmos_entry->name, strlen(cmos_entry->name));
+		entry.name[strlen(cmos_entry->name)] = '\0';
+		len = strlen(cmos_entry->name) + 1;
+
+		if (len % 4)
+			ROUNDUP4(len);
+
+		entry.size = sizeof(entry) - CMOS_MAX_NAME_LENGTH + len;
+		sum += entry.size;
+		if (fwrite((char *)&entry, entry.size, 1, f) != 1) {
+			perror("Error writing image file");
+			goto err;
+		}
+	}
+
+	for (cmos_enum = first_cmos_enum();
+			cmos_enum != NULL; cmos_enum = next_cmos_enum(cmos_enum)) {
+		memset(&cenum, 0, sizeof(cenum));
+		cenum.tag = LB_TAG_OPTION_ENUM;
+		memcpy(cenum.text, cmos_enum->text, strlen(cmos_enum->text));
+		cenum.text[strlen(cmos_enum->text)] = '\0';
+		len = strlen((char *)cenum.text) + 1;
+
+		if (len % 4)
+			ROUNDUP4(len);
+
+		cenum.config_id = cmos_enum->config_id;
+		cenum.value = cmos_enum->value;
+		cenum.size = sizeof(cenum) - CMOS_MAX_TEXT_LENGTH + len;
+		sum += cenum.size;
+		if (fwrite((char *)&cenum, cenum.size, 1, f) != 1) {
+			perror("Error writing image file");
+			goto err;
+		}
+	}
+
+	layout.summed_area_start = cmos_checksum_start;
+	layout.summed_area_end = cmos_checksum_end;
+	layout.checksum_at = cmos_checksum_index;
+	checksum_layout_to_bits(&layout);
+
+	csum.tag = LB_TAG_OPTION_CHECKSUM;
+	csum.size = sizeof(csum);
+	csum.range_start = layout.summed_area_start;
+	csum.range_end = layout.summed_area_end;
+	csum.location = layout.checksum_at;
+	csum.type = CHECKSUM_PCBIOS;
+	sum += csum.size;
+
+	if (fwrite((char *)&csum, csum.size, 1, f) != 1) {
+		perror("Error writing image file");
+		goto err;
+	}
+
+	if (fseek(f, sizeof(table.tag), SEEK_SET) != 0) {
+		perror("Error while seeking");
+		goto err;
+	}
+
+	if (fwrite((char *)&sum, sizeof(table.tag), 1, f) != 1) {
+		perror("Error writing image file");
+		goto err;
+	}
+	return sum;
+
+err:
+	fclose(f);
+	exit(1);
+}
+
+void write_cmos_output_bin(const char *binary_filename)
+{
+	FILE *fp;
+
+	if ((fp = fopen(binary_filename, "wb")) == NULL) {
+		fprintf(stderr,
+			"%s: Can not open file %s for writing: "
+			"%s\n", prog_name, binary_filename, strerror(errno));
+		exit(1);
+	}
+	write_cmos_layout_bin(fp);
+	fclose(fp);
 }
 
 /****************************************************************************

@@ -1,11 +1,11 @@
 /*****************************************************************************\
- * layout_file.h
+ * layout_common.c
  *****************************************************************************
- *  Copyright (C) 2002-2005 The Regents of the University of California.
- *  Produced at the Lawrence Livermore National Laboratory.
- *  Written by Dave Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>.
- *  UCRL-CODE-2003-012
- *  All rights reserved.
+ *  Copyright (C) 2012, Vikram Narayanan
+ *  Unified build_opt_tbl and nvramtool
+ *  build_opt_tbl.c
+ *  	Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
+ *  	Copyright (C) 2007-2010 coresystems GmbH
  *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
@@ -28,17 +28,48 @@
  *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 \*****************************************************************************/
 
-#ifndef LAYOUT_FILE_H
-#define LAYOUT_FILE_H
+#include <ctype.h>
 
-#include "common.h"
-#include "coreboot_tables.h"
+static int is_ident_nondigit(int c)
+{
+	int result;
+	switch(c) {
+	case 'A':	case 'B':	case 'C':	case 'D':
+	case 'E':	case 'F':	case 'G':	case 'H':
+	case 'I':	case 'J':	case 'K':	case 'L':
+	case 'M':	case 'N':	case 'O':	case 'P':
+	case 'Q':	case 'R':	case 'S':	case 'T':
+	case 'U':	case 'V':	case 'W':	case 'X':
+	case 'Y':	case 'Z':
+	case 'a':	case 'b':	case 'c':	case 'd':
+	case 'e':	case 'f':	case 'g':	case 'h':
+	case 'i':	case 'j':	case 'k':	case 'l':
+	case 'm':	case 'n':	case 'o':	case 'p':
+	case 'q':	case 'r':	case 's':	case 't':
+	case 'u':	case 'v':	case 'w':	case 'x':
+	case 'y':	case 'z':
+	case '_':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
 
-void set_layout_filename(const char filename[]);
-void get_layout_from_file(void);
-void write_cmos_layout(FILE * f);
-void write_cmos_output_bin(const char *binary_filename);
-void write_cmos_layout_header(const char *header_filename);
-extern int is_ident(char *str);
-
-#endif				/* LAYOUT_FILE_H */
+int is_ident(char *str)
+{
+	int result;
+	int ch;
+	ch = *str;
+	result = 0;
+	if (is_ident_nondigit(ch)) {
+		do {
+			str++;
+			ch = *str;
+		} while(ch && (is_ident_nondigit(ch) || (isdigit(ch))));
+		result = (ch == '\0');
+	}
+	return result;
+}

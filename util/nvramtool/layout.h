@@ -46,10 +46,10 @@
 #define LAYOUT_CHECKSUM_LOCATION_OUT_OF_RANGE (LAYOUT_RESULT_START + 9)
 
 typedef enum {
-	CMOS_ENTRY_ENUM,
-	CMOS_ENTRY_HEX,
-	CMOS_ENTRY_STRING,
-	CMOS_ENTRY_RESERVED
+	CMOS_ENTRY_ENUM = 'e',
+	CMOS_ENTRY_HEX = 'h',
+	CMOS_ENTRY_STRING = 's',
+	CMOS_ENTRY_RESERVED = 'r',
 } cmos_entry_config_t;
 
 /* This represents a CMOS parameter. */

@@ -62,6 +62,8 @@ static void op_write_cmos_dump(void);
 static void op_read_cmos_dump(void);
 static void op_show_cmos_hex_dump(void);
 static void op_show_cmos_dumpfile(void);
+static void op_write_cmos_layout_bin(void);
+static void op_write_cmos_layout_header(void);
 static int list_one_param(const char name[], int show_name);
 static int list_all_params(void);
 static void list_param_enums(const char name[]);
@@ -86,8 +88,22 @@ static const op_fn_t op_fns[] = { op_show_version,
 	op_write_cmos_dump,
 	op_read_cmos_dump,
 	op_show_cmos_hex_dump,
-	op_show_cmos_dumpfile
+	op_show_cmos_dumpfile,
+	op_write_cmos_layout_bin,
+	op_write_cmos_layout_header
 };
+
+static void op_write_cmos_layout_bin(void)
+{
+	get_layout_from_file();
+	write_cmos_output_bin(nvramtool_op.param);
+}
+
+static void op_write_cmos_layout_header(void)
+{
+	get_layout_from_file();
+	write_cmos_layout_header(nvramtool_op.param);
+}
 
 static const hexdump_format_t cmos_dump_format =
     { 16, 2, "", " | ", " ", " | ", '.' };

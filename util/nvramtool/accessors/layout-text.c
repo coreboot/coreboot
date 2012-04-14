@@ -1,6 +1,12 @@
 /*****************************************************************************\
  * layout-text.c
  *****************************************************************************
+ *  Copyright (C) 2012, Vikram Narayanan
+ *  	Unified build_opt_tbl and nvramtool
+ *  	build_opt_tbl.c
+ *  	Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
+ *  	Copyright (C) 2007-2010 coresystems GmbH
+ *
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
  *  Written by Dave Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>.
@@ -186,6 +192,7 @@ static int line_num;
 
 static const char *layout_filename = NULL;
 
+#define ALIGN(x)	(x += (4 - (x % 4)))
 /****************************************************************************
  * set_layout_filename
  *
@@ -218,6 +225,241 @@ void get_layout_from_file(void)
 	fclose(f);
 }
 
+static int is_ident_digit(int c)
+{
+	int result;
+	switch(c) {
+	case '0':	case '1':	case '2':	case '3':
+	case '4':	case '5':	case '6':	case '7':
+	case '8':	case '9':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
+
+static int is_ident_nondigit(int c)
+{
+	int result;
+	switch(c) {
+	case 'A':	case 'B':	case 'C':	case 'D':
+	case 'E':	case 'F':	case 'G':	case 'H':
+	case 'I':	case 'J':	case 'K':	case 'L':
+	case 'M':	case 'N':	case 'O':	case 'P':
+	case 'Q':	case 'R':	case 'S':	case 'T':
+	case 'U':	case 'V':	case 'W':	case 'X':
+	case 'Y':	case 'Z':
+	case 'a':	case 'b':	case 'c':	case 'd':
+	case 'e':	case 'f':	case 'g':	case 'h':
+	case 'i':	case 'j':	case 'k':	case 'l':
+	case 'm':	case 'n':	case 'o':	case 'p':
+	case 'q':	case 'r':	case 's':	case 't':
+	case 'u':	case 'v':	case 'w':	case 'x':
+	case 'y':	case 'z':
+	case '_':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
+
+static int is_ident(char *str)
+{
+	int result;
+	int ch;
+	ch = *str;
+	result = 0;
+	if (is_ident_nondigit(ch)) {
+		do {
+			str++;
+			ch = *str;
+		} while(ch && (is_ident_nondigit(ch) || (is_ident_digit(ch))));
+		result = (ch == '\0');
+	}
+	return result;
+}
+
+int write_cmos_layout_bin(FILE *f)
+{
+	const cmos_entry_t *cmos_entry;
+	const cmos_enum_t *cmos_enum;
+	cmos_checksum_layout_t layout;
+	struct cmos_option_table table;
+	struct cmos_entries entry;
+	struct cmos_enums cenum;
+	struct cmos_checksum csum;
+	size_t sum = 0;
+	int len;
+
+	for (cmos_entry = first_cmos_entry(); cmos_entry != NULL;
+			cmos_entry = next_cmos_entry(cmos_entry)) {
+
+		if (cmos_entry == first_cmos_entry()) {
+			sum += sizeof(table);
+			table.header_length = sizeof(table);
+			table.tag = LB_TAG_CMOS_OPTION_TABLE;
+
+			if (fwrite((char *)&table, sizeof(table), 1, f) != 1) {
+				perror("Error writing image file");
+				goto err;
+			}
+		}
+
+		memset(&entry, 0, sizeof(entry));
+		entry.tag = LB_TAG_OPTION;
+		entry.config = cmos_entry->config;
+		entry.config_id = (uint32_t)cmos_entry->config_id;
+		entry.bit = cmos_entry->bit;
+		entry.length = cmos_entry->length;
+
+		if (!is_ident((char *)cmos_entry->name)) {
+			fprintf(stderr,
+				"Error - Name %s is an invalid identifier\n",
+				cmos_entry->name);
+			goto err;
+		}
+
+		memcpy(entry.name, cmos_entry->name, strlen(cmos_entry->name));
+		entry.name[strlen(cmos_entry->name)] = '\0';
+		len = strlen(cmos_entry->name) + 1;
+
+		if (len % 4)
+			ALIGN(len);
+
+		entry.size = sizeof(entry) - CMOS_MAX_NAME_LENGTH + len;
+		sum += entry.size;
+		if (fwrite((char *)&entry, entry.size, 1, f) != 1) {
+			perror("Error writing image file");
+			goto err;
+		}
+	}
+
+	for (cmos_enum = first_cmos_enum();
+			cmos_enum != NULL; cmos_enum = next_cmos_enum(cmos_enum)) {
+		memset(&cenum, 0, sizeof(cenum));
+		cenum.tag = LB_TAG_OPTION_ENUM;
+		memcpy(cenum.text, cmos_enum->text, strlen(cmos_enum->text));
+		cenum.text[strlen(cmos_enum->text)] = '\0';
+		len = strlen((char *)cenum.text) + 1;
+
+		if (len % 4)
+			ALIGN(len);
+
+		cenum.config_id = cmos_enum->config_id;
+		cenum.value = cmos_enum->value;
+		cenum.size = sizeof(cenum) - CMOS_MAX_TEXT_LENGTH + len;
+		sum += cenum.size;
+		if (fwrite((char *)&cenum, cenum.size, 1, f) != 1) {
+			perror("Error writing image file");
+			goto err;
+		}
+	}
+
+	layout.summed_area_start = cmos_checksum_start;
+	layout.summed_area_end = cmos_checksum_end;
+	layout.checksum_at = cmos_checksum_index;
+	checksum_layout_to_bits(&layout);
+
+	csum.tag = LB_TAG_OPTION_CHECKSUM;
+	csum.size = sizeof(csum);
+	csum.range_start = layout.summed_area_start;
+	csum.range_end = layout.summed_area_end;
+	csum.location = layout.checksum_at;
+	csum.type = CHECKSUM_PCBIOS;
+	sum += csum.size;
+
+	if (fwrite((char *)&csum, csum.size, 1, f) != 1) {
+		perror("Error writing image file");
+		goto err;
+	}
+
+	if (fseek(f, sizeof(table.tag), SEEK_SET) != 0) {
+		perror("Error while seeking");
+		goto err;
+	}
+
+	if (fwrite((char *)&sum, sizeof(table.tag), 1, f) != 1) {
+		perror("Error writing image file");
+		goto err;
+	}
+	return sum;
+
+err:
+	fclose(f);
+	exit(1);
+}
+
+void write_cmos_output_bin(const char *binary_filename)
+{
+	FILE *fp;
+
+	if ((fp = fopen(binary_filename, "wb")) == NULL) {
+		fprintf(stderr,
+			"%s: Can not open file %s for writing: "
+			"%s\n", prog_name, binary_filename, strerror(errno));
+		exit(1);
+	}
+	write_cmos_layout_bin(fp);
+	fclose(fp);
+}
+
+void write_cmos_layout_header(const char *header_filename)
+{
+	FILE *fp;
+	const cmos_entry_t *cmos_entry;
+	cmos_checksum_layout_t layout;
+
+	if ((fp = fopen(header_filename, "w+")) == NULL) {
+		fprintf(stderr,
+				"%s: Can't open file %s for writing: %s\n",
+				prog_name, header_filename, strerror(errno));
+			exit(1);
+	}
+
+	fprintf(fp, "/**\n * This is an autogenerated file. Do not EDIT.\n"
+			" * All changes made to this file will be lost.\n"
+			" * See mainboard's cmos.layout file.\n */\n"
+			"\n#ifndef __OPTION_TABLE_H\n"
+			"#define __OPTION_TABLE_H\n\n");
+
+	for (cmos_entry = first_cmos_entry(); cmos_entry != NULL;
+			cmos_entry = next_cmos_entry(cmos_entry)) {
+
+		if (!is_ident((char *)cmos_entry->name)) {
+			fprintf(stderr,
+				"Error - Name %s is an invalid identifier\n",
+				cmos_entry->name);
+			fclose(fp);
+			exit(1);
+		}
+
+		fprintf(fp, "#define CMOS_VSTART_%s\t%d\n",
+				cmos_entry->name, cmos_entry->bit);
+		fprintf(fp, "#define CMOS_VLEN_%s\t%d\n",
+				cmos_entry->name, cmos_entry->length);
+	}
+
+	layout.summed_area_start = cmos_checksum_start;
+	layout.summed_area_end = cmos_checksum_end;
+	layout.checksum_at = cmos_checksum_index;
+	checksum_layout_to_bits(&layout);
+
+	fprintf(fp, "\n#define LB_CKS_RANGE_START %d\n",
+			layout.summed_area_start / 8);
+	fprintf(fp, "#define LB_CKS_RANGE_END %d\n",
+			layout.summed_area_end / 8);
+	fprintf(fp, "#define LB_CKS_LOC %d\n",
+			layout.checksum_at / 8);
+	fprintf(fp, "\n#endif /* __OPTION_TABLE_H */\n");
+
+	fclose(fp);
+}
 /****************************************************************************
  * write_cmos_layout
  *

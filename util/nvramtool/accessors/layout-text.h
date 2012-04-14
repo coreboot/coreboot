@@ -37,5 +37,7 @@
 void set_layout_filename(const char filename[]);
 void get_layout_from_file(void);
 void write_cmos_layout(FILE * f);
+void write_cmos_output_bin(const char *binary_filename);
+void write_cmos_layout_header(const char *header_filename);
 
 #endif				/* LAYOUT_FILE_H */

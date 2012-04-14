@@ -246,6 +246,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 {
+#ifndef CONFIG_BOARD_ASUS_M4A785TM
 	static const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
 	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {
@@ -255,6 +256,14 @@ BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 			return 1;
 		}
 	}
+#else
+	static const u8 swaplist[] = {0, 1, 0xFF, 0, 0xFF};
+	/* If the BUID was adjusted in early_ht we need to do the manual override */
+	if ((node == 0) && (link == 0)) {       /* BSP SB link */
+		*List = swaplist;
+		return 1;
+	}
+#endif
 
 	return 0;
 }

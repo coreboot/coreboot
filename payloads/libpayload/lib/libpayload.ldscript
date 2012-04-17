@@ -85,5 +85,8 @@ SECTIONS
 
 	_end = .;
 
-	/DISCARD/ : { *(.comment) }
+	/DISCARD/ : {
+		*(.comment)
+		*(.note*)
+	}
 }

@@ -30,6 +30,8 @@
 #ifndef _ARCH_RDTSC_H
 #define _ARCH_RDTSC_H
 
+#include <stdint.h>
+
 static u64 rdtsc(void)
 {
 	u64 val;

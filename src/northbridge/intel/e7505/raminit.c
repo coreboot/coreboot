@@ -100,228 +100,37 @@ static const uint8_t dual_channel_parameters[] = {
 	SPD_NUM_BANKS_PER_SDRAM
 };
 
-	/*
-	 * Table:       constant_register_values
+	/* Comments here are remains of e7501 or even 855PM.
+	 * They might be partially (in)correct for e7505.
 	 */
-static const long constant_register_values[] = {
-	/* SVID - Subsystem Vendor Identification Register
-	 * 0x2c - 0x2d
-	 * [15:00] Subsytem Vendor ID (Indicates system board vendor)
-	 */
-	/* SID - Subsystem Identification Register
-	 * 0x2e - 0x2f
-	 * [15:00] Subsystem ID
-	 */
-	// Not everyone wants to be Super Micro Computer, Inc.
-	// The mainboard should set this if desired.
-	// 0x2c, 0, (0x15d9 << 0) | (0x3580 << 16),
 
-	/* Undocumented
-	 * (DRAM Read Timing Control, if similar to 855PM?)
-	 * 0x80 - 0x81
+	/* (DRAM Read Timing Control, if similar to 855PM?)
+	 * 0x80 - 0x81   documented differently for e7505
 	 * This register has something to do with CAS latencies,
 	 * possibily this is the real chipset control.
 	 * At 0x00 CAS latency 1.5 works.
 	 * At 0x06 CAS latency 2.5 works.
 	 * At 0x01 CAS latency 2.0 works.
-	 */
-	/* This is still undocumented in e7501, but with different values
+	 *
+	 * This is still undocumented in e7501, but with different values
 	 * CAS 2.0 values taken from Intel BIOS settings, others are a guess
 	 * and may be terribly wrong. Old values preserved as comments until I
 	 * figure this out for sure.
 	 * e7501 docs claim that CAS1.5 is unsupported, so it may or may not
 	 * work at all.
 	 * Steven James 02/06/2003
-	 */
-	/* NOTE: values now configured in configure_e7501_cas_latency() based
+	 *
+	 * NOTE: values now configured in configure_e7501_cas_latency() based
 	 *       on SPD info and total number of DIMMs (per Intel)
 	 */
 
-	/* FDHC - Fixed DRAM Hole Control
-	 * 0x58
+	/* FDHC - Fixed DRAM Hole Control  ???
+	 * 0x58  undocumented for e7505, memory hole in southbridge configuration?
 	 * [7:7] Hole_Enable
 	 *       0 == No memory Hole
 	 *       1 == Memory Hole from 15MB to 16MB
 	 * [6:0] Reserved
-	 *
-	 * PAM - Programmable Attribute Map
-	 * 0x59 [1:0] Reserved
-	 * 0x59 [5:4] 0xF0000 - 0xFFFFF
-	 * 0x5A [1:0] 0xC0000 - 0xC3FFF
-	 * 0x5A [5:4] 0xC4000 - 0xC7FFF
-	 * 0x5B [1:0] 0xC8000 - 0xCBFFF
-	 * 0x5B [5:4] 0xCC000 - 0xCFFFF
-	 * 0x5C [1:0] 0xD0000 - 0xD3FFF
-	 * 0x5C [5:4] 0xD4000 - 0xD7FFF
-	 * 0x5D [1:0] 0xD8000 - 0xDBFFF
-	 * 0x5D [5:4] 0xDC000 - 0xDFFFF
-	 * 0x5E [1:0] 0xE0000 - 0xE3FFF
-	 * 0x5E [5:4] 0xE4000 - 0xE7FFF
-	 * 0x5F [1:0] 0xE8000 - 0xEBFFF
-	 * 0x5F [5:4] 0xEC000 - 0xEFFFF
-	 *       00 == DRAM Disabled (All Access go to memory mapped I/O space)
-	 *       01 == Read Only (Reads to DRAM, Writes to memory mapped I/O space)
-	 *       10 == Write Only (Writes to DRAM, Reads to memory mapped I/O space)
-	 *       11 == Normal (All Access go to DRAM)
 	 */
-
-	// Map all legacy ranges to DRAM
-	0x58, 0xcccccf7f, (0x00 << 0) | (0x30 << 8) | (0x33 << 16) | (0x33 << 24),
-	0x5C, 0xcccccccc, (0x33 << 0) | (0x33 << 8) | (0x33 << 16) | (0x33 << 24),
-
-	/* DRB - DRAM Row Boundary Registers
-	 * 0x60 - 0x6F
-	 *     An array of 8 byte registers, which hold the ending
-	 *     memory address assigned  to each pair of DIMMS, in 64MB
-	 *     granularity.
-	 */
-	// Conservatively say each row has 64MB of ram, we will fix this up later
-	// NOTE: These defaults allow us to prime all of the DIMMs on the board
-	//               without jumping through 36-bit adddressing hoops, even if the
-	//               total memory is > 4 GB. Changing these values may break do_ram_command()!
-	0x60, 0x00000000, (0x01 << 0) | (0x02 << 8) | (0x03 << 16) | (0x04 << 24),
-//	0x64, 0x00000000, (0x05 << 0) | (0x06 << 8) | (0x07 << 16) | (0x08 << 24),
-	0x64, 0x00000000, (0x04 << 0) | (0x04 << 8) | (0x04 << 16) | (0x04 << 24),
-
-	/* DRA - DRAM Row Attribute Register
-	 * 0x70 Row 0,1
-	 * 0x71 Row 2,3
-	 * 0x72 Row 4,5
-	 * 0x73 Row 6,7
-	 * [7:7] Device width for Odd numbered rows
-	 *       0 == 8 bits wide x8
-	 *       1 == 4 bits wide x4
-	 * [6:4] Row Attributes for Odd numbered rows
-	 *       010 == 8KB (for dual-channel)
-	 *       011 == 16KB (for dual-channel)
-	 *       100 == 32KB (for dual-channel)
-	 *       101 == 64KB (for dual-channel)
-	 *       Others == Reserved
-	 * [3:3] Device width for Even numbered rows
-	 *       0 == 8 bits wide x8
-	 *       1 == 4 bits wide x4
-	 * [2:0] Row Attributes for Even numbered rows
-	 *       010 == 8KB (for dual-channel)
-	 *       011 == 16KB (for dual-channel)
-	 *       100 == 32KB (for dual-channel)
-	 *       101 == 64KB (This page size appears broken)
-	 *       Others == Reserved
-	 */
-	// NOTE: overridden by configure_e7501_row_attributes(), later
-	0x70, 0x00000000, 0,
-
-	/* DRT - DRAM Timing Register
-	 * 0x78
-	 * [31:30] Reserved
-	 * [29:29] Back to Back Write-Read Turn Around
-	 *         0 == 3 clocks between WR-RD commands
-	 *         1 == 2 clocks between WR-RD commands
-	 * [28:28] Back to Back Read-Write Turn Around
-	 *         0 == 5 clocks between RD-WR commands
-	 *         1 == 4 clocks between RD-WR commands
-	 * [27:27] Back to Back Read Turn Around
-	 *         0 == 4 clocks between RD commands
-	 *         1 == 3 clocks between RD commands
-	 * [26:24] Read Delay (tRD)
-	 *         000 == 7 clocks
-	 *         001 == 6 clocks
-	 *         010 == 5 clocks
-	 *         Others == Reserved
-	 * [23:19] Reserved
-	 * [18:16] DRAM idle timer
-	 *      000 == infinite
-	 *      011 == 16 dram clocks
-	 *      001 == 0 clocks
-	 * [15:11] Reserved
-	 * [10:09] Active to Precharge (tRAS)
-	 *         00 == 7 clocks
-	 *         01 == 6 clocks
-	 *         10 == 5 clocks
-	 *         11 == Reserved
-	 * [08:06] Reserved
-	 * [05:04] Cas Latency (tCL)
-	 *         00 == 2.5 Clocks
-	 *         01 == 2.0 Clocks
-	 *         10 == Reserved (was 1.5 Clocks for E7500)
-	 *         11 == Reserved
-	 * [03:03] Write Ras# to Cas# Delay (tRCD)
-	 *         0 == 3 DRAM Clocks
-	 *         1 == 2 DRAM Clocks
-	 * [02:01] Read RAS# to CAS# Delay (tRCD)
-	 *         00 == reserved
-	 *         01 == reserved
-	 *         10 == 3 DRAM Clocks
-	 *         11 == 2 DRAM Clocks
-	 * [00:00] DRAM RAS# to Precharge (tRP)
-	 *         0 == 3 DRAM Clocks
-	 *         1 == 2 DRAM Clocks
-	 */
-
-	// Some earlier settings:
-	/* Most aggressive settings possible */
-//      0x78, 0xc0fff8c4, (1<<29)|(1<<28)|(1<<27)|(2<<24)|(2<<9)|CAS_LATENCY|(1<<3)|(1<<1)|(1<<0),
-//      0x78, 0xc0f8f8c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|CAS_LATENCY|(1<<3)|(3<<1)|(1<<0),
-//      0x78, 0xc0f8f9c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|CAS_LATENCY|(1<<3)|(3<<1)|(1<<0),
-
-	// The only things we need to set here are DRAM idle timer, Back-to-Back Read Turnaround, and
-	// Back-to-Back Write-Read Turnaround. All others are configured based on SPD.
-//	0x78, 0xD7F8FFFF, (1 << 29) | (1 << 27) | (1 << 16),
-	0x78, 0xC7F8FFFF, (0x03<<16)|(0x28<<24),
-
-	/* FIXME why was I attempting to set a reserved bit? */
-	/* 0x0100040f */
-
-	/* DRC - DRAM Contoller Mode Register
-	 * 0x7c
-	 * [31:30] Reserved
-	 * [29:29] Initialization Complete
-	 *         0 == Not Complete
-	 *         1 == Complete
-	 * [28:23] Reserved
-	 * [22:22]         Channels
-	 *              0 == Single channel
-	 *              1 == Dual Channel
-	 * [21:20] DRAM Data Integrity Mode
-	 *         00 == Disabled, no ECC
-	 *         01 == Reserved
-	 *         10 == Error checking, using chip-kill, with correction
-	 *         11 == Reserved
-	 * [19:18] DRB Granularity (Read-Only)
-	 *         00 == 32 MB quantities (single channel mode)
-	 *                 01 == 64 MB quantities (dual-channel mode)
-	 *                 10 == Reserved
-	 *                 11 == Reserved
-	 * [17:17] (Intel Undocumented) should always be set to 1       (SJM: comment inconsistent with current setting, below)
-	 * [16:16] Command Per Clock - Address/Control Assertion Rule (CPC)
-	 *         0 == 2n Rule
-	 *         1 == 1n rule
-	 * [15:11] Reserved
-	 * [10:08] Refresh mode select
-	 *         000 == Refresh disabled
-	 *         001 == Refresh interval 15.6 usec
-	 *         010 == Refresh interval 7.8 usec
-	 *         011 == Refresh interval 64 usec
-	 *         111 == Refresh every 64 clocks (fast refresh)
-	 * [07:07] Reserved
-	 * [06:04] Mode Select (SMS)
-	 *         000 == Reserved (was Self Refresh Mode in E7500)
-	 *         001 == NOP Command
-	 *         010 == All Banks Precharge
-	 *         011 == Mode Register Set
-	 *         100 == Extended Mode Register Set
-	 *         101 == Reserved
-	 *         110 == CBR Refresh
-	 *         111 == Normal Operation
-	 * [03:00] Reserved
-	 */
-//      .long 0x7c, 0xffcefcff, (1<<22)|(2 << 20)|(1 << 16)| (0 << 8),
-//      .long 0x7c, 0xff8cfcff, (1<<22)|(2 << 20)|(1 << 17)|(1 << 16)| (0 << 8),
-//      .long 0x7c, 0xff80fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 17)|(1 << 16)| (0 << 8),
-
-	// Default to dual-channel mode, ECC, 1-clock address/cmd hold
-	// NOTE: configure_e7501_dram_controller_mode() configures further
-//	0x7c, 0xff8ef8ff, (1 << 22) | (2 << 20) | (1 << 16) | (0 << 8),
-	0x7c, 0xffcef8f7, 0x00210008,
 
 	/* Another Intel undocumented register
 	 * 0x88 - 0x8B
@@ -336,118 +145,8 @@ static const long constant_register_values[] = {
 	 *                      0 == Normal operation?
 	 *                      1 == Reset?
 	 */
-	// NOTE: Some factory BIOSs don't do this.
-	//               Doesn't seem to matter either way.
-	0x88, 0xffffff00, 0x80,
 
-	/* CLOCK_DIS - CK/CK# Disable Register
-	 * 0x8C
-	 * [7:7] DDR Frequency
-	 *               0 == 100 MHz (200 MHz data rate)
-	 *               1 == 133 MHz (266 MHz data rate)
-	 * [6:4] Reserved
-	 * [3:3] CK3
-	 *       0 == Enable
-	 *       1 == Disable
-	 * [2:2] CK2
-	 *       0 == Enable
-	 *       1 == Disable
-	 * [1:1] CK1
-	 *       0 == Enable
-	 *       1 == Disable
-	 * [0:0] CK0
-	 *       0 == Enable
-	 *       1 == Disable
-	 */
-	// NOTE: Disable all clocks initially; turn ones we need back on
-	//               in enable_e7501_clocks()
-	0x8C, 0xfffffff0, 0xf,
-
-	/* TOLM - Top of Low Memory Register
-	 * 0xC4 - 0xC5
-	 * [15:11] Top of low memory (TOLM)
-	 *         The address below 4GB that should be treated as RAM,
-	 *         on a 128MB granularity.
-	 * [10:00] Reserved
-	 */
-	/* REMAPBASE - Remap Base Address Regsiter
-	 * 0xC6 - 0xC7
-	 * [15:10] Reserved
-	 * [09:00] Remap Base Address [35:26] 64M aligned
-	 *         Bits [25:0] are assumed to be 0.
-	 */
-
-	// NOTE: TOLM overridden by configure_e7501_ram_addresses()
-	0xc4, 0xfc0007ff, (0x2000 << 0) | (0x3ff << 16),
-
-	/* REMAPLIMIT - Remap Limit Address Register
-	 * 0xC8 - 0xC9
-	 * [15:10] Reserved
-	 * [09:00] Remap Limit Address [35:26] 64M aligned
-	 * When remaplimit < remapbase the remap window is disabled.
-	 */
-	0xc8, 0xfffffc00, 0,
-
-	/* DVNP - Device Not Present Register
-	 * 0xE0 - 0xE1
-	 * [15:05] Reserved
-	 * [04:04] Device 4 Function 1 Present
-	 *         0 == Present
-	 *         1 == Absent
-	 * [03:03] Device 3 Function 1 Present
-	 *         0 == Present
-	 *         1 == Absent
-	 * [02:02] Device 2 Function 1 Present
-	 *         0 == Present
-	 *         1 == Absent
-	 * [01:01] Reserved
-	 * [00:00] Device 0 Function 1 Present
-	 *         0 == Present
-	 *         1 == Absent
-	 */
-
-	// Enable D0:D1, disable D2:F1, D3:F1, D4:F1
-//	0xe0, 0xffffffe2, (1 << 4) | (1 << 3) | (1 << 2) | (0 << 0),
-	0xe0, 0xfffffffa, 0x0,
-
-	// Undocumented
-	0xd8, 0xffff9fff, 0x00000000,
-
-	// Undocumented - this is pure conjecture based on similarity to 855PM
-	/* MCHTST - MCH Test Register
-	 * 0xF4 - 0xF7
-	 * [31:31] Purpose unknown
-	 * [30:30] Purpose unknown
-	 * [29:23] Unknown - not used?
-	 * [22:22] System Memory MMR Enable
-	 *         0 == Disable: mem space and BAR at 0x14 are not accessible
-	 *         1 == Enable: mem space and BAR at 0x14 are accessible
-	 * [21:20] Purpose unknown
-	 * [19:02] Unknown - not used?
-	 * [01:01] D6EN (Device #6 enable)
-	 *         0 == Disable
-	 *         1 == Enable
-	 * [00:00] Unknown - not used?
-	 */
-
-//	0xf4, 0x3f8ffffd, 0x40300002,
-
-#ifdef SUSPICIOUS_LOOKING_CODE
-	// SJM: Undocumented.
-	//              This will access D2:F0:0x50, is this correct??
-	0x1050, 0xffffffcf, 0x00000030,
-#endif
-};
-
-	/* DDR RECOMP tables */
-#if 0
-// Slew table for 1x drive?
-static const uint32_t 1x_slew_table[] = {
-	0x44332211, 0xc9776655, 0xffffffff, 0xffffffff,
-	0x22111111, 0x55444332, 0xfffca876, 0xffffffff,
-};
-#endif
-
+/* DDR RECOMP tables */
 // Slew table for 2x drive?
 static const uint32_t slew_2x[] = {
 	0x00000000, 0x76543210, 0xffffeca8, 0xffffffff,
@@ -466,16 +165,8 @@ Delay functions:
 
 /* Estimate that SLOW_DOWN_IO takes about 1 us */
 #define SLOW_DOWN_IO inb(0x80)
-static inline void local_udelay(int i)
+static void local_udelay(int i)
 {
-	while (i--) {
-		SLOW_DOWN_IO;
-	}
-}
-
-static inline void local_mdelay(int i)
-{
-	i *= 1000;
 	while (i--) {
 		SLOW_DOWN_IO;
 	}
@@ -524,7 +215,7 @@ typedef enum {
  *         1 == Enable
  * [00:00] Unknown - not used?
  */
-static inline void mchtest_control(mchtst_cc cmd)
+static void mchtest_control(mchtst_cc cmd)
 {
 	uint32_t dword = pci_read_config32(MCHDEV, MCHTST);
 	switch (cmd) {
@@ -551,7 +242,7 @@ static inline void mchtest_control(mchtst_cc cmd)
 /**
  *
  */
-static inline void d060_control(d060_cc cmd)
+static void d060_control(d060_cc cmd)
 {
 	mchtest_control(D060_ENABLE);
 	uint32_t dword = pci_read_config32(D060DEV, 0xf0);
@@ -570,7 +261,7 @@ static inline void d060_control(d060_cc cmd)
 /**
  *
  */
-static inline void rcomp_smr_control(rcomp_smr_cc cmd)
+static void rcomp_smr_control(rcomp_smr_cc cmd)
 {
 	uint32_t dword = read32(RCOMP_MMIO + SMRCTL);
 	switch (cmd) {
@@ -995,6 +686,9 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 	dimm_start_64M_multiple = 0;
 
+	/* FIXME: Only address the number of rows present in the system?
+	 * Seems like rows 4-7 overlap with 0-3.
+	 */
 	for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
 
 		uint8_t dimm_end_64M_multiple = pci_read_config8(MCHDEV, DRB_ROW_0 + i);
@@ -1003,7 +697,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 			dimm_start_address &= 0x3ffffff;
 			dimm_start_address |= dimm_start_64M_multiple << 26;
 			read32(dimm_start_address);
-				// Set the start of the next DIMM
+			// Set the start of the next DIMM
 			dimm_start_64M_multiple = dimm_end_64M_multiple;
 		}
 	}
@@ -1756,47 +1450,6 @@ static void RAM_RESET_DDR_PTR(void)
 }
 
 /**
- * Set E7501 registers that are either independent of DIMM specifics, or
- * establish default settings that will be overridden when we learn the
- * specifics.
- *
- * This sets PCI configuration registers to known good values based on the
- * table 'constant_register_values', which are a triple of configuration
- * register offset, mask, and bits to set.
- */
-static void ram_set_d0f0_regs(void)
-{
-	int i;
-	int num_values = ARRAY_SIZE(constant_register_values);
-
-	ASSERT((num_values % 3) == 0);	// Bad table?
-
-	for (i = 0; i < num_values; i += 3) {
-
-		uint32_t register_offset = constant_register_values[i];
-		uint32_t bits_to_mask = constant_register_values[i + 1];
-		uint32_t bits_to_set = constant_register_values[i + 2];
-		uint32_t register_value;
-
-		// It's theoretically possible to set values for something other than D0:F0,
-		// but it's not typically done here
-		ASSERT(!(register_offset & 0xFFFFFF00));
-
-		// bits_to_mask and bits_to_set should not reference the same bits
-		// Again, not strictly an error, but flagged as a potential bug
-		ASSERT((bits_to_mask & bits_to_set) == 0);
-
-		register_value =
-		    pci_read_config32(MCHDEV, register_offset);
-		register_value &= bits_to_mask;
-		register_value |= bits_to_set;
-
-		pci_write_config32(MCHDEV, register_offset,
-				   register_value);
-	}
-}
-
-/**
  * Copy 64 bytes from one location to another.
  *
  * @param src_addr TODO
@@ -1822,19 +1475,12 @@ static void write_8dwords(const uint32_t *src_addr, uint32_t dst_addr)
  * Comments below are conjecture based on apparent similarity between the
  * E7501 and these two chips.
  */
-static void ram_set_rcomp_regs(void)
+static void rcomp_copy_registers(void)
 {
 	uint32_t dword;
-	uint8_t strength_control, revision;
+	uint8_t strength_control;
 
 	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\n");
-
-	/* Set the RCOMP MMIO base address */
-	mchtest_control(RCOMP_BAR_ENABLE);
-	pci_write_config32(MCHDEV, SMRBASE, RCOMP_MMIO);
-
-	/* Block RCOMP updates while we configure the registers */
-	rcomp_smr_control(RCOMP_HOLD);
 
 	/* Begin to write the RCOMP registers */
 	write8(RCOMP_MMIO + 0x2c, 0x0);
@@ -1902,7 +1548,6 @@ static void ram_set_rcomp_regs(void)
 	write_8dwords(pull_updown_offset_table, RCOMP_MMIO + 0x1a0);
 	write16(RCOMP_MMIO + 0x4e, 0);
 
-
 	dword = read32(RCOMP_MMIO + 0x400);
 	dword &= 0x7f7fffff;
 	write32(RCOMP_MMIO + 0x400, dword);
@@ -1910,17 +1555,26 @@ static void ram_set_rcomp_regs(void)
 	dword = read32(RCOMP_MMIO + 0x408);
 	dword &= 0x7f7fffff;
 	write32(RCOMP_MMIO + 0x408, dword);
+}
 
+static void ram_set_rcomp_regs(void)
+{
+	/* Set the RCOMP MMIO base address */
+	mchtest_control(RCOMP_BAR_ENABLE);
+	pci_write_config32(MCHDEV, SMRBASE, RCOMP_MMIO);
+
+	/* Block RCOMP updates while we configure the registers */
+	rcomp_smr_control(RCOMP_HOLD);
+	rcomp_copy_registers();
 	d060_control(D060_CMD_0);
 	mchtest_control(MCHTST_CMD_0);
 
-	revision = pci_read_config8(MCHDEV, 0x08);
+	uint8_t revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3) {
 		rcomp_smr_control(RCOMP_SMR_00);
 		rcomp_smr_control(RCOMP_SMR_01);
 	}
 	rcomp_smr_control(RCOMP_RELEASE);
-
 
 	/* Wait 40 usec */
 	SLOW_DOWN_IO;
@@ -2084,11 +1738,73 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
  */
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
-	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\n");
-	DUMPNORTH();
+	uint32_t dword;
+	uint16_t word;
+	uint8_t byte;
 
 	ram_set_rcomp_regs();
-	ram_set_d0f0_regs();
+
+	/* Enable 0:0.1, 0:2.1 */
+	word = pci_read_config16(MCHDEV, DVNP);
+	word &= ~0x05;
+	pci_write_config16(MCHDEV, DVNP, word);
+
+	/* Disable high-memory remap (power-on defaults, really) */
+	pci_write_config16(MCHDEV, REMAPBASE, 0x03ff);
+	pci_write_config16(MCHDEV, REMAPLIMIT, 0x0);
+
+	/* Disable legacy MMIO (0xC0000-0xEFFFF is DRAM) */
+	int i;
+	pci_write_config8(MCHDEV, PAM_0, 0x30);
+	for (i=1; i<=6; i++)
+		pci_write_config8(MCHDEV, PAM_0 + i, 0x33);
+
+	/* Conservatively say each row has 64MB of ram, we will fix this up later
+	 * Initial TOLM 8 rows 64MB each  (1<<3 * 1<<26) >> 16 = 1<<13
+	 *
+	 * FIXME: Hard-coded limit to first four rows to prevent overlap!
+	 */
+	pci_write_config32(MCHDEV, DRB_ROW_0, 0x04030201);
+	pci_write_config32(MCHDEV, DRB_ROW_4, 0x04040404);
+	//pci_write_config32(MCHDEV, DRB_ROW_4, 0x08070605);
+	pci_write_config16(MCHDEV, TOLM, (1<<13));
+
+	/* DIMM clocks off */
+	pci_write_config8(MCHDEV, CKDIS, 0xff);
+
+	/* reset row attributes */
+	pci_write_config32(MCHDEV, DRA, 0x0);
+
+	// The only things we need to set here are DRAM idle timer, Back-to-Back Read Turnaround, and
+	// Back-to-Back Write-Read Turnaround. All others are configured based on SPD.
+	dword = pci_read_config32(MCHDEV, DRT);
+	dword &= 0xC7F8FFFF;
+	dword |= (0x28<<24)|(0x03<<16);
+	pci_write_config32(MCHDEV, DRT, dword);
+
+	dword = pci_read_config32(MCHDEV, DRC);
+	dword &= 0xffcef8f7;
+	dword |= 0x00210008;
+	pci_write_config32(MCHDEV, DRC, dword);
+
+	/* Undocumented */
+	pci_write_config8(MCHDEV, 0x88, 0x80);
+
+	/* Undocumented. Set much later in vendor BIOS. */
+	byte = pci_read_config8(MCHDEV, 0xd9);
+	byte &= ~0x60;
+	pci_write_config8(MCHDEV, 0xd9, byte);
+
+#ifdef SUSPICIOUS_LOOKING_CODE
+	/* This will access D2:F0:0x50, is this correct??
+	 * Vendor BIOS reads Device ID before this is set.
+	 * Undocumented in the p64h2 PCI-X bridge datasheet.
+	 */
+	byte = pci_read_config8(PCI_DEV(0,2,0), 0x50);
+	byte &= 0xcf;
+	byte |= 0x30
+	pci_write_config8(PCI_DEV(0,2,0), 0x50, byte);
+#endif
 
 	uint8_t revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3)

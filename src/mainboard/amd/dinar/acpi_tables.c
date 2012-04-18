@@ -237,7 +237,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	 * We explicitly add these tables later on:
 	 */
 #ifdef UNUSED_CODE // Don't need HPET table. we have one in dsdt
-	current   = ( current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * HPET at %lx\n", current);
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
@@ -246,7 +246,7 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 
 	/* If we want to use HPET Timers Linux wants an MADT */
-	current   = ( current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n",current);
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
@@ -254,14 +254,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, madt);
 
 	/* HEST */
-	current	= (current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	hest = (acpi_hest_t *)current;
 	acpi_write_hest((void *)current);
 	acpi_add_table(rsdp, (void *)current);
 	current += ((acpi_header_t *)current)->length;
 
 	/* SRAT */
-	current   = ( current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
 	if (srat != NULL) {
@@ -273,7 +273,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	/* SLIT */
-	current   = ( current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
 	if (slit != NULL) {
@@ -285,7 +285,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	/* SSDT */
-	current	 = (current + 0x0f) & -0x10;
+	current = (current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
 	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
 	if (alib != NULL) {

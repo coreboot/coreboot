@@ -318,6 +318,8 @@ void sdram_initialize(struct pei_data *pei_data)
 	const char *target = "mrc.bin";
 	unsigned long entry;
 
+	report_platform_info();
+
 	/* Wait for ME to be ready */
 	intel_early_me_init();
 	intel_early_me_uma_size();

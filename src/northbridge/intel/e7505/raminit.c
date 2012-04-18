@@ -11,6 +11,9 @@
 
 /* converted to C 6/2004 yhlu */
 
+#include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/msr.h>
 #include <assert.h>
 #include <spd.h>
 #include <sdram_mode.h>
@@ -918,44 +921,93 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 }
 
 /**
- * If we're configured to use ECC, initialize the SDRAM and clear the E7501's
- * ECC error flags.
+ * Execute ECC full-speed scrub once and leave scrubber disabled.
+ *
+ * NOTE: All cache and stack is lost during ECC scrub loop.
  */
-#ifdef __ROMCC__
-static void initialize_ecc(void)
+static void __attribute__((always_inline))
+		initialize_ecc(unsigned long ret_addr, unsigned long ret_addr2)
 {
-	uint32_t dram_controller_mode;
+	uint16_t scrubbed = pci_read_config16(MCHDEV, MCHCFGNS) & 0x08;
 
-	/* Test to see if ECC support is enabled */
-	dram_controller_mode = pci_read_config32(MCHDEV, DRC);
-	dram_controller_mode >>= 20;
-	dram_controller_mode &= 3;
-	if (dram_controller_mode == 2) {
-		uint8_t byte;
-
+	if (!scrubbed) {
 		RAM_DEBUG_MESSAGE("Initializing ECC state...\n");
-		pci_write_config8(MCHDEV, MCHCFGNS, 0x01);
 
-		// Wait for scrub cycle to complete
+		/* ECC scrub flushes cache-lines and stack, need to
+		 * store return address from romstage.c:main().
+		 */
+		asm volatile(
+			"movd %0, %%xmm0;"
+			"movd (%0), %%xmm1;"
+			"movd %1, %%xmm2;"
+			"movd (%1), %%xmm3;"
+			:: "r" (ret_addr), "r" (ret_addr2) :
+		);
+
+		/* NOTE: All cache is lost during this loop.
+		 * Make sure PCI access does not use stack.
+		 */
+
+		pci_write_config16(MCHDEV, MCHCFGNS, 0x01);
 		do {
-			byte =
-			    pci_read_config8(MCHDEV, MCHCFGNS);
-		} while ((byte & 0x08) == 0);
+			scrubbed = pci_read_config16(MCHDEV, MCHCFGNS);
+		} while (! (scrubbed & 0x08));
+		pci_write_config16(MCHDEV, MCHCFGNS, (scrubbed & ~0x07) | 0x04);
 
-		pci_write_config8(MCHDEV, MCHCFGNS, (byte & 0xfc) | 0x04);
+		/* Some problem remains with XIP cache from ROM, so for
+		 * now, I disable XIP and also invalidate cache (again)
+		 * before the remaining small portion of romstage.
+		 *
+		 * Adding NOPs here has unexpected results, making
+		 * the first do_printk()/vtxprintf() after ECC scrub
+		 * fail midway. Sometimes vtxprintf() dumps strings
+		 * completely but with every 4th (fourth) character as "/".
+		 *
+		 * An inlined dump to console of the same string,
+		 * before vtxprintf() call, is successful. So the
+		 * source string should be completely in cache already.
+		 *
+		 * I need to review this again with CPU microcode
+		 * update applied pre-CAR.
+		 */
+
+		/* Disable and invalidate all cache. */
+		msr_t xip_mtrr = rdmsr(MTRRphysMask_MSR(1));
+		xip_mtrr.lo &= ~MTRRphysMaskValid;
+		invd();
+		wrmsr(MTRRphysMask_MSR(1), xip_mtrr);
+		invd();
+
 		RAM_DEBUG_MESSAGE("ECC state initialized.\n");
 
-		/* Clear the ECC error bits */
-		pci_write_config8(RASDEV, DRAM_FERR, 0x03);
-		pci_write_config8(RASDEV, DRAM_NERR, 0x03);
+		/* Recover IP for return from main. */
+		asm volatile(
+			"movd %%xmm0, %%edi;"
+			"movd %%xmm1, (%%edi);"
+			"movd %%xmm2, %%edi;"
+			"movd %%xmm3, (%%edi);"
+			 ::: "edi"
+		);
 
-		// Clear DRAM Interface error bits (write-one-clear)
-		pci_write_config32(RASDEV, FERR_GLOBAL, 1 << 18);
-		pci_write_config32(RASDEV, NERR_GLOBAL, 1 << 18);
+#if CONFIG_DEBUG_RAM_SETUP
+		unsigned int a1, a2;
+		asm volatile("movd %%xmm2, %%eax;" : "=a" (a1) ::);
+		asm volatile("movd %%xmm3, %%eax;" : "=a" (a2) ::);
+		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
+		asm volatile("movd %%xmm0, %%eax;" : "=a" (a1) ::);
+		asm volatile("movd %%xmm1, %%eax;" : "=a" (a2) ::);
+		printk(BIOS_DEBUG, "return EIP @ %x = %x\n", a1, a2);
+#endif
 	}
 
+	/* Clear the ECC error bits. */
+	pci_write_config8(RASDEV, DRAM_FERR, 0x03);
+	pci_write_config8(RASDEV, DRAM_NERR, 0x03);
+
+	/* Clear DRAM Interface error bits. */
+	pci_write_config32(RASDEV, FERR_GLOBAL, 1 << 18);
+	pci_write_config32(RASDEV, NERR_GLOBAL, 1 << 18);
 }
-#endif
 
 /**
  * Program the DRAM Timing register (DRT) of the E7501 (except for CAS#
@@ -1669,18 +1721,19 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	dram_controller_mode |= (1 << 29);
 	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
 	EXTRA_DELAY;
+}
 
-#ifdef __ROMCC__
-	/* Problems with cache-as-ram, disable for now */
-	initialize_ecc();
-#endif
-
-	dram_controller_mode = pci_read_config32(MCHDEV, DRC);	/* FCS_EN */
-	dram_controller_mode |= (1 << 17);	// NOTE: undocumented reserved bit
+/**
+ * @param ctrl PCI addresses of memory controller functions, and SMBus
+ *             addresses of DIMM slots on the mainboard.
+ */
+static void sdram_post_ecc(const struct mem_controller *ctrl)
+{
+	/* Fast CS# Enable. */
+	uint32_t dram_controller_mode = pci_read_config32(MCHDEV, DRC);
+	dram_controller_mode = pci_read_config32(MCHDEV, DRC);
+	dram_controller_mode |= (1 << 17);
 	pci_write_config32(MCHDEV, DRC, dram_controller_mode);
-
-	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\n");
-	DUMPNORTH();
 }
 
 /**
@@ -1815,7 +1868,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
  *
  *
  */
-void sdram_initialize(int controllers, const struct mem_controller *memctrl)
+void e7505_mch_init(const struct mem_controller *memctrl)
 {
 	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
@@ -1823,6 +1876,27 @@ void sdram_initialize(int controllers, const struct mem_controller *memctrl)
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);
 	sdram_enable(memctrl);
+}
+
+/**
+ * Scrub and reset error counts for ECC dimms.
+ *
+ * NOTE: this will invalidate cache and disable XIP cache for the
+ * short remaining part of romstage.
+ */
+void e7505_mch_scrub_ecc(unsigned long ret_addr)
+{
+	unsigned long ret_addr2 = (unsigned long)((unsigned long*)&ret_addr-1);
+	if ((pci_read_config32(MCHDEV, DRC)>>20 & 3) == 2)
+		initialize_ecc(ret_addr, ret_addr2);
+}
+
+void e7505_mch_done(const struct mem_controller *memctrl)
+{
+	sdram_post_ecc(memctrl);
+
+	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\n");
+	DUMPNORTH();
 }
 
 static int bios_reset_detected(void)

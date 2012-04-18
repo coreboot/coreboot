@@ -216,7 +216,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, madt);
 
 	/* HEST */
-	current	= (current + 0x07) & -0x08;
+	current = (current + 0x07) & -0x08;
 	hest = (acpi_hest_t *)current;
 	acpi_write_hest((void *)current);
 	acpi_add_table(rsdp, (void *)current);

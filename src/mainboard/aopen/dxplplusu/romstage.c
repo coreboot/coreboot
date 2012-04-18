@@ -20,32 +20,27 @@
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
-#include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
 #include <stdlib.h>
-#include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include <spd.h>
 
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "southbridge/intel/i82801dx/early_smbus.c"
 #include "southbridge/intel/i82801dx/reset.c"
 #include "northbridge/intel/e7505/raminit.h"
-#include "northbridge/intel/e7505/debug.c"
+
+#include <device/pnp_def.h>
 #include "superio/smsc/lpc47m10x/early_serial.c"
 
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M10X2_SP1)
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
-
-#include "northbridge/intel/e7505/raminit.c"
 
 void main(unsigned long bist)
 {
@@ -66,7 +61,7 @@ void main(unsigned long bist)
 	report_bist_failure(bist);
 
 	// If this is a warm boot, some initialization can be skipped
-	if (!bios_reset_detected()) {
+	if (!e7505_mch_is_ready()) {
 		enable_smbus();
 
 		/* The real MCH initialisation. */

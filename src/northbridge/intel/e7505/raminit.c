@@ -11,14 +11,25 @@
 
 /* converted to C 6/2004 yhlu */
 
+
+#include <stdint.h>
+#include <device/pci_def.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <arch/cpu.h>
+#include <stdlib.h>
+#include <console/console.h>
+
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <assert.h>
 #include <spd.h>
 #include <sdram_mode.h>
-#include <stdlib.h>
+
+#include "raminit.h"
 #include "e7505.h"
+#include "debug.h"
 
 /*-----------------------------------------------------------------------------
 Definitions:
@@ -1899,7 +1910,7 @@ void e7505_mch_done(const struct mem_controller *memctrl)
 	DUMPNORTH();
 }
 
-static int bios_reset_detected(void)
+int e7505_mch_is_ready(void)
 {
 	uint32_t dword = pci_read_config32(MCHDEV, DRC);
 	return !!(dword & DRC_DONE);

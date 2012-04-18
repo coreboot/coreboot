@@ -1,9 +1,20 @@
+
+#include <device/pci_def.h>
+#include <console/console.h>
+#include <stdlib.h>
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <spd.h>
+
+#include "raminit.h"
+#include "debug.h"
+
 /*
  * generic debug code, used by mainboard specific romstage.c
  *
  */
-#if 1
-static void print_debug_pci_dev(unsigned dev)
+
+void print_debug_pci_dev(unsigned dev)
 {
 	print_debug("PCI: ");
 	print_debug_hex8((dev >> 16) & 0xff);
@@ -13,7 +24,7 @@ static void print_debug_pci_dev(unsigned dev)
 	print_debug_hex8((dev >> 8) & 7);
 }
 
-static inline void print_pci_devices(void)
+void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -31,7 +42,7 @@ static inline void print_pci_devices(void)
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -58,7 +69,7 @@ static void dump_pci_device(unsigned dev)
 	print_debug("\n");
 }
 
-static inline void dump_pci_devices(void)
+void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -75,7 +86,7 @@ static inline void dump_pci_devices(void)
 	}
 }
 
-static inline void dump_pci_devices_on_bus(unsigned busn)
+void dump_pci_devices_on_bus(unsigned busn)
 {
         device_t dev;
         for(dev = PCI_DEV(busn, 0, 0);
@@ -92,7 +103,7 @@ static inline void dump_pci_devices_on_bus(unsigned busn)
         }
 }
 
-static inline void dump_spd_registers(const struct mem_controller *ctrl)
+void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	print_debug("\n");
@@ -121,7 +132,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 					print_debug(": ");
 #endif
 				}
-				status = smbus_read_byte(device, j);
+				status = spd_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
@@ -158,7 +169,7 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 					print_debug(": ");
 #endif
 				}
-				status = smbus_read_byte(device, j);
+				status = spd_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
@@ -174,13 +185,13 @@ static inline void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
-static inline void dump_smbus_registers(void)
+void dump_smbus_registers(void)
 {
 	unsigned device;
         print_debug("\n");
         for(device = 1; device < 0x80; device++) {
                 int j;
-		if( smbus_read_byte(device, 0) < 0 ) continue;
+		if( spd_read_byte(device, 0) < 0 ) continue;
 #if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "smbus: %02x", device);
 #else
@@ -190,7 +201,7 @@ static inline void dump_smbus_registers(void)
                 for(j = 0; j < 256; j++) {
                 	int status;
                         unsigned char byte;
-                        status = smbus_read_byte(device, j);
+                        status = spd_read_byte(device, j);
                         if (status < 0) {
 				break;
                         }
@@ -215,7 +226,7 @@ static inline void dump_smbus_registers(void)
 	}
 }
 
-static inline void dump_io_resources(unsigned port)
+void dump_io_resources(unsigned port)
 {
 
 	int i;
@@ -249,7 +260,7 @@ static inline void dump_io_resources(unsigned port)
         }
 }
 
-static inline void dump_mem(unsigned start, unsigned end)
+void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	print_debug("dump_mem:");
@@ -271,5 +282,4 @@ static inline void dump_mem(unsigned start, unsigned end)
 #endif
         }
         print_debug("\n");
- }
-#endif
+}

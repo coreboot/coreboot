@@ -15,8 +15,8 @@ struct mem_controller {
 	uint16_t channel1[MAX_DIMM_SOCKETS_PER_CHANNEL];
 };
 
-#ifndef __ROMCC__
-void sdram_initialize(int controllers, const struct mem_controller *ctrl);
-#endif
+void e7505_mch_init(const struct mem_controller *memctrl);
+void e7505_mch_scrub_ecc(unsigned long ret_addr);
+void e7505_mch_done(const struct mem_controller *memctrl);
 
 #endif /* RAMINIT_H */

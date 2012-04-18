@@ -68,8 +68,23 @@ void main(unsigned long bist)
 	// If this is a warm boot, some initialization can be skipped
 	if (!bios_reset_detected()) {
 		enable_smbus();
-		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
+
+		/* The real MCH initialisation. */
+		e7505_mch_init(memctrl);
+
+		/*
+		 * ECC scrub invalidates cache, so all stack in CAR
+		 * is lost. Only return addresses from main() and
+		 * scrub_ecc() are recovered to stack via xmm0-xmm3.
+		 */
+#if CONFIG_HW_SCRUBBER
+		unsigned long ret_addr = (unsigned long)((unsigned long*)&bist - 1);
+		e7505_mch_scrub_ecc(ret_addr);
+#endif
+
+		/* Hook for post ECC scrub settings and debug. */
+		e7505_mch_done(memctrl);
 	}
 
-	print_debug("SDRAM is up.\n");
+	printk(BIOS_DEBUG, "SDRAM is up.\n");
 }

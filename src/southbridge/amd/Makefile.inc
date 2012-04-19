@@ -15,14 +15,18 @@ subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += cimx
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx
 
+ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
+ifeq ($(CONFIG_CPU_AMD_AGESA), y)
+
 $(obj)/s3.rom:
 	echo "    S3 NVRAM   0xffff0000 (S3 storage area)"
 	awk 'BEGIN {for (i=0; i<20480; i++) {printf "%c", 255}}' > $@.tmp
 	mv $@.tmp $@
 
-ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 cbfs-files-y += s3nv
 s3nv-file := $(obj)/s3.rom
 s3nv-position := 0xffff0000
 s3nv-type := raw
-endif
+
+endif # CONFIG_CPU_AMD_AGESA == y
+endif # CONFIG_HAVE_ACPI_RESUME == y

@@ -27,14 +27,25 @@ ARCHDIR-$(CONFIG_ARCH_X86) := x86
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 
+## Final build results, which CBFSTOOL uses to create the final
+## rom image file, are placed under $(objcbfs).
+## These typically have suffixes .debug .elf .bin and .map
+export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+
+## Based on the active configuration, Makefile conditionally collects
+## the required assembly includes and saves them in a file.
+## Such files that do not have a clear one-to-one relation to a source
+## file under src/ are placed and built under $(objgenerated)
+export objgenerated := $(obj)/generated
+
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot
-coreboot: $(obj)/coreboot.rom
+coreboot: build-dirs $(obj)/coreboot.rom
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot lint lint-stable
+PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 
 #######################################################################
 # root source directories of coreboot
@@ -167,6 +178,9 @@ $(obj)/build.h: .xcompile
 
 $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
+
+build-dirs:
+	mkdir -p $(objcbfs) $(objgenerated)
 
 #######################################################################
 # Build the tools

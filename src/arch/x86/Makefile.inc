@@ -139,6 +139,21 @@ $(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.l
 	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
 
 #######################################################################
+# Common recipes for all stages
+
+$(objcbfs)/%.bin: $(objcbfs)/%.elf
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	$(OBJCOPY) -O binary $< $@
+
+$(objcbfs)/%.elf: $(objcbfs)/%.debug
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	cp $< $@.tmp
+	$(NM) -n $@.tmp | sort > $(basename $@).map
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$< $@.tmp
+	mv $@.tmp $@
+
+#######################################################################
 # Build the coreboot_ram (stage 2)
 
 $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions

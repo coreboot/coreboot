@@ -73,14 +73,14 @@ $(obj)/coreboot.pre1: $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
 	if [ -f $(obj)/coreboot_ap ]; \
 	then \
 		$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ap $(CONFIG_CBFS_PREFIX)/coreboot_ap $(CBFS_COMPRESS_FLAG); \
 	fi
-	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-stage $(objcbfs)/coreboot_ram.elf $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
 endif
@@ -156,23 +156,18 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 #######################################################################
 # Build the coreboot_ram (stage 2)
 
-$(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld #ldoptions
+$(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $(obj)/coreboot_ram.o
-	$(NM) -n $@.tmp | sort > $@.map
-	$(OBJCOPY) --only-keep-debug $@.tmp $@.debug
-	$(OBJCOPY) --strip-debug $@.tmp
-	$(OBJCOPY) --add-gnu-debuglink=$@.debug $@.tmp
-	mv $@.tmp $@
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $<
 
-$(obj)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
+$(objgenerated)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME) -Wl,--end-group
 
-$(obj)/coreboot.a: $$(ramstage-objs)
+$(objgenerated)/ramstage.a: $$(ramstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
-	rm -f $(obj)/coreboot.a
-	$(AR) cr $(obj)/coreboot.a $^
+	rm -f $@
+	$(AR) cr $@ $^
 
 #######################################################################
 # coreboot_ap.rom

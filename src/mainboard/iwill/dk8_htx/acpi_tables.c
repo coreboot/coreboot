@@ -251,7 +251,7 @@ unsigned long write_acpi_tables(unsigned long start)
                         c  = (uint8_t) ('A' + i - 1 - 6);
                 }
                 printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]); //pci0 and pci1 are in dsdt
-                current   = ( current + 0x07) & -0x08;
+                current = (current + 0x07) & -0x08;
                 ssdtx = (acpi_header_t *)current;
                 switch(sysconf.hcid[i]) {
                 case 1: //8132

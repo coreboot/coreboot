@@ -63,8 +63,8 @@ prebuild-files = \
 	$(call extract_nth,4,$(file)) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
-$(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
+	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(objcbfs)/bootblock.bin
 	$(prebuild-files) true
 	mv $@.tmp $@
 else
@@ -286,10 +286,6 @@ $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 #######################################################################
 # Build the bootblock
 
-$(obj)/coreboot.bootblock: $(obj)/bootblock.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY) -O binary $< $@
-
 bootblock_lds = $(src)/arch/x86/init/ldscript_failover.lb
 bootblock_lds += $(src)/cpu/x86/16bit/entry16.lds
 bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
@@ -306,7 +302,7 @@ bootblock_inc += $(chipset_bootblock_inc)
 ifeq ($(CONFIG_SSE),y)
 bootblock_inc += $(src)/cpu/x86/sse_enable.inc
 endif
-bootblock_inc += $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc
+bootblock_inc += $(objgenerated)/bootblock.inc
 bootblock_inc += $(src)/arch/x86/lib/walkcbfs.S
 
 bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__
@@ -314,38 +310,31 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__
 endif
 
-$(obj)/bootblock/ldscript.ld: $$(bootblock_lds) $(obj)/ldoptions
+$(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	mkdir -p $(obj)/bootblock
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
-$(obj)/bootblock/bootblock.S: $$(bootblock_inc)
+$(objgenerated)/bootblock.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	mkdir -p $(obj)/bootblock
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s
+$(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
+	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.S $(obj)/config.h $(obj)/build.h
+$(objgenerated)/bootblock.s: $(objgenerated)/bootblock.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/bootblock -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
+$(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC) $(INCLUDES) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
-		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
+	$(CC) $(INCLUDES) -MM -MT$(objgenerated)/bootblock.inc \
+		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
+$(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@.tmp -L$(obj) -T $(obj)/bootblock/ldscript.ld $<
-	$(NM) -n $@.tmp | sort > $(obj)/bootblock.map
-	$(OBJCOPY) --only-keep-debug $@.tmp $(obj)/bootblock.debug
-	$(OBJCOPY) --strip-debug $@.tmp
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/bootblock.debug $@.tmp
-	mv $@.tmp $@
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
 
 #######################################################################
 # Build the romstage

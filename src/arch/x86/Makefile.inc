@@ -230,7 +230,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/
 endif
 
 # Things that appear in every board
-romstage-srcs += $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mptable.c
@@ -265,11 +265,11 @@ endif
 #######################################################################
 # Build the final rom image
 
-$(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
+$(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage $(obj)/romstage.elf \
-		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(obj)/romstage/base_xip.txt)
+	$(CBFSTOOL) $@.tmp add-stage $(objcbfs)/romstage_xip.elf \
+		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(objcbfs)/base_xip.txt)
 	mv $@.tmp $@
 
 #######################################################################
@@ -328,54 +328,47 @@ $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootbloc
 #######################################################################
 # Build the romstage
 
-$(obj)/romstage.bin: $$(romstage-objs) $(obj)/romstage/link_null.ld
+$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/link_null.ld $(romstage-objs)
-	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld $(romstage-objs)
 
-$(obj)/coreboot.romstage: $$(romstage-objs) $(obj)/romstage/link_xip.ld
+$(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/link_xip.ld $(romstage-objs)
-	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
-	$(OBJCOPY) --only-keep-debug $(obj)/romstage.elf $(obj)/romstage.debug
-	$(OBJCOPY) --strip-debug $(obj)/romstage.elf
-	$(OBJCOPY) --add-gnu-debuglink=$(obj)/romstage.debug $(obj)/romstage.elf
-	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld $(romstage-objs)
 
-$(obj)/romstage/link_null.ld: $$(ldscripts) $(obj)/ldoptions
+$(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	mkdir -p $(obj)/romstage
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
 	mv $@.tmp $@
 
-$(obj)/romstage/link_xip.ld: $(obj)/romstage/link_null.ld $(obj)/romstage/base_xip.txt
+$(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
-	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(obj)/romstage/base_xip.txt > $@.tmp
-	sed -e '/ROMSTAGE_BASE/d' $(obj)/romstage/link_null.ld >> $@.tmp
+	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp
+	sed -e '/ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
 	mv $@.tmp $@
 
-$(obj)/romstage/base_xip.txt: $(obj)/coreboot.pre1 $(obj)/romstage.bin
+$(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(objcbfs)/romstage_null.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	sed -i -e 's/^/0x/g' $@.tmp
-	mv $@.tmp $@
+	sed -e 's/^/0x/g' $@.tmp > $@.tmp2
+	rm $@.tmp
+	mv $@.tmp2 $@
 
-$(obj)/romstage/crt0.S: $$(crt0s)
+$(objgenerated)/crt0.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	mkdir -p $(obj)/romstage
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.romstage.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+$(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
+	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S $(obj)/config.h $(obj)/build.h
+$(objgenerated)/crt0.s: $(objgenerated)/crt0.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 seabios:
 	$(MAKE) -C payloads/external/SeaBIOS -f Makefile.inc \

@@ -2,7 +2,6 @@
 	.code16
 .globl	reset_vector
 reset_vector:
-	wbinvd
 	.byte  0xe9
 	.int   _start - ( . + 2 )
 	/* Note: The above jump is hand coded to work around bugs in binutils.

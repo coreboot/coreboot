@@ -132,7 +132,7 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 
 	/* Align ACPI tables to 16 byte. */
-	start = (start + 0x0f) & -0x10;
+	start = ALIGN(start, 16);
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);

@@ -123,7 +123,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* Align ACPI tables to 16 bytes */
-	start = (start + 0x0f) & -0x10;
+	start = ALIGN(start, 16);
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
@@ -178,7 +178,7 @@ unsigned long write_acpi_tables(unsigned long start)
 			c = (u8) ('A' + i - 1 - 6);
 		}
 		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]);	/* pci0 and pci1 are in dsdt */
-		current = (current + 0x07) & -0x08;
+		current = ALIGN(current, 8);
 		ssdtx = (acpi_header_t *) current;
 		switch (sysconf.hcid[i]) {
 		case 1:	/* 8132 */

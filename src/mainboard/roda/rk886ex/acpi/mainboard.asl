@@ -24,7 +24,7 @@ Device (LID0)
 	Name(_HID, EisaId("PNP0C0D"))
 	Method(_LID, 0)
 	{
-		Return (1)
+		Return (\_SB.PCI0.LPCB.EC0.P61S)
 	}
 }
 

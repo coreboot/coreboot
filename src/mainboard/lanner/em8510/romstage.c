@@ -33,7 +33,6 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include "southbridge/intel/i82801dx/i82801dx.h"
-#include "southbridge/intel/i82801dx/early_smbus.c"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
 #include "superio/winbond/w83627thg/early_serial.c"

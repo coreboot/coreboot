@@ -31,8 +31,6 @@
 #include <spd.h>
 
 #include "southbridge/intel/i82801dx/i82801dx.h"
-#include "southbridge/intel/i82801dx/early_smbus.c"
-#include "southbridge/intel/i82801dx/reset.c"
 #include "northbridge/intel/e7505/raminit.h"
 #include "northbridge/intel/e7505/debug.c"
 #include "superio/smsc/lpc47m10x/early_serial.c"

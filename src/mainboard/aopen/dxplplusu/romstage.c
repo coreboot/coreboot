@@ -27,8 +27,6 @@
 #include <cpu/x86/bist.h>
 
 #include "southbridge/intel/i82801dx/i82801dx.h"
-#include "southbridge/intel/i82801dx/early_smbus.c"
-#include "southbridge/intel/i82801dx/reset.c"
 #include "northbridge/intel/e7505/raminit.h"
 
 #include <device/pnp_def.h>

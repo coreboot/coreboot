@@ -18,26 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
+#include <console/console.h>
+
 #include "i82801dx.h"
 
-#define SMBHSTSTAT 0x0
-#define SMBHSTCTL  0x2
-#define SMBHSTCMD  0x3
-#define SMBXMITADD 0x4
-#define SMBHSTDAT0 0x5
-#define SMBHSTDAT1 0x6
-#define SMBBLKDAT  0x7
-#define SMBTRNSADD 0x9
-#define SMBSLVDATA 0xa
-#define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf
-
-/* Between 1-10 seconds, We should never timeout normally
- * Longer than this is just painful when a timeout condition occurs.
- */
-//#define SMBUS_TIMEOUT (100*1000*10)
-
-static void enable_smbus(void)
+void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
@@ -112,7 +100,7 @@ static int smbus_wait_until_done(void)
 	return loops ? 0 : -3;
 }
 
-static int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned device, unsigned address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;

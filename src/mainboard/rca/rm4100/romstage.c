@@ -36,7 +36,6 @@
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
 #include "gpio.c"
-#include "southbridge/intel/i82801dx/early_smbus.c"
 #include "southbridge/intel/i82801dx/tco_timer.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)

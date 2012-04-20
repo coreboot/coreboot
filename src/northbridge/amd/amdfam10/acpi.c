@@ -362,7 +362,7 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 		}
 		printk(BIOS_DEBUG, "ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.core_id);
 
-		current	  = ( current + 0x0f) & -0x10;
+		current	  = ALIGN(current, 16);
 		ssdt = (acpi_header_t *)current;
 		memcpy(ssdt, AmlCode_sspr, sizeof(acpi_header_t));
 		current += ssdt->length;

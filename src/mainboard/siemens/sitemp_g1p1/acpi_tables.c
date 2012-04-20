@@ -174,7 +174,7 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_ta
 	return (unsigned long) (acpigen_get_current());
 }
 
-#define ALIGN_CURRENT current = ((current + 0x0f) & -0x10)
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
 
 unsigned long write_acpi_tables(unsigned long start)
 {

@@ -112,7 +112,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	get_bus_conf();		/* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* Align ACPI tables to 16byte */
-	start = (start + 0x0f) & -0x10;
+	start = ALIGN(start, 16);
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);

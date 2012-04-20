@@ -115,7 +115,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 #endif
 
-#define ALIGN_CURRENT current = ((current + 0x0f) & -0x10)
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;

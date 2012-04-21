@@ -22,6 +22,7 @@ CIMX_ROOT = $(src)/vendorcode/amd/cimx
 
 CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
 CIMX_INC  += -I$(src)/southbridge/amd/cimx/sb800
+CIMX_INC  += -I$(src)/include/cpu/amd/common
 CIMX_INC  += -I$(CIMX_ROOT)/sb800
 
 romstage-y += ACPILIB.c

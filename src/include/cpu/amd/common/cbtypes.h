@@ -20,8 +20,6 @@
 #ifndef _CBTYPES_H_
 #define _CBTYPES_H_
 
-//#include <stdint.h>
-
 typedef signed long long __int64;
 typedef void VOID;
 typedef unsigned int UINTN;
@@ -29,7 +27,12 @@ typedef signed char CHAR8;
 typedef unsigned char UINT8;
 typedef unsigned short UINT16;
 typedef unsigned int UINT32;
+typedef signed int INT32;
 typedef unsigned long long UINT64;
+typedef unsigned char BOOLEAN;
+
+#define DMSG_SB_TRACE   0x02
+#define TRACE(Arguments)
 
 #ifndef TRUE
 #define TRUE  1
@@ -37,10 +40,12 @@ typedef unsigned long long UINT64;
 #ifndef FALSE
 #define FALSE 0
 #endif
-typedef unsigned char BOOLEAN;
 
 #ifndef VOLATILE
 #define VOLATILE volatile
+#endif
+#ifndef CONST
+#define CONST const
 #endif
 
 #ifndef IN
@@ -48,6 +53,14 @@ typedef unsigned char BOOLEAN;
 #endif
 #ifndef OUT
 #define OUT
+#endif
+
+
+#ifndef STATIC
+#define STATIC static
+#endif
+#ifndef VOLATILE
+#define VOLATILE volatile
 #endif
 
 #endif

@@ -27,7 +27,7 @@
 #define _GPIO_H_
 
 #include <stdint.h>
-#include <cbtypes.h>
+#include <cpu/amd/common/cbtypes.h>
 
 /*----------------------------------------------------------------------------------------
  *                   D E F I N I T I O N S    A N D    M A C R O S

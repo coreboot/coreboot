@@ -22,7 +22,7 @@
 
 #pragma pack(push,1)
 
-#include "cbtypes.h"
+#include <cpu/amd/common/cbtypes.h>
 #include <console/console.h>
 #include <console/loglevel.h>
 #ifdef NULL

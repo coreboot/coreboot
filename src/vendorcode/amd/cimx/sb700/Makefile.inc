@@ -32,6 +32,7 @@ CIMX_ROOT = $(src)/vendorcode/amd/cimx
 
 SB_CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
 SB_CIMX_INC  += -I$(src)/southbridge/amd/cimx/sb700
+SB_CIMX_INC  += -I$(src)/include/cpu/amd/common
 SB_CIMX_INC  += -I$(CIMX_ROOT)/sb700
 
 romstage-y += ACPILIB.c

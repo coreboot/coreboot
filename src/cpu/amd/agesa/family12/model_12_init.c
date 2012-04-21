@@ -62,7 +62,7 @@ static void model_12_init(device_t dev)
 
   u8 i;
   msr_t msr;
-  struct node_core_id id;
+//  struct node_core_id id;
 #if CONFIG_LOGICAL_CPUS == 1
   u32 siblings;
 #endif

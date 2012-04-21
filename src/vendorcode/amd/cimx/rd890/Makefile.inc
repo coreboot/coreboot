@@ -32,6 +32,7 @@ CIMX_ROOT = $(src)/vendorcode/amd/cimx
 
 NB_CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
 NB_CIMX_INC  += -I$(src)/northbridge/amd/cimx/rd890
+NB_CIMX_INC  += -I$(src)/include/cpu/amd/common
 NB_CIMX_INC  += -I$(CIMX_ROOT)/rd890
 
 romstage-y += amdAcpiIvrs.c

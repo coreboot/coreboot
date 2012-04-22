@@ -89,7 +89,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 		ioapic_interrupts = 24;
 	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
 
-#ifdef CONFIG_IOAPIC_INTERRUPTS_ON_FSB
+#if CONFIG_IOAPIC_INTERRUPTS_ON_FSB
 	/*
 	 * For the Pentium 4 and above APICs deliver their interrupts
 	 * on the front side bus, enable that.
@@ -98,7 +98,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 	io_apic_write(ioapic_base, 0x03,
 		      io_apic_read(ioapic_base, 0x03) | (1 << 0));
 #endif
-#ifdef CONFIG_IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
+#if CONFIG_IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n");
 	io_apic_write(ioapic_base, 0x03, 0);
 #endif

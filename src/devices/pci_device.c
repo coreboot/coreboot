@@ -796,6 +796,28 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 }
 
 /**
+ * Check if a device id matches a PCI driver entry.
+ *
+ * The driver entry can either point at a zero terminated array of acceptable
+ * device IDs, or include a single device ID.
+ *
+ * @driver pointer to the PCI driver entry being checked
+ * @device_id PCI device ID of the device being matched
+ */
+static int device_id_match(struct pci_driver *driver, unsigned short device_id)
+{
+	if (driver->devices) {
+		unsigned short check_id;
+		const unsigned short *device_list = driver->devices;
+		while ((check_id = *device_list++) != 0)
+			if (check_id == device_id)
+				return 1;
+	}
+
+	return (driver->device == device_id);
+}
+
+/**
  * Set up PCI device operation.
  *
  * Check if it already has a driver. If not, use find_device_operations(),
@@ -817,7 +839,7 @@ static void set_pci_ops(struct device *dev)
 	 */
 	for (driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
-		    (driver->device == dev->device)) {
+		    device_id_match(driver, dev->device)) {
 			dev->ops = (struct device_operations *)driver->ops;
 			printk(BIOS_SPEW, "%s [%04x/%04x] %sops\n",
 			       dev_path(dev), driver->vendor, driver->device,

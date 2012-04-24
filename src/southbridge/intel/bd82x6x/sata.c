@@ -238,7 +238,27 @@ static const struct pci_driver pch_sata_mobile_ahci_driver __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x1c03,
 };
-static const struct pci_driver pch_sata_mobile_ahci_driver_a __pci_driver = {
+
+/* PantherPoint */
+static const struct pci_driver ppt_sata_desktop_normal_driver __pci_driver = {
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x1e00,
+};
+
+static const struct pci_driver ppt_sata_mobile_normal_driver __pci_driver = {
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x1e01,
+};
+
+static const struct pci_driver ppt_sata_desktop_ahci_driver __pci_driver = {
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x1e02,
+};
+
+static const struct pci_driver ppt_sata_mobile_ahci_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x1e03,

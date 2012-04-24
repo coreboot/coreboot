@@ -42,6 +42,7 @@ struct pci_driver {
 	const struct device_operations *ops;
 	unsigned short vendor;
 	unsigned short device;
+	const unsigned short *devices;
 };
 
 #define __pci_driver __attribute__ ((used,__section__(".rodata.pci_driver")))

@@ -91,7 +91,7 @@ void set_pcie_reset()
  */
 int is_dev3_present(void)
 {
-		return 0;
+	return 0;
 }
 
 /*
@@ -122,16 +122,16 @@ static void set_gpio40_gfx(void)
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
 	/* set the gfx to 1x16 lanes */
-		printk(BIOS_INFO, "Dev3 is not present. GFX Configuration is One x16 slot\n");
-		/* when the gpio40 is configured as GPIO, this will enable the output */
-		pci_write_config32(sm_dev, 0xf8, 0x4);
-		dword = pci_read_config32(sm_dev, 0xfc);
-		dword &= ~(1 << 10);
+	printk(BIOS_INFO, "Dev3 is not present. GFX Configuration is One x16 slot\n");
+	/* when the gpio40 is configured as GPIO, this will enable the output */
+	pci_write_config32(sm_dev, 0xf8, 0x4);
+	dword = pci_read_config32(sm_dev, 0xfc);
+	dword &= ~(1 << 10);
 
-        	/* When the gpio40 is configured as GPIO, this will represent the output value*/
-		/* 1 :enable two x8  , 0 : master slot enable only */
-		dword &=  ~(1 << 26);
-		pci_write_config32(sm_dev, 0xfc, dword);
+        /* When the gpio40 is configured as GPIO, this will represent the output value*/
+	/* 1 :enable two x8  , 0 : master slot enable only */
+	dword &=  ~(1 << 26);
+	pci_write_config32(sm_dev, 0xfc, dword);
 }
 
 /*************************************************

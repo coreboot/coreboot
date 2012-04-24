@@ -57,9 +57,10 @@ void hardwaremain(int boot_complete);
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+#if CONFIG_COLLECT_TIMESTAMPS
 	tsc_t timestamps[6];
-
 	timestamps[0] = rdtsc();
+#endif
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* console_init() MUST PRECEDE ALL printk()! */
@@ -81,26 +82,37 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
+#if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[1] = rdtsc();
+#endif
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
 
+#if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[2] = rdtsc();
+#endif
 	/* Now compute and assign the bus resources. */
 	dev_configure();
 	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
 
+#if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[3] = rdtsc();
+#endif
 	/* Now actually enable devices on the bus */
 	dev_enable();
 
+#if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[4] = rdtsc();
+#endif
 	/* And of course initialize devices on the bus */
 	dev_initialize();
 	post_code(POST_DEVICES_ENABLED);
 
+#if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[5] = rdtsc();
+#endif
+
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM

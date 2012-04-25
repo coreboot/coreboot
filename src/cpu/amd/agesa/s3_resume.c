@@ -137,8 +137,7 @@ void move_stack_high_mem(void)
 	void *high_stack;
 
 	high_stack = cbmem_find(CBMEM_ID_RESUME_SCRATCH);
-	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR,
-		(CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE));
+	memcpy(high_stack, (void *)BSP_STACK_BASE_ADDR,  CONFIG_HIGH_SCRATCH_HEAP_MEMORY_SIZE);
 
 	__asm__
 	    volatile ("add	%0, %%esp; add %0, %%ebp; invd"::"g"

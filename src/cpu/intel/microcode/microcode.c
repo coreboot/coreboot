@@ -1,5 +1,23 @@
-/* microcode.c:	Microcode update for PIII and later CPUS
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 Ronald G. Minnich
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+/* Microcode update for Intel PIII and later CPUs */
 
 #include <stdint.h>
 #include <console/console.h>
@@ -9,30 +27,28 @@
 
 struct microcode {
 	u32 hdrver;	/* Header Version */
-	u32 rev;	/* Patch ID       */
-	u32 date;	/* DATE           */
-	u32 sig;	/* CPUID          */
+	u32 rev;	/* Update Revision */
+	u32 date;	/* Date */
+	u32 sig;	/* Processor Signature */
 
-	u32 cksum;	/* Checksum       */
-	u32 ldrver;	/* Loader Version */
-	u32 pf;		/* Platform ID    */
+	u32 cksum;	/* Checksum */
+	u32 ldrver;	/* Loader Revision */
+	u32 pf;		/* Processor Flags */
 
-	u32 data_size;	/* Data size      */
-	u32 total_size;	/* Total size     */
+	u32 data_size;	/* Data Size */
+	u32 total_size;	/* Total Size */
 
 	u32 reserved[3];
-	u32 bits[1012];
 };
 
 static inline u32 read_microcode_rev(void)
 {
-	/* Some Intel Cpus can be very finicky about the
+	/* Some Intel CPUs can be very finicky about the
 	 * CPUID sequence used.  So this is implemented in
 	 * assembly so that it works reliably.
 	 */
 	msr_t msr;
-	__asm__ volatile (
-		"wrmsr\n\t"
+	asm volatile (
 		"xorl %%eax, %%eax\n\t"
 		"xorl %%edx, %%edx\n\t"
 		"movl $0x8b, %%ecx\n\t"
@@ -52,14 +68,14 @@ static inline u32 read_microcode_rev(void)
 
 void intel_update_microcode(const void *microcode_updates)
 {
-	unsigned int eax;
-	unsigned int pf, rev, sig;
+	u32 eax;
+	u32 pf, rev, sig;
 	unsigned int x86_model, x86_family;
 	const struct microcode *m;
 	const char *c;
 	msr_t msr;
 
-	/* cpuid sets msr 0x8B iff a microcode update has been loaded. */
+	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
 	msr.hi = 0;
 	wrmsr(0x8B, msr);
@@ -75,35 +91,38 @@ void intel_update_microcode(const void *microcode_updates)
 		msr = rdmsr(0x17);
 		pf = 1 << ((msr.hi >> 18) & 7);
 	}
-	print_debug("microcode_info: sig = 0x");
-	print_debug_hex32(sig);
-	print_debug(" pf=0x");
-	print_debug_hex32(pf);
-	print_debug(" rev = 0x");
-	print_debug_hex32(rev);
-	print_debug("\n");
+#if !defined(__ROMCC__)
+	/* If this code is compiled with ROMCC we're probably in
+	 * the bootblock and don't have console output yet.
+	 */
+	printk(BIOS_DEBUG, "microcode_info: sig=0x%08x pf=0x%08x rev=0x%08x\n",
+			sig, pf, rev);
+#endif
 
 	m = microcode_updates;
-	for(c = microcode_updates; m->hdrver;  m = (const struct microcode *)c) {
+	for(c = microcode_updates; m->hdrver; m = (const struct microcode *)c) {
 		if ((m->sig == sig) && (m->pf & pf)) {
 			unsigned int new_rev;
-			msr.lo = (unsigned long)(&m->bits) & 0xffffffff;
+			msr.lo = (unsigned long)c + sizeof(struct microcode);
 			msr.hi = 0;
 			wrmsr(0x79, msr);
 
 			/* Read back the new microcode version */
 			new_rev = read_microcode_rev();
 
-			print_debug("microcode updated to revision: ");
-			print_debug_hex32(new_rev);
-			print_debug(" from revision ");
-			print_debug_hex32(rev);
-			print_debug("\n");
+#if !defined(__ROMCC__)
+			printk(BIOS_DEBUG, "microcode updated to revision: "
+				    "%08x from revision %08x\n", new_rev, rev);
+#endif
 			break;
 		}
+
 		if (m->total_size) {
 			c += m->total_size;
 		} else {
+#if !defined(__ROMCC__)
+			printk(BIOS_WARNING, "Microcode has no valid size field!\n");
+#endif
 			c += 2048;
 		}
 	}

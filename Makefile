@@ -123,7 +123,7 @@ CCACHE:=$(word 1,$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH)))))
 ifeq ($(CCACHE),)
 $(error ccache selected, but not found in PATH)
 endif
-CCACHE:=CCACHE_COMPILERCHECK=content CCACHE_BASEDIR=$(top) $(CCACHE)
+CCACHE:=CCACHE_COMPILERCHECK=content CCACHE_NODIRECT=yes CCACHE_BASEDIR=$(top) $(CCACHE)
 CC := $(CCACHE) $(CC)
 HOSTCC := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)

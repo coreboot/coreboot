@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <cpu/x86/tsc.h>
 #include "pch.h"
 
 static void store_initial_timestamp(void)
@@ -59,7 +62,6 @@ static void enable_port80_on_lpc(void)
 	u32 reg32 = *gcs;
 	reg32 = reg32 & ~0x04;
 	*gcs = reg32;
-	post_code(0x01);
 #endif
 }
 

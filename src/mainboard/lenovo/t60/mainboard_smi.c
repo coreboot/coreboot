@@ -159,7 +159,7 @@ void mainboard_smi_gpi(u16 gpi)
 		mainboard_smi_handle_ec_sci();
 }
 
-int mainboard_apm_cnt(u8 data)
+int mainboard_smi_apmc(u8 data)
 {
 	u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 	u8 tmp;

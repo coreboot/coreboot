@@ -405,7 +405,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 {
 	u32 pmctrl;
 	u8 reg8;
-	void (*mainboard_apmc)(u8 apmc) = mainboard_smi_apmc;
+	int (*mainboard_apmc)(u8 apmc) = mainboard_smi_apmc;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
 

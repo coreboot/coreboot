@@ -34,6 +34,10 @@
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #endif
+#if CONFIG_CHROMEOS
+#include <arch/acpi.h>
+#include <vendorcode/google/chromeos/gnvs.h>
+#endif
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {

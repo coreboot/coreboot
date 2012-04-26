@@ -366,7 +366,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 	/* Emulate B2 register as the FADT / Linux expects it */
 
 	reg8 = inb(APM_CNT);
-	if (mainboard_apm_cnt && mainboard_apm_cnt(reg8))
+	if (mainboard_smi_apmc && mainboard_smi_apmc(reg8))
 		return;
 
 	switch (reg8) {

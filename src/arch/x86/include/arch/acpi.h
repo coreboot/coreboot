@@ -55,7 +55,10 @@ typedef struct acpi_gen_regaddr {
 	u8  space_id;		/* Address space ID */
 	u8  bit_width;		/* Register size in bits */
 	u8  bit_offset;		/* Register bit offset */
-	u8  resv;		/* FIXME: Access size in ACPI 2.0/3.0/4.0 */
+	union {
+		u8  resv;			/* Reserved in ACPI 2.0 - 2.0b */
+		u8  access_size;	/* Access size in ACPI 2.0c/3.0/4.0/5.0 */
+	};
 	u32 addrl;		/* Register address, low 32 bits */
 	u32 addrh;		/* Register address, high 32 bits */
 } __attribute__ ((packed)) acpi_addr_t;
@@ -65,9 +68,17 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_ADDRESS_SPACE_PCI		   2	/* PCI config space */
 #define ACPI_ADDRESS_SPACE_EC		   3	/* Embedded controller */
 #define ACPI_ADDRESS_SPACE_SMBUS	   4	/* SMBus */
+#define ACPI_ADDRESS_SPACE_PCC		0x0A	/* Platform Comm. Channel */
 #define ACPI_ADDRESS_SPACE_FIXED	0x7f	/* Functional fixed hardware */
 /* 0x80-0xbf: Reserved */
 /* 0xc0-0xff: OEM defined */
+
+/* Access size definitions for Generic address structure */
+#define ACPI_ACCESS_SIZE_UNDEFINED		0	/* Undefined (legacy reasons) */
+#define ACPI_ACCESS_SIZE_BYTE_ACCESS	1
+#define ACPI_ACCESS_SIZE_WORD_ACCESS	2
+#define ACPI_ACCESS_SIZE_DWORD_ACCESS	3
+#define ACPI_ACCESS_SIZE_QWORD_ACCESS	4
 
 /* Generic ACPI header, provided by (almost) all tables */
 typedef struct acpi_table_header {
@@ -286,6 +297,13 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_gpe1_blk;
 } __attribute__ ((packed)) acpi_fadt_t;
 
+/* FADT TABLE Revision values */
+#define ACPI_FADT_REV_ACPI_1_0		1
+#define ACPI_FADT_REV_ACPI_2_0		3
+#define ACPI_FADT_REV_ACPI_3_0		4
+#define ACPI_FADT_REV_ACPI_4_0		4
+#define ACPI_FADT_REV_ACPI_5_0		5
+
 /* FADT Feature Flags */
 #define ACPI_FADT_WBINVD		(1 << 0)
 #define ACPI_FADT_WBINVD_FLUSH		(1 << 1)
@@ -307,7 +325,10 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_REMOTE_POWER_ON	(1 << 17)
 #define ACPI_FADT_APIC_CLUSTER		(1 << 18)
 #define ACPI_FADT_APIC_PHYSICAL		(1 << 19)
-/* Bits 20-31: reserved */
+/* Bits 20-31: reserved ACPI 3.0 & 4.0 */
+#define ACPI_FADT_HW_REDUCED_ACPI	(1 << 20)
+#define ACPI_FADT_LOW_PWR_IDLE_S0	(1 << 21)
+/* bits 22-31: reserved ACPI 5.0 */
 
 /* FADT Boot Architecture Flags */
 #define ACPI_FADT_LEGACY_DEVICES	(1 << 0)
@@ -315,6 +336,7 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_VGA_NOT_PRESENT	(1 << 2)
 #define ACPI_FADT_MSI_NOT_SUPPORTED	(1 << 3)
 #define ACPI_FADT_NO_PCIE_ASPM_CONTROL	(1 << 4)
+#define ACPI_FADT_LEGACY_FREE	0; /* No legacy devices (including 8042) */
 
 /* FADT Preferred Power Management Profile */
 enum acpi_preferred_pm_profiles {
@@ -326,6 +348,7 @@ enum acpi_preferred_pm_profiles {
 	PM_SOHO_SERVER  	= 5,
 	PM_APPLIANCE_PC		= 6,
 	PM_PERFORMANCE_SERVER	= 7,
+	PM_TABLET		= 8,	/* ACPI 5.0 */
 };
 
 /* FACS (Firmware ACPI Control Structure) */
@@ -458,9 +481,9 @@ void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);
-#else
+#else	/* CONFIG_HAVE_ACPI_RESUME */
 #define acpi_slp_type 0
-#endif
+#endif	/* CONFIG_HAVE_ACPI_RESUME */
 
 /* northbridge/amd/amdfam10/amdfam10_acpi.c */
 unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
@@ -473,6 +496,6 @@ void generate_cpu_entries(void);
 #define write_acpi_tables(start) (start)
 #define acpi_slp_type 0
 
-#endif
+#endif	/* CONFIG_GENERATE_ACPI_TABLES */
 
-#endif
+#endif  /* __ASM_ACPI_H */

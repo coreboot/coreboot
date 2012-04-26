@@ -1,11 +1,11 @@
 #ifndef CPU_CPU_H
 #define CPU_CPU_H
 
-struct device;
-struct bus;
 #include <arch/cpu.h>
 
+#if !defined(__ROMCC__)
 void cpu_initialize(void);
+struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void secondary_cpu_init(void);
 
@@ -26,5 +26,6 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 extern struct cpu_driver cpu_drivers[];
 /** end of compile time generated pci driver array */
 extern struct cpu_driver ecpu_drivers[];
+#endif /* !__ROMCC__ */
 
 #endif /* CPU_CPU_H */

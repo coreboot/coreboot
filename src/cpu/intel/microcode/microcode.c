@@ -95,7 +95,7 @@ void intel_update_microcode(const void *microcode_updates)
 	/* If this code is compiled with ROMCC we're probably in
 	 * the bootblock and don't have console output yet.
 	 */
-	printk(BIOS_DEBUG, "microcode_info: sig=0x%08x pf=0x%08x rev=0x%08x\n",
+	printk(BIOS_DEBUG, "microcode: sig=0x%x pf=0x%x revision=0x%x\n",
 			sig, pf, rev);
 #endif
 
@@ -111,8 +111,10 @@ void intel_update_microcode(const void *microcode_updates)
 			new_rev = read_microcode_rev();
 
 #if !defined(__ROMCC__)
-			printk(BIOS_DEBUG, "microcode updated to revision: "
-				    "%08x from revision %08x\n", new_rev, rev);
+			printk(BIOS_DEBUG, "microcode: updated to revision "
+				    "0x%x date=%04x-%02x-%02x\n", new_rev,
+				    m->date & 0xffff, (m->date >> 16) & 0xff,
+				    (m->date >> 24) & 0xff);
 #endif
 			break;
 		}

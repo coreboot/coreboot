@@ -27,6 +27,7 @@ romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += ../../../arch/x86/lib/walkcbfs.S
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 # We don't ship that, but booting without it is bound to fail

@@ -18,6 +18,7 @@
  */
 
 #include <types.h>
+#include <string.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include "gnvs.h"

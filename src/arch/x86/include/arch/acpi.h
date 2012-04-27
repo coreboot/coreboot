@@ -411,6 +411,13 @@ typedef struct acpi_hest_hen {
 	u32 error_threshold_win;
 } __attribute__ ((packed)) acpi_hest_hen_t;
 
+typedef struct acpi_cstate {
+	u8  ctype;
+	u16 latency;
+	u32 power;
+	acpi_addr_t resource;
+} __attribute__ ((packed)) acpi_cstate_t;
+
 /* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);

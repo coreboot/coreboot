@@ -62,7 +62,7 @@ static int get_fsb(void)
 	return 200;
 }
 
-int __attribute__((weak)) get_cst_entries(struct cst_entry **entries __attribute__((unused)))
+int __attribute__((weak)) get_cst_entries(acpi_cstate_t **entries __attribute__((unused)))
 {
 	return 0;
 }
@@ -76,7 +76,7 @@ void generate_cpu_entries(void)
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; // this assumes that all CPUs share the same layout
 	int count;
-	struct cst_entry *cst_entries;
+	acpi_cstate_t *cst_entries;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n", numcpus, cores_per_package);
 

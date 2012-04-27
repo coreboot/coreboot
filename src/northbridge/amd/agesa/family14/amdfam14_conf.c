@@ -303,3 +303,25 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 }
 
 #endif // !defined(__PRE_RAM__)
+
+/********************************************************************
+* Change the vendor / device IDs to match the generic VBIOS header.
+********************************************************************/
+u32 map_oprom_vendev(u32 vendev)
+{
+	u32 new_vendev=vendev;
+
+	switch(vendev) {
+	case 0x10029809:
+	case 0x10029808:
+	case 0x10029807:
+	case 0x10029806:
+	case 0x10029805:
+	case 0x10029804:
+	case 0x10029803:
+		new_vendev=0x10029802;
+		break;
+	}
+
+	return new_vendev;
+}

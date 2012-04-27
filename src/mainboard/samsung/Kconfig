@@ -6,9 +6,13 @@ choice
 config BOARD_SAMSUNG_LUMPY
 	bool "Lumpy"
 
+config BOARD_SAMSUNG_STUMPY
+	bool "Stumpy"
+
 endchoice
 
 source "src/mainboard/samsung/lumpy/Kconfig"
+source "src/mainboard/samsung/stumpy/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

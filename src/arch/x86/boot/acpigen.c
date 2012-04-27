@@ -35,7 +35,7 @@ static char *gencurrent;
 char *len_stack[ACPIGEN_LENSTACK_SIZE];
 int ltop = 0;
 
-static int acpigen_write_len_f(void)
+int acpigen_write_len_f(void)
 {
 	ASSERT(ltop < (ACPIGEN_LENSTACK_SIZE - 1))
 	    len_stack[ltop++] = gencurrent;

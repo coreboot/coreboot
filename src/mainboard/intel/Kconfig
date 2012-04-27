@@ -9,6 +9,8 @@ config BOARD_INTEL_D945GCLF
 	bool "D945GCLF"
 config BOARD_INTEL_EAGLEHEIGHTS
 	bool "EagleHeights"
+config BOARD_INTEL_EMERALDLAKE2
+	bool "Emerald Lake 2 CRB"
 config BOARD_INTEL_JARRELL
 	bool "Jarrell (SE7520JR2)"
 config BOARD_INTEL_MTARVON
@@ -23,6 +25,7 @@ endchoice
 source "src/mainboard/intel/d810e2cb/Kconfig"
 source "src/mainboard/intel/d945gclf/Kconfig"
 source "src/mainboard/intel/eagleheights/Kconfig"
+source "src/mainboard/intel/emeraldlake2/Kconfig"
 source "src/mainboard/intel/jarrell/Kconfig"
 source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"

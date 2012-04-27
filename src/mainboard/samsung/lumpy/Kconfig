@@ -1,0 +1,59 @@
+if BOARD_SAMSUNG_LUMPY
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select BOARD_HAS_FADT
+	select BOARD_ROMSIZE_KB_8192
+	select CHROMEOS
+	select CPU_INTEL_SOCKET_RPGA989
+	select EC_SMSC_MEC1308
+	select EXTERNAL_MRC_BLOB
+	select GFXUMA
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_MAINBOARD_RESOURCES
+	select HAVE_OPTION_TABLE
+	select HAVE_SMI_HANDLER
+	select MMCONF_SUPPORT
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_SMSC_MEC1308
+
+config MAINBOARD_DIR
+	string
+	default samsung/lumpy
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Lumpy"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 8
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0106.rom"
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1ae0
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0xc000
+
+config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	bool
+	default n
+
+endif # BOARD_SAMSUNG_LUMPY

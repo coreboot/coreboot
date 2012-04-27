@@ -25,7 +25,12 @@ ifeq ($(OS_ARCH), Darwin)
 NVRAMTOOLFLAGS += -framework DirectHW
 endif
 ifeq ($(OS_ARCH), NetBSD)
-NVRAMTOOLFLAGS += -l$(shell uname -p)
+NVRAMTOOLLDLFLAGS = -l$(shell uname -p)
+endif
+ifeq ($(shell uname -o), Cygwin)
+NVRAMTOOLFLAGS += -O2 -g -Wall -W -D__GLIBC__
+NVRAMTOOLLDFLAGS = -lioperm
+HOSTCFLAGS =
 endif
 
 nvramtoolobj :=
@@ -43,6 +48,6 @@ $(objutil)/nvramtool/%.o: $(top)/util/nvramtool/%.c
 
 $(objutil)/nvramtool/nvramtool: $(objutil)/nvramtool $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli $(addprefix $(objutil)/nvramtool/,$(nvramtoolobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(NVRAMTOOLFLAGS) -o $@ $(addprefix $(objutil)/nvramtool/,$(nvramtoolobj))
+	$(HOSTCC) $(NVRAMTOOLFLAGS) -o $@ $(addprefix $(objutil)/nvramtool/,$(nvramtoolobj)) $(NVRAMTOOLLDFLAGS)
 
 

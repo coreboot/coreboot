@@ -24,10 +24,15 @@ PROGRAM = ectool
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 
+OS_ARCH = $(shell uname -o)
+ifeq ($(OS_ARCH), Cygwin)
+LDFLAGS = -lioperm
+endif
+
 all: $(PROGRAM)
 
 $(PROGRAM): ec.o ectool.o
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 install: $(PROGRAM)
 	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin

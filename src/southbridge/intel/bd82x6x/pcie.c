@@ -25,17 +25,6 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 
-static u16 pcie_port_link_width(int port)
-{
-	u16 link_width;
-
-	link_width = pci_read_config16(
-		dev_find_slot(0, PCI_DEVFN(0x1c, port)), 0x52);
-	link_width >>= 4;
-	link_width &= 0x3f;
-	return link_width;
-}
-
 static void pch_pcie_pm_early(struct device *dev)
 {
 	u16 link_width_p0, link_width_p4;
@@ -43,8 +32,35 @@ static void pch_pcie_pm_early(struct device *dev)
 	u32 reg32;
 	u8 reg8;
 
-	link_width_p0 = pcie_port_link_width(0);
-	link_width_p4 = pcie_port_link_width(4);
+	reg32 = RCBA32(RPC);
+
+	/* Port 0-3 link aggregation from PCIEPCS1[1:0] soft strap */
+	switch (reg32 & 3) {
+	case 3:
+		link_width_p0 = 4;
+		break;
+	case 1:
+	case 2:
+		link_width_p0 = 2;
+		break;
+	case 0:
+	default:
+		link_width_p0 = 1;
+	}
+
+	/* Port 4-7 link aggregation from PCIEPCS2[1:0] soft strap */
+	switch ((reg32 >> 2) & 3) {
+	case 3:
+		link_width_p4 = 4;
+		break;
+	case 1:
+	case 2:
+		link_width_p4 = 2;
+		break;
+	case 0:
+	default:
+		link_width_p4 = 1;
+	}
 
 	/* Enable dynamic clock gating where needed */
 	reg8 = pci_read_config8(dev, 0xe1);
@@ -54,6 +70,8 @@ static void pch_pcie_pm_early(struct device *dev)
 			slot_power_limit = 40; /* 40W for x4 */
 		else if (link_width_p0 == 2)
 			slot_power_limit = 20; /* 20W for x2 */
+		reg8 |= 0x3f;
+		break;
 	case 4: /* Port 4 */
 		if (link_width_p4 == 4)
 			slot_power_limit = 40; /* 40W for x4 */

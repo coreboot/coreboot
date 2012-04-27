@@ -49,6 +49,7 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat
 			u32 control, u32 status);
 typedef enum { SW_ALL=0xfc, SW_ANY=0xfd, HW_ALL=0xfe } PSD_coord;
 int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
+int acpigen_write_CST_package_entry(acpi_cstate_t *cstate);
 int acpigen_write_CST_package(acpi_cstate_t *entry, int nentries);
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
 int acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list);

@@ -448,7 +448,7 @@ int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	return len + lenh;
 }
 
-static int acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
+int acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 {
 	int len, len0;
 	char *start, *end;

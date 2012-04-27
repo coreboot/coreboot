@@ -418,6 +418,14 @@ typedef struct acpi_cstate {
 	acpi_addr_t resource;
 } __attribute__ ((packed)) acpi_cstate_t;
 
+typedef struct acpi_tstate {
+	u32 percent;
+	u32 power;
+	u32 latency;
+	u32 control;
+	u32 status;
+} __attribute__ ((packed)) acpi_tstate_t;
+
 /* These are implemented by the target port or north/southbridge. */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);

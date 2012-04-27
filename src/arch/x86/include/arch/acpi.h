@@ -70,6 +70,12 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_ADDRESS_SPACE_SMBUS	   4	/* SMBus */
 #define ACPI_ADDRESS_SPACE_PCC		0x0A	/* Platform Comm. Channel */
 #define ACPI_ADDRESS_SPACE_FIXED	0x7f	/* Functional fixed hardware */
+#define  ACPI_FFIXEDHW_VENDOR_INTEL	   1	/* Intel */
+#define  ACPI_FFIXEDHW_CLASS_HLT	   0	/* C1 Halt */
+#define  ACPI_FFIXEDHW_CLASS_IO_HLT	   1	/* C1 I/O then Halt */
+#define  ACPI_FFIXEDHW_CLASS_MWAIT	   2	/* MWAIT Native C-state */
+#define  ACPI_FFIXEDHW_FLAG_HW_COORD	   1	/* Hardware Coordination bit */
+#define  ACPI_FFIXEDHW_FLAG_BM_STS	   2	/* BM_STS avoidance bit */
 /* 0x80-0xbf: Reserved */
 /* 0xc0-0xff: OEM defined */
 

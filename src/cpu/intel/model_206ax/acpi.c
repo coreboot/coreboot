@@ -76,12 +76,18 @@ static int generate_cstate_entries(acpi_cstate_t *cstates,
 	length += acpigen_write_byte(cstate_count);
 
 	/* Add an entry if the level is enabled */
-	if (c1 > 0)
-		length += acpigen_write_CST_package(1, &cstates[c1]);
-	if (c2 > 0)
-		length += acpigen_write_CST_package(2, &cstates[c2]);
-	if (c3 > 0)
-		length += acpigen_write_CST_package(3, &cstates[c3]);
+	if (c1 > 0) {
+		cstates[c1].ctype = 1;
+		length += acpigen_write_CST_package_entry(&cstates[c1]);
+	}
+	if (c2 > 0) {
+		cstates[c2].ctype = 2;
+		length += acpigen_write_CST_package_entry(&cstates[c2]);
+	}
+	if (c3 > 0) {
+		cstates[c2].ctype = 2;
+		length += acpigen_write_CST_package_entry(&cstates[c3]);
+	}
 
 	acpigen_patch_len(length - 1);
 	return length;

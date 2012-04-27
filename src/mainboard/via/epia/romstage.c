@@ -9,7 +9,7 @@
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "lib/debug.c"
 #include "southbridge/via/vt8231/early_smbus.c"

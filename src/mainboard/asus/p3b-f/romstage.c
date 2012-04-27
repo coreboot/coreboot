@@ -28,7 +28,7 @@
 #include <console/console.h>
 #include "southbridge/intel/i82371eb/i82371eb.h"
 #include "northbridge/intel/i440bx/raminit.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */

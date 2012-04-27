@@ -3,4 +3,4 @@ driver-y += model_fxx_init.c
 ramstage-y += apic_timer.c
 ramstage-y += model_fxx_update_microcode.c
 ramstage-y += processor_name.c
-ramstage-y += powernow_acpi.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += powernow_acpi.c

@@ -498,4 +498,8 @@ void generate_cpu_entries(void);
 
 #endif	/* CONFIG_GENERATE_ACPI_TABLES */
 
+#if CONFIG_CHROMEOS
+void acpi_get_vdat_info(void **vdat_addr, uint32_t *vdat_size);
+#endif /* CONFIG_CHROMEOS */
+
 #endif  /* __ASM_ACPI_H */

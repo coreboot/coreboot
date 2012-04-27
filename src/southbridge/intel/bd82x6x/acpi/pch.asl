@@ -211,26 +211,32 @@ Scope(\)
 		, 5,
 		HPTE, 1,	// Address Enable
 		Offset(0x3418), // FD (Function Disable)
-		, 2,		// Reserved
-		SATD, 1,	// SATA disable
+		, 1,		// Reserved
+		PCID, 1,	// PCI bridge disable
+		SA1D, 1,	// SATA1 disable
 		SMBD, 1,	// SMBUS disable
 		HDAD, 1,	// Azalia disable
-		, 2,		// Reserved
-		ILND, 1,	// Internal LAN disable
-		US1D, 1,	// UHCI #1 disable
-		US2D, 1,	// UHCI #2 disable
-		US3D, 1,	// UHCI #3 disable
-		US4D, 1,	// UHCI #4 disable
-		, 2,		// Reserved
+		, 8,		// Reserved
+		EH2D, 1,	// EHCI #2 disable
 		LPBD, 1,	// LPC bridge disable
-		EHCD, 1,	// EHCI disable
-		Offset(0x341a), // FD Root Ports
+		EH1D, 1,	// EHCI #1 disable
 		RP1D, 1,	// Root Port 1 disable
 		RP2D, 1,	// Root Port 2 disable
 		RP3D, 1,	// Root Port 3 disable
-		RP4D, 1		// Root Port 4 disable
+		RP4D, 1,	// Root Port 4 disable
+		RP5D, 1,	// Root Port 5 disable
+		RP6D, 1,	// Root Port 6 disable
+		RP7D, 1,	// Root Port 7 disable
+		RP8D, 1,	// Root Port 8 disable
+		TTRD, 1,	// Thermal sensor registers disable
+		SA2D, 1,	// SATA2 disable
+		Offset(0x3428),	// FD2 (Function Disable 2)
+		BDFD, 1,	// Display BDF
+		ME1D, 1,	// ME Interface 1 disable
+		ME2D, 1,	// ME Interface 2 disable
+		IDRD, 1,	// IDE redirect disable
+		KTCT, 1,	// Keyboard Text redirect disable
 	}
-
 }
 
 // High Definition Audio (Azalia) 0:1b.0

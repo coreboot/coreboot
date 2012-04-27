@@ -26,7 +26,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include <arch/llshell.h>
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include <console/console.h>
 #include <lib.h>
 #include "superio/smsc/smscsuperio/early_serial.c"

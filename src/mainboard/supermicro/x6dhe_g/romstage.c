@@ -6,7 +6,7 @@
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/intel/esb6300/early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"

@@ -135,7 +135,7 @@ static inline int get_option(void *dest __attribute__((unused)),
 #define read_option_lowlevel(start, size, def) def
 #endif
 #else
-#include <pc80/mc146818rtc_early.c>
+#include <drivers/pc80/mc146818rtc_early.c>
 #endif
 #define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 

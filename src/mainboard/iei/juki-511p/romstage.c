@@ -28,7 +28,7 @@
 #include "superio/winbond/w83977f/early_serial.c"
 #include "southbridge/amd/cs5530/enable_rom.c"
 #include "cpu/x86/bist.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "northbridge/amd/gx1/raminit.c"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977F_SP1)

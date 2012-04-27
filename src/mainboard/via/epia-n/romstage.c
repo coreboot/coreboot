@@ -30,7 +30,7 @@
 #include "northbridge/via/cn400/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "southbridge/via/vt8237r/early_smbus.c"

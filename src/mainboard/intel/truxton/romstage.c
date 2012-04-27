@@ -26,7 +26,7 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include <console/console.h>
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"

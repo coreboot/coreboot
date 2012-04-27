@@ -69,3 +69,13 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x00a71e45,
 	0x00a71f43
 };
+
+static const u32 mainboard_pc_beep_verbs[] = {
+	0x00170500,			/* power up codec */
+	0x00270500,			/* power up DAC */
+	0x00670500,			/* power up speaker */
+	0x00670740,			/* enable speaker output */
+	0x0023B04B,			/* set DAC gain */
+};
+static const u32 mainboard_pc_beep_verbs_size =
+	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);

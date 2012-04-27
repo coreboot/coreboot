@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- * Copyright (C) 2011 Google Inc.
+ * Copyright (C) 2012 The Chromium OS Authors.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@
 
 #ifndef SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
 #define SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
+
+/* PCH types */
+#define PCH_TYPE_CPT	0x1c /* CougarPoint */
+#define PCH_TYPE_PPT	0x1e /* IvyBridge */
 
 /* PCH stepping values for LPC device */
 #define PCH_STEP_A0	0
@@ -57,6 +61,8 @@ void intel_pch_finalize_smm(void);
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include "chip.h"
 int pch_silicon_revision(void);
+int pch_silicon_type(void);
+int pch_silicon_supported(int type, int rev);
 void pch_enable(device_t dev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 #else
@@ -270,8 +276,17 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define RP6D		0x0180	/* 32bit */
 #define RP6BA		0x0188	/* 64bit */
 
-#define RPC		0x0224	/* 32bit */
-#define RPFN		0x0238	/* 32bit */
+#define RPC		0x0400	/* 32bit */
+#define RPFN		0x0404	/* 32bit */
+
+/* Root Port configuratinon space hide */
+#define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
+/* Get the function number assigned to a Root Port */
+#define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
+/* Set the function number for a Root Port */
+#define RPFN_FNSET(port,func)   (((func) & 7) << ((port) * 4))
+/* Root Port function number mask */
+#define RPFN_FNMASK(port)       (7 << ((port) * 4))
 
 #define TRSR		0x1e00	/*  8bit */
 #define TRCR		0x1e10	/* 64bit */

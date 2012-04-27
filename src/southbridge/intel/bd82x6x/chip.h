@@ -72,6 +72,9 @@ struct southbridge_intel_bd82x6x_config {
 	uint32_t gen2_dec;
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
+
+	/* Enable linear PCIe Root Port function numbers starting at zero */
+	uint8_t pcie_port_coalesce;
 };
 
 extern struct chip_operations southbridge_intel_bd82x6x_ops;

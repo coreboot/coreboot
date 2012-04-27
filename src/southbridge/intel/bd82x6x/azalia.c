@@ -92,6 +92,8 @@ no_codec:
 
 const u32 * cim_verb_data = NULL;
 u32 cim_verb_data_size = 0;
+const u32 * pc_beep_verbs = NULL;
+u32 pc_beep_verbs_size = 0;
 
 static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 {
@@ -217,6 +219,16 @@ static void codecs_init(struct device *dev, u32 base, u32 codec_mask)
 	for (i = 3; i >= 0; i--) {
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
+	}
+
+	for (i = 0; i < pc_beep_verbs_size; i++) {
+		if (wait_for_ready(base) == -1)
+			return;
+
+		write32(base + 0x60, pc_beep_verbs[i]);
+
+		if (wait_for_valid(base) == -1)
+			return;
 	}
 }
 

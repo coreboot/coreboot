@@ -30,7 +30,7 @@
 #include <lib.h>
 #include "northbridge/via/cn700/raminit.h"
 #include "cpu/x86/bist.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "southbridge/via/vt8235/early_serial.c"

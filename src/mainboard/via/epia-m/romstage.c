@@ -10,7 +10,7 @@
 #include "northbridge/via/vt8623/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "lib/debug.c"

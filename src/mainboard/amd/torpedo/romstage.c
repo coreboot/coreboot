@@ -32,8 +32,8 @@
 #include "cpu/x86/bist.h"
 #include "superio/smsc/kbc1100/kbc1100_early_init.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "pc80/i8254.c"
-#include "pc80/i8259.c"
+#include "drivers/pc80/i8254.c"
+#include "drivers/pc80/i8259.c"
 #include "SbEarly.h"
 #include "SbPlatform.h"
 #include <arch/cpu.h>

@@ -3,7 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <pc80/keyboard.h>
+#include <drivers/pc80/keyboard.h>
 #include <arch/io.h>
 #include "chip.h"
 

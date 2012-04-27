@@ -55,8 +55,6 @@ subdirs-y += util/cbfstool util/sconfig util/nvramtool
 subdirs-y += src/arch/$(ARCHDIR-y)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 
-subdirs-$(CONFIG_ARCH_X86) += src/pc80
-
 subdirs-y += site-local
 
 #######################################################################

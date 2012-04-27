@@ -35,6 +35,7 @@ struct cst_entry {
 	int power;
 };
 
+int acpigen_write_len_f(void);
 void acpigen_patch_len(int len);
 void acpigen_set_current(char *curr);
 char *acpigen_get_current(void);

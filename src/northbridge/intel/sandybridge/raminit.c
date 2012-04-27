@@ -121,6 +121,7 @@ static void save_mrc_data(struct pei_data *pei_data)
 #if CONFIG_CHROMEOS
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
+#if 0
 	const struct fdt_header *fdt_header;
 	const struct fdt_property *fdtp;
 	int offset, len;
@@ -249,6 +250,9 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	printk(BIOS_DEBUG, "%s: at %p, entry %u size %x checksum %04x\n",
 	       __func__, pei_data->mrc_input, entry_id,
 	       pei_data->mrc_input_len, mrc_cache->mrc_checksum);
+#else
+	printk(BIOS_ERR, "MRC cache handling code has to be redone.");
+#endif
 }
 #endif
 

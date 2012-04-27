@@ -7,7 +7,7 @@
 #include <arch/hlt.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 

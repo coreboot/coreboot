@@ -234,7 +234,7 @@ dummy_write(void){
   *ptr = 0;
 }
 
-#include "pc80/udelay_io.c"
+#include "drivers/pc80/udelay_io.c"
 
 static void dumpram(void){
   print_err("ctl "); print_err_hex8(*drcctl); print_err("\n");

@@ -19,3 +19,7 @@
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += sb900
+
+romstage-y += cimx_util.c
+
+ramstage-y += cimx_util.c

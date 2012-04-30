@@ -1,0 +1,7 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Duncan Laurie <dlaurie@chromium.org>
+Submitted-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Submitted-at: Mon, 30 Apr 2012 23:05:40 +0200
+Reviewed-on: http://review.coreboot.org/943
+Project: coreboot
+Branch: refs/heads/master

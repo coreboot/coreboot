@@ -218,6 +218,11 @@ function create_config
 			echo "CONFIG_CCACHE=y" >> ${build_dir}/config.build
 		fi
 
+		if [ "$enable_blobs" = "true" ]; then
+			printf "(blobs enabled) "
+			echo "CONFIG_USE_BLOBS=y" >> ${build_dir}/config.build
+		fi
+
 		if [ "$scanbuild" = "true" ]; then
 			printf "(scan-build enabled) "
 			echo "CONFIG_SCANBUILD_ENABLE=y" >> ${build_dir}/config.build
@@ -534,6 +539,7 @@ function myhelp
 	printf "    [-l|--loglevel <num>]         set loglevel\n"
 	printf "    [-u|--update]                 update existing image\n"
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
+	printf "    [-B|--blobs]                  Allow using binary files\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $ROOT)\n\n"
 }
@@ -571,7 +577,7 @@ getopt - > /dev/null 2>/dev/null || gcc -o util/abuild/getopt util/abuild/getopt
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache -o Vvhat:p:Tc:sJxCl:rP:uy -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache,blobs -o Vvhat:p:Tc:sJxCl:rP:uyB -- "$@"`
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -605,6 +611,7 @@ while true ; do
 		-l|--loglevel)  shift; loglevel="$1"; shift;;
 		-u|--update)    shift; update="true";;
 		-P|--prefix)    shift; cbfs_prefix="$1"; shift;;
+		-B|--blobs)	shift; enable_blobs="true";;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

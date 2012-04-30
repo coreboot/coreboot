@@ -108,6 +108,14 @@ cbfs-files-processor-nvramtool= \
 		printf "    CREATE     $(2) (from $(1))\n"; $(objutil)/nvramtool/nvramtool -y $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout -D $(2).tmp -p $(1) && mv $(2).tmp $(2))
 
 #######################################################################
+# Link VSA binary to ELF-ish stage
+# arg1: source file
+# arg2: binary file name
+cbfs-files-processor-vsa= \
+	$(eval $(2): $(1) ; \
+		printf "    CREATE     $(2) (from $(1))\n";  $(OBJCOPY) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(1) $(2).tmp && $(LD) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(2).tmp -o $(2))
+
+#######################################################################
 # Add handler for arbitrary files in CBFS
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \

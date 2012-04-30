@@ -51,6 +51,7 @@
 #define DEFAULT_MCHBAR		0xfed10000	/* 16 KB */
 #define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
+#define DEFAULT_RCBABASE	0xfed1c000
 
 #include "../../../southbridge/intel/bd82x6x/pch.h"
 

@@ -67,6 +67,14 @@ ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
 
+ifeq ($(CONFIG_USE_BLOBS),y)
+forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
+else
+ifeq ($(CONFIG_REQUIRES_BLOB),y)
+$(error Your current configuration requires binary-only components, but you did not choose to use them)
+endif
+endif
+
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 

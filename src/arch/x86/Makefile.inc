@@ -49,9 +49,6 @@ endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(objcbfs)/coreboot_ap.elf
 endif
-ifeq ($(CONFIG_GEODE_VSA_FILE),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VSA_FILENAME)
-endif
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -95,12 +92,6 @@ endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
-endif
-ifeq ($(CONFIG_GEODE_VSA_FILE),y)
-	@printf "    VSA        $(CONFIG_VSA_FILENAME)\n"
-	$(OBJCOPY) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(CONFIG_VSA_FILENAME) $(obj)/vsa.o
-	$(LD) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(obj)/vsa.o -o $(obj)/vsa.elf
-	$(CBFSTOOL) $@.tmp add-stage $(obj)/vsa.elf vsa
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"

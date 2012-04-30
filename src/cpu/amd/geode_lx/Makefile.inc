@@ -7,3 +7,7 @@ driver-y += geode_lx_init.c
 ramstage-y += cpubug.c
 
 cpu_incs += $(src)/cpu/amd/geode_lx/cache_as_ram.inc
+
+cbfs-files-$(CONFIG_GEODE_VSA_FILE) += vsa
+vsa-file = $(call strip_quotes,$(CONFIG_VSA_FILENAME)):vsa
+vsa-type = stage

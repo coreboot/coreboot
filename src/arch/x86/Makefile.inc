@@ -58,8 +58,8 @@ extract_nth=$(word $(1), $(subst |, ,$(2)))
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 prebuild-files = \
 	$(foreach file,$(cbfs-files), \
-	$(CBFSTOOL) $@.tmp add $(call extract_nth,1,$(file)) \
-	$(call extract_nth,2,$(file)) $(call extract_nth,3,$(file)) \
+	$(CBFSTOOL) $@.tmp add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage) $(call extract_nth,1,$(file)) \
+	$(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),$(call extract_nth,3,$(file))) \
 	$(call extract_nth,4,$(file)) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 

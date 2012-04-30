@@ -48,8 +48,6 @@ static void sata_init(struct device *dev)
 
 	if (config->ide_legacy_combined) {
 		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
-		/* Combine IDE - SATA configuration */
-		pci_write_config16(dev, 0x90, 0x0000);
 
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
@@ -88,9 +86,6 @@ static void sata_init(struct device *dev)
 		u32 abar;
 
 		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
-		/* Set Sata Controller Mode. */
-		pci_write_config16(dev, 0x90, 0x0060 |
-				   ((config->sata_port_map ^ 0x3f) << 8));
 
 		/* Set Interrupt Line */
 		/* Interrupt Pin is set by D31IP.PIP */
@@ -143,8 +138,6 @@ static void sata_init(struct device *dev)
 		write32(abar + 0xa0, reg32);
 	} else {
 		printk(BIOS_DEBUG, "SATA controller in plain mode.\n");
-		/* Set Sata Controller Mode. No Mapping(?) */
-		pci_write_config16(dev, 0x90, 0x0000);
 
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
@@ -191,6 +184,27 @@ static void sata_init(struct device *dev)
 	}
 }
 
+static void sata_enable(device_t dev)
+{
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
+	u16 map = 0;
+
+	if (!config)
+		return;
+
+	/*
+	 * Set SATA controller mode early so the resource allocator can
+	 * properly assign IO/Memory resources for the controller.
+	 */
+	if (config->sata_ahci)
+		map = 0x0060;
+
+	map |= (config->sata_port_map ^ 0x3f) << 8;
+
+	pci_write_config16(dev, 0x90, map);
+}
+
 static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	if (!vendor || !device) {
@@ -211,6 +225,7 @@ static struct device_operations sata_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sata_init,
+	.enable			= sata_enable,
 	.scan_bus		= 0,
 	.ops_pci		= &sata_pci_ops,
 };

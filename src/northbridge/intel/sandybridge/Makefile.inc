@@ -32,7 +32,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin
-mrc.bin-file := $(CONFIG_MRC_FILE)
+mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE),y)
 mrc.bin-position := 0xfffa0000
 endif

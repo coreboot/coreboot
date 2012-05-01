@@ -20,7 +20,9 @@
 /* Microcode update for Intel PIII and later CPUs */
 
 #include <stdint.h>
+#if !defined(__ROMCC__)
 #include <console/console.h>
+#endif
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>

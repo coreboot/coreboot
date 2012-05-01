@@ -62,8 +62,4 @@ config MAX_CPUS
 	int
 	default 4
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
 endif # BOARD_INTEL_D945GCLF

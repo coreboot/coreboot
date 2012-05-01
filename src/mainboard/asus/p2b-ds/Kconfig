@@ -49,8 +49,4 @@ config MAX_CPUS
 	int
 	default 2
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
 endif # BOARD_ASUS_P2B_DS

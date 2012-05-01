@@ -64,10 +64,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
 config VGA_BIOS_FILE
 	string
 	default "getac-pci8086,27a2.rom"

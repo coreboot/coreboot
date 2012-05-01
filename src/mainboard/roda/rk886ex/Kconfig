@@ -43,10 +43,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
 config MAXIMUM_SUPPORTED_FREQUENCY
 	int
 	default 400

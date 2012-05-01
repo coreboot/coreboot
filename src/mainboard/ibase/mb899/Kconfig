@@ -49,10 +49,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 2
-
 config VGA_BIOS_FILE
 	string
 	default "amipci_01.20"

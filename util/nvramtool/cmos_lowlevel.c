@@ -39,14 +39,21 @@
 /* Hardware Abstraction Layer: lowlevel byte-wise write access */
 
 extern cmos_access_t cmos_hal, memory_hal;
-static cmos_access_t *current_access = &cmos_hal;
+static cmos_access_t *current_access =
+#ifdef CMOS_HAL
+	&cmos_hal;
+#else
+	&memory_hal;
+#endif
 
 void select_hal(hal_t hal, void *data)
 {
 	switch(hal) {
+#ifdef CMOS_HAL
 		case HAL_CMOS:
 			current_access = &cmos_hal;
 			break;
+#endif
 		case HAL_MEMORY:
 			current_access = &memory_hal;
 			break;

@@ -32,9 +32,6 @@ CONTEXT=6
 
 TESTSUBMISSION="http://qa.coreboot.org/deployment/send.php"
 
-# Number of CPUs to compile on per default
-cpus=1
-
 # Configure-only mode
 configureonly=0
 
@@ -61,20 +58,8 @@ silent=
 # clang mode enabled by -sb option.
 scanbuild=false
 
-# use ccache
-ccache=false
-
 # stackprotect mode enabled by -ns option.
 stackprotect=false
-
-# loglevel changed with -l / --loglevel option
-loglevel=default
-
-# update existing image
-update=false
-
-# CBFS prefix
-cbfs_prefix=fallback
 
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/i86pc/i386/ \
@@ -173,10 +158,8 @@ function create_config
 		printf "Using payload $PAYLOAD\n"
 	fi
 
-	[ "$update" = "true" ] && mv ${build_dir}/coreboot.rom coreboot.rom.tmp
 	mkdir -p ${build_dir}
 	mkdir -p $TARGET/sharedutils
-	[ "$update" = "true" ] && mv coreboot.rom.tmp ${build_dir}/coreboot.rom
 
 	if [ "$CONFIG" != "" ]; then
 		printf "  Using existing configuration $CONFIG ... "
@@ -192,7 +175,6 @@ function create_config
 		grep "select[\t ]*ARCH" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
 			sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
 		echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> ${build_dir}/config.build
-		echo "CONFIG_CBFS_PREFIX=\"$cbfs_prefix\"" >> ${build_dir}/config.build
 		if [ "$PAYLOAD" != "/dev/null" ]; then
 			echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
 			echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
@@ -200,37 +182,10 @@ function create_config
 			echo "CONFIG_PAYLOAD_FILE=\"$PAYLOAD\"" >> ${build_dir}/config.build
 		fi
 
-		if [ "$loglevel" != "default" ]; then
-			printf "(loglevel override) "
-			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL_$loglevel=y" >> ${build_dir}/config.build
-			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$loglevel" >> ${build_dir}/config.build
-			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$loglevel=y" >> ${build_dir}/config.build
-			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel" >> ${build_dir}/config.build
-		fi
-
-		if [ "$update" != "false" ]; then
-			printf "(update) "
-			echo "CONFIG_UPDATE_IMAGE=y" >> ${build_dir}/config.build
-		fi
-
-		if [ "$ccache" = "true" ]; then
-			printf "(ccache enabled) "
-			echo "CONFIG_CCACHE=y" >> ${build_dir}/config.build
-		fi
-
-		if [ "$enable_blobs" = "true" ]; then
-			printf "(blobs enabled) "
-			echo "CONFIG_USE_BLOBS=y" >> ${build_dir}/config.build
-		fi
-
-		if [ "$scanbuild" = "true" ]; then
-			printf "(scan-build enabled) "
-			echo "CONFIG_SCANBUILD_ENABLE=y" >> ${build_dir}/config.build
-			echo "CONFIG_SCANBUILD_REPORT_LOCATION=\"$TARGET/scan-build-results-tmp\"" >> ${build_dir}/config.build
-		fi
+		printf "($customizing) "
+		printf "$configoptions" >> ${build_dir}/config.build
 	fi
 
-	#yes "" | $MAKE oldconfig obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	yes "" | $MAKE oldconfig DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
@@ -286,10 +241,7 @@ function compile_target
 	VENDOR=$1
 	MAINBOARD=$2
 
-	printf " Compiling image "
-	test "$cpus" == "" && printf "in parallel .. "
-	test "$cpus" == "1" && printf "on 1 cpu .. "
-	test 0$cpus -gt 1 && printf "on %d cpus in parallel .. " $cpus
+	printf " Compiling image $cpuconfig .. "
 
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
@@ -534,7 +486,7 @@ function myhelp
 	printf "    [-u|--update]                 update existing image\n"
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
 	printf "    [-B|--blobs]                  Allow using binary files\n"
-	printf "    [lbroot]			  absolute path to coreboot sources\n"
+	printf "    [cbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $ROOT)\n\n"
 }
 
@@ -587,6 +539,8 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+customizing=""
+configoptions=""
 while true ; do
 	case "$1" in
 		-x|--xml)       shift; mode=xml; rm -f $XMLFILE ;;
@@ -599,21 +553,54 @@ while true ; do
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
 		-T|--test)      shift; hwtest=true;;
-		-c|--cpus)	shift; cpus="$1"; test "$cpus" == "max" && cpus=""; shift;;
+		-c|--cpus)	shift
+			export MAKEFLAGS="-j $1"
+			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j"
+			test "$1" == "" && cpuconfig="in parallel"
+			test "$1" == "1" && cpuconfig="on 1 cpu"
+			test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
+			shift;;
 		-s|--silent)    shift; silent="-s";;
 		-ns|--nostackprotect) shift; stackprotect=true;;
-		-sb|--scan-build) shift; scanbuild=true;;
-		-y|--ccache)    shift; ccache=true;;
+		-sb|--scan-build) shift
+			scanbuild=true
+			customizing="${customizing}, scan-build"
+			configoptions="${configoptions}CONFIG_SCANBUILD_ENABLE=y\nCONFIG_SCANBUILD_REPORT_LOCATION=\"$TARGET/scan-build-results-tmp\""
+			;;
+		-y|--ccache)    shift
+			customizing="${customizing}, ccache"
+			configoptions="${configoptions}CONFIG_CCACHE=y\n"
+			;;
 		-C|--config)    shift; configureonly=1;;
-		-l|--loglevel)  shift; loglevel="$1"; shift;;
-		-u|--update)    shift; update="true";;
-		-P|--prefix)    shift; cbfs_prefix="$1"; shift;;
-		-B|--blobs)	shift; enable_blobs="true";;
+		-l|--loglevel)  shift
+			customizing="${customizing}, loglevel $1"
+			configoptions="${configoptions}CONFIG_MAXIMUM_CONSOLE_LOGLEVEL_$1=y\n"
+			configoptions="${configoptions}CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$1\n"
+			configoptions="${configoptions}CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$1=y\n"
+			configoptions="${configoptions}CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$1\n"
+			shift;;
+		-u|--update)    shift
+			customizing="${customizing}, update"
+			configoptions="${configoptions}CONFIG_UPDATE_IMAGE=y\n"
+			;;
+		-P|--prefix)    shift
+			customizing="${customizing}, cbfs prefix $1"
+			configoptions="${configoptions}CONFIG_CBFS_PREFIX=\"$1\""
+			shift;;
+		-B|--blobs)	shift
+			customizing="${customizing}, blobs"
+			configoptions="${configoptions}CONFIG_USE_BLOBS=y\n"
+			;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+
+customizing=`echo $customizing |cut -c3-`
+if [ "$customizing" = "" ]; then
+	customizing="default configuration"
+fi
 
 USE_XARGS=0
 if [ "$cpus" != "1" ]; then
@@ -659,7 +646,6 @@ build_all_targets()
 }
 fi
 
-# /path/to/freebios2/
 test -z "$1" || ROOT=$1
 
 debug "ROOT=$ROOT"

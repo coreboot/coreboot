@@ -37,7 +37,7 @@ nvramtoolobj :=
 nvramtoolobj += cli/nvramtool.o cli/opts.o
 nvramtoolobj += cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o
 nvramtoolobj += hexdump.o input_file.o layout.o accessors/layout-common.o accessors/layout-text.o accessors/layout-bin.o lbtable.o
-nvramtoolobj += reg_expr.o cbfs.o accessors/cmos-hw-unix.o accessors/cmos-mem.o
+nvramtoolobj += reg_expr.o cbfs.o accessors/cmos-mem.o
 
 $(objutil)/nvramtool $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli:
 	mkdir -p $@

@@ -24,7 +24,7 @@ CC      = gcc
 STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W -I.
+CFLAGS  = -O2 -g -Wall -W -I. -DCMOS_HAL=1
 #CFLAGS  = -Os -Wall
 
 CLI_OBJS = cli/nvramtool.o cli/opts.o

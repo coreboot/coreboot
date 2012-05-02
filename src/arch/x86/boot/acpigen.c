@@ -426,8 +426,12 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 	len += acpigen_write_dword(busmLat);
 	len += acpigen_write_dword(control);
 	len += acpigen_write_dword(status);
-	//pkglen without the len opcode
+	// pkglen without the len opcode
 	acpigen_patch_len(len - 1);
+
+	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n",
+	       coreFreq, power, control, status);
+
 	return len;
 }
 

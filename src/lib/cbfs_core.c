@@ -40,6 +40,9 @@
  *      print an error message x (in printf format)
  *
  * LOG(x...)
+ *      print a message x (in printf format)
+ *
+ * DEBUG(x...)
  *      print a debug message x (in printf format)
  *
  * romstart()
@@ -86,7 +89,7 @@ struct cbfs_file *cbfs_find(const char *name)
 	struct cbfs_header *header = get_cbfs_header();
 	if (header == (void*)0xffffffff) return NULL;
 
-	LOG("Searching for %s\n", name);
+	LOG("Looking for '%s'\n", name);
 
 	void *data, *dataend, *origdata;
 	/* find first entry */
@@ -111,8 +114,9 @@ struct cbfs_file *cbfs_find(const char *name)
 			data = phys_to_virt(CBFS_ALIGN_UP(virt_to_phys(data), align));
 			continue;
 		}
-		LOG("Check %s\n", CBFS_NAME(file));
+		DEBUG("Check '%s'\n", CBFS_NAME(file));
 		if (strcmp(CBFS_NAME(file), name) == 0) {
+			LOG("found.\n");
 			return file;
 		}
 		void *olddata = data;

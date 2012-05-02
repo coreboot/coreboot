@@ -68,14 +68,6 @@ Device (CRHW)
 			Package() { 0x001, 0, 42, "CougarPoint" }, // recovery button
 			Package() { 0x002, 1, 17, "CougarPoint" }, // developer switch
 			Package() { 0x003, 1, 68, "CougarPoint" }, // firmware write protect
-			Package() { 0x100, 0,  9, "CougarPoint" }, // debug header gpio
-			Package() { 0x101, 0, 10, "CougarPoint" }, // debug header gpio 1
-			Package() { 0x102, 0, 12, "CougarPoint" }, // debug header gpio 2
-			Package() { 0x103, 0, 13, "CougarPoint" }, // debug header gpio 3
-			Package() { 0x104, 0, 14, "CougarPoint" }, // debug header gpio 4
-			Package() { 0x105, 0, 15, "CougarPoint" }, // debug header gpio 5
-			Package() { 0x106, 0, 24, "CougarPoint" }, // debug header gpio 6
-			Package() { 0x107, 0, 26, "CougarPoint" }, // debug header gpio 7
 		})
 		Return (OIPG)
 

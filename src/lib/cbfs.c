@@ -30,8 +30,13 @@
 #endif
 #define phys_to_virt(x) (void*)(x)
 #define virt_to_phys(x) (uint32_t)(x)
-#define ERROR(x...) printk(BIOS_ERR, x)
-#define LOG(x...) printk(BIOS_INFO, x)
+#define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
+#define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
+#if CONFIG_DEBUG_CBFS
+#define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
+#else
+#define DEBUG(x...)
+#endif
 // FIXME: romstart/romend are fine on x86, but not on ARM
 #define romstart() 0xffffffff
 #define romend() 0
@@ -100,7 +105,7 @@ void * cbfs_load_stage(const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	printk(BIOS_INFO, "Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n",
+	LOG("loading stage %s @ 0x%x (%d bytes), entry @ 0x%llx\n",
 			name,
 			(u32) stage->load, stage->memlen,
 			stage->entry);
@@ -113,7 +118,7 @@ void * cbfs_load_stage(const char *name)
 			     stage->len))
 		return (void *) -1;
 
-	printk(BIOS_DEBUG, "Stage: done loading.\n");
+	DEBUG("stage loaded.\n");
 
 	entry = stage->entry;
 	// entry = ntohll(stage->entry);
@@ -130,13 +135,13 @@ int cbfs_execute_stage(const char *name)
 		return 1;
 
 	if (ntohl(stage->compression) != CBFS_COMPRESS_NONE) {
-		printk(BIOS_INFO,  "CBFS:  Unable to run %s:  Compressed file"
+		LOG("Unable to run %s:  Compressed file"
 		       "Not supported for in-place execution\n", name);
 		return 1;
 	}
 
 	/* FIXME: This isn't right */
-	printk(BIOS_INFO,  "CBFS: run @ %p\n", (void *) ntohl((u32) stage->entry));
+	LOG("run @ %p\n", (void *) ntohl((u32) stage->entry));
 	return run_address((void *) (intptr_t)ntohll(stage->entry));
 }
 

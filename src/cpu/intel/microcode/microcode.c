@@ -63,7 +63,7 @@ static inline u32 read_microcode_rev(void)
 		"=a" (msr.lo), "=d" (msr.hi)
 		: /* inputs */
 		: /* trashed */
-		 "ecx"
+		 "ebx", "ecx"
 	);
 	return msr.hi;
 }

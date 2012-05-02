@@ -132,9 +132,6 @@ static void early_pch_init(void)
 	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
 	reg8 &= ~(1 << 2);
 	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
-
-	// SATA - enable AHCI
-	pci_write_config16(PCH_SATA_DEV, 0x90, 0x0060);
 }
 
 static void setup_sio_gpios(void)

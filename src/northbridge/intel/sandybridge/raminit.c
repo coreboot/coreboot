@@ -252,7 +252,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	       __func__, pei_data->mrc_input, entry_id,
 	       pei_data->mrc_input_len, mrc_cache->mrc_checksum);
 #else
-	printk(BIOS_ERR, "MRC cache handling code has to be redone.");
+	printk(BIOS_ERR, "MRC cache handling code has to be redone.\n");
 #endif
 }
 #endif

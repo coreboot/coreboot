@@ -36,9 +36,8 @@
 #include "southbridge/intel/bd82x6x/me.h"
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
-#endif
-#if 0
-#include <fdt/libfdt.h>
+#else
+#define recovery_mode_enabled(x) 0
 #endif
 
 /*
@@ -55,17 +54,6 @@
 #define CMOS_OFFSET_MRC_SEED_S3  116
 #define CMOS_OFFSET_MRC_SEED_CHK 120
 #endif
-
-#define MRC_DATA_ALIGN           0x1000
-#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
-
-struct mrc_data_container {
-	u32	mrc_signature;	// "MRCD"
-	u32	mrc_data_size;	// Actual total size of this structure
-	u32	mrc_checksum;	// IP style checksum
-	u32	reserved;	// For header alignment
-	u8	mrc_data[0];	// Variable size, platform/run time dependent.
-} __attribute__ ((packed));
 
 static void save_mrc_data(struct pei_data *pei_data)
 {
@@ -119,22 +107,10 @@ static void save_mrc_data(struct pei_data *pei_data)
 	cmos_write((checksum >> 8) & 0xff, CMOS_OFFSET_MRC_SEED_CHK+1);
 }
 
-#if CONFIG_CHROMEOS
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
-#if 0
-	const struct fdt_header *fdt_header;
-	const struct fdt_property *fdtp;
-	int offset, len;
-	const char *compatible = "chromeos,flashmap";
-	const char *subnode = "rw-mrc-cache";
-	const char *property = "reg";
-	u32 *data;
-	struct mrc_data_container *mrc_cache, *mrc_next;
-	u8 *mrc_region, *region_ptr;
+	struct mrc_data_container *mrc_cache;
 	u16 c1, c2, checksum, seed_checksum;
-	u32 region_size, entry_id = 0;
-	u64 flashrom_base = 0;
 
 	// preset just in case there is an error
 	pei_data->mrc_input = NULL;
@@ -166,96 +142,18 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 		return;
 	}
 
-	fdt_header = cbfs_find_file(CONFIG_FDT_FILE_NAME, CBFS_TYPE_FDT);
-
-	if (!fdt_header) {
-		printk(BIOS_ERR, "%s: no FDT found!\n", __func__);
-		return;
-	}
-
-	offset = fdt_node_offset_by_compatible(fdt_header, 0, compatible);
-	if (offset < 0) {
-		printk(BIOS_ERR, "%s: no %s  node found!\n",
-		       __func__, compatible);
-		return;
-	}
-
-	if (fdt_get_base_addr(fdt_header, offset, &flashrom_base) < 0) {
-		printk(BIOS_ERR, "%s: no base address in node name!\n",
-		       __func__);
-		return;
-	}
-
-	offset = fdt_subnode_offset(fdt_header, offset, subnode);
-	if (offset < 0) {
-		printk(BIOS_ERR, "%s: no %s found!\n", __func__, subnode);
-		return;
-	}
-
-	fdtp = fdt_get_property(fdt_header, offset, property, &len);
-	if (!fdtp || (len != 8)) {
-		printk(BIOS_ERR, "%s: property %s at %p, len %d!\n",
-		       __func__, property, fdtp, len);
-		return;
-	}
-
-	data = (u32 *)fdtp->data;
-
-	// Calculate actual address of the MRC cache in memory
-	region_size = fdt32_to_cpu(data[1]);
-	mrc_region = region_ptr = (u8*)
-		((unsigned long)flashrom_base + fdt32_to_cpu(data[0]));
-	mrc_cache = mrc_next = (struct mrc_data_container *)mrc_region;
-
-	if (!mrc_cache || mrc_cache->mrc_signature != MRC_DATA_SIGNATURE) {
-		printk(BIOS_ERR, "%s: invalid MRC data\n", __func__);
-		return;
-	}
-
-	if (mrc_cache->mrc_data_size == -1UL) {
-		printk(BIOS_ERR, "%s: MRC cache not initialized?\n",  __func__);
-		return;
-	} else {
-		/* MRC data blocks are aligned within the region */
-		u32 mrc_size = sizeof(*mrc_cache) + mrc_cache->mrc_data_size;
-		if (mrc_size & (MRC_DATA_ALIGN - 1UL)) {
-			mrc_size &= ~(MRC_DATA_ALIGN - 1UL);
-			mrc_size += MRC_DATA_ALIGN;
-		}
-
-		/* Search for the last filled entry in the region */
-		while (mrc_next &&
-		       mrc_next->mrc_signature == MRC_DATA_SIGNATURE) {
-			entry_id++;
-			mrc_cache = mrc_next;
-			/* Stay in the mrcdata region defined in fdt */
-			if ((entry_id * mrc_size) > region_size)
-				break;
-			region_ptr += mrc_size;
-			mrc_next = (struct mrc_data_container *)region_ptr;
-		}
-		entry_id--;
-	}
-
-	/* Verify checksum */
-	if (mrc_cache->mrc_checksum !=
-	    compute_ip_checksum(mrc_cache->mrc_data,
-				mrc_cache->mrc_data_size)) {
-		printk(BIOS_ERR, "%s: MRC cache checksum mismatch\n", __func__);
+	if ((mrc_cache = find_current_mrc_cache()) == NULL) {
+		/* error message printed in find_current_mrc_cache */
 		return;
 	}
 
 	pei_data->mrc_input = mrc_cache->mrc_data;
 	pei_data->mrc_input_len = mrc_cache->mrc_data_size;
 
-	printk(BIOS_DEBUG, "%s: at %p, entry %u size %x checksum %04x\n",
-	       __func__, pei_data->mrc_input, entry_id,
+	printk(BIOS_DEBUG, "%s: at %p, size %x checksum %04x\n",
+	       __func__, pei_data->mrc_input,
 	       pei_data->mrc_input_len, mrc_cache->mrc_checksum);
-#else
-	printk(BIOS_ERR, "MRC cache handling code has to be redone.\n");
-#endif
 }
-#endif
 
 static const char* ecc_decoder[] = {
 	"inactive",
@@ -315,7 +213,6 @@ static void report_memory_config(void)
 void sdram_initialize(struct pei_data *pei_data)
 {
 	struct sys_info sysinfo;
-	const char *target = "mrc.bin";
 	unsigned long entry;
 
 	report_platform_info();
@@ -330,7 +227,6 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	sysinfo.boot_path = pei_data->boot_mode;
 
-#if CONFIG_CHROMEOS
 	/*
 	 * Do not pass MRC data in for recovery mode boot,
 	 * Always pass it in for S3 resume.
@@ -344,17 +240,16 @@ void sdram_initialize(struct pei_data *pei_data)
 		outb(0x6, 0xcf9);
 		hlt();
 	}
-#endif
 
 	/* Locate and call UEFI System Agent binary. */
-	entry = (unsigned long)cbfs_find_file(target, 0xab);
+	entry = (unsigned long)cbfs_find_file("mrc.bin", 0xab);
 	if (entry) {
 		int rv;
 		asm volatile (
 			      "call *%%ecx\n\t"
 			      :"=a" (rv) : "c" (entry), "a" (pei_data));
 		if (rv) {
-			printk(BIOS_ERR, "MRC returned %d\n", rv);
+			printk(BIOS_ERR, "MRC returned %x\n", rv);
 			die("Nonzero MRC return value\n");
 		}
 	} else {

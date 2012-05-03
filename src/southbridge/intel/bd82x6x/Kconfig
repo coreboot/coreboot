@@ -33,6 +33,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select USE_WATCHDOG_ON_BOOT
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
+	select SPI
 
 config EHCI_BAR
 	hex

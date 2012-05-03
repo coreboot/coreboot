@@ -53,6 +53,11 @@ struct lb_memory *write_tables(void)
 	 */
 	unsigned long high_table_pointer;
 
+#if CONFIG_CHROMEOS
+	void update_mrc_cache(void);
+	update_mrc_cache();
+#endif
+
 	if (!high_tables_base) {
 		printk(BIOS_ERR, "ERROR: High Tables Base is not set.\n");
 		// Are there any boards without?

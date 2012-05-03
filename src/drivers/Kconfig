@@ -26,3 +26,4 @@ source src/drivers/oxford/Kconfig
 source src/drivers/sil/Kconfig
 source src/drivers/trident/Kconfig
 source src/drivers/ics/Kconfig
+source src/drivers/spi/Kconfig

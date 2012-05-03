@@ -221,6 +221,28 @@ void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 void report_platform_info(void);
 #endif /* !__SMM__ */
+
+
+#define MRC_DATA_ALIGN           0x1000
+#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
+
+struct mrc_data_container {
+	u32	mrc_signature;	// "MRCD"
+	u32	mrc_data_size;	// Actual total size of this structure
+	u32	mrc_checksum;	// IP style checksum
+	u32	reserved;	// For header alignment
+	u8	mrc_data[0];	// Variable size, platform/run time dependent.
+} __attribute__ ((packed));
+
+struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache);
+int is_mrc_cache(struct mrc_data_container *mrc_cache);
+u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr);
+struct mrc_data_container *find_next_mrc_cache(void);
+struct mrc_data_container *find_current_mrc_cache(void);
+#if !defined(__PRE_RAM__)
+void update_mrc_cache(void);
+#endif
+
 #endif
 #endif
 #endif

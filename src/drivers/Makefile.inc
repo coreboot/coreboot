@@ -26,4 +26,5 @@ subdirs-y += oxford
 subdirs-y += sil
 subdirs-y += trident
 subdirs-y += ics
+subdirs-y += spi
 subdirs-$(CONFIG_ARCH_X86) += pc80

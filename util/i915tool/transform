@@ -1,0 +1,151 @@
+#!/bin/bash
+# This script has been honed over quite a few iterations. The trick is to make
+# it easy for you to see what transformations occur
+# without burying you in files.
+# Also, coccinelle is not perfect, so we have to help her at times. As she
+# gets smarter, we can shrink thigns we do in here.
+# So we get input files, then do per-file changes, then do all-file changes
+# I've deliberately made this script simple. Please don't decide it needs to
+# be automagic. Just let it work in its simple way. Also, if you change even
+# one simple thing, ALWAYS rerun this script do make sure you did not make a
+# global test. NEVER test one little thing in isolation. That way
+# lies madness.
+# The only thing you need to set is
+# export LINUX=/path/to/your/linux/tree.
+# Order in which we do things.
+# 1. Get source files into inputs.
+# 2. cp them to per-file-changes
+#    Note that we even copy ones that might not currently need per-file
+#    changes. Because they may in future and it keeps the script simple.
+#    We tried both ways and like this best.
+# 3. run 'ed' across a few files that need it
+# 4. run coccinelle with any per-file changes
+#    There is some ugliness here as we have to do a reverse patch step. Sorry.
+# 5. cp per-file-changes/* to final
+# 6. run coccinelle files that apply to more than one file
+#    it's best to run coccinelle on as many files as possible, she's pretty
+#	smart about
+#    certain transformations, e.g. if you remove a function definition she can
+#    remove all calls to that function (usually)
+#
+# Now you can
+# make (will build all working tools)
+# or
+# make broken
+# for things that don't build yet.
+
+# Step 1
+rm inputs/* per-file-changes/* final/* tmp/*
+cp $LINUX/drivers/gpu/drm/i915/i915_reg.h inputs
+cp $LINUX/drivers/gpu/drm/i915/i915_drv.? inputs
+cp $LINUX/drivers/gpu/drm/i915/intel_display.c inputs
+cp $LINUX/drivers/gpu/drm/i915/intel_bios.c inputs
+cp $LINUX/drivers/gpu/drm/i915/intel_bios.h inputs
+cp $LINUX/drivers/gpu/drm/i915/intel_ringbuffer.h inputs
+cp $LINUX/drivers/gpu/drm/i915/i915_dma.c inputs
+cp $LINUX/include/drm/drm_crtc.h inputs
+cp $LINUX/include/drm/drm_mode.h inputs
+cp $LINUX/include/drm/drm_dp_helper.h inputs
+cp $LINUX/drivers/gpu/drm/drm_modes.c inputs
+
+# Step 2
+cp inputs/* per-file-changes
+
+# Step 3
+# We tried sed but it had some issues that ed did not
+# coccinelle can't handle anonymous structs
+# also some stuff is easier with ed.
+# also there are bugs spatches/in coccinelle it seems :-(
+# the literal deletes below suck and we need to figure
+# out wtf went wrong.
+ed per-file-changes/i915_drv.h << EOF
+/intel_gtt/
+.
+?struct  *{?,/mm;/d
+.
+/i915_trace.h/
+.
+.,/#define POSTING_READ16/d
+/struct *intel_gmbus/
+.,/\*gmb/d
+.
+g/notifier_block/d
+g/struct  *drm_i915_display_funcs  *display;/d
+g/struct  *completion  *[a-z].*;/d
+w
+q
+EOF
+
+ed per-file-changes/drm_crtc.h <<EOF
+/drm_crtc_init/,/endif/-d
+w
+q
+EOF
+
+ed per-file-changes/intel_display.c << EOF
+g/mode_config.funcs  *=/d
+g/fb_base/d
+g/const/s///
+w
+q
+EOF
+
+# Reverse patches. We hope these will go away someday.
+>per-file-changes/intel_bios.c
+spatch -sp_file spatches/getfn.cocci inputs/intel_bios.c -U 0 > tmp/res
+./plusplusplus tmp/res per-file-changes/intel_bios.c
+(cd per-file-changes/; patch -p1 -R ) < tmp/res.pat
+
+>per-file-changes/drm_modes.c
+spatch -sp_file spatches/getdrmmodefn.cocci inputs/drm_modes.c -U 0 \
+	> tmp/drm_modes
+./plusplusplus tmp/drm_modes per-file-changes/drm_modes.c
+(cd per-file-changes/; patch -p1 -R ) < tmp/drm_modes.pat
+
+spatch -sp_file spatches/i915_dma.c.cocci inputs/i915_dma.c -U 0 \
+	> tmp/i915_dma.c.patch
+./plusplusplus tmp/i915_dma.c.patch per-file-changes/i915_dma.c
+# This is the only way I can make sure the right file gets patched!
+# someone tell me why. It keeps picking the wrong one.
+(cd per-file-changes/; patch -p1 -R ) < tmp/i915_dma.c.patch.pat
+spatch --in-place -sp_file spatches/fixcalls.cocci per-file-changes/i915_dma.c
+#patch -p0 -R < tmp/i915_dma.c.patch.pat
+
+#echo '#include "video.h"'
+>per-file-changes/i915_drv.c
+spatch -sp_file spatches/i915_drv.c.cocci inputs/i915_drv.c -U 0 \
+	> tmp/i915_drv.c.patch
+./plusplusplus tmp/i915_drv.c.patch per-file-changes/i915_drv.c
+# This is the only way I can make sure the right file gets patched!
+# someone tell me why. It keeps picking the wrong one.
+(cd per-file-changes/; patch -p1 -R ) < tmp/i915_drv.c.patch.pat
+spatch --in-place -sp_file spatches/fixcalls.cocci per-file-changes/i915_drv.c
+
+# Finally, a basic spatch sequence!
+
+spatch --in-place -sp_file \
+	spatches/intel_display.c.cocci per-file-changes/intel_display.c \
+		> /dev/null
+
+spatch --in-place -sp_file spatches/i915_drv.cocci \
+	per-file-changes/i915_drv.h >/dev/null
+
+# Now do the common changes to all files.
+cp per-file-changes/* final
+spatch --in-place -sp_file spatches/ringbuffer.cocci \
+	final/intel_ringbuffer.h >/dev/null
+spatch --in-place -sp_file spatches/removeinclude.cocci \
+	final/intel_display.c > /dev/null
+spatch --in-place -sp_file spatches/fixcalls.cocci final/intel_display.c \
+	>/dev/null
+spatch --in-place -sp_file spatches/ringbuffer.cocci final/drm_dp_helper.h\
+	>/dev/null
+spatch --in-place -sp_file spatches/removeinclude.cocci final/drm_dp_helper.h\
+	>/dev/null
+spatch --in-place -sp_file spatches/i915_drv.cocci final/intel_ringbuffer.h\
+	>/dev/null
+spatch --in-place -sp_file spatches/deldev.cocci final/intel_bios.c \
+	final/intel_bios.h final/i915_drv.h final/intel_ringbuffer.h>/dev/null
+spatch --in-place -sp_file spatches/fixcalls.cocci final/intel_bios.c \
+	>/dev/null
+spatch --in-place -sp_file spatches/drm_crtc.cocci final/drm_crtc.h >/dev/null

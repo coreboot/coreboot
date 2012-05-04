@@ -1,0 +1,11 @@
+spatches are the semantic patches
+tmp is just tmp
+inputs are copied from $LINUX
+per-file-changes contain input files that have specific transforms
+final contains the final form of the file, with 'global' changes applied (e.g. kzalloc -> calloc)
+
+transform copies files from $LINUX and then transforms them for use by stand-alone program/coreboot
+
+The Makefile is simple; this runs 'fast enough' that a complicated Makefile is not worth it.
+
+There's still some duct tape here but it's getting there.

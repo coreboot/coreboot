@@ -411,7 +411,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* GFX_InitFBAccess finished. */
 
-#if (CONFIG_GFXUMA == 1) /* for UMA mode. */
+#if CONFIG_GFXUMA /* for UMA mode. */
 	/* GFX_StartMC. */
 	set_nbmc_enable_bits(nb_dev, 0x02, 0x00000000, 0x80000000);
 	set_nbmc_enable_bits(nb_dev, 0x01, 0x00000000, 0x00000001);
@@ -473,7 +473,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	vgainfo.sHeader.ucTableFormatRevision = 1;
 	vgainfo.sHeader.ucTableContentRevision = 2;
 
-#if (CONFIG_GFXUMA == 0) /* SP mode. */
+#if !CONFIG_GFXUMA /* SP mode. */
 	// Side port support is incomplete, do not use it
 	// These parameters must match the motherboard
 	vgainfo.ulBootUpSidePortClock = 667*100;

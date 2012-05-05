@@ -394,7 +394,7 @@ static uint8_t get_linkn_last(uint8_t byte)
 }
 #endif
 
-#if (CONFIG_MAX_PHYSICAL_CPUS > 2) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
+#if (CONFIG_MAX_PHYSICAL_CPUS > 2) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 static uint8_t get_linkn_last_count(uint8_t byte)
 {
 	byte &= 0x0f;
@@ -563,7 +563,7 @@ static void setup_row_indirect_x(u8 temp, u8 source, u8 dest, u8 gateway, u8 dif
 
 	if(diff && (val_s!=(val&0xff)) ) { /* use another connect as response*/
 		val_s -= val &  0xff;
-#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
+#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 		uint8_t byte;
 		/* Some node have two links left
 		 * don't worry we only have (2, (3 as source need to handle
@@ -722,7 +722,7 @@ static unsigned setup_smp2(void)
 	setup_row_local(7,1);
 	setup_remote_row_direct(1, 0, byte);
 
-#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
+#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 	val = get_row(7,1);
 	byte = (val>>16) & 0xfe;
 	byte = get_linkn_last_count(byte);
@@ -848,7 +848,7 @@ static unsigned setup_smp4(void)
 	setup_temp_row(2,3);
 	verify_connection(7); /* to 3*/
 
-#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
+#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 	/* We need to find out which link is to node3 */
 	if((byte>>2)==2) { /* one to node3, one to node0, one to node4*/
 		val = get_row(7,3);
@@ -869,7 +869,7 @@ static unsigned setup_smp4(void)
 	print_linkn("(3,2) link=", byte);
 	setup_remote_row_direct(3,2, byte);
 
-#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
+#if (CONFIG_MAX_PHYSICAL_CPUS > 4) || CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 	/* set link from 3 to 5 before enable it*/
 	val = get_row(7,3);
 	byte = ((val>>16) & 0xfe) - link_connection(7,2) - link_connection(7,1);

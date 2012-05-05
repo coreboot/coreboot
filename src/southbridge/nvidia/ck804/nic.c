@@ -108,7 +108,7 @@ static void nic_init(struct device *dev)
 
 	nic_index++;
 
-#if CONFIG_PCI_ROM_RUN == 1
+#if CONFIG_PCI_ROM_RUN
 	pci_dev_init(dev);	/* It will init Option ROM. */
 #endif
 }

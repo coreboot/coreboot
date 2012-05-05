@@ -2,7 +2,7 @@
 
 #define AMDK8_H
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
         #include "f.h"
 #else
         #include "pre_f.h"

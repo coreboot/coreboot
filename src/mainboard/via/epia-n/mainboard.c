@@ -30,7 +30,7 @@
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-#if CONFIG_IOAPIC == 1
+#if CONFIG_IOAPIC
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		IO_APIC_ADDR, 0x1000);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,

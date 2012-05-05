@@ -8,7 +8,7 @@
 
 #define max(x,y) (x>=y)?x:y
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
     /*
      *  Elements of the hardware specific atyfb_par structure
      */
@@ -73,7 +73,7 @@ union aty_pll {
      *  The hardware parameters for each card
      */
 struct atyfb_par {
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
     struct crtc crtc;
 #endif
     union aty_pll pll;
@@ -97,7 +97,7 @@ struct aty_cursor {
 };
 #endif
 struct fb_info_aty {
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 #if PLL_CRTC_DECODE==1
     struct fb_info fb_info;
 #endif

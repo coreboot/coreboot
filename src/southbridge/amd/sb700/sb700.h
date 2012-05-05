@@ -75,7 +75,7 @@ void sb7xx_51xx_setup_sata_phys(struct device *dev);
 
 #endif
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_is_wakeup_early(void);
 #endif
 

@@ -73,7 +73,7 @@ static void lpc_init(device_t dev)
 
 	/* hack, but the whole sb700 startup lacks any device which
 	   is doing the acpi init */
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	{
 	extern u8 acpi_slp_type;
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);

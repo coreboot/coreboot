@@ -659,7 +659,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	pointer = (u32 *)&vgainfo;
 	for(i=0; i<sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4)
 	{
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 		*GpuF0MMReg = 0x80000000 + uma_memory_size - 512 + i;
 #else
 		*GpuF0MMReg = 0x80000000 + 0x8000000 - 512 + i;
@@ -775,7 +775,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 	device_t nb_dev = dev_find_slot(0, 0);
 	msr_t sysmem;
 
-#if (CONFIG_GFXUMA == 0)
+#if !CONFIG_GFXUMA
 	u32 FB_Start, FB_End;
 #endif
 
@@ -818,7 +818,7 @@ static void rs780_internal_gfx_enable(device_t dev)
 	set_nbmc_enable_bits(nb_dev, 0x25, 0xffffffff, 0x111f111f);
 	set_htiu_enable_bits(nb_dev, 0x37, 1<<24, 1<<24);
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	/* GFX_InitUMA. */
 	/* Copy CPU DDR Controller to NB MC. */
 	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));

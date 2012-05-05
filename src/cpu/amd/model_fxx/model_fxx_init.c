@@ -31,7 +31,7 @@
 #if CONFIG_WAIT_BEFORE_CPUS_INIT
 void cpus_ready_for_init(void)
 {
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
         struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
         // wait for ap memory to trained
         wait_all_core0_mem_trained(sysinfox);
@@ -39,7 +39,7 @@ void cpus_ready_for_init(void)
 }
 #endif
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 int is_e0_later_in_bsp(int nodeid)
 {
 	uint32_t val;
@@ -67,7 +67,7 @@ int is_e0_later_in_bsp(int nodeid)
 }
 #endif
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
 int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
@@ -298,7 +298,7 @@ static void init_ecc_memory(unsigned node_id)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	unsigned long hole_startk = 0;
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	if (!is_cpu_pre_e0()) {
 #endif
 
@@ -307,7 +307,7 @@ static void init_ecc_memory(unsigned node_id)
 		if (val & 1) {
 			hole_startk = ((val & (0xff << 24)) >> 10);
 		}
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	}
 #endif
 #endif
@@ -370,7 +370,7 @@ static void init_ecc_memory(unsigned node_id)
 static inline void k8_errata(void)
 {
 	msr_t msr;
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	if (is_cpu_pre_c0()) {
 		/* Erratum 63... */
 		msr = rdmsr(HWCR_MSR);
@@ -437,14 +437,14 @@ static inline void k8_errata(void)
 #endif
 
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	/* I can't touch this msr on early buggy cpus */
 	if (!is_cpu_pre_b3())
 #endif
 	{
 		msr = rdmsr(NB_CFG_MSR);
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
 			/* D0 later don't need it */
 			/* Erratum 86 Disable data masking on C0 and
@@ -523,7 +523,7 @@ static void model_fxx_init(device_t dev)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 	u32 siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
@@ -570,7 +570,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	{ X86_VENDOR_AMD, 0xf40 },   /* SH-B0 (socket 754) */
 	{ X86_VENDOR_AMD, 0xf50 },   /* SH-B0 (socket 940) */
 	{ X86_VENDOR_AMD, 0xf51 },   /* SH-B3 (socket 940) */
@@ -612,7 +612,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x30ff2 }, /* E4 ? */
 #endif
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
 	/*
 	 * AMD F0 support.
 	 *

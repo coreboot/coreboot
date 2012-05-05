@@ -1,7 +1,7 @@
 #ifndef ARCH_PIRQ_ROUTING_H
 #define ARCH_PIRQ_ROUTING_H
 
-#if CONFIG_GENERATE_PIRQ_TABLE==1
+#if CONFIG_GENERATE_PIRQ_TABLE
 #include <stdint.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
@@ -39,7 +39,7 @@ extern const struct irq_routing_table intel_irq_routing_table;
 unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
 
-#if CONFIG_PIRQ_ROUTE==1
+#if CONFIG_PIRQ_ROUTE
 void pirq_routing_irqs(unsigned long start);
 void pirq_assign_irqs(const unsigned char pIntAtoD[4]);
 #else

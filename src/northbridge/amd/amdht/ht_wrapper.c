@@ -28,7 +28,7 @@
  */
 
 /* Single CPU system? */
-#if (CONFIG_MAX_PHYSICAL_CPUS == 1)
+#if CONFIG_MAX_PHYSICAL_CPUS
 	#define HT_BUILD_NC_ONLY 1
 #endif
 

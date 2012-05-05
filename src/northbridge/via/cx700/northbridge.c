@@ -32,7 +32,7 @@
 #include "chip.h"
 #include "northbridge.h"
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -74,7 +74,7 @@ static void pci_domain_set_resources(device_t dev)
 		tolmk -= 1024;	// TOP 1M SM Memory
 	}
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 	high_tables_base = (tolmk * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
 	printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n",

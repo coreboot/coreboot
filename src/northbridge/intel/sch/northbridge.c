@@ -105,7 +105,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -192,7 +192,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	assign_resources(dev->link_list);
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables. */
 	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;

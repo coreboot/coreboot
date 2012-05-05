@@ -1,7 +1,7 @@
 #ifndef SMP_ATOMIC_H
 #define SMP_ATOMIC_H
 
-#if CONFIG_SMP == 1
+#if CONFIG_SMP
 #include <arch/smp/atomic.h>
 #else
 

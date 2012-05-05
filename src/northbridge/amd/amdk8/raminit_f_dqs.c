@@ -1717,7 +1717,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	return reg;
 }
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 static void set_top_mem_ap(unsigned tom_k, unsigned tom2_k)
 {
 	msr_t msr;
@@ -1804,7 +1804,7 @@ static void set_htic_bit(unsigned i, unsigned val, unsigned bit)
 }
 
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 static unsigned get_htic_bit(unsigned i, unsigned bit)
 {
 	uint32_t dword;
@@ -1826,9 +1826,9 @@ static void set_sysinfo_in_ram(unsigned val)
 	set_htic_bit(0, val, 9);
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 
-#if CONFIG_MEM_TRAIN_SEQ == 0
+#if !CONFIG_MEM_TRAIN_SEQ
 static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
 {
 	u32 dword = pci_read_config32_index_wait(dev, 0x98, index);
@@ -1865,7 +1865,7 @@ static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
 	return pos;
 }
 
-#if CONFIG_MEM_TRAIN_SEQ == 0
+#if !CONFIG_MEM_TRAIN_SEQ
 static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
 {
 	/* 30 bytes per channel */
@@ -1914,7 +1914,7 @@ static void dqs_restore_MC_NVRAM(unsigned int dev)
 }
 #endif
 
-#if CONFIG_MEM_TRAIN_SEQ == 0
+#if !CONFIG_MEM_TRAIN_SEQ
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 static void dqs_timing(int controllers, const struct mem_controller *ctrl, tsc_t *tsc0, struct sys_info *sysinfo)
 #else
@@ -1981,7 +1981,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 		if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
 		printk(BIOS_DEBUG, " done\n");
 		sysinfo->mem_trained[i]=1;
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 		dqs_save_MC_NVRAM((ctrl+i)->f2);
 #endif
 	}
@@ -2013,7 +2013,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
 	if(sysinfo->mem_trained[i] != 0x80) return;
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 	//need to enable mtrr, so dqs training could access the test address
 	setup_mtrr_dqs(sysinfo->tom_k, sysinfo->tom2_k);
 #endif
@@ -2059,7 +2059,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
 
 out:
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 	clear_mtrr_dqs(sysinfo->tom2_k);
 #endif
 
@@ -2076,7 +2076,7 @@ out:
 }
 #endif
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
 	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
@@ -2103,7 +2103,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		memcpy(sysinfo, sysinfox, CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
-	#if CONFIG_AP_CODE_IN_CAR == 0
+	#if !CONFIG_AP_CODE_IN_CAR
 		printk(BIOS_DEBUG, "CODE IN ROM AND RUN ON NODE: %02x\n", nodeid);
 		train_ram(nodeid, sysinfo, sysinfox);
 	#else

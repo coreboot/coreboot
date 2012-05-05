@@ -33,22 +33,22 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <delay.h>
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
+#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 #include <device/hypertransport.h>
 #endif
-#if CONFIG_PCIX_PLUGIN_SUPPORT == 1
+#if CONFIG_PCIX_PLUGIN_SUPPORT
 #include <device/pcix.h>
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT == 1
+#if CONFIG_PCIEXP_PLUGIN_SUPPORT
 #include <device/pciexp.h>
 #endif
-#if CONFIG_AGP_PLUGIN_SUPPORT == 1
+#if CONFIG_AGP_PLUGIN_SUPPORT
 #include <device/agp.h>
 #endif
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
+#if CONFIG_CARDBUS_PLUGIN_SUPPORT
 #include <device/cardbus.h>
 #endif
-#if CONFIG_PC80_SYSTEM == 1
+#if CONFIG_PC80_SYSTEM
 #include <pc80/i8259.h>
 #endif
 #if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
@@ -748,17 +748,17 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 {
 	unsigned int pos;
 
-#if CONFIG_PCIX_PLUGIN_SUPPORT == 1
+#if CONFIG_PCIX_PLUGIN_SUPPORT
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pos) {
 		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n", dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
 #endif
-#if CONFIG_AGP_PLUGIN_SUPPORT == 1
+#if CONFIG_AGP_PLUGIN_SUPPORT
 	/* How do I detect a PCI to AGP bridge? */
 #endif
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
+#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 	pos = 0;
 	while ((pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, pos))) {
 		u16 flags;
@@ -771,7 +771,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		}
 	}
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT == 1
+#if CONFIG_PCIEXP_PLUGIN_SUPPORT
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pos) {
 		u16 flags;
@@ -860,7 +860,7 @@ static void set_pci_ops(struct device *dev)
 			goto bad;
 		dev->ops = get_pci_bridge_ops(dev);
 		break;
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
+#if CONFIG_CARDBUS_PLUGIN_SUPPORT
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;
@@ -1256,7 +1256,7 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 	return max;
 }
 
-#if CONFIG_PC80_SYSTEM == 1
+#if CONFIG_PC80_SYSTEM
 /**
  * Assign IRQ numbers.
  *
@@ -1305,7 +1305,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
 #endif
 
-#if CONFIG_PC80_SYSTEM == 1
+#if CONFIG_PC80_SYSTEM
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);

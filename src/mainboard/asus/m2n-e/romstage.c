@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
@@ -126,7 +126,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo, sysinfo + 1);
 	printk(BIOS_DEBUG, "bsp_apicid=0x%02x\n", bsp_apicid);
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ
 	/* In BSP so could hold all AP until sysinfo is in RAM. */
 	set_sysinfo_in_ram(0);
 #endif
@@ -134,7 +134,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain(); /* Routing table and start other core0. */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 	/*
 	 * It is said that we should start core1 after all core0 launched
 	 * becase optimize_link_coherent_ht is moved out from

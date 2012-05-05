@@ -83,7 +83,7 @@ static int translate_i82810_to_mb[] = {
 /* MB */0, 8, 0, 16, 16, 24, 32, 32, 48, 64, 64, 96, 128, 128, 192, 256,
 };
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -147,7 +147,7 @@ static void pci_domain_set_resources(device_t dev)
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, tolmk - 768);
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;

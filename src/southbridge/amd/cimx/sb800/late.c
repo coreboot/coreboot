@@ -161,7 +161,7 @@ static const struct pci_driver raid5_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_ATI_SB800_SATA_RAID5,
 };
 
-#if CONFIG_USBDEBUG == 1
+#if CONFIG_USBDEBUG
 static void usb_set_resources(struct device *dev)
 {
 	struct resource *res;
@@ -480,7 +480,7 @@ static void sb800_enable(device_t dev)
 		/* call the CIMX entry at the last sb800 device,
 		 * so make sure the mainboard devicetree is complete
 		 */
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 		if (acpi_slp_type != 3)
 			sb_Before_Pci_Init();
 		else

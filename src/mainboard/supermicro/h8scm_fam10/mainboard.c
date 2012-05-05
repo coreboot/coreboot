@@ -97,7 +97,7 @@ static void h8scm_enable(device_t dev)
 	/* get_ide_dma66(); */
 }
 
-#if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
+#if CONFIG_HAVE_MAINBOARD_RESOURCES
 int add_mainboard_resources(struct lb_memory *mem)
 {
 	return 0;

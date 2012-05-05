@@ -2,7 +2,7 @@
 
 int init_processor_name(void);
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 static inline int is_cpu_rev_a0(void)
 {
 	return (cpuid_eax(1) & 0xfffef) == 0x0f00;
@@ -79,7 +79,7 @@ int is_e0_later_in_bsp(int nodeid); //defined model_fxx_init.c
 
 #endif
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
 //AMD_F0_SUPPORT
 static inline int is_cpu_pre_f0(void)
 {

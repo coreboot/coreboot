@@ -515,7 +515,7 @@ agesawrapper_amdinitlate (
 	return (UINT32)Status;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 UINT32
 agesawrapper_amdinitresume (
   VOID

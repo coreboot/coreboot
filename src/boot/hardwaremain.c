@@ -113,13 +113,13 @@ void hardwaremain(int boot_complete)
 	timestamps[5] = rdtsc();
 #endif
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
 #endif
 #endif
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	suspend_resume();
 	post_code(0x8a);
 #endif

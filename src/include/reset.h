@@ -4,7 +4,7 @@
 #if !defined( __ROMCC__ )
 /* ROMCC can't do function prototypes... */
 
-#if CONFIG_HAVE_HARD_RESET == 1
+#if CONFIG_HAVE_HARD_RESET
 void hard_reset(void);
 #else
 #define hard_reset() do {} while(0)

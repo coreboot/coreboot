@@ -976,7 +976,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #include "raminit.h"
 
-#if CONFIG_AMDMCT == 0
+#if !CONFIG_AMDMCT
 
 //struct definitions
 
@@ -1034,12 +1034,12 @@ struct nodes_info_t {
 } __attribute__((packed));
 
 /* be careful with the alignment of sysinfo, bacause sysinfo may be shared by coreboot_car and coreboot_ram stage. and coreboot_ram may be running at 64bit later.*/
-#if CONFIG_AMDMCT == 0
+#if !CONFIG_AMDMCT
 
 //#define MEM_CS_COPY 1
 #define MEM_CS_COPY NODE_NUMS
 
-#if CONFIG_MEM_TRAIN_SEQ == 0
+#if !CONFIG_MEM_TRAIN_SEQ
 	#define DQS_DELAY_COPY NODE_NUMS
 #else
 //	#define DQS_DELAY_COPY 1
@@ -1102,7 +1102,7 @@ struct sys_info {
 device_t get_node_pci(u32 nodeid, u32 fn);
 #endif
 
-#if CONFIG_AMDMCT == 0
+#if !CONFIG_AMDMCT
 
 #ifdef __PRE_RAM__
 static void soft_reset(void);

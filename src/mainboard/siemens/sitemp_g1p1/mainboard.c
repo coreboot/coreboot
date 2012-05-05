@@ -816,14 +816,14 @@ static void smm_lock( void )
 
 static void init(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL == 0
+#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	INT15_function_extensions int15_func;
 #endif
 
 	printk(BIOS_DEBUG, "%s %s[%x/%x] %s\n",
 		dev->chip_ops->name, dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL == 0
+#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	if(	get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") < 0 )
 		int15_func.regs.func00_LCD_panel_id = PANEL_TABLE_ID_NO;
 	int15_func.regs.func05_TV_standard = TV_MODE_NO;
@@ -853,7 +853,7 @@ static void enable_dev(device_t dev)
 	detect_hw_variant(dev);
 	update_subsystemid(dev);
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	{
 	msr_t msr, msr2;
 
@@ -921,7 +921,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
 	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base, uma_memory_size);

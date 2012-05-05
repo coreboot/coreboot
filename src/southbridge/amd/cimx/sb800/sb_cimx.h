@@ -40,7 +40,7 @@ int acpi_is_wakeup_early(void);
  */
 void sb800_clk_output_48Mhz(void);
 
-#if CONFIG_RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number, called by finalize_node_setup()
  * @param[in] bus target bus number

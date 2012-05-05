@@ -125,7 +125,7 @@ static void m4a78em_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard enable. dev=0x%p\n", dev);
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	msr_t msr, msr2;
 
 	/* TOP_MEM: the top of DRAM below 4G */

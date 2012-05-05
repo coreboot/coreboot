@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
 #endif
 

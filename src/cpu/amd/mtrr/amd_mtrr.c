@@ -6,7 +6,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 extern uint64_t uma_memory_size;
 #endif
 
@@ -163,7 +163,7 @@ void amd_setup_mtrrs(void)
 	 * has been deducted from the size of memory below 4GB.
 	 * When setting TOM, include UMA DRAM
 	 */
-	#if CONFIG_GFXUMA == 1
+	#if CONFIG_GFXUMA
 	msr.lo += uma_memory_size;
 	#endif
 	wrmsr(TOP_MEM, msr);

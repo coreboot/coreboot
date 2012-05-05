@@ -550,7 +550,7 @@ void acpi_write_hest(acpi_hest_t *hest)
 	header->checksum = acpi_checksum((void *)hest, header->length);
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 void suspend_resume(void)
 {
 	void *wake_vec;

@@ -127,7 +127,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 		}
 	}
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 	// let's check that in extend space
 	// use the nodeid extend space to find out the bus for the linkn
 	u32 tempreg;

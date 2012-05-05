@@ -31,7 +31,7 @@
 #include "smbus.h"
 
 
-#if CONFIG_RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number
  * @param[in] bus target bus number

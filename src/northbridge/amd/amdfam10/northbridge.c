@@ -1425,7 +1425,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			if (cpu) {
 				cpu->path.apic.node_id = i;
 				cpu->path.apic.core_id = j;
-	#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET>0)
+	#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
 				if(sysconf.enabled_apic_ext_id) {
 					if(sysconf.lift_bsp_apicid) {
 						cpu->path.apic.apic_id += sysconf.apicid_offset;

@@ -276,7 +276,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		u32 loop = 100;
 
 #if CONFIG_SET_FIDVID
-#if (CONFIG_LOGICAL_CPUS == 1) && CONFIG_SET_FIDVID_CORE0_ONLY
+#if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY
 		if (id.coreid == 0)	// only need set fid for core0
 #endif
 			init_fidvid_ap(bsp_apicid, apicid);

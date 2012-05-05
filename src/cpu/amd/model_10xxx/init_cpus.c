@@ -111,7 +111,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
 			    j * (nb_cfg_54 ? 1 : 64);
 
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
+#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
 #if !CONFIG_LIFT_BSP_APIC_ID
 			if ((i != 0) || (j != 0))	/* except bsp */
 #endif
@@ -274,7 +274,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 	enable_lapic();
 
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
+#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET > 0)
 	u32 initial_apicid = get_initial_apicid();
 
 #if !CONFIG_LIFT_BSP_APIC_ID
@@ -331,7 +331,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		cpuSetAMDMSR();
 
 #if CONFIG_SET_FIDVID
-#if (CONFIG_LOGICAL_CPUS == 1) && CONFIG_SET_FIDVID_CORE0_ONLY
+#if CONFIG_LOGICAL_CPUS && CONFIG_SET_FIDVID_CORE0_ONLY
 		// Run on all AP for proper FID/VID setup.
 		if (id.coreid == 0)	// only need set fid for core0
 #endif

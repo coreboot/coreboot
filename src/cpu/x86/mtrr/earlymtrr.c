@@ -20,7 +20,7 @@ static void set_var_mtrr(
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
-#if !defined(CONFIG_CACHE_AS_RAM) || (CONFIG_CACHE_AS_RAM == 0)
+#if !defined(CONFIG_CACHE_AS_RAM) || !CONFIG_CACHE_AS_RAM
 static void cache_lbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */

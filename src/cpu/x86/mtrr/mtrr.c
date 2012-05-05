@@ -464,7 +464,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
 
-#if (CONFIG_GFXUMA == 1) /* UMA or SP. */
+#if CONFIG_GFXUMA /* UMA or SP. */
 	/* For now we assume the UMA space is at the end of memory below 4GB */
 	if (var_state.hole_startk || var_state.hole_sizek) {
 		printk(BIOS_DEBUG, "Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");

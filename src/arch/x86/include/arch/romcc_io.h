@@ -65,7 +65,7 @@ typedef unsigned device_t; /* pci and pci_mmio need to have different ways to ha
 static inline __attribute__((always_inline)) uint8_t pci_io_read_config8(device_t dev, unsigned where)
 {
 	unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
 	addr = (dev>>4) | where;
 #else
 	addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16); //seg == 0
@@ -94,7 +94,7 @@ static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t d
 static inline __attribute__((always_inline)) uint16_t pci_io_read_config16(device_t dev, unsigned where)
 {
 	unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
         addr = (dev>>4) | where;
 #else
         addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
@@ -125,7 +125,7 @@ static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t
 static inline __attribute__((always_inline)) uint32_t pci_io_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
         addr = (dev>>4) | where;
 #else
         addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
@@ -155,7 +155,7 @@ static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t
 static inline __attribute__((always_inline)) void pci_io_write_config8(device_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
         addr = (dev>>4) | where;
 #else
         addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
@@ -186,7 +186,7 @@ static inline __attribute__((always_inline)) void pci_write_config8(device_t dev
 static inline __attribute__((always_inline)) void pci_io_write_config16(device_t dev, unsigned where, uint16_t value)
 {
         unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
         addr = (dev>>4) | where;
 #else
         addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
@@ -217,7 +217,7 @@ static inline __attribute__((always_inline)) void pci_write_config16(device_t de
 static inline __attribute__((always_inline)) void pci_io_write_config32(device_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
-#if CONFIG_PCI_IO_CFG_EXT == 0
+#if !CONFIG_PCI_IO_CFG_EXT
         addr = (dev>>4) | where;
 #else
         addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);

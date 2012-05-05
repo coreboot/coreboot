@@ -63,11 +63,11 @@ static void persimmon_enable(device_t dev)
  * The mainboard is the first place that we get control in ramstage. Check
  * for S3 resume and call the approriate AGESA/CIMx resume functions.
  */
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = acpi_get_sleep_type();
 #endif
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	msr_t msr, msr2;
 	uint32_t sys_mem;
 
@@ -113,7 +113,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	printk(BIOS_INFO, "uma_memory_start=0x%llx, uma_memory_size=0x%llx \n",
 			uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base,

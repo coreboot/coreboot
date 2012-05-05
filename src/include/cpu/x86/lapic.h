@@ -147,7 +147,7 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
 
 void setup_lapic(void);
 
-#if CONFIG_SMP == 1
+#if CONFIG_SMP
 struct device;
 int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */

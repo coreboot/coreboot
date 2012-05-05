@@ -210,7 +210,7 @@ static void amdfam14_link_read_bases(device_t dev, u32 nodeid, u32 link)
 	resource = amdfam14_find_iopair(dev, nodeid, link);
 	if (resource) {
 		u32 align;
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if ((resource->index & 0x1fff) == 0x1110) {	// ext
 			align = 8;
 		} else
@@ -235,7 +235,7 @@ static void amdfam14_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 		resource->flags |= IORESOURCE_BRIDGE;
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if ((resource->index & 0x1fff) == 0x1110) {	// ext
 			normalize_resource(resource);
 		}
@@ -252,7 +252,7 @@ static void amdfam14_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if ((resource->index & 0x1fff) == 0x1110) {	// ext
 			normalize_resource(resource);
 		}
@@ -326,7 +326,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
 
 static void add_uma_resource(struct device *dev, int index)
@@ -508,7 +508,7 @@ static void domain_read_resources(device_t dev)
 	/* FIXME: do we need to check extend conf space?
 	   I don't believe that much preset value */
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 0
+#if !CONFIG_PCI_64BIT_PREF_MEM
 	pci_domain_read_resources(dev);
 #else
 	struct bus *link;
@@ -538,7 +538,7 @@ static void domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "\nFam14h - domain_set_resources.\n");
 	printk(BIOS_DEBUG, "  amsr - incoming dev = %08x\n", (u32) dev);
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 	struct resource *io, *mem1, *mem2;
 	struct resource *res;
 #endif
@@ -551,7 +551,7 @@ static void domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 
 	printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
 	for (link = dev->link_list; link; link = link->next) {
@@ -685,10 +685,10 @@ static void domain_set_resources(device_t dev)
 						     pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 					if (high_tables_base == 0) {
 						/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
 						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
@@ -712,13 +712,13 @@ static void domain_set_resources(device_t dev)
 
 		ram_resource(dev, (idx | 0), basek, sizek);
 		idx += 0x10;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 		printk(BIOS_DEBUG,
 			"%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", 0,
 			 mmio_basek, basek, limitk);
 		if (high_tables_base == 0) {
 			/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 			printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx.\n", uma_memory_base);
 #else
@@ -732,7 +732,7 @@ static void domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",
 		high_tables_size);
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 	printk(BIOS_DEBUG, "adsr - adding uma resource.\n");
 	add_uma_resource(dev, 7);
 #endif

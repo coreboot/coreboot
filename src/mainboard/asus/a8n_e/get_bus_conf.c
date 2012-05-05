@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
 #endif
 #include <cpu/amd/amdk8_sysconf.h>
@@ -114,7 +114,7 @@ void get_bus_conf(void)
 		}
 	}
 
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(3);
 #else
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;

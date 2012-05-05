@@ -67,7 +67,7 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 	device_t dev;
 
 	//actually, only for one HT device HT chain, and unitid is 0
-#if CONFIG_HT_CHAIN_UNITID_BASE == 0
+#if !CONFIG_HT_CHAIN_UNITID_BASE
 	if(offset_unitid) {
 		return;
 	}
@@ -136,8 +136,8 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-	#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
-		#if CONFIG_K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_HT_FREQ_1G_SUPPORT
+		#if !CONFIG_K8_REV_F_SUPPORT
 		if (is_cpu_pre_e0()) {  // only E0 later support 1GHz
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		}
@@ -149,7 +149,7 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 
 	printk(BIOS_SPEW, "pos=0x%x, filtered freq_cap=0x%x\n", pos, freq_cap);
 
-#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890 == 1
+#if CONFIG_SOUTHBRIDGE_VIA_SUBTYPE_K8M890
 	freq_cap &= 0x3f;
 	printk(BIOS_INFO, "Limiting HT to 800/600/400/200 MHz until K8M890 HT1000 is fixed.\n");
 #endif
@@ -539,7 +539,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 		unsigned devn = 1;
 
 	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
 		if(i==0) // to check if it is sb ht chain
 		#endif
 			devn = CONFIG_HT_CHAIN_UNITID_BASE;
@@ -671,7 +671,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 
 
 	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
 		if(i==0) // to check if it is sb ht chain
 		#endif
 			offset_unitid = 1;

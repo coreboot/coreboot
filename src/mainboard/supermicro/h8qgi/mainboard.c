@@ -72,7 +72,7 @@ static void h8qgi_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
-#if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
+#if CONFIG_HAVE_MAINBOARD_RESOURCES
 int add_mainboard_resources(struct lb_memory *mem)
 {
 	return 0;

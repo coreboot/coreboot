@@ -27,7 +27,7 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if CONFIG_GENERATE_ACPI_TABLES==1
+#if CONFIG_GENERATE_ACPI_TABLES
 
 #include <stdint.h>
 

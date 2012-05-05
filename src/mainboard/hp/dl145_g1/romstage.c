@@ -126,7 +126,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	// It is said that we should start core1 after all core0 launched
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);

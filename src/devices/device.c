@@ -536,7 +536,7 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	}
 }
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 #define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #else
 #define MEM_MASK (IORESOURCE_MEM)
@@ -676,7 +676,7 @@ static void avoid_fixed_resources(struct device *dev)
 	}
 }
 
-#if CONFIG_VGA_BRIDGE_SETUP == 1
+#if CONFIG_VGA_BRIDGE_SETUP
 device_t vga_pri = 0;
 static void set_vga_bridge_bits(void)
 {
@@ -725,7 +725,7 @@ static void set_vga_bridge_bits(void)
 	if (!vga)
 		vga = vga_first;
 
-#if CONFIG_ONBOARD_VGA_IS_PRIMARY == 1
+#if CONFIG_ONBOARD_VGA_IS_PRIMARY
 	if (vga_onboard)	/* Will use onboard VGA as primary. */
 #else
 	if (!vga)		/* Will use last add-on adapter as primary. */
@@ -935,7 +935,7 @@ void dev_configure(void)
 	struct device *root;
 	struct device *child;
 
-#if CONFIG_VGA_BRIDGE_SETUP == 1
+#if CONFIG_VGA_BRIDGE_SETUP
 	set_vga_bridge_bits();
 #endif
 

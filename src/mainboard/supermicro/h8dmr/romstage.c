@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if CONFIG_K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
@@ -143,7 +143,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         setup_coherent_ht_domain(); // routing table and start other core0
 
         wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
         // It is said that we should start core1 after all core0 launched
         /* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
          * So here need to make sure last core0 is started, esp for two way system,

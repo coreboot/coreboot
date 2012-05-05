@@ -26,7 +26,7 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
@@ -75,7 +75,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	if (!sb_config)
 		return;
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_get_sleep_type() == 3)
 		sb_config->S3Resume = 1;
 #endif

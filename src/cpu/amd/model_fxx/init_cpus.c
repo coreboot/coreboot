@@ -40,7 +40,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 		     3);
 		if (nb_cfg_54) {
 			if (j == 0) {	// if it is single core, we need to increase siblings for apic calculation
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 				e0_later_single_core = is_e0_later_in_bsp(i);	// single core
 #else
 				e0_later_single_core = is_cpu_f0_in_bsp(i);	// We can read cpuid(1) from Func3
@@ -72,8 +72,8 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
 			    j * (nb_cfg_54 ? 1 : 8);
 
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
-#if CONFIG_LIFT_BSP_APIC_ID == 0
+#if CONFIG_ENABLE_APIC_EXT_ID
+#if !CONFIG_LIFT_BSP_APIC_ID
 			if ((i != 0) || (j != 0))	/* except bsp */
 #endif
 				ap_apicid += CONFIG_APIC_ID_OFFSET;
@@ -215,7 +215,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	   core0 is done at first --- use wait_all_core0_started  */
 	if (id.coreid == 0) {
 		set_apicid_cpuid_lo();	/* only set it on core0 */
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
+#if CONFIG_ENABLE_APIC_EXT_ID
 		enable_apic_ext_id(id.nodeid);
 #endif
 	}
@@ -223,10 +223,10 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	enable_lapic();
 	//      init_timer(); // We need TMICT to pass msg for FID/VID change
 
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
+#if CONFIG_ENABLE_APIC_EXT_ID
 	u32 initial_apicid = get_initial_apicid();
 
-#if CONFIG_LIFT_BSP_APIC_ID == 0
+#if !CONFIG_LIFT_BSP_APIC_ID
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
@@ -238,7 +238,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 		lapic_write(LAPIC_ID, dword);
 	}
-#if CONFIG_LIFT_BSP_APIC_ID == 1
+#if CONFIG_LIFT_BSP_APIC_ID
 	bsp_apicid += CONFIG_APIC_ID_OFFSET;
 #endif
 

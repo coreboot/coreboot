@@ -101,7 +101,7 @@ static void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {

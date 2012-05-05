@@ -177,7 +177,7 @@ static void ram_reservation(device_t dev, unsigned long index,
 }
 #endif
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -207,7 +207,7 @@ static void cn400_domain_set_resources(device_t dev)
 			tolmk = tomk;
 		}
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 		/* Locate the High Tables at the Top of Low Memory below the Video RAM */
 		high_tables_base = ((tolmk - (CONFIG_VIDEO_MB *1024)) * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;

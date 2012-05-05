@@ -144,7 +144,7 @@ print_debug("IDE_INIT:---------->\n");
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 12;
 	pci_write_config32(dev, 0xf8, dword);
-#if CONFIG_PCI_ROM_RUN == 1
+#if CONFIG_PCI_ROM_RUN
 	pci_dev_init(dev);
 #endif
 

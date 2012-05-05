@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
 #endif
 #include <cpu/amd/amdfam10_sysconf.h>
@@ -141,7 +141,7 @@ void get_bus_conf(void)
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(1);
 #else
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;

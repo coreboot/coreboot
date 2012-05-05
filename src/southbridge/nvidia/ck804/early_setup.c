@@ -82,7 +82,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
 #endif
 
-#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
 #define CK804B_DEVN_BASE 1
 #else
 #define CK804B_DEVN_BASE CK804_DEVN_BASE

@@ -51,7 +51,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	void *resume_backup_memory;
 #endif
 
@@ -107,7 +107,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	if (!acpi_is_wakeup_early()) { /* Check for S3 resume */
 #endif
 		post_code(0x40);
@@ -126,7 +126,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	} else { 			/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 

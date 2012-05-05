@@ -159,7 +159,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores();
@@ -172,7 +172,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* run _early_setup before soft-reset. */
 	rs780_early_setup();
 
-#if CONFIG_SET_FIDVID == 1
+#if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 	post_code(0x39);

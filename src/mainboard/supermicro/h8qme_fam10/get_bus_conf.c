@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
 #endif
 
@@ -132,7 +132,7 @@ void get_bus_conf(void)
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(3);
 #else
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;

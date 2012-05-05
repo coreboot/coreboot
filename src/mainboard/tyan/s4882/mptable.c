@@ -4,7 +4,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 #include <cpu/amd/multicore.h>
 #endif
 
@@ -109,7 +109,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(3);
 #else
         apicid_base = CONFIG_MAX_PHYSICAL_CPUS;

@@ -241,7 +241,7 @@ static void tim5690_enable(device_t dev)
 	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
 	vgabios_init(&vbios_regs);
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	msr_t msr, msr2;
 
 	/* TOP_MEM: the top of DRAM below 4G */
@@ -290,7 +290,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
 	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,

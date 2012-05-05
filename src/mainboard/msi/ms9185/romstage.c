@@ -143,7 +143,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
        setup_coherent_ht_domain();
 
        wait_all_core0_started();
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
         // It is said that we should start core1 after all core0 launched
        /* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
         * So here need to make sure last core0 is started, esp for two way system,

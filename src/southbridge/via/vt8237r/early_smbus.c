@@ -327,7 +327,7 @@ void enable_rom_decode(void)
 	pci_write_config8(dev, 0x41, 0x7f);
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 static int acpi_is_wakeup_early(void) {
 	device_t dev;
 	u16 tmp;

@@ -33,7 +33,7 @@ static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);
 
-#if CONFIG_PCI_IO_CFG_EXT == 1
+#if CONFIG_PCI_IO_CFG_EXT
 static void set_EnableCf8ExtCfg(void)
 {
 	// set the NB_CFG[46]=1;
@@ -112,7 +112,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 			    j * (nb_cfg_54 ? 1 : 64);
 
 #if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
-#if CONFIG_LIFT_BSP_APIC_ID == 0
+#if !CONFIG_LIFT_BSP_APIC_ID
 			if ((i != 0) || (j != 0))	/* except bsp */
 #endif
 				ap_apicid += CONFIG_APIC_ID_OFFSET;
@@ -267,7 +267,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	if (id.coreid == 0) {
 		set_apicid_cpuid_lo();	/* only set it on core0 */
 		set_EnableCf8ExtCfg();	/* only set it on core0 */
-#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
+#if CONFIG_ENABLE_APIC_EXT_ID
 		enable_apic_ext_id(id.nodeid);
 #endif
 	}
@@ -277,7 +277,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 #if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
 	u32 initial_apicid = get_initial_apicid();
 
-#if CONFIG_LIFT_BSP_APIC_ID == 0
+#if !CONFIG_LIFT_BSP_APIC_ID
 	if (initial_apicid != 0)	// other than bsp
 #endif
 	{
@@ -289,7 +289,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 		lapic_write(LAPIC_ID, dword);
 	}
-#if CONFIG_LIFT_BSP_APIC_ID == 1
+#if CONFIG_LIFT_BSP_APIC_ID
 	bsp_apicid += CONFIG_APIC_ID_OFFSET;
 #endif
 

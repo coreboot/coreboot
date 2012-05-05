@@ -58,7 +58,7 @@ static void ide_init(struct device *dev)
 		pci_write_config8(dev, 0xAD, byte);
 	}
 
-#if CONFIG_PCI_ROM_RUN == 1
+#if CONFIG_PCI_ROM_RUN
 	pci_dev_init(dev);
 #endif
 }

@@ -38,7 +38,7 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	dev = __f1_dev[0];
 #endif
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 	// I will use ext space only for simple
 	pci_write_config32(dev, 0x110, nodeid | (1<<28)); // [47:27] at [28:8]
 	d.mask = pci_read_config32(dev, 0x114);  // enable is bit 0
@@ -61,12 +61,12 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	return d;
 }
 
-#if CONFIG_AMDMCT == 0
+#if !CONFIG_AMDMCT
 static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 {
 	u32 i;
 	device_t dev;
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 	// I will use ext space only for simple
 	u32 d_base_i, d_base_d, d_mask_i, d_mask_d;
 	d_base_i = nodeid | (0<<28);
@@ -95,7 +95,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 		dev = __f1_dev[i];
 #endif
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		// I will use ext space only for simple
 		pci_write_config32(dev, 0x110, d_base_i);
 		pci_write_config32(dev, 0x114, d_base_d); //[47:27] at [28:8];
@@ -120,7 +120,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 }
 #endif
 
-#if CONFIG_AMDMCT == 0
+#if !CONFIG_AMDMCT
 static void set_DctSelBaseAddr(u32 i, u32 sel_m)
 {
 	device_t dev;

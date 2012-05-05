@@ -21,7 +21,7 @@
 // mmconf is not ready yet
 static  void set_bsp_node_CHtExtNodeCfgEn(void)
 {
-#if CONFIG_EXT_RT_TBL_SUPPORT == 1
+#if CONFIG_EXT_RT_TBL_SUPPORT
 	u32 dword;
 	dword = pci_io_read_config32(PCI_DEV(0, 0x18, 0), 0x68);
 	dword |= (1<<27) | (1<<25);
@@ -112,7 +112,7 @@ static void enumerate_ht_chain(void)
 					real_last_pos = pos;
 					ht_dev_num++ ;
 #endif
-		#if CONFIG_HT_CHAIN_END_UNITID_BASE == 0
+		#if !CONFIG_HT_CHAIN_END_UNITID_BASE
 					if (!next_unitid)
 						goto out;
 		#endif

@@ -31,7 +31,7 @@
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
 
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 #include <pc80/mc146818rtc.h>
 #endif
 
@@ -70,7 +70,7 @@ static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	dram_base_mask_t d;
 	dev = __f1_dev[0];
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 	/* I will use ext space only for simple */
 	pci_write_config32(dev, 0x110, nodeid | (1<<28)); // [47:27] at [28:8]
 	d.mask = pci_read_config32(dev, 0x114);  // enable is bit 0
@@ -551,7 +551,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 	resource = amdfam10_find_iopair(dev, nodeid, link);
 	if (resource) {
 		u32 align;
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if((resource->index & 0x1fff) == 0x1110) { // ext
 			align = 8;
 		}
@@ -577,7 +577,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 		resource->flags |= IORESOURCE_BRIDGE;
 
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if ((resource->index & 0x1fff) == 0x1110) { // ext
 			normalize_resource(resource);
 		}
@@ -594,7 +594,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 		if ((resource->index & 0x1fff) == 0x1110) { // ext
 			normalize_resource(resource);
 		}
@@ -677,7 +677,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS == 1
+#if CONFIG_MULTIPLE_VGA_ADAPTERS
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
@@ -806,7 +806,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 	/* FIXME: do we need to check extend conf space?
 	   I don't believe that much preset value */
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 0
+#if !CONFIG_PCI_64BIT_PREF_MEM
 	pci_domain_read_resources(dev);
 #else
 	struct bus *link;
@@ -908,7 +908,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
 
 static void add_uma_resource(struct device *dev, int index)
@@ -926,7 +926,7 @@ static void add_uma_resource(struct device *dev, int index)
 
 static void amdfam10_domain_set_resources(device_t dev)
 {
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 	struct resource *io, *mem1, *mem2;
 	struct resource *res;
 #endif
@@ -939,7 +939,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 
 	for (link = dev->link_list; link; link = link->next) {
 		/* Now reallocate the pci resources memory with the
@@ -1054,10 +1054,10 @@ static void amdfam10_domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 					if (high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
 						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
@@ -1079,19 +1079,19 @@ static void amdfam10_domain_set_resources(device_t dev)
 			}
 		}
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 		/* Deduct uma memory before reporting because
 		 * this is what the mtrr code expects */
 		sizek -= uma_memory_size / 1024;
 #endif
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			     i, mmio_basek, basek, limitk);
 		if (high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
 			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
@@ -1101,7 +1101,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 #endif
 	}
 
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 	add_uma_resource(dev, 7);
 #endif
 
@@ -1121,7 +1121,7 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 	for (reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-#if CONFIG_EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT
 	// all nodes
 	for (i = 0; i< sysconf.nodes; i++) {
 		int index;
@@ -1270,7 +1270,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	}
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 	get_option(&disable_siblings, "multi_core");
 #endif
 
@@ -1376,7 +1376,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			 * otherwise the device under it will not be scanned
 			 */
 			int linknum;
-#if CONFIG_HT3_SUPPORT==1
+#if CONFIG_HT3_SUPPORT
 			linknum = 8;
 #else
 			linknum = 4;

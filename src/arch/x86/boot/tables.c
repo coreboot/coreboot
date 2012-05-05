@@ -71,7 +71,7 @@ struct lb_memory *write_tables(void)
 	low_table_start = 0;
 	low_table_end = 0x500;
 
-#if CONFIG_GENERATE_PIRQ_TABLE == 1
+#if CONFIG_GENERATE_PIRQ_TABLE
 #define MAX_PIRQ_TABLE_SIZE (4 * 1024)
 	post_code(0x9a);
 
@@ -97,7 +97,7 @@ struct lb_memory *write_tables(void)
 
 #endif
 
-#if CONFIG_GENERATE_MP_TABLE == 1
+#if CONFIG_GENERATE_MP_TABLE
 #define MAX_MP_TABLE_SIZE (4 * 1024)
 	post_code(0x9b);
 
@@ -120,7 +120,7 @@ struct lb_memory *write_tables(void)
 	}
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
-#if CONFIG_GENERATE_ACPI_TABLES == 1
+#if CONFIG_GENERATE_ACPI_TABLES
 #define MAX_ACPI_SIZE (45 * 1024)
 	post_code(0x9c);
 

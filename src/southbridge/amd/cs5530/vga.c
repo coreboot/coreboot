@@ -41,7 +41,7 @@
 #include <cpu/amd/gx1def.h>
 #include <delay.h>
 
-#if CONFIG_GX1_VIDEO == 1
+#if CONFIG_GX1_VIDEO
 /*
  * Some register descriptions that are no listed in cpu/amd/gx1def.h
  */
@@ -397,7 +397,7 @@ static void cs5530_activate_video(u32 io_base, const struct video_mode *mode)
 	write32(io_base + CS5530_DISPLAY_CONFIG, val | 0x0020002F);
 }
 
-#if CONFIG_SPLASH_GRAPHIC == 1
+#if CONFIG_SPLASH_GRAPHIC
 
 /*
  * This bitmap file must provide:

@@ -40,7 +40,7 @@ void sb_Late_Post(void);
 void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base);
 void sb7xx_51xx_disable_wideio(u8 wio_index);
 
-#if CONFIG_RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number, called by finalize_node_setup()
  * @param[in] bus target bus number

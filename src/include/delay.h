@@ -3,7 +3,7 @@
 
 #if !defined( __ROMCC__)
 
-#if CONFIG_HAVE_INIT_TIMER == 1
+#if CONFIG_HAVE_INIT_TIMER
 void init_timer(void);
 #else
 #define init_timer() do{} while(0)

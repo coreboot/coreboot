@@ -158,7 +158,7 @@ typedef union _PCI_ADDR {
 
 #include "vendorcode/amd/cimx/sb800/AMDSBLIB.h"
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 #include "spi.h"
 #endif
 

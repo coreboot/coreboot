@@ -103,9 +103,9 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 
 	/* AMD K8 unsupported 1GHz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
-#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
+#if CONFIG_K8_HT_FREQ_1G_SUPPORT
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 		/* Only e0 later suupport 1GHz HT. */
 		if (is_cpu_pre_e0())
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
@@ -351,7 +351,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	} while ((ctrl & (1 << 5)) == 0);
 
 	/* Actually, only for one HT device HT chain, and unitid is 0. */
-#if CONFIG_HT_CHAIN_UNITID_BASE == 0
+#if !CONFIG_HT_CHAIN_UNITID_BASE
 	if (offset_unitid)
 		return;
 #endif

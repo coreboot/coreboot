@@ -31,7 +31,7 @@
 #include "i82371eb.h"
 #include "smbus.h"
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
 int acpi_get_sleep_type(void);
 #endif
@@ -92,7 +92,7 @@ static void pwrmgt_enable(struct device *dev)
 	outw(0xffff,     DEFAULT_PMBASE + GLBSTS);
 	outl(0xffffffff, DEFAULT_PMBASE + DEVSTS);
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	/* this reads PMCNTRL, so we have to call it before writing the
 	 * default value */
 	acpi_slp_type = acpi_get_sleep_type();

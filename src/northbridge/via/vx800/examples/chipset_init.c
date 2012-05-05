@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
 #include "../vx800.h"
@@ -607,7 +607,7 @@ void init_VIA_chipset(void)
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	void *wake_vec;
 #endif
 

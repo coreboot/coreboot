@@ -97,7 +97,7 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_CN700_MEMCTRL,
 };
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -138,7 +138,7 @@ static void pci_domain_set_resources(device_t dev)
 			tolmk = tomk;
 		}
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 		high_tables_base = ((tolmk - CONFIG_VIDEO_MB * 1024) * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;
 		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n",

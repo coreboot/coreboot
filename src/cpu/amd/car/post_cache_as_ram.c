@@ -29,7 +29,7 @@ static void inline __attribute__((always_inline))  memcopy(void *dest, const voi
 			: "memory", "cc");
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 
 static inline void *backup_resume(void) {
 	unsigned long high_ram_base;
@@ -83,7 +83,7 @@ static void vErrata343(void)
 
 static void post_cache_as_ram(void)
 {
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	void *resume_backup_memory;
 #endif
 #if 1
@@ -108,7 +108,7 @@ static void post_cache_as_ram(void)
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
 #endif
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
  	resume_backup_memory = backup_resume();
 #endif
 
@@ -142,7 +142,7 @@ static void post_cache_as_ram(void)
 	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	/* now copy the rest of the area, using the WB method because we already
 	   run normal RAM */
 	if (resume_backup_memory) {
@@ -154,7 +154,7 @@ static void post_cache_as_ram(void)
 
 	print_debug("Clearing initial memory region: ");
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	/* clear only coreboot used region of memory. Note: this may break ECC enabled boards */
 	memset((void*) CONFIG_RAMBASE, 0, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE);
 #else

@@ -2965,7 +2965,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
 	printk_raminit("Handling memory hole at 0x%08x (default)\n", hole_startk);
-#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
+#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
 	/* We need to double check if the hole_startk is valid, if it is equal
 	   to basek, we need to decrease it some */
 	uint32_t basek_pri;
@@ -3009,7 +3009,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 }
 #endif
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 #include "exit_from_self.c"
 #endif
 
@@ -3017,7 +3017,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			  struct sys_info *sysinfo)
 {
 	int i;
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	int suspend = acpi_is_wakeup_early();
 #else
 	int suspend = 0;
@@ -3190,7 +3190,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 	}
 
 
-#if CONFIG_MEM_TRAIN_SEQ ==  0
+#if CONFIG_MEM_TRAIN_SEQ == 0
    #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	dqs_timing(controllers, ctrl, tsc0, sysinfo);
    #else

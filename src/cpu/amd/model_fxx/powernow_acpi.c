@@ -632,7 +632,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		return 0;
 	}
 
-#if CONFIG_MAX_PHYSICAL_CPUS==1
+#if CONFIG_MAX_PHYSICAL_CPUS
 	/* IRT 80us RVO = 50mV PLL_LOCK_TIME 2us, MVS 25mv, VST 100us */
 	control = (3 << 30) | (2 << 28) | (2 << 20) | (0 << 18) | (5 << 11);
 #else

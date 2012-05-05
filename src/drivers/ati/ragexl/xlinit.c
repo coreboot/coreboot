@@ -28,7 +28,7 @@
 // Hence do only remove this if you fix the code.
 #define CONFIG_CONSOLE_BTEXT 0
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 
 #define PLL_CRTC_DECODE 0
 #define SUPPORT_8_BPP_ABOVE 0
@@ -393,7 +393,7 @@ static char m64n_xl_33[] = "3D RAGE (XL PCI-33MHz)";
 static char m64n_xl_66[] = "3D RAGE (XL PCI-66MHz)";
 
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 static void aty_set_crtc(const struct fb_info_aty *info,
                          const struct crtc *crtc);
 static int aty_var_to_crtc(const struct fb_info_aty *info,
@@ -455,7 +455,7 @@ static struct {
 	/* 3D RAGE XL PCI-33/BGA */
 	{ 0x4752, 0x4752, 0x00, 0x00, m64n_xl_33, 230, 83, 63, M64F_GT | M64F_INTEGRATED | M64F_RESET_3D | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL | M64F_EXTRA_BRIGHT | M64F_XL_DLL | M64F_MFB_TIMES_4 },
 };
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 static void aty_calc_mem_refresh(struct fb_info_aty *info, u16 id, int xclk)
 {
         int i, size;
@@ -502,7 +502,7 @@ static void ati_ragexl_init(device_t dev)
 #endif
     	int pll, mclk, xclk;
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 
 #if 0
 	int gtb_memsize, k;
@@ -532,7 +532,7 @@ static void ati_ragexl_init(device_t dev)
 		res = res->next;
 	}
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 	info->frame_buffer = res->base;
 #endif /* CONFIG_CONSOLE_BTEXT */
 
@@ -548,7 +548,7 @@ static void ati_ragexl_init(device_t dev)
 
 #endif
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
         info->aty_cmap_regs = (struct aty_cmap_regs *)(info->ati_regbase+0xc0);
 #endif
 
@@ -581,7 +581,7 @@ found:
             		mclk = 63;
     	}
 #endif
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
         aty_calc_mem_refresh(info, type, xclk);
 #endif /* CONFIG_CONSOLE_BTEXT */
 
@@ -596,7 +596,7 @@ found:
 
 	atyfb_xl_init(info);
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 
 	info->ram_type = (aty_ld_le32(CONFIG_STAT0, info) & 0x07);
 
@@ -803,7 +803,7 @@ found:
 
 }
 
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 
 static int atyfb_decode_var(const struct fb_var_screeninfo *var,
                             struct atyfb_par *par,

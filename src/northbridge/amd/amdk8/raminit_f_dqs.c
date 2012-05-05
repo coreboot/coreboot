@@ -1826,7 +1826,7 @@ static void set_sysinfo_in_ram(unsigned val)
 	set_htic_bit(0, val, 9);
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 
 #if CONFIG_MEM_TRAIN_SEQ == 0
 static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
@@ -1981,7 +1981,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 		if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
 		printk(BIOS_DEBUG, " done\n");
 		sysinfo->mem_trained[i]=1;
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 		dqs_save_MC_NVRAM((ctrl+i)->f2);
 #endif
 	}
@@ -2103,7 +2103,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		memcpy(sysinfo, sysinfox, CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
-	#if CONFIG_AP_CODE_IN_CAR == 0
+	#if !CONFIG_AP_CODE_IN_CAR
 		printk(BIOS_DEBUG, "CODE IN ROM AND RUN ON NODE: %02x\n", nodeid);
 		train_ram(nodeid, sysinfo, sysinfox);
 	#else

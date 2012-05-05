@@ -17,7 +17,7 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
         if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
 #endif
 

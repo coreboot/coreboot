@@ -236,7 +236,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_facs(facs);
 
 	/* FDAT */
-#if CONFIG_BOARD_HAS_FADT == 1
+#if CONFIG_BOARD_HAS_FADT
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;

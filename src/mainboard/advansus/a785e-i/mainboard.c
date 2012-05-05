@@ -84,7 +84,7 @@ static void a785e_i_enable(device_t dev)
 
 	printk(BIOS_INFO, "Mainboard A785E-I Enable. dev=0x%p\n", dev);
 
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	msr_t msr, msr2;
 
 	/* TOP_MEM: the top of DRAM below 4G */
@@ -133,7 +133,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	printk(BIOS_INFO, "uma_memory_start=0x%llx, uma_memory_size=0x%llx \n",
 		    uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base,

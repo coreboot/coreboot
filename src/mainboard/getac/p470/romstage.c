@@ -341,7 +341,7 @@ void main(unsigned long bist)
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization();
 
-#if CONFIG_HAVE_ACPI_RESUME == 0
+#if !CONFIG_HAVE_ACPI_RESUME
 	/* When doing resume, we must not overwrite RAM */
 #if CONFIG_DEBUG_RAM_SETUP
 	sdram_dump_mchbar_registers();

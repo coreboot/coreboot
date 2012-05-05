@@ -16,7 +16,7 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
 
-#if CONFIG_SMP == 1
+#if CONFIG_SMP
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -29,7 +29,7 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 char *lowmem_backup;
 char *lowmem_backup_ptr;
 int  lowmem_backup_size;
@@ -49,7 +49,7 @@ static void copy_secondary_start_to_1m_below(void)
 	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	/* need to save it for RAM resume */
 	lowmem_backup_size = code_size;
 	lowmem_backup = malloc(code_size);
@@ -277,7 +277,7 @@ int start_cpu(device_t cpu)
 	return result;
 }
 
-#if CONFIG_AP_IN_SIPI_WAIT == 1
+#if CONFIG_AP_IN_SIPI_WAIT
 
 /**
  * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of delay.
@@ -384,7 +384,7 @@ static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Dat
 void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
-#if CONFIG_SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT
 	spin_lock(&start_cpu_lock);
 #endif
 
@@ -399,7 +399,7 @@ void secondary_cpu_init(void)
 	writecr4(cr4_val);
 #endif
 	cpu_initialize();
-#if CONFIG_SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT
 	spin_unlock(&start_cpu_lock);
 #endif
 
@@ -417,7 +417,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
-	#if CONFIG_SERIAL_CPU_INIT == 0
+	#if !CONFIG_SERIAL_CPU_INIT
 		if(cpu==bsp_cpu) {
 			continue;
 		}
@@ -436,7 +436,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 		}
-#if CONFIG_SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT
 		udelay(10);
 #endif
 	}
@@ -502,7 +502,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the device structure for the boot cpu */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
-#if CONFIG_SMP == 1
+#if CONFIG_SMP
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 
@@ -512,8 +512,8 @@ void initialize_cpus(struct bus *cpu_bus)
 
 	cpus_ready_for_init();
 
-#if CONFIG_SMP == 1
-	#if CONFIG_SERIAL_CPU_INIT == 0
+#if CONFIG_SMP
+	#if !CONFIG_SERIAL_CPU_INIT
 	/* start all aps at first, so we can init ECC all together */
 	start_other_cpus(cpu_bus, info->cpu);
 	#endif
@@ -522,8 +522,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Initialize the bootstrap processor */
 	cpu_initialize();
 
-#if CONFIG_SMP == 1
-	#if CONFIG_SERIAL_CPU_INIT == 1
+#if CONFIG_SMP
+	#if CONFIG_SERIAL_CPU_INIT
 	start_other_cpus(cpu_bus, info->cpu);
 	#endif
 

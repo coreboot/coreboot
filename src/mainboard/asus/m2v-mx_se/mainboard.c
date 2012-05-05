@@ -30,7 +30,7 @@ uint64_t uma_memory_base, uma_memory_size;
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-#if (CONFIG_GFXUMA == 1)
+#if CONFIG_GFXUMA
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 #endif

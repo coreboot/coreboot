@@ -10,7 +10,7 @@
 #include "chip.h"
 #include "e7505.h"
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
 
@@ -90,7 +90,7 @@ static void pci_domain_set_resources(device_t dev)
 				(remaplimitk + 64*1024) - remapbasek);
 		}
 
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tolmk * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;

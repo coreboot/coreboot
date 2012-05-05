@@ -22,7 +22,7 @@
 #include <arch/romcc_io.h>
 
 
-#if CONFIG_CONSOLE_POST == 1
+#if CONFIG_CONSOLE_POST
 
 /* Data */
 #define UART_RBR 0x00

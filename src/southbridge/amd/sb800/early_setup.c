@@ -665,7 +665,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 static int acpi_is_wakeup_early(void)
 {
 	u16 tmp;

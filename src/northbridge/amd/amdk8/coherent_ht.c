@@ -160,7 +160,7 @@ static void disable_probes(void)
 #if 0
 static void enable_apic_ext_id(u8 node)
 {
-#if CONFIG_ENABLE_APIC_EXT_ID==1
+#if CONFIG_ENABLE_APIC_EXT_ID
 #warning "FIXME Is the right place to enable apic ext id here?"
 
       u32 val;
@@ -284,8 +284,8 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
-    #if CONFIG_K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_HT_FREQ_1G_SUPPORT
+    #if !CONFIG_K8_REV_F_SUPPORT
 	if (!is_cpu_pre_e0())
     #endif
 	{
@@ -665,7 +665,7 @@ static void setup_remote_row_indirect_group(const u8 *conn, int num)
 static void setup_uniprocessor(void)
 {
 	print_spew("Enabling UP settings\n");
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	unsigned tmp = (pci_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
 	if (tmp>0) return;
 #endif
@@ -1574,7 +1574,7 @@ static void clear_dead_routes(unsigned nodes)
 }
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 static unsigned verify_dualcore(unsigned nodes)
 {
 	unsigned node, totalcpus, tmp;
@@ -1593,10 +1593,10 @@ static unsigned verify_dualcore(unsigned nodes)
 static void coherent_ht_finalize(unsigned nodes)
 {
 	unsigned node;
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	int rev_a0;
 #endif
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	unsigned total_cpus;
 
 	if (read_option(multi_core, 0) == 0) { /* multi_core */
@@ -1614,7 +1614,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	print_spew("coherent_ht_finalize\n");
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 	rev_a0 = is_cpu_rev_a0();
 #endif
 	for (node = 0; node < nodes; node++) {
@@ -1625,7 +1625,7 @@ static void coherent_ht_finalize(unsigned nodes)
 		/* Set the Total CPU and Node count in the system */
 		val = pci_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 		val |= ((total_cpus-1)<<16)|((nodes-1)<<4);
 #else
 		val |= ((nodes-1)<<16)|((nodes-1)<<4);
@@ -1645,7 +1645,7 @@ static void coherent_ht_finalize(unsigned nodes)
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
 		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 		if (rev_a0) {
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
@@ -1665,7 +1665,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66
@@ -1710,7 +1710,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 #endif
 
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
+#if !CONFIG_K8_REV_F_SUPPORT
 		/* I can't touch this msr on early buggy cpus, and cannot apply either 169 or 131 */
 		if (!is_cpu_pre_b3())
 #endif

@@ -30,7 +30,7 @@
 #include "cbmem.h"
 
 
-#if CONFIG_RAMINIT_SYSINFO == 1
+#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number
  * @param[in] bus target bus number
@@ -82,7 +82,7 @@ void sb800_clk_output_48Mhz(void)
         *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_is_wakeup_early(void)
 {
 	return (acpi_get_sleep_type() == 3);

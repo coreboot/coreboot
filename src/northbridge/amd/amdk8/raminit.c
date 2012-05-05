@@ -2289,7 +2289,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
 	printk(BIOS_SPEW, "Handling memory hole at 0x%08x (default)\n", hole_startk);
-#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
+#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
 	/* We need to double check if hole_startk is valid.
 	 * If it is equal to the dram base address in K (base_k),
 	 * we need to decrease it.
@@ -2348,7 +2348,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 	u32 whatWait = 0;
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	int suspend = acpi_is_wakeup_early();
 #else
 	int suspend = 0;

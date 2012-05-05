@@ -284,7 +284,7 @@ int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
     aty_calc_pll_ct(info, &pll->ct);
     return 0;
 }
-#if CONFIG_CONSOLE_BTEXT==1
+#if CONFIG_CONSOLE_BTEXT
 #if PLL_CRTC_DECODE==1
 u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
 			     const union aty_pll *pll)

@@ -36,7 +36,7 @@
  * bigger than 1M you have to set the ROM size outside CIMx module and
  * before AGESA module get call.
  */
-#if CONFIG_COREBOOT_ROMSIZE_KB_1024 == 1
+#if CONFIG_COREBOOT_ROMSIZE_KB_1024
   #define BIOS_SIZE BIOS_SIZE_1M
 #elif CONFIG_COREBOOT_ROMSIZE_KB_2048 == 1
   #define BIOS_SIZE BIOS_SIZE_2M

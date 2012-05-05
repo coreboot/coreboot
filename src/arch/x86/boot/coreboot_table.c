@@ -324,7 +324,7 @@ static void lb_strings(struct lb_header *header)
 
 }
 
-#if CONFIG_WRITE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES
 static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
 {
 	struct lb_record *rec;

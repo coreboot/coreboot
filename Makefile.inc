@@ -91,7 +91,7 @@ romstage-c-deps:=$$(OPTION_TABLE_H)
 define ramstage-objs_asl_template
 $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
-	$(CC) -x assembler-with-cpp -E -MMD -MT $$(@) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-y)/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
+	$(CC) -x assembler-with-cpp -E -MMD -MT $$(@) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-y)/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) -tc $$(notdir $$(basename $$@)).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
@@ -154,7 +154,7 @@ endif
 INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include
 INCLUDES += -Isrc/devices/oprom/include
 # abspath is a workaround for romcc
-INCLUDES += -include $(abspath $(obj)/config.h)
+INCLUDES += -include $(src)/include/kconfig.h
 
 CFLAGS = $(INCLUDES) -Os -pipe -g -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

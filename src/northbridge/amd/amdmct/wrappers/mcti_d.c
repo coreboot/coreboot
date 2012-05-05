@@ -66,14 +66,14 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_BYPMAX:
 #if !CONFIG_GFXUMA
 		val = 4;
-#elif  (CONFIG_GFXUMA == 1)
+#elif  CONFIG_GFXUMA
 		val = 7;
 #endif
 		break;
 	case NV_RDWRQBYP:
 #if !CONFIG_GFXUMA
 		val = 2;
-#elif (CONFIG_GFXUMA == 1)
+#elif CONFIG_GFXUMA
 		val = 3;
 #endif
 		break;
@@ -115,7 +115,7 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_BurstLen32:
 #if !CONFIG_GFXUMA
 		val = 0;	/* 64 byte mode */
-#elif (CONFIG_GFXUMA == 1)
+#elif CONFIG_GFXUMA
 		val = 1;	/* 32 byte mode */
 #endif
 		break;
@@ -134,14 +134,14 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_BottomIO:
 #if !CONFIG_GFXUMA
 		val = 0xE0;	/* address bits [31:24] */
-#elif (CONFIG_GFXUMA == 1)
+#elif CONFIG_GFXUMA
 		val = 0xC0;	/* address bits [31:24] */
 #endif
 		break;
 	case NV_BottomUMA:
 #if !CONFIG_GFXUMA
 		val = 0xE0;	/* address bits [31:24] */
-#elif (CONFIG_GFXUMA == 1)
+#elif CONFIG_GFXUMA
 		val = 0xC0;	/* address bits [31:24] */
 #endif
 		break;

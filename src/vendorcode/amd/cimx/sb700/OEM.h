@@ -29,8 +29,12 @@
 #ifndef _AMD_SB_CIMx_OEM_H_
 #define _AMD_SB_CIMx_OEM_H_
 
-#define BIOS_SIZE					0x04	//04 - 1MB
-#define	LEGACY_FREE					0x00
+#ifndef BIOS_SIZE
+	#define BIOS_SIZE					0x04	//04 - 1MB
+#endif
+#ifndef LEGACY_FREE
+	#define	LEGACY_FREE					0x00
+#endif
 
 /**
  * PCIEX_BASE_ADDRESS - Define PCIE base address

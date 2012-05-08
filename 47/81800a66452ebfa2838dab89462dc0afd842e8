@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: Peter Stuge <peter@stuge.se>
+Code-Review+1: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Submitted-by: Peter Stuge <peter@stuge.se>
+Submitted-at: Tue, 08 May 2012 04:34:26 +0200
+Reviewed-on: http://review.coreboot.org/826
+Project: coreboot
+Branch: refs/heads/master

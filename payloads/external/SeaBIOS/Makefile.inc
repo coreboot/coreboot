@@ -9,7 +9,7 @@ all: build
 
 $(OUT)/seabios:
 	echo "    Cloning SeaBIOS from Git"
-	git clone git://git.seabios.org/seabios.git $(OUT)/seabios
+	git clone http://review.coreboot.org/p/seabios.git $(OUT)/seabios
 
 fetch: $(OUT)/seabios
 	cd $(OUT)/seabios; git show $(TAG-y) >/dev/null 2>&1 ;	if [ $$? -ne 0 ]; \

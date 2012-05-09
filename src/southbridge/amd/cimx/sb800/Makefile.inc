@@ -28,6 +28,7 @@ ramstage-y += cfg.c
 ramstage-y += late.c
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 
 driver-y   += smbus.c
 driver-y   += lpc.c

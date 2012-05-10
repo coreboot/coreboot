@@ -73,6 +73,7 @@ extern struct cbmem_entry *get_cbmem_toc(void);
 
 #ifndef __PRE_RAM__
 void set_cbmem_toc(struct cbmem_entry *);
+void __attribute__((weak)) cbmem_post_handling(void);
 #endif
 #endif
 #endif

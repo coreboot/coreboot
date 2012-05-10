@@ -33,6 +33,7 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
+#include <cbmem.h>
 #include "chip.h"
 #include "sandybridge.h"
 
@@ -77,7 +78,6 @@ int add_northbridge_resources(struct lb_memory *mem)
 	return 0;
 }
 
-void cbmem_post_handling(void);
 void cbmem_post_handling(void)
 {
 	update_mrc_cache();
@@ -148,10 +148,6 @@ static void add_fixed_resources(struct device *dev, int index)
 		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 	}
 }
-
-#if CONFIG_WRITE_HIGH_TABLES
-#include <cbmem.h>
-#endif
 
 static void pci_domain_set_resources(device_t dev)
 {

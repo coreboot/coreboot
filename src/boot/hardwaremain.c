@@ -130,6 +130,11 @@ void hardwaremain(int boot_complete)
 	timestamp_add(TS_DEVICE_ENABLE, timestamps[3]);
 	timestamp_add(TS_DEVICE_INITIALIZE, timestamps[4]);
 	timestamp_add(TS_DEVICE_DONE, timestamps[5]);
+	timestamp_add_now(TS_CBMEM_POST);
+
+	if (cbmem_post_handling)
+		cbmem_post_handling();
+
 	timestamp_add_now(TS_WRITE_TABLES);
 
 	/* Now that we have collected all of our information

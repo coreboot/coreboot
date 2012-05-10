@@ -31,6 +31,8 @@ config BOARD_GIGABYTE_M57SLI
 	bool "GA-M57SLI-S4"
 config BOARD_GIGABYTE_MA785GMT
 	bool "GA-MA785GMT-UD2H"
+config BOARD_GIGABYTE_MA785GM
+	bool "GA-MA785GM-US2H"
 config BOARD_GIGABYTE_MA78GM
 	bool "GA-MA78GM-US2H"
 
@@ -41,6 +43,7 @@ source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 source "src/mainboard/gigabyte/ma785gmt/Kconfig"
+source "src/mainboard/gigabyte/ma785gm/Kconfig"
 source "src/mainboard/gigabyte/ma78gm/Kconfig"
 
 config MAINBOARD_VENDOR

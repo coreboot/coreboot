@@ -946,6 +946,13 @@ config DEBUG_TPM
 	help
 	  This option enables additional TPM related debug messages.
 
+config DEBUG_SPI_FLASH
+	bool "Output verbose SPI flash debug messages"
+	default n
+	depends on SPI_FLASH
+	help
+	  This option enables additional SPI flash related debug messages.
+
 if SOUTHBRIDGE_INTEL_BD82X6X && DEFAULT_CONSOLE_LOGLEVEL_8
 # Only visible with the right southbridge and loglevel.
 config DEBUG_INTEL_ME

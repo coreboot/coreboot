@@ -30,6 +30,13 @@
 #include <device/device.h>
 #include "SBPLATFORM.h"
 
+#ifndef FADT_BOOT_ARCH
+#if LEGACY_FREE
+	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
+#else
+	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
+#endif
+#endif
 
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
@@ -115,7 +122,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->day_alrm = 0;	/* 0x7d these have to be */
 	fadt->mon_alrm = 0;	/* 0x7e added to cmos.layout */
 	fadt->century = 0;	/* 0x7f to make rtc alrm work */
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;	/* See table 5-10 */
+	fadt->iapc_boot_arch = FADT_BOOT_ARCH;	/* See table 5-10 */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
 	fadt->flags = ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
 				ACPI_FADT_C1_SUPPORTED |

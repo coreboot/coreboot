@@ -34,6 +34,8 @@ ramstage-y += me_status.c
 ramstage-y += reset.c
 ramstage-y += watchdog.c
 
+ramstage-y += spi.c
+
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c $(me-src-y) finalize.c
 

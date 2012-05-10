@@ -77,6 +77,12 @@ int add_northbridge_resources(struct lb_memory *mem)
 	return 0;
 }
 
+void cbmem_post_handling(void);
+void cbmem_post_handling(void)
+{
+	update_mrc_cache();
+}
+
 static int get_pcie_bar(u32 *base, u32 *len)
 {
 	device_t dev;

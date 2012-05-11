@@ -287,7 +287,7 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__
 endif
 
-$(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
+$(objgenerated)/bootblocklink.ld: $$(bootblock_lds) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
@@ -309,9 +309,9 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
+$(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblocklink.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblocklink.ld $<
 
 #######################################################################
 # Build the romstage

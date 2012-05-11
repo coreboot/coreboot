@@ -3,7 +3,7 @@ obj ?= $(shell pwd)
 HOSTCXX  ?= g++
 HOSTCC   ?= gcc
 CFLAGS   ?= -g -Wall
-CXXFLAGS ?=-DCOMPACT $(CFLAGS)
+CXXFLAGS +=-DCOMPACT $(CFLAGS)
 LDFLAGS  ?= -g
 
 BINARY:=$(obj)/cbfstool

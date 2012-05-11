@@ -44,15 +44,8 @@ static int get_cores_per_package(void)
 	if (c.x86 != 6)
 		return 1;
 
-	switch (c.x86_model) {
-	case CONFIG_CPU_MODEL_INDEX:
-		result = cpuid_ext(0xb, 1);
-		cores = result.ebx & 0xff;
-		break;
-	default:
-		cores = (cpuid_ebx(1) >> 16) & 0xff;
-		break;
-	}
+	result = cpuid_ext(0xb, 1);
+	cores = result.ebx & 0xff;
 
 	return cores;
 }

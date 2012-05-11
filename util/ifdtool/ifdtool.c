@@ -152,16 +152,52 @@ static void decode_spi_frequency(unsigned int freq)
 	}
 }
 
+static void decode_component_density(unsigned int density)
+{
+	switch (density) {
+	case COMPONENT_DENSITY_512KB:
+		printf("512KB");
+		break;
+	case COMPONENT_DENSITY_1MB:
+		printf("1MB");
+		break;
+	case COMPONENT_DENSITY_2MB:
+		printf("2MB");
+		break;
+	case COMPONENT_DENSITY_4MB:
+		printf("4MB");
+		break;
+	case COMPONENT_DENSITY_8MB:
+		printf("8MB");
+		break;
+	case COMPONENT_DENSITY_16MB:
+		printf("16MB");
+		break;
+	default:
+		printf("unknown<%x>MB", density);
+	}
+}
+
 static void dump_fcba(fcba_t * fcba)
 {
 	printf("\nFound Component Section\n");
 	printf("FLCOMP     0x%08x\n", fcba->flcomp);
+	printf("  Dual Output Fast Read Support:       %ssupported\n",
+		(fcba->flcomp & (1 << 30))?"":"not ");
 	printf("  Read ID/Read Status Clock Frequency: ");
 	decode_spi_frequency((fcba->flcomp >> 27) & 7);
 	printf("\n  Write/Erase Clock Frequency:         ");
 	decode_spi_frequency((fcba->flcomp >> 24) & 7);
 	printf("\n  Fast Read Clock Frequency:           ");
 	decode_spi_frequency((fcba->flcomp >> 21) & 7);
+	printf("\n  Fast Read Support:                   %ssupported",
+		(fcba->flcomp & (1 << 20))?"":"not ");
+	printf("\n  Read Clock Frequency:                ");
+	decode_spi_frequency((fcba->flcomp >> 17) & 7);
+	printf("\n  Component 2 Density:                 ");
+	decode_component_density((fcba->flcomp >> 3) & 7);
+	printf("\n  Component 1 Density:                 ");
+	decode_component_density(fcba->flcomp & 7);
 	printf("\n");
 	printf("FLILL      0x%08x\n", fcba->flill);
 	printf("FLPB       0x%08x\n", fcba->flpb);
@@ -303,6 +339,15 @@ static void set_spi_frequency(char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
+static void set_em100_mode(char *filename, char *image, int size)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	fcba_t *fcba = (fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4));
+
+	fcba->flcomp &= ~(1 << 30);
+	set_spi_frequency(filename, image, size, SPI_FREQUENCY_20MHZ);
+}
+
 void inject_region(char *filename, char *image, int size, int region_type,
 		   char *region_fname)
 {
@@ -389,6 +434,8 @@ static void print_usage(const char *name)
 	       "   -x | --extract:                   extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>   inject file <module> into region <region>\n"
 	       "   -s | --spifreq <20|33|50>         set the SPI frequency\n"
+	       "   -e | --em100                      set SPI frequency to 20MHz and disable\n"
+	       "                                     Dual Output Fast Read Support\n"
 	       "   -v | --version:                   print the version\n"
 	       "   -h | --help:                      print this help\n\n"
 	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
@@ -399,6 +446,7 @@ int main(int argc, char *argv[])
 {
 	int opt, option_index = 0;
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
+	int mode_em100 = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	int region_type = -1, inputfreq = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
@@ -408,12 +456,13 @@ int main(int argc, char *argv[])
 		{"extract", 0, NULL, 'x'},
 		{"inject", 1, NULL, 'i'},
 		{"spifreq", 1, NULL, 's'},
+		{"em100", 0, NULL, 'e'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dxi:s:vh?",
+	while ((opt = getopt_long(argc, argv, "dxi:s:evh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -473,6 +522,9 @@ int main(int argc, char *argv[])
 			}
 			mode_spifreq = 1;
 			break;
+		case 'e':
+			mode_em100 = 1;
+			break;
 		case 'v':
 			print_version();
 			exit(EXIT_SUCCESS);
@@ -492,7 +544,8 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if ((mode_dump + mode_extract + mode_inject + mode_spifreq) == 0) {
+	if ((mode_dump + mode_extract + mode_inject + mode_spifreq +
+	     mode_em100) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -544,6 +597,9 @@ int main(int argc, char *argv[])
 
 	if (mode_spifreq)
 		set_spi_frequency(filename, image, size, spifreq);
+
+	if (mode_em100)
+		set_em100_mode(filename, image, size);
 
 	free(image);
 

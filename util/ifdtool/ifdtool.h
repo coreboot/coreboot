@@ -26,6 +26,15 @@ enum spi_frequency {
 	SPI_FREQUENCY_50MHZ = 4,
 };
 
+enum component_density {
+	COMPONENT_DENSITY_512KB = 0,
+	COMPONENT_DENSITY_1MB   = 1,
+	COMPONENT_DENSITY_2MB   = 2,
+	COMPONENT_DENSITY_4MB   = 3,
+	COMPONENT_DENSITY_8MB   = 4,
+	COMPONENT_DENSITY_16MB  = 5,
+};
+
 // flash descriptor
 typedef struct {
 	uint32_t flvalsig;

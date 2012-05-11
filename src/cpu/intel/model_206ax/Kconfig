@@ -36,18 +36,10 @@ if CPU_INTEL_MODEL_206AX
    config CPU_MODEL_NAME
 	string
 	default "Intel SandyBridge CPU"
-
-   config CPU_MODEL_INDEX
-	hex
-	default 0x2a
 endif
 
 if CPU_INTEL_MODEL_306AX
    config CPU_MODEL_NAME
 	string
 	default "Intel IvyBridge CPU"
-
-   config CPU_MODEL_INDEX
-	hex
-	default 0x3a
 endif

@@ -176,7 +176,7 @@ $(objgenerated)/coreboot_ap.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(
 
 crt0s = $(src)/arch/x86/init/prologue.inc
 ldscripts =
-ldscripts += $(src)/arch/x86/init/bootblock.ld
+ldscripts += $(src)/arch/x86/init/romstage.ld
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
 ldscripts += $(src)/cpu/x86/32bit/entry32.lds
 

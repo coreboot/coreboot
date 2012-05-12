@@ -107,6 +107,8 @@ TAR=`searchgnu tar` || exit $?
 PATCH=`searchgnu patch` || exit $?
 MAKE=`searchgnu make` || exit $?
 
+searchgnu m4 > /dev/null
+
 cleanup()
 {
 	printf "Cleaning up temporary files... "

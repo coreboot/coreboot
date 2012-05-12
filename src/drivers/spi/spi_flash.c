@@ -177,7 +177,7 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 
 	printk(BIOS_DEBUG, "SF: Successfully erased %zu bytes @ %#x\n", len, start);
 
- out:
+out:
 	spi_release_bus(flash->spi);
 	return ret;
 }

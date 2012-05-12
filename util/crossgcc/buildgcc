@@ -29,29 +29,29 @@ TARGETARCH=i386-elf
 DESTDIR=
 
 # version numbers
-GMP_VERSION=5.0.2
+GMP_VERSION=5.0.5
 MPFR_VERSION=3.1.0
 MPC_VERSION=0.9
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.6.2
+GCC_VERSION=4.6.3
 GCC_AUTOCONF_VERSION=2.64
-BINUTILS_VERSION=2.21.1
-GDB_VERSION=7.3.1
+BINUTILS_VERSION=2.22
+GDB_VERSION=7.4.1
 W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.18
-IASL_VERSION=20110922
+IASL_VERSION=20120420
 PYTHON_VERSION=2.7.2
 EXPAT_VERSION=2.0.1
 
 # archive locations
-GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
-MPFR_ARCHIVE="http://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.bz2"
+GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.bz2"
+MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://www.multiprecision.org/mpc/download/mpc-${MPC_VERSION}.tar.gz"
 LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
-GCC_ARCHIVE="ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
-BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
-GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
+GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
+BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
+GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
@@ -256,7 +256,7 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	test -f tarballs/$FILE && printf "(cached)" || (
 		printf "(downloading)"
 		cd tarballs
-		wget -q $ARCHIVE
+		wget --no-check-certificate -q $ARCHIVE
 	)
 	test -f tarballs/$FILE || \
 		printf "\n${RED}Failed to download $FILE.${red}\n"
@@ -574,12 +574,12 @@ test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || \
 test -r build-gdb/.failed && exit 1
 fi
 
-if [ -f $IASL_DIR/compiler/.success ]; then
+if [ -f $IASL_DIR/source/compiler/.success ]; then
 	printf "Skipping IASL as it is already built\n"
 else
 printf "Building IASL ${IASL_VERSION} ... "
 (
-	cd $IASL_DIR/compiler
+	cd $IASL_DIR/source/compiler
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
@@ -587,10 +587,10 @@ printf "Building IASL ${IASL_VERSION} ... "
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
 	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) > $IASL_DIR/compiler/crossgcc-build.log 2>&1
-test -r $IASL_DIR/compiler/.failed && printf "${RED}failed${NC}\n" || \
+) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
+test -r $IASL_DIR/source/compiler/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r $IASL_DIR/compiler/.failed && exit 1
+test -r $IASL_DIR/source/compiler/.failed && exit 1
 fi
 
 if [ $SAVETEMPS -eq 0 ]; then

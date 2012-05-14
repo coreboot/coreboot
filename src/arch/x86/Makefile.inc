@@ -291,7 +291,7 @@ $(objgenerated)/bootblocklink.ld: $$(bootblock_lds) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
-$(objgenerated)/bootblock.S: $$(bootblock_inc)
+$(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
@@ -299,7 +299,7 @@ $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-$(objgenerated)/bootblock.s: $(objgenerated)/bootblock.S $(obj)/config.h $(obj)/build.h
+$(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
@@ -346,7 +346,7 @@ $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm $@.tmp
 	mv $@.tmp2 $@
 
-$(objgenerated)/crt0.S: $$(crt0s)
+$(objgenerated)/crt0s.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
@@ -354,7 +354,7 @@ $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-$(objgenerated)/crt0.s: $(objgenerated)/crt0.S $(obj)/config.h $(obj)/build.h
+$(objgenerated)/crt0.s: $(objgenerated)/crt0s.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 

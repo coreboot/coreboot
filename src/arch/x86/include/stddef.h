@@ -2,7 +2,10 @@
 #define I386_STDDEF_H
 
 typedef long ptrdiff_t;
-typedef unsigned long size_t;
+#ifndef __SIZE_TYPE__
+#define __SIZE_TYPE__ unsigned long
+#endif
+typedef __SIZE_TYPE__ size_t;
 typedef long ssize_t;
 
 typedef int wchar_t;

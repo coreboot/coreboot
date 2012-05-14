@@ -194,7 +194,7 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 		ret = sst_byte_write(flash, offset, buf + actual);
 
 done:
-	printk(BIOS_INFO, "SF: SST: program %s %zu bytes @ 0x%lx\n",
+	printk(BIOS_INFO, "SF: SST: program %s %zu bytes @ 0x%x\n",
 	      ret ? "failure" : "success", len, offset - actual);
 
 	spi_release_bus(flash->spi);

@@ -130,8 +130,8 @@ static int winbond_write(struct spi_flash *flash,
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %ld\n",
-			buf + actual,
+		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
+		        " chunk_len = %zu\n", buf + actual,
 			cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 
 		ret = spi_flash_cmd(flash->spi, CMD_W25_WREN, NULL, 0);
@@ -155,7 +155,7 @@ static int winbond_write(struct spi_flash *flash,
 		byte_addr = 0;
 	}
 
-	printk(BIOS_INFO, "SF: Winbond: Successfully programmed %zu bytes @ 0x%lx\n",
+	printk(BIOS_INFO, "SF: Winbond: Successfully programmed %zu bytes @ 0x%x\n",
 			len, offset - len);
 	ret = 0;
 

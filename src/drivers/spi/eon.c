@@ -86,7 +86,7 @@ static int eon_write(struct spi_flash *flash,
 		cmd[3] = byte_addr;
 
 		printk(BIOS_SPEW,
-		    "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zd\n",
+		    "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 
 		ret = spi_flash_cmd(flash->spi, CMD_EN25Q128_WREN, NULL, 0);

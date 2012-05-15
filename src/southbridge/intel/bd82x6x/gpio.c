@@ -25,6 +25,8 @@
 #include "pch.h"
 #include "gpio.h"
 
+#define MAX_GPIO_NUMBER 75 /* zero based */
+
 void setup_pch_gpios(const struct pch_gpio_map *gpio)
 {
 	u16 gpiobase = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
@@ -62,4 +64,39 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 		outl(*((u32*)gpio->set3.direction), gpiobase + GP_IO_SEL3);
 	if (gpio->set3.reset)
 		outl(*((u32*)gpio->set3.reset), gpiobase + GP_RST_SEL3);
+}
+
+int get_gpio(int gpio_num)
+{
+	static const int gpio_reg_offsets[] = {0xc, 0x38, 0x48};
+	u16 gpio_base = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+	int index, bit;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return 0; /* Just ignore wrong gpio numbers. */
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	return (inl(gpio_base + gpio_reg_offsets[index]) >> bit) & 1;
+}
+
+/*
+ * get a number comprised of multiple GPIO values. gpio_num_array points to
+ * the array of gpio pin numbers to scan, terminated by -1.
+ */
+unsigned get_gpios(const int *gpio_num_array)
+{
+	int gpio;
+	unsigned bitmask = 1;
+	unsigned vector = 0;
+
+	while (bitmask &&
+	       ((gpio = *gpio_num_array++) != -1)) {
+		vector <<= 1;
+		if (get_gpio(gpio))
+			vector |= bitmask;
+		bitmask <<= 1;
+	}
+	return vector;
 }

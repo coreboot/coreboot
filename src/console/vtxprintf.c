@@ -170,7 +170,7 @@ repeat:
 
 		/* get the conversion qualifier */
 		qualifier = -1;
-		if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
+		if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L' || *fmt == 'z') {
 			qualifier = *fmt;
 			++fmt;
 			if (*fmt == 'l') {
@@ -218,7 +218,6 @@ repeat:
 				field_width, precision, flags);
 			continue;
 
-
 		case 'n':
 			if (qualifier == 'L') {
 				long long *ip = va_arg(args, long long *);
@@ -265,6 +264,8 @@ repeat:
 			num = va_arg(args, unsigned long long);
 		} else if (qualifier == 'l') {
 			num = va_arg(args, unsigned long);
+		} else if (qualifier == 'z') {
+			num = va_arg(args, size_t);
 		} else if (qualifier == 'h') {
 			num = (unsigned short) va_arg(args, int);
 			if (flags & SIGN)

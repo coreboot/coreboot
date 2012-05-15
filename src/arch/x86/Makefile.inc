@@ -365,7 +365,7 @@ seabios:
 			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
 			CONFIG_SEABIOS_MASTER=$(CONFIG_SEABIOS_MASTER) \
 			CONFIG_SEABIOS_STABLE=$(CONFIG_SEABIOS_STABLE) \
-			OUT=$(abspath $(obj))
+			OUT=$(abspath $(obj)) IASL="$(IASL)"
 
 filo:
 	$(MAKE) -C payloads/external/FILO -f Makefile.inc \

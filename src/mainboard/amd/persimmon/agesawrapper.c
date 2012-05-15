@@ -253,10 +253,12 @@ UINT32 GetHeapBase(
 {
 	UINT32 heap;
 
+#if CONFIG_HAVE_APCI_RESUME
 	/* Both romstage and ramstage has this S3 detect. */
 	if (acpi_get_sleep_type() == 3)
 		heap = (UINT32)cbmem_find(CBMEM_ID_RESUME_SCRATCH) + (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE); /* himem_heap_base + high_stack_size */
 	else
+#endif
 		heap = BIOS_HEAP_START_ADDRESS; /* low mem */
 
 	return heap;

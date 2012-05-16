@@ -339,13 +339,13 @@ uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 		data += mlen;
 	}
 
-	tds[count].token = (dir == OUT) ? UHCI_IN : UHCI_OUT |
+	tds[count].token = ((dir == OUT) ? UHCI_IN : UHCI_OUT) |
 		dev->address << TD_DEVADDR_SHIFT |
 		endp << TD_EP_SHIFT |
 		maxlen(0) << TD_MAXLEN_SHIFT |
 		TD_TOGGLE_DATA1;
 	tds[count].bufptr = 0;
-	tds[0].ctrlsts = (0 << TD_COUNTER_SHIFT) | /* as Linux 2.4.10 does */
+	tds[count].ctrlsts = (0 << TD_COUNTER_SHIFT) | /* as Linux 2.4.10 does */
 		(dev->speed?TD_LOWSPEED:0) |
 		TD_STATUS_ACTIVE;
 	UHCI_INST (dev->controller)->qh_data->elementlinkptr =
@@ -395,7 +395,7 @@ fill_schedule (td_t *td, endpoint_t *ep, int length, unsigned char *data,
 		(*toggle & 1) << TD_TOGGLE_SHIFT;
 	td->bufptr = virt_to_phys (data);
 	td->ctrlsts = ((ep->direction == SETUP?3:0) << TD_COUNTER_SHIFT) |
-		ep->dev->speed?TD_LOWSPEED:0 |
+		(ep->dev->speed?TD_LOWSPEED:0) |
 		TD_STATUS_ACTIVE;
 	*toggle ^= 1;
 }
@@ -495,7 +495,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 			(ep->toggle & 1) << TD_TOGGLE_SHIFT;
 		tds[i].bufptr = virt_to_phys (data);
 		tds[i].ctrlsts = (0 << TD_COUNTER_SHIFT) |
-			ep->dev->speed?TD_LOWSPEED:0 |
+			(ep->dev->speed?TD_LOWSPEED:0) |
 			TD_STATUS_ACTIVE;
 		ep->toggle ^= 1;
 		data += reqsize;

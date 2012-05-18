@@ -41,10 +41,13 @@ static void pnp_exit_conf_state(device_t dev)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param iobase Base I/O port for the logical device.
  */
-void lpc47n227_pnp_set_iobase(device_t dev, u16 iobase)
+static void lpc47n227_pnp_set_iobase(device_t dev, u16 iobase)
 {
 	/* LPC47N227 requires base ports to be a multiple of 4. */
+	/* it's not very useful to do an ASSERT here: if it trips,
+	 * there's no console to report it.
 	ASSERT(!(iobase & 0x3));
+	*/
 
 	switch (dev & 0xFF) {
 	case LPC47N227_PP:
@@ -73,7 +76,7 @@ void lpc47n227_pnp_set_iobase(device_t dev, u16 iobase)
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
  * @param enable 0 to disable, anythig else to enable.
  */
-void lpc47n227_pnp_set_enable(device_t dev, int enable)
+static void lpc47n227_pnp_set_enable(device_t dev, int enable)
 {
 	u8 power_register = 0, power_mask = 0, current_power, new_power;
 

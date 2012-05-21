@@ -159,10 +159,21 @@ ehci_rh_init (usbdev_t *dev)
 
 	debug("root hub has %x ports\n", RH_INST(dev)->n_ports);
 
+	/* If the host controller has port power control, enable power on
+	 * all ports and wait 20ms.
+	 */
+	if (EHCI_INST(dev->controller)->capabilities->hcsparams
+			& HCS_PORT_POWER_CONTROL) {
+		debug("host controller has port power control, "
+				"giving power to all ports.\n");
+		for (i=0; i < RH_INST(dev)->n_ports; i++)
+			RH_INST(dev)->ports[i] |= P_PP;
+	}
+	mdelay(20); // ehci spec 2.3.9
+
 	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
 		RH_INST(dev)->devices[i] = -1;
-		RH_INST(dev)->ports[i] |= P_PP;
 		ehci_rh_scanport(dev, i);
 	}
 

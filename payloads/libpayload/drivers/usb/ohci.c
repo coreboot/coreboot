@@ -195,14 +195,23 @@ dump_td(td_t *cur, int level)
 }
 
 static int
-wait_for_ed(usbdev_t *dev, ed_t *head)
+wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 {
 	td_t *cur;
 
 	/* wait for results */
+	/* TODO: how long to wait?
+	 *       give 50ms per page plus another 100ms for now
+	 *       this should even work with low-speed
+	 */
+	int timeout = pages*50 + 100;
 	while (((head->head_pointer & ~3) != head->tail_pointer) &&
 		!(head->head_pointer & 1) &&
-		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >= TD_CC_NOACCESS)) {
+		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config
+				& TD_CC_MASK) >= TD_CC_NOACCESS) &&
+		timeout--) {
+		/* don't log every ms */
+		if (!(timeout % 100))
 		debug("intst: %x; ctrl: %x; cmdst: %x; head: %x -> %x, tail: %x, condition: %x\n",
 			OHCI_INST(dev->controller)->opreg->HcInterruptStatus,
 			OHCI_INST(dev->controller)->opreg->HcControl,
@@ -213,6 +222,9 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 			(((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >> TD_CC_SHIFT);
 		mdelay(1);
 	}
+	if (timeout < 0)
+		printf("Error: ohci: endpoint "
+			"descriptor processing timed out.\n");
 #if 0
 	/* XXX: The following debugging code may follow invalid lists and
 	 *      cause a reboot.
@@ -341,7 +353,8 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	OHCI_INST(dev->controller)->opreg->HcControl |= ControlListEnable;
 	OHCI_INST(dev->controller)->opreg->HcCommandStatus = ControlListFilled;
 
-	int failure = wait_for_ed(dev, head);
+	int failure = wait_for_ed(dev, head,
+			(dalen==0)?0:(last_page - first_page + 1));
 	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
 
 	/* free memory */
@@ -430,7 +443,8 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	OHCI_INST(ep->dev->controller)->opreg->HcControl |= BulkListEnable;
 	OHCI_INST(ep->dev->controller)->opreg->HcCommandStatus = BulkListFilled;
 
-	int failure = wait_for_ed(ep->dev, head);
+	int failure = wait_for_ed(ep->dev, head,
+			(dalen==0)?0:(last_page - first_page + 1));
 	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;
 
 	ep->toggle = head->head_pointer & ED_TOGGLE;

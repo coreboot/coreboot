@@ -213,7 +213,6 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 			(((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >> TD_CC_SHIFT);
 		mdelay(1);
 	}
-	mdelay(5);
 #if 0
 	/* XXX: The following debugging code may follow invalid lists and
 	 *      cause a reboot.

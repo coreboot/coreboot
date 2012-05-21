@@ -194,7 +194,6 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		reset_transport (dev);
 		return 1;
 	}
-	mdelay (10);
 	if (buflen > 0) {
 		if (dir == cbw_direction_data_in) {
 			if (dev->controller->

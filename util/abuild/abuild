@@ -309,6 +309,7 @@ function build_target
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
+	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD}
 	XMLFILE=$TOP/$TARGET/${VENDOR}_${MAINBOARD}/abuild.xml
 
 	xml "<mainboard>"
@@ -606,12 +607,12 @@ USE_XARGS=0
 if [ "$cpus" != "1" ]; then
 	if [ "$target" = "" ]; then
 		# Test if xargs supports the non-standard -P flag
-		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
+		# FIXME: disabled until we managed to eliminate all the make(1) quirks
+		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null  # && USE_XARGS=1
 	fi
 fi
 
 if [ "$USE_XARGS" = "0" ]; then
-export MAKEFLAGS="-j $cpus"
 build_all_targets()
 {
 	for VENDOR in $( vendors ); do
@@ -673,6 +674,7 @@ if [ "$target" != "" ]; then
 else
 	build_all_targets
 	rm -f $REAL_XMLFILE
+	XMLFILE=$REAL_XMLFILE
 	xml '<?xml version="1.0" encoding="utf-8"?>'
 	xml '<abuild>'
 

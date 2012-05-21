@@ -49,6 +49,7 @@ typedef volatile u32 portsc_t;
 
 typedef volatile struct {
 #define HCS_NPORTS_MASK 0xf
+#define HCS_PORT_POWER_CONTROL 0x10
 	u8 caplength;
 	u8 res1;
 	u16 hciversion;

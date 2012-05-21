@@ -116,7 +116,21 @@ static int wait_for_tds(qtd_t *head)
 	qtd_t *cur = head;
 	while (1) {
 		if (0) dump_td(virt_to_phys(cur));
-		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)) udelay(60);
+
+		/* wait for results */
+		/* TOTEST: how long to wait?
+		 *         tested with some USB2.0 flash sticks:
+		 *         slowest took around 180ms
+		 */
+		int timeout = 10000; /* time out after 10000 * 50us == 500ms */
+		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)
+				&& timeout--)
+			udelay(50);
+		if (timeout < 0) {
+			printf("Error: ehci: queue transfer "
+				"processing timed out.\n");
+			return 1;
+		}
 		if (cur->token & QTD_HALTED) {
 			printf("ERROR with packet\n");
 			dump_td(virt_to_phys(cur));
@@ -131,6 +145,51 @@ static int wait_for_tds(qtd_t *head)
 		if (0) debug("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
 		cur = phys_to_virt(cur->next_qtd);
 	}
+	return result;
+}
+
+static int ehci_set_async_schedule(ehci_t *ehcic, int enable)
+{
+	/* Set async schedule status. */
+	if (enable)
+		ehcic->operation->usbcmd |= HC_OP_ASYNC_SCHED_EN;
+	else
+		ehcic->operation->usbcmd &= ~HC_OP_ASYNC_SCHED_EN;
+	/* Wait for the controller to accept async schedule status.
+	 * This shouldn't take too long, but we should timeout nevertheless.
+	 */
+	enable = enable ? HC_OP_ASYNC_SCHED_STAT : 0;
+	int timeout = 100; /* time out after 100ms */
+	while (((ehcic->operation->usbsts & HC_OP_ASYNC_SCHED_STAT) != enable)
+			&& timeout--)
+		mdelay(1);
+	if (timeout < 0) {
+		debug("ehci async schedule status change timed out.\n");
+		return 1;
+	}
+	return 0;
+}
+
+static int ehci_process_async_schedule(
+		ehci_t *ehcic, ehci_qh_t *qhead, qtd_t *head)
+{
+	int result;
+
+	/* make sure async schedule is disabled */
+	if (ehci_set_async_schedule(ehcic, 0)) return 1;
+
+	/* hook up QH */
+	ehcic->operation->asynclistaddr = virt_to_phys(qhead);
+
+	/* start async schedule */
+	if (ehci_set_async_schedule(ehcic, 1)) return 1;
+
+	/* wait for result */
+	result = wait_for_tds(head);
+
+	/* disable async schedule */
+	ehci_set_async_schedule(ehcic, 0);
+
 	return result;
 }
 
@@ -179,19 +238,8 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	qh->td.token |= (ep->toggle?QTD_TOGGLE_DATA1:0);
 	head->token |= (ep->toggle?QTD_TOGGLE_DATA1:0);
 
-	/* hook up QH */
-	EHCI_INST(ep->dev->controller)->operation->asynclistaddr = virt_to_phys(qh);
-
-	/* start async schedule */
-	EHCI_INST(ep->dev->controller)->operation->usbcmd |= HC_OP_ASYNC_SCHED_EN;
-	while (!(EHCI_INST(ep->dev->controller)->operation->usbsts & HC_OP_ASYNC_SCHED_STAT)) ; /* wait */
-
-	/* wait for result */
-	result = wait_for_tds(head);
-
-	/* disable async schedule */
-	EHCI_INST(ep->dev->controller)->operation->usbcmd &= ~HC_OP_ASYNC_SCHED_EN;
-	while (EHCI_INST(ep->dev->controller)->operation->usbsts & HC_OP_ASYNC_SCHED_STAT) ; /* wait */
+	result = ehci_process_async_schedule(
+			EHCI_INST(ep->dev->controller), qh, head);
 
 	ep->toggle = (cur->token & QTD_TOGGLE_MASK) >> QTD_TOGGLE_SHIFT;
 
@@ -268,18 +316,8 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	qh->epcaps = 3 << QH_PIPE_MULTIPLIER_SHIFT;
 	qh->td.next_qtd = virt_to_phys(head);
 
-	/* hook up QH */
-	EHCI_INST(dev->controller)->operation->asynclistaddr = virt_to_phys(qh);
-
-	/* start async schedule */
-	EHCI_INST(dev->controller)->operation->usbcmd |= HC_OP_ASYNC_SCHED_EN;
-	while (!(EHCI_INST(dev->controller)->operation->usbsts & HC_OP_ASYNC_SCHED_STAT)) ; /* wait */
-
-	result = wait_for_tds(head);
-
-	/* disable async schedule */
-	EHCI_INST(dev->controller)->operation->usbcmd &= ~HC_OP_ASYNC_SCHED_EN;
-	while (EHCI_INST(dev->controller)->operation->usbsts & HC_OP_ASYNC_SCHED_STAT) ; /* wait */
+	result = ehci_process_async_schedule(
+			EHCI_INST(dev->controller), qh, head);
 
 	free_qh_and_tds(qh, head);
 	return result;

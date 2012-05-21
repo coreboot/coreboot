@@ -55,9 +55,21 @@ ehci_rh_hand_over_port (usbdev_t *dev, int port)
 {
 	debug("giving up port %x, it's USB1\n", port+1);
 
+	/* Clear ConnectStatusChange before evaluation */
+	/* RW/C register, so clear it by writing 1 */
+	RH_INST(dev)->ports[port] |= P_CONN_STATUS_CHANGE;
+
 	/* Lowspeed device. Hand over to companion */
 	RH_INST(dev)->ports[port] |= P_PORT_OWNER;
-	do {} while (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE));
+
+	/* TOTEST: how long to wait? trying 100ms for now */
+	int timeout = 10; /* timeout after 10 * 10ms == 100ms */
+	while (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE) && timeout--)
+		mdelay(10);
+	if (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE)) {
+		debug("Warning: Handing port over to companion timed out.\n");
+	}
+
 	/* RW/C register, so clear it by writing 1 */
 	RH_INST(dev)->ports[port] |= P_CONN_STATUS_CHANGE;
 	return;
@@ -73,7 +85,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 	}
 	/* device connected, handle */
 	if (RH_INST(dev)->ports[port] & P_CURR_CONN_STATUS) {
-		mdelay(100);
+		mdelay(100); // usb20 spec 9.1.2
 		if ((RH_INST(dev)->ports[port] & P_LINE_STATUS) == P_LINE_STATUS_LOWSPEED) {
 			ehci_rh_hand_over_port(dev, port);
 			return;
@@ -85,13 +97,23 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		RH_INST(dev)->ports[port] = (RH_INST(dev)->ports[port] & ~P_PORT_ENABLE) | P_PORT_RESET;
 
 		/* Wait a bit while reset is active. */
-		mdelay(50);
+		mdelay(50); // usb20 spec 7.1.7.5 (TDRSTR)
 
 		/* Deassert reset. */
 		RH_INST(dev)->ports[port] &= ~P_PORT_RESET;
 
-		/* Wait for flag change to finish. The controller might take a while */
-		while (RH_INST(dev)->ports[port] & P_PORT_RESET) ;
+		/* Wait max. 2ms (ehci spec 2.3.9) for flag change to finish. */
+		int timeout = 20; /* time out after 20 * 100us == 2ms */
+		while ((RH_INST(dev)->ports[port] & P_PORT_RESET) && timeout--)
+			udelay(100);
+		if (RH_INST(dev)->ports[port] & P_PORT_RESET) {
+			printf("Error: ehci_rh: port reset timed out.\n");
+			return;
+		}
+
+		/* If the host controller enabled the port, it's a high-speed
+		 * device, otherwise it's full-speed.
+		 */
 		if (!(RH_INST(dev)->ports[port] & P_PORT_ENABLE)) {
 			ehci_rh_hand_over_port(dev, port);
 			return;

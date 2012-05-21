@@ -361,6 +361,9 @@ read_capacity (usbdev_t *dev)
 	}
 	printf ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
 		MSC_INST (dev)->blocksize,
+		/* round down high block counts to avoid integer overflow */
+		MSC_INST (dev)->numblocks > 1000000
+			? (MSC_INST (dev)->numblocks / 1000) * MSC_INST (dev)->blocksize / 1000 :
 		MSC_INST (dev)->numblocks * MSC_INST (dev)->blocksize / 1000 / 1000);
 }
 

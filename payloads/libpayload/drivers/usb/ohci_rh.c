@@ -43,15 +43,40 @@ typedef struct {
 static void
 ohci_rh_enable_port (usbdev_t *dev, int port)
 {
-	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & CurrentConnectStatus))
-		return;
+	/* Reset RH port should hold 50ms with pulses of at least 10ms and
+	 * gaps of at most 3ms (usb20 spec 7.1.7.5).
+	 * After reset, the port will be enabled automatically (ohci spec
+	 * 7.4.4).
+	 */
+	int delay = 100; /* 100 * 500us == 50ms */
+	while (delay > 0) {
+		if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port]
+					& CurrentConnectStatus))
+			return;
 
-	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = SetPortEnable; // enable port
-	mdelay(10);
-	while (!(OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus)) mdelay(1);
-	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = SetPortReset; // reset port
-	while (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortResetStatus) mdelay(1);
-	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = PortResetStatusChange;
+		/* start reset */
+		OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] =
+			SetPortReset;
+		int timeout = 200; /* timeout after 200 * 500us == 100ms */
+		while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+					& PortResetStatus)
+				&& timeout--) {
+			udelay(500); delay--;
+		}
+		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+				& PortResetStatus) {
+			debug("Warning: root-hub port reset timed out.\n");
+			break;
+		}
+		if ((200-timeout) < 20)
+			debug("Warning: port reset too short: %dms; "
+					"should be at least 10ms.\n",
+					(200-timeout)/2);
+		/* clear reset status change */
+		OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] =
+			PortResetStatusChange;
+		debug ("rh port reset finished after %dms.\n", (200-timeout)/2);
+	}
 }
 
 /* disable root hub */
@@ -59,7 +84,12 @@ static void
 ohci_rh_disable_port (usbdev_t *dev, int port)
 {
 	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ClearPortEnable; // disable port
-	while (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus) mdelay(1);
+	int timeout = 50; /* timeout after 50 * 100us == 5ms */
+	while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+				& PortEnableStatus)
+			&& timeout--) {
+		udelay(100);
+	}
 }
 
 static void

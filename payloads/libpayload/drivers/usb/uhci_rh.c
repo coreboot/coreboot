@@ -65,10 +65,15 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 
 	uhci_reg_write16(controller, port,
 			 uhci_reg_read16(controller, port) | 1 << 2);	/* enable */
+	/* wait for controller to enable port */
+	/* TOTEST: how long to wait? 100ms for now */
+	int timeout = 200; /* time out after 200 * 500us == 100ms */
 	do {
 		value = uhci_reg_read16 (controller, port);
-		mdelay (1);
-	} while (((value & (1 << 2)) == 0) && (value & 0x01));
+		udelay(500); timeout--;
+	} while (((value & (1 << 2)) == 0) && (value & 0x01) && timeout);
+	if (!timeout)
+		debug("Warning: uhci_rh: port enabling timed out.\n");
 }
 
 /* disable root hub */
@@ -82,10 +87,15 @@ uhci_rh_disable_port (usbdev_t *dev, int port)
 	uhci_reg_write16(controller, port,
 			 uhci_reg_read16(controller, port) & ~4);
 	int value;
+	/* wait for controller to disable port */
+	/* TOTEST: how long to wait? 100ms for now */
+	int timeout = 200; /* time out after 200 * 500us == 100ms */
 	do {
 		value = uhci_reg_read16 (controller, port);
-		mdelay (1);
-	} while ((value & (1 << 2)) != 0);
+		udelay(500); timeout--;
+	} while (((value & (1 << 2)) != 0) && timeout);
+	if (!timeout)
+		debug("Warning: uhci_rh: port disabling timed out.\n");
 }
 
 static void

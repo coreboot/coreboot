@@ -102,13 +102,18 @@ static void
 uhci_reset (hci_t *controller)
 {
 	/* reset */
-	uhci_reg_write16 (controller, USBCMD, 4);
-	mdelay (50);
+	uhci_reg_write16 (controller, USBCMD, 4); /* Global Reset */
+	mdelay (50); /* uhci spec 2.1.1: at least 10ms */
 	uhci_reg_write16 (controller, USBCMD, 0);
 	mdelay (10);
-	uhci_reg_write16 (controller, USBCMD, 2);
-	while ((uhci_reg_read16 (controller, USBCMD) & 2) != 0)
-		mdelay (1);
+	uhci_reg_write16 (controller, USBCMD, 2); /* Host Controller Reset */
+	/* wait for controller to finish reset */
+	/* TOTEST: how long to wait? 100ms for now */
+	int timeout = 200; /* time out after 200 * 500us == 100ms */
+	while (((uhci_reg_read16 (controller, USBCMD) & 2) != 0) && timeout--)
+		udelay (500);
+	if (timeout < 0)
+		debug ("Warning: uhci: host controller reset timed out.\n");
 
 	uhci_reg_write32 (controller, FLBASEADD,
 			  (u32) virt_to_phys (UHCI_INST (controller)->

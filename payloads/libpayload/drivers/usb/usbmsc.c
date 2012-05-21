@@ -151,8 +151,8 @@ get_max_luns (usbdev_t *dev)
 	return luns;
 }
 
-int tag;
-int lun = 0;
+unsigned int tag;
+unsigned char lun = 0;
 
 static void
 wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
@@ -161,7 +161,7 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 	memset (cbw, 0, sizeof (cbw_t));
 
 	cbw->dCBWSignature = cbw_signature;
-	cbw->dCBWTag = tag++;
+	cbw->dCBWTag = ++tag;
 	cbw->bCBWLUN = lun;	// static value per device
 
 	cbw->dCBWDataTransferLength = datalen;
@@ -170,11 +170,22 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 	cbw->bCBWCBLength = cmdlen;
 }
 
-static void
+static int
 get_csw (endpoint_t *ep, csw_t *csw)
 {
-	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1))
+	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1)) {
 		clear_stall (ep);
+		if (ep->dev->controller->bulk
+				(ep, sizeof (csw_t), (u8 *) csw, 1)) {
+			reset_transport (ep->dev);
+			return 1;
+		}
+	}
+	if (csw->dCSWTag != tag) {
+		reset_transport (ep->dev);
+		return 1;
+	}
+	return 0;
 }
 
 static int
@@ -209,7 +220,8 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 			}
 		}
 	}
-	get_csw (MSC_INST (dev)->bulk_in, &csw);
+	if (get_csw (MSC_INST (dev)->bulk_in, &csw))
+		return 1;
 	if (always_succeed == 1) {
 		// return success, regardless of message
 		return 0;
@@ -219,7 +231,7 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		reset_transport (dev);
 		return 1;
 	}
-	if (csw.bCSWStatus == 0) {
+	if ((csw.bCSWStatus == 0) && (csw.dCSWDataResidue == 0)) {
 		// no error, exit
 		return 0;
 	}

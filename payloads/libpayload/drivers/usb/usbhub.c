@@ -31,8 +31,16 @@
 
 // assume that host_to_device is overwritten if necessary
 #define DR_PORT gen_bmRequestType(host_to_device, class_type, other_recp)
-#define PORT_RESET 0x4
-#define PORT_POWER 0x8
+/* status bits */
+#define PORT_CONNECTION 0x1
+#define PORT_ENABLE 0x2
+#define PORT_RESET 0x10
+/* status change bits */
+#define C_PORT_CONNECTION 0x1
+/* feature selectors (for setting / clearing features) */
+#define SEL_PORT_RESET 0x4
+#define SEL_PORT_POWER 0x8
+#define SEL_C_PORT_CONNECTION 0x10
 
 typedef struct {
 	int num_ports;
@@ -53,28 +61,54 @@ usb_hub_destroy (usbdev_t *dev)
 static void
 usb_hub_scanport (usbdev_t *dev, int port)
 {
+	int timeout;
+
 	unsigned short buf[2];
-
 	get_status (dev, port, DR_PORT, 4, buf);
-	int portstatus = ((buf[0] & 1) == 0);
-	int datastatus = (HUB_INST (dev)->ports[port] == -1);
-	if (portstatus == datastatus)
-		return;		// no change - FIXME: read right fields for that test
+	if (!(buf[1] & C_PORT_CONNECTION))
+		/* no change */
+		return;
 
-	if (!datastatus) {
-		int devno = HUB_INST (dev)->ports[port];
-		if (devno == -1)
-			fatal ("FATAL: illegal devno!\n");
+	/* clear Port Connection status change */
+	clear_feature (dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
+
+	int devno = HUB_INST (dev)->ports[port];
+	if (devno != -1) {
+		/* detach device, either because of re-/ or disconnect */
 		usb_detach_device(dev->controller, devno);
 		HUB_INST (dev)->ports[port] = -1;
-		return;
 	}
 
-	set_feature (dev, port, PORT_RESET, DR_PORT);
-	mdelay (20);
+	if (!(buf[0] & PORT_CONNECTION))
+		/* no device connected, nothing to do */
+		return;
+
+	/* wait 100ms for port to become stable */
+	mdelay (100); // usb20 spec 9.1.2
+
+	/* reset port */
+	set_feature (dev, port, SEL_PORT_RESET, DR_PORT);
+	/* wait at least 10ms (usb2.0 spec 11.5.1.5: 10ms to 20ms) */
+	mdelay (10);
+	/* wait for hub to finish reset */
+	timeout = 30; /* time out after 10ms (spec) + 20ms (kindly) */
+	do {
+		get_status (dev, port, DR_PORT, 4, buf);
+		mdelay(1); timeout--;
+	} while ((buf[0] & PORT_RESET) && timeout);
+	if (!timeout)
+		debug("Warning: usbhub: port reset timed out.\n");
+
+	/* wait for port to be enabled. the hub is responsible for this */
+	timeout = 500; /* time out after 500ms */
+	do {
+		get_status (dev, port, DR_PORT, 4, buf);
+		mdelay(1); timeout--;
+	} while (!(buf[0] & PORT_ENABLE) && timeout);
+	if (!timeout)
+		debug("Warning: usbhub: port enabling timed out.\n");
 
 	get_status (dev, port, DR_PORT, 4, buf);
-
 	/* bit  10  9
 	 *      0   0  full speed
 	 *      0   1  low speed
@@ -83,6 +117,9 @@ usb_hub_scanport (usbdev_t *dev, int port)
 	int speed = ((buf[0] >> 9) & 3) ;
 
 	HUB_INST (dev)->ports[port] = usb_attach_device(dev->controller, dev->address, port, speed);
+
+	/* clear Port Connection status change */
+	clear_feature (dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
 }
 
 static int
@@ -92,10 +129,7 @@ usb_hub_report_port_changes (usbdev_t *dev)
 	unsigned short buf[2];
 	for (port = 1; port <= HUB_INST (dev)->num_ports; port++) {
 		get_status (dev, port, DR_PORT, 4, buf);
-		// FIXME: proper change detection
-		int portstatus = ((buf[0] & 1) == 0);
-		int datastatus = (HUB_INST (dev)->ports[port] == -1);
-		if (portstatus != datastatus)
+		if (buf[1] & C_PORT_CONNECTION)
 			return port;
 	}
 
@@ -106,7 +140,7 @@ usb_hub_report_port_changes (usbdev_t *dev)
 static void
 usb_hub_enable_port (usbdev_t *dev, int port)
 {
-	set_feature (dev, port, PORT_POWER, DR_PORT);
+	set_feature (dev, port, SEL_PORT_POWER, DR_PORT);
 	mdelay (20);
 }
 

@@ -606,12 +606,12 @@ USE_XARGS=0
 if [ "$cpus" != "1" ]; then
 	if [ "$target" = "" ]; then
 		# Test if xargs supports the non-standard -P flag
-		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
+		# FIXME: disabled until we managed to eliminate all the make(1) quirks
+		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null  # && USE_XARGS=1
 	fi
 fi
 
 if [ "$USE_XARGS" = "0" ]; then
-export MAKEFLAGS="-j $cpus"
 build_all_targets()
 {
 	for VENDOR in $( vendors ); do

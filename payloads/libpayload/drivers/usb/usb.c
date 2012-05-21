@@ -205,22 +205,29 @@ set_configuration (usbdev_t *dev)
 	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
 }
 
+void
+clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
+{
+	dev_req_t dr;
+
+	dr.bmRequestType = rtype;
+	dr.data_dir = host_to_device;
+	dr.bRequest = CLEAR_FEATURE;
+	dr.wValue = feature;
+	dr.wIndex = endp;
+	dr.wLength = 0;
+	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+}
+
 int
 clear_stall (endpoint_t *ep)
 {
 	usbdev_t *dev = ep->dev;
 	int endp = ep->endpoint;
-	dev_req_t dr;
+	int rtype = gen_bmRequestType (host_to_device, standard_type,
+					endp ? endp_recp : dev_recp);
 
-	dr.bmRequestType = 0;
-	if (endp != 0) {
-		dr.req_recp = endp_recp;
-	}
-	dr.bRequest = CLEAR_FEATURE;
-	dr.wValue = ENDPOINT_HALT;
-	dr.wIndex = endp;
-	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	clear_feature (dev, endp, ENDPOINT_HALT, rtype);
 	ep->toggle = 0;
 	return 0;
 }

@@ -214,6 +214,11 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 		mdelay(1);
 	}
 	mdelay(5);
+#if 0
+	/* XXX: The following debugging code may follow invalid lists and
+	 *      cause a reboot.
+	 */
+#ifdef USB_DEBUG
 	if (OHCI_INST(dev->controller)->opreg->HcInterruptStatus & WritebackDoneHead) {
 		debug("done queue:\n");
 		debug("%x, %x\n", OHCI_INST(dev->controller)->hcca->HccaDoneHead, phys_to_virt(OHCI_INST(dev->controller)->hcca->HccaDoneHead));
@@ -236,6 +241,8 @@ wait_for_ed(usbdev_t *dev, ed_t *head)
 		}
 		OHCI_INST(dev->controller)->opreg->HcInterruptStatus &= ~WritebackDoneHead;
 	}
+#endif
+#endif
 
 	if (head->head_pointer & 1) {
 		debug("HALTED!\n");

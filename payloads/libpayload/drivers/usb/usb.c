@@ -245,8 +245,8 @@ get_free_address (hci_t *controller)
 	return -1;		// no free address
 }
 
-int
-set_address (hci_t *controller, int speed)
+static int
+set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 {
 	int adr = get_free_address (controller);	// address to set
 	dev_req_t dr;
@@ -266,6 +266,8 @@ set_address (hci_t *controller, int speed)
 	usbdev_t *dev = controller->devices[adr];
 	// dummy values for registering the address
 	dev->address = 0;
+	dev->hub = hubaddr;
+	dev->port = hubport;
 	dev->speed = speed;
 	dev->endpoints[0].dev = dev;
 	dev->endpoints[0].endpoint = 0;
@@ -469,14 +471,10 @@ usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 {
 	static const char* speeds[] = { "full", "low", "high" };
 	debug ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
-	int newdev = set_address (controller, speed);
+	int newdev = set_address (controller, speed, port, hubaddress);
 	if (newdev == -1)
 		return -1;
 	usbdev_t *newdev_t = controller->devices[newdev];
-
-	newdev_t->address = newdev;
-	newdev_t->hub = hubaddress;
-	newdev_t->port = port;
 	// determine responsible driver - current done in set_address
 	newdev_t->init (newdev_t);
 	return newdev;

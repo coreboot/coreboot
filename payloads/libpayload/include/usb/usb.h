@@ -223,8 +223,6 @@ void usb_hub_init (usbdev_t *dev);
 void usb_hid_init (usbdev_t *dev);
 void usb_msc_init (usbdev_t *dev);
 
-int set_address (hci_t *controller, int speed);
-
 u8 *get_descriptor (usbdev_t *dev, unsigned char bmRequestType,
 		    int descType, int descIdx, int langID);
 

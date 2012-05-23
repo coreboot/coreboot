@@ -116,6 +116,8 @@ typedef volatile struct {
 #define QH_NON_HS_CTRL_EP_SHIFT 27
 #define QH_NAK_CNT_SHIFT 28
 	u32 epcaps;
+#define QH_HUB_ADDRESS_SHIFT 16
+#define QH_PORT_NUMBER_SHIFT 23
 #define QH_PIPE_MULTIPLIER_SHIFT 30
 	volatile u32 current_td_ptr;
 	volatile qtd_t td;

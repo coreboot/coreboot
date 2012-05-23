@@ -61,6 +61,30 @@ static void ehci_shutdown (hci_t *controller)
 
 enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };
 
+/*
+ * returns the address of the closest USB2.0 hub, which is responsible for
+ * split transactions, along with the number of the used downstream port
+ */
+static int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const port)
+{
+	const usbdev_t *usb1dev;
+	do {
+		usb1dev = dev;
+		if ((dev->hub > 0) && (dev->hub < 128))
+			dev = dev->controller->devices[dev->hub];
+		else
+			dev = NULL;
+	} while (dev && (dev->speed < 2));
+	if (dev) {
+		*addr = usb1dev->hub;
+		*port = usb1dev->port;
+		return 0;
+	} else {
+		debug("ehci: Couldn't find closest USB2.0 hub.\n");
+		return 1;
+	}
+}
+
 /* returns handled bytes. assumes that the fields it writes are empty on entry */
 static int fill_td(qtd_t *td, void* data, int datalen)
 {
@@ -140,6 +164,13 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	int endp = ep->endpoint & 0xf;
 	int pid = (ep->direction==IN)?EHCI_IN:EHCI_OUT;
 
+	int hubaddr = 0, hubport = 0;
+	if (ep->dev->speed < 2) {
+		/* we need a split transaction */
+		if (closest_usb2_hub(ep->dev, &hubaddr, &hubport))
+			return 1;
+	}
+
 	qtd_t *head = memalign(32, sizeof(qtd_t));
 	qtd_t *cur = head;
 	while (1) {
@@ -173,7 +204,9 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		(1 << QH_RECLAIM_HEAD_SHIFT) |
 		(ep->maxpacketsize << QH_MPS_SHIFT) |
 		(0 << QH_NAK_CNT_SHIFT);
-	qh->epcaps = 3 << QH_PIPE_MULTIPLIER_SHIFT;
+	qh->epcaps = (3 << QH_PIPE_MULTIPLIER_SHIFT) |
+		(hubport << QH_PORT_NUMBER_SHIFT) |
+		(hubaddr << QH_HUB_ADDRESS_SHIFT);
 
 	qh->td.next_qtd = virt_to_phys(head);
 	qh->td.token |= (ep->toggle?QTD_TOGGLE_DATA1:0);
@@ -208,6 +241,14 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	int toggle = 0;
 	int mlen = dev->endpoints[0].maxpacketsize;
 	int result = 0;
+
+	int hubaddr = 0, hubport = 0, non_hs_ctrl_ep = 0;
+	if (dev->speed < 2) {
+		/* we need a split transaction */
+		if (closest_usb2_hub(dev, &hubaddr, &hubport))
+			return 1;
+		non_hs_ctrl_ep = 1;
+	}
 
 	/* create qTDs */
 	qtd_t *head = memalign(32, sizeof(qtd_t));
@@ -263,9 +304,11 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 		(1 << QH_DTC_SHIFT) | /* ctrl transfers are special: take toggle bit from TD */
 		(1 << QH_RECLAIM_HEAD_SHIFT) |
 		(mlen << QH_MPS_SHIFT) |
-		(0 << QH_NON_HS_CTRL_EP_SHIFT) | /* no non-HS device support yet */
+		(non_hs_ctrl_ep << QH_NON_HS_CTRL_EP_SHIFT) |
 		(0 << QH_NAK_CNT_SHIFT);
-	qh->epcaps = 3 << QH_PIPE_MULTIPLIER_SHIFT;
+	qh->epcaps = (3 << QH_PIPE_MULTIPLIER_SHIFT) |
+		(hubport << QH_PORT_NUMBER_SHIFT) |
+		(hubaddr << QH_HUB_ADDRESS_SHIFT);
 	qh->td.next_qtd = virt_to_phys(head);
 
 	/* hook up QH */

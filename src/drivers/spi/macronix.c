@@ -141,9 +141,11 @@ static int macronix_write(struct spi_flash *flash,
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 
+#if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
+#endif
 
 		ret = spi_flash_cmd(flash->spi, CMD_MX25XX_WREN, NULL, 0);
 		if (ret < 0) {

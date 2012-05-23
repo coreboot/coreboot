@@ -65,8 +65,8 @@ u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
 	u8 *mrc_region;
 	u32 region_size;
-	u32 *data;
 #ifdef USE_FDT_FMAP_FOR_MRC_CACHE
+	u32 *data;
 	const struct fdt_header *fdt_header;
 	const struct fdt_property *fdtp;
 	int offset, len;
@@ -114,10 +114,8 @@ u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 	region_size = fdt32_to_cpu(data[1]);
 	mrc_region = (u8*)((unsigned long)flashrom_base + fdt32_to_cpu(data[0]));
 #else
-	data = (u32 *)((void *)(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION + 12));
-
 	region_size = CONFIG_MRC_CACHE_SIZE;
-	mrc_region = (u8*)(CONFIG_MRC_CACHE_BASE + be32_to_cpu(data[0]));
+	mrc_region = (u8*)(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION);
 #endif
 
 	*mrc_region_ptr = (struct mrc_data_container *)mrc_region;

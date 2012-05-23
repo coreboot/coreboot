@@ -28,19 +28,6 @@
 #include "sandybridge.h"
 #include <spi.h>
 #include <spi_flash.h>
-/* Using the FDT FMAP for finding the MRC cache area requires including FDT
- * support in coreboot, which we would like to avoid. There are a number of
- * options:
- *  - Have each mainboard Kconfig supply a hard-coded offset
- *  - For ChromeOS devices: implement native FMAP
- *  - For non-ChromeOS devices: use CBFS
- * For now let's leave this code in here until the issue is sorted out in
- * a way that works for everyone.
- */
-#undef USE_FDT_FMAP_FOR_MRC_CACHE
-#ifdef USE_FDT_FMAP_FOR_MRC_CACHE
-#include <fdt/libfdt.h>
-#endif
 
 struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache)
 {
@@ -61,64 +48,19 @@ int is_mrc_cache(struct mrc_data_container *mrc_cache)
 	return (!!mrc_cache) && (mrc_cache->mrc_signature == MRC_DATA_SIGNATURE);
 }
 
+/* Right now, the offsets for the MRC cache area are hard-coded in the
+ * northbridge Kconfig. In order to make this more flexible, there are
+ * a number of options:
+ *  - Have each mainboard Kconfig supply a hard-coded offset
+ *  - For ChromeOS devices: implement native FMAP
+ *  - For non-ChromeOS devices: use CBFS
+ */
 u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
-	u8 *mrc_region;
-	u32 region_size;
-#ifdef USE_FDT_FMAP_FOR_MRC_CACHE
-	u32 *data;
-	const struct fdt_header *fdt_header;
-	const struct fdt_property *fdtp;
-	int offset, len;
-	const char *compatible = "chromeos,flashmap";
-	const char *subnode = "rw-mrc-cache";
-	const char *property = "reg";
-	u64 flashrom_base = 0;
 
-	fdt_header = cbfs_find_file(CONFIG_FDT_FILE_NAME, CBFS_TYPE_FDT);
-
-	if (!fdt_header) {
-		printk(BIOS_ERR, "%s: no FDT found!\n", __func__);
-		return 0;
-	}
-
-	offset = fdt_node_offset_by_compatible(fdt_header, 0, compatible);
-	if (offset < 0) {
-		printk(BIOS_ERR, "%s: no %s  node found!\n",
-		       __func__, compatible);
-		return 0;
-	}
-
-	if (fdt_get_base_addr(fdt_header, offset, &flashrom_base) < 0) {
-		printk(BIOS_ERR, "%s: no base address in node name!\n",
-		       __func__);
-		return 0;
-	}
-
-	offset = fdt_subnode_offset(fdt_header, offset, subnode);
-	if (offset < 0) {
-		printk(BIOS_ERR, "%s: no %s found!\n", __func__, subnode);
-		return 0;
-	}
-
-	fdtp = fdt_get_property(fdt_header, offset, property, &len);
-	if (!fdtp || (len != 8)) {
-		printk(BIOS_ERR, "%s: property %s at %p, len %d!\n",
-		       __func__, property, fdtp, len);
-		return 0;
-	}
-
-	data = (u32 *)fdtp->data;
-
-	// Calculate actual address of the MRC cache in memory
-	region_size = fdt32_to_cpu(data[1]);
-	mrc_region = (u8*)((unsigned long)flashrom_base + fdt32_to_cpu(data[0]));
-#else
-	region_size = CONFIG_MRC_CACHE_SIZE;
-	mrc_region = (u8*)(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION);
-#endif
-
-	*mrc_region_ptr = (struct mrc_data_container *)mrc_region;
+	u32 region_size = CONFIG_MRC_CACHE_SIZE;
+	*mrc_region_ptr = (struct mrc_data_container *)
+		(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION);
 
 	return region_size;
 }
@@ -182,7 +124,7 @@ struct mrc_data_container *find_current_mrc_cache(void)
 			entry_id++;
 			mrc_cache = mrc_next;
 			mrc_next = next_mrc_block(mrc_cache);
-			/* Stay in the mrcdata region defined in fdt */
+			/* Stay in the mrc data region */
 			if ((void*)mrc_next >= (void*)(mrc_region + region_size))
 				break;
 		}

@@ -29,6 +29,8 @@
  *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 \*****************************************************************************/
 
+#include <stdint.h>
+#include <inttypes.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -655,10 +657,10 @@ static void memory_print_fn(const struct lb_record *rec)
 		start = unpack_lb64(ranges[i].start);
 		end = start + size - 1;
 		printf("%s memory:\n"
-		       "    from physical addresses 0x%016llx to 0x%016llx\n"
-		       "    size is 0x%016llx bytes (%lld in decimal)\n",
-		       mem_type, start, end, size,
-		       (unsigned long long)size);
+		       "    from physical addresses 0x%016" PRIx64
+		       " to 0x%016" PRIx64 "\n    size is 0x%016" PRIx64
+		       " bytes (%" PRId64 " in decimal)\n",
+		       mem_type, start, end, size, size);
 
 		if (++i >= entries)
 			break;

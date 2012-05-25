@@ -38,6 +38,10 @@
 #endif
 #endif
 
+#ifndef FADT_PM_PROFILE
+	#define FADT_PM_PROFILE PM_UNSPECIFIED
+#endif
+
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
@@ -62,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;
 	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
-	fadt->preferred_pm_profile = PM_SOHO_SERVER;
+	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 – ACPI SCI */
 	fadt->smi_cmd = 0;		/* disable system management mode */
 	fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
@@ -85,7 +89,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	val = 0;
 	WritePMIO(SB_PMIOA_REG6A, AccWidthUint16, &val);
 	val = ACPI_PMA_CNT_BLK_ADDRESS;
-	WritePMIO(SB_PMIOA_REG6C, AccWidthUint16, &val);
+	WritePMIO(SB_PMIOA_REG6E, AccWidthUint16, &val);
 
 	/* AcpiDecodeEnable, When set, SB uses the contents of the
 	 * PM registers at index 60-6B to decode ACPI I/O address.
@@ -104,21 +108,21 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe0_blk = GPE0_BLK_ADDRESS;
 	fadt->gpe1_blk = 0;		/* No gpe1 block in hudson1 */
 
-	fadt->pm1_evt_len = 4;
-	fadt->pm1_cnt_len = 2;
-	fadt->pm2_cnt_len = 1;
-	fadt->pm_tmr_len = 4;
-	fadt->gpe0_blk_len = 8;
+	fadt->pm1_evt_len = 4;	/* 32 bits */
+	fadt->pm1_cnt_len = 2;	/* 16 bits */
+	fadt->pm2_cnt_len = 1;	/* 8 bits */
+	fadt->pm_tmr_len = 4;	/* 32 bits */
+	fadt->gpe0_blk_len = 8;	/* 64 bits */
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 
-	fadt->cst_cnt = 0xe3;
-	fadt->p_lvl2_lat = 101;
-	fadt->p_lvl3_lat = 1001;
+	fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->flush_size = 0;	/* set to 0 if WBINVD is 1 in flags */
 	fadt->flush_stride = 0;	/* set to 0 if WBINVD is 1 in flags */
-	fadt->duty_offset = 1;
-	fadt->duty_width = 3;
+	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
+	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
 	fadt->day_alrm = 0;	/* 0x7d these have to be */
 	fadt->mon_alrm = 0;	/* 0x7e added to cmos.layout */
 	fadt->century = 0;	/* 0x7f to make rtc alrm work */
@@ -157,7 +161,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
-	fadt->x_pm1a_evt_blk.access_size = 0;
+	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
 	fadt->x_pm1a_evt_blk.addrl = PM1_EVT_BLK_ADDRESS;
 	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
@@ -195,13 +199,13 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm_tmr_blk.bit_width = 32;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.access_size = 0;
+	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_pm_tmr_blk.addrl = PM1_TMR_BLK_ADDRESS;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 
 	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe0_blk.bit_width = 64;
+	fadt->x_gpe0_blk.bit_width = 64; /* EventStatus + Event Enable */
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_gpe0_blk.addrl = GPE0_BLK_ADDRESS;

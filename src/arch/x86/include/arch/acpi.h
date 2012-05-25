@@ -310,6 +310,10 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_REV_ACPI_4_0		4
 #define ACPI_FADT_REV_ACPI_5_0		5
 
+/* Flags for p_lvl2_lat and p_lvl3_lat */
+#define ACPI_FADT_C2_NOT_SUPPORTED	101
+#define ACPI_FADT_C3_NOT_SUPPORTED	1001
+
 /* FADT Feature Flags */
 #define ACPI_FADT_WBINVD		(1 << 0)
 #define ACPI_FADT_WBINVD_FLUSH		(1 << 1)

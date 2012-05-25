@@ -140,6 +140,12 @@ static void set_var_mtrr(
 	wrmsr (MTRRphysMask_MSR(reg), mask);
 
 	enable_cache();
+
+	printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
+		reg, basek >>10, sizek >> 10,
+		(type==MTRR_TYPE_UNCACHEABLE)?"UC":
+		    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
+	);
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
@@ -284,11 +290,6 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			align = max_align;
 		}
 		sizek = 1 << align;
-		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
-			reg, range_startk >>10, sizek >> 10,
-			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
-			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
-			);
 
 		/* if range is above 4GB, MTRR is needed
 		 * only if above4gb flag is set

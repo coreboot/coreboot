@@ -42,18 +42,33 @@ enum { GET_REPORT = 0x1, GET_IDLE = 0x2, GET_PROTOCOL = 0x3, SET_REPORT =
 		0x9, SET_IDLE = 0xa, SET_PROTOCOL = 0xb
 };
 
-static void
-usb_hid_destroy (usbdev_t *dev)
-{
-	free (dev->data);
-}
-
 typedef struct {
 	void* queue;
 	hid_descriptor_t *descriptor;
 } usbhid_inst_t;
 
 #define HID_INST(dev) ((usbhid_inst_t*)(dev)->data)
+
+static void
+usb_hid_destroy (usbdev_t *dev)
+{
+	if (HID_INST(dev)->queue) {
+		int i;
+		for (i = 0; i <= dev->num_endp; i++) {
+			if (dev->endpoints[i].endpoint == 0)
+				continue;
+			if (dev->endpoints[i].type != INTERRUPT)
+				continue;
+			if (dev->endpoints[i].direction != IN)
+				continue;
+			break;
+		}
+		dev->controller->destroy_intr_queue(
+				&dev->endpoints[i], HID_INST(dev)->queue);
+		HID_INST(dev)->queue = NULL;
+	}
+	free (dev->data);
+}
 
 /* keybuffer is global to all USB keyboards */
 static int keycount;

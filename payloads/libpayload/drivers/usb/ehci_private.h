@@ -61,9 +61,13 @@ typedef volatile struct {
 typedef volatile struct {
 	u32 usbcmd;
 #define HC_OP_RS 1
+#define HC_OP_PERIODIC_SCHED_EN_SHIFT 4
+#define HC_OP_PERIODIC_SCHED_EN (1 << HC_OP_PERIODIC_SCHED_EN_SHIFT)
 #define HC_OP_ASYNC_SCHED_EN_SHIFT 5
 #define HC_OP_ASYNC_SCHED_EN (1 << HC_OP_ASYNC_SCHED_EN_SHIFT)
 	u32 usbsts;
+#define HC_OP_PERIODIC_SCHED_STAT_SHIFT 14
+#define HC_OP_PERIODIC_SCHED_STAT (1 << HC_OP_PERIODIC_SCHED_STAT_SHIFT)
 #define HC_OP_ASYNC_SCHED_STAT_SHIFT 15
 #define HC_OP_ASYNC_SCHED_STAT (1 << HC_OP_ASYNC_SCHED_STAT_SHIFT)
 	u32 usbintr;
@@ -78,6 +82,7 @@ typedef volatile struct {
 
 typedef volatile struct {
 #define QTD_TERMINATE 1
+#define QTD_PTR_MASK ~0x1f
 	u32 next_qtd;
 	u32 alt_next_qtd;
 	u32 token;
@@ -116,6 +121,7 @@ typedef volatile struct {
 #define QH_NON_HS_CTRL_EP_SHIFT 27
 #define QH_NAK_CNT_SHIFT 28
 	u32 epcaps;
+#define QH_UFRAME_CMASK_SHIFT 8
 #define QH_HUB_ADDRESS_SHIFT 16
 #define QH_PORT_NUMBER_SHIFT 23
 #define QH_PIPE_MULTIPLIER_SHIFT 30
@@ -127,6 +133,10 @@ typedef struct ehci {
 	hc_cap_t *capabilities;
 	hc_op_t *operation;
 } ehci_t;
+
+#define PS_TERMINATE 1
+#define PS_TYPE_QH 1 << 1
+#define PS_PTR_MASK ~0x1f
 
 
 #define EHCI_INST(controller) ((ehci_t*)((controller)->instance))

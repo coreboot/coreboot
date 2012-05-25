@@ -54,8 +54,35 @@ static void ehci_reset (hci_t *controller)
 
 }
 
+static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
+{
+	/* Set periodic schedule status. */
+	if (enable)
+		ehcic->operation->usbcmd |= HC_OP_PERIODIC_SCHED_EN;
+	else
+		ehcic->operation->usbcmd &= ~HC_OP_PERIODIC_SCHED_EN;
+	/* Wait for the controller to accept periodic schedule status.
+	 * This shouldn't take too long, but we should timeout nevertheless.
+	 */
+	enable = enable ? HC_OP_PERIODIC_SCHED_STAT : 0;
+	int timeout = 100; /* time out after 100ms */
+	while (((ehcic->operation->usbsts & HC_OP_PERIODIC_SCHED_STAT) != enable)
+			&& timeout--)
+		mdelay(1);
+	if (timeout < 0) {
+		debug("ehci periodic schedule status change timed out.\n");
+		return 1;
+	}
+	return 0;
+}
+
 static void ehci_shutdown (hci_t *controller)
 {
+	/* Make sure periodic schedule is disabled */
+	ehci_set_periodic_schedule(EHCI_INST(controller), 0);
+	/* Free periodic frame list */
+	free(phys_to_virt(EHCI_INST(controller)->operation->periodiclistbase));
+
 	EHCI_INST(controller)->operation->configflag = 0;
 }
 
@@ -328,18 +355,202 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	return result;
 }
 
-static void* ehci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming)
+
+typedef struct _intr_qtd_t intr_qtd_t;
+
+struct _intr_qtd_t {
+	volatile qtd_t	td;
+	u8		*data;
+	intr_qtd_t	*next;
+};
+
+typedef struct {
+	volatile ehci_qh_t	qh;
+	intr_qtd_t		*head;
+	intr_qtd_t		*tail;
+	u8			*data;
+	endpoint_t		*endp;
+	int			reqsize;
+} intr_queue_t;
+
+static void fill_intr_queue_td(
+		intr_queue_t *const intrq,
+		intr_qtd_t *const intr_qtd,
+		u8 *const data)
 {
-	return NULL;
+	const int pid = (intrq->endp->direction == IN) ? EHCI_IN
+		: (intrq->endp->direction == OUT) ? EHCI_OUT
+		: EHCI_SETUP;
+	const int cerr = (intrq->endp->dev->speed < 2) ? 1 : 0;
+
+	memset(intr_qtd, 0, sizeof(*intr_qtd));
+	intr_qtd->td.next_qtd = QTD_TERMINATE;
+	intr_qtd->td.alt_next_qtd = QTD_TERMINATE;
+	intr_qtd->td.token = QTD_ACTIVE |
+		(pid << QTD_PID_SHIFT) |
+		(cerr << QTD_CERR_SHIFT) |
+		((intrq->endp->toggle & 1) << QTD_TOGGLE_SHIFT);
+	fill_td(&intr_qtd->td, data, intrq->reqsize);
+	intr_qtd->data = data;
+	intr_qtd->next = NULL;
+
+	intrq->endp->toggle ^= 1;
 }
 
-static void ehci_destroy_intr_queue (endpoint_t *ep, void *queue)
+static void ehci_destroy_intr_queue(endpoint_t *const, void *const);
+
+static void *ehci_create_intr_queue(
+		endpoint_t *const ep,
+		const int reqsize,
+		int reqcount,
+		const int reqtiming)
 {
+	int i;
+
+	if ((reqsize > (4 * 4096 + 1)) || /* the maximum for arbitrary aligned
+					     data in five 4096 byte pages */
+			(reqtiming > 1024))
+		return NULL;
+	if (reqcount < 2) /* we need at least 2:
+			     one for processing, one for the hc to advance to */
+		reqcount = 2;
+
+	int hubaddr = 0, hubport = 0;
+	if (ep->dev->speed < 2) {
+		/* we need a split transaction */
+		if (closest_usb2_hub(ep->dev, &hubaddr, &hubport))
+			return NULL;
+	}
+
+	intr_queue_t *const intrq =
+		(intr_queue_t *)memalign(32, sizeof(intr_queue_t));
+	u8 *data = (u8 *)malloc(reqsize * reqcount);
+	if (!intrq || !data)
+		fatal("Not enough memory to create USB interrupt queue.\n");
+	intrq->data = data;
+	intrq->endp = ep;
+	intrq->reqsize = reqsize;
+
+	/* create #reqcount transfer descriptors (qTDs) */
+	intrq->head = (intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+	intr_qtd_t *cur_td = intrq->head;
+	for (i = 0; i < reqcount; ++i) {
+		fill_intr_queue_td(intrq, cur_td, data);
+		data += reqsize;
+		if (i < reqcount - 1) {
+			/* create one more qTD */
+			intr_qtd_t *const next_td =
+				(intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+			cur_td->td.next_qtd = virt_to_phys(&next_td->td);
+			cur_td->next = next_td;
+			cur_td = next_td;
+		}
+	}
+	intrq->tail = cur_td;
+
+	/* initialize QH */
+	const int endp = ep->endpoint & 0xf;
+	memset(&intrq->qh, 0, sizeof(intrq->qh));
+	intrq->qh.horiz_link_ptr = PS_TERMINATE;
+	intrq->qh.epchar = ep->dev->address |
+		(endp << QH_EP_SHIFT) |
+		(ep->dev->speed << QH_EPS_SHIFT) |
+		(1 << QH_DTC_SHIFT) |
+		(0 << QH_RECLAIM_HEAD_SHIFT) |
+		(ep->maxpacketsize << QH_MPS_SHIFT) |
+		(0 << QH_NAK_CNT_SHIFT);
+	intrq->qh.epcaps = (1 << QH_PIPE_MULTIPLIER_SHIFT) |
+		(hubport << QH_PORT_NUMBER_SHIFT) |
+		(hubaddr << QH_HUB_ADDRESS_SHIFT) |
+		(0xfe << QH_UFRAME_CMASK_SHIFT) |
+		1 /* uFrame S-mask */;
+	intrq->qh.td.next_qtd = virt_to_phys(&intrq->head->td);
+
+	/* insert QH into periodic schedule */
+	int nothing_placed = 1;
+	u32 *const ps = (u32 *)phys_to_virt(EHCI_INST(ep->dev->controller)
+						->operation->periodiclistbase);
+	for (i = 0; i < 1024; i += reqtiming) {
+		/* advance to the next free position */
+		while ((i < 1024) && !(ps[i] & PS_TERMINATE)) ++i;
+		if (i < 1024) {
+			ps[i] =	virt_to_phys(&intrq->qh) | PS_TYPE_QH;
+			nothing_placed = 0;
+		}
+	}
+	if (nothing_placed) {
+		printf("Error: Failed to place ehci interrupt queue head "
+				"into periodic schedule: no space left\n");
+		ehci_destroy_intr_queue(ep, intrq);
+		return NULL;
+	}
+
+	return intrq;
 }
 
-static u8* ehci_poll_intr_queue (void *queue)
+static void ehci_destroy_intr_queue(endpoint_t *const ep, void *const queue)
 {
-	return NULL;
+	intr_queue_t *const intrq = (intr_queue_t *)queue;
+
+	/* remove QH from periodic schedule */
+	int i;
+	u32 *const ps = (u32 *)phys_to_virt(EHCI_INST(
+			ep->dev->controller)->operation->periodiclistbase);
+	for (i = 0; i < 1024; ++i) {
+		if ((ps[i] & PS_PTR_MASK) == virt_to_phys(&intrq->qh))
+			ps[i] = PS_TERMINATE;
+	}
+
+	/* wait 1ms for frame to end */
+	mdelay(1);
+
+	while (intrq->head) {
+		/* disable qTD and destroy list */
+		intrq->head->td.next_qtd = QTD_TERMINATE;
+		intrq->head->td.token &= ~QTD_ACTIVE;
+
+		/* save and advance head ptr */
+		intr_qtd_t *const to_free = intrq->head;
+		intrq->head = intrq->head->next;
+
+		/* free current interrupt qTD */
+		free(to_free);
+	}
+	free(intrq->data);
+	free(intrq);
+}
+
+static u8 *ehci_poll_intr_queue(void *const queue)
+{
+	intr_queue_t *const intrq = (intr_queue_t *)queue;
+
+	u8 *ret = NULL;
+
+	/* process if head qTD is inactive AND QH has been moved forward */
+	if (!(intrq->head->td.token & QTD_ACTIVE) &&
+			(intrq->qh.current_td_ptr !=
+			 virt_to_phys(&intrq->head->td))) {
+		if (!(intrq->head->td.token & QTD_STATUS_MASK))
+			ret = intrq->head->data;
+		else
+			debug("ehci_poll_intr_queue: transfer failed, "
+				"status == 0x%02x\n",
+				intrq->head->td.token & QTD_STATUS_MASK);
+
+		/* save and advance our head ptr */
+		intr_qtd_t *const new_td = intrq->head;
+		intrq->head = intrq->head->next;
+
+		/* reuse executed qTD */
+		fill_intr_queue_td(intrq, new_td, new_td->data);
+
+		/* at last insert reused qTD at the
+		 * end and advance our tail ptr */
+		intrq->tail->td.next_qtd = virt_to_phys(&new_td->td);
+		intrq->tail->next = new_td;
+		intrq->tail = intrq->tail->next;
+	}
+	return ret;
 }
 
 hci_t *
@@ -390,6 +601,22 @@ ehci_init (pcidev_t addr)
 
 	/* take over all ports. USB1 should be blind now */
 	EHCI_INST(controller)->operation->configflag = 1;
+
+	/* Initialize periodic frame list */
+	/* 1024 32-bit pointers, 4kb aligned */
+	u32 *const periodic_list = (u32 *)memalign(4096, 1024 * sizeof(u32));
+	if (!periodic_list)
+		fatal("Not enough memory creating EHCI periodic frame list.\n");
+	for (i = 0; i < 1024; ++i)
+		periodic_list[i] = PS_TERMINATE;
+
+	/* Make sure periodic schedule is disabled */
+	ehci_set_periodic_schedule(EHCI_INST(controller), 0);
+	/* Set periodic frame list pointer */
+	EHCI_INST(controller)->operation->periodiclistbase =
+		virt_to_phys(periodic_list);
+	/* Enable use of periodic schedule */
+	ehci_set_periodic_schedule(EHCI_INST(controller), 1);
 
 	/* TODO lots of stuff missing */
 

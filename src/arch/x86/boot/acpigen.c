@@ -344,7 +344,9 @@ int acpigen_write_empty_PTC(void)
 		.space_id   = ACPI_ADDRESS_SPACE_FIXED,
 		.bit_width  = 0,
 		.bit_offset = 0,
-		.resv       = 0,
+		{
+			.resv       = 0
+		},
 		.addrl      = 0,
 		.addrh      = 0,
 	};

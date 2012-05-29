@@ -297,7 +297,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	while (pages > 0) {
 		cur++;
-		cur->config = (dir==IN)?TD_DIRECTION_IN:TD_DIRECTION_OUT |
+		cur->config = (dir == IN ? TD_DIRECTION_IN : TD_DIRECTION_OUT) |
 			TD_DELAY_INTERRUPT_NODELAY |
 			TD_TOGGLE_FROM_ED |
 			TD_CC_NOACCESS;
@@ -324,7 +324,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	}
 
 	cur++;
-	cur->config = (dir==IN)?TD_DIRECTION_OUT:TD_DIRECTION_IN |
+	cur->config = (dir == IN ? TD_DIRECTION_OUT : TD_DIRECTION_IN) |
 		TD_DELAY_INTERRUPT_NODELAY |
 		TD_TOGGLE_FROM_TD |
 		TD_TOGGLE_DATA1 |
@@ -392,7 +392,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	}
 
 	for (cur = tds; cur->next_td != 0; cur++) {
-		cur->config =  (ep->direction==IN)?TD_DIRECTION_IN:TD_DIRECTION_OUT |
+		cur->config = (ep->direction == IN ? TD_DIRECTION_IN : TD_DIRECTION_OUT) |
                         TD_DELAY_INTERRUPT_NODELAY |
                         TD_TOGGLE_FROM_ED |
                         TD_CC_NOACCESS;

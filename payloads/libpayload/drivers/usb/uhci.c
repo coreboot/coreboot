@@ -267,12 +267,12 @@ uhci_stop (hci_t *controller)
 static td_t *
 wait_for_completed_qh (hci_t *controller, qh_t *qh)
 {
-	int timeout = 1000000;	/* max 30 ms. */
+	int timeout = 1000;	/* max 30 ms. */
 	void *current = GET_TD (qh->elementlinkptr);
 	while (((qh->elementlinkptr & FLISTP_TERMINATE) == 0) && (timeout-- > 0)) {
 		if (current != GET_TD (qh->elementlinkptr)) {
 			current = GET_TD (qh->elementlinkptr);
-			timeout = 1000000;
+			timeout = 1000;
 		}
 		uhci_reg_write16(controller, USBSTS,
 				 uhci_reg_read16(controller, USBSTS) | 0);	// clear resettable registers

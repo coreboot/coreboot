@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <ctype.h>
 #include "sconfig.h"
 #include "sconfig.tab.h"
 
@@ -336,7 +337,7 @@ static void pass0(FILE *fil, struct device *ptr) {
 static void pass1(FILE *fil, struct device *ptr) {
 	if (!ptr->used && (ptr->type == device)) {
 		if (ptr->id != 0)
-			fprintf(fil, "static ", ptr->name);
+			fprintf(fil, "static ");
 		fprintf(fil, "struct device %s = {\n", ptr->name);
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops)?(ptr->ops):"0");
 		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name, ptr->bus->link);
@@ -358,7 +359,7 @@ static void pass1(FILE *fil, struct device *ptr) {
 		if (ptr->children || ptr->multidev)
 			fprintf(fil, "\t.link_list = &%s_links[0],\n", ptr->name);
 		else
-			fprintf(fil, "\t.link_list = NULL,\n", ptr->name);
+			fprintf(fil, "\t.link_list = NULL,\n");
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 		if (ptr->chip->chiph_exists) {

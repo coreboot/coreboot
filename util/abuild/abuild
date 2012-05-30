@@ -527,7 +527,7 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache,blobs -o Vvhat:p:Tc:sJxCl:rP:uyB -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,xml,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache,blobs -o Vvhat:p:Tc:sJxCl:rP:uyB -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -556,10 +556,9 @@ while true ; do
 		-T|--test)      shift; hwtest=true;;
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
-			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j"
-			test "$1" == "" && cpuconfig="in parallel"
+			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j" && cpuconfig="in parallel"
 			test "$1" == "1" && cpuconfig="on 1 cpu"
-			test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
+			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
 			shift;;
 		-s|--silent)    shift; silent="-s";;
 		-ns|--nostackprotect) shift; stackprotect=true;;
@@ -608,11 +607,12 @@ if [ "$cpus" != "1" ]; then
 	if [ "$target" = "" ]; then
 		# Test if xargs supports the non-standard -P flag
 		# FIXME: disabled until we managed to eliminate all the make(1) quirks
-		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null  # && USE_XARGS=1
+		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null # && USE_XARGS=1
 	fi
 fi
 
 if [ "$USE_XARGS" = "0" ]; then
+test "$MAKEFLAGS" == "" && test "$cpus" != "" && export MAKEFLAGS="-j $cpus"
 build_all_targets()
 {
 	for VENDOR in $( vendors ); do

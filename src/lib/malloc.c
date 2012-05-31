@@ -18,7 +18,7 @@ void *memalign(size_t boundary, size_t size)
 {
 	void *p;
 
-	MALLOCDBG("%s Enter, boundary %ld, size %ld, free_mem_ptr %p\n",
+	MALLOCDBG("%s Enter, boundary %zu, size %zu, free_mem_ptr %p\n",
 		__func__, boundary, size, free_mem_ptr);
 
 	/* Overzealous linker check */
@@ -30,8 +30,15 @@ void *memalign(size_t boundary, size_t size)
 	p = free_mem_ptr;
 	free_mem_ptr += size;
 
-	if (free_mem_ptr >= free_mem_end_ptr)
+	if (free_mem_ptr >= free_mem_end_ptr) {
+		printk(BIOS_ERR, "memalign(boundary=%zu, size=%zu): failed: ",
+				boundary, size);
+		printk(BIOS_ERR, "Tried to round up free_mem_ptr %p to %p\n",
+				p, free_mem_ptr);
+		printk(BIOS_ERR, "but free_mem_end_ptr is %p\n",
+				free_mem_end_ptr);
 		die("Error! memalign: Out of memory (free_mem_ptr >= free_mem_end_ptr)");
+	}
 
 	MALLOCDBG("memalign %p\n", p);
 

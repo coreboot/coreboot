@@ -169,11 +169,15 @@ static int wait_for_tds(qtd_t *head)
 		if (0) dump_td(virt_to_phys(cur));
 
 		/* wait for results */
-		/* TOTEST: how long to wait?
-		 *         tested with some USB2.0 flash sticks:
-		 *         slowest took around 180ms
+		/* how long to wait?
+		 * tested with some USB2.0 flash sticks:
+		 * TUR turn around took
+		 *   about 2s for the slowest (14cd:121c)
+		 *   max. 250ms for the others
+		 * slowest non-TUR turn around took about 1.3s
+		 * try 2s for now as a failed TUR is not fatal
 		 */
-		int timeout = 10000; /* time out after 10000 * 50us == 500ms */
+		int timeout = 40000; /* time out after 40000 * 50us == 2s */
 		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)
 				&& timeout--)
 			udelay(50);

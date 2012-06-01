@@ -106,10 +106,22 @@ typedef struct {
 	unsigned char bCSWStatus;
 } __attribute__ ((packed)) csw_t;
 
+enum {
+	/*
+	 * MSC commands can be
+	 *   successful,
+	 *   fail with proper response or
+	 *   fail totally, which results in detaching of the usb device.
+	 * In the latter case the caller has to make sure, that he won't
+	 * use the device any more.
+	 */
+	MSC_COMMAND_OK = 0, MSC_COMMAND_FAIL, MSC_COMMAND_DETACHED
+};
+
 static int
 request_sense (usbdev_t *dev);
 
-static void
+static int
 reset_transport (usbdev_t *dev)
 {
 	dev_req_t dr;
@@ -124,9 +136,17 @@ reset_transport (usbdev_t *dev)
 	dr.wValue = 0;
 	dr.wIndex = 0;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
-	clear_stall (MSC_INST (dev)->bulk_in);
-	clear_stall (MSC_INST (dev)->bulk_out);
+
+	/* if any of these fails, detach device, as we are lost */
+	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) ||
+			clear_stall (MSC_INST (dev)->bulk_in) ||
+			clear_stall (MSC_INST (dev)->bulk_out)) {
+		printf ("Detaching unresponsive device.\n");
+		usb_detach_device (dev->controller, dev->address);
+		return MSC_COMMAND_DETACHED;
+	}
+	/* return fail as we are only called in case of failure */
+	return MSC_COMMAND_FAIL;
 }
 
 /* device may stall this command, so beware! */
@@ -177,20 +197,18 @@ get_csw (endpoint_t *ep, csw_t *csw)
 		clear_stall (ep);
 		if (ep->dev->controller->bulk
 				(ep, sizeof (csw_t), (u8 *) csw, 1)) {
-			reset_transport (ep->dev);
-			return 1;
+			return reset_transport (ep->dev);
 		}
 	}
 	if (csw->dCSWTag != tag) {
-		reset_transport (ep->dev);
-		return 1;
+		return reset_transport (ep->dev);
 	}
-	return 0;
+	return MSC_COMMAND_OK;
 }
 
 static int
 execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
-		 u8 *buf, int buflen)
+		 u8 *buf, int buflen, int residue_ok)
 {
 	cbw_t cbw;
 	csw_t csw;
@@ -202,43 +220,48 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	wrap_cbw (&cbw, buflen, dir, cb, cblen);
 	if (dev->controller->
 	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0)) {
-		reset_transport (dev);
-		return 1;
+		return reset_transport (dev);
 	}
 	if (buflen > 0) {
 		if (dir == cbw_direction_data_in) {
 			if (dev->controller->
 			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0)) {
 				clear_stall (MSC_INST (dev)->bulk_in);
-				return 1;
+				return MSC_COMMAND_FAIL;
 			}
 		} else {
 			if (dev->controller->
 			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0)) {
 				clear_stall (MSC_INST (dev)->bulk_out);
-				return 1;
+				return MSC_COMMAND_FAIL;
 			}
 		}
 	}
-	if (get_csw (MSC_INST (dev)->bulk_in, &csw))
-		return 1;
-	if (always_succeed == 1) {
-		// return success, regardless of message
-		return 0;
+	int ret = get_csw (MSC_INST (dev)->bulk_in, &csw);
+	if (ret) {
+		return ret;
+	} else if (always_succeed == 1) {
+		/* return success, regardless of message */
+		return MSC_COMMAND_OK;
+	} else if (csw.bCSWStatus == 2) {
+		/* phase error, reset transport */
+		return reset_transport (dev);
+	} else if (csw.bCSWStatus == 0) {
+		if ((csw.dCSWDataResidue == 0) || residue_ok)
+			/* no error, exit */
+			return MSC_COMMAND_OK;
+		else
+			/* missed some bytes */
+			return MSC_COMMAND_FAIL;
+	} else {
+		if (cb[0] == 0x03)
+			/* requesting sense failed, that's bad */
+			return MSC_COMMAND_FAIL;
+		/* error "check condition" or reserved error */
+		ret = request_sense (dev);
+		/* return fail or the status of request_sense if it's worse */
+		return ret ? ret : MSC_COMMAND_FAIL;
 	}
-	if (csw.bCSWStatus == 2) {
-		// phase error, reset transport
-		reset_transport (dev);
-		return 1;
-	}
-	if (csw.bCSWStatus == 0) {
-		// no error, exit
-		return 0;
-	}
-	if (cb[0] != 0x03) /* 0x03 == request sense */
-		// error "check condition" or reserved error
-		request_sense (dev);
-	return 1;
 }
 
 typedef struct {
@@ -309,7 +332,8 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 	cb.numblocks = htonw (n);
 
 	return execute_command (dev, dir, (u8 *) &cb, sizeof (cb), buf,
-				n * MSC_INST(dev)->blocksize);
+				n * MSC_INST(dev)->blocksize, 0)
+		!= MSC_COMMAND_OK ? 1 : 0;
 }
 
 /* Only request it, we don't interpret it.
@@ -324,7 +348,7 @@ request_sense (usbdev_t *dev)
 	cb.command = 0x3;
 
 	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
-				sizeof (cb), buf, 19);
+				sizeof (cb), buf, 19, 1);
 }
 
 static int
@@ -333,7 +357,7 @@ test_unit_ready (usbdev_t *dev)
 	cmdblock6_t cb;
 	memset (&cb, 0, sizeof (cb));	// full initialization for T-U-R
 	return execute_command (dev, cbw_direction_data_out, (u8 *) &cb,
-				sizeof (cb), 0, 0);
+				sizeof (cb), 0, 0, 0);
 }
 
 static int
@@ -344,10 +368,10 @@ spin_up (usbdev_t *dev)
 	cb.command = 0x1b;
 	cb.lun = 1;
 	return execute_command (dev, cbw_direction_data_out, (u8 *) &cb,
-				sizeof (cb), 0, 0);
+				sizeof (cb), 0, 0, 0);
 }
 
-static void
+static int
 read_capacity (usbdev_t *dev)
 {
 	cmdblock_t cb;
@@ -356,12 +380,20 @@ read_capacity (usbdev_t *dev)
 	u8 buf[8];
 
 	debug ("Reading capacity of mass storage device.\n");
-	int count = 0;
-	while ((count++ < 20)
-	       &&
-	       (execute_command
-		(dev, cbw_direction_data_in, (u8 *) &cb, sizeof (cb), buf,
-		 8) == 1));
+	int count = 0, ret;
+	while (count++ < 20) {
+		switch (ret = execute_command
+				(dev, cbw_direction_data_in, (u8 *) &cb,
+				 sizeof (cb), buf, 8, 0)) {
+		case MSC_COMMAND_OK:
+			break;
+		case MSC_COMMAND_FAIL:
+			continue;
+		default: /* if it's worse return */
+			return ret;
+		}
+		break;
+	}
 	if (count >= 20) {
 		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably more usable.
 		printf ("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
@@ -377,6 +409,7 @@ read_capacity (usbdev_t *dev)
 		MSC_INST (dev)->numblocks > 1000000
 			? (MSC_INST (dev)->numblocks / 1000) * MSC_INST (dev)->blocksize / 1000 :
 		MSC_INST (dev)->numblocks * MSC_INST (dev)->blocksize / 1000 / 1000);
+	return MSC_COMMAND_OK;
 }
 
 void
@@ -444,12 +477,21 @@ usb_msc_init (usbdev_t *dev)
 
 	printf ("  Waiting for device to become ready...");
 	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
-	while (test_unit_ready (dev) && --timeout) {
-		mdelay (100);
-		if (!(timeout % 10))
-			printf (".");
+	while (timeout--) {
+		switch (test_unit_ready (dev)) {
+		case MSC_COMMAND_OK:
+			break;
+		case MSC_COMMAND_FAIL:
+			mdelay (100);
+			if (!(timeout % 10))
+				printf (".");
+			continue;
+		default: /* if it's worse return */
+			return;
+		}
+		break;
 	}
-	if (test_unit_ready (dev)) {
+	if (timeout < 0) {
 		printf ("timeout. Device not ready. Still trying...\n");
 	} else {
 		printf ("ok.\n");
@@ -458,15 +500,20 @@ usb_msc_init (usbdev_t *dev)
 	debug ("  spin up");
 	for (i = 0; i < 30; i++) {
 		debug (".");
-		if (!spin_up (dev)) {
+		switch (spin_up (dev)) {
+		case MSC_COMMAND_OK:
 			debug (" OK.");
 			break;
+		case MSC_COMMAND_FAIL:
+			mdelay (100);
+			continue;
+		default: /* if it's worse return */
+			return;
 		}
-		mdelay (100);
+		break;
 	}
 	debug ("\n");
 
-	read_capacity (dev);
-	if (usbdisk_create)
+	if ((read_capacity (dev) == MSC_COMMAND_OK) && usbdisk_create)
 		usbdisk_create (dev);
 }

@@ -205,7 +205,7 @@ set_configuration (usbdev_t *dev)
 	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
 }
 
-void
+int
 clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
 {
 	dev_req_t dr;
@@ -216,7 +216,7 @@ clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wValue = feature;
 	dr.wIndex = endp;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
 }
 
 int
@@ -227,9 +227,9 @@ clear_stall (endpoint_t *ep)
 	int rtype = gen_bmRequestType (host_to_device, standard_type,
 					endp ? endp_recp : dev_recp);
 
-	clear_feature (dev, endp, ENDPOINT_HALT, rtype);
+	int ret = clear_feature (dev, endp, ENDPOINT_HALT, rtype);
 	ep->toggle = 0;
-	return 0;
+	return ret;
 }
 
 /* returns free address or -1 */
@@ -458,12 +458,21 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	return adr;
 }
 
+/*
+ * Should be called by the hub drivers whenever a physical detach occurs
+ * and can be called by usb class drivers if they are unsatisfied with a
+ * malfunctioning device.
+ */
 void
 usb_detach_device(hci_t *controller, int devno)
 {
-	controller->devices[devno]->destroy (controller->devices[devno]);
-	free(controller->devices[devno]);
-	controller->devices[devno] = 0;
+	/* check if device exists, as we may have
+	   been called yet by the usb class driver */
+	if (controller->devices[devno]) {
+		controller->devices[devno]->destroy (controller->devices[devno]);
+		free(controller->devices[devno]);
+		controller->devices[devno] = NULL;
+	}
 }
 
 int

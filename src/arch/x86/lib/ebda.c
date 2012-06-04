@@ -35,6 +35,9 @@ void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 		return;
 #endif
 
+#if CONFIG_ULINUX
+	return;
+#endif
 	if (!low_memory_size || !ebda_segment || !ebda_size)
 		return;
 

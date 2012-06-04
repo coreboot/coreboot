@@ -9,6 +9,7 @@
  * (insb/insw/insl/outsb/outsw/outsl).
  */
 #if defined(__ROMCC__)
+
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__builtin_outb(value, port);
@@ -41,6 +42,9 @@ static inline uint32_t inl(uint16_t port)
 	return __builtin_inl(port);
 }
 #else
+
+#if defined(__PRE_RAM__) || defined(__SMM__) || CONFIG_ULINUX == 0
+
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__asm__ __volatile__ ("outb %b0, %w1" : : "a" (value), "Nd" (port));
@@ -76,6 +80,43 @@ static inline uint32_t inl(uint16_t port)
 	__asm__ __volatile__ ("inl %w1, %0" : "=a"(value) : "Nd" (port));
 	return value;
 }
+
+#else /* CONFIG_ULINUX == 1 */
+
+#include <console/console.h>
+#include <serialice_host.h>
+
+static inline void outb(uint8_t value, uint16_t port)
+{
+	serialice_outb(value, port);
+}
+
+static inline void outw(uint16_t value, uint16_t port)
+{
+	serialice_outw(value, port);
+}
+
+static inline void outl(uint32_t value, uint16_t port)
+{
+	serialice_outl(value, port);
+}
+
+static inline uint8_t inb(uint16_t port)
+{
+	return serialice_inb(port);
+}
+
+static inline uint16_t inw(uint16_t port)
+{
+	return serialice_inw(port);
+}
+
+static inline uint32_t inl(uint16_t port)
+{
+	return serialice_inl(port);
+}
+
+#endif /* CONFIG_ULINUX */
 #endif /* __ROMCC__ */
 
 static inline void outsb(uint16_t port, const void *addr, unsigned long count)
@@ -133,6 +174,9 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
+
+#if defined(__PRE_RAM__) || defined(__SMM__) || CONFIG_ULINUX == 0
+
 static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
 {
 	return *((volatile uint8_t *)(addr));
@@ -163,5 +207,37 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 	*((volatile uint32_t *)(addr)) = value;
 }
 
+#else /* CONFIG_ULINUX */
+
+static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
+{
+	return serialice_readb(addr);
+}
+
+static inline __attribute__((always_inline)) uint16_t read16(unsigned long addr)
+{
+	return serialice_readw(addr);
+}
+
+static inline __attribute__((always_inline)) uint32_t read32(unsigned long addr)
+{
+	return serialice_readl(addr);
+}
+
+static inline __attribute__((always_inline)) void write8(unsigned long addr, uint8_t value)
+{
+	serialice_writeb(value, addr);
+}
+
+static inline __attribute__((always_inline)) void write16(unsigned long addr, uint16_t value)
+{
+	serialice_writew(value, addr);
+}
+
+static inline __attribute__((always_inline)) void write32(unsigned long addr, uint32_t value)
+{
+	serialice_writel(value, addr);
+}
+#endif
 #endif
 

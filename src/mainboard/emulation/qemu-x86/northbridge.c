@@ -11,6 +11,7 @@
 #include "chip.h"
 #include <delay.h>
 #include <smbios.h>
+#include <ulinux.h>
 
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
@@ -38,7 +39,8 @@ static void cpu_pci_domain_set_resources(device_t dev)
 	unsigned long tomk = 0, tolmk;
 	int idx;
 
-	tomk = qemu_get_memory_size();
+//	tomk = qemu_get_memory_size();
+	tomk = 16*1024;
 	printk(BIOS_DEBUG, "Detected %lu Kbytes (%lu MiB) RAM.\n",
 	       tomk, tomk / 1024);
 
@@ -58,8 +60,10 @@ static void cpu_pci_domain_set_resources(device_t dev)
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
+#if CONFIG_ULINUX
+	ulinux_mmap(high_tables_base, high_tables_size);
 #endif
-
+#endif
 	assign_resources(dev->link_list);
 }
 

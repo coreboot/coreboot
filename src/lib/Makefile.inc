@@ -21,6 +21,7 @@ romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-y += compute_ip_checksum.c
 romstage-y += memmove.c
+romstage-y += serialice/serialice.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 ramstage-y += memset.c

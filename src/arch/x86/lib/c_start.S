@@ -4,6 +4,8 @@
 	.code32
 	.globl _start
 _start:
+
+#if CONFIG_ULINUX == 0
 	cli
 	lgdt	%cs:gdtaddr
 	ljmp	$0x10, $1f
@@ -13,8 +15,8 @@ _start:
 	movl	%eax, %ss
 	movl	%eax, %fs
 	movl	%eax, %gs
-
 	post_code(POST_ENTRY_C_START)		/* post 13 */
+#endif
 
 	/** poison the stack. Code should not count on the
 	 * stack being full of zeros. This stack poisoning
@@ -53,7 +55,7 @@ _start:
 
 	/* Save the stack location */
 	movl	%esp, %ebp
-
+#if CONFIG_ULINUX == 0
 	/* Initialize the Interrupt Descriptor table */
 	leal	_idt, %edi
 	leal	vec0, %ebx
@@ -71,13 +73,13 @@ _start:
 
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
-
 	/*
 	 *	Now we are finished. Memory is up, data is copied and
 	 *	bss is cleared.   Now we call the main routine and
 	 *	let it do the rest.
 	 */
 	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
+#endif
 
 	/* Restore the stack location */
 	movl	%ebp, %esp
@@ -322,3 +324,31 @@ _idt_end:
 
 	.previous
 .code32
+
+#if CONFIG_ULINUX
+	.globl _call_linux
+	/* be paranoid of what registers to preserve for GCC */
+_call_linux:
+	pushl	%ebp
+	movl	%esp, %ebp
+	push	%ebx
+	push	%ecx
+	push	%edx
+	push	%esi
+	push	%edi
+	movl	0x8(%ebp), %eax
+	movl	0xc(%ebp), %ebx
+	movl	0x10(%ebp), %ecx
+	movl	0x14(%ebp), %edx
+	movl	0x18(%ebp), %esi
+	movl	0x1c(%ebp), %edi
+	movl	0x20(%ebp), %ebp
+	int	$0x80
+	popl	%edi
+	popl	%esi
+	popl	%edx
+	popl	%ecx
+	popl	%ebx
+	popl	%ebp
+	ret
+#endif

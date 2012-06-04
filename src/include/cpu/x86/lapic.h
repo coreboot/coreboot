@@ -5,6 +5,10 @@
 #include <cpu/x86/msr.h>
 #include <arch/hlt.h>
 
+#if CONFIG_ULINUX && !defined(__PRE_RAM__)
+#include <serialice_host.h>
+#endif
+
 /* See if I need to initialize the local apic */
 #if CONFIG_SMP || CONFIG_IOAPIC
 #  define NEED_LAPIC 1
@@ -14,12 +18,20 @@
 
 static inline __attribute__((always_inline)) unsigned long lapic_read(unsigned long reg)
 {
+#if CONFIG_ULINUX && !defined(__PRE_RAM__)
+	return serialice_readl((LAPIC_DEFAULT_BASE+reg));
+#else
 	return *((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg));
+#endif
 }
 
 static inline __attribute__((always_inline)) void lapic_write(unsigned long reg, unsigned long v)
 {
+#if CONFIG_ULINUX && !defined(__PRE_RAM__)
+	serialice_writel(v, LAPIC_DEFAULT_BASE+reg);
+#else
 	*((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg)) = v;
+#endif
 }
 
 static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)

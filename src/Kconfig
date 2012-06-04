@@ -194,6 +194,26 @@ config REQUIRES_BLOB
 	  coreboot build for such a board can override this manually, but
 	  this option serves as warning that it might fail.
 
+config ULINUX
+	bool "Compile and run coreboot as Linux userspace process"
+	default n
+	help
+	  This option enables to run coreboot as Linux process which
+	  communicates with hardware using SerialICE.
+
+config ULINUX_VALGRIND
+	bool "Add valgrind instrumentation"
+	default n
+	depends on ULINUX
+	help
+	  This option enables to track heap using valgrind.
+
+config SERIALICE_HOST_DEV
+	string "SerialICE host device"
+	default "/dev/ttyUSB0"
+	depends on ULINUX
+	help
+	  Selects the serial port to which is connected your remote target.
 endmenu
 
 source src/mainboard/Kconfig

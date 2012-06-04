@@ -19,6 +19,7 @@ driver-$(CONFIG_USBDEBUG) += usbdebug_console.c
 driver-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.c
 driver-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
 driver-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+driver-$(CONFIG_ULINUX) += ulinux_console.c
 
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h

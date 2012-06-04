@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <lib.h>
 #include <smbios.h>
+#include <ulinux.h>
 
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
@@ -69,7 +70,12 @@ struct lb_memory *write_tables(void)
 	 * and the coreboot table use low_tables.
 	 */
 	low_table_start = 0;
+#if CONFIG_ULINUX
+	low_table_end = 0x10000;
+	ulinux_mmap(low_table_end, 0x1000);
+#else
 	low_table_end = 0x500;
+#endif
 
 #if CONFIG_GENERATE_PIRQ_TABLE
 #define MAX_PIRQ_TABLE_SIZE (4 * 1024)

@@ -35,6 +35,9 @@ it with the version available from LANL.
 #include <boot/tables.h>
 #include <boot/elf.h>
 #include <cbfs.h>
+#if CONFIG_ULINUX
+#include <ulinux.h>
+#endif
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
@@ -62,6 +65,10 @@ void hardwaremain(int boot_complete)
 	timestamps[0] = rdtsc();
 #endif
 	post_code(POST_ENTRY_RAMSTAGE);
+
+#if CONFIG_ULINUX
+	ulinux_init();
+#endif
 
 	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();
@@ -143,6 +150,10 @@ void hardwaremain(int boot_complete)
 	lb_mem = write_tables();
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
+#if CONFIG_ULINUX
+	printk(BIOS_INFO, "All done, exiting\n");
+	ulinux_exit(0);
+#endif
 	cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
 	printk(BIOS_ERR, "Boot failed.\n");
 }

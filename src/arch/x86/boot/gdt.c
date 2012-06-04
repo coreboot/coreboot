@@ -38,7 +38,9 @@ void move_gdt(void)
 {
 	void *newgdt;
 	u16 num_gdt_bytes = &gdt_end - &gdt;
+#if CONFIG_ULINUX == 0
 	struct gdtarg gdtarg;
+#endif
 
 	newgdt = cbmem_find(CBMEM_ID_GDT);
 	if (!newgdt) {
@@ -50,11 +52,12 @@ void move_gdt(void)
 		printk(BIOS_DEBUG, "Moving GDT to %p...", newgdt);
 		memcpy((void*)newgdt, &gdt, num_gdt_bytes);
 	}
-
+#if CONFIG_ULINUX == 0
 	gdtarg.base = (u32)newgdt;
 	gdtarg.limit = num_gdt_bytes - 1;
 
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
+#endif
 	printk(BIOS_DEBUG, "ok\n");
 }
 

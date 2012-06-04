@@ -61,8 +61,15 @@ subdirs-y += site-local
 # Add source classes and their build options
 classes-y := ramstage romstage driver smm
 
-romstage-c-ccopts:=-D__PRE_RAM__
+
+ifeq ($(CONFIG_ULINUX),y)
+stack_opt := -fomit-frame-pointer
+ramstage-c-ccopts:= -fstack-protector-all
+endif
+
+romstage-c-ccopts:=-D__PRE_RAM__ $(stack_opt)
 romstage-S-ccopts:=-D__PRE_RAM__
+
 ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
@@ -163,7 +170,14 @@ CFLAGS += -Wstrict-aliasing -Wshadow
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS += -Werror
 endif
+
+ifeq ($(CONFIG_ULINUX),n)
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
+endif
+
+ifeq ($(CONFIG_ULINUX),y)
+CFLAGS += -fno-common -ffreestanding -fno-builtin
+endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options
 

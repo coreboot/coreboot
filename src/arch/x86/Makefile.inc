@@ -208,7 +208,12 @@ else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
+ifeq ($(CONFIG_ULINUX),y)
+	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -fomit-frame-pointer -I$(src) -I. -I$(obj) -c -S $< -o $@
+endif
+ifeq ($(CONFIG_ULINUX),n)
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
 	@printf "    POST       romstage.inc\n"

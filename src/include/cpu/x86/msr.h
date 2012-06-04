@@ -16,7 +16,7 @@ static void wrmsr(unsigned long index, msr_t msr)
 }
 
 #else
-
+#include <serialice_host.h>
 typedef struct msr_struct
 {
 	unsigned lo;
@@ -42,21 +42,34 @@ typedef struct msrinit_struct
 static inline __attribute__((always_inline)) msr_t rdmsr(unsigned index)
 {
 	msr_t result;
+#if defined(__PRE_RAM__)
 	__asm__ __volatile__ (
 		"rdmsr"
 		: "=a" (result.lo), "=d" (result.hi)
 		: "c" (index)
 		);
 	return result;
+
+#else
+	int64_t ret =  serialice_rdmsr(index, 0);
+	result.lo = ret & 0xffffffff;
+	result.hi = (ret >> 32) & 0xffffffff;
+	return result;
+#endif
 }
 
 static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t msr)
 {
+
+#if defined(__PRE_RAM__) || CONFIG_ULINUX == 0
 	__asm__ __volatile__ (
 		"wrmsr"
 		: /* No outputs */
 		: "c" (index), "a" (msr.lo), "d" (msr.hi)
 		);
+#else
+     serialice_wrmsr ((((uint64_t) msr.hi) << 32) | msr.lo, index, 0);
+#endif
 }
 
 #endif /* __ROMCC__ */

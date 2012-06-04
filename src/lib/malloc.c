@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <console/console.h>
 
+#if CONFIG_ULINUX_VALGRIND
+#include <valgrind.h>
+#endif
+
 #if CONFIG_DEBUG_MALLOC
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
 #else
@@ -8,7 +12,7 @@
 #endif
 
 extern unsigned char _heap, _eheap;
-static void *free_mem_ptr = &_heap;		/* Start of heap */
+static void *free_mem_ptr = &_heap + 64;		/* Start of heap */
 static void *free_mem_end_ptr = &_eheap;	/* End of heap */
 
 /* We don't restrict the boundary. This is firmware,
@@ -26,9 +30,9 @@ void *memalign(size_t boundary, size_t size)
 		die("Error! memalign: Free_mem_ptr <= 0");
 
 	free_mem_ptr = (void *)ALIGN((unsigned long)free_mem_ptr, boundary);
-
+	VALGRIND_MEMPOOL_ALLOC(&_heap, free_mem_ptr, size);
 	p = free_mem_ptr;
-	free_mem_ptr += size;
+	free_mem_ptr += (size + 8);
 
 	if (free_mem_ptr >= free_mem_end_ptr)
 		die("Error! memalign: Out of memory (free_mem_ptr >= free_mem_end_ptr)");

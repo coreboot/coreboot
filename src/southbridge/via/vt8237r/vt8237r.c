@@ -54,6 +54,7 @@ void writeback(struct device *dev, u16 where, u8 what)
 
 void dump_south(device_t dev)
 {
+#if CONFIG_ULINUX == 0
 	int i, j;
 
 	for (i = 0; i < 256; i += 16) {
@@ -62,6 +63,7 @@ void dump_south(device_t dev)
 			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev, i + j));
 		printk(BIOS_DEBUG, "\n");
 	}
+#endif
 }
 
 static void vt8237r_enable(struct device *dev)

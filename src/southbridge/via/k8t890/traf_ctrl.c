@@ -21,6 +21,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <arch/io.h>
 #include "k8t890.h"
 
 extern unsigned long log2(unsigned long x);
@@ -96,14 +97,13 @@ static void traf_ctrl_enable_generic(struct device *dev)
 	apic = (u32 *)K8T890_APIC_BASE;
 
 	/* Set APIC to FSB transported messages. */
-	apic[0] = 3;
-	data = apic[4];
-	apic[4] = (data & 0xFFFFFE) | 1;
-
+	write32(K8T890_APIC_BASE, 3);
+	data = read32(K8T890_APIC_BASE + 0x10);
+	write32(K8T890_APIC_BASE + 0x10, (data & 0xFFFFFE) | 1);
 	/* Set APIC ID. */
-	apic[0] = 0;
-	data = apic[4];
-	apic[4] = (data & 0xF0FFFF) | (K8T890_APIC_ID << 24);
+	write32(K8T890_APIC_BASE, 0);
+	data = read32(K8T890_APIC_BASE + 0x10);
+	write32(K8T890_APIC_BASE + 0x10, (data & 0xF0FFFF) | (K8T890_APIC_ID << 24));
 }
 
 static void traf_ctrl_enable_k8m890(struct device *dev)

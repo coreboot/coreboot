@@ -35,6 +35,11 @@ static void pcie_common_init(struct device *dev)
 {
 	u8 reg;
 	int i, up;
+#if CONFIG_ULINUX
+	int loops = 2;
+#else
+	int loops = 1000;
+#endif
 
 	/* Disable downstream read cycle retry,
 	 * otherwise the bus scan will hang if no device is plugged in. */
@@ -64,7 +69,7 @@ static void pcie_common_init(struct device *dev)
 
 	/* Wait up to 100ms for link to come up */
 	up = 0;
-	for (i=0; i<1000; i++) {
+	for (i=0; i<loops; i++) {
 		if (pci_read_config16(dev, 0x52) & (1<<13)) {
 			up = 1;
 			break;

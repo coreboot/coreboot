@@ -234,7 +234,7 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-void cpu_initialize(void)
+void cpu_initialize(unsigned int index)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -247,7 +247,7 @@ void cpu_initialize(void)
 
 	info = cpu_info();
 
-	printk(BIOS_INFO, "Initializing CPU #%ld\n", info->index);
+	printk(BIOS_INFO, "Initializing CPU #%d\n", index);
 
 	cpu = info->cpu;
 	if (!cpu) {
@@ -284,7 +284,7 @@ void cpu_initialize(void)
 		cpu->ops->init(cpu);
 	}
 
-	printk(BIOS_INFO, "CPU #%ld initialized\n", info->index);
+	printk(BIOS_INFO, "CPU #%d initialized\n", index);
 
 	return;
 }

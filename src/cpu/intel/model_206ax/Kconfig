@@ -21,10 +21,6 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
-config ENABLE_VMX
-	bool "Enable VMX for virtualization"
-	default n
-
 endif
 
 if CPU_INTEL_MODEL_206AX

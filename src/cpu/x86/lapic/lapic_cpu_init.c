@@ -209,13 +209,14 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
  * for select the stack from assembly language.
  *
  * In addition communicating by variables to the cpu I
- * am starting allows me to veryify it has started before
+ * am starting allows me to verify it has started before
  * start_cpu returns.
  */
 
 static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
-static unsigned last_cpu_index = 0;
+static unsigned int last_cpu_index = 0;
 volatile unsigned long secondary_stack;
+volatile unsigned int secondary_cpu_index;
 void *stacks[CONFIG_MAX_CPUS];
 
 int start_cpu(device_t cpu)
@@ -226,7 +227,7 @@ int start_cpu(device_t cpu)
 	unsigned long stack_base;
 	unsigned long *stack;
 	unsigned long apicid;
-	unsigned long index;
+	unsigned int index;
 	unsigned long count;
 	int i;
 	int result;
@@ -243,7 +244,7 @@ int start_cpu(device_t cpu)
 	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 
 	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
-	printk(BIOS_SPEW, "CPU%ld: stack_base %p, stack_end %p\n", index,
+	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
 		(void *)stack_base, (void *)stack_end);
 	/* poison the stack */
 	for(stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
@@ -254,8 +255,9 @@ int start_cpu(device_t cpu)
 	info->index = index;
 	info->cpu   = cpu;
 
-	/* Advertise the new stack to start_cpu */
+	/* Advertise the new stack and index to start_cpu */
 	secondary_stack = stack_end;
+	secondary_cpu_index = index;
 
 	/* Until the cpu starts up report the cpu is not enabled */
 	cpu->enabled = 0;
@@ -384,7 +386,7 @@ static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Dat
 #endif
 
 /* C entry point of secondary cpus */
-void __attribute__((regparm(0))) secondary_cpu_init(void)
+void __attribute__((regparm(0))) secondary_cpu_init(unsigned int index)
 {
 	atomic_inc(&active_cpus);
 #if CONFIG_SERIAL_CPU_INIT
@@ -401,7 +403,7 @@ void __attribute__((regparm(0))) secondary_cpu_init(void)
 	cr4_val |= (1 << 9 | 1 << 10);
 	writecr4(cr4_val);
 #endif
-	cpu_initialize();
+	cpu_initialize(index);
 #if CONFIG_SERIAL_CPU_INIT
 	spin_unlock(&start_cpu_lock);
 #endif
@@ -537,7 +539,7 @@ void initialize_cpus(struct bus *cpu_bus)
 #endif
 
 	/* Initialize the bootstrap processor */
-	cpu_initialize();
+	cpu_initialize(0);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	#if CONFIG_SERIAL_CPU_INIT

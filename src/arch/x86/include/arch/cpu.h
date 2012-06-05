@@ -160,7 +160,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu);
 
 struct cpu_info {
 	device_t cpu;
-	unsigned long index;
+	unsigned int index;
 };
 
 static inline struct cpu_info *cpu_info(void)

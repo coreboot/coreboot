@@ -16,7 +16,7 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
 
-#if CONFIG_SMP
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -216,15 +216,19 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
 static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
 static unsigned last_cpu_index = 0;
 volatile unsigned long secondary_stack;
+void *stacks[CONFIG_MAX_CPUS];
 
 int start_cpu(device_t cpu)
 {
 	extern unsigned char _estack[];
 	struct cpu_info *info;
 	unsigned long stack_end;
+	unsigned long stack_base;
+	unsigned long *stack;
 	unsigned long apicid;
 	unsigned long index;
 	unsigned long count;
+	int i;
 	int result;
 
 	spin_lock(&start_cpu_lock);
@@ -238,6 +242,13 @@ int start_cpu(device_t cpu)
 	/* Find end of the new processors stack */
 	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 
+	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
+	printk(BIOS_SPEW, "CPU%ld: stack_base %p, stack_end %p\n", index,
+		(void *)stack_base, (void *)stack_end);
+	/* poison the stack */
+	for(stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
+		stack[i/sizeof(*stack)] = 0xDEADBEEF;
+	stacks[index] = stack;
 	/* Record the index and which cpu structure we are using */
 	info = (struct cpu_info *)stack_end;
 	info->index = index;
@@ -440,6 +451,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	device_t cpu;
 	int old_active_count, active_count;
 	long loopcount = 0;
+	int i;
 
 	/* Now loop until the other cpus have finished initializing */
 	old_active_count = 1;
@@ -466,6 +478,21 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
+	for(i = 1; i <= last_cpu_index; i++){
+		unsigned long *stack = stacks[i];
+		int lowest;
+		int maxstack = (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
+					/sizeof(*stack) - 1;
+		if (stack[0] != 0xDEADBEEF)
+			printk(BIOS_ERR, "CPU%d overran its stack\n", i);
+		for(lowest = 0; lowest < maxstack; lowest++)
+			if (stack[lowest] != 0xDEADBEEF)
+				break;
+		printk(BIOS_SPEW, "CPU%d: stack allocated from %p to %p:", i,
+			stack, &stack[maxstack]);
+		printk(BIOS_SPEW, "lowest stack address was %p\n", &stack[lowest]);
+
+	}
 }
 
 #endif /* CONFIG_SMP */
@@ -494,7 +521,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the device structure for the boot cpu */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
-#if CONFIG_SMP
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 
@@ -502,7 +529,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	smm_init();
 #endif
 
-#if CONFIG_SMP
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	#if !CONFIG_SERIAL_CPU_INIT
 	/* start all aps at first, so we can init ECC all together */
 	start_other_cpus(cpu_bus, info->cpu);
@@ -512,7 +539,7 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Initialize the bootstrap processor */
 	cpu_initialize();
 
-#if CONFIG_SMP
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	#if CONFIG_SERIAL_CPU_INIT
 	start_other_cpus(cpu_bus, info->cpu);
 	#endif

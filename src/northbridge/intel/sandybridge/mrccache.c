@@ -118,17 +118,22 @@ struct mrc_data_container *find_current_mrc_cache(void)
 		 * from having no cache area at all
 		 */
 		return mrc_cache;
-	} else {
-		/* Search for the last filled entry in the region */
-		while (is_mrc_cache(mrc_next)) {
-			entry_id++;
-			mrc_cache = mrc_next;
-			mrc_next = next_mrc_block(mrc_cache);
-			/* Stay in the mrc data region */
-			if ((void*)mrc_next >= (void*)(mrc_region + region_size))
-				break;
-		}
-		entry_id--;
+	}
+
+	/* Search for the last filled entry in the region */
+	while (is_mrc_cache(mrc_next)) {
+		entry_id++;
+		mrc_cache = mrc_next;
+		mrc_next = next_mrc_block(mrc_cache);
+		/* Stay in the mrc data region */
+		if ((void*)mrc_next >= (void*)(mrc_region + region_size))
+			break;
+	}
+	entry_id--;
+
+	if (entry_id == -1) {
+		printk(BIOS_ERR, "%s: No valid MRC cache found.\n", __func__);
+		return NULL;
 	}
 
 	/* Verify checksum */
@@ -150,6 +155,7 @@ struct mrc_data_container *find_current_mrc_cache(void)
 #if !defined(__PRE_RAM__)
 void update_mrc_cache(void)
 {
+	printk(BIOS_DEBUG, "Updating MRC cache data.\n");
 	struct mrc_data_container *current = cbmem_find(CBMEM_ID_MRCDATA);
 	if (!current) {
 		printk(BIOS_ERR, "No MRC cache in cbmem. Can't update flash.\n");
@@ -166,12 +172,14 @@ void update_mrc_cache(void)
 	//  0. compare MRC data to last mrc-cache block (exit if same)
 	struct mrc_data_container *cache;
 	if ((cache = find_current_mrc_cache()) == NULL) {
-		printk(BIOS_DEBUG, "Failure looking for current last block\n");
+		printk(BIOS_DEBUG, "Failure looking for current last block.\n");
 		return;
 	}
 
-	if ((cache->mrc_data_size == current->mrc_data_size) && (memcmp(cache, current, cache->mrc_data_size) == 0)) {
-		printk(BIOS_DEBUG, "MRC data in flash is up to date. No update.\n");
+	if ((cache->mrc_data_size == current->mrc_data_size) &&
+			(memcmp(cache, current, cache->mrc_data_size) == 0)) {
+		printk(BIOS_DEBUG,
+			"MRC data in flash is up to date. No update.\n");
 		return;
 	}
 

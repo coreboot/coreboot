@@ -114,8 +114,6 @@ static void set_var_mtrr(
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
-	printk(BIOS_SPEW, "ADDRESS_MASK_HIGH=%#x\n", address_mask_high);
-
 	if (sizek < 4*1024*1024) {
 		mask.hi = address_mask_high;
 		mask.lo = ~((sizek << 10) -1);

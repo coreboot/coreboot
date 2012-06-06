@@ -21,10 +21,6 @@ void *memalign(size_t boundary, size_t size)
 	MALLOCDBG("%s Enter, boundary %zu, size %zu, free_mem_ptr %p\n",
 		__func__, boundary, size, free_mem_ptr);
 
-	/* Overzealous linker check */
-	if (free_mem_ptr <= 0)
-		die("Error! memalign: Free_mem_ptr <= 0");
-
 	free_mem_ptr = (void *)ALIGN((unsigned long)free_mem_ptr, boundary);
 
 	p = free_mem_ptr;

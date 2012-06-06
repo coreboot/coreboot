@@ -280,12 +280,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 	return slave;
 }
 
-void spi_free_slave(struct spi_slave *_slave)
-{
-	ich_spi_slave *slave = (ich_spi_slave *)_slave;
-	free(slave);
-}
-
 /*
  * Check if this device ID matches one of supported Intel PCH devices.
  *

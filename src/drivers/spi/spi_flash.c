@@ -297,12 +297,5 @@ err_manufacturer_probe:
 err_read_id:
 	spi_release_bus(spi);
 err_claim_bus:
-	spi_free_slave(spi);
 	return NULL;
-}
-
-void spi_flash_free(struct spi_flash *flash)
-{
-	spi_free_slave(flash->spi);
-	free(flash);
 }

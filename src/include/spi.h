@@ -84,13 +84,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 		unsigned int max_hz, unsigned int mode);
 
 /*-----------------------------------------------------------------------
- * Free any memory associated with a SPI slave.
- *
- *   slave:	The SPI slave
- */
-void spi_free_slave(struct spi_slave *slave);
-
-/*-----------------------------------------------------------------------
  * Claim the bus and prepare it for communication with a given slave.
  *
  * This must be called before doing any transfers with a SPI slave. It

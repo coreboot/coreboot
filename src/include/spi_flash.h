@@ -68,7 +68,6 @@ struct spi_flash {
 
 struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 		unsigned int max_hz, unsigned int spi_mode);
-void spi_flash_free(struct spi_flash *flash);
 
 static inline int spi_flash_read(struct spi_flash *flash, u32 offset,
 		size_t len, void *buf)

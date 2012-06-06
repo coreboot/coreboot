@@ -49,9 +49,3 @@ void *malloc(size_t size)
 {
 	return memalign(sizeof(u64), size);
 }
-
-void free(void *where)
-{
-	/* Don't care */
-	MALLOCDBG("free %p\n", where);
-}

@@ -1,8 +1,24 @@
 /*
-	2005.12 yhlu add coreboot_ram cross the vga font buffer handling
-	2005.12 yhlu add CONFIG_RAMBASE above 1M support for SMP
-	2008.05 stepan add support for going back to sipi wait state
-*/
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2001 Eric Biederman
+ * Copyright (C) 2001 Ronald G. Minnich
+ * Copyright (C) 2005 Yinghai Lu
+ * Copyright (C) 2008 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <cpu/x86/lapic.h>
 #include <delay.h>
@@ -36,7 +52,7 @@ int  lowmem_backup_size;
 
 extern char _secondary_start[];
 
-static void copy_secondary_start_to_1m_below(void)
+static void copy_secondary_start_to_lowest_1M(void)
 {
 	extern char _secondary_start_end[];
 	unsigned long code_size;
@@ -57,7 +73,8 @@ static void copy_secondary_start_to_1m_below(void)
 	/* copy the _secondary_start to the ram below 1M*/
 	memcpy((unsigned char *)AP_SIPI_VECTOR, (unsigned char *)_secondary_start, code_size);
 
-	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n", (long unsigned int)AP_SIPI_VECTOR, code_size);
+	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n",
+		(long unsigned int)AP_SIPI_VECTOR, code_size);
 }
 
 static int lapic_start_cpu(unsigned long apicid)
@@ -92,14 +109,15 @@ static int lapic_start_cpu(unsigned long apicid)
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk(BIOS_ERR, "CPU %ld: First apic write timed out. Disabling\n",
-			 apicid);
+		printk(BIOS_ERR, "CPU %ld: First APIC write timed out. "
+			"Disabling\n", apicid);
 		// too bad.
 		printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		if (lapic_read(LAPIC_ESR)) {
 			printk(BIOS_ERR, "Try to reset ESR\n");
 			lapic_write_around(LAPIC_ESR, 0);
-			printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
+			printk(BIOS_ERR, "ESR is 0x%lx\n",
+				lapic_read(LAPIC_ESR));
 		}
 		return 0;
 	}
@@ -123,8 +141,8 @@ static int lapic_start_cpu(unsigned long apicid)
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk(BIOS_ERR, "CPU %ld: Second apic write timed out. Disabling\n",
-			 apicid);
+		printk(BIOS_ERR, "CPU %ld: Second apic write timed out. "
+			"Disabling\n", apicid);
 		// too bad.
 		return 0;
 	}
@@ -195,7 +213,8 @@ static int lapic_start_cpu(unsigned long apicid)
 	if (send_status)
 		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
-		printk(BIOS_WARNING, "APIC delivery error (%lx).\n", accept_status);
+		printk(BIOS_WARNING, "APIC delivery error (%lx).\n",
+			accept_status);
 	if (send_status || accept_status)
 		return 0;
 	return 1;
@@ -215,9 +234,9 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
 
 static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
 static unsigned int last_cpu_index = 0;
+static void *stacks[CONFIG_MAX_CPUS];
 volatile unsigned long secondary_stack;
 volatile unsigned int secondary_cpu_index;
-void *stacks[CONFIG_MAX_CPUS];
 
 int start_cpu(device_t cpu)
 {
@@ -234,14 +253,15 @@ int start_cpu(device_t cpu)
 
 	spin_lock(&start_cpu_lock);
 
-	/* Get the cpu's apicid */
+	/* Get the CPU's apicid */
 	apicid = cpu->path.apic.apic_id;
 
 	/* Get an index for the new processor */
 	index = ++last_cpu_index;
 
-	/* Find end of the new processors stack */
-	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
+	/* Find end of the new processor's stack */
+	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) -
+			sizeof(struct cpu_info);
 
 	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
 	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
@@ -250,7 +270,7 @@ int start_cpu(device_t cpu)
 	for(stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
 		stack[i/sizeof(*stack)] = 0xDEADBEEF;
 	stacks[index] = stack;
-	/* Record the index and which cpu structure we are using */
+	/* Record the index and which CPU structure we are using */
 	info = (struct cpu_info *)stack_end;
 	info->index = index;
 	info->cpu   = cpu;
@@ -259,7 +279,7 @@ int start_cpu(device_t cpu)
 	secondary_stack = stack_end;
 	secondary_cpu_index = index;
 
-	/* Until the cpu starts up report the cpu is not enabled */
+	/* Until the CPU starts up report the CPU is not enabled */
 	cpu->enabled = 0;
 	cpu->initialized = 0;
 
@@ -285,7 +305,8 @@ int start_cpu(device_t cpu)
 #if CONFIG_AP_IN_SIPI_WAIT
 
 /**
- * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of delay.
+ * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of
+ * delay.
  * An undefined number of instruction cycles will complete. All global locks
  * must be released before INIT IPI and no printk is allowed after this.
  * De-asserting INIT IPI is a no-op on later Intel CPUs.
@@ -314,7 +335,8 @@ void stop_this_cpu(void)
 
 	/* send an LAPIC INIT to myself */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT);
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG |
+				LAPIC_INT_ASSERT | LAPIC_DM_INIT);
 
 	/* wait for the ipi send to finish */
 #if DEBUG_HALT_SELF
@@ -460,7 +482,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	active_count = atomic_read(&active_cpus);
 	while(active_count > 1) {
 		if (active_count != old_active_count) {
-			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n", active_count - 1);
+			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n",
+				active_count - 1);
 			old_active_count = active_count;
 		}
 		udelay(10);
@@ -492,8 +515,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 				break;
 		printk(BIOS_SPEW, "CPU%d: stack allocated from %p to %p:", i,
 			stack, &stack[maxstack]);
-		printk(BIOS_SPEW, "lowest stack address was %p\n", &stack[lowest]);
-
+		printk(BIOS_SPEW, "lowest stack address was %p\n",
+			&stack[lowest]);
 	}
 }
 
@@ -524,7 +547,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
+	// why here? In case some day we can start core1 in amd_sibling_init
+	copy_secondary_start_to_lowest_1M();
 #endif
 
 #if CONFIG_HAVE_SMI_HANDLER
@@ -550,4 +574,3 @@ void initialize_cpus(struct bus *cpu_bus)
 	wait_other_cpus_stop(cpu_bus);
 #endif
 }
-

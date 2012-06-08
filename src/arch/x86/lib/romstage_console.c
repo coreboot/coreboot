@@ -29,7 +29,7 @@
 #include <console/ne2k.h>
 #endif
 
-static void console_tx_byte(unsigned char byte)
+void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
 		console_tx_byte('\r');

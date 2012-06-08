@@ -30,7 +30,8 @@
 #ifndef PEI_DATA_H
 #define PEI_DATA_H
 
-#define PEI_VERSION 1
+typedef void (*tx_byte_func)(unsigned char byte);
+#define PEI_VERSION 2
 struct pei_data
 {
 	uint32_t pei_version;
@@ -93,6 +94,7 @@ struct pei_data
 	 * spd_address for a given "DIMM".
 	 */
 	uint8_t spd_data[4][256];
+	tx_byte_func tx_byte;
 } __attribute__((packed));
 
 #endif

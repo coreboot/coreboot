@@ -64,6 +64,7 @@ extern int console_loglevel;
  * we could use the same code on all architectures.
  */
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
+void console_tx_byte(unsigned char byte);
 #endif
 
 #ifndef __ROMCC__

@@ -34,7 +34,7 @@ static int set_timer_fsb(void)
 {
 	struct cpuinfo_x86 c;
 	int core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
-	int core2_fsb[8] = { 266, 133, 200, 166, -1, 100, -1, -1 };
+	int core2_fsb[8] = { 266, 133, 200, 166, 333, 100, -1, -1 };
 
 	get_fms(&c, cpuid_eax(1));
 	if (c.x86 != 6)
@@ -45,7 +45,7 @@ static int set_timer_fsb(void)
 	case 0x1c: /* Atom */
 		timer_fsb = core_fsb[rdmsr(0xcd).lo & 7];
 		break;
-	case 0xf:  /* Core 2*/
+	case 0xf:  /* Core 2 or Xeon */
 	case 0x17: /* Enhanced Core */
 		timer_fsb = core2_fsb[rdmsr(0xcd).lo & 7];
 		break;

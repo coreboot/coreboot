@@ -621,7 +621,7 @@ static int intel_mei_setup(device_t dev)
 static int intel_me_extend_valid(device_t dev)
 {
 	struct me_heres status;
-	u32 extend[] = {0};
+	u32 extend[8] = {0};
 	int i, count = 0;
 
 	pci_read_dword_ptr(dev, &status, PCI_ME_HERES);

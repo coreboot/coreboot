@@ -357,7 +357,7 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 }
 
 /* Send END OF POST message to the ME */
-int mkhi_end_of_post(void)
+static int mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -457,8 +457,9 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 }
 #endif
 
+#if CONFIG_CHROMEOS && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
-int mkhi_global_reset(void)
+static int mkhi_global_reset(void)
 {
 	struct me_global_reset reset = {
 		.request_origin	= GLOBAL_RESET_BIOS_POST,
@@ -486,10 +487,11 @@ int mkhi_global_reset(void)
 	printk(BIOS_ERR, "ME: Global Reset failed\n");
 	return -1;
 }
+#endif
 
 #ifdef __SMM__
 
-void intel_me_finalize_smm(void)
+void intel_me8_finalize_smm(void)
 {
 	struct me_hfs hfs;
 	u32 reg32;

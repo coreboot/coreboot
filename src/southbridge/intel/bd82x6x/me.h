@@ -248,14 +248,11 @@ void intel_early_me_status(void);
 int intel_early_me_init(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
-#else
-/* ME Kernel Host Interface Messages */
-int mkhi_end_of_post(void);
-int mkhi_global_reset(void);
 #endif
 
 #ifdef __SMM__
 void intel_me_finalize_smm(void);
+void intel_me8_finalize_smm(void);
 #endif
 typedef struct {
 	u32       major_version  : 16;

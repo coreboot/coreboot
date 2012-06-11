@@ -36,7 +36,9 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar_reg;
 	int max_buses;
 
-	dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_NB, 0);
+	dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_SB, 0);
+	if (!dev)
+		dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_IB, 0);
 	if (!dev)
 		return current;
 

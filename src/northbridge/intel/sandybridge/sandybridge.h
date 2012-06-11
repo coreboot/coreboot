@@ -199,12 +199,8 @@ struct ied_header {
 	u8 reserved[34];
 } __attribute__ ((packed));
 
-#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE
-#define PCI_DEVICE_ID_NB 0x0104
-#endif
-#if CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
-#define PCI_DEVICE_ID_NB 0x0154
-#endif
+#define PCI_DEVICE_ID_SB 0x0104
+#define PCI_DEVICE_ID_IB 0x0154
 
 #ifdef __SMM__
 void intel_sandybridge_finalize_smm(void);

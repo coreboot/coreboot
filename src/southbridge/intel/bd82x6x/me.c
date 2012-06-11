@@ -353,8 +353,9 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
+#ifdef __SMM__
 /* Send END OF POST message to the ME */
-int mkhi_end_of_post(void)
+static int mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -376,6 +377,7 @@ int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful\n");
 	return 0;
 }
+#endif
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 /* Get ME firmware version */
@@ -460,6 +462,7 @@ static int mkhi_get_fwcaps(void)
 }
 #endif
 
+#if CONFIG_CHROMEOS && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
 int mkhi_global_reset(void)
 {
@@ -490,10 +493,10 @@ int mkhi_global_reset(void)
 	printk(BIOS_ERR, "ME: Global Reset failed\n");
 	return -1;
 }
+#endif
 
 #ifdef __SMM__
-
-void intel_me_finalize_smm(void)
+static void intel_me7_finalize_smm(void)
 {
 	struct me_hfs hfs;
 	u32 reg32;
@@ -528,6 +531,20 @@ void intel_me_finalize_smm(void)
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 }
 
+void intel_me_finalize_smm(void)
+{
+	u32 did = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
+	switch (did) {
+	case 0x80861c3a:
+		intel_me7_finalize_smm();
+		break;
+	case 0x80861e3a:
+		intel_me8_finalize_smm();
+		break;
+	default:
+		printk(BIOS_ERR, "No finalize handler for ME %08x.\n", did);
+	}
+}
 #else /* !__SMM__ */
 
 /* Determine the path that we should take based on ME status */

@@ -49,6 +49,7 @@
 
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
 #ifndef __SMM__
@@ -622,7 +623,7 @@ static int intel_mei_setup(device_t dev)
 static int intel_me_extend_valid(device_t dev)
 {
 	struct me_heres status;
-	u32 extend;
+	u32 extend[8] = {0};
 	int i, count = 0;
 
 	pci_read_dword_ptr(dev, &status, PCI_ME_HERES);
@@ -651,15 +652,16 @@ static int intel_me_extend_valid(device_t dev)
 		return -1;
 	}
 
-	/*
-	 * TODO(dlaurie) Verify the hash against a saved good value.
-	 */
-
 	for (i = 0; i < count; ++i) {
-		extend = pci_read_config32(dev, PCI_ME_HER(i));
-		printk(BIOS_DEBUG, "%08x", extend);
+		extend[i] = pci_read_config32(dev, PCI_ME_HER(i));
+		printk(BIOS_DEBUG, "%08x", extend[i]);
 	}
 	printk(BIOS_DEBUG, "\n");
+
+#if CONFIG_CHROMEOS
+	/* Save hash in NVS for the OS to verify */
+	chromeos_set_me_hash(extend, count);
+#endif
 
 	return 0;
 }

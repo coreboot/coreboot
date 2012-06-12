@@ -21,7 +21,7 @@
 
 #ifndef __LIB_H__
 #define __LIB_H__
-
+#include <stdint.h>
 #ifndef __ROMCC__ /* romcc doesn't support prototypes. */
 
 #ifndef __PRE_RAM__ /* Conflicts with romcc_io.h */
@@ -39,6 +39,12 @@ void move_gdt(void);
 void ram_check(unsigned long start, unsigned long stop);
 int ram_check_nodie(unsigned long start, unsigned long stop);
 void quick_ram_check(void);
+
+/* Defined in src/lib/stack.c */
+int checkstack(void *top_of_stack, int stacksize);
+
+/* currently defined by a ldscript */
+extern u8 _estack;
 
 /* Defined in romstage.c */
 #if CONFIG_CPU_AMD_GEODE_LX

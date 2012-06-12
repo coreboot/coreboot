@@ -39,6 +39,7 @@ ramstage-y += version.c
 ramstage-y += cbfs.c
 ramstage-y += lzma.c
 #ramstage-y += lzmadecode.c
+ramstage-y += stack.c
 ramstage-y += gcc.c
 ramstage-y += clog2.c
 ramstage-y += cbmem.c

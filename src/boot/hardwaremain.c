@@ -35,6 +35,7 @@ it with the version available from LANL.
 #include <boot/tables.h>
 #include <boot/elf.h>
 #include <cbfs.h>
+#include <lib.h>
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
@@ -143,7 +144,19 @@ void hardwaremain(int boot_complete)
 	lb_mem = write_tables();
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
-	cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
-	printk(BIOS_ERR, "Boot failed.\n");
+
+	void *payload;
+	payload = cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
+	if (! payload)
+		die("Could not find a payload\n");
+
+	printk(BIOS_DEBUG, "Got a payload\n");
+	/* Before we go off to run the payload, see if
+	 * we stayed within our bounds.
+	 */
+	checkstack(&_estack, 0);
+
+	selfboot(lb_mem, payload);
+	printk(BIOS_EMERG, "Boot failed");
 }
 

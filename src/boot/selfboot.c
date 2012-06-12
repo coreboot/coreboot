@@ -494,7 +494,7 @@ static int load_self_segments(
 	return 1;
 }
 
-static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
+int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 {
 	u32 entry=0;
 	struct segment head;
@@ -532,13 +532,7 @@ void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 	struct cbfs_payload *payload;
 
 	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
-	if (payload == NULL)
-		return (void *) -1;
-	printk(BIOS_DEBUG, "Got a payload\n");
 
-	selfboot(lb_mem, payload);
-	printk(BIOS_EMERG, "SELFBOOT RETURNED!\n");
-
-	return (void *) -1;
+	return payload;
 }
 

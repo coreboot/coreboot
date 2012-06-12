@@ -57,5 +57,6 @@ void *cbfs_load_stage(const char *name);
 int cbfs_execute_stage(const char *name);
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
 int run_address(void *f);
+int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
 #endif
 

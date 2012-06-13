@@ -533,7 +533,7 @@ static void intel_me7_finalize_smm(void)
 
 void intel_me_finalize_smm(void)
 {
-	u32 did = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
+	u32 did = pcie_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
 	switch (did) {
 	case 0x80861c3a:
 		intel_me7_finalize_smm();

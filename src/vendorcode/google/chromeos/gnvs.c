@@ -23,7 +23,7 @@
 #include <console/console.h>
 #include "gnvs.h"
 
-chromeos_acpi_t *vboot_data;
+chromeos_acpi_t *vboot_data = NULL;
 static u32 me_hash_saved[8];
 
 void chromeos_init_vboot(chromeos_acpi_t *chromeos)
@@ -41,7 +41,14 @@ void chromeos_set_me_hash(u32 *hash, int len)
 
 	/* Copy to NVS or save until it is ready */
 	if (vboot_data)
+		/* This does never happen! */
 		memcpy(vboot_data->mehh, hash, len*sizeof(u32));
 	else
 		memcpy(me_hash_saved, hash, len*sizeof(u32));
+}
+
+void acpi_get_vdat_info(void **vdat_addr, uint32_t *vdat_size)
+{
+	*vdat_addr = vboot_data;
+	*vdat_size = sizeof(*vboot_data);
 }

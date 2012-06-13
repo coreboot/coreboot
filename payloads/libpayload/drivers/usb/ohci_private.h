@@ -215,11 +215,11 @@
 #define ED_TOGGLE 2
 
 #define ED_FUNC_SHIFT 0
-#define ED_FUNC_MASK MASK(7, 0)
+#define ED_FUNC_MASK MASK(0, 7)
 #define ED_EP_SHIFT 7
-#define ED_EP_MASK MASK(4, 7)
+#define ED_EP_MASK MASK(7, 4)
 #define ED_DIR_SHIFT 11
-#define ED_DIR_MASK MASK(2, 11)
+#define ED_DIR_MASK MASK(11, 2)
 #define ED_LOWSPEED (1 << 13)
 #define ED_MPS_SHIFT 16
 
@@ -230,7 +230,7 @@
 		u32 buffer_end;
 	} __attribute__ ((packed)) td_t;
 #define TD_DIRECTION_SHIFT 19
-#define TD_DIRECTION_MASK MASK(2, TD_DIRECTION_SHIFT)
+#define TD_DIRECTION_MASK MASK(TD_DIRECTION_SHIFT, 2)
 #define TD_DIRECTION_SETUP OHCI_SETUP << TD_DIRECTION_SHIFT
 #define TD_DIRECTION_IN OHCI_IN << TD_DIRECTION_SHIFT
 #define TD_DIRECTION_OUT OHCI_OUT << TD_DIRECTION_SHIFT
@@ -240,7 +240,7 @@
 #define TD_TOGGLE_FROM_ED 0
 #define TD_TOGGLE_FROM_TD (1 << 25)
 #define TD_CC_SHIFT 28
-#define TD_CC_MASK MASK(4, TD_CC_SHIFT)
+#define TD_CC_MASK MASK(TD_CC_SHIFT, 4)
 #define TD_CC_NOERR 0
 #define TD_CC_NOACCESS (14 << TD_CC_SHIFT) /* the lower of the two values, so "no access" can be tested with >= */
 

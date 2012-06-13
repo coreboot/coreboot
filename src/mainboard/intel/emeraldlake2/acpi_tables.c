@@ -318,11 +318,3 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
-
-#if CONFIG_CHROMEOS
-void acpi_get_vdat_info(void **vdat_addr, uint32_t *vdat_size)
-{
-	*vdat_addr = &gnvs_->chromeos.vdat;
-	*vdat_size = sizeof(gnvs_->chromeos.vdat);
-}
-#endif

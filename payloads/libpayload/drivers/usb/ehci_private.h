@@ -132,6 +132,7 @@ typedef volatile struct {
 typedef struct ehci {
 	hc_cap_t *capabilities;
 	hc_op_t *operation;
+	ehci_qh_t *dummy_qh;
 } ehci_t;
 
 #define PS_TERMINATE 1

@@ -83,6 +83,9 @@ static void ehci_shutdown (hci_t *controller)
 	/* Free periodic frame list */
 	free(phys_to_virt(EHCI_INST(controller)->operation->periodiclistbase));
 
+	/* Free dummy QH */
+	free(EHCI_INST(controller)->dummy_qh);
+
 	EHCI_INST(controller)->operation->configflag = 0;
 }
 
@@ -521,9 +524,11 @@ static void *ehci_create_intr_queue(
 	int nothing_placed = 1;
 	u32 *const ps = (u32 *)phys_to_virt(EHCI_INST(ep->dev->controller)
 						->operation->periodiclistbase);
+	const u32 dummy_ptr = virt_to_phys(EHCI_INST(
+				ep->dev->controller)->dummy_qh) | PS_TYPE_QH;
 	for (i = 0; i < 1024; i += reqtiming) {
 		/* advance to the next free position */
-		while ((i < 1024) && !(ps[i] & PS_TERMINATE)) ++i;
+		while ((i < 1024) && (ps[i] != dummy_ptr)) ++i;
 		if (i < 1024) {
 			ps[i] =	virt_to_phys(&intrq->qh) | PS_TYPE_QH;
 			nothing_placed = 0;
@@ -547,9 +552,11 @@ static void ehci_destroy_intr_queue(endpoint_t *const ep, void *const queue)
 	int i;
 	u32 *const ps = (u32 *)phys_to_virt(EHCI_INST(
 			ep->dev->controller)->operation->periodiclistbase);
+	const u32 dummy_ptr = virt_to_phys(EHCI_INST(
+				ep->dev->controller)->dummy_qh) | PS_TYPE_QH;
 	for (i = 0; i < 1024; ++i) {
 		if ((ps[i] & PS_PTR_MASK) == virt_to_phys(&intrq->qh))
-			ps[i] = PS_TERMINATE;
+			ps[i] = dummy_ptr;
 	}
 
 	/* wait 1ms for frame to end */
@@ -660,8 +667,19 @@ ehci_init (pcidev_t addr)
 	u32 *const periodic_list = (u32 *)memalign(4096, 1024 * sizeof(u32));
 	if (!periodic_list)
 		fatal("Not enough memory creating EHCI periodic frame list.\n");
+
+	/*
+	 * Insert dummy QH in periodic frame list
+	 * This helps with broken host controllers
+	 * and doesn't violate the standard.
+	 */
+	EHCI_INST(controller)->dummy_qh = (ehci_qh_t *)memalign(32, sizeof(ehci_qh_t));
+	memset(EHCI_INST(controller)->dummy_qh, 0,
+		sizeof(*EHCI_INST(controller)->dummy_qh));
+	EHCI_INST(controller)->dummy_qh->horiz_link_ptr = QH_TERMINATE;
 	for (i = 0; i < 1024; ++i)
-		periodic_list[i] = PS_TERMINATE;
+		periodic_list[i] = virt_to_phys(EHCI_INST(controller)->dummy_qh)
+				   | PS_TYPE_QH;
 
 	/* Make sure periodic schedule is disabled */
 	ehci_set_periodic_schedule(EHCI_INST(controller), 0);

@@ -19,7 +19,7 @@
  */
 
 SECTIONS {
-	. = (0x100000000 - 0x2c) - (__romstrap_end - __romstrap_start);
+	. = (0xffffffff - 0x2c) - (__romstrap_end - __romstrap_start) + 1;
 	.romstrap (.): {
 		*(.romstrap)
 	}

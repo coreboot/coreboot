@@ -112,8 +112,10 @@ ramtest:
 	jmp 3b
 5:
 	CONSOLE_INFO_TX_STRING($rt_toomany)
+#if CONFIG_ROMCC
 	post_code(0xf1)
 	jmp	.Lhlt
+#endif
 
 6:
 	CONSOLE_INFO_TX_STRING($rt_done)

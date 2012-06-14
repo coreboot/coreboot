@@ -410,6 +410,7 @@ typedef struct {
 	volatile ehci_qh_t	qh;
 	intr_qtd_t		*head;
 	intr_qtd_t		*tail;
+	intr_qtd_t		*spare;
 	u8			*data;
 	endpoint_t		*endp;
 	int			reqsize;
@@ -466,7 +467,11 @@ static void *ehci_create_intr_queue(
 
 	intr_queue_t *const intrq =
 		(intr_queue_t *)memalign(32, sizeof(intr_queue_t));
-	u8 *data = (u8 *)malloc(reqsize * reqcount);
+	/*
+	 * reqcount data chunks
+	 * plus one more spare, which we'll leave out of queue
+	 */
+	u8 *data = (u8 *)malloc(reqsize * (reqcount + 1));
 	if (!intrq || !data)
 		fatal("Not enough memory to create USB interrupt queue.\n");
 	intrq->data = data;
@@ -489,6 +494,10 @@ static void *ehci_create_intr_queue(
 		}
 	}
 	intrq->tail = cur_td;
+
+	/* create spare qTD */
+	intrq->spare = (intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+	fill_intr_queue_td(intrq, intrq->spare, data);
 
 	/* initialize QH */
 	const int endp = ep->endpoint & 0xf;
@@ -558,6 +567,7 @@ static void ehci_destroy_intr_queue(endpoint_t *const ep, void *const queue)
 		/* free current interrupt qTD */
 		free(to_free);
 	}
+	free(intrq->spare);
 	free(intrq->data);
 	free(intrq);
 }
@@ -569,9 +579,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 	u8 *ret = NULL;
 
 	/* process if head qTD is inactive AND QH has been moved forward */
-	if (!(intrq->head->td.token & QTD_ACTIVE) &&
-			(intrq->qh.current_td_ptr !=
-			 virt_to_phys(&intrq->head->td))) {
+	if (!(intrq->head->td.token & QTD_ACTIVE)) {
 		if (!(intrq->head->td.token & QTD_STATUS_MASK))
 			ret = intrq->head->data;
 		else
@@ -579,18 +587,21 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 				"status == 0x%02x\n",
 				intrq->head->td.token & QTD_STATUS_MASK);
 
-		/* save and advance our head ptr */
-		intr_qtd_t *const new_td = intrq->head;
-		intrq->head = intrq->head->next;
-
-		/* reuse executed qTD */
-		fill_intr_queue_td(intrq, new_td, new_td->data);
-
-		/* at last insert reused qTD at the
-		 * end and advance our tail ptr */
-		intrq->tail->td.next_qtd = virt_to_phys(&new_td->td);
-		intrq->tail->next = new_td;
+		/* insert spare qTD at the end and advance our tail ptr */
+		fill_intr_queue_td(intrq, intrq->spare, intrq->spare->data);
+		intrq->tail->td.next_qtd = virt_to_phys(&intrq->spare->td);
+		intrq->tail->next = intrq->spare;
 		intrq->tail = intrq->tail->next;
+
+		/* reuse executed qTD as spare one and advance our head ptr */
+		intrq->spare = intrq->head;
+		intrq->head = intrq->head->next;
+	}
+	/* reset queue if we fully processed it after underrun */
+	else if (intrq->qh.td.next_qtd & QTD_TERMINATE) {
+		debug("resetting underrun ehci interrupt queue.\n");
+		memset(&intrq->qh.td, 0, sizeof(intrq->qh.td));
+		intrq->qh.td.next_qtd = virt_to_phys(&intrq->head->td);
 	}
 	return ret;
 }

@@ -50,6 +50,7 @@
 #include "southbridge/amd/sb700/sb700.h"
 #include "southbridge/amd/sb700/smbus.h"
 #include "northbridge/amd/amdfam10/debug.c"
+#include "arch/llshell.h"
 
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
@@ -221,6 +222,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb7xx_51xx_before_pci_init();
 
 	post_code(0x42);
+
+#if CONFIG_LLSHELL
+       llshell();
+#endif
+
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }

@@ -772,7 +772,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config32(ctrl->f0, DRC, drc);
 
 	/* The memory is now set up--use it */
-	cache_lbmem(MTRR_TYPE_WRBACK);
+	cache_ramstage();
 }
 
 static inline int memory_initialized(void)

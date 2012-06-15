@@ -1198,6 +1198,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* The memory is now setup, use it */
 #if !CONFIG_CACHE_AS_RAM
-	cache_lbmem(MTRR_TYPE_WRBACK);
+	cache_ramstage();
 #endif
 }

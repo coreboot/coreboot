@@ -21,11 +21,11 @@ static void set_var_mtrr(
 }
 
 #if !defined(CONFIG_CACHE_AS_RAM) || !CONFIG_CACHE_AS_RAM
-static void cache_lbmem(int type)
+static void cache_ramstage(void)
 {
-	/* Enable caching for 0 - 1MB using variable mtrr */
+	/* Enable caching for lower 1MB and ram stage using variable mtrr */
 	disable_cache();
-	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, type);
+	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 	enable_cache();
 }
 

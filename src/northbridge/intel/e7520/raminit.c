@@ -1334,5 +1334,5 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config16(PCI_DEV(0, 0x00, 0), MCHSCRB, data16);
 
 	/* The memory is now setup, use it */
-	cache_lbmem(MTRR_TYPE_WRBACK);
+	cache_ramstage();
 }

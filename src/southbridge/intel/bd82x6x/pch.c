@@ -297,6 +297,8 @@ static void pch_pcie_enable(device_t dev)
 	}
 
 	if (!dev->enabled) {
+		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+
 		/*
 		 * PCIE Power Savings for PantherPoint and CougarPoint/B1+
 		 *

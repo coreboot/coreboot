@@ -2,7 +2,7 @@
 #include <cpu/x86/lapic_def.h>
 
 	.text
-	.globl _secondary_start, _secondary_start_end
+	.globl _secondary_start, _secondary_start_end, apcount
 	.balign 4096
 _secondary_start:
 	.code16
@@ -38,10 +38,19 @@ _secondary_start:
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
 
-	/* Set the stack pointer, and flag that we are done */
-	xorl	%eax, %eax
-	movl	secondary_stack, %esp
-	movl	%eax, secondary_stack
+apcount:
+	.long 0
+
+	/* increment our cpu index */
+	movl $1, %eax
+	lock xadd %eax, apcount
+	incl	%eax
+
+	/* assign stack for this specific cpu */
+	mov	_stack, %esp
+	mov	$CONFIG_STACK_SIZE, %ebx
+	mul	%ebx
+	add	%eax, %esp
 
 	call	secondary_cpu_init
 1:	hlt

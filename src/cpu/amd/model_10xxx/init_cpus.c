@@ -241,7 +241,8 @@ static void STOP_CAR_AND_CPU(void)
 
 	disable_cache_as_ram();	// inline
 	/* stop all cores except node0/core0 the bsp .... */
-	stop_this_cpu();
+	for(;;)
+		hlt();
 }
 
 #if CONFIG_RAMINIT_SYSINFO

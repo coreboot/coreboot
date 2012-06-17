@@ -9,6 +9,7 @@
 #include <device/path.h>
 #include <device/device.h>
 #include <smp/spinlock.h>
+#include <cpu/x86/lapic.h>
 
 /* Standard macro to see if a specific flag is changeable */
 static inline int flag_is_changeable_p(uint32_t flag)
@@ -234,7 +235,11 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-void cpu_initialize(void)
+#if CONFIG_SMP
+static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
+#endif
+
+void cpu_initialize(struct bus *cpu_bus)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -242,17 +247,23 @@ void cpu_initialize(void)
 	 * disabled.
 	 */
 	struct device *cpu;
-	struct cpu_info *info;
 	struct cpuinfo_x86 c;
+	struct device_path cpu_path;
+	static int cpu_index;
+	unsigned char id = lapicid();
 
-	info = cpu_info();
+	cpu_path.type = DEVICE_PATH_APIC;
+	cpu_path.apic.apic_id = id;
 
-	printk(BIOS_INFO, "Initializing CPU #%ld\n", info->index);
-
-	cpu = info->cpu;
-	if (!cpu) {
-		die("CPU: missing cpu device structure");
-	}
+#if CONFIG_SMP
+	spin_lock(&start_cpu_lock);
+#endif
+	cpu_path.apic.index = cpu_index++;
+	cpu = alloc_find_dev(cpu_bus, &cpu_path);
+#if CONFIG_SMP
+	spin_unlock(&start_cpu_lock);
+#endif
+	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
 
 	/* Find what type of cpu we are dealing with */
 	identify_cpu(cpu);
@@ -276,7 +287,6 @@ void cpu_initialize(void)
 		printk(BIOS_DEBUG, "Using generic cpu ops (good)\n");
 	}
 
-
 	/* Initialize the cpu */
 	if (cpu->ops && cpu->ops->init) {
 		cpu->enabled = 1;
@@ -284,7 +294,7 @@ void cpu_initialize(void)
 		cpu->ops->init(cpu);
 	}
 
-	printk(BIOS_INFO, "CPU #%ld initialized\n", info->index);
+	printk(BIOS_INFO, "CPU #%d initialized\n", id);
 
 	return;
 }

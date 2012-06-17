@@ -38,10 +38,33 @@ _secondary_start:
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
 
-	/* Set the stack pointer, and flag that we are done */
-	xorl	%eax, %eax
-	movl	secondary_stack, %esp
-	movl	%eax, secondary_stack
+lock:
+	.long 0
+
+cpu:
+	.long 0
+
+locked:
+	/* grab lock */
+	mov $1, %eax
+	xchg lock, %eax
+	test %eax, %eax
+	jnz locked
+
+	/* increment our cpu index */
+	incl cpu
+
+	/* assign stack for this specific cpu */
+	mov	_stack, %esp
+	mov	cpu, %eax
+	incl	%eax
+	mov	$CONFIG_STACK_SIZE, %ebx
+	mul	%ebx
+	add	%eax, %esp
+
+	/* release lock */
+        xor	 %eax, %eax
+	xchg	lock, %eax
 
 	call	secondary_cpu_init
 1:	hlt

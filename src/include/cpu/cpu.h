@@ -3,8 +3,9 @@
 
 #include <arch/cpu.h>
 
+struct bus;
 #if !defined(__ROMCC__)
-void cpu_initialize(void);
+void cpu_initialize(struct bus *cpu_bus);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void secondary_cpu_init(void);

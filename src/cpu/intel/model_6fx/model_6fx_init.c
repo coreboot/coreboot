@@ -243,9 +243,6 @@ static void model_6fx_init(device_t cpu)
 
 	/* PIC thermal sensor control */
 	configure_pic_thermal_sensors();
-
-	/* Start up my cpu siblings */
-	intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -52,20 +52,13 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 }
 
 #ifndef __ROMCC__
-#if CONFIG_AP_IN_SIPI_WAIT != 1
-/* If we need to go back to sipi wait, we use the long non-inlined version of
- * this function in lapic_cpu_init.c
- */
 static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
-	/* Called by an AP when it is ready to halt and wait for a new task */
-	for(;;) {
-		hlt();
-	}
+       /* Called by an AP when it is ready to halt and wait for a new task */
+       for(;;) {
+               hlt();
+       }
 }
-#else
-void stop_this_cpu(void);
-#endif
 
 #if !defined(__PRE_RAM__)
 

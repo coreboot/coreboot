@@ -7,7 +7,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
-#include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 
 static uint32_t microcode_updates[] = {
@@ -39,9 +38,6 @@ static void model_f3x_init(device_t cpu)
 
 	/* Enable the local cpu apics */
 	setup_lapic();
-
-	/* Start up my cpu siblings */
-	intel_sibling_init(cpu);
 };
 
 static struct device_operations cpu_dev_ops = {

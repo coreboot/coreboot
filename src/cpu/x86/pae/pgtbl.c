@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/pae.h>
+#include <cpu/x86/lapic.h>
 #include <string.h>
 
 static void paging_off(void)
@@ -60,7 +61,7 @@ void *map_2M_page(unsigned long page)
 	unsigned long window;
 	void *result;
 	int i;
-	index = cpu_index();
+	index = lapicid();
 	if ((index < 0) || (index >= CONFIG_MAX_CPUS)) {
 		return MAPPING_ERROR;
 	}

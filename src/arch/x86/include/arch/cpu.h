@@ -158,30 +158,6 @@ struct cpu_driver {
 struct device;
 struct cpu_driver *find_cpu_driver(struct device *cpu);
 
-struct cpu_info {
-	device_t cpu;
-	unsigned long index;
-};
-
-static inline struct cpu_info *cpu_info(void)
-{
-	struct cpu_info *ci;
-	__asm__("andl %%esp,%0; "
-		"orl  %2, %0 "
-		:"=r" (ci)
-		: "0" (~(CONFIG_STACK_SIZE - 1)),
-		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
-	);
-	return ci;
-}
-
-static inline unsigned long cpu_index(void)
-{
-	struct cpu_info *ci;
-	ci = cpu_info();
-	return ci->index;
-}
-
 struct cpuinfo_x86 {
         uint8_t    x86;            /* CPU family */
         uint8_t    x86_vendor;     /* CPU vendor */

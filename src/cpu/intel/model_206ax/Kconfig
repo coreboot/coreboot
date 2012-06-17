@@ -12,7 +12,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select UDELAY_LAPIC
 	select SMM_TSEG
-	#select AP_IN_SIPI_WAIT
 
 config BOOTBLOCK_CPU_INIT
 	string

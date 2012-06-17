@@ -4,10 +4,12 @@
 #include <arch/cpu.h>
 
 #if !defined(__ROMCC__)
-void cpu_initialize(void);
+void cpu_initialize(struct bus *cpu_bus, int index);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
-void secondary_cpu_init(void);
+void secondary_cpu_init(int index);
+
+extern unsigned int cpucount;
 
 #if !CONFIG_WAIT_BEFORE_CPUS_INIT
 	#define cpus_ready_for_init() do {} while(0)

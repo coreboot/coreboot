@@ -29,7 +29,7 @@ static void report_cpu_info(void)
 {
 	struct cpuid_result cpuidr;
 	u32 i, index;
-	char cpu_string[50]; /* 48 bytes are reported */
+	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
 	int vt, txt, aes;
 	const char *mode[] = {"NOT ", ""};
 
@@ -47,8 +47,12 @@ static void report_cpu_info(void)
 			*p++ = cpuidr.edx;
 		}
 	}
+	/* Skip leading spaces in CPU name string */
+	while (cpu_name[0] == ' ')
+		cpu_name++;
+
 	cpuidr = cpuid(1);
-	printk(BIOS_DEBUG, "CPU id(%x): %s\n", cpuidr.eax, cpu_string);
+	printk(BIOS_DEBUG, "CPU id(%x): %s\n", cpuidr.eax, cpu_name);
 	aes = (cpuidr.ecx & (1 << 25)) ? 1 : 0;
 	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
 	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;

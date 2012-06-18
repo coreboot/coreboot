@@ -249,8 +249,17 @@ void sdram_initialize(struct pei_data *pei_data)
 			      "call *%%ecx\n\t"
 			      :"=a" (rv) : "c" (entry), "a" (pei_data));
 		if (rv) {
-			printk(BIOS_ERR, "MRC returned %x\n", rv);
-			die("Nonzero MRC return value\n");
+			switch (rv) {
+			case -1:
+				printk(BIOS_ERR, "PEI version mismatch.");
+				break;
+			case -2:
+				printk(BIOS_ERR, "Invalid memory frequency.\n");
+				break;
+			default:
+				printk(BIOS_ERR, "MRC returned %x.\n", rv);
+			}
+			die("Nonzero MRC return value.\n");
 		}
 	} else {
 		die("UEFI PEI System Agent not found.\n");

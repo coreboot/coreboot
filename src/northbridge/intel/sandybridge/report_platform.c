@@ -96,8 +96,8 @@ static void report_pch_info(void)
 			break;
 		}
 	}
-	printk (BIOS_DEBUG, "PCH type: %s rev id %x\n",
-		pch_type, pci_read_config8(PCH_LPC_DEV, 8));
+	printk (BIOS_DEBUG, "PCH type: %s, device id: %x, rev id %x\n",
+		pch_type, dev_id, pci_read_config8(PCH_LPC_DEV, 8));
 }
 
 void report_platform_info(void)

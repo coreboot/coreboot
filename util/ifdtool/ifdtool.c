@@ -296,7 +296,7 @@ static void write_regions(char *image, int size)
 					 O_WRONLY | O_CREAT | O_TRUNC,
 					 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 			if (write(region_fd, image + region.base, region.size) != region.size)
-				printf("Error while writing.");
+				perror("Error while writing");
 			close(region_fd);
 		}
 	}
@@ -317,7 +317,7 @@ static void write_image(char *filename, char *image, int size)
 			 O_WRONLY | O_CREAT | O_TRUNC,
 			 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (write(new_fd, image, size) != size)
-		printf("Error while writing.");
+		perror("Error while writing");
 	close(new_fd);
 }
 

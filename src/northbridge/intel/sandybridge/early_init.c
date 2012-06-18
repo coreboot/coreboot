@@ -158,8 +158,3 @@ void sandybridge_early_initialization(int chipset_type)
 
 	sandybridge_setup_graphics();
 }
-
-void sandybridge_late_initialization(void)
-{
-}
-

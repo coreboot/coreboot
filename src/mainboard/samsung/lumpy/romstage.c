@@ -330,11 +330,8 @@ void main(unsigned long bist)
 	rcba_config();
 	post_code(0x3c);
 
-	/* Initialize the internal PCIe links before we go into stage2 */
-	sandybridge_late_initialization();
-
-	post_code(0x3e);
 	quick_ram_check();
+	post_code(0x3e);
 
 	MCHBAR16(SSKPD) = 0xCAFE;
 

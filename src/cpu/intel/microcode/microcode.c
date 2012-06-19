@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
  * Copyright (C) 2000 Ronald G. Minnich
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,6 +27,14 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
+
+#if CONFIG_MICROCODE_IN_CBFS
+#ifdef __PRE_RAM__
+#include <arch/cbfs.h>
+#else
+#include <cbfs.h>
+#endif
+#endif
 
 struct microcode {
 	u32 hdrver;	/* Header Version */
@@ -68,6 +77,9 @@ static inline u32 read_microcode_rev(void)
 	return msr.hi;
 }
 
+#if CONFIG_MICROCODE_IN_CBFS
+static
+#endif
 void intel_update_microcode(const void *microcode_updates)
 {
 	u32 eax;
@@ -131,3 +143,21 @@ void intel_update_microcode(const void *microcode_updates)
 		}
 	}
 }
+
+#if CONFIG_MICROCODE_IN_CBFS
+
+#define MICROCODE_CBFS_FILE "microcode_blob.bin"
+
+void intel_update_microcode_from_cbfs(void)
+{
+	void *microcode_blob;
+
+#ifdef __PRE_RAM__
+	microcode_blob = walkcbfs((char *) MICROCODE_CBFS_FILE);
+#else
+	microcode_blob = cbfs_find_file(MICROCODE_CBFS_FILE,
+					CBFS_TYPE_MICROCODE);
+#endif
+	intel_update_microcode(microcode_blob);
+}
+#endif

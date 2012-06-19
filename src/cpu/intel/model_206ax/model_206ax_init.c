@@ -116,7 +116,7 @@ static acpi_cstate_t cstate_map[] = {
 };
 
 static const uint32_t microcode_updates[] = {
-	#include "x06_microcode.h"
+	#include "microcode_blob.h"
 };
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */

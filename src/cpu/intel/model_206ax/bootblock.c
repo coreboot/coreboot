@@ -24,7 +24,7 @@
 #include <cpu/x86/mtrr.h>
 
 static const uint32_t microcode_updates[] = {
-	#include "x06_microcode.h"
+	#include "microcode_blob.h"
 };
 
 #include <cpu/intel/microcode/microcode.c>

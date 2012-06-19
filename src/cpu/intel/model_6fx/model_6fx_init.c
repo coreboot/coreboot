@@ -127,6 +127,8 @@ static void configure_c_states(void)
 }
 
 #define IA32_MISC_ENABLE	0x1a0
+#define IA32_PECI_CTL		0x5a0
+
 static void configure_misc(void)
 {
 	msr_t msr;
@@ -170,6 +172,12 @@ static void configure_misc(void)
 	msr.lo |= vid_max;
 
 	wrmsr(IA32_PERF_CTL, msr);
+
+	/* Enable PECI */
+	msr = rdmsr(IA32_PECI_CTL);
+	msr.lo |= 1;
+	wrmsr(IA32_PECI_CTL, msr);
+
 }
 
 #define PIC_SENS_CFG	0x1aa

@@ -23,9 +23,11 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 
+#if !CONFIG_MICROCODE_IN_CBFS
 static const uint32_t microcode_updates[] = {
 	#include "microcode_blob.h"
 };
+#endif
 
 #include <cpu/intel/microcode/microcode.c>
 
@@ -61,5 +63,9 @@ static void enable_rom_caching(void)
 static void bootblock_cpu_init(void)
 {
 	enable_rom_caching();
+#if CONFIG_MICROCODE_IN_CBFS
+	intel_update_microcode_from_cbfs();
+#else
 	intel_update_microcode(microcode_updates);
+#endif
 }

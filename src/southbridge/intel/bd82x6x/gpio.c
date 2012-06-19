@@ -93,7 +93,6 @@ unsigned get_gpios(const int *gpio_num_array)
 
 	while (bitmask &&
 	       ((gpio = *gpio_num_array++) != -1)) {
-		vector <<= 1;
 		if (get_gpio(gpio))
 			vector |= bitmask;
 		bitmask <<= 1;

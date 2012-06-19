@@ -203,11 +203,10 @@ static int
 wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 {
 	/* wait for results */
-	/* TODO: how long to wait?
-	 *       give 50ms per page plus another 100ms for now
-	 *       this should even work with low-speed
+	/* TOTEST: how long to wait?
+	 *         give 2s per TD (2 pages) plus another 2s for now
 	 */
-	int timeout = pages*50 + 100;
+	int timeout = pages*1000 + 2000;
 	while (((head->head_pointer & ~3) != head->tail_pointer) &&
 		!(head->head_pointer & 1) &&
 		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config
@@ -361,7 +360,10 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	int failure = wait_for_ed(dev, head,
 			(dalen==0)?0:(last_page - first_page + 1));
+	/* Wait some frames before and one after disabling list access. */
+	mdelay(4);
 	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
+	mdelay(1);
 
 	/* free memory */
 	ohci_free_ed(head);
@@ -462,7 +464,10 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 
 	int failure = wait_for_ed(ep->dev, head,
 			(dalen==0)?0:(last_page - first_page + 1));
+	/* Wait some frames before and one after disabling list access. */
+	mdelay(4);
 	OHCI_INST(ep->dev->controller)->opreg->HcControl &= ~BulkListEnable;
+	mdelay(1);
 
 	ep->toggle = head->head_pointer & ED_TOGGLE;
 

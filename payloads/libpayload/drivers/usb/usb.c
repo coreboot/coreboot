@@ -63,6 +63,7 @@ detach_controller (hci_t *controller)
 				it->next = controller->next;
 				return;
 			}
+			it = it->next;
 		}
 	}
 }

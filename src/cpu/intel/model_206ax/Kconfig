@@ -21,6 +21,12 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
+if MICROCODE_IN_CBFS
+config MICROCODE_INCLUDE_PATH
+	string
+	default "src/cpu/intel/model_206ax"
+endif
+
 endif
 
 if CPU_INTEL_MODEL_206AX

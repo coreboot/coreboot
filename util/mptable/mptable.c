@@ -997,9 +997,7 @@ lookupBusType( char* name )
 static void
 busEntry( void )
 {
-    int		x;
     char	name[ 8 ];
-    char	c;
     BusEntry	entry;
 
     /* read it into local memory */
@@ -1013,12 +1011,9 @@ busEntry( void )
     printf( "\t " ); pnstr( entry.busType, 6 ); printf( "\n" );
     }
 
-    for ( x = 0; x < 6; ++x ) {
-//	if ( (c = entry.busType[ x ]) == ' ' )
-	    //break;
-	name[ x ] = c;
-    }
-    name[ x ] = '\0';
+    memset(name, '\0', sizeof(name));
+    strncpy(name, (char *)entry.busType, 6);
+
     busses[ entry.busID ] = lookupBusType( name );
     printf("\tsmp_write_bus(mc, %d, \"", entry.busID);
     pnstr( entry.busType, 6 );

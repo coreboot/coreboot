@@ -623,13 +623,14 @@ ehci_init (pcidev_t addr)
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
 	controller->bus_address = addr;
+	controller->reg_base = pci_read_config32 (controller->bus_address, USBBASE);
 	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}
 	init_device_entry (controller, 0);
 
-	EHCI_INST(controller)->capabilities = phys_to_virt(pci_read_config32(addr, USBBASE));
-	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(pci_read_config32(addr, USBBASE)) + EHCI_INST(controller)->capabilities->caplength);
+	EHCI_INST(controller)->capabilities = phys_to_virt(controller->bus_address);
+	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(controller->bus_address) + EHCI_INST(controller)->capabilities->caplength);
 
 	/* default value for frame length adjust */
 	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));

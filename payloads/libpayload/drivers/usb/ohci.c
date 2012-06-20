@@ -129,16 +129,19 @@ ohci_init (pcidev_t addr)
 	}
 	int interval = OHCI_INST (controller)->opreg->HcFmInterval;
 
-	td_t *periodic_td = memalign(sizeof(*periodic_td), sizeof(*periodic_td));
-	memset((void*)periodic_td, 0, sizeof(*periodic_td));
-	for (i=0; i<32; i++) OHCI_INST (controller)->hcca->HccaInterruptTable[i] = virt_to_phys(periodic_td);
-	/* TODO: build HCCA data structures */
-
 	OHCI_INST (controller)->opreg->HcCommandStatus = HostControllerReset;
 	udelay (10); /* at most 10us for reset to complete. State must be set to Operational within 2ms (5.1.1.4) */
 	OHCI_INST (controller)->opreg->HcFmInterval = interval;
 	OHCI_INST (controller)->hcca = memalign(256, 256);
 	memset((void*)OHCI_INST (controller)->hcca, 0, 256);
+
+	/* Initialize interrupt table. */
+	u32 *const intr_table = OHCI_INST(controller)->hcca->HccaInterruptTable;
+	ed_t *const periodic_ed = memalign(sizeof(ed_t), sizeof(ed_t));
+	memset((void *)periodic_ed, 0, sizeof(*periodic_ed));
+	for (i = 0; i < 32; ++i)
+		intr_table[i] = virt_to_phys(periodic_ed);
+	OHCI_INST (controller)->periodic_ed = periodic_ed;
 
 	OHCI_INST (controller)->opreg->HcHCCA = virt_to_phys(OHCI_INST (controller)->hcca);
 	OHCI_INST (controller)->opreg->HcControl &= ~IsochronousEnable; // unused by this driver
@@ -167,6 +170,7 @@ ohci_shutdown (hci_t *controller)
 	ohci_stop(controller);
 	OHCI_INST (controller)->roothub->destroy (OHCI_INST (controller)->
 						  roothub);
+	free ((void *)OHCI_INST (controller)->periodic_ed);
 	free (OHCI_INST (controller));
 	free (controller);
 }

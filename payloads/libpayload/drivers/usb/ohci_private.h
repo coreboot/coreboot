@@ -191,9 +191,9 @@
 
  	typedef struct {
 		u32 HccaInterruptTable[32];
-		u16 HccaFrameNumber;
-		u16 HccaPad1;
-		u32 HccaDoneHead;
+		volatile u16 HccaFrameNumber;
+		volatile u16 HccaPad1;
+		volatile u32 HccaDoneHead;
 		u8 reserved[116]; // pad to 256 byte
 	} __attribute__ ((packed)) hcca_t;
 
@@ -229,12 +229,25 @@
 		u32 next_td;
 		u32 buffer_end;
 	} __attribute__ ((packed)) td_t;
+/*
+ * Bits 0 through 17 of .config won't be interpreted by the host controller
+ * (HC) and, after processing the TD, the HC has to ensure those bits have
+ * the same state as before. So we are free to use those bits for our own
+ * purpose.
+ */
+#define TD_QUEUETYPE_SHIFT	0
+#define TD_QUEUETYPE_MASK	MASK(TD_QUEUETYPE_SHIFT, 2)
+#define TD_QUEUETYPE_ASYNC	(0 << TD_QUEUETYPE_SHIFT)
+
 #define TD_DIRECTION_SHIFT 19
 #define TD_DIRECTION_MASK MASK(TD_DIRECTION_SHIFT, 2)
 #define TD_DIRECTION_SETUP OHCI_SETUP << TD_DIRECTION_SHIFT
 #define TD_DIRECTION_IN OHCI_IN << TD_DIRECTION_SHIFT
 #define TD_DIRECTION_OUT OHCI_OUT << TD_DIRECTION_SHIFT
-#define TD_DELAY_INTERRUPT_NODELAY (7 << 21)
+#define TD_DELAY_INTERRUPT_SHIFT	21
+#define TD_DELAY_INTERRUPT_MASK		MASK(TD_DELAY_INTERRUPT_SHIFT, 3)
+#define TD_DELAY_INTERRUPT_ZERO		0
+#define TD_DELAY_INTERRUPT_NOINTR	(7 << TD_DELAY_INTERRUPT_SHIFT)
 #define TD_TOGGLE_DATA0 0
 #define TD_TOGGLE_DATA1 (1 << 24)
 #define TD_TOGGLE_FROM_ED 0

@@ -79,7 +79,7 @@ static int generate_cstate_entries(acpi_cstate_t *cstates,
 		length += acpigen_write_CST_package_entry(&cstates[c2]);
 	}
 	if (c3 > 0) {
-		cstates[c2].ctype = 2;
+		cstates[c3].ctype = 3;
 		length += acpigen_write_CST_package_entry(&cstates[c3]);
 	}
 

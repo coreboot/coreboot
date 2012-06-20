@@ -623,6 +623,7 @@ ehci_init (pcidev_t addr)
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
 	controller->bus_address = addr;
+	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10); 
 	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}

@@ -298,6 +298,11 @@ char *preamble[] = {
 	"#include <string.h>",
 	"#include <stdint.h>",
 	"",
+	"#define INTA 0x00",
+	"#define INTB 0x01",
+	"#define INTC 0x02",
+	"#define INTD 0x03",
+	"",
 	"static void *smp_write_config_table(void *v)",
 	"{",
 	"        struct mp_config_table *mc;",
@@ -1090,14 +1095,25 @@ static void intEntry(void)
 		printf("\t %6d", (int)entry.dstApicID);
 		printf("\t %3d\n", (int)entry.dstApicINT);
 	}
-	printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%x, 0x%x, 0x%x);\n",
-	       intTypes[(int)entry.intType],
-	       triggerMode[((int)entry.intFlags >> 2) & 0x03],
-	       polarityMode[(int)entry.intFlags & 0x03],
-	       (int)entry.srcBusID,
-	       (int)entry.srcBusIRQ,
-	       (int)entry.dstApicID, (int)entry.dstApicINT);
 
+	if (busses[(int)entry.srcBusID] == PCI) {
+		printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, (0x%02x << 2) | INT%c, 0x%x, 0x%x);\n",
+		       intTypes[(int)entry.intType],
+		       triggerMode[((int)entry.intFlags >> 2) & 0x03],
+		       polarityMode[(int)entry.intFlags & 0x03],
+		       (int)entry.srcBusID,
+		       (int)entry.srcBusIRQ >> 2,
+		       ((int)entry.srcBusIRQ & 3) + 'A',
+		       (int)entry.dstApicID, (int)entry.dstApicINT);
+	} else {
+		printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%x, 0x%x, 0x%x);\n",
+		       intTypes[(int)entry.intType],
+		       triggerMode[((int)entry.intFlags >> 2) & 0x03],
+		       polarityMode[(int)entry.intFlags & 0x03],
+		       (int)entry.srcBusID,
+		       (int)entry.srcBusIRQ,
+		       (int)entry.dstApicID, (int)entry.dstApicINT);
+	}
 }
 
 static void lintEntry(void)

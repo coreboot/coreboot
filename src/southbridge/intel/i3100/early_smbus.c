@@ -37,7 +37,25 @@ static void enable_smbus(void)
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
 }
 
-static int smbus_read_byte(u32 device, u32 address)
+static
+#ifndef __ROMCC__
+  /*
+   * This looks rather stupid, but romcc doesn't know the unused attribute.
+   * Removing the attribute makes gcc fail, and using the normal way of
+   * creating a header file for declarations and link the c file fails because
+   * romcc can't handle function declarations. */
+__attribute__((unused))
+#endif
+int smbus_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
+}
+
+static
+#ifndef __ROMCC__
+__attribute__((unused))
+#endif
+int smbus_write_byte(unsigned device, u8 address, u8 data)
+{
+	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, data);
 }

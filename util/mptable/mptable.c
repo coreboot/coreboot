@@ -313,7 +313,6 @@ char *preamble[] = {
 	"",
 	"        smp_write_processors(mc);",
 	"",
-	"",
 	0
 };
 
@@ -809,7 +808,7 @@ static void MPConfigTableHeader(uint32_t pap)
 	}
 
 	/* process all the busses */
-	printf("/*Bus:\t\tBus ID\tType*/\n");
+	printf("\t/* Bus: Bus ID  Type */\n");
 	for (c = count; c; c--) {
 		if (readType() == 1)
 			busEntry();
@@ -817,7 +816,7 @@ static void MPConfigTableHeader(uint32_t pap)
 	}
 
 	/* process all the apics */
-	printf("/*I/O APICs:\tAPIC ID\tVersion\tState\t\tAddress*/\n");
+	printf("\t/* I/O APICs: APIC ID  Version  State  Address */\n");
 	for (c = count; c; c--) {
 		if (readType() == 2)
 			ioApicEntry();
@@ -825,8 +824,7 @@ static void MPConfigTableHeader(uint32_t pap)
 	}
 
 	/* process all the I/O Ints */
-	printf
-	    ("/*I/O Ints:\tType\tPolarity    Trigger\tBus ID\t IRQ\tAPIC ID\tPIN#\n*/");
+	printf("\t/* I/O Ints: Type  Polarity  Trigger  Bus ID  IRQ  APIC ID  PIN#*/ \n");
 	for (c = count; c; c--) {
 		if (readType() == 3)
 			intEntry();
@@ -835,7 +833,7 @@ static void MPConfigTableHeader(uint32_t pap)
 
 	/* process all the Local Ints */
 	printf
-	    ("/*Local Ints:\tType\tPolarity    Trigger\tBus ID\t IRQ\tAPIC ID\tPIN#*/\n");
+	    ("\t/* Local Ints: Type  Polarity  Trigger  Bus ID  IRQ  APIC ID  PIN# */\n");
 	for (c = count; c; c--) {
 		if (readType() == 4)
 			lintEntry();

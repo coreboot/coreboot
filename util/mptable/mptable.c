@@ -276,7 +276,7 @@ static void pnstr(uint8_t * s, int c);
 /* global data */
 int pfd;			/* physical /dev/mem fd */
 
-int busses[16];
+int busses[32];
 int apics[16];
 
 int ncpu;
@@ -787,9 +787,10 @@ static void MPConfigTableHeader(uint32_t pap)
 	}
 
 	/* initialze tables */
-	for (x = 0; x < 16; ++x) {
-		busses[x] = apics[x] = 0xff;
-	}
+	for(x = 0; x < ARRAY_SIZE(busses); x++)
+		busses[x] = UNKNOWN_BUSTYPE;
+	for(x = 0; x < ARRAY_SIZE(apics); x++)
+		apics[x] = 0xff;
 
 	ncpu = 0;
 	nbus = 0;

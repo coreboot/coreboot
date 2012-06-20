@@ -37,7 +37,12 @@ static void enable_smbus(void)
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
 }
 
-static int smbus_read_byte(u32 device, u32 address)
+static  __attribute__((unused)) int smbus_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
+}
+
+static int smbus_write_byte(unsigned device, u8 address, u8 data) __attribute__((unused))
+{
+	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, data);
 }

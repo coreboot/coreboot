@@ -14,8 +14,8 @@
 
 	/* perform hard reset */
 	movw	$0xcf9, %dx
-	movw	$0x06, %al
-	outw	%al, %dx
+	movb	$0x06, %al
+	outb	%al, %dx
 
 loop0:	hlt
 	jmp	loop0

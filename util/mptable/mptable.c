@@ -50,6 +50,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#define ARRAY_SIZE(_x) (sizeof(_x) / sizeof(_x[0]))
 #define SEP_LINE \
 "\n-------------------------------------------------------------------------------\n"
 
@@ -982,7 +983,7 @@ static void busEntry(void)
 {
 	char name[8];
 	BusEntry entry;
-
+	int i;
 	/* read it into local memory */
 	readEntry(&entry, sizeof(entry));
 
@@ -997,7 +998,21 @@ static void busEntry(void)
 	}
 
 	memset(name, '\0', sizeof(name));
-	strncpy(name, (char *)entry.busType, 6);
+	for(i = 0; i < 6; i++) {
+		switch(entry.busType[i]) {
+		case ' ':
+		case '\0':
+			break;
+		default:
+			name[i] = entry.busType[i];
+			break;
+		}
+	}
+
+	if (entry.busID > ARRAY_SIZE(busses)) {
+		fprintf(stderr, "busses array to small!\n");
+		exit(1);
+	}
 
 	busses[entry.busID] = lookupBusType(name);
 	printf("\tsmp_write_bus(mc, %d, \"", entry.busID);

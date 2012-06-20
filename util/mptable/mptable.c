@@ -311,7 +311,7 @@ char *preamble[] = {
 "",
 "        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);",
 "",
-"        mptable_init(mc, \"TODO        \", LAPIC_ADDR);",
+"        mptable_init(mc, \"TODO        \", LOCAL_APIC_ADDR);",
 "",
 "        smp_write_processors(mc);",
 "",

@@ -5,5 +5,6 @@ driver-y += sata.c
 driver-y += ehci.c
 driver-y += smbus.c
 driver-y += pci.c
+driver-y += ioapic.c
 ramstage-y += reset.c
 ramstage-y += pciexp_portb.c

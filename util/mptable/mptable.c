@@ -337,11 +337,6 @@ char *postamble[] = {
 0
 };
 
-char *ioapic_code[] = {
-"	smp_write_ioapic(mc, 2, 0x20, IO_APIC_ADDR);",
-"	/* TODO: If you have multiple IOAPICs, add them here. */",
-0
-};
 static void
 usage( void )
 {
@@ -831,8 +826,6 @@ MPConfigTableHeader( uint32_t pap )
         totalSize -= basetableEntryTypes[ 2 ].length;
     }
 
-    write_code(ioapic_code);
-
     /* process all the I/O Ints */
     printf( "/*I/O Ints:\tType\tPolarity    Trigger\tBus ID\t IRQ\tAPIC ID\tPIN#\n*/" );
     for ( t = totalSize, c = count; c; c-- ) {
@@ -1054,14 +1047,9 @@ ioApicEntry( void )
 
     apics[ entry.apicID ] = entry.apicID;
 
-    // the numbering and setup of ioapics is so irrational
-    // that for now we will punt.
-#if 0
     if (entry.apicFlags & IOAPICENTRY_FLAG_EN)
       printf("\tsmp_write_ioapic(mc, 0x%x, 0x%x, 0x%x);\n",
 	     entry.apicID, entry.apicVersion, entry.apicAddress);
-#endif
-
 }
 
 

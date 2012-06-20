@@ -44,6 +44,7 @@ static int ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 static void* ohci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
 static void ohci_destroy_intr_queue (endpoint_t *ep, void *queue);
 static u8* ohci_poll_intr_queue (void *queue);
+static void ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 
 static void
 ohci_reset (hci_t *controller)
@@ -197,8 +198,6 @@ dump_td(td_t *cur, int level)
 static int
 wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 {
-	td_t *cur;
-
 	/* wait for results */
 	/* TODO: how long to wait?
 	 *       give 50ms per page plus another 100ms for now
@@ -225,35 +224,8 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 	if (timeout < 0)
 		printf("Error: ohci: endpoint "
 			"descriptor processing timed out.\n");
-#if 0
-	/* XXX: The following debugging code may follow invalid lists and
-	 *      cause a reboot.
-	 */
-#ifdef USB_DEBUG
-	if (OHCI_INST(dev->controller)->opreg->HcInterruptStatus & WritebackDoneHead) {
-		debug("done queue:\n");
-		debug("%x, %x\n", OHCI_INST(dev->controller)->hcca->HccaDoneHead, phys_to_virt(OHCI_INST(dev->controller)->hcca->HccaDoneHead));
-		if ((OHCI_INST(dev->controller)->hcca->HccaDoneHead & ~1) == 0) {
-			debug("HcInterruptStatus %x\n", OHCI_INST(dev->controller)->opreg->HcInterruptStatus);
-		}
-		td_t *done_queue = NULL;
-		td_t *done_head = (td_t*)phys_to_virt(OHCI_INST(dev->controller)->hcca->HccaDoneHead);
-		while (1) {
-			td_t *oldnext = (td_t*)phys_to_virt(done_head->next_td);
-			if (oldnext == done_queue) break; /* last element refers to second to last, ie. endless loop */
-			if (oldnext == phys_to_virt(0)) break; /* last element of done list == first element of real list */
-			debug("head is %x, pointing to %x. requeueing to %x\n", done_head, oldnext, done_queue);
-			done_head->next_td = (u32)done_queue;
-			done_queue = done_head;
-			done_head = oldnext;
-		}
-		for (cur = done_queue; cur != 0; cur = (td_t*)cur->next_td) {
-			dump_td(cur, 1);
-		}
-		OHCI_INST(dev->controller)->opreg->HcInterruptStatus &= ~WritebackDoneHead;
-	}
-#endif
-#endif
+	/* Clear the done queue. */
+	ohci_process_done_queue(OHCI_INST(dev->controller), 1);
 
 	if (head->head_pointer & 1) {
 		debug("HALTED!\n");
@@ -262,12 +234,31 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 	return 0;
 }
 
+static void
+ohci_free_ed (ed_t *const head)
+{
+	/* In case the transfer canceled, we have to free unprocessed TDs. */
+	while ((head->head_pointer & ~0x3) != head->tail_pointer) {
+		/* Save current TD pointer. */
+		td_t *const cur_td =
+			(td_t*)phys_to_virt(head->head_pointer & ~0x3);
+		/* Advance head pointer. */
+		head->head_pointer = cur_td->next_td;
+		/* Free current TD. */
+		free((void *)cur_td);
+	}
+
+	/* Always free the dummy TD */
+	if ((head->head_pointer & ~0x3) == head->tail_pointer)
+		free(phys_to_virt(head->head_pointer & ~0x3));
+	/* and the ED. */
+	free((void *)head);
+}
+
 static int
 ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 	      unsigned char *data)
 {
-	int i;
-
 	td_t *cur;
 
 	// pages are specified as 4K in OHCI, so don't use getpagesize()
@@ -275,30 +266,31 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	int last_page = (unsigned long)(data+dalen-1)/4096;
 	if (last_page < first_page) last_page = first_page;
 	int pages = (dalen==0)?0:(last_page - first_page + 1);
-	int td_count = (pages+1)/2;
 
-	td_t *tds = memalign(sizeof(td_t), (td_count+3)*sizeof(td_t));
-	memset((void*)tds, 0, (td_count+3)*sizeof(td_t));
+	/* First TD. */
+	td_t *const first_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	memset((void *)first_td, 0, sizeof(*first_td));
+	cur = first_td;
 
-	for (i=0; i < td_count + 3; i++) {
-		tds[i].next_td = virt_to_phys(&tds[i+1]);
-	}
-	tds[td_count + 3].next_td = 0;
-
-	tds[0].config = TD_DIRECTION_SETUP |
-		TD_DELAY_INTERRUPT_NODELAY |
+	cur->config = TD_DIRECTION_SETUP |
+		TD_DELAY_INTERRUPT_NOINTR |
 		TD_TOGGLE_FROM_TD |
 		TD_TOGGLE_DATA0 |
 		TD_CC_NOACCESS;
-	tds[0].current_buffer_pointer = virt_to_phys(devreq);
-	tds[0].buffer_end = virt_to_phys(devreq + drlen - 1);
-
-	cur = &tds[0];
+	cur->current_buffer_pointer = virt_to_phys(devreq);
+	cur->buffer_end = virt_to_phys(devreq + drlen - 1);
 
 	while (pages > 0) {
-		cur++;
+		/* One more TD. */
+		td_t *const next = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+		memset((void *)next, 0, sizeof(*next));
+		/* Linked to the previous. */
+		cur->next_td = virt_to_phys(next);
+		/* Advance to the new TD. */
+		cur = next;
+
 		cur->config = (dir == IN ? TD_DIRECTION_IN : TD_DIRECTION_OUT) |
-			TD_DELAY_INTERRUPT_NODELAY |
+			TD_DELAY_INTERRUPT_NOINTR |
 			TD_TOGGLE_FROM_ED |
 			TD_CC_NOACCESS;
 		cur->current_buffer_pointer = virt_to_phys(data);
@@ -323,17 +315,26 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 		}
 	}
 
-	cur++;
+	/* One more TD. */
+	td_t *const next_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	memset((void *)next_td, 0, sizeof(*next_td));
+	/* Linked to the previous. */
+	cur->next_td = virt_to_phys(next_td);
+	/* Advance to the new TD. */
+	cur = next_td;
 	cur->config = (dir == IN ? TD_DIRECTION_OUT : TD_DIRECTION_IN) |
-		TD_DELAY_INTERRUPT_NODELAY |
+		TD_DELAY_INTERRUPT_ZERO | /* Write done head after this TD. */
 		TD_TOGGLE_FROM_TD |
 		TD_TOGGLE_DATA1 |
 		TD_CC_NOACCESS;
 	cur->current_buffer_pointer = 0;
 	cur->buffer_end = 0;
 
-	/* final dummy TD */
-	cur++;
+	/* Final dummy TD. */
+	td_t *const final_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	memset((void *)final_td, 0, sizeof(*final_td));
+	/* Linked to the previous. */
+	cur->next_td = virt_to_phys(final_td);
 
 	/* Data structures */
 	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
@@ -343,10 +344,11 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 		(OHCI_FROM_TD << ED_DIR_SHIFT) |
 		(dev->speed?ED_LOWSPEED:0) |
 		(dev->endpoints[0].maxpacketsize << ED_MPS_SHIFT);
-	head->tail_pointer = virt_to_phys(cur);
-	head->head_pointer = virt_to_phys(tds);
+	head->tail_pointer = virt_to_phys(final_td);
+	head->head_pointer = virt_to_phys(first_td);
 
-	debug("doing control transfer with %x. first_td at %x\n", head->config & ED_FUNC_MASK, virt_to_phys(tds));
+	debug("doing control transfer with %x. first_td at %x\n",
+		head->config & ED_FUNC_MASK, virt_to_phys(first_td));
 
 	/* activate schedule */
 	OHCI_INST(dev->controller)->opreg->HcControlHeadED = virt_to_phys(head);
@@ -358,8 +360,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	OHCI_INST(dev->controller)->opreg->HcControl &= ~ControlListEnable;
 
 	/* free memory */
-	free((void*)tds);
-	free((void*)head);
+	ohci_free_ed(head);
 
 	return failure;
 }
@@ -371,7 +372,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	int i;
 	debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, data, finalize, ep->maxpacketsize);
 
-	td_t *cur;
+	td_t *cur, *next;
 
 	// pages are specified as 4K in OHCI, so don't use getpagesize()
 	int first_page = (unsigned long)data / 4096;
@@ -384,16 +385,16 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 		td_count++;
 	}
 
-	td_t *tds = memalign(sizeof(td_t), (td_count+1)*sizeof(td_t));
-	memset((void*)tds, 0, (td_count+1)*sizeof(td_t));
+	/* First TD. */
+	td_t *const first_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	memset((void *)first_td, 0, sizeof(*first_td));
+	cur = next = first_td;
 
-	for (i=0; i < td_count; i++) {
-		tds[i].next_td = virt_to_phys(&tds[i+1]);
-	}
-
-	for (cur = tds; cur->next_td != 0; cur++) {
+	for (i = 0; i < td_count; ++i) {
+		/* Advance to next TD. */
+		cur = next;
 		cur->config = (ep->direction == IN ? TD_DIRECTION_IN : TD_DIRECTION_OUT) |
-                        TD_DELAY_INTERRUPT_NODELAY |
+                        TD_DELAY_INTERRUPT_NOINTR |
                         TD_TOGGLE_FROM_ED |
                         TD_CC_NOACCESS;
 		cur->current_buffer_pointer = virt_to_phys(data);
@@ -422,7 +423,17 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 			dalen -= second_page_size;
 			data += second_page_size;
 		}
+		/* One more TD. */
+		next = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+		memset((void *)next, 0, sizeof(*next));
+		/* Linked to the previous. */
+		cur->next_td = virt_to_phys(next);
 	}
+
+	/* Write done head after last TD. */
+	cur->config &= ~TD_DELAY_INTERRUPT_MASK;
+	/* Advance to final, dummy TD. */
+	cur = next;
 
 	/* Data structures */
 	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
@@ -433,10 +444,12 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 		(ep->dev->speed?ED_LOWSPEED:0) |
 		(ep->maxpacketsize << ED_MPS_SHIFT);
 	head->tail_pointer = virt_to_phys(cur);
-	head->head_pointer = virt_to_phys(tds) | (ep->toggle?ED_TOGGLE:0);
+	head->head_pointer = virt_to_phys(first_td) | (ep->toggle?ED_TOGGLE:0);
 
-	debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n", head->config & ED_FUNC_MASK,
-		(head->config & ED_EP_MASK) >> ED_EP_SHIFT, virt_to_phys(tds), virt_to_phys(cur));
+	debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n",
+		head->config & ED_FUNC_MASK,
+		(head->config & ED_EP_MASK) >> ED_EP_SHIFT,
+		virt_to_phys(first_td), virt_to_phys(cur));
 
 	/* activate schedule */
 	OHCI_INST(ep->dev->controller)->opreg->HcBulkHeadED = virt_to_phys(head);
@@ -450,8 +463,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	ep->toggle = head->head_pointer & ED_TOGGLE;
 
 	/* free memory */
-	free((void*)tds);
-	free((void*)head);
+	ohci_free_ed(head);
 
 	if (failure) {
 		/* try cleanup */
@@ -482,5 +494,41 @@ static u8*
 ohci_poll_intr_queue (void *q_)
 {
 	return NULL;
+}
+
+static void
+ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
+{
+	int i;
+
+	/* Check if done head has been written. */
+	if (!(ohci->opreg->HcInterruptStatus & WritebackDoneHead))
+		return;
+	/* Fetch current done head.
+	   Lsb is only interesting for hw interrupts. */
+	u32 phys_done_queue = ohci->hcca->HccaDoneHead & ~1;
+	/* Tell host controller, he may overwrite the done head pointer. */
+	ohci->opreg->HcInterruptStatus = WritebackDoneHead;
+
+	i = 0;
+	/* Process done queue (it's in reversed order). */
+	while (phys_done_queue) {
+		td_t *const done_td = (td_t *)phys_to_virt(phys_done_queue);
+
+		/* Advance pointer to next TD. */
+		phys_done_queue = done_td->next_td;
+
+		switch (done_td->config & TD_QUEUETYPE_MASK) {
+		case TD_QUEUETYPE_ASYNC:
+			/* Free processed async TDs. */
+			free((void *)done_td);
+			break;
+		default:
+			break;
+		}
+		++i;
+	}
+	if (spew_debug)
+		debug("Processed %d done TDs.\n", i);
 }
 

@@ -189,21 +189,14 @@
 	volatile u32 HcRhPortStatus[];
      } __attribute__ ((packed)) opreg_t;
 
- 	typedef struct {
+	typedef struct { /* should be 256 bytes according to spec */
 		u32 HccaInterruptTable[32];
 		volatile u16 HccaFrameNumber;
 		volatile u16 HccaPad1;
 		volatile u32 HccaDoneHead;
-		u8 reserved[116]; // pad to 256 byte
+		u8 reserved[116]; /* pad according to spec */
+		u8 what[4]; /* really pad to 256 as spec only covers 252 */
 	} __attribute__ ((packed)) hcca_t;
-
-	typedef struct ohci {
-		opreg_t *opreg;
-		hcca_t *hcca;
-		usbdev_t *roothub;
-	} ohci_t;
-
-	typedef enum { OHCI_SETUP=0, OHCI_OUT=1, OHCI_IN=2, OHCI_FROM_TD=3 } ohci_pid_t;
 
 	typedef volatile struct {
 		u32 config;
@@ -258,5 +251,14 @@
 #define TD_CC_NOACCESS (14 << TD_CC_SHIFT) /* the lower of the two values, so "no access" can be tested with >= */
 
 #define OHCI_INST(controller) ((ohci_t*)((controller)->instance))
+
+	typedef struct ohci {
+		opreg_t *opreg;
+		hcca_t *hcca;
+		usbdev_t *roothub;
+		ed_t *periodic_ed;
+	} ohci_t;
+
+	typedef enum { OHCI_SETUP=0, OHCI_OUT=1, OHCI_IN=2, OHCI_FROM_TD=3 } ohci_pid_t;
 
 #endif

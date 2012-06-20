@@ -14,11 +14,11 @@
 
 	/* perform hard reset */
 	movw	$0xcf9, %dx
-	movw	$0x06, %ax
-	outw	%ax, %dx
+	movw	$0x06, %al
+	outw	%al, %dx
 
 loop0:	hlt
-	jmp	loop
+	jmp	loop0
 
 no_reset:
 

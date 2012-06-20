@@ -25,6 +25,8 @@ config BOARD_SUPERMICRO_X6DHR_IG2
 	bool "X6DHR-iG2"
 config BOARD_SUPERMICRO_X6DHR_IG
 	bool "X6DHR-iG"
+config BOARD_SUPERMICRO_X7DB8
+	bool "X7DB8 / X7DB8+
 
 endchoice
 
@@ -39,6 +41,7 @@ source "src/mainboard/supermicro/x6dhe_g2/Kconfig"
 source "src/mainboard/supermicro/x6dhe_g/Kconfig"
 source "src/mainboard/supermicro/x6dhr_ig2/Kconfig"
 source "src/mainboard/supermicro/x6dhr_ig/Kconfig"
+source "src/mainboard/supermicro/x7db8/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

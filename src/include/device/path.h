@@ -12,6 +12,7 @@ enum device_path_type {
 	DEVICE_PATH_APIC_CLUSTER,
 	DEVICE_PATH_CPU,
 	DEVICE_PATH_CPU_BUS,
+	DEVICE_PATH_IOAPIC,
 };
 
 struct pci_domain_path
@@ -43,6 +44,11 @@ struct apic_path
 	unsigned index;
 };
 
+struct ioapic_path
+{
+	unsigned ioapic_id;
+};
+
 struct apic_cluster_path
 {
 	unsigned cluster;
@@ -66,6 +72,7 @@ struct device_path {
 		struct pnp_path          pnp;
 		struct i2c_path          i2c;
 		struct apic_path         apic;
+		struct ioapic_path	 ioapic;
 		struct pci_domain_path   pci_domain;
 		struct apic_cluster_path apic_cluster;
 		struct cpu_path          cpu;

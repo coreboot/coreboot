@@ -27,37 +27,64 @@ chip northbridge/intel/i5000
 			device lapic 0 on end
 		end
 	end
-
 	device pci_domain 0 on
 		device pci 00.0 on # Host bridge
 			subsystemid 0x15d9 0x2017
 		end
 
-		device pci 02.0 on # PCIe bridge
-			device pci 00.0 on
-				device pci 00.0 on
-					device pci 00.0 on end
-					device pci 02.0 on end
-				end
-				device pci 02.0 on
-					device pci 00.0 on
-						device pci 02.0 on
-							device pci 00.0 on end # e1000 #1
-							device pci 00.1 on end # e1000 #2
+		device pci 02.0 on # PCI Express x8 Port 2-3
+			ioapic_irq 8 0 0x10
+			ioapic_irq 8 1 0x11
+			ioapic_irq 8 2 0x12
+			ioapic_irq 8 3 0x13
+			device pci 00.0 on # PCI Express Upstream Port
+				device pci 00.0 on # PCI Express Downstream Port E1
+					device pci 00.0 on # 6700PXH PCI Express-to-PCI Bridge A
+					       ioapic_irq 8 0 0x11
+					       ioapic_irq 8 1 0x10
+					       ioapic_irq 8 2 0x11
+					       ioapic_irq 8 3 0x10
+					       # PCI slot
+						device pci 02.0 on # Adaptec U320 #1
+							ioapic_irq 8 0 0x10
+						end
+						device pci 02.1 on # Adaptec U320 #2
+							ioapic_irq 8 1 0x11
 						end
 					end
-					device pci 00.1 on end
+					device pci 00.2 on # 6700PXH PCI Express-to-PCI Bridge B
+						# PCI slot
+					end
+				end
+				device pci 02.0 on # PCI Express Downstream Port E3
+						device pci 00.0 on end # e1000 #1
+						device pci 00.1 on end # e1000 #2
 				end
 			end
-			device pci 00.1 on end
-			device pci 00.3 on end
+			device pci 00.3 on # PCI Express to PCI-X Bridge
+			       ioapic_irq 9 0 3
+			       ioapic_irq 9 1 0
+			       ioapic_irq 9 2 1
+			       ioapic_irq 9 3 2
+				# PCI-X Slot
+			end
 		end
 
-		device pci 03.0 on end
-		device pci 04.0 on end
-		device pci 05.0 on end
-		device pci 06.0 on end
-		device pci 07.0 on end
+		device pci 03.0 on
+			ioapic_irq 8 0 0x10
+		end
+		device pci 04.0 on
+			ioapic_irq 8 0 0x10
+		end
+		device pci 05.0 on
+			ioapic_irq 8 0 0x10
+		end
+		device pci 06.0 on
+			ioapic_irq 8 0 0x10
+		end
+		device pci 07.0 on
+			ioapic_irq 8 0 0x10
+		end
 		device pci 10.0 on end # FBD
 		device pci 10.1 on end # FBD
 		device pci 10.2 on end # FBD
@@ -66,23 +93,49 @@ chip northbridge/intel/i5000
 		device pci 15.0 on end # FBD
 		device pci 16.0 on end # FBD
 
+		chip drivers/generic/ioapic
+			register "irq_on_fsb" = "1"
+			register "base" = "0xfec00000"
+			register "have_isa_interrupts" = "1"
+			register "enable_virtual_wire" = "1"
+			device ioapic 8 on end
+		end
+		chip drivers/generic/ioapic
+			register "irq_on_fsb" = "1"
+			register "base" = "0xfec80000"
+			device ioapic 9 on end
+		end
+
 		chip southbridge/intel/i3100
 			register "pirq_a_d" = "0x0b0b0b0b"
 			register "pirq_e_h" = "0x80808080"
 			register "sata_ports_implemented" = "0x3f"
 
-		device pci 1c.0 on end # PCIe bridge
-		device pci 1d.0 on end # USB UHCI
-		device pci 1d.1 on end # USB UHCI
-		device pci 1d.2 on end # USB UHCI
-		device pci 1d.3 on end # USB UHCI
+		device pci 1c.0 on
+			ioapic_irq 8 0 0x14
+			ioapic_irq 8 1 0x15
+			ioapic_irq 8 2 0x16
+			ioapic_irq 8 3 0x17
+		end # PCIe bridge
+		device pci 1d.0 on
+		       ioapic_irq 8 0 0x10
+		end # USB UHCI
+		device pci 1d.1 on
+		       ioapic_irq 8 1 0x11
+		end # USB UHCI
+		device pci 1d.2 on
+		       ioapic_irq 8 2 0x12
+		end # USB UHCI
+		device pci 1d.3 on
+			ioapic_irq 8 3 0x13
+		       end # USB UHCI
 		device pci 1d.7 on end # USB2 EHCI
 		device pci 1e.0 on
-		       device pci 01.0 on
-		       end
+		       device pci 01.0 on end
 		end
 
 		device pci 1f.0 on # PCI-LPC bridge
+			ioapic_irq 8 0 0x11
 			subsystemid 0x15d9 0x2009
 			chip superio/winbond/w83627hf
 				device pnp 2e.0 off end # FDC
@@ -111,10 +164,11 @@ chip northbridge/intel/i5000
 				device pnp 2e.a on end # ACPI
 				device pnp 2e.b off end # HWMON
 			end
+
 		end
-		device pci 1f.1 off end # IDE
+		device pci 1f.1 on end # IDE
 		device pci 1f.2 on end # SATA
-		device pci 1f.3 off end # SMBUS
+		device pci 1f.3 on end # SMBUS
 
 		end
 	end

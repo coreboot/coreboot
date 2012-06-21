@@ -487,6 +487,7 @@ usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 	usbdev_t *newdev_t = controller->devices[newdev];
 	// determine responsible driver - current done in set_address
 	newdev_t->init (newdev_t);
-	return newdev;
+	/* init() may have called usb_detach_device() yet, so check */
+	return controller->devices[newdev] ? newdev : -1;
 }
 

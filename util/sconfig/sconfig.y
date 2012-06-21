@@ -30,13 +30,13 @@ static struct device *cur_parent, *cur_bus;
 	int number;
 }
 
-%token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC APIC_CLUSTER PCI_DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT
+%token CHIP DEVICE REGISTER BOOL BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC APIC_CLUSTER PCI_DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT
 %%
 devtree: { cur_parent = cur_bus = head; } chip { postprocess_devtree(); } ;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
-devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | /* empty */ ;
+devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
 	$<device>$ = new_chip(cur_parent, cur_bus, $<string>2);
@@ -72,5 +72,6 @@ subsystemid: SUBSYSTEMID NUMBER NUMBER
 subsystemid: SUBSYSTEMID NUMBER NUMBER INHERIT
 	{ add_pci_subsystem_ids(cur_parent, strtol($<string>2, NULL, 16), strtol($<string>3, NULL, 16), 1); };
 
-
+ioapic_irq: IOAPIC_IRQ NUMBER PCIINT NUMBER
+	{ add_ioapic_info(cur_parent, strtol($<string>2, NULL, 16), $<string>3, strtol($<string>4, NULL, 16)); };
 %%

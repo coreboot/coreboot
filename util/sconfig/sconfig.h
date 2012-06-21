@@ -43,6 +43,10 @@ struct reg {
 	struct reg *next;
 };
 
+struct pci_irq_info {
+	int ioapic_irq_pin;
+	int ioapic_dst_id;
+};
 struct device;
 struct device {
 	int id;
@@ -62,6 +66,7 @@ struct device {
 	int path_a;
 	int path_b;
 	int bustype;
+	struct pci_irq_info pci_irq_info[4];
 	enum devtype type;
 	struct device *parent;
 	struct device *bus;

@@ -35,6 +35,7 @@ typedef struct {
 	unsigned int protocol;
 	endpoint_t *bulk_in;
 	endpoint_t *bulk_out;
+	int usbdisk_created;
 } usbmsc_inst_t;
 
 #define MSC_INST(dev) ((usbmsc_inst_t*)(dev)->data)

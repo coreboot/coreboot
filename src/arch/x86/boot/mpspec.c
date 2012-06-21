@@ -6,6 +6,7 @@
 #include <string.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
+#include <drivers/generic/ioapic/chip.h>
 
 /* Initialize the specified "mc" struct with initial values. */
 void mptable_init(struct mp_config_table *mc, u32 lapic_addr)
@@ -409,4 +410,106 @@ void *mptable_finalize(struct mp_config_table *mc)
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n", mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
+}
+
+unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
+{
+	struct drivers_generic_ioapic_config *ioapic_config;
+        struct mp_config_table *mc;
+	int isa_bus, pin, parentpin;
+	device_t dev, parent, oldparent;
+	void *tmp, *v;
+	int isaioapic = -1;
+
+	v = smp_write_floating_table(addr, 0);
+        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+
+	mptable_init(mc, LOCAL_APIC_ADDR);
+
+        smp_write_processors(mc);
+
+	mptable_write_buses(mc, NULL, &isa_bus);
+
+	for(dev = all_devices; dev; dev = dev->next) {
+		if (dev->path.type != DEVICE_PATH_IOAPIC)
+			continue;
+
+		if (!(ioapic_config = dev->chip_info)) {
+			printk(BIOS_ERR, "%s has no config, ignoring\n", dev_path(dev));
+			continue;
+		}
+		smp_write_ioapic(mc, dev->path.ioapic.ioapic_id,
+				     ioapic_config->version,
+				     ioapic_config->base);
+
+		if (ioapic_config->have_isa_interrupts) {
+			if (isaioapic > 1)
+				printk(BIOS_ERR, "More than one IOAPIC with ISA interrupts?\n");
+			else
+				isaioapic = dev->path.ioapic.ioapic_id;;
+		}
+	}
+
+	if (isaioapic >= 0) {
+		/* Legacy Interrupts */
+		printk(BIOS_DEBUG, "writing ISA IRQs\n");
+		mptable_add_isa_interrupts(mc, isa_bus, isaioapic, 0);
+	}
+
+	for(dev = all_devices; dev; dev = dev->next) {
+
+		if (dev->path.type != DEVICE_PATH_PCI)
+			continue;
+
+		pin = (dev->path.pci.devfn & 7) % 4;
+
+		if (dev->pci_irq_info[pin].ioapic_dst_id) {
+			printk(BIOS_INFO, "fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n", dev_path(dev),
+			       pin + 'A',
+			       dev->pci_irq_info[pin].ioapic_dst_id,
+			       dev->pci_irq_info[pin].ioapic_irq_pin);
+			smp_write_intsrc(mc, mp_INT,
+					 dev->pci_irq_info[pin].ioapic_flags,
+					 dev->bus->secondary,
+					 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
+					 dev->pci_irq_info[pin].ioapic_dst_id,
+					 dev->pci_irq_info[pin].ioapic_irq_pin);
+		} else {
+				oldparent = parent = dev;
+				while((parent = parent->bus->dev)) {
+					parentpin = (oldparent->path.pci.devfn >> 3) + (oldparent->path.pci.devfn & 7);
+					parentpin += dev->path.pci.devfn & 7;
+					parentpin += dev->path.pci.devfn >> 3;
+					parentpin %= 4;
+					printk(BIOS_INFO, "%s: INT%c#\n", dev_path(parent), parentpin + 'A');
+
+					if (parent->pci_irq_info[parentpin].ioapic_dst_id) {
+						printk(BIOS_INFO, "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
+						       dev_path(dev), pin + 'A',
+						       parent->pci_irq_info[parentpin].ioapic_dst_id,
+						       parent->pci_irq_info[parentpin].ioapic_irq_pin);
+						smp_write_intsrc(mc, mp_INT,
+								 parent->pci_irq_info[parentpin].ioapic_flags,
+								 dev->bus->secondary,
+								 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
+								 parent->pci_irq_info[parentpin].ioapic_dst_id,
+								 parent->pci_irq_info[parentpin].ioapic_irq_pin);
+
+						break;
+					}
+
+					if (parent->path.type == DEVICE_PATH_PCI_DOMAIN) {
+						printk(BIOS_ERR, "no IRQ found for %s\n", dev_path(dev));
+						break;
+					}
+
+					oldparent = parent;
+				}
+		}
+	}
+
+	mptable_lintsrc(mc, isa_bus);
+	tmp = mptable_finalize(mc);
+	printk(BIOS_INFO, "MPTABLE len: %d\n", (unsigned int)tmp - (unsigned int)v);
+	return (unsigned long)tmp;
 }

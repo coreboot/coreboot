@@ -66,21 +66,24 @@ static struct {
 	const char *dev_name;
 } pch_table [] = {
 	{0x1E41, "Desktop Sample"},
+	{0x1E42, "Mobile Sample"},
+	{0x1E43, "SFF Sample"},
+	{0x1E44, "Z77"},
+	{0x1E45, "H71"},
+	{0x1E46, "Z75"},
 	{0x1E47, "Q77"},
 	{0x1E48, "Q75"},
 	{0x1E49, "B75"},
-	{0x1E44, "Z77"},
-	{0x1E46, "Z75"},
 	{0x1E4A, "H77"},
 	{0x1E53, "C216"},
-	{0x1E42, "Mobile Sample"},
 	{0x1E55, "QM77"},
+	{0x1E56, "QS77"},
 	{0x1E58, "UM77"},
 	{0x1E57, "HM77"},
 	{0x1E59, "HM76"},
-	{0x1E5d, "HM75"},
-	{0x1E43, "SFF Sample"},
-	{0x1E56, "QS77"},
+	{0x1E5D, "HM75"},
+	{0x1E5E, "HM70"},
+	{0x1E5F, "NM70"},
 };
 
 static void report_pch_info(void)

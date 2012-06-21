@@ -61,6 +61,13 @@ struct bus {
  * combination:
  */
 
+struct pci_irq_info {
+	unsigned int	ioapic_irq_pin;
+	unsigned int	ioapic_src_pin;
+	unsigned int	ioapic_dst_id;
+	unsigned int    ioapic_flags;
+};
+
 struct device {
 	struct bus *	bus;		/* bus this device is on, for bridge
 					 * devices, it is the up stream bus */
@@ -77,7 +84,7 @@ struct device {
 	unsigned int    enabled : 1;	/* set if we should enable the device */
 	unsigned int    initialized : 1; /* set if we have initialized the device */
 	unsigned int    on_mainboard : 1;
-
+	struct pci_irq_info pci_irq_info[4];
 	u8 command;
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */

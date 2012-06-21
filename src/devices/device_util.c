@@ -201,6 +201,10 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "APIC: %02x",
 				dev->path.apic.apic_id);
 			break;
+		case DEVICE_PATH_IOAPIC:
+			sprintf(buffer, "IOAPIC: %02x",
+				dev->path.ioapic.ioapic_id);
+			break;
 		case DEVICE_PATH_PCI_DOMAIN:
 			sprintf(buffer, "PCI_DOMAIN: %04x",
 				dev->path.pci_domain.domain);

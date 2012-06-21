@@ -226,23 +226,35 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 
 	lastdev->nextdev = new_d;
 	lastdev = new_d;
-	if (bus == PCI) {
+
+	switch(bus) {
+	case PCI:
 		new_d->path = ".type=DEVICE_PATH_PCI,{.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}";
-	}
-	if (bus == PNP) {
+		break;
+
+	case PNP:
 		new_d->path = ".type=DEVICE_PATH_PNP,{.pnp={ .port = 0x%x, .device = 0x%x }}";
-	}
-	if (bus == I2C) {
+		break;
+
+	case I2C:
 		new_d->path = ".type=DEVICE_PATH_I2C,{.i2c={ .device = 0x%x }}";
-	}
-	if (bus == APIC) {
+		break;
+
+	case APIC:
 		new_d->path = ".type=DEVICE_PATH_APIC,{.apic={ .apic_id = 0x%x }}";
-	}
-	if (bus == APIC_CLUSTER) {
+		break;
+
+	case APIC_CLUSTER:
 		new_d->path = ".type=DEVICE_PATH_APIC_CLUSTER,{.apic_cluster={ .cluster = 0x%x }}";
-	}
-	if (bus == PCI_DOMAIN) {
+		break;
+
+	case PCI_DOMAIN:
 		new_d->path = ".type=DEVICE_PATH_PCI_DOMAIN,{.pci_domain={ .domain = 0x%x }}";
+		break;
+
+	case IOAPIC:
+		new_d->path = ".type=DEVICE_PATH_IOAPIC,{.ioapic={ .ioapic_id = 0x%x }}";
+		break;
 	}
 	return new_d;
 }
@@ -322,6 +334,32 @@ void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inher
 	dev->inherit_subsystem = inherit;
 }
 
+void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int irqpin)
+{
+
+	int srcpin;
+
+	if (!_srcpin || strlen(_srcpin) < 4 ||strncasecmp(_srcpin, "INT", 3) ||
+		   _srcpin[3] < 'A' || _srcpin[3] > 'D') {
+		printf("ERROR: malformed ioapic_irq args: %s\n", _srcpin);
+		exit(1);
+	}
+
+	srcpin = _srcpin[3] - 'A';
+
+	if (dev->bustype != PCI && dev->bustype != PCI_DOMAIN) {
+		printf("ERROR: ioapic config only allowed for PCI devices\n");
+		exit(1);
+	}
+
+	if (srcpin > 3) {
+		printf("ERROR: srcpin '%d' invalid\n");
+		exit(1);
+	}
+	dev->pci_irq_info[srcpin].ioapic_irq_pin = irqpin;
+	dev->pci_irq_info[srcpin].ioapic_dst_id = apicid;
+}
+
 static void pass0(FILE *fil, struct device *ptr) {
 	if (ptr->type == device && ptr->id == 0)
 		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
@@ -334,7 +372,9 @@ static void pass0(FILE *fil, struct device *ptr) {
 	}
 }
 
-static void pass1(FILE *fil, struct device *ptr) {
+static void pass1(FILE *fil, struct device *ptr)
+{
+	int pin;
 	if (!ptr->used && (ptr->type == device)) {
 		if (ptr->id != 0)
 			fprintf(fil, "static ");
@@ -348,6 +388,14 @@ static void pass1(FILE *fil, struct device *ptr) {
 		fprintf(fil, "\t.on_mainboard = 1,\n");
 		if (ptr->subsystem_vendor > 0)
 			fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n", ptr->subsystem_vendor);
+
+		for(pin = 0; pin < 4; pin++) {
+			if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
+				fprintf(fil, "\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n", pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
+
+			if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
+				fprintf(fil, "\t.pci_irq_info[%d].ioapic_dst_id = %d,\n", pin, ptr->pci_irq_info[pin].ioapic_dst_id);
+		}
 
 		if (ptr->subsystem_device > 0)
 			fprintf(fil, "\t.subsystem_device = 0x%04x,\n", ptr->subsystem_device);

@@ -230,13 +230,13 @@ static struct device_operations sata_ops = {
 	.ops_pci		= &sata_pci_ops,
 };
 
-static const unsigned short all_dev_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,
-					      0x1e00, 0x1e01, 0x1e02, 0x1e03,
-					      0 };
-/* Non-AHCI and Non-RAID Mode */
-static const struct pci_driver pch_sata_normal_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices = all_dev_ids,
+static const unsigned short pci_device_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,
+						 0x1e00, 0x1e01, 0x1e02, 0x1e03,
+						 0 };
+
+static const struct pci_driver pch_sata __pci_driver = {
+	.ops	 = &sata_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };
 

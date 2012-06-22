@@ -604,93 +604,17 @@ static struct device_operations device_ops = {
  * update from August 2011
  */
 
-static const struct pci_driver q67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4e,
+static const unsigned short pci_device_ids[] = { 0x1c46, 0x1c47, 0x1c49, 0x1c4a,
+						 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
+						 0x1c4f, 0x1c50, 0x1c52, 0x1c54,
+						 0x1e55, 0x1c56, 0x1c5c, 0x1e5d,
+						 0x1e5e, 0x1e5f,
+						 0 };
+
+static const struct pci_driver pch_lpc __pci_driver = {
+	.ops	 = &device_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };
-static const struct pci_driver q65_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4c,
-};
-static const struct pci_driver b65_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c50,
-};
-static const struct pci_driver h67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4a,
-};
-static const struct pci_driver z68_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c46,
-};
-static const struct pci_driver h61_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c5c,
-};
-static const struct pci_driver c202_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c52,
-};
-static const struct pci_driver c204_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c54,
-};
-static const struct pci_driver c206_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c56,
-};
-static const struct pci_driver qm67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4f,
-};
-static const struct pci_driver um67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c47,
-};
-static const struct pci_driver hm67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4b,
-};
-static const struct pci_driver hm65_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c49,
-};
-static const struct pci_driver qs67_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c4d,
-};
-static const struct pci_driver c216_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e55,
-};
-static const struct pci_driver hm75_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e5d,
-};
-static const struct pci_driver hm70_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e5e,
-};
-static const struct pci_driver nm70_lpc __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e5f,
-};
+
+

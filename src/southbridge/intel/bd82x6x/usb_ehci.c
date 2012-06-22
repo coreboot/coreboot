@@ -102,23 +102,11 @@ static struct device_operations usb_ehci_ops = {
 	.ops_pci		= &lops_pci,
 };
 
-static const struct pci_driver pch_usb_ehci1 __pci_driver = {
-	.ops	= &usb_ehci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c26,
-};
-static const struct pci_driver pch_usb_ehci2 __pci_driver = {
-	.ops	= &usb_ehci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c2d,
-};
-static const struct pci_driver pch_usb_ehci3 __pci_driver = {
-	.ops	= &usb_ehci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e26,
-};
-static const struct pci_driver pch_usb_ehci4 __pci_driver = {
-	.ops	= &usb_ehci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e2d,
+static const unsigned short pci_device_ids[] = { 0x1c26, 0x1c2d, 0x1e26, 0x1e2d,
+						 0 };
+
+static const struct pci_driver pch_usb_ehci __pci_driver = {
+	.ops	 = &usb_ehci_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };

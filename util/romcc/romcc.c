@@ -24992,7 +24992,7 @@ static void compile(const char *filename,
 	state.i_noinline      = lookup(&state, "noinline", 8);
 	state.i_always_inline = lookup(&state, "always_inline", 13);
 	state.i_noreturn      = lookup(&state, "noreturn", 8);
-	state.i_unused        = lookup(&state, "unused", 8);
+	state.i_unused        = lookup(&state, "unused", 6);
 
 	/* Process the command line macros */
 	process_cmdline_macros(&state);

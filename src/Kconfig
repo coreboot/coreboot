@@ -779,6 +779,13 @@ config GDB_STUB
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/x86/lib/c_start.S for details.
 
+config GDB_WAIT
+	bool "Wait for a GDB connection"
+	default n
+	depends on GDB_STUB
+	help
+	  If enabled, coreboot will wait for a GDB connection.
+
 config DEBUG_CBFS
 	bool "Output verbose CBFS debug messages"
 	default n

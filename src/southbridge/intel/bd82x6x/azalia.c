@@ -353,15 +353,11 @@ static struct device_operations azalia_ops = {
 	.ops_pci		= &azalia_pci_ops,
 };
 
-static const struct pci_driver azalia_0 __pci_driver = {
-	.ops	= &azalia_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c20,
-};
+static const unsigned short pci_device_ids[] = { 0x1c20, 0x1e20, 0 };
 
-static const struct pci_driver azalia_1 __pci_driver = {
-	.ops	= &azalia_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e20,
+static const struct pci_driver pch_azalia __pci_driver = {
+	.ops	 = &azalia_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };
 

@@ -100,14 +100,10 @@ static struct device_operations smbus_ops = {
 	.ops_pci		= &smbus_pci_ops,
 };
 
-static const struct pci_driver pch_smbus __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c22,
-};
+static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };
 
-static const struct pci_driver pch_smbus_a __pci_driver = {
-	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e22,
+static const struct pci_driver pch_smbus __pci_driver = {
+	.ops	 = &smbus_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };

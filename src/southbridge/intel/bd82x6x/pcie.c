@@ -257,68 +257,14 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-static const struct pci_driver pch_pcie_port1 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c10,	/* D28:F0 */
-};
+static const unsigned short pci_device_ids[] = { 0x1c10, 0x1c12, 0x1c14, 0x1c16,
+						 0x1c18, 0x1c1a, 0x1c1c, 0x1c1e,
+						 0x1e10, 0x1e12, 0x1e14, 0x1e16,
+						 0x1e18, 0x1e1a, 0x1e1c, 0x1e1e,
+						 0 };
 
-static const struct pci_driver pch_pcie_port1_a __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e10,	/* D28:F0 */
-};
-
-static const struct pci_driver pch_pcie_port2 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c12,	/* D28:F1 */
-};
-
-static const struct pci_driver pch_pcie_port3 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c14,	/* D28:F2 */
-};
-
-static const struct pci_driver pch_pcie_port3_a __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e14,	/* D28:F2 */
-};
-
-static const struct pci_driver pch_pcie_port4 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c16,	/* D28:F3 */
-};
-
-static const struct pci_driver pch_pcie_port4_a __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e16,	/* D28:F3 */
-};
-
-static const struct pci_driver pch_pcie_port5 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c18,	/* D28:F4 */
-};
-
-static const struct pci_driver pch_pcie_port6 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c1a,	/* D28:F5 */
-};
-
-static const struct pci_driver pch_pcie_port7 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c1c,	/* D28:F6 */
-};
-
-static const struct pci_driver pch_pcie_port8 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c1e,	/* D28:F7 */
+static const struct pci_driver pch_pcie __pci_driver = {
+	.ops	 = &device_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };

@@ -78,6 +78,9 @@ _start:
 	/* Restore the stack location */
 	movl	%ebp, %esp
 
+#if CONFIG_GDB_WAIT == 1
+	call gdb_stub_breakpoint
+#endif
 	/* The boot_complete flag has already been pushed */
 	call	hardwaremain
 	/* NOTREACHED */
@@ -228,7 +231,7 @@ int_hand:
 
 	iret
 
-#if CONFIG_GDB_STUB == 1
+#if CONFIG_GDB_WAIT == 1
 
 	.globl gdb_stub_breakpoint
 gdb_stub_breakpoint:

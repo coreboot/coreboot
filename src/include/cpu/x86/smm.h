@@ -376,9 +376,12 @@ void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ);
 
 #if !CONFIG_SMM_TSEG
 void smi_release_lock(void);
+#define tseg_relocate(ptr)
 #else
 /* Return address of TSEG base */
 u32 smi_get_tseg_base(void);
+/* Adjust pointer with TSEG base */
+void tseg_relocate(void **ptr);
 #endif
 
 #endif

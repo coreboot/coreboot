@@ -29,6 +29,7 @@
 #include <cpu/x86/name.h>
 #include <cbfs_core.h>
 #include <arch/byteorder.h>
+#include <elog.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -296,6 +297,9 @@ unsigned long smbios_write_tables(unsigned long current)
 	len += smbios_write_type1(&current, handle++);
 	len += smbios_write_type3(&current, handle++);
 	len += smbios_write_type4(&current, handle++);
+#if CONFIG_ELOG
+	len += elog_smbios_write_type15(&current, handle++);
+#endif
 	len += smbios_write_type32(&current, handle++);
 
 	len += smbios_walk_device_tree(all_devices, &handle, &current);

@@ -20,6 +20,7 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
+#include <smbios.h>
 #include <spi.h>
 #include <spi_flash.h>
 #include <stdint.h>
@@ -674,6 +675,34 @@ static int elog_spi_init(void)
 	elog_spi = spi_flash_probe(0, 0, 0, 0);
 
 	return elog_spi ? 0 : -1;
+}
+
+/*
+ * Fill out SMBIOS Type 15 table entry so the
+ * event log can be discovered at runtime.
+ */
+int elog_smbios_write_type15(unsigned long *current, int handle)
+{
+	struct smbios_type15 *t = (struct smbios_type15 *)*current;
+	int len = sizeof(struct smbios_type15);
+
+	memset(t, 0, len);
+	t->type = SMBIOS_EVENT_LOG;
+	t->length = len - 2;
+	t->handle = handle;
+	t->area_length = elog_get_flash()->total_size - 1;
+	t->header_offset = 0;
+	t->data_offset = sizeof(struct elog_header);
+	t->access_method = SMBIOS_EVENTLOG_ACCESS_METHOD_MMIO32;
+	t->log_status = SMBIOS_EVENTLOG_STATUS_VALID;
+	t->change_token = 0;
+	t->address = (u32)elog_get_flash()->backing_store;
+	t->header_format = ELOG_HEADER_TYPE_OEM;
+	t->log_type_descriptors = 0;
+	t->log_type_descriptor_length = 2;
+
+	*current += len;
+	return len;
 }
 
 /*

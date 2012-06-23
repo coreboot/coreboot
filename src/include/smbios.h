@@ -28,6 +28,7 @@ typedef enum {
 	SMBIOS_PROCESSOR_INFORMATION=4,
 	SMBIOS_CACHE_INFORMATION=7,
 	SMBIOS_SYSTEM_SLOTS=9,
+	SMBIOS_EVENT_LOG=15,
 	SMBIOS_PHYS_MEMORY_ARRAY=16,
 	SMBIOS_MEMORY_DEVICE=17,
 	SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS=19,
@@ -137,6 +138,36 @@ struct smbios_type4 {
 	u16 processor_family2;
 	char eos[2];
 } __attribute__((packed));
+
+struct smbios_type15 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u16 area_length;
+	u16 header_offset;
+	u16 data_offset;
+	u8 access_method;
+	u8 log_status;
+	u32 change_token;
+	u32 address;
+	u8 header_format;
+	u8 log_type_descriptors;
+	u8 log_type_descriptor_length;
+	char eos[2];
+} __attribute__((packed));
+
+enum {
+	SMBIOS_EVENTLOG_ACCESS_METHOD_IO8 = 0,
+	SMBIOS_EVENTLOG_ACCESS_METHOD_IO8X2,
+	SMBIOS_EVENTLOG_ACCESS_METHOD_IO16,
+	SMBIOS_EVENTLOG_ACCESS_METHOD_MMIO32,
+	SMBIOS_EVENTLOG_ACCESS_METHOD_GPNV,
+};
+
+enum {
+	SMBIOS_EVENTLOG_STATUS_VALID = 1, /* Bit 0 */
+	SMBIOS_EVENTLOG_STATUS_FULL  = 2, /* Bit 1 */
+};
 
 struct smbios_type16 {
 	u8 type;

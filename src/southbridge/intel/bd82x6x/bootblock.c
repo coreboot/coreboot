@@ -72,4 +72,7 @@ static void bootblock_southbridge_init(void)
 #endif
 	enable_spi_prefetch();
 	enable_port80_on_lpc();
+
+	/* Enable upper 128bytes of CMOS */
+	RCBA32(RC) = (1 << 2);
 }

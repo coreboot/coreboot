@@ -115,6 +115,10 @@ extern void elog_add_event_dword(u8 event_type, u32 data);
 extern void elog_add_event_wake(u8 source, u32 instance);
 extern int elog_smbios_write_type15(unsigned long *current, int handle);
 
+#if CONFIG_ELOG_GSMI
+extern u32 gsmi_exec(u8 command, u32 *param);
+#endif
+
 #if CONFIG_ELOG_BOOT_COUNT
 u32 boot_count_read(void);
 u32 boot_count_increment(void);

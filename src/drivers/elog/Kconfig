@@ -68,6 +68,15 @@ config ELOG_SHRINK_SIZE
 
 endif
 
+config ELOG_GSMI
+	depends on ELOG && SPI_FLASH_SMM && SMM_TSEG
+	bool "SMI interface to write and clear event log"
+	default n
+	help
+	  This interface is compatible with the linux kernel driver
+	  available with CONFIG_GOOGLE_GSMI and can be used to write
+	  kernel reset/shutdown messages to the event log.
+
 config ELOG_BOOT_COUNT
 	depends on ELOG
 	bool "Maintain a monotonic boot number in CMOS"

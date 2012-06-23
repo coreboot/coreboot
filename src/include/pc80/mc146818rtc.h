@@ -76,6 +76,18 @@
 # define RTC_VRT 0x80		/* valid RAM and time */
 /**********************************************************************/
 
+/* Date and Time in RTC CMOS */
+#define RTC_CLK_SECOND		0
+#define RTC_CLK_SECOND_ALARM	1
+#define RTC_CLK_MINUTE		2
+#define RTC_CLK_MINUTE_ALARM	3
+#define RTC_CLK_HOUR		4
+#define RTC_CLK_HOUR_ALARM	5
+#define RTC_CLK_DAYOFWEEK	6
+#define RTC_CLK_DAYOFMONTH	7
+#define RTC_CLK_MONTH		8
+#define RTC_CLK_YEAR		9
+
 /* On PCs, the checksum is built only over bytes 16..45 */
 #define PC_CKS_RANGE_START	16
 #define PC_CKS_RANGE_END	45

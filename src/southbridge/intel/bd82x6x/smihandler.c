@@ -60,14 +60,12 @@ u32 smi_get_tseg_base(void)
 		tseg_base = pcie_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
 	return tseg_base;
 }
-static inline void tseg_fixup(void **ptr)
+void tseg_relocate(void **ptr)
 {
 	/* Adjust pointer with TSEG base */
 	if (*ptr)
-		*ptr = (void *)(((u8*)*ptr) + tseg_base);
+		*ptr = (void *)(((u8*)*ptr) + smi_get_tseg_base());
 }
-#else
-#define tseg_fixup(x) do {} while(0)
 #endif
 
 /**
@@ -343,7 +341,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	slp_typ = (reg32 >> 10) & 7;
 
 	/* Do any mainboard sleep handling */
-	tseg_fixup((void **)&mainboard_sleep);
+	tseg_relocate((void **)&mainboard_sleep);
 	if (mainboard_sleep)
 		mainboard_sleep(slp_typ);
 
@@ -456,7 +454,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 		break;
 	}
 
-	tseg_fixup((void **)&mainboard_apmc);
+	tseg_relocate((void **)&mainboard_apmc);
 	if (mainboard_apmc)
 		mainboard_apmc(reg8);
 }
@@ -496,7 +494,7 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
 
-	tseg_fixup((void **)&mainboard_gpi);
+	tseg_relocate((void **)&mainboard_gpi);
 	if (mainboard_gpi) {
 		mainboard_gpi(reg16);
 	} else {

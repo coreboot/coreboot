@@ -113,6 +113,7 @@ extern void elog_add_event_byte(u8 event_type, u8 data);
 extern void elog_add_event_word(u8 event_type, u16 data);
 extern void elog_add_event_dword(u8 event_type, u32 data);
 extern void elog_add_event_wake(u8 source, u32 instance);
+extern int elog_smbios_write_type15(unsigned long *current, int handle);
 
 #endif /* !CONFIG_ELOG */
 

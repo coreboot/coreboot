@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <console/console.h>
+#ifdef __SMM__
+#include <cpu/x86/smm.h>
+#endif
 
 #if CONFIG_DEBUG_MALLOC
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
@@ -43,5 +46,11 @@ void *memalign(size_t boundary, size_t size)
 
 void *malloc(size_t size)
 {
+#if CONFIG_SMM_TSEG && defined(__SMM__)
+	if (!free_mem_ptr) {
+		free_mem_ptr = &_heap + smi_get_tseg_base();
+		free_mem_end_ptr = &_eheap + smi_get_tseg_base();
+	}
+#endif
 	return memalign(sizeof(u64), size);
 }

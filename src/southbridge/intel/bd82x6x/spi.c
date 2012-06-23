@@ -27,20 +27,45 @@
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <device/pci.h>
 #include <device/pci_ids.h>
 
 #include <spi.h>
 
 #define min(a, b) ((a)<(b)?(a):(b))
 
+#ifdef __SMM__
+#include <arch/romcc_io.h>
+#include <northbridge/intel/sandybridge/pcie_config.c>
 typedef device_t pci_dev_t;
-#define pci_read_config_byte(dev, reg, targ) *(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ) *(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ) *(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val) pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val) pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val) pci_write_config32(dev, reg, val)
+#define pci_read_config_byte(dev, reg, targ)\
+	*(targ) = pcie_read_config8(dev, reg)
+#define pci_read_config_word(dev, reg, targ)\
+	*(targ) = pcie_read_config16(dev, reg)
+#define pci_read_config_dword(dev, reg, targ)\
+	*(targ) = pcie_read_config32(dev, reg)
+#define pci_write_config_byte(dev, reg, val)\
+	pcie_write_config8(dev, reg, val)
+#define pci_write_config_word(dev, reg, val)\
+	pcie_write_config16(dev, reg, val)
+#define pci_write_config_dword(dev, reg, val)\
+	pcie_write_config32(dev, reg, val)
+#else /* !__SMM__ */
+#include <device/device.h>
+#include <device/pci.h>
+typedef device_t pci_dev_t;
+#define pci_read_config_byte(dev, reg, targ)\
+	*(targ) = pci_read_config8(dev, reg)
+#define pci_read_config_word(dev, reg, targ)\
+	*(targ) = pci_read_config16(dev, reg)
+#define pci_read_config_dword(dev, reg, targ)\
+	*(targ) = pci_read_config32(dev, reg)
+#define pci_write_config_byte(dev, reg, val)\
+	pci_write_config8(dev, reg, val)
+#define pci_write_config_word(dev, reg, val)\
+	pci_write_config16(dev, reg, val)
+#define pci_write_config_dword(dev, reg, val)\
+	pci_write_config32(dev, reg, val)
+#endif /* !__SMM__ */
 
 typedef struct spi_slave ich_spi_slave;
 
@@ -310,7 +335,11 @@ void spi_init(void)
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 
+#ifdef __SMM__
+	dev = PCI_DEV(0, 31, 0);
+#else
 	dev = dev_find_slot(0, PCI_DEVFN(31, 0));
+#endif
 	pci_read_config_dword(dev, 0, &ids);
 	vendor_id = ids;
 	device_id = (ids >> 16);

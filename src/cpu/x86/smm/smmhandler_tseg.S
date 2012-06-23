@@ -20,7 +20,11 @@
  */
 
 /*
- * +--------------------------------+ 0xffff
+ * +--------------------------------+
+ * | SMM Handler C Code             |
+ * +--------------------------------+ 0x14000
+ * | SMM Handler Heap               |
+ * +--------------------------------+ 0x10000
  * |  Save State Map Node 0         |
  * |  Save State Map Node 1         |
  * |  Save State Map Node 2         |
@@ -39,7 +43,7 @@
  * | ...                            |
  * +--------------------------------+ 0x7400
  * |                                |
- * | SMM Handler                    |
+ * | SMM Handler Assembly Stub      |
  * |                                |
  * +--------------------------------+ TSEG
  *
@@ -91,6 +95,7 @@ smm_handler_start:
 
 	/* If we did not get the lock, wait for release */
 wait_for_unlock:
+	pause
 	addr32	movw (%ebx), %ax
 	cmpw	$SMI_LOCKED, %ax
 	je	wait_for_unlock

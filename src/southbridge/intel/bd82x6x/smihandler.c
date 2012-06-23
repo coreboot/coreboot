@@ -32,6 +32,13 @@
 
 #include "nvs.h"
 
+/* We are using PCIe accesses for now
+ *  1. the chipset can do it
+ *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
+ */
+#include <northbridge/intel/sandybridge/sandybridge.h>
+#include <northbridge/intel/sandybridge/pcie_config.c>
+
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
  */
@@ -47,6 +54,12 @@ void *smi1 = (void *)0x0;
 
 #if CONFIG_SMM_TSEG
 static u32 tseg_base = 0;
+u32 smi_get_tseg_base(void)
+{
+	if (!tseg_base)
+		tseg_base = pcie_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
+	return tseg_base;
+}
 static inline void tseg_fixup(void **ptr)
 {
 	/* Adjust pointer with TSEG base */
@@ -207,13 +220,6 @@ static void dump_tco_status(u32 tco_sts)
 	if (tco_sts & (1 <<  0)) printk(BIOS_DEBUG, "NMI2SMI ");
 	printk(BIOS_DEBUG, "\n");
 }
-
-/* We are using PCIe accesses for now
- *  1. the chipset can do it
- *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
- */
-#include <northbridge/intel/sandybridge/sandybridge.h>
-#include <northbridge/intel/sandybridge/pcie_config.c>
 
 int southbridge_io_trap_handler(int smif)
 {
@@ -672,11 +678,6 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	/* Update global variable pmbase */
 	pmbase = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 
-#if CONFIG_SMM_TSEG
-	/* Update global variable TSEG base */
-	tseg_base = pcie_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
-#endif
-
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
@@ -688,7 +689,8 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 			if (southbridge_smi[i]) {
 #if CONFIG_SMM_TSEG
 				smi_handler_t handler = (smi_handler_t)
-					((u8*)southbridge_smi[i] + tseg_base);
+					((u8*)southbridge_smi[i] +
+					 smi_get_tseg_base());
 				if (handler)
 					handler(node, state_save);
 #else

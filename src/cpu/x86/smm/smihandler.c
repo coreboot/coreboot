@@ -117,8 +117,14 @@ void smi_handler(u32 smm_revision)
 {
 	unsigned int node;
 	smm_state_save_area_t state_save;
+	u32 smm_base = 0xa8000; /* ASEG */
 
-#if !CONFIG_SMM_TSEG
+#if CONFIG_SMM_TSEG
+	/* Update global variable TSEG base */
+	if (!smi_get_tseg_base())
+		return;
+	smm_base = smi_get_tseg_base() + 0x8000;
+#else
 	/* Are we ok to execute the handler? */
 	if (!smi_obtain_lock()) {
 		/* For security reasons we don't release the other CPUs
@@ -146,18 +152,22 @@ void smi_handler(u32 smm_revision)
 	case 0x00030007:
 		state_save.type = LEGACY;
 		state_save.legacy_state_save = (legacy_smm_state_save_area_t *)
-			(0xa8000 + 0x7e00 - (node * 0x400));
+			(smm_base + 0x7e00 - (node * 0x400));
 		break;
 	case 0x00030100:
-	case 0x00030101: /* SandyBridge */
 		state_save.type = EM64T;
 		state_save.em64t_state_save = (em64t_smm_state_save_area_t *)
-			(0xa8000 + 0x7d00 - (node * 0x400));
+			(smm_base + 0x7d00 - (node * 0x400));
+	case 0x00030101: /* SandyBridge/IvyBridge */
+		state_save.type = EM64T101;
+		state_save.em64t101_state_save =
+			(em64t101_smm_state_save_area_t *)
+			(smm_base + 0x7d00 - (node * 0x400));
 		break;
 	case 0x00030064:
 		state_save.type = AMD64;
 		state_save.amd64_state_save = (amd64_smm_state_save_area_t *)
-			(0xa8000 + 0x7e00 - (node * 0x400));
+			(smm_base + 0x7e00 - (node * 0x400));
 		break;
 	default:
 		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_revision);

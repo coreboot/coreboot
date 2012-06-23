@@ -12,6 +12,9 @@
 #include <spi.h>
 #include <spi_flash.h>
 #include <delay.h>
+#ifdef __SMM__
+#include <cpu/x86/smm.h>
+#endif
 #include "spi_flash_internal.h"
 
 static void spi_flash_addr(u32 addr, u8 *cmd)
@@ -115,7 +118,7 @@ int spi_flash_cmd_poll_bit(struct spi_flash *flash, unsigned long timeout,
 		if ((status & poll_bit) == 0)
 			break;
 
-		mdelay(1);
+		udelay(500);
 	} while (timebase--);
 
 	if ((status & poll_bit) == 0)
@@ -206,7 +209,7 @@ out:
  */
 #define IDCODE_CONT_LEN 0
 #define IDCODE_PART_LEN 5
-static const struct {
+static struct {
 	const u8 shift;
 	const u8 idcode;
 	struct spi_flash *(*probe) (struct spi_slave *spi, u8 *idcode);
@@ -275,6 +278,10 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 	/* search the table for matches in shift and id */
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
+#ifdef __SMM__
+			/* Need to relocate this function */
+			tseg_relocate((void **)&flashes[i].probe);
+#endif
 			/* we have a match, call probe */
 			flash = flashes[i].probe(spi, idp);
 			if (flash)

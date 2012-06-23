@@ -1,0 +1,69 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2012 The Chromium OS Authors.  All rights reserved.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+config ELOG
+	depends on SPI_FLASH
+	bool "Support for flash based event log"
+	default n
+	help
+	  Enable support for flash based event logging.
+
+if ELOG
+
+config ELOG_DEBUG
+	bool "Enable debug output for event logging"
+	default n
+
+config ELOG_FLASH_BASE
+	hex "Event log offset into flash"
+	default 0
+	help
+	  Offset into the flash chip for the ELOG block.
+	  This should be allocated in the FMAP.
+
+config ELOG_AREA_SIZE
+	hex "Size of Event Log area in flash"
+	default 0x1000
+	help
+	  This should be a multiple of flash block size.
+
+	  Default is 4K.
+
+config ELOG_FULL_THRESHOLD
+	hex "Threshold at which flash is considered full"
+	default 0xC00
+	help
+	  When the Event Log size is larger than this it will be shrunk
+	  to ELOG_SHRINK_SIZE.  Must be greater than ELOG_AREA_SIZE, and
+	  ELOG_AREA_SIZE - ELOG_FULL_THRESHOLD must be greater than the
+	  maximum event size of 128.
+
+	  Default is 75% of the log, or 3K.
+
+config ELOG_SHRINK_SIZE
+	hex "Resulting size when the event log is shrunk"
+	default 0x400
+	help
+	  When the Event Log is shrunk it will go to this size.
+	  ELOG_AREA_SIZE - ELOG_SHRINK_SIZE must be less than
+	  CONFIG_ELOG_FULL_THRESHOLD.
+
+	  Default is 1K.
+
+endif

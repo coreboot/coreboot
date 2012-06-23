@@ -28,3 +28,4 @@ source src/drivers/trident/Kconfig
 source src/drivers/ics/Kconfig
 source src/drivers/spi/Kconfig
 source src/drivers/ipmi/Kconfig
+source src/drivers/elog/Kconfig

@@ -29,6 +29,7 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
+#include <elog.h>
 #include "pch.h"
 
 #define NMI_OFF	0
@@ -296,6 +297,9 @@ static void pch_rtc_init(struct device *dev)
 	if (rtc_failed) {
 		reg8 &= ~RTC_BATTERY_DEAD;
 		pci_write_config8(dev, GEN_PMCON_3, reg8);
+#if CONFIG_ELOG
+		elog_add_event(ELOG_TYPE_RTC_RESET);
+#endif
 	}
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 

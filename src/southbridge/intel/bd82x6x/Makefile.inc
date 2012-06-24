@@ -32,6 +32,7 @@ ramstage-y += me_status.c
 ramstage-y += reset.c
 ramstage-y += watchdog.c
 
+ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += spi.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 

@@ -346,6 +346,12 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	if (mainboard_sleep)
 		mainboard_sleep(slp_typ);
 
+#if CONFIG_ELOG_GSMI
+	/* Log S3, S4, and S5 entry */
+	if (slp_typ >= 5)
+		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ-2);
+#endif
+
 	/* Next, do the deed.
 	 */
 
@@ -526,6 +532,9 @@ static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_
 		// power button pressed
 		u32 reg32;
 		reg32 = (7 << 10) | (1 << 13);
+#if CONFIG_ELOG_GSMI
+		elog_add_event(ELOG_TYPE_POWER_BUTTON);
+#endif
 		outl(reg32, pmbase + PM1_CNT);
 	}
 }

@@ -370,6 +370,11 @@ static void smm_install(void)
 
 void smm_init(void)
 {
+#if CONFIG_ELOG
+	/* Log events from chipset before clearing */
+	pch_log_state();
+#endif
+
 	/* Put SMM code to 0xa0000 */
 	smm_install();
 

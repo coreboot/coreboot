@@ -65,6 +65,9 @@ int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
 void pch_enable(device_t dev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
+#if CONFIG_ELOG
+void pch_log_state(void);
+#endif
 #else
 void enable_smbus(void);
 void enable_usb_bar(void);
@@ -485,6 +488,8 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define DEVACT_STS	0x44
 #define SS_CNT		0x50
 #define C3_RES		0x54
+#define TCO1_STS	0x64
+#define TCO2_STS	0x66
 
 /*
  * SPI Opcode Menu setup for SPIBAR lockdown

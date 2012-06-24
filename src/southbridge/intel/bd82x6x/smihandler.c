@@ -28,6 +28,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
+#include <elog.h>
 #include "pch.h"
 
 #include "nvs.h"
@@ -405,6 +406,53 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	}
 }
 
+#if CONFIG_ELOG_GSMI
+static void southbridge_smi_gsmi(void)
+{
+	em64t101_smm_state_save_area_t *io_smi;
+	u32 base = smi_get_tseg_base() + 0x8000;
+	u32 *ret, *param;
+	u8 sub_command, node;
+
+	/*
+	 * Check for Synchronous IO SMI and use save state from that
+	 * core in case we are not running on the same core that
+	 * initiated the IO transaction.
+	 */
+	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
+		/*
+		 * Look for IO Misc Info:
+		 *  Synchronous bit[0]=1
+		 *  Byte bit[3:1]=1
+		 *  Output bit[7:4]=0
+		 *  APMC port bit[31:16]=0xb2
+		 * RAX[7:0] == 0xEF
+		 */
+		u32 io_want_info = (APM_CNT << 16) | 0x3;
+		io_smi = (em64t101_smm_state_save_area_t *)
+			(base + 0x7d00 - (node * 0x400));
+
+		if (io_smi->io_misc_info == io_want_info &&
+		    ((u8)io_smi->rax == ELOG_GSMI_APM_CNT))
+			break;
+	}
+
+	/* Did not find matching CPU Save State */
+	if (node == CONFIG_MAX_CPUS)
+		return;
+
+	/* Command and return value in EAX */
+	ret = (u32*)&io_smi->rax;
+	sub_command = (u8)(*ret >> 8);
+
+	/* Parameter buffer in EBX */
+	param = (u32*)&io_smi->rbx;
+
+	/* drivers/elog/gsmi.c */
+	*ret = gsmi_exec(sub_command, param);
+}
+#endif
+
 static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u32 pmctrl;
@@ -452,6 +500,11 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 		smm_initialized = 1;
 		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
 		break;
+#if CONFIG_ELOG_GSMI
+	case ELOG_GSMI_APM_CNT:
+		southbridge_smi_gsmi();
+		break;
+#endif
 	}
 
 	tseg_relocate((void **)&mainboard_apmc);

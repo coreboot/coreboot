@@ -21,6 +21,9 @@
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <elog.h>
+
+#include "chromeos.h"
 #include "gnvs.h"
 
 chromeos_acpi_t *vboot_data = NULL;
@@ -32,6 +35,14 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 
 	/* Copy saved ME hash into NVS */
 	memcpy(vboot_data->mehh, me_hash_saved, sizeof(vboot_data->mehh));
+
+#if CONFIG_ELOG
+	if (developer_mode_enabled())
+		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
+	if (recovery_mode_enabled())
+		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE,
+				    get_recovery_mode_from_vbnv());
+#endif
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)

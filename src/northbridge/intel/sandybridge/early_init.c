@@ -108,8 +108,6 @@ static void sandybridge_setup_graphics(void)
 	pci_write_config8(PCI_DEV(0, 2, 0), MSAC, reg8);
 
 	/* Erratum workarounds */
-	MCHBAR8(0x5f10) = 0x20;
-
 	reg32 = MCHBAR32(0x5f00);
 	reg32 |= (1 << 9)|(1 << 10);
 	MCHBAR32(0x5f00) = reg32;

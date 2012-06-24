@@ -388,8 +388,27 @@ static void northbridge_dmi_init(struct device *dev)
 static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl;
+	u32 bridge_type;
 
 	northbridge_dmi_init(dev);
+
+	bridge_type = MCHBAR32(0x5f10);
+	bridge_type &= ~0xff;
+
+	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_IVB) {
+		/* Enable Power Aware Interrupt Routing */
+		u8 pair = MCHBAR8(0x5418);
+		pair &= ~0xf;	/* Clear 3:0 */
+		pair |= 0x4;	/* Fixed Priority */
+		MCHBAR8(0x5418) = pair;
+
+		/* 30h for IvyBridge */
+		bridge_type |= 0x30;
+	} else {
+		/* 20h for Sandybridge */
+		bridge_type |= 0x20;
+	}
+	MCHBAR32(0x5f10) = bridge_type;
 
 	/*
 	 * Set bit 0 of BIOS_RESET_CPL to indicate to the CPU

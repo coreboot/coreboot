@@ -64,9 +64,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2) | 0x02, 0x02, 0x10); /* SATA      0:1f.2 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x06, (0x00 << 2) | 0x00, 0x02, 0x10); /* Cardbus   6:00.0 */
 
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_HIGH, isa_bus, 0, MP_APIC_ALL, 0);
-	smp_write_lintsrc(mc, mp_NMI,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_HIGH, isa_bus, 0, MP_APIC_ALL, 1);
-
+	mptable_lintsrc(mc, isa_bus);
 	return mptable_finalize(mc);
 }
 

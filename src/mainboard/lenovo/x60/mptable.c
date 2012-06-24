@@ -66,9 +66,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x05, (0x00 << 2) | 0x01, 0x02, 0x11); /* Firewire  5:00.1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x05, (0x00 << 2) | 0x02, 0x02, 0x12); /* SDHC      5:00.2 */
 
-	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_HIGH, isa_bus, 0, MP_APIC_ALL, 0);
-	smp_write_lintsrc(mc, mp_NMI,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_HIGH, isa_bus, 0, MP_APIC_ALL, 1);
-
+	mptable_lintsrc(mc, isa_bus);
 	return mptable_finalize(mc);
 }
 

@@ -311,7 +311,10 @@ static void configure_c_states(void)
 	/* Secondary Plane Current Limit */
 	msr = rdmsr(MSR_PP1_CURRENT_CONFIG);
 	msr.lo &= ~0x1fff;
-	msr.lo |= PP1_CURRENT_LIMIT;
+	if (cpuid_eax(1) >= 0x30600)
+		msr.lo |= PP1_CURRENT_LIMIT_IVB;
+	else
+		msr.lo |= PP1_CURRENT_LIMIT_SNB;
 	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
 }
 

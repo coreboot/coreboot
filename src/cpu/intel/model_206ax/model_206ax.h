@@ -75,7 +75,8 @@
 #define MSR_PP0_CURRENT_CONFIG		0x601
 #define  PP0_CURRENT_LIMIT		(112 << 3) /* 112 A */
 #define MSR_PP1_CURRENT_CONFIG		0x602
-#define  PP1_CURRENT_LIMIT		(35 << 3) /* 35 A */
+#define  PP1_CURRENT_LIMIT_SNB		(35 << 3) /* 35 A */
+#define  PP1_CURRENT_LIMIT_IVB		(50 << 3) /* 50 A */
 #define MSR_PKG_POWER_SKU_UNIT		0x606
 #define MSR_PKG_POWER_SKU		0x614
 #define MSR_PP0_POWER_LIMIT		0x638

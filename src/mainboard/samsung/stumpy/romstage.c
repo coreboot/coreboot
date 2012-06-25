@@ -119,9 +119,6 @@ static void rcba_config(void)
 	/* PCH BWG says to read back the IOAPIC enable register */
 	(void) RCBA16(OIC);
 
-	/* Enable upper 128bytes of CMOS (generic) */
-	RCBA32(RC) = (1 << 2);
-
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
 	reg32 |= PCH_DISABLE_ALWAYS;

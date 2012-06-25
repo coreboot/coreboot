@@ -81,6 +81,13 @@
 #define MSR_PP0_POWER_LIMIT		0x638
 #define MSR_PP1_POWER_LIMIT		0x640
 
+#define IVB_CONFIG_TDP_MIN_CPUID	0x306a2
+#define MSR_CONFIG_TDP_NOMINAL		0x648
+#define MSR_CONFIG_TDP_LEVEL1		0x649
+#define MSR_CONFIG_TDP_LEVEL2		0x64a
+#define MSR_CONFIG_TDP_CONTROL		0x64b
+#define MSR_TURBO_ACTIVATION_RATIO	0x64c
+
 /* P-state configuration */
 #define PSS_MAX_ENTRIES			8
 #define PSS_RATIO_STEP			2
@@ -93,6 +100,7 @@ void intel_model_206ax_finalize_smm(void);
 #else
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
+int cpu_config_tdp_levels(void);
 #endif
 
 #endif

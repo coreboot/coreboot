@@ -179,6 +179,19 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
+int cpu_config_tdp_levels(void)
+{
+	msr_t platform_info;
+
+	/* Minimum CPU revision */
+	if (cpuid_eax(1) < IVB_CONFIG_TDP_MIN_CPUID)
+		return 0;
+
+	/* Bits 34:33 indicate how many levels supported */
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+	return (platform_info.hi >> 1) & 3;
+}
+
 /*
  * Configure processor power limits if possible
  * This must be done AFTER set of BIOS_RESET_CPL
@@ -235,6 +248,14 @@ void set_power_limits(u8 power_limit_1_time)
 	/* Power limit 2 time is only programmable on SNB EP/EX */
 
 	wrmsr(MSR_PKG_POWER_LIMIT, limit);
+
+	/* Use nominal TDP values for CPUs with configurable TDP */
+	if (cpu_config_tdp_levels()) {
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		limit.hi = 0;
+		limit.lo = msr.lo & 0xff;
+		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
+	}
 }
 
 static void configure_c_states(void)
@@ -340,16 +361,24 @@ static void configure_dca_cap(void)
 
 static void set_max_ratio(void)
 {
-	msr_t msr;
+	msr_t msr, perf_ctl;
 
-	/* Platform Info bits 15:8 give max ratio */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	msr.hi = 0;
-	msr.lo &= 0xff00;
-	wrmsr(IA32_PERF_CTL, msr);
+	perf_ctl.hi = 0;
+
+	/* Check for configurable TDP option */
+	if (cpu_config_tdp_levels()) {
+		/* Set to nominal TDP ratio */
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		perf_ctl.lo = (msr.lo & 0xff) << 8;
+	} else {
+		/* Platform Info bits 15:8 give max ratio */
+		msr = rdmsr(MSR_PLATFORM_INFO);
+		perf_ctl.lo = msr.lo & 0xff00;
+	}
+	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
-	       ((msr.lo >> 8) & 0xff) * 100);
+	       ((perf_ctl.lo >> 8) & 0xff) * SANDYBRIDGE_BCLK);
 }
 
 static void set_energy_perf_bias(u8 policy)

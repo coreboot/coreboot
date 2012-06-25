@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -421,6 +422,16 @@ static void northbridge_init(struct device *dev)
 	/* Configure turbo power limits 1ms after reset complete bit */
 	mdelay(1);
 	set_power_limits(28);
+
+	/*
+	 * CPUs with configurable TDP also need power limits set
+	 * in MCHBAR.  Use same values from MSR_PKG_POWER_LIMIT.
+	 */
+	if (cpu_config_tdp_levels()) {
+		msr_t msr = rdmsr(MSR_PKG_POWER_LIMIT);
+		MCHBAR32(0x59A0) = msr.lo;
+		MCHBAR32(0x59A4) = msr.hi;
+	}
 
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;

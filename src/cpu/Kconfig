@@ -23,6 +23,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 # yet be dropped completely.
 config MAX_PHYSICAL_CPUS
 	int
+	depends on CPU_AMD_MODEL_10XXX || CPU_AMD_MODEL_FXX || CPU_AMD_AGESA
 	default 1
 
 config SMP

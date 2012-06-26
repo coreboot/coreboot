@@ -68,10 +68,22 @@ static void copy_secondary_start_to_1m_below(void)
 
 static struct bus *current_cpu_bus;
 
+static int wait_apic(int timeout)
+{
+	int send_status;
+
+	do {
+		printk(BIOS_SPEW, "+");
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && --timeout);
+
+	return send_status;
+}
+
 static int lapic_start_cpus(struct bus *cpu_bus)
 {
-	int timeout;
-	unsigned long send_status, accept_status, start_eip;
+	unsigned long accept_status, start_eip;
 	int maxlvt;
 
 	/*
@@ -88,13 +100,7 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 				| LAPIC_DM_INIT | LAPIC_DEST_ALLBUT);
 
 	printk(BIOS_DEBUG, "Waiting for send to finish...\n");
-	timeout = 0;
-	do {
-		printk(BIOS_SPEW, "+");
-		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
-	} while (send_status && (timeout++ < 1000));
-	if (timeout >= 1000) {
+	if (wait_apic(1000)) {
 		printk(BIOS_DEBUG, "First apic write timed out. Disabling\n");
 		// too bad.
 		printk(BIOS_DEBUG, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
@@ -135,13 +141,8 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 	printk(BIOS_DEBUG, "Startup point 1.\n");
 
 	printk(BIOS_DEBUG, "Waiting for send to finish...\n");
-	timeout = 0;
-	do {
-		printk(BIOS_DEBUG, "+");
-		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
-	} while (send_status && (timeout++ < 1000));
-
+	if (wait_apic(1000))
+		return 1;
 	/*
 	 * Give the other CPU some time to accept the IPI.
 	 */
@@ -156,12 +157,8 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 	accept_status = (lapic_read(LAPIC_ESR) & 0xEF);
 
 	printk(BIOS_DEBUG, "After Startup.\n");
-	if (send_status)
-		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
 		printk(BIOS_WARNING, "APIC delivery error (%lx).\n", accept_status);
-	if (send_status || accept_status)
-		return 0;
 	return 1;
 }
 
@@ -194,11 +191,7 @@ extern unsigned char _estack[];
  */
 void stop_this_cpu(void)
 {
-	int timeout;
-	unsigned long send_status;
-	unsigned long id;
-
-	id = lapic_read(LAPIC_ID) >> 24;
+	unsigned long id = lapicid();
 
 	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
 
@@ -210,19 +203,13 @@ void stop_this_cpu(void)
 #if DEBUG_HALT_SELF
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 #endif
-	timeout = 0;
-	do {
-#if DEBUG_HALT_SELF
-		printk(BIOS_SPEW, "+");
-#endif
-		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
-	} while (send_status && (timeout++ < 1000));
-	if (timeout >= 1000) {
+
+	if (wait_apic(1000))
 #if DEBUG_HALT_SELF
 		printk(BIOS_ERR, "timed out\n");
+#else
+	;
 #endif
-	}
 	mdelay(10);
 
 #if DEBUG_HALT_SELF
@@ -231,27 +218,18 @@ void stop_this_cpu(void)
 	/* Deassert the LAPIC INIT */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
-
 #if DEBUG_HALT_SELF
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 #endif
-	timeout = 0;
-	do {
-#if DEBUG_HALT_SELF
-		printk(BIOS_SPEW, "+");
-#endif
-		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
-	} while (send_status && (timeout++ < 1000));
-	if (timeout >= 1000) {
+
+	if (wait_apic(1000))
 #if DEBUG_HALT_SELF
 		printk(BIOS_ERR, "timed out\n");
+#else
+	;
 #endif
-	}
-
-	while(1) {
+	while(1)
 		hlt();
-	}
 }
 #endif
 

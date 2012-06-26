@@ -29,6 +29,8 @@ void save_chromeos_gpios(void);
 
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);
+int vboot_wants_oprom(void);
+extern int oprom_is_loaded;
 
 /* functions implemented in chromeos.c: */
 int developer_mode_enabled(void);

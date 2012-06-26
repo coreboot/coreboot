@@ -38,6 +38,8 @@
 
 #define BOOT_OFFSET                  1
 #define BOOT_DEBUG_RESET_MODE           0x80
+#define BOOT_DISABLE_DEV_REQUEST        0x40
+#define BOOT_OPROM_NEEDED               0x20
 #define BOOT_TRY_B_COUNT_MASK           0x0F
 
 #define RECOVERY_OFFSET              2
@@ -45,11 +47,7 @@
 
 #define DEV_FLAGS_OFFSET             4
 #define DEV_BOOT_USB_MASK               0x01
-
-#define FIRMWARE_FLAGS_OFFSET        5
-#define FIRMWARE_TEST_ERR_FUNC_MASK     0x38
-#define FIRMWARE_TEST_ERR_FUNC_SHIFT    3
-#define FIRMWARE_TEST_ERR_NUM_MASK      0x07
+#define DEV_BOOT_SIGNED_ONLY_MASK       0x02
 
 #define KERNEL_FIELD_OFFSET         11
 #define CRC_OFFSET                  15
@@ -106,4 +104,18 @@ int get_recovery_mode_from_vbnv(void)
 	if (!vbnv_initialized)
 		vbnv_setup();
 	return vbnv[RECOVERY_OFFSET];
+}
+
+int vboot_wants_oprom(void)
+{
+	if (!vbnv_initialized)
+		vbnv_setup();
+
+	/* FIXME(crosbug.com/p/8789). The following commented-out line does the
+	 * right thing, assuming that vboot has requested the option ROM and
+	 * rebooted if it finds that it's needed but not loaded. At the moment,
+	 * it doesn't yet do that, so we must always say we want it. */
+
+	/* return (vbnv[BOOT_OFFSET] & BOOT_OPROM_NEEDED) ? 1 : 0; */
+	return 1;
 }

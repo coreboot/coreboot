@@ -25,6 +25,7 @@
 #endif
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 
 struct microcode {
@@ -68,6 +69,27 @@ static inline u32 read_microcode_rev(void)
 	return msr.hi;
 }
 
+/* Microcode update needs to run only once per CPU core. Return true
+ * if running thread does not have the smallest lapic ID within a CPU core.
+ */
+static int intel_ht_sibling(void)
+{
+	unsigned int core_ids, apic_ids, threads;
+	
+	apic_ids = 1;
+	if (cpuid_eax(0) >= 1)
+		apic_ids = (cpuid_ebx(1) >> 16) & 0xff;
+	if (apic_ids < 1)
+		apic_ids = 1;
+
+	core_ids = 1;
+	if (cpuid_eax(0) >= 4)
+		core_ids += (cpuid_eax(4) >> 26) & 0x3f;
+
+	threads = (apic_ids / core_ids);
+	return !!(lapicid() & (threads-1));
+}
+
 void intel_update_microcode(const void *microcode_updates)
 {
 	u32 eax;
@@ -76,6 +98,9 @@ void intel_update_microcode(const void *microcode_updates)
 	const struct microcode *m;
 	const char *c;
 	msr_t msr;
+
+	if (intel_ht_sibling())
+		return;
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;

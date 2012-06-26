@@ -1,7 +1,3 @@
-config SERIAL_CPU_INIT
-	bool
-	default y
-
 config WAIT_BEFORE_CPUS_INIT
 	bool
 	default n

@@ -93,8 +93,4 @@ config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
 
-config SERIAL_CPU_INIT
-	bool
-	default n
-
 endif # BOARD_ASUS_M2N_E

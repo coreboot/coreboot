@@ -18,10 +18,6 @@ config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/model_206ax/bootblock.c"
 
-config SERIAL_CPU_INIT
-	bool
-	default n
-
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

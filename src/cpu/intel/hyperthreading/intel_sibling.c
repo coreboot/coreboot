@@ -14,6 +14,27 @@
 static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
+/* Return true if running thread does not have the smallest lapic ID
+ * within a CPU core.
+ */
+int intel_ht_sibling(void)
+{
+	unsigned int core_ids, apic_ids, threads;
+
+	apic_ids = 1;
+	if (cpuid_eax(0) >= 1)
+		apic_ids = (cpuid_ebx(1) >> 16) & 0xff;
+	if (apic_ids < 1)
+		apic_ids = 1;
+
+	core_ids = 1;
+	if (cpuid_eax(0) >= 4)
+		core_ids += (cpuid_eax(4) >> 26) & 0x3f;
+
+	threads = (apic_ids / core_ids);
+	return !!(lapicid() & (threads-1));
+}
+
 void intel_sibling_init(device_t cpu)
 {
 	unsigned i, siblings;

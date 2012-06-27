@@ -111,7 +111,9 @@ ohci_init (pcidev_t addr)
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
 	controller->bus_address = addr;
-	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10); // OHCI mandates MMIO, so bit 0 is clear
+	/* regarding OHCI spec, Appendix A, BAR_OCHI register description, Table A-4
+	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all */
+	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10) & 0xfffff000; // OHCI mandates MMIO, so bit 0 is clear
 	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);
 	printf("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
 

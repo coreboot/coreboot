@@ -306,8 +306,10 @@ static void pch_rtc_init(struct device *dev)
 	rtc_init(rtc_failed);
 }
 
-static void pch_pm_init(struct device *dev)
+/* CougarPoint PCH Power Management init */
+static void cpt_pm_init(struct device *dev)
 {
+	printk(BIOS_DEBUG, "CougarPoint PM init\n");
 	pci_write_config8(dev, 0xa9, 0x47);
 	RCBA32_AND_OR(0x2238, ~0UL, (1 << 6)|(1 << 0));
 	RCBA32_AND_OR(0x228c, ~0UL, (1 << 0));
@@ -342,6 +344,49 @@ static void pch_pm_init(struct device *dev)
 	RCBA32(0x3a6c) = 0x00000001;
 	RCBA32_AND_OR(0x2344, 0x00ffff00, 0xff00000c);
 	RCBA32_AND_OR(0x80c, ~(0xff << 20), 0x11 << 20);
+	RCBA32(0x33c8) = 0;
+	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
+}
+
+/* PantherPoint PCH Power Management init */
+static void ppt_pm_init(struct device *dev)
+{
+	printk(BIOS_DEBUG, "PantherPoint PM init\n");
+	pci_write_config8(dev, 0xa9, 0x47);
+	RCBA32_AND_OR(0x2238, ~0UL, (1 << 0));
+	RCBA32_AND_OR(0x228c, ~0UL, (1 << 0));
+	RCBA16_AND_OR(0x1100, ~0UL, (1 << 13)|(1 << 14));
+	RCBA16_AND_OR(0x0900, ~0UL, (1 << 14));
+	RCBA32(0x2304) = 0xc03b8400;
+	RCBA32_AND_OR(0x2314, ~0UL, (1 << 5)|(1 << 18));
+	RCBA32_AND_OR(0x2320, ~0UL, (1 << 15)|(1 << 1));
+	RCBA32_AND_OR(0x3314, ~0x1f, 0xf);
+	RCBA32(0x3318) = 0x054f0000;
+	RCBA32(0x3324) = 0x04000000;
+	RCBA32_AND_OR(0x3340, ~0UL, 0xfffff);
+	RCBA32_AND_OR(0x3344, ~0UL, (1 << 1)|(1 << 0));
+	RCBA32(0x3360) = 0x0001c000;
+	RCBA32(0x3368) = 0x00061100;
+	RCBA32(0x3378) = 0x7f8fdfff;
+	RCBA32(0x337c) = 0x000003fd;
+	RCBA32(0x3388) = 0x00001000;
+	RCBA32(0x3390) = 0x0001c000;
+	RCBA32(0x33a0) = 0x00000800;
+	RCBA32(0x33b0) = 0x00001000;
+	RCBA32(0x33c0) = 0x00093900;
+	RCBA32(0x33cc) = 0x24653002;
+	RCBA32(0x33d0) = 0x067388fe;
+	RCBA32_AND_OR(0x33d4, 0xf000f000, 0x00670060);
+	RCBA32(0x3a28) = 0x01010000;
+	RCBA32(0x3a2c) = 0x01010404;
+	RCBA32(0x3a80) = 0x01040000;
+	RCBA32_AND_OR(0x3a84, ~0x0000ffff, 0x00001001);
+	RCBA32_AND_OR(0x3a84, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
+	RCBA32_AND_OR(0x3a88, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
+	RCBA32(0x3a6c) = 0x00000001;
+	RCBA32_AND_OR(0x2344, 0x00ffff00, 0xff00000c);
+	RCBA32_AND_OR(0x80c, ~(0xff << 20), 0x11 << 20);
+	RCBA32_AND_OR(0x33a4, ~0UL, (1 << 0));
 	RCBA32(0x33c8) = 0;
 	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
 }
@@ -504,7 +549,16 @@ static void lpc_init(struct device *dev)
 	pch_power_options(dev);
 
 	/* Initialize power management */
-	pch_pm_init(dev);
+	switch (pch_silicon_type()) {
+	case PCH_TYPE_CPT: /* CougarPoint */
+		cpt_pm_init(dev);
+		break;
+	case PCH_TYPE_PPT: /* PantherPoint */
+		ppt_pm_init(dev);
+		break;
+	default:
+		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
+	}
 
 	/* Set the state of the GPIO lines. */
 	//gpio_init(dev);

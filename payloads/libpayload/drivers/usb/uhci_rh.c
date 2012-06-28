@@ -86,7 +86,7 @@ uhci_rh_disable_port (usbdev_t *dev, int port)
 		port = PORTSC1;
 	uhci_reg_write16(controller, port,
 			 uhci_reg_read16(controller, port) & ~4);
-	int value;
+	u16 value;
 	/* wait for controller to disable port */
 	/* TOTEST: how long to wait? 100ms for now */
 	int timeout = 200; /* time out after 200 * 500us == 100ms */
@@ -137,7 +137,7 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 static int
 uhci_rh_report_port_changes (usbdev_t *dev)
 {
-	int stored, real;
+	u16 stored, real;
 
 	stored = (RH_INST (dev)->port[0] == -1);
 	real = ((uhci_reg_read16 (dev->controller, PORTSC1) & 1) == 0);

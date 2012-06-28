@@ -32,8 +32,7 @@
 #define CACHE_MRC_BASE    (0xFFFFFFFF - CACHE_MRC_BYTES)
 #define CACHE_MRC_MASK    (~CACHE_MRC_BYTES)
 
-#define CPU_MAXPHYSADDR 36
-#define CPU_PHYSMASK_HI  (1 << (CPU_MAXPHYSADDR - 32) - 1)
+#define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
 
 #define NoEvictMod_MSR 0x2e0
 

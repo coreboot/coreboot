@@ -111,10 +111,13 @@ struct usbdev {
 	void (*poll) (usbdev_t *dev);
 };
 
+typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3} hc_type;
+
 struct usbdev_hc {
 	struct usbdev_hc *next;
 	pcidev_t bus_address;
 	u32 reg_base;
+	hc_type type;
 	usbdev_t *devices[128];	// dev 0 is root hub, 127 is last addressable
 	void (*start) (hci_t *controller);
 	void (*stop) (hci_t *controller);

@@ -63,6 +63,8 @@ xhci_init (pcidev_t addr)
 	if(!controller->instance)
 		fatal("Not enough memory creating USB controller instance.\n");
 
+	controller->type = XHCI;
+
 	controller->start = xhci_start;
 	controller->stop = xhci_stop;
 	controller->reset = xhci_reset;

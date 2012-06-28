@@ -635,6 +635,8 @@ ehci_init (pcidev_t addr)
 	pci_command = (pci_command | PCI_COMMAND_MEMORY) & ~PCI_COMMAND_IO ;
 	pci_write_config32(addr, PCI_COMMAND, pci_command);
 
+	controller->type = EHCI;
+
 	controller->start = ehci_start;
 	controller->stop = ehci_stop;
 	controller->reset = ehci_reset;

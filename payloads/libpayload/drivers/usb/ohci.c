@@ -102,6 +102,8 @@ ohci_init (pcidev_t addr)
 	if(!controller->instance)
 		fatal("Not enough memory creating USB controller instance.\n");
 
+	controller->type = OHCI;
+
 	controller->start = ohci_start;
 	controller->stop = ohci_stop;
 	controller->reset = ohci_reset;

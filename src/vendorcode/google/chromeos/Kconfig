@@ -20,7 +20,6 @@ config CHROMEOS
 	bool
 	default n
 	select TPM
-	select CACHE_ROM
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported

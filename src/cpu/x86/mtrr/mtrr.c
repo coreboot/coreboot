@@ -496,12 +496,14 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
 
-#if CONFIG_CACHE_ROM
+#if CONFIG_CACHE_ROM_SIZE
+#define CACHE_ROM_BASEK	((1<<22) - (CONFIG_CACHE_ROM_SIZE>>10))
 	/* Enable Caching and speculative Reads for the
 	 * complete ROM now that we actually have RAM.
 	 */
 	if (boot_cpu() && (acpi_slp_type != 3)) {
-		set_var_mtrr(total_mtrrs - 1, (4096 - 8)*1024, 8 * 1024,
+		set_var_mtrr(total_mtrrs - 1, CACHE_ROM_BASEK,
+			CONFIG_CACHE_ROM_SIZE>>10,
 			MTRR_TYPE_WRPROT, address_bits);
 	}
 #endif

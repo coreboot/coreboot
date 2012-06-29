@@ -476,12 +476,16 @@ void probe_idregs_nuvoton(uint16_t port)
 	uint8_t sid, srid;
 	uint16_t chip_id = 0;
 	uint8_t chip_rev = 0;
+	uint16_t iobase = 0;
+	int i;
 
 	/* Probe for the 16bit IDs first to avoid collisions */
 	probing_for("Nuvoton", "", port);
 	enter_conf_mode_winbond_fintek_ite_8787(port);
 	chip_id = (regval(port, DEVICE_ID_REG) << 8) |
 	      regval(port, DEVICE_ID_REG + 1);
+	regwrite(port, LDN_SEL, 0x0b);
+	iobase = (regval(port, 0x60) << 8) | (regval(port, 0x61) & ~7);
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 
@@ -492,7 +496,7 @@ void probe_idregs_nuvoton(uint16_t port)
 		enter_conf_mode_winbond_fintek_ite_8787(port);
 		dump_superio("Nuvoton", reg_table, port, chip_id, LDN_SEL);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
-		return;
+		goto extra;
 	}
 
 	if (verbose)
@@ -524,6 +528,27 @@ void probe_idregs_nuvoton(uint16_t port)
 	       get_superio_name(reg_table, sid), chip_id, chip_rev, port);
 	chip_found = 1;
 	dump_superio("Nuvoton", reg_table, port, sid, LDN_SEL);
+
+extra:
+	if (extra_dump && iobase) {
+		switch (chip_id & 0xfff0) {
+		case 0xb470:	/* NCT6775F */
+			for (i = 0; i < 7; i++)
+				dump_data(iobase + 5, i);
+			dump_data(iobase + 5, 0xa);
+			dump_data(iobase + 5, 0xc);
+			dump_data(iobase + 5, 0xd);
+			break;
+		case 0xc330:	/* NCT6776F */
+			for (i = 0; i < 8; i++)
+				dump_data(iobase + 5, i);
+			break;
+		case 0xc560:	/* NCT6779D */
+			for (i = 0; i < 10; i++)
+				dump_data(iobase + 5, i);
+			break;
+		}
+	}
 }
 
 void print_nuvoton_chips(void)

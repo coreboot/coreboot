@@ -24,13 +24,12 @@ CC      = gcc
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 
-# Set the superiotool version string from the highest revision number
-# of the checked out superiotool files.
-SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
-          | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
+# Set the superiotool version string to the output of 'git describe'.
+
+VERSION := -D'SUPERIOTOOL_VERSION="$(shell git describe 2>/dev/null)"'
 
 CFLAGS += -O2 -Wall -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -ansi -pedantic $(SVNDEF)
+         -Werror-implicit-function-declaration -ansi -pedantic $(VERSION)
 LDFLAGS += -lz
 
 OBJS = superiotool.o serverengines.o ali.o fintek.o ite.o nsc.o nuvoton.o \

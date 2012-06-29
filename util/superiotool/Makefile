@@ -26,8 +26,13 @@ PREFIX  = /usr/local
 
 # Set the superiotool version string from the highest revision number
 # of the checked out superiotool files.
+
+ifneq ($(shell svnversion -cn .), exported)
 SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
-          | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
+	| sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
+else
+SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell git describe 2>/dev/null)"'
+endif
 
 CFLAGS += -O2 -Wall -Wstrict-prototypes -Wundef -Wstrict-aliasing \
          -Werror-implicit-function-declaration -ansi -pedantic $(SVNDEF)

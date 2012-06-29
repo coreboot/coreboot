@@ -34,6 +34,18 @@ int dump = 0, verbose = 0, extra_dump = 0;
 /* Global flag which indicates whether a chip was detected at all. */
 int chip_found = 0;
 
+static void set_bank(uint16_t port, uint8_t bank)
+{
+	OUTB(0x4E, port);
+	OUTB(bank, port + 1);
+}
+
+static uint8_t datareg(uint16_t port, uint8_t reg)
+{
+	OUTB(reg, port);
+	return INB(port + 1);
+}
+
 uint8_t regval(uint16_t port, uint8_t reg)
 {
 	OUTB(reg, port);
@@ -183,6 +195,23 @@ void dump_io(uint16_t iobase, uint16_t length)
 	printf("\n");
 	for (i = 0; i < length; i++)
 		printf("%02x ", INB(iobase + i));
+	printf("\n");
+}
+
+void dump_data(uint16_t iobase, int bank)
+{
+	uint16_t i;
+
+	printf("Bank %d:\n", bank);
+	printf("    ");
+	for (i = 0; i < 16; i++)
+		printf("%02x ", i);
+	set_bank(iobase, bank);
+	for (i = 0; i < 256; i++) {
+		if (i % 16 == 0)
+			printf("\n%02x: ", i / 16);
+		printf("%02x ", datareg(iobase, i));
+	}
 	printf("\n");
 }
 

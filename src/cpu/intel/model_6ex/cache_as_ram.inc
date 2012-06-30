@@ -191,15 +191,17 @@ clear_mtrrs:
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 
-	/* Enable caching and Speculative Reads for the last 4MB. */
+#if CONFIG_CACHE_ROM_SIZE
+	/* Enable caching and Speculative Reads for Flash ROM device. */
 	movl	$MTRRphysBase_MSR(1), %ecx
-	movl	$(0xffc00000 | MTRR_TYPE_WRPROT), %eax
+	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$(~(4 * 1024 * 1024 - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
+#endif
 
 	post_code(0x39)
 

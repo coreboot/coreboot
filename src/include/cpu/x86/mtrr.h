@@ -56,6 +56,12 @@ void x86_setup_fixed_mtrrs(void);
 # error "CONFIG_XIP_ROM_SIZE is not a power of 2"
 #endif
 
+#if ((CONFIG_CACHE_ROM_SIZE & (CONFIG_CACHE_ROM_SIZE -1)) != 0)
+# error "CONFIG_CACHE_ROM_SIZE is not a power of 2"
+#endif
+
+#define CACHE_ROM_BASE	(((1<<20) - (CONFIG_CACHE_ROM_SIZE>>12))<<12)
+
 #if (CONFIG_RAMTOP & (CONFIG_RAMTOP - 1)) != 0
 # error "CONFIG_RAMTOP must be a power of 2"
 #endif

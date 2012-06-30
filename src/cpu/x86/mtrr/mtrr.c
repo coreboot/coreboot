@@ -36,7 +36,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 
@@ -484,12 +483,13 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
 
-#if CONFIG_CACHE_ROM
+#if CONFIG_CACHE_ROM_SIZE
 	/* Enable Caching and speculative Reads for the
 	 * complete ROM now that we actually have RAM.
 	 */
-	if (boot_cpu() && (acpi_slp_type != 3)) {
-		set_var_mtrr(total_mtrrs - 1, (4096 - 8)*1024, 8 * 1024,
+	if (acpi_slp_type != 3) {
+		set_var_mtrr(total_mtrrs - 1, (unsigned) CACHE_ROM_BASE>>10,
+			CONFIG_CACHE_ROM_SIZE>>10,
 			MTRR_TYPE_WRPROT, address_bits);
 	}
 #endif

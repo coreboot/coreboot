@@ -30,9 +30,6 @@
 #define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
 #define START_IPI_VECTOR	((CONFIG_AP_SIPI_VECTOR >> 12) & 0xff)
 
-/* Base address to cache all of Flash ROM, just below 4GB. */
-#define CACHE_ROM_BASE	((1<<22 - CONFIG_CACHE_ROM_SIZE>>10)<<10)
-
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
@@ -380,6 +377,7 @@ no_msr_11e:
 	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
+#if CONFIG_CACHE_ROM_SIZE
 	/* Enable caching and Speculative Reads for Flash ROM device. */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
@@ -389,6 +387,7 @@ no_msr_11e:
 	rdmsr
 	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
+#endif
 
 	post_code(0x39)
 

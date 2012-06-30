@@ -1,0 +1,103 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2012 Ricardo Martins <rasmartins@gmail.com>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+entries					
+	# RTC				
+	0	384	r	0	reserved_rtc
+	# Coreboot				
+	384	1	e	3	boot_option
+	385	1	e	3	last_boot
+	386	4	r	0	reboot_bits
+	390	3	e	4	baud_rate
+	393	4	e	5	debug_level
+	397	2	r	0	unused
+	# PM-LX2-800-R10				
+	399	1	e	1	com3_auto_direction
+	400	1	e	2	it8888_io_space0
+	401	1	e	2	it8888_io_space1
+	402	1	e	2	it8888_io_space2
+	403	1	e	2	it8888_io_space3
+	404	2	e	6	it8888_io_space0_speed
+	406	2	e	6	it8888_io_space1_speed
+	408	2	e	6	it8888_io_space2_speed
+	410	2	e	6	it8888_io_space3_speed
+	412	3	e	7	it8888_io_space0_size
+	415	3	e	7	it8888_io_space1_size
+	418	3	e	7	it8888_io_space2_size
+	421	3	e	7	it8888_io_space3_size
+	424	16	h	0	it8888_io_space0_addr
+	440	16	h	0	it8888_io_space1_addr
+	456	16	h	0	it8888_io_space2_addr
+	472	16	h	0	it8888_io_space3_addr
+	488	16	h	0	check_sum
+					
+enumerations					
+	# Yes / No				
+	1	0	No		
+	1	1	Yes		
+					
+	# Enabled / Disabled				
+	2	0	Disabled		
+	2	1	Enabled		
+					
+	# Normal / Fallback				
+	3	0	Fallback		
+	3	1	Normal		
+					
+	# Console Baud Rate				
+	4	0	115200		
+	4	1	57600		
+	4	2	38400		
+	4	3	19200		
+	4	4	9600		
+	4	5	4800		
+	4	6	2400		
+	4	7	1200		
+					
+	# Console Log Level				
+	5	0	Emergency		
+	5	1	Alert		
+	5	2	Critical		
+	5	3	Error		
+	5	4	Warning		
+	5	5	Notice		
+	5	6	Info		
+	5	7	Debug		
+	5	8	Spew		
+					
+	# IT8888 Decoding Speeds				
+	6	0	Subtractive		
+	6	1	Slow		
+	6	2	Medium		
+	6	3	Fast		
+					
+	# IT8888 Decoding Sizes				
+	7	0	1		
+	7	1	2		
+	7	2	4		
+	7	3	8		
+	7	4	16		
+	7	5	32		
+	7	6	64		
+	7	7	128		
+					
+checksums					
+	checksum	384	487	488

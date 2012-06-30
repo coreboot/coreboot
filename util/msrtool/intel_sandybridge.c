@@ -1,7 +1,7 @@
 /*
  * This file is part of msrtool.
  *
- * Copyright (C) 2011 Anton Kochkov <anton.kochkov@gmail.com>
+ * Copyright (C) 2012 Anton Kochkov <anton.kochkov@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,12 +19,14 @@
 
 #include "msrtool.h"
 
-int intel_core2_later_probe(const struct targetdef *target) {
+int intel_sandybridge_probe(const struct targetdef *target) {
 	struct cpuid_t *id = cpuid();
-	return ((0x6 == id->family) && (0x17 == id->model));
+	return ((0x6 == id->family) && (
+		(0x2a == id->model) ||
+		(0x2d == id->model)));
 }
 
-const struct msrdef intel_core2_later_msrs[] = {
+const struct msrdef intel_sandybridge_msrs[] = {
 	{0x17, MSRTYPE_RDWR, MSR2(0,0), "IA32_PLATFORM_ID Register", "Model Specific Platform ID", {
 		{ 63, 11, RESERVED },
 		{ 52, 3, RESERVED },
@@ -116,25 +118,7 @@ const struct msrdef intel_core2_later_msrs[] = {
 	{0xcd, MSRTYPE_RDWR, MSR2(0,0), "MSR_FSB_FREQ", "", {
 		{ BITS_EOT }
 	}},
-	{0x11e, MSRTYPE_RDWR, MSR2(0,0), "MSR_BBL_CR_CTL3", "", {
-		{ 63, 40, RESERVED },
-		{ 23, 1, "L2 Present", "R/O", PRESENT_BIN, {
-			{ MSR1(0), "L2 Present" },
-			{ MSR1(1), "L2 Not Present" },
-			{ BITVAL_EOT }
-		}},
-		{ 22, 14, RESERVED },
-		{ 8, 1, "L2 Enabled", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "L2 is disabled" },
-			{ MSR1(1), "L2 cache has been initialized" },
-			{ BITVAL_EOT }
-		}},
-		{ 7, 7, RESERVED},
-		{ 0, 1, "L2 Hardware Enabled", "R/O", PRESENT_BIN, {
-			{ MSR1(0), "L2 is hardware-disabled" },
-			{ MSR1(1), "L2 is hardware-enabled" },
-			{ BITVAL_EOT }
-		}},
+	{0x11, MSRTYPE_RDWR, MSR2(0,0), "MSR_BBL_CR_CTL3", "", {
 		{ BITS_EOT }
 	}},
 	{0x198, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_STATUS", "", {
@@ -158,77 +142,10 @@ const struct msrdef intel_core2_later_msrs[] = {
 	{0x10, MSRTYPE_RDWR, MSR2(0,0), "IA32_TIME_STEP_COUNTER", "", {
 		{ BITS_EOT }
 	}},
-	{0x1b, MSRTYPE_RDWR, MSR2(0,0), "IA32_APIC_BASE", "APIC BASE", {
-		/* In Intel's manual there is MAXPHYWID,
-		 * which determine index of highest bit of
-		 * APIC Base itself, so marking it as
-		 * 'RESERVED'.
-		 */
-		{ 63, 52, RESERVED },
-		{ 11, 1, "APIC Global Enable", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 10, 1, RESERVED },
-		{ 9, 1, RESERVED },
-		{ 8, 1, "BSP Flag", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 7, 8, RESERVED },
+	{0x1b, MSRTYPE_RDWR, MSR2(0,0), "IA32_APIC_BASE", "", {
 		{ BITS_EOT }
 	}},
-	{0x3a, MSRTYPE_RDWR, MSR2(0,0), "IA32_FEATURE_CONTROL",
-			"Control features in Intel 64Processor", {
-		{ 63, 48, RESERVED },
-		/* if CPUID.01H: ECX[6] = 1 */
-		{ 15, 1, "SENTER Global Enable", "R/WL", PRESENT_BIN, {
-			{ MSR1(0), "SENTER leaf functions are disabled" },
-			{ MSR1(1), "SENTER leaf functions are enabled" },
-			{ BITVAL_EOT }
-		}},
-		/* if CPUID.01H: ECX[6] = 1 */
-		{ 14, 7, "SENTER Local Function Enables", "R/WL", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 7, 4, RESERVED },
-		{ 3, 1, "SMRR Enable", "R/WL", PRESENT_BIN, {
-			{ MSR1(0), "SMRR_PHYS_BASE and SMRR_PHYS_MASK are invisible in SMM" },
-			{ MSR1(1), "SMRR_PHYS_BASE and SMRR_PHYS_MASK accessible from SMM" },
-			{ BITVAL_EOT }
-		}},
-		/* if CPUID.01H: ECX[5 or 6] = 1 */
-		{ 2, 1, "VMX outside of SMX operation", "R/WL", PRESENT_BIN, {
-			/* This bit enables VMX for system executive
-			* that do not require SMX.
-			*/
-			{ MSR1(0), "VMX outside of SMX operation disabled" },
-			{ MSR1(1), "VMX outside of SMX operation enabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 1, 1, "VMX inside of SMX operation", "R/WL", PRESENT_BIN, {
-			/* This bit enables a system executive to use
-			 * VMX in conjuction with SMX to support Intel
-			 * Trusted Execution Technology.
-			 */
-			{ MSR1(0), "VMX inside of SMX operation disabled" },
-			{ MSR1(1), "VMX outside of SMX operation enabled" },
-			{ BITVAL_EOT }
-		}},
-		/* if CPUID.01H: ECX[5 or 6] = 1 */
-		{ 0, 1, "Lock bit", "R/WO", PRESENT_BIN, {
-			/* Once the Lock bit is set, the contents
-			 * of this register cannot be modified.
-			 * Therefore the lock bit must be set after
-			 * configuring support for Intel Virtualization
-			 * Technology and prior transferring control
-			 * to an Option ROM or bootloader. Hence, once
-			 * the lock bit is set, the entire IA32_FEATURE_CONTROL_MSR
-			 * contents are preserved across RESET when
-			 * PWRGOOD it not deasserted.
-			 */
-			{ MSR1(0), "IA32_FEATURE_CONTROL MSR can be modified" },
-			{ MSR1(1), "IA32_FEATURE_CONTROL MSR cannot be modified" },
-			{ BITVAL_EOT }
-		}},
+	{0x3a, MSRTYPE_RDWR, MSR2(0,0), "IA32_FEATURE_CONTROL", "", {
 		{ BITS_EOT }
 	}},
 	{0x40, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_0_FROM_IP", "", {
@@ -255,12 +172,10 @@ const struct msrdef intel_core2_later_msrs[] = {
 	{0x63, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_3_TO_LIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x79, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_UPDT_TRIG",
-			"BIOS Update Trigger Register (W)", {
+	{0x79, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_UPDT_TRIG", "", {
 		{ BITS_EOT }
 	}},
-	{0x8b, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_SIGN_ID",
-			"BIOS Update Signature ID (RO)", {
+	{0x8b, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_SIGN_ID", "", {
 		{ BITS_EOT }
 	}},
 	{0xa0, MSRTYPE_RDWR, MSR2(0,0), "MSR_SMRR_PHYS_BASE", "", {
@@ -282,11 +197,6 @@ const struct msrdef intel_core2_later_msrs[] = {
 		{ BITS_EOT }
 	}},
 	{0xfe, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRRCAP", "", {
-		{ 63, 52, RESERVED },
-		{ 11, 1, "SMRR Capability Using MSR 0xa0 and 0xa1", "R/O", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 10, 11, RESERVED },
 		{ BITS_EOT }
 	}},
 	{0x174, MSRTYPE_RDWR, MSR2(0,0), "IA32_SYSENTER_CS", "", {
@@ -302,158 +212,12 @@ const struct msrdef intel_core2_later_msrs[] = {
 		{ BITS_EOT }
 	}},
 	{0x17a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCG_STATUS", "", {
-		{ 63, 61, RESERVED },
-		{ 2, 1, "MCIP", "R/W", PRESENT_BIN, {
-			/* When set, bit indicates that a machine check has been
-			 * generated. If a second machine check is detected while
-			 * this bit is still set, the processor enters a shutdown state.
-			 * Software should write this bit to 0 after processing
-			 * a machine check exception.
-			 */
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Machine check has been generated" },
-			{ BITVAL_EOT }
-		}},
-		{ 1, 1, "EPIV", "R/W", PRESENT_BIN, {
-			/* When set, bit indicates that the instruction addressed
-			 * by the instruction pointer pushed on the stack (when
-			 * the machine check was generated) is directly associated
-			 * with the error
-			 */
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Instruction addressed directly associated with the error" },
-			{ BITVAL_EOT }
-		}},
-		{ 0, 1, "RIPV", "R/W", PRESENT_BIN, {
-			/* When set, bit indicates that the instruction addressed
-			 * by the instruction pointer pushed on the stack (when
-			 * the machine check was generated) can be used to restart
-			 * the program. If cleared, the program cannot be reliably restarted
-			 */
-			{ MSR1(0), "Program cannot be reliably restarted" },
-			{ MSR1(1), "Instruction addressed can be used to restart the program" },
-			{ BITVAL_EOT }
-		}},
 		{ BITS_EOT }
 	}},
-	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x186, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL0",
-			"Performance Event Select Register 0", {
-		{ 63, 32, RESERVED },
-		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
-			/* When CMASK is not zero, the corresponding performance
-			 * counter 0 increments each cycle if the event count
-			 * is greater than or equal to the CMASK.
-			 */
-			{ BITVAL_EOT }
-		}},
-		{ 23, 1, "INV", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "CMASK using as is" },
-			{ MSR1(1), "CMASK inerting" },
-			{ BITVAL_EOT }
-		}},
-		{ 22, 1, "EN", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "No commence counting" },
-			{ MSR1(1), "Commence counting" },
-			{ BITVAL_EOT }
-		}},
-		{ 21, 1, "AnyThread", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 20, 1, "INT", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Interrupt on counter overflow is disabled" },
-			{ MSR1(1), "Interrupt on counter overflow is enabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 19, 1, "PC", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Disabled pin control" },
-			{ MSR1(1), "Enabled pin control" },
-			{ BITVAL_EOT }
-		}},
-		{ 18, 1, "Edge", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Disabled edge detection" },
-			{ MSR1(1), "Enabled edge detection" },
-			{ BITVAL_EOT }
-		}},
-		{ 17, 1, "OS", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Counts while in privilege level is ring 0" },
-			{ BITVAL_EOT }
-		}},
-		{ 16, 1, "USR", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Counts while in privilege level is not ring 0" },
-			{ BITVAL_EOT }
-		}},
-		{ 15, 8, "UMask", "R/W", PRESENT_HEX, {
-			/* Qualifies the microarchitectural condition
-			 * to detect on the selected event logic. */
-			{ BITVAL_EOT }
-		}},
-		{ 7, 8, "Event Select", "R/W", PRESENT_HEX, {
-			/* Selects a performance event logic unit. */
-			{ BITVAL_EOT }
-		}},
+	{0x186, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL0", "", {
 		{ BITS_EOT }
 	}},
-	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x187, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL1",
-			"Performance Event Select Register 1", {
-		{ 63, 32, RESERVED },
-		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
-			/* When CMASK is not zero, the corresponding performance
-			 * counter 1 increments each cycle if the event count
-			 * is greater than or equal to the CMASK.
-			 */
-			{ BITVAL_EOT }
-		}},
-		{ 23, 1, "INV", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "CMASK using as is" },
-			{ MSR1(1), "CMASK inerting" },
-			{ BITVAL_EOT }
-		}},
-		{ 22, 1, "EN", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "No commence counting" },
-			{ MSR1(1), "Commence counting" },
-			{ BITVAL_EOT }
-		}},
-		{ 21, 1, "AnyThread", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 20, 1, "INT", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Interrupt on counter overflow is disabled" },
-			{ MSR1(1), "Interrupt on counter overflow is enabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 19, 1, "PC", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Disabled pin control" },
-			{ MSR1(1), "Enabled pin control" },
-			{ BITVAL_EOT }
-		}},
-		{ 18, 1, "Edge", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Disabled edge detection" },
-			{ MSR1(1), "Enabled edge detection" },
-			{ BITVAL_EOT }
-		}},
-		{ 17, 1, "OS", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Counts while in privilege level is ring 0" },
-			{ BITVAL_EOT }
-		}},
-		{ 16, 1, "USR", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Counts while in privilege level is not ring 0" },
-			{ BITVAL_EOT }
-		}},
-		{ 15, 8, "UMask", "R/W", PRESENT_HEX, {
-			/* Qualifies the microarchitectural condition
-			 * to detect on the selected event logic. */
-			{ BITVAL_EOT }
-		}},
-		{ 7, 8, "Event Select", "R/W", PRESENT_HEX, {
-			/* Selects a performance event logic unit. */
-			{ BITVAL_EOT }
-		}},
+	{0x187, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL1", "", {
 		{ BITS_EOT }
 	}},
 	{0x198, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_STATUS", "", {
@@ -462,143 +226,19 @@ const struct msrdef intel_core2_later_msrs[] = {
 	{0x199, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x19a, MSRTYPE_RDWR, MSR2(0,0), "IA32_CLOCK_MODULATION",
-			"Clock Modulation", {
-		{ 63, 59, RESERVED },
-		{ 4, 1, "On demand Clock Modulation", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "On demand Clock Modulation is disabled" },
-			{ MSR1(1), "On demand Clock Modulation is enabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 3, 3, "On demand Clock Modulation Duty Cycle", "R/W", PRESENT_HEX, {
-			{ BITVAL_EOT }
-		}},
-		{ 0, 1, RESERVED },
+	{0x19a, MSRTYPE_RDWR, MSR2(0,0), "IA32_CLOCK_MODULATION", "", {
 		{ BITS_EOT }
 	}},
-	{0x19b, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_INTERRUPT",
-			"Thermal Interrupt Control", {
+	{0x19b, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_INTERRUPT", "", {
 		{ BITS_EOT }
 	}},
-	{0x19c, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_STATUS",
-			"Thermal Monitor Status", {
+	{0x19c, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_STATUS", "", {
 		{ BITS_EOT }
 	}},
 	{0x19d, MSRTYPE_RDWR, MSR2(0,0), "MSR_THERM2_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x1a0, MSRTYPE_RDWR, MSR2(0,0), "IA32_MISC_ENABLE",
-			"Enable miscellaneous processor features", {
-		{ 63, 24, RESERVED },
-		{ 39, 1, "IP Prefetcher Disable", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "IP Prefetcher enabled" },
-			{ MSR1(1), "IP Prefetcher disabled" },
-			{ BITVAL_EOT }
-		}},
-		/* Note: [38] bit using for whole package,
-		 * while some other bits can be Core or Thread
-		 * specific.
-		 */
-		{ 38, 1, "IDA Disable", "R/W", PRESENT_BIN, {
-			/* When set to a 0 on processors that support IDA,
-			 * CPUID.06H: EAX[1] reports the processor's
-			 * support of turbo mode is enabled.
-			 */
-			{ MSR1(0), "IDA enabled" },
-			/* When set 1 on processors that support Intel Turbo Boost
-			 * technology, the turbo mode feature is disabled and
-			 * the IDA_Enable feature flag will be clear (CPUID.06H: EAX[1]=0).
-			 */
-			{ MSR1(1), "IDA disabled" },
-			{ BITVAL_EOT }
-			/* Note: the power-on default value is used by BIOS to detect
-			 * hardware support of turbo mode. If power-on default value is 1,
-			 * turbo mode is available in the processor. If power-on default
-			 * value is 0, turbo mode not available.
-			 */
-		}},
-		{ 37, 1, "DCU Prefetcher Disable", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "DCU L1 data cache prefetcher is enabled" },
-			{ MSR1(1), "DCU L1 data cache prefetcher is disabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 36, 2, RESERVED },
-		{ 34, 1, "XD Bit Disable", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 33, 10, RESERVED },
-		{ 23, 1, "xTPR Message Disable", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 22, 1, "Limit CPUID Maxval", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 21, 1, RESERVED },
-		{ 20, 1, "Enhanced Intel SpeedStep Select Lock", "R/W",
-				PRESENT_BIN, {
-			{ MSR1(0), "Enhanced Intel SpeedStep Select\
-				and Enable bits are writeable" },
-			{ MSR1(1), "Enhanced Intel SpeedStep Select\
-				and Enable bits are locked and R/O" },
-			{ BITVAL_EOT }
-		}},
-		{ 19, 1, "Adjacent Cache Line Prefetch Disable", "R/W",
-				PRESENT_BIN, {
-			{ MSR1(0), "Fetching cache lines that comprise a cache\
-				line pair (128 bytes)" },
-			{ MSR1(1), "Fetching cache line that contains data\
-				currently required by the processor" },
-			{ BITVAL_EOT }
-		}},
-		{ 18, 1, "Enable Monitor FSM", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 17, 1, "UNDOCUMENTED", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		/* Note: [16] bit using for whole package,
-		 * while some other bits can be Core or Thread
-		 * specific.
-		 */
-		{ 16, 1, "Enhanced Intel SpeedStep Technology Enable", "R/W",
-				PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 15, 2, RESERVED },
-		{ 13, 1, "TM2 Enable", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 12, 1, "Precise Event Based Sampling Unavailable", "R/O",
-				PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 11, 1, "Branch Trace Storage Unavailable", "R/O", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 10, 1, "FERR# Multiplexing Enable", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "FERR# signaling compatible behaviour" },
-			{ MSR1(1), "FERR# asserted by the processor to indicate\
-				a pending break event within the processor" },
-			{ BITVAL_EOT }
-		}},
-		{ 9, 1, "Hardware Prefetcher Disable", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Hardware prefetcher is enabled" },
-			{ MSR1(1), "Hardware prefetcher is disabled" },
-			{ BITVAL_EOT }
-		}},
-		{ 8, 1, RESERVED },
-		{ 7, 1, "Performance Monitoring Available", "R", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 6, 3, RESERVED },
-		{ 3, 1, "Automatic Thermal Control Circuit Enable", "R/W"
-				, PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
-		{ 2, 2, RESERVED },
-		{ 0, 1, "Fast-Strings Enable", "R/W", PRESENT_BIN, {
-			{ BITVAL_EOT }
-		}},
+	{0x1a0, MSRTYPE_RDWR, MSR2(0,0), "IA32_MISC_ENABLE", "", {
 		{ BITS_EOT }
 	}},
 	{0x1c9, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_TOS", "", {

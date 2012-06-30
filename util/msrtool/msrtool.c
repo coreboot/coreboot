@@ -51,6 +51,8 @@ static struct targetdef alltargets[] = {
 	{ "intel_core2_later", "Intel Xeon Processor 5200, 5400 series, Intel Core 2 Quad	processors 8000, 9000 series", intel_core2_later_probe, intel_core2_later_msrs },
 	{ "intel_pentium4_early", "Intel Xeon Processor, Intel Xeon Processor MP, Intel Pentium 4 processors", intel_pentium4_early_probe, intel_pentium4_early_msrs },
 	{ "intel_pentium4_later", "Intel Xeon Processor, Intel Xeon Processor MP, Intel Pentium 4, Pentium D processors", intel_pentium4_later_probe, intel_pentium4_later_msrs },
+	{ "intel_nehalem", "Intel Core i5, i7 Processors, Intel Xeon Processor 3400, 3500, 5500, based on Nehalem architecture", intel_nehalem_probe, intel_nehalem_msrs },
+	{ "intel_sandybridge", "Intel 2nd Generation Core i3, i5, i7 Processors, Intel Xeon E3 and E5 Processor family", intel_sandybridge_probe, intel_sandybridge_msrs },
 	{ TARGET_EOT }
 };
 

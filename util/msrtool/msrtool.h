@@ -126,6 +126,7 @@ struct sysdef {
 #define SYSTEM_EOT .name = NULL
 #define SYSTEM_ISEOT(s) (NULL == (s).name)
 
+typedef enum { VENDOR_INTEL = 1, VENDOR_AMD = 2 } vendor_t;
 
 struct cpuid_t {
 	uint8_t family;
@@ -133,6 +134,7 @@ struct cpuid_t {
 	uint8_t stepping;
 	uint8_t ext_family;
 	uint8_t ext_model;
+	vendor_t vendor;
 };
 
 
@@ -241,5 +243,13 @@ extern const struct msrdef intel_pentium4_early_msrs[];
 /* intel_pentium4_later.c */
 extern int intel_pentium4_later_probe(const struct targetdef *t);
 extern const struct msrdef intel_pentium4_later_msrs[];
+
+/* intel_nehalem.c */
+extern int intel_nehalem_probe(const struct targetdef *t);
+extern const struct msrdef intel_nehalem_msrs[];
+
+/* intel_sandybridge.c */
+extern int intel_sandybridge_probe(const struct targetdef *t);
+extern const struct msrdef intel_sandybridge_msrs[];
 
 #endif /* MSRTOOL_H */

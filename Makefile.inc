@@ -228,6 +228,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 
 ramstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
+romstage-y+=$(obj)/mainboard/$(MAINBOARDDIR)/static.c
 
 $(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
@@ -236,6 +237,10 @@ $(objutil)/%.o: $(objutil)/%.c
 $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -c -o $@ $<
+
+$(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -MMD -D__PRE_RAM__ $(CFLAGS) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

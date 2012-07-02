@@ -114,7 +114,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
-	acpi_hpet_t *hpet;
+/*	acpi_hpet_t *hpet; */
 	acpi_madt_t *madt;
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
@@ -168,6 +168,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
 
+#if 0
+	/* having the HPET table will prevent 64 bit Windows from booting */
 	/*
 	 * We explicitly add these tables later on:
 	 */
@@ -177,6 +179,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
+#endif
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current = ALIGN(current, 8);

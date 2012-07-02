@@ -12,4 +12,5 @@ source src/southbridge/amd/rs780/Kconfig
 source src/southbridge/amd/sb700/Kconfig
 source src/southbridge/amd/sb800/Kconfig
 source src/southbridge/amd/cimx/Kconfig
+source src/southbridge/amd/agesa/Kconfig
 source src/southbridge/amd/sr5650/Kconfig

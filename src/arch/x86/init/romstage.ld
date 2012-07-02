@@ -53,5 +53,6 @@ SECTIONS
 	}
 
 	_bogus = ASSERT((SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
-	_bogus = ASSERT((SIZEOF(.bss) + SIZEOF(.data)) == 0 || CONFIG_CPU_AMD_AGESA, "Do not use global variables in romstage");
+	_bogus = ASSERT(SIZEOF(.bss) == 0 || CONFIG_CPU_AMD_AGESA, ".bss is non-zero size in romstage which is not allowed -- global variable?");
+	_bogus = ASSERT(SIZEOF(.data) == 0 || CONFIG_CPU_AMD_AGESA, ".data is non-zero size in romstage which is not allowed -- global variable?");
 }

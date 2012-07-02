@@ -13,6 +13,9 @@ romstage-y += romstage_console.c
 romstage-y += cbfs_and_run.c
 romstage-y += memset.c
 romstage-y += memcpy.c
+romstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
+romstage-y += pci_ops_auto.c
+romstage-y += pci_ops_conf1.c
 
 smm-y += memset.c
 smm-y += memcpy.c

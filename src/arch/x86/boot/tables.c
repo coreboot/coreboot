@@ -237,7 +237,7 @@ struct lb_memory *write_tables(void)
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
 	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
-#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14
+#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN
 	cbmem_add(CBMEM_ID_RESUME_SCRATCH, CONFIG_HIGH_SCRATCH_MEMORY_SIZE);
 #endif
 #endif

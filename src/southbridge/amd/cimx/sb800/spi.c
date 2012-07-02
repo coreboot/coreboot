@@ -115,6 +115,13 @@ void spi_write_enable(volatile u8 * spi_address)
 	execute_command(spi_address);
 	wait4command_complete(spi_address);
 }
+void spi_write_disable(volatile u8 * spi_address)
+{
+	*spi_address = 0x04;	/* Write Enable */
+	*(spi_address + 1) = 0x0;	/* RxByte=0, TxByte=0 */
+	execute_command(spi_address);
+	wait4command_complete(spi_address);
+}
 
 void sector_erase_spi(volatile u8 * spi_address, u32 address)
 {

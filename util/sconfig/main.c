@@ -361,14 +361,18 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int ir
 }
 
 static void pass0(FILE *fil, struct device *ptr) {
-	if (ptr->type == device && ptr->id == 0)
-		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
+	if (ptr->type == device && ptr->id == 0){
+		fprintf(fil, "struct bus SECTION %s_links[];\n", ptr->name);
+	}
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
 		fprintf(fil, "static struct device %s;\n", ptr->name);
-		if (ptr->rescnt > 0)
-			fprintf(fil, "struct resource %s_res[];\n", ptr->name);
-		if (ptr->children || ptr->multidev)
-			fprintf(fil, "struct bus %s_links[];\n", ptr->name);
+		if (ptr->rescnt > 0){
+			fprintf(fil, "struct resource SECTION %s_res[];\n", ptr->name);
+		}
+		if (ptr->children || ptr->multidev){
+			fprintf(fil, "struct bus SECTION %s_links[];\n",
+					ptr->name);
+		}
 	}
 }
 
@@ -376,11 +380,14 @@ static void pass1(FILE *fil, struct device *ptr)
 {
 	int pin;
 	if (!ptr->used && (ptr->type == device)) {
-		if (ptr->id != 0)
+		if (ptr->id)
 			fprintf(fil, "static ");
-		fprintf(fil, "struct device %s = {\n", ptr->name);
+		fprintf(fil, "struct device SECTION %s = {\n", ptr->name);
+		fprintf(fil, "#ifndef __PRE_RAM__\n");
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops)?(ptr->ops):"0");
-		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name, ptr->bus->link);
+		fprintf(fil, "#endif\n");
+		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name,
+				ptr->bus->link);
 		fprintf(fil, "\t.path = {");
 		fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
 		fprintf(fil, "},\n");
@@ -411,7 +418,9 @@ static void pass1(FILE *fil, struct device *ptr)
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 		if (ptr->chip->chiph_exists) {
+			fprintf(fil, "#ifndef __PRE_RAM__\n");
 			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
+			fprintf(fil, "#endif\n");
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
 		}
 		if (ptr->nextdev)
@@ -420,7 +429,8 @@ static void pass1(FILE *fil, struct device *ptr)
 	}
 	if (ptr->rescnt > 0) {
 		int i=1;
-		fprintf(fil, "struct resource %s_res[] = {\n", ptr->name);
+		fprintf(fil, "struct resource SECTION %s_res[] = {\n",
+				ptr->name);
 		struct resource *r = ptr->res;
 		while (r) {
 			fprintf(fil, "\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
@@ -437,7 +447,7 @@ static void pass1(FILE *fil, struct device *ptr)
 		fprintf(fil, "\t };\n");
 	}
 	if (!ptr->used && ptr->type == device && (ptr->children || ptr->multidev)) {
-		fprintf(fil, "struct bus %s_links[] = {\n", ptr->name);
+		fprintf(fil, "struct bus SECTION %s_links[] = {\n", ptr->name);
 		if (ptr->multidev) {
 			struct device *d = ptr;
 			while (d) {
@@ -469,8 +479,9 @@ static void pass1(FILE *fil, struct device *ptr)
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {
-			fprintf(fil, "struct %s_config %s_info_%d\t= {\n",
-				ptr->name_underscore, ptr->name_underscore, ptr->id);
+			fprintf(fil, "struct %s_config SECTION %s_info_%d\t= {\n",
+				ptr->name_underscore, ptr->name_underscore,
+				ptr->id);
 			struct reg *r = ptr->reg;
 			while (r) {
 				fprintf(fil, "\t.%s = %s,\n", r->key, r->value);
@@ -478,7 +489,7 @@ static void pass1(FILE *fil, struct device *ptr)
 			}
 			fprintf(fil, "};\n\n");
 		} else {
-			fprintf(fil, "struct %s_config %s_info_%d;\n",
+			fprintf(fil, "struct %s_config SECTION %s_info_%d;\n",
 				ptr->name_underscore, ptr->name_underscore, ptr->id);
 		}
 	}
@@ -606,12 +617,33 @@ int main(int argc, char** argv) {
 			h = h->next;
 			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 		}
-
+		fprintf(autogen,
+			"#ifdef __PRE_RAM__\n"
+			"#define SECTION "
+			"__attribute__((__section__(\".text\")))\n"
+			"#else\n"
+			"#define SECTION\n"
+			"#endif\n");
 		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 		fprintf(autogen, "\n/* pass 0 */\n");
 		walk_device_tree(autogen, &root, pass0, NULL);
-		fprintf(autogen, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\n"
-						"struct device *last_dev = &%s;\n", lastdev->name);
+
+		/* the section attribute fails (another gld bug?)
+		 * for last_dev. So we have to do the accessor function.
+		 */
+		fprintf(autogen,"\n/* pass 1 */\n"
+				"static struct "
+				"mainboard_config SECTION mainboard_info_0;\n"
+				"#ifndef __PRE_RAM__\n"
+				"struct device *last_dev = &%s;\n"
+				"#endif\n",
+				lastdev->name);
+		/* generate accessor function for PRE_RAM */
+		fprintf(autogen,"#ifdef __PRE_RAM__\n");
+		fprintf(autogen,"struct device *get_last_dev(void);\n");
+		fprintf(autogen,"struct device *get_last_dev(void)\n"
+				"{\nreturn &%s;\n}\n", lastdev->name);
+		fprintf(autogen,"#endif\n");
 		walk_device_tree(autogen, &root, pass1, NULL);
 
 	} else if (scan_mode == BOOTBLOCK_MODE) {

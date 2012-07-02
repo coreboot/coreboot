@@ -33,7 +33,7 @@ fi
 
 # $1: object directory
 run_printall() {
-$MAKE CONFIG_USE_BLOBS=n CONFIG_CCACHE=n CONFIG_SCANBUILD_ENABLE=n NOMKDIR=1 DOTCONFIG=$TMPCONFIG obj=$1 printall |sed -e "s,^ *,," -e "s,^ramstage-objs:=,," -e "s,mainboard/[^/]*/[^/]*/,.../," |tr " " "\n"|grep "/static.*\.[co]" |sort |tr '\012\015' '  ' |sed -e "s,  *, ,g" -e "s, *$,,"
+$MAKE CONFIG_USE_BLOBS=n CONFIG_CCACHE=n CONFIG_SCANBUILD_ENABLE=n NOMKDIR=1 DOTCONFIG=$TMPCONFIG obj=$1 printall |sed -e "s,^ *,," -e "s,^r.mstage-objs:=,," -e "s,mainboard/[^/]*/[^/]*/,.../,g" |tr " " "\n"|grep "/static.*\.[co]" |sort |tr '\012\015' '  ' |sed -e "s,  *, ,g" -e "s, *$,,"
 }
 
 # find GNU make
@@ -54,10 +54,10 @@ $MAKE DOTCONFIG=$TMPCONFIG allyesconfig >/dev/null
 # look up parent directory
 PARENTDIR=`dirname $PWD`
 
-compare_output "`run_printall build`" "build/.../static.c build/.../static.ramstage.o"
-compare_output "`run_printall ../obj`" "$PARENTDIR/obj/.../static.c $PARENTDIR/obj/.../static.ramstage.o"
-compare_output "`run_printall /tmp`" "/tmp/.../static.c /tmp/.../static.ramstage.o"
-compare_output "`run_printall /../tmp`" "/tmp/.../static.c /tmp/.../static.ramstage.o"
+compare_output "`run_printall build`" "build/.../static.c build/.../static.c build/.../static.ramstage.o build/.../static.romstage.o"
+compare_output "`run_printall ../obj`" "$PARENTDIR/obj/.../static.c $PARENTDIR/obj/.../static.c $PARENTDIR/obj/.../static.ramstage.o $PARENTDIR/obj/.../static.romstage.o"
+compare_output "`run_printall /tmp`" "/tmp/.../static.c /tmp/.../static.c /tmp/.../static.ramstage.o /tmp/.../static.romstage.o"
+compare_output "`run_printall /../tmp`" "/tmp/.../static.c /tmp/.../static.c /tmp/.../static.ramstage.o /tmp/.../static.romstage.o"
 
 rm -f $TMPCONFIG
 

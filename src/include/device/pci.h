@@ -100,7 +100,7 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 		bops = bus->dev->ops->ops_pci_bus;
 	}
 	if (!bops)
-		bops = pci_remember_direct();
+		bops = pci_config_default();
 	return bops;
 }
 

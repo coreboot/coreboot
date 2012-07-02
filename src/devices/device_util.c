@@ -29,6 +29,12 @@
 #include <device/resource.h>
 #include <string.h>
 
+/** Linked list of ALL devices */
+#ifdef __PRE_RAM__
+struct device __attribute__((__section__(".text"))) *all_devices = &dev_root;
+#else
+struct device *all_devices = &dev_root;
+
 /**
  * See if a device structure exists for path.
  *
@@ -63,6 +69,7 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 	return child;
 }
 
+#endif
 /**
  * Given a PCI bus and a devfn number, find the device structure.
  *
@@ -174,6 +181,47 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 	return from;
 }
 
+#ifdef __PRE_RAM__
+const char *dev_path(device_t dev)
+{
+	if (!dev) {
+		return "<null>";
+	} else {
+		switch(dev->path.type) {
+		case DEVICE_PATH_ROOT:
+			return "Root Device";
+			break;
+		case DEVICE_PATH_PCI:
+			return "PCI: ";
+			break;
+		case DEVICE_PATH_PNP:
+			return "PNP: ";
+			break;
+		case DEVICE_PATH_I2C:
+			return "I2C: ";
+			break;
+		case DEVICE_PATH_APIC:
+			return "APIC: ";
+			break;
+		case DEVICE_PATH_PCI_DOMAIN:
+			return "PCI_DOMAIN: ";
+			break;
+		case DEVICE_PATH_APIC_CLUSTER:
+			return "APIC_CLUSTER: ";
+			break;
+		case DEVICE_PATH_CPU:
+			return "CPU: ";
+			break;
+		case DEVICE_PATH_CPU_BUS:
+			return "CPU_BUS: ";
+			break;
+		default:
+			return "Unknown";
+			break;
+		}
+	}
+}
+#else
 /*
  * Warning: This function uses a static buffer. Don't call it more than once
  * from the same print statement!
@@ -868,3 +916,5 @@ int dev_count_cpu(void)
 
 	return count;
 }
+#endif
+

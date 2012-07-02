@@ -114,9 +114,7 @@ int int16_handler(struct eregs *regs)
 }
 
 #define PCI_CONFIG_SPACE_TYPE1	(1 << 0)
-#define PCI_CONFIG_SPACE_TYPE2	(1 << 1)
 #define PCI_SPECIAL_CYCLE_TYPE1	(1 << 4)
-#define PCI_SPECIAL_CYCLE_TYPE2	(1 << 5)
 
 int int1a_handler(struct eregs *regs)
 {

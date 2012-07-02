@@ -1,0 +1,216 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Advanced Micro Devices, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+config SOUTHBRIDGE_AMD_AGESA_HUDSON
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG
+	select TINY_BOOTBLOCK
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string
+	default "southbridge/amd/agesa/hudson/bootblock.c"
+	depends on SOUTHBRIDGE_AMD_AGESA_HUDSON
+
+config SOUTHBRIDGE_AMD_HUDSON_SKIP_ISA_DMA_INIT
+	bool
+	default n
+	depends on SOUTHBRIDGE_AMD_AGESA_HUDSON
+
+config EHCI_BAR
+	hex
+	default 0xfef00000 if SOUTHBRIDGE_AMD_AGESA_HUDSON
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xe0 if SOUTHBRIDGE_AMD_AGESA_HUDSON
+
+
+if SOUTHBRIDGE_AMD_AGESA_HUDSON
+
+config HUDSON_XHCI_FWM
+	bool "Add xhci firmware"
+	default y
+        help
+	  Add Hudson 2/3/4 XHCI Firmware to support the onboard usb3.0
+	  Please contact AMD to obtain the related firmware
+
+config HUDSON_IMC_FWM
+	bool "Add imc firmware"
+	default y
+        help
+	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
+	  Please contact AMD to obtain the related firmware
+
+config HUDSON_GEC_FWM
+	bool "Add gec firmware"
+	default n
+        help
+	  Add Hudson 2/3/4 GEC Firmware
+	  Please contact AMD to obtain the related firmware
+
+config HUDSON_XHCI_FWM_FILE
+        string "XHCI firmware path and filename"
+        default "src/southbridge/amd/agesa/hudson/xhci.bin"
+	depends on HUDSON_XHCI_FWM
+
+config HUDSON_IMC_FWM_FILE
+        string "IMC firmware path and filename"
+        default "src/southbridge/amd/agesa/hudson/imc.bin"
+	depends on HUDSON_IMC_FWM
+
+config HUDSON_GEC_FWM_FILE
+        string "GEC firmware path and filename"
+        default "src/southbridge/amd/agesa/hudson/gec.bin"
+	depends on HUDSON_GEC_FWM
+
+config HUDSON_FWM
+	bool
+	default y if HUDSON_XHCI_FWM || HUDSON_IMC_FWM || HUDSON_GEC_FWM
+	default n if !HUDSON_XHCI_FWM && !HUDSON_IMC_FWM && !HUDSON_GEC_FWM
+
+if HUDSON_FWM
+config HUDSON_FWM_FILE
+        string "Hudson firmware (with ROMSIG header) path and filename"
+        default "src/southbridge/amd/agesa/hudson/hudson.bin"
+
+config HUDSON_FWM_POSITION
+        hex "Hudwon Firmware rom Position"
+        #default 0xFFF20000 if COREBOOT_ROMSIZE_KB_1024
+        #default 0xFFE20000 if COREBOOT_ROMSIZE_KB_2048
+        #default 0xFFC20000 if COREBOOT_ROMSIZE_KB_4096
+        #default 0xFF820000 if COREBOOT_ROMSIZE_KB_8192
+        #default 0xFF020000 if COREBOOT_ROMSIZE_KB_16384
+        default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
+        default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
+        default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
+        default 0xFF820000 if BOARD_ROMSIZE_KB_8192
+        default 0xFF020000 if BOARD_ROMSIZE_KB_16384
+	help
+          Hudson requires the firmware MUST to be located at
+	  a specific address (ROM start address + 0x20000), otherwise
+	  xhci host Controller can not find or load the xhci firmware.
+
+	  The firmware start address is dependent on the ROM chip size.
+	  The default offset is 0x20000 from the ROM start address, namely
+           0xFFF20000 if flash chip size is 1M
+           0xFFE20000 if flash chip size is 2M
+           0xFFC20000 if flash chip size is 4M
+           0xFF820000 if flash chip size is 8M
+           0xFF020000 if flash chip size is 16M
+endif
+
+choice
+	prompt "SATA Mode"
+	default HUDSON_SATA_IDE
+	help
+	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
+	  The default is NATIVE.
+
+config HUDSON_SATA_IDE
+	bool "NATIVE"
+	help
+	  NATIVE is the default mode and does not require a ROM.
+
+config HUDSON_SATA_RAID
+	bool "RAID"
+	help
+	  HUDSON RAID mode must have the two required ROM files.
+
+config HUDSON_SATA_AHCI
+	bool "AHCI"
+	help
+	  AHCI may work with or without AHCI ROM. It depends on the payload support.
+	  For example, seabios does not require the AHCI ROM.
+
+config HUDSON_SATA_LEGACY_IDE
+	bool "LEGACY IDE"
+	help
+	  TODO
+
+config HUDSON_SATA_IDE2AHCI
+	bool "IDE to AHCI"
+	help
+	  TODO
+
+config HUDSON_SATA_AHCI7804
+	bool "AHCI7804"
+	help
+	  AHCI ROM Required, and AMD driver required in the OS.
+
+config HUDSON_SATA_IDE2AHCI7804
+	bool "IDE to AHCI7804"
+	help
+	  AHCI ROM Required, and AMD driver required in the OS.
+endchoice
+
+config HUDSON_SATA_MODE
+        hex
+	depends on (HUDSON_SATA_IDE || HUDSON_SATA_RAID || HUDSON_SATA_AHCI)
+	default "0x0" if HUDSON_SATA_IDE
+	default "0x1" if HUDSON_SATA_RAID
+	default "0x2" if HUDSON_SATA_AHCI
+	default "0x3" if HUDSON_SATA_LEGACY_IDE
+	default "0x4" if HUDSON_SATA_IDE2AHCI
+	default "0x5" if HUDSON_SATA_AHCI7804
+	default "0x6" if HUDSON_SATA_IDE2AHCI7804
+
+if HUDSON_SATA_AHCI || HUDSON_SATA_AHCI7804
+config AHCI_ROM_ID
+	string "AHCI device PCI IDs"
+	default "1022,7801" if HUDSON_SATA_AHCI
+	default "1022,7804" if HUDSON_SATA_AHCI7804
+
+config HUDSON_AHCI_ROM
+	bool "Add a AHCI ROM"
+
+config AHCI_ROM_FILE
+	string "AHCI ROM path and filename"
+	depends on HUDSON_AHCI_ROM
+	default "src/southbridge/amd/agesa/hudson/ahci.bin"
+endif
+
+if HUDSON_SATA_RAID
+config RAID_ROM_ID
+	string "RAID device PCI IDs"
+	default "1022,7802"
+        help
+          1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
+
+config RAID_ROM_FILE
+	string "RAID ROM path and filename"
+	depends on HUDSON_SATA_RAID
+	default "src/southbridge/amd/agesa/hudson/raid.bin"
+
+config RAID_MISC_ROM_FILE
+        string "RAID Misc ROM path and filename"
+        default "src/southbridge/amd/agesa/hudson/misc.bin"
+	depends on HUDSON_SATA_RAID
+
+config RAID_MISC_ROM_POSITION
+	hex "RAID Misc ROM Position"
+	default 0xFFF00000
+	depends on HUDSON_SATA_RAID
+	help
+	  The RAID ROM requires that the MISC ROM is located between the range
+	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
+	  The CONFIG_ROM_SIZE must larger than 0x100000.
+endif
+
+endif

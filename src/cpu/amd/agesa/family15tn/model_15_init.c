@@ -25,31 +25,34 @@
 #include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
+#include <pc80/mc146818rtc.h>
+#include <cpu/x86/lapic.h>
 
 #include <cpu/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam15.h>
+#include <arch/acpi.h>
+#include <cpu/amd/agesa/s3_resume.h>
 
 msr_t rdmsr_amd(u32 index)
 {
 	msr_t result;
 	__asm__ __volatile__(
-			"rdmsr"
-			:"=a"(result.lo), "=d"(result.hi)
-			:"c"(index), "D"(0x9c5a203a)
-			);
+		"rdmsr"
+		:"=a"(result.lo), "=d"(result.hi)
+		:"c"(index), "D"(0x9c5a203a)
+		);
 	return result;
 }
 
 void wrmsr_amd(u32 index, msr_t msr)
 {
 	__asm__ __volatile__(
-			"wrmsr"
-			: /* No outputs */
-			:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
-			);
+		"wrmsr"
+		: /* No outputs */
+		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
+		);
 }
 
 static void model_15_init(device_t dev)
@@ -59,31 +62,41 @@ static void model_15_init(device_t dev)
 	u8 i;
 	msr_t msr;
 	int msrno;
-#if CONFIG_LOGICAL_CPUS
+#if CONFIG_LOGICAL_CPUS == 1
 	u32 siblings;
 #endif
 
+	//x86_enable_cache();
+	//amd_setup_mtrrs();
+	//x86_mtrr_check();
 	disable_cache ();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-	// BSP: make a0000-bffff UC, c0000-fffff WB, same as ApMtrrSettingsList for APs
+	// BSP: make a0000-bffff UC, c0000-fffff WB, same as OntarioApMtrrSettingsList for APs
 	msr.lo = msr.hi = 0;
 	wrmsr (0x259, msr);
 	msr.lo = msr.hi = 0x1e1e1e1e;
+	wrmsr(0x250, msr);
+	wrmsr(0x258, msr);
 	for (msrno = 0x268; msrno <= 0x26f; msrno++)
 		wrmsr (msrno, msr);
 
-	msr.lo = 0x04040404; msr.hi = 0x04040404;
-	wrmsr(0x259, msr);
-
-	/* disable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
-	enable_cache ();
+
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	if (acpi_slp_type == 3)
+		restore_mtrr();
+#endif
+
+	x86_mtrr_check();
+	x86_enable_cache();
 
 	/* zero the machine check error status registers */
 	msr.lo = 0;
@@ -92,10 +105,11 @@ static void model_15_init(device_t dev)
 		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
 
+
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS
+#if CONFIG_LOGICAL_CPUS == 1
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
@@ -127,17 +141,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x100F80},    /* HY-D0 */
-	{ X86_VENDOR_AMD, 0x100F90},    /* HY-D0 */
-	{ X86_VENDOR_AMD, 0x100F81},    /* HY-D1 */
-	{ X86_VENDOR_AMD, 0x100F91},    /* HY-D1 */
-	{ X86_VENDOR_AMD, 0x600f00 },   /* OR_A0x */
-	{ X86_VENDOR_AMD, 0x600f01 },   /* OR_A0x */
-	{ X86_VENDOR_AMD, 0x600f10 },   /* OR_B0x */
-	{ X86_VENDOR_AMD, 0x600f11 },   /* OR_B1x */
-	{ X86_VENDOR_AMD, 0x600f12 },   /* OR_B2x */
-	{ X86_VENDOR_AMD, 0x600f13 },   /* OR_B3x */
-	{ X86_VENDOR_AMD, 0x600f20 },   /* OR_C0x */
+	{ X86_VENDOR_AMD, 0x610f00 },	  /* TN-A0 */
 	{ 0, 0 },
 };
 

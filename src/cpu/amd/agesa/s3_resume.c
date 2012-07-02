@@ -225,6 +225,8 @@ void OemAgesaSaveMtrr(void)
 	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
 	nvram_pos += 4;
 
+	write_spi_status((u8 *)spi_address, 0x3c);
+	spi_write_disable((u8 *) spi_address);
 #endif
 }
 
@@ -273,6 +275,10 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 			       S3_DATA_VOLATILE_POS + 0x2000);
 		sector_erase_spi((u8 *) spi_address,
 			       S3_DATA_VOLATILE_POS + 0x3000);
+		sector_erase_spi((u8 *) spi_address,
+			       S3_DATA_VOLATILE_POS + 0x4000);
+		sector_erase_spi((u8 *) spi_address,
+			       S3_DATA_VOLATILE_POS + 0x5000);
 	}
 
 	nvram_pos = 0;
@@ -283,6 +289,9 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 		dword_noneAAI_program((u8 *) spi_address, nvram_pos + pos + 4,
 				    *(u32 *) (Data + nvram_pos));
 	}
+	/* write_spi_status((u8 *)spi_address, 0x3c); */
+
+	/* spi_write_disable((u8 *) spi_address); */
 
 	return AGESA_SUCCESS;
 }

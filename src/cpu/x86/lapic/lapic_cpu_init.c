@@ -24,10 +24,9 @@
  * We actually handling that case by noting which cpus startup
  * and not telling anyone about the ones that dont.
  */
-static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
-{
-	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000
-}
+
+/* Start-UP IPI vector must be 4kB aligned and below 1MB. */
+#define AP_SIPI_VECTOR 0x1000
 
 #if CONFIG_HAVE_ACPI_RESUME
 char *lowmem_backup;
@@ -41,19 +40,14 @@ static void copy_secondary_start_to_1m_below(void)
 {
 	extern char _secondary_start_end[];
 	unsigned long code_size;
-	unsigned long start_eip;
 
-	/* _secondary_start need to be masked 20 above bit, because 16 bit code in secondary.S
-	   Also We need to copy the _secondary_start to the below 1M region
-	*/
-	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* need to save it for RAM resume */
 	lowmem_backup_size = code_size;
 	lowmem_backup = malloc(code_size);
-	lowmem_backup_ptr = (char *)start_eip;
+	lowmem_backup_ptr = (char *)AP_SIPI_VECTOR;
 
 	if (lowmem_backup == NULL)
 		die("Out of backup memory\n");
@@ -61,9 +55,9 @@ static void copy_secondary_start_to_1m_below(void)
 	memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
 #endif
 	/* copy the _secondary_start to the ram below 1M*/
-	memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
+	memcpy((unsigned char *)AP_SIPI_VECTOR, (unsigned char *)_secondary_start, code_size);
 
-	printk(BIOS_DEBUG, "start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
+	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n", (long unsigned int)AP_SIPI_VECTOR, code_size);
 }
 
 static struct bus *current_cpu_bus;
@@ -71,7 +65,7 @@ static struct bus *current_cpu_bus;
 static int lapic_start_cpus(struct bus *cpu_bus)
 {
 	int timeout;
-	unsigned long send_status, accept_status, start_eip;
+	unsigned long send_status, accept_status;
 	int maxlvt;
 
 	/*
@@ -105,7 +99,6 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 		}
 		return 0;
 	}
-	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 
 	maxlvt = 4;
 
@@ -125,7 +118,7 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 	/* Boot on the stack */
 	/* Kick the second */
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | LAPIC_DEST_ALLBUT
-			   | (start_eip >> 12));
+			   | ((AP_SIPI_VECTOR >> 12) & 0xff));
 
 	/*
 	 * Give the other CPU some time to accept the IPI.

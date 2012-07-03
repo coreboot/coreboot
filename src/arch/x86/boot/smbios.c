@@ -173,8 +173,8 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->length = len - 2;
 	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
 	t->product_name = smbios_add_string(t->eos, CONFIG_MAINBOARD_PART_NUMBER);
-	t->serial_number = smbios_add_string(t->eos, "123456789");
-	t->version = smbios_add_string(t->eos, "1.0");
+	t->serial_number = smbios_add_string(t->eos, CONFIG_MAINBOARD_SERIAL_NUMBER);
+	t->version = smbios_add_string(t->eos, CONFIG_MAINBOARD_VERSION);
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;

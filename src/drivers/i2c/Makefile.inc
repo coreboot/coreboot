@@ -5,3 +5,4 @@ subdirs-y += i2cmux
 subdirs-y += i2cmux2
 subdirs-y += lm63
 subdirs-y += w83795
+subdirs-y += w83793

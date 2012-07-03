@@ -1,0 +1,1 @@
+driver-$(CONFIG_DRIVERS_I2C_W83793) += w83793.c

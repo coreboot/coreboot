@@ -11,6 +11,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_512
 	select HAVE_MP_TABLE
 	select HAVE_PIRQ_TABLE
+	select DRIVERS_I2C_W83793
 
 config MAINBOARD_DIR
 	string

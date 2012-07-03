@@ -20,7 +20,8 @@ ifeq ($(CONFIG_CPU_AMD_AGESA), y)
 
 $(obj)/s3.rom:
 	echo "    S3 NVRAM   0xffff0000 (S3 storage area)"
-	awk 'BEGIN {for (i=0; i<20480; i++) {printf "%c", 255}}' > $@.tmp
+	# force C locale, so cygwin awk doesn't try to interpret the 0xff below as UTF-8 (or worse)
+	LC_ALL=C awk 'BEGIN {for (i=0; i<20480; i++) {printf "%c", 255}}' > $@.tmp
 	mv $@.tmp $@
 
 cbfs-files-y += s3nv

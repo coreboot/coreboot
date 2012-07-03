@@ -114,8 +114,25 @@ chip northbridge/intel/i5000
 		end
 		device pci 1f.1 off end # IDE
 		device pci 1f.2 on end # SATA
-		device pci 1f.3 off end # SMBUS
+		device pci 1f.3 on
+			chip drivers/i2c/w83793
+				register "mfc" = "0x28"
+				register "fanin" = "0x1f"
+				register "peci_agent_conf" = "0x33"
+				register "tcase0" = "0x5e"
+				register "tcase1" = "0x5e"
+				register "tcase2" = "0x5e"
+				register "tcase3" = "0x5e"
+				register "tr_enable" = "0x01"
+				register "critical_temperature" = "0x7f"
+				register "td1_fan_select" = "0x01"
+				register "td2_fan_select" = "0x01"
+				register "td3_fan_select" = "0x01"
+				register "td4_fan_select" = "0x01"
 
+				device i2c 0x2f on end
+			end
+		end # SMBUS
 		end
 	end
 end

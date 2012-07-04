@@ -126,6 +126,7 @@ struct sysdef {
 #define SYSTEM_EOT .name = NULL
 #define SYSTEM_ISEOT(s) (NULL == (s).name)
 
+typedef enum { VENDOR_INTEL = 1, VENDOR_AMD = 2 } vendor_t;
 
 struct cpuid_t {
 	uint8_t family;
@@ -133,6 +134,7 @@ struct cpuid_t {
 	uint8_t stepping;
 	uint8_t ext_family;
 	uint8_t ext_model;
+	vendor_t vendor;
 };
 
 

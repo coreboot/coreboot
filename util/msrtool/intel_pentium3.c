@@ -21,7 +21,10 @@
 
 int intel_pentium3_probe(const struct targetdef *target) {
 	struct cpuid_t *id = cpuid();
-	return ((0x6 == id->family)&((0xa == id->model)|(0xb == id->model)));
+	return ((0x6 == id->family) && (
+		(0xa == id->model) ||
+		(0xb == id->model)
+		));
 }
 
 const struct msrdef intel_pentium3_msrs[] = {

@@ -130,16 +130,36 @@ bsp_init:
 
 	post_code(0x24)
 
-	/* For a hyper-threading processor, cache must not be disabled
-	 * on an AP on the same physical package with the BSP.
-	 */
-	movl	$01, %eax
+	movl	$1, %eax
 	cpuid
 	btl	$28, %edx
 	jnc	sipi_complete
 	bswapl	%ebx
-	cmpb	$01, %bh
-	jbe	sipi_complete
+	movzx	%bh, %edi
+	cmpb	$1, %bh
+	jbe	sipi_complete	/* only one LAPIC ID in package */
+
+	movl	$0, %eax
+	cpuid
+	movb	$1, %bl
+	cmpl	$4, %eax
+	jb	cores_counted
+	movl	$4, %eax
+	movl	$0, %ecx
+	cpuid
+	shr	$26, %eax
+	movb	%al, %bl
+	inc	%bl
+
+cores_counted:
+	movl	%edi, %eax
+	divb	%bl
+	cmpb	$1, %al
+	jbe	sipi_complete	/* only LAPIC ID of a core */
+
+	/* For a hyper-threading processor, cache must not be disabled
+	 * on an AP on the same physical package with the BSP.
+	 */
 
 hyper_threading_cpu:
 
@@ -205,7 +225,7 @@ ap_init:
 ap_halt:
 	cli
 1:	hlt
-	jnz	1b
+	jmp	1b
 
 
 

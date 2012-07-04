@@ -21,8 +21,11 @@ int intel_ht_sibling(void)
 		apic_ids = 1;
 
 	core_ids = 1;
-	if (cpuid_eax(0) >= 4)
-		core_ids += (cpuid_eax(4) >> 26) & 0x3f;
+	if (cpuid_eax(0) >= 4) {
+		struct cpuid_result result;
+		result = cpuid_ext(4, 0);
+		core_ids += (result.eax >> 26) & 0x3f;
+	}
 
 	threads = (apic_ids / core_ids);
 	return !!(lapicid() & (threads-1));

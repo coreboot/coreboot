@@ -29,6 +29,8 @@ config BOARD_IEI_NOVA_4899R
 	bool "NOVA-4899R"
 config BOARD_IEI_PCISA_LX_800_R10
 	bool "PCISA LX-800-R10"
+config BOARD_IEI_PM_LX_800_R11
+	bool "PM LX-800-R11"
 
 endchoice
 
@@ -36,6 +38,7 @@ source "src/mainboard/iei/juki-511p/Kconfig"
 source "src/mainboard/iei/kino-780am2-fam10/Kconfig"
 source "src/mainboard/iei/nova4899r/Kconfig"
 source "src/mainboard/iei/pcisa-lx-800-r10/Kconfig"
+source "src/mainboard/iei/pm-lx-800-r11/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

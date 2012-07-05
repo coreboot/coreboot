@@ -55,10 +55,17 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
+static const unsigned short nb_ids[] = {
+	0x25c0,	/* 5000X */
+	0x25d0, /* 5000Z */
+	0x25d4, /* 5000V */
+	0x25d8, /* 5000P */
+	0};
+
 static const struct pci_driver mc_driver __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x25d8,
+	.devices = nb_ids,
 };
 
 static void cpu_bus_init(device_t dev)

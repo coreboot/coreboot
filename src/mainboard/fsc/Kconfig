@@ -1,0 +1,16 @@
+if VENDOR_FSC
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_FSC_TX200S3
+	bool "TX200 S3"
+endchoice
+
+source "src/mainboard/fsc/tx200s3/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "FSC (Fujitsu Siemens Computer)"
+
+endif # VENDOR_FSC

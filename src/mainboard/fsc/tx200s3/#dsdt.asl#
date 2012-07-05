@@ -1,0 +1,66 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2009 Thomas Jourdan <thomas.jourdan@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
+DefinitionBlock ("DSDT", "DSDT", 1, "BLAKFORD", "COREBOOT", 0x0000001)
+{
+        /* For now only define 2 power states:
+        *  - S0 which is fully on
+        *  - S5 which is soft off
+        * Any others would involve declaring the wake up methods.
+        */   
+        Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
+        Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
+
+        Name (PICM, 0x00)
+        Method (_PIC, 1, NotSerialized)
+        {    
+                Store (Arg0, PICM)
+        }    
+        /* System bus */
+        Scope (\_SB)
+        {    
+                /* Routing PCI0 */
+                Name (PR00, Package ()
+                {    
+		Package (0x04){0x0001FFFF,0x00,LNKA,0x00},
+                Package (0x04){0x0002FFFF,0x00,LNKA,0x00},
+                Package (0x04){0x0002FFFF,0x01,LNKB,0x00},
+                Package (0x04){0x0002FFFF,0x02,LNKC,0x00},
+                Package (0x04){0x0002FFFF,0x03,LNKD,0x00},
+                Package (0x04){0x0003FFFF,0x00,LNKA,0x00},
+                Package (0x04){0x0003FFFF,0x01,LNKB,0x00},
+                Package (0x04){0x0003FFFF,0x02,LNKC,0x00},
+                Package (0x04){0x0003FFFF,0x03,LNKD,0x00},
+                Package (0x04){0x001CFFFF,0x00,LNKE,0x00},
+                Package (0x04){0x001DFFFF,0x00,LNKH,0x00},
+		Package (0x04){0x001DFFFF,0x01,LNKD,0x00},
+                Package (0x04){0x001FFFFF,0x01,LNKD,0x00},
+                Package (0x04){0x001FFFFF,0x03,LNKA,0x00}
+                })
+		Device(LPC)
+		{
+			Name(_ADR, 0x001f0000)
+			
+		}
+	}
+
+}
+

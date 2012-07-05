@@ -87,6 +87,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000P, "Intel i5000P Memory Controller Hub" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000X, "Intel i5000X Memory Controller Hub" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000Z, "Intel i5000Z Memory Controller Hub" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000V, "Intel i5000V Memory Controller Hub" },
 };
 
 #ifndef __DARWIN__

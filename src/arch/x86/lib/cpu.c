@@ -249,10 +249,9 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 	struct device *cpu;
 	struct cpuinfo_x86 c;
 	struct device_path cpu_path;
-	unsigned char id = lapicid();
 
 	cpu_path.type = DEVICE_PATH_APIC;
-	cpu_path.apic.apic_id = id;
+	cpu_path.apic.apic_id = lapicid();
 	cpu_path.apic.index = index;
 
 #if CONFIG_SMP
@@ -262,16 +261,16 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 #if CONFIG_SMP
 	spin_unlock(&start_cpu_lock);
 #endif
-	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
+	printk(BIOS_DEBUG, "Initializing CPU #%d (APIC ID %lu)\n", index, lapicid());
 
 	/* Find what type of cpu we are dealing with */
 	identify_cpu(cpu);
-	printk(BIOS_DEBUG, "CPU: vendor %s device %x\n",
+	printk(BIOS_DEBUG, "CPU%d: vendor %s device %x\n", index,
 		cpu_vendor_name(cpu->vendor), cpu->device);
 
 	get_fms(&c, cpu->device);
 
-	printk(BIOS_DEBUG, "CPU: family %02x, model %02x, stepping %02x\n",
+	printk(BIOS_DEBUG, "CPU%d: family %02x, model %02x, stepping %02x\n", index,
 		c.x86, c.x86_model, c.x86_mask);
 
 	/* Lookup the cpu's operations */
@@ -283,7 +282,7 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
 		if(!cpu->ops) die("Unknown cpu");
-		printk(BIOS_DEBUG, "Using generic cpu ops (good)\n");
+		printk(BIOS_DEBUG, "CPU%d: Using generic cpu ops (good)\n", index);
 	}
 
 	/* Initialize the cpu */
@@ -293,7 +292,7 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 		cpu->ops->init(cpu);
 	}
 
-	printk(BIOS_INFO, "CPU #%d initialized\n", id);
+	printk(BIOS_INFO, "CPU #%d initialized\n", index);
 
 	return;
 }

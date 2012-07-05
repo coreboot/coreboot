@@ -41,8 +41,8 @@ _secondary_start:
 	/* increment our cpu index */
 	movl	$1, %eax
 	lock	xadd %eax, cpucount
-	incl	%eax
 	movl	%eax, %ecx
+	incl	%eax
 
 	/* assign stack for this specific cpu */
 	mov	_stack, %esp

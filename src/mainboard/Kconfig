@@ -52,6 +52,8 @@ config VENDOR_ECS
 	bool "ECS"
 config VENDOR_EMULATION
 	bool "Emulation"
+config VENDOR_FSC
+	bool "Fujitsu Siemens Computer(FSC)"
 config VENDOR_GETAC
 	bool "Getac"
 config VENDOR_GIGABYTE
@@ -153,6 +155,7 @@ source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
 source "src/mainboard/ecs/Kconfig"
 source "src/mainboard/emulation/Kconfig"
+source "src/mainboard/fsc/Kconfig"
 source "src/mainboard/getac/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"
 source "src/mainboard/hp/Kconfig"

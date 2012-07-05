@@ -1,0 +1,145 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/i5000
+
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_LGA771
+			device lapic 0 on end
+		end
+	end
+	device pci_domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x15d9 0x2017
+		end
+
+		device pci 02.0 on # PCI Express x8 Port 2-3
+			device pci 00.0 on # PCI Express Upstream Port
+				device pci 00.0 on # PCI Express Downstream Port E1
+					device pci 00.0 on # 6700PXH PCI Express-to-PCI Bridge A
+						# PCI slot
+						device pci 00.2 on # 6700PXH PCI Express-to-PCI Bridge B
+							# PCI slot
+						end
+					end
+
+				end
+				device pci 02.0 on # PCI Express Downstream Port E3
+						device pci 00.0 on end # e1000 #1
+						device pci 00.1 on end # e1000 #2
+				end
+			end
+			device pci 00.3 on # PCI Express to PCI-X Bridge
+				# PCI-X Slot
+			end
+		end
+
+		device pci 03.0 on end
+		device pci 10.0 on end # FBD
+		device pci 10.1 on end # FBD
+		device pci 10.2 on end # FBD
+		device pci 11.0 on end # FBD reserved
+		device pci 13.0 on end # FBD reserved
+		device pci 15.0 on end # FBD
+		device pci 16.0 on end # FBD
+
+		chip southbridge/intel/i3100
+			register "pirq_a_d" = "0x0b0b0b0b"
+			register "pirq_e_h" = "0x80808080"
+			register "sata_ports_implemented" = "0x3f"
+
+		device pci 1c.0 on end # PCIe bridge
+		device pci 1d.0 on end # USB UHCI
+		device pci 1d.1 on end # USB UHCI
+		device pci 1d.2 on end # USB UHCI
+		device pci 1d.3 on end # USB UHCI
+		device pci 1d.7 on end # USB2 EHCI
+		device pci 1e.0 on end
+
+		device pci 1f.0 on # PCI-LPC bridge
+			subsystemid 0x15d9 0x2009
+			chip superio/serverengines/pilot
+				device pnp 4e.0 on # unknown
+				       io 0x60 = 0xf00
+				end
+
+				device pnp 4e.1 on # COM2
+				       io 0x60 = 0x2f8
+				       irq 0x70 = 3
+				end
+
+				device pnp 4e.2 on # COM1
+				       io 0x60 = 0x3f8
+				       irq 0x70 = 4
+				end
+
+				device pnp 4e.3 on # unknown
+				       io 0x60 = 0xe00
+				       io 0x62 = 0x200
+				       io 0x64 = 0x204
+				       io 0x66 = 0x208
+				end
+
+				device pnp 4e.4 off end # unknown
+				device pnp 4e.5 off end # unknown
+				device pnp 4e.6 off end # unknown
+				device pnp 4e.7 off end # unknown
+				device pnp 4e.8 on # IPMI
+				       io 0x60 = 0xca4
+				       io 0x62 = 0xca5
+				end
+
+				device pnp 4e.9 on # IPMI
+				       io 0x60 = 0xca2
+				       io 0x62 = 0xca3
+				end
+
+				device pnp 4e.a off end # unknown
+
+			end
+			chip superio/smsc/smscsuperio
+				device pnp 2e.0 off end
+				device pnp 2e.3 on # LPT
+					io 0x60 = 0x378
+					irq 0x70 = 7
+				end
+
+				device pnp 2e.4 off end
+				device pnp 2e.5 off end
+
+				device pnp 2e.7 on # KBC
+				       io 0x60 = 0x60
+				       io 0x62 = 0x64
+				       irq 0x70 = 1
+				       irq 0x72 = 12
+
+				end
+				device pnp 2e.a off end
+			end
+		end
+		device pci 1f.1 on end # IDE
+		device pci 1f.2 on end # SATA
+		device pci 1f.3 on
+		end # SMBUS
+		end
+	end
+end

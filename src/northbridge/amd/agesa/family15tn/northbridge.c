@@ -937,8 +937,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for (i = 0; i < node_nums; i++) {
-		device_t cdb_dev, cpu;
-		struct device_path cpu_path;
+		device_t cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -997,59 +996,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		printk(BIOS_SPEW, "%s family%xh, core_max=0x%x, core_nums=0x%x, siblings=0x%x\n",
 				dev_path(cdb_dev), 0x0f + family, core_max, core_nums, siblings);
 
-		for (j = 0; j <= siblings; j++ ) {
-			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
-			u32 modules = TopologyConfiguration.PlatformNumberOfModules;
-			u32 lapicid_start = 0;
-
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			/*
-			 * APIC ID calucation is tightly coupled with AGESA v5 code.
-			 * This calculation MUST match the assignment calculation done
-			 * in LocalApicInitializationAtEarly() function.
-			 * And reference GetLocalApicIdForCore()
-			 *
-			 * Apply apic enumeration rules
-			 * For systems with >= 16 APICs, put the IO-APICs at 0..n and
-			 * put the local-APICs at m..z
-			 *
-			 * This is needed because many IO-APIC devices only have 4 bits
-			 * for their APIC id and therefore must reside at 0..15
-                         */
-#ifndef CFG_PLAT_NUM_IO_APICS /* defined in mainboard buildOpts.c */
-#define CFG_PLAT_NUM_IO_APICS 3
-#endif
-			if ((node_nums * core_max) + CFG_PLAT_NUM_IO_APICS >= 0x10) {
-				lapicid_start = (CFG_PLAT_NUM_IO_APICS - 1) / core_max;
-				lapicid_start = (lapicid_start + 1) * core_max;
-				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
-			}
-			cpu_path.apic.apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (siblings + 1)) : j);
-			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
-					i, j, cpu_path.apic.apic_id);
-
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
-			/* Enable the cpu if I have the processor */
-			if (cdb_dev && cdb_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
-			}
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
-				cpu->enabled = 0;
-			}
-			/* Report what I have done */
-			if (cpu) {
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-			}
-		} //j
 	}
 	return max;
 }

@@ -38,7 +38,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 }
 
 /* Serial config is a fairly standard procedure. */
-static void pilot_enable_serial(device_t dev, u16 iobase)
+static void __attribute__((unused)) pilot_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);
@@ -47,7 +47,7 @@ static void pilot_enable_serial(device_t dev, u16 iobase)
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void pilot_disable_serial(device_t dev)
+static void __attribute__((unused)) pilot_disable_serial(device_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

@@ -18,14 +18,24 @@
  */
 
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 
+#define GDRST 0xc0
+
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
+
+	/* Unconditionally reset graphics */
+	pci_write_config8(dev, GDRST, 1);
+	udelay(50);
+	pci_write_config8(dev, GDRST, 0);
+	/* wait for device to finish */
+	while (pci_read_config8(dev, GDRST) & 1) { };
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

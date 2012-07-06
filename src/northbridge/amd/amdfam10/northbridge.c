@@ -1425,21 +1425,14 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			cpu_path.type = DEVICE_PATH_APIC;
 			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
 
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
-
-			/* Enable the cpu if I have the processor */
 			if (cdb_dev && cdb_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
-			}
-
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
+				/* Enable the cpu if I have the processor */
+				cpu = alloc_find_dev(cpu_bus, &cpu_path);
+			} else {
+				/* Disable the cpu if I don't have the processor */
+				cpu = find_dev_path(cpu_bus, &cpu_path);
+				if (!cpu)
+					continue;
 				cpu->enabled = 0;
 			}
 

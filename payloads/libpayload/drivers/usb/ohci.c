@@ -49,6 +49,13 @@ static void ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 static void
 ohci_reset (hci_t *controller)
 {
+	if (controller == NULL)
+		return;
+
+	OHCI_INST(controller)->opreg->HcCommandStatus = HostControllerReset;
+	mdelay(2); /* wait 2ms */
+	OCHI_INST(controller)->opreg->HcControl = 0;
+	mdelay(10); /* wait 10ms */
 }
 
 #ifdef USB_DEBUG

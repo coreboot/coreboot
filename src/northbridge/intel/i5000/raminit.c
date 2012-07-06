@@ -1521,7 +1521,7 @@ static void i5000_try_restart(const char *msg)
 {
 	printk(BIOS_INFO, msg);
 	i5000_dump_error_registers();
-//	outb(0x06, 0xcf9);
+	outb(0x06, 0xcf9);
 	for(;;) asm volatile("hlt");
 }
 

@@ -832,7 +832,6 @@ static void cpu_bus_set_resources(device_t dev) {
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	device_t cpu;
-	struct device_path cpu_path;
 	int apic_id, cores_found;
 
 	/* There is only one node for fam14, but there may be multiple cores. */
@@ -845,18 +844,18 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 
 	for (apic_id = 0; apic_id <= cores_found; apic_id++) {
+		struct device_path cpu_path;
+
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = apic_id;
 		cpu = alloc_find_dev(dev->link_list, &cpu_path);
-		if (cpu) {
-			cpu->enabled = 1;
-			cpu->path.apic.node_id = 0;
-			cpu->path.apic.core_id = apic_id;
-			printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-		} else {
-			cpu->enabled = 0;
-		}
+		if (!cpu)
+			continue;
+		cpu->enabled = 1;
+		cpu->path.apic.node_id = 0;
+		cpu->path.apic.core_id = apic_id;
+		printk(BIOS_DEBUG, "CPU: %s %s\n",
+			dev_path(cpu), cpu->enabled?"enabled":"disabled");
 	}
 	return max;
 }

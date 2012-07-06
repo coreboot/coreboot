@@ -1310,8 +1310,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for (i = 0; i < nodes; i++) {
-		device_t cdb_dev, cpu;
-		struct device_path cpu_path;
+		device_t cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -1354,7 +1353,8 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 		cores_found = 0; // one core
 		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
-		if (cdb_dev && cdb_dev->enabled) {
+		int enable_node = cdb_dev && cdb_dev->enabled;
+		if (enable_node) {
 			j = pci_read_config32(cdb_dev, 0xe8);
 			cores_found = (j >> 12) & 3; // dev is func 3
 			if (siblings > 3)
@@ -1373,6 +1373,8 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
 			u32 modules = TopologyConfiguration.PlatformNumberOfModules;
 			u32 lapicid_start = 0;
+			struct device_path cpu_path;
+			device_t cpu;
 
 			/* Build the cpu device path */
 			cpu_path.type = DEVICE_PATH_APIC;
@@ -1393,31 +1395,19 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			}
 			cpu_path.apic.apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (cores_found + 1)) : j);
 
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
+			/* Update CPU in devicetree. */
+			if (enable_node)
+				cpu = alloc_find_dev(cpu_bus, &cpu_path);
+			else
+				cpu = find_dev_path(cpu_bus, &cpu_path);
+			if (!cpu)
+				continue;
 
-			/* Enable the cpu if I have the processor */
-			if (cdb_dev && cdb_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
-			}
-
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
-				cpu->enabled = 0;
-			}
-
-			/* Report what I have done */
-			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-			}
+			cpu->enabled = enable_node;
+			cpu->path.apic.node_id = i;
+			cpu->path.apic.core_id = j;
+			printk(BIOS_DEBUG, "CPU: %s %s\n",
+				dev_path(cpu), cpu->enabled?"enabled":"disabled");
 
 		} //j
 	}

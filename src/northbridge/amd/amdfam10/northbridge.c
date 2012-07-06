@@ -1359,8 +1359,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for(i = 0; i < nodes; i++) {
-		device_t cdb_dev, cpu;
-		struct device_path cpu_path;
+		device_t cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -1403,7 +1402,8 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 		cores_found = 0; // one core
 		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
-		if (cdb_dev && cdb_dev->enabled) {
+		int enable_node = cdb_dev && cdb_dev->enabled;
+		if (enable_node) {
 			j = pci_read_config32(cdb_dev, 0xe8);
 			cores_found = (j >> 12) & 3; // dev is func 3
 			if (siblings > 3)
@@ -1420,47 +1420,33 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		}
 
 		for (j = 0; j <=jj; j++ ) {
+			struct device_path cpu_path;
+			device_t cpu;
 
 			/* Build the cpu device path */
 			cpu_path.type = DEVICE_PATH_APIC;
 			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
 
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
+			/* Update CPU in devicetree. */
+			if (enable_node)
+				cpu = alloc_find_dev(cpu_bus, &cpu_path);
+			else
+				cpu = find_dev_path(cpu_bus, &cpu_path);
+			if (!cpu)
+				continue;
 
-			/* Enable the cpu if I have the processor */
-			if (cdb_dev && cdb_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
+#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
+			if(sysconf.enabled_apic_ext_id) {
+				if (cpu->path.apic.apic_id != 0 || sysconf.lift_bsp_apicid) {
+					cpu->path.apic.apic_id += sysconf.apicid_offset;
 				}
 			}
-
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
-				cpu->enabled = 0;
-			}
-
-			/* Report what I have done */
-			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
-	#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
-				if(sysconf.enabled_apic_ext_id) {
-					if(sysconf.lift_bsp_apicid) {
-						cpu->path.apic.apic_id += sysconf.apicid_offset;
-					} else
-					{
-						if (cpu->path.apic.apic_id != 0)
-							cpu->path.apic.apic_id += sysconf.apicid_offset;
-					}
-				}
-	#endif
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-			}
+#endif
+			cpu->enabled = enable_node;
+			cpu->path.apic.node_id = i;
+			cpu->path.apic.core_id = j;
+			printk(BIOS_DEBUG, "CPU: %s %s\n",
+				dev_path(cpu), cpu->enabled?"enabled":"disabled");
 
 		} //j
 	}

@@ -1327,8 +1327,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for (i = 0; i < nodes; i++) {
-		device_t cdb_dev, cpu;
-		struct device_path cpu_path;
+		device_t cdb_dev;
 		unsigned busn, devn;
 		struct bus *pbus;
 
@@ -1379,62 +1378,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cdb_dev), cores_found);
 		}
 
-		u32 jj;
-		if (disable_siblings) {
-			jj = 0;
-		} else {
-			jj = cores_found;
-		}
-
-		for (j = 0; j <=jj; j++ ) {
-			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
-			u32 modules = TopologyConfiguration.PlatformNumberOfModules;
-			u32 lapicid_start = 0;
-
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			/*
-			 * APIC ID calucation is tightly coupled with AGESA v5 code.
-			 * This calculation MUST match the assignment calculation done
-			 * in LocalApicInitializationAtEarly() function.
-			 * And reference GetLocalApicIdForCore()
-			 *
-			 * Apply apic enumeration rules
-			 * For systems with >= 16 APICs, put the IO-APICs at 0..n and
-			 * put the local-APICs at m..z
-			 * For systems with < 16 APICs, put the Local-APICs at 0..n and
-			 * put the IO-APICs at (n + 1)..z
-			 */
-			if (nodes * (cores_found + 1) >= 0x10) {
-  				lapicid_start = 0x10;
-			}
-			cpu_path.apic.apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (cores_found + 1)) : j);
-
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
-
-			/* Enable the cpu if I have the processor */
-			if (cdb_dev && cdb_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
-			}
-
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
-				cpu->enabled = 0;
-			}
-
-			/* Report what I have done */
-			if (cpu) {
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-			}
-
-		} //j
 	}
 	return max;
 }

@@ -816,31 +816,14 @@ static void cpu_bus_set_resources(device_t dev) {
 
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
-	device_t cpu;
-	struct device_path cpu_path;
-	int apic_id, cores_found;
+	int cores_found;
 
 	/* There is only one node for fam14, but there may be multiple cores. */
-	cpu = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-	if (!cpu)
+	if (! dev_find_slot(0, PCI_DEVFN(0x18, 0)))
 		printk(BIOS_ERR, "ERROR: %02x:%02x.0 not found", 0, 0x18);
 
 	cores_found = (pci_read_config32(dev_find_slot(0,PCI_DEVFN(0x18,0x3)), 0xe8) >> 12) & 3;
 	printk(BIOS_DEBUG, "  AP siblings=%d\n", cores_found);
-
-
-	for (apic_id = 0; apic_id <= cores_found; apic_id++) {
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.apic.apic_id = apic_id;
-		cpu = alloc_find_dev(dev->link_list, &cpu_path);
-		if (cpu) {
-			cpu->enabled = 1;
-			printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-		} else {
-			cpu->enabled = 0;
-		}
-	}
 	return max;
 }
 

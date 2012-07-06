@@ -1211,8 +1211,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
 	for(i = 0; i < sysconf.nodes; i++) {
-		device_t cpu_dev, cpu;
-		struct device_path cpu_path;
+		device_t cpu_dev;
 
 		/* Find the cpu's pci device */
 		cpu_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
@@ -1271,57 +1270,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
   			}
 		}
 
-		u32 jj;
-		if(e0_later_single_core || disable_siblings) {
-			jj = 0;
-		} else
-		{
-			jj = siblings;
-		}
-#if 0
-		jj = 0; // if create cpu core1 path in amd_siblings by core0
-#endif
-
-		for (j = 0; j <=jj; j++ ) {
-
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
-
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
-
-			/* Enable the cpu if I have the processor */
-			if (cpu_dev && cpu_dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
-			}
-
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!cpu_dev || !cpu_dev->enabled)) {
-				cpu->enabled = 0;
-			}
-
-			/* Report what I have done */
-			if (cpu) {
-				if(sysconf.enabled_apic_ext_id) {
-					if(sysconf.lift_bsp_apicid) {
-						cpu->path.apic.apic_id += sysconf.apicid_offset;
-					} else
-					{
-						if (cpu->path.apic.apic_id != 0)
-							cpu->path.apic.apic_id += sysconf.apicid_offset;
-					}
-				}
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-			}
-
-		} //j
 	}
 	return max;
 }

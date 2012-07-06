@@ -60,8 +60,4 @@ config CORE_GLIU_500_400
 
 endchoice
 
-config CORE_GLIU
-	int
-	default 7
-
 endif # BOARD_IEI_PM_LX_800_R11

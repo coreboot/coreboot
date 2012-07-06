@@ -1210,21 +1210,6 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
-/* dummy read_resources */
-static void lapic_read_resources(device_t dev)
-{
-}
-
-static struct device_operations lapic_ops = {
-        .read_resources   = lapic_read_resources,
-        .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init             = 0,
-        .scan_bus         = 0,
-        .enable           = 0,
-        .ops_pci          = 0,
-};
-
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	struct bus *cpu_bus;
@@ -1426,9 +1411,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			if (cpu) {
 				cpu->path.apic.node_id = i;
 				cpu->path.apic.core_id = j;
-				if (cpu->path.type == DEVICE_PATH_APIC) {
-					cpu->ops = &lapic_ops;
-				}
 				printk(BIOS_DEBUG, "CPU: %s %s\n",
 					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}

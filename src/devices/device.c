@@ -66,11 +66,9 @@ DECLARE_SPIN_LOCK(dev_lock)
  *
  * @see device_path
  */
-device_t alloc_dev(struct bus *parent, struct device_path *path)
+static device_t __alloc_dev(struct bus *parent, struct device_path *path)
 {
 	device_t dev, child;
-
-	spin_lock(&dev_lock);
 
 	/* Find the last child of our parent. */
 	for (child = parent->children; child && child->sibling; /* */ )
@@ -99,8 +97,34 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	last_dev->next = dev;
 	last_dev = dev;
 
+	return dev;
+}
+
+device_t alloc_dev(struct bus *parent, struct device_path *path)
+{
+	device_t dev;
+	spin_lock(&dev_lock);
+	dev = __alloc_dev(parent, path);
 	spin_unlock(&dev_lock);
 	return dev;
+}
+
+/**
+ * See if a device structure already exists and if not allocate it.
+ *
+ * @param parent The bus to find the device on.
+ * @param path The relative path from the bus to the appropriate device.
+ * @return Pointer to a device structure for the device on bus at path.
+ */
+device_t alloc_find_dev(struct bus *parent, struct device_path *path)
+{
+	device_t child;
+	spin_lock(&dev_lock);
+	child = find_dev_path(parent, path);
+	if (!child)
+		child = __alloc_dev(parent, path);
+	spin_unlock(&dev_lock);
+	return child;
 }
 
 /**

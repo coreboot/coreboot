@@ -11,12 +11,6 @@ void secondary_cpu_init(int index);
 
 extern unsigned int cpucount;
 
-#if !CONFIG_WAIT_BEFORE_CPUS_INIT
-	#define cpus_ready_for_init() do {} while(0)
-#else
-	void cpus_ready_for_init(void);
-#endif
-
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);
 void smm_lock(void);

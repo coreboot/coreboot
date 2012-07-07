@@ -286,8 +286,6 @@ void initialize_cpus(struct bus *cpu_bus)
 	smm_init();
 #endif
 
-	cpus_ready_for_init();
-
 	/* Initialize the bootstrap processor */
 	cpu_initialize(cpu_bus, 0);
 

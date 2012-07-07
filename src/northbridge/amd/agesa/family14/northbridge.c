@@ -833,15 +833,10 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = apic_id;
 		cpu = alloc_find_dev(dev->link_list, &cpu_path);
-		if (cpu) {
-			cpu->enabled = 1;
-			cpu->path.apic.node_id = 0;
-			cpu->path.apic.core_id = apic_id;
-			printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
-		} else {
-			cpu->enabled = 0;
-		}
+		cpu->path.apic.node_id = 0;
+		cpu->path.apic.core_id = apic_id;
+		printk(BIOS_DEBUG, "CPU: %s %s\n",
+			dev_path(cpu), cpu->enabled?"enabled":"disabled");
 	}
 	return max;
 }

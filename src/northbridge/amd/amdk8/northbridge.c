@@ -1300,22 +1300,16 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				cpu->enabled = 0;
 			}
 
-			/* Report what I have done */
-			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
-				if(sysconf.enabled_apic_ext_id) {
-					if(sysconf.lift_bsp_apicid) {
-						cpu->path.apic.apic_id += sysconf.apicid_offset;
-					} else
-					{
-						if (cpu->path.apic.apic_id != 0)
-							cpu->path.apic.apic_id += sysconf.apicid_offset;
-					}
+			if(sysconf.enabled_apic_ext_id) {
+				if (cpu->path.apic.apic_id != 0 || sysconf.lift_bsp_apicid) {
+					cpu->path.apic.apic_id += sysconf.apicid_offset;
 				}
-				printk(BIOS_DEBUG, "CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}
+
+			cpu->path.apic.node_id = i;
+			cpu->path.apic.core_id = j;
+			printk(BIOS_DEBUG, "CPU: %s %s\n",
+				dev_path(cpu), cpu->enabled?"enabled":"disabled");
 
 		} //j
 	}

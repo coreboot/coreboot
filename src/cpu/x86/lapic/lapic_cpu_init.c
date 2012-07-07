@@ -502,8 +502,6 @@ void initialize_cpus(struct bus *cpu_bus)
 	smm_init();
 #endif
 
-	cpus_ready_for_init();
-
 #if CONFIG_SMP
 	#if !CONFIG_SERIAL_CPU_INIT
 	/* start all aps at first, so we can init ECC all together */

@@ -9,12 +9,6 @@ struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void secondary_cpu_init(void);
 
-#if !CONFIG_WAIT_BEFORE_CPUS_INIT
-	#define cpus_ready_for_init() do {} while(0)
-#else
-	void cpus_ready_for_init(void);
-#endif
-
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);
 void smm_lock(void);

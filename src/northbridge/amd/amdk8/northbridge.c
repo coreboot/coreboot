@@ -1369,6 +1369,9 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 static void cpu_bus_init(device_t dev)
 {
+#if CONFIG_WAIT_BEFORE_CPUS_INIT
+	cpus_ready_for_init();
+#endif
 	initialize_cpus(dev->link_list);
 }
 

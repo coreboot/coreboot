@@ -48,22 +48,6 @@ device_t find_dev_path(struct bus *parent, struct device_path *path)
 }
 
 /**
- * See if a device structure already exists and if not allocate it.
- *
- * @param parent The bus to find the device on.
- * @param path The relative path from the bus to the appropriate device.
- * @return Pointer to a device structure for the device on bus at path.
- */
-device_t alloc_find_dev(struct bus *parent, struct device_path *path)
-{
-	device_t child;
-	child = find_dev_path(parent, path);
-	if (!child)
-		child = alloc_dev(parent, path);
-	return child;
-}
-
-/**
  * Given a PCI bus and a devfn number, find the device structure.
  *
  * @param bus The bus number.

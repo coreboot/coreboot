@@ -27,4 +27,5 @@ subdirs-y += sil
 subdirs-y += trident
 subdirs-y += ics
 subdirs-y += spi
+subdirs-y += ipmi
 subdirs-$(CONFIG_ARCH_X86) += pc80

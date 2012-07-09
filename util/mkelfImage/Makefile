@@ -10,10 +10,6 @@ DESTDIR =
 CWD:=$(shell pwd)
 OBJDIR:=objdir
 
-pkgdatadir = $(datadir)/$(PACKAGE)
-pkglibdir = $(libdir)/$(PACKAGE)
-pkgincludedir = $(includedir)/$(PACKAGE)
-
 CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"' -I include
 HOST_CPPFLAGS=$(CPPFLAGS)
 I386_CPPFLAGS=$(CPPFLAGS) -I arch/i386/include
@@ -69,7 +65,7 @@ maintainer-clean:: dist-clean
 
 
 install: $(TARGETS)
-	$(MKDIR) -p $(DESTDIR)/$(pkgdatadir)/elf32-i386/ $(DESTDIR)/$(sbindir) $(DESTDIR)/$(mandir)/man8
+	$(MKDIR) -p $(DESTDIR)/$(sbindir) $(DESTDIR)/$(mandir)/man8
 	$(CP) -ar $(SBIN_TARGETS) $(DESTDIR)/$(sbindir)/
 	$(CP) -ar $(MAN8_TARGETS) $(DESTDIR)/$(mandir)/man8/
 

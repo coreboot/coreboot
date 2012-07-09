@@ -72,4 +72,5 @@ extern struct amdfam10_sysconf_t sysconf;
 
 void get_sblk_pci1234(void);
 void get_bus_conf(void);
+void cpu_topology(u32 apic_id, u16 *node_id, u16 *core_id);
 #endif

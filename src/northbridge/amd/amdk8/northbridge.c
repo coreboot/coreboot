@@ -1158,21 +1158,20 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
+static unsigned int siblings = 0;
+static unsigned int nb_cfg_54 = 0;
+
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
 	int bsp_apicid;
 	int i,j;
-	unsigned nb_cfg_54;
-	unsigned siblings;
 	int e0_later_single_core;
 	int disable_siblings;
 
-	nb_cfg_54 = 0;
 	sysconf.enabled_apic_ext_id = 0;
 	sysconf.lift_bsp_apicid = 0;
-	siblings = 0;
 
 	/* Find the bootstrap processors apicid */
 	bsp_apicid = lapicid();
@@ -1309,8 +1308,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 			/* Report what I have done */
 			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
 				if(sysconf.enabled_apic_ext_id) {
 					if(sysconf.lift_bsp_apicid) {
 						cpu->path.apic.apic_id += sysconf.apicid_offset;
@@ -1327,6 +1324,23 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		} //j
 	}
 	return max;
+}
+
+void cpu_topology(u32 apic_id, u16 *node_id, u16 *core_id)
+{
+	// i = node_id, j = core_id
+	// cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
+
+	if (nb_cfg_54) {
+		// apic_id = node_id * (siblings+1) + core_id
+		*node_id = apic_id / (siblings+1);
+		*core_id = apic_id - (*node_id) * (siblings+1);
+
+	} else {
+		// apic_id = node_id + core_id * 8;
+		*node_id = apic_id % 8;
+		*core_id = apic_id / 8;
+	}
 }
 
 static void cpu_bus_init(device_t dev)

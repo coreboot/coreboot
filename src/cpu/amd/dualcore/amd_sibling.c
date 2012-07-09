@@ -187,8 +187,6 @@ void amd_sibling_init(device_t cpu)
 			new->initialized = 0;
 		}
 
-                new->path.apic.node_id = cpu->path.apic.node_id;
-                new->path.apic.core_id = i;
 
 #if 1
 		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n",

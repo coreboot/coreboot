@@ -365,6 +365,8 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define D25IR		0x3150	/* 16bit */
 #define D22IR		0x315c	/* 16bit */
 #define OIC		0x31fe	/* 16bit */
+#define SOFT_RESET_CTRL 0x38f4
+#define SOFT_RESET_DATA 0x38f8
 
 #define DIR_ROUTE(x,a,b,c,d) \
   RCBA32(x) = (((d) << DIR_IDR) | ((c) << DIR_ICR) | \

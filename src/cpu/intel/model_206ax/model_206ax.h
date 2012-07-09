@@ -29,6 +29,9 @@
 #define  CPUID_VMX			(1 << 5)
 #define  CPUID_SMX			(1 << 6)
 #define MSR_FEATURE_CONFIG		0x13c
+#define MSR_FLEX_RATIO			0x194
+#define  FLEX_RATIO_LOCK		(1 << 20)
+#define  FLEX_RATIO_EN			(1 << 16)
 #define IA32_PLATFORM_DCA_CAP		0x1f8
 #define IA32_MISC_ENABLE		0x1a0
 #define IA32_PERF_CTL 			0x199
@@ -95,6 +98,7 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
+#ifndef __ROMCC__
 #ifdef __SMM__
 /* Lock MSRs */
 void intel_model_206ax_finalize_smm(void);
@@ -102,6 +106,7 @@ void intel_model_206ax_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
+#endif
 #endif
 
 #endif

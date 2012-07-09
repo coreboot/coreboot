@@ -188,6 +188,19 @@ struct smbios_type32 {
 	u8 eos[2];
 } __attribute__((packed));
 
+struct smbios_type38 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 interface_type;
+	u8 ipmi_rev;
+	u8 i2c_slave_addr;
+	u8 nv_storage_addr;
+	u64 base_address;
+	u8 base_address_modifier;
+	u8 irq;
+} __attribute__((packed));
+
 typedef enum {
 	SMBIOS_DEVICE_TYPE_OTHER = 0x01,
 	SMBIOS_DEVICE_TYPE_UNKNOWN,

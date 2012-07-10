@@ -79,7 +79,9 @@ void udelay(u32 usecs)
 {
 	u32 start, value, ticks;
 
-	if (!timer_fsb)
+	if (!timer_fsb || (lapic_read(LAPIC_LVTT) &
+		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED)) !=
+		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED))
 		init_timer();
 
 	/* Calculate the number of ticks to run, our FSB runs at timer_fsb Mhz */

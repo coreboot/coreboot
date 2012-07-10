@@ -166,6 +166,8 @@ unsigned int scan_static_bus(device_t bus, unsigned int max);
 
 void ram_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek);
+void uma_resource(device_t dev, unsigned long index,
+		  unsigned long basek, unsigned long sizek);
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);
 

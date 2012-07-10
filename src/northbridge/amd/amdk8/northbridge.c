@@ -824,18 +824,6 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 
 #if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
-
-static void add_uma_resource(struct device *dev, int index)
-{
-	struct resource *resource;
-
-	printk(BIOS_DEBUG, "Adding UMA memory area\n");
-	resource = new_resource(dev, index);
-	resource->base = (resource_t) uma_memory_base;
-	resource->size = (resource_t) uma_memory_size;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
 #endif
 
 static void amdk8_domain_set_resources(device_t dev)
@@ -1073,7 +1061,7 @@ static void amdk8_domain_set_resources(device_t dev)
 	}
 
 #if CONFIG_GFXUMA
-	add_uma_resource(dev, 7);
+	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #endif
 	assign_resources(dev->link_list);
 

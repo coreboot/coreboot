@@ -235,10 +235,6 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-#if CONFIG_SMP
-static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
-#endif
-
 void cpu_initialize(struct bus *cpu_bus, int index)
 {
 	/* Because we busy wait at the printk spinlock.
@@ -255,13 +251,7 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 	cpu_path.apic.apic_id = id;
 	cpu_path.apic.index = index;
 
-#if CONFIG_SMP
-	spin_lock(&start_cpu_lock);
-#endif
 	cpu = alloc_find_dev(cpu_bus, &cpu_path);
-#if CONFIG_SMP
-	spin_unlock(&start_cpu_lock);
-#endif
 	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
 
 	/* Find what type of cpu we are dealing with */

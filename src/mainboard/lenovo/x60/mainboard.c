@@ -29,6 +29,7 @@
 #include "chip.h"
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/pci_ids.h>
 #include <arch/io.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
@@ -52,7 +53,7 @@ int get_cst_entries(acpi_cstate_t **entries)
 
 static void mainboard_enable(device_t dev)
 {
-	device_t dev0, idedev;
+	device_t dev0, idedev, sdhci_dev;
 	u8 defaults_loaded = 0;
 
 	ec_clr_bit(0x03, 2);
@@ -77,6 +78,19 @@ static void mainboard_enable(device_t dev)
 		/* disable Ultrabay power */
 		outb(inb(0x1628) & ~0x01, 0x1628);
 		ec_write(0x0c, 0x04);
+	}
+
+	/* Set SDHCI write protect polarity "SDWPPol" */
+	sdhci_dev = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_R5C822, 0);
+	if (sdhci_dev) {
+		if (pci_read_config8(sdhci_dev, 0xfa) != 0x20) {
+			/* unlock */
+			pci_write_config8(sdhci_dev, 0xf9, 0xfc);
+			/* set SDWPPol, keep CLKRUNDis, SDPWRPol clear */
+			pci_write_config8(sdhci_dev, 0xfa, 0x20);
+			/* restore lock */
+			pci_write_config8(sdhci_dev, 0xf9, 0x00);
+		}
 	}
 
 	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {

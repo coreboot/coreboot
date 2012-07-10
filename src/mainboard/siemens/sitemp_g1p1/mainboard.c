@@ -873,14 +873,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 		printk(BIOS_INFO, "mmconf: base=%0llx size=%0llx\n", res->base, res->size);
 		lb_add_memory_range(mem, LB_MEM_RESERVED, res->base, res->size);
 	}
-	/* UMA is removed from system memory in the northbridge code, but
-	 * in some circumstances we want the memory mentioned as reserved.
- 	 */
-#if CONFIG_GFXUMA
-	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
-	uma_memory_base, uma_memory_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base, uma_memory_size);
-#endif
 	return 0;
 }
 

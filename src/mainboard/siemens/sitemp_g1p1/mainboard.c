@@ -162,7 +162,6 @@
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
 
-uint64_t uma_memory_base, uma_memory_size;
 static u32 smbus_io_base = SMBUS_IO_BASE;
 static u32 adt7475_address = ADT7475_ADDRESS;
 

@@ -67,7 +67,6 @@ void set_pcie_dereset(void *nbconfig)
 	}
 }
 
-uint64_t uma_memory_base, uma_memory_size;
 
 /*************************************************
  * enable the dedicated function in dinar board.

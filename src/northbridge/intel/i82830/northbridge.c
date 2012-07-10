@@ -52,9 +52,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x3575,
 };
 
-/* IGD memory */
-uint64_t uma_memory_base=0, uma_memory_size=0;
-
 int add_northbridge_resources(struct lb_memory *mem)
 {
 	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");

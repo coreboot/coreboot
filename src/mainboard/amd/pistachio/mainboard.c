@@ -39,7 +39,6 @@ extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 #define ADT7475_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7475_ADDRESS, address, val)
 
-uint64_t uma_memory_base, uma_memory_size;
 
 /********************************************************
 * pistachio uses a BCM5787 as on-board NIC.

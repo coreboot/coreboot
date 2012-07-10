@@ -36,7 +36,6 @@
 #ifdef __SMM__
 #include <arch/romcc_io.h>
 #include <northbridge/intel/sandybridge/pcie_config.c>
-typedef device_t pci_dev_t;
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pcie_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\
@@ -52,7 +51,6 @@ typedef device_t pci_dev_t;
 #else /* !__SMM__ */
 #include <device/device.h>
 #include <device/pci.h>
-typedef device_t pci_dev_t;
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pci_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\
@@ -331,7 +329,7 @@ void spi_init(void)
 	uint8_t *rcrb; /* Root Complex Register Block */
 	uint32_t rcba; /* Root Complex Base Address */
 	uint8_t bios_cntl;
-	pci_dev_t dev;
+	device_t dev;
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 

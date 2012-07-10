@@ -247,15 +247,6 @@ static void tim5690_enable(device_t dev)
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	/* UMA is removed from system memory in the northbridge code, but
-	 * in some circumstances we want the memory mentioned as reserved.
- 	 */
-#if CONFIG_GFXUMA
-	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
-	uma_memory_base, uma_memory_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_base, uma_memory_size);
-#endif
 	technexion_post_code(LED_MESSAGE_FINISH);
 	return 0;
 }

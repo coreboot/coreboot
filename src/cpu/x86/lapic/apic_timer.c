@@ -50,6 +50,7 @@ static int set_timer_fsb(void)
 		timer_fsb = core2_fsb[rdmsr(0xcd).lo & 7];
 		break;
 	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
+	case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
 		timer_fsb = 100;
 		break;
 	default:

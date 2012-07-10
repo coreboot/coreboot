@@ -535,10 +535,10 @@ void intel_me_finalize_smm(void)
 {
 	u32 did = pcie_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
 	switch (did) {
-	case 0x80861c3a:
+	case 0x1c3a8086:
 		intel_me7_finalize_smm();
 		break;
-	case 0x80861e3a:
+	case 0x1e3a8086:
 		intel_me8_finalize_smm();
 		break;
 	default:

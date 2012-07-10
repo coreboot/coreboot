@@ -249,9 +249,10 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 
 	cpu_path.type = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = id;
-	cpu_path.apic.index = index;
 
 	cpu = alloc_find_dev(cpu_bus, &cpu_path);
+	cpu->path.apic.index = index;
+
 	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
 
 	/* Find what type of cpu we are dealing with */

@@ -61,8 +61,6 @@ struct amdfam10_sysconf_t {
 
 	unsigned bsp_apicid;
 	int enabled_apic_ext_id;
-	unsigned lift_bsp_apicid;
-	int apicid_offset;
 
 	void *mb; // pointer for mb releated struct
 

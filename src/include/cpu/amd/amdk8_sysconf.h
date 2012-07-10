@@ -15,12 +15,7 @@ struct amdk8_sysconf_t {
 
 	unsigned hcdn_reg[4]; // it will be used by get_sblk_pci1234
 
-	int enabled_apic_ext_id;
-	unsigned lift_bsp_apicid;
-	int apicid_offset;
-
 	void *mb; // pointer for mb releated struct
-
 };
 
 extern struct amdk8_sysconf_t sysconf;

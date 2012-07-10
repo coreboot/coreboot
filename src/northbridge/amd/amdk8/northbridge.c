@@ -1170,12 +1170,8 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	int e0_later_single_core;
 	int disable_siblings;
 
-	sysconf.enabled_apic_ext_id = 0;
-	sysconf.lift_bsp_apicid = 0;
-
 	/* Find the bootstrap processors apicid */
 	bsp_apicid = lapicid();
-	sysconf.apicid_offset = bsp_apicid;
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 #if CONFIG_LOGICAL_CPUS
@@ -1193,20 +1189,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	}
 
 	sysconf.nodes = ((pci_read_config32(dev_mc, 0x60)>>4) & 7) + 1;
-
-
-	if (pci_read_config32(dev_mc, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
-	{
-		sysconf.enabled_apic_ext_id = 1;
-		if(bsp_apicid == 0) {
-			/* bsp apic id is not changed */
-			sysconf.apicid_offset = CONFIG_APIC_ID_OFFSET;
-		} else
-		{
-			sysconf.lift_bsp_apicid = 1;
-		}
-
-	}
 
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;

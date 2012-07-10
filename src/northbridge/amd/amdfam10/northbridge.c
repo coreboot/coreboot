@@ -1180,28 +1180,14 @@ static void sysconf_init(device_t dev) // first node
 	sysconf.nodes += (((pci_read_config32(dev, 0x160)>>4) & 7)<<3);
 #endif
 
-	sysconf.enabled_apic_ext_id = 0;
-	sysconf.lift_bsp_apicid = 0;
 
 	/* Find the bootstrap processors apicid */
 	sysconf.bsp_apicid = lapicid();
-	sysconf.apicid_offset = sysconf.bsp_apicid;
 
+	sysconf.enabled_apic_ext_id = 0;
 #if CONFIG_ENABLE_APIC_EXT_ID
 	if (pci_read_config32(dev, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
-	{
 		sysconf.enabled_apic_ext_id = 1;
-	}
-	#if (CONFIG_APIC_ID_OFFSET>0)
-	if(sysconf.enabled_apic_ext_id) {
-		if(sysconf.bsp_apicid == 0) {
-			/* bsp apic id is not changed */
-			sysconf.apicid_offset = CONFIG_APIC_ID_OFFSET;
-		} else {
-			sysconf.lift_bsp_apicid = 1;
-		}
-	}
-	#endif
 #endif
 }
 

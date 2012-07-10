@@ -21,10 +21,7 @@
 
 int intel_pentium3_early_probe(const struct targetdef *target) {
 	struct cpuid_t *id = cpuid();
-	return ((0x6 == id->family) && (
-		(0x7 == id->model) ||
-		(0x8 == id->model)
-		));
+	return ((0x6 == id->family)&((0x7 == id->model)|(0x8 == id->model)));
 }
 
 const struct msrdef intel_pentium3_early_msrs[] = {

@@ -26,23 +26,7 @@ static struct cpuid_t id;
 
 struct cpuid_t *cpuid(void) {
 	uint32_t outeax;
-	uint32_t outebx;
 
-/* First, we need determine which vendor we have */
-#if defined(__DARWIN__) && !defined(__LP64__)
-        asm volatile (
-                "pushl %%ebx    \n"
-                "cpuid          \n"
-                "popl %%ebx     \n"
-                : "=b" (outebx) : "a" (0) : "%ecx", "%edx"
-        );
-#else
-	asm ("cpuid" : "=b" (outebx) : "a" (0) : "%ecx", "%edx");
-#endif
-
-	id.vendor = (outebx == 0x756e6547) ? VENDOR_INTEL : VENDOR_AMD;
-
-/* Then, identificate CPU itself */
 #if defined(__DARWIN__) && !defined(__LP64__)
         asm volatile (
                 "pushl %%ebx    \n"
@@ -63,8 +47,7 @@ struct cpuid_t *cpuid(void) {
 	id.ext_model = outeax & 0xf;
 	outeax >>= 4;
 	id.ext_family = outeax & 0xff;
-	if ((0xf == id.family) || ((VENDOR_INTEL == id.vendor)
-			&& (0x6 == id.family))) {
+	if (0xf == id.family) {
 		/* Intel says always do this, AMD says only for family f */
 		id.model |= (id.ext_model << 4);
 		id.family += id.ext_family;

@@ -21,7 +21,7 @@
 
 int intel_core2_early_probe(const struct targetdef *target) {
 	struct cpuid_t *id = cpuid();
-	return ((0x6 == id->family) && (0xf == id->model));
+	return ((0x6 == id->family)&(0xf == id->model));
 }
 
 const struct msrdef intel_core2_early_msrs[] = {

@@ -356,33 +356,6 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-/* Send END OF POST message to the ME */
-static int mkhi_end_of_post(void)
-{
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_GEN,
-		.command	= MKHI_END_OF_POST,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi),
-	};
-
-	u32 eop_ack;
-
-	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
-	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
-		printk(BIOS_ERR, "ME: END OF POST message failed\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
-	return 0;
-}
-
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 static inline void print_cap(const char *name, int state)
 {
@@ -490,6 +463,33 @@ static int mkhi_global_reset(void)
 #endif
 
 #ifdef __SMM__
+
+/* Send END OF POST message to the ME */
+static int mkhi_end_of_post(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST,
+	};
+	struct mei_header mei = {
+		.is_complete	= 1,
+		.host_address	= MEI_HOST_ADDRESS,
+		.client_address	= MEI_ADDRESS_MKHI,
+		.length		= sizeof(mkhi),
+	};
+
+	u32 eop_ack;
+
+	/* Send request and wait for response */
+	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
+	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
+	return 0;
+}
 
 void intel_me8_finalize_smm(void)
 {
@@ -719,10 +719,11 @@ static void intel_me_init(device_t dev)
 		me_print_fw_version(&mbp_data.fw_version_name);
 		me_print_fwcaps(&mbp_data.fw_caps_sku);
 #endif
-		/* Tell ME that BIOS is done */
-		mkhi_end_of_post();
-		/* Hide the virtual PCI device */
-		intel_me_hide(dev);
+
+		/*
+		 * Leave the ME unlocked in this path.
+		 * It will be locked via SMI command later.
+		 */
 		break;
 
 	case ME_ERROR_BIOS_PATH:

@@ -102,6 +102,20 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 
 }
 
+static void uma_fb_resource(void *gp, struct device *dev, struct resource *res)
+{
+	struct mem_state *state = gp;
+	unsigned long topk;
+
+	topk = resk(res->base + res->size);
+	if (state->tom2k < topk) {
+		state->tom2k = topk;
+	}
+	if ((topk < 4*1024*1024) && (state->tomk < topk)) {
+		state->tomk = topk;
+	}
+}
+
 void amd_setup_mtrrs(void)
 {
 	unsigned long address_bits;
@@ -133,6 +147,9 @@ void amd_setup_mtrrs(void)
 
 	state.tomk = state.tom2k = 0;
 	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_UMA_FB, IORESOURCE_MEM | IORESOURCE_UMA_FB,
+		uma_fb_resource, &state);
+	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, &state);
 
@@ -144,13 +161,6 @@ void amd_setup_mtrrs(void)
 	state.tomk = (state.tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
 	msr.hi = state.tomk >> 22;
 	msr.lo = state.tomk << 10;
-	/* If UMA graphics is enabled, the frame buffer memory
-	 * has been deducted from the size of memory below 4GB.
-	 * When setting TOM, include UMA DRAM
-	 */
-	#if CONFIG_GFXUMA
-	msr.lo += uma_memory_size;
-	#endif
 	wrmsr(TOP_MEM, msr);
 
 	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */

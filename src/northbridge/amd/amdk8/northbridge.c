@@ -1093,16 +1093,8 @@ static void amdk8_domain_set_resources(device_t dev)
 				sizek -= (4*1024*1024 - mmio_basek);
 			}
 		}
-		/* If sizek == 0, it was split at mmio_basek without a hole.
-		 * Don't create an empty ram_resource.
-		 */
-#if CONFIG_GFXUMA
-		/* Deduct uma memory before reporting because
-		 * this is what the mtrr code expects */
-		sizek -= uma_memory_size / 1024;
-#endif
-		if (sizek)
-			ram_resource(dev, (idx | i), basek, sizek);
+
+		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 #if CONFIG_WRITE_HIGH_TABLES
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",

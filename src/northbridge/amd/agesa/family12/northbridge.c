@@ -340,20 +340,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 #if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
-
-static void add_uma_resource(struct device *dev, int index)
-{
-    struct resource *resource;
-
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - add_uma_resource - Start.\n");
-
-    resource = new_resource(dev, index);
-    resource->base = (resource_t) uma_memory_base;
-    resource->size = (resource_t) uma_memory_size;
-    resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-        IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - add_uma_resource - End.\n");
-}
 #endif
 
 static void read_resources(device_t dev)
@@ -759,8 +745,7 @@ printk(BIOS_DEBUG, "  adsr - mmio_basek = %x.\n",mmio_basek);
 printk(BIOS_DEBUG, "  adsr - high_tables_size = %x.\n",high_tables_size);
 
 #if CONFIG_GFXUMA
-    printk(BIOS_DEBUG, "adsr - adding uma resource.\n");
-    add_uma_resource(dev, 7);
+	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #endif
 
     for(link = dev->link_list; link; link = link->next) {

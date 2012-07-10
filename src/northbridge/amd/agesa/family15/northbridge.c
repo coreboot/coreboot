@@ -628,18 +628,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 #if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
-static void add_uma_resource(struct device *dev, int index)
-{
-	struct resource *resource;
-
-	printk(BIOS_DEBUG, "Adding UMA memory area\n");
-	resource = new_resource(dev, index);
-	resource->base = (resource_t) uma_memory_base;
-	resource->size = (resource_t) uma_memory_size;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-			IORESOURCE_FIXED | IORESOURCE_STORED |
-			IORESOURCE_ASSIGNED;
-}
 #endif
 
 static void domain_set_resources(device_t dev)
@@ -821,7 +809,7 @@ static void domain_set_resources(device_t dev)
 	}
 
 #if CONFIG_GFXUMA
-	add_uma_resource(dev, 7);
+	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #endif
 
 	for(link = dev->link_list; link; link = link->next) {

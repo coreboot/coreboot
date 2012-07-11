@@ -115,12 +115,6 @@ static acpi_cstate_t cstate_map[] = {
 	{ 0 }
 };
 
-#if !CONFIG_MICROCODE_IN_CBFS
-static const uint32_t microcode_updates[] = {
-	#include "microcode_blob.h"
-};
-#endif
-
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
 	[0]   = 0x00,
@@ -421,11 +415,7 @@ static void model_206ax_init(device_t cpu)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-#if CONFIG_MICROCODE_IN_CBFS
 	intel_update_microcode_from_cbfs();
-#else
-	intel_update_microcode(microcode_updates);
-#endif
 
 	/* Clear out pending MCEs */
 	configure_mca();

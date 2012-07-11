@@ -25,12 +25,6 @@
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 
-#if !CONFIG_MICROCODE_IN_CBFS
-static const uint32_t microcode_updates[] = {
-	#include "microcode_blob.h"
-};
-#endif
-
 #include <cpu/intel/microcode/microcode.c>
 #include "model_206ax.h"
 
@@ -125,9 +119,5 @@ static void bootblock_cpu_init(void)
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
 	enable_rom_caching();
-#if CONFIG_MICROCODE_IN_CBFS
 	intel_update_microcode_from_cbfs();
-#else
-	intel_update_microcode(microcode_updates);
-#endif
 }

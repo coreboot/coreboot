@@ -352,8 +352,20 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	unsigned long basek, sizek;
 	if (state->reg >= bios_mtrrs)
 		return;
+
 	basek = resk(res->base);
 	sizek = resk(res->size);
+
+	if (res->flags & IORESOURCE_UMA_FB) {
+		/* FIXME: could I use Write-Combining for Frame Buffer ? */
+		state->reg = range_to_mtrr(state->reg,	basek, sizek, 0,
+			MTRR_TYPE_UNCACHEABLE, state->address_bits, state->above4gb);
+		return;
+	}
+
+	if (!(res->flags & IORESOURCE_CACHEABLE))
+		return;
+
 	/* See if I can merge with the last range
 	 * Either I am below 1M and the fixed mtrrs handle it, or
 	 * the ranges touch.
@@ -451,23 +463,9 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	if (above4gb == 2)
 		detect_var_mtrrs();
 
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+	search_global_resources(IORESOURCE_MEM, IORESOURCE_MEM,
 		set_var_mtrr_resource, &var_state);
 
-#if CONFIG_GFXUMA /* UMA or SP. */
-	/* For now we assume the UMA space is at the end of memory below 4GB */
-	if (var_state.hole_startk || var_state.hole_sizek) {
-		printk(BIOS_DEBUG, "Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
-	} else {
-		// Increase the base range and set up UMA as an UC hole instead
-		if (above4gb != 2)
-			var_state.range_sizek += (uma_memory_size >> 10);
-
-		var_state.hole_startk = (uma_memory_base >> 10);
-		var_state.hole_sizek = (uma_memory_size >> 10);
-	}
-#endif
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk,
 		var_state.range_sizek, 0, MTRR_TYPE_WRBACK,

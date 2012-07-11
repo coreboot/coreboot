@@ -26,15 +26,3 @@ config MICROCODE_INCLUDE_PATH
 	string
 	default "src/cpu/intel/model_206ax"
 endif
-
-if CPU_INTEL_MODEL_206AX
-   config CPU_MODEL_NAME
-	string
-	default "Intel SandyBridge CPU"
-endif
-
-if CPU_INTEL_MODEL_306AX
-   config CPU_MODEL_NAME
-	string
-	default "Intel IvyBridge CPU"
-endif

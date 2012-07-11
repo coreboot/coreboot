@@ -79,6 +79,9 @@ struct pei_data
 	 *  [1] = overcurrent pin
 	 *  [2] = length
 	 *
+	 * Ports 0-7 can be mapped to OC0-OC3
+	 * Ports 8-13 can be mapped to OC4-OC7
+	 *
 	 * Port Length
 	 *  MOBILE:
 	 *   < 0x050 = Setting 1 (back panel, 1-5in, lowest tx amplitude)

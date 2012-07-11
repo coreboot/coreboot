@@ -31,7 +31,7 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 2
+#define PEI_VERSION 3
 struct pei_data
 {
 	uint32_t pei_version;
@@ -98,6 +98,7 @@ struct pei_data
 	 */
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;
+	int ddr3lv_support;
 } __attribute__((packed));
 
 #endif

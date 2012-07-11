@@ -342,10 +342,6 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 
 }
 
-#ifndef CONFIG_VAR_MTRR_HOLE
-#define CONFIG_VAR_MTRR_HOLE 1
-#endif
-
 struct var_mtrr_state {
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
@@ -373,7 +369,6 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	}
 	/* Write the range mtrrs */
 	if (state->range_sizek != 0) {
-#if CONFIG_VAR_MTRR_HOLE
 		if (state->hole_sizek == 0 && state->above4gb != 2) {
 			/* We need to put that on to hole */
 			unsigned long endk = basek + sizek;
@@ -382,15 +377,14 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 			state->range_sizek = endk - state->range_startk;
 			return;
 		}
-#endif
 		state->reg = range_to_mtrr(state->reg, state->range_startk,
 			state->range_sizek, basek, MTRR_TYPE_WRBACK,
 			state->address_bits, state->above4gb);
-#if CONFIG_VAR_MTRR_HOLE
+
 		state->reg = range_to_mtrr(state->reg, state->hole_startk,
 			state->hole_sizek, basek, MTRR_TYPE_UNCACHEABLE,
 			state->address_bits, state->above4gb);
-#endif
+
 		state->range_startk = 0;
 		state->range_sizek = 0;
 		state->hole_startk = 0;
@@ -470,25 +464,23 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	if (var_state.hole_startk || var_state.hole_sizek) {
 		printk(BIOS_DEBUG, "Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
 	} else {
-#if CONFIG_VAR_MTRR_HOLE
 		// Increase the base range and set up UMA as an UC hole instead
 		if (above4gb != 2)
 			var_state.range_sizek += (uma_memory_size >> 10);
 
 		var_state.hole_startk = (uma_memory_base >> 10);
 		var_state.hole_sizek = (uma_memory_size >> 10);
-#endif
 	}
 #endif
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk,
 		var_state.range_sizek, 0, MTRR_TYPE_WRBACK,
 		var_state.address_bits, var_state.above4gb);
-#if CONFIG_VAR_MTRR_HOLE
+
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
 		var_state.hole_sizek, 0, MTRR_TYPE_UNCACHEABLE,
 		var_state.address_bits, var_state.above4gb);
-#endif
+
 	printk(BIOS_DEBUG, "DONE variable MTRRs\n");
 	printk(BIOS_DEBUG, "Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */

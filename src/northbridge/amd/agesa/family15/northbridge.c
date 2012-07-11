@@ -31,6 +31,7 @@
 #include <cbmem.h>
 
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/mtrr.h>
 
 #include <Porting.h>
 #include <AGESA.h>
@@ -625,6 +626,53 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	return mem_hole;
 }
 #endif
+
+#define ONE_MB  0x100000
+
+void setup_uma_memory(void)
+{
+#if CONFIG_GFXUMA
+	msr_t msr, msr2;
+	uint32_t sys_mem;
+
+	/* TOP_MEM: the top of DRAM below 4G */
+	msr = rdmsr(TOP_MEM);
+	printk
+		(BIOS_INFO, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+		 __func__, msr.lo, msr.hi);
+
+	/* TOP_MEM2: the top of DRAM above 4G */
+	msr2 = rdmsr(TOP_MEM2);
+	printk (BIOS_INFO, "%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
+			__func__, msr2.lo, msr2.hi);
+
+	/* refer to UMA Size Consideration in Family15h BKDG. */
+	/* Please reference MemNGetUmaSizeOR () */
+	/*
+	 *     Total system memory   UMASize
+	 *     >= 2G                 512M
+	 *     >=1G                  256M
+	 *     <1G                    64M
+	 */
+	sys_mem = msr.lo + 16 * ONE_MB;   // Ignore 16MB allocated for C6 when finding UMA size
+	if ((msr2.hi & 0x0000000F) || (sys_mem >= 2048 * ONE_MB)) {
+		uma_memory_size = 512 * ONE_MB;
+	} else if (sys_mem >= 1024 * ONE_MB) {
+		uma_memory_size = 256 * ONE_MB;
+	} else {
+		uma_memory_size = 64 * ONE_MB;
+	}
+	uma_memory_base = msr.lo - uma_memory_size; /* TOP_MEM1 */
+
+	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
+			__func__, uma_memory_size, uma_memory_base);
+
+	/* TODO: TOP_MEM2 */
+#else
+	uma_memory_size = 256 * ONE_MB; /* 256M recommended UMA */
+	uma_memory_base = 768 * ONE_MB; /* 1GB  system memory supported */
+#endif
+}
 
 static void domain_set_resources(device_t dev)
 {

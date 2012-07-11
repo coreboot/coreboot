@@ -53,10 +53,9 @@ __ap_protected_start:
 	movl	$1, %eax
 	lock	xadd %eax, cpucount
 	movl	%eax, %ecx
-	incl	%eax
 
 	/* assign stack for this specific cpu */
-	mov	_stack, %esp
+	mov	$_stack, %esp
 	mov	$CONFIG_STACK_SIZE, %ebx
 	mul	%ebx
 	add	%eax, %esp

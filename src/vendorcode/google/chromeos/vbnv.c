@@ -143,11 +143,5 @@ int vboot_wants_oprom(void)
 	if (!is_vbnv_initialized())
 		vbnv_setup();
 
-	/* FIXME(crosbug.com/p/8789). The following commented-out line does the
-	 * right thing, assuming that vboot has requested the option ROM and
-	 * rebooted if it finds that it's needed but not loaded. At the moment,
-	 * it doesn't yet do that, so we must always say we want it. */
-
-	/* return (vbnv_data(BOOT_OFFSET) & BOOT_OPROM_NEEDED) ? 1 : 0; */
-	return 1;
+	return (vbnv_data(BOOT_OFFSET) & BOOT_OPROM_NEEDED) ? 1 : 0;
 }

@@ -18,6 +18,7 @@
 #include <cpu/cpu.h>
 
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/mtrr.h>
 
 #include <cpu/amd/multicore.h>
 #if CONFIG_LOGICAL_CPUS
@@ -821,6 +822,68 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
+
+void setup_uma_memory(void)
+{
+#if CONFIG_GFXUMA
+	msr_t msr, msr2;
+
+	/* TOP_MEM: the top of DRAM below 4G */
+	msr = rdmsr(TOP_MEM);
+	printk(BIOS_INFO, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+		    __func__, msr.lo, msr.hi);
+
+	/* TOP_MEM2: the top of DRAM above 4G */
+	msr2 = rdmsr(TOP_MEM2);
+	printk(BIOS_INFO, "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+		    __func__, msr2.lo, msr2.hi);
+
+#if !CONFIG_BOARD_ASROCK_939A785GMH && !CONFIG_BOARD_AMD_MAHOGANY
+
+	switch (msr.lo) {
+	case 0x10000000:	/* 256M system memory */
+		uma_memory_size = 0x2000000;	/* 32M recommended UMA */
+		break;
+
+	case 0x18000000:	/* 384M system memory */
+		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
+		break;
+
+	case 0x20000000:	/* 512M system memory */
+		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
+		break;
+
+	default:		/* 1GB and above system memory */
+		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
+		break;
+	}
+#else
+	/* refer to UMA Size Consideration in 780 BDG. */
+	switch (msr.lo) {
+	case 0x10000000:	/* 256M system memory */
+		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
+		break;
+
+	case 0x20000000:	/* 512M system memory */
+		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
+		break;
+
+	default:		/* 1GB and above system memory */
+		uma_memory_size = 0x10000000;	/* 256M recommended UMA */
+		break;
+	}
+#endif
+
+	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
+	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
+		    __func__, uma_memory_size, uma_memory_base);
+
+	/* TODO: TOP_MEM2 */
+#else
+	uma_memory_size = 0x8000000;	/* 128M recommended UMA */
+	uma_memory_base = 0x38000000;	/* 1GB  system memory supposed */
+#endif
+}
 
 static void amdk8_domain_set_resources(device_t dev)
 {

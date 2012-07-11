@@ -137,10 +137,6 @@ config SB_HT_CHAIN_ON_BUS0
 	int
 	default 1
 
-config VAR_MTRR_HOLE
-	bool
-	default n
-
 config APIC_ID_OFFSET
 	hex
 	default 0x00

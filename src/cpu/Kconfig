@@ -61,11 +61,4 @@ config SSE2
 	  streaming SIMD instructions. Some parts of coreboot can be built
 	  with more efficient code if SSE2 instructions are available.
 
-config VAR_MTRR_HOLE
-	bool
-	default y
-	help
-		Unset this if you don't want the MTRR code to use
-		subtractive MTRRs
-
 endif # ARCH_X86

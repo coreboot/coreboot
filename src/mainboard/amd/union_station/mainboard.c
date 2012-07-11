@@ -55,46 +55,7 @@ static void unionstation_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-#if CONFIG_GFXUMA
-	msr_t msr, msr2;
-	uint32_t sys_mem;
-
-	/* TOP_MEM: the top of DRAM below 4G */
-	msr = rdmsr(TOP_MEM);
-	printk
-	    (BIOS_INFO, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-	     __func__, msr.lo, msr.hi);
-
-	/* TOP_MEM2: the top of DRAM above 4G */
-	msr2 = rdmsr(TOP_MEM2);
-	printk
-	    (BIOS_INFO, "%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
-	     __func__, msr2.lo, msr2.hi);
-
-	/* refer to UMA Size Consideration in Family14h BKDG. */
-	sys_mem = msr.lo + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size, refer MemNGetUmaSizeON()
-	if ((msr.hi & 0x0000000F) || (sys_mem >= 0x80000000)) {
-		uma_memory_size = 0x18000000;	/* >= 2G memory, 384M recommended UMA */
-	}
-	else {
-	  if (sys_mem >= 0x40000000) {
-		  uma_memory_size = 0x10000000;	/* >= 1G memory, 256M recommended UMA */
-	  }
-	  else {
-		  uma_memory_size = 0x4000000;	/* <1G memory, 64M recommended UMA */
-	  }
-	}
-
-	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-		    __func__, uma_memory_size, uma_memory_base);
-
-	/* TODO: TOP_MEM2 */
-#else
-	uma_memory_size = 0x10000000;	/* 256M recommended UMA */
-	uma_memory_base = 0x30000000;	/* 1GB  system memory supported */
-#endif
-
+	setup_uma_memory();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

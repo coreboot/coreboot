@@ -6,10 +6,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
-#if CONFIG_GFXUMA
-extern uint64_t uma_memory_size;
-#endif
-
 static unsigned long resk(uint64_t value)
 {
 	unsigned long resultk;

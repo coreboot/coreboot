@@ -40,10 +40,6 @@
 #include <arch/cpu.h>
 #include <arch/acpi.h>
 
-#if CONFIG_GFXUMA
-extern uint64_t uma_memory_base, uma_memory_size;
-#endif
-
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
 	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,

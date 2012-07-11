@@ -71,7 +71,6 @@ void set_pcie_dereset(void)
 	RWMEM(ACPI_MMIO_BASE + GPIO_BASE + SB_GPIO_REG50, AccWidthUint8, ~(0xFF), 0x48);
 }
 
-uint64_t uma_memory_base, uma_memory_size;
 
 /*************************************************
  * enable the dedicated function in INAGUA    board.

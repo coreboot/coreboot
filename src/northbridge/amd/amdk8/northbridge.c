@@ -822,10 +822,6 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 #include <cbmem.h>
 #endif
 
-#if CONFIG_GFXUMA
-extern uint64_t uma_memory_base, uma_memory_size;
-#endif
-
 static void amdk8_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM

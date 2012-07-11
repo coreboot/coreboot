@@ -110,6 +110,11 @@ extern struct device	*all_devices;	/* list of all devices */
 extern struct resource	*free_resources;
 extern struct bus	*free_links;
 
+/* IGD UMA memory */
+void setup_uma_memory(void);
+extern uint64_t uma_memory_base;
+extern uint64_t uma_memory_size;
+
 /* Generic device interface functions */
 device_t alloc_dev(struct bus *parent, struct device_path *path);
 void dev_enumerate(void);

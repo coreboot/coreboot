@@ -29,8 +29,6 @@
 #include "chip.h"
 
 
-uint64_t uma_memory_base, uma_memory_size;
-
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
 u8 is_dev3_present(void);

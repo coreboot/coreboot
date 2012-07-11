@@ -821,7 +821,7 @@ void uma_resource(device_t dev, unsigned long index,
 	resource = new_resource(dev, index);
 	resource->base = ((resource_t)basek) << 10;
 	resource->size = ((resource_t)sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_UMA_FB |
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 

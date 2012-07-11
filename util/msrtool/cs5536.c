@@ -1310,5 +1310,46 @@ const struct msrdef cs5536_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
+	{ 0x5140004e, MSRTYPE_RDWR, MSR2(0, 0), "LPC_SERIRQ", "LPC Serial IRQ Control", {
+		{ 31, 16, "INVERT", "IRQ[x] input is active low", PRESENT_HEX },
+		{ 15, 8, RESERVED },
+		{ 7, 1, "SIRQ_EN", "Serial IRQ Enable", PRESENT_BIN, {
+			{ MSR1(0), "Disable" },
+			{ MSR1(1), "Enable" },
+			{ BITVAL_EOT }
+		}},
+		{ 6, 1, "SIRQ_MODE", "Serial IRQ Interface Mode", PRESENT_BIN, {
+			{ MSR1(0), "Continuous (Idle)" },
+			{ MSR1(1), "Quiet (Active)" },
+			{ BITVAL_EOT }
+		}},
+		{ 5, 4, "IRQ_FRAME", "IRQ Data Frames", PRESENT_BIN, {
+			{ MSR1(0), "17" },
+			{ MSR1(1), "18" },
+			{ MSR1(2), "19" },
+			{ MSR1(3), "20" },
+			{ MSR1(4), "21" },
+			{ MSR1(5), "22" },
+			{ MSR1(6), "23" },
+			{ MSR1(7), "24" },
+			{ MSR1(8), "25" },
+			{ MSR1(9), "26" },
+			{ MSR1(10), "27" },
+			{ MSR1(11), "28" },
+			{ MSR1(12), "29" },
+			{ MSR1(13), "30" },
+			{ MSR1(14), "31" },
+			{ MSR1(15), "32" },
+			{ BITVAL_EOT }
+		}},
+		{ 1, 2, "START_FPW", "Start Frame Pulse Width", PRESENT_BIN, {
+			{ MSR1(0), "4 clocks" },
+			{ MSR1(1), "6 clocks" },
+			{ MSR1(2), "8 clocks" },
+			{ MSR1(3), "Reserved" },
+			{ BITVAL_EOT }
+		}},
+		{ BITS_EOT }
+	}},
 	{ MSR_EOT }
 };

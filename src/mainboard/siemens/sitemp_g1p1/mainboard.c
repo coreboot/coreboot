@@ -851,51 +851,7 @@ static void enable_dev(device_t dev)
 
 	detect_hw_variant(dev);
 	update_subsystemid(dev);
-
-#if CONFIG_GFXUMA
-	{
-	msr_t msr, msr2;
-
-	/* TOP_MEM: the top of DRAM below 4G */
-	msr = rdmsr(TOP_MEM);
-	printk(BIOS_DEBUG, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-		    __func__, msr.lo, msr.hi);
-
-	/* TOP_MEM2: the top of DRAM above 4G */
-	msr2 = rdmsr(TOP_MEM2);
-
-	printk(BIOS_DEBUG, "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-		    __func__, msr2.lo, msr2.hi);
-
-	switch (msr.lo) {
-	case 0x10000000:	/* 256M system memory */
-		uma_memory_size = 0x2000000;	/* 32M recommended UMA */
-		break;
-
-	case 0x18000000:	/* 384M system memory */
-		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
-		break;
-
-	case 0x20000000:	/* 512M system memory */
-		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
-		break;
-
-	default:		/* 1GB and above system memory */
-		uma_memory_size = 0x8000000;	/* 128M recommended UMA */
-		break;
-	}
-
-	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-
-	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-		    __func__, uma_memory_size, uma_memory_base);
-
-	/* TODO: TOP_MEM2 */
-	}
-#else
-	uma_memory_size = 0;
-	uma_memory_base = 0;
-#endif
+	setup_uma_memory();
 
 	dev->ops->init = init;  // rest of mainboard init later
 }

@@ -75,7 +75,7 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 }
 
 struct mem_state {
-	unsigned long mmio_basek, tomk;
+	unsigned long tomk, tom2k;
 };
 static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 {
@@ -85,11 +85,11 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	unsigned int last_mtrr;
 
 	topk = resk(res->base + res->size);
-	if (state->tomk < topk) {
-		state->tomk = topk;
+	if (state->tom2k < topk) {
+		state->tom2k = topk;
 	}
-	if ((topk < 4*1024*1024) && (state->mmio_basek < topk)) {
-		state->mmio_basek = topk;
+	if ((topk < 4*1024*1024) && (state->tomk < topk)) {
+		state->tomk = topk;
 	}
 	start_mtrr = fixed_mtrr_index(resk(res->base));
 	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
@@ -131,30 +131,19 @@ void amd_setup_mtrrs(void)
 		0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
-	/* Except for the PCI MMIO hole just before 4GB there are no
-	 * significant holes in the address space, so just account
-	 * for those two and move on.
-	 */
-	state.mmio_basek = state.tomk = 0;
+	state.tomk = state.tom2k = 0;
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, &state);
-	printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
 
-	if (state.mmio_basek > state.tomk) {
-		state.mmio_basek = state.tomk;
-	}
-	/* Round state.mmio_basek down to the nearst size that will fit in TOP_MEM */
-	state.mmio_basek = state.mmio_basek & ~TOP_MEM_MASK_KB;
-	/* Round state.tomk up to the next greater size that will fit in TOP_MEM */
-	state.tomk = (state.tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
+	printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
 
 	disable_cache();
 
-	/* Setup TOP_MEM */
-	msr.hi = state.mmio_basek >> 22;
-	msr.lo = state.mmio_basek << 10;
-
+	/* Round state.tomk up to the next greater size that will fit in TOP_MEM */
+	state.tomk = (state.tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
+	msr.hi = state.tomk >> 22;
+	msr.lo = state.tomk << 10;
 	/* If UMA graphics is enabled, the frame buffer memory
 	 * has been deducted from the size of memory below 4GB.
 	 * When setting TOM, include UMA DRAM
@@ -164,13 +153,13 @@ void amd_setup_mtrrs(void)
 	#endif
 	wrmsr(TOP_MEM, msr);
 
+	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */
 	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
-	if(state.tomk > (4*1024*1024)) {
-		/* DRAM above 4GB: set TOM2, SYSCFG_MSR_TOM2En
-		 * and SYSCFG_MSR_TOM2WB
-		 */
-		msr.hi = state.tomk >> 22;
-		msr.lo = state.tomk << 10;
+	if(state.tom2k > (4*1024*1024)) {
+		/* Round state.tomk up to the next greater size that will fit in TOP_MEM2 */
+		state.tom2k = (state.tom2k + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
+		msr.hi = state.tom2k >> 22;
+		msr.lo = state.tom2k << 10;
 		wrmsr(TOP_MEM2, msr);
 		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
 		if(has_tom2wb)

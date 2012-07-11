@@ -22,7 +22,7 @@
 #ifndef _CPU_INTEL_MODEL_206AX_H
 #define _CPU_INTEL_MODEL_206AX_H
 
-/* SandyBridge bus clock is fixed at 100MHz */
+/* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
 #define SANDYBRIDGE_BCLK		100
 
 #define IA32_FEATURE_CONTROL		0x3a

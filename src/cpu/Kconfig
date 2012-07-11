@@ -62,13 +62,10 @@ config SSE2
 	  streaming SIMD instructions. Some parts of coreboot can be built
 	  with more efficient code if SSE2 instructions are available.
 
-if CPU_INTEL_MODEL_206AX || CPU_INTEL_MODEL_306AX
-
 config MICROCODE_IN_CBFS
 	bool "Look for microcode in CBFS"
+	default n
 	help
 	  Load microcode updates from CBFS instead of compiling them in.
-
-endif
 
 endif # ARCH_X86

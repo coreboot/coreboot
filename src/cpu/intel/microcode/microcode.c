@@ -127,8 +127,8 @@ void intel_update_microcode(const void *microcode_updates)
 #if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "microcode: updated to revision "
 				    "0x%x date=%04x-%02x-%02x\n", new_rev,
-				    m->date & 0xffff, (m->date >> 16) & 0xff,
-				    (m->date >> 24) & 0xff);
+				    m->date & 0xffff, (m->date >> 24) & 0xff,
+				    (m->date >> 16) & 0xff);
 #endif
 			break;
 		}

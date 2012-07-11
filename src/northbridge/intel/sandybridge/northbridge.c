@@ -118,9 +118,6 @@ static int get_pcie_bar(u32 *base, u32 *len)
 	return 0;
 }
 
-/* IDG memory */
-uint64_t uma_memory_base=0, uma_memory_size=0;
-
 static void add_fixed_resources(struct device *dev, int index)
 {
 	struct resource *resource;

@@ -28,7 +28,6 @@
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "chip.h"
 
-uint64_t uma_memory_base, uma_memory_size;
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);

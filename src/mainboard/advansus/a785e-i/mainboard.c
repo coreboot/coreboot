@@ -28,7 +28,6 @@
 #include "SBPLATFORM.h"
 #include "chip.h"
 
-uint64_t uma_memory_base, uma_memory_size;
 
 u8 is_dev3_present(void);
 void set_pcie_dereset(void);

@@ -626,10 +626,6 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#if CONFIG_GFXUMA
-extern uint64_t uma_memory_base, uma_memory_size;
-#endif
-
 static void domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM

@@ -38,8 +38,6 @@
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
-uint64_t uma_memory_base, uma_memory_size;
-
 void set_pcie_dereset(void);
 void set_pcie_reset(void);
 u8 is_dev3_present(void);

@@ -50,7 +50,6 @@ void set_pcie_dereset(void)
 {
 }
 
-uint64_t uma_memory_base, uma_memory_size;
 
 /*************************************************
 * enable the dedicated function in persimmon board.

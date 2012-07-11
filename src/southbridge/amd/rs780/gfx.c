@@ -43,8 +43,6 @@ extern int is_dev3_present(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
-extern uint64_t uma_memory_base, uma_memory_size;
-
 /* Trust the original resource allocation. Don't do it again. */
 #undef DONT_TRUST_RESOURCE_ALLOCATION
 //#define DONT_TRUST_RESOURCE_ALLOCATION

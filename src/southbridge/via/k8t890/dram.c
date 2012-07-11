@@ -71,10 +71,6 @@ static void dram_enable(struct device *dev)
 
 }
 
-#if CONFIG_GFXUMA
-extern uint64_t uma_memory_base, uma_memory_size;
-#endif
-
 static void dram_enable_k8m890(struct device *dev)
 {
 #if CONFIG_GFXUMA

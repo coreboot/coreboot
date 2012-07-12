@@ -1349,8 +1349,8 @@ static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
 
 	i5000_setup_interleave(setup);
 
-	if ((tolm = MIN(setup->totalmem, 0xe00)) > 0xe00)
-		tolm = 0xe00;
+	if ((tolm = MIN(setup->totalmem, 0xd00)) > 0xd00)
+		tolm = 0xd00;
 
 	tolm <<= 4;
 	printk(BIOS_DEBUG, "TOLM: 0x%04x\n", tolm);
@@ -1759,7 +1759,7 @@ void i5000_fbdimm_init(void)
 
 #if CONFIG_NORTHBRIDGE_INTEL_I5000_RAM_CHECK
 	if (ram_check_nodie(0x000000, 0x0a0000) ||
-	    ram_check_nodie(0x100000, MIN(setup.totalmem * 1048576, 0xe0000000))) {
+	    ram_check_nodie(0x100000, MIN(setup.totalmem * 1048576, 0xd0000000))) {
 		i5000_try_restart("RAM verification failed");
 
 	}

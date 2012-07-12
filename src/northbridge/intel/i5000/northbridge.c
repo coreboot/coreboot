@@ -31,6 +31,9 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include "chip.h"
+#if CONFIG_WRITE_HIGH_TABLES
+#include <cbmem.h>
+#endif
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -43,59 +46,17 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
-};
-
-static struct device_operations mc_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
-};
-
-static const unsigned short nb_ids[] = {
-	0x25c0,	/* 5000X */
-	0x25d0, /* 5000Z */
-	0x25d4, /* 5000V */
-	0x25d8, /* 5000P */
-	0};
-
-static const struct pci_driver mc_driver __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.devices = nb_ids,
-};
-
-static void cpu_bus_init(device_t dev)
-{
-	initialize_cpus(dev->link_list);
-}
-
-static void cpu_bus_noop(device_t dev)
-{
-}
-static struct device_operations cpu_bus_ops = {
-	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
-	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
-};
-
-#if CONFIG_WRITE_HIGH_TABLES
-#include <cbmem.h>
-#endif
-
-static void pci_domain_set_resources(device_t dev)
+static void mc_read_resources(device_t dev)
 {
 	struct resource *resource;
 	uint32_t hecbase, amsize, tolm;
 	uint64_t ambase, memsize;
 	int idx = 0;
+
 	device_t dev16_0 = dev_find_slot(0, PCI_DEVFN(16, 0));
 	device_t dev16_1 = dev_find_slot(0, PCI_DEVFN(16, 1));
+
+	pci_dev_read_resources(dev);
 
 	tolm = pci_read_config16(dev_find_slot(0, PCI_DEVFN(16, 1)), 0x6c) << 16;
 	hecbase = pci_read_config16(dev16_0, 0x64) >> 12;
@@ -119,8 +80,8 @@ static void pci_domain_set_resources(device_t dev)
 
 	memsize <<= 24;
 	printk(BIOS_INFO, "MEMSIZE: %08llx\n", memsize);
-	if (memsize > 0xe0000000) {
-		memsize -= 0xe0000000;
+	if (memsize > 0xd0000000) {
+		memsize -= 0xd0000000;
 		printk(BIOS_INFO, "high memory: %lldMB\n", memsize / 1048576);
 		ram_resource(dev, idx++, 4096 * 1024, memsize / 1024);
 	}
@@ -156,14 +117,57 @@ static void pci_domain_set_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	assign_resources(dev->link_list);
-
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = tolm - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
 	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n", high_tables_base, high_tables_size);
 #endif
+}
+
+static struct pci_operations intel_pci_ops = {
+	.set_subsystem    = intel_set_subsystem,
+};
+
+static struct device_operations mc_ops = {
+	.read_resources   = mc_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.scan_bus         = 0,
+	.ops_pci          = &intel_pci_ops,
+};
+
+static const unsigned short nb_ids[] = {
+	0x25c0,	/* 5000X */
+	0x25d0, /* 5000Z */
+	0x25d4, /* 5000V */
+	0x25d8, /* 5000P */
+	0};
+
+static const struct pci_driver mc_driver __pci_driver = {
+	.ops    = &mc_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.devices = nb_ids,
+};
+
+static void cpu_bus_init(device_t dev)
+{
+	initialize_cpus(dev->link_list);
+}
+
+static void cpu_bus_noop(device_t dev)
+{
+}
+static struct device_operations cpu_bus_ops = {
+	.read_resources   = cpu_bus_noop,
+	.set_resources    = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init             = cpu_bus_init,
+	.scan_bus         = 0,
+};
+static void pci_domain_set_resources(device_t dev)
+{
+	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {

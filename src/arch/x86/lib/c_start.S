@@ -16,17 +16,21 @@ _start:
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
 
-	/** clear stack */
+	/** poison the stack. Code should not count on the
+	 * stack being full of zeros. This stack poisoning
+	 * recently uncovered a bug in the broadcast SIPI
+	 * code.
+	 */
 	cld
 	leal	_stack, %edi
 	movl	$_estack, %ecx
 	subl	%edi, %ecx
 	shrl	$2, %ecx   /* it is 32 bit aligned, right? */
-	xorl	%eax, %eax
+	movl	$0xDEADBEEF, %eax
 	rep
 	stosl
 
-	/** clear bss */
+	/** clear bss, which unlike the stack is zero by definition */
 	leal	_bss, %edi
 	movl	$_ebss, %ecx
 	subl	%edi, %ecx

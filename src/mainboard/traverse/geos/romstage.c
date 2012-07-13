@@ -39,10 +39,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#define ManualConf 1		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x0000059C	/* manual settings for the PLL */
-#define PLLMSRlo 0x00DE602E
-
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -75,7 +71,7 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset(ManualConf);
+	pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

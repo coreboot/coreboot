@@ -32,6 +32,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select PIRQ_ROUTE
 	select BOARD_ROMSIZE_KB_512
 	select POWER_BUTTON_FORCE_ENABLE
+	select PLL_MANUAL_CONFIG
+	select CORE_GLIU_500_266
 
 config MAINBOARD_DIR
 	string
@@ -45,19 +47,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 7
 
-choice
-	prompt "Core/GLIU Frequency"
-	default CORE_GLIU_500_266
-
-config CORE_GLIU_500_266
-	bool "500MHz / 266MHz"
-
-config CORE_GLIU_500_333
-	bool "500MHz / 333MHz"
-
-config CORE_GLIU_500_400
-	bool "500MHz / 400MHz"
-
-endchoice
+config PLLMSRlo
+	hex
+	default 0x07de0000
 
 endif # BOARD_IEI_PM_LX_800_R11

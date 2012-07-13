@@ -2,7 +2,36 @@ config NORTHBRIDGE_AMD_LX
 	bool
 	select GEODE_VSA
 
+if NORTHBRIDGE_AMD_LX
+
 config VIDEO_MB
 	int
 	default 8
-	depends on NORTHBRIDGE_AMD_LX
+
+config PLL_MANUAL_CONFIG
+	bool
+
+if PLL_MANUAL_CONFIG
+
+# "Core/GLIU Frequency"
+config CORE_GLIU_500_266
+	bool # "500MHz / 266MHz"
+
+config CORE_GLIU_500_333
+	bool # "500MHz / 333MHz"
+
+config CORE_GLIU_500_400
+	bool # "500MHz / 400MHz"
+
+config PLLMSRhi
+	hex
+	default 0x39c if CORE_GLIU_500_266
+	default 0x49c if CORE_GLIU_500_333
+	default 0x59c if CORE_GLIU_500_400
+
+config PLLMSRlo
+	hex
+
+endif
+
+endif

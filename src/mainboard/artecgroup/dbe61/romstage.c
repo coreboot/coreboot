@@ -51,12 +51,6 @@ static int spd_read_byte(unsigned device, unsigned address)
 	return 0xFF;
 }
 
-#define ManualConf 0		/* Do automatic strapped PLL config */
-/* CPU and GLIU mult/div 500/266*/
-#define PLLMSRhi 0x0000039C /* 33MHz PCI, 0x000003DD for 66MHz PCI */
-/* Hold Count - how long we will sit in reset */
-#define PLLMSRlo 0x00DE6000
-
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -94,7 +88,7 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset(ManualConf);
+	pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

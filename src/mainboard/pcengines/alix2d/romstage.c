@@ -98,10 +98,6 @@ static u8 spd_read_byte(u8 device, u8 address)
 	return spdbytes[address];
 }
 
-#define ManualConf	0		/* Do automatic strapped PLL config */
-#define PLLMSRhi	0x00001490	/* Manual settings for the PLL */
-#define PLLMSRlo	0x02000030
-
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -156,7 +152,7 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset(ManualConf);
+	pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

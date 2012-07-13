@@ -593,18 +593,20 @@ static void lpc_init(struct device *dev)
 static void pch_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
+	config_t *config = dev->chip_info;
+	u8 io_index = 0;
 
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
 	res->base = 0;
 	res->size = 0x1000;
 	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
 	res->base = 0xff800000;
 	res->size = 0x00800000; /* 8 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
@@ -614,6 +616,39 @@ static void pch_lpc_read_resources(device_t dev)
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Set PCH IO decode ranges if required.*/
+	if ((config->gen1_dec & 0xFFFC) > 0x1000) {
+		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+		res->base = config->gen1_dec & 0xFFFC;
+		res->size = (config->gen1_dec >> 16) & 0xFC;
+		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
+
+	if ((config->gen2_dec & 0xFFFC) > 0x1000) {
+		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+		res->base = config->gen2_dec & 0xFFFC;
+		res->size = (config->gen2_dec >> 16) & 0xFC;
+		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
+
+	if ((config->gen3_dec & 0xFFFC) > 0x1000) {
+		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+		res->base = config->gen3_dec & 0xFFFC;
+		res->size = (config->gen3_dec >> 16) & 0xFC;
+		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
+
+	if ((config->gen4_dec & 0xFFFC) > 0x1000) {
+		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
+		res->base = config->gen4_dec & 0xFFFC;
+		res->size = (config->gen4_dec >> 16) & 0xFC;
+		res->flags = IORESOURCE_IO| IORESOURCE_SUBTRACTIVE |
+				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
 }
 
 static void pch_lpc_enable_resources(device_t dev)

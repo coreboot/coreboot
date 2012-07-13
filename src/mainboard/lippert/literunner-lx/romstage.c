@@ -44,10 +44,6 @@
 	#define SMC_CONFIG	0x01
 #endif
 
-#define ManualConf 1		/* No automatic strapped PLL config */
-#define PLLMSRhi 0x0000059C	/* Manual settings for the PLL */
-#define PLLMSRlo 0x00DE6001
-
 static const unsigned char spdbytes[] = {	// 4x Promos V58C2512164SA-J5I
 	0xFF, 0xFF,				// only values used by Geode-LX raminit.c are set
 	[SPD_MEMORY_TYPE]		= SPD_MEMORY_TYPE_SDRAM_DDR,	// (Fundamental) memory type
@@ -181,7 +177,7 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	pll_reset(ManualConf);
+	pll_reset();
 
 	cpuRegInit(0, DIMM0, DIMM1, DRAM_TERMINATED);
 

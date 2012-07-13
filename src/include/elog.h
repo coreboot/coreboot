@@ -105,6 +105,9 @@ struct elog_event_data_wake {
 #define ELOG_TYPE_CROS_DEVELOPER_MODE     0xa0
 #define ELOG_TYPE_CROS_RECOVERY_MODE      0xa1
 
+/* Management Engine Events */
+#define ELOG_TYPE_MANAGEMENT_ENGINE       0xa2
+
 extern int elog_init(void);
 extern int elog_clear(void);
 extern void elog_add_event_raw(u8 event_type, void *data, u8 data_size);

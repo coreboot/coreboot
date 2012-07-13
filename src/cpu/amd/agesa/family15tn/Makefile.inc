@@ -213,7 +213,6 @@ agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htInterfaceNonCoherent.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htMain.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htNb.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htNotify.c
-agesa_lib_src += $(AGESA_ROOT)/Proc/IDS/Control/IdsCtrl.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/IDS/Debug/IdsDebug.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/IDS/Debug/IdsDebugPrint.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/IDS/Debug/IdsDpSerial.c

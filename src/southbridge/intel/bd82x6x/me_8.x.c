@@ -35,6 +35,7 @@
 #include <device/pci_def.h>
 #include <string.h>
 #include <delay.h>
+#include <elog.h>
 
 #ifdef __SMM__
 # include <arch/romcc_io.h>
@@ -730,9 +731,9 @@ static void intel_me_init(device_t dev)
 	case ME_RECOVERY_BIOS_PATH:
 	case ME_DISABLE_BIOS_PATH:
 	case ME_FIRMWARE_UPDATE_BIOS_PATH:
-		/*
-		 * TODO(dlaurie) Force recovery mode if ME is unhappy?
-		 */
+#if CONFIG_ELOG
+		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
+#endif
 		break;
 	}
 }

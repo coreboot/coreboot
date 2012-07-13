@@ -1,0 +1,17 @@
+if VENDOR_BACHMANN
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_BACHMANN_OT200
+	bool "OT200"
+
+endchoice
+
+source "src/mainboard/bachmann/ot200/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Bachmann electronic"
+
+endif # VENDOR_BACHMANN

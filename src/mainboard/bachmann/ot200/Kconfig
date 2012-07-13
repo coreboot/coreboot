@@ -1,0 +1,28 @@
+if BOARD_BACHMANN_OT200
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_GEODE_LX
+	select NORTHBRIDGE_AMD_LX
+	select SOUTHBRIDGE_AMD_CS5536
+	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
+	select UDELAY_TSC
+	select BOARD_ROMSIZE_KB_2048
+	select POWER_BUTTON_DEFAULT_DISABLE
+	select DRIVERS_I2C_IDREG
+
+config MAINBOARD_DIR
+	string
+	default bachmann/ot200
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "OT200"
+
+config IRQ_SLOT_COUNT
+	int
+	default 6
+
+endif # BOARD_BACHMANN_OT200

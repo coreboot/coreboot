@@ -34,6 +34,8 @@ config VENDOR_AXUS
 	bool "AXUS"
 config VENDOR_AZZA
 	bool "AZZA"
+config VENDOR_BACHMANN
+	bool "Bachmann electronic"
 config VENDOR_BCOM
 	bool "BCOM"
 config VENDOR_BIFFEROS
@@ -144,6 +146,7 @@ source "src/mainboard/asus/Kconfig"
 source "src/mainboard/avalue/Kconfig"
 source "src/mainboard/axus/Kconfig"
 source "src/mainboard/azza/Kconfig"
+source "src/mainboard/bachmann/Kconfig"
 source "src/mainboard/bcom/Kconfig"
 source "src/mainboard/bifferos/Kconfig"
 source "src/mainboard/biostar/Kconfig"

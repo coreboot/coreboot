@@ -11,6 +11,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_1024
 	select POWER_BUTTON_DEFAULT_DISABLE
+	select PLL_MANUAL_CONFIG
+	select CORE_GLIU_500_400
 
 config MAINBOARD_DIR
 	string
@@ -23,5 +25,9 @@ config MAINBOARD_PART_NUMBER
 config IRQ_SLOT_COUNT
 	int
 	default 6
+
+config PLLMSRlo
+        hex
+        default 0x00de602e
 
 endif # BOARD_TRAVERSE_GEOS

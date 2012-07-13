@@ -13,6 +13,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# Board is equipped with a 1 MB SPI flash, however, due to limitations
 	# of the IT8712F Super I/O, only the top 512 KB are directly mapped.
 	select BOARD_ROMSIZE_KB_512
+	select PLL_MANUAL_CONFIG
+	select CORE_GLIU_500_333
 
 config MAINBOARD_DIR
 	string
@@ -49,5 +51,9 @@ config ONBOARD_UARTS_RS485
 	help
 	  If selected, both on-board serial ports will operate in RS485 mode
 	  instead of RS232.
+
+config PLLMSRlo
+	hex
+	default 0x00de6001
 
 endif # BOARD_LIPPERT_HURRICANE_LX

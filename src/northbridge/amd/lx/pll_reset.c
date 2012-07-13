@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-static void pll_reset(char manualconf)
+static void pll_reset(void)
 {
 	msr_t msrGlcpSysRstpll;
 
@@ -31,13 +31,13 @@ static void pll_reset(char manualconf)
 
 	if (!(msrGlcpSysRstpll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {
 		printk(BIOS_DEBUG, "Configuring PLL.\n");
-		if (manualconf) {
+		if (CONFIG_PLL_MANUAL_CONFIG) {
 			post_code(POST_PLL_MANUAL);
 			/* CPU and GLIU mult/div (GLMC_CLK = GLIU_CLK / 2)  */
-			msrGlcpSysRstpll.hi = PLLMSRhi;
+			msrGlcpSysRstpll.hi = CONFIG_PLLMSRhi;
 
 			/* Hold Count - how long we will sit in reset */
-			msrGlcpSysRstpll.lo = PLLMSRlo;
+			msrGlcpSysRstpll.lo = CONFIG_PLLMSRlo;
 		} else {
 			/*automatic configuration (straps) */
 			post_code(POST_PLL_STRAP);

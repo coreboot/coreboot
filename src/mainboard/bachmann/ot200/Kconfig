@@ -12,6 +12,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_2048
 	select POWER_BUTTON_DEFAULT_DISABLE
 	select DRIVERS_I2C_IDREG
+	select PLL_MANUAL_CONFIG
+	select CORE_GLIU_500_266
 
 config MAINBOARD_DIR
 	string
@@ -24,5 +26,9 @@ config MAINBOARD_PART_NUMBER
 config IRQ_SLOT_COUNT
 	int
 	default 6
+
+config PLLMSRlo
+	hex
+	default 0x07de001e
 
 endif # BOARD_BACHMANN_OT200

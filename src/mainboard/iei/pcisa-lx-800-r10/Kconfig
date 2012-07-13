@@ -11,6 +11,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select PIRQ_ROUTE
 	select BOARD_ROMSIZE_KB_256
 	select POWER_BUTTON_FORCE_ENABLE
+	select PLL_MANUAL_CONFIG
+	select CORE_GLIU_500_266
 
 config MAINBOARD_DIR
 	string
@@ -23,5 +25,9 @@ config MAINBOARD_PART_NUMBER
 config IRQ_SLOT_COUNT
 	int
 	default 9
+
+config PLLMSRlo
+	hex
+	default 0x00DE6000
 
 endif # BOARD_IEI_PCISA_LX_800_R10

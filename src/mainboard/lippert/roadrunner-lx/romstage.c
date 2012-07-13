@@ -37,10 +37,6 @@
 #include "southbridge/amd/cs5536/early_setup.c"
 #include "superio/ite/it8712f/early_serial.c"
 
-#define ManualConf 1		/* No automatic strapped PLL config */
-#define PLLMSRhi 0x0000049C	/* Manual settings for the PLL */
-#define PLLMSRlo 0x00DE6001
-
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	if (device != DIMM0)

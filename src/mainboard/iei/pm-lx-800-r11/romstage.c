@@ -46,16 +46,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#if CONFIG_CORE_GLIU_500_400
-#	define PLLMSRhi 0x0000059c
-#elif CONFIG_CORE_GLIU_500_333
-#	define PLLMSRhi 0x0000049c
-#else
-#	define PLLMSRhi 0x0000039c
-#endif
-
-#define PLLMSRlo 0x07de000
-
 #include <northbridge/amd/lx/raminit.h>
 #include <northbridge/amd/lx/pll_reset.c>
 #include <northbridge/amd/lx/raminit.c>

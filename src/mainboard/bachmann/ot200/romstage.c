@@ -39,10 +39,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#define ManualConf 1		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x0000039c	/* CPU 500 MHz - GLIU 266 MHz */
-#define PLLMSRlo 0x07de001e
-
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"

@@ -20,3 +20,4 @@
 
 ramstage-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.c
 
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

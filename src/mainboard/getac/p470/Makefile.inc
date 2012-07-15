@@ -20,3 +20,4 @@
 ramstage-$(CONFIG_HAVE_ACPI_SLIC) += acpi_slic.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

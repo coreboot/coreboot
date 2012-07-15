@@ -19,3 +19,4 @@
 ##
 
 ROMCCFLAGS ?= -mcpu=c3
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

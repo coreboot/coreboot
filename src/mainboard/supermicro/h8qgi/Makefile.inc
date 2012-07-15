@@ -43,3 +43,4 @@ SB_CIMX_ROOT ?= $(CIMX_PREFIX)/sb700
 
 subdirs-y += ../../../../$(AGESA_ROOT)
 
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

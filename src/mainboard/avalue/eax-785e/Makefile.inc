@@ -16,3 +16,4 @@ ifneq ($(CONFIG_CPU_AMD_AGESA),y)
 
  CFLAGS += $(AGESA_INC)
 endif
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

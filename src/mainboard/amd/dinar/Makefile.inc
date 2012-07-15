@@ -36,3 +36,4 @@ ramstage-y += reset.c
 AGESA_PREFIX ?= $(src)/vendorcode/amd/agesa
 AGESA_ROOT ?= $(AGESA_PREFIX)/$(if $(CONFIG_CPU_AMD_AGESA_FAMILY15),f15,\
 		echo `wrong configuration`)
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

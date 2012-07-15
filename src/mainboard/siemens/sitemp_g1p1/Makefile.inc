@@ -21,3 +21,4 @@
 
 ramstage-y += int15_func.c
 
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

@@ -31,3 +31,4 @@ ramstage-y += PlatformGnbPcie.c
 
 ramstage-y += reset.c
 
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

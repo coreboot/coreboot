@@ -236,9 +236,6 @@ endif
 # Things that appear in every board
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
-ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mptable.c
-endif
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c
 endif

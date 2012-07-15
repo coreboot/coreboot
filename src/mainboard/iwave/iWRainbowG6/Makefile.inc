@@ -19,3 +19,4 @@
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

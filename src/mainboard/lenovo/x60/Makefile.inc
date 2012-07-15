@@ -20,3 +20,4 @@
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c dock.c
 romstage-y += dock.c
 ramstage-y += dock.c
+ramstage-$(CONFIG_GENERATE_MP_TABLE) += mptable.c

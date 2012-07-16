@@ -60,6 +60,8 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	int cpu_index = 0;
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		u16 node_id, core_id;
+
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
 		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
 			continue;
@@ -67,8 +69,11 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
-		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+
+		cpu_topology(cpu->path.apic.apic_id, &node_id, &core_id);
+
+		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, node_id, cpu->path.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, node_id, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
 	return current;

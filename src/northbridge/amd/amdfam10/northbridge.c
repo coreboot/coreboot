@@ -1264,6 +1264,9 @@ static void add_more_links(device_t dev, unsigned total_links)
 	last->next = NULL;
 }
 
+static unsigned int siblings = 0;
+static unsigned int nb_cfg_54 = 0;
+
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	struct bus *cpu_bus;
@@ -1273,8 +1276,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 #endif
 	int i,j;
 	int nodes;
-	unsigned nb_cfg_54;
-	unsigned siblings;
 	int cores_found;
 	int disable_siblings;
 	unsigned ApicIdCoreIdSize;
@@ -1446,8 +1447,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 			/* Report what I have done */
 			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
 	#if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
 				if(sysconf.enabled_apic_ext_id) {
 					if(sysconf.lift_bsp_apicid) {
@@ -1466,6 +1465,22 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		} //j
 	}
 	return max;
+}
+
+void cpu_topology(u32 apic_id, u16 *node_id, u16 *core_id)
+{
+	// i = node_id, j = core_id
+	// cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+
+	if (nb_cfg_54) {
+		// cpu_path.apic.apic_id = node_id * (siblings+1) + core_id
+		*node_id = apic_id / (siblings+1);
+		*core_id = apic_id - (*node_id) * (siblings+1);
+	} else {
+		// cpu_path.apic.apic_id = node_id + core_id * 64;
+		*node_id = apic_id % 64;
+		*core_id = apic_id / 64;
+	}
 }
 
 static void cpu_bus_init(device_t dev)

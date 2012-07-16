@@ -1046,8 +1046,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			}
 			/* Report what I have done */
 			if (cpu) {
-				cpu->path.apic.node_id = i;
-				cpu->path.apic.core_id = j;
 				printk(BIOS_DEBUG, "CPU: %s %s\n",
 					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}

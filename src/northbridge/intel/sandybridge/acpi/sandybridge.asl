@@ -19,8 +19,8 @@
  * MA 02110-1301 USA
  */
 
-#include "hostbridge.asl"
 #include "../sandybridge.h"
+#include "hostbridge.asl"
 
 /* PCI Device Resource Consumption */
 Device (PDRC)

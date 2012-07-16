@@ -101,8 +101,125 @@ Device (MCHC)
 		TLUD,	 32,
 	}
 
-}
+	Name (CTCN, 0)		/* CTDP Nominal Select */
+	Name (CTCD, 1)		/* CTDP Down Select */
+	Name (CTCU, 2)		/* CTDP Up Select */
 
+	OperationRegion (MCHB, SystemMemory, DEFAULT_MCHBAR, 0x8000)
+	Field (MCHB, DWordAcc, Lock, Preserve)
+	{
+		Offset (0x5930),
+		CTDN, 15,	/* CTDP Nominal PL1 */
+		Offset (0x59a0),
+		PL1V, 15,	/* Power Limit 1 Value */
+		PL1E, 1,	/* Power Limit 1 Enable */
+		PL1C, 1,	/* Power Limit 1 Clamp */
+		PL1T, 7,	/* Power Limit 1 Time */
+		Offset (0x59a4),
+		PL2V, 15,	/* Power Limit 2 Value */
+		PL2E, 1,	/* Power Limit 2 Enable */
+		PL2C, 1,	/* Power Limit 2 Clamp */
+		PL2T, 7,	/* Power Limit 2 Time */
+		Offset (0x5f3c),
+		TARN, 8,	/* CTDP Nominal Turbo Activation Ratio */
+		Offset (0x5f40),
+		CTDD, 15,	/* CTDP Down PL1 */
+		, 1,
+		TARD, 8,	/* CTDP Down Turbo Activation Ratio */
+		Offset (0x5f48),
+		CTDU, 15,	/* CTDP Up PL1 */
+		, 1,
+		TARU, 8,	/* CTDP Up Turbo Activation Ratio */
+		Offset (0x5f50),
+		CTCS, 2,	/* CTDP Select */
+		Offset (0x5f54),
+		TARS, 8,	/* Turbo Activation Ratio Select */
+	}
+
+	/*
+	 * Search CPU0 _PSS looking for control=arg0 and then
+	 * return previous P-state entry number for new _PPC
+	 *
+	 * Format of _PSS:
+	 *   Name (_PSS, Package () {
+	 *     Package (6) { freq, power, tlat, blat, control, status }
+	 *   }
+	 */
+	External (\_PR.CPU0._PSS)
+	Method (PSSS, 1, NotSerialized)
+	{
+		Store (One, Local0) /* Start at P1 */
+		Store (SizeOf (\_PR.CPU0._PSS), Local1)
+
+		While (LLess (Local0, Local1)) {
+			/* Store _PSS entry Control value to Local2 */
+			ShiftRight (DeRefOf (Index (DeRefOf (Index
+			      (\_PR.CPU0._PSS, Local0)), 4)), 8, Local2)
+			If (LEqual (Local2, Arg0)) {
+				Return (Subtract (Local0, 1))
+			}
+			Increment (Local0)
+		}
+
+		Return (0)
+	}
+
+	/* Set TDP Down */
+	Method (STND, 0, Serialized)
+	{
+		Store ("Set TDP Down", Debug)
+
+		If (LEqual (CTCD, CTCS)) {
+			Return (0)
+		}
+
+		/* Set CTC */
+		Store (CTCD, CTCS)
+
+		/* Set TAR */
+		Store (TARD, TARS)
+
+		/* Set PPC limit and notify OS */
+		Store (PSSS (TARD), PPCM)
+		PPCN ()
+
+		/* Set PL2 to 1.25 * PL1 */
+		Divide (Multiply (CTDD, 125), 100, Local0, PL2V)
+
+		/* Set PL1 */
+		Store (CTDD, PL1V)
+
+		Return (1)
+	}
+
+	/* Set TDP Nominal from Down */
+	Method (STDN, 0, Serialized)
+	{
+		Store ("Set TDP Nominal", Debug)
+
+		If (LEqual (CTCN, CTCS)) {
+			Return (0)
+		}
+
+		/* Set PL1 */
+		Store (CTDN, PL1V)
+
+		/* Set PL2 to 1.25 * PL1 */
+		Divide (Multiply (CTDN, 125), 100, Local0, PL2V)
+
+		/* Set PPC limit and notify OS */
+		Store (PSSS (TARN), PPCM)
+		PPCN ()
+
+		/* Set TAR */
+		Store (TARN, TARS)
+
+		/* Set CTC */
+		Store (CTCN, CTCS)
+
+		Return (1)
+	}
+}
 
 // Current Resource Settings
 

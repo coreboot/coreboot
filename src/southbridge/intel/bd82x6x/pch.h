@@ -198,6 +198,10 @@ int smbus_read_byte(unsigned device, unsigned address);
 
 #define SATA_SP			0xd0 /* Scratchpad */
 
+/* SATA IOBP Registers */
+#define SATA_IOBP_SP0G3IR	0xea000151
+#define SATA_IOBP_SP1G3IR	0xea000051
+
 /* PCI Configuration Space (D31:F3): SMBus */
 #define PCH_SMBUS_DEV		PCI_DEV(0, 0x1f, 3)
 #define SMB_BASE		0x20

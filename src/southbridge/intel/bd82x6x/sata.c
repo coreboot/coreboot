@@ -182,6 +182,15 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, 0x94,
 			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 	}
+
+	/* Set Gen3 Transmitter settings if needed */
+	if (config->sata_port0_gen3_tx)
+		pch_iobp_update(SATA_IOBP_SP0G3IR, 0,
+				config->sata_port0_gen3_tx);
+
+	if (config->sata_port1_gen3_tx)
+		pch_iobp_update(SATA_IOBP_SP1G3IR, 0,
+				config->sata_port1_gen3_tx);
 }
 
 static void sata_enable(device_t dev)

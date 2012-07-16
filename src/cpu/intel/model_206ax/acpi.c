@@ -251,7 +251,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	len = acpigen_write_empty_PCT();
 
 	/* Write _PPC with no limit on supported P-state */
-	len += acpigen_write_PPC(0);
+	len += acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
 	len += acpigen_write_PSD_package(core, cores_per_package, coord_type);

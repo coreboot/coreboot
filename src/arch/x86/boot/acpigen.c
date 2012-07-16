@@ -396,6 +396,32 @@ int acpigen_write_PPC(u8 nr)
 	return len;
 }
 
+/* generates a func with max supported P states */
+int acpigen_write_PPC_NVS(void)
+{
+/*
+    Method (_PPC, 0, NotSerialized)
+    {
+        Return (PPCM)
+    }
+*/
+	int len;
+	/* method op */
+	acpigen_emit_byte(0x14);
+	len = acpigen_write_len_f();
+	len += acpigen_emit_namestring("_PPC");
+	/* no fnarg */
+	acpigen_emit_byte(0x00);
+	/* return */
+	acpigen_emit_byte(0xa4);
+	/* arg */
+	len += acpigen_emit_namestring("PPCM");
+	/* add all single bytes */
+	len += 3;
+	acpigen_patch_len(len - 1);
+	return len;
+}
+
 int acpigen_write_TPC(const char *gnvs_tpc_limit)
 {
 /*

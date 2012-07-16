@@ -42,6 +42,7 @@ int acpigen_write_name_qword(const char *name, uint64_t val);
 int acpigen_write_name_byte(const char *name, uint8_t val);
 int acpigen_write_scope(const char *name);
 int acpigen_write_PPC(u8 nr);
+int acpigen_write_PPC_NVS(void);
 int acpigen_write_empty_PCT(void);
 int acpigen_write_empty_PTC(void);
 int acpigen_write_TPC(const char *gnvs_tpc_limit);

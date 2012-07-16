@@ -37,11 +37,14 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 	memcpy(vboot_data->mehh, me_hash_saved, sizeof(vboot_data->mehh));
 
 #if CONFIG_ELOG
-	if (developer_mode_enabled())
+	if (developer_mode_enabled() ||
+	    (vboot_wants_oprom() && !recovery_mode_enabled()))
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
-	if (recovery_mode_enabled())
+	if (recovery_mode_enabled()) {
+		int reason = get_recovery_mode_from_vbnv();
 		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE,
-				    get_recovery_mode_from_vbnv());
+			    reason ? reason : ELOG_CROS_RECOVERY_MODE_BUTTON);
+	}
 #endif
 }
 

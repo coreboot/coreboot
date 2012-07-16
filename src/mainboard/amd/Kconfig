@@ -37,6 +37,8 @@ config BOARD_AMD_TORPEDO
 	bool "Torpedo"
 config BOARD_AMD_UNIONSTATION
 	bool "Unionstation"
+config BOARD_AMD_PARMER
+        bool "Parmer"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -56,6 +58,8 @@ source "src/mainboard/amd/persimmon/Kconfig"
 source "src/mainboard/amd/south_station/Kconfig"
 source "src/mainboard/amd/torpedo/Kconfig"
 source "src/mainboard/amd/union_station/Kconfig"
+source "src/mainboard/amd/parmer/Kconfig"
+
 
 config MAINBOARD_VENDOR
 	string

@@ -55,7 +55,8 @@ typedef struct {
 	u8	f4of; /* 0x22 - FAN 4 OFF Threshold */
 	u8	f4on; /* 0x23 - FAN 4 ON Threshold */
 	u8	f4pw; /* 0x24 - FAN 4 PWM value */
-	u8	rsvd3[3];
+	u8	tmps; /* 0x25 - Temperature Sensor ID */
+	u8	rsvd3[2];
 	/* Processor Identification */
 	u8	apic; /* 0x28 - APIC enabled */
 	u8	mpen; /* 0x29 - MP capable/enabled */

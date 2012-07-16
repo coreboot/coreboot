@@ -104,6 +104,7 @@ struct elog_event_data_wake {
 /* Chrome OS related events */
 #define ELOG_TYPE_CROS_DEVELOPER_MODE     0xa0
 #define ELOG_TYPE_CROS_RECOVERY_MODE      0xa1
+#define  ELOG_CROS_RECOVERY_MODE_BUTTON    0x02
 
 /* Management Engine Events */
 #define ELOG_TYPE_MANAGEMENT_ENGINE       0xa2

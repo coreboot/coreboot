@@ -37,6 +37,7 @@
 #include <pc80/mc146818rtc.h>
 #include <usbdebug.h>
 #include "model_206ax.h"
+#include "chip.h"
 
 /*
  * List of suported C-states in this processor
@@ -312,6 +313,28 @@ static void configure_c_states(void)
 	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
 }
 
+static void configure_thermal_target(void)
+{
+	struct cpu_intel_model_206ax_config *conf;
+	device_t lapic;
+	msr_t msr;
+
+	/* Find pointer to CPU configuration */
+	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	if (!lapic || !lapic->chip_info)
+		return;
+	conf = lapic->chip_info;
+
+	/* Set TCC activaiton offset if supported */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
+		msr = rdmsr(MSR_TEMPERATURE_TARGET);
+		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
+		msr.lo |= (conf->tcc_offset & 0xf) << 24;
+		wrmsr(MSR_TEMPERATURE_TARGET, msr);
+	}
+}
+
 static void configure_misc(void)
 {
 	msr_t msr;
@@ -453,6 +476,9 @@ static void model_206ax_init(device_t cpu)
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
+
+	/* Thermal throttle activation offset */
+	configure_thermal_target();
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();

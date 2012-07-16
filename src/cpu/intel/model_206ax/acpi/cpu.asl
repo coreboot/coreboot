@@ -33,26 +33,37 @@ External (\_PR.CPU7, DeviceObj)
 Method (PNOT)
 {
 	If (LGreaterEqual (\PCNT, 2)) {
-		Notify (\_PR.CPU0, 0x80)  // _PPC
 		Notify (\_PR.CPU0, 0x81)  // _CST
-		Notify (\_PR.CPU1, 0x80)  // _PPC
 		Notify (\_PR.CPU1, 0x81)  // _CST
 	}
 	If (LGreaterEqual (\PCNT, 4)) {
-		Notify (\_PR.CPU2, 0x80)  // _PPC
 		Notify (\_PR.CPU2, 0x81)  // _CST
-		Notify (\_PR.CPU3, 0x80)  // _PPC
 		Notify (\_PR.CPU3, 0x81)  // _CST
 	}
 	If (LGreaterEqual (\PCNT, 8)) {
-		Notify (\_PR.CPU4, 0x80)  // _PPC
 		Notify (\_PR.CPU4, 0x81)  // _CST
-		Notify (\_PR.CPU5, 0x80)  // _PPC
 		Notify (\_PR.CPU5, 0x81)  // _CST
-		Notify (\_PR.CPU6, 0x80)  // _PPC
 		Notify (\_PR.CPU6, 0x81)  // _CST
-		Notify (\_PR.CPU7, 0x80)  // _PPC
 		Notify (\_PR.CPU7, 0x81)  // _CST
+	}
+}
+
+/* Notify OS to re-read CPU _PPC limit, assuming ^2 CPU count */
+Method (PPCN)
+{
+	If (LGreaterEqual (\PCNT, 2)) {
+		Notify (\_PR.CPU0, 0x80)  // _PPC
+		Notify (\_PR.CPU1, 0x80)  // _PPC
+	}
+	If (LGreaterEqual (\PCNT, 4)) {
+		Notify (\_PR.CPU2, 0x80)  // _PPC
+		Notify (\_PR.CPU3, 0x80)  // _PPC
+	}
+	If (LGreaterEqual (\PCNT, 8)) {
+		Notify (\_PR.CPU4, 0x80)  // _PPC
+		Notify (\_PR.CPU5, 0x80)  // _PPC
+		Notify (\_PR.CPU6, 0x80)  // _PPC
+		Notify (\_PR.CPU7, 0x80)  // _PPC
 	}
 }
 

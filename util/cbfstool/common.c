@@ -164,7 +164,7 @@ void print_supported_filetypes(void)
 
 const char *strfiletype(uint32_t number)
 {
-	int i;
+	size_t i;
 	for (i = 0; i < (sizeof(filetypes) / sizeof(struct filetypes_t)); i++)
 		if (filetypes[i].type == number)
 			return filetypes[i].name;
@@ -173,7 +173,7 @@ const char *strfiletype(uint32_t number)
 
 uint64_t intfiletype(const char *name)
 {
-	int i;
+	size_t i;
 	for (i = 0; i < (sizeof(filetypes) / sizeof(struct filetypes_t)); i++)
 		if (strcmp(filetypes[i].name, name) == 0)
 			return filetypes[i].type;
@@ -497,12 +497,12 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t alignment)
 {
 	loadrom(romfile);
-	int filename_size = strlen(filename);
+	size_t filename_size = strlen(filename);
 
-	int headersize =
+	size_t headersize =
 	    sizeof(struct cbfs_file) + ALIGN(filename_size + 1,
 					     16) + sizeof(struct cbfs_stage);
-	int totalsize = headersize + filesize;
+	size_t totalsize = headersize + filesize;
 
 	uint32_t current = phys_start;
 	while (current < phys_end) {

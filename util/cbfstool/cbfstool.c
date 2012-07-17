@@ -348,7 +348,7 @@ static void which_endian(void)
 
 int main(int argc, char **argv)
 {
-	int i;
+	size_t i;
 
 	if (argc < 3) {
 		usage();

@@ -196,6 +196,8 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define   PCB1			(1 <<  1)
 #define   PCB0			(1 <<  0)
 
+#define SATA_SIRI		0xa0 /* SATA Indexed Register Index */
+#define SATA_SIRD		0xa4 /* SATA Indexed Register Data */
 #define SATA_SP			0xd0 /* Scratchpad */
 
 /* SATA IOBP Registers */

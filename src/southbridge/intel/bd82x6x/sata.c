@@ -27,6 +27,18 @@
 
 typedef struct southbridge_intel_bd82x6x_config config_t;
 
+static inline u32 sir_read(struct device *dev, int idx)
+{
+	pci_write_config32(dev, SATA_SIRI, idx);
+	return pci_read_config32(dev, SATA_SIRD);
+}
+
+static inline void sir_write(struct device *dev, int idx, u32 value)
+{
+	pci_write_config32(dev, SATA_SIRI, idx);
+	pci_write_config32(dev, SATA_SIRD, value);
+}
+
 static void sata_init(struct device *dev)
 {
 	u32 reg32;
@@ -34,10 +46,10 @@ static void sata_init(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	printk(BIOS_DEBUG, "pch_sata: initializing...\n");
+	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
 	if (config == NULL) {
-		printk(BIOS_ERR, "pch_sata: error: device not in devicetree.cb!\n");
+		printk(BIOS_ERR, "SATA: ERROR: Device not in devicetree.cb!\n");
 		return;
 	}
 
@@ -47,7 +59,7 @@ static void sata_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, 0x0007);
 
 	if (config->ide_legacy_combined) {
-		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
+		printk(BIOS_DEBUG, "SATA: Controller in combined mode.\n");
 
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
@@ -85,7 +97,7 @@ static void sata_init(struct device *dev)
 	} else if(config->sata_ahci) {
 		u32 abar;
 
-		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
+		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");
 
 		/* Set Interrupt Line */
 		/* Interrupt Pin is set by D31IP.PIP */
@@ -137,7 +149,7 @@ static void sata_init(struct device *dev)
 		reg32 &= ~0x00000005;
 		write32(abar + 0xa0, reg32);
 	} else {
-		printk(BIOS_DEBUG, "SATA controller in plain mode.\n");
+		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
@@ -191,6 +203,33 @@ static void sata_init(struct device *dev)
 	if (config->sata_port1_gen3_tx)
 		pch_iobp_update(SATA_IOBP_SP1G3IR, 0,
 				config->sata_port1_gen3_tx);
+
+	/* Additional Programming Requirements */
+	sir_write(dev, 0x04, 0x00001600);
+	sir_write(dev, 0x28, 0xa0000033);
+	reg32 = sir_read(dev, 0x54);
+	reg32 &= 0xff000000;
+	reg32 |= 0x5555aa;
+	sir_write(dev, 0x54, reg32);
+	sir_write(dev, 0x64, 0xcccc8484);
+	reg32 = sir_read(dev, 0x68);
+	reg32 &= 0xffff0000;
+	reg32 |= 0xcccc;
+	sir_write(dev, 0x68, reg32);
+	reg32 = sir_read(dev, 0x78);
+	reg32 &= 0x0000ffff;
+	reg32 |= 0x88880000;
+	sir_write(dev, 0x78, reg32);
+	sir_write(dev, 0x84, 0x001c7000);
+	sir_write(dev, 0x88, 0x88338822);
+	sir_write(dev, 0xa0, 0x001c7000);
+	// a4
+	sir_write(dev, 0xc4, 0x0c0c0c0c);
+	sir_write(dev, 0xc8, 0x0c0c0c0c);
+	sir_write(dev, 0xd4, 0x10000000);
+
+	pch_iobp_update(0xea004001, 0x3fffffff, 0xc0000000);
+	pch_iobp_update(0xea00408a, 0xfffffcff, 0x00000100);
 }
 
 static void sata_enable(device_t dev)

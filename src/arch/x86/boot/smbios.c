@@ -162,6 +162,19 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	return len;
 }
 
+static const char *mainboard_serial_number = CONFIG_MAINBOARD_SERIAL_NUMBER;
+static const char *mainboard_version = CONFIG_MAINBOARD_VERSION;
+
+void smbios_set_mainboard_serial(const char *serial)
+{
+	mainboard_serial_number = serial;
+}
+
+void smbios_set_mainboard_version(const char *version)
+{
+	mainboard_version= version;
+}
+
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = (struct smbios_type1 *)*current;
@@ -173,8 +186,8 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->length = len - 2;
 	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
 	t->product_name = smbios_add_string(t->eos, CONFIG_MAINBOARD_PART_NUMBER);
-	t->serial_number = smbios_add_string(t->eos, CONFIG_MAINBOARD_SERIAL_NUMBER);
-	t->version = smbios_add_string(t->eos, CONFIG_MAINBOARD_VERSION);
+	t->serial_number = smbios_add_string(t->eos, mainboard_serial_number);
+	t->version = smbios_add_string(t->eos, mainboard_version);
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;

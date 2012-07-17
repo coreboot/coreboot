@@ -339,9 +339,9 @@ int host_bigendian = 0;
 
 static void which_endian(void)
 {
-	char test[4] = "1234";
-	uint32_t inttest = *(uint32_t *) test;
-	if (inttest == 0x31323334) {
+	static const uint32_t inttest = 0x12345678;
+	uint8_t inttest_lsb = *(uint8_t *)&inttest;
+	if (inttest_lsb == 0x12) {
 		host_bigendian = 1;
 	}
 }

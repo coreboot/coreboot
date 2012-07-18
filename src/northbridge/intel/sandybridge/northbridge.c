@@ -61,11 +61,6 @@ int bridge_silicon_revision(void)
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-int add_northbridge_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 void cbmem_post_handling(void)
 {
 	update_mrc_cache();

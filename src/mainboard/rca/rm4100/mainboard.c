@@ -24,7 +24,7 @@
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	return add_northbridge_resources(mem);
+	return 0;
 }
 
 static void mainboard_init(device_t dev)

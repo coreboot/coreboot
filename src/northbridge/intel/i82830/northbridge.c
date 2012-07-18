@@ -52,15 +52,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x3575,
 };
 
-int add_northbridge_resources(struct lb_memory *mem)
-{
-	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_base, uma_memory_size);
-
-	return 0;
-}
-
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif

@@ -51,7 +51,7 @@ void mainboard_suspend_resume(void)
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	return add_northbridge_resources(mem);
+	return 0;
 }
 
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE

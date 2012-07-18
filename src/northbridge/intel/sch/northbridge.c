@@ -79,7 +79,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	u32 pcie_config_base, pcie_config_size;
 
 	printk(BIOS_DEBUG, "Adding UMA memory area\n");
-	resource = new_resource(dev, index);
+	resource = new_resource(dev, index++);
 	resource->base = (resource_t) uma_memory_base;
 	resource->size = (resource_t) uma_memory_size;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
@@ -87,7 +87,7 @@ static void add_fixed_resources(struct device *dev, int index)
 
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar\n");
-		resource = new_resource(dev, index + 1);
+		resource = new_resource(dev, index++);
 		resource->base = (resource_t) pcie_config_base;
 		resource->size = (resource_t) pcie_config_size;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
@@ -95,7 +95,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 
 	printk(BIOS_DEBUG, "Adding CMC shadow area\n");
-	resource = new_resource(dev, index + 1);
+	resource = new_resource(dev, index++);
 	resource->base = (resource_t) CMC_SHADOW;
 	resource->size = (resource_t) (64 * 1024);
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |

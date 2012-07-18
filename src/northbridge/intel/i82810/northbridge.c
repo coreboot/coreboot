@@ -143,6 +143,7 @@ static void pci_domain_set_resources(device_t dev)
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, tolmk - 768);
+	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */

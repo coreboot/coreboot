@@ -110,6 +110,7 @@ static void pci_domain_set_resources(device_t dev)
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, 256);
 	ram_resource(dev, idx++, 1024, tolmk - 1024);
+	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 	assign_resources(dev->link_list);
 

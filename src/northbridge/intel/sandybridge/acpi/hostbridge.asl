@@ -101,6 +101,8 @@ Device (MCHC)
 		TLUD,	 32,
 	}
 
+	Mutex (CTCM, 1)		/* CTDP Switch Mutex (sync level 1) */
+	Name (CTCC, 0)		/* CTDP Current Selection */
 	Name (CTCN, 0)		/* CTDP Nominal Select */
 	Name (CTCD, 1)		/* CTDP Down Select */
 	Name (CTCU, 2)		/* CTDP Up Select */
@@ -167,11 +169,15 @@ Device (MCHC)
 	/* Set TDP Down */
 	Method (STND, 0, Serialized)
 	{
-		Store ("Set TDP Down", Debug)
-
-		If (LEqual (CTCD, CTCS)) {
+		If (Acquire (CTCM, 100)) {
 			Return (0)
 		}
+		If (LEqual (CTCD, CTCC)) {
+			Release (CTCM)
+			Return (0)
+		}
+
+		Store ("Set TDP Down", Debug)
 
 		/* Set CTC */
 		Store (CTCD, CTCS)
@@ -189,17 +195,25 @@ Device (MCHC)
 		/* Set PL1 */
 		Store (CTDD, PL1V)
 
+		/* Store the new TDP Down setting */
+		Store (CTCD, CTCC)
+
+		Release (CTCM)
 		Return (1)
 	}
 
 	/* Set TDP Nominal from Down */
 	Method (STDN, 0, Serialized)
 	{
-		Store ("Set TDP Nominal", Debug)
-
-		If (LEqual (CTCN, CTCS)) {
+		If (Acquire (CTCM, 100)) {
 			Return (0)
 		}
+		If (LEqual (CTCN, CTCC)) {
+			Release (CTCM)
+			Return (0)
+		}
+
+		Store ("Set TDP Nominal", Debug)
 
 		/* Set PL1 */
 		Store (CTDN, PL1V)
@@ -217,6 +231,10 @@ Device (MCHC)
 		/* Set CTC */
 		Store (CTCN, CTCS)
 
+		/* Store the new TDP Nominal setting */
+		Store (CTCN, CTCC)
+
+		Release (CTCM)
 		Return (1)
 	}
 }

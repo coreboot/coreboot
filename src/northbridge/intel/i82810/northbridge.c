@@ -62,15 +62,6 @@ static const struct pci_driver i810e_northbridge_driver __pci_driver = {
 	.device = 0x7124,
 };
 
-int add_northbridge_resources(struct lb_memory *mem)
-{
-	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_base, uma_memory_size);
-
-	return 0;
-}
-
 /* Table which returns the RAM size in MB when fed the DRP[7:4] or [3:0] value.
  * Note that 2 is a value which the DRP should never be programmed to.
  * Some size values appear twice, due to single-sided vs dual-sided banks.
@@ -143,6 +134,7 @@ static void pci_domain_set_resources(device_t dev)
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, tolmk - 768);
+	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */

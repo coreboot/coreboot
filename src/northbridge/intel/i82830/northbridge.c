@@ -52,15 +52,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x3575,
 };
 
-int add_northbridge_resources(struct lb_memory *mem)
-{
-	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_base, uma_memory_size);
-
-	return 0;
-}
-
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif
@@ -110,6 +101,7 @@ static void pci_domain_set_resources(device_t dev)
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, 256);
 	ram_resource(dev, idx++, 1024, tolmk - 1024);
+	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 	assign_resources(dev->link_list);
 

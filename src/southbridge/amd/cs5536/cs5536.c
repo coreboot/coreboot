@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <device/smbus.h>
 #include <console/console.h>
 #include <stdint.h>
 #include <pc80/isa-dma.h>
@@ -32,6 +33,7 @@
 #include <cpu/amd/vr.h>
 #include <stdlib.h>
 #include "chip.h"
+#include "smbus.h"
 #include "cs5536.h"
 
 struct msrinit {
@@ -664,8 +666,24 @@ static void cs5536_read_resources(device_t dev)
 static void southbridge_enable(struct device *dev)
 {
 	printk(BIOS_ERR, "cs5536: %s: dev is %p\n", __func__, dev);
-
 }
+
+static int lsmbus_read_byte(device_t dev, u8 address)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x10);
+
+	return do_smbus_read_byte(res->base, device, address);
+}
+
+static struct smbus_bus_operations lops_smbus_bus = {
+	.read_byte  = lsmbus_read_byte,
+};
 
 static struct device_operations southbridge_ops = {
 	.read_resources = cs5536_read_resources,
@@ -674,6 +692,7 @@ static struct device_operations southbridge_ops = {
 	.init = southbridge_init,
 //      .enable                   = southbridge_enable,
 	.scan_bus = scan_static_bus,
+	.ops_smbus_bus = &lops_smbus_bus,
 };
 
 static const struct pci_driver cs5536_pci_driver __pci_driver = {

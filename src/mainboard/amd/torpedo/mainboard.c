@@ -56,7 +56,6 @@ void set_pcie_dereset(void)
 static void torpedo_enable(device_t dev)
 {
   printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable. dev=0x%p\n", dev);
-  setup_uma_memory();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

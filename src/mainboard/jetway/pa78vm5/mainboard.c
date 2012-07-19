@@ -105,8 +105,6 @@ static void pa78vm5_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard PA78VM5 Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 }

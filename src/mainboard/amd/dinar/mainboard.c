@@ -72,7 +72,6 @@ void set_pcie_dereset(void *nbconfig)
 static void dinar_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard Dinar Enable. dev=0x%p\n", dev);
-	setup_uma_memory();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

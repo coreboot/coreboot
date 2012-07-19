@@ -78,8 +78,6 @@ static void inagua_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	setup_uma_memory();
-
 	/* Inagua mainboard specific setting */
 	set_pcie_dereset();
 }

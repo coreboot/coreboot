@@ -78,8 +78,6 @@ static void eax_785e(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	enable_int_gfx();
 }

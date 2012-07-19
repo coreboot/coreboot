@@ -58,8 +58,6 @@ static void kino_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard Kino Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 }

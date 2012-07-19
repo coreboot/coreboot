@@ -239,8 +239,6 @@ static void tim5690_enable(device_t dev)
 	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
 	vgabios_init(&vbios_regs);
 
-	setup_uma_memory();
-
 	set_thermal_config();
 }
 

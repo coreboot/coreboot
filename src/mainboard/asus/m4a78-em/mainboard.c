@@ -122,8 +122,6 @@ static void m4a78em_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 	/* set_thermal_config(); */

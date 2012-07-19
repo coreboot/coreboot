@@ -64,9 +64,6 @@ static void persimmon_enable(device_t dev)
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = acpi_get_sleep_type();
 #endif
-
-	setup_uma_memory();
-
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

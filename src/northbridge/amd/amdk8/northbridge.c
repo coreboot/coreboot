@@ -823,7 +823,7 @@ static u32 hoist_memory(unsigned long hole_startk, int node_id)
 #include <cbmem.h>
 #endif
 
-void setup_uma_memory(void)
+static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
 	msr_t msr, msr2;

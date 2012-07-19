@@ -44,9 +44,7 @@ static void parmer_enable(device_t dev)
 	acpi_slp_type = acpi_get_sleep_type();
 	if (acpi_slp_type == 3)
 		agesawrapper_fchs3earlyrestore();
-
 #endif
-	setup_uma_memory();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

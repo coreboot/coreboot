@@ -52,7 +52,6 @@ void set_pcie_dereset(void)
 static void e350m1_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-	setup_uma_memory();
 }
 
 int add_mainboard_resources(struct lb_memory *mem)

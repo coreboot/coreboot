@@ -629,7 +629,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 #define ONE_MB  0x100000
 
-void setup_uma_memory(void)
+static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
 	msr_t msr, msr2;

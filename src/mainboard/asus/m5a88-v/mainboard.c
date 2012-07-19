@@ -79,8 +79,6 @@ static void m5a88pm_v_enable(device_t dev)
 
 	printk(BIOS_INFO, "Mainboard ASUS M5A88-V Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	enable_int_gfx();
 }

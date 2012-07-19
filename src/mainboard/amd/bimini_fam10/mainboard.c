@@ -128,8 +128,6 @@ static void bimini_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard BIMINI Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	enable_int_gfx();
 	/* get_ide_dma66(); */

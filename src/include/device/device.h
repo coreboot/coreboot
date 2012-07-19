@@ -112,7 +112,6 @@ extern struct resource	*free_resources;
 extern struct bus	*free_links;
 
 /* IGD UMA memory */
-void setup_uma_memory(void);
 extern uint64_t uma_memory_base;
 extern uint64_t uma_memory_size;
 

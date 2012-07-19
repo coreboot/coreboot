@@ -517,7 +517,7 @@ static void domain_read_resources(device_t dev)
 #endif
 }
 
-void setup_uma_memory(void)
+static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
 	msr_t msr, msr2;

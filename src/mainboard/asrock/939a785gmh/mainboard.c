@@ -100,8 +100,6 @@ static void mb_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard 939A785GMH/128M Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 }

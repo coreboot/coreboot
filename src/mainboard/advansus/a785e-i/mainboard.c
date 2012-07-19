@@ -78,8 +78,6 @@ static void a785e_i_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard A785E-I Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	enable_int_gfx();
 }

@@ -76,8 +76,6 @@ static void ma78gm_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MA78GM-US2H Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 }

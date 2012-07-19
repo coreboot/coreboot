@@ -255,10 +255,7 @@ static void pistachio_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard Pistachio Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	enable_onboard_nic();
-
 	set_thermal_config();
 }
 

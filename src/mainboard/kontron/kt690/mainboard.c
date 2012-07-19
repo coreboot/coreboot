@@ -185,8 +185,6 @@ static void kt690_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard KT690 Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	enable_onboard_nic();
 	get_ide_dma66();
 	set_thermal_config();

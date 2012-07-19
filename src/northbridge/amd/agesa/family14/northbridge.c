@@ -517,7 +517,7 @@ static void domain_read_resources(device_t dev)
 #endif
 }
 
-void setup_uma_memory(void)
+static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
 	msr_t msr, msr2;
@@ -573,6 +573,8 @@ static void domain_set_resources(device_t dev)
 	struct hw_mem_hole_info mem_hole;
 	u32 reset_memhole = 1;
 #endif
+
+	setup_uma_memory();
 
 #if CONFIG_PCI_64BIT_PREF_MEM
 

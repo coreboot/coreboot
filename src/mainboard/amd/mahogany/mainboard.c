@@ -101,7 +101,6 @@ u8 is_dev3_present(void)
 static void mahogany_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MAHOGANY Enable. dev=0x%p\n", dev);
-	setup_uma_memory();
 
 	set_pcie_dereset();
 	/* get_ide_dma66(); */

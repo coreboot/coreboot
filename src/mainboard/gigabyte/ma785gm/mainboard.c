@@ -139,8 +139,6 @@ static void ma785gm_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MA785GM-US2H Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 	set_gpio40_gfx();

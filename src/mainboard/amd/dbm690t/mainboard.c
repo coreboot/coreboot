@@ -185,8 +185,6 @@ static void dbm690t_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard DBM690T Enable. dev=0x%p\n", dev);
 
-	setup_uma_memory();
-
 	enable_onboard_nic();
 	get_ide_dma66();
 	set_thermal_config();

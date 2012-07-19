@@ -851,7 +851,6 @@ static void enable_dev(device_t dev)
 
 	detect_hw_variant(dev);
 	update_subsystemid(dev);
-	setup_uma_memory();
 
 	dev->ops->init = init;  // rest of mainboard init later
 }

@@ -79,8 +79,6 @@ static void southstation_led_init(void)
 static void southstation_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-	setup_uma_memory();
-
 	southstation_led_init();
 }
 

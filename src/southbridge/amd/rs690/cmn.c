@@ -316,7 +316,13 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 void rs690_set_tom(device_t nb_dev)
 {
 	/* set TOM */
+#if CONFIG_GFXUMA
 	pci_write_config32(nb_dev, 0x90, uma_memory_base);
 	nbmc_write_index(nb_dev, 0x1e, uma_memory_base);
+#else
+	/* 1GB  system memory supposed */
+	pci_write_config32(nb_dev, 0x90, 0x38000000);
+	nbmc_write_index(nb_dev, 0x1e, 0x38000000);
+#endif
 }
 

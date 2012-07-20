@@ -105,6 +105,18 @@ config YABEL_PCI_ACCESS_OTHER_DEVICES
 	  onboard graphics chips whose Option ROM needs to reconfigure the
 	  north bridge.
 
+config YABEL_PCI_FAKE_WRITING_OTHER_DEVICES_CONFIG
+	prompt "Fake success on writing other device's config space"
+	bool
+	depends on YABEL_PCI_ACCESS_OTHER_DEVICES
+	help
+	  By default, YABEL aborts when the Option ROM tries to write to other
+	  devices' config spaces. With this option enabled, the write doesn't
+	  follow through, but the Option ROM is allowed to go on.
+	  This can create issues such as hanging Option ROMs (if it depends on
+	  that other register changing to the written value), so test for
+	  impact before using this option.
+
 config YABEL_VIRTMEM_LOCATION
 	prompt "Location of YABEL's virtual memory"
 	hex

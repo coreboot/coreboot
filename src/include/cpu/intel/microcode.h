@@ -21,7 +21,7 @@
 #define __CPU__INTEL__MICROCODE__
 
 #ifndef __PRE_RAM__
-#if CONFIG_MICROCODE_IN_CBFS
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 void intel_update_microcode_from_cbfs(void);
 #else
 void intel_update_microcode(const void *microcode_updates);

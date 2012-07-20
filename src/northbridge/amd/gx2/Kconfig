@@ -24,7 +24,7 @@ config NORTHBRIDGE_AMD_GX2
 choice
 	prompt "Framebuffer size"
 	default GX2_VIDEO_MB_8MB
-	depends on NORTHBRIDGE_AMD_GX2 && VGA_BRIDGE_SETUP
+	depends on NORTHBRIDGE_AMD_GX2
 
 config GX2_VIDEO_MB_4MB
 	bool "4MB"

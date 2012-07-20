@@ -18,13 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config VGA_BRIDGE_SETUP
-	bool "Setup bridges on path to VGA adapter"
-	default y
-	help
-	  Allow bridges to set up legacy decoding ranges for VGA. Don't disable
-	  this unless you're sure you don't want the briges setup for VGA.
-
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"

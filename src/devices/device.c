@@ -705,7 +705,6 @@ static void avoid_fixed_resources(struct device *dev)
 	}
 }
 
-#if CONFIG_VGA_BRIDGE_SETUP
 device_t vga_pri = 0;
 static void set_vga_bridge_bits(void)
 {
@@ -780,8 +779,6 @@ static void set_vga_bridge_bits(void)
 		bus = (bus == bus->dev->bus) ? 0 : bus->dev->bus;
 	}
 }
-
-#endif
 
 /**
  * Assign the computed resources to the devices on the bus.
@@ -964,9 +961,7 @@ void dev_configure(void)
 	struct device *root;
 	struct device *child;
 
-#if CONFIG_VGA_BRIDGE_SETUP
 	set_vga_bridge_bits();
-#endif
 
 	printk(BIOS_INFO, "Allocating resources...\n");
 

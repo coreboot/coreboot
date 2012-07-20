@@ -28,7 +28,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
 
-#if CONFIG_MICROCODE_IN_CBFS
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 #ifdef __PRE_RAM__
 #include <arch/cbfs.h>
 #else
@@ -77,7 +77,7 @@ static inline u32 read_microcode_rev(void)
 	return msr.hi;
 }
 
-#if CONFIG_MICROCODE_IN_CBFS
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 static
 #endif
 void intel_update_microcode(const void *microcode_updates)
@@ -144,9 +144,9 @@ void intel_update_microcode(const void *microcode_updates)
 	}
 }
 
-#if CONFIG_MICROCODE_IN_CBFS
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 
-#define MICROCODE_CBFS_FILE "microcode_blob.bin"
+#define MICROCODE_CBFS_FILE "cpu_microcode_blob.bin"
 
 void intel_update_microcode_from_cbfs(void)
 {

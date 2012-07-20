@@ -885,9 +885,6 @@ void setup_uma_memory(void)
 		    __func__, uma_memory_size, uma_memory_base);
 
 	/* TODO: TOP_MEM2 */
-#else
-	uma_memory_size = 0x8000000;	/* 128M recommended UMA */
-	uma_memory_base = 0x38000000;	/* 1GB  system memory supposed */
 #endif
 }
 

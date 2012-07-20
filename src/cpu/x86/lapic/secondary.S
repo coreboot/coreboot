@@ -2,7 +2,11 @@
 #include <cpu/x86/lapic_def.h>
 
 	.text
-	.globl _secondary_start, _secondary_start_end, cpucount, ap_protected_start
+	.globl _secondary_start, _secondary_start_end, ap_protected_start
+#if CONFIG_BROADCAST_SIPI == 1
+	.globl cpucount
+#endif
+	.balign 4096
 _secondary_start:
 	.code16
 	cli
@@ -26,12 +30,6 @@ _secondary_start:
 
 	ljmpl	$0x10, $__ap_protected_start
 
-gdtaddr:
-	.word   gdt_limit	/* the table limit */
-	.long   gdt             /* we know the offset */
-
-_secondary_start_end:
-
 ap_protected_start:
 	.code32
 	lgdt	gdtaddr
@@ -49,6 +47,14 @@ __ap_protected_start:
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
 
+#if CONFIG_BROADCAST_SIPI == 0
+	/* Set the stack pointer, and flag that we are done */
+	xorl	%eax, %eax
+	movl	secondary_stack, %esp
+	movl	secondary_cpu_index, %edi
+	pushl	%edi
+	movl	%eax, secondary_stack
+#else /* CONFIG_BROADCAST_SIPI */
 	/* increment our cpu index */
 	movl	$1, %eax
 	lock	xadd %eax, cpucount
@@ -61,10 +67,19 @@ __ap_protected_start:
 	add	%eax, %esp
 
 	pushl	%ecx
+#endif /* CONFIG_BROADCAST_SIPI */
+
 	call	secondary_cpu_init
 1:	hlt
 	jmp	1b
 
+#if CONFIG_BROADCAST_SIPI == 1
 cpucount:
 	.long	1
+#endif /* CONFIG_BROADCAST_SIPI */
+gdtaddr:
+	.word   gdt_limit	/* the table limit */
+	.long   gdt             /* we know the offset */
+
+_secondary_start_end:
 .code32

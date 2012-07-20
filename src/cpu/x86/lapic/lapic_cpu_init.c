@@ -16,7 +16,6 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
 
-#if CONFIG_SMP
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -34,9 +33,10 @@ char *lowmem_backup_ptr;
 int  lowmem_backup_size;
 #endif
 
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 extern char _secondary_start[];
 
-static void copy_secondary_start_to_1m_below(void)
+static void copy_secondary_start_to_lowest_1M(void)
 {
 	extern char _secondary_start_end[];
 	unsigned long code_size;
@@ -59,13 +59,528 @@ static void copy_secondary_start_to_1m_below(void)
 
 	printk(BIOS_DEBUG, "start_eip=0x%08lx, code_size=0x%08lx\n", (long unsigned int)AP_SIPI_VECTOR, code_size);
 }
+#endif /* CONFIG_SMP && CONFIG_MAX_CPUS > 1 */
+
+#ifdef __SSE3__
+static __inline__ __attribute__((always_inline)) unsigned long readcr4(void)
+{
+	unsigned long value;
+	__asm__ __volatile__ (
+			"mov %%cr4, %[value]"
+			: [value] "=a" (value));
+	return value;
+}
+
+static __inline__ __attribute__((always_inline)) void
+	writecr4(unsigned long Data)
+{
+	__asm__ __volatile__ (
+			"mov %%eax, %%cr4"
+			:
+			: "a" (Data)
+			);
+}
+#endif
+
+#if CONFIG_BROADCAST_SIPI == 0
+
+static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
+{
+	// 16 bit to avoid 0xa0000
+	return (unsigned long)orig_start_eip & 0xffff;
+}
+
+static int lapic_start_cpu(unsigned long apicid)
+{
+	int timeout;
+	unsigned long send_status, accept_status, start_eip;
+	int j, num_starts, maxlvt;
+
+	/*
+	 * Starting actual IPI sequence...
+	 */
+
+	printk(BIOS_SPEW, "Asserting INIT.\n");
+
+	/*
+	 * Turn INIT on target chip
+	 */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+
+	/*
+	 * Send IPI
+	 */
+
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT
+				| LAPIC_DM_INIT);
+
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
+	timeout = 0;
+	do {
+		printk(BIOS_SPEW, "+");
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+		printk(BIOS_ERR, "CPU %ld: First APIC write timed out. "
+			"Disabling\n", apicid);
+		// too bad.
+		printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
+		if (lapic_read(LAPIC_ESR)) {
+			printk(BIOS_ERR, "Try to reset ESR\n");
+			lapic_write_around(LAPIC_ESR, 0);
+			printk(BIOS_ERR, "ESR is 0x%lx\n",
+				lapic_read(LAPIC_ESR));
+		}
+		return 0;
+	}
+#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX
+	mdelay(10);
+#endif
+
+	printk(BIOS_SPEW, "Deasserting INIT.\n");
+
+	/* Target chip */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+
+	/* Send IPI */
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
+
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
+	timeout = 0;
+	do {
+		printk(BIOS_SPEW, "+");
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+		printk(BIOS_ERR, "CPU %ld: Second apic write timed out. "
+			"Disabling\n", apicid);
+		// too bad.
+		return 0;
+	}
+
+	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
+
+#if !CONFIG_CPU_AMD_MODEL_10XXX
+	num_starts = 2;
+#else
+	num_starts = 1;
+#endif
+
+	/*
+	 * Run STARTUP IPI loop.
+	 */
+	printk(BIOS_SPEW, "#startup loops: %d.\n", num_starts);
+
+	maxlvt = 4;
+
+	for (j = 1; j <= num_starts; j++) {
+		printk(BIOS_SPEW, "Sending STARTUP #%d to %lu.\n", j, apicid);
+		lapic_read_around(LAPIC_SPIV);
+		lapic_write(LAPIC_ESR, 0);
+		lapic_read(LAPIC_ESR);
+		printk(BIOS_SPEW, "After apic_write.\n");
+
+		/*
+		 * STARTUP IPI
+		 */
+
+		/* Target chip */
+		lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+
+		/* Boot on the stack */
+		/* Kick the second */
+		lapic_write_around(LAPIC_ICR, LAPIC_DM_STARTUP
+					| (start_eip >> 12));
+
+		/*
+		 * Give the other CPU some time to accept the IPI.
+		 */
+		udelay(300);
+
+		printk(BIOS_SPEW, "Startup point 1.\n");
+
+		printk(BIOS_SPEW, "Waiting for send to finish...\n");
+		timeout = 0;
+		do {
+			printk(BIOS_SPEW, "+");
+			udelay(100);
+			send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+		} while (send_status && (timeout++ < 1000));
+
+		/*
+		 * Give the other CPU some time to accept the IPI.
+		 */
+		udelay(200);
+		/*
+		 * Due to the Pentium erratum 3AP.
+		 */
+		if (maxlvt > 3) {
+			lapic_read_around(LAPIC_SPIV);
+			lapic_write(LAPIC_ESR, 0);
+		}
+		accept_status = (lapic_read(LAPIC_ESR) & 0xEF);
+		if (send_status || accept_status)
+			break;
+	}
+	printk(BIOS_SPEW, "After Startup.\n");
+	if (send_status)
+		printk(BIOS_WARNING, "APIC never delivered???\n");
+	if (accept_status)
+		printk(BIOS_WARNING, "APIC delivery error (%lx).\n",
+			accept_status);
+	if (send_status || accept_status)
+		return 0;
+	return 1;
+}
+
+/* Number of cpus that are currently running in coreboot */
+static atomic_t active_cpus = ATOMIC_INIT(1);
+
+/* start_cpu_lock covers last_cpu_index and secondary_stack.
+ * Only starting one cpu at a time let's me remove the logic
+ * for select the stack from assembly language.
+ *
+ * In addition communicating by variables to the cpu I
+ * am starting allows me to verify it has started before
+ * start_cpu returns.
+ */
+
+static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
+static unsigned int last_cpu_index = 0;
+static void *stacks[CONFIG_MAX_CPUS];
+volatile unsigned long secondary_stack;
+volatile unsigned int secondary_cpu_index;
+
+int start_cpu(device_t cpu)
+{
+	extern unsigned char _estack[];
+	struct cpu_info *info;
+	unsigned long stack_end;
+	unsigned long stack_base;
+	unsigned long *stack;
+	unsigned long apicid;
+	unsigned int index;
+	unsigned long count;
+	int i;
+	int result;
+
+	spin_lock(&start_cpu_lock);
+
+	/* Get the CPU's apicid */
+	apicid = cpu->path.apic.apic_id;
+
+	/* Get an index for the new processor */
+	index = ++last_cpu_index;
+
+	/* Find end of the new processor's stack */
+	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) -
+			sizeof(struct cpu_info);
+
+	stack_base = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*(index+1));
+	printk(BIOS_SPEW, "CPU%d: stack_base %p, stack_end %p\n", index,
+		(void *)stack_base, (void *)stack_end);
+	/* poison the stack */
+	for(stack = (void *)stack_base, i = 0; i < CONFIG_STACK_SIZE; i++)
+		stack[i/sizeof(*stack)] = 0xDEADBEEF;
+	stacks[index] = stack;
+	/* Record the index and which CPU structure we are using */
+	info = (struct cpu_info *)stack_end;
+	info->index = index;
+	info->cpu   = cpu;
+
+	/* Advertise the new stack and index to start_cpu */
+	secondary_stack = stack_end;
+	secondary_cpu_index = index;
+
+	/* Until the CPU starts up report the CPU is not enabled */
+	cpu->enabled = 0;
+	cpu->initialized = 0;
+
+	/* Start the cpu */
+	result = lapic_start_cpu(apicid);
+
+	if (result) {
+		result = 0;
+		/* Wait 1s or until the new cpu calls in */
+		for(count = 0; count < 100000 ; count++) {
+			if (secondary_stack == 0) {
+				result = 1;
+				break;
+			}
+			udelay(10);
+	}
+	}
+	secondary_stack = 0;
+	spin_unlock(&start_cpu_lock);
+	return result;
+}
+
+#if CONFIG_AP_IN_SIPI_WAIT
+
+/**
+ * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of
+ * delay.
+ * An undefined number of instruction cycles will complete. All global locks
+ * must be released before INIT IPI and no printk is allowed after this.
+ * De-asserting INIT IPI is a no-op on later Intel CPUs.
+ *
+ * If you set DEBUG_HALT_SELF to 1, printk's after INIT IPI are enabled
+ * but running thread may halt without releasing the lock and effectively
+ * deadlock other CPUs.
+ */
+#define DEBUG_HALT_SELF 0
+
+/**
+ * Normally this function is defined in lapic.h as an always inline function
+ * that just keeps the CPU in a hlt() loop. This does not work on all CPUs.
+ * I think all hyperthreading CPUs might need this version, but I could only
+ * verify this on the Intel Core Duo
+ */
+void stop_this_cpu(void)
+{
+	int timeout;
+	unsigned long send_status;
+	unsigned long id;
+
+	id = lapic_read(LAPIC_ID) >> 24;
+
+	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
+
+	/* send an LAPIC INIT to myself */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG |
+				LAPIC_INT_ASSERT | LAPIC_DM_INIT);
+
+	/* wait for the ipi send to finish */
+#if DEBUG_HALT_SELF
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
+#endif
+	timeout = 0;
+	do {
+#if DEBUG_HALT_SELF
+		printk(BIOS_SPEW, "+");
+#endif
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+#if DEBUG_HALT_SELF
+		printk(BIOS_ERR, "timed out\n");
+#endif
+	}
+	mdelay(10);
+
+#if DEBUG_HALT_SELF
+	printk(BIOS_SPEW, "Deasserting INIT.\n");
+#endif
+	/* Deassert the LAPIC INIT */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
+
+#if DEBUG_HALT_SELF
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
+#endif
+	timeout = 0;
+	do {
+#if DEBUG_HALT_SELF
+		printk(BIOS_SPEW, "+");
+#endif
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+#if DEBUG_HALT_SELF
+		printk(BIOS_ERR, "timed out\n");
+#endif
+	}
+
+	while(1) {
+		hlt();
+	}
+}
+#endif
+
+
+/* C entry point of secondary cpus */
+void secondary_cpu_init(unsigned int index)
+{
+	atomic_inc(&active_cpus);
+#if CONFIG_SERIAL_CPU_INIT
+	spin_lock(&start_cpu_lock);
+#endif
+
+#ifdef __SSE3__
+	/*
+	 * Seems that CR4 was cleared when AP start via lapic_start_cpu()
+	 * Turn on CR4.OSFXSR and CR4.OSXMMEXCPT when SSE options enabled
+	 */
+	u32 cr4_val;
+	cr4_val = readcr4();
+	cr4_val |= (1 << 9 | 1 << 10);
+	writecr4(cr4_val);
+#endif
+	cpu_initialize(index);
+#if CONFIG_SERIAL_CPU_INIT
+	spin_unlock(&start_cpu_lock);
+#endif
+
+	atomic_dec(&active_cpus);
+
+	stop_this_cpu();
+}
+
+static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
+{
+	device_t cpu;
+	/* Loop through the cpus once getting them started */
+
+	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
+		if (cpu->path.type != DEVICE_PATH_APIC) {
+			continue;
+		}
+	#if !CONFIG_SERIAL_CPU_INIT
+		if(cpu==bsp_cpu) {
+			continue;
+		}
+	#endif
+
+		if (!cpu->enabled) {
+			continue;
+		}
+
+		if (cpu->initialized) {
+			continue;
+		}
+
+		if (!start_cpu(cpu)) {
+			/* Record the error in cpu? */
+			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
+				cpu->path.apic.apic_id);
+		}
+#if CONFIG_SERIAL_CPU_INIT
+		udelay(10);
+#endif
+	}
+
+}
+
+static void wait_other_cpus_stop(struct bus *cpu_bus)
+{
+	device_t cpu;
+	int old_active_count, active_count;
+	long loopcount = 0;
+	int i;
+
+	/* Now loop until the other cpus have finished initializing */
+	old_active_count = 1;
+	active_count = atomic_read(&active_cpus);
+	while(active_count > 1) {
+		if (active_count != old_active_count) {
+			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n",
+				active_count - 1);
+			old_active_count = active_count;
+		}
+		udelay(10);
+		active_count = atomic_read(&active_cpus);
+		loopcount++;
+	}
+	for(cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
+		if (cpu->path.type != DEVICE_PATH_APIC) {
+			continue;
+		}
+		if (cpu->path.apic.apic_id == SPEEDSTEP_APIC_MAGIC) {
+			continue;
+		}
+		if (!cpu->initialized) {
+			printk(BIOS_ERR, "CPU 0x%02x did not initialize!\n",
+				cpu->path.apic.apic_id);
+		}
+	}
+	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
+	for(i = 1; i <= last_cpu_index; i++){
+		unsigned long *stack = stacks[i];
+		int lowest;
+		int maxstack = (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
+					/sizeof(*stack) - 1;
+		if (stack[0] != 0xDEADBEEF)
+			printk(BIOS_ERR, "CPU%d overran its stack\n", i);
+		for(lowest = 0; lowest < maxstack; lowest++)
+			if (stack[lowest] != 0xDEADBEEF)
+				break;
+		printk(BIOS_SPEW, "CPU%d: stack allocated from %p to %p:", i,
+			stack, &stack[maxstack]);
+		printk(BIOS_SPEW, "lowest stack address was %p\n",
+			&stack[lowest]);
+	}
+}
+
+void initialize_cpus(struct bus *cpu_bus)
+{
+	struct device_path cpu_path;
+	struct cpu_info *info;
+
+	/* Find the info struct for this cpu */
+	info = cpu_info();
+
+#if NEED_LAPIC == 1
+	/* Ensure the local apic is enabled */
+	enable_lapic();
+
+	/* Get the device path of the boot cpu */
+	cpu_path.type           = DEVICE_PATH_APIC;
+	cpu_path.apic.apic_id = lapicid();
+#else
+	/* Get the device path of the boot cpu */
+	cpu_path.type           = DEVICE_PATH_CPU;
+	cpu_path.cpu.id       = 0;
+#endif
+
+	/* Find the device structure for the boot cpu */
+	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+	// why here? In case some day we can start core1 in amd_sibling_init
+	copy_secondary_start_to_lowest_1M();
+#endif
+
+#if CONFIG_HAVE_SMI_HANDLER
+	smm_init();
+#endif
+
+	cpus_ready_for_init();
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+	#if !CONFIG_SERIAL_CPU_INIT
+	/* start all aps at first, so we can init ECC all together */
+	start_other_cpus(cpu_bus, info->cpu);
+	#endif
+#endif
+
+	/* Initialize the bootstrap processor */
+	cpu_initialize(0);
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+	#if CONFIG_SERIAL_CPU_INIT
+	start_other_cpus(cpu_bus, info->cpu);
+	#endif
+
+	/* Now wait the rest of the cpus stop*/
+	wait_other_cpus_stop(cpu_bus);
+#endif
+}
+
+#else /* CONFIG_BROADCAST_SIPI == 1*/
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 
 static struct bus *current_cpu_bus;
 
 static int lapic_start_cpus(struct bus *cpu_bus)
 {
 	int timeout;
-	unsigned long send_status, accept_status;
+	unsigned long send_status, accept_status, start_eip;
 	int maxlvt;
 
 	/*
@@ -99,6 +614,7 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 		}
 		return 0;
 	}
+	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 
 	maxlvt = 4;
 
@@ -114,11 +630,15 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 
 	/* Target chip */
 	lapic_write_around(LAPIC_ICR2, 0);
+	printk(BIOS_SPEW, "After apic_write_around(LAPIC_ICR2, 0);\n");
 
 	/* Boot on the stack */
 	/* Kick the second */
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | LAPIC_DEST_ALLBUT
-			   | ((AP_SIPI_VECTOR >> 12) & 0xff));
+	lapic_write_around(LAPIC_ICR,
+		LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | LAPIC_DEST_ALLBUT
+			   | (start_eip >> 12));
+	printk(BIOS_SPEW, "After apic_write_around allbut starteip %p.\n",
+				(void *)start_eip);
 
 	/*
 	 * Give the other CPU some time to accept the IPI.
@@ -152,7 +672,8 @@ static int lapic_start_cpus(struct bus *cpu_bus)
 	if (send_status)
 		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
-		printk(BIOS_WARNING, "APIC delivery error (%lx).\n", accept_status);
+		printk(BIOS_WARNING, "APIC delivery error (%lx).\n",
+			accept_status);
 	if (send_status || accept_status)
 		return 0;
 	return 1;
@@ -171,7 +692,8 @@ static void stop_all_ap_cpus(void)
 	int timeout;
 	/* send an LAPIC INIT to all but myself */
 	lapic_write_around(LAPIC_ICR2, 0);
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_INIT | LAPIC_DEST_ALLBUT);
+	lapic_write_around(LAPIC_ICR,
+		LAPIC_INT_ASSERT | LAPIC_DM_INIT | LAPIC_DEST_ALLBUT);
 
 	/* wait for the ipi send to finish */
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
@@ -186,26 +708,6 @@ static void stop_all_ap_cpus(void)
 	}
 	mdelay(10);
 }
-
-#ifdef __SSE3__
-static __inline__ __attribute__((always_inline)) unsigned long readcr4(void)
-{
-	unsigned long value;
-	__asm__ __volatile__ (
-			"mov %%cr4, %[value]"
-			: [value] "=a" (value));
-	return value;
-}
-
-static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Data)
-{
-	__asm__ __volatile__ (
-			"mov %%eax, %%cr4"
-			:
-			: "a" (Data)
-			);
-}
-#endif
 
 /* C entry point of secondary cpus */
 void secondary_cpu_init(int index)
@@ -236,7 +738,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	active_count = atomic_read(&active_cpus);
 	while(active_count > 1) {
 		if (active_count != old_active_count) {
-			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n", active_count - 1);
+			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n",
+				active_count - 1);
 			old_active_count = active_count;
 		}
 		udelay(10);
@@ -257,9 +760,26 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	}
 	stop_all_ap_cpus();
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
+#if 0
+	for(i = 1; i <= last_cpu_index; i++){
+		unsigned long *stack = stacks[i];
+		int lowest;
+		int maxstack = (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
+					/sizeof(*stack) - 1;
+		if (stack[0] != 0xDEADBEEF)
+			printk(BIOS_ERR, "CPU%d overran its stack\n", i);
+		for(lowest = 0; lowest < maxstack; lowest++)
+			if (stack[lowest] != 0xDEADBEEF)
+				break;
+		printk(BIOS_SPEW, "CPU%d: stack allocated from %p to %p:", i,
+			stack, &stack[maxstack]);
+		printk(BIOS_SPEW, "lowest stack address was %p\n",
+			&stack[lowest]);
+	}
+#endif
 }
 
-#endif /* CONFIG_SMP */
+#endif /* CONFIG_SMP and MAX_CPUS > 1 */
 
 void initialize_cpus(struct bus *cpu_bus)
 {
@@ -279,7 +799,8 @@ void initialize_cpus(struct bus *cpu_bus)
 #endif
 
 #if CONFIG_SMP
-	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
+	// why here? In case some day we can start core1 in amd_sibling_init
+	copy_secondary_start_to_lowest_1M();
 #endif
 
 #if CONFIG_HAVE_SMI_HANDLER
@@ -297,4 +818,4 @@ void initialize_cpus(struct bus *cpu_bus)
 	wait_other_cpus_stop(cpu_bus);
 #endif
 }
-
+#endif /* CONFIG_BROADCAST_SIPI == 1 */

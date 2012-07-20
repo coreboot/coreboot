@@ -32,6 +32,7 @@ struct device_operations {
 	void (*init)(device_t dev);
 	unsigned int (*scan_bus)(device_t bus, unsigned int max);
 	void (*enable)(device_t dev);
+	void (*disable)(device_t dev);
 	void (*set_link)(device_t dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 #if CONFIG_GENERATE_SMBIOS_TABLES

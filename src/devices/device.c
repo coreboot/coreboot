@@ -762,6 +762,14 @@ static void set_vga_bridge_bits(void)
 		vga = vga_onboard;
 	}
 
+	/* If we prefer plugin VGA over chipset VGA, the chipset might
+	   want to know. */
+	if (!CONFIG_ONBOARD_VGA_IS_PRIMARY && (vga != vga_onboard) &&
+		vga_onboard && vga_onboard->ops && vga_onboard->ops->disable) {
+		printk(BIOS_DEBUG, "Use plugin graphics over integrated.\n");
+		vga_onboard->ops->disable(vga_onboard);
+	}
+
 	if (vga) {
 		/* VGA is first add-on card or the only onboard VGA. */
 		printk(BIOS_DEBUG, "Setting up VGA for %s\n", dev_path(vga));

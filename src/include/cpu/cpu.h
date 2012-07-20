@@ -4,12 +4,18 @@
 #include <arch/cpu.h>
 
 #if !defined(__ROMCC__)
+
+#if CONFIG_BROADCAST_SIPI == 0
+void secondary_cpu_init(unsigned int cpu_index)__attribute__((regparm(0)));
+void cpu_initialize(unsigned int cpu_index);
+#else /* CONFIG_BROADCAST_SIPI */
+void secondary_cpu_init(int index);
+extern unsigned int cpucount;
 void cpu_initialize(struct bus *cpu_bus, int index);
+#endif /* CONFIG_BROADCAST_SIPI */
+
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
-void secondary_cpu_init(int index);
-
-extern unsigned int cpucount;
 
 #if !CONFIG_WAIT_BEFORE_CPUS_INIT
 	#define cpus_ready_for_init() do {} while(0)

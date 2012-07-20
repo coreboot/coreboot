@@ -22,7 +22,9 @@
 #include <console/console.h>
 #include <device/device.h>
 #include "southbridge/amd/cimx/sb700/smbus.h" /*SMBUS_IO_BASE*/
+#if CONFIG_BROADCAST_SIPI == 1
 #include <cpu/x86/lapic.h>
+#endif /* CONFIG_BROADCAST_SIPI */
 #include "w83795.h"
 
 static u32 w83795_set_bank(u8 bank)
@@ -225,8 +227,13 @@ static void w83795_init(w83795_fan_mode_t mode, u8 dts_src)
 static void w83795_hwm_init(device_t dev)
 {
 	struct device *cpu;
-
+#if CONFIG_BROADCAST_SIPI == 0
+	struct cpu_info *info;
+	info = cpu_info();
+	cpu = info->cpu;
+#else /* CONFIG_BROADCAST_SIPI */
 	cpu = dev_find_lapic(lapicid());
+#endif /* CONFIG_BROADCAST_SIPI */
 	if (!cpu)
 		die("CPU: missing cpu device structure");
 

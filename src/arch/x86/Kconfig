@@ -2,7 +2,23 @@ menu "Architecture (x86)"
 
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
-# TODO: Improve description.
+# If set, startup uses a BROADCAST to start all cores at once
+# It is wrong for some HT cores, e.g. those in chromebooks.
+# Because it is breaks some platforms, and the old code works on
+# all platforms, we leave it off.
+config BROADCAST_SIPI
+	bool
+	default n
+	depends on ARCH_X86
+
+# This is another SMP option. On some HT platforms the AP
+# must not try to halt, but rather must wait in the
+# secondary start code for another SIPI so it can stop
+# correctly.
+config AP_IN_SIPI_WAIT
+	bool
+	default n
+	depends on ARCH_X86 && ! BROADCAST_SIPI
 
 # Aligns 16bit entry code in bootblock so that hyper-threading CPUs
 # can boot AP CPUs to enable their shared caches.

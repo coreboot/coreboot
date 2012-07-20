@@ -715,52 +715,35 @@ static void set_vga_bridge_bits(void)
 	 */
 
 	/* FIXME: Handle the VGA palette snooping. */
-	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;
+	struct device *dev, *vga, *vga_onboard;
 	struct bus *bus;
 
 	bus = 0;
 	vga = 0;
 	vga_onboard = 0;
-	vga_first = 0;
-	vga_last = 0;
 
-	for (dev = all_devices; dev; dev = dev->next) {
-
+	dev = NULL;
+	while ((dev = dev_find_class(PCI_CLASS_DISPLAY_VGA << 8, dev))) {
 		if (!dev->enabled)
 			continue;
 
-		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
-		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
-			if (!vga_first) {
-				if (dev->on_mainboard)
-					vga_onboard = dev;
-				else
-					vga_first = dev;
-			} else {
-				if (dev->on_mainboard)
-					vga_onboard = dev;
-				else
-					vga_last = dev;
-			}
+		printk(BIOS_DEBUG, "found VGA at %s\n", dev_path(dev));
 
-			/* It isn't safe to enable other VGA cards. */
-			dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		if (dev->on_mainboard) {
+			vga_onboard = dev;
+		} else if (!vga) {
+			vga = dev;
 		}
-	}
 
-	vga = vga_last;
+		/* It isn't safe to enable all VGA cards. */
+		dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	};
 
 	if (!vga)
-		vga = vga_first;
-
-#if CONFIG_ONBOARD_VGA_IS_PRIMARY
-	if (vga_onboard)	/* Will use onboard VGA as primary. */
-#else
-	if (!vga)		/* Will use last add-on adapter as primary. */
-#endif
-	{
 		vga = vga_onboard;
-	}
+
+	if (CONFIG_ONBOARD_VGA_IS_PRIMARY && vga_onboard)
+		vga = vga_onboard;
 
 	/* If we prefer plugin VGA over chipset VGA, the chipset might
 	   want to know. */

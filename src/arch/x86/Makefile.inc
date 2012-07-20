@@ -1,6 +1,8 @@
+################################################################################
 ##
 ## This file is part of the coreboot project.
 ##
+## Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
 ## Copyright (C) 2009-2010 coresystems GmbH
 ## Copyright (C) 2009 Ronald G. Minnich
 ##
@@ -17,8 +19,8 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+################################################################################
 
-#######################################################################
 # Take care of subdirectories
 subdirs-y += boot
 # subdirs-y += init
@@ -34,13 +36,7 @@ cmos_layout.bin-type = 0x01aa
 OPTION_TABLE_H:=$(obj)/option_table.h
 endif
 
-ifeq ($(CONFIG_MICROCODE_IN_CBFS),y)
-cbfs-files-y += microcode_blob.bin
-microcode_blob.bin-file = $(obj)/microcode_blob.bin
-microcode_blob.bin-type = 0x53
-endif
-
-#######################################################################
+################################################################################
 # Build the final rom image
 COREBOOT_ROM_DEPENDENCIES:=
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
@@ -125,7 +121,7 @@ cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash
 
-#######################################################################
+################################################################################
 # i386 specific tools
 NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
 
@@ -137,7 +133,7 @@ $(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.l
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
 	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
 
-#######################################################################
+################################################################################
 # Common recipes for all stages
 
 $(objcbfs)/%.bin: $(objcbfs)/%.elf
@@ -152,7 +148,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	$(OBJCOPY) --add-gnu-debuglink=$< $@.tmp
 	mv $@.tmp $@
 
-#######################################################################
+################################################################################
 # Build the coreboot_ram (stage 2)
 
 $(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
@@ -176,7 +172,7 @@ $(objgenerated)/ramstage.a: $$(ramstage-objs)
 	rm -f $@
 	$(AR) cr $@ $^
 
-#######################################################################
+################################################################################
 # Ramstage for AP CPU (AMD K8, obsolete?)
 
 $(objcbfs)/coreboot_ap.debug: $(objgenerated)/coreboot_ap.o $(src)/arch/x86/init/ldscript_apc.lb
@@ -187,7 +183,7 @@ $(objgenerated)/coreboot_ap.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD $(CFLAGS) -I$(src) -D__PRE_RAM__ -I. -I$(obj) -c $< -o $@
 
-#######################################################################
+################################################################################
 # done
 
 crt0s = $(src)/arch/x86/init/prologue.inc
@@ -266,7 +262,7 @@ ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 
-#######################################################################
+################################################################################
 # Build the final rom image
 
 $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
@@ -276,7 +272,7 @@ $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL
 		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(objcbfs)/base_xip.txt)
 	mv $@.tmp $@
 
-#######################################################################
+################################################################################
 # Build the bootblock
 
 bootblock_lds = $(src)/arch/x86/init/ldscript_failover.lb
@@ -333,7 +329,7 @@ else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
 endif
 
-#######################################################################
+################################################################################
 # Build the romstage
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld

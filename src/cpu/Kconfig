@@ -62,10 +62,90 @@ config SSE2
 	  streaming SIMD instructions. Some parts of coreboot can be built
 	  with more efficient code if SSE2 instructions are available.
 
-config MICROCODE_IN_CBFS
-	bool "Look for microcode in CBFS"
-	default n
-	help
-	  Load microcode updates from CBFS instead of compiling them in.
-
 endif # ARCH_X86
+
+config CPU_MICROCODE_IN_CBFS
+	bool
+	default n
+
+choice
+	prompt "Include CPU microcode in CBFS"
+	default CPU_MICROCODE_CBFS_GENERATE if CPU_MICROCODE_IN_CBFS
+	default CPU_MICROCODE_CBFS_NONE if !CPU_MICROCODE_IN_CBFS
+
+config CPU_MICROCODE_CBFS_GENERATE
+	bool "Generate from tree"
+	help
+	  Select this option if you want microcode updates to be assembled when
+	  building coreboot and included in the final image as a separate CBFS
+	  file. Microcode will not be hard-coded into ramstage.
+
+	  The microcode file and may be removed from the ROM image at a later
+	  time with cbfstool, if desired.
+
+	  If unsure, select this option.
+
+config CPU_MICROCODE_CBFS_EXTERNAL
+	bool "Include external microcode file"
+	help
+	  Select this option if you want to include an external file containing
+	  the CPU microcode. This will be included as a separate file in CBFS.
+	  A word of caution: only select this option if you are sure the
+	  microcode that you have is newer than the microcode shipping with
+	  coreboot.
+
+	  The microcode file and may be removed from the ROM image at a later
+	  time with cbfstool, if desired.
+
+	  If unsure, select "Generate from tree"
+
+config CPU_MICROCODE_FILE
+	  string "Path and filename of CPU microcode"
+	  depends on CPU_MICROCODE_CBFS_EXTERNAL
+	  default "cpu_microcode.bin"
+	  help
+	    The path and filename of the file containing the CPU microcode.
+
+config CPU_MICROCODE_CBFS_NONE
+	bool "Do not include microcode updates"
+	help
+	  Select this option if you do not want CPU microcode included in CBFS.
+	  Note that for some CPUs, the microcode is hard-coded into the source
+	  tree and is not loaded from CBFS. In this case, microcode will still
+	  be updated. There is a push to move all microcode to CBFS, but this
+	  change is not implemented for all CPUs.
+
+	  This option currently applies to:
+	    - Intel SandyBridge/IvyBridge
+	    - VIA Nano
+
+	  Microcode may be added to the ROM image at a later time with cbfstool,
+	  if desired.
+
+	  If unsure, select "Generate from tree"
+
+	  The GOOD:
+	  Microcode updates intend to solve issues that have been discovered
+	  after CPU production. The expected effect is that systems work as
+	  intended with the updated microcode, but we have also seen cases where
+	  issues were solved by not applying microcode updates.
+
+	  The BAD:
+	  Note that some operating system include these same microcode patches,
+	  so you may need to also disable microcode updates in your operating
+	  system for this option to have an effect.
+
+	  The UGLY:
+	  A word of CAUTION: some CPUs depend on microcode updates to function
+	  correctly. Not updating the microcode may leave the CPU operating at
+	  less than optimal performance, or may cause outright hangups.
+	  There are CPUs where coreboot cannot properly initialize the CPU
+	  without microcode updates
+	  For example, if running with the factory microcode, some Intel
+	  SandyBridge CPUs may hang when enabling CAR, or some VIA Nano CPUs
+	  will hang when changing the frequency.
+
+	  Make sure you have a way of flashing the ROM externally before
+	  selecting this option.
+
+endchoice

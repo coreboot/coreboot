@@ -205,6 +205,11 @@ static void model_6ex_init(device_t cpu)
 
 	/* PIC thermal sensor control */
 	configure_pic_thermal_sensors();
+#if CONFIG_BROADCAST_SIPI == 0
+
+	/* Start up my cpu siblings */
+	intel_sibling_init(cpu);
+#endif /* ! CONFIG_BROADCAST_SIPI */
 }
 
 static struct device_operations cpu_dev_ops = {

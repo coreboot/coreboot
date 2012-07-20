@@ -20,3 +20,5 @@
 driver-y += cs5536.c
 driver-y += ide.c
 driver-y += pirq.c
+driver-y += smbus.c
+romstage-y += smbus.c

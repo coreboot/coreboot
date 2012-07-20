@@ -923,6 +923,10 @@ static void amdfam10_domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
+#if CONFIG_GFXUMA
+#error Northbridge does not set uma_memory_base or uma_memory_size.
+#endif
+
 #if CONFIG_PCI_64BIT_PREF_MEM
 
 	for (link = dev->link_list; link; link = link->next) {

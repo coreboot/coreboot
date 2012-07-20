@@ -1,2 +1,3 @@
 source src/cpu/via/c3/Kconfig
 source src/cpu/via/c7/Kconfig
+source src/cpu/via/nano/Kconfig

@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
+#include "i945.h"
 
 #define GDRST 0xc0
 
@@ -42,6 +43,22 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
 	pci_dev_init(dev);
+}
+
+/* This doesn't reclaim stolen UMA memory, but IGD could still
+   be reenabled later. */
+static void gma_func0_disable(struct device *dev)
+{
+	struct device *dev_host = dev_find_slot(0, PCI_DEVFN(0x0, 0));
+
+	pci_write_config16(dev, GCFC, 0xa00);
+	pci_write_config16(dev_host, GGC, (1 << 1));
+
+	unsigned int reg32 = pci_read_config32(dev_host, DEVEN);
+	reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);
+	pci_write_config32(dev_host, DEVEN, reg32);
+
+	dev->enabled = 0;
 }
 
 static void gma_func1_init(struct device *dev)
@@ -82,6 +99,7 @@ static struct device_operations gma_func0_ops = {
 	.init			= gma_func0_init,
 	.scan_bus		= 0,
 	.enable			= 0,
+	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
 };
 

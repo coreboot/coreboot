@@ -34,9 +34,13 @@ cmos_layout.bin-type = 0x01aa
 OPTION_TABLE_H:=$(obj)/option_table.h
 endif
 
-ifeq ($(CONFIG_MICROCODE_IN_CBFS),y)
-cbfs-files-y += microcode_blob.bin
-microcode_blob.bin-file = $(obj)/microcode_blob.bin
+ifeq ($(CONFIG_CPU_MICROCODE_IN_CBFS),y)
+cbfs-files-y += cpu_microcode_blob.bin
+  ifeq ($(CPU_MICROCODE_CBFS_EXTERNAL), y)
+    microcode_blob.bin-file = $(CPU_MICROCODE_FILE)
+  else
+    microcode_blob.bin-file = $(obj)/cpu_microcode_blob.bin
+  endif
 microcode_blob.bin-type = 0x53
 endif
 

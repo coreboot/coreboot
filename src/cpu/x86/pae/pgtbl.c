@@ -7,6 +7,15 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/pae.h>
 #include <cpu/x86/lapic.h>
+
+#if CONFIG_BROADCAST_SIPI == 1
+#include <device/device.h>
+#endif /* CONFIG_BROADCAST_SIPI */
+#include <cpu/cpu.h>
+#include <cpu/x86/pae.h>
+#if CONFIG_BROADCAST_SIPI == 1
+#include <cpu/x86/lapic.h>
+#endif /* CONFIG_BROADCAST_SIPI */
 #include <string.h>
 
 static void paging_off(void)
@@ -45,6 +54,7 @@ static void paging_on(void *pdp)
 		);
 }
 
+#if CONFIG_BROADCAST_SIPI == 1
 static int cpu_index(void)
 {
 	device_t dev = dev_find_lapic(lapicid());
@@ -53,6 +63,7 @@ static int cpu_index(void)
 	return dev->path.apic.index;
 }
 
+#endif /* CONFIG_BROADCAST_SIPI */
 void *map_2M_page(unsigned long page)
 {
 	struct pde {

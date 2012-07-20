@@ -9,7 +9,9 @@
 #include <device/path.h>
 #include <device/device.h>
 #include <smp/spinlock.h>
+#if CONFIG_BROADCAST_SIPI == 1
 #include <cpu/x86/lapic.h>
+#endif /* CONFIG_BROADCAST_SIPI */
 
 /* Standard macro to see if a specific flag is changeable */
 static inline int flag_is_changeable_p(uint32_t flag)
@@ -235,7 +237,15 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
+#if CONFIG_BROADCAST_SIPI == 0
+void cpu_initialize(unsigned int index)
+#else /* CONFIG_BROADCAST_SIPI */
+#if CONFIG_SMP
+static spinlock_t start_cpu_lock = SPIN_LOCK_UNLOCKED;
+#endif
+
 void cpu_initialize(struct bus *cpu_bus, int index)
+#endif /* CONFIG_BROADCAST_SIPI */
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -244,16 +254,38 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 	 */
 	struct device *cpu;
 	struct cpuinfo_x86 c;
+#if CONFIG_BROADCAST_SIPI == 1
 	struct device_path cpu_path;
 	unsigned char id = lapicid();
 
 	cpu_path.type = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = id;
+	cpu_path.type = DEVICE_PATH_APIC;
+	cpu_path.apic.apic_id = id;
+	cpu_path.apic.index = index;
+
+#if CONFIG_SMP
+	spin_lock(&start_cpu_lock);
+#endif
+	cpu = alloc_find_dev(cpu_bus, &cpu_path);
+#if CONFIG_SMP
+	spin_unlock(&start_cpu_lock);
+#endif
+	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
+#else /* ! CONFIG_BROADCAST_SIPI */
+	struct cpu_info *info;
+	info = cpu_info();
 
 	cpu = alloc_find_dev(cpu_bus, &cpu_path);
 	cpu->path.apic.index = index;
 
 	printk(BIOS_DEBUG, "Initializing CPU #%d\n", id);
+	cpu = info->cpu;
+	if (!cpu) {
+		die("CPU: missing cpu device structure");
+	}
+#else /* CONFIG_BROADCAST_SIPI */
+#endif /* CONFIG_BROADCAST_SIPI */
 
 	/* Find what type of cpu we are dealing with */
 	identify_cpu(cpu);
@@ -284,8 +316,7 @@ void cpu_initialize(struct bus *cpu_bus, int index)
 		cpu->ops->init(cpu);
 	}
 
-	printk(BIOS_INFO, "CPU #%d initialized\n", id);
+	printk(BIOS_INFO, "CPU #%d ,lapic id %d, initialized\n", index, id);
 
-	return;
 }
 

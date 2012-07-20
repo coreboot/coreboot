@@ -11,4 +11,3 @@ config CPU_ADDR_BITS
 	default 32
 
 endif
-

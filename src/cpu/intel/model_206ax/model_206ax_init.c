@@ -414,6 +414,63 @@ static void configure_mca(void)
 static unsigned ehci_debug_addr;
 #endif
 
+#if CONFIG_BROADCAST_SIPI == 0
+/*
+ * Initialize any extra cores/threads in this package.
+ */
+static void intel_cores_init(device_t cpu)
+{
+	struct cpuid_result result;
+	unsigned cores, threads, i;
+
+	result = cpuid_ext(0xb, 0); /* Threads per core */
+	threads = result.ebx & 0xff;
+
+	result = cpuid_ext(0xb, 1); /* Cores per package */
+	cores = result.ebx & 0xff;
+
+	/* Only initialize extra cores from BSP */
+	if (cpu->path.apic.apic_id)
+		return;
+
+	printk(BIOS_DEBUG, "CPU: %u has %u cores %u threads\n",
+	       cpu->path.apic.apic_id, cores, threads);
+
+	for (i = 1; i < cores; ++i) {
+		struct device_path cpu_path;
+		device_t new;
+
+		/* Build the cpu device path */
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.apic.apic_id =
+			cpu->path.apic.apic_id + i;
+
+		/* Update APIC ID if no hyperthreading */
+		if (threads == 1)
+			cpu_path.apic.apic_id <<= 1;
+
+		/* Allocate the new cpu device structure */
+		new = alloc_dev(cpu->bus, &cpu_path);
+		if (!new)
+			continue;
+
+		printk(BIOS_DEBUG, "CPU: %u has core %u\n",
+		       cpu->path.apic.apic_id,
+		       new->path.apic.apic_id);
+
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
+		/* Start the new cpu */
+		if (!start_cpu(new)) {
+			/* Record the error in cpu? */
+			printk(BIOS_ERR, "CPU %u would not start!\n",
+			       new->path.apic.apic_id);
+		}
+#endif
+	}
+}
+
+#endif /* ! CONFIG_BROADCAST_SIPI */
+
 static void model_206ax_init(device_t cpu)
 {
 	char processor_name[49];
@@ -476,6 +533,13 @@ static void model_206ax_init(device_t cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
+
+#if CONFIG_BROADCAST_SIPI == 0
+
+	/* Start up extra cores */
+	intel_cores_init(cpu);
+#endif /* ! CONFIG_BROADCAST_SIPI */
+
 }
 
 static struct device_operations cpu_dev_ops = {

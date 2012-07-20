@@ -27,6 +27,10 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
+
+#if CONFIG_BROADCAST_SIPI == 0
+#include <cpu/intel/hyperthreading.h>
+#endif /* ! CONFIG_BROADCAST_SIPI */
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <usbdebug.h>
@@ -177,6 +181,11 @@ static void model_106cx_init(device_t cpu)
 	configure_misc();
 
 	/* TODO: PIC thermal sensor control */
+#if CONFIG_BROADCAST_SIPI == 0
+
+	/* Start up my cpu siblings */
+	intel_sibling_init(cpu);
+#endif /* ! CONFIG_BROADCAST_SIPI */
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -26,7 +26,4 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
-config MICROCODE_INCLUDE_PATH
-	string
-	default "src/cpu/intel/model_206ax"
 endif

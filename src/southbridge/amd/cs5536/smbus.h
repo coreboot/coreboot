@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -17,23 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "cs5536.h"
-#include "smbus.h"
+#ifndef _CS5536_SMBUS_H
+#define _CS5536_SMBUS_H
 
-/* initialization for SMBus Controller */
-static void cs5536_enable_smbus(void)
-{
+int smbus_start_condition(unsigned smbus_io_base);
+int smbus_stop_condition(unsigned smbus_io_base);
+int smbus_check_stop_condition(unsigned smbus_io_base);
+int smbus_send_slave_address(unsigned smbus_io_base,
+				    unsigned char device);
+static int smbus_send_command(unsigned smbus_io_base, unsigned char command);
 
-	/* Set SCL freq and enable SMB controller */
-	/*outb((0x20 << 1) | SMB_CTRL2_ENABLE, smbus_io_base + SMB_CTRL2); */
-	outb((0x7F << 1) | SMB_CTRL2_ENABLE, SMBUS_IO_BASE + SMB_CTRL2);
+unsigned char do_smbus_read_byte(unsigned smbus_io_base,
+					unsigned char device,
+					unsigned char address);
 
-	/* Setup SMBus host controller address to 0xEF */
-	outb((0xEF | SMB_ADD_SAEN), SMBUS_IO_BASE + SMB_ADD);
-
-}
-
-static inline int smbus_read_byte(unsigned device, unsigned address)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
-}
+#endif				/* _CS5536_SMBUS_H */

@@ -353,7 +353,7 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int ir
 	}
 
 	if (srcpin > 3) {
-		printf("ERROR: srcpin '%d' invalid\n");
+		printf("ERROR: srcpin '%d' invalid\n", srcpin);
 		exit(1);
 	}
 	dev->pci_irq_info[srcpin].ioapic_irq_pin = irqpin;

@@ -524,7 +524,9 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 				printf
 				    ("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
 				     bus, devfn >> 3, devfn & 7, offs);
+#if !CONFIG_YABEL_PCI_FAKE_WRITING_OTHER_DEVICES_CONFIG
 				HALT_SYS();
+#endif
 			} else {
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 				switch (size) {

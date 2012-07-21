@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int geodelx_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int geodelx_probe(const struct cpuid_t *id, const struct targetdef *target) {
 	return 5 == id->family && 10 == id->model;
 }
 

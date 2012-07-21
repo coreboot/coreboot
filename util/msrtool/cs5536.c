@@ -19,7 +19,7 @@
 
 #include "msrtool.h"
 
-int cs5536_probe(const struct targetdef *target) {
+int cs5536_probe(const struct cpuid_t *id, const struct targetdef *target) {
 	return (NULL != pci_dev_find(0x1022, 0x2090));
 }
 

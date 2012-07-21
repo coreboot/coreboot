@@ -97,10 +97,21 @@ struct msrdef {
 
 #define MAX_CORES 8
 
+typedef enum { VENDOR_INTEL = 1, VENDOR_AMD = 2 } vendor_t;
+
+struct cpuid_t {
+	uint8_t family;
+	uint8_t model;
+	uint8_t stepping;
+	uint8_t ext_family;
+	uint8_t ext_model;
+	vendor_t vendor;
+};
+
 struct targetdef {
 	const char *name;
 	const char *prettyname;
-	int (*probe)(const struct targetdef *target);
+	int (*probe)(const struct cpuid_t *id, const struct targetdef *target);
 	const struct msrdef *msrs;
 };
 
@@ -125,18 +136,6 @@ struct sysdef {
 
 #define SYSTEM_EOT .name = NULL
 #define SYSTEM_ISEOT(s) (NULL == (s).name)
-
-typedef enum { VENDOR_INTEL = 1, VENDOR_AMD = 2 } vendor_t;
-
-struct cpuid_t {
-	uint8_t family;
-	uint8_t model;
-	uint8_t stepping;
-	uint8_t ext_family;
-	uint8_t ext_model;
-	vendor_t vendor;
-};
-
 
 extern const struct sysdef *sys;
 
@@ -201,51 +200,51 @@ extern int freebsd_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
 /** target externs **/
 
 /* geodegx2.c */
-extern int geodegx2_probe(const struct targetdef *t);
+extern int geodegx2_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef geodegx2_msrs[];
 
 /* geodelx.c */
-extern int geodelx_probe(const struct targetdef *t);
+extern int geodelx_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef geodelx_msrs[];
 
 /* cs5536.c */
-extern int cs5536_probe(const struct targetdef *t);
+extern int cs5536_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef cs5536_msrs[];
 
 /* k8.c */
-extern int k8_probe(const struct targetdef *t);
+extern int k8_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef k8_msrs[];
 
 /* intel_pentium3_early.c */
-extern int intel_pentium3_early_probe(const struct targetdef *t);
+extern int intel_pentium3_early_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_pentium3_early_msrs[];
 
 /* intel_pentium3.c */
-extern int intel_pentium3_probe(const struct targetdef *t);
+extern int intel_pentium3_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_pentium3_msrs[];
 
 /* intel_core1.c */
-extern int intel_core1_probe(const struct targetdef *t);
+extern int intel_core1_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_core1_msrs[];
 
 /* intel_core2_early.c */
-extern int intel_core2_early_probe(const struct targetdef *t);
+extern int intel_core2_early_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_core2_early_msrs[];
 
 /* intel_core2_later.c */
-extern int intel_core2_later_probe(const struct targetdef *t);
+extern int intel_core2_later_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_core2_later_msrs[];
 
 /* intel_pentium4_early.c */
-extern int intel_pentium4_early_probe(const struct targetdef *t);
+extern int intel_pentium4_early_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_pentium4_early_msrs[];
 
 /* intel_pentium4_later.c */
-extern int intel_pentium4_later_probe(const struct targetdef *t);
+extern int intel_pentium4_later_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_pentium4_later_msrs[];
 
 /* intel_nehalem.c */
-extern int intel_nehalem_probe(const struct targetdef *t);
+extern int intel_nehalem_probe(const struct cpuid_t *id, const struct targetdef *t);
 extern const struct msrdef intel_nehalem_msrs[];
 
 #endif /* MSRTOOL_H */

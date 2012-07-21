@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int k8_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int k8_probe(const struct cpuid_t *id, const struct targetdef *target) {
 	return 0xF == id->family;
 }
 

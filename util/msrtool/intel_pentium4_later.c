@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int intel_pentium4_later_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int intel_pentium4_later_probe(const struct cpuid_t *id, const struct targetdef *target) {
 	return ((0xf == id->family) && (
 		(0x3 == id->model) ||
 		(0x4 == id->model)

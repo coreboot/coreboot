@@ -78,6 +78,7 @@ int linux_close(uint8_t cpu) {
 int linux_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val) {
 	struct msr tmp;
 	if (lseek(msr_fd[cpu], addr, SEEK_SET) == -1) {
+		printf("linux_rdmsr(): cpu = %d\n", cpu);
 		SYSERROR(lseek, addr);
 		return 0;
 	}

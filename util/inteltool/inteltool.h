@@ -102,6 +102,8 @@
 /* 82371AB/EB/MB use the same device ID value. */
 #define PCI_DEVICE_ID_INTEL_82371XX		0x7110
 
+#define PCI_DEVICE_ID_INTEL_HM65E		0x0104
+
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)

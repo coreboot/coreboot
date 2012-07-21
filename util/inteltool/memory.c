@@ -23,6 +23,47 @@
 #include <inttypes.h>
 #include "inteltool.h"
 
+static const io_register_t sandybridge_mch_registers[] = {
+/* Channel 0 */
+	{ 0x4000, 4, "TC_DBP_C0" }, // Timing of DDR Bin Parameters
+	{ 0x4004, 4, "TC_RAP_C0" }, // Timing of DDR Regular Access Parameters
+	{ 0x4028, 4, "SC_IO_LATENCY_C0" }, // IO Latency Configuration
+	{ 0x42A4, 4, "TC_SRFTP_C0" }, // Self-Refresh Timing Parameters
+	{ 0x40B0, 4, "PM_PDWN_config_C0" }, // Power-down Configuration
+	{ 0x4294, 4, "TC_RFP_C0" }, // Refresh Parameters
+	{ 0x4298, 4, "TC_RFTP_C0" }, // Refresh Timing Parameters
+/* Channel 1 */
+	{ 0x4400, 4, "TC_DBP_C1" }, // Timing of DDR Bin Parameters
+	{ 0x4404, 4, "TC_RAP_C1" }, // Timing of DDR Regular Access Parameters
+	{ 0x4428, 4, "SC_IO_LATENCY_C1" }, // IO Latency Configuration
+	{ 0x46A4, 4, "TC_SRFTP_C1" }, // Self-Refresh Timing Parameters
+	{ 0x44B0, 4, "PM_PDWN_config_C1" }, // Power-down Configuration
+	{ 0x4694, 4, "TC_RFP_C1" }, // Refresh Parameters
+	{ 0x4698, 4, "TC_RFTP_C1" }, // Refresh Timing Parameters
+/* Integrated Memory Peripheral Hub (IMPH) */
+	{ 0x740C, 4, "CRDTCTL3" }, // Credit Control 3
+/* Common Registers */
+	{ 0x5000, 4, "MAD_CHNL" }, // Address decoder Channel Configuration
+	{ 0x5004, 4, "MAD_DIMM_ch0" }, // Address Decode Channel 0
+	{ 0x5008, 4, "MAD_DIMM_ch1" }, // Address Decode Channel 1
+	{ 0x5060, 4, "PM_SREF_config" }, // Self Refresh Configuration
+/* MMIO Registers Broadcast Group */
+	{ 0x4CB0, 4, "PM_PDWN_config" }, // Power-down Configuration
+	{ 0x4F84, 4, "PM_CMD_PWR" }, // Power Management Command Power
+	{ 0x4F88, 4, "PM_BW_LIMIT_config" }, // BW Limit Configuration
+	{ 0x4F8C, 4, "RESERVED" }, // Reserved, default value - 0xFF1D1519
+/* PCU MCHBAR Registers */
+	{ 0x5880, 4, "MEM_TRML_ESTIMATION_CONFIG" }, // Memory Thermal Estimation Configuration
+	{ 0x5884, 4, "RESERVED" }, // Reserved
+	{ 0x5888, 4, "MEM_TRML_THRESHOLDS_CONFIG" }, // Memory Thermal Thresholds Configuration
+	{ 0x58A0, 4, "MEM_TRML_STATUS_REPORT" }, // Memory Thermal Status Report
+	{ 0x58A4, 4, "MEM_TRML_TEMPERATURE_REPORT" }, // Memory Thermal Temperature Report
+	{ 0x58A8, 4, "MEM_TRML_INTERRUPT" }, // Memory Thermal Interrupt
+	{ 0x5948, 4, "GT_PERF_STATUS" }, // GT Performance Status
+	{ 0x5998, 4, "RP_STATE_CAP" }, // RP State Capability
+	{ 0x5D10, 8, "SSKPD" }, // Sticky Scratchpad Data
+};
+
 /*
  * (G)MCH MMIO Config Space
  */
@@ -31,6 +72,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	int i, size = (16 * 1024);
 	volatile uint8_t *mchbar;
 	uint64_t mchbar_phys;
+	const io_register_t *mch_registers = NULL;
 	struct pci_dev *nb_device6; /* "overflow device" on i865 */
 	uint16_t pcicmd6;
 
@@ -115,6 +157,11 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;
+	case PCI_DEVICE_ID_INTEL_HM65E:
+		mchbar_phys = pci_read_long(nb, 0x48) & 0xffff8000;
+		mch_registers = sandybridge_mch_registers;
+		size = ARRAY_SIZE(sandybridge_mch_registers);
+		break;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
 		return 1;
@@ -135,9 +182,40 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	else
 		printf("MCHBAR = 0x%08" PRIx64 " (MEM)\n\n", mchbar_phys);
 
-	for (i = 0; i < size; i += 4) {
-		if (*(uint32_t *)(mchbar + i))
-			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(mchbar+i));
+	if (mch_registers != NULL) {
+		for (i = 0; i < size; i++) {
+			switch (mch_registers[i].size) {
+				case 8:
+					printf("mchbase+0x%04x: 0x%08lx (%s)\n",
+						mch_registers[i].addr,
+						*(uint64_t *)(mchbar+mch_registers[i].addr),
+						mch_registers[i].name);
+					break;
+				case 4:
+					printf("mchbase+0x%04x: 0x%08x (%s)\n",
+						mch_registers[i].addr,
+						*(uint32_t *)(mchbar+mch_registers[i].addr),
+						mch_registers[i].name);
+					break;
+				case 2:
+					printf("mchbase+0x%04x: 0x%04x     (%s)\n",
+						mch_registers[i].addr,
+						*(uint16_t *)(mchbar+mch_registers[i].addr),
+						mch_registers[i].name);
+					break;
+				case 1:
+					printf("mchbase+0x%04x: 0x%02x       (%s)\n",
+						mch_registers[i].addr,
+						*(uint8_t *)(mchbar+mch_registers[i].addr),
+						mch_registers[i].name);
+					break;
+			}
+		}
+	} else {
+		for (i = 0; i < size; i += 4) {
+			if (*(uint32_t *)(mchbar + i))
+				printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(mchbar+i));
+		}
 	}
 
 	unmap_physical((void *)mchbar, size);

@@ -2,6 +2,7 @@
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
  * Copyright (C) 2008-2010 by coresystems GmbH
+ * Copyright (C) 2012 Anton Kochkov
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,58 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include "inteltool.h"
+
+static const io_register_t sandybridge_dmi_registers[] = {
+	{ 0x00, 4, "DMI VCECH" }, // DMI Virtual Channel Enhanced Capability
+	{ 0x04, 4, "DMI PVCCAP1" }, // DMI Port VC Capability Register 1
+	{ 0x08, 4, "DMI PVVAP2" }, // DMI Port VC Capability Register 2
+	{ 0x0C, 2, "DMI PVCCTL" }, // DMI Port VC Control
+/*	{ 0x0E, 2, "RSVD" }, // Reserved */
+	{ 0x10, 4, "DMI VC0RCAP" }, // DMI VC0 Resource Capability
+	{ 0x14, 4, "DMI VC0RCTL" }, // DMI VC0 Resource Control
+/*	{ 0x18, 2, "RSVD" }, // Reserved */
+	{ 0x1A, 2, "DMI VC0RSTS" }, // DMI VC0 Resource Status
+	{ 0x1C, 4, "DMI VC1RCAP" }, // DMI VC1 Resource Capability
+	{ 0x20, 4, "DMI VC1RCTL" }, // DMI VC1 Resource Control
+/*	{ 0x24, 2, "RSVD" }, // Reserved */
+	{ 0x26, 2, "DMI VC1RSTS" }, // DMI VC1 Resource Status
+	{ 0x28, 4, "DMI VCPRCAP" }, // DMI VCp Resource Capability
+	{ 0x2C, 4, "DMI VCPRCTL" }, // DMI VCp Resource Control
+/*	{ 0x30, 2, "RSVD" }, // Reserved */
+	{ 0x32, 2, "DMI VCPRSTS" }, // DMI VCp Resource Status
+	{ 0x34, 4, "DMI VCMRCAP" }, // DMI VCm Resource Capability
+	{ 0x38, 4, "DMI VCMRCTL" }, // DMI VCm Resource Control
+/*	{ 0x3C, 2, "RSVD" }, // Reserved */
+	{ 0x3E, 2, "DMI VCMRSTS" }, // DMI VCm Resource Status
+/*	{ 0x40, 4, "RSVD" }, // Reserved */
+	{ 0x44, 4, "DMI ESC" }, // DMI Element Self Description
+/*	{ 0x48, 8, "RSVD" }, // Reserved */
+	{ 0x50, 4, "DMI LE1D" }, // DMI Link Entry 1 Description
+/*	{ 0x54, 4, "RSVD" }, // Reserved */
+	{ 0x58, 4, "DMI LE1A" }, // DMI Link Entry 1 Address
+	{ 0x5C, 4, "DMI LUE1A" }, // DMI Link Upper Entry 1 Address
+	{ 0x60, 4, "DMI LE2D" }, // DMI Link Entry 2 Description
+/*	{ 0x64, 4, "RSVD" }, // Reserved */
+	{ 0x68, 4, "DMI LE2A" }, // DMI Link Entry 2 Address
+/*	{ 0x6C, 4, "RSVD" }, // Reserved
+	{ 0x70, 8, "RSVD" }, // Reserved
+	{ 0x78, 8, "RSVD" }, // Reserved
+	{ 0x80, 4, "RSVD" }, // Reserved */
+	{ 0x84, 4, "LCAP" }, // Link Capabilities
+	{ 0x88, 2, "LCTL" }, // Link Control
+	{ 0x8A, 2, "LSTS" }, // Link Status
+/*	{ 0x8C, 4, "RSVD" }, // Reserved
+	{ 0x90, 4, "RSVD" }, // Reserved
+	{ 0x94, 4, "RSVD" }, // Reserved */
+	{ 0x98, 2, "LCTL2" }, // Link Control 2
+	{ 0x9A, 2, "LSTS2" }, // Link Status 2
+/*	... - Reserved */
+	{ 0xBC0, 4, "AFE_BMUF0" }, // AFE BMU Configuration Function 0
+	{ 0xBC4, 4, "RSVD" }, // Reserved
+	{ 0xBC8, 4, "RSVD" }, // Reserved
+	{ 0xBCC, 4, "AFE_BMUT0" }, // AFE BMU Configuration Test 0
+/*	... - Reserved */
+};
 
 /*
  * Egress Port Root Complex MMIO configuration space
@@ -91,6 +144,7 @@ int print_dmibar(struct pci_dev *nb)
 	int i, size = (4 * 1024);
 	volatile uint8_t *dmibar;
 	uint64_t dmibar_phys;
+	const io_register_t *dmi_registers = NULL;
 
 	printf("\n============= DMIBAR ============\n\n");
 
@@ -124,6 +178,11 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_X58:
 		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000;
 		break;
+	case PCI_DEVICE_ID_INTEL_HM65E:
+		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffff000;
+		dmi_registers = sandybridge_dmi_registers;
+		size = ARRAY_SIZE(sandybridge_dmi_registers);
+		break;
 	default:
 		printf("Error: Dumping DMIBAR on this northbridge is not (yet) supported.\n");
 		return 1;
@@ -137,9 +196,34 @@ int print_dmibar(struct pci_dev *nb)
 	}
 
 	printf("DMIBAR = 0x%08" PRIx64 " (MEM)\n\n", dmibar_phys);
-	for (i = 0; i < size; i += 4) {
-		if (*(uint32_t *)(dmibar + i))
-			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
+	if (dmi_registers != NULL) {
+		for (i = 0; i < size; i++) {
+			switch (dmi_registers[i].size) {
+				case 4:
+					printf("dmibase+0x%04x: 0x%08x (%s)\n",
+						dmi_registers[i].addr,
+						*(uint32_t *)(dmibar+dmi_registers[i].addr),
+						dmi_registers[i].name);
+					break;
+				case 2:
+					printf("dmibase+0x%04x: 0x%04x     (%s)\n",
+						dmi_registers[i].addr,
+						*(uint16_t *)(dmibar+dmi_registers[i].addr),
+						dmi_registers[i].name);
+					break;
+				case 1:
+					printf("dmibase+0x%04x: 0x%02x       (%s)\n",
+						dmi_registers[i].addr,
+						*(uint8_t *)(dmibar+dmi_registers[i].addr),
+						dmi_registers[i].name);
+					break;
+			}
+		}
+	} else {
+		for (i = 0; i < size; i += 4) {
+			if (*(uint32_t *)(dmibar + i))
+				printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
+		}
 	}
 
 	unmap_physical((void *)dmibar, size);

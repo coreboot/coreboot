@@ -71,6 +71,7 @@ static void syntax(char *argv[]) {
 	printf("  -r\t include [Reserved] values\n");
 	printf("  -k\t list all known systems and targets\n");
 	printf("  -l\t list MSRs and bit fields for current target(s) (-kl for ALL targets!)\n");
+	printf("  -lf\t list MSRs and enforce decoding for current target\n");
 	printf("  -c\t access MSRs on the specified CPU, default=%d\n", DEFAULT_CPU);
 	printf("  -m\t force a system, e.g: -m linux\n");
 	printf("  -t\t force a target, can be used multiple times, e.g: -t geodelx -t cs5536\n");
@@ -270,11 +271,11 @@ int main(int argc, char *argv[]) {
 	int ret = 1;
 	const struct sysdef *s;
 	const struct targetdef *t;
-	uint8_t tn, listmsrs = 0, listknown = 0, input = 0;
+	uint8_t tn, listmsrs = 0, listknown = 0, input = 0, forcedecode = 0;
 	uint32_t addr = 0;
 	const char *streamfn = NULL, *difffn = NULL;
 	struct msr msrval = MSR2(-1, -1);
-	while ((c = getopt(argc, argv, "hqvrklc:m:t:a:i:s:d:")) != -1)
+	while ((c = getopt(argc, argv, "hqvrklfc:m:t:a:i:s:d:")) != -1)
 		switch (c) {
 		case 'h':
 			syntax(argv);
@@ -293,6 +294,9 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'l':
 			listmsrs = 1;
+			break;
+		case 'f':
+			forcedecode = 1;
 			break;
 		case 'c':
 			cpu = atoi(optarg);
@@ -395,6 +399,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (listmsrs) {
+		if (forcedecode) {
+			for (tn = 0; tn < targets_found; tn++) {
+				if (tn)
+					printf("\n");
+				dumpmsrs(targets[tn], cpu);
+			}
+			printf("\n");
+			return 0;
+		}
 		if (streamfn)
 			return do_stream(streamfn, 1);
 		for (tn = 0; tn < targets_found; tn++) {

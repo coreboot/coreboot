@@ -211,6 +211,39 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
 	return 0;
 }
 
+int dumpmsrs(const struct targetdef *t, const uint8_t cpu) {
+	struct msr bitval, mask;
+	struct msr val = MSR1(0);
+	const struct msrdef *m;
+	const struct msrbits *mb;
+	if (NULL == t)
+		return 1;
+	if (!sys->open(cpu, SYS_RDONLY))
+		return 1;
+	printf("# %s MSRs:\n", t->name);
+	for (m = t->msrs; !MSR_ISEOT(*m); m++) {
+		if (t->msrs != m)
+			printf("\n");
+		if (m->type != MSRTYPE_WRONLY) {
+			if (!sys->rdmsr(cpu, m->addr, &val))
+				return 1;
+			printf("# %s\n", m->symbol);
+			for (mb = m->bits; mb->size; mb++) {
+				if (!reserved && 0 == strcmp(mb->name, "RSVD"))
+					continue;
+				print_bitdef(stdout, mb, " = ");
+				mask.hi = mask.lo = 0xffffffff;
+				mask = msr_shr(mask, 64 - mb->size);
+				bitval = msr_shr(val, mb->start - mb->size + 1);
+				msr_and(&bitval, mask);
+				print_bitval(stdout, mb, bitval);
+			}
+		}
+	}
+	sys->close(cpu);
+	return 0;
+}
+
 /**
  * Parse a hexadecimal string into an MSR value.
  *

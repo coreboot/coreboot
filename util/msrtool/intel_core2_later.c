@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int intel_core2_later_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int intel_core2_later_probe(const struct targetdef *target, const struct cpuid_t *id) {
 	return ((0x6 == id->family)&(0x17 == id->model));
 }
 

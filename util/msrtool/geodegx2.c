@@ -20,8 +20,7 @@
 
 #include "msrtool.h"
 
-int geodegx2_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int geodegx2_probe(const struct targetdef *target, const struct cpuid_t *id) {
 	return 5 == id->family && 5 == id->model;
 }
 

@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int intel_core2_early_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int intel_core2_early_probe(const struct targetdef *target, const struct cpuid_t *id) {
 	return ((0x6 == id->family) && (0xf == id->model));
 }
 

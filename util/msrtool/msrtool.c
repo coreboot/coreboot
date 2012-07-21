@@ -270,6 +270,7 @@ int main(int argc, char *argv[]) {
 	int ret = 1;
 	const struct sysdef *s;
 	const struct targetdef *t;
+	const struct cpuid_t *id = cpuid();
 	uint8_t tn, listmsrs = 0, listknown = 0, input = 0;
 	uint32_t addr = 0;
 	const char *streamfn = NULL, *difffn = NULL;
@@ -357,7 +358,7 @@ int main(int argc, char *argv[]) {
 	else
 		for (t = alltargets; !TARGET_ISEOT(*t); t++) {
 			printf_verbose("Probing for target %s: %s\n", t->name, t->prettyname);
-			if (!t->probe(t))
+			if (!t->probe(t, id))
 				continue;
 			printf_quiet("Detected target %s: %s\n", t->name, t->prettyname);
 			add_target(t);

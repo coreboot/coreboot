@@ -354,14 +354,16 @@ int main(int argc, char *argv[]) {
 	if (targets)
 		for (tn = 0; tn < targets_found; tn++)
 			printf_quiet("Forced target %s: %s\n", targets[tn]->name, targets[tn]->prettyname);
-	else
+	else {
+		const struct cpuid_t *id = cpuid();
 		for (t = alltargets; !TARGET_ISEOT(*t); t++) {
 			printf_verbose("Probing for target %s: %s\n", t->name, t->prettyname);
-			if (!t->probe(t))
+			if (!t->probe(t, id))
 				continue;
 			printf_quiet("Detected target %s: %s\n", t->name, t->prettyname);
 			add_target(t);
 		}
+	}
 
 	printf_quiet("\n");
 	fflush(stdout);

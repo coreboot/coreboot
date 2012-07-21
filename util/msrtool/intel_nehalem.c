@@ -19,8 +19,7 @@
 
 #include "msrtool.h"
 
-int intel_nehalem_probe(const struct targetdef *target) {
-	struct cpuid_t *id = cpuid();
+int intel_nehalem_probe(const struct targetdef *target, const struct cpuid_t *id) {
 	return ((0x6 == id->family) && (
 		(0x1a == id->model) ||
 		(0x1e == id->model) ||

@@ -17,13 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE
 	#include "microcode-m12206a7_00000025.h"
-#elif CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
-#else
-#error "Which microcode to use?"
-#endif
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

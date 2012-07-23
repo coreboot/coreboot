@@ -399,7 +399,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_ADAPTERS == 1
+#if CONFIG_MULTIPLE_VGA_ADAPTERS
 			extern device_t vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
@@ -447,12 +447,35 @@ static void northbridge_init(struct device *dev)
 {
 }
 
+static unsigned scan_chains(device_t dev, unsigned max)
+{
+	unsigned nodeid;
+	struct bus *link;
+	device_t io_hub = NULL;
+	u32 next_unitid = 0x18;
+	nodeid = amdfam15_nodeid(dev);
+	if (nodeid == 0) {
+		for (link = dev->link_list; link; link = link->next) {
+			//if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[sblink] */
+			if (link->link_num == 0) { /* devicetree put IO Hub on link_lsit[0] */
+				io_hub = link->children;
+				if (!io_hub || !io_hub->enabled) {
+					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
+				}
+				/* Now that nothing is overlapping it is safe to scan the children. */
+				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
+			}
+		}
+	}
+	return max;
+}
+
 static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
-	.scan_bus	  = 0, /*scan_chains, */
+	.scan_bus	  = scan_chains,
 	.enable		  = 0,
 	.ops_pci	  = 0,
 };
@@ -508,7 +531,7 @@ static void domain_read_resources(device_t dev)
 	/* FIXME: do we need to check extend conf space?
 	   I don't believe that much preset value */
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 0
+#if !CONFIG_PCI_64BIT_PREF_MEM
 	pci_domain_read_resources(dev);
 
 #else
@@ -663,7 +686,7 @@ void setup_uma_memory(void)
 
 static void domain_set_resources(device_t dev)
 {
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 	struct resource *io, *mem1, *mem2;
 	struct resource *res;
 #endif
@@ -676,7 +699,7 @@ static void domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#if CONFIG_PCI_64BIT_PREF_MEM
 
 	for (link = dev->link_list; link; link = link->next) {
 		/* Now reallocate the pci resources memory with the
@@ -791,10 +814,10 @@ static void domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 					if (high_tables_base==0) {
 						/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
 						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
@@ -818,12 +841,12 @@ static void domain_set_resources(device_t dev)
 
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
-#if CONFIG_WRITE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 				i, mmio_basek, basek, limitk);
 		if (high_tables_base==0) {
 			/* Leave some space for ACPI, PIRQ and MP tables */
-#if CONFIG_GFXUMA == 1
+#if CONFIG_GFXUMA
 			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
 #else
 			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
@@ -1018,7 +1041,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			 * otherwise the device under it will not be scanned
 			 */
 			int linknum;
-#if CONFIG_HT3_SUPPORT==1
+#if CONFIG_HT3_SUPPORT
 			linknum = 8;
 #else
 			linknum = 4;

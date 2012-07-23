@@ -55,8 +55,8 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
 	 */
-	/* TODO: Check out why it is commented. */
-#if 0  /* (CONFIG_GFXUMA == 1) */
+	/* TODO: Check out why it was commented. */
+#if CONFIG_GFXUMA
 	printk(BIOS_INFO, "uma_memory_start=0x%llx, uma_memory_size=0x%llx \n",
 	       uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base,

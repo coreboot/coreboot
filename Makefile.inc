@@ -19,7 +19,7 @@
 
 #######################################################################
 # misleadingly named, this is the coreboot version
-export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; then git describe --dirty; else echo unknown; fi)
+export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; then git describe --dirty 2>/dev/null || git describe; else echo unknown; fi)
 
 #######################################################################
 # Basic component discovery

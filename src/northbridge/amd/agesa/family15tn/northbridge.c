@@ -636,7 +636,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#define ONE_MB  0x100000
+#define ONE_MB_SHIFT  20
 
 void setup_uma_memory(void)
 {
@@ -663,13 +663,13 @@ void setup_uma_memory(void)
 	 *     >=1G                  256M
 	 *     <1G                    64M
 	 */
-	sys_mem = msr.lo + 16 * ONE_MB;   // Ignore 16MB allocated for C6 when finding UMA size
-	if ((msr2.hi & 0x0000000F) || (sys_mem >= 2048 * ONE_MB)) {
-		uma_memory_size = 512 * ONE_MB;
-	} else if (sys_mem >= 1024 * ONE_MB) {
-		uma_memory_size = 256 * ONE_MB;
+	sys_mem = msr.lo + (16 << ONE_MB_SHIFT);   // Ignore 16MB allocated for C6 when finding UMA size
+	if ((msr2.hi & 0x0000000F) || (sys_mem >= 2048 << ONE_MB_SHIFT)) {
+		uma_memory_size = 512 << ONE_MB_SHIFT;
+	} else if (sys_mem >= 1024 << ONE_MB_SHIFT) {
+		uma_memory_size = 256 << ONE_MB_SHIFT;
 	} else {
-		uma_memory_size = 64 * ONE_MB;
+		uma_memory_size = 64 << ONE_MB_SHIFT;
 	}
 	uma_memory_base = msr.lo - uma_memory_size; /* TOP_MEM1 */
 
@@ -678,8 +678,8 @@ void setup_uma_memory(void)
 
 	/* TODO: TOP_MEM2 */
 #else
-	uma_memory_size = 256 * ONE_MB; /* 256M recommended UMA */
-	uma_memory_base = 768 * ONE_MB; /* 1GB  system memory supported */
+	uma_memory_size = 256 << ONE_MB_SHIFT; /* 256M recommended UMA */
+	uma_memory_base = 768 << ONE_MB_SHIFT; /* 1GB  system memory supported */
 #endif
 }
 

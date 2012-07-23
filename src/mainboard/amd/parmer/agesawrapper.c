@@ -423,7 +423,7 @@ agesawrapper_amdinitlate (
 	Status = AmdInitLate(AmdLateParams);
 	/* CDIT table is not created. */
 	if (Status != AGESA_SUCCESS) {
-		/* agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus); */
+		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
@@ -752,7 +752,7 @@ agesawrapper_amdreadeventlog (
 		       &(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = NULL;
+	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdEventParams.StdHeader.Func = 0;
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	AmdEventParams.StdHeader.HeapStatus = HeapStatus;

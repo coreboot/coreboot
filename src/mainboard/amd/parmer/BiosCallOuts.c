@@ -506,7 +506,7 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 /**
  * AMD Parmer Platform ALC272 Verb Table
  */
-const CODEC_ENTRY Pumori_Alc272_VerbTbl[] = {
+const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
 	{0x11, 0x411111F0},
 	{0x12, 0x411111F0},
 	{0x13, 0x411111F0},
@@ -514,19 +514,19 @@ const CODEC_ENTRY Pumori_Alc272_VerbTbl[] = {
 	{0x15, 0x411111F0},
 	{0x16, 0x411111F0},
 	{0x17, 0x411111F0},
-	{0x18, 0x01a19830},
+	{0x18, 0x01a19840},
 	{0x19, 0x411111F0},
-	{0x1a, 0x01813020},
+	{0x1a, 0x01813030},
 	{0x1b, 0x411111F0},
-	{0x1d, 0x40151e05},
-	{0x1e, 0x411111F0},
-	{0x21, 0x01214010},
+	{0x1d, 0x40130605},
+	{0x1e, 0x01441120},
+	{0x21, 0x01211010},
 	{0xff, 0xffffffff}
 };
 
-const CODEC_TBL_LIST PumoriCodecTableList[] =
+const CODEC_TBL_LIST ParmerCodecTableList[] =
 {
-	{0x10ec0272, (CODEC_ENTRY*)&Pumori_Alc272_VerbTbl[0]},
+	{0x10ec0272, (CODEC_ENTRY*)&Parmer_Alc272_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
@@ -725,7 +725,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&PumoriCodecTableList[0]);
+		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&ParmerCodecTableList[0]);
 		/* Azalia Controller Front Panel OEM Table Pointer */
 
 		/* Fan Control */

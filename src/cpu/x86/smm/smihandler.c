@@ -158,6 +158,7 @@ void smi_handler(u32 smm_revision)
 		state_save.type = EM64T;
 		state_save.em64t_state_save = (em64t_smm_state_save_area_t *)
 			(smm_base + 0x7d00 - (node * 0x400));
+		break;
 	case 0x00030101: /* SandyBridge/IvyBridge */
 		state_save.type = EM64T101;
 		state_save.em64t101_state_save =

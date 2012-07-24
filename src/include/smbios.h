@@ -3,6 +3,9 @@
 
 #include <types.h>
 
+const char *__attribute__((weak)) smbios_mainboard_serial_number(void);
+const char *__attribute__((weak)) smbios_mainboard_version(void);
+
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
 int smbios_string_table_len(char *start);

@@ -1,3 +1,4 @@
+.gitignore
 .config
 .config.old
 .xcompile
@@ -5,13 +6,16 @@ build/
 coreboot-builds/
 payloads/external/FILO/filo/
 payloads/external/SeaBIOS/seabios/
+util/crossgcc/tarballs/
+util/crossgcc/xgcc/
+util/crossgcc/Python-*/
 util/crossgcc/acpica-unix-*/
 util/crossgcc/binutils-*/
 util/crossgcc/build-binutils/
-util/crossgcc/build-expat/
 util/crossgcc/build-gcc/
 util/crossgcc/build-gdb/
 util/crossgcc/build-gmp/
+util/crossgcc/build-expat/
 util/crossgcc/build-libelf/
 util/crossgcc/build-mpc/
 util/crossgcc/build-mpfr/
@@ -24,26 +28,14 @@ util/crossgcc/libelf-*/
 util/crossgcc/mingwrt-*/
 util/crossgcc/mpc-*/
 util/crossgcc/mpfr-*/
-util/crossgcc/Python-*/
-util/crossgcc/tarballs/
 util/crossgcc/w32api-*/
-util/crossgcc/xgcc/
-
-*.\#
-*.bin
-*.debug
-*.elf
 *.o
+*.elf
+*.debug
 *.out
+*.\#
 *.swp
-
-# Development friendly files
-tags
-.clang_complete
-
-# Cross-compile toolkits
-xgcc/
-tarballs/
+*.bin
 
 #
 # KDE editors create lots of backup files whenever
@@ -53,40 +45,21 @@ tarballs/
 # Ignore Kdevelop project file
 .kdev4
 
-util/*/.dependencies
-util/*/.test
-util/cbfstool/cbfstool
-util/cbmem/.dependencies
-util/cbmem/cbmem
-util/dumpmmcr/dumpmmcr
 util/ectool/ectool
-util/getpir/getpir
-util/ifdtool/ifdtool
 util/inteltool/.dependencies
 util/inteltool/inteltool
-util/k8resdump/k8resdump
-util/lbtdump/lbtdump
-util/mptable/mptable
 util/msrtool/Makefile
 util/msrtool/Makefile.deps
 util/msrtool/msrtool
-util/nrv2b/nrv2b
 util/nvramtool/.dependencies
 util/nvramtool/nvramtool
-util/optionlist/Options.wiki
-util/romcc/romcc
-util/romcc/tests/fail_test*.S
-util/romcc/tests/*.S-O2-mmmx
 util/superiotool/superiotool
-util/vgabios/testbios
-
-documentation/*.aux
-documentation/*.idx
-documentation/*.log
-documentation/*.toc
-documentation/*.out
-documentation/*.pdf
-documentation/cpukconfig.tex
-documentation/mainboardkconfig.tex
-documentation/skconfig.tex
-documentation/socketfkconfig.tex
+util/romcc/romcc
+util/romcc/tests/*.S-O2-mmmx
+util/romcc/tests/fail_test*.S
+*~
+*.patch
+*.rom
+ util/
+coreboot.kdev4
+memtest

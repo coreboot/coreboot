@@ -126,24 +126,6 @@ static int via_vx800_int15_handler(struct eregs *regs)
 	return res;
 }
 
-#ifdef UNUSED_CODE
-static void write_protect_vgabios(void)
-{
-	device_t dev;
-
-	printk(BIOS_INFO, "write_protect_vgabios\n");
-	/* there are two possible devices. Just do both. */
-	dev = dev_find_device(PCI_VENDOR_ID_VIA,
-			      PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
-	if (dev)
-		pci_write_config8(dev, 0x80, 0xff);
-	/*vx855 no th 0x61 reg */
-	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VLINK, 0);
-	   //if(dev)
-	   //   pci_write_config8(dev, 0x61, 0xff); */
-}
-#endif
-
 static void vga_enable_console(void)
 {
 	/* Call VGA BIOS int10 function 0x4f14 to enable main console
@@ -152,7 +134,7 @@ static void vga_enable_console(void)
 	 */
 
 	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
-	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+	//realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
 }
 
 extern u8 acpi_sleep_type;
@@ -173,7 +155,7 @@ static void vga_init(device_t dev)
 	//pci_write_config32(dev,0x14, 0xdd000000);
 	pci_write_config32(dev, 0x10, VIACONFIG_VGA_PCI_10);
 	pci_write_config32(dev, 0x14, VIACONFIG_VGA_PCI_14);
-	pci_write_config8(dev, 0x3c, 0x0a);	//same with vx855_lpc.c
+	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0x0a);//same with vx855_lpc.c
 	//*/
 
 	printk(BIOS_DEBUG, "Initializing VGA...\n");
@@ -182,26 +164,8 @@ static void vga_init(device_t dev)
 
 	printk(BIOS_DEBUG, "Enable VGA console\n");
 	vga_enable_console();
-
-	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
-		/* It's not clear if these need to be programmed before or after
-		 * the VGA bios runs. Try both, clean up later */
-		/* Set memory rate to 200MHz */
-		outb(0x3d, CRTM_INDEX);
-		reg8 = inb(CRTM_DATA);
-		reg8 &= 0x0f;
-		reg8 |= (0x3 << 4);
-		outb(0x3d, CRTM_INDEX);
-		outb(reg8, CRTM_DATA);
-
-#if 0
-		/* Set framebuffer size to CONFIG_VIDEO_MB mb */
-		reg8 = (CONFIG_VIDEO_MB/4);
-		outb(0x39, SR_INDEX);
-		outb(reg8, SR_DATA);
-#endif
-	}
 }
+
 
 static struct device_operations vga_operations = {
 	.read_resources = pci_dev_read_resources,
@@ -215,4 +179,10 @@ static const struct pci_driver vga_driver __pci_driver = {
 	.ops = &vga_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_VX855_VGA,
+};
+
+static const struct pci_driver vga_driver_900 __pci_driver = {
+	.ops = &vga_operations,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.device = PCI_DEVICE_ID_VIA_VX900_VGA,
 };

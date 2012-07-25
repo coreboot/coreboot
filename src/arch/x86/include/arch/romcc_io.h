@@ -244,6 +244,34 @@ static inline __attribute__((always_inline)) void pci_write_config32(device_t de
 #endif
 }
 
+static inline __attribute__((always_inline))
+void pci_mod_config8(device_t dev, unsigned int where,
+		     uint8_t clr_mask, uint8_t set_mask)
+{
+	uint8_t reg8 = pci_read_config8(dev, where);
+	reg8 &= ~clr_mask;
+	reg8 |= set_mask;
+	pci_write_config8(dev, where, reg8);
+}
+static inline __attribute__((always_inline))
+void pci_mod_config16(device_t dev, unsigned int where,
+		      uint16_t clr_mask, uint16_t set_mask)
+{
+	uint16_t reg16 = pci_read_config16(dev, where);
+	reg16 &= ~clr_mask;
+	reg16 |= set_mask;
+	pci_write_config16(dev, where, reg16);
+}
+static inline __attribute__((always_inline))
+void pci_mod_config32(device_t dev, unsigned int where,
+		      uint32_t clr_mask, uint32_t set_mask)
+{
+	uint32_t reg32 = pci_read_config32(dev, where);
+	reg32 &= ~clr_mask;
+	reg32 |= set_mask;
+	pci_write_config32(dev, where, reg32);
+}
+
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
 {

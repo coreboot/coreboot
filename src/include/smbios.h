@@ -7,6 +7,9 @@ unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
 int smbios_string_table_len(char *start);
 
+const char *smbios_mainboard_serial_number(void);
+const char *smbios_mainboard_version(void);
+
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED  (1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD  (1 << 8)
 #define BIOS_CHARACTERISTICS_PNP  (1 << 9)

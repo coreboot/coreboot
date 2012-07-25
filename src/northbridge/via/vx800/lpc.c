@@ -374,3 +374,9 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_VX855_LPC,
 };
+
+static const struct pci_driver lpc_driver_900 __pci_driver = {
+	.ops = &vx800_lpc_ops,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.device = PCI_DEVICE_ID_VIA_VX900_LPC,
+};

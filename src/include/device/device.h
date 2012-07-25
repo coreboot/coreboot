@@ -16,6 +16,8 @@ struct smbus_bus_operations;
 /* Chip operations */
 struct chip_operations {
 	void (*enable_dev)(struct device *dev);
+	void (*init)(void *chip_info);
+	unsigned int initialized : 1;
 	const char *name;
 };
 
@@ -100,7 +102,7 @@ struct device {
 
 	struct device_operations *ops;
 #ifndef __PRE_RAM__
-	const struct chip_operations *chip_ops;
+	struct chip_operations *chip_ops;
 	const char *name;
 #endif
 	ROMSTAGE_CONST void *chip_info;
@@ -125,6 +127,7 @@ extern uint64_t uma_memory_size;
 
 /* Generic device interface functions */
 device_t alloc_dev(struct bus *parent, struct device_path *path);
+void dev_initialize_chips(void);
 void dev_enumerate(void);
 void dev_configure(void);
 void dev_enable(void);

@@ -52,6 +52,26 @@ extern struct device *last_dev;
 /** Linked list of free resources */
 struct resource *free_resources = NULL;
 
+/**
+ * Initialize all chips of statically known devices.
+ *
+ * Will be called before bus enumeration to initialize chips stated in the
+ * device tree.
+ */
+void dev_initialize_chips(void)
+{
+	struct device *dev;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		/* Initialize chip if we haven't yet. */
+		if (dev->chip_ops && dev->chip_ops->init &&
+				!dev->chip_ops->initialized) {
+			dev->chip_ops->init(dev->chip_info);
+			dev->chip_ops->initialized = 1;
+		}
+	}
+}
+
 DECLARE_SPIN_LOCK(dev_lock)
 
 #if CONFIG_GFXUMA

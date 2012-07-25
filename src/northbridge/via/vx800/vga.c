@@ -152,7 +152,7 @@ static void vga_enable_console(void)
 	 */
 
 	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
-	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+	//realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
 }
 
 extern u8 acpi_sleep_type;
@@ -182,7 +182,7 @@ static void vga_init(device_t dev)
 
 	printk(BIOS_DEBUG, "Enable VGA console\n");
 	vga_enable_console();
-
+	#if 0
 	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
 		/* It's not clear if these need to be programmed before or after
 		 * the VGA bios runs. Try both, clean up later */
@@ -194,14 +194,14 @@ static void vga_init(device_t dev)
 		outb(0x3d, CRTM_INDEX);
 		outb(reg8, CRTM_DATA);
 
-#if 0
+
 		/* Set framebuffer size to CONFIG_VIDEO_MB mb */
 		reg8 = (CONFIG_VIDEO_MB/4);
 		outb(0x39, SR_INDEX);
 		outb(reg8, SR_DATA);
 #endif
 	}
-}
+
 
 static struct device_operations vga_operations = {
 	.read_resources = pci_dev_read_resources,
@@ -215,4 +215,10 @@ static const struct pci_driver vga_driver __pci_driver = {
 	.ops = &vga_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_VX855_VGA,
+};
+
+static const struct pci_driver vga_driver_900 __pci_driver = {
+	.ops = &vga_operations,
+	.vendor = PCI_VENDOR_ID_VIA,
+	.device = PCI_DEVICE_ID_VIA_VX900_VGA,
 };

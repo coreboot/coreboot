@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __UPDATE_UCODE_C
-#define __UPDATE_UCODE_C
+#ifndef __UPDATE_UCODE_H
+#define __UPDATE_UCODE_H
 
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -69,4 +69,4 @@ typedef struct nano_ucode_header_st {
 
 unsigned int nano_update_ucode(void);
 
-#endif /* __UPDATE_UCODE_C */
+#endif /* __UPDATE_UCODE_H */

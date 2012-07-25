@@ -51,9 +51,6 @@ endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(objcbfs)/coreboot_ap.elf
 endif
-ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL),y)
-COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_CPU_MICROCODE_FILE)
-endif
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -104,10 +101,6 @@ ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
 	$(CBFSTOOL) $@.tmp add $(obj)/config.tmp config raw; rm -f $(obj)/config.tmp ; fi
-endif
-ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL),y)
-	@printf "    CPU uCode  cpu_microcode\n"
-	$(CBFSTOOL) $@.tmp add $(CONFIG_CPU_MICROCODE_FILE) cpu_microcode microcode
 endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"

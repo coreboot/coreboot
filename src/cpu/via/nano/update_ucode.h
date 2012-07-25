@@ -40,7 +40,7 @@ typedef enum {
 } ucode_update_status;
 
 
-typedef enum ucode_validity_enum {
+typedef enum {
 	NANO_UCODE_VALID = 0, /* We only care that valid == 0 */
 	NANO_UCODE_SIGNATURE_ERROR,
 	NANO_UCODE_WRONG_SIZE,

@@ -737,7 +737,7 @@ static void set_vga_bridge_bits(void)
 
 		/* It isn't safe to enable all VGA cards. */
 		dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-	};
+	}
 
 	if (!vga)
 		vga = vga_onboard;

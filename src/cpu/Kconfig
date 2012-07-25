@@ -72,8 +72,14 @@ choice
 	default CPU_MICROCODE_CBFS_NONE
 	depends on EXPERT && CPU_MICROCODE_FROM_CBFS
 
-#config CPU_MICROCODE_CBFS_GENERATE
-#	bool "Generate from tree"
+config CPU_MICROCODE_CBFS_GENERATE
+	depends on CPU_MICROCODE_FROM_CBFS
+	bool "Generate from tree"
+	help
+	  Select this option if you want microcode updates to be assembled when
+	  building coreboot and included in the final image as a separate CBFS
+	  file. Microcode will not be hard-coded into ramstage, and may be
+	  removed from the ROM image at a later time with cbfstool.
 
 config CPU_MICROCODE_CBFS_EXTERNAL
 	depends on CPU_MICROCODE_FROM_CBFS

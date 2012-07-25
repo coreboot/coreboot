@@ -1,3 +1,4 @@
+.gitignore
 .config
 .config.old
 .xcompile
@@ -47,3 +48,9 @@ util/superiotool/superiotool
 util/romcc/romcc
 util/romcc/tests/*.S-O2-mmmx
 util/romcc/tests/fail_test*.S
+*~
+*.patch
+*.rom
+ util/
+coreboot.kdev4
+memtest

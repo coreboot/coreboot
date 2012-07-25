@@ -182,7 +182,7 @@ static void nano_init(device_t dev)
 	/* Turn on cache */
 	x86_enable_cache();
 	/* Set up Memory Type Range Registers */
-	x86_setup_mtrrs();
+	//x86_setup_mtrrs();
 	x86_mtrr_check();
 	/* Enable the local cpu apics */
 	setup_lapic();

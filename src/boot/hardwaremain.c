@@ -86,6 +86,9 @@ void hardwaremain(int boot_complete)
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[1] = rdtsc();
 #endif
+	/* Initialize chips early, they might disable unused devices. */
+	dev_initialize_chips();
+
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(POST_DEVICE_ENUMERATION_COMPLETE);

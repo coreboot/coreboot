@@ -80,6 +80,7 @@
 #define HUB_RESET_TIMEOUT	500
 
 #define DBGP_MAX_PACKET		8
+#define DBGP_LOOPS 1000
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
@@ -108,11 +109,10 @@ static void dbgp_breath(void)
 	/* Sleep to give the debug port a chance to breathe */
 }
 
-static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, unsigned ctrl)
+static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, unsigned ctrl, int loop)
 {
 	u32 pids, lpid;
 	int ret;
-	int loop = 3;
 
 retry:
 	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_GO);
@@ -120,8 +120,11 @@ retry:
 	pids = read32((unsigned long)&ehci_debug->pids);
 	lpid = DBGP_PID_GET(pids);
 
-	if (ret < 0)
+	if (ret < 0) {
+		if (ret == -DBGP_ERR_BAD && --loop > 0)
+			goto retry;
 		return ret;
+	}
 
 	/* If the port is getting full or it has dropped data
 	 * start pacing ourselves, not necessary but it's friendly.
@@ -190,7 +193,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
 
-	ret = dbgp_wait_until_done(ehci_debug, ctrl);
+	ret = dbgp_wait_until_done(ehci_debug, ctrl, DBGP_LOOPS);
 
 	return ret;
 }
@@ -202,7 +205,7 @@ int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int s
 }
 
 static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
-		unsigned endpoint, void *data, int size)
+		unsigned endpoint, void *data, int size, int loops)
 {
 	u32 pids, addr, ctrl;
 	int ret;
@@ -222,7 +225,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, ctrl);
+	ret = dbgp_wait_until_done(ehci_debug, ctrl, loops);
 	if (ret < 0)
 		return ret;
 
@@ -235,7 +238,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 {
 	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum,
-			dbg_info->endpoint_in, data, size);
+			dbg_info->endpoint_in, data, size, DBGP_LOOPS);
 }
 
 static void dbgp_mdelay(int ms)
@@ -279,13 +282,13 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	dbgp_set_data(ehci_debug, &req, sizeof(req));
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, ctrl);
+	ret = dbgp_wait_until_done(ehci_debug, ctrl, DBGP_LOOPS);
 	if (ret < 0)
 		return ret;
 
 
 	/* Read the result */
-	ret = dbgp_bulk_read(ehci_debug, devnum, 0, data, size);
+	ret = dbgp_bulk_read(ehci_debug, devnum, 0, data, size, DBGP_LOOPS);
 	return ret;
 }
 

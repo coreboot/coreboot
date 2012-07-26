@@ -156,6 +156,40 @@ static void x86emuOp2_wrmsr(u8 op2)
 }
 
 /****************************************************************************
+REMARKS:
+Handles opcode 0x0f,0x31
+****************************************************************************/
+static void x86emuOp2_rdtsc(u8 X86EMU_UNUSED(op2))
+{
+#ifdef __HAS_LONG_LONG__
+  static u64 counter = 0;
+#else
+  static u32 counter = 0;
+#endif
+
+  counter += 0x10000;
+
+  /* read timestamp counter */
+  /*
+   * Note that instead of actually trying to accurately measure this, we just
+   * increase the counter by a fixed amount every time we hit one of these
+   * instructions.  Feel free to come up with a better method.
+   */
+  START_OF_INSTR();
+  DECODE_PRINTF("RDTSC\n");
+  TRACE_AND_STEP();
+#ifdef __HAS_LONG_LONG__
+  M.x86.R_EAX = counter & 0xffffffff;
+  M.x86.R_EDX = counter >> 32;
+#else
+  M.x86.R_EAX = counter;
+  M.x86.R_EDX = 0;
+#endif
+  DECODE_CLEAR_SEGOVR();
+  END_OF_INSTR();
+}
+
+/****************************************************************************
  * REMARKS:
  * Handles opcode 0x0f,0x32
  * ****************************************************************************/
@@ -1728,7 +1762,7 @@ void (*x86emu_optab2[256])(u8) =
 /*  0x2f */ x86emuOp2_illegal_op,
 
 /*  0x30 */ x86emuOp2_wrmsr,
-/*  0x31 */ x86emuOp2_illegal_op,
+/*  0x31 */ x86emuOp2_rdtsc,
 /*  0x32 */ x86emuOp2_rdmsr,
 /*  0x33 */ x86emuOp2_illegal_op,
 /*  0x34 */ x86emuOp2_illegal_op,

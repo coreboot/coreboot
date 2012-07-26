@@ -4279,16 +4279,25 @@ Handles opcode 0xe9
 ****************************************************************************/
 static void x86emuOp_jump_near_IMM(u8 X86EMU_UNUSED(op1))
 {
-    int ip;
+    u32 ip;
 
     START_OF_INSTR();
     DECODE_PRINTF("JMP\t");
-    ip = (s16)fetch_word_imm();
-    ip += (s16)M.x86.R_IP;
-    DECODE_PRINTF2("%04x\n", ip);
-    JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
-    TRACE_AND_STEP();
-    M.x86.R_IP = (u16)ip;
+    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+        ip = (u32)fetch_long_imm();
+	ip += (u32)M.x86.R_EIP;
+	DECODE_PRINTF2("%08x\n", (u32)ip);
+        JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
+	TRACE_AND_STEP();
+	M.x86.R_EIP = (u32)ip;
+    } else {
+        ip = (s16)fetch_word_imm();
+        ip += (s16)M.x86.R_IP;
+        DECODE_PRINTF2("%04x\n", (u16)ip);
+        JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
+        TRACE_AND_STEP();
+        M.x86.R_IP = (u16)ip;
+    }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }

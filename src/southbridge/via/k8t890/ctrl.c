@@ -193,32 +193,17 @@ static const struct device_operations ctrl_ops = {
 	.ops_pci		= &lops_pci,
 };
 
+static const unsigned short ctrl_ids[] = {
+	PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR,
+	PCI_DEVICE_ID_VIA_K8M800_NB_SB_CTR,
+	PCI_DEVICE_ID_VIA_K8T890CE_7,
+	PCI_DEVICE_ID_VIA_K8T890CF_7,
+	PCI_DEVICE_ID_VIA_K8M890CE_7,
+	0
+};
+
 static const struct pci_driver northbridge_driver_t800 __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T800_NB_SB_CTR,
-};
-
-static const struct pci_driver northbridge_driver_m800 __pci_driver = {
-	.ops	= &ctrl_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8M800_NB_SB_CTR,
-};
-
-static const struct pci_driver northbridge_driver_t890 __pci_driver = {
-	.ops	= &ctrl_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_7,
-};
-
-static const struct pci_driver northbridge_driver_t890cf __pci_driver = {
-	.ops	= &ctrl_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CF_7,
-};
-
-static const struct pci_driver northbridge_driver_m890 __pci_driver = {
-	.ops	= &ctrl_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8M890CE_7,
+	.devices= ctrl_ids,
 };

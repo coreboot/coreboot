@@ -53,32 +53,17 @@ static const struct device_operations error_ops = {
 	.ops_pci		= &lops_pci,
 };
 
+static const unsigned short error_ids[] = {
+	PCI_DEVICE_ID_VIA_K8T800_ERR,
+	PCI_DEVICE_ID_VIA_K8M800_ERR,
+	PCI_DEVICE_ID_VIA_K8T890CE_1,
+	PCI_DEVICE_ID_VIA_K8T890CF_1,
+	PCI_DEVICE_ID_VIA_K8M890CE_1,
+	0
+};
+
 static const struct pci_driver northbridge_driver_t800 __pci_driver = {
 	.ops	= &error_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T800_ERR,
-};
-
-static const struct pci_driver northbridge_driver_m800 __pci_driver = {
-	.ops	= &error_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8M800_ERR,
-};
-
-static const struct pci_driver northbridge_driver_t890 __pci_driver = {
-	.ops	= &error_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CE_1,
-};
-
-static const struct pci_driver northbridge_driver_tcf __pci_driver = {
-	.ops	= &error_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8T890CF_1,
-};
-
-static const struct pci_driver northbridge_driver_m __pci_driver = {
-	.ops	= &error_ops,
-	.vendor	= PCI_VENDOR_ID_VIA,
-	.device	= PCI_DEVICE_ID_VIA_K8M890CE_1,
+	.devices= error_ids,
 };

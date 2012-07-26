@@ -27,7 +27,6 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb700/sb700.h>
 #include <southbridge/amd/sr5650/cmn.h>
-#include "chip.h"
 
 
 void set_pcie_reset(void);
@@ -73,10 +72,6 @@ void set_pcie_dereset(void)
 *************************************************/
 static void h8scm_enable(device_t dev)
 {
-	/* Leave it for furture use. */
-	/* struct mainboard_config *mainboard =
-	   (struct mainboard_config *)dev->chip_info; */
-
 	printk(BIOS_INFO, "Mainboard H8SCM Enable. dev=0x%p\n", dev);
 
 	msr_t msr, msr2;

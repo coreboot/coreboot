@@ -25,7 +25,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 // #include "hda_verb.h"
-#include "chip.h"
 
 static void verb_setup(void)
 {

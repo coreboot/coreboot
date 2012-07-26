@@ -29,7 +29,6 @@
 #include <x86emu/x86emu.h>
 #endif
 #include <arch/coreboot_tables.h>
-#include "chip.h"
 
 #include <ec/acpi/ec.h>
 #include "m3885.h"

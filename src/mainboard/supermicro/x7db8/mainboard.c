@@ -25,7 +25,6 @@
 #include <boot/tables.h>
 #include <delay.h>
 #include <arch/coreboot_tables.h>
-#include "chip.h"
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>

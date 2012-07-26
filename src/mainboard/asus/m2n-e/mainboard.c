@@ -20,7 +20,6 @@
 
 #include <device/device.h>
 #include "hda_verb.h"
-#include "chip.h"
 
 static void verb_setup(void)
 {

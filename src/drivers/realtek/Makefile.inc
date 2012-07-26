@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
+## Copyright (C) 2012 secunet Security Networks AG
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,16 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-source src/drivers/ati/Kconfig
-source src/drivers/dec/Kconfig
-source src/drivers/emulation/Kconfig
-source src/drivers/generic/Kconfig
-source src/drivers/i2c/Kconfig
-source src/drivers/oxford/Kconfig
-source src/drivers/realtek/Kconfig
-source src/drivers/sil/Kconfig
-source src/drivers/trident/Kconfig
-source src/drivers/ics/Kconfig
-source src/drivers/spi/Kconfig
-source src/drivers/ipmi/Kconfig
-source src/drivers/elog/Kconfig
+driver-$(CONFIG_RTL8168_ROM_DISABLE) += rtl8168.c

@@ -1,0 +1,6 @@
+config RTL8168_ROM_DISABLE
+	bool "Disable RTL8168 ROM"
+	default n
+	help
+	  Just enough of a driver to make coreboot not look for an Option ROM.
+	  No configuration is necessary for the OS to pick up the device.

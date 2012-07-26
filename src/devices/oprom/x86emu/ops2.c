@@ -1461,7 +1461,7 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
     uint srcoffset;
 
     START_OF_INSTR();
-    DECODE_PRINTF("BSF\n");
+    DECODE_PRINTF("BSF\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
         srcoffset = decode_rmXX_address(mod, rl);
@@ -1487,25 +1487,25 @@ static void x86emuOp2_bsf(u8 X86EMU_UNUSED(op2))
         }
     } else {             /* register to register */
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *srcreg, *dstreg;
+            u32 srcval, *dstreg;
 
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
+            srcval = *DECODE_RM_LONG_REGISTER(rl);
             DECODE_PRINTF(",");
             dstreg = DECODE_RM_LONG_REGISTER(rh);
             TRACE_AND_STEP();
-            CONDITIONAL_SET_FLAG(*srcreg == 0, F_ZF);
+            CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
             for(*dstreg = 0; *dstreg < 32; (*dstreg)++)
-                if ((*srcreg >> *dstreg) & 1) break;
+                if ((srcval >> *dstreg) & 1) break;
         } else {
-            u16 *srcreg, *dstreg;
+            u16 srcval, *dstreg;
 
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
+            srcval = *DECODE_RM_WORD_REGISTER(rl);
             DECODE_PRINTF(",");
             dstreg = DECODE_RM_WORD_REGISTER(rh);
             TRACE_AND_STEP();
-            CONDITIONAL_SET_FLAG(*srcreg == 0, F_ZF);
+            CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
             for(*dstreg = 0; *dstreg < 16; (*dstreg)++)
-                if ((*srcreg >> *dstreg) & 1) break;
+                if ((srcval >> *dstreg) & 1) break;
         }
     }
     DECODE_CLEAR_SEGOVR();
@@ -1522,7 +1522,7 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
     uint srcoffset;
 
     START_OF_INSTR();
-    DECODE_PRINTF("BSF\n");
+    DECODE_PRINTF("BSR\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
         srcoffset = decode_rmXX_address(mod, rl);
@@ -1548,25 +1548,25 @@ static void x86emuOp2_bsr(u8 X86EMU_UNUSED(op2))
         }
     } else {             /* register to register */
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *srcreg, *dstreg;
+            u32 srcval, *dstreg;
 
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
+            srcval = *DECODE_RM_LONG_REGISTER(rl);
             DECODE_PRINTF(",");
             dstreg = DECODE_RM_LONG_REGISTER(rh);
             TRACE_AND_STEP();
-            CONDITIONAL_SET_FLAG(*srcreg == 0, F_ZF);
+            CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
             for(*dstreg = 31; *dstreg > 0; (*dstreg)--)
-                if ((*srcreg >> *dstreg) & 1) break;
+                if ((srcval >> *dstreg) & 1) break;
         } else {
-            u16 *srcreg, *dstreg;
+            u16 srcval, *dstreg;
 
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
+            srcval = *DECODE_RM_WORD_REGISTER(rl);
             DECODE_PRINTF(",");
             dstreg = DECODE_RM_WORD_REGISTER(rh);
             TRACE_AND_STEP();
-            CONDITIONAL_SET_FLAG(*srcreg == 0, F_ZF);
+            CONDITIONAL_SET_FLAG(srcval == 0, F_ZF);
             for(*dstreg = 15; *dstreg > 0; (*dstreg)--)
-                if ((*srcreg >> *dstreg) & 1) break;
+                if ((srcval >> *dstreg) & 1) break;
         }
     }
     DECODE_CLEAR_SEGOVR();

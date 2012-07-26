@@ -55,8 +55,7 @@ static void dbgp_init(void)
 
 static void dbgp_tx_byte(unsigned char data)
 {
-	if (dbg_info.ehci_debug)
-		dbgp_bulk_write_x(&dbg_info, (char*)&data, 1);
+	usbdebug_tx_byte(&dbg_info, data);
 }
 
 static unsigned char dbgp_rx_byte(void)
@@ -69,6 +68,11 @@ static unsigned char dbgp_rx_byte(void)
 	return data;
 }
 
+static void dbgp_tx_flush(void)
+{
+	usbdebug_tx_flush(&dbg_info);
+}
+
 static int dbgp_tst_byte(void)
 {
 	return (int)dbg_info.ehci_debug;
@@ -77,6 +81,7 @@ static int dbgp_tst_byte(void)
 static const struct console_driver usbdebug_direct_console __console = {
 	.init     = dbgp_init,
 	.tx_byte  = dbgp_tx_byte,
+	.tx_flush = dbgp_tx_flush,
 	.rx_byte  = dbgp_rx_byte,
 	.tst_byte = dbgp_tst_byte,
 };

@@ -30,6 +30,8 @@ struct ehci_debug_info {
         u32 devnum;
         u32 endpoint_out;
         u32 endpoint_in;
+        char buf[8];
+        u8 bufidx;
 };
 
 #ifndef __ROMCC__
@@ -41,7 +43,8 @@ void set_ehci_debug(unsigned ehci_debug);
 unsigned get_ehci_debug(void);
 void set_debug_port(unsigned port);
 int early_usbdebug_init(void);
-void usbdebug_tx_byte(unsigned char data);
+void usbdebug_tx_byte(struct ehci_debug_info *info, unsigned char data);
+void usbdebug_tx_flush(struct ehci_debug_info *info);
 int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info);
 #endif
 #endif

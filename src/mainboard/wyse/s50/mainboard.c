@@ -21,7 +21,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include "chip.h"
 
 static void init(struct device *dev)
 {

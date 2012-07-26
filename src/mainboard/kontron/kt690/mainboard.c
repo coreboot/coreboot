@@ -26,7 +26,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb600/sb600.h>
-#include "chip.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */

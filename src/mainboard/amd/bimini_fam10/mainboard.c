@@ -26,7 +26,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
-#include "chip.h"
 
 
 u8 is_dev3_present(void);
@@ -127,10 +126,6 @@ static void get_ide_dma66(void)
 *************************************************/
 static void bimini_enable(device_t dev)
 {
-	/* Leave it for furture use. */
-	/* struct mainboard_config *mainboard =
-	   (struct mainboard_config *)dev->chip_info; */
-
 	printk(BIOS_INFO, "Mainboard BIMINI Enable. dev=0x%p\n", dev);
 
 	setup_uma_memory();

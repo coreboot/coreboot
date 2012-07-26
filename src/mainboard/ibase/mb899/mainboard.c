@@ -27,7 +27,6 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include <arch/coreboot_tables.h>
-#include "chip.h"
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 static int int15_handler(void)

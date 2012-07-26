@@ -26,7 +26,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <NbPlatform.h>
-#include "chip.h"
 
 void set_pcie_dereset(void *nbconfig);
 void set_pcie_reset(void *nbconfig);

@@ -34,7 +34,6 @@
 #include <arch/interrupt.h>
 #include <arch/coreboot_tables.h>
 #include "hda_verb.h"
-#include "chip.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 
 void mainboard_suspend_resume(void)

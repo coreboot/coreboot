@@ -24,7 +24,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "chip.h"
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("GIGABYTE GA-2761GXDK Mainboard")

@@ -22,7 +22,6 @@
 #include <device/pci_ids.h>
 #include <boot/tables.h>
 #include <southbridge/via/k8t890/k8t890.h>
-#include "chip.h"
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

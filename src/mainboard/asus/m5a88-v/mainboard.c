@@ -26,7 +26,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include "SBPLATFORM.h"
-#include "chip.h"
 
 
 u8 is_dev3_present(void);

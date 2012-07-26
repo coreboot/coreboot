@@ -4,17 +4,13 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
-#include "chip.h"
 
-static void init(struct device *dev) {
-	struct mainboard_config  *mainboard = (struct mainboard_config*)dev->chip_info;
+static void init(struct device *dev)
+{
 	device_t nic = NULL;
 	unsigned bus = 0;
 	unsigned devfn = PCI_DEVFN(0xd, 0);
 	int nicirq = 1;
-
-	if (mainboard->nicirq)
-		nicirq = mainboard->nicirq;
 
 	printk(BIOS_DEBUG, "AMD RUMBA ENTER %s\n", __func__);
 

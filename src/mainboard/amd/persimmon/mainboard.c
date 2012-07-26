@@ -26,7 +26,6 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include <arch/acpi.h>
-#include "chip.h"
 #include "BiosCallOuts.h"
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/amd/mtrr.h>

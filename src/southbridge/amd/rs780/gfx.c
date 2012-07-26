@@ -1005,56 +1005,24 @@ static struct device_operations pcie_ops = {
 /*
  * We should list all of them here.
  * */
+static const unsigned short pcie_780_ids[] = {
+	PCI_DEVICE_ID_ATI_RS780_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS780C_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS780M_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS780MC_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS780E_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS785G_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS785C_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS785M_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS785MC_INT_GFX,
+	PCI_DEVICE_ID_ATI_RS785D_INT_GFX,
+	0
+};
+
 static const struct pci_driver pcie_driver_780 __pci_driver = {
 	.ops = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS780_INT_GFX,
-};
-
-static const struct pci_driver pcie_driver_780c __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS780C_INT_GFX,
-};
-static const struct pci_driver pcie_driver_780m __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS780M_INT_GFX,
-};
-static const struct pci_driver pcie_driver_780mc __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS780MC_INT_GFX,
-};
-static const struct pci_driver pcie_driver_780e __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS780E_INT_GFX,
-};
-static const struct pci_driver pcie_driver_785g __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS785G_INT_GFX,
-};
-static const struct pci_driver pcie_driver_785c __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS785C_INT_GFX,
-};
-static const struct pci_driver pcie_driver_785m __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS785M_INT_GFX,
-};
-static const struct pci_driver pcie_driver_785mc __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS785MC_INT_GFX,
-};
-static const struct pci_driver pcie_driver_785d __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS785D_INT_GFX,
+	.devices = pcie_780_ids,
 };
 
 /* step 12 ~ step 14 from rpr */

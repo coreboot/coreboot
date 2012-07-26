@@ -659,50 +659,12 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
+static const unsigned short gma_ids[] = {
+	0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x166,
+	0,
+};
 static const struct pci_driver gma_gt1_desktop __pci_driver = {
 	.ops	= &gma_func0_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0102,
-};
-
-static const struct pci_driver gma_gt1_mobile __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0106,
-};
-
-static const struct pci_driver gma_gt1_server __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x010a,
-};
-
-static const struct pci_driver gma_gt2_desktop __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0112,
-};
-
-static const struct pci_driver gma_gt2_mobile __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0116,
-};
-
-static const struct pci_driver gma_gt2_desktop_fast __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0122,
-};
-
-static const struct pci_driver gma_gt2_mobile_fast __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0126,
-};
-
-static const struct pci_driver gma_func0_driver_3 __pci_driver = {
-	.ops    = &gma_func0_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0166,
+	.devices= gma_ids,
 };

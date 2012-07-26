@@ -213,53 +213,19 @@ static struct device_operations sata_ops = {
 	.ops_pci		= &sata_pci_ops,
 };
 
-/* Desktop Non-AHCI and Non-RAID Mode */
-/* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
-static const struct pci_driver i82801gx_sata_normal_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c0,
+static const unsigned short sata_ids[] = {
+	0x27c0, /* Desktop Non-AHCI and Non-RAID Mode: 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
+	0x27c4, /* Mobile Non-AHCI and Non-RAID Mode: 82801GBM/GHM (ICH7-M/ICH7-M DH) */
+	/* NOTE: Any of the below are not properly supported yet. */
+	0x27c1, /* Desktop AHCI Mode: 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
+	0x27c3, /* Desktop RAID mode: 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
+	0x27c5, /* Mobile AHCI Mode: 82801GBM/GHM (ICH7-M/ICH7-M DH) */
+	0x27c6, /* ICH7M DH Raid Mode: 82801GHM (ICH7-M DH) */
+	0
 };
 
-/* Mobile Non-AHCI and Non-RAID Mode */
-/* 82801GBM/GHM (ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_sata_mobile_normal_driver __pci_driver = {
+static const struct pci_driver i82801gx_sata_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c4,
-};
-
-
-/* NOTE: Any of the below are not properly supported yet. */
-
-/* Desktop AHCI Mode */
-/* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
-static const struct pci_driver i82801gx_sata_ahci_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c1,
-};
-
-/* Desktop RAID mode */
-/* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
-static const struct pci_driver i82801gx_sata_raid_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c3,
-};
-
-/* Mobile AHCI Mode */
-/* 82801GBM/GHM (ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_sata_mobile_ahci_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c5,
-};
-
-/* ICH7M DH Raid Mode */
-/* 82801GHM (ICH7-M DH) */
-static const struct pci_driver i82801gx_sata_ich7dh_raid_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c6,
+	.devices= sata_ids,
 };

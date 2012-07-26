@@ -121,44 +121,18 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port1 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27d0,
+static const unsigned short i82801gx_pcie_ids[] = {
+	0x27d0, /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
+	0x27d2, /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
+	0x27d4, /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
+	0x27d6, /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
+	0x27e0, /* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
+	0x27e2, /* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
+	0
 };
 
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port2 __pci_driver = {
+static const struct pci_driver i82801gx_pcie __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27d2,
-};
-
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port3 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27d4,
-};
-
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port4 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27d6,
-};
-
-/* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port5 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27e0,
-};
-
-/* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
-static const struct pci_driver i82801gx_pcie_port6 __pci_driver = {
-	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27e2,
+	.devices= i82801gx_pcie_ids,
 };

@@ -220,38 +220,18 @@ static struct device_operations ht_ops = {
 	.ops_pci = &lops_pci,
 };
 
+static const unsigned short driver_ids[] = {
+	PCI_DEVICE_ID_AMD_SR5690_HT,
+	PCI_DEVICE_ID_AMD_SR5670_HT,
+	PCI_DEVICE_ID_AMD_SR5650_HT,
+	PCI_DEVICE_ID_AMD_RD890TV_HT,
+	PCI_DEVICE_ID_AMD_RD890_HT,
+	PCI_DEVICE_ID_AMD_990FX_HT,
+	0
+};
+
 static const struct pci_driver ht_driver_sr5690 __pci_driver = {
 	.ops = &ht_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_SR5690_HT,
-};
-
-static const struct pci_driver ht_driver_sr5670 __pci_driver = {
-	.ops = &ht_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_SR5670_HT,
-};
-
-static const struct pci_driver ht_driver_sr5650 __pci_driver = {
-	.ops = &ht_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_SR5650_HT,
-};
-
-static const struct pci_driver ht_driver_rd890tv __pci_driver = {
-	.ops = &ht_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_RD890TV_HT,
-};
-
-static const struct pci_driver ht_driver_rd890 __pci_driver = {
-	.ops = &ht_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_RD890_HT,
-};
-
-static const struct pci_driver ht_driver_990fx __pci_driver = {
-	.ops = &ht_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_AMD_990FX_HT,
+	.devices= driver_ids,
 };

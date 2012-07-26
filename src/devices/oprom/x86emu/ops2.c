@@ -725,7 +725,7 @@ static void x86emuOp2_pop_GS(u8 X86EMU_UNUSED(op2))
 
 /****************************************************************************
 REMARKS:
-Handles opcode 0x0f,0xaa
+Handles opcode 0x0f,0xab
 ****************************************************************************/
 static void x86emuOp2_bts_R(u8 X86EMU_UNUSED(op2))
 {

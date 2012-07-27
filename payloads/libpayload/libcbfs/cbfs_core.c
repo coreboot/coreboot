@@ -137,7 +137,7 @@ void *cbfs_get_file(const char *name)
 	return (void*)CBFS_SUBHEADER(file);
 }
 
-void *cbfs_find_file(const char *name, int type)
+struct cbfs_stage *cbfs_find_file(const char *name, int type)
 {
 	struct cbfs_file *file = cbfs_find(name);
 

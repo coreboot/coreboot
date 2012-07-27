@@ -172,7 +172,7 @@ struct cbfs_file *cbfs_find(const char *name);
 void *cbfs_get_file(const char *name);
 
 /* returns pointer to file data inside CBFS after if type is correct */
-void *cbfs_find_file(const char *name, int type);
+struct cbfs_stage *cbfs_find_file(const char *name, int type);
 
 /* returns 0 on success, -1 on failure */
 int cbfs_decompress(int algo, void *src, void *dst, int len);

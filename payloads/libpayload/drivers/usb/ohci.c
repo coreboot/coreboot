@@ -54,7 +54,7 @@ ohci_reset (hci_t *controller)
 
 	OHCI_INST(controller)->opreg->HcCommandStatus = HostControllerReset;
 	mdelay(2); /* wait 2ms */
-	OCHI_INST(controller)->opreg->HcControl = 0;
+	OHCI_INST(controller)->opreg->HcControl = 0;
 	mdelay(10); /* wait 10ms */
 }
 
@@ -118,7 +118,7 @@ ohci_init (pcidev_t addr)
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
 	controller->bus_address = addr;
-	/* regarding OHCI spec, Appendix A, BAR_OCHI register description, Table A-4
+	/* regarding OHCI spec, Appendix A, BAR_OHCI register description, Table A-4
 	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all */
 	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10) & 0xfffff000; // OHCI mandates MMIO, so bit 0 is clear
 	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);

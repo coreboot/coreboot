@@ -923,8 +923,8 @@ void dev_enumerate(void)
 	printk(BIOS_SPEW, "Compare with tree...\n");
 	show_devs_tree(root, BIOS_SPEW, 0, 0);
 
-	if (root->chip_ops && root->chip_ops->enable_dev)
-		root->chip_ops->enable_dev(root);
+	if (mainboard_ops.enable_dev)
+		mainboard_ops.enable_dev(root);
 
 	if (!root->ops || !root->ops->scan_bus) {
 		printk(BIOS_ERR, "dev_root missing scan_bus operation");

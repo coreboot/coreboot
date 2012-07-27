@@ -166,6 +166,7 @@ void show_all_devs_resources(int debug_level, const char* msg);
 #define DEVICE_MEM_ALIGN 4096
 
 extern struct device_operations default_dev_ops_root;
+extern struct chip_operations mainboard_ops;
 void pci_domain_read_resources(struct device *dev);
 unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
 unsigned int scan_static_bus(device_t bus, unsigned int max);

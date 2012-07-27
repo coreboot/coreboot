@@ -170,10 +170,21 @@ void pci_domain_read_resources(struct device *dev);
 unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
 unsigned int scan_static_bus(device_t bus, unsigned int max);
 
-void ram_resource(device_t dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek);
-void uma_resource(device_t dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek);
+void fixed_mem_resource(device_t dev, unsigned long index,
+		  unsigned long basek, unsigned long sizek, unsigned long type);
+
+#define ram_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
+
+#define bad_ram_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_CACHEABLE )
+
+#define uma_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)
+
+#define mmio_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
+
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);
 

@@ -795,8 +795,8 @@ void show_all_devs_resources(int debug_level, const char* msg)
 	}
 }
 
-void ram_resource(device_t dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek)
+void fixed_mem_resource(device_t dev, unsigned long index,
+		  unsigned long basek, unsigned long sizek, unsigned long type)
 {
 	struct resource *resource;
 
@@ -806,23 +806,10 @@ void ram_resource(device_t dev, unsigned long index,
 	resource = new_resource(dev, index);
 	resource->base = ((resource_t)basek) << 10;
 	resource->size = ((resource_t)sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+		 IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-void uma_resource(device_t dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek)
-		return;
-
-	resource = new_resource(dev, index);
-	resource->base = ((resource_t)basek) << 10;
-	resource->size = ((resource_t)sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_UMA_FB |
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	resource->flags |= type;
 }
 
 void tolm_test(void *gp, struct device *dev, struct resource *new)

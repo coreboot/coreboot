@@ -111,17 +111,11 @@ static void add_fixed_resources(struct device *dev, int index)
 	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
 
-	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
-	       "size=0x%llx\n", uma_memory_base, uma_memory_size);
-	resource = new_resource(dev, index++);
-	resource->base = (resource_t) uma_memory_base;
-	resource->size = (resource_t) uma_memory_size;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-
-	/* Clear these values here so they don't get used by MTRR code */
-	uma_memory_base = 0;
-	uma_memory_size = 0;
+	/* Using uma_resource() here would fail, as base & size cannot
+	 * be used as-is for a single MTRR. Use separate resources after
+	 * MTRR code is fixed to merge them wisely. 
+	 */
+	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "

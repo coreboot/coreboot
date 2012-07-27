@@ -67,15 +67,13 @@ int add_northbridge_resources(struct lb_memory *mem)
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
-	uint32_t pci_tolm;
 	int igd_memory = 0;
 
-	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
 	if (!mc_dev)
 		return;
 
-	unsigned long tomk, tolmk;
+	unsigned long tomk;
 	int idx;
 
 	if (CONFIG_VIDEO_MB == 512) {
@@ -98,18 +96,11 @@ static void pci_domain_set_resources(device_t dev)
 	uma_memory_size = igd_memory * 1024ULL;
 	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
 
-	/* Compute the top of low memory. */
-	tolmk = pci_tolm >> 10;
-	if (tolmk >= tomk) {
-		/* The PCI hole does does not overlap the memory. */
-		tolmk = tomk;
-	}
-
 	/* Report the memory regions. */
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, 256);
-	ram_resource(dev, idx++, 1024, tolmk - 1024);
+	ram_resource(dev, idx++, 1024, tomk - 1024);
 
 	assign_resources(dev->link_list);
 

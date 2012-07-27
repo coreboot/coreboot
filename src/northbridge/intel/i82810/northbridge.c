@@ -87,15 +87,13 @@ static int translate_i82810_to_mb[] = {
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
-	uint32_t pci_tolm;
 	int igd_memory = 0;
 
-	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
 	if (!mc_dev)
 		return;
 
-	unsigned long tomk, tolmk;
+	unsigned long tomk;
 	int idx, drp_value;
 	u8 reg8;
 
@@ -132,17 +130,10 @@ static void pci_domain_set_resources(device_t dev)
 	uma_memory_size = igd_memory * 1024ULL;
 	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
 
-	/* Compute the top of low memory. */
-	tolmk = pci_tolm >> 10;
-	if (tolmk >= tomk) {
-		/* The PCI hole does does not overlap the memory. */
-		tolmk = tomk;
-	}
-
 	/* Report the memory regions. */
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
-	ram_resource(dev, idx++, 768, tolmk - 768);
+	ram_resource(dev, idx++, 768, tomk - 768);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */

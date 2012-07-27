@@ -182,9 +182,6 @@ static void pci_domain_set_resources(device_t dev)
 	/* Report the memory regions. */
 	ram_resource(dev, 3, 0, 640);
 	ram_resource(dev, 4, 768, (tomk - 768));
-	if (tomk > 4 * 1024 * 1024)
-		ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
-
 	add_fixed_resources(dev, 6);
 
 	assign_resources(dev->link_list);

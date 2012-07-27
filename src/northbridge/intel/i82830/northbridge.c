@@ -73,7 +73,7 @@ static void pci_domain_set_resources(device_t dev)
 	if (!mc_dev)
 		return;
 
-	unsigned long tomk;
+	unsigned long tomk, tomk_stolen;
 	int idx;
 
 	if (CONFIG_VIDEO_MB == 512) {
@@ -89,24 +89,24 @@ static void pci_domain_set_resources(device_t dev)
 	 * i.e. 1 means 32MB.
 	 */
 	tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
-	tomk -= igd_memory;
+	tomk_stolen = tomk - igd_memory;
 
 	/* For reserving UMA memory in the memory map */
-	uma_memory_base = tomk * 1024ULL;
+	uma_memory_base = tomk_stolen * 1024ULL;
 	uma_memory_size = igd_memory * 1024ULL;
-	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
+	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk_stolen);
 
 	/* Report the memory regions. */
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
-	ram_resource(dev, idx++, 768, 256);
-	ram_resource(dev, idx++, 1024, tomk - 1024);
+	ram_resource(dev, idx++, 768, tomk - 768);
+	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
 	assign_resources(dev->link_list);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
+	high_tables_base = (tomk_stolen * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
 #endif
 }

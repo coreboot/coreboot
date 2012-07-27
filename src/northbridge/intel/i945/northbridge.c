@@ -73,16 +73,9 @@ static void add_fixed_resources(struct device *dev, int index)
 	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
 
-	printk(BIOS_DEBUG, "Adding UMA memory area\n");
-	resource = new_resource(dev, index);
-	resource->base = (resource_t) uma_memory_base;
-	resource->size = (resource_t) uma_memory_size;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar\n");
-		resource = new_resource(dev, index+1);
+		resource = new_resource(dev, index++);
 		resource->base = (resource_t) pcie_config_base;
 		resource->size = (resource_t) pcie_config_size;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
@@ -99,7 +92,8 @@ static void pci_domain_set_resources(device_t dev)
 	uint32_t pci_tolm;
 	uint8_t tolud, reg8;
 	uint16_t reg16;
-	unsigned long long tomk;
+	unsigned long long tomk, tomk_stolen;
+	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
 
 	/* Can we find out how much memory we can use at most
 	 * this way?
@@ -114,6 +108,7 @@ static void pci_domain_set_resources(device_t dev)
 	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08x\n", tolud << 24);
 
 	tomk = tolud << 14;
+	tomk_stolen = tomk;
 
 	/* Note: subtract IGD device and TSEG */
 	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), 0x9e);
@@ -135,7 +130,11 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 		printk(BIOS_DEBUG, "%dM\n", tseg_size >> 10);
-		tomk -= tseg_size;
+		tomk_stolen -= tseg_size;
+
+		/* For reserving TSEG memory in the memory map */
+		tseg_memory_base = tomk_stolen * 1024ULL;
+		tseg_memory_size = tseg_size * 1024ULL;
 	}
 
 	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
@@ -154,29 +153,32 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
-		tomk -= uma_size;
+		tomk_stolen -= uma_size;
 
 		/* For reserving UMA memory in the memory map */
-		uma_memory_base = tomk * 1024ULL;
+		uma_memory_base = tomk_stolen * 1024ULL;
 		uma_memory_size = uma_size * 1024ULL;
 	}
 
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */
-	printk(BIOS_INFO, "Available memory: %dK", (uint32_t)tomk);
-	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk >> 10));
+	printk(BIOS_INFO, "Available memory: %dK", (uint32_t)tomk_stolen);
+	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen >> 10));
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, 640);
 	ram_resource(dev, 4, 768, (tomk - 768));
-	add_fixed_resources(dev, 6);
+	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
+	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
+
+	add_fixed_resources(dev, 7);
 
 	assign_resources(dev->link_list);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
+	high_tables_base = (tomk_stolen * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
 #endif
 }

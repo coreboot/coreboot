@@ -265,6 +265,10 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
+#if CONFIG_USBDEBUG
+	early_usbdebug_init();
+#endif
+
 	/* For reference print the System Agent version
 	 * after executing the UEFI PEI stage.
 	 */

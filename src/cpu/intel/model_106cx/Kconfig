@@ -3,12 +3,10 @@ config CPU_INTEL_MODEL_106CX
 	select SMP
 	select SSE2
 	select UDELAY_LAPIC
-
-if CPU_INTEL_MODEL_106CX
+	select AP_IN_SIPI_WAIT
 
 config CPU_ADDR_BITS
 	int
 	default 32
 
-endif
 

@@ -3,10 +3,8 @@
 */
 
 #include <console/console.h>
-#include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/pae.h>
-#include <cpu/x86/lapic.h>
 #include <string.h>
 
 static void paging_off(void)
@@ -45,14 +43,6 @@ static void paging_on(void *pdp)
 		);
 }
 
-static int cpu_index(void)
-{
-	device_t dev = dev_find_lapic(lapicid());
-	if (!dev)
-		return -1;
-	return dev->path.apic.index;
-}
-
 void *map_2M_page(unsigned long page)
 {
 	struct pde {
@@ -70,9 +60,7 @@ void *map_2M_page(unsigned long page)
 	unsigned long window;
 	void *result;
 	int i;
-
 	index = cpu_index();
-
 	if ((index < 0) || (index >= CONFIG_MAX_CPUS)) {
 		return MAPPING_ERROR;
 	}

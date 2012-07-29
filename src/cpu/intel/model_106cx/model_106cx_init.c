@@ -27,6 +27,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
+#include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <usbdebug.h>
@@ -177,6 +178,9 @@ static void model_106cx_init(device_t cpu)
 	configure_misc();
 
 	/* TODO: PIC thermal sensor control */
+
+	/* Start up my cpu siblings */
+	intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -26,7 +26,6 @@
 #include <arch/acpigen.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/intel/acpi.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
@@ -89,8 +88,8 @@ static int generate_cstate_entries(acpi_cstate_t *cstates,
 
 static int generate_C_state_entries(void)
 {
+	struct cpu_info *info;
 	struct cpu_driver *cpu;
-	struct device *cpu_dev;
 	int len, lenif;
 	device_t lapic;
 	struct cpu_intel_model_206ax_config *conf = NULL;
@@ -104,10 +103,10 @@ static int generate_C_state_entries(void)
 		return 0;
 
 	/* Find CPU map of supported C-states */
-	cpu_dev = dev_find_lapic(lapicid());
-	if (!cpu_dev)
+	info = cpu_info();
+	if (!info)
 		return 0;
-	cpu = find_cpu_driver(cpu_dev);
+	cpu = find_cpu_driver(info->cpu);
 	if (!cpu || !cpu->cstates)
 		return 0;
 

@@ -3,3 +3,4 @@ config CPU_INTEL_SOCKET_LGA771
         select CPU_INTEL_MODEL_6FX
 	select SSE2
 	select MMX
+	select AP_IN_SIPI_WAIT

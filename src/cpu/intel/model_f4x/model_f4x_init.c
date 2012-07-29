@@ -51,6 +51,9 @@ static void model_f4x_init(device_t cpu)
 
 	/* Enable the local cpu apics */
 	setup_lapic();
+
+	/* Start up my cpu siblings */
+	intel_sibling_init(cpu);
 };
 
 static struct device_operations cpu_dev_ops = {

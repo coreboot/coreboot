@@ -73,6 +73,10 @@ config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
 
+config SERIAL_CPU_INIT
+	bool
+	default n
+
 config IRQ_SLOT_COUNT
 	int
 	default 11

@@ -93,6 +93,10 @@ config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_0100009f.h"
 
+config SERIAL_CPU_INIT
+	bool
+	default y
+
 config STACK_SIZE
 	hex
 	default 0x10000

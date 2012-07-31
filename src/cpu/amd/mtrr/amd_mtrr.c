@@ -116,6 +116,30 @@ static void uma_fb_resource(void *gp, struct device *dev, struct resource *res)
 	}
 }
 
+/* Take a copy of BSP CPUs TOP_MEM and TOP_MEM2 registers,
+ * so they can be distributed to AP CPUs. Not strictly MTRRs,
+ * but this is not that bad a place to have this code.
+ */
+void setup_bsp_ramtop(void)
+{
+	msr_t msr, msr2;
+
+	/* TOP_MEM: the top of DRAM below 4G */
+	msr = rdmsr(TOP_MEM);
+	printk(BIOS_INFO,
+	    "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+	     __func__, msr.lo, msr.hi);
+
+	/* TOP_MEM2: the top of DRAM above 4G */
+	msr2 = rdmsr(TOP_MEM2);
+	printk(BIOS_INFO,
+	    "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+	     __func__, msr2.lo, msr2.hi);
+
+	msr_nv_setup_ramtop((uint64_t) msr.hi<<32 | msr.lo,
+		(uint64_t) msr2.hi<<32 | msr2.lo);
+}
+
 void amd_setup_mtrrs(void)
 {
 	unsigned long address_bits;

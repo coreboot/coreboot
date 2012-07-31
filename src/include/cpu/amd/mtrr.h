@@ -39,6 +39,11 @@
 
 #if !defined(__PRE_RAM__) && !defined(__ASSEMBLER__)
 void amd_setup_mtrrs(void);
+
+/* To distribute topmem MSRs to APs. */
+void setup_bsp_ramtop(void);
+#define bsp_topmem(x)	msr_nv_get_tolm(x)
+#define bsp_topmem2(x)	msr_nv_get_tom(x)
 #endif
 
 #endif /* CPU_AMD_MTRR_H */

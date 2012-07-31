@@ -17,6 +17,8 @@ static void wrmsr(unsigned long index, msr_t msr)
 
 #else
 
+#include <stdint.h>
+
 typedef struct msr_struct
 {
 	unsigned lo;
@@ -58,6 +60,11 @@ static inline __attribute__((always_inline)) void wrmsr(unsigned index, msr_t ms
 		: "c" (index), "a" (msr.lo), "d" (msr.hi)
 		);
 }
+
+/* Utility functions for non-volatile copy of MSRs. */
+void msr_nv_setup_ramtop(uint64_t tolm, uint64_t tom);
+uint64_t msr_nv_get_tolm(void);
+uint64_t msr_nv_get_tom(void);
 
 #endif /* __ROMCC__ */
 

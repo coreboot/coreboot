@@ -39,6 +39,8 @@ config BOARD_AMD_UNIONSTATION
 	bool "Unionstation"
 config BOARD_AMD_PARMER
 	bool "Parmer"
+config BOARD_AMD_THATCHER
+	bool "Thatcher"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -59,6 +61,7 @@ source "src/mainboard/amd/south_station/Kconfig"
 source "src/mainboard/amd/torpedo/Kconfig"
 source "src/mainboard/amd/union_station/Kconfig"
 source "src/mainboard/amd/parmer/Kconfig"
+source "src/mainboard/amd/thatcher/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

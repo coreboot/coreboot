@@ -29,7 +29,9 @@
 #endif
 #include <device/device.h>
 #include <device/pci.h>
+#ifndef __PRE_RAM__
 #include <device/pci_ops.h>
+#endif
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <string.h>

@@ -19,8 +19,12 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#ifndef __PRE_RAM__
+#ifndef __SMM__
 #include <device/device.h>
 #include <device/pnp.h>
+#endif
+#endif
 #include <stdlib.h>
 #include "pmh7.h"
 #include "chip.h"

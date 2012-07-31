@@ -2,6 +2,7 @@
 #define DEVICE_RESOURCE_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
 
@@ -72,7 +73,7 @@ struct resource {
 	resource_t base;	/* Base address of the resource */
 	resource_t size;	/* Size of the resource */
 	resource_t limit;	/* Largest valid value base + size -1 */
-	struct resource* next;	/* Next resource in the list */
+	ROMSTAGE_CONST struct resource* next;	/* Next resource in the list */
 	unsigned long flags;	/* Descriptions of the kind of resource */
 	unsigned long index;	/* Bus specific per device resource id */
 	unsigned char align;	/* Required alignment (log 2) of the resource */

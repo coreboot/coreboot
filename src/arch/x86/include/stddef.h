@@ -15,4 +15,10 @@ typedef unsigned int wint_t;
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
+#ifdef __PRE_RAM__
+#define ROMSTAGE_CONST const
+#else
+#define ROMSTAGE_CONST
+#endif
+
 #endif /* I386_STDDEF_H */

@@ -366,13 +366,15 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int ir
 
 static void pass0(FILE *fil, struct device *ptr) {
 	if (ptr->type == device && ptr->id == 0)
-		fprintf(fil, "struct bus %s_links[];\n", ptr->name);
+		fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[];\n", ptr->name);
+
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used)) {
-		fprintf(fil, "static struct device %s;\n", ptr->name);
+		fprintf(fil, "ROMSTAGE_CONST static struct device %s;\n", ptr->name);
 		if (ptr->rescnt > 0)
-			fprintf(fil, "struct resource %s_res[];\n", ptr->name);
+			fprintf(fil, "ROMSTAGE_CONST struct resource %s_res[];\n", ptr->name);
 		if (ptr->children || ptr->multidev)
-			fprintf(fil, "struct bus %s_links[];\n", ptr->name);
+			fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[];\n",
+					ptr->name);
 	}
 }
 
@@ -382,8 +384,10 @@ static void pass1(FILE *fil, struct device *ptr)
 	if (!ptr->used && (ptr->type == device)) {
 		if (ptr->id != 0)
 			fprintf(fil, "static ");
-		fprintf(fil, "struct device %s = {\n", ptr->name);
+		fprintf(fil, "ROMSTAGE_CONST struct device %s = {\n", ptr->name);
+		fprintf(fil, "#ifndef __PRE_RAM__\n");
 		fprintf(fil, "\t.ops = %s,\n", (ptr->ops)?(ptr->ops):"0");
+		fprintf(fil, "#endif\n");
 		fprintf(fil, "\t.bus = &%s_links[%d],\n", ptr->bus->name, ptr->bus->link);
 		fprintf(fil, "\t.path = {");
 		fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
@@ -415,7 +419,9 @@ static void pass1(FILE *fil, struct device *ptr)
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 		if (ptr->chip->chiph_exists) {
+			fprintf(fil, "#ifndef __PRE_RAM__\n");
 			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
+			fprintf(fil, "#endif\n");
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
 		}
 		if (ptr->nextdev)
@@ -424,7 +430,8 @@ static void pass1(FILE *fil, struct device *ptr)
 	}
 	if (ptr->rescnt > 0) {
 		int i=1;
-		fprintf(fil, "struct resource %s_res[] = {\n", ptr->name);
+		fprintf(fil, "ROMSTAGE_CONST struct resource %s_res[] = {\n",
+				ptr->name);
 		struct resource *r = ptr->res;
 		while (r) {
 			fprintf(fil, "\t\t{ .flags=IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_");
@@ -441,7 +448,7 @@ static void pass1(FILE *fil, struct device *ptr)
 		fprintf(fil, "\t };\n");
 	}
 	if (!ptr->used && ptr->type == device && (ptr->children || ptr->multidev)) {
-		fprintf(fil, "struct bus %s_links[] = {\n", ptr->name);
+		fprintf(fil, "ROMSTAGE_CONST struct bus %s_links[] = {\n", ptr->name);
 		if (ptr->multidev) {
 			struct device *d = ptr;
 			while (d) {
@@ -473,8 +480,9 @@ static void pass1(FILE *fil, struct device *ptr)
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {
-			fprintf(fil, "struct %s_config %s_info_%d\t= {\n",
-				ptr->name_underscore, ptr->name_underscore, ptr->id);
+			fprintf(fil, "ROMSTAGE_CONST struct %s_config ROMSTAGE_CONST %s_info_%d = {\n",
+				ptr->name_underscore, ptr->name_underscore,
+				ptr->id);
 			struct reg *r = ptr->reg;
 			while (r) {
 				fprintf(fil, "\t.%s = %s,\n", r->key, r->value);
@@ -482,7 +490,7 @@ static void pass1(FILE *fil, struct device *ptr)
 			}
 			fprintf(fil, "};\n\n");
 		} else {
-			fprintf(fil, "struct %s_config %s_info_%d;\n",
+			fprintf(fil, "ROMSTAGE_CONST struct %s_config ROMSTAGE_CONST %s_info_%d = { };\n",
 				ptr->name_underscore, ptr->name_underscore, ptr->id);
 		}
 	}
@@ -617,9 +625,9 @@ int main(int argc, char** argv) {
 		fprintf(autogen, "\n/* pass 0 */\n");
 		walk_device_tree(autogen, &root, pass0, NULL);
 		fprintf(autogen, "\n/* pass 1 */\n"
-			    "struct device *last_dev = &%s;\n", lastdev->name);
+			    "ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
 #ifdef MAINBOARDS_HAVE_CHIP_H
-		fprintf(autogen, "struct mainboard_config mainboard_info_0;\n");
+		fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
 #endif
 		walk_device_tree(autogen, &root, pass1, NULL);
 

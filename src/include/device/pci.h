@@ -16,9 +16,11 @@
 #define PCI_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
+#ifndef __PRE_RAM__
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
 
@@ -107,4 +109,5 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 unsigned mainboard_pci_subsystem_vendor_id(struct device *dev);
 unsigned mainboard_pci_subsystem_device_id(struct device *dev);
 
+#endif
 #endif /* PCI_H */

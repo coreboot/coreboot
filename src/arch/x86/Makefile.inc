@@ -341,6 +341,10 @@ ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld $(romstage-objs)
 endif
+	$(NM) $@ | grep -q " [DdBb] "; if [ $$? -eq 0 ]; then \
+		echo "Forbidden global variables in romstage:"; \
+		$(NM) $@ | grep " [DdBb] "; test "$(CONFIG_CPU_AMD_AGESA)" == y; \
+		else true; fi
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

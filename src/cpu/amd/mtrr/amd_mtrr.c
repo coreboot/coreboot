@@ -102,20 +102,6 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 
 }
 
-static void uma_fb_resource(void *gp, struct device *dev, struct resource *res)
-{
-	struct mem_state *state = gp;
-	unsigned long topk;
-
-	topk = resk(res->base + res->size);
-	if (state->tom2k < topk) {
-		state->tom2k = topk;
-	}
-	if ((topk < 4*1024*1024) && (state->tomk < topk)) {
-		state->tomk = topk;
-	}
-}
-
 /* Take a copy of BSP CPUs TOP_MEM and TOP_MEM2 registers,
  * so they can be distributed to AP CPUs. Not strictly MTRRs,
  * but this is not that bad a place to have this code.
@@ -138,6 +124,25 @@ void setup_bsp_ramtop(void)
 
 	msr_nv_setup_ramtop((uint64_t) msr.hi<<32 | msr.lo,
 		(uint64_t) msr2.hi<<32 | msr2.lo);
+}
+
+static void setup_ap_ramtop(void)
+{
+	msr_t msr;
+	uint64_t v;
+
+	v = bsp_topmem();
+	if (!v)
+		return;
+
+	msr.hi = v >> 32;
+	msr.lo = (uint32_t) v;
+	wrmsr(TOP_MEM, msr);
+
+	v = bsp_topmem2();
+	msr.hi = v >> 32;
+	msr.lo = (uint32_t) v;
+	wrmsr(TOP_MEM2, msr);
 }
 
 void amd_setup_mtrrs(void)
@@ -171,9 +176,6 @@ void amd_setup_mtrrs(void)
 
 	state.tomk = state.tom2k = 0;
 	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_UMA_FB, IORESOURCE_MEM | IORESOURCE_UMA_FB,
-		uma_fb_resource, &state);
-	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, &state);
 
@@ -181,20 +183,11 @@ void amd_setup_mtrrs(void)
 
 	disable_cache();
 
-	/* Round state.tomk up to the next greater size that will fit in TOP_MEM */
-	state.tomk = (state.tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
-	msr.hi = state.tomk >> 22;
-	msr.lo = state.tomk << 10;
-	wrmsr(TOP_MEM, msr);
+	setup_ap_ramtop();
 
 	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */
 	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
-	if(state.tom2k > (4*1024*1024)) {
-		/* Round state.tomk up to the next greater size that will fit in TOP_MEM2 */
-		state.tom2k = (state.tom2k + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
-		msr.hi = state.tom2k >> 22;
-		msr.lo = state.tom2k << 10;
-		wrmsr(TOP_MEM2, msr);
+	if (bsp_topmem2() > (uint64_t)1<<32) {
 		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
 		if(has_tom2wb)
 			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;

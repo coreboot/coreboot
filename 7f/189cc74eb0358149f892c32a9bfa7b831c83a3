@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Anton Kochkov <anton.kochkov@gmail.com>
+Code-Review+2: Duncan Laurie <dlaurie@chromium.org>
+Submitted-by: Anton Kochkov <anton.kochkov@gmail.com>
+Submitted-at: Wed, 01 Aug 2012 10:58:44 +0200
+Reviewed-on: http://review.coreboot.org/1373
+Project: coreboot
+Branch: refs/heads/master

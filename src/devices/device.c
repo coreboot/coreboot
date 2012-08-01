@@ -54,10 +54,11 @@ struct resource *free_resources = NULL;
 
 DECLARE_SPIN_LOCK(dev_lock)
 
-
+#if CONFIG_GFXUMA
 /* IGD UMA memory */
 uint64_t uma_memory_base = 0;
 uint64_t uma_memory_size = 0;
+#endif
 
 /**
  * Allocate a new device structure.

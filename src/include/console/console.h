@@ -69,6 +69,8 @@ extern int console_loglevel;
 #ifndef __ROMCC__
 void console_init(void);
 void post_code(u8 value);
+/* this function is weak and can be overridden by a mainboard function. */
+void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 

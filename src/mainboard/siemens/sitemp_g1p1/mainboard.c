@@ -855,26 +855,6 @@ static void enable_dev(device_t dev)
 	dev->ops->init = init;  // rest of mainboard init later
 }
 
- /**
- * @brief
- *
- * @param
- */
-
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	device_t dev;
-	struct resource *res;
-
-	dev = dev_find_slot(0, PCI_DEVFN(0,0));
-	res = probe_resource(dev, 0x1C);
-	if( res ) {
-		printk(BIOS_INFO, "mmconf: base=%0llx size=%0llx\n", res->base, res->size);
-		lb_add_memory_range(mem, LB_MEM_RESERVED, res->base, res->size);
-	}
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_PART_NUMBER)
 	.enable_dev = enable_dev,

@@ -103,7 +103,8 @@ static void ht_dev_read_resources(device_t dev)
 	res->align = log2(res->size);
 	res->gran = log2(res->size);
 	res->limit = 0xffffffffffffffffULL;	/* 64bit */
-	res->flags = IORESOURCE_FIXED | IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED;
+	res->flags = IORESOURCE_FIXED | IORESOURCE_MEM | IORESOURCE_PCI64 |
+		IORESOURCE_ASSIGNED | IORESOURCE_RESERVE;
 
 	compact_resources(dev);
 #endif

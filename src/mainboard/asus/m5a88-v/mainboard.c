@@ -83,11 +83,6 @@ static void m5a88pm_v_enable(device_t dev)
 	enable_int_gfx();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASUS M5A88-V Mainboard")
 	.enable_dev = m5a88pm_v_enable,

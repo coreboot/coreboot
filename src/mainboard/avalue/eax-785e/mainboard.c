@@ -82,11 +82,6 @@ static void eax_785e(device_t dev)
 	enable_int_gfx();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = eax_785e,

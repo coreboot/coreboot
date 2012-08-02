@@ -55,10 +55,6 @@ static void unionstation_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = unionstation_enable,

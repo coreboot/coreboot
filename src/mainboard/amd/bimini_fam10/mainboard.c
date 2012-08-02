@@ -133,11 +133,6 @@ static void bimini_enable(device_t dev)
 	/* get_ide_dma66(); */
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("AMD Bimini Mainboard")
 	.enable_dev = bimini_enable,

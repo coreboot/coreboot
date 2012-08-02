@@ -62,11 +62,6 @@ static void kino_enable(device_t dev)
 	/* get_ide_dma66(); */
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("IEI Kino-780AM2 Mainboard")
 	.enable_dev = kino_enable,

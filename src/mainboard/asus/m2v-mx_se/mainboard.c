@@ -23,11 +23,6 @@
 #include <boot/tables.h>
 #include <southbridge/via/k8t890/k8t890.h>
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASUS M2V-MX SE Mainboard")
 };

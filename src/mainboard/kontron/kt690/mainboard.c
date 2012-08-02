@@ -190,11 +190,6 @@ static void kt690_enable(device_t dev)
 	set_thermal_config();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Kontron KT690/mITX Mainboard")
 	.enable_dev = kt690_enable,

@@ -82,11 +82,6 @@ static void a785e_i_enable(device_t dev)
 	enable_int_gfx();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("ADVANSUS A785E-I Mainboard")
 	.enable_dev = a785e_i_enable,

@@ -92,13 +92,6 @@ static void h8scm_enable(device_t dev)
 	/* get_ide_dma66(); */
 }
 
-#if CONFIG_HAVE_MAINBOARD_RESOURCES
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-#endif
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("AMD H8SCM   Mainboard")
 	.enable_dev = h8scm_enable,

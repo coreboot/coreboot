@@ -49,11 +49,6 @@ void mainboard_suspend_resume(void)
 	send_ec_command(EC_ACPI_ENABLE);
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 static int int15_handler(struct eregs *regs)
 {

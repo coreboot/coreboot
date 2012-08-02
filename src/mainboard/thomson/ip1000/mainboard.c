@@ -28,11 +28,6 @@
 #include <arch/coreboot_tables.h>
 #include <arch/io.h>
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 // setting the bit disables the led.
 #define PARPORT_GPIO_LED_GREEN	(1 << 0)
 #define PARPORT_GPIO_LED_ORANGE	(1 << 1)

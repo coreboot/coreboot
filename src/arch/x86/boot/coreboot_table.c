@@ -667,10 +667,6 @@ unsigned long write_coreboot_table(
 	/* Add reserved regions */
 	add_lb_reserved(mem);
 
-#if CONFIG_HAVE_MAINBOARD_RESOURCES
-	add_mainboard_resources(mem);
-#endif
-
 	lb_dump_memory_ranges(mem);
 
 	/* Note:

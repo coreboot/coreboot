@@ -144,11 +144,6 @@ static void ma785gm_enable(device_t dev)
 	set_gpio40_gfx();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("GIGABYTE MA785GM-US2H   Mainboard")
 	.enable_dev = ma785gm_enable,

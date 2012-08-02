@@ -64,10 +64,6 @@ static void thatcher_enable(device_t dev)
 #endif
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 	.enable_dev = thatcher_enable,

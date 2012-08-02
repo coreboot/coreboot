@@ -82,10 +82,6 @@ static void inagua_enable(device_t dev)
 	set_pcie_dereset();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
 struct chip_operations mainboard_ops = {
 	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 		.enable_dev = inagua_enable,

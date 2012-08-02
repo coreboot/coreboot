@@ -19,13 +19,6 @@
  */
 
 #include <device/device.h>
-#include <boot/tables.h>
-#include <arch/coreboot_tables.h>
-
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
 
 static void mainboard_init(device_t dev)
 {

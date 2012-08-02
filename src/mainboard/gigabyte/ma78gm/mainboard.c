@@ -22,7 +22,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -80,11 +79,6 @@ static void ma78gm_enable(device_t dev)
 
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
-}
-
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
 }
 
 struct chip_operations mainboard_ops = {

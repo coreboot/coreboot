@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -255,11 +254,6 @@ static void ma785gmt_enable(device_t dev)
 	/* get_ide_dma66(); */
 	set_thermal_config();
 	set_gpio40_gfx();
-}
-
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
 }
 
 struct chip_operations mainboard_ops = {

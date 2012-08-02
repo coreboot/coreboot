@@ -292,10 +292,6 @@ config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0
 
-config HAVE_MAINBOARD_RESOURCES
-	bool
-	default n
-
 config USE_OPTION_TABLE
 	bool
 	default n

@@ -27,7 +27,6 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <boot/coreboot_tables.h>
 #include <delay.h>
 #include "rs690.h"
 

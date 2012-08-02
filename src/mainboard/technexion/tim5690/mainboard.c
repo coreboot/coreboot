@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -244,10 +243,9 @@ static void tim5690_enable(device_t dev)
 	set_thermal_config();
 }
 
-int add_mainboard_resources(struct lb_memory *mem)
+void mainboard_coreboot_completed(void)
 {
 	technexion_post_code(LED_MESSAGE_FINISH);
-	return 0;
 }
 
 struct chip_operations mainboard_ops = {

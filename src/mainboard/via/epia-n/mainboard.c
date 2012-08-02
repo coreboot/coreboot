@@ -20,25 +20,6 @@
  */
 
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <boot/tables.h>
-#include <arch/ioapic.h>
-#include <southbridge/via/vt8237r/vt8237r.h>
-#include <cpu/x86/lapic_def.h>
-
-int add_mainboard_resources(struct lb_memory *mem)
-{
-#if CONFIG_IOAPIC
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		IO_APIC_ADDR, 0x1000);
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		LOCAL_APIC_ADDR, 0x1000);
-	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		0xFFFF0000ULL, 0x10000);
-#endif
-	return 0;
-}
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("VIA EPIA-N Mainboard")

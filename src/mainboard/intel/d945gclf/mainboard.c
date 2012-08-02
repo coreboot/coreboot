@@ -19,8 +19,6 @@
 
 #include <device/device.h>
 #include <console/console.h>
-#include <boot/tables.h>
-#include <arch/coreboot_tables.h>
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Intel D945GCLF Mainboard")

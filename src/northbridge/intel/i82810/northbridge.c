@@ -30,7 +30,6 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include "chip.h"
-#include <boot/tables.h>
 #include "northbridge.h"
 #include "i82810.h"
 

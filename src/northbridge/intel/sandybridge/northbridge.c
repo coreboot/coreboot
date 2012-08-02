@@ -33,7 +33,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include <boot/tables.h>
 #include <cbmem.h>
 #include "chip.h"
 #include "sandybridge.h"

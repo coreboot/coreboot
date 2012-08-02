@@ -23,12 +23,10 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <boot/tables.h>
 #include <delay.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
-#include <arch/coreboot_tables.h>
 
 #include <ec/acpi/ec.h>
 #include "m3885.h"

@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
-#include <boot/tables.h>
 #include <delay.h>
 #include "hda_verb.h"
 

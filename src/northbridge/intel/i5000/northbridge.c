@@ -27,7 +27,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include <boot/tables.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include "chip.h"

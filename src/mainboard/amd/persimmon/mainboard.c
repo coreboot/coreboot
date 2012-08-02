@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>

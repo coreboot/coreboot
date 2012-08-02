@@ -19,8 +19,6 @@
  */
 
 #include <device/device.h>
-#include <boot/tables.h>
-#include <arch/coreboot_tables.h>
 
 static void mainboard_init(device_t dev)
 {

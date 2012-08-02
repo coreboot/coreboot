@@ -28,7 +28,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include <boot/tables.h>
 #include <arch/acpi.h>
 #include "chip.h"
 #include "sch.h"

@@ -20,7 +20,6 @@
 
 #include <device/device.h>
 #include <console/console.h>
-#include <boot/tables.h>
 #include "hda_verb.h"
 
 static void verb_setup(void)

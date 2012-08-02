@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include <boot/tables.h>
 #include "chip.h"
 #include "i82830.h"
 

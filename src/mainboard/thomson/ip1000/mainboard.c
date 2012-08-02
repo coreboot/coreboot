@@ -20,12 +20,10 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <boot/tables.h>
 #include <delay.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
-#include <arch/coreboot_tables.h>
 #include <arch/io.h>
 
 // setting the bit disables the led.

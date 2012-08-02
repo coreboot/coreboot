@@ -24,7 +24,6 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>

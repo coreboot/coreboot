@@ -21,8 +21,6 @@
 
 
 #include <device/device.h>
-#include <boot/tables.h>
-#include <arch/coreboot_tables.h>
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Intel Eagle Heights Mainboard")

@@ -338,7 +338,7 @@ static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header 
 }
 #endif
 
-void lb_memory_range(struct lb_memory *mem,
+static void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	int entries;
@@ -503,8 +503,7 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 	}
 }
 
-/* This function is used in mainboard specific code, too */
-void lb_add_memory_range(struct lb_memory *mem,
+static void lb_add_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	lb_remove_memory_range(mem, start, size);

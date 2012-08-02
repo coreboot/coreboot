@@ -123,6 +123,7 @@ void dev_configure(void);
 void dev_enable(void);
 void dev_initialize(void);
 void dev_optimize(void);
+void __attribute__((weak)) mainboard_coreboot_completed(void);
 
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);

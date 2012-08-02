@@ -148,13 +148,13 @@ void rtc_init(int invalid)
 
 		if (cmos_invalid) {
 			/* Now setup a default date of Sat 1 January 2000 */
-			cmos_write(0, 0x00); /* seconds */
-			cmos_write(0, 0x02); /* minutes */
-			cmos_write(1, 0x04); /* hours */
-			cmos_write(7, 0x06); /* day of week */
-			cmos_write(1, 0x07); /* day of month */
-			cmos_write(1, 0x08); /* month */
-			cmos_write(0, 0x09); /* year */
+			cmos_write(0, RTC_CLK_SECOND);
+			cmos_write(0, RTC_CLK_MINUTE);
+			cmos_write(1, RTC_CLK_HOUR);
+			cmos_write(7, RTC_CLK_DAYOFWEEK);
+			cmos_write(1, RTC_CLK_DAYOFMONTH);
+			cmos_write(1, RTC_CLK_MINUTE);
+			cmos_write(0, RTC_CLK_YEAR);
 		}
 #endif
 	}
@@ -338,3 +338,29 @@ int set_option(const char *name, void *value)
 	return 0;
 }
 #endif /* CONFIG_USE_OPTION_TABLE */
+
+/*
+ * If the CMOS is cleared, the rtc_reg has the invalid date. That
+ * hurts some OSes. Even if we don't set USE_OPTION_TABLE, we need
+ * to make sure the date is valid.
+ */
+void rtc_check_update_coms_date(u8 has_century)
+{
+	u8 year;
+
+	/* Note: We need to check if the hardware supports RTC_CLK_ALTCENTURY. */
+	year = cmos_read(RTC_CLK_YEAR);
+
+	/* TODO: So far rtc_year is the only entry to check if the date is valid. */
+	if (year > 0x99) {	/* Invalid date */
+		/* Now setup a default date of Sat 1 January 2000 */
+		cmos_write(0, RTC_CLK_SECOND);
+		cmos_write(0, RTC_CLK_MINUTE);
+		cmos_write(1, RTC_CLK_HOUR);
+		cmos_write(7, RTC_CLK_DAYOFWEEK);
+		cmos_write(1, RTC_CLK_DAYOFMONTH);
+		cmos_write(1, RTC_CLK_MINUTE);
+		cmos_write(0, RTC_CLK_YEAR);
+		has_century ? cmos_write(0x20, RTC_CLK_ALTCENTURY) : NULL;
+	}
+}

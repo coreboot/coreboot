@@ -87,6 +87,7 @@
 #define RTC_CLK_DAYOFMONTH	7
 #define RTC_CLK_MONTH		8
 #define RTC_CLK_YEAR		9
+#define RTC_CLK_ALTCENTURY	0x32
 
 /* On PCs, the checksum is built only over bytes 16..45 */
 #define PC_CKS_RANGE_START	16
@@ -136,6 +137,7 @@ static inline void cmos_write32(u8 offset, u32 value)
 
 #if !defined(__ROMCC__)
 void rtc_init(int invalid);
+void rtc_check_update_coms_date(u8 has_century);
 #if CONFIG_USE_OPTION_TABLE
 int set_option(const char *name, void *val);
 int get_option(void *dest, const char *name);

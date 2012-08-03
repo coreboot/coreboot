@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <arch/ioapic.h>
 #include <device/smbus.h>       /* smbus_bus_operations */
+#include <pc80/mc146818rtc.h>
 #include <console/console.h>    /* printk */
 #include "lpc.h"                /* lpc_read_resources */
 #include "Platform.h"   /* Platfrom Specific Definitions */
@@ -72,11 +73,20 @@ static void lpc_enable_resources(device_t dev)
 	printk(BIOS_SPEW, "SB700 - Late.c - %s - End.\n", __func__);
 }
 
+static void lpc_init(device_t dev)
+{
+	printk(BIOS_DEBUG, "SB700 - Late.c - lpc_init - Start.\n");
+
+	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
+
+	printk(BIOS_DEBUG, "SB700 - Late.c - lpc_init - End.\n");
+}
+
 static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = lpc_enable_resources,
-	.init = 0,
+	.init = lpc_init,
 	.scan_bus = scan_static_bus,
 	.ops_pci = &lops_pci,
 };

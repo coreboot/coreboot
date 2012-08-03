@@ -81,6 +81,8 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", acpi_slp_type);
 	}
 #endif
+
+	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
 }
 
 void set_cbmem_toc(struct cbmem_entry *toc)

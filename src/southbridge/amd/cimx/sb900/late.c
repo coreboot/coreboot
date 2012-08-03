@@ -22,6 +22,7 @@
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
+#include <pc80/mc146818rtc.h>
 #include <console/console.h>	/* printk */
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h" 	/* Platfrom Specific Definitions */
@@ -98,6 +99,8 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - Start.\n");
 	/* SB Configure HPET base and enable bit */
 //-	hpetInit(sb_config, &(sb_config->BuildParameters));
+	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
+
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - End.\n");
 }
 

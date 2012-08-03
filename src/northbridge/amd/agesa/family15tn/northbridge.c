@@ -628,7 +628,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 				mem_hole.node_id = i;
 				break; //only one hole
 			}
-			limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
+			limit_k = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
 			limitk_pri = limit_k;
 		}
 	}

@@ -75,12 +75,6 @@ static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	int bus_isa;
-	int boot_apic_id;
-	unsigned apic_version;
-	unsigned cpu_features;
-	unsigned cpu_feature_flags;
-	struct cpuid_result result;
-	unsigned long cpu_flag;
 	u32 dword;
 	u8 byte;
 

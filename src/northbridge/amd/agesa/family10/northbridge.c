@@ -361,8 +361,8 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 static device_t get_node_pci(u32 nodeid, u32 fn)
 {
-#if NODE_NUMS == 64
-	if (nodeid < 32) {
+#if NODE_NUMS + CONFIG_CDB >= 32
+	if ((CONFIG_CDB + nodeid) < 32) {
 		return dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB + nodeid, fn));
 	} else {
 		return dev_find_slot(CONFIG_CBB-1, PCI_DEVFN(CONFIG_CDB + nodeid - 32, fn));

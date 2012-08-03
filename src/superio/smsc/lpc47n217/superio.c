@@ -133,7 +133,8 @@ static void lpc47n217_pnp_enable(device_t dev)
  */
 static void lpc47n217_init(device_t dev)
 {
-	struct superio_smsc_lpc47n217_config* conf = dev->chip_info;
+	/* TODO: Reserved for future. */
+	/* struct superio_smsc_lpc47n217_config* conf = dev->chip_info; */
 
 	if (!dev->enabled)
 		return;
@@ -142,7 +143,7 @@ static void lpc47n217_init(device_t dev)
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "ERROR: %s %02x not allocated\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx not allocated\n",
 		       dev_path(dev), resource->index);
 		return;
 	}
@@ -160,7 +161,7 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 	} else if (resource->flags & IORESOURCE_IRQ) {
 		lpc47n217_pnp_set_irq(dev, resource->base);
 	} else {
-		printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
 		       dev_path(dev), resource->index);
 		return;
 	}

@@ -76,7 +76,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* 5 mean: 0101 --> Edige-triggered, Active high */
 
 	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi(current, 0xff, 5, 1);
+	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0xff, 5, 1);
 	/* 1: LINT1 connect to NMI */
 
 	return current;

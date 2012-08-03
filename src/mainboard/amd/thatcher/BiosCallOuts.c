@@ -25,6 +25,7 @@
 #include "OptionsIds.h"
 #include "heapManager.h"
 #include "FchPlatform.h"
+#include "cbfs.h"
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -71,6 +72,9 @@ STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_FCH_OEM_CALLOUT,
 	 Fch_Oem_config
 	},
+	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,
+	 BiosHookGfxGetVbiosImage
+	}
 };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -734,4 +738,12 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	printk(BIOS_DEBUG, "Done\n");
 
 	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS BiosHookGfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt)
+{
+	GFX_VBIOS_IMAGE_INFO  *pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;
+	pVbiosImageInfo->ImagePtr = cbfs_find_file("pci"CONFIG_VGA_BIOS_ID".rom", CBFS_TYPE_OPTIONROM);
+	/* printk(BIOS_DEBUG, "IMGptr=%x\n", pVbiosImageInfo->ImagePtr); */
+	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
 }

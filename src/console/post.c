@@ -24,6 +24,20 @@
 
 /* Write POST information */
 
+/* someday romcc will be gone. */
+#ifndef __ROMCC__
+/* Some mainboards have very nice features beyond just a simple display.
+ * They can override this function.
+ */
+void __attribute__((weak)) mainboard_post(uint8_t value)
+{
+}
+
+#else
+/* This just keeps the number of #ifs to a minimum */
+#define mainboard_post(x)
+#endif
+
 void post_code(uint8_t value)
 {
 #if !CONFIG_NO_POST
@@ -34,4 +48,5 @@ void post_code(uint8_t value)
 #endif
 	outb(value, CONFIG_POST_PORT);
 #endif
+	mainboard_post(value);
 }

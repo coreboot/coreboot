@@ -27,8 +27,8 @@ config: libpayload
 	echo "CONFIG_LZMA=y" >> filo/.config
 	echo "CONFIG_FLASH_FLOPPY=y" >> filo/.config
 	echo "CONFIG_VGAHOOKS=y" >> filo/.config
-	# This shows how to force a previously set .config option *off*
-	#echo "# CONFIG_SMBIOS is not set" >> filo/.config
+	@# This shows how to force a previously set .config option *off*
+	@#echo "# CONFIG_SMBIOS is not set" >> filo/.config
 
 filo: config
 	echo "    MAKE       FILO $(NAME-y)"

@@ -29,8 +29,8 @@ config: checkout
 	echo "CONFIG_LZMA=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_FLASH_FLOPPY=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_VGAHOOKS=y" >> $(OUT)/seabios/.config
-	# This shows how to force a previously set .config option *off*
-	#echo "# CONFIG_SMBIOS is not set" >> $(OUT)/seabios/.config
+	@# This shows how to force a previously set .config option *off*
+	@#echo "# CONFIG_SMBIOS is not set" >> $(OUT)/seabios/.config
 
 build: config
 	echo "    MAKE       SeaBIOS $(TAG-y)"

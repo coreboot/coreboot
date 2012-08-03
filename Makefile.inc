@@ -95,7 +95,7 @@ $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) -tc $$(notdir $$(basename $$@)).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
-	# keep %.o: %.c rule from catching the temporary .c file after a make clean
+	@# keep %.o: %.c rule from catching the temporary .c file after a make clean
 	mv $$(basename $$@).c $$(basename $$@).hex
 endef
 

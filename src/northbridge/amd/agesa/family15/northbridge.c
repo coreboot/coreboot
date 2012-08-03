@@ -627,7 +627,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-#define ONE_MB  0x100000
+#define ONE_MB_SHIFT  20
 
 static void setup_uma_memory(void)
 {
@@ -643,13 +643,13 @@ static void setup_uma_memory(void)
 	 *     >=1G                  256M
 	 *     <1G                    64M
 	 */
-	sys_mem = topmem + 16 * ONE_MB;   // Ignore 16MB allocated for C6 when finding UMA size
-	if ((bsp_topmem2()>>32) || (sys_mem >= 2048 * ONE_MB)) {
-		uma_memory_size = 512 * ONE_MB;
-	} else if (sys_mem >= 1024 * ONE_MB) {
-		uma_memory_size = 256 * ONE_MB;
+	sys_mem = topmem + (16 << ONE_MB_SHIFT);   // Ignore 16MB allocated for C6 when finding UMA size
+	if ((bsp_topmem2()>>32) || (sys_mem >= 2048 << ONE_MB_SHIFT)) {
+		uma_memory_size = 512 << ONE_MB_SHIFT;
+	} else if (sys_mem >= 1024 << ONE_MB_SHIFT) {
+		uma_memory_size = 256 << ONE_MB_SHIFT;
 	} else {
-		uma_memory_size = 64 * ONE_MB;
+		uma_memory_size = 64 << ONE_MB_SHIFT;
 	}
 	uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
 

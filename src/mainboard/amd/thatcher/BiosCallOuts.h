@@ -71,6 +71,8 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /* FCH OEM Config*/
 AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
+/* Get Vbios Image */
+AGESA_STATUS BiosHookGfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt);
 #define SB_GPIO_REG02   2
 #define SB_GPIO_REG09   9
 #define SB_GPIO_REG10   10

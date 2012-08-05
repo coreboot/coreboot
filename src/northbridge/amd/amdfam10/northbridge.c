@@ -851,22 +851,9 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 static void setup_uma_memory(void)
 {
 #if CONFIG_GFXUMA
-	msr_t msr, msr2;
-
-	/* TOP_MEM: the top of DRAM below 4G */
-	msr = rdmsr(TOP_MEM);
-	printk(BIOS_INFO,
-	    "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-	     __func__, msr.lo, msr.hi);
-
-	/* TOP_MEM2: the top of DRAM above 4G */
-	msr2 = rdmsr(TOP_MEM2);
-	printk(BIOS_INFO,
-	    "%s, TOP MEM2: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-	     __func__, msr2.lo, msr2.hi);
-
+	uint32_t topmem = (uint32_t) bsp_topmem();
 	/* refer to UMA Size Consideration in 780 BDG. */
-	switch (msr.lo) {
+	switch (topmem) {
 	case 0x10000000:	/* 256M system memory */
 		uma_memory_size = 0x4000000;	/* 64M recommended UMA */
 		break;
@@ -880,11 +867,9 @@ static void setup_uma_memory(void)
 		break;
 	}
 
-	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
+	uma_memory_base = topmem - uma_memory_size;	/* TOP_MEM1 */
 	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
-
-	/* TODO: TOP_MEM2 */
 #endif
 }
 
@@ -903,6 +888,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
+	setup_bsp_ramtop();
 	setup_uma_memory();
 
 #if CONFIG_PCI_64BIT_PREF_MEM

@@ -923,6 +923,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
+	setup_bsp_ramtop();
 #if CONFIG_GFXUMA
 #error Northbridge does not set uma_memory_base or uma_memory_size.
 #endif

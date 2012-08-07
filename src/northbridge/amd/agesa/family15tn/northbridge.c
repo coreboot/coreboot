@@ -1060,11 +1060,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
 			u32 modules = TopologyConfiguration.PlatformNumberOfModules;
 			u32 lapicid_start = 0;
-			struct device_path cpu_path;
-			device_t cpu;
 
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
 			/*
 			 * APIC ID calucation is tightly coupled with AGESA v5 code.
 			 * This calculation MUST match the assignment calculation done
@@ -1086,23 +1082,13 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				lapicid_start = (lapicid_start + 1) * core_max;
 				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
 			}
-			cpu_path.apic.apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (siblings + 1)) : j);
+			u32 apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (siblings + 1)) : j);
 			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
-					i, j, cpu_path.apic.apic_id);
+					i, j, apic_id);
 
-			/* Update CPU in devicetree. */
-			if (enable_node)
-				cpu = alloc_find_dev(cpu_bus, &cpu_path);
-			else
-				cpu = find_dev_path(cpu_bus, &cpu_path);
-			if (!cpu)
-				continue;
-
-			cpu->enabled = enable_node;
-			cpu->path.apic.node_id = i;
-			cpu->path.apic.core_id = j;
-			printk(BIOS_DEBUG, "CPU: %s %s\n",
-				dev_path(cpu), cpu->enabled?"enabled":"disabled");
+			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
+			if (cpu)
+				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
 	return max;

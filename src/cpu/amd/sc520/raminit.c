@@ -90,7 +90,7 @@ void setupsc520(void)
 	/* PAR register setup */
 	/* set up the PAR registers as they are on the MSM586SEG */
 	/*    moved to romstage.c by Stepan, Ron says: */
-	/* NOTE: move this to mainboard.c ASAP */
+	/* NOTE: move this to ramstage.c ASAP */
 	setup_pars();
 
 	/* CPCSF register */

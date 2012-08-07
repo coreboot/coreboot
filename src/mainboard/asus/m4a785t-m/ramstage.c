@@ -18,4 +18,4 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "../m4a785-m/mainboard.c"
+#include "../m4a785-m/ramstage.c"

@@ -70,7 +70,7 @@ void sb7xx_51xx_early_setup(void);
 void sb7xx_51xx_before_pci_init(void);
 #else
 #include <device/pci.h>
-/* allow override in mainboard.c */
+/* allow override in ramstage.c */
 void sb7xx_51xx_setup_sata_phys(struct device *dev);
 
 #endif

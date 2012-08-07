@@ -27,7 +27,7 @@
 #include "chip.h"
 
 /**
- * Cable type detect function, weak so it can be overloaded in mainboard.c
+ * Cable type detect function, weak so it can be overloaded in ramstage.c
  */
 u32 __attribute__((weak)) vt8237_ide_80pin_detect(struct device *dev)
 {

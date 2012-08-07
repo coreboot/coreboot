@@ -26,7 +26,7 @@ void setup_pars(void)
         volatile unsigned long *par;
         par = (unsigned long *) 0xfffef088;
 
-        /* NOTE: Ron says, move this to mainboard.c */
+        /* NOTE: Ron says, move this to ramstage.c */
 	*par++ = 0x00000000;
 	*par++ = 0x340f0070;
 	*par++ = 0x380701f0;

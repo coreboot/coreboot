@@ -16,7 +16,7 @@ void setup_pars(void)
         /* set up the PAR registers as they are on the MSM586SEG */
         par = (unsigned long *) 0xfffef088;
 
-        /* NOTE: move this to mainboard.c ASAP */
+        /* NOTE: move this to ramstage.c ASAP */
         *par++ = 0x607c00a0; /*PAR0: PCI:Base 0xa0000; size 0x1f000:*/
         *par++ = 0x480400d8; /*PAR1: GP BUS MEM:CS2:Base 0xd8, size 0x4:*/
         *par++ = 0x340100ea; /*PAR2: GP BUS IO:CS5:Base 0xea, size 0x1:*/

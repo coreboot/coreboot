@@ -16,7 +16,7 @@ void lb_memory_range(struct lb_memory *mem,
  */
 struct lb_memory *get_lb_mem(void);
 
-/* defined by mainboard.c if the mainboard requires extra resources */
+/* defined by ramstage.c if the mainboard requires extra resources */
 int add_mainboard_resources(struct lb_memory *mem);
 int add_northbridge_resources(struct lb_memory *mem);
 

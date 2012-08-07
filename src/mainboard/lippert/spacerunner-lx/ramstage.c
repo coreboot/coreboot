@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 LiPPERT Embedded Computers GmbH
+ * Copyright (C) 2008 LiPPERT Embedded Computers GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Based on mainboard.c from the SpaceRunner-LX mainboard. */
+/* Based on ramstage.c from AMD's DB800 mainboard. */
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -35,9 +35,6 @@
 	#define SIO_GP1X_CONFIG 0x01
 #endif
 
-/* Bit0 enables COM3's transceiver, bit1 disables the RS485 receiver (e.g. for IR). */
-#define SIO_GP2X_CONFIG 0x00
-
 static const u16 ec_init_table[] = { /* hi=data, lo=index */
 	0x1900,		/* Enable monitoring */
 	0x3050,		/* VIN4,5 enabled */
@@ -51,7 +48,7 @@ static const u16 ec_init_table[] = { /* hi=data, lo=index */
 static void init(struct device *dev)
 {
 	unsigned int gpio_base, i;
-	printk(BIOS_DEBUG, "LiPPERT LiteRunner-LX ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "LiPPERT SpaceRunner-LX ENTER %s\n", __func__);
 
 	/* Init CS5536 GPIOs */
 	gpio_base = pci_read_config32(dev_find_device(PCI_VENDOR_ID_AMD,
@@ -75,10 +72,8 @@ static void init(struct device *dev)
 
 	/* bit2 = RS485_EN2, bit1 = RS485_EN1, bit0 = Live LED */
 	outb(SIO_GP1X_CONFIG, 0x1220); /* Simple-I/O GP17-10 */
-	/* bit1 = COM3_RX_EN, bit0 = COM3_TX_EN */
-	outb(SIO_GP2X_CONFIG, 0x1221); /* Simple-I/O GP27-20 */
 
-	printk(BIOS_DEBUG, "LiPPERT LiteRunner-LX EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "LiPPERT SpaceRunner-LX EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)
@@ -87,6 +82,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("LiPPERT LiteRunner-LX Mainboard")
+	CHIP_NAME("LiPPERT SpaceRunner-LX Mainboard")
 	.enable_dev = enable_dev,
 };

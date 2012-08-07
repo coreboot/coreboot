@@ -53,7 +53,7 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	return 0;
 }
 
-/* This function can be overloaded in mainboard.c */
+/* This function can be overloaded in ramstage.c */
 void __attribute__((weak)) sb7xx_51xx_setup_sata_phys(struct device *dev)
 {
 	/* RPR7.6.1 Program the PHY Global Control to 0x2C00 */

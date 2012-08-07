@@ -29,7 +29,7 @@
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */
 
 
-/*implement in mainboard.c*/
+/*implement in ramstage.c*/
 //void set_pcie_assert(void);
 //void set_pcie_deassert(void);
 void set_pcie_reset(void);

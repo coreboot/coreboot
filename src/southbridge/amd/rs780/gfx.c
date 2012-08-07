@@ -1396,7 +1396,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	set_nbmisc_enable_bits(nb_dev, 0x8, 1 << 15, 0 << 15);
 
 	/* 5.9.5 Reset PCIE_GFX Slot */
-	/* It is done in mainboard.c */
+	/* It is done in ramstage.c */
 	set_pcie_reset();
 	mdelay(1);
 	set_pcie_dereset();

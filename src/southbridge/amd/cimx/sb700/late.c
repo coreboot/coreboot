@@ -32,7 +32,7 @@
 #include "chip.h"               /* struct southbridge_amd_cimx_sb700_config */
 
 
-/*implement in mainboard.c*/
+/*implement in ramstage.c*/
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 

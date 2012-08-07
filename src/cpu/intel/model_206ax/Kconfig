@@ -14,6 +14,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SMM_TSEG
 	select MICROCODE_IN_CBFS
 	#select AP_IN_SIPI_WAIT
+	select TSC_SYNC_MFENCE
 
 config BOOTBLOCK_CPU_INIT
 	string

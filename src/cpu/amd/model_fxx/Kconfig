@@ -3,6 +3,7 @@ config CPU_AMD_MODEL_FXX
 	select MMX
 	select SSE
 	select SSE2
+	select TSC_SYNC_LFENCE
 
 if CPU_AMD_MODEL_FXX
 config UDELAY_IO

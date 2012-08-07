@@ -423,6 +423,8 @@ static void pass1(FILE *fil, struct device *ptr)
 			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
 			fprintf(fil, "#endif\n");
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
+		} else if (ptr->chip->chip == &mainboard) {
+			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
 		}
 		if (ptr->nextdev)
 			fprintf(fil, "\t.next=&%s\n", ptr->nextdev->name);
@@ -628,6 +630,8 @@ int main(int argc, char** argv) {
 			    "ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
 #ifdef MAINBOARDS_HAVE_CHIP_H
 		fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
+#else
+		fprintf(autogen, "extern struct chip_operations mainboard_ops;\n");
 #endif
 		walk_device_tree(autogen, &root, pass1, NULL);
 

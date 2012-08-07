@@ -10,10 +10,16 @@ typedef struct tsc_struct tsc_t;
 static inline tsc_t rdtsc(void)
 {
 	tsc_t res;
-	__asm__ __volatile__ (
+	asm volatile (
+#if CONFIG_TSC_SYNC_MFENCE
+		"mfence\n"
+#endif
+#if CONFIG_TSC_SYNC_LFENCE
+		"lfence\n"
+#endif
 		"rdtsc"
 		: "=a" (res.lo), "=d"(res.hi) /* outputs */
-		);
+	);
 	return res;
 }
 
@@ -22,7 +28,16 @@ static inline tsc_t rdtsc(void)
 static inline unsigned long long rdtscll(void)
 {
 	unsigned long long val;
-	asm volatile ("rdtsc" : "=A" (val));
+	asm volatile (
+#if CONFIG_TSC_SYNC_MFENCE
+		"mfence\n"
+#endif
+#if CONFIG_TSC_SYNC_LFENCE
+		"lfence\n"
+#endif
+		"rdtsc"
+		: "=A" (val)
+	);
 	return val;
 }
 #endif

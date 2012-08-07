@@ -3,6 +3,7 @@ config CPU_AMD_MODEL_10XXX
 	select SSE
 	select SSE2
 	select MMCONF_SUPPORT_DEFAULT
+	select TSC_SYNC_LFENCE
 
 if CPU_AMD_MODEL_10XXX
 config CPU_ADDR_BITS

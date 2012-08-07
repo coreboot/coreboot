@@ -23,6 +23,22 @@ config TSC_CALIBRATE_WITH_IO
 	bool
 	default n
 
+config TSC_SYNC_LFENCE
+	bool
+	default n
+	help
+	  The CPU driver should select this if the CPU needs
+	  to execute an lfence instruction in order to synchronize
+	  rdtsc. This is true for all modern AMD CPUs.
+
+config TSC_SYNC_MFENCE
+	bool
+	default n
+	help
+	  The CPU driver should select this if the CPU needs
+	  to execute an mfence instruction in order to synchronize
+	  rdtsc. This is true for all modern Intel CPUs.
+
 config XIP_ROM_SIZE
 	hex
 	default ROM_SIZE if ROMCC

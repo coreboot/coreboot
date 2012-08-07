@@ -102,13 +102,14 @@ void hardwaremain(int boot_complete)
 #endif
 	/* Now actually enable devices on the bus */
 	dev_enable();
+	post_code(POST_DEVICES_ENABLED);
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[4] = rdtsc();
 #endif
 	/* And of course initialize devices on the bus */
 	dev_initialize();
-	post_code(POST_DEVICES_ENABLED);
+	post_code(POST_DEVICES_INITIALIZED);
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamps[5] = rdtsc();

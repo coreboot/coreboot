@@ -45,11 +45,7 @@ static struct device mainboard = {
 	.id = 0,
 	.chip = &mainboard,
 	.type = chip,
-#ifdef MAINBOARDS_HAVE_CHIP_H
 	.chiph_exists = 1,
-#else
-	.chiph_exists = 0,
-#endif
 	.children = &root
 };
 
@@ -565,14 +561,12 @@ int main(int argc, char** argv) {
 	}
 
 	headers.next = 0;
-#ifdef MAINBOARDS_HAVE_CHIP_H
 	if (scan_mode == STATIC_MODE) {
 		headers.next = malloc(sizeof(struct header));
 		headers.next->name = malloc(strlen(mainboard)+12);
 		headers.next->next = 0;
 		sprintf(headers.next->name, "mainboard/%s", mainboard);
 	}
-#endif
 
 	FILE *filec = fopen(devtree, "r");
 	if (!filec) {
@@ -616,11 +610,8 @@ int main(int argc, char** argv) {
 		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 		fprintf(autogen, "\n/* pass 0 */\n");
 		walk_device_tree(autogen, &root, pass0, NULL);
-		fprintf(autogen, "\n/* pass 1 */\n"
-			    "struct device *last_dev = &%s;\n", lastdev->name);
-#ifdef MAINBOARDS_HAVE_CHIP_H
-		fprintf(autogen, "struct mainboard_config mainboard_info_0;\n");
-#endif
+		fprintf(autogen, "\n/* pass 1 */\nstruct mainboard_config mainboard_info_0;\n"
+						"struct device *last_dev = &%s;\n", lastdev->name);
 		walk_device_tree(autogen, &root, pass1, NULL);
 
 	} else if (scan_mode == BOOTBLOCK_MODE) {

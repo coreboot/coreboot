@@ -27,6 +27,7 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb600/sb600.h>
 #include <superio/ite/it8712f/it8712f.h>
+#include "chip.h"
 #include "tn_post_code.h"
 #include "vgabios.h"
 

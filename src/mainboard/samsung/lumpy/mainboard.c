@@ -34,6 +34,7 @@
 #include <arch/coreboot_tables.h>
 #include <ec/smsc/mec1308/ec.h>
 #include "hda_verb.h"
+#include "chip.h"
 #include "ec.h"
 #include "onboard.h"
 #include <southbridge/intel/bd82x6x/pch.h>

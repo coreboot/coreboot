@@ -24,6 +24,7 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include "southbridge/via/vt8237r/vt8237r.h"
+#include "chip.h"
 
 u32 vt8237_ide_80pin_detect(struct device *dev)
 {

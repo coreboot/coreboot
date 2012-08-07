@@ -27,6 +27,7 @@
 #endif
 #include <arch/coreboot_tables.h>
 #include <arch/io.h>
+#include "chip.h"
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

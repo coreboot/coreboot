@@ -26,6 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/sb600/sb600.h>
+#include "chip.h"
 
 #define ADT7475_ADDRESS 0x2E
 #define SMBUS_IO_BASE 0x1000

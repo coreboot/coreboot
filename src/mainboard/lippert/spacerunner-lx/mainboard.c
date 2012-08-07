@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "chip.h"
 
 /* Bit0 turns off the Live LED, bit1 switches Com1 to RS485, bit2 same for Com2. */
 #if CONFIG_ONBOARD_UARTS_RS485

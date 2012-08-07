@@ -28,6 +28,7 @@
 #include <arch/acpi.h>
 #include "BiosCallOuts.h"
 #include <cpu/amd/agesa/s3_resume.h>
+#include "chip.h"
 #include "agesawrapper.h"
 
 /*************************************************

@@ -34,6 +34,7 @@
 #include <southbridge/amd/rs690/chip.h>
 #include <southbridge/amd/rs690/rs690.h>
 #include <superio/ite/it8712f/it8712f.h>
+#include "chip.h"
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
@@ -672,14 +673,13 @@ struct {
 };
 
 
-unsigned int plx_present = 0;
+static void update_subsystemid( device_t dev ) {
 
-static void update_subsystemid( device_t dev )
-{
 	int i;
+	struct mainboard_config *mb = dev->chip_info;
 
 	dev->subsystem_vendor = 0x110a;
-	if( plx_present ){
+	if( mb->plx_present ){
 		dev->subsystem_device = 0x4076; // U1P1 = 0x4076, U1P0 = 0x4077
 	} else {
 		dev->subsystem_device = 0x4077; // U1P0 = 0x4077
@@ -701,12 +701,12 @@ static void update_subsystemid( device_t dev )
  * @param
  */
 
-static void detect_hw_variant( device_t dev )
-{
+static void detect_hw_variant( device_t dev ) {
 
 	device_t nb_dev =0, dev2 = 0;
 	struct southbridge_amd_rs690_config *cfg;
 	u32 lc_state, id = 0;
+	struct mainboard_config *mb = dev->chip_info;
 
 	printk(BIOS_INFO, "Scan for PLX device ...\n");
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
@@ -782,10 +782,10 @@ static void detect_hw_variant( device_t dev )
 		break;
 	}
 
-	plx_present = 0;
+	mb->plx_present = 0;
 	if( id == PLX_VIDDID ){
 		printk(BIOS_INFO, "found PLX device\n");
-		plx_present = 1;
+		mb->plx_present = 1;
 		cfg = (struct southbridge_amd_rs690_config *)dev2->chip_info;
 		if( cfg->gfx_tmds ) {
 			printk(BIOS_INFO, "Disable 'gfx_tmds' support\n");

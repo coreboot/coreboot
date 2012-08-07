@@ -27,6 +27,7 @@
 #include <device/pci_def.h>
 #include "southbridge/amd/sb700/sb700.h"
 #include "southbridge/amd/sb700/smbus.h"
+#include "chip.h"
 
 void set_pcie_dereset(void);
 void set_pcie_reset(void);

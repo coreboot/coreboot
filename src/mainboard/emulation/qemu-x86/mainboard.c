@@ -5,6 +5,7 @@
 #include <device/pci_ops.h>
 #include <pc80/keyboard.h>
 #include <arch/io.h>
+#include "chip.h"
 
 /* not sure how these are routed in qemu */
 static const unsigned char enetIrqs[4] = { 11, 0, 0, 0 };

@@ -26,6 +26,7 @@
 #include <arch/ioapic.h>
 #include <southbridge/via/vt8237r/vt8237r.h>
 #include <cpu/x86/lapic_def.h>
+#include "chip.h"
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

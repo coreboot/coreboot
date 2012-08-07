@@ -4,6 +4,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cpu/amd/sc520.h>
+#include "chip.h"
 
 
 static void irqdump(void)

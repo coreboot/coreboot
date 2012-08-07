@@ -25,6 +25,7 @@
 #include <arch/io.h>
 #include <boot/tables.h>
 #include <delay.h>
+#include "chip.h"
 #include "hda_verb.h"
 
 #include "ec_oem.c"

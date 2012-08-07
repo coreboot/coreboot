@@ -26,6 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 //#include <southbridge/amd/sb900/sb900.h>
+#include "chip.h"
 
 #define ONE_MB  0x100000
 //#define SMBUS_IO_BASE 0x6000

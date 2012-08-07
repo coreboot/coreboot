@@ -19,6 +19,7 @@
  */
 
 #include <device/device.h>
+#include "chip.h"
 
 #if 0
 #include "hda_verb.h"

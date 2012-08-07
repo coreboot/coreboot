@@ -19,6 +19,7 @@
  */
 
 #include <device/device.h>
+#include "chip.h"
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Soyo SY-6BA+ III Mainboard")

@@ -844,6 +844,7 @@ static void cpu_bus_set_resources(device_t dev) {
 
 static u32 cpu_bus_scan(device_t dev, u32 max)
 {
+	struct bus *cpu_bus = dev->link_list;
 	device_t cpu;
 	int apic_id, cores_found;
 
@@ -855,20 +856,10 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	cores_found = (pci_read_config32(dev_find_slot(0,PCI_DEVFN(0x18,0x3)), 0xe8) >> 12) & 3;
 	printk(BIOS_DEBUG, "  AP siblings=%d\n", cores_found);
 
-
 	for (apic_id = 0; apic_id <= cores_found; apic_id++) {
-		struct device_path cpu_path;
-
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.apic.apic_id = apic_id;
-		cpu = alloc_find_dev(dev->link_list, &cpu_path);
-		if (!cpu)
-			continue;
-		cpu->enabled = 1;
-		cpu->path.apic.node_id = 0;
-		cpu->path.apic.core_id = apic_id;
-		printk(BIOS_DEBUG, "CPU: %s %s\n",
-			dev_path(cpu), cpu->enabled?"enabled":"disabled");
+		cpu = add_cpu_device(cpu_bus, apic_id, 1);
+		if (cpu)
+			amd_cpu_topology(cpu, 0, apic_id);
 	}
 	return max;
 }

@@ -153,6 +153,16 @@ device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 device_t dev_find_lapic(unsigned apic_id);
 int dev_count_cpu(void);
 
+void remap_bsp_lapic(struct bus *cpu_bus);
+device_t add_cpu_device(struct bus *cpu_bus, unsigned apic_id, int enabled);
+void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned core, unsigned thread);
+
+#define amd_cpu_topology(cpu, node, core) \
+	set_cpu_topology(cpu, node, 0, core, 0)
+
+#define intel_cpu_topology(cpu, package, core, thread) \
+	set_cpu_topology(cpu, 0, package, core, thread)
+
 /* Debug functions */
 void print_resource_tree(struct device * root, int debug_level,
 			 const char *msg);

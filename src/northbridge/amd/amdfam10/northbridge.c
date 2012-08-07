@@ -1358,6 +1358,10 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 #endif
 	/* Find which cpus are present */
 	cpu_bus = dev->link_list;
+
+	/* Always use the devicetree node with lapic_id 0 for BSP. */
+	remap_bsp_lapic(cpu_bus);
+
 	for(i = 0; i < nodes; i++) {
 		device_t cdb_dev;
 		unsigned busn, devn;
@@ -1420,34 +1424,18 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		}
 
 		for (j = 0; j <=jj; j++ ) {
-			struct device_path cpu_path;
-			device_t cpu;
-
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
-
-			/* Update CPU in devicetree. */
-			if (enable_node)
-				cpu = alloc_find_dev(cpu_bus, &cpu_path);
-			else
-				cpu = find_dev_path(cpu_bus, &cpu_path);
-			if (!cpu)
-				continue;
+			u32 apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
 
 #if CONFIG_ENABLE_APIC_EXT_ID && (CONFIG_APIC_ID_OFFSET>0)
 			if(sysconf.enabled_apic_ext_id) {
-				if (cpu->path.apic.apic_id != 0 || sysconf.lift_bsp_apicid) {
-					cpu->path.apic.apic_id += sysconf.apicid_offset;
+				if (apic_id != 0 || sysconf.lift_bsp_apicid) {
+					apic_id += sysconf.apicid_offset;
 				}
 			}
 #endif
-			cpu->enabled = enable_node;
-			cpu->path.apic.node_id = i;
-			cpu->path.apic.core_id = j;
-			printk(BIOS_DEBUG, "CPU: %s %s\n",
-				dev_path(cpu), cpu->enabled?"enabled":"disabled");
-
+			device_t cpu = add_cpu_device(cpu_bus, apic_id, enable_node);
+			if (cpu)
+				amd_cpu_topology(cpu, i, j);
 		} //j
 	}
 	return max;

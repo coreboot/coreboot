@@ -1,5 +1,6 @@
 ramstage-y += device.c
 ramstage-y += root_device.c
+ramstage-y += cpu_device.c
 ramstage-y += device_util.c
 ramstage-y += pci_device.c
 ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c

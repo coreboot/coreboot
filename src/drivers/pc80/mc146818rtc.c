@@ -171,6 +171,8 @@ void rtc_init(int invalid)
 	cmos_write(RTC_CONTROL_DEFAULT, RTC_CONTROL);
 	/* Setup the frequency it operates at */
 	cmos_write(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
+	/* Ensure all reserved bits are 0 in register D */
+	cmos_write(RTC_VRT, RTC_VALID);
 
 #if CONFIG_USE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */

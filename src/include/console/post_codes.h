@@ -134,6 +134,13 @@
 #define POST_DEVICES_ENABLED			0x89
 
 /**
+ * \brief Devices have been initialized
+ *
+ * Devices have been initialized.
+ */
+#define POST_DEVICES_INITIALIZED		0x8a
+
+/**
  * \brief Entry into elf boot
  *
  * This POST code is called right before invoking jmp_to_elf_entry()

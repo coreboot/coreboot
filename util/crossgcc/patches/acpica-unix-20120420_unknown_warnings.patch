@@ -1,12 +1,16 @@
 --- acpica-unix-20120420/source/compiler/Makefile	2012-04-21 04:02:33.000000000 +0800
-+++ acpica-unix-20120420/source/compiler/Makefile	2012-08-08 16:30:14.000000000 +0800
-@@ -261,15 +261,11 @@
++++ acpica-unix-20120420/source/compiler/Makefile	2012-08-08 18:06:11.000000000 +0800
+@@ -257,19 +257,12 @@
+ # gcc 4+ flags
+ #
+ CWARNINGFLAGS += \
+-    -Waddress \
      -Waggregate-return \
      -Wchar-subscripts \
-     -Wempty-body \
+-    -Wempty-body \
 -    -Wlogical-op \
      -Wmissing-declarations \
-     -Wmissing-field-initializers \
+-    -Wmissing-field-initializers \
 -    -Wmissing-parameter-type \
      -Wnested-externs \
 -    -Wold-style-declaration \

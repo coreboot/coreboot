@@ -50,9 +50,9 @@
 #define CMOS_OFFSET_MRC_SEED_S3  (CMOS_VSTART_mrc_scrambler_seed_s3 >> 3)
 #define CMOS_OFFSET_MRC_SEED_CHK (CMOS_VSTART_mrc_scrambler_seed_chk >> 3)
 #else
-#define CMOS_OFFSET_MRC_SEED     112
-#define CMOS_OFFSET_MRC_SEED_S3  116
-#define CMOS_OFFSET_MRC_SEED_CHK 120
+#define CMOS_OFFSET_MRC_SEED     152
+#define CMOS_OFFSET_MRC_SEED_S3  156
+#define CMOS_OFFSET_MRC_SEED_CHK 160
 #endif
 
 static void save_mrc_data(struct pei_data *pei_data)

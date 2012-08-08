@@ -35,6 +35,15 @@ util/crossgcc/w32api-*/
 *.\#
 *.swp
 *.bin
+
+#
+# KDE editors create lots of backup files whenever
+# a file is edited, so just ignore them
+*~
+*.kate-swp
+# Ignore Kdevelop project file
+.kdev4
+
 util/ectool/ectool
 util/inteltool/.dependencies
 util/inteltool/inteltool

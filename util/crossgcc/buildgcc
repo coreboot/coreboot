@@ -289,7 +289,7 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
 		test "$suffix" = "bz2" && FLAGS=jxf
 		test "$suffix" = "lzma" && FLAGS="--lzma -xf"
 		$TAR $FLAGS tarballs/`basename $archive`
-		for patch in patches/${dir}_*.patch; do
+		for patch in `ls patches/${dir}_*.patch 2>/dev/null`; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
 			$PATCH -s -N -p0 < `echo $patch` || \

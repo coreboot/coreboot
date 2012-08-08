@@ -1,5 +1,5 @@
---- binutils-2.21.1/bfd/Makefile.in	2011-06-27 01:57:12.000000000 -0700
-+++ binutils-2.21.1/bfd/Makefile.in	2011-10-11 21:59:15.000000000 -0700
+--- binutils-2.22/bfd/Makefile.in	2011-06-27 01:57:12.000000000 -0700
++++ binutils-2.22/bfd/Makefile.in	2011-10-11 21:59:15.000000000 -0700
 @@ -323,7 +323,7 @@
  RELEASE = y
  INCDIR = $(srcdir)/../include

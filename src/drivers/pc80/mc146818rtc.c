@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <build.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
@@ -79,15 +80,14 @@
 
 static void rtc_update_cmos_date(u8 has_century)
 {
-	/* Now setup a default date of Sat 1 January 2000 */
-	/* TODO: Set the time as building time? Is it reasonable? */
+	/* Now setup a default date equals to the build date */
 	cmos_write(0, RTC_CLK_SECOND);
 	cmos_write(0, RTC_CLK_MINUTE);
 	cmos_write(1, RTC_CLK_HOUR);
-	cmos_write(7, RTC_CLK_DAYOFWEEK);
-	cmos_write(1, RTC_CLK_DAYOFMONTH);
-	cmos_write(1, RTC_CLK_MINUTE);
-	cmos_write(0, RTC_CLK_YEAR);
+	cmos_write(COREBOOT_BUILD_WEEKDAY, RTC_CLK_DAYOFWEEK);
+	cmos_write(COREBOOT_BUILD_DAY, RTC_CLK_DAYOFMONTH);
+	cmos_write(COREBOOT_BUILD_MONTH, RTC_CLK_MINUTE);
+	cmos_write(COREBOOT_BUILD_YEAR, RTC_CLK_YEAR);
 	if (has_century) cmos_write(0x20, RTC_CLK_ALTCENTURY);
 }
 
@@ -129,9 +129,10 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 
 void rtc_init(int invalid)
 {
+	int cmos_invalid = 0;
+	int checksum_invalid = 0;
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char x;
-	int cmos_invalid, checksum_invalid;
 #endif
 
 	printk(BIOS_DEBUG, "RTC Init\n");
@@ -146,17 +147,18 @@ void rtc_init(int invalid)
 			PC_CKS_RANGE_END,PC_CKS_LOC);
 
 #define CLEAR_CMOS 0
+#else
+#define CLEAR_CMOS 1
+#endif
+
 	if (invalid || cmos_invalid || checksum_invalid) {
-		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
-			invalid?" Clear requested":"",
-			cmos_invalid?" Power Problem":"",
-			checksum_invalid?" Checksum invalid":"",
-			CLEAR_CMOS?" zeroing cmos":"");
 #if CLEAR_CMOS
+		int i;
+
 		cmos_write(0, 0x01);
 		cmos_write(0, 0x03);
 		cmos_write(0, 0x05);
-		for(i = 10; i < 48; i++) {
+		for(i = 10; i < 128; i++) {
 			cmos_write(0, i);
 		}
 
@@ -164,8 +166,12 @@ void rtc_init(int invalid)
 			rtc_update_cmos_date(RTC_HAS_NO_ALTCENTURY);
 		}
 #endif
+		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
+			invalid?" Clear requested":"",
+			cmos_invalid?" Power Problem":"",
+			checksum_invalid?" Checksum invalid":"",
+			CLEAR_CMOS?" zeroing cmos":"");
 	}
-#endif
 
 	/* Setup the real time clock */
 	cmos_write(RTC_CONTROL_DEFAULT, RTC_CONTROL);

@@ -78,7 +78,7 @@
  *
  */
 VOID
-Fchdef180  (
+FchInitLateAzalia  (
   IN  VOID     *FchDataPtr
   )
 {

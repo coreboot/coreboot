@@ -130,7 +130,7 @@
       extern FCH_TASK_ENTRY    FchInitEnvIde;
       extern FCH_TASK_ENTRY    FchInitEnvSd;
       extern FCH_TASK_ENTRY    FchInitEnvIr;
-      extern FCH_TASK_ENTRY    Fchdef178 ;
+      extern FCH_TASK_ENTRY    FchInitEnvAzalia;
       extern FCH_TASK_ENTRY    FchInitEnvHwm;
       extern FCH_TASK_ENTRY    FchInitEnvImc;
     #endif
@@ -139,6 +139,7 @@
   #ifdef AGESA_ENTRY_INIT_MID
     #if AGESA_ENTRY_INIT_MID == TRUE
       extern FCH_TASK_ENTRY    FchInitMidHwm;
+      extern FCH_TASK_ENTRY    FchInitMidAzalia;
       extern FCH_TASK_ENTRY    FchInitMidGec;
       extern FCH_TASK_ENTRY    FchInitMidSata;
       extern FCH_TASK_ENTRY    FchInitMidIde;
@@ -167,6 +168,7 @@
       extern FCH_TASK_ENTRY    FchInitLateUsbOhci;
       extern FCH_TASK_ENTRY    FchInitLateUsbXhci;
       extern FCH_TASK_ENTRY    FchInitLateImc;
+      extern FCH_TASK_ENTRY    FchInitLateAzalia;
       extern FCH_TASK_ENTRY    FchInitLateHwm;
     #endif
   #endif
@@ -247,6 +249,7 @@
   #undef  FCH_NO_IMC_SUPPORT
   #undef  FCH_NO_SD_SUPPORT
   #undef  FCH_NO_IR_SUPPORT
+  #undef  FCH_NO_AZALIA_SUPPORT
   #undef  FCH_NO_HWM_SUPPORT
 
   #define FCH_NO_GEC_SUPPORT        TRUE
@@ -504,6 +507,19 @@
     #define InstallFchInitLateIr        &FchTaskDummy
   #endif
 
+  #ifndef FCH_NO_AZALIA_SUPPORT
+    #define BLOCK_AZALIA_SIZE           sizeof (FCH_AZALIA)
+    #define InstallFchInitResetAzalia   &FchInitResetAzalia
+    #define InstallFchInitEnvAzalia     &FchInitEnvAzalia
+    #define InstallFchInitMidAzalia     &FchInitMidAzalia
+    #define InstallFchInitLateAzalia    &FchInitLateAzalia
+  #else
+    #define BLOCK_AZALIA_SIZE           0
+    #define InstallFchInitResetAzalia   &FchTaskDummy
+    #define InstallFchInitEnvAzalia     &FchTaskDummy
+    #define InstallFchInitMidAzalia     &FchTaskDummy
+    #define InstallFchInitLateAzalia    &FchTaskDummy
+  #endif
 
   #ifndef FCH_NO_HWM_SUPPORT
     #define BLOCK_HWM_SIZE              sizeof (FCH_HWM)
@@ -618,6 +634,11 @@
     #define CFG_HPET_BASE_ADDRESS           DFLT_HPET_BASE_ADDRESS
   #endif
 
+  #ifdef BLDCFG_AZALIA_SSID
+    #define CFG_AZALIA_SSID                 BLDCFG_AZALIA_SSID
+  #else
+    #define CFG_AZALIA_SSID                 DFLT_AZALIA_SSID
+  #endif
 
   #ifdef BLDCFG_SMBUS_SSID
     #define CFG_SMBUS_SSID                  BLDCFG_SMBUS_SSID
@@ -836,7 +857,7 @@
         InstallFchInitEnvSata,
         InstallFchInitEnvIde,
         InstallFchInitEnvGec,
-        Fchdef178 ,
+        InstallFchInitEnvAzalia,
         InstallFchInitEnvAb,
         InstallFchInitEnvHwm,
         InstallFchInitEnvGppPhaseII,
@@ -861,6 +882,7 @@
         InstallFchInitMidSata,
         InstallFchInitMidIde,
         InstallFchInitMidGec,
+        InstallFchInitMidAzalia,
         InstallFchInitMidHwm,
         NULL
       };
@@ -883,6 +905,7 @@
         InstallFchInitLateSata,
         InstallFchInitLateIde,
         InstallFchInitLateGec,
+        &FchTaskDummy,
         InstallFchInitLateImc,
         InstallFchInitLateHwm,
         InstallFchInitLateGpp,
@@ -911,7 +934,7 @@
         InstallFchInitEnvSata,
         InstallFchInitEnvIde,
         InstallFchInitEnvGec,
-        Fchdef178 ,
+        InstallFchInitEnvAzalia,
         InstallFchInitEnvAb,
         InstallFchInitEnvGppPhaseII,
         InstallFchInitEnvAbS,
@@ -936,6 +959,7 @@
         InstallFchInitMidSata,
         InstallFchInitMidIde,
         InstallFchInitMidGec,
+        InstallFchInitMidAzalia,
         InstallFchInitLateSata,
         InstallFchInitLateIde,
         InstallFchInitLateHwAcpi,
@@ -977,6 +1001,7 @@
   #define CFG_SMI_CMD_PORT_ADDRESS           0
   #define CFG_ACPI_PMA_CNTBLK_ADDRESS        0
   #define CFG_GEC_SHADOW_ROM_BASE            0
+  #define CFG_AZALIA_SSID                    0
   #define CFG_SMBUS_SSID                     0
   #define CFG_IDE_SSID                       0
   #define CFG_SATA_AHCI_SSID                 0

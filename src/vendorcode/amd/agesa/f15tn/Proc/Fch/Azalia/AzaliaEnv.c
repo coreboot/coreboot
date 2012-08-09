@@ -84,7 +84,7 @@
  *
  */
 VOID
-Fchdef178  (
+FchInitEnvAzalia (
   IN  VOID     *FchDataPtr
   )
 {
@@ -94,15 +94,15 @@ Fchdef178  (
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
 
-  if ( LocalCfgPtr->Azalia.AzaliaEnable == hdaconf1  ) {
+  if ( LocalCfgPtr->Azalia.AzaliaEnable == AzDisable  ) {
     RwMem (ACPI_MMIO_BASE + PMIO_BASE + 0xEB , AccessWidth8, (UINT32)~BIT0, 0);
   } else {
     RwMem (ACPI_MMIO_BASE + PMIO_BASE + 0xEB , AccessWidth8, (UINT32)~BIT0, BIT0);
-    RwPci ((((0x14<<3)+2)  << 16) + FCH_AZ_REG4C, AccessWidth8, (UINT32)~BIT0, BIT0, StdHeader);
+    RwPci ((((0x14<<3)+2)  << 16) + 0x4C, AccessWidth8, (UINT32)~BIT0, BIT0, StdHeader);
 
     if ( LocalCfgPtr->Azalia.AzaliaMsiEnable) {
-      RwPci ((((0x14<<3)+2)  << 16) + FCH_AZ_REG44, AccessWidth32, (UINT32)~BIT8, BIT8, StdHeader);
-      RwPci ((((0x14<<3)+2)  << 16) + FCH_AZ_REG60, AccessWidth32, (UINT32)~BIT16, BIT16, StdHeader);
+      RwPci ((((0x14<<3)+2)  << 16) + 0x44, AccessWidth32, (UINT32)~BIT8, BIT8, StdHeader);
+      RwPci ((((0x14<<3)+2)  << 16) + 0x60, AccessWidth32, (UINT32)~BIT16, BIT16, StdHeader);
     }
   }
 }

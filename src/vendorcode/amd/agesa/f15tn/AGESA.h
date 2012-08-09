@@ -529,9 +529,9 @@ typedef enum {
 
 /// Configuration values for AzaliaController
 typedef enum {
-  hdaconf0  = 0,                         ///< Auto - Detect Azalia controller automatically
-  hdaconf1 ,                          ///< Diable - Disable Azalia controller
-  hdaconf2                             ///< Enable - Enable Azalia controller
+  AzAuto = 0,                         ///< Auto - Detect Azalia controller automatically
+  AzDisable,                          ///< Diable - Disable Azalia controller
+  AzEnable                            ///< Enable - Enable Azalia controller
 } HDA_CONFIG;
 
 /// Configuration values for IrConfig

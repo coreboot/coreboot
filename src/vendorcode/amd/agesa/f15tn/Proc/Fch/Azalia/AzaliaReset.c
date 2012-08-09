@@ -80,7 +80,7 @@
  *
  */
 VOID
-Fchdef174  (
+FchInitResetAzalia  (
   IN  VOID     *FchDataPtr
   )
 {

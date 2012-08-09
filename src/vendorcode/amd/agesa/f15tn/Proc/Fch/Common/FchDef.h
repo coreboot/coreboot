@@ -170,13 +170,13 @@ UINT32 GppGetFchTempBus (IN AMD_CONFIG_PARAMS *StdHeader);
 ///
 ///  Pei Phase
 ///
-VOID  Fchdef174     (IN VOID  *FchDataPtr);
+VOID  FchInitResetAzalia     (IN VOID  *FchDataPtr);
 ///
 ///  Dxe Phase
 ///
-VOID  Fchdef178       (IN VOID  *FchDataPtr);
-VOID  Fchdef179       (IN VOID  *FchDataPtr);
-VOID  Fchdef180      (IN VOID  *FchDataPtr);
+VOID  FchInitEnvAzalia      (IN VOID  *FchDataPtr);
+VOID  FchInitMidAzalia      (IN VOID  *FchDataPtr);
+VOID  FchInitLateAzalia     (IN VOID  *FchDataPtr);
 
 
 ///

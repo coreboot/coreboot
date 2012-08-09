@@ -89,7 +89,7 @@
  */
 CONST FCH_INTERFACE ROMDATA FchInterfaceDefault = {
   SdAmda,              // SdConfig
-  hdaconf2 ,            // AzaliaControl
+  AzEnable,            // AzaliaControl
   IrRxTx0Tx1,          // IrConfig
   TRUE,                // UmiGen2
   SataAhci,            // SataClass
@@ -273,7 +273,7 @@ FCH_DATA_BLOCK   InitEnvCfgDefault = {
   },
 
   {                          // FCH_AZALIA
-    hdaconf2,               // AzaliaEnable
+    AzEnable,               // AzaliaEnable
     FALSE,                   // AzaliaMsiEnable
     0x00000000,              // AzaliaSsid
     1,                       // AzaliaPinCfg

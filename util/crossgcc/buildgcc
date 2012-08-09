@@ -54,7 +54,7 @@ BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
-IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
+IASL_ARCHIVE="https://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
 EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
 

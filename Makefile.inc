@@ -30,7 +30,7 @@ export MAINBOARDDIR
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).
 ## These typically have suffixes .debug .elf .bin and .map
-export objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+export objcbfs := $(obj)/cbfs/$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
 
 ## Based on the active configuration, Makefile conditionally collects
 ## the required assembly includes and saves them in a file.

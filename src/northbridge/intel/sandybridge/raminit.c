@@ -251,7 +251,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		if (rv) {
 			switch (rv) {
 			case -1:
-				printk(BIOS_ERR, "PEI version mismatch.");
+				printk(BIOS_ERR, "PEI version mismatch.\n");
 				break;
 			case -2:
 				printk(BIOS_ERR, "Invalid memory frequency.\n");

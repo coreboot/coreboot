@@ -23,3 +23,5 @@ romstage-y += vbnv.c
 ramstage-y += vbnv.c
 romstage-y += vboot.c
 ramstage-y += gnvs.c
+romstage-y += fmap.c
+ramstage-y += fmap.c

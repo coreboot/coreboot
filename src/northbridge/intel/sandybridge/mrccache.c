@@ -28,6 +28,9 @@
 #include "sandybridge.h"
 #include <spi.h>
 #include <spi_flash.h>
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/fmap.h>
+#endif
 
 struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache)
 {
@@ -49,18 +52,21 @@ int is_mrc_cache(struct mrc_data_container *mrc_cache)
 }
 
 /* Right now, the offsets for the MRC cache area are hard-coded in the
- * northbridge Kconfig. In order to make this more flexible, there are
- * a number of options:
+ * northbridge Kconfig if CONFIG_CHROMEOS is not set. In order to make
+ * this more flexible, there are two of options:
  *  - Have each mainboard Kconfig supply a hard-coded offset
- *  - For ChromeOS devices: implement native FMAP
- *  - For non-ChromeOS devices: use CBFS
+ *  - Use CBFS
  */
 u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
-
-	u32 region_size = CONFIG_MRC_CACHE_SIZE;
+	u32 region_size;
+#if CONFIG_CHROMEOS
+	region_size =  find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
+#else
+	region_size = CONFIG_MRC_CACHE_SIZE;
 	*mrc_region_ptr = (struct mrc_data_container *)
 		(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION);
+#endif
 
 	return region_size;
 }

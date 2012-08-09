@@ -44,15 +44,13 @@ config MRC_CACHE_BASE
 
 config MRC_CACHE_LOCATION
 	hex
+	depends on !CHROMEOS
 	default 0x1ec000
 
 config MRC_CACHE_SIZE
 	hex
+	depends on !CHROMEOS
 	default 0x10000
-
-config MRC_CACHE_ALIGNMENT
-	hex
-	default 0x1000
 
 config DCACHE_RAM_BASE
 	hex
@@ -85,16 +83,13 @@ config MRC_CACHE_BASE
 
 config MRC_CACHE_LOCATION
 	hex
+	depends on !CHROMEOS
 	default 0x370000
 
 config MRC_CACHE_SIZE
 	hex
+	depends on !CHROMEOS
 	default 0x10000
-
-config MRC_CACHE_ALIGNMENT
-	hex
-	default 0x1000
-
 
 config DCACHE_RAM_BASE
 	hex

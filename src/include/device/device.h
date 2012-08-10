@@ -189,16 +189,16 @@ void fixed_mem_resource(device_t dev, unsigned long index,
  * is used for all UMA except Intel Sandy/IvyBridge.
  */
 #define ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_FREEMEM | IORESOURCE_MTRR_WB)
 
 #define bad_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_MTRR_ANY)
 
 #define uma_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_MTRR_UC)
 
 #define mmio_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_MTRR_ANY)
 
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);

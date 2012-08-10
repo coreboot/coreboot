@@ -568,7 +568,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 
 	/* Build the raw table of memory */
 	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		IORESOURCE_MEM | IORESOURCE_FREEMEM, IORESOURCE_MEM | IORESOURCE_FREEMEM,
 		build_lb_mem_range, mem);
 	lb_cleanup_memory_ranges(mem);
 	return mem;

@@ -13,7 +13,7 @@
 
 #define IORESOURCE_PREFETCH	0x00001000	/* No side effects */
 #define IORESOURCE_READONLY	0x00002000
-#define IORESOURCE_CACHEABLE	0x00004000
+#define IORESOURCE_FREEMEM	0x00004000
 #define IORESOURCE_RANGELENGTH	0x00008000
 #define IORESOURCE_SHADOWABLE	0x00010000
 #define IORESOURCE_BUS_HAS_VGA	0x00020000
@@ -21,8 +21,11 @@
 						 * to the bus below.
 						 */
 #define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
-#define IORESOURCE_UMA_FB	0x00100000	/* UMA framebuffer */
-#define IORESOURCE_IGNORE_MTRR	0x00200000	/* The resource does not affect MTRR setup. */
+
+#define IORESOURCE_MTRR_MASK	0x00f00000	/* MTRR cache types. */
+#define IORESOURCE_MTRR_ANY	0x00000000	/* The resource does not affect MTRR setup. */
+#define IORESOURCE_MTRR_UC	0x00100000	/* The resource creates an explicit un-cached MTRR hole. */
+#define IORESOURCE_MTRR_WB	0x00200000	/* The resource creates or merges with a write-back MTRR region. */
 
 #define IORESOURCE_RESERVE	0x10000000	/* The resource needs to be reserved in the coreboot table */
 #define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */

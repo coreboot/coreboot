@@ -190,7 +190,7 @@ void amd_setup_mtrrs(void)
 
 	state.tomk = state.tom2k = 0;
 	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		IORESOURCE_MEM | IORESOURCE_MTRR_MASK, IORESOURCE_MEM | IORESOURCE_MTRR_WB,
 		set_fixed_mtrr_resource, &state);
 
 	printk(BIOS_DEBUG, "DONE fixed MTRRs\n");

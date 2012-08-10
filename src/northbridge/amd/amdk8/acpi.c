@@ -128,7 +128,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 
 	srat_mem_state.current = current;
 	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		IORESOURCE_MEM | IORESOURCE_FREEMEM, IORESOURCE_MEM | IORESOURCE_FREEMEM,
 		set_srat_mem, &srat_mem_state);
 
 	current = srat_mem_state.current;

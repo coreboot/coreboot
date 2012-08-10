@@ -354,18 +354,17 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	basek = resk(res->base);
 	sizek = resk(res->size);
 
-	if (res->flags & IORESOURCE_UMA_FB) {
-		/* FIXME: could I use Write-Combining for Frame Buffer ? */
+	if ((res->flags & IORESOURCE_MTRR_MASK) == IORESOURCE_MTRR_UC) {
 		state->reg = range_to_mtrr(state->reg,	basek, sizek, 0,
 			MTRR_TYPE_UNCACHEABLE, state->address_bits, state->above4gb);
 		return;
 	}
 
-	if (res->flags & IORESOURCE_IGNORE_MTRR) {
+	if ((res->flags & IORESOURCE_MTRR_MASK) == IORESOURCE_MTRR_ANY) {
 		return;
 	}
 
-	if (!(res->flags & IORESOURCE_CACHEABLE))
+	if ((res->flags & IORESOURCE_MTRR_MASK) != IORESOURCE_MTRR_WB)
 		return;
 
 	/* See if I can merge with the last range
@@ -422,7 +421,7 @@ void x86_setup_fixed_mtrrs(void)
         /* Now see which of the fixed mtrrs cover ram.
                  */
         search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		IORESOURCE_MEM | IORESOURCE_MTRR_MASK, IORESOURCE_MEM | IORESOURCE_MTRR_WB,
 		set_fixed_mtrr_resource, NULL);
         printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
 

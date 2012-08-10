@@ -1,0 +1,12 @@
+viatool is a utility for extracting useful for extracting certain configuration
+bits on VIA chipsets and CPUs. It is a fork of inteltool.
+
+viatool is currently focused on "quirks". Quirks are device configurations that
+cannot be accessed directly. They are implemented as hierarchical configurations
+in the PCI or memory address spaces (index/data register pairs). Such
+configurations refer to hardware parameters that are board specific. Those
+parameters would otherwise be difficult to extract from a system running the
+vendor's firmware.
+
+viatool also preserves inteltool's MSR dumps. VIA CPU and Intel CPU MSRs are
+nearly identical.

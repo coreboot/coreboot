@@ -24,10 +24,11 @@ PROGRAM = inteltool
 CC      ?= gcc
 INSTALL ?= /usr/bin/install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O2 -g -Wall -W
+CFLAGS  ?= -O2 -g -Wall -W -I$(shell pwd)
 LDFLAGS += -lpci -lz
 
-OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o amb.o
+OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o amb.o \
+	quirks/quirks.c quirks/vx900_quirks.c
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)

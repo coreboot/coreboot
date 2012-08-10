@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2008-2010 by coresystems GmbH
  * Copyright (C) 2009 Carl-Daniel Hailfinger
+ * Copyright (C) 2013 Alexandru Gagniuc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+#ifndef _INTELTOOL_H
+#define _INTELTOOL_H
 
 #include <stdint.h>
 
@@ -36,7 +40,10 @@
 #endif
 
 #define INTELTOOL_VERSION "1.0"
-
+\
+/*==============================================================================
+ * = Intel Section
+ *----------------------------------------------------------------------------*/
 /* Tested chipsets: */
 #define PCI_VENDOR_ID_INTEL			0x8086
 #define PCI_DEVICE_ID_INTEL_ICH			0x2410
@@ -140,6 +147,14 @@
 #define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN	0x0154 /* Ivy Bridge */
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN	0x0c04 /* Haswell */
 
+/*==============================================================================
+ *= VIA Section
+ *----------------------------------------------------------------------------*/
+#define PCI_VENDOR_ID_VIA			0x1106
+#define PCI_DEVICE_ID_VIA_VX900			0x0410
+#define PCI_DEVICE_ID_VIA_VX900_SATA		0x9001
+#define PCI_DEVICE_ID_VIA_VX900_LPC		0x8410
+
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
@@ -170,3 +185,7 @@ int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
 int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
+int print_quirks_north(struct pci_dev *nb, struct pci_access *pacc);
+int print_quirks_south(struct pci_dev *sb, struct pci_access *pacc);
+
+#endif /* _INTELTOOL_H */

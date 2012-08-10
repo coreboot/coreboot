@@ -150,6 +150,13 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM70, "HM70" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_NM70, "NM70" },
 	{ PCI_VENDOR_ID_INTEL, 0x2310, "DH89xxCC" },
+	/*
+	 * VIA chips go below this line
+	 */
+	/* Host bridges/DRAM controllers (Northbridges) */
+	{ PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX900, "VX900"},
+	/* Southbridges (LPC controllers) */
+	{ PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX900_LPC, "VX900" },
 };
 
 #ifndef __DARWIN__
@@ -209,6 +216,7 @@ void print_usage(const char *name)
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
 	     "   -A | --ambs:                      dump AMB registers\n"
+	     "   -q | --quirks:                    dump special configuration bits\n"
 	     "   -a | --all:                       dump all known registers\n"
 	     "\n");
 	exit(1);
@@ -226,7 +234,7 @@ int main(int argc, char *argv[])
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
-	int show_gpio_diffs = 0;
+	int show_gpio_diffs = 0, dump_quirks = 0;
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
@@ -241,11 +249,12 @@ int main(int argc, char *argv[])
 		{"pciexpress", 0, 0, 'P'},
 		{"msrs", 0, 0, 'M'},
 		{"ambs", 0, 0, 'A'},
+		{"quirks", 0, 0, 'q'},
 		{"all", 0, 0, 'a'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaA",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaAq",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -293,6 +302,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'A':
 			dump_ambs = 1;
+			break;
+		case 'q':
+			dump_quirks = 1;
 			break;
 		case 'h':
 		case '?':
@@ -347,8 +359,9 @@ int main(int argc, char *argv[])
 
 	pci_fill_info(sb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
 
-	if (sb->vendor_id != PCI_VENDOR_ID_INTEL) {
-		printf("Not an Intel(R) southbridge.\n");
+	if ((sb->vendor_id != PCI_VENDOR_ID_INTEL) &&
+	    (sb->vendor_id != PCI_VENDOR_ID_VIA)) {
+		printf("Not a supported southbridge.\n");
 		exit(1);
 	}
 
@@ -360,8 +373,9 @@ int main(int argc, char *argv[])
 
 	pci_fill_info(nb, PCI_FILL_IDENT|PCI_FILL_BASES|PCI_FILL_SIZES|PCI_FILL_CLASS);
 
-	if (nb->vendor_id != PCI_VENDOR_ID_INTEL) {
-		printf("Not an Intel(R) northbridge.\n");
+	if ((nb->vendor_id != PCI_VENDOR_ID_INTEL) &&
+	    (nb->vendor_id != PCI_VENDOR_ID_VIA)) {
+		printf("Not a supported northbridge.\n");
 		exit(1);
 	}
 
@@ -439,6 +453,12 @@ int main(int argc, char *argv[])
 	if (dump_ambs) {
 		print_ambs(nb, pacc);
 	}
+
+	if (dump_quirks) {
+		print_quirks_north(nb, pacc);
+		print_quirks_south(sb, pacc);
+	}
+
 	/* Clean up */
 	pci_free_dev(nb);
 	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"

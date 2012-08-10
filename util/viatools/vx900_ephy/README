@@ -1,0 +1,9 @@
+
+On the VX900 chipset, the SATA physical layer is controllable by index/value
+pairs in the PCI config space. Getting the EPHY config (as VIA calls it) is thus
+not achievable by a simple lspci -xx.
+
+The EPHY config is needed to get the SATA links running properly. The default
+values disable the driving resistors. While the SATA link may appear to work
+initially, the chipset indicates a PHY error occurs. This tool reads the EPHY
+config from a VX900 chipset.

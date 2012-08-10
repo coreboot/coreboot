@@ -354,8 +354,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	basek = resk(res->base);
 	sizek = resk(res->size);
 
-	if (res->flags & IORESOURCE_UMA_FB) {
-		/* FIXME: could I use Write-Combining for Frame Buffer ? */
+	if (res->flags & IORESOURCE_UNCACHEABLE) {
 		state->reg = range_to_mtrr(state->reg,	basek, sizek, 0,
 			MTRR_TYPE_UNCACHEABLE, state->address_bits, state->above4gb);
 		return;

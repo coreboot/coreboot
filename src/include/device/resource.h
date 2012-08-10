@@ -21,7 +21,7 @@
 						 * to the bus below.
 						 */
 #define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
-#define IORESOURCE_UMA_FB	0x00100000	/* UMA framebuffer */
+#define IORESOURCE_UNCACHEABLE	0x00100000	/* The resource creates an explicit un-cached MTRR hole. */
 #define IORESOURCE_IGNORE_MTRR	0x00200000	/* The resource does not affect MTRR setup. */
 
 #define IORESOURCE_RESERVE	0x10000000	/* The resource needs to be reserved in the coreboot table */

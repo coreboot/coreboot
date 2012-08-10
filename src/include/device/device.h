@@ -195,7 +195,7 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
 
 #define uma_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UNCACHEABLE)
 
 #define mmio_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)

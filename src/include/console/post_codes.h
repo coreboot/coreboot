@@ -83,6 +83,14 @@
 #define POST_ENTRY_C_START			0x13
 
 /**
+ * \brief Pre call to hardwaremain()
+ *
+ * POSTed right before hardwaremain is called from c_start.S
+ * TODO: Change this code to a lower number
+ */
+#define POST_PRE_HARDWAREMAIN			0x79
+
+/**
  * \brief Entry into coreboot in hardwaremain (RAM)
  *
  * This is the first call in hardwaremain.c. If this code is POSTed, then
@@ -166,12 +174,18 @@
 #define POST_DEAD_CODE				0xee
 
 /**
- * \brief Pre call to hardwaremain()
+ * \brief Final code before OS resumes
  *
- * POSTed right before hardwaremain is called from c_start.S
- * TODO: Change this code to a lower number
+ * Called right before jumping to the OS resume vector.
  */
-#define POST_PRE_HARDWAREMAIN			0xfe
+#define POST_OS_RESUME				0xfd
+
+/**
+ * \brief Final code before OS boots
+ *
+ * This may not be called depending on the payload used.
+ */
+#define POST_OS_BOOT				0xfe
 
 /**
  * \brief Elfload fail or die() called

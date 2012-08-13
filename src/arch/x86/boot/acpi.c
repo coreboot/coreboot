@@ -565,6 +565,7 @@ void suspend_resume(void)
 		/* Call mainboard resume handler first, if defined. */
 		if (mainboard_suspend_resume)
 			mainboard_suspend_resume();
+		post_code(POST_OS_RESUME);
 		acpi_jump_to_wakeup(wake_vec);
 	}
 }

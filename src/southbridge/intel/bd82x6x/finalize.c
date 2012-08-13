@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include <arch/romcc_io.h>
+#include <console/post_codes.h>
 #include <northbridge/intel/sandybridge/pcie_config.c>
 #include "pch.h"
 
@@ -56,4 +57,7 @@ void intel_pch_finalize_smm(void)
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 	pcie_write_config32(PCI_DEV(0, 27, 0), 0x74,
 		    pcie_read_config32(PCI_DEV(0, 27, 0), 0x74));
+
+	/* Indicate finalize step with post code */
+	outb(POST_OS_BOOT, 0x80);
 }

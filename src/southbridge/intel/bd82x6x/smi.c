@@ -269,6 +269,11 @@ static void smm_relocate(void)
 	gpe0_en &= ~PME_B0_EN;
 	outl(gpe0_en, pmbase + GPE0_EN);
 
+	pm1_en = 0;
+	pm1_en |= PWRBTN_EN;
+	pm1_en |= GBL_EN;
+	outw(pm1_en, pmbase + PM1_EN);
+
 	/* Enable SMI generation:
 	 *  - on TCO events
 	 *  - on APMC writes (io 0xb2)
@@ -300,11 +305,6 @@ static void smm_relocate(void)
 	smi_en |= EOS | GBL_SMI_EN;
 
 	outl(smi_en, pmbase + SMI_EN);
-
-	pm1_en = 0;
-	pm1_en |= PWRBTN_EN;
-	pm1_en |= GBL_EN;
-	outw(pm1_en, pmbase + PM1_EN);
 
 	/**
 	 * There are several methods of raising a controlled SMI# via

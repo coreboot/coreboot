@@ -109,6 +109,9 @@ struct elog_event_data_wake {
 /* Management Engine Events */
 #define ELOG_TYPE_MANAGEMENT_ENGINE       0xa2
 
+/* Last post code from previous boot */
+#define ELOG_TYPE_LAST_POST_CODE          0xa3
+
 extern int elog_init(void);
 extern int elog_clear(void);
 extern void elog_add_event_raw(u8 event_type, void *data, u8 data_size);

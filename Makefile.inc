@@ -128,9 +128,10 @@ cbfs-files-handler= \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
 			$(call cbfs-files-processor-$(tmp-cbfs-method),$(tmp-old-cbfs-file),$(tmp-cbfs-file))) \
-		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-position)) \
+		$(eval cbfs-files += $(tmp-cbfs-file)|$(2)|$($(2)-type)|$($(2)-compression)|$($(2)-position)) \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
+		$(eval $(2)-compression:=) \
 		$(eval $(2)-position:=)
 
 #######################################################################

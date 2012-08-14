@@ -58,9 +58,9 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 	depends on CHROMEOS_RAMOOPS
 
 config FLASHMAP_OFFSET
-	hex
+	hex "Flash Map Offset"
 	default 0x00670000 if NORTHBRIDGE_INTEL_SANDYBRIDGE
-	default 0x005f0000 if NORTHBRIDGE_INTEL_IVYBRIDGE
+	default 0x00610000 if NORTHBRIDGE_INTEL_IVYBRIDGE
 	help
 	  Offset of flash map in firmware image
 

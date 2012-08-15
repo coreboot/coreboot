@@ -1,0 +1,128 @@
+   _____ ____  _____  ______ ____   ____   ____ _______
+  / ____/ __ \|  __ \|  ____|  _ \ / __ \ / __ \__   __|
+ | |   | |  | | |__) | |__  | |_) | |  | | |  | | | |
+ | |   | |  | |  _  /|  __| |  _ <| |  | | |  | | | |
+ | |___| |__| | | \ \| |____| |_) | |__| | |__| | | |
+  \_____\____/|_|  \_\______|____/ \____/ \____/  |_|
+
+           __  __ _____     _____   ____
+     /\   |  \/  |  __ \   / ____| |___ \
+    /  \  | \  / | |  | | | (___     __) |
+   / /\ \ | |\/| | |  | |  \___ \   |__ <
+  / ____ \| |  | | |__| |  ____) |  ___) |
+ /_/    \_\_|  |_|_____/  |_____/  |____/
+
+
+               S3 in Coreboot (V 1.1)
+----------------------------------------
+                Zheng Bao
+            <zheng.bao@amd.com>
+            <fishbaozi@gmail.com>
+
+Introduction
+============
+This document is about how the feature S3 is implemented on coreboot,
+specificly on AMD platform. This topic deals with ACPI spec, hardware,
+BIOS, OS. We try to help coreboot users to realize their own S3.
+
+S3 in a nutshell
+================
+The S3 sleeping state is a low wake latency sleeping state where all
+system context is lost except system memory. [1]. S3 is a ACPI
+definition.
+To enter S3, write 3 in SLP_TYPx and set the SLP_EN bit (See ACPI
+registers). But if you do that, board can not resume at where it
+sleeps, because you don't save the context. More often than not, we
+make the board go into S3 by the tools which OSes provide. For
+windows, click Start->sleep. For linux, some distribution provide a
+tools called pm-suspend, which can make the system goto S3. If
+pm-suspend is not available, we can run "echo mem > /sys/power/state",
+but this way may not save all the needed context.
+In S3 state, the power is off. So when the power button is pressed,
+BIOS runs as it does in cold boot. If BIOS didn't detect whether
+board boots or resumes, it would go the same way as boot. It is not
+what we expect. BIOS detects the SLP_TYPx. If it is 3, it means BIOS
+are waking up.
+BIOS is responsible for restore the machine state as it is before
+sleep. It needs restore the memory controller, not overwriting memory
+which is not marked as reserved. For the peripheral which loses its
+registers, BIOS needs to write the original value.
+When everything is done, BIOS needs to find out the wakeup vector
+provided by OSes and jump there. OSes also have work to do. We can go
+to linux kernel or some other open source projects to find out how they
+handle S3 resume.
+
+ACPI registers
+==============
+ACPI specification defines a group of registers. OSes handle all these
+registers to read and write status to all the platform.
+On AMD platform, these registers are provided by southbridge. For
+example, Hudson uses PMIO 60:6F to define ACPI registers.
+OSes don't have any specific driver to know where these registers
+are. BIOS has the responsibility to allocated the IO resources and
+write all these address to FADT, a ACPI defined table.
+
+Memory Layout
+=============
+Restoring memory is the most important job done by BIOS. When the
+power is off, the memory is maintained by standby power. BIOS need to
+make sure that when flow goes to OS, everything in memory should be
+the same as it was.
+
+The chip vendor will provide a way, or code, to wake up the memory
+from sleeping. In AGESA 2008 arch, it is called AmdInitResume.
+
+The BIOS itself needs some memory to run. Either, BIOS marks the erea
+as reserved in e820, or BIOS saves the content into reserved space.
+
+Here is the address Map for S3 Resume. Assumingly the total memory is 1GB.
+00000000 --- 00100000      BIOS Reserved area.
+00100000 --- 00200000      Free
+00200000 --- 01000000      Coreboot ramstage area.
+01000000 --- 2e160000      Free
+2e160000 --- 2e170000      ACPI table
+2e170000 --- 2ef70000      OSRAM
+2ef70000 --- 2efe0000      Stack in highmem
+2efe0000 --- 2f000000      heap in highmem
+2f000000                   TOM
+
+AMD requirements in S3
+======================
+Chip vendor like AMD will provide bunch of routines to restore the
+board.[2]
+ * AmdS3Save: It is called in cold boot, save required register into
+ non-volatile storage. Currently, we use SPI flash to store the data.
+ * AmdInitResume: Restore the memory controller.
+ * AmdS3LateRestore: Called after AmdInitResume, restore other
+ register that memory.
+ * (SouthBridge)InitS3EarlyRestore, (SouthBridge)InitS3LateRestore:
+ Provided by Southbridge vendor code. Early is called before PCI
+ enumeration, and Late is called after that.
+
+Lifecycle of booting, sleeping and waking Coreboot and Ubuntu
+=============================================================
+1. Cold boot.
+For a system with S3 feature, the BIOS needs to save some data to
+non-volitile storage at cold boot stage. What data need to be save are
+provided by AmdS3Save. After the wrapper calls the AmdS3Save, it gets
+the VolatileStorage and NvStorage, which are where the data are
+located. It is the wrappers's responsibility to save the data.[3][4]
+Currently, the wrappers allocate a CBFS modules in BIOS image. Todo
+that, the wrapper needs to have the ability to write flash chips. It
+is not as comprehensive as flashrom. But for the SST chip on Parmer,
+MX chip on Thather, coreboot works well.[5]
+
+2. OS goes in S3.
+
+3. BIOS detect S3 wakeup
+
+4. OS resumes.
+
+
+Reference
+=========
+[1]   ACPI40a, http://www.acpi.info/spec40a.htm
+[2]   Coreboot Vendorcode, {top}/src/vendorcode/amd/agesa/{family}/Proc/Common/
+[3]   Coreboot AGESA wrapper, {top}/src/mainboard/amd/parmer/agesawrapper.c
+[4]   Coreboot AGESA wrapper, {top}/src/cpu/amd/agesa/s3_resume.c
+[5]   Coreboot Southbridge, {top}/src/southbridge/amd/agesa/hudson/spi.c

@@ -245,7 +245,11 @@ static int cbfs_create(int argc, char **argv)
 	if (argc > 5)
 		align = strtoul(argv[5], NULL, 0);
 
-	return create_cbfs_image(romname, size, bootblock, align);
+	uint32_t offs = 0;
+	if (argc > 6)
+		offs = strtoul(argv[6], NULL, 0);
+
+	return create_cbfs_image(romname, size, bootblock, align, offs);
 }
 
 static int cbfs_locate(int argc, char **argv)
@@ -318,14 +322,14 @@ static void usage(void)
 	     " cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
 	     "  -h		Display this help message\n\n"
 	     "COMMANDs:\n"
-	     " add FILE NAME TYPE [base address]    Add a component\n"
-	     " add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
-	     " add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
-	     " remove FILE NAME                     Remove a component\n"
-	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
-	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
-	     " print                                Show the contents of the ROM\n"
-	     " extract NAME FILE                    Extracts a raw payload from ROM\n"
+	     " add FILE NAME TYPE [base address]      Add a component\n"
+	     " add-payload FILE NAME [COMP] [base]    Add a payload to the ROM\n"
+	     " add-stage FILE NAME [COMP] [base]      Add a stage to the ROM\n"
+	     " remove FILE NAME                       Remove a component\n"
+	     " create SIZE BOOTBLOCK [ALIGN] [offset] Create a ROM file\n"
+	     " locate FILE NAME ALIGN                 Find a place for a file of that size\n"
+	     " print                                  Show the contents of the ROM\n"
+	     " extract NAME FILE                      Extracts a raw payload from ROM\n"
 	     "\n"
 	     "TYPEs:\n"
 	     );

@@ -446,7 +446,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 }
 
 int create_cbfs_image(const char *romfile, uint32_t _romsize,
-		      const char *bootblock, uint32_t align)
+		      const char *bootblock, uint32_t align, uint32_t offs)
 {
 	romsize = _romsize;
 	unsigned char *romarea = malloc(romsize);
@@ -473,14 +473,14 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	master_header->romsize = htonl(romsize);
 	master_header->bootblocksize = htonl(bootblocksize);
 	master_header->align = htonl(align);
-	master_header->offset = htonl(0);
+	master_header->offset = htonl(offs);
 	((uint32_t *) phys_to_virt(0xfffffffc))[0] =
 	    virt_to_phys(master_header);
 
 	recalculate_rom_geometry(romarea);
 
-	cbfs_create_empty_file((0 - romsize) & 0xffffffff,
-				   romsize - bootblocksize -
+	cbfs_create_empty_file((0 - romsize + offs) & 0xffffffff,
+				   romsize - offs - bootblocksize -
 				   sizeof(struct cbfs_header) -
 				   sizeof(struct cbfs_file) - 16);
 

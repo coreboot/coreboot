@@ -28,7 +28,9 @@
 #include <elog.h>
 #include "elog_internal.h"
 
-#if CONFIG_ELOG_FLASH_BASE == 0
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/fmap.h>
+#elif CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
 #endif
 #if CONFIG_ELOG_FULL_THRESHOLD >= CONFIG_ELOG_AREA_SIZE
@@ -735,6 +737,12 @@ int elog_clear(void)
  */
 int elog_init(void)
 {
+	u32 flash_base = CONFIG_ELOG_FLASH_BASE;
+	int flash_size = CONFIG_ELOG_AREA_SIZE;
+#if CONFIG_CHROMEOS
+	u8 *flash_base_ptr;
+#endif
+
 	if (elog_initialized)
 		return 0;
 
@@ -746,9 +754,24 @@ int elog_init(void)
 		return -1;
 	}
 
+#if CONFIG_CHROMEOS
+	/* Find the ELOG base and size in FMAP */
+	flash_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
+	if (flash_size < 0) {
+		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP, "
+		       "using CONFIG_ELOG_FLASH_BASE instead\n");
+		flash_size = CONFIG_ELOG_AREA_SIZE;
+	} else {
+		flash_base = elog_flash_address_to_offset(flash_base_ptr);
+
+		/* Use configured size if smaller than FMAP size */
+		if (flash_size > CONFIG_ELOG_AREA_SIZE)
+			flash_size = CONFIG_ELOG_AREA_SIZE;
+	}
+#endif
+
 	/* Setup descriptors for flash and memory areas */
-	if (elog_setup_descriptors(CONFIG_ELOG_FLASH_BASE,
-				   CONFIG_ELOG_AREA_SIZE) < 0) {
+	if (elog_setup_descriptors(flash_base, flash_size) < 0) {
 		printk(BIOS_ERR, "ELOG: Unable to initialize descriptors\n");
 		return -1;
 	}

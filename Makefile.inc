@@ -166,7 +166,7 @@ CFLAGS += -Werror
 endif
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
-additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options
+additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool $(objutil)/options
 
 #######################################################################
 # generate build support files
@@ -223,6 +223,11 @@ $(ROMCC): $(top)/util/romcc/romcc.c
 	@# Note: Adding -O2 here might cause problems. For details see:
 	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
 	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
+
+IFDTOOL:=$(objutil)/ifdtool/ifdtool
+$(IFDTOOL): $(top)/util/ifdtool/ifdtool.c
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
 #######################################################################
 # needed objects that every mainboard uses

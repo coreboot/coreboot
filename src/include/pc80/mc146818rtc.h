@@ -63,6 +63,8 @@
 # define RTC_24H 0x02		/* 24 hour mode - else hours bit 7 means pm */
 # define RTC_DST_EN 0x01	/* auto switch DST - works f. USA only */
 
+#define RTC_TO_BCD(value) (((value / 10) << 4) | (value % 10))
+
 /**********************************************************************/
 #define RTC_INTR_FLAGS	RTC_REG_C
 /* caution - cleared by read */

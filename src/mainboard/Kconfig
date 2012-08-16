@@ -304,14 +304,6 @@ config ROM_SIZE
 	default 0x800000 if COREBOOT_ROMSIZE_KB_8192
 	default 0x1000000 if COREBOOT_ROMSIZE_KB_16384
 
-config CBFS_SIZE
-	hex
-	default ROM_SIZE
-
-config CACHE_ROM_SIZE
-	hex
-	default CBFS_SIZE
-
 config ENABLE_POWER_BUTTON
 	bool "Enable the power button" if POWER_BUTTON_IS_OPTIONAL
 	default y if POWER_BUTTON_DEFAULT_ENABLE

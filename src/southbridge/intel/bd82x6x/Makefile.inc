@@ -17,6 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+# Run an intermediate step when producing coreboot.rom
+# that adds additional components to the final firmware
+# image outside of CBFS
+INTERMEDIATE:=bd82x6x_add_me
+
 driver-y += pch.c
 driver-y += azalia.c
 driver-y += lpc.c
@@ -45,3 +50,14 @@ ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c
 
+$(INTERMEDIATE): $(obj)/coreboot.pre $(IFDTOOL)
+	printf "    DD         Adding Intel Firmware Descriptor\n"
+	dd if=3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin \
+		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
+	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		-i ME:3rdparty/mainboard/$(MAINBOARDDIR)/me.bin \
+		$(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+
+PHONY += $$(INTERMEDIATE)

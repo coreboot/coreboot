@@ -45,6 +45,7 @@
  * the function pointer is NULL */
 typedef int (* yabel_handleIntFunc)(void);
 extern yabel_handleIntFunc yabel_intFuncArray[256];
+void mainboard_interrupt_handlers(int, yabel_handleIntFunc);
 
 struct device;
 

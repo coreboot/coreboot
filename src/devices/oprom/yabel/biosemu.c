@@ -44,6 +44,12 @@ static X86EMU_pioFuncs my_pio_funcs = {
 /* interrupt function override array (see biosemu.h) */
 yabel_handleIntFunc yabel_intFuncArray[256];
 
+void
+mainboard_interrupt_handlers(int interrupt, yabel_handleIntFunc func)
+{
+	yabel_intFuncArray[interrupt] = func;
+}
+
 /* main entry into YABEL biosemu, arguments are:
  * *biosmem = pointer to virtual memory
  * biosmem_size = size of the virtual memory

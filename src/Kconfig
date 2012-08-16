@@ -325,6 +325,14 @@ config TPM
 	bool
 	default n
 
+config CBFS_SIZE
+	hex
+	default ROM_SIZE
+
+config CACHE_ROM_SIZE
+	hex
+	default CBFS_SIZE
+
 # TODO: Can probably be removed once all chipsets have kconfig options for it.
 config VIDEO_MB
 	int

@@ -14,8 +14,11 @@ romstage-y += early_setup.c
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 
-$(obj)/hudson.bin:
-	python $(src)/southbridge/amd/agesa/hudson/hudson_fwm.py $(CONFIG_HUDSON_FWM_POSITION) $@ $(CONFIG_HUDSON_XHCI_FWM_FILE) $(CONFIG_HUDSON_IMC_FWM_FILE) ""
+$(obj)/hudson.bin: $(top)/$(strip $(patsubst "%", %, $(CONFIG_HUDSON_XHCI_FWM_FILE))) \
+			$(top)/$(strip $(patsubst "%", %, $(CONFIG_HUDSON_IMC_FWM_FILE))) \
+			$(top)/$(strip $(patsubst "%", %, $(CONFIG_HUDSON_GEC_FWM_FILE)))
+	echo "    Hudson FW  $@"
+	$(src)/southbridge/amd/agesa/hudson/hudson_fwm.sh $(CONFIG_HUDSON_FWM_POSITION) $@ $(CONFIG_HUDSON_XHCI_FWM_FILE) $(CONFIG_HUDSON_IMC_FWM_FILE) $(CONFIG_HUDSON_GEC_FWM_FILE)
 
 ifeq ($(CONFIG_HUDSON_FWM), y)
 cbfs-files-y += hudson/fwm

@@ -26,7 +26,6 @@
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
 #include <arch/io.h>
-#include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <elog.h>
@@ -38,45 +37,6 @@
 #define TEST_SMM_FLASH_LOCKDOWN		0
 
 typedef struct southbridge_intel_bd82x6x_config config_t;
-
-static void pch_enable_apic(struct device *dev)
-{
-	int i;
-	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-
-	/* Enable ACPI I/O and power management.
-	 * Set SCI IRQ to IRQ9
-	 */
-	pci_write_config8(dev, ACPI_CNTL, 0x80);
-
-	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
-
-	/* affirm full set of redirection table entries ("write once") */
-	*ioapic_index = 1;
-	reg32 = *ioapic_data;
-	*ioapic_index = 1;
-	*ioapic_data = reg32;
-
-	*ioapic_index = 0;
-	reg32 = *ioapic_data;
-	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
-	if (reg32 != (1 << 25))
-		die("APIC Error\n");
-
-	printk(BIOS_SPEW, "Dumping IOAPIC registers\n");
-	for (i=0; i<3; i++) {
-		*ioapic_index = i;
-		printk(BIOS_SPEW, "  reg 0x%04x:", i);
-		reg32 = *ioapic_data;
-		printk(BIOS_SPEW, " 0x%08x\n", reg32);
-	}
-
-	*ioapic_index = 3; /* Select Boot Configuration register. */
-	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
-}
 
 static void pch_enable_serial_irqs(struct device *dev)
 {
@@ -537,8 +497,8 @@ static void lpc_init(struct device *dev)
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);
 
-	/* IO APIC initialization. */
-	pch_enable_apic(dev);
+	/* enable ACPI */
+	pci_write_config8(dev, ACPI_CNTL, 0x80);
 
 	pch_enable_serial_irqs(dev);
 
@@ -611,11 +571,6 @@ static void pch_lpc_read_resources(device_t dev)
 	res->size = 0x00800000; /* 8 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, 3); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* Set PCH IO decode ranges if required.*/
 	if ((config->gen1_dec & 0xFFFC) > 0x1000) {

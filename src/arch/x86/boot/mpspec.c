@@ -458,7 +458,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 	for(dev = all_devices; dev; dev = dev->next) {
 
-		if (dev->path.type != DEVICE_PATH_PCI)
+		if (dev->path.type != DEVICE_PATH_PCI || !dev->enabled)
 			continue;
 
 		pin = (dev->path.pci.devfn & 7) % 4;

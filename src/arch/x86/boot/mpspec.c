@@ -419,7 +419,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 	int isa_bus, pin, parentpin;
 	device_t dev, parent, oldparent;
 	void *tmp, *v;
-	int isaioapic = -1;
+	int isaioapic = -1, have_fixed_entries;
 
 	v = smp_write_floating_table(addr, 0);
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -458,51 +458,56 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 	for(dev = all_devices; dev; dev = dev->next) {
 
-		if (dev->path.type != DEVICE_PATH_PCI)
+		if (dev->path.type != DEVICE_PATH_PCI || !dev->enabled)
 			continue;
 
-		pin = (dev->path.pci.devfn & 7) % 4;
+		have_fixed_entries = 0;
+		for (pin = 0; pin < 4; pin++) {
+			if (dev->pci_irq_info[pin].ioapic_dst_id) {
+				printk(BIOS_DEBUG, "fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n", dev_path(dev),
+				       pin + 'A',
+				       dev->pci_irq_info[pin].ioapic_dst_id,
+				       dev->pci_irq_info[pin].ioapic_irq_pin);
+				smp_write_intsrc(mc, mp_INT,
+						 dev->pci_irq_info[pin].ioapic_flags,
+						 dev->bus->secondary,
+						 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
+						 dev->pci_irq_info[pin].ioapic_dst_id,
+						 dev->pci_irq_info[pin].ioapic_irq_pin);
+				have_fixed_entries = 1;
+			}
+		}
 
-		if (dev->pci_irq_info[pin].ioapic_dst_id) {
-			printk(BIOS_DEBUG, "fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n", dev_path(dev),
-			       pin + 'A',
-			       dev->pci_irq_info[pin].ioapic_dst_id,
-			       dev->pci_irq_info[pin].ioapic_irq_pin);
-			smp_write_intsrc(mc, mp_INT,
-					 dev->pci_irq_info[pin].ioapic_flags,
-					 dev->bus->secondary,
-					 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
-					 dev->pci_irq_info[pin].ioapic_dst_id,
-					 dev->pci_irq_info[pin].ioapic_irq_pin);
-		} else {
-				oldparent = parent = dev;
-				while((parent = parent->bus->dev)) {
-					parentpin = (oldparent->path.pci.devfn >> 3) + (oldparent->path.pci.devfn & 7);
-					parentpin += dev->path.pci.devfn & 7;
-					parentpin += dev->path.pci.devfn >> 3;
-					parentpin %= 4;
+		if (!have_fixed_entries) {
+			pin = (dev->path.pci.devfn & 7) % 4;
+			oldparent = parent = dev;
+			while((parent = parent->bus->dev)) {
+				parentpin = (oldparent->path.pci.devfn >> 3) + (oldparent->path.pci.devfn & 7);
+				parentpin += dev->path.pci.devfn & 7;
+				parentpin += dev->path.pci.devfn >> 3;
+				parentpin %= 4;
 
-					if (parent->pci_irq_info[parentpin].ioapic_dst_id) {
-						printk(BIOS_DEBUG, "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
-						       dev_path(dev), pin + 'A',
-						       parent->pci_irq_info[parentpin].ioapic_dst_id,
-						       parent->pci_irq_info[parentpin].ioapic_irq_pin);
-						smp_write_intsrc(mc, mp_INT,
-								 parent->pci_irq_info[parentpin].ioapic_flags,
-								 dev->bus->secondary,
-								 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
-								 parent->pci_irq_info[parentpin].ioapic_dst_id,
-								 parent->pci_irq_info[parentpin].ioapic_irq_pin);
+				if (parent->pci_irq_info[parentpin].ioapic_dst_id) {
+					printk(BIOS_DEBUG, "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
+					       dev_path(dev), pin + 'A',
+					       parent->pci_irq_info[parentpin].ioapic_dst_id,
+					       parent->pci_irq_info[parentpin].ioapic_irq_pin);
+					smp_write_intsrc(mc, mp_INT,
+							 parent->pci_irq_info[parentpin].ioapic_flags,
+							 dev->bus->secondary,
+							 ((dev->path.pci.devfn & 0xf8) >> 1) | pin,
+							 parent->pci_irq_info[parentpin].ioapic_dst_id,
+							 parent->pci_irq_info[parentpin].ioapic_irq_pin);
 
-						break;
-					}
-
-					if (parent->path.type == DEVICE_PATH_PCI_DOMAIN) {
-						printk(BIOS_WARNING, "no IRQ found for %s\n", dev_path(dev));
-						break;
-					}
-					oldparent = parent;
+					break;
 				}
+
+				if (parent->path.type == DEVICE_PATH_PCI_DOMAIN) {
+					printk(BIOS_WARNING, "no IRQ found for %s\n", dev_path(dev));
+					break;
+				}
+				oldparent = parent;
+			}
 		}
 	}
 

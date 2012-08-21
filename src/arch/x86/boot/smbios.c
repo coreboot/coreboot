@@ -278,7 +278,8 @@ static int smbios_walk_device_tree(device_t tree, int *handle, unsigned long *cu
 	int len = 0;
 
 	for(dev = tree; dev; dev = dev->next) {
-		printk(BIOS_INFO, "%s (%s)\n", dev_path(dev), dev->chip_ops ? dev->chip_ops->name : "");
+		printk(BIOS_INFO, "%s (%s)\n", dev_path(dev),
+			(dev->chip_ops && dev->chip_ops->name) ? dev->chip_ops->name : "");
 
 		if (dev->ops && dev->ops->get_smbios_data)
 			len += dev->ops->get_smbios_data(dev, handle, current);

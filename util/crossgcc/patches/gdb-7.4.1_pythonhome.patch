@@ -1,15 +1,7 @@
-diff -ur gdb-7.3.1.orig/gdb/python/python.c gdb-7.3.1/gdb/python/python.c
---- gdb-7.3.1.orig/gdb/python/python.c	2011-07-02 21:33:10.000000000 +0200
-+++ gdb-7.3.1/gdb/python/python.c	2011-11-01 21:07:25.000000000 +0100
-@@ -33,6 +33,7 @@
- #include "python.h"
- 
- #include <ctype.h>
-+#include <libgen.h>
- 
- /* True if we should print the stack when catching a Python error,
-    false otherwise.  */
-@@ -1010,6 +1011,15 @@
+diff -ur gdb-7.4.1.orig/gdb/python/python.c gdb-7.4.1/gdb/python/python.c
+--- gdb-7.4.1.orig/gdb/python/python.c	2012-01-15 02:04:05.000000000 +0800
++++ gdb-7.4.1/gdb/python/python.c	2012-08-21 15:11:32.000000000 +0800
+@@ -1273,6 +1273,15 @@
  			     SLASH_STRING, "python", NULL));
  #endif
  

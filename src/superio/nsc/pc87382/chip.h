@@ -22,7 +22,6 @@
 #define SUPERIO_NSC_PC87382_CHIP_H
 
 #include <uart8250.h>
-extern struct chip_operations superio_nsc_pc87382_ops;
 
 struct superio_nsc_pc87382_config {
 

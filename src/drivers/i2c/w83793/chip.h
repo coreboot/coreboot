@@ -1,5 +1,3 @@
-extern struct chip_operations drivers_i2c_w83793_ops;
-
 struct drivers_i2c_w83793_config {
 	u8 mfc;
 	u8 fanin;

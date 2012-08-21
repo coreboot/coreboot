@@ -21,4 +21,3 @@ struct northbridge_amd_amdfam10_root_complex_config
 {
 };
 
-extern struct chip_operations northbridge_amd_amdfam10_root_complex_ops;

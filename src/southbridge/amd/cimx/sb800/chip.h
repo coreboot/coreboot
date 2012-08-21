@@ -20,8 +20,6 @@
 #ifndef _CIMX_SB800_CHIP_H_
 #define _CIMX_SB800_CHIP_H_
 
-extern struct chip_operations southbridge_amd_cimx_sb800_ops;
-
 /*
  * configuration set in mainboard/devicetree.cb
  *  boot_switch_sata_ide:

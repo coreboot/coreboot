@@ -23,4 +23,3 @@ struct northbridge_intel_i3100_config
 	u16 intrline;
 };
 
-extern struct chip_operations northbridge_intel_i3100_ops;

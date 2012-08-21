@@ -35,6 +35,4 @@ struct southbridge_intel_sch_config {
 	uint8_t pirqh_routing;
 };
 
-extern struct chip_operations southbridge_intel_sch_ops;
-
 #endif

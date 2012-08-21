@@ -20,4 +20,3 @@
 struct northbridge_via_cx700_config {
 };
 
-extern struct chip_operations northbridge_via_cx700_ops;

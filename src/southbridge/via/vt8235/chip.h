@@ -1,8 +1,6 @@
 #ifndef _SOUTHBRIDGE_VIA_VT8235
 #define _SOUTHBRIDGE_VIA_VT8235
 
-extern struct chip_operations southbridge_via_vt8235_ops;
-
 struct southbridge_via_vt8235_config {
 	/* PCI function enables */
 	/* i.e. so that pci scan bus will find them. */

@@ -24,7 +24,5 @@ struct southbridge_amd_sb700_config
 {
 	u32 boot_switch_sata_ide : 1;
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_sb700_ops;
 
 #endif /* SB700_CHIP_H */

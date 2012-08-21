@@ -20,7 +20,6 @@
 #ifndef DRIVERS_GENERIC_IOAPIC_CHIP_H
 #define DRIVERS_GENERIC_IOAPIC_CHIP_H
 
-extern struct chip_operations drivers_generic_ioapic_ops;
 struct drivers_generic_ioapic_config {
 	u32 version;
 	u8 apicid;

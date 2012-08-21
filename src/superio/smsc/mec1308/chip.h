@@ -23,9 +23,6 @@
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 
-struct chip_operations;
-extern struct chip_operations superio_smsc_mec1308_ops;
-
 struct superio_smsc_mec1308_config {
 	struct pc_keyboard keyboard;
 };

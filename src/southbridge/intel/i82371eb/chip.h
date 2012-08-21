@@ -23,8 +23,6 @@
 
 #include <device/device.h>
 
-extern const struct chip_operations southbridge_intel_i82371eb_ops;
-
 struct southbridge_intel_i82371eb_config {
 	int ide0_enable:1;
 	int ide0_drive0_udma33_enable:1;

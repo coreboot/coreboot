@@ -23,8 +23,6 @@
 
 #include <uart8250.h>
 
-extern struct chip_operations superio_via_vt1211_ops;
-
 struct superio_via_vt1211_config {
 
 };

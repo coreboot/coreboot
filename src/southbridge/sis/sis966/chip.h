@@ -31,7 +31,5 @@ struct southbridge_sis_sis966_config
 	unsigned int mac_eeprom_smbus;
 	unsigned int mac_eeprom_addr;
 };
-struct chip_operations;
-extern struct chip_operations southbridge_sis_sis966_ops;
 
 #endif /* SIS966_CHIP_H */

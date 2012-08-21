@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations cpu_intel_model_206ax_ops;
-
 /* Magic value used to locate this chip in the device tree */
 #define SPEEDSTEP_APIC_MAGIC 0xACAC
 

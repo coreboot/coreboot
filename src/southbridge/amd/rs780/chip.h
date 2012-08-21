@@ -36,7 +36,5 @@ struct southbridge_amd_rs780_config
 	u8 gfx_pcie_config;		/* GFX PCIE Modes */
 	u8 gfx_ddi_config;		/* GFX DDI Modes */
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_rs780_ops;
 
 #endif /* RS780_CHIP_H */

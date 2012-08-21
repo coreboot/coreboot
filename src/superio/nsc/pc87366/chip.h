@@ -22,8 +22,6 @@
 #ifndef SUPERIO_NSC_PC87366_CHIP_H
 #define SUPERIO_NSC_PC87366_CHIP_H
 
-extern struct chip_operations superio_nsc_pc87366_ops;
-
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 

@@ -23,8 +23,6 @@
 
 #define MAX_UNWANTED_VPCI 8	/* increase if needed */
 
-extern struct chip_operations southbridge_amd_cs5536_ops;
-
 struct southbridge_amd_cs5536_config {
 	unsigned int lpc_serirq_enable;	/* interrupt enables for LPC bus; each bit is an irq 0-15 */
 	unsigned int lpc_serirq_polarity;	/* LPC IRQ polarity; each bit is an irq 0-15 */

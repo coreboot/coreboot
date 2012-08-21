@@ -30,7 +30,5 @@ struct southbridge_amd_agesa_hudson_config
 	u8  gpp_configuration;
 	#endif
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_agesa_hudson_ops;
 
 #endif /* HUDSON_CHIP_H */

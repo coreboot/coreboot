@@ -21,4 +21,3 @@
 struct northbridge_rdc_r8610_config {
 };
 
-extern struct chip_operations northbridge_rdc_r8610_ops;

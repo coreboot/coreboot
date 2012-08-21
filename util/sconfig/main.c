@@ -624,6 +624,14 @@ int main(int argc, char** argv) {
 			h = h->next;
 			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 		}
+		h = &headers;
+		while (h->next) {
+			h = h->next;
+			char *name_underscore = strdup(h->name);
+			translate_name(name_underscore, 0);
+			fprintf(autogen, "extern struct chip_operations %s_ops;\n", name_underscore);
+			free(name_underscore);
+		}
 
 		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 		fprintf(autogen, "\n/* pass 0 */\n");

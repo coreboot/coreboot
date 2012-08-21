@@ -20,4 +20,3 @@
 struct northbridge_intel_i5000_config {
 };
 
-extern struct chip_operations northbridge_intel_i5000_ops;

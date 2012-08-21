@@ -37,6 +37,4 @@ struct southbridge_intel_i82801ax_config {
 	u8 ide1_enable;
 };
 
-extern struct chip_operations southbridge_intel_i82801ax_ops;
-
 #endif

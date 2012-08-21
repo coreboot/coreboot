@@ -73,6 +73,4 @@ struct southbridge_intel_i82801gx_config {
 	int c4onc3_enable:1;
 };
 
-extern struct chip_operations southbridge_intel_i82801gx_ops;
-
 #endif				/* SOUTHBRIDGE_INTEL_I82801GX_CHIP_H */

@@ -21,4 +21,3 @@ struct northbridge_amd_agesa_family15_config
 {
 };
 
-extern struct chip_operations northbridge_amd_agesa_family15_ops;

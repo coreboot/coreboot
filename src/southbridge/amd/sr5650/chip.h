@@ -28,7 +28,5 @@ struct southbridge_amd_sr5650_config
 	u8 gpp3a_configuration;		/* The configuration of General Purpose Port. */
 	u16 port_enable;		/* Which port is enabled? GPP(2,3,4,5,6,7,9,10,11,12,13) */
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_sr5650_ops;
 
 #endif /* SR5650_CHIP_H */

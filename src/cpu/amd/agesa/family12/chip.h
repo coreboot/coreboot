@@ -17,7 +17,5 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations cpu_amd_agesa_family12_ops;
-
 struct cpu_amd_agesa_family12_config {
 };

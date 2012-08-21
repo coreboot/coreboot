@@ -24,7 +24,5 @@ struct southbridge_amd_sb600_config
 {
 	u32 hda_viddid;
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_sb600_ops;
 
 #endif /* SB600_CHIP_H */

@@ -21,4 +21,3 @@
 struct northbridge_intel_i82810_config {
 };
 
-extern struct chip_operations northbridge_intel_i82810_ops;

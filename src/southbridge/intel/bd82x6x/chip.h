@@ -79,6 +79,4 @@ struct southbridge_intel_bd82x6x_config {
 	uint8_t pcie_port_coalesce;
 };
 
-extern struct chip_operations southbridge_intel_bd82x6x_ops;
-
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H */

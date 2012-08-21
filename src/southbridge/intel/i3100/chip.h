@@ -47,4 +47,3 @@ struct southbridge_intel_i3100_config
 	u32 pirq_a_d;
 	u32 pirq_e_h;
 };
-extern struct chip_operations southbridge_intel_i3100_ops;

@@ -20,4 +20,3 @@
 struct northbridge_via_vx800_config {
 };
 
-extern struct chip_operations northbridge_via_vx800_ops;

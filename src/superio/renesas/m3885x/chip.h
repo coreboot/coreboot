@@ -23,8 +23,6 @@
 #include <device/device.h>
 #include <pc80/keyboard.h>
 
-extern struct chip_operations superio_renesas_m3885x_ops;
-
 struct superio_renesas_m3885x_config {
 	struct pc_keyboard keyboard;
 };

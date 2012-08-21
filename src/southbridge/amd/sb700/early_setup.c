@@ -420,6 +420,14 @@ static void sb700_devices_por_init(void)
 	byte |= 0x24;
 	pci_write_config8(dev, 0x62, byte);
 
+	/* Configure HPET Counter CLK period */
+	byte = pci_read_config8(dev, 0x43);
+	byte &= 0xF7;	/* unhide HPET regs */
+	pci_write_config8(dev, 0x43, byte);
+	pci_write_config32(dev, 0x34, 0x0429B17E ); /* Counter CLK period */
+	byte |= 0x08;	/* hide HPET regs */
+	pci_write_config8(dev, 0x43, byte);
+
 	/* Features Enable */
 	pci_write_config32(dev, 0x64, 0x829E79BF); /* bit10: Enables the HPET interrupt. */
 

@@ -418,16 +418,11 @@ static void pass1(FILE *fil, struct device *ptr)
 			fprintf(fil, "\t.link_list = NULL,\n");
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
-		if (ptr->chip->chiph_exists) {
-			fprintf(fil, "#ifndef __PRE_RAM__\n");
-			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
-			fprintf(fil, "#endif\n");
+		fprintf(fil, "#ifndef __PRE_RAM__\n");
+		fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
+		fprintf(fil, "#endif\n");
+		if (ptr->chip->chiph_exists)
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
-		} else if (ptr->chip->chip == &mainboard) {
-			fprintf(fil, "#ifndef __PRE_RAM__\n");
-			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
-			fprintf(fil, "#endif\n");
-		}
 		if (ptr->nextdev)
 			fprintf(fil, "\t.next=&%s\n", ptr->nextdev->name);
 		fprintf(fil, "};\n");

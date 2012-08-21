@@ -426,7 +426,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
@@ -443,16 +443,16 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 				     ioapic_config->base);
 
 		if (ioapic_config->have_isa_interrupts) {
-			if (isaioapic > 1)
+			if (isaioapic >= 0)
 				printk(BIOS_ERR, "More than one IOAPIC with ISA interrupts?\n");
 			else
-				isaioapic = dev->path.ioapic.ioapic_id;;
+				isaioapic = dev->path.ioapic.ioapic_id;
 		}
 	}
 
 	if (isaioapic >= 0) {
 		/* Legacy Interrupts */
-		printk(BIOS_DEBUG, "writing ISA IRQs\n");
+		printk(BIOS_DEBUG, "Writing ISA IRQs\n");
 		mptable_add_isa_interrupts(mc, isa_bus, isaioapic, 0);
 	}
 

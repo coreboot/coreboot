@@ -29,7 +29,6 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
-#include "chip.h"
 #include "i945.h"
 
 static int get_pcie_bar(u32 *base, u32 *len)

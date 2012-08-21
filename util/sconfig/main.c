@@ -179,7 +179,7 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 }
 
 void add_header(struct device *dev) {
-	if ((dev->chiph_exists) || (scan_mode == KCONFIG_MODE)){
+	if (1 || (scan_mode == KCONFIG_MODE)){
 		int include_exists = 0;
 		struct header *h = &headers;
 		while (h->next) {
@@ -195,6 +195,7 @@ void add_header(struct device *dev) {
 			struct header *tmp = h->next;
 			h->next = malloc(sizeof(struct header));
 			memset(h->next, 0, sizeof(struct header));
+			h->next->chiph_exists = dev->chiph_exists;
 			h->next->name = dev->name;
 			h->next->next = tmp;
 		}
@@ -617,8 +618,10 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
+			if (h->chiph_exists)
+				fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 		}
+		fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
 		h = &headers;
 		while (h->next) {
 			h = h->next;
@@ -627,6 +630,7 @@ int main(int argc, char** argv) {
 			fprintf(autogen, "extern struct chip_operations %s_ops;\n", name_underscore);
 			free(name_underscore);
 		}
+		fprintf(autogen, "#endif\n");
 
 		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 		fprintf(autogen, "\n/* pass 0 */\n");

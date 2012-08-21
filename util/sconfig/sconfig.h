@@ -86,6 +86,7 @@ struct device *head;
 struct header;
 struct header {
 	char *name;
+	int chiph_exists;
 	struct header *next;
 };
 

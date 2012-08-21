@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include "chip.h"
 #include "e7505.h"
 
 #if CONFIG_WRITE_HIGH_TABLES

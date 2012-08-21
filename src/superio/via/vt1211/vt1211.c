@@ -26,7 +26,6 @@
 #include <uart8250.h>
 #include <stdlib.h>
 #include "vt1211.h"
-#include "chip.h"
 
 static u8 hwm_io_regs[] = {
 	0x10,0x03, 0x11,0x10, 0x12,0x0d, 0x13,0x7f,

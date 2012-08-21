@@ -29,7 +29,6 @@
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include "chip.h"
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
 #endif

@@ -5,7 +5,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
-#include "chip.h"
 
 static void i2cmux_set_link(device_t dev, unsigned int link)
 {

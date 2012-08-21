@@ -30,7 +30,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <smbios.h>
-#include "chip.h"
 
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>

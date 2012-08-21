@@ -42,7 +42,6 @@
 #include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdfam10.h"
-#include "chip.h"
 
 extern uint32_t agesawrapper_amdinitmid(void);
 

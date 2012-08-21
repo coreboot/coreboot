@@ -19,8 +19,6 @@
  * MA 02110-1301 USA
  */
 
-extern struct chip_operations drivers_ics_954309_ops;
-
 struct drivers_ics_954309_config {
 	u8 reg0;
 	u8 reg1;

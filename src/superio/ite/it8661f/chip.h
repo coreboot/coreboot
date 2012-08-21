@@ -26,8 +26,6 @@
 #include <device/device.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_ite_it8661f_ops;
-
 struct superio_ite_it8661f_config {
 
 };

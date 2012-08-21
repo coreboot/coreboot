@@ -21,8 +21,6 @@
 #ifndef SOUTHBRIDGE_AMD_CS5530_CHIP_H
 #define SOUTHBRIDGE_AMD_CS5530_CHIP_H
 
-extern struct chip_operations southbridge_amd_cs5530_ops;
-
 struct southbridge_amd_cs5530_config {
 	int ide0_enable:1;
 	int ide1_enable:1;

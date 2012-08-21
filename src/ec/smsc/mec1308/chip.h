@@ -27,7 +27,4 @@ struct ec_smsc_mec1308_config
 	u16 mailbox_port;
 };
 
-struct chip_operations;
-extern struct chip_operations ec_smsc_mec1308_ops;
-
 #endif /* _EC_SMSC_MEC1308_CHIP_H */

@@ -30,7 +30,6 @@ struct southbridge_intel_i82801ex_config
 	unsigned int  pirq_a_d;
 	unsigned int  pirq_e_h;
 };
-extern struct chip_operations southbridge_intel_i82801ex_ops;
 
 #endif /* I82801EX_CHIP_H */
 

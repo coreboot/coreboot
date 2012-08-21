@@ -20,8 +20,6 @@
 #ifndef _SOUTHBRIDGE_TI_PCIXX12
 #define _SOUTHBRIDGE_TI_PCIXX12
 
-extern struct chip_operations southbridge_ti_pcixx12_ops;
-
 struct southbridge_ti_pcixx12_config {
 	int dummy;
 

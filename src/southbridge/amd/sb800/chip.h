@@ -28,7 +28,5 @@ struct southbridge_amd_sb800_config
 	u32 hda_viddid;
 	u8  gpp_configuration;
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_sb800_ops;
 
 #endif /* SB800_CHIP_H */

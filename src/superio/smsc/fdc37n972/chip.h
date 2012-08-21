@@ -24,8 +24,6 @@
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_smsc_fdc37n972_ops;
-
 struct superio_smsc_fdc37n972_config {
 
 	struct pc_keyboard keyboard;

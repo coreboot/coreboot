@@ -21,9 +21,6 @@
 #ifndef SUPERIO_SMSC_LPC47B272_CHIP_H
 #define SUPERIO_SMSC_LPC47B272_CHIP_H
 
-struct chip_operations;
-extern struct chip_operations superio_smsc_lpc47b272_ops;
-
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 

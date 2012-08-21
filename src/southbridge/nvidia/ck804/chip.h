@@ -30,7 +30,5 @@ struct southbridge_nvidia_ck804_config {
 	unsigned int mac_eeprom_smbus;
 	unsigned int mac_eeprom_addr;
 };
-struct chip_operations;
-extern struct chip_operations southbridge_nvidia_ck804_ops;
 
 #endif

@@ -26,8 +26,6 @@
 
 /* This chip doesn't have keyboard and mouse support. */
 
-extern struct chip_operations superio_fintek_f71805f_ops;
-
 struct superio_fintek_f71805f_config {
 
 };

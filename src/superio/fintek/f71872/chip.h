@@ -24,8 +24,6 @@
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_fintek_f71872_ops;
-
 struct superio_fintek_f71872_config {
 
 	struct pc_keyboard keyboard;

@@ -22,8 +22,6 @@
 
 #include <stdint.h>
 
-extern struct chip_operations southbridge_via_vt8237r_ops;
-
 struct southbridge_via_vt8237r_config {
 	/**
 	 * Function disable. 1 = disabled.

@@ -25,8 +25,6 @@
 #include <device/device.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_fintek_f71863fg_ops;
-
 struct superio_fintek_f71863fg_config {
 
 	struct pc_keyboard keyboard;

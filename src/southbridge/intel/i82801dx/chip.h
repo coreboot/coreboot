@@ -41,6 +41,4 @@ struct southbridge_intel_i82801dx_config {
 	uint8_t ide1_enable;
 };
 
-extern struct chip_operations southbridge_intel_i82801dx_ops;
-
 #endif				/* I82801DBM_CHIP_H */

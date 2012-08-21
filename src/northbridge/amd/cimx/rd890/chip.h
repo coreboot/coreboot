@@ -17,11 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #ifndef _CIMX_RD890_CHIP_H_
 #define _CIMX_RD890_CHIP_H_
-
-extern struct chip_operations northbridge_amd_cimx_rd890_ops;
 
 /**
  * RD890 specific device configuration

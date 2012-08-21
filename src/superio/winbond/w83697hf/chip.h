@@ -23,8 +23,6 @@
 
 #include <uart8250.h>
 
-extern struct chip_operations superio_winbond_w83697hf_ops;
-
 struct superio_winbond_w83697hf_config {
 	unsigned int hwmon_fan1_divisor;
 	unsigned int hwmon_fan2_divisor;

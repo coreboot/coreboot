@@ -33,7 +33,5 @@ struct southbridge_amd_rs690_config
 	u8 gfx_reconfiguration;	/* Dynamic Lind Width Control */
 	u8 gfx_link_width;	/* Desired width of lane 2 */
 };
-struct chip_operations;
-extern struct chip_operations southbridge_amd_rs690_ops;
 
 #endif /* RS690_CHIP_H */

@@ -21,8 +21,6 @@
 #ifndef _SOUTHBRIDGE_TI_PCI7420
 #define _SOUTHBRIDGE_TI_PCI7420
 
-extern struct chip_operations southbridge_ti_pci7420_ops;
-
 struct southbridge_ti_pci7420_config {
 	int smartcard_enabled;
 };

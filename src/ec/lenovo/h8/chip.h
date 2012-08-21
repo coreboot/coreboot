@@ -20,7 +20,6 @@
 #ifndef EC_LENOVO_H8EC_CHIP_H
 #define EC_LENOVO_H8EC_CHIP_H
 
-extern struct chip_operations ec_lenovo_h8_ops;
 struct ec_lenovo_h8_config {
 
 	u8 config0;

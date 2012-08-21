@@ -24,8 +24,6 @@
 #include <device/device.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_intel_i3100_ops;
-
 struct superio_intel_i3100_config {
 };
 

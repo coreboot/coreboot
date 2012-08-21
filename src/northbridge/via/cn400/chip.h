@@ -21,4 +21,3 @@
 struct northbridge_via_cn400_config {
 };
 
-extern struct chip_operations northbridge_via_cn400_ops;

@@ -24,8 +24,6 @@
 #include <device/device.h>
 #include <uart8250.h>
 
-extern struct chip_operations superio_fintek_f71859_ops;
-
 struct superio_fintek_f71859_config {
 
 };

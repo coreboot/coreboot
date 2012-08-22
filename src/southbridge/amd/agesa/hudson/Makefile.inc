@@ -14,14 +14,73 @@ romstage-y += early_setup.c
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 
-$(obj)/hudson.bin:
-	python $(src)/southbridge/amd/agesa/hudson/hudson_fwm.py $(CONFIG_HUDSON_FWM_POSITION) $@ $(CONFIG_HUDSON_XHCI_FWM_FILE) $(CONFIG_HUDSON_IMC_FWM_FILE) ""
+# ROMSIG At ROMBASE + 0x20000:
+# +-----------+---------------+----------------+------------+
+# |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
+# +-----------+---------------+----------------+------------+
+# EC ROM should be 64K aligned.
+HUDSON_FWM_POSITION=$(shell printf %d $(CONFIG_HUDSON_FWM_POSITION))
+
+ifeq ($(CONFIG_HUDSON_XHCI_FWM), y)
+HUDSON_XHCI_POSITION=$(shell expr $(HUDSON_FWM_POSITION) + 128)
+XHCI_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_XHCI_FWM_FILE)))
+else
+HUDSON_XHCI_POSITION=0
+XHCI_FWM_SIZE=0
+endif
+
+ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
+HUDSON_GEC_POSITION=$(shell expr $(HUDSON_FWM_POSITION) + 128 + $(XHCI_FWM_SIZE))
+GEC_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_GEC_FWM_FILE)))
+else
+HUDSON_GEC_POSITION=0
+GEC_FWM_SIZE=0
+endif
+
+ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
+HUDSON_IMC_POSITION_UNALIGN=$(shell expr $(HUDSON_FWM_POSITION) + 256 + $(XHCI_FWM_SIZE) + $(GEC_FWM_SIZE) + 65535)
+HUDSON_IMC_POSITION=$(shell expr $(HUDSON_IMC_POSITION_UNALIGN) - $(HUDSON_IMC_POSITION_UNALIGN) % 65536)
+else
+HUDSON_IMC_POSITION=0
+endif
+
+$(obj)/hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
+			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
+			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE))
+	echo "    Hudson FW  $@"
+	for fwm in 1437226410 \
+		$(HUDSON_IMC_POSITION) \
+		$(HUDSON_GEC_POSITION) \
+		$(HUDSON_XHCI_POSITION) ; do \
+		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 0x100, $$1/0x100 % 0x100, $$1/0x10000 % 0x100, $$1/0x1000000);}'; \
+	done > $@
 
 ifeq ($(CONFIG_HUDSON_FWM), y)
 cbfs-files-y += hudson/fwm
-hudson/fwm-file := $(obj)/hudson.bin
-hudson/fwm-position := $(CONFIG_HUDSON_FWM_POSITION)
+hudson/fwm-file := $(obj)/hudson_romsig.bin
+hudson/fwm-position := $(HUDSON_FWM_POSITION)
 hudson/fwm-type := raw
+endif
+
+ifeq ($(CONFIG_HUDSON_XHCI_FWM), y)
+cbfs-files-y += hudson/xhci
+hudson/xhci-file := $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE))
+hudson/xhci-position := $(HUDSON_XHCI_POSITION)
+hudson/xhci-type := raw
+endif
+
+ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
+cbfs-files-y += hudson/imc
+hudson/imc-file := $(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE))
+hudson/imc-position := $(HUDSON_IMC_POSITION)
+hudson/imc-type := raw
+endif
+
+ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
+cbfs-files-y += hudson/gec
+hudson/gec-file := $(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE))
+hudson/gec-position := $(HUDSON_GEC_POSITION)
+hudson/gec-type := raw
 endif
 
 #ifeq ($(CONFIG_HUDSON_SATA_AHCI), y)

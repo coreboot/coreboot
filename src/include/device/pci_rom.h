@@ -37,4 +37,7 @@ struct rom_header *pci_rom_probe(struct device *dev);
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header);
 u32 __attribute__((weak)) map_oprom_vendev(u32 vendev);
 
+void __attribute__((weak))
+pci_vga_rom_patch(struct pci_data *rom_data, void *pci_vga_ram_image_start);
+
 #endif

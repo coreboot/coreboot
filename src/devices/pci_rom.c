@@ -161,7 +161,14 @@ struct rom_header *pci_rom_load(struct device *dev,
 			       PCI_VGA_RAM_IMAGE_START, rom_size);
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
 			       rom_size);
-		}
+		}git commit --amend -m
+
+		/* In some cases it is useful to patch an pci vga oprom. A good example
+		 * is adding/changing some EDID information stored in the VGA option rom.
+		 */
+		if (pci_vga_rom_patch)
+			pci_vga_rom_patch(rom_data, (void *)PCI_VGA_RAM_IMAGE_START);
+
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 	}
 

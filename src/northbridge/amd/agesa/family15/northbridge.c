@@ -499,8 +499,8 @@ static const struct pci_driver family10_northbridge __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_10H_NB_HT,
 };
 
+DEVICE_NAME("AMD FAM15 Northbridge");
 struct chip_operations northbridge_amd_agesa_family15_ops = {
-	CHIP_NAME("AMD FAM15 Northbridge")
 	.enable_dev = 0,
 };
 
@@ -1143,8 +1143,8 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 
+CHIP_ROOT_COMPLEX_NAME("AMD FAM15 Root Complex");
 struct chip_operations northbridge_amd_agesa_family15_root_complex_ops = {
-	CHIP_NAME("AMD FAM15 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
 

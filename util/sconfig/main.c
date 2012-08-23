@@ -436,6 +436,8 @@ static void pass1(FILE *fil, struct device *ptr)
 		fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
 		if (ptr->chip->chip == &mainboard)
 			fprintf(fil, "\t.name = mainboard_name,\n");
+		else
+			fprintf(fil, "\t.name = %s_name,\n", ptr->chip->name_underscore);
 		fprintf(fil, "#endif\n");
 		if (ptr->chip->chiph_exists)
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
@@ -642,6 +644,7 @@ int main(int argc, char** argv) {
 		while (h->next) {
 			h = h->next;
 			char *name_underscore = translate_name(h->name, UNSLASH);
+			fprintf(autogen, "__attribute__((weak)) const char %s_name[] = \"(unknown)\";\n", name_underscore);
 			fprintf(autogen, "__attribute__((weak)) struct chip_operations %s_ops = {};\n", name_underscore);
 			free(name_underscore);
 		}

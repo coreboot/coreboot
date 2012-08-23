@@ -19,6 +19,6 @@
 
 #include <device/device.h>
 
+DEVICE_NAME("Socket 441 CPU");
 struct chip_operations cpu_intel_socket_441_ops = {
-	CHIP_NAME("Socket 441 CPU")
 };

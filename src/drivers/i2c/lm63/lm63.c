@@ -37,7 +37,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &lm63_operations;
 }
 
+DEVICE_NAME("National Semiconductor LM63");
 struct chip_operations drivers_i2c_lm63_ops = {
-	CHIP_NAME("National Semiconductor LM63")
 	.enable_dev = enable_dev,
 };

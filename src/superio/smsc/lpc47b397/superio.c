@@ -193,7 +193,7 @@ static void enable_dev(struct device *dev)
 		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("SMSC LPC47B397 Super I/O");
 struct chip_operations superio_smsc_lpc47b397_ops = {
-	CHIP_NAME("SMSC LPC47B397 Super I/O")
 	.enable_dev = enable_dev,
 };

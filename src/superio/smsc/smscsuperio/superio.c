@@ -347,7 +347,7 @@ static void enable_dev(device_t dev)
 		pnp_dev_info[j].function = tmp[j];
 }
 
+DEVICE_NAME("Various SMSC Super I/Os");
 struct chip_operations superio_smsc_smscsuperio_ops = {
-	CHIP_NAME("Various SMSC Super I/Os")
 	.enable_dev = enable_dev
 };

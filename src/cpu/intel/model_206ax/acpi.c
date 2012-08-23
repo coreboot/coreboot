@@ -359,6 +359,6 @@ void generate_cpu_entries(void)
 	}
 }
 
+DEVICE_NAME("Intel SandyBridge/IvyBridge CPU");
 struct chip_operations cpu_intel_model_206ax_ops = {
-	CHIP_NAME("Intel SandyBridge/IvyBridge CPU")
 };

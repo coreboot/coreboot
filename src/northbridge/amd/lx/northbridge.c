@@ -459,7 +459,7 @@ static void enable_dev(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 }
 
+DEVICE_NAME("AMD LX Northbridge");
 struct chip_operations northbridge_amd_lx_ops = {
-	CHIP_NAME("AMD LX Northbridge")
 	    .enable_dev = enable_dev,
 };

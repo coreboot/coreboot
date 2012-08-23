@@ -42,7 +42,7 @@ void i82801ex_enable(device_t dev)
 
 }
 
+DEVICE_NAME("Intel ICH5 (82801Ex) Series Southbridge");
 struct chip_operations southbridge_intel_i82801ex_ops = {
-	CHIP_NAME("Intel ICH5 (82801Ex) Series Southbridge")
 	.enable_dev = i82801ex_enable,
 };

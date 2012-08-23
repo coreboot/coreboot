@@ -63,7 +63,7 @@ static void enable_dev(struct device *dev)
 		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("NSC PC87382 Docking LPC Switch");
 struct chip_operations superio_nsc_pc87382_ops = {
-	CHIP_NAME("NSC PC87382 Docking LPC Switch")
 	.enable_dev = enable_dev,
 };

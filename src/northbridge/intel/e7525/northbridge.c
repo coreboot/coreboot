@@ -208,7 +208,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel E7525 Northbridge");
 struct chip_operations northbridge_intel_e7525_ops = {
-	CHIP_NAME("Intel E7525 Northbridge")
 	.enable_dev = enable_dev,
 };

@@ -225,7 +225,7 @@ void sb600_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("ATI SB600");
 struct chip_operations southbridge_amd_sb600_ops = {
-	CHIP_NAME("ATI SB600")
 	.enable_dev = sb600_enable,
 };

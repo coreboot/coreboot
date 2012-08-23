@@ -68,7 +68,7 @@ static void enable_dev(device_t dev)
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("Renesas M3885x Super I/O");
 struct chip_operations superio_renesas_m3885x_ops = {
-	CHIP_NAME("Renesas M3885x Super I/O")
 	.enable_dev = enable_dev,
 };

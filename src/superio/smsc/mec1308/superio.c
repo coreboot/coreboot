@@ -113,8 +113,8 @@ static void enable_dev(device_t dev)
 			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("SMSC MEC1308 EC SuperIO Interface");
 struct chip_operations superio_smsc_mec1308_ops = {
-	CHIP_NAME("SMSC MEC1308 EC SuperIO Interface")
 	.enable_dev = enable_dev
 };
 

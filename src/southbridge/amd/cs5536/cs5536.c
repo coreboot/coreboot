@@ -702,8 +702,8 @@ static const struct pci_driver cs5536_pci_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_CS5536_ISA
 };
 
+DEVICE_NAME("AMD Geode CS5536 Southbridge");
 struct chip_operations southbridge_amd_cs5536_ops = {
-	CHIP_NAME("AMD Geode CS5536 Southbridge")
 	    /* This is only called when this device is listed in the
 	     * static device tree.
 	     */

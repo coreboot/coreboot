@@ -71,7 +71,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &ics954309_operations;
 }
 
+DEVICE_NAME("ICS 954309 Clock generator");
 struct chip_operations drivers_ics_954309_ops = {
-	CHIP_NAME("ICS 954309 Clock generator")
 	.enable_dev = enable_dev,
 };

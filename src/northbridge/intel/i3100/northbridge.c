@@ -229,7 +229,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel 3100 Northbridge");
 struct chip_operations northbridge_intel_i3100_ops = {
-	CHIP_NAME("Intel 3100 Northbridge")
 	.enable_dev = enable_dev,
 };

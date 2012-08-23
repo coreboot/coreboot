@@ -101,7 +101,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &adt7463_operations;
 }
 
+DEVICE_NAME("adt7463");
 struct chip_operations drivers_i2c_adt7463_ops = {
-	CHIP_NAME("adt7463")
 	.enable_dev = enable_dev,
 };

@@ -122,7 +122,7 @@ static void ti_pci7420_enable_dev(device_t dev)
 	/* Nothing here yet */
 }
 
+DEVICE_NAME("Texas Instruments PCI7420/7620 Cardbus Controller");
 struct chip_operations southbridge_ti_pci7420_ops = {
-	CHIP_NAME("Texas Instruments PCI7420/7620 Cardbus Controller")
 	.enable_dev    = ti_pci7420_enable_dev,
 };

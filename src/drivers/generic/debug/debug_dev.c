@@ -283,7 +283,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &debug_operations;
 }
 
+DEVICE_NAME("Debug device");
 struct chip_operations drivers_generic_debug_ops = {
-	CHIP_NAME("Debug device")
 	.enable_dev = enable_dev,
 };

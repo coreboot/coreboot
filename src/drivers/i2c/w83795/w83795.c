@@ -255,7 +255,7 @@ static void enable_dev(device_t dev)
 	dev->ops = &w83795_operations;
 }
 
+DEVICE_NAME("Nuvoton W83795G/ADG Hardware Monitor");
 struct chip_operations drivers_i2c_w83795_ops = {
-	CHIP_NAME("Nuvoton W83795G/ADG Hardware Monitor")
 	.enable_dev = enable_dev,
 };

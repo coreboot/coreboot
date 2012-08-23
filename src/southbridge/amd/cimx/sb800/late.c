@@ -491,7 +491,7 @@ static void sb800_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("ATI SB800");
 struct chip_operations southbridge_amd_cimx_sb800_ops = {
-	CHIP_NAME("ATI SB800")
 	.enable_dev = sb800_enable,
 };

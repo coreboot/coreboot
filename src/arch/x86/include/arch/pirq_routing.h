@@ -1,5 +1,34 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
+ * Copyright (C) 2012 Patrick Georgi <patrick@georgi-clan.de>
+ * Copyright (C) 2010 Stefan Reinauer <stepan@coreboot.org>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifndef ARCH_PIRQ_ROUTING_H
 #define ARCH_PIRQ_ROUTING_H
+
+/* This is the maximum number on interrupt entries that a PCI device may have.
+ *   This is NOT the number of slots or devices in the system
+ *   This is NOT the number of entries in the PIRQ table
+ * This tells us that in the PIRQ table, we are going to have 4 link-bitmap
+ * entries per PCI device
+ * It is fixed at 4: INTA, INTB, INTC, and INTD
+ * CAUTION: If you change this, pirq_routing will not work correctly*/
+#define MAX_INTX_ENTRIES 4
 
 #if CONFIG_GENERATE_PIRQ_TABLE
 #include <stdint.h>
@@ -40,10 +69,10 @@ unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
 
 #if CONFIG_PIRQ_ROUTE
-void pirq_routing_irqs(unsigned long start);
-void pirq_assign_irqs(const unsigned char pIntAtoD[4]);
+void pirq_route_irqs(unsigned long start);
+void pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS]);
 #else
-#define pirq_routing_irqs(start) {}
+#define pirq_route_irqs(start) {}
 #endif
 
 #else

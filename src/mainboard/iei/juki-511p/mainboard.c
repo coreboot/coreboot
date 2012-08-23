@@ -25,5 +25,3 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 
-struct chip_operations mainboard_ops = {
-};

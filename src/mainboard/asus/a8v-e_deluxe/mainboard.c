@@ -22,5 +22,3 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-struct chip_operations mainboard_ops = {
-};

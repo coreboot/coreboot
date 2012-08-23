@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+ * Copyright (C) 2012  Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,4 +29,6 @@ struct drivers_generic_ioapic_config {
 	u8 have_isa_interrupts;
 	u32 base;
 };
+
+typedef struct drivers_generic_ioapic_config *ioapic_config_t;
 #endif

@@ -1,6 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
+## Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
 ## Copyright (C) 2009-2010 coresystems GmbH
 ## Copyright (C) 2009 Ronald G. Minnich
 ##
@@ -237,7 +238,9 @@ endif
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
+ifeq ($(MP_TABLE_FROM_DEVICETREE),n)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mptable.c
+endif
 endif
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c

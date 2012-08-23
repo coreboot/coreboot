@@ -1,3 +1,22 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
+ * Copyright (C) 2010 Stefan Reinauer <stepan@coreboot.org>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <console/console.h>
 #include <arch/pirq_routing.h>
 #include <string.h>
@@ -92,17 +111,49 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 #if CONFIG_DEBUG_PIRQ
 	verify_copy_pirq_routing_table(addr);
 #endif
-	pirq_routing_irqs(addr);
+	pirq_route_irqs(addr);
 	return addr + intel_irq_routing_table.size;
 }
 
 #if CONFIG_PIRQ_ROUTE
-void pirq_routing_irqs(unsigned long addr)
+static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 {
-	int i, j, k, num_entries;
-	unsigned char irq_slot[4];
-	unsigned char pirq[4] = {0, 0, 0, 0};
+	int i, link;
+	u8 irq = 0;
+	for (i = 2; i <= 15; i++)
+	{
+		/* Can we assign this IRQ ? */
+		if (!((bitmap >> i) & 1))
+			continue;
+		/* We can, Now let's assume we can use this IRQ */
+		irq = i;
+		/* And assume we have not yet routed it */
+		int already_routed = 0;
+		/* Have we already routed it ? */
+		for(link = 0; link < CONFIG_MAX_PIRQ_LINKS; link++) {
+			if (pirq[link] == irq) {
+				already_routed = 1;
+				break;
+			}
+		}
+		/* If it's not yet routed, use it */
+		if(!already_routed)
+			break;
+		/* But if it was already routed, try the next one */
+		continue;
+	}
+	/* Now we got our IRQ */
+	return irq;
+}
+
+void pirq_route_irqs(unsigned long addr)
+{
+	int i, intx, num_entries;
+	unsigned char irq_slot[MAX_INTX_ENTRIES];
+	unsigned char pirq[CONFIG_MAX_PIRQ_LINKS];
 	struct irq_routing_table *pirq_tbl;
+
+	memset(pirq, 0, CONFIG_MAX_PIRQ_LINKS);
 
 	pirq_tbl = (struct irq_routing_table *)(addr);
 	num_entries = (pirq_tbl->size - 32) / 16;
@@ -113,37 +164,26 @@ void pirq_routing_irqs(unsigned long addr)
 		printk(BIOS_DEBUG, "PIRQ Entry %d Dev/Fn: %X Slot: %d\n", i,
 			pirq_tbl->slots[i].devfn >> 3, pirq_tbl->slots[i].slot);
 
-		for (j = 0; j < 4; j++) {
+		for (intx = 0; intx < MAX_INTX_ENTRIES; intx++) {
 
-			int link = pirq_tbl->slots[i].irq[j].link;
-			int bitmap = pirq_tbl->slots[i].irq[j].bitmap;
+			int link = pirq_tbl->slots[i].irq[intx].link;
+			int bitmap = pirq_tbl->slots[i].irq[intx].bitmap;
 			int irq = 0;
 
 			printk(BIOS_DEBUG, "INT: %c link: %x bitmap: %x  ",
-				'A' + j, link, bitmap);
+				'A' + intx, link, bitmap);
 
-			if (!bitmap|| !link || link > 4) {
+			if (!bitmap|| !link || link > CONFIG_MAX_PIRQ_LINKS) {
 
 				printk(BIOS_DEBUG, "not routed\n");
-				irq_slot[j] = irq;
+				irq_slot[intx] = irq;
 				continue;
 			}
 
 			/* yet not routed */
-			if (!pirq[link - 1]) {
-
-				for (k = 2; k <= 15; k++) {
-
-					if (!((bitmap >> k) & 1))
-						continue;
-
-					irq = k;
-
-					/* yet not routed */
-					if (pirq[0] != irq && pirq[1] != irq && pirq[2] != irq && pirq[3] != irq)
-						break;
-				}
-
+			if (!pirq[link - 1])
+			{
+				irq = pirq_get_next_free_irq(pirq, bitmap);
 				if (irq)
 					pirq[link - 1] = irq;
 			}
@@ -151,7 +191,7 @@ void pirq_routing_irqs(unsigned long addr)
 				irq = pirq[link - 1];
 
 			printk(BIOS_DEBUG, "IRQ: %d\n", irq);
-			irq_slot[j] = irq;
+			irq_slot[intx] = irq;
 		}
 
 		/* Bus, device, slots IRQs for {A,B,C,D}. */
@@ -159,10 +199,8 @@ void pirq_routing_irqs(unsigned long addr)
 			pirq_tbl->slots[i].devfn >> 3, irq_slot);
 	}
 
-	printk(BIOS_DEBUG, "PIRQ1: %d\n", pirq[0]);
-	printk(BIOS_DEBUG, "PIRQ2: %d\n", pirq[1]);
-	printk(BIOS_DEBUG, "PIRQ3: %d\n", pirq[2]);
-	printk(BIOS_DEBUG, "PIRQ4: %d\n", pirq[3]);
+	for(i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)
+		printk(BIOS_DEBUG, "PIRQ%u: %d\n", i + 'A',  pirq[i]);
 
 	pirq_assign_irqs(pirq);
 }

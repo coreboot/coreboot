@@ -19,6 +19,6 @@
 
 #include <device/device.h>
 
+DEVICE_NAME("EP80579 CPU");
 struct chip_operations cpu_intel_ep80579_ops = {
-	CHIP_NAME("EP80579 CPU")
 };

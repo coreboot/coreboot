@@ -47,7 +47,7 @@ void i82801cx_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel ICH3 (82801Cx) Series Southbridge");
 struct chip_operations southbridge_intel_i82801cx_ops = {
-	CHIP_NAME("Intel ICH3 (82801Cx) Series Southbridge")
 	.enable_dev = i82801cx_enable,
 };

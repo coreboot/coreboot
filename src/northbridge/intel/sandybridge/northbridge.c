@@ -508,7 +508,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel i7 (SandyBridge/IvyBridge) integrated Northbridge");
 struct chip_operations northbridge_intel_sandybridge_ops = {
-	CHIP_NAME("Intel i7 (SandyBridge/IvyBridge) integrated Northbridge")
 	.enable_dev = enable_dev,
 };

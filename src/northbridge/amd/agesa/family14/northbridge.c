@@ -868,8 +868,8 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x1510,
 };
 
+DEVICE_NAME("AMD Family 14h Northbridge");
 struct chip_operations northbridge_amd_agesa_family14_ops = {
-	CHIP_NAME("AMD Family 14h Northbridge")
 	.enable_dev = 0,
 };
 
@@ -911,7 +911,7 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
+ROOT_COMPLEX_NAME("AMD Family 14h Root Complex");
 struct chip_operations northbridge_amd_agesa_family14_root_complex_ops = {
-	CHIP_NAME("AMD Family 14h Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };

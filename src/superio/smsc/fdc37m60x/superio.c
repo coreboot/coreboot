@@ -67,7 +67,7 @@ static void enable_dev(struct device *dev)
 		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("SMSC FDC37M60X Super I/O");
 struct chip_operations superio_smsc_fdc37m60x_ops = {
-	CHIP_NAME("SMSC FDC37M60X Super I/O")
 	.enable_dev = enable_dev,
 };

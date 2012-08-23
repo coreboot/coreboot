@@ -111,8 +111,8 @@ static void rd890_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("ATI rd890");
 struct chip_operations northbridge_amd_cimx_rd890_ops = {
-	CHIP_NAME("ATI rd890")
 	.enable_dev = rd890_enable,
 };
 

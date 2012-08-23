@@ -171,7 +171,7 @@ static void enable_dev(struct device *dev)
 	}
 }
 
+DEVICE_NAME("VIA VX800 Chipset");
 struct chip_operations northbridge_via_vx800_ops = {
-	CHIP_NAME("VIA VX800 Chipset")
 	    .enable_dev = enable_dev,
 };

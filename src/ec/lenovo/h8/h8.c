@@ -163,7 +163,7 @@ static void h8_enable(device_t dev)
 	h8_set_audio_mute(0);
 }
 
+DEVICE_NAME("Lenovo H8 EC");
 struct chip_operations ec_lenovo_h8_ops = {
-	CHIP_NAME("Lenovo H8 EC")
 	.enable_dev = h8_enable
 };

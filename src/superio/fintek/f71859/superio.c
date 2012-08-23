@@ -86,7 +86,7 @@ static void enable_dev(device_t dev)
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("Fintek F71859 Super I/O");
 struct chip_operations superio_fintek_f71859_ops = {
-	CHIP_NAME("Fintek F71859 Super I/O")
 	.enable_dev = enable_dev
 };

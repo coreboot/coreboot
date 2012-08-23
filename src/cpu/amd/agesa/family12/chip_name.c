@@ -19,6 +19,6 @@
 
 #include <device/device.h>
 
+DEVICE_NAME("AMD CPU Family 12h");
 struct chip_operations cpu_amd_agesa_family12_ops = {
-	CHIP_NAME("AMD CPU Family 12h")
 };

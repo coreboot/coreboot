@@ -437,7 +437,7 @@ void sr5650_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("ATI SR5650");
 struct chip_operations southbridge_amd_sr5650_ops = {
-	CHIP_NAME("ATI SR5650")
 	.enable_dev = sr5650_enable,
 };

@@ -129,7 +129,7 @@ static void enable_dev(struct device *dev)
 	dev->ops = &ioapic_operations;
 }
 
+DEVICE_NAME("IOAPIC");
 struct chip_operations drivers_generic_ioapic_ops = {
-	CHIP_NAME("IOAPIC")
 	.enable_dev = enable_dev,
 };

@@ -53,7 +53,7 @@ void cs5530_enable(device_t dev)
 {
 }
 
+DEVICE_NAME("AMD Geode CS5530/CS5530A I/O Companion Southbridge");
 struct chip_operations southbridge_amd_cs5530_ops = {
-	CHIP_NAME("AMD Geode CS5530/CS5530A I/O Companion Southbridge")
 	.enable_dev = cs5530_enable,
 };

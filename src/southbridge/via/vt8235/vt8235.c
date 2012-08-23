@@ -83,7 +83,7 @@ static void vt8235_enable(struct device *dev)
 	pci_write_config8(dev, 0x50, regval);
 }
 
+DEVICE_NAME("VIA VT8235 Southbridge");
 struct chip_operations southbridge_via_vt8235_ops = {
-	CHIP_NAME("VIA VT8235 Southbridge")
 	.enable_dev = vt8235_enable,
 };

@@ -371,7 +371,7 @@ void rs780_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("ATI RS780");
 struct chip_operations southbridge_amd_rs780_ops = {
-	CHIP_NAME("ATI RS780")
 	.enable_dev = rs780_enable,
 };

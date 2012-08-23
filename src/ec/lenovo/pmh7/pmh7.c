@@ -117,8 +117,8 @@ static void enable_dev(device_t dev)
 		pmh7_touchpad_enable(val);
 }
 
+DEVICE_NAME("Lenovo Power Management Hardware Hub 7");
 struct chip_operations ec_lenovo_pmh7_ops = {
-	CHIP_NAME("Lenovo Power Management Hardware Hub 7")
 	.enable_dev = enable_dev,
 };
 #endif

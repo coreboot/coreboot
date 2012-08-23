@@ -194,7 +194,7 @@ void sis966_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("SiS SiS966 Southbridge");
 struct chip_operations southbridge_sis_sis966_ops = {
-	CHIP_NAME("SiS SiS966 Southbridge")
 	.enable_dev	= sis966_enable,
 };

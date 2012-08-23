@@ -63,7 +63,7 @@ static void southbridge_init(device_t dev)
 {
 }
 
+DEVICE_NAME("Texas Instruments PCIxx12 Cardbus Controller");
 struct chip_operations southbridge_ti_pcixx12_ops = {
-	CHIP_NAME("Texas Instruments PCIxx12 Cardbus Controller")
 	.enable_dev    = southbridge_init,
 };

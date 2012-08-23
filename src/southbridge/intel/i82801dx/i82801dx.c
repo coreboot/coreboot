@@ -80,7 +80,7 @@ void i82801dx_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel ICH4/ICH4-M (82801Dx) Series Southbridge");
 struct chip_operations southbridge_intel_i82801dx_ops = {
-	CHIP_NAME("Intel ICH4/ICH4-M (82801Dx) Series Southbridge")
 	    .enable_dev = i82801dx_enable,
 };

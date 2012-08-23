@@ -244,7 +244,7 @@ struct pci_operations mcp55_pci_ops = {
 	.set_subsystem = mcp55_set_subsystem,
 };
 
+DEVICE_NAME("NVIDIA MCP55 Southbridge");
 struct chip_operations southbridge_nvidia_mcp55_ops = {
-	CHIP_NAME("NVIDIA MCP55 Southbridge")
 	.enable_dev = mcp55_enable,
 };

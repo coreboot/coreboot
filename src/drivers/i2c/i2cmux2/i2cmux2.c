@@ -34,7 +34,7 @@ static void enable_dev(struct device *dev)
 		dev->ops = &i2cmux2_operations;
 }
 
+DEVICE_NAME("i2cmux2");
 struct chip_operations drivers_i2c_i2cmux2_ops = {
-	CHIP_NAME("i2cmux2")
 	.enable_dev = enable_dev,
 };

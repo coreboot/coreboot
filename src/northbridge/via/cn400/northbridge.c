@@ -273,7 +273,7 @@ static void enable_dev(struct device *dev)
 	}
 }
 
+DEVICE_NAME("VIA CN400 Northbridge");
 struct chip_operations northbridge_via_cn400_ops = {
-	CHIP_NAME("VIA CN400 Northbridge")
 	.enable_dev = enable_dev,
 };

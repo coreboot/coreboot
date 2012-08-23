@@ -41,8 +41,8 @@ static void sch4037_init(device_t dev);
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
 
+DEVICE_NAME("SMSC SCH4037 Super I/O");
 struct chip_operations superio_smsc_sch4037_ops = {
-	CHIP_NAME("SMSC SCH4037 Super I/O")
 		.enable_dev = enable_dev,
 };
 

@@ -235,7 +235,7 @@ static void southbridge_init(device_t dev)
 	enable_cf_boot = conf->enable_cf;
 }
 
+DEVICE_NAME("Ricoh RL5C476 CardBus Controller");
 struct chip_operations southbridge_ricoh_rl5c476_ops = {
-	CHIP_NAME("Ricoh RL5C476 CardBus Controller")
 	.enable_dev    = southbridge_init,
 };

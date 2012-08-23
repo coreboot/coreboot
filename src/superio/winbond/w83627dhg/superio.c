@@ -105,7 +105,7 @@ static void enable_dev(struct device *dev)
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("Winbond W83627DHG Super I/O");
 struct chip_operations superio_winbond_w83627dhg_ops = {
-	CHIP_NAME("Winbond W83627DHG Super I/O")
 	.enable_dev = enable_dev,
 };

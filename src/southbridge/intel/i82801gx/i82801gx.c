@@ -33,7 +33,7 @@ void i82801gx_enable(device_t dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 }
 
+DEVICE_NAME("Intel ICH7/ICH7-M (82801Gx) Series Southbridge");
 struct chip_operations southbridge_intel_i82801gx_ops = {
-	CHIP_NAME("Intel ICH7/ICH7-M (82801Gx) Series Southbridge")
 	.enable_dev = i82801gx_enable,
 };

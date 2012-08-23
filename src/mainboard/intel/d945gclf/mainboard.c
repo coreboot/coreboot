@@ -20,6 +20,3 @@
 #include <device/device.h>
 #include <console/console.h>
 
-struct chip_operations mainboard_ops = {
-};
-

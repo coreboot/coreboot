@@ -54,5 +54,3 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 	return res;
 }
 
-struct chip_operations mainboard_ops = {
-};

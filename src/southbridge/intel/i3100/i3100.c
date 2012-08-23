@@ -57,6 +57,6 @@ void i3100_enable(device_t dev)
 	pci_write_config32(lpc_dev, 0xf0, 0);
 }
 
+DEVICE_NAME("Intel 3100 Southbridge");
 struct chip_operations southbridge_intel_i3100_ops = {
-	CHIP_NAME("Intel 3100 Southbridge")
 };

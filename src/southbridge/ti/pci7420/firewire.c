@@ -55,12 +55,4 @@ static const struct pci_driver ti_pci7420_driver __pci_driver = {
 	.device = 0x802e,
 };
 
-static void ti_pci7420_firewire_enable_dev(device_t dev)
-{
-	/* Nothing here yet */
-}
-
-struct chip_operations southbridge_ti_pci7420_firewire_ops = {
-	CHIP_NAME("Texas Instruments PCI7420/7620 FireWire (IEEE 1394)")
-	.enable_dev    = ti_pci7420_firewire_enable_dev,
-};
+//DEVICE_NAME("Texas Instruments PCI7420/7620 FireWire (IEEE 1394)");

@@ -198,7 +198,7 @@ struct pci_operations ck804_pci_ops = {
 	.set_subsystem = ck804_set_subsystem,
 };
 
+DEVICE_NAME("NVIDIA CK804 Southbridge");
 struct chip_operations southbridge_nvidia_ck804_ops = {
-	CHIP_NAME("NVIDIA CK804 Southbridge")
 	.enable_dev = ck804_enable,
 };

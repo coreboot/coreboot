@@ -116,7 +116,7 @@ struct cbmem_entry *get_cbmem_toc(void)
 }
 
 
+DEVICE_NAME("ATI HUDSON");
 struct chip_operations southbridge_amd_agesa_hudson_ops = {
-	CHIP_NAME("ATI HUDSON")
 	.enable_dev = hudson_enable,
 };

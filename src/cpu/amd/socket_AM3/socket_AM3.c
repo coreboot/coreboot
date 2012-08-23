@@ -19,6 +19,6 @@
 
 #include <device/device.h>
 
+DEVICE_NAME("socket AM3");
 struct chip_operations cpu_amd_socket_AM3_ops = {
-	CHIP_NAME("socket AM3")
 };

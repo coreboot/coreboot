@@ -71,7 +71,7 @@ static void enable_dev(struct device *dev)
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
+DEVICE_NAME("NSC PC97317 Super I/O");
 struct chip_operations superio_nsc_pc97317_ops = {
-	CHIP_NAME("NSC PC97317 Super I/O")
 	.enable_dev = enable_dev,
 };

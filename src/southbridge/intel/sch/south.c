@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 
+DEVICE_NAME("Intel SCH Southbridge");
 struct chip_operations southbridge_intel_sch_ops = {
-	CHIP_NAME("Intel SCH Southbridge")
 };

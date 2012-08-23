@@ -206,7 +206,7 @@ static const struct pci_driver ioapic2_driver __pci_driver = {
 
 };
 
+DEVICE_NAME("Intel PXHD Southbridge");
 struct chip_operations southbridge_intel_pxhd_ops = {
-	CHIP_NAME("Intel PXHD Southbridge")
 	.enable_dev = pxhd_enable,
 };

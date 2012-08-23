@@ -18,10 +18,7 @@ struct chip_operations {
 	void (*enable_dev)(struct device *dev);
 	void (*init)(void *chip_info);
 	unsigned int initialized : 1;
-	const char *name;
 };
-
-#define CHIP_NAME(X) .name = X,
 
 #define __CONCAT1(x,y) x ## y
 #define __CONCAT2(x,y) __CONCAT1(x,y)

@@ -404,7 +404,7 @@ void pch_enable(device_t dev)
 	}
 }
 
+DEVICE_NAME("Intel Series 6/7 (Cougar Point/Panther Point) Southbridge");
 struct chip_operations southbridge_intel_bd82x6x_ops = {
-	CHIP_NAME("Intel Series 6/7 (Cougar Point/Panther Point) Southbridge")
 	.enable_dev = pch_enable,
 };

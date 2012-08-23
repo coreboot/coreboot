@@ -277,8 +277,8 @@ static void gm45_init(void *const chip_info)
 		pci_write_config32(d0f0, D0F0_DEVEN, deven & ~(1 << 14));
 }
 
+DEVICE_NAME("Intel GM45 Northbridge");
 struct chip_operations northbridge_intel_gm45_ops = {
-	CHIP_NAME("Intel GM45 Northbridge")
 	.enable_dev = enable_dev,
 	.init = gm45_init,
 };

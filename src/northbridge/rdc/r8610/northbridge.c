@@ -127,7 +127,7 @@ static void enable_dev(struct device *dev)
 	}
 }
 
+DEVICE_NAME("RDC R8610 Northbridge");
 struct chip_operations northbridge_rdc_r8610_ops = {
-	CHIP_NAME("RDC R8610 Northbridge")
 	.enable_dev = enable_dev,
 };

@@ -42,7 +42,7 @@ void esb6300_enable(device_t dev)
 
 }
 
+DEVICE_NAME("Intel 6300ESB Southbridge");
 struct chip_operations southbridge_intel_esb6300_ops = {
-	CHIP_NAME("Intel 6300ESB Southbridge")
 	.enable_dev = esb6300_enable,
 };

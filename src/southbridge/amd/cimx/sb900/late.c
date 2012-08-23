@@ -473,7 +473,7 @@ static void sb900_enable(device_t dev)
 	//AmdSbDispatcher(sb_config);
 }
 
+DEVICE_NAME("ATI SB900");
 struct chip_operations southbridge_amd_cimx_sb900_ops = {
-	CHIP_NAME("ATI SB900")
 	.enable_dev = sb900_enable,
 };

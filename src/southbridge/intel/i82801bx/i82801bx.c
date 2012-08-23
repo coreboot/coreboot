@@ -44,7 +44,7 @@ void i82801bx_enable(device_t dev)
 	pci_write_config16(lpc_dev, FUNC_DIS, reg16);
 }
 
+DEVICE_NAME("Intel ICH2 (82801Bx) Series Southbridge");
 struct chip_operations southbridge_intel_i82801bx_ops = {
-	CHIP_NAME("Intel ICH2 (82801Bx) Series Southbridge")
 	.enable_dev = i82801bx_enable,
 };

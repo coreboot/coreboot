@@ -85,7 +85,7 @@ static void vt8237r_enable(struct device *dev)
 	/* TODO: If SATA is disabled, move IDE to fn0 to conform PCI specs. */
 }
 
+DEVICE_NAME("VIA VT8237R Southbridge");
 struct chip_operations southbridge_via_vt8237r_ops = {
-	CHIP_NAME("VIA VT8237R Southbridge")
 	.enable_dev = vt8237r_enable,
 };

@@ -201,7 +201,7 @@ static void enable_dev(struct device *dev)
 }
 
 
+DEVICE_NAME("AMD Elan SC520 CPU");
 struct chip_operations cpu_amd_sc520_ops = {
-	CHIP_NAME("AMD Elan SC520 CPU")
 	.enable_dev = enable_dev,
 };

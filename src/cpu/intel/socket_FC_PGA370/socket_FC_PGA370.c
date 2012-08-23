@@ -20,6 +20,6 @@
 
 #include <device/device.h>
 
+DEVICE_NAME("(FC)PGA370 CPU");
 struct chip_operations cpu_intel_socket_FC_PGA370_ops = {
-	CHIP_NAME("(FC)PGA370 CPU")
 };

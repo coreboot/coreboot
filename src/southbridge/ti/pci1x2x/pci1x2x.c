@@ -92,6 +92,6 @@ static const struct pci_driver ti_pci1520_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_TI_1520,
 };
 
+DEVICE_NAME("TI PCI1x2x Cardbus controller");
 struct chip_operations southbridge_ti_pci1x2x_ops = {
-	CHIP_NAME("TI PCI1x2x Cardbus controller")
 };

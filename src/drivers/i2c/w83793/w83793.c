@@ -236,7 +236,7 @@ static void enable_dev(device_t dev)
 	dev->ops = &w83793_operations;
 }
 
+DEVICE_NAME("Nuvoton W83793 Hardware Monitor");
 struct chip_operations drivers_i2c_w83793_ops = {
-	CHIP_NAME("Nuvoton W83793 Hardware Monitor")
 	.enable_dev = enable_dev,
 };

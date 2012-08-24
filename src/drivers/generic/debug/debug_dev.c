@@ -7,7 +7,6 @@
 #include <cpu/x86/msr.h>
 #include <reset.h>
 #include <delay.h>
-#include "chip.h"
 
 static void print_pci_regs(struct device *dev)
 {

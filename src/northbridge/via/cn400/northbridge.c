@@ -30,7 +30,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include "chip.h"
 #include "northbridge.h"
 #include "cn400.h"
 

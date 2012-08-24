@@ -24,7 +24,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "chip.h"
 #include "northbridge.h"
 #include "cn400.h"
 

@@ -34,7 +34,6 @@
 #include <cpu/amd/mtrr.h>
 
 #include "agesawrapper.h"
-#include "chip.h"
 #include "northbridge.h"
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>

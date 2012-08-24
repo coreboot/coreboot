@@ -33,7 +33,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
-#include "chip.h"
 #include "northbridge.h"
 
 /* PCI Domain 1 Device 0 Function 0 */

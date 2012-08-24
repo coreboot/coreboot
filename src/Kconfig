@@ -383,7 +383,7 @@ config GENERATE_ACPI_TABLES
 
 config GENERATE_MP_TABLE
 	bool
-	default HAVE_MP_TABLE
+	default HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
 
 config GENERATE_PIRQ_TABLE
 	bool
@@ -413,7 +413,7 @@ config GENERATE_ACPI_TABLES
 	  If unsure, say Y.
 
 config GENERATE_MP_TABLE
-	depends on HAVE_MP_TABLE
+	depends on HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
 	bool "Generate an MP table"
 	default y
 	help

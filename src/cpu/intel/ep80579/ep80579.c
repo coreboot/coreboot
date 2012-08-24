@@ -18,7 +18,6 @@
  */
 
 #include <device/device.h>
-#include "chip.h"
 
 struct chip_operations cpu_intel_ep80579_ops = {
 	CHIP_NAME("EP80579 CPU")

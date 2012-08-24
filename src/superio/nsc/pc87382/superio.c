@@ -27,7 +27,6 @@
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "pc87382.h"
 
 static void init(device_t dev)

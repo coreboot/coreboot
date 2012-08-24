@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include "chip.h"
 #include "northbridge.h"
 
 /*

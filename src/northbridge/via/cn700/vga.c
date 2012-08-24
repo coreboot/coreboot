@@ -34,7 +34,6 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <arch/interrupt.h>
-#include "chip.h"
 #include "northbridge.h"
 #include "cn700.h"
 

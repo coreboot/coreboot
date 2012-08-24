@@ -33,7 +33,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
 
-#include "chip.h"
 #include "northbridge.h"
 #include "SbEarly.h"
 #include "agesawrapper.h"

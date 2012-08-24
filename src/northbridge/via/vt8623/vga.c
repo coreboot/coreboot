@@ -30,7 +30,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
-#include "chip.h"
 #include "northbridge.h"
 
 static int via_vt8623_int15_handler(struct eregs *regs)

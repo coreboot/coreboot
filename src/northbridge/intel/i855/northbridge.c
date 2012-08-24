@@ -31,7 +31,6 @@
 #include <bitops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/cpu.h>
-#include "chip.h"
 
 static void northbridge_init(device_t dev)
 {

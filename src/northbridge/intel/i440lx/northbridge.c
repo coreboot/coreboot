@@ -30,7 +30,6 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <pc80/keyboard.h>
-#include "chip.h"
 #include "northbridge.h"
 #include "i440lx.h"
 

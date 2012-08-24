@@ -22,7 +22,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include "chip.h"
 #include <arch/io.h>
 #include "vx800.h"
 
@@ -191,10 +190,6 @@ static void ide_init(struct device *dev)
 	pci_write_config8(dev, PCI_INTERRUPT_PIN, 0x0);
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0xff);
 #if 0
-
-	struct southbridge_via_vt8237r_config *sb =
-	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
-
 	u8 enables;
 	u32 cablesel;
 

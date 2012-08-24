@@ -31,7 +31,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include "chip.h"
 #include "northbridge.h"
 #include "vx800.h"
 

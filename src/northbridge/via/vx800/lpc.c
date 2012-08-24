@@ -28,7 +28,6 @@
 #include <pc80/keyboard.h>
 #include <pc80/i8259.h>
 #include "vx800.h"
-#include "chip.h"
 
 static const unsigned char pciIrqs[4] = { 0xa, 0x9, 0xb, 0xa };
 

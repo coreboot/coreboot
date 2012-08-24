@@ -26,7 +26,6 @@
 #include <bitops.h>
 #include <uart8250.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "pc87392.h"
 
 static void init(device_t dev)

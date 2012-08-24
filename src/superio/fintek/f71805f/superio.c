@@ -24,7 +24,6 @@
 #include <console/console.h>
 #include <stdlib.h>
 #include <uart8250.h>
-#include "chip.h"
 #include "f71805f.h"
 
 static void pnp_enter_conf_state(device_t dev)

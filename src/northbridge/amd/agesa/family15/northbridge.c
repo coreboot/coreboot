@@ -40,9 +40,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
 #include "agesawrapper.h"
-#include "root_complex/chip.h"
 #include "northbridge.h"
-#include "chip.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 

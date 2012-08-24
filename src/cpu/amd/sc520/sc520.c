@@ -14,7 +14,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <delay.h>
-#include "chip.h"
 
 /*
  * set up basic things ...

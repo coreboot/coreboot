@@ -22,7 +22,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <uart8250.h>
-#include "chip.h"
 #include "i3100.h"
 #include <arch/io.h>
 

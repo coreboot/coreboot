@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include "chip.h"
 
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>

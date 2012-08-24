@@ -17,5 +17,14 @@ source src/southbridge/amd/sr5650/Kconfig
 
 # This can be overriden by mainboard/Kconfig
 config S3_VOLATILE_POS
-	hex
+	hex "s3 volatile position"
 	default 0xFFFF0000
+	depends on (HAVE_ACPI_RESUME \
+	&& (SOUTHBRIDGE_AMD_AGESA_HUDSON \
+	|| SOUTHBRIDGE_AMD_CIMX_SB700 \
+	|| SOUTHBRIDGE_AMD_CIMX_SB800 \
+	|| SOUTHBRIDGE_AMD_CIMX_SB900 \
+	|| SOUTHBRIDGE_AMD_SB800 \
+	|| SOUTHBRIDGE_AMD_SB700 \
+	|| SOUTHBRIDGE_AMD_SB600))
+

@@ -19,7 +19,7 @@ subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += agesa
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 ifeq ($(CONFIG_CPU_AMD_AGESA), y)
 
-$(obj)/s3.rom:
+$(obj)/s3.rom: $(obj)/config.h
 	echo "    S3 NVRAM   $(CONFIG_S3_VOLATILE_POS) (S3 storage area)"
 	# force C locale, so cygwin awk doesn't try to interpret the 0xff below as UTF-8 (or worse)
 	LC_ALL=C awk 'BEGIN {for (i=0; i<32768; i++) {printf "%c", 255}}' > $@.tmp

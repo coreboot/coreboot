@@ -22,13 +22,10 @@
 #include <device/pnp.h>
 #include <uart8250.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "it8705f.h"
 
 static void init(device_t dev)
 {
-	struct superio_ite_it8705f_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 

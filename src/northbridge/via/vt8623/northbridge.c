@@ -11,7 +11,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
-#include "chip.h"
 #include "northbridge.h"
 
 /*

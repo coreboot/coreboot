@@ -24,7 +24,6 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <device/cardbus.h>
-#include "chip.h"
 
 static void pcixx12_init(device_t dev)
 {
@@ -62,7 +61,6 @@ static const struct pci_driver ti_pcixx12_driver __pci_driver = {
 
 static void southbridge_init(device_t dev)
 {
-	// struct southbridge_ti_pcixx12_config *config = dev->chip_info;
 }
 
 struct chip_operations southbridge_ti_pcixx12_ops = {

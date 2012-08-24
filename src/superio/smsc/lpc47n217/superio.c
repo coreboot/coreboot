@@ -33,7 +33,6 @@
 #include <uart8250.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "lpc47n217.h"
 
 /* Forward declarations */
@@ -133,9 +132,6 @@ static void lpc47n217_pnp_enable(device_t dev)
  */
 static void lpc47n217_init(device_t dev)
 {
-	/* TODO: Reserved for future. */
-	/* struct superio_smsc_lpc47n217_config* conf = dev->chip_info; */
-
 	if (!dev->enabled)
 		return;
 }

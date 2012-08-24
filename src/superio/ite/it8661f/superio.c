@@ -22,7 +22,6 @@
 #include <device/pnp.h>
 #include <uart8250.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "it8661f.h"
 
 /* TODO: Add pnp_enter_ext_func_mode() etc. and wrap functions. */

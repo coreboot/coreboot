@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <device/smbus.h>
-#include "chip.h"
 
 /**
  * Do some S2881-specific HWM initialization for the ADT7463 chip.

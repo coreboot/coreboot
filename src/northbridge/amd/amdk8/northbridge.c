@@ -25,7 +25,6 @@
 #include <pc80/mc146818rtc.h>
 #endif
 
-#include "chip.h"
 #include "root_complex/chip.h"
 #include "northbridge.h"
 

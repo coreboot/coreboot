@@ -44,6 +44,9 @@
 #define SPI_XFER_BEGIN	0x01			/* Assert CS before transfer */
 #define SPI_XFER_END	0x02			/* Deassert CS after transfer */
 
+/* SPI opcodes */
+#define SPI_OPCODE_WREN 0x06
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.
  *

@@ -29,44 +29,9 @@
 #define IORESOURCE_ASSIGNED	0x40000000	/* An IO resource that has been assigned a value */
 #define IORESOURCE_FIXED	0x80000000	/* An IO resource the allocator must not change */
 
-/* PCI specific resource bits */
+/* PCI specific resource bits (IORESOURCE_BITS) */
 #define IORESOURCE_PCI64	(1<<0)	/* 64bit long pci resource */
 #define IORESOURCE_PCI_BRIDGE	(1<<1)  /* A bridge pci resource */
-
-/* ISA PnP IRQ specific bits (IORESOURCE_BITS) */
-#define IORESOURCE_IRQ_HIGHEDGE		(1<<0)
-#define IORESOURCE_IRQ_LOWEDGE		(1<<1)
-#define IORESOURCE_IRQ_HIGHLEVEL	(1<<2)
-#define IORESOURCE_IRQ_LOWLEVEL		(1<<3)
-
-/* ISA PnP DMA specific bits (IORESOURCE_BITS) */
-#define IORESOURCE_DMA_TYPE_MASK	(3<<0)
-#define IORESOURCE_DMA_8BIT		(0<<0)
-#define IORESOURCE_DMA_8AND16BIT	(1<<0)
-#define IORESOURCE_DMA_16BIT		(2<<0)
-
-#define IORESOURCE_DMA_MASTER		(1<<2)
-#define IORESOURCE_DMA_BYTE		(1<<3)
-#define IORESOURCE_DMA_WORD		(1<<4)
-
-#define IORESOURCE_DMA_SPEED_MASK	(3<<6)
-#define IORESOURCE_DMA_COMPATIBLE	(0<<6)
-#define IORESOURCE_DMA_TYPEA		(1<<6)
-#define IORESOURCE_DMA_TYPEB		(2<<6)
-#define IORESOURCE_DMA_TYPEF		(3<<6)
-
-
-/* ISA PnP memory I/O specific bits (IORESOURCE_BITS) */
-#define IORESOURCE_MEM_WRITEABLE	(1<<0)	/* dup: IORESOURCE_READONLY */
-#define IORESOURCE_MEM_CACHEABLE	(1<<1)	/* dup: IORESOURCE_CACHEABLE */
-#define IORESOURCE_MEM_RANGELENGTH	(1<<2)	/* dup: IORESOURCE_RANGELENGTH */
-#define IORESOURCE_MEM_TYPE_MASK	(3<<3)
-#define IORESOURCE_MEM_8BIT		(0<<3)
-#define IORESOURCE_MEM_16BIT		(1<<3)
-#define IORESOURCE_MEM_8AND16BIT	(2<<3)
-#define IORESOURCE_MEM_SHADOWABLE	(1<<5)	/* dup: IORESOURCE_SHADOWABLE */
-#define IORESOURCE_MEM_EXPANSIONROM	(1<<6)
-
 
 typedef u64 resource_t;
 struct resource {

@@ -505,6 +505,10 @@ static int spi_setup_opcode(spi_transaction *trans)
 		uint8_t optype;
 		uint16_t opcode_index;
 
+		/* Write Enable is handled as atomic prefix */
+		if (trans->opcode == SPI_OPCODE_WREN)
+			return 0;
+
 		read_reg(cntlr.opmenu, opmenu, sizeof(opmenu));
 		for (opcode_index = 0; opcode_index < cntlr.menubytes;
 				opcode_index++) {
@@ -623,7 +627,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	if ((with_address = spi_setup_offset(&trans)) < 0)
 		return -1;
 
-	if (!ichspi_lock && trans.opcode == 0x06) {
+	if (!ichspi_lock && trans.opcode == SPI_OPCODE_WREN) {
 		/*
 		 * Treat Write Enable as Atomic Pre-Op if possible
 		 * in order to prevent the Management Engine from

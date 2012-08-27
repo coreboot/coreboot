@@ -31,11 +31,8 @@ void intel_pch_finalize_smm(void)
 	RCBA32(0x3898) = SPI_OPMENU_LOWER;
 	RCBA32(0x389c) = SPI_OPMENU_UPPER;
 
-/* Need to fix SMI driver use of opcode menu */
-#if !CONFIG_ELOG_GSMI
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));
-#endif
 
 	/* TCLOCKDN: TC Lockdown */
 	RCBA32_OR(0x0050, (1 << 31));

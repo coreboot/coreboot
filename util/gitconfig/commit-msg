@@ -37,7 +37,7 @@ add_ChangeId() {
 	fi
 
 	# Does Change-Id: already exist? if so, exit (no change).
-	if grep -i '^Change-Id:' "$MSG" >/dev/null
+	if grep -i '^Change-Id: I[0-9a-f]\{40\}$' "$MSG" >/dev/null
 	then
 		return
 	fi

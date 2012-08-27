@@ -564,9 +564,6 @@ static void domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
-	setup_bsp_ramtop();
-	setup_uma_memory();
-
 #if CONFIG_PCI_64BIT_PREF_MEM
 
 	printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
@@ -905,7 +902,16 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus = cpu_bus_scan,
 };
 
-static void root_complex_enable_dev(struct device *dev) {
+static void root_complex_enable_dev(struct device *dev)
+{
+	static int done = 0;
+
+	if (!done) {
+		setup_bsp_ramtop();
+		setup_uma_memory();
+		done = 1;
+	}
+
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;

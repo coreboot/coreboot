@@ -923,11 +923,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 	u32 reset_memhole = 1;
 #endif
 
-	setup_bsp_ramtop();
-#if CONFIG_GFXUMA
-#error Northbridge does not set uma_memory_base or uma_memory_size.
-#endif
-
 #if CONFIG_PCI_64BIT_PREF_MEM
 
 	for (link = dev->link_list; link; link = link->next) {
@@ -1439,6 +1434,19 @@ static struct device_operations cpu_bus_ops = {
 
 static void root_complex_enable_dev(struct device *dev)
 {
+	static int done = 0;
+
+	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
+	   the global uma_memory variables already in its enable function. */
+	if (!done) {
+		setup_bsp_ramtop();
+#if CONFIG_GFXUMA
+#error Northbridge does not set uma_memory_base or uma_memory_size.
+		setup_uma_memory();
+#endif
+		done = 1;
+	}
+
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;

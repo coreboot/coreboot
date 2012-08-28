@@ -58,7 +58,7 @@ subdirs-$(CONFIG_CBFS) += libcbfs
 subdirs-$(CONFIG_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
-CFLAGS = $(INCLUDES) -O2 -pipe -g
+CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Wshadow -fno-builtin

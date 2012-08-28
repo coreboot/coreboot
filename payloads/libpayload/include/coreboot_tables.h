@@ -31,6 +31,7 @@
 #define _COREBOOT_TABLES_H
 
 #include <arch/types.h>
+#include <ipchksum.h>
 
 struct cbuint64 {
 	u32 lo;

@@ -45,6 +45,7 @@
 
 #include <libpayload-config.h>
 #include <ctype.h>
+#include <ipchksum.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -260,13 +261,6 @@ void console_add_output_driver(struct console_output_driver *out);
 void console_add_input_driver(struct console_input_driver *in);
 
 #define havechar havekey
-/** @} */
-
-/**
- * @defgroup ipchecksum IP checksum functions
- * @{
- */
-unsigned short ipchksum(const void *ptr, unsigned long nbytes);
 /** @} */
 
 

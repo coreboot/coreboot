@@ -283,9 +283,6 @@ static int smbios_walk_device_tree(device_t tree, int *handle, unsigned long *cu
 
 		if (dev->ops && dev->ops->get_smbios_data)
 			len += dev->ops->get_smbios_data(dev, handle, current);
-
-		if (dev->chip_ops && dev->chip_ops->get_smbios_data)
-			len += dev->chip_ops->get_smbios_data(dev, handle, current);
 	}
 	return len;
 }

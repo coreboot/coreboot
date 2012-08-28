@@ -31,8 +31,8 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-#define IOBASE lib_sysinfo.ser_ioport
-#define MEMBASE (phys_to_virt(lib_sysinfo.ser_base))
+#define IOBASE lib_sysinfo.serial->baseaddr
+#define MEMBASE (phys_to_virt(lib_sysinfo.serial->baseaddr))
 #define DIVISOR(x) (115200 / x)
 
 #ifdef CONFIG_SERIAL_SET_SPEED
@@ -96,15 +96,11 @@ static struct console_output_driver consout = {
 
 void serial_init(void)
 {
-	pcidev_t oxpcie_dev;
-	if (pci_find_device(0x1415, 0xc158, &oxpcie_dev)) {
-		lib_sysinfo.ser_base = pci_read_resource(oxpcie_dev, 0) + 0x1000;
-	} else {
-		lib_sysinfo.ser_base = 0;
-	}
+	if (!lib_sysinfo.serial)
+		return;
 
 #ifdef CONFIG_SERIAL_SET_SPEED
-	if (lib_sysinfo.ser_base)
+	if (lib_sysinfo.serial->type == CB_SERIAL_TYPE_MEMORY_MAPPED)
 		serial_mem_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
 	else
 		serial_io_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
@@ -152,7 +148,10 @@ static int serial_mem_getchar(void)
 
 void serial_putchar(unsigned int c)
 {
-	if (lib_sysinfo.ser_base)
+	if (!lib_sysinfo.serial)
+		return;
+
+	if (lib_sysinfo.serial->type == CB_SERIAL_TYPE_MEMORY_MAPPED)
 		serial_mem_putchar(c);
 	else
 		serial_io_putchar(c);
@@ -160,6 +159,9 @@ void serial_putchar(unsigned int c)
 
 int serial_havechar(void)
 {
+	if (!lib_sysinfo.serial)
+		return 0;
+
 	if (lib_sysinfo.ser_base)
 		return serial_mem_havechar();
 	else
@@ -168,6 +170,9 @@ int serial_havechar(void)
 
 int serial_getchar(void)
 {
+	if (!lib_sysinfo.serial)
+		return -1;
+
 	if (lib_sysinfo.ser_base)
 		return serial_mem_getchar();
 	else

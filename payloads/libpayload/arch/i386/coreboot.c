@@ -75,10 +75,7 @@ static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_serial *ser = ptr;
-	if (ser->type != CB_SERIAL_TYPE_IO_MAPPED)
-		return;
-	info->ser_ioport = ser->baseaddr;
+	info->serial = ((struct cb_serial *)ptr);
 }
 
 static void cb_parse_version(void *ptr, struct sysinfo_t *info)

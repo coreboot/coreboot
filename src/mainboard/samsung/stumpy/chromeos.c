@@ -39,7 +39,7 @@
 #ifndef __PRE_RAM__
 #include <arch/coreboot_tables.h>
 
-#define GPIO_COUNT	5
+#define GPIO_COUNT	6
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
@@ -83,6 +83,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[4].polarity = ACTIVE_LOW;
 	gpios->gpios[4].value = (gen_pmcon_1 >> 9) & 1;
 	strncpy((char *)gpios->gpios[4].name,"power", GPIO_MAX_NAME_LENGTH);
+
+	/* Did we load the VGA Option ROM? */
+	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
+	gpios->gpios[5].polarity = ACTIVE_HIGH;
+	gpios->gpios[5].value = oprom_is_loaded;
+	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif
 

@@ -33,8 +33,11 @@
 /* Allow a maximum of 16 memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 16
 
+struct cb_serial;
+
 struct sysinfo_t {
 	unsigned int cpu_khz;
+	struct cb_serial *serial;
 	unsigned short ser_ioport;
 	unsigned long ser_base; // for mmapped serial
 

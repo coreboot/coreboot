@@ -49,7 +49,7 @@ else
 HUDSON_IMC_POSITION=0
 endif
 
-$(obj)/hudson_romsig.bin: #$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
+$(obj)/hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(obj)/config.h
@@ -59,7 +59,7 @@ $(obj)/hudson_romsig.bin: #$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) 
 		$(HUDSON_GEC_POSITION) \
 		$(HUDSON_XHCI_POSITION) ; do \
 		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 0x100, $$1/0x100 % 0x100, $$1/0x10000 % 0x100, $$1/0x1000000);}'; \
-	done  > $@
+	done > $@
 
 ifeq ($(CONFIG_HUDSON_FWM), y)
 cbfs-files-y += hudson/fwm

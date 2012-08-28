@@ -265,19 +265,6 @@ static void mainboard_init(device_t dev)
 	lumpy_ec_init();
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
-static void mainboard_enable(device_t dev)
-{
-	dev->ops->init = mainboard_init;
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	/* Install custom int15 handler for VGA OPROM */
-	int15_install();
-#endif
-	verb_setup();
-}
-
 static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 				   const char *name, u8 irq, u8 addr)
 {
@@ -322,9 +309,22 @@ static int lumpy_onboard_smbios_data(device_t dev, int *handle,
 	return len;
 }
 
+// mainboard_enable is executed as first thing after
+// enumerate_buses().
+
+static void mainboard_enable(device_t dev)
+{
+	dev->ops->init = mainboard_init;
+	dev->ops->get_smbios_data = lumpy_onboard_smbios_data;
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+	/* Install custom int15 handler for VGA OPROM */
+	int15_install();
+#endif
+	verb_setup();
+}
+
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Samsung Lumpy ChromeBook")
 	.enable_dev = mainboard_enable,
-	.get_smbios_data = lumpy_onboard_smbios_data,
 };
 

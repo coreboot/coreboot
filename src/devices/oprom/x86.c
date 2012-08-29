@@ -169,7 +169,7 @@ static void setup_realmode_idt(void)
 #if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 static u8 vbe_get_mode_info(vbe_mode_info_t * mode_info)
 {
-	printk(BIOS_DEBUG, "Getting information about VESA mode %04x\n",
+	printk(BIOS_DEBUG, "VBE: Getting information about VESA mode %04x\n",
 		mode_info->video_mode);
 	char *buffer = (char *)&__buffer;
 	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
@@ -182,7 +182,7 @@ static u8 vbe_get_mode_info(vbe_mode_info_t * mode_info)
 
 static u8 vbe_set_mode(vbe_mode_info_t * mode_info)
 {
-	printk(BIOS_DEBUG, "Setting VESA mode %04x\n", mode_info->video_mode);
+	printk(BIOS_DEBUG, "VBE: Setting VESA mode %04x\n", mode_info->video_mode);
 	// request linear framebuffer mode
 	mode_info->video_mode |= (1 << 14);
 	// request clearing of framebuffer
@@ -203,7 +203,17 @@ void vbe_set_graphics(void)
 	vbe_get_mode_info(&mode_info);
 	unsigned char *framebuffer =
 		(unsigned char *)mode_info.vesa.phys_base_ptr;
-	printk(BIOS_DEBUG, "framebuffer: %p\n", framebuffer);
+	printk(BIOS_DEBUG, "VBE: resolution:  %dx%d@%d\n",
+		le16_to_cpu(mode_info.vesa.x_resolution),
+		le16_to_cpu(mode_info.vesa.y_resolution),
+		mode_info.vesa.bits_per_pixel);
+	printk(BIOS_DEBUG, "VBE: framebuffer: %p\n", framebuffer);
+	if (!framebuffer) {
+		printk(BIOS_DEBUG, "VBE: Mode does not support linear "
+			"framebuffer\n");
+		return;
+	}
+
 	vbe_set_mode(&mode_info);
 #if CONFIG_BOOTSPLASH
 	struct jpeg_decdata *decdata;
@@ -211,6 +221,7 @@ void vbe_set_graphics(void)
 	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg",
 						CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) {
+		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
 		return;
 	}
 	int ret = 0;

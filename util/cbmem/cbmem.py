@@ -57,7 +57,7 @@ def get_phys_mem(addr, size):
 class MetaCStruct(type):
     def __init__(cls, name, bases, dct):
         struct_members = dct["struct_members"]
-        cls.struct_fmt = "@"
+        cls.struct_fmt = "<"
         for char, name in struct_members:
             cls.struct_fmt += char
         cls.struct_len = struct.calcsize(cls.struct_fmt)

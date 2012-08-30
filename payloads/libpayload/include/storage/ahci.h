@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2010 coresystems GmbH
+ * Copyright (C) 2012 secunet Security Networks AG
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,13 +27,9 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _UNISTD_H
-#define _UNISTD_H
+#ifndef _STORAGE_AHCI_H
+#define _STORAGE_AHCI_H
 
-#include <stddef.h>
-
-typedef ptrdiff_t ssize_t;
-
-int getpagesize(void);
+void ahci_initialize(void);
 
 #endif

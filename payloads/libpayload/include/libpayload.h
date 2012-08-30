@@ -119,6 +119,13 @@ void rtc_read_clock(struct tm *tm);
 /** @} */
 
 /**
+ * @defgroup storage driver functions
+ * @{
+ */
+void storage_initialize(void);
+/** @} */
+
+/**
  * @defgroup usb USB functions
  * @{
  */

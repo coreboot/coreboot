@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2010 coresystems GmbH
+ * Copyright (C) 2012 secunet Security Networks AG
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,13 +27,51 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _UNISTD_H
-#define _UNISTD_H
+#ifndef _STORAGE_ATA_H
+#define _STORAGE_ATA_H
 
-#include <stddef.h>
+#include <stdint.h>
 
-typedef ptrdiff_t ssize_t;
+#include "storage.h"
 
-int getpagesize(void);
+
+/* ATA commands */
+enum {
+	ATA_READ_DMA			= 0xc8,
+	ATA_READ_DMA_EXT		= 0x25,
+	ATA_IDENTIFY_DEVICE		= 0xec,
+	ATA_PACKET			= 0xa0,
+	ATA_IDENTIFY_PACKET_DEVICE	= 0xa1,
+};
+
+/* 16-bit-word indices into id structure from ATA_IDENTIFY_DEVICE */
+enum {
+	ATA_CMDS_AND_FEATURE_SETS	=  82,
+	ATA_ID_SECTOR_SIZE		= 106,
+	ATA_ID_LOGICAL_SECTOR_SIZE	= 117,
+};
+
+#define DEFAULT_ATA_SECTOR_SIZE 512
+
+struct ata_dev;
+typedef struct ata_dev {
+	storage_dev_t storage_dev;
+
+	int (*identify)(struct ata_dev *, u8 *buf);
+	ssize_t (*read_sectors)(struct ata_dev *, lba_t start, size_t count, u8 *buf);
+
+	u8 read_cmd;
+	u8 identify_cmd;
+	size_t sector_size;
+	size_t sector_size_shift;
+
+	void (*detach_device)(struct ata_dev *);
+} ata_dev_t;
+
+int ata_attach_device(ata_dev_t *, storage_port_t);
+
+char *ata_strncpy(char *dest, const u16 *src, size_t n);
+int ata_set_sector_size(ata_dev_t *, u32 sector_size);
+void ata_initialize_storage_ops(ata_dev_t *);
 
 #endif

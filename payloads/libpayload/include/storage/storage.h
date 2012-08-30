@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2010 coresystems GmbH
+ * Copyright (C) 2012 secunet Security Networks AG
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,13 +27,51 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _UNISTD_H
-#define _UNISTD_H
+#ifndef _STORAGE_STORAGE_H
+#define _STORAGE_STORAGE_H
 
-#include <stddef.h>
+#include <stdint.h>
+#include <unistd.h>
 
-typedef ptrdiff_t ssize_t;
 
-int getpagesize(void);
+#ifndef CONFIG_STORAGE_64BIT_LBA
+typedef u32 lba_t;
+#else
+typedef u64 lba_t;
+#endif
+
+
+typedef enum {
+	PORT_TYPE_IDE	= (1 << 0),
+	PORT_TYPE_SATA	= (1 << 1),
+	PORT_TYPE_USB	= (1 << 2),
+} storage_port_t;
+
+typedef enum {
+	POLL_MEDIUM_ERROR	= -3,
+	POLL_NO_DEVICE		= -2,
+	POLL_ERROR		= -1,
+	POLL_NO_MEDIUM		=  0,
+	POLL_MEDIUM_PRESENT	=  1,
+} storage_poll_t;
+
+
+struct storage_dev;
+
+typedef struct storage_dev {
+	storage_port_t port_type;
+
+	storage_poll_t (*poll)(struct storage_dev *);
+	ssize_t (*read_blocks512)(struct storage_dev *, lba_t start, size_t count, unsigned char *buf);
+	ssize_t (*write_blocks512)(struct storage_dev *, lba_t start, size_t count, const unsigned char *buf);
+
+	void (*detach_device)(struct storage_dev *);
+} storage_dev_t;
+
+int storage_attach_device(storage_dev_t *dev);
+
+
+storage_poll_t storage_probe(size_t dev_num);
+ssize_t storage_read_blocks512(size_t dev_num, lba_t start, size_t count, unsigned char *buf);
 
 #endif

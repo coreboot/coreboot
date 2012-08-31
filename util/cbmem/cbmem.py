@@ -136,10 +136,16 @@ def process_timers(base):
     print('\ntime base %d, total entries %d' % (header.base_time, header.entr))
     clock_freq = get_cpu_freq()
     base = base + header.struct_len
+    prev_time = 0
     for i in range(header.entr):
         timestamp = TimestampEntry(base)
         print '%d:%s ' % (timestamp.timer_id,
             normalize_timer(timestamp.timer_value, clock_freq)),
+        if prev_time:
+            print '(%s)' % normalize_timer(
+                timestamp.timer_value - prev_time, clock_freq),
+        prev_time = timestamp.timer_value
+        print
         base = base + timestamp.struct_len
     print
 

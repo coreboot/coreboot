@@ -803,6 +803,10 @@ int elog_init(void)
 		elog_add_event_word(ELOG_TYPE_LOG_CLEAR,
 				    elog_get_flash()->total_size);
 
+	/* Shrink the log if we are getting too full */
+	if (elog_get_mem()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
+		elog_shrink();
+
 #if CONFIG_ELOG_BOOT_COUNT && !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
 	if (acpi_slp_type != 3)

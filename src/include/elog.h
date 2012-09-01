@@ -108,6 +108,16 @@ struct elog_event_data_wake {
 
 /* Management Engine Events */
 #define ELOG_TYPE_MANAGEMENT_ENGINE       0xa2
+#define ELOG_TYPE_MANAGEMENT_ENGINE_EXT   0xa4
+struct elog_event_data_me_extended {
+	u8 current_working_state;
+	u8 operation_state;
+	u8 operation_mode;
+	u8 error_code;
+	u8 progress_code;
+	u8 current_pmevent;
+	u8 current_state;
+} __attribute__ ((packed));
 
 /* Last post code from previous boot */
 #define ELOG_TYPE_LAST_POST_CODE          0xa3

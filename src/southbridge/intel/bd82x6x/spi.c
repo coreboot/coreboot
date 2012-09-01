@@ -627,13 +627,14 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	if ((with_address = spi_setup_offset(&trans)) < 0)
 		return -1;
 
-	if (!ichspi_lock && trans.opcode == SPI_OPCODE_WREN) {
+	if (trans.opcode == SPI_OPCODE_WREN) {
 		/*
 		 * Treat Write Enable as Atomic Pre-Op if possible
 		 * in order to prevent the Management Engine from
 		 * issuing a transaction between WREN and DATA.
 		 */
-		writew_(trans.opcode, cntlr.preop);
+		if (!ichspi_lock)
+			writew_(trans.opcode, cntlr.preop);
 		return 0;
 	}
 
@@ -645,6 +646,10 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 		control |= SPIC_ACS;
 
 	if (!trans.bytesout && !trans.bytesin) {
+		/* SPI addresses are 24 bit only */
+		if (with_address)
+			writel_(trans.offset & 0x00FFFFFF, cntlr.addr);
+
 		/*
 		 * This is a 'no data' command (like Write Enable), its
 		 * bitesout size was 1, decremented to zero while executing

@@ -549,20 +549,10 @@ static me_bios_path intel_me_path(device_t dev)
 	/* Check and dump status */
 	intel_me_status(&hfs, &gmes);
 
-	/* Check for valid firmware */
-	if (hfs.fpt_bad)
-		return ME_ERROR_BIOS_PATH;
-
 	/* Check Current Working State */
 	switch (hfs.working_state) {
 	case ME_HFS_CWS_NORMAL:
 		path = ME_NORMAL_BIOS_PATH;
-		/* check if the MBP is ready */
-		if (!gmes.mbp_rdy) {
-			printk(BIOS_CRIT, "%s: mbp is not ready!\n",
-			       __FUNCTION__);
-			return ME_ERROR_BIOS_PATH;
-		}
 		break;
 	case ME_HFS_CWS_REC:
 		path = ME_RECOVERY_BIOS_PATH;
@@ -585,9 +575,33 @@ static me_bios_path intel_me_path(device_t dev)
 		break;
 	}
 
-	/* Check for any error code */
-	if (hfs.error_code)
+	/* Check for any error code and valid firmware and MBP */
+	if (hfs.error_code || hfs.fpt_bad)
 		path = ME_ERROR_BIOS_PATH;
+
+	/* Check if the MBP is ready */
+	if (!gmes.mbp_rdy) {
+		printk(BIOS_CRIT, "%s: mbp is not ready!\n",
+		       __FUNCTION__);
+		path = ME_ERROR_BIOS_PATH;
+	}
+
+#if CONFIG_ELOG
+	if (path != ME_NORMAL_BIOS_PATH) {
+		struct elog_event_data_me_extended data = {
+			.current_working_state = hfs.working_state,
+			.operation_state       = hfs.operation_state,
+			.operation_mode        = hfs.operation_mode,
+			.error_code            = hfs.error_code,
+			.progress_code         = gmes.progress_code,
+			.current_pmevent       = gmes.current_pmevent,
+			.current_state         = gmes.current_state,
+		};
+		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
+		elog_add_event_raw(ELOG_TYPE_MANAGEMENT_ENGINE_EXT,
+				   &data, sizeof(data));
+	}
+#endif
 
 	return path;
 }
@@ -731,9 +745,6 @@ static void intel_me_init(device_t dev)
 	case ME_RECOVERY_BIOS_PATH:
 	case ME_DISABLE_BIOS_PATH:
 	case ME_FIRMWARE_UPDATE_BIOS_PATH:
-#if CONFIG_ELOG
-		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
-#endif
 		break;
 	}
 }

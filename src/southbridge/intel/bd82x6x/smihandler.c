@@ -65,7 +65,7 @@ u32 smi_get_tseg_base(void)
 void tseg_relocate(void **ptr)
 {
 	/* Adjust pointer with TSEG base */
-	if (*ptr)
+	if (*ptr && *ptr < (void*)smi_get_tseg_base())
 		*ptr = (void *)(((u8*)*ptr) + smi_get_tseg_base());
 }
 #endif

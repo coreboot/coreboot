@@ -31,7 +31,7 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 3
+#define PEI_VERSION 4
 struct pei_data
 {
 	uint32_t pei_version;
@@ -99,6 +99,17 @@ struct pei_data
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;
 	int ddr3lv_support;
+	/* pcie_init needs to be set to 1 to have the system agent initialize
+	 * PCIe. Note: This should only be required if your system has Gen3 devices
+	 * and it will increase your boot time by at least 100ms.
+	 */
+	int pcie_init;
+	/* N mode functionality. Leave this setting at 0.
+	 * 0 Auto
+	 * 1 1N
+	 * 2 2N
+	 */
+	int nmode;
 } __attribute__((packed));
 
 #endif

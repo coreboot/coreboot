@@ -8,6 +8,9 @@
 #include "option_table.h"
 #include <cbfs.h>
 #endif
+#if CONFIG_HAVE_ACPI_RESUME
+#include <arch/acpi.h>
+#endif
 
 /* control registers - Moto names
  */
@@ -127,6 +130,7 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 #endif
 #endif
 
+#ifndef __SMM__
 void rtc_init(int invalid)
 {
 	int cmos_invalid = 0;
@@ -192,9 +196,20 @@ void rtc_init(int invalid)
                         PC_CKS_RANGE_END,PC_CKS_LOC);
 #endif
 
+#if CONFIG_HAVE_ACPI_RESUME
+	/*
+	 * Avoid clearing pending interrupts in the resume path because
+	 * the Linux kernel relies on this to know if it should restart
+	 * the RTC timerqueue if the wake was due to the RTC alarm.
+	 */
+	if (acpi_slp_type == 3)
+		return;
+#endif
+
 	/* Clear any pending interrupts */
 	(void) cmos_read(RTC_INTR_FLAGS);
 }
+#endif
 
 
 #if CONFIG_USE_OPTION_TABLE

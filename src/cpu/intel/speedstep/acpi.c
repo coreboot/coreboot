@@ -49,13 +49,15 @@ static int determine_total_number_of_cores(void)
 
 static int get_fsb(void)
 {
-	u32 fsbcode=(rdmsr(0xcd).lo >> 4) & 7;
+	const u32 fsbcode = rdmsr(0xcd).lo & 7;
 	switch (fsbcode) {
 		case 0: return 266;
 		case 1: return 133;
 		case 2: return 200;
 		case 3: return 166;
+		case 4: return 333;
 		case 5: return 100;
+		case 6: return 400;
 	}
 	printk(BIOS_DEBUG, "Warning: No supported FSB frequency. Assuming 200MHz\n");
 	return 200;

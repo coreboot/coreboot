@@ -56,5 +56,6 @@ void pnp_enter_ext_func_mode(device_t dev);
 void pnp_exit_ext_func_mode(device_t dev);
 void w83627dhg_enable_serial(device_t dev, u16 iobase);
 void w83627dhg_enable_i2c(device_t dev);
+void w83627dhg_set_clksel_48(device_t dev);
 
 #endif

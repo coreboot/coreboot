@@ -67,3 +67,13 @@ void w83627dhg_enable_i2c(device_t dev)
 	pnp_exit_ext_func_mode(dev);
 }
 
+void w83627dhg_set_clksel_48(device_t dev)
+{
+	u8 reg8;
+
+	pnp_enter_ext_func_mode(dev);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 6); /* Set CLKSEL (clock input on pin 1) to 48MHz. */
+	pnp_write_config(dev, 0x24, reg8);
+	pnp_exit_ext_func_mode(dev);
+}

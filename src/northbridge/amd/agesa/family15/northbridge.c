@@ -1071,7 +1071,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				lapicid_start = (lapicid_start + 1) * core_max;
 				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
 			}
-			u32 apic_id = (lapicid_start * (i/modules + 1)) + ((i % modules) ? (j + (siblings + 1)) : j);
+			u32 apic_id = (i * core_max) + j + lapicid_start;
 			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
 					i, j, apic_id);
 

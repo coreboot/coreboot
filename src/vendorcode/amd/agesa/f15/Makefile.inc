@@ -390,7 +390,7 @@ agesa_lib_src  += ./Proc/Recovery/HT/htInitReset.c
 agesa_lib_src  += ./Proc/Mem/Main/mmflow.c
 agesa_lib_src  += ./Proc/Mem/Main/OR/mmflowor.c
 agesa_lib_src  += ./Proc/Mem/Ps/OR/mpor3.c
-ifeq ($(CONFIG_CPU_AMD_SOCKET_C32), y)
+ifeq ($(CONFIG_CPU_AMD_AGESA_SOCKET_C32), y)
 	agesa_lib_src  += ./Proc/Mem/Main/C32/mmflowC32.c
 	agesa_lib_src  += ./Proc/Mem/Ps/OR/C32/mpLorC3.c
 	agesa_lib_src  += ./Proc/Mem/Ps/OR/C32/mpRorC3.c

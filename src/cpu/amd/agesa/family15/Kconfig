@@ -29,7 +29,7 @@ config CPU_AMD_SOCKET_G34
 	help
 	  AMD G34 Socket
 
-config CPU_AMD_SOCKET_C32
+config CPU_AMD_AGESA_SOCKET_C32
 	bool
 	default n
 	help

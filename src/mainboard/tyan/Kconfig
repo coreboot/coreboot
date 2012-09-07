@@ -51,7 +51,8 @@ config BOARD_TYAN_S4880
 	bool "S4880 (Thunder K8QS)"
 config BOARD_TYAN_S4882
 	bool "S4882 (Thunder K8QS Pro)"
-
+config BOARD_TYAN_S8226
+        bool "S8226"
 endchoice
 
 source "src/mainboard/tyan/s1846/Kconfig"
@@ -69,6 +70,7 @@ source "src/mainboard/tyan/s2912/Kconfig"
 source "src/mainboard/tyan/s2912_fam10/Kconfig"
 source "src/mainboard/tyan/s4880/Kconfig"
 source "src/mainboard/tyan/s4882/Kconfig"
+source "src/mainboard/tyan/s8226/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

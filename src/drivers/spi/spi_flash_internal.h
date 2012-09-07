@@ -78,4 +78,6 @@ struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_stmicro(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode);
+struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi,
+					     u8 *idcode);
 struct spi_flash *spi_fram_probe_ramtron(struct spi_slave *spi, u8 *idcode);

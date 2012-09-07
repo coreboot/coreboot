@@ -86,3 +86,11 @@ config SPI_FLASH_NO_FAST_READ
 	help
 	  Select this option if your setup requires to avoid "fast read"s
 	  from the SPI flash parts.
+
+config SPI_FLASH_GIGADEVICE
+	bool
+	default y
+	depends on SPI_FLASH
+	help
+	  Select this option if your chipset driver needs to store certain
+	  data in the SPI flash and your SPI flash is made by Gigadevice.

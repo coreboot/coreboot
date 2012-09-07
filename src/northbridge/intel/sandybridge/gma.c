@@ -32,7 +32,7 @@ struct gt_powermeter {
 	u32 value;
 };
 
-struct gt_powermeter snb_pm_gt1[] = {
+static const struct gt_powermeter snb_pm_gt1[] = {
 	{ 0xa200, 0xcc000000 },
 	{ 0xa204, 0x07000040 },
 	{ 0xa208, 0x0000fe00 },
@@ -55,7 +55,7 @@ struct gt_powermeter snb_pm_gt1[] = {
 	{ 0 }
 };
 
-struct gt_powermeter snb_pm_gt2[] = {
+static const struct gt_powermeter snb_pm_gt2[] = {
 	{ 0xa200, 0x330000a6 },
 	{ 0xa204, 0x402d0031 },
 	{ 0xa208, 0x00165f83 },
@@ -78,7 +78,7 @@ struct gt_powermeter snb_pm_gt2[] = {
 	{ 0 }
 };
 
-struct gt_powermeter ivb_pm_gt1[] = {
+static const struct gt_powermeter ivb_pm_gt1[] = {
 	{ 0xa800, 0x00000000 },
 	{ 0xa804, 0x00021c00 },
 	{ 0xa808, 0x00000403 },
@@ -134,7 +134,7 @@ struct gt_powermeter ivb_pm_gt1[] = {
 	{ 0 }
 };
 
-struct gt_powermeter ivb_pm_gt2[] = {
+static const struct gt_powermeter ivb_pm_gt2[] = {
 	{ 0xa800, 0x10000000 },
 	{ 0xa804, 0x00033800 },
 	{ 0xa808, 0x00000902 },
@@ -190,7 +190,7 @@ struct gt_powermeter ivb_pm_gt2[] = {
 	{ 0 }
 };
 
-struct gt_powermeter ivb_pm_gt2_17w[] = {
+static const struct gt_powermeter ivb_pm_gt2_17w[] = {
 	{ 0xa800, 0x20000000 },
 	{ 0xa804, 0x000e3800 },
 	{ 0xa808, 0x00000806 },
@@ -246,7 +246,7 @@ struct gt_powermeter ivb_pm_gt2_17w[] = {
 	{ 0 }
 };
 
-struct gt_powermeter ivb_pm_gt2_35w[] = {
+static const struct gt_powermeter ivb_pm_gt2_35w[] = {
 	{ 0xa800, 0x00000000 },
 	{ 0xa804, 0x00030400 },
 	{ 0xa808, 0x00000806 },
@@ -338,7 +338,7 @@ static inline void gtt_write(u32 reg, u32 data)
 	write32(gtt_res->base + reg, data);
 }
 
-static inline void gtt_write_powermeter(struct gt_powermeter *pm)
+static inline void gtt_write_powermeter(const struct gt_powermeter *pm)
 {
 	for (; pm && pm->reg; pm++)
 		gtt_write(pm->reg, pm->value);

@@ -22,6 +22,7 @@
 #include <arch/romcc_io.h>
 #include <northbridge/intel/sandybridge/pcie_config.c>
 #include "pch.h"
+#include "spi.h"
 
 void intel_pch_finalize_smm(void)
 {
@@ -33,6 +34,11 @@ void intel_pch_finalize_smm(void)
 
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));
+
+#if CONFIG_SPI_FLASH_SMM
+	/* Re-init SPI driver to handle locked BAR */
+	spi_init();
+#endif
 
 	/* TCLOCKDN: TC Lockdown */
 	RCBA32_OR(0x0050, (1 << 31));

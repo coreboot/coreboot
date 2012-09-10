@@ -21,6 +21,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <pc80/mc146818rtc.h>
 
 /* Write POST information */
 
@@ -38,6 +39,20 @@ void __attribute__((weak)) mainboard_post(uint8_t value)
 #define mainboard_post(x)
 #endif
 
+#if CONFIG_CMOS_POST
+static void cmos_post_code(u8 value)
+{
+	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
+	case CMOS_POST_BANK_0_MAGIC:
+		cmos_write(value, CMOS_POST_BANK_0_OFFSET);
+		break;
+	case CMOS_POST_BANK_1_MAGIC:
+		cmos_write(value, CMOS_POST_BANK_1_OFFSET);
+		break;
+	}
+}
+#endif /* CONFIG_CMOS_POST */
+
 void post_code(uint8_t value)
 {
 #if !CONFIG_NO_POST
@@ -45,6 +60,9 @@ void post_code(uint8_t value)
 	print_emerg("POST: 0x");
 	print_emerg_hex8(value);
 	print_emerg("\n");
+#endif
+#if CONFIG_CMOS_POST
+	cmos_post_code(value);
 #endif
 	outb(value, CONFIG_POST_PORT);
 #endif

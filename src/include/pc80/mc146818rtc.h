@@ -158,4 +158,23 @@ static inline int get_option(void *dest __attribute__((unused)),
 #endif
 #define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 
+#if CONFIG_CMOS_POST
+#if CONFIG_USE_OPTION_TABLE
+# include "option_table.h"
+# define CMOS_POST_OFFSET (CMOS_VSTART_cmos_post_offset >> 3)
+#else
+# if defined(CONFIG_CMOS_POST_OFFSET)
+#  define CMOS_POST_OFFSET CONFIG_CMOS_POST_OFFSET
+# else
+#  error "Must define CONFIG_CMOS_POST_OFFSET"
+# endif
+#endif
+
+#define CMOS_POST_BANK_OFFSET     (CMOS_POST_OFFSET)
+#define CMOS_POST_BANK_0_MAGIC    0x80
+#define CMOS_POST_BANK_0_OFFSET   (CMOS_POST_OFFSET + 1)
+#define CMOS_POST_BANK_1_MAGIC    0x81
+#define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
+#endif /* CONFIG_CMOS_POST */
+
 #endif /*  PC80_MC146818RTC_H */

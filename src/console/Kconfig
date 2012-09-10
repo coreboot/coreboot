@@ -373,5 +373,23 @@ config CONSOLE_POST
 	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
 	  device) on the debug console.
 
+config CMOS_POST
+	bool "Store post codes in CMOS for debugging"
+	depends on !NO_POST
+	default n
+	help
+	  If enabled, coreboot will store post codes in CMOS and switch between
+	  two offsets on each boot so the last post code in the previous boot
+	  can be retrieved.  This uses 3 bytes of CMOS.
+
+config CMOS_POST_OFFSET
+	hex "Offset into CMOS to store POST codes"
+	depends on CMOS_POST
+	default 0
+	help
+	  If CMOS_POST is enabled then an offset into CMOS must be provided.
+	  If CONFIG_HAVE_OPTION_TABLE is enabled then it will use the value
+	  defined in the mainboard option table.
+
 endmenu
 

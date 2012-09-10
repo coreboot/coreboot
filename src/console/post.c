@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
+#include <elog.h>
 
 /* Write POST information */
 
@@ -40,6 +41,41 @@ void __attribute__((weak)) mainboard_post(uint8_t value)
 #endif
 
 #if CONFIG_CMOS_POST
+
+#if !defined(__PRE_RAM__)
+void cmos_post_log(void)
+{
+	u8 code;
+
+	/* Get post code from other bank */
+	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
+	case CMOS_POST_BANK_0_MAGIC:
+		code = cmos_read(CMOS_POST_BANK_1_OFFSET);
+		break;
+	case CMOS_POST_BANK_1_MAGIC:
+		code = cmos_read(CMOS_POST_BANK_0_OFFSET);
+		break;
+	default:
+		return;
+	}
+
+	/* Check last post code in previous boot against normal list */
+	switch (code) {
+	case POST_OS_BOOT:
+	case POST_OS_RESUME:
+	case POST_ENTER_ELF_BOOT:
+	case 0:
+		break;
+	default:
+		printk(BIOS_WARNING, "POST: Unexpected post code "
+		       "in previous boot: 0x%02x\n", code);
+#if CONFIG_ELOG
+		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
+#endif
+	}
+}
+#endif /* !__PRE_RAM__ */
+
 static void cmos_post_code(u8 value)
 {
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {

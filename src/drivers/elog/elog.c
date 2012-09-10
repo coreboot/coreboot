@@ -790,6 +790,11 @@ int elog_init(void)
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
 #endif
 
+#if CONFIG_CMOS_POST && !defined(__SMM__)
+	/* Check and log POST codes from previous boot */
+	cmos_post_log();
+#endif
+
 	return 0;
 }
 

@@ -175,6 +175,10 @@ static inline int get_option(void *dest __attribute__((unused)),
 #define CMOS_POST_BANK_0_OFFSET   (CMOS_POST_OFFSET + 1)
 #define CMOS_POST_BANK_1_MAGIC    0x81
 #define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
+
+#if !defined(__ROMCC__)
+void cmos_post_log(void);
+#endif
 #endif /* CONFIG_CMOS_POST */
 
 #endif /*  PC80_MC146818RTC_H */

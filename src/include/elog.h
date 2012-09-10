@@ -70,6 +70,23 @@
 
 /* Embedded controller event */
 #define ELOG_TYPE_EC_EVENT                0x91
+#define EC_EVENT_LID_CLOSED                0x01
+#define EC_EVENT_LID_OPEN                  0x02
+#define EC_EVENT_POWER_BUTTON              0x03
+#define EC_EVENT_AC_CONNECTED              0x04
+#define EC_EVENT_AC_DISCONNECTED           0x05
+#define EC_EVENT_BATTERY_LOW               0x06
+#define EC_EVENT_BATTERY_CRITICAL          0x07
+#define EC_EVENT_BATTERY                   0x08
+#define EC_EVENT_THERMAL_THRESHOLD         0x09
+#define EC_EVENT_THERMAL_OVERLOAD          0x0a
+#define EC_EVENT_THERMAL                   0x0b
+#define EC_EVENT_USB_CHARGER               0x0c
+#define EC_EVENT_KEY_PRESSED               0x0d
+#define EC_EVENT_INTERFACE_READY           0x0e
+#define EC_EVENT_KEYBOARD_RECOVERY         0x0f
+#define EC_EVENT_THERMAL_SHUTDOWN          0x10
+#define EC_EVENT_BATTERY_SHUTDOWN          0x11
 
 /* Power */
 #define ELOG_TYPE_POWER_FAIL              0x92

@@ -334,6 +334,71 @@ void acpi_create_srat(acpi_srat_t *srat)
 	header->checksum = acpi_checksum((void *)srat, header->length);
 }
 
+unsigned long __attribute__((weak)) acpi_fill_dmar(unsigned long current)
+{
+	return current;
+}
+
+void acpi_create_dmar(acpi_dmar_t *dmar)
+{
+	acpi_header_t *header = &(dmar->header);
+	unsigned long current = (unsigned long)dmar + sizeof(acpi_dmar_t);
+
+	memset((void *)dmar, 0, sizeof(acpi_dmar_t));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "DMAR", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->length = sizeof(acpi_dmar_t);
+	header->revision = 1;
+
+	dmar->host_address_width = 40 - 1; /* FIXME: == MTRR size? */
+	dmar->flags = 0;
+
+	current = acpi_fill_dmar(current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)dmar;
+	header->checksum = acpi_checksum((void *)dmar, header->length);
+}
+
+unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
+	u16 segment, u32 bar)
+{
+	dmar_entry_t *drhd = (dmar_entry_t *)current;
+	memset(drhd, 0, sizeof(*drhd));
+	drhd->type = DMAR_DRHD;
+	drhd->length = sizeof(*drhd); /* will be fixed up later */
+	drhd->flags = flags;
+	drhd->segment = segment;
+	drhd->bar = bar;
+
+	return drhd->length;
+}
+
+void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
+{
+	dmar_entry_t *drhd = (dmar_entry_t *)base;
+	drhd->length = current - base;
+}
+
+unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
+	u8 dev, u8 fn)
+{
+	dev_scope_t *ds = (dev_scope_t *)current;
+	memset(ds, 0, sizeof(*ds));
+	ds->type = SCOPE_PCI_ENDPOINT;
+	ds->length = sizeof(*ds) + 2; /* we don't support longer paths yet */
+	ds->start_bus = segment;
+	ds->path[0].dev = dev;
+	ds->path[0].fn = fn;
+
+	return ds->length; 
+}
+
 /* http://h21007.www2.hp.com/portal/download/files/unprot/Itanium/slit.pdf */
 void acpi_create_slit(acpi_slit_t *slit)
 {

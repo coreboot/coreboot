@@ -187,6 +187,54 @@ typedef struct acpi_madt {
 	u32 flags;			/* Multiple APIC flags */
 } __attribute__ ((packed)) acpi_madt_t;
 
+enum dev_scope_type {
+	SCOPE_PCI_ENDPOINT = 1,
+	SCOPE_PCI_SUB = 2,
+	SCOPE_IOAPIC = 3,
+	SCOPE_MSI_HPET = 4
+};
+
+typedef struct dev_scope {
+	u8 type;
+	u8 length;
+	u8 reserved[2];
+	u8 enumeration;
+	u8 start_bus;
+	struct {
+		u8 dev;
+		u8 fn;
+	} __attribute__((packed)) path[0];
+} __attribute__ ((packed)) dev_scope_t;
+
+enum dmar_type {
+	DMAR_DRHD = 0,
+	DMAR_RMRR = 1,
+	DMAR_ATSR = 2,
+	DMAR_RHSA = 3
+};
+
+enum {
+	DRHD_INCLUDE_PCI_ALL = 1
+};
+
+typedef struct dmar_entry {
+	u16 type;
+	u16 length;
+	u8 flags;
+	u8 reserved;
+	u16 segment;
+	u64 bar;
+} __attribute__ ((packed)) dmar_entry_t;
+
+/* DMAR (DMA Remapping Reporting Structure) */
+typedef struct acpi_dmar {
+	struct acpi_table_header header;
+	u8 host_address_width;
+	u8 flags;
+	u8 reserved[10];
+	dmar_entry_t structure[0];
+} __attribute__ ((packed)) acpi_dmar_t;
+
 /* MADT: APIC Structure Types */
 /* TODO: Convert to ALLCAPS. */
 enum acpi_apic_types {
@@ -482,6 +530,15 @@ void acpi_create_hpet(acpi_hpet_t *hpet);
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
+
+void acpi_create_dmar(acpi_dmar_t *dmar);
+unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
+				    u16 segment, u32 bar);
+void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
+unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
+					   u8 dev, u8 fn);
+
+unsigned long acpi_fill_dmar(unsigned long);
 
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);

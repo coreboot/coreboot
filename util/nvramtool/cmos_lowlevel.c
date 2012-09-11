@@ -55,6 +55,7 @@ void select_hal(hal_t hal, void *data)
 			break;
 #endif
 		case HAL_MEMORY:
+		default:
 			current_access = &memory_hal;
 			break;
 	}

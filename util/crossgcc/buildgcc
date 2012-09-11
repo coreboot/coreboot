@@ -99,6 +99,13 @@ searchgnu()
 			fi
 		fi
 	done
+	# A workaround for FreeBSD, whose nongnu patch and tar also work.
+	if [ `uname` = "FreeBSD" -a $1 != make ]; then
+		if test -x "`which $1 2>/dev/null`"; then
+			echo $1
+			return
+		fi
+	fi
 	printf "${RED}ERROR:${red} Missing toolchain: $1${NC}\n" >&2
 	exit 1
 }

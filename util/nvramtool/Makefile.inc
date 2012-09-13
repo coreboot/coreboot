@@ -27,10 +27,6 @@ endif
 ifeq ($(OS_ARCH), NetBSD)
 NVRAMTOOLLDLFLAGS = -l$(shell uname -p)
 endif
-ifeq ($(OS_ARCH), FreeBSD)
-NVRAMTOOLFLAGS += -O2 -g -Wall -W
-HOSTCFLAGS =
-endif
 ifeq ($(shell uname -o), Cygwin)
 NVRAMTOOLFLAGS += -O2 -g -Wall -W -D__GLIBC__
 NVRAMTOOLLDFLAGS = -lioperm

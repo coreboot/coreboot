@@ -344,3 +344,5 @@ $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
+$(objk)/%.o: HOSTCFLAGS+=-I$(srck) -I$(objk)
+$(objk)/%.o: HOSTCXXFLAGS+=-I$(srck) -I$(objk)

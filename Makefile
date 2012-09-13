@@ -76,8 +76,8 @@ endif
 
 HOSTCC = gcc
 HOSTCXX = g++
-HOSTCFLAGS := -I$(srck) -I$(objk) -g
-HOSTCXXFLAGS := -I$(srck) -I$(objk)
+HOSTCFLAGS := -g
+HOSTCXXFLAGS := -g
 LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -print-libgcc-file-name)
 
 DOXYGEN := doxygen

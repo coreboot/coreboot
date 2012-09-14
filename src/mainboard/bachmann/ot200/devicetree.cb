@@ -19,7 +19,11 @@ chip northbridge/amd/lx
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0"	# End of list has a zero
 			device pci 4.0 on end	# Ethernet 0
-			device pci f.0 on end	# ISA Bridge
+			device pci f.0 on	# ISA Bridge
+				chip drivers/generic/generic        # eeprom
+					device i2c 52 on end
+				end
+			end
 			device pci f.2 on end	# IDE Controller
 			device pci f.3 on end	# Audio
 			device pci f.4 on end	# OHCI

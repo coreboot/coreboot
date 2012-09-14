@@ -83,11 +83,12 @@ void generate_cpu_entries(void)
 
 	for (cpuID=1; cpuID <=numcpus; cpuID++) {
 		for (coreID=1; coreID<=cores_per_package; coreID++) {
-		if (coreID>1) {
-			pcontrol_blk = 0;
-			plen = 0;
-		}
-		len_pr = acpigen_write_processor((cpuID-1)*cores_per_package+coreID-1, pcontrol_blk, plen);
+			if (coreID>1) {
+				pcontrol_blk = 0;
+				plen = 0;
+			}
+			len_pr = acpigen_write_processor(
+					(cpuID - 1) * cores_per_package + coreID - 1, pcontrol_blk, plen);
 			len_pr += acpigen_write_empty_PCT();
 			len_pr += acpigen_write_PSD_package(cpuID-1,cores_per_package,SW_ANY);
 			if ((count = get_cst_entries(&cst_entries)) > 0)
@@ -115,19 +116,29 @@ void generate_cpu_entries(void)
 				busratio_step <<= 1;
 				num_states >>= 1;
 			}
-			printk(BIOS_DEBUG, "adding %x P-States between busratio %x and %x, incl. P0\n", num_states+1, busratio_min, busratio_max);
+			printk(BIOS_DEBUG, "adding %x P-States between busratio %x and %x, incl. P0\n",
+				num_states+1, busratio_min, busratio_max);
 			int vid_step=(vid_max-vid_min)/num_states;
 			int power_step=(power_max-power_min)/num_states;
 			int clock_step=(clock_max-clock_min)/num_states;
-			len_ps = acpigen_write_package(num_states+1); // for Super LFM, this must be increases by another one
-			len_ps += acpigen_write_PSS_package(clock_max /*mhz*/, power_max /*mW*/, 0 /*lat1*/, 0 /*lat2*/, (busratio_max<<8)|(vid_max) /*control*/, (busratio_max<<8)|(vid_max) /*status*/);
+			len_ps = acpigen_write_package(num_states + 1); /* For Super LFM, this must
+									   be increases by another one. */
+			len_ps += acpigen_write_PSS_package(
+					clock_max /*mhz*/, power_max /*mW*/, 0 /*lat1*/, 0 /*lat2*/,
+					(busratio_max << 8) | vid_max /*control*/,
+					(busratio_max << 8) | vid_max /*status*/);
+
 			int current_busratio=busratio_min+((num_states-1)*busratio_step);
 			int current_vid=vid_min+((num_states-1)*vid_step);
 			int current_power=power_min+((num_states-1)*power_step);
 			int current_clock=clock_min+((num_states-1)*clock_step);
 			int i;
 			for (i=0;i<num_states; i++) {
-				len_ps += acpigen_write_PSS_package(current_clock /*mhz*/, current_power /*mW*/, 0 /*lat1*/, 0 /*lat2*/, (current_busratio<<8)|(current_vid) /*control*/, (current_busratio<<8)|(current_vid) /*status*/);
+				len_ps += acpigen_write_PSS_package(
+						current_clock /*mhz*/, current_power /*mW*/,
+						0 /*lat1*/, 0 /*lat2*/,
+						(current_busratio << 8) | current_vid /*control*/,
+						(current_busratio << 8) | current_vid /*status*/);
 				current_busratio -= busratio_step;
 				current_vid -= vid_step;
 				current_power -= power_step;
@@ -136,9 +147,9 @@ void generate_cpu_entries(void)
 			len_ps--;
 			acpigen_patch_len(len_ps);
 			len_pr += acpigen_write_PPC(0);
-		len_pr += len_ps;
-		len_pr--;
-		acpigen_patch_len(len_pr);
+			len_pr += len_ps;
+			len_pr--;
+			acpigen_patch_len(len_pr);
 		}
 	}
 }

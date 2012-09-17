@@ -37,7 +37,7 @@ $MAKE CONFIG_USE_BLOBS=n CONFIG_CCACHE=n CONFIG_SCANBUILD_ENABLE=n NOMKDIR=1 \
 	DOTCONFIG=$TMPCONFIG obj=$1 printall |        \
 	sed -e "s,^ *,," -e "s,^r.mstage-objs:=,,"    \
 	    -e "s,mainboard/[^/]*/[^/]*/,.../,g" |    \
-	tr " " "\n" | grep "/static.*\.[co]" | sort | \
+	tr " " "\n" | GREP_OPTIONS= grep "/static.*\.[co]" | sort | \
 	tr '\012\015' '  ' | sed -e "s,  *, ,g" -e "s, *$,,"
 }
 

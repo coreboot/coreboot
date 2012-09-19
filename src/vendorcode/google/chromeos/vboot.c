@@ -39,6 +39,11 @@
 #define TPM_E_NEEDS_SELFTEST     ((u32)(TPM_E_NON_FATAL + 1))
 #define TPM_E_DOING_SELFTEST     ((u32)(TPM_E_NON_FATAL + 2))
 
+#if CONFIG_NO_TPM_RESUME
+static void init_vboot(int bootmode)
+{
+}
+#else
 static const struct {
 	u8 buffer[12];
 } tpm_resume_cmd = {
@@ -229,6 +234,7 @@ static void init_vboot(int bootmode)
 	printk(BIOS_ERR, "TPM: Error code 0x%x. Hard reset!\n", result);
 	hard_reset();
 }
+#endif
 
 void init_chromeos(int bootmode)
 {

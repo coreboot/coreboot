@@ -65,3 +65,12 @@ config FLASHMAP_OFFSET
 	  Offset of flash map in firmware image
 
 endmenu
+
+config NO_TPM_RESUME
+	bool
+	default n
+	depends on CHROMEOS
+	help
+	  On some boards the TPM stays powered up in S3. On those
+	  boards, booting Windows will break if the TPM resume command
+	  is sent during an S3 resume.

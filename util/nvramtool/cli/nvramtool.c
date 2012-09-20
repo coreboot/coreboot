@@ -402,7 +402,7 @@ static void op_write_cmos_dump(void)
 	unsigned char data[CMOS_SIZE];
 	FILE *f;
 
-	if ((f = fopen(nvramtool_op.param, "w")) == NULL) {
+	if ((f = fopen(nvramtool_op.param, "wb")) == NULL) {
 		fprintf(stderr, "%s: Can not open file %s for writing: %s\n",
 			prog_name, nvramtool_op.param, strerror(errno));
 		exit(1);
@@ -434,7 +434,7 @@ static void op_read_cmos_dump(void)
 	size_t nr_bytes;
 	FILE *f;
 
-	if ((f = fopen(nvramtool_op.param, "r")) == NULL) {
+	if ((f = fopen(nvramtool_op.param, "rb")) == NULL) {
 		fprintf(stderr, "%s: Can not open file %s for reading: %s\n",
 			prog_name, nvramtool_op.param, strerror(errno));
 		exit(1);

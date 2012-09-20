@@ -175,7 +175,7 @@ uhci_init (pcidev_t addr)
 	reg16 &= 0xdf80;
 	pci_write_config16 (controller->bus_address, 0xc0, reg16);
 
-	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t *));	/* 4kb aligned to 4kb */
+	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t));	/* 4kb aligned to 4kb */
 	if (! UHCI_INST (controller)->framelistptr)
 		fatal("Not enough memory for USB frame list pointer.\n");
 

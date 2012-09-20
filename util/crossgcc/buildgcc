@@ -262,7 +262,7 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 		wget --no-check-certificate -q $ARCHIVE
 	)
 	test -f tarballs/$FILE || \
-		printf "\n${RED}Failed to download $FILE.${red}\n"
+		printf "\n${RED}Failed to download $FILE.${NC}\n"
 	test -f tarballs/$FILE || exit 1
 	printf "\n"
 done
@@ -293,7 +293,7 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
 			$PATCH -s -N -p0 < `echo $patch` || \
-				printf "\n${RED}Failed $patch.${red}\n"
+				printf "\n${RED}Failed $patch.${NC}\n"
 		done
 	)
 done

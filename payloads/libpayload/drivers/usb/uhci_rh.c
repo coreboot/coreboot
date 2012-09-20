@@ -81,9 +81,14 @@ static void
 uhci_rh_disable_port (usbdev_t *dev, int port)
 {
 	hci_t *controller = dev->controller;
-	port = PORTSC2;
 	if (port == 1)
 		port = PORTSC1;
+	else if (port == 2)
+		port = PORTSC2;
+	else {
+		debug("Invalid port %d\n", port);
+		return;
+	}
 	uhci_reg_write16(controller, port,
 			 uhci_reg_read16(controller, port) & ~4);
 	u16 value;

@@ -133,8 +133,10 @@ void hardwaremain(int boot_complete)
 	timestamp_add(TS_DEVICE_DONE, timestamps[5]);
 	timestamp_add_now(TS_CBMEM_POST);
 
+#if CONFIG_WRITE_HIGH_TABLES
 	if (cbmem_post_handling)
 		cbmem_post_handling();
+#endif
 
 	timestamp_add_now(TS_WRITE_TABLES);
 

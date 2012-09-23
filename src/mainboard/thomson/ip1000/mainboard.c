@@ -130,13 +130,6 @@ static int int15_handler(void)
 	/* Interrupt handled */
 	return 1;
 }
-
-static void int15_install(void)
-{
-	typedef int (* yabel_handleIntFunc)(void);
-	extern yabel_handleIntFunc yabel_intFuncArray[256];
-	yabel_intFuncArray[0x15] = int15_handler;
-}
 #endif
 
 static void mainboard_init(device_t dev)
@@ -150,7 +143,7 @@ static void mainboard_enable(device_t dev)
 	dev->ops->init = mainboard_init;
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	/* Install custom int15 handler for VGA OPROM */
-	int15_install();
+	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 }
 

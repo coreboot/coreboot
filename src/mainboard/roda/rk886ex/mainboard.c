@@ -88,13 +88,6 @@ static int int15_handler(void)
 	/* Interrupt handled */
 	return 1;
 }
-
-static void int15_install(void)
-{
-	typedef int (* yabel_handleIntFunc)(void);
-	extern yabel_handleIntFunc yabel_intFuncArray[256];
-	yabel_intFuncArray[0x15] = int15_handler;
-}
 #endif
 
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
@@ -136,11 +129,6 @@ static int int15_handler(struct eregs *regs)
 
 	return res;
 }
-
-static void int15_install(void)
-{
-	mainboard_interrupt_handlers(0x15, &int15_handler);
-}
 #endif
 
 #if DUMP_RUNTIME_REGISTERS
@@ -171,7 +159,7 @@ static void mainboard_enable(device_t dev)
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	/* Install custom int15 handler for VGA OPROM */
-	int15_install();
+	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 #if DUMP_RUNTIME_REGISTERS
 	dump_runtime_registers();

@@ -200,20 +200,6 @@ static int int15_handler(void)
 }
 #endif
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-static void int15_install(void)
-{
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
-	typedef int (* yabel_handleIntFunc)(void);
-	extern yabel_handleIntFunc yabel_intFuncArray[256];
-	yabel_intFuncArray[0x15] = int15_handler;
-#endif
-#ifdef CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	mainboard_interrupt_handlers(0x15, &int15_handler);
-#endif
-}
-#endif
-
 /* Audio Setup */
 
 extern const u32 * cim_verb_data;
@@ -232,7 +218,7 @@ static void mainboard_enable(device_t dev)
 {
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	/* Install custom int15 handler for VGA OPROM */
-	int15_install();
+	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 	verb_setup();
 }

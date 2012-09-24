@@ -158,13 +158,11 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 	int len = name ? strnlen(name, CMOS_MAX_NAME_LENGTH) : 0;
 
 	/* cmos entries are located right after the option table */
-
-	for (   cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
-		cmos_entry->tag == CB_TAG_OPTION;
-		cmos_entry = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size)) {
-		if (memcmp((const char*)cmos_entry->name, name, len))
-			continue;
-		return cmos_entry;
+	cmos_entry = first_cmos_entry(option_table);
+	while (cmos_entry) {
+		if (memcmp((const char*)cmos_entry->name, name, len) == 0)
+			return cmos_entry;
+		cmos_entry = next_cmos_entry(cmos_entry);
 	}
 
 	printf("ERROR: No such CMOS option (%s)\n", name);
@@ -173,7 +171,7 @@ static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *op
 
 struct cb_cmos_entries *first_cmos_entry(struct cb_cmos_option_table *option_table)
 {
-	return lookup_cmos_entry(option_table, NULL);
+	return (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
 }
 
 struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cmos_entry)

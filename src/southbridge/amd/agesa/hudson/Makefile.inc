@@ -58,7 +58,7 @@ $(obj)/hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(HUDSON_IMC_POSITION) \
 		$(HUDSON_GEC_POSITION) \
 		$(HUDSON_XHCI_POSITION) ; do \
-		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, $$1/256 % 256, $$1/65536 % 256, $$1/16777216);}'; \
+		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done > $@
 
 ifeq ($(CONFIG_HUDSON_FWM), y)

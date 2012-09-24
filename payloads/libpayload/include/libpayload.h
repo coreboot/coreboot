@@ -206,8 +206,15 @@ struct cb_cmos_option_table *get_system_option_table(void);
 int options_checksum_valid(const struct nvram_accessor *nvram);
 void fix_options_checksum_with(const struct nvram_accessor *nvram);
 void fix_options_checksum(void);
+
 struct cb_cmos_entries *first_cmos_entry(struct cb_cmos_option_table *option_table);
 struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cur);
+
+struct cb_cmos_enums *first_cmos_enum(struct cb_cmos_option_table *option_table);
+struct cb_cmos_enums *next_cmos_enum(struct cb_cmos_enums *cmos_enum);
+struct cb_cmos_enums *first_cmos_enum_of_id(struct cb_cmos_option_table *option_table, int id);
+struct cb_cmos_enums *next_cmos_enum_of_id(struct cb_cmos_enums *cmos_enum, int id);
+
 int get_option_with(const struct nvram_accessor *nvram, struct cb_cmos_option_table *option_table, void *dest, const char *name);
 int get_option_from(struct cb_cmos_option_table *option_table, void *dest, const char *name);
 int get_option(void *dest, const char *name);

@@ -41,7 +41,7 @@ static const io_register_t ich10_pm_registers[] = {
 	{ 0x1a, 2, "RESERVED" },
 	{ 0x1c, 4, "RESERVED" },
 	{ 0x20, 8, "GPE0_STS" }, // General Purpose Event 0 Status; ACPI pointer: GPE0_BLK
-	{ 0x2C, 4, "GPE0_EN" },  // General Purpose Event 0 Enables; ACPI pointer: GPE0_BLK+8
+	{ 0x28, 8, "GPE0_EN" },  // General Purpose Event 0 Enables; ACPI pointer: GPE0_BLK+8
 	{ 0x30, 4, "SMI_EN" },
 	{ 0x34, 4, "SMI_STS" },
 	{ 0x38, 2, "ALT_GP_SMI_EN" },
@@ -102,7 +102,7 @@ static const io_register_t ich9_pm_registers[] = {
 	{ 0x1a, 2, "RESERVED" },
 	{ 0x1c, 4, "RESERVED" },
 	{ 0x20, 8, "GPE0_STS" }, // General Purpose Event 0 Status; ACPI pointer: GPE0_BLK
-	{ 0x2C, 4, "GPE0_EN" },  // General Purpose Event 0 Enables; ACPI pointer: GPE0_BLK+8
+	{ 0x28, 8, "GPE0_EN" },  // General Purpose Event 0 Enables; ACPI pointer: GPE0_BLK+8
 	{ 0x30, 4, "SMI_EN" },
 	{ 0x34, 4, "SMI_STS" },
 	{ 0x38, 2, "ALT_GP_SMI_EN" },
@@ -689,6 +689,14 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 
 	for (i = 0; i < size; i++) {
 		switch (pm_registers[i].size) {
+		case 8:
+			printf("pmbase+0x%04x: 0x%08x (%s)\n"
+			       "               0x%08x\n",
+				pm_registers[i].addr,
+				inl(pmbase+pm_registers[i].addr),
+				pm_registers[i].name,
+				inl(pmbase+pm_registers[i].addr+4));
+			break;
 		case 4:
 			printf("pmbase+0x%04x: 0x%08x (%s)\n",
 				pm_registers[i].addr,

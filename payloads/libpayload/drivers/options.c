@@ -185,25 +185,67 @@ struct cb_cmos_entries *next_cmos_entry(struct cb_cmos_entries *cmos_entry)
 		return NULL;
 }
 
-/* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
-static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, const u8 *value, const char *text)
+struct cb_cmos_enums *first_cmos_enum(struct cb_cmos_option_table *option_table)
 {
 	struct cb_cmos_entries *cmos_entry;
-	int len = strnlen(text, CMOS_MAX_TEXT_LENGTH);
-
 	/* cmos entries are located right after the option table. Skip them */
-	cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
+	cmos_entry = (struct cb_cmos_entries *)((unsigned char *)option_table + option_table->header_length);
 	while (cmos_entry->tag == CB_TAG_OPTION)
 		cmos_entry = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size);
 
 	/* cmos enums are located after cmos entries. */
+	return (struct cb_cmos_enums *)cmos_entry;
+}
+
+struct cb_cmos_enums *next_cmos_enum(struct cb_cmos_enums *cmos_enum)
+{
+	if (!cmos_enum) {
+		return NULL;
+	}
+
+	cmos_enum = (struct cb_cmos_enums*)((unsigned char *)cmos_enum + cmos_enum->size);
+	if (cmos_enum->tag == CB_TAG_OPTION_ENUM) {
+		return cmos_enum;
+	} else {
+		return NULL;
+	}
+}
+
+struct cb_cmos_enums *next_cmos_enum_of_id(struct cb_cmos_enums *cmos_enum, int id)
+{
+	while ((cmos_enum = next_cmos_enum(cmos_enum))) {
+		if (cmos_enum->config_id == id) {
+			return cmos_enum;
+		}
+	}
+	return NULL;
+}
+
+struct cb_cmos_enums *first_cmos_enum_of_id(struct cb_cmos_option_table *option_table, int id)
+{
+	struct cb_cmos_enums *cmos_enum = first_cmos_enum(option_table);
+	if (!cmos_enum) {
+		return NULL;
+	}
+	if (cmos_enum->config_id == id) {
+		return cmos_enum;
+	}
+
+	return next_cmos_enum_of_id(cmos_enum, id);
+}
+
+/* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
+static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, const u8 *value, const char *text)
+{
+	int len = strnlen(text, CMOS_MAX_TEXT_LENGTH);
+
+	/* cmos enums are located after cmos entries. */
 	struct cb_cmos_enums *cmos_enum;
-	for (   cmos_enum = (struct cb_cmos_enums*)cmos_entry;
-		cmos_enum->tag == CB_TAG_OPTION_ENUM;
-		cmos_enum = (struct cb_cmos_enums*)((unsigned char *)cmos_enum + cmos_enum->size)) {
-		if ((cmos_enum->config_id == config_id)
-		   && ((value == NULL) || (cmos_enum->value == *value))
-		   && ((text == NULL) || (memcmp((const char*)cmos_enum->text, text, len)))) {
+	for (   cmos_enum = first_cmos_enum_of_id(option_table, config_id);
+		cmos_enum;
+		cmos_enum = next_cmos_enum_of_id(cmos_enum, config_id)) {
+		if (((value == NULL) || (cmos_enum->value == *value)) &&
+		    ((text == NULL) || (memcmp((const char*)cmos_enum->text, text, len)))) {
 			return cmos_enum;
 		}
 	}

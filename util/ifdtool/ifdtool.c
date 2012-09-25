@@ -397,6 +397,12 @@ void inject_region(char *filename, char *image, int size, int region_type,
 		memset(image + region.base, 0xff, offset);
 	}
 
+	if (size < region.base + offset + region_size) {
+		fprintf(stderr, "Output file is too small. (%d < %d)\n",
+			size, region.base + offset + region_size);
+		exit(EXIT_FAILURE);
+	}
+
 	if (read(region_fd, image + region.base + offset, region_size)
 							!= region_size) {
 		perror("Could not read file");

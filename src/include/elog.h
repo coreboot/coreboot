@@ -87,6 +87,7 @@
 #define EC_EVENT_KEYBOARD_RECOVERY         0x0f
 #define EC_EVENT_THERMAL_SHUTDOWN          0x10
 #define EC_EVENT_BATTERY_SHUTDOWN          0x11
+#define EC_EVENT_FAN_ERROR                 0x12
 
 /* Power */
 #define ELOG_TYPE_POWER_FAIL              0x92

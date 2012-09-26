@@ -58,10 +58,8 @@ BASE=`dirname $0`
 _LDSCRIPT="-Wl,-T,$_LIBDIR/libpayload.ldscript"
 
 trygccoption() {
-	$DEFAULT_CC $1 -S -xc /dev/null -o .$$.tmp &> /dev/null
-	RET=$?
-	rm -f .$$.tmp
-	return $RET
+	$DEFAULT_CC $1 -S -xc /dev/null -o /dev/null &> /dev/null
+	return $?
 }
 
 DEBUGME=0

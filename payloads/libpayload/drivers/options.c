@@ -324,7 +324,7 @@ int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_opti
 			/* only works on little endian.
 			   26 bytes is enough for a 64bit value in decimal */
 			*dest = malloc(26);
-			sprintf(*dest, "%ull", *(u64*)raw);
+			sprintf(*dest, "%llu", *(u64*)raw);
 			break;
 		case 's':
 			*dest = strdup(raw);

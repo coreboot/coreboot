@@ -40,8 +40,6 @@ static void serial_io_hardware_init(int port, int speed, int word_bits, int pari
 {
 	unsigned char reg;
 
-	/* We will assume 8n1 for now. Does anyone use anything else these days? */
-
 	/* Disable interrupts. */
 	outb(0, port + 0x01);
 
@@ -56,8 +54,9 @@ static void serial_io_hardware_init(int port, int speed, int word_bits, int pari
 	outb(DIVISOR(speed) & 0xFF, port);
 	outb(DIVISOR(speed) >> 8 & 0xFF, port + 1);
 
-	/* Restore the previous value of the divisor. */
-	outb(reg & ~0x80, port + 0x03);
+	/* Restore the previous value of the divisor.
+	 * And set 8 bits per character */
+	outb((reg & ~0x80) | 3, port + 0x03);
 }
 
 static void serial_mem_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
@@ -80,8 +79,9 @@ static void serial_mem_hardware_init(int port, int speed, int word_bits, int par
 	writeb(DIVISOR(speed) & 0xFF, MEMBASE);
 	writeb(DIVISOR(speed) >> 8 & 0xFF, MEMBASE + 1);
 
-	/* Restore the previous value of the divisor. */
-	writeb(reg & ~0x80, MEMBASE + 0x03);
+	/* Restore the previous value of the divisor.
+	 * And set 8 bits per character */
+	writeb((reg & ~0x80) | 3, MEMBASE + 0x03);
 }
 #endif
 

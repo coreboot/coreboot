@@ -79,6 +79,8 @@ typedef struct {
 	uint32_t pchstrp13;
 	uint32_t pchstrp14;
 	uint32_t pchstrp15;
+	uint32_t pchstrp16;
+	uint32_t pchstrp17;
 } __attribute__((packed)) fpsba_t;
 
 // master
@@ -93,4 +95,17 @@ typedef struct {
 	uint32_t data[8];
 } __attribute__((packed)) fmsba_t;
 
+// ME VSCC
+typedef struct {
+	uint32_t jid;
+	uint32_t vscc;
+} vscc_t;
 
+typedef struct {
+	// Actual number of entries specified in vtl
+	vscc_t entry[8];
+} vtba_t;
+
+typedef struct {
+	int base, limit, size;
+} region_t;

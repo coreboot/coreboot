@@ -49,10 +49,6 @@ static fdbar_t *find_fd(char *image, int size)
 	return (fdbar_t *) (image + i);
 }
 
-typedef struct {
-	int base, limit, size;
-} region_t;
-
 static region_t get_region(frba_t *frba, int region_type)
 {
 	region_t region;
@@ -125,14 +121,27 @@ static const char *region_filename(int region_type)
 	return region_filenames[region_type];
 }
 
+static void dump_region(int num, frba_t *frba)
+{
+	region_t region = get_region(frba, num);
+	printf("  Flash Region %d (%s): %08x - %08x %s\n",
+		       num, region_name(num), region.base, region.limit,
+		       region.size < 1 ? "(unused)" : "");
+}
+
 static void dump_frba(frba_t * frba)
 {
-	printf("\nFound Region Section\n");
+	printf("Found Region Section\n");
 	printf("FLREG0:    0x%08x\n", frba->flreg0);
+	dump_region(0, frba);
 	printf("FLREG1:    0x%08x\n", frba->flreg1);
+	dump_region(1, frba);
 	printf("FLREG2:    0x%08x\n", frba->flreg2);
+	dump_region(2, frba);
 	printf("FLREG3:    0x%08x\n", frba->flreg3);
+	dump_region(3, frba);
 	printf("FLREG4:    0x%08x\n", frba->flreg4);
+	dump_region(4, frba);
 }
 
 static void decode_spi_frequency(unsigned int freq)
@@ -200,7 +209,17 @@ static void dump_fcba(fcba_t * fcba)
 	decode_component_density(fcba->flcomp & 7);
 	printf("\n");
 	printf("FLILL      0x%08x\n", fcba->flill);
-	printf("FLPB       0x%08x\n\n", fcba->flpb);
+	printf("  Invalid Instruction 3: 0x%02x\n",
+		(fcba->flill >> 24) & 0xff);
+	printf("  Invalid Instruction 2: 0x%02x\n",
+		(fcba->flill >> 16) & 0xff);
+	printf("  Invalid Instruction 1: 0x%02x\n",
+		(fcba->flill >> 8) & 0xff);
+	printf("  Invalid Instruction 0: 0x%02x\n",
+		fcba->flill & 0xff);
+	printf("FLPB       0x%08x\n", fcba->flpb);
+	printf("  Flash Partition Boundary Address: 0x%06x\n\n",
+		(fcba->flpb & 0xfff) << 12);
 }
 
 static void dump_fpsba(fpsba_t * fpsba)
@@ -221,7 +240,9 @@ static void dump_fpsba(fpsba_t * fpsba)
 	printf("PCHSTRP12: 0x%08x\n", fpsba->pchstrp12);
 	printf("PCHSTRP13: 0x%08x\n", fpsba->pchstrp13);
 	printf("PCHSTRP14: 0x%08x\n", fpsba->pchstrp14);
-	printf("PCHSTRP15: 0x%08x\n\n", fpsba->pchstrp15);
+	printf("PCHSTRP15: 0x%08x\n", fpsba->pchstrp15);
+	printf("PCHSTRP16: 0x%08x\n", fpsba->pchstrp16);
+	printf("PCHSTRP17: 0x%08x\n\n", fpsba->pchstrp17);
 }
 
 static void decode_flmstr(uint32_t flmstr)
@@ -272,6 +293,95 @@ static void dump_fmsba(fmsba_t * fmsba)
 	printf("????:      0x%08x\n", fmsba->data[3]);
 }
 
+static void dump_jid(uint32_t jid)
+{
+	printf("    SPI Componend Device ID 1:          0x%02x\n",
+		(jid >> 16) & 0xff);
+	printf("    SPI Componend Device ID 0:          0x%02x\n",
+		(jid >> 8) & 0xff);
+	printf("    SPI Componend Vendor ID:            0x%02x\n",
+		jid & 0xff);
+}
+
+static void dump_vscc(uint32_t vscc)
+{
+	printf("    Lower Erase Opcode:                 0x%02x\n",
+		vscc >> 24);
+	printf("    Lower Write Enable on Write Status: 0x%02x\n",
+		vscc & (1 << 20) ? 0x06 : 0x50);
+	printf("    Lower Write Status Required:        %s\n",
+		vscc & (1 << 19) ? "Yes" : "No");
+	printf("    Lower Write Granularity:            %d bytes\n",
+		vscc & (1 << 18) ? 64 : 1);
+	printf("    Lower Block / Sector Erase Size:    ");
+	switch ((vscc >> 16) & 0x3) {
+	case 0:
+		printf("256 Byte\n");
+		break;
+	case 1:
+		printf("4KB\n");
+		break;
+	case 2:
+		printf("8KB\n");
+		break;
+	case 3:
+		printf("64KB\n");
+		break;
+	}
+
+	printf("    Upper Erase Opcode:                 0x%02x\n",
+		(vscc >> 8) & 0xff);
+	printf("    Upper Write Enable on Write Status: 0x%02x\n",
+		vscc & (1 << 4) ? 0x06 : 0x50);
+	printf("    Upper Write Status Required:        %s\n",
+		vscc & (1 << 3) ? "Yes" : "No");
+	printf("    Upper Write Granularity:            %d bytes\n",
+		vscc & (1 << 2) ? 64 : 1);
+	printf("    Upper Block / Sector Erase Size:    ");
+	switch (vscc & 0x3) {
+	case 0:
+		printf("256 Byte\n");
+		break;
+	case 1:
+		printf("4KB\n");
+		break;
+	case 2:
+		printf("8KB\n");
+		break;
+	case 3:
+		printf("64KB\n");
+		break;
+	}
+}
+
+static void dump_vtba(vtba_t *vtba, int vtl)
+{
+	int i;
+	int num = (vtl >> 1) < 8 ? (vtl >> 1) : 8;
+
+	printf("ME VSCC table:\n");
+	for (i = 0; i < num; i++) {
+		printf("  JID%d:  0x%08x\n", i, vtba->entry[i].jid);
+		dump_jid(vtba->entry[i].jid);
+		printf("  VSCC%d: 0x%08x\n", i, vtba->entry[i].vscc);
+		dump_vscc(vtba->entry[i].vscc);
+	}
+	printf("\n");
+}
+
+static void dump_oem(uint8_t *oem)
+{
+	int i, j;
+	printf("OEM Section:\n");
+	for (i = 0; i < 4; i++) {
+		printf("%02x:", i << 4);
+		for (j = 0; j < 16; j++)
+			printf(" %02x", oem[(i<<4)+j]);
+		printf ("\n");
+	}
+	printf ("\n");
+}
+
 static void dump_fd(char *image, int size)
 {
 	fdbar_t *fdb = find_fd(image, size);
@@ -295,7 +405,14 @@ static void dump_fd(char *image, int size)
 	printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
 
 	printf("FLUMAP1:   0x%08x\n", fdb->flumap1);
-
+	printf("  Intel ME VSCC Table Length (VTL):        %d\n",
+		(fdb->flumap1 >> 8) & 0xff);
+	printf("  Intel ME VSCC Table Base Address (VTBA): 0x%06x\n\n",
+		(fdb->flumap1 & 0xff) << 4);
+	dump_vtba((vtba_t *)
+			(image + ((fdb->flumap1 & 0xff) << 4)),
+			(fdb->flumap1 >> 8) & 0xff);
+	dump_oem((uint8_t *)image + 0xf00);
 	dump_frba((frba_t *)
 			(image + (((fdb->flmap0 >> 16) & 0xff) << 4)));
 	dump_fcba((fcba_t *) (image + (((fdb->flmap0) & 0xff) << 4)));
@@ -318,9 +435,7 @@ static void write_regions(char *image, int size)
 
 	for (i = 0; i<5; i++) {
 		region_t region = get_region(frba, i);
-		printf("Flash Region %d (%s): %08x - %08x %s\n",
-		       i, region_name(i), region.base, region.limit,
-		       region.size < 1 ? "(unused)" : "");
+		dump_region(i, frba);
 		if (region.size > 0) {
 			int region_fd;
 			region_fd = open(region_filename(i),

@@ -18,7 +18,7 @@
  */
 
 #include <stdint.h>
-#define IFDTOOL_VERSION "1.0"
+#define IFDTOOL_VERSION "1.1"
 
 enum spi_frequency {
 	SPI_FREQUENCY_20MHZ = 0,

@@ -19,7 +19,7 @@ ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 # |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
 # +-----------+---------------+----------------+------------+
 # EC ROM should be 64K aligned.
-HUDSON_FWM_POSITION=$(shell printf %d $(CONFIG_HUDSON_FWM_POSITION))
+HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
 
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16

@@ -47,6 +47,8 @@ util/crossgcc/xgcc/
 util/*/.dependencies
 util/*/.test
 util/cbfstool/cbfstool
+util/cbmem/.dependencies
+util/cbmem/cbmem
 util/dumpmmcr/dumpmmcr
 util/ectool/ectool
 util/getpir/getpir

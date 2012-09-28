@@ -31,6 +31,7 @@ head.o-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
+libc-y += string.c
 
 # Multiboot support is configurable
 libc-$(CONFIG_MULTIBOOT) += multiboot.c

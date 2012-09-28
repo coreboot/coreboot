@@ -42,9 +42,10 @@ $MAKE CONFIG_USE_BLOBS=n CONFIG_CCACHE=n CONFIG_SCANBUILD_ENABLE=n NOMKDIR=1 \
 }
 
 # find GNU make
+MAKE=
 search_make make
-search_make gmake
-search_make gnumake
+[ -z $MAKE ] && search_make gmake
+[ -z $MAKE ] && search_make gnumake
 
 if [ "$MAKE" = "" ]; then
 	echo Could not identify GNU make

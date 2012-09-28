@@ -58,7 +58,8 @@ rm -f $TMPCONFIG
 $MAKE DOTCONFIG=$TMPCONFIG allyesconfig >/dev/null
 
 # look up parent directory
-PARENTDIR=`dirname $PWD`
+CURRENTDIR=`pwd -P`
+PARENTDIR=`dirname $CURRENTDIR`
 
 compare_output "`run_printall build`" "build/.../static.c build/.../static.c build/.../static.ramstage.o build/.../static.romstage.o"
 compare_output "`run_printall ../obj`" "$PARENTDIR/obj/.../static.c $PARENTDIR/obj/.../static.c $PARENTDIR/obj/.../static.ramstage.o $PARENTDIR/obj/.../static.romstage.o"

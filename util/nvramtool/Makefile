@@ -42,7 +42,7 @@ endif
 ifeq ($(OS_ARCH), NetBSD)
 LDFLAGS = -l$(shell uname -p)
 endif
-ifeq ($(shell uname -o), Cygwin)
+ifeq ($(shell uname -o 2>/dev/null), Cygwin)
 LDFLAGS = -lioperm
 CFLAGS += -D__GLIBC__
 endif

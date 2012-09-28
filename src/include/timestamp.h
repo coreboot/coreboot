@@ -20,8 +20,6 @@
 #ifndef __TIMESTAMP_H__
 #define __TIMESTAMP_H__
 
-#include <cpu/x86/tsc.h>
-
 struct timestamp_entry {
 	uint32_t	entry_id;
 	uint64_t	entry_stamp;
@@ -55,6 +53,7 @@ enum timestamp_id {
 };
 
 #if CONFIG_COLLECT_TIMESTAMPS
+#include <cpu/x86/tsc.h>
 void timestamp_init(tsc_t base);
 void timestamp_add(enum timestamp_id id, tsc_t ts_time);
 void timestamp_add_now(enum timestamp_id id);

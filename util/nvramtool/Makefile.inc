@@ -21,15 +21,11 @@
 
 OS_ARCH        = $(shell uname)
 NVRAMTOOLFLAGS := -I$(top)/util/nvramtool
-ifeq ($(OS_ARCH), Darwin)
-NVRAMTOOLFLAGS += -framework DirectHW
-endif
 ifeq ($(OS_ARCH), NetBSD)
 NVRAMTOOLLDLFLAGS = -l$(shell uname -p)
 endif
 ifeq ($(shell uname -o), Cygwin)
 NVRAMTOOLFLAGS += -O2 -g -Wall -W -D__GLIBC__
-NVRAMTOOLLDFLAGS = -lioperm
 HOSTCFLAGS =
 endif
 

@@ -24,7 +24,7 @@ NVRAMTOOLFLAGS := -I$(top)/util/nvramtool
 ifeq ($(OS_ARCH), NetBSD)
 NVRAMTOOLLDLFLAGS = -l$(shell uname -p)
 endif
-ifeq ($(shell uname -o), Cygwin)
+ifeq ($(shell uname -o 2>/dev/null), Cygwin)
 NVRAMTOOLFLAGS += -O2 -g -Wall -W -D__GLIBC__
 HOSTCFLAGS =
 endif

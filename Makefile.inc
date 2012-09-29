@@ -272,7 +272,7 @@ update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
 lint lint-stable:
-	FAILED=0; LINTLOG=`mktemp .tmpconfig.lintXXXXX`; \
+	FAILED=0; LINTLOG=`mktemp.tmpconfig.lintXXXXX`; \
 	for script in util/lint/$@-*; do \
 		echo; echo `basename $$script`; \
 		grep "^# DESCR:" $$script | sed "s,.*DESCR: *,," ; \

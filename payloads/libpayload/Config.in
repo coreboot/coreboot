@@ -141,6 +141,10 @@ endmenu
 
 menu "Console Options"
 
+config CBMEM_CONSOLE
+	bool "Send output to the in memory CBMEM console"
+	default y
+
 config SERIAL_CONSOLE
 	bool "See output on the serial port console"
 	default y

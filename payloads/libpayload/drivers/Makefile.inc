@@ -37,6 +37,8 @@ libc-$(CONFIG_SERIAL_CONSOLE) += serial.c
 
 libc-$(CONFIG_PC_KEYBOARD) += keyboard.c
 
+libc-$(CONFIG_CBMEM_CONSOLE) += cbmem_console.c
+
 libc-$(CONFIG_NVRAM) += nvram.c
 libc-$(CONFIG_NVRAM) += options.c
 

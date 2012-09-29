@@ -57,6 +57,9 @@ void console_init(void)
 #ifdef CONFIG_PC_KEYBOARD
 	keyboard_init();
 #endif
+#ifdef CONFIG_CBMEM_CONSOLE
+	cbmem_console_init();
+#endif
 }
 
 static void device_putchar(unsigned char c)

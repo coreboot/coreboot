@@ -201,6 +201,15 @@ void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en
 void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
 /** @} */
 
+/**
+ * @defgroup cbmem_console CBMEM memory console.
+ * @ingroup input
+ * @{
+ */
+void cbmem_console_init(void);
+void cbmem_console_putc(unsigned int data);
+/** @} */
+
 /* drivers/option.c */
 struct nvram_accessor {
 	u8 (*read)(u8 reg);

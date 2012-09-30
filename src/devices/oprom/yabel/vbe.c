@@ -133,6 +133,13 @@ vbe_info(vbe_info_t * info)
 	return 0;
 }
 
+static int mode_info_valid;
+
+int vbe_mode_info_valid(void)
+{
+	return mode_info_valid;
+}
+
 // VBE Function 01h
 static u8
 vbe_get_mode_info(vbe_mode_info_t * mode_info)
@@ -167,6 +174,7 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 	memcpy(mode_info->mode_info_block,
 	       biosmem + ((M.x86.R_ES << 4) + M.x86.R_DI),
 	       sizeof(mode_info->mode_info_block));
+	mode_info_valid = 1;
 
 	//printf("Mode Info Dump:");
 	//dump(mode_info_block, 64);

@@ -174,7 +174,12 @@ static void lb_framebuffer(struct lb_header *header)
 {
 #if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+	int vbe_mode_info_valid(void);
 
+	// If there isn't any mode info to put in the table, don't ask for it
+	// to be filled with junk.
+	if (!vbe_mode_info_valid())
+		return;
 	struct lb_framebuffer *framebuffer;
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;

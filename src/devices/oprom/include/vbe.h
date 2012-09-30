@@ -105,6 +105,9 @@ typedef struct {
 struct lb_framebuffer;
 
 void vbe_set_graphics(void);
+// A way to check if mode information collected by vbe_set_graphics is valid
+// and fill_lb_framebuffer will have real information to use.
+int vbe_mode_info_valid(void);
 void vbe_textmode_console(void);
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 

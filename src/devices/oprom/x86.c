@@ -167,32 +167,39 @@ static void setup_realmode_idt(void)
 }
 
 #if CONFIG_FRAMEBUFFER_SET_VESA_MODE
-static u8 vbe_get_mode_info(vbe_mode_info_t * mode_info)
+vbe_mode_info_t mode_info;
+static int mode_info_valid;
+
+int vbe_mode_info_valid(void)
+{
+	return mode_info_valid;
+}
+
+static u8 vbe_get_mode_info(vbe_mode_info_t * mi)
 {
 	printk(BIOS_DEBUG, "VBE: Getting information about VESA mode %04x\n",
-		mode_info->video_mode);
+		mi->video_mode);
 	char *buffer = (char *)&__buffer;
 	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
 	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
 	realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
-			mode_info->video_mode, 0x0000, buffer_seg, buffer_adr);
-	memcpy(mode_info->mode_info_block, buffer, sizeof(vbe_mode_info_t));
+			mi->video_mode, 0x0000, buffer_seg, buffer_adr);
+	memcpy(mi->mode_info_block, buffer, sizeof(vbe_mode_info_t));
+	mode_info_valid = 1;
 	return 0;
 }
 
-static u8 vbe_set_mode(vbe_mode_info_t * mode_info)
+static u8 vbe_set_mode(vbe_mode_info_t * mi)
 {
-	printk(BIOS_DEBUG, "VBE: Setting VESA mode %04x\n", mode_info->video_mode);
+	printk(BIOS_DEBUG, "VBE: Setting VESA mode %04x\n", mi->video_mode);
 	// request linear framebuffer mode
-	mode_info->video_mode |= (1 << 14);
+	mi->video_mode |= (1 << 14);
 	// request clearing of framebuffer
-	mode_info->video_mode &= ~(1 << 15);
-	realmode_interrupt(0x10, VESA_SET_MODE, mode_info->video_mode,
+	mi->video_mode &= ~(1 << 15);
+	realmode_interrupt(0x10, VESA_SET_MODE, mi->video_mode,
 			0x0000, 0x0000, 0x0000, 0x0000);
 	return 0;
 }
-
-vbe_mode_info_t mode_info;
 
 /* These two functions could probably even be generic between
  * yabel and x86 native. TBD later.

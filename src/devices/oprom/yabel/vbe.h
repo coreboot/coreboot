@@ -16,6 +16,7 @@
 struct lb_framebuffer;
 
 void vbe_set_graphics(void);
+int vbe_mode_info_valid(void);
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 void vbe_textmode_console(void);
 

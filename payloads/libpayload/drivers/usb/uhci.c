@@ -411,7 +411,7 @@ static int
 run_schedule (usbdev_t *dev, td_t *td)
 {
 	UHCI_INST (dev->controller)->qh_data->elementlinkptr =
-		virt_to_phys (td) | ~(FLISTP_QH | FLISTP_TERMINATE);
+		virt_to_phys (td) & ~(FLISTP_QH | FLISTP_TERMINATE);
 	td = wait_for_completed_qh (dev->controller,
 				    UHCI_INST (dev->controller)->qh_data);
 	if (td == 0) {
@@ -429,7 +429,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
 		fatal("MaxPacketSize == 0!!!");
-	int numpackets = (size + maxpsize - 1 + finalize) / maxpsize;
+	int numpackets = (size + maxpsize - 1) / maxpsize + finalize;
 	if (numpackets == 0)
 		return 0;
 	td_t *tds = create_schedule (numpackets);

@@ -350,7 +350,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	/* Do any mainboard sleep handling */
 	tseg_relocate((void **)&mainboard_sleep);
 	if (mainboard_sleep)
-		mainboard_sleep(slp_typ);
+		mainboard_sleep(slp_typ-2);
 
 #if CONFIG_ELOG_GSMI
 	/* Log S3, S4, and S5 entry */

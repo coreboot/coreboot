@@ -30,7 +30,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/intel/speedstep.h>
-#include <cpu/intel/acpi.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <usbdebug.h>

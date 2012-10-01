@@ -30,7 +30,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include <cpu/intel/acpi.h>
+#include <cpu/intel/speedstep.h>
 #include "southbridge/intel/i3100/early_smbus.c"
 #include "southbridge/intel/i3100/early_lpc.c"
 #include "reset.c"

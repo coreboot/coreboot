@@ -26,7 +26,6 @@
 #include <arch/acpigen.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/intel/acpi.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>

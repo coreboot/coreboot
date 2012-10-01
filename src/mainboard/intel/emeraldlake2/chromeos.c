@@ -31,7 +31,7 @@
 #ifndef __PRE_RAM__
 #include <arch/coreboot_tables.h>
 
-#define GPIO_COUNT	5
+#define GPIO_COUNT	6
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
@@ -39,7 +39,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u16 gen_pmcon_1 = pci_read_config32(dev, GEN_PMCON_1);
 
 	if (!gpio_base)
 		return;
@@ -66,21 +65,27 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	/* Developer: GPIO57 */
 	gpios->gpios[2].port = 57;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
+	gpios->gpios[2].polarity = ACTIVE_LOW;
 	gpios->gpios[2].value = (gp_lvl2 >> (57-32)) & 1;
 	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
 
 	/* Hard code the lid switch GPIO to open. */
-	gpios->gpios[3].port = 100;
+	gpios->gpios[3].port = -1;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
 	gpios->gpios[3].value = 1;
 	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
 
 	/* Power Button */
-	gpios->gpios[4].port = 101;
-	gpios->gpios[4].polarity = ACTIVE_LOW;
-	gpios->gpios[4].value = (gen_pmcon_1 >> 9) & 1;
+	gpios->gpios[4].port = -1;
+	gpios->gpios[4].polarity = ACTIVE_HIGH;
+	gpios->gpios[4].value = 0;
 	strncpy((char *)gpios->gpios[4].name,"power", GPIO_MAX_NAME_LENGTH);
+
+	/* Did we load the VGA option ROM? */
+	gpios->gpios[5].port = -1;
+	gpios->gpios[5].polarity = ACTIVE_HIGH;
+	gpios->gpios[5].value = oprom_is_loaded;
+	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif
 

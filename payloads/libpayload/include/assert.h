@@ -36,5 +36,11 @@
 // Heisenbugs appear if statement has side-effects. This could be worked around but does the standard allow for that?
 #define assert(statement)
 #else
-#define assert(statement) if ((statement) == 0) { fprintf(stderr, "assertion failed in file %s, function %s(), line %s\n", __FILE__, __FUNCTION__, __LINE__); abort(); }
+#define assert(statement)					\
+	if ((statement) == 0) {					\
+		fprintf(stderr, "assertion failed in file %s, "	\
+			"function %s(), line %d\n",		\
+			 __FILE__, __FUNCTION__, __LINE__);	\
+		abort();					\
+	}
 #endif

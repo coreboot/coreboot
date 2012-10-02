@@ -166,12 +166,14 @@ struct cb_framebuffer {
 };
 
 #define CB_TAG_GPIO 0x0013
-#define GPIO_MAX_NAME_LENGTH 16
+#define CB_GPIO_ACTIVE_LOW 0
+#define CB_GPIO_ACTIVE_HIGH 1
+#define CB_GPIO_MAX_NAME_LENGTH 16
 struct cb_gpio {
 	u32 port;
 	u32 polarity;
 	u32 value;
-	u8 name[GPIO_MAX_NAME_LENGTH];
+	u8 name[CB_GPIO_MAX_NAME_LENGTH];
 };
 
 struct cb_gpios {

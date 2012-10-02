@@ -155,7 +155,7 @@ static int set_cmos_value(const struct nvram_accessor *nvram, u32 bitnum, u32 le
 static struct cb_cmos_entries *lookup_cmos_entry(struct cb_cmos_option_table *option_table, const char *name)
 {
 	struct cb_cmos_entries *cmos_entry;
-	int len = name ? strnlen(name, CMOS_MAX_NAME_LENGTH) : 0;
+	int len = name ? strnlen(name, CB_CMOS_MAX_NAME_LENGTH) : 0;
 
 	/* cmos entries are located right after the option table */
 	cmos_entry = first_cmos_entry(option_table);
@@ -235,7 +235,7 @@ struct cb_cmos_enums *first_cmos_enum_of_id(struct cb_cmos_option_table *option_
 /* Either value or text must be NULL. Returns the field that matches "the other" for a given config_id */
 static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *option_table, int config_id, const u8 *value, const char *text)
 {
-	int len = strnlen(text, CMOS_MAX_TEXT_LENGTH);
+	int len = strnlen(text, CB_CMOS_MAX_TEXT_LENGTH);
 
 	/* cmos enums are located after cmos entries. */
 	struct cb_cmos_enums *cmos_enum;

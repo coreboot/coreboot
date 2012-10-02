@@ -217,7 +217,7 @@ struct cb_cmos_option_table {
 };
 
 #define CB_TAG_OPTION         0x00c9
-#define CMOS_MAX_NAME_LENGTH    32
+#define CB_CMOS_MAX_NAME_LENGTH    32
 struct cb_cmos_entries {
 	u32 tag;
 	u32 size;
@@ -225,33 +225,33 @@ struct cb_cmos_entries {
 	u32 length;
 	u32 config;
 	u32 config_id;
-	u8 name[CMOS_MAX_NAME_LENGTH];
+	u8 name[CB_CMOS_MAX_NAME_LENGTH];
 };
 
 
 #define CB_TAG_OPTION_ENUM    0x00ca
-#define CMOS_MAX_TEXT_LENGTH 32
+#define CB_CMOS_MAX_TEXT_LENGTH 32
 struct cb_cmos_enums {
 	u32 tag;
 	u32 size;
 	u32 config_id;
 	u32 value;
-	u8 text[CMOS_MAX_TEXT_LENGTH];
+	u8 text[CB_CMOS_MAX_TEXT_LENGTH];
 };
 
 #define CB_TAG_OPTION_DEFAULTS 0x00cb
-#define CMOS_IMAGE_BUFFER_SIZE 128
+#define CB_CMOS_IMAGE_BUFFER_SIZE 128
 struct cb_cmos_defaults {
 	u32 tag;
 	u32 size;
 	u32 name_length;
-	u8 name[CMOS_MAX_NAME_LENGTH];
-	u8 default_set[CMOS_IMAGE_BUFFER_SIZE];
+	u8 name[CB_CMOS_MAX_NAME_LENGTH];
+	u8 default_set[CB_CMOS_IMAGE_BUFFER_SIZE];
 };
 
 #define CB_TAG_OPTION_CHECKSUM 0x00cc
-#define CHECKSUM_NONE	0
-#define CHECKSUM_PCBIOS	1
+#define CB_CHECKSUM_NONE	0
+#define CB_CHECKSUM_PCBIOS	1
 struct	cb_cmos_checksum {
 	u32 tag;
 	u32 size;

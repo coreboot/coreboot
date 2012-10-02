@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
+ *               2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,6 +33,8 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
+
+#include "chip.h"
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-2618-m441067AA07.h"
@@ -98,20 +101,45 @@ static void enable_vmx(void)
 #define PMG_CST_CONFIG_CONTROL	0xe2
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
+#define MSR_BBL_CR_CTL3		0x11e
+#define MSR_FSB_FREQ		0xcd
 
-#define CST_RANGE		2
-static void configure_c_states(void)
+static void configure_c_states(const int quad)
 {
 	msr_t msr;
 
+	/* Find pointer to CPU configuration. */
+	const device_t lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	const struct cpu_intel_model_1067x_config *const conf =
+		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
+
+	/* Is C5 requested and supported? */
+	const int c5 = conf && conf->c5 &&
+			(rdmsr(MSR_BBL_CR_CTL3).lo & (3 << 30)) &&
+			!(rdmsr(MSR_FSB_FREQ).lo & (1 << 31));
+	/* Is C6 requested and supported? */
+	const int c6 = conf && conf->c6 &&
+			((cpuid_edx(5) >> (6 * 4)) & 0xf) && c5;
+
+	const int cst_range = (c6 ? 6 : (c5 ? 5 : 4)) - 2; /* zero means lvl2 */
+
 	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
-
-	msr.lo |= (1 << 15); // config lock until next reset
-	msr.lo |= (1 << 14); // Deeper Sleep
-	msr.lo |= (1 << 10); // Enable IO MWAIT redirection
 	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
-	msr.lo |= (1 << 3); // Dynamic L2
-
+	msr.lo |=  (1 << 8);
+	if (quad) {
+		msr.lo = (msr.lo & ~(7 << 0)) | (4 << 0);
+	}
+	if (c5) {
+		msr.lo &= ~(1 << 13);
+		msr.lo &= ~(7 <<  0);
+		msr.lo |= (1 <<  3); /* Enable dynamic L2. */
+		msr.lo |= (1 << 14); /* Enable deeper sleep */
+	}
+	/* Next two fields seem to be mutually exclusive: */
+	msr.lo &= ~(7 << 4);
+	msr.lo |= (1 << 10); /* Enable IO MWAIT redirection. */
+	if (c6)
+		msr.lo |= (1 << 25);
 	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE */
@@ -121,52 +149,160 @@ static void configure_c_states(void)
 
 	/* Set IO Capture Address */
 	msr.hi = 0;
-	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (( CST_RANGE & 0xffff) << 16);
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | ((cst_range & 0xffff) << 16);
 	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
+
+	if (c5) {
+		msr = rdmsr(MSR_BBL_CR_CTL3);
+		msr.lo &= ~(7 << 25);
+		msr.lo |=  (2 << 25);
+		msr.lo &= ~(3 << 30);
+		msr.lo |=  (1 << 30);
+		wrmsr(MSR_BBL_CR_CTL3, msr);
+	}
 }
 
-#define IA32_MISC_ENABLE	0x1a0
-static void configure_misc(void)
+static void configure_p_states(const char stepping, const char cores)
 {
 	msr_t msr;
 
-	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo |= (1 << 3); 	/* TM1 enable */
-	msr.lo |= (1 << 13);	/* TM2 enable */
+	/* Find pointer to CPU configuration. */
+	const device_t lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	struct cpu_intel_model_1067x_config *const conf =
+		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
+
+	msr = rdmsr(MSR_EXTENDED_CONFIG);
+	if (conf->slfm && (msr.lo & (1 << 27))) /* Super LFM supported? */
+		msr.lo |= (1 << 28); /* Enable Super LFM. */
+	wrmsr(MSR_EXTENDED_CONFIG, msr);
+
+	if (rdmsr(MSR_FSB_CLOCK_VCC).hi & (1 << (63 - 32))) {
+							/* Turbo supported? */
+		if ((stepping == 0xa) && (cores < 4)) {
+			msr = rdmsr(MSR_FSB_FREQ);
+			msr.lo |= (1 << 3); /* Enable hysteresis. */
+			wrmsr(MSR_FSB_FREQ, msr);
+		}
+		msr = rdmsr(IA32_PERF_CTL);
+		msr.hi &= ~(1 << (32 - 32)); /* Clear turbo disable. */
+		wrmsr(IA32_PERF_CTL, msr);
+	}
+
+	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+	msr.lo &= ~(1 << 11); /* Enable hw coordination. */
+	msr.lo |= (1 << 15); /* Lock config until next reset. */
+	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+}
+
+#define MSR_EMTTM_CR_TABLE(x)	(0xa8 + (x))
+#define MSR_EMTTM_TABLE_NUM	6
+static void configure_emttm_tables(void)
+{
+	int i;
+	int num_states, pstate_idx;
+	msr_t msr;
+	sst_table_t pstates;
+
+	/* Gather p-state information. */
+	speedstep_gen_pstates(&pstates);
+
+	/* Never turbo mode or Super LFM. */
+	num_states = pstates.num_states;
+	if (pstates.states[0].is_turbo)
+		--num_states;
+	if (pstates.states[pstates.num_states - 1].is_slfm)
+		--num_states;
+	/* Repeat lowest p-state if we haven't enough states. */
+	const int num_lowest_pstate =
+		(num_states < MSR_EMTTM_TABLE_NUM)
+		? (MSR_EMTTM_TABLE_NUM - num_states) + 1
+		: 1;
+	/* Start from the lowest entry but skip Super LFM. */
+	if (pstates.states[pstates.num_states - 1].is_slfm)
+		pstate_idx = pstates.num_states - 2;
+	else
+		pstate_idx = pstates.num_states - 1;
+	for (i = 0; i < MSR_EMTTM_TABLE_NUM; ++i) {
+		if (i >= num_lowest_pstate)
+			--pstate_idx;
+		const sst_state_t *const pstate = &pstates.states[pstate_idx];
+		printk(BIOS_DEBUG, "writing P-State %d: %d, %d, "
+				   "%2d, 0x%02x, %d; encoded: 0x%04x\n",
+			pstate_idx, pstate->dynfsb, pstate->nonint,
+			pstate->ratio, pstate->vid, pstate->power,
+			SPEEDSTEP_ENCODE_STATE(*pstate));
+		msr.hi = 0;
+		msr.lo = SPEEDSTEP_ENCODE_STATE(pstates.states[pstate_idx]) &
+						/* Don't set half ratios. */
+						~SPEEDSTEP_RATIO_NONINT;
+		wrmsr(MSR_EMTTM_CR_TABLE(i), msr);
+	}
+
+	msr = rdmsr(MSR_EMTTM_CR_TABLE(5));
+	msr.lo |= (1 << 31); /* lock tables */
+	wrmsr(MSR_EMTTM_CR_TABLE(5), msr);
+}
+
+static void configure_misc(const int eist, const int tm2, const int emttm)
+{
+	msr_t msr;
+
+	const u32 sub_cstates = cpuid_edx(5);
+
+	msr = rdmsr(IA32_MISC_ENABLES);
+	msr.lo |= (1 << 3);	/* TM1 enable */
+	if (tm2)
+		msr.lo |= (1 << 13);	/* TM2 enable */
 	msr.lo |= (1 << 17);	/* Bidirectional PROCHOT# */
+	msr.lo |= (1 << 18);	/* MONITOR/MWAIT enable */
 
 	msr.lo |= (1 << 10);	/* FERR# multiplexing */
 
-	// TODO: Only if  IA32_PLATFORM_ID[17] = 0 and IA32_PLATFORM_ID[50] = 1
-	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+	if (eist)
+		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 
 	/* Enable C2E */
-	msr.lo |= (1 << 26);
+	if (((sub_cstates >> (2 * 4)) & 0xf) >= 2) {
+		msr.lo |= (1 << 26);
+	}
 
 	/* Enable C4E */
-	/* TODO This should only be done on mobile CPUs, see cpuid 5 */
-	msr.hi |= (1 << (32 - 32)); // C4E
-	msr.hi |= (1 << (33 - 32)); // Hard C4E
+	if (((sub_cstates >> (4 * 4)) & 0xf) >= 2) {
+		msr.hi |= (1 << (32 - 32)); // C4E
+		msr.hi |= (1 << (33 - 32)); // Hard C4E
+	}
 
-	/* Enable EMTTM. */
-	/* NOTE: We leave the EMTTM_CR_TABLE0-5 at their default values */
-	msr.hi |= (1 << (36 - 32));
+	/* Enable EMTTM */
+	if (emttm)
+		msr.hi |= (1 << (36 - 32));
 
-	wrmsr(IA32_MISC_ENABLE, msr);
+	/* Enable turbo mode */
+	if (rdmsr(MSR_FSB_CLOCK_VCC).hi & (1 << (63 - 32)))
+		msr.hi &= ~(1 << (38 - 32));
 
-	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
-	wrmsr(IA32_MISC_ENABLE, msr);
+	wrmsr(IA32_MISC_ENABLES, msr);
+
+	if (eist) {
+		msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
+		wrmsr(IA32_MISC_ENABLES, msr);
+	}
 }
 
 #define PIC_SENS_CFG	0x1aa
-static void configure_pic_thermal_sensors(void)
+static void configure_pic_thermal_sensors(const int tm2, const int quad)
 {
 	msr_t msr;
 
 	msr = rdmsr(PIC_SENS_CFG);
 
+	if (quad)
+		msr.lo |=  (1 << 31);
+	else
+		msr.lo &= ~(1 << 31);
+	if (tm2)
+		msr.lo |= (1 << 20); /* Enable TM1 if TM2 fails. */
 	msr.lo |= (1 << 21); // inter-core lock TM1
-	msr.lo |= (1 << 4); // Enable bypass filter
+	msr.lo |= (1 << 4); // Enable bypass filter /* What does it do? */
 
 	wrmsr(PIC_SENS_CFG, msr);
 }
@@ -178,6 +314,30 @@ static unsigned ehci_debug_addr;
 static void model_1067x_init(device_t cpu)
 {
 	char processor_name[49];
+
+
+	/* Gather some information: */
+
+	const struct cpuid_result cpuid1 = cpuid(1);
+
+	/* Read stepping. */
+	const char stepping = cpuid1.eax & 0xf;
+	/* Read number of cores. */
+	const char cores = (cpuid1.ebx >> 16) & 0xf;
+	/* Is this a quad core? */
+	const char quad = cores > 2;
+	/* Is this even a multiprocessor? */
+	const char mp = cores > 1;
+
+	/* Enable EMTTM on uni- and on multi-processors if it's not disabled. */
+	const char emttm = !mp || !(rdmsr(MSR_EXTENDED_CONFIG).lo & 4);
+
+	/* Is enhanced speedstep supported? */
+	const char eist = (cpuid1.ecx & (1 << 7)) &&
+			  !(rdmsr(IA32_PLATFORM_ID).lo & (1 << 17));
+	/* Test for TM2 only if EIST is available. */
+	const char tm2 = eist && (cpuid1.ecx & (1 << 8));
+
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -214,13 +374,20 @@ static void model_1067x_init(device_t cpu)
 	enable_vmx();
 
 	/* Configure C States */
-	configure_c_states();
+	configure_c_states(quad);
+
+	/* Configure P States */
+	configure_p_states(stepping, cores);
+
+	/* EMTTM */
+	if (emttm)
+		configure_emttm_tables();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
-	configure_misc();
+	configure_misc(eist, tm2, emttm);
 
 	/* PIC thermal sensor control */
-	configure_pic_thermal_sensors();
+	configure_pic_thermal_sensors(tm2, quad);
 
 	/* Start up my cpu siblings */
 	intel_sibling_init(cpu);
@@ -242,3 +409,6 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
+struct chip_operations cpu_intel_model_1067x_ops = {
+	CHIP_NAME("Intel Penryn CPU")
+};

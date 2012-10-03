@@ -41,7 +41,7 @@ LIBS = -framework IOKit -framework DirectHW -lpci -lz
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -ansi $(SVNDEF) \
+         -Werror-implicit-function-declaration -ansi $(VERSION) \
          -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 LIBS = -lz

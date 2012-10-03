@@ -429,7 +429,10 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
 		fatal("MaxPacketSize == 0!!!");
-	int numpackets = (size + maxpsize - 1) / maxpsize + finalize;
+	int numpackets = (size + maxpsize - 1) / maxpsize;
+	if (finalize && ((size % maxpsize) == 0)) {
+		numpackets++;
+	}
 	if (numpackets == 0)
 		return 0;
 	td_t *tds = create_schedule (numpackets);

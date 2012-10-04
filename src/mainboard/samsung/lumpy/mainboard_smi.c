@@ -29,17 +29,12 @@
 #include <ec/smsc/mec1308/ec.h>
 #include "ec.h"
 
-/* The southbridge SMI handler checks whether gnvs has a
- * valid pointer before calling the trap handler
- */
-extern global_nvs_t *gnvs;
-
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
 	case 0x99:
 		printk(BIOS_DEBUG, "Sample\n");
-		gnvs->smif = 0;
+		smm_get_gnvs()->smif = 0;
 		break;
 	default:
 		return 0;
@@ -59,7 +54,6 @@ static u8 mainboard_smi_ec(void)
 {
 	u8 cmd;
 	u32 pm1_cnt;
-	extern u16 pmbase; /* Set in southbridge SMI handler */
 
 	cmd = read_ec_command_byte(EC_GET_SMI_CAUSE);
 
@@ -68,9 +62,9 @@ static u8 mainboard_smi_ec(void)
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
 		/* Go to S5 */
-		pm1_cnt = inl(pmbase + PM1_CNT);
+		pm1_cnt = inl(smm_get_pmbase() + PM1_CNT);
 		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, pmbase + PM1_CNT);
+		outl(pm1_cnt, smm_get_pmbase() + PM1_CNT);
 		break;
 	}
 

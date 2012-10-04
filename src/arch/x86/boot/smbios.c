@@ -192,8 +192,8 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->type = SMBIOS_SYSTEM_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
-	t->product_name = smbios_add_string(t->eos, CONFIG_MAINBOARD_PART_NUMBER);
+	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_SMBIOS_MANUFACTURER);
+	t->product_name = smbios_add_string(t->eos, CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME);
 	t->serial_number = smbios_add_string(t->eos, smbios_mainboard_serial_number());
 	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
 	len = t->length + smbios_string_table_len(t->eos);
@@ -210,7 +210,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->type = SMBIOS_SYSTEM_ENCLOSURE;
 	t->handle = handle;
 	t->length = len - 2;
-	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
+	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_SMBIOS_MANUFACTURER);
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;

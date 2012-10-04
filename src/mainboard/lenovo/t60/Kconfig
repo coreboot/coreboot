@@ -39,6 +39,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad T60 / T60p"
 
+config MAINBOARD_SMBIOS_VENDOR
+	string
+	default "LENOVO"
+
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000

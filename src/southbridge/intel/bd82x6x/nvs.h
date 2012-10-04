@@ -138,3 +138,7 @@ typedef struct {
 	chromeos_acpi_t chromeos;
 } __attribute__((packed)) global_nvs_t;
 
+#ifdef __SMM__
+/* Used in SMM to find the ACPI GNVS address */
+global_nvs_t *smm_get_gnvs(void);
+#endif

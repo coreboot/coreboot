@@ -384,4 +384,7 @@ u32 smi_get_tseg_base(void);
 void tseg_relocate(void **ptr);
 #endif
 
+/* Get PMBASE address */
+u16 smm_get_pmbase(void);
+
 #endif

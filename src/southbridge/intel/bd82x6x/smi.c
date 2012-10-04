@@ -398,11 +398,19 @@ void smm_lock(void)
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {
-	/* The GDT or coreboot table is going to live here. But a long time
-	 * after we relocated the GNVS, so this is not troublesome.
+	/*
+	 * Issue SMI to set the gnvs pointer in SMM.
+	 * tcg and smi1 are unused.
+	 *
+	 * EAX = APM_CNT_GNVS_UPDATE
+	 * EBX = gnvs pointer
+	 * EDX = APM_CNT
 	 */
-	*(u32 *)0x500 = (u32)gnvs;
-	*(u32 *)0x504 = (u32)tcg;
-	*(u32 *)0x508 = (u32)smi1;
-	outb(0xea, 0xb2);
+	asm volatile (
+		"outb %%al, %%dx\n\t"
+		: /* ignore result */
+		: "a" (APM_CNT_GNVS_UPDATE),
+		  "b" ((u32)gnvs),
+		  "d" (APM_CNT)
+	);
 }

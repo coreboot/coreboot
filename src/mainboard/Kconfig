@@ -347,4 +347,19 @@ config MAINBOARD_VERSION
 	default "1.0"
 	help
 	  Define the used version number which will be used by SMBIOS tables.
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string "SMBIOS Manufacturer"
+	depends on GENERATE_SMBIOS_TABLES
+	default MAINBOARD_VENDOR
+	help
+	  Override the default Manufacturer stored in SMBIOS structures.
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	string "SMBIOS Product name"
+	depends on GENERATE_SMBIOS_TABLES
+	default MAINBOARD_PART_NUMBER
+	help
+	  Override the default Product name stored in SMBIOS structures.
+
 endmenu

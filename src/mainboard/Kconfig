@@ -347,4 +347,17 @@ config MAINBOARD_VERSION
 	default "1.0"
 	help
 	  Define the used version number which will be used by SMBIOS tables.
+
+config MAINBOARD_SMBIOS_VENDOR
+	string "BIOS table vendor string"
+	default MAINBOARD_VENDOR
+	help
+	  Override the default mainboard vendor string used by SMBIOS tables.
+
+config MAINBOARD_SMBIOS_PART_NUMBER
+	string "BIOS table part number string"
+	default MAINBOARD_PART_NUMBER
+	help
+	  Override the default mainboard part number string used by SMBIOS tables.
+
 endmenu

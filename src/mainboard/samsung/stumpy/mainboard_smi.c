@@ -30,17 +30,12 @@
 /* Include romstage serial for SIO helper functions */
 #include <superio/ite/it8772f/early_serial.c>
 
-/* The southbridge SMI handler checks whether gnvs has a
- * valid pointer before calling the trap handler
- */
-extern global_nvs_t *gnvs;
-
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
 	case 0x99:
 		printk(BIOS_DEBUG, "Sample\n");
-		gnvs->smif = 0;
+		smm_get_gnvs()->smif = 0;
 		break;
 	default:
 		return 0;

@@ -25,7 +25,6 @@
 #include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
@@ -44,15 +43,22 @@
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
  */
-u16 pmbase = DEFAULT_PMBASE;
-u8 smm_initialized = 0;
+static u16 pmbase = DEFAULT_PMBASE;
+u16 smm_get_pmbase(void)
+{
+	return pmbase;
+}
+
+static u8 smm_initialized = 0;
 
 /* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
  * by coreboot.
  */
-global_nvs_t *gnvs = (global_nvs_t *)0x0;
-void *tcg = (void *)0x0;
-void *smi1 = (void *)0x0;
+static global_nvs_t *gnvs = (global_nvs_t *)0x0;
+global_nvs_t *smm_get_gnvs(void)
+{
+	return gnvs;
+}
 
 #if CONFIG_SMM_TSEG
 static u32 tseg_base = 0;
@@ -521,10 +527,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 			return;
 		}
 		gnvs = *(global_nvs_t **)0x500;
-		tcg  = *(void **)0x504;
-		smi1 = *(void **)0x508;
 		smm_initialized = 1;
-		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
 		break;
 #if CONFIG_ELOG_GSMI
 	case ELOG_GSMI_APM_CNT:

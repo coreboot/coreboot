@@ -552,6 +552,8 @@ void acpi_write_hest(acpi_hest_t *hest);
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 unsigned long acpi_fill_hest(acpi_hest_t *hest);
 
+void acpi_save_gnvs(u32 gnvs_address);
+
 #if CONFIG_HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/
 extern u8 acpi_slp_type;

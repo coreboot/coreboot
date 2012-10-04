@@ -32,6 +32,7 @@
 #include <device/pci.h>
 #include <cbmem.h>
 #include <cpu/x86/lapic_def.h>
+#include <cpu/cpu.h>
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
@@ -140,7 +141,7 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	device_t cpu;
-	int cpu_index = 0;
+	int index = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
@@ -150,8 +151,8 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 		if (!cpu->enabled)
 			continue;
 		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-				cpu_index, cpu->path.apic.apic_id);
-		cpu_index++;
+				index, cpu->path.apic.apic_id);
+		index++;
 	}
 
 	return current;
@@ -627,6 +628,15 @@ void suspend_resume(void)
 	/* If we happen to be resuming find wakeup vector and jump to OS. */
 	wake_vec = acpi_find_wakeup_vector();
 	if (wake_vec) {
+		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS);
+
+		/* Restore GNVS pointer in SMM if found */
+		if (gnvs_address && *gnvs_address) {
+			printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
+			       *gnvs_address);
+			smm_setup_structures((void *)*gnvs_address, NULL, NULL);
+		}
+
 		/* Call mainboard resume handler first, if defined. */
 		if (mainboard_suspend_resume)
 			mainboard_suspend_resume();
@@ -770,3 +780,10 @@ void acpi_jump_to_wakeup(void *vector)
 		       HIGH_MEMORY_SAVE);
 }
 #endif
+
+void acpi_save_gnvs(u32 gnvs_address)
+{
+	u32 *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	if (gnvs)
+		*gnvs = gnvs_address;
+}

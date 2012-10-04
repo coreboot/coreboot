@@ -490,6 +490,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 	u32 pmctrl;
 	u8 reg8;
 	int (*mainboard_apmc)(u8 apmc) = mainboard_smi_apmc;
+	em64t101_smm_state_save_area_t *state;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
 
@@ -526,8 +527,13 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 			printk(BIOS_DEBUG, "SMI#: SMM structures already initialized!\n");
 			return;
 		}
-		gnvs = *(global_nvs_t **)0x500;
-		smm_initialized = 1;
+		state = smi_apmc_find_state_save(reg8);
+		if (state) {
+			/* EBX in the state save contains the GNVS pointer */
+			gnvs = (global_nvs_t *)((u32)state->rbx);
+			smm_initialized = 1;
+			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
+		}
 		break;
 #if CONFIG_ELOG_GSMI
 	case ELOG_GSMI_APM_CNT:

@@ -147,6 +147,14 @@ endmenu
 
 menu "Console Options"
 
+config SKIP_CONSOLE_INIT
+	bool "Skip initializing the consoles at startup"
+	default n
+	help
+	  Normally, libpayload will initialize console input/output on startup
+	  before the payload itself gets control. This option disables that
+	  behavior and leaves console initialization up to the payload.
+
 config CBMEM_CONSOLE
 	bool "Send output to the in memory CBMEM console"
 	default y

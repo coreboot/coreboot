@@ -46,8 +46,9 @@ void start_main(void)
 {
 	extern int main(int argc, char **argv);
 
-	/* Set up the consoles. */
-	console_init();
+	/* Optionally set up the consoles. */
+	if (!CONFIG_SKIP_CONSOLE_INIT)
+		console_init();
 
 	/* Gather system information. */
 	lib_get_sysinfo();

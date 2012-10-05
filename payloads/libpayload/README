@@ -14,9 +14,9 @@ See http://coreboot.org for details on coreboot.
 Installation
 ------------
 
- $ svn co svn://coreboot.org/coreboot/trunk/payloads/libpayload
+ $ git clone http://review.coreboot.org/p/coreboot.git
 
- $ cd libpayload
+ $ cd payloads/libpayload
 
  $ make menuconfig
 

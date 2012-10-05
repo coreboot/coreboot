@@ -76,37 +76,6 @@ static void acpi_write_gvars(global_vars_t *gvars)
 	gvars->mpen = 1;
 }
 
-static void acpi_create_my_hpet(acpi_hpet_t *hpet)
-{
-#define HPET_ADDR  0xfed00000ULL
-	acpi_header_t *header=&(hpet->header);
-	acpi_addr_t *addr=&(hpet->addr);
-
-	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
-
-	/* fill out header fields */
-	memcpy(header->signature, "HPET", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
-
-	/* fill out HPET address */
-	addr->space_id		= 0; /* Memory */
-	addr->bit_width		= 64;
-	addr->bit_offset	= 0;
-	addr->addrl		= HPET_ADDR & 0xffffffff;
-	addr->addrh		= HPET_ADDR >> 32;
-
-	hpet->id = 0x43538301;
-	hpet->number	= 0;
-	hpet->min_tick  = 20;
-
-	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
-}
-
 #if DUMP_ACPI_TABLES == 1
 static void dump_mem(u32 start, u32 end)
 {
@@ -231,7 +200,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	 /* HPET */
 	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
 	hpet = (acpi_hpet_t *) current;
-	acpi_create_my_hpet(hpet);
+	acpi_create_hpet(hpet);
 	current += sizeof(acpi_hpet_t);
 	acpi_add_table(rsdp, hpet);
 

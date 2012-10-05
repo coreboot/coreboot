@@ -48,5 +48,9 @@ config CMC_FILE
 	  The path and filename of the file to use as CMC state machine
 	  binary.
 
+config HPET_MIN_TICKS
+        hex
+        default 0x80
+
 endif
 

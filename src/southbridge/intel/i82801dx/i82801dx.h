@@ -41,15 +41,6 @@ int smbus_read_byte(unsigned device, unsigned address);
 #endif
 #endif
 
-/*
- * HPET Memory Address Range. Possible values:
- * 0xfed00000 for FED0_0000h - FED0_03FFh
- * 0xfed01000 for FED0_1000h - FED0_13FFh
- * 0xfed02000 for FED0_2000h - FED0_23FFh
- * 0xfed03000 for FED0_3000h - FED0_33FFh
- */
-#define HPET_ADDR		0xfed00000
-
 #define DEBUG_PERIODIC_SMIS 0
 
 #define MAINBOARD_POWER_OFF	0

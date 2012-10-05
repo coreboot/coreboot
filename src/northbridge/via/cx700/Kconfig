@@ -28,6 +28,8 @@ config CX700_VIDEO_MB_128MB
 
 endchoice
 
+if NORTHBRIDGE_VIA_CX700
+
 config VIDEO_MB
 	int
 	default 0   if CX700_VIDEO_MB_OFF
@@ -36,5 +38,16 @@ config VIDEO_MB
 	default 32  if CX700_VIDEO_MB_32MB
 	default 64  if CX700_VIDEO_MB_64MB
 	default 128 if CX700_VIDEO_MB_128MB
-	depends on NORTHBRIDGE_VIA_CX700
 
+config HPET_ADDRESS_OVERRIDE
+	def_bool y
+
+config HPET_ADDRESS
+	hex
+	default 0xfe800000
+
+config HPET_MIN_TICKS
+	hex
+	default 0x90
+
+endif

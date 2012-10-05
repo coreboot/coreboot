@@ -51,38 +51,6 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
-{
-#define HPET_ADDR  0xfed00000ULL
-	acpi_header_t *header = &(hpet->header);
-	acpi_addr_t *addr = &(hpet->addr);
-
-	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
-
-	/* fill out header fields */
-	memcpy(header->signature, "HPET", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, "IC      ", 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
-
-	/* fill out HPET address */
-	// XXX factory bios just puts an address here -- who's right?
-	addr->space_id = 0;	/* Memory */
-	addr->bit_width = 64;
-	addr->bit_offset = 0;
-	addr->addrl = HPET_ADDR & 0xffffffff;
-	addr->addrh = HPET_ADDR >> 32;
-
-	hpet->id = 0x80861234;
-	hpet->number = 0x00;
-	hpet->min_tick = 0x0090;
-
-	header->checksum = acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
-}
-
 #define IO_APIC0 2
 #define IO_APIC1 3
 
@@ -177,7 +145,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	ALIGN_CURRENT;
-	acpi_create_intel_hpet(hpet);
+	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */

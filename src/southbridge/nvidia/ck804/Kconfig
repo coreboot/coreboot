@@ -38,4 +38,8 @@ config CK804_NUM
 	int
 	default 1
 
+config HPET_MIN_TICKS
+        hex
+        default 0xfa
+
 endif

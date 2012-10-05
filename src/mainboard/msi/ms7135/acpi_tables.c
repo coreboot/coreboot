@@ -23,76 +23,6 @@
 
 extern const unsigned char AmlCode[];
 
-static void acpi_create_hpet_new(acpi_hpet_t *);
-static int acpi_create_hpet_new_fill(acpi_hpet_t *, u32, u16, u8);
-static unsigned long acpi_fill_hpet_new(unsigned long);
-
-void acpi_create_hpet_new(acpi_hpet_t *hpet)
-{
-	acpi_header_t *header=&(hpet->header);
-	unsigned long current=(unsigned long)hpet;
-
-	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
-
-	/* fill out header fields */
-	memcpy(header->signature, "HPET", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_hpet_t);
-	header->revision = 1;
-
-	current = acpi_fill_hpet_new(current);
-
-	/* recalculate length */
-	header->length = current - (unsigned long)hpet;
-
-	header->checksum	= acpi_checksum((void *)hpet, header->length);
-}
-
-
-int acpi_create_hpet_new_fill(acpi_hpet_t *hpet, u32 base, u16 min, u8 attr)
-{
-	static u8 num = 0;
-	acpi_addr_t *addr = &(hpet->addr);
-
-	hpet->id = read32(base + 0x000);
-
-	/* fill out HPET address */
-	addr->space_id		= 0; /* Memory */
-	addr->bit_width		= 0;
-	addr->bit_offset	= 0;
-	addr->addrl		= base;
-	addr->addrh		= 0;
-
-	hpet->number	= num++;
-	hpet->min_tick  = min;
-	hpet->attributes = attr;
-
-	return (sizeof(acpi_hpet_t));
-}
-
-static unsigned long acpi_fill_hpet_new(unsigned long current)
-{
-#if 1
-	device_t dev;
-	unsigned long hpet_base;
-
-	dev = dev_find_slot(0x0, PCI_DEVFN(0x1,0));
-	if (!dev)
-		return current;
-
-	hpet_base = pci_read_config32(dev, 0x44) & ~0xf;
-
-	printk(BIOS_INFO, "hpet_base %lx.\n", hpet_base);
-
-	current += acpi_create_hpet_new_fill((acpi_hpet_t *)current, hpet_base, 250, 1);
-#endif
-
-	return current;
-}
-
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	device_t dev;
@@ -239,7 +169,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current = ALIGN(current, 16);
 	hpet = (acpi_hpet_t *) current;
 	printk(BIOS_DEBUG, "ACPI:    * HPET @ %p\n", hpet);
-	acpi_create_hpet_new(hpet);
+	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
 	current += hpet->header.length;
 

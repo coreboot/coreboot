@@ -111,4 +111,8 @@ config PCI_CONF2
 	bool
 	default n
 
+config HPET_ADDRESS
+	hex
+	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE
+
 endmenu

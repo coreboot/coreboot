@@ -33,7 +33,6 @@ int smbus_read_byte(u8 device, u8 address);
 
 #define SMBUS_IO_BASE		0x0f00
 #define PMBASE_ADDR		0x0400
-#define HPET_ADDR		0xfed00000
 
 #define PCI_DMA_CFG		0x90
 #define SERIRQ_CNTL		0x64

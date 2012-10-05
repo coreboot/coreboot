@@ -32,7 +32,6 @@
 #include <stdlib.h>
 
 #define ACPI_IO_BASE	0x400
-#define HPET_ADDR	0xfe800000UL
 
 static const unsigned char pci_irqs[4] = { 11, 11, 10, 10 };
 
@@ -229,7 +228,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 	pci_write_config8(dev, 0x40, 0x54);
 
 	/* Enable HPET timer */
-	pci_write_config32(dev, 0x68, (1 << 31) | (HPET_ADDR >> 8));
+	pci_write_config32(dev, 0x68, (1 << 31) | (CONFIG_HPET_ADDRESS >> 8));
 
 }
 

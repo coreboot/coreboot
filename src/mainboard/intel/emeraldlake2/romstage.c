@@ -189,7 +189,7 @@ void main(unsigned long bist)
 		smbusbar: SMBUS_IO_BASE,
 		wdbbar: 0x4000000,
 		wdbsize: 0x1000,
-		hpet_address: HPET_ADDR,
+		hpet_address: CONFIG_HPET_ADDRESS,
 		rcba: DEFAULT_RCBABASE,
 		pmbase: DEFAULT_PMBASE,
 		gpiobase: DEFAULT_GPIOBASE,

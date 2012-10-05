@@ -233,7 +233,7 @@ static void enable_hpet(struct device *dev)
 	u32 reg32, hpet, val;
 
 	/* Set HPET base address and enable it */
-	printk(BIOS_DEBUG, "Enabling HPET at 0x%x\n", HPET_ADDR);
+	printk(BIOS_DEBUG, "Enabling HPET at 0x%x\n", CONFIG_HPET_ADDRESS);
 	reg32 = pci_read_config32(dev, GEN_CNTL);
 	/*
 	 * Bit 17 is HPET enable bit.
@@ -241,7 +241,7 @@ static void enable_hpet(struct device *dev)
 	 */
 	reg32 &= ~(3 << 15);	/* Clear it */
 
-	hpet = HPET_ADDR >> 12;
+	hpet = CONFIG_HPET_ADDRESS >> 12;
 	hpet &= 0x3;
 
 	reg32 |= (hpet << 15);
@@ -254,7 +254,7 @@ static void enable_hpet(struct device *dev)
 	val &= 0x7;
 
 	if ((val & 0x4) && (hpet == (val & 0x3))) {
-		printk(BIOS_INFO, "HPET enabled at 0x%x\n", HPET_ADDR);
+		printk(BIOS_INFO, "HPET enabled at 0x%x\n", CONFIG_HPET_ADDRESS);
 	} else {
 		printk(BIOS_WARNING, "HPET was not enabled correctly\n");
 		reg32 &= ~(1 << 17);	/* Clear Enable */

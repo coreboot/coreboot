@@ -33,7 +33,6 @@
 #else
 #define VT8237S_SPI_MEM_BASE		0xfed02000UL
 #endif
-#define VT8237R_HPET_ADDR		0xfed00000ULL
 
 /* PMBASE FIXME mostly taken from ich7 */
 #define PM1_STS		0x00

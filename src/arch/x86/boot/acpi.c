@@ -36,6 +36,11 @@
 #include <timestamp.h>
 #endif
 
+/* FIXME: Kconfig doesn't support overridable defaults :-( */
+#ifndef CONFIG_HPET_MIN_TICKS
+#define CONFIG_HPET_MIN_TICKS 0x1000
+#endif
+
 u8 acpi_checksum(u8 *table, u32 length)
 {
 	u8 ret = 0;
@@ -356,7 +361,6 @@ void acpi_create_slit(acpi_slit_t *slit)
 /* http://www.intel.com/hardwaredesign/hpetspec_1.pdf */
 void acpi_create_hpet(acpi_hpet_t *hpet)
 {
-#define HPET_ADDR 0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
 
@@ -375,12 +379,12 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	addr->space_id = 0; /* Memory */
 	addr->bit_width = 64;
 	addr->bit_offset = 0;
-	addr->addrl = HPET_ADDR & 0xffffffff;
-	addr->addrh = HPET_ADDR >> 32;
+	addr->addrl = CONFIG_HPET_ADDRESS & 0xffffffff;
+	addr->addrh = ((unsigned long long)CONFIG_HPET_ADDRESS) >> 32;
 
-	hpet->id = 0x102282a0; /* AMD! FIXME */
+	hpet->id = *(unsigned int*)CONFIG_HPET_ADDRESS;
 	hpet->number = 0;
-	hpet->min_tick = 4096;
+	hpet->min_tick = CONFIG_HPET_MIN_TICKS;
 
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }

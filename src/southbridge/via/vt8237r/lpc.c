@@ -387,8 +387,8 @@ static void vt8237a_init(struct device *dev)
 	/* Host Bus Power Management Control, maybe not needed */
 	pci_write_config8(dev, 0x8c, 0x5);
 
-	/* Enable HPET at VT8237R_HPET_ADDR. */
-	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
+	/* Enable HPET */
+	pci_write_config32(dev, 0x68, (CONFIG_HPET_ADDRESS | 0x80));
 
 	southbridge_init_common(dev);
 
@@ -426,8 +426,8 @@ static void vt8237s_init(struct device *dev)
 	/* Host Bus Power Management Control, maybe not needed */
 	pci_write_config8(dev, 0x8c, 0x5);
 
-	/* Enable HPET at VT8237R_HPET_ADDR., does not work correctly on R. */
-	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
+	/* Enable HPET, does not work correctly on R. */
+	pci_write_config32(dev, 0x68, (CONFIG_HPET_ADDRESS | 0x80));
 
 	southbridge_init_common(dev);
 

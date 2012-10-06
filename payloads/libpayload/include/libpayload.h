@@ -192,6 +192,7 @@ void speaker_tone(u16 freq, unsigned int duration);
  * @ingroup input
  * @{
  */
+int video_init(void);
 int video_console_init(void);
 void video_console_putchar(unsigned int ch);
 void video_console_putc(u8 row, u8 col, unsigned int ch);

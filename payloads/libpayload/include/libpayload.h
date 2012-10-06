@@ -194,6 +194,7 @@ void speaker_tone(u16 freq, unsigned int duration);
  */
 int video_init(void);
 int video_console_init(void);
+void video_get_rows_cols(unsigned int *rows, unsigned int *cols);
 void video_console_putchar(unsigned int ch);
 void video_console_putc(u8 row, u8 col, unsigned int ch);
 void video_console_clear(void);

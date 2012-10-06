@@ -62,6 +62,16 @@ static int cursorx;
 static int cursory;
 static unsigned int cursor_enabled = 1;
 
+void video_get_rows_cols(unsigned int *rows, unsigned int *cols)
+{
+	if (console) {
+		*cols = console->columns;
+		*rows = console->rows;
+	} else {
+		*cols = *rows = 0;
+	}
+}
+
 static void video_console_fixup_cursor(void)
 {
 	if (!cursor_enabled)

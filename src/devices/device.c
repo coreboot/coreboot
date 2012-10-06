@@ -732,7 +732,7 @@ static void set_vga_bridge_bits(void)
 
 		if (dev->on_mainboard) {
 			vga_onboard = dev;
-		} else if (!vga) {
+		} else {
 			vga = dev;
 		}
 

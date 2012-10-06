@@ -183,29 +183,36 @@ static struct console_output_driver cons = {
 	.putchar = video_console_putchar
 };
 
-int video_console_init(void)
+int video_init(void)
 {
-		int i;
+	int i;
 
-		for(i = 0; i < ARRAY_SIZE(console_list); i++) {
-			if (console_list[i]->init())
-				continue;
+	for (i = 0; i < ARRAY_SIZE(console_list); i++) {
+		if (console_list[i]->init())
+			continue;
 
-			console = console_list[i];
+		console = console_list[i];
 
-			if (console->get_cursor)
-				console->get_cursor((unsigned int*)&cursorx, (unsigned int*)&cursory, &cursor_enabled);
+		if (console->get_cursor)
+			console->get_cursor((unsigned int*)&cursorx,
+					    (unsigned int*)&cursory,
+					    &cursor_enabled);
 
-			if (cursorx) {
-				cursorx = 0;
-				cursory++;
-			}
-
-			video_console_fixup_cursor();
-			console_add_output_driver(&cons);
-			return 0;
+		if (cursorx) {
+			cursorx = 0;
+			cursory++;
 		}
 
+		video_console_fixup_cursor();
 		return 0;
+	}
+}
+
+int video_console_init(void)
+{
+	video_init();
+	if (console)
+		console_add_output_driver(&cons);
+	return 0;
 }
 

@@ -641,7 +641,7 @@ int main(int argc, char** argv) {
 		while (h->next) {
 			h = h->next;
 			char *name_underscore = translate_name(h->name, UNSLASH);
-			fprintf(autogen, "extern struct chip_operations %s_ops;\n", name_underscore);
+			fprintf(autogen, "__attribute__((weak)) struct chip_operations %s_ops = {};\n", name_underscore);
 			free(name_underscore);
 		}
 		fprintf(autogen, "#endif\n");

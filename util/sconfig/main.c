@@ -179,25 +179,24 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 }
 
 void add_header(struct device *dev) {
-	if ((dev->chiph_exists) || (scan_mode == KCONFIG_MODE)){
-		int include_exists = 0;
-		struct header *h = &headers;
-		while (h->next) {
-			int result = strcmp(dev->name, h->next->name);
-			if (result == 0) {
-				include_exists = 1;
-				break;
-			}
-			if (result < 0) break;
-			h = h->next;
+	int include_exists = 0;
+	struct header *h = &headers;
+	while (h->next) {
+		int result = strcmp(dev->name, h->next->name);
+		if (result == 0) {
+			include_exists = 1;
+			break;
 		}
-		if (!include_exists) {
-			struct header *tmp = h->next;
-			h->next = malloc(sizeof(struct header));
-			memset(h->next, 0, sizeof(struct header));
-			h->next->name = dev->name;
-			h->next->next = tmp;
-		}
+		if (result < 0) break;
+		h = h->next;
+	}
+	if (!include_exists) {
+		struct header *tmp = h->next;
+		h->next = malloc(sizeof(struct header));
+		memset(h->next, 0, sizeof(struct header));
+		h->next->chiph_exists = dev->chiph_exists;
+		h->next->name = dev->name;
+		h->next->next = tmp;
 	}
 }
 
@@ -418,16 +417,11 @@ static void pass1(FILE *fil, struct device *ptr)
 			fprintf(fil, "\t.link_list = NULL,\n");
 		if (ptr->sibling)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
-		if (ptr->chip->chiph_exists) {
-			fprintf(fil, "#ifndef __PRE_RAM__\n");
-			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
-			fprintf(fil, "#endif\n");
+		fprintf(fil, "#ifndef __PRE_RAM__\n");
+		fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
+		fprintf(fil, "#endif\n");
+		if (ptr->chip->chiph_exists)
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);
-		} else if (ptr->chip->chip == &mainboard) {
-			fprintf(fil, "#ifndef __PRE_RAM__\n");
-			fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
-			fprintf(fil, "#endif\n");
-		}
 		if (ptr->nextdev)
 			fprintf(fil, "\t.next=&%s\n", ptr->nextdev->name);
 		fprintf(fil, "};\n");
@@ -622,8 +616,10 @@ int main(int argc, char** argv) {
 		h = &headers;
 		while (h->next) {
 			h = h->next;
-			fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
+			if (h->chiph_exists)
+				fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 		}
+		fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
 		h = &headers;
 		while (h->next) {
 			h = h->next;
@@ -632,6 +628,7 @@ int main(int argc, char** argv) {
 			fprintf(autogen, "extern struct chip_operations %s_ops;\n", name_underscore);
 			free(name_underscore);
 		}
+		fprintf(autogen, "#endif\n");
 
 		walk_device_tree(autogen, &root, inherit_subsystem_ids, NULL);
 		fprintf(autogen, "\n/* pass 0 */\n");

@@ -159,18 +159,13 @@ else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $<
 endif
 
-$(objgenerated)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME)
+$(objgenerated)/coreboot_ram.o: $(obj)/arch/x86/lib/c_start.ramstage.o $$(driver-objs) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m elf_i386 -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME) --end-group
+	$(LD) -m elf_i386 -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(filter-out $(obj)/arch/x86/lib/c_start.ramstage.o,$(ramstage-objs)) $(LIBGCC_FILE_NAME) --end-group
 else
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(objgenerated)/ramstage.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -r -o $@ $(obj)/arch/x86/lib/c_start.ramstage.o $(driver-objs) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(filter-out $(obj)/arch/x86/lib/c_start.ramstage.o,$(ramstage-objs)) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
-
-$(objgenerated)/ramstage.a: $$(ramstage-objs)
-	@printf "    AR         $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	$(AR) cr $@ $^
 
 ################################################################################
 # Ramstage for AP CPU (AMD K8, obsolete?)

@@ -137,6 +137,7 @@ unsigned int scan_bus(struct device *bus, unsigned int max);
 void assign_resources(struct bus *bus);
 void enumerate_static_device(void);
 void enumerate_static_devices(void);
+const char *dev_name(device_t dev);
 const char *dev_path(device_t dev);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(device_t dev, int enable);

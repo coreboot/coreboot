@@ -237,12 +237,7 @@ static void debug_init(device_t dev)
 	switch(dev->path.pnp.device) {
 	case 0:
 		parent = dev->bus->dev;
-		printk(BIOS_DEBUG, "DEBUG: %s", dev_path(parent));
-		if(parent->chip_ops && parent->chip_ops->name) {
-			printk(BIOS_DEBUG, ": %s\n", parent->chip_ops->name);
-		} else {
-			printk(BIOS_DEBUG, "\n");
-		}
+		printk(BIOS_DEBUG, "DEBUG: %s : %s\n", dev_path(parent), dev_name(parent));
 		break;
 
 	case 1:

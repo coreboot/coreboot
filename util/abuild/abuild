@@ -160,6 +160,8 @@ function create_config
 			exit 1
 		fi
 		printf "Using payload $PAYLOAD\n"
+	elif [ "$payloads" = "none" ]; then
+		PAYLOAD=none
 	fi
 
 	mkdir -p ${build_dir}
@@ -179,7 +181,9 @@ function create_config
 		grep "select[\t ]*ARCH" src/mainboard/$VENDOR/$MAINBOARD/Kconfig | \
 			sed "s,^.*\(ARCH_.*\)[^A-Z0-9_]*,CONFIG_\1=y," >> ${build_dir}/config.build
 		echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> ${build_dir}/config.build
-		if [ "$PAYLOAD" != "/dev/null" ]; then
+		if [ "$PAYLOAD" = "none" ]; then
+			echo "CONFIG_PAYLOAD_NONE=y" >> ${build_dir}/config.build
+		elif [ "$PAYLOAD" != "/dev/null" ]; then
 			echo "# CONFIG_PAYLOAD_NONE is not set" >> ${build_dir}/config.build
 			echo "# CONFIG_PAYLOAD_SEABIOS is not set" >> ${build_dir}/config.build
 			echo "CONFIG_PAYLOAD_ELF=y" >> ${build_dir}/config.build

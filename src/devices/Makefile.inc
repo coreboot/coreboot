@@ -12,9 +12,6 @@ ramstage-y += pnp_device.c
 ramstage-y += pci_ops.c
 ramstage-y += smbus_ops.c
 
-# Work-around for chip.h removal
-ramstage-y += dummy_chip_ops.c
-
 romstage-y+= device_romstage.c
 
 subdirs-y += oprom

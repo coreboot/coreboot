@@ -676,7 +676,7 @@ static void update_subsystemid( device_t dev )
 	} else {
 		dev->subsystem_device = 0x4077; // U1P0 = 0x4077
 	}
-	printk(BIOS_INFO, "%s [%x/%x]\n", dev->chip_ops->name, dev->subsystem_vendor, dev->subsystem_device );
+	printk(BIOS_INFO, "%s [%x/%x]\n", dev_name(dev), dev->subsystem_vendor, dev->subsystem_device );
 	for( i=0; slot[i].bus < 255; i++) {
 		device_t d;
 		d = dev_find_slot(slot[i].bus,slot[i].devfn);
@@ -812,7 +812,7 @@ static void init(device_t dev)
 #endif
 
 	printk(BIOS_DEBUG, "%s %s[%x/%x] %s\n",
-		dev->chip_ops->name, dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
+		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 
 #if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	if(	get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") < 0 )
@@ -835,7 +835,7 @@ static void enable_dev(device_t dev)
 {
 
 	printk(BIOS_INFO, "%s %s[%x/%x] %s\n",
-		dev->chip_ops->name, dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
+		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

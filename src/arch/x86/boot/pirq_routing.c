@@ -145,7 +145,7 @@ static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 	return irq;
 }
 
-void pirq_route_irqs(unsigned long addr)
+static void pirq_route_irqs(unsigned long addr)
 {
 	int i, intx, num_entries;
 	unsigned char irq_slot[MAX_INTX_ENTRIES];

@@ -67,10 +67,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routi
 unsigned long write_pirq_routing_table(unsigned long start);
 
 #if CONFIG_PIRQ_ROUTE
-void pirq_route_irqs(unsigned long start);
 void pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS]);
-#else
-#define pirq_route_irqs(start) {}
 #endif
 
 #else

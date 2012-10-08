@@ -37,6 +37,9 @@
  * We're also susceptible to the usual buffer overrun poisoning, though the
  * risk is within acceptable ranges for this implementation (don't overrun
  * your buffers, kids!).
+ *
+ * The header format (hdrtype_t) supports heaps of up to 32MiB (given that int
+ * is 32 bits long).
  */
 
 #define IN_MALLOC_C
@@ -51,14 +54,15 @@ typedef unsigned int hdrtype_t;
 
 #define MAGIC     (0x2a << 26)
 #define FLAG_FREE (1 << 25)
-#define FLAG_USED (1 << 24)
+#define SIZE_BITS 25
+#define MAX_SIZE  ((1 << SIZE_BITS) - 1)
 
-#define SIZE(_h) ((_h) & 0xFFFFFF)
+#define SIZE(_h) ((_h) & MAX_SIZE)
 
-#define _HEADER(_s, _f) ((hdrtype_t) (MAGIC | (_f) | ((_s) & 0xFFFFFF)))
+#define _HEADER(_s, _f) ((hdrtype_t) (MAGIC | (_f) | ((_s) & MAX_SIZE)))
 
 #define FREE_BLOCK(_s) _HEADER(_s, FLAG_FREE)
-#define USED_BLOCK(_s) _HEADER(_s, FLAG_USED)
+#define USED_BLOCK(_s) _HEADER(_s, 0)
 
 #define HDRSIZE (sizeof(hdrtype_t))
 
@@ -91,7 +95,7 @@ static void *alloc(int len)
 	/* Align the size. */
 	len = (len + 3) & ~3;
 
-	if (!len || len > 0xffffff)
+	if (!len || len > MAX_SIZE)
 		return (void *)NULL;
 
 	/* Make sure the region is setup correctly. */

@@ -42,8 +42,7 @@
  * @param dev PCI device id at bus
  * @param func function id of the controller
  */
-int
-usb_controller_initialize (int bus, int dev, int func)
+int usb_controller_initialize(int bus, int dev, int func)
 {
 	u32 class;
 	u32 devclass;
@@ -52,8 +51,8 @@ usb_controller_initialize (int bus, int dev, int func)
 	u32 pciid;
 
 	addr = PCI_DEV (bus, dev, func);
-	class = pci_read_config32 (addr, 8);
-	pciid = pci_read_config32 (addr, 0);
+	class = pci_read_config32(addr, 8);
+	pciid = pci_read_config32(addr, 0);
 
 	devclass = class >> 16;
 	prog_if = (class >> 8) & 0xff;
@@ -64,78 +63,98 @@ usb_controller_initialize (int bus, int dev, int func)
 	if (devclass == 0xc03) {
 		u32 pci_command;
 
-		pci_command =pci_read_config32(addr, PCI_COMMAND);
+		pci_command = pci_read_config32(addr, PCI_COMMAND);
 		pci_command |= PCI_COMMAND_MASTER;
 		pci_write_config32(addr, PCI_COMMAND, pci_command);
 
-		printf ("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
+		printf("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
 			pciid >> 16, pciid & 0xFFFF, func);
-		switch(prog_if) {
-			case 0x00:
+		switch (prog_if) {
+		case 0x00:
 #ifdef CONFIG_USB_UHCI
-				printf ("UHCI controller\n");
-				uhci_init (addr);
+			printf("UHCI controller\n");
+			uhci_init (addr);
 #else
-				printf ("UHCI controller (not supported)\n");
+			printf("UHCI controller (not supported)\n");
 #endif
-				break;
+			break;
 
-			case 0x10:
+		case 0x10:
 #ifdef CONFIG_USB_OHCI
-				printf ("OHCI controller\n");
-				ohci_init(addr);
+			printf("OHCI controller\n");
+			ohci_init(addr);
 #else
-				printf ("OHCI controller (not supported)\n");
+			printf("OHCI controller (not supported)\n");
 #endif
-				break;
+			break;
 
-			case 0x20:
+		case 0x20:
 #ifdef CONFIG_USB_EHCI
-				printf ("EHCI controller\n");
-				ehci_init(addr);
+			printf("EHCI controller\n");
+			ehci_init(addr);
 #else
-				printf ("EHCI controller (not supported)\n");
+			printf("EHCI controller (not supported)\n");
 #endif
-				break;
+			break;
 
-			case 0x30:
+		case 0x30:
 #ifdef CONFIG_USB_XHCI
-				printf ("xHCI controller\n");
-				xhci_init(addr);
+			printf("xHCI controller\n");
+			xhci_init(addr);
 #else
-				printf ("xHCI controller (not supported)\n");
+			printf("xHCI controller (not supported)\n");
 #endif
-				break;
+			break;
 
-			default:
-				printf ("unknown controller %x not supported\n",
-						prog_if);
-				break;
+		default:
+			printf("unknown controller %x not supported\n",
+			       prog_if);
+			break;
 		}
 	}
 
 	return 0;
 }
 
+static void usb_scan_pci_bus(int bus)
+{
+	int dev, func;
+	for (dev = 0; dev < 32; dev++) {
+		u8 header_type;
+		pcidev_t addr = PCI_DEV(bus, dev, 0);
+		/* Check if there's a device here at all. */
+		if (pci_read_config32(addr, REG_VENDOR_ID) == 0xffff)
+			continue;
+		header_type = pci_read_config8(addr, REG_HEADER_TYPE);
+		/* If this is a bridge, scan the bus on the other side. */
+		if ((header_type & ~HEADER_TYPE_MULTIFUNCTION) ==
+				HEADER_TYPE_BRIDGE) {
+			int sub_bus =
+				pci_read_config8(addr, REG_SECONDARY_BUS);
+			usb_scan_pci_bus(sub_bus);
+			continue;
+		}
+		/*
+		 * EHCI is defined by standards to be at a higher function
+		 * than the USB1 controllers. We don't want to init USB1 +
+		 * devices just to "steal" those for USB2, so make sure USB2
+		 * comes first.
+		 */
+		/* Check for a multifunction device. */
+		if (header_type & HEADER_TYPE_MULTIFUNCTION)
+			for (func = 7; func > 0; func--)
+				usb_controller_initialize(bus, dev, func);
+		/* Initialize function 0. */
+		usb_controller_initialize(bus, dev, 0);
+	}
+}
+
 /**
  * Initialize all USB controllers attached to PCI.
  */
-int
-usb_initialize (void)
+int usb_initialize(void)
 {
-	int bus, dev, func;
-	/* EHCI is defined by standards to be at a
-	 * higher function than the USB1 controllers.
-	 * We don't want to init USB1 + devices just to
-	 * "steal" those for USB2, so make sure USB2
-	 * comes first.
-	 */
-	for (bus = 0; bus < 256; bus++)
-		for (dev = 0; dev < 32; dev++)
-			if (pci_read_config32 (PCI_DEV(bus, dev, 0), 8) >> 16 != 0xffff)
-				for (func = 7; func >= 0 ; func--)
-					usb_controller_initialize (bus, dev, func);
+	usb_scan_pci_bus(0);
 	usb_poll();
 	return 0;
 }
-

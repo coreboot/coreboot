@@ -98,22 +98,6 @@ static int verify_copy_pirq_routing_table(unsigned long addr, const struct irq_r
 }
 #endif
 
-unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
-{
-	/* Align the table to be 16 byte aligned. */
-	addr = ALIGN(addr, 16);
-
-	/* This table must be betweeen 0xf0000 & 0x100000 */
-	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
-	memcpy((void *)addr, routing_table, routing_table->size);
-	printk(BIOS_INFO, "done.\n");
-#if CONFIG_DEBUG_PIRQ
-	verify_copy_pirq_routing_table(addr, routing_table);
-#endif
-	pirq_route_irqs(addr);
-	return addr + routing_table->size;
-}
-
 #if CONFIG_PIRQ_ROUTE
 static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 {
@@ -145,7 +129,7 @@ static u8 pirq_get_next_free_irq(u8* pirq, u16 bitmap)
 	return irq;
 }
 
-void pirq_route_irqs(unsigned long addr)
+static void pirq_route_irqs(unsigned long addr)
 {
 	int i, intx, num_entries;
 	unsigned char irq_slot[MAX_INTX_ENTRIES];
@@ -204,3 +188,21 @@ void pirq_route_irqs(unsigned long addr)
 	pirq_assign_irqs(pirq);
 }
 #endif
+
+unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
+{
+	/* Align the table to be 16 byte aligned. */
+	addr = ALIGN(addr, 16);
+
+	/* This table must be betweeen 0xf0000 & 0x100000 */
+	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
+	memcpy((void *)addr, routing_table, routing_table->size);
+	printk(BIOS_INFO, "done.\n");
+#if CONFIG_DEBUG_PIRQ
+	verify_copy_pirq_routing_table(addr, routing_table);
+#endif
+#if CONFIG_PIRQ_ROUTE
+	pirq_route_irqs(addr);
+#endif
+	return addr + routing_table->size;
+}

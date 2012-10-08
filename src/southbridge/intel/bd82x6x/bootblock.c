@@ -65,6 +65,26 @@ static void enable_port80_on_lpc(void)
 #endif
 }
 
+static void set_spi_speed(void)
+{
+	u32 fdod;
+	u8 ssfc;
+
+	/* Observe SPI Descriptor Component Section 0 */
+	RCBA32(0x38b0) = 0x1000;
+
+	/* Extract the Write/Erase SPI Frequency from descriptor */
+	fdod = RCBA32(0x38b4);
+	fdod >>= 24;
+	fdod &= 7;
+
+	/* Set Software Sequence frequency to match */
+	ssfc = RCBA8(0x3893);
+	ssfc &= ~7;
+	ssfc |= fdod;
+	RCBA8(0x3893) = ssfc;
+}
+
 static void bootblock_southbridge_init(void)
 {
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -72,6 +92,7 @@ static void bootblock_southbridge_init(void)
 #endif
 	enable_spi_prefetch();
 	enable_port80_on_lpc();
+	set_spi_speed();
 
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(RC) = (1 << 2);

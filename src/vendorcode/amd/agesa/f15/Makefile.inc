@@ -88,6 +88,7 @@ agesa_lib_src  += ./Proc/Common/CommonReturns.c
 agesa_lib_src  += ./Proc/Common/CreateStruct.c
 agesa_lib_src  += ./Proc/Common/S3RestoreState.c
 agesa_lib_src  += ./Proc/Common/S3SaveState.c
+agesa_lib_src  += ./Proc/CPU/cahaltasm.S
 agesa_lib_src  += ./Proc/CPU/cahalt.c
 agesa_lib_src  += ./Proc/CPU/cpuApicUtilities.c
 agesa_lib_src  += ./Proc/CPU/cpuBist.c

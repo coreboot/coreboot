@@ -524,8 +524,8 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define SPI_OPMENU_6 0xd8 /* BED8: Block Erase 0xd8 */
 #define SPI_OPTYPE_6 0x03 /* Write, address required */
 
-#define SPI_OPMENU_7 0x52 /* BE52: Block Erase 0x52 */
-#define SPI_OPTYPE_7 0x03 /* Write, address required */
+#define SPI_OPMENU_7 0x0b /* FAST: Fast Read */
+#define SPI_OPTYPE_7 0x02 /* Read, address required */
 
 #define SPI_OPMENU_UPPER ((SPI_OPMENU_7 << 24) | (SPI_OPMENU_6 << 16) | \
 			  (SPI_OPMENU_5 << 8) | SPI_OPMENU_4)

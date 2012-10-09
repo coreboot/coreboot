@@ -38,6 +38,5 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("NVIDIA l1_2pvv Mainboard")
 	.enable_dev = mainboard_enable,
 };

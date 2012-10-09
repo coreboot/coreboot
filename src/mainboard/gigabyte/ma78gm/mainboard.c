@@ -80,6 +80,5 @@ static void ma78gm_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("GIGABYTE MA78GM-US2H")
 	.enable_dev = ma78gm_enable,
 };

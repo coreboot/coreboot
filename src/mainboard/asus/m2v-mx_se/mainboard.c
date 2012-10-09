@@ -23,5 +23,4 @@
 #include <southbridge/via/k8t890/k8t890.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ASUS M2V-MX SE Mainboard")
 };

@@ -62,6 +62,5 @@ static void kino_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("IEI Kino-780AM2 Mainboard")
 	.enable_dev = kino_enable,
 };

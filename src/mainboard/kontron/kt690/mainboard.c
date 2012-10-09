@@ -190,6 +190,5 @@ static void kt690_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Kontron KT690/mITX Mainboard")
 	.enable_dev = kt690_enable,
 };

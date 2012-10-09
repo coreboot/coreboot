@@ -21,6 +21,5 @@
 #include <device/device.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("LANNER EM-8510 Mainboard")
 };
 

@@ -129,7 +129,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("DIGITAL-LOGIC MSM586SEG Mainboard")
 	.enable_dev = enable_dev
 };
 

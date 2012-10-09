@@ -26,5 +26,4 @@
 #include <arch/io.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("IEI NOVA-4899R Mainboard")
 };

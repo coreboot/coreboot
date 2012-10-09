@@ -26,5 +26,4 @@
 #include <device/pci_ops.h>
 
 struct chip_operations mainboard_ops = {
-       CHIP_NAME("MSI MS-9185 Mainboard")
 };

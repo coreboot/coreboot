@@ -251,6 +251,5 @@ void mainboard_post(u8 value)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("TechNexion TIM-5690   Mainboard")
 	.enable_dev = tim5690_enable,
 };

@@ -109,6 +109,5 @@ static void pa78vm5_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD PA78VM5 Mainboard")
 	.enable_dev = pa78vm5_enable,
 };

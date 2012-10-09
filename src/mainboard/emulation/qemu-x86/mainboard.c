@@ -71,6 +71,5 @@ static const struct pci_driver vga_driver __pci_driver = {
 };
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("QEMU Mainboard")
 };
 

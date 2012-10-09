@@ -71,6 +71,5 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER)
 	.enable_dev = enable_dev,
 };

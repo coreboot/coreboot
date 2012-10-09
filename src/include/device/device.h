@@ -117,6 +117,8 @@ extern struct device	*all_devices;	/* list of all devices */
 extern struct resource	*free_resources;
 extern struct bus	*free_links;
 
+extern const char mainboard_name[];
+
 /* IGD UMA memory */
 extern uint64_t uma_memory_base;
 extern uint64_t uma_memory_size;

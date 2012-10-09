@@ -77,6 +77,5 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("LiPPERT RoadRunner-LX Mainboard")
 	.enable_dev = enable_dev,
 };

@@ -59,5 +59,4 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ASUS K8V-X Mainboard")
 };

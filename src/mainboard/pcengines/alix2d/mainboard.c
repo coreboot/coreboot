@@ -32,7 +32,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("PC Engines ALIX.2D Mainboard")
 	.enable_dev = enable_dev,
 };
 

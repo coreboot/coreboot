@@ -21,5 +21,4 @@
 #include <device/device.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("IEI PCISA-LX-800-R10 Mainboard")
 };

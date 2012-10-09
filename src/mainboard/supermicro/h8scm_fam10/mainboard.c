@@ -92,6 +92,5 @@ static void h8scm_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD H8SCM   Mainboard")
 	.enable_dev = h8scm_enable,
 };

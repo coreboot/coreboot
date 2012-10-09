@@ -104,7 +104,6 @@ static void mb_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Asrock 939A785GMH/128M Mainboard")
 	.enable_dev = mb_enable,
 };
 

@@ -167,7 +167,6 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Roda Computer GmbH RK886EX Rugged Notebook (ROCKY3+)")
 	.enable_dev = mainboard_enable,
 };
 

@@ -83,6 +83,5 @@ static void m5a88pm_v_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ASUS M5A88-V Mainboard")
 	.enable_dev = m5a88pm_v_enable,
 };

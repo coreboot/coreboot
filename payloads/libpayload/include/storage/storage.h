@@ -68,6 +68,7 @@ typedef struct storage_dev {
 	void (*detach_device)(struct storage_dev *);
 } storage_dev_t;
 
+int storage_device_count(void);
 int storage_attach_device(storage_dev_t *dev);
 
 

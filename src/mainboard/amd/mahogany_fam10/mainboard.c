@@ -107,6 +107,5 @@ static void mahogany_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD MAHOGANY   Mainboard")
 	.enable_dev = mahogany_enable,
 };

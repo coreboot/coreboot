@@ -74,6 +74,5 @@ static void dinar_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD DINAR Mainboard")
 		.enable_dev = dinar_enable,
 };

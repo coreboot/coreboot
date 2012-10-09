@@ -309,7 +309,6 @@ static int lumpy_onboard_smbios_data(device_t dev, int *handle,
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Samsung Lumpy ChromeBook")
 	.enable_dev = mainboard_enable,
 	.get_smbios_data = lumpy_onboard_smbios_data,
 };

@@ -190,6 +190,5 @@ static void dbm690t_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("AMD DBM690T   Mainboard")
 	.enable_dev = dbm690t_enable,
 };

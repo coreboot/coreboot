@@ -149,6 +149,5 @@ static void tim8690_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("TechNexion TIM-8690   Mainboard")
 	.enable_dev = tim8690_enable,
 };

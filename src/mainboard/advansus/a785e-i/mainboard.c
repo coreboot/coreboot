@@ -82,6 +82,5 @@ static void a785e_i_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ADVANSUS A785E-I Mainboard")
 	.enable_dev = a785e_i_enable,
 };

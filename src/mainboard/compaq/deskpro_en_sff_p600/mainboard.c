@@ -21,5 +21,4 @@
 #include <device/device.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Compaq Deskpro EN SFF P600 Mainboard")
 };

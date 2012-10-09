@@ -128,6 +128,5 @@ static void m4a78em_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("ASUS M4A78-EM Mainboard")
 	.enable_dev = m4a78em_enable,
 };

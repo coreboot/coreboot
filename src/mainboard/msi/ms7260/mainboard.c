@@ -36,6 +36,5 @@ static void mainboard_enable(device_t dev)
 #endif
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("MSI K9N Neo (MS-7260) Mainboard")
 	// .enable_dev = mainboard_enable,
 };

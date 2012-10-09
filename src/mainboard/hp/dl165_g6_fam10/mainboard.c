@@ -29,5 +29,4 @@
 #include <device/pci_ops.h>
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("HP ProLiant DL165 G6 Mainboard (Fam10h)")
 };

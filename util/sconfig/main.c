@@ -419,6 +419,8 @@ static void pass1(FILE *fil, struct device *ptr)
 			fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 		fprintf(fil, "#ifndef __PRE_RAM__\n");
 		fprintf(fil, "\t.chip_ops = &%s_ops,\n", ptr->chip->name_underscore);
+		if (ptr->chip->chip == &mainboard)
+			fprintf(fil, "\t.name = mainboard_name,\n");
 		fprintf(fil, "#endif\n");
 		if (ptr->chip->chiph_exists)
 			fprintf(fil, "\t.chip_info = &%s_info_%d,\n", ptr->chip->name_underscore, ptr->chip->id);

@@ -82,6 +82,5 @@ static void inagua_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME(CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER " Mainboard")
 		.enable_dev = inagua_enable,
 };

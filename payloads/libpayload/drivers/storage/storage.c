@@ -57,6 +57,11 @@ int storage_attach_device(storage_dev_t *const dev)
 	return 0;
 }
 
+int storage_device_count(void)
+{
+	return dev_count;
+}
+
 /**
  * Probe for drive with given number
  *

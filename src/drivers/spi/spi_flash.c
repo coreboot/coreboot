@@ -281,7 +281,7 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 	/* search the table for matches in shift and id */
 	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
-#ifdef __SMM__
+#if CONFIG_SMM_TSEG && defined(__SMM__)
 			/* Need to relocate this function */
 			tseg_relocate((void **)&flashes[i].probe);
 #endif
@@ -295,6 +295,14 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 		printk(BIOS_WARNING, "SF: Unsupported manufacturer %02x\n", *idp);
 		goto err_manufacturer_probe;
 	}
+
+#if CONFIG_SMM_TSEG && defined(__SMM__)
+	/* Ensure flash handlers are valid for TSEG */
+	tseg_relocate((void **)&flash->read);
+	tseg_relocate((void **)&flash->write);
+	tseg_relocate((void **)&flash->erase);
+	tseg_relocate((void **)&flash->name);
+#endif
 
 	printk(BIOS_INFO, "SF: Detected %s with page size %x, total %x\n",
 			flash->name, flash->sector_size, flash->size);

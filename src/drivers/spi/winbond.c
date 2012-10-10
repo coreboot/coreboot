@@ -205,7 +205,7 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 
 	stm->flash.write = winbond_write;
 	stm->flash.erase = winbond_erase;
-#ifdef CONFIG_SPI_FLASH_NO_FAST_READ
+#if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm->flash.read = spi_flash_cmd_read_slow;
 #else
 	stm->flash.read = spi_flash_cmd_read_fast;

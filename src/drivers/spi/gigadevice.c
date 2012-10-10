@@ -154,7 +154,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 		cmd[3] = offset & 0xff;
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW,
-		       "PP gigadevice.c: %#p => cmd = { %#02x %#02x%02x%02x }"
+		       "PP gigadevice.c: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		       " chunk_len = %zu\n", buf + actual,
 		       cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
@@ -226,7 +226,7 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 
 	stm->flash.write = gigadevice_write;
 	stm->flash.erase = gigadevice_erase;
-#ifdef CONFIG_SPI_FLASH_NO_FAST_READ
+#if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm->flash.read = spi_flash_cmd_read_slow;
 #else
 	stm->flash.read = spi_flash_cmd_read_fast;

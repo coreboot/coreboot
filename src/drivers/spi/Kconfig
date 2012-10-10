@@ -80,7 +80,7 @@ config SPI_FLASH_WINBOND
 	  data in the SPI flash and your SPI flash is made by Winbond.
 
 config SPI_FLASH_NO_FAST_READ
-	bool
+	bool "Disable Fast Read command"
 	default n
 	depends on SPI_FLASH
 	help

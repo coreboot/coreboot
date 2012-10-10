@@ -484,6 +484,12 @@ static void spi_setup_type(spi_transaction *trans)
 	if (trans->bytesout == 4) { /* and bytesin is > 0 */
 		trans->type = SPI_OPCODE_TYPE_READ_WITH_ADDRESS;
 	}
+
+	/* Fast read command is called with 5 bytes instead of 4 */
+	if (trans->out[0] == SPI_OPCODE_FAST_READ && trans->bytesout == 5) {
+		trans->type = SPI_OPCODE_TYPE_READ_WITH_ADDRESS;
+		--trans->bytesout;
+	}
 }
 
 static int spi_setup_opcode(spi_transaction *trans)

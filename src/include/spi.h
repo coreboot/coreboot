@@ -46,6 +46,7 @@
 
 /* SPI opcodes */
 #define SPI_OPCODE_WREN 0x06
+#define SPI_OPCODE_FAST_READ 0x0b
 
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.

@@ -23,8 +23,8 @@
 /* Platform IRQs */
 #define PIRQA 5
 #define PIRQB 9
-#define PIRQC 7
-#define PIRQD 10
+#define PIRQC 10
+#define PIRQD 7
 
 /* Map */
 #define M_PIRQA (1 << PIRQA)	/* Bitmap of supported IRQs */

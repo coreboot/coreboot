@@ -104,6 +104,7 @@ struct device {
 	struct device_operations *ops;
 #ifndef __PRE_RAM__
 	const struct chip_operations *chip_ops;
+	const char *name;
 #endif
 	ROMSTAGE_CONST void *chip_info;
 };

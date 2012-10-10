@@ -230,7 +230,9 @@ const char *dev_path(device_t dev)
 
 const char *dev_name(device_t dev)
 {
-	if (dev->chip_ops && dev->chip_ops->name)
+	if (dev->name)
+		return dev->name;
+	else if (dev->chip_ops && dev->chip_ops->name)
 		return dev->chip_ops->name;
 	else
 		return "unknown";

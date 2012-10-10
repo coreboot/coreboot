@@ -6,8 +6,9 @@
 PDFLATEX=pdflatex -t a4
 
 FIGS=codeflow.pdf hypertransport.pdf
+PAPERS=LinuxBIOS-AMD64.pdf Kconfig.pdf
 
-all: LinuxBIOS-AMD64.pdf Kconfig.pdf
+all: $(PAPERS)
 
 SVG2PDF=$(shell which svg2pdf)
 INKSCAPE=$(shell which inkscape)
@@ -67,5 +68,5 @@ clean:
 	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketfkconfig.tex
 
 distclean: clean
-	rm -f LinuxBIOS-AMD64.pdf Kconfig.pdf
+	rm -f $(PAPERS)
 

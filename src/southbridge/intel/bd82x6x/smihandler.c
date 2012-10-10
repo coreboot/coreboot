@@ -429,7 +429,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
  * core in case we are not running on the same core that
  * initiated the IO transaction.
  */
-static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u64 cmd)
+static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 {
 	em64t101_smm_state_save_area_t *state;
 	u32 base = smi_get_tseg_base() + 0x8000 + 0x7d00;
@@ -453,7 +453,7 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u64 cmd)
 			continue;
 
 		/* Check AX against the requested command */
-		if (state->rax != cmd)
+		if ((state->rax & 0xff) != cmd)
 			continue;
 
 		return state;

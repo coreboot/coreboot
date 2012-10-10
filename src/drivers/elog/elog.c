@@ -18,6 +18,7 @@
  */
 
 #include <arch/acpi.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <smbios.h>
@@ -265,18 +266,23 @@ static int elog_is_event_valid(struct elog_descriptor *elog, u32 offset)
  */
 static void elog_flash_write(u8 *address, u8 *buffer, u32 size)
 {
+	struct elog_descriptor *flash = elog_get_flash();
 	u32 offset;
 
 	if (!address || !buffer || !size || !elog_spi)
 		return;
 
-	offset = elog_flash_address_to_offset(address);
+	offset = flash->flash_base;
+	offset += address - (u8*)flash->backing_store;
 
 	elog_debug("elog_flash_write(address=0x%p offset=0x%08x buffer=0x%p "
 		   "size=%u)\n", address, offset, buffer, size);
 
 	/* Write the data to flash */
 	elog_spi->write(elog_spi, offset, size, buffer);
+
+	/* Update the copy in memory */
+	memcpy(address, buffer, size);
 }
 
 /*
@@ -285,12 +291,14 @@ static void elog_flash_write(u8 *address, u8 *buffer, u32 size)
  */
 static void elog_flash_erase(u8 *address, u32 size)
 {
+	struct elog_descriptor *flash = elog_get_flash();
 	u32 offset;
 
 	if (!address || !size || !elog_spi)
 		return;
 
-	offset = elog_flash_address_to_offset(address);
+	offset = flash->flash_base;
+	offset += address - (u8*)flash->backing_store;
 
 	elog_debug("elog_flash_erase(address=0x%p offset=0x%08x size=%u)\n",
 		   address, offset, size);
@@ -393,6 +401,10 @@ static void elog_init_descriptor(struct elog_descriptor *elog,
 	elog->backing_store = buffer;
 	elog->total_size = size;
 
+	/* Fill memory buffer by reading from SPI */
+	if (type == ELOG_DESCRIPTOR_FLASH)
+		elog_spi->read(elog_spi, elog->flash_base, size, buffer);
+
 	/* Get staging header from backing store */
 	elog->staging_header = header;
 	memcpy(header, buffer, sizeof(struct elog_header));
@@ -442,11 +454,12 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 		return -1;
 	}
 
-	area = elog_flash_offset_to_address(flash_base);
+	area = malloc(area_size);
 	if (!area) {
 		printk(BIOS_ERR, "ELOG: Unable to determine flash address\n");
 		return -1;
 	}
+	elog_get_flash()->flash_base = flash_base;
 	elog_init_descriptor(elog_get_flash(), ELOG_DESCRIPTOR_FLASH,
 			     area, area_size, staging_header);
 
@@ -470,6 +483,7 @@ static void elog_flash_erase_area(void)
 	elog_debug("elog_flash_erase_area()\n");
 
 	elog_flash_erase(elog->backing_store, elog->total_size);
+	memset(elog->backing_store, ELOG_TYPE_EOL, elog->total_size);
 	elog_reinit_descriptor(elog);
 }
 
@@ -514,12 +528,13 @@ static int elog_sync_flash_to_mem(void)
 	/* Fill with empty pattern first */
 	memset(mem->backing_store, ELOG_TYPE_EOL, mem->total_size);
 
-	/* Copy the header to memory */
-	memcpy(mem->backing_store, flash->backing_store,
-	       sizeof(struct elog_header));
+	/* Read the header from SPI to memory */
+	elog_spi->read(elog_spi, flash->flash_base,
+		       sizeof(struct elog_header), mem->backing_store);
 
-	/* Copy the valid flash contents to memory */
-	memcpy(mem->data, flash->data, flash->next_event_offset);
+	/* Read the valid flash contents from SPI to memory */
+	elog_spi->read(elog_spi, flash->flash_base + sizeof(struct elog_header),
+		       flash->next_event_offset, mem->data);
 
 	elog_reinit_descriptor(mem);
 
@@ -677,26 +692,40 @@ static int elog_spi_init(void)
 	return elog_spi ? 0 : -1;
 }
 
+#ifndef __SMM__
 /*
  * Fill out SMBIOS Type 15 table entry so the
  * event log can be discovered at runtime.
  */
 int elog_smbios_write_type15(unsigned long *current, int handle)
 {
+	struct elog_descriptor *flash = elog_get_flash();
 	struct smbios_type15 *t = (struct smbios_type15 *)*current;
 	int len = sizeof(struct smbios_type15);
+
+#if CONFIG_ELOG_CBMEM
+	/* Save event log buffer into CBMEM for the OS to read */
+	void *cbmem = cbmem_add(CBMEM_ID_ELOG, flash->total_size);
+	if (!cbmem)
+		return 0;
+	memcpy(cbmem, flash->backing_store, flash->total_size);
+#endif
 
 	memset(t, 0, len);
 	t->type = SMBIOS_EVENT_LOG;
 	t->length = len - 2;
 	t->handle = handle;
-	t->area_length = elog_get_flash()->total_size - 1;
+	t->area_length = flash->total_size - 1;
 	t->header_offset = 0;
 	t->data_offset = sizeof(struct elog_header);
 	t->access_method = SMBIOS_EVENTLOG_ACCESS_METHOD_MMIO32;
 	t->log_status = SMBIOS_EVENTLOG_STATUS_VALID;
 	t->change_token = 0;
-	t->address = (u32)elog_get_flash()->backing_store;
+#if CONFIG_ELOG_CBMEM
+	t->address = (u32)cbmem;
+#else
+	t->address = (u32)elog_flash_offset_to_address(flash->flash_base);
+#endif
 	t->header_format = ELOG_HEADER_TYPE_OEM;
 	t->log_type_descriptors = 0;
 	t->log_type_descriptor_length = 2;
@@ -704,6 +733,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	*current += len;
 	return len;
 }
+#endif
 
 /*
  * Clear the entire event log
@@ -767,9 +797,9 @@ int elog_init(void)
 
 	elog_initialized = 1;
 
-	printk(BIOS_INFO, "ELOG: MEM @0x%p FLASH @0x%p\n",
+	printk(BIOS_INFO, "ELOG: MEM @0x%p FLASH @0x%p [SPI 0x%08x]\n",
 	       elog_get_mem()->backing_store,
-	       elog_get_flash()->backing_store);
+	       elog_get_flash()->backing_store, elog_get_flash()->flash_base);
 
 	printk(BIOS_INFO, "ELOG: areas are %d bytes, full threshold %d,"
 	       " shrink size %d\n", CONFIG_ELOG_AREA_SIZE,

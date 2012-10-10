@@ -66,6 +66,16 @@ config ELOG_SHRINK_SIZE
 
 	  Default is 1K.
 
+config ELOG_CBMEM
+	bool "Store a copy of ELOG in CBMEM"
+	default n
+	help
+	 This option will have ELOG store a copy of the flash event log
+	 in a CBMEM region and export that address in SMBIOS to the OS.
+	 This is useful if the ELOG location is not in memory mapped flash,
+	 but it means that events added at runtime via the SMI handler
+	 will not be reflected in the CBMEM copy of the log.
+
 endif
 
 config ELOG_GSMI

@@ -71,6 +71,7 @@ void pch_log_state(void);
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
+int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #endif
 #endif
 
@@ -538,6 +539,20 @@ int smbus_read_byte(unsigned device, unsigned address);
 		    (SPI_OPTYPE_1 << 2) | (SPI_OPTYPE_0))
 
 #define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
+
+#define SPIBAR_HSFS                 0x3804   /* SPI hardware sequence status */
+#define  SPIBAR_HSFS_SCIP           (1 << 5) /* SPI Cycle In Progress */
+#define  SPIBAR_HSFS_AEL            (1 << 2) /* SPI Access Error Log */
+#define  SPIBAR_HSFS_FCERR          (1 << 1) /* SPI Flash Cycle Error */
+#define  SPIBAR_HSFS_FDONE          (1 << 0) /* SPI Flash Cycle Done */
+#define SPIBAR_HSFC                 0x3806   /* SPI hardware sequence control */
+#define  SPIBAR_HSFC_BYTE_COUNT(c)  (((c - 1) & 0x3f) << 8)
+#define  SPIBAR_HSFC_CYCLE_READ     (0 << 1) /* Read cycle */
+#define  SPIBAR_HSFC_CYCLE_WRITE    (2 << 1) /* Write cycle */
+#define  SPIBAR_HSFC_CYCLE_ERASE    (3 << 1) /* Erase cycle */
+#define  SPIBAR_HSFC_GO             (1 << 0) /* GO: start SPI transaction */
+#define SPIBAR_FADDR                0x3808   /* SPI flash address */
+#define SPIBAR_FDATA(n)             (0x3810 + (4 * n)) /* SPI flash data */
 
 #endif /* __ACPI__ */
 #endif				/* SOUTHBRIDGE_INTEL_BD82X6X_PCH_H */

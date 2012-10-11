@@ -44,4 +44,5 @@ romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c
+romstage-y += early_spi.c
 

@@ -15,7 +15,6 @@
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include <reset.h>
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "cpu/x86/bist.h"
 #include "lib/delay.c"

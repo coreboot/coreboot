@@ -37,7 +37,6 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 #include <lib.h>
 #include <spd.h>

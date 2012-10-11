@@ -37,7 +37,6 @@
 #include "southbridge/nvidia/mcp55/early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
-#include "cpu/amd/model_10xxx/apic_timer.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"

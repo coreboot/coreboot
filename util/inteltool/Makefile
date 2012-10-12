@@ -53,13 +53,25 @@ distclean: clean
 dep:
 	@$(CC) $(CFLAGS) -MM *.c > .dependencies
 
+define LIBPCI_TEST
+/* Avoid a failing test due to libpci header symbol shadowing breakage */
+#define index shadow_workaround_index
+#include <pci/pci.h>
+struct pci_access *pacc;
+int main(int argc, char **argv)
+{
+	(void) argc;
+	(void) argv;
+	pacc = pci_alloc();
+	return 0;
+}
+endef
+export LIBPCI_TEST
+
 pciutils:
 	@printf "\nChecking for pciutils and zlib... "
-	@$(shell ( printf "#include <pci/pci.h>\n";		\
-		   printf "struct pci_access *pacc;\n";		\
-		   printf "int main(int argc, char **argv)\n";	\
-		   printf "{ pacc = pci_alloc(); return 0; }\n"; ) > .test.c )
-	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	  \
+	@echo "$$LIBPCI_TEST" > .test.c
+	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) >/dev/null 2>&1 &&	  \
 		printf "found.\n" || ( printf "not found.\n\n"; 	  \
 		printf "Please install pciutils-devel and zlib-devel.\n"; \
 		printf "See README for more information.\n\n";		  \

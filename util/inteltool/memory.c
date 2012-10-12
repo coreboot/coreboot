@@ -111,14 +111,14 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
  	case PCI_DEVICE_ID_INTEL_82975X:
 		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;
 		break;
- 	case PCI_DEVICE_ID_INTEL_PM965:
+ 	case PCI_DEVICE_ID_INTEL_82965PM:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
  		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
  		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;
- 	case PCI_DEVICE_ID_INTEL_Q965:
+ 	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		mchbar_phys = pci_read_long(nb, 0x48);
@@ -146,18 +146,18 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_82443LX:
 	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:
-	case PCI_DEVICE_ID_INTEL_82810E_MC:
-	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82810E_DC:
+	case PCI_DEVICE_ID_INTEL_82810_DC:
 	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbridge does not have MCHBAR.\n");
 		return 1;
-	case PCI_DEVICE_ID_INTEL_GS45:
-	case PCI_DEVICE_ID_INTEL_X44:
+	case PCI_DEVICE_ID_INTEL_82X4X:
+	case PCI_DEVICE_ID_INTEL_82X38:
 	case PCI_DEVICE_ID_INTEL_32X0:
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;
-	case PCI_DEVICE_ID_INTEL_HM65E:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xffff8000;
 		mch_registers = sandybridge_mch_registers;
 		size = ARRAY_SIZE(sandybridge_mch_registers);

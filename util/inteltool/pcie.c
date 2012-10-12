@@ -94,22 +94,22 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82975X:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
- 	case PCI_DEVICE_ID_INTEL_PM965:
- 	case PCI_DEVICE_ID_INTEL_Q965:
+ 	case PCI_DEVICE_ID_INTEL_82965PM:
+ 	case PCI_DEVICE_ID_INTEL_82Q965:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
-	case PCI_DEVICE_ID_INTEL_X44:
+	case PCI_DEVICE_ID_INTEL_82X38:
 	case PCI_DEVICE_ID_INTEL_32X0:
-	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_82X4X:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
  		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
-	case PCI_DEVICE_ID_INTEL_82810DC:
-	case PCI_DEVICE_ID_INTEL_82810E_MC:
+	case PCI_DEVICE_ID_INTEL_82810_DC:
+	case PCI_DEVICE_ID_INTEL_82810E_DC:
 	case PCI_DEVICE_ID_INTEL_82830M:
 	case PCI_DEVICE_ID_INTEL_82865:
 		printf("This northbridge does not have EPBAR.\n");
@@ -156,29 +156,29 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82975X:
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
-	case PCI_DEVICE_ID_INTEL_PM965:
-	case PCI_DEVICE_ID_INTEL_Q965:
+	case PCI_DEVICE_ID_INTEL_82965PM:
+	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_82Q35:
 	case PCI_DEVICE_ID_INTEL_82G33:
 	case PCI_DEVICE_ID_INTEL_82Q33:
-	case PCI_DEVICE_ID_INTEL_X44:
+	case PCI_DEVICE_ID_INTEL_82X38:
 	case PCI_DEVICE_ID_INTEL_32X0:
-	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_82X4X:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
 		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffffffe;
 		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
 		break;
 	case PCI_DEVICE_ID_INTEL_82810:
-	case PCI_DEVICE_ID_INTEL_82810DC:
-	case PCI_DEVICE_ID_INTEL_82810E_MC:
+	case PCI_DEVICE_ID_INTEL_82810_DC:
+	case PCI_DEVICE_ID_INTEL_82810E_DC:
 	case PCI_DEVICE_ID_INTEL_82865:
 		printf("This northbridge does not have DMIBAR.\n");
 		return 1;
-	case PCI_DEVICE_ID_INTEL_X58:
+	case PCI_DEVICE_ID_INTEL_82X58:
 		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000;
 		break;
-	case PCI_DEVICE_ID_INTEL_HM65E:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
 		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffff000;
 		dmi_registers = sandybridge_dmi_registers;
 		size = ARRAY_SIZE(sandybridge_dmi_registers);
@@ -251,22 +251,22 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82975X:
 		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
- 	case PCI_DEVICE_ID_INTEL_PM965:
-	case PCI_DEVICE_ID_INTEL_Q965:
+ 	case PCI_DEVICE_ID_INTEL_82965PM:
+	case PCI_DEVICE_ID_INTEL_82Q965:
  	case PCI_DEVICE_ID_INTEL_82Q35:
  	case PCI_DEVICE_ID_INTEL_82G33:
  	case PCI_DEVICE_ID_INTEL_82Q33:
-	case PCI_DEVICE_ID_INTEL_X44:
+	case PCI_DEVICE_ID_INTEL_82X38:
 	case PCI_DEVICE_ID_INTEL_32X0:
-	case PCI_DEVICE_ID_INTEL_GS45:
+	case PCI_DEVICE_ID_INTEL_82X4X:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
  		pciexbar_reg = pci_read_long(nb, 0x60);
  		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
-	case PCI_DEVICE_ID_INTEL_82810DC:
-	case PCI_DEVICE_ID_INTEL_82810E_MC:
+	case PCI_DEVICE_ID_INTEL_82810_DC:
+	case PCI_DEVICE_ID_INTEL_82810E_DC:
 	case PCI_DEVICE_ID_INTEL_82865:
 		printf("Error: This northbridge does not have PCIEXBAR.\n");
 		return 1;

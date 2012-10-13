@@ -1,0 +1,28 @@
+config CPU_INTEL_SOCKET_LGA775
+	bool
+
+if CPU_INTEL_SOCKET_LGA775
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_MODEL_6EX
+	select CPU_INTEL_MODEL_6FX
+	select CPU_INTEL_MODEL_F3X
+	select CPU_INTEL_MODEL_F4X
+#	select CPU_INTEL_MODEL_F6X
+#	select CPU_INTEL_MODEL_1066X
+	select CPU_INTEL_MODEL_1067X
+	select MMX
+	select SSE
+	select UDELAY_TSC
+	select SIPI_VECTOR_IN_ROM
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x4000 # 16 kB
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfeffc000 # 4GB - 16MB - DCACHE_RAM_SIZE
+
+endif # CPU_INTEL_SOCKET_LGA775

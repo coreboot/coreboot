@@ -59,7 +59,7 @@ pciutils:
 		   printf "struct pci_access *pacc;\n";		\
 		   printf "int main(int argc, char **argv)\n";	\
 		   printf "{ pacc = pci_alloc(); return 0; }\n"; ) > .test.c )
-	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	  \
+	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) >/dev/null 2>&1 &&	  \
 		printf "found.\n" || ( printf "not found.\n\n"; 	  \
 		printf "Please install pciutils-devel and zlib-devel.\n"; \
 		printf "See README for more information.\n\n";		  \

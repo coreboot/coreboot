@@ -91,6 +91,7 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945GSE:
 	case PCI_DEVICE_ID_INTEL_82945P:
+	case PCI_DEVICE_ID_INTEL_82946:
 	case PCI_DEVICE_ID_INTEL_82975X:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
@@ -156,6 +157,7 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82975X:
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
+	case PCI_DEVICE_ID_INTEL_82946:
 	case PCI_DEVICE_ID_INTEL_82965PM:
 	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_82Q35:
@@ -260,6 +262,7 @@ int print_pciexbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82975X:
 		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
+	case PCI_DEVICE_ID_INTEL_82946:
 	case PCI_DEVICE_ID_INTEL_82965PM:
 	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_82Q35:

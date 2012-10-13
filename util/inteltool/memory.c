@@ -118,6 +118,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		break;
+	case PCI_DEVICE_ID_INTEL_82946:
 	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:

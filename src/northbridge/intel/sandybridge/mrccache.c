@@ -32,7 +32,13 @@
 #include <vendorcode/google/chromeos/fmap.h>
 #endif
 
-struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache)
+/* convert a pointer to flash area into the offset inside the flash */
+static inline u32 to_flash_offset(void *p) {
+	return ((u32)p + CONFIG_ROM_SIZE);
+}
+
+static struct mrc_data_container *next_mrc_block(
+	struct mrc_data_container *mrc_cache)
 {
 	/* MRC data blocks are aligned within the region */
 	u32 mrc_size = sizeof(*mrc_cache) + mrc_cache->mrc_data_size;
@@ -46,7 +52,7 @@ struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache)
 	return (struct mrc_data_container *)region_ptr;
 }
 
-int is_mrc_cache(struct mrc_data_container *mrc_cache)
+static int is_mrc_cache(struct mrc_data_container *mrc_cache)
 {
 	return (!!mrc_cache) && (mrc_cache->mrc_signature == MRC_DATA_SIGNATURE);
 }
@@ -57,7 +63,7 @@ int is_mrc_cache(struct mrc_data_container *mrc_cache)
  *  - Have each mainboard Kconfig supply a hard-coded offset
  *  - Use CBFS
  */
-u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
+static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
 	u32 region_size;
 #if CONFIG_CHROMEOS
@@ -71,73 +77,31 @@ u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 	return region_size;
 }
 
-/* find the first empty field in the MRC cache area. If there's none, return
- * the first region. By testing for emptiness caller can detect if flash
- * needs to be erased.
- *
- * FIXME: that interface is crap
+/*
+ * Find the largest index block in the MRC cache. Return NULL if non is
+ * found.
  */
-struct mrc_data_container *find_next_mrc_cache(void)
+static struct mrc_data_container *find_current_mrc_cache_local
+	(struct mrc_data_container *mrc_cache, u32 region_size)
 {
+	u32 region_end;
 	u32 entry_id = 0;
-	struct mrc_data_container *mrc_cache = NULL;
-	u32 region_size = get_mrc_cache_region(&mrc_cache);
-	void *mrc_region = (void*)mrc_cache;
+	struct mrc_data_container *mrc_next = mrc_cache;
 
-	if (mrc_cache == NULL) {
-		printk(BIOS_ERR, "%s: could not find mrc cache area\n", __func__);
-		return NULL;
-	}
-
-	/* Search for the first empty entry in the region */
-	while (is_mrc_cache(mrc_cache)) {
-		entry_id++;
-		mrc_cache = next_mrc_block(mrc_cache);
-		/* If we exceed the defined area, move to front */
-		if ((void*)mrc_cache >= (void*)(mrc_region + region_size)) {
-			mrc_cache = (struct mrc_data_container *)mrc_region;
-			break;
-		}
-	}
-
-	printk(BIOS_DEBUG, "picked entry %u from cache block when looking for empty block\n", entry_id);
-
-	return mrc_cache;
-}
-
-struct mrc_data_container *find_current_mrc_cache(void)
-{
-	u32 entry_id = 0;
-	struct mrc_data_container *mrc_next, *mrc_cache = NULL;
-	u32 region_size = get_mrc_cache_region(&mrc_cache);
-	void *mrc_region = (void*)mrc_cache;
-	mrc_next = mrc_cache;
-
-	if (mrc_cache == NULL) {
-		printk(BIOS_ERR, "%s: could not find mrc cache area\n", __func__);
-		return NULL;
-	}
-
-	if (mrc_cache->mrc_data_size == -1UL) {
-		printk(BIOS_ERR, "%s: MRC cache not initialized?\n",  __func__);
-		/* return non-initialized cache, so we can discern this
-		 * from having no cache area at all
-		 */
-		return mrc_cache;
-	}
+	region_end = (u32) mrc_cache + region_size;
 
 	/* Search for the last filled entry in the region */
 	while (is_mrc_cache(mrc_next)) {
 		entry_id++;
 		mrc_cache = mrc_next;
-		mrc_next = next_mrc_block(mrc_cache);
-		/* Stay in the mrc data region */
-		if ((void*)mrc_next >= (void*)(mrc_region + region_size))
+		mrc_next = next_mrc_block(mrc_next);
+		if ((u32)mrc_next >= region_end) {
+			/* Stay in the MRC data region */
 			break;
+		}
 	}
-	entry_id--;
 
-	if (entry_id == -1) {
+	if (entry_id == 0) {
 		printk(BIOS_ERR, "%s: No valid MRC cache found.\n", __func__);
 		return NULL;
 	}
@@ -150,7 +114,8 @@ struct mrc_data_container *find_current_mrc_cache(void)
 		return NULL;
 	}
 
-	printk(BIOS_DEBUG, "picked entry %u from cache block\n", entry_id);
+	printk(BIOS_DEBUG, "%s: picked entry %u from cache block\n", __func__,
+	       entry_id - 1);
 
 	return mrc_cache;
 }
@@ -159,10 +124,42 @@ struct mrc_data_container *find_current_mrc_cache(void)
  * Also unknown if writing flash from XIP-flash code is a good idea
  */
 #if !defined(__PRE_RAM__)
+/* find the first empty block in the MRC cache area.
+ * If there's none, return NULL.
+ *
+ * @mrc_cache_base - base address of the MRC cache area
+ * @mrc_cache - current entry (for which we need to find next)
+ * @region_size - total size of the MRC cache area
+ */
+static struct mrc_data_container *find_next_mrc_cache
+		(struct mrc_data_container *mrc_cache_base,
+		 struct mrc_data_container *mrc_cache,
+		 u32 region_size)
+{
+	u32 region_end = (u32) mrc_cache_base + region_size;
+
+	mrc_cache = next_mrc_block(mrc_cache);
+	if ((u32)mrc_cache >= region_end) {
+		/* Crossed the boundary */
+		mrc_cache = NULL;
+		printk(BIOS_DEBUG, "%s: no available entries found\n",
+		       __func__);
+	} else {
+		printk(BIOS_DEBUG,
+		       "%s: picked next entry from cache block at %p\n",
+		       __func__, mrc_cache);
+	}
+
+	return mrc_cache;
+}
+
 void update_mrc_cache(void)
 {
 	printk(BIOS_DEBUG, "Updating MRC cache data.\n");
 	struct mrc_data_container *current = cbmem_find(CBMEM_ID_MRCDATA);
+	struct mrc_data_container *cache, *cache_base;
+	u32 cache_size;
+
 	if (!current) {
 		printk(BIOS_ERR, "No MRC cache in cbmem. Can't update flash.\n");
 		return;
@@ -172,17 +169,20 @@ void update_mrc_cache(void)
 		return;
 	}
 
+	cache_size = get_mrc_cache_region(&cache_base);
+	if (cache_base == NULL) {
+		printk(BIOS_ERR, "%s: could not find MRC cache area\n",
+		       __func__);
+		return;
+	}
+
 	/*
 	 * we need to:
 	 */
 	//  0. compare MRC data to last mrc-cache block (exit if same)
-	struct mrc_data_container *cache;
-	if ((cache = find_current_mrc_cache()) == NULL) {
-		printk(BIOS_DEBUG, "Failure looking for current last block.\n");
-		return;
-	}
+	cache = find_current_mrc_cache_local(cache_base, cache_size);
 
-	if ((cache->mrc_data_size == current->mrc_data_size) &&
+	if (cache && (cache->mrc_data_size == current->mrc_data_size) &&
 			(memcmp(cache, current, cache->mrc_data_size) == 0)) {
 		printk(BIOS_DEBUG,
 			"MRC data in flash is up to date. No update.\n");
@@ -198,22 +198,48 @@ void update_mrc_cache(void)
 	}
 
 	//  2. look up the first unused block
-	cache = find_next_mrc_cache();
-	if (!cache) {
-		printk(BIOS_DEBUG, "Could not find MRC cache area\n");
-		return;
-	}
+	if (cache)
+		cache = find_next_mrc_cache(cache_base, cache, cache_size);
 
-	//  3. if no such place exists, erase entire mrc-cache range & use block 0
-	if (cache->mrc_data_size != -1) {
-		printk(BIOS_DEBUG, "We need to erase the MRC cache region\n");
-		flash->erase(flash, CONFIG_MRC_CACHE_LOCATION, CONFIG_MRC_CACHE_SIZE);
-		/* we know we can start at the beginning again */
-		get_mrc_cache_region(&cache);
+	/*
+	 * 3. if no such place exists, erase entire mrc-cache range & use
+	 * block 0. First time around the erase is not needed, but this is a
+	 * small overhead for simpler code.
+	 */
+	if (!cache) {
+		printk(BIOS_DEBUG,
+		       "Need to erase the MRC cache region of %d bytes at %p\n",
+		       cache_size, cache_base);
+
+		flash->erase(flash, to_flash_offset(cache_base), cache_size);
+
+		/* we will start at the beginning again */
+		cache = cache_base;
 	}
 	//  4. write mrc data with flash->write()
-	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash\n");
-	flash->write(flash, (u32)(((void*)cache)-CONFIG_MRC_CACHE_BASE), current->mrc_data_size + sizeof(*current), current);
+	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
+	       cache);
+	flash->write(flash, to_flash_offset(cache),
+		     current->mrc_data_size + sizeof(*current), current);
 }
 #endif
+
+struct mrc_data_container *find_current_mrc_cache(void)
+{
+	struct mrc_data_container *cache_base;
+	u32 cache_size;
+
+	cache_size = get_mrc_cache_region(&cache_base);
+	if (cache_base == NULL) {
+		printk(BIOS_ERR, "%s: could not find MRC cache area\n",
+		       __func__);
+		return NULL;
+	}
+
+	/*
+	 * we need to:
+	 */
+	//  0. compare MRC data to last mrc-cache block (exit if same)
+	return find_current_mrc_cache_local(cache_base, cache_size);
+}
 

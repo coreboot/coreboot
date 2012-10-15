@@ -255,6 +255,7 @@ void cbmem_list(void)
 		case CBMEM_ID_MPTABLE:	 printk(BIOS_DEBUG, "SMP TABLE  "); break;
 		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
 		case CBMEM_ID_RESUME_SCRATCH:	 printk(BIOS_DEBUG, "ACPISCRATCH"); break;
+		case CBMEM_ID_ACPI_GNVS: printk(BIOS_DEBUG, "ACPI GNVS  "); break;
 		case CBMEM_ID_SMBIOS:    printk(BIOS_DEBUG, "SMBIOS     "); break;
 		case CBMEM_ID_TIMESTAMP: printk(BIOS_DEBUG, "TIME STAMP "); break;
 		case CBMEM_ID_MRCDATA:	 printk(BIOS_DEBUG, "MRC DATA   "); break;

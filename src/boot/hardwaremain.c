@@ -137,12 +137,6 @@ void hardwaremain(int boot_complete)
 	if (! payload)
 		die("Could not find a payload\n");
 
-	printk(BIOS_DEBUG, "Got a payload\n");
-	/* Before we go off to run the payload, see if
-	 * we stayed within our bounds.
-	 */
-	checkstack(&_estack, 0);
-
 	selfboot(lb_mem, payload);
 	printk(BIOS_EMERG, "Boot failed");
 }

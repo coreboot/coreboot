@@ -6,6 +6,7 @@
 
 #include <cpu/x86/lapic.h>
 #include <delay.h>
+#include <lib.h>
 #include <string.h>
 #include <console/console.h>
 #include <arch/hlt.h>
@@ -219,7 +220,6 @@ volatile unsigned long secondary_stack;
 
 int start_cpu(device_t cpu)
 {
-	extern unsigned char _estack[];
 	struct cpu_info *info;
 	unsigned long stack_end;
 	unsigned long apicid;
@@ -466,6 +466,9 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
+
+	for(i = 1; i <= last_cpu_index; i++)
+		checkstack((void *)stacks[i] + CONFIG_STACK_SIZE, i);
 }
 
 #endif /* CONFIG_SMP */

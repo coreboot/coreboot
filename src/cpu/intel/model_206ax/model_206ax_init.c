@@ -436,22 +436,25 @@ static unsigned ehci_debug_addr;
 static void intel_cores_init(device_t cpu)
 {
 	struct cpuid_result result;
-	unsigned cores, threads, i;
+	unsigned threads_per_package, threads_per_core, i;
 
-	result = cpuid_ext(0xb, 0); /* Threads per core */
-	threads = result.ebx & 0xff;
+	/* Logical processors (threads) per core */
+	result = cpuid_ext(0xb, 0);
+	threads_per_core = result.ebx & 0xffff;
 
-	result = cpuid_ext(0xb, 1); /* Cores per package */
-	cores = result.ebx & 0xff;
+	/* Logical processors (threads) per package */
+	result = cpuid_ext(0xb, 1);
+	threads_per_package = result.ebx & 0xffff;
 
 	/* Only initialize extra cores from BSP */
 	if (cpu->path.apic.apic_id)
 		return;
 
-	printk(BIOS_DEBUG, "CPU: %u has %u cores %u threads\n",
-	       cpu->path.apic.apic_id, cores, threads);
+	printk(BIOS_DEBUG, "CPU: %u has %u cores, %u threads per core\n",
+	       cpu->path.apic.apic_id, threads_per_package/threads_per_core,
+	       threads_per_core);
 
-	for (i = 1; i < cores; ++i) {
+	for (i = 1; i < threads_per_package; ++i) {
 		struct device_path cpu_path;
 		device_t new;
 
@@ -461,7 +464,7 @@ static void intel_cores_init(device_t cpu)
 			cpu->path.apic.apic_id + i;
 
 		/* Update APIC ID if no hyperthreading */
-		if (threads == 1)
+		if (threads_per_core == 1)
 			cpu_path.apic.apic_id <<= 1;
 
 		/* Allocate the new cpu device structure */

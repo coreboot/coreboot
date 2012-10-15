@@ -41,10 +41,10 @@ int ram_check_nodie(unsigned long start, unsigned long stop);
 void quick_ram_check(void);
 
 /* Defined in src/lib/stack.c */
-int checkstack(void *top_of_stack, int stacksize);
+int checkstack(void *top_of_stack, int core);
 
 /* currently defined by a ldscript */
-extern u8 _estack;
+extern unsigned char _estack[];
 
 /* Defined in romstage.c */
 #if CONFIG_CPU_AMD_GEODE_LX

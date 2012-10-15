@@ -22,6 +22,7 @@
 
 #include <cpu/x86/lapic.h>
 #include <delay.h>
+#include <lib.h>
 #include <string.h>
 #include <console/console.h>
 #include <arch/hlt.h>
@@ -240,7 +241,6 @@ volatile unsigned int secondary_cpu_index;
 
 int start_cpu(device_t cpu)
 {
-	extern unsigned char _estack[];
 	struct cpu_info *info;
 	unsigned long stack_end;
 	unsigned long stack_base;
@@ -503,21 +503,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 	}
 	printk(BIOS_DEBUG, "All AP CPUs stopped (%ld loops)\n", loopcount);
-	for(i = 1; i <= last_cpu_index; i++){
-		unsigned long *stack = stacks[i];
-		int lowest;
-		int maxstack = (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
-					/sizeof(*stack) - 1;
-		if (stack[0] != 0xDEADBEEF)
-			printk(BIOS_ERR, "CPU%d overran its stack\n", i);
-		for(lowest = 0; lowest < maxstack; lowest++)
-			if (stack[lowest] != 0xDEADBEEF)
-				break;
-		printk(BIOS_SPEW, "CPU%d: stack allocated from %p to %p:", i,
-			stack, &stack[maxstack]);
-		printk(BIOS_SPEW, "lowest stack address was %p\n",
-			&stack[lowest]);
-	}
+	for(i = 1; i <= last_cpu_index; i++)
+		checkstack((void *)stacks[i] + CONFIG_STACK_SIZE, i);
 }
 
 #endif /* CONFIG_SMP */

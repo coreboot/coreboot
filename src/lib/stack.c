@@ -35,15 +35,17 @@ int checkstack(void *top_of_stack, int core)
 		return -1;
 	}
 
-	for(i = 0; i < CONFIG_STACK_SIZE/sizeof(stack[0]); i++){
+	for(i = 1; i < CONFIG_STACK_SIZE/sizeof(stack[0]); i++){
 		if (stack[i] == 0xDEADBEEF)
 			continue;
-		printk(BIOS_SPEW, "CPU%d: stack from %p to %p:",
-			core,
-			stack,
+		printk(BIOS_SPEW, "CPU%d: stack: %p - %p, ",
+			core, stack,
 			&stack[CONFIG_STACK_SIZE/sizeof(stack[0])]);
-		printk(BIOS_SPEW, "Lowest stack address %p\n", &stack[i]);
-		return -1;
+		printk(BIOS_SPEW, "lowest used address %p, ", &stack[i]);
+		printk(BIOS_SPEW, "stack used: %ld bytes\n",
+			(unsigned long)&stack[CONFIG_STACK_SIZE /
+			sizeof(stack[0])] - (unsigned long)&stack[i]);
+		return 0;
 	}
 
 	return 0;

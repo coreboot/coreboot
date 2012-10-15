@@ -519,6 +519,11 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	timestamp_add_now(TS_SELFBOOT_JUMP);
 #endif
 
+	/* Before we go off to run the payload, see if
+	 * we stayed within our bounds.
+	 */
+	checkstack(_estack, 0);
+
 	/* Jump to kernel */
 	jmp_to_elf_entry((void*)entry, bounce_buffer, bounce_size);
 	return 1;

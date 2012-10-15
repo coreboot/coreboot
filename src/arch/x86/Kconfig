@@ -6,7 +6,7 @@ menu "Architecture (x86)"
 config AP_IN_SIPI_WAIT
 	bool
 	default n
-	depends on ARCH_X86
+	depends on ARCH_X86 && SMP
 
 # Aligns 16bit entry code in bootblock so that hyper-threading CPUs
 # can boot AP CPUs to enable their shared caches.

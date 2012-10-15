@@ -58,10 +58,8 @@ void hardwaremain(int boot_complete);
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
-#if CONFIG_COLLECT_TIMESTAMPS
-	tsc_t timestamps[6];
-	timestamps[0] = rdtsc();
-#endif
+
+	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* console_init() MUST PRECEDE ALL printk()! */
@@ -83,37 +81,27 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamps[1] = rdtsc();
-#endif
+	timestamp_stash(TS_DEVICE_ENUMERATE);
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamps[2] = rdtsc();
-#endif
+	timestamp_stash(TS_DEVICE_CONFIGURE);
 	/* Now compute and assign the bus resources. */
 	dev_configure();
 	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamps[3] = rdtsc();
-#endif
+	timestamp_stash(TS_DEVICE_ENABLE);
 	/* Now actually enable devices on the bus */
 	dev_enable();
 	post_code(POST_DEVICES_ENABLED);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamps[4] = rdtsc();
-#endif
+	timestamp_stash(TS_DEVICE_INITIALIZE);
 	/* And of course initialize devices on the bus */
 	dev_initialize();
 	post_code(POST_DEVICES_INITIALIZED);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamps[5] = rdtsc();
-#endif
+	timestamp_stash(TS_DEVICE_DONE);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	cbmem_initialize();
@@ -121,13 +109,7 @@ void hardwaremain(int boot_complete)
 	cbmemc_reinit();
 #endif
 #endif
-
-	timestamp_add(TS_START_RAMSTAGE, timestamps[0]);
-	timestamp_add(TS_DEVICE_ENUMERATE, timestamps[1]);
-	timestamp_add(TS_DEVICE_CONFIGURE, timestamps[2]);
-	timestamp_add(TS_DEVICE_ENABLE, timestamps[3]);
-	timestamp_add(TS_DEVICE_INITIALIZE, timestamps[4]);
-	timestamp_add(TS_DEVICE_DONE, timestamps[5]);
+	timestamp_sync();
 
 #if CONFIG_HAVE_ACPI_RESUME
 	suspend_resume();

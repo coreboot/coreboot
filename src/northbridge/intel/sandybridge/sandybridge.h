@@ -230,10 +230,6 @@ struct mrc_data_container {
 	u8	mrc_data[0];	// Variable size, platform/run time dependent.
 } __attribute__ ((packed));
 
-struct mrc_data_container *next_mrc_block(struct mrc_data_container *mrc_cache);
-int is_mrc_cache(struct mrc_data_container *mrc_cache);
-u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr);
-struct mrc_data_container *find_next_mrc_cache(void);
 struct mrc_data_container *find_current_mrc_cache(void);
 #if !defined(__PRE_RAM__)
 void update_mrc_cache(void);

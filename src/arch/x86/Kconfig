@@ -25,7 +25,7 @@ config RAMTOP
 
 config STACK_SIZE
 	hex
-	default 0x8000
+	default 0x1000
 
 # Maximum reboot count
 # TODO: Improve description.

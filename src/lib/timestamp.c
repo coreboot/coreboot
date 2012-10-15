@@ -21,6 +21,10 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <timestamp.h>
+#ifndef __PRE_RAM__
+/* For CAR_GLOBAL... This should move out of x86 specific code */
+#include <cpu/x86/car.h>
+#endif
 
 #define MAX_TIMESTAMPS 30
 
@@ -72,3 +76,42 @@ void timestamp_add_now(enum timestamp_id id)
 {
 	timestamp_add(id, rdtsc());
 }
+
+#ifndef __PRE_RAM__
+
+#define MAX_TIMESTAMP_CACHE 8
+struct timestamp_cache {
+	enum timestamp_id id;
+	tsc_t time;
+} timestamp_cache[MAX_TIMESTAMP_CACHE] CAR_GLOBAL;
+
+static int timestamp_entries CAR_GLOBAL = 0;
+
+/**
+ * timestamp_stash() allows to temporarily cache time stamps.
+ * This is needed when time stamping before the CBMEM area
+ * is initialized. The function timestamp_sync() is used to
+ * write the time stamps to the CBMEM area. This is done in
+ * hardwaremain()
+ */
+
+void timestamp_stash(enum timestamp_id id)
+{
+	if (timestamp_entries >= MAX_TIMESTAMP_CACHE) {
+		printk(BIOS_ERR, "ERROR: failed to add timestamp to cache\n");
+		return;
+	}
+	timestamp_cache[timestamp_entries].id = id;
+	timestamp_cache[timestamp_entries].time = rdtsc();
+	timestamp_entries++;
+}
+
+void timestamp_sync(void)
+{
+	int i;
+	for (i = 0; i < timestamp_entries; i++)
+		timestamp_add(timestamp_cache[i].id, timestamp_cache[i].time);
+	timestamp_entries = 0;
+}
+
+#endif

@@ -599,6 +599,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x206a0 }, /* Intel Sandybridge */
 	{ X86_VENDOR_INTEL, 0x206a6 }, /* Intel Sandybridge D1 */
 	{ X86_VENDOR_INTEL, 0x206a7 }, /* Intel Sandybridge D2/J1 */
+	{ X86_VENDOR_INTEL, 0x306a0 }, /* Intel IvyBridge */
 	{ X86_VENDOR_INTEL, 0x306a2 }, /* Intel IvyBridge */
 	{ X86_VENDOR_INTEL, 0x306a4 }, /* Intel IvyBridge */
 	{ X86_VENDOR_INTEL, 0x306a5 }, /* Intel IvyBridge */

@@ -23,44 +23,32 @@
 #include <console/console.h>
 #include "fmap.h"
 
-static int fmap_try_find(void *fmap)
-{
-	if (!memcmp(fmap, FMAP_SIGNATURE,
-	    sizeof(FMAP_SIGNATURE)-1))
-		return 1;
-	return 0;
-}
-
 /* Find FMAP data structure in ROM.
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
 const struct fmap *fmap_find(void)
 {
-	const struct fmap *fmap = NULL;
-
 	/* FIXME: Get rid of the hard codes. The "easy" way would be to
 	 * do a binary search, but since ROM accesses are slow, we don't
 	 * want to spend a lot of time looking for the FMAP. An elegant
 	 * solution would be to store a pointer to the FMAP in the CBFS
 	 * master header; that would require some more changes to cbfstool
 	 * and possibly cros_bundle_firmware.
-	 * FIXME: Use CONFIG_ROMSIZE instead of CONFIG_MRC_CACHE_BASE
-	 * (and get rid of CONFIG_MRC_CACHE_BASE), once we are building
-	 * coreboot images with ME firmware etc built in instead of just
-	 * the CBFS part.
 	 */
-	if (fmap_try_find((void *)CONFIG_MRC_CACHE_BASE +
-						CONFIG_FLASHMAP_OFFSET))
-		fmap = (const struct fmap  *)(CONFIG_MRC_CACHE_BASE +
-						CONFIG_FLASHMAP_OFFSET);
-	if (fmap) {
-		printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %p.\n",
-			fmap->name, fmap->ver_major, fmap->ver_minor, fmap);
-		printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
-			(unsigned long long)fmap->base, fmap->size,
-			fmap->nareas);
-	} else
-		printk(BIOS_DEBUG, "No FMAP found.\n");
+
+	/* wrapping around 0x100000000 */
+	const struct fmap *fmap = (void *)
+		(CONFIG_FLASHMAP_OFFSET - CONFIG_ROM_SIZE);
+
+	if (memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE)-1)) {
+		printk(BIOS_DEBUG, "No FMAP found at %p.\n", fmap);
+		return NULL;
+	}
+
+	printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %p.\n",
+	       fmap->name, fmap->ver_major, fmap->ver_minor, fmap);
+	printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
+	       (unsigned long long)fmap->base, fmap->size, fmap->nareas);
 
 	return fmap;
 }
@@ -114,13 +102,15 @@ int find_fmap_entry(const char name[], void **pointer)
 	 */
 	if (fmap->base) {
 		base = (void *)(unsigned long)fmap->base;
+		printk(BIOS_DEBUG, "FMAP: %s base at %p\n", name, base);
 	} else {
+		base = (void *)(0 - CONFIG_ROM_SIZE);
 		printk(BIOS_WARNING, "FMAP: No valid base address, using"
-				" 0x%08x\n", CONFIG_MRC_CACHE_BASE);
-		base = (void *)CONFIG_MRC_CACHE_BASE;
+				" 0x%p\n", base);
 	}
 
-	*pointer = base + area->offset;
-
+	*pointer = (void*) ((u32)base + area->offset);
+	printk(BIOS_DEBUG, "FMAP: %s at %p (offset %x)\n",
+	       name, *pointer, area->offset);
 	return area->size;
 }

@@ -121,10 +121,6 @@ void hardwaremain(int boot_complete)
 	cbmemc_reinit();
 #endif
 #endif
-#if CONFIG_HAVE_ACPI_RESUME
-	suspend_resume();
-	post_code(0x8a);
-#endif
 
 	timestamp_add(TS_START_RAMSTAGE, timestamps[0]);
 	timestamp_add(TS_DEVICE_ENUMERATE, timestamps[1]);
@@ -132,6 +128,12 @@ void hardwaremain(int boot_complete)
 	timestamp_add(TS_DEVICE_ENABLE, timestamps[3]);
 	timestamp_add(TS_DEVICE_INITIALIZE, timestamps[4]);
 	timestamp_add(TS_DEVICE_DONE, timestamps[5]);
+
+#if CONFIG_HAVE_ACPI_RESUME
+	suspend_resume();
+	post_code(0x8a);
+#endif
+
 	timestamp_add_now(TS_CBMEM_POST);
 
 #if CONFIG_WRITE_HIGH_TABLES

@@ -28,12 +28,16 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
 
-#if CONFIG_CPU_MICROCODE_IN_CBFS
 #ifdef __PRE_RAM__
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 #include <arch/cbfs.h>
+#endif
 #else
+#if CONFIG_CPU_MICROCODE_IN_CBFS
 #include <cbfs.h>
 #endif
+#include <smp/spinlock.h>
+DECLARE_SPIN_LOCK(microcode_lock)
 #endif
 
 struct microcode {
@@ -111,6 +115,9 @@ void intel_update_microcode(const void *microcode_updates)
 	 */
 	printk(BIOS_DEBUG, "microcode: sig=0x%x pf=0x%x revision=0x%x\n",
 			sig, pf, rev);
+#if !defined(__PRE_RAM__)
+	spin_lock(&microcode_lock);
+#endif
 #endif
 
 	m = microcode_updates;
@@ -142,6 +149,10 @@ void intel_update_microcode(const void *microcode_updates)
 			c += 2048;
 		}
 	}
+
+#if !defined(__ROMCC__) && !defined(__PRE_RAM__)
+	spin_unlock(&microcode_lock);
+#endif
 }
 
 #if CONFIG_CPU_MICROCODE_IN_CBFS

@@ -7,7 +7,7 @@
 void cpu_initialize(void);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
-void secondary_cpu_init(void);
+void __attribute__((regparm(0))) secondary_cpu_init(void);
 
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);

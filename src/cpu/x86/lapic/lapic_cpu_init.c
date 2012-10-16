@@ -373,7 +373,7 @@ static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Dat
 #endif
 
 /* C entry point of secondary cpus */
-void secondary_cpu_init(void)
+void __attribute__((regparm(0))) secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
 #if CONFIG_SERIAL_CPU_INIT

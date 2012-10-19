@@ -19,17 +19,16 @@
 
 PROGRAM = cbmem
 ROOT = ../../src
-CC      = gcc
-CFLAGS  = -O2 -Wall -Werror -iquote $(ROOT)/include \
-	-iquote $(ROOT)/src/arch/x86
-LDFLAGS =
+CC     = $(CROSS_COMPILE)gcc
+CFLAGS ?= -O2
+CFLAGS += -Wall -Werror
+CPPFLAGS += -iquote $(ROOT)/include -iquote $(ROOT)/src/arch/x86
 
 OBJS = $(PROGRAM).o
 
-all: dep $(PROGRAM)
+all: $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
-	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
 
 clean:
 	rm -f $(PROGRAM) *.o *~
@@ -37,9 +36,9 @@ clean:
 distclean: clean
 	rm -f .dependencies
 
-dep:
+.dependencies:
 	@$(CC) $(CFLAGS) -MM *.c > .dependencies
 
-.PHONY: all clean distclean dep
+.PHONY: all clean distclean
 
 -include .dependencies

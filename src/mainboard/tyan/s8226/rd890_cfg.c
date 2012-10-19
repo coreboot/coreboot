@@ -23,25 +23,32 @@
 #include "nbInitializer.h"
 #include <string.h>
 #include <arch/ioapic.h>
-
-#ifndef __PRE_RAM__
 #include <device/device.h>
+
+extern ROMSTAGE_CONST struct device dev_root;
 extern void set_pcie_reset(void *config);
 extern void set_pcie_dereset(void *config);
 
 /**
  * Platform dependent configuration at ramstage
  */
-static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
+void nb_platform_config(AMD_NB_CONFIG_BLOCK *pConfig)
 {
 	u16 i;
+	struct device *pdev;
+	AMD_NB_CONFIG *NbConfigPtr = &(pConfig->Northbridges[0]);
 	PCIE_CONFIG *pPcieConfig = NbConfigPtr->pPcieConfig;
-	//AMD_NB_CONFIG_BLOCK *ConfigPtr = GET_BLOCK_CONFIG_PTR(NbConfigPtr);
 	struct northbridge_amd_cimx_rd890_config *rd890_info = NULL;
 	DEFAULT_PLATFORM_CONFIG(platform_config);
 
+	/* find rd890 in device list */
+	for (pdev = &dev_root; pdev; pdev=pdev->next) {
+		if ((pdev->path.type == DEVICE_PATH_PCI) && (pdev->path.pci.devfn == 0))
+			break;
+	}
+	rd890_info = pdev->chip_info;
+
 	/* update the platform depentent configuration by devicetree */
-	rd890_info  = nb_dev->chip_info;
 	platform_config.PortEnableMap = rd890_info->port_enable;
 	if (rd890_info->gpp1_configuration == 0) {
 		platform_config.Gpp1Config = GFX_CONFIG_AAAA;
@@ -97,7 +104,6 @@ static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
 		}
 	}
 }
-#endif // __PRE_RAM__
 
 /**
  * @brief Entry point of Northbridge CIMx callout/CallBack
@@ -160,9 +166,6 @@ static u32 rd890_callout_entry(u32 func, u32 data, void *config)
 
 			break;
 		case CB_AmdSetPcieEarlyConfig:
-#ifndef __PRE_RAM__
-			nb_platform_config(nb_dev, nbConfigPtr);
-#endif
 			break;
 
 		case CB_AmdSetEarlyPostConfig:
@@ -244,6 +247,7 @@ void rd890_cimx_config(AMD_NB_CONFIG_BLOCK *pConfig, NB_CONFIG *nbConfig, HT_CON
 	pConfig->Northbridges[0].NbHtPath.NodeID = sbNode;
 	pConfig->Northbridges[0].NbHtPath.LinkID = sbLink;
 	//TODO: other NBs
+	pConfig->Northbridges[0].pNbConfig->IoApicBaseAddress = IO_APIC_ADDR;
 
 #ifndef __PRE_RAM__
 	/* If temporrary MMIO enable set up CPU MMIO */

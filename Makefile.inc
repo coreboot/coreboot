@@ -23,7 +23,6 @@ export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; the
 
 #######################################################################
 # Basic component discovery
-ARCHDIR-$(CONFIG_ARCH_X86) := x86
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 

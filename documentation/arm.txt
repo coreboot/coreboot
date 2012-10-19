@@ -1,0 +1,7 @@
+Misc
+----
+
+To disassemble an ARM binary use
+
+ $ arm-elf-objdump -D -b binary temp.bin --architecture=arm | less
+

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,28 +302,41 @@ static int cbfs_remove(int argc, char **argv)
 static int cbfs_create(int argc, char **argv)
 {
 	char *romname = argv[1];
-	if (argc < 5) {
+	if (argc < 6) {
 		printf("not enough arguments to 'create'.\n");
 		return 1;
 	}
 
+	char *arch_string = argv[3];
+
+	if (!strncasecmp(arch_string, "arm", 4))
+		arch = ARCH_ARM;
+	else if (!strncasecmp(arch_string, "x86", 4))
+		arch = ARCH_X86;
+	else if (!strncasecmp(arch_string, "i386", 5))
+		arch = ARCH_X86;
+	else {
+		printf("unknown architecture '%s'\n", arch_string);
+		return 1;
+	}
+
 	char* suffix;
-	uint32_t size = strtoul(argv[3], &suffix, 0);
+	uint32_t size = strtoul(argv[4], &suffix, 0);
 	if (tolower(suffix[0])=='k') {
 		size *= 1024;
 	}
 	if (tolower(suffix[0])=='m') {
 		size *= 1024 * 1024;
 	}
-	char *bootblock = argv[4];
+	char *bootblock = argv[5];
 	uint32_t align = 0;
 
-	if (argc > 5)
-		align = strtoul(argv[5], NULL, 0);
+	if (argc > 6)
+		align = strtoul(argv[6], NULL, 0);
 
 	uint32_t offs = 0;
-	if (argc > 6)
-		offs = strtoul(argv[6], NULL, 0);
+	if (argc > 7)
+		offs = strtoul(argv[7], NULL, 0);
 
 	return create_cbfs_image(romname, size, bootblock, align, offs);
 }
@@ -404,11 +418,17 @@ static void usage(void)
 	     " add-flat-binary FILE NAME LOAD ENTRY \\\n"
 	     "                       [COMP] [base]    Add a 32bit flat mode binary\n"
 	     " remove FILE NAME                       Remove a component\n"
+<<<<<<< HEAD
 	     " create SIZE BOOTBLOCK [ALIGN] [offset] Create a ROM file\n"
+=======
+	     " create ARCH SIZE BOOTBLOCK [ALIGN] [offset] Create a ROM file\n"
+>>>>>>> coreboot: Support multiple architecture.
 	     " locate FILE NAME ALIGN                 Find a place for a file of that size\n"
 	     " print                                  Show the contents of the ROM\n"
 	     " extract NAME FILE                      Extracts a raw payload from ROM\n"
 	     "\n"
+	     "ARCHes:\n"
+	     " x86, arm\n\n"
 	     "TYPEs:\n"
 	     );
 	print_supported_filetypes();

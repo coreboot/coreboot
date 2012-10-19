@@ -125,7 +125,7 @@ static const struct timestamp_table *find_tstamps(u64 address)
 				int new_size;
 				struct timestamp_table *tst_p;
 				u32 stamp_addr = (u32)
-					((u64)cbmr_p->cbmem_addr);
+					((uintptr_t)(cbmr_p->cbmem_addr));
 
 				readmem(buf, stamp_addr,
 					sizeof(struct timestamp_table));

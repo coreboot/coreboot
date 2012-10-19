@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,17 +74,68 @@ static struct cbfs_header *master_header;
 static uint32_t phys_start, phys_end, align;
 uint32_t romsize;
 void *offset;
+arch_t arch = ARCH_NONE;
 
 void recalculate_rom_geometry(void *romarea)
 {
-	offset = romarea + romsize - 0x100000000ULL;
-	master_header = (struct cbfs_header *)
-	    phys_to_virt(*((uint32_t *) phys_to_virt(0xfffffffc)));
-	phys_start = (0 - romsize + ntohl(master_header->offset)) & 0xffffffff;
-	phys_end =
-	    (0 - ntohl(master_header->bootblocksize) -
-	     sizeof(struct cbfs_header)) & 0xffffffff;
+	switch (arch) {
+	case ARCH_ARM:
+		offset = romarea;
+		master_header = (struct cbfs_header *)(romarea + 0x20);
+		phys_start = (0 + ntohl(master_header->offset)) & 0xffffffff;
+		phys_end = romsize & 0xffffffff;
+		break;
+
+	case ARCH_X86:
+		offset = romarea + romsize - 0x100000000ULL;
+		master_header = (struct cbfs_header *)
+		    phys_to_virt(*((uint32_t *) phys_to_virt(0xfffffffc)));
+		phys_start = (0 - romsize + ntohl(master_header->offset)) &
+				0xffffffff;
+		phys_end = (0 - ntohl(master_header->bootblocksize) -
+		     sizeof(struct cbfs_header)) & 0xffffffff;
+		break;
+
+	default:
+		printf("Unknown architecture\n");
+		exit(1);
+	}
 	align = ntohl(master_header->align);
+}
+
+static void detect_architecture(void *romarea)
+{
+	uint32_t *magic = (uint32_t *)romarea;
+	// TODO(hungte) Replace the magic value by find master header and
+	// reading architecture variable.
+	if (ntohl(magic[0]) == 0x0e0000ea) {
+		arch = ARCH_ARM;
+	} else {
+		arch = ARCH_X86;
+	}
+}
+
+static struct arch_name {
+	arch_t arch;
+	const char *name;
+} arch_names[] = {
+	{ ARCH_X86, "x86" },
+	{ ARCH_ARM, "arm" },
+	{ ARCH_NONE, "unknown" }
+};
+
+static const char *arch_string(void)
+{
+	int i;
+	const char *ret;
+	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
+		ret = arch_names[i].name;
+		if (arch == arch_names[i].arch)
+			break;
+	}
+	// if it's an unknown/invalid architecture, the returned
+	// string will be "unknown" (ie. the last entry in the array)
+	return ret;
 }
 
 void *loadrom(const char *filename)
@@ -91,6 +143,7 @@ void *loadrom(const char *filename)
 	void *romarea = loadfile(filename, &romsize, 0, SEEK_SET);
 	if (romarea == NULL)
 		return NULL;
+	detect_architecture(romarea);
 	recalculate_rom_geometry(romarea);
 	return romarea;
 }
@@ -187,10 +240,11 @@ uint64_t intfiletype(const char *name)
 
 void print_cbfs_directory(const char *filename)
 {
-	printf
-	    ("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\nAlignment: %d bytes\n\n",
-	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
-	     romsize, ntohl(master_header->offset), align);
+	printf("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
+	       "alignment: %d bytes,  architecture: %s\n\n",
+	       basename((char *)filename), romsize / 1024,
+	       ntohl(master_header->bootblocksize), romsize,
+	       ntohl(master_header->offset), align, arch_string());
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;
 	while (current < phys_end) {
@@ -201,13 +255,14 @@ void print_cbfs_directory(const char *filename)
 		struct cbfs_file *thisfile =
 		    (struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
-		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+		char *fname = ((char *)(phys_to_virt(current) +
+					sizeof(struct cbfs_file)));
 		if (strlen(fname) == 0)
 			fname = "(empty)";
 
 		printf("%-30s 0x%-8x %-12s %d\n", fname,
-		       current - phys_start, strfiletype(ntohl(thisfile->type)),
-		       length);
+		       current - phys_start + ntohl(master_header->offset),
+		       strfiletype(ntohl(thisfile->type)), length);
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
@@ -291,22 +346,23 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 		    (struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
 
-		dprintf("at %x, %x bytes\n", current, length);
+		dprintf("at 0x%x, 0x%x bytes\n", current, length);
 		/* Is this a free chunk? */
 		if ((thisfile->type == CBFS_COMPONENT_DELETED)
 		    || (thisfile->type == CBFS_COMPONENT_NULL)) {
-			dprintf("null||deleted at %x, %x bytes\n", current,
+			dprintf("null||deleted at 0x%x, 0x%x bytes\n", current,
 				length);
 			/* if this is the right size, and if specified, the right location, use it */
 			if ((contentsize <= length)
 			    && ((location == 0) || (current == location))) {
 				if (contentsize < length) {
-					dprintf
-					    ("this chunk is %x bytes, we need %x. create a new chunk at %x with %x bytes\n",
-					     length, contentsize,
-					     ALIGN(current + contentsize,
-						   align),
-					     length - contentsize);
+					dprintf("this chunk is 0x%x bytes, we "
+						"need 0x%x. create a new chunk "
+						"at 0x%x with 0x%x bytes\n",
+						length, contentsize,
+						ALIGN(current + contentsize,
+						      align),
+						length - contentsize);
 					uint32_t start =
 					    ALIGN(current + contentsize, align);
 					uint32_t size =
@@ -334,7 +390,7 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 				    && ((location + contentsize) <=
 					(current + length))) {
 					/* Split it up. In the next iteration the code will be at the right place. */
-					dprintf("split up. new length: %x\n",
+					dprintf("split up. new length: 0x%x\n",
 						location - current -
 						ntohl(thisfile->offset));
 					thisfile->len =
@@ -466,9 +522,6 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	}
 	memset(romarea, 0xff, romsize);
 
-	// Set up physical/virtual mapping
-	offset = romarea + romsize - 0x100000000ULL;
-
 	if (align == 0)
 		align = 64;
 
@@ -481,24 +534,75 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		return 1;
 	}
 
-	master_header =
-	    (struct cbfs_header *)(romarea + romsize - bootblocksize -
-				   sizeof(struct cbfs_header));
-	master_header->magic = ntohl(0x4f524243);
-	master_header->version = ntohl(0x31313131);
-	master_header->romsize = htonl(romsize);
-	master_header->bootblocksize = htonl(bootblocksize);
-	master_header->align = htonl(align);
-	master_header->offset = htonl(offs);
-	((uint32_t *) phys_to_virt(0xfffffffc))[0] =
-	    virt_to_phys(master_header);
+	// TODO(hungte) Replace magic numbers by named constants.
+	switch (arch) {
+	case ARCH_ARM:
+		/* Set up physical/virtual mapping */
+		offset = romarea;
 
-	recalculate_rom_geometry(romarea);
+		// should be aligned to align but then we need to dynamically
+		// create the jump to the bootblock
+		loadfile(bootblock, &bootblocksize, romarea + 0x20 +
+			 sizeof(struct cbfs_header), SEEK_SET);
+		master_header = (struct cbfs_header *)(romarea + 0x20);
+		uint32_t *arm_vec = (uint32_t *)romarea;
+		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
 
-	cbfs_create_empty_file((0 - romsize + offs) & 0xffffffff,
-				   romsize - offs - bootblocksize -
-				   sizeof(struct cbfs_header) -
-				   sizeof(struct cbfs_file) - 16);
+		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
+		master_header->version = ntohl(VERSION1);
+		master_header->romsize = htonl(romsize);
+		master_header->bootblocksize = htonl(bootblocksize);
+		master_header->align = htonl(align);
+		master_header->offset = htonl(
+				ALIGN((0x40 + bootblocksize), align));
+		master_header->architecture = CBFS_ARCHITECTURE_ARM;
+
+		((uint32_t *) phys_to_virt(0x4))[0] =
+				virt_to_phys(master_header);
+
+		recalculate_rom_geometry(romarea);
+
+		cbfs_create_empty_file(
+				ALIGN((0x40 + bootblocksize), align),
+				romsize - ALIGN((bootblocksize + 0x40), align)
+				//- sizeof(struct cbfs_header)
+				- sizeof(struct cbfs_file) );
+		break;
+
+	case ARCH_X86:
+		// Set up physical/virtual mapping
+		offset = romarea + romsize - 0x100000000ULL;
+
+		loadfile(bootblock, &bootblocksize, romarea + romsize,
+			 SEEK_END);
+		master_header = (struct cbfs_header *)(romarea + romsize -
+				  bootblocksize - sizeof(struct cbfs_header));
+
+		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
+		master_header->version = ntohl(VERSION1);
+		master_header->romsize = htonl(romsize);
+		master_header->bootblocksize = htonl(bootblocksize);
+		master_header->align = htonl(align);
+		master_header->offset = htonl(offs);
+		master_header->architecture = CBFS_ARCHITECTURE_X86;
+
+		((uint32_t *) phys_to_virt(CBFS_HEADPTR_ADDR_X86))[0] =
+		    virt_to_phys(master_header);
+
+		recalculate_rom_geometry(romarea);
+
+		cbfs_create_empty_file((0 - romsize + offs) & 0xffffffff,
+				       romsize - offs - bootblocksize -
+				       sizeof(struct cbfs_header) -
+				       sizeof(struct cbfs_file) - 16);
+		break;
+
+	case ARCH_NONE:
+		// Could not happen.
+		printf("You found a bug in cbfstool.\n");
+		exit(1);
+	}
+>>>>>>> coreboot: Support multiple architecture.
 
 	writerom(romfile, romarea, romsize);
 	free(romarea);
@@ -539,6 +643,14 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			current += align;
 			continue;
 		}
+<<<<<<< HEAD
+=======
+
+		dprintf("locate trying 0x%x\n", current);
+
+		struct cbfs_file *thisfile =
+		    (struct cbfs_file *)phys_to_virt(current);
+>>>>>>> coreboot: Support multiple architecture.
 
 		thisfile = (struct cbfs_file *)phys_to_virt(current);
 

@@ -20,6 +20,8 @@
 #ifndef _NB_CIMX_H_
 #define _NB_CIMX_H_
 
+#include "NbPlatform.h"
+
 /**
  * @brief disable GPP1 Port0,1, GPP2, GPP3a Port0,1,2,3,4,5, GPP3b
  *
@@ -34,11 +36,11 @@ void sr56x0_rd890_disable_pcie_bridge(void);
 void nb_Poweron_Init(void);
 void nb_Ht_Init(void);
 void nb_S3_Init(void);
-void nb_Early_Post_Init(void);
-void nb_Mid_Post_Init(void);
-void nb_Late_Post_Init(void);
-void nb_Pcie_Early_Init(void);
-void nb_Pcie_Late_Init(void);
+void nb_Pcie_Early_Init(AMD_NB_CONFIG_BLOCK *pConfig);
+void nb_Pcie_Late_Init(AMD_NB_CONFIG_BLOCK *pConfig);
+void nb_Early_Post_Init(AMD_NB_CONFIG_BLOCK *pConfig);
+void nb_Mid_Post_Init(AMD_NB_CONFIG_BLOCK *pConfig);
+void nb_Late_Post_Init(AMD_NB_CONFIG_BLOCK *pConfig);
 
 #endif//_RD890_EARLY_H_
 

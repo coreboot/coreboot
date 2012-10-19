@@ -170,5 +170,6 @@ typedef struct {
  * Bridge CIMx configuration
  */
 void rd890_cimx_config(AMD_NB_CONFIG_BLOCK *pConfig, NB_CONFIG *nbConfig, HT_CONFIG *htConfig, PCIE_CONFIG *pcieConfig);
+void nb_platform_config(AMD_NB_CONFIG_BLOCK *pConfigPtr);
 
 #endif //_RD890_CFG_H_

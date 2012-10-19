@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +24,17 @@
 #define ntohll(x) (host_bigendian?(x):swab64(x))
 #define htonll(x) (host_bigendian?(x):swab64(x))
 
+typedef enum {
+	ARCH_NONE,
+	ARCH_ARM,
+	ARCH_X86,
+} arch_t;
+
 extern void *offset;
 extern struct cbfs_header *master_header;
 extern uint32_t phys_start, phys_end, align, romsize;
 extern int host_bigendian;
+extern arch_t arch;
 
 static inline void *phys_to_virt(uint32_t addr)
 {

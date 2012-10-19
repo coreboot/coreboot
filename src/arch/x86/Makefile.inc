@@ -65,7 +65,7 @@ prebuild-files = \
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(objcbfs)/bootblock.bin
+	$(CBFSTOOL) $@.tmp create x86 $(CONFIG_COREBOOT_ROMSIZE_KB)K $(objcbfs)/bootblock.bin 64 $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
 	$(prebuild-files) true
 	mv $@.tmp $@
 else

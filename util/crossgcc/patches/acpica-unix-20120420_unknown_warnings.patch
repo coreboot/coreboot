@@ -1,6 +1,6 @@
---- acpica-unix-20120420/source/compiler/Makefile	2012-04-21 04:02:33.000000000 +0800
-+++ acpica-unix-20120420/source/compiler/Makefile	2012-08-08 18:06:11.000000000 +0800
-@@ -257,19 +257,12 @@
+--- acpica-unix-20120420/source/compiler/Makefile	2012-04-20 22:02:33.000000000 +0200
++++ acpica-unix-20120420.patched/source/compiler/Makefile	2012-10-21 00:30:38.634470788 +0200
+@@ -257,19 +257,11 @@
  # gcc 4+ flags
  #
  CWARNINGFLAGS += \
@@ -14,10 +14,10 @@
 -    -Wmissing-parameter-type \
      -Wnested-externs \
 -    -Wold-style-declaration \
-     -Wold-style-definition \
+-    -Wold-style-definition \
 -    -Wredundant-decls \
 -    -Wtype-limits
-+    -Wredundant-decls
++    -Wold-style-definition
  
  #
  # Bison/Flex configuration

@@ -1,0 +1,40 @@
+diff -ur acpica-unix-20121018/generate/unix/Makefile.config acpica-unix-20121018.patched/generate/unix/Makefile.config
+--- acpica-unix-20121018/generate/unix/Makefile.config	2012-10-18 21:23:26.000000000 +0200
++++ acpica-unix-20121018.patched/generate/unix/Makefile.config	2012-10-21 02:24:34.667999649 +0200
+@@ -104,6 +104,7 @@
+ # automatically included in -Wall.
+ #
+ CFLAGS += \
++    -O \
+     $(BITSFLAG) \
+     -D$(HOST) \
+     -D_GNU_SOURCE \
+@@ -114,7 +115,6 @@
+ 
+ CWARNINGFLAGS = \
+     -ansi \
+-    -Wall \
+     -Wbad-function-cast \
+     -Wdeclaration-after-statement \
+     -Werror \
+@@ -131,19 +131,11 @@
+ # gcc 4+ flags
+ #
+ CWARNINGFLAGS += \
+-    -Waddress \
+     -Waggregate-return \
+     -Wchar-subscripts \
+-    -Wempty-body \
+-    -Wlogical-op \
+     -Wmissing-declarations \
+-    -Wmissing-field-initializers \
+-    -Wmissing-parameter-type \
+     -Wnested-externs \
+-    -Wold-style-declaration \
+-    -Wold-style-definition \
+-    -Wredundant-decls \
+-    -Wtype-limits
++    -Wold-style-definition
+ 
+ #
+ # Extra warning flags (possible future use)

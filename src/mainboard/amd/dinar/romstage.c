@@ -36,7 +36,6 @@
 #include "drivers/pc80/i8259.c"
 #include "nb_cimx.h"
 #include "sb_cimx.h"
-#include "Platform.h"
 #include <arch/cpu.h>
 
 #define SERIAL_DEV PNP_DEV(CONFIG_SIO_PORT, SMSCSUPERIO_SP1)

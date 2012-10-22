@@ -35,9 +35,10 @@
  *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 \*****************************************************************************/
 
-#include <arpa/inet.h>
 #include <string.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#endif
 #include "common.h"
 #include "coreboot_tables.h"
 #include "ip_checksum.h"

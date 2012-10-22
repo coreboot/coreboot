@@ -31,9 +31,10 @@
 
 #include <stdint.h>
 #include <inttypes.h>
-#include <arpa/inet.h>
 #include <string.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#endif
 #include "common.h"
 #include "coreboot_tables.h"
 #include "ip_checksum.h"

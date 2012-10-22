@@ -58,6 +58,21 @@
 #define LINE_EOF (COMMON_RESULT_START + 0)
 #define LINE_TOO_LONG (COMMON_RESULT_START + 1)
 
+#ifdef __MINGW32__
+#define PROT_READ 1
+#define PROT_WRITE 2
+#define MAP_PRIVATE 1
+
+void *win32_mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset);
+int win32_munmap(void *start, size_t length);
+
+#define mmap win32_mmap
+#define munmap win32_munmap
+
+#define MAP_FAILED ((void *)-1)
+#define MAP_SHARED 1
+#endif
+
 /* basename of this program, as reported by argv[0] */
 extern const char prog_name[];
 

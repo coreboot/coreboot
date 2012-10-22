@@ -19,15 +19,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#ifdef __MINGW32__
+#include <winsock.h>
+#else
 #include <arpa/inet.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#endif
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 #include "cbfs.h"
+#include "common.h"
 
 #define ALIGN(x,a)              __ALIGN_MASK(x,(typeof(x))(a)-1)
 #define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))

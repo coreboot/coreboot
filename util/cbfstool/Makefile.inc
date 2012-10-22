@@ -15,6 +15,10 @@ cbfsobj += cbfstool.o
 
 CBFSTOOLFLAGS=-DCOMPACT -g
 
+ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
+CBFSTOOLFLAGS+=-mno-ms-bitfields
+endif
+
 $(objutil)/cbfstool:
 	mkdir -p $@
 

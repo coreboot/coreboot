@@ -111,3 +111,13 @@ void nb_S3_Init(void)
 {
 	//TODO
 }
+
+void nb_Pcie_Early_Init(AMD_NB_CONFIG_BLOCK *pConfig)
+{
+	LibSystemApiCall(AmdPcieEarlyInit, pConfig);
+}
+
+void nb_Pcie_Late_Init(AMD_NB_CONFIG_BLOCK *pConfig)
+{
+	LibSystemApiCall(AmdPcieLateInit, pConfig);
+}

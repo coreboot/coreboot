@@ -101,6 +101,9 @@ ifneq ($(MAKECMDGOALS),)
 ifneq ($(filter %config distclean,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
+ifeq ($(MAKECMDGOALS), distclean)
+NOMKDIR:=1
+endif
 endif
 
 ifeq ($(NOCOMPILE),1)

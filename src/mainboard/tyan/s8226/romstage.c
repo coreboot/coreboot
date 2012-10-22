@@ -45,6 +45,10 @@ extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
+	NB_CONFIG nb_cfg[MAX_NB_COUNT];
+	HT_CONFIG ht_cfg[MAX_NB_COUNT];
+	PCIE_CONFIG pcie_cfg[MAX_NB_COUNT];
+	AMD_NB_CONFIG_BLOCK gConfig;
 
 	post_code(0x30);
 	agesawrapper_amdinitmmio();
@@ -139,6 +143,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x51);
 	setup_i8259 ();
 	setup_i8254 ();
+
+	rd890_cimx_config(&gConfig, &nb_cfg[0], &ht_cfg[0], &pcie_cfg[0]);
+	nb_platform_config(&gConfig);
+	nb_Pcie_Early_Init(&gConfig);
+	nb_Pcie_Late_Init(&gConfig);
+
 	copy_and_run(0);
 
 	/* We will not return,  Should never see this message and post code. */

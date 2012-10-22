@@ -33,6 +33,7 @@
 #include <sb_cimx.h>
 #include "superio/nuvoton/wpcm450/wpcm450.h"
 #include "superio/winbond/w83627dhg/w83627dhg.h"
+#include <cpu/x86/cache.h>
 
 extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
 
@@ -128,6 +129,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	disable_cache_as_ram();
 	print_debug("done\n");
 
+	enable_cache();
 	post_code(0x51);
 	copy_and_run(0);
 

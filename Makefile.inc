@@ -292,6 +292,7 @@ lint lint-stable:
 	rm -f $$LINTLOG
 
 gitconfig:
+	mkdir -p .git/hooks
 	for hook in commit-msg pre-commit ; do                       \
 		if [ util/gitconfig/$$hook -nt .git/hooks/$$hook -o  \
 		! -x .git/hooks/$$hook ]; then			     \

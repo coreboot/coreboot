@@ -29,6 +29,7 @@ typedef enum {
 	CMD_ADD,
 	CMD_ADD_PAYLOAD,
 	CMD_ADD_STAGE,
+	CMD_ADD_FLAT,
 	CMD_REMOVE,
 	CMD_CREATE,
 	CMD_LOCATE,
@@ -196,6 +197,93 @@ static int cbfs_add_stage(int argc, char **argv)
 	return 0;
 }
 
+static int cbfs_add_flat_binary(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
+
+	if (argc < 7) {
+		printf("not enough arguments to '%s'.\n", cmd);
+		return 1;
+	}
+
+	char *filename = argv[3];
+	char *cbfsname = argv[4];
+	unsigned long load_address = strtoul(argv[5], NULL, 0);
+	unsigned long entry_point = strtoul(argv[6], NULL, 0);
+
+	uint32_t base = 0;
+	void *cbfsfile = NULL;
+
+	comp_algo algo = CBFS_COMPRESS_NONE;
+	if (argc > 7) {
+		if (argv[7][0] == 'l')
+			algo = CBFS_COMPRESS_LZMA;
+	}
+	if (argc > 8) {
+		base = strtoul(argv[8], NULL, 0);
+	}
+	comp_func_ptr compress = compression_function(algo);
+	if (!compress)
+		return 1;
+
+	uint32_t filesize = 0;
+	void *filedata = loadfile(filename, &filesize, 0, SEEK_SET);
+	if (filedata == NULL) {
+		printf("Could not load file '%s'.\n", filename);
+		return 1;
+	}
+
+	unsigned char *payload;
+	payload = calloc((2 * sizeof(struct cbfs_payload_segment)) + filesize, 1);
+	if (payload == NULL) {
+		printf("Could not allocate memory.\n");
+		return 1;
+	}
+
+	struct cbfs_payload_segment *segs;
+	segs = (struct cbfs_payload_segment *)payload;
+	int doffset = (2 * sizeof(struct cbfs_payload_segment));
+
+	segs[0].type = PAYLOAD_SEGMENT_CODE;
+	segs[0].load_addr = (uint64_t)htonll(load_address);
+	segs[0].mem_len = (uint32_t)htonl(filesize);
+	segs[0].offset = htonl(doffset);
+
+	int len = 0;
+
+	compress(filedata, filesize, (char *)(payload + doffset), &len);
+	segs[0].compression = htonl(algo);
+	segs[0].len = htonl(len);
+
+	if ((unsigned int)len > filesize) {
+		segs[0].compression = 0;
+		segs[0].len = htonl(filesize);
+		memcpy((char *)(payload + doffset), filedata, filesize);
+	}
+	uint32_t final_size = doffset + ntohl(segs[0].len);
+
+	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
+	segs[1].load_addr = (uint64_t)htonll(entry_point);
+
+	cbfsfile =
+	    create_cbfs_file(cbfsname, payload, &final_size,
+			     CBFS_COMPONENT_PAYLOAD, &base);
+	if (add_file_to_cbfs(cbfsfile, final_size, base)) {
+		printf("Adding payload '%s' failed.\n", filename);
+		return 1;
+	}
+	if (writerom(romname, rom, romsize))
+		return 1;
+	return 0;
+}
+
 static int cbfs_remove(int argc, char **argv)
 {
 	char *romname = argv[1];
@@ -307,6 +395,7 @@ static const struct command commands[] = {
 	{CMD_ADD, "add", cbfs_add},
 	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
 	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
+	{CMD_ADD_FLAT, "add-flat-binary", cbfs_add_flat_binary},
 	{CMD_REMOVE, "remove", cbfs_remove},
 	{CMD_CREATE, "create", cbfs_create},
 	{CMD_LOCATE, "locate", cbfs_locate},
@@ -325,6 +414,8 @@ static void usage(void)
 	     " add FILE NAME TYPE [base address]      Add a component\n"
 	     " add-payload FILE NAME [COMP] [base]    Add a payload to the ROM\n"
 	     " add-stage FILE NAME [COMP] [base]      Add a stage to the ROM\n"
+	     " add-flat-binary FILE NAME LOAD ENTRY \\\n"
+	     "                       [COMP] [base]    Add a 32bit flat mode binary\n"
 	     " remove FILE NAME                       Remove a component\n"
 	     " create SIZE BOOTBLOCK [ALIGN] [offset] Create a ROM file\n"
 	     " locate FILE NAME ALIGN                 Find a place for a file of that size\n"

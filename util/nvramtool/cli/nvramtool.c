@@ -31,7 +31,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef __MINGW32__
 #include <sys/mman.h>
+#endif
 #include "common.h"
 #include "opts.h"
 #include "lbtable.h"
@@ -164,7 +166,9 @@ int main(int argc, char *argv[])
 						nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 				exit(1);
 			}
+#ifndef __MINGW32__
 			fsync(fd);
+#endif
 		}
 
 		cmos_default = mmap(NULL, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);

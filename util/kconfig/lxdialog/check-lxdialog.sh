@@ -5,7 +5,7 @@
 ldflags()
 {
 	for ext in so a dylib ; do
-		for lib in ncursesw ncurses curses ; do
+		for lib in ncursesw ncurses curses pdcursesw pdcurses; do
 			$cc -print-file-name=lib${lib}.${ext} | grep / >/dev/null
 			if [ $? -eq 0 ]; then
 				echo "-l${lib}"

@@ -35,6 +35,11 @@ nvramtoolobj += cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o
 nvramtoolobj += hexdump.o input_file.o layout.o accessors/layout-common.o accessors/layout-text.o accessors/layout-bin.o lbtable.o
 nvramtoolobj += reg_expr.o cbfs.o accessors/cmos-mem.o
 
+ifeq ($(shell uname -s 2>/dev/null | cut -c-7), MINGW32)
+NVRAMTOOLLDFLAGS += -lregex -lwsock32
+nvramtoolobj += win32mmap.o
+endif
+
 $(objutil)/nvramtool $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli:
 	mkdir -p $@
 

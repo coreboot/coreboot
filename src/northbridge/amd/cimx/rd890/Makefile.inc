@@ -20,6 +20,8 @@
 
 # RD890 Platform Files
 romstage-y += early.c
+romstage-y += nb_cimx.c
 
 ramstage-y += late.c
+ramstage-y += nb_cimx.c
 

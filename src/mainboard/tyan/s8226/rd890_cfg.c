@@ -23,81 +23,11 @@
 #include "nbInitializer.h"
 #include <string.h>
 #include <arch/ioapic.h>
-
-#ifndef __PRE_RAM__
 #include <device/device.h>
+
+extern ROMSTAGE_CONST struct device dev_root;
 extern void set_pcie_reset(void *config);
 extern void set_pcie_dereset(void *config);
-
-/**
- * Platform dependent configuration at ramstage
- */
-static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
-{
-	u16 i;
-	PCIE_CONFIG *pPcieConfig = NbConfigPtr->pPcieConfig;
-	//AMD_NB_CONFIG_BLOCK *ConfigPtr = GET_BLOCK_CONFIG_PTR(NbConfigPtr);
-	struct northbridge_amd_cimx_rd890_config *rd890_info = NULL;
-	DEFAULT_PLATFORM_CONFIG(platform_config);
-
-	/* update the platform depentent configuration by devicetree */
-	rd890_info  = nb_dev->chip_info;
-	platform_config.PortEnableMap = rd890_info->port_enable;
-	if (rd890_info->gpp1_configuration == 0) {
-		platform_config.Gpp1Config = GFX_CONFIG_AAAA;
-	} else if (rd890_info->gpp1_configuration == 1) {
-		platform_config.Gpp1Config = GFX_CONFIG_AABB;
-	}
-	if (rd890_info->gpp2_configuration == 0) {
-		platform_config.Gpp2Config = GFX_CONFIG_AAAA;
-	} else if (rd890_info->gpp2_configuration == 1) {
-		platform_config.Gpp2Config = GFX_CONFIG_AABB;
-	}
-	platform_config.Gpp3aConfig = rd890_info->gpp3a_configuration;
-
-	if (platform_config.Gpp1Config != 0) {
-		pPcieConfig->CoreConfiguration[0] = platform_config.Gpp1Config;
-	}
-	if (platform_config.Gpp2Config != 0) {
-		pPcieConfig->CoreConfiguration[1] = platform_config.Gpp2Config;
-	}
-	if (platform_config.Gpp3aConfig != 0) {
-		pPcieConfig->CoreConfiguration[2] = platform_config.Gpp3aConfig;
-	}
-
-	pPcieConfig->TempMmioBaseAddress = (UINT16)(platform_config.TemporaryMmio >> 20);
-	for (i = 0; i <= MAX_CORE_ID; i++) {
-		NbConfigPtr->pPcieConfig->CoreSetting[i].SkipConfiguration = OFF;
-		NbConfigPtr->pPcieConfig->CoreSetting[i].PerformanceMode = OFF;
-	}
-	for (i = MIN_PORT_ID; i <= MAX_PORT_ID; i++) {
-		NbConfigPtr->pPcieConfig->PortConfiguration[i].PortLinkMode = PcieLinkModeGen2;
-	}
-
-	for (i = MIN_PORT_ID; i <= MAX_PORT_ID; i++) {
-		if ((platform_config.PortEnableMap & (1 << i)) != 0) {
-			pPcieConfig->PortConfiguration[i].PortPresent = ON;
-			if ((platform_config.PortGen1Map & (1 << i)) != 0) {
-				pPcieConfig->PortConfiguration[i].PortLinkMode = PcieLinkModeGen1;
-			}
-			if ((platform_config.PortHotplugMap & (1 << i)) != 0) {
-				u16 j;
-				pPcieConfig->PortConfiguration[j].PortHotplug = ON; /* Enable Hotplug */
-				/* Set Hotplug descriptor info */
-				for (j = 0; j < 8; j++) {
-					u32 PortDescriptor;
-					PortDescriptor = platform_config.PortHotplugDescriptors[j];
-					if ((PortDescriptor & 0xF) == j) {
-						pPcieConfig->ExtPortConfiguration[j].PortHotplugDevMap  = (PortDescriptor >> 4)  & 3;
-						pPcieConfig->ExtPortConfiguration[j].PortHotplugByteMap = (PortDescriptor >> 6)  & 1;
-						break;
-					}
-				}
-			}
-		}
-	}
-}
-#endif // __PRE_RAM__
 
 /**
  * @brief Entry point of Northbridge CIMx callout/CallBack
@@ -160,9 +90,6 @@ static u32 rd890_callout_entry(u32 func, u32 data, void *config)
 
 			break;
 		case CB_AmdSetPcieEarlyConfig:
-#ifndef __PRE_RAM__
-			nb_platform_config(nb_dev, nbConfigPtr);
-#endif
 			break;
 
 		case CB_AmdSetEarlyPostConfig:
@@ -244,6 +171,7 @@ void rd890_cimx_config(AMD_NB_CONFIG_BLOCK *pConfig, NB_CONFIG *nbConfig, HT_CON
 	pConfig->Northbridges[0].NbHtPath.NodeID = sbNode;
 	pConfig->Northbridges[0].NbHtPath.LinkID = sbLink;
 	//TODO: other NBs
+	pConfig->Northbridges[0].pNbConfig->IoApicBaseAddress = IO_APIC_ADDR;
 
 #ifndef __PRE_RAM__
 	/* If temporrary MMIO enable set up CPU MMIO */

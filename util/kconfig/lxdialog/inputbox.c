@@ -127,6 +127,7 @@ do_resize:
 				continue;
 			case KEY_BACKSPACE:
 			case 127:
+			case '\b':
 				if (input_x || scroll) {
 					wattrset(dialog, dlg.inputbox.atr);
 					if (!input_x) {

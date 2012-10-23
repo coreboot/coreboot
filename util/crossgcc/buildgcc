@@ -325,7 +325,7 @@ if [ `uname` = "Darwin" ]; then
 	# binaries in 10.6 (even if the kernel is 32bit)
 	# For some weird reason, 10.5 autodetects an ABI=64 though
 	# so we're setting the ABI explicitly here.
-	if [ `sysctl -n hw.optional.x86_64` -eq 1 ]; then
+	if [ `sysctl -n hw.optional.x86_64 2>/dev/null` -eq 1 ] 2>/dev/null; then
 		OPTIONS="ABI=64"
 	else
 		OPTIONS="ABI=32"

@@ -25,20 +25,7 @@
 #include "common.h"
 #include "cbfs.h"
 
-typedef enum {
-	CMD_ADD,
-	CMD_ADD_PAYLOAD,
-	CMD_ADD_STAGE,
-	CMD_ADD_FLAT,
-	CMD_REMOVE,
-	CMD_CREATE,
-	CMD_LOCATE,
-	CMD_PRINT,
-	CMD_EXTRACT,
-} cmd_t;
-
 struct command {
-	cmd_t id;
 	const char *name;
 	int (*function) (int argc, char **argv);
 };
@@ -392,15 +379,15 @@ static int cbfs_extract(int argc, char **argv)
 }
 
 static const struct command commands[] = {
-	{CMD_ADD, "add", cbfs_add},
-	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
-	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
-	{CMD_ADD_FLAT, "add-flat-binary", cbfs_add_flat_binary},
-	{CMD_REMOVE, "remove", cbfs_remove},
-	{CMD_CREATE, "create", cbfs_create},
-	{CMD_LOCATE, "locate", cbfs_locate},
-	{CMD_PRINT, "print", cbfs_print},
-	{CMD_EXTRACT, "extract", cbfs_extract},
+	{"add", cbfs_add},
+	{"add-payload", cbfs_add_payload},
+	{"add-stage", cbfs_add_stage},
+	{"add-flat-binary", cbfs_add_flat_binary},
+	{"remove", cbfs_remove},
+	{"create", cbfs_create},
+	{"locate", cbfs_locate},
+	{"print", cbfs_print},
+	{"extract", cbfs_extract},
 };
 
 static void usage(void)

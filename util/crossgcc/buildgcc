@@ -21,7 +21,7 @@
 #
 
 CROSSGCC_DATE="October 23rd, 2012"
-CROSSGCC_VERSION="1.09"
+CROSSGCC_VERSION="1.10"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -33,7 +33,7 @@ GMP_VERSION=5.0.5
 MPFR_VERSION=3.1.0
 MPC_VERSION=0.9
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.6.3
+GCC_VERSION=4.7.2
 GCC_AUTOCONF_VERSION=2.64
 BINUTILS_VERSION=2.22
 GDB_VERSION=7.4.1
@@ -49,7 +49,7 @@ GMP_ARCHIVE="http://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.bz2"
 MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://www.multiprecision.org/mpc/download/mpc-${MPC_VERSION}.tar.gz"
 LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
-GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
+GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
 W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"

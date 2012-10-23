@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA  02110-1335, USA
 #
 
-CROSSGCC_DATE="November 1st, 2011"
-CROSSGCC_VERSION="1.07"
+CROSSGCC_DATE="October 23rd, 2012"
+CROSSGCC_VERSION="1.08"
 
 # default settings
 TARGETDIR=`pwd`/xgcc

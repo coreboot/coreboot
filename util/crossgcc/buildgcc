@@ -593,13 +593,13 @@ printf "Building IASL ${IASL_VERSION} ... "
 (
 	cd $IASL_DIR/generate/unix
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
-	rm -f $IASL_DIR/source/compiler/.failed
+	rm -f ../../source/compiler/.failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" || touch $IASL_DIR/source/compiler/.failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch $IASL_DIR/source/compiler/.failed
-	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch $IASL_DIR/source/compiler/.failed
-	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch $IASL_DIR/source/compiler/.failed
-	if [ ! -f $IASL_DIR/source/compiler/.failed ]; then touch $IASL_DIR/source/compiler/.success; fi
+	$MAKE CC="$CC" || touch ../../source/compiler/.failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch ../../source/compiler/.failed
+	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
+	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
+	if [ ! -f ../../source/compiler/.failed ]; then touch ../../source/compiler/.success; fi
 ) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
 test -r $IASL_DIR/source/compiler/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"

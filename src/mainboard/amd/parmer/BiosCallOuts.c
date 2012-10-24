@@ -297,10 +297,10 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
 
+	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
+
 	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
-
-	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
 	/* Find target node to deallocate in list of allocated nodes.
 	   Return AGESA_BOUNDS_CHK if the BufferHandle is not found

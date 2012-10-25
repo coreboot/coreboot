@@ -21,7 +21,7 @@
 #
 
 CROSSGCC_DATE="October 23rd, 2012"
-CROSSGCC_VERSION="1.14"
+CROSSGCC_VERSION="1.15"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -53,7 +53,7 @@ LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.gz"
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/Base/w32api/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION_SHORT}-mingw32-src.tar.lzma"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/Base/mingw-rt/mingwrt-${MINGWRT_VERSION_SHORT}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.lzma"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"

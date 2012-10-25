@@ -21,7 +21,7 @@
 #
 
 CROSSGCC_DATE="October 23rd, 2012"
-CROSSGCC_VERSION="1.13"
+CROSSGCC_VERSION="1.14"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -39,7 +39,8 @@ BINUTILS_VERSION=2.23
 GDB_VERSION=7.5
 W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
-MINGWRT_VERSION=3.18
+MINGWRT_VERSION=3.20-2
+MINGWRT_VERSION_SHORT=3.20
 IASL_VERSION=20120420
 PYTHON_VERSION=2.7.2
 EXPAT_VERSION=2.0.1
@@ -52,8 +53,8 @@ LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.gz"
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
-MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/Base/w32api/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION_SHORT}-mingw32-src.tar.lzma"
+MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-${MINGWRT_VERSION_SHORT}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
 EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"

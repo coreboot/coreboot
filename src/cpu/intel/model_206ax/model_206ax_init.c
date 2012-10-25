@@ -116,6 +116,41 @@ static acpi_cstate_t cstate_map[] = {
 	{ 0 }
 };
 
+static void enable_vmx(void)
+{
+	struct cpuid_result regs;
+	msr_t msr;
+	int enable = CONFIG_ENABLE_VMX;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		printk(BIOS_ERR, "VMX is locked, so enable_vmx will do nothing\n");
+		/* VMX locked. If we set it again we get an illegal
+		 * instruction
+		 */
+		return;
+	}
+
+	regs = cpuid(1);
+	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
+	if (regs.ecx & CPUID_VMX) {
+		if (enable)
+			msr.lo |= (1 << 2);
+		else
+			msr.lo &= ~(1 << 2);
+
+		if (regs.ecx & CPUID_SMX) {
+			if (enable)
+				msr.lo |= (1 << 1);
+			else
+				msr.lo &= ~(1 << 1);
+		}
+	}
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+}
+
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
 	[0]   = 0x00,
@@ -522,6 +557,9 @@ static void model_206ax_init(device_t cpu)
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Enable virtualization if enabled in CMOS */
+	enable_vmx();
 
 	/* Configure C States */
 	configure_c_states();

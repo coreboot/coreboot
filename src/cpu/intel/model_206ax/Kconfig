@@ -28,6 +28,10 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default n
+
 config MICROCODE_INCLUDE_PATH
 	string
 	default "src/cpu/intel/model_206ax"

@@ -122,30 +122,32 @@ static void enable_vmx(void)
 	msr_t msr;
 	int enable = CONFIG_ENABLE_VMX;
 
+	regs = cpuid(1);
+	/* Check that the VMX is supported before reading or writing the MSR. */
+	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX)))
+		return;
+
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_ERR, "VMX is locked, so enable_vmx will do nothing\n");
+		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n", __func__);
 		/* VMX locked. If we set it again we get an illegal
 		 * instruction
 		 */
 		return;
 	}
 
-	regs = cpuid(1);
-	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
-	if (regs.ecx & CPUID_VMX) {
-		if (enable)
-			msr.lo |= (1 << 2);
-		else
-			msr.lo &= ~(1 << 2);
+	/* The IA32_FEATURE_CONTROL MSR may initialize with random values.
+	 * It must be cleared regardless of VMX config setting.
+	 */
+	msr.hi = msr.lo = 0;
 
-		if (regs.ecx & CPUID_SMX) {
-			if (enable)
+	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
+
+	if (enable) {
+			msr.lo |= (1 << 2);
+			if (regs.ecx & CPUID_SMX)
 				msr.lo |= (1 << 1);
-			else
-				msr.lo &= ~(1 << 1);
-		}
 	}
 
 	wrmsr(IA32_FEATURE_CONTROL, msr);

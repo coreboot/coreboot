@@ -43,6 +43,7 @@ static void msr_set_bit(unsigned reg, unsigned bit)
 
 void intel_model_206ax_finalize_smm(void)
 {
+	msr_set_bit(IA32_FEATURE_CONTROL, 0);
 	msr_set_bit(MSR_PMG_CST_CONFIG_CONTROL, 15);
 
 	/* Lock AES-NI only if supported */

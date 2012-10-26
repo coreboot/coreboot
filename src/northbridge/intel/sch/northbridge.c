@@ -111,10 +111,10 @@ static void pci_domain_set_resources(device_t dev)
 	printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
 	       pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c));
 
-	tolud = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), 0x9c);
-	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08llx\n", tolud << 24);
+	tolud = sch_port_access_read(2, 8, 4);
+	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08llx\n", tolud);
 
-	tomk = tolud << 14;
+	tomk = tolud / 1024;
 	tomk_stolen = tomk;
 
 	/* Note: subtract IGD device and TSEG. */

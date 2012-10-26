@@ -321,11 +321,11 @@ static void poulsbo_setup_Stage1Regs(void)
 
 static void poulsbo_setup_Stage2Regs(void)
 {
-	u32 reg32;
+	u16 reg16;
 
 	printk(BIOS_DEBUG, "Reserved");
-	reg32 = pci_read_config32(PCI_DEV(0, 0x2, 0), 0x62);
-	pci_write_config32(PCI_DEV(0, 0x2, 0), 0x62, (reg32 | 0x3));
+	reg16 = pci_read_config16(PCI_DEV(0, 0x2, 0), 0x62);
+	pci_write_config16(PCI_DEV(0, 0x2, 0), 0x62, (reg16 | 0x3));
 	/* Slot capabilities */
 	pci_write_config32(PCI_DEV(0, 28, 0), 0x54, 0x80500);
 	pci_write_config32(PCI_DEV(0, 28, 1), 0x54, 0x100500);

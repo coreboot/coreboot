@@ -153,7 +153,7 @@ static void sch_detect_chipset(void)
 		/* Others reserved. */
 		printk(BIOS_INFO, "Unknown (%02x)", reg16);
 	}
-	printk(BIOS_INFO, " Chipset\n");
+	printk(BIOS_INFO, " Chipset ");
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0x8);
 	switch (reg8) {
@@ -173,6 +173,7 @@ static void sch_detect_chipset(void)
 		/* Others reserved. */
 		printk(BIOS_INFO, "Unknown (%02x)", reg8);
 	}
+	printk(BIOS_INFO, "\n");
 }
 
 static void sch_setup_non_standard_bars(void)

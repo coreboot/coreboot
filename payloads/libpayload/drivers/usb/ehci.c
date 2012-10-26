@@ -359,7 +359,7 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 			return 1;
 	}
 
-	qtd_t *head = memalign(32, sizeof(qtd_t));
+	qtd_t *head = memalign(64, sizeof(qtd_t));
 	qtd_t *cur = head;
 	while (1) {
 		memset((void *)cur, 0, sizeof(qtd_t));
@@ -375,14 +375,14 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 			cur->next_qtd = virt_to_phys(0) | QTD_TERMINATE;
 			break;
 		} else {
-			qtd_t *next = memalign(32, sizeof(qtd_t));
+			qtd_t *next = memalign(64, sizeof(qtd_t));
 			cur->next_qtd = virt_to_phys(next);
 			cur = next;
 		}
 	}
 
 	/* create QH */
-	ehci_qh_t *qh = memalign(32, sizeof(ehci_qh_t));
+	ehci_qh_t *qh = memalign(64, sizeof(ehci_qh_t));
 	memset((void *)qh, 0, sizeof(ehci_qh_t));
 	qh->horiz_link_ptr = virt_to_phys(qh) | QH_QH;
 	qh->epchar = ep->dev->address |
@@ -428,7 +428,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	}
 
 	/* create qTDs */
-	qtd_t *head = memalign(32, sizeof(qtd_t));
+	qtd_t *head = memalign(64, sizeof(qtd_t));
 	qtd_t *cur = head;
 	memset((void *)cur, 0, sizeof(qtd_t));
 	cur->token = QTD_ACTIVE |
@@ -438,7 +438,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	if (fill_td(cur, devreq, drlen) != drlen) {
 		usb_debug("ERROR: couldn't send the entire device request\n");
 	}
-	qtd_t *next = memalign(32, sizeof(qtd_t));
+	qtd_t *next = memalign(64, sizeof(qtd_t));
 	cur->next_qtd = virt_to_phys(next);
 	cur->alt_next_qtd = QTD_TERMINATE;
 
@@ -455,7 +455,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 		if (fill_td(cur, data, dalen) != dalen) {
 			usb_debug("ERROR: couldn't send the entire control payload\n");
 		}
-		next = memalign(32, sizeof(qtd_t));
+		next = memalign(64, sizeof(qtd_t));
 		cur->next_qtd = virt_to_phys(next);
 		cur->alt_next_qtd = QTD_TERMINATE;
 	}
@@ -472,7 +472,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	cur->alt_next_qtd = QTD_TERMINATE;
 
 	/* create QH */
-	ehci_qh_t *qh = memalign(32, sizeof(ehci_qh_t));
+	ehci_qh_t *qh = memalign(64, sizeof(ehci_qh_t));
 	memset((void *)qh, 0, sizeof(ehci_qh_t));
 	qh->horiz_link_ptr = virt_to_phys(qh) | QH_QH;
 	qh->epchar = dev->address |
@@ -564,7 +564,7 @@ static void *ehci_create_intr_queue(
 	}
 
 	intr_queue_t *const intrq =
-		(intr_queue_t *)memalign(32, sizeof(intr_queue_t));
+		(intr_queue_t *)memalign(64, sizeof(intr_queue_t));
 	/*
 	 * reqcount data chunks
 	 * plus one more spare, which we'll leave out of queue
@@ -577,7 +577,7 @@ static void *ehci_create_intr_queue(
 	intrq->reqsize = reqsize;
 
 	/* create #reqcount transfer descriptors (qTDs) */
-	intrq->head = (intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+	intrq->head = (intr_qtd_t *)memalign(64, sizeof(intr_qtd_t));
 	intr_qtd_t *cur_td = intrq->head;
 	for (i = 0; i < reqcount; ++i) {
 		fill_intr_queue_td(intrq, cur_td, data);
@@ -585,7 +585,7 @@ static void *ehci_create_intr_queue(
 		if (i < reqcount - 1) {
 			/* create one more qTD */
 			intr_qtd_t *const next_td =
-				(intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+				(intr_qtd_t *)memalign(64, sizeof(intr_qtd_t));
 			cur_td->td.next_qtd = virt_to_phys(&next_td->td);
 			cur_td->next = next_td;
 			cur_td = next_td;
@@ -594,7 +594,7 @@ static void *ehci_create_intr_queue(
 	intrq->tail = cur_td;
 
 	/* create spare qTD */
-	intrq->spare = (intr_qtd_t *)memalign(32, sizeof(intr_qtd_t));
+	intrq->spare = (intr_qtd_t *)memalign(64, sizeof(intr_qtd_t));
 	fill_intr_queue_td(intrq, intrq->spare, data);
 
 	/* initialize QH */
@@ -761,6 +761,10 @@ ehci_init (pcidev_t addr)
 	/* default value for frame length adjust */
 	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));
 
+	/* Set the high address word (aka segment) if controller is 64-bit */
+	if (EHCI_INST(controller)->capabilities->hccparams & 1)
+		EHCI_INST(controller)->operation->ctrldssegment = 0;
+
 	/* Enable operation of controller */
 	controller->start(controller);
 
@@ -778,7 +782,7 @@ ehci_init (pcidev_t addr)
 	 * This helps with broken host controllers
 	 * and doesn't violate the standard.
 	 */
-	EHCI_INST(controller)->dummy_qh = (ehci_qh_t *)memalign(32, sizeof(ehci_qh_t));
+	EHCI_INST(controller)->dummy_qh = (ehci_qh_t *)memalign(64, sizeof(ehci_qh_t));
 	memset((void *)EHCI_INST(controller)->dummy_qh, 0,
 		sizeof(*EHCI_INST(controller)->dummy_qh));
 	EHCI_INST(controller)->dummy_qh->horiz_link_ptr = QH_TERMINATE;

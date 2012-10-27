@@ -23,37 +23,60 @@ config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
 	default y
 	help
-	  Execute VGA Option ROMs, if found. This is required to enable
-	  PCI/AGP/PCI-E video cards.
+	  Execute VGA Option ROMs in coreboot if found. This is required
+	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
+	  payload.
+
+	  When using a SeaBIOS payload it runs all option ROMs with much
+	  more complete BIOS interrupt services available than coreboot,
+	  which some option ROMs require in order to function correctly.
+
+	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
 
 config S3_VGA_ROM_RUN
 	bool "Re-run VGA Option ROMs on S3 resume"
 	default y
 	depends on VGA_ROM_RUN && HAVE_ACPI_RESUME
 	help
-	  Execute VGA Option ROMs when coming out of an S3 resume.
+	  Execute VGA Option ROMs in coreboot when resuming from S3 suspend.
+
+	  When using a SeaBIOS payload it runs all option ROMs with much
+	  more complete BIOS interrupt services available than coreboot,
+	  which some option ROMs require in order to function correctly.
+
+	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
 
 config PCI_ROM_RUN
 	bool "Run non-VGA Option ROMs"
 	default y
 	help
-	  Execute non-VGA PCI Option ROMs, if found.
+	  Execute non-VGA PCI Option ROMs in coreboot if found.
 
 	  Examples include IDE/SATA controller Option ROMs and Option ROMs
 	  for network cards (NICs).
+
+	  When using a SeaBIOS payload it runs all option ROMs with much
+	  more complete BIOS interrupt services available than coreboot,
+	  which some option ROMs require in order to function correctly.
+
+	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
 
 config ON_DEVICE_ROM_RUN
 	bool "Run Option ROMs on PCI devices"
 	default y
 	help
-	  Execute Option ROMs that are stored on PCI/PCIe/AGP devices.
+	  Execute Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
 
-	  If disabled, only Option ROMs stored in CBFS will be executed. If
-	  you are concerned about security, you might want to disable this
-	  option, but it might leave your system in a state of degraded
-	  functionality.
+	  If disabled, only Option ROMs stored in CBFS will be executed by
+	  coreboot. If you are concerned about security, you might want to
+	  disable this option, but it might leave your system in a state of
+	  degraded functionality.
 
-	  If unsure, say Y
+	  When using a SeaBIOS payload it runs all option ROMs with much
+	  more complete BIOS interrupt services available than coreboot,
+	  which some option ROMs require in order to function correctly.
+
+	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
 
 choice
 	prompt "Option ROM execution type"

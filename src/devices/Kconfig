@@ -21,7 +21,8 @@
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
-	default y
+	default n if PAYLOAD_SEABIOS
+	default y if !PAYLOAD_SEABIOS
 	help
 	  Execute VGA Option ROMs in coreboot if found. This is required
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
@@ -48,7 +49,8 @@ config S3_VGA_ROM_RUN
 
 config PCI_ROM_RUN
 	bool "Run non-VGA Option ROMs"
-	default y
+	default n if PAYLOAD_SEABIOS
+	default y if !PAYLOAD_SEABIOS
 	help
 	  Execute non-VGA PCI Option ROMs in coreboot if found.
 
@@ -63,7 +65,8 @@ config PCI_ROM_RUN
 
 config ON_DEVICE_ROM_RUN
 	bool "Run Option ROMs on PCI devices"
-	default y
+	default n if PAYLOAD_SEABIOS
+	default y if !PAYLOAD_SEABIOS
 	help
 	  Execute Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
 

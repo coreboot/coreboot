@@ -846,7 +846,7 @@ static struct device_operations pci_domain_ops = {
 	.set_resources	  = domain_set_resources,
 	.enable_resources = domain_enable_resources,
 	.init		  = NULL,
-	.scan_bus	  = pci_domain_scan_bus,
+	.scan_bus	  = f15_pci_domain_scan_bus,
 
 #if CONFIG_MMCONF_SUPPORT_DEFAULT
 	.ops_pci_bus	  = &pci_ops_mmconf,
@@ -1143,3 +1143,10 @@ struct chip_operations northbridge_amd_agesa_family15_root_complex_ops = {
 	CHIP_NAME("AMD FAM15 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
+
+/* all family15's pci devices are under 0x18.0, so we search from dev 0x18 fun 0 */
+static unsigned int f15_pci_domain_scan_bus(device_t dev, unsigned int max)
+{
+	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0x18, 0), 0xff, max);
+	return max;
+}

@@ -1,0 +1,127 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+chip northbridge/amd/agesa/family15/root_complex
+	device lapic_cluster 0 on
+		chip cpu/amd/agesa/family15
+			device lapic 0x10 on end
+		end
+	end
+	device pci_domain 0 on
+		subsystemid 0x15d9 0xab11 inherit #Supermicro
+		chip northbridge/amd/agesa/family15 # CPU side of HT root complex
+			device pci 18.0 on     # Put IO-HUB at link_num 0, Instead of HT Link topology
+				chip northbridge/amd/cimx/rd890 # Southbridge PCI side of HT Root complex
+					device pci 0.0 on  end # HT Root Complex 0x9600
+					device pci 0.1 on end # CLKCONFIG
+					device pci 2.0 on  end # GPP1 Port0  x16 SLOT4, 0x5A16
+					device pci 3.0 on end # GPP1 Port1
+					device pci 4.0 on end # GPP3a Port0  x4 SAS
+					device pci 5.0 off end # GPP3a Port1
+					device pci 6.0 off end # GPP3a Port2
+					device pci 7.0 off end # GPP3a Port3
+					device pci 8.0 off end # NB/SB Link P2P bridge, should be hidden at boot time
+					device pci 9.0 on end # GPP3a Port4  x1 NC
+					device pci a.0 on end # GPP3a Port5  x1 NC
+					device pci b.0 off end # GPP2 Port0 (Not for sr5650)
+					device pci c.0 off end # GPP2 Port1 (Not for sr5650/sr5670)
+					device pci d.0 off  end # GPP3b Port0 (Not for sr5650/sr5670) 0x5A1E, Intel 82576
+					register "gpp1_configuration" = "1"   # Configuration 16:0 default
+					#register "gpp2_configuration" = "0"   # Configuration 8:8
+					register "gpp3a_configuration" = "2"   # 2 Configuration 4:1:1:0:0:0, 11 Configuration 1:1:1:1:1:1
+					register "port_enable" = "0x61f"
+				end #northbridge/amd/cimx/rd890
+				chip southbridge/amd/cimx/sb700 # it is under NB/SB Link, but on the same pci bus
+					device pci 11.0 on end # SATA
+					device pci 12.0 on end # USB1
+					device pci 12.1 on end # USB1
+					device pci 12.2 on end # USB1
+					device pci 13.0 on end # USB2
+					device pci 13.1 on end # USB2
+					device pci 13.2 on end # USB2
+					device pci 14.0 on end # SM
+					device pci 14.1 off end # IDE  0x439c
+					device pci 14.2 off end # HDA  0x4383, h8scm not have codec.
+					device pci 14.3 on # LPC  0x439d
+						chip superio/winbond/w83627dhg
+							device pnp 2e.0 off #  Floppy
+								io 0x60 = 0x3f0
+								irq 0x70 = 6
+								drq 0x74 = 2
+							end
+							device pnp 2e.1 off #  Parallel Port
+								io 0x60 = 0x378
+								irq 0x70 = 7
+							end
+							device pnp 2e.2 on  #  Com1
+								io 0x60 = 0x3f8
+								irq 0x70 = 4
+							end
+							device pnp 2e.3 on  #  Com2
+								io 0x60 = 0x2f8
+								irq 0x70 = 3
+							end
+							## though UARTs are on the NUVOTON BMC, superio only used to support PS2 KB/MS##
+							device pnp 2e.5 on #  PS/2 keyboard & mouse
+								io 0x60 = 0x60
+								io 0x62 = 0x64
+								irq 0x70 = 0x01 #keyboard
+								irq 0x72 = 0x0C #mouse
+							end
+							device pnp 2e.6 off #  SPI
+							end
+							device pnp 2e.307 off #  GPIO6
+							end
+							device pnp 2e.8 off #  WDTO#, PLED
+							end
+							device pnp 2e.009 off #  GPIO2
+							end
+							device pnp 2e.109 off #  GPIO3
+							end
+							device pnp 2e.209 off #  GPIO4
+							end
+							device pnp 2e.309 off #  GPIO5
+							end
+							device pnp 2e.a off #  ACPI
+							end
+							device pnp 2e.b off # HWM
+								io 0x60 = 0x290
+							end
+							device pnp 2e.c off # PECI, SST
+							end
+						end #superio/winbond/w83627dhg
+						chip drivers/i2c/w83795
+							device pnp 5e on #hwm
+							end
+						end #drivers/i2c/w83795
+					end # LPC
+					device pci 14.4 on end # PCI 0x4384
+					device pci 14.5 on end # USB 3
+					register "boot_switch_sata_ide" = "0"   # 0: boot from SATA. 1: IDE
+				end # southbridge/amd/cimx/sb700
+			end # device pci 18.0
+
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+			device pci 18.4 on end
+			device pci 18.5 on end #f15
+		end #chip northbridge/amd/agesa/family15 # CPU side of HT root complex
+	end #pci_domain
+end #northbridge/amd/agesa/family15/root_complex
+

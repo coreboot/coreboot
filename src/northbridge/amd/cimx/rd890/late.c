@@ -69,10 +69,7 @@ void nb_Late_Post_Init(void)
 static void rd890_enable(device_t dev)
 {
 	u32 address = 0;
-	u32 mask;
-	u32 val;
 	u32 devfn;
-	u32 port;
 	AMD_NB_CONFIG *NbConfigPtr = NULL;
 
 	u8 nb_index = 0; /* The first IO Hub, TODO: other NBs */
@@ -80,97 +77,37 @@ static void rd890_enable(device_t dev)
 	NbConfigPtr = &(gConfig.Northbridges[nb_index]);
 
 	devfn = dev->path.pci.devfn;
-	port = devfn >> 3;
 	printk(BIOS_INFO, "rd890_enable  ");
 	printk(BIOS_INFO, "Bus-%x Dev-%X Fun-%X, enable=%x\n",
 			0, (devfn >> 3), (devfn & 0x07), dev->enabled);
-	if (port != 0) {
-		if (dev->enabled) {
-			NbConfigPtr->pPcieConfig->PortConfiguration[port].ForcePortDisable = OFF;
-		} else {
-			NbConfigPtr->pPcieConfig->PortConfiguration[port].ForcePortDisable = ON;
+
+	/* we only do this once */
+	if(devfn==0) {
+		/* CIMX configuration defualt initialize */
+		rd890_cimx_config(&gConfig, &nb_cfg[0], &ht_cfg[0], &pcie_cfg[0]);
+		if (gConfig.StandardHeader.CalloutPtr != NULL) {
+			gConfig.StandardHeader.CalloutPtr(CB_AmdSetPcieEarlyConfig, (u32)dev, (VOID*)NbConfigPtr);
 		}
-	}
+		/* Reset PCIE Cores, Training the Ports selected by port_enable of devicetree
+		 * After this call EP are fully operational on particular NB
+		 */
+		nb_Pcie_Early_Init();
 
-	switch (port) {
-		case 0x0: /* Root Complex, and ClkConfig */
+		if (gConfig.StandardHeader.CalloutPtr != NULL) {
+			gConfig.StandardHeader.CalloutPtr(CB_AmdSetEarlyPostConfig, 0, (VOID*)NbConfigPtr);
+		}
+		nb_Early_Post_Init();
 
-			if ((devfn & 0x07) == 1) { /* skip dev-0 fun-1 */
-				break;
-			}
+		if (gConfig.StandardHeader.CalloutPtr != NULL) {
+			gConfig.StandardHeader.CalloutPtr(CB_AmdSetMidPostConfig, 0, (VOID*)NbConfigPtr);
+		}
+		nb_Mid_Post_Init();
+		nb_Pcie_Late_Init();
 
-			/* CIMX configuration defualt initialize */
-			rd890_cimx_config(&gConfig, &nb_cfg[0], &ht_cfg[0], &pcie_cfg[0]);
-			if (gConfig.StandardHeader.CalloutPtr != NULL) {
-				/* NOTE: not use LibNbCallBack */
-				gConfig.StandardHeader.CalloutPtr(CB_AmdSetPcieEarlyConfig, (u32)dev, (VOID*)NbConfigPtr);
-			}
-			/* Reset PCIE Cores, Training the Ports selected by port_enable of devicetree
-			 * After this call EP are fully operational on particular NB
-			 */
-			nb_Pcie_Early_Init();
-			break;
-
-		case 0x2: /* Gpp1 Port0 */
-		case 0x3: /* Gpp1 Port1 */
-			mask = ~(1 << port);
-			val = (dev->enabled ? 0 : 1) << port;
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-			break;
-
-		case 0x4: /* Gpp3a Port0 */
-		case 0x5: /* Gpp3a Port1 */
-		case 0x6: /* Gpp3a Port2 */
-		case 0x7: /* Gpp3a Port3 */
-			mask = ~(1 << port);
-			val = (dev->enabled ? 0 : 1) << port;
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-			break;
-
-		case 0x8: /* SB ALink */
-			mask = ~(1 << 6);
-			val = (dev->enabled ? 1 : 0) << 6;
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-			break;
-
-		case 0x9: /* Gpp3a Port4 */
-		case 0xa: /* Gpp3a Port5 */
-			mask = ~(1 << (7 + port));
-			val = (dev->enabled ? 0 : 1) << (7 + port);
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-			break;
-
-		case 0xb: /* Gpp2 Port0 */
-		case 0xc: /* Gpp2 Port1 */
-			mask = ~(1 << (7 + port));
-			val = (dev->enabled ? 0 : 1) << (7 + port);
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-			break;
-
-		case 0xd: /* Gpp3b */
-			mask = ~(1 << (7 + port));
-			val = (dev->enabled ? 0 : 1) << (7 + port);
-			LibNbPciIndexRMW(address | NB_MISC_INDEX, NB_MISC_REG0C, AccessS3SaveWidth32, mask, val, NbConfigPtr);
-
-			/* Init NB at Early Post */
-			if (gConfig.StandardHeader.CalloutPtr != NULL) {
-				gConfig.StandardHeader.CalloutPtr(CB_AmdSetEarlyPostConfig, 0, (VOID*)NbConfigPtr);
-			}
-			nb_Early_Post_Init();//
-			if (gConfig.StandardHeader.CalloutPtr != NULL) {
-				gConfig.StandardHeader.CalloutPtr(CB_AmdSetMidPostConfig, 0, (VOID*)NbConfigPtr);
-			}
-			nb_Mid_Post_Init();
-			nb_Pcie_Late_Init();
-			if (gConfig.StandardHeader.CalloutPtr != NULL) {
-				gConfig.StandardHeader.CalloutPtr(CB_AmdSetLatePostConfig, 0, (VOID*)NbConfigPtr);
-			}
-			nb_Late_Post_Init();
-			break;
-
-		default:
-			printk(BIOS_INFO, "Buggy Device Tree\n");
-			break;
+		if (gConfig.StandardHeader.CalloutPtr != NULL) {
+			gConfig.StandardHeader.CalloutPtr(CB_AmdSetLatePostConfig, 0, (VOID*)NbConfigPtr);
+		}
+		nb_Late_Post_Init();
 	}
 }
 

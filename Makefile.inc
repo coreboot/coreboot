@@ -136,16 +136,14 @@ cbfs-files-handler= \
 
 #######################################################################
 # a variety of flags for our build
-CBFS_COMPRESS_FLAG:=
+CBFS_COMPRESS_FLAG:=none
 ifeq ($(CONFIG_COMPRESS_RAMSTAGE),y)
-CBFS_COMPRESS_FLAG:=l
+CBFS_COMPRESS_FLAG:=LZMA
 endif
 
-CBFS_PAYLOAD_COMPRESS_FLAG:=
-CBFS_PAYLOAD_COMPRESS_NAME:=none
+CBFS_PAYLOAD_COMPRESS_FLAG:=none
 ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
-CBFS_PAYLOAD_COMPRESS_FLAG:=l
-CBFS_PAYLOAD_COMPRESS_NAME:=LZMA
+CBFS_PAYLOAD_COMPRESS_FLAG:=LZMA
 endif
 
 ifneq ($(CONFIG_LOCALVERSION),"")

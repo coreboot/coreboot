@@ -31,7 +31,7 @@
 #include "common.h"
 #include "cbfs.h"
 
-unsigned int idemp(unsigned int x)
+static unsigned int idemp(unsigned int x)
 {
 	return x;
 }
@@ -123,7 +123,8 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	}
 
 	if (data_end <= data_start) {
-		fprintf(stderr, "E: data ends before it starts. Make sure the ELF file is correct and resides in ROM space.\n");
+		fprintf(stderr, "E: data ends before it starts. Make sure the "
+			"ELF file is correct and resides in ROM space.\n");
 		exit(1);
 	}
 
@@ -174,6 +175,8 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 
 	compress(buffer, data_end - data_start,
 		 (char *)(out + sizeof(struct cbfs_stage)), (int *)&stage->len);
+
+	free(buffer);
 
 	*output = out;
 

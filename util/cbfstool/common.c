@@ -28,10 +28,13 @@
 
 #define dprintf(x...)
 
-uint32_t getfilesize(const char *filename)
+size_t getfilesize(const char *filename)
 {
-	uint32_t size;
+	size_t size;
 	FILE *file = fopen(filename, "rb");
+	if (file == NULL)
+		return -1;
+
 	fseek(file, 0, SEEK_END);
 	size = ftell(file);
 	fclose(file);
@@ -44,6 +47,7 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	FILE *file = fopen(filename, "rb");
 	if (file == NULL)
 		return NULL;
+
 	fseek(file, 0, SEEK_END);
 	*romsize_p = ftell(file);
 	fseek(file, 0, SEEK_SET);
@@ -58,15 +62,16 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 		content -= *romsize_p;
 
 	if (!fread(content, *romsize_p, 1, file)) {
-		printf("failed to read %s\n", filename);
+		printf("Failed to read %s\n", filename);
 		return NULL;
 	}
 	fclose(file);
 	return content;
 }
 
-struct cbfs_header *master_header;
-uint32_t phys_start, phys_end, align, romsize;
+static struct cbfs_header *master_header;
+static uint32_t phys_start, phys_end, align;
+uint32_t romsize;
 void *offset;
 
 void recalculate_rom_geometry(void *romarea)
@@ -448,11 +453,15 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		      const char *bootblock, uint32_t align, uint32_t offs)
 {
+	uint32_t bootblocksize = 0;
+	struct cbfs_header *master_header;
+	unsigned char *romarea, *bootblk;
+
 	romsize = _romsize;
-	unsigned char *romarea = malloc(romsize);
+	romarea = malloc(romsize);
 	if (!romarea) {
-		printf("Could not get %d bytes of memory for CBFS image.\n",
-		       romsize);
+		fprintf(stderr, "E: Could not get %d bytes of memory"
+			" for CBFS image.\n", romsize);
 		exit(1);
 	}
 	memset(romarea, 0xff, romsize);
@@ -463,9 +472,16 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	if (align == 0)
 		align = 64;
 
-	uint32_t bootblocksize = 0;
-	loadfile(bootblock, &bootblocksize, romarea + romsize, SEEK_END);
-	struct cbfs_header *master_header =
+	bootblk = loadfile(bootblock, &bootblocksize,
+				romarea + romsize, SEEK_END);
+	if (!bootblk) {
+		fprintf(stderr, "E: Could not load bootblock %s.\n",
+			bootblock);
+		free(romarea);
+		return 1;
+	}
+
+	master_header =
 	    (struct cbfs_header *)(romarea + romsize - bootblocksize -
 				   sizeof(struct cbfs_header));
 	master_header->magic = ntohl(0x4f524243);
@@ -485,6 +501,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 				   sizeof(struct cbfs_file) - 16);
 
 	writerom(romfile, romarea, romsize);
+	free(romarea);
 	return 0;
 }
 
@@ -496,49 +513,69 @@ static int in_segment(int addr, int size, int gran)
 uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t alignment)
 {
-	loadrom(romfile);
-	size_t filename_size = strlen(filename);
+	void *rom;
+	size_t filename_size, headersize, totalsize;
+	int ret = 0;
+	uint32_t current;
 
-	size_t headersize =
-	    sizeof(struct cbfs_file) + ALIGN(filename_size + 1,
-					     16) + sizeof(struct cbfs_stage);
-	size_t totalsize = headersize + filesize;
+	rom = loadrom(romfile);
+	if (rom == NULL) {
+		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+			romfile);
+		return 0;
+	}
 
-	uint32_t current = phys_start;
+	filename_size = strlen(filename);
+	headersize = sizeof(struct cbfs_file) + ALIGN(filename_size + 1, 16) +
+			sizeof(struct cbfs_stage);
+	totalsize = headersize + filesize;
+
+	current = phys_start;
 	while (current < phys_end) {
+		uint32_t top;
+		struct cbfs_file *thisfile;
+
 		if (!cbfs_file_header(current)) {
 			current += align;
 			continue;
 		}
-		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
 
-		uint32_t top =
-		    current + ntohl(thisfile->len) + ntohl(thisfile->offset);
+		thisfile = (struct cbfs_file *)phys_to_virt(current);
+
+		top = current + ntohl(thisfile->len) + ntohl(thisfile->offset);
+
 		if (((ntohl(thisfile->type) == 0x0)
 		     || (ntohl(thisfile->type) == 0xffffffff))
 		    && (ntohl(thisfile->len) + ntohl(thisfile->offset) >=
 			totalsize)) {
 			if (in_segment
-			    (current + headersize, filesize, alignment))
-				return current + headersize;
+			    (current + headersize, filesize, alignment)) {
+				ret = current + headersize;
+				break;
+			}
 			if ((ALIGN(current, alignment) + filesize < top)
 			    && (ALIGN(current, alignment) - headersize >
 				current)
 			    && in_segment(ALIGN(current, alignment), filesize,
-					  alignment))
-				return ALIGN(current, alignment);
+					  alignment)) {
+				ret = ALIGN(current, alignment);
+				break;
+			}
 			if ((ALIGN(current, alignment) + alignment + filesize <
 			     top)
 			    && (ALIGN(current, alignment) + alignment -
 				headersize > current)
 			    && in_segment(ALIGN(current, alignment) + alignment,
-					  filesize, alignment))
-				return ALIGN(current, alignment) + alignment;
+					  filesize, alignment)) {
+				ret = ALIGN(current, alignment) + alignment;
+				break;
+			}
 		}
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
 	}
-	return 0;
+
+	free(rom);
+	return ret;
 }

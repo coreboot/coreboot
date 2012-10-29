@@ -16,6 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#ifndef __CBFSTOOL_COMMON_H
+#define __CBFSTOOL_COMMON_H
+
 #include <stdint.h>
 #include "swab.h"
 #define ntohl(x)  (host_bigendian?(x):swab32(x))
@@ -24,8 +27,7 @@
 #define htonll(x) (host_bigendian?(x):swab64(x))
 
 extern void *offset;
-extern struct cbfs_header *master_header;
-extern uint32_t phys_start, phys_end, align, romsize;
+extern uint32_t romsize;
 extern int host_bigendian;
 
 static inline void *phys_to_virt(uint32_t addr)
@@ -40,7 +42,7 @@ static inline uint32_t virt_to_phys(void *addr)
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 
-uint32_t getfilesize(const char *filename);
+size_t getfilesize(const char *filename);
 void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	       int place);
 void *loadrom(const char *filename);
@@ -77,4 +79,6 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 
 void print_supported_filetypes(void);
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
+
+#endif

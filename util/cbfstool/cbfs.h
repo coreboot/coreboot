@@ -16,6 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#ifndef __CBFS_H
+#define __CBFS_H
+
 #include <stdint.h>
 
 struct cbfs_header {
@@ -93,3 +96,5 @@ struct cbfs_payload {
 
 int cbfs_file_header(uint32_t physaddr);
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
+
+#endif

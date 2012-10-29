@@ -59,13 +59,15 @@ prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
-	$(call extract_nth,1,$(file)) \
-	$(call extract_nth,2,$(file)) $(if $(filter-out stage payload,$(call extract_nth,3,$(file))),$(call extract_nth,3,$(file))) \
-	$(call extract_nth,4,$(file)) &&)
+	-f $(call extract_nth,1,$(file)) \
+	-n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
+	$(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(objcbfs)/bootblock.bin 64 $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
+	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+		-B $(objcbfs)/bootblock.bin -a 64 \
+		-o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
 	$(prebuild-files) true
 	mv $@.tmp $@
 else
@@ -79,30 +81,30 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL)
 	cp $(obj)/coreboot.pre $@.tmp
 	if [ -f $(objcbfs)/coreboot_ap.elf ]; \
 	then \
-		$(CBFSTOOL) $@.tmp add-stage $(objcbfs)/coreboot_ap.elf $(CONFIG_CBFS_PREFIX)/coreboot_ap $(CBFS_COMPRESS_FLAG); \
+		$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ap.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ap -c $(CBFS_COMPRESS_FLAG); \
 	fi
-	$(CBFSTOOL) $@.tmp add-stage $(objcbfs)/coreboot_ram.elf $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
 endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
-	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
-	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
-	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
-	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
-	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \
 	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
-	$(CBFSTOOL) $@.tmp add $(obj)/config.tmp config raw; rm -f $(obj)/config.tmp ; fi
+	$(CBFSTOOL) $@.tmp add -f $(obj)/config.tmp -n config -t raw; rm -f $(obj)/config.tmp ; fi
 endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
@@ -270,8 +272,9 @@ endif
 $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage $(objcbfs)/romstage_xip.elf \
-		$(CONFIG_CBFS_PREFIX)/romstage x $(shell cat $(objcbfs)/base_xip.txt)
+	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/romstage_xip.elf \
+		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
+		-b $(shell cat $(objcbfs)/base_xip.txt)
 	mv $@.tmp $@
 
 ################################################################################
@@ -370,7 +373,7 @@ $(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/bas
 
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(objcbfs)/romstage_null.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	sed -e 's/^/0x/g' $@.tmp > $@.tmp2
 	rm $@.tmp

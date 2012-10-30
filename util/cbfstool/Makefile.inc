@@ -1,19 +1,16 @@
 cbfsobj :=
+cbfsobj += cbfstool.o
 cbfsobj += common.o
 cbfsobj += compress.o
-cbfsobj += minilzma.o
-cbfsobj += LZMAEncoder.o
-cbfsobj += LZInWindow.o
-cbfsobj += RangeCoderBit.o
-cbfsobj += StreamUtils.o
-cbfsobj += OutBuffer.o
-cbfsobj += Alloc.o
-cbfsobj += CRC.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
-cbfsobj += cbfstool.o
+# LZMA
+cbfsobj += lzma.o
+cbfsobj += LzFind.o
+cbfsobj += LzmaDec.o
+cbfsobj += LzmaEnc.o
 
-CBFSTOOLFLAGS=-DCOMPACT -g
+CBFSTOOLFLAGS=-D_7ZIP_ST -g
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 CBFSTOOLFLAGS+=-mno-ms-bitfields
@@ -30,25 +27,9 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.cc
 	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/LZMA/%.cpp
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
-
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/LZ/%.cpp
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
-
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/RangeCoder/%.cpp
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
-
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Common/%.cpp
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
-
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/Common/%.cpp
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
+$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
+	printf "    HOSTCC    $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCXX    $(subst $(objutil)/,,$(@)) (link)\n"

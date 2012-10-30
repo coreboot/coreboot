@@ -1,0 +1,45 @@
+if BOARD_INTEL_GRAYSREEF
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_RPGA989
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select BOARD_ROMSIZE_KB_8192
+	select BOARD_HAS_FADT
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select HAVE_MAINBOARD_RESOURCES
+	select MMCONF_SUPPORT
+	select HAVE_SMI_HANDLER
+	select GFXUMA
+	select CHROMEOS
+	select EXTERNAL_MRC_BLOB
+
+config MAINBOARD_DIR
+	string
+	default intel/graysreef
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "GRAYS REEF"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 16
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0166.rom"
+
+endif # BOARD_INTEL_GRAYSREEF

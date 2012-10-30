@@ -13,3 +13,4 @@ source src/northbridge/intel/gm45/Kconfig
 source src/northbridge/intel/sch/Kconfig
 source src/northbridge/intel/i5000/Kconfig
 source src/northbridge/intel/sandybridge/Kconfig
+source src/northbridge/intel/haswell/Kconfig

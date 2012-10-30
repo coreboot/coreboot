@@ -1,0 +1,8 @@
+The contents of this directory are extracted from
+the official LZMA SDK, version 9.12, for the use in
+mkcromfs (cromfs 1.5.10.1).
+
+However, cromfs does not include all files from that
+archive. Basically, only those which are required in
+compiling cromfs, plus a few text files.
+

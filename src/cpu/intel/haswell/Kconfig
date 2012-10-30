@@ -1,0 +1,35 @@
+
+config CPU_INTEL_HASWELL
+	bool
+
+if CPU_INTEL_HASWELL
+
+
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select SMP
+	select SSE2
+	select UDELAY_LAPIC
+	select SMM_TSEG
+	#select MICROCODE_IN_CBFS
+	#select AP_IN_SIPI_WAIT
+	select TSC_SYNC_MFENCE
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/intel/haswell/bootblock.c"
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config MICROCODE_INCLUDE_PATH
+	string
+	default "src/cpu/intel/haswell"
+
+endif

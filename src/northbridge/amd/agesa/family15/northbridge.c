@@ -1068,7 +1068,11 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				lapicid_start = (lapicid_start + 1) * core_max;
 				printk(BIOS_SPEW, "lpaicid_start=0x%x ", lapicid_start);
 			}
-			u32 apic_id = (i * core_max) + j + lapicid_start;
+#if CONFIG_CPU_AMD_SOCKET_G34
+			u32 apic_id = (i / 2 * core_max) + j + lapicid_start + (i % 2 ? siblings + 1 : 0);
+#else
+			u32 apic_id = (i  * core_max) + j + lapicid_start;
+#endif
 			printk(BIOS_SPEW, "node 0x%x core 0x%x apicid=0x%x\n",
 					i, j, apic_id);
 

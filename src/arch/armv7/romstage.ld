@@ -1,0 +1,69 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2006 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008-2010 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/* FIXME: linker was unhappy using CONFIG_SPL_* for some reason even
+   though they show up in build/ldoptions.
+MEMORY { .sram : ORIGIN = CONFIG_SPL_TEXT_BASE,
+		LENGTH = CONFIG_SPL_MAX_SIZE }
+*/
+
+MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x3800 }
+
+/* We use ELF as output format. So that we can debug the code in some form. */
+OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
+OUTPUT_ARCH(arm)
+
+TARGET(binary)
+SECTIONS
+{
+	. = ROMSTAGE_BASE;
+
+	.rom . : {
+		_rom = .;
+		*(.rom.text);
+		*(.rom.data);
+		*(.rodata);
+		*(.rodata.*);
+		*(.rom.data.*);
+		. = ALIGN(16);
+		_erom = .;
+	}
+
+	/DISCARD/ : {
+		*(.comment)
+		*(.note)
+		*(.comment.*)
+		*(.note.*)
+		*(.eh_frame);
+	}
+
+	/* FIXME: worry about these later */
+	/*
+	. = CONFIG_DCACHE_RAM_BASE;
+	.car.data . (NOLOAD) : {
+		*(.car.global_data);
+		*(.car.cbmem_console);
+	}
+
+	_bogus = ASSERT((SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
+	_bogus = ASSERT(SIZEOF(.bss) == 0 || CONFIG_CPU_AMD_AGESA, ".bss is non-zero size in romstage which is not allowed -- global variable?");
+	_bogus = ASSERT(SIZEOF(.data) == 0 || CONFIG_CPU_AMD_AGESA, ".data is non-zero size in romstage which is not allowed -- global variable?");
+	*/
+}

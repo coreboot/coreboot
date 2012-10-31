@@ -1,0 +1,56 @@
+if BOARD_GOOGLE_SNOW
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARM
+	select CPU_SAMSUNG_EXYNOS5
+#	select NORTHBRIDGE_INTEL_IVYBRIDGE
+#	select EC_GOOGLE_CHROMEEC
+	select BOARD_ROMSIZE_KB_4096
+#	select HAVE_ACPI_TABLES
+#	select HAVE_MAINBOARD_RESOURCES
+#	select MMCONF_SUPPORT
+#	select CHROMEOS
+
+config MAINBOARD_DIR
+	string
+	default google/snow
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "SNOW"
+
+#config MMCONF_BASE_ADDRESS
+#	hex
+#	default 0xf0000000
+
+#config IRQ_SLOT_COUNT
+#	int
+#	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_VENDOR
+	string
+	default "Samsung"
+
+# SPL (second-phase loader) stuff
+config SPL_TEXT_BASE
+	hex "SPL executable base"
+	default 0x02023400
+	help
+	  Location of SPL. Default location is within iRAM region.
+
+config SPL_MAX_SIZE
+	hex "SPL executable max size"
+	default 0x3800
+	help
+	  Max size of SPL. Default is 14KB
+
+config DRAM_SIZE_MB
+	int "DRAM size (MB)"
+	default 2048
+
+endif # BOARD_GOOGLE_SNOW

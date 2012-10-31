@@ -1,0 +1,17 @@
+if VENDOR_GOOGLE
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_GOOGLE_SNOW
+	bool "Snow"
+
+endchoice
+
+source "src/mainboard/google/snow/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Google"
+
+endif # VENDOR_GOOGLE

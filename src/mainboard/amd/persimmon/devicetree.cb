@@ -82,7 +82,7 @@ chip northbridge/amd/agesa/family14/root_complex
 					end # f81865f
 				end #LPC
 				device pci 14.4 on  end # PCIB 0x4384, NOTE: PCI interface pins shared with GPIO {GPIO 35:0}
-				device pci 14.5 on  end # USB 2
+				device pci 14.5 off end # USB 2
 				device pci 15.0 off end # PCIe PortA
 				device pci 15.1 off end # PCIe PortB
 				device pci 15.2 off end # PCIe PortC

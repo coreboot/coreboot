@@ -30,4 +30,5 @@ subdirs-y += ics
 subdirs-y += spi
 subdirs-y += ipmi
 subdirs-y += elog
+subdirs-y += maxim
 subdirs-$(CONFIG_ARCH_X86) += pc80

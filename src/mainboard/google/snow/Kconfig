@@ -1,0 +1,162 @@
+if BOARD_GOOGLE_SNOW
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARMV7
+	select CPU_SAMSUNG_EXYNOS5
+	select HAVE_UART_MEMORY_MAPPED
+	select CONSOLE_SERIAL_NONSTANDARD_MEM	# enable serial debugging
+#	select NORTHBRIDGE_INTEL_IVYBRIDGE
+#	select EC_GOOGLE_CHROMEEC
+	select BOARD_ROMSIZE_KB_4096
+	select DRIVER_MAXIM_77686
+#	select HAVE_ACPI_TABLES
+#	select MMCONF_SUPPORT
+#	select CHROMEOS
+
+config MAINBOARD_DIR
+	string
+	default google/snow
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "SNOW"
+
+#config MMCONF_BASE_ADDRESS
+#	hex
+#	default 0xf0000000
+
+#config IRQ_SLOT_COUNT
+#	int
+#	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_VENDOR
+	string
+	default "Samsung"
+
+# SPL (second-phase loader) stuff
+config SPL_TEXT_BASE
+	hex "SPL executable base"
+	default 0x02023400
+	help
+	  Location of SPL. Default location is within iRAM region.
+
+#FIXME: increased "SPL" size to get around build issues 
+#config SPL_MAX_SIZE
+#	hex "SPL executable max size"
+#	default 0x3800
+#	help
+#	  Max size of SPL. Default is 14KB
+config SPL_MAX_SIZE
+	hex "SPL executable max size"
+	default 0x8000
+	help
+	  Max size of SPL. Let's say 32KB for now...
+
+config DRAM_SIZE_MB
+	int "DRAM size (MB)"
+	default 2048
+
+config NR_DRAM_BANKS
+	int "Number of DRAM banks"
+	default 1
+
+choice
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART3
+	depends on CONSOLE_SERIAL_NONSTANDARD_MEM
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+endchoice
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_NONSTANDARD_MEM
+	default 0x12c00000 if CONSOLE_SERIAL_UART0
+	default 0x12c10000 if CONSOLE_SERIAL_UART1
+	default 0x12c20000 if CONSOLE_SERIAL_UART2
+	default 0x12c30000 if CONSOLE_SERIAL_UART3
+	help
+	  Map the UART names to the respective MMIO address.
+
+#################################################################
+#   stuff from smdk5250.h                                       #
+#   FIXME: can we move some of these to exynos5250's Kconfig?   #
+#################################################################
+config SYS_I2C_SPEED
+	int
+	default 100000
+
+config SYS_I2C_SLAVE
+	hex
+	default 0x0
+	
+config I2C_MULTI_BUS
+	bool
+	default y
+
+#config HARD_I2C
+#	bool
+#	default y
+#CMD_I2C
+#I2C_EDID
+#DRIVER_S3C24X0_I2C
+
+config VDD_ARM_MV
+	int
+	default 1300	#1.3V
+
+config VDD_INT_UV
+	int
+	default 1012500	# 1.0125v
+
+config VDD_MIF_MV
+	int
+	default 1000	# 1.0v
+
+config VDD_G3D_MV
+	int
+	default 1200	# 1.2v
+
+config VDD_LDO2_MV
+	int
+	default 1500	# 1.5v
+
+config VDD_LDO3_MV
+	int
+	default 1800	# 1.8v
+
+config VDD_LDO5_MV
+	int
+	default 1800	# 1.8v
+
+config VDD_LDO10_MV
+	int
+	default 1800	# 1.8v
+
+######### smdk5250.h ########
+
+endif # BOARD_GOOGLE_SNOW

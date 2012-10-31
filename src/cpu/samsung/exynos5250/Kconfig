@@ -1,0 +1,15 @@
+config EXYNOS_ACE_SHA
+	bool
+	default n
+
+config SATA_AHCI
+	bool
+	default n
+
+config SPL_BUILD
+	bool
+	default n
+
+config SYS_TEXT_BASE
+	hex "Executable code section"
+	default 0x43e00000

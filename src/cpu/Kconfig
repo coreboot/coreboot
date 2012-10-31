@@ -1,3 +1,24 @@
+if ARCH_ARM
+
+source src/cpu/samsung/Kconfig
+
+# TODO(dhendrix): not sure if these can be used on exynos5...
+#config CACHE_AS_RAM
+#	bool
+#	default !ROMCC
+#
+#config DCACHE_RAM_BASE
+#	hex
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#
+#config DCACHE_RAM_GLOBAL_VAR_SIZE
+#	hex
+#	default 0x0
+
+endif	# ARCH_ARM
+
 if ARCH_X86
 
 source src/cpu/amd/Kconfig

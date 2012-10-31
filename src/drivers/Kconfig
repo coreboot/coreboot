@@ -33,3 +33,4 @@ source src/drivers/realtek/Kconfig
 source src/drivers/sil/Kconfig
 source src/drivers/spi/Kconfig
 source src/drivers/trident/Kconfig
+source src/drivers/maxim/Kconfig

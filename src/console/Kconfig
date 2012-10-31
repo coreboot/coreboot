@@ -1,17 +1,32 @@
 menu "Console"
-# TODO: Rename to SERIAL_CONSOLE once Kconfig transition is complete.
-config CONSOLE_SERIAL8250
+config SERIAL_CONSOLE
 	bool "Serial port console output"
+	default y
+	help
+	  Send coreboot debug output to a serial port
+
+config CONSOLE_SERIAL8250
+	bool "Serial port console output (I/O mapped, 8250-compatible)"
+	depends on SERIAL_CONSOLE
 	depends on HAVE_UART_IO_MAPPED
 	default y
 	help
 	  Send coreboot debug output to an I/O mapped serial port console.
 
 config CONSOLE_SERIAL8250MEM
-	bool "Serial port console output (memory mapped)"
+	bool "Serial port console output (memory mapped, 8250-compatible)"
+	depends on SERIAL_CONSOLE
 	depends on HAVE_UART_MEMORY_MAPPED
 	help
 	  Send coreboot debug output to a memory mapped serial port console.
+
+config CONSOLE_SERIAL_NONSTANDARD_MEM
+	bool "Serial port console output (memory-mapped, device-specific)"
+	depends on SERIAL_CONSOLE
+	depends on HAVE_UART_MEMORY_MAPPED
+	help
+	  Send coreboot debug output to a memory mapped serial port console
+	  on a device-specific UART.
 
 choice
 	prompt "Serial port"
@@ -50,7 +65,7 @@ config TTYS0_BASE
 choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
-	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
+	depends on SERIAL_CONSOLE
 
 config CONSOLE_SERIAL_115200
 	bool "115200"
@@ -75,6 +90,7 @@ config CONSOLE_SERIAL_9600
 
 endchoice
 
+#FIXME(dhendrix): Change name to SERIAL_BAUD? (Stefan sayz: yes!!)
 config TTYS0_BAUD
 	int
 	default 115200 if CONSOLE_SERIAL_115200

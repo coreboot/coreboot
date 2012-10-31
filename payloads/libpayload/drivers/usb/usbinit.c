@@ -155,6 +155,5 @@ static void usb_scan_pci_bus(int bus)
 int usb_initialize(void)
 {
 	usb_scan_pci_bus(0);
-	usb_poll();
 	return 0;
 }

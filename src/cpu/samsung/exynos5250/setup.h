@@ -25,6 +25,10 @@
 #ifndef _SMDK5250_SETUP_H
 #define _SMDK5250_SETUP_H
 
+struct exynos5_dmc;
+enum ddr_mode;
+struct exynos5_phy_control;
+
 /* TZPC : Register Offsets */
 #define TZPC0_BASE		0x10100000
 #define TZPC1_BASE		0x10110000
@@ -683,7 +687,8 @@ enum {
 };
 
 /* Functions common between LPDDR2 and DDR3 */
-void sdelay(unsigned long);
+/* FIXME(dhendrix): conflicts with arch system.h version of sdelay()... */
+//void sdelay(unsigned long);
 
 /* CPU info initialization code */
 void cpu_info_init(void);

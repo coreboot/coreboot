@@ -1,0 +1,28 @@
+config EXYNOS_ACE_SHA
+	bool
+	default n
+
+config SATA_AHCI
+	bool
+	default n
+
+config SPL_BUILD
+	bool
+	default n
+
+config SYS_TEXT_BASE
+	hex "Executable code section"
+	default 0x43e00000
+
+config SYS_SDRAM_BASE
+	hex "SDRAM base address"
+	default 0x40000000
+
+#FIXME(dhendrix, reinauer): re-visit this RAMBASE/RAMTOP stuff...
+config RAMBASE
+	hex
+	default SYS_SDRAM_BASE
+# according to stefan, this is RAMBASE + 1M.
+config RAMTOP
+	hex
+	default 0x40100000

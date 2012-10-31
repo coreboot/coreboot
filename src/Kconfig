@@ -205,7 +205,7 @@ config ARCH_X86
 	bool
 	default n
 
-config ARCH_ARM
+config ARCH_ARMV7
 	bool
 	default n
 
@@ -213,6 +213,10 @@ config ARCH_ARM
 # but the if controls how the evaluation occurs.
 if ARCH_X86
 source src/arch/x86/Kconfig
+endif
+
+if ARCH_ARMV7
+source src/arch/armv7/Kconfig
 endif
 
 menu "Chipset"

@@ -1,3 +1,55 @@
 menu "Architecture (armv7)"
 
+config SPL_BUILD
+	bool "Build second-phase bootloader (SPL)"
+	default y
+
+config EABI_COMPAT
+	bool "Toolchain is EABI compatible"
+	default n
+
+# Maximum reboot count
+# TODO: Improve description.
+config MAX_REBOOT_CNT
+	int
+	default 3
+
+choice
+	prompt "Bootblock behaviour"
+	default ARM_BOOTBLOCK_SIMPLE
+
+config ARM_BOOTBLOCK_SIMPLE
+	bool "Always load fallback"
+
+config ARM_BOOTBLOCK_NORMAL
+	bool "Switch to normal if non-volatile memory says so"
+
+endchoice
+
+config BOOTBLOCK_SOURCE
+	string
+	default "bootblock_simple.c" if ARM_BOOTBLOCK_SIMPLE
+	default "bootblock_normal.c" if ARM_BOOTBLOCK_NORMAL
+
+config UPDATE_IMAGE
+	bool "Update existing coreboot.rom image"
+	default n
+	depends on TINY_BOOTBLOCK
+	help
+	  If this option is enabled, no new coreboot.rom file
+	  is created. Instead it is expected that there already
+	  is a suitable file for further processing.
+	  The bootblock will not be modified.
+
+config BOOTBLOCK_SOC_INIT
+	string
+
+# FIXME: Should cache policy be set on a per-CPU basis?
+# FIXME(dhendrix): Stefan sayz to make a smart decision and not prompt the user.
+config ARM_DCACHE_POLICY_WRITEBACK
+	bool y
+
+config ARM_DCACHE_POLICY_WRITETHROUGH
+	bool n
+
 endmenu

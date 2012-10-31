@@ -1,5 +1,5 @@
-#ifndef I386_STDDEF_H
-#define I386_STDDEF_H
+#ifndef STDDEF_H
+#define STDDEF_H
 
 typedef long ptrdiff_t;
 #ifndef __SIZE_TYPE__
@@ -21,4 +21,4 @@ typedef unsigned int wint_t;
 #define ROMSTAGE_CONST
 #endif
 
-#endif /* I386_STDDEF_H */
+#endif /* STDDEF_H */

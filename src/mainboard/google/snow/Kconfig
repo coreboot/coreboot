@@ -1,0 +1,95 @@
+if BOARD_GOOGLE_SNOW
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARM
+	select CPU_SAMSUNG_EXYNOS5
+	select HAVE_UART_MEMORY_MAPPED
+	select CONSOLE_SERIAL_NONSTANDARD_MEM	# enable serial debugging
+#	select NORTHBRIDGE_INTEL_IVYBRIDGE
+#	select EC_GOOGLE_CHROMEEC
+	select BOARD_ROMSIZE_KB_4096
+#	select HAVE_ACPI_TABLES
+#	select HAVE_MAINBOARD_RESOURCES
+#	select MMCONF_SUPPORT
+#	select CHROMEOS
+
+config MAINBOARD_DIR
+	string
+	default google/snow
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "SNOW"
+
+#config MMCONF_BASE_ADDRESS
+#	hex
+#	default 0xf0000000
+
+#config IRQ_SLOT_COUNT
+#	int
+#	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_VENDOR
+	string
+	default "Samsung"
+
+# SPL (second-phase loader) stuff
+config SPL_TEXT_BASE
+	hex "SPL executable base"
+	default 0x02023400
+	help
+	  Location of SPL. Default location is within iRAM region.
+
+config SPL_MAX_SIZE
+	hex "SPL executable max size"
+	default 0x3800
+	help
+	  Max size of SPL. Default is 14KB
+
+config DRAM_SIZE_MB
+	int "DRAM size (MB)"
+	default 2048
+
+choice
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART3
+	depends on CONSOLE_SERIAL_NONSTANDARD_MEM
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+endchoice
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_NONSTANDARD_MEM
+	default 0x12c00000 if CONSOLE_SERIAL_UART0
+	default 0x12c10000 if CONSOLE_SERIAL_UART1
+	default 0x12c20000 if CONSOLE_SERIAL_UART2
+	default 0x12c30000 if CONSOLE_SERIAL_UART3
+	help
+	  Map the UART names to the respective MMIO address.
+
+endif # BOARD_GOOGLE_SNOW

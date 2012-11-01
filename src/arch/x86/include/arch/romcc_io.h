@@ -244,6 +244,21 @@ static inline __attribute__((always_inline)) void pci_write_config32(device_t de
 #endif
 }
 
+static inline __attribute__((always_inline)) void pci_or_config8(device_t dev, unsigned where, uint8_t value)
+{
+	pci_write_config8(dev, where, pci_read_config8(dev, where) | value);
+}
+
+static inline __attribute__((always_inline)) void pci_or_config16(device_t dev, unsigned where, uint16_t value)
+{
+	pci_write_config16(dev, where, pci_read_config16(dev, where) | value);
+}
+
+static inline __attribute__((always_inline)) void pci_or_config32(device_t dev, unsigned where, uint32_t value)
+{
+	pci_write_config32(dev, where, pci_read_config32(dev, where) | value);
+}
+
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
 {

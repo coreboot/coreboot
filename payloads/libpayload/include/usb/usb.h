@@ -253,10 +253,14 @@ int usb_interface_check(u16 vendor, u16 device);
 #define USB_QUIRK_TEST				(1 << 31)
 #define USB_QUIRK_NONE				 0
 
+static inline void usb_debug(const char *fmt, ...)
+{
 #ifdef USB_DEBUG
-# define debug(fmt, ...)	printf(fmt, ##__VA_ARGS__)
-#else
-# define debug(fmt, ...)	while (0) { printf(fmt, ##__VA_ARGS__); }
+	va_list ap;
+	va_start(ap, fmt);
+	vprintf(fmt, ap);
+	va_end(ap);
 #endif
+}
 
 #endif

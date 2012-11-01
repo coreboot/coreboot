@@ -65,17 +65,17 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 		}
 		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
 				& PortResetStatus) {
-			debug("Warning: root-hub port reset timed out.\n");
+			usb_debug("Warning: root-hub port reset timed out.\n");
 			break;
 		}
 		if ((200-timeout) < 20)
-			debug("Warning: port reset too short: %dms; "
+			usb_debug("Warning: port reset too short: %dms; "
 					"should be at least 10ms.\n",
 					(200-timeout)/2);
 		/* clear reset status change */
 		OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] =
 			PortResetStatusChange;
-		debug ("rh port reset finished after %dms.\n", (200-timeout)/2);
+		usb_debug ("rh port reset finished after %dms.\n", (200-timeout)/2);
 	}
 }
 
@@ -96,7 +96,7 @@ static void
 ohci_rh_scanport (usbdev_t *dev, int port)
 {
 	if (port >= RH_INST(dev)->numports) {
-		debug("Invalid port %d\n", port);
+		usb_debug("Invalid port %d\n", port);
 		return;
 	}
 
@@ -117,7 +117,7 @@ ohci_rh_scanport (usbdev_t *dev, int port)
 	mdelay(100); // wait for signal to stabilize
 
 	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus)) {
-		debug ("port enable failed\n");
+		usb_debug ("port enable failed\n");
 		return;
 	}
 
@@ -132,12 +132,12 @@ ohci_rh_report_port_changes (usbdev_t *dev)
 
 	if (!(OHCI_INST (dev->controller)->opreg->HcInterruptStatus & RootHubStatusChange)) return -1;
 	OHCI_INST (dev->controller)->opreg->HcInterruptStatus = RootHubStatusChange;
-	debug("port change\n");
+	usb_debug("port change\n");
 
 	for (i = 0; i < RH_INST(dev)->numports; i++) {
 		// maybe detach+attach happened between two scans?
 		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[i] & ConnectStatusChange) {
-			debug("attachment change on port %d\n", i);
+			usb_debug("attachment change on port %d\n", i);
 			return i;
 		}
 	}
@@ -177,7 +177,7 @@ ohci_rh_init (usbdev_t *dev)
 
 	RH_INST (dev)->numports = OHCI_INST (dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
 	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);
-	debug("%d ports registered\n", RH_INST (dev)->numports);
+	usb_debug("%d ports registered\n", RH_INST (dev)->numports);
 
 	for (i = 0; i < RH_INST (dev)->numports; i++) {
 		ohci_rh_enable_port (dev, i);
@@ -190,5 +190,5 @@ ohci_rh_init (usbdev_t *dev)
 	dev->hub = -1;
 	dev->port = -1;
 
-	debug("rh init done\n");
+	usb_debug("rh init done\n");
 }

@@ -50,14 +50,14 @@ static u8* uhci_poll_intr_queue (void *queue);
 static void
 uhci_dump (hci_t *controller)
 {
-	debug ("dump:\nUSBCMD: %x\n", uhci_reg_read16 (controller, USBCMD));
-	debug ("USBSTS: %x\n", uhci_reg_read16 (controller, USBSTS));
-	debug ("USBINTR: %x\n", uhci_reg_read16 (controller, USBINTR));
-	debug ("FRNUM: %x\n", uhci_reg_read16 (controller, FRNUM));
-	debug ("FLBASEADD: %x\n", uhci_reg_read32 (controller, FLBASEADD));
-	debug ("SOFMOD: %x\n", uhci_reg_read8 (controller, SOFMOD));
-	debug ("PORTSC1: %x\n", uhci_reg_read16 (controller, PORTSC1));
-	debug ("PORTSC2: %x\n", uhci_reg_read16 (controller, PORTSC2));
+	usb_debug ("dump:\nUSBCMD: %x\n", uhci_reg_read16 (controller, USBCMD));
+	usb_debug ("USBSTS: %x\n", uhci_reg_read16 (controller, USBSTS));
+	usb_debug ("USBINTR: %x\n", uhci_reg_read16 (controller, USBINTR));
+	usb_debug ("FRNUM: %x\n", uhci_reg_read16 (controller, FRNUM));
+	usb_debug ("FLBASEADD: %x\n", uhci_reg_read32 (controller, FLBASEADD));
+	usb_debug ("SOFMOD: %x\n", uhci_reg_read8 (controller, SOFMOD));
+	usb_debug ("PORTSC1: %x\n", uhci_reg_read16 (controller, PORTSC1));
+	usb_debug ("PORTSC2: %x\n", uhci_reg_read16 (controller, PORTSC2));
 }
 #endif
 
@@ -80,22 +80,22 @@ td_dump (td_t *td)
 			sprintf(td_value, "%x", td->token & TD_PID_MASK);
 			td_type=td_value;
 	}
-	debug ("%s packet (at %lx) to %x.%x failed\n", td_type,
+	usb_debug ("%s packet (at %lx) to %x.%x failed\n", td_type,
 		virt_to_phys (td), (td->token & TD_DEVADDR_MASK) >> TD_DEVADDR_SHIFT,
 		(td->token & TD_EP_MASK) >> TD_EP_SHIFT);
-	debug ("td (counter at %x) returns: ", td->ctrlsts >> TD_COUNTER_SHIFT);
-	debug (" bitstuff err: %x, ", !!(td->ctrlsts & TD_STATUS_BITSTUFF_ERR));
-	debug (" CRC err: %x, ", !!(td->ctrlsts & TD_STATUS_CRC_ERR));
-	debug (" NAK rcvd: %x, ", !!(td->ctrlsts & TD_STATUS_NAK_RCVD));
-	debug (" Babble: %x, ", !!(td->ctrlsts & TD_STATUS_BABBLE));
-	debug (" Data Buffer err: %x, ", !!(td->ctrlsts & TD_STATUS_DATABUF_ERR));
-	debug (" Stalled: %x, ", !!(td->ctrlsts & TD_STATUS_STALLED));
-	debug (" Active: %x\n", !!(td->ctrlsts & TD_STATUS_ACTIVE));
+	usb_debug ("td (counter at %x) returns: ", td->ctrlsts >> TD_COUNTER_SHIFT);
+	usb_debug (" bitstuff err: %x, ", !!(td->ctrlsts & TD_STATUS_BITSTUFF_ERR));
+	usb_debug (" CRC err: %x, ", !!(td->ctrlsts & TD_STATUS_CRC_ERR));
+	usb_debug (" NAK rcvd: %x, ", !!(td->ctrlsts & TD_STATUS_NAK_RCVD));
+	usb_debug (" Babble: %x, ", !!(td->ctrlsts & TD_STATUS_BABBLE));
+	usb_debug (" Data Buffer err: %x, ", !!(td->ctrlsts & TD_STATUS_DATABUF_ERR));
+	usb_debug (" Stalled: %x, ", !!(td->ctrlsts & TD_STATUS_STALLED));
+	usb_debug (" Active: %x\n", !!(td->ctrlsts & TD_STATUS_ACTIVE));
 	if (td->ctrlsts & TD_STATUS_BABBLE)
-		debug (" Babble because of %s\n",
+		usb_debug (" Babble because of %s\n",
 			(td->ctrlsts & TD_STATUS_BITSTUFF_ERR) ? "host" : "device");
 	if (td->ctrlsts & TD_STATUS_ACTIVE)
-		debug (" still active - timeout?\n");
+		usb_debug (" still active - timeout?\n");
 }
 
 static void
@@ -113,12 +113,12 @@ uhci_reset (hci_t *controller)
 	while (((uhci_reg_read16 (controller, USBCMD) & 2) != 0) && timeout--)
 		udelay (500);
 	if (timeout < 0)
-		debug ("Warning: uhci: host controller reset timed out.\n");
+		usb_debug ("Warning: uhci: host controller reset timed out.\n");
 
 	uhci_reg_write32 (controller, FLBASEADD,
 			  (u32) virt_to_phys (UHCI_INST (controller)->
 					      framelistptr));
-	//debug ("framelist at %p\n",UHCI_INST(controller)->framelistptr);
+	//usb_debug ("framelist at %p\n",UHCI_INST(controller)->framelistptr);
 
 	/* disable irqs */
 	uhci_reg_write16 (controller, USBINTR, 0);
@@ -364,7 +364,7 @@ uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	if (td == 0) {
 		result = 0;
 	} else {
-		debug ("control packet, req %x\n", req);
+		usb_debug ("control packet, req %x\n", req);
 		td_dump (td);
 		result = 1;
 	}
@@ -445,7 +445,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		size -= maxpsize;
 	}
 	if (run_schedule (ep->dev, tds) == 1) {
-		debug("Stalled. Trying to clean up.\n");
+		usb_debug("Stalled. Trying to clean up.\n");
 		clear_stall (ep);
 		free (tds);
 		return 1;

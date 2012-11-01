@@ -53,7 +53,7 @@ ehci_rh_destroy (usbdev_t *dev)
 static void
 ehci_rh_hand_over_port (usbdev_t *dev, int port)
 {
-	debug("giving up port %x, it's USB1\n", port+1);
+	usb_debug("giving up port %x, it's USB1\n", port+1);
 
 	/* Clear ConnectStatusChange before evaluation */
 	/* RW/C register, so clear it by writing 1 */
@@ -67,7 +67,7 @@ ehci_rh_hand_over_port (usbdev_t *dev, int port)
 	while (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE) && timeout--)
 		mdelay(10);
 	if (!(RH_INST(dev)->ports[port] & P_CONN_STATUS_CHANGE)) {
-		debug("Warning: Handing port over to companion timed out.\n");
+		usb_debug("Warning: Handing port over to companion timed out.\n");
 	}
 
 	/* RW/C register, so clear it by writing 1 */
@@ -79,7 +79,7 @@ static void
 ehci_rh_scanport (usbdev_t *dev, int port)
 {
 	if (RH_INST(dev)->devices[port]!=-1) {
-		debug("Unregister device at port %x\n", port+1);
+		usb_debug("Unregister device at port %x\n", port+1);
 		usb_detach_device(dev->controller, RH_INST(dev)->devices[port]);
 		RH_INST(dev)->devices[port]=-1;
 	}
@@ -118,7 +118,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 			ehci_rh_hand_over_port(dev, port);
 			return;
 		}
-		debug("port %x hosts a USB2 device\n", port+1);
+		usb_debug("port %x hosts a USB2 device\n", port+1);
 		RH_INST(dev)->devices[port] = usb_attach_device(dev->controller, dev->address, port, 2);
 	}
 	/* RW/C register, so clear it by writing 1 */
@@ -157,14 +157,14 @@ ehci_rh_init (usbdev_t *dev)
 	RH_INST(dev)->n_ports = EHCI_INST(dev->controller)->capabilities->hcsparams & HCS_NPORTS_MASK;
 	RH_INST(dev)->ports = EHCI_INST(dev->controller)->operation->portsc;
 
-	debug("root hub has %x ports\n", RH_INST(dev)->n_ports);
+	usb_debug("root hub has %x ports\n", RH_INST(dev)->n_ports);
 
 	/* If the host controller has port power control, enable power on
 	 * all ports and wait 20ms.
 	 */
 	if (EHCI_INST(dev->controller)->capabilities->hcsparams
 			& HCS_PORT_POWER_CONTROL) {
-		debug("host controller has port power control, "
+		usb_debug("host controller has port power control, "
 				"giving power to all ports.\n");
 		for (i=0; i < RH_INST(dev)->n_ports; i++)
 			RH_INST(dev)->ports[i] |= P_PP;

@@ -64,7 +64,7 @@ u32 usb_quirk_check(u16 vendor, u16 device)
 	for (i = 0; i < ARRAY_SIZE(usb_quirks); i++) {
 		if ((usb_quirks[i].vendor == vendor) &&
 				(usb_quirks[i].device == device)) {
-			debug("USB quirks enabled: %08x\n",
+			usb_debug("USB quirks enabled: %08x\n",
 					usb_quirks[i].quirks);
 			return usb_quirks[i].quirks;
 		}

@@ -20,7 +20,7 @@
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
-INTERMEDIATE:=bd82x6x_add_me
+INTERMEDIATE+=bd82x6x_add_me
 
 driver-y += pch.c
 driver-y += azalia.c
@@ -51,7 +51,7 @@ smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c
 romstage-y += early_spi.c
 
-$(INTERMEDIATE): $(obj)/coreboot.pre $(IFDTOOL)
+bd82x6x_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"
 	dd if=3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
@@ -60,5 +60,14 @@ $(INTERMEDIATE): $(obj)/coreboot.pre $(IFDTOOL)
 		-i ME:3rdparty/mainboard/$(MAINBOARDDIR)/me.bin \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
+	printf "    IFDTOOL    Locking Management Engine\n"
+	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+else
+	printf "    IFDTOOL    Unlocking Management Engine\n"
+	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 
-PHONY += $$(INTERMEDIATE)
+PHONY += bd82x6x_add_me

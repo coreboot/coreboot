@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA  02110-1335, USA
 #
 
-CROSSGCC_DATE="October 26th, 2012"
-CROSSGCC_VERSION="1.17"
+CROSSGCC_DATE="November 1st, 2012"
+CROSSGCC_VERSION="1.18"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -533,7 +533,7 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-expat/crossgcc-build.log
+) > build-expat/crossgcc-build.log 2>&1
 test -r build-expat/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
 test -r build-expat/.failed && exit 1
@@ -555,7 +555,7 @@ printf "Building Python ${PYTHON_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) &> build-gdb/crossgcc-build.log
+) > build-python/crossgcc-build.log 2>&1
 test -r build-python/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
 test -r build-python/.failed && exit 1

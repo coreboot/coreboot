@@ -22,8 +22,13 @@ config NORTHBRIDGE_INTEL_HASWELL
 	select CACHE_MRC_BIN
 	select CPU_INTEL_HASWELL
 	select REQUIRES_BLOB
+	select MMCONF_SUPPORT_DEFAULT
 
 if NORTHBRIDGE_INTEL_HASWELL
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/haswell/bootblock.c"
 
 config VGA_BIOS_ID
 	string

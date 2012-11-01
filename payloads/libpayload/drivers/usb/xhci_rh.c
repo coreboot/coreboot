@@ -64,7 +64,7 @@ xhci_rh_scanport (usbdev_t *dev, int port)
 	val |= PORTSC_CSC;
 	XHCI_INST (dev->controller)->opreg->prs[port].portsc = val;
 
-	debug("device attach status on port %x: %x\n", port, XHCI_INST (dev->controller)->opreg->prs[port].portsc & PORTSC_CCS);
+	usb_debug("device attach status on port %x: %x\n", port, XHCI_INST (dev->controller)->opreg->prs[port].portsc & PORTSC_CCS);
 }
 
 static int
@@ -77,7 +77,7 @@ xhci_rh_report_port_changes (usbdev_t *dev)
 
 	for (i = 0; i < RH_INST (dev)->numports; i++) {
 		if (XHCI_INST (dev->controller)->opreg->prs[i].portsc & PORTSC_CSC) {
-			debug("found connect status change on port %d\n", i);
+			usb_debug("found connect status change on port %d\n", i);
 			return i;
 		}
 	}
@@ -116,7 +116,7 @@ xhci_rh_init (usbdev_t *dev)
 
 	RH_INST (dev)->numports = XHCI_INST (dev->controller)->capreg->MaxPorts;
 	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);
-	debug("%d ports registered\n", RH_INST (dev)->numports);
+	usb_debug("%d ports registered\n", RH_INST (dev)->numports);
 
 	for (i = 0; i < RH_INST (dev)->numports; i++) {
 		xhci_rh_enable_port (dev, i);
@@ -129,5 +129,5 @@ xhci_rh_init (usbdev_t *dev)
 	dev->hub = -1;
 	dev->port = -1;
 
-	debug("rh init done\n");
+	usb_debug("rh init done\n");
 }

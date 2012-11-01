@@ -49,7 +49,7 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 	else if (port == 2)
 		port = PORTSC2;
 	else {
-		debug("Invalid port %d\n", port);
+		usb_debug("Invalid port %d\n", port);
 		return;
 	}
 
@@ -73,7 +73,7 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 		udelay(500); timeout--;
 	} while (((value & (1 << 2)) == 0) && (value & 0x01) && timeout);
 	if (!timeout)
-		debug("Warning: uhci_rh: port enabling timed out.\n");
+		usb_debug("Warning: uhci_rh: port enabling timed out.\n");
 }
 
 /* disable root hub */
@@ -86,7 +86,7 @@ uhci_rh_disable_port (usbdev_t *dev, int port)
 	else if (port == 2)
 		port = PORTSC2;
 	else {
-		debug("Invalid port %d\n", port);
+		usb_debug("Invalid port %d\n", port);
 		return;
 	}
 	uhci_reg_write16(controller, port,
@@ -100,7 +100,7 @@ uhci_rh_disable_port (usbdev_t *dev, int port)
 		udelay(500); timeout--;
 	} while (((value & (1 << 2)) != 0) && timeout);
 	if (!timeout)
-		debug("Warning: uhci_rh: port disabling timed out.\n");
+		usb_debug("Warning: uhci_rh: port disabling timed out.\n");
 }
 
 static void
@@ -114,7 +114,7 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 		portsc = PORTSC2;
 		offset = 1;
 	} else {
-		debug("Invalid port %d\n", port);
+		usb_debug("Invalid port %d\n", port);
 		return;
 	}
 	int devno = RH_INST (dev)->port[offset];
@@ -147,25 +147,25 @@ uhci_rh_report_port_changes (usbdev_t *dev)
 	stored = (RH_INST (dev)->port[0] == -1);
 	real = ((uhci_reg_read16 (dev->controller, PORTSC1) & 1) == 0);
 	if (stored != real) {
-		debug("change on port 1\n");
+		usb_debug("change on port 1\n");
 		return 1;
 	}
 
 	stored = (RH_INST (dev)->port[1] == -1);
 	real = ((uhci_reg_read16 (dev->controller, PORTSC2) & 1) == 0);
 	if (stored != real) {
-		debug("change on port 2\n");
+		usb_debug("change on port 2\n");
 		return 2;
 	}
 
 	// maybe detach+attach happened between two scans?
 
 	if ((uhci_reg_read16 (dev->controller, PORTSC1) & 2) > 0) {
-		debug("possibly re-attached on port 1\n");
+		usb_debug("possibly re-attached on port 1\n");
 		return 1;
 	}
 	if ((uhci_reg_read16 (dev->controller, PORTSC2) & 2) > 0) {
-		debug("possibly re-attached on port 2\n");
+		usb_debug("possibly re-attached on port 2\n");
 		return 2;
 	}
 

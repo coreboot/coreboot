@@ -86,27 +86,27 @@ xhci_init (pcidev_t addr)
 	if (pci_read_config32 (controller->bus_address, 0x14) > 0) {
 		fatal("We don't do 64bit addressing.\n");
 	}
-	debug("regbase: %lx\n", controller->reg_base);
+	usb_debug("regbase: %lx\n", controller->reg_base);
 
 	XHCI_INST (controller)->capreg = (void*)controller->reg_base;
 	XHCI_INST (controller)->opreg = (void*)(controller->reg_base + XHCI_INST (controller)->capreg->caplength);
 	XHCI_INST (controller)->hcrreg = (void*)(controller->reg_base + XHCI_INST (controller)->capreg->rtsoff);
 	XHCI_INST (controller)->dbreg = (void*)(controller->reg_base + XHCI_INST (controller)->capreg->dboff);
-	debug("caplen: %lx\nrtsoff: %lx\ndboff: %lx\n", XHCI_INST (controller)->capreg->caplength, XHCI_INST (controller)->capreg->rtsoff, XHCI_INST (controller)->capreg->dboff);
-	debug("caplength: %x\n", XHCI_INST (controller)->capreg->caplength);
-	debug("hciversion: %x.%x\n", XHCI_INST (controller)->capreg->hciver_hi, XHCI_INST (controller)->capreg->hciver_lo);
+	usb_debug("caplen: %lx\nrtsoff: %lx\ndboff: %lx\n", XHCI_INST (controller)->capreg->caplength, XHCI_INST (controller)->capreg->rtsoff, XHCI_INST (controller)->capreg->dboff);
+	usb_debug("caplength: %x\n", XHCI_INST (controller)->capreg->caplength);
+	usb_debug("hciversion: %x.%x\n", XHCI_INST (controller)->capreg->hciver_hi, XHCI_INST (controller)->capreg->hciver_lo);
 	if ((XHCI_INST (controller)->capreg->hciversion < 0x96) || (XHCI_INST (controller)->capreg->hciversion > 0x100)) {
 		fatal("Unsupported xHCI version\n");
 	}
-	debug("maxslots: %x\n", XHCI_INST (controller)->capreg->MaxSlots);
-	debug("maxports: %x\n", XHCI_INST (controller)->capreg->MaxPorts);
+	usb_debug("maxslots: %x\n", XHCI_INST (controller)->capreg->MaxSlots);
+	usb_debug("maxports: %x\n", XHCI_INST (controller)->capreg->MaxPorts);
 	int pagesize = XHCI_INST (controller)->opreg->pagesize << 12;
-	debug("pagesize: %x\n", pagesize);
+	usb_debug("pagesize: %x\n", pagesize);
 
 	XHCI_INST (controller)->dcbaa = memalign(64, (XHCI_INST (controller)->capreg->MaxSlots+1)*sizeof(devctxp_t));
 	memset((void*)XHCI_INST (controller)->dcbaa, 0, (XHCI_INST (controller)->capreg->MaxSlots+1)*sizeof(devctxp_t));
 
-	debug("max scratchpad bufs: %x\n", XHCI_INST (controller)->capreg->Max_Scratchpad_Bufs);
+	usb_debug("max scratchpad bufs: %x\n", XHCI_INST (controller)->capreg->Max_Scratchpad_Bufs);
 	if (XHCI_INST (controller)->capreg->Max_Scratchpad_Bufs > 0) {
 		XHCI_INST (controller)->dcbaa->ptr = memalign(64, XHCI_INST (controller)->capreg->Max_Scratchpad_Bufs * 8);
 	}
@@ -118,7 +118,7 @@ xhci_init (pcidev_t addr)
 	while ((XHCI_INST (controller)->opreg->usbsts & USBSTS_CNR) != 0) mdelay(1);
 	printf("ok.\n");
 
-	debug("ERST Max: %lx -> %lx entries\n", XHCI_INST (controller)->capreg->ERST_Max, 1<<(XHCI_INST (controller)->capreg->ERST_Max));
+	usb_debug("ERST Max: %lx -> %lx entries\n", XHCI_INST (controller)->capreg->ERST_Max, 1<<(XHCI_INST (controller)->capreg->ERST_Max));
 
 	// enable all available slots
 	XHCI_INST (controller)->opreg->config = XHCI_INST (controller)->capreg->MaxSlots & CONFIG_MASK_MaxSlotsEn;
@@ -161,7 +161,7 @@ xhci_init (pcidev_t addr)
 	cmd->cmd_No_Op.TRB_Type = TRB_CMD_NOOP;
 
 	// ring the HC doorbell
-	debug("Posting command at %lx\n", virt_to_phys(cmd));
+	usb_debug("Posting command at %lx\n", virt_to_phys(cmd));
 	cmd->cmd_No_Op.C = XHCI_INST (controller)->cmd_ccs; // enable command
 	XHCI_INST (controller)->dbreg[0] = 0; // and tell controller to consume commands
 
@@ -169,27 +169,27 @@ xhci_init (pcidev_t addr)
 	trb_t *ev = &XHCI_INST (controller)->ev_ring[0];
 	trb_t *ev1 = &XHCI_INST (controller)->ev_ring[1];
 	while (ev->event_cmd_cmpl.C != XHCI_INST (controller)->ev_ccs) {
-		debug("CRCR: %lx, USBSTS: %lx\n",  XHCI_INST (controller)->opreg->crcr_lo, XHCI_INST (controller)->opreg->usbsts);
-		debug("ev0.C %x, ev1.C %x\n", ev->event_cmd_cmpl.C, ev1->event_cmd_cmpl.C);
+		usb_debug("CRCR: %lx, USBSTS: %lx\n",  XHCI_INST (controller)->opreg->crcr_lo, XHCI_INST (controller)->opreg->usbsts);
+		usb_debug("ev0.C %x, ev1.C %x\n", ev->event_cmd_cmpl.C, ev1->event_cmd_cmpl.C);
 		mdelay(100);
 	}
-	debug("command ring is %srunning\n", (XHCI_INST (controller)->opreg->crcr_lo & CRCR_CRR)?"":"not ");
+	usb_debug("command ring is %srunning\n", (XHCI_INST (controller)->opreg->crcr_lo & CRCR_CRR)?"":"not ");
 	switch (ev->event_cmd_cmpl.TRB_Type) {
 		case TRB_EV_CMD_CMPL:
-			debug("Completed command TRB at %lx. Code: %d\n",
+			usb_debug("Completed command TRB at %lx. Code: %d\n",
 				ev->event_cmd_cmpl.Cmd_TRB_Pointer_lo, ev->event_cmd_cmpl.Completion_Code);
 			break;
 		case TRB_EV_PORTSC:
-			debug("Port Status Change Event. Completion Code: %d\n Port: %d. Ignoring.\n",
+			usb_debug("Port Status Change Event. Completion Code: %d\n Port: %d. Ignoring.\n",
 				ev->event_cmd_cmpl.Completion_Code, ev->event_portsc.Port);
 			// we ignore the event as we look for the PORTSC registers instead, at a time when it suits _us_
 			break;
 		default:
-			debug("Unknown event: %d, Completion Code: %d\n", ev->event_cmd_cmpl.TRB_Type, ev->event_cmd_cmpl.Completion_Code);
+			usb_debug("Unknown event: %d, Completion Code: %d\n", ev->event_cmd_cmpl.TRB_Type, ev->event_cmd_cmpl.Completion_Code);
 			break;
 	}
-	debug("CRCR: %lx, USBSTS: %lx\n",  XHCI_INST (controller)->opreg->crcr_lo, XHCI_INST (controller)->opreg->usbsts);
-	debug("ev0.C %x, ev1.C %x, ev1.CC %d\n", ev->event_cmd_cmpl.C, ev1->event_cmd_cmpl.C, ev1->event_cmd_cmpl.Completion_Code);
+	usb_debug("CRCR: %lx, USBSTS: %lx\n",  XHCI_INST (controller)->opreg->crcr_lo, XHCI_INST (controller)->opreg->usbsts);
+	usb_debug("ev0.C %x, ev1.C %x, ev1.CC %d\n", ev->event_cmd_cmpl.C, ev1->event_cmd_cmpl.C, ev1->event_cmd_cmpl.Completion_Code);
 
 	controller->devices[0]->controller = controller;
 	controller->devices[0]->init = xhci_rh_init;

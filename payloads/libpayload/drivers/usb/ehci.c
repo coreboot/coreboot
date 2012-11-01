@@ -34,8 +34,8 @@
 static void dump_td(u32 addr)
 {
 	qtd_t *td = phys_to_virt(addr);
-	debug("td at phys(%x): status: %x\n\n", addr, td->token & QTD_STATUS_MASK);
-	debug("-   cerr: %x, total_len: %x\n\n", (td->token & QTD_CERR_MASK) >> QTD_CERR_SHIFT,
+	usb_debug("td at phys(%x): status: %x\n\n", addr, td->token & QTD_STATUS_MASK);
+	usb_debug("-   cerr: %x, total_len: %x\n\n", (td->token & QTD_CERR_MASK) >> QTD_CERR_SHIFT,
 		(td->token & QTD_TOTAL_LEN_MASK) >> QTD_TOTAL_LEN_SHIFT);
 }
 
@@ -70,7 +70,7 @@ static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 			&& timeout--)
 		mdelay(1);
 	if (timeout < 0) {
-		debug("ehci periodic schedule status change timed out.\n");
+		usb_debug("ehci periodic schedule status change timed out.\n");
 		return 1;
 	}
 	return 0;
@@ -110,7 +110,7 @@ static int closest_usb2_hub(const usbdev_t *dev, int *const addr, int *const por
 		*port = usb1dev->port;
 		return 0;
 	} else {
-		debug("ehci: Couldn't find closest USB2.0 hub.\n");
+		usb_debug("ehci: Couldn't find closest USB2.0 hub.\n");
 		return 1;
 	}
 }
@@ -192,7 +192,7 @@ static int wait_for_tds(qtd_t *head)
 		if (cur->token & QTD_HALTED) {
 			printf("ERROR with packet\n");
 			dump_td(virt_to_phys(cur));
-			debug("-----------------\n");
+			usb_debug("-----------------\n");
 			return 1;
 		}
 		if (cur->next_qtd & 1) {
@@ -200,7 +200,7 @@ static int wait_for_tds(qtd_t *head)
 		}
 		if (0) dump_td(virt_to_phys(cur));
 		/* helps debugging the TD chain */
-		if (0) debug("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
+		if (0) usb_debug("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
 		cur = phys_to_virt(cur->next_qtd);
 	}
 	return result;
@@ -222,7 +222,7 @@ static int ehci_set_async_schedule(ehci_t *ehcic, int enable)
 			&& timeout--)
 		mdelay(1);
 	if (timeout < 0) {
-		debug("ehci async schedule status change timed out.\n");
+		usb_debug("ehci async schedule status change timed out.\n");
 		return 1;
 	}
 	return 0;
@@ -590,7 +590,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 		if (!(intrq->head->td.token & QTD_STATUS_MASK))
 			ret = intrq->head->data;
 		else
-			debug("ehci_poll_intr_queue: transfer failed, "
+			usb_debug("ehci_poll_intr_queue: transfer failed, "
 				"status == 0x%02x\n",
 				intrq->head->td.token & QTD_STATUS_MASK);
 
@@ -606,7 +606,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 	}
 	/* reset queue if we fully processed it after underrun */
 	else if (intrq->qh.td.next_qtd & QTD_TERMINATE) {
-		debug("resetting underrun ehci interrupt queue.\n");
+		usb_debug("resetting underrun ehci interrupt queue.\n");
 		memset(&intrq->qh.td, 0, sizeof(intrq->qh.td));
 		intrq->qh.td.next_qtd = virt_to_phys(&intrq->head->td);
 	}

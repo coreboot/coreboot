@@ -108,7 +108,7 @@ void
 init_device_entry (hci_t *controller, int i)
 {
 	if (controller->devices[i] != 0)
-		debug("warning: device %d reassigned?\n", i);
+		usb_debug("warning: device %d reassigned?\n", i);
 	controller->devices[i] = malloc(sizeof(usbdev_t));
 	controller->devices[i]->controller = controller;
 	controller->devices[i]->address = -1;
@@ -162,13 +162,13 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	dr.wIndex = langID;
 	dr.wLength = 8;
 	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 8, buf)) {
-		debug ("getting descriptor size (type %x) failed\n",
+		usb_debug ("getting descriptor size (type %x) failed\n",
 			descType);
 	}
 
 	if (descType == 1) {
 		device_descriptor_t *dd = (device_descriptor_t *) buf;
-		debug ("maxPacketSize0: %x\n", dd->bMaxPacketSize0);
+		usb_debug ("maxPacketSize0: %x\n", dd->bMaxPacketSize0);
 		if (dd->bMaxPacketSize0 != 0)
 			dev->endpoints[0].maxpacketsize = dd->bMaxPacketSize0;
 	}
@@ -186,7 +186,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	dr.wLength = size;
 	if (dev->controller->
 	    control (dev, IN, sizeof (dr), &dr, size, result)) {
-		debug ("getting descriptor (type %x, size %x) failed\n",
+		usb_debug ("getting descriptor (type %x, size %x) failed\n",
 			descType, size);
 	}
 
@@ -242,7 +242,7 @@ get_free_address (hci_t *controller)
 		if (controller->devices[i] == 0)
 			return i;
 	}
-	debug ("no free address found\n");
+	usb_debug ("no free address found\n");
 	return -1;		// no free address
 }
 
@@ -277,7 +277,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	dev->endpoints[0].direction = SETUP;
 	mdelay (50);
 	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0)) {
-		debug ("set_address failed\n");
+		usb_debug ("set_address failed\n");
 		return -1;
 	}
 	mdelay (50);
@@ -291,7 +291,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
 	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
 
-	debug ("\ndevice has %x configurations\n", dd->bNumConfigurations);
+	usb_debug ("\ndevice has %x configurations\n", dd->bNumConfigurations);
 	if (dd->bNumConfigurations == 0) {
 		/* device isn't usable */
 		printf ("... no usable configuration!\n");
@@ -309,7 +309,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		int i;
 		int num = cd->bNumInterfaces;
 		interface_descriptor_t *current = interface;
-		debug ("device has %x interfaces\n", num);
+		usb_debug ("device has %x interfaces\n", num);
 		if (num > 1) {
 			int interfaces = usb_interface_check(dd->idVendor, dd->idProduct);
 			if (interfaces) {
@@ -331,7 +331,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		}
 		for (i = 0; i < num; i++) {
 			int j;
-			debug (" #%x has %x endpoints, interface %x:%x, protocol %x\n",
+			usb_debug (" #%x has %x endpoints, interface %x:%x, protocol %x\n",
 					current->bInterfaceNumber, current->bNumEndpoints, current->bInterfaceClass, current->bInterfaceSubClass, current->bInterfaceProtocol);
 			endpoint_descriptor_t *endp =
 				(endpoint_descriptor_t *) (((char *) current)
@@ -349,7 +349,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 				static const char *transfertypes[4] = {
 					"control", "isochronous", "bulk", "interrupt"
 				};
-				debug ("   #%x: Endpoint %x (%s), max packet size %x, type %s\n", j, endp->bEndpointAddress & 0x7f, ((endp->bEndpointAddress & 0x80) != 0) ? "in" : "out", endp->wMaxPacketSize, transfertypes[endp->bmAttributes]);
+				usb_debug ("   #%x: Endpoint %x (%s), max packet size %x, type %s\n", j, endp->bEndpointAddress & 0x7f, ((endp->bEndpointAddress & 0x80) != 0) ? "in" : "out", endp->wMaxPacketSize, transfertypes[endp->bmAttributes]);
 #endif
 				endpoint_t *ep =
 					&dev->endpoints[dev->num_endp++];
@@ -403,7 +403,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #ifdef CONFIG_USB_HID
 		controller->devices[adr]->init = usb_hid_init;
 #else
-		debug ("NOTICE: USB HID support not compiled in\n");
+		usb_debug ("NOTICE: USB HID support not compiled in\n");
 #endif
 		break;
 	case physical_device:
@@ -420,7 +420,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #ifdef CONFIG_USB_MSC
 		controller->devices[adr]->init = usb_msc_init;
 #else
-		debug ("NOTICE: USB MSC support not compiled in\n");
+		usb_debug ("NOTICE: USB MSC support not compiled in\n");
 #endif
 		break;
 	case hub_device:
@@ -428,7 +428,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #ifdef CONFIG_USB_HUB
 		controller->devices[adr]->init = usb_hub_init;
 #else
-		debug ("NOTICE: USB hub support not compiled in.\n");
+		usb_debug ("NOTICE: USB hub support not compiled in.\n");
 #endif
 		break;
 	case cdc_device:
@@ -480,7 +480,7 @@ int
 usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 {
 	static const char* speeds[] = { "full", "low", "high" };
-	debug ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
+	usb_debug ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
 	int newdev = set_address (controller, speed, port, hubaddress);
 	if (newdev == -1)
 		return -1;

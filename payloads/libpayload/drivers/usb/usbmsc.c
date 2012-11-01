@@ -381,7 +381,7 @@ read_capacity (usbdev_t *dev)
 	cb.command = 0x25;	// read capacity
 	u8 buf[8];
 
-	debug ("Reading capacity of mass storage device.\n");
+	usb_debug ("Reading capacity of mass storage device.\n");
 	int count = 0, ret;
 	while (count++ < 20) {
 		switch (ret = execute_command
@@ -430,9 +430,9 @@ usb_msc_init (usbdev_t *dev)
 	interface_descriptor_t *interface =
 		(interface_descriptor_t *) (((char *) cd) + cd->bLength);
 
-	debug ("  it uses %s command set\n",
+	usb_debug ("  it uses %s command set\n",
 		msc_subclass_strings[interface->bInterfaceSubClass]);
-	debug ("  it uses %s protocol\n",
+	usb_debug ("  it uses %s protocol\n",
 		msc_protocol_strings[interface->bInterfaceProtocol]);
 
 
@@ -479,11 +479,11 @@ usb_msc_init (usbdev_t *dev)
 		printf("couldn't find bulk-out endpoint");
 		return;
 	}
-	debug ("  using endpoint %x as in, %x as out\n",
+	usb_debug ("  using endpoint %x as in, %x as out\n",
 		MSC_INST (dev)->bulk_in->endpoint,
 		MSC_INST (dev)->bulk_out->endpoint);
 
-	debug ("  has %d luns\n", get_max_luns (dev) + 1);
+	usb_debug ("  has %d luns\n", get_max_luns (dev) + 1);
 
 	printf ("  Waiting for device to become ready...");
 	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
@@ -507,12 +507,12 @@ usb_msc_init (usbdev_t *dev)
 		printf ("ok.\n");
 	}
 
-	debug ("  spin up");
+	usb_debug ("  spin up");
 	for (i = 0; i < 30; i++) {
-		debug (".");
+		usb_debug (".");
 		switch (spin_up (dev)) {
 		case MSC_COMMAND_OK:
-			debug (" OK.");
+			usb_debug (" OK.");
 			break;
 		case MSC_COMMAND_FAIL:
 			mdelay (100);
@@ -522,7 +522,7 @@ usb_msc_init (usbdev_t *dev)
 		}
 		break;
 	}
-	debug ("\n");
+	usb_debug ("\n");
 
 	if ((read_capacity (dev) == MSC_COMMAND_OK) && usbdisk_create) {
 		usbdisk_create (dev);

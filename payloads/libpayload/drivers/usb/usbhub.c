@@ -97,7 +97,7 @@ usb_hub_scanport (usbdev_t *dev, int port)
 		mdelay(1); timeout--;
 	} while ((buf[0] & PORT_RESET) && timeout);
 	if (!timeout)
-		debug("Warning: usbhub: port reset timed out.\n");
+		usb_debug("Warning: usbhub: port reset timed out.\n");
 
 	/* wait for port to be enabled. the hub is responsible for this */
 	timeout = 500; /* time out after 500ms */
@@ -106,7 +106,7 @@ usb_hub_scanport (usbdev_t *dev, int port)
 		mdelay(1); timeout--;
 	} while (!(buf[0] & PORT_ENABLE) && timeout);
 	if (!timeout)
-		debug("Warning: usbhub: port enabling timed out.\n");
+		usb_debug("Warning: usbhub: port enabling timed out.\n");
 
 	get_status (dev, port, DR_PORT, 4, buf);
 	/* bit  10  9

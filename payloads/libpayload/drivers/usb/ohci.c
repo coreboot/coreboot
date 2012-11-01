@@ -206,9 +206,9 @@ dump_td(td_t *cur, int level)
 #ifdef USB_DEBUG
 	static const char *spaces="          ";
 	const char *spc=spaces+(10-level);
-	debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[(cur->config & TD_DIRECTION_MASK) >> TD_DIRECTION_SHIFT],
+	usb_debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[(cur->config & TD_DIRECTION_MASK) >> TD_DIRECTION_SHIFT],
 		completion_codes[(cur->config & TD_CC_MASK) >> TD_CC_SHIFT]);
-	debug("%s toggle: %x\n", spc, !!(cur->config & TD_TOGGLE_DATA1));
+	usb_debug("%s toggle: %x\n", spc, !!(cur->config & TD_TOGGLE_DATA1));
 #endif
 }
 
@@ -227,7 +227,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 		timeout--) {
 		/* don't log every ms */
 		if (!(timeout % 100))
-		debug("intst: %x; ctrl: %x; cmdst: %x; head: %x -> %x, tail: %x, condition: %x\n",
+		usb_debug("intst: %x; ctrl: %x; cmdst: %x; head: %x -> %x, tail: %x, condition: %x\n",
 			OHCI_INST(dev->controller)->opreg->HcInterruptStatus,
 			OHCI_INST(dev->controller)->opreg->HcControl,
 			OHCI_INST(dev->controller)->opreg->HcCommandStatus,
@@ -244,7 +244,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 	ohci_process_done_queue(OHCI_INST(dev->controller), 1);
 
 	if (head->head_pointer & 1) {
-		debug("HALTED!\n");
+		usb_debug("HALTED!\n");
 		return 1;
 	}
 	return 0;
@@ -363,7 +363,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	head->tail_pointer = virt_to_phys(final_td);
 	head->head_pointer = virt_to_phys(first_td);
 
-	debug("doing control transfer with %x. first_td at %x\n",
+	usb_debug("doing control transfer with %x. first_td at %x\n",
 		head->config & ED_FUNC_MASK, virt_to_phys(first_td));
 
 	/* activate schedule */
@@ -389,7 +389,7 @@ static int
 ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 {
 	int i;
-	debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, data, finalize, ep->maxpacketsize);
+	usb_debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, data, finalize, ep->maxpacketsize);
 
 	td_t *cur, *next;
 
@@ -465,7 +465,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	head->tail_pointer = virt_to_phys(cur);
 	head->head_pointer = virt_to_phys(first_td) | (ep->toggle?ED_TOGGLE:0);
 
-	debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n",
+	usb_debug("doing bulk transfer with %x(%x). first_td at %x, last %x\n",
 		head->config & ED_FUNC_MASK,
 		(head->config & ED_EP_MASK) >> ED_EP_SHIFT,
 		virt_to_phys(first_td), virt_to_phys(cur));
@@ -738,7 +738,7 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 		++i;
 	}
 	if (spew_debug)
-		debug("Processed %d done TDs.\n", i);
+		usb_debug("Processed %d done TDs.\n", i);
 
 	j = 0;
 	/* Process interrupt queue TDs in right order. */
@@ -763,6 +763,6 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 		++j;
 	}
 	if (spew_debug)
-		debug("processed %d done tds, %d intr tds thereof.\n", i, j);
+		usb_debug("processed %d done tds, %d intr tds thereof.\n", i, j);
 }
 

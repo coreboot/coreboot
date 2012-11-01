@@ -324,7 +324,7 @@ usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current,
 
 		if (keypress == -1) {
 			/* Debug: Print unknown keys */
-			debug ("usbhid: <%x> %x [ %x %x %x %x %x %x ] %d\n",
+			usb_debug ("usbhid: <%x> %x [ %x %x %x %x %x %x ] %d\n",
 				current->modifiers, current->repeats,
 			current->keys[0], current->keys[1],
 			current->keys[2], current->keys[3],
@@ -429,18 +429,18 @@ usb_hid_init (usbdev_t *dev)
 
 	if (interface->bInterfaceSubClass == hid_subclass_boot) {
 		u8 countrycode;
-		debug ("  supports boot interface..\n");
-		debug ("  it's a %s\n",
+		usb_debug ("  supports boot interface..\n");
+		usb_debug ("  it's a %s\n",
 			boot_protos[interface->bInterfaceProtocol]);
 		switch (interface->bInterfaceProtocol) {
 		case hid_boot_proto_keyboard:
 			dev->data = malloc (sizeof (usbhid_inst_t));
 			if (!dev->data)
 				fatal("Not enough memory for USB HID device.\n");
-			debug ("  configuring...\n");
+			usb_debug ("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);
-			debug ("  activating...\n");
+			usb_debug ("  activating...\n");
 
 			HID_INST (dev)->descriptor =
 				(hid_descriptor_t *)
@@ -451,7 +451,7 @@ usb_hid_init (usbdev_t *dev)
 			/* 35 countries defined: */
 			if (countrycode > 35)
 				countrycode = 0;
-			debug ("  Keyboard has %s layout (country code %02x)\n",
+			usb_debug ("  Keyboard has %s layout (country code %02x)\n",
 					countries[countrycode][0], countrycode);
 
 			/* Set keyboard layout accordingly */
@@ -470,14 +470,14 @@ usb_hid_init (usbdev_t *dev)
 					continue;
 				break;
 			}
-			debug ("  found endpoint %x for interrupt-in\n", i);
+			usb_debug ("  found endpoint %x for interrupt-in\n", i);
 			/* 20 buffers of 8 bytes, for every 10 msecs */
 			HID_INST(dev)->queue = dev->controller->create_intr_queue (&dev->endpoints[i], 8, 20, 10);
 			keycount = 0;
-			debug ("  configuration done.\n");
+			usb_debug ("  configuration done.\n");
 			break;
 		case hid_boot_proto_mouse:
-			debug("NOTICE: USB mice are not supported.\n");
+			usb_debug("NOTICE: USB mice are not supported.\n");
 			break;
 		}
 	}

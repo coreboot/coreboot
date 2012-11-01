@@ -60,5 +60,14 @@ bd82x6x_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 		-i ME:3rdparty/mainboard/$(MAINBOARDDIR)/me.bin \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
+	printf "    IFDTOOL    Locking Management Engine\n"
+	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+else
+	printf "    IFDTOOL    Unlocking Management Engine\n"
+	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 
 PHONY += bd82x6x_add_me

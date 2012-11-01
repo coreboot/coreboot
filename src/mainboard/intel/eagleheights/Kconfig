@@ -27,14 +27,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xffdf8000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "EagleHeights"

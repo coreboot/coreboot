@@ -15,42 +15,40 @@
 				(((DEVFN) & 0xFF) << 12) |\
 				((WHERE) & 0xFFF))
 
-#include <arch/mmio_conf.h>
-
 static uint8_t pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn,
 				       int where)
 {
-	return (read8x(PCI_MMIO_ADDR(bus, devfn, where)));
+	return (read8(PCI_MMIO_ADDR(bus, devfn, where)));
 }
 
 static uint16_t pci_mmconf_read_config16(struct bus *pbus, int bus, int devfn,
 					 int where)
 {
-	return (read16x(PCI_MMIO_ADDR(bus, devfn, where) & ~1));
+	return (read16(PCI_MMIO_ADDR(bus, devfn, where) & ~1));
 }
 
 static uint32_t pci_mmconf_read_config32(struct bus *pbus, int bus, int devfn,
 					 int where)
 {
-	return (read32x(PCI_MMIO_ADDR(bus, devfn, where) & ~3));
+	return (read32(PCI_MMIO_ADDR(bus, devfn, where) & ~3));
 }
 
 static void pci_mmconf_write_config8(struct bus *pbus, int bus, int devfn,
 				     int where, uint8_t value)
 {
-	write8x(PCI_MMIO_ADDR(bus, devfn, where), value);
+	write8(PCI_MMIO_ADDR(bus, devfn, where), value);
 }
 
 static void pci_mmconf_write_config16(struct bus *pbus, int bus, int devfn,
 				      int where, uint16_t value)
 {
-	write16x(PCI_MMIO_ADDR(bus, devfn, where) & ~1, value);
+	write16(PCI_MMIO_ADDR(bus, devfn, where) & ~1, value);
 }
 
 static void pci_mmconf_write_config32(struct bus *pbus, int bus, int devfn,
 				      int where, uint32_t value)
 {
-	write32x(PCI_MMIO_ADDR(bus, devfn, where) & ~3, value);
+	write32(PCI_MMIO_ADDR(bus, devfn, where) & ~3, value);
 }
 
 const struct pci_bus_operations pci_ops_mmconf = {

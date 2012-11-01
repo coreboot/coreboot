@@ -7,12 +7,6 @@
 // also be pulled in here for all romcc/romstage code.
 // #include <arch/io.h>
 
-#if CONFIG_MMCONF_SUPPORT
-
-#include <arch/mmio_conf.h>
-
-#endif
-
 static inline int log2(int value)
 {
         unsigned int r = 0;
@@ -79,7 +73,7 @@ static inline __attribute__((always_inline)) uint8_t pci_mmio_read_config8(devic
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | where;
-        return read8x(addr);
+        return read8(addr);
 }
 #endif
 static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
@@ -108,7 +102,7 @@ static inline __attribute__((always_inline)) uint16_t pci_mmio_read_config16(dev
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~1);
-        return read16x(addr);
+        return read16(addr);
 }
 #endif
 
@@ -139,7 +133,7 @@ static inline __attribute__((always_inline)) uint32_t pci_mmio_read_config32(dev
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~3);
-        return read32x(addr);
+        return read32(addr);
 }
 #endif
 
@@ -169,7 +163,7 @@ static inline __attribute__((always_inline)) void pci_mmio_write_config8(device_
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | where;
-        write8x(addr, value);
+        write8(addr, value);
 }
 #endif
 
@@ -200,7 +194,7 @@ static inline __attribute__((always_inline)) void pci_mmio_write_config16(device
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~1);
-        write16x(addr, value);
+        write16(addr, value);
 }
 #endif
 
@@ -231,7 +225,7 @@ static inline __attribute__((always_inline)) void pci_mmio_write_config32(device
 {
         unsigned addr;
         addr = CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~3);
-        write32x(addr, value);
+        write32(addr, value);
 }
 #endif
 

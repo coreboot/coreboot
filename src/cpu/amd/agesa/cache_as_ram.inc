@@ -98,6 +98,13 @@ disable_cache_as_ram:
 
   /* Restore the return stack */
   movd %xmm0, %esp
+
+  /* enable cache */
+  movl %cr0, %eax
+  andl $0x9fffffff, %eax
+  movl %eax, %cr0
+  xorl %eax, %eax
+
   ret
 
 cache_as_ram_setup_out:

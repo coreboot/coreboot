@@ -36,6 +36,7 @@ typedef struct {
 	endpoint_t *bulk_in;
 	endpoint_t *bulk_out;
 	int usbdisk_created;
+	void *data; /* For use by consumers of libpayload. */
 } usbmsc_inst_t;
 
 #define MSC_INST(dev) ((usbmsc_inst_t*)(dev)->data)

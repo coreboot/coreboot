@@ -62,89 +62,89 @@ static const char *me_error_values[] = {
 	[ME_HFS_ERROR_DEBUG]	= "Debug Failure"
 };
 
-/* GMES[31:28] ME Progress Code */
+/* HFS2[31:28] ME Progress Code */
 static const char *me_progress_values[] = {
-	[ME_GMES_PHASE_ROM]	= "ROM Phase",
-	[ME_GMES_PHASE_BUP]	= "BUP Phase",
-	[ME_GMES_PHASE_UKERNEL]	= "uKernel Phase",
-	[ME_GMES_PHASE_POLICY]	= "Policy Module",
-	[ME_GMES_PHASE_MODULE]	= "Module Loading",
-	[ME_GMES_PHASE_UNKNOWN]	= "Unknown",
-	[ME_GMES_PHASE_HOST]	= "Host Communication"
+	[ME_HFS2_PHASE_ROM]		= "ROM Phase",
+	[ME_HFS2_PHASE_BUP]		= "BUP Phase",
+	[ME_HFS2_PHASE_UKERNEL]		= "uKernel Phase",
+	[ME_HFS2_PHASE_POLICY]		= "Policy Module",
+	[ME_HFS2_PHASE_MODULE_LOAD]	= "Module Loading",
+	[ME_HFS2_PHASE_UNKNOWN]		= "Unknown",
+	[ME_HFS2_PHASE_HOST_COMM]	= "Host Communication"
 };
 
-/* GMES[27:24] Power Management Event */
+/* HFS2[27:24] Power Management Event */
 static const char *me_pmevent_values[] = {
-	[0x00] = "Clean Moff->Mx wake",
-	[0x01] = "Moff->Mx wake after an error",
-	[0x02] = "Clean global reset",
-	[0x03] = "Global reset after an error",
-	[0x04] = "Clean Intel ME reset",
-	[0x05] = "Intel ME reset due to exception",
-	[0x06] = "Pseudo-global reset",
-	[0x07] = "S0/M0->Sx/M3",
-	[0x08] = "Sx/M3->S0/M0",
-	[0x09] = "Non-power cycle reset",
-	[0x0a] = "Power cycle reset through M3",
-	[0x0b] = "Power cycle reset through Moff",
-	[0x0c] = "Sx/Mx->Sx/Moff"
+	[ME_HFS2_PMEVENT_CLEAN_MOFF_MX_WAKE] = "Clean Moff->Mx wake",
+	[ME_HFS2_PMEVENT_MOFF_MX_WAKE_ERROR] = "Moff->Mx wake after an error",
+	[ME_HFS2_PMEVENT_CLEAN_GLOBAL_RESET] = "Clean global reset",
+	[ME_HFS2_PMEVENT_CLEAN_GLOBAL_RESET_ERROR] = "Global reset after an error",
+	[ME_HFS2_PMEVENT_CLEAN_ME_RESET] = "Clean Intel ME reset",
+	[ME_HFS2_PMEVENT_ME_RESET_EXCEPTION] = "Intel ME reset due to exception",
+	[ME_HFS2_PMEVENT_PSEUDO_ME_RESET] = "Pseudo-global reset",
+	[ME_HFS2_PMEVENT_S0MO_SXM3] = "S0/M0->Sx/M3",
+	[ME_HFS2_PMEVENT_SXM3_S0M0] = "Sx/M3->S0/M0",
+	[ME_HFS2_PMEVENT_NON_PWR_CYCLE_RESET] = "Non-power cycle reset",
+	[ME_HFS2_PMEVENT_PWR_CYCLE_RESET_M3] = "Power cycle reset through M3",
+	[ME_HFS2_PMEVENT_PWR_CYCLE_RESET_MOFF] = "Power cycle reset through Moff",
+	[ME_HFS2_PMEVENT_SXMX_SXMOFF] = "Sx/Mx->Sx/Moff"
 };
 
 /* Progress Code 0 states */
 static const char *me_progress_rom_values[] = {
-	[0x00] = "BEGIN",
-	[0x06] = "DISABLE"
+	[ME_HFS2_STATE_ROM_BEGIN] = "BEGIN",
+	[ME_HFS2_STATE_ROM_DISABLE] = "DISABLE"
 };
 
 /* Progress Code 1 states */
 static const char *me_progress_bup_values[] = {
-	[0x00] = "Initialization starts",
-	[0x01] = "Disable the host wake event",
-	[0x04] = "Flow determination start process",
-	[0x08] = "Error reading/matching the VSCC table in the descriptor",
-	[0x0a] = "Check to see if straps say ME DISABLED",
-	[0x0b] = "Timeout waiting for PWROK",
-	[0x0d] = "Possibly handle BUP manufacturing override strap",
-	[0x11] = "Bringup in M3",
-	[0x12] = "Bringup in M0",
-	[0x13] = "Flow detection error",
-	[0x15] = "M3 clock switching error",
-	[0x18] = "M3 kernel load",
-	[0x1c] = "T34 missing - cannot program ICC",
-	[0x1f] = "Waiting for DID BIOS message",
-	[0x20] = "Waiting for DID BIOS message failure",
-	[0x21] = "DID reported an error",
-	[0x22] = "Enabling UMA",
-	[0x23] = "Enabling UMA error",
-	[0x24] = "Sending DID Ack to BIOS",
-	[0x25] = "Sending DID Ack to BIOS error",
-	[0x26] = "Switching clocks in M0",
-	[0x27] = "Switching clocks in M0 error",
-	[0x28] = "ME in temp disable",
-	[0x32] = "M0 kernel load",
+	[ME_HFS2_STATE_BUP_INIT] = "Initialization starts",
+	[ME_HFS2_STATE_BUP_DIS_HOST_WAKE] = "Disable the host wake event",
+	[ME_HFS2_STATE_BUP_FLOW_DET] = "Flow determination start process",
+	[ME_HFS2_STATE_BUP_VSCC_ERR] = "Error reading/matching the VSCC table in the descriptor",
+	[ME_HFS2_STATE_BUP_CHECK_STRAP] = "Check to see if straps say ME DISABLED",
+	[ME_HFS2_STATE_BUP_PWR_OK_TIMEOUT] = "Timeout waiting for PWROK",
+	[ME_HFS2_STATE_BUP_MANUF_OVRD_STRAP] = "Possibly handle BUP manufacturing override strap",
+	[ME_HFS2_STATE_BUP_M3] = "Bringup in M3",
+	[ME_HFS2_STATE_BUP_M0] = "Bringup in M0",
+	[ME_HFS2_STATE_BUP_FLOW_DET_ERR] = "Flow detection error",
+	[ME_HFS2_STATE_BUP_M3_CLK_ERR] = "M3 clock switching error",
+	[ME_HFS2_STATE_BUP_M3_KERN_LOAD] = "M3 kernel load",
+	[ME_HFS2_STATE_BUP_T32_MISSING] = "T34 missing - cannot program ICC",
+	[ME_HFS2_STATE_BUP_WAIT_DID] = "Waiting for DID BIOS message",
+	[ME_HFS2_STATE_BUP_WAIT_DID_FAIL] = "Waiting for DID BIOS message failure",
+	[ME_HFS2_STATE_BUP_DID_NO_FAIL] = "DID reported no error",
+	[ME_HFS2_STATE_BUP_ENABLE_UMA] = "Enabling UMA",
+	[ME_HFS2_STATE_BUP_ENABLE_UMA_ERR] = "Enabling UMA error",
+	[ME_HFS2_STATE_BUP_SEND_DID_ACK] = "Sending DID Ack to BIOS",
+	[ME_HFS2_STATE_BUP_SEND_DID_ACK_ERR] = "Sending DID Ack to BIOS error",
+	[ME_HFS2_STATE_BUP_M0_CLK] = "Switching clocks in M0",
+	[ME_HFS2_STATE_BUP_M0_CLK_ERR] = "Switching clocks in M0 error",
+	[ME_HFS2_STATE_BUP_TEMP_DIS] = "ME in temp disable",
+	[ME_HFS2_STATE_BUP_M0_KERN_LOAD] = "M0 kernel load",
 };
 
 /* Progress Code 3 states */
 static const char *me_progress_policy_values[] = {
-	[0x00] = "Entery into Policy Module",
-	[0x03] = "Received S3 entry",
-	[0x04] = "Received S4 entry",
-	[0x05] = "Received S5 entry",
-	[0x06] = "Received UPD entry",
-	[0x07] = "Received PCR entry",
-	[0x08] = "Received NPCR entry",
-	[0x09] = "Received host wake",
-	[0x0a] = "Received AC<>DC switch",
-	[0x0b] = "Received DRAM Init Done",
-	[0x0c] = "VSCC Data not found for flash device",
-	[0x0d] = "VSCC Table is not valid",
-	[0x0e] = "Flash Partition Boundary is outside address space",
-	[0x0f] = "ME cannot access the chipset descriptor region",
-	[0x10] = "Required VSCC values for flash parts do not match",
+	[ME_HFS2_STATE_POLICY_ENTRY] = "Entery into Policy Module",
+	[ME_HFS2_STATE_POLICY_RCVD_S3] = "Received S3 entry",
+	[ME_HFS2_STATE_POLICY_RCVD_S4] = "Received S4 entry",
+	[ME_HFS2_STATE_POLICY_RCVD_S5] = "Received S5 entry",
+	[ME_HFS2_STATE_POLICY_RCVD_UPD] = "Received UPD entry",
+	[ME_HFS2_STATE_POLICY_RCVD_PCR] = "Received PCR entry",
+	[ME_HFS2_STATE_POLICY_RCVD_NPCR] = "Received NPCR entry",
+	[ME_HFS2_STATE_POLICY_RCVD_HOST_WAKE] = "Received host wake",
+	[ME_HFS2_STATE_POLICY_RCVD_AC_DC] = "Received AC<>DC switch",
+	[ME_HFS2_STATE_POLICY_RCVD_DID] = "Received DRAM Init Done",
+	[ME_HFS2_STATE_POLICY_VSCC_NOT_FOUND] = "VSCC Data not found for flash device",
+	[ME_HFS2_STATE_POLICY_VSCC_INVALID] = "VSCC Table is not valid",
+	[ME_HFS2_STATE_POLICY_FPB_ERR] = "Flash Partition Boundary is outside address space",
+	[ME_HFS2_STATE_POLICY_DESCRIPTOR_ERR] = "ME cannot access the chipset descriptor region",
+	[ME_HFS2_STATE_POLICY_VSCC_NO_MATCH] = "Required VSCC values for flash parts do not match",
 };
 #endif
 
-void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes)
+void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2)
 {
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	/* Check Current States */
@@ -169,44 +169,45 @@ void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes)
 	printk(BIOS_DEBUG, "ME: Error Code              : %s\n",
 	       me_error_values[hfs->error_code]);
 	printk(BIOS_DEBUG, "ME: Progress Phase          : %s\n",
-	       me_progress_values[gmes->progress_code]);
+	       me_progress_values[hfs2->progress_code]);
 	printk(BIOS_DEBUG, "ME: Power Management Event  : %s\n",
-	       me_pmevent_values[gmes->current_pmevent]);
+	       me_pmevent_values[hfs2->current_pmevent]);
 
 	printk(BIOS_DEBUG, "ME: Progress Phase State    : ");
-	switch (gmes->progress_code) {
-	case ME_GMES_PHASE_ROM:		/* ROM Phase */
+	switch (hfs2->progress_code) {
+	case ME_HFS2_PHASE_ROM:		/* ROM Phase */
 		printk(BIOS_DEBUG, "%s",
-		       me_progress_rom_values[gmes->current_state]);
+		       me_progress_rom_values[hfs2->current_state]);
 		break;
 
-	case ME_GMES_PHASE_BUP:		/* Bringup Phase */
-		if (gmes->current_state < ARRAY_SIZE(me_progress_bup_values)
-		    && me_progress_bup_values[gmes->current_state])
+	case ME_HFS2_PHASE_BUP:		/* Bringup Phase */
+		if (hfs2->current_state < ARRAY_SIZE(me_progress_bup_values)
+		    && me_progress_bup_values[hfs2->current_state])
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_bup_values[gmes->current_state]);
+			       me_progress_bup_values[hfs2->current_state]);
 		else
-			printk(BIOS_DEBUG, "0x%02x", gmes->current_state);
+			printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
 		break;
 
-	case ME_GMES_PHASE_POLICY:	/* Policy Module Phase */
-		if (gmes->current_state < ARRAY_SIZE(me_progress_policy_values)
-		    && me_progress_policy_values[gmes->current_state])
+	case ME_HFS2_PHASE_POLICY:	/* Policy Module Phase */
+		if (hfs2->current_state < ARRAY_SIZE(me_progress_policy_values)
+		    && me_progress_policy_values[hfs2->current_state])
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_policy_values[gmes->current_state]);
+			       me_progress_policy_values[hfs2->current_state]);
 		else
-			printk(BIOS_DEBUG, "0x%02x", gmes->current_state);
+			printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
 		break;
 
-	case ME_GMES_PHASE_HOST:	/* Host Communication Phase */
-		if (!gmes->current_state)
+	case ME_HFS2_PHASE_HOST_COMM:	/* Host Communication Phase */
+		if (!hfs2->current_state)
 			printk(BIOS_DEBUG, "Host communication established");
 		else
-			printk(BIOS_DEBUG, "0x%02x", gmes->current_state);
+			printk(BIOS_DEBUG, "0x%02x", hfs2->current_state);
 		break;
 
 	default:
-		printk(BIOS_DEBUG, "Unknown 0x%02x", gmes->current_state);
+		printk(BIOS_DEBUG, "Unknown phase: 0x%02x sate: 0x%02x",
+		       hfs2->progress_code, hfs2->current_state);
 	}
 	printk(BIOS_DEBUG, "\n");
 #endif

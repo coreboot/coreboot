@@ -63,7 +63,7 @@ static const char *me_bios_path_values[] = {
 	[ME_DISABLE_BIOS_PATH]		= "Disable",
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
-static int intel_me_read_mbp(me_bios_payload *mbp_data);
+static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev);
 #endif
 
 /* MMIO base address for MEI interface */
@@ -415,8 +415,6 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("Full Network manageability", cap->full_net);
 	print_cap("Regular Network manageability", cap->std_net);
 	print_cap("Manageability", cap->manageability);
-	print_cap("Small business technology", cap->small_business);
-	print_cap("Level III manageability", cap->l3manageability);
 	print_cap("IntelR Anti-Theft (AT)", cap->intel_at);
 	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
 	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
@@ -534,7 +532,7 @@ static me_bios_path intel_me_path(device_t dev)
 {
 	me_bios_path path = ME_DISABLE_BIOS_PATH;
 	struct me_hfs hfs;
-	struct me_gmes gmes;
+	struct me_hfs2 hfs2;
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* S3 wake skips all MKHI messages */
@@ -544,10 +542,10 @@ static me_bios_path intel_me_path(device_t dev)
 #endif
 
 	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(dev, &gmes, PCI_ME_GMES);
+	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 
 	/* Check and dump status */
-	intel_me_status(&hfs, &gmes);
+	intel_me_status(&hfs, &hfs2);
 
 	/* Check Current Working State */
 	switch (hfs.working_state) {
@@ -580,7 +578,7 @@ static me_bios_path intel_me_path(device_t dev)
 		path = ME_ERROR_BIOS_PATH;
 
 	/* Check if the MBP is ready */
-	if (!gmes.mbp_rdy) {
+	if (!hfs2.mbp_rdy) {
 		printk(BIOS_CRIT, "%s: mbp is not ready!\n",
 		       __FUNCTION__);
 		path = ME_ERROR_BIOS_PATH;
@@ -593,9 +591,9 @@ static me_bios_path intel_me_path(device_t dev)
 			.operation_state       = hfs.operation_state,
 			.operation_mode        = hfs.operation_mode,
 			.error_code            = hfs.error_code,
-			.progress_code         = gmes.progress_code,
-			.current_pmevent       = gmes.current_pmevent,
-			.current_state         = gmes.current_state,
+			.progress_code         = hfs2.progress_code,
+			.current_pmevent       = hfs2.current_pmevent,
+			.current_state         = hfs2.current_state,
 		};
 		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
 		elog_add_event_raw(ELOG_TYPE_MANAGEMENT_ENGINE_EXT,
@@ -699,54 +697,35 @@ static void intel_me_init(device_t dev)
 	/* Do initial setup and determine the BIOS path */
 	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
 
-	switch (path) {
-	case ME_S3WAKE_BIOS_PATH:
+	if (path == ME_S3WAKE_BIOS_PATH) {
 		intel_me_hide(dev);
-		break;
-
-	case ME_NORMAL_BIOS_PATH:
+		return;
+	} else if (path == ME_NORMAL_BIOS_PATH) {
 		/* Validate the extend register */
-		if (intel_me_extend_valid(dev) < 0)
-			break; /* TODO: force recovery mode */
+		/* FIXME: force recovery mode on failure. */
+		intel_me_extend_valid(dev);
+	}
 
-		/* Prepare MEI MMIO interface */
-		if (intel_mei_setup(dev) < 0)
-			break;
+	/*
+	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
+	 * all boot flows except S3 Resume.
+	 */
 
-		if(intel_me_read_mbp(&mbp_data))
-			break;
+	/* Prepare MEI MMIO interface */
+	if (intel_mei_setup(dev) < 0)
+		return;
 
-#if CONFIG_CHROMEOS && 0 /* DISABLED */
-		/*
-		 * Unlock ME in recovery mode.
-		 */
-		if (recovery_mode_enabled()) {
-			/* Unlock ME flash region */
-			mkhi_hmrfpo_enable();
-
-			/* Issue global reset */
-			mkhi_global_reset();
-			return;
-		}
-#endif
+	if(intel_me_read_mbp(&mbp_data, dev))
+		return;
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-		me_print_fw_version(&mbp_data.fw_version_name);
-		me_print_fwcaps(&mbp_data.fw_caps_sku);
+	me_print_fw_version(&mbp_data.fw_version_name);
+	me_print_fwcaps(&mbp_data.fw_caps_sku);
 #endif
 
-		/*
-		 * Leave the ME unlocked in this path.
-		 * It will be locked via SMI command later.
-		 */
-		break;
-
-	case ME_ERROR_BIOS_PATH:
-	case ME_RECOVERY_BIOS_PATH:
-	case ME_DISABLE_BIOS_PATH:
-	case ME_FIRMWARE_UPDATE_BIOS_PATH:
-		break;
-	}
+	/*
+	 * Leave the ME unlocked. It will be locked via SMI command later.
+	 */
 }
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -806,22 +785,49 @@ static u32 host_to_me_words_room(void)
 		(csr.buffer_depth - 1);
 }
 #endif
+
+/*
+ * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
+ * state machine on the BIOS end doesn't match the ME's state machine.
+ */
+static void intel_me_mbp_give_up(device_t dev)
+{
+	u32 reg32;
+	struct mei_csr csr;
+
+	reg32 = PCI_ME_MBP_GIVE_UP;
+	pci_write_config32(dev, PCI_ME_H_GS3, reg32);
+	read_host_csr(&csr);
+	csr.reset = 1;
+	csr.interrupt_generate = 1;
+	write_host_csr(&csr);
+}
+
 /*
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
-static int intel_me_read_mbp(me_bios_payload *mbp_data)
+static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 {
 	mbp_header mbp_hdr;
 	mbp_item_header	mbp_item_hdr;
 	u32 me2host_pending;
-	u32 mbp_item_id;
+	u32 mbp_ident;
 	struct mei_csr host;
+	struct me_hfs2 hfs2;
+	int count;
+
+	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+
+	if (!hfs2.mbp_rdy) {
+		printk(BIOS_ERR, "ME: MBP not ready\n");
+		goto mbp_failure;
+	}
 
 	me2host_pending = me_to_host_words_pending();
 	if (!me2host_pending) {
 		printk(BIOS_ERR, "ME: no mbp data!\n");
-		return -1;
+		goto mbp_failure;
 	}
 
 	/* we know for sure that at least the header is there */
@@ -833,7 +839,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 		       " buffer contains %d words\n",
 		       mbp_hdr.num_entries, mbp_hdr.mbp_size,
 		       me2host_pending);
-		return -1;
+		goto mbp_failure;
 	}
 
 	me2host_pending--;
@@ -847,7 +853,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 		if (!me2host_pending) {
 			printk(BIOS_ERR, "ME: no mbp data %d entries to go!\n",
 			       mbp_hdr.num_entries + 1);
-			return -1;
+			goto mbp_failure;
 		}
 
 		mei_read_dword_ptr(&mbp_item_hdr, MEI_ME_CB_RW);
@@ -856,13 +862,13 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 			printk(BIOS_ERR, "ME: insufficient mbp data %d "
 			       "entries to go!\n",
 			       mbp_hdr.num_entries + 1);
-			return -1;
+			goto mbp_failure;
 		}
 
 		me2host_pending -= mbp_item_hdr.length;
 
-		mbp_item_id = (((u32)mbp_item_hdr.item_id) << 8) +
-			mbp_item_hdr.app_id;
+		mbp_ident = MBP_MAKE_IDENT(mbp_item_hdr.app_id,
+		                           mbp_item_hdr.item_id);
 
 		copy_size = mbp_item_hdr.length - 1;
 
@@ -874,44 +880,44 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 		p = &mbp_item_hdr;
 		printk(BIOS_INFO, "ME: MBP item header %8.8x\n", *((u32*)p));
 
-		switch(mbp_item_id) {
-		case 0x101:
+		switch(mbp_ident) {
+		case MBP_IDENT(KERNEL, FW_VER):
 			SET_UP_COPY(fw_version_name);
 
-		case 0x102:
+		case MBP_IDENT(ICC, PROFILE):
 			SET_UP_COPY(icc_profile);
 
-		case 0x103:
+		case MBP_IDENT(INTEL_AT, STATE):
 			SET_UP_COPY(at_state);
 
-		case 0x201:
+		case MBP_IDENT(KERNEL, FW_CAP):
 			mbp_data->fw_caps_sku.available = 1;
 			SET_UP_COPY(fw_caps_sku.fw_capabilities);
 
-		case 0x301:
+		case MBP_IDENT(KERNEL, ROM_BIST):
 			SET_UP_COPY(rom_bist_data);
 
-		case 0x401:
+		case MBP_IDENT(KERNEL, PLAT_KEY):
 			SET_UP_COPY(platform_key);
 
-		case 0x501:
+		case MBP_IDENT(KERNEL, FW_TYPE):
 			mbp_data->fw_plat_type.available = 1;
 			SET_UP_COPY(fw_plat_type.rule_data);
 
-		case 0x601:
+		case MBP_IDENT(KERNEL, MFS_FAILURE):
 			SET_UP_COPY(mfsintegrity);
 
 		default:
 			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x!!!\n",
-			       mbp_item_id);
-			return -1;
+			       mbp_ident);
+			goto mbp_failure;
 		}
 
 		if (buffer_room != copy_size) {
 			printk(BIOS_ERR, "ME: buffer room %d != %d copy size"
 			       " for item  0x%x!!!\n",
-			       buffer_room, copy_size, mbp_item_id);
-			return -1;
+			       buffer_room, copy_size, mbp_ident);
+			goto mbp_failure;
 		}
 		while(copy_size--)
 			*copy_addr++ = read_cb();
@@ -921,16 +927,23 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 	host.interrupt_generate = 1;
 	write_host_csr(&host);
 
-	{
-		int cntr = 0;
-		while(host.interrupt_generate) {
-			read_host_csr(&host);
-			cntr++;
-		}
-		printk(BIOS_SPEW, "ME: mbp read OK after %d cycles\n", cntr);
+	for (count = ME_RETRY; count > 0; --count) {
+		pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+		if (hfs2.mbp_cleared)
+			break;
+		udelay(ME_DELAY);
+	}
+
+	if (count == 0) {
+		printk(BIOS_WARNING, "ME: Timeout waiting for mbp_cleared\n");
+		intel_me_mbp_give_up(dev);
 	}
 
 	return 0;
+
+mbp_failure:
+	intel_me_mbp_give_up(dev);
+	return -1;
 }
 
 #endif /* !__SMM__ */

@@ -56,12 +56,12 @@ static inline void pci_write_dword_ptr(void *ptr, int offset)
 void intel_early_me_status(void)
 {
 	struct me_hfs hfs;
-	struct me_gmes gmes;
+	struct me_hfs2 hfs2;
 
 	pci_read_dword_ptr(&hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(&gmes, PCI_ME_GMES);
+	pci_read_dword_ptr(&hfs2, PCI_ME_HFS2);
 
-	intel_me_status(&hfs, &gmes);
+	intel_me_status(&hfs, &hfs2);
 }
 
 int intel_early_me_init(void)
@@ -73,6 +73,7 @@ int intel_early_me_init(void)
 	printk(BIOS_INFO, "Intel ME early init\n");
 
 	/* Wait for ME UMA SIZE VALID bit to be set */
+	/* FIXME: ME9 BGW indicates a 5 sec poll timeout. */
 	for (count = ME_RETRY; count > 0; --count) {
 		pci_read_dword_ptr(&uma, PCI_ME_UMA);
 		if (uma.valid)
@@ -147,6 +148,13 @@ int intel_early_me_init_done(u8 status)
 
 	pci_write_dword_ptr(&did, PCI_ME_H_GS);
 
+	/*
+	 * The ME firmware does not respond with an ACK when NOMEM or ERROR
+	 * are sent.
+	 */
+	if (status == ME_INIT_STATUS_NOMEM || status == ME_INIT_STATUS_ERROR)
+		return 0;
+
 	/* Must wait for ME acknowledgement */
 	for (count = ME_RETRY; count > 0; --count) {
 		pci_read_dword_ptr(&hfs, PCI_ME_HFS);
@@ -195,7 +203,9 @@ int intel_early_me_init_done(u8 status)
 	/* Perform the requested reset */
 	if (reset) {
 		outb(reset, 0xcf9);
-		hlt();
+		while (1) {
+			hlt();
+		}
 	}
 	return -1;
 }

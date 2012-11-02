@@ -111,18 +111,15 @@ int intel_early_me_uma_size(void)
 
 static inline void set_global_reset(int enable)
 {
-	u32 etr3 = pci_read_config32(PCH_LPC_DEV, ETR3);
-
-	/* Clear CF9 Without Resume Well Reset Enable */
-	etr3 &= ~ETR3_CWORWRE;
+	u32 pmir = pci_read_config32(PCH_LPC_DEV, PMIR);
 
 	/* CF9GR indicates a Global Reset */
 	if (enable)
-		etr3 |= ETR3_CF9GR;
+		pmir |= PMIR_CF9GR;
 	else
-		etr3 &= ~ETR3_CF9GR;
+		pmir &= ~PMIR_CF9GR;
 
-	pci_write_config32(PCH_LPC_DEV, ETR3, etr3);
+	pci_write_config32(PCH_LPC_DEV, PMIR, pmir);
 }
 
 int intel_early_me_init_done(u8 status)

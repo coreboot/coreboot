@@ -936,7 +936,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller
  *
  * NOTE: All cache and stack is lost during ECC scrub loop.
  */
-static void __attribute__((always_inline))
+static inline void __attribute__((always_inline))
 		initialize_ecc(unsigned long ret_addr, unsigned long ret_addr2)
 {
 	uint16_t scrubbed = pci_read_config16(MCHDEV, MCHCFGNS) & 0x08;

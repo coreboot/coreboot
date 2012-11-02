@@ -27,7 +27,6 @@
 #include <arch/romcc_io.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/cache.h>
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "agesawrapper.h"
@@ -102,7 +101,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		}
 		printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
 		disable_cache_as_ram();
-		enable_cache();
 #if CONFIG_HAVE_ACPI_RESUME
 	} else {		/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");

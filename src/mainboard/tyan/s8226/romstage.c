@@ -35,7 +35,6 @@
 #include "superio/winbond/w83627dhg/w83627dhg.h"
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
-#include <cpu/x86/cache.h>
 
 extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
 
@@ -133,7 +132,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x50);
 	print_debug("Disabling cache as ram ");
 	disable_cache_as_ram();
-	enable_cache();
 	print_debug("done\n");
 
 	post_code(0x51);

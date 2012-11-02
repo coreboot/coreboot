@@ -29,7 +29,7 @@
 
 static void nic_init(struct device *dev)
 {
-	u32 dword, old, mac_h, mac_l;
+	u32 dword, old, mac_h = 0, mac_l = 0;
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_ck804_config *conf;
 	static u32 nic_index = 0;

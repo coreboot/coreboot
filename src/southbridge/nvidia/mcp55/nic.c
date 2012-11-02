@@ -103,7 +103,7 @@ static void phy_detect(u32 base)
 
 static void nic_init(struct device *dev)
 {
-	u32 mac_h, mac_l, base;
+	u32 mac_h = 0, mac_l = 0, base;
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_mcp55_config *conf;
 	static u32 nic_index = 0;

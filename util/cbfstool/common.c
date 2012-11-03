@@ -502,7 +502,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 }
 
 int create_cbfs_image(const char *romfile, uint32_t _romsize,
-		      const char *bootblock, uint32_t align)
+		      const char *bootblock, uint32_t align, uint32_t offs)
 {
 	romsize = _romsize;
 	unsigned char *romarea = malloc(romsize);

@@ -568,6 +568,8 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		master_header->romsize = htonl(romsize);
 		master_header->bootblocksize = htonl(bootblocksize);
 		master_header->align = htonl(align);
+		offs = 0;	/* FIXME(dhendrix): was this offs variable in
+				   hung-te's original patch? */
 		master_header->offset = htonl(offs);
 		master_header->architecture = CBFS_ARCHITECTURE_X86;
 

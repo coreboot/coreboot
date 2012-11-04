@@ -144,4 +144,44 @@ static inline int tolower(int c)
                 c -= 'A'-'a';
         return c;
 }
+
+// functions copied from the Linux kernel source tree, from arch/x86/boot/string.c
+static inline unsigned int simple_guess_base(const char *cp)
+{
+	if (cp[0] == '0') {
+		if (tolower(cp[1]) == 'x' && isxdigit(cp[2]))
+			return 16;
+		else
+			return 8;
+	} else {
+		return 10;
+	}
+}
+
+static inline unsigned long int strtoul(const char *cp, char **endp, unsigned int base)
+{
+	unsigned long long result = 0;
+
+	if (!base)
+		base = simple_guess_base(cp);
+
+	if (base == 16 && cp[0] == '0' && tolower(cp[1]) == 'x')
+		cp += 2;
+
+	while (isxdigit(*cp)) {
+		unsigned int value;
+
+		value = isdigit(*cp) ? *cp - '0' : tolower(*cp) - 'a' + 10;
+		if (value >= base)
+			break;
+		result = result * base + value;
+		cp++;
+	}
+	if (endp)
+		*endp = (char *)cp;
+
+	return result;
+}
+
+
 #endif /* STRING_H */

@@ -45,7 +45,7 @@ ramstage-y += gcc.c
 ramstage-y += clog2.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_ULINUX) += ulinux.c
-ramstage-$(CONFIG_ULINUX) += serialice_host.c
+ramstage-$(CONFIG_ULINUX) += serialice-com.c
 
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c

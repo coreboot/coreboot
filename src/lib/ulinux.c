@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <console/console.h>
-#include <serialice_host.h>
+#include <serialice.h>
 #include <ulinux.h>
 
 #if CONFIG_ULINUX_VALGRIND
@@ -158,3 +158,5 @@ int ulinux_tcflush(int fd, int queue_selector)
 			   (uint32_t) queue_selector, 0, 0, 0);
 
 }
+
+

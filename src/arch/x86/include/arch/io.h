@@ -84,36 +84,36 @@ static inline uint32_t inl(uint16_t port)
 #else /* CONFIG_ULINUX == 1 */
 
 #include <console/console.h>
-#include <serialice_host.h>
+#include <serialice.h>
 
 static inline void outb(uint8_t value, uint16_t port)
 {
-	serialice_outb(value, port);
+	serialice_io_write(port, 1, value);
 }
 
 static inline void outw(uint16_t value, uint16_t port)
 {
-	serialice_outw(value, port);
+	serialice_io_write(port, 2, value);
 }
 
 static inline void outl(uint32_t value, uint16_t port)
 {
-	serialice_outl(value, port);
+	serialice_io_write(port, 4, value);
 }
 
 static inline uint8_t inb(uint16_t port)
 {
-	return serialice_inb(port);
+	return serialice_io_read(port, 1);
 }
 
 static inline uint16_t inw(uint16_t port)
 {
-	return serialice_inw(port);
+	return serialice_io_read(port, 2);
 }
 
 static inline uint32_t inl(uint16_t port)
 {
-	return serialice_inl(port);
+	return serialice_io_read(port, 4);
 }
 
 #endif /* CONFIG_ULINUX */
@@ -211,32 +211,32 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 
 static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
 {
-	return serialice_readb(addr);
+	return serialice_io_read(addr, 1);
 }
 
 static inline __attribute__((always_inline)) uint16_t read16(unsigned long addr)
 {
-	return serialice_readw(addr);
+	return serialice_io_read(addr, 2);
 }
 
 static inline __attribute__((always_inline)) uint32_t read32(unsigned long addr)
 {
-	return serialice_readl(addr);
+	return serialice_io_read(addr, 4);
 }
 
 static inline __attribute__((always_inline)) void write8(unsigned long addr, uint8_t value)
 {
-	serialice_writeb(value, addr);
+	serialice_io_write(addr, 1, value);
 }
 
 static inline __attribute__((always_inline)) void write16(unsigned long addr, uint16_t value)
 {
-	serialice_writew(value, addr);
+	serialice_io_write(addr, 2, value);
 }
 
 static inline __attribute__((always_inline)) void write32(unsigned long addr, uint32_t value)
 {
-	serialice_writel(value, addr);
+	serialice_io_write(addr, 4, value);
 }
 #endif
 #endif

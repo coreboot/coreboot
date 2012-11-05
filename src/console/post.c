@@ -21,7 +21,9 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#if CONFIG_CMOS_POST
 #include <pc80/mc146818rtc.h>
+#endif
 #include <elog.h>
 
 /* Write POST information */
@@ -100,7 +102,9 @@ void post_code(uint8_t value)
 #if CONFIG_CMOS_POST
 	cmos_post_code(value);
 #endif
-	outb(value, CONFIG_POST_PORT);
+#if CONFIG_IO_POST
+	outb(value, CONFIG_IO_POST_PORT);
+#endif
 #endif
 	mainboard_post(value);
 }

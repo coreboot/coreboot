@@ -360,9 +360,21 @@ config NO_POST
 	bool "Don't show any POST codes"
 	default n
 
-config POST_PORT
+config IO_POST
+	bool "Send POST codes to an IO port"
+	default y
+	help
+	  If enabled, POST codes will be written to an IO port.
+
+config IO_POST_PORT
+	depends on IO_POST
 	hex
 	default 0x80
+	help
+	  POST codes on x86 are historically written to the LPC bus on port
+	  0x80. However, it may be desireable to change the port number
+	  depending on the presence of coprocessors/microcontrollers or if the
+	  platform does not support IO in the conventional x86 manner.
 
 config CONSOLE_POST
 	bool "Show POST codes on the debug console"

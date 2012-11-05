@@ -46,7 +46,9 @@ void post_code(uint8_t value)
 	print_emerg_hex8(value);
 	print_emerg("\n");
 #endif
+#if CONFIG_IO_POST
 	outb(value, CONFIG_POST_PORT);
+#endif
 #endif
 	mainboard_post(value);
 }

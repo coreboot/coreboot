@@ -1,0 +1,152 @@
+chip northbridge/intel/gm45
+	device lapic_cluster 0 on
+		chip cpu/intel/socket_BGA956
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			# Enable Super LFM
+			register "slfm" = "1"
+
+			# Enable C5, C6
+			register "c5" = "1"
+			register "c6" = "1"
+		end
+	end
+
+	device pci_domain 0 on
+		subsystemid 0x4352 0x8986
+		device pci 00.0 on end # host bridge
+		device pci 02.0 on # VGA
+			ioapic_irq 2 INTA 0x10
+		end
+		device pci 02.1 on end # Display
+		device pci 03.0 off end # ME
+		device pci 03.1 off end # ME
+		device pci 03.2 off end # ME
+		device pci 03.3 off end # ME
+		chip southbridge/intel/i82801ix
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			register "gpi8_routing"  = "2"
+			register "gpi7_routing"  = "2"
+			register "gpe0_en" = "0x01800042"
+			register "gpi1_routing"  = "1"
+			register "alt_gp_smi_en" = "0x0002"
+
+			# Set AHCI mode, enable ports 1 and 2.
+			register "sata_ahci"			= "1"
+			register "sata_port_map"		= "0x03"
+			register "sata_clock_request"		= "0"
+			register "sata_traffic_monitor"		= "0"
+
+			# Set c-state support
+			register "c4onc3_enable"		= "0"
+			register "c5_enable"			= "1"
+			register "c6_enable"			= "1"
+
+			# Set thermal throttling to 75%.
+			register "throttle_duty"		= "THTL_75_0"
+
+			# Enable PCIe ports 1 and 5 as slots (Mini * PCIe).
+			register "pcie_slot_implemented"	= "0x11"
+			# Set power limits to 10 * 10^0 watts.
+			# Maybe we should set less for Mini PCIe.
+			register "pcie_power_limits" = "{ { 10, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 } }"
+
+			chip drivers/generic/ioapic
+				register "have_isa_interrupts" = "1"
+				register "irq_on_fsb" = "1"
+				register "enable_virtual_wire" = "1"
+				register "base" = "0xfec00000"
+				device ioapic 2 on end
+			end
+
+			device pci 19.0 off end # LAN
+			device pci 1a.0 on # UHCI
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1a.1 on # UHCI
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1a.2 on # UHCI
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1a.7 on # EHCI
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1b.0 on # HD Audio
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1c.0 on # PCIe Port #1
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 on # PCIe Port #5
+				ioapic_irq 2 INTA 0x10
+				device pci 00.0 on end # Realtek 8168B
+			end
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on # UHCI
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1d.1 on # UHCI
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1d.2 on # UHCI
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1d.7 on # EHCI
+				ioapic_irq 2 INTA 0x10
+			end
+			device pci 1e.0 on # PCI
+				device pci 03.0 on # TI Cardbus
+					ioapic_irq 2 INTA 0x10
+				end
+				device pci 03.1 on # TI Cardbus
+					ioapic_irq 2 INTB 0x11
+				end
+				device pci 03.2 off end # TI FireWire OHC
+				device pci 03.3 off end # unconnected FlashMedia
+				device pci 03.4 off end # unconnected SD-Card
+			end
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/lpc47n227
+					device pnp 2e.1 on # Parallel port
+						 io 0x60 = 0x378
+						irq 0x70 = 5
+					end
+					device pnp 2e.2 on # COM1
+						 io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on # COM2
+						 io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.5 off # Keyboard+Mouse
+					end
+				end
+			end
+			device pci 1f.2 on # SATA/IDE 1
+				ioapic_irq 2 INTB 0x11
+			end
+			device pci 1f.3 on # SMBus
+				ioapic_irq 2 INTC 0x12
+			end
+			device pci 1f.5 off end # SATA/IDE 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

@@ -1,0 +1,46 @@
+if BOARD_RODA_RK9
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_BGA956
+	select NORTHBRIDGE_INTEL_GM45
+	select SOUTHBRIDGE_INTEL_I82801IX
+	select SUPERIO_SMSC_LPC47N227
+	select MMCONF_SUPPORT
+	select BOARD_ROMSIZE_KB_4096
+	select RTL8168_ROM_DISABLE
+	select DRIVERS_GENERIC_IOAPIC
+	select HAVE_MP_TABLE
+	select CARDBUS_PLUGIN_SUPPORT
+	select BOARD_HAS_FADT
+	select HAVE_ACPI_TABLES
+	#select HAVE_ACPI_RESUME
+	select EC_ACPI
+	select HAVE_OPTION_TABLE
+
+config MAINBOARD_DIR
+	string
+	default roda/rk9
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "RK9"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
+endif # BOARD_RODA_RK9

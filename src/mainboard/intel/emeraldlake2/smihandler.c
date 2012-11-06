@@ -59,11 +59,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 	u8 reg8;
 
 	switch (slp_typ) {
-	case SLP_TYP_S3:
-	case SLP_TYP_S4:
+	case 3:
+	case 4:
 		break;
 
-	case SLP_TYP_S5:
+	case 5:
 		/* Turn off LED */
 		reg8 = inb(SIO_GPIO_BASE_SET4);
 		reg8 |= (1 << 5);

@@ -62,8 +62,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 	u8 reg8;
 
 	switch (slp_typ) {
-	case SLP_TYP_S3:
-	case SLP_TYP_S4:
+	case 3:
+	case 4:
 		/* Blink LED */
 		it8772f_enter_conf();
 		it8772f_sio_write(IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
@@ -79,7 +79,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		it8772f_exit_conf();
 		break;
 
-	case SLP_TYP_S5:
+	case 5:
 		/* Turn off LED */
 		reg8 = inb(SIO_GPIO_BASE_SET4);
 		reg8 |= (1 << 5);

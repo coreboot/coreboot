@@ -97,11 +97,11 @@ void rtc_init(int invalid)
 		for(i = 10; i < 128; i++) {
 			cmos_write(0, i);
 		}
-
+#endif
 		if (cmos_invalid) {
 			rtc_update_cmos_date(RTC_HAS_NO_ALTCENTURY);
 		}
-#endif
+
 		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
 			invalid?" Clear requested":"",
 			cmos_invalid?" Power Problem":"",

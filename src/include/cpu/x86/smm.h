@@ -27,6 +27,9 @@
 /* used only by C programs so far */
 #define SMM_BASE 0xa0000
 
+#define SMM_ENTRY_OFFSET 0x8000
+#define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
+
 #include <types.h>
 typedef struct {
 	u16	es_selector;
@@ -202,11 +205,17 @@ typedef struct {
 
 
 /* Intel Revision 30101 SMM State-Save Area
- * Used in SandyBridge/IvyBridge architecture
- * starts @ 0x7d00
+ * The following processor architectures use this:
+ * - SandyBridge
+ * - IvyBridge
+ * - Haswell
  */
+#define SMM_EM64T101_ARCH_OFFSET 0x7c00
+#define SMM_EM64T101_SAVE_STATE_OFFSET \
+	SMM_SAVE_STATE_BEGIN(SMM_EM64T101_ARCH_OFFSET)
 typedef struct {
-	u8	reserved0[208];
+	u8	reserved0[256];
+	u8	reserved1[208];
 
 	u32	gdtr_upper_base;
 	u32	ldtr_upper_base;
@@ -219,25 +228,29 @@ typedef struct {
 	u64	io_rcx;
 	u64	io_rsi;
 
-	u8	reserved1[52];
+	u8	reserved2[52];
 	u32	shutdown_auto_restart;
-	u8	reserved2[8];
+	u8	reserved3[8];
 	u32	cr4;
 
-	u8	reserved3[72];
+	u8	reserved4[72];
 
 	u32	gdtr_base;
-	u8	reserved4[4];
-	u32	idtr_base;
 	u8	reserved5[4];
+	u32	idtr_base;
+	u8	reserved6[4];
 	u32	ldtr_base;
 
-	u8	reserved6[68];
+	u8	reserved7[56];
+	/* EPTP fields are only on Haswell according to BWGs, but Intel was
+	 * wise and reused the same revision number. */
+	u64	eptp;
+	u32	eptp_en;
 	u32	cs_base;
-	u8	reserved7[4];
+	u8	reserved8[4];
 	u32	iedbase;
 
-	u8	reserved8[8];
+	u8	reserved9[8];
 
 	u32	smbase;
 	u32	smm_revision;
@@ -245,7 +258,7 @@ typedef struct {
 	u16	io_restart;
 	u16	autohalt_restart;
 
-	u8	reserved9[24];
+	u8	reserved10[24];
 
 	u64	r15;
 	u64	r14;

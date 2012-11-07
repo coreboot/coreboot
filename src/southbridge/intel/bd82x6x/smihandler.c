@@ -432,7 +432,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 {
 	em64t101_smm_state_save_area_t *state;
-	u32 base = smi_get_tseg_base() + 0x8000 + 0x7d00;
+	u32 base = smi_get_tseg_base() + SMM_EM64T101_SAVE_STATE_OFFSET;
 	int node;
 
 	/* Check all nodes looking for the one that issued the IO */

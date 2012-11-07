@@ -107,6 +107,12 @@ static void smi_restore_pci_address(void)
 	outl(pci_orig, 0xcf8);
 }
 
+static inline void *smm_save_state(u32 base, int arch_offset, int node)
+{
+	base += SMM_SAVE_STATE_BEGIN(arch_offset) - (node * 0x400);
+	return (void *)base;
+}
+
 /**
  * @brief Interrupt handler for SMI#
  *
@@ -117,13 +123,13 @@ void smi_handler(u32 smm_revision)
 {
 	unsigned int node;
 	smm_state_save_area_t state_save;
-	u32 smm_base = 0xa8000; /* ASEG */
+	u32 smm_base = 0xa0000; /* ASEG */
 
 #if CONFIG_SMM_TSEG
 	/* Update global variable TSEG base */
 	if (!smi_get_tseg_base())
 		return;
-	smm_base = smi_get_tseg_base() + 0x8000;
+	smm_base = smi_get_tseg_base();
 #else
 	/* Are we ok to execute the handler? */
 	if (!smi_obtain_lock()) {
@@ -151,24 +157,23 @@ void smi_handler(u32 smm_revision)
 	case 0x00030002:
 	case 0x00030007:
 		state_save.type = LEGACY;
-		state_save.legacy_state_save = (legacy_smm_state_save_area_t *)
-			(smm_base + 0x7e00 - (node * 0x400));
+		state_save.legacy_state_save =
+			smm_save_state(smm_base, 0x7e00, node);
 		break;
 	case 0x00030100:
 		state_save.type = EM64T;
-		state_save.em64t_state_save = (em64t_smm_state_save_area_t *)
-			(smm_base + 0x7d00 - (node * 0x400));
-		break;
-	case 0x00030101: /* SandyBridge/IvyBridge */
+		state_save.em64t_state_save =
+			smm_save_state(smm_base, 0x7d00, node);
+	case 0x00030101: /* SandyBridge, IvyBridge, and Haswell */
 		state_save.type = EM64T101;
 		state_save.em64t101_state_save =
-			(em64t101_smm_state_save_area_t *)
-			(smm_base + 0x7d00 - (node * 0x400));
+			smm_save_state(smm_base,
+			               SMM_EM64T101_ARCH_OFFSET, node);
 		break;
 	case 0x00030064:
 		state_save.type = AMD64;
-		state_save.amd64_state_save = (amd64_smm_state_save_area_t *)
-			(smm_base + 0x7e00 - (node * 0x400));
+		state_save.amd64_state_save =
+			smm_save_state(smm_base, 0x7e00, node);
 		break;
 	default:
 		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_revision);

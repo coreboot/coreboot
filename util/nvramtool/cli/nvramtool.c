@@ -45,6 +45,9 @@
 #include "reg_expr.h"
 #include "hexdump.h"
 #include "cbfs.h"
+#ifdef __MINGW32__
+#include <windows.h>
+#endif
 
 typedef void (*op_fn_t) (void);
 
@@ -168,6 +171,8 @@ int main(int argc, char *argv[])
 			}
 #ifndef __MINGW32__
 			fsync(fd);
+#else
+			FlushFileBuffers ((HANDLE) _get_osfhandle (fd));
 #endif
 		}
 

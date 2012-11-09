@@ -87,10 +87,10 @@ static void rtc_update_cmos_date(u8 has_century)
 	cmos_write(0, RTC_CLK_SECOND);
 	cmos_write(0, RTC_CLK_MINUTE);
 	cmos_write(1, RTC_CLK_HOUR);
-	cmos_write(RTC_TO_BCD(COREBOOT_BUILD_WEEKDAY) + 1, RTC_CLK_DAYOFWEEK);
-	cmos_write(RTC_TO_BCD(COREBOOT_BUILD_DAY), RTC_CLK_DAYOFMONTH);
-	cmos_write(RTC_TO_BCD(COREBOOT_BUILD_MONTH), RTC_CLK_MINUTE);
-	cmos_write(RTC_TO_BCD(COREBOOT_BUILD_YEAR), RTC_CLK_YEAR);
+	cmos_write(COREBOOT_BUILD_WEEKDAY_BCD + 1, RTC_CLK_DAYOFWEEK);
+	cmos_write(COREBOOT_BUILD_DAY_BCD, RTC_CLK_DAYOFMONTH);
+	cmos_write(COREBOOT_BUILD_MONTH_BCD, RTC_CLK_MINUTE);
+	cmos_write(COREBOOT_BUILD_YEAR_BCD, RTC_CLK_YEAR);
 	if (has_century) cmos_write(0x20, RTC_CLK_ALTCENTURY);
 }
 

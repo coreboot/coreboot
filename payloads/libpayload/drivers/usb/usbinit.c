@@ -126,14 +126,6 @@ static void usb_scan_pci_bus(int bus)
 		if (pci_read_config32(addr, REG_VENDOR_ID) == 0xffff)
 			continue;
 		header_type = pci_read_config8(addr, REG_HEADER_TYPE);
-		/* If this is a bridge, scan the bus on the other side. */
-		if ((header_type & ~HEADER_TYPE_MULTIFUNCTION) ==
-				HEADER_TYPE_BRIDGE) {
-			int sub_bus =
-				pci_read_config8(addr, REG_SECONDARY_BUS);
-			usb_scan_pci_bus(sub_bus);
-			continue;
-		}
 		/*
 		 * EHCI is defined by standards to be at a higher function
 		 * than the USB1 controllers. We don't want to init USB1 +
@@ -141,11 +133,22 @@ static void usb_scan_pci_bus(int bus)
 		 * comes first.
 		 */
 		/* Check for a multifunction device. */
+		int top_func = 0;
 		if (header_type & HEADER_TYPE_MULTIFUNCTION)
-			for (func = 7; func > 0; func--)
+			top_func = 7;
+		for (func = top_func; func >= 0; func--) {
+			addr = PCI_DEV(bus, dev, func);
+			header_type = pci_read_config8(addr, REG_HEADER_TYPE);
+			/* If this is a bridge, scan the other side. */
+			if ((header_type & ~HEADER_TYPE_MULTIFUNCTION) ==
+					HEADER_TYPE_BRIDGE) {
+				int sub_bus = pci_read_config8(addr,
+					REG_SECONDARY_BUS);
+				usb_scan_pci_bus(sub_bus);
+			} else {
 				usb_controller_initialize(bus, dev, func);
-		/* Initialize function 0. */
-		usb_controller_initialize(bus, dev, 0);
+			}
+		}
 	}
 }
 

@@ -51,7 +51,21 @@ static void ehci_stop (hci_t *controller)
 
 static void ehci_reset (hci_t *controller)
 {
-
+	short count = 0;
+	ehci_stop(controller);
+	/* wait 10 ms just to be shure */
+	mdelay(10);
+	if (EHCI_INST(controller)->operation->usbsts & HC_OP_HC_HALTED) {
+		EHCI_INST(controller)->operation->usbcmd = HC_OP_HC_RESET;
+		/* wait 100 ms */
+		for (count = 0; count < 10; count++) {
+			mdelay(10);
+			if (!(EHCI_INST(controller)->operation->usbcmd & HC_OP_HC_RESET)) {
+				return;
+			}
+		}
+	}
+	usb_debug("ehci_reset(): reset failed!\n");
 }
 
 static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)

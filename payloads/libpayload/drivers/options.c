@@ -243,7 +243,7 @@ static struct cb_cmos_enums *lookup_cmos_enum_core(struct cb_cmos_option_table *
 		cmos_enum;
 		cmos_enum = next_cmos_enum_of_id(cmos_enum, config_id)) {
 		if (((value == NULL) || (cmos_enum->value == *value)) &&
-		    ((text == NULL) || (memcmp((const char*)cmos_enum->text, text, len)))) {
+		    ((text == NULL) || (memcmp((const char*)cmos_enum->text, text, len) == 0))) {
 			return cmos_enum;
 		}
 	}

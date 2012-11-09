@@ -182,7 +182,7 @@ $(obj)/build.h: .xcompile
 	printf "#define COREBOOT_BUILD_YEAR `LANG= date +"%-y"`\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_BUILD_MONTH `LANG= date +"%-m"`\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_BUILD_DAY `LANG= date +"%-d"`\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_BUILD_WEEKDAY `LANG= date +"%-u"`\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_BUILD_WEEKDAY `LANG= date +"%-w"`\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_DMI_DATE \"`LANG= date +"%m/%d/%Y"`\"\n" >> $(obj)/build.ht
 	printf "\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.ht

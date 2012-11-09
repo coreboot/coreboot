@@ -61,6 +61,7 @@ typedef volatile struct {
 typedef volatile struct {
 	u32 usbcmd;
 #define HC_OP_RS 1
+#define HC_OP_HC_RESET (1 << 1)
 #define HC_OP_PERIODIC_SCHED_EN_SHIFT 4
 #define HC_OP_PERIODIC_SCHED_EN (1 << HC_OP_PERIODIC_SCHED_EN_SHIFT)
 #define HC_OP_ASYNC_SCHED_EN_SHIFT 5
@@ -70,6 +71,8 @@ typedef volatile struct {
 #define HC_OP_PERIODIC_SCHED_STAT (1 << HC_OP_PERIODIC_SCHED_STAT_SHIFT)
 #define HC_OP_ASYNC_SCHED_STAT_SHIFT 15
 #define HC_OP_ASYNC_SCHED_STAT (1 << HC_OP_ASYNC_SCHED_STAT_SHIFT)
+#define HC_OP_HC_HALTED_SHIFT 12
+#define HC_OP_HC_HALTED (1 << HC_OP_HC_HALTED_SHIFT)
 	u32 usbintr;
 	u32 frindex;
 	u32 ctrldssegment;

@@ -513,12 +513,14 @@ static void intel_cores_init(device_t cpu)
 		       cpu->path.apic.apic_id,
 		       new->path.apic.apic_id);
 
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 		/* Start the new cpu */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU %u would not start!\n",
 			       new->path.apic.apic_id);
 		}
+#endif
 	}
 }
 

@@ -101,6 +101,9 @@ static void ehci_shutdown (hci_t *controller)
 	free(EHCI_INST(controller)->dummy_qh);
 
 	EHCI_INST(controller)->operation->configflag = 0;
+
+	free(EHCI_INST(controller));
+	free(controller);
 }
 
 enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };

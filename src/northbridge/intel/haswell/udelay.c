@@ -21,10 +21,7 @@
 #include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
-
-/**
- * Intel SandyBridge/IvyBridge CPUs always run the TSC at BCLK=100MHz
- */
+#include "cpu/intel/haswell/haswell.h"
 
 /* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow. */
 static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
@@ -42,13 +39,13 @@ void udelay(u32 us)
 	u32 dword;
 	tsc_t tsc, tsc1, tscd;
 	msr_t msr;
-	u32 fsb = 100, divisor;
+	u32 divisor;
 	u32 d;			/* ticks per us */
 
-	msr = rdmsr(0xce);
+	msr = rdmsr(MSR_PLATFORM_INFO);
 	divisor = (msr.lo >> 8) & 0xff;
 
-	d = fsb * divisor; /* On Core/Core2 this is divided by 4 */
+	d = HASWELL_BCLK * divisor;
 	multiply_to_tsc(&tscd, us, d);
 
 	tsc1 = rdtsc();

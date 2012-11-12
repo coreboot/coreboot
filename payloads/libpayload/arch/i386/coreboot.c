@@ -84,7 +84,7 @@ static void cb_parse_version(void *ptr, struct sysinfo_t *info)
 	info->cb_version = (char *)ver->string;
 }
 
-#if CONFIG_CHROMEOS
+#ifdef CONFIG_CHROMEOS
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_vbnv *vbnv = (struct cb_vbnv *)ptr;
@@ -251,7 +251,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 #endif
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
-#if CONFIG_CHROMEOS
+#ifdef CONFIG_CHROMEOS
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);
 			break;

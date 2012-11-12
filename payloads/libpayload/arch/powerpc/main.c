@@ -47,8 +47,9 @@ void start_main(void)
 	extern int main(int argc, char **argv);
 
 	/* Optionally set up the consoles. */
-	if (!CONFIG_SKIP_CONSOLE_INIT)
-		console_init();
+#ifndef CONFIG_SKIP_CONSOLE_INIT
+	console_init();
+#endif
 
 	/* Gather system information. */
 	lib_get_sysinfo();

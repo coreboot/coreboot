@@ -57,7 +57,7 @@ struct sysinfo_t {
 	u32 cmos_range_start;
 	u32 cmos_range_end;
 	u32 cmos_checksum_location;
-#if CONFIG_CHROMEOS
+#ifdef CONFIG_CHROMEOS
 	u32 vbnv_start;
 	u32 vbnv_size;
 #endif
@@ -77,7 +77,7 @@ struct sysinfo_t {
 
 	struct cb_framebuffer *framebuffer;
 
-#if CONFIG_CHROMEOS
+#ifdef CONFIG_CHROMEOS
 	int num_gpios;
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
 #endif
@@ -87,7 +87,7 @@ struct sysinfo_t {
 	struct cb_header *header;
 	struct cb_mainboard *mainboard;
 
-#if CONFIG_CHROMEOS
+#ifdef CONFIG_CHROMEOS
 	void	*vdat_addr;
 	u32	vdat_size;
 #endif

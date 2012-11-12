@@ -50,8 +50,9 @@ void start_main(void)
 	lib_get_sysinfo();
 
 	/* Optionally set up the consoles. */
-	if (!CONFIG_SKIP_CONSOLE_INIT)
-		console_init();
+#ifndef CONFIG_SKIP_CONSOLE_INIT
+	console_init();
+#endif
 
 	/*
 	 * Any other system init that has to happen before the

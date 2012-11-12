@@ -114,7 +114,11 @@ uhci_reset (hci_t *controller)
 		udelay (500);
 	if (timeout < 0)
 		usb_debug ("Warning: uhci: host controller reset timed out.\n");
+}
 
+static void
+uhci_reinit (hci_t *controller)
+{
 	uhci_reg_write32 (controller, FLBASEADD,
 			  (u32) virt_to_phys (UHCI_INST (controller)->
 					      framelistptr));
@@ -152,6 +156,7 @@ uhci_init (pcidev_t addr)
 	controller->start = uhci_start;
 	controller->stop = uhci_stop;
 	controller->reset = uhci_reset;
+	controller->init = uhci_reinit;
 	controller->shutdown = uhci_shutdown;
 	controller->bulk = uhci_bulk;
 	controller->control = uhci_control;
@@ -228,6 +233,7 @@ uhci_init (pcidev_t addr)
 	controller->devices[0]->init = uhci_rh_init;
 	controller->devices[0]->init (controller->devices[0]);
 	uhci_reset (controller);
+	uhci_reinit (controller);
 	return controller;
 }
 

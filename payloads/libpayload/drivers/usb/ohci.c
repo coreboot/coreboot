@@ -170,7 +170,6 @@ ohci_init (pcidev_t addr)
 	controller->devices[0]->controller = controller;
 	controller->devices[0]->init = ohci_rh_init;
 	controller->devices[0]->init (controller->devices[0]);
-	ohci_reset (controller);
 	return controller;
 }
 

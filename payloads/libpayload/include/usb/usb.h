@@ -119,10 +119,19 @@ struct usbdev_hc {
 	u32 reg_base;
 	hc_type type;
 	usbdev_t *devices[128];	// dev 0 is root hub, 127 is last addressable
+
+	/* start():     Resume operation. */
 	void (*start) (hci_t *controller);
+	/* stop():      Stop operation but keep controller initialized. */
 	void (*stop) (hci_t *controller);
+	/* reset():     Perform a controller reset. The controller needs to
+	                be (re)initialized afterwards to work (again). */
 	void (*reset) (hci_t *controller);
+	/* shutdown():  Stop operation, detach host controller and shutdown
+	                this driver instance. After calling shutdown() any
+			other usage of this hci_t* is invalid. */
 	void (*shutdown) (hci_t *controller);
+
 	int (*bulk) (endpoint_t *ep, int size, u8 *data, int finalize);
 	int (*control) (usbdev_t *dev, direction_t pid, int dr_length,
 			void *devreq, int data_length, u8 *data);

@@ -49,6 +49,11 @@ xhci_reset (hci_t *controller)
 {
 }
 
+static void
+xhci_reinit (hci_t *controller)
+{
+}
+
 hci_t *
 xhci_init (pcidev_t addr)
 {
@@ -68,6 +73,7 @@ xhci_init (pcidev_t addr)
 	controller->start = xhci_start;
 	controller->stop = xhci_stop;
 	controller->reset = xhci_reset;
+	controller->init = xhci_reinit;
 	controller->shutdown = xhci_shutdown;
 	controller->bulk = xhci_bulk;
 	controller->control = xhci_control;

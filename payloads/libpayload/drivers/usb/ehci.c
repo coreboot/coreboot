@@ -68,6 +68,10 @@ static void ehci_reset (hci_t *controller)
 	usb_debug("ehci_reset(): reset failed!\n");
 }
 
+static void ehci_reinit (hci_t *controller)
+{
+}
+
 static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 {
 	/* Set periodic schedule status. */
@@ -657,6 +661,7 @@ ehci_init (pcidev_t addr)
 	controller->start = ehci_start;
 	controller->stop = ehci_stop;
 	controller->reset = ehci_reset;
+	controller->init = ehci_reinit;
 	controller->shutdown = ehci_shutdown;
 	controller->bulk = ehci_bulk;
 	controller->control = ehci_control;

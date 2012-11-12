@@ -58,6 +58,11 @@ ohci_reset (hci_t *controller)
 	mdelay(10); /* wait 10ms */
 }
 
+static void
+ohci_reinit (hci_t *controller)
+{
+}
+
 #ifdef USB_DEBUG
 /* Section 4.3.3 */
 static const char *completion_codes[] = {
@@ -107,6 +112,7 @@ ohci_init (pcidev_t addr)
 	controller->start = ohci_start;
 	controller->stop = ohci_stop;
 	controller->reset = ohci_reset;
+	controller->init = ohci_reinit;
 	controller->shutdown = ohci_shutdown;
 	controller->bulk = ohci_bulk;
 	controller->control = ohci_control;

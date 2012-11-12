@@ -127,6 +127,9 @@ struct usbdev_hc {
 	/* reset():     Perform a controller reset. The controller needs to
 	                be (re)initialized afterwards to work (again). */
 	void (*reset) (hci_t *controller);
+	/* init():      Initialize a (previously reset) controller
+	                to a working state. */
+	void (*init) (hci_t *controller);
 	/* shutdown():  Stop operation, detach host controller and shutdown
 	                this driver instance. After calling shutdown() any
 			other usage of this hci_t* is invalid. */

@@ -22,12 +22,20 @@ config SOUTHBRIDGE_VIA_VT8237R
 	select HAVE_DEBUG_SMBUS
 	select IOAPIC
 
+if SOUTHBRIDGE_VIA_VT8237R
+
+if NORTHBRIDGE_AMD_K8 || NORTHBRIDGE_AMD_FAM10
+config SOUTH_BRIDGE_OPTIONS # dummy
+	def_bool y
+	select HAVE_SMI_HANDLER
+endif
+
 config EPIA_VT8237R_INIT
 	bool
 	default n
-	depends on SOUTHBRIDGE_VIA_VT8237R
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/via/vt8237r/bootblock.c"
-	depends on SOUTHBRIDGE_VIA_VT8237R
+
+endif

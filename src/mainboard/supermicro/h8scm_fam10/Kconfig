@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 	select SUPERIO_WINBOND_W83627HF
 	select SUPERIO_NUVOTON_WPCM450
-	select HAVE_BUS_CONFIG
 	select HAVE_OPTION_TABLE
 	select GENERATE_PIRQ_TABLE
 	select GENERATE_MP_TABLE
@@ -76,10 +75,6 @@ config RAMTOP
 config HEAP_SIZE
 	hex
 	default 0xc0000
-
-config ACPI_SSDTX_NUM
-	int
-	default 0
 
 config RAMBASE
 	hex

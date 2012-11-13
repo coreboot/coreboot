@@ -24,16 +24,6 @@ config BOARD_HAS_FADT
 	  FADT in fadt.c. Long-term, those should be moved to appropriate
 	  chipset components (eg. southbridge).
 
-# There ought to be a better place to put data than code. Also, make this
-# (or a similar) framework more universally usable, so all boards benefit
-# from sharing data between the various tables.
-config HAVE_BUS_CONFIG
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a get_bus_conf.c
-	  file containing information about bus routing.
-
 # Will be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD

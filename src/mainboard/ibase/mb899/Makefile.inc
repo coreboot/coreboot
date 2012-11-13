@@ -18,5 +18,3 @@
 ##
 
 driver-y += mv88e8053.c
-
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

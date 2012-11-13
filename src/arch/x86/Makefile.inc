@@ -264,7 +264,11 @@ ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif
 endif
-
+ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard_smi.c),)
+smm-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard_smi.c
+endif
+endif
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif

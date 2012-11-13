@@ -18,5 +18,3 @@
 ##
 
 ramstage-$(CONFIG_HAVE_ACPI_SLIC) += acpi_slic.c
-
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

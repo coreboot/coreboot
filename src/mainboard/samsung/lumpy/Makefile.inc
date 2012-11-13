@@ -19,10 +19,6 @@
 
 ramstage-y += ec.c
 
-romstage-$(CONFIG_CHROMEOS) += chromeos.c
-ramstage-$(CONFIG_CHROMEOS) += chromeos.c
-
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 SPD_BIN = $(obj)/spd.bin
 
 # Include spd rom data

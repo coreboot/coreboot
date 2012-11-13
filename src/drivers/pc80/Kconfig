@@ -1,10 +1,4 @@
-# Options in this file are meant to be deprecated. Avoid their use
-# if possible, and if you find the time, or touch the general area
-# for other purposes, please consider removing their uses.
-
-menu "Deprecated"
-
-# Will be removed (alongside with the PS/2 init code) once payloads
+# Might be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD
 	bool "PS/2 keyboard init"
@@ -20,9 +14,3 @@ config DRIVERS_PS2_KEYBOARD
 	  If you know you will only use a payload which does not require
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
-
-config ID_SECTION_OFFSET
-	hex
-	default 0x80
-
-endmenu

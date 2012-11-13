@@ -63,11 +63,11 @@ static const u32 vga_colors[] = {
 };
 
 /* Addresses for the various components */
-static unsigned long fbinfo;
+static struct cb_framebuffer *fbinfo;
 static unsigned long fbaddr;
 static unsigned long chars;
 
-#define FI ((struct cb_framebuffer *) phys_to_virt(fbinfo))
+#define FI (fbinfo)
 #define FB ((unsigned char *) phys_to_virt(fbaddr))
 #define CHARS ((unsigned short *) phys_to_virt(chars))
 
@@ -233,7 +233,7 @@ static int corebootfb_init(void)
 	if (lib_sysinfo.framebuffer == NULL)
 		return -1;
 
-	fbinfo = (unsigned long)lib_sysinfo.framebuffer;
+	fbinfo = lib_sysinfo.framebuffer;
 
 	fbaddr = FI->physical_address;
 

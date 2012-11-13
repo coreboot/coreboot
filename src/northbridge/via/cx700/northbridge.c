@@ -29,7 +29,6 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
-#include "northbridge.h"
 
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>

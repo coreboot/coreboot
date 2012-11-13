@@ -31,7 +31,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include "northbridge.h"
 #include "vx800.h"
 
 /* !!FIXME!!  This was meant to be a CONFIG option */

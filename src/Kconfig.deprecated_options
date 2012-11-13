@@ -14,16 +14,6 @@ config BOARD_HAS_HARD_RESET
 	  This variable specifies whether a given board has a reset.c
 	  file containing a hard_reset() function.
 
-# It might be possible to consolidate FADTs to southbridges. This would
-# improve code reuse in the tree.
-config BOARD_HAS_FADT
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a board-local
-	  FADT in fadt.c. Long-term, those should be moved to appropriate
-	  chipset components (eg. southbridge).
-
 # Will be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD

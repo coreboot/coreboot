@@ -95,6 +95,7 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 
 #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
+#define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
 #define PCH_PCIE_DEV_SLOT	28
 
@@ -365,6 +366,8 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #define D22IP_IDERIP	8	/* IDE-R Pin */
 #define D22IP_MEI2IP	4	/* MEI #2 Pin */
 #define D22IP_MEI1IP	0	/* MEI #1 Pin */
+#define D20IP		0x3128  /* 32bit */
+#define D20IP_XHCIIP	0
 #define D31IR		0x3140	/* 16bit */
 #define D30IR		0x3142	/* 16bit */
 #define D29IR		0x3144	/* 16bit */
@@ -373,6 +376,7 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #define D26IR		0x314c	/* 16bit */
 #define D25IR		0x3150	/* 16bit */
 #define D22IR		0x315c	/* 16bit */
+#define D20IR		0x3160	/* 16bit */
 #define OIC		0x31fe	/* 16bit */
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
@@ -392,7 +396,7 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #define CG		0x341c	/* 32bit */
 
 /* Function Disable 1 RCBA 0x3418 */
-#define PCH_DISABLE_ALWAYS	((1 << 0)|(1 << 26)|(1 << 27))
+#define PCH_DISABLE_ALWAYS	((1 << 0)|(1 << 26))
 #define PCH_DISABLE_P2P		(1 << 1)
 #define PCH_DISABLE_SATA1	(1 << 2)
 #define PCH_DISABLE_SMBUS	(1 << 3)

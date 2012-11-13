@@ -326,6 +326,17 @@ static void southbridge_gate_memory_reset(void)
 	outl(reg32, gpiobase + GP_LVL2);
 }
 
+static void xhci_sleep(u8 slp_typ)
+{
+	u32 reg32;
+
+	if (slp_typ == SLP_TYP_S5) {
+	    reg32 = pcie_read_config32(PCH_XHCI_DEV, 0x74);
+	    reg32 |= (1 << 8 | 0x03 );
+	    pcie_write_config32(PCH_XHCI_DEV, 0x74, reg32);
+	}
+}
+
 static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u8 reg8;
@@ -352,6 +363,9 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = (reg32 >> 10) & 7;
+
+	if(smm_get_gnvs()->xhci)
+		xhci_sleep(slp_typ);
 
 	/* Do any mainboard sleep handling */
 	tseg_relocate((void **)&mainboard_sleep);

@@ -136,6 +136,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	GTF2,	56,	// 0xa4 - GTF task file buffer for port 2
 	IDEM,	 8,	// 0xab - IDE mode (compatible / enhanced)
 	IDET,	 8,	// 0xac - IDE
+	/* XHCI */
+	Offset (0xb2),
+	XHCI,	 8,
 	/* IGD OpRegion */
 	Offset (0xb4),
 	ASLB,	32,	// 0xb4 - IGD OpRegion Base Address
@@ -223,6 +226,17 @@ Method (S3GD)
 	Store (Zero, \S33G)
 }
 
+/* Set XHCI Mode enable */
+Method (XHCE)
+{
+	Store (One, \XHCI)
+}
+
+/* Set XHCI Mode disable */
+Method (XHCD)
+{
+	Store (Zero, \XHCI)
+}
 External (\_TZ.THRM)
 External (\_TZ.SKIN)
 

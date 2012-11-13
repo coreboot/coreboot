@@ -89,3 +89,72 @@ Device (EHC2)
 	}
 }
 
+Device (XHC)
+{
+	Name(_ADR, 0x00140000)
+	OperationRegion(XDEV, PCI_Config, 0, 256)
+	Field(XDEV, DWordAcc, NoLock, Preserve)
+	{
+		Offset(0xD0),
+		X2PR, 32,	// XUSB2PR
+		PRM2, 32,	// XUSB2PRM
+		SSEN, 32,	// USB3_PSSEN
+		RPM3, 32,	// USB3PRM
+		XPRT, 32,	// XHCI Ports
+	}
+
+	Name (_PRW, Package(){ 13, 4 }) // Power Resources for Wake
+
+	Method(POSC,3,Serialized)
+	{
+		// Create DWord field from the Capabilities Buffer
+		CreateDWordField(Arg2,0,CDW1)
+
+		// Check revision
+		If(LNotEqual(Arg1,One)) {
+			// Set unknown revision bit
+			Or(CDW1,0x8,CDW1)
+		}
+
+		// Set failure if xHCI is disabled by coreboot
+		If(LEqual(XHCI, 0)) {
+			Or(CDW1,0x2,CDW1)
+		}
+
+		// Query flag clear and xHCI in auto mode
+		If(LAnd(LNot(And(CDW1,0x1)),LOr(LEqual(XHCI ,2), LEqual(XHCI ,3)))) {
+			Store ("XHCI Switch", Debug)
+			Store(Zero, Local0)
+			And(XPRT, 0x3, Local0)
+			If(LOr(LEqual(Local0, 0), LEqual(Local0, 1))) {
+				Store(0xF, Local1)
+			}
+			ElseIf(LEqual(Local0, 2)) {
+				Store(0x3, Local1)
+			}
+			ElseIf(LEqual(Local0, 3)) {
+				Store(Zero, Local1)
+			}
+			And(RPM3, 0xFFFFFFF0, Local0)
+			Or(Local0, Local1, RPM3)
+			And(PRM2, 0xFFFFFFF0, Local0)
+			Or(Local0, Local1, PRM2)
+			And(SSEN, 0xFFFFFFF0, Local0)
+			Or(Local0, Local1, SSEN)
+			And(X2PR, 0xFFFFFFF0, Local0)
+			Or(Local0, Local1, X2PR)
+		}
+		Return(Arg2)
+	}
+
+	// Leave USB ports on for to allow Wake from USB
+	Method(_S3D,0)	// Highest D State in S3 State
+	{
+		Return (2)
+	}
+
+	Method(_S4D,0)	// Highest D State in S4 State
+	{
+		Return (2)
+	}
+}

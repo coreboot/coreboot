@@ -27,10 +27,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 12
 
-config BOARD_HAS_FADT
-	bool
-	default y
-
 config MAX_CPUS
 	int
 	default 4

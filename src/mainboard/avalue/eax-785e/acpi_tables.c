@@ -235,8 +235,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
-	/* FDAT */
-#if CONFIG_BOARD_HAS_FADT
+	/* FADT */
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;
@@ -244,7 +243,6 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
-#endif
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

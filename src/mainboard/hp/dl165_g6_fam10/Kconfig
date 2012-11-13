@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select DIMM_DDR2
 	select DIMM_REGISTERED
 	select HAVE_OPTION_TABLE
-	select HAVE_BUS_CONFIG
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select LIFT_BSP_APIC_ID

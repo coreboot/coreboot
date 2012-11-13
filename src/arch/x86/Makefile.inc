@@ -235,34 +235,37 @@ endif
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
-ifeq ($(CONFIG_HAVE_MP_TABLE),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/mptable.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mptable.c
 endif
 endif
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c
 endif
-ifeq ($(CONFIG_BOARD_HAS_HARD_RESET),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/reset.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_GENERATE_ACPI_TABLES),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/dsdt.asl
-# make doesn't have arithmetic operators or greater-than comparisons
-ifeq ($(subst 5,4,$(CONFIG_ACPI_SSDTX_NUM)),4)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt2.asl),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt2.asl
+endif
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt3.asl),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt3.asl
+endif
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt4.asl),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt4.asl
 endif
-ifeq ($(CONFIG_ACPI_SSDTX_NUM),5)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/ssdt5.asl),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt5.asl
 endif
-ifeq ($(CONFIG_BOARD_HAS_FADT),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
 endif
 endif
 
-ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
 

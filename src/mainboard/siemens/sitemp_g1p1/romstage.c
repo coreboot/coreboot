@@ -147,7 +147,7 @@ static inline int cmos_chksum_valid(void) {
 #if DUMP_CMOS_RAM
 	__DEBUG__("\n");
 #endif
-	sum = (sum & 0xffff) ^ 0xffff;
+	sum = (sum & 0xffff);
 
 	/* Read the stored checksum */
 	outb(LB_CKS_LOC, 0x72);

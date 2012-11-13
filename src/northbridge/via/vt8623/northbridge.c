@@ -11,7 +11,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
-#include "northbridge.h"
 
 /*
  * This fixup is based on capturing values from an Award BIOS.  Without

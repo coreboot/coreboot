@@ -30,7 +30,9 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
-#include "northbridge.h"
+#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#include <devices/oprom/x86.h>
+#endif
 
 static int via_vt8623_int15_handler(struct eregs *regs)
 {
@@ -99,6 +101,7 @@ static void vga_random_fixup(device_t dev)
 
 static void vga_enable_console(void)
 {
+#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	/* Call VGA BIOS int10 function 0x4f14 to enable main console
 	 * Epia-M does not always autosense the main console so forcing
 	 * it on is good.
@@ -106,6 +109,7 @@ static void vga_enable_console(void)
 
 	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
 	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
+#endif
 }
 
 static void vga_init(device_t dev)

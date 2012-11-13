@@ -4,7 +4,6 @@
 #if !defined(__PRE_RAM__)
 #include <device/device.h>
 void i82801cx_enable(device_t dev);
-void i82801cx_hard_reset(void);
 #endif
 
 

@@ -13,7 +13,7 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
 #include "watchdog.c"
-#include "reset.c"
+#include "southbridge/intel/i82801ex/reset.c"
 #include "superio/winbond/w83627hf/early_serial.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"

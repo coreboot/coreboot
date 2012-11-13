@@ -26,3 +26,7 @@ ramstage-y += gnvs.c
 romstage-y += fmap.c
 ramstage-y += fmap.c
 smm-y += fmap.c
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/chromeos.c),)
+ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/chromeos.c
+romstage-srcs += src/mainboard/$(MAINBOARDDIR)/chromeos.c
+endif

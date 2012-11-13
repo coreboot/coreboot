@@ -19,4 +19,3 @@
 
 ramstage-y += m3885.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

@@ -245,7 +245,7 @@ Scope(\)
 // PCI Express Ports 0:1c.x
 #include "pcie.asl"
 
-// USB 0:1d.0 and 0:1a.0
+// USB EHCI 0:1d.0 and 0:1a.0, XHCI 0:14.0
 #include "usb.asl"
 
 // LPC Bridge 0:1f.0
@@ -259,17 +259,22 @@ Scope(\)
 
 Method (_OSC, 4)
 {
-	/* Check for proper GUID */
+	/* Check for XHCI */
+	If (LEqual (Arg0, ToUUID("7c9512a9-1705-4cb4-af7d-506a2423ab71")))
+	{
+		Return (^XHC.POSC(Arg1, Arg2, Arg3))
+	}
+
+	/* Check for PCIe */
 	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
 	{
 		/* Let OS control everything */
 		Return (Arg3)
 	}
-	Else
-	{
-		/* Unrecognized UUID */
-		CreateDWordField (Arg3, 0, CDW1)
-		Or (CDW1, 4, CDW1)
-		Return (Arg3)
-	}
+
+	/* Else Return Unrecognized UUID */
+	CreateDWordField (Arg3, 0, CDW1)
+	Or (CDW1, 4, CDW1)
+	Return (Arg3)
+
 }

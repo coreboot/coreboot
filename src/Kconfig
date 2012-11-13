@@ -278,7 +278,6 @@ config ACPI_SSDTX_NUM
 
 config HAVE_HARD_RESET
 	bool
-	default y if BOARD_HAS_HARD_RESET
 	default n
 	help
 	  This variable specifies whether a given board has a hard_reset

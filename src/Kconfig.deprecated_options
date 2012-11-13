@@ -4,16 +4,6 @@
 
 menu "Deprecated"
 
-# It might be possible to consolidate hard_reset() to southbridges,
-# given that it (usually) uses its registers.
-# The long term goal would be to eliminate hard_reset() from boards.
-config BOARD_HAS_HARD_RESET
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a reset.c
-	  file containing a hard_reset() function.
-
 # Will be removed (alongside with the PS/2 init code) once payloads
 # reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD

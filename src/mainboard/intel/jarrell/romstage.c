@@ -12,7 +12,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "watchdog.c"
-#include "reset.c"
+#include "southbridge/intel/i82801ex/reset.c"
 #include "power_reset_check.c"
 #include "jarrell_fixups.c"
 #include "superio/nsc/pc87427/early_init.c"

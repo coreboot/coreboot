@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
+#include <arch/interrupt.h>
 #include <delay.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -807,14 +808,14 @@ static void smm_lock( void )
 
 static void init(device_t dev)
 {
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	INT15_function_extensions int15_func;
 #endif
 
 	printk(BIOS_DEBUG, "%s %s[%x/%x] %s\n",
 		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 
-#if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	if(	get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") < 0 )
 		int15_func.regs.func00_LCD_panel_id = PANEL_TABLE_ID_NO;
 	int15_func.regs.func05_TV_standard = TV_MODE_NO;

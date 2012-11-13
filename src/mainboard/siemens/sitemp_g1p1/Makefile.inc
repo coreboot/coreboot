@@ -19,5 +19,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ramstage-y += int15_func.c
+ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += int15_func.c
 

@@ -31,7 +31,7 @@
 #include "cfg.h"		/* sb800 Cimx configuration */
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
-
+#include "smbus.h"
 
 /*implement in mainboard.c*/
 void set_pcie_reset(void);
@@ -306,35 +306,6 @@ struct device_operations bridge_ops = {
 	.ops_pci          = &lops_pci,
 };
 
-/* 0:15:0 PCIe PortA */
-static const struct pci_driver PORTA_driver __pci_driver = {
-        .ops = &bridge_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCIEA,
-};
-
-/* 0:15:1 PCIe PortB */
-static const struct pci_driver PORTB_driver __pci_driver = {
-        .ops = &bridge_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCIEB,
-};
-
-/* 0:15:2 PCIe PortC */
-static const struct pci_driver PORTC_driver __pci_driver = {
-        .ops = &bridge_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCIEC,
-};
-
-/* 0:15:3 PCIe PortD */
-static const struct pci_driver PORTD_driver __pci_driver = {
-        .ops = &bridge_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCIED,
-};
-
-
 /**
  * South Bridge CIMx ramstage entry point wrapper.
  */
@@ -387,6 +358,21 @@ static void sb800_enable(device_t dev)
 	switch (dev->path.pci.devfn) {
 	case (0x11 << 3) | 0: /* 0:11.0  SATA */
 		/* the first sb800 device */
+		switch (GPP_CFGMODE) { /* config the GPP PCIe ports */
+		case GPP_CFGMODE_X2200:
+			abcfg_reg(0xc0, 0x01FF, 0x030); /* x2 Port_0, x2 Port_1 */
+			break;
+		case GPP_CFGMODE_X2110:
+			abcfg_reg(0xc0, 0x01FF, 0x070); /* x2 Port_0, x1 Port_1&2 */
+			break;
+		case GPP_CFGMODE_X1111:
+			abcfg_reg(0xc0, 0x01FF, 0x0F0); /* x1 Port_0&1&2&3 */
+			break;
+		case GPP_CFGMODE_X4000:
+		default:
+			abcfg_reg(0xc0, 0x01FF, 0x010); /* x4 Port_0 */
+			break;
+		}
 		sb800_cimx_config(sb_config);
 
 		if (dev->enabled) {

@@ -113,7 +113,9 @@ typedef struct {
 	u8	gtf2[7];
 	u8	idem;
 	u8	idet;
-	u8	rsvd11[7];
+	u8	rsvd11[6];
+	/* XHCI */
+	u8	xhci;
 	/* IGD OpRegion (not implemented yet) */
 	u32	aslb; /* 0xb4 - IGD OpRegion Base Address */
 	u8	ibtt; /* 0xb8 - IGD boot type */

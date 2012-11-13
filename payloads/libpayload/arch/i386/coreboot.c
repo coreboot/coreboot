@@ -78,12 +78,6 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->serial = ((struct cb_serial *)ptr);
 }
 
-static void cb_parse_version(void *ptr, struct sysinfo_t *info)
-{
-	struct cb_string *ver = ptr;
-	info->cb_version = (char *)ver->string;
-}
-
 #ifdef CONFIG_CHROMEOS
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
@@ -109,24 +103,27 @@ static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_vdat *vdat = (struct cb_vdat *) ptr;
 
-	info->vdat_addr = vdat->vdat_addr;
+	info->vdat_addr = phys_to_virt(vdat->vdat_addr);
 	info->vdat_size = vdat->vdat_size;
 }
 #endif
 
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->tstamp_table = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->tstamp_table = phys_to_virt(cbmem->cbmem_tab);
 }
 
 static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->cbmem_cons = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->cbmem_cons = phys_to_virt(cbmem->cbmem_tab);
 }
 
 static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->mrc_cache = ((struct cb_cbmem_tab *)ptr)->cbmem_tab;
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->mrc_cache = phys_to_virt(cbmem->cbmem_tab);
 }
 
 #ifdef CONFIG_NVRAM
@@ -153,7 +150,7 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_string(unsigned char *ptr, char **info)
 {
-	*info = (char *)((struct cb_string *)ptr)->string;
+	*info = (char *)phys_to_virt(((struct cb_string *)ptr)->string);
 }
 
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
@@ -205,7 +202,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_serial(ptr, info);
 			break;
 		case CB_TAG_VERSION:
-			cb_parse_version(ptr, info);
+			cb_parse_string(ptr, &info->cb_version);
 			break;
 		case CB_TAG_EXTRA_VERSION:
 			cb_parse_string(ptr, &info->extra_version);

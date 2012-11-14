@@ -120,10 +120,9 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 ** verb)
 
 static int wait_for_ready(u32 base)
 {
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
+	/* Use a 1msec timeout */
 
-	int timeout = 50;
+	int timeout = 1000;
 
 	while(timeout--) {
 		u32 reg32 = read32(base +  HDA_ICII_REG);
@@ -150,10 +149,9 @@ static int wait_for_valid(u32 base)
 	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
 	write32(base + HDA_ICII_REG, reg32);
 
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
+	/* Use a 1msec timeout */
 
-	int timeout = 50;
+	int timeout = 1000;
 	while(timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
@@ -254,12 +252,12 @@ static void azalia_init(struct device *dev)
 	if (RCBA32(0x2030) & (1 << 31)) {
 		reg32 = pci_mmio_read_config32(dev, 0x120);
 		reg32 &= 0xf8ffff01;
-		reg32 |= (1 << 24); // 25 for server
+		reg32 |= (1 << 24); // 2 << 24 for server
 		reg32 |= RCBA32(0x2030) & 0xfe;
 		pci_mmio_write_config32(dev, 0x120, reg32);
 
 		reg16 = pci_mmio_read_config16(dev, 0x78);
-		reg16 &= ~(1 << 11);
+		reg16 |= (1 << 11);
 		pci_mmio_write_config16(dev, 0x78, reg16);
 	} else
 		printk(BIOS_DEBUG, "Azalia: V1CTL disabled.\n");
@@ -269,12 +267,9 @@ static void azalia_init(struct device *dev)
 	pci_mmio_write_config32(dev, 0x114, reg32);
 
 	// Set VCi enable bit
-	if (pci_mmio_read_config32(dev, 0x120) & ((1 << 24) |
-						(1 << 25) | (1 << 26))) {
-		reg32 = pci_mmio_read_config32(dev, 0x120);
-		reg32 |= (1 << 31);
-		pci_mmio_write_config32(dev, 0x120, reg32);
-	}
+	reg32 = pci_mmio_read_config32(dev, 0x120);
+	reg32 |= (1 << 31);
+	pci_mmio_write_config32(dev, 0x120, reg32);
 
 	// Enable HDMI codec:
 	reg32 = pci_read_config32(dev, 0xc4);
@@ -284,15 +279,6 @@ static void azalia_init(struct device *dev)
 	reg8 = pci_read_config8(dev, 0x43);
 	reg8 |= (1 << 6);
 	pci_write_config8(dev, 0x43, reg8);
-
-	/* Additional programming steps */
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 13) | (1 << 10);
-	pci_write_config32(dev, 0xc4, reg32);
-
-	reg32 = pci_read_config32(dev, 0xd0);
-	reg32 &= ~(1 << 31);
-	pci_write_config32(dev, 0xd0, reg32);
 
 	/* Additional programming steps */
 	reg32 = pci_read_config32(dev, 0xc4);
@@ -307,6 +293,13 @@ static void azalia_init(struct device *dev)
 	reg32 &= ~(1 << 31);
 	pci_write_config32(dev, 0xd0, reg32);
 
+	if (dev->device == 0x1e20) {
+		/* Additional step on Panther Point */
+		reg32 = pci_read_config32(dev, 0xc4);
+		reg32 |= (1 << 17);
+		pci_write_config32(dev, 0xc4, reg32);
+	}
+
 	/* Set Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
@@ -314,9 +307,13 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x3c, 0x0a); // unused?
 
 	/* Codec Initialization Programming Sequence */
+
+	/* Take controller out of reset */
 	reg32 = read32(base + 0x08);
 	reg32 |= (1 << 0);
 	write32(base + 0x08, reg32);
+	/* Wait 1ms */
+	udelay(1000);
 
 	//
 	reg8 = pci_read_config8(dev, 0x40); // Audio Control

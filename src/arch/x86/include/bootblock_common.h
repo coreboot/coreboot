@@ -11,6 +11,9 @@
 #include CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
 #endif
 
+#ifdef CONFIG_BOOTBLOCK_MAINBOARD_INIT
+#include CONFIG_BOOTBLOCK_MAINBOARD_INIT
+#else
 static void bootblock_mainboard_init(void)
 {
 #ifdef CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
@@ -23,6 +26,7 @@ static void bootblock_mainboard_init(void)
 	bootblock_cpu_init();
 #endif
 }
+#endif
 
 #if CONFIG_USE_OPTION_TABLE
 #include <pc80/mc146818rtc.h>

@@ -55,10 +55,6 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
 
-config BOOTBLOCK_NORTHBRIDGE_INIT
-        string
-        default "northbridge/amd/amdk8/bootblock.c"
-
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n

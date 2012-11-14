@@ -23,11 +23,6 @@ config SOUTHBRIDGE_AMD_AGESA_HUDSON
 	select HAVE_USBDEBUG
 	select TINY_BOOTBLOCK
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/agesa/hudson/bootblock.c"
-	depends on SOUTHBRIDGE_AMD_AGESA_HUDSON
-
 config SOUTHBRIDGE_AMD_HUDSON_SKIP_ISA_DMA_INIT
 	bool
 	default n

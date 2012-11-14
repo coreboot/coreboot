@@ -34,8 +34,4 @@ config EPIA_VT8237R_INIT
 	bool
 	default n
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/via/vt8237r/bootblock.c"
-
 endif

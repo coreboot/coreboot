@@ -91,10 +91,6 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-	default "mainboard/hp/dl165_g6_fam10/bootblock.c"
-
 config MMCONF_SUPPORT_DEFAULT
 	bool
 	default y

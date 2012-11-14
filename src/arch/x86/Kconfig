@@ -73,21 +73,12 @@ config PC80_SYSTEM
 config HAS_MAINBOARD_BOOTBLOCK
 	def_bool n
 
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-
 config HAVE_CMOS_DEFAULT
 	def_bool n
 
 config CMOS_DEFAULT_FILE
 	string
 	depends on HAVE_CMOS_DEFAULT
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
 
 config HAVE_ARCH_MEMSET
 	bool

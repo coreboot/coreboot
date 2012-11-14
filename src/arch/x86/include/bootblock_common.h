@@ -1,32 +1,38 @@
 #include <cpu/x86/lapic/boot_cpu.c>
 #include <arch/cbfs.h>
 
-#ifdef CONFIG_BOOTBLOCK_CPU_INIT
-#include CONFIG_BOOTBLOCK_CPU_INIT
-#endif
-#ifdef CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
-#include CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
-#endif
-#ifdef CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
-#include CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
-#endif
+/*
+ * Compiler for bootblock is ROMCC and it can only build from a single source
+ * file. To overcome this limitation, sconfig utility includes all the required
+ * bootblock.c files in a single file named bootblock_devices.h.
+ *
+ * In this file sconfig utility creates bootblock_mainboard_init(), which
+ * calls the individual chips bootblock_xxx_init() functions in the order
+ * chips appear in devicetree.cb. If this does not meet requirements, use option
+ * HAS_MAINBOARD_BOOTBLOCK and override it in mainboard/x/x/bootblock.c.
+ */
 
-#ifdef CONFIG_BOOTBLOCK_MAINBOARD_INIT
-#include CONFIG_BOOTBLOCK_MAINBOARD_INIT
+#include "bootblock_devices.h"
+
+#if 0	/* non-functional sample of bootblock_devices.h */
+
+#include "cpu/vendor/part/bootblock.c"
+#include "northbridge/vendor/part/bootblock.c"
+#include "southbridge/vendor/part/bootblock.c"
+
+#if CONFIG_HAS_MAINBOARD_BOOTBLOCK
+#include "mainboard/vendor/part/bootblock.c"
 #else
 static void bootblock_mainboard_init(void)
 {
-#ifdef CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
 	bootblock_northbridge_init();
-#endif
-#ifdef CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
 	bootblock_southbridge_init();
-#endif
-#ifdef CONFIG_BOOTBLOCK_CPU_INIT
 	bootblock_cpu_init();
-#endif
 }
 #endif
+
+#endif	/* non-functional sample of bootblock_devices.h */
+
 
 #if CONFIG_USE_OPTION_TABLE
 #include <pc80/mc146818rtc.h>

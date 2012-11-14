@@ -16,10 +16,6 @@ config CPU_SPECIFIC_OPTIONS
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "cpu/intel/model_206ax/bootblock.c"
-
 config SERIAL_CPU_INIT
 	bool
 	default n

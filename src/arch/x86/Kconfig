@@ -70,6 +70,9 @@ config PC80_SYSTEM
 	bool
 	default y
 
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 

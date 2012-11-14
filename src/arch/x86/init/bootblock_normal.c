@@ -13,9 +13,7 @@ static void main(unsigned long bist)
 	const char *default_filenames = "normal/romstage\0fallback/romstage";
 
 	if (boot_cpu()) {
-		bootblock_northbridge_init();
-		bootblock_southbridge_init();
-		bootblock_cpu_init();
+		bootblock_mainboard_init();
 
 #if CONFIG_USE_OPTION_TABLE
 		sanitize_cmos();

@@ -1,22 +1,28 @@
 #include <cpu/x86/lapic/boot_cpu.c>
+#include <arch/cbfs.h>
 
 #ifdef CONFIG_BOOTBLOCK_CPU_INIT
 #include CONFIG_BOOTBLOCK_CPU_INIT
-#else
-static void bootblock_cpu_init(void) { }
 #endif
 #ifdef CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
 #include CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
-#else
-static void bootblock_northbridge_init(void) { }
 #endif
 #ifdef CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
 #include CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
-#else
-static void bootblock_southbridge_init(void) { }
 #endif
 
-#include <arch/cbfs.h>
+static void bootblock_mainboard_init(void)
+{
+#ifdef CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT
+	bootblock_northbridge_init();
+#endif
+#ifdef CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT
+	bootblock_southbridge_init();
+#endif
+#ifdef CONFIG_BOOTBLOCK_CPU_INIT
+	bootblock_cpu_init();
+#endif
+}
 
 #if CONFIG_USE_OPTION_TABLE
 #include <pc80/mc146818rtc.h>

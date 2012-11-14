@@ -39,10 +39,6 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x04000
 
-config GENERATE_PIRQ_TABLE
-	bool
-	default y
-
 # Define to 0 because the IRQ slot count is
 # determined dynamically for this board.
 config IRQ_SLOT_COUNT

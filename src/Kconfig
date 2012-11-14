@@ -379,22 +379,6 @@ config MAX_PIRQ_LINKS
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.
 
-config GENERATE_ACPI_TABLES
-	bool
-	default HAVE_ACPI_TABLES
-
-config GENERATE_MP_TABLE
-	bool
-	default HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
-
-config GENERATE_PIRQ_TABLE
-	bool
-	default HAVE_PIRQ_TABLE
-
-config GENERATE_SMBIOS_TABLES
-	bool
-	default y
-
 menu "System tables"
 
 config WRITE_HIGH_TABLES
@@ -406,18 +390,18 @@ config MULTIBOOT
 	default y
 
 config GENERATE_ACPI_TABLES
-	depends on HAVE_ACPI_TABLES
-	bool "Generate ACPI tables"
-	default y
+	prompt "Generate ACPI tables" if HAVE_ACPI_TABLES
+	bool
+	default HAVE_ACPI_TABLES
 	help
 	  Generate ACPI tables for this board.
 
 	  If unsure, say Y.
 
 config GENERATE_MP_TABLE
-	depends on HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
-	bool "Generate an MP table"
-	default y
+	prompt "Generate an MP table" if HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
+	bool
+	default HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
 	help
 	  Generate an MP table (conforming to the Intel MultiProcessor
 	  specification 1.4) for this board.
@@ -425,9 +409,9 @@ config GENERATE_MP_TABLE
 	  If unsure, say Y.
 
 config GENERATE_PIRQ_TABLE
-	depends on HAVE_PIRQ_TABLE
-	bool "Generate a PIRQ table"
-	default y
+	prompt "Generate a PIRQ table" if HAVE_PIRQ_TABLE
+	bool
+	default HAVE_PIRQ_TABLE
 	help
 	  Generate a PIRQ table for this board.
 

@@ -659,6 +659,8 @@ int main(int argc, char** argv) {
 		walk_device_tree(autogen, &root, pass1, NULL);
 
 	} else if (scan_mode == BOOTBLOCK_MODE) {
+		const char * initorder[] = {"northbridge","southbridge","superio","cpu", 0};
+		int i = 0;
 		h = &headers;
 		while (h->next) {
 			h = h->next;
@@ -671,16 +673,19 @@ int main(int argc, char** argv) {
 		fprintf(autogen, "#include \"mainboard/%s/bootblock.c\"\n", mainboard);
 		fprintf(autogen, "#else\n");
 		fprintf(autogen, "static void bootblock_mainboard_init(void)\n{\n");
-		h = &headers;
-		while (h->next) {
-			h = h->next;
-			if (!h->chiph_exists)
-				continue;
-			char * buf = translate_name(h->name, SPLIT_1ST);
-			if (buf) {
-				fprintf(autogen, "\tbootblock_%s_init();\n", buf);
-				free(buf);
+		while (initorder[i]) {
+			h = &headers;
+			while (h->next) {
+				h = h->next;
+				if (!h->chiph_exists)
+					continue;
+				char * buf = translate_name(h->name, SPLIT_1ST);
+				if (buf && !strcmp(buf, initorder[i])) {
+					fprintf(autogen, "\tbootblock_%s_init();\n", buf);
+					free(buf);
+				}
 			}
+			i++;
 		}
 		fprintf(autogen, "}\n");
 		fprintf(autogen, "#endif\n");

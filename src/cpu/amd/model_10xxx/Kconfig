@@ -30,6 +30,10 @@ config SET_FIDVID
 	bool
 	default y
 
+config LIFT_BSP_APIC_ID
+	bool
+	default n
+
 if SET_FIDVID
 config SET_FIDVID_DEBUG
 	bool

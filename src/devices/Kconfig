@@ -18,6 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+menu "Devices"
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
@@ -211,3 +212,228 @@ config PCIEXP_ASPM
 	default n
 	help
 	  Detect and enable ASPM on PCIe links.
+
+config PCI_BUS_SEGN_BITS
+	int
+	default 0
+endmenu
+
+menu "VGA BIOS"
+
+config VGA_BIOS
+	bool "Add a VGA BIOS image"
+	help
+	  Select this option if you have a VGA BIOS image that you would
+	  like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
+
+config VGA_BIOS_FILE
+	string "VGA BIOS path and filename"
+	depends on VGA_BIOS
+	default "vgabios.bin"
+	help
+	  The path and filename of the file to use as VGA BIOS.
+
+config VGA_BIOS_ID
+	string "VGA device PCI IDs"
+	depends on VGA_BIOS
+	default "1106,3230"
+	help
+	  The comma-separated PCI vendor and device ID that would associate
+	  your VGA BIOS to your video card.
+
+	  Example: 1106,3230
+
+	  In the above example 1106 is the PCI vendor ID (in hex, but without
+	  the "0x" prefix) and 3230 specifies the PCI device ID of the
+	  video card (also in hex, without "0x" prefix).
+
+config INTEL_MBI
+	bool "Add an MBI image"
+	depends on NORTHBRIDGE_INTEL_I82830
+	help
+	  Select this option if you have an Intel MBI image that you would
+	  like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
+
+config MBI_FILE
+	string "Intel MBI path and filename"
+	depends on INTEL_MBI
+	default "mbi.bin"
+	help
+	  The path and filename of the file to use as VGA BIOS.
+
+endmenu
+
+menu "Display"
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+
+config FRAMEBUFFER_SET_VESA_MODE
+	prompt "Set VESA framebuffer mode"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  Set VESA framebuffer mode (needed for bootsplash)
+
+choice
+	prompt "VESA framebuffer video mode"
+	default FRAMEBUFFER_VESA_MODE_117
+	depends on FRAMEBUFFER_SET_VESA_MODE
+	help
+	  This option sets the resolution used for the coreboot framebuffer (and
+	  bootsplash screen).
+
+config FRAMEBUFFER_VESA_MODE_100
+	bool "640x400 256-color"
+
+config FRAMEBUFFER_VESA_MODE_101
+	bool "640x480 256-color"
+
+config FRAMEBUFFER_VESA_MODE_102
+	bool "800x600 16-color"
+
+config FRAMEBUFFER_VESA_MODE_103
+	bool "800x600 256-color"
+
+config FRAMEBUFFER_VESA_MODE_104
+	bool "1024x768 16-color"
+
+config FRAMEBUFFER_VESA_MODE_105
+	bool "1024x7686 256-color"
+
+config FRAMEBUFFER_VESA_MODE_106
+	bool "1280x1024 16-color"
+
+config FRAMEBUFFER_VESA_MODE_107
+	bool "1280x1024 256-color"
+
+config FRAMEBUFFER_VESA_MODE_108
+	bool "80x60 text"
+
+config FRAMEBUFFER_VESA_MODE_109
+	bool "132x25 text"
+
+config FRAMEBUFFER_VESA_MODE_10A
+	bool "132x43 text"
+
+config FRAMEBUFFER_VESA_MODE_10B
+	bool "132x50 text"
+
+config FRAMEBUFFER_VESA_MODE_10C
+	bool "132x60 text"
+
+config FRAMEBUFFER_VESA_MODE_10D
+	bool "320x200 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_10E
+	bool "320x200 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_10F
+	bool "320x200 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_110
+	bool "640x480 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_111
+	bool "640x480 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_112
+	bool "640x480 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_113
+	bool "800x600 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_114
+	bool "800x600 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_115
+	bool "800x600 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_116
+	bool "1024x768 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_117
+	bool "1024x768 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_118
+	bool "1024x768 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_119
+	bool "1280x1024 32k-color (1:5:5:5)"
+
+config FRAMEBUFFER_VESA_MODE_11A
+	bool "1280x1024 64k-color (5:6:5)"
+
+config FRAMEBUFFER_VESA_MODE_11B
+	bool "1280x1024 16.8M-color (8:8:8)"
+
+config FRAMEBUFFER_VESA_MODE_USER
+	bool "Manually select VESA mode"
+
+endchoice
+
+# Map the config names to an integer (KB).
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA mode" if FRAMEBUFFER_VESA_MODE_USER
+	hex
+	default 0x100 if FRAMEBUFFER_VESA_MODE_100
+	default 0x101 if FRAMEBUFFER_VESA_MODE_101
+	default 0x102 if FRAMEBUFFER_VESA_MODE_102
+	default 0x103 if FRAMEBUFFER_VESA_MODE_103
+	default 0x104 if FRAMEBUFFER_VESA_MODE_104
+	default 0x105 if FRAMEBUFFER_VESA_MODE_105
+	default 0x106 if FRAMEBUFFER_VESA_MODE_106
+	default 0x107 if FRAMEBUFFER_VESA_MODE_107
+	default 0x108 if FRAMEBUFFER_VESA_MODE_108
+	default 0x109 if FRAMEBUFFER_VESA_MODE_109
+	default 0x10A if FRAMEBUFFER_VESA_MODE_10A
+	default 0x10B if FRAMEBUFFER_VESA_MODE_10B
+	default 0x10C if FRAMEBUFFER_VESA_MODE_10C
+	default 0x10D if FRAMEBUFFER_VESA_MODE_10D
+	default 0x10E if FRAMEBUFFER_VESA_MODE_10E
+	default 0x10F if FRAMEBUFFER_VESA_MODE_10F
+	default 0x110 if FRAMEBUFFER_VESA_MODE_110
+	default 0x111 if FRAMEBUFFER_VESA_MODE_111
+	default 0x112 if FRAMEBUFFER_VESA_MODE_112
+	default 0x113 if FRAMEBUFFER_VESA_MODE_113
+	default 0x114 if FRAMEBUFFER_VESA_MODE_114
+	default 0x115 if FRAMEBUFFER_VESA_MODE_115
+	default 0x116 if FRAMEBUFFER_VESA_MODE_116
+	default 0x117 if FRAMEBUFFER_VESA_MODE_117
+	default 0x118 if FRAMEBUFFER_VESA_MODE_118
+	default 0x119 if FRAMEBUFFER_VESA_MODE_119
+	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
+	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
+	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
+
+config FRAMEBUFFER_KEEP_VESA_MODE
+	prompt "Keep VESA framebuffer"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a
+	  framebuffer entry in its coreboot table and the payload will need a
+	  framebuffer driver. If this option is disabled, coreboot will switch
+	  back to text mode before handing control to a payload.
+
+config BOOTSPLASH
+	prompt "Show graphical bootsplash"
+	bool
+	depends on FRAMEBUFFER_SET_VESA_MODE
+	help
+	  This option shows a graphical bootsplash screen. The grapics are
+	  loaded from the CBFS file bootsplash.jpg.
+
+config BOOTSPLASH_FILE
+	string "Bootsplash path and filename"
+	depends on BOOTSPLASH
+	default "bootsplash.jpg"
+	help
+	  The path and filename of the file to use as graphical bootsplash
+	  screen. The file format has to be jpg.
+endmenu

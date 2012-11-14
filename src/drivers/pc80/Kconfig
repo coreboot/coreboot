@@ -14,3 +14,11 @@ config DRIVERS_PS2_KEYBOARD
 	  If you know you will only use a payload which does not require
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
+
+config TPM
+	bool
+	default n
+	help
+	  Enable this option to enable TPM support in coreboot.
+
+	  If unsure, say N.

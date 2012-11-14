@@ -10,6 +10,10 @@ config UDELAY_IO
 	bool
 	default n
 
+config LIFT_BSP_APIC_ID
+	bool
+	default n
+
 config SET_FIDVID
 	bool
 	default n

@@ -76,15 +76,15 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "done.\n");
 }
 
-static int verify_copy_pirq_routing_table(unsigned long addr)
+static int verify_copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
 {
 	int i;
 	uint8_t *rt_orig, *rt_curr;
 
 	rt_curr = (uint8_t*)addr;
-	rt_orig = (uint8_t*)&intel_irq_routing_table;
+	rt_orig = (uint8_t*)routing_table;
 	printk(BIOS_INFO, "Verifying copy of Interrupt Routing Table at 0x%08lx... ", addr);
-	for (i = 0; i < intel_irq_routing_table.size; i++) {
+	for (i = 0; i < routing_table->size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk(BIOS_INFO, "failed\n");
 			return -1;
@@ -98,21 +98,20 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 }
 #endif
 
-unsigned long copy_pirq_routing_table(unsigned long addr)
+unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routing_table *routing_table)
 {
 	/* Align the table to be 16 byte aligned. */
-	addr += 15;
-	addr &= ~15;
+	addr = ALIGN(addr, 16);
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
-	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
+	memcpy((void *)addr, routing_table, routing_table->size);
 	printk(BIOS_INFO, "done.\n");
 #if CONFIG_DEBUG_PIRQ
-	verify_copy_pirq_routing_table(addr);
+	verify_copy_pirq_routing_table(addr, routing_table);
 #endif
 	pirq_route_irqs(addr);
-	return addr + intel_irq_routing_table.size;
+	return addr + routing_table->size;
 }
 
 #if CONFIG_PIRQ_ROUTE

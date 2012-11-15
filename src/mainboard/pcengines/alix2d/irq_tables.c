@@ -71,7 +71,7 @@
  * interrupt controller lines B, C and D.
  */
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
@@ -113,5 +113,5 @@ const struct irq_routing_table intel_irq_routing_table = {
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

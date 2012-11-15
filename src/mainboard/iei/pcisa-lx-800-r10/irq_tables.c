@@ -44,7 +44,7 @@
 
 #define EXCLUSIVE_PCI_IRQS (IRQ_BITMAP_LINKA | IRQ_BITMAP_LINKB | IRQ_BITMAP_LINKC | IRQ_BITMAP_LINKD)
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,		/* u16 version   */
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
@@ -292,5 +292,5 @@ const struct irq_routing_table intel_irq_routing_table = {
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
 	/* Put the PIR table in memory and checksum. */
-	return 	copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

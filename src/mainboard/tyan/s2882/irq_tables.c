@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <arch/pirq_routing.h>
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
         PIRQ_SIGNATURE, /* u32 signature */
         PIRQ_VERSION,   /* u16 version   */
         32+16*CONFIG_IRQ_SLOT_COUNT,        /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */

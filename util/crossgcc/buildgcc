@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA  02110-1335, USA
 #
 
-CROSSGCC_DATE="November 1st, 2012"
-CROSSGCC_VERSION="1.18"
+CROSSGCC_DATE="November 15th, 2012"
+CROSSGCC_VERSION="1.19"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -41,7 +41,7 @@ W32API_VERSION=3.17-2
 W32API_VERSION_SHORT=3.17
 MINGWRT_VERSION=3.20-2
 MINGWRT_VERSION_SHORT=3.20
-IASL_VERSION=20120420
+IASL_VERSION=20121114
 PYTHON_VERSION=2.7.3
 EXPAT_VERSION=2.1.0
 
@@ -597,14 +597,15 @@ if [ -f $IASL_DIR/source/compiler/.success ]; then
 else
 printf "Building IASL ${IASL_VERSION} ... "
 (
-	cd $IASL_DIR/source/compiler
+	cd $IASL_DIR/generate/unix
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
-	rm -f .failed
+	rm -f ../../source/compiler/.failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" || touch .failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
-	cp iasl $DESTDIR$TARGETDIR/bin || touch .failed
-	if [ ! -f .failed ]; then touch .success; fi
+	$MAKE CC="$CC" || touch ../../source/compiler/.failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch ../../source/compiler/.failed
+	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
+	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
+	if [ ! -f ../../source/compiler/.failed ]; then touch ../../source/compiler/.success; fi
 ) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
 test -r $IASL_DIR/source/compiler/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"

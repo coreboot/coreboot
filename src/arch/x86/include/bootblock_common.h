@@ -27,9 +27,11 @@ static void sanitize_cmos(void)
 		unsigned char *cmos_default = (unsigned char*)walkcbfs("cmos.default");
 		if (cmos_default) {
 			int i;
+			cmos_disable_rtc();
 			for (i = 14; i < 128; i++) {
 				cmos_write(cmos_default[i], i);
 			}
+			cmos_enable_rtc();
 		}
 	}
 }

@@ -110,7 +110,7 @@ static inline unsigned char cmos_read(unsigned char addr)
 	return inb(RTC_BASE_PORT + offs + 1);
 }
 
-static inline void cmos_write(unsigned char val, unsigned char addr)
+static inline void cmos_write_inner(unsigned char val, unsigned char addr)
 {
 	int offs = 0;
 	if (addr >= 128) {
@@ -119,6 +119,35 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 	}
 	outb(addr, RTC_BASE_PORT + offs + 0);
 	outb(val, RTC_BASE_PORT + offs + 1);
+}
+
+static inline void cmos_write(unsigned char val, unsigned char addr)
+{
+	u8 control_state = cmos_read(RTC_CONTROL);
+	/* There are various places where RTC bits might be hiding,
+	 * eg. the Century / AltCentury byte. So to be safe, disable
+	 * RTC before changing any value.
+	 */
+	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET)) {
+		cmos_write_inner(control_state | RTC_SET, RTC_CONTROL);
+	}
+	cmos_write_inner(val, addr);
+	/* reset to prior configuration */
+	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET)) {
+		cmos_write_inner(control_state, RTC_CONTROL);
+	}
+}
+
+static inline void cmos_disable_rtc(void)
+{
+	u8 control_state = cmos_read(RTC_CONTROL);
+	cmos_write(control_state | RTC_SET, RTC_CONTROL);
+}
+
+static inline void cmos_enable_rtc(void)
+{
+	u8 control_state = cmos_read(RTC_CONTROL);
+	cmos_write(control_state & ~RTC_SET, RTC_CONTROL);
 }
 
 static inline u32 cmos_read32(u8 offset)

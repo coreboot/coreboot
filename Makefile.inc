@@ -120,7 +120,7 @@ cbfs-files-processor-vsa= \
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
 		$(eval tmp-cbfs-method:=$(word 2, $(subst :, ,$($(2)-file)))) \
-		$(eval $(2)-file:=$(word 1, $(subst :, ,$($(2)-file)))) \
+		$(eval $(2)-file:=$(call strip_quotes,$(word 1, $(subst :, ,$($(2)-file))))) \
 		$(if $(wildcard $(1)$($(2)-file)), \
 			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
 			$(eval tmp-cbfs-file:= $($(2)-file))) \

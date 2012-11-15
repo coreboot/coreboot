@@ -1,6 +1,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 
+#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	.text
 	.globl _secondary_start, _secondary_start_end
 	.balign 4096
@@ -62,3 +63,4 @@ __ap_protected_start:
 	jmp	1b
 
 .code32
+#endif

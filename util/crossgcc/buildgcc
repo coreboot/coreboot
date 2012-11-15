@@ -119,6 +119,7 @@ MAKE=`searchgnu make` || exit $?
 
 searchgnu m4 > /dev/null
 searchgnu bison > /dev/null
+searchgnu flex > /dev/null
 
 cleanup()
 {

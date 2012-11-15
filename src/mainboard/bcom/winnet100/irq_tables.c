@@ -61,7 +61,7 @@
  * Routing description.
  * Documentation at: http://www.microsoft.com/whdc/archive/pciirq.mspx
  */
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	.signature = PIRQ_SIGNATURE,	/* PIRQ signature */
 	.version = PIRQ_VERSION,	/* PIRQ version */
 	.size = 32 +16 * CONFIG_IRQ_SLOT_COUNT,/* Max. CONFIG_IRQ_SLOT_COUNT devices */
@@ -117,5 +117,5 @@ const struct irq_routing_table intel_irq_routing_table = {
  */
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

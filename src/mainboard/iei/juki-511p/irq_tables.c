@@ -25,7 +25,7 @@
 #define IRQ_BITMAP_LINK2 0x0000		/* chipset's INTC# input should be routed to nothing (disabled) */
 #define IRQ_BITMAP_LINK3 0x0000		/* chipset's INTD# input should be routed to nothing (disabled) */
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,	 /* u32 signature */
 	PIRQ_VERSION,	 /* u16 version */
 	32+16*CONFIG_IRQ_SLOT_COUNT,	 /* There can be a total of CONFIG_IRQ_SLOT_COUNT devices on the bus */
@@ -99,5 +99,5 @@ const struct irq_routing_table intel_irq_routing_table = {
  */
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

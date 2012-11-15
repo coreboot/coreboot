@@ -48,7 +48,7 @@
 /* Bit 11 means IRQ11 is available for this cs5530 INT input. */
 #define IRQ_BITMAP_LINK3 0x0800
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	.signature = PIRQ_SIGNATURE,	/* u32 signature */
 	.version = PIRQ_VERSION,	/* u16 version   */
 	.size = 32+16*CONFIG_IRQ_SLOT_COUNT,	/* There can be total 4 devices on the bus */
@@ -210,5 +210,5 @@ const struct irq_routing_table intel_irq_routing_table = {
  **/
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

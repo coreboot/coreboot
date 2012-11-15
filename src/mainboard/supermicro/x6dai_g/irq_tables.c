@@ -2,7 +2,7 @@
 
 #include <arch/pirq_routing.h>
 
-const struct irq_routing_table intel_irq_routing_table = {
+static const struct irq_routing_table intel_irq_routing_table = {
 	0x52495024, /* u32 signature */
 	0x0100,     /* u16 version   */
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,        /* u16 Table size 32+(16*devices)  */
@@ -35,6 +35,6 @@ const struct irq_routing_table intel_irq_routing_table = {
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }
 

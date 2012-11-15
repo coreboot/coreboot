@@ -637,6 +637,7 @@ int main(int argc, char** argv) {
 				fprintf(autogen, "#include \"%s/chip.h\"\n", h->name);
 		}
 		fprintf(autogen, "\n#ifndef __PRE_RAM__\n");
+		fprintf(autogen, "__attribute__((weak)) struct chip_operations mainboard_ops = {};\n");
 		h = &headers;
 		while (h->next) {
 			h = h->next;
@@ -653,8 +654,6 @@ int main(int argc, char** argv) {
 			    "ROMSTAGE_CONST struct device * ROMSTAGE_CONST last_dev = &%s;\n", lastdev->name);
 #ifdef MAINBOARDS_HAVE_CHIP_H
 		fprintf(autogen, "static ROMSTAGE_CONST struct mainboard_config ROMSTAGE_CONST mainboard_info_0;\n");
-#else
-		fprintf(autogen, "extern struct chip_operations mainboard_ops;\n");
 #endif
 		walk_device_tree(autogen, &root, pass1, NULL);
 

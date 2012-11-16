@@ -62,7 +62,7 @@ static void model_15_init(device_t dev)
 	u8 i;
 	msr_t msr;
 	int msrno;
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 	u32 siblings;
 #endif
 
@@ -90,7 +90,7 @@ static void model_15_init(device_t dev)
 	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_slp_type == 3)
 		restore_mtrr();
 #endif
@@ -109,7 +109,7 @@ static void model_15_init(device_t dev)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {

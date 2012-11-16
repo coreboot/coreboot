@@ -36,10 +36,6 @@
 
 #define DUMP_ACPI_TABLES 0
 
-#ifndef CONFIG_LINT01_CONVERSION
-#define CONFIG_LINT01_CONVERSION 1
-#endif
-
 extern u16 pm_base;
 
 /*

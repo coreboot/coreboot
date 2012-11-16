@@ -663,7 +663,7 @@ int oprom_is_loaded = 0;
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_PCI_ROM_RUN == 1 || CONFIG_VGA_ROM_RUN == 1
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 	struct rom_header *rom, *ram;
 
 	if (CONFIG_PCI_ROM_RUN != 1 && /* Only execute VGA ROMs. */

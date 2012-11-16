@@ -266,7 +266,7 @@ void sr5650_htinit(void)
 		//set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x26);
 
 		/* HT Buffer Allocation for Ganged Links!!! */
-#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
+#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
 	}
 }
 
@@ -299,7 +299,7 @@ void fam10_optimization(void)
 }
 #else
 #define fam10_optimization() do{}while(0)
-#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
+#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY10 */
 
 /*****************************************
 * Compliant with CIM_33's ATINB_PCICFG_POR_TABLE

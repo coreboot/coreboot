@@ -47,7 +47,7 @@ u32 sbdn_sb800;
 
 static u32 get_bus_conf_done = 0;
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
 #endif
 void get_bus_conf(void)
@@ -78,7 +78,7 @@ void get_bus_conf(void)
 	 * of each of the write functions called prior to the ACPI write functions, so this
 	 * becomes the best place for this call.
 	 */
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_slp_type != 3) {
 		status = agesawrapper_amdinitlate();
 		if(status) {

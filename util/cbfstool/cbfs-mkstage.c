@@ -4,6 +4,7 @@
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *               2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +68,13 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		return -1;
 
 	if (!iself(input)) {
-		fprintf(stderr, "E:  The incoming file is not an ELF\n");
+		fprintf(stderr, "E: The stage file is not in ELF format!\n");
+		return -1;
+	}
+
+	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
+	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
+		fprintf(stderr, "E: The stage file has the wrong architecture\n");
 		return -1;
 	}
 

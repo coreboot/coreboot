@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,10 @@
 extern void *offset;
 extern uint32_t romsize;
 extern int host_bigendian;
+extern uint32_t arch;
+
+const char *arch_to_string(uint32_t a);
+uint32_t string_to_arch(const char *arch_string);
 
 static inline void *phys_to_virt(uint32_t addr)
 {

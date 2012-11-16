@@ -28,6 +28,3 @@ ramstage-y += agesawrapper.c
 ramstage-y += dimmSpd.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
-
-ramstage-y += reset.c
-ramstage-y += pmio.c

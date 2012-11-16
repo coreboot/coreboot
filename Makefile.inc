@@ -59,7 +59,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage driver smm cpu_microcode
+classes-y := ramstage romstage smm cpu_microcode
 
 romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-D__PRE_RAM__

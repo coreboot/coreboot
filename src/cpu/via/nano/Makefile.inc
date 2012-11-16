@@ -23,7 +23,7 @@ subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 
-driver-y += nano_init.c
+ramstage-y += nano_init.c
 ramstage-y += update_ucode.c
 
 # We need to hear from VIA to get permission to include this file in the

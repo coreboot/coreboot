@@ -18,7 +18,7 @@
 #
 
 ramstage-y += chip_name.c
-driver-y += model_10_init.c
+ramstage-y += model_10_init.c
 
 AGESA_ROOT = ../../../../vendorcode/amd/agesa/f10
 

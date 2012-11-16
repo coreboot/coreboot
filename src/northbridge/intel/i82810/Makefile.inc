@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += northbridge.c
+ramstage-y += northbridge.c
 
 romstage-y += raminit.c
 romstage-y += debug.c

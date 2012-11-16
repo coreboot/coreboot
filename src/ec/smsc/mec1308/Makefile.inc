@@ -1,2 +1,2 @@
-driver-y += ec.c
+ramstage-y += ec.c
 smm-y += ec.c

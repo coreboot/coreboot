@@ -20,7 +20,7 @@
 ramstage-y += reset.c
 ramstage-y += northbridge.c
 
-driver-y += agp.c
-driver-y += lpc.c
-driver-y += sata.c
-driver-y += vga.c
+ramstage-y += agp.c
+ramstage-y += lpc.c
+ramstage-y += sata.c
+ramstage-y += vga.c

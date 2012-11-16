@@ -1,5 +1,5 @@
 ramstage-y += ep80579.c
-driver-y += ep80579_init.c
+ramstage-y += ep80579_init.c
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic

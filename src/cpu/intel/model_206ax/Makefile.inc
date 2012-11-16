@@ -1,4 +1,4 @@
-driver-y += model_206ax_init.c
+ramstage-y += model_206ax_init.c
 subdirs-y += ../../x86/name
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c

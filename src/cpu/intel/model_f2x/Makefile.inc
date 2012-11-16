@@ -1,1 +1,1 @@
-driver-y += model_f2x_init.c
+ramstage-y += model_f2x_init.c

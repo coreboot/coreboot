@@ -1,1 +1,1 @@
-driver-y += rl5c476.c
+ramstage-y += rl5c476.c

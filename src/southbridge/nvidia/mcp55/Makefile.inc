@@ -1,17 +1,17 @@
-driver-y += mcp55.c
-driver-y += azalia.c
-driver-y += ht.c
-driver-y += ide.c
-driver-y += lpc.c
-driver-y += nic.c
-driver-y += pci.c
-driver-y += pcie.c
-driver-y += sata.c
-driver-y += smbus.c
-driver-y += usb2.c
-driver-y += usb.c
+ramstage-y += mcp55.c
+ramstage-y += azalia.c
+ramstage-y += ht.c
+ramstage-y += ide.c
+ramstage-y += lpc.c
+ramstage-y += nic.c
+ramstage-y += pci.c
+ramstage-y += pcie.c
+ramstage-y += sata.c
+ramstage-y += smbus.c
+ramstage-y += usb2.c
+ramstage-y += usb.c
 
-driver-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 
 ramstage-y += reset.c
 

@@ -17,16 +17,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += south.c
-driver-y += audio.c
-driver-y += lpc.c
-driver-y += ide.c
-driver-y += pcie.c
-driver-y += usb.c
-driver-y += usb_ehci.c
-driver-y += usb_client.c
-driver-y += mmc.c
-driver-y += smbus.c
+ramstage-y += south.c
+ramstage-y += audio.c
+ramstage-y += lpc.c
+ramstage-y += ide.c
+ramstage-y += pcie.c
+ramstage-y += usb.c
+ramstage-y += usb_ehci.c
+ramstage-y += usb_client.c
+ramstage-y += mmc.c
+ramstage-y += smbus.c
 
 ramstage-y += reset.c
 

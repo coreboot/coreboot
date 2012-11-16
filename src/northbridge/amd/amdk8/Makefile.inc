@@ -1,5 +1,5 @@
-driver-y += northbridge.c
-driver-y += misc_control.c
+ramstage-y += northbridge.c
+ramstage-y += misc_control.c
 ramstage-y += get_sblk_pci1234.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 

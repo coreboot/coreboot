@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += vt8235.c
-driver-y += ide.c
-driver-y += lpc.c
-driver-y += nic.c
-driver-y += usb.c
+ramstage-y += vt8235.c
+ramstage-y += ide.c
+ramstage-y += lpc.c
+ramstage-y += nic.c
+ramstage-y += usb.c

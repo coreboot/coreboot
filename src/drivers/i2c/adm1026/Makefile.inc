@@ -1,1 +1,1 @@
-driver-$(CONFIG_DRIVERS_I2C_ADM1026) += adm1026.c
+ramstage-$(CONFIG_DRIVERS_I2C_ADM1026) += adm1026.c

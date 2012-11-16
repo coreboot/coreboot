@@ -17,8 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-driver-y += northbridge.c
-driver-y += gma.c
+ramstage-y += northbridge.c
+ramstage-y += gma.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 
 romstage-y += udelay.c

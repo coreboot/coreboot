@@ -1,1 +1,1 @@
-driver-y += bridge.c
+ramstage-y += bridge.c

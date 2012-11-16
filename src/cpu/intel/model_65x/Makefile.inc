@@ -18,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += model_65x_init.c
+ramstage-y += model_65x_init.c
 

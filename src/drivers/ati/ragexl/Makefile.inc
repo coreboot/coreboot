@@ -1,1 +1,1 @@
-driver-$(CONFIG_DRIVERS_ATI_RAGEXL) += xlinit.c
+ramstage-$(CONFIG_DRIVERS_ATI_RAGEXL) += xlinit.c

@@ -19,13 +19,13 @@
 ## MA 02110-1301 USA
 ##
 
-driver-y += i82801dx.c
-driver-y += ac97.c
-driver-y += ide.c
-driver-y += lpc.c
-#driver-y += pci.c
-driver-y += usb.c
-driver-y += usb2.c
+ramstage-y += i82801dx.c
+ramstage-y += ac97.c
+ramstage-y += ide.c
+ramstage-y += lpc.c
+#ramstage-y += pci.c
+ramstage-y += usb.c
+ramstage-y += usb2.c
 
 ramstage-y += reset.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c

@@ -1,1 +1,1 @@
-driver-$(CONFIG_IPMI_KCS) += ipmi_kcs.c
+ramstage-$(CONFIG_IPMI_KCS) += ipmi_kcs.c

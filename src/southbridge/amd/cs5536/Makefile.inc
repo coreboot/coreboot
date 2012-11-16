@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += cs5536.c
-driver-y += ide.c
-driver-y += pirq.c
-driver-y += smbus.c
+ramstage-y += cs5536.c
+ramstage-y += ide.c
+ramstage-y += pirq.c
+ramstage-y += smbus.c
 romstage-y += smbus.c

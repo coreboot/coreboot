@@ -1,1 +1,1 @@
-driver-$(CONFIG_DRIVERS_I2C_ADT7463) += adt7463.c
+ramstage-$(CONFIG_DRIVERS_I2C_ADT7463) += adt7463.c

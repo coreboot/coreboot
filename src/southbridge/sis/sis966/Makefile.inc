@@ -1,13 +1,13 @@
-driver-y += sis761.c
-driver-y += sis966.c
-driver-y += lpc.c
-driver-y += ide.c
-driver-y += usb.c
-driver-y += usb2.c
-driver-y += nic.c
-driver-y += sata.c
-driver-y += pcie.c
-driver-y += aza.c
+ramstage-y += sis761.c
+ramstage-y += sis966.c
+ramstage-y += lpc.c
+ramstage-y += ide.c
+ramstage-y += usb.c
+ramstage-y += usb2.c
+ramstage-y += nic.c
+ramstage-y += sata.c
+ramstage-y += pcie.c
+ramstage-y += aza.c
 ramstage-y += reset.c
 
 romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c

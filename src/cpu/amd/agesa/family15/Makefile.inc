@@ -26,5 +26,5 @@ subdirs-y += ../../../x86/pae
 subdirs-y += ../../../x86/smm
 
 ramstage-y += chip_name.c
-driver-y += model_15_init.c
+ramstage-y += model_15_init.c
 

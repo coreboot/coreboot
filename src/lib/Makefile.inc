@@ -52,7 +52,7 @@ ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-driver-$(CONFIG_CONSOLE_NE2K) += ne2k.c
+ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 smm-y += memset.c

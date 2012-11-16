@@ -1,2 +1,2 @@
-driver-y += 21143.c
+ramstage-y += 21143.c
 

@@ -1,1 +1,1 @@
-driver-y += h8.c
+ramstage-y += h8.c

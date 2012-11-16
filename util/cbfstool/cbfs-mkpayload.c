@@ -35,7 +35,7 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			 comp_algo algo)
 {
 	Elf32_Phdr *phdr;
-	Elf32_Ehdr *ehdr;
+	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
 	Elf32_Shdr *shdr;
 	char *header;
 	char *strtab;
@@ -48,16 +48,20 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	int i;
 
 	if(!iself(input)){
-		printf("Fatal error: the payload file is not in ELF format!\n");
-		exit(1);
+		fprintf(stderr, "E: The payload file is not in ELF format!\n");
+		return -1;
 	}
 
+	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
+	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
+		fprintf(stderr, "E: The payload file has the wrong architecture\n");
+		return -1;
+	}
 
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
 		return -1;
 
-	ehdr = (Elf32_Ehdr *) input;
 	headers = ehdr->e_phnum;
 	header = (char *)ehdr;
 

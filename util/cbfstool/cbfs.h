@@ -21,6 +21,12 @@
 
 #include <stdint.h>
 
+#define CBFS_HEADER_MAGIC  0x4F524243
+#define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
+#define VERSION1 0x31313131
+#define VERSION2 0x31313132
+#define VERSION  VERSION2
+
 struct cbfs_header {
 	uint32_t magic;
 	uint32_t version;
@@ -28,8 +34,13 @@ struct cbfs_header {
 	uint32_t bootblocksize;
 	uint32_t align;
 	uint32_t offset;
-	uint32_t pad[2];
+	uint32_t architecture;	/* Version 2 */
+	uint32_t pad[1];
 } __attribute__ ((packed));
+
+#define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
+#define CBFS_ARCHITECTURE_X86      0x00000001
+#define CBFS_ARCHITECTURE_ARMV7    0x00000010
 
 struct cbfs_file {
 	uint8_t magic[8];
@@ -94,7 +105,7 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
-int cbfs_file_header(uint32_t physaddr);
+int cbfs_file_header(unsigned long physaddr);
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
 
 #endif

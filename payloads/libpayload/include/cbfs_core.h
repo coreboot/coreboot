@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
+ * Copyright (C) 2012 Google, Inc.
  *
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation
@@ -76,13 +77,17 @@
 
 /** this is the master cbfs header - it need to be
     located somewhere in the bootblock.  Where it
-    actually lives is up to coreboot. A pointer to
-    this header will live at 0xFFFFFFFc, so we can
-    easily find it. */
+    actually lives is up to coreboot. On x86, a
+    pointer to this header will live at 0xFFFFFFFC,
+    so we can easily find it. */
 
 #define CBFS_HEADER_MAGIC  0x4F524243
-#define CBFS_HEADPTR_ADDR 0xFFFFFFFc
+#if CONFIG_ARCH_X86
+#define CBFS_HEADPTR_ADDR 0xFFFFFFFC
+#endif
 #define VERSION1 0x31313131
+#define VERSION2 0x31313132
+#define VERSION  VERSION2
 
 struct cbfs_header {
 	uint32_t magic;
@@ -91,8 +96,16 @@ struct cbfs_header {
 	uint32_t bootblocksize;
 	uint32_t align;
 	uint32_t offset;
-	uint32_t pad[2];
+	uint32_t architecture;
+	uint32_t pad[1];
 } __attribute__((packed));
+
+/* "Unknown" refers to CBFS headers version 1,
+ * before the architecture was defined (i.e., x86 only).
+ */
+#define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
+#define CBFS_ARCHITECTURE_X86      0x00000001
+#define CBFS_ARCHITECTURE_ARMV7    0x00000010
 
 /** This is a component header - every entry in the CBFS
     will have this header.
@@ -178,4 +191,3 @@ void *cbfs_find_file(const char *name, int type);
 int cbfs_decompress(int algo, void *src, void *dst, int len);
 struct cbfs_header *get_cbfs_header(void);
 #endif
-

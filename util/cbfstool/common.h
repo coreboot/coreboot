@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,21 @@
 extern void *offset;
 extern uint32_t romsize;
 extern int host_bigendian;
+
+typedef enum {
+	ARCH_NONE,
+	ARCH_ARM,
+	ARCH_X86,
+} arch_t;
+extern arch_t arch;
+
+struct arch_name {
+	arch_t arch;
+	const char *name;
+};
+extern struct arch_name arch_names[];
+const char *arch_to_string(arch_t a);
+arch_t string_to_arch(const char *arch_string);
 
 static inline void *phys_to_virt(uint32_t addr)
 {

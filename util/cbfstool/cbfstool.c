@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,7 @@ static char *cbfs_name = NULL;
 static char *rom_name = NULL;
 static char *rom_filename = NULL;
 static char *rom_bootblock = NULL;
+static char *arch_string = NULL;
 static uint32_t rom_type = 0;
 static uint32_t rom_baseaddress = 0;
 static uint32_t rom_loadaddress = 0;
@@ -372,6 +374,17 @@ static int cbfs_create(void)
 		return 1;
 	}
 
+	if (!arch_string) {
+		printf("You need to specify a -m/machine architecture.\n");
+		return 1;
+	}
+
+	arch = string_to_arch(arch_string);
+	if (arch == ARCH_NONE) {
+		printf("Invalid architecture specified: %s\n", arch_string);
+		return 1;
+	}
+
 	return create_cbfs_image(cbfs_name, rom_size, rom_bootblock,
 						rom_alignment, rom_offset);
 }
@@ -450,7 +463,7 @@ static const struct command commands[] = {
 	{"add-stage", "f:n:t:c:b:h?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:h?", cbfs_add_flat_binary},
 	{"remove", "n:h?", cbfs_remove},
-	{"create", "s:B:a:o:h?", cbfs_create},
+	{"create", "s:B:a:o:m:h?", cbfs_create},
 	{"locate", "f:n:a:h?", cbfs_locate},
 	{"print", "h?", cbfs_print},
 	{"extract", "n:f:h?", cbfs_extract},
@@ -468,6 +481,7 @@ static struct option long_options[] = {
 	{"alignment",    required_argument, 0, 'a' },
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
+	{"arch",         required_argument, 0, 'm' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },
 	{NULL,           0,                 0,  0  }
@@ -492,7 +506,7 @@ static void usage(char *name)
 			"Add a 32bit flat mode binary\n"
 	     " remove -n NAME                                            "
 			"Remove a component\n"
-	     " create -s size -B bootblock [-a align] [-o offset]        "
+	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]"
 			"Create a ROM file\n"
 	     " locate -f FILE -n NAME -a align                           "
 			"Find a place for a file of that size\n"
@@ -501,7 +515,9 @@ static void usage(char *name)
 	     " extract -n NAME -f FILE                                   "
 			"Extracts a raw payload from ROM\n"
 	     "\n"
-	     "TYPEs:\n", name, name
+	     "TYPEs:\n", name, name,
+	     "ARCHes:\n",
+	     " arm, x86\n"
 	    );
 	print_supported_filetypes();
 }
@@ -609,6 +625,9 @@ int main(int argc, char **argv)
 				break;
 			case 'v':
 				verbose++;
+				break;
+			case 'm':
+				arch_string = strdup(optarg);
 				break;
 			case 'h':
 			case '?':

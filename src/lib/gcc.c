@@ -22,10 +22,21 @@
  * compiler call specifies. Therefore we need a wrapper around those
  * functions. See gcc bug PR41055 for more information.
  */
+
+#if CONFIG_ARCH_X86
 #define WRAP_LIBGCC_CALL(type, name) \
 	type __real_##name(type a, type b) __attribute__((regparm(0))); \
 	type __wrap_##name(type a, type b); \
 	type __wrap_##name(type a, type b) { return __real_##name(a, b); }
+#elif CONFIG_ARCH_ARM
+#define WRAP_LIBGCC_CALL(type, name) \
+	type __real_##name(type a, type b); \
+	type __wrap_##name(type a, type b); \
+	type __wrap_##name(type a, type b) { return __real_##name(a, b); }
+#else
+#error Architecture unsupported.
+#endif
+
 
 WRAP_LIBGCC_CALL(long long, __divdi3)
 WRAP_LIBGCC_CALL(unsigned long long, __udivdi3)

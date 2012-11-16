@@ -22,16 +22,16 @@
 # image outside of CBFS
 INTERMEDIATE+=bd82x6x_add_me
 
-driver-y += pch.c
-driver-y += azalia.c
-driver-y += lpc.c
-driver-y += pci.c
-driver-y += pcie.c
-driver-y += sata.c
-driver-y += usb_ehci.c
-driver-y += me.c
-driver-y += me_8.x.c
-driver-y += smbus.c
+ramstage-y += pch.c
+ramstage-y += azalia.c
+ramstage-y += lpc.c
+ramstage-y += pci.c
+ramstage-y += pcie.c
+ramstage-y += sata.c
+ramstage-y += usb_ehci.c
+ramstage-y += me.c
+ramstage-y += me_8.x.c
+ramstage-y += smbus.c
 
 ramstage-y += me_status.c
 ramstage-y += reset.c

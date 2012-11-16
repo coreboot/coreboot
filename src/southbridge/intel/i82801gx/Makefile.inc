@@ -17,18 +17,18 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += i82801gx.c
-driver-y += ac97.c
-driver-y += azalia.c
-driver-y += ide.c
-driver-y += lpc.c
-driver-y += nic.c
-driver-y += pci.c
-driver-y += pcie.c
-driver-y += sata.c
-driver-y += smbus.c
-driver-y += usb.c
-driver-y += usb_ehci.c
+ramstage-y += i82801gx.c
+ramstage-y += ac97.c
+ramstage-y += azalia.c
+ramstage-y += ide.c
+ramstage-y += lpc.c
+ramstage-y += nic.c
+ramstage-y += pci.c
+ramstage-y += pcie.c
+ramstage-y += sata.c
+ramstage-y += smbus.c
+ramstage-y += usb.c
+ramstage-y += usb_ehci.c
 
 ramstage-y += reset.c
 ramstage-y += watchdog.c

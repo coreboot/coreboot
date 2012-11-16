@@ -25,7 +25,7 @@ romstage-y += smbus.c
 
 ramstage-y += late.c
 
-driver-y   += smbus.c
-driver-y   += lpc.c
+ramstage-y   += smbus.c
+ramstage-y   += lpc.c
 
 

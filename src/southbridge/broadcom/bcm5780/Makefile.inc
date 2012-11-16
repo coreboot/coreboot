@@ -1,3 +1,3 @@
-driver-y += nic.c
-driver-y += pcix.c
-driver-y += pcie.c
+ramstage-y += nic.c
+ramstage-y += pcix.c
+ramstage-y += pcie.c

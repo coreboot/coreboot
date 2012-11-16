@@ -14,12 +14,12 @@ romstage-$(CONFIG_CACHE_AS_RAM) += console.c
 romstage-y += post.c
 romstage-y += die.c
 
-driver-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.c
-driver-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem_console.c
-driver-$(CONFIG_USBDEBUG) += usbdebug_console.c
-driver-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.c
-driver-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
-driver-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.c
+ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem_console.c
+ramstage-$(CONFIG_USBDEBUG) += usbdebug_console.c
+ramstage-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.c
+ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
+ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h

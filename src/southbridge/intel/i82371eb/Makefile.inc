@@ -18,15 +18,15 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y +=  i82371eb.c
-driver-y +=  isa.c
-driver-y +=  ide.c
-driver-y +=  usb.c
-driver-y +=  smbus.c
-driver-y +=  reset.c
-driver-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
-driver-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.c
-driver-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
+ramstage-y +=  i82371eb.c
+ramstage-y +=  isa.c
+ramstage-y +=  ide.c
+ramstage-y +=  usb.c
+ramstage-y +=  smbus.c
+ramstage-y +=  reset.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
 
 romstage-y += early_pm.c
 romstage-y += early_smbus.c

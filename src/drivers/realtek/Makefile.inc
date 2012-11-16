@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-$(CONFIG_RTL8168_ROM_DISABLE) += rtl8168.c
+ramstage-$(CONFIG_RTL8168_ROM_DISABLE) += rtl8168.c

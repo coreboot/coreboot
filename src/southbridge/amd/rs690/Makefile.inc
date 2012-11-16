@@ -1,5 +1,5 @@
-driver-y += rs690.c
-driver-y += cmn.c
-driver-y += pcie.c
-driver-y += ht.c
-driver-y += gfx.c
+ramstage-y += rs690.c
+ramstage-y += cmn.c
+ramstage-y += pcie.c
+ramstage-y += ht.c
+ramstage-y += gfx.c

@@ -1,1 +1,1 @@
-driver-y += agp3.c
+ramstage-y += agp3.c

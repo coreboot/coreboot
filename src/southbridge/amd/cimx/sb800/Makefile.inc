@@ -30,8 +30,8 @@ ramstage-y += late.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 
-driver-y   += smbus.c
-driver-y   += lpc.c
+ramstage-y   += smbus.c
+ramstage-y   += lpc.c
 
 ifeq ($(CONFIG_SB800_SATA_AHCI), y)
 ifdef CONFIG_SB800_AHCI_ROM

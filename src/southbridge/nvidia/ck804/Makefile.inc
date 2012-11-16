@@ -1,15 +1,15 @@
-driver-y += ck804.c
-driver-y += usb.c
-driver-y += lpc.c
-driver-y += smbus.c
-driver-y += ide.c
-driver-y += sata.c
-driver-y += usb2.c
-driver-y += ac97.c
-driver-y += nic.c
-driver-y += pci.c
-driver-y += pcie.c
-driver-y += ht.c
+ramstage-y += ck804.c
+ramstage-y += usb.c
+ramstage-y += lpc.c
+ramstage-y += smbus.c
+ramstage-y += ide.c
+ramstage-y += sata.c
+ramstage-y += usb2.c
+ramstage-y += ac97.c
+ramstage-y += nic.c
+ramstage-y += pci.c
+ramstage-y += pcie.c
+ramstage-y += ht.c
 
 ramstage-y += reset.c
 

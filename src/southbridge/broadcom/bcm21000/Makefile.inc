@@ -1,1 +1,1 @@
-driver-y += pcie.c
+ramstage-y += pcie.c

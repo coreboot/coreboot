@@ -1,3 +1,3 @@
-driver-y += ioapic.c
-driver-y += pcibridge.c
-#driver-y += pci_parity.c
+ramstage-y += ioapic.c
+ramstage-y += pcibridge.c
+#ramstage-y += pci_parity.c

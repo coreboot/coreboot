@@ -41,7 +41,8 @@ struct cbheader {
 	u32 bootblocksize;
 	u32 align;
 	u32 offset;
-	u32 pad[2];
+	u32 architecture;
+	u32 pad[1];
 } __attribute__ ((packed));
 
 struct cbfile {

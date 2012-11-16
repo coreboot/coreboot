@@ -4,7 +4,7 @@ config SERIAL_CPU_INIT
 
 config UDELAY_IO
 	bool
-	default y if !UDELAY_LAPIC && !UDELAY_TSC
+	default y if !UDELAY_LAPIC && !UDELAY_TSC && !UDELAY_TIMER2
 	default n
 
 config UDELAY_LAPIC

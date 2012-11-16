@@ -76,8 +76,8 @@ endif
 
 HOSTCC = gcc
 HOSTCXX = g++
-HOSTCFLAGS := -g
-HOSTCXXFLAGS := -g
+HOSTCFLAGS := -I$(srck) -I$(objk) -g
+HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen

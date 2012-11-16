@@ -36,6 +36,16 @@ program_exists() {
 	type "$1" >/dev/null 2>&1
 }
 
+find_gnu_make() {
+	for make in make gmake gnumake; do
+		if [ "$($make --version 2>/dev/null | grep -c GNU)" -gt 0 ]
+		then
+			echo "$make"
+			return
+		fi
+	done
+}
+
 testcc() {
 	local tmp_c="$TMPFILE.c"
 	local tmp_o="$TMPFILE.o"

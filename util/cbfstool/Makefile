@@ -1,7 +1,7 @@
 obj ?= $(shell pwd)
 
-HOSTCXX  ?= g++
-HOSTCC   ?= gcc
+HOSTCXX  ?= $(CROSS_COMPILE)g++
+HOSTCC   ?= $(CROSS_COMPILE)gcc
 CFLAGS   ?= -g -Wall
 CFLAGS   += -D_7ZIP_ST
 

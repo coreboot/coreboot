@@ -123,6 +123,11 @@ cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash
 
+additional_option_rom = $(call strip_quotes,$(CONFIG_ADDL_OPTION_ROM_FILE_OUT))
+cbfs-files-$(CONFIG_ADDL_OPTION_ROM) += $(additional_option_rom)
+$(additional_option_rom)-file := $(call strip_quotes,$(CONFIG_ADDL_OPTION_ROM_FILE_IN))
+$(additional_option_rom)-type := optionrom
+
 ################################################################################
 # i386 specific tools
 NVRAMTOOL:=$(objutil)/nvramtool/nvramtool

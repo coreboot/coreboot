@@ -79,7 +79,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
@@ -89,7 +89,7 @@ int acpi_get_sleep_type(void)
 }
 #endif
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_is_wakeup_early(void)
 {
 	return (acpi_get_sleep_type() == 3);

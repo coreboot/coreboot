@@ -492,4 +492,4 @@ static const struct pci_driver vga_pci_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_CYRIX_5530_VIDEO,
 };
 
-#endif /* #if CONFIG_GX1_VIDEO == 1 */
+#endif /* #if CONFIG_GX1_VIDEO */

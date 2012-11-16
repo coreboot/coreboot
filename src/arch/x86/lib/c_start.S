@@ -82,7 +82,7 @@ _start:
 	/* Restore the stack location */
 	movl	%ebp, %esp
 
-#if CONFIG_GDB_WAIT == 1
+#if CONFIG_GDB_WAIT
 	call gdb_stub_breakpoint
 #endif
 	/* The boot_complete flag has already been pushed */
@@ -235,7 +235,7 @@ int_hand:
 
 	iret
 
-#if CONFIG_GDB_WAIT == 1
+#if CONFIG_GDB_WAIT
 
 	.globl gdb_stub_breakpoint
 gdb_stub_breakpoint:

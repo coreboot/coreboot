@@ -202,7 +202,7 @@ CONST MANUAL_BUID_SWAP_LIST ROMDATA s8226_manual_swaplist[2] =
 	}
 };
 
-#if CONFIG_HT3_SUPPORT == 1
+#if CONFIG_HT3_SUPPORT
 /**
  * The socket and link match values are platform specific
  *
@@ -439,10 +439,10 @@ CONST AP_MTRR_SETTINGS ROMDATA s8226_ap_mtrr_list[] =
 #define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
 
 /*
-#if (CONFIG_CPU_AMD_AGESA_FAMILY15 == 1)
+#if CONFIG_CPU_AMD_AGESA_FAMILY15
   #define BLDOPT_REMOVE_FAMILY_10_SUPPORT         TRUE
 #endif
-#if (CONFIG_CPU_AMD_AGESA_FAMILY10 == 1)
+#if CONFIG_CPU_AMD_AGESA_FAMILY10
   #define BLDOPT_REMOVE_FAMILY_15_SUPPORT         TRUE
 #endif
 */

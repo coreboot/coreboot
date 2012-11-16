@@ -30,7 +30,7 @@
 #include "hudson.h"
 #include "smbus.h"
 
-#if CONFIG_HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);

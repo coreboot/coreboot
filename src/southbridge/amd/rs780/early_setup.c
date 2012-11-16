@@ -147,7 +147,7 @@ static u8 is_famly10(void)
 	return (cpuid_eax(1) & 0xff00000) != 0;
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 static u8 l3_cache(void)
 {
 	return (cpuid_edx(0x80000006) & (0x3FFF << 18)) != 0;
@@ -246,7 +246,7 @@ static void rs780_htinit(void)
 	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
 		printk(BIOS_INFO, "rs780_htinit: HT3 mode\n");
 
-		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
+		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 		/* HT3 mode, RPR 8.4.3 */
 		set_nbcfg_enable_bits(rs780_f0, 0x9c, 0x3 << 16, 0);
 
@@ -282,11 +282,11 @@ static void rs780_htinit(void)
 		/* Sets Training 0 Time. See T0Time table for encodings */
 		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x20);
 		/* TODO: */
-		#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
+		#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 	}
 }
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1		/* save some spaces */
+#if !CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 /*******************************************************
 * Optimize k8 with UMA.
 * See BKDG_NPT_0F guide for details.
@@ -340,9 +340,9 @@ static void k8_optimization(void)
 }
 #else
 #define k8_optimization() do{}while(0)
-#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1 */
+#endif	/* !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
-#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 static void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
@@ -405,7 +405,7 @@ static void fam10_optimization(void)
 }
 #else
 #define fam10_optimization() do{}while(0)
-#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
+#endif	/* CONFIG_NORTHBRIDGE_AMD_AMDFAM10 */
 
 /*****************************************
 * rs780_por_pcicfg_init()

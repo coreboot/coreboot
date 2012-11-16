@@ -28,6 +28,7 @@
 #include "BiosCallOuts.h"
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/amd/mtrr.h>
+#include "SBPLATFORM.h"
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
@@ -63,6 +64,15 @@ static void persimmon_enable(device_t dev)
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = acpi_get_sleep_type();
 #endif
+
+	/* enable GPP CLK0 thru CLK1 */
+	/* disable GPP CLK2 thru SLT_GFX_CLK */
+	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
+	*(misc_mem_clk_cntrl + 0) = 0xFF;
+	*(misc_mem_clk_cntrl + 1) = 0x00;
+	*(misc_mem_clk_cntrl + 2) = 0x00;
+	*(misc_mem_clk_cntrl + 3) = 0x00;
+	*(misc_mem_clk_cntrl + 4) = 0x00;
 }
 
 struct chip_operations mainboard_ops = {

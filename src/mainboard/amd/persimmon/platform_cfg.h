@@ -90,7 +90,7 @@
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
-#define PCI_CLOCK_CTRL			0x1F
+#define PCI_CLOCK_CTRL			0x07
 
 /**
  * @def SATA_CONTROLLER

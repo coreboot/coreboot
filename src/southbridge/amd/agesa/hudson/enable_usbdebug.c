@@ -45,8 +45,10 @@ void set_debug_port(unsigned int port)
 
 void enable_usbdebug(unsigned int port)
 {
-	pci_write_config32(PCI_DEV(0, HUDSON_DEVN_BASE + 0x13, 5),
+	outb(0xEF, 0xCD6);
+	outb(0x7F, 0xCD7);
+	pci_write_config32(PCI_DEV(0, HUDSON_DEVN_BASE + 0x12, 2),
 			   EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, HUDSON_DEVN_BASE + 0x13, 5), 0x04, 0x2);	/* mem space enabe */
+	pci_write_config8(PCI_DEV(0, HUDSON_DEVN_BASE + 0x12, 2), 0x04, 0x6);	/* mem space enabe */
 	set_debug_port(port);
 }

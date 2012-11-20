@@ -590,6 +590,11 @@ uhci_poll_intr_queue (void *q_)
 		q->lastread = (q->lastread + 1) % q->total;
 		return &q->data[current*q->reqsize];
 	}
+	/* reset queue if we fully processed it after underrun */
+	else if (q->qh->elementlinkptr & FLISTP_TERMINATE) {
+		usb_debug("resetting underrun uhci interrupt queue.\n");
+		q->qh->elementlinkptr = virt_to_phys(q->tds + q->lastread);
+	}
 	return NULL;
 }
 

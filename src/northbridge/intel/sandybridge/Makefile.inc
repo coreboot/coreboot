@@ -23,7 +23,6 @@ driver-y += gma.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-y += mrccache.c
 
-romstage-y += udelay.c
 romstage-y += raminit.c
 romstage-y += mrccache.c
 romstage-y += early_init.c

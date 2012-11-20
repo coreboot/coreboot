@@ -98,8 +98,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		DIMM1, DIMM3, 0, 0,	/* Channel B (DIMM_B1, DIMM_B2) */
 	};
 
-	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
-		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = &sysinfo_car;
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;
 

@@ -15,10 +15,6 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x0
-
 # FIXME MAX_PHYSICAL_CPUS should move to AMD specific code, or better
 # yet be dropped completely.
 config MAX_PHYSICAL_CPUS

@@ -518,6 +518,10 @@ struct sys_info {
 	uint32_t sbbusn;
 } __attribute__((packed));
 
+#ifdef __PRE_RAM__
+extern struct sys_info sysinfo_car;
+#endif
+
 #include <reset.h>
 
 #if ((CONFIG_MEM_TRAIN_SEQ != 1) && defined(__PRE_RAM__)) || \

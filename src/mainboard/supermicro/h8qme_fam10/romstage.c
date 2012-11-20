@@ -160,8 +160,7 @@ static void write_GPIO(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
-		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = &sysinfo_car;
 	u32 bsp_apicid = 0, val, wants_reset;
 	msr_t msr;
 

@@ -2089,7 +2089,7 @@ static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if(coreid) return; // only do it on core0
-	struct sys_info *sysinfox = (void*)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfox = (void *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {
@@ -2100,7 +2100,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
 		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
 	#else
-		memcpy(sysinfo, sysinfox, CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+		memcpy(sysinfo, sysinfox, sizeof(*sysinfo));
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
 	#if !CONFIG_AP_CODE_IN_CAR

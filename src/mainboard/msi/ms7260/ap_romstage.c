@@ -49,10 +49,8 @@
 
 void hardwaremain(int ret_addr)
 {
-	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE -
-				    CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); /* in CACHE */
-	struct sys_info *sysinfox = ((CONFIG_RAMTOP) -
-				     CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); /* in RAM */
+	struct sys_info *sysinfo = &sysinfo_car; /* in CACHE */
+	struct sys_info *sysinfox = ((CONFIG_RAMTOP) - sizeof(*sysinfox)); /* in RAM */
 	struct node_core_id id;
 
 	id = get_node_core_id_x();

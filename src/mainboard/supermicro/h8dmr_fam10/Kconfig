@@ -33,10 +33,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
 
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x04000
-
 config RAMBASE
 	hex
 	default 0x200000

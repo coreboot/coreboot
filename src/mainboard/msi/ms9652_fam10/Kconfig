@@ -35,10 +35,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
 
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x04000
-
 # Define to 0 because the IRQ slot count is
 # determined dynamically for this board.
 config IRQ_SLOT_COUNT

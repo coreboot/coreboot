@@ -30,10 +30,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x4000
 
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x1000
-
 config APIC_ID_OFFSET
 	hex
 	default 0x10

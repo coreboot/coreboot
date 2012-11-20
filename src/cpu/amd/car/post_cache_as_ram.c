@@ -164,12 +164,6 @@ static void post_cache_as_ram(void)
 
 	set_sysinfo_in_ram(1); // So other core0 could start to train mem
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
-//	struct sys_info *sysinfox = ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-
-	// wait for ap memory to trained
-//	wait_all_core0_mem_trained(sysinfox); // moved to lapic_init_cpus.c
-#endif
 	/*copy and execute coreboot_ram */
 	copy_and_run(0);
 	/* We will not return */

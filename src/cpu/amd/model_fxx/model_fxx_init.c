@@ -32,7 +32,7 @@
 void cpus_ready_for_init(void)
 {
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
         // wait for ap memory to trained
         wait_all_core0_mem_trained(sysinfox);
 #endif

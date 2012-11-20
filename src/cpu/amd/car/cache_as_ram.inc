@@ -25,9 +25,6 @@
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		(0xd0000 - CacheSize)
 
-/* Leave some space for global variable to pass to RAM stage. */
-#define GlobalVarSize		CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
-
 /* For CAR with Fam10h. */
 #define CacheSizeAPStack	0x400 /* 1K */
 
@@ -348,7 +345,7 @@ fam10_end_part1:
 	rep	stosl
 
 	/* Set up the stack pointer. */
-	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax
+	movl	$(CacheBase + CacheSize), %eax
 	movl	%eax, %esp
 
 	post_code(0xa3)
@@ -358,7 +355,7 @@ CAR_FAM10_ap:
 	/*
 	 * Need to set stack pointer for AP.
 	 * It will be from:
-	 *   CacheBase + (CacheSize - GlobalVarSize) / 2
+	 *   CacheBase + CacheSize / 2
 	 *   - (NodeID << CoreIDbits + CoreID) * CacheSizeAPStack
 	 * So need to get the NodeID and CoreID at first.
 	 * If NB_CFG bit 54 is set just use initial APIC ID, otherwise need
@@ -392,7 +389,7 @@ roll_cfg:
 	/* Calculate stack pointer. */
 	movl	$CacheSizeAPStack, %eax
 	mull	%ebx
-	movl	$(CacheBase + (CacheSize - GlobalVarSize) / 2), %esp
+	movl	$(CacheBase + CacheSize / 2), %esp
 	subl	%eax, %esp
 
 	/* Retrive init detected. */

@@ -18,10 +18,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
 
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x04000
-
 config UDELAY_IO
 	bool
 	default n

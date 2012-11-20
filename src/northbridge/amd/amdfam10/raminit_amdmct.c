@@ -120,6 +120,9 @@ static  void print_t(const char *strval)
 
 #endif	/* DDR2 */
 
+#include <cpu/x86/car.h>
+struct sys_info sysinfo_car CAR_GLOBAL;
+
 int mctRead_SPD(u32 smaddr, u32 reg)
 {
 	return spd_read_byte(smaddr, reg);
@@ -128,7 +131,7 @@ int mctRead_SPD(u32 smaddr, u32 reg)
 
 void mctSMBhub_Init(u32 node)
 {
-	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = &sysinfo_car;
 	struct mem_controller *ctrl = &( sysinfo->ctrl[node] );
 	activate_spd_rom(ctrl);
 }
@@ -137,7 +140,7 @@ void mctSMBhub_Init(u32 node)
 void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node)
 {
 	int j;
-	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = &sysinfo_car;
 	struct mem_controller *ctrl = &( sysinfo->ctrl[node] );
 
 	for(j=0;j<DIMM_SOCKETS;j++) {

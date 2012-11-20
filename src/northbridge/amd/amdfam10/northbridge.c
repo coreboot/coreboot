@@ -773,7 +773,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 	u32 hole_sizek;
 
 	u32 one_DCT;
-	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox)); // in RAM
 	struct mem_info *meminfo;
 	meminfo = &sysinfox->meminfo[node_id];
 
@@ -1056,7 +1056,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 				#if !CONFIG_AMDMCT
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 				if(reset_memhole) {
-					struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
+					struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox)); // in RAM
 					struct mem_info *meminfo;
 					meminfo = &sysinfox->meminfo[i];
 					sizek += hoist_memory(mmio_basek,i, get_one_DCT(meminfo), sysconf.nodes);

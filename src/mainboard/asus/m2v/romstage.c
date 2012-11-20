@@ -231,8 +231,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
-	struct sys_info *sysinfo =
-	    (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = &sysinfo_car;
 
 	it8712f_24mhz_clkin();
 	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

@@ -1098,6 +1098,10 @@ struct sys_info {
 
 } __attribute__((packed));
 
+#ifdef __PRE_RAM__
+extern struct sys_info sysinfo_car;
+#endif
+
 #ifndef __PRE_RAM__
 device_t get_node_pci(u32 nodeid, u32 fn);
 #endif

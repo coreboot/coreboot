@@ -119,7 +119,11 @@ MAKE=`searchgnu make` || exit $?
 
 searchgnu m4 > /dev/null
 searchgnu bison > /dev/null
-searchgnu flex > /dev/null
+
+if ! flex --version > /dev/null 2> /dev/null; then
+	printf "${RED}ERROR:${red} Missing toolchain: flex${NC}\n" >&2
+	exit 1
+fi
 
 cleanup()
 {

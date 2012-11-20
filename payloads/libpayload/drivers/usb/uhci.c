@@ -517,11 +517,27 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 		data += reqsize;
 	}
 	tds[reqcount - 1].ptr = 0 | TD_TERMINATE;
-	for (i = reqtiming; i < 1024; i += reqtiming) {
-		/* FIXME: wrap in another qh, one for each occurance of the qh in the framelist */
-		qh->headlinkptr = UHCI_INST (ep->dev->controller)->framelistptr[i] & ~FLISTP_TERMINATE;
-		UHCI_INST (ep->dev->controller)->framelistptr[i] = virt_to_phys(qh) | FLISTP_QH;
+
+	/* insert QH into framelist */
+	uhci_t *const uhcic = UHCI_INST(ep->dev->controller);
+	const u32 def_ptr = virt_to_phys(uhcic->qh_prei) | FLISTP_QH;
+	int nothing_placed = 1;
+	qh->headlinkptr = def_ptr;
+	for (i = 0; i < 1024; i += reqtiming) {
+		/* advance to the next free position */
+		while ((i < 1024) && (uhcic->framelistptr[i] != def_ptr)) ++i;
+		if (i < 1024) {
+			uhcic->framelistptr[i] = virt_to_phys(qh) | FLISTP_QH;
+			nothing_placed = 0;
+		}
 	}
+	if (nothing_placed) {
+		printf("Error: Failed to place UHCI interrupt queue "
+			      "head into framelist: no space left\n");
+		uhci_destroy_intr_queue(ep, q);
+		return NULL;
+	}
+
 	return q;
 }
 
@@ -529,23 +545,18 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 static void
 uhci_destroy_intr_queue (endpoint_t *ep, void *q_)
 {
-	intr_q *q = (intr_q*)q_;
-	u32 val = virt_to_phys (q->qh);
-	u32 end = virt_to_phys (UHCI_INST (ep->dev->controller)->qh_intr);
+	intr_q *const q = (intr_q*)q_;
+
+	/* remove QH from framelist */
+	uhci_t *const uhcic = UHCI_INST(ep->dev->controller);
+	const u32 qh_ptr = virt_to_phys(q->qh) | FLISTP_QH;
+	const u32 def_ptr = virt_to_phys(uhcic->qh_prei) | FLISTP_QH;
 	int i;
-	for (i=0; i<1024; i++) {
-		u32 oldptr = 0;
-		u32 ptr = UHCI_INST (ep->dev->controller)->framelistptr[i];
-		while (ptr != end) {
-			if (((qh_t*)phys_to_virt(ptr))->elementlinkptr == val) {
-				((qh_t*)phys_to_virt(oldptr))->headlinkptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr;
-				free(phys_to_virt(ptr));
-				break;
-			}
-			oldptr = ptr;
-			ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr;
-		}
+	for (i = 0; i < 1024; ++i) {
+		if (uhcic->framelistptr[i] == qh_ptr)
+			uhcic->framelistptr[i] = def_ptr;
 	}
+
 	free(q->data);
 	free(q->tds);
 	free(q->qh);

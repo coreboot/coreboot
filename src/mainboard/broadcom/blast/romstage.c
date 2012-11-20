@@ -11,7 +11,6 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"

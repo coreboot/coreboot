@@ -4,6 +4,7 @@ config CPU_AMD_MODEL_FXX
 	select SSE
 	select SSE2
 	select TSC_SYNC_LFENCE
+	select UDELAY_LAPIC
 
 if CPU_AMD_MODEL_FXX
 config UDELAY_IO
@@ -22,6 +23,10 @@ config SET_FIDVID
 config HW_SCRUBBER
 	bool
 	default n
+
+config UDELAY_LAPIC_FIXED_FSB
+	int
+	default 200
 
 if SET_FIDVID
 config SET_FIDVID_DEBUG

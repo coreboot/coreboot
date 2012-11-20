@@ -40,7 +40,6 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/early_smbus.h"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/x86/mtrr/earlymtrr.c"

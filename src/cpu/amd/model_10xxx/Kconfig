@@ -4,6 +4,7 @@ config CPU_AMD_MODEL_10XXX
 	select SSE2
 	select MMCONF_SUPPORT_DEFAULT
 	select TSC_SYNC_LFENCE
+	select UDELAY_LAPIC
 
 if CPU_AMD_MODEL_10XXX
 config CPU_ADDR_BITS
@@ -55,6 +56,10 @@ config SET_FIDVID_CORE_RANGE
 	default 0
 
 endif	# SET_FIDVID
+
+config UDELAY_LAPIC_FIXED_FSB
+	int
+	default 200
 
 config UPDATE_CPU_MICROCODE
 	bool

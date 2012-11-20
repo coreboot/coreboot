@@ -36,7 +36,6 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 #include <reset.h>
 #include "cpu/x86/lapic/boot_cpu.c"

@@ -8,10 +8,10 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/amd/model_fxx_rev.h>
+#include <delay.h>
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627hf/early_serial.c"

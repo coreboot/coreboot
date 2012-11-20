@@ -20,7 +20,9 @@
 
 #include <stdint.h>
 #include <delay.h>
+#include <arch/io.h>
 #include <arch/cpu.h>
+#include <cpu/x86/car.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 
@@ -28,7 +30,15 @@
  * memory init.
  */
 
-static u32 timer_fsb = 0;
+#if CONFIG_UDELAY_LAPIC_FIXED_FSB
+static const u32 timer_fsb = CONFIG_UDELAY_LAPIC_FIXED_FSB;
+
+static int set_timer_fsb(void)
+{
+	return 0;
+}
+#else
+static u32 timer_fsb CAR_GLOBAL = 0;
 
 static int set_timer_fsb(void)
 {
@@ -60,6 +70,7 @@ static int set_timer_fsb(void)
 
 	return 0;
 }
+#endif
 
 void init_timer(void)
 {

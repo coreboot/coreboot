@@ -11,6 +11,9 @@ config UDELAY_LAPIC
 	bool
 	default n
 
+config UDELAY_LAPIC_FIXED_FSB
+	int
+
 config UDELAY_TSC
 	bool
 	default n

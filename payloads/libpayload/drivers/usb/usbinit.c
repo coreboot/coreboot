@@ -123,7 +123,7 @@ static void usb_scan_pci_bus(int bus)
 		u8 header_type;
 		pcidev_t addr = PCI_DEV(bus, dev, 0);
 		/* Check if there's a device here at all. */
-		if (pci_read_config32(addr, REG_VENDOR_ID) == 0xffff)
+		if (pci_read_config32(addr, REG_VENDOR_ID) == 0xffffffff)
 			continue;
 		header_type = pci_read_config8(addr, REG_HEADER_TYPE);
 		/* If this is a bridge, scan the bus on the other side. */

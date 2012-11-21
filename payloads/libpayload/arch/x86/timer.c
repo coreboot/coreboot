@@ -49,6 +49,8 @@ u32 cpu_khz;
 unsigned int get_cpu_speed(void)
 {
 	unsigned long long start, end;
+	const uint32_t clock_rate = 1193182; // 1.193182 MHz
+	const uint16_t interval = (2 * clock_rate) / 1000; // 2 ms
 
 	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
 	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
@@ -56,9 +58,9 @@ unsigned int get_cpu_speed(void)
 	/* Set the PIT to Mode 0, counter 2, word access. */
 	outb(0xB0, 0x43);
 
-	/* Load the counter with 0xffff. */
-	outb(0xff, 0x42);
-	outb(0xff, 0x42);
+	/* Load the interval into the counter. */
+	outb(interval & 0xff, 0x42);
+	outb((interval >> 8) & 0xff, 0x42);
 
 	/* Read the number of ticks during the period. */
 	start = rdtsc();
@@ -66,11 +68,11 @@ unsigned int get_cpu_speed(void)
 	end = rdtsc();
 
 	/*
-	 * The clock rate is 1193180 Hz, the number of milliseconds for a
-	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
-	 * Multiply that by the number of measured clocks to get the kHz value.
+	 * The number of milliseconds for a period is
+	 * clock_rate / (interval * 1000). Multiply that by the number of
+	 * measured clocks to get the kHz value.
 	 */
-	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
+	cpu_khz = (end - start) * clock_rate / (1000 * interval);
 
 	return cpu_khz;
 }

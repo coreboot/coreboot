@@ -211,7 +211,7 @@ static int wait_for_tds(qtd_t *head)
 			return 1;
 		}
 		if (cur->token & QTD_HALTED) {
-			printf("ERROR with packet\n");
+			usb_debug("ERROR with packet\n");
 			dump_td(virt_to_phys(cur));
 			usb_debug("-----------------\n");
 			return 1;

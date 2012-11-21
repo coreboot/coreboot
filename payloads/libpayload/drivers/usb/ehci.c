@@ -157,10 +157,10 @@ static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 	 * This shouldn't take too long, but we should timeout nevertheless.
 	 */
 	enable = enable ? HC_OP_PERIODIC_SCHED_STAT : 0;
-	int timeout = 100; /* time out after 100ms */
+	int timeout = 100000; /* time out after 100ms */
 	while (((ehcic->operation->usbsts & HC_OP_PERIODIC_SCHED_STAT) != enable)
 			&& timeout--)
-		mdelay(1);
+		udelay(1);
 	if (timeout < 0) {
 		usb_debug("ehci periodic schedule status change timed out.\n");
 		return 1;

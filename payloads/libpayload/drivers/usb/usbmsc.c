@@ -227,16 +227,12 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	if (buflen > 0) {
 		if (dir == cbw_direction_data_in) {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0)) {
+			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0))
 				clear_stall (MSC_INST (dev)->bulk_in);
-				return MSC_COMMAND_FAIL;
-			}
 		} else {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0)) {
+			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0))
 				clear_stall (MSC_INST (dev)->bulk_out);
-				return MSC_COMMAND_FAIL;
-			}
 		}
 	}
 	int ret = get_csw (MSC_INST (dev)->bulk_in, &csw);

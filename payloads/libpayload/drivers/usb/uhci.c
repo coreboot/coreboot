@@ -572,7 +572,6 @@ uhci_poll_intr_queue (void *q_)
 {
 	intr_q *q = (intr_q*)q_;
 	if ((q->tds[q->lastread].ctrlsts & TD_STATUS_ACTIVE) == 0) {
-		/* FIXME: handle errors */
 		int current = q->lastread;
 		int previous;
 		if (q->lastread == 0) {
@@ -588,7 +587,8 @@ uhci_poll_intr_queue (void *q_)
 		}
 		q->tds[previous].ctrlsts |= TD_STATUS_ACTIVE;
 		q->lastread = (q->lastread + 1) % q->total;
-		return &q->data[current*q->reqsize];
+		if (!(q->tds[current].ctrlsts & TD_STATUS_MASK))
+			return &q->data[current*q->reqsize];
 	}
 	/* reset queue if we fully processed it after underrun */
 	else if (q->qh->elementlinkptr & FLISTP_TERMINATE) {

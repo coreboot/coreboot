@@ -24,7 +24,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -50,14 +50,14 @@ void mainboard_suspend_resume(void)
 }
 
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-static int int15_handler(struct eregs *regs)
+static int int15_handler(void)
 {
 	int res=0;
 
 	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
-			__func__, regs->eax & 0xffff);
+			__func__, X86_EAX & 0xffff);
 
-	switch(regs->eax & 0xffff) {
+	switch(X86_EAX & 0xffff) {
 	case 0x5f34:
 		/*
 		 * Set Panel Fitting Hook:
@@ -66,10 +66,10 @@ static int int15_handler(struct eregs *regs)
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
 		 *  0     = video bios default
 		 */
-		regs->eax &= 0xffff0000;
-		regs->eax |= 0x005f;
-		regs->ecx &= 0xffffff00;
-		regs->ecx |= 0x00;
+		X86_EAX &= 0xffff0000;
+		X86_EAX |= 0x005f;
+		X86_ECX &= 0xffffff00;
+		X86_ECX |= 0x00;
 		res = 1;
 		break;
 	case 0x5f35:
@@ -84,10 +84,10 @@ static int int15_handler(struct eregs *regs)
 		 *  bit 6 = EFP2 *
 		 *  bit 7 = LFP2
 		 */
-		regs->eax &= 0xffff0000;
-		regs->eax |= 0x005f;
-		regs->ecx &= 0xffff0000;
-		regs->ecx |= 0x0000;
+		X86_EAX &= 0xffff0000;
+		X86_EAX |= 0x005f;
+		X86_ECX &= 0xffff0000;
+		X86_ECX |= 0x0000;
 		res = 1;
 		break;
 	case 0x5f51:
@@ -98,49 +98,49 @@ static int int15_handler(struct eregs *regs)
 		 *  02h = SVDO-LVDS, LFP driven by SVDO decoder
 		 *  03h = eDP, LFP Driven by Int-DisplayPort encoder
 		 */
-		regs->eax &= 0xffff0000;
-		regs->eax |= 0x005f;
-		regs->ecx &= 0xffff0000;
-		regs->ecx |= 0x0001;
+		X86_EAX &= 0xffff0000;
+		X86_EAX |= 0x005f;
+		X86_ECX &= 0xffff0000;
+		X86_ECX |= 0x0001;
 		res = 1;
 		break;
 	case 0x5f70:
-		switch ((regs->ecx >> 8) & 0xff) {
+		switch ((X86_ECX >> 8) & 0xff) {
 		case 0:
 			/* Get Mux */
-			regs->eax &= 0xffff0000;
-			regs->eax |= 0x005f;
-			regs->ecx &= 0xffff0000;
-			regs->ecx |= 0x0000;
+			X86_EAX &= 0xffff0000;
+			X86_EAX |= 0x005f;
+			X86_ECX &= 0xffff0000;
+			X86_ECX |= 0x0000;
 			res = 1;
 			break;
 		case 1:
 			/* Set Mux */
-			regs->eax &= 0xffff0000;
-			regs->eax |= 0x005f;
-			regs->ecx &= 0xffff0000;
-			regs->ecx |= 0x0000;
+			X86_EAX &= 0xffff0000;
+			X86_EAX |= 0x005f;
+			X86_ECX &= 0xffff0000;
+			X86_ECX |= 0x0000;
 			res = 1;
 			break;
 		case 2:
 			/* Get SG/Non-SG mode */
-			regs->eax &= 0xffff0000;
-			regs->eax |= 0x005f;
-			regs->ecx &= 0xffff0000;
-			regs->ecx |= 0x0000;
+			X86_EAX &= 0xffff0000;
+			X86_EAX |= 0x005f;
+			X86_ECX &= 0xffff0000;
+			X86_ECX |= 0x0000;
 			res = 1;
 			break;
 		default:
 			/* FIXME: Interrupt was not handled, but return success? */
 			printk(BIOS_DEBUG, "Unknown INT15 5f70 function: 0x%02x\n",
-				((regs->ecx >> 8) & 0xff));
+				((X86_ECX >> 8) & 0xff));
 			return 1;
 		}
 		break;
 
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
+				X86_EAX & 0xffff);
 		break;
 	}
 	return res;

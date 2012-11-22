@@ -24,7 +24,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <delay.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
 #endif
 
@@ -91,7 +91,7 @@ static int int15_handler(void)
 #endif
 
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-static int int15_handler(struct eregs *regs)
+static int int15_handler(void)
 {
 	int res = 0;
 
@@ -100,7 +100,7 @@ static int int15_handler(struct eregs *regs)
 	 * the mainboard or northbridge code.
 	 * TODO: completely move to mainboards / chipsets.
 	 */
-	switch (regs->eax & 0xffff) {
+	switch (X86_EAX & 0xffff) {
 	/* And now Intel IGD code */
 #define BOOT_DISPLAY_DEFAULT    0
 #define BOOT_DISPLAY_CRT        (1 << 0)
@@ -112,19 +112,19 @@ static int int15_handler(struct eregs *regs)
 #define BOOT_DISPLAY_EFP2       (1 << 6)
 #define BOOT_DISPLAY_LCD2       (1 << 7)
 	case 0x5f35:
-		regs->eax = 0x5f;
-		regs->ecx = BOOT_DISPLAY_DEFAULT;
+		X86_EAX = 0x5f;
+		X86_ECX = BOOT_DISPLAY_DEFAULT;
 		res = 1;
 		break;
 	case 0x5f40:
-		regs->eax = 0x5f;
-		regs->ecx = 3; // This is mainboard specific
-		printk(BIOS_DEBUG, "DISPLAY=%x\n", regs->ecx);
+		X86_EAX = 0x5f;
+		X86_ECX = 3; // This is mainboard specific
+		printk(BIOS_DEBUG, "DISPLAY=%x\n", X86_ECX);
 		res = 1;
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
+				X86_EAX & 0xffff);
 	}
 
 	return res;

@@ -45,7 +45,7 @@ void mainboard_suspend_resume(void)
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 static int int15_handler(struct eregs *regs)
 {
-	int res=-1;
+	int res=0;
 
 	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
 			__func__, regs->eax & 0xffff);
@@ -63,7 +63,7 @@ static int int15_handler(struct eregs *regs)
 		regs->eax |= 0x005f;
 		regs->ecx &= 0xffffff00;
 		regs->ecx |= 0x01;
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f35:
 		/*
@@ -81,7 +81,7 @@ static int int15_handler(struct eregs *regs)
 		regs->eax |= 0x005f;
 		regs->ecx &= 0xffff0000;
 		regs->ecx |= 0x0000;
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f51:
 		/*
@@ -95,7 +95,7 @@ static int int15_handler(struct eregs *regs)
 		regs->eax |= 0x005f;
 		regs->ecx &= 0xffff0000;
 		regs->ecx |= 0x0003;
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f70:
 		switch ((regs->ecx >> 8) & 0xff) {
@@ -105,7 +105,7 @@ static int int15_handler(struct eregs *regs)
 			regs->eax |= 0x005f;
 			regs->ecx &= 0xffff0000;
 			regs->ecx |= 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		case 1:
 			/* Set Mux */
@@ -113,7 +113,7 @@ static int int15_handler(struct eregs *regs)
 			regs->eax |= 0x005f;
 			regs->ecx &= 0xffff0000;
 			regs->ecx |= 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		case 2:
 			/* Get SG/Non-SG mode */
@@ -121,13 +121,13 @@ static int int15_handler(struct eregs *regs)
 			regs->eax |= 0x005f;
 			regs->ecx &= 0xffff0000;
 			regs->ecx |= 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		default:
-			/* Interrupt was not handled */
+			/* FIXME: Interrupt was not handled, but return sucess? */
 			printk(BIOS_DEBUG, "Unknown INT15 5f70 function: 0x%02x\n",
 				((regs->ecx >> 8) & 0xff));
-			return 0;
+			return 1;
 		}
 		break;
 

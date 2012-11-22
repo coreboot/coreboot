@@ -40,7 +40,7 @@ static void vbios_fun_init(rs690_vbios_regs *vbios_regs)
 /* BIOS int15 function */
 int tim5690_int15_handler(struct eregs *regs)
 {
-        int res = -1;
+        int res = 0;
 
         printk(BIOS_DEBUG, "tim5690_int15_handler\n");
 
@@ -50,12 +50,12 @@ int tim5690_int15_handler(struct eregs *regs)
                 case 0x00:
                         regs->eax &= ~(0xff);
                         regs->ebx = (regs->ebx & ~(0xff)) | vbios_regs_local.int15_regs.fun00_panel_id;
-                        res = 0;
+                        res = 1;
                         break;
                 case 0x05:
                         regs->eax &= ~(0xff);
                         regs->ebx = (regs->ebx & ~(0xff)) | vbios_regs_local.int15_regs.fun05_tv_standard;
-                        res = 0;
+                        res = 1;
                         break;
                 }
                 break;

@@ -40,11 +40,11 @@ enum {
 
 int int10_handler(struct eregs *regs)
 {
-	int res=-1;
+	int res=0;
 	static u8 cursor_row=0, cursor_col=0;
 	switch((regs->eax & 0xff00)>>8) {
 	case 0x01: // Set cursor shape
-		res = 0;
+		res = 1;
 		break;
 	case 0x02: // Set cursor position
 		if (cursor_row != ((regs->edx >> 8) & 0xff) ||
@@ -53,31 +53,31 @@ int int10_handler(struct eregs *regs)
 		}
 		cursor_row = (regs->edx >> 8) & 0xff;
 		cursor_col = regs->edx & 0xff;
-		res = 0;
+		res = 1;
 		break;
 	case 0x03: // Get cursor position
 		regs->eax &= 0x00ff;
 		regs->ecx = 0x0607;
 		regs->edx = (cursor_row << 8) | cursor_col;
-		res = 0;
+		res = 1;
 		break;
 	case 0x06: // Scroll up
 		printk(BIOS_INFO, "\n");
-		res = 0;
+		res = 1;
 		break;
 	case 0x08: // Get Character and Mode at Cursor Position
 		regs->eax = 0x0f00 | 'A'; // White on black 'A'
-		res = 0;
+		res = 1;
 		break;
 	case 0x09: // Write Character and attribute
 	case 0x0e: // Write Character
 		printk(BIOS_INFO, "%c", regs->eax & 0xff);
-		res = 0;
+		res = 1;
 		break;
 	case 0x0f: // Get video mode
 		regs->eax = 0x5002; //80x25
 		regs->ebx &= 0x00ff;
-		res = 0;
+		res = 1;
 		break;
         default:
 		printk(BIOS_WARNING, "Unknown INT10 function %04x!\n",
@@ -90,20 +90,20 @@ int int10_handler(struct eregs *regs)
 int int12_handler(struct eregs *regs)
 {
 	regs->eax = 64 * 1024;
-	return 0;
+	return 1;
 }
 
 int int16_handler(struct eregs *regs)
 {
-	int res=-1;
+	int res=0;
 	switch((regs->eax & 0xff00)>>8) {
 	case 0x00: // Check for Keystroke
 		regs->eax = 0x6120; // Space Bar, Space
-		res = 0;
+		res = 1;
 		break;
 	case 0x01: // Check for Keystroke
 		regs->eflags |= 1<<6; // Zero Flag set (no key available)
-		res = 0;
+		res = 1;
 		break;
         default:
 		printk(BIOS_WARNING, "Unknown INT16 function %04x!\n",
@@ -119,7 +119,7 @@ int int16_handler(struct eregs *regs)
 int int1a_handler(struct eregs *regs)
 {
 	unsigned short func = (unsigned short)regs->eax;
-	int retval = 0;
+	int retval = 1;
 	unsigned short devid, vendorid, devfn;
 	/* Use short to get rid of gabage in upper half of 32-bit register */
 	short devindex;
@@ -138,7 +138,7 @@ int int1a_handler(struct eregs *regs)
 		// dev_enumerate() does not seem to tell us (publically)
 		regs->ecx = 0xff;
 		regs->edi = 0x00000000;	/* protected mode entry */
-		retval = 0;
+		retval = 1;
 		break;
 	case 0xb102: /* Find Device */
 		devid = regs->ecx;
@@ -160,11 +160,11 @@ int int1a_handler(struct eregs *regs)
 			    | (dev->path.pci.devfn & 0xff);
 			printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func, busdevfn);
 			regs->ebx = busdevfn;
-			retval = 0;
+			retval = 1;
 		} else {
 			regs->eax &= 0xffff00ff; /* Clear AH */
 			regs->eax |= PCIBIOS_NODEV;
-			retval = -1;
+			retval = 0;
 		}
 		break;
 	case 0xb10a: /* Read Config Dword */
@@ -182,7 +182,7 @@ int int1a_handler(struct eregs *regs)
 			// Or are we supposed to return PCIBIOS_NODEV?
 			regs->eax &= 0xffff00ff; /* Clear AH */
 			regs->eax |= PCIBIOS_BADREG;
-			retval = -1;
+			retval = 0;
 			return retval;
 		}
 		switch (func) {
@@ -218,13 +218,13 @@ int int1a_handler(struct eregs *regs)
 #endif
 		regs->eax &= 0xffff00ff; /* Clear AH */
 		regs->eax |= PCIBIOS_SUCCESSFUL;
-		retval = 0;
+		retval = 1;
 		break;
 	default:
 		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
 		regs->eax &= 0xffff00ff; /* Clear AH */
 		regs->eax |= PCIBIOS_UNSUPPORTED;
-		retval = -1;
+		retval = 0;
 		break;
 	}
 

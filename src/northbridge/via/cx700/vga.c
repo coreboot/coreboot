@@ -46,7 +46,7 @@
 
 static int via_cx700_int15_handler(struct eregs *regs)
 {
-	int res=-1;
+	int res=0;
 	u8 mem_speed;
 
 #define MEMORY_SPEED_66MHZ	(0 << 4)
@@ -70,14 +70,14 @@ static int via_cx700_int15_handler(struct eregs *regs)
 	switch(regs->eax & 0xffff) {
 	case 0x5f00:	/* VGA POST Initialization Signal */
 		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
-		res = 0;
+		res = 1;
 		break;
 
 	case 0x5f01:	/* Software Panel Type Configuration */
 		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
 		// panel type =  2 = 1024 * 768
 		regs->ecx = (regs->ecx & 0xffffff00 ) | 2;
-		res = 0;
+		res = 1;
 		break;
 
 	case 0x5f27:	/* Boot Device Selection */
@@ -87,7 +87,7 @@ static int via_cx700_int15_handler(struct eregs *regs)
 		regs->ecx = 0x00000000; // 0 -> default
 		// TV Layout - default
 		regs->edx = (regs->edx & 0xffffff00) | 0;
-		res=0;
+		res=1;
 		break;
 
 	case 0x5f0b:	/* Get Expansion Setting */
@@ -95,12 +95,12 @@ static int via_cx700_int15_handler(struct eregs *regs)
 
 		regs->ecx = regs->ecx & 0xffffff00; // non-expansion
 		// regs->ecx = regs->ecx & 0xffffff00 | 1; // expansion
-		res=0;
+		res=1;
 		break;
 
 	case 0x5f0f:	/* VGA Post Completion */
 		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
-		res=0;
+		res=1;
 		break;
 
 	case 0x5f18:
@@ -117,7 +117,7 @@ static int via_cx700_int15_handler(struct eregs *regs)
 
 		regs->ebx |= memory_mapping[mem_speed];
 
-		res=0;
+		res=1;
 		break;
 
         default:

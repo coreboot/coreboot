@@ -53,6 +53,17 @@ typedef struct {
 static void
 usb_hub_destroy (usbdev_t *dev)
 {
+	int i;
+
+	/* First, detach all devices behind this hub. */
+	int *const ports = HUB_INST (dev)->ports;
+	for (i = 1; i <= HUB_INST (dev)->num_ports; i++) {
+		if (ports[i] != -1) {
+			usb_detach_device(dev->controller, ports[i]);
+			ports[i] = -1;
+		}
+	}
+
 	free (HUB_INST (dev)->ports);
 	free (HUB_INST (dev)->descriptor);
 	free (HUB_INST (dev));

@@ -144,9 +144,9 @@ static int int15_handler(void)
 static int int15_handler(void)
 {
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
+			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
-	switch (M.x86.R_AX) {
+	switch (X86_AX) {
 	case 0x5f34:
 		/*
 		 * Set Panel Fitting Hook:
@@ -154,8 +154,8 @@ static int int15_handler(void)
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
 		 */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = 0x0001;
+		X86_AX = 0x005f;
+		X86_CX = 0x0001;
 		break;
 	case 0x5f35:
 		/*
@@ -169,8 +169,8 @@ static int int15_handler(void)
 		 *  bit 6 = EFP2 *
 		 *  bit 7 = LFP2
 		 */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = 0x0000;
+		X86_AX = 0x005f;
+		X86_CX = 0x0000;
 		break;
 	case 0x5f51:
 		/*
@@ -180,18 +180,18 @@ static int int15_handler(void)
 		 *  02h = SVDO-LVDS, LFP driven by SVDO decoder
 		 *  03h = eDP, LFP Driven by Int-DisplayPort encoder
 		 */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = 3;
+		X86_AX = 0x005f;
+		X86_CX = 3;
 		break;
 	case 0x5f70:
 		/* Unknown */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = 0;
+		X86_AX = 0x005f;
+		X86_CX = 0;
 		break;
 	default:
 		/* Interrupt was not handled */
 		printk(BIOS_DEBUG, "Unknown INT15 function: 0x%04x\n",
-			M.x86.R_AX);
+			X86_AX);
 		return 0;
 	}
 

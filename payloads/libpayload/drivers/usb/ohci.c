@@ -520,6 +520,7 @@ struct _intr_queue {
 	int			reqsize;
 	endpoint_t		*endp;
 	unsigned int		remaining_tds;
+	int			destroy;
 };
 
 typedef struct _intrq_td intrq_td_t;
@@ -648,7 +649,7 @@ ohci_destroy_intr_queue(endpoint_t *const ep, void *const q_)
 	/* Free data buffer. */
 	free(intrq->data);
 
-	/* Process done queue and free processed TDs. */
+	/* Free TDs already fetched from the done queue. */
 	ohci_process_done_queue(ohci, 1);
 	while (intrq->head) {
 		intrq_td_t *const cur_td = intrq->head;
@@ -656,12 +657,11 @@ ohci_destroy_intr_queue(endpoint_t *const ep, void *const q_)
 		free(cur_td);
 		--intrq->remaining_tds;
 	}
-	if (intrq->remaining_tds) {
-		printf("error: ohci_destroy_intr_queue(): "
-			"freed all but %d TDs.\n", intrq->remaining_tds);
-	}
 
-	free(intrq);
+	/* Mark interrupt queue to be destroyed.
+	   ohci_process_done_queue() will free the remaining TDs
+	   and finish the interrupt queue off once all TDs are gone. */
+	intrq->destroy = 1;
 
 	/* Save data toggle. */
 	ep->toggle = intrq->ed.head_pointer & ED_TOGGLE;
@@ -734,11 +734,28 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 			/* Free processed async TDs. */
 			free((void *)done_td);
 			break;
-		case TD_QUEUETYPE_INTR:
-			/* Save done TD if it comes from an interrupt queue. */
-			INTRQ_TD_FROM_TD(done_td)->next = temp_tdq;
-			temp_tdq = INTRQ_TD_FROM_TD(done_td);
+		case TD_QUEUETYPE_INTR: {
+			intrq_td_t *const td = INTRQ_TD_FROM_TD(done_td);
+			intr_queue_t *const intrq = td->intrq;
+			/* Check if the corresponding interrupt
+			   queue is still beeing processed. */
+			if (intrq->destroy) {
+				/* Free this TD, and */
+				free(td);
+				--intrq->remaining_tds;
+				/* the interrupt queue if it has no more TDs. */
+				if (!intrq->remaining_tds)
+					free(intrq);
+				usb_debug("Freed TD from orphaned interrupt "
+					  "queue, %d TDs remain.\n",
+					  intrq->remaining_tds);
+			} else {
+				/* Save done TD to be processed. */
+				td->next = temp_tdq;
+				temp_tdq = td;
+			}
 			break;
+		}
 		default:
 			break;
 		}

@@ -298,6 +298,12 @@ function build_target
 	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
+	if [ "`cat $TOP/$TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
+		"$buildall" = "false" ]; then
+		printf "Skipping $VENDOR/$MAINBOARD; (already successful)\n"
+		return
+	fi
+
 	# default setting
 
 	CC="${CROSS_COMPILE}gcc"

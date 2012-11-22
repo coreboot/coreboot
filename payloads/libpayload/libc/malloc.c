@@ -387,6 +387,9 @@ look_further:
 			count = 0;
 		}
 	}
+	/* The free space in this region is fragmented,
+	   so we will move on and try the next one: */
+	reg = reg->next;
 	goto look_further; // end condition is once a new region is allocated - it always has enough space
 }
 

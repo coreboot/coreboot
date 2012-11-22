@@ -402,7 +402,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	u32 ip;
 	u32 cs;
 	u32 flags;
-	int ret = -1;
+	int ret = 0;
 	struct eregs reg_info;
 
 	ip = cs_ip & 0xffff;
@@ -455,15 +455,17 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	*(volatile u32 *)&edi = reg_info.edi;
 	flags = reg_info.eflags;
 
-	/* Pass errors back to our caller via the CARRY flag */
+	/* Pass success or error back to our caller via the CARRY flag */
 	if (ret) {
+		flags &= ~1; // no error: clear carry
+	}else{
 		printk(BIOS_DEBUG,"int%02x call returned error.\n", intnumber);
 		flags |= 1;  // error: set carry
-	}else{
-		flags &= ~1; // no error: clear carry
 	}
 	*(volatile u16 *)&stackflags = flags;
 
+	/* The assembler code doesn't actually care for the return value,
+	 * but keep it around so its expectations are met */
 	return ret;
 }
 

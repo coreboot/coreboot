@@ -39,7 +39,7 @@
 
 static int via_cn700_int15_handler(struct eregs *regs)
 {
-	int res=-1;
+	int res=0;
 	printk(BIOS_DEBUG, "via_cn700_int15_handler\n");
 	switch(regs->eax & 0xffff) {
 	case 0x5f19:
@@ -48,7 +48,7 @@ static int via_cn700_int15_handler(struct eregs *regs)
 		regs->eax=0x5f;
 		regs->ebx=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
 		regs->ecx=0x060;
-		res=0;
+		res=1;
 		break;
 	case 0x5f00:
 		regs->eax = 0x8600;
@@ -56,14 +56,14 @@ static int via_cn700_int15_handler(struct eregs *regs)
 	case 0x5f01:
 		regs->eax = 0x5f;
 		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f02:
 		regs->eax=0x5f;
 		regs->ebx= (regs->ebx & 0xffff0000) | 2;
 		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
 		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
-		res=0;
+		res=1;
 		break;
 	case 0x5f0f:
 		regs->eax=0x860f;

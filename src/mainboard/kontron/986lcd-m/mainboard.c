@@ -66,7 +66,7 @@ static int int15_handler(void)
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 static int int15_handler(struct eregs *regs)
 {
-	int res = -1;
+	int res = 0;
 
 	/* This int15 handler is Intel IGD. specific. Other chipsets need other
 	 * handlers. The right way to do this is to move this handler code into
@@ -87,13 +87,13 @@ static int int15_handler(struct eregs *regs)
 	case 0x5f35:
 		regs->eax = 0x5f;
 		regs->ecx = BOOT_DISPLAY_DEFAULT;
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f40:
 		regs->eax = 0x5f;
 		regs->ecx = 3; // This is mainboard specific
 		printk(BIOS_DEBUG, "DISPLAY=%x\n", regs->ecx);
-		res = 0;
+		res = 1;
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",

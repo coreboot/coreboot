@@ -70,12 +70,12 @@ static void vga_init(device_t dev)
 #define PIPE_B_TV	(1 << 10)
 	printk(BIOS_DEBUG, "Enabling TV-Out\n");
 	void runInt10(void);
-	M.x86.R_AX = 0x5f64;
-	M.x86.R_BX = 0x0001; // Set Display Device, force execution
-	M.x86.R_CX = PIPE_A_CRT | PIPE_A_TV;
+	X86_AX = 0x5f64;
+	X86_BX = 0x0001; // Set Display Device, force execution
+	X86_CX = PIPE_A_CRT | PIPE_A_TV;
 	// M.x86.R_CX = PIPE_B_TV;
 	runInt10();
-	switch (M.x86.R_AX) {
+	switch (X86_AX) {
 	case 0x005f:
 		printk(BIOS_DEBUG, "... failed.\n");
 		break;

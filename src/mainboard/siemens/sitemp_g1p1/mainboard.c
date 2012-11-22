@@ -230,24 +230,24 @@ static int int15_handler(void)
 #define BOOT_DISPLAY_LCD2	(1 << 7)
 
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
+			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
-	switch (M.x86.R_AX) {
+	switch (X86_AX) {
 	case 0x4e08: /* Boot Display */
-	    switch (M.x86.R_BX) {
+	    switch (X86_BX) {
 		case 0x80:
-			M.x86.R_AX &= ~(0xff); // Success
-			M.x86.R_BX &= ~(0xff);
+			X86_AX &= ~(0xff); // Success
+			X86_BX &= ~(0xff);
 			printk(BIOS_DEBUG, "Integrated System Information\n");
 			break;
 		case 0x00:
-			M.x86.R_AX &= ~(0xff);
-			M.x86.R_BX = 0x00;
+			X86_AX &= ~(0xff);
+			X86_BX = 0x00;
 			printk(BIOS_DEBUG, "Panel ID = 0\n");
 			break;
 		case 0x05:
-			M.x86.R_AX &= ~(0xff);
-			M.x86.R_BX = 0xff;
+			X86_AX &= ~(0xff);
+			X86_BX = 0xff;
 			printk(BIOS_DEBUG, "TV = off\n");
 			break;
 		default:
@@ -255,13 +255,13 @@ static int int15_handler(void)
 		}
 		break;
 	case 0x5f35: /* Boot Display */
-		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
+		X86_AX = 0x005f; // Success
+		X86_CL = BOOT_DISPLAY_DEFAULT;
 		break;
 	case 0x5f40: /* Boot Panel Type */
 		// M.x86.R_AX = 0x015f; // Supported but failed
-		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = 3; // Display ID
+		X86_AX = 0x005f; // Success
+		X86_CL = 3; // Display ID
 		break;
 	default:
 		/* Interrupt was not handled */

@@ -41,17 +41,17 @@ static int int15_handler(void)
 #define BOOT_DISPLAY_LCD2	(1 << 7)
 
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
+			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
-	switch (M.x86.R_AX) {
+	switch (X86_AX) {
 	case 0x5f35: /* Boot Display */
-		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = BOOT_DISPLAY_CRT;
+		X86_AX = 0x005f; // Success
+		X86_CL = BOOT_DISPLAY_CRT;
 		break;
 	case 0x5f40: /* Boot Panel Type */
 		// M.x86.R_AX = 0x015f; // Supported but failed
-		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = 3; // Display ID
+		X86_AX = 0x005f; // Success
+		X86_CL = 3; // Display ID
 		break;
 	default:
 		/* Interrupt was not handled */

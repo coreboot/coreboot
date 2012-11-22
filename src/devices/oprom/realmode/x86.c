@@ -30,7 +30,7 @@
 #include <pc80/i8259.h>
 #include "x86.h"
 #include "vbe.h"
-#include "../../src/lib/jpeg.h"
+#include <lib/jpeg.h>
 
 void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0))) =

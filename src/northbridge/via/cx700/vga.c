@@ -32,7 +32,7 @@
 #include <arch/interrupt.h>
 #include "registers.h"
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-#include <devices/oprom/x86.h>
+#include <devices/oprom/realmode/x86.h>
 #endif
 
 /* PCI Domain 1 Device 0 Function 0 */

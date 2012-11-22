@@ -34,7 +34,7 @@
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-#include <devices/oprom/x86.h>
+#include <devices/oprom/realmode/x86.h>
 #endif
 
 /* PCI Domain 1 Device 0 Function 0 */

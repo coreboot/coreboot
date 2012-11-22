@@ -30,44 +30,45 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
+#include <x86emu/regs.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <devices/oprom/realmode/x86.h>
 #endif
 
-static int via_vt8623_int15_handler(struct eregs *regs)
+static int via_vt8623_int15_handler(void)
 {
 	int res=0;
 	printk(BIOS_DEBUG, "via_vt8623_int15_handler\n");
-	switch(regs->eax & 0xffff) {
+	switch(X86_EAX & 0xffff) {
 	case 0x5f19:
 		break;
 	case 0x5f18:
-		regs->eax=0x5f;
-		regs->ebx=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
-		regs->ecx=0x060;
+		X86_EAX=0x5f;
+		X86_EBX=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
+		X86_ECX=0x060;
 		res=1;
 		break;
 	case 0x5f00:
-		regs->eax = 0x8600;
+		X86_EAX = 0x8600;
 		break;
 	case 0x5f01:
-		regs->eax = 0x5f;
-		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+		X86_EAX = 0x5f;
+		X86_ECX = (X86_ECX & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
 		res = 1;
 		break;
 	case 0x5f02:
-		regs->eax=0x5f;
-		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
-		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
+		X86_EAX=0x5f;
+		X86_EBX= (X86_EBX & 0xffff0000) | 2;
+		X86_ECX= (X86_ECX & 0xffff0000) | 0x401;  // PAL + crt only
+		X86_EDX= (X86_EDX & 0xffff0000) | 0;  // TV Layout - default
 		res=1;
 		break;
 	case 0x5f0f:
-		regs->eax=0x860f;
+		X86_EAX=0x860f;
 		break;
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
+				X86_EAX & 0xffff);
 		break;
 	}
 	return res;

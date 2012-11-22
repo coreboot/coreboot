@@ -31,6 +31,11 @@
 #include "x86.h"
 #include "vbe.h"
 #include <lib/jpeg.h>
+/* we use x86emu's register file representation */
+#include <x86emu/regs.h>
+
+/* to have a common register file for interrupt handlers */
+X86EMU_sysEnv _X86EMU_env;
 
 void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) __attribute__((regparm(0))) =
@@ -52,10 +57,28 @@ static void setup_rombios(void)
 	write8(0xffffe, 0xfc);
 }
 
-int (*intXX_handler[256])(struct eregs *regs) = { NULL };
+static int (*intXX_handler[256])(void) = { NULL };
 
-static int intXX_exception_handler(struct eregs *regs)
+static int intXX_exception_handler(void)
 {
+	/* compatibility shim */
+	struct eregs reg_info = {
+		.eax=X86_EAX,
+		.ecx=X86_ECX,
+		.edx=X86_EDX,
+		.ebx=X86_EBX,
+		.esp=X86_ESP,
+		.ebp=X86_EBP,
+		.esi=X86_ESI,
+		.edi=X86_EDI,
+		.vector=M.x86.intno,
+		.error_code=0, // FIXME: fill in
+		.eip=X86_EIP,
+		.cs=X86_CS,
+		.eflags=X86_EFLAGS
+	};
+	struct eregs *regs = &reg_info;
+
 	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n",
 			regs->vector);
 	x86_exception(regs);	// Call coreboot exception handler
@@ -63,10 +86,10 @@ static int intXX_exception_handler(struct eregs *regs)
 	return 0;		// Never really returns
 }
 
-static int intXX_unknown_handler(struct eregs *regs)
+static int intXX_unknown_handler(void)
 {
 	printk(BIOS_INFO, "Unsupported software interrupt #0x%x eax 0x%x\n",
-			regs->vector, regs->eax);
+			M.x86.intno, X86_EAX);
 
 	return -1;
 }
@@ -403,7 +426,6 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	u32 cs;
 	u32 flags;
 	int ret = 0;
-	struct eregs reg_info;
 
 	ip = cs_ip & 0xffff;
 	cs = cs_ip >> 16;
@@ -419,27 +441,24 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 		     ip, cs, flags);
 #endif
 
-	// Fetch arguments from the stack and put them into
-	// a structure that we want to pass on to our sub interrupt
-	// handlers.
-	reg_info = (struct eregs) {
-		.eax=eax,
-		.ecx=ecx,
-		.edx=edx,
-		.ebx=ebx,
-		.esp=esp,
-		.ebp=ebp,
-		.esi=esi,
-		.edi=edi,
-		.vector=intnumber,
-		.error_code=0, // ??
-		.eip=ip,
-		.cs=cs,
-		.eflags=flags // ??
-	};
+	// Fetch arguments from the stack and put them to a place
+	// suitable for the interrupt handlers
+	X86_EAX = eax;
+	X86_ECX = ecx;
+	X86_EDX = edx;
+	X86_EBX = ebx;
+	X86_ESP = esp;
+	X86_EBP = ebp;
+	X86_ESI = esi;
+	X86_EDI = edi;
+	M.x86.intno = intnumber;
+	/* TODO: error_code must be stored somewhere */
+	X86_EIP = ip;
+	X86_CS = cs;
+	X86_EFLAGS = flags;
 
 	// Call the interrupt handler for this int#
-	ret = intXX_handler[intnumber](&reg_info);
+	ret = intXX_handler[intnumber]();
 
 	// Put registers back on the stack. The assembler code
 	// will later pop them.
@@ -447,13 +466,13 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	// the values of the parameters of this function. We do this
 	// because we know that they stay alive on the stack after
 	// we leave this function. Don't say this is bollocks.
-	*(volatile u32 *)&eax = reg_info.eax;
-	*(volatile u32 *)&ecx = reg_info.ecx;
-	*(volatile u32 *)&edx = reg_info.edx;
-	*(volatile u32 *)&ebx = reg_info.ebx;
-	*(volatile u32 *)&esi = reg_info.esi;
-	*(volatile u32 *)&edi = reg_info.edi;
-	flags = reg_info.eflags;
+	*(volatile u32 *)&eax = X86_EAX;
+	*(volatile u32 *)&ecx = X86_ECX;
+	*(volatile u32 *)&edx = X86_EDX;
+	*(volatile u32 *)&ebx = X86_EBX;
+	*(volatile u32 *)&esi = X86_ESI;
+	*(volatile u32 *)&edi = X86_EDI;
+	flags = X86_EFLAGS;
 
 	/* Pass success or error back to our caller via the CARRY flag */
 	if (ret) {

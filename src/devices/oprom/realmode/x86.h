@@ -42,8 +42,8 @@ extern void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
 #define INITIAL_EBDA_SEGMENT 0xF600
 #define INITIAL_EBDA_SIZE 0x400
 
-int int10_handler(struct eregs *regs);
-int int12_handler(struct eregs *regs);
-int int16_handler(struct eregs *regs);
-int int1a_handler(struct eregs *regs);
+int int10_handler(void);
+int int12_handler(void);
+int int16_handler(void);
+int int1a_handler(void);
 

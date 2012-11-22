@@ -33,6 +33,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
+#include <x86emu/regs.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <devices/oprom/realmode/x86.h>
 #endif
@@ -50,14 +51,14 @@
 #define VIACONFIG_VGA_PCI_10 0xf8000008
 #define VIACONFIG_VGA_PCI_14 0xfc000000
 
-static int via_vx800_int15_handler(struct eregs *regs)
+static int via_vx800_int15_handler(void)
 {
 	int res=0;
 	printk(BIOS_DEBUG, "via_vx800_int15_handler\n");
-	switch(regs->eax & 0xffff) {
+	switch(X86_EAX & 0xffff) {
 	case 0x5f19:
-		regs->eax=0x5f;
-		regs->ecx=0x03;
+		X86_EAX=0x5f;
+		X86_ECX=0x03;
 		res=1;
 		break;
 	case 0x5f18:
@@ -84,44 +85,44 @@ static int via_vx800_int15_handler(struct eregs *regs)
 		i = (i & 0x70);
 		i = i >> 4;
 		if (i == 0) {
-			regs->eax = 0x00;	//not support 5f18
+			X86_EAX = 0x00;	//not support 5f18
 			break;
 		}
 		i = i + 2;
-		regs->ebx = (u32) i;
+		X86_EBX = (u32) i;
 		i = pci_read_config8(dev, 0x90);
 		i = (i & 0x07);
 		i = i + 3;
 		i = i << 4;
-		regs->ebx = regs->ebx + ((u32) i);
-		regs->eax = 0x5f;
+		X86_EBX = X86_EBX + ((u32) i);
+		X86_EAX = 0x5f;
 		res = 1;
 		break;
 	}
 	case 0x5f00:
-		regs->eax = 0x005f;
+		X86_EAX = 0x005f;
 		res = 1;
 		break;
 	case 0x5f01:
-		regs->eax = 0x5f;
-		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+		X86_EAX = 0x5f;
+		X86_ECX = (X86_ECX & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
 		res = 1;
 		break;
 	case 0x5f02:
-		regs->eax=0x5f;
-		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
-		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
+		X86_EAX=0x5f;
+		X86_EBX= (X86_EBX & 0xffff0000) | 2;
+		X86_ECX= (X86_ECX & 0xffff0000) | 0x401;  // PAL + crt only
+		X86_EDX= (X86_EDX & 0xffff0000) | 0;  // TV Layout - default
 		res=1;
 		break;
 	case 0x5f0f:
-		regs->eax = 0x005f;
+		X86_EAX = 0x005f;
 		res = 1;
 		break;
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
-		regs->eax = 0;
+				X86_EAX & 0xffff);
+		X86_EAX = 0;
 		break;
 	}
 	return res;

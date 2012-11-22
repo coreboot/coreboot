@@ -24,9 +24,10 @@
 #include <console/console.h>
 #include <arch/interrupt.h>
 #include "vgabios.h"
+#include <x86emu/regs.h>
 
 
-int tim5690_int15_handler(struct eregs *regs);
+int tim5690_int15_handler(void);
 
 static rs690_vbios_regs vbios_regs_local;
 
@@ -38,30 +39,30 @@ static void vbios_fun_init(rs690_vbios_regs *vbios_regs)
 }
 
 /* BIOS int15 function */
-int tim5690_int15_handler(struct eregs *regs)
+int tim5690_int15_handler(void)
 {
         int res = 0;
 
         printk(BIOS_DEBUG, "tim5690_int15_handler\n");
 
-        switch (regs->eax & 0xffff) {
+        switch (X86_EAX & 0xffff) {
         case AMD_RS690_INT15:
-                switch (regs->ebx & 0xff) {
+                switch (X86_EBX & 0xff) {
                 case 0x00:
-                        regs->eax &= ~(0xff);
-                        regs->ebx = (regs->ebx & ~(0xff)) | vbios_regs_local.int15_regs.fun00_panel_id;
+                        X86_EAX &= ~(0xff);
+                        X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun00_panel_id;
                         res = 1;
                         break;
                 case 0x05:
-                        regs->eax &= ~(0xff);
-                        regs->ebx = (regs->ebx & ~(0xff)) | vbios_regs_local.int15_regs.fun05_tv_standard;
+                        X86_EAX &= ~(0xff);
+                        X86_EBX = (X86_EBX & ~(0xff)) | vbios_regs_local.int15_regs.fun05_tv_standard;
                         res = 1;
                         break;
                 }
                 break;
         default:
                 printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-                                regs->eax & 0xffff);
+                                X86_EAX & 0xffff);
 		break;
         }
 

@@ -31,6 +31,7 @@
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
 #include "registers.h"
+#include <x86emu/regs.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <devices/oprom/realmode/x86.h>
 #endif
@@ -44,7 +45,7 @@
 #define CRTC_INDEX	0x3d4
 #define CRTC_DATA	0x3d5
 
-static int via_cx700_int15_handler(struct eregs *regs)
+static int via_cx700_int15_handler(void)
 {
 	int res=0;
 	u8 mem_speed;
@@ -67,62 +68,62 @@ static int via_cx700_int15_handler(struct eregs *regs)
 
 	printk(BIOS_DEBUG, "via_cx700_int15_handler\n");
 
-	switch(regs->eax & 0xffff) {
+	switch(X86_EAX & 0xffff) {
 	case 0x5f00:	/* VGA POST Initialization Signal */
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 		res = 1;
 		break;
 
 	case 0x5f01:	/* Software Panel Type Configuration */
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 		// panel type =  2 = 1024 * 768
-		regs->ecx = (regs->ecx & 0xffffff00 ) | 2;
+		X86_ECX = (X86_ECX & 0xffffff00 ) | 2;
 		res = 1;
 		break;
 
 	case 0x5f27:	/* Boot Device Selection */
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 
-		regs->ebx = 0x00000000; // 0 -> default
-		regs->ecx = 0x00000000; // 0 -> default
+		X86_EBX = 0x00000000; // 0 -> default
+		X86_ECX = 0x00000000; // 0 -> default
 		// TV Layout - default
-		regs->edx = (regs->edx & 0xffffff00) | 0;
+		X86_EDX = (X86_EDX & 0xffffff00) | 0;
 		res=1;
 		break;
 
 	case 0x5f0b:	/* Get Expansion Setting */
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 
-		regs->ecx = regs->ecx & 0xffffff00; // non-expansion
+		X86_ECX = X86_ECX & 0xffffff00; // non-expansion
 		// regs->ecx = regs->ecx & 0xffffff00 | 1; // expansion
 		res=1;
 		break;
 
 	case 0x5f0f:	/* VGA Post Completion */
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 		res=1;
 		break;
 
 	case 0x5f18:
-		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		X86_EAX = (X86_EAX & 0xffff0000 ) | 0x5f;
 #define UMA_SIZE_8MB		(3 << 0)
 #define UMA_SIZE_16MB		(4 << 0)
 #define UMA_SIZE_32MB		(5 << 0)
 
-		regs->ebx = (regs->ebx & 0xffff0000 ) | MEMORY_SPEED_533MHZ | UMA_SIZE_32MB;
+		X86_EBX = (X86_EBX & 0xffff0000 ) | MEMORY_SPEED_533MHZ | UMA_SIZE_32MB;
 
 		mem_speed = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 4)), SCRATCH_DRAM_FREQ);
 		if (mem_speed > 5)
 			mem_speed = 5;
 
-		regs->ebx |= memory_mapping[mem_speed];
+		X86_EBX |= memory_mapping[mem_speed];
 
 		res=1;
 		break;
 
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
-				regs->eax & 0xffff);
+				X86_EAX & 0xffff);
 		break;
 	}
 	return res;

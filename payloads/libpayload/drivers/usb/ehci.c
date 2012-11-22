@@ -626,8 +626,14 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 		intrq->head = intrq->head->next;
 	}
 	/* reset queue if we fully processed it after underrun */
-	else if (intrq->qh.td.next_qtd & QTD_TERMINATE) {
+	else if ((intrq->qh.td.next_qtd & QTD_TERMINATE) &&
+			/* to prevent race conditions:
+			   not our head and not active */
+			(intrq->qh.current_td_ptr !=
+			 virt_to_phys(&intrq->head->td)) &&
+			!(intrq->qh.td.token & QTD_ACTIVE)) {
 		usb_debug("resetting underrun ehci interrupt queue.\n");
+		intrq->qh.current_td_ptr = 0;
 		memset((void *)&intrq->qh.td, 0, sizeof(intrq->qh.td));
 		intrq->qh.td.next_qtd = virt_to_phys(&intrq->head->td);
 	}

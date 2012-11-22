@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Zheng Bao <zheng.bao@amd.com>
+Submitted-by: Patrick Georgi <patrick@georgi-clan.de>
+Submitted-at: Thu, 22 Nov 2012 08:08:48 +0100
+Reviewed-on: http://review.coreboot.org/1884
+Project: coreboot
+Branch: refs/heads/master

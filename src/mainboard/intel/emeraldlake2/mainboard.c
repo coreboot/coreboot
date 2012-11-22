@@ -42,13 +42,13 @@ void mainboard_suspend_resume(void)
 	outb(0xcb, 0xb2);
 }
 
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) && CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
 	int res=0;
 
-	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
-			__func__, X86_EAX & 0xffff);
+	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
+			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
 	switch(X86_EAX & 0xffff) {
 	case 0x5f34:
@@ -137,66 +137,6 @@ static int int15_handler(void)
 		break;
 	}
 	return res;
-}
-#endif
-
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
-static int int15_handler(void)
-{
-	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-			  __func__, X86_AX, X86_BX, X86_CX, X86_DX);
-
-	switch (X86_AX) {
-	case 0x5f34:
-		/*
-		 * Set Panel Fitting Hook:
-		 *  bit 2 = Graphics Stretching
-		 *  bit 1 = Text Stretching
-		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 */
-		X86_AX = 0x005f;
-		X86_CX = 0x0001;
-		break;
-	case 0x5f35:
-		/*
-		 * Boot Display Device Hook:
-		 *  bit 0 = CRT
-		 *  bit 1 = TV (eDP) *
-		 *  bit 2 = EFP *
-		 *  bit 3 = LFP
-		 *  bit 4 = CRT2
-		 *  bit 5 = TV2 (eDP) *
-		 *  bit 6 = EFP2 *
-		 *  bit 7 = LFP2
-		 */
-		X86_AX = 0x005f;
-		X86_CX = 0x0000;
-		break;
-	case 0x5f51:
-		/*
-		 * Hook to select active LFP configuration:
-		 *  00h = No LVDS, VBIOS does not enable LVDS
-		 *  01h = Int-LVDS, LFP driven by integrated LVDS decoder
-		 *  02h = SVDO-LVDS, LFP driven by SVDO decoder
-		 *  03h = eDP, LFP Driven by Int-DisplayPort encoder
-		 */
-		X86_AX = 0x005f;
-		X86_CX = 3;
-		break;
-	case 0x5f70:
-		/* Unknown */
-		X86_AX = 0x005f;
-		X86_CX = 0;
-		break;
-	default:
-		/* Interrupt was not handled */
-		printk(BIOS_DEBUG, "Unknown INT15 function: 0x%04x\n",
-			X86_AX);
-		return 0;
-	}
-
-	/* Interrupt handled */
-	return 1;
 }
 #endif
 

@@ -128,15 +128,14 @@ ohci_rh_scanport (usbdev_t *dev, int port)
 static int
 ohci_rh_report_port_changes (usbdev_t *dev)
 {
-	int i;
+	ohci_t *const ohcic = OHCI_INST (dev->controller);
 
-	if (!(OHCI_INST (dev->controller)->opreg->HcInterruptStatus & RootHubStatusChange)) return -1;
-	OHCI_INST (dev->controller)->opreg->HcInterruptStatus = RootHubStatusChange;
-	usb_debug("port change\n");
+	int i;
 
 	for (i = 0; i < RH_INST(dev)->numports; i++) {
 		// maybe detach+attach happened between two scans?
-		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[i] & ConnectStatusChange) {
+		if (ohcic->opreg->HcRhPortStatus[i] & ConnectStatusChange) {
+			ohcic->opreg->HcRhPortStatus[i] = ConnectStatusChange;
 			usb_debug("attachment change on port %d\n", i);
 			return i;
 		}
@@ -158,7 +157,17 @@ ohci_rh_destroy (usbdev_t *dev)
 static void
 ohci_rh_poll (usbdev_t *dev)
 {
+	ohci_t *const ohcic = OHCI_INST (dev->controller);
+
 	int port;
+
+	/* Check if anything changed. */
+	if (!(ohcic->opreg->HcInterruptStatus & RootHubStatusChange))
+		return;
+	ohcic->opreg->HcInterruptStatus = RootHubStatusChange;
+	usb_debug("root hub status change\n");
+
+	/* Scan ports with changed connection status. */
 	while ((port = ohci_rh_report_port_changes (dev)) != -1)
 		ohci_rh_scanport (dev, port);
 }

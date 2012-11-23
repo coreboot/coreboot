@@ -42,9 +42,22 @@ enum { GET_REPORT = 0x1, GET_IDLE = 0x2, GET_PROTOCOL = 0x3, SET_REPORT =
 		0x9, SET_IDLE = 0xa, SET_PROTOCOL = 0xb
 };
 
+typedef union {
+	struct {
+		u8 modifiers;
+		u8 repeats;
+		u8 keys[6];
+	};
+	u8 buffer[8];
+} usb_hid_keyboard_event_t;
+
 typedef struct {
 	void* queue;
 	hid_descriptor_t *descriptor;
+
+	usb_hid_keyboard_event_t previous;
+	int lastkeypress;
+	int repeat_delay;
 } usbhid_inst_t;
 
 #define HID_INST(dev) ((usbhid_inst_t*)(dev)->data)
@@ -241,25 +254,17 @@ static void usb_hid_keyboard_queue(int ch) {
 		keybuffer[keycount++] = ch;
 }
 
-typedef union {
-	struct {
-		u8 modifiers;
-		u8 repeats;
-		u8 keys[6];
-	};
-	u8 buffer[8];
-} usb_hid_keyboard_event_t;
-
 #define KEYBOARD_REPEAT_MS	30
 #define INITIAL_REPEAT_DELAY	10
 #define REPEAT_DELAY		 2
 
 static void
-usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current,
-		usb_hid_keyboard_event_t *previous)
+usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
+		const usb_hid_keyboard_event_t *const current)
 {
+	const usb_hid_keyboard_event_t *const previous = &inst->previous;
+
 	int i, keypress = 0, modifiers = 0;
-	static int lastkeypress = 0, repeat_delay = INITIAL_REPEAT_DELAY;
 
 	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= MOD_CTRL;
 	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= MOD_SHIFT;
@@ -278,19 +283,20 @@ usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current,
 	}
 
 	/* Did the event change at all? */
-	if (lastkeypress && !memcmp(current, previous, sizeof(usb_hid_keyboard_event_t))) {
+	if (inst->lastkeypress &&
+			!memcmp(current, previous, sizeof(*current))) {
 		/* No. Then it's a key repeat event. */
-		if (repeat_delay) {
-			repeat_delay--;
+		if (inst->repeat_delay) {
+			inst->repeat_delay--;
 		} else {
-			usb_hid_keyboard_queue(lastkeypress);
-			repeat_delay = REPEAT_DELAY;
+			usb_hid_keyboard_queue(inst->lastkeypress);
+			inst->repeat_delay = REPEAT_DELAY;
 		}
 
 		return;
 	}
 
-	lastkeypress = 0;
+	inst->lastkeypress = 0;
 
 	for (i=0; i<6; i++) {
 		int j;
@@ -337,8 +343,8 @@ usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current,
 		usb_hid_keyboard_queue(keypress);
 
 		/* Remember for authentic key repeat */
-		lastkeypress = keypress;
-		repeat_delay = INITIAL_REPEAT_DELAY;
+		inst->lastkeypress = keypress;
+		inst->repeat_delay = INITIAL_REPEAT_DELAY;
 	}
 }
 
@@ -346,14 +352,12 @@ static void
 usb_hid_poll (usbdev_t *dev)
 {
 	usb_hid_keyboard_event_t current;
-	static usb_hid_keyboard_event_t previous = {
-		.buffer = { 0, 0, 0, 0, 0, 0, 0, 0}
-	};
-	u8* buf;
+	const u8 *buf;
+
 	while ((buf=dev->controller->poll_intr_queue (HID_INST(dev)->queue))) {
 		memcpy(&current.buffer, buf, 8);
-		usb_hid_process_keyboard_event(&current, &previous);
-		previous = current;
+		usb_hid_process_keyboard_event(HID_INST(dev), &current);
+		HID_INST(dev)->previous = current;
 	}
 }
 
@@ -437,6 +441,8 @@ usb_hid_init (usbdev_t *dev)
 			dev->data = malloc (sizeof (usbhid_inst_t));
 			if (!dev->data)
 				fatal("Not enough memory for USB HID device.\n");
+			memset(&HID_INST(dev)->previous, 0x00,
+			       sizeof(HID_INST(dev)->previous));
 			usb_debug ("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);

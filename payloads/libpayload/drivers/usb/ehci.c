@@ -102,7 +102,7 @@ static void ehci_shutdown (hci_t *controller)
 	free(phys_to_virt(EHCI_INST(controller)->operation->periodiclistbase));
 
 	/* Free dummy QH */
-	free(EHCI_INST(controller)->dummy_qh);
+	free((void *)EHCI_INST(controller)->dummy_qh);
 
 	EHCI_INST(controller)->operation->configflag = 0;
 
@@ -179,10 +179,10 @@ static void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur)
 	qtd_t *next;
 	while (cur) {
 		next = (qtd_t*)phys_to_virt(cur->next_qtd & ~31);
-		free(cur);
+		free((void *)cur);
 		cur = next;
 	}
-	free(qh);
+	free((void *)qh);
 }
 
 static int wait_for_tds(qtd_t *head)
@@ -288,7 +288,7 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	qtd_t *head = memalign(32, sizeof(qtd_t));
 	qtd_t *cur = head;
 	while (1) {
-		memset(cur, 0, sizeof(qtd_t));
+		memset((void *)cur, 0, sizeof(qtd_t));
 		cur->token = QTD_ACTIVE |
 			(pid << QTD_PID_SHIFT) |
 			(0 << QTD_CERR_SHIFT);
@@ -309,7 +309,7 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 
 	/* create QH */
 	ehci_qh_t *qh = memalign(32, sizeof(ehci_qh_t));
-	memset(qh, 0, sizeof(ehci_qh_t));
+	memset((void *)qh, 0, sizeof(ehci_qh_t));
 	qh->horiz_link_ptr = virt_to_phys(qh) | QH_QH;
 	qh->epchar = ep->dev->address |
 		(endp << QH_EP_SHIFT) |
@@ -356,7 +356,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	/* create qTDs */
 	qtd_t *head = memalign(32, sizeof(qtd_t));
 	qtd_t *cur = head;
-	memset(cur, 0, sizeof(qtd_t));
+	memset((void *)cur, 0, sizeof(qtd_t));
 	cur->token = QTD_ACTIVE |
 		(toggle?QTD_TOGGLE_DATA1:0) |
 		(EHCI_SETUP << QTD_PID_SHIFT) |
@@ -373,7 +373,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	if (dalen > 0) {
 		toggle ^= 1;
 		cur = next;
-		memset(cur, 0, sizeof(qtd_t));
+		memset((void *)cur, 0, sizeof(qtd_t));
 		cur->token = QTD_ACTIVE |
 			(toggle?QTD_TOGGLE_DATA1:0) |
 			(((dir == OUT)?EHCI_OUT:EHCI_IN) << QTD_PID_SHIFT) |
@@ -388,7 +388,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 
 	toggle = 1;
 	cur = next;
-	memset(cur, 0, sizeof(qtd_t));
+	memset((void *)cur, 0, sizeof(qtd_t));
 	cur->token = QTD_ACTIVE |
 		(toggle?QTD_TOGGLE_DATA1:QTD_TOGGLE_DATA0) |
 		((dir == OUT)?EHCI_IN:EHCI_OUT) << QTD_PID_SHIFT |
@@ -399,7 +399,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 
 	/* create QH */
 	ehci_qh_t *qh = memalign(32, sizeof(ehci_qh_t));
-	memset(qh, 0, sizeof(ehci_qh_t));
+	memset((void *)qh, 0, sizeof(ehci_qh_t));
 	qh->horiz_link_ptr = virt_to_phys(qh) | QH_QH;
 	qh->epchar = dev->address |
 		(endp << QH_EP_SHIFT) |
@@ -525,7 +525,7 @@ static void *ehci_create_intr_queue(
 
 	/* initialize QH */
 	const int endp = ep->endpoint & 0xf;
-	memset(&intrq->qh, 0, sizeof(intrq->qh));
+	memset((void *)&intrq->qh, 0, sizeof(intrq->qh));
 	intrq->qh.horiz_link_ptr = PS_TERMINATE;
 	intrq->qh.epchar = ep->dev->address |
 		(endp << QH_EP_SHIFT) |
@@ -628,7 +628,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 	/* reset queue if we fully processed it after underrun */
 	else if (intrq->qh.td.next_qtd & QTD_TERMINATE) {
 		usb_debug("resetting underrun ehci interrupt queue.\n");
-		memset(&intrq->qh.td, 0, sizeof(intrq->qh.td));
+		memset((void *)&intrq->qh.td, 0, sizeof(intrq->qh.td));
 		intrq->qh.td.next_qtd = virt_to_phys(&intrq->head->td);
 	}
 	return ret;
@@ -699,7 +699,7 @@ ehci_init (pcidev_t addr)
 	 * and doesn't violate the standard.
 	 */
 	EHCI_INST(controller)->dummy_qh = (ehci_qh_t *)memalign(32, sizeof(ehci_qh_t));
-	memset(EHCI_INST(controller)->dummy_qh, 0,
+	memset((void *)EHCI_INST(controller)->dummy_qh, 0,
 		sizeof(*EHCI_INST(controller)->dummy_qh));
 	EHCI_INST(controller)->dummy_qh->horiz_link_ptr = QH_TERMINATE;
 	for (i = 0; i < 1024; ++i)

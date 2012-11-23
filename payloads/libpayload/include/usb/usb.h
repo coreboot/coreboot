@@ -230,6 +230,7 @@ void init_device_entry (hci_t *controller, int num);
 
 void set_feature (usbdev_t *dev, int endp, int feature, int rtype);
 void get_status (usbdev_t *dev, int endp, int rtype, int len, void *data);
+void set_configuration (usbdev_t *dev);
 int clear_feature (usbdev_t *dev, int endp, int feature, int rtype);
 int clear_stall (endpoint_t *ep);
 

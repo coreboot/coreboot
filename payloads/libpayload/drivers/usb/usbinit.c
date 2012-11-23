@@ -42,7 +42,7 @@
  * @param dev PCI device id at bus
  * @param func function id of the controller
  */
-int usb_controller_initialize(int bus, int dev, int func)
+static int usb_controller_initialize(int bus, int dev, int func)
 {
 	u32 class;
 	u32 devclass;

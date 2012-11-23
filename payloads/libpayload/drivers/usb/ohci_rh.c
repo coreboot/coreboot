@@ -48,8 +48,8 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 	 * After reset, the port will be enabled automatically (ohci spec
 	 * 7.4.4).
 	 */
-	int delay = 100; /* 100 * 500us == 50ms */
-	while (delay > 0) {
+	int total_delay = 100; /* 100 * 500us == 50ms */
+	while (total_delay > 0) {
 		if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port]
 					& CurrentConnectStatus))
 			return;
@@ -61,7 +61,7 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 		while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
 					& PortResetStatus)
 				&& timeout--) {
-			udelay(500); delay--;
+			udelay(500); total_delay--;
 		}
 		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
 				& PortResetStatus) {

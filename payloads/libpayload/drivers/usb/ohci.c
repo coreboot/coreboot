@@ -205,6 +205,7 @@ ohci_stop (hci_t *controller)
 // TODO: turn off all operation of OHCI
 }
 
+#if 0
 static void
 dump_td(td_t *cur, int level)
 {
@@ -216,6 +217,7 @@ dump_td(td_t *cur, int level)
 	usb_debug("%s toggle: %x\n", spc, !!(cur->config & TD_TOGGLE_DATA1));
 #endif
 }
+#endif
 
 static int
 wait_for_ed(usbdev_t *dev, ed_t *head, int pages)

@@ -32,6 +32,7 @@ SECTIONS
 	 */
 	.text : {
 		_text = .;
+		*(.textfirst);
 		*(.text);
 		*(.text.*);
 		. = ALIGN(16);

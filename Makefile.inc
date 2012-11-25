@@ -60,6 +60,40 @@ subdirs-y += site-local
 # Add source classes and their build options
 classes-y := ramstage romstage smm cpu_microcode
 
+#######################################################################
+# Helper functions for ramstage postprocess
+spc :=
+spc +=
+$(spc) :=
+$(spc) +=
+
+# files-in-dir-recursive,dir,files
+files-in-dir-recursive=$(filter $(1)%,$(2))
+
+# parent-dir,dir/
+parent-dir=$(dir $(subst $( ),/,$(strip $(subst /, ,$(1)))))
+
+# filters out exactly the directory specified
+# filter-out-dir,dir_to_keep,dirs
+filter-out-dir=$(filter-out $(1),$(2))
+
+# filters out dir_to_keep and all its parents
+# filter-out-dirs,dir_to_keep,dirs
+filter-out-dirs=$(if $(filter-out ./,$(1)),$(call filter-out-dirs,$(call parent-dir,$(1)),$(call filter-out-dir,$(1),$(2))),$(call filter-out-dir,$(1),$(2)))
+
+# dir-wildcards,dirs
+dir-wildcards=$(addsuffix %,$(1))
+
+# files-in-dir,dir,files
+files-in-dir=$(filter-out $(call dir-wildcards,$(call filter-out-dirs,$(1),$(dir $(2)))),$(call files-in-dir-recursive,$(1),$(2)))
+
+#######################################################################
+# reduce command line length by linking the objects of each
+# directory into an intermediate file
+ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
+	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD) -o $$@ -r $$^ ) \
+	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
+
 romstage-c-ccopts:=-D__PRE_RAM__
 romstage-S-ccopts:=-D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)

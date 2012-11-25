@@ -1,6 +1,6 @@
 #include <cpu/x86/post_code.h>
 
-	.section ".text"
+	.section ".textfirst"
 	.code32
 	.globl _start
 _start:

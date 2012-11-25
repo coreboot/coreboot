@@ -237,6 +237,10 @@ $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
 
+# Call post-processors if they're defined
+$(foreach class,$(classes),\
+	$(if $(value $(class)-postprocess),$(eval $(call $(class)-postprocess,$($(class)-objs)))))
+
 allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))

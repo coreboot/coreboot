@@ -78,7 +78,6 @@ HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
-LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -print-libgcc-file-name)
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
@@ -113,6 +112,31 @@ real-all: config
 else
 
 include $(HAVE_DOTCONFIG)
+
+ARCHDIR-$(CONFIG_ARCH_ARM)     := armv7
+ARCHDIR-$(CONFIG_ARCH_X86)     := x86
+
+ARCH-y := $(ARCHDIR-y)
+
+# If architecture folder name is different from GCC binutils architecture name,
+# override here.
+ARCH-$(CONFIG_ARCH_ARM)     := littlearm
+ARCH-$(CONFIG_ARCH_X86)     := i386
+
+CC := $(CC_$(ARCH-y))
+AS := $(AS_$(ARCH-y))
+LD := $(LD_$(ARCH-y))
+NM := $(NM_$(ARCH-y))
+OBJCOPY := $(OBJCOPY_$(ARCH-y))
+OBJDUMP := $(OBJDUMP_$(ARCH-y))
+READELF := $(READELF_$(ARCH-y))
+STRIP := $(STRIP_$(ARCH-y))
+AR := $(AR_$(ARCH-y))
+
+CFLAGS += $(CFLAGS_$(ARCH-y))
+
+LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && \
+		      $(CC) -print-libgcc-file-name)
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)

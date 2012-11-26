@@ -21,7 +21,9 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#if CONFIG_CMOS_POST
 #include <pc80/mc146818rtc.h>
+#endif
 #include <elog.h>
 
 /* Write POST information */

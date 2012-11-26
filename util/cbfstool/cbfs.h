@@ -21,6 +21,12 @@
 
 #include <stdint.h>
 
+#define CBFS_HEADER_MAGIC  0x4F524243
+#define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
+#define VERSION1 0x31313131
+#define VERSION2 0x31313132
+#define VERSION  VERSION2
+
 struct cbfs_header {
 	uint32_t magic;
 	uint32_t version;
@@ -28,8 +34,14 @@ struct cbfs_header {
 	uint32_t bootblocksize;
 	uint32_t align;
 	uint32_t offset;
-	uint32_t pad[2];
+	uint32_t architecture;
+	uint32_t pad[1];
 } __attribute__ ((packed));
+
+// "Legacy" refers to cbfs headers before architecture is defined (i.e., X86).
+#define CBFS_ARCHITECTURE_LEGACY   0xFFFFFFFF
+#define CBFS_ARCHITECTURE_ARM      0x10
+#define CBFS_ARCHITECTURE_X86      0x20
 
 struct cbfs_file {
 	uint8_t magic[8];

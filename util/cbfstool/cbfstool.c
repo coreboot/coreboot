@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
+ * Copyright (C) 2012 Google Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,6 +175,11 @@ static int cbfs_add_stage(void)
 
 	if (!rom_name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	if (arch == ARCH_UNKNOWN) {
+		fprintf(stderr, "E: You need to specify -m/--machine arch\n");
 		return 1;
 	}
 
@@ -372,6 +378,11 @@ static int cbfs_create(void)
 		return 1;
 	}
 
+	if (arch == ARCH_UNKNOWN) {
+		fprintf(stderr, "E: You need to specify -m/--machine arch\n");
+		return 1;
+	}
+
 	return create_cbfs_image(cbfs_name, rom_size, rom_bootblock,
 						rom_alignment, rom_offset);
 }
@@ -387,6 +398,11 @@ static int cbfs_locate(void)
 
 	if (!rom_name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	if (arch == ARCH_UNKNOWN) {
+		fprintf(stderr, "E: You need to specify -m/--machine arch\n");
 		return 1;
 	}
 
@@ -447,11 +463,11 @@ static int cbfs_extract(void)
 static const struct command commands[] = {
 	{"add", "f:n:t:b:h?", cbfs_add},
 	{"add-payload", "f:n:t:c:b:h?", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:h?", cbfs_add_stage},
+	{"add-stage", "f:n:t:c:b:m:h?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:h?", cbfs_add_flat_binary},
 	{"remove", "n:h?", cbfs_remove},
-	{"create", "s:B:a:o:h?", cbfs_create},
-	{"locate", "f:n:a:h?", cbfs_locate},
+	{"create", "s:B:a:o:m:h?", cbfs_create},
+	{"locate", "f:n:a:m:h?", cbfs_locate},
 	{"print", "h?", cbfs_print},
 	{"extract", "n:f:h?", cbfs_extract},
 };
@@ -468,6 +484,7 @@ static struct option long_options[] = {
 	{"alignment",    required_argument, 0, 'a' },
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
+	{"arch",         required_argument, 0, 'm' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },
 	{NULL,           0,                 0,  0  }
@@ -481,26 +498,28 @@ static void usage(char *name)
 	     " %s FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
 	     "  -h		Display this help message\n\n"
 	     "COMMANDs:\n"
-	     " add -f FILE -n NAME -t TYPE [-b base-address]             "
+	     " add -f FILE -n NAME -t TYPE [-b base-address]               "
 			"Add a component\n"
-	     " add-payload -f FILE -n NAME [-c compression] [-b base]    "
+	     " add-payload -f FILE -n NAME [-c compression] [-b base]      "
 			"Add a payload to the ROM\n"
-	     " add-stage -f FILE -n NAME [-c compression] [-b base]      "
+	     " add-stage -f FILE -n NAME [-c compression] [-b base] -m ARCH"
 			"Add a stage to the ROM\n"
 	     " add-flat-binary -f FILE -n NAME -l load-address \\\n"
-	     "        -e entry-point [-c compression] [-b base]          "
+	     "        -e entry-point [-c compression] [-b base]            "
 			"Add a 32bit flat mode binary\n"
-	     " remove -n NAME                                            "
+	     " remove -n NAME                                              "
 			"Remove a component\n"
-	     " create -s size -B bootblock [-a align] [-o offset]        "
+	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
 			"Create a ROM file\n"
-	     " locate -f FILE -n NAME -a align                           "
+	     " locate -f FILE -n NAME -a align -m ARCH                     "
 			"Find a place for a file of that size\n"
-	     " print                                                     "
+	     " print                                                       "
 			"Show the contents of the ROM\n"
-	     " extract -n NAME -f FILE                                   "
+	     " extract -n NAME -f FILE                                     "
 			"Extracts a raw payload from ROM\n"
 	     "\n"
+	     "ARCHes:\n"
+	     "  armv7, x86\n"
 	     "TYPEs:\n", name, name
 	    );
 	print_supported_filetypes();
@@ -609,6 +628,9 @@ int main(int argc, char **argv)
 				break;
 			case 'v':
 				verbose++;
+				break;
+			case 'm':
+				arch = string_to_arch(optarg);
 				break;
 			case 'h':
 			case '?':

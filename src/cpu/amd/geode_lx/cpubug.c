@@ -26,7 +26,6 @@
 #include <device/device.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 

@@ -27,7 +27,6 @@
 #include <cpu/cpu.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include "i82830.h"
 
 static void northbridge_init(device_t dev)

@@ -27,7 +27,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <cpu/cpu.h>
 #include "northbridge.h"
 #include "i82810.h"

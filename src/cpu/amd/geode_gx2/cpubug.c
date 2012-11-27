@@ -6,7 +6,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <cpu/amd/gx2def.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>

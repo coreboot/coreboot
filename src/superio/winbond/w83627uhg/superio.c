@@ -25,7 +25,6 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <bitops.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include "chip.h"

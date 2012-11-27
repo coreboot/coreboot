@@ -5,7 +5,7 @@
 #include <device/pci_ops.h>
 #include <device/smbus.h>
 #include <pc80/mc146818rtc.h>
-#include <bitops.h>
+#include <lib.h>
 #include <arch/io.h>
 #include "amd8111.h"
 #include "amd8111_smbus.h"

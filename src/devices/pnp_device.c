@@ -24,7 +24,6 @@
 #include <console/console.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <bitops.h>
 #include <string.h>
 #include <arch/io.h>
 #include <device/device.h>

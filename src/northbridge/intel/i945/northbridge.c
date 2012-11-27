@@ -26,7 +26,6 @@
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
 #include "i945.h"

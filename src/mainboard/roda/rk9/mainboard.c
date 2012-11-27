@@ -23,7 +23,8 @@
 //#include <pc80/mc146818rtc.h>
 #include <device/device.h>
 #include <console/console.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_VGA_ROM_RUN
+#include <arch/interrupt.h>
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/keyboard.h>
@@ -36,7 +37,7 @@
 #endif
 
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#if CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
 	enum {
@@ -57,16 +58,16 @@ static int int15_handler(void)
 		PANEL_FIT_GFX_STRETCH	= (1 << 2),
 	};
 
-	switch (M.x86.R_AX) {
+	switch (X86_AX) {
 	case 0x5f34:
 		/* Set Panel Fitting Hook */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = PANEL_FIT_CENTERING;
+		X86_AX = 0x005f;
+		X86_CX = PANEL_FIT_CENTERING;
 		break;
 	case 0x5f35:
 		/* Boot Display Device Hook */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = BOOT_DISPLAY_DEFAULT; /* Select automatically. */
+		X86_AX = 0x005f;
+		X86_CX = BOOT_DISPLAY_DEFAULT; /* Select automatically. */
 		break;
 	case 0x5f40:
 		/* Boot Panel Type Hook */
@@ -75,8 +76,8 @@ static int int15_handler(void)
 		/* LCD panel type is SIO GPIO40-43.
 		   It's controlled by a DIP switch but was always
 		   set to 4 while only values of 5 and 6 worked. */
-		M.x86.R_AX = 0x005f;
-		M.x86.R_CX = (inb(0x60f) & 0x0f) + 1;
+		X86_AX = 0x005f;
+		X86_CX = (inb(0x60f) & 0x0f) + 1;
 		break;
 	case 0x5f70:
 		/* Sandybridge boards return 0 here. */
@@ -89,7 +90,7 @@ static int int15_handler(void)
 		/* Interrupt was not handled. */
 		printk(BIOS_DEBUG,
 			"%s: AX=%04x BX=%04x CX=%04x DX=%04x\n", __func__,
-			M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
+			X86_AX, X86_BX, X86_CX, X86_DX);
 		return 0;
 	}
 
@@ -97,12 +98,6 @@ static int int15_handler(void)
 	return 1;
 }
 
-static void int15_install(void)
-{
-	typedef int (* yabel_handleIntFunc)(void);
-	extern yabel_handleIntFunc yabel_intFuncArray[256];
-	yabel_intFuncArray[0x15] = int15_handler;
-}
 #endif
 
 static void verb_setup(void)
@@ -131,9 +126,9 @@ static void mainboard_enable(device_t dev)
 {
 	ec_setup();
 	verb_setup();
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL// || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
-	int15_install();
+	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 
 	/* We have no driver for the embedded controller since the firmware

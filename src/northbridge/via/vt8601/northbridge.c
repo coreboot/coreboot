@@ -8,7 +8,7 @@
 #include <cpu/cpu.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include "northbridge.h"
 
 /*

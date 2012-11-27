@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/smbus.h>
-#include <bitops.h>
+#include <lib.h>
 #include <arch/io.h>
 #include "ck804.h"
 #include "smbus.h"

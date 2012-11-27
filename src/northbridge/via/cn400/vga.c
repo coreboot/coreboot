@@ -31,7 +31,7 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <cpu/cpu.h>
 #include <arch/interrupt.h>
 #include "northbridge.h"

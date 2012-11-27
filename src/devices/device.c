@@ -33,7 +33,7 @@
  */
 
 #include <console/console.h>
-#include <bitops.h>
+#include <lib.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

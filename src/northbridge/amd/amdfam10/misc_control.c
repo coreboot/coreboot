@@ -31,7 +31,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
-#include <bitops.h>
+#include <lib.h>
 #include <cpu/amd/model_10xxx_rev.h>
 
 #include "amdfam10.h"

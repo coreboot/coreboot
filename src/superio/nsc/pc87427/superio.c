@@ -24,7 +24,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <string.h>
-#include <bitops.h>
 #include <stdlib.h>
 #include "chip.h"
 #include "pc87427.h"

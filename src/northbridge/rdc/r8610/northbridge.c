@@ -28,7 +28,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <smbios.h>
 
 #if CONFIG_WRITE_HIGH_TABLES

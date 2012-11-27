@@ -26,7 +26,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <string.h>
-#include <bitops.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>

@@ -6,7 +6,6 @@
 #include <cpu/cpu.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 
 #if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>

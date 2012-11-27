@@ -23,6 +23,13 @@ struct chip_operations {
 
 #define CHIP_NAME(X) .name = X,
 
+#define __CONCAT1(x,y) x ## y
+#define __CONCAT2(x,y) __CONCAT1(x,y)
+#define CHIP_GLOBAL(f) __CONCAT2(__CHIP_PREFIX__,f)
+
+#define DEVICE_NAME(s) const char CHIP_GLOBAL(name)[] = s
+#define ROOT_COMPLEX_NAME(s) const char CHIP_GLOBAL(root_complex_name)[] = s
+
 struct bus;
 
 struct device_operations {

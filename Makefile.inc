@@ -100,6 +100,9 @@ ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
 
+# This macro expands to the component path like "southbridge_intel_i82801gx".
+ramstage-c-ccopts:=-D__CHIP_PREFIX__="$$(subst /,_,$$(dir $$(1)))"
+
 ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
 else

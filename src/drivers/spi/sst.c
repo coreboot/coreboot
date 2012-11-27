@@ -20,6 +20,7 @@
 #define CMD_SST_WRDI		0x04	/* Write Disable */
 #define CMD_SST_RDSR		0x05	/* Read Status Register */
 #define CMD_SST_WRSR		0x01	/* Write Status Register */
+#define CMD_SST_EWSR		0x50	/* Enable Write Status Register */
 #define CMD_SST_READ		0x03	/* Read Data Bytes */
 #define CMD_SST_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
 #define CMD_SST_BP		0x02	/* Byte Program */
@@ -97,6 +98,15 @@ sst_enable_writing(struct spi_flash *flash)
 	int ret = spi_flash_cmd(flash->spi, CMD_SST_WREN, NULL, 0);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Enabling Write failed\n");
+	return ret;
+}
+
+static int
+sst_enable_writing_status(struct spi_flash *flash)
+{
+	int ret = spi_flash_cmd(flash->spi, CMD_SST_EWSR, NULL, 0);
+	if (ret)
+		printk(BIOS_WARNING, "SF: Enabling Write Status failed\n");
 	return ret;
 }
 
@@ -212,7 +222,7 @@ sst_unlock(struct spi_flash *flash)
 	int ret;
 	u8 cmd, status;
 
-	ret = sst_enable_writing(flash);
+	ret = sst_enable_writing_status(flash);
 	if (ret)
 		return ret;
 

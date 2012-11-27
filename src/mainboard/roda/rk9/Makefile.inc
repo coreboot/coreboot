@@ -17,5 +17,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-driver-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += ti_pci7xx1.c
+ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += ti_pci7xx1.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

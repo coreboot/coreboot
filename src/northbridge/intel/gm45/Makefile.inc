@@ -33,7 +33,7 @@ romstage-$(CONFIG_IOMMU) += iommu.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 
-driver-y += ram_calc.c
-driver-y += northbridge.c
+ramstage-y += ram_calc.c
+ramstage-y += northbridge.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += delay.c

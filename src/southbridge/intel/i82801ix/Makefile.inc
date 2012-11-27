@@ -18,14 +18,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-y += i82801ix.c
-driver-y += pci.c
-driver-y += lpc.c
-driver-y += pcie.c
-driver-y += usb_ehci.c
-driver-y += sata.c
-driver-y += hdaudio.c
-driver-y += thermal.c
+ramstage-y += i82801ix.c
+ramstage-y += pci.c
+ramstage-y += lpc.c
+ramstage-y += pcie.c
+ramstage-y += usb_ehci.c
+ramstage-y += sata.c
+ramstage-y += hdaudio.c
+ramstage-y += thermal.c
 
 ramstage-y += ../i82801gx/usb_debug.c
 ramstage-y += ../i82801gx/reset.c

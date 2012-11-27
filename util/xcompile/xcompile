@@ -151,6 +151,7 @@ TWIDTH_arm="32"
 TARCH_x86="i386"
 TCLIST_x86="i386 x86_64"
 TWIDTH_x86="32"
+XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURE; do

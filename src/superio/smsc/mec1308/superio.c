@@ -25,7 +25,7 @@
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "chip.h"

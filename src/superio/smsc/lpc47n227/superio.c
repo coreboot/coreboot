@@ -26,7 +26,7 @@
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <uart8250.h>
 #include <assert.h>
 #include <stdlib.h>

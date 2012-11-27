@@ -7,7 +7,7 @@
 #include <device/pci.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <delay.h>
 #include <smbios.h>
 

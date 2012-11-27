@@ -188,6 +188,7 @@ static void mb_gpio_init(u16 *iobase)
         it8712f_exit_conf();
 }
 
+#if CONFIG_VGA_ROM_RUN
 /* The LCD's panel id seletion. */
 static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 {
@@ -215,6 +216,7 @@ static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 		break;
 	}
 }
+#endif
 
 /*************************************************
 * enable the dedicated function in tim5690 board.
@@ -222,14 +224,17 @@ static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 *************************************************/
 static void tim5690_enable(device_t dev)
 {
-	rs690_vbios_regs vbios_regs;
 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
+#if CONFIG_VGA_ROM_RUN
+	rs690_vbios_regs vbios_regs;
 	u8 port2;
+#endif
 
 	printk(BIOS_INFO, "Mainboard tim5690 Enable. dev=0x%p\n", dev);
 
 	mb_gpio_init(&gpio_base);
 
+#if CONFIG_VGA_ROM_RUN
 	/* The LCD's panel id seletion by switch. */
 	port2 = inb(gpio_base+1);
 	lcd_panel_id(&vbios_regs, ((~port2) & 0xf));
@@ -237,6 +242,7 @@ static void tim5690_enable(device_t dev)
 	/* No support TV */
 	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
 	vgabios_init(&vbios_regs);
+#endif
 
 	set_thermal_config();
 }

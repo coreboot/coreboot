@@ -41,7 +41,8 @@
 #include "agesawrapper.h"
 
 #ifndef __PRE_RAM__
-#include "spi.h"
+#include <spi.h>
+#include <spi_flash.h>
 #endif
 
 void restore_mtrr(void)
@@ -151,14 +152,18 @@ void move_stack_high_mem(void)
 void OemAgesaSaveMtrr(void)
 {
 #ifndef __PRE_RAM__
-	u32 spi_address;
 	msr_t  msr_data;
-	device_t dev;
 	u32 nvram_pos = S3_DATA_MTRR_POS;
 	u32 i;
+	struct spi_flash *flash;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
-	spi_address = pci_read_config32(dev, 0xA0) & ~0x1F;
+	spi_init();
+
+	flash = spi_flash_probe(0, 0, 0, 0);
+	if (!flash) {
+		printk(BIOS_DEBUG, "Could not find SPI device\n");
+		return;
+	}
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
@@ -167,28 +172,29 @@ void OemAgesaSaveMtrr(void)
 
 	/* Fixed MTRRs */
 	msr_data = rdmsr(0x250);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
 	msr_data = rdmsr(0x258);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
 	msr_data = rdmsr(0x259);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
 	for (i = 0x268; i < 0x270; i++) {
 		msr_data = rdmsr(i);
-		dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+		flash->write(flash, nvram_pos, 4, &msr_data.lo);
 		nvram_pos += 4;
-		dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+		flash->write(flash, nvram_pos, 4, &msr_data.hi);
 		nvram_pos += 4;
 	}
 
@@ -200,35 +206,33 @@ void OemAgesaSaveMtrr(void)
 	/* Variable MTRRs */
 	for (i = 0x200; i < 0x210; i++) {
 		msr_data = rdmsr(i);
-		dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+		flash->write(flash, nvram_pos, 4, &msr_data.lo);
 		nvram_pos += 4;
-		dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+		flash->write(flash, nvram_pos, 4, &msr_data.hi);
 		nvram_pos += 4;
 	}
 
 	/* SYS_CFG */
 	msr_data = rdmsr(0xC0010010);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
 	/* TOM */
 	msr_data = rdmsr(0xC001001A);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
 	/* TOM2 */
 	msr_data = rdmsr(0xC001001D);
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.lo);
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
 	nvram_pos += 4;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos, msr_data.hi);
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
-	write_spi_status((u8 *)spi_address, 0x3c);
-	spi_write_disable((u8 *) spi_address);
 #endif
 }
 
@@ -251,9 +255,9 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 {
 
 	u32 pos = S3_DATA_VOLATILE_POS;
-	u32 spi_address, data;
+	u32 data;
 	u32 nvram_pos;
-	device_t dev;
+	struct spi_flash *flash;
 
 	if (S3DataType == S3DataTypeNonVolatile) {
 		pos = S3_DATA_NONVOLATILE_POS;
@@ -261,39 +265,27 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 		pos = S3_DATA_VOLATILE_POS;
 	}
 
-	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
-	spi_address = pci_read_config32(dev, 0xA0) & ~0x1F;
+	spi_init();
+	flash = spi_flash_probe(0, 0, 0, 0);
+	if (!flash) {
+		printk(BIOS_DEBUG, "Could not find SPI device\n");
+		/* Dont make flow stop. */
+		return AGESA_SUCCESS;
+	}
 
-	/* printk(BIOS_DEBUG, "spi_address=%x\n", spi_address); */
-	read_spi_id((u8 *) spi_address);
-	write_spi_status((u8 *)spi_address, 0);
 	if (S3DataType == S3DataTypeNonVolatile) {
-		sector_erase_spi((u8 *) spi_address, S3_DATA_NONVOLATILE_POS);
+		flash->erase(flash, S3_DATA_NONVOLATILE_POS, 0x1000);
 	} else {
-		sector_erase_spi((u8 *) spi_address, S3_DATA_VOLATILE_POS);
-		sector_erase_spi((u8 *) spi_address,
-			       S3_DATA_VOLATILE_POS + 0x1000);
-		sector_erase_spi((u8 *) spi_address,
-			       S3_DATA_VOLATILE_POS + 0x2000);
-		sector_erase_spi((u8 *) spi_address,
-			       S3_DATA_VOLATILE_POS + 0x3000);
-		sector_erase_spi((u8 *) spi_address,
-			       S3_DATA_VOLATILE_POS + 0x4000);
-		sector_erase_spi((u8 *) spi_address,
-			       S3_DATA_VOLATILE_POS + 0x5000);
+		flash->erase(flash, S3_DATA_VOLATILE_POS, 0x6000);
 	}
 
 	nvram_pos = 0;
-	dword_noneAAI_program((u8 *) spi_address, nvram_pos + pos, DataSize);
+	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
 
 	for (nvram_pos = 0; nvram_pos < DataSize; nvram_pos += 4) {
 		data = *(u32 *) (Data + nvram_pos);
-		dword_noneAAI_program((u8 *) spi_address, nvram_pos + pos + 4,
-				    *(u32 *) (Data + nvram_pos));
+		flash->write(flash, nvram_pos + pos + 4, sizeof(u32), (u32 *)(Data + nvram_pos));
 	}
-	/* write_spi_status((u8 *)spi_address, 0x3c); */
-
-	/* spi_write_disable((u8 *) spi_address); */
 
 	return AGESA_SUCCESS;
 }

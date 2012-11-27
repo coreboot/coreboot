@@ -6,7 +6,7 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include "northbridge.h"
 #include <cpu/amd/gx1def.h>
 #include <cpu/x86/cache.h>

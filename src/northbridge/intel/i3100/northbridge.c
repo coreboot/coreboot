@@ -29,7 +29,7 @@
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <cpu/cpu.h>
 #include "chip.h"
 #include "i3100.h"

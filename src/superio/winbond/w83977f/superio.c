@@ -23,7 +23,7 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <string.h>
-#include <bitops.h>
+#include <lib.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>

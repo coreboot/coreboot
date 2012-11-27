@@ -19,7 +19,7 @@
 
 #include <device/pci.h>
 #include "lpc.h"
-#include <bitops.h>
+#include <lib.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <console/console.h>	/* printk */

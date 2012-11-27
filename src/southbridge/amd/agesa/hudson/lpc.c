@@ -25,7 +25,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
-#include <bitops.h>
+#include <lib.h>
 #include <arch/io.h>
 #include "hudson.h"
 

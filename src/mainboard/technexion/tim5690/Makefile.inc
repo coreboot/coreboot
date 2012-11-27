@@ -23,4 +23,4 @@
 ramstage-y += tn_post_code.c
 
 ramstage-y += speaker.c
-ramstage-y += vgabios.c
+ramstage-$(CONFIG_VGA_ROM_RUN) += vgabios.c

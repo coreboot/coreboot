@@ -149,14 +149,14 @@ int PDC_get_key(void)
 
 #ifdef CONFIG_PC_KEYBOARD
     if ((curses_flags & F_ENABLE_CONSOLE) &&
-        keyboard_havechar()) {
+        keyboard_havechar() && (c==0)) {
         c = keyboard_getchar();
     }
 #endif
 
 #ifdef CONFIG_SERIAL_CONSOLE
     if ((curses_flags & F_ENABLE_SERIAL) &&
-        serial_havechar()) {
+        serial_havechar() && (c==0)) {
         c = cook_serial(serial_getchar());
     }
 #endif

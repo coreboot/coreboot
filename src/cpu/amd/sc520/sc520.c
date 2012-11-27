@@ -12,7 +12,6 @@
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <delay.h>
 
 /*

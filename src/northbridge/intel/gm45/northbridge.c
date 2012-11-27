@@ -26,7 +26,6 @@
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>

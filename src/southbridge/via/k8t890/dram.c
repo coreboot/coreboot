@@ -25,7 +25,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <pc80/mc146818rtc.h>
-#include <bitops.h>
 #include "k8x8xx.h"
 
 static void dram_enable(struct device *dev)

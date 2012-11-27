@@ -21,7 +21,6 @@
 #include <device/pci.h>
 #include <arch/ioapic.h>
 #include "lpc.h"
-#include <bitops.h>
 #include <arch/io.h>
 #include <cbmem.h>
 

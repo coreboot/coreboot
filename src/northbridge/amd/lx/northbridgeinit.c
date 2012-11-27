@@ -26,7 +26,6 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bitops.h>
 #include "northbridge.h"
 #include <cpu/amd/lxdef.h>
 #include <cpu/x86/msr.h>

@@ -78,13 +78,19 @@
 
 /** this is the master cbfs header - it need to be
     located somewhere in the bootblock.  Where it
-    actually lives is up to coreboot. A pointer to
-    this header will live at 0xFFFFFFFc, so we can
-    easily find it. */
+    actually lives is up to coreboot. On x86, a
+    pointer to this header will live at 0xFFFFFFFc,
+    so we can easily find it. */
 
 #define CBFS_HEADER_MAGIC  0x4F524243
+#if CONFIG_ARCH_X86
 #define CBFS_HEADPTR_ADDR 0xFFFFFFFc
+#elif CONFIG_ARCH_ARM
+#define CBFS_HEADPTR_ADDR 0x0000000c
+#endif
 #define VERSION1 0x31313131
+#define VERSION2 0x31313132
+#define VERSION  VERSION2
 
 struct cbfs_header {
 	uint32_t magic;
@@ -93,8 +99,14 @@ struct cbfs_header {
 	uint32_t bootblocksize;
 	uint32_t align;
 	uint32_t offset;
-	uint32_t pad[2];
+	uint32_t architecture;
+	uint32_t pad[1];
 } __attribute__((packed));
+
+// "Legacy" refers to cbfs headers before architecture is defined (i.e., X86).
+#define CBFS_ARCHITECTURE_LEGACY   0xFFFFFFFF
+#define CBFS_ARCHITECTURE_ARM      0x10
+#define CBFS_ARCHITECTURE_X86      0x20
 
 /** This is a component header - every entry in the CBFS
     will have this header.
@@ -180,4 +192,3 @@ void *cbfs_find_file(const char *name, int type);
 int cbfs_decompress(int algo, void *src, void *dst, int len);
 struct cbfs_header *get_cbfs_header(void);
 #endif
-

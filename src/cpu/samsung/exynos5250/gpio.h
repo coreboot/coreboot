@@ -21,7 +21,7 @@
 #ifndef EXYNOS5250_GPIO_H_
 #define EXYNOS5250_GPIO_H_
 
-#include <cpu/samsung/exynos-common/gpio.h>
+#include <cpu/samsung/exynos5-common/gpio.h>
 
 struct exynos5_gpio_part1 {
 	struct s5p_gpio_bank a0;

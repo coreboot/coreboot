@@ -22,7 +22,7 @@
 #ifndef __EXYNOS5_CLK_H__
 #define __EXYNOS5_CLK_H__
 
-#include <cpu/samsung/exynos-common/clk.h>
+#include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
 
 /*

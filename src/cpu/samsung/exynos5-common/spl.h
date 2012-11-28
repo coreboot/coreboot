@@ -23,7 +23,7 @@
 #ifndef __ASM_ARCH_EXYNOS_SPL_H__
 #define __ASM_ARCH_EXYNOS_SPL_H__
 
-#include <cpu/samsung/exynos-common/cpu.h>
+#include <cpu/samsung/exynos5-common/cpu.h>
 /* FIXME(dhendrix): non-common header included by a common header... */
 #include <cpu/samsung/exynos5250/dmc.h>
 

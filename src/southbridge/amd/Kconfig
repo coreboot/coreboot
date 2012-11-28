@@ -14,3 +14,7 @@ source src/southbridge/amd/sb800/Kconfig
 source src/southbridge/amd/cimx/Kconfig
 source src/southbridge/amd/agesa/Kconfig
 source src/southbridge/amd/sr5650/Kconfig
+
+config SPI_FLASH
+	bool
+	default y if HAVE_ACPI_RESUME && CPU_AMD_AGESA

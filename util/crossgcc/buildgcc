@@ -601,7 +601,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f ../../source/compiler/.failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" || touch ../../source/compiler/.failed
+	$MAKE CC="$CC" iasl || touch ../../source/compiler/.failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch ../../source/compiler/.failed
 	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
 	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi

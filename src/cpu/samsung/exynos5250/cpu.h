@@ -22,7 +22,7 @@
 #ifndef _EXYNOS5250_CPU_H
 #define _EXYNOS5250_CPU_H
 
-#include <cpu/samsung/exynos-common/cpu.h>
+#include <cpu/samsung/exynos5-common/cpu.h>
 
 /* EXYNOS5 */
 #define EXYNOS5_GPIO_PART6_BASE		0x03860000	/* Z<6:0> */

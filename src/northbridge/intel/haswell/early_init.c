@@ -139,21 +139,6 @@ static void haswell_setup_graphics(void)
 
 void haswell_early_initialization(int chipset_type)
 {
-	u32 capid0_a;
-	u8 reg8;
-
-	/* Device ID Override Enable should be done very early */
-	capid0_a = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
-	if (capid0_a & (1 << 10)) {
-		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf3);
-		reg8 &= ~7; /* Clear 2:0 */
-
-		if (chipset_type == HASWELL_MOBILE)
-			reg8 |= 1; /* Set bit 0 */
-
-		pci_write_config8(PCI_DEV(0, 0, 0), 0xf3, reg8);
-	}
-
 	/* Setup all BARs required for early PCIe and raminit */
 	haswell_setup_bars();
 

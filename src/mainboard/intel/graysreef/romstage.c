@@ -193,6 +193,10 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
+	/*
+	 * FIXME: MCHBAR isn't setup yet. It's setup in
+	 * haswell_early_initialization().
+	 */
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected\n");
 		boot_mode = 1;

@@ -31,7 +31,8 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 4
+#define PEI_VERSION 10
+
 struct pei_data
 {
 	uint32_t pei_version;
@@ -46,11 +47,10 @@ struct pei_data
 	uint32_t rcba;
 	uint32_t pmbase;
 	uint32_t gpiobase;
-	uint32_t thermalbase;
+	uint32_t temp_mmio_base;
 	uint32_t system_type; // 0 Mobile, 1 Desktop/Server
 	uint32_t tseg_size;
 	uint8_t spd_addresses[4];
-	uint8_t ts_addresses[4];
 	int boot_mode;
 	int ec_present;
 	// 0 = leave channel enabled
@@ -59,9 +59,6 @@ struct pei_data
 	// 3 = disable dimm 0+1 on channel
 	int dimm_channel0_disabled;
 	int dimm_channel1_disabled;
-	/* Seed values saved in CMOS */
-	uint32_t scrambler_seed;
-	uint32_t scrambler_seed_s3;
 	/* Data read from flash and passed into MRC */
 	unsigned char *mrc_input;
 	unsigned int mrc_input_len;
@@ -69,9 +66,9 @@ struct pei_data
 	unsigned char *mrc_output;
 	unsigned int mrc_output_len;
 	/*
-	 * Max frequency DDR3 could be ran at. Could be one of four values:
-	 * 800, 1067, 1333, 1600
-	 */
+	* Max frequency DDR3 could be ran at. Could be one of four values: 800,
+	* 1067, 1333, 1600
+	*/
 	uint32_t max_ddr3_freq;
 	/*
 	 * USB Port Configuration:
@@ -98,18 +95,6 @@ struct pei_data
 	 */
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;
-	int ddr3lv_support;
-	/* pcie_init needs to be set to 1 to have the system agent initialize
-	 * PCIe. Note: This should only be required if your system has Gen3 devices
-	 * and it will increase your boot time by at least 100ms.
-	 */
-	int pcie_init;
-	/* N mode functionality. Leave this setting at 0.
-	 * 0 Auto
-	 * 1 1N
-	 * 2 2N
-	 */
-	int nmode;
 } __attribute__((packed));
 
 #endif

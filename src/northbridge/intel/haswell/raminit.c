@@ -40,25 +40,8 @@
 #define recovery_mode_enabled(x) 0
 #endif
 
-/*
- * MRC scrambler seed offsets should be reserved in
- * mainboard cmos.layout and not covered by checksum.
- */
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#define CMOS_OFFSET_MRC_SEED     (CMOS_VSTART_mrc_scrambler_seed >> 3)
-#define CMOS_OFFSET_MRC_SEED_S3  (CMOS_VSTART_mrc_scrambler_seed_s3 >> 3)
-#define CMOS_OFFSET_MRC_SEED_CHK (CMOS_VSTART_mrc_scrambler_seed_chk >> 3)
-#else
-#define CMOS_OFFSET_MRC_SEED     152
-#define CMOS_OFFSET_MRC_SEED_S3  156
-#define CMOS_OFFSET_MRC_SEED_CHK 160
-#endif
-
 static void save_mrc_data(struct pei_data *pei_data)
 {
-	u16 c1, c2, checksum;
-
 #if CONFIG_EARLY_CBMEM_INIT
 	struct mrc_data_container *mrcdata;
 	int output_len = ALIGN(pei_data->mrc_output_len, 16);
@@ -86,61 +69,15 @@ static void save_mrc_data(struct pei_data *pei_data)
 	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
 						    mrcdata->mrc_data_size);
 #endif
-
-	/* Save the MRC seed values to CMOS */
-	cmos_write32(CMOS_OFFSET_MRC_SEED, pei_data->scrambler_seed);
-	printk(BIOS_DEBUG, "Save scrambler seed    0x%08x to CMOS 0x%02x\n",
-	       pei_data->scrambler_seed, CMOS_OFFSET_MRC_SEED);
-
-	cmos_write32(CMOS_OFFSET_MRC_SEED_S3, pei_data->scrambler_seed_s3);
-	printk(BIOS_DEBUG, "Save s3 scrambler seed 0x%08x to CMOS 0x%02x\n",
-	       pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
-
-	/* Save a simple checksum of the seed values */
-	c1 = compute_ip_checksum((u8*)&pei_data->scrambler_seed,
-				 sizeof(u32));
-	c2 = compute_ip_checksum((u8*)&pei_data->scrambler_seed_s3,
-				 sizeof(u32));
-	checksum = add_ip_checksums(sizeof(u32), c1, c2);
-
-	cmos_write(checksum & 0xff, CMOS_OFFSET_MRC_SEED_CHK);
-	cmos_write((checksum >> 8) & 0xff, CMOS_OFFSET_MRC_SEED_CHK+1);
 }
 
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
 	struct mrc_data_container *mrc_cache;
-	u16 c1, c2, checksum, seed_checksum;
 
 	// preset just in case there is an error
 	pei_data->mrc_input = NULL;
 	pei_data->mrc_input_len = 0;
-
-	/* Read scrambler seeds from CMOS */
-	pei_data->scrambler_seed = cmos_read32(CMOS_OFFSET_MRC_SEED);
-	printk(BIOS_DEBUG, "Read scrambler seed    0x%08x from CMOS 0x%02x\n",
-	       pei_data->scrambler_seed, CMOS_OFFSET_MRC_SEED);
-
-	pei_data->scrambler_seed_s3 = cmos_read32(CMOS_OFFSET_MRC_SEED_S3);
-	printk(BIOS_DEBUG, "Read S3 scrambler seed 0x%08x from CMOS 0x%02x\n",
-	       pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
-
-	/* Compute seed checksum and compare */
-	c1 = compute_ip_checksum((u8*)&pei_data->scrambler_seed,
-				 sizeof(u32));
-	c2 = compute_ip_checksum((u8*)&pei_data->scrambler_seed_s3,
-				 sizeof(u32));
-	checksum = add_ip_checksums(sizeof(u32), c1, c2);
-
-	seed_checksum = cmos_read(CMOS_OFFSET_MRC_SEED_CHK);
-	seed_checksum |= cmos_read(CMOS_OFFSET_MRC_SEED_CHK+1) << 8;
-
-	if (checksum != seed_checksum) {
-		printk(BIOS_ERR, "%s: invalid seed checksum\n", __func__);
-		pei_data->scrambler_seed = 0;
-		pei_data->scrambler_seed_s3 = 0;
-		return;
-	}
 
 	if ((mrc_cache = find_current_mrc_cache()) == NULL) {
 		/* error message printed in find_current_mrc_cache */

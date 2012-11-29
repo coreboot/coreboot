@@ -144,11 +144,15 @@ need to read the pointer and do the appropriate math to locate the header.
 The following is the structure of the master header:
 
 struct cbfs_header {
-	unsigned int magic;
-	unsigned int size;
-	unsigned int align;
-	unsigned int offset;
-};
+        u32 magic;
+        u32 version;
+        u32 romsize;
+        u32 bootblocksize;
+        u32 align;
+        u32 offset;
+        u32 architecture;
+        u32 pad[1];
+} __attribute__((packed));
 
 The meaning of each member is as follows:
 
@@ -156,8 +160,13 @@ The meaning of each member is as follows:
 magic
 number is 0x4F524243, which is 'ORBC' in ASCII.
 
-'size' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
+'version' is a version number for CBFS header. cbfs_header structure may be
+different if version is not matched.
+
+'romsize' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
 0xFFFFFFFF to locate the beginning of the ROM in memory.
+
+'bootblocksize' is the size of bootblock reserved in firmware image.
 
 'align' is the number of bytes that each component is aligned to within the
 ROM.  This is used to make sure that each component is aligned correctly
@@ -168,6 +177,9 @@ component at runtime without disturbing the others.
 'offset' is the offset of the the first CBFS component (from the start of
 the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
+
+'architecture' describes which architecture (x86, arm, ...) this CBFS is created
+for.
 
 = Bootblock =
 The bootblock is a mandatory component in the ROM.  It is located in the

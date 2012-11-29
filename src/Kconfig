@@ -63,6 +63,7 @@ config COMPILER_GCC
 
 config COMPILER_LLVM_CLANG
 	bool "LLVM/clang"
+	depends on ARCH_X86
 	help
 	  Use LLVM/clang to build coreboot.
 

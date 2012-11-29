@@ -143,11 +143,10 @@ void main(unsigned long bist)
 		rcba: DEFAULT_RCBA,
 		pmbase: DEFAULT_PMBASE,
 		gpiobase: DEFAULT_GPIOBASE,
-		thermalbase: 0xfed08000,
+		temp_mmio_base: 0xfed08000,
 		system_type: 0, // 0 Mobile, 1 Desktop/Server
 		tseg_size: CONFIG_SMM_TSEG_SIZE,
 		spd_addresses: { 0xa0, 0x00, 0xa4, 0x00 },
-		ts_addresses: { 0x00, 0x00, 0x00, 0x00 },
 		ec_present: 0,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel

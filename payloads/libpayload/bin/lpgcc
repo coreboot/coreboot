@@ -27,19 +27,25 @@
 ## SUCH DAMAGE.
 
 # GCC wrapper for libpayload
+if [ -z "${V}" ] && [ "${V}" = 1 ]; then
+	DEBUGME=1
+else
+	DEBUGME=0
+fi
+
+if [ $DEBUGME -eq 1 ]; then
+	echo "CC = $CC"
+fi
+
 # let's not recurse.
 # This is a hack, I know, but it makes sure that really simple user errors
 # don't fork-bomb your machine.
-# echo "CC = $CC"
-
 if [ -n "$CC" ]; then
-b=`basename $CC`
+b=`basename "$CC"`
 if [ "$b" = "lpgcc" ]; then
 CC=""
 fi
 fi
-
-
 
 if [ "$CC" != "" ]; then
 DEFAULT_CC=$CC
@@ -62,7 +68,6 @@ trygccoption() {
 	return $?
 }
 
-DEBUGME=0
 DOLINK=1
 
 # This variable will contain the command line that the user wants to

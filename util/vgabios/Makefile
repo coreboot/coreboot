@@ -12,7 +12,7 @@ CFLAGS  += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS  += -Wstrict-aliasing -Wshadow -Wextra
 
-INCLUDES = -Iinclude -I../../src/devices/oprom/include/
+INCLUDES = -Iinclude -I../../src/device/oprom/include/
 
 INTOBJS  = int10.o int15.o int16.o int1a.o inte6.o
 X86EMUOBJS  = sys.o decode.o ops.o ops2.o prim_ops.o fpu.o debug.o

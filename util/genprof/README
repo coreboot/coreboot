@@ -16,7 +16,7 @@ You can use the log2dress to dress the log again:
 
 ...
 src/arch/x86/lib/c_start.S:85 calls /home/ruik/coreboot/src/boot/selfboot.c:367
-/home/ruik/coreboot/src/boot/selfboot.c:370 calls /home/ruik/coreboot/src/devices/device.c:325
+/home/ruik/coreboot/src/boot/selfboot.c:370 calls /home/ruik/coreboot/src/device/device.c:325
 ...
 
 Alternatively, you can use genprof to generate a gmon.out file, which can be used

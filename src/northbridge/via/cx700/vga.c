@@ -32,7 +32,7 @@
 #include "registers.h"
 #include <x86emu/regs.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-#include <devices/oprom/realmode/x86.h>
+#include <device/oprom/realmode/x86.h>
 #endif
 
 /* PCI Domain 1 Device 0 Function 0 */

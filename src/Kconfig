@@ -238,7 +238,7 @@ source src/ec/Kconfig
 
 endmenu
 
-source src/devices/Kconfig
+source src/device/Kconfig
 
 menu "Generic Drivers"
 source src/drivers/Kconfig

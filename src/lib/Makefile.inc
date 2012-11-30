@@ -39,6 +39,8 @@ romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-y += compute_ip_checksum.c
 romstage-y += memmove.c
 
+ramstage-y += hardwaremain.c
+ramstage-y += selfboot.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 ramstage-y += memset.c
 endif

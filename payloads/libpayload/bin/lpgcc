@@ -102,7 +102,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-if [ "$CONFIG_TARGET_I386" = "y" ]; then
+if [ "$CONFIG_ARCH_X86" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/i386
   _ARCHLIBDIR=$_LIBDIR/i386
 fi

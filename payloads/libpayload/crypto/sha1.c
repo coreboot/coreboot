@@ -30,7 +30,7 @@ typedef unsigned int u_int;
 
 /* Moved from libpayload.h */
 
-#ifdef CONFIG_TARGET_I386
+#ifdef CONFIG_ARCH_X86
 #define BYTE_ORDER      LITTLE_ENDIAN
 #else
 #define BYTE_ORDER      BIG_ENDIAN

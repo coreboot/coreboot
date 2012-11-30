@@ -65,9 +65,9 @@ menu "Architecture Options"
 
 choice
         prompt "Target Architecture"
-        default TARGET_I386
+        default ARCH_X86
 
-config TARGET_I386
+config ARCH_X86
         bool "x86"
         help
           Support the x86 architecture
@@ -85,7 +85,7 @@ config MEMMAP_RAM_ONLY
 
 config MULTIBOOT
 	bool "Multiboot header support"
-	depends on TARGET_I386
+	depends on ARCH_X86
 	default y
 
 endmenu

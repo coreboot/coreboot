@@ -20,7 +20,7 @@
 ## MA 02111-1307 USA
 ##
 
-if TARGET_I386
+if ARCH_X86
 
 config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y

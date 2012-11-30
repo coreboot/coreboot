@@ -26,7 +26,9 @@ source src/drivers/i2c/Kconfig
 source src/drivers/ics/Kconfig
 source src/drivers/ipmi/Kconfig
 source src/drivers/oxford/Kconfig
+if PC80_SYSTEM
 source src/drivers/pc80/Kconfig
+endif
 source src/drivers/realtek/Kconfig
 source src/drivers/sil/Kconfig
 source src/drivers/spi/Kconfig

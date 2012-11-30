@@ -34,7 +34,7 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
-#ifdef CONFIG_TARGET_I386
+#ifdef CONFIG_ARCH_X86
 #include <arch/rdtsc.h>
 #endif
 
@@ -49,7 +49,7 @@ static struct {
 #define TICKS_PER_SEC (cpu_khz * 1000)
 #define TICKS_PER_USEC (cpu_khz / 1000)
 
-#ifdef CONFIG_TARGET_I386
+#ifdef CONFIG_ARCH_X86
 static void update_clock(void)
 {
 	u64 delta = rdtsc() - clock.ticks;

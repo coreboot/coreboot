@@ -1,11 +1,12 @@
 #include <console/console.h>
 #include <fallback.h>
 #include <watchdog.h>
-#include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 
+#if IS_ENABLED(CONFIG_ARCH_X86)
+#include <pc80/mc146818rtc.h>
 
-void set_boot_successful(void)
+static inline void set_boot_successful(void)
 {
 	/* Remember I succesfully booted by setting
 	 * the initial boot direction
@@ -25,6 +26,9 @@ void set_boot_successful(void)
 		byte &= 0x0f;
 	outb(byte, RTC_PORT(1));
 }
+#else
+static inline void set_boot_successful(void) {}
+#endif
 
 void boot_successful(void)
 {

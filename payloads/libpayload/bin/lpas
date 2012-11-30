@@ -27,16 +27,33 @@
 ## SUCH DAMAGE.
 
 # AS wrapper for libpayload
+if [ -z "${V}" ] && [ "${V}" = 1 ]; then
+	DEBUGME=1
+else
+	DEBUGME=0
+fi
 
-DEFAULT_PREFIX=/opt
+if [ $DEBUGME -eq 1 ]; then
+	echo "AS = $AS"
+fi
+
+if [ -n "$AS" ]; then
+b=`basename "$AS"`
+if [ "$b" = "lpas" ]; then
+AS=""
+fi
+fi
+
+if [ "$AS" != "" ]; then
+DEFAULT_AS=$AS
+else
 DEFAULT_AS=as
+fi
 
 BASE=`dirname $0`
 
 # This will set the _LIBDIR and _INCDIR variables used below
 . $BASE/lp.functions
-
-DEBUGME=0
 
 # This variable will contain the command line that the user wants to
 # pass to gas
@@ -68,5 +85,9 @@ while [ $# -gt 0 ]; do
 done
 
 _ASFLAGS="--32 -I$_INCDIR"
+
+if [ $DEBUGME -eq 1 ]; then
+echo "$DEFAULT_AS $_ASFLAGS $CMDLINE"
+fi
 
 $DEFAULT_AS $_ASFLAGS $CMDLINE

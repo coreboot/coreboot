@@ -756,11 +756,10 @@ struct device_operations default_pci_ops_bus = {
  */
 static struct device_operations *get_pci_bridge_ops(device_t dev)
 {
-	unsigned int pos;
-
 #if CONFIG_PCIX_PLUGIN_SUPPORT
-	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
-	if (pos) {
+	unsigned int pcixpos;
+	pcixpos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
+	if (pcixpos) {
 		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n", dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
@@ -769,10 +768,10 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 	/* How do I detect a PCI to AGP bridge? */
 #endif
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
-	pos = 0;
-	while ((pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, pos))) {
+	unsigned int htpos = 0;
+	while ((htpos = pci_find_next_capability(dev, PCI_CAP_ID_HT, htpos))) {
 		u16 flags;
-		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+		flags = pci_read_config16(dev, htpos + PCI_CAP_FLAGS);
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface */
 			printk(BIOS_DEBUG, "%s subordinate bus HT\n",
@@ -782,10 +781,11 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 	}
 #endif
 #if CONFIG_PCIEXP_PLUGIN_SUPPORT
-	pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-	if (pos) {
+	unsigned int pciexpos;
+	pciexpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (pciexpos) {
 		u16 flags;
-		flags = pci_read_config16(dev, pos + PCI_EXP_FLAGS);
+		flags = pci_read_config16(dev, pciexpos + PCI_EXP_FLAGS);
 		switch ((flags & PCI_EXP_FLAGS_TYPE) >> 4) {
 		case PCI_EXP_TYPE_ROOT_PORT:
 		case PCI_EXP_TYPE_UPSTREAM:

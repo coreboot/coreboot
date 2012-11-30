@@ -55,7 +55,7 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	if (!content) {
 		content = malloc(*romsize_p);
 		if (!content) {
-			printf("Could not get %d bytes for file %s\n",
+			fprintf(stderr, "E: Could not get %d bytes for file %s\n",
 			       *romsize_p, filename);
 			exit(1);
 		}
@@ -63,7 +63,7 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 		content -= *romsize_p;
 
 	if (!fread(content, *romsize_p, 1, file)) {
-		printf("Failed to read %s\n", filename);
+		fprintf(stderr, "E: Failed to read %s\n", filename);
 		return NULL;
 	}
 	fclose(file);
@@ -145,7 +145,7 @@ void recalculate_rom_geometry(void *romarea)
 	/* Update old headers */
 	if (master_header->version == VERSION1 &&
 	    ntohl(master_header->architecture) == CBFS_ARCHITECTURE_UNKNOWN) {
-		printf("Updating CBFS master header to version 2\n");
+		dprintf("Updating CBFS master header to version 2\n");
 		master_header->architecture = htonl(CBFS_ARCHITECTURE_X86);
 	}
 
@@ -275,7 +275,7 @@ void print_cbfs_directory(const char *filename)
 {
 	printf
 	    ("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
-	     "Alignment: %d bytes, architecture: %s\n\n",
+	     "alignment: %d bytes, architecture: %s\n\n",
 	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
 	     romsize, ntohl(master_header->offset), align, arch_to_string(arch));
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
@@ -303,12 +303,6 @@ void print_cbfs_directory(const char *filename)
 
 int extract_file_from_cbfs(const char *filename, const char *payloadname, const char *outpath)
 {
-	// Identify the coreboot image.
-	printf(
-	     "%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\nAlignment: %d bytes\n\n",
-	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
-	     romsize, ntohl(master_header->offset), align);
-
 	FILE *outfile = NULL;
 	uint32_t current = phys_start;
 	while (current < phys_end) {
@@ -343,13 +337,13 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 		outfile = fopen(outpath, "wb");
 		if (!outfile)
 		{
-			printf("Could not open the file %s for writing. Aborting.\n", outpath);
+			fprintf(stderr, "E: Could not open the file %s for writing.\n", outpath);
 			return 1;
 		}
 
 		if (ntohl(thisfile->type) != CBFS_COMPONENT_RAW)
 		{
-			printf("Warning: only 'raw' files are safe to extract.\n");
+			fprintf(stderr, "W: Only 'raw' files are safe to extract.\n");
 		}
 
 		fwrite(((char *)thisfile)
@@ -361,7 +355,7 @@ int extract_file_from_cbfs(const char *filename, const char *payloadname, const 
 		// We'll only dump one file.
 		return 0;
 	}
-	printf("File %s not found.\n", payloadname);
+	fprintf(stderr, "E: File %s not found.\n", payloadname);
 	return 1;
 }
 
@@ -411,8 +405,8 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 				/* CBFS has the constraint that the chain always moves up in memory. so once
 				   we're past the place we seek, we don't need to look any further */
 				if (current > location) {
-					printf
-					    ("the requested space is not available\n");
+					fprintf
+					    (stderr, "E: The requested space is not available\n");
 					return 1;
 				}
 
@@ -438,8 +432,8 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
 	}
-	printf("Could not add the file to CBFS, it's probably too big.\n");
-	printf("File size: %d bytes (%d KB).\n", contentsize, contentsize/1024);
+	fprintf(stderr, "E: Could not add the file to CBFS, it's probably too big.\n");
+	fprintf(stderr, "E: File size: %d bytes (%d KB).\n", contentsize, contentsize/1024);
 	return 1;
 }
 
@@ -494,7 +488,7 @@ int remove_file_from_cbfs(const char *filename)
 
 		return 0;
 	}
-	printf("CBFS file %s not found.\n", filename);
+	fprintf(stderr, "E: CBFS file %s not found.\n", filename);
 	return 1;
 }
 
@@ -520,7 +514,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 	}
 	void *newdata = malloc(*datasize + headersize);
 	if (!newdata) {
-		printf("Could not get %d bytes for CBFS file.\n", *datasize +
+		fprintf(stderr, "E: Could not get %d bytes for CBFS file.\n", *datasize +
 		       headersize);
 		exit(1);
 	}

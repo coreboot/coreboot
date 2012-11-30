@@ -247,7 +247,7 @@ static int cbfs_add_flat_binary(void)
 	}
 
 	if (rom_entrypoint == 0) {
-		fprintf(stderr, "You need to specify a valid "
+		fprintf(stderr, "E: You need to specify a valid "
 			"-e/--entry-point.\n");
 		return 1;
 	}
@@ -258,7 +258,7 @@ static int cbfs_add_flat_binary(void)
 
 	rom = loadrom(cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "Could not load ROM image '%s'.\n",
+		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
 			cbfs_name);
 		return 1;
 	}
@@ -364,12 +364,12 @@ static int cbfs_remove(void)
 static int cbfs_create(void)
 {
 	if (rom_size == 0) {
-		printf("You need to specify a valid -s/--size.\n");
+		fprintf(stderr, "E: You need to specify a valid -s/--size.\n");
 		return 1;
 	}
 
 	if (!rom_bootblock) {
-		printf("You need to specify -b/--bootblock.\n");
+		fprintf(stderr, "E: You need to specify -b/--bootblock.\n");
 		return 1;
 	}
 

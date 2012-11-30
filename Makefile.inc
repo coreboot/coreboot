@@ -48,7 +48,7 @@ PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 
 #######################################################################
 # root source directories of coreboot
-subdirs-y := src/lib src/console src/devices src/ec src/southbridge
+subdirs-y := src/lib src/console src/device src/ec src/southbridge
 subdirs-y += src/northbridge src/superio src/drivers src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool
 subdirs-y += src/arch/$(ARCHDIR-y)
@@ -184,7 +184,7 @@ COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
 
 INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include
-INCLUDES += -Isrc/devices/oprom/include
+INCLUDES += -Isrc/device/oprom/include
 # abspath is a workaround for romcc
 INCLUDES += -include $(src)/include/kconfig.h
 

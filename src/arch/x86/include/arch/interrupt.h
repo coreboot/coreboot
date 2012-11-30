@@ -25,7 +25,7 @@
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 extern void mainboard_interrupt_handlers(int intXX, void *intXX_func);
 #elif CONFIG_PCI_OPTION_ROM_RUN_YABEL
-#include <devices/oprom/yabel/biosemu.h>
+#include <device/oprom/yabel/biosemu.h>
 #else
 static inline void mainboard_interrupt_handlers(int intXX, void *intXX_func) { }
 #endif

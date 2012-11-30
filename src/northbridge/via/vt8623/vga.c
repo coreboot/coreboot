@@ -31,7 +31,7 @@
 #include <arch/interrupt.h>
 #include <x86emu/regs.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-#include <devices/oprom/realmode/x86.h>
+#include <device/oprom/realmode/x86.h>
 #endif
 
 static int via_vt8623_int15_handler(void)

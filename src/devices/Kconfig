@@ -175,28 +175,38 @@ config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 
+config PCI
+	bool
+	default n
+
 config PCI_64BIT_PREF_MEM
 	bool
+	depends on PCI
 	default n
 
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
-	default n
+	depends on PCI
+	default y
 
 config PCIX_PLUGIN_SUPPORT
 	bool
+	depends on PCI
 	default y
 
 config PCIEXP_PLUGIN_SUPPORT
 	bool
+	depends on PCI
 	default y
 
 config AGP_PLUGIN_SUPPORT
 	bool
+	depends on PCI
 	default y
 
 config CARDBUS_PLUGIN_SUPPORT
 	bool
+	depends on PCI
 	default y
 
 config PCIEXP_COMMON_CLOCK

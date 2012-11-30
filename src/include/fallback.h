@@ -3,7 +3,6 @@
 
 #if !defined(__ASSEMBLER__) && !defined(__PRE_RAM__)
 
-void set_boot_successful(void);
 void boot_successful(void);
 
 #endif /* __ASSEMBLER__ */

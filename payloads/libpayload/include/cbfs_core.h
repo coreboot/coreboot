@@ -82,7 +82,7 @@
     so we can easily find it. */
 
 #define CBFS_HEADER_MAGIC  0x4F524243
-#if CONFIG_ARCH_X86
+#if CONFIG_TARGET_I386
 #define CBFS_HEADPTR_ADDR 0xFFFFFFFC
 #endif
 #define VERSION1 0x31313131

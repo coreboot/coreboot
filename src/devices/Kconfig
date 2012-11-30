@@ -175,6 +175,10 @@ config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 
+config PCI
+	bool
+	default n
+
 config PCI_64BIT_PREF_MEM
 	bool
 	default n
@@ -185,19 +189,23 @@ config HYPERTRANSPORT_PLUGIN_SUPPORT
 
 config PCIX_PLUGIN_SUPPORT
 	bool
-	default y
+	depends on PCI
+	default n
 
 config PCIEXP_PLUGIN_SUPPORT
 	bool
-	default y
+	depends on PCI
+	default n
 
 config AGP_PLUGIN_SUPPORT
 	bool
-	default y
+	depends on PCI
+	default n
 
 config CARDBUS_PLUGIN_SUPPORT
 	bool
-	default y
+	depends on ARCH_X86
+	default n
 
 config PCIEXP_COMMON_CLOCK
 	prompt "Enable PCIe Common Clock"

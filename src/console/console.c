@@ -24,7 +24,17 @@
 
 #ifndef __PRE_RAM__
 #include <string.h>
+
+/*
+ * FIXME: get_option() needs to be abstracted better so that other non-volatile
+ * storage can be used. This will benefit machines without CMOS as well as those
+ * without a battery-backed CMOS (e.g. some laptops).
+ */
+#ifdef HAVE_CMOS_DEFAULT
 #include <pc80/mc146818rtc.h>
+#else
+static inline int get_option(void *dest, const char *name) { return -1; }
+#endif
 
 /* initialize the console */
 void console_init(void)

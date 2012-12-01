@@ -24,7 +24,21 @@
 
 #ifndef __PRE_RAM__
 #include <string.h>
+
+#ifdef HAVE_CMOS_DEFAULT
 #include <pc80/mc146818rtc.h>
+#endif
+
+/*
+ * FIXME(dhendrix): stub for get_option(). This function is usually defined in
+ * mc146818rtc.c and libpayload. For now, make it a weak symbol that returns an
+ * error code to let the caller decide what to do (ie use default value).
+ */
+int __attribute__((weak)) get_option(void *dest, const char *name);
+int __attribute__((weak)) get_option(void *dest, const char *name)
+{
+	return -1;
+}
 
 /* initialize the console */
 void console_init(void)

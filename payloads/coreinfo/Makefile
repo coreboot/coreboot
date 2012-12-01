@@ -18,15 +18,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-export src := $(shell pwd)
-export srctree := $(src)
-export srck := $(src)/util/kconfig
-export obj := $(src)/build
-export objk := $(src)/build/util/kconfig
+src := $(shell pwd)
+srctree := $(src)
+srck := $(src)/util/kconfig
+obj := $(src)/build
+objk := $(src)/build/util/kconfig
 
 export KERNELVERSION      := 0.1.0
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+export V := $(V)
 
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
@@ -39,17 +40,17 @@ ifneq ($(V),1)
 Q := @
 endif
 
-HOSTCC = gcc
-HOSTCXX = g++
+HOSTCC ?= gcc
+HOSTCXX ?= g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 LIBPAYLOAD_DIR := ../libpayload/install/libpayload
-XCC := CC=$(CC) $(LIBPAYLOAD_DIR)/bin/lpgcc
-AS = $(LIBPAYLOAD_DIR)/bin/lpas
-STRIP ?= strip
+LPCC := $(LIBPAYLOAD_DIR)/bin/lpgcc
+LPAS := $(LIBPAYLOAD_DIR)/bin/lpas
+OBJCOPY ?= objcopy
 
-INCLUDES = -Ibuild
+INCLUDES = -I$(obj)
 CFLAGS := -Wall -Werror -Os $(INCLUDES)
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o bootlog_module.o ramdump_module.o lar_module.o \
@@ -57,31 +58,29 @@ OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
 TARGET  = $(obj)/coreinfo.elf
 
-ifeq ($(strip $(HAVE_DOTCONFIG)),)
-
-all: config
-
-else
-
+ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
-
 all: $(TARGET)
 
 $(TARGET): $(src)/.config $(OBJS) prepare
-	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(XCC) -o $@ $(OBJS)
-	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(STRIP) -s $@
+	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPCC) -o $@ $(OBJS)
+	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
+	$(Q)$(OBJCOPY) --strip-debug $@
+	$(Q)$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
 
 $(obj)/%.S.o: $(src)/%.S
-	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(AS) -o $@ $<
+	$(Q)printf "  LPAS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPAS) -o $@ $<
 
 $(obj)/%.o: $(src)/%.c
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(XCC) $(CFLAGS) -c -o $@ $<
+	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPCC) $(CFLAGS) -c -o $@ $<
 
+else
+all: config
 endif
+
 
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog

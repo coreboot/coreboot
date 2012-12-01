@@ -167,6 +167,8 @@ static inline void cmos_write32(u8 offset, u32 value)
 }
 #endif
 
+#define get_option(a,b) -1
+
 #if !defined(__ROMCC__)
 void rtc_init(int invalid);
 void rtc_check_update_cmos_date(u8 has_century);

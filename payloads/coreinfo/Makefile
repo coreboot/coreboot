@@ -45,9 +45,12 @@ HOSTCXX ?= g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-LIBPAYLOAD_DIR := ../libpayload/install/libpayload
-LPCC := $(LIBPAYLOAD_DIR)/bin/lpgcc
-LPAS := $(LIBPAYLOAD_DIR)/bin/lpas
+LIBCONFIG_PATH := ../libpayload
+LIBPAYLOAD_DIR := ./libpayloadbin
+LPCC := $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
+LPAS := $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
+HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
+LIB_CONFIG ?= defconfig
 OBJCOPY ?= objcopy
 
 INCLUDES = -I$(obj)
@@ -62,18 +65,18 @@ ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
 all: $(TARGET)
 
-$(TARGET): $(src)/.config $(OBJS) prepare
+$(TARGET): $(src)/.config $(OBJS) prepare libpayload
 	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LPCC) -o $@ $(OBJS)
 	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
 	$(Q)$(OBJCOPY) --strip-debug $@
 	$(Q)$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
 
-$(obj)/%.S.o: $(src)/%.S
+$(obj)/%.S.o: $(src)/%.S libpayload
 	$(Q)printf "  LPAS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LPAS) -o $@ $<
 
-$(obj)/%.o: $(src)/%.c
+$(obj)/%.o: $(src)/%.c libpayload
 	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LPCC) $(CFLAGS) -c -o $@ $<
 
@@ -81,6 +84,16 @@ else
 all: config
 endif
 
+ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
+libpayload:
+	$(Q)printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"
+else
+libpayload:
+	$(Q)printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
+	$(Q)make -C $(LIBCONFIG_PATH) distclean
+	$(Q)make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
+	$(Q)make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
+endif
 
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog

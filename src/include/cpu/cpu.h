@@ -7,7 +7,11 @@
 void cpu_initialize(unsigned int cpu_index);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
+#ifdef CONFIG_ARCH_X86
 void __attribute__((regparm(0))) secondary_cpu_init(unsigned int cpu_index);
+#else
+void secondary_cpu_init(unsigned int cpu_index);
+#endif
 
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);

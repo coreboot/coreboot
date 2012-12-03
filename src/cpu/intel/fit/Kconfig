@@ -1,0 +1,12 @@
+config CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	def_bool n
+	help
+	  This option selects building a Firmware Interface Table
+
+config CPU_INTEL_NUM_FIT_ENTRIES
+	int
+	default 4
+	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	help
+	  This option selects the number of empty FIT entries in the FIT table.
+

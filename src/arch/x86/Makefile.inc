@@ -299,12 +299,18 @@ bootblock_lds += $(src)/cpu/x86/16bit/entry16.lds
 bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
 bootblock_lds += $(src)/arch/x86/lib/id.lds
 bootblock_lds += $(chipset_bootblock_lds)
+ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
+bootblock_lds += $(src)/cpu/intel/fit/fit.lds
+endif
 
 bootblock_inc = $(src)/arch/x86/init/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
 bootblock_inc += $(src)/arch/x86/lib/id.inc
+ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
+bootblock_inc += $(src)/cpu/intel/fit/fit.inc
+endif
 bootblock_inc += $(chipset_bootblock_inc)
 
 ifeq ($(CONFIG_SSE),y)

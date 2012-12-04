@@ -189,8 +189,10 @@ static int spansion_write(struct spi_flash *flash,
 		byte_addr = 0;
 	}
 
-	printk(BIOS_INFO, "SF: SPANSION: Successfully programmed %zu bytes @ 0x%x\n",
+#if CONFIG_DEBUG_SPI_FLASH
+	printk(BIOS_SPEW, "SF: SPANSION: Successfully programmed %zu bytes @ 0x%x\n",
 	      len, offset);
+#endif
 
 	spi_release_bus(flash->spi);
 	return ret;

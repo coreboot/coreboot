@@ -176,8 +176,10 @@ static int macronix_write(struct spi_flash *flash,
 		byte_addr = 0;
 	}
 
-	printk(BIOS_INFO, "SF: Macronix: Successfully programmed %zu bytes @"
+#if CONFIG_DEBUG_SPI_FLASH
+	printk(BIOS_SPEW, "SF: Macronix: Successfully programmed %zu bytes @"
 	      " 0x%lx\n", len, (unsigned long)(offset - len));
+#endif
 
 	spi_release_bus(flash->spi);
 	return ret;

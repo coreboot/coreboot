@@ -157,8 +157,10 @@ static int winbond_write(struct spi_flash *flash,
 		byte_addr = 0;
 	}
 
-	printk(BIOS_INFO, "SF: Winbond: Successfully programmed %zu bytes @"
+#if CONFIG_DEBUG_SPI_FLASH
+	printk(BIOS_SPEW, "SF: Winbond: Successfully programmed %zu bytes @"
 			" 0x%lx\n", len, (unsigned long)(offset - len));
+#endif
 	ret = 0;
 
 out:

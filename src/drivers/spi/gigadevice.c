@@ -175,9 +175,12 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 		byte_addr = 0;
 	}
 
-	printk(BIOS_INFO,
+#if CONFIG_DEBUG_SPI_FLASH
+	printk(BIOS_SPEW,
 	       "SF gigadevice.c: Successfully programmed %zu bytes @ %#x\n",
 	       len, (unsigned int)(offset - len));
+#endif
+
 	ret = 0;
 
 out:

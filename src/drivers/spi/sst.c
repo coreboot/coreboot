@@ -130,8 +130,10 @@ sst_byte_write(struct spi_flash *flash, u32 offset, const void *buf)
 		offset,
 	};
 
+#if CONFIG_DEBUG_SPI_FLASH
 	printk(BIOS_SPEW, "BP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
 		spi_w8r8(flash->spi, CMD_SST_RDSR), buf, cmd[0], offset);
+#endif
 
 	ret = sst_enable_writing(flash);
 	if (ret)
@@ -177,9 +179,11 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 	cmd[3] = offset;
 
 	for (; actual < len - 1; actual += 2) {
+#if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "WP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
 		     spi_w8r8(flash->spi, CMD_SST_RDSR), buf + actual, cmd[0],
 		     offset);
+#endif
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, cmd_len,
 		                          buf + actual, 2);

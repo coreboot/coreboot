@@ -49,7 +49,7 @@ else
 HUDSON_IMC_POSITION=0
 endif
 
-$(obj)/hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
+$(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(obj)/config.h
@@ -63,7 +63,7 @@ $(obj)/hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 
 ifeq ($(CONFIG_HUDSON_FWM), y)
 cbfs-files-y += hudson/fwm
-hudson/fwm-file := $(obj)/hudson_romsig.bin
+hudson/fwm-file := $(obj)/coreboot_hudson_romsig.bin
 hudson/fwm-position := $(HUDSON_FWM_POSITION)
 hudson/fwm-type := raw
 endif

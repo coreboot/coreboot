@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <arch/ioapic.h>
 #include "lpc.h"
 #include <arch/io.h>
@@ -32,7 +33,7 @@ void lpc_read_resources(device_t dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
-	pci_get_resource(dev, SPIROM_BASE_ADDRESS); /* SPI ROM base address */
+	pci_get_resource(dev, SPIROM_BASE_ADDRESS_REGISTER); /* SPI ROM base address */
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -61,11 +62,13 @@ void lpc_set_resources(struct device *dev)
 	struct resource *res;
 
 	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - Start.\n");
+
+	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
+	res = find_resource(dev, SPIROM_BASE_ADDRESS_REGISTER);
+	res->base |= PCI_COMMAND_MEMORY;
+
 	pci_dev_set_resources(dev);
 
-	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
-	res = find_resource(dev, SPIROM_BASE_ADDRESS);
-	pci_write_config32(dev, SPIROM_BASE_ADDRESS, res->base | 1 << 1);
 	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - End.\n");
 }
 

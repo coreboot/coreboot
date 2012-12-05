@@ -23,6 +23,7 @@
 #include <device/pnp.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
@@ -104,11 +105,12 @@ static void hudson_lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
 
+	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
+	res = find_resource(dev, SPIROM_BASE_ADDRESS_REGISTER);
+	res->base |= PCI_COMMAND_MEMORY;
+
 	pci_dev_set_resources(dev);
 
-	/* Specical case. SPI Base Address. The SpiRomEnable should be set. */
-	res = find_resource(dev, 0xA0);
-	pci_write_config32(dev, 0xA0, res->base | 1 << 1);
 
 }
 

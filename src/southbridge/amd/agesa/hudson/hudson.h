@@ -56,6 +56,7 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
 #define SMI_CMD_PORT                            0xB0                            //      SmiCmdPortAddr;
 #define ACPI_PMA_CNT_BLK_ADDRESS        0xFE00                          //      AcpiPmaCntBlkAddr;
+#define SPIROM_BASE_ADDRESS_REGISTER    0xA0
 
 #ifdef __PRE_RAM__
 void hudson_lpc_port80(void);

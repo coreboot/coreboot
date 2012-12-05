@@ -57,6 +57,10 @@ typedef union _PCI_ADDR {
 #endif
 #define FIXUP_PTR(ptr)  ptr
 
+#if CONFIG_SB800_IMC_FWM
+	#define IMC_ENABLE_OVER_WRITE        0x01
+#endif
+
 #include <console/console.h>
 #include "AmdSbLib.h"
 #include "Amd.h"

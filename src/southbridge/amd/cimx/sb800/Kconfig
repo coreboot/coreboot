@@ -130,5 +130,100 @@ config S3_VOLATILE_POS
 	  For a system with S3 feature, the BIOS needs to save some data to
 	  non-volitile storage at cold boot stage.
 
+config SB800_IMC_FWM
+	bool "Add IMC firmware"
+	default n
+	help
+	  Add SB800 / Hudson 1 IMC Firmware to support the onboard fan control.
+	  Please contact AMD to obtain the related firmware.
+
+if SB800_IMC_FWM
+
+config SB800_IMC_FWM_FILE
+	string "IMC firmware path and filename"
+	default "3rdparty/southbridge/amd/sb800/imc.bin"
+
+choice
+	prompt "SB800 Firmware ROM Position"
+
+config SB800_FWM_AT_FFFA0000
+	bool "0xFFFA0000"
+	help
+	  The IMC and GEC ROMs requires a 'signature' located at one of several
+	  fixed locations in memory.  The location used shouldn't matter, just
+	  select an area that doesn't conflict with anything else.
+
+config SB800_FWM_AT_FFF20000
+	bool "0xFFF20000"
+	help
+	  The IMC and GEC ROMs requires a 'signature' located at one of several
+	  fixed locations in memory.  The location used shouldn't matter, just
+	  select an area that doesn't conflict with anything else.
+
+config SB800_FWM_AT_FFE20000
+	depends on BOARD_ROMSIZE_KB_8192 || BOARD_ROMSIZE_KB_4096 || BOARD_ROMSIZE_KB_2048
+	bool "0xFFE20000"
+	help
+	  The IMC and GEC ROMs requires a 'signature' located at one of several
+	  fixed locations in memory.  The location used shouldn't matter, just
+	  select an area that doesn't conflict with anything else.
+
+config SB800_FWM_AT_FFC20000
+	depends on BOARD_ROMSIZE_KB_8192 || BOARD_ROMSIZE_KB_4096
+	bool "0xFFC20000"
+	help
+	  The IMC and GEC ROMs requires a 'signature' located at one of several
+	  fixed locations in memory.  The location used shouldn't matter, just
+	  select an area that doesn't conflict with anything else.
+
+config SB800_FWM_AT_FF820000
+	depends on BOARD_ROMSIZE_KB_8192
+	bool "0xFF820000"
+	help
+	  The IMC and GEC ROMs requires a 'signature' located at one of several
+	  fixed locations in memory.  The location used shouldn't matter, just
+	  select an area that doesn't conflict with anything else.
+
+endchoice
+
+config SB800_FWM_POSITION
+	hex
+	default 0xFFFA0000 if SB800_FWM_AT_FFFA0000
+	default 0xFFF20000 if SB800_FWM_AT_FFF20000
+	default 0xFFE20000 if SB800_FWM_AT_FFE20000
+	default 0xFFC20000 if SB800_FWM_AT_FFC20000
+	default 0xFF820000 if SB800_FWM_AT_FFE20000
+
+endif  #SB800_IMC_FWM
+
+choice
+	prompt "Fan Control"
+	default SB800_NO_FAN_CONTROL
+	help
+	  Select the method of SB800 fan control to be used.  None would be
+	  for either fixed maximum speed fans connected to the SB800 or for
+	  an external chip controlling the fan speeds.  Manual control sets
+	  up the SB800 fan control registers.  IMC fan control uses the SB800
+	  IMC to actively control the fan speeds.
+
+config SB800_NO_FAN_CONTROL
+	bool "None"
+	help
+	  No SB800 Fan control - Do not set up the SB800 fan control registers.
+
+config SB800_MANUAL_FAN_CONTROL
+	bool "Manual"
+	help
+	  Configure the SB800 fan control registers in devicetree.cb.
+
+config SB800_IMC_FAN_CONTROL
+	bool "IMC Based"
+	depends on SB800_IMC_FWM
+	help
+	  Set up the SB800 to use the IMC based Fan controller.  This requires
+	  the IMC rom from AMD.  Configure the registers in devicetree.cb.
+
+endchoice
+
 endif #SOUTHBRIDGE_AMD_CIMX_SB800
 

@@ -293,3 +293,13 @@
 #ifndef Spread_Spectrum_Type
   #define Spread_Spectrum_Type         0x00
 #endif
+
+/**
+ *    Imc Enable OverWrite
+ *    2 - by default strapping
+ *    1 - On
+ *    0 - Off
+ */
+#ifndef IMC_ENABLE_OVER_WRITE
+  #define IMC_ENABLE_OVER_WRITE        0x02
+#endif

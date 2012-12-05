@@ -20,7 +20,7 @@
 #ifndef _SB800_LPC_H_
 #define _SB800_LPC_H_
 
-#define SPIROM_BASE_ADDRESS	0xA0 /* SPI ROM base address */
+#define SPIROM_BASE_ADDRESS_REGISTER	0xA0 /* SPI ROM base address */
 
 void lpc_read_resources(device_t dev);
 void lpc_set_resources(device_t dev);

@@ -165,6 +165,9 @@ void OemAgesaSaveMtrr(void)
 		return;
 	}
 
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_claim_bus(flash->spi);
+
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
 	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;
@@ -233,6 +236,9 @@ void OemAgesaSaveMtrr(void)
 	flash->write(flash, nvram_pos, 4, &msr_data.hi);
 	nvram_pos += 4;
 
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_release_bus(flash->spi);
+
 #endif
 }
 
@@ -273,6 +279,9 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 		return AGESA_SUCCESS;
 	}
 
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_claim_bus(flash->spi);
+
 	if (S3DataType == S3DataTypeNonVolatile) {
 		flash->erase(flash, S3_DATA_NONVOLATILE_POS, 0x1000);
 	} else {
@@ -286,6 +295,9 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 		data = *(u32 *) (Data + nvram_pos);
 		flash->write(flash, nvram_pos + pos + 4, sizeof(u32), (u32 *)(Data + nvram_pos));
 	}
+
+	flash->spi->rw = SPI_WRITE_FLAG;
+	spi_release_bus(flash->spi);
 
 	return AGESA_SUCCESS;
 }

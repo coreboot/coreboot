@@ -70,6 +70,7 @@ static int eon_write(struct spi_flash *flash,
 	page_addr = offset / page_size;
 	byte_addr = offset % page_size;
 
+	flash->spi->rw = SPI_WRITE_FLAG;
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");

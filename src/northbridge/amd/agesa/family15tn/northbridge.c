@@ -1150,3 +1150,39 @@ struct chip_operations northbridge_amd_agesa_family15tn_root_complex_ops = {
 	CHIP_NAME("AMD FAM15 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
+
+/********************************************************************
+* Change the vendor / device IDs to match the generic VBIOS header.
+********************************************************************/
+u32 map_oprom_vendev(u32 vendev)
+{
+	u32 new_vendev=vendev;
+
+	switch(vendev) {
+	//case 0x10029900: //FS1r2
+	case 0x10029901: //FM2
+	case 0x10029903: //FS1r2
+	case 0x10029904: //FM2
+	case 0x10029906: //FM2
+	case 0x10029907: //FP2
+	case 0x10029908: //FP2
+	case 0x1002990A: //FP2
+	case 0x10029910: //FS1r2
+	case 0x10029913: //FS1r2
+	case 0x10029917: //FP2
+	case 0x10029918: //FP2
+	case 0x10029919: //FP2
+	case 0x10029990: //FS1r2
+	case 0x10029991: //FM2
+	case 0x10029992: //FS1r2
+	case 0x10029993: //FM2
+	case 0x10029994: //FP2
+	case 0x100299A0: //FS1r2
+	case 0x100299A2: //FS1r2
+	case 0x100299A4: //FP2
+		new_vendev=0x10029900;
+		break;
+	}
+
+	return new_vendev;
+}

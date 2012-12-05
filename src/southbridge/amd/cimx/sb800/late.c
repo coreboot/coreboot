@@ -32,6 +32,7 @@
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
 #include "smbus.h"
+#include "fan.h"
 
 /*implement in mainboard.c*/
 void set_pcie_reset(void);
@@ -418,6 +419,12 @@ static void sb800_enable(device_t dev)
 
 
 	case (0x14 << 3) | 3: /* 0:14:3 LPC */
+		/* Initialize the fans */
+#if CONFIG_SB800_IMC_FAN_CONTROL
+		init_sb800_IMC_fans(dev);
+#elif CONFIG_SB800_MANUAL_FAN_CONTROL
+		init_sb800_MANUAL_fans(dev);
+#endif
 		break;
 
 	case (0x14 << 3) | 4: /* 0:14:4 PCI */

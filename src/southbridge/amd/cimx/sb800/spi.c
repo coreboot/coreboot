@@ -25,6 +25,13 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
+#if defined (CONFIG_SB800_IMC_FWM)
+#include "SBPLATFORM.h"
+#include <vendorcode/amd/cimx/sb800/ECfan.h>
+
+static int bus_claimed = 0;
+#endif
+
 static u32 spibar;
 
 static void reset_internal_fifo_pointer(void)
@@ -90,13 +97,63 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 	return 0;
 }
+
+#if defined (CONFIG_SB800_IMC_FWM)
+
+static void ImcSleep(void)
+{
+	u8	cmd_val = 0x96;		/* Kick off IMC Mailbox command 96 */
+	u8	reg0_val = 0;		/* clear response register */
+	u8	reg1_val = 0xB4;	/* request ownership flag */
+
+	WriteECmsg (MSG_REG0, AccWidthUint8, &reg0_val);
+	WriteECmsg (MSG_REG1, AccWidthUint8, &reg1_val);
+	WriteECmsg (MSG_SYS_TO_IMC, AccWidthUint8, &cmd_val);
+
+	WaitForEcLDN9MailboxCmdAck();
+}
+
+
+static void ImcWakeup(void)
+{
+	u8	cmd_val = 0x96;		/* Kick off IMC Mailbox command 96 */
+	u8	reg0_val = 0;;		/* clear response register */
+	u8	reg1_val = 0xB5;	/* release ownership flag */
+
+	WriteECmsg (MSG_REG0, AccWidthUint8, &reg0_val);
+	WriteECmsg (MSG_REG1, AccWidthUint8, &reg1_val);
+	WriteECmsg (MSG_SYS_TO_IMC, AccWidthUint8, &cmd_val);
+
+	WaitForEcLDN9MailboxCmdAck();
+}
+#endif
+
 int spi_claim_bus(struct spi_slave *slave)
 {
+#if defined (CONFIG_SB800_IMC_FWM)
+
+	if (slave->rw == SPI_WRITE_FLAG) {
+		bus_claimed++;
+		if (bus_claimed == 1)
+			ImcSleep();
+	}
+#endif
+
 	return 0;
 }
 
 void spi_release_bus(struct spi_slave *slave)
 {
+#if defined (CONFIG_SB800_IMC_FWM)
+
+	if (slave->rw == SPI_WRITE_FLAG)  {
+		bus_claimed--;
+		if (bus_claimed <= 0) {
+			bus_claimed = 0;
+			ImcWakeup();
+		}
+	}
+#endif
 }
 
 void spi_cs_activate(struct spi_slave *slave)

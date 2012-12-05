@@ -48,6 +48,9 @@
 #define SPI_OPCODE_WREN 0x06
 #define SPI_OPCODE_FAST_READ 0x0b
 
+#define SPI_READ_FLAG	0x01
+#define SPI_WRITE_FLAG	0x02
+
 /*-----------------------------------------------------------------------
  * Representation of a SPI slave, i.e. what we're communicating with.
  *
@@ -55,16 +58,17 @@
  *
  *   bus:	ID of the bus that the slave is attached to.
  *   cs:	ID of the chip select connected to the slave.
+ *   rw: 	Read or Write flag
  */
 struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
+	unsigned int	rw;
 };
 
 /*-----------------------------------------------------------------------
  * Initialization, must be called once on start up.
  *
- * TODO: I don't think we really need this.
  */
 void spi_init(void);
 

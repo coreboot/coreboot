@@ -69,6 +69,7 @@ int spi_flash_read_common(struct spi_flash *flash, const u8 *cmd,
 	struct spi_slave *spi = flash->spi;
 	int ret;
 
+	spi->rw = SPI_READ_FLAG;
 	spi_claim_bus(spi);
 	ret = spi_flash_cmd_read(spi, cmd, cmd_len, data, data_len);
 	spi_release_bus(spi);
@@ -148,6 +149,7 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 		return -1;
 	}
 
+	flash->spi->rw = SPI_WRITE_FLAG;
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");
@@ -257,6 +259,7 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 		return NULL;
 	}
 
+	spi->rw = SPI_READ_FLAG;
 	ret = spi_claim_bus(spi);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to claim SPI bus: %d\n", ret);

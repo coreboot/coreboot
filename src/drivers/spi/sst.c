@@ -151,6 +151,7 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 	int ret;
 	u8 cmd[4];
 
+	flash->spi->rw = SPI_WRITE_FLAG;
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");

@@ -25,6 +25,12 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
+#if defined (CONFIG_HUDSON_IMC_FWM)
+#include "FchPlatform.h"
+
+static int bus_claimed = 0;
+#endif
+
 static u32 spibar;
 
 static void reset_internal_fifo_pointer(void)
@@ -92,11 +98,30 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 }
 int spi_claim_bus(struct spi_slave *slave)
 {
+#if defined (CONFIG_HUDSON_IMC_FWM)
+
+	if (slave->rw == SPI_WRITE_FLAG) {
+		bus_claimed++;
+		if (bus_claimed == 1)
+			ImcSleep(NULL);
+	}
+#endif
+
 	return 0;
 }
 
 void spi_release_bus(struct spi_slave *slave)
 {
+#if defined (CONFIG_HUDSON_IMC_FWM)
+
+	if (slave->rw == SPI_WRITE_FLAG)  {
+		bus_claimed--;
+		if (bus_claimed <= 0) {
+			bus_claimed = 0;
+			ImcWakeup(NULL);
+		}
+	}
+#endif
 }
 
 void spi_cs_activate(struct spi_slave *slave)

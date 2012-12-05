@@ -134,6 +134,7 @@ static int macronix_write(struct spi_flash *flash,
 	page_size = min(mcx->params->page_size, CONTROLLER_PAGE_LIMIT);
 	byte_addr = offset % page_size;
 
+	flash->spi->rw = SPI_WRITE_FLAG;
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");

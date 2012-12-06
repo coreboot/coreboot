@@ -271,6 +271,10 @@ int main(void)
 {
 	int i, j;
 
+#if defined(CONFIG_USB)
+	usb_initialize();
+#endif
+
 	initscr();
 
 	start_color();
@@ -291,6 +295,9 @@ int main(void)
 		for (j = 0; j < categories[i].count; j++)
 			categories[i].modules[j]->init();
 	}
+
+	noecho(); /* don't let curses echo keyboard chars */
+	keypad(stdscr, TRUE); /* allow KEY_F(n) keys to be seen */
 
 	loop();
 

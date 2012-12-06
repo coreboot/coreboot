@@ -17,26 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <arch/cpu.h>
+
 /* GCC's libgcc handling is quite broken. While the libgcc functions
  * are always regparm(0) the code that calls them uses whatever the
  * compiler call specifies. Therefore we need a wrapper around those
  * functions. See gcc bug PR41055 for more information.
  */
 
-#if CONFIG_ARCH_X86
+/* TODO: maybe this code should move to arch/x86 as architecture
+ * specific implementations may vary
+ */
 #define WRAP_LIBGCC_CALL(type, name) \
-	type __real_##name(type a, type b) __attribute__((regparm(0))); \
+	type __real_##name(type a, type b) asmlinkage; \
 	type __wrap_##name(type a, type b); \
 	type __wrap_##name(type a, type b) { return __real_##name(a, b); }
-#elif CONFIG_ARCH_ARMV7
-#define WRAP_LIBGCC_CALL(type, name) \
-	type __real_##name(type a, type b); \
-	type __wrap_##name(type a, type b); \
-	type __wrap_##name(type a, type b) { return __real_##name(a, b); }
-#else
-#error Architecture unsupported.
-#endif
-
 
 WRAP_LIBGCC_CALL(long long, __divdi3)
 WRAP_LIBGCC_CALL(unsigned long long, __udivdi3)

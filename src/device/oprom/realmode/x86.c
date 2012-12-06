@@ -38,11 +38,11 @@
 X86EMU_sysEnv _X86EMU_env;
 
 void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) __attribute__((regparm(0))) =
+		u32 esi, u32 edi) asmlinkage =
 						(void *)&__realmode_call;
 
 void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) __attribute__((regparm(0))) =
+		u32 esi, u32 edi) asmlinkage =
 						(void *)&__realmode_interrupt;
 
 static void setup_rombios(void)
@@ -406,7 +406,7 @@ void do_vsmbios(void)
 /* interrupt_handler() is called from assembler code only,
  * so there is no use in putting the prototype into a header file.
  */
-int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
+int asmlinkage interrupt_handler(u32 intnumber,
 	    u32 gsfs, u32 dses,
 	    u32 edi, u32 esi,
 	    u32 ebp, u32 esp,
@@ -414,7 +414,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	    u32 ecx, u32 eax,
 	    u32 cs_ip, u16 stackflags);
 
-int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
+int asmlinkage interrupt_handler(u32 intnumber,
 	    u32 gsfs, u32 dses,
 	    u32 edi, u32 esi,
 	    u32 ebp, u32 esp,

@@ -238,7 +238,7 @@ if [ $SKIPPYTHON -eq 1 ]; then
 fi
 
 MINGW_ARCHIVES=""
-if [ "$TARGETARCH" = "i386-mingw32" ]; then
+if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
 	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
 fi
 
@@ -285,7 +285,7 @@ printf "Downloaded tar balls ... "
 printf "${green}ok${NC}\n"
 
 MINGW_PACKAGES=""
-if [ "$TARGETARCH" = "i386-mingw32" ]; then
+if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
 	MINGW_PACKAGES="W32API MINGWRT"
 fi
 
@@ -315,10 +315,10 @@ done
 printf "Unpacked and patched ... "
 printf "${green}ok${NC}\n"
 
-if [ "$TARGETARCH" = "i386-mingw32" ]; then
-	mkdir -p $TARGETDIR/i386-mingw32/sys-include
+if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
+	mkdir -p $TARGETDIR/$TARGETARCH/sys-include
 	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* \
-				  $TARGETDIR/i386-mingw32/sys-include
+				  $TARGETDIR/$TARGETARCH/sys-include
 fi
 
 CC=cc

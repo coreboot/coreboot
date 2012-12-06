@@ -120,7 +120,7 @@ $CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
 
 report_arch_toolchain() {
 	cat <<EOF
-# elf${TWIDTH}-${TARCH} toolchain (${GCCPREFIX}gcc)
+# elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
 CC_${TARCH}:=${GCCPREFIX}gcc ${CFLAGS}
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld ${LDFLAGS}
@@ -140,15 +140,17 @@ touch "$TMPFILE"
 trap clean_up EXIT
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm"
+SUPPORTED_ARCHITECTURE="x86 armv7"
 
 # ARM Architecture
-TARCH_arm="littlearm"
-TCLIST_arm="littlearm"
-TWIDTH_arm="32"
+TARCH_armv7="armv7a"
+TBFDARCH_armv7="littlearm"
+TCLIST_armv7="armv7a"
+TWIDTH_armv7="32"
 
 # X86 Architecture
 TARCH_x86="i386"
+TBFDARCH_x86="i386"
 TCLIST_x86="i386 x86_64"
 TWIDTH_x86="32"
 XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
@@ -157,6 +159,7 @@ XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
 for architecture in $SUPPORTED_ARCHITECTURE; do
 	GCCPREFIX="invalid"
 	TARCH="$(eval echo \$TARCH_$architecture)"
+	TBFDARCH="$(eval echo \$TBFDARCH_$architecture)"
 	TCLIST="$(eval echo \$TCLIST_$architecture)"
 	TWIDTH="$(eval echo \$TWIDTH_$architecture)"
 	[ -z "$TARCH" -o -z "$TCLIST" -o -z "$TWIDTH" ] &&
@@ -171,14 +174,16 @@ for architecture in $SUPPORTED_ARCHITECTURE; do
 	for toolchain in $TCLIST; do
 		search="$search $XGCCPATH$toolchain-elf-"
 		search="$search $toolchain-elf-"
+		search="$search $XGCCPATH$toolchain-eabi-"
+		search="$search $toolchain-eabi-"
 	done
 	echo "# $architecture TARCH_SEARCH=$search"
 
 	# Search toolchain by checking assembler capability.
 	for gccprefixes in $search ""; do
 		program_exists "${gccprefixes}as" || continue
-		testas "$gccprefixes" "$TWIDTH" "$TARCH" "" && break
-		testas "$gccprefixes" "$TWIDTH" "$TARCH" "TRUE" && break
+		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
+		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
 	done
 
 	if [ "$GCCPREFIX" = "invalid" ]; then

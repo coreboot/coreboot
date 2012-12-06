@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA  02110-1335, USA
 #
 
-CROSSGCC_DATE="November 15th, 2012"
-CROSSGCC_VERSION="1.19"
+CROSSGCC_DATE="December 4th, 2012"
+CROSSGCC_VERSION="1.20"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -336,12 +336,11 @@ if [ `uname` = "Darwin" ]; then
 		OPTIONS="ABI=32"
 	fi
 
-	# In Xcode 4 the default compiler was switched to gcc-llvm.
-	# However, this compiler fails to compile gcc 4.6.x. As a
-	# workaround it's possible to compile gcc with gcc-4.2 or
-	# clang.
+	# In Xcode 4.5.2 the default compiler is clang.
+	# However, this compiler fails to compile gcc 4.7.x. As a
+	# workaround it's possible to compile gcc with llvm-gcc.
 	if $CC -v 2>&1 | grep -q LLVM; then
-		CC=clang
+		CC=llvm-gcc
 	fi
 fi
 
@@ -599,17 +598,17 @@ printf "Building IASL ${IASL_VERSION} ... "
 (
 	cd $IASL_DIR/generate/unix
 	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
-	rm -f ../../source/compiler/.failed
+	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" iasl || touch ../../source/compiler/.failed
-	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch ../../source/compiler/.failed
-	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
-	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch ../../source/compiler/.failed ; fi
-	if [ ! -f ../../source/compiler/.failed ]; then touch ../../source/compiler/.success; fi
+	$MAKE CC="$CC" iasl || touch .failed
+	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
+	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
+	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
+	if [ ! -f .failed ]; then touch .success; fi
 ) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
-test -r $IASL_DIR/source/compiler/.failed && printf "${RED}failed${NC}\n" || \
+test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r $IASL_DIR/source/compiler/.failed && exit 1
+test -r $IASL_DIR/generate/unix/.failed && exit 1
 fi
 
 if [ $SAVETEMPS -eq 0 ]; then

@@ -271,6 +271,13 @@ int main(void)
 {
 	int i, j;
 
+#if defined(CONFIG_USB)
+	usb_initialize();
+	/* the 1st call to havekey prints out info */
+	/* lets do one here before the screen init */
+	havekey();
+#endif
+
 	initscr();
 
 	init_pair(1, COLOR_WHITE, COLOR_GREEN);
@@ -290,6 +297,9 @@ int main(void)
 		for (j = 0; j < categories[i].count; j++)
 			categories[i].modules[j]->init();
 	}
+
+	noecho();
+	keypad(stdscr, TRUE); /* there may be a Fn key */
 
 	loop();
 

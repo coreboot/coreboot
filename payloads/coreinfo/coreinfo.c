@@ -273,9 +273,10 @@ int main(void)
 
 	initscr();
 
+	start_color();
 	init_pair(1, COLOR_WHITE, COLOR_GREEN);
-	init_pair(2, COLOR_BLACK, COLOR_WHITE);
-	init_pair(3, COLOR_WHITE, COLOR_WHITE);
+	init_pair(2, COLOR_WHITE, COLOR_BLACK);
+	init_pair(3, COLOR_BLACK, COLOR_WHITE);
 
 	modwin = newwin(SCREEN_Y - 3, SCREEN_X, 1, 0);
 	menuwin = newwin(2, SCREEN_X, SCREEN_Y - 2, 0);

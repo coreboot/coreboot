@@ -7,7 +7,7 @@
 void cpu_initialize(unsigned int cpu_index);
 struct bus;
 void initialize_cpus(struct bus *cpu_bus);
-void __attribute__((regparm(0))) secondary_cpu_init(unsigned int cpu_index);
+void asmlinkage secondary_cpu_init(unsigned int cpu_index);
 
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);

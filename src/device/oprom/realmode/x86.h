@@ -18,6 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef __DEVICE_OPROM_REALMODE_X86_H__
+#define __DEVICE_OPROM_REALMODE_X86_H__
+
+#include <arch/cpu.h>
+
 #define REALMODE_BASE ((void *)0x600)
 
 struct realmode_idt {
@@ -33,10 +38,10 @@ extern unsigned char __realmode_call, __realmode_interrupt;
 extern unsigned char __buffer;
 
 extern void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) __attribute__((regparm(0)));
+		u32 esi, u32 edi) asmlinkage;
 
 extern void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) __attribute__((regparm(0)));
+		u32 esi, u32 edi) asmlinkage;
 
 #define FAKE_MEMORY_SIZE (1024*1024) // only 1MB
 #define INITIAL_EBDA_SEGMENT 0xF600
@@ -47,3 +52,4 @@ int int12_handler(void);
 int int16_handler(void);
 int int1a_handler(void);
 
+#endif

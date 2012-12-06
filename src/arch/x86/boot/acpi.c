@@ -748,7 +748,7 @@ extern int lowmem_backup_size;
 #define WAKEUP_BASE 0x600
 
 void (*acpi_do_wakeup)(u32 vector, u32 backup_source, u32 backup_target,
-       u32 backup_size) __attribute__((regparm(0))) = (void *)WAKEUP_BASE;
+       u32 backup_size) asmlinkage = (void *)WAKEUP_BASE;
 
 extern unsigned char __wakeup, __wakeup_size;
 

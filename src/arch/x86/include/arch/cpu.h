@@ -1,6 +1,8 @@
 #ifndef ARCH_CPU_H
 #define ARCH_CPU_H
 
+#include <stdint.h>
+
 /*
  * EFLAGS bits
  */
@@ -205,6 +207,9 @@ static void inline get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
                 c->x86_model += ((tfms >> 16) & 0xF) << 4;
 
 }
+
+#define asmlinkage __attribute__((regparm(0)))
+
 #endif
 
 #endif /* ARCH_CPU_H */

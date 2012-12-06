@@ -372,7 +372,7 @@ config CONSOLE_POST
 
 config CMOS_POST
 	bool "Store post codes in CMOS for debugging"
-	depends on !NO_POST
+	depends on !NO_POST && PC80_SYSTEM
 	default n
 	help
 	  If enabled, coreboot will store post codes in CMOS and switch between
@@ -390,6 +390,7 @@ config CMOS_POST_OFFSET
 
 config IO_POST
 	bool "Send POST codes to an IO port"
+	depends on PC80_SYSTEM
 	default y
 	help
 	  If enabled, POST codes will be written to an IO port.

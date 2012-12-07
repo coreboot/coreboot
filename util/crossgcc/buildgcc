@@ -309,6 +309,10 @@ fi
 
 mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils \
 		build-gcc build-python build-expat
+
+mkdir -p $DESTDIR$TARGETDIR/bin
+export PATH=$DESTDIR$TARGETDIR/bin:$PATH
+
 if [ $SKIPGDB -eq 0 ]; then
 	mkdir -p build-gdb
 fi
@@ -329,11 +333,6 @@ test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || \
 	printf "${green}ok${NC}\n"
 test -r build-gmp/.failed && exit 1
 fi
-
-#if [ "$DESTDIR" != "" -a ! -x $TARGETDIR ]; then
-#	# create compat link
-#	ln -s $DESTDIR$TARGETDIR $TARGETDIR
-#fi
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
 # as GCC 4.6.x fails if it's there.
@@ -372,7 +371,6 @@ if [ -f build-mpc/.success ]; then
 else
 printf "Building MPC ${MPC_VERSION} ... "
 (
-	#test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	cd build-mpc
 	rm -f .failed
 	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
@@ -454,7 +452,6 @@ printf "Building GCC ${GCC_VERSION} ... "
 	cd ..
 	# Now, finally, we can build gcc:
 	cd build-gcc
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files. This is pretty misdesigned.
@@ -495,7 +492,6 @@ else
 printf "Building Expat ${EXPAT_VERSION} ... "
 (
 	cd build-expat
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
 		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
@@ -517,7 +513,6 @@ else
 printf "Building Python ${PYTHON_VERSION} ... "
 (
 	cd build-python
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} || touch .failed
@@ -539,7 +534,6 @@ else
 printf "Building GDB ${GDB_VERSION} ... "
 (
 	cd build-gdb
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	export PYTHONHOME=$DESTDIR$TARGETDIR
 	rm -f .failed
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
@@ -562,7 +556,6 @@ else
 printf "Building IASL ${IASL_VERSION} ... "
 (
 	cd $IASL_DIR/generate/unix
-	export PATH=$PATH:$DESTDIR$TARGETDIR/bin
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
 	$MAKE CC="$CC" iasl || touch .failed

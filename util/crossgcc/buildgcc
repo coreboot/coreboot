@@ -234,23 +234,6 @@ fi
 USE_GOLD=""
 GCC_OPTIONS="--enable-lto"
 
-if [ ${GCC_VERSION} = "trunk" ]; then
-  if [ ! -r tarballs/gcc-core-${GCC_VERSION}.tar.bz2 ]; then
-    printf "Pre-Release GCC ${GCC_VERSION}, checking out subversion trunk\n"
-    mkdir -p tarballs/.tmp
-    cd tarballs/.tmp
-    rm -rf gcc-${GCC_VERSION}
-    svn export -q svn://gcc.gnu.org/svn/gcc/trunk gcc-${GCC_VERSION}
-    printf "done. Now creating tar ball...\n"
-    tar cjf ../gcc-core-${GCC_VERSION}.tar.bz2 gcc-${GCC_VERSION}
-    printf "done. Now cleaning up...\n"
-    cd ..
-    rm -rf .tmp
-    cd ..
-    printf "done.\n"
-  fi
-fi
-
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
 for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \

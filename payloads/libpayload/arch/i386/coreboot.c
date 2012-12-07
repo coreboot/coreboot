@@ -150,7 +150,7 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_string(unsigned char *ptr, char **info)
 {
-	*info = (char *)phys_to_virt(((struct cb_string *)ptr)->string);
+	*info = (char *)((struct cb_string *)ptr)->string;
 }
 
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)

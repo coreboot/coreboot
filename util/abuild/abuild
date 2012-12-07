@@ -368,8 +368,9 @@ function build_target
 			xml ""
 			xml "</mainboard>"
 
-			junit " <testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
-			junit "<failure type='NoCrossCompiler'>No cross-compiler for $TARCH found</failure>"
+			junit "<testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
+			junit " <failure type='NoCrossCompiler'>No cross-compiler for $TARCH found</failure>"
+			junit "</testcase>"
 
 			return 0
 		else

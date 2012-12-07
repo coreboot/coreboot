@@ -24,7 +24,7 @@ config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on !PAYLOAD_SEABIOS || EXPERT
+	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
 	help
 	  Execute VGA Option ROMs in coreboot if found. This is required
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
@@ -53,7 +53,7 @@ config PCI_ROM_RUN
 	bool "Run non-VGA Option ROMs"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on !PAYLOAD_SEABIOS || EXPERT
+	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
 	help
 	  Execute non-VGA PCI Option ROMs in coreboot if found.
 
@@ -70,7 +70,7 @@ config ON_DEVICE_ROM_RUN
 	bool "Run Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on !PAYLOAD_SEABIOS || EXPERT
+	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
 	help
 	  Execute Option ROMs stored on PCI/PCIe/AGP devices in coreboot.
 

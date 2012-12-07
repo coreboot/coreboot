@@ -312,6 +312,10 @@ mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils \
 
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
+# autotools are portability hell. Force things right
+mkdir -p $DESTDIR$TARGETDIR/lib
+ln -s lib $DESTDIR$TARGETDIR/lib64
+ln -s lib $DESTDIR$TARGETDIR/lib32
 
 if [ $SKIPGDB -eq 0 ]; then
 	mkdir -p build-gdb

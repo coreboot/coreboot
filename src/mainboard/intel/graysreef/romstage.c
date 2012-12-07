@@ -146,30 +146,30 @@ void main(unsigned long bist)
 		temp_mmio_base: 0xfed08000,
 		system_type: 0, // 0 Mobile, 1 Desktop/Server
 		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xa0, 0x00, 0xa4, 0x00 },
+		spd_addresses: { 0xa0, 0xa2, 0xa4, 0xa6 },
 		ec_present: 0,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
 		// 2 = disable dimm 1 on channel
 		// 3 = disable dimm 0+1 on channel
-		dimm_channel0_disabled: 2,
-		dimm_channel1_disabled: 2,
+		dimm_channel0_disabled: 0,
+		dimm_channel1_disabled: 0,
 		max_ddr3_freq: 1600,
 		usb_port_config: {
-			{ 1, 0, 0x0040 }, /* P0: Front port  (OC0) */
-			{ 1, 1, 0x0040 }, /* P1: Back port   (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
-			{ 1, 2, 0x0040 }, /* P4: Front port  (OC2) */
-			{ 0, 0, 0x0000 }, /* P5: Empty */
-			{ 0, 0, 0x0000 }, /* P6: Empty */
-			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: Back port   (OC4) */
-			{ 1, 4, 0x0040 }, /* P9: MINIPCIE3   (no OC) */
-			{ 1, 4, 0x0040 }, /* P10: BLUETOOTH  (no OC) */
-			{ 0, 4, 0x0000 }, /* P11: Empty */
-			{ 1, 6, 0x0040 }, /* P12: Back port  (OC6) */
-			{ 1, 5, 0x0040 }, /* P13: Back port  (OC5) */
+			{ 1, 0, 0x0040 }, /* P0: Back USB3 port  (OC0) */
+			{ 1, 0, 0x0040 }, /* P1: Back USB3 port  (OC0) */
+			{ 1, 1, 0x0040 }, /* P2: Flex Port on bottom (OC1) */
+			{ 1, 8, 0x0040 }, /* P3: Docking connector (no OC) */
+			{ 1, 8, 0x0040 }, /* P4: Mini PCIE (no OC) */
+			{ 1, 1, 0x0040 }, /* P5: USB eSATA header (OC1) */
+			{ 1, 3, 0x0040 }, /* P6: Front Header J8H2 (OC3) */
+			{ 1, 3, 0x0040 }, /* P7: Front Header J8H2 (OC3) */
+			{ 1, 4, 0x0040 }, /* P8: USB/LAN Jack (OC4) */
+			{ 1, 4, 0x0040 }, /* P9: USB/LAN Jack (OC4) */
+			{ 1, 5, 0x0040 }, /* P10: Front Header J7H3 (OC5) */
+			{ 1, 5, 0x0040 }, /* P11: Front Header J7H3 (OC5) */
+			{ 1, 6, 0x0040 }, /* P12: USB/DP Jack (OC6) */
+			{ 1, 6, 0x0040 }, /* P13: USB/DP Jack (OC6) */
 		},
 	};
 
@@ -248,10 +248,6 @@ void main(unsigned long bist)
 	before_dram_time = rdtsc();
 #endif
 	sdram_initialize(&pei_data);
-
-	while (1) {
-		asm("hlt\n");
-	}
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	after_dram_time = rdtsc();

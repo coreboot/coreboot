@@ -216,13 +216,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		version >> 24 , (version >> 16) & 0xff,
 		(version >> 8) & 0xff, version & 0xff);
 
-	/* Send ME init done for SandyBridge here.  This is done
-	 * inside the SystemAgent binary on IvyBridge. */
-	if (BASE_REV_SNB ==
-	    (pci_read_config16(PCI_CPU_DEVICE, PCI_DEVICE_ID) & BASE_REV_MASK))
-		intel_early_me_init_done(ME_INIT_STATUS_SUCCESS);
-	else
-		intel_early_me_status();
+	intel_early_me_status();
 
 	report_memory_config();
 

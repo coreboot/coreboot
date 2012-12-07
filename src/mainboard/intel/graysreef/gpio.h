@@ -26,24 +26,24 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0 = GPIO_MODE_GPIO,    /* PCH_GPIO0_R -> S_GPIO -> J9F5 */
 	.gpio1 = GPIO_MODE_GPIO,    /* SMC_EXTSMI_N */
 	.gpio2 = GPIO_MODE_GPIO,    /* TP_RSVD_TESTMODE  - float */
-	.gpio3 = GPIO_MODE_NATIVE,  /* SATA_ODD_DA_N -> PIRQF# */
+	.gpio3 = GPIO_MODE_NATIVE,  /* PCH_PCI_IRQ_N -> SIO GPIO12/SMI# */
 	.gpio4 = GPIO_MODE_GPIO,    /* EXTTS_SNI_DRV0_PCH  - float */
 	.gpio5 = GPIO_MODE_GPIO,    /* EXTTS_SNI_DRV1_PCH  - float */
 	.gpio6 = GPIO_MODE_GPIO,    /* DGPU_HPD_INTR_N */
 	.gpio7 = GPIO_MODE_GPIO,    /* SMC_RUNTIME_SCI_N */
 	.gpio8 = GPIO_MODE_GPIO,    /* PCH_GPIO8 -> DDR Voltage Select Bit 0 */
-	.gpio9 = GPIO_MODE_NATIVE,  /* USB_OC_10_11_R_N */
+	.gpio9  = GPIO_MODE_NATIVE, /* USB_OC_10_11_R_N */
 	.gpio10 = GPIO_MODE_NATIVE, /* USB_OC_12_13_R_N */
 	.gpio11 = GPIO_MODE_GPIO,   /* PCH_GPIO11 -> HOST_ALERT2_N -> PCIE_RSVD_2_N (3GIO_X1) slot 4 */
 	.gpio12 = GPIO_MODE_GPIO,   /* PM_LANPHY_ENABLE */
 	.gpio13 = GPIO_MODE_NATIVE, /* HDA_DOCK_RST_N */
-	.gpio14 = GPIO_MODE_GPIO,   /* SMC_WAKE_SCI_R_N */
+	.gpio14 = GPIO_MODE_GPIO,   /* SMC_WAKE_SCI_N (not stuffed) & USB_8_9_PWR */
 	.gpio15 = GPIO_MODE_GPIO,   /* Always GPIO: HOST_ALERT1_R_N -> PCIE_RSV_1_N */
 	.gpio16 = GPIO_MODE_NATIVE, /* SATA_DET4_R_N */
 	.gpio17 = GPIO_MODE_GPIO,   /* DGPU_PWROK */
 	.gpio18 = GPIO_MODE_NATIVE, /* CK_SLOT1_OE_N_R */
 	.gpio19 = GPIO_MODE_GPIO,   /* BBS_BIT0_R - STRAP */
-	.gpio20 = GPIO_MODE_GPIO,   /* CK_SLOT2_OE_N_R */
+	.gpio20 = GPIO_MODE_NATIVE, /* CK_SLOT2_OE_N_R */
 	.gpio21 = GPIO_MODE_GPIO,   /* SATA_DET0_R_N -> J9H4 */
 	.gpio22 = GPIO_MODE_GPIO,   /* BIOS_REC -> J8G1 */
 	.gpio23 = GPIO_MODE_NATIVE, /* PCH_DRQ1_N */
@@ -51,7 +51,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio25 = GPIO_MODE_NATIVE, /* CK_SLOT3_OE_N */
 	.gpio26 = GPIO_MODE_NATIVE, /* CK_SLOT4_OE_N */
 	.gpio27 = GPIO_MODE_GPIO,   /* Always GPIO: PCH_GPIO_27 -> SMC_WAKE_SCI_N & LANWAKE_N */
-	.gpio28 = GPIO_MODE_GPIO,   /* Always GPIO: PLL_ODVR_EN */
+	.gpio28 = GPIO_MODE_GPIO,   /* Always GPIO: PLL_ODVR_EN -> PCH_AUDIO_PWR_N */
 	.gpio29 = GPIO_MODE_NATIVE, /* PCH_SLP_WLAN_N */
 	.gpio30 = GPIO_MODE_NATIVE, /* SUS_PWR_ACK_R */
 	.gpio31 = GPIO_MODE_NATIVE, /* AC_PRESENT_R */
@@ -108,13 +108,13 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE, /* Always GPIO on desktop. Mobile Native. PM_CLKRUN_N */
 	.gpio33 = GPIO_MODE_NATIVE, /* HDADOCKEN_R_N */
 	.gpio34 = GPIO_MODE_GPIO,   /* PCH_GPIO34 -> SATA_PWR_EN0_N */
-	.gpio35 = GPIO_MODE_GPIO,   /* Always GPIO. SATA_PWR_EN1_R_N  */
+	.gpio35 = GPIO_MODE_GPIO,   /* SATA_PWR_EN1_R_N  */
 	.gpio36 = GPIO_MODE_NATIVE, /* SATA_ODD_PRSNT_R_N */
-	.gpio37 = GPIO_MODE_GPIO,   /* FDI_OVRVLTG */
+	.gpio37 = GPIO_MODE_NATIVE, /* SATA_ODD_DA_N_R */
 	.gpio38 = GPIO_MODE_GPIO,   /* MFG_MODE */
 	.gpio39 = GPIO_MODE_GPIO,   /* GFX_CRB_DET */
-	.gpio40 = GPIO_MODE_NATIVE, /* USB_OC_2_R_N */
-	.gpio41 = GPIO_MODE_NATIVE, /* USB_OC_5_R_N */
+	.gpio40 = GPIO_MODE_NATIVE, /* USB_OC_2_5_R_N */
+	.gpio41 = GPIO_MODE_GPIO,   /* USB_0_1_PWR */
 	.gpio42 = GPIO_MODE_NATIVE, /* USB_OC_6_7_R_N */
 	.gpio43 = GPIO_MODE_NATIVE, /* USB_OSC_8_9_R_N */
 	.gpio44 = GPIO_MODE_NATIVE, /* CK_SLOT5_OE_N */
@@ -145,11 +145,11 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio34 = GPIO_DIR_OUTPUT,
 	.gpio35 = GPIO_DIR_OUTPUT,
 	/* .gpio36  NATIVE */
-	.gpio37 = GPIO_DIR_INPUT,
+	/* .gpio37  NATIVE */
 	.gpio38 = GPIO_DIR_INPUT,
 	.gpio39 = GPIO_DIR_INPUT,
 	/* .gpio40  NATIVE */
-	/* .gpio41  NATIVE */
+	.gpio41 = GPIO_DIR_OUTPUT,
 	/* .gpio42  NATIVE */
 	/* .gpio43  NATIVE */
 	/* .gpio44  NATIVE */
@@ -176,6 +176,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 
 const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio34 = GPIO_LEVEL_LOW,
+	.gpio41 = GPIO_LEVEL_HIGH,
 	.gpio35 = GPIO_LEVEL_LOW,
 	.gpio46 = GPIO_LEVEL_HIGH,
 	.gpio49 = GPIO_LEVEL_HIGH,
@@ -189,9 +190,9 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 };
 
 const struct pch_gpio_set3 pch_gpio_set3_mode = {
-	.gpio64 = GPIO_MODE_GPIO,   /* CK_PCH_SIO_DOCK_R -> TP_CK_PCI_SIO_DOCK */
+	.gpio64 = GPIO_MODE_NATIVE, /* CK_PCH_SIO_DOCK_R -> TP_CK_PCI_SIO_DOCK */
 	.gpio65 = GPIO_MODE_NATIVE, /* CK_FLEX1 */
-	.gpio66 = GPIO_MODE_GPIO,   /* TP_CK_FLEX2 */
+	.gpio66 = GPIO_MODE_GPIO,   /* CK_FLEX2 */
 	.gpio67 = GPIO_MODE_GPIO,   /* DGPU_PRSNT_N -> PEG_RSVD3 */
 	.gpio68 = GPIO_MODE_GPIO,   /* SATA_ODD_PWRGT */
 	.gpio69 = GPIO_MODE_GPIO,   /* SV_DET -> J8E5 */
@@ -199,7 +200,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio71 = GPIO_MODE_GPIO,   /* USB3_DET_P3_N */
 	.gpio72 = GPIO_MODE_NATIVE, /* PM_BATLOW_R_N */
 	.gpio73 = GPIO_MODE_NATIVE, /* CK_REQ_DOCK_N */
-	.gpio74 = GPIO_MODE_NATIVE, /* PCH_GPIO74_R -> AMB_THM2_R_N */
+	.gpio74 = GPIO_MODE_NATIVE, /* PCH_GPIO74_R -> AMB_THM2_R_N (PCHHOT) */
 	.gpio75 = GPIO_MODE_NATIVE, /* SM1_DATA */
 };
 

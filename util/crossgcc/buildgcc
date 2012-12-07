@@ -37,10 +37,6 @@ GCC_VERSION=4.7.2
 GCC_AUTOCONF_VERSION=2.64
 BINUTILS_VERSION=2.23
 GDB_VERSION=7.5
-W32API_VERSION=3.17-2
-W32API_VERSION_SHORT=3.17
-MINGWRT_VERSION=3.20-2
-MINGWRT_VERSION_SHORT=3.20
 IASL_VERSION=20121114
 PYTHON_VERSION=2.7.3
 EXPAT_VERSION=2.1.0
@@ -53,8 +49,6 @@ LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.gz"
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/Base/w32api/w32api-${W32API_VERSION_SHORT}/w32api-${W32API_VERSION}-mingw32-src.tar.lzma"
-MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW/Base/mingw-rt/mingwrt-${MINGWRT_VERSION_SHORT}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.lzma"
 IASL_ARCHIVE="http://www.acpica.org/download/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
 EXPAT_ARCHIVE="http://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.gz"
@@ -66,8 +60,6 @@ LIBELF_DIR="libelf-${LIBELF_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
-W32API_DIR="w32api-${W32API_VERSION}-mingw32"
-MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
 IASL_DIR="acpica-unix-${IASL_VERSION}"
 PYTHON_DIR="Python-${PYTHON_VERSION}"
 EXPAT_DIR="expat-${EXPAT_VERSION}"
@@ -129,7 +121,7 @@ cleanup()
 {
 	printf "Cleaning up temporary files... "
 	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-*
-	rm -rf gdb-* w32api-* mingwrt-* acpica-* python-* expat-*
+	rm -rf gdb-* acpica-* python-* expat-*
 	printf "${green}ok${NC}\n"
 }
 
@@ -237,11 +229,6 @@ if [ $SKIPPYTHON -eq 1 ]; then
 	EXPAT_PACKAGE=""
 fi
 
-MINGW_ARCHIVES=""
-if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
-	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
-fi
-
 # coreboot does not like the GOLD linker
 # USE_GOLD="--enable-gold"
 USE_GOLD=""
@@ -267,7 +254,7 @@ fi
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
 for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
-	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES \
+	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE \
 	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
@@ -284,14 +271,9 @@ done
 printf "Downloaded tar balls ... "
 printf "${green}ok${NC}\n"
 
-MINGW_PACKAGES=""
-if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
-	MINGW_PACKAGES="W32API MINGWRT"
-fi
-
 printf "Unpacking and patching ... \n"
 for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
-	    $EXPAT_PACKAGE $GDB_PACKAGE $MINGW_PACKAGES IASL; do
+	    $EXPAT_PACKAGE $GDB_PACKAGE IASL; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive="`eval echo '$'$archive`"
 	dir=$PACKAGE"_DIR"
@@ -314,12 +296,6 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
 done
 printf "Unpacked and patched ... "
 printf "${green}ok${NC}\n"
-
-if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -gt 0 ]; then
-	mkdir -p $TARGETDIR/$TARGETARCH/sys-include
-	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* \
-				  $TARGETDIR/$TARGETARCH/sys-include
-fi
 
 CC=cc
 if [ `uname` = "Darwin" ]; then
@@ -507,14 +483,20 @@ printf "Building GCC ${GCC_VERSION} ... "
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
 		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--disable-libssp --disable-bootstrap --disable-nls \
-		--disable-libquadmath \
+		--disable-libquadmath --without-headers \
 		$GCC_OPTIONS --enable-languages="c" $USE_GOLD \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		--with-mpc=$DESTDIR$TARGETDIR --with-libelf=$DESTDIR$TARGETDIR \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		|| touch .failed
-	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc || touch .failed
+	$MAKE install-gcc DESTDIR=$DESTDIR || touch .failed
+
+	if [ "`echo $TARGETARCH | grep -c -- -mingw32`" -eq 0 ]; then
+		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc || touch .failed
+		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
+	fi
+
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-gcc/crossgcc-build.log 2>&1
 test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || \

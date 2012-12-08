@@ -17,6 +17,7 @@
 #include "device.h"
 #include "debug.h"
 #include <x86emu/x86emu.h>
+#include <device/oprom/include/io.h>
 #include "io.h"
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
@@ -74,6 +75,9 @@ inl(u16 port)
 	HALT_SYS();
 	return 0;
 }
+
+#ifndef CONFIG_PCI
+#endif
 #endif
 
 #if CONFIG_YABEL_DIRECTHW
@@ -136,13 +140,13 @@ read_io(void *addr, size_t sz)
 
         switch (sz) {
         case 1:
-		asm volatile ("inb %1, %b0" : "=a"(ret) : "d" (port));
+		ret = inb(port);
                 break;
         case 2:
-		asm volatile ("inw %1, %w0" : "=a"(ret) : "d" (port));
+		ret = inw(port);
                 break;
         case 4:
-		asm volatile ("inl %1, %0" : "=a"(ret) : "d" (port));
+		ret = inl(port);
                 break;
         default:
                 ret = 0;
@@ -158,13 +162,13 @@ write_io(void *addr, unsigned int value, size_t sz)
         switch (sz) {
 	/* since we are using inb instructions, we need the port number as 16bit value */
         case 1:
-		asm volatile ("outb %b0, %1" : : "a"(value), "d" (port));
+		outb(value, port);
                 break;
         case 2:
-		asm volatile ("outw %w0, %1" : : "a"(value), "d" (port));
+		outw(value, port);
                 break;
         case 4:
-		asm volatile ("outl %0, %1" : : "a"(value), "d" (port));
+		outl(value, port);
                 break;
         default:
                 return -1;

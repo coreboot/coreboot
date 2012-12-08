@@ -47,7 +47,8 @@ unsigned long tb_freq = 0;
 
 u64 get_time(void)
 {
-    u64 act;
+    u64 act = 0;
+#if CONFIG_ARCH_X86
     u32 eax, edx;
 
     __asm__ __volatile__(
@@ -55,5 +56,6 @@ u64 get_time(void)
         : "=a"(eax), "=d"(edx)
         : /* no inputs, no clobber */);
     act = ((u64) edx << 32) | eax;
+#endif
     return act;
 }

@@ -157,7 +157,7 @@ config YABEL_VIRTMEM_LOCATION
 config YABEL_DIRECTHW
 	prompt "Direct hardware access"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL
+	depends on PCI_OPTION_ROM_RUN_YABEL && ARCH_X86
 	help
 	  YABEL consists of two parts: It uses x86emu for the CPU emulation and
 	  additionally provides a PC system emulation that filters bad device

@@ -44,6 +44,7 @@
 #include <arch/io.h>
 #include <x86emu/x86emu.h>
 #include <x86emu/regs.h>
+#include <device/oprom/include/io.h>
 #include "debug.h"
 #include "prim_ops.h"
 

@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#include <asm/byteorder.h>
 #include "common.h"
 #include "cbfs.h"
 #include "elf.h"
@@ -581,7 +580,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		 * When executing the branch, the PC will read as the address
 		 * of current instruction + 8.
 		 */
-		arm_vec[0] = __cpu_to_le32(0xea00000e);  // branch to . + 64 bytes
+		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
 		master_header->version = ntohl(VERSION);

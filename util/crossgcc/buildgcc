@@ -78,6 +78,17 @@ cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
+normalize_dirs()
+{
+	mkdir -p $DESTDIR$TARGETDIR/lib
+	test -d $DESTDIR$TARGETDIR/lib32 && mv $DESTDIR$TARGETDIR/lib32/* $DESTDIR$TARGETDIR/lib
+	test -d $DESTDIR$TARGETDIR/lib64 && mv $DESTDIR$TARGETDIR/lib64/* $DESTDIR$TARGETDIR/lib
+	rmdir -p $DESTDIR$TARGETDIR/lib32 $DESTDIR$TARGETDIR/lib64
+
+	perl -pi -e "s,/lib32,/lib," $DESTDIR$TARGETDIR/lib/*.la
+	perl -pi -e "s,/lib64,/lib," $DESTDIR$TARGETDIR/lib/*.la
+}
+
 searchgnu()
 {
 	# $1 short name
@@ -327,6 +338,9 @@ printf "Building GMP ${GMP_VERSION} ... "
 		|| touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-gmp/crossgcc-build.log 2>&1
 test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || \
@@ -354,6 +368,8 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
+	normalize_dirs
+
 	# work around build problem of libgmp.la
 	if [ "$DESTDIR" != "" ]; then
 	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/libgmp.la
@@ -380,6 +396,8 @@ printf "Building MPC ${MPC_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
+	normalize_dirs
+
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-mpc/crossgcc-build.log 2>&1
 test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || \
@@ -400,6 +418,8 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 		--infodir=$TARGETDIR/info CFLAGS="$HOSTCFLAGS" || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-libelf/crossgcc-build.log 2>&1
@@ -497,6 +517,9 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
 	$MAKE || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-expat/crossgcc-build.log 2>&1
 test -r build-expat/.failed && printf "${RED}failed${NC}\n" || \
@@ -518,6 +541,9 @@ printf "Building Python ${PYTHON_VERSION} ... "
 		--target=${TARGETARCH} || touch .failed
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+
 	if [ ! -f .failed ]; then touch .success; fi
 ) > build-python/crossgcc-build.log 2>&1
 test -r build-python/.failed && printf "${RED}failed${NC}\n" || \

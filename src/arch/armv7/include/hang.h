@@ -1,7 +1,7 @@
-/*
+ /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google, Inc
+ * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,33 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __ARCH_CPU_H__
-#define __ARCH_CPU_H__
-
-#define asmlinkage
-
-#if !defined(__PRE_RAM__)
-#include <device/device.h>
-
-struct cpu_driver {
-	struct device_operations *ops;
-	struct cpu_device_id *id_table;
-};
-
-struct cpu_info {
-	device_t cpu;
-	unsigned long index;
-};
-
-struct cpuinfo_arm {
-        uint8_t    arm;            /* CPU family */
-        uint8_t    arm_vendor;     /* CPU vendor */
-        uint8_t    arm_model;
-};
-
-#endif
-
-#endif /* __ARCH_CPU_H__ */
+void hang(void);

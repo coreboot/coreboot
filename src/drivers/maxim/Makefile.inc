@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2010 coresystems GmbH
+## Copyright (C) 2012 The ChromiumOS Authors
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,18 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-subdirs-y += ati
-subdirs-y += dec
-subdirs-y += emulation
-subdirs-y += generic
-subdirs-y += i2c
-subdirs-y += oxford
-subdirs-y += realtek
-subdirs-y += sil
-subdirs-y += trident
-subdirs-y += ics
-subdirs-y += spi
-subdirs-y += ipmi
-subdirs-y += elog
-subdirs-y += maxim
-subdirs-$(CONFIG_ARCH_X86) += pc80
+driver-$(CONFIG_DRIVER_MAXIM_77686) += max77686.c

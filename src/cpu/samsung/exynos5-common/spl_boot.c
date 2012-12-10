@@ -54,7 +54,6 @@
 #include <system.h>
 
 #include <arch/io.h>
-#include <arch/types.h>
 
 /* FIXME(dhendrix): clean out u-boot global data stuff */
 //DECLARE_GLOBAL_DATA_PTR;

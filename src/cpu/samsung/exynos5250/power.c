@@ -30,7 +30,7 @@
 #include <cpu/samsung/exynos5250/sysreg.h>
 #include <cpu/samsung/exynos5-common/spl.h>
 #include <device/i2c.h>
-#include <device/power/max77686.h>
+#include <drivers/power/max77686.h>
 
 static void ps_hold_setup(void)
 {

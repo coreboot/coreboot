@@ -29,7 +29,7 @@
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/sysreg.h>
 #include <cpu/samsung/exynos5-common/spl.h>
-#include <drivers/power/max77686.h>
+#include <drivers/maxim/max77686/max77686.h>
 
 static void ps_hold_setup(void)
 {

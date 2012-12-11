@@ -1,0 +1,4 @@
+config EC_COMPAL_ENE932
+	bool
+	help
+	Interface to COMPAL ENE932 Embedded Controller.

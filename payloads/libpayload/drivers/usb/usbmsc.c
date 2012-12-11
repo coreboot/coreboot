@@ -143,7 +143,7 @@ reset_transport (usbdev_t *dev)
 	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) ||
 			clear_stall (MSC_INST (dev)->bulk_in) ||
 			clear_stall (MSC_INST (dev)->bulk_out)) {
-		printf ("Detaching unresponsive device.\n");
+		usb_debug ("Detaching unresponsive device.\n");
 		usb_detach_device (dev->controller, dev->address);
 		return MSC_COMMAND_DETACHED;
 	}
@@ -394,14 +394,14 @@ read_capacity (usbdev_t *dev)
 	}
 	if (count >= 20) {
 		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably more usable.
-		printf ("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
+		usb_debug ("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
 		MSC_INST (dev)->numblocks = 0xffffffff;
 		MSC_INST (dev)->blocksize = 512;
 	} else {
 		MSC_INST (dev)->numblocks = ntohl (*(u32 *) buf) + 1;
 		MSC_INST (dev)->blocksize = ntohl (*(u32 *) (buf + 4));
 	}
-	printf ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
+	usb_debug ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
 		MSC_INST (dev)->blocksize,
 		/* round down high block counts to avoid integer overflow */
 		MSC_INST (dev)->numblocks > 1000000
@@ -433,7 +433,7 @@ usb_msc_init (usbdev_t *dev)
 
 
 	if (interface->bInterfaceProtocol != 0x50) {
-		printf ("  Protocol not supported.\n");
+		usb_debug ("  Protocol not supported.\n");
 		return;
 	}
 
@@ -441,7 +441,7 @@ usb_msc_init (usbdev_t *dev)
 		(interface->bInterfaceSubClass != 5) &&	// ATAPI 8070
 		(interface->bInterfaceSubClass != 6)) {	// SCSI
 		/* Other protocols, such as ATAPI don't seem to be very popular. looks like ATAPI would be really easy to add, if necessary. */
-		printf ("  Interface SubClass not supported.\n");
+		usb_debug ("  Interface SubClass not supported.\n");
 		return;
 	}
 
@@ -468,11 +468,11 @@ usb_msc_init (usbdev_t *dev)
 	}
 
 	if (MSC_INST (dev)->bulk_in == 0) {
-		printf("couldn't find bulk-in endpoint");
+		usb_debug("couldn't find bulk-in endpoint");
 		return;
 	}
 	if (MSC_INST (dev)->bulk_out == 0) {
-		printf("couldn't find bulk-out endpoint");
+		usb_debug("couldn't find bulk-out endpoint");
 		return;
 	}
 	usb_debug ("  using endpoint %x as in, %x as out\n",
@@ -481,7 +481,7 @@ usb_msc_init (usbdev_t *dev)
 
 	usb_debug ("  has %d luns\n", get_max_luns (dev) + 1);
 
-	printf ("  Waiting for device to become ready...");
+	usb_debug ("  Waiting for device to become ready...");
 	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
 	while (timeout--) {
 		switch (test_unit_ready (dev)) {
@@ -490,7 +490,7 @@ usb_msc_init (usbdev_t *dev)
 		case MSC_COMMAND_FAIL:
 			mdelay (100);
 			if (!(timeout % 10))
-				printf (".");
+				usb_debug (".");
 			continue;
 		default: /* if it's worse return */
 			return;
@@ -498,9 +498,9 @@ usb_msc_init (usbdev_t *dev)
 		break;
 	}
 	if (timeout < 0) {
-		printf ("timeout. Device not ready. Still trying...\n");
+		usb_debug ("timeout. Device not ready. Still trying...\n");
 	} else {
-		printf ("ok.\n");
+		usb_debug ("ok.\n");
 	}
 
 	usb_debug ("  spin up");

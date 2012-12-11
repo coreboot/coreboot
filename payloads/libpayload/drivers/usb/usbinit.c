@@ -67,47 +67,47 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		pci_command |= PCI_COMMAND_MASTER;
 		pci_write_config32(addr, PCI_COMMAND, pci_command);
 
-		printf("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
+		usb_debug("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
 			pciid >> 16, pciid & 0xFFFF, func);
 		switch (prog_if) {
 		case 0x00:
 #ifdef CONFIG_USB_UHCI
-			printf("UHCI controller\n");
+			usb_debug("UHCI controller\n");
 			uhci_init (addr);
 #else
-			printf("UHCI controller (not supported)\n");
+			usb_debug("UHCI controller (not supported)\n");
 #endif
 			break;
 
 		case 0x10:
 #ifdef CONFIG_USB_OHCI
-			printf("OHCI controller\n");
+			usb_debug("OHCI controller\n");
 			ohci_init(addr);
 #else
-			printf("OHCI controller (not supported)\n");
+			usb_debug("OHCI controller (not supported)\n");
 #endif
 			break;
 
 		case 0x20:
 #ifdef CONFIG_USB_EHCI
-			printf("EHCI controller\n");
+			usb_debug("EHCI controller\n");
 			ehci_init(addr);
 #else
-			printf("EHCI controller (not supported)\n");
+			usb_debug("EHCI controller (not supported)\n");
 #endif
 			break;
 
 		case 0x30:
 #ifdef CONFIG_USB_XHCI
-			printf("xHCI controller\n");
+			usb_debug("xHCI controller\n");
 			xhci_init(addr);
 #else
-			printf("xHCI controller (not supported)\n");
+			usb_debug("xHCI controller (not supported)\n");
 #endif
 			break;
 
 		default:
-			printf("unknown controller %x not supported\n",
+			usb_debug("unknown controller %x not supported\n",
 			       prog_if);
 			break;
 		}

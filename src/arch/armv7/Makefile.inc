@@ -33,9 +33,6 @@ COREBOOT_ROM_DEPENDENCIES:=
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_PAYLOAD_FILE)
 endif
-#ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
-#COREBOOT_ROM_DEPENDENCIES+=$(objcbfs)/coreboot_ap.elf
-#endif
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -44,9 +41,9 @@ prebuild-files = \
 	$(foreach file,$(cbfs-files), \
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
-	$(call extract_nth,1,$(file)) \
-	$(call extract_nth,2,$(file)) $(if $(filter-out stage payload,$(call extract_nth,3,$(file))),$(call extract_nth,3,$(file))) \
-	$(call extract_nth,4,$(file)) &&)
+	-f $(call extract_nth,1,$(file)) \
+	-n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
+	$(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
@@ -74,7 +71,7 @@ ifeq ($(CONFIG_PAYLOAD_NONE),y)
 endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
 	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
-	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"

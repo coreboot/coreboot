@@ -647,16 +647,19 @@ static struct device_operations device_ops = {
 };
 
 
-/* IDs for LPC device of Intel 6 Series Chipset, Intel 7 Series Chipset, and
- * Intel C200 Series Chipset
- */
-
-static const unsigned short pci_device_ids[] = { 0x1c46, 0x1c47, 0x1c49, 0x1c4a,
-						 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
-						 0x1c4f, 0x1c50, 0x1c52, 0x1c54,
-						 0x1e55, 0x1c56, 0x1e57, 0x1c5c,
-						 0x1e5d, 0x1e5e, 0x1e5f,
-						 0 };
+/* IDs for LPC device of Intel 8 Series Chipset (Lynx Point) */
+static const unsigned short pci_device_ids[] = {
+	0x8c41, /* Mobile Full Featured Engineering Sample. */
+	0x8c42, /* Desktop Full Featured Engineering Sample. */
+	0x8c44, /* Z87 SKU */
+	0x8c46, /* Z85 SKU */
+	0x8c49, /* HM86 SKU */
+	0x8c4a, /* H87 SKU */
+	0x8c4b, /* HM87 SKU */
+	0x8c4c, /* Q85 SKU */
+	0x8c4e, /* Q87 SKU */
+	0x8c4f, /* QM87 SKU */
+	0 };
 
 static const struct pci_driver pch_lpc __pci_driver = {
 	.ops	 = &device_ops,

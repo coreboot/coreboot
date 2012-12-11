@@ -461,22 +461,10 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
-static const struct pci_driver mc_driver_0100 __pci_driver = {
+static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0100,
-};
-
-static const struct pci_driver mc_driver __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0104, /* Sandy bridge */
-};
-
-static const struct pci_driver mc_driver_1 __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0154, /* Ivy bridge */
+	.device = 0x0c04, /* Mobile Haswell */
 };
 
 static void cpu_bus_init(device_t dev)

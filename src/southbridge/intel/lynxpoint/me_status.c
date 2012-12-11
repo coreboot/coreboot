@@ -109,6 +109,7 @@ static const char *me_progress_bup_values[] = {
 	[ME_HFS2_STATE_BUP_M0] = "Bringup in M0",
 	[ME_HFS2_STATE_BUP_FLOW_DET_ERR] = "Flow detection error",
 	[ME_HFS2_STATE_BUP_M3_CLK_ERR] = "M3 clock switching error",
+	[ME_HFS2_STATE_BUP_CPU_RESET_DID_TIMEOUT_MEM_MISSING] = "Host error - CPU reset timeout, DID timeout, memory missing",
 	[ME_HFS2_STATE_BUP_M3_KERN_LOAD] = "M3 kernel load",
 	[ME_HFS2_STATE_BUP_T32_MISSING] = "T34 missing - cannot program ICC",
 	[ME_HFS2_STATE_BUP_WAIT_DID] = "Waiting for DID BIOS message",

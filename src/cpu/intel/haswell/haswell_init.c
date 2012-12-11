@@ -404,6 +404,12 @@ static void set_max_ratio(void)
 static void set_energy_perf_bias(u8 policy)
 {
 	msr_t msr;
+	int ecx;
+
+	/* Determine if energy efficient policy is supported. */
+	ecx = cpuid_ecx(0x6);
+	if (!(ecx & (1 << 3)))
+		return;
 
 	/* Energy Policy is bits 3:0 */
 	msr = rdmsr(IA32_ENERGY_PERFORMANCE_BIAS);

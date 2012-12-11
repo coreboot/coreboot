@@ -107,7 +107,7 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		while ((RH_INST(dev)->ports[port] & P_PORT_RESET) && timeout--)
 			udelay(100);
 		if (RH_INST(dev)->ports[port] & P_PORT_RESET) {
-			printf("Error: ehci_rh: port reset timed out.\n");
+			usb_debug("Error: ehci_rh: port reset timed out.\n");
 			return;
 		}
 

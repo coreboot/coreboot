@@ -120,9 +120,9 @@ xhci_init (pcidev_t addr)
 	XHCI_INST (controller)->opreg->dcbaap_lo = virt_to_phys(XHCI_INST (controller)->dcbaa);
 	XHCI_INST (controller)->opreg->dcbaap_hi = 0;
 
-	printf("waiting for controller to be ready - ");
+	usb_debug("waiting for controller to be ready - ");
 	while ((XHCI_INST (controller)->opreg->usbsts & USBSTS_CNR) != 0) mdelay(1);
-	printf("ok.\n");
+	usb_debug("ok.\n");
 
 	usb_debug("ERST Max: %lx -> %lx entries\n", XHCI_INST (controller)->capreg->ERST_Max, 1<<(XHCI_INST (controller)->capreg->ERST_Max));
 

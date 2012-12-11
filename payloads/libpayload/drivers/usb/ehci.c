@@ -206,7 +206,7 @@ static int wait_for_tds(qtd_t *head)
 				&& timeout--)
 			udelay(50);
 		if (timeout < 0) {
-			printf("Error: ehci: queue transfer "
+			usb_debug("Error: ehci: queue transfer "
 				"processing timed out.\n");
 			return 1;
 		}
@@ -362,7 +362,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 		(EHCI_SETUP << QTD_PID_SHIFT) |
 		(3 << QTD_CERR_SHIFT);
 	if (fill_td(cur, devreq, drlen) != drlen) {
-		printf("ERROR: couldn't send the entire device request\n");
+		usb_debug("ERROR: couldn't send the entire device request\n");
 	}
 	qtd_t *next = memalign(32, sizeof(qtd_t));
 	cur->next_qtd = virt_to_phys(next);
@@ -379,7 +379,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 			(((dir == OUT)?EHCI_OUT:EHCI_IN) << QTD_PID_SHIFT) |
 			(3 << QTD_CERR_SHIFT);
 		if (fill_td(cur, data, dalen) != dalen) {
-			printf("ERROR: couldn't send the entire control payload\n");
+			usb_debug("ERROR: couldn't send the entire control payload\n");
 		}
 		next = memalign(32, sizeof(qtd_t));
 		cur->next_qtd = virt_to_phys(next);
@@ -556,7 +556,7 @@ static void *ehci_create_intr_queue(
 		}
 	}
 	if (nothing_placed) {
-		printf("Error: Failed to place ehci interrupt queue head "
+		usb_debug("Error: Failed to place ehci interrupt queue head "
 				"into periodic schedule: no space left\n");
 		ehci_destroy_intr_queue(ep, intrq);
 		return NULL;

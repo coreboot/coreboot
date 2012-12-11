@@ -532,7 +532,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 		}
 	}
 	if (nothing_placed) {
-		printf("Error: Failed to place UHCI interrupt queue "
+		usb_debug("Error: Failed to place UHCI interrupt queue "
 			      "head into framelist: no space left\n");
 		uhci_destroy_intr_queue(ep, q);
 		return NULL;

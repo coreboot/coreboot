@@ -286,7 +286,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		(device_to_host, standard_type, dev_recp), 1, 0, 0);
 	dd = (device_descriptor_t *) dev->descriptor;
 
-	printf ("* found device (0x%04x:0x%04x, USB %x.%x)",
+	usb_debug ("* found device (0x%04x:0x%04x, USB %x.%x)",
 		 dd->idVendor, dd->idProduct,
 		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
 	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
@@ -294,7 +294,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	usb_debug ("\ndevice has %x configurations\n", dd->bNumConfigurations);
 	if (dd->bNumConfigurations == 0) {
 		/* device isn't usable */
-		printf ("... no usable configuration!\n");
+		usb_debug ("... no usable configuration!\n");
 		dev->address = 0;
 		return -1;
 	}
@@ -317,7 +317,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 				num = interfaces;
 			} else {
 
-				printf ("\nNOTICE: This driver defaults to using the first interface.\n"
+				usb_debug ("\nNOTICE: This driver defaults to using the first interface.\n"
 					"This might be the wrong choice and lead to limited functionality\n"
 					"of the device. Please report such a case to coreboot@coreboot.org\n"
 					"as you might be the first.\n");
@@ -390,16 +390,16 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		wireless_device   = 0xe0,
 		misc_device       = 0xef,
 	};
-	printf(", class: ");
+	usb_debug(", class: ");
 	switch (class) {
 	case audio_device:
-		printf("audio\n");
+		usb_debug("audio\n");
 		break;
 	case comm_device:
-		printf("communication\n");
+		usb_debug("communication\n");
 		break;
 	case hid_device:
-		printf ("HID\n");
+		usb_debug ("HID\n");
 #ifdef CONFIG_USB_HID
 		controller->devices[adr]->init = usb_hid_init;
 #else
@@ -407,16 +407,16 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #endif
 		break;
 	case physical_device:
-		printf("physical\n");
+		usb_debug("physical\n");
 		break;
 	case imaging_device:
-		printf("camera\n");
+		usb_debug("camera\n");
 		break;
 	case printer_device:
-		printf("printer\n");
+		usb_debug("printer\n");
 		break;
 	case msc_device:
-		printf ("MSC\n");
+		usb_debug ("MSC\n");
 #ifdef CONFIG_USB_MSC
 		controller->devices[adr]->init = usb_msc_init;
 #else
@@ -424,7 +424,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #endif
 		break;
 	case hub_device:
-		printf ("hub\n");
+		usb_debug ("hub\n");
 #ifdef CONFIG_USB_HUB
 		controller->devices[adr]->init = usb_hub_init;
 #else
@@ -432,28 +432,28 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 #endif
 		break;
 	case cdc_device:
-		printf("CDC\n");
+		usb_debug("CDC\n");
 		break;
 	case ccid_device:
-		printf("smartcard / CCID\n");
+		usb_debug("smartcard / CCID\n");
 		break;
 	case security_device:
-		printf("content security\n");
+		usb_debug("content security\n");
 		break;
 	case video_device:
-		printf("video\n");
+		usb_debug("video\n");
 		break;
 	case healthcare_device:
-		printf("healthcare\n");
+		usb_debug("healthcare\n");
 		break;
 	case diagnostic_device:
-		printf("diagnostic\n");
+		usb_debug("diagnostic\n");
 		break;
 	case wireless_device:
-		printf("wireless\n");
+		usb_debug("wireless\n");
 		break;
 	default:
-		printf("unsupported class %x\n", class);
+		usb_debug("unsupported class %x\n", class);
 		break;
 	}
 	return adr;

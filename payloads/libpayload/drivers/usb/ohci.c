@@ -130,7 +130,7 @@ ohci_init (pcidev_t addr)
 	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all */
 	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10) & 0xfffff000; // OHCI mandates MMIO, so bit 0 is clear
 	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);
-	printf("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
+	usb_debug("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
 
 	if ((OHCI_INST (controller)->opreg->HcControl & HostControllerFunctionalStateMask) == USBReset) {
 		/* cold boot */
@@ -245,7 +245,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 		mdelay(1);
 	}
 	if (timeout < 0)
-		printf("Error: ohci: endpoint "
+		usb_debug("Error: ohci: endpoint "
 			"descriptor processing timed out.\n");
 	/* Clear the done queue. */
 	ohci_process_done_queue(OHCI_INST(dev->controller), 1);
@@ -609,7 +609,7 @@ ohci_create_intr_queue(endpoint_t *const ep, const int reqsize,
 		}
 	}
 	if (nothing_placed) {
-		printf("Error: Failed to place ohci interrupt endpoint "
+		usb_debug("Error: Failed to place ohci interrupt endpoint "
 			"descriptor into periodic table: no space left\n");
 		ohci_destroy_intr_queue(ep, intrq);
 		return NULL;

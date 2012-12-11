@@ -1,5 +1,0 @@
-config DRIVER_MAXIM_77686
-	bool "Maxim 77686"
-	default n
-	help
-	  Maxim 77686 power regulator

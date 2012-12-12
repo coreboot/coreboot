@@ -394,12 +394,7 @@ typedef struct {
 	u32  reserved_4		: 1;
 	u32  wlan		: 1;
 	u32  reserved_5		: 8;
-} __attribute__ ((packed)) mefwcaps_sku;
-
-typedef struct {
-	mefwcaps_sku fw_capabilities;
-	u8      available;
-} mbp_fw_caps;
+} __attribute__ ((packed)) mbp_mefwcaps;
 
 typedef struct {
 	u16        device_id;
@@ -431,11 +426,17 @@ typedef struct {
 } mbp_plat_type;
 
 typedef struct {
+	u16 icc_start_address;
+	u16 mask;
+} __attribute__ ((packed)) icc_address_mask;
+
+typedef struct {
 	u8        num_icc_profiles;
 	u8        icc_profile_soft_strap;
 	u8        icc_profile_index;
 	u8        reserved;
-	u32       register_lock_mask[3];
+	u32       icc_reg_bundles;
+	icc_address_mask icc_address_mask[0];
 } __attribute__ ((packed)) mbp_icc_profile;
 
 typedef struct {
@@ -451,23 +452,23 @@ typedef struct {
 	u8           state;
 	u8           last_theft_trigger;
 	tdt_state_flag  flags;
-}  __attribute__ ((packed)) tdt_state_info;
+}  __attribute__ ((packed)) mbp_at_state;
 
 typedef struct {
-	mbp_fw_version_name  fw_version_name;
-	mbp_fw_caps	     fw_caps_sku;
-	mbp_rom_bist_data    rom_bist_data;
-	mbp_platform_key     platform_key;
-	mbp_plat_type        fw_plat_type;
-	mbp_icc_profile	     icc_profile;
-	tdt_state_info	     at_state;
-	u32		     mfsintegrity;
+	mbp_fw_version_name  *fw_version_name;
+	mbp_mefwcaps         *fw_capabilities;
+	mbp_rom_bist_data    *rom_bist_data;
+	mbp_platform_key     *platform_key;
+	mbp_plat_type        *fw_plat_type;
+	mbp_icc_profile	     *icc_profile;
+	mbp_at_state         *at_state;
+	u32		     *mfsintegrity;
 } me_bios_payload;
 
 struct me_fwcaps {
 	u32 id;
 	u8 length;
-	mefwcaps_sku caps_sku;
+	mbp_mefwcaps caps_sku;
 	u8 reserved[3];
 } __attribute__ ((packed));
 

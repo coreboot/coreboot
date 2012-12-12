@@ -290,41 +290,6 @@ static void busmaster_disable_on_bus(int bus)
         }
 }
 
-/*
- * Drive GPIO 60 low to gate memory reset in S3.
- *
- * Intel reference designs all use GPIO 60 but it is
- * not a requirement and boards could use a different pin.
- */
-static void southbridge_gate_memory_reset(void)
-{
-	u32 reg32;
-	u16 gpiobase;
-
-	gpiobase = pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
-	if (!gpiobase)
-		return;
-
-	/* Make sure it is set as GPIO */
-	reg32 = inl(gpiobase + GPIO_USE_SEL2);
-	if (!(reg32 & (1 << 28))) {
-		reg32 |= (1 << 28);
-		outl(reg32, gpiobase + GPIO_USE_SEL2);
-	}
-
-	/* Make sure it is set as output */
-	reg32 = inl(gpiobase + GP_IO_SEL2);
-	if (reg32 & (1 << 28)) {
-		reg32 &= ~(1 << 28);
-		outl(reg32, gpiobase + GP_IO_SEL2);
-	}
-
-	/* Drive the output low */
-	reg32 = inl(gpiobase + GP_LVL2);
-	reg32 &= ~(1 << 28);
-	outl(reg32, gpiobase + GP_LVL2);
-}
-
 static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u8 reg8;
@@ -371,9 +336,6 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	case 1: printk(BIOS_DEBUG, "SMI#: Entering S1 (Assert STPCLK#)\n"); break;
 	case 5:
 		printk(BIOS_DEBUG, "SMI#: Entering S3 (Suspend-To-RAM)\n");
-
-		/* Gate memory reset */
-		southbridge_gate_memory_reset();
 
 		/* Invalidate the cache before going to S3 */
 		wbinvd();

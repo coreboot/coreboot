@@ -47,7 +47,7 @@ chip northbridge/intel/haswell
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
 			register "gpi1_routing" = "1"
 			register "gpi14_routing" = "2"
-			register "alt_gp_smi_en" = "0x0002"
+			register "alt_gp_smi_en" = "0x0000"
 			register "gpe0_en" = "0x4000"
 
 			register "ide_legacy_combined" = "0x0"

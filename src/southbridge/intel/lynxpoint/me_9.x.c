@@ -365,7 +365,7 @@ static inline void print_cap(const char *name, int state)
 
 static void me_print_fw_version(mbp_fw_version_name *vers_name)
 {
-	if (!vers_name->major_version) {
+	if (!vers_name) {
 		printk(BIOS_ERR, "ME: mbp missing version report\n");
 		return;
 	}
@@ -376,7 +376,7 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 }
 
 /* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(mefwcaps_sku *cap)
+static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 {
 	u32 rule_id = 0;
 	struct me_fwcaps cap_msg;
@@ -402,10 +402,11 @@ static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 }
 
 /* Get ME Firmware Capabilities */
-static void me_print_fwcaps(mbp_fw_caps *caps_section)
+static void me_print_fwcaps(mbp_mefwcaps *cap)
 {
-	mefwcaps_sku *cap = &caps_section->fw_capabilities;
-	if (!caps_section->available) {
+	mbp_mefwcaps local_caps;
+	if (!cap) {
+		cap = &local_caps;
 		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
 		if (mkhi_get_fwcaps(cap))
 			return;
@@ -705,6 +706,8 @@ static void intel_me_init(device_t dev)
 		intel_me_extend_valid(dev);
 	}
 
+	memset(&mbp_data, 0, sizeof(mbp_data));
+
 	/*
 	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
 	 * all boot flows except S3 Resume.
@@ -718,8 +721,8 @@ static void intel_me_init(device_t dev)
 		return;
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-	me_print_fw_version(&mbp_data.fw_version_name);
-	me_print_fwcaps(&mbp_data.fw_caps_sku);
+	me_print_fw_version(mbp_data.fw_version_name);
+	me_print_fwcaps(mbp_data.fw_capabilities);
 #endif
 
 	/*
@@ -754,7 +757,7 @@ static struct device_operations device_ops = {
 static const struct pci_driver intel_me __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1e3a,
+	.device	= 0x8c3a,
 };
 
 /******************************************************************************
@@ -802,6 +805,11 @@ static void intel_me_mbp_give_up(device_t dev)
 	write_host_csr(&csr);
 }
 
+struct mbp_payload {
+	mbp_header header;
+	u32 data[0];
+};
+
 /*
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
@@ -809,12 +817,12 @@ static void intel_me_mbp_give_up(device_t dev)
 static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 {
 	mbp_header mbp_hdr;
-	mbp_item_header	mbp_item_hdr;
 	u32 me2host_pending;
-	u32 mbp_ident;
 	struct mei_csr host;
 	struct me_hfs2 hfs2;
 	int count;
+	struct mbp_payload *mbp;
+	int i;
 
 	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 
@@ -840,92 +848,25 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 		       me2host_pending);
 		goto mbp_failure;
 	}
+	mbp = malloc(mbp_hdr.mbp_size * sizeof(u32));
+	if (!mbp)
+		goto mbp_failure;
 
+	mbp->header = mbp_hdr;
 	me2host_pending--;
-	memset(mbp_data, 0, sizeof(*mbp_data));
 
-	while (mbp_hdr.num_entries--) {
-		u32* copy_addr;
-		u32 copy_size, buffer_room;
-		void *p;
-
-		if (!me2host_pending) {
-			printk(BIOS_ERR, "ME: no mbp data %d entries to go!\n",
-			       mbp_hdr.num_entries + 1);
-			goto mbp_failure;
-		}
-
-		mei_read_dword_ptr(&mbp_item_hdr, MEI_ME_CB_RW);
-
-		if (mbp_item_hdr.length > me2host_pending) {
-			printk(BIOS_ERR, "ME: insufficient mbp data %d "
-			       "entries to go!\n",
-			       mbp_hdr.num_entries + 1);
-			goto mbp_failure;
-		}
-
-		me2host_pending -= mbp_item_hdr.length;
-
-		mbp_ident = MBP_MAKE_IDENT(mbp_item_hdr.app_id,
-		                           mbp_item_hdr.item_id);
-
-		copy_size = mbp_item_hdr.length - 1;
-
-#define SET_UP_COPY(field) { copy_addr = (u32 *)&mbp_data->field;	     \
-			buffer_room = sizeof(mbp_data->field) / sizeof(u32); \
-			break;					             \
-		}
-
-		p = &mbp_item_hdr;
-		printk(BIOS_INFO, "ME: MBP item header %8.8x\n", *((u32*)p));
-
-		switch(mbp_ident) {
-		case MBP_IDENT(KERNEL, FW_VER):
-			SET_UP_COPY(fw_version_name);
-
-		case MBP_IDENT(ICC, PROFILE):
-			SET_UP_COPY(icc_profile);
-
-		case MBP_IDENT(INTEL_AT, STATE):
-			SET_UP_COPY(at_state);
-
-		case MBP_IDENT(KERNEL, FW_CAP):
-			mbp_data->fw_caps_sku.available = 1;
-			SET_UP_COPY(fw_caps_sku.fw_capabilities);
-
-		case MBP_IDENT(KERNEL, ROM_BIST):
-			SET_UP_COPY(rom_bist_data);
-
-		case MBP_IDENT(KERNEL, PLAT_KEY):
-			SET_UP_COPY(platform_key);
-
-		case MBP_IDENT(KERNEL, FW_TYPE):
-			mbp_data->fw_plat_type.available = 1;
-			SET_UP_COPY(fw_plat_type.rule_data);
-
-		case MBP_IDENT(KERNEL, MFS_FAILURE):
-			SET_UP_COPY(mfsintegrity);
-
-		default:
-			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x!!!\n",
-			       mbp_ident);
-			goto mbp_failure;
-		}
-
-		if (buffer_room != copy_size) {
-			printk(BIOS_ERR, "ME: buffer room %d != %d copy size"
-			       " for item  0x%x!!!\n",
-			       buffer_room, copy_size, mbp_ident);
-			goto mbp_failure;
-		}
-		while(copy_size--)
-			*copy_addr++ = read_cb();
+	i = 0;
+	while (i != me2host_pending) {
+		mei_read_dword_ptr(&mbp->data[i], MEI_ME_CB_RW);
+		i++;
 	}
 
+	/* Signal to the ME that the host has finished reading the MBP. */
 	read_host_csr(&host);
 	host.interrupt_generate = 1;
 	write_host_csr(&host);
 
+	/* Wait for the mbp_cleared indicator. */
 	for (count = ME_RETRY; count > 0; --count) {
 		pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 		if (hfs2.mbp_cleared)
@@ -937,6 +878,58 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 		printk(BIOS_WARNING, "ME: Timeout waiting for mbp_cleared\n");
 		intel_me_mbp_give_up(dev);
 	}
+
+	/* Dump out the MBP contents. */
+#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
+	       mbp->header.num_entries, mbp->header.mbp_size);
+	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
+		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
+	}
+#endif
+
+	#define ASSIGN_FIELD_PTR(field_,val_) \
+		{ \
+		mbp_data->field_ = (typeof(mbp_data->field_))(void *)val_; \
+		break; \
+		}
+	/* Setup the pointers in the me_bios_payload structure. */
+	for (i = 0; i < mbp->header.mbp_size - 1;) {
+		mbp_item_header *item = (void *)&mbp->data[i];
+
+		switch(MBP_MAKE_IDENT(item->app_id, item->item_id)) {
+		case MBP_IDENT(KERNEL, FW_VER):
+			ASSIGN_FIELD_PTR(fw_version_name, &mbp->data[i+1]);
+
+		case MBP_IDENT(ICC, PROFILE):
+			ASSIGN_FIELD_PTR(icc_profile, &mbp->data[i+1]);
+
+		case MBP_IDENT(INTEL_AT, STATE):
+			ASSIGN_FIELD_PTR(at_state, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, FW_CAP):
+			ASSIGN_FIELD_PTR(fw_capabilities, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, ROM_BIST):
+			ASSIGN_FIELD_PTR(rom_bist_data, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, PLAT_KEY):
+			ASSIGN_FIELD_PTR(platform_key, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, FW_TYPE):
+			ASSIGN_FIELD_PTR(fw_plat_type, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, MFS_FAILURE):
+			ASSIGN_FIELD_PTR(mfsintegrity, &mbp->data[i+1]);
+
+		default:
+			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ dw offset 0x%x\n",
+			       mbp->data[i], i);
+			break;
+		}
+		i += item->length;
+	}
+	#undef ASSIGN_FIELD_PTR
 
 	return 0;
 

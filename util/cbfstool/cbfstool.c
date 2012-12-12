@@ -106,7 +106,7 @@ static int cbfs_add(void)
 
 static int cbfs_add_payload(void)
 {
-	uint32_t filesize = 0;
+	int32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *payload;
 
@@ -136,6 +136,12 @@ static int cbfs_add_payload(void)
 	}
 
 	filesize = parse_elf_to_payload(filedata, &payload, rom_algo);
+	if (filesize <= 0) {
+		fprintf(stderr, "E: Adding payload '%s' failed.\n",
+			rom_filename);
+		free(rom);
+		return 1;
+	}
 
 	cbfsfile = create_cbfs_file(rom_name, payload, &filesize,
 				CBFS_COMPONENT_PAYLOAD, &rom_baseaddress);

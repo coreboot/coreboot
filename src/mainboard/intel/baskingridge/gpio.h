@@ -23,7 +23,7 @@
 #include "southbridge/intel/lynxpoint/gpio.h"
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
-	.gpio0 = GPIO_MODE_GPIO,    /* PCH_GPIO0_R -> S_GPIO -> J9F5 */
+	.gpio0 = GPIO_MODE_GPIO,    /* PCH_GPIO0_R -> S_GPIO -> J9F4 */
 	.gpio1 = GPIO_MODE_GPIO,    /* SMC_EXTSMI_N */
 	.gpio2 = GPIO_MODE_GPIO,    /* TP_RSVD_TESTMODE  - float */
 	.gpio3 = GPIO_MODE_NATIVE,  /* PCH_PCI_IRQ_N -> SIO GPIO12/SMI# */
@@ -121,7 +121,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio45 = GPIO_MODE_NATIVE, /* CK_PCIE_LAN_REQ_N */
 	.gpio46 = GPIO_MODE_GPIO,   /* PCH_GPIO46_R -> DDR Voltage Select Bit 1 */
 	.gpio47 = GPIO_MODE_NATIVE, /* PEGA_CKREQ_N */
-	.gpio48 = GPIO_MODE_GPIO,   /* BIOS_RESP -> J8E6 */
+	.gpio48 = GPIO_MODE_GPIO,   /* BIOS_RESP -> J8E3 */
 	.gpio49 = GPIO_MODE_GPIO,   /* PCH_GP_49 -> CRIT_TEMP_REP_N */
 	.gpio50 = GPIO_MODE_GPIO,   /* DGPU_HOLD_RST_N */
 	.gpio51 = GPIO_MODE_GPIO,   /* BBS_BIT1 Strap */
@@ -195,7 +195,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio66 = GPIO_MODE_GPIO,   /* CK_FLEX2 */
 	.gpio67 = GPIO_MODE_GPIO,   /* DGPU_PRSNT_N -> PEG_RSVD3 */
 	.gpio68 = GPIO_MODE_GPIO,   /* SATA_ODD_PWRGT */
-	.gpio69 = GPIO_MODE_GPIO,   /* SV_DET -> J8E5 */
+	.gpio69 = GPIO_MODE_GPIO,   /* SV_DET -> J8E2 */
 	.gpio70 = GPIO_MODE_GPIO,   /* USB3_DET_P2_N */
 	.gpio71 = GPIO_MODE_GPIO,   /* USB3_DET_P3_N */
 	.gpio72 = GPIO_MODE_NATIVE, /* PM_BATLOW_R_N */

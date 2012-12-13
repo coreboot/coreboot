@@ -37,14 +37,19 @@ u32 map_oprom_vendev(u32 vendev)
 	u32 new_vendev=vendev;
 
 	switch (vendev) {
-	case 0x80860102:		/* GT1 Desktop */
-	case 0x8086010a:		/* GT1 Server */
-	case 0x80860112:		/* GT2 Desktop */
-	case 0x80860116:		/* GT2 Mobile */
-	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
-	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
-	case 0x80860166:                /* IVB */
-		new_vendev=0x80860106;	/* GT1 Mobile */
+	case 0x80860402:		/* GT1 Desktop */
+	case 0x80860406:		/* GT1 Mobile */
+	case 0x8086040a:		/* GT1 Server */
+
+	case 0x80860412:		/* GT2 Desktop */
+	case 0x80860416:		/* GT2 Mobile */
+	case 0x8086041a:		/* GT2 Server */
+
+	case 0x80860422:		/* GT3 Desktop */
+	case 0x80860426:		/* GT3 Mobile */
+	case 0x8086042a:		/* GT3 Server */
+
+		new_vendev=0x80860406;	/* GT1 Mobile */
 		break;
 	}
 

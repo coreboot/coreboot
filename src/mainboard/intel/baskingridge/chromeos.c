@@ -27,6 +27,7 @@
 #include <device/pci.h>
 #endif
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <southbridge/intel/lynxpoint/gpio.h>
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -44,30 +45,30 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	if (!gpio_base)
 		return;
 
-	u32 gp_lvl = inl(gpio_base + 0x0c);
-	u32 gp_lvl2 = inl(gpio_base + 0x38);
-	/* u32 gp_lvl3 = inl(gpio_base + 0x48); */
+	u32 gp_lvl  = inl(gpio_base + GP_LVL);
+	u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
+	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
 
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
 	gpios->count = GPIO_COUNT;
 
-	/* Write Protect: GPIO48 */
-	gpios->gpios[0].port = 48;
+	/* Write Protect: GPIO22 */
+	gpios->gpios[0].port = 0;
 	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = (gp_lvl2 >> (48-32)) & 1;
+	gpios->gpios[0].value = (gp_lvl >> 22) & 1;
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
-	/* Recovery: GPIO22 */
-	gpios->gpios[1].port = 22;
-	gpios->gpios[1].polarity = ACTIVE_LOW;
-	gpios->gpios[1].value = (gp_lvl >> 22) & 1;
+	/* Recovery: GPIO69 - SV_DETECT - J8E3 (silkscreen: J8E2) */
+	gpios->gpios[1].port = 69;
+	gpios->gpios[1].polarity = ACTIVE_HIGH;
+	gpios->gpios[1].value = (gp_lvl3 >> (69-64)) & 1;
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: GPIO57 */
-	gpios->gpios[2].port = 57;
+	/* Developer: GPIO48 - BIOS_RESP - J8E4 (silkscreen: J8E3) */
+	gpios->gpios[2].port = 48;
 	gpios->gpios[2].polarity = ACTIVE_LOW;
-	gpios->gpios[2].value = (gp_lvl2 >> (57-32)) & 1;
+	gpios->gpios[2].value = (gp_lvl2 >> (48-32)) & 1;
 	strncpy((char *)gpios->gpios[2].name,"developer", GPIO_MAX_NAME_LENGTH);
 
 	/* Hard code the lid switch GPIO to open. */
@@ -99,10 +100,13 @@ int get_developer_mode_switch(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 #endif
 	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl2 = inl(gpio_base + 0x38);
+	u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
 
-	/* Developer: GPIO17, active high */
-	return (gp_lvl2 >> (57-32)) & 1;
+	/*
+	 * Developer: GPIO48, Connected to J8E4, however the silkscreen says
+	 * J8E3. The jumper is active low.
+	 */
+	return !((gp_lvl2 >> (48-32)) & 1);
 }
 
 int get_recovery_mode_switch(void)
@@ -114,9 +118,12 @@ int get_recovery_mode_switch(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 #endif
 	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
-	u32 gp_lvl = inl(gpio_base + 0x0c);
+	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
 
-	/* Recovery: GPIO22, active low */
-	return !((gp_lvl >> 22) & 1);
+	/*
+	 * Recovery: GPIO69, Connected to J8E3, however the silkscreen says
+	 * J8E2. The jump is active high.
+	 */
+	return (gp_lvl3 >> (69-64)) & 1;
 }
 

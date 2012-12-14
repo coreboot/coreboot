@@ -28,6 +28,7 @@
 #include "common.h"
 #include "cbfs.h"
 #include "cbfs_image.h"
+#include "fit.h"
 
 struct command {
 	const char *name;
@@ -52,6 +53,7 @@ static struct param {
 	uint32_t alignment;
 	uint32_t offset;
 	uint32_t top_aligned;
+	int fit_empty_entries;
 	comp_algo algo;
 } param = {
 	/* All variables not listed are initialized as zero. */
@@ -414,6 +416,37 @@ static int cbfs_extract(void)
 	return result;
 }
 
+static int cbfs_update_fit(void)
+{
+	void *rom;
+	int ret;
+
+	if (!param.name) {
+		ERROR("You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	if (param.fit_empty_entries <= 0) {
+		ERROR("Invalid number of fit entries "
+		        "(-x/--empty-fits): %d\n", param.fit_empty_entries);
+		return 1;
+	}
+
+	rom = loadrom(param.cbfs_name);
+	if (rom == NULL) {
+		ERROR("Could not load ROM image '%s'.\n",
+			param.cbfs_name);
+		return 1;
+	}
+
+	ret = fit_update_table(rom, romsize, param.fit_empty_entries, param.name);
+	if (!ret)
+		ret = writerom(param.cbfs_name, rom, romsize);
+
+	free(rom);
+	return 0;
+}
+
 static const struct command commands[] = {
 	{"add", "f:n:t:b:vh?", cbfs_add},
 	{"add-payload", "f:n:t:c:b:vh?", cbfs_add_payload},
@@ -424,6 +457,7 @@ static const struct command commands[] = {
 	{"locate", "f:n:a:Tvh?", cbfs_locate},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
+	{"update-fit", "n:x:vh?", cbfs_update_fit},
 };
 
 static struct option long_options[] = {
@@ -440,6 +474,7 @@ static struct option long_options[] = {
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
 	{"arch",         required_argument, 0, 'm' },
+	{"empty-fits",   required_argument, 0, 'x' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },
 	{NULL,           0,                 0,  0  }
@@ -474,6 +509,8 @@ static void usage(char *name)
 			"Show the contents of the ROM\n"
 	     " extract -n NAME -f FILE                                     "
 			"Extracts a raw payload from ROM\n"
+	     " update-fit -n MICROCODE_BLOB_NAME -x EMTPY_FIT_ENTRIES\n  "
+			"Updates the FIT table with mircodoe entries\n"
 	     "\n"
 	     "ARCHes:\n"
 	     "  armv7, x86\n"
@@ -580,6 +617,9 @@ int main(int argc, char **argv)
 				break;
 			case 'T':
 				param.top_aligned = 1;
+				break;
+			case 'x':
+				param.fit_empty_entries = strtol(optarg, NULL, 0);
 				break;
 			case 'v':
 				verbose++;

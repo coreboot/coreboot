@@ -3,6 +3,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2007-2010 coresystems GmbH
+# Copyright (C) 2012 Google Inc
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,86 +19,198 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-testcc()
-{
-	echo "_start(void) {}" > .$$$$.c
-	$1 -nostdlib $2 .$$$$.c -o .$$$$.tmp 2>/dev/null >/dev/null
-	ret=$?
-	rm -f .$$$$.c .$$$$.tmp
-	return $ret
+TMPFILE=""
+
+die() {
+	echo "ERROR: $*" >&2
+	exit 1
 }
 
-for make in make gmake gnumake; do
-	if [ "`$make --version 2>/dev/null | grep -c GNU`" -gt 0 ]; then
-		MAKE=$make
-		break
+clean_up() {
+	if [ -n "$TMPFILE" ]; then
+		rm -f "$TMPFILE" "$TMPFILE.c" "$TMPFILE.o"
 	fi
-done
+}
 
-GCCPREFIX=invalid
-TMPFILE=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
-touch $TMPFILE
+program_exists() {
+	type "$1" >/dev/null 2>&1
+}
 
-# This should be a loop over all supported architectures
-TARCH=i386
-TWIDTH=32
-for gccprefixes in `pwd`/../../util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; do
-	if ! which ${gccprefixes}as 2>/dev/null >/dev/null; then
+testcc() {
+	local tmp_c="$TMPFILE.c"
+	local tmp_o="$TMPFILE.o"
+	rm -f "$tmp_c" "$tmp_o"
+	echo "_start(void) {}" >"$tmp_c"
+	"$1" -nostdlib -Werror $2 "$tmp_c" -o "$tmp_o" >/dev/null 2>&1
+}
+
+testas() {
+	local gccprefixes="$1"
+	local twidth="$2"
+	local arch="$3"
+	local use_dash_twidth="$4"
+	local obj_file="$TMPFILE.o"
+	local full_arch="elf$twidth-$arch"
+
+	rm -f "$obj_file"
+	[ -n "$use_dash_twidth" ] && use_dash_twidth="--$twidth"
+	${gccprefixes}as $use_dash_twidth -o "$obj_file" $TMPFILE 2>/dev/null ||
+		return 1
+
+	# Check output content type.
+	local obj_type="$(${gccprefixes}objdump -p $obj_file)"
+	local obj_arch="$(expr "$obj_type" : '.*format \(.[a-z0-9-]*\)')"
+	[ "$obj_arch" = "$full_arch" ] || return 1
+
+	# Architecture matched.
+	GCCPREFIX="$gccprefixes"
+
+	if [ -z "$use_dash_twidth" ]; then
+		ASFLAGS=""
+		CFLAGS=""
+		LDFLAGS=""
+	else
+		ASFLAGS="--$twidth"
+		CFLAGS="-m$twidth"
+		LDFLAGS="-b $full_arch"
+
+	fi
+
+	# Special parameters only available in dash_twidth mode.
+	[ -n "$use_dash_twidth" ] && case "$full_arch" in
+		"elf32-i386" )
+			LDFLAGS="$LDFLAGS -melf_i386"
+			CFLAGS="$CFLAGS -Wl,-b,elf32-i386 -Wl,-melf_i386"
+			;;
+	esac
+
+	return 0
+}
+
+detect_special_flags() {
+	local architecture="$1"
+	# GCC 4.6 is much more picky about unused variables.
+	# Turn off it's warnings for now:
+	testcc "$CC"   "$CFLAGS -Wno-unused-but-set-variable " &&
+		CFLAGS="$CFLAGS -Wno-unused-but-set-variable "
+
+	# Use bfd linker instead of gold if available:
+	testcc "$CC"   "$CFLAGS -fuse-ld=bfd" &&
+		CFLAGS="$CFLAGS -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
+
+	testcc "$CC"   "$CFLAGS -Wa,--divide" &&
+		CFLAGS="$CFLAGS -Wa,--divide"
+	testcc "$CC"   "$CFLAGS -fno-stack-protector"&&
+		CFLAGS="$CFLAGS -fno-stack-protector"
+	testcc "$CC"   "$CFLAGS -Wl,--build-id=none" &&
+		CFLAGS="$CFLAGS -Wl,--build-id=none"
+
+	case "$architecture" in
+		arm )
+			# testcc "$CC" "$CFLAGS -mcpu=cortex-a9" &&
+			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
+			testcc "$CC" "\
+$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
+-mno-thumb-interwork -march=armv7 -mno-thumb-interwork" && CFLAGS="\
+$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
+-mno-thumb-interwork -march=armv7 -mno-thumb-interwork"
+			;;
+	esac
+}
+
+report_arch_toolchain() {
+	cat <<EOF
+# elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
+CC_${TARCH}:=${GCCPREFIX}gcc ${CFLAGS}
+AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
+LD_${TARCH}:=${GCCPREFIX}ld ${LDFLAGS}
+NM_${TARCH}:=${GCCPREFIX}nm
+OBJCOPY_${TARCH}:=${GCCPREFIX}objcopy
+OBJDUMP_${TARCH}:=${GCCPREFIX}objdump
+READELF_${TARCH}:=${GCCPREFIX}readelf
+STRIP_${TARCH}:=${GCCPREFIX}strip
+AR_${TARCH}:=${GCCPREFIX}ar
+
+EOF
+}
+
+# Create temporary file(s).
+TMPFILE="$(mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz)"
+touch "$TMPFILE"
+trap clean_up EXIT
+
+# Architecture definition
+SUPPORTED_ARCHITECTURE="x86 armv7"
+
+# ARM Architecture
+TARCH_armv7="armv7"
+TBFDARCH_armv7="littlearm"
+TCLIST_armv7="armv7a"
+TWIDTH_armv7="32"
+
+# X86 Architecture
+TARCH_x86="i386"
+TBFDARCH_x86="i386"
+TCLIST_x86="i386 x86_64"
+TWIDTH_x86="32"
+XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
+
+# This loops over all supported architectures.
+for architecture in $SUPPORTED_ARCHITECTURE; do
+	GCCPREFIX="invalid"
+	TARCH="$(eval echo \$TARCH_$architecture)"
+	TBFDARCH="$(eval echo \$TBFDARCH_$architecture)"
+	TCLIST="$(eval echo \$TCLIST_$architecture)"
+	TWIDTH="$(eval echo \$TWIDTH_$architecture)"
+	[ -z "$TARCH" -o -z "$TCLIST" -o -z "$TWIDTH" ] &&
+		die "Missing architecture definition for $architecture."
+
+	# To override toolchain, define CROSS_COMPILE_$arch or CROSS_COMPILE as
+	# environment variable.
+	# Ex: CROSS_COMPILE_arm="armv7a-cros-linux-gnueabi-"
+	#     CROSS_COMPILE_x86="i686-pc-linux-gnu-"
+	search="$(eval echo \$CROSS_COMPILE_$architecture 2>/dev/null)"
+	search="$search $CROSS_COMPILE"
+	for toolchain in $TCLIST; do
+		search="$search $XGCCPATH$toolchain-elf-"
+		search="$search $toolchain-elf-"
+		search="$search $XGCCPATH$toolchain-eabi-"
+		search="$search $toolchain-eabi-"
+	done
+	echo "# $architecture TARCH_SEARCH=$search"
+
+	# Search toolchain by checking assembler capability.
+	for gccprefixes in $search ""; do
+		program_exists "${gccprefixes}as" || continue
+		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "" && break
+		testas "$gccprefixes" "$TWIDTH" "$TBFDARCH" "TRUE" && break
+	done
+
+	if [ "$GCCPREFIX" = "invalid" ]; then
+		echo "Warning: no suitable GCC for $architecture." >&2
 		continue
 	fi
-	rm -f ${TMPFILE}.o
-	if ${gccprefixes}as -o ${TMPFILE}.o ${TMPFILE}; then
-		TYPE=`${gccprefixes}objdump -p ${TMPFILE}.o`
-		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
-			GCCPREFIX=$gccprefixes
-			ASFLAGS=
-			CFLAGS=
-			LDFLAGS=
-			break
-		fi
-	fi
-	if ${gccprefixes}as --32 -o ${TMPFILE}.o ${TMPFILE}; then
-		TYPE=`${gccprefixes}objdump -p ${TMPFILE}.o`
-		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
-			GCCPREFIX=$gccprefixes
-			ASFLAGS=--32
-			CFLAGS="-m32 "
-			LDFLAGS="-b elf32-i386"
-			break
-		fi
-	fi
-done
-rm -f $TMPFILE ${TMPFILE}.o
+	CC="${GCCPREFIX}"gcc
 
-if [ "$GCCPREFIX" = "invalid" ]; then
-	echo '$(error no suitable gcc found)'
-	exit 1
+	detect_special_flags "$architecture"
+	report_arch_toolchain
+done
+
+if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
+	IASL=${XGCCPATH}iasl
+else
+	IASL=iasl
 fi
 
-CC="${GCCPREFIX}gcc"
-testcc "$CC" "$CFLAGS-Wa,--divide " && CFLAGS="$CFLAGS-Wa,--divide "
-testcc "$CC" "$CFLAGS-fno-stack-protector " && CFLAGS="$CFLAGS-fno-stack-protector "
-testcc "$CC" "$CFLAGS-Wl,--build-id=none " && CFLAGS="$CFLAGS-Wl,--build-id=none "
-
-if which gcc 2>/dev/null >/dev/null; then
+if program_exists gcc; then
 	HOSTCC=gcc
 else
 	HOSTCC=cc
 fi
 
-cat << EOF
-# elf${TWIDTH}-${TARCH} toolchain
-AS:=${GCCPREFIX}as ${ASFLAGS}
-CC:=${GCCPREFIX}gcc ${CFLAGS}
-CPP:=${GCCPREFIX}cpp
-AR:=${GCCPREFIX}ar
-LD:=${GCCPREFIX}ld ${LDFLAGS}
-STRIP:=${GCCPREFIX}strip
-NM:=${GCCPREFIX}nm
-OBJCOPY:=${GCCPREFIX}objcopy
-OBJDUMP:=${GCCPREFIX}objdump
+cat <<EOF
+IASL:=${IASL}
 
 # native toolchain
 HOSTCC:=${HOSTCC}
 EOF
-

@@ -20,11 +20,11 @@ fit_table:
  */
 .long 0x00000001
 /* Version */
-.word 0x1000
+.word 0x0100
 /* Type 0 with checksum valid. */
 .byte 0x80
 /* Checksum byte - must add to zero. */
-.byte 0x6e
+.byte 0x7d
 .fill CONFIG_CPU_INTEL_NUM_FIT_ENTRIES*16
 fit_table_end:
 .previous

@@ -16,12 +16,14 @@ ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL), y)
 cbfs-files-y += cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type = 0x53
 cpu_microcode_blob.bin-file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
+cpu_microcode_blob.bin-position = 0x10
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
 cbfs-files-y += cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type = 0x53
 cpu_microcode_blob.bin-file = $(obj)/cpu_microcode_blob.bin
+cpu_microcode_blob.bin-position = 0x10
 endif
 
 # In case we have more than one "source" (cough) files containing microcode, we

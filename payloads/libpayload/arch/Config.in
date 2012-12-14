@@ -20,5 +20,5 @@
 ## MA 02111-1307 USA
 ##
 
-source "arch/i386/Config.in"
+source "arch/x86/Config.in"
 source "arch/powerpc/Config.in"

@@ -870,3 +870,24 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 	free(rom);
 	return ret;
 }
+
+struct cbfs_file *cbfs_find_file(const char *name)
+{
+	uint32_t current = phys_start;
+	while (current < phys_end) {
+		if (!cbfs_file_header(current)) {
+			current += align;
+			continue;
+		}
+		struct cbfs_file *thisfile =
+		    (struct cbfs_file *)phys_to_virt(current);
+		uint32_t length = ntohl(thisfile->len);
+		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+		if (!strcmp(fname, name))
+			return thisfile;
+		current =
+		    ALIGN(current + ntohl(thisfile->len) +
+			  ntohl(thisfile->offset), align);
+	}
+	return NULL;
+}

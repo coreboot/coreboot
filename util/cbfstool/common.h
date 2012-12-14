@@ -130,4 +130,6 @@ void print_supported_filetypes(void);
 
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 
+struct cbfs_file;
+struct cbfs_file *cbfs_find_file(const char *name);
 #endif

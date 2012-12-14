@@ -632,17 +632,31 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 {
 	uint32_t filename_len = ALIGN(strlen(filename) + 1, 16);
 	uint32_t headersize = sizeof(struct cbfs_file) + filename_len;
-	if ((location != 0) && (*location != 0)) {
-		uint32_t offset = *location % align;
-		/* If offset >= (headersize % align), we can stuff the header into the offset.
-		   Otherwise the header has to be aligned itself, and put before the offset data */
-		if (offset >= (headersize % align)) {
-			offset -= (headersize % align);
+
+	if (location != NULL && *location != 0) {
+		/*
+		 * A location of less than or equal 1024 is considered the data
+		 * alignement. The location is then zero'd out so that cbfs
+		 * can place it where ever it finds.
+		 */
+		if (*location <= 1024) {
+			uint32_t data_start = (headersize + align - 1) % align;
+			uint32_t alignment = *location;
+			if ((data_start % alignment) != 0)
+				headersize += (data_start % alignment);
+			*location = 0;
 		} else {
-			offset += align - (headersize % align);
+			uint32_t offset = *location % align;
+			/* If offset >= (headersize % align), we can stuff the header into the offset.
+			   Otherwise the header has to be aligned itself, and put before the offset data */
+			if (offset >= (headersize % align)) {
+				offset -= (headersize % align);
+			} else {
+				offset += align - (headersize % align);
+			}
+			headersize += offset;
+			*location -= headersize;
 		}
-		headersize += offset;
-		*location -= headersize;
 	}
 	void *newdata = malloc(*datasize + headersize);
 	if (!newdata) {

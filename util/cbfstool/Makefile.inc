@@ -28,7 +28,7 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.cc
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
-	printf "    HOSTCC    $(subst $(objutil)/,,$(@))\n"
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(cbfsobj))

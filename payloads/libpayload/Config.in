@@ -67,15 +67,20 @@ choice
         prompt "Target Architecture"
         default ARCH_X86
 
+config ARCH_ARMV7
+        bool "ARMv7"
+        help
+          Support the x86 architecture
+
+config ARCH_POWERPC
+        bool "PowerPC"
+        help
+	  Support the PowerPC architecture
+
 config ARCH_X86
         bool "x86"
         help
           Support the x86 architecture
-
-config TARGET_POWERPC
-        bool "PowerPC"
-        help
-	  Support the PowerPC architecture
 
 endchoice
 
@@ -198,12 +203,12 @@ config VIDEO_CONSOLE
 
 config VGA_VIDEO_CONSOLE
 	bool "VGA video console driver"
-	depends on VIDEO_CONSOLE
+	depends on ARCH_X86 && VIDEO_CONSOLE
 	default y
 
 config GEODELX_VIDEO_CONSOLE
 	bool "Geode LX video console driver"
-	depends on VIDEO_CONSOLE
+	depends on ARCH_X86 && VIDEO_CONSOLE
 	default n
 
 config COREBOOT_VIDEO_CONSOLE
@@ -234,10 +239,12 @@ menu "Drivers"
 
 config PCI
 	bool "Support for PCI devices"
+	depends on ARCH_X86 # for now
 	default y
 
 config NVRAM
 	bool "Support for reading/writing NVRAM bytes"
+	depends on ARCH_X86 # for now
 	default y
 
 config RTC_PORT_EXTENDED_VIA
@@ -258,6 +265,7 @@ config RTC_PORT_EXTENDED_VIA
 
 config SPEAKER
 	bool "Support for PC speaker"
+	depends on ARCH_X86
 	default y
 
 config STORAGE

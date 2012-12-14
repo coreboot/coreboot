@@ -31,8 +31,9 @@
 
 export KERNELVERSION      := 0.2.0
 
-ARCHDIR-$(CONFIG_ARCH_X86)       := x86
-ARCHDIR-$(CONFIG_TARGET_POWERPC) := powerpc
+ARCHDIR-$(CONFIG_ARCH_ARMV7)   := armv7
+ARCHDIR-$(CONFIG_ARCH_X86)     := x86
+ARCHDIR-$(CONFIG_ARCH_POWERPC) := powerpc
 DESTDIR ?= install
 
 real-target: lib

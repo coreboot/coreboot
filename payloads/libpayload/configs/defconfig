@@ -14,8 +14,9 @@
 #
 # Architecture Options
 #
+# CONFIG_ARCH_ARMV7 is not set
+# CONFIG_ARCH_POWERPC is not set
 CONFIG_ARCH_X86=y
-# CONFIG_TARGET_POWERPC is not set
 # CONFIG_MEMMAP_RAM_ONLY is not set
 # CONFIG_MULTIBOOT is not set
 

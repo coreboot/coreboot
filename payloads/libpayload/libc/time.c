@@ -118,7 +118,7 @@ static void gettimeofday_init(void)
 }
 #endif
 #endif
-#ifdef CONFIG_TARGET_POWERPC
+#ifdef CONFIG_ARCH_POWERPC
 static void update_clock(void)
 {
 }

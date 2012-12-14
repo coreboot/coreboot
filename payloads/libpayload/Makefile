@@ -79,7 +79,6 @@ HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
-LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -print-libgcc-file-name)
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
@@ -89,6 +88,35 @@ all: real-all
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
 include util/kconfig/Makefile
+
+include $(HAVE_DOTCONFIG)
+
+ARCHDIR-$(CONFIG_ARCH_ARMV7)   := armv7
+ARCHDIR-$(CONFIG_ARCH_POWERPC) := powerpc
+ARCHDIR-$(CONFIG_ARCH_X86)     := x86
+
+ARCH-y := $(ARCHDIR-y)
+
+# If architecture folder name is different from GCC binutils architecture name,
+# override here.
+ARCH-$(CONFIG_ARCH_ARMV7)   := armv7
+ARCH-$(CONFIG_ARCH_ARMV7)   := armv7
+ARCH-$(CONFIG_ARCH_X86)     := i386
+
+CC := $(CC_$(ARCH-y))
+AS := $(AS_$(ARCH-y))
+LD := $(LD_$(ARCH-y))
+NM := $(NM_$(ARCH-y))
+OBJCOPY := $(OBJCOPY_$(ARCH-y))
+OBJDUMP := $(OBJDUMP_$(ARCH-y))
+READELF := $(READELF_$(ARCH-y))
+STRIP := $(STRIP_$(ARCH-y))
+AR := $(AR_$(ARCH-y))
+
+CFLAGS += $(CFLAGS_$(ARCH-y))
+
+LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && \
+		      $(CC) -print-libgcc-file-name)
 
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
@@ -109,8 +137,6 @@ include $(TOPLEVEL)/Makefile.inc
 real-all: config
 
 else
-
-include $(HAVE_DOTCONFIG)
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)

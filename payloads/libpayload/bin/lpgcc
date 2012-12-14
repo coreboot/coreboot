@@ -108,8 +108,8 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$CONFIG_ARCH_X86" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/i386
-  _ARCHLIBDIR=$_LIBDIR/i386
+  _ARCHINCDIR=$_INCDIR/x86
+  _ARCHLIBDIR=$_LIBDIR/x86
 fi
 
 if [ "$CONFIG_TARGET_POWERPC" = "y" ]; then

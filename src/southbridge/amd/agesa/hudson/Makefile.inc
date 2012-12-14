@@ -9,7 +9,8 @@ ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
-romstage-y += enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_setup.c
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c

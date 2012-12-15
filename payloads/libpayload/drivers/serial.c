@@ -35,6 +35,8 @@
 #define MEMBASE (phys_to_virt(lib_sysinfo.serial->baseaddr))
 #define DIVISOR(x) (115200 / x)
 
+static int serial_io_hardware_is_present = 1;
+
 #ifdef CONFIG_SERIAL_SET_SPEED
 static void serial_io_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
 {
@@ -107,6 +109,12 @@ void serial_init(void)
 #endif
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);
+
+	/* check to see if there's actually serial port h/w */
+	if (lib_sysinfo.ser_ioport) {
+		if( (inb(IOBASE + 0x05)==0xFF) && (inb(IOBASE + 0x06)==0xFF) )
+			serial_io_hardware_is_present = 0;
+	}
 }
 
 static void serial_io_putchar(unsigned int c)
@@ -118,11 +126,15 @@ static void serial_io_putchar(unsigned int c)
 
 static int serial_io_havechar(void)
 {
+	if ( !serial_io_hardware_is_present )
+		return 0;
 	return inb(IOBASE + 0x05) & 0x01;
 }
 
 static int serial_io_getchar(void)
 {
+	if ( !serial_io_hardware_is_present )
+		return -1;
 	while (!serial_io_havechar()) ;
 	return (int)inb(IOBASE);
 }

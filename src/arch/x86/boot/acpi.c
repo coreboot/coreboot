@@ -687,7 +687,7 @@ void *acpi_find_wakeup_vector(void)
 	char *p, *end;
 	acpi_rsdt_t *rsdt;
 	acpi_facs_t *facs;
-	acpi_fadt_t *fadt;
+	acpi_fadt_t *fadt = NULL;
 	void *wake_vec;
 	int i;
 

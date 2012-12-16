@@ -20,7 +20,8 @@
 #ifndef SB800_SMBUS_H
 #define SB800_SMBUS_H
 
-//#include <stdint.h>
+#include <stdint.h>
+#include <arch/io.h>
 
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1
@@ -63,7 +64,6 @@
 	alink_rc_indx((RC_INDXC), (reg), (port), (mask), (val))
 #define rcindxp_reg(reg, port, mask, val)	\
 	alink_rc_indx((RC_INDXP), (reg), (port), (mask), (val))
-
 int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
 int do_smbus_recv_byte(u32 smbus_io_base, u32 device);

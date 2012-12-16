@@ -11,7 +11,7 @@ ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 romstage-y += enable_usbdebug.c
 romstage-y += early_setup.c
-
+romstage-$(CONFIG_BOARD_ASUS_F2A85_M) += smbus.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 
 # ROMSIG At ROMBASE + 0x20000:

@@ -32,6 +32,12 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
 
+config INTEL_LYNXPOINT_LP
+	bool
+	default n
+	help
+	  Set this option to y for Lynxpont LP (Haswell ULT).
+
 config EHCI_BAR
 	hex
 	default 0xfef00000

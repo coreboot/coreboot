@@ -120,13 +120,37 @@ static void sata_init(struct device *dev)
 
 		/* for AHCI, Port Enable is managed in memory mapped space */
 		reg16 = pci_read_config16(dev, 0x92);
-		reg16 &= ~0x3f; /* 6 ports SKU + ORM */
+		reg16 &= ~0x3f;
 		reg16 |= 0x8000 | config->sata_port_map;
 		pci_write_config16(dev, 0x92, reg16);
 
+		/* Setup register 98h */
+		reg32 = pci_read_config16(dev, 0x98);
+		reg32 |= 1 << 19;    /* BWG step 6 */
+		reg32 |= 1 << 22;    /* BWG step 5 */
+		reg32 &= ~(0x3f << 7);
+		reg32 |= 0x04 << 7;  /* BWG step 7 */
+		reg32 |= 1 << 20;    /* BWG step 8 */
+		reg32 &= ~(0x03 << 5);
+		reg32 |= 1 << 5;     /* BWG step 9 */
+		reg32 |= 1 << 18;    /* BWG step 10 */
+		reg32 |= 1 << 29;    /* BWG step 11 */
+#if CONFIG_INTEL_LYNXPOINT_LP
+		reg32 &= ~((1 << 31) | (1 << 30));
+		reg32 |= 1 << 23;
+#endif
+		pci_write_config32(dev, 0x98, reg32);
+
+		/* Setup register 9Ch */
+		reg16 = 0;           /* Disable alternate ID */
+		reg16 = 1 << 5;      /* BWG step 12 */
+		pci_write_config16(dev, 0x9c, reg16);
+
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+		reg32 = 0x183;
+		reg32 |= (config->sata_port_map ^ 0x3f) << 24;
+		reg32 |= (config->sata_devslp_mux & 1) << 15;
+		pci_write_config32(dev, 0x94, reg32);
 
 		/* Initialize AHCI memory-mapped space */
 		abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
@@ -205,31 +229,29 @@ static void sata_init(struct device *dev)
 				config->sata_port1_gen3_tx);
 
 	/* Additional Programming Requirements */
-	sir_write(dev, 0x04, 0x00001600);
-	sir_write(dev, 0x28, 0xa0000033);
-	reg32 = sir_read(dev, 0x54);
-	reg32 &= 0xff000000;
-	reg32 |= 0x5555aa;
-	sir_write(dev, 0x54, reg32);
-	sir_write(dev, 0x64, 0xcccc8484);
+	/* Power Optimizer */
+	sir_write(dev, 0x64, 0x883c9001);
+
 	reg32 = sir_read(dev, 0x68);
 	reg32 &= 0xffff0000;
-	reg32 |= 0xcccc;
+	reg32 |= 0x880a;
 	sir_write(dev, 0x68, reg32);
-	reg32 = sir_read(dev, 0x78);
-	reg32 &= 0x0000ffff;
-	reg32 |= 0x88880000;
-	sir_write(dev, 0x78, reg32);
-	sir_write(dev, 0x84, 0x001c7000);
-	sir_write(dev, 0x88, 0x88338822);
-	sir_write(dev, 0xa0, 0x001c7000);
-	// a4
-	sir_write(dev, 0xc4, 0x0c0c0c0c);
-	sir_write(dev, 0xc8, 0x0c0c0c0c);
-	sir_write(dev, 0xd4, 0x10000000);
 
-	pch_iobp_update(0xea004001, 0x3fffffff, 0xc0000000);
-	pch_iobp_update(0xea00408a, 0xfffffcff, 0x00000100);
+	reg32 = sir_read(dev, 0x60);
+	reg32 |= (1 << 0) | (1 << 1) | (1 << 3);
+	sir_write(dev, 0x60, reg32);
+
+	/* Clock Gating */
+	sir_write(dev, 0x70, 0x3f00bf1f);
+#if CONFIG_INTEL_LYNXPOINT_LP
+	sir_write(dev, 0x54, 0xcf000f0f);
+	sir_write(dev, 0x58, 0x00190000);
+#endif
+
+	reg32 = pci_read_config32(dev, 0x300);
+	reg32 |= (1 << 17) | (1 << 16);
+	reg32 |= (1 << 31) | (1 << 30) | (1 << 29);
+	pci_write_config32(dev, 0x300, reg32);
 }
 
 static void sata_enable(device_t dev)
@@ -278,9 +300,12 @@ static struct device_operations sata_ops = {
 	.ops_pci		= &sata_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,
-						 0x1e00, 0x1e01, 0x1e02, 0x1e03,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	0x8c00, 0x8c02, 0x8c04, 0x8c06, 0x8c08, 0x8c0e, /* Desktop */
+	0x8c01, 0x8c03, 0x8c05, 0x8c07, 0x8c09, 0x8c0f, /* Mobile */
+	0x9c03, 0x9c05, 0x9c07, 0x9c0f,                 /* Low Power */
+	0
+};
 
 static const struct pci_driver pch_sata __pci_driver = {
 	.ops	 = &sata_ops,

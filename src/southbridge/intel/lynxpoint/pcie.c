@@ -260,11 +260,13 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c10, 0x1c12, 0x1c14, 0x1c16,
-						 0x1c18, 0x1c1a, 0x1c1c, 0x1c1e,
-						 0x1e10, 0x1e12, 0x1e14, 0x1e16,
-						 0x1e18, 0x1e1a, 0x1e1c, 0x1e1e,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	/* Lynxpoint Mobile */
+	0x8c10, 0x8c12, 0x8c14, 0x8c16, 0x8c18, 0x8c1a, 0x8c1c, 0x8c1e,
+	/* Lynxpoint Low Power */
+	0x9c10, 0x9c12, 0x9c14, 0x9c16, 0x9c18, 0x9c1a,
+	0
+};
 
 static const struct pci_driver pch_pcie __pci_driver = {
 	.ops	 = &device_ops,

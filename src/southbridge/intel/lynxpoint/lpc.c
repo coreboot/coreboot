@@ -365,38 +365,67 @@ static void enable_hpet(void)
 
 static void enable_clock_gating(device_t dev)
 {
+#if CONFIG_INTEL_LYNXPOINT_LP
+	/* LynxPoint LP */
 	u32 reg32;
 	u16 reg16;
 
+	/* DMI */
 	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
-
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
-	reg16 |= (1 << 2) | (1 << 11);
+	reg16 &= ~((1 << 11) | (1 << 14));
+	reg16 |= (1 << 5) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 13);
+	reg16 |= (1 << 2); // PCI CLKRUN# Enable
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	pch_iobp_update(0xEB007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEB004000, ~0UL, (1 << 7));
-	pch_iobp_update(0xEC007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEC004000, ~0UL, (1 << 7));
+	reg32 = pci_read_config32(dev, 0x64);
+	reg32 |= (1 << 6);
+	pci_write_config32(dev, 0x64, reg32);
+
+	RCBA32_AND_OR(0x2614, 0x8fffffff, 0x0f006500);
+	RCBA32_OR(0x900, 0x0000031f);
 
 	reg32 = RCBA32(CG);
-	reg32 |= (1 << 31);
-	reg32 |= (1 << 29) | (1 << 28);
-	reg32 |= (1 << 27) | (1 << 26) | (1 << 25) | (1 << 24);
-	reg32 |= (1 << 16);
-	reg32 |= (1 << 17);
-	reg32 |= (1 << 18);
-	reg32 |= (1 << 22);
-	reg32 |= (1 << 23);
-	reg32 &= ~(1 << 20);
-	reg32 |= (1 << 19);
-	reg32 |= (1 << 0);
-	reg32 |= (0xf << 1);
+	reg32 |= (1 << 31); // LPC Dynamic
+	reg32 |= (1 << 30); // LP LPC
+	reg32 |= (1 << 28); // GPIO Dynamic
+	reg32 |= (1 << 27); // HPET Dynamic
+	reg32 |= (1 << 26); // LP LPC
+	reg32 |= (1 << 22); // HDA Dynamic
+	reg32 |= (1 << 16); // PCIe Dynamic
 	RCBA32(CG) = reg32;
 
-	RCBA32_OR(0x38c0, 0x7);
-	RCBA32_OR(0x36d4, 0x6680c004);
-	RCBA32_OR(0x3564, 0x3);
+	RCBA32_OR(0x3434, 0x7); // LP LPC
+
+	RCBA32_AND_OR(0x333c, 0xff0fffff, 0x00800000); // SATA
+
+	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
+
+	pch_iobp_update(0xCF000000, ~0UL, 0x00007001);
+	pch_iobp_update(0xCE00C000, ~0UL, 0x00000001);
+#else
+	/* LynxPoint Mobile */
+	u32 reg32;
+	u16 reg16;
+
+	/* DMI */
+	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
+	reg16 = pci_read_config16(dev, GEN_PMCON_1);
+	reg16 |= (1 << 11) | (1 << 12) | (1 << 14);
+	reg16 |= (1 << 2); // PCI CLKRUN# Enable
+	pci_write_config16(dev, GEN_PMCON_1, reg16);
+	RCBA32_OR(0x900, (1 << 14));
+
+	reg32 = RCBA32(CG);
+	reg32 |= (1 << 22); // HDA Dynamic
+	reg32 |= (1 << 31); // LPC Dynamic
+	reg32 |= (1 << 16); // PCIe Dynamic
+	reg32 |= (1 << 27); // HPET Dynamic
+	reg32 |= (1 << 28); // GPIO Dynamic
+	RCBA32(CG) = reg32;
+
+	RCBA32_OR(0x38c0, 0x7); // SPI Dynamic
+#endif
 }
 
 #if CONFIG_HAVE_SMI_HANDLER
@@ -666,6 +695,10 @@ static const unsigned short pci_device_ids[] = {
 	0x8c4c, /* Q85 SKU */
 	0x8c4e, /* Q87 SKU */
 	0x8c4f, /* QM87 SKU */
+	0x9c41, /* LP Full Featured Engineering Sample */
+	0x9c43, /* LP Premium SKU */
+	0x9c45, /* LP Mainstream SKU */
+	0x9c47, /* LP Value SKU */
 	0 };
 
 static const struct pci_driver pch_lpc __pci_driver = {

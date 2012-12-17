@@ -20,7 +20,7 @@
 #include "microcode-M32306c1_ffff000d.h"
 #include "microcode-M32306c2_ffff0003.h"
 #include "microcode-M3240660_ffff000b.h"
-#include "microcode-M7240650_ffff0007.h"
+#include "microcode-M7240650_ffff000a.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

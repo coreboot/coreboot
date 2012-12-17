@@ -223,9 +223,21 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x0102, 0x0106, 0x010a, 0x0112,
-						 0x0116, 0x0122, 0x0126, 0x0166,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	0x0402, /* Desktop GT1 */
+	0x0412, /* Desktop GT2 */
+	0x0422, /* Desktop GT3 */
+	0x0406, /* Mobile GT1 */
+	0x0416, /* Mobile GT2 */
+	0x0426, /* Mobile GT3 */
+	0x0d16, /* Mobile 4+3 GT1 */
+	0x0d26, /* Mobile 4+3 GT2 */
+	0x0d36, /* Mobile 4+3 GT3 */
+	0x0a06, /* ULT GT1 */
+	0x0a16, /* ULT GT2 */
+	0x0a26, /* ULT GT3 */
+	0,
+};
 
 static const struct pci_driver pch_lpc __pci_driver = {
 	.ops	 = &gma_func0_ops,

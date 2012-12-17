@@ -45,9 +45,17 @@ smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c finalize.c
 
-romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c
+romstage-y += early_usb.c early_smbus.c early_me.c me_status.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c early_spi.c
+
+ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
+romstage-y += lp_gpio.c
+ramstage-y += lp_gpio.c
+else
+romstage-y += gpio.c
+ramstage-y += gpio.c
+endif
 
 lynxpoint_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"

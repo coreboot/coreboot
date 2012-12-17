@@ -63,9 +63,15 @@
  */
 #define SMBUS_IO_BASE		0x0400
 #define SMBUS_SLAVE_ADDR	0x24
-/* TODO Make sure these don't get changed by stage2 */
-#define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
+
+#if CONFIG_INTEL_LYNXPOINT_LP
+#define DEFAULT_GPIOBASE	0x1000
+#define DEFAULT_GPIOSIZE	0x400
+#else
+#define DEFAULT_GPIOBASE	0x480
+#define DEFAULT_GPIOSIZE	0x80
+#endif
 
 #define HPET_ADDR		0xfed00000
 #define DEFAULT_RCBA		0xfed1c000
@@ -97,6 +103,15 @@ void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #endif
+/*
+ * get GPIO pin value
+ */
+int get_gpio(int gpio_num);
+/*
+ * get a number comprised of multiple GPIO values. gpio_num_array points to
+ * the array of gpio pin numbers to scan, terminated by -1.
+ */
+unsigned get_gpios(const int *gpio_num_array);
 #endif
 
 #define MAINBOARD_POWER_OFF	0
@@ -433,22 +448,6 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #define PCH_DISABLE_MEI2	(1 << 2)
 #define PCH_DISABLE_MEI1	(1 << 1)
 #define PCH_ENABLE_DBDF		(1 << 0)
-
-/* ICH7 GPIOBASE */
-#define GPIO_USE_SEL	0x00
-#define GP_IO_SEL	0x04
-#define GP_LVL		0x0c
-#define GPO_BLINK	0x18
-#define GPI_INV		0x2c
-#define GPIO_USE_SEL2	0x30
-#define GP_IO_SEL2	0x34
-#define GP_LVL2		0x38
-#define GPIO_USE_SEL3	0x40
-#define GP_IO_SEL3	0x44
-#define GP_LVL3		0x48
-#define GP_RST_SEL1	0x60
-#define GP_RST_SEL2	0x64
-#define GP_RST_SEL3	0x68
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00

@@ -194,7 +194,22 @@ Device (LPCB)
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02)		// SWSMI
 			//IO (Decode16, 0x800, 0x800, 0x1, 0x10)		// ACPI I/O trap
 			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE, 0x1, 0x80)	// ICH7-M ACPI
-			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE, 0x1, 0x40)	// ICH7-M GPIO
+
+#if CONFIG_INTEL_LYNXPOINT_LP
+			// LynxPoint LP GPIO is 1KB
+			IO (Decode16, DEFAULT_GPIOBASE,
+			    DEFAULT_GPIOBASE, 0x1, 0xff)
+			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x100),
+			     Add(DEFAULT_GPIOBASE, 0x100), 0x1, 0xff)
+			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x200),
+			    Add(DEFAULT_GPIOBASE, 0x200), 0x1, 0xff)
+			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x300),
+			    Add(DEFAULT_GPIOBASE, 0x300), 0x1, 0xff)
+#else
+			// LynxPoint GPIO is 128 bytes
+			IO (Decode16, DEFAULT_GPIOBASE,
+			    DEFAULT_GPIOBASE, 0x1, DEFAULT_GPIOSIZE)
+#endif
 		})
 	}
 

@@ -20,16 +20,32 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+
+#ifdef __PRE_RAM__
 #include <arch/romcc_io.h>
+#else
+#include <device/device.h>
+#include <device/pci.h>
+#endif
 
 #include "pch.h"
 #include "gpio.h"
 
 #define MAX_GPIO_NUMBER 75 /* zero based */
 
+static u16 get_gpio_base(void)
+{
+#ifdef __PRE_RAM__
+	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+#else
+	return pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
+				 GPIO_BASE) & 0xfffc;
+#endif
+}
+
 void setup_pch_gpios(const struct pch_gpio_map *gpio)
 {
-	u16 gpiobase = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+	u16 gpiobase = get_gpio_base();
 
 	/* GPIO Set 1 */
 	if (gpio->set1.level)
@@ -69,7 +85,7 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 int get_gpio(int gpio_num)
 {
 	static const int gpio_reg_offsets[] = {0xc, 0x38, 0x48};
-	u16 gpio_base = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+	u16 gpio_base = get_gpio_base();
 	int index, bit;
 
 	if (gpio_num > MAX_GPIO_NUMBER)

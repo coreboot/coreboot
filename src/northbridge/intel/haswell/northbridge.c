@@ -175,15 +175,15 @@ static void pci_domain_set_resources(device_t dev)
 	/* Top of Upper Usable DRAM, including remap */
 	touud = pci_read_config32(dev, TOUUD+4);
 	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD);
+	touud |= pci_read_config32(dev, TOUUD) & ~1;
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config32(dev, TOLUD);
+	tolud = pci_read_config32(dev, TOLUD) & ~1;
 
 	/* Top of Memory - does not account for any UMA */
 	tom = pci_read_config32(dev, 0xa4);
 	tom <<= 32;
-	tom |= pci_read_config32(dev, 0xa0);
+	tom |= pci_read_config32(dev, 0xa0) & ~1;
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
 	       touud, tolud, tom);
@@ -465,6 +465,12 @@ static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0c04, /* Mobile Haswell */
+};
+
+static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
+	.ops    = &mc_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x0a04, /* ULT Haswell */
 };
 
 static void cpu_bus_init(device_t dev)

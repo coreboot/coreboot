@@ -282,7 +282,7 @@ static void azalia_init(struct device *dev)
 	pci_write_config32(dev, 0xc4, reg32);
 
 	reg8 = pci_read_config8(dev, 0x43);
-	reg8 |= (1 << 6);
+	reg8 |= (1 << 5) | (1 << 6) | (1 << 2) | (1 << 1) | (1 << 0);
 	pci_write_config8(dev, 0x43, reg8);
 
 	/* Additional programming steps */

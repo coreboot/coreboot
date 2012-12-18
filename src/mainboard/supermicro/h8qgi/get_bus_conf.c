@@ -79,7 +79,7 @@ void get_bus_conf(void)
 
 	sbdn_sp5100 = 0;
 
-	for (i = 0; i < 0; i++) {
+	for (i = 0; i < ARRAY_SIZE(bus_sp5100); i++) {
 		bus_sp5100[i] = 0;
 	}
 	for (i = 0; i < ARRAY_SIZE(bus_sr5650); i++) {

@@ -414,7 +414,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
 		uint64_t entry_start = unpack_lb64(mem->map[i].start);
-		for(j = i; j < entries; j++) {
+		for(j = i + 1; j < entries; j++) {
 			uint64_t temp_start = unpack_lb64(mem->map[j].start);
 			if (temp_start < entry_start) {
 				struct lb_memory_range tmp;
@@ -435,7 +435,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 		end    = start + unpack_lb64(mem->map[i].size);
 		nstart = unpack_lb64(mem->map[i + 1].start);
 		nend   = nstart + unpack_lb64(mem->map[i + 1].size);
-		if ((start <= nstart) && (end > nstart)) {
+		if ((start <= nstart) && (end >= nstart)) {
 			if (start > nstart) {
 				start = nstart;
 			}

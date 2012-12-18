@@ -89,7 +89,7 @@ Scope(\_SB) {
 	Name(APR0, Package(){
 		/* NB devices in APIC mode */
 		/* Bus 0, Dev 0 - SR5650 HT */
-		Package() { 0xFFFF, Zero, Zero, 16 },
+		Package() { 0xFFFF, Zero, Zero, 55 },
 
 		/* Bus 0, Dev 1 - CLKCONFIG */
 

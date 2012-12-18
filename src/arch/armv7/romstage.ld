@@ -29,7 +29,7 @@
  * FIXME 2: Somehow linker didn't like CONFIG_SPL_MAX_SIZE and CONFIG_SPL_TEXT_BASE...
  */
 /* MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x3800 } */
-MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x10000 }
+/*MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x10000 }*/
 
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
@@ -41,56 +41,22 @@ SECTIONS
 {
 	. = ROMSTAGE_BASE;
 
-	/*
-	.rom . : {
+	.romtext . : {
 		_rom = .;
-		*(.rom.text);
-		*(.rom.data);
+		*(.text);
+	}
+
+	.romdata . : {
 		*(.rodata);
-		*(.rodata.*);
-		*(.rom.data.*);
+		*(.machine_param);
+		*(.data);
 		. = ALIGN(16);
 		_erom = .;
 	}
-	*/
 
-	/* First we place the code and read only data (typically const declared).
-	 * This could theoretically be placed in rom.
-	 */
-	.text : {
-		_text = .;
-		*(.text);
-		*(.text.*);
-		. = ALIGN(4);
-		_etext = .;
-	} >.sram
-
-	.rodata : {
-		_rodata = .;
-		. = ALIGN(4);
-		cpu_drivers = . ;
-		*(.rodata.cpu_driver)
-		ecpu_drivers = . ;
-		*(.rodata)
-		*(.rodata.*)
-		/* kevinh/Ispiri - Added an align, because the objcopy tool
-		 * incorrectly converts sections that are not long word aligned.
-		 */
-		 . = ALIGN(4);
-
-		_erodata = .;
-	} >.sram
-	/* After the code we place initialized data (typically initialized
-	 * global variables). This gets copied into ram by startup code.
-	 * __data_start and __data_end shows where in ram this should be placed,
-	 * whereas __data_loadstart and __data_loadend shows where in rom to
-	 * copy from.
-	 */
-	.data : {
-		_data = .;
-		*(.data)
-		_edata = .;
-	} >.sram
+	.xidx . : {
+		//*(.*.exidx);
+	}
 
 	__image_copy_end = .;
 
@@ -104,7 +70,7 @@ SECTIONS
 		*(.bss)
 		*(.sbss)
 		*(COMMON)
-	} >.sram
+	}
 	_ebss = .;
 	_end = .;
 

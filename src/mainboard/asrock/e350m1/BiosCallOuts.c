@@ -23,12 +23,7 @@
 #include "heapManager.h"
 #include "SB800.h"
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  UINTN i;
-  AGESA_STATUS CalloutStatus;
-
-CONST BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
+CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
   {AGESA_ALLOCATE_BUFFER,
    BiosAllocateBuffer
@@ -73,7 +68,13 @@ CONST BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
   },
 };
 
-  for (i = 0; i < REQUIRED_CALLOUTS; i++)
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+  UINTN i;
+  AGESA_STATUS CalloutStatus;
+  UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
+
+  for (i = 0; i < CallOutCount; i++)
   {
     if (BiosCallouts[i].CalloutName == Func)
     {
@@ -81,7 +82,7 @@ CONST BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
     }
   }
 
-  if(i >= REQUIRED_CALLOUTS)
+  if(i >= CallOutCount)
   {
     return AGESA_UNSUPPORTED;
   }

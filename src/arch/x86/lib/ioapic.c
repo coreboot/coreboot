@@ -43,8 +43,11 @@ void clear_ioapic(u32 ioapic_base)
 
 	/* Read the available number of interrupts. */
 	ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
-	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
-		ioapic_interrupts = 24;
+	if (ioapic_interrupts == 0xff)
+		ioapic_interrupts = 23;
+	ioapic_interrupts += 1; /* Bits 23-16 specify the maximum redirection
+				   entry, which is the number of interrupts
+				   minus 1. */
 	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
 
 	low = DISABLED;

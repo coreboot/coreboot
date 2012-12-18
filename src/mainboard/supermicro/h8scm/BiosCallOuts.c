@@ -24,7 +24,7 @@
 #include "OptionsIds.h"
 #include "heapManager.h"
 
-STATIC BIOS_CALLOUT_STRUCT BiosCallouts[REQUIRED_CALLOUTS] =
+STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{
 		AGESA_ALLOCATE_BUFFER,
@@ -87,14 +87,15 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	UINTN i;
 	AGESA_STATUS CalloutStatus;
+	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
 
-	for (i = 0; i < REQUIRED_CALLOUTS; i++) {
+	for (i = 0; i < CallOutCount; i++) {
 		if (BiosCallouts[i].CalloutName == Func) {
 			break;
 		}
 	}
 
-	if(i >= REQUIRED_CALLOUTS) {
+	if(i >= CallOutCount) {
 		return AGESA_UNSUPPORTED;
 	}
 

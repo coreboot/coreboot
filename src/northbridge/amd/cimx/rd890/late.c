@@ -123,6 +123,7 @@ static void ioapic_init(struct device *dev)
 
 	pci_write_config32(dev, 0xF8, 0x1);
 	ioapic_base = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+	clear_ioapic(ioapic_base);
 	setup_ioapic(ioapic_base, 1);
 }
 

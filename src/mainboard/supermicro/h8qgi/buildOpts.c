@@ -87,7 +87,7 @@
 #define BLDCFG_VRM_CURRENT_LIMIT                 120000
 #define BLDCFG_VRM_LOW_POWER_THRESHOLD           0
 #define BLDCFG_VRM_INRUSH_CURRENT_LIMIT          0
-#define BLDCFG_PLAT_NUM_IO_APICS                 3
+#define BLDCFG_PLAT_NUM_IO_APICS                 2
 #define BLDCFG_CORE_LEVELING_MODE                CORE_LEVEL_LOWEST
 #define BLDCFG_MEM_INIT_PSTATE                   0
 #define BLDCFG_AMD_PSTATE_CAP_VALUE              0

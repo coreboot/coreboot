@@ -71,6 +71,10 @@ typedef uint32_t u32;
 #if __HAVE_LONG_LONG__
 typedef uint64_t u64;
 #endif
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+
 
 #undef __HAVE_LONG_LONG__
 

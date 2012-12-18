@@ -65,19 +65,14 @@ void cbmem_post_handling(void)
 	update_mrc_cache();
 }
 
-static int get_pcie_bar(u32 *base, u32 *len)
+static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 {
-	device_t dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
 	*len = 0;
 
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
-	if (!dev)
-		return 0;
-
-	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
+	pciexbar_reg = pci_read_config32(dev, index);
 
 	if (!(pciexbar_reg & (1 << 0)))
 		return 0;
@@ -100,168 +95,9 @@ static int get_pcie_bar(u32 *base, u32 *len)
 	return 0;
 }
 
-static void add_fixed_resources(struct device *dev, int index)
-{
-	struct resource *resource;
-	u32 pcie_config_base, pcie_config_size;
-
-	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
-	       "size=0x%llx\n", uma_memory_base, uma_memory_size);
-	resource = new_resource(dev, index);
-	resource->base = (resource_t) uma_memory_base;
-	resource->size = (resource_t) uma_memory_size;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-
-	/* Clear these values here so they don't get used by MTRR code */
-	uma_memory_base = 0;
-	uma_memory_size = 0;
-
-	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
-		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		resource = new_resource(dev, index+1);
-		resource->base = (resource_t) pcie_config_base;
-		resource->size = (resource_t) pcie_config_size;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	}
-
-	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
-
-#if CONFIG_CHROMEOS_RAMOOPS
-	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
-#endif
-
-	/* Required for SandyBridge sighting 3715511 */
-	bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
-	bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
-}
-
 static void pci_domain_set_resources(device_t dev)
 {
-	uint64_t tom, me_base, touud;
-	uint32_t tseg_base, uma_size, tolud;
-	uint16_t ggc;
-	unsigned long long tomk;
-
-	/* Total Memory 2GB example:
-	 *
-	 *  00000000  0000MB-1992MB  1992MB  RAM     (writeback)
-	 *  7c800000  1992MB-2000MB     8MB  TSEG    (SMRR)
-	 *  7d000000  2000MB-2002MB     2MB  GFX GTT (uncached)
-	 *  7d200000  2002MB-2034MB    32MB  GFX UMA (uncached)
-	 *  7f200000   2034MB TOLUD
-	 *  7f800000   2040MB MEBASE
-	 *  7f800000  2040MB-2048MB     8MB  ME UMA  (uncached)
-	 *  80000000   2048MB TOM
-	 * 100000000  4096MB-4102MB     6MB  RAM     (writeback)
-	 *
-	 * Total Memory 4GB example:
-	 *
-	 *  00000000  0000MB-2768MB  2768MB  RAM     (writeback)
-	 *  ad000000  2768MB-2776MB     8MB  TSEG    (SMRR)
-	 *  ad800000  2776MB-2778MB     2MB  GFX GTT (uncached)
-	 *  ada00000  2778MB-2810MB    32MB  GFX UMA (uncached)
-	 *  afa00000   2810MB TOLUD
-	 *  ff800000   4088MB MEBASE
-	 *  ff800000  4088MB-4096MB     8MB  ME UMA  (uncached)
-	 * 100000000   4096MB TOM
-	 * 100000000  4096MB-5374MB  1278MB  RAM     (writeback)
-	 * 14fe00000   5368MB TOUUD
-	 */
-
-	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config32(dev, TOUUD+4);
-	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD) & ~1;
-
-	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config32(dev, TOLUD) & ~1;
-
-	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config32(dev, 0xa4);
-	tom <<= 32;
-	tom |= pci_read_config32(dev, 0xa0) & ~1;
-
-	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
-	       touud, tolud, tom);
-
-	/* ME UMA needs excluding if total memory <4GB */
-	me_base = pci_read_config32(dev, 0x74);
-	me_base <<= 32;
-	me_base |= pci_read_config32(dev, 0x70);
-
-	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
-
-	tomk = tolud >> 10;
-	if (me_base == tolud) {
-		/* ME is from MEBASE-TOM */
-		uma_size = (tom - me_base) >> 10;
-		/* Increment TOLUD to account for ME as RAM */
-		tolud += uma_size << 10;
-		/* UMA starts at old TOLUD */
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size = uma_size * 1024ULL;
-		printk(BIOS_DEBUG, "ME UMA base 0x%llx size %uM\n",
-		       me_base, uma_size >> 10);
-	}
-
-	/* Graphics memory comes next */
-	ggc = pci_read_config16(dev, GGC);
-	if (!(ggc & 2)) {
-		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-
-		/* Graphics memory */
-		uma_size = ((ggc >> 3) & 0x1f) * 32 * 1024ULL;
-		printk(BIOS_DEBUG, "%uM UMA", uma_size >> 10);
-		tomk -= uma_size;
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size += uma_size * 1024ULL;
-
-		/* GTT Graphics Stolen Memory Size (GGMS) */
-		uma_size = ((ggc >> 8) & 0x3) * 1024ULL;
-		tomk -= uma_size;
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size += uma_size * 1024ULL;
-		printk(BIOS_DEBUG, " and %uM GTT\n", uma_size >> 10);
-	}
-
-	/* Calculate TSEG size from its base which must be below GTT */
-	tseg_base = pci_read_config32(dev, 0xb8);
-	uma_size = (uma_memory_base - tseg_base) >> 10;
-	tomk -= uma_size;
-	uma_memory_base = tomk * 1024ULL;
-	uma_memory_size += uma_size * 1024ULL;
-	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n",
-	       tseg_base, uma_size >> 10);
-
-	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
-
-	/* Report the memory regions */
-	ram_resource(dev, 3, 0, legacy_hole_base_k);
-	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-	     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
-
-	/*
-	 * If >= 4GB installed then memory from TOLUD to 4GB
-	 * is remapped above TOM, TOUUD will account for both
-	 */
-	touud >>= 10; /* Convert to KB */
-	if (touud > 4096 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
-	}
-
-	add_fixed_resources(dev, 6);
-
 	assign_resources(dev->link_list);
-
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
 }
 
 	/* TODO We could determine how many PCIe busses we need in
@@ -281,40 +117,283 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
-static void mc_read_resources(device_t dev)
+static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 {
-	struct resource *resource;
+	u32 bar;
 
-	pci_dev_read_resources(dev);
+	bar = pci_read_config32(dev, index);
 
-	/* So, this is one of the big mysteries in the coreboot resource
-	 * allocator. This resource should make sure that the address space
-	 * of the PCIe memory mapped config space bar. But it does not.
-	 */
+	/* If not enabled don't report it. */
+	if (!(bar & 0x1))
+		return 0;
 
-	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
-	resource = new_resource(dev, 0xcf);
-	resource->base = DEFAULT_PCIEXBAR;
-	resource->size = 64 * 1024 * 1024;	/* 64MB hard coded PCIe config space */
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
-	    IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
-		     (unsigned long)(resource->base), (unsigned long)(resource->base + resource->size));
+	/* Knock down the enable bit. */
+	*base = bar & ~1;
+
+	return 1;
 }
 
-static void mc_set_resources(device_t dev)
+/* There are special BARs that actually are programmed in the MCHBAR. These
+ * Intel special features, but they do consume resources that need to be
+ * accounted for. */
+static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
+                             u32 *len)
 {
-	struct resource *resource;
+	u32 bar;
 
-	/* Report the PCIe BAR */
-	resource = find_resource(dev, 0xcf);
-	if (resource) {
-		report_resource_stored(dev, resource, "<mmconfig>");
+	bar = MCHBAR32(index);
+
+	/* If not enabled don't report it. */
+	if (!(bar & 0x1))
+		return 0;
+
+	/* Knock down the enable bit. */
+	*base = bar & ~1;
+
+	return 1;
+}
+
+struct fixed_mmio_descriptor {
+	unsigned int index;
+	u32 size;
+	int (*get_resource)(device_t dev, unsigned int index,
+	                    u32 *base, u32 *size);
+	const char *description;
+};
+
+#define SIZE_KB(x) ((x)*1024)
+struct fixed_mmio_descriptor mc_fixed_resources[] = {
+	{ PCIEXBAR, SIZE_KB(0),  get_pcie_bar,      "PCIEXBAR" },
+	{ MCHBAR,   SIZE_KB(32), get_bar,           "MCHBAR"   },
+	{ DMIBAR,   SIZE_KB(4),  get_bar,           "DMIBAR"   },
+	{ EPBAR,    SIZE_KB(4),  get_bar,           "EPBAR"    },
+	{ 0x5420,   SIZE_KB(4),  get_bar_in_mchbar, "GDXCBAR"  },
+	{ 0x5408,   SIZE_KB(16), get_bar_in_mchbar, "EDRAMBAR" },
+};
+#undef SIZE_KB
+
+/*
+ * Add all known fixed MMIO ranges that hang off the host bridge/memory
+ * controller device.
+ */
+static void mc_add_fixed_mmio_resources(device_t dev)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(mc_fixed_resources); i++) {
+		u32 base;
+		u32 size;
+		struct resource *resource;
+		unsigned int index;
+
+		size = mc_fixed_resources[i].size;
+		index = mc_fixed_resources[i].index;
+		if (!mc_fixed_resources[i].get_resource(dev, index,
+		                                        &base, &size))
+			continue;
+
+		resource = new_resource(dev, mc_fixed_resources[i].index);
+		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+		                  IORESOURCE_STORED | IORESOURCE_RESERVE |
+		                  IORESOURCE_ASSIGNED;
+		resource->base = base;
+		resource->size = size;
+		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
+		       __func__, mc_fixed_resources[i].description, index,
+		       (unsigned long)base, (unsigned long)(base + size - 1));
+	}
+}
+
+/* Host Memory Map:
+ *
+ * +--------------------------+ TOUUD
+ * |                          |
+ * +--------------------------+ 4GiB
+ * |     PCI Address Space    |
+ * +--------------------------+ TOLUD (also maps into MC address space)
+ * |     iGD                  |
+ * +--------------------------+ BDSM
+ * |     GTT                  |
+ * +--------------------------+ BGSM
+ * |     TSEG                 |
+ * +--------------------------+ TSEGMB
+ * |     Usage DRAM           |
+ * +--------------------------+ 0
+ *
+ * Some of the base registers above can be equal making the size of those
+ * regions 0. The reason is because the memory controller internally subtracts
+ * the base registers from each other to determine sizes of the regions. In
+ * other words, the memory map is in a fixed order no matter what.
+ */
+
+struct map_entry {
+	int reg;
+	int is_64_bit;
+	int is_limit;
+	const char *description;
+};
+
+static void read_map_entry(device_t dev, struct map_entry *entry,
+                           uint64_t *result)
+{
+	uint64_t value;
+	uint64_t mask;
+
+	/* All registers are on a 1MiB granularity. */
+	mask = ((1ULL<<20)-1);
+	mask = ~mask;
+
+	value = 0;
+
+	if (entry->is_64_bit) {
+		value = pci_read_config32(dev, entry->reg + 4);
+		value <<= 32;
 	}
 
-	/* And call the normal set_resources */
-	pci_dev_set_resources(dev);
+	value |= pci_read_config32(dev, entry->reg);
+	value &= mask;
+
+	if (entry->is_limit)
+		value |= ~mask;
+
+	*result = value;
+}
+
+#define MAP_ENTRY(reg_, is_64_, is_limit_, desc_) \
+	{ \
+		.reg = reg_,           \
+		.is_64_bit = is_64_,   \
+		.is_limit = is_limit_, \
+		.description = desc_,  \
+	}
+
+#define MAP_ENTRY_BASE_64(reg_, desc_) \
+	MAP_ENTRY(reg_, 1, 0, desc_)
+#define MAP_ENTRY_LIMIT_64(reg_, desc_) \
+	MAP_ENTRY(reg_, 1, 1, desc_)
+#define MAP_ENTRY_BASE_32(reg_, desc_) \
+	MAP_ENTRY(reg_, 0, 0, desc_)
+
+enum {
+	TOM_REG,
+	TOUUD_REG,
+	MESEG_BASE_REG,
+	MESEG_LIMIT_REG,
+	REMAP_BASE_REG,
+	REMAP_LIMIT_REG,
+	TOLUD_REG,
+	BGSM_REG,
+	BDSM_REG,
+	TSEG_REG,
+	// Must be last.
+	NUM_MAP_ENTRIES
+};
+
+static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
+	[TOM_REG] = MAP_ENTRY_BASE_64(TOM, "TOM"),
+	[TOUUD_REG] = MAP_ENTRY_BASE_64(TOUUD, "TOUUD"),
+	[MESEG_BASE_REG] = MAP_ENTRY_BASE_64(MESEG_BASE, "MESEG_BASE"),
+	[MESEG_LIMIT_REG] = MAP_ENTRY_LIMIT_64(MESEG_LIMIT, "MESEG_LIMIT"),
+	[REMAP_BASE_REG] = MAP_ENTRY_BASE_64(REMAPBASE, "REMAP_BASE"),
+	[REMAP_LIMIT_REG] = MAP_ENTRY_LIMIT_64(REMAPLIMIT, "REMAP_LIMIT"),
+	[TOLUD_REG] = MAP_ENTRY_BASE_32(TOLUD, "TOLUD"),
+	[BGSM_REG] = MAP_ENTRY_BASE_32(BDSM, "BDSM"),
+	[BDSM_REG] = MAP_ENTRY_BASE_32(BGSM, "BGSM"),
+	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
+};
+
+static void mc_read_map_entries(device_t dev, uint64_t *values)
+{
+	int i;
+	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
+		read_map_entry(dev, &memory_map[i], &values[i]);
+	}
+}
+
+static void mc_report_map_entries(device_t dev, uint64_t *values)
+{
+	int i;
+	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
+		printk(BIOS_DEBUG, "MC MAP: %s: 0x%llx\n",
+		       memory_map[i].description, values[i]);
+	}
+	/* One can validate the BDSM and BGSM against the GGC. */
+	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
+}
+
+static void mc_add_dram_resources(device_t dev)
+{
+	unsigned long base_k, size_k;
+	unsigned long index;
+	struct resource *resource;
+	uint64_t mc_values[NUM_MAP_ENTRIES];
+
+	/* Read in the MAP registers and report their values. */
+	mc_read_map_entries(dev, &mc_values[0]);
+	mc_report_map_entries(dev, &mc_values[0]);
+
+	/*
+	 * There are 4 host memory ranges that should be added:
+	 * - 0 -> 0xa0000 : cacheable
+	 * - 0xc0000 -> TSEG : cacheable
+	 * - TESG -> TOLUD: not cacheable with standard MTRRs and reserved
+	 * - 4GiB -> TOUUD: cacheable
+	 *
+	 * The range 0xa0000 -> 0xc0000 does not have any resources
+	 * associated with it to handle legacy VGA memory. If this range
+	 * is not omitted the mtrr code will setup the area as cacheable
+	 * causing VGA access to not work.
+	 *
+	 * The resource index starts low and should not meet or exceed
+	 * PCI_BASE_ADDRESS_0. In this case there are only 3 entries so there
+	 * are no conflicts in the index space.
+	 */
+	index = 0;
+
+	/* 0 - > 0xa0000 */
+	base_k = 0;
+	size_k = 0xa0000 >> 10;
+	ram_resource(dev, index++, base_k, size_k);
+
+	/* 0xa0000 -> TSEG */
+	base_k = 0xc0000 >> 10;
+	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
+	ram_resource(dev, index++, base_k, size_k);
+
+	/* TSEG -> TOLUD */
+	resource = new_resource(dev, index++);
+	resource->base = mc_values[TSEG_REG];
+	resource->size = mc_values[TOLUD_REG] - resource->base;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
+	                  IORESOURCE_ASSIGNED;
+
+	/* 4GiB -> TOUUD */
+	base_k = 4096 * 1024; /* 4GiB */
+	size_k = (unsigned long)(mc_values[TOUUD_REG] >> 10) - base_k;
+	ram_resource(dev, index++, base_k, size_k);
+
+	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
+#if CONFIG_CHROMEOS_RAMOOPS
+	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
+			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
+#endif
+
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_size = HIGH_MEMORY_SIZE;
+	high_tables_base = mc_values[TSEG_REG] - high_tables_size;
+}
+
+static void mc_read_resources(device_t dev)
+{
+	/* Read standard PCI resources. */
+	pci_dev_read_resources(dev);
+
+	/* Add all fixed MMIO resources. */
+	mc_add_fixed_mmio_resources(dev);
+
+	/* Calculate and add DRAM resources. */
+	mc_add_dram_resources(dev);
 }
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -453,7 +532,7 @@ static struct pci_operations intel_pci_ops = {
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = mc_set_resources,
+	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
 	.enable           = northbridge_enable,

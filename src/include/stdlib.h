@@ -14,6 +14,8 @@
 #if !defined(__PRE_RAM__)
 void *memalign(size_t boundary, size_t size);
 void *malloc(size_t size);
+/* We never free memory */
+#define free(addr) (void)(addr)
 #endif
 
 #endif /* STDLIB_H */

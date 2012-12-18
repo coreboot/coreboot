@@ -63,7 +63,6 @@
 #define MCHBAR		0x48
 #define PCIEXBAR	0x60
 #define DMIBAR		0x68
-#define X60BAR		0x60
 
 #define GGC		0x50			/* GMCH Graphics Control */
 
@@ -91,8 +90,14 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-#define TOM		0xa0
+#define MESEG_BASE	0x70	/* Management Engine Base. */
+#define MESEG_LIMIT	0x78	/* Management Engine Limit. */
+#define REMAPBASE	0x90	/* Remap base. */
+#define REMAPLIMIT	0x98	/* Remap limit. */
+#define TOM		0xa0	/* Top of DRAM in memory controller space. */
 #define TOUUD		0xa8	/* Top of Upper Usable DRAM */
+#define BDSM		0xb0	/* Base Data Stolen Memory */
+#define BGSM		0xb4	/* Base GTT Stolen Memory */
 #define TSEG		0xb8	/* TSEG base */
 #define TOLUD		0xbc	/* Top of Low Used Memory */
 

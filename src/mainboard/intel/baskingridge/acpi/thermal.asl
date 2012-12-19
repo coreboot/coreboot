@@ -63,26 +63,7 @@ Scope (\_TZ)
 
 		Method (_TMP, 0, Serialized)
 		{
-			// Get CPU Temperature from PECI via SuperIO TMPIN3
-			// FIXME: figure out how to read temp on this board.
-			Store (30, Local0)
-
-			// Check for invalid readings
-			If (LOr (LEqual (Local0, 255), LEqual (Local0, 0))) {
-				Return (CTOK (\F2ON))
-			}
-
-			// PECI raw value is an offset from Tj_max
-			Subtract (255, Local0, Local1)
-
-			// Handle values greater than Tj_max
-			If (LGreaterEqual (Local1, \TMAX)) {
-				Return (CTOK (\TMAX))
-			}
-
-			// Subtract from Tj_max to get temperature
-			Subtract (\TMAX, Local1, Local0)
-			Return (CTOK (Local0))
+			Return (CTOK (50))
 		}
 
 		Method (_AC0) {

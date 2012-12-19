@@ -585,10 +585,15 @@ struct mem_timings mem_timings[] = {
  */
 #define BOARD_REV_ELPIDA_MEMORY		3
 #define BOARD_REV_SAMSUNG_MEMORY	4
+
+static inline int board_get_revision(void)
+{
+	return BOARD_REV_ELPIDA_MEMORY;
+}
+
 static int autodetect_memory(void)
 {
-//	int board_rev = board_get_revision();
-	int board_rev = BOARD_REV_ELPIDA_MEMORY;
+	int board_rev = board_get_revision();
 
 	if (board_rev == -1)
 		return -1;
@@ -602,8 +607,41 @@ static int autodetect_memory(void)
 
 	return -1;
 }
-
 #ifdef CONFIG_SPL_BUILD
+
+#if 0
+/* FIXME: this is an awful hack (duplicated from snow/smdk5250_spl), get rid of it */
+#include <cpu/samsung/exynos5-common/spl.h>
+#include <cpu/samsung/exynos5250/gpio.h>
+static struct spl_machine_param foo_param = {
+	.signature	= 0xdeadbeef,
+	.version	= 1,
+	.params		= "vmubfasirMw",
+	.size		= sizeof(foo_param),
+
+	.mem_iv_size	= 0x1f,
+	.mem_type	= DDR_MODE_DDR3,
+
+	/*
+	 * Set uboot_size to 0x100000 bytes.
+	 *
+	 * This is an overly conservative value chosen to accommodate all
+	 * possible U-Boot image.  You are advised to set this value to a
+	 * smaller realistic size via scripts that modifies the .machine_param
+	 * section of output U-Boot image.
+	 */
+	.uboot_size	= 0x100000,
+
+	.boot_source	= BOOT_MODE_OM,
+	.frequency_mhz	= 800,
+	.arm_freq_mhz	= 1700,
+	.serial_base	= 0x12c30000,
+	.i2c_base	= 0x12c60000,
+	.board_rev_gpios = GPIO_D00 | (GPIO_D01 << 16),
+	.mem_manuf	= MEM_MANUF_SAMSUNG,
+	.bad_wake_gpio	= GPIO_Y10,
+};
+#endif
 
 /**
  * Get the required memory type and speed (SPL version).
@@ -614,8 +652,20 @@ int clock_get_mem_selection(enum ddr_mode *mem_type,
 		unsigned *frequency_mhz, unsigned *arm_freq,
 		enum mem_manuf *mem_manuf)
 {
+#if 0
+	*mem_type = DDR_MODE_DDR3;
+	*frequency_mhz = 800;
+	*arm_freq = 1700;
+	return 0;
+#endif
+
+//	struct spl_machine_param *params = &foo_param;
 	struct spl_machine_param *params;
 
+	/* FIXME(dhendrix): spl_get_machine_params() seemed to work
+	   fine, however the machine would crash upon return for
+	   some reason (stack issue?)... To hack around this, machine_params
+	   table is copy + pasted above. */
 	params = spl_get_machine_params();
 	*mem_type = params->mem_type;
 	*frequency_mhz = params->frequency_mhz;
@@ -711,6 +761,8 @@ const char *clock_get_mem_manuf_name(enum mem_manuf mem_manuf)
 struct arm_clk_ratios *get_arm_ratios(void);	/* FIXME: silence compiler... */
 struct arm_clk_ratios *get_arm_ratios(void)
 {
+	return &arm_clk_ratios[5];
+#if 0
 	struct arm_clk_ratios *arm_ratio;
 	enum ddr_mode mem_type;
 	enum mem_manuf mem_manuf;
@@ -721,6 +773,9 @@ struct arm_clk_ratios *get_arm_ratios(void)
 	if (clock_get_mem_selection(&mem_type, &frequency_mhz,
 					&arm_freq, &mem_manuf))
 		;
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	*addr |= 0x100;
+	while (1) ;
 	for (i = 0, arm_ratio = arm_clk_ratios; i < ARRAY_SIZE(arm_clk_ratios);
 		i++, arm_ratio++) {
 		if (arm_ratio->arm_freq_mhz == arm_freq)
@@ -729,10 +784,13 @@ struct arm_clk_ratios *get_arm_ratios(void)
 
 	die("get_arm_ratios: Failed to find ratio\n");
 	return NULL;
+#endif
 }
 
 struct mem_timings *clock_get_mem_timings(void)
 {
+	return &mem_timings[0];
+#if 0
 	struct mem_timings *mem;
 	enum ddr_mode mem_type;
 	enum mem_manuf mem_manuf;
@@ -745,14 +803,16 @@ struct mem_timings *clock_get_mem_timings(void)
 				i++, mem++) {
 			if (mem->mem_type == mem_type &&
 					mem->frequency_mhz == frequency_mhz &&
-					mem->mem_manuf == mem_manuf)
+					mem->mem_manuf == mem_manuf) {
 				return mem;
+			}
 		}
 	}
-	/* TODO: Call panic() here */
-	while (1)
-		;
+	/* FIXME: remove the while-loop once we have serial */
+	die("Failed to get mem timings");
+	while (1) ;
 	return NULL;
+#endif
 }
 
 void system_clock_init()
@@ -850,6 +910,12 @@ void system_clock_init()
 	while ((readl(&clk->mpll_con0) & MPLL_CON0_LOCKED) == 0)
 		;
 
+	/* FIXME: it would usually freeze in the above while loop... let's just ignore
+	   that for now. */
+//	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+//	*addr |= 0x100;
+//	while (1) ;
+
 	/*
 	 * Configure MUX_MPLL_FOUT to choose the direct clock source
 	 * path and avoid the fixed DIV/2 block to save power
@@ -866,6 +932,7 @@ void system_clock_init()
 
 		setbits_le32(&clk->pll_div2_sel, MUX_BPLL_FOUT_SEL);
 	}
+
 
 	/* Set CPLL */
 	writel(CPLL_CON1_VAL, &clk->cpll_con1);
@@ -993,7 +1060,6 @@ void system_clock_init()
 
 	writel(CLK_SRC_PERIC0_VAL, &clk->src_peric0);
 	writel(CLK_DIV_PERIC0_VAL, &clk->div_peric0);
-
 	writel(CLK_SRC_PERIC1_VAL, &clk->src_peric1);
 	writel(CLK_DIV_PERIC1_VAL, &clk->div_peric1);
 	writel(CLK_DIV_PERIC2_VAL, &clk->div_peric2);

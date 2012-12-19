@@ -17,4 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-subdirs-$(CONFIG_DRIVERS_MAXIM_MAX77676) += max77686
+subdirs-$(CONFIG_DRIVER_MAXIM_MAX77686) += max77686/

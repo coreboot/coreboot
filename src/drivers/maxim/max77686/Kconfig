@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config DRIVER_MAXIM_77686
+config DRIVER_MAXIM_MAX77686
 	bool
 	default n
 	help
-	  Maxim 77686 power regulator
+	  Maxim MAX77686 power regulator

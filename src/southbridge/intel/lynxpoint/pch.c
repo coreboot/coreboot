@@ -55,6 +55,12 @@ int pch_silicon_supported(int type, int rev)
 static void pch_hide_devfn(unsigned devfn)
 {
 	switch (devfn) {
+	case PCI_DEVFN(19, 0): /* Audio DSP */
+		RCBA32_OR(FD, PCH_DISABLE_ADSPD);
+		break;
+	case PCI_DEVFN(20, 0): /* XHCI */
+		RCBA32_OR(FD, PCH_DISABLE_XHCI);
+		break;
 	case PCI_DEVFN(22, 0): /* MEI #1 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 		break;
@@ -89,9 +95,6 @@ static void pch_hide_devfn(unsigned devfn)
 	case PCI_DEVFN(29, 0): /* EHCI #1 */
 		RCBA32_OR(FD, PCH_DISABLE_EHCI1);
 		break;
-	case PCI_DEVFN(30, 0): /* PCI-to-PCI Bridge */
-		RCBA32_OR(FD, PCH_DISABLE_P2P);
-		break;
 	case PCI_DEVFN(31, 0): /* LPC */
 		RCBA32_OR(FD, PCH_DISABLE_LPC);
 		break;
@@ -101,7 +104,7 @@ static void pch_hide_devfn(unsigned devfn)
 	case PCI_DEVFN(31, 3): /* SMBUS */
 		RCBA32_OR(FD, PCH_DISABLE_SMBUS);
 		break;
-	case PCI_DEVFN(31, 5): /* SATA #22 */
+	case PCI_DEVFN(31, 5): /* SATA #2 */
 		RCBA32_OR(FD, PCH_DISABLE_SATA2);
 		break;
 	case PCI_DEVFN(31, 6): /* Thermal Subsystem */

@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <delay.h>
 #include "pch.h"
 
 typedef struct southbridge_intel_lynxpoint_config config_t;
@@ -123,6 +124,7 @@ static void sata_init(struct device *dev)
 		reg16 &= ~0x3f;
 		reg16 |= 0x8000 | config->sata_port_map;
 		pci_write_config16(dev, 0x92, reg16);
+		udelay(2);
 
 		/* Setup register 98h */
 		reg32 = pci_read_config16(dev, 0x98);
@@ -138,6 +140,7 @@ static void sata_init(struct device *dev)
 #if CONFIG_INTEL_LYNXPOINT_LP
 		reg32 &= ~((1 << 31) | (1 << 30));
 		reg32 |= 1 << 23;
+		reg32 |= 1 << 24;    /* Disable listen mode (hotplug) */
 #endif
 		pci_write_config32(dev, 0x98, reg32);
 
@@ -159,6 +162,9 @@ static void sata_init(struct device *dev)
 		reg32 = read32(abar + 0x00);
 		reg32 |= 0x0c006000;  // set PSC+SSC+SALP+SSS
 		reg32 &= ~0x00020060; // clear SXS+EMS+PMS
+#if CONFIG_INTEL_LYNXPOINT_LP
+		reg32 |= (1 << 18);   // SAM: SATA AHCI MODE ONLY
+#endif
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */
 		write32(abar + 0x0c, config->sata_port_map);
@@ -166,12 +172,13 @@ static void sata_init(struct device *dev)
 		(void) read32(abar + 0x0c); /* Read back 2 */
 		/* CAP2 (HBA Capabilities Extended)*/
 		reg32 = read32(abar + 0x24);
+#if CONFIG_INTEL_LYNXPOINT_LP
+		/* Enable DEVSLP */
+		reg32 |= (1 << 5)|(1 << 4)|(1 << 3)|(1 << 2);
+#else
 		reg32 &= ~0x00000002;
+#endif
 		write32(abar + 0x24, reg32);
-		/* VSP (Vendor Specific Register */
-		reg32 = read32(abar + 0xa0);
-		reg32 &= ~0x00000005;
-		write32(abar + 0xa0, reg32);
 	} else {
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
@@ -230,15 +237,33 @@ static void sata_init(struct device *dev)
 
 	/* Additional Programming Requirements */
 	/* Power Optimizer */
-	sir_write(dev, 0x64, 0x883c9001);
 
+	/* Step 1 */
+#if CONFIG_INTEL_LYNXPOINT_LP
+	sir_write(dev, 0x64, 0x883c9003);
+#else
+	sir_write(dev, 0x64, 0x883c9001);
+#endif
+
+	/* Step 2: SIR 68h[15:0] = 880Ah */
 	reg32 = sir_read(dev, 0x68);
 	reg32 &= 0xffff0000;
 	reg32 |= 0x880a;
 	sir_write(dev, 0x68, reg32);
 
+	/* Step 3: SIR 60h[3] = 1 */
 	reg32 = sir_read(dev, 0x60);
-	reg32 |= (1 << 0) | (1 << 1) | (1 << 3);
+	reg32 |= (1 << 3);
+	sir_write(dev, 0x60, reg32);
+
+	/* Step 4: SIR 60h[0] = 1 */
+	reg32 = sir_read(dev, 0x60);
+	reg32 |= (1 << 0);
+	sir_write(dev, 0x60, reg32);
+
+	/* Step 5: SIR 60h[1] = 1 */
+	reg32 = sir_read(dev, 0x60);
+	reg32 |= (1 << 1);
 	sir_write(dev, 0x60, reg32);
 
 	/* Clock Gating */

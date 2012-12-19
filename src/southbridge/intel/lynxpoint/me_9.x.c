@@ -754,10 +754,16 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
+static const unsigned short pci_device_ids[] = {
+	0x8c3a, /* Mobile */
+	0x9c3a, /* Low Power */
+	0
+};
+
 static const struct pci_driver intel_me __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x8c3a,
+	.devices= pci_device_ids,
 };
 
 /******************************************************************************

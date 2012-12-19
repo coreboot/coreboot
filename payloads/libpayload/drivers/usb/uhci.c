@@ -61,41 +61,51 @@ uhci_dump (hci_t *controller)
 }
 #endif
 
-static void
-td_dump (td_t *td)
+static void td_dump(td_t *td)
 {
-	char td_value[3];
-	const char *td_type;
-	switch (td->token & TD_PID_MASK) {
-		case UHCI_SETUP:
-			td_type="SETUP";
-			break;
-		case UHCI_IN:
-			td_type="IN";
-			break;
-		case UHCI_OUT:
-			td_type="OUT";
-			break;
-		default:
-			sprintf(td_value, "%x", td->token & TD_PID_MASK);
-			td_type=td_value;
-	}
-	usb_debug ("%s packet (at %lx) to %x.%x failed\n", td_type,
-		virt_to_phys (td), (td->token & TD_DEVADDR_MASK) >> TD_DEVADDR_SHIFT,
-		(td->token & TD_EP_MASK) >> TD_EP_SHIFT);
-	usb_debug ("td (counter at %x) returns: ", td->ctrlsts >> TD_COUNTER_SHIFT);
-	usb_debug (" bitstuff err: %x, ", !!(td->ctrlsts & TD_STATUS_BITSTUFF_ERR));
-	usb_debug (" CRC err: %x, ", !!(td->ctrlsts & TD_STATUS_CRC_ERR));
-	usb_debug (" NAK rcvd: %x, ", !!(td->ctrlsts & TD_STATUS_NAK_RCVD));
-	usb_debug (" Babble: %x, ", !!(td->ctrlsts & TD_STATUS_BABBLE));
-	usb_debug (" Data Buffer err: %x, ", !!(td->ctrlsts & TD_STATUS_DATABUF_ERR));
-	usb_debug (" Stalled: %x, ", !!(td->ctrlsts & TD_STATUS_STALLED));
-	usb_debug (" Active: %x\n", !!(td->ctrlsts & TD_STATUS_ACTIVE));
-	if (td->ctrlsts & TD_STATUS_BABBLE)
-		usb_debug (" Babble because of %s\n",
-			(td->ctrlsts & TD_STATUS_BITSTUFF_ERR) ? "host" : "device");
-	if (td->ctrlsts & TD_STATUS_ACTIVE)
-		usb_debug (" still active - timeout?\n");
+	usb_debug("+---------------------------------------------------+\n");
+	if ((td->token & TD_PID_MASK) == UHCI_SETUP)
+		usb_debug("|..[SETUP]..........................................|\n");
+	else if ((td->token & TD_PID_MASK) == UHCI_IN)
+		usb_debug("|..[IN].............................................|\n");
+	else if ((td->token & TD_PID_MASK) == UHCI_OUT)
+		usb_debug("|..[OUT]............................................|\n");
+	else
+		usb_debug("|..[]...............................................|\n");
+	usb_debug("|:|============ UHCI TD at [0x%08lx] ==========|:|\n", virt_to_phys(td));
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Next  TD/QH     [0x%08lx]                  |:|\n", td->ptr & ~0xFUL);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Depth/Breath [%lx]  | QH/TD [%lx] | TERMINATE [%lx] |:|\n",
+	(td->ptr & (1UL << 2)) >> 2, (td->ptr & (1UL << 1)) >> 1, td->ptr & 1UL);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:|   T   | Maximum Length               | [%04lx] |:|\n", (td->token & (0x7FFUL << 21)) >> 21);
+	usb_debug("|:|   O   | PID CODE                     | [%04lx] |:|\n", td->token & 0xFF);
+	usb_debug("|:|   K   | Endpoint                     | [%04lx] |:|\n", (td->token & TD_EP_MASK) >> TD_EP_SHIFT);
+	usb_debug("|:|   E   | Device Address               | [%04lx] |:|\n", (td->token & (0x7FUL << 8)) >> 8);
+	usb_debug("|:|   N   | Data Toggle                  |    [%lx] |:|\n", (td->token & (1UL << 19)) >> 19);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:|   C   | Short Packet Detector        |    [%lx] |:|\n", (td->ctrlsts & (1UL << 29)) >> 29);
+	usb_debug("|:|   O   | Error Counter                |    [%lx] |:|\n",
+		(td->ctrlsts & (3UL << TD_COUNTER_SHIFT)) >> TD_COUNTER_SHIFT);
+	usb_debug("|:|   N   | Low Speed Device             |    [%lx] |:|\n", (td->ctrlsts & (1UL << 26)) >> 26);
+	usb_debug("|:|   T   | Isochronous Select           |    [%lx] |:|\n", (td->ctrlsts & (1UL << 25)) >> 25);
+	usb_debug("|:|   R   | Interrupt on Complete (IOC)  |    [%lx] |:|\n", (td->ctrlsts & (1UL << 24)) >> 24);
+	usb_debug("|:+   O   ----------------------------------------+:|\n");
+	usb_debug("|:|   L   | Active                       |    [%lx] |:|\n", (td->ctrlsts & (1UL << 23)) >> 23);
+	usb_debug("|:|   &   | Stalled                      |    [%lx] |:|\n", (td->ctrlsts & (1UL << 22)) >> 22);
+	usb_debug("|:|   S   | Data Buffer Error            |    [%lx] |:|\n", (td->ctrlsts & (1UL << 21)) >> 21);
+	usb_debug("|:|   T   | Bubble Detected              |    [%lx] |:|\n", (td->ctrlsts & (1UL << 20)) >> 20);
+	usb_debug("|:|   A   | NAK Received                 |    [%lx] |:|\n", (td->ctrlsts & (1UL << 19)) >> 19);
+	usb_debug("|:|   T   | CRC/Timeout Error            |    [%lx] |:|\n", (td->ctrlsts & (1UL << 18)) >> 18);
+	usb_debug("|:|   U   | Bitstuff Error               |    [%lx] |:|\n", (td->ctrlsts & (1UL << 17)) >> 17);
+	usb_debug("|:|   S   ----------------------------------------|:|\n");
+	usb_debug("|:|       | Actual Length                | [%04lx] |:|\n", td->ctrlsts & 0x7FFUL);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Buffer pointer  [0x%08lx]                  |:|\n", td->bufptr);
+	usb_debug("|:|-----------------------------------------------|:|\n");
+	usb_debug("|...................................................|\n");
+	usb_debug("+---------------------------------------------------+\n");
 }
 
 static void

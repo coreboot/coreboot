@@ -21,9 +21,12 @@
  * MA 02111-1307 USA
  */
 
+#include <arch/io.h>
 #include <common.h>
-#include <smbus.h>
-#include <max77686.h>
+//#include <smbus.h>
+#include <device/i2c.h>
+
+#include "max77686.h"
 
 /* Chip register numbers (not exported from this module) */
 enum {
@@ -167,6 +170,15 @@ static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
 		return -1;
 	}
 
+	/* FIXME(dhendrix): why is the vol_min wrong? is the address of the
+	   array element somehow getting corrupted? */
+#error "FIXME(hung-te and dhendrix -- Why does this fail?"
+	if ((reg == PMIC_BUCK2) && (pmic->vol_min != 600)) {
+		volatile unsigned long *addr = (unsigned long *)0x1004330c;
+		*addr &= ~0x100;
+		while (1);
+	}
+
 	ret = max77686_i2c_read(MAX77686_I2C_ADDR, pmic->vol_addr, &read_data);
 	if (ret != 0) {
 		debug("max77686 i2c read failed.\n");
@@ -179,6 +191,8 @@ static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
 		vol_level = (volt - pmic->vol_min) * 1000;
 
 	if (vol_level < 0) {
+//		volatile unsigned long *addr = (unsigned long *)0x1004330c;
+//		*addr &= ~0x100;
 		debug("Not a valid voltage level to set\n");
 		return -1;
 	}
@@ -210,6 +224,13 @@ int max77686_volsetting(enum max77686_regnum reg, unsigned int volt,
 
 	i2c_set_bus_num(0);
 	ret = max77686_do_volsetting(reg, volt, enable, volt_units);
+#if 0
+	/* FIXME: for debugging */
+	if (ret) {
+		volatile unsigned long *addr = (unsigned long *)0x1004330c;
+		*addr &= ~0x100;
+	}
+#endif
 	i2c_set_bus_num(old_bus);
 	return ret;
 }

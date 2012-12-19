@@ -31,6 +31,9 @@
 #include <cpu/samsung/exynos5-common/spl.h>
 #include <drivers/maxim/max77686/max77686.h>
 
+#include "device/i2c.h"
+#include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
+
 static void ps_hold_setup(void)
 {
 	struct exynos5_power *power =
@@ -126,6 +129,8 @@ void power_exit_wakeup(void)
 	((resume_func)power->inform0)();
 }
 
+int test(int x);
+
 /**
  * Initialize the pmic voltages to power up the system
  * This also calls i2c_init so that we can program the pmic
@@ -137,22 +142,15 @@ void power_exit_wakeup(void)
 int power_init(void)
 {
 	int error = 0;
-
-	/* FIXME(dhendrix): not necessary for initial bringup... */
-#if 0
-#ifdef CONFIG_SPL_BUILD
-	struct spl_machine_param *param = spl_get_machine_params();
+//	struct spl_machine_param *param = spl_get_machine_params();
 
 	/* Set the i2c register address base so i2c works before FDT */
-	i2c_set_early_reg(param->i2c_base);
-#endif
-#endif
+//	i2c_set_early_reg(param->i2c_base);
+	
+	i2c_set_early_reg(0x12c60000);
 
+	/* FIXME(dhendrix): this is our POST code for now... */
 	ps_hold_setup();
-
-	/* FIXME(dhendrix): not necessary for initial bringup... */
-#if 0
-	/* init the i2c so that we can program pmic chip */
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
 	/*
@@ -169,8 +167,15 @@ int power_init(void)
 
 	error |= max77686_volsetting(PMIC_BUCK2, CONFIG_VDD_ARM_MV,
 						REG_ENABLE, MAX77686_MV);
+	while (1);
 	error |= max77686_volsetting(PMIC_BUCK3, CONFIG_VDD_INT_UV,
 						REG_ENABLE, MAX77686_UV);
+//	if (error)
+//		power_shutdown();
+//	/* FIXME: for debugging */
+//	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+//	*addr &= ~0x100;
+//	while (1) ;
 	error |= max77686_volsetting(PMIC_BUCK1, CONFIG_VDD_MIF_MV,
 						REG_ENABLE, MAX77686_MV);
 	error |= max77686_volsetting(PMIC_BUCK4, CONFIG_VDD_G3D_MV,
@@ -183,7 +188,6 @@ int power_init(void)
 						REG_ENABLE, MAX77686_MV);
 	error |= max77686_volsetting(PMIC_LDO10, CONFIG_VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
-#endif
 	if (error != 0)
 		printk(BIOS_ERR, "power init failed\n");
 

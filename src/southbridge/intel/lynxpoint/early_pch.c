@@ -31,6 +31,15 @@
 #include "gpio.h"
 #endif
 
+const struct rcba_config_instruction pch_early_config[] = {
+	/* Enable IOAPIC */
+	RCBA_SET_REG_16(OIC, 0x0100),
+	/* PCH BWG says to read back the IOAPIC enable register */
+	RCBA_READ_REG_16(OIC),
+
+	RCBA_END_CONFIG,
+};
+
 static void pch_enable_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */
@@ -48,17 +57,10 @@ static void pch_enable_bars(void)
 
 static void pch_generic_setup(void)
 {
-	u8 reg8;
-
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
-
-	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3, reg8);
 }
 
 static int sleep_type_s3(void)
@@ -158,6 +160,10 @@ int early_pch_init(const void *gpio_map,
 	/* Enable SMBus for reading SPDs. */
 	enable_smbus();
 
+	/* Early PCH RCBA settings */
+	pch_config_rcba(pch_early_config);
+
+	/* Mainboard RCBA settings */
 	pch_config_rcba(rcba_config);
 
 	wake_from_s3 = sleep_type_s3();

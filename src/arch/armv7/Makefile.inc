@@ -141,11 +141,10 @@ endif
 # For various headers imported from Linux
 CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7
-INCLUDES += -Isrc/include/linux
-INCLUDES += -Isrc/include/linux/uapi
 
 # FIXME(dhendrix): trying to split start.S apart...
-crt0s = $(src)/arch/armv7/start.S
+#crt0s = $(src)/arch/armv7/start.S
+crt0s = $(src)/arch/armv7/init/init.S
 #crt0s = $(src)/arch/armv7/romstage.S
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
@@ -284,6 +283,13 @@ else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
+#$(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
+#	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+#	rm -f $@
+#	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
+#	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
+#	mv $@.tmp $@
+# let's try setting ROMSTAGE_BASE to beginning of iROM plus the size of BL1 (8K)...
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@

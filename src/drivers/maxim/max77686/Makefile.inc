@@ -17,4 +17,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ramstage-$(CONFIG_DRIVER_MAXIM_77686) += max77686.c
+romstage-$(CONFIG_DRIVER_MAXIM_MAX77686) += max77686.c
+ramstage-$(CONFIG_DRIVER_MAXIM_MAX77686) += max77686.c

@@ -25,9 +25,11 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 romstage-y += memcpy.c
 endif
 romstage-y += memcmp.c
-romstage-y += cbfs.c
-romstage-y += lzma.c
+romstage-y += memmove.c
+#romstage-y += cbfs.c
+#romstage-y += lzma.c
 #romstage-y += lzmadecode.c
+#romstage-y += compute_ip_checksum.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
@@ -36,8 +38,6 @@ romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-romstage-y += compute_ip_checksum.c
-romstage-y += memmove.c
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c

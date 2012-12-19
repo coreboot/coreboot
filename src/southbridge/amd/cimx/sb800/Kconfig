@@ -135,7 +135,6 @@ config SB800_IMC_FWM
 	default n
 	help
 	  Add SB800 / Hudson 1 IMC Firmware to support the onboard fan control.
-	  Please contact AMD to obtain the related firmware.
 
 if SB800_IMC_FWM
 

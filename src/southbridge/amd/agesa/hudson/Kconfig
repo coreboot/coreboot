@@ -48,21 +48,18 @@ config HUDSON_XHCI_FWM
 	default y
         help
 	  Add Hudson 2/3/4 XHCI Firmware to support the onboard usb3.0
-	  Please contact AMD to obtain the related firmware
 
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"
 	default y
         help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
-	  Please contact AMD to obtain the related firmware
 
 config HUDSON_GEC_FWM
 	bool "Add gec firmware"
 	default n
         help
 	  Add Hudson 2/3/4 GEC Firmware
-	  Please contact AMD to obtain the related firmware
 
 config HUDSON_XHCI_FWM_FILE
         string "XHCI firmware path and filename"

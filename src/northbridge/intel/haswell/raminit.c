@@ -32,8 +32,6 @@
 #include "pei_data.h"
 #include "haswell.h"
 
-/* Management Engine is in the southbridge */
-#include "southbridge/intel/lynxpoint/me.h"
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
 #else
@@ -152,12 +150,6 @@ void sdram_initialize(struct pei_data *pei_data)
 	struct sys_info sysinfo;
 	unsigned long entry;
 
-	report_platform_info();
-
-	/* Wait for ME to be ready */
-	intel_early_me_init();
-	intel_early_me_uma_size();
-
 	printk(BIOS_DEBUG, "Starting UEFI PEI System Agent\n");
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
@@ -216,8 +208,6 @@ void sdram_initialize(struct pei_data *pei_data)
 		version >> 24 , (version >> 16) & 0xff,
 		(version >> 8) & 0xff, version & 0xff);
 
-	intel_early_me_status();
-
 	report_memory_config();
 
 	/* S3 resume: don't save scrambler seed or MRC data */
@@ -232,7 +222,10 @@ struct cbmem_entry *get_cbmem_toc(void)
 
 unsigned long get_top_of_ram(void)
 {
-	/* Base of TSEG is top of usable DRAM */
+	/*
+	 * Base of TSEG is top of usable DRAM below 4GiB. The register has
+	 * 1 MiB alignement.
+	 */
 	u32 tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
-	return (unsigned long) tom;
+	return (unsigned long) tom & ~((1 << 20) - 1);
 }

@@ -17,7 +17,8 @@ config SKIP_LOWLEVEL_INIT
 
 config IRAM_BOTTOM
 	hex
-	default 0x02020000
+	default 0x02023400
+#	default 0x02020000
 
 # FIXME(dhendrix): 0x02050000 was in the u-boot sources, but the docs say the
 # iRAM range is 0x0202_0000 - 0x0207_7fff (352KB).
@@ -30,7 +31,8 @@ config IRAM_TOP
 
 config SYS_INIT_SP_ADDR
 	hex
-	default 0x0204F800
+	default 0x02028000
+#	default 0x0206f800
 
 config IRAM_STACK
 	hex

@@ -47,6 +47,77 @@ static u8* ohci_poll_intr_queue (void *queue);
 static void ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 
 static void
+dump_td (td_t *cur)
+{
+	usb_debug("+---------------------------------------------------+\n");
+	if (((cur->config & (3UL << 19)) >> 19) == 0)
+		usb_debug("|..[SETUP]..........................................|\n");
+	else if (((cur->config & (3UL << 8)) >> 8) == 2)
+		usb_debug("|..[IN].............................................|\n");
+	else if (((cur->config & (3UL << 8)) >> 8) == 1)
+		usb_debug("|..[OUT]............................................|\n");
+	else
+		usb_debug("|..[]...............................................|\n");
+	usb_debug("|:|============ OHCI TD at [0x%08lx] ==========|:|\n", virt_to_phys(cur));
+	usb_debug("|:| ERRORS = [%ld] | CONFIG = [0x%08lx] |        |:|\n",
+		3 - ((cur->config & (3UL << 26)) >> 26), cur->config);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:|   C   | Condition Code               |   [%02ld] |:|\n", (cur->config & (0xFUL << 28)) >> 28);
+	usb_debug("|:|   O   | Direction/PID                |    [%ld] |:|\n", (cur->config & (3UL << 19)) >> 19);
+	usb_debug("|:|   N   | Buffer Rounding              |    [%ld] |:|\n", (cur->config & (1UL << 18)) >> 18);
+	usb_debug("|:|   F   | Delay Intterrupt             |    [%ld] |:|\n", (cur->config & (7UL << 21)) >> 21);
+	usb_debug("|:|   I   | Data Toggle                  |    [%ld] |:|\n", (cur->config & (3UL << 24)) >> 24);
+	usb_debug("|:|   G   | Error Count                  |    [%ld] |:|\n", (cur->config & (3UL << 26)) >> 26);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Current Buffer Pointer         [0x%08lx]   |:|\n", cur->current_buffer_pointer);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Next TD                        [0x%08lx]   |:|\n", cur->next_td);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Current Buffer End             [0x%08lx]   |:|\n", cur->buffer_end);
+	usb_debug("|:|-----------------------------------------------|:|\n");
+	usb_debug("|...................................................|\n");
+	usb_debug("+---------------------------------------------------+\n");
+}
+
+static void
+dump_ed (ed_t far *cur)
+{
+	td_t *tmp_td = NULL;
+	usb_debug("+===================================================+\n");
+	usb_debug("| ############# OHCI ED at [0x%08lx] ########### |\n", virt_to_phys(cur));
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("| Next Endpoint Descriptor       [0x%08lx]       |\n", cur->next_ed & ~0xFUL);
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("|        |               @ 0x%08lx :             |\n", cur->config);
+	usb_debug("|   C    | Maximum Packet Length           | [%04ld] |\n", ((cur->config & (0x3fffUL << 16)) >> 16));
+	usb_debug("|   O    | Function Address                | [%04ld] |\n", cur->config & 0x7F);
+	usb_debug("|   N    | Endpoint Number                 |   [%02ld] |\n", (cur->config & (0xFUL << 7)) >> 7);
+	usb_debug("|   F    | Endpoint Direction              |    [%ld] |\n", ((cur->config & (3UL << 11)) >> 11));
+	usb_debug("|   I    | Endpoint Speed                  |    [%ld] |\n", ((cur->config & (1UL << 13)) >> 13));
+	usb_debug("|   G    | Skip                            |    [%ld] |\n", ((cur->config & (1UL << 14)) >> 14));
+	usb_debug("|        | Format                          |    [%ld] |\n", ((cur->config & (1UL << 15)) >> 15));
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("| TD Queue Tail Pointer          [0x%08lx]       |\n", cur->tail_pointer & ~0xFUL);
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("| TD Queue Head Pointer          [0x%08lx]       |\n", cur->head_pointer & ~0xFUL);
+	usb_debug("| CarryToggleBit    [%d]          Halted   [%d]         |\n", (u16)(cur->head_pointer & 0x2UL)>>1, (u16)(cur->head_pointer & 0x1UL));
+
+	tmp_td = (td_t *)phys_to_virt((cur->head_pointer & ~0xFUL));
+	if ((cur->head_pointer & ~0xFUL) != (cur->tail_pointer & ~0xFUL)) {
+		usb_debug("|:::::::::::::::::: OHCI TD CHAIN ::::::::::::::::::|\n");
+		while (virt_to_phys(tmp_td) != (cur->tail_pointer & ~0xFUL))
+		{
+			dump_td(tmp_td, 1);
+			tmp_td = (td_t *)phys_to_virt((tmp_td->next_td & ~0xFUL));
+		}
+		usb_debug("|:::::::::::::::: EOF OHCI TD CHAIN ::::::::::::::::|\n");
+		usb_debug("+---------------------------------------------------+\n");
+	} else {
+		usb_debug("+---------------------------------------------------+\n");
+	}
+}
+
+static void
 ohci_reset (hci_t *controller)
 {
 	if (controller == NULL)
@@ -205,20 +276,6 @@ ohci_stop (hci_t *controller)
 // TODO: turn off all operation of OHCI
 }
 
-#if 0
-static void
-dump_td(td_t *cur, int level)
-{
-#ifdef USB_DEBUG
-	static const char *spaces="          ";
-	const char *spc=spaces+(10-level);
-	usb_debug("%std at %x (%s), condition code: %s\n", spc, cur, direction[(cur->config & TD_DIRECTION_MASK) >> TD_DIRECTION_SHIFT],
-		completion_codes[(cur->config & TD_CC_MASK) >> TD_CC_SHIFT]);
-	usb_debug("%s toggle: %x\n", spc, !!(cur->config & TD_TOGGLE_DATA1));
-#endif
-}
-#endif
-
 static int
 wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 {
@@ -370,8 +427,11 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	head->tail_pointer = virt_to_phys(final_td);
 	head->head_pointer = virt_to_phys(first_td);
 
-	usb_debug("doing control transfer with %x. first_td at %x\n",
+	usb_debug("ohci_control(): doing transfer with %x. first_td at %x\n",
 		head->config & ED_FUNC_MASK, virt_to_phys(first_td));
+#if 0
+	dump_ed(head);
+#endif
 
 	/* activate schedule */
 	OHCI_INST(dev->controller)->opreg->HcControlHeadED = virt_to_phys(head);

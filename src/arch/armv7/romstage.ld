@@ -39,7 +39,9 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = ROMSTAGE_BASE;
+/*	. = ROMSTAGE_BASE; */	/* works? */
+/*	. = 0x02023400; */	/* doesn't work at all */
+	. = 0x02022000; 	/* works, maybe? */
 
 	.romtext . : {
 		_rom = .;
@@ -50,7 +52,7 @@ SECTIONS
 		*(.rodata);
 		*(.machine_param);
 		*(.data);
-		. = ALIGN(16);
+		. = ALIGN(8);
 		_erom = .;
 	}
 
@@ -65,7 +67,7 @@ SECTIONS
 	 * crt0.S fills between _bss and _ebss with zeroes.
 	 */
 	.bss . : {
-		. = ALIGN(4);
+		. = ALIGN(8);
 		_bss = .;
 		*(.bss)
 		*(.sbss)

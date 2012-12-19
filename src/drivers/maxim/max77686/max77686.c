@@ -21,9 +21,12 @@
  * MA 02111-1307 USA
  */
 
+#include <arch/io.h>
 #include <common.h>
-#include <smbus.h>
-#include <max77686.h>
+//#include <smbus.h>
+#include <device/i2c.h>
+
+#include "max77686.h"
 
 /* Chip register numbers (not exported from this module) */
 enum {

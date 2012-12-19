@@ -164,7 +164,8 @@ void	init_cmd_timeout(void);
 void	reset_cmd_timeout(void);
 
 /* arch/$(ARCH)/lib/board.c */
-void	board_init_f  (ulong);
+void	board_init_f  (void);
+//void	board_init_f  (ulong);
 //void	board_init_f  (ulong) __attribute__ ((noreturn));
 void	board_init_r  (gd_t *, ulong) __attribute__ ((noreturn));
 int	checkboard    (void);

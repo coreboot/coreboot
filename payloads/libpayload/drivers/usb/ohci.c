@@ -80,7 +80,7 @@ dump_td (td_t *cur)
 }
 
 static void
-dump_ed (ed_t far *cur)
+dump_ed (ed_t *cur)
 {
 	td_t *tmp_td = NULL;
 	usb_debug("+===================================================+\n");

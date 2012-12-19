@@ -99,6 +99,9 @@ romstage-S-ccopts:=-D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
+ifeq ($(CONFIG_COVERAGE),y)
+ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
+endif
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)

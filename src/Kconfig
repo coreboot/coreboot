@@ -194,6 +194,15 @@ config REQUIRES_BLOB
 	  coreboot build for such a board can override this manually, but
 	  this option serves as warning that it might fail.
 
+config COVERAGE
+	bool "Code coverage support"
+	depends on COMPILER_GCC
+	default n
+	help
+	  Add code coverage support for coreboot. This will store code
+	  coverage information in CBMEM for extraction from user space.
+	  If unsure, say N.
+
 endmenu
 
 source src/mainboard/Kconfig
@@ -868,6 +877,15 @@ config TRACE
 	  the 0xaaaabbbb is the actual function and 0xccccdddd is EIP
 	  of calling function. Please note some printk releated functions
 	  are omitted from trace to have good looking console dumps.
+
+config DEBUG_COVERAGE
+	bool "Debug code coverage"
+	default n
+	depends on COVERAGE
+	help
+	  If enabled, the code coverage hooks in coreboot will output some
+	  information about the coverage data that is dumped.
+
 endmenu
 
 # These probably belong somewhere else, but they are needed somewhere.

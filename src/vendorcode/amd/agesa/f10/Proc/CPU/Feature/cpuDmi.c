@@ -206,7 +206,7 @@ GetDmiInfoMain (
   LOCATE_HEAP_PTR LocateHeapParams;
 
   MsrData = 0;
-  Flag = TRUE;
+  Flag = AGESA_SUCCESS;
   DmiBufferPtr = *DmiTable;
   if (DmiBufferPtr == NULL) {
     //
@@ -387,7 +387,7 @@ GetType4Type7Info (
   PROC_FAMILY_TABLE   *ProcData;
   CPU_LOGICAL_ID LogicalID;
 
-  Flag = TRUE;
+  Flag = AGESA_SUCCESS;
   DmiBufferPtr = (DMI_INFO *) ApExeParams->RelatedDataBlock;
   GetLogicalIdOfCurrentCore (&LogicalID, &ApExeParams->StdHeader);
 

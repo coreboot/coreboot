@@ -85,7 +85,7 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL)
 	fi
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	@printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
+	@printf "    PAYLOAD    none (as specified by user)\n"
 endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
 	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"

@@ -1174,7 +1174,7 @@ UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 			&(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
-	AmdEventParams.StdHeader.CalloutPtr = NULL;
+	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
 	AmdEventParams.StdHeader.Func = 0;
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
 	/* I have to know the current HeapStatus to Locate the EventLogHeapPointer */

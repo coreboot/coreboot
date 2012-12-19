@@ -34,9 +34,84 @@
 static void dump_td(u32 addr)
 {
 	qtd_t *td = phys_to_virt(addr);
-	usb_debug("td at phys(%x): status: %x\n\n", addr, td->token & QTD_STATUS_MASK);
-	usb_debug("-   cerr: %x, total_len: %x\n\n", (td->token & QTD_CERR_MASK) >> QTD_CERR_SHIFT,
-		(td->token & QTD_TOTAL_LEN_MASK) >> QTD_TOTAL_LEN_SHIFT);
+	usb_debug("+---------------------------------------------------+\n");
+	if (((td->token & (3UL << 8)) >> 8) == 2)
+		usb_debug("|..[SETUP]..........................................|\n");
+	else if (((td->token & (3UL << 8)) >> 8) == 1)
+		usb_debug("|..[IN].............................................|\n");
+	else if (((td->token & (3UL << 8)) >> 8) == 0)
+		usb_debug("|..[OUT]............................................|\n");
+	else
+		usb_debug("|..[]...............................................|\n");
+	usb_debug("|:|============ EHCI TD at [0x%08lx] ==========|:|\n", addr);
+	usb_debug("|:| ERRORS = [%ld] | TOKEN = [0x%08lx] |         |:|\n",
+		3 - ((td->token & QTD_CERR_MASK) >> QTD_CERR_SHIFT), td->token);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Next qTD        [0x%08lx]                  |:|\n", td->next_qtd);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:| Alt. Next qTD   [0x%08lx]                  |:|\n", td->alt_next_qtd);
+	usb_debug("|:+-----------------------------------------------+:|\n");
+	usb_debug("|:|       | Bytes to Transfer            | [%04ld] |:|\n", (td->token & (0x7FUL << 16)) >> 16);
+	usb_debug("|:|       | PID CODE:                    |    [%ld] |:|\n", (td->token & (3UL << 8)) >> 8);
+	usb_debug("|:|       | Interrupt On Complete (IOC)  |    [%ld] |:|\n", (td->token & (1UL << 15)) >> 15);
+	usb_debug("|:|       | Status Active                |    [%ld] |:|\n", (td->token & (1UL << 7)) >> 7);
+	usb_debug("|:|       | Status Halted                |    [%ld] |:|\n", (td->token & (1UL << 6)) >> 6);
+	usb_debug("|:| TOKEN | Status Data Buffer Error     |    [%ld] |:|\n", (td->token & (1UL << 5)) >> 5);
+	usb_debug("|:|       | Status Babble detected       |    [%ld] |:|\n", (td->token & (1UL << 4)) >> 4);
+	usb_debug("|:|       | Status Transaction Error     |    [%ld] |:|\n", (td->token & (1UL << 3)) >> 3);
+	usb_debug("|:|       | Status Missed Micro Frame    |    [%ld] |:|\n", (td->token & (1UL << 2)) >> 2);
+	usb_debug("|:|       | Split Transaction State      |    [%ld] |:|\n", (td->token & (1UL << 1)) >> 1);
+	usb_debug("|:|       | Ping State                   |    [%ld] |:|\n", td->token & 1UL);
+	usb_debug("|:|-----------------------------------------------|:|\n");
+	usb_debug("|...................................................|\n");
+	usb_debug("+---------------------------------------------------+\n");
+}
+
+static void dump_qh(ehci_qh_t *cur)
+{
+	ehci_qtd_t *tmp_qtd = NULL;
+	ehci_qh_t *tmp_qh = NULL;
+	usb_debug("+===================================================+\n");
+	usb_debug("| ############# EHCI QH at [0x%08lx] ########### |\n", virt_to_phys(cur));
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("| Horizonal Link Pointer         [0x%08lx]       |\n", cur->horiz_link_ptr);
+	usb_debug("+------------------[ 0x%08lx ]-------------------+\n", cur->epchar);
+	usb_debug("|        | Maximum Packet Length           | [%04ld] |\n", ((cur->epchar & (0x7ffUL << 16)) >> 16));
+	usb_debug("|        | Device Address                  |    [%ld] |\n", cur->epchar & 0x7F);
+	usb_debug("|        | Inactivate on Next Transaction  |    [%ld] |\n", ((cur->epchar & (1UL << 7)) >> 7));
+	usb_debug("|        | Endpoint Number                 |    [%ld] |\n", ((cur->epchar & (0xFUL << 8)) >> 8));
+	usb_debug("| EPCHAR | Endpoint Speed                  |    [%ld] |\n", ((cur->epchar & (3UL << 12)) >> 12));
+	usb_debug("|        | Data Toggle Control             |    [%ld] |\n", ((cur->epchar & (1UL << 14)) >> 14));
+	usb_debug("|        | Head of Reclamation List Flag   |    [%ld] |\n", ((cur->epchar & (1UL << 15)) >> 15));
+	usb_debug("|        | Control Endpoint Flag           |    [%ld] |\n", ((cur->epchar & (1UL << 27)) >> 27));
+	usb_debug("|        | Nak Count Reload                |    [%ld] |\n", ((cur->epchar & (0xFUL << 28)) >> 28));
+	if (((cur->epchar & (1UL << QH_NON_HS_CTRL_EP_SHIFT)) >> QH_NON_HS_CTRL_EP_SHIFT) == 1) { /* Split transaction */
+		usb_debug("+--------+---------[ 0x%08lx ]----------+--------+\n", cur->epcaps);
+		usb_debug("|        | Hub Port                        |    [%ld] |\n", ((cur->epcaps & (0x7FUL << 23)) >> 23)); /* [29:23] */
+		usb_debug("|        | Hub Address                     |    [%ld] |\n", ((cur->epcaps & (0x7FUL << 16)) >> 16)); /* [22:16] */
+	}
+	usb_debug("+---------------------------------------------------+\n");
+	usb_debug("| Current QTD                   [0x%08lx]        |\n", cur->current_td_ptr);
+
+	if (!((cur->horiz_link_ptr == 0) && (cur->epchar == 0))) {
+		/* Dump overlay QTD for this QH */
+		usb_debug("+---------------------------------------------------+\n");
+		usb_debug("|::::::::::::::::::: QTD OVERLAY :::::::::::::::::::|\n");
+		dump_td(virt_to_phys((void *)&(cur->td)));
+		/* Dump all TD tree for this QH */
+		tmp_qtd = (qtd_t *)phys_to_virt((cur->td.next_qtd & ~0x1FUL));
+		if (tmp_qtd != NULL)
+			usb_debug("|:::::::::::::::::: EHCI QTD CHAIN :::::::::::::::::|\n");
+		while (tmp_qtd != NULL)
+		{
+			dump_td(virt_to_phys(tmp_qtd));
+			tmp_qtd = (qtd_t *)phys_to_virt((tmp_qtd->next_qtd & ~0x1FUL));
+		}
+		usb_debug("|:::::::::::::::: EOF EHCI QTD CHAIN :::::::::::::::|\n");
+		usb_debug("+---------------------------------------------------+\n");
+	} else {
+		usb_debug("+---------------------------------------------------+\n");
+	}
 }
 
 static void ehci_start (hci_t *controller)

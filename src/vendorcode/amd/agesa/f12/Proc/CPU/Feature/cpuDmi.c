@@ -216,7 +216,7 @@ GetDmiInfoMain (
   CPU_GET_MEM_INFO CpuGetMemInfo;
 
   MsrData = 0;
-  Flag = TRUE;
+  Flag = AGESA_SUCCESS;
   ProcData = NULL;
   MemInfo = NULL;
   DmiBufferPtr = *DmiTable;
@@ -415,7 +415,7 @@ GetType4Type7Info (
   PROC_FAMILY_TABLE   *ProcData;
   CPU_LOGICAL_ID LogicalID;
 
-  Flag = TRUE;
+  Flag = AGESA_SUCCESS;
   DmiBufferPtr = (DMI_INFO *) ApExeParams->RelatedDataBlock;
   GetLogicalIdOfCurrentCore (&LogicalID, &ApExeParams->StdHeader);
 

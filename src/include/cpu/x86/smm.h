@@ -24,6 +24,9 @@
 #ifndef CPU_X86_SMM_H
 #define CPU_X86_SMM_H
 
+#define SMM_DEFAULT_BASE 0x30000
+#define SMM_DEFAULT_SIZE 0x10000
+
 /* used only by C programs so far */
 #define SMM_BASE 0xa0000
 

@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/smm.h>
 #include <boot/tables.h>
 #include <cbmem.h>
 #include "chip.h"
@@ -333,29 +334,54 @@ static void mc_add_dram_resources(device_t dev)
 	mc_report_map_entries(dev, &mc_values[0]);
 
 	/*
-	 * There are 4 host memory ranges that should be added:
-	 * - 0 -> 0xa0000 : cacheable
+	 * These are the host memory ranges that should be added:
+	 * - 0 -> SMM_DEFAULT_BASE : cacheable
+	 * - SMM_DEFAULT_BASE -> SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE :
+	 *       cacheable and reserved
+	 * - SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE -> 0xa0000 : cacheable
 	 * - 0xc0000 -> TSEG : cacheable
 	 * - TESG -> TOLUD: not cacheable with standard MTRRs and reserved
 	 * - 4GiB -> TOUUD: cacheable
+	 *
+	 * The default SMRAM space is reserved so that the range doesn't
+	 * have to be saved during S3 Resume. Once marked reserved the OS
+	 * cannot use the memory. This is a bit of an odd place to reserve
+	 * the region, but the CPU devices don't have dev_ops->read_resources()
+	 * called on them.
 	 *
 	 * The range 0xa0000 -> 0xc0000 does not have any resources
 	 * associated with it to handle legacy VGA memory. If this range
 	 * is not omitted the mtrr code will setup the area as cacheable
 	 * causing VGA access to not work.
 	 *
+	 * It should be noted that cacheable entry types need to be added in
+	 * order. The reason is that the current MTRR code assumes this and
+	 * falls over itself if it isn't.
+	 *
 	 * The resource index starts low and should not meet or exceed
-	 * PCI_BASE_ADDRESS_0. In this case there are only 3 entries so there
-	 * are no conflicts in the index space.
+	 * PCI_BASE_ADDRESS_0.
 	 */
 	index = 0;
 
-	/* 0 - > 0xa0000 */
+	/* 0 - > SMM_DEFAULT_BASE */
 	base_k = 0;
-	size_k = 0xa0000 >> 10;
+	size_k = SMM_DEFAULT_BASE >> 10;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xa0000 -> TSEG */
+	/* SMM_DEFAULT_BASE -> SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE */
+	resource = new_resource(dev, index++);
+	resource->base = SMM_DEFAULT_BASE;
+	resource->size = SMM_DEFAULT_SIZE;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+	                  IORESOURCE_CACHEABLE | IORESOURCE_STORED |
+	                  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
+
+	/* SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE -> 0xa0000 */
+	base_k = (SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE) >> 10;
+	size_k = (0xa0000 >> 10) - base_k;
+	ram_resource(dev, index++, base_k, size_k);
+
+	/* 0xc0000 -> TSEG */
 	base_k = 0xc0000 >> 10;
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);

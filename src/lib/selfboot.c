@@ -32,6 +32,7 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
+#include <coverage.h>
 
 /* Maximum physical address we can use for the coreboot bounce buffer. */
 #ifndef MAX_ADDR
@@ -517,6 +518,9 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_add_now(TS_SELFBOOT_JUMP);
+#endif
+#if CONFIG_COVERAGE
+	coverage_exit();
 #endif
 
 	/* Before we go off to run the payload, see if

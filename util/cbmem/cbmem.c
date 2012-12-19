@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <libgen.h>
+#include <assert.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define MAP_BYTES (1024*1024)
@@ -82,7 +84,7 @@ static void *map_memory(u64 physical)
 	/* Mapped memory must be aligned to page size */
 	p = physical & ~(page - 1);
 
-	debug("Mapping 1MB of physical memory at %zx.\n", p);
+	debug("Mapping 1MB of physical memory at 0x%zx.\n", p);
 
 	v = mmap(NULL, MAP_BYTES, PROT_READ, MAP_SHARED, fd, p);
 
@@ -103,8 +105,13 @@ static void *map_memory(u64 physical)
 
 static void unmap_memory(void)
 {
+	if (mapped_virtual == NULL) {
+		fprintf(stderr, "Error unmapping memory\n");
+		return;
+	}
 	debug("Unmapping 1MB of virtual memory at %p.\n", mapped_virtual);
 	munmap(mapped_virtual, MAP_BYTES);
+	mapped_virtual = NULL;
 }
 
 /*
@@ -347,7 +354,7 @@ struct cbmem_entry {
 	uint64_t size;
 };
 
-void dump_cbmem_toc(void)
+static void dump_cbmem_toc(void)
 {
 	int i;
 	uint64_t start;
@@ -374,7 +381,7 @@ void dump_cbmem_toc(void)
 		case CBMEM_ID_GDT:       printf("GDT         "); break;
 		case CBMEM_ID_ACPI:      printf("ACPI        "); break;
 		case CBMEM_ID_ACPI_GNVS: printf("ACPI GNVS   "); break;
-		case CBMEM_ID_CBTABLE:   printf("COREBOOTE   "); break;
+		case CBMEM_ID_CBTABLE:   printf("COREBOOT    "); break;
 		case CBMEM_ID_PIRQ:      printf("IRQ TABLE   "); break;
 		case CBMEM_ID_MPTABLE:   printf("SMP TABLE   "); break;
 		case CBMEM_ID_RESUME:    printf("ACPI RESUME "); break;
@@ -384,6 +391,7 @@ void dump_cbmem_toc(void)
 		case CBMEM_ID_MRCDATA:   printf("MRC DATA    "); break;
 		case CBMEM_ID_CONSOLE:   printf("CONSOLE     "); break;
 		case CBMEM_ID_ELOG:      printf("ELOG        "); break;
+		case CBMEM_ID_COVERAGE:  printf("COVERAGE    "); break;
 		default:                 printf("%08x    ",
 						entries[i].id); break;
 		}
@@ -393,7 +401,111 @@ void dump_cbmem_toc(void)
 	unmap_memory();
 }
 
-void print_version(void)
+#define COVERAGE_MAGIC 0x584d4153
+struct file {
+	uint32_t magic;
+	uint32_t next;
+	uint32_t filename;
+	uint32_t data;
+	int offset;
+	int len;
+};
+
+static int mkpath(char *path, mode_t mode)
+{
+	assert (path && *path);
+	char *p;
+	for (p = strchr(path+1, '/'); p; p = strchr(p + 1, '/')) {
+		*p = '\0';
+		if (mkdir(path, mode) == -1) {
+			if (errno != EEXIST) {
+				*p = '/';
+				return -1;
+			}
+		}
+		*p = '/';
+	}
+	return 0;
+}
+
+static void dump_coverage(void)
+{
+	int i, found = 0;
+	uint64_t start;
+	struct cbmem_entry *entries;
+	void *coverage;
+	unsigned long phys_offset;
+#define phys_to_virt(x) ((void *)(unsigned long)(x) + phys_offset)
+
+	if (cbmem.type != LB_MEM_TABLE) {
+		fprintf(stderr, "No coreboot table area found!\n");
+		return;
+	}
+
+	start = unpack_lb64(cbmem.start);
+
+	entries = (struct cbmem_entry *)map_memory(start);
+
+	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
+		if (entries[i].magic != CBMEM_MAGIC)
+			break;
+		if (entries[i].id == CBMEM_ID_COVERAGE) {
+			found = 1;
+			break;
+		}
+	}
+
+	if (!found) {
+		unmap_memory();
+		fprintf(stderr, "No coverage information found in"
+			" CBMEM area.\n");
+		return;
+	}
+
+	start = entries[i].base;
+	unmap_memory();
+	/* Map coverage area */
+	coverage = map_memory(start);
+	phys_offset = (unsigned long)coverage - (unsigned long)start;
+
+	printf("Dumping coverage data...\n");
+
+	struct file *file = (struct file *)coverage;
+	while (file && file->magic == COVERAGE_MAGIC) {
+		FILE *f;
+		char *filename;
+
+		debug(" -> %s\n", (char *)phys_to_virt(file->filename));
+		filename = strdup((char *)phys_to_virt(file->filename));
+		if (mkpath(filename, 0755) == -1) {
+			perror("Directory for coverage data could "
+				"not be created");
+			exit(1);
+		}
+		f = fopen(filename, "wb");
+		if (!f) {
+			printf("Could not open %s: %s\n",
+				filename, strerror(errno));
+			exit(1);
+		}
+		if (fwrite((void *)phys_to_virt(file->data),
+						file->len, 1, f) != 1) {
+			printf("Could not write to %s: %s\n",
+				filename, strerror(errno));
+			exit(1);
+		}
+		fclose(f);
+		free(filename);
+
+		if (file->next)
+			file = (struct file *)phys_to_virt(file->next);
+		else
+			file = NULL;
+	}
+	unmap_memory();
+}
+
+static void print_version(void)
 {
 	printf("cbmem v%s -- ", CBMEM_VERSION);
 	printf("Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.\n\n");
@@ -409,11 +521,12 @@ void print_version(void)
     "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n");
 }
 
-void print_usage(const char *name)
+static void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?]\n", name);
+	printf("usage: %s [-cCltVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
+	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
@@ -430,12 +543,14 @@ int main(int argc, char** argv)
 
 	int print_defaults = 1;
 	int print_console = 0;
+	int print_coverage = 0;
 	int print_list = 0;
 	int print_timestamps = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
 		{"console", 0, 0, 'c'},
+		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"timestamps", 0, 0, 't'},
 		{"verbose", 0, 0, 'V'},
@@ -443,11 +558,15 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cltVvh?",
+	while ((opt = getopt_long(argc, argv, "cCltVvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
 			print_console = 1;
+			print_defaults = 0;
+			break;
+		case 'C':
+			print_coverage = 1;
 			print_defaults = 0;
 			break;
 		case 'l':
@@ -489,6 +608,9 @@ int main(int argc, char** argv)
 
 	if (print_console)
 		dump_console();
+
+	if (print_coverage)
+		dump_coverage();
 
 	if (print_list)
 		dump_cbmem_toc();

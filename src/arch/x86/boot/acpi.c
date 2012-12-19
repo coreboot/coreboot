@@ -36,6 +36,7 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
+#include <coverage.h>
 
 /* FIXME: Kconfig doesn't support overridable defaults :-( */
 #ifndef CONFIG_HPET_MIN_TICKS
@@ -642,6 +643,9 @@ void suspend_resume(void)
 		/* Call mainboard resume handler first, if defined. */
 		if (mainboard_suspend_resume)
 			mainboard_suspend_resume();
+#if CONFIG_COVERAGE
+		coverage_exit();
+#endif
 		post_code(POST_OS_RESUME);
 		acpi_jump_to_wakeup(wake_vec);
 	}

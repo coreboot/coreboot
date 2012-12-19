@@ -166,7 +166,7 @@ $(objgenerated)/coreboot_ram.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
 else
-	$(CC) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 ################################################################################

@@ -73,6 +73,7 @@ static inline void strcpy(char *dst, const char *src)
 {
 	while (*src)
 		*dst++ = *src++;
+	*dst = '\0';
 }
 
 static inline int strcmp(const char *s1, const char *s2)

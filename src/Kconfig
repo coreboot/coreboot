@@ -194,6 +194,15 @@ config REQUIRES_BLOB
 	  coreboot build for such a board can override this manually, but
 	  this option serves as warning that it might fail.
 
+config COVERAGE
+	bool "Code coverage support"
+	depends on COMPILER_GCC
+	default n
+	help
+	  Add code coverage support for coreboot. This will store code
+	  coverage information in CBMEM for extraction from user space.
+	  If unsure, say N.
+
 endmenu
 
 source src/mainboard/Kconfig

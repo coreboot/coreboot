@@ -35,6 +35,9 @@ SECTIONS
 		*(.textfirst);
 		*(.text);
 		*(.text.*);
+		__CTOR_LIST__ = .;
+		*(.ctors)
+		__CTOR_END__ = .;
 		. = ALIGN(16);
 		_etext = .;
 	}

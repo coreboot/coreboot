@@ -102,6 +102,48 @@ void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
+
+/* State Machine configuration. */
+#define RCBA_REG_SIZE_MASK 0x8000
+#define   RCBA_REG_SIZE_16   0x8000
+#define   RCBA_REG_SIZE_32   0x0000
+#define RCBA_COMMAND_MASK  0x000f
+#define   RCBA_COMMAND_SET   0x0001
+#define   RCBA_COMMAND_READ  0x0002
+#define   RCBA_COMMAND_RMW   0x0003
+#define   RCBA_COMMAND_END   0x0007
+
+#define RCBA_ENCODE_COMMAND(command_, reg_, mask_, or_value_) \
+	{ .command = command_,   \
+	  .reg = reg_,           \
+	  .mask = mask_,         \
+	  .or_value = or_value_  \
+	}
+#define RCBA_SET_REG_32(reg_, value_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_SET, reg_, 0, value_)
+#define RCBA_READ_REG_32(reg_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_READ, reg_, 0, 0)
+#define RCBA_RMW_REG_32(reg_, mask_, or_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_RMW, reg_, mask_, or_)
+#define RCBA_SET_REG_16(reg_, value_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_SET, reg_, 0, value_)
+#define RCBA_READ_REG_16(reg_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_READ, reg_, 0, 0)
+#define RCBA_RMW_REG_16(reg_, mask_, or_) \
+	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_RMW, reg_, mask_, or_)
+#define RCBA_END_CONFIG \
+	RCBA_ENCODE_COMMAND(RCBA_COMMAND_END, 0, 0, 0)
+
+struct rcba_config_instruction
+{
+	u16 command;
+	u16 reg;
+	u32 mask;
+	u32 or_value;
+};
+
+int early_pch_init(const void *gpio_map,
+                   const struct rcba_config_instruction *rcba_config);
 #endif
 /*
  * get GPIO pin value
@@ -421,9 +463,9 @@ unsigned get_gpios(const int *gpio_num_array);
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
 
-#define DIR_ROUTE(x,a,b,c,d) \
-  RCBA32(x) = (((d) << DIR_IDR) | ((c) << DIR_ICR) | \
-               ((b) << DIR_IBR) | ((a) << DIR_IAR))
+#define DIR_ROUTE(a,b,c,d) \
+  (((d) << DIR_IDR) | ((c) << DIR_ICR) | \
+  ((b) << DIR_IBR) | ((a) << DIR_IAR))
 
 #define RC		0x3400	/* 32bit */
 #define HPTC		0x3404	/* 32bit */

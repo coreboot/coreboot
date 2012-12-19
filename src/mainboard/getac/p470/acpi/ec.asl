@@ -425,14 +425,14 @@ Scope(\_SB)
 		Method(SBLL, 1, Serialized)
 		{
 			Store (Arg0, BRTL)
-			TRAP(0xd5)	// See mainboard_smi.c
+			TRAP(0xd5)	// See mainboard's smihandler.c
 			Return (0)
 		}
 
 		/* Get Brightness Level */
 		Method(GBLL, 0, Serialized)
 		{
-			TRAP(0xd6)	// See mainboard_smi.c
+			TRAP(0xd6)	// See mainboard's smihandler.c
 			Return (BRTL)
 		}
 

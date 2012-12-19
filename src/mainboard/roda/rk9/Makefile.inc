@@ -18,4 +18,3 @@
 ##
 
 ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += ti_pci7xx1.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

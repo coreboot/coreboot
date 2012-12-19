@@ -407,6 +407,8 @@ unsigned get_gpios(const int *gpio_num_array);
 #define D22IP_IDERIP	8	/* IDE-R Pin */
 #define D22IP_MEI2IP	4	/* MEI #2 Pin */
 #define D22IP_MEI1IP	0	/* MEI #1 Pin */
+#define D20IP		0x3128	/* 32bit */
+#define D20IP_XHCI	0	/* XHCI Pin */
 #define D31IR		0x3140	/* 16bit */
 #define D30IR		0x3142	/* 16bit */
 #define D29IR		0x3144	/* 16bit */
@@ -414,7 +416,11 @@ unsigned get_gpios(const int *gpio_num_array);
 #define D27IR		0x3148	/* 16bit */
 #define D26IR		0x314c	/* 16bit */
 #define D25IR		0x3150	/* 16bit */
+#define D23IR		0x3158	/* 16bit */
 #define D22IR		0x315c	/* 16bit */
+#define D20IR		0x3160	/* 16bit */
+#define D21IR		0x3164	/* 16bit */
+#define D19IR		0x3168	/* 16bit */
 #define OIC		0x31fe	/* 16bit */
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
@@ -434,8 +440,8 @@ unsigned get_gpios(const int *gpio_num_array);
 #define CG		0x341c	/* 32bit */
 
 /* Function Disable 1 RCBA 0x3418 */
-#define PCH_DISABLE_ALWAYS	((1 << 0)|(1 << 26)|(1 << 27))
-#define PCH_DISABLE_P2P		(1 << 1)
+#define PCH_DISABLE_ALWAYS	(1 << 0)
+#define PCH_DISABLE_ADSPD	(1 << 1)
 #define PCH_DISABLE_SATA1	(1 << 2)
 #define PCH_DISABLE_SMBUS	(1 << 3)
 #define PCH_DISABLE_HD_AUDIO	(1 << 4)
@@ -445,6 +451,7 @@ unsigned get_gpios(const int *gpio_num_array);
 #define PCH_DISABLE_PCIE(x)	(1 << (16 + x))
 #define PCH_DISABLE_THERMAL	(1 << 24)
 #define PCH_DISABLE_SATA2	(1 << 25)
+#define PCH_DISABLE_XHCI	(1 << 27)
 
 /* Function Disable 2 RCBA 0x3428 */
 #define PCH_DISABLE_KT		(1 << 4)

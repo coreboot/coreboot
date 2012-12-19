@@ -70,6 +70,7 @@ ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+ramstage-$(CONFIG_COVERAGE) += libgcov.c
 
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 

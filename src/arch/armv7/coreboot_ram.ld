@@ -38,6 +38,14 @@ SECTIONS
 		_etext = .;
 	}
 
+	.ctors : {
+		. = ALIGN(0x100);
+		__CTOR_LIST__ = .;
+		*(.ctors);
+		LONG(0);
+		__CTOR_END__ = .;
+	}
+
 	.rodata : {
 		_rodata = .;
 		. = ALIGN(4);

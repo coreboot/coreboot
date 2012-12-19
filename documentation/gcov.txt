@@ -1,0 +1,177 @@
+This patch contains our local modifications for gcov-io.h and libgcov.c.
+The file gcov-iov.h is taken from a gcc build (produced at compile
+time). The file gcov-io.c is unchanged.
+
+--- gcc-4.7.2/gcc/gcov-io.h	2011-12-04 10:27:19.000000000 -0800
++++ coreboot/src/lib/gcov-io.h	2013-01-09 15:29:19.000000000 -0800
+@@ -163,6 +163,24 @@
+ #ifndef GCC_GCOV_IO_H
+ #define GCC_GCOV_IO_H
+ 
++#ifdef __COREBOOT__
++#define GCOV_LINKAGE /* nothing */
++/* We need the definitions for
++    BITS_PER_UNIT and
++    LONG_LONG_TYPE_SIZE
++   They are defined in gcc/defaults.h and gcc/config/<arch_depend_files>
++   (like, gcc/config/i386/i386.h). And it can be overridden by setting
++   in build scripts. Here I hardcoded the value for x86. */
++#define BITS_PER_UNIT 8
++#define LONG_LONG_TYPE_SIZE 64
++
++/* There are many gcc_assertions. Set the vaule to 1 if we want a warning
++   message if the assertion fails.  */
++#ifndef ENABLE_ASSERT_CHECKING
++#define ENABLE_ASSERT_CHECKING 1
++#endif
++#endif /* __COREBOOT__ */
++
+ #if IN_LIBGCOV
+ /* About the target */
+ 
+@@ -232,7 +250,9 @@
+    is not also used in a DSO.  */
+ #if IN_LIBGCOV
+ 
++#ifndef __COREBOOT__
+ #include "tconfig.h"
++#endif /* __COREBOOT__ */
+ 
+ #define gcov_var __gcov_var
+ #define gcov_open __gcov_open
+@@ -455,8 +475,10 @@
+ /* Register a new object file module.  */
+ extern void __gcov_init (struct gcov_info *) ATTRIBUTE_HIDDEN;
+ 
++#ifndef __COREBOOT__
+ /* Called before fork, to avoid double counting.  */
+ extern void __gcov_flush (void) ATTRIBUTE_HIDDEN;
++#endif
+ 
+ /* The merge function that just sums the counters.  */
+ extern void __gcov_merge_add (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
+--- gcc-4.7.2/libgcc/libgcov.c	2012-01-11 10:50:21.000000000 -0800
++++ coreboot/src/lib/libgcov.c	2013-01-09 15:32:37.000000000 -0800
+@@ -25,12 +25,41 @@
+ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ <http://www.gnu.org/licenses/>.  */
+ 
++#define __COREBOOT__
++#ifdef __COREBOOT__
++#include <stdlib.h>
++#include <string.h>
++#include <console/console.h>
++#include <assert.h>
++typedef s32 pid_t;
++#define gcc_assert(x) ASSERT(x)
++#define fprintf(file, x...) printk(BIOS_ERR, x)
++#define alloca(size)   __builtin_alloca (size)
++#include "gcov-glue.c"
++
++/* Define MACROs to be used by coreboot compilation.  */
++# define L_gcov
++# define L_gcov_interval_profiler
++# define L_gcov_pow2_profiler
++# define L_gcov_one_value_profiler
++# define L_gcov_indirect_call_profiler
++# define L_gcov_average_profiler
++# define L_gcov_ior_profiler
++
++# define HAVE_CC_TLS 0
++# define __GCOV_KERNEL__
++
++# define IN_LIBGCOV 1
++# define IN_GCOV 0
++#else /* __COREBOOT__ */
+ #include "tconfig.h"
+ #include "tsystem.h"
+ #include "coretypes.h"
+ #include "tm.h"
+ #include "libgcc_tm.h"
++#endif /* __COREBOOT__ */
+ 
++#ifndef __COREBOOT__
+ #if defined(inhibit_libc)
+ #define IN_LIBGCOV (-1)
+ #else
+@@ -41,6 +70,7 @@
+ #define GCOV_LINKAGE /* nothing */
+ #endif
+ #endif
++#endif /* __COREBOOT__ */
+ #include "gcov-io.h"
+ 
+ #if defined(inhibit_libc)
+@@ -68,12 +98,17 @@
+ 
+ #else
+ 
++#ifndef __COREBOOT__
+ #include <string.h>
+ #if GCOV_LOCKED
+ #include <fcntl.h>
+ #include <errno.h>
+ #include <sys/stat.h>
+ #endif
++#else
++void __gcov_merge_add(gcov_type *counters  __attribute__ ((unused)),
++			unsigned n_counters __attribute__ ((unused))) {}
++#endif /* __COREBOOT__ */
+ 
+ #ifdef L_gcov
+ #include "gcov-io.c"
+@@ -99,6 +134,10 @@
+ static int
+ create_file_directory (char *filename)
+ {
++#ifdef __COREBOOT__
++  (void) filename;
++  return 0;
++#else
+ #if !defined(TARGET_POSIX_IO) && !defined(_WIN32)
+   (void) filename;
+   return -1;
+@@ -137,6 +176,7 @@
+       };
+   return 0;
+ #endif
++#endif
+ }
+ 
+ static struct gcov_fn_buffer *
+@@ -279,7 +319,7 @@
+   struct gcov_ctr_summary *cs_ptr;
+   const struct gcov_ctr_info *ci_ptr;
+   unsigned t_ix;
+-  int f_ix;
++  int f_ix = 0;
+   gcov_unsigned_t c_num;
+   const char *gcov_prefix;
+   int gcov_prefix_strip = 0;
+@@ -329,6 +369,7 @@
+ 	}
+     }
+ 
++#ifndef __COREBOOT__
+   {
+     /* Check if the level of dirs to strip off specified. */
+     char *tmp = getenv("GCOV_PREFIX_STRIP");
+@@ -352,6 +393,7 @@
+ 	prefix_length--;
+     }
+   else
++#endif
+     prefix_length = 0;
+ 
+   /* If no prefix was specified and a prefix stip, then we assume
+@@ -696,8 +738,10 @@
+       if (filename_length > gcov_max_filename)
+         gcov_max_filename = filename_length;
+ 
++#ifndef __COREBOOT__
+       if (!gcov_list)
+ 	atexit (gcov_exit);
++#endif
+ 
+       info->next = gcov_list;
+       gcov_list = info;

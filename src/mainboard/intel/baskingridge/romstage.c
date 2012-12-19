@@ -79,11 +79,6 @@ const struct rcba_config_instruction rcba_config[] = {
 	/* Disable unused devices (board specific) */
 	RCBA_RMW_REG_32(FD, ~0, PCH_DISABLE_ALWAYS),
 
-	/* Enable IOAPIC (generic) */
-	RCBA_SET_REG_16(OIC, 0x0100),
-	/* PCH BWG says to read back the IOAPIC enable register */
-	RCBA_READ_REG_16(OIC),
-
 	RCBA_END_CONFIG,
 };
 

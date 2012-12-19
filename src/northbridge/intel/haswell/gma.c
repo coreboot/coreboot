@@ -315,14 +315,17 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x80860402:		/* GT1 Desktop */
 	case 0x80860406:		/* GT1 Mobile */
 	case 0x8086040a:		/* GT1 Server */
+	case 0x80860a06:		/* GT1 ULT */
 
 	case 0x80860412:		/* GT2 Desktop */
 	case 0x80860416:		/* GT2 Mobile */
 	case 0x8086041a:		/* GT2 Server */
+	case 0x80860a16:		/* GT2 ULT */
 
 	case 0x80860422:		/* GT3 Desktop */
 	case 0x80860426:		/* GT3 Mobile */
 	case 0x8086042a:		/* GT3 Server */
+	case 0x80860a26:		/* GT3 ULT */
 
 		new_vendev=0x80860406;	/* GT1 Mobile */
 		break;

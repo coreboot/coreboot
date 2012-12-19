@@ -28,6 +28,7 @@ util/crossgcc/Python-*/
 util/crossgcc/tarballs/
 util/crossgcc/w32api-*/
 util/crossgcc/xgcc/
+
 *.\#
 *.bin
 *.debug
@@ -35,6 +36,14 @@ util/crossgcc/xgcc/
 *.o
 *.out
 *.swp
+
+# Development friendly files
+tags
+.clang_complete
+
+# Cross-compile toolkits
+xgcc/
+tarballs/
 
 #
 # KDE editors create lots of backup files whenever

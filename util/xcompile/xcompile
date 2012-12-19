@@ -100,20 +100,24 @@ detect_special_flags() {
 
 	testcc "$CC"   "$CFLAGS -Wa,--divide" &&
 		CFLAGS="$CFLAGS -Wa,--divide"
-	testcc "$CC"   "$CFLAGS -fno-stack-protector"&&
+	testcc "$CC"   "$CFLAGS -fno-stack-protector" &&
 		CFLAGS="$CFLAGS -fno-stack-protector"
 	testcc "$CC"   "$CFLAGS -Wl,--build-id=none" &&
 		CFLAGS="$CFLAGS -Wl,--build-id=none"
 
 	case "$architecture" in
-		arm )
+		armv7 )
 			# testcc "$CC" "$CFLAGS -mcpu=cortex-a9" &&
 			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
 			testcc "$CC" "\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork" && CFLAGS="\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork"
+$CFLAGS -fno-common -ffixed-r8 -marm -mabi=aapcs-linux -march=armv7-a \
+-mthumb -mthumb-interwork -mfloat-abi=hard -fno-builtin -pipe \
+-mno-unaligned-access -Werror -Wall -Wno-format-nonliteral \
+-Wno-format-security" && CFLAGS="\
+$CFLAGS -fno-common -ffixed-r8 -marm -mabi=aapcs-linux -march=armv7-a \
+-mthumb -mthumb-interwork -mfloat-abi=hard -fno-builtin -pipe \
+-mno-unaligned-access -Werror -Wall -Wno-format-nonliteral \
+-Wno-format-security"
 			;;
 	esac
 }

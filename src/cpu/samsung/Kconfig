@@ -17,7 +17,7 @@ config SKIP_LOWLEVEL_INIT
 
 config IRAM_BOTTOM
 	hex
-	default 0x02020000
+	default 0x02023400
 
 # FIXME(dhendrix): 0x02050000 was in the u-boot sources, but the docs say the
 # iRAM range is 0x0202_0000 - 0x0207_7fff (352KB).
@@ -36,10 +36,9 @@ config IRAM_STACK
 	hex
 	default SYS_INIT_SP_ADDR
 
-# FIXME(dhendrix): what should this really be?
 config XIP_ROM_SIZE
-	hex
-	default 0x20000
+	hex "ROM stage (BL2) size"
+	default 0x4000
 
 if CPU_SAMSUNG_EXYNOS5
 source src/cpu/samsung/exynos5250/Kconfig

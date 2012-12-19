@@ -30,7 +30,12 @@
 
 int exynos_pinmux_config(enum periph_id peripheral, int flags)
 {
-	int i, start, count, start_ext, pin_ext, pin, drv;
+	int i, start, count;
+
+#ifndef __PRE_RAM__
+	/* Variables only in RAM stage. */
+	int start_ext, pin_ext, pin, drv;
+#endif
 
 	switch (peripheral) {
 	case PERIPH_ID_UART0:
@@ -57,6 +62,8 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 			gpio_cfg_pin(i, EXYNOS_GPIO_FUNC(0x2));
 		}
 		break;
+
+#ifndef __PRE_RAM__
 	case PERIPH_ID_SDMMC0:
 	case PERIPH_ID_SDMMC1:
 	case PERIPH_ID_SDMMC2:
@@ -294,6 +301,8 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 		for (i = 0; i < 5; i++)
 			gpio_cfg_pin(GPIO_B00 + i, EXYNOS_GPIO_FUNC(0x02));
 		break;
+#endif // __PRE_RAM__
+
 	default:
 		debug("%s: invalid peripheral %d", __func__, peripheral);
 		return -1;

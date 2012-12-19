@@ -1,7 +1,6 @@
 romstage-y += clock.c
 romstage-y += clock_init.c
 romstage-y += exynos_cache.c
-romstage-y += lowlevel_init.S
 romstage-y += lowlevel_init_c.c
 romstage-y += pinmux.c
 romstage-y += power.c
@@ -18,7 +17,6 @@ romstage-y += uart.c
 ramstage-y += clock.c
 ramstage-y += clock_init.c
 ramstage-y += exynos_cache.c
-ramstage-y += lowlevel_init.S
 ramstage-y += lowlevel_init_c.c
 ramstage-y += pinmux.c
 ramstage-y += power.c

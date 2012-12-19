@@ -574,72 +574,129 @@ static void lpc_init(struct device *dev)
 	pch_fixups(dev);
 }
 
-static void pch_lpc_read_resources(device_t dev)
+static void pch_lpc_add_mmio_resources(device_t dev)
+{
+	u32 reg;
+	struct resource *res;
+	const u32 default_decode_base = IO_APIC_ADDR;
+
+	/*
+	 * Just report all resources from IO-APIC base to 4GiB. Don't mark
+	 * them reserved as that may upset the OS if this range is marked
+	 * as reserved in the e820.
+	 */
+	res = new_resource(dev, OIC);
+	res->base = default_decode_base;
+	res->size = 0 - default_decode_base;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* RCBA */
+	if (DEFAULT_RCBA < default_decode_base) {
+		res = new_resource(dev, RCBA);
+		res->base = DEFAULT_RCBA;
+		res->size = 16 * 1024;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+		             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+	}
+
+	/* Check LPC Memory Decode register. */
+	reg = pci_read_config32(dev, LGMR);
+	if (reg & 1) {
+		reg &= ~0xffff;
+		if (reg < default_decode_base) {
+			res = new_resource(dev, LGMR);
+			res->base = reg;
+			res->size = 16 * 1024;
+			res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+			             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+		}
+	}
+}
+
+/* Default IO range claimed by the LPC device. The upper bound is exclusive. */
+#define LPC_DEFAULT_IO_RANGE_LOWER 0
+#define LPC_DEFAULT_IO_RANGE_UPPER 0x1000
+
+static inline int pch_io_range_in_default(u16 base, u16 size)
+{
+	/* Does it start above the range? */
+	if (base >= LPC_DEFAULT_IO_RANGE_UPPER)
+		return 0;
+
+	/* Is it entirely contained? */
+	if (base >= LPC_DEFAULT_IO_RANGE_LOWER &&
+	    (base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
+		return 1;
+
+	/* This will return not in range for partial overlaps. */
+	return 0;
+}
+
+/*
+ * Note: this function assumes there is no overlap with the default LPC device's
+ * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
+ */
+static void pch_lpc_add_io_resource(device_t dev, u16 base, u16 size, int index)
+{
+	struct resource *res;
+
+	if (pch_io_range_in_default(base, size))
+		return;
+
+	res = new_resource(dev, index);
+	res->base = base;
+	res->size = size;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+static void pch_lpc_add_gen_io_resources(device_t dev, int reg_value, int index)
+{
+	/*
+	 * Check if the register is enabled. If so and the base exceeds the
+	 * device's deafult claim range add the resoure.
+	 */
+	if (reg_value & 1) {
+		u16 base = reg_value & 0xfffc;
+		u16 size = (0x3 | ((reg_value >> 16) & 0xfc)) + 1;
+		pch_lpc_add_io_resource(dev, base, size, index);
+	}
+}
+
+static void pch_lpc_add_io_resources(device_t dev)
 {
 	struct resource *res;
 	config_t *config = dev->chip_info;
-	u8 io_index = 0;
 
+	/* Add the default claimed IO range for the LPC device. */
+	res = new_resource(dev, 0);
+	res->base = LPC_DEFAULT_IO_RANGE_LOWER;
+	res->size = LPC_DEFAULT_IO_RANGE_UPPER - LPC_DEFAULT_IO_RANGE_LOWER;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* GPIOBASE */
+	pch_lpc_add_io_resource(dev, DEFAULT_GPIOBASE, DEFAULT_GPIOSIZE,
+	                        GPIO_BASE);
+
+	/* PMBASE */
+	pch_lpc_add_io_resource(dev, DEFAULT_PMBASE, 128, PMBASE);
+
+	/* LPC Generic IO Decode range. */
+	pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
+	pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
+	pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);
+	pch_lpc_add_gen_io_resources(dev, config->gen4_dec, LPC_GEN4_DEC);
+}
+
+static void pch_lpc_read_resources(device_t dev)
+{
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
-	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	/* Add non-standard MMIO resources. */
+	pch_lpc_add_mmio_resources(dev);
 
-	/* GPIOBASE */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = DEFAULT_GPIOBASE;
-	res->size = DEFAULT_GPIOSIZE;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0xff800000;
-	res->size = 0x00800000; /* 8 MB for flash */
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	res = new_resource(dev, io_index++); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	/* Set PCH IO decode ranges if required.*/
-	if ((config->gen1_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen1_dec & 0xFFFC;
-		res->size = (config->gen1_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
-
-	if ((config->gen2_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen2_dec & 0xFFFC;
-		res->size = (config->gen2_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
-
-	if ((config->gen3_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen3_dec & 0xFFFC;
-		res->size = (config->gen3_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
-
-	if ((config->gen4_dec & 0xFFFC) > 0x1000) {
-		res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-		res->base = config->gen4_dec & 0xFFFC;
-		res->size = (config->gen4_dec >> 16) & 0xFC;
-		res->flags = IORESOURCE_IO| IORESOURCE_SUBTRACTIVE |
-				 IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
+	/* Add IO resources. */
+	pch_lpc_add_io_resources(dev);
 }
 
 static void pch_lpc_enable_resources(device_t dev)

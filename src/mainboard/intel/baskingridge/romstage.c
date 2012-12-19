@@ -33,7 +33,7 @@
 #include "northbridge/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
-#include "southbridge/intel/lynxpoint/gpio.h"
+#include "southbridge/intel/lynxpoint/me.h"
 #include <arch/cpu.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
@@ -42,22 +42,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
-static void pch_enable_lpc(void)
-{
-	device_t dev = PCH_LPC_DEV;
-
-	/* Set COM1/COM2 decode range */
-	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
-
-	/* Enable SuperIO + COM1 + PS/2 Keyboard/Mouse */
-	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN | KBC_LPC_EN;
-	pci_write_config16(dev, LPC_EN, lpc_config);
-}
-
-static void rcba_config(void)
-{
-	u32 reg32;
-
+const struct rcba_config_instruction rcba_config[] = {
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
@@ -71,55 +56,42 @@ static void rcba_config(void)
 	 */
 
 	/* Device interrupt pin register (board specific) */
-	RCBA32(D31IP) = (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
-		(INTB << D31IP_SMIP) | (INTA << D31IP_SIP);
-	RCBA32(D30IP) = (NOINT << D30IP_PIP);
-	RCBA32(D29IP) = (INTA << D29IP_E1P);
-	RCBA32(D28IP) = (INTA << D28IP_P1IP) | (INTC << D28IP_P3IP) |
-		(INTB << D28IP_P4IP);
-	RCBA32(D27IP) = (INTA << D27IP_ZIP);
-	RCBA32(D26IP) = (INTA << D26IP_E2P);
-	RCBA32(D25IP) = (NOINT << D25IP_LIP);
-	RCBA32(D22IP) = (NOINT << D22IP_MEI1IP);
+	RCBA_SET_REG_32(D31IP, (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
+		               (INTB << D31IP_SMIP) | (INTA << D31IP_SIP)),
+	RCBA_SET_REG_32(D30IP, (NOINT << D30IP_PIP)),
+	RCBA_SET_REG_32(D29IP, (INTA << D29IP_E1P)),
+	RCBA_SET_REG_32(D28IP, (INTA << D28IP_P1IP) | (INTC << D28IP_P3IP) |
+	                       (INTB << D28IP_P4IP)),
+	RCBA_SET_REG_32(D27IP, (INTA << D27IP_ZIP)),
+	RCBA_SET_REG_32(D26IP, (INTA << D26IP_E2P)),
+	RCBA_SET_REG_32(D25IP, (NOINT << D25IP_LIP)),
+	RCBA_SET_REG_32(D22IP, (NOINT << D22IP_MEI1IP)),
 
 	/* Device interrupt route registers */
-	DIR_ROUTE(D31IR, PIRQF, PIRQG, PIRQH, PIRQA);
-	DIR_ROUTE(D29IR, PIRQD, PIRQE, PIRQF, PIRQG);
-	DIR_ROUTE(D28IR, PIRQB, PIRQC, PIRQD, PIRQE);
-	DIR_ROUTE(D27IR, PIRQG, PIRQH, PIRQA, PIRQB);
-	DIR_ROUTE(D26IR, PIRQE, PIRQF, PIRQG, PIRQH);
-	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
-	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	RCBA_SET_REG_32(D31IR, DIR_ROUTE(PIRQF, PIRQG, PIRQH, PIRQA)),
+	RCBA_SET_REG_32(D29IR, DIR_ROUTE(PIRQD, PIRQE, PIRQF, PIRQG)),
+	RCBA_SET_REG_32(D28IR, DIR_ROUTE(PIRQB, PIRQC, PIRQD, PIRQE)),
+	RCBA_SET_REG_32(D27IR, DIR_ROUTE(PIRQG, PIRQH, PIRQA, PIRQB)),
+	RCBA_SET_REG_32(D26IR, DIR_ROUTE(PIRQE, PIRQF, PIRQG, PIRQH)),
+	RCBA_SET_REG_32(D25IR, DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD)),
+	RCBA_SET_REG_32(D22IR, DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD)),
 
 	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	reg32 |= PCH_DISABLE_ALWAYS;
-	RCBA32(FD) = reg32;
-}
+	RCBA_RMW_REG_32(FD, ~0, PCH_DISABLE_ALWAYS),
 
-// FIXME, this function is generic code that should go to sb/... or
-// nb/../early_init.c
-static void early_pch_init(void)
-{
-	u8 reg8;
+	/* Enable IOAPIC (generic) */
+	RCBA_SET_REG_16(OIC, 0x0100),
+	/* PCH BWG says to read back the IOAPIC enable register */
+	RCBA_READ_REG_16(OIC),
 
-	// reset rtc power status
-	reg8 = pci_read_config8(PCH_LPC_DEV, 0xa4);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
-}
+	RCBA_END_CONFIG,
+};
 
 void main(unsigned long bist)
 {
 	int boot_mode = 0;
+	int wake_from_s3;
 	int cbmem_was_initted;
-	u32 pm1_cnt;
-	u16 pm1_sts;
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	tsc_t start_romstage_time;
@@ -180,34 +152,10 @@ void main(unsigned long bist)
 	if (bist == 0)
 		enable_lapic();
 
-	pch_enable_lpc();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* Early Console setup */
-	console_init();
+	wake_from_s3 = early_pch_init(&mainboard_gpio_map, &rcba_config[0]);
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-
-	/*
-	 * FIXME: MCHBAR isn't setup yet. It's setup in
-	 * haswell_early_initialization().
-	 */
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected\n");
-		boot_mode = 1;
-
-		/* System is not happy after keyboard reset... */
-		printk(BIOS_DEBUG, "Issuing CF9 warm reset\n");
-		outb(0x6, 0xcf9);
-		while (1) {
-			hlt();
-		}
-	}
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
@@ -215,28 +163,14 @@ void main(unsigned long bist)
 	haswell_early_initialization(HASWELL_MOBILE);
 	printk(BIOS_DEBUG, "Back from haswell_early_initialization()\n");
 
-	/* Check PM1_STS[15] to see if we are waking from Sx */
-	pm1_sts = inw(DEFAULT_PMBASE + PM1_STS);
-
-	/* Read PM1_CNT[12:10] to determine which Sx state */
-	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
-
-	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
+	if (wake_from_s3) {
 #if CONFIG_HAVE_ACPI_RESUME
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 		boot_mode = 2;
-		/* Clear SLP_TYPE. This will break stage2 but
-		 * we care for that when we get there.
-		 */
-		outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
 #else
 		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
 #endif
 	}
-
-	post_code(0x38);
-	/* Enable SPD ROMs and DDR-III DRAM */
-	enable_smbus();
 
 	/* Prepare USB controller early in S3 resume */
 	if (boot_mode == 2)
@@ -247,21 +181,17 @@ void main(unsigned long bist)
 #if CONFIG_COLLECT_TIMESTAMPS
 	before_dram_time = rdtsc();
 #endif
+
+	report_platform_info();
+
 	sdram_initialize(&pei_data);
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	after_dram_time = rdtsc();
 #endif
 	post_code(0x3b);
-	/* Perform some initialization that must run before stage2 */
-	early_pch_init();
-	post_code(0x3c);
 
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-	post_code(0x3d);
+	intel_early_me_status();
 
 	quick_ram_check();
 	post_code(0x3e);

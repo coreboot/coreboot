@@ -760,6 +760,23 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	clkind_write(dev, 0x5C, 0x0);
 }
 
+/**
+ * Set registers in RS780 and CPU to disable the internal GFX.
+ * Please refer to `rs780_internal_gfx_enable()`.
+ */
+static void rs780_internal_gfx_disable(device_t dev)
+{
+	u32 l_dword;
+	device_t nb_dev = dev_find_slot(0, 0);
+
+	/* Disable internal GFX and enable external GFX. */
+	l_dword = pci_read_config32(nb_dev, 0x8c);
+	l_dword |= 1<<0;
+	l_dword &= ~(1<<1);
+	pci_write_config32(nb_dev, 0x8c, l_dword);
+
+	dev->enabled = 0;
+}
 
 /*
 * Set registers in RS780 and CPU to enable the internal GFX.
@@ -999,6 +1016,7 @@ static struct device_operations pcie_ops = {
 	.init = internal_gfx_pci_dev_init,	/* The option ROM initializes the device. rs780_gfx_init, */
 	.scan_bus = 0,
 	.enable = rs780_internal_gfx_enable,
+	.disable = rs780_internal_gfx_disable,
 	.ops_pci = &lops_pci,
 };
 

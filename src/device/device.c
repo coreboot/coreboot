@@ -749,7 +749,7 @@ static void set_vga_bridge_bits(void)
 
 		printk(BIOS_DEBUG, "found VGA at %s\n", dev_path(dev));
 
-		if (dev->on_mainboard) {
+		if(strcmp(dev_path(dev),"PCI: 01:05.0") == 0 ) {
 			vga_onboard = dev;
 		} else {
 			vga = dev;

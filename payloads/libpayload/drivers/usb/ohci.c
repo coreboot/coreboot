@@ -107,7 +107,7 @@ dump_ed (ed_t *cur)
 		usb_debug("|:::::::::::::::::: OHCI TD CHAIN ::::::::::::::::::|\n");
 		while (virt_to_phys(tmp_td) != (cur->tail_pointer & ~0xFUL))
 		{
-			dump_td(tmp_td, 1);
+			dump_td(tmp_td);
 			tmp_td = (td_t *)phys_to_virt((tmp_td->next_td & ~0xFUL));
 		}
 		usb_debug("|:::::::::::::::: EOF OHCI TD CHAIN ::::::::::::::::|\n");

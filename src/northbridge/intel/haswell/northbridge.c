@@ -340,7 +340,8 @@ static void mc_add_dram_resources(device_t dev)
 	 *       cacheable and reserved
 	 * - SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE -> 0xa0000 : cacheable
 	 * - 0xc0000 -> TSEG : cacheable
-	 * - TESG -> TOLUD: not cacheable with standard MTRRs and reserved
+	 * - TESG -> BGSM: cacheable with standard MTRRs and reserved
+	 * - BGSM -> TOLUD: not cacheable with standard MTRRs and reserved
 	 * - 4GiB -> TOUUD: cacheable
 	 *
 	 * The default SMRAM space is reserved so that the range doesn't
@@ -353,6 +354,10 @@ static void mc_add_dram_resources(device_t dev)
 	 * associated with it to handle legacy VGA memory. If this range
 	 * is not omitted the mtrr code will setup the area as cacheable
 	 * causing VGA access to not work.
+	 *
+	 * The TSEG region is mapped as cacheable so that one can perform
+	 * SMRAM relocation faster. Once the SMRR is enabled the SMRR takes
+	 * precedence over the existing MTRRs covering this region.
 	 *
 	 * It should be noted that cacheable entry types need to be added in
 	 * order. The reason is that the current MTRR code assumes this and
@@ -386,9 +391,17 @@ static void mc_add_dram_resources(device_t dev)
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* TSEG -> TOLUD */
+	/* TSEG -> BGSM */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[TSEG_REG];
+	resource->size = mc_values[BGSM_REG] - resource->base;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
+	                  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+
+	/* BGSM -> TOLUD */
+	resource = new_resource(dev, index++);
+	resource->base = mc_values[BGSM_REG];
 	resource->size = mc_values[TOLUD_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
@@ -581,6 +594,15 @@ static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
+	/*
+	 * This calls into the gerneic initialize_cpus() which attempts to
+	 * start APs on the APIC bus in the devicetree.  No APs get started
+	 * because there is only the BSP and placeholder (disabled) in the
+	 * devicetree. initialize_cpus() also does SMM initialization by way
+	 * of smm_init(). It will eventually call cpu_initialize(0) which calls
+	 * dev_ops->init(). For Haswell the dev_ops->init() starts up the APs
+	 * by way of intel_cores_init().
+	 */
 	initialize_cpus(dev->link_list);
 }
 

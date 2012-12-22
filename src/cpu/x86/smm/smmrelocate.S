@@ -39,8 +39,6 @@
 #include "../../../southbridge/intel/bd82x6x/pch.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_I82801IX
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
-#elif CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT
-#include "../../../southbridge/intel/lynxpoint/pch.h"
 #else
 #error "Southbridge needs SMM handler support."
 #endif
@@ -49,9 +47,6 @@
 
 #if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
-#elif CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT
-#include <northbridge/intel/haswell/haswell.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
 #else
 #error "Northbridge must define TSEG_BAR."

@@ -97,6 +97,11 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void pch_log_state(void);
 #endif
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
+
+/* These helpers are for performing SMM relocation. */
+void southbridge_smm_init(void);
+void southbridge_trigger_smi(void);
+void southbridge_clear_smi_status(void);
 #else
 void enable_smbus(void);
 void enable_usb_bar(void);

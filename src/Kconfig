@@ -357,6 +357,14 @@ config GFXUMA
 	help
 	  Enable Unified Memory Architecture for graphics.
 
+config RELOCATABLE_MODULES
+	bool "Relocatable Modules"
+	default n
+	help
+	 If RELOCATABLE_MODULES is selected then support is enabled for
+	 building relocatable modules in the ram stage. Those modules can be
+	 loaded anywhere and all the relocations are handled automatically.
+
 config HAVE_ACPI_TABLES
 	bool
 	help

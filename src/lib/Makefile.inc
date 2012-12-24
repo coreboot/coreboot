@@ -107,3 +107,21 @@ endif
 $(obj)/lib/uart8250mem.smm.o : $(OPTION_TABLE_H)
 $(obj)/lib/uart8250.smm.o : $(OPTION_TABLE_H)
 
+ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
+ramstage-y += rmodule.c
+
+RMODULE_LDSCRIPT := $(src)/lib/rmodule.ld
+RMODULE_LDFLAGS  := -nostartfiles -shared -z defs -nostdlib -Bsymbolic -T $(RMODULE_LDSCRIPT)
+
+# rmodule_link_rules is a function that should be called with:
+# (1) the object name to link
+# (2) the dependencies
+# (3) heap size of the relocatable module
+# It will create the necessary Make rules.
+define rmodule_link =
+$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions
+	$$(LD) $$(RMODULE_LDFLAGS) --defsym=__heap_size=$(strip $(3)) -o $$@ $(strip $(2))
+	$$(NM) -n $$@ > $$(basename $$@).map
+endef
+
+endif

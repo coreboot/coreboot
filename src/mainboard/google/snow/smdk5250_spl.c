@@ -24,8 +24,7 @@
 #define SIGNATURE	0xdeadbeef
 
 /* Parameters of early board initialization in SPL */
-static struct spl_machine_param machine_param
-		__attribute__((section(".machine_param"))) = {
+static struct spl_machine_param machine_param = {
 	.signature	= SIGNATURE,
 	.version	= 1,
 	.params		= "vmubfasirMw",
@@ -65,6 +64,18 @@ struct spl_machine_param *spl_get_machine_params(void)
 	return &machine_param;
 }
 
+#if 0
+int board_get_revision(void)
+{
+	struct spl_machine_param *params = spl_get_machine_params();
+	unsigned gpio[CONFIG_BOARD_REV_GPIO_COUNT];
+
+	gpio[0] = params->board_rev_gpios & 0xffff;
+	gpio[1] = params->board_rev_gpios >> 16;
+	return gpio_decode_number(gpio, CONFIG_BOARD_REV_GPIO_COUNT);
+}
+#endif
+
 int board_wakeup_permitted(void)
 {
 	struct spl_machine_param *param = spl_get_machine_params();
@@ -75,4 +86,19 @@ int board_wakeup_permitted(void)
 	is_bad_wake = ((gpio != -1) && gpio_get_value(gpio));
 
 	return !is_bad_wake;
+}
+
+/*
+ * TODO(sjg@chromium.org):
+ * Declared there here for SPL, since there is no core i2c subsystem and
+ * cmd_i2c.c is not included.
+ */
+void board_i2c_release_bus(int node)
+{
+}
+
+int board_i2c_claim_bus(int node)
+{
+	/* EC is not allowed to touch the bus until we enter U-Boot */
+	return 0;
 }

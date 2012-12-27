@@ -106,14 +106,9 @@ detect_special_flags() {
 		CFLAGS="$CFLAGS -Wl,--build-id=none"
 
 	case "$architecture" in
-		arm )
-			# testcc "$CC" "$CFLAGS -mcpu=cortex-a9" &&
-			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
-			testcc "$CC" "\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork" && CFLAGS="\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork"
+	armv7 )
+		ARMFLAGS=""
+		testcc "$CC" "$CFLAGS $ARMFLAGS"&&CFLAGS="$CFLAGS $ARMFLAGS"
 			;;
 	esac
 }

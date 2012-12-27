@@ -141,8 +141,6 @@ endif
 # For various headers imported from Linux
 CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7
-INCLUDES += -Isrc/include/linux
-INCLUDES += -Isrc/include/linux/uapi
 
 # FIXME(dhendrix): trying to split start.S apart...
 crt0s = $(src)/arch/armv7/start.S

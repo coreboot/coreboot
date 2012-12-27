@@ -26,3 +26,23 @@ config RAMBASE
 config RAMTOP
 	hex
 	default 0x40100000
+
+config IRAM_BOTTOM
+	hex
+	default 0x02020000
+
+config IRAM_TOP
+	hex
+	default 0x02077fff
+
+config SYS_INIT_SP_ADDR
+	hex
+	default 0x0204F800
+
+config IRAM_STACK
+	hex
+	default SYS_INIT_SP_ADDR
+
+config XIP_ROM_SIZE
+	hex "ROM stage (BL2) size"
+	default 0x20000

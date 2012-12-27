@@ -142,9 +142,7 @@ endif
 CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
-# FIXME(dhendrix): trying to split start.S apart...
-crt0s = $(src)/arch/armv7/start.S
-#crt0s = $(src)/arch/armv7/romstage.S
+crt0s = $(src)/arch/armv7/init/init.S
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 

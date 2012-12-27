@@ -106,14 +106,21 @@ detect_special_flags() {
 		CFLAGS="$CFLAGS -Wl,--build-id=none"
 
 	case "$architecture" in
-		arm )
-			# testcc "$CC" "$CFLAGS -mcpu=cortex-a9" &&
-			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
-			testcc "$CC" "\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork" && CFLAGS="\
-$CFLAGS -ffixed-r8 -msoft-float -marm -mabi=aapcs-linux \
--mno-thumb-interwork -march=armv7 -mno-thumb-interwork"
+		armv7 )
+			ARMFLAGS="\
+			-fno-builtin\
+			-fno-common-ffixed-r8\
+			-mabi=aapcs-linux\
+			-march=armv7-a\
+			-marm\
+			-mno-unaligned-access-Werror\
+			-mthumb-mthumb-interwork\
+			-pipe\
+			-Wall\
+			-Wno-format-nonliteral\
+			-Wno-format-security"
+
+			testcc "$CC" "$CFLAGS $ARMFLAGS" && CFLAGS="$CFLAGS $ARMFLAGS"
 			;;
 	esac
 }

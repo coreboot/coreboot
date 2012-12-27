@@ -26,3 +26,27 @@ config RAMBASE
 config RAMTOP
 	hex
 	default 0x40100000
+
+# FIXME 1: According to the Exynos5250 datasheet, the iRAM range is
+# 0x0202_0000 to 0x0207_7fff (352KB). However, it appears that we are
+# actually constrained by whatever region BL1 sets up for us.
+config IRAM_BOTTOM
+	hex
+#	default 0x02020000
+	default 0x02023400
+
+config IRAM_TOP
+	hex
+	default 0x02077fff
+
+config SYS_INIT_SP_ADDR
+	hex
+	default 0x0204F800
+
+config IRAM_STACK
+	hex
+	default SYS_INIT_SP_ADDR
+
+config XIP_ROM_SIZE
+	hex "ROM stage (BL2) size"
+	default 0x20000

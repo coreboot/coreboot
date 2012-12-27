@@ -138,6 +138,16 @@ endif
 ################################################################################
 # done
 
+CFLAGS += \
+	-fno-common\
+	-ffixed-r8\
+	-mabi=aapcs-linux\
+	-march=armv7-a\
+	-marm\
+	-mno-unaligned-access\
+	-mthumb\
+	-mthumb-interwork
+
 # For various headers imported from Linux
 CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7

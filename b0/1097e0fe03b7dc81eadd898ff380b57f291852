@@ -1,0 +1,10 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+2: Marc Jones <marcj303@gmail.com>
+Code-Review+1: Anton Kochkov <anton.kochkov@gmail.com>
+Code-Review+1: Dave Frodin <dave.frodin@se-eng.com>
+Submitted-by: Marc Jones <marcj303@gmail.com>
+Submitted-at: Fri, 28 Dec 2012 21:16:42 +0100
+Reviewed-on: http://review.coreboot.org/1880
+Project: coreboot
+Branch: refs/heads/master

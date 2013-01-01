@@ -15,10 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * FIXME(dhendrix): This file contains generic prototypes for UART functions.
- * The existing headers are too specific to the 8250, so we need a better
- * abstraction for use with non-8250 UARTs.
  */
 
 #ifndef UART_H

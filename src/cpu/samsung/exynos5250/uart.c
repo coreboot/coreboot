@@ -34,7 +34,6 @@
 
 #include <cpu/samsung/exynos5-common/exynos5-common.h>
 #include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/uart.h>
 
 #define RX_FIFO_COUNT_MASK	0xff
 #define RX_FIFO_FULL_MASK	(1 << 8)
@@ -218,12 +217,12 @@ static const struct console_driver exynos5_uart_console __console = {
 //unsigned char (*uart_rx_byte)(unsigned base_port) = exynos5_uart_rx_byte;
 //void (*uart_tx_byte)(unsigned base_port, unsigned char data) = exynos5_uart_tx_byte;
 /* FIXME: trivial wrappers */
-void uart_init()
+void uart_init(void)
 {
 	exynos5_init_dev();
 }
 
-unsigned char uart_rx_byte()
+unsigned char uart_rx_byte(void)
 {
 	return exynos5_uart_rx_byte();
 }

@@ -21,15 +21,9 @@
  *
  */
 
-//#include <common.h>
-//#include <linux/compiler.h>
 #include <types.h>
 #include <uart.h>
 #include <arch/io.h>
-//#include <asm/arch-exynos/spl.h>
-//#include <asm/global_data.h>
-//#include <fdtdec.h>
-//#include <serial.h>
 
 #include <console/console.h>	/* for __console definition */
 
@@ -180,8 +174,6 @@ static unsigned char exynos5_uart_rx_byte(void)
 /*
  * Output a single byte to the serial port.
  */
-/* FIXME: ordering of arguments for coreboot v. u-boot for tx_byte */
-//static void exynos5_tx_byte(const char c, const int dev_index)
 static void exynos5_uart_tx_byte(unsigned char data)
 {
 //	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
@@ -198,14 +190,6 @@ static void exynos5_uart_tx_byte(unsigned char data)
 
 #ifndef __PRE_RAM__
 static const struct console_driver exynos5_uart_console __console = {
-//static const struct console_driver exynos5_uart_console __console = {
-#if 0
-	void (*init)(void);
-	void (*tx_byte)(unsigned char byte);
-	void (*tx_flush)(void);
-	unsigned char (*rx_byte)(void);
-	int (*tst_byte)(void);
-#endif
 	.init     = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,
 //	.tx_flush = exynos5_uart_tx_flush,
@@ -213,11 +197,6 @@ static const struct console_driver exynos5_uart_console __console = {
 //	.tst_byte = exynos5_uart_tst_byte,
 };
 #else
-/* for romstage_console... */
-//void (*uart_init)(void) = exynos5_init_dev;
-//unsigned char (*uart_rx_byte)(unsigned base_port) = exynos5_uart_rx_byte;
-//void (*uart_tx_byte)(unsigned base_port, unsigned char data) = exynos5_uart_tx_byte;
-/* FIXME: trivial wrappers */
 void uart_init(void)
 {
 	exynos5_init_dev();

@@ -10,7 +10,7 @@ smm-y += vtxprintf.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
 romstage-y += vtxprintf.c
-romstage-$(CONFIG_CACHE_AS_RAM) += console.c
+romstage-$(CONFIG_EARLY_SERIAL_CONSOLE) += console.c
 romstage-y += post.c
 romstage-y += die.c
 

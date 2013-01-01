@@ -121,7 +121,7 @@ int lowlevel_init_subsystems(void)
 //			exynos5_uart_tx_byte('C');
 		}
 	}
-	init_timer();	/* FIXME(dhendrix): was timer_init() */
+//	init_timer();	/* FIXME(dhendrix): was timer_init() */
 
 #if 0
 	if (actions & DO_CLOCKS) {

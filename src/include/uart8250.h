@@ -125,7 +125,6 @@ void uart8250_tx_flush(unsigned base_port);
  * have three different sets of uart code, so it's an improvement.
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
-void uart_init(void);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 void uartmem_init(void);

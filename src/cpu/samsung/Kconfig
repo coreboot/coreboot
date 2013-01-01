@@ -5,6 +5,7 @@ config CPU_SAMSUNG_EXYNOS
 config CPU_SAMSUNG_EXYNOS5
 	depends on ARCH_ARMV7
 	select CPU_SAMSUNG_EXYNOS
+	select EARLY_SERIAL_CONSOLE
 	bool
 	default n
 

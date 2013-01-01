@@ -25,16 +25,13 @@
 
 #include <common.h>
 #include <arch/io.h>
-//#include <cpu/samsung/exynos5250/pwm.h>
-//#include <cpu/samsung/exynos5250/clk.h>
+
 #include <cpu/samsung/s5p-common/pwm.h>
 #include <cpu/samsung/s5p-common/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5-common/exynos5-common.h>
 
-//#include <pwm.h>
 
-//DECLARE_GLOBAL_DATA_PTR;
 static unsigned long long timer_reset_value;
 static unsigned long lastinc;
 
@@ -57,28 +54,6 @@ static unsigned long timer_get_us_down(void)
 	struct s5p_timer *const timer = s5p_get_base_timer();
 
 	return readl(&timer->tcnto4);
-}
-
-int init_timer(void)
-{
-	/* Timer may have been enabled in SPL */
-	if (!pwm_check_enabled(4)) {
-		/* PWM Timer 4 */
-		pwm_init(4, MUX_DIV_4, 0);
-		pwm_config(4, 100000, 100000);
-		pwm_enable(4);
-#ifndef CONFIG_SPL_BUILD
-		/* Use this as the current monotonic time in us */
-		//gd->timer_reset_value = 0;
-		timer_reset_value = 0;
-
-		/* Use this as the last timer value we saw */
-		//gd->lastinc = timer_get_us_down();
-		lastinc = timer_get_us_down();
-#endif
-	}
-
-	return 0;
 }
 
 /*
@@ -105,6 +80,32 @@ unsigned long get_timer(unsigned long base)
 
 	/* Divide by 1000 to convert from us to ms */
 	return timer_reset_value / 1000 - base;
+}
+
+/* FIXME(dhendrix): We should probably do init_timer() in romstage. This
+ * is just a stop-gap to reduce image size until we have the proper
+ * bootblock code implemented. */
+#ifndef __PRE_RAM__
+int init_timer(void)
+{
+	/* Timer may have been enabled in SPL */
+	if (!pwm_check_enabled(4)) {
+		/* PWM Timer 4 */
+		pwm_init(4, MUX_DIV_4, 0);
+		pwm_config(4, 100000, 100000);
+		pwm_enable(4);
+#ifndef CONFIG_SPL_BUILD
+		/* Use this as the current monotonic time in us */
+		//gd->timer_reset_value = 0;
+		timer_reset_value = 0;
+
+		/* Use this as the last timer value we saw */
+		//gd->lastinc = timer_get_us_down();
+		lastinc = timer_get_us_down();
+#endif
+	}
+
+	return 0;
 }
 
 unsigned long timer_get_us(void)
@@ -151,3 +152,4 @@ unsigned long timer_get_boot_us(void)
 {
 	return timer_get_us();
 }
+#endif	/* __PRE_RAM__ */

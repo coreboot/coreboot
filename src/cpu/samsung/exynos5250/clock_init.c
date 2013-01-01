@@ -40,6 +40,9 @@
 #include "setup.h"
 
 struct arm_clk_ratios arm_clk_ratios[] = {
+	/* FIXME(dhendrix): this is just a stop-gap measure to reduce image
+	   size while we implement bootblock and romstage functionality */
+#if 0
 	{
 		.arm_freq_mhz = 600,
 
@@ -116,6 +119,8 @@ struct arm_clk_ratios arm_clk_ratios[] = {
 		.cpud_ratio = 0x3,
 		.arm_ratio = 0x0,
 	}, {
+#endif
+	{
 		.arm_freq_mhz = 1700,
 
 		.apll_mdiv = 0x1a9,
@@ -238,6 +243,10 @@ struct mem_timings mem_timings[] = {
 		.send_zq_init = 1,
 		.impedance = IMP_OUTPUT_DRV_30_OHM,
 		.gate_leveling_enable = 0,
+	/* FIXME(dhendrix): this is just a stop-gap measure to reduce image
+	   size while we implement bootblock and romstage functionality */
+	}
+#if 0
 	}, {
 		.mem_manuf = MEM_MANUF_SAMSUNG,
 		.mem_type = DDR_MODE_DDR3,
@@ -552,6 +561,7 @@ struct mem_timings mem_timings[] = {
 		.impedance = IMP_OUTPUT_DRV_40_OHM,
 		.gate_leveling_enable = 1,
 	}
+#endif
 };
 
 /**
@@ -723,6 +733,8 @@ struct arm_clk_ratios *get_arm_ratios(void)
 
 struct mem_timings *clock_get_mem_timings(void)
 {
+	return &mem_timings[0];
+#if 0
 	struct mem_timings *mem;
 	enum ddr_mode mem_type;
 	enum mem_manuf mem_manuf;
@@ -741,6 +753,7 @@ struct mem_timings *clock_get_mem_timings(void)
 		}
 	}
 	return NULL;
+#endif
 }
 
 void system_clock_init()
@@ -854,7 +867,6 @@ void system_clock_init()
 
 		setbits_le32(&clk->pll_div2_sel, MUX_BPLL_FOUT_SEL);
 	}
-
 
 	/* Set CPLL */
 	writel(CPLL_CON1_VAL, &clk->cpll_con1);
@@ -979,7 +991,6 @@ void system_clock_init()
 	writel(CLK_REG_DISABLE, &clk->clkout_cmu_r0x);
 	writel(CLK_REG_DISABLE, &clk->clkout_cmu_r1x);
 	writel(CLK_REG_DISABLE, &clk->clkout_cmu_cdrex);
-
 	writel(CLK_SRC_PERIC0_VAL, &clk->src_peric0);
 	writel(CLK_DIV_PERIC0_VAL, &clk->div_peric0);
 	writel(CLK_SRC_PERIC1_VAL, &clk->src_peric1);

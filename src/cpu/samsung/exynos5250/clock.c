@@ -169,6 +169,8 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		src = readl(&clk->src_peric0);
 		div = readl(&clk->div_peric0);
 		break;
+	/* FIXME (dhendrix): temporarily omitted for space */
+#ifndef __PRE_RAM__
 	case PERIPH_ID_PWM0:
 	case PERIPH_ID_PWM1:
 	case PERIPH_ID_PWM2:
@@ -202,6 +204,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		src = readl(&clk->src_fsys);
 		div = readl(&clk->div_fsys1);
 		break;
+#endif	/* __PRE_RAM__ */
 	case PERIPH_ID_I2C0:
 	case PERIPH_ID_I2C1:
 	case PERIPH_ID_I2C2:
@@ -239,10 +242,13 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	sub_div = (div >> bit_info->div_bit) & 0xf;
 	sub_clk = sclk / (sub_div + 1);
 
+	/* FIXME (dhendrix): temporarily omitted for space */
+#ifndef __PRE_RAM__
 	if (peripheral == PERIPH_ID_SDMMC0 || peripheral == PERIPH_ID_SDMMC2) {
 		div = (div >> bit_info->prediv_bit) & 0xff;
 		return sub_clk / (div + 1);
 	}
+#endif	/* __PRE_RAM__ */
 
 	return sub_clk;
 }
@@ -466,6 +472,8 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 	return 0;
 }
 
+/* FIXME(dhendrix): temporarily omitted for space */
+#if 0
 int clock_set_mshci(enum periph_id peripheral)
 {
 	struct exynos5_clock *clk =
@@ -504,6 +512,7 @@ int clock_set_mshci(enum periph_id peripheral)
 	}
 	return 0;
 }
+#endif
 
 #ifdef CONFIG_OF_CONTROL
 int clock_decode_periph_id(const void *blob, int node)

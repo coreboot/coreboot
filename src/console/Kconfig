@@ -5,6 +5,13 @@ config SERIAL_CONSOLE
 	help
 	  Send coreboot debug output to a serial port
 
+config EARLY_SERIAL_CONSOLE
+	bool
+	select SERIAL_CONSOLE
+	default n
+	help
+	  Use serial console during early boot stages (e.g. cache-as-RAM)
+
 config CONSOLE_SERIAL8250
 	bool "Serial port console output (I/O mapped, 8250-compatible)"
 	depends on SERIAL_CONSOLE

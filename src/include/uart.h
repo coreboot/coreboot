@@ -15,19 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * FIXME(dhendrix): This file contains generic prototypes for UART functions.
- * The existing headers are too specific to the 8250, so we need a better
- * abstraction for use with non-8250 UARTs.
  */
 
+/* madness. Uarts are a mess. If you include this file, it
+ * includes ALL uart implementations which may be needed.
+ * No need to include them separately, and include this file FIRST.
+ * At least one (but at most one) of the files needs to define
+ * uart_init().
+ */
 #ifndef UART_H
 #define UART_H
 
+#if CONFIG_CONSOLE_SERIAL8250
+#include <uart8250.h>
+#endif
+
+#if CONFIG_CPU_SAMSUNG_EXYNOS5
+#include <cpu/samsung/exynos5250/uart.h>
+#endif
+
+#ifndef __ROMCC__
 unsigned char uart_rx_byte(void);
 void uart_tx_byte(unsigned char data);
 void uart_tx_flush(void);
-
-void uart_init(void);
+#endif
 
 #endif /* UART_H */

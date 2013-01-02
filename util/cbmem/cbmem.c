@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <getopt.h>
 
 #include "stdlib.h"
 #include "boot/coreboot_tables.h"
@@ -31,6 +33,8 @@ typedef uint64_t u64;
 
 #include "cbmem.h"
 #include "timestamp.h"
+
+#define CBMEM_VERSION "1.0"
 
 /* File descriptor used to access /dev/mem */
 static FILE* fd;
@@ -246,11 +250,58 @@ static void dump_timestamps(const struct timestamp_table *tst_p)
 	}
 }
 
+void print_version(void)
+{
+	printf("cbmem v%s -- ", CBMEM_VERSION);
+	printf("Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.\n\n");
+	printf(
+    "This program is free software: you can redistribute it and/or modify\n"
+    "it under the terms of the GNU General Public License as published by\n"
+    "the Free Software Foundation, version 2 of the License.\n\n"
+    "This program is distributed in the hope that it will be useful,\n"
+    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+    "GNU General Public License for more details.\n\n"
+    "You should have received a copy of the GNU General Public License\n"
+    "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n");
+}
+
+void print_usage(const char *name)
+{
+	printf("usage: %s [-vh?]\n", name);
+	printf("\n"
+	     "   -v | --version:                   print the version\n"
+	     "   -h | --help:                      print this help\n"
+	     "\n");
+	exit(1);
+}
 
 int main(int argc, char** argv)
 {
 	int j;
-	static const int possible_base_addresses[] = {0, 0xf0000};
+	static const int possible_base_addresses[] = { 0, 0xf0000 };
+
+	int opt, option_index = 0;
+	static struct option long_options[] = {
+		{"version", 0, 0, 'v'},
+		{"help", 0, 0, 'h'},
+		{0, 0, 0, 0}
+	};
+	while ((opt = getopt_long(argc, argv, "vh?",
+				  long_options, &option_index)) != EOF) {
+		switch (opt) {
+		case 'v':
+			print_version();
+			exit(0);
+			break;
+		case 'h':
+		case '?':
+		default:
+			print_usage(argv[0]);
+			exit(0);
+			break;
+		}
+	}
 
 	fd = fopen("/dev/mem", "r");
 	if (!fd) {

@@ -340,6 +340,7 @@ gitconfig:
 			chmod +x .git/hooks/$$hook;		     \
 		fi;						     \
 	done
+	git config remote.origin.push HEAD:refs/for/master
 	(git config --global user.name >/dev/null && git config --global user.email >/dev/null) || (printf 'Please configure your name and email in git:\n\n git config --global user.name "Your Name Comes Here"\n git config --global user.email your.email@example.com\n'; exit 1)
 
 crossgcc: clean-for-update

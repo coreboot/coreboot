@@ -1,3 +1,10 @@
+config BOOTBLOCK_OFFSET
+	hex "Bootblock offset"
+	default 0x3400
+	help
+	  This is where the Coreboot bootblock resides. For Exynos5250,
+	  this value is pre-determined by the vendor-provided BL1.
+
 config EXYNOS_ACE_SHA
 	bool
 	default n

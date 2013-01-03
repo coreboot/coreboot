@@ -58,7 +58,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock smm cpu_microcode
+classes-y := ramstage romstage bootblock smm smmstub cpu_microcode
 
 #######################################################################
 # Helper functions for ramstage postprocess
@@ -110,12 +110,16 @@ endif
 bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
 bootblock-S-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
 
+smmstub-c-ccopts:=-D__SMM__
+smmstub-S-ccopts:=-D__SMM__
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 
 # SMM TSEG base is dynamic
+ifneq ($(CONFIG_SMM_MODULES),y)
 ifeq ($(CONFIG_SMM_TSEG),y)
 smm-c-ccopts += -fpic
+endif
 endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)

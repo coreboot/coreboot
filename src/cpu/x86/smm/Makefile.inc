@@ -17,6 +17,51 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SMM_MODULES),y)
+
+smmstub-y += smm_stub.S
+smmstub-y += smm_module_header.c
+
+smm-y += smiutil.c
+smm-y += smm_module_header.c
+smm-y += smm_module_handler.c
+
+ramstage-y += smm_module_loader.c
+
+ramstage-srcs += $(obj)/cpu/x86/smm/smm
+ramstage-srcs += $(obj)/cpu/x86/smm/smmstub
+
+# SMM Stub Module. The stub is used as a trampoline for relocation and normal
+# SMM handling.
+$(obj)/cpu/x86/smm/smmstub.o: $$(smmstub-objs)
+	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+
+# Link the SMM stub module with a 0-byte heap.
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0))
+
+$(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf
+	$(OBJCOPY) -O binary $< $@
+
+$(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+
+# C-based SMM handler.
+
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs)
+	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE)))
+
+$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf
+	$(OBJCOPY) -O binary $< $@
+
+$(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+
+else # CONFIG_SMM_MODULES
+
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
 ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ramstage-srcs += $(obj)/cpu/x86/smm/smm_wrap
@@ -50,3 +95,4 @@ $(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(obj)/cpu/x86/smm; $(OBJCOPY) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
 
+endif # CONFIG_SMM_MODULES

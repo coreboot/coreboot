@@ -382,6 +382,14 @@ int __attribute__((weak)) mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
+#if CONFIG_SMM_MODULES
+void cpu_smi_handler(void);
+void northbridge_smi_handler(void);
+void southbridge_smi_handler(void);
+void mainboard_smi_gpi(u16 gpi_sts);
+int  mainboard_smi_apmc(u8 data);
+void mainboard_smi_sleep(u8 slp_typ);
+#else
 void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
@@ -389,10 +397,14 @@ void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_
 void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
 int __attribute__((weak)) mainboard_smi_apmc(u8 data);
 void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ);
+#endif /* CONFIG_SMM_MODULES */
 
 #if !CONFIG_SMM_TSEG
 void smi_release_lock(void);
 #define tseg_relocate(ptr)
+#elif CONFIG_SMM_MODULES
+#define tseg_relocate(ptr)
+#define smi_get_tseg_base() 0
 #else
 /* Return address of TSEG base */
 u32 smi_get_tseg_base(void);
@@ -402,5 +414,73 @@ void tseg_relocate(void **ptr);
 
 /* Get PMBASE address */
 u16 smm_get_pmbase(void);
+
+#if CONFIG_SMM_MODULES
+
+struct smm_runtime {
+	u32 smbase;
+	u32 save_state_size;
+	/* The apic_id_to_cpu provides a mapping from APIC id to cpu number.
+	 * The cpu number is indicated by the index into the array by matching
+	 * the deafult APIC id and value at the index. The stub loader
+	 * initializes this array with a 1:1 mapping. If the APIC ids are not
+	 * contiguous like the 1:1 mapping it is up to the caller of the stub
+	 * loader to adjust this mapping. */
+	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
+} __attribute__ ((packed));
+
+typedef void (*smm_handler_t)(void *arg, int cpu,
+                              const struct smm_runtime *runtime);
+
+#ifdef __SMM__
+/* SMM Runtime helpers. */
+
+/* Entry point for SMM modules. */
+void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime);
+
+/* Retrieve SMM save state for a given CPU. WARNING: This does not take into
+ * account CPUs which are configured to not save their state to RAM. */
+void *smm_get_save_state(int cpu);
+
+#else
+/* SMM Module Loading API */
+
+/* Ths smm_loader_params structure provides direction to the SMM loader:
+ * - stack_top - optional external stack provided to loader. It must be at
+ *               least per_cpu_stack_size * num_concurrent_stacks in size.
+ * - per_cpu_stack_size - stack size per cpu for smm modules.
+ * - num_concurrent_stacks - number of concurrent cpus in handler needing stack
+ *                           optional for setting up relocation handler.
+ * - per_cpu_save_state_size - the smm save state size per cpu
+ * - num_concurrent_save_states - number of concurrent cpus needing save state
+ *                                space
+ * - handler - optional handler to call. Only used during SMM relocation setup.
+ * - handler_arg - optional argument to handler for SMM relocation setup. For
+ *                 loading the SMM module, the handler_arg is filled in with
+ *                 the address of the module's parameters (if present).
+ * - runtime - this field is a result only. The SMM runtime location is filled
+ *             into this field so the code doing the loading can manipulate the
+ *             runtime's assumptions. e.g. updating the apic id to cpu map to
+ *             handle sparse apic id space.
+ */
+struct smm_loader_params {
+	void *stack_top;
+	int per_cpu_stack_size;
+	int num_concurrent_stacks;
+
+	int per_cpu_save_state_size;
+	int num_concurrent_save_states;
+
+	smm_handler_t handler;
+	void *handler_arg;
+
+	struct smm_runtime *runtime;
+};
+
+/* Both of these return 0 on success, < 0 on failure. */
+int smm_setup_relocation_handler(struct smm_loader_params *params);
+int smm_load_module(void *smram, int size, struct smm_loader_params *params);
+#endif /* __SMM__ */
+#endif /* CONFIG_SMM_MODULES */
 
 #endif

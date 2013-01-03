@@ -567,10 +567,10 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 
 		// should be aligned to align but then we need to dynamically
 		// create the jump to the bootblock
-		loadfile(bootblock, &bootblocksize, romarea + 0x20 +
+		loadfile(bootblock, &bootblocksize, romarea + offs + 0x20 +
 			 sizeof(struct cbfs_header), SEEK_SET);
-		master_header = (struct cbfs_header *)(romarea + 0x20);
-		uint32_t *arm_vec = (uint32_t *)romarea;
+		master_header = (struct cbfs_header *)(romarea + offs + 0x20);
+		uint32_t *arm_vec = (uint32_t *)(romarea + offs);
 		/*
 		 * Encoding for this branch instruction is:
 		 * 31:28 - condition (0xe for always/unconditional)
@@ -591,16 +591,15 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 				ALIGN((0x40 + bootblocksize), align));
 		master_header->architecture = htonl(CBFS_ARCHITECTURE_ARMV7);
 
-		((uint32_t *) phys_to_virt(0x4))[0] =
+		((uint32_t *) phys_to_virt(0x4 + offs))[0] =
 				virt_to_phys(master_header);
 
 		recalculate_rom_geometry(romarea);
 
 		cbfs_create_empty_file(
-				ALIGN((0x40 + bootblocksize), align),
-				romsize - ALIGN((bootblocksize + 0x40), align)
-				//- sizeof(struct cbfs_header)
-				- sizeof(struct cbfs_file) );
+				offs + ALIGN((0x40 + bootblocksize), align),
+				romsize - offs - sizeof(struct cbfs_file) -
+				ALIGN((bootblocksize + 0x40), align));
 		break;
 
 	case CBFS_ARCHITECTURE_X86:

@@ -150,7 +150,7 @@ CFLAGS += \
 CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
-crt0s = $(src)/arch/armv7/init/init.S
+crt0s = $(src)/arch/armv7/init.S
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 

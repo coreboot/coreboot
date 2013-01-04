@@ -22,18 +22,6 @@
  * MA 02111-1307 USA
  */
 
-#if 0
-#include <common.h>
-#include <config.h>
-//#include <fdtdec.h>
-#include <arch/io.h>
-#include <asm/arch/board.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/clock.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <asm/arch/gpio.h>
-#include <asm/arch-exynos/spl.h>
-#endif
 #include <delay.h>
 #include <stdlib.h>
 #include <types.h>
@@ -50,8 +38,6 @@
 
 #include "clock_init.h"
 #include "setup.h"
-
-//DECLARE_GLOBAL_DATA_PTR;
 
 struct arm_clk_ratios arm_clk_ratios[] = {
 	{
@@ -585,10 +571,15 @@ struct mem_timings mem_timings[] = {
  */
 #define BOARD_REV_ELPIDA_MEMORY		3
 #define BOARD_REV_SAMSUNG_MEMORY	4
+
+static inline int board_get_revision(void)
+{
+	return BOARD_REV_ELPIDA_MEMORY;
+}
+
 static int autodetect_memory(void)
 {
-//	int board_rev = board_get_revision();
-	int board_rev = BOARD_REV_ELPIDA_MEMORY;
+	int board_rev = board_get_revision();
 
 	if (board_rev == -1)
 		return -1;
@@ -602,7 +593,6 @@ static int autodetect_memory(void)
 
 	return -1;
 }
-
 #ifdef CONFIG_SPL_BUILD
 
 /**
@@ -745,13 +735,11 @@ struct mem_timings *clock_get_mem_timings(void)
 				i++, mem++) {
 			if (mem->mem_type == mem_type &&
 					mem->frequency_mhz == frequency_mhz &&
-					mem->mem_manuf == mem_manuf)
+					mem->mem_manuf == mem_manuf) {
 				return mem;
+			}
 		}
 	}
-	/* TODO: Call panic() here */
-	while (1)
-		;
 	return NULL;
 }
 
@@ -866,6 +854,7 @@ void system_clock_init()
 
 		setbits_le32(&clk->pll_div2_sel, MUX_BPLL_FOUT_SEL);
 	}
+
 
 	/* Set CPLL */
 	writel(CPLL_CON1_VAL, &clk->cpll_con1);
@@ -993,7 +982,6 @@ void system_clock_init()
 
 	writel(CLK_SRC_PERIC0_VAL, &clk->src_peric0);
 	writel(CLK_DIV_PERIC0_VAL, &clk->div_peric0);
-
 	writel(CLK_SRC_PERIC1_VAL, &clk->src_peric1);
 	writel(CLK_DIV_PERIC1_VAL, &clk->div_peric1);
 	writel(CLK_DIV_PERIC2_VAL, &clk->div_peric2);

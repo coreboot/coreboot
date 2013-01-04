@@ -89,7 +89,7 @@ typedef uint8_t u8;
 
 #define CBFS_HEADER_MAGIC  0x4F524243
 #define CBFS_HEADPTR_ADDR 0xFFFFFFFc
-#define VERSION1 0x31313131
+#define CBFS_HEADER_VERSION1 0x31313131
 
 struct cbfs_header {
 	u32 magic;

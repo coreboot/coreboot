@@ -88,9 +88,9 @@
 /* FIXME: This could also be 0xFFFF0000 with HIVECS enabled */
 #define CBFS_HEADPTR_ADDR 0x0000000C
 #endif
-#define VERSION1 0x31313131
-#define VERSION2 0x31313132
-#define VERSION  VERSION2
+#define CBFS_HEADER_VERSION1 0x31313131
+#define CBFS_HEADER_VERSION2 0x31313132
+#define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
 
 struct cbfs_header {
 	uint32_t magic;

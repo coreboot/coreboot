@@ -143,7 +143,7 @@ void recalculate_rom_geometry(void *romarea)
 	}
 
 	/* Update old headers */
-	if (master_header->version == VERSION1 &&
+	if (master_header->version == CBFS_HEADER_VERSION1 &&
 	    ntohl(master_header->architecture) == CBFS_ARCHITECTURE_UNKNOWN) {
 		dprintf("Updating CBFS master header to version 2\n");
 		master_header->architecture = htonl(CBFS_ARCHITECTURE_X86);
@@ -583,7 +583,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
-		master_header->version = ntohl(VERSION);
+		master_header->version = ntohl(CBFS_HEADER_VERSION);
 		master_header->romsize = htonl(romsize);
 		master_header->bootblocksize = htonl(bootblocksize);
 		master_header->align = htonl(align);
@@ -612,7 +612,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 				  bootblocksize - sizeof(struct cbfs_header));
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
-		master_header->version = ntohl(VERSION);
+		master_header->version = ntohl(CBFS_HEADER_VERSION);
 		master_header->romsize = htonl(romsize);
 		master_header->bootblocksize = htonl(bootblocksize);
 		master_header->align = htonl(align);

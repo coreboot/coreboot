@@ -1,0 +1,71 @@
+#!/bin/sh
+
+SCRIPT="$0"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
+OUTPUT="$SCRIPT_DIR/image.bin"
+TMP_DIFF="$SCRIPT_DIR/.image-diff.bin"
+
+die() {
+  echo "$*" >&2
+  exit 1
+}
+
+create_diff_32k() {
+  local image_file="$1"
+  local diff_file="$2"
+  cp -f "$image_file" "$diff_file"
+  dd if=/dev/zero of=$diff_file bs=1 count=$((32*1024)) conv=notrunc
+}
+
+fast_flash_image() {
+  local image_file="$1"
+  local diff_file="$2"
+  dut-control spi2_buf_en:on spi2_buf_on_flex_en:on spi2_vref:pp1800
+  sudo flashrom -p ft2232_spi:type=servo-v2,port=a -w "$image_file" -V \
+    --noverify --ignore-fmap --diff "$diff_file"
+  dut-control spi2_buf_en:off spi2_buf_on_flex_en:off spi2_vref:off
+}
+
+merge_bl1() {
+  local image_file="$1"
+  local input="build/coreboot.rom"
+  # use the new BL1 which supports 30KB BL2/SPL/Coreboot
+#  local bl1="/build/daisy/firmware/E5250.nbl1.bin"
+#  [ -s "$bl1" ] || bl1="$SCRIPT_DIR/E5250.nbl1.30k_bl2.bin"
+  local bl1="$SCRIPT_DIR/E5250.nbl1.30k_bl2.bin"
+  local size="$(stat -c "%s" $input)"
+  local bl1_size="$(stat -c "%s" "$bl1")"
+
+  # TODO(hungte) How to deal with the magic 0xd4 here?
+  local bootblock_offset=0xd4
+
+  [ "$bl1_size" = "$((0x2000))" ] || die "Incorrect BL1 input file."
+  cp -f "$bl1" "$image_file"
+  dd if="$input" bs=$((0x3400+$bootblock_offset)) skip=1 >>"$image_file"
+  # Copy first jump command from boot block
+  # dd if="$input" of="$image_file" bs=1 count=$((0x10)) seek=$((0x2000)) \
+  #   conv=notrunc
+  truncate -s $size "$image_file"
+}
+
+is_servod_ready() {
+  ps -C servod >/dev/null 2>&1
+}
+
+main() {
+  make
+  merge_bl1 "$OUTPUT"
+  create_diff_32k "$OUTPUT" "$TMP_DIFF"
+  echo "OK: Generated image (with BL1) in $OUTPUT"
+  if is_servod_ready; then
+    echo "servod detected - flashing into device."
+    fast_flash_image "$OUTPUT" "$TMP_DIFF"
+    echo "OK: Generated and flashed 32k of image into device via servo."
+  else
+    echo "(servod is not running, flashing into device is skipped)"
+  fi
+}
+
+set -e
+main "$@"

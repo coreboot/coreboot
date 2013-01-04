@@ -179,6 +179,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 //	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
+
 	/* wait for room in the tx FIFO */
 	while ((readl(uart->ufstat) & TX_FIFO_FULL_MASK)) {
 		if (exynos5_uart_err_check(1))

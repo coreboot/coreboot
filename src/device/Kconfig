@@ -212,6 +212,7 @@ config CARDBUS_PLUGIN_SUPPORT
 config PCIEXP_COMMON_CLOCK
 	prompt "Enable PCIe Common Clock"
 	bool
+	depends on PCIEXP_PLUGIN_SUPPORT
 	default n
 	help
 	  Detect and enable Common Clock on PCIe links.
@@ -219,6 +220,7 @@ config PCIEXP_COMMON_CLOCK
 config PCIEXP_ASPM
 	prompt "Enable PCIe ASPM"
 	bool
+	depends on PCIEXP_PLUGIN_SUPPORT
 	default n
 	help
 	  Detect and enable ASPM on PCIe links.

@@ -139,9 +139,7 @@ endif
 # done
 
 CFLAGS += \
-	-fno-common\
 	-ffixed-r8\
-	-mabi=aapcs-linux\
 	-march=armv7-a\
 	-marm\
 	-mno-unaligned-access\

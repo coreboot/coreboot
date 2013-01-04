@@ -40,6 +40,7 @@ ENTRY(_start)
 SECTIONS
 {
 	/* FIXME: replace this with CPU-specific Kconfig variable */
+/*	. = ROMSTAGE_BASE; */	/* works? */
 	. = 0x02023400;	/* Exynos5 */
 
 	.romtext . : {
@@ -50,6 +51,7 @@ SECTIONS
 	.romdata . : {
 		*(.rodata);
 		*(.machine_param);
+	/*	*(.data); */
 		. = ALIGN(8);
 		_erom = .;
 	}

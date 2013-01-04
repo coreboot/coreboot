@@ -22,8 +22,10 @@
 
 #include <stdint.h>
 #include "swab.h"
+#ifndef __APPLE__
 #define ntohl(x)  (host_bigendian?(x):swab32(x))
 #define htonl(x)  (host_bigendian?(x):swab32(x))
+#endif
 #define ntohll(x) (host_bigendian?(x):swab64(x))
 #define htonll(x) (host_bigendian?(x):swab64(x))
 

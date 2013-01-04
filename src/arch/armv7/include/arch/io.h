@@ -20,13 +20,8 @@
 #ifndef __ASM_ARM_IO_H
 #define __ASM_ARM_IO_H
 
-#ifdef __KERNEL__
-
 #include <types.h>
 #include <arch/byteorder.h>
-#if 0	/* XXX###XXX */
-#include <asm/arch/hardware.h>
-#endif	/* XXX###XXX */
 
 static inline void sync(void)
 {
@@ -423,5 +418,4 @@ out:
 #define isa_check_signature(io,sig,len)	(0)
 
 #endif	/* __mem_isa */
-#endif	/* __KERNEL__ */
 #endif	/* __ASM_ARM_IO_H */

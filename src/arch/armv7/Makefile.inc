@@ -147,7 +147,6 @@ CFLAGS += \
 	-mthumb-interwork
 
 # For various headers imported from Linux
-CFLAGS += -D__KERNEL__
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
 crt0s = $(src)/arch/armv7/init.S

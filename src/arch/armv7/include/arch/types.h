@@ -22,11 +22,6 @@ __extension__ typedef __signed__ long long __s64;
 __extension__ typedef unsigned long long __u64;
 #endif
 
-/*
- * These aren't exported outside the kernel to avoid name space clashes
- */
-#ifdef __KERNEL__
-
 typedef signed char s8;
 typedef unsigned char u8;
 
@@ -47,7 +42,5 @@ typedef u32 dma_addr_t;
 
 typedef unsigned long phys_addr_t;
 typedef unsigned long phys_size_t;
-
-#endif /* __KERNEL__ */
 
 #endif

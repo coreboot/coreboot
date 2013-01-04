@@ -290,6 +290,13 @@ else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
+#$(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
+#	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+#	rm -f $@
+#	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
+#	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
+#	mv $@.tmp $@
+# let's try setting ROMSTAGE_BASE to beginning of iROM plus the size of BL1 (8K)...
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@

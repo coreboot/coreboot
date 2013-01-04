@@ -580,7 +580,10 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		 * When executing the branch, the PC will read as the address
 		 * of current instruction + 8.
 		 */
-		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
+//		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
+		/* FIXME(dhendrix): hack to jump to 0xd4, which is where actual
+		   code is being placed... */
+		arm_vec[0] = htonl(0x330000ea);  // branch to . + 64 bytes
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
 		master_header->version = ntohl(CBFS_HEADER_VERSION);

@@ -81,6 +81,9 @@
 
 #ifndef __ASSEMBLY__
 
+/* FIXME (dhendrix): this is rather ugly... s5p_set_cpu_id gets set from
+ * lowlevel_init_subsystems(). From there, magic happens and we wind up
+ * with correct offsets when samsung_get_base_* is called. Can we do better? */
 #define SAMSUNG_BASE(device, base)				\
 static inline unsigned int samsung_get_base_##device(void)	\
 {								\

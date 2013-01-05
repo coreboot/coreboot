@@ -25,7 +25,7 @@
 #ifndef __ASM_ARM_ARCH_COMMON_ADC_H_
 #define __ASM_ARM_ARCH_COMMON_ADC_H_
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_adc {
 	unsigned int adccon;
 	unsigned int adctsc;

@@ -23,7 +23,7 @@
 #ifndef __ASM_ARM_ARCH_CLOCK_H_
 #define __ASM_ARM_ARCH_CLOCK_H_
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5pc100_clock {
 	unsigned int	apll_lock;
 	unsigned int	mpll_lock;

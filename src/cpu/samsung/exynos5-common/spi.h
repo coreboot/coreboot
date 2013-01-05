@@ -20,7 +20,7 @@
 #ifndef __ASM_ARCH_EXYNOS_COMMON_SPI_H_
 #define __ASM_ARCH_EXYNOS_COMMON_SPI_H_
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 
 /* SPI peripheral register map; padded to 64KB */
 struct exynos_spi {
@@ -85,5 +85,5 @@ struct exynos_spi {
 #define SPI_RX_BYTE_SWAP	(1 << 6)
 #define SPI_RX_HWORD_SWAP	(1 << 7)
 
-#endif /* __ASSEMBLY__ */
+#endif /* __ASSEMBLER__ */
 #endif

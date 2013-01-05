@@ -21,7 +21,7 @@
 #ifndef __ASM_ARCH_MMC_H_
 #define __ASM_ARCH_MMC_H_
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_mmc {
 	unsigned int	sysad;
 	unsigned short	blksize;
@@ -69,5 +69,5 @@ struct mmc_host {
 
 int s5p_mmc_init(int dev_index, int bus_width);
 
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 #endif

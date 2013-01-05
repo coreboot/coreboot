@@ -23,7 +23,7 @@
 #ifndef __ASM_ARCH_UART_H_
 #define __ASM_ARCH_UART_H_
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 /* baudrate rest value */
 union br_rest {
 	unsigned short	slot;		/* udivslot */
@@ -53,6 +53,6 @@ static inline int s5p_uart_divslot(void)
 	return 1;
 }
 
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 
 #endif

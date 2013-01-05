@@ -38,12 +38,12 @@
 #define SROMC_BC_TACP(x) (x << 4)  /* page mode access cycle */
 #define SROMC_BC_PMC(x)  (x << 0)  /* normal(1data)page mode configuration */
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_sromc {
 	unsigned int	bw;
 	unsigned int	bc[4];
 };
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 
 /* Configure the Band Width and Bank Control Regs for required SROMC Bank */
 void s5p_config_sromc(u32 srom_bank, u32 srom_bw_conf, u32 srom_bc_conf);

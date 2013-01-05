@@ -29,7 +29,6 @@
  * MA 02111-1307 USA
  */
 
-#define __ASSEMBLY__
 #include <system.h>
 
 .globl _start

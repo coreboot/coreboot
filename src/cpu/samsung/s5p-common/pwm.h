@@ -42,7 +42,7 @@
 #define TCON_AUTO_RELOAD(x)	(1 << (TCON_OFFSET(x) + 3))
 #define TCON4_AUTO_RELOAD	(1 << 22)
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_timer {
 	unsigned int	tcfg0;
 	unsigned int	tcfg1;
@@ -63,7 +63,7 @@ struct s5p_timer {
 	unsigned int	tcnto4;
 	unsigned int	tintcstat;
 };
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 
 /* FIXME(dhendrix): added missing prototypes... */
 int pwm_config(int pwm_id, int duty_ns, int period_ns);

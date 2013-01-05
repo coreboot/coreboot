@@ -41,7 +41,7 @@
 #define WTCON_RESET		(0x1 << WTCON_RESET_OFFSET)
 #define WTCON_INT		(0x1 << WTCON_INTEN_OFFSET)
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_watchdog {
 	unsigned int wtcon;
 	unsigned int wtdat;
@@ -52,6 +52,6 @@ struct s5p_watchdog {
 /* functions */
 void wdt_stop(void);
 void wdt_start(unsigned int timeout);
-#endif	/* __ASSEMBLY__ */
+#endif	/* __ASSEMBLER__ */
 
 #endif

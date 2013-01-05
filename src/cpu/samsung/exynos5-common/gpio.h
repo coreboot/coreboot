@@ -21,7 +21,7 @@
 #ifndef __ASM_ARCH_COMMON_GPIO_H
 #define __ASM_ARCH_COMMON_GPIO_H
 
-#ifndef __ASSEMBLY__	/* FIXME: not needed (i hope)? */
+#ifndef __ASSEMBLER__	/* FIXME: not needed (i hope)? */
 #include <cpu/samsung/s5p-common/gpio.h>
 /* FIXME: s5p's gpio.h and exynos' gpio.h have a lot of conflicting
    definitions */

@@ -23,7 +23,7 @@
 
 #include <cpu/samsung/s5p-common/cpu.h>	/* FIXME: for S5PC110_GPIO_BASE */
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 struct s5p_gpio_bank {
 	unsigned int	con;
 	unsigned int	dat;

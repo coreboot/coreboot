@@ -79,7 +79,7 @@
 /* Distance between each Trust Zone PC register set */
 #define TZPC_BASE_OFFSET		0x10000
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 
 #define SAMSUNG_BASE(device, base)				\
 static inline unsigned int samsung_get_base_##device(void)	\

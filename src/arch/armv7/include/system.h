@@ -60,7 +60,7 @@
 
 #define arch_align_stack(x) (x)
 
-#ifndef __ASSEMBLY__
+#ifndef __ASSEMBLER__
 static inline unsigned int get_cr(void)
 {
 	unsigned int val;

@@ -23,7 +23,7 @@ config CPU_AMD_AGESA_FAMILY12
 
 config CPU_ADDR_BITS
 	int
-	default 36
+	default 48
 	depends on CPU_AMD_AGESA_FAMILY12
 
 config CPU_SOCKET_TYPE

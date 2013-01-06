@@ -28,6 +28,10 @@
 #include "common.h"
 #include "cbfs.h"
 
+#ifdef __MINGW32__
+#define index strchr
+#endif
+
 struct command {
 	const char *name;
 	const char *optstring;

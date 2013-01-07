@@ -158,12 +158,12 @@ static int parse_cbtable(u64 address)
 			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
 			switch (lbr_p->tag) {
 			case LB_TAG_TIMESTAMPS: {
-				debug("Found timestamp table\n");
+				debug("    Found timestamp table.\n");
 				timestamps = *(struct lb_cbmem_ref *) lbr_p;
 				continue;
 			}
 			case LB_TAG_CBMEM_CONSOLE: {
-				debug("Found cbmem console\n");
+				debug("    Found cbmem console.\n");
 				console = *(struct lb_cbmem_ref *) lbr_p;
 				continue;
 			}
@@ -174,6 +174,7 @@ static int parse_cbtable(u64 address)
 				 */
 				struct lb_forward lbf_p =
 					*(struct lb_forward *) lbr_p;
+				debug("    Found forwarding entry.\n");
 				unmap_memory();
 				return parse_cbtable(lbf_p.forward);
 			}

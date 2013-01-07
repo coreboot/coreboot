@@ -283,6 +283,43 @@ static void dump_timestamps(void)
 	unmap_memory();
 }
 
+/* dump the cbmem console */
+static void dump_console(void)
+{
+	void *console_p;
+	char *console_c;
+	uint32_t size;
+
+	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
+		fprintf(stderr, "No console found in coreboot table.\n");
+		return;
+	}
+
+	console_p = map_memory((unsigned long)console.cbmem_addr);
+	/* The in-memory format of the console area is:
+	 *  u32  size
+	 *  u32  cursor
+	 *  char console[size]
+	 * Hence we have to add 8 to get to the actual console string.
+	 */
+	size = *(uint32_t *)console_p;
+	console_c = malloc(size + 1);
+	if (!console_c) {
+		fprintf(stderr, "Not enough memory for console.\n");
+		exit(1);
+	}
+
+	memcpy(console_c, console_p + 8, size);
+	console_c[size] = 0;
+
+	printf("%s", console_c);
+
+	free(console_c);
+
+	unmap_memory();
+}
+
+
 void print_version(void)
 {
 	printf("cbmem v%s -- ", CBMEM_VERSION);
@@ -303,6 +340,9 @@ void print_usage(const char *name)
 {
 	printf("usage: %s [-vh?]\n", name);
 	printf("\n"
+	     "   -c | --console:                   print cbmem console\n"
+	     "   -t | --timestamps:                print timestamp information\n"
+	     "   -V | --verbose:                   verbose (debugging) output\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n"
 	     "\n");
@@ -314,18 +354,30 @@ int main(int argc, char** argv)
 	int j;
 	static const int possible_base_addresses[] = { 0, 0xf0000 };
 
-	int print_timestamps = 1;
+	int print_defaults = 1;
+	int print_console = 0;
+	int print_timestamps = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
+		{"console", 0, 0, 'c'},
+		{"timestamps", 0, 0, 't'},
 		{"verbose", 0, 0, 'V'},
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "Vvh?",
+	while ((opt = getopt_long(argc, argv, "ctVvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
+		case 'c':
+			print_console = 1;
+			print_defaults = 0;
+			break;
+		case 't':
+			print_timestamps = 1;
+			print_defaults = 0;
+			break;
 		case 'V':
 			verbose = 1;
 			break;
@@ -355,7 +407,10 @@ int main(int argc, char** argv)
 			break;
 	}
 
-	if (print_timestamps)
+	if (print_console)
+		dump_console();
+
+	if (print_defaults || print_timestamps)
 		dump_timestamps();
 
 	close(fd);

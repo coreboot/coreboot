@@ -14,21 +14,7 @@
 #include <cbmem.h>
 #endif
 
-#define CMOS_ADDR_PORT 0x70
-#define CMOS_DATA_PORT 0x71
-#define HIGH_RAM_ADDR 0x35
-#define LOW_RAM_ADDR 0x34
-
-static unsigned long qemu_get_memory_size(void)
-{
-	unsigned long tomk;
-	outb (HIGH_RAM_ADDR, CMOS_ADDR_PORT);
-	tomk = ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
-	outb (LOW_RAM_ADDR, CMOS_ADDR_PORT);
-	tomk |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
-	tomk += 16 * 1024;
-	return tomk;
-}
+#include "memory.c"
 
 static void cpu_pci_domain_set_resources(device_t dev)
 {

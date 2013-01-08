@@ -397,7 +397,8 @@ static void mc_add_dram_resources(device_t dev)
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */
 	size_k = (unsigned long)(mc_values[TOUUD_REG] >> 10) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	if (size_k > 0)
+		ram_resource(dev, index++, base_k, size_k);
 
 	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
 #if CONFIG_CHROMEOS_RAMOOPS

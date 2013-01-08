@@ -118,6 +118,7 @@ static void unmap_memory(void)
 
 static struct lb_cbmem_ref timestamps;
 static struct lb_cbmem_ref console;
+static struct lb_memory_range cbmem;
 
 static int parse_cbtable(u64 address)
 {
@@ -157,6 +158,22 @@ static int parse_cbtable(u64 address)
 			lbr_p = (struct lb_record*) ((char *)lbtable + j);
 			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
 			switch (lbr_p->tag) {
+			case LB_TAG_MEMORY: {
+				int i = 0;
+				debug("    Found memory map.\n");
+				struct lb_memory *memory =
+						(struct lb_memory *)lbr_p;
+				while ((char *)&memory->map[i] < ((char *)lbtable
+							    + lbr_p->size)) {
+					if (memory->map[i].type == LB_MEM_TABLE) {
+						debug("      LB_MEM_TABLE found.\n");
+						/* The last one found is CBMEM */
+						cbmem = memory->map[i];
+					}
+					i++;
+				}
+				continue;
+			}
 			case LB_TAG_TIMESTAMPS: {
 				debug("Found timestamp table\n");
 				timestamps = *(struct lb_cbmem_ref *) lbr_p;
@@ -319,6 +336,39 @@ static void dump_console(void)
 	unmap_memory();
 }
 
+#define CBMEM_MAGIC 0x434f5245
+#define MAX_CBMEM_ENTRIES 16
+
+struct cbmem_entry {
+	uint32_t magic;
+	uint32_t id;
+	uint64_t base;
+	uint64_t size;
+};
+
+void dump_cbmem_toc(void)
+{
+	int i;
+	uint64_t start;
+	struct cbmem_entry *entries;
+
+	if (cbmem.type != LB_MEM_TABLE) {
+		fprintf(stderr, "No coreboot table area found!\n");
+		return;
+	}
+
+	start = unpack_lb64(cbmem.start);
+
+	entries = (struct cbmem_entry *)map_memory(start);
+
+	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
+		if (entries[i].magic != CBMEM_MAGIC)
+			break;
+		printf("CBMEM entry %d %08x\n",
+			i, entries[i].id);
+	}
+	unmap_memory();
+}
 
 void print_version(void)
 {
@@ -341,6 +391,7 @@ void print_usage(const char *name)
 	printf("usage: %s [-vh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
+	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
 	     "   -v | --version:                   print the version\n"
@@ -356,22 +407,28 @@ int main(int argc, char** argv)
 
 	int print_defaults = 1;
 	int print_console = 0;
+	int print_list = 0;
 	int print_timestamps = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
 		{"console", 0, 0, 'c'},
+		{"list", 0, 0, 'l'},
 		{"timestamps", 0, 0, 't'},
 		{"verbose", 0, 0, 'V'},
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "ctVvh?",
+	while ((opt = getopt_long(argc, argv, "cltVvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
 			print_console = 1;
+			print_defaults = 0;
+			break;
+		case 'l':
+			print_list = 1;
 			print_defaults = 0;
 			break;
 		case 't':
@@ -409,6 +466,9 @@ int main(int argc, char** argv)
 
 	if (print_console)
 		dump_console();
+
+	if (print_list)
+		dump_cbmem_toc();
 
 	if (print_defaults || print_timestamps)
 		dump_timestamps();

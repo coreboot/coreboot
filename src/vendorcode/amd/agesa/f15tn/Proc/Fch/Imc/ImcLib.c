@@ -126,7 +126,7 @@ WaitForEcLDN9MailboxCmdAck (
   )
 {
   UINT8    Msgdata;
-  UINT16   Delaytime;
+  UINT32   Delaytime;
 
   Msgdata = 0;
 

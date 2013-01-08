@@ -18,9 +18,11 @@ IndexField(IMCX, IMCA, ByteAcc, NoLock, Preserve) {
 Method(WACK, 0)
 {
 	Store(0, Local0)
-	While (LNotEqual(Local0, 0xFA)) {
+	Store(50, Local1)
+	While (LAnd (LNotEqual(Local0, 0xFA), LGreater(Local1,0))) {
 		Store(MRG0, Local0)
 		Sleep(10)
+		Decrement(Local1)
 	}
 }
 

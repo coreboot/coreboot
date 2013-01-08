@@ -563,7 +563,7 @@ int main(int argc, char **argv)
 				break;
 
 			/* filter out illegal long options */
-			if (index(commands[i].optstring, c) == NULL) {
+			if (strchr(commands[i].optstring, c) == NULL) {
 				/* TODO maybe print actual long option instead */
 				printf("%s: invalid option -- '%c'\n",
 					argv[0], c);

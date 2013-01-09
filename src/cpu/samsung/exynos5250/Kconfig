@@ -1,6 +1,8 @@
+# FIXME: shouldn't this be 0x3400? Or maybe the bootblock in ROM needs
+# to follow the BL1 image, but in SRAM it needs to be at 0x3400? Hm...
 config BOOTBLOCK_OFFSET
 	hex "Bootblock offset"
-	default 0x3400
+	default 0x2000
 	help
 	  This is where the Coreboot bootblock resides. For Exynos5250,
 	  this value is pre-determined by the vendor-provided BL1.

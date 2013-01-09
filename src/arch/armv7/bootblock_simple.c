@@ -19,33 +19,30 @@
  * MA 02110-1301 USA
  */
 
-
-
 #include <bootblock_common.h>
+#include <arch/hlt.h>
 
-
-#include "../../lib/uart8250.c"
-#include "lib/div.c"
-
-struct uart8250 uart = {
-	115200
-}; 
+static int boot_cpu(void)
+{
+	/*
+	 * FIXME: This is a stub for now. All non-boot CPUs should be
+	 * waiting for an interrupt. We could move the chunk of assembly
+	 * which puts them to sleep in here...
+	 */
+	return 1;
+}
 
 void main(unsigned long bist)
 {
-	init_uart8250(CONFIG_TTYS0_BASE, &uart);
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, '@');
+	const char *target1 = "fallback/romstage";
+	unsigned long entry;
 
 	if (boot_cpu()) {
-		bootblock_cpu_init();
-		bootblock_northbridge_init();
-		bootblock_southbridge_init();
+		bootblock_mainboard_init();
 	}
-	const char* target1 = "fallback/romstage";
-	unsigned long entry;
+
 	entry = findstage(target1);
-	if (entry) call(entry, bist);
+	if (entry) call(entry);
 
 	hlt();
 }
-

@@ -149,7 +149,6 @@ CFLAGS += \
 # For various headers imported from Linux
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
-crt0s = $(src)/arch/armv7/bootblock.inc
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 
@@ -223,19 +222,14 @@ $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL
 ################################################################################
 # Build the bootblock
 
-#bootblock_lds = $(src)/arch/armv7/ldscript_fallback_cbfs.lb
-bootblock_lds = $(src)/arch/armv7/lib/id.lds
-#bootblock_lds = $(src)/arch/armv7/romstage.ld
+bootblock_lds = $(src)/arch/armv7/bootblock.lds
+bootblock_lds += $(src)/arch/armv7/lib/id.lds
 bootblock_lds += $(chipset_bootblock_lds)
 
+bootblock_inc += $(src)/arch/armv7/bootblock.inc
 bootblock_inc += $(src)/arch/armv7/lib/id.inc
 bootblock_inc += $(chipset_bootblock_inc)
-
-# FIXME: CONFIG_NEON or something similar for ARM?
-#ifeq ($(CONFIG_SSE),y)
-#bootblock_inc += $(src)/cpu/x86/sse_enable.inc
-#endif
-#bootblock_inc += $(objgenerated)/bootblock.inc
+bootblock_inc += $(objgenerated)/bootblock.inc
 
 $(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
@@ -253,11 +247,11 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-#$(objgenerated)/bootblock.inc: $(src)/arch/armv7/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
-#	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-#	$(CC) $(INCLUDES) -MM -MT$(objgenerated)/bootblock.inc \
-#		$< > $(objgenerated)/bootblock.inc.d
-#	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
+$(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(OPTION_TABLE_H)
+	@printf "    CC      $(subst $(obj)/,,$(@))\n"
+	$(CC) $(INCLUDES) -MM -MT$(objgenerated)/bootblock.inc \
+		$< > $(objgenerated)/bootblock.inc.d
+	$(CC) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

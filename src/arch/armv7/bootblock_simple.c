@@ -23,24 +23,14 @@
 
 #include <bootblock_common.h>
 
-
-#include "../../lib/uart8250.c"
-#include "lib/div.c"
-
-struct uart8250 uart = {
-	115200
-}; 
-
 void main(unsigned long bist)
 {
-	init_uart8250(CONFIG_TTYS0_BASE, &uart);
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, '@');
-
 	if (boot_cpu()) {
 		bootblock_cpu_init();
 		bootblock_northbridge_init();
 		bootblock_southbridge_init();
 	}
+
 	const char* target1 = "fallback/romstage";
 	unsigned long entry;
 	entry = findstage(target1);

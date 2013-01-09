@@ -1,0 +1,82 @@
+/*
+ * Early initialization code for ARMv7 architecture.
+ *
+ * This file is based off of the OMAP3530/ARM Cortex start.S file from Das
+ * U-Boot, which itself got the file from armboot.
+ *
+ * Copyright (c) 2004	Texas Instruments <r-woodruff2@ti.com>
+ * Copyright (c) 2001	Marius Gröger <mag@sysgo.de>
+ * Copyright (c) 2002	Alex Züpke <azu@sysgo.de>
+ * Copyright (c) 2002	Gary Jennejohn <garyj@denx.de>
+ * Copyright (c) 2003	Richard Woodruff <r-woodruff2@ti.com>
+ * Copyright (c) 2003	Kshitij <kshitij@ti.com>
+ * Copyright (c) 2006-2008 Syed Mohammed Khasim <x0khasim@ti.com>
+ * Copyright (c) 2013   The Chromium OS Authors
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
+ */
+
+#include <system.h>
+
+_bl1:
+	/* For now we have to live with a first stage boot loader
+	 * on ARM, which is 8KB in size and it is prepended to the
+	 * reset vector
+	 */
+	.skip 8192
+
+.globl _start
+_start: b	reset
+	.balignl 16,0xdeadbeef
+
+_cbfs_master_header:
+	/* The CBFS master header is inserted here by cbfstool
+	 * when coreboot.rom is being created. Hence, we leave
+	 * some space for it.
+	 */
+	.skip 64
+
+reset:
+	/*
+	 * set the cpu to SVC32 mode
+	 */
+	mrs	r0, cpsr
+	bic	r0, r0, #0x1f
+	orr	r0, r0, #0xd3
+	msr	cpsr,r0
+
+	/*
+	 * From Cortex-A Series Programmer's Guide:
+	 * Only CPU 0 performs initialization. Other CPUs go into WFI
+	 * to do this, first work out which CPU this is
+	 * this code typically is run before any other initialization step
+	 */
+	mrc p15, 0, r1, c0, c0, 5	@ Read Multiprocessor Affinity Register
+	and r1, r1, #0x3 @ Extract CPU ID bits
+	cmp r1, #0
+	bne wait_for_interrupt		@ If this is not core0, wait
+
+/* Set stackpointer in internal RAM to call board_init_f */
+call_bootblock:
+	ldr	sp, =(0x0204F800) /* Set up stack pointer */
+	mov	sp, r0
+	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
+	ldr	r0,=0x00000000
+	bl	main
+
+wait_for_interrupt:
+	wfi
+	mov	pc, lr			@ back to my caller

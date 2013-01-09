@@ -36,8 +36,7 @@ _bl1:
 	 * on ARM, which is 8KB in size and it is prepended to the
 	 * reset vector
 	 */
-	/* this comes a bit later. */
-//	.skip 8192
+	.skip 8192
 
 .globl _start
 _start: b	reset
@@ -81,10 +80,6 @@ call_bootblock:
 	 * Thumb. However, "b" will not and GCC may attempt to create a
 	 * wrapper which is currently broken.
 	 */
-	/* for now call board_init_f; change later. We're trying to get as much into ToT as
-	 * we can
-	 */
-	bl	board_init_f
 	bl	main
 
 wait_for_interrupt:

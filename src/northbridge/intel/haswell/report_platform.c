@@ -86,6 +86,10 @@ static struct {
 	{0x8c54, "C224"},
 	{0x8c56, "C226"},
 	{0x8c5c, "H81"},
+	{0x9c41, "LP Full Featured Engineering Sample"},
+	{0x9c43, "LP Premium"},
+	{0x9c45, "LP Mainstream"},
+	{0x9c47, "LP Value"},
 };
 
 static void report_pch_info(void)

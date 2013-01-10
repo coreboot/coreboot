@@ -25,7 +25,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
         device pci_domain 0 on
                 subsystemid 0x1022 0x1410 inherit
                 chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
-                       device pci 18.0 on  #  northbridge
                                 chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
                                         device pci 0.0 on end # Root Complex
                                         device pci 1.0 on end # Internal Graphics P2P bridge 0x9804
@@ -38,7 +37,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
                                         device pci 7.0 on end # LAN
                                         device pci 8.0 off end # NB/SB Link P2P bridge
                        end
-				end
 				chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
 					device pci 10.0 on end # XHCI HC0
 					device pci 10.1 on end # XHCI HC1
@@ -75,7 +73,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 					register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
 					register "gpp_configuration" = "4"
 				end	#southbridge/amd/hudson
-#                        device pci 18.0 on end
+                        device pci 18.0 on end
                         #device pci 18.0 on end
                         device pci 18.1 on end
                         device pci 18.2 on end

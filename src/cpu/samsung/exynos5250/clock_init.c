@@ -22,18 +22,6 @@
  * MA 02111-1307 USA
  */
 
-#if 0
-#include <common.h>
-#include <config.h>
-//#include <fdtdec.h>
-#include <arch/io.h>
-#include <asm/arch/board.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/clock.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <asm/arch/gpio.h>
-#include <asm/arch-exynos/spl.h>
-#endif
 #include <delay.h>
 #include <stdlib.h>
 #include <types.h>
@@ -50,8 +38,6 @@
 
 #include "clock_init.h"
 #include "setup.h"
-
-//DECLARE_GLOBAL_DATA_PTR;
 
 struct arm_clk_ratios arm_clk_ratios[] = {
 	{
@@ -585,10 +571,16 @@ struct mem_timings mem_timings[] = {
  */
 #define BOARD_REV_ELPIDA_MEMORY		3
 #define BOARD_REV_SAMSUNG_MEMORY	4
+
+static inline int board_get_revision(void)
+{
+	/* FIXME: yuck! */
+	return BOARD_REV_ELPIDA_MEMORY;
+}
+
 static int autodetect_memory(void)
 {
-//	int board_rev = board_get_revision();
-	int board_rev = BOARD_REV_ELPIDA_MEMORY;
+	int board_rev = board_get_revision();
 
 	if (board_rev == -1)
 		return -1;
@@ -749,9 +741,6 @@ struct mem_timings *clock_get_mem_timings(void)
 				return mem;
 		}
 	}
-	/* TODO: Call panic() here */
-	while (1)
-		;
 	return NULL;
 }
 

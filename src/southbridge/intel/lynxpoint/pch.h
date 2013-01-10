@@ -413,9 +413,13 @@ unsigned get_gpios(const int *gpio_num_array);
 #define IOBPIRI		0x2330
 #define IOBPD		0x2334
 #define IOBPS		0x2338
-#define  IOBPS_RW_BX    ((1 << 9)|(1 << 10))
-#define  IOBPS_WRITE_AX	((1 << 9)|(1 << 10))
-#define  IOBPS_READ_AX	((1 << 8)|(1 << 9)|(1 << 10))
+#define  IOBPS_READY	0x0001
+#define  IOBPS_TX_MASK	0x0006
+#define  IOBPS_MASK     0xff00
+#define  IOBPS_READ     0x0600
+#define  IOBPS_WRITE	0x0700
+#define IOBPU		0x233a
+#define  IOBPU_MAGIC	0xf000
 
 #define D31IP		0x3100	/* 32bit */
 #define D31IP_TTIP	24	/* Thermal Throttle Pin */

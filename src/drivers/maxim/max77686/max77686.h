@@ -77,7 +77,6 @@ enum max77686_regnum {
  * @param vol_div	voltage division value of given buck/ldo
  */
 struct max77686_para {
-	enum max77686_regnum regnum;
 	u8	vol_addr;
 	u8	vol_bitpos;
 	u8	vol_bitmask;
@@ -86,8 +85,8 @@ struct max77686_para {
 	u8	reg_enbitmask;
 	u8	reg_enbiton;
 	u8	reg_enbitoff;
-	u32	vol_min;
-	u32	vol_div;
+	u16	vol_min;
+	u16	vol_div;
 };
 
 /* I2C device address for pmic max77686 */

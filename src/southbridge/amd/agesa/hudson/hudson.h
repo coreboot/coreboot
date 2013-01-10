@@ -35,7 +35,6 @@
 
 #define ACPI_PM_EVT_BLK		(HUDSON_ACPI_IO_BASE + 0x00) /* 4 bytes */
 #define ACPI_PM1_CNT_BLK	(HUDSON_ACPI_IO_BASE + 0x04) /* 2 bytes */
-#define ACPI_PMA_CNT_BLK	(HUDSON_ACPI_IO_BASE + 0x0F) /* 1 byte, TODO: Is it 0xFE00? */
 #define ACPI_PM_TMR_BLK		(HUDSON_ACPI_IO_BASE + 0x18) /* 4 bytes */
 #define ACPI_GPE0_BLK		(HUDSON_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(HUDSON_ACPI_IO_BASE + 0x08) /* 6 bytes */
@@ -55,7 +54,6 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define CPU_CNT_BLK_ADDRESS                     0x810                           //      CpuControlBlkAddr;
 #define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
 #define SMI_CMD_PORT                            0xB0                            //      SmiCmdPortAddr;
-#define ACPI_PMA_CNT_BLK_ADDRESS        0xFE00                          //      AcpiPmaCntBlkAddr;
 #define SPIROM_BASE_ADDRESS_REGISTER    0xA0
 
 #ifdef __PRE_RAM__

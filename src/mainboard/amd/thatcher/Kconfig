@@ -105,4 +105,8 @@ config WARNINGS_ARE_ERRORS
 	bool
 	default n
 
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
 endif # BOARD_AMD_THATCHER

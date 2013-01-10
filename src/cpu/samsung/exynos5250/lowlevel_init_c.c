@@ -36,6 +36,7 @@
 #include <cpu/samsung/exynos5250/tzpc.h>
 #include "setup.h"
 
+#include <console/console.h>
 
 void do_barriers(void);	/* FIXME: make gcc shut up about "no previous prototype" */
 
@@ -70,14 +71,15 @@ enum {
 
 int lowlevel_init_subsystems(void)
 {
-	uint32_t reset_status;
+//	uint32_t reset_status;
 	int actions = 0;
 
-	do_barriers();
+// 	do_barriers();
 
 	/* Setup cpu info which is needed to select correct register offsets */
 	cpu_info_init();
 
+#if 0
 	reset_status = power_read_reset_status();
 
 	switch (reset_status) {
@@ -91,24 +93,28 @@ int lowlevel_init_subsystems(void)
 		/* This is a normal boot (not a wake from sleep) */
 		actions = DO_UART | DO_CLOCKS | DO_POWER;
 	}
+#endif
 
+	actions = DO_UART | DO_CLOCKS | DO_POWER;
 	if (actions & DO_POWER)
 		power_init();
 	if (actions & DO_CLOCKS)
 		system_clock_init();
 	if (actions & DO_UART) {
+
 		/* Set up serial UART so we can printf() */
-//		exynos_pinmux_config(EXYNOS_UART, PINMUX_FLAG_NONE);
 		/* FIXME(dhendrix): add a function for mapping
 		   CONFIG_CONSOLE_SERIAL_UART_ADDRESS to PERIPH_ID_UARTn */
+//		exynos_pinmux_config(EXYNOS_UART, PINMUX_FLAG_NONE);
 		exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
-		/* FIXME(dhendrix): serial_init() does not seem to
-		   actually do anything !?!? */
-//		serial_init();
-		init_timer();	/* FIXME(dhendrix): was timer_init() */
-	}
 
-/* FIXME(dhendrix): place this somewhere for ramstage... */
+		console_init();
+		while (1) {
+			console_tx_byte('C');
+		}
+	}
+	init_timer();	/* FIXME(dhendrix): was timer_init() */
+
 #if 0
 	if (actions & DO_CLOCKS) {
 		mem_ctrl_init();
@@ -116,5 +122,6 @@ int lowlevel_init_subsystems(void)
 	}
 #endif
 
-	return actions & DO_WAKEUP;
+//	return actions & DO_WAKEUP;
+	return 0;
 }

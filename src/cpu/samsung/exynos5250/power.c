@@ -31,6 +31,9 @@
 #include <cpu/samsung/exynos5-common/spl.h>
 #include <drivers/maxim/max77686/max77686.h>
 
+#include "device/i2c.h"
+#include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
+
 static void ps_hold_setup(void)
 {
 	struct exynos5_power *power =
@@ -138,21 +141,16 @@ int power_init(void)
 {
 	int error = 0;
 
-	/* FIXME(dhendrix): not necessary for initial bringup... */
-#if 0
-#ifdef CONFIG_SPL_BUILD
-	struct spl_machine_param *param = spl_get_machine_params();
-
+	/*
+	 * FIXME(dhendrix): We will re-factor the caller of power_init()
+	 * to start from a board-specific romstage file and do the i2c
+	 * early setup. There is no reason CPU power init code should
+	 * mess with board-specific i2c parameters.
+	 */
 	/* Set the i2c register address base so i2c works before FDT */
-	i2c_set_early_reg(param->i2c_base);
-#endif
-#endif
+	i2c_set_early_reg(0x12c60000);
 
 	ps_hold_setup();
-
-	/* FIXME(dhendrix): not necessary for initial bringup... */
-#if 0
-	/* init the i2c so that we can program pmic chip */
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
 	/*
@@ -183,9 +181,10 @@ int power_init(void)
 						REG_ENABLE, MAX77686_MV);
 	error |= max77686_volsetting(PMIC_LDO10, CONFIG_VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
-#endif
-	if (error != 0)
+	if (error != 0) {
+		power_shutdown();
 		printk(BIOS_ERR, "power init failed\n");
+	}
 
 	return error;
 }

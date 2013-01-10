@@ -308,7 +308,7 @@ static int __def_board_wakeup_permitted(void)
 int board_wakeup_permitted(void)
 	__attribute__((weak, alias("__def_board_wakeup_permitted")));
 
-void board_init_f(unsigned long bootflag)
+void board_init_f(void)
 {
 	/*
 	 * The gd struct is only needed for serial initialization. Since this

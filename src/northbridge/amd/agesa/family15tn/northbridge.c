@@ -446,35 +446,12 @@ static void northbridge_init(struct device *dev)
 {
 }
 
-static unsigned scan_chains(device_t dev, unsigned max)
-{
-	unsigned nodeid;
-	struct bus *link;
-	device_t io_hub = NULL;
-	u32 next_unitid = 0x18;
-	nodeid = amdfam15_nodeid(dev);
-	if (nodeid == 0) {
-		for (link = dev->link_list; link; link = link->next) {
-			//if (link->link_num == sblink) { /* devicetree put IO Hub on link_lsit[sblink] */
-			if (link->link_num == 0) { /* devicetree put IO Hub on link_lsit[0] */
-				io_hub = link->children;
-				if (!io_hub || !io_hub->enabled) {
-					die("I can't find the IO Hub, or IO Hub not enabled, please check the device tree.\n");
-				}
-				/* Now that nothing is overlapping it is safe to scan the children. */
-				max = pci_scan_bus(link, 0x00, ((next_unitid - 1) << 3) | 7, 0);
-			}
-		}
-	}
-	return max;
-}
 
 static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
-	.scan_bus	  = scan_chains,
 	.enable		  = 0,
 	.ops_pci	  = 0,
 };

@@ -39,8 +39,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	/* FIXME: replace this with CPU-specific Kconfig variable */
-	. = 0x02023400;	/* Exynos5 */
+	. = CONFIG_ROMSTAGE_BASE;
 
 	.romtext . : {
 		_rom = .;

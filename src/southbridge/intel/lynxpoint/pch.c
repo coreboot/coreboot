@@ -61,6 +61,27 @@ static void pch_hide_devfn(unsigned devfn)
 	case PCI_DEVFN(20, 0): /* XHCI */
 		RCBA32_OR(FD, PCH_DISABLE_XHCI);
 		break;
+	case PCI_DEVFN(21, 0): /* DMA */
+		pch_iobp_update(SIO_IOBP_FUNCDIS0, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 1): /* I2C0 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS1, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 2): /* I2C1 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS2, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 3): /* SPI0 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS3, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 4): /* SPI1 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS4, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 5): /* UART0 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS5, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
+	case PCI_DEVFN(21, 6): /* UART1 */
+		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		break;
 	case PCI_DEVFN(22, 0): /* MEI #1 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 		break;
@@ -72,6 +93,9 @@ static void pch_hide_devfn(unsigned devfn)
 		break;
 	case PCI_DEVFN(22, 3): /* KT */
 		RCBA32_OR(FD2, PCH_DISABLE_KT);
+		break;
+	case PCI_DEVFN(23, 0): /* SDIO */
+		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(25, 0): /* Gigabit Ethernet */
 		RCBA32_OR(BUC, PCH_DISABLE_GBE);

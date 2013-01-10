@@ -594,7 +594,6 @@ static int autodetect_memory(void)
 
 	return -1;
 }
-
 #ifdef CONFIG_SPL_BUILD
 
 /**
@@ -737,8 +736,9 @@ struct mem_timings *clock_get_mem_timings(void)
 				i++, mem++) {
 			if (mem->mem_type == mem_type &&
 					mem->frequency_mhz == frequency_mhz &&
-					mem->mem_manuf == mem_manuf)
+					mem->mem_manuf == mem_manuf) {
 				return mem;
+			}
 		}
 	}
 	return NULL;
@@ -855,6 +855,7 @@ void system_clock_init()
 
 		setbits_le32(&clk->pll_div2_sel, MUX_BPLL_FOUT_SEL);
 	}
+
 
 	/* Set CPLL */
 	writel(CPLL_CON1_VAL, &clk->cpll_con1);
@@ -982,7 +983,6 @@ void system_clock_init()
 
 	writel(CLK_SRC_PERIC0_VAL, &clk->src_peric0);
 	writel(CLK_DIV_PERIC0_VAL, &clk->div_peric0);
-
 	writel(CLK_SRC_PERIC1_VAL, &clk->src_peric1);
 	writel(CLK_DIV_PERIC1_VAL, &clk->div_peric1);
 	writel(CLK_DIV_PERIC2_VAL, &clk->div_peric2);

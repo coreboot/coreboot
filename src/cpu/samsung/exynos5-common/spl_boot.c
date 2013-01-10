@@ -327,6 +327,7 @@ void board_init_f(void)
 	 * Init subsystems, and resume if required. For a normal boot this
 	 * will set up the UART and display a message.
 	 */
+
 	if (lowlevel_init_subsystems()) {
 		if (!board_wakeup_permitted())
 			power_reset();

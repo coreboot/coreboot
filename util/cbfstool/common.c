@@ -565,22 +565,23 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		/* Set up physical/virtual mapping */
 		offset = romarea;
 
-		// should be aligned to align but then we need to dynamically
-		// create the jump to the bootblock
-		loadfile(bootblock, &bootblocksize, romarea + offs + 0x20 +
-			 sizeof(struct cbfs_header), SEEK_SET);
-		master_header = (struct cbfs_header *)(romarea + offs + 0x20);
+		// should be aligned to align
 		uint32_t *arm_vec = (uint32_t *)(romarea + offs);
+		master_header = (struct cbfs_header *)(romarea + offs + 0x20);
+		loadfile(bootblock, &bootblocksize, romarea + offs + 0x20 +
+				sizeof(struct cbfs_header), SEEK_SET);
+
 		/*
 		 * Encoding for this branch instruction is:
 		 * 31:28 - condition (0xe for always/unconditional)
-		 * 27:24 - 0xa
+		 * 27:24 - Branch (0xa, encoding A1)
 		 * 23: 0 - sign-extended offset (in multiples of 4)
 		 *
 		 * When executing the branch, the PC will read as the address
 		 * of current instruction + 8.
 		 */
-		arm_vec[0] = htonl(0x0e0000ea);  // branch to . + 64 bytes
+		uint32_t imm = ((0x20 + sizeof(struct cbfs_header)) - 8) / 4;
+		arm_vec[0] = imm | (0xa << 24) | (0xe << 28);
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
 		master_header->version = ntohl(CBFS_HEADER_VERSION);

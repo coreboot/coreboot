@@ -50,6 +50,7 @@ SECTIONS
 	.romdata . : {
 		*(.rodata);
 		*(.machine_param);
+		*(.data);
 		. = ALIGN(8);
 		_erom = .;
 	}

@@ -286,6 +286,40 @@ unsigned get_gpios(const int *gpio_num_array);
 #define SATA_IOBP_SP0G3IR	0xea000151
 #define SATA_IOBP_SP1G3IR	0xea000051
 
+/* Serial IO IOBP Registers */
+#define SIO_IOBP_PORTCTRL0	0xcb000000	/* SDIO D23:F0 */
+#define  SIO_IOBP_PORTCTRL0_ACPI_IRQ_EN		(1 << 5)
+#define  SIO_IOBP_PORTCTRL0_PCI_CONF_DIS	(1 << 4)
+#define SIO_IOBP_PORTCTRL1	0xcb000014	/* SDIO D23:F0 */
+#define  SIO_IOBP_PORTCTRL1_SNOOP_SELECT(x)	(((x) & 3) << 13)
+#define SIO_IOBP_GPIODF		0xcb000154
+#define  SIO_IOBP_GPIODF_SDIO_IDLE_DET_EN	(1 << 4)
+#define  SIO_IOBP_GPIODF_DMA_IDLE_DET_EN	(1 << 3)
+#define  SIO_IOBP_GPIODF_UART_IDLE_DET_EN	(1 << 2)
+#define  SIO_IOBP_GPIODF_I2C_IDLE_DET_EN	(1 << 1)
+#define  SIO_IOBP_GPIODF_SPI_IDLE_DET_EN	(1 << 0)
+#define SIO_IOBP_PORTCTRL2	0xcb000240	/* DMA D21:F0 */
+#define SIO_IOBP_PORTCTRL3	0xcb000248	/* I2C0 D21:F1 */
+#define SIO_IOBP_PORTCTRL4	0xcb000250	/* I2C1 D21:F2 */
+#define SIO_IOBP_PORTCTRL5	0xcb000258	/* SPI0 D21:F3 */
+#define SIO_IOBP_PORTCTRL6	0xcb000260	/* SPI1 D21:F4 */
+#define SIO_IOBP_PORTCTRL7	0xcb000268	/* UART0 D21:F5 */
+#define SIO_IOBP_PORTCTRL8	0xcb000270	/* UART1 D21:F6 */
+/* PORTCTRL 2-8 have the same layout */
+#define  SIO_IOBP_PORTCTRL_ACPI_IRQ_EN		(1 << 21)
+#define  SIO_IOBP_PORTCTRL_PCI_CONF_DIS		(1 << 20)
+#define  SIO_IOBP_PORTCTRL_SNOOP_SELECT(x)	(((x) & 3) << 18)
+#define  SIO_IOBP_PORTCTRL_INT_PIN(x)		(((x) & 0xf) << 2)
+#define SIO_IOBP_FUNCDIS0	0xce00aa07	/* DMA D21:F0 */
+#define SIO_IOBP_FUNCDIS1	0xce00aa47	/* I2C0 D21:F1 */
+#define SIO_IOBP_FUNCDIS2	0xce00aa87	/* I2C1 D21:F2 */
+#define SIO_IOBP_FUNCDIS3	0xce00aac7	/* SPI0 D21:F3 */
+#define SIO_IOBP_FUNCDIS4	0xce00ab07	/* SPI1 D21:F4 */
+#define SIO_IOBP_FUNCDIS5	0xce00ab47	/* UART0 D21:F5 */
+#define SIO_IOBP_FUNCDIS6	0xce00ab87	/* UART1 D21:F6 */
+#define SIO_IOBP_FUNCDIS7	0xce00ae07	/* SDIO D23:F0 */
+#define  SIO_IOBP_FUNCDIS_DIS			(1 << 8)
+
 /* PCI Configuration Space (D31:F3): SMBus */
 #define PCH_SMBUS_DEV		PCI_DEV(0, 0x1f, 3)
 #define SMB_BASE		0x20

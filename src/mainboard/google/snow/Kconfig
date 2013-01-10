@@ -63,6 +63,10 @@ config SPL_TEXT_BASE
 	help
 	  Location of SPL. Default location is within iRAM region.
 
+config ROMSTAGE_BASE
+	hex
+	default SPL_TEXT_BASE
+
 # FIXME: increased "SPL" size to get around build issues
 #config SPL_MAX_SIZE
 #	hex "SPL executable max size"

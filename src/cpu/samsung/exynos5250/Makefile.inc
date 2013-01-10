@@ -1,6 +1,8 @@
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
+
+# FIXME: this will be needed once the BL1 mess is sorted out.
 #INTERMEDIATE += exynos5250_add_bl1
 
 romstage-y += clock.c
@@ -33,7 +35,10 @@ ramstage-$(CONFIG_SPL_BUILD) += lowlevel_init_c.c
 ramstage-$(CONFIG_SPL_BUILD) += dmc_common.c
 ramstage-$(CONFIG_SPL_BUILD) += dmc_init_ddr3.c
 
+BL1_NAME	= E5250.nbl1.bin
+BL1_PATH	= 3rdparty/cpu/samsung/exynos5250/
+
 exynos5250_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5250 BL1\n"
-	dd if=3rdparty/cpu/samsung/exynos5250/E5250.nbl1.bin \
+	dd if=$(BL1_PATH)/$(BL1_NAME) 
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1

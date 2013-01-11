@@ -35,11 +35,11 @@
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
-ENTRY(_start)
+/* ENTRY(_start) */
 
 SECTIONS
 {
-	. = CONFIG_ROMSTAGE_BASE;
+	. = 0x02023400 + 0x4000;
 
 	.romtext . : {
 		_rom = .;

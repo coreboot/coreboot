@@ -45,7 +45,7 @@ config IRAM_TOP
 
 config SYS_INIT_SP_ADDR
 	hex
-	default 0x0204F800
+	default 0x02058000
 
 config IRAM_STACK
 	hex

@@ -31,8 +31,10 @@ static int cbfs_check_magic(struct cbfs_file *file)
 	return !strcmp(file->magic, CBFS_FILE_MAGIC) ? 1 : 0;
 }
 
+#if 0
 static unsigned long findstage(const char* target)
 {
+<<<<<<< HEAD
 	unsigned long offset, align;
 	/* FIXME: magic offsets */
 	struct cbfs_header *header = (struct cbfs_header *)(0x02023400 + 0x40);
@@ -45,9 +47,70 @@ static unsigned long findstage(const char* target)
 		struct cbfs_file *file;
 		file = (struct cbfs_file *)(offset + CONFIG_ROMSTAGE_BASE);
 		if (!cbfs_check_magic(file))
+=======
+	unsigned long offset;
+	void *ptr = (void *)*((unsigned long *) CBFS_HEADPTR_ADDR);
+	struct cbfs_header *header = (struct cbfs_header *) ptr;
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	// if (ntohl(header->magic) != CBFS_HEADER_MAGIC)
+	// 	printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
+
+	/* FIXME(dhendrix,reinauer): should this be ntohl(header->offset)? */
+	offset = ntohl(header->offset);
+	int align = ntohl(header->align);
+	while(1) {
+		struct cbfs_file *file = (struct cbfs_file *) offset;
+		if (!cbfs_check_magic(file)) {
+>>>>>>> 6396c89... WIP: first attempt at porting SPI driver into bootblock
 			return 0;
-		if (!strcmp(CBFS_NAME(file), target))
+		}
+		if (!strcmp(CBFS_NAME(file), target)) {
 			return (unsigned long)CBFS_SUBHEADER(file);
+		}
+
+		int flen = ntohl(file->len);
+		int foffset = ntohl(file->offset);
+		unsigned long oldoffset = offset;
+		offset = ALIGN(offset + foffset + flen, align);
+		if (offset <= oldoffset)
+			return 0;
+		/* FIXME(dhendrix,reinauer): calculate the limit correctly */
+		if (offset < ntohl(header->offset) + ntohl(header->romsize))
+			return 0;
+	}
+#if 0
+	/* FIXME: for debugging */
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	*addr |= 0x100;
+#endif
+	while(1);	/* FIXME: for debugging */
+}
+#endif
+
+static unsigned long findstage(const char* target)
+{
+	unsigned long offset;
+	/* FIXME: CBFS_HEADPTR_ADDR is completely wrong. */
+	void *ptr = (void *)*((unsigned long *) CBFS_HEADPTR_ADDR);
+	struct cbfs_header *header = (struct cbfs_header *) ptr;
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	// if (ntohl(header->magic) != CBFS_HEADER_MAGIC)
+	// 	printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
+
+	*addr |= 0x100;
+	while(1);	/* FIXME: for debugging */
+	/* FIXME(dhendrix,reinauer): should this be ntohl(header->offset)? */
+	offset = ntohl(header->offset);
+	int align = ntohl(header->align);
+	while(1) {
+		struct cbfs_file *file = (struct cbfs_file *) offset;
+		if (!cbfs_check_magic(file)) {
+			return 0;
+		}
+		if (!strcmp(CBFS_NAME(file), target)) {
+			return (unsigned long)CBFS_SUBHEADER(file);
+		}
+
 		int flen = ntohl(file->len);
 		int foffset = ntohl(file->offset);
 		unsigned long oldoffset = offset;
@@ -57,6 +120,12 @@ static unsigned long findstage(const char* target)
 		if (offset < CONFIG_ROMSTAGE_BASE + ntohl(header->romsize));
 			return 0;
 	}
+#if 0
+	/* FIXME: for debugging */
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	*addr |= 0x100;
+	while(1);	/* FIXME: for debugging */
+#endif
 }
 
 static inline void call(unsigned long addr)

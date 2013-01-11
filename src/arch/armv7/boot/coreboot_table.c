@@ -251,7 +251,7 @@ static void add_cbmem_pointers(struct lb_header *header)
 		}
 		cbmem_ref->tag = sid->table_tag;
 		cbmem_ref->size = sizeof(*cbmem_ref);
-		cbmem_ref->cbmem_addr = cbmem_addr;
+		cbmem_ref->cbmem_addr = (unsigned long)cbmem_addr;
 	}
 }
 

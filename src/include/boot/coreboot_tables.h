@@ -229,7 +229,7 @@ struct lb_cbmem_ref {
 	uint32_t tag;
 	uint32_t size;
 
-	void	*cbmem_addr;
+	uint64_t cbmem_addr;
 };
 
 #define LB_TAG_VBNV		0x0019

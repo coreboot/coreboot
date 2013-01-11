@@ -25,6 +25,8 @@
 #include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
 
+enum periph_id;
+
 /*
  * Set mshci controller instances clock drivder
  *

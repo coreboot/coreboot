@@ -56,6 +56,10 @@ config MAINBOARD_VENDOR
 	string
 	default "Samsung"
 
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/google/snow/bootblock.c"
+
 # SPL (second-phase loader) stuff
 config SPL_TEXT_BASE
 	hex

@@ -42,6 +42,10 @@ void main(unsigned long bist)
 		bootblock_mainboard_init();
 	}
 
+	volatile unsigned long *addr = (unsigned long *)0x1004330c;
+	*addr |= 0x100;
+	while (1) ;
+
 	entry = findstage(target1);
 	if (entry) call(entry);
 

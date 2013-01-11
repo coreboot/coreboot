@@ -85,3 +85,7 @@ call_bootblock:
 wait_for_interrupt:
 	wfi
 	mov	pc, lr			@ back to my caller
+
+/* This is a gross hack to avoid issues with the literal pool being placed
+ * too far away from lpr instruction above (seriously). */
+.ltorg

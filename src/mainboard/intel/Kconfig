@@ -21,6 +21,8 @@ config BOARD_INTEL_XE7501DEVKIT
 	bool "XE7501devkit"
 config BOARD_INTEL_BASKING_RIDGE
 	bool "Basking Ridge CRB"
+config BOARD_INTEL_WTM1
+	bool "Whitetip Mountain 1 CRB"
 
 endchoice
 
@@ -33,6 +35,7 @@ source "src/mainboard/intel/jarrell/Kconfig"
 source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"
 source "src/mainboard/intel/xe7501devkit/Kconfig"
+source "src/mainboard/intel/wtm1/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -15,8 +15,8 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,25 +31,24 @@
 
 #include <system.h>
 
+_bl1:
+	/* For now we have to live with a first stage boot loader
+	 * on ARM, which is 8KB in size and it is prepended to the
+	 * reset vector
+	 */
+	/* this comes a bit later. */
+//	.skip 8192
+
 .globl _start
 _start: b	reset
-	ldr	pc, _undefined_instruction
-	ldr	pc, _software_interrupt
-	ldr	pc, _prefetch_abort
-	ldr	pc, _data_abort
-	ldr	pc, _not_used
-	ldr	pc, _irq
-	ldr	pc, _fiq
-_undefined_instruction: .word _undefined_instruction
-_software_interrupt:	.word _software_interrupt
-_prefetch_abort:	.word _prefetch_abort
-_data_abort:		.word _data_abort
-_not_used:		.word _not_used
-_irq:			.word _irq
-_fiq:			.word _fiq
-_pad:			.word 0x12345678 /* now 16*4=64 */
-
 	.balignl 16,0xdeadbeef
+
+_cbfs_master_header:
+	/* The CBFS master header is inserted here by cbfstool
+	 * when coreboot.rom is being created. Hence, we leave
+	 * some space for it.
+	 */
+	.skip 64
 
 reset:
 	/*
@@ -71,22 +70,22 @@ reset:
 	cmp r1, #0
 	bne wait_for_interrupt		@ If this is not core0, wait
 
-	/* Set V=0 in CP15 SCTRL register - for VBAR to point to vector */
-	mrc	p15, 0, r0, c1, c0, 0	@ Read CP15 SCTRL Register
-	bic	r0, #CR_V		@ V = 0
-	mcr	p15, 0, r0, c1, c0, 0	@ Write CP15 SCTRL Register
-
-	/* Set vector address in CP15 VBAR register */
-	ldr	r0, =_start
-	mcr	p15, 0, r0, c12, c0, 0	@Set VBAR
-
 /* Set stackpointer in internal RAM to call board_init_f */
-call_board_init_f:
-	ldr	sp, =(CONFIG_SYS_INIT_SP_ADDR)
-	mov	sp, r0
+call_bootblock:
+	ldr	sp, =(CONFIG_SYS_INIT_SP_ADDR) /* Set up stack pointer */
 	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
 	ldr	r0,=0x00000000
+	/*
+	 * Use "bl" instead of "b" even though we do not intend to return.
+	 * "bl" gets compiled to "blx" if we're transitioning from ARM to
+	 * Thumb. However, "b" will not and GCC may attempt to create a
+	 * wrapper which is currently broken.
+	 */
+	/* for now call board_init_f; change later. We're trying to get as much into ToT as
+	 * we can
+	 */
 	bl	board_init_f
+	bl	main
 
 wait_for_interrupt:
 	wfi

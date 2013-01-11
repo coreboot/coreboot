@@ -1,3 +1,11 @@
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/samsung/exynos5250/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
+
 config EXYNOS_ACE_SHA
 	bool
 	default n

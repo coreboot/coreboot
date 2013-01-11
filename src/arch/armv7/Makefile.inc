@@ -228,6 +228,9 @@ bootblock_lds = $(src)/arch/armv7/lib/id.lds
 #bootblock_lds = $(src)/arch/armv7/romstage.ld
 bootblock_lds += $(chipset_bootblock_lds)
 
+bootblock_inc += $(src)/arch/armv7/bootblock.inc
+bootblock_inc += $(src)/arch/armv7/lib/_udivsi3.S
+bootblock_inc += $(src)/arch/armv7/lib/_divsi3.S
 bootblock_inc += $(src)/arch/armv7/lib/id.inc
 bootblock_inc += $(chipset_bootblock_inc)
 

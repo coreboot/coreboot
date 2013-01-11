@@ -8,10 +8,10 @@ config BOOTBLOCK_OFFSET
 	  this value is pre-determined by the vendor-provided BL1.
 
 config BOOTBLOCK_CPU_INIT
-	bool
-	default n
+	string
+	default "cpu/samsung/exynos5250/bootblock.c"
 	help
-	  Run CPU/SoC-specific bootblock code. This is useful if the
+	  CPU/SoC-specific bootblock code. This is useful if the
 	  bootblock must load microcode or copy data from ROM before
 	  searching for the bootblock.
 

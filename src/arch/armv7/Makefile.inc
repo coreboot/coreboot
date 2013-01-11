@@ -149,7 +149,7 @@ CFLAGS += \
 # For various headers imported from Linux
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
-crt0s = $(src)/arch/armv7/init.S
+crt0s = $(src)/arch/armv7/bootblock.inc
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 

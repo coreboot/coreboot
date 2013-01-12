@@ -241,6 +241,10 @@ static int fill_td(qtd_t *td, void* data, int datalen)
 			}
 			datalen -= 4096;
 			total_len += 4096;
+
+			/* end TD at a packet boundary if transfer not complete */
+			if (page_no == 5)
+				total_len &= ~511;
 		}
 	}
 	td->token |= total_len << QTD_TOTAL_LEN_SHIFT;

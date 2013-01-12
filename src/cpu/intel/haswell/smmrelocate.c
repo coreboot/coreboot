@@ -36,8 +36,6 @@
 #define UNCORE_EMRRphysBase_MSR 0x2f4
 #define UNCORE_EMRRphysMask_MSR 0x2f5
 
-#define CORE_THREAD_COUNT_MSR 0x35
-
 #define SMRR_SUPPORTED (1<<11)
 #define EMRR_SUPPORTED (1<<12)
 

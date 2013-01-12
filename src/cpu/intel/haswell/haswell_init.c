@@ -424,11 +424,17 @@ static void set_energy_perf_bias(u8 policy)
 static void configure_mca(void)
 {
 	msr_t msr;
+	const unsigned int mcg_cap_msr = 0x179;
 	int i;
+	int num_banks;
 
+	msr = rdmsr(mcg_cap_msr);
+	num_banks = msr.lo & 0xff;
 	msr.lo = msr.hi = 0;
-	/* This should only be done on a cold boot */
-	for (i = 0; i < 7; i++)
+	/* TODO(adurbin): This should only be done on a cold boot. Also, some
+	 * of these banks are core vs package scope. For now every CPU clears
+	 * every bank. */
+	for (i = 0; i < num_banks; i++)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 

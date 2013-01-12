@@ -25,6 +25,7 @@
 /* Haswell bus clock is fixed at 100MHz */
 #define HASWELL_BCLK		100
 
+#define CORE_THREAD_COUNT_MSR		0x35
 #define IA32_FEATURE_CONTROL		0x3a
 #define  CPUID_VMX			(1 << 5)
 #define  CPUID_SMX			(1 << 6)

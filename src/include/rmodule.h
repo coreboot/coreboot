@@ -26,6 +26,7 @@
 
 enum {
 	RMODULE_TYPE_SMM,
+	RMODULE_TYPE_SIPI_VECTOR,
 };
 
 struct rmodule;

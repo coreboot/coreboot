@@ -60,7 +60,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock smm smmstub cpu_microcode
+classes-y := ramstage romstage bootblock smm smmstub cpu_microcode rmodules
 
 #######################################################################
 # Helper functions for ramstage postprocess

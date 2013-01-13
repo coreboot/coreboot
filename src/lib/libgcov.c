@@ -811,14 +811,15 @@ __gcov_merge_ior (gcov_type *counters, unsigned n_counters)
 
 #ifdef L_gcov_merge_single
 /* The profile merging function for choosing the most common value.
-   It is given an array COUNTERS of N_COUNTERS old counters and it
-   reads the same number of counters from the gcov file.  The counters
-   are split into 3-tuples where the members of the tuple have
-   meanings:
-  
-   -- the stored candidate on the most common value of the measured entity
-   -- counter
-   -- total number of evaluations of the value  */
+ * It is given an array COUNTERS of N_COUNTERS old counters and it
+ * reads the same number of counters from the gcov file.  The counters
+ * are split into 3-tuples where the members of the tuple have
+ * meanings:
+ *
+ * -- the stored candidate on the most common value of the measured entity
+ * -- counter
+ * -- total number of evaluations of the value 
+ */
 void
 __gcov_merge_single (gcov_type *counters, unsigned n_counters)
 {
@@ -849,15 +850,16 @@ __gcov_merge_single (gcov_type *counters, unsigned n_counters)
 
 #ifdef L_gcov_merge_delta
 /* The profile merging function for choosing the most common
-   difference between two consecutive evaluations of the value.  It is
-   given an array COUNTERS of N_COUNTERS old counters and it reads the
-   same number of counters from the gcov file.  The counters are split
-   into 4-tuples where the members of the tuple have meanings:
-
-   -- the last value of the measured entity
-   -- the stored candidate on the most common difference
-   -- counter
-   -- total number of evaluations of the value  */
+ * difference between two consecutive evaluations of the value.  It is
+ * given an array COUNTERS of N_COUNTERS old counters and it reads the
+ * same number of counters from the gcov file.  The counters are split
+ * into 4-tuples where the members of the tuple have meanings:
+ *
+ * -- the last value of the measured entity
+ * -- the stored candidate on the most common difference
+ * -- counter
+ * -- total number of evaluations of the value 
+ */
 void
 __gcov_merge_delta (gcov_type *counters, unsigned n_counters)
 {

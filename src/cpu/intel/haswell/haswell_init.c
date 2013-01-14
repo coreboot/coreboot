@@ -499,18 +499,9 @@ static void intel_cores_init(device_t cpu)
 	}
 }
 
-static void haswell_init(device_t cpu)
+static void bsp_init_before_ap_bringup(void)
 {
 	char processor_name[49];
-	struct cpuid_result cpuid_regs;
-
-	intel_update_microcode_from_cbfs();
-
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-
-	/* Clear out pending MCEs */
-	configure_mca();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
@@ -523,18 +514,35 @@ static void haswell_init(device_t cpu)
 	set_ehci_debug(0);
 #endif
 
-	/* Setup MTRRs based on physical address size */
-	cpuid_regs = cpuid(0x80000008);
+	/* Setup MTRRs based on physical address size. */
 	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(cpuid_regs.eax & 0xff, 2);
+	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
-
-	/* Setup Page Attribute Tables (PAT) */
-	// TODO set up PAT
 
 #if CONFIG_USBDEBUG
 	set_ehci_debug(ehci_debug_addr);
 #endif
+
+	enable_lapic();
+}
+
+static void ap_init(device_t cpu)
+{
+	/* Microcode needs to be loaded before caching is enabled. */
+	intel_update_microcode_from_cbfs();
+
+	/* Turn on caching if we haven't already */
+	x86_enable_cache();
+	x86_setup_fixed_mtrrs();
+	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
+
+	enable_lapic();
+}
+
+static void cpu_common_init(device_t cpu)
+{
+	/* Clear out pending MCEs */
+	configure_mca();
 
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();
@@ -560,9 +568,37 @@ static void haswell_init(device_t cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
+}
 
-	/* Start up extra cores */
-	intel_cores_init(cpu);
+void bsp_init_and_start_aps(struct bus *cpu_bus)
+{
+	/* Perform any necesarry BSP initialization before APs are brought up.
+	 * This call alos allows the BSP to prepare for any secondary effects
+	 * from calling cpu_initialize() such as smm_init(). */
+	bsp_init_before_ap_bringup();
+
+	/*
+	 * This calls into the gerneic initialize_cpus() which attempts to
+	 * start APs on the APIC bus in the devicetree.  No APs get started
+	 * because there is only the BSP and a placeholder (disabled) in the
+	 * devicetree. initialize_cpus() also does SMM initialization by way
+	 * of smm_init(). It will eventually call cpu_initialize(0) which calls
+	 * dev_ops->init(). For Haswell the dev_ops->init() starts up the APs
+	 * by way of intel_cores_init().
+	 */
+	initialize_cpus(cpu_bus);
+}
+
+static void haswell_init(device_t cpu)
+{
+	if (cpu->path.apic.apic_id == 0) {
+		cpu_common_init(cpu);
+		/* Start up extra cores */
+		intel_cores_init(cpu);
+	} else {
+		ap_init(cpu);
+		cpu_common_init(cpu);
+	}
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -594,16 +594,7 @@ static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
-	/*
-	 * This calls into the gerneic initialize_cpus() which attempts to
-	 * start APs on the APIC bus in the devicetree.  No APs get started
-	 * because there is only the BSP and placeholder (disabled) in the
-	 * devicetree. initialize_cpus() also does SMM initialization by way
-	 * of smm_init(). It will eventually call cpu_initialize(0) which calls
-	 * dev_ops->init(). For Haswell the dev_ops->init() starts up the APs
-	 * by way of intel_cores_init().
-	 */
-	initialize_cpus(dev->link_list);
+	bsp_init_and_start_aps(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)

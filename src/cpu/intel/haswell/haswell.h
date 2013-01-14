@@ -108,6 +108,8 @@ void intel_cpu_haswell_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
+struct bus;
+void bsp_init_and_start_aps(struct bus *cpu_bus);
 #endif
 #endif
 

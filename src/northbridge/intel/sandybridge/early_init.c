@@ -97,7 +97,8 @@ static void sandybridge_setup_graphics(void)
 	case 0x0116: /* GT2 Mobile */
 	case 0x0122: /* GT2 Desktop >=1.3GHz */
 	case 0x0126: /* GT2 Mobile >=1.3GHz */
-	case 0x0166: /* IvyBridge ??? */
+	case 0x0156: /* IvyBridge */
+	case 0x0166: /* IvyBridge */
 		break;
 	default:
 		printk(BIOS_DEBUG, "Graphics not supported by this CPU/chipset.\n");

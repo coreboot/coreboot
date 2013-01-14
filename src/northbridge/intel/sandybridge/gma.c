@@ -318,6 +318,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x80860116:		/* GT2 Mobile */
 	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
 	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
+	case 0x80860156:                /* IVB */
 	case 0x80860166:                /* IVB */
 		new_vendev=0x80860106;	/* GT1 Mobile */
 		break;
@@ -660,7 +661,7 @@ static struct device_operations gma_func0_ops = {
 };
 
 static const unsigned short gma_ids[] = {
-	0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x166,
+	0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x0156, 0x166,
 	0,
 };
 static const struct pci_driver gma_gt1_desktop __pci_driver = {

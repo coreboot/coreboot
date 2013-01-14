@@ -47,11 +47,13 @@ uint32_t romstart(void);
 uint32_t romend(void);
 
 #include <arch/virtual.h>
-static uint32_t host_virt_to_phys(void *addr) {
+static uint32_t host_virt_to_phys(void *addr)
+{
 	return virt_to_phys(addr);
 }
 
-static void *host_phys_to_virt(uint32_t addr) {
+static void *host_phys_to_virt(uint32_t addr)
+{
 	return phys_to_virt(addr);
 }
 #undef virt_to_phys
@@ -78,11 +80,13 @@ uint32_t romend(void)
 
 static uint32_t ram_cbfs_offset;
 
-static uint32_t ram_virt_to_phys(void *addr) {
+static uint32_t ram_virt_to_phys(void *addr)
+{
 	return (uint32_t)addr - ram_cbfs_offset;
 }
 
-static void *ram_phys_to_virt(uint32_t addr) {
+static void *ram_phys_to_virt(uint32_t addr)
+{
 	return (void*)addr + ram_cbfs_offset;
 }
 
@@ -94,7 +98,7 @@ void setup_cbfs_from_ram(void* start, uint32_t size)
 	phys_to_virt = ram_phys_to_virt;
 }
 
-void setup_cbfs_from_flash()
+void setup_cbfs_from_flash(void)
 {
 	virt_to_phys = host_virt_to_phys;
 	phys_to_virt = host_phys_to_virt;

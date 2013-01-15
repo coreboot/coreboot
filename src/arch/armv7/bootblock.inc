@@ -43,11 +43,11 @@ _start: b	reset
 	.balignl 16,0xdeadbeef
 
 _cbfs_master_header:
-	/* The CBFS master header is inserted here by cbfstool
-	 * when coreboot.rom is being created. Hence, we leave
-	 * some space for it.
+	/* The CBFS master header is inserted by cbfstool at the first
+	 * aligned offset after the above anchor string is found.
+	 * Hence, we leave some space for it.
 	 */
-	.skip 64
+	.skip 128			@ Assumes 64-byte alignment
 
 reset:
 	/*

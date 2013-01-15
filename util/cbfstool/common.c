@@ -565,23 +565,32 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		/* Set up physical/virtual mapping */
 		offset = romarea;
 
-		// should be aligned to align
-		uint32_t *arm_vec = (uint32_t *)(romarea + offs);
-		master_header = (struct cbfs_header *)(romarea + offs + 0x20);
-		loadfile(bootblock, &bootblocksize, romarea + offs + 0x20 +
-				sizeof(struct cbfs_header), SEEK_SET);
-
 		/*
-		 * Encoding for this branch instruction is:
-		 * 31:28 - condition (0xe for always/unconditional)
-		 * 27:24 - Branch (0xa, encoding A1)
-		 * 23: 0 - sign-extended offset (in multiples of 4)
+		 * The initial jump instruction and bootblock will be placed
+		 * before and after the master header, respectively. The
+		 * bootblock image must contain a blank, aligned region large
+		 * enough for the master header to fit.
 		 *
-		 * When executing the branch, the PC will read as the address
-		 * of current instruction + 8.
+		 * An anchor string must be left such that when cbfstool is run
+		 * we can find it and insert the master header at the next
+		 * aligned boundary.
 		 */
-		uint32_t imm = ((0x20 + sizeof(struct cbfs_header)) - 8) / 4;
-		arm_vec[0] = imm | (0xa << 24) | (0xe << 28);
+		loadfile(bootblock, &bootblocksize, romarea + offs, SEEK_SET);
+
+		unsigned char *p = romarea + offs;
+		while (1) {
+			/* FIXME: assumes little endian... */
+			if (*(uint32_t *)p == 0xdeadbeef)
+				break;
+			if (p >= (romarea + _romsize)) {
+				fprintf(stderr, "E: Could not determine CBFS "
+					"header location.\n", bootblock);
+				return 1;
+			}
+			p += (sizeof(unsigned int));
+		}
+		unsigned int u = ALIGN((unsigned int)(p - romarea), align);
+		master_header = (struct cbfs_header *)(romarea + u);
 
 		master_header->magic = ntohl(CBFS_HEADER_MAGIC);
 		master_header->version = ntohl(CBFS_HEADER_VERSION);

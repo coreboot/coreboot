@@ -62,6 +62,8 @@ static int set_timer_fsb(void)
 		break;
 	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
 	case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
+	case 0x3c: /* Haswell BCLK fixed at 100MHz */
+	case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
 		timer_fsb = 100;
 		break;
 	default:

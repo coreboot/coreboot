@@ -442,70 +442,29 @@ static void configure_mca(void)
 static unsigned ehci_debug_addr;
 #endif
 
-/*
- * Initialize any extra cores/threads in this package.
- */
-static void intel_cores_init(device_t cpu)
+static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 {
-	struct cpuid_result result;
-	unsigned threads_per_package, threads_per_core, i;
-
-	/* Logical processors (threads) per core */
-	result = cpuid_ext(0xb, 0);
-	threads_per_core = result.ebx & 0xffff;
-
-	/* Logical processors (threads) per package */
-	result = cpuid_ext(0xb, 1);
-	threads_per_package = result.ebx & 0xffff;
-
-	/* Only initialize extra cores from BSP */
-	if (cpu->path.apic.apic_id)
-		return;
-
-	printk(BIOS_DEBUG, "CPU: %u has %u cores, %u threads per core\n",
-	       cpu->path.apic.apic_id, threads_per_package/threads_per_core,
-	       threads_per_core);
-
-	for (i = 1; i < threads_per_package; ++i) {
-		struct device_path cpu_path;
-		device_t new;
-
-		/* Build the cpu device path */
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.apic.apic_id =
-			cpu->path.apic.apic_id + i;
-
-		/* Update APIC ID if no hyperthreading */
-		if (threads_per_core == 1)
-			cpu_path.apic.apic_id <<= 1;
-
-		/* Allocate the new cpu device structure */
-		new = alloc_dev(cpu->bus, &cpu_path);
-		if (!new)
-			continue;
-
-		printk(BIOS_DEBUG, "CPU: %u has core %u\n",
-		       cpu->path.apic.apic_id,
-		       new->path.apic.apic_id);
-
-#if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-		/* Start the new cpu */
-		if (!start_cpu(new)) {
-			/* Record the error in cpu? */
-			printk(BIOS_ERR, "CPU %u would not start!\n",
-			       new->path.apic.apic_id);
-		}
-#endif
-	}
-}
-
-static void bsp_init_before_ap_bringup(void)
-{
+	struct device_path cpu_path;
+	struct cpu_info *info;
 	char processor_name[49];
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
+
+	/* Ensure the local apic is enabled */
+	enable_lapic();
+
+	/* Set the device path of the boot cpu. */
+	cpu_path.type = DEVICE_PATH_APIC;
+	cpu_path.apic.apic_id = lapicid();
+
+	/* Find the device structure for the boot cpu. */
+	info = cpu_info();
+	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+
+	if (info->index != 0)
+		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
 
 #if CONFIG_USBDEBUG
 	// Is this caution really needed?
@@ -523,23 +482,12 @@ static void bsp_init_before_ap_bringup(void)
 	set_ehci_debug(ehci_debug_addr);
 #endif
 
-	enable_lapic();
+	/* Call through the cpu driver's initialization. */
+	cpu_initialize(0);
 }
 
-static void ap_init(device_t cpu)
-{
-	/* Microcode needs to be loaded before caching is enabled. */
-	intel_update_microcode_from_cbfs();
-
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-	x86_setup_fixed_mtrrs();
-	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
-
-	enable_lapic();
-}
-
-static void cpu_common_init(device_t cpu)
+/* All CPUs including BSP will run the following function. */
+static void haswell_init(device_t cpu)
 {
 	/* Clear out pending MCEs */
 	configure_mca();
@@ -572,33 +520,40 @@ static void cpu_common_init(device_t cpu)
 
 void bsp_init_and_start_aps(struct bus *cpu_bus)
 {
+	int max_cpus;
+	int num_aps;
+	const void *microcode_patch;
+
 	/* Perform any necesarry BSP initialization before APs are brought up.
 	 * This call alos allows the BSP to prepare for any secondary effects
 	 * from calling cpu_initialize() such as smm_init(). */
-	bsp_init_before_ap_bringup();
+	bsp_init_before_ap_bringup(cpu_bus);
 
-	/*
-	 * This calls into the gerneic initialize_cpus() which attempts to
-	 * start APs on the APIC bus in the devicetree.  No APs get started
-	 * because there is only the BSP and a placeholder (disabled) in the
-	 * devicetree. initialize_cpus() also does SMM initialization by way
-	 * of smm_init(). It will eventually call cpu_initialize(0) which calls
-	 * dev_ops->init(). For Haswell the dev_ops->init() starts up the APs
-	 * by way of intel_cores_init().
-	 */
-	initialize_cpus(cpu_bus);
-}
+	microcode_patch = intel_microcode_find();
 
-static void haswell_init(device_t cpu)
-{
-	if (cpu->path.apic.apic_id == 0) {
-		cpu_common_init(cpu);
-		/* Start up extra cores */
-		intel_cores_init(cpu);
-	} else {
-		ap_init(cpu);
-		cpu_common_init(cpu);
+	/* This needs to be called after the mtrr setup so the BSP mtrrs
+	 * can be mirrored by the APs. */
+	if (setup_ap_init(cpu_bus, &max_cpus, microcode_patch)) {
+		printk(BIOS_CRIT, "AP setup initialization failed. "
+		       "No APs will be brought up.\n");
+		return;
 	}
+
+	num_aps = max_cpus - 1;
+	if (start_aps(cpu_bus, num_aps)) {
+		printk(BIOS_CRIT, "AP startup failed. Trying to continue.\n");
+	}
+
+	if (smm_initialize()) {
+		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
+		return;
+	}
+
+	/* Release APs to perform SMM relocation. */
+	release_aps_for_smm_relocation();
+
+	/* After SMM relocation a 2nd microcode load is required. */
+	intel_microcode_load_unlocked(microcode_patch);
 }
 
 static struct device_operations cpu_dev_ops = {

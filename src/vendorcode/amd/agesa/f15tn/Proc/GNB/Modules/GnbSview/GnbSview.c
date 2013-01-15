@@ -126,6 +126,7 @@ GfxInitSview (
   AGESA_STATUS          Status;
   AGESA_STATUS          AgesaStatus;
   GFX_PLATFORM_CONFIG   *Gfx;
+  UINT32                OriginalCmdReg;
   IDS_HDT_CONSOLE (GNB_TRACE, "GfxInitSview Enter\n");
   AgesaStatus = AGESA_SUCCESS;
   Status =  GfxLocateConfigData (StdHeader, &Gfx);
@@ -138,6 +139,7 @@ GfxInitSview (
         VbiosImageInfo.ImagePtr = NULL;
         VbiosImageInfo.GfxPciAddress = Gfx->GfxPciAddress;
         VbiosImageInfo.Flags = GFX_VBIOS_IMAGE_FLAG_SPECIAL_POST;
+        GnbLibPciRead (Gfx->GfxPciAddress.AddressValue | 0x4, AccessS3SaveWidth8, &OriginalCmdReg, StdHeader);
         GnbLibPciRMW (Gfx->GfxPciAddress.AddressValue | 0x4, AccessS3SaveWidth8, 0xff, BIT1 | BIT2 | BIT0, StdHeader);
         Status = AgesaGetVbiosImage (0, &VbiosImageInfo);
         if (Status == AGESA_SUCCESS && VbiosImageInfo.ImagePtr != NULL) {
@@ -146,7 +148,7 @@ GfxInitSview (
           GfxFmDisableController (StdHeader);
           AgesaStatus = AGESA_ERROR;
         }
-        GnbLibPciRMW (Gfx->GfxPciAddress.AddressValue | 0x4, AccessS3SaveWidth8, 0xf8, BIT1 | BIT2, StdHeader);
+        GnbLibPciRMW (Gfx->GfxPciAddress.AddressValue | 0x4, AccessS3SaveWidth8, 0x00, OriginalCmdReg, StdHeader);
       }
     }
   }

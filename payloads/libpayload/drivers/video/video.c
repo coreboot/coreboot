@@ -216,6 +216,7 @@ int video_init(void)
 		video_console_fixup_cursor();
 		return 0;
 	}
+	return 1;
 }
 
 int video_console_init(void)

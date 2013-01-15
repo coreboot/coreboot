@@ -23,6 +23,13 @@
 #ifndef __PRE_RAM__
 #if CONFIG_CPU_MICROCODE_IN_CBFS
 void intel_update_microcode_from_cbfs(void);
+/* Find a microcode that matches the revision and platform family returning
+ * NULL if none found. */
+const void *intel_microcode_find(void);
+/* It is up to the caller to determine if parallel loading is possible as
+ * well as ensuring the micrcode matches the family and revision (i.e. with
+ * intel_microcode_find()). */
+void intel_microcode_load_unlocked(const void *microcode_patch);
 #else
 void intel_update_microcode(const void *microcode_updates);
 #endif

@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Anton Kochkov <anton.kochkov@gmail.com>
+Code-Review+1: Martin Roth <martin.roth@se-eng.com>
+Code-Review+1: Dave Frodin <dave.frodin@se-eng.com>
+Submitted-by: Anton Kochkov <anton.kochkov@gmail.com>
+Submitted-at: Tue, 15 Jan 2013 09:29:30 +0100
+Reviewed-on: http://review.coreboot.org/2144
+Project: coreboot
+Branch: refs/heads/master

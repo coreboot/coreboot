@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
@@ -297,24 +298,30 @@ static int cpu_smm_setup(void)
 	return 0;
 }
 
-void smm_init(void)
+int smm_initialize(void)
 {
 	/* Return early if CPU SMM setup failed. */
 	if (cpu_smm_setup())
-		return;
+		return -1;
 
 	southbridge_smm_init();
 
-	/* Initiate first SMI to kick off SMM-context relocation. Note: this
-	 * SMI being triggered here queues up an SMI in the APs which are in
-	 * wait-for-SIPI state. Once an AP gets an SIPI it will service the SMI
-	 * at the SMM_DEFAULT_BASE before jumping to startup vector. */
-	southbridge_trigger_smi();
-
-	printk(BIOS_DEBUG, "Relocation complete.\n");
+	/* Run the relocation handler. */
+	smm_initiate_relocation();
 
 	/* Lock down the SMRAM space. */
 	smm_lock();
+
+	return 0;
+}
+
+void smm_init(void)
+{
+	/* smm_init() is normally called from initialize_cpus() in
+	 * lapic_cpu_init.c. However, that path is no longer used. Don't reuse
+	 * the function name because that would cause confusion.
+	 * The smm_initialize() function above is used to setup SMM at the
+	 * appropriate time. */
 }
 
 void smm_lock(void)

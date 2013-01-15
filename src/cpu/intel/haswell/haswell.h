@@ -141,8 +141,17 @@ void intel_cpu_haswell_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
+/* Returns 0 on success, < 0 on failure. */
+int smm_initialize(void);
+void smm_initiate_relocation(void);
 struct bus;
 void bsp_init_and_start_aps(struct bus *cpu_bus);
+/* Returns 0 on succes. < 0 on failure. */
+int setup_ap_init(struct bus *cpu_bus, int *max_cpus,
+                  const void *microcode_patch);
+/* Returns 0 on success, < 0 on failure. */
+int start_aps(struct bus *cpu_bus, int max_cpus);
+void release_aps_for_smm_relocation(void);
 #endif
 #endif
 

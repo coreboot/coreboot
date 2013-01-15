@@ -24,9 +24,6 @@
 #ifndef __COMMON_H_
 #define __COMMON_H_	1
 
-#undef	_LINUX_CONFIG_H
-#define _LINUX_CONFIG_H 1	/* avoid reading Linux autoconf.h file	*/
-
 #ifndef __ASSEMBLER__		/* put C only stuff in this section */
 
 typedef unsigned char		uchar;
@@ -36,17 +33,7 @@ typedef volatile unsigned char	vu_char;
 typedef unsigned long ulong;
 typedef unsigned int uint;
 
-//#include <config.h>
-//#include <asm-offsets.h>
-//#include <linux/bitops.h>
-//#include <linux/string.h>
-//#include <asm/ptrace.h>
 #include <types.h>
-//#include <stdarg.h>
-
-//#include <part.h>
-//#include <flash.h>
-//#include <image.h>
 
 #ifdef	DEBUG
 #define debug(fmt,args...)	printf (fmt ,##args)

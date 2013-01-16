@@ -3,7 +3,7 @@ The file gcov-iov.h is taken from a gcc build (produced at compile
 time). The file gcov-io.c is unchanged.
 
 --- gcc-4.7.2/gcc/gcov-io.h	2011-12-04 10:27:19.000000000 -0800
-+++ coreboot/src/lib/gcov-io.h	2013-01-09 15:29:19.000000000 -0800
++++ coreboot/src/lib/gcov-io.h	2013-01-12 16:45:57.000000000 -0800
 @@ -163,6 +163,24 @@
  #ifndef GCC_GCOV_IO_H
  #define GCC_GCOV_IO_H
@@ -51,7 +51,7 @@ time). The file gcov-io.c is unchanged.
  /* The merge function that just sums the counters.  */
  extern void __gcov_merge_add (gcov_type *, unsigned) ATTRIBUTE_HIDDEN;
 --- gcc-4.7.2/libgcc/libgcov.c	2012-01-11 10:50:21.000000000 -0800
-+++ coreboot/src/lib/libgcov.c	2013-01-09 15:32:37.000000000 -0800
++++ coreboot/src/lib/libgcov.c	2013-01-16 09:45:11.000000000 -0800
 @@ -25,12 +25,41 @@
  see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  <http://www.gnu.org/licenses/>.  */
@@ -175,3 +175,53 @@ time). The file gcov-io.c is unchanged.
  
        info->next = gcov_list;
        gcov_list = info;
+@@ -767,14 +811,15 @@
+ 
+ #ifdef L_gcov_merge_single
+ /* The profile merging function for choosing the most common value.
+-   It is given an array COUNTERS of N_COUNTERS old counters and it
+-   reads the same number of counters from the gcov file.  The counters
+-   are split into 3-tuples where the members of the tuple have
+-   meanings:
+-
+-   -- the stored candidate on the most common value of the measured entity
+-   -- counter
+-   -- total number of evaluations of the value  */
++ * It is given an array COUNTERS of N_COUNTERS old counters and it
++ * reads the same number of counters from the gcov file.  The counters
++ * are split into 3-tuples where the members of the tuple have
++ * meanings:
++ *
++ * -- the stored candidate on the most common value of the measured entity
++ * -- counter
++ * -- total number of evaluations of the value 
++ */
+ void
+ __gcov_merge_single (gcov_type *counters, unsigned n_counters)
+ {
+@@ -805,15 +850,16 @@
+ 
+ #ifdef L_gcov_merge_delta
+ /* The profile merging function for choosing the most common
+-   difference between two consecutive evaluations of the value.  It is
+-   given an array COUNTERS of N_COUNTERS old counters and it reads the
+-   same number of counters from the gcov file.  The counters are split
+-   into 4-tuples where the members of the tuple have meanings:
+-
+-   -- the last value of the measured entity
+-   -- the stored candidate on the most common difference
+-   -- counter
+-   -- total number of evaluations of the value  */
++ * difference between two consecutive evaluations of the value.  It is
++ * given an array COUNTERS of N_COUNTERS old counters and it reads the
++ * same number of counters from the gcov file.  The counters are split
++ * into 4-tuples where the members of the tuple have meanings:
++ *
++ * -- the last value of the measured entity
++ * -- the stored candidate on the most common difference
++ * -- counter
++ * -- total number of evaluations of the value 
++ */
+ void
+ __gcov_merge_delta (gcov_type *counters, unsigned n_counters)
+ {

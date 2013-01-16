@@ -149,7 +149,7 @@ CFLAGS += \
 # For various headers imported from Linux
 CFLAGS += -D__LINUX_ARM_ARCH__=7
 
-crt0s = $(src)/arch/armv7/bootblock.inc
+#crt0s = $(src)/arch/armv7/bootblock.inc
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 
@@ -166,17 +166,18 @@ ifeq ($(CONFIG_LLSHELL),y)
 crt0s += $(src)/arch/armv7/llshell/llshell.inc
 endif
 
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
+# FIXME: do we need romstage.inc? Maybe just get rid of this entirely.
+#crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
-	@printf "    POST       romstage.inc\n"
-	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
-		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
-	mv $@.tmp $@
+#$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
+#	@printf "    POST       romstage.inc\n"
+#	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
+#		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
+#	mv $@.tmp $@
 
 # Things that appear in every board
 romstage-srcs += $(objgenerated)/crt0.s

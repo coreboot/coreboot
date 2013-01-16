@@ -375,14 +375,14 @@ read_capacity (usbdev_t *dev)
 	cmdblock_t cb;
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x25;	// read capacity
-	u8 buf[8];
+	u32 buf[2];
 
 	usb_debug ("Reading capacity of mass storage device.\n");
 	int count = 0, ret;
 	while (count++ < 20) {
 		switch (ret = execute_command
 				(dev, cbw_direction_data_in, (u8 *) &cb,
-				 sizeof (cb), buf, 8, 0)) {
+				 sizeof (cb), (u8 *)buf, 8, 0)) {
 		case MSC_COMMAND_OK:
 			break;
 		case MSC_COMMAND_FAIL:
@@ -398,8 +398,8 @@ read_capacity (usbdev_t *dev)
 		MSC_INST (dev)->numblocks = 0xffffffff;
 		MSC_INST (dev)->blocksize = 512;
 	} else {
-		MSC_INST (dev)->numblocks = ntohl (*(u32 *) buf) + 1;
-		MSC_INST (dev)->blocksize = ntohl (*(u32 *) (buf + 4));
+		MSC_INST (dev)->numblocks = ntohl(buf[0]) + 1;
+		MSC_INST (dev)->blocksize = ntohl(buf[1]);
 	}
 	usb_debug ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
 		MSC_INST (dev)->blocksize,

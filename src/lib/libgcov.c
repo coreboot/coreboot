@@ -818,7 +818,7 @@ __gcov_merge_ior (gcov_type *counters, unsigned n_counters)
  *
  * -- the stored candidate on the most common value of the measured entity
  * -- counter
- * -- total number of evaluations of the value 
+ * -- total number of evaluations of the value
  */
 void
 __gcov_merge_single (gcov_type *counters, unsigned n_counters)
@@ -858,7 +858,7 @@ __gcov_merge_single (gcov_type *counters, unsigned n_counters)
  * -- the last value of the measured entity
  * -- the stored candidate on the most common difference
  * -- counter
- * -- total number of evaluations of the value 
+ * -- total number of evaluations of the value
  */
 void
 __gcov_merge_delta (gcov_type *counters, unsigned n_counters)

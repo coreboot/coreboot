@@ -46,6 +46,7 @@ static void ohci_destroy_intr_queue (endpoint_t *ep, void *queue);
 static u8* ohci_poll_intr_queue (void *queue);
 static void ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 
+#ifdef USB_DEBUG
 static void
 dump_td (td_t *cur)
 {
@@ -116,6 +117,7 @@ dump_ed (ed_t *cur)
 		usb_debug("+---------------------------------------------------+\n");
 	}
 }
+#endif
 
 static void
 ohci_reset (hci_t *controller)
@@ -429,7 +431,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	usb_debug("ohci_control(): doing transfer with %x. first_td at %x\n",
 		head->config & ED_FUNC_MASK, virt_to_phys(first_td));
-#if 0
+#ifdef USB_DEBUG
 	dump_ed(head);
 #endif
 

@@ -43,6 +43,8 @@ SECTIONS
 
 	.romtext . : {
 		_rom = .;
+		_start = .;
+		*(.text.startup);
 		*(.text);
 	}
 

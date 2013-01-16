@@ -213,3 +213,9 @@ config S3_VOLATILE_POS
 	  non-volitile storage at cold boot stage.
 
 endif
+
+config HUDSON_LEGACY_FREE
+	bool "System is legacy free"
+	help
+	  Select y if there is no keyboard controller in the system.
+	  This sets variables in AGESA and ACPI.

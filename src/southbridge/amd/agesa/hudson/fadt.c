@@ -28,7 +28,11 @@
 #include <device/device.h>
 #include "hudson.h"
 
-#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
+#if CONFIG_HUDSON_LEGACY_FREE
+	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
+#else
+	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
+#endif
 
 #ifndef FADT_PM_PROFILE
 	#define FADT_PM_PROFILE PM_UNSPECIFIED
@@ -86,7 +90,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 					* index 60-6B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
 	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
-	outl(0x1, ACPI_PM1_CNT_BLK);		  /* set SCI_EN */
+	outl(0x1, ACPI_PM1_CNT_BLK);			/* set SCI_EN */
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1b_evt_blk = 0x0000;
 	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;

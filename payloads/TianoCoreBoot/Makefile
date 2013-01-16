@@ -1,0 +1,90 @@
+##
+## This file is part of the TianoCoreBoot project.
+##
+## Copyright (C) 2013 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+src := $(shell pwd)
+srctree := $(src)
+obj := $(src)/build
+
+export V := $(V)
+
+CONFIG_SHELL := sh
+UNAME_RELEASE := $(shell uname -r)
+HAVE_DOTCONFIG := $(wildcard .config)
+MAKEFLAGS += -rR --no-print-directory
+
+# Make is silent per default, but 'make V=1' will show all compiler calls.
+ifneq ($(V),1)
+Q := @
+endif
+
+HOSTCC ?= gcc
+HOSTCXX ?= g++
+HOSTCFLAGS := -I$(srck) -I$(objk)
+HOSTCXXFLAGS := -I$(srck) -I$(objk)
+
+LIBCONFIG_PATH := ../libpayload
+LIBPAYLOAD_DIR := ./libpayloadbin
+LPCC := $(LIBPAYLOAD_DIR)/libpayload/bin/lpgcc
+LPAS := $(LIBPAYLOAD_DIR)/libpayload/bin/lpas
+HAVE_LIBPAYLOAD := $(wildcard $(LIBPAYLOAD_DIR)/libpayload/lib/libpayload.a)
+LIB_CONFIG ?= defconfig
+OBJCOPY ?= objcopy
+
+INCLUDES = -I$(obj)
+CFLAGS := -Wall -Werror -Os $(INCLUDES)
+OBJECTS = tianocoreboot.o
+OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
+TARGET  = $(obj)/tianocoreboot.elf
+
+all: $(TARGET)
+
+$(TARGET): prepare $(OBJS) libpayload
+	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPCC) -o $@ $(OBJS)
+	$(Q)$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
+	$(Q)$(OBJCOPY) --strip-debug $@
+	$(Q)$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@
+
+$(obj)/%.S.o: $(src)/%.S libpayload
+	$(Q)printf "  LPAS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPAS) -o $@ $<
+
+$(obj)/%.o: $(src)/%.c libpayload
+	$(Q)printf "  LPCC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LPCC) $(CFLAGS) -c -o $@ $<
+
+ifneq ($(strip $(HAVE_LIBPAYLOAD)),)
+libpayload:
+	$(Q)printf "Found Libpayload $(LIBPAYLOAD_DIR).\n"
+else
+libpayload:
+	$(Q)printf "Building libpayload @ $(LIBCONFIG_PATH).\n"
+	$(Q)make -C $(LIBCONFIG_PATH) distclean
+	$(Q)make -C $(LIBCONFIG_PATH) $(LIB_CONFIG)
+	$(Q)make -C $(LIBCONFIG_PATH) DESTDIR=$(shell pwd)/$(LIBPAYLOAD_DIR) install
+endif
+
+prepare:
+	$(Q)mkdir -p $(obj)
+
+clean:
+	$(Q)rm -rf $(obj) $(LIBPAYLOAD_DIR)
+
+.PHONY: $(PHONY) clean
+

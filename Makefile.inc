@@ -100,6 +100,7 @@ ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts:= -finstrument-functions
 endif
 ifeq ($(CONFIG_COVERAGE),y)
+romstage-c-ccopts+=-fprofile-arcs -ftest-coverage
 ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
 endif
 

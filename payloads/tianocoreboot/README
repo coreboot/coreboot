@@ -1,0 +1,27 @@
+mkdir Tiano
+cd Tiano
+svn co https://edk2.svn.sourceforge.net/svnroot/edk2/trunk/edk2 edk2 --username guest
+cd edk2
+svn co https://edk2-fatdriver2.svn.sourceforge.net/svnroot/edk2-fatdriver2/trunk/FatPkg FatPkg --username guest
+cd ..
+
+make -C edk2/BaseTools
+
+export EDK_TOOLS_PATH=$(pwd)/edk2/BaseTools
+cd edk2
+. ./edksetup.sh BaseTools
+
+vi Conf/target.txt
+
+ACTIVE_PLATFORM       = OvmfPkg/OvmfPkgIa32.dsc
+TOOL_CHAIN_TAG        = GCC46
+
+------
+#TODO
+TARGET_ARCH = IA32 X64
+------
+
+build -D DEBUG_ON_SERIAL_PORT
+
+--> ./Build/OvmfIa32/DEBUG_GCC46/FV/DXEFV.Fv
+

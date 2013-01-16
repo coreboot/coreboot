@@ -495,6 +495,15 @@ config PAYLOAD_FILO
 
 	  See http://coreboot.org/Payloads for more information.
 
+config PAYLOAD_TIANOCORE
+	bool "Tiano Core"
+	help
+	  Select this option if you want to build a coreboot image
+	  with a Tiano Core payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See http://coreboot.org/Payloads for more information.
+
 endchoice
 
 choice
@@ -527,6 +536,13 @@ config FILO_MASTER
 	  Newest FILO version
 endchoice
 
+config TIANOCORE_FILE
+	string "Tianocore FILE"
+	depends on PAYLOAD_TIANOCORE
+	default "DXEFV.Fv"
+	help
+	  TBD
+
 config PAYLOAD_FILE
 	string "Payload path and filename"
 	depends on PAYLOAD_ELF
@@ -541,6 +557,10 @@ config PAYLOAD_FILE
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO
 	default "payloads/external/FILO/filo/build/filo.elf"
+
+config PAYLOAD_FILE
+	depends on PAYLOAD_TIANOCORE
+	default "$(obj)/tiano/tianocoreboot.elf"
 
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA

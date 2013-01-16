@@ -732,7 +732,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 	writeb(data, &uart->utxh);
 }
 
-extern void puts(const char *s);
+void puts(const char *s);
 void puts(const char *s)
 {
 	int n = 0;
@@ -1852,6 +1852,13 @@ static void clock_init(void)
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
 
+void __div0 (void);
+void __div0 (void)
+{
+	puts("divide by zero detected");
+	while(1) ;
+}
+
 static int skip_atoi(const char **s)
 {
 	int i=0;
@@ -1870,8 +1877,6 @@ static int number(void (*tx_byte)(unsigned char byte),
 	int i;
 	int count = 0;
 
-	puts("number: entered");
-	puts("number: checkpoint 1");
 	if (type & LARGE)
 		digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	if (type & LEFT)
@@ -1880,7 +1885,6 @@ static int number(void (*tx_byte)(unsigned char byte),
 		return 0;
 	c = (type & ZEROPAD) ? '0' : ' ';
 	sign = 0;
-	puts("number: checkpoint 2");
 	if (type & SIGN) {
 		if ((signed long long)num < 0) {
 			sign = '-';
@@ -1894,7 +1898,6 @@ static int number(void (*tx_byte)(unsigned char byte),
 			size--;
 		}
 	}
-	puts("number: checkpoint 3");
 	if (type & SPECIAL) {
 		if (base == 16)
 			size -= 2;
@@ -1902,20 +1905,17 @@ static int number(void (*tx_byte)(unsigned char byte),
 			size--;
 	}
 	i = 0;
-	puts("number: checkpoint 4");
 	if (num == 0) {
-		puts("number: checkpoint 4a");
 		tmp[i++]='0';
-		puts("number: checkpoint 4b");
 	} else while (num != 0) {
-		puts("number: checkpoint 4c");
-		tmp[i++] = digits[do_div(num,base)];
-		puts("number: checkpoint 4d");
+		/* FIXME: do_div was broken */
+//		tmp[i++] = digits[do_div(num,base)];
+		tmp[i++] = digits[num & 0xf];
+		num = num >> 4;
 	}
 	if (i > precision)
 		precision = i;
 	size -= precision;
-	puts("number: checkpoint 5");
 	if (!(type&(ZEROPAD+LEFT)))
 		while(size-->0)
 			tx_byte(' '), count++;
@@ -1938,7 +1938,6 @@ static int number(void (*tx_byte)(unsigned char byte),
 		tx_byte(tmp[i]), count++;
 	while (size-- > 0)
 		tx_byte(' '), count++;
-	puts("number: returning");
 	return count;
 }
 
@@ -1990,7 +1989,6 @@ repeat:
 			}
 		}
 
-		puts("vtxprintf: checkpoint 1\n");
 		/* get the precision */
 		precision = -1;
 		if (*fmt == '.') {
@@ -2020,7 +2018,6 @@ repeat:
 		/* default base */
 		base = 10;
 
-		puts("vtxprintf: checkpoint 2\n");
 		switch (*fmt) {
 		case 'c':
 			if (!(flags & LEFT))
@@ -2070,7 +2067,6 @@ repeat:
 			}
 			continue;
 
-		puts("vtxprintf: checkpoint 3\n");
 		case '%':
 			tx_byte('%'), count++;
 			continue;
@@ -2100,7 +2096,6 @@ repeat:
 				--fmt;
 			continue;
 		}
-		puts("vtxprintf: checkpoint 4\n");
 		if (qualifier == 'L') {
 			num = va_arg(args, unsigned long long);
 		} else if (qualifier == 'l') {
@@ -2116,9 +2111,7 @@ repeat:
 		} else {
 			num = va_arg(args, unsigned int);
 		}
-		puts("vtxprintf: checkpoint 5\n");
 		count += number(tx_byte, num, base, field_width, precision, flags);
-		puts("vtxprintf: checkpoint 6\n");
 	}
 	return count;
 }
@@ -2138,18 +2131,14 @@ int do_printk(int msg_level, const char *fmt, ...)
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
-//	uint32_t test = 0xdeadbeef;
 	/* FIXME: we should not need UART in bootblock, this is only
 	   done for testing purposes */
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 	power_init();
 	clock_init();
 	do_serial();
-	puts("checkpoint 1");
-	printk(BIOS_INFO, "%x\n", test);
-	/* FIXME: printk doens't work with numbers due to division issues... */
-//	printk(BIOS_INFO, "%d\n", 0xdeadbeef);
-	puts("checkpoint 2");
+//	printk(BIOS_INFO, "num: %x\n", 0xdeadbeef);
+//	printk(BIOS_INFO, "pointer: %p\n", (void *)0xdeadbeef);
 
 	/* Copy romstage data from SPI ROM to SRAM */
 	/* FIXME: test with something benign, then fix the offsets once

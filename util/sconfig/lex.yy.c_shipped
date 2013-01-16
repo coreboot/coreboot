@@ -1,5 +1,5 @@
 
-#line 3 "/home/svens/coreboot/coreboot-i5000-latest/util/sconfig/lex.yy.c_shipped"
+#line 3 "util/sconfig/lex.yy.c_shipped"
 
 #define  YY_INT_ALIGNED short int
 

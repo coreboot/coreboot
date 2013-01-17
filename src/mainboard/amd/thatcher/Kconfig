@@ -101,10 +101,6 @@ config VGA_BIOS_ID
 	string
 	default "1002,9917"
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 config HUDSON_LEGACY_FREE
 	bool
 	default y

@@ -458,15 +458,8 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
 	                   LAPIC_DM_INIT);
-	printk(BIOS_DEBUG, "Waiting for INIT to complete...");
-
-	/* Wait for 10 ms to complete. */
-	if (apic_wait_timeout(10000 /* 10 ms */, 100 /* us */)) {
-		printk(BIOS_DEBUG, "timed out. Bailing. \n");
-		return -1;
-	} else {
-		printk(BIOS_DEBUG, "done.\n");
-	}
+	printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
+	mdelay(10);
 
 	/* Send 1st SIPI */
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {

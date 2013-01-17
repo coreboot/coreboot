@@ -204,8 +204,8 @@ struct ied_header {
 	u8 reserved[34];
 } __attribute__ ((packed));
 
-#define PCI_DEVICE_ID_SB 0x0104
-#define PCI_DEVICE_ID_IB 0x0154
+#define PCI_DEVICE_ID_HSW_MOBILE 0x0c04
+#define PCI_DEVICE_ID_HSW_ULT 0x0a04
 
 #ifdef __SMM__
 void intel_northbridge_haswell_finalize_smm(void);

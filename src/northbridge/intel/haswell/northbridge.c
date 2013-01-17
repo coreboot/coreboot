@@ -583,13 +583,13 @@ static struct device_operations mc_ops = {
 static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0c04, /* Mobile Haswell */
+	.device = PCI_DEVICE_ID_HSW_MOBILE,
 };
 
 static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0a04, /* ULT Haswell */
+	.device = PCI_DEVICE_ID_HSW_ULT,
 };
 
 static void cpu_bus_init(device_t dev)

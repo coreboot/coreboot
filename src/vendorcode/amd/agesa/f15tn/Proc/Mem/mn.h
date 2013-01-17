@@ -1417,7 +1417,7 @@ GetTrainDlyFromHeapNb (
   IN       DRBN Drbn
   );
 
-BOOLEAN
+VOID
 MemNTrainingFlowUnb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );

@@ -40,6 +40,7 @@ void main(unsigned long bist)
 
 	if (boot_cpu()) {
 		bootblock_mainboard_init();
+		bootblock_cpu_init();
 	}
 
 	entry = findstage(target1);

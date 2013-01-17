@@ -330,12 +330,12 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-static void read_resources(device_t dev)
+static void nb_read_resources(device_t dev)
 {
 	u32 nodeid;
 	struct bus *link;
 
-	printk(BIOS_DEBUG, "\nFam14h - read_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - nb_read_resources.\n");
 
 	nodeid = amdfam14_nodeid(dev);
 	for (link = dev->link_list; link; link = link->next) {
@@ -429,13 +429,13 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	set_vga_enable_reg(nodeid, link->link_num);
 }
 
-static void set_resources(device_t dev)
+static void nb_set_resources(device_t dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
 	struct resource *res;
 
-	printk(BIOS_DEBUG, "\nFam14h - set_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - nb_set_resources.\n");
 
 	/* Find the nodeid */
 	nodeid = amdfam14_nodeid(dev);
@@ -855,8 +855,8 @@ static void cpu_bus_init(device_t dev)
 /* North Bridge Structures */
 
 static struct device_operations northbridge_operations = {
-	.read_resources = read_resources,
-	.set_resources = set_resources,
+	.read_resources = nb_read_resources,
+	.set_resources = nb_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = northbridge_init,
 	.enable = 0,.ops_pci = 0,

@@ -101,8 +101,4 @@ config VGA_BIOS_ID
 	string
 	default "1002,9917"
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 endif # BOARD_AMD_THATCHER

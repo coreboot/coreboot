@@ -514,13 +514,13 @@ MemNInsDlyCompareTestPatternNb (
  *
  *      @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
  */
-BOOLEAN
+VOID
 MemNTrainingFlowUnb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   )
 {
   memNTrainFlowControl[DDR3_TRAIN_FLOW] (NBPtr);
-  return TRUE;
+  return;
 }
 /*----------------------------------------------------------------------------
  *                              LOCAL FUNCTIONS

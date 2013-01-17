@@ -350,7 +350,7 @@ MemNInitNBDataTN (
   NBPtr->ProgramCycTimings = MemNProgramCycTimingsUnb;
   NBPtr->SyncDctsReady = (BOOLEAN (*) (MEM_NB_BLOCK *)) memDefTrue;
   NBPtr->HtMemMapInit = MemNHtMemMapInitTN;
-  NBPtr->SyncAddrMapToAllNodes = (BOOLEAN (*) (MEM_NB_BLOCK *)) memDefTrue;
+  NBPtr->SyncAddrMapToAllNodes = (VOID (*) (MEM_NB_BLOCK *)) memDefRet;
   NBPtr->CpuMemTyping = MemNCPUMemTypingNb;
   NBPtr->BeforeDqsTraining = MemNBeforeDQSTrainingTN;
   NBPtr->AfterDqsTraining = MemNAfterDQSTrainingTN;

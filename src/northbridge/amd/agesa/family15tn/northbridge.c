@@ -29,12 +29,12 @@
 #include <lib.h>
 #include <cpu/cpu.h>
 #include <cbmem.h>
+#include <AGESA.h>
 
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/mtrr.h>
 
 #include <Porting.h>
-#include <AGESA.h>
 #include <Options.h>
 #include <Topology.h>
 #include <cpu/amd/amdfam15.h>

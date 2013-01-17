@@ -83,7 +83,6 @@
  *                   D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
-UINT8  NumOfSataPorts = 8;
 
 /**
  * FchSataGpioInitial - Sata GPIO function Procedure
@@ -581,7 +580,6 @@ FchShutdownUnconnectedSataPortClock (
 {
   UINT8                  PortNumByte;
   UINT8                  PortSataStatusByte;
-  UINT8                  NumOfPorts;
   UINT8                  FchSataClkAutoOff;
   FCH_DATA_BLOCK         *LocalCfgPtr;
   AMD_CONFIG_PARAMS      *StdHeader;
@@ -590,7 +588,6 @@ FchShutdownUnconnectedSataPortClock (
   StdHeader = LocalCfgPtr->StdHeader;
   FchSataClkAutoOff = (UINT8) LocalCfgPtr->Sata.SataClkAutoOff;
 
-  NumOfPorts = 0;
   //
   // Enable SATA auto clock control by default
   //
@@ -606,28 +603,20 @@ FchShutdownUnconnectedSataPortClock (
     }
   }                                            ///end of for (PortNumByte=0;PortNumByte<6;PortNumByte++)
 
-  ReadMem (Bar5 + 0x0C, AccessWidth8, &PortSataStatusByte);
-
   //
+  //Set the Ports Implemented register
   //if all ports are in disabled state, report at least one port
   //
+  ReadMem (Bar5 + 0x0C, AccessWidth8, &PortSataStatusByte);
   if ( (PortSataStatusByte & 0xFF) == 0) {
     RwMem (Bar5 + 0x0C, AccessWidth8, (UINT32) ~(0xFF), 01);
   }
 
-  ReadMem (Bar5 + 0x0C, AccessWidth8, &PortSataStatusByte);
-
-  for (PortNumByte = 0; PortNumByte < MAX_SATA_PORTS; PortNumByte ++) {
-    if (PortSataStatusByte & (1 << PortNumByte)) {
-      NumOfPorts++;
-    }
-  }
-
-  if ( NumOfPorts == 0) {
-    NumOfPorts = 0x01;
-  }
-
-  RwMem (Bar5 + 0x00, AccessWidth8, 0xE0, NumOfPorts - 1);
+  //
+  // Number of Ports (NP): 0’s based value indicating the maximum number
+  //  of ports supported by the HBA silicon.
+  //
+  RwMem (Bar5 + 0x00, AccessWidth8, 0xE0, MAX_SATA_PORTS - 1);
 }
 
 /**

@@ -71,7 +71,7 @@ reset:
 
 /* Set stackpointer in internal RAM to call board_init_f */
 call_bootblock:
-	ldr	sp, =(CONFIG_SYS_INIT_SP_ADDR) /* Set up stack pointer */
+	ldr	sp, .Stack /* Set up stack pointer */
 	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
 	ldr	r0,=0x00000000
 	/*
@@ -85,3 +85,11 @@ call_bootblock:
 wait_for_interrupt:
 	wfi
 	mov	pc, lr			@ back to my caller
+
+/* we do it this way because it's a 32-bit constant and
+ * in some cases too far away to be loaded as just an offset
+ * from IP
+ */
+.align 2
+.Stack:
+	.word CONFIG_SYS_INIT_SP_ADDR

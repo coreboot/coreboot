@@ -92,4 +92,4 @@ wait_for_interrupt:
  */
 .align 2
 .Stack:
-	.word CONFIG_SYS_INIT_SP_ADDR
+	.word CONFIG_IRAM_STACK

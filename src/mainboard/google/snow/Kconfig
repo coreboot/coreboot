@@ -60,29 +60,6 @@ config BOOTBLOCK_MAINBOARD_INIT
 	string
 	default "mainboard/google/snow/bootblock.c"
 
-# SPL (second-phase loader) stuff
-config SPL_TEXT_BASE
-	hex
-	default 0x02023400
-	help
-	  Location of SPL. Default location is within iRAM region.
-
-config ROMSTAGE_BASE
-	hex
-	default SPL_TEXT_BASE
-
-# FIXME: increased "SPL" size to get around build issues
-#config SPL_MAX_SIZE
-#	hex "SPL executable max size"
-#	default 0x3800
-#	help
-#	  Max size of SPL. Default is 14KB
-config SPL_MAX_SIZE
-	hex
-	default 0x8000
-	help
-	  Max size of SPL. Let's say 32KB for now...
-
 config DRAM_SIZE_MB
 	int
 	default 2048

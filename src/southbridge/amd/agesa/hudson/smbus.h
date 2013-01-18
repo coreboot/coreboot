@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef SB800_SMBUS_H
-#define SB800_SMBUS_H
+#ifndef HUDSON_SMBUS_H
+#define HUDSON_SMBUS_H
 
 //#include <stdint.h>
 

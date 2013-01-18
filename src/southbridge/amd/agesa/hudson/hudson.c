@@ -99,7 +99,7 @@ u8 pm2_ioread(u8 reg)
 
 void hudson_enable(device_t dev)
 {
-	printk(BIOS_DEBUG, "sb800_enable()\n");
+	printk(BIOS_DEBUG, "hudson_enable()\n");
 }
 
 struct cbmem_entry *get_cbmem_toc(void)

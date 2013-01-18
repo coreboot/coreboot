@@ -36,5 +36,6 @@ static int config_branch_prediction(int set_cr_z)
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
-	/* FIXME: this is a stub for now */
+	volatile unsigned long *pshold = (unsigned long *)0x1004330c;
+	*pshold |= 0x100;
 }

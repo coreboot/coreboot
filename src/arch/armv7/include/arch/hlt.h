@@ -4,7 +4,6 @@
 static inline __attribute__((always_inline)) void hlt(void)
 {
 	for (;;) ;
-	//asm("hlt");
 }
 
 #endif /* ARCH_HLT_H */

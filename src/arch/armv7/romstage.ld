@@ -39,11 +39,13 @@ ENTRY(_start)
 
 SECTIONS
 {
+	/* TODO make this a configurable option (per chipset). */
 	. = 0x02065438;
 
 	.romtext . : {
 		_rom = .;
 		_start = .;
+		*(.text.entry.armv7);
 		*(.text.startup);
 		*(.text);
 	}

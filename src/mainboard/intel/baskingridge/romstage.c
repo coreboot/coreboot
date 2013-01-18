@@ -30,6 +30,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include "cpu/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
@@ -82,7 +83,7 @@ const struct rcba_config_instruction rcba_config[] = {
 	RCBA_END_CONFIG,
 };
 
-void main(unsigned long bist)
+void romstage_main(unsigned long bist)
 {
 	int boot_mode = 0;
 	int wake_from_s3;
@@ -236,8 +237,5 @@ void main(unsigned long bist)
 	timestamp_add(TS_AFTER_INITRAM, after_dram_time );
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
 }
+

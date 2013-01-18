@@ -85,13 +85,11 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
 	post_code(0x37);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
 	val = agesawrapper_amdinitreset();
 	if(val) {
 		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
 	}
-
-	post_code(0x38);
-	printk(BIOS_DEBUG, "Got past sb800_early_setup\n");
 
 	post_code(0x39);
 

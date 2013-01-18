@@ -188,7 +188,7 @@ DefinitionBlock (
 		PM2D, 0x00000008,
 	}
 
-	/* Power Management I/O registers, TODO:PMIO is quite different in SB800. */
+	/* Power Management I/O registers. */
 	OperationRegion(PIOR, SystemIO, 0x00000CD6, 0x00000002)
 		Field(PIOR, ByteAcc, NoLock, Preserve) {
 		PIOI, 0x00000008,

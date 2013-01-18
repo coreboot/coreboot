@@ -100,7 +100,7 @@ agesawrapper_amdinitcpuio (
 	PciData = 1;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
-	/* The platform BIOS needs to ensure the memory ranges of SB800 legacy
+	/* The platform BIOS needs to ensure the memory ranges of Hudson legacy
 	 * devices (TPM, HPET, BIOS RAM, Watchdog Timer, I/O APIC and ACPI) are
 	 * set to non-posted regions.
 	 */

@@ -274,10 +274,10 @@ uint64_t intfiletype(const char *name)
 void print_cbfs_directory(const char *filename)
 {
 	printf
-	    ("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
-	     "alignment: %d bytes, architecture: %s\n\n",
-	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
-	     romsize, ntohl(master_header->offset), align, arch_to_string(arch));
+		("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
+		 "alignment: %d bytes, architecture: %s\n\n",
+		 basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
+		 romsize, ntohl(master_header->offset), align, arch_to_string(arch));
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;
 	while (current < phys_end) {
@@ -286,7 +286,7 @@ void print_cbfs_directory(const char *filename)
 			continue;
 		}
 		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
+			(struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
 		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
 		if (strlen(fname) == 0)
@@ -295,6 +295,54 @@ void print_cbfs_directory(const char *filename)
 		printf("%-30s 0x%-8x %-12s %d\n", fname,
 		       current - phys_start + ntohl(master_header->offset),
 		       strfiletype(ntohl(thisfile->type)), length);
+		/* note the components of the subheader are in host order ... */
+		switch(ntohl(thisfile->type)){
+		case CBFS_COMPONENT_STAGE:
+		{
+			struct cbfs_stage *stage = CBFS_SUBHEADER(thisfile);
+			printf("\tcompression:%x,entry:%016llx,load:%016llx,len:0x%x,memlen:0x%x\n",
+			       stage->compression,
+			       stage->entry,
+			       stage->load,
+			       stage->len,
+			       stage->memlen);
+			break;
+		}
+		case CBFS_COMPONENT_PAYLOAD:
+		{
+			struct cbfs_payload_segment *payload = CBFS_SUBHEADER(thisfile);
+			printf("\ttype:%x,compression:%x,offset:0x%x,load:%016llx,len:0x%x,memlen:0x%x\n",
+			       payload->type,
+			       payload->compression,
+			       payload->offset,
+			       payload->load_addr,
+			       payload->len,
+			       payload->mem_len);
+			break;
+		}
+		case CBFS_COMPONENT_OPTIONROM:
+			break;
+		case CBFS_COMPONENT_BOOTSPLASH:
+			break;
+		case CBFS_COMPONENT_RAW:
+			break;
+		case CBFS_COMPONENT_VSA:
+			break;
+		case CBFS_COMPONENT_MBI:
+			break;
+		case CBFS_COMPONENT_MICROCODE:
+			break;
+		case CBFS_COMPONENT_CMOS_DEFAULT:
+			break;
+		case CBFS_COMPONENT_CMOS_LAYOUT:
+			break;
+		case CBFS_COMPONENT_DELETED:
+			break;
+		case CBFS_COMPONENT_NULL:
+			break;
+		default:
+			break;
+		}
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);

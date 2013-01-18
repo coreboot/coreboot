@@ -106,6 +106,8 @@ struct cbfs_payload {
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
 int cbfs_file_header(unsigned long physaddr);
+#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
 
 #endif

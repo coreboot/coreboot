@@ -42,7 +42,8 @@ static void mmu_setup(void)
 	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
 }
 
-void main(void)
+void romstage_main(void);
+void romstage_main(void) 
 {
 //	volatile unsigned long *pshold = (unsigned long *)0x1004330c;
 //	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);

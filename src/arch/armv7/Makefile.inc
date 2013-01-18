@@ -245,13 +245,20 @@ endif
 ################################################################################
 # Build the romstage
 
+romstage_main_c = $(src)/arch/armv7/romstage_main.c
+romstage_main_o = $(obj)/arch/armv7/romstage_main.o
+
+$(romstage_main_o): $(romstage_main_c)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -nostdlib -nostartfiles -static -c -o $@ $< -marm
+
 # FIXME(dhendrix): added debug printfs
-$(objcbfs)/romstage.debug: $$(romstage-objs) $(objgenerated)/romstage.ld
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(romstage_main_o) $(objgenerated)/romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) $(romstage_main_o) -T $(objgenerated)/romstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage.ld -Wl,--start-group $(romstage-objs) $(romstage_main_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage.ld: $$(ldscripts) $(obj)/ldoptions

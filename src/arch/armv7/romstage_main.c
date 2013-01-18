@@ -17,17 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <system.h>
-#include <cache.h>
-
-static void mmu_setup(void)
-{
-	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
-}
-
 void main(void);
-void main(void)
+
+/* romstage_main is simply a stub to invoke main(), to handle ARM mode switching
+ * (ARM/Thumb) properly. */
+
+void romstage_main(void) __attribute__((section(".text.entry.armv7")));
+void romstage_main(void)
 {
-	mmu_setup();
+	main();
 }

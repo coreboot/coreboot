@@ -265,21 +265,28 @@ endif
 ################################################################################
 # Build the romstage
 
+romstage_main_c = $(src)/arch/armv7/romstage_main.c
+romstage_main_o = $(obj)/arch/armv7/romstage_main.o
+
+$(romstage_main_o): $(romstage_main_c)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -nostdlib -nostartfiles -static -c -o $@ $< -marm
+
 # FIXME(dhendrix): added debug printfs
-$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld
+$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(romstage_main_o) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_null.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--start-group $(romstage-objs) $(romstage_main_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_xip.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) $(romstage_main_o) -T $(objgenerated)/romstage_xip.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(romstage_main_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions

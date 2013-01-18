@@ -32,5 +32,6 @@ if ARCH_X86
 config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select LITTLE_ENDIAN
+	select IO_ADDRESS_SPACE
 
 endif

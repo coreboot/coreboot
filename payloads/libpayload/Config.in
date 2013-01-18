@@ -410,4 +410,9 @@ config LITTLE_ENDIAN
 	default n
 	bool
 
+# Whether the target system has an IO address space.
+config IO_ADDRESS_SPACE
+	default n
+	bool
+
 source "arch/Config.in"

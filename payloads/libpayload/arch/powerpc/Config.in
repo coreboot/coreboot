@@ -32,5 +32,6 @@ if ARCH_POWERPC
 config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BIG_ENDIAN
+	select IO_ADDRESS_SPACE
 
 endif

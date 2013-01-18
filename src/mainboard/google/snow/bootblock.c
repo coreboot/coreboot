@@ -42,8 +42,6 @@
 
 #define EXYNOS5_CLOCK_BASE		0x10010000
 
-volatile unsigned long *pshold = (unsigned long *)0x1004330c;
-
 /* FIXME(dhendrix): Can we move this SPI stuff elsewhere? */
 static void spi_rx_tx(struct exynos_spi *regs, int todo,
 			void *dinp, void const *doutp, int i)
@@ -723,6 +721,9 @@ static void exynos5_uart_tx_byte(unsigned char data)
 //	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
 
+	if (data == '\n')
+		exynos5_uart_tx_byte('\r');
+
 	/* wait for room in the tx FIFO */
 	while ((readl(uart->ufstat) & TX_FIFO_FULL_MASK)) {
 		if (exynos5_uart_err_check(1))
@@ -738,12 +739,13 @@ void puts(const char *s)
 	int n = 0;
 
 	while (*s) {
+		if (*s == '\n') {
+			exynos5_uart_tx_byte(0xd);	/* CR */
+		}
+
 		exynos5_uart_tx_byte(*s++);
 		n++;
 	}
-
-	exynos5_uart_tx_byte(0xd);	/* CR */
-	exynos5_uart_tx_byte(0xa);	/* LF */
 }
 
 static void do_serial(void)
@@ -2137,10 +2139,26 @@ void bootblock_mainboard_init(void)
 	power_init();
 	clock_init();
 	do_serial();
-	printk(BIOS_INFO, "%s: hello world\n", __func__);
+	printk(BIOS_INFO, "%s: UART initialized\n", __func__);
 
 	/* Copy romstage data from SPI ROM to SRAM */
-	/* FIXME: test with something benign, then fix the offsets once
-	   we're more confident in this */
-	copy_romstage(0x2000, 0x2060000, 0x800);
+	printk(BIOS_INFO, "Copying romstage:\n"
+			"\tSPI offset: 0x%06x\n"
+			"\tiRAM offset: 0x%08x\n"
+			"\tSize: 0x%x\n",
+			0, CONFIG_SPI_IMAGE_HACK, CONFIG_ROMSTAGE_SIZE);
+	copy_romstage(0x0, CONFIG_SPI_IMAGE_HACK, CONFIG_ROMSTAGE_SIZE);
+#if 0
+	/* FIXME: dump SRAM content for sanity checking */
+	uint32_t u;
+	for (u = CONFIG_SPI_IMAGE_HACK; u < CONFIG_SPI_IMAGE_HACK + 128; u++) {
+		if (u % 16 == 0)
+			printk(BIOS_INFO, "\n0x%08x: ", u);
+		else
+			printk(BIOS_INFO, " ");
+		printk(BIOS_INFO, "%02x", *(uint8_t *)(u));
+	}
+	printk(BIOS_INFO, "\n");
+#endif
+	printk(BIOS_INFO, "%s: finished\n", __func__);
 }

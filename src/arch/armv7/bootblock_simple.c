@@ -39,12 +39,13 @@ void main(unsigned long bist)
 	unsigned long entry;
 
 	if (boot_cpu()) {
-		bootblock_mainboard_init();
 		bootblock_cpu_init();
+		bootblock_mainboard_init();
 	}
 
-	entry = findstage(target1);
+	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
+	entry = loadstage(target1);
+	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
 	if (entry) call(entry);
-
 	hlt();
 }

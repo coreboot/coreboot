@@ -24,22 +24,16 @@
  INCLUDE ldoptions
  */
 
-/*
- * FIXME: what exactly should these be? maybe defined on a per-CPU basis?
- * FIXME 2: Somehow linker didn't like CONFIG_SPL_MAX_SIZE and CONFIG_SPL_TEXT_BASE...
- */
-/* MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x3800 } */
-/*MEMORY { .sram : ORIGIN = 0x02023400, LENGTH = 0x10000 }*/
-
 /* We use ELF as output format. So that we can debug the code in some form. */
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
-/* ENTRY(_start) */
+ENTRY(_start)
 
 SECTIONS
 {
-	. = 0x02023400 + 0x4000;
+	/* TODO make this a configurable option (per chipset). */
+	. = CONFIG_ROMSTAGE_BASE;
 
 	.romtext . : {
 		_rom = .;

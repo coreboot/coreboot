@@ -1,6 +1,5 @@
 SECTIONS {
-	/* FIXME: determine a sensible location... */
-	. = (0x2026400);
+	. = CONFIG_ID_SECTION_BASE;
 	.id (.): {
 		*(.id)
 	}

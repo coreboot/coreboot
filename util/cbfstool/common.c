@@ -274,10 +274,10 @@ uint64_t intfiletype(const char *name)
 void print_cbfs_directory(const char *filename)
 {
 	printf
-	    ("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
-	     "alignment: %d bytes, architecture: %s\n\n",
-	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
-	     romsize, ntohl(master_header->offset), align, arch_to_string(arch));
+		("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
+		 "alignment: %d bytes, architecture: %s\n\n",
+		 basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
+		 romsize, ntohl(master_header->offset), align, arch_to_string(arch));
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;
 	while (current < phys_end) {
@@ -286,7 +286,7 @@ void print_cbfs_directory(const char *filename)
 			continue;
 		}
 		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
+			(struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
 		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
 		if (strlen(fname) == 0)
@@ -295,6 +295,64 @@ void print_cbfs_directory(const char *filename)
 		printf("%-30s 0x%-8x %-12s %d\n", fname,
 		       current - phys_start + ntohl(master_header->offset),
 		       strfiletype(ntohl(thisfile->type)), length);
+
+		/* note the components of the subheader are in host order ... */
+		switch (ntohl(thisfile->type)) {
+		case CBFS_COMPONENT_STAGE:
+		{
+			struct cbfs_stage *stage = CBFS_SUBHEADER(thisfile);
+			dprintf("    %s compression, entry: 0x%llx, load: 0x%llx, length: %d/%d\n",
+			       stage->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
+			       (unsigned long long)stage->entry,
+			       (unsigned long long)stage->load,
+			       stage->len,
+			       stage->memlen);
+			break;
+		}
+		case CBFS_COMPONENT_PAYLOAD:
+		{
+			struct cbfs_payload_segment *payload = CBFS_SUBHEADER(thisfile);
+			while(payload) {
+				switch(payload->type) {
+				case PAYLOAD_SEGMENT_CODE:
+				case PAYLOAD_SEGMENT_DATA:
+					dprintf("    %s (%s compression, offset: 0x%x, load: 0x%llx, length: %d/%d)\n",
+						payload->type == PAYLOAD_SEGMENT_CODE ? "code " : "data" ,
+						payload->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
+						ntohl(payload->offset),
+						(unsigned long long)ntohll(payload->load_addr),
+						ntohl(payload->len), ntohl(payload->mem_len));
+					break;
+				case PAYLOAD_SEGMENT_ENTRY:
+					dprintf("    entry (0x%llx)\n", (unsigned long long)ntohll(payload->load_addr));
+					break;
+				case PAYLOAD_SEGMENT_BSS:
+					dprintf("    BSS (address 0x%016llx, length 0x%x)\n", (unsigned long long)ntohll(payload->load_addr), ntohl(payload->len));
+					break;
+				case PAYLOAD_SEGMENT_PARAMS:
+					dprintf("    parameters\n");
+					break;
+				default:
+					dprintf("    %x (%s compression, offset: 0x%x, load: 0x%llx, length: %d/%d\n",
+						payload->type,
+						payload->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
+						ntohl(payload->offset),
+						(unsigned long long)ntohll(payload->load_addr),
+						ntohl(payload->len),
+						ntohl(payload->mem_len));
+					break;
+				}
+
+				if(payload->type == PAYLOAD_SEGMENT_ENTRY)
+					payload=NULL;
+				else
+					payload++;
+			}
+			break;
+		}
+		default:
+			break;
+		}
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);

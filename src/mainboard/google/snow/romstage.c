@@ -42,6 +42,7 @@ static void mmu_setup(void)
 	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
 }
 
+void main(void);
 void main(void)
 {
 //	volatile unsigned long *pshold = (unsigned long *)0x1004330c;

@@ -101,6 +101,11 @@
 #define PSS_LATENCY_BUSMASTER		10
 
 #ifndef __ROMCC__
+
+#if defined(__PRE_RAM__)
+void romstage_main(unsigned long bist);
+#endif
+
 #ifdef __SMM__
 /* Lock MSRs */
 void intel_cpu_haswell_finalize_smm(void);

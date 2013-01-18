@@ -22,6 +22,7 @@
 #include <string.h>
 #include <lib.h>
 #include <timestamp.h>
+#include <arch/byteorder.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>

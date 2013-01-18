@@ -26,42 +26,92 @@
 #include <arch/byteorder.h>
 #include <arch/cbfs.h>
 
+
 static int cbfs_check_magic(struct cbfs_file *file)
 {
-	return !strcmp(file->magic, CBFS_FILE_MAGIC) ? 1 : 0;
+	return strcmp(file->magic, CBFS_FILE_MAGIC) ? 0 : 1;
 }
 
-static unsigned long findstage(const char* target)
+static unsigned long loadstage(const char* target)
 {
 	unsigned long offset, align;
 	/* FIXME: magic offsets */
-	struct cbfs_header *header = (struct cbfs_header *)(0x02023400 + 0x40);
+	struct cbfs_header *header = (struct cbfs_header *)(0x02062040);
 	// if (ntohl(header->magic) != CBFS_HEADER_MAGIC)
 	// 	printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
 
 	offset = ntohl(header->offset);
 	align = ntohl(header->align);
+	printk(BIOS_INFO, "cbfs header (%p)\n", header);
+	printk(BIOS_INFO, "\tmagic: 0x%08x\n", ntohl(header->magic));
+	printk(BIOS_INFO, "\tversion: 0x%08x\n", ntohl(header->version));
+	printk(BIOS_INFO, "\tromsize: 0x%08x\n", ntohl(header->romsize));
+	printk(BIOS_INFO, "\tbootblocksize: 0x%08x\n", ntohl(header->bootblocksize));
+	printk(BIOS_INFO, "\talign: 0x%08x\n", ntohl(header->align));
+	printk(BIOS_INFO, "\toffset: 0x%08x\n", ntohl(header->offset));
 	while(1) {
 		struct cbfs_file *file;
-		file = (struct cbfs_file *)(offset + CONFIG_ROMSTAGE_BASE);
-		if (!cbfs_check_magic(file))
+		struct cbfs_stage *stage;
+		file = (struct cbfs_file *)(offset + 0x02060000);
+		if (!cbfs_check_magic(file)) {
+			printk(BIOS_INFO, "magic is wrong, file: %p\n", file);
 			return 0;
-		if (!strcmp(CBFS_NAME(file), target))
-			return (unsigned long)CBFS_SUBHEADER(file);
+		}
+		if (!strcmp(CBFS_NAME(file), target)) {
+			uint32_t  load, entry;
+			printk(BIOS_INFO, "CBFS name matched, offset: %p\n", file);
+			printk(BIOS_INFO, "\tmagic: %02x%02x%02x%02x%02x%02x%02x%02x\n",
+				file->magic[0], file->magic[1], file->magic[2], file->magic[3],
+				file->magic[4], file->magic[5], file->magic[6], file->magic[7]);
+			printk(BIOS_INFO, "\tlen: 0x%08x\n", ntohl(file->len));
+			printk(BIOS_INFO, "\ttype: 0x%08x\n", ntohl(file->type));
+			printk(BIOS_INFO, "\tchecksum: 0x%08x\n", ntohl(file->checksum));
+			printk(BIOS_INFO, "\toffset: 0x%08x\n", ntohl(file->offset));
+			/* exploit the fact that this is all word-aligned. */
+			stage = CBFS_SUBHEADER(file);
+			load = stage->load;
+			entry = stage->entry;
+			int i;
+			u32 *to = (void *)load;
+			u32 *from = (void *)((u8 *)stage+sizeof(*stage));
+			/* we could do memmove/memset here. But the math gets messy. 
+			 * far easier just to do what we want.
+			 */
+			 printk(BIOS_INFO, "entry: 0x%08x, load: 0x%08x, "
+			 	"len: 0x%08x, memlen: 0x%08x\n", entry,
+				 load, stage->len, stage->memlen);
+			for(i = 0; i < stage->len; i += 4)
+				*to++ = *from++;
+			for(; i < stage->memlen; i += 4)
+				*to++ = 0;
+			return entry;
+		}
 		int flen = ntohl(file->len);
 		int foffset = ntohl(file->offset);
 		unsigned long oldoffset = offset;
 		offset = ALIGN(offset + foffset + flen, align);
+		printk(BIOS_INFO, "offset: 0x%08lx\n", offset);
 		if (offset <= oldoffset)
 			return 0;
-		if (offset < CONFIG_ROMSTAGE_BASE + ntohl(header->romsize));
+		if (offset > (128 * 1024))
 			return 0;
 	}
 }
 
 static inline void call(unsigned long addr)
 {
-	void (*doit)(void) = (void *)addr;
+	__attribute__((noreturn)) void (*doit)(void) = (void *)addr;
+	printk(BIOS_INFO, "addr: %08lx, doit: %p\n", addr, doit);
+	/* FIXME: dumping SRAM content for sanity checking */
+	int i;
+	for (i = 0; i < 128; i++) {
+		if (i % 16 == 0)
+			printk(BIOS_INFO, "\n0x%08lx: ", addr + i);
+		else
+			printk(BIOS_INFO, " ");
+		printk(BIOS_INFO, "%02x", *(uint8_t *)(addr + i));
+	}
+	/* FIXME: do we need to change to/from arm/thumb? */
 	doit();
 }
 #endif

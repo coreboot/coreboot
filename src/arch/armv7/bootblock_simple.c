@@ -39,12 +39,12 @@ void main(unsigned long bist)
 	unsigned long entry;
 
 	if (boot_cpu()) {
-		bootblock_mainboard_init();
 		bootblock_cpu_init();
+		bootblock_mainboard_init();
 	}
 
-	entry = findstage(target1);
+	entry = loadstage(target1);
+	printk(BIOS_INFO, "entry: 0x%08lx\n", entry);
 	if (entry) call(entry);
-
 	hlt();
 }

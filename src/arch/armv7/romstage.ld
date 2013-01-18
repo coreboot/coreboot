@@ -35,11 +35,12 @@
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
-/* ENTRY(_start) */
+ENTRY(_start)
 
 SECTIONS
 {
-	. = 0x02023400 + 0x4000;
+	/* TODO make this a configurable option (per chipset). */
+	. = 0x02050000;
 
 	.romtext . : {
 		_rom = .;

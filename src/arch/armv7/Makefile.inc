@@ -215,9 +215,8 @@ $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage \
-		-f $(objcbfs)/romstage_xip.elf \
+		-f $(objcbfs)/romstage_null.debug \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
-		-b $(shell cat $(objcbfs)/base_xip.txt)
 	mv $@.tmp $@
 
 ################################################################################

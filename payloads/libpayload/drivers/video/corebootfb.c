@@ -32,7 +32,6 @@
 #include <coreboot_tables.h>
 #include <pci.h>
 #include <video_console.h>
-#include <arch/msr.h>
 #include "font8x16.h"
 
 struct video_console coreboot_video_console;

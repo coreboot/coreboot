@@ -111,9 +111,8 @@ static void gettimeofday_init(void)
 		(tm.tm_min * 60) + tm.tm_sec;
 }
 #endif // CONFIG_NVRAM
-#endif // CONFIG_ARCH_X86
 
-#ifdef CONFIG_ARCH_ARMV7
+#else
 static void update_clock(void)
 {
 }
@@ -121,18 +120,7 @@ static void update_clock(void)
 static void gettimeofday_init(void)
 {
 }
-#endif // CONFIG_ARCH_ARMV7
-
-
-#ifdef CONFIG_ARCH_POWERPC
-static void update_clock(void)
-{
-}
-
-static void gettimeofday_init(void)
-{
-}
-#endif // CONFIG_ARCH_POWERPC
+#endif
 
 /**
  * Return the current time broken into a timeval structure.

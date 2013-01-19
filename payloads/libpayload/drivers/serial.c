@@ -97,10 +97,18 @@ void serial_init(void)
 	serial_is_mem_mapped =
 		(lib_sysinfo.serial->type == CB_SERIAL_TYPE_MEMORY_MAPPED);
 
-	if (!serial_is_mem_mapped && (inb(IOBASE + 0x05) == 0xFF) &&
-			(inb(IOBASE + 0x06) == 0xFF)) {
+	if (!serial_is_mem_mapped) {
+#ifdef CONFIG_IO_ADDRESS_SPACE
+		if ((inb(IOBASE + 0x05) == 0xFF) &&
+				(inb(IOBASE + 0x06) == 0xFF)) {
+			return;
+		}
+#else
+		printf("IO space mapped serial not supported.");
 		return;
+#endif
 	}
+
 
 	serial_hardware_is_present = 1;
 

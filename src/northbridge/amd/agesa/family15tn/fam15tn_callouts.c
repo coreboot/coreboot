@@ -24,6 +24,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
+#include "dimmSpd.h"
 #include "fam15tn_callouts.h"
 
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -403,3 +404,10 @@ AGESA_STATUS fam15tn_HookGfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *Con
 	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
 }
 
+AGESA_STATUS fam15tn_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS Status;
+	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+
+	return Status;
+}

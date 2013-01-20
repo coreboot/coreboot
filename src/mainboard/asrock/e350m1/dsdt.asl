@@ -74,21 +74,21 @@ DefinitionBlock (
 		Processor(
 			C001,		/* name space name */
 			1,		/* Unique number for this processor */
-			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x810,		/* PBLK system I/O address !hardcoded! */
 			0x00		/* PBLKLEN for boot processor */
 			) {
 		}
 		Processor(
 			C002,		/* name space name */
 			2,		/* Unique number for this processor */
-			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x810,		/* PBLK system I/O address !hardcoded! */
 			0x00		/* PBLKLEN for boot processor */
 			) {
 		}
 		Processor(
 			C003,		/* name space name */
 			3,		/* Unique number for this processor */
-			0x810		,		/* PBLK system I/O address !hardcoded! */
+			0x810,		/* PBLK system I/O address !hardcoded! */
 			0x00		/* PBLKLEN for boot processor */
 			) {
 		}

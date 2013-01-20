@@ -25,9 +25,6 @@
 /* CALLOUT Initialization */
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32  Func,UINT32  Data,VOID *ConfigPtr);
-
 /* FCH OEM Config*/
 AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
 

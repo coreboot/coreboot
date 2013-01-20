@@ -19,7 +19,6 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
-#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "Ids.h"
 #include "OptionsIds.h"
@@ -33,10 +32,10 @@ STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DEALLOCATE_BUFFER,        fam15tn_DeallocateBuffer },
 	{AGESA_DO_RESET,                 fam15tn_Reset },
 	{AGESA_LOCATE_BUFFER,            fam15tn_LocateBuffer },
-	{AGESA_READ_SPD,                 BiosReadSpd },
+	{AGESA_READ_SPD,                 fam15tn_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,        fam15tn_DefaultRet },
-	{AGESA_RUNFUNC_ONAP,             fam15tn_RunFuncOnAp	},
-	{AGESA_GET_IDS_INIT_DATA,        fam15tn_GetIdsInitData	},
+	{AGESA_RUNFUNC_ONAP,             fam15tn_RunFuncOnAp },
+	{AGESA_GET_IDS_INIT_DATA,        fam15tn_GetIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  fam15tn_HookBeforeDQSTraining },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, fam15tn_HookBeforeExitSelfRefresh },
 	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
@@ -61,14 +60,6 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
 
 	return CalloutStatus;
-}
-
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
-
-	return Status;
 }
 
 /**

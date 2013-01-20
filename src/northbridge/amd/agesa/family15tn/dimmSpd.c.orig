@@ -21,28 +21,21 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include "dimmSpd.h"
+#include "chip.h"
+<<<<<<< Updated upstream:src/northbridge/amd/agesa/family15tn/dimmSpd.c
 
 #define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
 
-/*#pragma optimize ("", off) // for source level debug
- *---------------------------------------------------------------------------
- *
- * SPD address table - porting required
- */
+extern ROMSTAGE_CONST struct northbridge_amd_agesa_family15tn_config ROMSTAGE_CONST northbridge_amd_agesa_family15tn_info_6;
+=======
+#include <device/pci_def.h>
+#include <device/device.h>
+#include <console/console.h>
+#include <console/loglevel.h>
 
-static const UINT8 spdAddressLookup [2] [2] [4] =  // socket, channel, dimm
-{
-	// socket 0
-	{
-		{0xA0, 0x00},  // channel 0 dimms
-		{0xA2, 0x00},  // channel 1 dimms
-	},
-	// socket 1
-	{
-		{0x00, 0x00},  // channel 0 dimms
-		{0x00, 0x00},  // channel 1 dimms
-	},
-};
+
+#define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
+>>>>>>> Stashed changes:src/mainboard/amd/parmer/dimmSpd.c
 
 /*-----------------------------------------------------------------------------
  *
@@ -151,12 +144,43 @@ static void setupFch (int ioBase)
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress, ioBase;
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	ROMSTAGE_CONST struct northbridge_amd_agesa_family15tn_config *config = dev->chip_info;
 
-	if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]   )) return AGESA_ERROR;
-	if (info->DimmId       >= DIMENSION (spdAddressLookup[0][0])) return AGESA_ERROR;
+	if ((dev == 0) || (config == 0)) {
+		return AGESA_ERROR;
+	}
+	printk(BIOS_DEBUG, "SPD ADDR 0: %02x \n", config->spdAddrLookup[0][0][0]);
 
-	spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
+
+	if (info->SocketId     >= DIMENSION(config->spdAddrLookup      ))
+		return AGESA_ERROR;
+	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]   ))
+		return AGESA_ERROR;
+	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
+		return AGESA_ERROR;
+
+<<<<<<< Updated upstream:src/northbridge/amd/agesa/family15tn/dimmSpd.c
+	if (info->SocketId     >= DIMENSION
+		(northbridge_amd_agesa_family15tn_info_6.spdAddrLookup      ))
+		return AGESA_ERROR;
+	if (info->MemChannelId >= DIMENSION
+		(northbridge_amd_agesa_family15tn_info_6.spdAddrLookup[0]   ))
+		return AGESA_ERROR;
+	if (info->DimmId       >= DIMENSION
+		(northbridge_amd_agesa_family15tn_info_6.spdAddrLookup[0][0]))
+		return AGESA_ERROR;
+
+	spdAddress = northbridge_amd_agesa_family15tn_info_6.spdAddrLookup
+		[info->SocketId] [info->MemChannelId] [info->DimmId];
+=======
+	spdAddress = config->spdAddrLookup
+		[info->SocketId] [info->MemChannelId] [info->DimmId];
+	printk(BIOS_DEBUG, "SPD ADDR [%02x][%02x][%02x]: %02x \n",
+		info->SocketId, info->MemChannelId, info->DimmId,
+		config->spdAddrLookup[info->SocketId][info->MemChannelId][info->DimmId]);
+
+>>>>>>> Stashed changes:src/mainboard/amd/parmer/dimmSpd.c
 	if (spdAddress == 0) return AGESA_ERROR;
 	ioBase = 0xB00;
 	setupFch (ioBase);

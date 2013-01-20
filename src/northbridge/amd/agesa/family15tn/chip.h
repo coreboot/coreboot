@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef _BIOS_CALLOUT_H_
-#define _BIOS_CALLOUT_H_
+#ifndef _AGESA_FAM15TN_CHIP_H_
+#define _AGESA_FAM15TN_CHIP_H_
 
-#include <northbridge/amd/agesa/family15tn/fam15tn_callouts.h>
+struct northbridge_amd_agesa_family15tn_config
+{
+	u8 spdAddrLookup[2][2][4];
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+};
 
-/* FCH OEM Config*/
-AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);
-
-#endif //_BIOS_CALLOUT_H_
+#endif

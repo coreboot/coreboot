@@ -18,7 +18,8 @@
 #
 
 romstage-y += fam15tn_callouts.c
+romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
 ramstage-y += fam15tn_callouts.c
-
+ramstage-y += dimmSpd.c

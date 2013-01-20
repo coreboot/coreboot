@@ -17,32 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <device/pci_def.h>
+#include <device/device.h>
+
+/* warning: Porting.h includes an open #pragma pack(1) */
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
 #include "dimmSpd.h"
+#include "chip.h"
+
 
 #define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
-
-/*#pragma optimize ("", off) // for source level debug
- *---------------------------------------------------------------------------
- *
- * SPD address table - porting required
- */
-
-static const UINT8 spdAddressLookup [2] [2] [4] =  // socket, channel, dimm
-{
-	// socket 0
-	{
-		{0xA0, 0x00},  // channel 0 dimms
-		{0xA2, 0x00},  // channel 1 dimms
-	},
-	// socket 1
-	{
-		{0x00, 0x00},  // channel 0 dimms
-		{0x00, 0x00},  // channel 1 dimms
-	},
-};
 
 /*-----------------------------------------------------------------------------
  *
@@ -145,20 +131,29 @@ static void setupFch (int ioBase)
 {
 	writePmReg (0x2D, ioBase >> 8);
 	writePmReg (0x2C, ioBase | 1);
-	//writePmReg (0x29, 0x80);
-	//writePmReg (0x28, 0x61);
 	__outbyte (ioBase + 0x0E, 66000000 / 400000 / 4); // set SMBus clock to 400 KHz
 }
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress, ioBase;
+	ROMSTAGE_CONST struct device *dev = dev_find_slot(0, PCI_DEVFN(0x18, 2));
+	ROMSTAGE_CONST struct northbridge_amd_agesa_family15tn_config *config = dev->chip_info;
 
-	if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]   )) return AGESA_ERROR;
-	if (info->DimmId       >= DIMENSION (spdAddressLookup[0][0])) return AGESA_ERROR;
+	if ((dev == 0) || (config == 0)) {
+		return AGESA_ERROR;
+	}
 
-	spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
+	if (info->SocketId     >= DIMENSION(config->spdAddrLookup      ))
+		return AGESA_ERROR;
+	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]   ))
+		return AGESA_ERROR;
+	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
+		return AGESA_ERROR;
+
+	spdAddress = config->spdAddrLookup
+		[info->SocketId] [info->MemChannelId] [info->DimmId];
+
 	if (spdAddress == 0) return AGESA_ERROR;
 	ioBase = 0xB00;
 	setupFch (ioBase);

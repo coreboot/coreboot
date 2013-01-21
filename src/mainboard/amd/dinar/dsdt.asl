@@ -61,49 +61,49 @@ DefinitionBlock (
                         C001,           /* name space name */
                         1,              /* Unique number for this processor */
                         0x810,          /* PBLK system I/O address !hardcoded! */
-                        0x0             /* PBLKLEN for boot processor */
+                        0x06            /* PBLKLEN for boot processor */
                         ) {
                 }
                 Processor(
                         C002,           /* name space name */
                         2,              /* Unique number for this processor */
                         0x810,          /* PBLK system I/O address !hardcoded! */
-                        0x00            /* PBLKLEN for boot processor */
+                        0x06            /* PBLKLEN for boot processor */
                         ) {
                 }
                 Processor(
                         C003,           /* name space name */
                         3,              /* Unique number for this processor */
                         0x810,          /* PBLK system I/O address !hardcoded! */
-                        0x00            /* PBLKLEN for boot processor */
+                        0x06            /* PBLKLEN for boot processor */
                         ) {
                 }
 		Processor(
 			C004,		/* name space name */
 			4,		/* Unique number for this processor */
 			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
+			0x06		/* PBLKLEN for boot processor */
 			) {
 		}
 		Processor(
 			C005,		/* name space name */
 			5,		/* Unique number for this processor */
 			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
+			0x06		/* PBLKLEN for boot processor */
 			) {
 		}
 		Processor(
 			C006,		/* name space name */
 			6,		/* Unique number for this processor */
 			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
+			0x06		/* PBLKLEN for boot processor */
 			) {
 		}
 		Processor(
 			C007,		/* name space name */
 			7,		/* Unique number for this processor */
 			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
+			0x06		/* PBLKLEN for boot processor */
 			) {
 		}
         } /* End _PR scope */

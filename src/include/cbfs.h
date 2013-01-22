@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
+ * Copyright (C) 2013 The ChromiumOS Authors.  All rights reserved.
  *
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation
@@ -49,14 +50,38 @@
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
-#include "cbfs_core.h"
-#include <boot/coreboot_tables.h>
+#include <cbfs_core.h>
 
-void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name);
-void *cbfs_load_stage(const char *name);
-int cbfs_execute_stage(const char *name);
-void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
+int cbfs_execute_stage(struct cbfs_media *media, const char *name);
+void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
+			  uint16_t device, void * dest);
+void *cbfs_load_payload(struct cbfs_media *media, const char *name);
+void *cbfs_load_stage(struct cbfs_media *media, const char *name);
+
+/* Simple buffer for streaming media. */
+struct cbfs_simple_buffer {
+	char *buffer;
+	size_t allocated;
+	size_t size;
+	size_t last_allocate;
+};
+
+void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
+			     struct cbfs_media *media,
+			     size_t offset, size_t count);
+
+void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
+			       const void *address);
+
+// Utility functions
 int run_address(void *f);
+
+/* Defined in src/lib/selfboot.c */
+struct lb_memory;
 int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
+
+/* Defined in individual arch / board implementation. */
+int init_default_cbfs_media(struct cbfs_media *media);
+
 #endif
 

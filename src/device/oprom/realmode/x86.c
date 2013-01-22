@@ -248,8 +248,9 @@ void vbe_set_graphics(void)
 #if CONFIG_BOOTSPLASH
 	struct jpeg_decdata *decdata;
 	decdata = malloc(sizeof(*decdata));
-	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg",
-						CBFS_TYPE_BOOTSPLASH);
+	unsigned char *jpeg = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+						    "bootsplash.jpg",
+						    CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) {
 		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
 		return;
@@ -366,7 +367,8 @@ void do_vsmbios(void)
 	printk(BIOS_SPEW, "VSA: Real mode stub @%p: %d bytes\n", REALMODE_BASE,
 			(u32)&__realmode_code_size);
 
-	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
+	if ((unsigned int)cbfs_load_stage(CBFS_DEFAULT_MEDIA, "vsa") !=
+	    VSA2_ENTRY_POINT) {
 		printk(BIOS_ERR, "Failed to load VSA.\n");
 		return;
 	}

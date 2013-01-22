@@ -32,7 +32,7 @@
 static void vga_init(device_t dev)
 {
 	printk(BIOS_INFO, "Starting Graphics Initialization\n");
-	struct cbfs_file *file = cbfs_find("mbi.bin");
+	struct cbfs_file *file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "mbi.bin");
 	void *mbi = NULL;
 	unsigned int mbi_len = 0;
 

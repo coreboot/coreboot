@@ -25,10 +25,13 @@
 static void cbfs_and_run_core(const char *filename, unsigned ebp)
 {
 	u8 *dst;
+	struct cbfs_media media;
 
 	timestamp_add_now(TS_START_COPYRAM);
 	print_debug("Loading image.\n");
-	dst = cbfs_load_stage(filename);
+	if (init_default_cbfs_media(&media) != 0)
+		die("FATAL: Cannot initialize CBFS media.\n");
+	dst = cbfs_load_stage(&media, filename);
 	if ((void *)dst == (void *) -1)
 		die("FATAL: Essential component is missing.\n");
 

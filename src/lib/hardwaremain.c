@@ -59,6 +59,8 @@ void hardwaremain(int boot_complete);
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+	struct cbfs_media media;
+	void *payload;
 
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
@@ -141,8 +143,10 @@ void hardwaremain(int boot_complete)
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
-	void *payload;
-	payload = cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
+	if (init_default_cbfs_media(&media) != 0)
+		die("Could not load primary CBFS media source.");
+	payload = cbfs_load_payload(&media, lb_mem,
+				    CONFIG_CBFS_PREFIX "/payload");
 	if (! payload)
 		die("Could not find a payload\n");
 

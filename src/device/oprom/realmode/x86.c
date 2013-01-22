@@ -247,9 +247,11 @@ void vbe_set_graphics(void)
 	vbe_set_mode(&mode_info);
 #if CONFIG_BOOTSPLASH
 	struct jpeg_decdata *decdata;
+	struct cbfs_media media;
 	decdata = malloc(sizeof(*decdata));
-	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg",
-						CBFS_TYPE_BOOTSPLASH);
+	init_default_cbfs_media(&media);
+	unsigned char *jpeg = cbfs_find_file(media, "bootsplash.jpg",
+					     CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) {
 		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
 		return;
@@ -354,6 +356,7 @@ static u32 VSA_vrRead(u16 classIndex)
 
 void do_vsmbios(void)
 {
+	struct cbfs_media media;
 	printk(BIOS_DEBUG, "Preparing for VSA...\n");
 
 	/* Set up C interrupt handlers */
@@ -366,7 +369,8 @@ void do_vsmbios(void)
 	printk(BIOS_SPEW, "VSA: Real mode stub @%p: %d bytes\n", REALMODE_BASE,
 			(u32)&__realmode_code_size);
 
-	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
+	if (init_default_cbfs_media(&media) != 0 ||
+	    (unsigned int)cbfs_load_stage(&media, "vsa") != VSA2_ENTRY_POINT) {
 		printk(BIOS_ERR, "Failed to load VSA.\n");
 		return;
 	}

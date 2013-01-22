@@ -53,5 +53,21 @@ void cache_as_ram_main(void);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
 
+/* definition is architecture-dependent but at minimum, for most architectures,
+ * defined in src/lib/romstream.c. There are so few systems that don't have
+ * memory mapped ROM that we yanked this years ago. Now, thanks to
+ * some ARM systems, it's back.
+ * There is a subtle design trick here. For rom streams which are memory-addressable,
+ * we don't want to copy the data. So we can return a pointer to the data in **where, along
+ * with the length of the available date. 
+ * For spi streams, as on ARM, the caller must set *where to a data buffer.
+ * In any event, the implementation guarantee that on return, *where points to a data
+ * area and return the length of the area it points to, which is at most 'len' bytes
+ * and may be zero bytes. In this way, we can be efficient on machines with memory-addressed ROM.
+ */
+void *stream_start(void *v);
+int stream_read(void *stream, void **where, u32 size, u32 off);
+void stream_fini(void *stream);
+
 #endif /* __ROMCC__ */
 #endif /* __LIB_H__ */

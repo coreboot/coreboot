@@ -32,13 +32,13 @@ static int cbfs_check_magic(struct cbfs_file *file)
 	return strcmp(file->magic, CBFS_FILE_MAGIC) ? 0 : 1;
 }
 
+/* start and stop the stream each time. It's the simplest thing to do */
 static unsigned long loadstage(const char* target)
 {
 	unsigned long offset, align;
+	void *stream;
 	struct cbfs_header *header = (struct cbfs_header *)(CONFIG_BOOTBLOCK_BASE + 0x40);
-	/* FIXME: magic offsets */
-	// if (ntohl(header->magic) != CBFS_HEADER_MAGIC)
-	// 	printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
+	stream = stream_start((void *)0x12d30000);
 
 	offset = ntohl(header->offset);
 	align = ntohl(header->align);
@@ -50,13 +50,20 @@ static unsigned long loadstage(const char* target)
 	printk(BIOS_INFO, "\talign: 0x%08x\n", ntohl(header->align));
 	printk(BIOS_INFO, "\toffset: 0x%08x\n", ntohl(header->offset));
 	while(1) {
-		struct cbfs_file *file;
-		struct cbfs_stage *stage;
+		struct cbfs_file f, *file = &f;
+		struct cbfs_stage s, *stage = &s;
+		int amount;
 		/* FIXME: SPI image hack */
-		file = (struct cbfs_file *)(offset + CONFIG_SPI_IMAGE_HACK);
+		amount = stream_read(stream, (void *)&file, sizeof(file), offset);
+		if (amount < sizeof(*file)){
+			printk(BIOS_INFO, "Stream read of file header only returned %d bytes, wanted %d\n",
+			       amount, sizeof(*file));
+			goto fail;
+		}
+
 		if (!cbfs_check_magic(file)) {
 			printk(BIOS_INFO, "magic is wrong, file: %p\n", file);
-			return 0;
+			goto fail;
 		}
 		if (!strcmp(CBFS_NAME(file), target)) {
 			uint32_t  load, entry;
@@ -68,23 +75,29 @@ static unsigned long loadstage(const char* target)
 			printk(BIOS_INFO, "\ttype: 0x%08x\n", ntohl(file->type));
 			printk(BIOS_INFO, "\tchecksum: 0x%08x\n", ntohl(file->checksum));
 			printk(BIOS_INFO, "\toffset: 0x%08x\n", ntohl(file->offset));
-			/* exploit the fact that this is all word-aligned. */
-			stage = CBFS_SUBHEADER(file);
+			offset += file->offset;
+			amount = stream_read(stream, (void *)&stage, 
+					     sizeof(stage), offset);
+			if (amount < sizeof(*stage)){
+				printk(BIOS_ERR, "Read stage: got %d, wanted %d\n", 
+				       amount, sizeof(stage));
+				goto fail;
+			}
 			load = stage->load;
 			entry = stage->entry;
 			int i;
-			u32 *to = (void *)load;
-			u32 *from = (void *)((u8 *)stage+sizeof(*stage));
-			/* we could do memmove/memset here. But the math gets messy. 
-			 * far easier just to do what we want.
-			 */
-			 printk(BIOS_INFO, "entry: 0x%08x, load: 0x%08x, "
-			 	"len: 0x%08x, memlen: 0x%08x\n", entry,
-				 load, stage->len, stage->memlen);
-			for(i = 0; i < stage->len; i += 4)
-				*to++ = *from++;
-			for(; i < stage->memlen; i += 4)
-				*to++ = 0;
+			offset += sizeof(stage);
+			amount = stream_read(stream, (void *)load, stage->len, offset);
+			if (amount < stage->len){
+				printk(BIOS_ERR, "Stage read: got %d, wanted %d\n", 
+				       amount, stage->len);
+				       
+				goto fail;
+			}
+			u32 *zero = (u32 *)(load + stage->len);
+			for(i = stage->len; i < stage->memlen; i += 4)
+				*zero++ = 0;
+			stream_fini(stream);
 			return entry;
 		}
 		int flen = ntohl(file->len);
@@ -93,9 +106,13 @@ static unsigned long loadstage(const char* target)
 		offset = ALIGN(offset + foffset + flen, align);
 		printk(BIOS_INFO, "offset: 0x%08lx\n", offset);
 		if (offset <= oldoffset)
-			return 0;
+			goto fail;
 		if (offset > CONFIG_ROMSTAGE_SIZE)
-			return 0;
+			goto fail;
 	}
+
+ fail:
+	stream_fini(stream);
+	return 0;
 }
 #endif

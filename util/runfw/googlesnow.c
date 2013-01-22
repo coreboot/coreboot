@@ -86,7 +86,7 @@ Starting program: /root/coreboot/util/runarmbios/a.out ~/coreboot/build/coreboot
 
 Breakpoint 3, main (argc=3, argv=0x7efff7c4) at runbios.c:54
 54              coreboot();
-(gdb) symbol-file ~/coreboot/build/cbfs/fallback/bootblock.debug 
+(gdb) symbol-file ~/coreboot/build/cbfs/fallback/bootblock.debug
 Load new symbol table from "/root/coreboot/build/cbfs/fallback/bootblock.debug"? (y or n) y
 Reading symbols from /root/coreboot/build/cbfs/fallback/bootblock.debug...done.
 Error in re-setting breakpoint 3: No source file named runbios.c.
@@ -97,37 +97,37 @@ Error in re-setting breakpoint 3: No source file named runbios.c.
 0x0000879c in ?? ()
 1: x/i $pc
 => 0x879c:      blx     r3
-(gdb) 
+(gdb)
 0x020234b0 in call_bootblock ()
 1: x/i $pc
 => 0x20234b0 <call_bootblock>:  ldr     sp, [pc, #3800] ; 0x2024390
-(gdb) 
+(gdb)
 0x020234b4 in call_bootblock ()
 1: x/i $pc
 => 0x20234b4 <call_bootblock+4>:        bic     sp, sp, #7
-(gdb) 
+(gdb)
 0x020234b8 in call_bootblock ()
 1: x/i $pc
 => 0x20234b8 <call_bootblock+8>:        mov     r0, #0
-(gdb) 
+(gdb)
 0x020234bc in call_bootblock ()
 1: x/i $pc
 => 0x20234bc <call_bootblock+12>:       blx     0x20244b8 <main>
-(gdb) 
+(gdb)
 main (bist=0) at src/arch/armv7/bootblock_simple.c:37
 37      {
 1: x/i $pc
 => 0x20244b8 <main>:    push    {r3, lr}
-(gdb) 
+(gdb)
 42                      bootblock_mainboard_init();
 1: x/i $pc
 => 0x20244ba <main+2>:  bl      0x2023c08 <bootblock_mainboard_init>
-(gdb) 
+(gdb)
 bootblock_mainboard_init () at src/mainboard/google/snow/bootblock.c:2124
 2124    {
 1: x/i $pc
 => 0x2023c08 <bootblock_mainboard_init>:        stmdb   sp!, {r4, r5, r6, r7, r9, r10, r11, lr}
-(gdb) 
+(gdb)
 2127            i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 1: x/i $pc
 => 0x2023c0c <bootblock_mainboard_init+4>:      movs    r1, #0

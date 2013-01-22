@@ -166,8 +166,9 @@ void intel_update_microcode_from_cbfs(void)
 #ifdef __PRE_RAM__
 	microcode_blob = walkcbfs((char *) MICROCODE_CBFS_FILE);
 #else
-	microcode_blob = cbfs_find_file(MICROCODE_CBFS_FILE,
-					CBFS_TYPE_MICROCODE);
+	microcode_blob = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+					       MICROCODE_CBFS_FILE,
+					       CBFS_TYPE_MICROCODE);
 #endif
 	intel_update_microcode(microcode_blob);
 }

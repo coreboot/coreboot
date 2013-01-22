@@ -536,12 +536,3 @@ out:
 	return 0;
 }
 
-void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
-{
-	struct cbfs_payload *payload;
-
-	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
-
-	return payload;
-}
-

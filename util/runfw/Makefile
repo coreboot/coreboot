@@ -1,5 +1,5 @@
 #
-# runfw -- run firmware in user mode. 
+# runfw -- run firmware in user mode.
 #
 # Copyright (C) 2013 The ChromiumOS Authors.  All rights reserved.
 #

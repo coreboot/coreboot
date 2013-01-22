@@ -39,8 +39,12 @@
 #include <drivers/maxim/max77686/max77686.h>
 
 #include <console/console.h>
+#include <cbfs.h>
 
 #define EXYNOS5_CLOCK_BASE		0x10010000
+
+/* TODO Move to Makefile.inc once we support adding bootblock stage files. */
+#include "cpu/samsung/exynos5-common/spi.c"
 
 /* FIXME(dhendrix): Can we move this SPI stuff elsewhere? */
 static void spi_rx_tx(struct exynos_spi *regs, int todo,

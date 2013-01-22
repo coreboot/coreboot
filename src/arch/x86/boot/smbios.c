@@ -120,7 +120,6 @@ static int smbios_processor_name(char *start)
 
 static int smbios_write_type0(unsigned long *current, int handle)
 {
-	struct cbfs_header *hdr;
 	struct smbios_type0 *t = (struct smbios_type0 *)*current;
 	int len = sizeof(struct smbios_type0);
 
@@ -143,8 +142,15 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
 
-	if ((hdr = get_cbfs_header()) != (struct cbfs_header *)0xffffffff)
-		t->bios_rom_size = (ntohl(hdr->romsize) / 65535) - 1;
+	{
+		const struct cbfs_header *header;
+		u32 romsize = CONFIG_ROM_SIZE;
+		header = cbfs_get_header(CBFS_DEFAULT_MEDIA);
+		if (header != CBFS_HEADER_INVALID_ADDRESS)
+			romsize = ntohl(header->romsize);
+		t->bios_rom_size = (romsize / 65535) - 1;
+	}
+
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =
 		BIOS_CHARACTERISTICS_PCI_SUPPORTED |

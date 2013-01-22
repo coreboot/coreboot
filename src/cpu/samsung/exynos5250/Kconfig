@@ -48,6 +48,22 @@ config ROMSTAGE_SIZE
 	hex
 	default 0x10000
 
+# TODO Change this to some better address not overlapping bootblock when
+# cbfstool supports creating header in arbitrary location.
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x2040
+
+# TODO We may probably move this to board-specific implementation files instead
+# of KConfig values.
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x02060000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x000017000
+
 # FIXME: This is for copying SPI content into SRAM temporarily and
 # will be removed when we have the SPI streaming driver implemented.
 config SPI_IMAGE_HACK

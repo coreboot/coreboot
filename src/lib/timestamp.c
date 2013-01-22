@@ -46,7 +46,7 @@ void timestamp_init(tsc_t base)
 			MAX_TIMESTAMPS * sizeof(struct timestamp_entry));
 
 	if (!tst) {
-		printk(BIOS_ERR, "ERROR: failed to allocate timstamp table\n");
+		printk(BIOS_ERR, "ERROR: failed to allocate timestamp table\n");
 		return;
 	}
 

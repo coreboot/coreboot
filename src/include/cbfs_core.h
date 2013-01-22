@@ -50,6 +50,8 @@
 #ifndef _CBFS_CORE_H_
 #define _CBFS_CORE_H_
 
+#include <stddef.h>
+
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and
     payloads.  Of course, other CBFS users can use whatever
@@ -74,23 +76,17 @@
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 
-
-/** this is the master cbfs header - it need to be
-    located somewhere in the bootblock.  Where it
-    actually lives is up to coreboot. On x86, a
-    pointer to this header will live at 0xFFFFFFFC,
-    so we can easily find it. */
-
 #define CBFS_HEADER_MAGIC  0x4F524243
-#if CONFIG_ARCH_X86
-#define CBFS_HEADPTR_ADDR 0xFFFFFFFC
-#elif CONFIG_ARCH_ARMV7
-/* FIXME: This could also be 0xFFFF0000 with HIVECS enabled */
-#define CBFS_HEADPTR_ADDR 0x0000000C
-#endif
 #define CBFS_HEADER_VERSION1 0x31313131
 #define CBFS_HEADER_VERSION2 0x31313132
 #define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
+
+#define CBFS_HEADER_INVALID_ADDRESS	((void*)(0xffffffff))
+
+/** this is the master cbfs header - it need to be located somewhere available
+    to bootblock (to load romstage).  Where it actually lives is up to coreboot.
+    On x86, a pointer to this header will live at 0xFFFFFFFC.
+    For other platforms, you need to define CONFIG_CBFS_HEADER_ROM_OFFSET */
 
 struct cbfs_header {
 	uint32_t magic;
@@ -181,16 +177,49 @@ struct cbfs_optionrom {
 #define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 
-/* returns pointer to file inside CBFS or NULL */
-struct cbfs_file *cbfs_find(const char *name);
+#define CBFS_MEDIA_INVALID_MAP_ADDRESS	((void*)(0xffffffff))
+#define CBFS_DEFAULT_MEDIA		((void*)(0x0))
 
-/* returns pointer to file data inside CBFS */
-void *cbfs_get_file(const char *name);
+/* Media for CBFS to load files. */
+struct cbfs_media {
 
-/* returns pointer to file data inside CBFS after if type is correct */
-void *cbfs_find_file(const char *name, int type);
+	/* implementation dependent context, to hold resource references */
+	void *context;
+
+	/* opens media and returns 0 on success, -1 on failure */
+	int (*open)(struct cbfs_media *media);
+
+	/* returns number of bytes read from media into dest, starting from
+	 * offset for count of bytes */
+	size_t (*read)(struct cbfs_media *media, void *dest, size_t offset,
+		       size_t count);
+
+	/* returns a pointer to memory with count of bytes from media source
+	 * starting from offset, or CBFS_MEDIA_INVALID_MAP_ADDRESS on failure.
+	 * Note: mapped data can't be free unless unmap is called, even if you
+	 * do close first. */
+	void * (*map)(struct cbfs_media *media, size_t offset, size_t count);
+
+	/* returns NULL and releases the memory by address, which was allocated
+	 * by map */
+	void * (*unmap)(struct cbfs_media *media, const void *address);
+
+	/* closes media and returns 0 on success, -1 on failure. */
+	int (*close)(struct cbfs_media *media);
+};
+
+/* returns pointer to a file entry inside CBFS or NULL */
+struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
+
+/* returns pointer to file content inside CBFS after if type is correct */
+void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
+			    int type);
 
 /* returns 0 on success, -1 on failure */
 int cbfs_decompress(int algo, void *src, void *dst, int len);
-struct cbfs_header *get_cbfs_header(void);
+
+/* returns a pointer to CBFS master header, or CBFS_HEADER_INVALID_ADDRESS
+ *  on failure */
+const struct cbfs_header *cbfs_get_header(struct cbfs_media *media);
+
 #endif

@@ -59,6 +59,7 @@ void hardwaremain(int boot_complete);
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+	void *payload;
 
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
@@ -141,8 +142,8 @@ void hardwaremain(int boot_complete)
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
-	void *payload;
-	payload = cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
+	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA, lb_mem,
+				    CONFIG_CBFS_PREFIX "/payload");
 	if (! payload)
 		die("Could not find a payload\n");
 

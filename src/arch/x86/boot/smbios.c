@@ -27,7 +27,7 @@
 #include <device/device.h>
 #include <arch/cpu.h>
 #include <cpu/x86/name.h>
-#include <cbfs_core.h>
+#include <cbfs.h>
 #include <arch/byteorder.h>
 #include <elog.h>
 #if CONFIG_CHROMEOS
@@ -120,7 +120,6 @@ static int smbios_processor_name(char *start)
 
 static int smbios_write_type0(unsigned long *current, int handle)
 {
-	struct cbfs_header *hdr;
 	struct smbios_type0 *t = (struct smbios_type0 *)*current;
 	int len = sizeof(struct smbios_type0);
 
@@ -143,8 +142,17 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
 
-	if ((hdr = get_cbfs_header()) != (struct cbfs_header *)0xffffffff)
-		t->bios_rom_size = (ntohl(hdr->romsize) / 65535) - 1;
+	// TODO cache the value or always trust CONFIG_ROM_SIZE?
+	{
+		const struct cbfs_header *header;
+		header = cbfs_get_header(CBFS_DEFAULT_MEDIA, &media);
+		if (header != CBFS_HEADER_INVALID_ADDRESS)
+			t->bios_rom_size = (ntohl(header->romsize) / 65535) - 1;
+		else
+			t->bios_rom_size = (CONFIG_ROM_SIZE / 65535) - 1;
+	}
+
+
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =
 		BIOS_CHARACTERISTICS_PCI_SUPPORTED |

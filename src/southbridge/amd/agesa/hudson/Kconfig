@@ -105,7 +105,7 @@ config HUDSON_FWM_POSITION
 	  0xFFC20000 if flash chip size is 4M
 	  0xFF820000 if flash chip size is 8M
 	  0xFF020000 if flash chip size is 16M
-endif
+endif # HUDSON_FWM
 
 choice
 	prompt "SATA Mode"
@@ -175,7 +175,7 @@ config AHCI_ROM_FILE
 	string "AHCI ROM path and filename"
 	depends on HUDSON_AHCI_ROM
 	default "src/southbridge/amd/agesa/hudson/ahci.bin"
-endif
+endif # HUDSON_SATA_AHCI || HUDSON_SATA_AHCI7804
 
 if HUDSON_SATA_RAID
 config RAID_ROM_ID
@@ -202,7 +202,7 @@ config RAID_MISC_ROM_POSITION
 	  The RAID ROM requires that the MISC ROM is located between the range
 	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
 	  The CONFIG_ROM_SIZE must larger than 0x100000.
-endif
+endif # HUDSON_SATA_RAID
 
 config S3_VOLATILE_POS
 	hex "S3 volatile storage position"
@@ -212,10 +212,10 @@ config S3_VOLATILE_POS
 	  For a system with S3 feature, the BIOS needs to save some data to
 	  non-volitile storage at cold boot stage.
 
-endif
-
 config HUDSON_LEGACY_FREE
 	bool "System is legacy free"
 	help
 	  Select y if there is no keyboard controller in the system.
 	  This sets variables in AGESA and ACPI.
+
+endif # SOUTHBRIDGE_AMD_AGESA_HUDSON

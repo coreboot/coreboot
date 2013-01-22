@@ -45,7 +45,9 @@ void main(unsigned long bist)
 	}
 
 	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
-	romstage_entry = loadstage(target1);
+	romstage_entry = (unsigned long)cbfs_load_stage(
+			CBFS_DEFAULT_MEDIA, target1);
+
 	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
 	if (romstage_entry) bootblock_exit(romstage_entry);
 	hlt();

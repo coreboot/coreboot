@@ -20,8 +20,8 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include <lib.h>
+#include <cbfs.h>
 #include <arch/byteorder.h>
 
 // use CBFS core

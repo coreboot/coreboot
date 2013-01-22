@@ -27,8 +27,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cbfs.h>
 #include <lib.h>
+#include <cbfs.h>
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif

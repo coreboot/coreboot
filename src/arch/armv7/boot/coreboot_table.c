@@ -29,6 +29,7 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
+#include <lib.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #if CONFIG_USE_OPTION_TABLE

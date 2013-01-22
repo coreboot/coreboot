@@ -54,21 +54,15 @@
  *      romstart() == 0xffffffff. This is a physical address.
  */
 
+#include <lib.h>
 #include <cbfs_core.h>
 
 
 /* returns pointer to master header or 0xffffffff if not found */
-struct cbfs_header *get_cbfs_header(void)
+struct cbfs_header *get_cbfs_header(struct stream *stream)
 {
 	struct cbfs_header *header;
-
-	/* find header */
-	if (romstart() == 0xffffffff) {
-		header = (struct cbfs_header*)phys_to_virt(*(uint32_t*)phys_to_virt(romend() + CBFS_HEADPTR_ADDR));
-	} else {
-		// FIXME: where's the master header on ARM (our current bottom-aligned platform)?
-		header = NULL;
-	}
+	stream_read(stream, &header, sizeof(header), 0);
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
 		ERROR("Could not find valid CBFS master header at %p: %x vs %x.\n", header, CBFS_HEADER_MAGIC, ntohl(header->magic));
 		if (header->magic == 0xffffffff) {
@@ -76,6 +70,7 @@ struct cbfs_header *get_cbfs_header(void)
 		}
 		return (void*)0xffffffff;
 	}
+
 	return header;
 }
 
@@ -86,27 +81,38 @@ struct cbfs_header *get_cbfs_header(void)
 /* public API starts here*/
 struct cbfs_file *cbfs_find(const char *name)
 {
-	struct cbfs_header *header = get_cbfs_header();
+	/* this is how we avoid globals in the rom stage. It's not pretty but it will work.
+	 */
+	struct stream stream;
+	u64 base;
+	u32 size;
+
+	if (romstart() == 0xffffffff) {
+		/* yuck. */
+		base = (*(uint32_t*)phys_to_virt(romend() + CBFS_HEADPTR_ADDR));
+	} else {
+		/* er, what, precisely? */
+		base = 0;
+	}
+	size = CONFIG_ROM_SIZE;
+	stream_start(&stream, base, size);
+
+	struct cbfs_header *header = get_cbfs_header(&stream);
 	if (header == (void*)0xffffffff) return NULL;
 
 	LOG("Looking for '%s'\n", name);
 
-	void *data, *dataend, *origdata;
-	/* find first entry */
-	if (romstart() == 0xffffffff) {
-		data = (void*)phys_to_virt(romend()) - ntohl(header->romsize) + ntohl(header->offset);
-		dataend = (void*)phys_to_virt(romend());
-	} else {
-		data = (void*)phys_to_virt(romstart()) + ntohl(header->offset);
-		dataend = (void*)phys_to_virt(romstart()) + ntohl(header->romsize);
-	}
-	dataend -= ntohl(header->bootblocksize);
+	void *data = NULL;
+	stream.size -= ntohl(header->bootblocksize);
 
 	int align = ntohl(header->align);
+	u32 offset = sizeof(*header);
 
-	origdata = data;
-	while ((data < (dataend - 1)) && (data >= origdata)) {
-		struct cbfs_file *file = data;
+	while (1) {
+		struct cbfs_file f, *file = &f;
+		char filename[32];
+		if (stream_read(&stream, file, sizeof(*file), offset) < sizeof(*file))
+			break;
 		if (memcmp(CBFS_FILE_MAGIC, file->magic, strlen(CBFS_FILE_MAGIC)) != 0) {
 			// no file header found. corruption?
 			// proceed in aligned steps to resynchronize
@@ -114,18 +120,24 @@ struct cbfs_file *cbfs_find(const char *name)
 			data = phys_to_virt(CBFS_ALIGN_UP(virt_to_phys(data), align));
 			continue;
 		}
+		/* read in the name. This hurts a bit because there is no max name length.
+		 * but not too much. Could we set a max name length? 32 chars, say?
+		 */
+		stream_read(&stream, filename, 32, offset+sizeof(*file));
 		DEBUG("Check '%s'\n", CBFS_NAME(file));
-		if (strcmp(CBFS_NAME(file), name) == 0) {
+		if (strcmp(filename, name) == 0) {
 			LOG("found.\n");
+			stream_fini(&stream);
 			return file;
 		}
 		void *olddata = data;
 		data = phys_to_virt(CBFS_ALIGN(virt_to_phys(data) + ntohl(file->len) + ntohl(file->offset), align));
 		if (olddata > data) {
 			LOG("Something is wrong here. File chain moved from %p to %p\n", olddata, data);
-			return NULL;
+			break;
 		}
 	}
+	stream_fini(&stream);
 	return NULL;
 }
 

@@ -50,6 +50,7 @@
 #define _CBFS_H_
 
 #include "cbfs_core.h"
+#include <lib.h>
 #include <boot/coreboot_tables.h>
 
 void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name);

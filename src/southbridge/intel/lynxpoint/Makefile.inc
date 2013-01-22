@@ -37,6 +37,7 @@ ramstage-y += me_status.c
 ramstage-y += reset.c
 ramstage-y += watchdog.c
 ramstage-y += acpi.c
+ramstage-$(CONFIG_ALT_CBFS_LOAD_PAYLOAD) += spi_loading.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += spi.c

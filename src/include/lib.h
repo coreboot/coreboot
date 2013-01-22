@@ -53,5 +53,14 @@ void cache_as_ram_main(void);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
 
+/* definition is architecture-dependent but at minimum, for most architectures,
+ * defined in src/lib/romstream.c. There are so few systems that don't have
+ * memory mapped ROM that we yanked this years ago. Now, thanks to
+ * some ARM systems, it's back.
+ */
+void *stream_start(void *v);
+int stream_read(void *stream, void *where, u32 size, u32 off);
+void stream_fini(void *stream);
+
 #endif /* __ROMCC__ */
 #endif /* __LIB_H__ */

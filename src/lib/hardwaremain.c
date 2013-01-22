@@ -34,8 +34,8 @@ it with the version available from LANL.
 #include <reset.h>
 #include <boot/tables.h>
 #include <boot/elf.h>
-#include <cbfs.h>
 #include <lib.h>
+#include <cbfs.h>
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif

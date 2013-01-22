@@ -53,5 +53,21 @@ void cache_as_ram_main(void);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
 
+/* definition is architecture-dependent but at minimum, for most architectures,
+ * defined in src/lib/romstream.c. There are so few systems that don't have
+ * memory mapped ROM that we yanked this years ago. Now, thanks to
+ * some ARM systems, it's back.
+ * A stream is a struct which contains a base (of arbitrary type, so u64)
+ * and a size (u32; will we ever have 4GB flash?)
+ */
+struct stream {
+	u64 base;
+	u32 size;
+};
+
+struct stream *stream_start(struct stream *stream, u64 base, u32 size);
+int stream_read(struct stream *stream, void *where, u32 size, u32 off);
+void stream_fini(struct stream *stream);
+
 #endif /* __ROMCC__ */
 #endif /* __LIB_H__ */

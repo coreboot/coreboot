@@ -28,18 +28,24 @@
 #ifndef __SMM__
 #define CBFS_CORE_WITH_LZMA
 #endif
-#define phys_to_virt(x) (void*)(x)
-#define virt_to_phys(x) (uint32_t)(x)
+#ifndef ERROR
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
+#endif
+#ifndef LOG
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
+#endif
 #if CONFIG_DEBUG_CBFS
 #define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
 #else
 #define DEBUG(x...)
 #endif
-// FIXME: romstart/romend are fine on x86, but not on ARM
-#define romstart() 0xffffffff
-#define romend() 0
+
+#ifdef CONFIG_CBFS_HEADER_ROM_OFFSET
+# define CBFS_HEADER_ROM_ADDRESS (CONFIG_CBFS_HEADER_ROM_OFFSET)
+#else
+// Indirect ROM address
+# define CBFS_HEADER_ROM_ADDRESS *(uint32_t*)0xfffffffc
+#endif
 
 #include "cbfs_core.c"
 
@@ -57,7 +63,8 @@ static void tohex16(unsigned int val, char* dest)
 	dest[3]=tohex4(val & 0xf);
 }
 
-void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
+void *cbfs_load_optionrom(struct cbfs_media *media,
+			  u16 vendor, u16 device, void *dest)
 {
 	char name[17]="pciXXXX,XXXX.rom";
 	struct cbfs_optionrom *orom;
@@ -67,7 +74,7 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	tohex16(device, name+8);
 
 	orom = (struct cbfs_optionrom *)
-		cbfs_find_file(name, CBFS_TYPE_OPTIONROM);
+		cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM);
 
 	if (orom == NULL)
 		return NULL;
@@ -94,10 +101,10 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	return dest;
 }
 
-void * cbfs_load_stage(const char *name)
+void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_find_file(name, CBFS_TYPE_STAGE);
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 	/* this is a mess. There is no ntohll. */
 	/* for now, assume compatible byte order until we solve this. */
 	u32 entry;
@@ -126,10 +133,10 @@ void * cbfs_load_stage(const char *name)
 	return (void *) entry;
 }
 
-int cbfs_execute_stage(const char *name)
+int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_find_file(name, CBFS_TYPE_STAGE);
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 
 	if (stage == NULL)
 		return 1;
@@ -145,6 +152,55 @@ int cbfs_execute_stage(const char *name)
 	return run_address((void *) (intptr_t)ntohll(stage->entry));
 }
 
+void *cbfs_load_payload(struct cbfs_media *media, struct lb_memory *lb_mem,
+			const char *name)
+{
+	struct cbfs_payload *payload;
+
+	payload = (struct cbfs_payload *)cbfs_get_file_content(
+			media, name, CBFS_TYPE_PAYLOAD);
+
+	return payload;
+}
+
+/* Simple buffer */
+
+void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
+			     struct cbfs_media *media,
+			     size_t offset, size_t count) {
+	void *address = buffer->buffer + buffer->allocated;;
+	DEBUG("simple_buffer_map(offset=%d, count=%d): "
+	      "allocated=%d, size=%d, last_allocate=%d\n",
+	    offset, count, buffer->allocated, buffer->size,
+	    buffer->last_allocate);
+	if (buffer->allocated + count >= buffer->size)
+		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
+	if (media->read(media, address, offset, count) != count) {
+		ERROR("simple_buffer: fail to read %d bytes from 0x%x\n",
+		      count, offset);
+		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
+	}
+	buffer->allocated += count;
+	buffer->last_allocate = count;
+	return address;
+}
+
+void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
+			       const void *address) {
+	// TODO Add simple buffer management so we can free more than last
+	// allocated one.
+	DEBUG("simple_buffer_unmap(address=0x%p): "
+	      "allocated=%d, size=%d, last_allocate=%d\n",
+	    address, buffer->allocated, buffer->size,
+	    buffer->last_allocate);
+	if ((buffer->buffer + buffer->allocated - buffer->last_allocate) ==
+	    address) {
+		buffer->allocated -= buffer->last_allocate;
+		buffer->last_allocate = 0;
+	}
+	return NULL;
+}
+
 /**
  * run_address is passed the address of a function taking no parameters and
  * jumps to it, returning the result.
@@ -158,4 +214,5 @@ int run_address(void *f)
 	v = f;
 	return v();
 }
+
 #endif

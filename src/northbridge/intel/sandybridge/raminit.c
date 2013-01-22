@@ -252,7 +252,8 @@ void sdram_initialize(struct pei_data *pei_data)
 	pei_data->tx_byte = console_tx_byte;
 
 	/* Locate and call UEFI System Agent binary. */
-	entry = (unsigned long)cbfs_find_file("mrc.bin", 0xab);
+	entry = (unsigned long)cbfs_get_file_content(
+			CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab);
 	if (entry) {
 		int rv;
 		asm volatile (

@@ -28,7 +28,7 @@ static void cbfs_and_run_core(const char *filename, unsigned ebp)
 
 	timestamp_add_now(TS_START_COPYRAM);
 	print_debug("Loading image.\n");
-	dst = cbfs_load_stage(filename);
+	dst = cbfs_load_stage(CBFS_DEFAULT_MEDIA, filename);
 	if ((void *)dst == (void *) -1)
 		die("FATAL: Essential component is missing.\n");
 

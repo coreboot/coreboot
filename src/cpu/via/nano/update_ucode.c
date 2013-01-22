@@ -105,7 +105,7 @@ unsigned int nano_update_ucode(void)
 	const struct cbfs_file *cbfs_ucode;
 	u32 fms = cpuid_eax(0x1);
 
-	cbfs_ucode = cbfs_find("cpu_microcode_blob.bin");
+	cbfs_ucode = cbfs_get_file(CBFS_DEFAULT_MEDIA, "cpu_microcode_blob.bin");
 	/* Oops, did you forget to include the microcode ? */
 	if(cbfs_ucode == NULL) {
 		printk(BIOS_ALERT, "WARNING: No microcode file found in CBFS. "

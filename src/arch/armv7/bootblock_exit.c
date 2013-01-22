@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Google Inc
+ * Copyright (C) 2013 Google Inc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,34 +19,10 @@
  * MA 02110-1301 USA
  */
 
-#include <bootblock_common.h>
 #include <arch/bootblock_exit.h>
-#include <arch/cbfs.h>
-#include <arch/hlt.h>
 
-static int boot_cpu(void)
+void bootblock_exit(unsigned long addr)
 {
-	/*
-	 * FIXME: This is a stub for now. All non-boot CPUs should be
-	 * waiting for an interrupt. We could move the chunk of assembly
-	 * which puts them to sleep in here...
-	 */
-	return 1;
-}
-
-void main(unsigned long bist)
-{
-	const char *target1 = "fallback/romstage";
-	unsigned long romstage_entry;
-
-	if (boot_cpu()) {
-		bootblock_cpu_init();
-		bootblock_mainboard_init();
-	}
-
-	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
-	romstage_entry = loadstage(target1);
-	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
-	if (romstage_entry) bootblock_exit(romstage_entry);
-	hlt();
+	__attribute__((noreturn)) void (*doit)(void) = (void *)addr;
+	doit();
 }

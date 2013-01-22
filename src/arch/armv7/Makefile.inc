@@ -239,9 +239,18 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
+bootblock_exit_c = $(src)/arch/armv7/bootblock_exit.c
+bootblock_exit_o = $(obj)/arch/armv7/bootblock_exit.o
+
+$(bootblock_exit_o): $(bootblock_exit_c)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -Wa,-acdlns -I. $(INCLUDES) -c -o $@ $< -marm
+
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+
+BOOTBLOCK_OBJS = $(objgenerated)/bootblock.o $(bootblock_exit_o)
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -253,12 +262,12 @@ $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_S
 		$< > $(objgenerated)/bootblock.inc.d
 	$(CC) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
+$(objcbfs)/bootblock.debug: $(BOOTBLOCK_OBJS) $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $< $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(BOOTBLOCK_OBJS) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 ################################################################################

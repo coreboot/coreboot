@@ -98,21 +98,4 @@ static unsigned long loadstage(const char* target)
 			return 0;
 	}
 }
-
-static inline void call(unsigned long addr)
-{
-	__attribute__((noreturn)) void (*doit)(void) = (void *)addr;
-	printk(BIOS_INFO, "addr: %08lx, doit: %p\n", addr, doit);
-	/* FIXME: dumping SRAM content for sanity checking */
-	int i;
-	for (i = 0; i < 128; i++) {
-		if (i % 16 == 0)
-			printk(BIOS_INFO, "\n0x%08lx: ", addr + i);
-		else
-			printk(BIOS_INFO, " ");
-		printk(BIOS_INFO, "%02x", *(uint8_t *)(addr + i));
-	}
-	/* FIXME: do we need to change to/from arm/thumb? */
-	doit();
-}
 #endif

@@ -43,6 +43,10 @@ config UPDATE_IMAGE
 config BOOTBLOCK_SOC_INIT
 	string
 
+config CBFS_MEMORY_MAPPED
+	bool "CBFS is already memory-mapped."
+	default n
+
 # FIXME: Should cache policy be set on a per-CPU basis?
 # FIXME(dhendrix): Stefan sayz to make a smart decision and not prompt the user.
 config ARM_DCACHE_POLICY_WRITEBACK

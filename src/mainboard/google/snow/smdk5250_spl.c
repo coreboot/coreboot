@@ -88,6 +88,12 @@ int board_wakeup_permitted(void)
 	return !is_bad_wake;
 }
 
+extern int board_copy_from_rom(const void *spi_addr, void *sram_addr, size_t len);
+int board_copy_from_rom(const void *spi_addr, void *sram_addr, size_t len) {
+	return -1;
+}
+
+
 /*
  * TODO(sjg@chromium.org):
  * Declared there here for SPL, since there is no core i2c subsystem and

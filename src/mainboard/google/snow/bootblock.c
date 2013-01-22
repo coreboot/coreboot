@@ -34,6 +34,7 @@
 #include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
 #include "cpu/samsung/exynos5-common/spi.h"
 #include "cpu/samsung/exynos5-common/uart.h"
+#include "cbfs_core.h"
 
 #include <device/i2c.h>
 #include <drivers/maxim/max77686/max77686.h>
@@ -358,8 +359,7 @@ void gpio_cfg_pin(int gpio, int cfg)
 	writel(value, &bank->con);
 }
 
-//static void exynos_spi_copy(unsigned int uboot_size)
-static void copy_romstage(uint32_t spi_addr, uint32_t sram_addr, unsigned int len)
+int board_copy_from_rom(const void *spi_addr, void *sram_addr, size_t len)
 {
 	int upto, todo;
 	int i;
@@ -399,15 +399,14 @@ static void copy_romstage(uint32_t spi_addr, uint32_t sram_addr, unsigned int le
 	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
 
 	/* Send read instruction (0x3h) followed by a 24 bit addr */
-	writel((SF_READ_DATA_CMD << 24) | spi_addr, &regs->tx_data);
+	writel((SF_READ_DATA_CMD << 24) | (uint32_t)spi_addr, &regs->tx_data);
 
 	/* waiting for TX done */
 	while (!(readl(&regs->spi_sts) & SPI_ST_TX_DONE));
 
 	for (upto = 0, i = 0; upto < len; upto += todo, i++) {
 		todo = MIN(len - upto, (1 << 15));
-		spi_rx_tx(regs, todo, (void *)(sram_addr),
-					(void *)(spi_addr), i);
+		spi_rx_tx(regs, todo, sram_addr, spi_addr, i);
 	}
 
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);/* make the CS high */
@@ -427,6 +426,7 @@ static void copy_romstage(uint32_t spi_addr, uint32_t sram_addr, unsigned int le
 	clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
 	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
 	clrbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
+	return 0;
 }
 
 /* Pull mode */
@@ -2141,13 +2141,22 @@ void bootblock_mainboard_init(void)
 	do_serial();
 	printk(BIOS_INFO, "%s: UART initialized\n", __func__);
 
+#if 0
 	/* Copy romstage data from SPI ROM to SRAM */
 	printk(BIOS_INFO, "Copying romstage:\n"
 			"\tSPI offset: 0x%06x\n"
 			"\tiRAM offset: 0x%08x\n"
 			"\tSize: 0x%x\n",
 			0, CONFIG_SPI_IMAGE_HACK, CONFIG_ROMSTAGE_SIZE);
-	copy_romstage(0x0, CONFIG_SPI_IMAGE_HACK, CONFIG_ROMSTAGE_SIZE);
+	// board_copy_from_rom((void*)0x0, (void*)CONFIG_SPI_IMAGE_HACK, CONFIG_ROMSTAGE_SIZE);
+	{
+		const char* target1 = "fallback/romstage";
+		unsigned long entry;
+		entry = findstage(target1);
+		if (entry) call(entry, bist);
+	}
+#endif
+
 #if 0
 	/* FIXME: dump SRAM content for sanity checking */
 	uint32_t u;

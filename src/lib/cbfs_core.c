@@ -27,14 +27,23 @@
  * SUCH DAMAGE.
  */
 
-/* The CBFS core requires a couple of #defines or functions to adapt it to the target environment:
+/* The CBFS core requires a couple of #defines or functions to adapt it to the
+ * target environment:
  *
  * CBFS_CORE_WITH_LZMA (must be #define)
  *      if defined, ulzma() must exist for decompression of data streams
  *
- * phys_to_virt(x), virt_to_phys(x)
- *      translate physical addresses to virtual and vice versa
- *      can be idempotent if no mapping is necessary.
+ * CBFS_MEMORY_MAPPED
+ *	if defined, assume whole ROM is already mapped into memory
+ *
+ * CBFS_COPY_FROM_ROM(source, dest, len)
+ *	copies len of bytes from ROM into memory, if not memory-mapped
+ *
+ * CBFS_CACHE_ADDRESS
+ *	memory address of cache for CBFS, if not memory-mapped.
+ *
+ * CBFS_HEADER_ROM_ADDRESS
+ *	ROM address of CBFS header.
  *
  * ERROR(x...)
  *      print an error message x (in printf format)
@@ -45,92 +54,146 @@
  * DEBUG(x...)
  *      print a debug message x (in printf format)
  *
- * romstart()
- *      returns the start address of the ROM image, or 0xffffffff if ROM is
- *      top-aligned. This is a physical address.
- *
- * romend()
- *      returns the highest address of the ROM image + 1, for use if
- *      romstart() == 0xffffffff. This is a physical address.
  */
 
 #include <cbfs_core.h>
+#include <assert.h>
 
+/* loads len of bytes data starting at offset from rom (described by header).
+ * If header is NULL, load the header itself.
+ * Returns 0 on success (with pointer to data in *pre_ref), or -1 on failure.
+ */
+int cbfs_load_rom(const struct cbfs_header *header, size_t offset,
+		  void **ptr_ref, size_t len) {
+#ifdef CBFS_MEMORY_MAPPED
+	if (header)
+		*ptr_ref = (void*)(0 - romsize + offset);
+	else
+		*ptr_ref = (void*)offset;
+	return 0;
+#else
+	char *data;
+	static int used_cache_size = -1;
+	if (used_cache_size < 0)
+		used_cache_size = 0;
+	// FIXME we need to properly initialize used_cache_size (currently it's
+	// not really initialized)... The -1 is simply a workaround for non-init
+	// ROM data.
 
-/* returns pointer to master header or 0xffffffff if not found */
-struct cbfs_header *get_cbfs_header(void)
+	data = (char*)CBFS_CACHE_ADDRESS + used_cache_size;
+	used_cache_size += len;
+	LOG("board_copy_from_rom(0x%x, 0x%p, %d)[%d]\n", offset, data, len,
+	    used_cache_size);
+
+	// TODO check if we're run out of cache.
+	// TODO reuse cache.
+	board_copy_from_rom((void*)offset, (void*)data, len);
+	LOG("board_copy_from_rom finished.\n");
+	*ptr_ref = data;
+	return 0;
+#endif
+}
+
+/* returns 0 on success (and pointer to header stored in *header_ref),
+ * -1 on failure */
+int cbfs_get_header(struct cbfs_header **header_ref)
 {
 	struct cbfs_header *header;
+	void *p;
 
-	/* find header */
-	if (romstart() == 0xffffffff) {
-		header = (struct cbfs_header*)phys_to_virt(*(uint32_t*)phys_to_virt(romend() + CBFS_HEADPTR_ADDR));
-	} else {
-		// FIXME: where's the master header on ARM (our current bottom-aligned platform)?
-		header = NULL;
+	ERROR("entry of cbfs_core(cbfs_get_header)\n");
+	if (!header_ref) {
+		ERROR("Need a pointer to hold header reference.\n");
+		return -1;
 	}
+	if (cbfs_load_rom(NULL, CBFS_HEADER_ROM_ADDRESS,
+			  &p, sizeof(*header)) != 0) {
+		ERROR("Failed to load CBFS header from 0x%x\n",
+		      CBFS_HEADER_ROM_ADDRESS);
+		return -1;
+	}
+
+	header = (struct cbfs_header*)p;
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
-		ERROR("Could not find valid CBFS master header at %p: %x vs %x.\n", header, CBFS_HEADER_MAGIC, ntohl(header->magic));
+		ERROR("Could not find valid CBFS master header at %x: "
+		      "%x vs %x.\n", CBFS_HEADER_ROM_ADDRESS, CBFS_HEADER_MAGIC,
+		      ntohl(header->magic));
 		if (header->magic == 0xffffffff) {
 			ERROR("Maybe ROM is not mapped properly?\n");
 		}
-		return (void*)0xffffffff;
+		return -1;
 	}
-	return header;
-}
 
-// by must be power-of-two
-#define CBFS_ALIGN(val, by) (typeof(val))((uint32_t)(val + by - 1) & (uint32_t)~(by - 1))
-#define CBFS_ALIGN_UP(val, by) CBFS_ALIGN(val + 1, by)
+	// TODO Cache header.
+	*header_ref = header;
+	return 0;
+}
 
 /* public API starts here*/
 struct cbfs_file *cbfs_find(const char *name)
 {
-	struct cbfs_header *header = get_cbfs_header();
-	if (header == (void*)0xffffffff) return NULL;
+	struct cbfs_header *header;
+	struct cbfs_file *file;
+	const char *file_name;
+	uint32_t offset, align, romsize;
+	void *p;
 
-	LOG("Looking for '%s'\n", name);
+	if (cbfs_get_header(&header) != 0)
+		return NULL;
 
-	void *data, *dataend, *origdata;
-	/* find first entry */
-	if (romstart() == 0xffffffff) {
-		data = (void*)phys_to_virt(romend()) - ntohl(header->romsize) + ntohl(header->offset);
-		dataend = (void*)phys_to_virt(romend());
-	} else {
-		data = (void*)phys_to_virt(romstart()) + ntohl(header->offset);
-		dataend = (void*)phys_to_virt(romstart()) + ntohl(header->romsize);
-	}
-	dataend -= ntohl(header->bootblocksize);
+	// Logical offset (for source media) of first file.
+	offset = ntohl(header->offset);
+	align = ntohl(header->align);
 
-	int align = ntohl(header->align);
+	// TODO header->romsize seems broken now on ARM.
+	// Let's trust CONFIG_ROM_SIZE.
+	romsize = ntohl(header->romsize);
 
-	origdata = data;
-	while ((data < (dataend - 1)) && (data >= origdata)) {
-		struct cbfs_file *file = data;
-		if (memcmp(CBFS_FILE_MAGIC, file->magic, strlen(CBFS_FILE_MAGIC)) != 0) {
+#if CONFIG_ROM_SIZE
+	romsize = CONFIG_ROM_SIZE;
+#endif
+	
+	LOG("offset: %d, align: %d, romsize: %d\n",
+	    offset, align, romsize);
+
+	LOG("Looking for '%s' starting from 0x%x.\n", name, offset);
+	while (offset < romsize &&
+	       cbfs_load_rom(header, offset, &p, sizeof(*file)) == 0) {
+		file = (struct cbfs_file*)p;
+		if (memcmp(CBFS_FILE_MAGIC, file->magic,
+			   sizeof(file->magic)) != 0) {
 			// no file header found. corruption?
-			// proceed in aligned steps to resynchronize
-			LOG("ERROR: No file header found at %p, attempting to recover by searching for header\n", data);
-			data = phys_to_virt(CBFS_ALIGN_UP(virt_to_phys(data), align));
-			continue;
-		}
-		DEBUG("Check '%s'\n", CBFS_NAME(file));
-		if (strcmp(CBFS_NAME(file), name) == 0) {
-			LOG("found.\n");
-			return file;
-		}
-		void *olddata = data;
-		data = phys_to_virt(CBFS_ALIGN(virt_to_phys(data) + ntohl(file->len) + ntohl(file->offset), align));
-		if (olddata > data) {
-			LOG("Something is wrong here. File chain moved from %p to %p\n", olddata, data);
+			LOG("ERROR: No file header found at 0x%x.", offset);
+			// TODO proceed in aligned steps to resynchronize
 			return NULL;
 		}
+		// load file name
+		cbfs_load_rom(header, offset + sizeof(*file), &p,
+			      ntohl(file->offset) - sizeof(*file));
+		file_name = (const char *)p;
+		DEBUG("Check '%s' at 0x%x\n", file_name, offset);
+
+		if (strcmp(file_name, name) == 0) {
+			LOG("found.\n");
+			cbfs_load_rom(header, offset, &p,
+				      ntohl(file->offset) + ntohl(file->len));
+			file = (struct cbfs_file*)p;
+			return file;
+		}
+
+		// Move to next file.
+		offset += ntohl(file->len) + ntohl(file->offset);
+		if (offset % align)
+			offset += align - (offset % align);
 	}
+
+	LOG("ERROR: Not found.\n");
 	return NULL;
 }
 
 void *cbfs_get_file(const char *name)
 {
+	// TODO Support CBFS files in 0x0.
 	struct cbfs_file *file = cbfs_find(name);
 
 	if (file == NULL) {
@@ -151,7 +214,8 @@ void *cbfs_find_file(const char *name, int type)
 	}
 
 	if (ntohl(file->type) != type) {
-		ERROR("File '%s' is of type %x, but we requested %x.\n", name, ntohl(file->type), type);
+		ERROR("File '%s' is of type %x, but we requested %x.\n", name,
+		      ntohl(file->type), type);
 		return NULL;
 	}
 
@@ -172,7 +236,9 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 			return -1;
 #endif
 		default:
-			ERROR("tried to decompress %d bytes with algorithm #%x, but that algorithm id is unsupported.\n", len, algo);
+			ERROR("tried to decompress %d bytes with algorithm #%x,"
+			      "but that algorithm id is unsupported.\n", len,
+			      algo);
 			return -1;
 	}
 }

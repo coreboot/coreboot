@@ -48,6 +48,14 @@ config ROMSTAGE_SIZE
 	hex
 	default 0x10000
 
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x2040
+
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x02060000
+
 # FIXME: This is for copying SPI content into SRAM temporarily and
 # will be removed when we have the SPI streaming driver implemented.
 config SPI_IMAGE_HACK

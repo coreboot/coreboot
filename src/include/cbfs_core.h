@@ -75,22 +75,21 @@
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 
 
-/** this is the master cbfs header - it need to be
-    located somewhere in the bootblock.  Where it
-    actually lives is up to coreboot. On x86, a
-    pointer to this header will live at 0xFFFFFFFC,
-    so we can easily find it. */
+/** this is the master cbfs header - it need to be located somewhere available
+    to bootblock (to load romstage).  Where it actually lives is up to coreboot.
+    On x86, a pointer to this header will live at 0xFFFFFFFC.
+    For other platforms, you need to define CONFIG_CBFS_HEADER_ROM_OFFSET */
 
 #define CBFS_HEADER_MAGIC  0x4F524243
-#if CONFIG_ARCH_X86
-#define CBFS_HEADPTR_ADDR 0xFFFFFFFC
-#elif CONFIG_ARCH_ARMV7
-/* FIXME: This could also be 0xFFFF0000 with HIVECS enabled */
-#define CBFS_HEADPTR_ADDR 0x0000000C
-#endif
 #define CBFS_HEADER_VERSION1 0x31313131
 #define CBFS_HEADER_VERSION2 0x31313132
 #define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
+
+#ifdef CONFIG_CBFS_HEADER_ROM_OFFSET
+# define CBFS_HEADER_ROM_ADDRESS (CONFIG_CBFS_HEADER_ROM_OFFSET)
+#else
+# define CBFS_HEADER_ROM_ADDRESS *(uint32_t*)0xfffffffc
+#endif
 
 struct cbfs_header {
 	uint32_t magic;
@@ -192,5 +191,14 @@ void *cbfs_find_file(const char *name, int type);
 
 /* returns 0 on success, -1 on failure */
 int cbfs_decompress(int algo, void *src, void *dst, int len);
-struct cbfs_header *get_cbfs_header(void);
+
+/* returns 0 on success (and pointer to header stored in *header_ptr),
+ * -1 on failure */
+int cbfs_get_header(struct cbfs_header **header_ptr);
+
+/* returns 0 on success, -1 on failure */
+int cbfs_load_rom(const struct cbfs_header *header, size_t offset,
+		  void **ptr_ref, size_t len);
+
+int board_copy_from_rom(const void *from, void *to, size_t len);
 #endif

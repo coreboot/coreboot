@@ -24,9 +24,8 @@
 #include <types.h>
 #include <cbfs_core.h>
 #include <arch/byteorder.h>
-#include <arch/cbfs.h>
 
-
+#if 0
 static int cbfs_check_magic(struct cbfs_file *file)
 {
 	return strcmp(file->magic, CBFS_FILE_MAGIC) ? 0 : 1;
@@ -36,9 +35,6 @@ static unsigned long loadstage(const char* target)
 {
 	unsigned long offset, align;
 	struct cbfs_header *header = (struct cbfs_header *)(CONFIG_BOOTBLOCK_BASE + 0x40);
-	/* FIXME: magic offsets */
-	// if (ntohl(header->magic) != CBFS_HEADER_MAGIC)
-	// 	printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
 
 	offset = ntohl(header->offset);
 	align = ntohl(header->align);
@@ -98,4 +94,5 @@ static unsigned long loadstage(const char* target)
 			return 0;
 	}
 }
-#endif
+#endif // 0
+#endif // __INCLUDE_ARCH_CBFS__

@@ -28,8 +28,6 @@
 #ifndef __SMM__
 #define CBFS_CORE_WITH_LZMA
 #endif
-#define phys_to_virt(x) (void*)(x)
-#define virt_to_phys(x) (uint32_t)(x)
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
 #if CONFIG_DEBUG_CBFS
@@ -37,9 +35,20 @@
 #else
 #define DEBUG(x...)
 #endif
-// FIXME: romstart/romend are fine on x86, but not on ARM
-#define romstart() 0xffffffff
-#define romend() 0
+
+#ifdef CONFIG_CBFS_HEADER_ROM_OFFSET
+# define CBFS_HEADER_ROM_ADDRESS (CONFIG_CBFS_HEADER_ROM_OFFSET)
+#else
+// Indirect ROM address
+# define CBFS_HEADER_ROM_ADDRESS *(uint32_t*)0xfffffffc
+#endif
+
+#if CONFIG_CBFS_MEMORY_MAPPED
+# define CBFS_MEMORY_MAPPED
+#else
+  // TODO make this configurable.
+# define CBFS_CACHE_ADDRESS	CONFIG_CBFS_CACHE_ADDRESS
+#endif
 
 #include "cbfs_core.c"
 

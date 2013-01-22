@@ -122,4 +122,8 @@ config ID_SECTION_OFFSET
 	hex
 	default 0x80
 
+config CBFS_MEMORY_MAPPED
+	bool "CBFS is already memory-mapped."
+	default y
+
 endmenu

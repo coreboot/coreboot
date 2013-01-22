@@ -165,11 +165,13 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 	return run_address((void *)(uintptr_t)ntohll(stage->entry));
 }
 
+#if !CONFIG_ALT_CBFS_LOAD_PAYLOAD
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
 	return (struct cbfs_payload *)cbfs_get_file_content(
 			media, name, CBFS_TYPE_PAYLOAD);
 }
+#endif
 
 /* Simple buffer */
 

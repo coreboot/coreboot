@@ -536,4 +536,3 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 out:
 	return 0;
 }
-

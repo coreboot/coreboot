@@ -34,10 +34,60 @@ static int boot_cpu(void)
 	return 1;
 }
 
+// TODO(hungte) Find a better way to enable cbfs code here.
+// mem* and ulzma are now workarounds for bootblock compilation.
+
+#include "lib/cbfs.c"
+
+void *memcpy(void *dest, const void *src, size_t n) {
+	char *d = (char *)dest;
+	const char *s = (const char*)src;
+	while (n-- > 0)
+		*d++ = *s++;
+	return dest;
+}
+
+void *memset(void *dest, int c, size_t n) {
+	char *d = (char*)dest;
+	while (n-- > 0)
+		*d++ = c;
+	return dest;
+}
+
+int memcmp(const void *ptr1, const void *ptr2, size_t n) {
+	const char *s1 = (const char*)ptr1, *s2 = (const char*)ptr2;
+	int c;
+	while (n-- > 0)
+		if ((c = *s1++ - *s2++))
+			return c;
+	return 0;
+}
+
+unsigned long ulzma(unsigned char *src, unsigned char *dest) {
+	// TODO remove this.
+	return -1;
+}
+
+// end of stubs
+
+// ROM media implementation.
+static int snow_rom_open(struct cbfs_media *media) {
+	return 0;
+}
+
+static int snow_rom_close(struct cbfs_media *media) {
+	return 0;
+}
+
 void main(unsigned long bist)
 {
 	const char *target1 = "fallback/romstage";
 	unsigned long romstage_entry;
+	struct cbfs_media media = {
+		.context = NULL,
+		.open = snow_rom_open,
+		.close = snow_rom_close,
+	};
 
 	if (boot_cpu()) {
 		bootblock_cpu_init();
@@ -45,7 +95,8 @@ void main(unsigned long bist)
 	}
 
 	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
-	romstage_entry = loadstage(target1);
+	romstage_entry = (unsigned long)cbfs_load_stage(&media, target1);
+
 	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
 	if (romstage_entry) bootblock_exit(romstage_entry);
 	hlt();

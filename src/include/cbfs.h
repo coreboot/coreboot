@@ -52,11 +52,18 @@
 #include "cbfs_core.h"
 #include <boot/coreboot_tables.h>
 
-void *cbfs_load_payload(struct lb_memory *lb_mem, const char *name);
-void *cbfs_load_stage(const char *name);
-int cbfs_execute_stage(const char *name);
-void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
+int cbfs_execute_stage(struct cbfs_media *media, const char *name);
+void *cbfs_load_stage(struct cbfs_media *media, const char *name);
+void *cbfs_load_optionrom(struct cbfs_media *media, u16 vendor, u16 device,
+			  void * dest);
+void *cbfs_load_payload(struct cbfs_media *media, struct lb_memory *lb_mem,
+			const char *name);
+
+// Utility functions
 int run_address(void *f);
+
+/* Defined in src/lib/selfboot.c */
 int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
+
 #endif
 

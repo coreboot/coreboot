@@ -143,7 +143,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	vboot_data->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
 
-	if ((hdr = get_cbfs_header()) != (struct cbfs_header *)0xffffffff)
+	if (cbfs_get_header(&hdr) != -1)
 		t->bios_rom_size = (ntohl(hdr->romsize) / 65535) - 1;
 	t->system_bios_major_release = 4;
 	t->bios_characteristics =

@@ -28,8 +28,6 @@
 #ifndef __SMM__
 #define CBFS_CORE_WITH_LZMA
 #endif
-#define phys_to_virt(x) (void*)(x)
-#define virt_to_phys(x) (uint32_t)(x)
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
 #if CONFIG_DEBUG_CBFS
@@ -37,9 +35,13 @@
 #else
 #define DEBUG(x...)
 #endif
-// FIXME: romstart/romend are fine on x86, but not on ARM
-#define romstart() 0xffffffff
-#define romend() 0
+
+#ifdef CONFIG_CBFS_HEADER_ROM_OFFSET
+# define CBFS_HEADER_ROM_ADDRESS (CONFIG_CBFS_HEADER_ROM_OFFSET)
+#else
+// Indirect ROM address
+# define CBFS_HEADER_ROM_ADDRESS *(uint32_t*)0xfffffffc
+#endif
 
 #include "cbfs_core.c"
 
@@ -57,7 +59,8 @@ static void tohex16(unsigned int val, char* dest)
 	dest[3]=tohex4(val & 0xf);
 }
 
-void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
+void *cbfs_load_optionrom(struct cbfs_media *media,
+			  u16 vendor, u16 device, void *dest)
 {
 	char name[17]="pciXXXX,XXXX.rom";
 	struct cbfs_optionrom *orom;
@@ -67,7 +70,7 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	tohex16(device, name+8);
 
 	orom = (struct cbfs_optionrom *)
-		cbfs_find_file(name, CBFS_TYPE_OPTIONROM);
+		cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM);
 
 	if (orom == NULL)
 		return NULL;
@@ -94,10 +97,10 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	return dest;
 }
 
-void * cbfs_load_stage(const char *name)
+void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_find_file(name, CBFS_TYPE_STAGE);
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 	/* this is a mess. There is no ntohll. */
 	/* for now, assume compatible byte order until we solve this. */
 	u32 entry;
@@ -126,10 +129,10 @@ void * cbfs_load_stage(const char *name)
 	return (void *) entry;
 }
 
-int cbfs_execute_stage(const char *name)
+int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_find_file(name, CBFS_TYPE_STAGE);
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 
 	if (stage == NULL)
 		return 1;
@@ -145,6 +148,17 @@ int cbfs_execute_stage(const char *name)
 	return run_address((void *) (intptr_t)ntohll(stage->entry));
 }
 
+void *cbfs_load_payload(struct cbfs_media *media, struct lb_memory *lb_mem,
+			const char *name)
+{
+	struct cbfs_payload *payload;
+
+	payload = (struct cbfs_payload *)cbfs_get_file_content(
+			media, name, CBFS_TYPE_PAYLOAD);
+
+	return payload;
+}
+
 /**
  * run_address is passed the address of a function taking no parameters and
  * jumps to it, returning the result.
@@ -158,4 +172,5 @@ int run_address(void *f)
 	v = f;
 	return v();
 }
+
 #endif

@@ -34,6 +34,20 @@ static void io_apic_write(u32 ioapic_base, u32 reg, u32 value)
 	write32(ioapic_base + 0x10, value);
 }
 
+static int ioapic_interrupt_count(int ioapic_base)
+{
+	/* Read the available number of interrupts. */
+	int ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
+	if (ioapic_interrupts == 0xff)
+		ioapic_interrupts = 23;
+	ioapic_interrupts += 1; /* Bits 23-16 specify the maximum redirection
+				   entry, which is the number of interrupts
+				   minus 1. */
+	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
+
+	return ioapic_interrupts;
+}
+
 void clear_ioapic(u32 ioapic_base)
 {
 	u32 low, high;
@@ -41,14 +55,7 @@ void clear_ioapic(u32 ioapic_base)
 
 	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base);
 
-	/* Read the available number of interrupts. */
-	ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
-	if (ioapic_interrupts == 0xff)
-		ioapic_interrupts = 23;
-	ioapic_interrupts += 1; /* Bits 23-16 specify the maximum redirection
-				   entry, which is the number of interrupts
-				   minus 1. */
-	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
+	ioapic_interrupts = ioapic_interrupt_count(ioapic_base);
 
 	low = DISABLED;
 	high = NONE;
@@ -86,14 +93,7 @@ void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
 			(ioapic_id << 24));
 	}
 
-	/* Read the available number of interrupts. */
-	ioapic_interrupts = (io_apic_read(ioapic_base, 0x01) >> 16) & 0xff;
-	if (ioapic_interrupts == 0xff)
-		ioapic_interrupts = 23;
-	ioapic_interrupts += 1; /* Bits 23-16 specify the maximum redirection
-				   entry, which is the number of interrupts
-				   minus 1. */
-	printk(BIOS_DEBUG, "IOAPIC: %d interrupts\n", ioapic_interrupts);
+	ioapic_interrupts = ioapic_interrupt_count(ioapic_base);
 
 #if CONFIG_IOAPIC_INTERRUPTS_ON_FSB
 	/*

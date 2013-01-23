@@ -103,7 +103,7 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 			DESCRIPTOR_TERMINATE_LIST, //Descriptor flags	!!!IMPORTANT!!! Terminate last element of array
 			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
 			//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
-			{ConnectorTypeDP, Aux2, Hdp2}
+			{ConnectorTypeLvds, Aux2, Hdp2}
 		}
 };
 

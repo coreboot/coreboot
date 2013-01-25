@@ -375,7 +375,7 @@ $(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/bas
 
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate-stage \
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate-stage -T \
 		-f $(objcbfs)/romstage_null.bin \
 		-n $(CONFIG_CBFS_PREFIX)/romstage \
 		-a $(CONFIG_XIP_ROM_SIZE) > $@.tmp || \

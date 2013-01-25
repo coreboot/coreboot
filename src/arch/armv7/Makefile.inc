@@ -46,9 +46,12 @@ prebuild-files = \
 	$(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
+# TODO(hungte) Change CBFS command to use per-board params. Also we don't need
+# to prefix 0x2000 bytes of zero in boot block anymore!
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create -m armv7 -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
-		-B $(objcbfs)/bootblock.bin -a 64
+	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+		-B $(objcbfs)/bootblock.bin -a 64 -b 0x0000 -H 0x2040 \
+		-o 0x5000
 	$(prebuild-files) true
 	mv $@.tmp $@
 else

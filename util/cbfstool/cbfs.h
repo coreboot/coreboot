@@ -25,7 +25,9 @@
 #define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
 #define CBFS_HEADER_VERSION1 0x31313131
 #define CBFS_HEADER_VERSION2 0x31313132
-#define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
+// TODO(hungte) We probably don't need "architecture" anymore - remove in future
+// Right now, to make old cbfstool happy, declare version as 1.
+#define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION1
 
 struct cbfs_header {
 	uint32_t magic;
@@ -41,6 +43,8 @@ struct cbfs_header {
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
 #define CBFS_ARCHITECTURE_X86      0x00000001
 #define CBFS_ARCHITECTURE_ARMV7    0x00000010
+
+#define CBFS_FILE_MAGIC "LARCHIVE"
 
 struct cbfs_file {
 	uint8_t magic[8];
@@ -105,9 +109,7 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
-int cbfs_file_header(unsigned long physaddr);
+#define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
-
-struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
 
 #endif

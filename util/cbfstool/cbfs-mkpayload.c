@@ -31,15 +31,14 @@
 #include "common.h"
 #include "cbfs.h"
 
-int parse_elf_to_payload(unsigned char *input, unsigned char **output,
-			 comp_algo algo)
+int parse_elf_to_payload(char *input, char **output, comp_algo algo)
 {
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
 	Elf32_Shdr *shdr;
 	char *header;
 	char *strtab;
-	unsigned char *sptr;
+	char *sptr;
 	int headers;
 	int segments = 1;
 	int isize = 0, osize = 0;
@@ -47,14 +46,8 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	struct cbfs_payload_segment *segs;
 	int i;
 
-	if(!iself(input)){
+	if(!is_elf_object(input)){
 		fprintf(stderr, "E: The payload file is not in ELF format!\n");
-		return -1;
-	}
-
-	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
-	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
-		fprintf(stderr, "E: The payload file has the wrong architecture\n");
 		return -1;
 	}
 
@@ -156,9 +149,9 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 		if (phdr[i].p_filesz == 0) {
 			segs[segments].type = PAYLOAD_SEGMENT_BSS;
 			segs[segments].load_addr =
-			    (uint64_t)htonll(phdr[i].p_paddr);
+			    htobe64(phdr[i].p_paddr);
 			segs[segments].mem_len =
-			    (uint32_t)htonl(phdr[i].p_memsz);
+			    htobe32(phdr[i].p_memsz);
 			segs[segments].offset = htonl(doffset);
 
 			segments++;
@@ -169,8 +162,8 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			segs[segments].type = PAYLOAD_SEGMENT_CODE;
 		else
 			segs[segments].type = PAYLOAD_SEGMENT_DATA;
-		segs[segments].load_addr = (uint64_t)htonll(phdr[i].p_paddr);
-		segs[segments].mem_len = (uint32_t)htonl(phdr[i].p_memsz);
+		segs[segments].load_addr = htobe64(phdr[i].p_paddr);
+		segs[segments].mem_len = htobe32(phdr[i].p_memsz);
 		segs[segments].compression = htonl(algo);
 		segs[segments].offset = htonl(doffset);
 
@@ -197,7 +190,7 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	}
 
 	segs[segments].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[segments++].load_addr = (uint64_t)htonll(ehdr->e_entry);
+	segs[segments++].load_addr = htobe64(ehdr->e_entry);
 
 	*output = sptr;
 
@@ -205,4 +198,54 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 
       err:
 	return -1;
+}
+
+int parse_flat_binary_to_payload(char *input,
+				 char **output,
+				 uint32_t input_size,
+				 uint32_t loadaddress,
+				 uint32_t entrypoint,
+				 comp_algo algo)
+{
+	comp_func_ptr compress;
+	char *payload;
+	struct cbfs_payload_segment *segs;
+	int doffset, len = 0;
+
+	compress = compression_function(algo);
+	if (!compress)
+		return 1;
+
+	/* FIXME compressed file size might be bigger than original file */
+	payload = calloc((2 * sizeof(*segs)) + input_size, 1);
+	if (payload == NULL) {
+		fprintf(stderr, "E: Could not allocate memory.\n");
+		return 1;
+	}
+
+	segs = (struct cbfs_payload_segment *)payload;
+	doffset = (2 * sizeof(*segs));
+
+	/* Prepare code segment */
+	segs[0].type = PAYLOAD_SEGMENT_CODE;
+	segs[0].load_addr = htobe64(loadaddress);
+	segs[0].mem_len = (uint32_t)htonl(input_size);
+	segs[0].offset = (uint32_t)htonl(doffset);
+
+	compress(input, input_size, (char *)(payload + doffset), &len);
+	segs[0].compression = htonl(algo);
+	segs[0].len = htonl(len);
+
+	if ((unsigned int)len >= input_size) {
+		segs[0].compression = 0;
+		segs[0].len = htonl(input_size);
+		memcpy(payload + doffset, input, input_size);
+	}
+
+	/* prepare entry point segment */
+	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
+	segs[1].load_addr = htobe64(entrypoint);
+
+	*output = payload;
+	return doffset + ntohl(segs[0].len);
 }

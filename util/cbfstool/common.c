@@ -4,6 +4,7 @@
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  * Copyright (C) 2012 Google, Inc.
+ * Copyright (C) 2013 The ChromiumOS Authors.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,215 +20,88 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <assert.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgen.h>
+
 #include "common.h"
-#include "cbfs.h"
 #include "elf.h"
 
-#define dprintf(x...)
+#define CBFS_FILENAME_ALIGN	(16)
 
-size_t getfilesize(const char *filename)
-{
-	size_t size;
-	FILE *file = fopen(filename, "rb");
-	if (file == NULL)
-		return -1;
+/* Buffer and file I/O */
 
-	fseek(file, 0, SEEK_END);
-	size = ftell(file);
-	fclose(file);
-	return size;
-}
-
-void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
-	       int place)
-{
-	FILE *file = fopen(filename, "rb");
-	if (file == NULL)
-		return NULL;
-
-	fseek(file, 0, SEEK_END);
-	*romsize_p = ftell(file);
-	fseek(file, 0, SEEK_SET);
-	if (!content) {
-		content = malloc(*romsize_p);
-		if (!content) {
-			fprintf(stderr, "E: Could not get %d bytes for file %s\n",
-			       *romsize_p, filename);
-			exit(1);
-		}
-	} else if (place == SEEK_END)
-		content -= *romsize_p;
-
-	if (!fread(content, *romsize_p, 1, file)) {
-		fprintf(stderr, "E: Failed to read %s\n", filename);
-		return NULL;
-	}
-	fclose(file);
-	return content;
-}
-
-static struct cbfs_header *master_header;
-static uint32_t phys_start, phys_end, align;
-uint32_t romsize;
-void *offset;
-uint32_t arch = CBFS_ARCHITECTURE_UNKNOWN;
-
-static struct {
-	uint32_t arch;
-	const char *name;
-} arch_names[] = {
-	{ CBFS_ARCHITECTURE_ARMV7, "armv7" },
-	{ CBFS_ARCHITECTURE_X86, "x86" },
-	{ CBFS_ARCHITECTURE_UNKNOWN, "unknown" }
-};
-
-uint32_t string_to_arch(const char *arch_string)
-{
-	int i;
-	uint32_t ret = CBFS_ARCHITECTURE_UNKNOWN;
-
-	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
-		if (!strcasecmp(arch_string, arch_names[i].name)) {
-			ret = arch_names[i].arch;
-			break;
-		}
-	}
-
-	return ret;
-}
-
-const char *arch_to_string(uint32_t a)
-{
-	int i;
-	const char *ret = NULL;
-
-	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
-		if (a == arch_names[i].arch) {
-			ret = arch_names[i].name;
-			break;
-		}
-	}
-
-	return ret;
-
-}
-
-int find_master_header(void *romarea, size_t size)
-{
-	size_t offset;
-
-	if (master_header)
-		return 0;
-
-	for (offset = 0; offset < size - sizeof(struct cbfs_header); offset++) {
-		struct cbfs_header *tmp = romarea + offset;
-
-		if (tmp->magic == ntohl(CBFS_HEADER_MAGIC)) {
-			master_header = tmp;
-			break;
-		}
-	}
-
-	return master_header ? 0 : 1;
-}
-
-void recalculate_rom_geometry(void *romarea)
-{
-	if (find_master_header(romarea, romsize)) {
-		fprintf(stderr, "E: Cannot find master header\n");
-		exit(1);
-	}
-
-	/* Update old headers */
-	if (master_header->version == CBFS_HEADER_VERSION1 &&
-	    ntohl(master_header->architecture) == CBFS_ARCHITECTURE_UNKNOWN) {
-		dprintf("Updating CBFS master header to version 2\n");
-		master_header->architecture = htonl(CBFS_ARCHITECTURE_X86);
-	}
-
-	arch = ntohl(master_header->architecture);
-
-	switch (arch) {
-	case CBFS_ARCHITECTURE_ARMV7:
-		offset = romarea;
-		phys_start = (0 + ntohl(master_header->offset)) & 0xffffffff;
-		phys_end = romsize & 0xffffffff;
-		break;
-	case CBFS_ARCHITECTURE_X86:
-		offset = romarea + romsize - 0x100000000ULL;
-		phys_start = (0 - romsize + ntohl(master_header->offset)) &
-				0xffffffff;
-		phys_end = (0 - ntohl(master_header->bootblocksize) -
-		     sizeof(struct cbfs_header)) & 0xffffffff;
-		break;
-	default:
-		fprintf(stderr, "E: Unknown architecture\n");
-		exit(1);
-	}
-
-	align = ntohl(master_header->align);
-}
-
-void *loadrom(const char *filename)
-{
-	void *romarea = loadfile(filename, &romsize, 0, SEEK_SET);
-	if (romarea == NULL)
-		return NULL;
-	recalculate_rom_geometry(romarea);
-	return romarea;
-}
-
-int writerom(const char *filename, void *start, uint32_t size)
-{
-	FILE *file = fopen(filename, "wb");
-	if (!file) {
-		fprintf(stderr, "Could not open '%s' for writing: ", filename);
-		perror("");
-		return 1;
-	}
-
-	if (fwrite(start, size, 1, file) != 1) {
-		fprintf(stderr, "Could not write to '%s': ", filename);
-		perror("");
-		return 1;
-	}
-
-	fclose(file);
+int buffer_create(struct buffer *buffer, size_t size, const char *name) {
+	buffer->name = strdup(name);
+	buffer->size = size;
+	buffer->data = (char*)malloc(buffer->size);
 	return 0;
 }
 
-int cbfs_file_header(unsigned long physaddr)
-{
-	/* maybe improve this test */
-	return (strncmp(phys_to_virt(physaddr), "LARCHIVE", 8) == 0);
+int buffer_load_file(struct buffer *buffer, const char *filename) {
+	FILE *fp = fopen(filename, "rb");
+	if (!fp) {
+		perror(filename);
+		return -1;
+	}
+	fseek(fp, 0, SEEK_END);
+	buffer->size = ftell(fp);
+	buffer->name = strdup(filename);
+	rewind(fp);
+	buffer->data = (char*)malloc(buffer->size);
+	assert(buffer->data);
+	if (fread(buffer->data, 1, buffer->size, fp) != buffer->size) {
+		ERROR("incomplete read: %s\n", filename);
+		fclose(fp);
+		return -1;
+	}
+	fclose(fp);
+	return 0;
 }
 
-struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size)
-{
-	struct cbfs_file *nextfile = (struct cbfs_file *)phys_to_virt(physaddr);
-	strncpy((char *)(nextfile->magic), "LARCHIVE", 8);
-	nextfile->len = htonl(size);
-	nextfile->type = htonl(0xffffffff);
-	nextfile->checksum = 0;	// FIXME?
-	nextfile->offset = htonl(sizeof(struct cbfs_file) + 16);
-	memset(((void *)nextfile) + sizeof(struct cbfs_file), 0, 16);
-	return nextfile;
+int buffer_write_file(struct buffer *buffer, const char *filename) {
+	FILE *fp = fopen(filename, "wb");
+	if (!fp) {
+		perror(filename);
+		return -1;
+	}
+	assert(buffer && buffer->data);
+	if (fwrite(buffer->data, 1, buffer->size, fp) != buffer->size) {
+		ERROR("incomplete write: %s\n", filename);
+		fclose(fp);
+		return -1;
+	}
+	fclose(fp);
+	return 0;
 }
 
-int iself(unsigned char *input)
-{
-	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
+int buffer_delete(struct buffer *buffer) {
+	assert(buffer);
+	if (buffer->name) {
+		free(buffer->name);
+		buffer->name = NULL;
+	}
+	if (buffer->data) {
+		free(buffer->data);
+		buffer->data = NULL;
+	}
+	buffer->size = 0;
+	return 0;
+}
+
+/* Type and format */
+
+int is_elf_object(const void *input) {
+	Elf32_Ehdr *ehdr = (Elf32_Ehdr *)input;
 	return !memcmp(ehdr->e_ident, ELFMAG, 4);
 }
 
 static struct filetypes_t {
 	uint32_t type;
 	const char *name;
-} filetypes[] = {
+} cbfs_filetypes[] = {
 	{CBFS_COMPONENT_STAGE, "stage"},
 	{CBFS_COMPONENT_PAYLOAD, "payload"},
 	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
@@ -236,206 +110,149 @@ static struct filetypes_t {
 	{CBFS_COMPONENT_VSA, "vsa"},
 	{CBFS_COMPONENT_MBI, "mbi"},
 	{CBFS_COMPONENT_MICROCODE, "microcode"},
-	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos default"},
-	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos layout"},
+	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos_default"},
+	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
 	{CBFS_COMPONENT_NULL, "null"}
 };
 
-void print_supported_filetypes(void)
-{
-	int i, number = ARRAY_SIZE(filetypes);
+uint32_t get_cbfs_entry_type(const char *name) {
+	size_t i;
+	for (i = 0; i < ARRAY_SIZE(cbfs_filetypes); i++)
+		if (strcmp(cbfs_filetypes[i].name, name) == 0)
+			return cbfs_filetypes[i].type;
+	return -1;
+}
 
-	for (i=0; i<number; i++) {
-		printf(" %s%c", filetypes[i].name, (i==(number-1))?'\n':',');
-		if ((i%8) == 7)
+const char * get_cbfs_entry_type_name(uint32_t type) {
+	size_t i;
+	for (i = 0; i < ARRAY_SIZE(cbfs_filetypes); i++)
+		if (cbfs_filetypes[i].type == type)
+			return cbfs_filetypes[i].name;
+	return "(unknown)";
+}
+
+void print_all_cbfs_entry_types(void) {
+	size_t i, total = ARRAY_SIZE(cbfs_filetypes);
+
+	for (i = 0; i < total; i++) {
+		printf(" %s%c", cbfs_filetypes[i].name,
+		       (i + 1 == total) ? '\n' : ',');
+		if ((i + 1) % 8 == 0)
 			printf("\n");
 	}
 }
 
-const char *strfiletype(uint32_t number)
-{
-	size_t i;
-	for (i = 0; i < (sizeof(filetypes) / sizeof(struct filetypes_t)); i++)
-		if (filetypes[i].type == number)
-			return filetypes[i].name;
-	return "unknown";
+/* CBFS image processing */
+int create_cbfs_image(struct cbfs_image *image, size_t size) {
+	buffer_create(&image->buffer, size, "");
+	image->header = NULL;
+	memset(image->buffer.data, -1, size);
+	// TODO point header to somewhere?
+	return 0;
 }
 
-uint64_t intfiletype(const char *name)
-{
-	size_t i;
-	for (i = 0; i < (sizeof(filetypes) / sizeof(struct filetypes_t)); i++)
-		if (strcmp(filetypes[i].name, name) == 0)
-			return filetypes[i].type;
-	return -1;
-}
-
-void print_cbfs_directory(const char *filename)
-{
-	printf
-		("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
-		 "alignment: %d bytes, architecture: %s\n\n",
-		 basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
-		 romsize, ntohl(master_header->offset), align, arch_to_string(arch));
-	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
-	uint32_t current = phys_start;
-	while (current < phys_end) {
-		if (!cbfs_file_header(current)) {
-			current += align;
-			continue;
-		}
-		struct cbfs_file *thisfile =
-			(struct cbfs_file *)phys_to_virt(current);
-		uint32_t length = ntohl(thisfile->len);
-		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
-		if (strlen(fname) == 0)
-			fname = "(empty)";
-
-		printf("%-30s 0x%-8x %-12s %d\n", fname,
-		       current - phys_start + ntohl(master_header->offset),
-		       strfiletype(ntohl(thisfile->type)), length);
-
-		/* note the components of the subheader are in host order ... */
-		switch (ntohl(thisfile->type)) {
-		case CBFS_COMPONENT_STAGE:
-		{
-			struct cbfs_stage *stage = CBFS_SUBHEADER(thisfile);
-			dprintf("    %s compression, entry: 0x%llx, load: 0x%llx, length: %d/%d\n",
-			       stage->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
-			       (unsigned long long)stage->entry,
-			       (unsigned long long)stage->load,
-			       stage->len,
-			       stage->memlen);
-			break;
-		}
-		case CBFS_COMPONENT_PAYLOAD:
-		{
-			struct cbfs_payload_segment *payload = CBFS_SUBHEADER(thisfile);
-			while(payload) {
-				switch(payload->type) {
-				case PAYLOAD_SEGMENT_CODE:
-				case PAYLOAD_SEGMENT_DATA:
-					dprintf("    %s (%s compression, offset: 0x%x, load: 0x%llx, length: %d/%d)\n",
-						payload->type == PAYLOAD_SEGMENT_CODE ? "code " : "data" ,
-						payload->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
-						ntohl(payload->offset),
-						(unsigned long long)ntohll(payload->load_addr),
-						ntohl(payload->len), ntohl(payload->mem_len));
-					break;
-				case PAYLOAD_SEGMENT_ENTRY:
-					dprintf("    entry (0x%llx)\n", (unsigned long long)ntohll(payload->load_addr));
-					break;
-				case PAYLOAD_SEGMENT_BSS:
-					dprintf("    BSS (address 0x%016llx, length 0x%x)\n", (unsigned long long)ntohll(payload->load_addr), ntohl(payload->len));
-					break;
-				case PAYLOAD_SEGMENT_PARAMS:
-					dprintf("    parameters\n");
-					break;
-				default:
-					dprintf("    %x (%s compression, offset: 0x%x, load: 0x%llx, length: %d/%d\n",
-						payload->type,
-						payload->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
-						ntohl(payload->offset),
-						(unsigned long long)ntohll(payload->load_addr),
-						ntohl(payload->len),
-						ntohl(payload->mem_len));
-					break;
-				}
-
-				if(payload->type == PAYLOAD_SEGMENT_ENTRY)
-					payload=NULL;
-				else
-					payload++;
-			}
-			break;
-		}
-		default:
-			break;
-		}
-		current =
-		    ALIGN(current + ntohl(thisfile->len) +
-			  ntohl(thisfile->offset), align);
+int load_cbfs_image(struct cbfs_image *image, const char *filename) {
+	if (buffer_load_file(&image->buffer, filename) != 0)
+		return -1;
+	DEBUG("read_cbfs_image: %s (%zd bytes)\n", image->buffer.name,
+	      image->buffer.size);
+	image->header = cbfs_find_header(image->buffer.data,
+					 image->buffer.size);
+	if (!image->header) {
+		ERROR("%s does not have CBFS master header.\n", filename);
+		delete_cbfs_image(image);
+		return -1;
 	}
+	return 0;
 }
 
-int extract_file_from_cbfs(const char *filename, const char *payloadname, const char *outpath)
-{
-	FILE *outfile = NULL;
-	uint32_t current = phys_start;
-	while (current < phys_end) {
-		if (!cbfs_file_header(current)) {
-			current += align;
+int write_cbfs_image(struct cbfs_image *image, const char *filename) {
+	assert(image && image->buffer.data);
+	return buffer_write_file(&image->buffer, filename);
+}
+
+int delete_cbfs_image(struct cbfs_image *image) {
+	buffer_delete(&image->buffer);
+	image->header = NULL;
+	return 0;
+}
+
+static uint32_t align_up(uint32_t value, uint32_t align) {
+	if (value % align)
+		value += align - (value % align);
+	return value;
+}
+
+int cbfs_add_entry(struct cbfs_image *image, const char *name,
+		   uint32_t type, struct buffer *buffer) {
+	uint32_t entry_type, entry_offset, entry_capacity;
+	uint32_t addr;
+	struct cbfs_file *entry, old_entry;
+	uint32_t need_size, new_size;
+
+	need_size = align_up(strlen(name) + 1, CBFS_FILENAME_ALIGN);
+	need_size += sizeof(*entry);
+	need_size += buffer->size;
+	need_size = align_up(need_size, ntohl(image->header->align));
+
+	DEBUG("cbfs_add_entry('%s', %zd) => need_size = %u\n",
+	      name, buffer->size, need_size);
+
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+
+		entry_type = ntohl(entry->type);
+		if (// entry_type != CBFS_COMPONENT_DELETED &&
+		    entry_type != CBFS_COMPONENT_NULL)
 			continue;
-		}
 
-		// Locate the file start struct
-		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
-		// And its length
-		uint32_t length = ntohl(thisfile->len);
-		// Locate the file name
-		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+		addr = cbfs_get_entry_addr(image, entry);
+		entry_offset = ntohl(entry->offset);
+		entry_capacity = entry_offset + ntohl(entry->len);
 
-		// It's not the file we are looking for..
-		if (strcmp(fname, payloadname) != 0)
-		{
-			current =
-			   ALIGN(current + ntohl(thisfile->len) +
-				  ntohl(thisfile->offset), align);
+		DEBUG("cbfs_add_entry: space %s at 0x%x, %d bytes\n",
+		      get_cbfs_entry_type_name(entry_type), addr,
+		      entry_capacity);
+
+		DEBUG("%d %d\n", entry_capacity, need_size);
+
+		if (entry_capacity < need_size)
 			continue;
-		}
 
-		// Else, it's our file.
-		printf("Found file %.30s at 0x%x, type %.12s, size %d\n", fname,
-		       current - phys_start, strfiletype(ntohl(thisfile->type)),
-		       length);
+		DEBUG("start creating new entry.\n");
 
-		// If we are not dumping to stdout, open the out file.
-		outfile = fopen(outpath, "wb");
-		if (!outfile)
-		{
-			fprintf(stderr, "E: Could not open the file %s for writing.\n", outpath);
-			return 1;
-		}
+		// fill entry
+		memcpy(&old_entry, entry, sizeof(old_entry));
+		entry->len = htonl(buffer->size);
+		entry->type = htonl(type);
+		entry->offset = htonl(align_up(strlen(name) + 1,
+					       CBFS_FILENAME_ALIGN));
+		strcpy(CBFS_NAME(entry), name);
+		memcpy(CBFS_SUBHEADER(entry), buffer->data, buffer->size);
+		cbfs_print_entry_info(image, entry, NULL);
 
-		if (ntohl(thisfile->type) != CBFS_COMPONENT_RAW)
-		{
-			fprintf(stderr, "W: Only 'raw' files are safe to extract.\n");
-		}
+		// setup new entry
+		entry = cbfs_find_next_entry(image, entry);
+		new_size = ntohl(old_entry.len);
+		new_size -= (cbfs_get_entry_addr(image, entry) - addr);
+		old_entry.len = htonl(new_size);
+		memcpy(entry, &old_entry, sizeof(old_entry));
+		*CBFS_NAME(entry) = 0;
+		cbfs_print_entry_info(image, entry, NULL);
 
-		fwrite(((char *)thisfile)
-				+ ntohl(thisfile->offset), length, 1, outfile);
-
-		fclose(outfile);
-		printf("Successfully dumped the file.\n");
-
-		// We'll only dump one file.
 		return 0;
+
+		// assume NULL is 
+		// assume we always have good NULL to add.
+
+		// See if we can update current record.
+		//if (buffer->size <= len && 
+		 //   (location == 0 || current == location))
 	}
-	fprintf(stderr, "E: File %s not found.\n", payloadname);
-	return 1;
-}
 
-
-int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
-{
-	uint32_t current = phys_start;
-	while (current < phys_end) {
-		if (!cbfs_file_header(current)) {
-			current += align;
-			continue;
-		}
-		struct cbfs_file *thisfile =
-		    (struct cbfs_file *)phys_to_virt(current);
-		uint32_t length = ntohl(thisfile->len);
-
-		dprintf("at %x, %x bytes\n", current, length);
-		/* Is this a free chunk? */
-		if ((thisfile->type == CBFS_COMPONENT_DELETED)
-		    || (thisfile->type == CBFS_COMPONENT_NULL)) {
-			dprintf("null||deleted at %x, %x bytes\n", current,
-				length);
+#if 0
 			/* if this is the right size, and if specified, the right location, use it */
 			if ((contentsize <= length)
 			    && ((location == 0) || (current == location))) {
@@ -490,11 +307,299 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
 	}
-	fprintf(stderr, "E: Could not add the file to CBFS, it's probably too big.\n");
-	fprintf(stderr, "E: File size: %d bytes (%d KB).\n", contentsize, contentsize/1024);
-	return 1;
+#endif
+	ERROR("Could not add [%s, %zd bytes (%zd KB)]; probably too big?\n",
+	      buffer->name, buffer->size, buffer->size / 1024);
+	return 0;
 }
 
+int cbfs_remove_entry(struct cbfs_image *image, const char *name) {
+	struct cbfs_file *entry;
+	char *entry_name;
+	size_t len, name_len;
+	entry = cbfs_get_entry(image, name);
+	if (!entry) {
+		ERROR("CBFS file %s not found.\n", name);
+		return -1;
+	}
+	entry_name = CBFS_NAME(entry);
+	name_len = ntohl(entry->offset) - sizeof(*entry);
+	DEBUG("cbfs_remove_entry: Removed %s @ 0x%x\n",
+	      name, cbfs_get_entry_addr(image, entry));
+	// entry->type = htonl(CBFS_COMPONENT_NULL);
+	entry->type = htonl(CBFS_COMPONENT_DELETED);
+	// adjust name & offset.
+	// TODO offset(name) must be aligned at 16.
+	memset(entry_name, 0, name_len);
+	len = ntohl(entry->len) + name_len;
+	entry->offset = htonl(sizeof(*entry) + CBFS_FILENAME_ALIGN);
+	// TODO entry->len can expand to next aligned address.
+	entry->len = htonl(len - ntohl(entry->offset));
+
+	// TODO(hungte) Merge with previous and next file if possible.
+	return 0;
+}
+
+struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name) {
+	struct cbfs_file *entry;
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+		if (strcmp(CBFS_NAME(entry), name) == 0) {
+			DEBUG("cbfs_get_entry: found %s\n", name);
+			return entry;
+		}
+	}
+	return NULL;
+}
+
+int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
+		      const char *filename) {
+	struct cbfs_file *entry = cbfs_get_entry(image, entry_name);
+	struct buffer buffer;
+	if (!entry) {
+		ERROR("File not found: %s\n", entry_name);
+		return -1;
+	}
+	LOG("Found file %.30s at 0x%x, type %.12s, size %d\n",
+	    entry_name, cbfs_get_entry_addr(image, entry),
+	    get_cbfs_entry_type_name(ntohl(entry->type)),
+	    ntohl(entry->len));
+
+	if (ntohl(entry->type) != CBFS_COMPONENT_RAW) {
+		WARN("Only 'raw' files are safe to extract.\n");
+	}
+
+	buffer.data = CBFS_SUBHEADER(entry);
+	buffer.size = ntohl(entry->len);
+	buffer.name = "(cbfs_export_entry)";
+	if (buffer_write_file(&buffer, filename) != 0) {
+		ERROR("Failed to write %s into %s.\n",
+		      entry_name, filename);
+		return -1;
+	}
+	printf("Successfully dumped the file to: %s\n", filename);
+	return 0;
+}
+
+/* basename(3) may modify buffer, so we want a tiny alternative. */
+static const char *simple_basename(const char *name) {
+	const char *slash = strrchr(name, '/');
+	if (slash)
+		return slash + 1;
+	else
+		return name;
+}
+
+int cbfs_print_header_info(struct cbfs_image *image) {
+	assert(image && image->header);
+	printf("%s: %zd kB, bootblocksize %d, romsize %d, offset 0x%x\n"
+	       "alignment: %d bytes\n\n",
+	       simple_basename(image->buffer.name),
+	       image->buffer.size / 1024,
+	       ntohl(image->header->bootblocksize),
+	       ntohl(image->header->romsize),
+	       ntohl(image->header->offset),
+	       ntohl(image->header->align));
+	return 0;
+}
+
+static int cbfs_print_stage_info(struct cbfs_stage *stage) {
+	printf("    %s compression, entry: 0x%" PRIx64 ", load: 0x%" PRIx64 ", "
+	       "length: %d/%d\n",
+	       stage->compression == CBFS_COMPRESS_LZMA ? "LZMA" : "no",
+	       stage->entry,
+	       stage->load,
+	       stage->len,
+	       stage->memlen);
+	return 0;
+}
+
+static int cbfs_print_payload_segment_info(struct cbfs_payload_segment *payload)
+{
+	switch(payload->type) {
+		case PAYLOAD_SEGMENT_CODE:
+		case PAYLOAD_SEGMENT_DATA:
+			printf("    %s (%s compression, offset: 0x%x, "
+			       "load: 0x%" PRIx64 ", length: %d/%d)\n",
+			       (payload->type == PAYLOAD_SEGMENT_CODE ?
+				"code " : "data"),
+			       (payload->compression == CBFS_COMPRESS_LZMA ?
+				"LZMA" : "no"),
+			       ntohl(payload->offset),
+			       htobe64(payload->load_addr),
+			       ntohl(payload->len), ntohl(payload->mem_len));
+			break;
+
+		case PAYLOAD_SEGMENT_ENTRY:
+			printf("    entry (0x%" PRIx64 ")\n",
+			       htobe64(payload->load_addr));
+			break;
+
+		case PAYLOAD_SEGMENT_BSS:
+			printf("    BSS (address 0x%016" PRIx64 ", "
+			       "length 0x%x)\n",
+			       htobe64(payload->load_addr),
+			       ntohl(payload->len));
+			break;
+
+		case PAYLOAD_SEGMENT_PARAMS:
+			printf("    parameters\n");
+			break;
+
+		default:
+			printf("    %x (%s compression, offset: 0x%x, "
+			       "load: 0x%" PRIx64 ", length: %d/%d\n",
+			       payload->type,
+			       (payload->compression == CBFS_COMPRESS_LZMA ?
+			       "LZMA" : "no"),
+			       ntohl(payload->offset),
+			       htobe64(payload->load_addr),
+			       ntohl(payload->len),
+			       ntohl(payload->mem_len));
+			break;
+	}
+	return 0;
+}
+
+int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
+			  void *arg) {
+	const char *name = CBFS_NAME(entry);
+	struct cbfs_payload_segment *payload;
+	int *verbose = (int*)arg;
+
+	printf("%-30s 0x%-8x %-12s %d\n",
+	       *name ? name : "(empty)",
+	       cbfs_get_entry_addr(image, entry),
+	       get_cbfs_entry_type_name(ntohl(entry->type)),
+	       ntohl(entry->len));
+
+	if (!(verbose && *verbose))
+		return 0;
+
+	/* note the components of the subheader may be in host order ... */
+	switch (ntohl(entry->type)) {
+		case CBFS_COMPONENT_STAGE:
+			cbfs_print_stage_info((struct cbfs_stage*)
+					      CBFS_SUBHEADER(entry));
+			break;
+
+		case CBFS_COMPONENT_PAYLOAD:
+			payload  = (struct cbfs_payload_segment*)
+					CBFS_SUBHEADER(entry);
+			while (payload) {
+				cbfs_print_payload_segment_info(payload);
+				if (payload->type == PAYLOAD_SEGMENT_ENTRY)
+					break;
+				else
+					payload ++;
+			}
+			break;
+		default:
+			break;
+	}
+	return 0;
+}
+
+int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
+	      void *arg) {
+	int count = 0;
+	struct cbfs_file *entry;
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+		count ++;
+		if (callback(image, entry, arg) != 0)
+			break;
+	}
+	return count;
+}
+
+struct cbfs_header *cbfs_find_header(char *data, size_t size) {
+	size_t offset;
+	int found = 0;
+	uint32_t x86sig;
+	struct cbfs_header *header, *result = NULL;
+
+	// Try x86 style (check signature in bottom) header first.
+	x86sig = *(uint32_t*)(data + size - sizeof(uint32_t));
+	offset = (x86sig + (uint32_t)size);
+	DEBUG("x86sig: 0x%x, offset: 0x%zx\n", x86sig, offset);
+	if (offset >= size - sizeof(*header) ||
+	    ntohl(((struct cbfs_header*)(data + offset))->magic) !=
+	    CBFS_HEADER_MAGIC)
+		offset = 0;
+
+	for (; offset + sizeof(*header) < size; offset++) {
+		header = (struct cbfs_header*)(data + offset);
+		if (ntohl(header->magic) !=(CBFS_HEADER_MAGIC))
+		    continue;
+		if (ntohl(header->version) != CBFS_HEADER_VERSION1 &&
+		    ntohl(header->version) != CBFS_HEADER_VERSION2) {
+			// Probably not a real CBFS header?
+			continue;
+		}
+		found++;
+		result = header;
+	}
+	if (found > 1) {
+		ERROR("multiple (%d) CBFS headers found!\n",
+		       found);
+		result = NULL;
+	}
+	return result;
+}
+
+struct cbfs_file *cbfs_find_first_entry(struct cbfs_image *image) {
+	assert(image && image->header);
+	return (struct cbfs_file*)(image->buffer.data +
+				   ntohl(image->header->offset));
+}
+
+struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,
+				       struct cbfs_file *entry) {
+	// TODO check if next entry is valid in cbfs_image?
+	uint32_t addr = cbfs_get_entry_addr(image, entry);
+	int align = ntohl(image->header->align);
+	assert(entry && cbfs_is_valid_entry(entry));
+	addr += ntohl(entry->offset) + ntohl(entry->len);
+	addr = align_up(addr, align);
+	return (struct cbfs_file*)(image->buffer.data + addr);
+}
+
+uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry) {
+	assert(image && image->buffer.data && entry);
+	return (int32_t)((char*)entry - image->buffer.data);
+}
+
+int cbfs_is_valid_entry(struct cbfs_file *entry) {
+	return (entry &&memcmp(entry->magic, CBFS_FILE_MAGIC,
+			       sizeof(entry->magic)) == 0);
+}
+
+int cbfs_init_entry(struct cbfs_file *entry,
+		    struct buffer *buffer) {
+	memset(entry, 0, sizeof(*entry));
+	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
+	entry->len = htonl(buffer->size);
+	entry->offset = sizeof(*entry) + strlen(buffer->name) + 1;
+	return 0;
+}
+
+
+int cbfs_create_entry(struct cbfs_image *image, struct cbfs_file *entry,
+		      size_t len) {
+	memset(entry, -1, sizeof(*entry));
+	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
+	entry->type = htonl(CBFS_COMPONENT_NULL);
+	entry->len = htonl(len);
+	entry->checksum = 0;  // FIXME Get a checksum algorithm.
+	entry->offset = htonl(sizeof(*entry) + CBFS_FILENAME_ALIGN);
+	memset(CBFS_NAME(entry), 0, CBFS_FILENAME_ALIGN);
+	return 0;
+}
+
+#if 0
 
 static struct cbfs_file *merge_adjacent_files(struct cbfs_file *first,
 					      struct cbfs_file *second)
@@ -505,51 +610,6 @@ static struct cbfs_file *merge_adjacent_files(struct cbfs_file *first,
 	first->checksum = 0; // FIXME?
 	return first;
 }
-
-static struct cbfs_file *next_file(struct cbfs_file *prev)
-{
-	uint32_t pos = (prev == NULL) ? phys_start :
-	    ALIGN(virt_to_phys(prev) + ntohl(prev->len) + ntohl(prev->offset),
-		  align);
-
-	for (; pos < phys_end; pos += align) {
-		if (cbfs_file_header(pos))
-			return (struct cbfs_file *)phys_to_virt(pos);
-	}
-	return NULL;
-}
-
-
-int remove_file_from_cbfs(const char *filename)
-{
-	struct cbfs_file *prev = NULL;
-	struct cbfs_file *cur = next_file(prev);
-	struct cbfs_file *next = next_file(cur);
-	for (; cur; prev = cur, cur = next, next = next_file(next)) {
-
-		/* Check if this is the file to remove. */
-		char *name = (char *)cur + sizeof(*cur);
-		if (strcmp(name, filename))
-			continue;
-
-		/* Mark the file as free space and erase its name. */
-		cur->type = CBFS_COMPONENT_NULL;
-		name[0] = '\0';
-
-		/* Merge it with the previous file if possible. */
-		if (prev && prev->type == CBFS_COMPONENT_NULL)
-			cur = merge_adjacent_files(prev, cur);
-
-		/* Merge it with the next file if possible. */
-		if (next && next->type == CBFS_COMPONENT_NULL)
-			merge_adjacent_files(cur, next);
-
-		return 0;
-	}
-	fprintf(stderr, "E: CBFS file %s not found.\n", filename);
-	return 1;
-}
-
 
 /* returns new data block with cbfs_file header, suitable to dump into the ROM. location returns
    the new location that points to the cbfs_file header */
@@ -593,7 +653,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 		const char *bootblock, uint32_t align, uint32_t offs)
 {
 	uint32_t bootblocksize = 0;
-	struct cbfs_header *master_header;
+	struct cbfs_header *header;
 	unsigned char *romarea, *bootblk;
 
 	romsize = _romsize;
@@ -783,3 +843,4 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 	free(rom);
 	return ret;
 }
+#endif

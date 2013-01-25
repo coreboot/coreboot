@@ -617,7 +617,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 				mem_hole.node_id = i;
 				break; //only one hole
 			}
-			limit_k = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
+			limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
 			limitk_pri = limit_k;
 		}
 	}
@@ -762,7 +762,7 @@ static void domain_set_resources(device_t dev)
 
 		if (!(d.mask & 1)) continue;
 		basek = ((resource_t)(d.base & 0x1fffff00)) << 9; // could overflow, we may lost 6 bit here
-		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
+		limitk = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9 ;
 
 		sizek = limitk - basek;
 

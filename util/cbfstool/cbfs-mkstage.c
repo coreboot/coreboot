@@ -23,14 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include "elf.h"
-#include <fcntl.h>
-#include <getopt.h>
-#include <sys/stat.h>
 
 #include "common.h"
-#include "cbfs.h"
+#include "elf.h"
 
 static unsigned int idemp(unsigned int x)
 {
@@ -48,13 +43,13 @@ static unsigned int swap32(unsigned int x)
 unsigned int (*elf32_to_native) (unsigned int) = idemp;
 
 /* returns size of result, or -1 if error */
-int parse_elf_to_stage(unsigned char *input, unsigned char **output,
-		       comp_algo algo, uint32_t * location)
+int parse_elf_to_stage(char *input, char **output,
+		       comp_algo algo, uint32_t location)
 {
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
 	char *header, *buffer;
-	unsigned char *out;
+	char *out;
 
 	int headers;
 	int i;
@@ -67,21 +62,16 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (!compress)
 		return -1;
 
-	if (!iself(input)) {
+	DEBUG("start: parse_elf_to_stage(location=0x%x)\n", location);
+	if (!is_elf_object(input)) {
 		fprintf(stderr, "E: The stage file is not in ELF format!\n");
-		return -1;
-	}
-
-	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
-	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
-		fprintf(stderr, "E: The stage file has the wrong architecture\n");
 		return -1;
 	}
 
 	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 		elf_bigendian = 1;
 	}
-	if (elf_bigendian != host_bigendian) {
+	if (elf_bigendian != is_big_endian()) {
 		elf32_to_native = swap32;
 	}
 
@@ -125,8 +115,8 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 			mem_end = mend;
 	}
 
-	if (data_start < *location) {
-		data_start = *location;
+	if (data_start < location) {
+		data_start = location;
 	}
 
 	if (data_end <= data_start) {
@@ -155,9 +145,9 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 			continue;
 
 		l_start = elf32_to_native(phdr[i].p_paddr);
-		if (l_start < *location) {
-			l_offset = *location - l_start;
-			l_start = *location;
+		if (l_start < location) {
+			l_offset = location - l_start;
+			l_start = location;
 		}
 
 		memcpy(buffer + (l_start - data_start),
@@ -184,10 +174,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		 (char *)(out + sizeof(struct cbfs_stage)), (int *)&stage->len);
 
 	free(buffer);
-
 	*output = out;
 
-	if (*location)
-		*location -= sizeof(struct cbfs_stage);
-	return sizeof(struct cbfs_stage) + stage->len;
+	return sizeof(*stage) + stage->len;
 }

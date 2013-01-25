@@ -46,9 +46,12 @@ prebuild-files = \
 	$(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
+# TODO(hungte) Change CBFS command to use per-board params. Also we don't need
+# to prefix 0x2000 bytes of zero in boot block anymore!
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create -m armv7 -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
-		-B $(objcbfs)/bootblock.bin -a 64
+	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+		-B $(objcbfs)/bootblock.bin -a 64 -A 0x0000 -H 0x2040 \
+		-o 0x5000
 	$(prebuild-files) true
 	mv $@.tmp $@
 else
@@ -314,11 +317,9 @@ $(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/bas
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	@printf "    generating base_xip.txt\n"
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate-stage -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	sed -e 's/^/0x/g' $@.tmp > $@.tmp2
-	rm $@.tmp
-	mv $@.tmp2 $@
+	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

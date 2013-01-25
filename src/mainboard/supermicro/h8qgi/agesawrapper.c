@@ -147,7 +147,7 @@ static UINT32 agesawrapper_amdinitcpuio(VOID)
 		 * coreboot not implemente the range by range setting yet.
 		 */
 		PciAddress.AddressValue = MAKE_SBDFO(0, 0, CONFIG_CDB + node, FUNC_1, 0xBC);
-		PciData = CONFIG_MMCONF_BASE_ADDRESS + (CONFIG_MMCONF_BUS_NUMBER * 0x100000);//1MB each bus
+		PciData = CONFIG_MMCONF_BASE_ADDRESS + (CONFIG_MMCONF_BUS_NUMBER * 0x100000) - 1;//1MB each bus
 		PciData = (PciData >> 8) & 0xFFFFFF00;
 		PciData |= 0x80; //NP
 		PciData |= sblink << 4;

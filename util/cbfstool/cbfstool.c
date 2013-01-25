@@ -4,6 +4,7 @@
  * Copyright (C) 2009 coresystems GmbH
  *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  * Copyright (C) 2012 Google, Inc.
+ * Copyright (C) 2013 The ChromiumOS Authors.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +27,6 @@
 #include <unistd.h>
 #include <getopt.h>
 #include "common.h"
-#include "cbfs.h"
 
 struct command {
 	const char *name;
@@ -35,6 +35,7 @@ struct command {
 };
 
 int verbose = 0;
+
 static char *cbfs_name = NULL;
 static char *rom_name = NULL;
 static char *rom_filename = NULL;
@@ -50,8 +51,9 @@ static comp_algo rom_algo = CBFS_COMPRESS_NONE;
 
 static int cbfs_add(void)
 {
-	uint32_t filesize = 0;
-	void *rom, *filedata, *cbfsfile;
+	struct cbfs_image image;
+	struct buffer buffer;
+	int result = 1;
 
 	if (!rom_filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
@@ -68,44 +70,41 @@ static int cbfs_add(void)
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
-	if (rom == NULL) {
+	if (load_cbfs_image(&image, cbfs_name) != 0) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
 			cbfs_name);
 		return 1;
 	}
 
-	filedata = loadfile(rom_filename, &filesize, 0, SEEK_SET);
-	if (filedata == NULL) {
+	if (buffer_load_file(&buffer, rom_filename) != 0) {
 		fprintf(stderr, "E: Could not load file '%s'.\n",
 			rom_filename);
-		free(rom);
+		delete_cbfs_image(&image);
 		return 1;
 	}
 
-	cbfsfile = create_cbfs_file(rom_name, filedata, &filesize,
-					rom_type, &rom_baseaddress);
-	free(filedata);
+	// cbfsfile = create_cbfs_file(rom_name, filedata, &filesize,
+	// rom_type, &rom_baseaddress);
+	do {
+		if (cbfs_add_entry(&image, &buffer) != 0)
+			break;
 
-	if (add_file_to_cbfs(cbfsfile, filesize, rom_baseaddress)) {
-		fprintf(stderr, "E: Adding file '%s' failed.\n", rom_filename);
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-	if (writerom(cbfs_name, rom, romsize)) {
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
+		// if (add_file_to_cbfs(cbfsfile, filesize, rom_baseaddress)) 
+		if (write_cbfs_image(&image, cbfs_name) != 0)
+			break;
 
-	free(cbfsfile);
-	free(rom);
-	return 0;
+		result = 0;
+	} while (0);
+
+	buffer_delete(&buffer);
+	delete_cbfs_image(&image);
+	return result;
 }
 
 static int cbfs_add_payload(void)
 {
+#if 0
+	struct cbfs_image image;
 	int32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *payload;
@@ -165,11 +164,14 @@ static int cbfs_add_payload(void)
 
 	free(cbfsfile);
 	free(rom);
+#endif
 	return 0;
 }
 
 static int cbfs_add_stage(void)
 {
+#if 0
+	struct cbfs_image image;
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *stage;
@@ -222,12 +224,15 @@ static int cbfs_add_stage(void)
 	}
 
 	free(cbfsfile);
-	free(rom);
+	delete_cbfs_image(&image);
+#endif
 	return 0;
 }
 
 static int cbfs_add_flat_binary(void)
 {
+#if 0
+	struct cbfs_image image;
 	uint32_t filesize = 0;
 	uint32_t final_size;
 	void *rom, *filedata, *cbfsfile;
@@ -331,44 +336,46 @@ static int cbfs_add_flat_binary(void)
 	}
 
 	free(cbfsfile);
-	free(rom);
+	delete_cbfs_image(&image);
+#endif
 	return 0;
 }
 
 static int cbfs_remove(void)
 {
-	void *rom;
+	int result = 1;
+	struct cbfs_image image;
 
 	if (!rom_name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
-	if (rom == NULL) {
+	if (load_cbfs_image(&image, cbfs_name) != 0) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
 			cbfs_name);
 		return 1;
 	}
 
-	if (remove_file_from_cbfs(rom_name)) {
-		fprintf(stderr, "E: Removing file '%s' failed.\n",
-			rom_name);
-		free(rom);
-		return 1;
-	}
+	do {
+		if (cbfs_remove_entry(&image, rom_name) != 0) {
+			fprintf(stderr, "E: Removing file '%s' failed.\n",
+				rom_name);
+			break;
+		}
+		if (write_cbfs_image(&image, cbfs_name) != 0)
+			break;
+		result = 0;
+	} while (0);
 
-	if (writerom(cbfs_name, rom, romsize)) {
-		free(rom);
-		return 1;
-	}
-
-	free(rom);
-	return 0;
+	delete_cbfs_image(&image);
+	return result;
 }
 
 static int cbfs_create(void)
 {
+	struct cbfs_image image;
+
 	if (rom_size == 0) {
 		fprintf(stderr, "E: You need to specify a valid -s/--size.\n");
 		return 1;
@@ -379,17 +386,23 @@ static int cbfs_create(void)
 		return 1;
 	}
 
+#if 0
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		fprintf(stderr, "E: You need to specify -m/--machine arch\n");
 		return 1;
 	}
-
 	return create_cbfs_image(cbfs_name, rom_size, rom_bootblock,
 						rom_alignment, rom_offset);
+#endif
+	delete_cbfs_image(&image);
+	return 0;
+
 }
 
 static int cbfs_locate(void)
 {
+#if 0
+	struct cbfs_image image;
 	uint32_t filesize, location;
 
 	if (!rom_filename) {
@@ -409,29 +422,29 @@ static int cbfs_locate(void)
 
 	printf("%x\n", location);
 	return location == 0 ? 1 : 0;
+#endif
+	return 0;
 }
 
 static int cbfs_print(void)
 {
-	void *rom;
-
-	rom = loadrom(cbfs_name);
-	if (rom == NULL) {
+	struct cbfs_image image;
+	if (load_cbfs_image(&image, cbfs_name) != 0) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
 			cbfs_name);
 		return 1;
 	}
+	cbfs_print_header_info(&image);
+	cbfs_walk(&image, cbfs_print_entry_info, &verbose);
 
-	print_cbfs_directory(cbfs_name);
-
-	free(rom);
+	delete_cbfs_image(&image);
 	return 0;
 }
 
 static int cbfs_extract(void)
 {
-	void *rom;
-	int ret;
+	int result = 0;
+	struct cbfs_image image;
 
 	if (!rom_filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
@@ -443,29 +456,28 @@ static int cbfs_extract(void)
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
-	if (rom == NULL) {
+	if (load_cbfs_image(&image, cbfs_name) != 0) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
 			cbfs_name);
-		return 1;
+		result = 1;
+	} else if (cbfs_export_entry(&image, rom_name, rom_filename) != 0) {
+		result = 1;
 	}
 
-	ret = extract_file_from_cbfs(cbfs_name, rom_name, rom_filename);
-
-	free(rom);
-	return ret;
+	delete_cbfs_image(&image);
+	return result;
 }
 
 static const struct command commands[] = {
-	{"add", "f:n:t:b:h?", cbfs_add},
-	{"add-payload", "f:n:t:c:b:h?", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:h?", cbfs_add_stage},
-	{"add-flat-binary", "f:n:l:e:c:b:h?", cbfs_add_flat_binary},
-	{"remove", "n:h?", cbfs_remove},
-	{"create", "s:B:a:o:m:h?", cbfs_create},
-	{"locate", "f:n:a:h?", cbfs_locate},
-	{"print", "h?", cbfs_print},
-	{"extract", "n:f:h?", cbfs_extract},
+	{"add", "vf:n:t:b:h?", cbfs_add},
+	{"add-payload", "vf:n:t:c:b:h?", cbfs_add_payload},
+	{"add-stage", "vf:n:t:c:b:h?", cbfs_add_stage},
+	{"add-flat-binary", "vf:n:l:e:c:b:h?", cbfs_add_flat_binary},
+	{"remove", "vn:h?", cbfs_remove},
+	{"create", "vs:B:a:o:m:h?", cbfs_create},
+	{"locate", "vf:n:a:h?", cbfs_locate},
+	{"print", "vh?", cbfs_print},
+	{"extract", "vn:f:h?", cbfs_extract},
 };
 
 static struct option long_options[] = {
@@ -491,8 +503,9 @@ static void usage(char *name)
 	printf
 	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
 	     "USAGE:\n" " %s [-h]\n"
-	     " %s FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
-	     "  -h		Display this help message\n\n"
+	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     "  -h             Display this help message\n\n"
+	     "  -v             Verbose output\n"
 	     "COMMANDs:\n"
 	     " add -f FILE -n NAME -t TYPE [-b base-address]               "
 			"Add a component\n"
@@ -509,7 +522,7 @@ static void usage(char *name)
 			"Create a ROM file\n"
 	     " locate -f FILE -n NAME -a align                             "
 			"Find a place for a file of that size\n"
-	     " print                                                       "
+	     " print	                                                   "
 			"Show the contents of the ROM\n"
 	     " extract -n NAME -f FILE                                     "
 			"Extracts a raw payload from ROM\n"
@@ -518,19 +531,7 @@ static void usage(char *name)
 	     "  armv7, x86\n"
 	     "TYPEs:\n", name, name
 	    );
-	print_supported_filetypes();
-}
-
-/* Small, OS/libc independent runtime check for endianess */
-int host_bigendian = 0;
-
-static void which_endian(void)
-{
-	static const uint32_t inttest = 0x12345678;
-	uint8_t inttest_lsb = *(uint8_t *)&inttest;
-	if (inttest_lsb == 0x12) {
-		host_bigendian = 1;
-	}
+	print_all_cbfs_entry_types();
 }
 
 int main(int argc, char **argv)
@@ -542,8 +543,6 @@ int main(int argc, char **argv)
 		usage(argv[0]);
 		return 1;
 	}
-
-	which_endian();
 
 	cbfs_name = argv[1];
 	char *cmd = argv[2];
@@ -575,9 +574,8 @@ int main(int argc, char **argv)
 				rom_name = optarg;
 				break;
 			case 't':
-				if (intfiletype(optarg) != ((uint64_t) - 1))
-					rom_type = intfiletype(optarg);
-				else
+				rom_type = get_cbfs_entry_type(optarg);
+				if (rom_type == (uint32_t)-1)
 					rom_type = strtoul(optarg, NULL, 0);
 				if (rom_type == 0)
 					printf("W: Unknown type '%s' ignored\n",
@@ -626,7 +624,7 @@ int main(int argc, char **argv)
 				verbose++;
 				break;
 			case 'm':
-				arch = string_to_arch(optarg);
+				// arch = string_to_arch(optarg);
 				break;
 			case 'h':
 			case '?':

@@ -34,6 +34,7 @@
 int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			 comp_algo algo)
 {
+#if 0
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
 	Elf32_Shdr *shdr;
@@ -47,7 +48,7 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	struct cbfs_payload_segment *segs;
 	int i;
 
-	if(!iself(input)){
+	if(!is_elf_object(input)){
 		fprintf(stderr, "E: The payload file is not in ELF format!\n");
 		return -1;
 	}
@@ -204,5 +205,6 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	return (segments * sizeof(struct cbfs_payload_segment)) + osize;
 
       err:
+#endif
 	return -1;
 }

@@ -32,6 +32,17 @@
 #include "common.h"
 #include "cbfs.h"
 
+/* Small, OS/libc independent runtime check for endianess */
+static int which_endian(void)
+{
+	static const uint32_t inttest = 0x12345678;
+	uint8_t inttest_lsb = *(uint8_t *)&inttest;
+	if (inttest_lsb == 0x12) {
+		return 1;
+	}
+	return 0;
+}
+
 static unsigned int idemp(unsigned int x)
 {
 	return x;
@@ -42,7 +53,10 @@ static unsigned int idemp(unsigned int x)
  */
 static unsigned int swap32(unsigned int x)
 {
+	return x;
+#if 0
 	return swab32(x);
+#endif
 }
 
 unsigned int (*elf32_to_native) (unsigned int) = idemp;
@@ -51,6 +65,7 @@ unsigned int (*elf32_to_native) (unsigned int) = idemp;
 int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		       comp_algo algo, uint32_t * location)
 {
+#if 0
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
 	char *header, *buffer;
@@ -67,7 +82,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (!compress)
 		return -1;
 
-	if (!iself(input)) {
+	if (!is_elf_object(input)) {
 		fprintf(stderr, "E: The stage file is not in ELF format!\n");
 		return -1;
 	}
@@ -81,7 +96,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 		elf_bigendian = 1;
 	}
-	if (elf_bigendian != host_bigendian) {
+	if (elf_bigendian != which_endian()) {
 		elf32_to_native = swap32;
 	}
 
@@ -190,4 +205,6 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (*location)
 		*location -= sizeof(struct cbfs_stage);
 	return sizeof(struct cbfs_stage) + stage->len;
+#endif
+	return -1;
 }

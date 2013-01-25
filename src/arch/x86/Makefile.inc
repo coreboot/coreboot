@@ -65,7 +65,7 @@ prebuild-files = \
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 $(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
-	$(CBFSTOOL) $@.tmp create -m x86 -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
 		-B $(objcbfs)/bootblock.bin -a 64 \
 		-o $$(( $(CONFIG_ROM_SIZE) - $(CONFIG_CBFS_SIZE) ))
 	$(prebuild-files) true
@@ -274,6 +274,9 @@ endif
 $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
+	echo $(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/romstage_xip.elf \
+		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
+		-b $(shell cat $(objcbfs)/base_xip.txt) >>cbfs.log
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/romstage_xip.elf \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
 		-b $(shell cat $(objcbfs)/base_xip.txt)
@@ -375,11 +378,10 @@ $(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/bas
 
 $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
+	echo $(CBFSTOOL) $(obj)/coreboot.pre1 locate-stage -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) >> cbfs.log
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate-stage -T -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	sed -e 's/^/0x/g' $@.tmp > $@.tmp2
-	rm $@.tmp
-	mv $@.tmp2 $@
+	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

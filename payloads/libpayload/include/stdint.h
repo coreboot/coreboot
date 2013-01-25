@@ -32,4 +32,5 @@
 #include <arch/types.h>
 
 typedef unsigned long uintptr_t;
+typedef long intptr_t;
 #endif

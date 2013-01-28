@@ -24,10 +24,7 @@
 
 /* Endianess */
 #include "swab.h"
-#ifndef __APPLE__
-#define ntohl(x)	(is_big_endian ? (x) : swab32(x))
-#define htonl(x)	(is_big_endian ? (x) : swab32(x))
-#endif
+#include <arpa/inet.h>	/* for ntohl, htonl */
 #define ntohll(x)	(is_big_endian() ? (x) : swab64(x))
 #define htonll(x)	(is_big_endian() ? (x) : swab64(x))
 extern int is_big_endian(void);

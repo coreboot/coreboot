@@ -24,9 +24,8 @@
 #include <common.h>
 #include <stdlib.h>
 #include <system.h>
-#include <global_data.h>
 
-DECLARE_GLOBAL_DATA_PTR;
+static unsigned int tlb_addr;
 
 static void cp_delay (void)
 {
@@ -41,9 +40,7 @@ static void cp_delay (void)
 static void set_section_dcache(int section, enum dcache_option option)
 {
 	u32 value = section << MMU_SECTION_SHIFT | (3 << 10);
-//	u32 *page_table = (u32 *)gd->tlb_addr;
 	u32 *page_table;
-	unsigned int tlb_addr;
 	unsigned int tlb_size = 4096 * 4;
 
 	/*
@@ -82,7 +79,7 @@ void __mmu_page_table_flush(unsigned long start, unsigned long stop)
 
 void mmu_set_region_dcache(unsigned long start, int size, enum dcache_option option)
 {
-	u32 *page_table = (u32 *)gd->tlb_addr;
+	u32 *page_table = &tlb_addr;
 	u32 upto, end;
 
 	end = ALIGN(start + size, MMU_SECTION_SIZE) >> MMU_SECTION_SHIFT;
@@ -113,8 +110,6 @@ static inline void dram_bank_mmu_setup(int bank)
 }
 #endif
 
-/* FIXME(dhendrix): modified to take arguments from the caller (mainboard's
-   romstage.c) so it doesn't rely on global data struct */
 /**
  * dram_bank_mmu_set - set up the data cache policy for a given dram bank
  *
@@ -163,7 +158,7 @@ static inline void mmu_setup(void)
 
 	/* Copy the page table address to cp15 */
 	asm volatile("mcr p15, 0, %0, c2, c0, 0"
-		     : : "r" (gd->tlb_addr) : "memory");
+		     : : "r" (tlb_addr) : "memory");
 	/* Set the access control to all-supervisor */
 	asm volatile("mcr p15, 0, %0, c3, c0, 0"
 		     : : "r" (~0));

@@ -83,7 +83,6 @@ void __assert_fail(const char *assertion, const char *file, unsigned line,
 typedef void (interrupt_handler_t)(void *);
 
 //#include <asm/u-boot.h> /* boot information for Linux kernel */
-#include <global_data.h>	/* global data used for startup functions */
 
 /*
  * Return the time since boot in microseconds, This is needed for bootstage
@@ -152,7 +151,6 @@ void	reset_cmd_timeout(void);
 
 /* arch/$(ARCH)/lib/board.c */
 void	board_init_f  (void);
-void	board_init_r  (gd_t *, ulong) __attribute__ ((noreturn));
 int	checkboard    (void);
 int	checkflash    (void);
 int	checkdram     (void);
@@ -247,7 +245,6 @@ int	dcache_status (void);
 void	dcache_enable (void);
 void	dcache_disable(void);
 void	mmu_disable(void);
-void	relocate_code (ulong, gd_t *, ulong) __attribute__ ((noreturn));
 ulong	get_endaddr   (void);
 void	trap_init     (ulong);
 #if defined (CONFIG_4xx)	|| \

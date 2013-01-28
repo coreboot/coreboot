@@ -27,6 +27,19 @@
 #include "cbfs.h"
 #include "elf.h"
 
+/* Utilities */
+
+/* Small, OS/libc independent runtime check for endianess */
+int is_big_endian(void)
+{
+	static const uint32_t inttest = 0x12345678;
+	uint8_t inttest_lsb = *(uint8_t *)&inttest;
+	if (inttest_lsb == 0x12) {
+		return 1;
+	}
+	return 0;
+}
+
 size_t getfilesize(const char *filename)
 {
 	size_t size;

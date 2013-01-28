@@ -360,7 +360,7 @@ static int cbfs_create(void)
 						param.alignment, param.offset);
 }
 
-static int cbfs_locate(void)
+static int cbfs_locate_stage(void)
 {
 	uint32_t filesize, location;
 
@@ -376,10 +376,10 @@ static int cbfs_locate(void)
 
 	filesize = getfilesize(param.filename);
 
-	location = cbfs_find_location(param.cbfs_name, filesize,
-					param.name, param.alignment);
+	location = cbfs_find_stage_location(param.cbfs_name, filesize,
+					    param.name, param.alignment);
 
-	printf("%x\n", location);
+	printf("0x%x\n", location);
 	return location == 0 ? 1 : 0;
 }
 
@@ -435,7 +435,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
 	{"create", "s:B:a:o:m:vh?", cbfs_create},
-	{"locate", "f:n:a:vh?", cbfs_locate},
+	{"locate-stage", "f:n:a:vh?", cbfs_locate_stage},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
 };
@@ -479,8 +479,8 @@ static void usage(char *name)
 			"Remove a component\n"
 	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
 			"Create a ROM file\n"
-	     " locate -f FILE -n NAME -a align                             "
-			"Find a place for a file of that size\n"
+	     " locate-stage -f FILE -n NAME [-a align]                     "
+			"Find a space for stage to fit in one aligned page\n"
 	     " print                                                       "
 			"Show the contents of the ROM\n"
 	     " extract -n NAME -f FILE                                     "

@@ -84,8 +84,8 @@ void print_cbfs_directory(const char *filename);
 int extract_file_from_cbfs(const char *filename, const char *payloadname, const char *outpath);
 int remove_file_from_cbfs(const char *filename);
 
-uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
-			    const char *filename, uint32_t align);
+uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
+				  const char *filename, uint32_t align);
 
 void print_supported_filetypes(void);
 

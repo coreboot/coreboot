@@ -55,9 +55,6 @@
 
 #include <arch/io.h>
 
-/* FIXME(dhendrix): clean out u-boot global data stuff */
-//DECLARE_GLOBAL_DATA_PTR;
-
 #define OM_STAT		(0x1f << 1)
 
 /**
@@ -342,15 +339,6 @@ void board_init_f(void)
 //	printk(BIOS_ERR, "%s: u-boot jump failed", __func__);
 	printk(BIOS_INFO, "%s: we should not be here...", __func__);
 	hlt();
-}
-
-/* Place Holders */
-void board_init_r(gd_t *id, ulong dest_addr)
-{
-	/* Function attribute is no-return */
-	/* This Function never executes */
-	while (1)
-		;
 }
 
 //void save_boot_params(u32 r0, u32 r1, u32 r2, u32 r3) {}

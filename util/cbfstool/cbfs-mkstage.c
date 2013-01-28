@@ -77,7 +77,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 		elf_bigendian = 1;
 	}
-	if (elf_bigendian != host_bigendian) {
+	if (elf_bigendian != is_big_endian()) {
 		elf32_to_native = swap32;
 	}
 

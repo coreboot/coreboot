@@ -356,6 +356,49 @@ int cbfs_print_directory(struct cbfs_image *image) {
 	return 0;
 }
 
+int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
+			   void *arg) {
+	struct cbfs_file *next;
+	uint32_t type, addr, last_addr;
+
+	type = ntohl(entry->type);
+	if (type == CBFS_COMPONENT_DELETED) {
+		// Ready to be recycled.
+		type = CBFS_COMPONENT_NULL;
+		entry->type = htonl(type);
+	}
+	if (type != CBFS_COMPONENT_NULL)
+		return 0;
+
+	next = cbfs_find_next_entry(image, entry);
+
+	while (next && cbfs_is_valid_entry(next)) {
+		type = ntohl(next->type);
+		if (type == CBFS_COMPONENT_DELETED) {
+			type = CBFS_COMPONENT_NULL;
+			next->type = htonl(type);
+		}
+		if (type != CBFS_COMPONENT_NULL)
+			return 0;
+
+		addr = cbfs_get_entry_addr(image, entry);
+		last_addr = cbfs_get_entry_addr(
+				image, cbfs_find_next_entry(image, next));
+
+		// Now, we find two deleted/empty entries; try to merge now.
+		DEBUG("join_empty_entry: combine 0x%x+0x%x and 0x%x+0x%x.\n",
+		      cbfs_get_entry_addr(image, entry), ntohl(entry->len),
+		      cbfs_get_entry_addr(image, next), ntohl(next->len));
+		cbfs_create_empty_entry(image, entry,
+					(last_addr - addr -
+					 cbfs_calculate_file_header_size("")),
+					"");
+		DEBUG("new empty entry: length=0x%x\n", ntohl(entry->len));
+		next = cbfs_find_next_entry(image, entry);
+	}
+	return 0;
+}
+
 int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
 	      void *arg) {
 	int count = 0;
@@ -432,3 +475,96 @@ int cbfs_is_valid_entry(struct cbfs_file *entry) {
 			       sizeof(entry->magic)) == 0);
 }
 
+int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
+		      size_t len, const char *name) {
+	memset(entry, CBFS_CONTENT_DEFAULT_VALUE, sizeof(*entry));
+	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
+	entry->type = htonl(CBFS_COMPONENT_NULL);
+	entry->len = htonl(len);
+	entry->checksum = 0;  // TODO Build a checksum algorithm.
+	entry->offset = htonl(cbfs_calculate_file_header_size(name));
+	memset(CBFS_NAME(entry), 0, ntohl(entry->offset) - sizeof(*entry));
+	strcpy(CBFS_NAME(entry), name);
+	memset(CBFS_SUBHEADER(entry), CBFS_CONTENT_DEFAULT_VALUE, len);
+	return 0;
+}
+
+/* Finds a place to hold whole stage data in same memory page.
+ */
+static int is_in_same_page(uint32_t start, uint32_t size, uint32_t page) {
+	if (!page)
+		return 1;
+	return (start / page) == (start + size - 1) / page;
+}
+
+int32_t cbfs_locate_stage(struct cbfs_image *image, const char *name,
+			  uint32_t size, uint32_t page_size) {
+	struct cbfs_file *entry;
+	size_t need_len;
+	uint32_t addr, addr_next, addr2, addr3, header_len;
+	assert(size < page_size);
+
+	if (page_size % ntohl(image->header->align))
+		WARN("locate_stage page does not align with CBFS image.\n");
+
+	header_len = (cbfs_calculate_file_header_size(name) +
+		      sizeof(struct cbfs_stage));
+	need_len = header_len + size;
+
+	// Merge empty entries to build get max available pages.
+	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+
+	/* Three cases of content location on memory page:
+	 * case 1.
+	 *          |  PAGE 1  |   PAGE 2  |
+	 *          |     <header><content>| Fit. Return start of content.
+	 *
+	 * case 2.
+	 *          |  PAGE 1  |   PAGE 2  |
+	 *          | <header><content>    | Fits when we shift content to align
+	 *  shift-> |  <header>|<content>  | at starting of PAGE 2.
+	 *
+	 * case 3. (large content filling whole page)
+	 *  |  PAGE 1  |   PAGE 2  | PAGE 3|
+	 *  | <header><  content > |       | Can't fit. If we shift content to
+	 *  |       {   free space .       } PAGE 2, header can't fit in free
+	 *  |  shift->     <header><content> space, so we must use PAGE 3.
+	 *
+	 * The returned address will be used to re-link stage file, and then
+	 * assigned to add-stage command (-b), which will be then re-calculated
+	 * by ELF loader and positioned by cbfs_add_entry.
+	 */
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+
+		uint32_t type = ntohl(entry->type);
+		if (type != CBFS_COMPONENT_NULL)
+			continue;
+
+		addr = cbfs_get_entry_addr(image, entry);
+		addr_next = cbfs_get_entry_addr(image, cbfs_find_next_entry(
+				image, entry));
+		if (addr_next - addr < need_len)
+			continue;
+		if (is_in_same_page(addr + header_len, size, page_size)) {
+			DEBUG("cbfs_locate_stage: FIT (PAGE1).");
+			return addr + header_len;
+		}
+
+		addr2 = align_up(addr, page_size);
+		if (addr2 < addr_next && addr_next - addr2 >= size &&
+		    addr2 - addr >= header_len) {
+			DEBUG("cbfs_locate_stage: OVERLAP (PAGE2).");
+			return addr2;
+		}
+
+		addr3 = addr2 + page_size;
+		if (addr3 < addr_next && addr_next - addr3 >= size &&
+		    addr3 - addr >= header_len) {
+			DEBUG("cbfs_locate_stage: OVERLAP+ (PAGE3).");
+			return addr3;
+		}
+	}
+	return -1;
+}

@@ -382,7 +382,7 @@ static int cbfs_locate(void)
 	location = cbfs_find_location(param.cbfs_name, filesize,
 					param.name, param.alignment);
 
-	printf("%x\n", location);
+	printf("0x%x\n", location);
 	return location == 0 ? 1 : 0;
 }
 

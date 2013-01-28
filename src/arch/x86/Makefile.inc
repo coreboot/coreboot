@@ -377,9 +377,7 @@ $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	rm -f $@
 	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -a $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
 	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
-	sed -e 's/^/0x/g' $@.tmp > $@.tmp2
-	rm $@.tmp
-	mv $@.tmp2 $@
+	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"

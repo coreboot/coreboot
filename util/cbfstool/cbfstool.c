@@ -54,7 +54,7 @@ static struct param {
 	.algo = CBFS_COMPRESS_NONE,
 };
 
-static int cbfs_add(void)
+static int cbfstool_add(void)
 {
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
@@ -110,7 +110,7 @@ static int cbfs_add(void)
 	return 0;
 }
 
-static int cbfs_add_payload(void)
+static int cbfstool_add_payload(void)
 {
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
@@ -174,7 +174,7 @@ static int cbfs_add_payload(void)
 	return 0;
 }
 
-static int cbfs_add_stage(void)
+static int cbfstool_add_stage(void)
 {
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
@@ -232,7 +232,7 @@ static int cbfs_add_stage(void)
 	return 0;
 }
 
-static int cbfs_add_flat_binary(void)
+static int cbfstool_add_flat_binary(void)
 {
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
@@ -311,7 +311,7 @@ static int cbfs_add_flat_binary(void)
 	return 0;
 }
 
-static int cbfs_remove(void)
+static int cbfstool_remove(void)
 {
 	int result = 1;
 	struct cbfs_image image;
@@ -342,7 +342,7 @@ static int cbfs_remove(void)
 	return result;
 }
 
-static int cbfs_create(void)
+static int cbfstool_create(void)
 {
 	if (param.size == 0) {
 		ERROR("You need to specify a valid -s/--size.\n");
@@ -386,7 +386,7 @@ static int cbfs_locate_stage(void)
 	return location == 0 ? 1 : 0;
 }
 
-static int cbfs_print(void)
+static int cbfstool_print(void)
 {
 	struct cbfs_image image;
 	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
@@ -399,7 +399,7 @@ static int cbfs_print(void)
 	return 0;
 }
 
-static int cbfs_extract(void)
+static int cbfstool_extract(void)
 {
 	int result = 0;
 	struct cbfs_image image;
@@ -428,15 +428,15 @@ static int cbfs_extract(void)
 }
 
 static const struct command commands[] = {
-	{"add", "f:n:t:b:vh?", cbfs_add},
-	{"add-payload", "f:n:t:c:b:vh?", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
-	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
-	{"remove", "n:vh?", cbfs_remove},
-	{"create", "s:B:a:o:m:vh?", cbfs_create},
-	{"locate-stage", "f:n:a:vh?", cbfs_locate_stage},
-	{"print", "vh?", cbfs_print},
-	{"extract", "n:f:vh?", cbfs_extract},
+	{"add", "f:n:t:b:vh?", cbfstool_add},
+	{"add-payload", "f:n:t:c:b:vh?", cbfstool_add_payload},
+	{"add-stage", "f:n:t:c:b:vh?", cbfstool_add_stage},
+	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfstool_add_flat_binary},
+	{"remove", "n:vh?", cbfstool_remove},
+	{"create", "s:B:a:o:m:vh?", cbfstool_create},
+	{"locate-stage", "Tf:n:a:vh?", cbfstool_locate_stage},
+	{"print", "vh?", cbfstool_print},
+	{"extract", "n:f:vh?", cbfstool_extract},
 };
 
 static struct option long_options[] = {

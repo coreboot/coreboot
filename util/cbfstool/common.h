@@ -72,11 +72,6 @@ comp_func_ptr compression_function(comp_algo algo);
 
 uint64_t intfiletype(const char *name);
 
-int parse_elf_to_payload(unsigned char *input, unsigned char **output,
-			 comp_algo algo);
-int parse_elf_to_stage(unsigned char *input, unsigned char **output,
-		       comp_algo algo, uint32_t * location);
-
 void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		       uint32_t type, uint32_t * location);
 
@@ -93,6 +88,17 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t align);
 
 void print_supported_filetypes(void);
+
+/* cbfs-mkstage.c */
+int parse_elf_to_stage(unsigned char *input, unsigned char **output,
+		       comp_algo algo, uint32_t * location);
+/* cbfs-mkpayload.c */
+int parse_elf_to_payload(unsigned char *input, unsigned char **output,
+			 comp_algo algo);
+int parse_flat_binary_to_payload(unsigned char *input, unsigned char **output,
+				 int32_t input_size, uint32_t loadaddress,
+				 uint32_t entrypoint, comp_algo algo);
+
 
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 

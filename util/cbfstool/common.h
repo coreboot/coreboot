@@ -72,10 +72,16 @@ comp_func_ptr compression_function(comp_algo algo);
 
 uint64_t intfiletype(const char *name);
 
+/* cbfs-mkpayload.c */
 int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			 comp_algo algo);
+int parse_flat_binary_to_payload(unsigned char *input, unsigned char **output,
+				 int32_t input_size, uint32_t loadaddress,
+				 uint32_t entrypoint, comp_algo algo);
+/* cbfs-mkstage.c */
 int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		       comp_algo algo, uint32_t * location);
+
 
 void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		       uint32_t type, uint32_t * location);

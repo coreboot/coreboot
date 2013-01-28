@@ -21,13 +21,16 @@
 #define __CBFSTOOL_COMMON_H
 
 #include <stdint.h>
+
+/* Endianess */
 #include "swab.h"
 #ifndef __APPLE__
-#define ntohl(x)  (host_bigendian?(x):swab32(x))
-#define htonl(x)  (host_bigendian?(x):swab32(x))
+#define ntohl(x)	(is_big_endian() ? (x) : swab32(x))
+#define htonl(x)	(is_big_endian() ? (x) : swab32(x))
 #endif
-#define ntohll(x) (host_bigendian?(x):swab64(x))
-#define htonll(x) (host_bigendian?(x):swab64(x))
+#define ntohll(x)	(is_big_endian() ? (x) : swab64(x))
+#define htonll(x)	(is_big_endian() ? (x) : swab64(x))
+extern int is_big_endian(void);
 
 /* Message output */
 extern int verbose;

@@ -35,65 +35,70 @@ struct command {
 };
 
 int verbose = 0;
-static char *cbfs_name = NULL;
-static char *rom_name = NULL;
-static char *rom_filename = NULL;
-static char *rom_bootblock = NULL;
-static uint32_t rom_type = 0;
-static uint32_t rom_baseaddress = 0;
-static uint32_t rom_loadaddress = 0;
-static uint32_t rom_entrypoint = 0;
-static uint32_t rom_size = 0;
-static uint32_t rom_alignment = 0;
-static uint32_t rom_offset = 0;
-static comp_algo rom_algo = CBFS_COMPRESS_NONE;
+static struct param {
+	char *cbfs_name;
+	char *name;
+	char *filename;
+	char *bootblock;
+	uint32_t type;
+	uint32_t baseaddress;
+	uint32_t loadaddress;
+	uint32_t entrypoint;
+	uint32_t size;
+	uint32_t alignment;
+	uint32_t offset;
+	comp_algo algo;
+} param = {
+	/* All variables not listed are initialized as zero. */
+	.algo = CBFS_COMPRESS_NONE,
+};
 
 static int cbfs_add(void)
 {
 	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	if (rom_type == 0) {
+	if (param.type == 0) {
 		fprintf(stderr, "E: You need to specify a valid -t/--type.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	filedata = loadfile(rom_filename, &filesize, 0, SEEK_SET);
+	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
 		fprintf(stderr, "E: Could not load file '%s'.\n",
-			rom_filename);
+			param.filename);
 		free(rom);
 		return 1;
 	}
 
-	cbfsfile = create_cbfs_file(rom_name, filedata, &filesize,
-					rom_type, &rom_baseaddress);
+	cbfsfile = create_cbfs_file(param.name, filedata, &filesize,
+					param.type, &param.baseaddress);
 	free(filedata);
 
-	if (add_file_to_cbfs(cbfsfile, filesize, rom_baseaddress)) {
-		fprintf(stderr, "E: Adding file '%s' failed.\n", rom_filename);
+	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
+		fprintf(stderr, "E: Adding file '%s' failed.\n", param.filename);
 		free(cbfsfile);
 		free(rom);
 		return 1;
 	}
-	if (writerom(cbfs_name, rom, romsize)) {
+	if (writerom(param.cbfs_name, rom, romsize)) {
 		free(cbfsfile);
 		free(rom);
 		return 1;
@@ -106,58 +111,58 @@ static int cbfs_add(void)
 
 static int cbfs_add_payload(void)
 {
-	int32_t filesize = 0;
+	uint32_t filesize = 0;
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *payload;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	filedata = loadfile(rom_filename, &filesize, 0, SEEK_SET);
+	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
 		fprintf(stderr, "E: Could not load file '%s'.\n",
-			rom_filename);
+			param.filename);
 		free(rom);
 		return 1;
 	}
 
-	filesize = parse_elf_to_payload(filedata, &payload, rom_algo);
+	filesize = parse_elf_to_payload(filedata, &payload, param.algo);
 	if (filesize <= 0) {
 		fprintf(stderr, "E: Adding payload '%s' failed.\n",
-			rom_filename);
+			param.filename);
 		free(rom);
 		return 1;
 	}
 
-	cbfsfile = create_cbfs_file(rom_name, payload, &filesize,
-				CBFS_COMPONENT_PAYLOAD, &rom_baseaddress);
+	cbfsfile = create_cbfs_file(param.name, payload, &filesize,
+				CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
 
 	free(filedata);
 	free(payload);
 
-	if (add_file_to_cbfs(cbfsfile, filesize, rom_baseaddress)) {
+	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
 		fprintf(stderr, "E: Adding payload '%s' failed.\n",
-			rom_filename);
+			param.filename);
 		free(cbfsfile);
 		free(rom);
 		return 1;
 	}
 
-	if (writerom(cbfs_name, rom, romsize)) {
+	if (writerom(param.cbfs_name, rom, romsize)) {
 		free(cbfsfile);
 		free(rom);
 		return 1;
@@ -174,48 +179,48 @@ static int cbfs_add_stage(void)
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *stage;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	filedata = loadfile(rom_filename, &filesize, 0, SEEK_SET);
+	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
 		fprintf(stderr, "E: Could not load file '%s'.\n",
-			rom_filename);
+			param.filename);
 		free(rom);
 		return 1;
 	}
 
-	filesize = parse_elf_to_stage(filedata, &stage, rom_algo, &rom_baseaddress);
+	filesize = parse_elf_to_stage(filedata, &stage, param.algo, &param.baseaddress);
 
-	cbfsfile = create_cbfs_file(rom_name, stage, &filesize,
-				CBFS_COMPONENT_STAGE, &rom_baseaddress);
+	cbfsfile = create_cbfs_file(param.name, stage, &filesize,
+				CBFS_COMPONENT_STAGE, &param.baseaddress);
 
 	free(filedata);
 	free(stage);
 
-	if (add_file_to_cbfs(cbfsfile, filesize, rom_baseaddress)) {
+	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
 		fprintf(stderr, "E: Adding stage '%s' failed.\n",
-			rom_filename);
+			param.filename);
 		free(cbfsfile);
 		free(rom);
 		return 1;
 	}
 
-	if (writerom(cbfs_name, rom, romsize)) {
+	if (writerom(param.cbfs_name, rom, romsize)) {
 		free(cbfsfile);
 		free(rom);
 		return 1;
@@ -236,43 +241,43 @@ static int cbfs_add_flat_binary(void)
 	struct cbfs_payload_segment *segs;
 	int doffset, len = 0;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	if (rom_loadaddress == 0) {
+	if (param.loadaddress == 0) {
 		fprintf(stderr, "E: You need to specify a valid "
 			"-l/--load-address.\n");
 		return 1;
 	}
 
-	if (rom_entrypoint == 0) {
+	if (param.entrypoint == 0) {
 		fprintf(stderr, "E: You need to specify a valid "
 			"-e/--entry-point.\n");
 		return 1;
 	}
 
-	compress = compression_function(rom_algo);
+	compress = compression_function(param.algo);
 	if (!compress)
 		return 1;
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	filedata = loadfile(rom_filename, &filesize, 0, SEEK_SET);
+	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
 		fprintf(stderr, "E: Could not load file '%s'.\n",
-			rom_filename);
+			param.filename);
 		free(rom);
 		return 1;
 	}
@@ -291,12 +296,12 @@ static int cbfs_add_flat_binary(void)
 
 	/* Prepare code segment */
 	segs[0].type = PAYLOAD_SEGMENT_CODE;
-	segs[0].load_addr = (uint64_t)htonll(rom_loadaddress);
+	segs[0].load_addr = (uint64_t)htonll(param.loadaddress);
 	segs[0].mem_len = (uint32_t)htonl(filesize);
 	segs[0].offset = (uint32_t)htonl(doffset);
 
 	compress(filedata, filesize, (char *)(payload + doffset), &len);
-	segs[0].compression = htonl(rom_algo);
+	segs[0].compression = htonl(param.algo);
 	segs[0].len = htonl(len);
 
 	if ((unsigned int)len >= filesize) {
@@ -307,24 +312,24 @@ static int cbfs_add_flat_binary(void)
 
 	/* prepare entry point segment */
 	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[1].load_addr = (uint64_t)htonll(rom_entrypoint);
+	segs[1].load_addr = (uint64_t)htonll(param.entrypoint);
 
 	final_size = doffset + ntohl(segs[0].len);
 	cbfsfile =
-	    create_cbfs_file(rom_name, payload, &final_size,
-			     CBFS_COMPONENT_PAYLOAD, &rom_baseaddress);
+	    create_cbfs_file(param.name, payload, &final_size,
+			     CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
 
 	free(filedata);
 	free(payload);
 
-	if (add_file_to_cbfs(cbfsfile, final_size, rom_baseaddress)) {
+	if (add_file_to_cbfs(cbfsfile, final_size, param.baseaddress)) {
 		fprintf(stderr, "E: Adding payload '%s' failed.\n",
-			rom_filename);
+			param.filename);
 		free(cbfsfile);
 		free(rom);
 		return 1;
 	}
-	if (writerom(cbfs_name, rom, romsize)) {
+	if (writerom(param.cbfs_name, rom, romsize)) {
 		free(cbfsfile);
 		free(rom);
 		return 1;
@@ -339,26 +344,26 @@ static int cbfs_remove(void)
 {
 	void *rom;
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	if (remove_file_from_cbfs(rom_name)) {
+	if (remove_file_from_cbfs(param.name)) {
 		fprintf(stderr, "E: Removing file '%s' failed.\n",
-			rom_name);
+			param.name);
 		free(rom);
 		return 1;
 	}
 
-	if (writerom(cbfs_name, rom, romsize)) {
+	if (writerom(param.cbfs_name, rom, romsize)) {
 		free(rom);
 		return 1;
 	}
@@ -369,12 +374,12 @@ static int cbfs_remove(void)
 
 static int cbfs_create(void)
 {
-	if (rom_size == 0) {
+	if (param.size == 0) {
 		fprintf(stderr, "E: You need to specify a valid -s/--size.\n");
 		return 1;
 	}
 
-	if (!rom_bootblock) {
+	if (!param.bootblock) {
 		fprintf(stderr, "E: You need to specify -b/--bootblock.\n");
 		return 1;
 	}
@@ -384,28 +389,28 @@ static int cbfs_create(void)
 		return 1;
 	}
 
-	return create_cbfs_image(cbfs_name, rom_size, rom_bootblock,
-						rom_alignment, rom_offset);
+	return create_cbfs_image(param.cbfs_name, param.size, param.bootblock,
+						param.alignment, param.offset);
 }
 
 static int cbfs_locate(void)
 {
 	uint32_t filesize, location;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	filesize = getfilesize(rom_filename);
+	filesize = getfilesize(param.filename);
 
-	location = cbfs_find_location(cbfs_name, filesize,
-					rom_name, rom_alignment);
+	location = cbfs_find_location(param.cbfs_name, filesize,
+					param.name, param.alignment);
 
 	printf("%x\n", location);
 	return location == 0 ? 1 : 0;
@@ -415,14 +420,14 @@ static int cbfs_print(void)
 {
 	void *rom;
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	print_cbfs_directory(cbfs_name);
+	print_cbfs_directory(param.cbfs_name);
 
 	free(rom);
 	return 0;
@@ -433,24 +438,24 @@ static int cbfs_extract(void)
 	void *rom;
 	int ret;
 
-	if (!rom_filename) {
+	if (!param.filename) {
 		fprintf(stderr, "E: You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!rom_name) {
+	if (!param.name) {
 		fprintf(stderr, "E: You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(cbfs_name);
+	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
-			cbfs_name);
+			param.cbfs_name);
 		return 1;
 	}
 
-	ret = extract_file_from_cbfs(cbfs_name, rom_name, rom_filename);
+	ret = extract_file_from_cbfs(param.cbfs_name, param.name, param.filename);
 
 	free(rom);
 	return ret;
@@ -545,7 +550,7 @@ int main(int argc, char **argv)
 
 	which_endian();
 
-	cbfs_name = argv[1];
+	param.cbfs_name = argv[1];
 	char *cmd = argv[2];
 	optind += 2;
 
@@ -572,55 +577,55 @@ int main(int argc, char **argv)
 
 			switch(c) {
 			case 'n':
-				rom_name = optarg;
+				param.name = optarg;
 				break;
 			case 't':
 				if (intfiletype(optarg) != ((uint64_t) - 1))
-					rom_type = intfiletype(optarg);
+					param.type = intfiletype(optarg);
 				else
-					rom_type = strtoul(optarg, NULL, 0);
-				if (rom_type == 0)
+					param.type = strtoul(optarg, NULL, 0);
+				if (param.type == 0)
 					printf("W: Unknown type '%s' ignored\n",
 							optarg);
 				break;
 			case 'c':
 				if (!strncasecmp(optarg, "lzma", 5))
-					rom_algo = CBFS_COMPRESS_LZMA;
+					param.algo = CBFS_COMPRESS_LZMA;
 				else if (!strncasecmp(optarg, "none", 5))
-					rom_algo = CBFS_COMPRESS_NONE;
+					param.algo = CBFS_COMPRESS_NONE;
 				else
 					printf("W: Unknown compression '%s'"
 							" ignored.\n", optarg);
 				break;
 			case 'b':
-				rom_baseaddress = strtoul(optarg, NULL, 0);
+				param.baseaddress = strtoul(optarg, NULL, 0);
 				break;
 			case 'l':
-				rom_loadaddress = strtoul(optarg, NULL, 0);
+				param.loadaddress = strtoul(optarg, NULL, 0);
 
 				break;
 			case 'e':
-				rom_entrypoint = strtoul(optarg, NULL, 0);
+				param.entrypoint = strtoul(optarg, NULL, 0);
 				break;
 			case 's':
-				rom_size = strtoul(optarg, &suffix, 0);
+				param.size = strtoul(optarg, &suffix, 0);
 				if (tolower(suffix[0])=='k') {
-					rom_size *= 1024;
+					param.size *= 1024;
 				}
 				if (tolower(suffix[0])=='m') {
-					rom_size *= 1024 * 1024;
+					param.size *= 1024 * 1024;
 				}
 			case 'B':
-				rom_bootblock = optarg;
+				param.bootblock = optarg;
 				break;
 			case 'a':
-				rom_alignment = strtoul(optarg, NULL, 0);
+				param.alignment = strtoul(optarg, NULL, 0);
 				break;
 			case 'o':
-				rom_offset = strtoul(optarg, NULL, 0);
+				param.offset = strtoul(optarg, NULL, 0);
 				break;
 			case 'f':
-				rom_filename = optarg;
+				param.filename = optarg;
 				break;
 			case 'v':
 				verbose++;

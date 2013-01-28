@@ -7,7 +7,7 @@ CFLAGS   += -D_7ZIP_ST
 
 BINARY:=$(obj)/cbfstool
 
-COMMON:=cbfstool.o common.o compress.o
+COMMON:=cbfstool.o common.o cbfs_image.o compress.o
 COMMON+=cbfs-mkstage.o cbfs-mkpayload.o
 # LZMA
 COMMON+=lzma/lzma.o

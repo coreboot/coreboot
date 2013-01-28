@@ -46,6 +46,9 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name);
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		      const char *filename);
 
+/* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
+int cbfs_remove_entry(struct cbfs_image *image, const char *name);
+
 /* Callback function used by cbfs_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */
 typedef int (*cbfs_entry_callback)(struct cbfs_image *image,

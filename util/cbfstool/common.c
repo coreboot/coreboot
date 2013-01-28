@@ -273,11 +273,13 @@ uint64_t intfiletype(const char *name)
 
 void print_cbfs_directory(const char *filename)
 {
+	char *name = strdup(filename);
 	printf
 		("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
 		 "alignment: %d bytes, architecture: %s\n\n",
-		 basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
+		 basename(name), romsize / 1024, ntohl(master_header->bootblocksize),
 		 romsize, ntohl(master_header->offset), align, arch_to_string(arch));
+	free(name);
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;
 	while (current < phys_end) {

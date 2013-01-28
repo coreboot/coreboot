@@ -138,7 +138,7 @@ static int cbfs_add_payload(void)
 	}
 
 	filesize = parse_elf_to_payload(filedata, &payload, param.algo);
-	if (filesize <= 0) {
+	if ((int)filesize <= 0) {
 		ERROR("Adding payload '%s' failed.\n",
 			param.filename);
 		free(rom);
@@ -231,12 +231,8 @@ static int cbfs_add_stage(void)
 static int cbfs_add_flat_binary(void)
 {
 	uint32_t filesize = 0;
-	uint32_t final_size;
 	void *rom, *filedata, *cbfsfile;
 	unsigned char *payload;
-	comp_func_ptr compress;
-	struct cbfs_payload_segment *segs;
-	int doffset, len = 0;
 
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -260,10 +256,6 @@ static int cbfs_add_flat_binary(void)
 		return 1;
 	}
 
-	compress = compression_function(param.algo);
-	if (!compress)
-		return 1;
-
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
 		ERROR("Could not load ROM image '%s'.\n",
@@ -279,47 +271,25 @@ static int cbfs_add_flat_binary(void)
 		return 1;
 	}
 
-	/* FIXME compressed file size might be bigger than original file */
-	payload = calloc((2 * sizeof(struct cbfs_payload_segment)) + filesize, 1);
-	if (payload == NULL) {
-		ERROR("Could not allocate memory.\n");
-		free(filedata);
+	filesize = parse_flat_binary_to_payload(filedata, &payload,
+						filesize,
+						param.loadaddress,
+						param.entrypoint,
+						param.algo);
+	if ((int)filesize <= 0) {
+		ERROR("Adding payload '%s' failed.\n",
+			param.filename);
 		free(rom);
 		return 1;
 	}
 
-	segs = (struct cbfs_payload_segment *)payload;
-	doffset = (2 * sizeof(struct cbfs_payload_segment));
-
-	/* Prepare code segment */
-	segs[0].type = PAYLOAD_SEGMENT_CODE;
-	segs[0].load_addr = (uint64_t)htonll(param.loadaddress);
-	segs[0].mem_len = (uint32_t)htonl(filesize);
-	segs[0].offset = (uint32_t)htonl(doffset);
-
-	compress(filedata, filesize, (char *)(payload + doffset), &len);
-	segs[0].compression = htonl(param.algo);
-	segs[0].len = htonl(len);
-
-	if ((unsigned int)len >= filesize) {
-		segs[0].compression = 0;
-		segs[0].len = htonl(filesize);
-		memcpy((char *)(payload + doffset), filedata, filesize);
-	}
-
-	/* prepare entry point segment */
-	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[1].load_addr = (uint64_t)htonll(param.entrypoint);
-
-	final_size = doffset + ntohl(segs[0].len);
-	cbfsfile =
-	    create_cbfs_file(param.name, payload, &final_size,
-			     CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
+	cbfsfile = create_cbfs_file(param.name, payload, &filesize,
+				    CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
 
 	free(filedata);
 	free(payload);
 
-	if (add_file_to_cbfs(cbfsfile, final_size, param.baseaddress)) {
+	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
 		ERROR("Adding payload '%s' failed.\n",
 			param.filename);
 		free(cbfsfile);

@@ -23,14 +23,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include "elf.h"
-#include <fcntl.h>
-#include <getopt.h>
-#include <sys/stat.h>
 
 #include "common.h"
 #include "cbfs.h"
+#include "elf.h"
 
 static unsigned int idemp(unsigned int x)
 {

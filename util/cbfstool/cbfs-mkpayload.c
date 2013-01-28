@@ -22,14 +22,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include "elf.h"
-#include <fcntl.h>
-#include <getopt.h>
-#include <sys/stat.h>
 
 #include "common.h"
 #include "cbfs.h"
+#include "elf.h"
 
 int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 			 comp_algo algo)

@@ -38,6 +38,14 @@ int cbfs_image_write_file(struct cbfs_image *image, const char *filename);
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);
 
+/* Returns a pointer to entry by name, or NULL if name is not found. */
+struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name);
+
+/* Exports an entry to external file.
+ * Returns 0 on success, otherwise (ex, not found) non-zero. */
+int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
+		      const char *filename);
+
 /* Callback function used by cbfs_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */
 typedef int (*cbfs_entry_callback)(struct cbfs_image *image,

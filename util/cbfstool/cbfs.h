@@ -42,6 +42,8 @@ struct cbfs_header {
 #define CBFS_ARCHITECTURE_X86      0x00000001
 #define CBFS_ARCHITECTURE_ARMV7    0x00000010
 
+#define CBFS_FILE_MAGIC "LARCHIVE"
+
 struct cbfs_file {
 	uint8_t magic[8];
 	uint32_t len;

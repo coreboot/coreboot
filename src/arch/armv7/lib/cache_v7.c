@@ -32,7 +32,6 @@
 #define ARMV7_DCACHE_INVAL_RANGE	3
 #define ARMV7_DCACHE_CLEAN_INVAL_RANGE	4
 
-#ifndef CONFIG_SYS_DCACHE_OFF
 /*
  * Write the level and type you want to Cache Size Selection Register(CSSELR)
  * to get size details from Current Cache Size ID Register(CCSIDR)
@@ -319,43 +318,7 @@ void  flush_cache(unsigned long start, unsigned long size)
 {
 	flush_dcache_range(start, start + size);
 }
-#else /* #ifndef CONFIG_SYS_DCACHE_OFF */
-ulong dcache_get_line_size(void)
-{
-	return 0;
-}
 
-void invalidate_dcache_all(void)
-{
-}
-
-void flush_dcache_all(void)
-{
-}
-
-void invalidate_dcache_range(unsigned long start, unsigned long stop)
-{
-}
-
-void flush_dcache_range(unsigned long start, unsigned long stop)
-{
-}
-
-void arm_init_before_mmu(void)
-{
-}
-
-void  flush_cache(unsigned long start, unsigned long size)
-{
-}
-
-void mmu_page_table_flush(unsigned long start, unsigned long stop)
-{
-}
-
-#endif /* #ifndef CONFIG_SYS_DCACHE_OFF */
-
-#ifndef CONFIG_SYS_ICACHE_OFF
 /* Invalidate entire I-cache and branch predictor array */
 void invalidate_icache_all(void)
 {
@@ -374,54 +337,3 @@ void invalidate_icache_all(void)
 	/* ISB - make sure the instruction stream sees it */
 	CP15ISB;
 }
-#else
-void invalidate_icache_all(void)
-{
-}
-#endif
-
-/*
- * FIXME(dhendrix): had unexplainable compilation failure of weak symbols
- * (in spite of having prototypes and whatnot)... ron's advice is "death
- *  to weak symbols!"
- */
-#if 0
-/*
- * Stub implementations for outer cache operations
- */
-void __v7_outer_cache_enable(void)
-{
-}
-void v7_outer_cache_enable(void)
-	__attribute__((weak, alias("__v7_outer_cache_enable")));
-
-void __v7_outer_cache_disable(void)
-{
-}
-void v7_outer_cache_disable(void)
-	__attribute__((weak, alias("__v7_outer_cache_disable")));
-
-void __v7_outer_cache_flush_all(void)
-{
-}
-void v7_outer_cache_flush_all(void)
-	__attribute__((weak, alias("__v7_outer_cache_flush_all")));
-
-void __v7_outer_cache_inval_all(void)
-{
-}
-void v7_outer_cache_inval_all(void)
-	__attribute__((weak, alias("__v7_outer_cache_inval_all")));
-
-void __v7_outer_cache_flush_range(u32 start, u32 end)
-{
-}
-void v7_outer_cache_flush_range(u32 start, u32 end)
-	__attribute__((weak, alias("__v7_outer_cache_flush_range")));
-
-void __v7_outer_cache_inval_range(u32 start, u32 end)
-{
-}
-void v7_outer_cache_inval_range(u32 start, u32 end)
-	__attribute__((weak, alias("__v7_outer_cache_inval_range")));
-#endif

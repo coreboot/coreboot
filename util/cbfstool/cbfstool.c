@@ -48,6 +48,7 @@ static struct param {
 	uint32_t size;
 	uint32_t alignment;
 	uint32_t offset;
+	uint32_t top_aligned;
 	comp_algo algo;
 } param = {
 	/* All variables not listed are initialized as zero. */
@@ -364,7 +365,9 @@ static int cbfs_create(void)
 
 static int cbfs_locate(void)
 {
-	uint32_t filesize, location;
+	struct cbfs_image image;
+	struct buffer buffer;
+	int32_t address;
 
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -376,13 +379,42 @@ static int cbfs_locate(void)
 		return 1;
 	}
 
-	filesize = getfilesize(param.filename);
+	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
+		ERROR("Failed to load %s.\n", param.cbfs_name);
+		return 1;
+	}
 
-	location = cbfs_find_location(param.cbfs_name, filesize,
-					param.name, param.alignment);
+	if (buffer_from_file(&buffer, param.filename) != 0) {
+		ERROR("Cannot load %s.\n", param.filename);
+		cbfs_image_delete(&image);
+		return 1;
+	}
 
-	printf("0x%x\n", location);
-	return location == 0 ? 1 : 0;
+	if (cbfs_get_entry(&image, param.name)) {
+		ERROR("'%s' already in CBFS.\n", param.name);
+		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+
+	address = cbfs_locate_entry(&image, param.name, buffer.size,
+				    param.alignment);
+	if (address == -1) {
+		ERROR("'%s' can't fit in CBFS for align 0x%x.\n",
+			param.name, param.alignment);
+		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+
+	if (param.top_aligned) {
+		address = address - ntohl(image.header->romsize);
+	}
+
+	buffer_delete(&buffer);
+	cbfs_image_delete(&image);
+	printf("0x%x\n", address);
+	return 0;
 }
 
 static int cbfs_print(void)
@@ -433,7 +465,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
 	{"create", "s:B:a:o:m:vh?", cbfs_create},
-	{"locate", "f:n:a:vh?", cbfs_locate},
+	{"locate", "f:n:a:Tvh?", cbfs_locate},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
 };
@@ -462,6 +494,7 @@ static void usage(char *name)
 	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
 	     "USAGE:\n" " %s [-h]\n"
 	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     "  -T              Output top-aligned memory address\n"
 	     "  -v              Provide verbose output\n"
 	     "  -h              Display this help message\n\n"
 	     "COMMANDs:\n"
@@ -478,7 +511,7 @@ static void usage(char *name)
 			"Remove a component\n"
 	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
 			"Create a ROM file\n"
-	     " locate -f FILE -n NAME -a align                             "
+	     " locate -f FILE -n NAME [-a align] [-T]                      "
 			"Find a place for a file of that size\n"
 	     " print                                                       "
 			"Show the contents of the ROM\n"
@@ -578,6 +611,9 @@ int main(int argc, char **argv)
 				break;
 			case 'f':
 				param.filename = optarg;
+				break;
+			case 'T':
+				param.top_aligned = 1;
 				break;
 			case 'v':
 				verbose++;

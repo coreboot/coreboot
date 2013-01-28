@@ -49,6 +49,16 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 /* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_remove_entry(struct cbfs_image *image, const char *name);
 
+/* Initializes a new empty (type = NULL) entry with size and name in CBFS image.
+ * Returns 0 on success, otherwise (ex, not found) non-zero. */
+int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
+			    size_t len, const char *name);
+
+/* Finds a location to put given content in same memory page.
+ * Returns a valid offset, or -1 on failure. */
+int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
+			  uint32_t size, uint32_t page_size);
+
 /* Callback function used by cbfs_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */
 typedef int (*cbfs_entry_callback)(struct cbfs_image *image,
@@ -89,5 +99,10 @@ int cbfs_print_directory(struct cbfs_image *image);
 int cbfs_print_header_info(struct cbfs_image *image);
 int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			  void *arg);
+
+/* Merge empty entries starting from given entry.
+ * Returns 0 on success, otherwise non-zero. */
+int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
+			   void *arg);
 
 #endif

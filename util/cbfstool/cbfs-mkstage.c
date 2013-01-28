@@ -64,13 +64,13 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		return -1;
 
 	if (!iself(input)) {
-		fprintf(stderr, "E: The stage file is not in ELF format!\n");
+		ERROR("The stage file is not in ELF format!\n");
 		return -1;
 	}
 
 	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
 	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
-		fprintf(stderr, "E: The stage file has the wrong architecture\n");
+		ERROR("The stage file has the wrong architecture\n");
 		return -1;
 	}
 
@@ -126,7 +126,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	}
 
 	if (data_end <= data_start) {
-		fprintf(stderr, "E: data ends before it starts. Make sure the "
+		ERROR("data ends before it starts. Make sure the "
 			"ELF file is correct and resides in ROM space.\n");
 		exit(1);
 	}
@@ -135,7 +135,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	buffer = calloc(data_end - data_start, 1);
 
 	if (buffer == NULL) {
-		fprintf(stderr, "E: Unable to allocate memory: %m\n");
+		ERROR("Unable to allocate memory: %m\n");
 		return -1;
 	}
 
@@ -165,7 +165,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	out = calloc(sizeof(struct cbfs_stage) + data_end - data_start, 1);
 
 	if (out == NULL) {
-		fprintf(stderr, "E: Unable to allocate memory: %m\n");
+		ERROR("Unable to allocate memory: %m\n");
 		return -1;
 	}
 

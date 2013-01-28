@@ -40,6 +40,9 @@ extern int verbose;
 #define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
 #define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
 
+/* Utilities */
+const char *simple_basename(const char *name);
+
 extern void *offset;
 extern uint32_t romsize;
 extern int host_bigendian;

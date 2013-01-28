@@ -124,6 +124,47 @@ int cbfs_image_delete(struct cbfs_image *image) {
 	return 0;
 }
 
+struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name) {
+	struct cbfs_file *entry;
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+		if (strcasecmp(CBFS_NAME(entry), name) == 0) {
+			DEBUG("cbfs_get_entry: found %s\n", name);
+			return entry;
+		}
+	}
+	return NULL;
+}
+
+int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
+		      const char *filename) {
+	struct cbfs_file *entry = cbfs_get_entry(image, entry_name);
+	struct buffer buffer;
+	if (!entry) {
+		ERROR("File not found: %s\n", entry_name);
+		return -1;
+	}
+	LOG("Found file %.30s at 0x%x, type %.12s, size %d\n",
+	    entry_name, cbfs_get_entry_addr(image, entry),
+	    get_cbfs_entry_type_name(ntohl(entry->type)), ntohl(entry->len));
+
+	if (ntohl(entry->type) != CBFS_COMPONENT_RAW) {
+		WARN("Only 'raw' files are safe to extract.\n");
+	}
+
+	buffer.data = CBFS_SUBHEADER(entry);
+	buffer.size = ntohl(entry->len);
+	buffer.name = "(cbfs_export_entry)";
+	if (buffer_write_file(&buffer, filename) != 0) {
+		ERROR("Failed to write %s into %s.\n",
+		      entry_name, filename);
+		return -1;
+	}
+	INFO("Successfully dumped the file to: %s\n", filename);
+	return 0;
+}
+
 int cbfs_print_header_info(struct cbfs_image *image) {
 	assert(image && image->header);
 	printf("%s: %zd kB, bootblocksize %d, romsize %d, offset 0x%x\n"

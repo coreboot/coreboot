@@ -401,8 +401,8 @@ static int cbfs_print(void)
 
 static int cbfs_extract(void)
 {
-	void *rom;
-	int ret;
+	int result = 0;
+	struct cbfs_image image;
 
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -414,17 +414,17 @@ static int cbfs_extract(void)
 		return 1;
 	}
 
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
+	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
-		return 1;
+		result = 1;
+	} else if (cbfs_export_entry(&image, param.name,
+				     param.filename) != 0) {
+		result = 1;
 	}
 
-	ret = extract_file_from_cbfs(param.cbfs_name, param.name, param.filename);
-
-	free(rom);
-	return ret;
+	cbfs_image_delete(&image);
+	return result;
 }
 
 static const struct command commands[] = {

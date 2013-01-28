@@ -104,6 +104,31 @@ static int cbfs_calculate_file_header_size(const char *name) {
 		align_up(strlen(name) + 1, CBFS_FILENAME_ALIGN));
 }
 
+static int cbfs_fix_legacy_size(struct cbfs_image *image) {
+	// A bug in old CBFStool may produce extra few bytes (by alignment) and
+	// cause cbfstool to overwrite things after free space -- which is
+	// usually CBFS header on x86. We need to workaround that.
+
+	struct cbfs_file *entry, *first = NULL, *last = NULL;
+	for (first = entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+		last = entry;
+	}
+	if ((char *)first < (char *)image->header &&
+	    (char *)entry > (char *)image->header) {
+		WARN("CBFS image was created with old cbfstool with size bug. "
+		     "Fixing size in last entry...\n");
+		last->len = htonl(ntohl(last->len) -
+				  ntohl(image->header->align));
+		DEBUG("Last entry has been changed from 0x%x to 0x%x.\n",
+		      cbfs_get_entry_addr(image, entry),
+		      cbfs_get_entry_addr(image,
+					  cbfs_find_next_entry(image, last)));
+	}
+	return 0;
+}
+
 int cbfs_image_from_file(struct cbfs_image *image, const char *filename) {
 	if (buffer_from_file(&image->buffer, filename) != 0)
 		return -1;
@@ -116,6 +141,7 @@ int cbfs_image_from_file(struct cbfs_image *image, const char *filename) {
 		cbfs_image_delete(image);
 		return -1;
 	}
+	cbfs_fix_legacy_size(image);
 
 	return 0;
 }

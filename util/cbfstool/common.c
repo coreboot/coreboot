@@ -711,8 +711,8 @@ static int in_segment(int addr, int size, int gran)
 	return ((addr & ~(gran - 1)) == ((addr + size) & ~(gran - 1)));
 }
 
-uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
-			    const char *filename, uint32_t alignment)
+uint32_t cbfs_find_stage_location(const char *romfile, uint32_t filesize,
+				  const char *filename, uint32_t alignment)
 {
 	void *rom;
 	size_t filename_size, headersize, totalsize;

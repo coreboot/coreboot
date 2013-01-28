@@ -21,24 +21,12 @@
  * MA 02111-1307 USA
  */
 
-/* FIXME(dhendrix): clean-up weak symbols if it looks unlikely we'll
-   want to override them with anything other than what's in cache_v7. */
 #include <common.h>
 #include <stdlib.h>
 #include <system.h>
 #include <global_data.h>
 
-#if !(defined(CONFIG_SYS_ICACHE_OFF) && defined(CONFIG_SYS_DCACHE_OFF))
-
 DECLARE_GLOBAL_DATA_PTR;
-
-#if 0
-void __arm_init_before_mmu(void)
-{
-}
-void arm_init_before_mmu(void)
-	__attribute__((weak, alias("__arm_init_before_mmu")));
-#endif
 
 static void cp_delay (void)
 {
@@ -90,11 +78,6 @@ void __mmu_page_table_flush(unsigned long start, unsigned long stop)
 {
 	debug("%s: Warning: not implemented\n", __func__);
 }
-#endif
-
-#if 0
-void mmu_page_table_flush(unsigned long start, unsigned long stop)
-	__attribute__((weak, alias("__mmu_page_table_flush")));
 #endif
 
 void mmu_set_region_dcache(unsigned long start, int size, enum dcache_option option)
@@ -237,24 +220,7 @@ static void cache_disable(uint32_t cache_bit)
 		flush_dcache_all();
 	set_cr(reg & ~cache_bit);
 }
-#endif
 
-#ifdef CONFIG_SYS_ICACHE_OFF
-void icache_enable (void)
-{
-	return;
-}
-
-void icache_disable (void)
-{
-	return;
-}
-
-int icache_status (void)
-{
-	return 0;					/* always off */
-}
-#else
 void icache_enable(void)
 {
 	cache_enable(CR_I);
@@ -269,24 +235,7 @@ int icache_status(void)
 {
 	return (get_cr() & CR_I) != 0;
 }
-#endif
 
-#ifdef CONFIG_SYS_DCACHE_OFF
-void dcache_enable (void)
-{
-	return;
-}
-
-void dcache_disable (void)
-{
-	return;
-}
-
-int dcache_status (void)
-{
-	return 0;					/* always off */
-}
-#else
 void dcache_enable(void)
 {
 	cache_enable(CR_C);
@@ -301,4 +250,3 @@ int dcache_status(void)
 {
 	return (get_cr() & CR_C) != 0;
 }
-#endif

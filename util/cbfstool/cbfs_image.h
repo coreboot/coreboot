@@ -38,6 +38,17 @@ int cbfs_image_write_file(struct cbfs_image *image, const char *filename);
 /* Releases the CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_delete(struct cbfs_image *image);
 
+/* Callback function used by cbfs_walk.
+ * Returns 0 on success, or non-zero to stop further iteration. */
+typedef int (*cbfs_entry_callback)(struct cbfs_image *image,
+				   struct cbfs_file *file,
+				   void *arg);
+
+/* Iterates through all entries in CBFS image, and invoke with callback.
+ * Stops if callback returns non-zero values.
+ * Returns number of entries invoked. */
+int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback, void *arg);
+
 /* Primitive CBFS utilities */
 
 /* Returns a pointer to the only valid CBFS header in give buffer, otherwise
@@ -61,5 +72,11 @@ uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry);
 
 /* Returns 1 if entry has valid data (by checking magic number), otherwise 0. */
 int cbfs_is_valid_entry(struct cbfs_file *entry);
+
+/* Print CBFS component information. */
+int cbfs_print_directory(struct cbfs_image *image);
+int cbfs_print_header_info(struct cbfs_image *image);
+int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
+			  void *arg);
 
 #endif

@@ -312,33 +312,31 @@ static int cbfs_add_flat_binary(void)
 
 static int cbfs_remove(void)
 {
-	void *rom;
+	struct cbfs_image image;
 
 	if (!param.name) {
 		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
+	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
-	if (remove_file_from_cbfs(param.name)) {
+	if (cbfs_remove_entry(&image, param.name) != 0) {
 		ERROR("Removing file '%s' failed.\n",
-			param.name);
-		free(rom);
+		      param.name);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+	if (cbfs_image_write_file(&image, param.cbfs_name) != 0) {
+		cbfs_image_delete(&image);
 		return 1;
 	}
 
-	if (writerom(param.cbfs_name, rom, romsize)) {
-		free(rom);
-		return 1;
-	}
-
-	free(rom);
+	cbfs_image_delete(&image);
 	return 0;
 }
 

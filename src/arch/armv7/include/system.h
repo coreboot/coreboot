@@ -106,7 +106,7 @@ void mmu_set_region_dcache(unsigned long start, int size,
  */
 void mmu_page_table_flush(unsigned long start, unsigned long stop);
 
-void dram_bank_mmu_setup(unsigned long start, unsigned long size);
+void mmu_setup(unsigned long start, unsigned long size);
 
 void arm_init_before_mmu(void);
 

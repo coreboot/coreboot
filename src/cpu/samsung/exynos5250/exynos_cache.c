@@ -39,7 +39,8 @@ enum l2_cache_params {
 void enable_caches(void)
 {
 	/* Enable D-cache. I-cache is already enabled in start.S */
-	dcache_enable();
+	/* can't use it anyway -- it has dependencies we have to fix. */
+	//dcache_enable();
 }
 #endif
 

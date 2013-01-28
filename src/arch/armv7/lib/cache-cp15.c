@@ -91,32 +91,13 @@ void mmu_set_region_dcache(unsigned long start, int size, enum dcache_option opt
 	mmu_page_table_flush((u32)&page_table[start], (u32)&page_table[end]);
 }
 
-#if 0
-static inline void dram_bank_mmu_setup(int bank)
-{
-//	bd_t *bd = gd->bd;
-	int	i;
-
-	debug("%s: bank: %d\n", __func__, bank);
-	for (i = bd->bi_dram[bank].start >> 20;
-	     i < (bd->bi_dram[bank].start + bd->bi_dram[bank].size) >> 20;
-	     i++) {
-#if defined(CONFIG_SYS_ARM_CACHE_WRITETHROUGH)
-		set_section_dcache(i, DCACHE_WRITETHROUGH);
-#else
-		set_section_dcache(i, DCACHE_WRITEBACK);
-#endif
-	}
-}
-#endif
-
 /**
  * dram_bank_mmu_set - set up the data cache policy for a given dram bank
  *
  * @start:	virtual address start of bank
  * @size:	size of bank (in bytes)
  */
-inline void dram_bank_mmu_setup(unsigned long start, unsigned long size)
+static inline void dram_bank_mmu_setup(unsigned long start, unsigned long size)
 {
 	int	i;
 
@@ -133,27 +114,17 @@ inline void dram_bank_mmu_setup(unsigned long start, unsigned long size)
 }
 
 /* to activate the MMU we need to set up virtual memory: use 1M areas */
-static inline void mmu_setup(void)
+inline void mmu_setup(unsigned long start, unsigned long size)
 {
 	int i;
 	u32 reg;
 
 	arm_init_before_mmu();
+
 	/* Set up an identity-mapping for all 4GB, rw for everyone */
 	for (i = 0; i < 4096; i++)
 		set_section_dcache(i, DCACHE_OFF);
 
-	/* FIXME(dhendrix): u-boot's global data struct was used here... */
-#if 0
-	for (i = 0; i < CONFIG_NR_DRAM_BANKS; i++) {
-		dram_bank_mmu_setup(i);
-	}
-#endif
-#if 0
-	/* comes from board's romstage.c, since we need to know which
-	   ranges to setup */
-	mainboard_setup_mmu();
-#endif
 	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB << 20);
 
 	/* Copy the page table address to cp15 */
@@ -174,13 +145,13 @@ static int mmu_enabled(void)
 }
 
 /* cache_bit must be either CR_I or CR_C */
-static void cache_enable(uint32_t cache_bit)
+static void cache_enable(unsigned long start, unsigned long size, uint32_t cache_bit)
 {
 	uint32_t reg;
 
 	/* The data cache is not active unless the mmu is enabled too */
 	if ((cache_bit == CR_C) && !mmu_enabled())
-		mmu_setup();
+		mmu_setup(start, size);
 	reg = get_cr();	/* get control reg. */
 	cp_delay();
 	set_cr(reg | cache_bit);
@@ -216,9 +187,9 @@ static void cache_disable(uint32_t cache_bit)
 	set_cr(reg & ~cache_bit);
 }
 
-void icache_enable(void)
+void icache_enable(unsigned long start, unsigned long size)
 {
-	cache_enable(CR_I);
+	cache_enable(start, size, CR_I);
 }
 
 void icache_disable(void)
@@ -231,9 +202,9 @@ int icache_status(void)
 	return (get_cr() & CR_I) != 0;
 }
 
-void dcache_enable(void)
+void dcache_enable(unsigned long start, unsigned long size)
 {
-	cache_enable(CR_C);
+	cache_enable(start, size, CR_C);
 }
 
 void dcache_disable(void)

@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,65 @@ static uint32_t align_up(uint32_t value, uint32_t align) {
 	if (value % align)
 		value += align - (value % align);
 	return value;
+}
+
+/* Type and format */
+
+struct typedesc_t {
+	uint32_t type;
+	const char *name;
+};
+
+static struct typedesc_t types_cbfs_entry[] = {
+	{CBFS_COMPONENT_STAGE, "stage"},
+	{CBFS_COMPONENT_PAYLOAD, "payload"},
+	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
+	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
+	{CBFS_COMPONENT_RAW, "raw"},
+	{CBFS_COMPONENT_VSA, "vsa"},
+	{CBFS_COMPONENT_MBI, "mbi"},
+	{CBFS_COMPONENT_MICROCODE, "microcode"},
+	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos_default"},
+	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
+	{CBFS_COMPONENT_DELETED, "deleted"},
+	{CBFS_COMPONENT_NULL, "null"},
+	{0, NULL},
+};
+
+static struct typedesc_t types_cbfs_compression[] = {
+	{CBFS_COMPRESS_NONE, "none"},
+	{CBFS_COMPRESS_LZMA, "LZMA"},
+	{0, NULL},
+};
+
+uint32_t lookup_type_by_name(struct typedesc_t *desc, const char *name,
+			     uint32_t default_value) {
+	int i;
+	for (i = 0; desc[i].name; i++)
+		if (strcmp(desc[i].name, name) == 0)
+			return desc[i].type;
+	return default_value;
+}
+
+const char *lookup_name_by_type(struct typedesc_t *desc, uint32_t type,
+				const char *default_value) {
+	int i;
+	for (i = 0; desc[i].name; i++)
+		if (desc[i].type == type)
+			return desc[i].name;
+	return default_value;
+}
+
+uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value) {
+	return lookup_type_by_name(types_cbfs_entry, name, default_value);
+}
+
+const char *get_cbfs_entry_type_name(uint32_t type) {
+	return lookup_name_by_type(types_cbfs_entry, type, "(unknown)");
+}
+
+uint32_t get_cbfs_compression(const char *name, uint32_t unknown) {
+	return lookup_type_by_name(types_cbfs_compression, name, unknown);
 }
 
 int cbfs_image_from_file(struct cbfs_image *image, const char *filename) {
@@ -62,6 +122,155 @@ int cbfs_image_delete(struct cbfs_image *image) {
 	buffer_delete(&image->buffer);
 	image->header = NULL;
 	return 0;
+}
+
+int cbfs_print_header_info(struct cbfs_image *image) {
+	assert(image && image->header);
+	printf("%s: %zd kB, bootblocksize %d, romsize %d, offset 0x%x\n"
+	       "alignment: %d bytes\n\n",
+	       simple_basename(image->buffer.name),
+	       image->buffer.size / 1024,
+	       ntohl(image->header->bootblocksize),
+	       ntohl(image->header->romsize),
+	       ntohl(image->header->offset),
+	       ntohl(image->header->align));
+	return 0;
+}
+
+static int cbfs_print_stage_info(struct cbfs_stage *stage, FILE* fp) {
+	fprintf(fp,
+		"    %s compression, entry: 0x%" PRIx64 ", load: 0x%" PRIx64 ", "
+		"length: %d/%d\n",
+		lookup_name_by_type(types_cbfs_compression,
+				    stage->compression, "(unknown)"),
+		stage->entry,
+		stage->load,
+		stage->len,
+		stage->memlen);
+	return 0;
+}
+
+static int cbfs_print_payload_segment_info(struct cbfs_payload_segment *payload,
+					   FILE *fp)
+{
+	switch(payload->type) {
+		case PAYLOAD_SEGMENT_CODE:
+		case PAYLOAD_SEGMENT_DATA:
+			fprintf(fp, "    %s (%s compression, offset: 0x%x, "
+				"load: 0x%" PRIx64 ", length: %d/%d)\n",
+				(payload->type == PAYLOAD_SEGMENT_CODE ?
+				 "code " : "data"),
+				lookup_name_by_type(types_cbfs_compression,
+						    ntohl(payload->compression),
+						    "(unknown)"),
+				ntohl(payload->offset),
+				ntohll(payload->load_addr),
+				ntohl(payload->len), ntohl(payload->mem_len));
+			break;
+
+		case PAYLOAD_SEGMENT_ENTRY:
+			fprintf(fp, "    entry (0x%" PRIx64 ")\n",
+				ntohll(payload->load_addr));
+			break;
+
+		case PAYLOAD_SEGMENT_BSS:
+			fprintf(fp, "    BSS (address 0x%016" PRIx64 ", "
+				"length 0x%x)\n",
+				ntohll(payload->load_addr),
+				ntohl(payload->len));
+			break;
+
+		case PAYLOAD_SEGMENT_PARAMS:
+			fprintf(fp, "    parameters\n");
+			break;
+
+		default:
+			fprintf(fp, "   0x%x (%s compression, offset: 0x%x, "
+				"load: 0x%" PRIx64 ", length: %d/%d\n",
+				payload->type,
+				lookup_name_by_type(types_cbfs_compression,
+						    payload->compression,
+						    "(unknown)"),
+				ntohl(payload->offset),
+				ntohll(payload->load_addr),
+				ntohl(payload->len),
+				ntohl(payload->mem_len));
+			break;
+	}
+	return 0;
+}
+
+int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
+			  void *arg) {
+	const char *name = CBFS_NAME(entry);
+	struct cbfs_payload_segment *payload;
+	FILE *fp = (FILE *)arg;
+
+	if (!cbfs_is_valid_entry(entry)) {
+		ERROR("cbfs_print_entry_info: Invalid entry at 0x%x\n",
+		      cbfs_get_entry_addr(image, entry));
+		return -1;
+	}
+	if (!fp)
+		fp = stdout;
+
+	fprintf(fp, "%-30s 0x%-8x %-12s %d\n",
+		*name ? name : "(empty)",
+		cbfs_get_entry_addr(image, entry),
+		get_cbfs_entry_type_name(ntohl(entry->type)),
+		ntohl(entry->len));
+
+	if (!verbose)
+		return 0;
+
+	DEBUG(" cbfs_file=0x%x, offset=0x%x, content_address=0x%x+0x%x\n",
+	      cbfs_get_entry_addr(image, entry), ntohl(entry->offset),
+	      cbfs_get_entry_addr(image, entry) + ntohl(entry->offset),
+	      ntohl(entry->len));
+
+	/* note the components of the subheader may be in host order ... */
+	switch (ntohl(entry->type)) {
+		case CBFS_COMPONENT_STAGE:
+			cbfs_print_stage_info((struct cbfs_stage *)
+					      CBFS_SUBHEADER(entry), fp);
+			break;
+
+		case CBFS_COMPONENT_PAYLOAD:
+			payload  = (struct cbfs_payload_segment *)
+					CBFS_SUBHEADER(entry);
+			while (payload) {
+				cbfs_print_payload_segment_info(payload, fp);
+				if (payload->type == PAYLOAD_SEGMENT_ENTRY)
+					break;
+				else
+					payload ++;
+			}
+			break;
+		default:
+			break;
+	}
+	return 0;
+}
+
+int cbfs_print_directory(struct cbfs_image *image) {
+	cbfs_print_header_info(image);
+	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
+	cbfs_walk(image, cbfs_print_entry_info, NULL);
+	return 0;
+}
+
+int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
+	      void *arg) {
+	int count = 0;
+	struct cbfs_file *entry;
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+		count ++;
+		if (callback(image, entry, arg) != 0)
+			break;
+	}
+	return count;
 }
 
 struct cbfs_header *cbfs_find_header(char *data, size_t size) {

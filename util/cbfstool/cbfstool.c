@@ -27,6 +27,7 @@
 #include <getopt.h>
 #include "common.h"
 #include "cbfs.h"
+#include "cbfs_image.h"
 
 struct command {
 	const char *name;
@@ -387,18 +388,14 @@ static int cbfs_locate(void)
 
 static int cbfs_print(void)
 {
-	void *rom;
-
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
+	struct cbfs_image image;
+	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
-
-	print_cbfs_directory(param.cbfs_name);
-
-	free(rom);
+	cbfs_print_directory(&image);
+	cbfs_image_delete(&image);
 	return 0;
 }
 

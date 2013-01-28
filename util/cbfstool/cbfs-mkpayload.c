@@ -202,3 +202,56 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
       err:
 	return -1;
 }
+
+int parse_flat_binary_to_payload(unsigned char *input, unsigned char **output,
+				 int32_t input_size,
+				 uint32_t loadaddress,
+				 uint32_t entrypoint,
+				 comp_algo algo)
+{
+	comp_func_ptr compress;
+	unsigned char *payload;
+	struct cbfs_payload_segment *segs;
+	int doffset, len = 0;
+
+	compress = compression_function(algo);
+	if (!compress)
+		return -1;
+
+	DEBUG("start: parse_flat_binary_to_payload\n");
+
+	/* FIXME compressed file size might be bigger than original file and
+	 * causing buffer overflow. */
+	payload = calloc((2 * sizeof(struct cbfs_payload_segment)) + input_size, 1);
+	if (payload == NULL) {
+		ERROR("Could not allocate memory.\n");
+		return -1;
+	}
+
+	segs = (struct cbfs_payload_segment *)payload;
+	doffset = (2 * sizeof(*segs));
+
+	/* Prepare code segment */
+	segs[0].type = PAYLOAD_SEGMENT_CODE;
+	segs[0].load_addr = htonll(loadaddress);
+	segs[0].mem_len = htonl(input_size);
+	segs[0].offset = htonl(doffset);
+
+	compress((char*)input, input_size, (char*)payload + doffset, &len);
+	segs[0].compression = htonl(algo);
+	segs[0].len = htonl(len);
+
+	if ((unsigned int)len >= input_size) {
+		WARN("Compressing data would make it bigger - disabled.\n");
+		segs[0].compression = 0;
+		segs[0].len = htonl(input_size);
+		memcpy(payload + doffset, input, input_size);
+	}
+
+	/* prepare entry point segment */
+	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
+	segs[1].load_addr = htonll(entrypoint);
+	*output = payload;
+
+	return doffset + ntohl(segs[0].len);
+}

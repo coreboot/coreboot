@@ -21,13 +21,7 @@
 #define __CBFSTOOL_COMMON_H
 
 #include <stdint.h>
-#include "swab.h"
-#ifndef __APPLE__
-#define ntohl(x)  (host_bigendian?(x):swab32(x))
-#define htonl(x)  (host_bigendian?(x):swab32(x))
-#endif
-#define ntohll(x) (host_bigendian?(x):swab64(x))
-#define htonll(x) (host_bigendian?(x):swab64(x))
+#include "cbfs.h"
 
 /* Message output */
 extern int verbose;
@@ -36,6 +30,15 @@ extern int verbose;
 #define LOG(x...) { fprintf(stderr, x); }
 #define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
 #define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
+
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
+/* Endianess */
+#include <arpa/inet.h>	/* for ntohl, htonl */
+#include "swab.h"
+extern int is_big_endian(void);
+#define ntohll(x)	(is_big_endian() ? (x) : swab64(x))
+#define htonll(x)	(is_big_endian() ? (x) : swab64(x))
 
 extern void *offset;
 extern uint32_t romsize;
@@ -98,8 +101,4 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 int parse_flat_binary_to_payload(unsigned char *input, unsigned char **output,
 				 int32_t input_size, uint32_t loadaddress,
 				 uint32_t entrypoint, comp_algo algo);
-
-
-#define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
-
 #endif

@@ -19,13 +19,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <assert.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgen.h>
 #include "common.h"
 #include "cbfs.h"
 #include "elf.h"
+
+/* Utilities */
+
+/* Small, OS/libc independent runtime check for endianess */
+int is_big_endian(void)
+{
+	static const uint32_t inttest = 0x12345678;
+	uint8_t inttest_lsb = *(uint8_t *)&inttest;
+	if (inttest_lsb == 0x12) {
+		return 1;
+	}
+	return 0;
+}
 
 size_t getfilesize(const char *filename)
 {
@@ -269,11 +283,20 @@ uint64_t intfiletype(const char *name)
 	return -1;
 }
 
+/* basename(3) may modify buffer, so we want a tiny alternative. */
+static const char *simple_basename(const char *name) {
+	const char *slash = strrchr(name, '/');
+	if (slash)
+		return slash + 1;
+	else
+		return name;
+}
+
 void print_cbfs_directory(const char *filename)
 {
 	printf("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
 	       "alignment: %d bytes, architecture: %s\n\n",
-	       basename((char *)filename), romsize / 1024,
+	       simple_basename((char *)filename), romsize / 1024,
 	       ntohl(master_header->bootblocksize),
 	       romsize, ntohl(master_header->offset), align,
 	       arch_to_string(arch));

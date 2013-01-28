@@ -19,11 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <unistd.h>
 #include <getopt.h>
 #include "common.h"
 #include "cbfs.h"
@@ -493,18 +492,6 @@ static void usage(char *name)
 	print_supported_filetypes();
 }
 
-/* Small, OS/libc independent runtime check for endianess */
-int host_bigendian = 0;
-
-static void which_endian(void)
-{
-	static const uint32_t inttest = 0x12345678;
-	uint8_t inttest_lsb = *(uint8_t *)&inttest;
-	if (inttest_lsb == 0x12) {
-		host_bigendian = 1;
-	}
-}
-
 int main(int argc, char **argv)
 {
 	size_t i;
@@ -514,8 +501,6 @@ int main(int argc, char **argv)
 		usage(argv[0]);
 		return 1;
 	}
-
-	which_endian();
 
 	param.cbfs_name = argv[1];
 	char *cmd = argv[2];

@@ -50,7 +50,7 @@ comp_func_ptr compression_function(comp_algo algo)
 		compress = lzma_compress;
 		break;
 	default:
-		fprintf(stderr, "E: Unknown compression algorithm %d!\n", algo);
+		ERROR("Unknown compression algorithm %d!\n", algo);
 		return NULL;
 	}
 	return compress;

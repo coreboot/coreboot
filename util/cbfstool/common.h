@@ -29,6 +29,14 @@
 #define ntohll(x) (host_bigendian?(x):swab64(x))
 #define htonll(x) (host_bigendian?(x):swab64(x))
 
+/* Message output */
+extern int verbose;
+#define ERROR(x...) { fprintf(stderr, "E: " x); }
+#define WARN(x...) { fprintf(stderr, "W: " x); }
+#define LOG(x...) { fprintf(stderr, x); }
+#define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
+#define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
+
 extern void *offset;
 extern uint32_t romsize;
 extern int host_bigendian;

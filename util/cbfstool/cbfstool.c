@@ -59,30 +59,30 @@ static int cbfs_add(void)
 	void *rom, *filedata, *cbfsfile;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	if (param.type == 0) {
-		fprintf(stderr, "E: You need to specify a valid -t/--type.\n");
+		ERROR("You need to specify a valid -t/--type.\n");
 		return 1;
 	}
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
 	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
-		fprintf(stderr, "E: Could not load file '%s'.\n",
+		ERROR("Could not load file '%s'.\n",
 			param.filename);
 		free(rom);
 		return 1;
@@ -93,7 +93,7 @@ static int cbfs_add(void)
 	free(filedata);
 
 	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		fprintf(stderr, "E: Adding file '%s' failed.\n", param.filename);
+		ERROR("Adding file '%s' failed.\n", param.filename);
 		free(cbfsfile);
 		free(rom);
 		return 1;
@@ -116,25 +116,25 @@ static int cbfs_add_payload(void)
 	unsigned char *payload;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
 	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
-		fprintf(stderr, "E: Could not load file '%s'.\n",
+		ERROR("Could not load file '%s'.\n",
 			param.filename);
 		free(rom);
 		return 1;
@@ -142,7 +142,7 @@ static int cbfs_add_payload(void)
 
 	filesize = parse_elf_to_payload(filedata, &payload, param.algo);
 	if (filesize <= 0) {
-		fprintf(stderr, "E: Adding payload '%s' failed.\n",
+		ERROR("Adding payload '%s' failed.\n",
 			param.filename);
 		free(rom);
 		return 1;
@@ -155,7 +155,7 @@ static int cbfs_add_payload(void)
 	free(payload);
 
 	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		fprintf(stderr, "E: Adding payload '%s' failed.\n",
+		ERROR("Adding payload '%s' failed.\n",
 			param.filename);
 		free(cbfsfile);
 		free(rom);
@@ -180,25 +180,25 @@ static int cbfs_add_stage(void)
 	unsigned char *stage;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
 	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
-		fprintf(stderr, "E: Could not load file '%s'.\n",
+		ERROR("Could not load file '%s'.\n",
 			param.filename);
 		free(rom);
 		return 1;
@@ -213,7 +213,7 @@ static int cbfs_add_stage(void)
 	free(stage);
 
 	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		fprintf(stderr, "E: Adding stage '%s' failed.\n",
+		ERROR("Adding stage '%s' failed.\n",
 			param.filename);
 		free(cbfsfile);
 		free(rom);
@@ -242,23 +242,23 @@ static int cbfs_add_flat_binary(void)
 	int doffset, len = 0;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	if (param.loadaddress == 0) {
-		fprintf(stderr, "E: You need to specify a valid "
+		ERROR("You need to specify a valid "
 			"-l/--load-address.\n");
 		return 1;
 	}
 
 	if (param.entrypoint == 0) {
-		fprintf(stderr, "E: You need to specify a valid "
+		ERROR("You need to specify a valid "
 			"-e/--entry-point.\n");
 		return 1;
 	}
@@ -269,14 +269,14 @@ static int cbfs_add_flat_binary(void)
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
 	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
 	if (filedata == NULL) {
-		fprintf(stderr, "E: Could not load file '%s'.\n",
+		ERROR("Could not load file '%s'.\n",
 			param.filename);
 		free(rom);
 		return 1;
@@ -285,7 +285,7 @@ static int cbfs_add_flat_binary(void)
 	/* FIXME compressed file size might be bigger than original file */
 	payload = calloc((2 * sizeof(struct cbfs_payload_segment)) + filesize, 1);
 	if (payload == NULL) {
-		fprintf(stderr, "E: Could not allocate memory.\n");
+		ERROR("Could not allocate memory.\n");
 		free(filedata);
 		free(rom);
 		return 1;
@@ -323,7 +323,7 @@ static int cbfs_add_flat_binary(void)
 	free(payload);
 
 	if (add_file_to_cbfs(cbfsfile, final_size, param.baseaddress)) {
-		fprintf(stderr, "E: Adding payload '%s' failed.\n",
+		ERROR("Adding payload '%s' failed.\n",
 			param.filename);
 		free(cbfsfile);
 		free(rom);
@@ -345,19 +345,19 @@ static int cbfs_remove(void)
 	void *rom;
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
 
 	if (remove_file_from_cbfs(param.name)) {
-		fprintf(stderr, "E: Removing file '%s' failed.\n",
+		ERROR("Removing file '%s' failed.\n",
 			param.name);
 		free(rom);
 		return 1;
@@ -375,17 +375,17 @@ static int cbfs_remove(void)
 static int cbfs_create(void)
 {
 	if (param.size == 0) {
-		fprintf(stderr, "E: You need to specify a valid -s/--size.\n");
+		ERROR("You need to specify a valid -s/--size.\n");
 		return 1;
 	}
 
 	if (!param.bootblock) {
-		fprintf(stderr, "E: You need to specify -b/--bootblock.\n");
+		ERROR("You need to specify -b/--bootblock.\n");
 		return 1;
 	}
 
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
-		fprintf(stderr, "E: You need to specify -m/--machine arch\n");
+		ERROR("You need to specify -m/--machine arch\n");
 		return 1;
 	}
 
@@ -398,12 +398,12 @@ static int cbfs_locate(void)
 	uint32_t filesize, location;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
@@ -422,7 +422,7 @@ static int cbfs_print(void)
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
@@ -439,18 +439,18 @@ static int cbfs_extract(void)
 	int ret;
 
 	if (!param.filename) {
-		fprintf(stderr, "E: You need to specify -f/--filename.\n");
+		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
 	if (!param.name) {
-		fprintf(stderr, "E: You need to specify -n/--name.\n");
+		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
 	rom = loadrom(param.cbfs_name);
 	if (rom == NULL) {
-		fprintf(stderr, "E: Could not load ROM image '%s'.\n",
+		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
 		return 1;
 	}
@@ -462,15 +462,15 @@ static int cbfs_extract(void)
 }
 
 static const struct command commands[] = {
-	{"add", "f:n:t:b:h?", cbfs_add},
-	{"add-payload", "f:n:t:c:b:h?", cbfs_add_payload},
-	{"add-stage", "f:n:t:c:b:h?", cbfs_add_stage},
-	{"add-flat-binary", "f:n:l:e:c:b:h?", cbfs_add_flat_binary},
-	{"remove", "n:h?", cbfs_remove},
-	{"create", "s:B:a:o:m:h?", cbfs_create},
-	{"locate", "f:n:a:h?", cbfs_locate},
-	{"print", "h?", cbfs_print},
-	{"extract", "n:f:h?", cbfs_extract},
+	{"add", "f:n:t:b:vh?", cbfs_add},
+	{"add-payload", "f:n:t:c:b:vh?", cbfs_add_payload},
+	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
+	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
+	{"remove", "n:vh?", cbfs_remove},
+	{"create", "s:B:a:o:m:vh?", cbfs_create},
+	{"locate", "f:n:a:vh?", cbfs_locate},
+	{"print", "vh?", cbfs_print},
+	{"extract", "n:f:vh?", cbfs_extract},
 };
 
 static struct option long_options[] = {
@@ -493,10 +493,10 @@ static struct option long_options[] = {
 
 static void usage(char *name)
 {
-	printf
-	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
+	LOG("cbfstool: Management utility for CBFS formatted ROM images\n\n"
 	     "USAGE:\n" " %s [-h]\n"
-	     " %s FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     " %s FILE COMMAND [-v] [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     "  -v              Provide verbose output\n"
 	     "  -h		Display this help message\n\n"
 	     "COMMANDs:\n"
 	     " add -f FILE -n NAME -t TYPE [-b base-address]               "
@@ -570,8 +570,8 @@ int main(int argc, char **argv)
 			/* filter out illegal long options */
 			if (strchr(commands[i].optstring, c) == NULL) {
 				/* TODO maybe print actual long option instead */
-				printf("%s: invalid option -- '%c'\n",
-					argv[0], c);
+				ERROR("%s: invalid option -- '%c'\n",
+				      argv[0], c);
 				c = '?';
 			}
 
@@ -585,7 +585,7 @@ int main(int argc, char **argv)
 				else
 					param.type = strtoul(optarg, NULL, 0);
 				if (param.type == 0)
-					printf("W: Unknown type '%s' ignored\n",
+					WARN("Unknown type '%s' ignored\n",
 							optarg);
 				break;
 			case 'c':
@@ -594,8 +594,8 @@ int main(int argc, char **argv)
 				else if (!strncasecmp(optarg, "none", 5))
 					param.algo = CBFS_COMPRESS_NONE;
 				else
-					printf("W: Unknown compression '%s'"
-							" ignored.\n", optarg);
+					WARN("Unknown compression '%s'"
+					     " ignored.\n", optarg);
 				break;
 			case 'b':
 				param.baseaddress = strtoul(optarg, NULL, 0);
@@ -645,7 +645,7 @@ int main(int argc, char **argv)
 		return commands[i].function();
 	}
 
-	printf("Unknown command '%s'.\n", cmd);
+	ERROR("Unknown command '%s'.\n", cmd);
 	usage(argv[0]);
 	return 1;
 }

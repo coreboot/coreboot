@@ -37,11 +37,6 @@
 #endif
 #include <console/console.h>
 
-static void mmu_setup(void)
-{
-	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
-}
-
 void main(void);
 void main(void)
 {
@@ -54,5 +49,5 @@ void main(void)
 	printk(BIOS_INFO, "hello from romstage\n");
 
 //	*pshold &= ~0x100;	/* shut down */
-	mmu_setup();
+	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
 }

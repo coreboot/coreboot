@@ -44,13 +44,13 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	int i;
 
 	if(!iself(input)){
-		fprintf(stderr, "E: The payload file is not in ELF format!\n");
+		ERROR("The payload file is not in ELF format!\n");
 		return -1;
 	}
 
 	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
 	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
-		fprintf(stderr, "E: The payload file has the wrong architecture\n");
+		ERROR("The payload file has the wrong architecture\n");
 		return -1;
 	}
 

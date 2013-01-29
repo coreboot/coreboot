@@ -326,7 +326,7 @@ static void amdfam15_link_read_bases(device_t dev, u32 nodeid, u32 link)
 
 }
 
-static void read_resources(device_t dev)
+static void nb_read_resources(device_t dev)
 {
 	u32 nodeid;
 	struct bus *link;
@@ -419,7 +419,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 	set_vga_enable_reg(nodeid, sblink);
 }
 
-static void set_resources(device_t dev)
+static void nb_set_resources(device_t dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
@@ -448,8 +448,8 @@ static void northbridge_init(struct device *dev)
 
 
 static struct device_operations northbridge_operations = {
-	.read_resources	  = read_resources,
-	.set_resources	  = set_resources,
+	.read_resources	  = nb_read_resources,
+	.set_resources	  = nb_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
 	.enable		  = 0,

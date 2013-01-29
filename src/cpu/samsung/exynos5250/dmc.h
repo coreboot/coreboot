@@ -152,12 +152,27 @@ enum ddr_mode {
 	DDR_MODE_COUNT,
 };
 
+/* For reasons unknown, people are in the habit of taking a 32-bit
+ * field with 2 possible values and packing it with, say, 2 bits. A
+ * non-robust encoding, using only 2 bits of a 32-bit field, is
+ * incredibly difficult to deal with when things go wrong, because
+ * there are a lot of things that get expressed as 0, 1, or 2. If
+ * you're scanning with jtag or dumping memory it is really hard to
+ * tell when you've hit the beginning of the struct. So, let's be a
+ * bit smart here. First, while it's common to let the enum count
+ * entries for you, when there are two of them, we can do the
+ * counting. And, let's set the values to something we can easily scan
+ * for in memory. Since '1' and '2' are rather common, we pick
+ * something that's actually of some value when things go wrong.  This
+ * setup motivated by a use case: something's going wrong and having a
+ * manuf name of '1' or '2' is completely useless!
+ */
 enum mem_manuf {
 	MEM_MANUF_AUTODETECT,
-	MEM_MANUF_ELPIDA,
-	MEM_MANUF_SAMSUNG,
+	MEM_MANUF_ELPIDA = 0xe7b1da,
+	MEM_MANUF_SAMSUNG = 0x5a5096,
 
-	MEM_MANUF_COUNT,
+	MEM_MANUF_COUNT = 2, // fancy that.
 };
 
 /* CONCONTROL register fields */

@@ -29,6 +29,69 @@
 
 #define dprintf(x...)
 
+/* Buffer and file I/O */
+
+int buffer_create(struct buffer *buffer, size_t size, const char *name) {
+	buffer->name = strdup(name);
+	buffer->size = size;
+	buffer->data = (char *)malloc(buffer->size);
+	if (!buffer->data) {
+		fprintf(stderr, "buffer_create: Insufficient memory (0x%zx).\n",
+			size);
+	}
+	return (buffer->data == NULL);
+}
+
+int buffer_from_file(struct buffer *buffer, const char *filename) {
+	FILE *fp = fopen(filename, "rb");
+	if (!fp) {
+		perror(filename);
+		return -1;
+	}
+	fseek(fp, 0, SEEK_END);
+	buffer->size = ftell(fp);
+	buffer->name = strdup(filename);
+	rewind(fp);
+	buffer->data = (char *)malloc(buffer->size);
+	assert(buffer->data);
+	if (fread(buffer->data, 1, buffer->size, fp) != buffer->size) {
+		fprintf(stderr, "incomplete read: %s\n", filename);
+		fclose(fp);
+		return -1;
+	}
+	fclose(fp);
+	return 0;
+}
+
+int buffer_write_file(struct buffer *buffer, const char *filename) {
+	FILE *fp = fopen(filename, "wb");
+	if (!fp) {
+		perror(filename);
+		return -1;
+	}
+	assert(buffer && buffer->data);
+	if (fwrite(buffer->data, 1, buffer->size, fp) != buffer->size) {
+		fprintf(stderr, "incomplete write: %s\n", filename);
+		fclose(fp);
+		return -1;
+	}
+	fclose(fp);
+	return 0;
+}
+
+void buffer_delete(struct buffer *buffer) {
+	assert(buffer);
+	if (buffer->name) {
+		free(buffer->name);
+		buffer->name = NULL;
+	}
+	if (buffer->data) {
+		free(buffer->data);
+		buffer->data = NULL;
+	}
+	buffer->size = 0;
+}
+
 size_t getfilesize(const char *filename)
 {
 	size_t size;

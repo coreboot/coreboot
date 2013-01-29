@@ -21,6 +21,8 @@
 #define __CBFSTOOL_COMMON_H
 
 #include <stdint.h>
+#include <assert.h>
+
 #include "swab.h"
 #ifndef __APPLE__
 #define ntohl(x)  (host_bigendian?(x):swab32(x))
@@ -28,6 +30,27 @@
 #endif
 #define ntohll(x) (host_bigendian?(x):swab64(x))
 #define htonll(x) (host_bigendian?(x):swab64(x))
+
+/* Buffer and file I/O */
+struct buffer {
+	char *name;
+	char *data;
+	size_t size;
+};
+
+/* Creates an empty memory buffer with given size.
+ * Returns 0 on success, otherwise non-zero. */
+int buffer_create(struct buffer *buffer, size_t size, const char *name);
+
+/* Loads a file into memory buffer. Returns 0 on success, otherwise non-zero. */
+int buffer_from_file(struct buffer *buffer, const char *filename);
+
+/* Writes memory buffer content into file.
+ * Returns 0 on success, otherwise non-zero. */
+int buffer_write_file(struct buffer *buffer, const char *filename);
+
+/* Destroys a memory buffer. */
+void buffer_delete(struct buffer *buffer);
 
 extern void *offset;
 extern uint32_t romsize;

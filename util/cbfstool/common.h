@@ -21,6 +21,7 @@
 #define __CBFSTOOL_COMMON_H
 
 #include <stdint.h>
+#include <assert.h>
 
 /* Endianess */
 #include "swab.h"
@@ -39,6 +40,30 @@ extern int verbose;
 #define LOG(x...) { fprintf(stderr, x); }
 #define INFO(x...) { if (verbose > 0) fprintf(stderr, "INFO: " x); }
 #define DEBUG(x...) { if (verbose > 1) fprintf(stderr, "DEBUG: " x); }
+
+/* Buffer and file I/O */
+struct buffer {
+	char *name;
+	char *data;
+	size_t size;
+};
+
+/* Creates an empty memory buffer with given size.
+ * Returns 0 on success, otherwise non-zero. */
+int buffer_create(struct buffer *buffer, size_t size, const char *name);
+
+/* Loads a file into memory buffer. Returns 0 on success, otherwise non-zero. */
+int buffer_from_file(struct buffer *buffer, const char *filename);
+
+/* Writes memory buffer content into file.
+ * Returns 0 on success, otherwise non-zero. */
+int buffer_write_file(struct buffer *buffer, const char *filename);
+
+/* Destroys a memory buffer. Returns 0 on success, otherwise non-zero. */
+int buffer_delete(struct buffer *buffer);
+
+/* Utilities */
+const char *simple_basename(const char *name);
 
 extern void *offset;
 extern uint32_t romsize;

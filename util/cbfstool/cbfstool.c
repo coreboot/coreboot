@@ -58,7 +58,7 @@ static struct param {
 	.algo = CBFS_COMPRESS_NONE,
 };
 
-typedef int (*convert_buffer_t)(struct buffer *buffer);
+typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
 
 static int cbfs_add_component(const char *cbfs_name,
 			      const char *filename,
@@ -89,7 +89,7 @@ static int cbfs_add_component(const char *cbfs_name,
 		return 1;
 	}
 
-	if (convert && convert(&buffer) != 0) {
+	if (convert && convert(&buffer, &offset) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
 		return 1;
@@ -126,6 +126,42 @@ static int cbfs_add_component(const char *cbfs_name,
 	return 0;
 }
 
+static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset) {
+	struct buffer output;
+	if (parse_elf_to_stage(buffer, &output, param.algo, offset) != 0)
+		return -1;
+	buffer_delete(buffer);
+	// direct assign, no dupe.
+	memcpy(buffer, &output, sizeof(*buffer));
+	return 0;
+}
+
+static int cbfstool_convert_mkpayload(struct buffer *buffer, uint32_t *offset) {
+	struct buffer output;
+	if (parse_elf_to_payload(buffer, &output, param.algo) != 0)
+		return -1;
+	buffer_delete(buffer);
+	// direct assign, no dupe.
+	memcpy(buffer, &output, sizeof(*buffer));
+	return 0;
+}
+
+static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
+					  uint32_t *offset) {
+	struct buffer output;
+	if (parse_flat_binary_to_payload(buffer, &output,
+					 param.loadaddress,
+					 param.entrypoint,
+					 param.algo) != 0) {
+		return -1;
+	}
+	buffer_delete(buffer);
+	// direct assign, no dupe.
+	memcpy(buffer, &output, sizeof(*buffer));
+	return 0;
+}
+
+
 static int cbfs_add(void)
 {
 	return cbfs_add_component(param.cbfs_name,
@@ -136,204 +172,44 @@ static int cbfs_add(void)
 				  NULL);
 }
 
-static int cbfs_add_payload(void)
-{
-	uint32_t filesize = 0;
-	void *rom, *filedata, *cbfsfile;
-	unsigned char *payload;
-
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
-		return 1;
-	}
-
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
-		return 1;
-	}
-
-	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
-	if (filedata == NULL) {
-		ERROR("Could not load file '%s'.\n",
-			param.filename);
-		free(rom);
-		return 1;
-	}
-
-	filesize = parse_elf_to_payload(filedata, &payload, param.algo);
-	if (filesize <= 0) {
-		ERROR("Adding payload '%s' failed.\n",
-			param.filename);
-		free(rom);
-		return 1;
-	}
-
-	cbfsfile = create_cbfs_file(param.name, payload, &filesize,
-				CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
-
-	free(filedata);
-	free(payload);
-
-	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		ERROR("Adding payload '%s' failed.\n",
-			param.filename);
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-
-	if (writerom(param.cbfs_name, rom, romsize)) {
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-
-	free(cbfsfile);
-	free(rom);
-	return 0;
-}
-
 static int cbfs_add_stage(void)
 {
-	uint32_t filesize = 0;
-	void *rom, *filedata, *cbfsfile;
-	unsigned char *stage;
+	return cbfs_add_component(param.cbfs_name,
+				  param.filename,
+				  param.name,
+				  CBFS_COMPONENT_STAGE,
+				  param.baseaddress,
+				  cbfstool_convert_mkstage);
+}
 
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
-		return 1;
-	}
-
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
-		return 1;
-	}
-
-	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
-	if (filedata == NULL) {
-		ERROR("Could not load file '%s'.\n",
-			param.filename);
-		free(rom);
-		return 1;
-	}
-
-	filesize = parse_elf_to_stage(filedata, &stage, param.algo, &param.baseaddress);
-
-	cbfsfile = create_cbfs_file(param.name, stage, &filesize,
-				CBFS_COMPONENT_STAGE, &param.baseaddress);
-
-	free(filedata);
-	free(stage);
-
-	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		ERROR("Adding stage '%s' failed.\n",
-			param.filename);
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-
-	if (writerom(param.cbfs_name, rom, romsize)) {
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-
-	free(cbfsfile);
-	free(rom);
-	return 0;
+static int cbfs_add_payload(void)
+{
+	return cbfs_add_component(param.cbfs_name,
+				  param.filename,
+				  param.name,
+				  CBFS_COMPONENT_PAYLOAD,
+				  param.baseaddress,
+				  cbfstool_convert_mkpayload);
 }
 
 static int cbfs_add_flat_binary(void)
 {
-	uint32_t filesize = 0;
-	void *rom, *filedata, *cbfsfile;
-	unsigned char *payload;
-
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
-		return 1;
-	}
-
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
 	if (param.loadaddress == 0) {
 		ERROR("You need to specify a valid "
 			"-l/--load-address.\n");
 		return 1;
 	}
-
 	if (param.entrypoint == 0) {
 		ERROR("You need to specify a valid "
 			"-e/--entry-point.\n");
 		return 1;
 	}
-
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
-		return 1;
-	}
-
-	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
-	if (filedata == NULL) {
-		ERROR("Could not load file '%s'.\n",
-			param.filename);
-		free(rom);
-		return 1;
-	}
-
-	filesize = parse_flat_binary_to_payload(filedata, &payload,
-						filesize,
-						param.loadaddress,
-						param.entrypoint,
-						param.algo);
-	free(filedata);
-
-	if ((int)filesize <= 0) {
-		ERROR("Adding payload '%s' failed.\n",
-			param.filename);
-		free(rom);
-		return 1;
-	}
-	cbfsfile = create_cbfs_file(param.name, payload, &filesize,
-				    CBFS_COMPONENT_PAYLOAD, &param.baseaddress);
-
-	free(payload);
-	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		ERROR("Adding payload '%s' failed.\n",
-			param.filename);
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-	if (writerom(param.cbfs_name, rom, romsize)) {
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-
-	free(cbfsfile);
-	free(rom);
-	return 0;
+	return cbfs_add_component(param.cbfs_name,
+				  param.filename,
+				  param.name,
+				  CBFS_COMPONENT_PAYLOAD,
+				  param.baseaddress,
+				  cbfstool_convert_mkflatpayload);
 }
 
 static int cbfs_remove(void)

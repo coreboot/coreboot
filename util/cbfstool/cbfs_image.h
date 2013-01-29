@@ -22,12 +22,28 @@
 #include "common.h"
 #include "cbfs.h"
 
+#define IS_TOP_ALIGNED_ADDRESS(x)	((uint32_t)(x) > 0x80000000)
+
 /* CBFS image processing */
 
 struct cbfs_image {
 	struct buffer buffer;
 	struct cbfs_header *header;
 };
+
+/* Creates an empty CBFS image by given size, and description to its content
+ * (bootblock, align, header location, starting offset of CBFS entries.
+ * The output image will contain a valid cbfs_header, with one cbfs_file
+ * entry with type CBFS_COMPONENT_NULL, with max available size.
+ * Returns 0 on success, otherwise none-zero. */
+int cbfs_image_create(struct cbfs_image *image,
+		      uint32_t arch,
+		      size_t size,
+		      uint32_t align,
+		      struct buffer *bootblock,
+		      int32_t bootblock_offset,
+		      int32_t header_offset,
+		      int32_t entries_offset);
 
 /* Loads a CBFS image from file. Returns 0 on success, otherwise non-zero. */
 int cbfs_image_from_file(struct cbfs_image *image, const char *filename);

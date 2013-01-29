@@ -335,7 +335,7 @@ static void nb_read_resources(device_t dev)
 	u32 nodeid;
 	struct bus *link;
 
-	printk(BIOS_DEBUG, "\nFam14h - nb_read_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 	nodeid = amdfam14_nodeid(dev);
 	for (link = dev->link_list; link; link = link->next) {
@@ -364,7 +364,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 	unsigned reg, link_num;
 	char buf[50];
 
-	printk(BIOS_DEBUG, "\nFam14h - set_resource.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
@@ -414,7 +414,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct bus *link;
 
-	printk(BIOS_DEBUG, "\nFam14h - create_vga_resource.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
@@ -448,7 +448,7 @@ static void nb_set_resources(device_t dev)
 	struct bus *bus;
 	struct resource *res;
 
-	printk(BIOS_DEBUG, "\nFam14h - nb_set_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 	/* Find the nodeid */
 	nodeid = amdfam14_nodeid(dev);
@@ -479,7 +479,7 @@ static void domain_read_resources(device_t dev)
 {
 	unsigned reg;
 
-	printk(BIOS_DEBUG, "\nFam14h - domain_read_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
@@ -566,7 +566,7 @@ static void setup_uma_memory(void)
 
 static void domain_set_resources(device_t dev)
 {
-	printk(BIOS_DEBUG, "\nFam14h - domain_set_resources.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 	printk(BIOS_DEBUG, "  amsr - incoming dev = %08x\n", (u32) dev);
 
 #if CONFIG_PCI_64BIT_PREF_MEM
@@ -796,7 +796,7 @@ static void domain_enable_resources(device_t dev)
 #endif
 
 	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam14h - domain_enable_resources: AmdInitMid.\n");
+	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
 #if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_slp_type != 3) {

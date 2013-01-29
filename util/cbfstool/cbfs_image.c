@@ -246,6 +246,180 @@ int cbfs_image_delete(struct cbfs_image *image) {
 	return 0;
 }
 
+/* Tries to add an entry with its data (CBFS_SUBHEADER) at given offset. */
+static int cbfs_add_entry_at(struct cbfs_image *image,
+			     struct cbfs_file *entry,
+			     uint32_t size,
+			     const char *name,
+			     uint32_t type,
+			     const void *data,
+			     uint32_t content_offset) {
+	struct cbfs_file *next = cbfs_find_next_entry(image, entry);
+	uint32_t addr = cbfs_get_entry_addr(image, entry),
+		 addr_next = cbfs_get_entry_addr(image, next);
+	uint32_t header_size = cbfs_calculate_file_header_size(name),
+		 min_entry_size = cbfs_calculate_file_header_size("");
+	uint32_t len, target;
+	uint32_t align = ntohl(image->header->align);
+
+	target = content_offset - header_size;
+	if (target % align)
+		target -= target % align;
+	if (target < addr) {
+		ERROR("No space to hold cbfs_file header.");
+		return -1;
+	}
+
+	// Process buffer BEFORE content_offset.
+	if (target - addr > min_entry_size) {
+		DEBUG("|min|...|header|content|... <create new entry>\n");
+		len = target - addr - min_entry_size;
+		cbfs_create_empty_entry(image, entry, len, "");
+		if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
+		entry = cbfs_find_next_entry(image, entry);
+		addr = cbfs_get_entry_addr(image, entry);
+	}
+
+	len = size + (content_offset - addr - header_size);
+	cbfs_create_empty_entry(image, entry, len, name);
+	if (len != size) {
+		DEBUG("|..|header|content|... <use offset to create entry>\n");
+		DEBUG("before: offset=0x%x, len=0x%x\n",
+		      ntohl(entry->offset), ntohl(entry->len));
+		// TODO reset expanded name buffer to 0xFF.
+		entry->offset = htonl(ntohl(entry->offset) + (len - size));
+		entry->len = htonl(size);
+		DEBUG("after: offset=0x%x, len=0x%x\n",
+		      ntohl(entry->offset), ntohl(entry->len));
+	}
+
+	// Ready to fill data into entry.
+	assert(ntohl(entry->len) == size);
+	entry->type = htonl(type);
+	DEBUG("content_offset: 0x%x, entry location: %x\n",
+	      content_offset, (int)((char*)CBFS_SUBHEADER(entry) -
+				    image->buffer.data));
+	assert((char*)CBFS_SUBHEADER(entry) - image->buffer.data ==
+	       content_offset);
+	memcpy(CBFS_SUBHEADER(entry), data, size);
+	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
+
+	// Process buffer AFTER entry.
+	entry = cbfs_find_next_entry(image, entry);
+	addr = cbfs_get_entry_addr(image, entry);
+	assert(addr < addr_next);
+
+	if (addr_next - addr < min_entry_size) {
+		DEBUG("No space after content to keep CBFS structure.\n");
+		return -1;
+	}
+
+	len = addr_next - addr - min_entry_size;
+	cbfs_create_empty_entry(image, entry, len, "");
+	if (verbose > 1) cbfs_print_entry_info(image, entry, stderr);
+	return 0;
+}
+
+int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
+		   const char *name, uint32_t type, uint32_t content_offset) {
+	uint32_t entry_type;
+	uint32_t addr, addr_next;
+	struct cbfs_file *entry, *next;
+	uint32_t header_size, need_size, new_size;
+
+	header_size = cbfs_calculate_file_header_size(name);
+
+	need_size = header_size + buffer->size;
+	DEBUG("cbfs_add_entry('%s'@0x%x) => need_size = %u+%zu=%u\n",
+	      name, content_offset, header_size, buffer->size, need_size);
+
+	if (IS_TOP_ALIGNED_ADDRESS(content_offset)) {
+		// legacy cbfstool takes top-aligned address.
+		uint32_t romsize = ntohl(image->header->romsize);
+		INFO("Converting top-aligned address 0x%x to offset: 0x%x\n",
+		     content_offset, content_offset + romsize);
+		content_offset += romsize;
+	}
+
+	// Merge empty entries.
+	DEBUG("(trying to merge empty entries...)\n");
+	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+
+	for (entry = cbfs_find_first_entry(image);
+	     entry && cbfs_is_valid_entry(entry);
+	     entry = cbfs_find_next_entry(image, entry)) {
+
+		entry_type = ntohl(entry->type);
+		if (entry_type != CBFS_COMPONENT_NULL)
+			continue;
+
+		addr = cbfs_get_entry_addr(image, entry);
+		next = cbfs_find_next_entry(image, entry);
+		addr_next = cbfs_get_entry_addr(image, next);
+
+		DEBUG("cbfs_add_entry: space at 0x%x+0x%x(%d) bytes\n",
+		      addr, addr_next - addr, addr_next - addr);
+		if (addr + need_size > addr_next)
+			continue;
+
+		// Can we simply put object here?
+		if (!content_offset || content_offset == addr + header_size) {
+			DEBUG("Filling new entry data (%zd bytes).\n",
+			      buffer->size);
+			cbfs_create_empty_entry(image, entry, buffer->size,
+						name);
+			entry->type = htonl(type);
+			memcpy(CBFS_SUBHEADER(entry), buffer->data, buffer->size);
+			if (verbose)
+				cbfs_print_entry_info(image, entry, stderr);
+
+			// setup new entry
+			DEBUG("Seting new empty entry.\n");
+			entry = cbfs_find_next_entry(image, entry);
+			new_size = (cbfs_get_entry_addr(image, next) -
+				    cbfs_get_entry_addr(image, entry));
+			new_size -= cbfs_calculate_file_header_size("");
+			DEBUG("new size: %d\n", new_size);
+			cbfs_create_empty_entry(image, entry, new_size, "");
+			if (verbose)
+				cbfs_print_entry_info(image, entry, stderr);
+			return 0;
+		}
+
+		// We need to put content here, and the case is really
+		// complicated...
+		assert(content_offset);
+		if (addr_next < content_offset) {
+			DEBUG("Not for specified offset yet");
+			continue;
+		} else if (addr > content_offset) {
+			DEBUG("Exceed specified content_offset.");
+			break;
+		} else if (addr + header_size > content_offset) {
+			ERROR("Not enough space for header.\n");
+			break;
+		} else if (content_offset + buffer->size > addr_next) {
+			ERROR("Not enough space for content.\n");
+			break;
+		}
+
+		// TODO there are more few tricky cases that we may
+		// want to fit by altering offset.
+		DEBUG("section 0x%x+0x%x for content_offset 0x%x.\n",
+		      addr, addr_next - addr, content_offset);
+
+		if (cbfs_add_entry_at(image, entry, buffer->size, name, type,
+				      buffer->data, content_offset) == 0) {
+			return 0;
+		}
+		break;
+	}
+
+	ERROR("Could not add [%s, %zd bytes (%zd KB)@0x%x]; too big?\n",
+	      buffer->name, buffer->size, buffer->size / 1024, content_offset);
+	return -1;
+}
+
 struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name) {
 	struct cbfs_file *entry;
 	for (entry = cbfs_find_first_entry(image);
@@ -564,6 +738,15 @@ uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry) 
 int cbfs_is_valid_entry(struct cbfs_file *entry) {
 	return (entry &&memcmp(entry->magic, CBFS_FILE_MAGIC,
 			       sizeof(entry->magic)) == 0);
+}
+
+int cbfs_init_entry(struct cbfs_file *entry,
+		    struct buffer *buffer) {
+	memset(entry, 0, sizeof(*entry));
+	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
+	entry->len = htonl(buffer->size);
+	entry->offset = htonl(sizeof(*entry) + strlen(buffer->name) + 1);
+	return 0;
 }
 
 int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,

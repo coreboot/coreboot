@@ -129,6 +129,94 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image) {
 	return 0;
 }
 
+int cbfs_image_create(struct cbfs_image *image,
+		      uint32_t arch,
+		      size_t size,
+		      uint32_t align,
+		      struct buffer *bootblock,
+		      int32_t bootblock_offset,
+		      int32_t header_offset,
+		      int32_t entries_offset)
+{
+	struct cbfs_header *header;
+	struct cbfs_file *entry;
+	uint32_t cbfs_len;
+
+	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
+	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
+	      bootblock_offset, bootblock->size,
+	      header_offset, sizeof(*header), entries_offset);
+
+	if (buffer_create(&image->buffer, size, "(new)") != 0)
+		return -1;
+	image->header = NULL;
+	memset(image->buffer.data, CBFS_CONTENT_DEFAULT_VALUE, size);
+
+	// Adjust legcay top-aligned address to ROM offset.
+	if (IS_TOP_ALIGNED_ADDRESS(entries_offset))
+		entries_offset += (int32_t)size;
+	if (IS_TOP_ALIGNED_ADDRESS(bootblock_offset))
+		bootblock_offset += (int32_t)size;
+	if (IS_TOP_ALIGNED_ADDRESS(header_offset))
+		header_offset += (int32_t) size;
+
+	DEBUG("cbfs_create_image: (real offset) bootblock=0x%x, "
+	      "header=0x%x, entries_offset=0x%x\n",
+	      bootblock_offset, header_offset, entries_offset);
+
+	if (align == 0)
+		align = 64;  // default align size.
+
+	// Prepare bootblock
+	if (bootblock_offset + bootblock->size > size) {
+		ERROR("Bootblock (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
+		      bootblock_offset, bootblock->size, size);
+		return -1;
+	}
+	memcpy(image->buffer.data + bootblock_offset, bootblock->data,
+	       bootblock->size);
+
+	// Prepare header
+	if (header_offset + sizeof(*header) > size) {
+		ERROR("Header (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
+		      header_offset, sizeof(*header), size);
+		return -1;
+	}
+	header = (struct cbfs_header *)(image->buffer.data + header_offset);
+	image->header = header;
+	header->magic = htonl(CBFS_HEADER_MAGIC);
+	header->version = htonl(CBFS_HEADER_VERSION);
+	header->romsize = htonl(size);
+	header->bootblocksize = htonl(bootblock->size);
+	header->align = htonl(align);
+	header->offset = htonl(entries_offset);
+	header->architecture = htonl(arch);
+
+	// Prepare entries
+	if (align_up(entries_offset, align) != entries_offset) {
+		ERROR("Offset (0x%x) must be aligned to 0x%x.\n",
+		      entries_offset, align);
+		return -1;
+	}
+	if (entries_offset + sizeof(*entry) > size) {
+		ERROR("Offset (0x%x+0x%zx) exceed ROM size(0x%zx)\n",
+		      entries_offset, sizeof(*entry), size);
+		return -1;
+	}
+	entry = (struct cbfs_file *)(image->buffer.data + entries_offset);
+	// To calculate available length, find
+	//   e = min(bootblock, header, size) where e > entries_offset.
+	cbfs_len = size;
+	if (bootblock_offset > entries_offset && bootblock_offset < cbfs_len)
+		cbfs_len = bootblock_offset;
+	if (header_offset > entries_offset && header_offset < cbfs_len)
+		cbfs_len = header_offset;
+	cbfs_len -= entries_offset + align;
+	cbfs_create_empty_entry(image, entry, cbfs_len, "");
+	LOG("Created CBFS image (capacity = %d bytes)\n", cbfs_len);
+	return 0;
+}
+
 int cbfs_image_from_file(struct cbfs_image *image, const char *filename) {
 	if (buffer_from_file(&image->buffer, filename) != 0)
 		return -1;

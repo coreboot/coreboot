@@ -43,7 +43,10 @@ static struct param {
 	char *bootblock;
 	uint32_t type;
 	uint32_t baseaddress;
+	uint32_t baseaddress_assigned;
 	uint32_t loadaddress;
+	uint32_t headeroffset;
+	uint32_t headeroffset_assigned;
 	uint32_t entrypoint;
 	uint32_t size;
 	uint32_t alignment;
@@ -343,23 +346,72 @@ static int cbfs_remove(void)
 
 static int cbfs_create(void)
 {
+	struct cbfs_image image;
+	struct buffer bootblock;
+
 	if (param.size == 0) {
 		ERROR("You need to specify a valid -s/--size.\n");
 		return 1;
 	}
 
 	if (!param.bootblock) {
-		ERROR("You need to specify -b/--bootblock.\n");
+		ERROR("You need to specify -B/--bootblock.\n");
 		return 1;
 	}
 
+	// TODO Remove arch or pack into param.
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m/--machine arch\n");
 		return 1;
 	}
 
-	return create_cbfs_image(param.cbfs_name, param.size, param.bootblock,
-						param.alignment, param.offset);
+	if (buffer_from_file(&bootblock, param.bootblock) != 0) {
+		return 1;
+	}
+
+	// Setup default boot offset and header offset.
+	if (!param.baseaddress_assigned) {
+		// put boot block before end of ROM.
+		param.baseaddress = param.size - bootblock.size;
+		DEBUG("bootblock in end of ROM.\n");
+	}
+	if (!param.headeroffset_assigned) {
+		// Put header before bootblock, and make a reference in end of
+		// bootblock.
+		param.headeroffset = (
+				param.baseaddress -
+				sizeof(struct cbfs_header));
+		if (bootblock.size >= sizeof(uint32_t)) {
+			// TODO this only works for 32b top-aligned system now...
+			uint32_t ptr = param.headeroffset - param.size;
+			uint32_t *sig = (uint32_t *)(bootblock.data +
+						     bootblock.size -
+						     sizeof(ptr));
+			*sig = ptr;
+			DEBUG("CBFS header reference in end of bootblock.\n");
+		}
+	}
+
+	if (cbfs_image_create(&image,
+			      arch,
+			      param.size,
+			      param.alignment,
+			      &bootblock,
+			      param.baseaddress,
+			      param.headeroffset,
+			      param.offset) != 0) {
+		ERROR("Failed to create %s.\n", param.cbfs_name);
+		return 1;
+	}
+	buffer_delete(&bootblock);
+
+	if (cbfs_image_write_file(&image, param.cbfs_name) != 0) {
+		ERROR("Failed to write %s.\n", param.cbfs_name);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+	cbfs_image_delete(&image);
+	return 0;
 }
 
 static int cbfs_locate(void)
@@ -458,7 +510,7 @@ static const struct command commands[] = {
 	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
-	{"create", "s:B:a:o:m:vh?", cbfs_create},
+	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
 	{"locate", "f:n:a:Tvh?", cbfs_locate},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
@@ -579,6 +631,10 @@ int main(int argc, char **argv)
 				break;
 			case 'b':
 				param.baseaddress = strtoul(optarg, NULL, 0);
+				// baseaddress may be zero on non-x86, so we
+				// need an explicit "baseaddress_assigned".
+				param.baseaddress = strtoul(optarg, NULL, 0);
+				param.baseaddress_assigned = 1;
 				break;
 			case 'l':
 				param.loadaddress = strtoul(optarg, NULL, 0);
@@ -597,6 +653,11 @@ int main(int argc, char **argv)
 				}
 			case 'B':
 				param.bootblock = optarg;
+				break;
+			case 'H':
+				param.headeroffset = strtoul(
+						optarg, NULL, 0);
+				param.headeroffset_assigned = 1;
 				break;
 			case 'a':
 				param.alignment = strtoul(optarg, NULL, 0);

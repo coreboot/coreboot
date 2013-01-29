@@ -11,6 +11,8 @@ romstage-y += pinmux.c
 romstage-y += power.c
 romstage-y += soc.c
 romstage-y += uart.c
+romstage-y += dmc_common.c
+romstage-y += dmc_init_ddr3.c
 
 #ramstage-y += clock.c
 #ramstage-y += clock_init.c
@@ -30,8 +32,6 @@ ramstage-y += uart.c
 #ramstage-$(CONFIG_EXYNOS_ACE_SHA) += ace_sha.c
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c
 ramstage-$(CONFIG_SPL_BUILD) += lowlevel_init_c.c
-ramstage-$(CONFIG_SPL_BUILD) += dmc_common.c
-ramstage-$(CONFIG_SPL_BUILD) += dmc_init_ddr3.c
 
 exynos5250_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5250 BL1\n"

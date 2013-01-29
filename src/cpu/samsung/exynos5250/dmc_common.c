@@ -26,6 +26,8 @@
 #include <common.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/setup.h>
+#include <cpu/samsung/exynos5250/dmc.h>
+#include <cpu/samsung/exynos5250/clock_init.h>
 #include <cpu/samsung/exynos5-common/spl.h>
 #include <system.h>
 
@@ -179,22 +181,3 @@ void dmc_config_memory(struct mem_timings *mem, struct exynos5_dmc *dmc)
 	writel(DMC_MEMBASECONFIG1_VAL, &dmc->membaseconfig1);
 }
 
-void mem_ctrl_init()
-{
-	struct spl_machine_param *param = spl_get_machine_params();
-	struct mem_timings *mem;
-	int ret;
-
-	mem = clock_get_mem_timings();
-
-	/* If there are any other memory variant, add their init call below */
-	if (param->mem_type == DDR_MODE_DDR3) {
-		ret = ddr3_mem_ctrl_init(mem, param->mem_iv_size);
-		if (ret) {
-			printk(BIOS_ERR, "Memory controller init failed, err: %u", ret);
-			BUG();
-		}
-	} else {
-		die("Unknown memory type");
-	}
-}

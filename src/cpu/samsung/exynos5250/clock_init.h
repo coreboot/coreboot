@@ -31,27 +31,27 @@ enum {
 
 /* These are the ratio's for configuring ARM clock */
 struct arm_clk_ratios {
-	unsigned arm_freq_mhz;		/* Frequency of ARM core in MHz */
+	unsigned int arm_freq_mhz;	/* Frequency of ARM core in MHz */
 
-	unsigned apll_mdiv;
-	unsigned apll_pdiv;
-	unsigned apll_sdiv;
+	unsigned int apll_mdiv;
+	unsigned int apll_pdiv;
+	unsigned int apll_sdiv;
 
-	unsigned arm2_ratio;
-	unsigned apll_ratio;
-	unsigned pclk_dbg_ratio;
-	unsigned atb_ratio;
-	unsigned periph_ratio;
-	unsigned acp_ratio;
-	unsigned cpud_ratio;
-	unsigned arm_ratio;
+	unsigned int arm2_ratio;
+	unsigned int apll_ratio;
+	unsigned int pclk_dbg_ratio;
+	unsigned int atb_ratio;
+	unsigned int periph_ratio;
+	unsigned int acp_ratio;
+	unsigned int cpud_ratio;
+	unsigned int arm_ratio;
 };
 
 /* These are the memory timings for a particular memory type and speed */
 struct mem_timings {
 	enum mem_manuf mem_manuf;	/* Memory manufacturer */
 	enum ddr_mode mem_type;		/* Memory type */
-	unsigned frequency_mhz;		/* Frequency of memory in MHz */
+	unsigned int frequency_mhz;	/* Frequency of memory in MHz */
 
 	/* Here follow the timing parameters for the selected memory */
 	uint8_t apll_mdiv;
@@ -77,18 +77,18 @@ struct mem_timings {
 	uint8_t bpll_sdiv;
 	uint8_t use_bpll;       /* 1 to use BPLL for cdrex, 0 to use MPLL */
 	uint8_t pclk_cdrex_ratio;
-	unsigned direct_cmd_msr[MEM_TIMINGS_MSR_COUNT];
+	unsigned int direct_cmd_msr[MEM_TIMINGS_MSR_COUNT];
 
-	unsigned timing_ref;
-	unsigned timing_row;
-	unsigned timing_data;
-	unsigned timing_power;
+	unsigned int timing_ref;
+	unsigned int timing_row;
+	unsigned int timing_data;
+	unsigned int timing_power;
 
 	/* DQS, DQ, DEBUG offsets */
-	unsigned phy0_dqs;
-	unsigned phy1_dqs;
-	unsigned phy0_dq;
-	unsigned phy1_dq;
+	unsigned int phy0_dqs;
+	unsigned int phy1_dqs;
+	unsigned int phy0_dq;
+	unsigned int phy1_dq;
 	uint8_t phy0_tFS;
 	uint8_t phy1_tFS;
 	uint8_t phy0_pulld_dqs;
@@ -116,21 +116,21 @@ struct mem_timings {
 	uint8_t zq_mode_term;
 	uint8_t zq_mode_noterm;	/* 1 to allow termination disable */
 
-	unsigned memcontrol;
-	unsigned memconfig;
+	unsigned int memcontrol;
+	unsigned int memconfig;
 
-	unsigned membaseconfig0;
-	unsigned membaseconfig1;
-	unsigned prechconfig_tp_cnt;
-	unsigned dpwrdn_cyc;
-	unsigned dsref_cyc;
-	unsigned concontrol;
+	unsigned int membaseconfig0;
+	unsigned int membaseconfig1;
+	unsigned int prechconfig_tp_cnt;
+	unsigned int dpwrdn_cyc;
+	unsigned int dsref_cyc;
+	unsigned int concontrol;
 	/* Channel and Chip Selection */
 	uint8_t dmc_channels;		/* number of memory channels */
 	uint8_t chips_per_channel;	/* number of chips per channel */
 	uint8_t chips_to_configure;	/* number of chips to configure */
 	uint8_t send_zq_init;		/* 1 to send this command */
-	unsigned impedance;		/* drive strength impedeance */
+	unsigned int impedance;		/* drive strength impedeance */
 	uint8_t gate_leveling_enable;	/* check gate leveling is enabled */
 };
 

@@ -744,7 +744,7 @@ struct mem_timings *clock_get_mem_timings(void)
 	return NULL;
 }
 
-void system_clock_init()
+void system_clock_init(void)
 {
 	struct exynos5_clock *clk = (struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
 	struct exynos5_mct_regs *mct_regs =

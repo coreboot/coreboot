@@ -706,9 +706,7 @@ void mem_ctrl_init(void);
  */
 int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size);
 
-/* FIXME(dhendrix): why is this here? commenting it out and we'll use
-   clock_init.h instead */
-//void system_clock_init(void);
+void ddr3_init(void);
 
 void tzpc_init(void);
 /*

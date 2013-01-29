@@ -24,6 +24,7 @@
 
 #include <config.h>
 #include <arch/io.h>
+#include <console/console.h>
 //#include "clock.h"
 /* FIXME(dhendrix): untangle clock/clk ... */
 #include <cpu/samsung/s5p-common/clock.h>
@@ -67,28 +68,37 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	phy0_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY0_BASE;
 	phy1_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY1_BASE;
 	dmc = (struct exynos5_dmc *)EXYNOS5_DMC_CTRL_BASE;
-
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: reset phy: ");
 	reset_phy_ctrl();
+	printk(BIOS_SPEW, "done\n");
 
 	/* Set Impedance Output Driver */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Set Impedance Output Driver\n");
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: mem->impedance 0x%x\n",
+	       mem->impedance);
 	val = (mem->impedance << CA_CK_DRVR_DS_OFFSET) |
 		(mem->impedance << CA_CKE_DRVR_DS_OFFSET) |
 		(mem->impedance << CA_CS_DRVR_DS_OFFSET) |
 		(mem->impedance << CA_ADR_DRVR_DS_OFFSET);
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: val 0x%x\n", val);
 	writel(val, &phy0_ctrl->phy_con39);
 	writel(val, &phy1_ctrl->phy_con39);
 
 	/* Set Read Latency and Burst Length for PHY0 and PHY1 */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
+	       "Set Read Latency and Burst Length for PHY0 and PHY1\n");
 	val = (mem->ctrl_bstlen << PHY_CON42_CTRL_BSTLEN_SHIFT) |
 		(mem->ctrl_rdlat << PHY_CON42_CTRL_RDLAT_SHIFT);
 	writel(val, &phy0_ctrl->phy_con42);
 	writel(val, &phy1_ctrl->phy_con42);
 
 	/* ZQ Calibration */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: ZQ Calibration\n");
 	if (dmc_config_zq(mem, phy0_ctrl, phy1_ctrl))
 		return SETUP_ERR_ZQ_CALIBRATION_FAILURE;
 
 	/* DQ Signal */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: DQ Signal\n");
 	writel(mem->phy0_pulld_dqs, &phy0_ctrl->phy_con14);
 	writel(mem->phy1_pulld_dqs, &phy1_ctrl->phy_con14);
 
@@ -99,6 +109,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	update_reset_dll(dmc, DDR_MODE_DDR3);
 
 	/* DQS Signal */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: DQS Signal\n");
 	writel(mem->phy0_dqs, &phy0_ctrl->phy_con4);
 	writel(mem->phy1_dqs, &phy1_ctrl->phy_con4);
 
@@ -116,6 +127,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	writel(val, &phy1_ctrl->phy_con12);
 
 	/* Start DLL locking */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Start DLL Locking\n");
 	writel(val | (mem->ctrl_start << PHY_CON12_CTRL_START_SHIFT),
 		&phy0_ctrl->phy_con12);
 	writel(val | (mem->ctrl_start << PHY_CON12_CTRL_START_SHIFT),
@@ -127,9 +139,12 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 		&dmc->concontrol);
 
 	/* Memory Channel Inteleaving Size */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
+	       "Memory Channel Inteleaving Size\n");
 	writel(mem->iv_size, &dmc->ivcontrol);
 
 	/* Set DMC MEMCONTROL register */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Set DMC MEMCONTROL register\n");
 	val = mem->memcontrol & ~DMC_MEMCONTROL_DSREF_ENABLE;
 	writel(val, &dmc->memcontrol);
 
@@ -139,10 +154,13 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	writel(mem->membaseconfig1, &dmc->membaseconfig1);
 
 	/* Precharge Configuration */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Precharge Configuration\n");
 	writel(mem->prechconfig_tp_cnt << PRECHCONFIG_TP_CNT_SHIFT,
 		&dmc->prechconfig);
 
 	/* Power Down mode Configuration */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
+	       "Power Down mode Configuraation\n");
 	writel(mem->dpwrdn_cyc << PWRDNCONFIG_DPWRDN_CYC_SHIFT |
 		mem->dsref_cyc << PWRDNCONFIG_DSREF_CYC_SHIFT,
 		&dmc->pwrdnconfig);
@@ -150,15 +168,19 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	/* TimingRow, TimingData, TimingPower and Timingaref
 	 * values as per Memory AC parameters
 	 */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
+	       "TimingRow, TimingData, TimingPower and Timingaref\n");
 	writel(mem->timing_ref, &dmc->timingref);
 	writel(mem->timing_row, &dmc->timingrow);
 	writel(mem->timing_data, &dmc->timingdata);
 	writel(mem->timing_power, &dmc->timingpower);
 
 	/* Send PALL command */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Send PALL Command\n");
 	dmc_config_prech(mem, dmc);
 
 	/* Send NOP, MRS and ZQINIT commands */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Send NOP, MRS, and ZQINIT\n");
 	dmc_config_mrs(mem, dmc);
 
 	if (mem->gate_leveling_enable) {
@@ -217,8 +239,10 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 			sdelay(100);
 			i--;
 		}
-		if (!i)
+		if (!i){
+			printk(BIOS_SPEW, "Timeout on RDLVL. No DRAM.\n");
 			return SETUP_ERR_RDLV_COMPLETE_TIMEOUT;
+		}
 		writel(CTRL_RDLVL_GATE_DISABLE, &dmc->rdlvl_config);
 
 		writel(0, &phy0_ctrl->phy_con14);
@@ -238,11 +262,14 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	}
 
 	/* Send PALL command */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Send PALL Command\n");
 	dmc_config_prech(mem, dmc);
 
 	writel(mem->memcontrol, &dmc->memcontrol);
 
 	/* Set DMC Concontrol and enable auto-refresh counter */
+	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
+	       "Set DMC Concontrol and enable auto-refresh counter\n");
 	writel(mem->concontrol | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT)
 		| (mem->aref_en << CONCONTROL_AREF_EN_SHIFT), &dmc->concontrol);
 	return 0;

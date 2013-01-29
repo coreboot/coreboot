@@ -62,6 +62,12 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name);
 int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 		      const char *filename);
 
+/* Adds an entry to CBFS image by given name and type. If content_offset is
+ * non-zero, try to align "content" (CBFS_SUBHEADER(p)) at content_offset.
+ * Returns 0 on success, otherwise non-zero. */
+int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
+		   const char *name, uint32_t type, uint32_t content_offset);
+
 /* Removes an entry from CBFS image. Returns 0 on success, otherwise non-zero. */
 int cbfs_remove_entry(struct cbfs_image *image, const char *name);
 

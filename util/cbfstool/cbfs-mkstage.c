@@ -44,13 +44,12 @@ static unsigned int swap32(unsigned int x)
 unsigned int (*elf32_to_native) (unsigned int) = idemp;
 
 /* returns size of result, or -1 if error */
-int parse_elf_to_stage(unsigned char *input, unsigned char **output,
-		       comp_algo algo, uint32_t * location)
+int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
+		       comp_algo algo, uint32_t *location)
 {
 	Elf32_Phdr *phdr;
-	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
+	Elf32_Ehdr *ehdr = (Elf32_Ehdr *)input->data;
 	char *header, *buffer;
-	unsigned char *out;
 
 	int headers;
 	int i;
@@ -63,12 +62,15 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	if (!compress)
 		return -1;
 
-	if (!iself(input)) {
+	DEBUG("start: parse_elf_to_stage(location=0x%x)\n", *location);
+	if (!iself((unsigned char *)input->data)) {
 		ERROR("The stage file is not in ELF format!\n");
 		return -1;
 	}
 
-	if (!((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
+	// The tool may work in architecture-independent way.
+	if (arch != CBFS_ARCHITECTURE_UNKNOWN &&
+	    !((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARMV7)) &&
 	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {
 		ERROR("The stage file has the wrong architecture\n");
 		return -1;
@@ -162,28 +164,26 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	}
 
 	/* Now make the output buffer */
-	out = calloc(sizeof(struct cbfs_stage) + data_end - data_start, 1);
-
-	if (out == NULL) {
+	if (buffer_create(output, sizeof(*stage) + data_end - data_start,
+			  input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
 		return -1;
 	}
+	memset(output->data, 0, output->size);
 
-	stage = (struct cbfs_stage *)out;
+	stage = (struct cbfs_stage *)output->data;
 
 	stage->load = data_start; /* FIXME: htonll */
 	stage->memlen = mem_end - data_start;
 	stage->compression = algo;
 	stage->entry = ehdr->e_entry; /* FIXME: htonll */
 
-	compress(buffer, data_end - data_start,
-		 (char *)(out + sizeof(struct cbfs_stage)), (int *)&stage->len);
-
+	compress(buffer, data_end - data_start, (output->data + sizeof(*stage)),
+		 (int *)&stage->len);
 	free(buffer);
-
-	*output = out;
 
 	if (*location)
 		*location -= sizeof(struct cbfs_stage);
-	return sizeof(struct cbfs_stage) + stage->len;
+	output->size = sizeof(*stage) + stage->len;
+	return 0;
 }

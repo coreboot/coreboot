@@ -58,60 +58,82 @@ static struct param {
 	.algo = CBFS_COMPRESS_NONE,
 };
 
-static int cbfs_add(void)
-{
-	uint32_t filesize = 0;
-	void *rom, *filedata, *cbfsfile;
+typedef int (*convert_buffer_t)(struct buffer *buffer);
 
-	if (!param.filename) {
+static int cbfs_add_component(const char *cbfs_name,
+			      const char *filename,
+			      const char *name,
+			      uint32_t type,
+			      uint32_t offset,
+			      convert_buffer_t convert) {
+	struct cbfs_image image;
+	struct buffer buffer;
+
+	if (!filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
 	}
 
-	if (!param.name) {
+	if (!name) {
 		ERROR("You need to specify -n/--name.\n");
 		return 1;
 	}
 
-	if (param.type == 0) {
+	if (type == 0) {
 		ERROR("You need to specify a valid -t/--type.\n");
 		return 1;
 	}
 
-	rom = loadrom(param.cbfs_name);
-	if (rom == NULL) {
-		ERROR("Could not load ROM image '%s'.\n",
-			param.cbfs_name);
+	if (buffer_from_file(&buffer, filename) != 0) {
+		ERROR("Could not load file '%s'.\n", filename);
 		return 1;
 	}
 
-	filedata = loadfile(param.filename, &filesize, 0, SEEK_SET);
-	if (filedata == NULL) {
-		ERROR("Could not load file '%s'.\n",
-			param.filename);
-		free(rom);
+	if (convert && convert(&buffer) != 0) {
+		ERROR("Failed to parse file '%s'.\n", filename);
+		buffer_delete(&buffer);
 		return 1;
 	}
 
-	cbfsfile = create_cbfs_file(param.name, filedata, &filesize,
-					param.type, &param.baseaddress);
-	free(filedata);
-
-	if (add_file_to_cbfs(cbfsfile, filesize, param.baseaddress)) {
-		ERROR("Adding file '%s' failed.\n", param.filename);
-		free(cbfsfile);
-		free(rom);
-		return 1;
-	}
-	if (writerom(param.cbfs_name, rom, romsize)) {
-		free(cbfsfile);
-		free(rom);
+	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
+		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
+		buffer_delete(&buffer);
 		return 1;
 	}
 
-	free(cbfsfile);
-	free(rom);
+	if (cbfs_get_entry(&image, name)) {
+		ERROR("'%s' already in ROM image.\n", name);
+		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+
+	if (cbfs_add_entry(&image, &buffer, name, type, offset) != 0) {
+		ERROR("Failed to add '%s' into ROM image.\n", filename);
+		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+
+	if (cbfs_image_write_file(&image, cbfs_name) != 0) {
+		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
+		return 1;
+	}
+
+	buffer_delete(&buffer);
+	cbfs_image_delete(&image);
 	return 0;
+}
+
+static int cbfs_add(void)
+{
+	return cbfs_add_component(param.cbfs_name,
+				  param.filename,
+				  param.name,
+				  param.type,
+				  param.baseaddress,
+				  NULL);
 }
 
 static int cbfs_add_payload(void)

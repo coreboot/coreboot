@@ -563,7 +563,7 @@ static void domain_enable_resources(device_t dev)
 #endif
 
 	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam15 - domain_enable_resources: AmdInitMid.\n");
+	printk(BIOS_DEBUG, "\nFam15 - %s: AmdInitMid.\n", __func__);
 #if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_slp_type != 3) {
 		printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
@@ -582,7 +582,7 @@ static void domain_enable_resources(device_t dev)
 		printk(BIOS_DEBUG, "passed.\n");
 #endif
 
-	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
+	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
 }
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

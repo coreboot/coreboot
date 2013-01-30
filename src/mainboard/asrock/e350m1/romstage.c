@@ -45,7 +45,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-	u8 reg8;
 
 	/*
 	 * All cores: allow caching of flash chip code and data

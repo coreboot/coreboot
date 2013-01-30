@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+2: David Hendricks <dhendrix@chromium.org>
+Submitted-by: David Hendricks <dhendrix@chromium.org>
+Submitted-at: Wed, 30 Jan 2013 21:22:04 +0100
+Reviewed-on: http://review.coreboot.org/2232
+Project: coreboot
+Branch: refs/heads/master

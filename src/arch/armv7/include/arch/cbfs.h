@@ -20,14 +20,9 @@
 #ifndef __INCLUDE_ARCH_CBFS__
 #define __INCLUDE_ARCH_CBFS__
 
-#include <cbfs_core.h>
 #include <arch/byteorder.h>
 
-// TODO FIXME This file is only for providing CBFS function in bootblock.
-// Should be removed once bootblock can link lib/* files.
-#include "lib/cbfs.c"
-
-// mem* and ulzma are now workarounds for bootblock compilation.
+// mem* are now workarounds for bootblock compilation.
 void *memcpy(void *dest, const void *src, size_t n) {
 	char *d = (char *)dest;
 	const char *s = (const char*)src;
@@ -50,11 +45,6 @@ int memcmp(const void *ptr1, const void *ptr2, size_t n) {
 		if ((c = *s1++ - *s2++))
 			return c;
 	return 0;
-}
-
-unsigned long ulzma(unsigned char *src, unsigned char *dest) {
-	// TODO remove this.
-	return -1;
 }
 
 #endif // __INCLUDE_ARCH_CBFS__

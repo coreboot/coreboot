@@ -42,9 +42,6 @@
 
 #define EXYNOS5_CLOCK_BASE		0x10010000
 
-/* TODO Move to Makefile.inc once we support adding bootblock stage files. */
-#include "cpu/samsung/exynos5-common/spi.c"
-
 void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 {
 	struct exynos5_clock *clk =

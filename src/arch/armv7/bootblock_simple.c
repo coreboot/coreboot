@@ -20,9 +20,9 @@
  */
 
 #include <bootblock_common.h>
-#include <arch/cbfs.h>
 #include <arch/hlt.h>
 #include <arch/stages.h>
+#include <cbfs.h>
 
 #include "stages.c"
 

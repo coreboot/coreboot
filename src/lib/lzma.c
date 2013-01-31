@@ -29,9 +29,15 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 #endif
 	/* in pre-ram, it must go on the stack */
 	unsigned char scratchpad[15980];
+	unsigned char *cp;
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
-	outSize = *(UInt32 *)(src + LZMA_PROPERTIES_SIZE);
+	/* The outSize in LZMA stream is a 64bit integer stored in little-endian
+	 * (ref: lzma.cc@LZMACompress: put_64). To prevent accessing by
+	 * unaligned memory address and to load in correct endianess, read each
+	 * byte and re-costruct. */
+	cp = src + LZMA_PROPERTIES_SIZE;
+	outSize = cp[3] << 24 | cp[2] << 16 | cp[1] << 8 | cp[0];
 	if (LzmaDecodeProperties(&state.Properties, properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
 		printk(BIOS_WARNING, "lzma: Incorrect stream properties.\n");
 		return 0;

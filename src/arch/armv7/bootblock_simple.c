@@ -21,8 +21,8 @@
 
 #include <bootblock_common.h>
 #include <arch/bootblock_exit.h>
-#include <arch/cbfs.h>
 #include <arch/hlt.h>
+#include <cbfs.h>
 
 static int boot_cpu(void)
 {

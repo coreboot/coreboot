@@ -58,7 +58,7 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage smm cpu_microcode
+classes-y := ramstage romstage bootblock smm cpu_microcode
 
 #######################################################################
 # Helper functions for ramstage postprocess
@@ -111,6 +111,9 @@ $(error Your current configuration requires binary-only components, but you did 
 endif
 endif
 
+bootblock-c-ccopts:=-D__BOOT_BLOCK__
+bootblock-S-ccopts:=-D__BOOT_BLOCK__
+
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
 
@@ -121,6 +124,7 @@ endif
 
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
+bootblock-c-deps:=$$(OPTION_TABLE_H)
 
 #######################################################################
 # Add handler to compile ACPI's ASL
@@ -285,6 +289,10 @@ $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $
 $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -D__PRE_RAM__ $(CFLAGS) -c -o $@ $<
+
+$(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -MMD -D__BOOT_BLOCK__ $(CFLAGS) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

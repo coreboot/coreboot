@@ -21,3 +21,4 @@ ramstage-y += syslib.c
 #FIXME(dhendrix): should this be a config option?
 romstage-y += eabi_compat.c
 ramstage-y += eabi_compat.c
+bootblock-y += eabi_compat.c

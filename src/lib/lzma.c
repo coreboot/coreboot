@@ -31,7 +31,8 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	unsigned char scratchpad[15980];
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
-	outSize = *(UInt32 *)(src + LZMA_PROPERTIES_SIZE);
+	/* Do memcpy to prevent unaligned memory access. */
+	memcpy(&outSize, src + LZMA_PROPERTIES_SIZE, sizeof(outSize));
 	if (LzmaDecodeProperties(&state.Properties, properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
 		printk(BIOS_WARNING, "lzma: Incorrect stream properties.\n");
 		return 0;

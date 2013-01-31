@@ -99,7 +99,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 
 static u32 amdfam12_nodeid(device_t dev)
 {
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - amdfam12_nodeid\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s\n",__func__);
     return (dev->path.pci.devfn >> 3) - CONFIG_CDB;
 }
 
@@ -117,13 +117,13 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 {
     u32 val;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - set_vga_enable_reg - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     val =  1 | (nodeid<<4) | (linkn<<12);
     /* it will routing (1)mmio  0xa0000:0xbffff (2) io 0x3b0:0x3bb,
      0x3c0:0x3df */
     f1_write_config32(0xf4, val);
 
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - set_vga_enable_reg - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -133,7 +133,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
     struct resource *res;
     unsigned nodeid, link = 0;
     int result;
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - reg_useable - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     res = 0;
     for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
         device_t dev;
@@ -153,7 +153,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
             result = 1;
         }
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - reg_useable - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
     return result;
 }
 
@@ -221,7 +221,7 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
 {
     struct resource *resource;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - amdfam12_link_read_bases - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     /* Initialize the io space constraints on the current bus */
     resource = amdfam12_find_iopair(dev, nodeid, link);
     if (resource) {
@@ -275,7 +275,7 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
         }
 #endif
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - amdfam12_link_read_bases - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
@@ -347,7 +347,7 @@ static void read_resources(device_t dev)
     u32 nodeid;
     struct bus *link;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - read_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
     nodeid = amdfam12_nodeid(dev);
     for(link = dev->link_list; link; link = link->next) {
@@ -355,7 +355,7 @@ static void read_resources(device_t dev)
             amdfam12_link_read_bases(dev, nodeid, link->link_num);
         }
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - read_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -366,7 +366,7 @@ static void set_resource(device_t dev, struct resource *resource,
     unsigned reg, link_num;
     char buf[50];
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - set_resource - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
     /* Make certain the resource has actually been set */
     if (!(resource->flags & IORESOURCE_ASSIGNED)) {
@@ -406,7 +406,7 @@ static void set_resource(device_t dev, struct resource *resource,
     sprintf(buf, " <node %x link %x>",
         nodeid, link_num);
     report_resource_stored(dev, resource, buf);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - set_resource - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -418,7 +418,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 {
     struct bus *link;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - create_vga_resource - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
     /* find out which link the VGA card is connected,
      * we only deal with the 'first' vga card */
@@ -442,7 +442,7 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
 
     printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
     set_vga_enable_reg(nodeid, link->link_num);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - create_vga_resource - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -452,7 +452,7 @@ static void set_resources(device_t dev)
     struct bus *bus;
     struct resource *res;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - set_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
     /* Find the nodeid */
     nodeid = amdfam12_nodeid(dev);
@@ -469,7 +469,7 @@ static void set_resources(device_t dev)
             assign_resources(bus);
         }
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - set_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void setup_uma_memory(void)
@@ -506,7 +506,7 @@ static void domain_read_resources(device_t dev)
 {
     unsigned reg;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_read_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
     /* Find the already assigned resource pairs */
     get_fx_devs();
@@ -576,14 +576,14 @@ static void domain_read_resources(device_t dev)
         resource->flags = IORESOURCE_MEM;
     }
 #endif
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - domain_read_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 static void domain_set_resources(device_t dev)
 {
   u32 val;
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_set_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     printk(BIOS_DEBUG, "  amsr - incoming dev = %08lx\n",dev);
 
 
@@ -781,7 +781,7 @@ printk(BIOS_DEBUG, "  adsr - high_tables_size = %x.\n",high_tables_size);
         }
     }
 printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - domain_set_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -789,14 +789,14 @@ static void domain_enable_resources(device_t dev)
 {
 //  u32 val;
   /* Must be called after PCI enumeration and resource allocation */
-//  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_enable_resources - agesawrapper_amdinitmid - Start.\n");
-  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - domain_enable_resources - Start.\n");
+//  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - agesawrapper_amdinitmid - Start.\n",__func__);
+  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 //  val = agesawrapper_amdinitmid ();
 //  if(val) {
 //    printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
 //  }
-//  printk(BIOS_DEBUG, "Fam12h - northbridge.c - domain_enable_resources - agesawrapper_amdinitmid - End.\n");
-  printk(BIOS_DEBUG, "Fam12h - northbridge.c - domain_enable_resources - End.\n");
+//  printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - agesawrapper_amdinitmid - End.\n",__func__);
+  printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -805,7 +805,7 @@ static void domain_enable_resources(device_t dev)
 
 static void cpu_bus_read_resources(device_t dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_read_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
 #if CONFIG_MMCONF_SUPPORT
     struct resource *resource = new_resource(dev, 0xc0010058);
@@ -814,50 +814,50 @@ static void cpu_bus_read_resources(device_t dev)
     resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
         IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 #endif
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_read_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void cpu_bus_set_resources(device_t dev)
 {
     struct resource *resource = find_resource(dev, 0xc0010058);
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_set_resources - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     if (resource) {
         report_resource_stored(dev, resource, " <mmconfig>");
     }
     pci_dev_set_resources(dev);
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_set_resources - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 static void cpu_bus_init(device_t dev)
 {
     u32 val;
 
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     initialize_cpus(dev->link_list);
 
 #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
     /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - sb_After_Pci_Init - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - sb_After_Pci_Init - Start.\n",__func__);
     sb_After_Pci_Init ();
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - sb_After_Pci_Init - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - sb_After_Pci_Init - End.\n",__func__);
 #endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
 
 #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
     /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - sb_Mid_Post_Init - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - sb_Mid_Post_Init - Start.\n",__func__);
     sb_Mid_Post_Init ();
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - sb_Mid_Post_Init - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - sb_Mid_Post_Init - End.\n",__func__);
 #endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
 
     /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - cpu_bus_init - agesawrapper_amdinitmid - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - agesawrapper_amdinitmid - Start.\n",__func__);
     val = agesawrapper_amdinitmid ();
     if(val) {
         printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - agesawrapper_amdinitmid - End.\n");
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - cpu_bus_init - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - agesawrapper_amdinitmid - End.\n",__func__);
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -909,7 +909,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void root_complex_enable_dev(struct device *dev)
 {
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - root_complex_enable_dev - Start.\n");
+    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     static int done = 0;
 
 	/* Do not delay UMA setup, as a device on the PCI bus may evaluate
@@ -927,7 +927,7 @@ static void root_complex_enable_dev(struct device *dev)
     else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
         dev->ops = &cpu_bus_ops;
     }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - root_complex_enable_dev - End.\n");
+    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 

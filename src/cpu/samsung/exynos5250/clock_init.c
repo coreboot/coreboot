@@ -725,6 +725,9 @@ struct arm_clk_ratios *get_arm_ratios(void)
 
 struct mem_timings *clock_get_mem_timings(void)
 {
+	/* FIXME: hard-coded for now */
+	return &mem_timings[0];
+#if 0
 	struct mem_timings *mem;
 	enum ddr_mode mem_type;
 	enum mem_manuf mem_manuf;
@@ -742,6 +745,7 @@ struct mem_timings *clock_get_mem_timings(void)
 		}
 	}
 	return NULL;
+#endif
 }
 
 void system_clock_init(void)

@@ -175,6 +175,8 @@ enum mem_manuf {
 	MEM_MANUF_COUNT = 2, // fancy that.
 };
 
+#define DMC_INTERLEAVE_SIZE		0x1f
+
 /* CONCONTROL register fields */
 #define CONCONTROL_DFI_INIT_START_SHIFT	28
 #define CONCONTROL_RD_FETCH_SHIFT	12

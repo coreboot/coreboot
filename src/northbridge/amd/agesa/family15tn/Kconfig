@@ -33,10 +33,10 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config MMCONF_BASE_ADDRESS
 	hex
-	default 0xA0000000
+	default 0xF8000000
 
 config MMCONF_BUS_NUMBER
 	int
-	default 256
+	default 64
 
 endif

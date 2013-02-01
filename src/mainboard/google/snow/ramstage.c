@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The ChromeOS Authors
+ * Copyright (C) 2013 The ChromeOS Authors
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,18 +17,16 @@
  * MA 02111-1307 USA
  */
 
-#include <device/device.h>
 #include <console/console.h>
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
-static void mainboard_enable(device_t dev)
+void main(void)
 {
-	//dev->ops->init = mainboard_init;
-}
+//	volatile unsigned long *pshold = (unsigned long *)0x1004330c;
+//	*pshold &= ~0x100;	/* shut down */
 
-struct chip_operations mainboard_ops = {
-	.name	= "Samsung/Google ARM ChromeBook",
-	.enable_dev = mainboard_enable,
-};
+	/* FIXME: console_init() seems to cause things to die... Maybe
+	   we need to reset our stack pointer? */
+//	console_init();
+	printk(BIOS_INFO, "hello from ramstage\n");
+	while (1);
+}

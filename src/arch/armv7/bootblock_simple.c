@@ -20,9 +20,11 @@
  */
 
 #include <bootblock_common.h>
-#include <arch/bootblock_exit.h>
 #include <arch/cbfs.h>
 #include <arch/hlt.h>
+#include <arch/stages.h>
+
+#include "stages.c"
 
 static int boot_cpu(void)
 {
@@ -34,7 +36,7 @@ static int boot_cpu(void)
 	return 1;
 }
 
-void main(unsigned long bist)
+void main(void)
 {
 	const char *target1 = "fallback/romstage";
 	unsigned long romstage_entry;
@@ -49,6 +51,6 @@ void main(unsigned long bist)
 			CBFS_DEFAULT_MEDIA, target1);
 
 	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
-	if (romstage_entry) bootblock_exit(romstage_entry);
+	if (romstage_entry) stage_exit(romstage_entry);
 	hlt();
 }

@@ -28,6 +28,7 @@ romstage-y += romstage.c
 romstage-y += smdk5250_spl.c
 ramstage-y += smdk5250_spl.c
 #ramstage-y += mainboard.c
+ramstage-y += ramstage.c
 
 # romstage-$(CONFIG_CHROMEOS) += chromeos.c
 

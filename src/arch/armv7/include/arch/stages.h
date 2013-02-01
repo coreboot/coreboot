@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
+ * Copyright (C) 2013 The ChromiumOS Authors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-void main(void);
+#ifndef __ARCH_STAGES_H
+#define __ARCH_STAGES_H
 
-/* romstage_main is simply a stub to invoke main(), to handle ARM mode switching
- * (ARM/Thumb) properly. */
+extern void main(void);
 
-void romstage_main(void) __attribute__((section(".text.entry.armv7")));
-void romstage_main(void)
-{
-	main();
-}
+void stage_entry(void) __attribute__((section(".text.stage_entry.armv7")));
+void stage_exit(unsigned long);
+
+#endif

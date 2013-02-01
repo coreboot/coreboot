@@ -73,8 +73,12 @@ endif
 prepare:
 	$(Q)mkdir -p $(obj)
 
+dumpfv: dumpfv.c
+	$(Q)printf "    CC         $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) dumpfv.c -o dumpfv -I include
+
 clean:
-	$(Q)rm -rf $(obj) $(LIBPAYLOAD_DIR) .xcompile .config .config.old
+	$(Q)rm -rf $(obj) $(LIBPAYLOAD_DIR) .xcompile .config .config.old dumpfv
 
 .PHONY: $(PHONY) clean
 

@@ -9,8 +9,6 @@ romstage-y += syslib.c
 #ramstage-y += printk_init.c
 #romstage-y += walkcbfs.S
 
-ramstage-y += c_start.S
-
 ramstage-y += div0.c
 ramstage-y += div64.S
 ramstage-y += hang_spl.c

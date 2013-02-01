@@ -32,6 +32,7 @@ SECTIONS
 	 */
 	.text : {
 		_text = .;
+		*(.text.stage_entry.armv7);
 		*(.text);
 		*(.text.*);
 		. = ALIGN(16);

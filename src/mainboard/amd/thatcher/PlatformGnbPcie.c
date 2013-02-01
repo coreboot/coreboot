@@ -131,7 +131,7 @@ PCIe_COMPLEX_DESCRIPTOR Trinity = {
  *  OemCustomizeInitEarly
  *
  *  Description:
- *    This is the stub function will call the host environment through the binary block
+ *    This stub function will call the host environment through the binary block
  *    interface (call-out port) to provide a user hook opportunity
  *
  *  Parameters:

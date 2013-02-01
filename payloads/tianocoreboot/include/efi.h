@@ -25,6 +25,7 @@
 typedef long intn_t;
 typedef unsigned long uintn_t;
 
+#define PI_SPECIFICATION_VERSION 0x0001000A
 #include <EfiTypes.h>
 #include <EfiFirmwareVolumeHeader.h>
 #include <PiFirmwareFile.h>

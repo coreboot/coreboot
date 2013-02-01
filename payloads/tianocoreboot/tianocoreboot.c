@@ -30,6 +30,19 @@
 #undef VERBOSE
 #undef INVENTORY
 
+static unsigned int cpuid_eax(unsigned int op)
+{
+	unsigned int eax;
+
+	__asm__("mov %%ebx, %%edi;"
+		"cpuid;"
+		"mov %%edi, %%ebx;"
+		: "=a" (eax)
+		: "0" (op)
+		: "ecx", "edx", "edi");
+	return eax;
+}
+
 static void print_guid(EFI_GUID *guid)
 {
 	printf("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
@@ -108,7 +121,7 @@ static void dump_uefi_ffs_file_header(EFI_FFS_FILE_HEADER *file)
 }
 #endif
 
-void *load_dxe_core(void *pe, void *target)
+static void *load_dxe_core(void *pe, void *target)
 {
 	dos_header_t *dos_hdr = (dos_header_t *)pe;
 
@@ -273,7 +286,7 @@ void *load_dxe_core(void *pe, void *target)
 	return (target + pe_hdr->AddressOfEntryPoint - offset);
 }
 
-void start_dxe_core(void *entry, void *stack, void *hoblist)
+static void start_dxe_core(void *entry, void *stack, void *hoblist)
 {
 	printf("\nJumping to DXE core at %p\n", entry);
 	asm volatile(
@@ -301,13 +314,24 @@ static const EFI_HOB_FIRMWARE_VOLUME FirmwareVolume = {
 	0 /* Length */
 };
 
+static const EFI_HOB_FIRMWARE_VOLUME2 FirmwareVolume2 = {
+	{ EFI_HOB_TYPE_FV2, sizeof(EFI_HOB_FIRMWARE_VOLUME2), 0 },
+	0 /* BaseAddress */,
+	0 /* Length */
+};
+
 /* 1..n */
 static const EFI_HOB_RESOURCE_DESCRIPTOR ResourceDescriptor = {
 	{ EFI_HOB_TYPE_RESOURCE_DESCRIPTOR, sizeof(EFI_HOB_RESOURCE_DESCRIPTOR), 0 },
 	{ 0 }, // owner EFI_GUID
 	EFI_RESOURCE_SYSTEM_MEMORY,
-	EFI_RESOURCE_ATTRIBUTE_PRESENT | EFI_RESOURCE_ATTRIBUTE_INITIALIZED |
-		EFI_RESOURCE_ATTRIBUTE_TESTED,
+	(EFI_RESOURCE_ATTRIBUTE_PRESENT                 |
+	 EFI_RESOURCE_ATTRIBUTE_TESTED                  |
+	 EFI_RESOURCE_ATTRIBUTE_INITIALIZED             |
+	 EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE             |
+	 EFI_RESOURCE_ATTRIBUTE_WRITE_COMBINEABLE       |
+	 EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE |
+	 EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE),
 	0, /* PhysicalStart */
 	0 /* ResourceLength */
 };
@@ -346,6 +370,10 @@ static void prepare_handoff_blocks(void *hoblist, EFI_FIRMWARE_VOLUME_HEADER *fv
 	memcpy(ptr, &FirmwareVolume, sizeof(FirmwareVolume));
 	ptr += sizeof(FirmwareVolume);
 
+	EFI_HOB_FIRMWARE_VOLUME2 *fv2 = (EFI_HOB_FIRMWARE_VOLUME2 *)ptr;
+	memcpy(ptr, &FirmwareVolume2, sizeof(FirmwareVolume2));
+	ptr += sizeof(FirmwareVolume2);
+
 	for (i = 0; i < lib_sysinfo.n_memranges; i++) {
 		EFI_HOB_RESOURCE_DESCRIPTOR *resource;
 		if (lib_sysinfo.memrange[i].type != CB_MEM_RAM)
@@ -361,6 +389,7 @@ static void prepare_handoff_blocks(void *hoblist, EFI_FIRMWARE_VOLUME_HEADER *fv
 	memcpy(ptr, &MemoryAllocationModule, sizeof(MemoryAllocationModule));
 	ptr += sizeof(MemoryAllocationModule);
 
+	EFI_HOB_CPU *cpu = ptr;
 	memcpy(ptr, &Cpu, sizeof(Cpu));
 	ptr += sizeof(Cpu);
 
@@ -378,8 +407,17 @@ static void prepare_handoff_blocks(void *hoblist, EFI_FIRMWARE_VOLUME_HEADER *fv
 	fv->BaseAddress = (unsigned long)fvh;
 	fv->Length = fvh->FvLength;
 
-	allocation->MemoryAllocationHeader.MemoryBaseAddress = dxecore_base;
-	allocation->MemoryAllocationHeader.MemoryLength = DXE_CORE_SIZE;
+	fv2->BaseAddress = (unsigned long)fvh;
+	fv2->Length = fvh->FvLength;
+
+	allocation->MemoryAllocationHeader.MemoryBaseAddress = (unsigned long)fvh;
+	allocation->MemoryAllocationHeader.MemoryLength = fvh->FvLength;
+	allocation->EntryPoint = dxecore_base;
+
+	if (cpuid_eax(0x80000000) >= 0x80000008) {
+		int phys = cpuid_eax(0x80000008) & 0xff;
+		cpu->SizeOfMemorySpace = phys;
+	}
 }
 
 int main(void)

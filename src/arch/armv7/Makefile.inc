@@ -25,7 +25,6 @@
 # Take care of subdirectories
 subdirs-y += boot/
 subdirs-y += lib/
-# subdirs-y += smp/
 
 ################################################################################
 # Build the final rom image
@@ -60,10 +59,6 @@ endif
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	if [ -f $(objcbfs)/coreboot_ap.elf ]; \
-	then \
-		$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ap.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ap -c $(CBFS_COMPRESS_FLAG) ; \
-	fi
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
@@ -131,20 +126,6 @@ else
 	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
-################################################################################
-# Ramstage for AP CPU (AMD K8, obsolete?)
-
-#$(objcbfs)/coreboot_ap.debug: $(objgenerated)/coreboot_ap.o $(src)/arch/armv7/init/ldscript_apc.lb
-#	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-#	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/init/ldscript_apc.lb $<
-
-#$(objgenerated)/coreboot_ap.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(OPTION_TABLE_H)
-#	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-#	$(CC) -MMD $(CFLAGS) -I$(src) -D__PRE_RAM__ -I. -I$(obj) -c $< -o $@
-
-################################################################################
-# done
-
 CFLAGS += \
 	-ffixed-r8\
 	-march=armv7-a\
@@ -153,10 +134,6 @@ CFLAGS += \
 	-mthumb\
 	-mthumb-interwork
 
-# For various headers imported from Linux
-CFLAGS += -D__LINUX_ARM_ARCH__=7
-
-#crt0s = $(src)/arch/armv7/bootblock.inc
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 
@@ -173,18 +150,9 @@ ifeq ($(CONFIG_LLSHELL),y)
 crt0s += $(src)/arch/armv7/llshell/llshell.inc
 endif
 
-# FIXME: do we need romstage.inc? Maybe just get rid of this entirely.
-#crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
-
-#$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
-#	@printf "    POST       romstage.inc\n"
-#	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
-#		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
-#	mv $@.tmp $@
 
 # Things that appear in every board
 romstage-srcs += $(objgenerated)/crt0.s
@@ -251,8 +219,6 @@ $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-#BOOTBLOCK_OBJS = $(objgenerated)/bootblock.o $(bootblock_exit_o)
-
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
@@ -274,7 +240,6 @@ endif
 ################################################################################
 # Build the romstage
 
-# FIXME(dhendrix): added debug printfs
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)

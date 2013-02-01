@@ -104,6 +104,14 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	$(OBJCOPY) --add-gnu-debuglink=$< $@.tmp
 	mv $@.tmp $@
 
+stages_c = $(src)/arch/armv7/stages.c
+stages_o = $(obj)/arch/armv7/stages.o
+
+$(stages_o): $(stages_c)
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -Wa,-acdlns -I. $(INCLUDES) -c -o $@ $< -marm
+
+
 ################################################################################
 # Build the coreboot_ram (stage 2)
 
@@ -115,12 +123,12 @@ else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/coreboot_ram.ld $<
 endif
 
-$(objgenerated)/coreboot_ram.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME)
+$(objgenerated)/coreboot_ram.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --wrap __do_div64 --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
 else
-	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 ################################################################################
@@ -239,18 +247,11 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
-bootblock_exit_c = $(src)/arch/armv7/bootblock_exit.c
-bootblock_exit_o = $(obj)/arch/armv7/bootblock_exit.o
-
-$(bootblock_exit_o): $(bootblock_exit_c)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -I. $(INCLUDES) -c -o $@ $< -marm
-
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
-BOOTBLOCK_OBJS = $(objgenerated)/bootblock.o $(bootblock_exit_o)
+#BOOTBLOCK_OBJS = $(objgenerated)/bootblock.o $(bootblock_exit_o)
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -262,39 +263,32 @@ $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_S
 		$< > $(objgenerated)/bootblock.inc.d
 	$(CC) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(objcbfs)/bootblock.debug: $(BOOTBLOCK_OBJS) $(objgenerated)/bootblock.ld
+$(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(BOOTBLOCK_OBJS) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group  $(objgenerated)/bootblock.o $(stages) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 ################################################################################
 # Build the romstage
 
-romstage_main_c = $(src)/arch/armv7/romstage_main.c
-romstage_main_o = $(obj)/arch/armv7/romstage_main.o
-
-$(romstage_main_o): $(romstage_main_c)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -c -o $@ $< -marm
-
 # FIXME(dhendrix): added debug printfs
-$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(romstage_main_o) $(objgenerated)/romstage_null.ld
+$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_null.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--start-group $(romstage-objs) $(romstage_main_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) $(romstage_main_o) -T $(objgenerated)/romstage_xip.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) $(stages_o) -T $(objgenerated)/romstage_xip.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(romstage_main_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions

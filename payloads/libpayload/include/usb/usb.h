@@ -238,6 +238,7 @@ void usb_nop_init (usbdev_t *dev);
 void usb_hub_init (usbdev_t *dev);
 void usb_hid_init (usbdev_t *dev);
 void usb_msc_init (usbdev_t *dev);
+void usb_generic_init (usbdev_t *dev);
 
 u8 *get_descriptor (usbdev_t *dev, unsigned char bmRequestType,
 		    int descType, int descIdx, int langID);
@@ -275,5 +276,23 @@ static inline void usb_debug(const char *fmt, ...)
 	va_end(ap);
 #endif
 }
+
+/**
+ * To be implemented by libpayload-client. It's called by the USB stack
+ * when a new USB device is found which isn't claimed by a built in driver,
+ * so the client has the chance to know about it.
+ *
+ * @param dev descriptor for the USB device
+ */
+void __attribute__((weak)) usb_generic_create (usbdev_t *dev);
+
+/**
+ * To be implemented by libpayload-client. It's called by the USB stack
+ * when it finds out that a USB device is removed which wasn't claimed by a
+ * built in driver.
+ *
+ * @param dev descriptor for the USB device
+ */
+void __attribute__((weak)) usb_generic_remove (usbdev_t *dev);
 
 #endif

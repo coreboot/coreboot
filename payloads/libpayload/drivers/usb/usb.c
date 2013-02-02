@@ -402,6 +402,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		usb_debug ("HID\n");
 #ifdef CONFIG_USB_HID
 		controller->devices[adr]->init = usb_hid_init;
+		return adr;
 #else
 		usb_debug ("NOTICE: USB HID support not compiled in\n");
 #endif
@@ -419,6 +420,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		usb_debug ("MSC\n");
 #ifdef CONFIG_USB_MSC
 		controller->devices[adr]->init = usb_msc_init;
+		return adr;
 #else
 		usb_debug ("NOTICE: USB MSC support not compiled in\n");
 #endif
@@ -427,6 +429,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		usb_debug ("hub\n");
 #ifdef CONFIG_USB_HUB
 		controller->devices[adr]->init = usb_hub_init;
+		return adr;
 #else
 		usb_debug ("NOTICE: USB hub support not compiled in.\n");
 #endif
@@ -456,6 +459,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		usb_debug("unsupported class %x\n", class);
 		break;
 	}
+	controller->devices[adr]->init = usb_generic_init;
 	return adr;
 }
 
@@ -491,3 +495,19 @@ usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 	return controller->devices[newdev] ? newdev : -1;
 }
 
+static void
+usb_generic_destroy (usbdev_t *dev)
+{
+	if (usb_generic_remove)
+		usb_generic_remove(dev);
+}
+
+void
+usb_generic_init (usbdev_t *dev)
+{
+	dev->data = NULL;
+	dev->destroy = usb_generic_destroy;
+
+	if (usb_generic_create)
+		usb_generic_create(dev);
+}

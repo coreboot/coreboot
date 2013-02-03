@@ -477,6 +477,15 @@ void gpio_set_rate(int gpio, int mode);
  */
 int gpio_decode_number(unsigned gpio_list[], int count);
 
+/*
+ * similar to gpio_decode_number, but reads only a single GPIO
+ *
+ * @param gpio		GPIO to read
+ * @return -1 if the value cannot be determined. Otherwise returns
+ *              the corresponding MVL3 enum value.
+ */
+int gpio_read_mvl3(unsigned gpio);
+
 void gpio_info(void);
 
 #endif	/* EXYNOS5250_GPIO_H_ */

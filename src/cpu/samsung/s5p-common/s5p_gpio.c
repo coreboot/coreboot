@@ -21,6 +21,7 @@
 /* FIXME(dhendrix): fix this up so it doesn't require a bunch of #ifdefs... */
 #include <common.h>
 //#include <arch/io.h>
+#include <gpio.h>
 #include <arch/gpio.h>
 #include <console/console.h>
 #include <cpu/samsung/s5p-common/gpio.h>
@@ -414,42 +415,61 @@ int gpio_set_value(unsigned gpio, int value)
  */
 #define GPIO_DELAY_US 5
 
-/* FIXME(dhendrix): this should probably go to a more generic location */
+int gpio_read_mvl3(unsigned gpio)
+{
+	int high, low;
+	enum mvl3 value;
+
+	if (gpio >= GPIO_MAX_PORT)
+		return -1;
+
+	gpio_direction_input(gpio);
+	gpio_set_pull(gpio, EXYNOS_GPIO_PULL_UP);
+	udelay(GPIO_DELAY_US);
+	high = gpio_get_value(gpio);
+	gpio_set_pull(gpio, EXYNOS_GPIO_PULL_DOWN);
+	udelay(GPIO_DELAY_US);
+	low = gpio_get_value(gpio);
+
+	if (high && low) /* external pullup */
+		value = LOGIC_1;
+	else if (!high && !low) /* external pulldown */
+		value = LOGIC_0;
+	else /* floating */
+		value = LOGIC_Z;
+
+	/*
+	 * Check if line is externally pulled high and
+	 * configure the internal pullup to match.  For
+	 * floating and pulldowns, the GPIO is already
+	 * configured with an internal pulldown from the
+	 * above test.
+	 */
+	if (value == LOGIC_1)
+		gpio_set_pull(gpio, EXYNOS_GPIO_PULL_UP);
+
+	return value;
+}
+
 int gpio_decode_number(unsigned gpio_list[], int count)
 {
 	int result = 0;
 	int multiplier = 1;
-	int value, high, low;
-	int gpio, i;
+	int gpio, i, value;
+	enum mvl3 mvl3;
 
 	for (i = 0; i < count; i++) {
 		gpio = gpio_list[i];
-		if (gpio >= GPIO_MAX_PORT)
-			return -1;
-		gpio_direction_input(gpio);
-		gpio_set_pull(gpio, EXYNOS_GPIO_PULL_UP);
-		udelay(GPIO_DELAY_US);
-		high = gpio_get_value(gpio);
-		gpio_set_pull(gpio, EXYNOS_GPIO_PULL_DOWN);
-		udelay(GPIO_DELAY_US);
-		low = gpio_get_value(gpio);
 
-		if (high && low) /* external pullup */
+		mvl3 = gpio_read_mvl3(gpio);
+		if (mvl3 == LOGIC_1)
 			value = 2;
-		else if (!high && !low) /* external pulldown */
+		else if (mvl3 == LOGIC_0)
 			value = 1;
-		else /* floating */
+		else if (mvl3 == LOGIC_Z)
 			value = 0;
-
-		/*
-		 * Check if line is externally pulled high and
-		 * configure the internal pullup to match.  For
-		 * floating and pulldowns, the GPIO is already
-		 * configured with an internal pulldown from the
-		 * above test.
-		 */
-		if (value == 2)
-			gpio_set_pull(gpio, EXYNOS_GPIO_PULL_UP);
+		else
+			return -1;
 
 		result += value * multiplier;
 		multiplier *= 3;

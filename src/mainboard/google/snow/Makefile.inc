@@ -17,6 +17,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+bootblock-y += clocks.c
+bootblock-y += mainboard.c
+bootblock-y += memory.c
+
+romstage-y += mainboard.c
+romstage-y += memory.c
 romstage-y += romstage.c
 
 # ramstage-y += ec.c

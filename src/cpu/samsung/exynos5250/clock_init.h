@@ -25,9 +25,13 @@
 #ifndef __EXYNOS_CLOCK_INIT_H
 #define __EXYNOS_CLOCK_INIT_H
 
+struct mem_timings;
+
+#if 0
 enum {
 	MEM_TIMINGS_MSR_COUNT	= 4,
 };
+#endif
 
 /* These are the ratio's for configuring ARM clock */
 struct arm_clk_ratios {
@@ -47,9 +51,10 @@ struct arm_clk_ratios {
 	unsigned int arm_ratio;
 };
 
+#if 0
 /* These are the memory timings for a particular memory type and speed */
 struct mem_timings {
-	enum mem_manuf mem_manuf;	/* Memory manufacturer */
+	int mem_manuf;			/* Memory manufacturer */
 	enum ddr_mode mem_type;		/* Memory type */
 	unsigned int frequency_mhz;	/* Frequency of memory in MHz */
 
@@ -137,14 +142,21 @@ struct mem_timings {
 /**
  * Get the correct memory timings for our selected memory type and speed.
  *
- * This function can be called from SPL or the main U-Boot.
- *
  * @return pointer to the memory timings that we should use
  */
-struct mem_timings *clock_get_mem_timings(void);
+struct mem_timings *get_mem_timings(void);
+#endif
+
+/**
+ * Get the clock ratios for CPU configuration
+ *
+ * @return pointer to the clock ratios that we should use
+ */
+struct arm_clk_ratios *get_arm_clk_ratios(void);
 
 /*
  * Initialize clock for the device
  */
-void system_clock_init(void);
+void system_clock_init(struct mem_timings *mem,
+		struct arm_clk_ratios *arm_clk_ratio);
 #endif

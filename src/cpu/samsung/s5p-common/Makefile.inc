@@ -1,3 +1,8 @@
+# cpu_info.c is needed in the bootblock so that samsung_get_base_* macros work
+bootblock-y += pwm.c	# needed by timer.c
+bootblock-y += s5p_gpio.c
+bootblock-y += timer.c
+
 romstage-y += cpu_info.c
 romstage-y += pwm.c	# needed by timer.c
 romstage-y += s5p_gpio.c

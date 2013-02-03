@@ -81,10 +81,18 @@
 
 #ifndef __ASSEMBLER__
 
+/* FIXME(dhendrix): cpu_is_exynos5() seems broken atm... */
+#if 0
 #define SAMSUNG_BASE(device, base)				\
 static inline unsigned int samsung_get_base_##device(void)	\
 {								\
 	return cpu_is_exynos5() ? EXYNOS5_##base : 0;		\
+}
+#endif
+#define SAMSUNG_BASE(device, base)				\
+static inline unsigned int samsung_get_base_##device(void)	\
+{								\
+	return EXYNOS5_##base;					\
 }
 
 SAMSUNG_BASE(adc, ADC_BASE)

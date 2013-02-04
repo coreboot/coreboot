@@ -138,8 +138,20 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset) {
 
 static int cbfstool_convert_mkpayload(struct buffer *buffer, uint32_t *offset) {
 	struct buffer output;
-	if (parse_elf_to_payload(buffer, &output, param.algo) != 0)
+	int ret;
+	/* per default, try and see if payload is an ELF binary */
+	ret = parse_elf_to_payload(buffer, &output, param.algo);
+
+	/* If it's not an ELF, see if it's a UEFI FV */
+	if (ret != 0)
+		ret = parse_fv_to_payload(buffer, &output, param.algo);
+
+	/* Not a supported payload type */
+	if (ret != 0) {
+		ERROR("Not a supported payload type (ELF / FV).\n");
 		return -1;
+	}
+
 	buffer_delete(buffer);
 	// direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));

@@ -26,6 +26,8 @@
 #include "common.h"
 #include "cbfs.h"
 #include "elf.h"
+#include "fv.h"
+#include "coff.h"
 
 int parse_elf_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo)
@@ -43,7 +45,7 @@ int parse_elf_to_payload(const struct buffer *input,
 	int i;
 
 	if(!iself((unsigned char *)input->data)){
-		ERROR("The payload file is not in ELF format!\n");
+		INFO("The payload file is not in ELF format!\n");
 		return -1;
 	}
 
@@ -246,4 +248,107 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 	output->size = doffset + ntohl(segs[0].len);
 
 	return 0;
+}
+
+int parse_fv_to_payload(const struct buffer *input,
+			 struct buffer *output, comp_algo algo)
+{
+	comp_func_ptr compress;
+	struct cbfs_payload_segment *segs;
+	int doffset, len = 0;
+	firmware_volume_header_t *fv;
+	ffs_file_header_t *fh;
+	common_section_header_t *cs;
+	dos_header_t *dh;
+	coff_header_t *ch;
+	pe_opt_header_t *ph;
+	int dh_offset;
+
+	uint32_t loadaddress;
+	uint32_t entrypoint;
+
+	compress = compression_function(algo);
+	if (!compress)
+		return -1;
+
+	DEBUG("start: parse_fv_to_payload\n");
+
+	fv = (firmware_volume_header_t *)input->data;
+	if (fv->signature != FV_SIGNATURE) {
+		INFO("Not a UEFI firmware volume.\n");
+		return -1;
+	}
+
+	fh = (ffs_file_header_t *)(input->data + fv->header_length);
+	if (fh->file_type != FILETYPE_SEC) {
+		ERROR("Not a usable UEFI firmware volume.\n");
+		return -1;
+	}
+
+	cs = (common_section_header_t *)&fh[1];
+	if (cs->section_type != SECTION_PE32) {
+		ERROR("Not a usable UEFI firmware volume.\n");
+		return -1;
+	}
+
+	dh = (dos_header_t *)&cs[1];
+	if (dh->signature != 0x5a4d) {
+		ERROR("Not a usable UEFI firmware volume.\n");
+		return -1;
+	}
+
+	dh_offset = (unsigned long)dh - (unsigned long)input->data;
+	DEBUG("dos header offset = %x\n", dh_offset);
+
+	ch = (coff_header_t *)(((void *)dh)+dh->e_lfanew);
+	if (ch->machine != 0x14c) {
+		ERROR("Not a usable UEFI firmware volume.\n");
+		return -1;
+	}
+
+	ph = (pe_opt_header_t *)&ch[1];
+	if (ph->signature != 267) {
+		ERROR("Not a usable UEFI firmware volume.\n");
+		return -1;
+	}
+
+	DEBUG("image base %x\n", ph->image_addr);
+	DEBUG("entry point %x\n", ph->entry_point);
+
+	loadaddress = ph->image_addr - dh_offset;
+	entrypoint = ph->image_addr + ph->entry_point;
+
+	if (buffer_create(output, (2 * sizeof(*segs) + input->size),
+			  input->name) != 0)
+		return -1;
+
+	memset(output->data, 0, output->size);
+
+	segs = (struct cbfs_payload_segment *)output->data;
+	doffset = (2 * sizeof(*segs));
+
+	/* Prepare code segment */
+	segs[0].type = PAYLOAD_SEGMENT_CODE;
+	segs[0].load_addr = htonll(loadaddress);
+	segs[0].mem_len = htonl(input->size);
+	segs[0].offset = htonl(doffset);
+
+	compress(input->data, input->size, output->data + doffset, &len);
+	segs[0].compression = htonl(algo);
+	segs[0].len = htonl(len);
+
+	if ((unsigned int)len >= input->size) {
+		WARN("Compressing data would make it bigger - disabled.\n");
+		segs[0].compression = 0;
+		segs[0].len = htonl(input->size);
+		memcpy(output->data + doffset, input->data, input->size);
+	}
+
+	/* prepare entry point segment */
+	segs[1].type = PAYLOAD_SEGMENT_ENTRY;
+	segs[1].load_addr = htonll(entrypoint);
+	output->size = doffset + ntohl(segs[0].len);
+
+	return 0;
+
 }

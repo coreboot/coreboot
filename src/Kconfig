@@ -539,9 +539,9 @@ endchoice
 config TIANOCORE_FILE
 	string "Tianocore FILE"
 	depends on PAYLOAD_TIANOCORE
-	default "DXEFV.Fv"
+	default "COREBOOT.FD"
 	help
-	  TBD
+	  The result of a corebootPkg build
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
@@ -558,15 +558,11 @@ config PAYLOAD_FILE
 	depends on PAYLOAD_FILO
 	default "payloads/external/FILO/filo/build/filo.elf"
 
-config PAYLOAD_FILE
-	depends on PAYLOAD_TIANOCORE
-	default "$(obj)/tiano/tianocoreboot.elf"
-
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
 	default y
-	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO
+	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO || PAYLOAD_TIANOCORE
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.

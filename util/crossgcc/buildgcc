@@ -595,6 +595,8 @@ test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}\n" || \
 test -r $IASL_DIR/generate/unix/.failed && exit 1
 fi
 
+cp `pwd`/$0 $DESTDIR$TARGETDIR/$0.commit.`git log -1 --oneline $0 | sed 's, .*,,'`
+
 if [ $SAVETEMPS -eq 0 ]; then
 	printf "Cleaning up... "
 	rm -rf ${GMP_DIR} build-gmp

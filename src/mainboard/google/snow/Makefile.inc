@@ -33,6 +33,7 @@ romstage-y += romstage.c
 # parameters. Grep around for spl_get_machine_params for examples.
 romstage-y += smdk5250_spl.c
 ramstage-y += smdk5250_spl.c
+bootblock-y += smdk5250_spl.c
 #ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 

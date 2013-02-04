@@ -24,6 +24,7 @@
 
 #include <common.h>
 #include <arch/io.h>
+#include <arch/hlt.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
@@ -62,7 +63,7 @@ void power_shutdown(void)
 
 	clrbits_le32(&power->ps_hold_ctrl, POWER_PS_HOLD_CONTROL_DATA_HIGH);
 
-	hang();
+	hlt();
 }
 
 void power_enable_dp_phy(void)

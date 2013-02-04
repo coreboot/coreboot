@@ -9,6 +9,7 @@
 bootblock-y += clock_init.c
 bootblock-y += clock.c
 bootblock-y += pinmux.c
+bootblock-y += power.c
 bootblock-y += soc.c
 bootblock-y += uart.c
 

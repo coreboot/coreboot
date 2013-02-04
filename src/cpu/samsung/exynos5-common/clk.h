@@ -52,7 +52,7 @@ struct clk_bit_info {
 	s8 prediv_bit;
 };
 
-/* FIXME(dhendrix) conflicts with stp-common/clk.h */
+/* FIXME(dhendrix) conflicts with s5p-common/clk.h */
 #if 0
 unsigned long get_pll_clk(int pllreg);
 unsigned long get_arm_clk(void);

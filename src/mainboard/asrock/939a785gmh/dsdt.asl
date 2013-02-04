@@ -43,13 +43,13 @@ DefinitionBlock (
 		PRQD, 0x00000008,  /* Offset: 1h */
 	}
 	IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
-		PINA, 0x00000008,	/* Index 0  */
+		PINA, 0x00000008,	/* Index 0 */
 		PINB, 0x00000008,	/* Index 1 */
 		PINC, 0x00000008,	/* Index 2 */
 		PIND, 0x00000008,	/* Index 3 */
 		AINT, 0x00000008,	/* Index 4 */
-		SINT, 0x00000008,	/*  Index 5 */
-		, 0x00000008,	             /* Index 6 */
+		SINT, 0x00000008,	/* Index 5 */
+		, 0x00000008,		/* Index 6 */
 		AAUD, 0x00000008,	/* Index 7 */
 		AMOD, 0x00000008,	/* Index 8 */
 		PINE, 0x00000008,	/* Index 9 */

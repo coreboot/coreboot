@@ -22,10 +22,10 @@
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
-	0x04,           // DSDT revision: ACPI v4.0
-	"COREv4",       // OEM id
-	"COREBOOT",     // OEM table id
-	0x20111103      // OEM revision
+	0x04,		// DSDT revision: ACPI v4.0
+	"COREv4",	// OEM id
+	"COREBOOT",	// OEM table id
+	0x20111103	// OEM revision
 ) {
 
 Scope(\_SB)

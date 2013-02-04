@@ -19,11 +19,11 @@
 
 /* DefinitionBlock Statement */
 DefinitionBlock (
-	"DSDT.AML",           /* Output filename */
-	"DSDT",                 /* Signature */
+	"DSDT.AML",	/* Output filename */
+	"DSDT",		/* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"ASROCK",               /* OEMID */
-	"939A785GM",     /* TABLE ID */
+	"ASROCK",	/* OEMID */
+	"939A785GM",	/* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */

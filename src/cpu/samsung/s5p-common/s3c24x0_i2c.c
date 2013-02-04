@@ -39,9 +39,6 @@
 #include "device/i2c.h"
 #include "s3c24x0_i2c.h"
 
-/* for board_i2c_* */
-#include "cpu/samsung/exynos5-common/spl.h"
-
 #define I2C_WRITE	0
 #define I2C_READ	1
 
@@ -531,12 +528,7 @@ int i2c_probe(uchar chip)
 	 * address was <ACK>ed (i.e. there was a chip at that address which
 	 * drove the data line low).
 	 */
-	if (board_i2c_claim_bus(i2c->node)) {
-		debug("I2C cannot claim bus %d\n", i2c->bus_num);
-		return -1;
-	}
 	ret = i2c_transfer(i2c->regs, I2C_READ, chip << 1, 0, 0, buf, 1);
-	board_i2c_release_bus(i2c->node);
 
 	return ret != I2C_OK;
 }
@@ -578,13 +570,8 @@ int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 	i2c = get_bus(g_current_bus);
 	if (!i2c)
 		return -1;
-	if (board_i2c_claim_bus(i2c->node)) {
-		debug("I2C cannot claim bus %d\n", i2c->bus_num);
-		return -1;
-	}
 	ret = i2c_transfer(i2c->regs, I2C_READ, chip << 1, &xaddr[4 - alen],
 			   alen, buffer, len);
-	board_i2c_release_bus(i2c->node);
 	if (ret) {
 		debug("I2c read: failed %d\n", ret);
 		return 1;
@@ -628,13 +615,9 @@ int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len)
 	i2c = get_bus(g_current_bus);
 	if (!i2c)
 		return -1;
-	if (board_i2c_claim_bus(i2c->node)) {
-		debug("I2C cannot claim bus %d\n", i2c->bus_num);
-		return -1;
-	}
+
 	ret = i2c_transfer(i2c->regs, I2C_WRITE, chip << 1, &xaddr[4 - alen],
 			   alen, buffer, len);
-	board_i2c_release_bus(i2c->node);
 
 	return ret != 0;
 }

@@ -649,15 +649,8 @@ int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 #endif
 	if (!i2c)
 		return -1;
-#if 0
-	if (board_i2c_claim_bus(i2c->node)) {
-		debug("I2C cannot claim bus %d\n", i2c->bus_num);
-		return -1;
-	}
-#endif
 	ret = i2c_transfer(i2c->regs, I2C_READ, chip << 1, &xaddr[4 - alen],
 			   alen, buffer, len);
-	//board_i2c_release_bus(i2c->node);
 	if (ret) {
 		//debug("I2c read: failed %d\n", ret);
 		return 1;
@@ -702,15 +695,8 @@ int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len)
 	i2c = &i2c0;
 	if (!i2c)
 		return -1;
-#if 0
-	if (board_i2c_claim_bus(i2c->node)) {
-		//debug("I2C cannot claim bus %d\n", i2c->bus_num);
-		return -1;
-	}
-#endif
 	ret = i2c_transfer(i2c->regs, I2C_WRITE, chip << 1, &xaddr[4 - alen],
 			   alen, buffer, len);
-	//board_i2c_release_bus(i2c->node);
 
 	return ret != 0;
 }

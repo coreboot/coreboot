@@ -48,9 +48,6 @@ endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 COREBOOT_ROM_DEPENDENCIES+=filo
 endif
-ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
-COREBOOT_ROM_DEPENDENCIES+=tianocore
-endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(objcbfs)/coreboot_ap.elf
 endif
@@ -103,10 +100,20 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
-	@printf "    PAYLOAD    Tiano Core (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
-	@printf "    PAYLOAD    Tiano Core FD $(CONFIG_TIANOCORE_FILE)\n"
-	$(CBFSTOOL) $@.tmp add -f $(CONFIG_TIANOCORE_FILE) -n $(CONFIG_CBFS_PREFIX)/tianocore.fd -t raw
+	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(eval $(shell \
+		TMPFILE=`mktemp`; \
+		head -c1200 $(CONFIG_TIANOCORE_FILE) | \
+		tail -c1100 > $$TMPFILE && \
+		LC_ALL=C objdump -x $$TMPFILE | \
+		grep .text | while read idx nam size vma lma off align; do \
+			printf "TIANO_ENTRY:=%d " 0x$$vma; \
+			expr `printf "%d - %d - 100" 0x$$vma 0x$$off`; \
+		done && \
+		rm $$TMPFILE))
+	$(eval TIANO_BASE:=$(word 2,$(TIANO_ENTRY)))
+	$(eval TIANO_ENTRY:=$(word 1,$(TIANO_ENTRY)))
+	$(CBFSTOOL) $@.tmp add-flat-binary -f $(CONFIG_TIANOCORE_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -l $(TIANO_BASE) -e $(TIANO_ENTRY) -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"
@@ -416,9 +423,4 @@ filo:
 			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
 			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
 			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
-
-tianocore:
-	$(MAKE) -C payloads/tianocoreboot \
-			CC="$(CC)" AS="$(AS)" OBJCOPY="$(OBJCOPY)" \
-			obj=$(abspath $(obj))/tiano
 

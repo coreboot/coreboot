@@ -24,6 +24,7 @@
 
 #ifndef __EXYNOS_CLOCK_INIT_H
 #define __EXYNOS_CLOCK_INIT_H
+#include "dmc.h"
 
 /* These are the ratio's for configuring ARM clock */
 struct arm_clk_ratios {

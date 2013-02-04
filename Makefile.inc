@@ -111,8 +111,8 @@ $(error Your current configuration requires binary-only components, but you did 
 endif
 endif
 
-bootblock-c-ccopts:=-D__BOOT_BLOCK__
-bootblock-S-ccopts:=-D__BOOT_BLOCK__
+bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
+bootblock-S-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
 
 smm-c-ccopts:=-D__SMM__
 smm-S-ccopts:=-D__SMM__
@@ -292,7 +292,7 @@ $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $
 
 $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -D__BOOT_BLOCK__ $(CFLAGS) -c -o $@ $<
+	$(CC) -MMD $(bootblock-c-ccopts) $(CFLAGS) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

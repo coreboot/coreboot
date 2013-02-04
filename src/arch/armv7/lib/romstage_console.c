@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <console/vtxprintf.h>
+// TODO Unify with x86 (CONFIG_CONSOLE_SERIAL8250)
 #if CONFIG_SERIAL_CONSOLE
 #include <uart.h>
 #endif
@@ -43,18 +44,15 @@ void console_tx_byte(unsigned char byte)
 #endif
 }
 
-/* FIXME(dhendrix): add this back in */
-#if 0
-static void console_tx_flush(void)
+static void _console_tx_flush(void)
 {
-#if CONFIG_CONSOLE_SERIAL
-	uart_tx_flush(CONFIG_CONSOLE_SERIAL_UART_ADDRESS);
+#if CONFIG_SERIAL_CONSOLE
+	uart_tx_flush();
 #endif
 #if CONFIG_USBDEBUG
 	usbdebug_tx_flush(0);
 #endif
 }
-#endif
 
 int do_printk(int msg_level, const char *fmt, ...)
 {
@@ -69,7 +67,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	i = vtxprintf(console_tx_byte, fmt, args);
 	va_end(args);
 
-//	console_tx_flush();
+	_console_tx_flush();
 
 	return i;
 }

@@ -131,7 +131,11 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->vendor = smbios_add_string(t->eos, "coreboot");
 #if !CONFIG_CHROMEOS
 	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
-	t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
+
+	if (strlen(CONFIG_LOCALVERSION))
+		t->bios_version = smbios_add_string(t->eos, CONFIG_LOCALVERSION);
+	else
+		t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
 #else
 #define SPACES \
 	"                                                                  "

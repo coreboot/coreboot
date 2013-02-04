@@ -24,12 +24,13 @@
 #include <cbfs.h>
 #include <common.h>
 
-#include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
-#include <cpu/samsung/exynos5250/clock_init.h>
+#include <cpu/samsung/exynos5250/setup.h>
+
 #include <console/console.h>
-#include <arch/bootblock_exit.h>
 #include <arch/stages.h>
+
+#include "mainboard.h"
 
 void main(void)
 {
@@ -43,28 +44,31 @@ void main(void)
 	struct mem_timings *mem;
 	int ret;
 
-	mem = clock_get_mem_timings();
-	printk(BIOS_SPEW, "clock_get_mem_timings returns 0x%p\n", mem);
+	mem = get_mem_timings();
+	if (!mem) {
+		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
+		while(1);
+	}
 	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
 		mem->mem_manuf,
 		mem->mem_type,
 		mem->mpll_mdiv,
 		mem->frequency_mhz);
 
-       ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE);
-       if (ret) {
-               printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
-                      ret);
-               while(1);
-       }
+	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE);
+	if (ret) {
+		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
+		ret);
+		while(1);
+	}
 
-       printk(BIOS_INFO, "ddr3_init done\n");
+	printk(BIOS_INFO, "ddr3_init done\n");
        /* wow, did it work? */
 	int i;
 	u32 *c = (void *)CONFIG_RAMBASE;
 
 //	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB * 1024);
-//      printk(BIOS_INFO, "mmu_setup done\n");
+//	printk(BIOS_INFO, "mmu_setup done\n");
 	for(i = 0; i < 16384; i++)
 		c[i] = i+32768;
 	for(i = 0; i < 16384; i++)
@@ -72,6 +76,7 @@ void main(void)
 			printk(BIOS_SPEW, "BADc[%02x]: %02x,", i, c[i]);
 	for(i = 0; i < 1048576; i++)
 		c[i] = 0;
+
 	ret = init_default_cbfs_media(&cbfs);
 	if (ret){
 		printk(BIOS_ERR, "init_default_cbfs_media returned %d: HALT\n",

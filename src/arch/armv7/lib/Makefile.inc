@@ -1,3 +1,5 @@
+bootblock-y += syslib.c
+
 romstage-y += cache_v7.c
 romstage-y += cache-cp15.c
 romstage-y += div0.c

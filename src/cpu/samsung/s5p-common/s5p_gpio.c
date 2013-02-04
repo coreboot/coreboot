@@ -21,6 +21,7 @@
 /* FIXME(dhendrix): fix this up so it doesn't require a bunch of #ifdefs... */
 #include <common.h>
 //#include <arch/io.h>
+#include <gpio.h>
 #include <arch/gpio.h>
 #include <console/console.h>
 #include <cpu/samsung/s5p-common/gpio.h>

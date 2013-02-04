@@ -42,112 +42,6 @@
 
 #define EXYNOS5_CLOCK_BASE		0x10010000
 
-void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
-{
-	struct exynos5_clock *clk =
-		(struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
-	unsigned shift;
-	unsigned mask = 0xff;
-	u32 *reg;
-
-	reg = &clk->div_peric1;
-	shift = 24;
-	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
-}
-
-void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
-{
-	struct exynos5_clock *clk =
-		(struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
-	unsigned shift;
-	unsigned mask = 0xff;
-	u32 *reg;
-
-	reg = &clk->div_peric1;
-	shift = 16;
-	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
-}
-
-/**
- * Linearly searches for the most accurate main and fine stage clock scalars
- * (divisors) for a specified target frequency and scalar bit sizes by checking
- * all multiples of main_scalar_bits values. Will always return scalars up to or
- * slower than target.
- *
- * @param main_scalar_bits	Number of main scalar bits, must be > 0 and < 32
- * @param fine_scalar_bits	Number of fine scalar bits, must be > 0 and < 32
- * @param input_freq		Clock frequency to be scaled in Hz
- * @param target_freq		Desired clock frequency in Hz
- * @param best_fine_scalar	Pointer to store the fine stage divisor
- *
- * @return best_main_scalar	Main scalar for desired frequency or -1 if none
- * found
- */
-static int clock_calc_best_scalar(unsigned int main_scaler_bits,
-	unsigned int fine_scalar_bits, unsigned int input_rate,
-	unsigned int target_rate, unsigned int *best_fine_scalar)
-{
-	int i;
-	int best_main_scalar = -1;
-	unsigned int best_error = target_rate;
-	const unsigned int cap = (1 << fine_scalar_bits) - 1;
-	const unsigned int loops = 1 << main_scaler_bits;
-
-#if 0
-	debug("Input Rate is %u, Target is %u, Cap is %u\n", input_rate,
-			target_rate, cap);
-
-	assert(best_fine_scalar != NULL);
-	assert(main_scaler_bits <= fine_scalar_bits);
-#endif
-
-	*best_fine_scalar = 1;
-
-	if (input_rate == 0 || target_rate == 0)
-		return -1;
-
-	if (target_rate >= input_rate)
-		return 1;
-
-	for (i = 1; i <= loops; i++) {
-		const unsigned int effective_div = MAX(MIN(input_rate / i /
-							target_rate, cap), 1);
-		const unsigned int effective_rate = input_rate / i /
-							effective_div;
-		const int error = target_rate - effective_rate;
-
-#if 0
-		debug("%d|effdiv:%u, effrate:%u, error:%d\n", i, effective_div,
-				effective_rate, error);
-#endif
-
-		if (error >= 0 && error <= best_error) {
-			best_error = error;
-			best_main_scalar = i;
-			*best_fine_scalar = effective_div;
-		}
-	}
-
-	return best_main_scalar;
-}
-
-int clock_set_rate(enum periph_id periph_id, unsigned int rate)
-{
-	int main;
-	unsigned int fine;
-
-	main = clock_calc_best_scalar(4, 8, 400000000, rate, &fine);
-	if (main < 0) {
-//		debug("%s: Cannot set clock rate for periph %d",
-//				__func__, periph_id);
-		return -1;
-	}
-	clock_ll_set_ratio(-1, main - 1);
-	clock_ll_set_pre_ratio(-1, fine - 1);
-
-	return 0;
-}
-
 struct gpio_info {
 	unsigned int reg_addr;	/* Address of register for this part */
 	unsigned int max_gpio;	/* Maximum GPIO in this part */
@@ -234,163 +128,6 @@ static uint32_t uart3_base = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 
 #define CONFIG_SYS_CLK_FREQ            24000000
 
-/* exynos5: return pll clock frequency */
-unsigned long get_pll_clk(int pllreg);
-unsigned long get_pll_clk(int pllreg)
-{
-	struct exynos5_clock *clk =
-		(struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
-	unsigned long r, m, p, s, k = 0, mask, fout;
-	unsigned int freq;
-
-	switch (pllreg) {
-	case APLL:
-		r = readl(&clk->apll_con0);
-		break;
-	case BPLL:
-		r = readl(&clk->bpll_con0);
-		break;
-	case MPLL:
-		r = readl(&clk->mpll_con0);
-		break;
-	case EPLL:
-		r = readl(&clk->epll_con0);
-		k = readl(&clk->epll_con1);
-		break;
-	case VPLL:
-		r = readl(&clk->vpll_con0);
-		k = readl(&clk->vpll_con1);
-		break;
-	default:
-//		printk(BIOS_DEBUG, "Unsupported PLL (%d)\n", pllreg);
-		return 0;
-	}
-
-	/*
-	 * APLL_CON: MIDV [25:16]
-	 * MPLL_CON: MIDV [25:16]
-	 * EPLL_CON: MIDV [24:16]
-	 * VPLL_CON: MIDV [24:16]
-	 */
-	if (pllreg == APLL || pllreg == BPLL || pllreg == MPLL)
-		mask = 0x3ff;
-	else
-		mask = 0x1ff;
-
-	m = (r >> 16) & mask;
-
-	/* PDIV [13:8] */
-	p = (r >> 8) & 0x3f;
-	/* SDIV [2:0] */
-	s = r & 0x7;
-
-	freq = CONFIG_SYS_CLK_FREQ;
-
-	if (pllreg == EPLL) {
-		k = k & 0xffff;
-		/* FOUT = (MDIV + K / 65536) * FIN / (PDIV * 2^SDIV) */
-		fout = (m + k / 65536) * (freq / (p * (1 << s)));
-	} else if (pllreg == VPLL) {
-		k = k & 0xfff;
-		/* FOUT = (MDIV + K / 1024) * FIN / (PDIV * 2^SDIV) */
-		fout = (m + k / 1024) * (freq / (p * (1 << s)));
-	} else {
-		/* FOUT = MDIV * FIN / (PDIV * 2^SDIV) */
-		fout = m * (freq / (p * (1 << s)));
-	}
-
-	return fout;
-}
-
-/* src_bit div_bit prediv_bit */
-static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
-	{0,	4,	0,	-1},
-	{4,	4,	4,	-1},
-	{8,	4,	8,	-1},
-	{12,	4,	12,	-1},
-	{0,	4,	0,	8},
-	{4,	4,	16,	24},
-	{8,	4,	0,	8},
-	{12,	4,	16,	24},
-	{-1,	-1,	-1,	-1},
-	{16,	4,	0,	8}, /* PERIPH_ID_SROMC */
-	{20,	4,	16,	24},
-	{24,	4,	0,	8},
-	{0,	4,	0,	4},
-	{4,	4,	12,	16},
-	{-1,	4,	-1,	-1},
-	{-1,	4,	-1,	-1},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{-1,	4,	24,	0},
-	{24,	4,	0,	-1},
-	{24,	4,	0,	-1},
-	{24,	4,	0,	-1},
-	{24,	4,	0,	-1},
-	{24,	4,	0,	-1},
-	{-1,	-1,	-1,	-1},
-	{-1,	-1,	-1,	-1},
-	{-1,	-1,	-1,	-1}, /* PERIPH_ID_I2S1 */
-	{24,	1,	20,	-1}, /* PERIPH_ID_SATA */
-};
-
-static unsigned long my_clock_get_periph_rate(enum periph_id peripheral)
-{
-//	struct exynos5_clock *clk =
-//		(struct exynos5_clock *)samsung_get_base_clock();
-	struct exynos5_clock *clk =
-		(struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
-	struct clk_bit_info *bit_info = &clk_bit_info[peripheral];
-//	struct clk_bit_info bit_info = { 12, 4, 12, -1 };
-	unsigned long sclk, sub_clk;
-	unsigned int src, div, sub_div;
-
-	switch (peripheral) {
-	case PERIPH_ID_UART0:
-	case PERIPH_ID_UART1:
-	case PERIPH_ID_UART2:
-	case PERIPH_ID_UART3:
-		src = readl(&clk->src_peric0);
-		div = readl(&clk->div_peric0);
-		break;
-	case PERIPH_ID_I2C0:
-	case PERIPH_ID_I2C1:
-	case PERIPH_ID_I2C2:
-	case PERIPH_ID_I2C3:
-	case PERIPH_ID_I2C4:
-	case PERIPH_ID_I2C5:
-	case PERIPH_ID_I2C6:
-	case PERIPH_ID_I2C7:
-		src = 0;
-		sclk = get_pll_clk(MPLL);
-		sub_div = ((readl(&clk->div_top1) >> bit_info->div_bit) & 0x7) + 1;
-		div = ((readl(&clk->div_top0) >> bit_info->prediv_bit) & 0x7) + 1;
-		return (sclk / sub_div) / div;
-	default:
-		return -1;
-	};
-
-	src = (src >> bit_info->src_bit) & ((1 << bit_info->n_src_bits) - 1);
-	if (src == SRC_MPLL)
-		sclk = get_pll_clk(MPLL);
-	else if (src == SRC_EPLL)
-		sclk = get_pll_clk(EPLL);
-	else if (src == SRC_VPLL)
-		sclk = get_pll_clk(VPLL);
-	else
-		return 0;
-
-	sub_div = (div >> bit_info->div_bit) & 0xf;
-	sub_clk = sclk / (sub_div + 1);
-
-	return sub_clk;
-}
-
 static void serial_setbrg_dev(void)
 {
 //	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
@@ -401,7 +138,7 @@ static void serial_setbrg_dev(void)
 //	enum periph_id periph;
 
 //	periph = exynos5_get_periph_id(base_port);
-	uclk = my_clock_get_periph_rate(PERIPH_ID_UART3);
+	uclk = clock_get_periph_rate(PERIPH_ID_UART3);
 	val = uclk / baudrate;
 
 	writel(val / 16 - 1, &uart->ubrdiv);
@@ -569,7 +306,7 @@ static void i2c_ch_init(struct s3c24x0_i2c *i2c, int speed, int slaveadd)
 {
 	unsigned long freq, pres = 16, div;
 
-	freq = my_clock_get_periph_rate(PERIPH_ID_I2C0);
+	freq = clock_get_periph_rate(PERIPH_ID_I2C0);
 	/* calculate prescaler and divisor values */
 	if ((freq / pres / (16 + 1)) > speed)
 		/* set prescaler to 512 */
@@ -1222,7 +959,8 @@ static void power_init(void)
 						REG_ENABLE, MAX77686_MV);
 }
 
-struct mem_timings mem_timings[] = {
+/* FIXME(dhendrix): this will be removed in a follow-up patch */
+struct mem_timings my_mem_timings[] = {
 	{
 		.mem_manuf = MEM_MANUF_ELPIDA,
 		.mem_type = DDR_MODE_DDR3,
@@ -1330,7 +1068,8 @@ struct mem_timings mem_timings[] = {
 	},
 };
 
-struct arm_clk_ratios arm_clk_ratios[] = {
+/* FIXME(dhendrix): this will be removed in a follow-up patch */
+struct arm_clk_ratios my_arm_clk_ratios[] = {
 	{
 		.arm_freq_mhz = 1700,
 
@@ -1354,8 +1093,8 @@ static void clock_init(void)
 	struct exynos5_clock *clk = (struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
 	struct exynos5_mct_regs *mct_regs =
 		(struct exynos5_mct_regs *)EXYNOS5_MULTI_CORE_TIMER_BASE;
-	struct mem_timings *mem = &mem_timings[0];
-	struct arm_clk_ratios *arm_clk_ratio = &arm_clk_ratios[0];
+	struct mem_timings *mem = &my_mem_timings[0];
+	struct arm_clk_ratios *arm_clk_ratio = &my_arm_clk_ratios[0];
 	u32 val, tmp;
 
 	/* Turn on the MCT as early as possible. */

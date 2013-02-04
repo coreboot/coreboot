@@ -23,6 +23,12 @@
  * MA 02111-1307 USA
  */
 
+/*
+ * FIXME: This file is essentially the "bootblock" leftover from U-Boot. For
+ * now it serves as a reference until all the resume-related stuff is added
+ * to the appropriate bootblock/romstage/ramstage files in coreboot.
+ */
+
 #include <common.h>
 #include <config.h>
 #include <cpu/samsung/exynos5-common/exynos5-common.h>

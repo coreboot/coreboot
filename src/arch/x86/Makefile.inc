@@ -101,19 +101,7 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 endif
 ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
 	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(eval $(shell \
-		TMPFILE=`mktemp`; \
-		head -c1200 $(CONFIG_TIANOCORE_FILE) | \
-		tail -c1100 > $$TMPFILE && \
-		LC_ALL=C objdump -x $$TMPFILE | \
-		grep .text | while read idx nam size vma lma off align; do \
-			printf "TIANO_ENTRY:=%d " 0x$$vma; \
-			expr `printf "%d - %d - 100" 0x$$vma 0x$$off`; \
-		done && \
-		rm $$TMPFILE))
-	$(eval TIANO_BASE:=$(word 2,$(TIANO_ENTRY)))
-	$(eval TIANO_ENTRY:=$(word 1,$(TIANO_ENTRY)))
-	$(CBFSTOOL) $@.tmp add-flat-binary -f $(CONFIG_TIANOCORE_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -l $(TIANO_BASE) -e $(TIANO_ENTRY) -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_TIANOCORE_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"

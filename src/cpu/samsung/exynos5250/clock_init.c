@@ -597,6 +597,38 @@ static int autodetect_memory(void)
 
 #ifdef CONFIG_SPL_BUILD
 
+#define SIGNATURE	0xdeadbeef
+
+/* Parameters of early board initialization in SPL */
+static struct spl_machine_param machine_param = {
+	.signature	= SIGNATURE,
+	.version	= 1,
+	.params		= "vmubfasirMw",
+	.size		= sizeof(machine_param),
+
+	.mem_iv_size	= 0x1f,
+	.mem_type	= DDR_MODE_DDR3,
+
+	/*
+	 * Set uboot_size to 0x100000 bytes.
+	 *
+	 * This is an overly conservative value chosen to accommodate all
+	 * possible U-Boot image.  You are advised to set this value to a
+	 * smaller realistic size via scripts that modifies the .machine_param
+	 * section of output U-Boot image.
+	 */
+	.uboot_size	= 0x100000,
+
+	.boot_source	= BOOT_MODE_OM,
+	.frequency_mhz	= 800,
+	.arm_freq_mhz	= 1700,
+	.serial_base	= 0x12c30000,
+	.i2c_base	= 0x12c60000,
+//	.board_rev_gpios = GPIO_D00 | (GPIO_D01 << 16),
+	.mem_manuf	= MEM_MANUF_SAMSUNG,
+//	.bad_wake_gpio	= GPIO_Y10,
+};
+
 /**
  * Get the required memory type and speed (SPL version).
  *
@@ -608,7 +640,7 @@ int clock_get_mem_selection(enum ddr_mode *mem_type,
 {
 	struct spl_machine_param *params;
 
-	params = spl_get_machine_params();
+	params = &machine_param;
 	*mem_type = params->mem_type;
 	*frequency_mhz = params->frequency_mhz;
 	*arm_freq = params->arm_freq_mhz;
@@ -719,7 +751,7 @@ struct arm_clk_ratios *get_arm_ratios(void)
 			return arm_ratio;
 	}
 
-	die("get_arm_ratios: Failed to find ratio\n");
+//	die("get_arm_ratios: Failed to find ratio\n");
 	return NULL;
 }
 

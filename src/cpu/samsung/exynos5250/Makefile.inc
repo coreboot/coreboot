@@ -3,6 +3,12 @@
 # image outside of CBFS
 #INTERMEDIATE += exynos5250_add_bl1
 
+# Clock init is done in bootblock to support UART output for
+# debugging. We may add a Kconfig option to disable clock init
+# in the bootblock and try moving it entirely into romstage.
+bootblock-y += clock_init.c
+bootblock-y += clock.c
+
 romstage-y += clock.c
 romstage-y += clock_init.c
 romstage-y += exynos_cache.c

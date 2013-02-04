@@ -175,6 +175,10 @@ enum mem_manuf {
 	MEM_MANUF_COUNT = 2, // fancy that.
 };
 
+enum {
+	MEM_TIMINGS_MSR_COUNT	= 4,
+};
+
 #define DMC_INTERLEAVE_SIZE		0x1f
 
 /* CONCONTROL register fields */
@@ -223,6 +227,100 @@ enum mem_manuf {
 
 #define PHY_CON42_CTRL_RDLAT_SHIFT	0
 #define PHY_CON42_CTRL_RDLAT_MASK	(0x1f << PHY_CON42_CTRL_RDLAT_SHIFT)
+
+/* These are the memory timings for a particular memory type and speed */
+struct mem_timings {
+	enum mem_manuf mem_manuf;	/* Memory manufacturer */
+	enum ddr_mode mem_type;		/* Memory type */
+	unsigned int frequency_mhz;	/* Frequency of memory in MHz */
+
+	/* Here follow the timing parameters for the selected memory */
+	uint8_t apll_mdiv;
+	uint8_t apll_pdiv;
+	uint8_t apll_sdiv;
+	uint8_t mpll_mdiv;
+	uint8_t mpll_pdiv;
+	uint8_t mpll_sdiv;
+	uint8_t cpll_mdiv;
+	uint8_t cpll_pdiv;
+	uint8_t cpll_sdiv;
+	uint8_t gpll_pdiv;
+	uint16_t gpll_mdiv;
+	uint8_t gpll_sdiv;
+	uint8_t epll_mdiv;
+	uint8_t epll_pdiv;
+	uint8_t epll_sdiv;
+	uint8_t vpll_mdiv;
+	uint8_t vpll_pdiv;
+	uint8_t vpll_sdiv;
+	uint8_t bpll_mdiv;
+	uint8_t bpll_pdiv;
+	uint8_t bpll_sdiv;
+	uint8_t use_bpll;       /* 1 to use BPLL for cdrex, 0 to use MPLL */
+	uint8_t pclk_cdrex_ratio;
+	unsigned int direct_cmd_msr[MEM_TIMINGS_MSR_COUNT];
+
+	unsigned int timing_ref;
+	unsigned int timing_row;
+	unsigned int timing_data;
+	unsigned int timing_power;
+
+	/* DQS, DQ, DEBUG offsets */
+	unsigned int phy0_dqs;
+	unsigned int phy1_dqs;
+	unsigned int phy0_dq;
+	unsigned int phy1_dq;
+	uint8_t phy0_tFS;
+	uint8_t phy1_tFS;
+	uint8_t phy0_pulld_dqs;
+	uint8_t phy1_pulld_dqs;
+
+	uint8_t lpddr3_ctrl_phy_reset;
+	uint8_t ctrl_start_point;
+	uint8_t ctrl_inc;
+	uint8_t ctrl_start;
+	uint8_t ctrl_dll_on;
+	uint8_t ctrl_ref;
+
+	uint8_t ctrl_force;
+	uint8_t ctrl_rdlat;
+	uint8_t ctrl_bstlen;
+
+	uint8_t fp_resync;
+	uint8_t iv_size;
+	uint8_t dfi_init_start;
+	uint8_t aref_en;
+
+	uint8_t rd_fetch;
+
+	uint8_t zq_mode_dds;
+	uint8_t zq_mode_term;
+	uint8_t zq_mode_noterm;	/* 1 to allow termination disable */
+
+	unsigned int memcontrol;
+	unsigned int memconfig;
+
+	unsigned int membaseconfig0;
+	unsigned int membaseconfig1;
+	unsigned int prechconfig_tp_cnt;
+	unsigned int dpwrdn_cyc;
+	unsigned int dsref_cyc;
+	unsigned int concontrol;
+	/* Channel and Chip Selection */
+	uint8_t dmc_channels;		/* number of memory channels */
+	uint8_t chips_per_channel;	/* number of chips per channel */
+	uint8_t chips_to_configure;	/* number of chips to configure */
+	uint8_t send_zq_init;		/* 1 to send this command */
+	unsigned int impedance;		/* drive strength impedeance */
+	uint8_t gate_leveling_enable;	/* check gate leveling is enabled */
+};
+
+/**
+ * Get the correct memory timings for our selected memory type and speed.
+ *
+ * @return pointer to the memory timings that we should use
+ */
+struct mem_timings *get_mem_timings(void);
 
 #endif
 #endif

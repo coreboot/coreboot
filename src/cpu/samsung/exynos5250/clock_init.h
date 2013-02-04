@@ -24,6 +24,7 @@
 
 #ifndef __EXYNOS_CLOCK_INIT_H
 #define __EXYNOS_CLOCK_INIT_H
+#include "dmc.h"
 
 enum {
 	MEM_TIMINGS_MSR_COUNT	= 4,

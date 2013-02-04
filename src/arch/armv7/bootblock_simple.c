@@ -46,6 +46,7 @@ void main(void)
 		bootblock_mainboard_init();
 	}
 
+	printk(BIOS_INFO, "hello from bootblock\n");
 	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
 	romstage_entry = (unsigned long)cbfs_load_stage(
 			CBFS_DEFAULT_MEDIA, target1);

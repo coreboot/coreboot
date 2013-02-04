@@ -8,6 +8,10 @@
 # in the bootblock and try moving it entirely into romstage.
 bootblock-y += clock_init.c
 bootblock-y += clock.c
+bootblock-y += uart.c
+bootblock-y += soc.c
+bootblock-y += power.c
+bootblock-y += pinmux.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c

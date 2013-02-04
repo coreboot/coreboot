@@ -38,8 +38,8 @@ void stage_entry(void)
 	main();
 }
 
-void stage_exit(unsigned long addr)
+void stage_exit(void *addr)
 {
-	__attribute__((noreturn)) void (*doit)(void) = (void *)addr;
+	__attribute__((noreturn)) void (*doit)(void) = addr;
 	doit();
 }

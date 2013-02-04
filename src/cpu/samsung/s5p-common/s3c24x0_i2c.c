@@ -221,22 +221,11 @@ void board_i2c_init(const void *blob)
 /*
  * MULTI BUS I2C support
  */
-/*
- * FIXME(dhendrix): not sure why this had to be guarded, but the code
- * should probably go into an exynos5-specific .c file if it really is
- * not generic.
- */
-//#ifdef CONFIG_EXYNOS5
 static void i2c_bus_init(struct s3c24x0_i2c_bus *i2c, unsigned int bus)
 {
 	exynos_pinmux_config(i2c->id, 0);
-
 	i2c_ch_init(i2c->regs, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 }
-//#else
-//#error "should not be here"
-//static void i2c_bus_init(struct s3c24x0_i2c_bus *i2c, unsigned int bus) {}
-//#endif
 
 #ifdef CONFIG_I2C_MULTI_BUS
 int i2c_set_bus_num(unsigned int bus)

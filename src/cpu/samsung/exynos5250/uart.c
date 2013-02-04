@@ -211,4 +211,7 @@ void uart_tx_byte(unsigned char data)
 {
 	exynos5_uart_tx_byte(data);
 }
+
+void uart_tx_flush(void) {
+}
 #endif

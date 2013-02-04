@@ -38,19 +38,19 @@ static int boot_cpu(void)
 
 void main(void)
 {
-	const char *target1 = "fallback/romstage";
-	unsigned long romstage_entry;
+	const char *stage_name = "fallback/romstage";
+	void *entry;
 
 	if (boot_cpu()) {
 		bootblock_cpu_init();
 		bootblock_mainboard_init();
 	}
 
+	printk(BIOS_INFO, "hello from bootblock\n");
 	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
-	romstage_entry = (unsigned long)cbfs_load_stage(
-			CBFS_DEFAULT_MEDIA, target1);
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
 
 	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
-	if (romstage_entry) stage_exit(romstage_entry);
+	if (entry) stage_exit(entry);
 	hlt();
 }

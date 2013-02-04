@@ -8,6 +8,7 @@ known working:
   x86_64-elf
   powerpc-elf
   mipsel-elf
+  armv7a-eabi
 
 known broken:
   alpha-elf

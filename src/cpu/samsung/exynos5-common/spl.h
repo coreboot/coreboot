@@ -91,8 +91,4 @@ struct spl_machine_param *spl_get_machine_params(void);
  */
 void spl_early_init(void);
 
-/* FIXME(dhendrix): for early i2c init */
-void board_i2c_release_bus(int node);
-int board_i2c_claim_bus(int node);
-
 #endif /* __ASM_ARCH_EXYNOS_SPL_H__ */

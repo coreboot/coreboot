@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The ChromeOS Authors
+ * Copyright (C) 2012 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,18 +17,60 @@
  * MA 02111-1307 USA
  */
 
+#include <stdlib.h>
+#include <gpio.h>
 #include <device/device.h>
 #include <console/console.h>
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
+#include <cpu/samsung/exynos5-common/gpio.h>
+#include <cpu/samsung/exynos5250/gpio.h>
 
-static void mainboard_enable(device_t dev)
+#include "mainboard.h"
+
+#define SNOW_BOARD_ID0_GPIO	88	/* GPD0, pin 0 */
+#define SNOW_BOARD_ID1_GPIO	89	/* GPD0, pin 1 */
+
+struct {
+	enum mvl3 id0, id1;
+	enum snow_board_config config;
+} snow_id_map[] = {
+	/*  ID0      ID1         config */
+	{ LOGIC_0, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
+	{ LOGIC_0, LOGIC_1, SNOW_CONFIG_ELPIDA_MP },
+	{ LOGIC_1, LOGIC_0, SNOW_CONFIG_SAMSUNG_DVT },
+	{ LOGIC_1, LOGIC_1, SNOW_CONFIG_ELPIDA_DVT },
+	{ LOGIC_0, LOGIC_Z, SNOW_CONFIG_SAMSUNG_PVT },
+	{ LOGIC_1, LOGIC_Z, SNOW_CONFIG_ELPIDA_PVT },
+	{ LOGIC_Z, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
+	{ LOGIC_Z, LOGIC_Z, SNOW_CONFIG_ELPIDA_MP },
+	{ LOGIC_Z, LOGIC_1, SNOW_CONFIG_RSVD },
+};
+
+int board_get_config(void)
 {
-	//dev->ops->init = mainboard_init;
+	int i;
+	int id0, id1;
+	enum snow_board_config config = SNOW_CONFIG_UNKNOWN;
+
+	id0 = gpio_read_mvl3(SNOW_BOARD_ID0_GPIO);
+	id1 = gpio_read_mvl3(SNOW_BOARD_ID1_GPIO);
+	if (id0 < 0 || id1 < 0)
+		return -1;
+	printk(BIOS_DEBUG, "%s: id0: %u, id1: %u\n", __func__, id0, id1);
+
+	for (i = 0; i < ARRAY_SIZE(snow_id_map); i++) {
+		if (id0 == snow_id_map[i].id0 && id1 == snow_id_map[i].id1) {
+			config = snow_id_map[i].config;
+			break;
+		}
+	}
+
+	return config;
 }
 
+#if 0
 struct chip_operations mainboard_ops = {
 	.name	= "Samsung/Google ARM ChromeBook",
 	.enable_dev = mainboard_enable,
 };
+#endif

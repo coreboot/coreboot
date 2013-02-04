@@ -23,6 +23,6 @@
 extern void main(void);
 
 void stage_entry(void) __attribute__((section(".text.stage_entry.armv7")));
-void stage_exit(unsigned long);
+void stage_exit(void *);
 
 #endif

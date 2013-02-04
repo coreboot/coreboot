@@ -6,8 +6,10 @@
 # Clock init is done in bootblock to support UART output for
 # debugging. We may add a Kconfig option to disable clock init
 # in the bootblock and try moving it entirely into romstage.
-bootblock-y += clock_init.c
-bootblock-y += clock.c
+bootblock-$(CONFIG_EARLY_SERIAL_CONSOLE) += clock_init.c
+bootblock-$(CONFIG_EARLY_SERIAL_CONSOLE) += clock.c
+bootblock-$(CONFIG_EARLY_SERIAL_CONSOLE) += uart.c
+bootblock-$(CONFIG_EARLY_SERIAL_CONSOLE) += soc.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c

@@ -237,6 +237,7 @@ $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblo
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
+	echo $(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(objgenerated)/bootblock.o $(bootblock-objs) $(stages) $(LIBGCC_FILE_NAME) -Wl,--end-group
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(objgenerated)/bootblock.o $(bootblock-objs) $(stages) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 

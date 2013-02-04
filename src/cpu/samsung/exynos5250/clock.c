@@ -26,17 +26,107 @@
 #include <stdlib.h>
 //#include <fdtdec.h>
 #include <arch/io.h>
-//#include <asm/arch/clock.h>
-//#include <asm/arch/clk.h>
-#include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/clock_init.h>
 #include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/s5p-common/clk.h>
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000
 
+struct arm_clk_ratios arm_clk_ratios[] = {
+	{
+		.arm_freq_mhz = 600,
+
+		.apll_mdiv = 0xc8,
+		.apll_pdiv = 0x4,
+		.apll_sdiv = 0x1,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x1,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x2,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x1,
+		.arm_ratio = 0x0,
+	}, {
+		.arm_freq_mhz = 800,
+
+		.apll_mdiv = 0x64,
+		.apll_pdiv = 0x3,
+		.apll_sdiv = 0x0,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x1,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x3,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x2,
+		.arm_ratio = 0x0,
+	}, {
+		.arm_freq_mhz = 1000,
+
+		.apll_mdiv = 0x7d,
+		.apll_pdiv = 0x3,
+		.apll_sdiv = 0x0,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x1,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x4,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x2,
+		.arm_ratio = 0x0,
+	}, {
+		.arm_freq_mhz = 1200,
+
+		.apll_mdiv = 0x96,
+		.apll_pdiv = 0x3,
+		.apll_sdiv = 0x0,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x3,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x5,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x3,
+		.arm_ratio = 0x0,
+	}, {
+		.arm_freq_mhz = 1400,
+
+		.apll_mdiv = 0xaf,
+		.apll_pdiv = 0x3,
+		.apll_sdiv = 0x0,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x3,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x6,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x3,
+		.arm_ratio = 0x0,
+	}, {
+		.arm_freq_mhz = 1700,
+
+		.apll_mdiv = 0x1a9,
+		.apll_pdiv = 0x6,
+		.apll_sdiv = 0x0,
+
+		.arm2_ratio = 0x0,
+		.apll_ratio = 0x3,
+		.pclk_dbg_ratio = 0x1,
+		.atb_ratio = 0x6,
+		.periph_ratio = 0x7,
+		.acp_ratio = 0x7,
+		.cpud_ratio = 0x3,
+		.arm_ratio = 0x0,
+	}
+};
 
 /* src_bit div_bit prediv_bit */
 static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
@@ -267,6 +357,21 @@ unsigned long get_arm_clk(void)
 	armclk /= (arm2_ratio + 1);
 
 	return armclk;
+}
+
+struct arm_clk_ratios *get_arm_clk_ratios(void)
+{
+	struct arm_clk_ratios *arm_ratio;
+	unsigned long arm_freq = 1700;	/* FIXME: use get_arm_clk() */
+	int i;
+
+	for (i = 0, arm_ratio = arm_clk_ratios; i < ARRAY_SIZE(arm_clk_ratios);
+		i++, arm_ratio++) {
+		if (arm_ratio->arm_freq_mhz == arm_freq)
+			return arm_ratio;
+	}
+
+	return NULL;
 }
 
 /* exynos5: set the mmc clock */

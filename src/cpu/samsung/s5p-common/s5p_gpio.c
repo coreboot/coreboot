@@ -20,6 +20,7 @@
 
 /* FIXME(dhendrix): fix this up so it doesn't require a bunch of #ifdefs... */
 #include <common.h>
+#include <gpio.h>
 //#include <arch/io.h>
 #include <gpio.h>
 #include <arch/gpio.h>

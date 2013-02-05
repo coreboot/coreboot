@@ -188,7 +188,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 	writeb(data, &uart->utxh);
 }
 
-#ifndef __PRE_RAM__
+#if !defined(__PRE_RAM__) && !defined(__BOOT_BLOCK__)
 static const struct console_driver exynos5_uart_console __console = {
 	.init     = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,

@@ -32,10 +32,10 @@
 #include "cpu/samsung/s5p-common/gpio.h"
 #include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
 #include "cpu/samsung/exynos5-common/spi.h"
-#include "cpu/samsung/exynos5-common/uart.h"
 
 #include <device/i2c.h>
 #include <drivers/maxim/max77686/max77686.h>
+#include <uart.h>
 
 #include <console/console.h>
 #include <cbfs.h>
@@ -124,124 +124,7 @@ void gpio_set_pull(int gpio, int mode)
 	writel(value, &bank->pull);
 }
 
-static uint32_t uart3_base = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-
 #define CONFIG_SYS_CLK_FREQ            24000000
-
-static void serial_setbrg_dev(void)
-{
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
-	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
-	u32 uclk;
-	u32 baudrate = CONFIG_TTYS0_BAUD;
-	u32 val;
-//	enum periph_id periph;
-
-//	periph = exynos5_get_periph_id(base_port);
-	uclk = clock_get_periph_rate(PERIPH_ID_UART3);
-	val = uclk / baudrate;
-
-	writel(val / 16 - 1, &uart->ubrdiv);
-
-	/*
-	 * FIXME(dhendrix): the original uart.h had a "br_rest" value which
-	 * does not seem relevant to the exynos5250... not entirely sure
-	 * where/if we need to worry about it here
-	 */
-#if 0
-	if (s5p_uart_divslot())
-		writew(udivslot[val % 16], &uart->rest.slot);
-	else
-		writeb(val % 16, &uart->rest.value);
-#endif
-}
-
-/*
- * Initialise the serial port with the given baudrate. The settings
- * are always 8 data bits, no parity, 1 stop bit, no start bits.
- */
-static void exynos5_init_dev(void)
-{
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
-	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
-
-	/* enable FIFOs */
-	writel(0x1, &uart->ufcon);
-	writel(0, &uart->umcon);
-	/* 8N1 */
-	writel(0x3, &uart->ulcon);
-	/* No interrupts, no DMA, pure polling */
-	writel(0x245, &uart->ucon);
-
-	serial_setbrg_dev();
-}
-
-static int exynos5_uart_err_check(int op)
-{
-	//struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
-	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
-	unsigned int mask;
-
-	/*
-	 * UERSTAT
-	 * Break Detect	[3]
-	 * Frame Err	[2] : receive operation
-	 * Parity Err	[1] : receive operation
-	 * Overrun Err	[0] : receive operation
-	 */
-	if (op)
-		mask = 0x8;
-	else
-		mask = 0xf;
-
-	return readl(&uart->uerstat) & mask;
-}
-
-#define RX_FIFO_COUNT_MASK	0xff
-#define RX_FIFO_FULL_MASK	(1 << 8)
-#define TX_FIFO_FULL_MASK	(1 << 24)
-
-#if 0
-/*
- * Read a single byte from the serial port. Returns 1 on success, 0
- * otherwise. When the function is succesfull, the character read is
- * written into its argument c.
- */
-static unsigned char exynos5_uart_rx_byte(void)
-{
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
-	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
-
-	/* wait for character to arrive */
-	while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
-					 RX_FIFO_FULL_MASK))) {
-		if (exynos5_uart_err_check(0))
-			return 0;
-	}
-
-	return readb(&uart->urxh) & 0xff;
-}
-#endif
-
-/*
- * Output a single byte to the serial port.
- */
-static void exynos5_uart_tx_byte(unsigned char data)
-{
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
-	struct s5p_uart *uart = (struct s5p_uart *)uart3_base;
-
-	if (data == '\n')
-		exynos5_uart_tx_byte('\r');
-
-	/* wait for room in the tx FIFO */
-	while ((readl(uart->ufstat) & TX_FIFO_FULL_MASK)) {
-		if (exynos5_uart_err_check(1))
-			return;
-	}
-
-	writeb(data, &uart->utxh);
-}
 
 void puts(const char *s);
 void puts(const char *s)
@@ -250,10 +133,10 @@ void puts(const char *s)
 
 	while (*s) {
 		if (*s == '\n') {
-			exynos5_uart_tx_byte(0xd);	/* CR */
+			uart_tx_byte(0xd);	/* CR */
 		}
 
-		exynos5_uart_tx_byte(*s++);
+		uart_tx_byte(*s++);
 		n++;
 	}
 }
@@ -264,7 +147,7 @@ static void do_serial(void)
 	gpio_set_pull(GPIO_A14, EXYNOS_GPIO_PULL_NONE);
 	gpio_cfg_pin(GPIO_A15, EXYNOS_GPIO_FUNC(0x2));
 
-	exynos5_init_dev();
+	uart_init();
 }
 
 #define I2C_WRITE	0
@@ -1616,7 +1499,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	int i;
 
 	va_start(args, fmt);
-	i = vtxprintf(exynos5_uart_tx_byte, fmt, args);
+	i = vtxprintf(uart_tx_byte, fmt, args);
 	va_end(args);
 
 	return i;

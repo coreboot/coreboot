@@ -116,8 +116,8 @@ void i2c_board_late_init(void);
 #if defined(CONFIG_I2C_MUX)
 
 typedef struct _mux {
-	uchar	chip;
-	uchar	channel;
+	unsigned char chip;
+	unsigned char channel;
 	char	*name;
 	struct _mux	*next;
 } I2C_MUX;
@@ -129,16 +129,16 @@ typedef struct _mux_device {
 } I2C_MUX_DEVICE;
 
 I2C_MUX_DEVICE	*i2c_mux_search_device(int id);
-I2C_MUX_DEVICE *i2c_mux_ident_muxstring (uchar *buf);
+I2C_MUX_DEVICE *i2c_mux_ident_muxstring (unsigned char *buf);
 int i2x_mux_select_mux(int bus);
-int i2c_mux_ident_muxstring_f (uchar *buf);
+int i2c_mux_ident_muxstring_f (unsigned char *buf);
 #endif
 
 /*
  * Probe the given I2C chip address.  Returns 0 if a chip responded,
  * not 0 on failure.
  */
-int i2c_probe(uchar chip);
+int i2c_probe(unsigned char chip);
 
 /*
  * Read/Write interface:
@@ -152,8 +152,10 @@ int i2c_probe(uchar chip);
  *
  *   Returns: 0 on success, not 0 on failure
  */
-int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len);
-int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len);
+int i2c_read(unsigned char chip, unsigned int addr, int alen,
+		unsigned char *buffer, int len);
+int i2c_write(unsigned char chip, unsigned int addr, int alen,
+		unsigned char *buffer, int len);
 
 /*
  * Utility routines to read/write registers.

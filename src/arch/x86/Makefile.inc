@@ -101,7 +101,7 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 endif
 ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
 	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_TIANOCORE_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"

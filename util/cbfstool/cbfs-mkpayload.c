@@ -261,11 +261,10 @@ int parse_fv_to_payload(const struct buffer *input,
 	common_section_header_t *cs;
 	dos_header_t *dh;
 	coff_header_t *ch;
-	pe_opt_header_t *ph;
 	int dh_offset;
 
-	uint32_t loadaddress;
-	uint32_t entrypoint;
+	uint32_t loadaddress = 0;
+	uint32_t entrypoint = 0;
 
 	compress = compression_function(algo);
 	if (!compress)
@@ -282,18 +281,21 @@ int parse_fv_to_payload(const struct buffer *input,
 	fh = (ffs_file_header_t *)(input->data + fv->header_length);
 	if (fh->file_type != FILETYPE_SEC) {
 		ERROR("Not a usable UEFI firmware volume.\n");
+		INFO("First file in first FV not a SEC core.\n");
 		return -1;
 	}
 
 	cs = (common_section_header_t *)&fh[1];
 	if (cs->section_type != SECTION_PE32) {
 		ERROR("Not a usable UEFI firmware volume.\n");
+		INFO("Section type not PE32.\n");
 		return -1;
 	}
 
 	dh = (dos_header_t *)&cs[1];
-	if (dh->signature != 0x5a4d) {
+	if (dh->signature != DOS_MAGIC) {
 		ERROR("Not a usable UEFI firmware volume.\n");
+		INFO("DOS header signature wrong.\n");
 		return -1;
 	}
 
@@ -301,22 +303,35 @@ int parse_fv_to_payload(const struct buffer *input,
 	DEBUG("dos header offset = %x\n", dh_offset);
 
 	ch = (coff_header_t *)(((void *)dh)+dh->e_lfanew);
-	if (ch->machine != 0x14c) {
-		ERROR("Not a usable UEFI firmware volume.\n");
+
+	if (ch->machine == MACHINE_TYPE_X86) {
+		pe_opt_header_32_t *ph;
+		ph = (pe_opt_header_32_t *)&ch[1];
+		if (ph->signature != PE_HDR_32_MAGIC) {
+			WARN("PE header signature incorrect.\n");
+			return -1;
+		}
+		DEBUG("image base %x\n", ph->image_addr);
+		DEBUG("entry point %x\n", ph->entry_point);
+
+		loadaddress = ph->image_addr - dh_offset;
+		entrypoint = ph->image_addr + ph->entry_point;
+	} else if (ch->machine == MACHINE_TYPE_X64) {
+		pe_opt_header_64_t *ph;
+		ph = (pe_opt_header_64_t *)&ch[1];
+		if (ph->signature != PE_HDR_64_MAGIC) {
+			WARN("PE header signature incorrect.\n");
+			return -1;
+		}
+		DEBUG("image base %lx\n", (unsigned long)ph->image_addr);
+		DEBUG("entry point %x\n", ph->entry_point);
+
+		loadaddress = ph->image_addr - dh_offset;
+		entrypoint = ph->image_addr + ph->entry_point;
+	} else {
+		ERROR("Machine type not x86 or x64.\n");
 		return -1;
 	}
-
-	ph = (pe_opt_header_t *)&ch[1];
-	if (ph->signature != 267) {
-		ERROR("Not a usable UEFI firmware volume.\n");
-		return -1;
-	}
-
-	DEBUG("image base %x\n", ph->image_addr);
-	DEBUG("entry point %x\n", ph->entry_point);
-
-	loadaddress = ph->image_addr - dh_offset;
-	entrypoint = ph->image_addr + ph->entry_point;
 
 	if (buffer_create(output, (2 * sizeof(*segs) + input->size),
 			  input->name) != 0)

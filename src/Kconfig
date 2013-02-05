@@ -536,13 +536,6 @@ config FILO_MASTER
 	  Newest FILO version
 endchoice
 
-config TIANOCORE_FILE
-	string "Tianocore FILE"
-	depends on PAYLOAD_TIANOCORE
-	default "COREBOOT.FD"
-	help
-	  The result of a corebootPkg build
-
 config PAYLOAD_FILE
 	string "Payload path and filename"
 	depends on PAYLOAD_ELF
@@ -557,6 +550,13 @@ config PAYLOAD_FILE
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO
 	default "payloads/external/FILO/filo/build/filo.elf"
+
+config PAYLOAD_FILE
+	string "Tianocore firmware volume"
+	depends on PAYLOAD_TIANOCORE
+	default "COREBOOT.fd"
+	help
+	  The result of a corebootPkg build
 
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA

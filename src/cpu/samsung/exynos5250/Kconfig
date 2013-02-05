@@ -38,7 +38,7 @@ config BOOTBLOCK_BASE
 
 config ID_SECTION_BASE
 	hex
-	default 0x02027000
+	default 0x02027e00
 
 config ROMSTAGE_BASE
 	hex

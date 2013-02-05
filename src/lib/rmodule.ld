@@ -74,9 +74,7 @@ SECTIONS
 		*(COMMON);
 		. = ALIGN(8);
 		_bss_end = .;
-	}
 
-	.heap (NOLOAD) : {
 		/*
 		 * Place the heap after BSS. The heap size is passed in by
 		 * by way of ld --defsym=__heap_size=<>

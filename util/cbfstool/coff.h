@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#define DOS_MAGIC 0x5a4d
 typedef struct {
 	 uint16_t signature;
 	 uint16_t lastsize;
@@ -39,6 +40,8 @@ typedef struct {
 	 uint32_t e_lfanew;
 } dos_header_t;
 
+#define MACHINE_TYPE_X86 0x014c
+#define MACHINE_TYPE_X64 0x8664
 typedef struct {
 	uint8_t  signature[4];
 	uint16_t machine;
@@ -50,6 +53,7 @@ typedef struct {
 	uint16_t characteristics;
 } coff_header_t;
 
+#define PE_HDR_32_MAGIC 0x10b
 typedef struct {
 	uint16_t signature;
 	uint8_t  major_linker_version;
@@ -82,5 +86,39 @@ typedef struct {
 	uint32_t loader_flags;
 	uint32_t number_of_va_and_sizes;
 	/* data directory not needed */
-} pe_opt_header_t;
+} pe_opt_header_32_t;
+
+#define PE_HDR_64_MAGIC 0x20b
+typedef struct {
+	uint16_t signature;
+	uint8_t  major_linker_version;
+	uint8_t  minor_linker_version;
+	uint32_t code_size;
+	uint32_t data_size;
+	uint32_t bss_size;
+	uint32_t entry_point;
+	uint32_t code_offset;
+	uint64_t image_addr;
+	uint32_t section_alignment;
+	uint32_t file_alignment;
+	uint16_t major_os_version;
+	uint16_t minor_os_version;
+	uint16_t major_image_version;
+	uint16_t minor_image_version;
+	uint16_t major_subsystem_version;
+	uint16_t minor_subsystem_version;
+	uint32_t reserved;
+	uint32_t image_size;
+	uint32_t header_size;
+	uint32_t checksum;
+	uint16_t subsystem;
+	uint16_t characteristics;
+	uint64_t stack_reserve_size;
+	uint64_t stack_commit_size;
+	uint64_t heap_reserve_size;
+	uint64_t heap_commit_size;
+	uint32_t loader_flags;
+	uint32_t number_of_va_and_sizes;
+	/* data directory not needed */
+} pe_opt_header_64_t;
 

@@ -31,7 +31,7 @@
 #endif
 
 #if CONFIG_CPU_SAMSUNG_EXYNOS5
-#include <cpu/samsung/exynos5250/uart.h>
+#include <cpu/samsung/exynos5-common/uart.h>
 #endif
 
 #ifndef __ROMCC__

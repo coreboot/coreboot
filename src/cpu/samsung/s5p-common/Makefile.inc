@@ -1,4 +1,5 @@
 bootblock-y += pwm.c
+bootblock-y += s3c24x0_i2c.c
 bootblock-y += s5p_gpio.c
 bootblock-y += timer.c
 

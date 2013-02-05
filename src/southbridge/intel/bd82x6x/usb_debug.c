@@ -19,18 +19,13 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
 #include "pch.h"
 
-/* Required for successful build, but currently empty. */
-void set_debug_port(unsigned int port)
-{
-	/* Not needed, the ICH* southbridges hardcode physical USB port 1. */
-}
-
+#ifdef __PRE_RAM__
+#include <arch/romcc_io.h>
 void enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;
@@ -47,5 +42,12 @@ void enable_usbdebug(unsigned int port)
 	dbgctl = read32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
 	write32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET, dbgctl);
+}
+#endif	/* __PRE_RAM__ */
+
+/* Required for successful build, but currently empty. */
+void set_debug_port(unsigned int port)
+{
+	/* Not needed, the ICH* southbridges hardcode physical USB port 1. */
 }
 

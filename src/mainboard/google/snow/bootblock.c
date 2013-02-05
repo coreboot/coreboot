@@ -17,89 +17,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdlib.h>
 #include <types.h>
-#include <assert.h>
-#include <arch/armv7/include/common.h>
 #include <arch/io.h>
-#include "cpu/samsung/exynos5250/clk.h"
-#include "cpu/samsung/exynos5250/cpu.h"
-#include "cpu/samsung/exynos5250/dmc.h"
-#include "cpu/samsung/exynos5250/gpio.h"
-#include "cpu/samsung/exynos5250/periph.h"
-#include "cpu/samsung/exynos5250/setup.h"
-#include "cpu/samsung/exynos5250/clock_init.h"
-#include "cpu/samsung/s5p-common/gpio.h"
-#include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
-#include "cpu/samsung/exynos5-common/spi.h"
-
-#include <device/i2c.h>
-#include <drivers/maxim/max77686/max77686.h>
-#include <uart.h>
-
-#include <console/console.h>
 #include <cbfs.h>
-
-#define EXYNOS5_CLOCK_BASE		0x10010000
-
-#define CONFIG_SYS_CLK_FREQ            24000000
-
-void puts(const char *s);
-void puts(const char *s)
-{
-	int n = 0;
-
-	while (*s) {
-		if (*s == '\n') {
-			uart_tx_byte(0xd);	/* CR */
-		}
-
-		uart_tx_byte(*s++);
-		n++;
-	}
-}
-
-static void do_serial(void)
-{
-	//exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
-	gpio_set_pull(GPIO_A14, EXYNOS_GPIO_PULL_NONE);
-	gpio_cfg_pin(GPIO_A15, EXYNOS_GPIO_FUNC(0x2));
-
-	uart_init();
-}
+#include <uart.h>
+#include <console/console.h>
+#include <device/i2c.h>
+#include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/dmc.h>
+#include <cpu/samsung/exynos5250/periph.h>
+#include <cpu/samsung/exynos5250/clock_init.h>
+#include <drivers/maxim/max77686/max77686.h>
 
 #define I2C0_BASE	0x12c60000
-
-void do_barriers(void);
-void do_barriers(void)
-{
-	/*
-	 * The reason we don't write out the instructions dsb/isb/sev:
-	 * While ARM Cortex-A8 supports ARM v7 instruction set (-march=armv7a),
-	 * we compile with -march=armv5 to allow more compilers to work.
-	 * For U-Boot code this has no performance impact.
-	 */
-	__asm__ __volatile__(
-#if defined(__thumb__)
-	".hword 0xF3BF, 0x8F4F\n"  /* dsb; darn -march=armv5 */
-	".hword 0xF3BF, 0x8F6F\n"  /* isb; darn -march=armv5 */
-	".hword 0xBF40\n"          /* sev; darn -march=armv5 */
-#else
-	".word  0xF57FF04F\n"      /* dsb; darn -march=armv5 */
-	".word  0xF57FF06F\n"      /* isb; darn -march=armv5 */
-	".word  0xE320F004\n"      /* sev; darn -march=armv5 */
-#endif
-	);
-}
-
-/* is this right? meh, it seems to work well enough... */
-void my_udelay(unsigned int n);
-void my_udelay(unsigned int n)
-{
-	n *= 1000;
-	__asm__ volatile ("1:\n" "subs %0, %1, #1\n"
-			  "bne 1b":"=r" (n):"0"(n));
-}
 
 /*
  * Max77686 parameters values
@@ -358,13 +288,6 @@ static void power_init(void)
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-
-void __div0 (void);
-void __div0 (void)
-{
-	puts("divide by zero detected");
-	while(1) ;
-}
 
 static int skip_atoi(const char **s)
 {
@@ -649,7 +572,8 @@ void bootblock_mainboard_init(void)
 	mem = get_mem_timings();
 	arm_ratios = get_arm_clk_ratios();
 	system_clock_init(mem, arm_ratios);
-	do_serial();
+	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
+	uart_init();
 	printk(BIOS_INFO, "%s: UART initialized\n", __func__);
 
 #if 0

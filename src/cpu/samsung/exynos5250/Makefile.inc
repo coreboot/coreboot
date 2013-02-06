@@ -10,7 +10,7 @@ bootblock-y += clock_init.c
 bootblock-y += clock.c
 bootblock-y += pinmux.c
 bootblock-y += soc.c
-bootblock-y += uart.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c
@@ -18,23 +18,18 @@ romstage-y += exynos_cache.c
 romstage-y += pinmux.c
 romstage-y += power.c
 romstage-y += soc.c
-romstage-y += uart.c
 romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c
+romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 
-#ramstage-y += clock.c
-#ramstage-y += clock_init.c
-#ramstage-y += power.c
-#ramstage-y += uart.c
-#ramstage-y += pinmux.c
-##ramstage-y += tzpc_init.c
+#ramstage-y += tzpc_init.c
 ramstage-y += clock.c
 ramstage-y += clock_init.c
 ramstage-y += exynos_cache.c
 ramstage-y += pinmux.c
 ramstage-y += power.c
 ramstage-y += soc.c
-ramstage-y += uart.c
+ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 
 #ramstage-$(CONFIG_EXYNOS_ACE_SHA) += ace_sha.c
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c

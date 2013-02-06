@@ -88,10 +88,6 @@ config SYS_SDRAM_BASE
 	hex "SDRAM base address"
 	default 0x40000000
 
-config SPL_BUILD
-	bool
-	default n
-
 config SYS_TEXT_BASE
 	hex "Executable code section"
 	default 0x43e00000

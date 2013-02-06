@@ -410,7 +410,7 @@ void panic(const char *fmt, ...)
 	putc('\n');
 	va_end(args);
 #if defined(CONFIG_PANIC_HANG)
-	hang();
+	hlt();
 #else
 	udelay(100000);		/* allow messages to go out */
 	do_reset(NULL, 0, 0, NULL);

@@ -10,7 +10,7 @@ ramstage-y += memcpy.c
 ramstage-y += ebda.c
 ramstage-y += rom_media.c
 
-romstage-y += romstage_console.c
+romstage-$(CONFIG_EARLY_CONSOLE) += romstage_console.c
 romstage-y += cbfs_and_run.c
 romstage-y += memset.c
 romstage-y += memcpy.c

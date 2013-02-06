@@ -208,7 +208,7 @@ LoadMicrocode (
   PATCH_LOADER PatchLoaderMsr;
 
   // Load microcode patch into CPU
-  PatchLoaderMsr.RawData = (UINT64) MicrocodePatchPtr;
+  PatchLoaderMsr.RawData = (UINT64) (intptr_t) MicrocodePatchPtr;
   PatchLoaderMsr.BitFields.SBZ = 0;
   LibAmdMsrWrite (MSR_PATCH_LOADER, &PatchLoaderMsr.RawData, StdHeader);
 

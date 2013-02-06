@@ -26,7 +26,7 @@
 #ifndef UART_H
 #define UART_H
 
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
 
@@ -34,7 +34,7 @@
 #include <cpu/samsung/exynos5-common/uart.h>
 #endif
 
-#ifndef __ROMCC__
+#if !defined(__ROMCC__) && CONFIG_CONSOLE_SERIAL_UART
 unsigned char uart_rx_byte(void);
 void uart_tx_byte(unsigned char data);
 void uart_tx_flush(void);

@@ -92,20 +92,6 @@ SECTIONS
 		*(COMMON)
 	}
 	_ebss = .;
-	_end = .;
-
-	/* coreboot really "ends" here. Only heap and stack are placed after
-	 * this line.
-	 */
-
-	. = ALIGN(CONFIG_STACK_SIZE);
-
-	_stack = .;
-	.stack . : {
-		/* Reserve a stack for each possible cpu */
-		. += CONFIG_MAX_CPUS*CONFIG_STACK_SIZE;
-	}
-	_estack = .;
 
         _heap = .;
         .heap . : {

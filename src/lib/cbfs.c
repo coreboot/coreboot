@@ -177,8 +177,8 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 			     struct cbfs_media *media,
 			     size_t offset, size_t count) {
 	void *address = buffer->buffer + buffer->allocated;;
-	DEBUG("simple_buffer_map(offset=%d, count=%d): "
-	      "allocated=%d, size=%d, last_allocate=%d\n",
+	DEBUG("simple_buffer_map(offset=%zd, count=%zd): "
+	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
 	    offset, count, buffer->allocated, buffer->size,
 	    buffer->last_allocate);
 	if (buffer->allocated + count >= buffer->size)
@@ -198,7 +198,7 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 	// TODO Add simple buffer management so we can free more than last
 	// allocated one.
 	DEBUG("simple_buffer_unmap(address=0x%p): "
-	      "allocated=%d, size=%d, last_allocate=%d\n",
+	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
 	    address, buffer->allocated, buffer->size,
 	    buffer->last_allocate);
 	if ((buffer->buffer + buffer->allocated - buffer->last_allocate) ==

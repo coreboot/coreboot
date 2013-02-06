@@ -132,7 +132,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			uint32_t new_align = align;
 			if (offset % align)
 				new_align += align - (offset % align);
-			ERROR("ERROR: No file header found at 0x%xx - "
+			ERROR("ERROR: No file header found at 0x%x - "
 			      "try next aligned address: 0x%x.\n", offset,
 			      offset + new_align);
 			offset += new_align;

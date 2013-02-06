@@ -100,6 +100,8 @@ struct rmodule_header {
 	/* BSS section information so the loader can clear the bss. */
 	u32 bss_begin;
 	u32 bss_end;
+	/* Add some room for growth. */
+	u32 padding[4];
 } __attribute__ ((packed));
 
 struct rmodule {

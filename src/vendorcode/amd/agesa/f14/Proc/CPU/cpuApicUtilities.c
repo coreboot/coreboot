@@ -860,7 +860,7 @@ ApUtilSetupIdtForHlt (
     DescSize = 8;
   }
 
-  HandlerOffset = (UINT64)&NmiHandler;
+  HandlerOffset = (UINT64) (intptr_t) &NmiHandler;
   NmiIdtDescPtr->OffsetLo = (UINT16) (HandlerOffset & 0xFFFF);
   NmiIdtDescPtr->OffsetHi = (UINT16) ((HandlerOffset >> 16) & 0xFFFF);
   GetCsSelector (&NmiIdtDescPtr->Selector, StdHeader);
@@ -869,7 +869,7 @@ ApUtilSetupIdtForHlt (
   NmiIdtDescPtr->Offset64 = (UINT32) (HandlerOffset >> 32);
   NmiIdtDescPtr->Rsvd64 = 0;
   IdtInfo.Limit = (UINT16) ((DescSize * 3) - 1);
-  IdtInfo.Base = (UINT64) NmiIdtDescPtr - (DescSize * 2);
+  IdtInfo.Base = (UINT64) (intptr_t) NmiIdtDescPtr - (DescSize * 2);
   SetIdtr (&IdtInfo , StdHeader);
 }
 

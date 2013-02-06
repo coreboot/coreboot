@@ -39,7 +39,7 @@ static void sanitize_cmos(void)
 			int i;
 			cmos_disable_rtc();
 			for (i = 14; i < 128; i++) {
-				cmos_write(cmos_default[i], i);
+				cmos_write_inner(cmos_default[i], i);
 			}
 			cmos_enable_rtc();
 		}

@@ -27,6 +27,7 @@
 enum {
 	RMODULE_TYPE_SMM,
 	RMODULE_TYPE_SIPI_VECTOR,
+	RMODULE_TYPE_STAGE,
 };
 
 struct rmodule;
@@ -58,8 +59,8 @@ int rmodule_load_alignment(const struct rmodule *m);
 	.module_entry_point = FIELD_ENTRY(entry_),			\
 	.parameters_begin = FIELD_ENTRY(_module_params_begin),		\
 	.parameters_end = FIELD_ENTRY(_module_params_end),		\
-	.bss_begin = FIELD_ENTRY(_bss_begin),				\
-	.bss_end = FIELD_ENTRY(_bss_end),				\
+	.bss_begin = FIELD_ENTRY(_bss),					\
+	.bss_end = FIELD_ENTRY(_ebss),					\
 }
 
 #define DEFINE_RMODULE_HEADER(name_, entry_, type_) \
@@ -119,8 +120,8 @@ extern char _relocations_begin_offset[];
 extern char _relocations_end_offset[];
 extern char _payload_end_offset[];
 extern char _payload_begin_offset[];
-extern char _bss_begin[];
-extern char _bss_end[];
+extern char _bss[];
+extern char _ebss[];
 extern char _module_program_size[];
 extern char _module_link_start_addr[];
 extern char _module_params_begin[];

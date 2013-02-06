@@ -50,6 +50,10 @@ SECTIONS
 	.rodata : {
 		_rodata = .;
 		. = ALIGN(4);
+
+		/* If any changes are made to the driver start/symbols or the
+		 * section names the equivalent changes need to made to
+		 * rmodule.ld. */
 		console_drivers = .;
 		*(.rodata.console_drivers)
 		econsole_drivers = . ;
@@ -60,6 +64,7 @@ SECTIONS
 		cpu_drivers = . ;
 		*(.rodata.cpu_driver)
 		ecpu_drivers = . ;
+
 		*(.rodata)
 		*(.rodata.*)
 		/* kevinh/Ispiri - Added an align, because the objcopy tool

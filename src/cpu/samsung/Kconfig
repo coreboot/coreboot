@@ -5,7 +5,10 @@ config CPU_SAMSUNG_EXYNOS
 config CPU_SAMSUNG_EXYNOS5
 	depends on ARCH_ARMV7
 	select CPU_SAMSUNG_EXYNOS
-	select EARLY_SERIAL_CONSOLE
+	select HAVE_UART_SPECIAL
+	# TODO remove EARLY_CONSOLE when we can run ramstage without early UART
+	# init.
+	select EARLY_CONSOLE
 	bool
 	default n
 

@@ -1,5 +1,16 @@
 #include <cpu/x86/post_code.h>
 
+/* Place the stack in the bss section. It's not necessary to define it in the
+ * the linker script. */
+	.section .bss, "aw", @nobits
+.global _stack
+.global _estack
+
+.align CONFIG_STACK_SIZE
+_stack:
+.space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
+_estack:
+
 	.section ".textfirst"
 	.code32
 	.globl _start
@@ -16,19 +27,7 @@ _start:
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
 
-	/** poison the stack. Code should not count on the
-	 * stack being full of zeros. This stack poisoning
-	 * recently uncovered a bug in the broadcast SIPI
-	 * code.
-	 */
 	cld
-	leal	_stack, %edi
-	movl	$_estack, %ecx
-	subl	%edi, %ecx
-	shrl	$2, %ecx   /* it is 32 bit aligned, right? */
-	movl	$0xDEADBEEF, %eax
-	rep
-	stosl
 
 	/** clear bss, which unlike the stack is zero by definition */
 	leal	_bss, %edi
@@ -40,6 +39,19 @@ _start:
 	rep
 	stosl
 .Lnobss:
+
+	/** poison the stack. Code should not count on the
+	 * stack being full of zeros. This stack poisoning
+	 * recently uncovered a bug in the broadcast SIPI
+	 * code.
+	 */
+	leal	_stack, %edi
+	movl	$_estack, %ecx
+	subl	%edi, %ecx
+	shrl	$2, %ecx   /* it is 32 bit aligned, right? */
+	movl	$0xDEADBEEF, %eax
+	rep
+	stosl
 
 	/* set new stack */
 	movl	$_estack, %esp

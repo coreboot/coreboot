@@ -23,6 +23,7 @@
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <cbfs.h>
+#include <console/console.h>
 
 #include "stages.c"
 
@@ -46,6 +47,7 @@ void main(void)
 		bootblock_mainboard_init();
 	}
 
+	console_init();
 	printk(BIOS_INFO, "hello from bootblock\n");
 	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);

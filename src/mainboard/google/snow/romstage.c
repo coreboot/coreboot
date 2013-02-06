@@ -32,6 +32,19 @@
 
 #include "mainboard.h"
 
+#if 0
+static int board_wakeup_permitted(void)
+{
+	const int gpio = GPIO_Y10;
+	int is_bad_wake;
+
+	/* We're a bad wakeup if the gpio was defined and was high */
+	is_bad_wake = ((gpio != -1) && gpio_get_value(gpio));
+
+	return !is_bad_wake;
+}
+#endif
+
 void main(void)
 {
 	struct cbfs_media cbfs;

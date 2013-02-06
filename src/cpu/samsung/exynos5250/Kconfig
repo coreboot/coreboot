@@ -48,6 +48,11 @@ config ROMSTAGE_SIZE
 	hex
 	default 0x10000
 
+config CBFS_ROM_OFFSET
+	# Calculated by BL1 + max bootblock size.
+	hex "offset of CBFS data in ROM"
+	default 0x0A000
+
 # TODO Change this to some better address not overlapping bootblock when
 # cbfstool supports creating header in arbitrary location.
 config CBFS_HEADER_ROM_OFFSET

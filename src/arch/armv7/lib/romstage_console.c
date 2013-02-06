@@ -20,7 +20,7 @@
 #include <console/console.h>
 #include <console/vtxprintf.h>
 // TODO Unify with x86 (CONFIG_CONSOLE_SERIAL8250)
-#if CONFIG_SERIAL_CONSOLE
+#if CONFIG_CONSOLE_SERIAL
 #include <uart.h>
 #endif
 #if CONFIG_USBDEBUG
@@ -33,7 +33,7 @@ void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
-#if CONFIG_SERIAL_CONSOLE
+#if CONFIG_CONSOLE_SERIAL_UART
 	uart_tx_byte(byte);
 #endif
 #if CONFIG_USBDEBUG
@@ -46,7 +46,7 @@ void console_tx_byte(unsigned char byte)
 
 static void _console_tx_flush(void)
 {
-#if CONFIG_SERIAL_CONSOLE
+#if CONFIG_CONSOLE_SERIAL_UART
 	uart_tx_flush();
 #endif
 #if CONFIG_USBDEBUG

@@ -277,6 +277,10 @@ config HAVE_UART_MEMORY_MAPPED
 	bool
 	default n
 
+config HAVE_UART_SPECIAL
+	bool
+	default n
+
 config HAVE_ACPI_RESUME
 	bool
 	default n

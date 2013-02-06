@@ -24,8 +24,8 @@
 #include <console/loglevel.h>
 #include <console/post_codes.h>
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
-#include <uart8250.h>
+#if CONFIG_CONSOLE_SERIAL
+#include <uart.h>
 #endif
 #if CONFIG_USBDEBUG
 #include <usbdebug.h>

@@ -1,9 +1,5 @@
 menu "Architecture (armv7)"
 
-config SPL_BUILD
-	bool "Build second-phase bootloader (SPL)"
-	default y
-
 config EABI_COMPAT
 	bool "Toolchain is EABI compatible"
 	default n

@@ -1,14 +1,12 @@
 bootblock-y += syslib.c
-bootblock-y += romstage_console.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 romstage-y += cache_v7.c
 romstage-y += cache-cp15.c
 romstage-y += div0.c
 romstage-y += div64.S
-romstage-y += romstage_console.c
 romstage-y += syslib.c
-
-#ramstage-y += printk_init.c
+romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 ramstage-y += div0.c
 ramstage-y += div64.S

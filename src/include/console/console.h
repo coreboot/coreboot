@@ -74,6 +74,15 @@ void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
+#if defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE
+
+static inline void printk(int LEVEL, const char *fmt, ...);
+static inline void printk(int LEVEL, const char *fmt, ...) {
+	/* Do nothing. */
+}
+
+#else /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
+
 #undef WE_CLEANED_UP_ALL_SIDE_EFFECTS
 /* We saw some strange effects in the past like coreboot crashing while
  * disabling cache as ram for a maximum console log level of 6 and above while
@@ -97,7 +106,7 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 		}						\
 	} while(0)
 
-#else
+#else /* WE_CLEANED_UP_ALL_SIDE_EFFECTS */
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\
@@ -107,7 +116,10 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 			do_printk(BIOS_NEVER, fmt, ##args);	\
 		}						\
 	} while(0)
-#endif
+
+#endif /* WE_CLEANED_UP_ALL_SIDE_EFFECTS */
+
+#endif /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
 
 #define print_emerg(STR)         printk(BIOS_EMERG,  "%s", (STR))
 #define print_alert(STR)         printk(BIOS_ALERT,  "%s", (STR))

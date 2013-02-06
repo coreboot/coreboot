@@ -29,7 +29,6 @@
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/sysreg.h>
-#include <cpu/samsung/exynos5-common/spl.h>
 #include <drivers/maxim/max77686/max77686.h>
 
 #include "device/i2c.h"

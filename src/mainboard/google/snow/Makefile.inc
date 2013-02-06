@@ -26,15 +26,6 @@ romstage-y += memory.c
 romstage-y += romstage.c
 
 # ramstage-y += ec.c
-
-# FIXME: smdk5250_spl and mainboard.c are a mess. In the long
-# run we'll want to replace low-level code that calls mainboard code
-# with mainboard code that calls low-level code with appropriate
-# parameters. Grep around for spl_get_machine_params for examples.
-romstage-y += smdk5250_spl.c
-ramstage-y += smdk5250_spl.c
-bootblock-y += smdk5250_spl.c
-#ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 
 # romstage-$(CONFIG_CHROMEOS) += chromeos.c

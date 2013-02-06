@@ -22,13 +22,13 @@
  * MA 02111-1307 USA
  */
 
+#include <arch/io.h>
 #include <assert.h>
 #include <common.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-#include <cpu/samsung/exynos5-common/spl.h>
 #include <system.h>
 
 #include "clock_init.h"

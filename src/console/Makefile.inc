@@ -10,12 +10,12 @@ smm-y += vtxprintf.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
 romstage-y += vtxprintf.c
-romstage-$(CONFIG_EARLY_SERIAL_CONSOLE) += console.c
+romstage-$(CONFIG_EARLY_CONSOLE) += console.c
 romstage-y += post.c
 romstage-y += die.c
 
 bootblock-y += vtxprintf.c
-bootblock-$(CONFIG_EARLY_SERIAL_CONSOLE) += console.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += console.c
 bootblock-y += post.c
 bootblock-y += die.c
 

@@ -52,6 +52,4 @@ static inline int s5p_uart_divslot(void)
 	return 0;
 }
 
-void uart_init(void);
-
 #endif

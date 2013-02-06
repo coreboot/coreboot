@@ -19,13 +19,6 @@
 
 #include <console/console.h>
 #include <console/vtxprintf.h>
-// TODO Unify with x86 (CONFIG_CONSOLE_SERIAL8250)
-#if CONFIG_CONSOLE_SERIAL
-#include <uart.h>
-#endif
-#if CONFIG_USBDEBUG
-#include <usbdebug.h>
-#endif
 
 /* FIXME: need to make console driver more generic */
 void console_tx_byte(unsigned char byte)
@@ -33,6 +26,15 @@ void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	if (oxford_oxpcie_present) {
+		uart8250_mem_tx_byte(
+			CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000, byte);
+	}
+#endif
+#if CONFIG_CONSOLE_SERIAL8250
+	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+#endif
 #if CONFIG_CONSOLE_SERIAL_UART
 	uart_tx_byte(byte);
 #endif
@@ -46,6 +48,12 @@ void console_tx_byte(unsigned char byte)
 
 static void _console_tx_flush(void)
 {
+#if CONFIG_CONSOLE_SERIAL8250MEM
+	uart8250_mem_tx_flush(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000);
+#endif
+#if CONFIG_CONSOLE_SERIAL8250
+	uart8250_tx_flush(CONFIG_TTYS0_BASE);
+#endif
 #if CONFIG_CONSOLE_SERIAL_UART
 	uart_tx_flush();
 #endif

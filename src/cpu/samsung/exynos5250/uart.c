@@ -28,6 +28,8 @@
 #include <console/console.h>	/* for __console definition */
 
 #include <cpu/samsung/exynos5-common/exynos5-common.h>
+#include <cpu/samsung/exynos5-common/uart.h>
+#include <cpu/samsung/exynos5250/uart.h>
 #include <cpu/samsung/exynos5250/clk.h>
 
 #define RX_FIFO_COUNT_MASK	0xff
@@ -191,7 +193,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 	writeb(data, &uart->utxh);
 }
 
-#if !defined(__PRE_RAM__) && !defined(__BOOT_BLOCK__)
+#if !defined(__PRE_RAM__)
 static const struct console_driver exynos5_uart_console __console = {
 	.init     = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,

@@ -99,15 +99,15 @@ int console_tst_byte(void)
 
 #else // __PRE_RAM__   ^^^ NOT defined   vvv defined
 
-#include <uart.h>
-
 void console_init(void)
 {
+#if CONFIG_EARLY_CONSOLE
+
 #if CONFIG_USBDEBUG
 	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
+#if CONFIG_CONSOLE_SERIAL
 	uart_init();
 #endif
 #if CONFIG_DRIVERS_OXFORD_OXPCIE && CONFIG_CONSOLE_SERIAL8250MEM
@@ -127,5 +127,7 @@ void console_init(void)
 		COREBOOT_BUILD
 		" starting...\n";
 	print_info(console_test);
+
+#endif /* CONFIG_EARLY_CONSOLE */
 }
-#endif
+#endif /* __PRE_RAM__ */

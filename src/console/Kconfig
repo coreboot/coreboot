@@ -1,20 +1,21 @@
 menu "Console"
-config SERIAL_CONSOLE
+
+config EARLY_CONSOLE
+	bool "Enable early (pre-RAM) console output."
+	default n
+	help
+	  Use console during early (pre-RAM) boot stages
+
+config CONSOLE_SERIAL
 	bool "Serial port console output"
 	default y
 	help
-	  Send coreboot debug output to a serial port
-
-config EARLY_SERIAL_CONSOLE
-	bool
-	depends on SERIAL_CONSOLE
-	default n
-	help
-	  Use serial console during early (pre-RAM) boot stages
+	  Send coreboot debug output to a serial port (should be one or more of
+	  CONSOLE_SERIAL8250, CONSOLE_SERIAL8250MEM, CONSOLE_SERIAL_UART)
 
 config CONSOLE_SERIAL8250
 	bool "Serial port console output (I/O mapped, 8250-compatible)"
-	depends on SERIAL_CONSOLE
+	depends on CONSOLE_SERIAL
 	depends on HAVE_UART_IO_MAPPED
 	default y
 	help
@@ -22,21 +23,21 @@ config CONSOLE_SERIAL8250
 
 config CONSOLE_SERIAL8250MEM
 	bool "Serial port console output (memory mapped, 8250-compatible)"
-	depends on SERIAL_CONSOLE
+	depends on CONSOLE_SERIAL
 	depends on HAVE_UART_MEMORY_MAPPED
 	help
 	  Send coreboot debug output to a memory mapped serial port console.
 
-config CONSOLE_SERIAL_NONSTANDARD_MEM
-	bool "Serial port console output (memory-mapped, device-specific)"
-	depends on SERIAL_CONSOLE
-	depends on HAVE_UART_MEMORY_MAPPED
+config CONSOLE_SERIAL_UART
+	bool "Serial port console output (device-specific UART)"
+	depends on CONSOLE_SERIAL
+	depends on HAVE_UART_SPECIAL
+	default y
 	help
-	  Send coreboot debug output to a memory mapped serial port console
-	  on a device-specific UART.
+	  Send coreboot debug output to a device-specific serial port console.
 
 choice
-	prompt "Serial port"
+	prompt "Serial port for 8250"
 	default CONSOLE_SERIAL_COM1
 	depends on CONSOLE_SERIAL8250
 
@@ -72,7 +73,7 @@ config TTYS0_BASE
 choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
-	depends on SERIAL_CONSOLE
+	depends on CONSOLE_SERIAL
 
 config CONSOLE_SERIAL_115200
 	bool "115200"

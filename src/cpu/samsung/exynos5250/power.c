@@ -23,12 +23,12 @@
  */
 
 #include <common.h>
+#include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/sysreg.h>
-#include <cpu/samsung/exynos5-common/spl.h>
 #include <drivers/maxim/max77686/max77686.h>
 
 #include "device/i2c.h"
@@ -62,7 +62,7 @@ void power_shutdown(void)
 
 	clrbits_le32(&power->ps_hold_ctrl, POWER_PS_HOLD_CONTROL_DATA_HIGH);
 
-	hang();
+	hlt();
 }
 
 void power_enable_dp_phy(void)

@@ -452,7 +452,6 @@ void clock_init_dp_clock(void)
 	setbits_le32(&clk->div_disp1_0, CLK_DIV_DISP1_0_FIMD1);
 }
 
-#ifdef CONFIG_SPL_BUILD
 /*
  * This is a custom implementation for the udelay(), as we do not the timer
  * initialise during the SPL boot. We are assuming the cpu takes 3 instruction
@@ -466,4 +465,3 @@ void udelay(unsigned usec)
 	count = usec * (get_pll_clk(APLL) / (3 * 10000000));
 	sdelay(count);
 }
-#endif

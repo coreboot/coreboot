@@ -564,8 +564,6 @@ const char *clock_get_mem_manuf_name(enum mem_manuf mem_manuf);
  * At present we are using 14148 of 14336 bytes. If we change this function
  * to be exported in SPL, we go over the edge.
  */
-/* TODO(dhendrix): do we still need this ifndef? */
-//#ifndef CONFIG_SPL_BUILD
 /**
  * Get the required memory type and speed (Main U-Boot version).
  *
@@ -581,6 +579,5 @@ const char *clock_get_mem_manuf_name(enum mem_manuf mem_manuf);
 int clock_get_mem_selection(enum ddr_mode *mem_type,
 		unsigned *frequency_mhz, unsigned *arm_freq,
 		enum mem_manuf *mem_manuf);
-//#endif /* CONFIG_SPL_BUILD */
 
 #endif

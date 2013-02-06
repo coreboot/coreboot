@@ -95,9 +95,7 @@ static struct s5p_gpio_bank *gpio_get_bank(unsigned int gpio)
 		}
 	}
 
-#ifndef CONFIG_SPL_BUILD
 	assert(gpio < GPIO_MAX_PORT);	/* ...which it will not be */
-#endif
 	return NULL;
 }
 //#endif

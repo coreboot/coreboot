@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#if CONFIG_EARLY_SERIAL_CONSOLE
+#if CONFIG_EARLY_CONSOLE
 #include <types.h>
 #include <arch/io.h>
 #include <cbfs.h>
@@ -40,7 +40,7 @@ void bootblock_mainboard_init(void)
 	arm_ratios = get_arm_clk_ratios();
 	system_clock_init(mem, arm_ratios);
 
-#if CONFIG_EARLY_SERIAL_CONSOLE
+#if CONFIG_EARLY_CONSOLE
 	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 	uart_init();
 	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);

@@ -41,6 +41,22 @@ SECTIONS
 		*(.text.*);
 		/* C read-only data. */
 		. = ALIGN(16);
+
+		/* The driver sections are to allow linking coreboot's
+		 * ramstage with the rmodule linker. Any changes made in
+		 * coreboot_ram.ld should be made here as well. */
+		console_drivers = .;
+		*(.rodata.console_drivers)
+		econsole_drivers = . ;
+		. = ALIGN(4);
+		pci_drivers = . ;
+		*(.rodata.pci_driver)
+		epci_drivers = . ;
+		cpu_drivers = . ;
+		*(.rodata.cpu_driver)
+		ecpu_drivers = . ;
+		. = ALIGN(4);
+
 		*(.rodata);
 		*(.rodata.*);
 		. = ALIGN(4);
@@ -67,13 +83,13 @@ SECTIONS
 	_payload_end_offset = LOADADDR(.data) + SIZEOF(.data);
 
 	.bss (NOLOAD) : {
-		/* C uninitialized data of the SMM handler */
-		_bss_begin = .;
+		/* C uninitialized data of the module. */
+		_bss = .;
 		*(.bss);
 		*(.sbss);
 		*(COMMON);
 		. = ALIGN(8);
-		_bss_end = .;
+		_ebss = .;
 
 		/*
 		 * Place the heap after BSS. The heap size is passed in by
@@ -86,6 +102,12 @@ SECTIONS
 
 	/* _module_program_size is the total memory used by the program. */
 	_module_program_size = _eheap - _module_link_start_addr;
+
+	/* coreboot's ramstage uses the _ram_seg and _eram_seg symbols
+	 * for determining its load location. Provide those to help it out.
+	 * It's a nop for any non-ramstage rmodule. */
+	_ram_seg = _module_link_start_addr;
+	_eram_seg = _module_link_start_addr + _module_program_size;
 
 	/* The relocation information is linked on top of the BSS section
 	 * because the BSS section takes no space on disk. The relocation data

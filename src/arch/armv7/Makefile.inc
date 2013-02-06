@@ -223,17 +223,18 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC) $(bootblock-S-ccopts) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H)
 	@printf "    CC      $(subst $(obj)/,,$(@))\n"
-	$(CC) $(INCLUDES) -MM -MT$(objgenerated)/bootblock.inc \
+	$(CC) $(bootblock-c-ccopts) $(INCLUDES) -MM \
+		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(CC) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
+	$(CC) $(bootblock-c-ccopts) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
 $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

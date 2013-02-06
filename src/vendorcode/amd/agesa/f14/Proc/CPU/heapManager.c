@@ -164,7 +164,8 @@ HeapManagerInit (
   LibAmdMsrRead (AMD_MTRR_VARIABLE_HEAP_MASK, &MsrData, StdHeader);
   if (MsrData == (CacheInfoPtr->VariableMtrrMask & AMD_HEAP_MTRR_MASK)) {
     LibAmdMsrRead (AMD_MTRR_VARIABLE_HEAP_BASE, &MsrData, StdHeader);
-    if ((MsrData & CacheInfoPtr->HeapBaseMask) == ((UINT64) HeapBufferPtr & CacheInfoPtr->HeapBaseMask)) {
+    if (((UINT64) (intptr_t) MsrData & CacheInfoPtr->HeapBaseMask) ==
+        ((UINT64) (intptr_t) HeapBufferPtr & CacheInfoPtr->HeapBaseMask)) {
       if (((HEAP_MANAGER *) HeapBufferPtr)->Signature == HEAP_SIGNATURE_VALID) {
         // This is not a bug, there are multiple premem basic entry points,
         // and each will call heap init to make sure create struct will succeed.
@@ -180,7 +181,7 @@ HeapManagerInit (
   }
 
   // Set variable MTRR base and mask
-  MsrData = ((UINT64) HeapBufferPtr & CacheInfoPtr->HeapBaseMask);
+  MsrData = ((UINT64) (intptr_t)HeapBufferPtr & CacheInfoPtr->HeapBaseMask);
   MsrMask = CacheInfoPtr->VariableMtrrHeapMask & AMD_HEAP_MTRR_MASK;
 
   MsrData |= 0x06;
@@ -666,34 +667,34 @@ VOID
 
   // Firstly, we try to see if heap is in cache
   BaseAddress = HeapGetCurrentBase (StdHeader);
-  HeapManager = (HEAP_MANAGER *) BaseAddress;
+  HeapManager = (HEAP_MANAGER *) (intptr_t) BaseAddress;
 
   if ((HeapManager->Signature != HEAP_SIGNATURE_VALID) &&
       (StdHeader->HeapStatus != HEAP_DO_NOT_EXIST_YET) &&
       (StdHeader->HeapStatus != HEAP_LOCAL_CACHE)) {
     // Secondly, we try to see if heap is in temp memory
     BaseAddress = UserOptions.CfgHeapDramAddress;
-    HeapManager = (HEAP_MANAGER *) BaseAddress;
+    HeapManager = (HEAP_MANAGER *) (intptr_t) BaseAddress;
     if (HeapManager->Signature != HEAP_SIGNATURE_VALID) {
       // Thirdly, we try to see if heap in main memory
       // by locating with external buffer manager (IBV)
       AgesaBuffer.StdHeader = *StdHeader;
       AgesaBuffer.BufferHandle = AMD_HEAP_IN_MAIN_MEMORY_HANDLE;
       if (AgesaLocateBuffer (0, &AgesaBuffer) == AGESA_SUCCESS) {
-        BaseAddress = (UINT64) AgesaBuffer.BufferPointer;
-        HeapManager = (HEAP_MANAGER *) BaseAddress;
+        BaseAddress = (UINT64) (intptr_t) AgesaBuffer.BufferPointer;
+        HeapManager = (HEAP_MANAGER *) (intptr_t) BaseAddress;
         if (HeapManager->Signature != HEAP_SIGNATURE_VALID) {
           // No valid heap signature ever found, return a NULL pointer
-          BaseAddress = NULL;
+          BaseAddress = (UINT64) (intptr_t) NULL;
         }
       } else {
         // No heap buffer is allocated by external manager (IBV), return a NULL pointer
-        BaseAddress = NULL;
+        BaseAddress = (UINT64) (intptr_t) NULL;
       }
     }
   }
 
-  return BaseAddress;
+  return (void *) (intptr_t) BaseAddress;
 }
 
 /*---------------------------------------------------------------------------------------

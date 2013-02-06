@@ -174,6 +174,12 @@ int cbfs_image_create(struct cbfs_image *image,
 		      bootblock_offset, bootblock->size, size);
 		return -1;
 	}
+	if (entries_offset > bootblock_offset &&
+	    entries_offset < bootblock->size) {
+		ERROR("Bootblock (0x%x+0x%zx) overlap CBFS data (0x%x)\n",
+		      bootblock_offset, bootblock->size, entries_offset);
+		return -1;
+	}
 	memcpy(image->buffer.data + bootblock_offset, bootblock->data,
 	       bootblock->size);
 

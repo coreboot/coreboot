@@ -67,7 +67,7 @@ int init_timer(void)
 		pwm_init(4, MUX_DIV_4, 0);
 		pwm_config(4, 100000, 100000);
 		pwm_enable(4);
-#ifndef CONFIG_SPL_BUILD
+
 		/* Use this as the current monotonic time in us */
 		//gd->timer_reset_value = 0;
 		timer_reset_value = 0;
@@ -75,7 +75,6 @@ int init_timer(void)
 		/* Use this as the last timer value we saw */
 		//gd->lastinc = timer_get_us_down();
 		lastinc = timer_get_us_down();
-#endif
 	}
 
 	return 0;

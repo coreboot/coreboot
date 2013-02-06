@@ -92,7 +92,7 @@ int print_cpuinfo(void)
 }
 #endif
 
-#ifndef CONFIG_SPL_BUILD
+#if 0
 void board_show_dram(ulong size)
 {
 	enum ddr_mode mem_type;

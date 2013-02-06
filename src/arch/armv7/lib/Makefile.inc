@@ -4,7 +4,6 @@ romstage-y += cache_v7.c
 romstage-y += cache-cp15.c
 romstage-y += div0.c
 romstage-y += div64.S
-romstage-y += hang_spl.c
 romstage-y += romstage_console.c
 romstage-y += syslib.c
 
@@ -13,7 +12,6 @@ romstage-y += syslib.c
 
 ramstage-y += div0.c
 ramstage-y += div64.S
-ramstage-y += hang_spl.c
 #ramstage-y += interrupts.c
 #ramstage-y += memcpy.S
 #ramstage-y += memset.S

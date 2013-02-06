@@ -129,8 +129,6 @@ ulong timer_get_us(void);
  * Function Prototypes
  */
 
-void	hang		(void) __attribute__ ((noreturn));
-
 int	init_timer(void);	/* FIXME(dhendrix): used to be timer_init() */
 int	cpu_init(void);
 

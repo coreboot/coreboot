@@ -230,6 +230,10 @@ void romstage_common(const struct romstage_params *params)
 						     - HIGH_MEMORY_SIZE));
 #endif
 
+	/* Save data returned from MRC on non-S3 resumes. */
+	if (boot_mode != 2)
+		save_mrc_data(params->pei_data);
+
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.

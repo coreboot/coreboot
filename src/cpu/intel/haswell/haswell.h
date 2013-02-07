@@ -103,7 +103,16 @@
 #ifndef __ROMCC__
 
 #if defined(__PRE_RAM__)
-void romstage_main(unsigned long bist);
+struct pei_data;
+struct rcba_config_instruction;
+struct romstage_params {
+	struct pei_data *pei_data;
+	const void *gpio_map;
+	const struct rcba_config_instruction *rcba_config;
+	unsigned long bist;
+};
+void mainboard_romstage_entry(unsigned long bist);
+void romstage_common(const struct romstage_params *params);
 #endif
 
 #ifdef __SMM__

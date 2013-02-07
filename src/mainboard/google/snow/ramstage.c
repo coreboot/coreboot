@@ -19,12 +19,21 @@
 
 #include <console/console.h>
 
+#if CONFIG_WRITE_HIGH_TABLES
+#include <cbmem.h>
+#endif
+
+void hardwaremain(int boot_complete);
 void main(void)
 {
-//	volatile unsigned long *pshold = (unsigned long *)0x1004330c;
-//	*pshold &= ~0x100;	/* shut down */
-
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
-	while (1);
+
+#if CONFIG_WRITE_HIGH_TABLES
+	/* Leave some space for ACPI tables */
+	high_tables_base = CONFIG_RAMBASE;
+	high_tables_size = CONFIG_RAMBASE + 0x100000;
+#endif
+
+	hardwaremain(0);
 }

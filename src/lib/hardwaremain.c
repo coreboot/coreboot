@@ -114,7 +114,7 @@ void hardwaremain(int boot_complete)
 	timestamp_stash(TS_DEVICE_DONE);
 
 #if CONFIG_WRITE_HIGH_TABLES
-	cbmem_initialize();
+	int rc = cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
 #endif
@@ -142,11 +142,13 @@ void hardwaremain(int boot_complete)
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
+	printk(BIOS_DEBUG, "%s: finding payload\n", __func__);
 	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
 				    CONFIG_CBFS_PREFIX "/payload");
 	if (! payload)
 		die("Could not find a payload\n");
 
+	printk(BIOS_DEBUG, "%s: found payload, running selfboot\n", __func__);
 	selfboot(lb_mem, payload);
 	printk(BIOS_EMERG, "Boot failed");
 }

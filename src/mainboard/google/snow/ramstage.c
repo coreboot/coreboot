@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 
+void hardwaremain(int boot_complete);
 void main(void)
 {
 //	volatile unsigned long *pshold = (unsigned long *)0x1004330c;
@@ -26,7 +27,7 @@ void main(void)
 
 	/* FIXME: console_init() seems to cause things to die... Maybe
 	   we need to reset our stack pointer? */
-//	console_init();
+	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
-	while (1);
+	hardwaremain(0);
 }

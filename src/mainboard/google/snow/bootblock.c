@@ -42,7 +42,6 @@ void bootblock_mainboard_init(void)
 	mem = get_mem_timings();
 	arm_ratios = get_arm_clk_ratios();
 	system_clock_init(mem, arm_ratios);
-	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 
 	console_init();
 	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);

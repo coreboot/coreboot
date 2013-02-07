@@ -3,14 +3,11 @@
 # image outside of CBFS
 #INTERMEDIATE += exynos5250_add_bl1
 
-# Clock init is done in bootblock to support UART output for
-# debugging. We may add a Kconfig option to disable clock init
-# in the bootblock and try moving it entirely into romstage.
-bootblock-y += clock_init.c
+# clock and clock_init are included for SPI to work.
 bootblock-y += clock.c
-bootblock-y += pinmux.c
-bootblock-y += power.c
-bootblock-y += soc.c
+bootblock-y += clock_init.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += pinmux.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += soc.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
 romstage-y += clock.c

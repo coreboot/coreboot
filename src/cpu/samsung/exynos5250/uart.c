@@ -121,6 +121,10 @@ static void exynos5_init_dev(void)
 //	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
+	// TODO setup pinmux properly by dev_index and base_port, or move this
+	// to console driver.
+	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
+
 	/* enable FIFOs */
 	writel(0x1, &uart->ufcon);
 	writel(0, &uart->umcon);

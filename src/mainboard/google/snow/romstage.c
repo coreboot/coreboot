@@ -24,6 +24,8 @@
 #include <cbfs.h>
 #include <common.h>
 
+#include <arch/hlt.h>
+#include <cpu/samsung/exynos5250/clock_init.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/setup.h>
 
@@ -47,9 +49,10 @@ static int board_wakeup_permitted(void)
 
 void main(void)
 {
-	struct mem_timings *mem;
 	int ret;
 	void *entry;
+	struct mem_timings *mem;
+	struct arm_clk_ratios *arm_ratios;
 
 	console_init();
 	printk(BIOS_INFO, "hello from romstage\n");
@@ -57,8 +60,14 @@ void main(void)
 	mem = get_mem_timings();
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
-		while(1);
+		hlt();
 	}
+	arm_ratios = get_arm_clk_ratios();
+	system_clock_init(mem, arm_ratios);
+
+	/* Re-initialize console in case clock is changed. */
+	console_init();
+
 	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
 		mem->mem_manuf,
 		mem->mem_type,
@@ -69,7 +78,7 @@ void main(void)
 	if (ret) {
 		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
 		ret);
-		while(1);
+		hlt();
 	}
 
 	printk(BIOS_INFO, "ddr3_init done\n");

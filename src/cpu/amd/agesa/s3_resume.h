@@ -20,9 +20,13 @@
 #ifndef S3_RESUME_H
 #define S3_RESUME_H
 
-#define S3_DATA_NONVOLATILE_POS	(CONFIG_S3_VOLATILE_POS + 0x7000)
+/* The size needs to be 4k align, which is the sector size of most flashes. */
+#define S3_DATA_VOLATILE_SIZE	0x6000
+#define S3_DATA_MTRR_SIZE	0x1000
+#define S3_DATA_NONVOLATILE_SIZE	0x1000
 #define S3_DATA_VOLATILE_POS	CONFIG_S3_VOLATILE_POS
-#define S3_DATA_MTRR_POS	(CONFIG_S3_VOLATILE_POS + 0x6000)
+#define S3_DATA_MTRR_POS	(CONFIG_S3_VOLATILE_POS + S3_DATA_VOLATILE_SIZE)
+#define S3_DATA_NONVOLATILE_POS	(CONFIG_S3_VOLATILE_POS + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE)
 
 typedef enum {
 	S3DataTypeNonVolatile=0,            ///< NonVolatile Data Type

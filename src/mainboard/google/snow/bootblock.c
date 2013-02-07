@@ -27,7 +27,6 @@
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-#include <src/cpu/samsung/exynos5250/power.h>
 
 #endif
 
@@ -37,7 +36,6 @@ void bootblock_mainboard_init(void)
 	struct mem_timings *mem;
 	struct arm_clk_ratios *arm_ratios;
 
-	power_init();
 	mem = get_mem_timings();
 	arm_ratios = get_arm_clk_ratios();
 	system_clock_init(mem, arm_ratios);

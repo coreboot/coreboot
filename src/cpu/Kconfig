@@ -16,7 +16,7 @@ source src/cpu/x86/Kconfig
 
 config CACHE_AS_RAM
 	bool
-	select EARLY_CONSOLE
+	select DEFAULT_EARLY_CONSOLE
 	default !ROMCC
 
 config DCACHE_RAM_BASE

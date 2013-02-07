@@ -17,10 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-# needed for system_clock_init()
-bootblock-y += mainboard.c
-bootblock-y += memory.c
-
 romstage-y += mainboard.c
 romstage-y += memory.c
 romstage-y += romstage.c

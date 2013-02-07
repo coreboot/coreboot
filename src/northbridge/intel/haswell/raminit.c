@@ -147,14 +147,9 @@ static void report_memory_config(void)
  */
 void sdram_initialize(struct pei_data *pei_data)
 {
-	struct sys_info sysinfo;
 	unsigned long entry;
 
 	printk(BIOS_DEBUG, "Starting UEFI PEI System Agent\n");
-
-	memset(&sysinfo, 0, sizeof(sysinfo));
-
-	sysinfo.boot_path = pei_data->boot_mode;
 
 	/*
 	 * Do not pass MRC data in for recovery mode boot,

@@ -114,7 +114,8 @@ void hardwaremain(int boot_complete)
 	timestamp_stash(TS_DEVICE_DONE);
 
 #if CONFIG_WRITE_HIGH_TABLES
-	cbmem_initialize();
+	int rc = cbmem_initialize();
+	printk(BIOS_DEBUG, "cbmem_initialize returned %d\n", rc);
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
 #endif

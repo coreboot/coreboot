@@ -5,8 +5,7 @@
 
 /* This file holds function prototypes for building the coreboot table. */
 unsigned long write_coreboot_table(
-	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_start, unsigned long rom_table_end);
+	unsigned long table_start, unsigned long table_end);
 
 void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size);

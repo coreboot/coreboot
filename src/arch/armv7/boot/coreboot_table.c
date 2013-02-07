@@ -559,11 +559,13 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
+#if 0
 static void build_lb_mem_range(void *gp, struct device *dev, struct resource *res)
 {
 	struct lb_memory *mem = gp;
 	new_lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
 }
+#endif
 
 static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
@@ -573,11 +575,15 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem = lb_memory(head);
 	mem_ranges = mem;
 
+	/* FIXME: implement this */
+#if 0
 	/* Build the raw table of memory */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		build_lb_mem_range, mem);
-	lb_cleanup_memory_ranges(mem);
+#endif
+	/* FIXME: things die in cleanup_memory_ranges(), skip for now */
+//	lb_cleanup_memory_ranges(mem);
 	return mem;
 }
 
@@ -596,47 +602,30 @@ static void add_lb_reserved(struct lb_memory *mem)
 }
 
 unsigned long write_coreboot_table(
-	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_start, unsigned long rom_table_end)
+	unsigned long table_start, unsigned long table_end)
 {
 	struct lb_header *head;
 	struct lb_memory *mem;
+	unsigned long fini;
 
-#if CONFIG_WRITE_HIGH_TABLES
-	printk(BIOS_DEBUG, "Writing high table forward entry at 0x%08lx\n",
-			low_table_end);
-	head = lb_table_init(low_table_end);
-	lb_forward(head, (struct lb_header*)rom_table_end);
+	printk(BIOS_DEBUG, "table_start: 0x%lx, table_end: 0x%lx, ",
+			   table_start, table_end);
+	head = lb_table_init(table_start);
 
-	low_table_end = (unsigned long) lb_table_fini(head, 0);
-	printk(BIOS_DEBUG, "New low_table_end: 0x%08lx\n", low_table_end);
-	printk(BIOS_DEBUG, "Now going to write high coreboot table at 0x%08lx\n",
-			rom_table_end);
+	printk(BIOS_DEBUG, "writing head (0x%p)... ", head);
+	printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",
+			table_end);
+	lb_forward(head, (struct lb_header*)table_end);
+	printk(BIOS_DEBUG, "done\n");
 
-	head = lb_table_init(rom_table_end);
-	rom_table_end = (unsigned long)head;
-	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
-#else
-	if(low_table_end > (0x1000 - sizeof(struct lb_header))) { /* after 4K */
-		/* We need to put lbtable on  to [0xf0000,0x100000) */
-		head = lb_table_init(rom_table_end);
-		rom_table_end = (unsigned long)head;
-	} else {
-		head = lb_table_init(low_table_end);
-		low_table_end = (unsigned long)head;
-	}
-#endif
+	table_end = (unsigned long) head + head->table_bytes;
+	printk(BIOS_DEBUG, "New table_end: 0x%08lx\n", table_end);
 
-	printk(BIOS_DEBUG, "Adjust low_table_end from 0x%08lx to ", low_table_end);
-	low_table_end += 0xfff; // 4K aligned
-	low_table_end &= ~0xfff;
-	printk(BIOS_DEBUG, "0x%08lx \n", low_table_end);
-
-	/* The Linux kernel assumes this region is reserved */
-	printk(BIOS_DEBUG, "Adjust rom_table_end from 0x%08lx to ", rom_table_end);
-	rom_table_end += 0xffff; // 64K align
-	rom_table_end &= ~0xffff;
-	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
+	/* FIXME(dhendrix): do we need this? */
+	printk(BIOS_DEBUG, "Adjust table_end from 0x%08lx to ", table_end);
+	table_end += 0xfff; // 4K aligned
+	table_end &= ~0xfff;
+	printk(BIOS_DEBUG, "0x%08lx \n", table_end);
 
 #if CONFIG_USE_OPTION_TABLE
 	{
@@ -655,35 +644,50 @@ unsigned long write_coreboot_table(
 	}
 #endif
 	/* Record where RAM is located */
+	/* FIXME(dhendrix): add global resources */
+	printk(BIOS_DEBUG, "%s: head: 0x%p\n", __func__, head);
 	mem = build_lb_mem(head);
+	/* FIXME: we seem to get a bogus return value */
+	printk(BIOS_DEBUG, "%s: mem: 0x%p\n", __func__, mem);
+	if ((unsigned long)mem < CONFIG_RAMBASE) {
+		printk(BIOS_DEBUG, "%s: ZOMG PANIC!!!111n", __func__);
+		while (1);
+	}
 
 	/* Record the mptable and the the lb_table (This will be adjusted later) */
 	lb_add_memory_range(mem, LB_MEM_TABLE,
-		low_table_start, low_table_end - low_table_start);
+		table_start, table_end - table_start);
 
+	printk(BIOS_DEBUG, "%s: checkpoint 1\n", __func__);
 	/* Record the pirq table, acpi tables, and maybe the mptable */
 	lb_add_memory_range(mem, LB_MEM_TABLE,
-		rom_table_start, rom_table_end-rom_table_start);
+		table_start, table_end - table_start);
 
+	printk(BIOS_DEBUG, "%s: checkpoint 2\n", __func__);
 #if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Adding high table area\n");
 	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,
-		high_tables_base, high_tables_size);
+			table_start, table_end - table_start);
 #endif
 
+	printk(BIOS_DEBUG, "%s: checkpoint 3\n", __func__);
 	/* Add reserved regions */
 	add_lb_reserved(mem);
 
+	printk(BIOS_DEBUG, "%s: checkpoint 4\n", __func__);
 	lb_dump_memory_ranges(mem);
+	printk(BIOS_DEBUG, "%s: checkpoint 5\n", __func__);
 
 	/* Note:
 	 * I assume that there is always memory at immediately after
-	 * the low_table_end.  This means that after I setup the coreboot table.
+	 * the table_end.  This means that after I setup the coreboot table.
 	 * I can trivially fixup the reserved memory ranges to hold the correct
 	 * size of the coreboot table.
 	 */
 
+	printk(BIOS_DEBUG, "%s: checkpoint 5\n", __func__);
+	/* FIXME(dhendrix): Most of these do nothing at the moment */
 	/* Record our motherboard */
 	lb_mainboard(head);
 	/* Record the serial port, if present */
@@ -695,6 +699,7 @@ unsigned long write_coreboot_table(
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
+#if 0
 #if CONFIG_CHROMEOS
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
@@ -705,9 +710,12 @@ unsigned long write_coreboot_table(
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
 #endif
+#endif
 	add_cbmem_pointers(head);
 
 	/* Remember where my valid memory ranges are */
-	return lb_table_fini(head, 1);
+	fini =  lb_table_fini(head, 1);
+	printk(BIOS_DEBUG, "%s: DONE: fini is 0x%lx\n", __func__, fini);
+	return fini;
 
 }

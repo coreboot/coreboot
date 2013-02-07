@@ -38,14 +38,12 @@
 #define recovery_mode_enabled(x) 0
 #endif
 
-static void save_mrc_data(struct pei_data *pei_data)
+void save_mrc_data(struct pei_data *pei_data)
 {
-#if CONFIG_EARLY_CBMEM_INIT
 	struct mrc_data_container *mrcdata;
 	int output_len = ALIGN(pei_data->mrc_output_len, 16);
 
 	/* Save the MRC S3 restore data to cbmem */
-	cbmem_initialize();
 	mrcdata = cbmem_add
 		(CBMEM_ID_MRCDATA,
 		 output_len + sizeof(struct mrc_data_container));
@@ -66,7 +64,6 @@ static void save_mrc_data(struct pei_data *pei_data)
 
 	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
 						    mrcdata->mrc_data_size);
-#endif
 }
 
 static void prepare_mrc_cache(struct pei_data *pei_data)
@@ -204,10 +201,6 @@ void sdram_initialize(struct pei_data *pei_data)
 		(version >> 8) & 0xff, version & 0xff);
 
 	report_memory_config();
-
-	/* S3 resume: don't save scrambler seed or MRC data */
-	if (pei_data->boot_mode != 2)
-		save_mrc_data(pei_data);
 }
 
 struct cbmem_entry *get_cbmem_toc(void)

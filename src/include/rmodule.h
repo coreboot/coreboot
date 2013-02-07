@@ -39,6 +39,7 @@ void *rmodule_entry(const struct rmodule *m);
 int rmodule_entry_offset(const struct rmodule *m);
 int rmodule_memory_size(const struct rmodule *m);
 int rmodule_load(void *loc, struct rmodule *m);
+int rmodule_load_no_clear_bss(void *base, struct rmodule *m);
 int rmodule_load_alignment(const struct rmodule *m);
 
 #define FIELD_ENTRY(x_) ((u32)&x_)

@@ -228,7 +228,7 @@ int rmodule_load_alignment(const struct rmodule *module)
 	return module->header->module_link_start_address;
 }
 
-int rmodule_load(void *base, struct rmodule *module)
+static int __rmodule_load(void *base, struct rmodule *module, int clear_bss)
 {
 	/*
 	 * In order to load the module at a given address, the following steps
@@ -239,7 +239,17 @@ int rmodule_load(void *base, struct rmodule *module)
 	 */
 	module->location = base;
 	rmodule_copy_payload(module);
-	rmodule_clear_bss(module);
+	if (clear_bss)
+		rmodule_clear_bss(module);
 	return rmodule_relocate(module);
 }
 
+int rmodule_load(void *base, struct rmodule *module)
+{
+	return __rmodule_load(base, module, 1);
+}
+
+int rmodule_load_no_clear_bss(void *base, struct rmodule *module)
+{
+	return __rmodule_load(base, module, 0);
+}

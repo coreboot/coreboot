@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <ip_checksum.h>
 
+#include <console/console.h>
+
 unsigned long compute_ip_checksum(void *addr, unsigned long length)
 {
 	uint8_t *ptr;
@@ -15,6 +17,7 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 	 */
 	sum = 0;
 	ptr = addr;
+	printk(BIOS_DEBUG, "%s: ptr: 0x%p, length: %ld\n", __func__, ptr, length);
 	for(i = 0; i < length; i++) {
 		unsigned long v;
 		v = ptr[i];
@@ -28,8 +31,10 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 			sum = (sum + (sum >> 16)) & 0xFFFF;
 		}
 	}
+	printk(BIOS_DEBUG, "%s: done\n", __func__);
 	value.byte[0] = sum & 0xff;
 	value.byte[1] = (sum >> 8) & 0xff;
+	printk(BIOS_DEBUG, "%s: exiting...\n", __func__);
 	return (~value.word) & 0xFFFF;
 }
 

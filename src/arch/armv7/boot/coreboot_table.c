@@ -391,21 +391,30 @@ static void lb_reserve_table_memory(struct lb_header *head)
 static unsigned long lb_table_fini(struct lb_header *head, int fixup)
 {
 	struct lb_record *rec, *first_rec;
+	printk(BIOS_DEBUG, "%s: entered\n", __func__);
 	rec = lb_last_record(head);
 	if (head->table_entries) {
 		head->table_bytes += rec->size;
 	}
+	printk(BIOS_DEBUG, "%s: checkpoint 1\n", __func__);
+	printk(BIOS_DEBUG, "%s: table_entries: %s, head->table_bytes: 0x%x\n",
+			__func__, head->table_entries ? "yes" : "no", head->table_bytes);
 
 	if (fixup)
 		lb_reserve_table_memory(head);
 
+	printk(BIOS_DEBUG, "%s: checkpoint 2\n", __func__);
 	first_rec = lb_first_record(head);
+	printk(BIOS_DEBUG, "%s: checkpoint 3, first_rec: %p\n", __func__, first_rec);
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
+	printk(BIOS_DEBUG, "%s: checkpoint 4\n", __func__);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
+	printk(BIOS_DEBUG, "%s: checkpoint 5\n", __func__);
 	printk(BIOS_DEBUG,
 	       "Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
 	       head, head->table_bytes, head->table_checksum);
+	printk(BIOS_DEBUG, "%s: exitingn", __func__);
 	return (unsigned long)rec + rec->size;
 }
 
@@ -603,10 +612,18 @@ unsigned long write_coreboot_table(
 	struct lb_memory *mem;
 
 #if CONFIG_WRITE_HIGH_TABLES
+	printk(BIOS_DEBUG, "low_table_start: 0x%lx, low_table_end: 0x%lx, "
+			   "rom_table_start: 0x%lx, rom_table_end: 0x%lx\n",
+			   low_table_start, low_table_end,
+			   rom_table_start, rom_table_end);
 	printk(BIOS_DEBUG, "Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
+	printk(BIOS_DEBUG, "low_table_end: 0x%lx, head: 0x%p,... ",
+			low_table_end, head);
+	printk(BIOS_DEBUG, "writing head (0x%p)... ", head);
 	lb_forward(head, (struct lb_header*)rom_table_end);
+	printk(BIOS_DEBUG, "done\n");
 
 	low_table_end = (unsigned long) lb_table_fini(head, 0);
 	printk(BIOS_DEBUG, "New low_table_end: 0x%08lx\n", low_table_end);

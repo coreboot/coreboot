@@ -23,6 +23,8 @@
 #include <arch/cpu.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/x86/stack.h>
 #include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
@@ -40,16 +42,90 @@
 #include "southbridge/intel/lynxpoint/me.h"
 
 
-/* The cache-as-ram assembly file calls main() after setting up cache-as-ram.
- * main() will then call the mainboards's mainboard_romstage_entry() function.
- * That function then calls romstage_common() below. The reason for the back
- * and forth is to provide common entry point from cache-as-ram while still
- * allowing for code sharing. Because we can't use global variables the stack
- * is used for allocations -- thus the need to call back and forth. */
+/* The cache-as-ram assembly file calls romstage_main() after setting up
+ * cache-as-ram.  romstage_main() will then call the mainboards's
+ * mainboard_romstage_entry() function. That function then calls
+ * romstage_common() below. The reason for the back and forth is to provide
+ * common entry point from cache-as-ram while still allowing for code sharing.
+ * Because we can't use global variables the stack is used for allocations --
+ * thus the need to call back and forth. */
 
-void main(unsigned long bist)
+
+static inline u32 *stack_push(u32 *stack, u32 value)
+{
+	stack = &stack[-1];
+	*stack = value;
+	return stack;
+}
+
+/* setup_romstage_stack_after_car() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use. */
+static void *setup_romstage_stack_after_car(void)
+{
+	unsigned long top_of_stack;
+	int num_mtrrs;
+	u32 *slot;
+	u32 mtrr_mask_upper;
+
+	/* Top of stack needs to be aligned to a 4-byte boundary. */
+	top_of_stack = ROMSTAGE_STACK & ~3;
+	slot = (void *)top_of_stack;
+	num_mtrrs = 0;
+
+	/* The upper bits of the MTRR mask need to set according to the number
+	 * of physical address bits. */
+	mtrr_mask_upper = (1 << ((cpuid_eax(0x80000008) & 0xff) - 32)) - 1;
+
+	/* The order for each MTTR is value then base with upper 32-bits of
+	 * each value coming before the lower 32-bits. The reasoning for
+	 * this ordering is to create a stack layout like the following:
+	 *   +0: Number of MTRRs
+	 *   +4: MTTR base 0 31:0
+	 *   +8: MTTR base 0 63:32
+	 *  +12: MTTR mask 0 31:0
+	 *  +16: MTTR mask 0 63:32
+	 *  +20: MTTR base 1 31:0
+	 *  +24: MTTR base 1 63:32
+	 *  +28: MTTR mask 1 31:0
+	 *  +32: MTTR mask 1 63:32
+	 */
+
+	/* Cache the ROM as WP just below 4GiB. */
+	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
+	slot = stack_push(slot, ~(CONFIG_ROM_SIZE - 1) | MTRRphysMaskValid);
+	slot = stack_push(slot, 0); /* upper base */
+	slot = stack_push(slot, ~(CONFIG_ROM_SIZE - 1) | MTRR_TYPE_WRPROT);
+	num_mtrrs++;
+
+	/* Cache RAM as WB from 0 -> CONFIG_RAMTOP. */
+	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
+	slot = stack_push(slot, ~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid);
+	slot = stack_push(slot, 0); /* upper base */
+	slot = stack_push(slot, 0 | MTRR_TYPE_WRBACK);
+	num_mtrrs++;
+
+	/* Cache 8MiB below the top of ram. On haswell systems the top of
+	 * ram under 4GiB is the start of the TSEG region. It is required to
+	 * be 8MiB aligned. Set this area as cacheable so it can be used later
+	 * for ramstage before setting up the entire RAM as cacheable. */
+	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
+	slot = stack_push(slot, ~((8 << 20) - 1) | MTRRphysMaskValid);
+	slot = stack_push(slot, 0); /* upper base */
+	slot = stack_push(slot,
+	                  (get_top_of_ram() - (8 << 20)) | MTRR_TYPE_WRBACK);
+	num_mtrrs++;
+
+	/* Save the number of MTTRs to setup. Return the stack location
+	 * pointing to the number of MTRRs. */
+	slot = stack_push(slot, num_mtrrs);
+
+	return slot;
+}
+
+void * __attribute__((regparm(0))) romstage_main(unsigned long bist)
 {
 	int i;
+	void *romstage_stack_after_car;
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base = (void *)(CONFIG_DCACHE_RAM_BASE +
@@ -69,10 +145,15 @@ void main(unsigned long bist)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
+	/* Get the stack to use after cache-as-ram is torn down. */
+	romstage_stack_after_car = setup_romstage_stack_after_car();
+
 #if CONFIG_CONSOLE_CBMEM
 	/* Keep this the last thing this function does. */
 	cbmemc_reinit();
 #endif
+
+	return romstage_stack_after_car;
 }
 
 void romstage_common(const struct romstage_params *params)

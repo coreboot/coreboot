@@ -1,8 +1,12 @@
 menu "Console"
 
+config DEFAULT_EARLY_CONSOLE
+	bool
+	default n
+
 config EARLY_CONSOLE
 	bool "Enable early (pre-RAM) console output."
-	default n
+	default DEFAULT_EARLY_CONSOLE
 	help
 	  Use console during early (pre-RAM) boot stages
 

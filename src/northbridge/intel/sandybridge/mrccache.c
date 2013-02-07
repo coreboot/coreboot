@@ -26,7 +26,7 @@
 #include <cbmem.h>
 #include "pei_data.h"
 #include "sandybridge.h"
-#include <spi.h>
+#include <spi-generic.h>
 #include <spi_flash.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>

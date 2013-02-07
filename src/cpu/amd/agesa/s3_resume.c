@@ -41,7 +41,7 @@
 #include "agesawrapper.h"
 
 #ifndef __PRE_RAM__
-#include <spi.h>
+#include <spi-generic.h>
 #include <spi_flash.h>
 #endif
 

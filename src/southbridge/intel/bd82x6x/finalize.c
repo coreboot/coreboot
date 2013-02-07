@@ -23,7 +23,7 @@
 #include <console/post_codes.h>
 #include <northbridge/intel/sandybridge/pcie_config.c>
 #include "pch.h"
-#include "spi.h"
+#include <spi-generic.h>
 
 void intel_pch_finalize_smm(void)
 {

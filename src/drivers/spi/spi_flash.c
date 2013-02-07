@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <spi.h>
+#include <spi-generic.h>
 #include <spi_flash.h>
 #include <delay.h>
 #ifdef __SMM__

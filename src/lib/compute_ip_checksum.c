@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <ip_checksum.h>
 
+#include <console/console.h>
+
 unsigned long compute_ip_checksum(void *addr, unsigned long length)
 {
 	uint8_t *ptr;

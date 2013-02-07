@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <smbios.h>
-#include <spi.h>
+#include <spi-generic.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>

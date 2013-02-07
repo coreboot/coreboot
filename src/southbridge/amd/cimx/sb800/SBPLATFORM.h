@@ -163,7 +163,7 @@ typedef union _PCI_ADDR {
 #include "vendorcode/amd/cimx/sb800/AMDSBLIB.h"
 
 #if CONFIG_HAVE_ACPI_RESUME
-#include "spi.h"
+#include <spi-generic.h>
 #endif
 
 #define BIOSRAM_INDEX   0xcd4

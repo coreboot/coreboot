@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <console/console.h>
-#include <spi.h>
+#include <spi-generic.h>
 
 /**
  * container_of - cast a member of a structure out to the containing structure

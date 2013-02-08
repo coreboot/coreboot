@@ -32,10 +32,10 @@ struct realmode_idt {
 void x86_exception(struct eregs *info);
 
 /* From x86_asm.S */
-extern unsigned char __idt_handler, __idt_handler_size;
-extern unsigned char __realmode_code, __realmode_code_size;
-extern unsigned char __realmode_call, __realmode_interrupt;
-extern unsigned char __buffer;
+extern unsigned char __idt_handler;
+extern unsigned int __idt_handler_size;
+extern unsigned char __realmode_code;
+extern unsigned int __realmode_code_size;
 
 extern void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
 		u32 esi, u32 edi) asmlinkage;

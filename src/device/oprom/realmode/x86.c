@@ -36,16 +36,37 @@
 #include <boot/coreboot_tables.h>
 #include <device/pci_ids.h>
 
+/* The following symbols cannot be used directly. They need to be fixed up
+ * to point to the correct address location after the code has been copied
+ * to REALMODE_BASE. Absolute symbols are not used because those symbols are
+ * relocated when a relocatable ramstage is enabled.
+ */
+extern unsigned char __realmode_call, __realmode_interrupt;
+extern unsigned char __realmode_buffer;
+
+#define PTR_TO_REAL_MODE(sym)\
+	(void *)(REALMODE_BASE + ((char *)&(sym) - (char *)&__realmode_code))
+
 /* to have a common register file for interrupt handlers */
 X86EMU_sysEnv _X86EMU_env;
 
 void (*realmode_call)(u32 addr, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) asmlinkage =
-						(void *)&__realmode_call;
+		u32 esi, u32 edi) asmlinkage;
 
 void (*realmode_interrupt)(u32 intno, u32 eax, u32 ebx, u32 ecx, u32 edx,
-		u32 esi, u32 edi) asmlinkage =
-						(void *)&__realmode_interrupt;
+		u32 esi, u32 edi) asmlinkage;
+
+static void setup_realmode_code(void)
+{
+	memcpy(REALMODE_BASE, &__realmode_code, __realmode_code_size);
+
+	/* Ensure the global pointers are relocated properly. */
+	realmode_call = PTR_TO_REAL_MODE(__realmode_call);
+	realmode_interrupt = PTR_TO_REAL_MODE(__realmode_interrupt);
+
+	printk(BIOS_SPEW, "Real mode stub @%p: %d bytes\n", REALMODE_BASE,
+			__realmode_code_size);
+}
 
 static void setup_rombios(void)
 {
@@ -149,7 +170,7 @@ static void write_idt_stub(void *target, u8 intnum)
 {
 	unsigned char *codeptr;
 	codeptr = (unsigned char *) target;
-	memcpy(codeptr, &__idt_handler, (size_t)&__idt_handler_size);
+	memcpy(codeptr, &__idt_handler, __idt_handler_size);
 	codeptr[3] = intnum; /* modify int# in the code stub. */
 }
 
@@ -163,7 +184,7 @@ static void setup_realmode_idt(void)
 	 */
 	 for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		idts[i].offset = 0x1000 + (i * (u32)&__idt_handler_size);
+		idts[i].offset = 0x1000 + (i * __idt_handler_size);
 		write_idt_stub((void *)((u32 )idts[i].offset), i);
 	}
 
@@ -204,7 +225,7 @@ static u8 vbe_get_mode_info(vbe_mode_info_t * mi)
 {
 	printk(BIOS_DEBUG, "VBE: Getting information about VESA mode %04x\n",
 		mi->video_mode);
-	char *buffer = (char *)&__buffer;
+	char *buffer = PTR_TO_REAL_MODE(__realmode_buffer);
 	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
 	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
 	realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
@@ -312,9 +333,8 @@ void run_bios(struct device *dev, unsigned long addr)
 	/* Set up real-mode IDT */
 	setup_realmode_idt();
 
-	memcpy(REALMODE_BASE, &__realmode_code, (size_t)&__realmode_code_size);
-	printk(BIOS_SPEW, "Real mode stub @%p: %d bytes\n", REALMODE_BASE,
-			(u32)&__realmode_code_size);
+	/* Make sure the code is placed. */
+	setup_realmode_code();
 
 	printk(BIOS_DEBUG, "Calling Option ROM...\n");
 	/* TODO ES:DI Pointer to System BIOS PnP Installation Check Structure */
@@ -366,9 +386,8 @@ void do_vsmbios(void)
 	/* Setting up realmode IDT */
 	setup_realmode_idt();
 
-	memcpy(REALMODE_BASE, &__realmode_code, (size_t)&__realmode_code_size);
-	printk(BIOS_SPEW, "VSA: Real mode stub @%p: %d bytes\n", REALMODE_BASE,
-			(u32)&__realmode_code_size);
+	/* Make sure the code is placed. */
+	setup_realmode_code();
 
 	if ((unsigned int)cbfs_load_stage(CBFS_DEFAULT_MEDIA, "vsa") !=
 	    VSA2_ENTRY_POINT) {

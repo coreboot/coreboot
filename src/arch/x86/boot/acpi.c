@@ -754,7 +754,8 @@ extern int lowmem_backup_size;
 void (*acpi_do_wakeup)(u32 vector, u32 backup_source, u32 backup_target,
        u32 backup_size) asmlinkage = (void *)WAKEUP_BASE;
 
-extern unsigned char __wakeup, __wakeup_size;
+extern unsigned char __wakeup;
+extern unsigned int __wakeup_size;
 
 void acpi_jump_to_wakeup(void *vector)
 {
@@ -776,7 +777,7 @@ void acpi_jump_to_wakeup(void *vector)
 #endif
 
 	/* Copy wakeup trampoline in place. */
-	memcpy((void *)WAKEUP_BASE, &__wakeup, (size_t)&__wakeup_size);
+	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);

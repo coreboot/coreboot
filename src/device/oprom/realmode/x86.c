@@ -34,6 +34,7 @@
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>
 #include <boot/coreboot_tables.h>
+#include <device/pci_ids.h>
 
 /* to have a common register file for interrupt handlers */
 X86EMU_sysEnv _X86EMU_env;
@@ -322,7 +323,8 @@ void run_bios(struct device *dev, unsigned long addr)
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 
 #if CONFIG_FRAMEBUFFER_SET_VESA_MODE
-	vbe_set_graphics();
+	if ((dev->class >> 8)== PCI_CLASS_DISPLAY_VGA)
+		vbe_set_graphics();
 #endif
 }
 

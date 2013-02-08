@@ -20,6 +20,7 @@
 #define RMODULE_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define RMODULE_MAGIC 0xf8fe
 #define RMODULE_VERSION_1 1
@@ -41,6 +42,13 @@ int rmodule_memory_size(const struct rmodule *m);
 int rmodule_load(void *loc, struct rmodule *m);
 int rmodule_load_no_clear_bss(void *base, struct rmodule *m);
 int rmodule_load_alignment(const struct rmodule *m);
+/* Returns the an aligned pointer that reflects a region used below addr
+ * based on the rmodule_size. i.e. the returned pointer up to addr is memory
+ * that may be utilized by the rmodule. program_start and rmodule_start
+ * are pointers updated to reflect where the rmodule program starts and where
+ * the rmodule (including header) should be placed respectively. */
+void *rmodule_find_region_below(void *addr, size_t rmodule_size,
+                                void **program_start, void **rmodule_start);
 
 #define FIELD_ENTRY(x_) ((u32)&x_)
 #define RMODULE_HEADER(entry_, type_)					\

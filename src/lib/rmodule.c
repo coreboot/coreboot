@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <console/console.h>
 #include <rmodule.h>
@@ -165,6 +166,12 @@ static void rmodule_copy_payload(const struct rmodule *module)
 	       "filesize: 0x%x memsize: 0x%x\n",
 	       module->location, rmodule_entry(module),
 	       module->payload_size, rmodule_memory_size(module));
+
+	/* No need to copy the payload if the load location and the
+	 * payload location are the same. */
+	if (module->location == module->payload)
+		return;
+
 	memcpy(module->location, module->payload, module->payload_size);
 }
 
@@ -252,4 +259,49 @@ int rmodule_load(void *base, struct rmodule *module)
 int rmodule_load_no_clear_bss(void *base, struct rmodule *module)
 {
 	return __rmodule_load(base, module, 0);
+}
+
+void *rmodule_find_region_below(void *addr, size_t rmodule_size,
+                                void **program_start, void **rmodule_start)
+{
+	unsigned long ceiling;
+	unsigned long program_base;
+	unsigned long placement_loc;
+	unsigned long program_begin;
+
+	ceiling = (unsigned long)addr;
+	/* Place the rmodule just under the ceiling. The rmodule files
+	 * themselves are packed as a header and a payload, however the rmodule
+	 * itself is linked along with the header. The header starts at address
+	 * 0. Immediately following the header in the file is the program,
+	 * however its starting address is determined by the rmodule linker
+	 * script. In short, sizeof(struct rmodule_header) can be less than
+	 * or equal to the linked address of the program. Therefore we want
+	 * to place the rmodule so that the prgoram falls on the aligned
+	 * address with the header just before it. Therefore, we need at least
+	 * a page to account for the size of the header. */
+	program_base = ALIGN((ceiling - (rmodule_size + 4096)), 4096);
+	/* The program starts immediately after the header. However,
+	 * it needs to be aligned to a 4KiB boundary. Therefore, adjust the
+	 * program location so that the program lands on a page boundary.  The
+	 * layout looks like the following:
+	 *
+	 * +--------------------------------+  ceiling
+	 * |  >= 0 bytes from alignment     |
+	 * +--------------------------------+  program end (4KiB aligned)
+	 * |  program size                  |
+	 * +--------------------------------+  program_begin (4KiB aligned)
+	 * |  sizeof(struct rmodule_header) |
+	 * +--------------------------------+  rmodule header start
+	 * |  >= 0 bytes from alignment     |
+	 * +--------------------------------+  program_base (4KiB aligned)
+	 */
+	placement_loc = ALIGN(program_base + sizeof(struct rmodule_header),
+	                      4096) - sizeof(struct rmodule_header);
+	program_begin = placement_loc + sizeof(struct rmodule_header);
+
+	*program_start = (void *)program_begin;
+	*rmodule_start = (void *)placement_loc;
+
+	return (void *)program_base;
 }

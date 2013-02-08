@@ -36,6 +36,7 @@
 
 #include <cbfs.h>
 #include <string.h>
+#include <cbmem.h>
 
 #ifdef LIBPAYLOAD
 # include <stdio.h>
@@ -114,6 +115,65 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return dest;
 }
 
+#if CONFIG_RELOCATABLE_RAMSTAGE && defined(__PRE_RAM__)
+
+#include <rmodule.h>
+#include <romstage_handoff.h>
+/* When CONFIG_RELOCATABLE_RAMSTAGE is enabled and this file is being compiled
+ * for the romstage the rmodule loader is used. The ramstage is placed just
+ * below the cbemem location. */
+
+void * cbfs_load_stage(struct cbfs_media *media, const char *name)
+{
+	struct cbfs_stage *stage;
+	struct rmodule ramstage;
+	void *cbmem_base;
+	void *ramstage_base;
+	void *decompression_loc;
+	void *ramstage_loc;
+	struct romstage_handoff *handoff;
+
+	stage = (struct cbfs_stage *)
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
+
+	if (stage == NULL)
+		return (void *) -1;
+
+	cbmem_base = get_cbmem_toc();
+	if (cbmem_base == NULL)
+		return (void *) -1;
+
+	ramstage_base = rmodule_find_region_below(cbmem_base, stage->memlen,
+	                                          &ramstage_loc,
+	                                          &decompression_loc);
+
+	LOG("Decompressing stage %s @ 0x%p (%d bytes)\n",
+	    name, decompression_loc, stage->memlen);
+
+	if (cbfs_decompress(stage->compression, &stage[1],
+	                    decompression_loc, stage->len))
+		return (void *) -1;
+
+	if (rmodule_parse(decompression_loc, &ramstage))
+		return (void *) -1;
+
+	/* The ramstage is responsible for clearing its own bss. */
+	if (rmodule_load(ramstage_loc, &ramstage))
+		return (void *) -1;
+
+	handoff = cbmem_add(CBMEM_ID_ROMSTAGE_INFO, sizeof(*handoff));
+	if (handoff) {
+		handoff->reserve_base = (uint32_t)ramstage_base;
+		handoff->reserve_size = (uint32_t)cbmem_base -
+		                        (uint32_t)ramstage_base;
+	} else
+		LOG("Couldn't allocate romstage handoff.\n");
+
+	return rmodule_entry(&ramstage);
+}
+
+#else
+
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
@@ -146,6 +206,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 	return (void *) entry;
 }
+#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 {

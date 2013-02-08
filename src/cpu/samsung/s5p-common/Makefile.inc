@@ -2,7 +2,6 @@ bootblock-y += pwm.c
 bootblock-y += s5p_gpio.c
 bootblock-y += timer.c
 
-romstage-y += cpu_info.c
 romstage-y += pwm.c	# needed by timer.c
 romstage-y += s5p_gpio.c
 romstage-y += timer.c

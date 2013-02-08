@@ -35,7 +35,7 @@
 #endif
 
 extern unsigned char _binary_smm_start;
-extern unsigned char _binary_smm_size;
+extern unsigned char _binary_smm_end;
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
@@ -352,7 +352,8 @@ static void smm_install(void)
 
 	/* copy the real SMM handler */
 	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n", smm_base);
-	memcpy((void *)smm_base, &_binary_smm_start, (size_t)&_binary_smm_size);
+	memcpy((void *)smm_base, &_binary_smm_start,
+	       (size_t)(&_binary_smm_end - &_binary_smm_start));
 
 	/* copy the IED header into place */
 	if (CONFIG_SMM_TSEG_SIZE > IED_SIZE) {

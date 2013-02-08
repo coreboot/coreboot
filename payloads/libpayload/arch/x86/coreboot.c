@@ -137,6 +137,7 @@ static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
 #ifdef CONFIG_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
+	/* ptr points to a coreboot table entry and is already virtual */
 	info->option_table = ptr;
 }
 
@@ -152,6 +153,7 @@ static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)
 #ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
 static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 {
+	/* ptr points to a coreboot table entry and is already virtual */
 	info->framebuffer = ptr;
 }
 #endif

@@ -109,6 +109,7 @@ $(obj)/lib/uart8250.smm.o : $(OPTION_TABLE_H)
 
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
+romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
 
 RMODULE_LDSCRIPT := $(src)/lib/rmodule.ld
 RMODULE_LDFLAGS  := -nostartfiles -shared -z defs -nostdlib -Bsymbolic -T $(RMODULE_LDSCRIPT)

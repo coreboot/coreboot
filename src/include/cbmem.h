@@ -28,7 +28,12 @@
 #endif
 
 #if CONFIG_HAVE_ACPI_RESUME
+#if CONFIG_RELOCATABLE_RAMSTAGE
+#define HIGH_MEMORY_SAVE	0
+#else
 #define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
+#endif
+
 #define HIGH_MEMORY_SIZE	(HIGH_MEMORY_SAVE + CONFIG_HIGH_SCRATCH_MEMORY_SIZE + HIGH_MEMORY_DEF_SIZE)
 
 /* Delegation of resume backup memory so we don't have to

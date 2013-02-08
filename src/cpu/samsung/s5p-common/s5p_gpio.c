@@ -414,6 +414,12 @@ int gpio_set_value(unsigned gpio, int value)
  */
 #define GPIO_DELAY_US 5
 
+#ifndef __BOOT_BLOCK__
+/*
+ * FIXME(dhendrix): These functions use udelay, which has dependencies on
+ * pwm code and timer code. These aren't necessary for the bootblock and
+ * bloat the image significantly.
+ */
 int gpio_read_mvl3(unsigned gpio)
 {
 	int high, low;
@@ -476,6 +482,7 @@ int gpio_decode_number(unsigned gpio_list[], int count)
 
 	return result;
 }
+#endif	/* __BOOT_BLOCK__ */
 
 static const char *get_cfg_name(int cfg)
 {

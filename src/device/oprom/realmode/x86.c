@@ -33,6 +33,7 @@
 #include <lib/jpeg.h>
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>
+#include <boot/coreboot_tables.h>
 
 /* to have a common register file for interrupt handlers */
 X86EMU_sysEnv _X86EMU_env;

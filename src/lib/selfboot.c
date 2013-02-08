@@ -78,6 +78,16 @@ struct segment {
 
 static unsigned long bounce_size, bounce_buffer;
 
+#if CONFIG_RELOCATABLE_RAMSTAGE
+static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
+{
+	/* When the ramstage is relocatable there is no need for a bounce
+	 * buffer. All payloads should not overlap the ramstage.
+	 */
+	bounce_buffer = ~0UL;
+	bounce_size = 0;
+}
+#else
 static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 {
 	unsigned long lb_size;
@@ -114,6 +124,7 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 	bounce_buffer = buffer;
 	bounce_size = req_size;
 }
+#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	unsigned long start, unsigned long len)
@@ -394,8 +405,13 @@ static int load_self_segments(
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (!overlaps_coreboot(ptr))
 			continue;
+#if CONFIG_RELOCATABLE_RAMSTAGE
+		/* payloads are required to not overlap ramstage. */
+		return 0;
+#else
 		if (ptr->s_dstaddr + ptr->s_memsz > bounce_high)
 			bounce_high = ptr->s_dstaddr + ptr->s_memsz;
+#endif
 	}
 	get_bounce_buffer(mem, bounce_high - lb_start);
 	if (!bounce_buffer) {

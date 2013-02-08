@@ -307,7 +307,14 @@ config HAVE_INIT_TIMER
 
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
+	default 0x5000 if RELOCATABLE_RAMSTAGE
 	default 0x0
+	help
+	 The amount of extra memory to reserve from the OS. If
+	 RELOCATABLE_RAMSTAGE is enabled a size of 20KiB is reserved. This is
+	 for the use of a stack in romstage after memory has been initialized.
+	 The stack size required in romstage can be large when needing to
+	 decompress the ramstage.
 
 config USE_OPTION_TABLE
 	bool
@@ -373,6 +380,17 @@ config RELOCATABLE_MODULES
 	 If RELOCATABLE_MODULES is selected then support is enabled for
 	 building relocatable modules in the ram stage. Those modules can be
 	 loaded anywhere and all the relocations are handled automatically.
+
+config RELOCATABLE_RAMSTAGE
+	depends on RELOCATABLE_MODULES
+	bool "Build the ramstage to be relocatable in 32-bit address space."
+	default n
+	help
+	 The reloctable ramstage support allows for the ramstage to be built
+	 as a relocatable module. The stage loader can identify a place
+	 out of the OS way so that copying memory is unnecessary during an S3
+	 wake. When selecting this option the romstage is responsible for
+	 determing a stack location to use for loading the ramstage.
 
 config HAVE_ACPI_TABLES
 	bool

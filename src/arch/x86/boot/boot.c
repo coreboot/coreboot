@@ -68,6 +68,34 @@ int elf_check_arch(Elf_ehdr *ehdr)
 
 }
 
+#if CONFIG_RELOCATABLE_RAMSTAGE
+/* When the ramstage is relocatable the elf loading ensures an elf image cannot
+ * be loaded over the ramstage code. */
+void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
+{
+	elf_boot_notes.hdr.b_checksum =
+		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
+
+	/* Jump to kernel */
+	__asm__ __volatile__(
+		"	cld	\n\t"
+		/* Now jump to the loaded image */
+		"	call	*%0\n\t"
+
+		/* The loaded image returned? */
+		"	cli	\n\t"
+		"	cld	\n\t"
+
+		::
+		"r" (entry),
+#if CONFIG_MULTIBOOT
+		"b"(mbi), "a" (MB_MAGIC2)
+#else
+		"b"(&elf_boot_notes), "a" (0x0E1FB007)
+#endif
+		);
+}
+#else
 void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 {
 	extern unsigned char _ram_seg, _eram_seg;
@@ -182,5 +210,6 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 #endif
 		);
 }
+#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 

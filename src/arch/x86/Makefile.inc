@@ -157,12 +157,20 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 ################################################################################
 # Build the coreboot_ram (stage 2)
 
+ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
+
+$(eval $(call rmodule_link,$(objcbfs)/coreboot_ram.debug, $(obj)/arch/x86/boot/ramstage_module_header.ramstage.o $(objgenerated)/coreboot_ram.o, $(CONFIG_HEAP_SIZE)))
+
+else
+
 $(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/coreboot_ram.ld
 else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $<
+endif
+
 endif
 
 $(objgenerated)/coreboot_ram.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME)

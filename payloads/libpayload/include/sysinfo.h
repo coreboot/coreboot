@@ -39,6 +39,12 @@
 
 struct cb_serial;
 
+/*
+ * All pointers in here shall be virtual.
+ *
+ * If a relocation happens after the last call to lib_get_sysinfo(),
+ * it is up to the user to call lib_get_sysinfo() again.
+ */
 struct sysinfo_t {
 	unsigned int cpu_khz;
 	struct cb_serial *serial;

@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <romstage_handoff.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #endif
@@ -591,6 +592,23 @@ static void add_lb_reserved(struct lb_memory *mem)
 		lb_add_rsvd_range, mem);
 }
 
+static void add_romstage_resources(struct lb_memory *mem)
+{
+	struct romstage_handoff *handoff;
+
+	/* Reserve memory requested to be reserved from romstage. */
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL)
+		return;
+
+	if (handoff->reserve_size == 0)
+		return;
+
+	lb_add_memory_range(mem, LB_MEM_RESERVED, handoff->reserve_base,
+	                    handoff->reserve_size);
+}
+
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
@@ -657,6 +675,8 @@ unsigned long write_coreboot_table(
 
 	/* Add reserved regions */
 	add_lb_reserved(mem);
+
+	add_romstage_resources(mem);
 
 	lb_dump_memory_ranges(mem);
 

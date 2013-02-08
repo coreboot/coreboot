@@ -90,5 +90,6 @@ __wakeup_segment = RELOCATED(.)
 	.word 0x0000
 
 	.globl __wakeup_size
-__wakeup_size = ( . - __wakeup)
+__wakeup_size:
+	.long . - __wakeup
 

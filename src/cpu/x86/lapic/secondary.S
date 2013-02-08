@@ -3,7 +3,7 @@
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 	.text
-	.globl _secondary_start, _secondary_start_end
+	.globl _secondary_start, _secondary_start_end, _secondary_gdt_addr
 	.balign 4096
 _secondary_start:
 	.code16
@@ -28,9 +28,11 @@ _secondary_start:
 
 	ljmpl	$0x10, $__ap_protected_start
 
+	/* This will get filled in by C code. */
+_secondary_gdt_addr:
 gdtaddr:
-	.word   gdt_limit	/* the table limit */
-	.long   gdt             /* we know the offset */
+	.word   0	/* the table limit */
+	.long   0	/* we know the offset */
 
 _secondary_start_end:
 

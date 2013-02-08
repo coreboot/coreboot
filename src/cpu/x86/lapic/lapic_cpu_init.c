@@ -52,11 +52,29 @@ int  lowmem_backup_size;
 #endif
 
 extern char _secondary_start[];
+extern char _secondary_gdt_addr[];
+extern char gdt[];
+extern char gdt_end[];
+
+static inline void setup_secondary_gdt(void)
+{
+	u16 *gdt_limit;
+	u32 *gdt_base;
+
+	gdt_limit = (void *)&_secondary_gdt_addr;
+	gdt_base = (void *)&gdt_limit[1];
+
+	*gdt_limit = (u32)&gdt_end - (u32)&gdt - 1;
+	*gdt_base = (u32)&gdt;
+}
 
 static void copy_secondary_start_to_lowest_1M(void)
 {
 	extern char _secondary_start_end[];
 	unsigned long code_size;
+
+	/* Fill in secondary_start's local gdt. */
+	setup_secondary_gdt();
 
 	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 

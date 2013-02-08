@@ -36,7 +36,8 @@ __idt_handler:
 	movb 	$0, %al /* This instruction gets modified */
 	ljmp 	$0, $__interrupt_handler_16bit
 	.globl __idt_handler_size
-__idt_handler_size = ( . - __idt_handler)
+__idt_handler_size:
+	.long  . - __idt_handler
 
 
 /* In order to be independent of coreboot's position in RAM
@@ -47,7 +48,6 @@ __idt_handler_size = ( . - __idt_handler)
 __realmode_code:
 
 /* Realmode IDT pointer structure. */
-	.globl __realmode_idt
 __realmode_idt = RELOCATED(.)
 	.word 1023	/* 16 bit limit */
 	.long 0		/* 24 bit base */
@@ -67,13 +67,13 @@ __registers = RELOCATED(.)
 	.long 0 /* 20 - EDI */
 
 /* 256 byte buffer, used by int10 */
-	.globl __buffer
-__buffer = RELOCATED(.)
+	.globl __realmode_buffer
+__realmode_buffer:
 	.skip 256
 
 	.code32
 	.globl __realmode_call
-__realmode_call = RELOCATED(.)
+__realmode_call:
 	/* save all registers to the stack */
 	pusha
 	pushf
@@ -204,7 +204,7 @@ __lcall_instr = RELOCATED(.)
 	ret
 
 	.globl __realmode_interrupt
-__realmode_interrupt = RELOCATED(.)
+__realmode_interrupt:
 	/* save all registers to the stack */
 	pusha
 	pushf
@@ -408,6 +408,7 @@ __interrupt_handler_16bit = RELOCATED(.)
 	iret
 
 	.globl __realmode_code_size
-__realmode_code_size = (. - __realmode_code)
+__realmode_code_size:
+	.long  . - __realmode_code
 
 	.code32

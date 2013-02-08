@@ -250,11 +250,10 @@ gdb_stub_breakpoint:
 
 #endif
 
-	.globl gdt, gdt_end, gdt_limit, idtarg
+	.globl gdt, gdt_end, idtarg
 
-gdt_limit = gdt_end - gdt - 1	/* compute the table limit */
 gdtaddr:
-	.word	gdt_limit
+	.word	gdt_end - gdt - 1
 	.long	gdt		/* we know the offset */
 
 	 .data

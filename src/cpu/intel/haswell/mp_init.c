@@ -66,7 +66,7 @@ struct saved_msr {
 extern char _binary_sipi_vector_start[];
 /* These symbols are defined in c_start.S. */
 extern char gdt[];
-extern char gdt_limit[];
+extern char gdt_end[];
 extern char idtarg[];
 
 /* This table keeps track of each CPU's APIC id. */
@@ -189,7 +189,7 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	int i;
 
 	sp->gdt = (u32)&gdt;
-	sp->gdtlimit = (u32)&gdt_limit;
+	sp->gdtlimit = (u32)&gdt_end - (u32)&gdt - 1;
 	sp->idt_ptr = (u32)&idtarg;
 	sp->stack_size = CONFIG_STACK_SIZE;
 	sp->stack_top = (u32)&_estack;

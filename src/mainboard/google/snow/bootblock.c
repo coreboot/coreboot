@@ -23,14 +23,23 @@
 #include <cbfs.h>
 #include <uart.h>
 #include <console/console.h>
+#include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/periph.h>
-#include <cpu/samsung/exynos5250/pinmux.h>
+#include <cpu/samsung/exynos5250/clock_init.h>
 
 #endif
 
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
+	struct mem_timings *mem;
+	struct arm_clk_ratios *arm_ratios;
+
+	mem = get_mem_timings();
+	arm_ratios = get_arm_clk_ratios();
+	system_clock_init(mem, arm_ratios);
+
 #if CONFIG_EARLY_SERIAL_CONSOLE
 	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 	uart_init();

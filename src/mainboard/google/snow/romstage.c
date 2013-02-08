@@ -26,7 +26,6 @@
 
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/setup.h>
-#include <cpu/samsung/exynos5250/clock_init.h>
 
 #include <console/console.h>
 #include <arch/stages.h>
@@ -49,19 +48,13 @@ static int board_wakeup_permitted(void)
 void main(void)
 {
 	struct mem_timings *mem;
-	struct arm_clk_ratios *arm_ratios;
 	int ret;
 	void *entry;
-
-	/* Clock must be initialized before console_init, otherwise you may need
-	 * to re-initialize serial console drivers again. */
-	mem = get_mem_timings();
-	arm_ratios = get_arm_clk_ratios();
-	system_clock_init(mem, arm_ratios);
 
 	console_init();
 	printk(BIOS_INFO, "hello from romstage\n");
 
+	mem = get_mem_timings();
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
 		while(1);

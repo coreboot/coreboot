@@ -60,6 +60,19 @@ static inline u32 *stack_push(u32 *stack, u32 value)
 	return stack;
 }
 
+static unsigned long choose_top_of_stack(void)
+{
+	unsigned long stack_top;
+#if CONFIG_RELOCATABLE_RAMSTAGE
+	stack_top = (unsigned long)cbmem_add(CBMEM_ID_RESUME_SCRATCH,
+	                                     CONFIG_HIGH_SCRATCH_MEMORY_SIZE);
+	stack_top += CONFIG_HIGH_SCRATCH_MEMORY_SIZE;
+#else
+	stack_top = ROMSTAGE_STACK;
+#endif
+	return stack_top;
+}
+
 /* setup_romstage_stack_after_car() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 static void *setup_romstage_stack_after_car(void)
@@ -70,7 +83,7 @@ static void *setup_romstage_stack_after_car(void)
 	u32 mtrr_mask_upper;
 
 	/* Top of stack needs to be aligned to a 4-byte boundary. */
-	top_of_stack = ROMSTAGE_STACK & ~3;
+	top_of_stack = choose_top_of_stack() & ~3;
 	slot = (void *)top_of_stack;
 	num_mtrrs = 0;
 
@@ -245,11 +258,13 @@ void romstage_common(const struct romstage_params *params)
 	*(u32 *)CBMEM_RESUME_BACKUP = 0;
 
 	if ((boot_mode == 2) && cbmem_was_initted) {
+		#if !CONFIG_RELOCATABLE_RAMSTAGE
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 		if (resume_backup_memory) {
 			*(u32 *)CBMEM_BOOT_MODE = boot_mode;
 			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
 		}
+		#endif
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
 	} else if (boot_mode == 2) {
@@ -277,6 +292,8 @@ void romstage_common(const struct romstage_params *params)
 
 static inline void prepare_for_resume(void)
 {
+/* Only need to save memory when ramstage isn't relocatable. */
+#if !CONFIG_RELOCATABLE_RAMSTAGE
 #if CONFIG_HAVE_ACPI_RESUME
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
 	if (*(u32 *)CBMEM_BOOT_MODE == 2) {
@@ -284,6 +301,7 @@ static inline void prepare_for_resume(void)
 		void *dest = *(void **)CBMEM_RESUME_BACKUP;
 		memcpy(dest, src, HIGH_MEMORY_SAVE);
 	}
+#endif
 #endif
 }
 

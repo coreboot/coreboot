@@ -262,6 +262,7 @@ void cbmem_list(void)
 		case CBMEM_ID_CONSOLE:   printk(BIOS_DEBUG, "CONSOLE    "); break;
 		case CBMEM_ID_ELOG:      printk(BIOS_DEBUG, "ELOG       "); break;
 		case CBMEM_ID_COVERAGE:  printk(BIOS_DEBUG, "COVERAGE   "); break;
+		case CBMEM_ID_ROMSTAGE_INFO:   printk(BIOS_DEBUG, "ROMSTAGE   "); break;
 		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
 		}
 		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);

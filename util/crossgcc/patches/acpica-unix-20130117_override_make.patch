@@ -1,6 +1,6 @@
-diff -Nurbs acpica-unix-20121114.orig/generate/unix/Makefile.common acpica-unix-20121114/generate/unix/Makefile.common
---- acpica-unix-20121114.orig/generate/unix/Makefile.common	2012-11-15 00:22:38.000000000 +0800
-+++ acpica-unix-20121114/generate/unix/Makefile.common	2013-02-09 12:11:55.994133871 +0800
+diff -ur acpica-unix-20130117.orig/generate/unix/Makefile.common acpica-unix-20130117/generate/unix/Makefile.common
+--- acpica-unix-20130117.orig/generate/unix/Makefile.common	2013-01-17 20:47:17.000000000 +0100
++++ acpica-unix-20130117/generate/unix/Makefile.common	2013-02-10 00:25:08.000000000 +0100
 @@ -19,17 +19,17 @@
  	if [ $(BITS) -eq 32 ]; then \
  		echo "Forced 32-bit generation of $@"; \
@@ -67,9 +67,10 @@ diff -Nurbs acpica-unix-20121114.orig/generate/unix/Makefile.common acpica-unix-
  			echo "Installed 32-bit version of $$toolname"; \
  		fi; \
  		echo ""; \
-diff -Nurbs acpica-unix-20121114.orig/generate/unix/Makefile.config acpica-unix-20121114/generate/unix/Makefile.config
---- acpica-unix-20121114.orig/generate/unix/Makefile.config	2012-11-15 00:22:38.000000000 +0800
-+++ acpica-unix-20121114/generate/unix/Makefile.config	2013-02-09 12:11:12.978134325 +0800
+Only in acpica-unix-20130117/generate/unix: Makefile.common.orig
+diff -ur acpica-unix-20130117.orig/generate/unix/Makefile.config acpica-unix-20130117/generate/unix/Makefile.config
+--- acpica-unix-20130117.orig/generate/unix/Makefile.config	2013-01-17 20:47:17.000000000 +0100
++++ acpica-unix-20130117/generate/unix/Makefile.config	2013-02-10 00:25:08.000000000 +0100
 @@ -31,6 +31,7 @@
  PROGS = acpibin acpiexec acpihelp acpinames acpisrc acpixtract iasl
  HOST =  _CYGWIN
@@ -78,3 +79,4 @@ diff -Nurbs acpica-unix-20121114.orig/generate/unix/Makefile.config acpica-unix-
  
  #
  # Common defines
+Only in acpica-unix-20130117/generate/unix: Makefile.config.orig

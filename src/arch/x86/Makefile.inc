@@ -212,7 +212,15 @@ crt0s += $(src)/arch/x86/init/crt0_romcc_epilogue.inc
 endif
 
 ifeq ($(CONFIG_ROMCC),y)
-ROMCCFLAGS ?= -mcpu=p2 -O2
+ifeq ($(CONFIG_MMX),y)
+ ifeq ($(CONFIG_SSE),y)
+  ROMCCFLAGS := -mcpu=p4 -O2 # MMX, SSE
+ else
+  ROMCCFLAGS := -mcpu=p2 -O2 # MMX, !SSE
+ endif
+else
+ ROMCCFLAGS := -mcpu=i386 -O2 # !MMX, !SSE
+endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"

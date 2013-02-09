@@ -85,8 +85,8 @@ static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
 /* The relocation work is actually performed in SMM context, but the code
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here. */
-static void cpu_smm_do_relocation(void *arg, int cpu,
-                                  const struct smm_runtime *runtime)
+static void __attribute__((cdecl))
+cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 {
 	em64t101_smm_state_save_area_t *save_state;
 	msr_t mtrr_cap;
@@ -209,7 +209,7 @@ static int install_relocation_handler(int num_cpus,
 		.num_concurrent_stacks = num_cpus,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = 1,
-		.handler = &cpu_smm_do_relocation,
+		.handler = (smm_handler_t)&cpu_smm_do_relocation,
 		.handler_arg = (void *)relo_params,
 	};
 

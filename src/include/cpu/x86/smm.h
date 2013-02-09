@@ -429,7 +429,7 @@ struct smm_runtime {
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 } __attribute__ ((packed));
 
-typedef void (*smm_handler_t)(void *arg, int cpu,
+typedef void __attribute__((cdecl)) (*smm_handler_t)(void *arg, int cpu,
                               const struct smm_runtime *runtime);
 
 #ifdef __SMM__

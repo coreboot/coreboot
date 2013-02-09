@@ -102,7 +102,6 @@ static void enable_vmx(void)
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
 #define MSR_BBL_CR_CTL3		0x11e
-#define MSR_FSB_FREQ		0xcd
 
 static void configure_c_states(const int quad)
 {

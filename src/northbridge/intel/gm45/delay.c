@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/speedstep.h>
 #include "delay.h"
 
 /* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow. */
@@ -45,7 +46,7 @@ static void _udelay(const u32 us, const u32 numerator, const int total)
 	u32 fsb = 0, divisor;
 	u32 d;			/* ticks per us */
 
-	msr = rdmsr(0xcd);
+	msr = rdmsr(MSR_FSB_FREQ);
 	switch (msr.lo & 0x07) {
 	case 5:
 		fsb = 400;

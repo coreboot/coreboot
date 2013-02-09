@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/speedstep.h>
 
 /* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow. */
 static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
@@ -46,7 +47,7 @@ void udelay(u32 us)
 	u32 fsb = 0, divisor;
 	u32 d;			/* ticks per us */
 
-	msr = rdmsr(0xcd);
+	msr = rdmsr(MSR_FSB_FREQ);
 	switch (msr.lo & 0x07) {
 	case 5:
 		fsb = 400;

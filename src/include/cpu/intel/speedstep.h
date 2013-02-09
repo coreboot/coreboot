@@ -45,6 +45,7 @@
 #define IA32_PERF_CTL     0x199
 #define MSR_THERM2_CTL    0x19D
 #define IA32_MISC_ENABLES 0x1A0
+#define MSR_FSB_FREQ		0xcd
 #define MSR_FSB_CLOCK_VCC	0xce
 #define MSR_EXTENDED_CONFIG	0xee
 

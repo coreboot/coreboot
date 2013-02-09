@@ -25,6 +25,7 @@
 #include <cpu/x86/car.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/intel/speedstep.h>
 
 /* NOTE: This code uses global variables, so it can not be used during
  * memory init.
@@ -53,11 +54,11 @@ static int set_timer_fsb(void)
 	switch (c.x86_model) {
 	case 0xe:  /* Core Solo/Duo */
 	case 0x1c: /* Atom */
-		timer_fsb = core_fsb[rdmsr(0xcd).lo & 7];
+		timer_fsb = core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
 		break;
 	case 0xf:  /* Core 2 or Xeon */
 	case 0x17: /* Enhanced Core */
-		timer_fsb = core2_fsb[rdmsr(0xcd).lo & 7];
+		timer_fsb = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
 		break;
 	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
 	case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/

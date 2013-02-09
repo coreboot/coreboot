@@ -1,0 +1,82 @@
+diff -ur acpica-unix-20130117.orig/generate/unix/Makefile.common acpica-unix-20130117/generate/unix/Makefile.common
+--- acpica-unix-20130117.orig/generate/unix/Makefile.common	2013-01-17 20:47:17.000000000 +0100
++++ acpica-unix-20130117/generate/unix/Makefile.common	2013-02-10 00:23:13.000000000 +0100
+@@ -19,17 +19,17 @@
+ 	if [ $(BITS) -eq 32 ]; then \
+ 		echo "Forced 32-bit generation of $@"; \
+ 		mkdir -p obj32; \
+-		make BITS=32; \
++		$(MAKE) BITS=32; \
+ 		echo "32-bit version of $@:"; \
+ 		ls -al ../bin32/$@; \
+ 	elif [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
+ 		mkdir -p obj64; \
+-		make BITS=64; \
++		$(MAKE) BITS=64; \
+ 		echo "64-bit version of $@:"; \
+ 		ls -al ../bin64/$@; \
+ 	else \
+ 		mkdir -p obj32; \
+-		make BITS=32; \
++		$(MAKE) BITS=32; \
+ 		echo "32-bit version of $@:"; \
+ 		ls -al ../bin32/$@; \
+ 	fi;
+@@ -47,7 +47,7 @@
+ 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
+ 		pwd; \
+ 		mkdir -p obj32; \
+-		make BITS=32; \
++		$(MAKE) BITS=32; \
+ 		echo "32-bit version of $$toolname:"; \
+ 		ls -al obj32/$$toolname \
+ 		); \
+@@ -61,7 +61,7 @@
+ 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
+ 		pwd; \
+ 		mkdir -p obj64; \
+-		make BITS=64; \
++		$(MAKE) BITS=64; \
+ 		echo "64-bit version of $$toolname:"; \
+ 		ls -al obj64/$$toolname \
+ 		); \
+@@ -73,11 +73,11 @@
+ 		echo "Removing $$toolname"; \
+ 		pwd; \
+ 		if [ -d "obj32" ] ; then \
+-			make BITS=32 clean; \
++			$(MAKE) BITS=32 clean; \
+ 			rmdir obj32; \
+ 		fi; \
+ 		if [ -d "obj64" ] ; then \
+-			make BITS=64 clean; \
++			$(MAKE) BITS=64 clean; \
+ 			rmdir obj64; \
+ 		fi; \
+ 		echo ""; \
+@@ -92,10 +92,10 @@
+ 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
+ 		pwd; \
+ 		if [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
+-			make BITS=64 PROG=$$toolname install; \
++			$(MAKE) BITS=64 PROG=$$toolname install; \
+ 			echo "Installed 64-bit version of $$toolname"; \
+ 		else \
+-			make BITS=32 PROG=$$toolname install; \
++			$(MAKE) BITS=32 PROG=$$toolname install; \
+ 			echo "Installed 32-bit version of $$toolname"; \
+ 		fi; \
+ 		echo ""; \
+Only in acpica-unix-20130117/generate/unix: Makefile.common.orig
+diff -ur acpica-unix-20130117.orig/generate/unix/Makefile.config acpica-unix-20130117/generate/unix/Makefile.config
+--- acpica-unix-20130117.orig/generate/unix/Makefile.config	2013-01-17 20:47:17.000000000 +0100
++++ acpica-unix-20130117/generate/unix/Makefile.config	2013-02-10 00:23:13.000000000 +0100
+@@ -31,6 +31,7 @@
+ PROGS = acpibin acpiexec acpihelp acpinames acpisrc acpixtract iasl
+ HOST =  _CYGWIN
+ CC =    gcc
++MAKE =  make
+ 
+ #
+ # Common defines
+Only in acpica-unix-20130117/generate/unix: Makefile.config.orig

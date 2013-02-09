@@ -584,7 +584,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	cd $IASL_DIR/generate/unix
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" iasl || touch .failed
+	$MAKE MAKE="$MAKE" CC="$CC" iasl || touch .failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
 	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
 	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi

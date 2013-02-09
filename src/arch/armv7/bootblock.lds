@@ -25,7 +25,7 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 SECTIONS
 {
-	ROMLOC = 0x2023400 - 8192;
+	ROMLOC = CONFIG_BOOTBLOCK_BASE - CONFIG_BL1_SIZE_KB;
 
 	/* This section might be better named .setup */
 	.rom ROMLOC : {

@@ -36,7 +36,7 @@ _bl1:
 	 * on ARM, which is 8KB in size and it is prepended to the
 	 * reset vector
 	 */
-	.skip 8192
+	.skip CONFIG_BL1_SIZE_KB
 
 .globl _start
 _start: b	reset

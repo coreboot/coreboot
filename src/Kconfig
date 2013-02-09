@@ -597,7 +597,6 @@ config GDB_WAIT
 config DEBUG_CBFS
 	bool "Output verbose CBFS debug messages"
 	default n
-	depends on TPM
 	help
 	  This option enables additional CBFS related debug messages.
 

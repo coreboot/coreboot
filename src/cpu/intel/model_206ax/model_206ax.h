@@ -48,8 +48,6 @@
 #define MSR_PIC_MSG_CONTROL		0x2e
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
-#define MSR_PMG_CST_CONFIG_CONTROL	0xe2
-#define MSR_PMG_IO_CAPTURE_BASE		0xe4
 
 #define MSR_MISC_PWR_MGMT		0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)

@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/speedstep.h>
 #include "model_206ax.h"
 
 static void msr_set_bit(unsigned reg, unsigned bit)

@@ -77,16 +77,12 @@ static void enable_vmx(void)
 	wrmsr(IA32_FEATURE_CONTROL, msr);
 }
 
-#define PMG_CST_CONFIG_CONTROL	0xe2
-#define PMG_IO_BASE_ADDR	0xe3
-#define PMG_IO_CAPTURE_ADDR	0xe4
-
 #define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {
 	msr_t msr;
 
-	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 15); // config lock until next reset.
 	msr.lo |= (1 << 10); // Enable I/O MWAIT redirection for C-States
 	msr.lo &= ~(1 << 9); // Issue a single stop grant cycle upon stpclk
@@ -96,17 +92,17 @@ static void configure_c_states(void)
 	msr.lo &= ~7;
 	msr.lo |= HIGHEST_CLEVEL; // support at most C3
 
-	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE (P_BLK) */
 	msr.hi = 0;
 	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
-	wrmsr(PMG_IO_BASE_ADDR, msr);
+	wrmsr(MSR_PMG_IO_BASE_ADDR, msr);
 
 	/* set C_LVL controls */
 	msr.hi = 0;
 	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
-	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
+	wrmsr(MSR_PMG_IO_CAPTURE_ADDR, msr);
 }
 
 #define IA32_MISC_ENABLE	0x1a0

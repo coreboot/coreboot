@@ -112,7 +112,7 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image) {
 
 	struct cbfs_file *entry, *first = NULL, *last = NULL;
 	for (first = entry = cbfs_find_first_entry(image);
-	     entry && cbfs_is_valid_entry(entry);
+	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 		last = entry;
 	}
@@ -352,7 +352,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
 
 	for (entry = cbfs_find_first_entry(image);
-	     entry && cbfs_is_valid_entry(entry);
+	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 
 		entry_type = ntohl(entry->type);
@@ -429,7 +429,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name) {
 	struct cbfs_file *entry;
 	for (entry = cbfs_find_first_entry(image);
-	     entry && cbfs_is_valid_entry(entry);
+	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 		if (strcasecmp(CBFS_NAME(entry), name) == 0) {
 			DEBUG("cbfs_get_entry: found %s\n", name);
@@ -574,7 +574,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	struct cbfs_payload_segment *payload;
 	FILE *fp = (FILE *)arg;
 
-	if (!cbfs_is_valid_entry(entry)) {
+	if (!cbfs_is_valid_entry(image, entry)) {
 		ERROR("cbfs_print_entry_info: Invalid entry at 0x%x\n",
 		      cbfs_get_entry_addr(image, entry));
 		return -1;
@@ -643,7 +643,7 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 
 	next = cbfs_find_next_entry(image, entry);
 
-	while (next && cbfs_is_valid_entry(next)) {
+	while (next && cbfs_is_valid_entry(image, next)) {
 		type = ntohl(next->type);
 		if (type == CBFS_COMPONENT_DELETED) {
 			type = CBFS_COMPONENT_NULL;
@@ -675,7 +675,7 @@ int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
 	int count = 0;
 	struct cbfs_file *entry;
 	for (entry = cbfs_find_first_entry(image);
-	     entry && cbfs_is_valid_entry(entry);
+	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 		count ++;
 		if (callback(image, entry, arg) != 0)
@@ -730,7 +730,7 @@ struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,
 				       struct cbfs_file *entry) {
 	uint32_t addr = cbfs_get_entry_addr(image, entry);
 	int align = ntohl(image->header->align);
-	assert(entry && cbfs_is_valid_entry(entry));
+	assert(entry && cbfs_is_valid_entry(image, entry));
 	addr += ntohl(entry->offset) + ntohl(entry->len);
 	addr = align_up(addr, align);
 	return (struct cbfs_file *)(image->buffer.data + addr);
@@ -741,9 +741,13 @@ uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry) 
 	return (int32_t)((char *)entry - image->buffer.data);
 }
 
-int cbfs_is_valid_entry(struct cbfs_file *entry) {
-	return (entry &&memcmp(entry->magic, CBFS_FILE_MAGIC,
-			       sizeof(entry->magic)) == 0);
+int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry) {
+	return (entry &&
+		(char *)entry >= image->buffer.data &&
+		(char *)entry + sizeof(entry->magic) <
+			image->buffer.data + image->buffer.size &&
+		memcmp(entry->magic, CBFS_FILE_MAGIC,
+		       sizeof(entry->magic)) == 0);
 }
 
 int cbfs_init_entry(struct cbfs_file *entry,
@@ -818,7 +822,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 	 * by ELF loader and positioned by cbfs_add_entry.
 	 */
 	for (entry = cbfs_find_first_entry(image);
-	     entry && cbfs_is_valid_entry(entry);
+	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 
 		uint32_t type = ntohl(entry->type);

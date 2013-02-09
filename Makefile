@@ -97,10 +97,10 @@ ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config distclean,$(MAKECMDGOALS)),)
+ifneq ($(filter %config %clean,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
-ifeq ($(MAKECMDGOALS), distclean)
+ifeq ($(MAKECMDGOALS), %clean)
 NOMKDIR:=1
 endif
 endif

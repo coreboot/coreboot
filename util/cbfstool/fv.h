@@ -33,6 +33,7 @@ typedef struct {
 } firmware_volume_header_t;
 
 #define FILETYPE_SEC 0x03
+#define FILETYPE_PAD 0xf0
 typedef struct {
 	uint8_t  name[16];
 	uint16_t integrity;
@@ -43,6 +44,7 @@ typedef struct {
 } ffs_file_header_t;
 
 #define SECTION_PE32 0x10
+#define SECTION_RAW 0x19
 typedef struct {
 	uint8_t size[3];
 	uint8_t section_type;

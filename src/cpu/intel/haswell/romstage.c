@@ -18,6 +18,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <arch/cpu.h>
@@ -28,6 +29,7 @@
 #include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
+#include <arch/stages.h>
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
@@ -271,4 +273,23 @@ void romstage_common(const struct romstage_params *params)
 	timestamp_add(TS_AFTER_INITRAM, after_dram_time );
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
+}
+
+static inline void prepare_for_resume(void)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Back up the OS-controlled memory where ramstage will be loaded. */
+	if (*(u32 *)CBMEM_BOOT_MODE == 2) {
+		void *src = (void *)CONFIG_RAMBASE;
+		void *dest = *(void **)CBMEM_RESUME_BACKUP;
+		memcpy(dest, src, HIGH_MEMORY_SAVE);
+	}
+#endif
+}
+
+void romstage_after_car(void)
+{
+	prepare_for_resume();
+	/* Load the ramstage. */
+	copy_and_run(0);
 }

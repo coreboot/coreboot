@@ -31,6 +31,7 @@
 
 #include <system.h>
 
+.section ".bl1", "a", %progbits
 _bl1:
 	/* For now we have to live with a first stage boot loader
 	 * on ARM, which is 8KB in size and it is prepended to the
@@ -38,6 +39,7 @@ _bl1:
 	 */
 	.skip (CONFIG_BL1_SIZE_KB * 1024)
 
+.section ".start", "a", %progbits
 .globl _start
 _start: b	reset
 	.balignl 16,0xdeadbeef

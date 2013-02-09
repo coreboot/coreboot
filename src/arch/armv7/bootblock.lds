@@ -30,6 +30,8 @@ SECTIONS
 	/* This section might be better named .setup */
 	.rom ROMLOC : {
 		_rom = .;
+		*(.bl1);
+		*(.start);
 		*(.text);
 		*(.text.*);
 		*(.rom.text);

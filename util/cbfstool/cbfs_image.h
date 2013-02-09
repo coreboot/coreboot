@@ -114,7 +114,7 @@ struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,
 uint32_t cbfs_get_entry_addr(struct cbfs_image *image, struct cbfs_file *entry);
 
 /* Returns 1 if entry has valid data (by checking magic number), otherwise 0. */
-int cbfs_is_valid_entry(struct cbfs_file *entry);
+int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry);
 
 /* Print CBFS component information. */
 int cbfs_print_directory(struct cbfs_image *image);

@@ -32,6 +32,7 @@ SECTIONS
 		_rom = .;
 		*(.bl1);
 		*(.start);
+		*(.id);
 		*(.text);
 		*(.text.*);
 		*(.rom.text);

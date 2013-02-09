@@ -202,7 +202,6 @@ $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL
 # Build the bootblock
 
 bootblock_lds = $(src)/arch/armv7/bootblock.lds
-bootblock_lds += $(src)/arch/armv7/lib/id.lds
 bootblock_lds += $(chipset_bootblock_lds)
 
 bootblock_inc += $(src)/arch/armv7/bootblock.inc

@@ -45,6 +45,7 @@
 #define IA32_PERF_CTL     0x199
 #define MSR_THERM2_CTL    0x19D
 #define IA32_MISC_ENABLES 0x1A0
+#define MSR_FSB_FREQ		0xcd
 #define MSR_FSB_CLOCK_VCC	0xce
 #define MSR_PMG_CST_CONFIG_CONTROL	0xe2
 #define MSR_PMG_IO_BASE_ADDR	0xe3
@@ -104,7 +105,9 @@ typedef struct {
 	int num_states;
 } sst_table_t;
 
+#ifndef __ROMCC__
 void speedstep_gen_pstates(sst_table_t *);
+#endif
 
 #define SPEEDSTEP_MAX_POWER_YONAH	31000
 #define SPEEDSTEP_MIN_POWER_YONAH	13100

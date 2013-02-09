@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/speedstep.h>
 #include <console/console.h>
 /**
  * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
@@ -35,7 +36,7 @@ void udelay(u32 us)
 	u32 d;			/* ticks per us */
 	u32 dn = 0x1000000 / 2;	/* how many us before we need to use hi */
 
-	msr = rdmsr(0xcd);
+	msr = rdmsr(MSR_FSB_FREQ);
 	switch (msr.lo & 0x07) {
 	case 5:
 		fsb = 400;

@@ -20,6 +20,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <cpu/intel/speedstep.h>
 #include "raminit_ep80579.h"
 #include "ep80579.h"
 
@@ -441,8 +442,8 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 
 	/* TODO check: */
 	/* set front side bus speed */
-	msr = rdmsr(0xcd); /* returns 0 on Pentium M 90nm */
-	print_debug("msr 0xcd = ");
+	msr = rdmsr(MSR_FSB_FREQ); /* returns 0 on Pentium M 90nm */
+	print_debug("MSR FSB_FREQ(0xcd) = ");
 	print_debug_hex32(msr.hi);
 	print_debug_hex32(msr.lo);
 	print_debug("\n");

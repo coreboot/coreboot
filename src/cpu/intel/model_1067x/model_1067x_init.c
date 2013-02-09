@@ -98,9 +98,6 @@ static void enable_vmx(void)
 	wrmsr(IA32_FEATURE_CONTROL, msr);
 }
 
-#define PMG_CST_CONFIG_CONTROL	0xe2
-#define PMG_IO_BASE_ADDR	0xe3
-#define PMG_IO_CAPTURE_ADDR	0xe4
 #define MSR_BBL_CR_CTL3		0x11e
 #define MSR_FSB_FREQ		0xcd
 
@@ -123,7 +120,7 @@ static void configure_c_states(const int quad)
 
 	const int cst_range = (c6 ? 6 : (c5 ? 5 : 4)) - 2; /* zero means lvl2 */
 
-	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
 	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
 	msr.lo |=  (1 << 8);
 	if (quad) {
@@ -140,17 +137,17 @@ static void configure_c_states(const int quad)
 	msr.lo |= (1 << 10); /* Enable IO MWAIT redirection. */
 	if (c6)
 		msr.lo |= (1 << 25);
-	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE */
 	msr.hi = 0;
 	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
-	wrmsr(PMG_IO_BASE_ADDR, msr);
+	wrmsr(MSR_PMG_IO_BASE_ADDR, msr);
 
 	/* Set IO Capture Address */
 	msr.hi = 0;
 	msr.lo = ((PMB0_BASE + 4) & 0xffff) | ((cst_range & 0xffff) << 16);
-	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
+	wrmsr(MSR_PMG_IO_CAPTURE_ADDR, msr);
 
 	if (c5) {
 		msr = rdmsr(MSR_BBL_CR_CTL3);
@@ -188,10 +185,10 @@ static void configure_p_states(const char stepping, const char cores)
 		wrmsr(IA32_PERF_CTL, msr);
 	}
 
-	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
 	msr.lo &= ~(1 << 11); /* Enable hw coordination. */
 	msr.lo |= (1 << 15); /* Lock config until next reset. */
-	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
 }
 
 #define MSR_EMTTM_CR_TABLE(x)	(0xa8 + (x))

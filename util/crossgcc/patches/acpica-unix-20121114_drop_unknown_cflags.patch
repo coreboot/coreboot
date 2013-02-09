@@ -1,10 +1,19 @@
 diff -ur acpica-unix-20121114.orig/generate/unix/Makefile.config acpica-unix-20121114/generate/unix/Makefile.config
---- acpica-unix-20121114.orig/generate/unix/Makefile.config	2012-11-14 08:22:38.000000000 -0800
-+++ acpica-unix-20121114/generate/unix/Makefile.config	2012-12-05 15:53:35.000000000 -0800
-@@ -135,15 +135,11 @@
+--- acpica-unix-20121114.orig/generate/unix/Makefile.config	2012-11-14 17:22:38.000000000 +0100
++++ acpica-unix-20121114/generate/unix/Makefile.config	2013-02-09 17:57:59.000000000 +0100
+@@ -115,7 +115,6 @@
+ CWARNINGFLAGS = \
+     -ansi \
+     -Wall \
+-    -Wbad-function-cast \
+     -Wdeclaration-after-statement \
+     -Werror \
+     -Wformat=2 \
+@@ -134,16 +133,11 @@
+     -Waddress \
      -Waggregate-return \
      -Wchar-subscripts \
-     -Wempty-body \
+-    -Wempty-body \
 -    -Wlogical-op \
      -Wmissing-declarations \
      -Wmissing-field-initializers \

@@ -21,6 +21,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <cpu/intel/speedstep.h>
 #include <stdlib.h>
 #include "raminit.h"
 #include "i3100.h"
@@ -583,7 +584,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	drc |= (1 << 4); /* independent clocks */
 
 	/* set front side bus speed */
-	msr = rdmsr(0xcd); /* returns 0 on Pentium M 90nm */
+	msr = rdmsr(MSR_FSB_FREQ); /* returns 0 on Pentium M 90nm */
 	value = msr.lo & 0x07;
 	drc &= ~(3 << 2);
 	drc |= (fsb_conversion[value] << 2);

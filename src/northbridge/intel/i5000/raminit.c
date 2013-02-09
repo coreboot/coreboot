@@ -25,6 +25,7 @@
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/intel/speedstep.h>
 #include <console/console.h>
 #include <spd.h>
 #include <types.h>
@@ -1560,7 +1561,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 		return 1;
 	}
 
-	msr = rdmsr(0xcd);
+	msr = rdmsr(MSR_FSB_FREQ);
 
 	switch(msr.lo & 7) {
 	case 1:

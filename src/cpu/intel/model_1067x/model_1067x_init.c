@@ -99,7 +99,6 @@ static void enable_vmx(void)
 }
 
 #define MSR_BBL_CR_CTL3		0x11e
-#define MSR_FSB_FREQ		0xcd
 
 static void configure_c_states(const int quad)
 {

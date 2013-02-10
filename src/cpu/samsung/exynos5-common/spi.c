@@ -83,7 +83,6 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 
 int exynos_spi_open(struct exynos_spi *regs)
 {
-	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 	/* set the spi1 GPIO */
 
 	// TODO Some of these should be done in board's bootblock file.

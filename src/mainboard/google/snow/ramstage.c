@@ -30,9 +30,11 @@ void main(void)
 	printk(BIOS_INFO, "hello from ramstage\n");
 
 #if CONFIG_WRITE_HIGH_TABLES
-	/* Leave some space for ACPI tables */
-	high_tables_base = CONFIG_RAMBASE;
-	high_tables_size = CONFIG_RAMBASE + 0x100000;
+	/* place at top of physical memory */
+	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
+	high_tables_base = CONFIG_SYS_SDRAM_BASE +
+			((CONFIG_DRAM_SIZE_MB * 1024) * CONFIG_NR_DRAM_BANKS) -
+			CONFIG_COREBOOT_TABLES_SIZE;
 #endif
 
 	hardwaremain(0);

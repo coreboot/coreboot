@@ -90,11 +90,6 @@ config SYS_TEXT_BASE
 	hex "Executable code section"
 	default 0x43e00000
 
-config RAMBASE
+config COREBOOT_TABLES_SIZE
 	hex
-	default SYS_SDRAM_BASE
-# according to stefan, this is RAMBASE + 1M.
-config RAMTOP
-	hex
-	default 0x40100000
-
+	default 0x100000

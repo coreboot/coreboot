@@ -26,7 +26,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = CONFIG_RAMBASE;
+	. = CONFIG_SYS_SDRAM_BASE;
 	/* First we place the code and read only data (typically const declared).
 	 * This could theoretically be placed in rom.
 	 */
@@ -122,11 +122,6 @@ SECTIONS
 	 */
 	_ram_seg = _text;
 	_eram_seg = _eheap;
-
-	/* CONFIG_RAMTOP is the upper address of cached memory (among other
-	 * things). We must not exceed beyond that address, there be dragons.
-	 */
-	_bogus = ASSERT( ( _eram_seg < (CONFIG_RAMTOP)) , "Please increase CONFIG_RAMTOP");
 
 	/* Discard the sections we don't need/want */
 

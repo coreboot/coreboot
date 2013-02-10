@@ -168,6 +168,8 @@ void OemAgesaSaveMtrr(void)
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_claim_bus(flash->spi);
 
+	flash->erase(flash, S3_DATA_MTRR_POS, S3_DATA_MTRR_SIZE);
+
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
 	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;

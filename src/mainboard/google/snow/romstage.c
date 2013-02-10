@@ -24,8 +24,10 @@
 #include <cbfs.h>
 #include <common.h>
 
+#include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/setup.h>
+#include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
 
 #include <console/console.h>
@@ -52,6 +54,8 @@ void main(void)
 	struct arm_clk_ratios *arm_ratios;
 	int ret;
 	void *entry;
+
+	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */

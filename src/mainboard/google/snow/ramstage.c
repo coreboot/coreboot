@@ -17,6 +17,7 @@
  * MA 02111-1307 USA
  */
 
+#include <lib.h>
 #include <console/console.h>
 
 #if CONFIG_WRITE_HIGH_TABLES
@@ -24,7 +25,7 @@
 #endif
 
 void hardwaremain(int boot_complete);
-void main(void)
+static void real_main(void)
 {
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
@@ -38,4 +39,18 @@ void main(void)
 #endif
 
 	hardwaremain(0);
+}
+
+void main(void)
+{
+#if CONFIG_STACK_IN_DRAM
+	__asm__ __volatile__(
+		"mov sp, %0\n\r"
+		"mov pc, %1\n\r"
+		:
+		:"r"(_estack), "r"(&real_main)
+	);
+#else
+	real_main();
+#endif
 }

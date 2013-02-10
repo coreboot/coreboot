@@ -96,7 +96,8 @@ SECTIONS
 	_end = .;
 
 	/* coreboot really "ends" here. Only heap and stack are placed after
-	 * this line.
+	 * this line. Note: Depending on the SoC, the stack may actually reside
+	 * somewhere else (ie SRAM).
 	 */
 
 	. = ALIGN(CONFIG_STACK_SIZE);

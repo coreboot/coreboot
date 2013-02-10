@@ -77,6 +77,27 @@ config IRAM_STACK
 	hex
 	default 0x02077f00
 
+choice
+	prompt "Stack location"
+
+config STACK_IN_IRAM
+	bool "Place stack in IRAM"
+	default y
+
+config STACK_IN_DRAM
+	bool "Place stack in DRAM in ramstage"
+
+endchoice
+
+config STACK_ADDR
+	hex "Stack address"
+	depends on STACK_IN_IRAM
+	default IRAM_STACK
+
+config STACK_SIZE
+	hex
+	default 0x1000
+
 # FIXME: other magic numbers that should probably go away
 config XIP_ROM_SIZE
 	hex

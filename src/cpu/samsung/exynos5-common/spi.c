@@ -81,20 +81,11 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	}
 }
 
+/* set up SPI channel */
 int exynos_spi_open(struct exynos_spi *regs)
 {
 	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 	/* set the spi1 GPIO */
-
-	// TODO Some of these should be done in board's bootblock file.
-	// We should fix-up the mainboard-specific vs. exynos-specific parts in a
-	// follow-up CL.
-
-//	exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
-	gpio_cfg_pin(GPIO_A24, 0x2);
-	gpio_cfg_pin(GPIO_A25, 0x2);
-	gpio_cfg_pin(GPIO_A26, 0x2);
-	gpio_cfg_pin(GPIO_A27, 0x2);
 
 	/* set pktcnt and enable it */
 	writel(4 | SPI_PACKET_CNT_EN, &regs->pkt_cnt);

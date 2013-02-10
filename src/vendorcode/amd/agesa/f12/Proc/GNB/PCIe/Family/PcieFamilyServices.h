@@ -48,6 +48,13 @@
 #define _PCIECOMPLEXCONFIG_H_
 
 
+AGESA_STATUS
+PcieFmForceDccRecalibrationCallback (
+  IN       PCIe_WRAPPER_CONFIG   *Wrapper,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  );
+
 VOID
 PcieFmPhyApplyGanging (
   IN       PCIe_WRAPPER_CONFIG          *Wrapper,

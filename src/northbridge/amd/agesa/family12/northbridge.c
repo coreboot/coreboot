@@ -299,7 +299,6 @@ struct hw_mem_hole_info {
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
         struct hw_mem_hole_info mem_hole;
-        int i;
 
         mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
         mem_hole.node_id = -1;
@@ -582,10 +581,8 @@ static void domain_read_resources(device_t dev)
 
 static void domain_set_resources(device_t dev)
 {
-  u32 val;
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-    printk(BIOS_DEBUG, "  amsr - incoming dev = %08lx\n",dev);
-
+    printk(BIOS_DEBUG, "  amsr - incoming dev = %08x\n", (u32) dev);
 
 #if CONFIG_PCI_64BIT_PREF_MEM
     struct resource *io, *mem1, *mem2;
@@ -593,7 +590,7 @@ static void domain_set_resources(device_t dev)
 #endif
     unsigned long mmio_basek;
     u32 pci_tolm;
-    int i, idx;
+    int idx;
     struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
     struct hw_mem_hole_info mem_hole;
@@ -712,8 +709,9 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
             sizek = limitk - 768;
         }
 
-
-printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_basek, basek, limitk);
+		printk(BIOS_DEBUG,
+			"adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
+			 mmio_basek, basek, limitk);
 
         /* split the region to accomodate pci memory space */
         if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
@@ -760,7 +758,7 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_bas
         /* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
             high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
-            printk(BIOS_DEBUG, "  adsr - uma_memory_base = %x.\n",uma_memory_base);
+            printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx.\n", uma_memory_base);
 #else
             high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
 #endif
@@ -768,8 +766,9 @@ printk(BIOS_DEBUG, "adsr: mmio_basek=%08x, basek=%08x, limitk=%08x\n",  mmio_bas
         }
 #endif
     }
-printk(BIOS_DEBUG, "  adsr - mmio_basek = %x.\n",mmio_basek);
-printk(BIOS_DEBUG, "  adsr - high_tables_size = %x.\n",high_tables_size);
+	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
+	printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",
+		high_tables_size);
 
 #if CONFIG_GFXUMA
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);

@@ -195,7 +195,7 @@ PcieConfigBuildData (
     return AGESA_FATAL;
   }
   LibAmdMemFill (Pcie, 0x00, sizeof (PCIe_PLATFORM_CONFIG) + ComplexesDataLength, StdHeader);
-  Pcie->StdHeader = (PVOID) StdHeader;
+  Pcie->StdHeader = (PVOID) (intptr_t) StdHeader;
   Pcie->Header.Child = offsetof (PCIe_PLATFORM_CONFIG, ComplexList);
   PcieConfigSetDescriptorFlags (Pcie, DESCRIPTOR_PLATFORM | DESCRIPTOR_TERMINATE_LIST | DESCRIPTOR_TERMINATE_TOPOLOGY);
   Buffer = (UINT8 *) (Pcie) + sizeof (PCIe_PLATFORM_CONFIG);
@@ -422,7 +422,7 @@ PcieLocateConfigurationData (
     return AGESA_FATAL;
   }
   PcieUpdateConfigurationData (*Pcie);
-  (*Pcie)->StdHeader = (PVOID) StdHeader;
+  (*Pcie)->StdHeader = (PVOID) (intptr_t) StdHeader;
   return  AGESA_SUCCESS;
 }
 

@@ -119,7 +119,7 @@ AmdS3LateRestore (
   ASSERT (S3LateParams != NULL);
 
   BufferPointer = (UINT8 *) S3LateParams->S3DataBlock.VolatileStorage;
-  S3LateParams->StdHeader.HeapBasePtr = (UINT64)((UINT8 *)(&BufferPointer[(((S3_VOLATILE_STORAGE_HEADER *) S3LateParams->S3DataBlock.VolatileStorage)->HeapOffset)]));
+  S3LateParams->StdHeader.HeapBasePtr = (UINT64) (intptr_t) ((UINT8 *)(&BufferPointer[(((S3_VOLATILE_STORAGE_HEADER *) S3LateParams->S3DataBlock.VolatileStorage)->HeapOffset)]));
   ASSERT (S3LateParams->StdHeader.HeapBasePtr != 0);
 
   IDS_HDT_CONSOLE_INIT (&S3LateParams->StdHeader);

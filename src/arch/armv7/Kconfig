@@ -49,4 +49,8 @@ config ARM_DCACHE_POLICY_WRITETHROUGH
 	bool
 	default n
 
+config STACK_SIZE
+	hex
+	default 0x1000
+
 endmenu

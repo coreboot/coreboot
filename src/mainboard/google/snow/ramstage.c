@@ -17,6 +17,7 @@
  * MA 02111-1307 USA
  */
 
+#include <lib.h>
 #include <console/console.h>
 #include <device/device.h>
 
@@ -25,7 +26,7 @@
 #endif
 
 void hardwaremain(int boot_complete);
-void main(void)
+static void real_main(void)
 {
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
@@ -41,30 +42,6 @@ void main(void)
 	hardwaremain(0);
 }
 
-#if 0
-static void mainboard_read_resources(device_t dev)
-{
-	printk(BIOS_DEBUG, "%s: entered\n", __func__);
-	/* Report the memory regions */
-	ram_resource(dev, 0,
-			CONFIG_SYS_SDRAM_BASE + (CONFIG_COREBOOT_ROMSIZE_KB),
-			((CONFIG_DRAM_SIZE_MB << 10UL) * CONFIG_NR_DRAM_BANKS) -
-			CONFIG_COREBOOT_TABLES_SIZE);
-}
-
-static void mainboard_set_resources(device_t dev)
-{
-	printk(BIOS_DEBUG, "%s: entered\n", __func__);
-
-	assign_resources(dev->link_list);
-}
-
-static struct device_operations mainboard_device_ops = {
-	.read_resources = mainboard_read_resources,
-	.set_resources = mainboard_set_resources,
-};
-#endif
-
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_DEBUG, "%s: entered\n", __func__);
@@ -75,3 +52,13 @@ struct chip_operations mainboard_ops = {
 	.name	= "Samsung/Google ARM ChromeBook",
 	.enable_dev = mainboard_enable,
 };
+
+void main(void)
+{
+	__asm__ __volatile__(
+		"mov sp, %0\n\r"
+		"mov pc, %1\n\r"
+		:
+		:"r"(_estack), "r"(&real_main)
+	);
+}

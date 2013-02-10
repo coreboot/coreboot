@@ -76,7 +76,6 @@ ramstage-y += Usb.c
 #ramstage-y += Legacy.c
 #ramstage-y += SbModInf.c
 ramstage-y += Debug.c
-ramstage-y += GppHp.c
 ramstage-y += Hwm.c
 
 CIMX_CFLAGS =

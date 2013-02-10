@@ -605,3 +605,4 @@ void TurnOffCG2 (OUT void);
  */
 void BackUpCG2 (OUT void);
 
+void XhciA12Fix (OUT void);

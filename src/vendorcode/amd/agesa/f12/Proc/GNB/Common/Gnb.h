@@ -82,7 +82,7 @@
 
 #define PVOID UINT64
 
-#define GnbLibGetHeader(x)  ((AMD_CONFIG_PARAMS*) (x)->StdHeader)
+#define GnbLibGetHeader(x)  ((AMD_CONFIG_PARAMS*) (intptr_t) (x)->StdHeader)
 
 #define AGESA_STATUS_UPDATE(Current, Aggregated) \
 if (Current > Aggregated) { \

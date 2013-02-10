@@ -117,7 +117,7 @@ F12_COMPLEX_CONFIG ComplexData = {
     DDI_NUMBER_OF_PIFs,
     DDI_START_PHY_LANE,
     DDI_END_PHY_LANE,
-    (UINT8)0xff,
+    0x0f,
     0x0,
     8,
     {

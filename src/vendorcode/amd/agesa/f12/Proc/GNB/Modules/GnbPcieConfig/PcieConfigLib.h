@@ -185,7 +185,7 @@ PcieUserConfigConfigDump (
 #define PcieConfigGetChildWrapper(Descriptor)     ((PCIe_WRAPPER_CONFIG *) PcieConfigGetChild (DESCRIPTOR_ALL_WRAPPERS, &((Descriptor)->Header)))
 #define PcieConfigGetChildEngine(Descriptor)      ((PCIe_ENGINE_CONFIG *) PcieConfigGetChild (DESCRIPTOR_ALL_ENGINES, &((Descriptor)->Header)))
 #define PcieConfigGetChildSilicon(Descriptor)     ((PCIe_SILICON_CONFIG *) PcieConfigGetChild (DESCRIPTOR_SILICON, &((Descriptor)->Header)))
-#define PcieConfigGetNextDescriptor(Descriptor)   (Descriptor != NULL ? ((((Descriptor->Header.DescriptorFlags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : (++Descriptor))) : NULL)
+#define PcieConfigGetNextDescriptor(Descriptor)   (Descriptor != NULL ? ((((Descriptor->Header.DescriptorFlags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : (Descriptor+1))) : NULL)
 #define PcieConfigIsPcieEngine(Descriptor)        (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_PCIE_ENGINE) != 0) : (1==0))
 #define PcieConfigIsDdiEngine(Descriptor)         (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_DDI_ENGINE) != 0) : (1==0))
 #define PcieConfigIsPcieWrapper(Descriptor)       (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_PCIE_WRAPPER) != 0) : (1==0))
@@ -195,7 +195,7 @@ PcieUserConfigConfigDump (
 #define PcieConfigIsVirtualDesciptor(Descriptor)  (Descriptor != NULL ? ((Descriptor->Header.DescriptorFlags & DESCRIPTOR_VIRTUAL) != 0) : (1==0))
 #define PcieConfigSetDescriptorFlags(Descriptor, SetDescriptorFlags)   (Descriptor)->Header.DescriptorFlags |= SetDescriptorFlags
 #define PcieConfigResetDescriptorFlags(Descriptor, ResetDescriptorFlags) ((PCIe_DESCRIPTOR_HEADER *) Descriptor)->DescriptorFlags &= (~(ResetDescriptorFlags))
-#define PcieInputParsetGetNextDescriptor(Descriptor) (Descriptor != NULL ? ((((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : (++Descriptor))) : NULL)
+#define PcieInputParsetGetNextDescriptor(Descriptor) (Descriptor != NULL ? ((((Descriptor->Flags & DESCRIPTOR_TERMINATE_LIST) != 0) ? NULL : (Descriptor+1))) : NULL)
 #define PcieConfigGetNextTopologyDescriptor(Descriptor, Termination) (((((PCIe_DESCRIPTOR_HEADER *) Descriptor)->DescriptorFlags & Termination) != 0) ? NULL : ((UINT8 *) Descriptor + ((PCIe_DESCRIPTOR_HEADER *) Descriptor)->Peer))
 
 #endif

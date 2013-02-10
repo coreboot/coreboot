@@ -49,6 +49,5 @@ void wait_all_aps_started(u32 bsp_apicid);
 void allow_all_aps_stop(u32 bsp_apicid);
 #endif
 void get_bus_conf(void);
-u32 get_initial_apicid(void);
 
 #endif /* CPU_AMD_FAM12_H */

@@ -807,7 +807,7 @@ ApUtilSetupIdtForHlt (
     DescSize = 8;
   }
 
-  HandlerOffset = (UINT64) NmiHandler;
+  HandlerOffset = (UINT64) (intptr_t) NmiHandler;
   NmiIdtDescPtr->OffsetLo = (UINT16) HandlerOffset & 0xFFFF;
   NmiIdtDescPtr->OffsetHi = (UINT16) (HandlerOffset >> 16);
   GetCsSelector (&NmiIdtDescPtr->Selector, StdHeader);
@@ -816,7 +816,7 @@ ApUtilSetupIdtForHlt (
   NmiIdtDescPtr->Offset64 = (UINT32) (HandlerOffset >> 32);
   NmiIdtDescPtr->Rsvd64 = 0;
   IdtInfo.Limit = (UINT16) ((DescSize * 3) - 1);
-  IdtInfo.Base = (UINT64) NmiIdtDescPtr - (DescSize * 2);
+  IdtInfo.Base = (UINT64) (intptr_t) NmiIdtDescPtr - (DescSize * 2);
 //  IDS_EXCEPTION_TRAP (IDS_IDT_UPDATE_EXCEPTION_VECTOR_FOR_AP, &IdtInfo, StdHeader);
   SetIdtr (&IdtInfo , StdHeader);
 }

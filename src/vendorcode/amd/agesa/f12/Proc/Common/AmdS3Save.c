@@ -227,9 +227,9 @@ AmdS3Save (
         BufferPointer = AllocParams.BufferPtr;
         AmdS3SaveParams->S3DataBlock.VolatileStorage = &(BufferPointer[EarlyBufferSize]);
 
-        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapOffset = NULL;
+        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapOffset = (intptr_t) NULL;
         ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->HeapSize = HeapSize;
-        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataOffset = NULL;
+        ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataOffset = (intptr_t) NULL;
         ((S3_VOLATILE_STORAGE_HEADER *) AmdS3SaveParams->S3DataBlock.VolatileStorage)->RegisterDataSize = LateContextSize;
 
         if (HeapSize != 0) {
@@ -246,7 +246,7 @@ AmdS3Save (
 
           HeapStatus = AmdS3SaveParams->StdHeader.HeapStatus;
           AmdS3SaveParams->StdHeader.HeapStatus = HEAP_S3_RESUME;
-          AmdS3SaveParams->StdHeader.HeapBasePtr = (UINT64) HeapPtr;
+          AmdS3SaveParams->StdHeader.HeapBasePtr = (UINT64) (intptr_t) HeapPtr;
 
           for (i = 0; i < S3LATE_TABLE_SIZE; i++) {
             if (HeapPtrs[i] != NULL) {

@@ -208,12 +208,12 @@ CopyHeapToTempRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInTempMem = 0;
-    BaseAddressInCache = (UINT8 *) StdHeader->HeapBasePtr;
+    BaseAddressInCache = (UINT8 *) (intptr_t) StdHeader->HeapBasePtr;
     HeapManagerInCache = (HEAP_MANAGER *) BaseAddressInCache;
     HeapInCacheOffset = HeapManagerInCache->FirstActiveBufferOffset;
     HeapInCache = (BUFFER_NODE *) (BaseAddressInCache + HeapInCacheOffset);
 
-    BaseAddressInTempMem = (UINT8 *) UserOptions.CfgHeapDramAddress;
+    BaseAddressInTempMem = (UINT8 *) (intptr_t) UserOptions.CfgHeapDramAddress;
     HeapManagerInTempMem = (HEAP_MANAGER *) BaseAddressInTempMem;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + TotalSize);
 
@@ -307,8 +307,8 @@ CopyHeapToMainRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInMainMem = 0;
-    BaseAddressInTempMem = (UINT8 *) StdHeader->HeapBasePtr;
-    HeapManagerInTempMem = (HEAP_MANAGER *) StdHeader->HeapBasePtr;
+    BaseAddressInTempMem = (UINT8 *) (intptr_t) StdHeader->HeapBasePtr;
+    HeapManagerInTempMem = (HEAP_MANAGER *) (intptr_t) StdHeader->HeapBasePtr;
     HeapInTempMemOffset = HeapManagerInTempMem->FirstActiveBufferOffset;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + HeapInTempMemOffset);
 

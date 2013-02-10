@@ -43,6 +43,7 @@
 */
 #include "SbPlatform.h"
 #include "cbtypes.h"
+#include "AmdSbLib.h"
 
 //
 // Declaration of external functions
@@ -61,7 +62,7 @@ UINT8 GppPortPollingLtssm (IN AMDSBCFG* pConfig, IN UINT8 ActivePorts, IN BOOLEA
  * @param[in] HpPort    The hot plug port number.
  *
  */
-VOID
+static VOID
 sbGppHotPlugSmiProcess (
   IN       AMDSBCFG*     pConfig,
   IN       UINT32        HpPort
@@ -97,7 +98,7 @@ sbGppHotPlugSmiProcess (
  * @param[in] HpPort    The hot plug port number.
  *
  */
-VOID
+static VOID
 sbGppHotUnplugSmiProcess (
   IN       AMDSBCFG*     pConfig,
   IN       UINT32        HpPort

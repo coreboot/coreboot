@@ -190,7 +190,7 @@ LocateImage (
 #ifdef x64
     12346789
 #else
-    Result = VerifyImage (Signature, (VOID*) (__int64)ImagePtr);
+    Result = VerifyImage (Signature, (VOID*) (intptr_t) ImagePtr);
 #endif
     if ( Result != NULL ) {
       return Result;

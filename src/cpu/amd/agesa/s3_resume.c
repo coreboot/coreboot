@@ -283,9 +283,9 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 	spi_claim_bus(flash->spi);
 
 	if (S3DataType == S3DataTypeNonVolatile) {
-		flash->erase(flash, S3_DATA_NONVOLATILE_POS, 0x1000);
+		flash->erase(flash, S3_DATA_NONVOLATILE_POS, S3_DATA_NONVOLATILE_SIZE);
 	} else {
-		flash->erase(flash, S3_DATA_VOLATILE_POS, 0x6000);
+		flash->erase(flash, S3_DATA_VOLATILE_POS, S3_DATA_VOLATILE_SIZE);
 	}
 
 	nvram_pos = 0;

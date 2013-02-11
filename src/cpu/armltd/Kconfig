@@ -1,0 +1,8 @@
+config CPU_ARMLTD_CORTEX_A9
+	depends on ARCH_ARMV7
+	bool
+	default n
+
+if CPU_ARMLTD_CORTEX_A9
+source src/cpu/armltd/cortex-a9/Kconfig
+endif

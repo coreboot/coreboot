@@ -42,7 +42,7 @@ ramstage-y += spi.c
 smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c

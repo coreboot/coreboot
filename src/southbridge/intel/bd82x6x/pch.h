@@ -57,17 +57,19 @@ void intel_pch_finalize_smm(void);
 #endif
 
 #if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#if !defined(__PRE_RAM__)
+#if !defined(__SMM__)
 #include "chip.h"
+void pch_enable(device_t dev);
+#endif
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
-void pch_enable(device_t dev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 #if CONFIG_ELOG
 void pch_log_state(void);
 #endif
-#else
+#else /* __PRE_RAM__ */
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);

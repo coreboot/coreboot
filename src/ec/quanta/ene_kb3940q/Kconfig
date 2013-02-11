@@ -1,0 +1,4 @@
+config EC_QUANTA_ENE_KB3940Q
+	bool
+	help
+	Interface to QUANTA ENE KB3940Q Embedded Controller.

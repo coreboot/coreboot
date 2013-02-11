@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_EC_QUANTA_ENE_KB3940Q) += ene_kb3940q

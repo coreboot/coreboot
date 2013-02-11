@@ -6,9 +6,13 @@ choice
 config BOARD_EMULATION_QEMU_X86
 	bool "QEMU x86"
 
+config BOARD_EMULATION_QEMU_ARMV7
+	bool "QEMU armv7 (vexpress-a9)"
+
 endchoice
 
 source "src/mainboard/emulation/qemu-x86/Kconfig"
+source "src/mainboard/emulation/qemu-armv7/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

@@ -313,4 +313,4 @@ distclean:
 	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
-.PHONY: $(PHONY) clean clean-cscope cscope distclean doxygen doxy .xcompile
+.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy .xcompile

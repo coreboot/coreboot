@@ -16,11 +16,11 @@ die() {
   exit 1
 }
 
-create_diff_128k() {
+create_diff_192k() {
   local image_file="$1"
   local diff_file="$2"
   cp -f "$image_file" "$diff_file"
-  dd if=/dev/zero of=$diff_file bs=1 count=$((128*1024)) conv=notrunc
+  dd if=/dev/zero of=$diff_file bs=1 count=$((192*1024)) conv=notrunc
 }
 
 fast_flash_image() {
@@ -67,7 +67,7 @@ is_servod_ready() {
 main() {
   make
   merge_bl1 "$OUTPUT"
-  create_diff_128k "$OUTPUT" "$TMP_DIFF"
+  create_diff_192k "$OUTPUT" "$TMP_DIFF"
   echo "OK: Generated image (with BL1) in $OUTPUT"
   if is_servod_ready; then
     echo "servod detected - flashing into device."

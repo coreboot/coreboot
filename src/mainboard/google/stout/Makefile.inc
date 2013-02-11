@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012 The ChromiumOS Authors
+## Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -16,32 +16,13 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
-if VENDOR_GOOGLE
 
-choice
-	prompt "Mainboard model"
+ramstage-y += ec.c
 
-config BOARD_GOOGLE_BUTTERFLY
-	bool "Butterfly"
-config BOARD_GOOGLE_LINK
-	bool "Link"
-config BOARD_GOOGLE_PARROT
-	bool "Parrot"
-config BOARD_GOOGLE_SNOW
-	bool "Snow"
-config BOARD_GOOGLE_STOUT
-	bool "Stout"
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
-endchoice
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += ec.c
 
-source "src/mainboard/google/butterfly/Kconfig"
-source "src/mainboard/google/link/Kconfig"
-source "src/mainboard/google/parrot/Kconfig"
-source "src/mainboard/google/snow/Kconfig"
-source "src/mainboard/google/stout/Kconfig"
-
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
-endif # VENDOR_GOOGLE
+SRC_ROOT = $(src)/mainboard/google/stout

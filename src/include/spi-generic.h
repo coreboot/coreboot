@@ -21,8 +21,8 @@
  * MA 02111-1307 USA
  */
 
-#ifndef _SPI_H_
-#define _SPI_H_
+#ifndef _SPI_GENERIC_H_
+#define _SPI_GENERIC_H_
 
 #include <stdint.h>
 
@@ -201,4 +201,4 @@ static inline int spi_w8r8(struct spi_slave *slave, unsigned char byte)
 	return ret < 0 ? ret : din[1];
 }
 
-#endif	/* _SPI_H_ */
+#endif	/* _SPI_GENERIC_H_ */

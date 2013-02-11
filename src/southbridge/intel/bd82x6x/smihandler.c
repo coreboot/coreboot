@@ -328,14 +328,49 @@ static void southbridge_gate_memory_reset(void)
 
 static void xhci_sleep(u8 slp_typ)
 {
-	u32 reg32;
+	u32 reg32, xhci_bar;
+	u16 reg16;
 
-	if (slp_typ == SLP_TYP_S5) {
-	    reg32 = pcie_read_config32(PCH_XHCI_DEV, 0x74);
-	    reg32 |= (1 << 8 | 0x03 );
-	    pcie_write_config32(PCH_XHCI_DEV, 0x74, reg32);
+	switch (slp_typ) {
+	case SLP_TYP_S3:
+	case SLP_TYP_S4:
+		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 &= ~0x03UL;
+		pcie_write_config32(PCH_XHCI_DEV, 0x74, reg16);
+
+		reg32 = pcie_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
+		reg32 |= (PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+		pcie_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+
+		xhci_bar = pcie_read_config32(PCH_XHCI_DEV,
+				              PCI_BASE_ADDRESS_0) & ~0xFUL;
+
+		if ((xhci_bar + 0x4C0) & 1)
+			pch_iobp_update(0xEC000082, ~0UL, (3 << 2));
+		if ((xhci_bar + 0x4D0) & 1)
+			pch_iobp_update(0xEC000182, ~0UL, (3 << 2));
+		if ((xhci_bar + 0x4E0) & 1)
+			pch_iobp_update(0xEC000282, ~0UL, (3 << 2));
+		if ((xhci_bar + 0x4F0) & 1)
+			pch_iobp_update(0xEC000382, ~0UL, (3 << 2));
+
+		reg32 = pcie_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
+		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+		pcie_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+
+		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 |= 0x03;
+		pcie_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		break;
+
+	case SLP_TYP_S5:
+		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 |= ((1 << 8) | 0x03);
+		pcie_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		break;
 	}
 }
+
 
 static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
 {

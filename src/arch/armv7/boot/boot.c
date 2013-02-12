@@ -4,6 +4,7 @@
 #include <boot/elf_boot.h>
 #include <string.h>
 #include <cpu/x86/multiboot.h>
+#include <arch/stages.h>
 
 
 #ifndef CMD_LINE
@@ -92,8 +93,9 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 	printk(BIOS_SPEW, "     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
 	printk(BIOS_SPEW, "adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 
-	/* FIXME(dhendrix): port code to jump to kernel here... */
+	stage_exit(entry);
 #if 0
+	/* FIXME: do we need any of this? */
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"	cld	\n\t"
@@ -185,5 +187,3 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 		);
 #endif
 }
-
-

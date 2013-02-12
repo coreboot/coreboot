@@ -20,6 +20,8 @@
 #define ROMSTAGE_HANDOFF_H
 
 #include <stdint.h>
+#include <string.h>
+#include <cbmem.h>
 
 /* It is the chipset's responsbility for maintaining the integrity of this
  * structure in CBMEM. For instance, if chipset code adds this structure
@@ -30,6 +32,31 @@ struct romstage_handoff {
 	uint32_t reserve_base;
 	uint32_t reserve_size;
 };
+
+#if defined(__PRE_RAM__)
+/* The romstage_handoff_find_or_add() function provides the necessary logic
+ * for initializng the romstage_handoff structure in cbmem. Different components
+ * of the romstage may be responsible for setting up different fields. Therefore
+ * that same logic flow should be used for allocating and initializing the
+ * structure. A newly allocated structure will be memset to 0. */
+static inline struct romstage_handoff *romstage_handoff_find_or_add(void)
+{
+	struct romstage_handoff *handoff;
+
+	/* cbmem_add() first does a find and uses the old location before the
+	 * real add. However, it is important to know when the structure is not
+	 * found so it can be initialized to 0. */
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL) {
+		handoff = cbmem_add(CBMEM_ID_ROMSTAGE_INFO, sizeof(*handoff));
+		if (handoff != NULL)
+			memset(handoff, 0, sizeof(*handoff));
+	}
+
+	return handoff;
+}
+#endif
 
 #endif /* ROMSTAGE_HANDOFF_H */
 

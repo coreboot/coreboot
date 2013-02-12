@@ -75,7 +75,7 @@ Scope (\_TZ)
 			Return (Local0)
 		}
 
-// The EC does all fan control. The is no Active Cooling Fan control (_ACx).
+// The EC does all fan control. There is no Active Cooling Fan control (_ACx).
 	}
 }
 

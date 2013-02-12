@@ -19,8 +19,14 @@
 
 # FIXME: this is just a stub for now
 chip cpu/samsung/exynos5250
+
+device lapic_cluster 0 on
+end
+
+device pci_domain 0 on
 	chip drivers/generic/generic # I2C0 controller
 		device i2c 6 on end # ?
 		device i2c 9 on end # ?
 	end
+end
 end

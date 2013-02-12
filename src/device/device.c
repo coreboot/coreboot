@@ -812,6 +812,7 @@ void assign_resources(struct bus *bus)
 	       dev_path(bus->dev), bus->secondary, bus->link_num);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+		printk(BIOS_DEBUG, "curdev=%s\n", dev_path(curdev));
 		if (!curdev->enabled || !curdev->resource_list)
 			continue;
 

@@ -69,6 +69,27 @@ int board_get_config(void)
 }
 
 #if 0
+static void mainboard_set_resources(device_t dev)
+{
+	printk(BIOS_DEBUG, "%s: entered\n", __func__);
+	/* Report the memory regions */
+	ram_resource(dev, 0,
+			CONFIG_SYS_SDRAM_BASE + (CONFIG_COREBOOT_ROMSIZE_KB),
+			((CONFIG_DRAM_SIZE_MB << 10UL) * CONFIG_NR_DRAM_BANKS) -
+			CONFIG_COREBOOT_TABLES_SIZE);
+
+	assign_resources(dev->link_list);
+}
+
+static struct device_operations mainboard_device_ops = {
+	.set_resources = mainboard_set_resources,
+}
+
+static void mainboard_enable(device_t dev)
+{
+	dev->ops = &mainboard_device_ops;
+}
+
 struct chip_operations mainboard_ops = {
 	.name	= "Samsung/Google ARM ChromeBook",
 	.enable_dev = mainboard_enable,

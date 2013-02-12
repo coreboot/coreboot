@@ -559,13 +559,11 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
-#if 0
 static void build_lb_mem_range(void *gp, struct device *dev, struct resource *res)
 {
 	struct lb_memory *mem = gp;
 	new_lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
 }
-#endif
 
 static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
@@ -576,12 +574,10 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem_ranges = mem;
 
 	/* FIXME: implement this */
-#if 0
 	/* Build the raw table of memory */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		build_lb_mem_range, mem);
-#endif
 	/* FIXME: things die in cleanup_memory_ranges(), skip for now */
 //	lb_cleanup_memory_ranges(mem);
 	return mem;

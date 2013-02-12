@@ -18,7 +18,7 @@
 #
 
 chip northbridge/amd/agesa/family15/root_complex
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/amd/agesa/family15
 		device lapic 0x20 on end
 		end

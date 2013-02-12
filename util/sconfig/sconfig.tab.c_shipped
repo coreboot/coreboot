@@ -132,7 +132,7 @@ static struct device *cur_parent, *cur_bus;
      PNP = 269,
      I2C = 270,
      APIC = 271,
-     APIC_CLUSTER = 272,
+     CPU_CLUSTER = 272,
      DOMAIN = 273,
      IRQ = 274,
      DRQ = 275,
@@ -478,7 +478,7 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "CHIP", "DEVICE", "REGISTER", "BOOL",
   "BUS", "RESOURCE", "END", "EQUALS", "HEX", "STRING", "PCI", "PNP", "I2C",
-  "APIC", "APIC_CLUSTER", "DOMAIN", "IRQ", "DRQ", "IO", "NUMBER",
+  "APIC", "CPU_CLUSTER", "DOMAIN", "IRQ", "DRQ", "IO", "NUMBER",
   "SUBSYSTEMID", "INHERIT", "IOAPIC_IRQ", "IOAPIC", "PCIINT", "$accept",
   "devtree", "$@1", "chipchildren", "devicechildren", "chip", "@2",
   "device", "@3", "resource", "registers", "subsystemid", "ioapic_irq", 0

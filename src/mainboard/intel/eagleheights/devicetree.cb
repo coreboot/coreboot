@@ -64,7 +64,7 @@ chip northbridge/intel/i3100
 			device pci 1f.4 on end # Performance counters
                 end
         end
-        device lapic_cluster 0 on
+        device cpu_cluster 0 on
                 chip cpu/intel/socket_BGA956
                         device lapic 0 on end
                 end

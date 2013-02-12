@@ -22,7 +22,7 @@
 ##
 
 chip northbridge/amd/amdfam10/root_complex	# Root complex
-  device lapic_cluster 0 on			# (L)APIC cluster
+  device cpu_cluster 0 on			# (L)APIC cluster
     chip cpu/amd/socket_F_1207			# CPU socket
       device lapic 0 on end			# Local APIC of the CPU
     end

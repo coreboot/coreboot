@@ -53,7 +53,7 @@ chip northbridge/via/vt8601
         	end
 	end
 
-        device lapic_cluster 0 on
+        device cpu_cluster 0 on
                 chip cpu/via/c3
                         device lapic 0 on end
                 end

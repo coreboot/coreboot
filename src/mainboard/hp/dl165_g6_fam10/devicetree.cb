@@ -1,5 +1,5 @@
 chip northbridge/amd/amdfam10/root_complex
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/amd/socket_F_1207
 			device lapic 0 on end
 		end

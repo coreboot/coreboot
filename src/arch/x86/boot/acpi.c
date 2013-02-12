@@ -146,7 +146,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled)

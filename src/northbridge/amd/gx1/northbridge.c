@@ -159,8 +159,8 @@ static void enable_dev(struct device *dev)
                 dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
-        else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-        	printk(BIOS_SPEW, "DEVICE_PATH_APIC_CLUSTER\n");
+        else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+        	printk(BIOS_SPEW, "DEVICE_PATH_CPU_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         } else {
         	printk(BIOS_SPEW, "device path type %d\n",dev->path.type);

@@ -194,7 +194,7 @@ static void enable_dev(struct device *dev)
 	/* This is never hit as none of the sc520 boards have
 	 * an APIC cluster defined
 	 */
-        else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+        else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
                 dev->ops = &cpu_bus_ops;
         }
 #endif

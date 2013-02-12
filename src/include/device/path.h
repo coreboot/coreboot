@@ -8,14 +8,14 @@ enum device_path_type {
 	DEVICE_PATH_PNP,
 	DEVICE_PATH_I2C,
 	DEVICE_PATH_APIC,
-	DEVICE_PATH_PCI_DOMAIN,
+	DEVICE_PATH_DOMAIN,
 	DEVICE_PATH_APIC_CLUSTER,
 	DEVICE_PATH_CPU,
 	DEVICE_PATH_CPU_BUS,
 	DEVICE_PATH_IOAPIC,
 };
 
-struct pci_domain_path
+struct domain_path
 {
 	unsigned domain;
 };
@@ -74,7 +74,7 @@ struct device_path {
 		struct i2c_path          i2c;
 		struct apic_path         apic;
 		struct ioapic_path	 ioapic;
-		struct pci_domain_path   pci_domain;
+		struct domain_path	 domain;
 		struct apic_cluster_path apic_cluster;
 		struct cpu_path          cpu;
 		struct cpu_bus_path      cpu_bus;

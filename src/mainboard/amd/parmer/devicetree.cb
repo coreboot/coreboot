@@ -24,7 +24,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
 		chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
 
@@ -86,5 +86,5 @@ chip northbridge/amd/agesa/family15tn/root_complex
 			}"
 
 		end	#chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
-	end	#pci_domain
+	end	#domain
 end	#chip northbridge/amd/agesa/family15tn/root_complex

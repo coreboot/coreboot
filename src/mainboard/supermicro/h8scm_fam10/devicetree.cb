@@ -9,7 +9,7 @@ chip northbridge/amd/amdfam10/root_complex
 			 device lapic 0 on end
 		end
 	end
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x15d9 0x1511 inherit
 		chip northbridge/amd/amdfam10
 			##device pci 18.0 on end
@@ -104,9 +104,9 @@ chip northbridge/amd/amdfam10/root_complex
 			device pci 19.3 on end
 			device pci 19.4 on end
 		end
-	end #pci_domain
+	end #domain
 	#for node 32 to node 63
-#	device pci_domain 0 on
+#	device domain 0 on
 #		chip northbridge/amd/amdfam10
 #			  device pci 00.0 on end#  northbridge
 #			  device pci 00.0 on end
@@ -118,7 +118,7 @@ chip northbridge/amd/amdfam10/root_complex
 #			  device pci 00.4 on end
 #			 device pci 00.5 on end
 #		end
-#	end #pci_domain
+#	end #domain
 
 #	  chip drivers/generic/debug
 #		 device pnp 0.0 off end # chip name

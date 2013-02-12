@@ -1,5 +1,5 @@
 chip northbridge/via/cn700			# Northbridge
-  device pci_domain 0 on			# PCI domain
+  device domain 0 on			# PCI domain
     subsystemid 0x1019 0xaa51 inherit
     device pci 0.0 on end			# AGP Bridge
     device pci 0.1 on end			# Error Reporting

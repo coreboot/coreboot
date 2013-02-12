@@ -6,7 +6,7 @@ chip northbridge/intel/sch
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on end # Integrated Graphics and Video Device
 

@@ -23,7 +23,7 @@ chip northbridge/amd/agesa/family15/root_complex
 		device lapic 0x20 on end
 		end
 	end
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x1022 0x1705 inherit
 		chip northbridge/amd/agesa/family15 # CPU side of HT root complex
 			device pci 18.0 on     # Put IO-HUB at link_num 0, Instead of HT Link topology to satisfy both f10 and f15 CPUs
@@ -98,6 +98,6 @@ chip northbridge/amd/agesa/family15/root_complex
 			device pci 18.4 on end
 			device pci 18.5 on end
 		end #chip northbridge/amd/agesa/family15 # CPU side of HT root complex
-	end #pci_domain
+	end #domain
 end #northbridge/amd/agesa/family15/root_complex
 

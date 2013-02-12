@@ -994,7 +994,7 @@ void dev_configure(void)
 
 	/* Compute resources for all domains. */
 	for (child = root->link_list->children; child; child = child->sibling) {
-		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
+		if (!(child->path.type == DEVICE_PATH_DOMAIN))
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)
@@ -1019,7 +1019,7 @@ void dev_configure(void)
 
 	/* For all domains. */
 	for (child = root->link_list->children; child; child=child->sibling)
-		if (child->path.type == DEVICE_PATH_PCI_DOMAIN)
+		if (child->path.type == DEVICE_PATH_DOMAIN)
 			avoid_fixed_resources(child);
 
 	/*
@@ -1027,7 +1027,7 @@ void dev_configure(void)
 	 * the highest address managable.
 	 */
 	for (child = root->link_list->children; child; child = child->sibling) {
-		if (child->path.type != DEVICE_PATH_PCI_DOMAIN)
+		if (child->path.type != DEVICE_PATH_DOMAIN)
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
 			if (!(res->flags & IORESOURCE_MEM) ||
@@ -1040,7 +1040,7 @@ void dev_configure(void)
 	/* Store the computed resource allocations into device registers ... */
 	printk(BIOS_INFO, "Setting resources...\n");
 	for (child = root->link_list->children; child; child = child->sibling) {
-		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
+		if (!(child->path.type == DEVICE_PATH_DOMAIN))
 			continue;
 		for (res = child->resource_list; res; res = res->next) {
 			if (res->flags & IORESOURCE_FIXED)

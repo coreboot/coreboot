@@ -4,7 +4,7 @@ chip northbridge/intel/i82810		# Northbridge
       device lapic 0 on end		# APIC
     end
   end
-  device pci_domain 0 on		# PCI domain
+  device domain 0 on		# PCI domain
     device pci 0.0 on end		# Graphics Memory Controller Hub (GMCH)
     device pci 1.0 on end		# Chipset Graphics Controller (CGC)
     chip southbridge/intel/i82801ax	# Southbridge

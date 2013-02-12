@@ -31,8 +31,16 @@ struct romstage_handoff {
 	/* This indicates to the ramstage to reserve a chunk of memory. */
 	uint32_t reserve_base;
 	uint32_t reserve_size;
-	/* Inidicate if the current boot is an S3 resume. */
+	/* Inidicate if the current boot is an S3 resume. If
+	 * CONFIG_RELOCTABLE_RAMSTAGE is enabled the chipset code is
+	 * responsible for initializing this variable. Otherwise, ramstage
+	 * will be re-loaded from cbfs (which can be slower since it lives
+	 * in flash). */
 	uint32_t s3_resume;
+	/* The ramstage_entry_point is cached in the stag loading path. This
+	 * cached value can only be utilized when the chipset code properly
+	 * fills in the s3_resume field above. */
+	uint32_t ramstage_entry_point;
 };
 
 #if defined(__PRE_RAM__)

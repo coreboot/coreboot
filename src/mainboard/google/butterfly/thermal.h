@@ -26,6 +26,6 @@
 	#define CRITICAL_TEMPERATURE	100
 
 	/* Temperature which OS will throttle CPU */
-	#define PASSIVE_TEMPERATURE		90
+	#define PASSIVE_TEMPERATURE	90
 
 #endif

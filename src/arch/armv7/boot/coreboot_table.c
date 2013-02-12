@@ -110,7 +110,7 @@ static struct lb_memory *lb_memory(struct lb_header *header)
 
 static struct lb_serial *lb_serial(struct lb_header *header)
 {
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_HAVE_UART_IO_MAPPED
 	struct lb_record *rec;
 	struct lb_serial *serial;
 	rec = lb_new_record(header);
@@ -121,7 +121,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	serial->baseaddr = CONFIG_TTYS0_BASE;
 	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
-#elif CONFIG_CONSOLE_SERIAL8250MEM
+#elif CONFIG_HAVE_UART_MEMORY_MAPPED
 	if (uartmem_getbaseaddr()) {
 		struct lb_record *rec;
 		struct lb_serial *serial;
@@ -141,8 +141,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
-    CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
+#if CONFIG_CONSOLE_SERIAL || CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
 static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
@@ -161,6 +160,9 @@ static void lb_console(struct lb_header *header)
 #endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
+#endif
+#if CONFIG_HAVE_UART_SPECIAL
+	add_console(header, LB_TAG_CONSOLE_UART_SPECIAL);
 #endif
 #if CONFIG_CONSOLE_LOGBUF
 	add_console(header, LB_TAG_CONSOLE_LOGBUF);

@@ -35,6 +35,6 @@
  *
  * returns the decompressed size, or 0 on error
  */
-unsigned long ulzma(unsigned char *src, unsigned char *dst);
+unsigned long ulzma(const unsigned char *src, unsigned char *dst);
 
 #endif

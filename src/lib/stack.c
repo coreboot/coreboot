@@ -47,7 +47,6 @@ int checkstack(void *top_of_stack, int core)
 			sizeof(stack[0])] - (unsigned long)&stack[i]);
 		return 0;
 	}
-
 	return 0;
 
 }

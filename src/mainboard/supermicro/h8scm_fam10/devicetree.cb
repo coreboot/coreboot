@@ -4,7 +4,7 @@
 
 # sample config for supermicro/h8scm_fam10
 chip northbridge/amd/amdfam10/root_complex
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/amd/socket_C32  #L1 and DDR3
 			 device lapic 0 on end
 		end

@@ -1,5 +1,5 @@
 chip northbridge/amd/gx2
-  device lapic_cluster 0 on
+  device cpu_cluster 0 on
     chip cpu/amd/geode_gx2
       device lapic 0 on end
     end

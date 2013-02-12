@@ -1,6 +1,6 @@
 # sample config for advansus/A785E-I
 chip northbridge/amd/amdfam10/root_complex
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/amd/socket_AM3  #L1 and DDR3
 			 device lapic 0 on end
 		end

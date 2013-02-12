@@ -262,8 +262,8 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 		new_d->path = ".type=DEVICE_PATH_APIC,{.apic={ .apic_id = 0x%x }}";
 		break;
 
-	case APIC_CLUSTER:
-		new_d->path = ".type=DEVICE_PATH_APIC_CLUSTER,{.apic_cluster={ .cluster = 0x%x }}";
+	case CPU_CLUSTER:
+		new_d->path = ".type=DEVICE_PATH_CPU_CLUSTER,{.cpu_cluster={ .cluster = 0x%x }}";
 		break;
 
 	case DOMAIN:

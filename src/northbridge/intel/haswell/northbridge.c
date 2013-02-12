@@ -35,6 +35,7 @@
 #include <cpu/x86/smm.h>
 #include <boot/tables.h>
 #include <cbmem.h>
+#include <romstage_handoff.h>
 #include "chip.h"
 #include "haswell.h"
 
@@ -560,19 +561,19 @@ int cbmem_get_table_location(uint64_t *tables_base, uint64_t *tables_size)
 static void northbridge_enable(device_t dev)
 {
 #if CONFIG_HAVE_ACPI_RESUME
-	switch (pci_read_config32(dev, SKPAD)) {
-	case 0xcafebabe:
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type=0;
-		break;
-	case 0xcafed00d:
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type=3;
-		break;
-	default:
+	struct romstage_handoff *handoff;
+
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+
+	if (handoff == NULL) {
 		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type=0;
-		break;
+		acpi_slp_type = 0;
+	} else if (handoff->s3_resume) {
+		printk(BIOS_DEBUG, "S3 Resume.\n");
+		acpi_slp_type = 3;
+	} else {
+		printk(BIOS_DEBUG, "Normal boot.\n");
+		acpi_slp_type = 0;
 	}
 #endif
 }

@@ -161,7 +161,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (rmodule_load_no_clear_bss(ramstage_loc, &ramstage))
 		return (void *) -1;
 
-	handoff = cbmem_add(CBMEM_ID_ROMSTAGE_INFO, sizeof(*handoff));
+	handoff = romstage_handoff_find_or_add();
 	if (handoff) {
 		handoff->reserve_base = (uint32_t)ramstage_base;
 		handoff->reserve_size = (uint32_t)cbmem_base -

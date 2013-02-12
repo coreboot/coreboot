@@ -418,10 +418,6 @@ static void mc_add_dram_resources(device_t dev)
 	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
-
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_size = HIGH_MEMORY_SIZE;
-	high_tables_base = mc_values[TSEG_REG] - high_tables_size;
 }
 
 static void mc_read_resources(device_t dev)
@@ -545,6 +541,21 @@ static void northbridge_init(struct device *dev)
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;
 }
+
+#if CONFIG_EARLY_CBMEM_INIT
+int cbmem_get_table_location(uint64_t *tables_base, uint64_t *tables_size)
+{
+	uint32_t tseg;
+
+	/* Put the CBMEM location just below TSEG. */
+	*tables_size = HIGH_MEMORY_SIZE;
+	tseg = (pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)),
+	                          TSEG) & ~((1 << 20) - 1)) - HIGH_MEMORY_SIZE;
+	*tables_base = tseg;
+
+	return 0;
+}
+#endif
 
 static void northbridge_enable(device_t dev)
 {

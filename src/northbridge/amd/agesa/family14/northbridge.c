@@ -347,7 +347,7 @@ static void nb_read_resources(device_t dev)
 	/*
 	 * This MMCONF resource must be reserved in the PCI domain.
 	 * It is not honored by the coreboot resource allocator if it is in
-	 * the APIC_CLUSTER.
+	 * the CPU_CLUSTER.
 	 */
 #if CONFIG_MMCONF_SUPPORT
 	struct resource *resource = new_resource(dev, 0xc0010058);
@@ -910,7 +910,7 @@ static void root_complex_enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
 }

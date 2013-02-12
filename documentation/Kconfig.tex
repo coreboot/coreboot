@@ -139,9 +139,9 @@ properly, as it defines topology and chips that can be defined no other way.
 Let's go through the tree.
 \begin{verbatim}
 chip northbridge/amd/amdk8/root_complex
-  device apic_cluster 0 on
+  device cpu_cluster 0 on
     chip cpu/amd/socket_F
-      device apic 0 on end
+      device lapic 0 on end
     end
   end
 \end{verbatim}
@@ -153,11 +153,11 @@ somewhere, since it runs memory.
 
 
 What is the APIC? Northbridges always have an Advanced Programmable Interrupt Controller, and that {\it APIC cluster} is a topological connection to the
-CPU socket. So the tree is rooted at the northbridge, which has a link to an apic cluster, and then the CPU. The CPU contains
+CPU socket. So the tree is rooted at the northbridge, which has a link to a CPU cluster, and then the CPU. The CPU contains
 its own APIC, and will define any parameters needed. In this case, we have a northbridge of type
-{\it northbridge/amd/amdk8/root\_complex}, with its own apic\_cluster device which we turn on,
+{\it northbridge/amd/amdk8/root\_complex}, with its own cpu\_cluster device which we turn on,
 which connects to a {\it cpu/amd/socket\_F},
-which has an apic, which is on.
+which has a local apic, which is on.
 
 Note that we do not enumerate all CPUs, even on this SMP mainboard. The reason is they may not all be there. The CPU we define here
 is the so-called Boot Strap Processor, or BSP; the other CPUs will come along later, as the are discovered. We do not require (unlike many

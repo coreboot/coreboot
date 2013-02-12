@@ -48,7 +48,7 @@ chip northbridge/intel/i855
                 	end
 		end
 	end
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/socket_mPGA479M
 			device lapic 0 on end
 		end

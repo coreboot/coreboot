@@ -16,7 +16,7 @@ chip northbridge/via/vx800	# Northbridge
     # device pci 11.0 on	# Southbridge LPC
     # end
   end
-  device lapic_cluster 0 on	# APIC cluster
+  device cpu_cluster 0 on	# APIC cluster
     chip cpu/via/c7	# VIA C7
       device lapic 0 on end	# APIC
     end

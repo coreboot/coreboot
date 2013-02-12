@@ -19,7 +19,7 @@
 ##
 
 chip northbridge/intel/i82810           # Northbridge
-  device lapic_cluster 0 on              # APIC cluster
+  device cpu_cluster 0 on              # APIC cluster
     chip cpu/intel/socket_PGA370        # CPU
       device lapic 0 on end              # APIC
     end

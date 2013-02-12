@@ -152,7 +152,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		unsigned long cpu_flag;
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
 		{
 			continue;
 		}

@@ -120,10 +120,11 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 #include <rmodule.h>
 #include <romstage_handoff.h>
 /* When CONFIG_RELOCATABLE_RAMSTAGE is enabled and this file is being compiled
- * for the romstage the rmodule loader is used. The ramstage is placed just
- * below the cbemem location. */
+ * for the romstage, the rmodule loader is used. The ramstage is placed just
+ * below the cbmem location. */
 
-void * cbfs_load_stage(struct cbfs_media *media, const char *name)
+static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
+                                  struct romstage_handoff *handoff)
 {
 	struct cbfs_stage *stage;
 	struct rmodule ramstage;
@@ -131,7 +132,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	void *ramstage_base;
 	void *decompression_loc;
 	void *ramstage_loc;
-	struct romstage_handoff *handoff;
+	void *entry_point;
 
 	stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
@@ -143,9 +144,10 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (cbmem_base == NULL)
 		return (void *) -1;
 
-	ramstage_base = rmodule_find_region_below(cbmem_base, stage->memlen,
-	                                          &ramstage_loc,
-	                                          &decompression_loc);
+	ramstage_base =
+		rmodule_find_region_below(cbmem_base, stage->memlen,
+		                          &ramstage_loc,
+                                          &decompression_loc);
 
 	LOG("Decompressing stage %s @ 0x%p (%d bytes)\n",
 	    name, decompression_loc, stage->memlen);
@@ -161,15 +163,49 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (rmodule_load(ramstage_loc, &ramstage))
 		return (void *) -1;
 
-	handoff = romstage_handoff_find_or_add();
+	entry_point = rmodule_entry(&ramstage);
+
 	if (handoff) {
 		handoff->reserve_base = (uint32_t)ramstage_base;
 		handoff->reserve_size = (uint32_t)cbmem_base -
 		                        (uint32_t)ramstage_base;
-	} else
-		LOG("Couldn't allocate romstage handoff.\n");
+		/* Save an entire copy in RAM of the relocated ramstage for
+		 * the S3 resume path. The size of the saved relocated ramstage
+		 * is larger than necessary. It could be optimized by saving
+		 * just the text/data segment of the ramstage. The rmodule
+		 * API would need to be modified to expose these details. For
+		 * the time being, just save the entire used region. */
+		memcpy((void *)(handoff->reserve_base - handoff->reserve_size),
+		       (void *)handoff->reserve_base, handoff->reserve_size);
+		/* Update the size and base of the reserve region. */
+		handoff->reserve_base -= handoff->reserve_size;
+		handoff->reserve_size += handoff->reserve_size;
+		/* Save the entry point in the handoff area. */
+		handoff->ramstage_entry_point = (uint32_t)entry_point;
+	}
 
-	return rmodule_entry(&ramstage);
+	return entry_point;
+}
+
+void * cbfs_load_stage(struct cbfs_media *media, const char *name)
+{
+	struct romstage_handoff *handoff;
+
+	handoff = romstage_handoff_find_or_add();
+
+	if (handoff == NULL) {
+		LOG("Couldn't find or allocate romstage handoff.\n");
+		return load_stage_from_cbfs(media, name, handoff);
+	} else if (!handoff->s3_resume)
+		return load_stage_from_cbfs(media, name, handoff);
+
+	/* S3 resume path. Copy from the saved relocated program buffer to
+	 * the running location. load_stage_from_cbfs() keeps a copy of the
+	 * relocated program just below the relocated program. */
+	memcpy((void *)(handoff->reserve_base + (handoff->reserve_size / 2)),
+	       (void *)handoff->reserve_base, handoff->reserve_size / 2);
+
+	return (void *)handoff->ramstage_entry_point;
 }
 
 #else

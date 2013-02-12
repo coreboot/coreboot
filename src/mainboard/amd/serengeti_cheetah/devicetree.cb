@@ -1,5 +1,5 @@
 chip northbridge/amd/amdk8/root_complex
-        device lapic_cluster 0 on
+        device cpu_cluster 0 on
                 chip cpu/amd/socket_F
                         device lapic 0 on end
                 end

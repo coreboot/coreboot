@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 chip northbridge/amd/agesa/family15/root_complex
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/amd/agesa/family15
 			device lapic 0x10 on end
 		end

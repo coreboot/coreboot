@@ -209,9 +209,9 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "DOMAIN: %04x",
 				dev->path.domain.domain);
 			break;
-		case DEVICE_PATH_APIC_CLUSTER:
-			sprintf(buffer, "APIC_CLUSTER: %01x",
-				dev->path.apic_cluster.cluster);
+		case DEVICE_PATH_CPU_CLUSTER:
+			sprintf(buffer, "CPU_CLUSTER: %01x",
+				dev->path.cpu_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
 			sprintf(buffer, "CPU: %02x", dev->path.cpu.id);
@@ -274,9 +274,9 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 	case DEVICE_PATH_DOMAIN:
 		equal = (path1->domain.domain == path2->domain.domain);
 		break;
-	case DEVICE_PATH_APIC_CLUSTER:
-		equal = (path1->apic_cluster.cluster
-			 == path2->apic_cluster.cluster);
+	case DEVICE_PATH_CPU_CLUSTER:
+		equal = (path1->cpu_cluster.cluster
+			 == path2->cpu_cluster.cluster);
 		break;
 	case DEVICE_PATH_CPU:
 		equal = (path1->cpu.id == path2->cpu.id);
@@ -859,7 +859,7 @@ int dev_count_cpu(void)
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+		    (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
 			continue;
 		if (!cpu->enabled)
 			continue;

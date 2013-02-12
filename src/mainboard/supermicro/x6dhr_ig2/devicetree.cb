@@ -63,7 +63,7 @@ chip northbridge/intel/e7520 # mch
 		device pci 04.0 on end
 		device pci 06.0 on end
 	end
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/socket_mPGA604 # cpu 0
 			device lapic 0 on end
 		end

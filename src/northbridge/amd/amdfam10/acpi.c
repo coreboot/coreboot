@@ -35,7 +35,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+		   (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {
@@ -54,7 +54,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+		   (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {
@@ -354,7 +354,7 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+		   (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {

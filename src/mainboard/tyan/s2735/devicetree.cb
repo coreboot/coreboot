@@ -74,7 +74,7 @@ chip northbridge/intel/e7501
 		        device pci 1f.6 off end
 		end # SB
         end # PCI domain
-        device lapic_cluster 0 on
+        device cpu_cluster 0 on
                 chip cpu/intel/socket_mPGA604
                         device lapic 0 on end
                 end

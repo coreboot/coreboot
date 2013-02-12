@@ -21,7 +21,7 @@
 
 chip northbridge/via/cn400			# Northbridge
 
-  device lapic_cluster 0 on			# APIC cluster
+  device cpu_cluster 0 on			# APIC cluster
     chip cpu/via/c3			# VIA C3
       device lapic 0 on end			# APIC
     end

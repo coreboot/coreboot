@@ -22,7 +22,7 @@
 
 chip northbridge/intel/i5000
 
-	device lapic_cluster 0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/socket_LGA771
 			device lapic 0 on end
 		end

@@ -19,7 +19,7 @@
 ##
 
 chip northbridge/intel/i440bx		# Northbridge
-  device lapic_cluster 0 on		# (L)APIC cluster
+  device cpu_cluster 0 on		# (L)APIC cluster
     chip cpu/intel/socket_PGA370	# CPU socket
       device lapic 0 on end		# Local APIC of the CPU
     end

@@ -25,6 +25,7 @@ it with the version available from LANL.
 
 int checkstack(void *top_of_stack, int core)
 {
+#if CONFIG_ARCH_X86 // FIXME not yet implemented on ARM!
 	int i;
 	u32 *stack = (u32 *) (top_of_stack - CONFIG_STACK_SIZE);
 
@@ -47,7 +48,7 @@ int checkstack(void *top_of_stack, int core)
 			sizeof(stack[0])] - (unsigned long)&stack[i]);
 		return 0;
 	}
-
+#endif
 	return 0;
 
 }

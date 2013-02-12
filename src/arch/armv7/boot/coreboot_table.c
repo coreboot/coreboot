@@ -136,13 +136,26 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	} else {
 		return NULL;
 	}
+#elif CONFIG_HAVE_UART_SPECIAL
+	/* FIXME(dhendrix): this should probably go in a board-specific file */
+	struct lb_record *rec;
+	struct lb_serial *serial;
+	rec = lb_new_record(header);
+	serial = (struct lb_serial *)rec;
+	serial->tag = LB_TAG_SERIAL;
+	serial->size = sizeof(*serial);
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	serial->baud = CONFIG_TTYS0_BAUD;
+	return serial;
 #else
 	return NULL;
 #endif
 }
 
+/* FIXME: maybe just check for CONFIG_CONSOLE_SERIAL? */
 #if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
-    CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
+    CONFIG_HAVE_UART_SPECIAL || CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
 static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
@@ -161,6 +174,9 @@ static void lb_console(struct lb_header *header)
 #endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
+#endif
+#if CONFIG_HAVE_UART_SPECIAL
+	add_console(header, LB_TAG_CONSOLE_UART_SPECIAL);
 #endif
 #if CONFIG_CONSOLE_LOGBUF
 	add_console(header, LB_TAG_CONSOLE_LOGBUF);

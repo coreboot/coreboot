@@ -502,7 +502,7 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 					break;
 				}
 
-				if (parent->path.type == DEVICE_PATH_PCI_DOMAIN) {
+				if (parent->path.type == DEVICE_PATH_DOMAIN) {
 					printk(BIOS_WARNING, "no IRQ found for %s\n", dev_path(dev));
 					break;
 				}

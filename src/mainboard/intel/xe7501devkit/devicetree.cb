@@ -1,5 +1,5 @@
 chip northbridge/intel/e7501
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x8086 0x2480 inherit
 		device pci 0.0 on end # Chipset host controller
 		device pci 0.1 on end # Host RASUM controller
@@ -61,7 +61,7 @@ chip northbridge/intel/e7501
 			device pci 1f.5 off end # AC97 Audio
 			device pci 1f.6 off end # AC97 Modem
 		end # SB
-	end # PCI_DOMAIN
+	end # PCI domain
 	device lapic_cluster 0 on
 		chip cpu/intel/socket_mPGA604
 			device lapic 0 on end

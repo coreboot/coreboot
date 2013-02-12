@@ -115,7 +115,7 @@ static struct device_operations cpu_bus_ops = {
 static void enable_dev(struct device *dev)
 {
 	/* Our wonderful device model */
-	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
 	} else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {

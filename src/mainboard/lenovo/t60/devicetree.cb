@@ -28,7 +28,7 @@ chip northbridge/intel/i945
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		device pci 00.0 on # Host bridge
 			subsystemid 0x17aa 0x2015
 		end

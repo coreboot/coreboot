@@ -58,7 +58,7 @@ static void pci_init(struct device *dev)
 
 	pci_domain_dev = dev->bus->dev;
 	while (pci_domain_dev) {
-		if (pci_domain_dev->path.type == DEVICE_PATH_PCI_DOMAIN)
+		if (pci_domain_dev->path.type == DEVICE_PATH_DOMAIN)
 			break;
 		pci_domain_dev = pci_domain_dev->bus->dev;
 	}

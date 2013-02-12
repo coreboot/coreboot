@@ -1280,7 +1280,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	if(dev_mc && dev_mc->bus) {
 		printk(BIOS_DEBUG, "%s found", dev_path(dev_mc));
 		pci_domain = dev_mc->bus->dev;
-		if(pci_domain && (pci_domain->path.type == DEVICE_PATH_PCI_DOMAIN)) {
+		if(pci_domain && (pci_domain->path.type == DEVICE_PATH_DOMAIN)) {
 			printk(BIOS_DEBUG, "\n%s move to ",dev_path(dev_mc));
 			dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
 			printk(BIOS_DEBUG, "%s",dev_path(dev_mc));
@@ -1296,7 +1296,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		if (dev_mc && dev_mc->bus) {
 			printk(BIOS_DEBUG, "%s found\n", dev_path(dev_mc));
 			pci_domain = dev_mc->bus->dev;
-			if(pci_domain && (pci_domain->path.type == DEVICE_PATH_PCI_DOMAIN)) {
+			if(pci_domain && (pci_domain->path.type == DEVICE_PATH_DOMAIN)) {
 				if((pci_domain->link_list) && (pci_domain->link_list->children == dev_mc)) {
 					printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
 					dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
@@ -1469,7 +1469,7 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
 	}
 	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {

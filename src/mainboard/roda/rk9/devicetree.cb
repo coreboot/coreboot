@@ -16,7 +16,7 @@ chip northbridge/intel/gm45
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x4352 0x8986
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on # VGA

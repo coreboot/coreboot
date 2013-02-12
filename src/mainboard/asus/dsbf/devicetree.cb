@@ -28,7 +28,7 @@ chip northbridge/intel/i5000
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		device pci 00.0 on # Host bridge
 			subsystemid 0x1043 0x81db
 		end

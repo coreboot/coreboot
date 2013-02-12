@@ -453,7 +453,7 @@ static void enable_dev(struct device *dev)
 		    __func__, dev->path.type);
 
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN)
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER)
 		dev->ops = &cpu_bus_ops;

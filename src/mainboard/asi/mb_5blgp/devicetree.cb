@@ -1,5 +1,5 @@
 chip northbridge/amd/gx1		# Northbridge
-  device pci_domain 0 on		# PCI domain
+  device domain 0 on		# PCI domain
     device pci 0.0 on end		# Host bridge
     chip southbridge/amd/cs5530		# Southbridge
       device pci 0f.0 on end		# Ethernet

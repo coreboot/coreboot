@@ -27,7 +27,7 @@ chip northbridge/via/cn400			# Northbridge
     end
   end
 
-  device pci_domain 0 on			# PCI domain
+  device domain 0 on			# PCI domain
     device pci 0.0 on end			# AGP Bridge
     device pci 0.1 on end			# Error Reporting
     device pci 0.2 on end			# Host Bus Control

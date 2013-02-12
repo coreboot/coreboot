@@ -20,7 +20,7 @@
 ##
 
 chip northbridge/amd/lx
-	device pci_domain 0 on
+	device domain 0 on
 		device pci 1.0 on end					# Northbridge
 		device pci 1.1 on end					# Video Adapter
 		device pci 1.2 on end					# AES Security Block

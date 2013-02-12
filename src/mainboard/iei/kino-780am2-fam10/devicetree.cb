@@ -5,7 +5,7 @@ chip northbridge/amd/amdfam10/root_complex
 			 device lapic 0 on end
 		end
 	end
-	device pci_domain 0 on
+	device domain 0 on
 		chip northbridge/amd/amdfam10
 			device pci 18.0 on #  northbridge
 				chip southbridge/amd/rs780
@@ -66,6 +66,6 @@ chip northbridge/amd/amdfam10/root_complex
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end
-	end #pci_domain
+	end #domain
 end #root_complex
 

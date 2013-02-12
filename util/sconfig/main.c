@@ -266,8 +266,8 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 		new_d->path = ".type=DEVICE_PATH_APIC_CLUSTER,{.apic_cluster={ .cluster = 0x%x }}";
 		break;
 
-	case PCI_DOMAIN:
-		new_d->path = ".type=DEVICE_PATH_PCI_DOMAIN,{.pci_domain={ .domain = 0x%x }}";
+	case DOMAIN:
+		new_d->path = ".type=DEVICE_PATH_DOMAIN,{.domain={ .domain = 0x%x }}";
 		break;
 
 	case IOAPIC:
@@ -342,7 +342,7 @@ void add_register(struct device *dev, char *name, char *val) {
 
 void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit)
 {
-	if (dev->bustype != PCI && dev->bustype != PCI_DOMAIN) {
+	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
 		printf("ERROR: 'subsystem' only allowed for PCI devices\n");
 		exit(1);
 	}
@@ -365,7 +365,7 @@ void add_ioapic_info(struct device *dev, int apicid, const char *_srcpin, int ir
 
 	srcpin = _srcpin[3] - 'A';
 
-	if (dev->bustype != PCI && dev->bustype != PCI_DOMAIN) {
+	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
 		printf("ERROR: ioapic config only allowed for PCI devices\n");
 		exit(1);
 	}
@@ -529,7 +529,7 @@ static void inherit_subsystem_ids(FILE *file, struct device *dev)
 
 	for(p = dev; p && p != p->parent; p = p->parent) {
 
-		if (p->bustype != PCI && p->bustype != PCI_DOMAIN)
+		if (p->bustype != PCI && p->bustype != DOMAIN)
 			continue;
 
 		if (p->inherit_subsystem) {

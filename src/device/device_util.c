@@ -205,9 +205,9 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "IOAPIC: %02x",
 				dev->path.ioapic.ioapic_id);
 			break;
-		case DEVICE_PATH_PCI_DOMAIN:
-			sprintf(buffer, "PCI_DOMAIN: %04x",
-				dev->path.pci_domain.domain);
+		case DEVICE_PATH_DOMAIN:
+			sprintf(buffer, "DOMAIN: %04x",
+				dev->path.domain.domain);
 			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %01x",
@@ -271,8 +271,8 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 	case DEVICE_PATH_APIC:
 		equal = (path1->apic.apic_id == path2->apic.apic_id);
 		break;
-	case DEVICE_PATH_PCI_DOMAIN:
-		equal = (path1->pci_domain.domain == path2->pci_domain.domain);
+	case DEVICE_PATH_DOMAIN:
+		equal = (path1->domain.domain == path2->domain.domain);
 		break;
 	case DEVICE_PATH_APIC_CLUSTER:
 		equal = (path1->apic_cluster.cluster

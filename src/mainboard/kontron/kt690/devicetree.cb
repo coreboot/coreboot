@@ -14,7 +14,7 @@ chip northbridge/amd/amdk8/root_complex
 		device lapic 0 on end
 		end
 	end
-	device pci_domain 0 on
+	device domain 0 on
 		subsystemid 0x1488 0x6900 inherit
 		chip northbridge/amd/amdk8
 			device pci 18.0 on #  southbridge
@@ -121,6 +121,6 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end		#northbridge/amd/amdk8
-	end #pci_domain
+	end #domain
 end		#northbridge/amd/amdk8/root_complex
 

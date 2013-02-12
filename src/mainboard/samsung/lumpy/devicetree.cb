@@ -32,7 +32,7 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		ioapic_irq 4 INTA 0x10
 		ioapic_irq 4 INTB 0x11
 		ioapic_irq 4 INTC 0x12

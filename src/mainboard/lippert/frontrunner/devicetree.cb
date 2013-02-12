@@ -5,7 +5,7 @@ chip northbridge/amd/gx2
     end
   end
 
-  device pci_domain 0 on
+  device domain 0 on
     device pci 0.0 on end
       chip southbridge/amd/cs5535
   	register "setupflash" = "0"

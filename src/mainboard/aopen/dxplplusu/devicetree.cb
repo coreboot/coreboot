@@ -28,7 +28,7 @@ chip northbridge/intel/e7505
 		end
 	end
 
-	device pci_domain 0 on
+	device domain 0 on
 		device pci 0.0 on end # Chipset host controller
 		device pci 0.1 on end # Host RASUM controller
 		device pci 2.0 on # Hub interface B
@@ -86,5 +86,5 @@ chip northbridge/intel/e7505
 			device pci 1f.5 on end # AC97 Audio
 			device pci 1f.6 off end # AC97 Modem
 		end # SB
-	end # PCI_DOMAIN
+	end # PCI domain
 end

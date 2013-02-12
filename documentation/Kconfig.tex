@@ -163,7 +163,7 @@ Note that we do not enumerate all CPUs, even on this SMP mainboard. The reason i
 is the so-called Boot Strap Processor, or BSP; the other CPUs will come along later, as the are discovered. We do not require (unlike many
 BIOSes) that the BSP be CPU 0; any CPU will do.
 \begin{verbatim}
-  device pci_domain 0 on
+  device domain 0 on
     chip northbridge/amd/amdk8
       device pci 18.0 on #  northbridge
         #  devices on link 0, link 0 == LDT 0
@@ -338,7 +338,7 @@ That's it for the BSP I/O and HT busses. Now we begin the AP busses. Not much he
 
 \end{verbatim}
 \begin{verbatim}
-  end #pci_domain
+  end # domain
 #  chip drivers/generic/debug
 #    device pnp 0.0 off end # chip name
 #    device pnp 0.1 on end # pci_regs_all

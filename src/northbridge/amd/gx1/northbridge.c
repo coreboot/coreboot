@@ -154,8 +154,8 @@ static void enable_dev(struct device *dev)
 {
         printk(BIOS_SPEW, "%s:%s()\n", NORTHBRIDGE_FILE, __func__);
         /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-        	printk(BIOS_SPEW, "DEVICE_PATH_PCI_DOMAIN\n");
+        if (dev->path.type == DEVICE_PATH_DOMAIN) {
+        	printk(BIOS_SPEW, "DEVICE_PATH_DOMAIN\n");
                 dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }

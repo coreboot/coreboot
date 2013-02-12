@@ -4,7 +4,7 @@ chip northbridge/amd/amdk8/root_complex
 			device lapic 0 on end
 		end
 	end
-	device pci_domain 0 on
+	device domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # LDT 0
 			device pci 18.0 on     # LDT 1

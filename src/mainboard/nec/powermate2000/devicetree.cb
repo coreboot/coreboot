@@ -4,7 +4,7 @@ chip northbridge/intel/i82810			# Northbridge
       device lapic 0 on end			# APIC
     end
   end
-  device pci_domain 0 on
+  device domain 0 on
     device pci 0.0 on end			# Host bridge
     device pci 1.0 off end			# Onboard video
     chip southbridge/intel/i82801ax		# Southbridge

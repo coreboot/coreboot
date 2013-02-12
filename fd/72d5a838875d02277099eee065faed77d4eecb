@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Peter Stuge <peter@stuge.se>
+Code-Review+2: Duncan Laurie <dlaurie@chromium.org>
+Submitted-by: Peter Stuge <peter@stuge.se>
+Submitted-at: Tue, 12 Feb 2013 16:40:51 +0100
+Reviewed-on: http://review.coreboot.org/2373
+Project: coreboot
+Branch: refs/heads/master

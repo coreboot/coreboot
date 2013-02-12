@@ -114,7 +114,7 @@ static inline void dram_bank_mmu_setup(unsigned long start, unsigned long size)
 }
 
 /* to activate the MMU we need to set up virtual memory: use 1M areas */
-inline void mmu_setup(unsigned long start, unsigned long size)
+inline void mmu_setup(unsigned long start, unsigned long size_mb)
 {
 	int i;
 	u32 reg;
@@ -125,7 +125,7 @@ inline void mmu_setup(unsigned long start, unsigned long size)
 	for (i = 0; i < 4096; i++)
 		set_section_dcache(i, DCACHE_OFF);
 
-	dram_bank_mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB << 20);
+	dram_bank_mmu_setup(start, size_mb << 20);
 
 	/* Copy the page table address to cp15 */
 	asm volatile("mcr p15, 0, %0, c2, c0, 0"

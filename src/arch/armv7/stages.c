@@ -21,7 +21,7 @@
  * loading.
  *
  * Unlike other files, this one should be compiled with a -m option to
- * specify a pre-determined instruction set. The is to ensure consistency
+ * specify a pre-determined instruction set. This is to ensure consistency
  * in the CPU operating mode (ARM or Thumb) when hand-off between stages
  * occurs.
  *

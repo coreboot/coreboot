@@ -82,6 +82,8 @@ void main(void)
 		while(1);
 	}
 
+	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 

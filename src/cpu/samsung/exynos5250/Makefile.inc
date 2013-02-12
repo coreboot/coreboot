@@ -27,6 +27,7 @@ ramstage-y += pinmux.c
 ramstage-y += power.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+ramstage-y += cpu.c
 
 #ramstage-$(CONFIG_EXYNOS_ACE_SHA) += ace_sha.c
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c

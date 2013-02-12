@@ -34,6 +34,7 @@
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
+#include <romstage_handoff.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
@@ -173,9 +174,10 @@ void * __attribute__((regparm(0))) romstage_main(unsigned long bist)
 
 void romstage_common(const struct romstage_params *params)
 {
-	int boot_mode = 0;
+	int boot_mode;
 	int wake_from_s3;
 	int cbmem_was_initted;
+	struct romstage_handoff *handoff;
 
 #if CONFIG_COLLECT_TIMESTAMPS
 	tsc_t start_romstage_time;
@@ -208,14 +210,18 @@ void romstage_common(const struct romstage_params *params)
 	if (wake_from_s3) {
 #if CONFIG_HAVE_ACPI_RESUME
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-		boot_mode = 2;
 #else
 		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		wake_from_s3 = 0;
 #endif
 	}
 
+	/* There are hard coded assumptions of 2 meaning s3 wake. Normalize
+	 * the users of the 2 literal here based off wake_from_s3. */
+	boot_mode = wake_from_s3 ? 2 : 0;
+
 	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2)
+	if (wake_from_s3)
 		enable_usb_bar();
 
 	post_code(0x3a);
@@ -246,37 +252,25 @@ void romstage_common(const struct romstage_params *params)
 #endif
 
 	/* Save data returned from MRC on non-S3 resumes. */
-	if (boot_mode != 2)
+	if (!wake_from_s3)
 		save_mrc_data(params->pei_data);
 
 #if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-
-	*(u32 *)CBMEM_BOOT_MODE = 0;
-	*(u32 *)CBMEM_RESUME_BACKUP = 0;
-
-	if ((boot_mode == 2) && cbmem_was_initted) {
-		#if !CONFIG_RELOCATABLE_RAMSTAGE
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-		if (resume_backup_memory) {
-			*(u32 *)CBMEM_BOOT_MODE = boot_mode;
-			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
-		}
-		#endif
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else if (boot_mode == 2) {
+	if (wake_from_s3 && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
 		outb(0x6, 0xcf9);
 		while (1) {
 			hlt();
 		}
-	} else {
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
 	}
 #endif
+
+	handoff = romstage_handoff_find_or_add();
+	if (handoff != NULL)
+		handoff->s3_resume = wake_from_s3;
+	else
+		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
+
 	post_code(0x3f);
 #if CONFIG_CHROMEOS
 	init_chromeos(boot_mode);
@@ -295,11 +289,14 @@ static inline void prepare_for_resume(void)
 /* Only need to save memory when ramstage isn't relocatable. */
 #if !CONFIG_RELOCATABLE_RAMSTAGE
 #if CONFIG_HAVE_ACPI_RESUME
+	struct romstage_handoff *handoff = romstage_handoff_find_or_add();
+
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
-	if (*(u32 *)CBMEM_BOOT_MODE == 2) {
+	if (handoff != NULL && handoff->s3_resume) {
 		void *src = (void *)CONFIG_RAMBASE;
-		void *dest = *(void **)CBMEM_RESUME_BACKUP;
-		memcpy(dest, src, HIGH_MEMORY_SAVE);
+		void *dest = cbmem_find(CBMEM_ID_RESUME);
+		if (dest != NULL)
+			memcpy(dest, src, HIGH_MEMORY_SAVE);
 	}
 #endif
 #endif

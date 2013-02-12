@@ -85,6 +85,16 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
+	/* CONFIG_EARLY_CBMEM_INIT indicates that romstage initialized
+	 * the cbmem area. Therefore the table location can be initialized
+	 * early in ramstage if cbmem_get_table_location() is implemented.
+	 */
+#if CONFIG_EARLY_CBMEM_INIT
+	if (cbmem_get_table_location != NULL &&
+	    !cbmem_get_table_location(&high_tables_base, &high_tables_size))
+		cbmem_initialize();
+#endif
+
 	timestamp_stash(TS_DEVICE_ENUMERATE);
 
 	/* Initialize chips early, they might disable unused devices. */

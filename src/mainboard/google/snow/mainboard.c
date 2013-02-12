@@ -70,7 +70,7 @@ int board_get_config(void)
 
 #if 0
 struct chip_operations mainboard_ops = {
-	.name	= "Samsung/Google ARM ChromeBook",
+	.name	= "Samsung/Google ARM Chromebook",
 	.enable_dev = mainboard_enable,
 };
 #endif

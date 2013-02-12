@@ -31,6 +31,8 @@ struct romstage_handoff {
 	/* This indicates to the ramstage to reserve a chunk of memory. */
 	uint32_t reserve_base;
 	uint32_t reserve_size;
+	/* Inidicate if the current boot is an S3 resume. */
+	uint32_t s3_resume;
 };
 
 #if defined(__PRE_RAM__)

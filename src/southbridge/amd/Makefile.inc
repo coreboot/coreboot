@@ -22,7 +22,7 @@ ifeq ($(CONFIG_CPU_AMD_AGESA), y)
 $(obj)/coreboot_s3nv.rom: $(obj)/config.h
 	echo "    S3 NVRAM   $(CONFIG_S3_VOLATILE_POS) (S3 storage area)"
 	# force C locale, so cygwin awk doesn't try to interpret the 0xff below as UTF-8 (or worse)
-	LC_ALL=C awk 'BEGIN {for (i=0; i<32768; i++) {printf "%c", 255}}' > $@.tmp
+	printf %d $(CONFIG_S3_VOLATILE_SIZE) | LC_ALL=C awk '{for (i=0; i<$$1; i++) {printf "%c", 255}}' > $@.tmp
 	mv $@.tmp $@
 
 cbfs-files-y += s3nv

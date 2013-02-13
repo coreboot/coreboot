@@ -61,5 +61,13 @@ config S3_VOLATILE_POS
 	  For a system with S3 feature, the BIOS needs to save some data to
 	  non-volitile storage at cold boot stage.
 
+config S3_VOLATILE_SIZE
+	hex "S3 volatile storage size"
+	default 0x8000
+	depends on HAVE_ACPI_RESUME
+	help
+	  For a system with S3 feature, the BIOS needs to save some data to
+	  non-volitile storage at cold boot stage.
+
 endif #SOUTHBRIDGE_AMD_CIMX_SB900
 

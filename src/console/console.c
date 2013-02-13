@@ -30,7 +30,7 @@
  * storage can be used. This will benefit machines without CMOS as well as those
  * without a battery-backed CMOS (e.g. some laptops).
  */
-#if CONFIG_HAVE_CMOS_DEFAULT
+#if CONFIG_USE_OPTION_TABLE
 #include <pc80/mc146818rtc.h>
 #else
 static inline int get_option(void *dest, const char *name) { return -1; }

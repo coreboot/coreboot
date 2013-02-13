@@ -549,9 +549,6 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 		return;
 	}
 
-	/* Release APs to perform SMM relocation. */
-	release_aps_for_smm_relocation();
-
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_patch);
 }

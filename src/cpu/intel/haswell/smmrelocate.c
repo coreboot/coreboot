@@ -36,6 +36,14 @@
 #define EMRRphysMask_MSR 0x1f5
 #define UNCORE_EMRRphysBase_MSR 0x2f4
 #define UNCORE_EMRRphysMask_MSR 0x2f5
+#define SMM_MCA_CAP_MSR 0x17d
+#define   SMM_CPU_SVRSTR_BIT 57
+#define   SMM_CPU_SVRSTR_MASK (1 << (SMM_CPU_SVRSTR_BIT - 32))
+#define SMM_FEATURE_CONTROL_MSR 0x4e0
+#define   SMM_CPU_SAVE_EN (1 << 1)
+/* SMM save state MSRs */
+#define SMBASE_MSR 0xc20
+#define IEDBASE_MSR 0xc22
 
 #define SMRR_SUPPORTED (1<<11)
 #define EMRR_SUPPORTED (1<<12)
@@ -51,6 +59,10 @@ struct smm_relocation_params {
 	msr_t emrr_mask;
 	msr_t uncore_emrr_base;
 	msr_t uncore_emrr_mask;
+	/* The smm_save_state_in_msrs field indicates if SMM save state
+	 * locations live in MSRs. This indicates to the CPUs how to adjust
+	 * the SMMBASE and IEDBASE */
+	int smm_save_state_in_msrs;
 };
 
 /* This gets filled in and used during relocation. */
@@ -82,13 +94,79 @@ static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
 	wrmsr(UNCORE_EMRRphysMask_MSR, relo_params->uncore_emrr_mask);
 }
 
+static void update_save_state(int cpu,
+                              struct smm_relocation_params *relo_params,
+                              const struct smm_runtime *runtime)
+{
+	u32 smbase;
+	u32 iedbase;
+
+	/* The relocated handler runs with all CPUs concurrently. Therefore
+	 * stagger the entry points adjusting SMBASE downwards by save state
+	 * size * CPU num. */
+	smbase = relo_params->smram_base - cpu * runtime->save_state_size;
+	iedbase = relo_params->ied_base;
+
+	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x\n",
+	       smbase, iedbase);
+
+	/* All threads need to set IEDBASE and SMBASE to the relocated
+	 * handler region. However, the save state location depends on the
+	 * smm_save_state_in_msrs field in the relocation parameters. If
+	 * smm_save_state_in_msrs is non-zero then the CPUs are relocating
+	 * the SMM handler in parallel, and each CPUs save state area is
+	 * located in their respective MSR space. If smm_save_state_in_msrs
+	 * is zero then the SMM relocation is happening serially so the
+	 * save state is at the same default location for all CPUs. */
+	if (relo_params->smm_save_state_in_msrs) {
+		msr_t smbase_msr;
+		msr_t iedbase_msr;
+
+		smbase_msr.lo = smbase;
+		smbase_msr.hi = 0;
+
+		/* According the BWG the IEDBASE MSR is in bits 63:32. It's
+		 * not clear why it differs from the SMBASE MSR. */
+		iedbase_msr.lo = 0;
+		iedbase_msr.hi = iedbase;
+
+		wrmsr(SMBASE_MSR, smbase_msr);
+		wrmsr(IEDBASE_MSR, iedbase_msr);
+	} else {
+		em64t101_smm_state_save_area_t *save_state;
+
+		save_state = (void *)(runtime->smbase + SMM_DEFAULT_SIZE -
+				      runtime->save_state_size);
+
+		save_state->smbase = smbase;
+		save_state->iedbase = iedbase;
+	}
+}
+
+/* Returns 1 if SMM MSR save state was set. */
+static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
+{
+	msr_t smm_mca_cap;
+
+	smm_mca_cap = rdmsr(SMM_MCA_CAP_MSR);
+	if (smm_mca_cap.hi & SMM_CPU_SVRSTR_MASK) {
+		msr_t smm_feature_control;
+
+		smm_feature_control = rdmsr(SMM_FEATURE_CONTROL_MSR);
+		smm_feature_control.hi = 0;
+		smm_feature_control.lo |= SMM_CPU_SAVE_EN;
+		wrmsr(SMM_FEATURE_CONTROL_MSR, smm_feature_control);
+		relo_params->smm_save_state_in_msrs = 1;
+	}
+	return relo_params->smm_save_state_in_msrs;
+}
+
 /* The relocation work is actually performed in SMM context, but the code
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here. */
 static void __attribute__((cdecl))
 cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 {
-	em64t101_smm_state_save_area_t *save_state;
 	msr_t mtrr_cap;
 	struct smm_relocation_params *relo_params = arg;
 
@@ -100,21 +178,32 @@ cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 
 	printk(BIOS_DEBUG, "In relocation handler: cpu %d\n", cpu);
 
-	/* All threads need to set IEDBASE and SMBASE in the save state area.
-	 * Since one thread runs at a time during the relocation the save state
-	 * is the same for all cpus. */
-	save_state = (void *)(runtime->smbase + SMM_DEFAULT_SIZE -
-                              runtime->save_state_size);
+	/* Determine if the processor supports saving state in MSRs. If so,
+	 * enable it before the non-BSPs run so that SMM relocation can occur
+	 * in parallel in the non-BSP CPUs. */
+	if (cpu == 0) {
+		/* If smm_save_state_in_msrs is 1 then that means this is the
+		 * 2nd time through the relocation handler for the BSP.
+		 * Parallel SMM handler relocation is taking place. However,
+		 * it is desired to access other CPUs save state in the real
+		 * SMM handler. Therefore, disable the SMM save state in MSRs
+		 * feature. */
+		if (relo_params->smm_save_state_in_msrs) {
+			msr_t smm_feature_control;
 
-	/* The relocated handler runs with all CPUs concurrently. Therefore
-	 * stagger the entry points adjusting SMBASE downwards by save state
-	 * size * CPU num. */
-	save_state->smbase = relo_params->smram_base -
-	                     cpu * runtime->save_state_size;
-	save_state->iedbase = relo_params->ied_base;
+			smm_feature_control = rdmsr(SMM_FEATURE_CONTROL_MSR);
+			smm_feature_control.lo &= ~SMM_CPU_SAVE_EN;
+			wrmsr(SMM_FEATURE_CONTROL_MSR, smm_feature_control);
+		} else if (bsp_setup_msr_save_state(relo_params))
+			/* Just return from relocation handler if MSR save
+			 * state is enabled. In that case the BSP will come
+			 * back into the relocation handler to setup the new
+			 * SMBASE as well disabling SMM save state in MSRs. */
+			return;
+	}
 
-	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x @ %p\n",
-	       save_state->smbase, save_state->iedbase, save_state);
+	/* Make appropriate changes to the save state map. */
+	update_save_state(cpu, relo_params, runtime);
 
 	/* Write EMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRRcap_MSR);
@@ -128,8 +217,6 @@ cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 		if (cpu == 0)
 			write_uncore_emrr(relo_params);
 	}
-
-	southbridge_clear_smi_status();
 }
 
 static u32 northbridge_get_base_reg(device_t dev, int reg)
@@ -199,10 +286,12 @@ static void fill_in_relocation_params(device_t dev,
 static int install_relocation_handler(int num_cpus,
                                       struct smm_relocation_params *relo_params)
 {
-	/* The default SMM entry happens serially at the default location.
-	 * Therefore, there is only 1 concurrent save state area. Set the
-	 * stack size to the save state size, and call into the
-	 * do_relocation handler. */
+	/* The default SMM entry can happen in parallel or serially. If the
+	 * default SMM entry is done in parallel the BSP has already setup
+	 * the saving state to each CPU's MSRs. At least one save state size
+	 * is required for the initial SMM entry for the BSP to determine if
+	 * parallel SMM relocation is even feasible.  Set the stack size to
+	 * the save state size, and call into the do_relocation handler. */
 	int save_state_size = sizeof(em64t101_smm_state_save_area_t);
 	struct smm_loader_params smm_params = {
 		.per_cpu_stack_size = save_state_size,
@@ -308,6 +397,17 @@ int smm_initialize(void)
 
 	/* Run the relocation handler. */
 	smm_initiate_relocation();
+
+	/* If smm_save_state_in_msrs is non-zero then parallel SMM relocation
+	 * shall take place. Run the relocation handler a second time to do
+	 * the final move. */
+	if (smm_reloc_params.smm_save_state_in_msrs) {
+		printk(BIOS_DEBUG, "Doing parallel SMM relocation.\n");
+		release_aps_for_smm_relocation(1);
+		smm_initiate_relocation_parallel();
+	} else {
+		release_aps_for_smm_relocation(0);
+	}
 
 	/* Lock down the SMRAM space. */
 	smm_lock();

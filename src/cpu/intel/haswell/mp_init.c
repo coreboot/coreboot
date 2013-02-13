@@ -75,8 +75,15 @@ static device_t cpu_devs[CONFIG_MAX_CPUS];
 
 /* Number of APs checked that have checked in. */
 static atomic_t num_aps;
+/* Number of APs that have relocated their SMM handler. */
+static atomic_t num_aps_relocated_smm;
 /* Barrier to stop APs from performing SMM relcoation. */
 static int smm_relocation_barrier_begin __attribute__ ((aligned (64)));
+
+static inline void mfence(void)
+{
+	__asm__ __volatile__("mfence\t\n": : :"memory");
+}
 
 static inline void wait_for_barrier(volatile int *barrier)
 {
@@ -95,13 +102,18 @@ static void ap_wait_for_smm_relocation_begin(void)
 	wait_for_barrier(&smm_relocation_barrier_begin);
 }
 
+/* This function pointer is used by the non-BSP CPUs to initiate relocation. It
+ * points to either a serial or parallel SMM initiation. */
+static void (*ap_initiate_smm_relocation)(void) = &smm_initiate_relocation;
+
 
 /* Returns 1 if timeout waiting for APs. 0 if target aps found. */
-static int wait_for_aps(int target, int total_delay, int delay_step)
+static int wait_for_aps(atomic_t *val, int target, int total_delay,
+                        int delay_step)
 {
 	int timeout = 0;
 	int delayed = 0;
-	while (atomic_read(&num_aps) != target) {
+	while (atomic_read(val) != target) {
 		udelay(delay_step);
 		delayed += delay_step;
 		if (delayed >= total_delay) {
@@ -113,9 +125,19 @@ static int wait_for_aps(int target, int total_delay, int delay_step)
 	return timeout;
 }
 
-void release_aps_for_smm_relocation(void)
+void release_aps_for_smm_relocation(int do_parallel)
 {
+	/* Change the AP SMM initiation function, and ensure it is visible
+	 * before releasing the APs. */
+	if (do_parallel) {
+		ap_initiate_smm_relocation = &smm_initiate_relocation_parallel;
+		mfence();
+	}
 	release_barrier(&smm_relocation_barrier_begin);
+	/* Wait for CPUs to relocate their SMM handler up to 100ms. */
+	if (wait_for_aps(&num_aps_relocated_smm, atomic_read(&num_aps),
+	                 100000 /* 100 ms */, 200 /* us */))
+		printk(BIOS_DEBUG, "Timed out waiting for AP SMM relocation\n");
 }
 
 /* The mtrr code sets up ROM caching on the BSP, but not the others. However,
@@ -172,7 +194,10 @@ ap_init(unsigned int cpu, void *microcode_ptr)
 
 	ap_wait_for_smm_relocation_begin();
 
-	smm_initiate_relocation();
+	ap_initiate_smm_relocation();
+
+	/* Indicate that SMM relocation has occured on this thread. */
+	atomic_inc(&num_aps_relocated_smm);
 
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_ptr);
@@ -483,7 +508,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 		printk(BIOS_DEBUG, "done.\n");
 	}
 	/* Wait for CPUs to check in up to 200 us. */
-	wait_for_aps(ap_count, 200 /* us */, 15 /* us */);
+	wait_for_aps(&num_aps, ap_count, 200 /* us */, 15 /* us */);
 
 	/* Send 2nd SIPI */
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
@@ -507,7 +532,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 	}
 
 	/* Wait for CPUs to check in. */
-	if (wait_for_aps(ap_count, 10000 /* 10 ms */, 50 /* us */)) {
+	if (wait_for_aps(&num_aps, ap_count, 10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(&num_aps), ap_count);
 		return -1;
@@ -516,17 +541,12 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 	return 0;
 }
 
-DECLARE_SPIN_LOCK(smm_relocation_lock);
-
-void smm_initiate_relocation(void)
+void smm_initiate_relocation_parallel(void)
 {
-	spin_lock(&smm_relocation_lock);
-
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
-			spin_unlock(&smm_relocation_lock);
 			return;
 		} else
 			printk(BIOS_DEBUG, "done.\n");
@@ -539,6 +559,14 @@ void smm_initiate_relocation(void)
 	} else
 		printk(BIOS_DEBUG, "Relocation complete.\n");
 
+}
+
+DECLARE_SPIN_LOCK(smm_relocation_lock);
+
+void smm_initiate_relocation(void)
+{
+	spin_lock(&smm_relocation_lock);
+	smm_initiate_relocation_parallel();
 	spin_unlock(&smm_relocation_lock);
 }
 

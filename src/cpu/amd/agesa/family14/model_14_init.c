@@ -33,7 +33,9 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam14.h>
 #include <arch/acpi.h>
+#if CONFIG_HAVE_ACPI_RESUME
 #include <cpu/amd/agesa/s3_resume.h>
+#endif
 
 #define MCI_STATUS 0x401
 

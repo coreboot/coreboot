@@ -329,20 +329,6 @@ static void lb_strings(struct lb_header *header)
 
 }
 
-#if CONFIG_WRITE_HIGH_TABLES
-static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
-{
-	struct lb_record *rec;
-	struct lb_forward *forward;
-	rec = lb_new_record(header);
-	forward = (struct lb_forward *)rec;
-	forward->tag = LB_TAG_FORWARD;
-	forward->size = sizeof(*forward);
-	forward->forward = (uint64_t)(unsigned long)next_header;
-	return forward;
-}
-#endif
-
 /* FIXME(dhendrix): used to be static void lb_memory_range(), but compiler
    started complaining since it shares a name with a non-static struct. ugh. */
 static void new_lb_memory_range(struct lb_memory *mem,
@@ -611,10 +597,6 @@ unsigned long write_coreboot_table(
 	printk(BIOS_DEBUG, "table_start: 0x%lx, table_end: 0x%lx\n",
 			   table_start, table_end);
 	head = lb_table_init(table_start);
-
-	printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",
-			table_end);
-	lb_forward(head, (struct lb_header*)table_end);
 
 	table_end = (unsigned long) head + head->table_bytes;
 

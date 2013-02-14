@@ -413,6 +413,7 @@ config WRITE_HIGH_TABLES
 config MULTIBOOT
 	bool "Generate Multiboot tables (for GRUB2)"
 	default y
+	depends on ARCH_X86
 
 config GENERATE_ACPI_TABLES
 	prompt "Generate ACPI tables" if HAVE_ACPI_TABLES

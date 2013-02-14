@@ -97,7 +97,7 @@ install: real-target
 	for lib in $(library-targets); do \
 		install -m 644 $$lib $(DESTDIR)/libpayload/lib/; \
 	done
-	install -m 644 lib/libpayload.ldscript $(DESTDIR)/libpayload/lib/
+	install -m 644 arch/$(ARCHDIR-y)/libpayload.ldscript $(DESTDIR)/libpayload/lib/
 	install -m 755 -d $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	install -m 644 $(obj)/head.o $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	printf "    INSTALL    $(DESTDIR)/libpayload/include\n"

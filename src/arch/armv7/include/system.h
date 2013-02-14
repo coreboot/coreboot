@@ -2,17 +2,6 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-#define CPU_ARCH_UNKNOWN	0
-#define CPU_ARCH_ARMv3		1
-#define CPU_ARCH_ARMv4		2
-#define CPU_ARCH_ARMv4T		3
-#define CPU_ARCH_ARMv5		4
-#define CPU_ARCH_ARMv5T		5
-#define CPU_ARCH_ARMv5TE	6
-#define CPU_ARCH_ARMv5TEJ	7
-#define CPU_ARCH_ARMv6		8
-#define CPU_ARCH_ARMv7		9
-
 /*
  * CR1 bits (CP#15 CR1)
  */
@@ -111,13 +100,9 @@ void mmu_setup(unsigned long start, unsigned long size);
 void arm_init_before_mmu(void);
 
  /*
-  * FIXME: sdelay, sr32, and wait_on_value originally came from
-  * arch/arm/cpu/armv7/exynos5/setup.h in u-boot but do not seem
-  * specific to exynos5...
+  * FIXME: sdelay originally came from arch/arm/cpu/armv7/exynos5/setup.h in
+  * u-boot but does not seem specific to exynos5...
   */
 void sdelay(unsigned long loops);
-void sr32(void *addr, u32 start_bit, u32 num_bits, u32 value);
-u32 wait_on_value(u32 read_bit_mask, u32 match_value, void *read_addr,
-		  u32 bound);
 #endif // __ASSEMBLY__
 #endif	/* SYSTEM_H_ */

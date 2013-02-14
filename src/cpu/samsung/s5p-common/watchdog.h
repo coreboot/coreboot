@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2011 Samsung Electronics
  * Heungjun Kim <riverful.kim@samsung.com>
- * Minkyu Kang <mk7.kang@samsung.com>
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -22,8 +21,8 @@
  * MA 02111-1307 USA
  */
 
-#ifndef __ASM_ARM_ARCH_WATCHDOG_H_
-#define __ASM_ARM_ARCH_WATCHDOG_H_
+#ifndef __ASM_ARM_ARCH_COMMON_WATCHDOG_H_
+#define __ASM_ARM_ARCH_COMMON_WATCHDOG_H_
 
 #define WTCON_RESET_OFFSET	0
 #define WTCON_INTEN_OFFSET	2

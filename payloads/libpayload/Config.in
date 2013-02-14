@@ -170,7 +170,7 @@ config SERIAL_CONSOLE
 
 config SERIAL_IOBASE
 	hex "I/O base for the serial port (default 0x3f8)"
-	depends on SERIAL_CONSOLE
+	depends on ARCH_X86 && SERIAL_CONSOLE
 	default 0x3f8
 
 config SERIAL_SET_SPEED

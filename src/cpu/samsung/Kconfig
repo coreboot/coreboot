@@ -10,13 +10,6 @@ config CPU_SAMSUNG_EXYNOS5
 	bool
 	default n
 
-config SKIP_LOWLEVEL_INIT
-	bool "Skip low-level init"
-	default n
-	help
-	  Certain functions (ie PLL init) and processor features may already be
-	  handled by masked ROM code.
-
 if CPU_SAMSUNG_EXYNOS5
 source src/cpu/samsung/exynos5250/Kconfig
 endif

@@ -444,13 +444,6 @@ int cpu_release(int nr, int argc, char * const argv[]);
 #endif
 #endif
 
-#ifdef CONFIG_INIT_CRITICAL
-#error CONFIG_INIT_CRITICAL is deprecated!
-#error Read section CONFIG_SKIP_LOWLEVEL_INIT in README.
-#endif
-
-//#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-
 #define ROUND(a,b)		(((a) + (b) - 1) & ~((b) - 1))
 #define DIV_ROUND(n,d)		(((n) + ((d)/2)) / (d))
 #define DIV_ROUND_UP(n,d)	(((n) + (d) - 1) / (d))

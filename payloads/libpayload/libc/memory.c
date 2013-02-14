@@ -33,10 +33,7 @@
 
 #include <libpayload.h>
 
-void *memset(void *s, int c, size_t n)
-	__attribute__((weak, alias("default_memset")));
-
-void *default_memset(void *s, int c, size_t n)
+static void *default_memset(void *s, int c, size_t n)
 {
 	char *os = s;
 
@@ -46,10 +43,10 @@ void *default_memset(void *s, int c, size_t n)
 	return s;
 }
 
-void *memcpy(void *dst, const void *src, size_t n)
-	__attribute__((weak, alias("default_memcpy")));
+void *memset(void *s, int c, size_t n)
+	__attribute__((weak, alias("default_memset")));
 
-void *default_memcpy(void *dst, const void *src, size_t n)
+static void *default_memcpy(void *dst, const void *src, size_t n)
 {
 	int i;
 	void *ret = dst;
@@ -67,10 +64,10 @@ void *default_memcpy(void *dst, const void *src, size_t n)
 	return ret;
 }
 
-void *memmove(void *dst, const void *src, size_t n)
-	__attribute__((weak, alias("default_memmove")));
+void *memcpy(void *dst, const void *src, size_t n)
+	__attribute__((weak, alias("default_memcpy")));
 
-void *default_memmove(void *dst, const void *src, size_t n)
+static void *default_memmove(void *dst, const void *src, size_t n)
 {
 	int i;
 	unsigned long offs;
@@ -90,6 +87,9 @@ void *default_memmove(void *dst, const void *src, size_t n)
 	return dst;
 }
 
+void *memmove(void *dst, const void *src, size_t n)
+	__attribute__((weak, alias("default_memmove")));
+
 /**
  * Compare two memory areas.
  *
@@ -100,11 +100,12 @@ void *default_memmove(void *dst, const void *src, size_t n)
  *         Otherwise return non-zero.
  */
 
-int memcmp(const void *s1, const void *s2, size_t len)
-	__attribute__((weak, alias("default_memcmp")));
-
-int default_memcmp(const void *s1, const void *s2, size_t len)
+static int default_memcmp(const void *s1, const void *s2, size_t len)
 {
 	for (; len && *(char *)s1++ == *(char *)s2++; len--) ;
 	return len;
 }
+
+int memcmp(const void *s1, const void *s2, size_t len)
+	__attribute__((weak, alias("default_memcmp")));
+

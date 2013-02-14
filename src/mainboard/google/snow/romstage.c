@@ -64,7 +64,6 @@ void main(void)
 	system_clock_init(mem, arm_ratios);
 
 	console_init();
-	printk(BIOS_INFO, "hello from romstage\n");
 
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
@@ -82,8 +81,6 @@ void main(void)
 		ret);
 		while(1);
 	}
-
-	printk(BIOS_INFO, "ddr3_init done\n");
 
 	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
 

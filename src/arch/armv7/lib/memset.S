@@ -9,7 +9,7 @@
  *
  *  ASM optimised string functions
  */
-#include <asm/assembler.h>
+#include <assembler.h>
 
 	.text
 	.align	5

@@ -10,7 +10,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include <asm/assembler.h>
+#include <assembler.h>
 
 #define W(instr)	instr
 

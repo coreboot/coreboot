@@ -28,7 +28,6 @@ ramstage-y += power.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 
-#ramstage-$(CONFIG_EXYNOS_ACE_SHA) += ace_sha.c
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c
 
 exynos5250_add_bl1: $(obj)/coreboot.pre

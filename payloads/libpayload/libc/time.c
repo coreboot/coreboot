@@ -110,14 +110,20 @@ static void gettimeofday_init(void)
 	clock.secs = (days * 86400) + (tm.tm_hour * 3600) +
 		(tm.tm_min * 60) + tm.tm_sec;
 }
-#else
+#endif // CONFIG_NVRAM
+#endif // CONFIG_ARCH_X86
+
+#ifdef CONFIG_ARCH_ARMV7
+static void update_clock(void)
+{
+}
+
 static void gettimeofday_init(void)
 {
-	/* Record the number of ticks */
-	clock.ticks = rdtsc();
 }
-#endif
-#endif
+#endif // CONFIG_ARCH_ARMV7
+
+
 #ifdef CONFIG_ARCH_POWERPC
 static void update_clock(void)
 {
@@ -126,7 +132,8 @@ static void update_clock(void)
 static void gettimeofday_init(void)
 {
 }
-#endif
+#endif // CONFIG_ARCH_POWERPC
+
 /**
  * Return the current time broken into a timeval structure.
  *

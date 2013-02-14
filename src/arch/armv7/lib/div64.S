@@ -13,8 +13,7 @@
  */
 
 // FIXME
-//#include <linux/linkage.h>
-#define __LINUX_ARM_ARCH__ 7
+#define __ARM_ARCH__ 7
 
 #ifdef __ARMEB__
 #define xh r0
@@ -65,7 +64,7 @@ __do_div64:
 	@ The aligned divisor is stored in yl preserving the original.
 	@ The bit position is stored in ip.
 
-#if __LINUX_ARM_ARCH__ >= 5
+#if __ARM_ARCH__ >= 5
 
 	clz	yl, r4
 	clz	ip, xh
@@ -125,7 +124,7 @@ __do_div64:
 
 	@ We still have remainer bits in the low part.  Bring them up.
 
-#if __LINUX_ARM_ARCH__ >= 5
+#if __ARM_ARCH__ >= 5
 
 	clz	xh, xl			@ we know xh is zero here so...
 	add	xh, xh, #1
@@ -152,7 +151,7 @@ __do_div64:
 8:	@ Division by a power of 2: determine what that divisor order is
 	@ then simply shift values around
 
-#if __LINUX_ARM_ARCH__ >= 5
+#if __ARM_ARCH__ >= 5
 
 	clz	ip, r4
 	rsb	ip, ip, #31

@@ -294,6 +294,11 @@ long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
 void fatal(const char *msg) __attribute__ ((noreturn));
+
+void *default_memset(void *s, int c, size_t n);
+void *default_memcpy(void *dst, const void *src, size_t n);
+void *default_memmove(void *dst, const void *src, size_t n);
+int default_memcmp(const void *s1, const void *s2, size_t len);
 /** @} */
 
 

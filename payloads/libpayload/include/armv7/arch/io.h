@@ -31,12 +31,22 @@
 #ifndef _ARCH_IO_H
 #define _ARCH_IO_H
 
+/* x86 has to differentiate between inb/readb.
+ * No such issue on arm, but we still need to define both
+ * types of operations.
+ */
 #define readb(_a) (*(volatile unsigned char *) (_a))
 #define readw(_a) (*(volatile unsigned short *) (_a))
 #define readl(_a) (*(volatile unsigned long *) (_a))
+#define inb(_a) (*(volatile unsigned char *) (_a))
+#define inw(_a) (*(volatile unsigned short *) (_a))
+#define inl(_a) (*(volatile unsigned long *) (_a))
 
 #define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
 #define writew(_v, _a) (*(volatile unsigned short *) (_a) = (_v))
 #define writel(_v, _a) (*(volatile unsigned long *) (_a) = (_v))
+#define outb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
+#define outw(_v, _a) (*(volatile unsigned short *) (_a) = (_v))
+#define outl(_v, _a) (*(volatile unsigned long *) (_a) = (_v))
 
 #endif

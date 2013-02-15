@@ -23,7 +23,7 @@ config BL1_SIZE_KB
 # 0x0202_0000: vendor-provided BL1
 # 0x0202_3400: bootblock, assume up to 32KB in size
 # 0x0203_0000: romstage, assume up to 128KB in size.
-# 0x0207_7f00: stack pointer
+# 0x0207_8000: stack pointer
 
 # this may be used to calculate offsets
 config IRAM_BOTTOM
@@ -45,6 +45,23 @@ config ROMSTAGE_BASE
 config ROMSTAGE_SIZE
 	hex
 	default 0x10000
+
+# Stack may reside in either IRAM or DRAM. We will define it to live
+# at the top of IRAM for now.
+#
+# Stack grows downward, push operation stores register contents in
+# consecutive memory locations ending just below SP
+config STACK_TOP
+	hex
+	default 0x02078000
+
+config STACK_BOTTOM
+	hex
+	default 0x02077000
+
+config STACK_SIZE
+	hex
+	default 0x1000
 
 config CBFS_ROM_OFFSET
 	# Calculated by BL1 + max bootblock size.
@@ -72,10 +89,6 @@ config CBFS_CACHE_SIZE
 config SPI_IMAGE_HACK
 	hex
 	default 0x02060000
-
-config IRAM_STACK
-	hex
-	default 0x02077f00
 
 # FIXME: other magic numbers that should probably go away
 config XIP_ROM_SIZE

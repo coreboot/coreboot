@@ -37,6 +37,9 @@
  */
 struct sysinfo_t lib_sysinfo = {
 	.cpu_khz = 200,
+#ifdef CONFIG_SERIAL_CONSOLE
+	.ser_base = CONFIG_EXYNOS5_SERIAL_BASE,
+#endif
 };
 
 int lib_get_sysinfo(void)

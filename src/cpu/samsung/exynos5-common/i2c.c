@@ -148,7 +148,7 @@ static void ReadWriteByte(struct s3c24x0_i2c *i2c)
 
 static void i2c_ch_init(struct s3c24x0_i2c *i2c, int speed, int slaveadd)
 {
-	ulong freq, pres = 16, div;
+	unsigned long freq, pres = 16, div;
 
 	freq = clock_get_periph_rate(PERIPH_ID_I2C0);
 	/* calculate prescaler and divisor values */
@@ -207,7 +207,7 @@ void board_i2c_init(const void *blob)
 	int i;
 
 	for (i = 0; i < EXYNOS_I2C_MAX_CONTROLLERS; i++) {
-		uintptr_t reg_addr = samsung_get_base_i2c() +
+		unsigned intptr_t reg_addr = samsung_get_base_i2c() +
 			EXYNOS_I2C_SPACING * i;
 
 		i2c_bus[i].regs = (struct s3c24x0_i2c_bus *)reg_addr;
@@ -262,7 +262,7 @@ int i2c_get_bus_num_fdt(const void *blob, int node)
 
 	reg = fdtdec_get_addr(blob, node, "reg");
 	for (i = 0; i < i2c_busses; i++)
-		if (reg == (fdt_addr_t)(uintptr_t)i2c_bus[i].regs)
+		if (reg == (fdt_addr_t)(unsigned intptr_t)i2c_bus[i].regs)
 			return i;
 
 	debug("%s: Can't find any matched I2C bus\n", __func__);
@@ -501,10 +501,10 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 	return (result == I2C_OK) ? stop_bit_result : result;
 }
 
-int i2c_probe(uchar chip)
+int i2c_probe(unsigned char chip)
 {
 	struct s3c24x0_i2c_bus *i2c;
-	uchar buf[1];
+	unsigned char buf[1];
 	int ret;
 
 	i2c = get_bus(g_current_bus);
@@ -522,10 +522,10 @@ int i2c_probe(uchar chip)
 	return ret != I2C_OK;
 }
 
-int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
+int i2c_read(unsigned char chip, unsigned int addr, int alen, unsigned char *buffer, int len)
 {
 	struct s3c24x0_i2c_bus *i2c;
-	uchar xaddr[4];
+	unsigned char xaddr[4];
 	int ret;
 
 	if (alen > 4) {
@@ -568,10 +568,10 @@ int i2c_read(uchar chip, uint addr, int alen, uchar *buffer, int len)
 	return 0;
 }
 
-int i2c_write(uchar chip, uint addr, int alen, uchar *buffer, int len)
+int i2c_write(unsigned char chip, unsigned int addr, int alen, unsigned char *buffer, int len)
 {
 	struct s3c24x0_i2c_bus *i2c;
-	uchar xaddr[4];
+	unsigned char xaddr[4];
 	int ret;
 
 	if (alen > 4) {

@@ -83,7 +83,7 @@ int init_timer(void)
  */
 unsigned long get_timer(unsigned long base)
 {
-	ulong now = timer_get_us_down();
+	unsigned long now = timer_get_us_down();
 
 	/*
 	 * Increment the time by the amount elapsed since the last read.

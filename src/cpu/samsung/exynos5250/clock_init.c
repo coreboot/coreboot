@@ -35,7 +35,7 @@
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/s5p-dp.h>
-#include <cpu/samsung/s5p-common/clk.h>
+#include <cpu/samsung/exynos5-common/clk.h>
 
 #include "setup.h"
 

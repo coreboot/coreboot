@@ -1,10 +1,5 @@
-config CPU_SAMSUNG_EXYNOS
-	bool
-	default n
-
 config CPU_SAMSUNG_EXYNOS5
 	depends on ARCH_ARMV7
-	select CPU_SAMSUNG_EXYNOS
 	select HAVE_UART_SPECIAL
 	select DEFAULT_EARLY_CONSOLE
 	bool

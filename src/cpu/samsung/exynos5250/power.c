@@ -33,7 +33,7 @@
 #include <drivers/maxim/max77686/max77686.h>
 
 #include "device/i2c.h"
-#include "cpu/samsung/s5p-common/s3c24x0_i2c.h"
+#include "cpu/samsung/exynos5-common/i2c.h"
 
 static void ps_hold_setup(void)
 {

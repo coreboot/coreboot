@@ -37,7 +37,7 @@
 
 //#include <fdtdec.h>
 #include "device/i2c.h"
-#include "s3c24x0_i2c.h"
+#include "i2c.h"
 
 #define I2C_WRITE	0
 #define I2C_READ	1

@@ -82,6 +82,7 @@ static void *setup_romstage_stack_after_car(void)
 	int num_mtrrs;
 	u32 *slot;
 	u32 mtrr_mask_upper;
+	u32 top_of_ram;
 
 	/* Top of stack needs to be aligned to a 4-byte boundary. */
 	top_of_stack = choose_top_of_stack() & ~3;
@@ -120,6 +121,7 @@ static void *setup_romstage_stack_after_car(void)
 	slot = stack_push(slot, 0 | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
+	top_of_ram = get_top_of_ram();
 	/* Cache 8MiB below the top of ram. On haswell systems the top of
 	 * ram under 4GiB is the start of the TSEG region. It is required to
 	 * be 8MiB aligned. Set this area as cacheable so it can be used later
@@ -127,8 +129,18 @@ static void *setup_romstage_stack_after_car(void)
 	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
 	slot = stack_push(slot, ~((8 << 20) - 1) | MTRRphysMaskValid);
 	slot = stack_push(slot, 0); /* upper base */
-	slot = stack_push(slot,
-	                  (get_top_of_ram() - (8 << 20)) | MTRR_TYPE_WRBACK);
+	slot = stack_push(slot, (top_of_ram - (8 << 20)) | MTRR_TYPE_WRBACK);
+	num_mtrrs++;
+
+	/* Cache 8MiB at the top of ram. Top of ram on haswell systems
+	 * is where the TSEG region resides. However, it is not restricted
+	 * to SMM mode until SMM has been relocated. By setting the region
+	 * to cacheable it provides faster access when relocating the SMM
+	 * handler as well as using the TSEG region for other purposes. */
+	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
+	slot = stack_push(slot, ~((8 << 20) - 1) | MTRRphysMaskValid);
+	slot = stack_push(slot, 0); /* upper base */
+	slot = stack_push(slot, top_of_ram | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
 	/* Save the number of MTTRs to setup. Return the stack location

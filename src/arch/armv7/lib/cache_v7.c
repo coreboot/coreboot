@@ -240,7 +240,7 @@ static void v7_inval_tlb(void)
 	CP15ISB;
 }
 
-ulong dcache_get_line_size(void)
+unsigned long dcache_get_line_size(void)
 {
 	u32 line_len, ccsidr;
 

@@ -44,8 +44,8 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 			     void *dinp, void const *doutp, int i)
 {
 	int rx_lvl, tx_lvl;
-	uint *rxp = (uint *)(dinp + (i * (32 * 1024)));
-	uint out_bytes, in_bytes;
+	unsigned int *rxp = (unsigned int *)(dinp + (i * (32 * 1024)));
+	unsigned int out_bytes, in_bytes;
 
 	// TODO In currrent implementation, every read/write must be aligned to
 	// 4 bytes, otherwise you may get timeout or other unexpected results.

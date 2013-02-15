@@ -26,13 +26,6 @@
 
 #ifndef __ASSEMBLER__		/* put C only stuff in this section */
 
-typedef unsigned char		uchar;
-typedef volatile unsigned long	vu_long;
-typedef volatile unsigned short vu_short;
-typedef volatile unsigned char	vu_char;
-typedef unsigned long ulong;
-typedef unsigned int uint;
-
 #include <types.h>
 
 #ifdef	DEBUG
@@ -82,20 +75,18 @@ void __assert_fail(const char *assertion, const char *file, unsigned line,
 
 typedef void (interrupt_handler_t)(void *);
 
-//#include <asm/u-boot.h> /* boot information for Linux kernel */
-
 /*
  * Return the time since boot in microseconds, This is needed for bootstage
  * and should be defined in CPU- or board-specific code. If undefined then
  * millisecond resolution will be used (the standard get_timer()).
  */
-ulong timer_get_boot_us(void);
+unsigned long timer_get_boot_us(void);
 
 /*
  * Return the current value of a monotonically increasing microsecond timer.
  * Granularity may be larger than 1us if hardware does not support this.
  */
-ulong timer_get_us(void);
+unsigned long timer_get_us(void);
 
 /*
  * General Purpose Utilities
@@ -136,7 +127,7 @@ int	cpu_init(void);
 unsigned long long initdram (int);
 int	display_options (void);
 void	print_size(unsigned long long, const char *);
-int	print_buffer (ulong addr, void* data, uint width, uint count, uint linelen);
+int	print_buffer (unsigned long addr, void* data, unsigned int width, unsigned int count, unsigned int linelen);
 
 /* common/main.c */
 void	main_loop	(void);
@@ -153,7 +144,7 @@ int	checkboard    (void);
 int	checkflash    (void);
 int	checkdram     (void);
 int	last_stage_init(void);
-extern ulong monitor_flash_len;
+extern unsigned long monitor_flash_len;
 int mac_read_from_eeprom(void);
 
 #ifdef CONFIG_ARM
@@ -186,8 +177,8 @@ void eeprom_init  (void);
 #ifndef CONFIG_SPI
 int  eeprom_probe (unsigned dev_addr, unsigned offset);
 #endif
-int  eeprom_read  (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cnt);
-int  eeprom_write (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned cnt);
+int  eeprom_read  (unsigned dev_addr, unsigned offset, unsigned char *buffer, unsigned cnt);
+int  eeprom_write (unsigned dev_addr, unsigned offset, unsigned char *buffer, unsigned cnt);
 
 /*
  * Set this up regardless of board
@@ -204,8 +195,8 @@ int  eeprom_write (unsigned dev_addr, unsigned offset, uchar *buffer, unsigned c
 #if defined(CONFIG_SPI)
 extern void spi_init_f (void);
 extern void spi_init_r (void);
-extern ssize_t spi_read	 (uchar *, int, uchar *, int);
-extern ssize_t spi_write (uchar *, int, uchar *, int);
+extern ssize_t spi_read	 (unsigned char *, int, unsigned char *, int);
+extern ssize_t spi_write (unsigned char *, int, unsigned char *, int);
 #endif
 
 /* $(BOARD)/$(BOARD).c */
@@ -222,20 +213,20 @@ int testdram(void);
 /* $(CPU)/start.S */
 #if defined(CONFIG_5xx) || \
     defined(CONFIG_8xx)
-uint	get_immr      (uint);
+unsigned int	get_immr      (unsigned int);
 #endif
-uint	get_pir	      (void);
+unsigned int	get_pir	      (void);
 #if defined(CONFIG_MPC5xxx)
-uint	get_svr       (void);
+unsigned int	get_svr       (void);
 #endif
-uint	get_pvr	      (void);
-uint	get_svr	      (void);
-uint	rd_ic_cst     (void);
-void	wr_ic_cst     (uint);
-void	wr_ic_adr     (uint);
-uint	rd_dc_cst     (void);
-void	wr_dc_cst     (uint);
-void	wr_dc_adr     (uint);
+unsigned int	get_pvr	      (void);
+unsigned int	get_svr	      (void);
+unsigned int	rd_ic_cst     (void);
+void	wr_ic_cst     (unsigned int);
+void	wr_ic_adr     (unsigned int);
+unsigned int	rd_dc_cst     (void);
+void	wr_dc_cst     (unsigned int);
+void	wr_dc_adr     (unsigned int);
 int	icache_status (void);
 void	icache_enable (unsigned long start, unsigned long size);
 void	icache_disable(void);
@@ -243,8 +234,8 @@ int	dcache_status (void);
 void	dcache_enable (unsigned long start, unsigned long size);
 void	dcache_disable(void);
 void	mmu_disable(void);
-ulong	get_endaddr   (void);
-void	trap_init     (ulong);
+unsigned long	get_endaddr   (void);
+void	trap_init     (unsigned long);
 #if defined (CONFIG_4xx)	|| \
     defined (CONFIG_MPC5xxx)	|| \
     defined (CONFIG_74xx_7xx)	|| \
@@ -293,7 +284,7 @@ int	checkcpu      (void);
 int	checkicache   (void);
 int	checkdcache   (void);
 void	upmconfig     (unsigned int, unsigned int *, unsigned int);
-ulong	get_tbclk     (void);
+unsigned long	get_tbclk     (void);
 #if defined (CONFIG_OF_LIBFDT) && defined (CONFIG_OF_BOARD_SETUP)
 void ft_cpu_setup(void *blob, bd_t *bd);
 #endif
@@ -332,34 +323,34 @@ int	prt_mpc512xxx_clks (void);
 int	prt_mpc8220_clks (void);
 #endif
 #ifdef CONFIG_4xx
-ulong	get_OPB_freq (void);
-ulong	get_PCI_freq (void);
+unsigned long	get_OPB_freq (void);
+unsigned long	get_PCI_freq (void);
 #endif
 #if defined(CONFIG_S3C24X0) || \
     defined(CONFIG_LH7A40X) || \
     defined(CONFIG_S3C6400) || \
     defined(CONFIG_EP93XX)
-ulong	get_FCLK (void);
-ulong	get_HCLK (void);
-ulong	get_PCLK (void);
-ulong	get_UCLK (void);
+unsigned long	get_FCLK (void);
+unsigned long	get_HCLK (void);
+unsigned long	get_PCLK (void);
+unsigned long	get_UCLK (void);
 #endif
 #if defined(CONFIG_LH7A40X)
-ulong	get_PLLCLK (void);
+unsigned long	get_PLLCLK (void);
 #endif
 #if defined CONFIG_INCA_IP
-uint	incaip_get_cpuclk (void);
+unsigned int	incaip_get_cpuclk (void);
 #endif
 #if defined(CONFIG_IMX)
-ulong get_systemPLLCLK(void);
-ulong get_FCLK(void);
-ulong get_HCLK(void);
-ulong get_BCLK(void);
-ulong get_PERCLK1(void);
-ulong get_PERCLK2(void);
-ulong get_PERCLK3(void);
+unsigned long get_systemPLLCLK(void);
+unsigned long get_FCLK(void);
+unsigned long get_HCLK(void);
+unsigned long get_BCLK(void);
+unsigned long get_PERCLK1(void);
+unsigned long get_PERCLK2(void);
+unsigned long get_PERCLK3(void);
 #endif
-ulong	get_bus_freq  (ulong);
+unsigned long	get_bus_freq  (unsigned long);
 int get_serial_clock(void);
 
 struct pt_regs;
@@ -370,31 +361,31 @@ void	external_interrupt (struct pt_regs *);
 void	irq_install_handler(int, interrupt_handler_t *, void *);
 void	irq_free_handler   (int);
 void	reset_timer	   (void);
-ulong	get_timer	   (ulong base);
+unsigned long	get_timer	   (unsigned long base);
 void	enable_interrupts  (void);
 int	disable_interrupts (void);
 
 /* $(CPU)/.../commproc.c */
 int	dpram_init (void);
-uint	dpram_base(void);
-uint	dpram_base_align(uint align);
-uint	dpram_alloc(uint size);
-uint	dpram_alloc_align(uint size,uint align);
-void	bootcount_store (ulong);
-ulong	bootcount_load (void);
+unsigned int	dpram_base(void);
+unsigned int	dpram_base_align(unsigned int align);
+unsigned int	dpram_alloc(unsigned int size);
+unsigned int	dpram_alloc_align(unsigned int size,unsigned int align);
+void	bootcount_store (unsigned long);
+unsigned long	bootcount_load (void);
 #define BOOTCOUNT_MAGIC		0xB001C041
 
 /* $(CPU)/.../<eth> */
 void mii_init (void);
 
 /* $(CPU)/.../lcd.c */
-ulong	lcd_setmem (ulong);
+unsigned long	lcd_setmem (unsigned long);
 
 /* $(CPU)/.../video.c */
-ulong	video_setmem (ulong);
+unsigned long	video_setmem (unsigned long);
 
 /* arch/$(ARCH)/lib/cache.c */
-ulong	dcache_get_line_size(void);
+unsigned long	dcache_get_line_size(void);
 void	enable_caches(void);
 void	flush_cache   (unsigned long, unsigned long);
 void	flush_dcache_all(void);
@@ -409,8 +400,8 @@ void	wait_ticks    (unsigned long);
 
 /* arch/$(ARCH)/lib/time.c */
 void	__udelay      (unsigned long);
-ulong	usec2ticks    (unsigned long usec);
-ulong	ticks2usec    (unsigned long ticks);
+unsigned long	usec2ticks    (unsigned long usec);
+unsigned long	ticks2usec    (unsigned long ticks);
 int	init_timebase (void);
 
 /* lib/qsort.c */

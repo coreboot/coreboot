@@ -27,7 +27,7 @@
 #include <console/console.h>
 //#include "clock.h"
 /* FIXME(dhendrix): untangle clock/clk ... */
-#include <cpu/samsung/s5p-common/clock.h>
+#include <cpu/samsung/exynos5-common/clock.h>
 #include <system.h>
 #include "clk.h"
 #include "cpu.h"

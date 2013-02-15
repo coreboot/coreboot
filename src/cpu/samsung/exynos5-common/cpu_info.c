@@ -29,9 +29,9 @@
 #endif
 #include <arch/io.h>
 
-#include <cpu/samsung/s5p-common/clk.h>
-#include <cpu/samsung/s5p-common/clock.h>
-#include <cpu/samsung/s5p-common/cpu.h>
+#include <cpu/samsung/exynos5-common/clk.h>
+#include <cpu/samsung/exynos5-common/clock.h>
+#include <cpu/samsung/exynos5-common/cpu.h>
 
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5-common/cpu.h>	/* for EXYNOS_PRO_ID */

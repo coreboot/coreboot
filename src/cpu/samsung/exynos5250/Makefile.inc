@@ -12,7 +12,7 @@ bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c
-romstage-y += pinmux.c  # required by s3c24x0_i2c (s5p-common) and uart.
+romstage-y += pinmux.c  # required by s3c24x0_i2c (exynos5-common) and uart.
 romstage-y += exynos_cache.c
 romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c

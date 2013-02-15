@@ -25,7 +25,6 @@
 #include <gpio.h>
 #include <arch/gpio.h>
 #include <console/console.h>
-#include <cpu/samsung/s5p-common/gpio.h>
 #include <cpu/samsung/exynos5-common/gpio.h>
 #include <cpu/samsung/exynos5250/gpio.h>	/* FIXME: for gpio_decode_number prototype */
 
@@ -48,8 +47,6 @@ struct gpio_info {
 	unsigned int max_gpio;	/* Maximum GPIO in this part */
 };
 
-#ifdef CONFIG_CPU_SAMSUNG_EXYNOS5
-
 #include <cpu/samsung/exynos5250/cpu.h>
 static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
 	{ EXYNOS5_GPIO_PART1_BASE, GPIO_MAX_PORT_PART_1 },
@@ -61,18 +58,6 @@ static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
 };
 
 #define HAVE_GENERIC_GPIO
-
-#elif defined(CONFIG_CPU_SAMSUNG_EXYNOS4)
-
-static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
-	{ EXYNOS4_GPIO_PART1_BASE, GPIO_MAX_PORT_PART_1 },
-	{ EXYNOS4_GPIO_PART2_BASE, GPIO_MAX_PORT_PART_2 },
-	{ EXYNOS4_GPIO_PART3_BASE, GPIO_MAX_PORT_PART_3 },
-};
-
-#define HAVE_GENERIC_GPIO
-
-#endif
 
 /* This macro gets gpio pin offset from 0..7 */
 #define GPIO_BIT(x)     ((x) & 0x7)

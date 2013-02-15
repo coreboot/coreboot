@@ -23,17 +23,11 @@
  */
 
 #include <common.h>
-//#include <pwm.h>
 #include <arch/io.h>
-//#include <arch/pwm.h>
-//#include <arch/clk.h>
-/* FIXME(dhendrix): this is a godawful mess of similar-but-different includes... */
 #include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/periph.h>
-#include <cpu/samsung/s5p-common/pwm.h>
-#include <cpu/samsung/s5p-common/clk.h>
-//#include <arch/periph.h>
+#include <cpu/samsung/exynos5-common/pwm.h>
 
 int pwm_enable(int pwm_id)
 {

@@ -27,10 +27,14 @@
 ## SUCH DAMAGE.
 ##
 
+top=..
+include $(top)/.xcompile
+include $(top)/payloadbuild.inc
+
 # Sample libpayload Makefile.
 LIBPAYLOAD_DIR := ../install/libpayload
-XCC := CC=$(CC) $(LIBPAYLOAD_DIR)/bin/lpgcc
-XAS := AS=$(AS) $(LIBPAYLOAD_DIR)/bin/lpas
+XCC := CC='$(CC)' $(LIBPAYLOAD_DIR)/bin/lpgcc
+XAS := AS='$(AS)' $(LIBPAYLOAD_DIR)/bin/lpas
 CFLAGS := -Wall -Werror -Os
 TARGET := hello
 OBJS := $(TARGET).o

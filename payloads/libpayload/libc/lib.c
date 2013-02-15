@@ -126,3 +126,8 @@ char *getenv(const char *name)
 	return NULL;
 }
 
+void abort(void)
+{
+	halt();
+}
+

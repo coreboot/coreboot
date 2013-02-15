@@ -61,6 +61,11 @@ SECTIONS
 		*(.data.*)
 	}
 
+    	.ARM.exidx : {
+		__exidx_start = .;
+		__exidx_end = .;
+	}
+
 	_edata = .;
 
 	.bss : {

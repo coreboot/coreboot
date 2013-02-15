@@ -139,7 +139,9 @@ void srand(unsigned int seed);
  */
 void halt(void) __attribute__ ((noreturn));
 void exit(int status) __attribute__ ((noreturn));
-#define abort() halt()    /**< Alias for the halt() function */
+
+/* needed as a symbol for ARM runtime */
+void abort(void) __attribute__ ((noreturn));
 
 /** @} */
 

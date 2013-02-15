@@ -99,15 +99,6 @@ SECTIONS
 	 * this line.
 	 */
 
-	. = ALIGN(CONFIG_STACK_SIZE);
-
-	_stack = .;
-	.stack . : {
-		/* Reserve a stack for each possible cpu */
-		. += CONFIG_MAX_CPUS*CONFIG_STACK_SIZE;
-	}
-	_estack = .;
-
         _heap = .;
         .heap . : {
                 /* Reserve CONFIG_HEAP_SIZE bytes for the heap */
@@ -115,6 +106,9 @@ SECTIONS
                 . = ALIGN(4);
         }
         _eheap = .;
+
+	_stack = CONFIG_STACK_BOTTOM;
+	_estack = CONFIG_STACK_TOP;
 
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on

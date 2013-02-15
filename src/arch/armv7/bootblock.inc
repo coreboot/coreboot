@@ -94,4 +94,4 @@ wait_for_interrupt:
  */
 .align 2
 .Stack:
-	.word CONFIG_IRAM_STACK
+	.word CONFIG_STACK_TOP

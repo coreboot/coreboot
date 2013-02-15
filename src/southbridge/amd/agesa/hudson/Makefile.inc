@@ -74,6 +74,17 @@ cbfs-files-y += hudson/xhci
 hudson/xhci-file := $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE))
 hudson/xhci-position := $(HUDSON_XHCI_POSITION)
 hudson/xhci-type := raw
+
+# check to see if the XHCI firmware exists
+$(call strip_quotes,$(CONFIG_HUDSON_XHCI_FWM_FILE)):
+	$(info )
+	$(info ###########################################################################)
+	$(info # ERROR: The XHCI firmware file specified does not exist:)
+	$(info # $(CONFIG_HUDSON_XHCI_FWM_FILE) )
+	$(info # Please enable binary blobs or configure a valid XHCI firmware path.)
+	$(info ###########################################################################)
+	$(info )
+	__XHCI_FIRMWARE_ERROR___END_BUILD__
 endif
 
 ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
@@ -81,6 +92,17 @@ cbfs-files-y += hudson/imc
 hudson/imc-file := $(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE))
 hudson/imc-position := $(HUDSON_IMC_POSITION)
 hudson/imc-type := raw
+
+# check to see if the IMC firmware exists
+$(call strip_quotes,$(CONFIG_HUDSON_IMC_FWM_FILE)):
+	$(info )
+	$(info ###########################################################################)
+	$(info # ERROR: The IMC firmware file specified does not exist:)
+	$(info # $(CONFIG_HUDSON_IMC_FWM_FILE) )
+	$(info # Please enable binary blobs or config a valid IMC firmware path.)
+	$(info ###########################################################################)
+	$(info )
+	__IMC_FIRMWARE_ERROR___END_BUILD__
 endif
 
 ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
@@ -88,13 +110,35 @@ cbfs-files-y += hudson/gec
 hudson/gec-file := $(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE))
 hudson/gec-position := $(HUDSON_GEC_POSITION)
 hudson/gec-type := raw
+
+# check to see if the GEC firmware exists
+$(call strip_quotes,$(CONFIG_HUDSON_GEC_FWM_FILE)):
+	$(info )
+	$(info ###########################################################################)
+	$(info # ERROR: The GEC firmware file specified does not exist:)
+	$(info # $(CONFIG_HUDSON_GEC_FWM_FILE) )
+	$(info # Please configure a valid GEC firmware path. If you don't have)
+	$(info # this file, it may be obtained from your AMD representative.)
+	$(info ###########################################################################)
+	$(info )
+	__GEC_FIRMWARE_ERROR___END_BUILD__
 endif
 
-#ifeq ($(CONFIG_HUDSON_SATA_AHCI), y)
 ifdef CONFIG_HUDSON_AHCI_ROM
 stripped_ahci_rom_id = $(call strip_quotes,$(CONFIG_AHCI_ROM_ID))
 cbfs-files-y += pci$(stripped_ahci_rom_id).rom
 pci$(stripped_ahci_rom_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_ROM_FILE))
 pci$(stripped_ahci_rom_id).rom-type := optionrom
-#endif
+
+# check to see if the AHCI rom exists
+$(call strip_quotes,$(CONFIG_AHCI_ROM_FILE)):
+	$(info )
+	$(info ###########################################################################)
+	$(info # ERROR: The AHCI rom specified does not exist:)
+	$(info # $(CONFIG_AHCI_ROM_FILE) )
+	$(info # Please configure a valid AHCI rom path.  If you don't have)
+	$(info # this file, it may be obtained from your AMD representative.)
+	$(info ###########################################################################)
+	$(info )
+	__AHCI_ROM_ERROR___END_BUILD__
 endif

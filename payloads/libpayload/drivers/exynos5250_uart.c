@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Google, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,39 +29,89 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
-#include <coreboot_tables.h>
 
-/**
- * This is a global structure that is used through the library - we set it
- * up initially with some dummy values - hopefully they will be overridden.
+/*
+ * this is a seriously cut-down UART implementation, the assumption
+ * being that you should let coreboot set it up. It's quite
+ * messy to keep doing UART setup everywhere on these ARM SOCs.
  */
-struct sysinfo_t lib_sysinfo = {
-	.cpu_khz = 200,
-#ifdef CONFIG_SERIAL_CONSOLE
-	.ser_base = CONFIG_EXYNOS5_SERIAL_BASE,
-#endif
+
+/* word offset of registers from MEMBASE */
+enum {
+	/* RX and TX data.
+	 * these are the lsb of the word
+	 */
+	RXDATA = 9,
+	TXDATA = 8,
+
+	ERR = 5,
+	FIFOSTAT = 6,
+	RXCOUNT = 0xff,
+	RXFULL = 0x100,
+	RXREADY = 0x1ff,
+	TXFULL = 1<<24,
 };
 
-int lib_get_sysinfo(void)
+#define MEMBASE (u32 *)(phys_to_virt(lib_sysinfo.serial->baseaddr))
+
+static inline u8 regreadb(u32 reg)
 {
-	int ret;
+	return readb(MEMBASE + reg);
+}
 
-	/* Get the CPU speed (for delays). */
-	lib_sysinfo.cpu_khz = get_cpu_speed();
+static inline u32 regreadl(u32 reg)
+{
+	return readl(MEMBASE + reg);
+}
 
-	/* Get information from the coreboot tables,
-	 * if they exist */
+static inline void regwritel(u32 val, u32 reg)
+{
+	writel(val, MEMBASE + reg);
+}
 
-	ret = get_coreboot_info(&lib_sysinfo);
+static inline void regwriteb(u8 val, u32 reg)
+{
+	writeb(val, MEMBASE + reg);
+}
 
-	if (!lib_sysinfo.n_memranges) {
-		/* If we can't get a good memory range, use the default. */
-		lib_sysinfo.n_memranges = 2;
+/*
+ * Initialise the serial port.
+ * This hardware is really complex, and we're not going to pretend
+ * it's a good idea to mess with it here. So, take what coreboot did
+ * and leave it at that.
+ */
+void serial_init(void)
+{
+}
 
-		lib_sysinfo.memrange[0].base = 0;
-		lib_sysinfo.memrange[0].size = 1024 * 1024;
-		lib_sysinfo.memrange[0].type = CB_MEM_RAM;
-	}
+int serial_havechar(void)
+{
+	return (regreadl(ERR)&RXREADY);
+}
 
-	return ret;
+int serial_getchar(void)
+{
+	/* wait for character to arrive */
+	while (! serial_havechar())
+		;
+	return regreadl(RXDATA);
+}
+
+static int serial_cansend(void)
+{
+	return (! (regreadl(FIFOSTAT)&TXFULL));
+}
+
+/*
+ * Output a single byte to the serial port.
+ * The function is defined as taking an int; unfortunate.
+ */
+void serial_putchar(unsigned int c)
+{
+
+	/* wait for room in the tx FIFO */
+	while (! serial_cansend())
+		;
+
+	regwriteb(c, TXDATA);
 }

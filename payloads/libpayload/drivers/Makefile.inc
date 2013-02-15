@@ -34,6 +34,7 @@ libc-$(CONFIG_PCI) += pci.c
 libc-$(CONFIG_SPEAKER) += speaker.c
 
 libc-$(CONFIG_SERIAL_CONSOLE) += serial.c
+libc-$(CONFIG_EXYNOS5_SERIAL_CONSOLE) += exynos5250_uart.c
 
 libc-$(CONFIG_PC_KEYBOARD) += keyboard.c
 

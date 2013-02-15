@@ -83,30 +83,6 @@
 void intel_pch_finalize_smm(void);
 #endif
 
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-#include <device/device.h>
-#include <arch/acpi.h>
-#include "chip.h"
-int pch_silicon_revision(void);
-int pch_silicon_type(void);
-int pch_silicon_supported(int type, int rev);
-void pch_enable(device_t dev);
-void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-#if CONFIG_ELOG
-void pch_log_state(void);
-#endif
-void acpi_create_intel_hpet(acpi_hpet_t * hpet);
-
-/* These helpers are for performing SMM relocation. */
-void southbridge_smm_init(void);
-void southbridge_trigger_smi(void);
-void southbridge_clear_smi_status(void);
-#else
-void enable_smbus(void);
-void enable_usb_bar(void);
-int smbus_read_byte(unsigned device, unsigned address);
-int early_spi_read(u32 offset, u32 size, u8 *buffer);
 
 /* State Machine configuration. */
 #define RCBA_REG_SIZE_MASK 0x8000
@@ -147,6 +123,31 @@ struct rcba_config_instruction
 	u32 or_value;
 };
 
+#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
+void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#include <device/device.h>
+#include <arch/acpi.h>
+#include "chip.h"
+int pch_silicon_revision(void);
+int pch_silicon_type(void);
+int pch_silicon_supported(int type, int rev);
+void pch_enable(device_t dev);
+void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
+#if CONFIG_ELOG
+void pch_log_state(void);
+#endif
+void acpi_create_intel_hpet(acpi_hpet_t * hpet);
+
+/* These helpers are for performing SMM relocation. */
+void southbridge_smm_init(void);
+void southbridge_trigger_smi(void);
+void southbridge_clear_smi_status(void);
+#else
+void enable_smbus(void);
+void enable_usb_bar(void);
+int smbus_read_byte(unsigned device, unsigned address);
+int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_pch_init(const void *gpio_map,
                    const struct rcba_config_instruction *rcba_config);
 #endif

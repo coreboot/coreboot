@@ -33,10 +33,10 @@
 
 #define readb(_a) (*(volatile unsigned char *) (_a))
 #define readw(_a) (*(volatile unsigned short *) (_a))
-#define readl(_a) (*(volatile unsigned long *) (_a))
+#define readl(_a) (*(volatile unsigned int *) (_a))
 
 #define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
 #define writew(_v, _a) (*(volatile unsigned short *) (_a) = (_v))
-#define writel(_v, _a) (*(volatile unsigned long *) (_a) = (_v))
+#define writel(_v, _a) (*(volatile unsigned int *) (_a) = (_v))
 
 #endif

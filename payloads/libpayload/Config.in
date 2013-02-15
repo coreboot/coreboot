@@ -70,7 +70,7 @@ choice
 config ARCH_ARMV7
         bool "ARMv7"
         help
-          Support the x86 architecture
+          Support the ARMV7 architecture
 
 config ARCH_POWERPC
         bool "PowerPC"
@@ -167,6 +167,16 @@ config CBMEM_CONSOLE
 config SERIAL_CONSOLE
 	bool "See output on the serial port console"
 	default y
+
+config EXYNOS5_SERIAL_CONSOLE
+	bool "Exynos 5xxx serial console"
+	depends on ARCH_ARMV7
+	default n
+
+config EXYNOS5_SERIAL_BASE
+	hex "Base for the Exynos5 serial port"
+	depends on EXYNOS5_SERIAL_CONSOLE
+	default 0x12c30000
 
 config SERIAL_IOBASE
 	hex "I/O base for the serial port (default 0x3f8)"

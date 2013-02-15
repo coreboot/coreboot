@@ -64,14 +64,6 @@
 /* CPU detection macros */
 extern unsigned int s5p_cpu_id;
 
-/* FIXME(dhendrix): conflicts with the one in cpu_info.c ... */
-#if 0
-inline void s5p_set_cpu_id(void)
-{
-	s5p_cpu_id = readl(S5PC100_PRO_ID);
-	s5p_cpu_id = 0xC000 | ((s5p_cpu_id & 0x00FFF000) >> 12);
-}
-#endif
 inline void s5p_set_cpu_id(void);
 
 #define IS_SAMSUNG_TYPE(type, id)			\
@@ -82,32 +74,6 @@ static inline int cpu_is_##type(void)			\
 
 IS_SAMSUNG_TYPE(s5pc100, 0xc100)
 IS_SAMSUNG_TYPE(s5pc110, 0xc110)
-
-/*
- * FIXME(dhendrix): collides with SAMSUNG_BASE in exynos header files. We
- * don't really care about old S5P processors right now.
- */
-#if 0
-#define SAMSUNG_BASE(device, base)				\
-static inline unsigned int samsung_get_base_##device(void)	\
-{								\
-	if (cpu_is_s5pc100())					\
-		return S5PC100_##base;				\
-	else if (cpu_is_s5pc110())				\
-		return S5PC110_##base;				\
-	else							\
-		return 0;					\
-}
-
-SAMSUNG_BASE(clock, CLOCK_BASE)
-SAMSUNG_BASE(gpio, GPIO_BASE)
-SAMSUNG_BASE(pro_id, PRO_ID)
-SAMSUNG_BASE(mmc, MMC_BASE)
-SAMSUNG_BASE(sromc, SROMC_BASE)
-SAMSUNG_BASE(timer, PWMTIMER_BASE)
-SAMSUNG_BASE(uart, UART_BASE)
-SAMSUNG_BASE(watchdog, WATCHDOG_BASE)
-#endif
 
 int s5p_get_cpu_rev(void);
 //void s5p_set_cpu_id(void);
@@ -145,15 +111,6 @@ enum boot_mode {
 	BOOT_MODE_OM = 32,
 	BOOT_MODE_USB,		/* Boot using USB download */
 };
-
-#if 0
-/**
- * Get the U-boot size for SPL copy functions
- *
- * @return size of U-Boot code/data that needs to be loaded by the SPL stage
- */
-unsigned int exynos_get_uboot_size(void);
-#endif
 
 /**
  * Get the boot device containing BL1, BL2 (SPL) and U-boot

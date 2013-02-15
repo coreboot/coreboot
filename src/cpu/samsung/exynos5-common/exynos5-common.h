@@ -179,34 +179,6 @@
 #define CONFIG_EFI_PARTITION
 #endif
 
-#if 0
-/* 
- * FIXME(dhendrix): 0x02050000 was in the u-boot sources, but the docs say the
- * iRAM range is 0x0202_0000 - 0x0207_7fff (352KB).
- */
-#define CONFIG_IRAM_TOP		0x02050000
-
-/*
- * Put the initial stack pointer 1KB below this to allow room for the
- * SPL marker. This value is arbitrary, but gd_t is placed starting here.
- */
-#define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_IRAM_TOP - 0x800)
-#endif
-
-/* The place where we put our SPL marker */
-#define CONFIG_SPL_MARKER	(CONFIG_IRAM_TOP - 4)
-
-/* Place to stash bootstage data from first-stage U-Boot */
-#define CONFIG_BOOTSTAGE_STASH	(CONFIG_IRAM_TOP - 0x400)
-#define CONFIG_BOOTSTAGE_STASH_SIZE	0x3fc
-
-/* The top of the SPL stack, also used for early U-Boot init */
-//#define CONFIG_IRAM_STACK	CONFIG_SYS_INIT_SP_ADDR
-
-//#define CONFIG_SPL_LDSCRIPT
-//#define CONFIG_SPL_TEXT_BASE	0x02023400
-//#define CONFIG_SPL_MAX_SIZE	(14 * 1024)
-
 /* Enable devicetree support */
 #define CONFIG_OF_LIBFDT
 

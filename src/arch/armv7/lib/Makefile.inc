@@ -13,7 +13,6 @@ ramstage-y += div64.S
 #ramstage-y += interrupts.c
 #ramstage-y += memcpy.S
 #ramstage-y += memset.S
-#ramstage-y += reset.c
 ramstage-y += syslib.c
 
 #FIXME(dhendrix): should this be a config option?

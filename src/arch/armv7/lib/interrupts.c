@@ -36,6 +36,7 @@
  */
 
 #include <common.h>
+#include <reset.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -105,7 +106,7 @@ int disable_interrupts (void)
 void bad_mode (void)
 {
 	panic ("Resetting CPU ...\n");
-	reset_cpu (0);
+	soft_reset();
 }
 
 void show_regs (struct pt_regs *regs)

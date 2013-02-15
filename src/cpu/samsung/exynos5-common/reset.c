@@ -21,10 +21,10 @@
  * MA 02111-1307 USA
  */
 
-#include <common.h>
+#include <reset.h>
 #include <arch/io.h>
 
-void reset_cpu(unsigned long addr)
+void soft_reset(void)
 {
 	writel(0x1, samsung_get_base_swreset());
 }

@@ -13465,7 +13465,8 @@ static struct triple *do_decl(struct compile_state *state,
 		internal_error(state, 0, "Undefined storage class");
 	}
 	if ((type->type & TYPE_MASK) == TYPE_FUNCTION) {
-		error(state, 0, "Function prototypes not supported");
+		// ignore function prototypes
+		return def;
 	}
 	if (ident &&
 		((type->type & TYPE_MASK) == TYPE_ARRAY) &&

@@ -71,6 +71,18 @@ reset:
 	cmp r1, #0
 	bne wait_for_interrupt		@ If this is not core0, wait
 
+	/* init the stack */
+	ldr	r0, .Stack
+	ldr	r1, .Stack_size
+	sub	r0, r0, r1
+	ldr	r1, .Stack
+	ldr	r2, =0xdeadbeef
+init_stack_loop:
+	cmp	r0, r1
+	str	r2, [r0]
+	add	r0, #4
+	bne	init_stack_loop
+
 /* Set stackpointer in internal RAM to call board_init_f */
 call_bootblock:
 	ldr	sp, .Stack /* Set up stack pointer */
@@ -95,3 +107,6 @@ wait_for_interrupt:
 .align 2
 .Stack:
 	.word CONFIG_STACK_TOP
+.align 2
+.Stack_size:
+	.word CONFIG_STACK_SIZE

@@ -37,4 +37,8 @@ void uart_tx_flush(void);
 void uart_init(void);
 #endif
 
+#if CONFIG_HAVE_UART_MEMORY_MAPPED
+uint32_t uartmem_getbaseaddr(void);
+#endif
+
 #endif /* UART_H */

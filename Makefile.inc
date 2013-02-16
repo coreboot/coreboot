@@ -105,10 +105,6 @@ endif
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
-else
-ifeq ($(CONFIG_REQUIRES_BLOB),y)
-$(error Your current configuration requires binary-only components, but you did not choose to use them)
-endif
 endif
 
 bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
@@ -164,6 +160,11 @@ cbfs-files-handler= \
 		$(if $(wildcard $(1)$($(2)-file)), \
 			$(eval tmp-cbfs-file:= $(wildcard $(1)$($(2)-file))), \
 			$(eval tmp-cbfs-file:= $($(2)-file))) \
+		$(if $(strip $($(2)-required)), \
+			$(ifeq $(wildcard $(tmp-cbfs-file)),, \
+				$(info This build configuration requires $($(2)-required)) \
+				$(eval FAILBUILD:=1) \
+			)) \
 		$(if $(tmp-cbfs-method), \
 			$(eval tmp-old-cbfs-file:=$(tmp-cbfs-file)) \
 			$(eval tmp-cbfs-file:=$(shell mkdir -p $(obj)/mainboard/$(MAINBOARDDIR); mktemp $(obj)/mainboard/$(MAINBOARDDIR)/cbfs-file.XXXXXX).out) \
@@ -172,7 +173,8 @@ cbfs-files-handler= \
 		$(eval $(2)-name:=) \
 		$(eval $(2)-type:=) \
 		$(eval $(2)-compression:=) \
-		$(eval $(2)-position:=)
+		$(eval $(2)-position:=) \
+		$(eval $(2)-required:=)
 
 #######################################################################
 # a variety of flags for our build

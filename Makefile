@@ -232,6 +232,9 @@ evaluate_subdirs= \
 # collect all object files eligible for building
 subdirs:=$(TOPLEVEL)
 $(eval $(call evaluate_subdirs))
+ifeq ($(FAILBUILD),1)
+$(error cannot continue build)
+endif
 
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))

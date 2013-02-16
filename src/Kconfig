@@ -184,16 +184,6 @@ config USE_BLOBS
 	  might be required for some chipsets or boards.
 	  This flag ensures that a "Free" option remains available for users.
 
-config REQUIRES_BLOB
-	bool
-	default n
-	help
-	  This option can be configured by boards that require the blobs
-	  repository for the default configuration. It will make the build
-	  fail if USE_BLOBS is disabled. Users that still desire to do a
-	  coreboot build for such a board can override this manually, but
-	  this option serves as warning that it might fail.
-
 config COVERAGE
 	bool "Code coverage support"
 	depends on COMPILER_GCC

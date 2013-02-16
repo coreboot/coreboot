@@ -83,5 +83,26 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
 /* Defined in individual arch / board implementation. */
 int init_default_cbfs_media(struct cbfs_media *media);
 
+#if CONFIG_RELOCATABLE_RAMSTAGE && defined(__PRE_RAM__)
+/* The cache_loaded_ramstage() and load_cached_ramstage() functions are defined
+ * to be weak so that board and chipset code may override them. Their job is to
+ * cache and load the ramstage for quick S3 resume. By default a copy of the
+ * relocated ramstage is saved just below the running ramstage region. These
+ * functions are only valid during romstage. */
+
+struct romstage_handoff;
+
+/* The implementer of cache_loaded_ramstage() needs to ensure that the
+ * reserve_* fields in in romstage_handoff reflect the memory footprint of the
+ * ramstage (including cached region). Note that the handoff variable can be
+ * NULL. */
+void __attribute__((weak))
+cache_loaded_ramstage(struct romstage_handoff *handoff, void *ramstage_base,
+                      uint32_t ramstage_size, void *entry_point);
+/* Return NULL on error or entry point on success. */
+void * __attribute__((weak))
+load_cached_ramstage(struct romstage_handoff *handoff);
+#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
+
 #endif
 

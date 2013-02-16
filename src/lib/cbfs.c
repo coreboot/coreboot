@@ -123,16 +123,53 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
  * for the romstage, the rmodule loader is used. The ramstage is placed just
  * below the cbmem location. */
 
+void __attribute__((weak))
+cache_loaded_ramstage(struct romstage_handoff *handoff, void *ramstage_base,
+                      uint32_t ramstage_size, void *entry_point)
+{
+	if (handoff == NULL)
+		return;
+
+	/* Cache the loaded ramstage just below the to-be-run ramstage. Then
+	 * save the base, size, and entry point in the handoff area. */
+	handoff->reserve_base = (uint32_t)ramstage_base - ramstage_size;
+	handoff->reserve_size = ramstage_size;
+	handoff->ramstage_entry_point = (uint32_t)entry_point;
+
+	memcpy((void *)handoff->reserve_base, ramstage_base, ramstage_size);
+
+	/* Update the reserve region by 2x in order to store the cached copy. */
+	handoff->reserve_size += handoff->reserve_size;
+}
+
+void * __attribute__((weak))
+load_cached_ramstage(struct romstage_handoff *handoff)
+{
+	uint32_t ramstage_size;
+
+	if (handoff == NULL)
+		return NULL;
+
+	/* Load the cached ramstage copy into the to-be-run region. It is just
+	 * above the cached copy. */
+	ramstage_size = handoff->reserve_size / 2;
+	memcpy((void *)(handoff->reserve_base + ramstage_size),
+	       (void *)handoff->reserve_base, ramstage_size);
+
+	return (void *)handoff->ramstage_entry_point;
+}
+
 static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
                                   struct romstage_handoff *handoff)
 {
 	struct cbfs_stage *stage;
 	struct rmodule ramstage;
-	void *cbmem_base;
-	void *ramstage_base;
+	char *cbmem_base;
+	char *ramstage_base;
 	void *decompression_loc;
 	void *ramstage_loc;
 	void *entry_point;
+	uint32_t ramstage_size;
 
 	stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
@@ -140,7 +177,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 	if (stage == NULL)
 		return (void *) -1;
 
-	cbmem_base = get_cbmem_toc();
+	cbmem_base = (void *)get_cbmem_toc();
 	if (cbmem_base == NULL)
 		return (void *) -1;
 
@@ -165,24 +202,9 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 
 	entry_point = rmodule_entry(&ramstage);
 
-	if (handoff) {
-		handoff->reserve_base = (uint32_t)ramstage_base;
-		handoff->reserve_size = (uint32_t)cbmem_base -
-		                        (uint32_t)ramstage_base;
-		/* Save an entire copy in RAM of the relocated ramstage for
-		 * the S3 resume path. The size of the saved relocated ramstage
-		 * is larger than necessary. It could be optimized by saving
-		 * just the text/data segment of the ramstage. The rmodule
-		 * API would need to be modified to expose these details. For
-		 * the time being, just save the entire used region. */
-		memcpy((void *)(handoff->reserve_base - handoff->reserve_size),
-		       (void *)handoff->reserve_base, handoff->reserve_size);
-		/* Update the size and base of the reserve region. */
-		handoff->reserve_base -= handoff->reserve_size;
-		handoff->reserve_size += handoff->reserve_size;
-		/* Save the entry point in the handoff area. */
-		handoff->ramstage_entry_point = (uint32_t)entry_point;
-	}
+	ramstage_size = cbmem_base - ramstage_base;
+	cache_loaded_ramstage(handoff, ramstage_base, ramstage_size,
+	                      entry_point);
 
 	return entry_point;
 }
@@ -190,6 +212,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct romstage_handoff *handoff;
+	void *entry;
 
 	handoff = romstage_handoff_find_or_add();
 
@@ -199,13 +222,13 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	} else if (!handoff->s3_resume)
 		return load_stage_from_cbfs(media, name, handoff);
 
-	/* S3 resume path. Copy from the saved relocated program buffer to
-	 * the running location. load_stage_from_cbfs() keeps a copy of the
-	 * relocated program just below the relocated program. */
-	memcpy((void *)(handoff->reserve_base + (handoff->reserve_size / 2)),
-	       (void *)handoff->reserve_base, handoff->reserve_size / 2);
+	/* S3 resume path. Load a cached copy of the loaded ramstage. If
+	 * return value is NULL load from cbfs. */
+	entry = load_cached_ramstage(handoff);
+	if (entry == NULL)
+		return load_stage_from_cbfs(name, handoff);
 
-	return (void *)handoff->ramstage_entry_point;
+	return entry;
 }
 
 #else

@@ -34,6 +34,7 @@
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
+#include <cbfs.h>
 #include <romstage_handoff.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -320,3 +321,67 @@ void romstage_after_car(void)
 	/* Load the ramstage. */
 	copy_and_run(0);
 }
+
+
+#if CONFIG_RELOCATABLE_RAMSTAGE
+void cache_loaded_ramstage(struct romstage_handoff *handoff,
+                           void *ramstage_base, uint32_t ramstage_size,
+                           void *entry_point)
+{
+	struct ramstage_cache *cache;
+	uint32_t total_size;
+
+	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
+	 * The top of ram is defined to be the TSEG base address. */
+	cache = (void *)(get_top_of_ram() + RESERVED_SMM_OFFSET);
+	total_size = sizeof(*cache) + ramstage_size;
+	if (total_size > RESERVED_SMM_SIZE) {
+		printk(BIOS_DEBUG, "0x%08x > RESERVED_SMM_SIZE (0x%08x)\n",
+		       total_size, RESERVED_SMM_SIZE);
+		/* Nuke whatever may be there now just in case. */
+		cache->magic = ~RAMSTAGE_CACHE_MAGIC;
+		return;
+	}
+
+	cache->magic = RAMSTAGE_CACHE_MAGIC;
+	cache->entry_point = (uint32_t)entry_point;
+	cache->load_address = (uint32_t)ramstage_base;
+	cache->size = ramstage_size;
+
+	printk(BIOS_DEBUG, "Saving ramstage to SMM space cache.\n");
+
+	/* Copy over the program. */
+	memcpy(&cache->program[0], ramstage_base, ramstage_size);
+
+	/* Do not update reserve region if the handoff structure is not
+	 * available. Perhaps the ramstage will fix things up for the resume
+	 * path. */
+	if (handoff == NULL)
+		return;
+
+	/* Update entry and reserve region. */
+	handoff->reserve_base = (uint32_t)ramstage_base;
+	handoff->reserve_size = ramstage_size;
+	handoff->ramstage_entry_point = (uint32_t)entry_point;
+}
+
+void *load_cached_ramstage(struct romstage_handoff *handoff)
+{
+	struct ramstage_cache *cache;
+
+	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
+	 * The top of ram is defined to be the TSEG base address. */
+	cache = (void *)(get_top_of_ram() + RESERVED_SMM_OFFSET);
+
+	if (cache->magic != RAMSTAGE_CACHE_MAGIC) {
+		printk(BIOS_DEBUG, "Invalid ramstage cache found.\n");
+		return NULL;
+	}
+
+	printk(BIOS_DEBUG, "Loading ramstage from SMM space cache.\n");
+
+	memcpy((void *)cache->load_address, &cache->program[0], cache->size);
+
+	return (void *)cache->entry_point;
+}
+#endif

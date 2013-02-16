@@ -201,6 +201,11 @@ static const struct console_driver exynos5_uart_console __console = {
 	.rx_byte  = exynos5_uart_rx_byte,
 //	.tst_byte = exynos5_uart_tst_byte,
 };
+
+uint32_t uartmem_getbaseaddr(void)
+{
+	return base_port;
+}
 #else
 void uart_init(void)
 {

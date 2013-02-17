@@ -53,7 +53,7 @@ config BOOTBLOCK_SOUTHBRIDGE_INIT
         string
         default "southbridge/amd/cimx/sb900/bootblock.c"
 
-config S3_VOLATILE_POS
+config S3_DATA_POS
 	hex "S3 volatile storage position"
 	default 0xFFFF0000
 	depends on HAVE_ACPI_RESUME

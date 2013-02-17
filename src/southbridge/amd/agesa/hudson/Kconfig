@@ -204,7 +204,7 @@ config RAID_MISC_ROM_POSITION
 	  The CONFIG_ROM_SIZE must larger than 0x100000.
 endif # HUDSON_SATA_RAID
 
-config S3_VOLATILE_POS
+config S3_DATA_POS
 	hex "S3 volatile storage position"
 	default 0xFFFF0000
 	depends on HAVE_ACPI_RESUME

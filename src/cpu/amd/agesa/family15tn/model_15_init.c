@@ -33,7 +33,9 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam15.h>
 #include <arch/acpi.h>
+#if CONFIG_HAVE_ACPI_RESUME
 #include <cpu/amd/agesa/s3_resume.h>
+#endif
 
 msr_t rdmsr_amd(u32 index)
 {

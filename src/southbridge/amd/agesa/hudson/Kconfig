@@ -209,6 +209,14 @@ config S3_DATA_POS
 	  For a system with S3 feature, the BIOS needs to save some data to
 	  non-volatile storage at cold boot stage.
 
+config S3_DATA_SIZE
+	int "S3 volatile storage size"
+	default 32768
+	depends on HAVE_ACPI_RESUME
+	help
+	  For a system with S3 feature, the BIOS needs to save some data to
+	  non-volatile storage at cold boot stage.
+
 config HUDSON_LEGACY_FREE
 	bool "System is legacy free"
 	help

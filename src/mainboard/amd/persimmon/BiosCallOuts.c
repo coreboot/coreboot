@@ -445,84 +445,10 @@ AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPt
 /*	Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS		Status;
-	UINTN			 FcnData;
-	MEM_DATA_STRUCT	 *MemData;
-	UINT32			AcpiMmioAddr;
-	UINT32			GpioMmioAddr;
-	UINT8			 Data8;
-	UINT16			Data16;
-	UINT8			 TempData8;
-
-	FcnData = Data;
-	MemData = ConfigPtr;
-
-	Status	= AGESA_SUCCESS;
-	/* Get SB MMIO Base (AcpiMmioAddr) */
-	WriteIo8 (0xCD6, 0x27);
-	Data8	 = ReadIo8(0xCD7);
-	Data16	= Data8<<8;
-	WriteIo8 (0xCD6, 0x26);
-	Data8	 = ReadIo8(0xCD7);
-	Data16	|= Data8;
-	AcpiMmioAddr = (UINT32)Data16 << 16;
-	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
-
-	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
-	Data8 &= ~BIT5;
-	TempData8	= Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
-	TempData8 &= 0x03;
-	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
-
-	Data8 |= BIT2+BIT3;
-	Data8 &= ~BIT4;
-	TempData8	= Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
-	TempData8 &= 0x23;
-	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
-
-	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
-	Data8 &= ~BIT5;
-	TempData8	= Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-	TempData8 &= 0x03;
-	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
-
-	Data8 |= BIT2+BIT3;
-	Data8 &= ~BIT4;
-	TempData8	= Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-	TempData8 &= 0x23;
-	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
-
-	switch(MemData->ParameterListPtr->DDR3Voltage){
-	case VOLT1_35:
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
-		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-		Data8 |= (UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
-		break;
-	case VOLT1_25:
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
-		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
-		break;
-	case VOLT1_5:
-	default:
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);
-		Data8 |= (UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 =	Read64Mem8 (GpioMmioAddr+SB_GPIO_REG179);
-		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
-	}
-	return Status;
+	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
+	// Make sure the right speed settings are selected.
+	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
+	return AGESA_SUCCESS;
 }
 
 /*	Call the host environment interface to provide a user hook opportunity. */

@@ -592,7 +592,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
         Status = AGESA_SUCCESS;
         break;
       case DeassertSlotReset:
-        Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
+        Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
         Data8 |= BIT6 ;
         Write64Mem8 (GpioMmioAddr+SB_GPIO_REG02, Data8);       // MPCIE_RST0, GPIO02
         Status = AGESA_SUCCESS;

@@ -106,13 +106,6 @@ config CPU_MICROCODE_CBFS_EXTERNAL
 
 	  If unsure, select "Generate from tree"
 
-config CPU_MICROCODE_FILE
-	  string "Path and filename of CPU microcode"
-	  depends on CPU_MICROCODE_CBFS_EXTERNAL
-	  default "cpu_microcode.bin"
-	  help
-	    The path and filename of the file containing the CPU microcode.
-
 config CPU_MICROCODE_CBFS_NONE
 	bool "Do not include microcode updates"
 	help
@@ -156,3 +149,10 @@ config CPU_MICROCODE_CBFS_NONE
 	  selecting this option.
 
 endchoice
+
+config CPU_MICROCODE_FILE
+	  string "Path and filename of CPU microcode"
+	  depends on CPU_MICROCODE_CBFS_EXTERNAL
+	  default "cpu_microcode.bin"
+	  help
+	    The path and filename of the file containing the CPU microcode.

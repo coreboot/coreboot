@@ -281,7 +281,7 @@ int parse_fv_to_payload(const struct buffer *input,
 	fh = (ffs_file_header_t *)(input->data + fv->header_length);
 	while (fh->file_type == FILETYPE_PAD) {
 		unsigned long offset = (fh->size[2] << 16) | (fh->size[1] << 8) | fh->size[0];
-		ERROR("skipping %d bytes of FV padding\n", offset);
+		ERROR("skipping %lu bytes of FV padding\n", offset);
 		fh = (ffs_file_header_t *)(((void*)fh) + offset);
 	}
 	if (fh->file_type != FILETYPE_SEC) {
@@ -293,7 +293,7 @@ int parse_fv_to_payload(const struct buffer *input,
 	cs = (common_section_header_t *)&fh[1];
 	while (cs->section_type == SECTION_RAW) {
 		unsigned long offset = (cs->size[2] << 16) | (cs->size[1] << 8) | cs->size[0];
-		ERROR("skipping %d bytes of section padding\n", offset);
+		ERROR("skipping %lu bytes of section padding\n", offset);
 		cs = (common_section_header_t *)(((void*)cs) + offset);
 	}
 	if (cs->section_type != SECTION_PE32) {

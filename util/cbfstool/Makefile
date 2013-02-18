@@ -2,7 +2,7 @@ obj ?= $(shell pwd)
 
 HOSTCXX  ?= g++
 HOSTCC   ?= gcc
-CFLAGS   ?= -g -Wall
+CFLAGS   ?= -g -Wall -Werror
 CFLAGS   += -D_7ZIP_ST
 
 BINARY:=$(obj)/cbfstool

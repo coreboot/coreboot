@@ -69,12 +69,7 @@ AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *Con
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-#define SB_GPIO_REG02	2
-#define SB_GPIO_REG09	9
-#define SB_GPIO_REG10	10
-#define SB_GPIO_REG15	15
-#define SB_GPIO_REG17	17
-#define SB_GPIO_REG21	21
-#define SB_GPIO_REG25	25
-#define SB_GPIO_REG28	28
+
+#define SB_GPIO_REG50	50
+
 #endif //_BIOS_CALLOUT_H_

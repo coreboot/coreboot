@@ -28,6 +28,10 @@
 #define S3_DATA_MTRR_POS	(CONFIG_S3_DATA_POS + S3_DATA_VOLATILE_SIZE)
 #define S3_DATA_NONVOLATILE_POS	(CONFIG_S3_DATA_POS + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE)
 
+#if (S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
+#error "Please increase the value of S3_DATA_SIZE"
+#endif
+
 typedef enum {
 	S3DataTypeNonVolatile=0,            ///< NonVolatile Data Type
 	S3DataTypeVolatile                  ///< Volatile Data Type

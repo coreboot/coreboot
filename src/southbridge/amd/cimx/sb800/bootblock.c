@@ -97,10 +97,17 @@ static void enable_clocks(void)
 	reg8 &= ~(1 << 1);
 	outb(reg8, 0xCD7);
 
-	// Program SB800 MiscCntrl Device_CLK1_sel for 48 MHz (default is 14 MHz)
+	// Program SB800 MiscClkCntrl register to configure clock output on the
+	// 14M_25M_48M_OSC ball usually used for the Super-I/O.
+	// Almost all SIOs need 48 MHz, only the SMSC SCH311x wants 14 MHz,
+	// which is the SB800's power up default.  We could switch back to 14
+	// in the mainboard's romstage.c, but then the clock frequency would
+	// change twice.
 	reg32 = *acpi_mmio;
-	reg32 &= ~((1 << 0) | (1 << 2));
-	reg32 |= 1 << 1;
+	reg32 &= ~((1 << 2) | (3 << 0)); // enable, 14 MHz (power up default)
+#if !CONFIG_SUPERIO_WANTS_14MHZ_CLOCK
+	reg32 |= 2 << 0; // Device_CLK1_sel = 48 MHz
+#endif
 	*acpi_mmio = reg32;
 }
 

@@ -39,4 +39,8 @@ config MMCONF_BUS_NUMBER
 	int
 	default 64
 
+config SMBUS0_BASE_ADDRESS
+	hex
+	default 0xB00
+
 endif

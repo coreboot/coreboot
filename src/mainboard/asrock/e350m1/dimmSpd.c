@@ -20,6 +20,7 @@
 #include "Porting.h"
 #include "AGESA.h"
 #include "amdlib.h"
+#include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 
 AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info);
 #define DIMENSION(array)(sizeof (array)/ sizeof (array [0]))
@@ -160,7 +161,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 
    spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
    if (spdAddress == 0) return AGESA_ERROR;
-   ioBase = 0xB00;
+   ioBase = SMBUS0_BASE_ADDRESS;
    setupFch (ioBase);
    return readspd (ioBase, spdAddress, (void *) info->Buffer, 128);
    }

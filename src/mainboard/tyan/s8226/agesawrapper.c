@@ -286,7 +286,7 @@ UINT32 agesawrapper_amdinitearly(VOID)
 
 	GetCpuServicesOfCurrentCore((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdParamStruct.StdHeader);
 	FamilySpecificServices->GetTscRate(FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
-	printk(BIOS_DEBUG, "BSP Frequency: %luMHz\n", TscRateInMhz);
+	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
 
 	AmdReleaseStruct(&AmdParamStruct);
 	return (UINT32)status;
@@ -339,7 +339,7 @@ UINT32 agesawrapper_amdinitpost(VOID)
 
 	GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdParamStruct.StdHeader);
 	FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
-	printk(BIOS_DEBUG, "BSP Frequency: %luMHz\n", TscRateInMhz);
+	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
 
 	return (UINT32)status;
 }
@@ -547,47 +547,47 @@ static void agesa_alert(EVENT_PARAMS *event)
 {
 	switch (event->EventInfo) {
 		case MEM_ALERT_USER_TMG_MODE_OVERRULED:
-			printk(BIOS_DEBUG, "Socket %lx Dct %lx Channel %lx "
+			printk(BIOS_DEBUG, "Socket %x Dct %x Channel %x "
 					"TIMING_MODE_SPECIFIC is requested but can not be applied to current configurations.\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case MEM_ALERT_ORG_MISMATCH_DIMM:
-			printk(BIOS_DEBUG, "Socket %lx Dct %lx Channel %lx "
+			printk(BIOS_DEBUG, "Socket %x Dct %x Channel %x "
 					"DIMM organization miss-match\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case MEM_ALERT_BK_INT_DIS:
-			printk(BIOS_DEBUG, "Socket %lx Dct %lx Channel %lx "
+			printk(BIOS_DEBUG, "Socket %x Dct %x Channel %x "
 					"Bank interleaving disable for internal issue\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case CPU_EVENT_BIST_ERROR:
-			printk(BIOS_DEBUG, "BIST error: %lx reported on Socket %lx Core %lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "BIST error: %x reported on Socket %x Core %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_HW_SYNCFLOOD:
-			printk(BIOS_DEBUG, "HT_EVENT_DATA_HW_SYNCFLOOD error on Socket %lx Link %lx\n",
-					event->DataParam1,
-					event->DataParam2);
+			printk(BIOS_DEBUG, "HT_EVENT_DATA_HW_SYNCFLOOD error on Socket %x Link %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2);
 			break;
 
 		case HT_EVENT_HW_HTCRC:
-			printk(BIOS_DEBUG, "HT_EVENT_HW_HTCRC error on Socket %lx Link %lx Lanemask:%lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "HT_EVENT_HW_HTCRC error on Socket %x Link %x Lanemask:%x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		default:
@@ -612,10 +612,10 @@ static void agesa_warning(EVENT_PARAMS *event)
 
 	switch (event->EventInfo >> 24) {
 		case 0x04:
-			printk(BIOS_DEBUG, "Memory: Socket %lx Dct %lx Channel%lx ",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "Memory: Socket %x Dct %x Channel%x ",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case 0x08:
@@ -712,24 +712,24 @@ static void agesa_warning(EVENT_PARAMS *event)
 			} else if ((event->EventInfo & 0x000000FF) == 0x03) {
 				printk(BIOS_DEBUG, "AGESA_CACHE_REGIONS_ACROSS_4GB\n");
 			}
-			printk(BIOS_DEBUG, "cache region index:%lx, start:%lx size:%lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "cache region index:%x, start:%x size:%x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case CPU_WARNING_ADJUSTED_LEVELING_MODE:
 			printk(BIOS_DEBUG, "CPU_WARNING_ADJUSTED_LEVELING_MODE "
-					"requested: %lx, actual level:%lx\n",
-					event->DataParam1,
-					event->DataParam2);
+					"requested: %x, actual level:%x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2);
 			break;
 
 		case CPU_EVENT_PM_PSTATE_OVERCURRENT:
 			printk(BIOS_DEBUG, "CPU_EVENT_PM_PSTATE_OVERCURRENT "
-						"Socket: %lx, Pstate:%lx\n",
-						event->DataParam1,
-						event->DataParam2);
+						"Socket: %x, Pstate:%x\n",
+						(unsigned int)event->DataParam1,
+						(unsigned int)event->DataParam2);
 			break;
 
 		case CPU_WARNING_NONOPTIMAL_HT_ASSIST_CFG:
@@ -745,34 +745,34 @@ static void agesa_warning(EVENT_PARAMS *event)
 */
 
 		case HT_EVENT_OPT_REQUIRED_CAP_RETRY:
-			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_RETRY, Socket %lx Link %lx Depth %lx\n",
+			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_RETRY, Socket %x Link %x Depth %x\n",
 				event->DataParam1,
 				event->DataParam2,
 				event->DataParam3);
 			break;
 
 		case HT_EVENT_OPT_REQUIRED_CAP_GEN3:
-			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_GEN3, Socket %lx Link %lx Depth %lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_GEN3, Socket %x Link %x Depth %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_OPT_UNUSED_LINKS:
-			printk(BIOS_DEBUG, "HT_EVENT_OPT_UNUSED_LINKS, SocketA%lx LinkA%lx SocketB%lx LinkB%lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3,
-					event->DataParam4);
+			printk(BIOS_DEBUG, "HT_EVENT_OPT_UNUSED_LINKS, SocketA%x LinkA%x SocketB%x LinkB%x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3,
+					(unsigned int)event->DataParam4);
 			break;
 
 		case HT_EVENT_OPT_LINK_PAIR_EXCEED:
-			printk(BIOS_DEBUG, "HT_EVENT_OPT_LINK_PAIR_EXCEED, SocketA%lx MasterLink%lx SocketB%lx AltLink%lx\n",
+			printk(BIOS_DEBUG, "HT_EVENT_OPT_LINK_PAIR_EXCEED, SocketA%x MasterLink%x SocketB%x AltLink%x\n",
 
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3,
-					event->DataParam4);
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3,
+					(unsigned int)event->DataParam4);
 		default:
 			break;
 	}
@@ -786,10 +786,10 @@ static void agesa_error(EVENT_PARAMS *event)
 
 	switch (event->EventInfo >> 24) {
 		case 0x04:
-			printk(BIOS_DEBUG, "Memory: Socket %lx Dct %lx Channel%lx ",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "Memory: Socket %x Dct %x Channel%x ",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case 0x08:
@@ -953,47 +953,47 @@ static void agesa_error(EVENT_PARAMS *event)
 			} else if ((event->EventInfo & 0x000000FF) == 0x07) {
 				printk(BIOS_DEBUG, "AGESA_DEALLOCATE_CACHE_REGIONS\n");
 			}
-			printk(BIOS_DEBUG, "cache region index:%lx, start:%lx size:%lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "cache region index:%x, start:%x size:%x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_COH_NO_TOPOLOGY:
-			printk(BIOS_DEBUG, "no Matching Topology was found during coherent initializatio TotalHtNodes: %lx\n",
-					event->DataParam1);
+			printk(BIOS_DEBUG, "no Matching Topology was found during coherent initializatio TotalHtNodes: %x\n",
+					(unsigned int)event->DataParam1);
 			break;
 
 		case HT_EVENT_NCOH_BUID_EXCEED:
-			printk(BIOS_DEBUG, "there is a limit of 32 unit IDs per chain Socket%lx Link%lx Depth%lx"
-					"Current BUID: %lx, Unit Count: %lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3,
-					event->DataParam4 >> 16,
-					event->DataParam4 & 0x0000FFFF);
+			printk(BIOS_DEBUG, "there is a limit of 32 unit IDs per chain Socket%x Link%x Depth%x"
+					"Current BUID: %x, Unit Count: %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3,
+					(unsigned int)event->DataParam4 >> 16,
+					(unsigned int)event->DataParam4 & 0x0000FFFF);
 			break;
 
 		 case HT_EVENT_NCOH_BUS_MAX_EXCEED:
-			printk(BIOS_DEBUG, "maximum auto bus limit exceeded, Socket %lx Link %lx Bus %lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "maximum auto bus limit exceeded, Socket %x Link %x Bus %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_NCOH_CFG_MAP_EXCEED:
-			printk(BIOS_DEBUG, "there is a limit of four non-coherent chains, Socket %lx Link %lx\n",
-					event->DataParam1,
-					event->DataParam2);
+			printk(BIOS_DEBUG, "there is a limit of four non-coherent chains, Socket %x Link %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2);
 			break;
 
 		case HT_EVENT_NCOH_DEVICE_FAILED:
 			printk(BIOS_DEBUG, "after assigning an IO Device an ID, it does not respond at the new ID"
-					"Socket %lx Link %lx Depth %lx DeviceID %lx\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3,
-					event->DataParam4);
+					"Socket %x Link %x Depth %x DeviceID %x\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3,
+					(unsigned int)event->DataParam4);
 		default:
 			break;
 	}
@@ -1005,33 +1005,33 @@ static void agesa_critical(EVENT_PARAMS *event)
 {
 	switch (event->EventInfo) {
 		case MEM_ERROR_HEAP_ALLOCATE_FOR_DMI_TABLE_DDR3:
-			printk(BIOS_DEBUG, "Socket: %lx, Heap allocation error for DMI table for DDR3\n",
-					event->DataParam1);
+			printk(BIOS_DEBUG, "Socket: %x, Heap allocation error for DMI table for DDR3\n",
+					(unsigned int)event->DataParam1);
 			break;
 
 		case MEM_ERROR_HEAP_ALLOCATE_FOR_DMI_TABLE_DDR2:
-			printk(BIOS_DEBUG, "Socket: %lx, Heap allocation error for DMI table for DDR2\n",
-					event->DataParam1);
+			printk(BIOS_DEBUG, "Socket: %x, Heap allocation error for DMI table for DDR2\n",
+					(unsigned int)event->DataParam1);
 			break;
 
 		case MEM_ERROR_UNSUPPORTED_DIMM_CONFIG:
-			printk(BIOS_DEBUG, "Socket: %lx, Dimm population is not supported\n",
-					event->DataParam1);
+			printk(BIOS_DEBUG, "Socket: %x, Dimm population is not supported\n",
+					(unsigned int)event->DataParam1);
 			break;
 
 		case HT_EVENT_COH_PROCESSOR_TYPE_MIX:
-			printk(BIOS_DEBUG, "Socket %lx Link %lx TotalSockets %lx, HT_EVENT_COH_PROCESSOR_TYPE_MIX \n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "Socket %x Link %x TotalSockets %x, HT_EVENT_COH_PROCESSOR_TYPE_MIX \n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_COH_MPCAP_MISMATCH:
-			printk(BIOS_DEBUG, "Socket %lx Link %lx MpCap %lx TotalSockets %lx, HT_EVENT_COH_MPCAP_MISMATCH\n",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3,
-					event->DataParam4);
+			printk(BIOS_DEBUG, "Socket %x Link %x MpCap %x TotalSockets %x, HT_EVENT_COH_MPCAP_MISMATCH\n",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3,
+					(unsigned int)event->DataParam4);
 		default:
 			break;
 	}
@@ -1045,10 +1045,10 @@ static void agesa_fatal(EVENT_PARAMS *event)
 
 	switch (event->EventInfo >> 24) {
 		case 0x04:
-			printk(BIOS_DEBUG, "Memory: Socket %lx Dct %lx Channel%lx ",
-					event->DataParam1,
-					event->DataParam2,
-					event->DataParam3);
+			printk(BIOS_DEBUG, "Memory: Socket %x Dct %x Channel%x ",
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case 0x08:
@@ -1124,8 +1124,8 @@ static void agesa_fatal(EVENT_PARAMS *event)
 			break;
 
 		case CPU_EVENT_PM_ALL_PSTATE_OVERCURRENT:
-			printk(BIOS_DEBUG, "Socket: %lx, All PStates exceeded the motherboard current limit on specified socket\n",
-				event->DataParam1);
+			printk(BIOS_DEBUG, "Socket: %x, All PStates exceeded the motherboard current limit on specified socket\n",
+				(unsigned int)event->DataParam1);
 			break;
 
 		default:
@@ -1191,9 +1191,15 @@ UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 	AmdEventParams.StdHeader.HeapStatus = HeapStatus;
 	Status = AmdReadEventLog(&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
-		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %lx, EventInfo = %lx.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
-		printk(BIOS_DEBUG,"  Param1 = %lx, Param2 = %lx.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
-		printk(BIOS_DEBUG,"  Param3 = %lx, Param4 = %lx.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
+		printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
+				(unsigned int)AmdEventParams.EventClass,
+				(unsigned int)AmdEventParams.EventInfo);
+		printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",
+				(unsigned int)AmdEventParams.DataParam1,
+				(unsigned int)AmdEventParams.DataParam2);
+		printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
+				(unsigned int)AmdEventParams.DataParam3,
+				(unsigned int)AmdEventParams.DataParam4);
 		interpret_agesa_eventlog(&AmdEventParams);
 		Status = AmdReadEventLog(&AmdEventParams);
 	}

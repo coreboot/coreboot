@@ -32,7 +32,7 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
  * and acpi_tables busnum is default.
  */
-u8 bus_isa;
+int bus_isa;
 u8 bus_sp5100[2];
 u8 bus_sr5650[14];
 
@@ -101,7 +101,7 @@ void get_bus_conf(void)
 	if (dev) {
 		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
-		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+		bus_isa = (int)pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
 		for (j = bus_sp5100[1]; j < bus_isa; j++)
 			bus_type[j] = 1;
@@ -113,7 +113,7 @@ void get_bus_conf(void)
 		if (dev) {
 			bus_sr5650[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			if(255 != bus_sr5650[i]) {
-				bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+				bus_isa = (int)pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 				bus_isa++;
 				bus_type[bus_sr5650[i]] = 1; /* PCI bus. */
 			}

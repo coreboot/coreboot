@@ -191,8 +191,7 @@
  *  SDIN3 is define at BIT6 & BIT7
  */
 #ifndef AZALIA_SDIN_PIN
-//#define AZALIA_SDIN_PIN             0xAA
-#define AZALIA_SDIN_PIN               0x2A
+#define AZALIA_SDIN_PIN              0x02
 #endif
 
 /**

@@ -36,6 +36,7 @@
 #include <cbmem.h>
 #include <cbfs.h>
 #include <romstage_handoff.h>
+#include <reset.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
@@ -45,6 +46,14 @@
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
 
+
+static inline void reset_system(void)
+{
+	hard_reset();
+	while (1) {
+		hlt();
+	}
+}
 
 /* The cache-as-ram assembly file calls romstage_main() after setting up
  * cache-as-ram.  romstage_main() will then call the mainboards's
@@ -271,10 +280,7 @@ void romstage_common(const struct romstage_params *params)
 #if CONFIG_HAVE_ACPI_RESUME
 	if (wake_from_s3 && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		while (1) {
-			hlt();
-		}
+		reset_system();
 	}
 #endif
 
@@ -375,6 +381,9 @@ void *load_cached_ramstage(struct romstage_handoff *handoff)
 
 	if (cache->magic != RAMSTAGE_CACHE_MAGIC) {
 		printk(BIOS_DEBUG, "Invalid ramstage cache found.\n");
+		#if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
+		reset_system();
+		#endif
 		return NULL;
 	}
 

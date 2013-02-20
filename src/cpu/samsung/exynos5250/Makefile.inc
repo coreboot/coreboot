@@ -9,6 +9,7 @@ bootblock-$(CONFIG_EARLY_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += soc.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
+bootblock-y += exynos_cache.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c
@@ -28,6 +29,7 @@ ramstage-y += power.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 ramstage-y += cpu.c
+ramstage-y += exynos_cache.c
 
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c
 

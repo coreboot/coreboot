@@ -39,6 +39,10 @@ static const struct console_driver pl011_uart_console __console = {
 	.tx_flush = pl011_uart_tx_flush,
 };
 
+uint32_t uartmem_getbaseaddr(void)
+{
+	return VEXPRESS_UART0_IO_ADDRESS;
+}
 #else
 void uart_init(void)
 {

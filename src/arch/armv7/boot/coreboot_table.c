@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <ip_checksum.h>
 #include <boot/tables.h>
-#include <boot/coreboot_tables.h>
 #include <arch/coreboot_tables.h>
 #include <string.h>
 #include <version.h>
@@ -35,7 +34,7 @@
 #include <option_table.h>
 #endif
 #if CONFIG_CHROMEOS
-#include <arch/acpi.h>
+//#include <arch/acpi.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -183,11 +182,10 @@ static void lb_gpios(struct lb_header *header)
 	struct lb_gpios *gpios;
 	gpios = (struct lb_gpios *)lb_new_record(header);
 	gpios->tag = LB_TAG_GPIO;
-	gpios->size = sizeof(*gpios);
-	gpios->count = 0;
 	fill_lb_gpios(gpios);
 }
 
+#if 0
 static void lb_vdat(struct lb_header *header)
 {
 	struct lb_vdat* vdat;
@@ -208,6 +206,7 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
 	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
 }
+#endif
 #endif
 
 static void add_cbmem_pointers(struct lb_header *header)
@@ -656,12 +655,11 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
-
-#if 0
 #if CONFIG_CHROMEOS
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 
+#if 0
 	/* pass along the VDAT buffer adress */
 	lb_vdat(head);
 

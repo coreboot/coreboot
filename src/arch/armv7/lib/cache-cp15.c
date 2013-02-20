@@ -46,8 +46,12 @@ static void set_section_dcache(int section, enum dcache_option option)
 	/*
 	 * FIXME(dhendrix): This calculation is from arch/arm/lib/board.c
 	 * in u-boot. We may need to subtract more due to logging.
+	 * FIXME(rminnich)
+	 * The cast avoids an incorrect overflow diagnostic.
+	 * We really need to start adding ULL to constants that are
+	 * intrinsically unsigned.
 	 */
-	tlb_addr = (CONFIG_SYS_SDRAM_BASE + (CONFIG_DRAM_SIZE_MB << 20UL));
+	tlb_addr = ((u32)CONFIG_SYS_SDRAM_BASE + (CONFIG_DRAM_SIZE_MB << 20UL));
 	tlb_addr -= tlb_size;
 	/* round down to next 64KB limit */
 	tlb_addr &= ~(0x10000 - 1);

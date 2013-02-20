@@ -62,8 +62,8 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 	if (media == CBFS_DEFAULT_MEDIA) {
 		media = &default_media;
 		if (init_default_cbfs_media(media) != 0) {
-			ERROR("Failed to initializee default media.\n");
-			return NULL;
+			ERROR("Failed to initialize default media.\n");
+			return CBFS_HEADER_INVALID_ADDRESS;
 		}
 	}
 
@@ -103,7 +103,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	if (media == CBFS_DEFAULT_MEDIA) {
 		media = &default_media;
 		if (init_default_cbfs_media(media) != 0) {
-			ERROR("Failed to initializee default media.\n");
+			ERROR("Failed to initialize default media.\n");
 			return NULL;
 		}
 	}

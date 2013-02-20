@@ -72,15 +72,15 @@ static void southstation_led_init(void)
 }
 
 
-/*************************************************
-* enable the dedicated function in southstation board.
-*************************************************/
-static void southstation_enable(device_t dev)
+/**********************************************
+ * Enable the dedicated functions of the board.
+ **********************************************/
+static void enable_dev(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 	southstation_led_init();
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = southstation_enable,
+	.enable_dev = enable_dev,
 };

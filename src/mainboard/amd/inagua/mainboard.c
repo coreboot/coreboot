@@ -70,10 +70,10 @@ void set_pcie_dereset(void)
 }
 
 
-/*************************************************
- * enable the dedicated function in INAGUA    board.
- *************************************************/
-static void inagua_enable(device_t dev)
+/**********************************************
+ * Enable the dedicated functions of the board.
+ **********************************************/
+static void enable_dev(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -82,5 +82,5 @@ static void inagua_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-		.enable_dev = inagua_enable,
+	.enable_dev = enable_dev,
 };

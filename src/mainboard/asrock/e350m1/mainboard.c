@@ -45,14 +45,14 @@ void set_pcie_dereset(void)
 }
 
 
-/*************************************************
-* enable the dedicated function in e350m1 board.
-*************************************************/
-static void e350m1_enable(device_t dev)
+/**********************************************
+ * Enable the dedicated functions of the board.
+ **********************************************/
+static void enable_dev(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = e350m1_enable,
+	.enable_dev = enable_dev,
 };

@@ -18,8 +18,8 @@
  */
 
 
-#ifndef _A785E_I_CFG_H_
-#define _A785E_I_CFG_H_
+#ifndef _PLATFORM_CFG_H_
+#define _PLATFORM_CFG_H_
 
 /**
  * @def BIOS_SIZE_1M

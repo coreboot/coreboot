@@ -18,8 +18,8 @@
  */
 
 
-#ifndef _SB900_CFG_H_
-#define _SB900_CFG_H_
+#ifndef _PLATFORM_CFG_H_
+#define _PLATFORM_CFG_H_
 
 #include <stdint.h>
 

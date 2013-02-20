@@ -23,6 +23,7 @@ romstage-y += romstage.c
 
 # ramstage-y += ec.c
 ramstage-y += ramstage.c
+ramstage-y += chromeos.c
 
 # romstage-$(CONFIG_CHROMEOS) += chromeos.c
 

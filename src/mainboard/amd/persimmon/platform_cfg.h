@@ -227,7 +227,7 @@
  */
 #define GEC_CONFIG			0
 
-const static CODECENTRY persimmon_codec_alc269[] =
+static const CODECENTRY persimmon_codec_alc269[] =
 {
 	/* NID, PinConfig */
 	{0x12, 0x411111F0},
@@ -244,7 +244,7 @@ const static CODECENTRY persimmon_codec_alc269[] =
 	{0xff, 0xffffffff} /* end of table */
 };
 
-const static CODECTBLLIST persimmon_codec_tablelist[] =
+static const CODECTBLLIST persimmon_codec_tablelist[] =
 {
 	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},
 	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}

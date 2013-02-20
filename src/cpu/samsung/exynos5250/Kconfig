@@ -87,11 +87,11 @@ config XIP_ROM_SIZE
 	default ROMSTAGE_SIZE
 
 config SYS_SDRAM_BASE
-	hex "SDRAM base address"
+	hex
 	default 0x40000000
 
 config SYS_TEXT_BASE
-	hex "Executable code section"
+	hex
 	default 0x43e00000
 
 config COREBOOT_TABLES_SIZE

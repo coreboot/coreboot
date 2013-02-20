@@ -32,14 +32,28 @@
  */
 
 #include <arch/stages.h>
+#include <arch/armv7/include/common.h>
 
 void stage_entry(void)
 {
 	main();
 }
 
+/* we had marked 'doit' as 'noreturn'. 
+ * There is no apparent harm in leaving it as something we can return from, and in the one
+ * case where we call a payload, the payload is allowed to return. 
+ * Hence, leave it as something we can return from.
+ */
 void stage_exit(void *addr)
 {
-	__attribute__((noreturn)) void (*doit)(void) = addr;
+	void (*doit)(void) = addr;
+	/* make sure any code we installed is written to memory. Not all ARM have
+	 * unified caches.
+	 */
+	flush_dcache_all();
+	/* Because most stages copy code to memory, it's a safe and hygienic thing
+	 * to flush the icache here.
+	 */
+	invalidate_icache_all();
 	doit();
 }

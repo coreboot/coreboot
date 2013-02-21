@@ -1,2 +1,2 @@
 subdirs-$(CONFIG_EC_ACPI) += acpi
-subdirs-y += compal lenovo smsc quanta
+subdirs-y += compal google lenovo smsc quanta

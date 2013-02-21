@@ -23,7 +23,7 @@ DefinitionBlock (
 	"DSDT",                 /* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
 	"ADVANSUS",               /* OEMID */
-	"A785E-I ",	     /* TABLE ID */
+	"COREBOOT",	     /* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */

@@ -1,0 +1,109 @@
+chip northbridge/intel/sandybridge
+
+	# Enable DisplayPort Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Enable Panel as eDP and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP_A
+	register "gpu_panel_power_cycle_delay" = "6"		# 500ms
+	register "gpu_panel_power_up_delay" = "2000"		# 200ms
+	register "gpu_panel_power_down_delay" = "500"		# 50ms
+	register "gpu_panel_power_backlight_on_delay" = "2000"	# 200ms
+	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
+
+	# Set backlight PWM values for eDP
+	register "gpu_cpu_backlight" = "0x00000200"
+	register "gpu_pch_backlight" = "0x04000000"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_rPGA989
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_206ax
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			# Coordinate with HW_ALL
+			register "pstate_coord_type" = "0xfe"
+
+			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_acpower" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_acpower" = "5"	# ACPI(C3) = MWAIT(C7)
+
+			register "c1_battery" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_battery" = "3"	# ACPI(C2) = MWAIT(C3)
+			register "c3_battery" = "5"	# ACPI(C3) = MWAIT(C7)
+		end
+	end
+
+	device domain 0 on
+		subsystemid 0x1ae0 0xc000 inherit
+		device pci 00.0 on end # host bridge
+		device pci 02.0 on end # vga controller
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "pirqa_routing" = "0x8b"
+			register "pirqb_routing" = "0x8a"
+			register "pirqc_routing" = "0x8b"
+			register "pirqd_routing" = "0x8b"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "alt_gp_smi_en" = "0x0100"
+			register "gpi7_routing" = "2"
+			register "gpi8_routing" = "1"
+
+			register "ide_legacy_combined" = "0x0"
+			register "sata_ahci" = "0x1"
+			register "sata_port_map" = "0x1"
+
+			register "sata_port0_gen3_tx" = "0x00880a7f"
+
+			# EC range is 0x800-0x9ff
+			# Please note: you MUST not change this unless
+			# you also change romstage.c:pch_enable_lpc
+			register "gen1_dec" = "0x00fc0801"
+			register "gen2_dec" = "0x00fc0901"
+
+			# Enable zero-based linear PCIe root port functions
+			register "pcie_port_coalesce" = "1"
+
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 19.0 off end # Intel Gigabit Ethernet
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1 (WLAN remapped)
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 on end # PCIe Port #3 (WLAN actual)
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1c.6 off end # PCIe Port #7
+			device pci 1c.7 off end # PCIe Port #8
+			device pci 1d.0 on end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on
+				chip ec/google/chromeec
+					# We only have one init function that
+					# we need to call to initialize the
+					# keyboard part of the EC.
+					device pnp ff.1 on # dummy address
+					end
+				end
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller 1
+			device pci 1f.3 on end # SMBus
+			device pci 1f.5 off end # SATA Controller 2
+			device pci 1f.6 on end # Thermal
+		end
+	end
+end

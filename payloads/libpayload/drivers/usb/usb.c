@@ -157,7 +157,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	dr.wValue = (descType << 8) | descIdx;
 	dr.wIndex = langID;
 	dr.wLength = 8;
-	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 8, buf)) {
+	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 8, buf) < 0) {
 		usb_debug ("getting descriptor size (type %x) failed\n",
 			descType);
 	}
@@ -181,7 +181,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 	memset (result, 0, size);
 	dr.wLength = size;
 	if (dev->controller->
-	    control (dev, IN, sizeof (dr), &dr, size, result)) {
+	    control (dev, IN, sizeof (dr), &dr, size, result) < 0) {
 		usb_debug ("getting descriptor (type %x, size %x) failed\n",
 			descType, size);
 	}
@@ -213,7 +213,7 @@ clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wValue = feature;
 	dr.wIndex = endp;
 	dr.wLength = 0;
-	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0;
 }
 
 int
@@ -270,7 +270,7 @@ generic_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	dev->endpoints[0].toggle = 0;
 	dev->endpoints[0].direction = SETUP;
 	mdelay (50);
-	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0)) {
+	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0) {
 		return -1;
 	}
 	mdelay (50);

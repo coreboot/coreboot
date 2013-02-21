@@ -270,6 +270,7 @@ static void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur)
 
 static int wait_for_tds(qtd_t *head)
 {
+	/* returns the amount of bytes *not* transmitted, or -1 for error */
 	int result = 0;
 	qtd_t *cur = head;
 	while (1) {
@@ -291,16 +292,18 @@ static int wait_for_tds(qtd_t *head)
 		if (timeout < 0) {
 			usb_debug("Error: ehci: queue transfer "
 				"processing timed out.\n");
-			return 1;
+			return -1;
 		}
 		if (cur->token & QTD_HALTED) {
 			usb_debug("ERROR with packet\n");
 			dump_td(virt_to_phys(cur));
 			usb_debug("-----------------\n");
-			return 1;
+			return -1;
 		}
+		result += (cur->token & QTD_TOTAL_LEN_MASK)
+				>> QTD_TOTAL_LEN_SHIFT;
 		if (cur->next_qtd & 1) {
-			return 0;
+			break;
 		}
 		if (0) dump_td(virt_to_phys(cur));
 		/* helps debugging the TD chain */
@@ -338,13 +341,13 @@ static int ehci_process_async_schedule(
 	int result;
 
 	/* make sure async schedule is disabled */
-	if (ehci_set_async_schedule(ehcic, 0)) return 1;
+	if (ehci_set_async_schedule(ehcic, 0)) return -1;
 
 	/* hook up QH */
 	ehcic->operation->asynclistaddr = virt_to_phys(qhead);
 
 	/* start async schedule */
-	if (ehci_set_async_schedule(ehcic, 1)) return 1;
+	if (ehci_set_async_schedule(ehcic, 1)) return -1;
 
 	/* wait for result */
 	result = wait_for_tds(head);
@@ -358,6 +361,7 @@ static int ehci_process_async_schedule(
 static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 {
 	int result = 0;
+	int remaining = size;
 	int endp = ep->endpoint & 0xf;
 	int pid = (ep->direction==IN)?EHCI_IN:EHCI_OUT;
 
@@ -365,7 +369,7 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	if (ep->dev->speed < 2) {
 		/* we need a split transaction */
 		if (closest_usb2_hub(ep->dev, &hubaddr, &hubport))
-			return 1;
+			return -1;
 	}
 
 	qtd_t *head = memalign(64, sizeof(qtd_t));
@@ -375,12 +379,12 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		cur->token = QTD_ACTIVE |
 			(pid << QTD_PID_SHIFT) |
 			(0 << QTD_CERR_SHIFT);
-		u32 chunk = fill_td(cur, data, size);
-		size -= chunk;
+		u32 chunk = fill_td(cur, data, remaining);
+		remaining -= chunk;
 		data += chunk;
 
 		cur->alt_next_qtd = QTD_TERMINATE;
-		if (size == 0) {
+		if (remaining == 0) {
 			cur->next_qtd = virt_to_phys(0) | QTD_TERMINATE;
 			break;
 		} else {
@@ -411,10 +415,13 @@ static int ehci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 
 	result = ehci_process_async_schedule(
 			EHCI_INST(ep->dev->controller), qh, head);
+	if (result >= 0)
+		result = size - result;
 
 	ep->toggle = (cur->token & QTD_TOGGLE_MASK) >> QTD_TOGGLE_SHIFT;
 
 	free_qh_and_tds(qh, head);
+
 	return result;
 }
 
@@ -432,7 +439,7 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 	if (dev->speed < 2) {
 		/* we need a split transaction */
 		if (closest_usb2_hub(dev, &hubaddr, &hubport))
-			return 1;
+			return -1;
 		non_hs_ctrl_ep = 1;
 	}
 
@@ -499,6 +506,8 @@ static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 
 	result = ehci_process_async_schedule(
 			EHCI_INST(dev->controller), qh, head);
+	if (result >= 0)
+		result = dalen - result;
 
 	free_qh_and_tds(qh, head);
 	return result;

@@ -386,7 +386,7 @@ uhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	} else {
 		usb_debug ("control packet, req %x\n", req);
 		td_dump (td);
-		result = 1;
+		result = -1;
 	}
 	free (tds);
 	return result;
@@ -468,7 +468,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		usb_debug("Stalled. Trying to clean up.\n");
 		clear_stall (ep);
 		free (tds);
-		return 1;
+		return -1;
 	}
 	ep->toggle = toggle;
 	free (tds);

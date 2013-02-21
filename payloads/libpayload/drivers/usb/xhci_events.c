@@ -308,7 +308,7 @@ xhci_wait_for_command_done(xhci_t *const xhci,
 	return cc;
 }
 
-/* returns cc of transfer for given slot/endpoint pair */
+/* returns amount of bytes transferred on success, negative CC on error */
 int
 xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
 {
@@ -319,7 +319,9 @@ xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
 	while (xhci_wait_for_event_type(xhci, TRB_EV_TRANSFER, &timeout_us)) {
 		if (TRB_GET(ID, xhci->er.cur) == slot_id &&
 				TRB_GET(EP, xhci->er.cur) == ep_id) {
-			cc = TRB_GET(CC, xhci->er.cur);
+			cc = -TRB_GET(CC, xhci->er.cur);
+			if (cc == -CC_SUCCESS || cc == -CC_SHORT_PACKET)
+				cc = TRB_GET(EVTL, xhci->er.cur);
 			xhci_advance_event_ring(xhci);
 			break;
 		}

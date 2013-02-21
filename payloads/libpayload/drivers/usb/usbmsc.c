@@ -184,7 +184,7 @@ reset_transport (usbdev_t *dev)
 	dr.wLength = 0;
 
 	/* if any of these fails, detach device, as we are lost */
-	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) ||
+	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0 ||
 			clear_stall (MSC_INST (dev)->bulk_in) ||
 			clear_stall (MSC_INST (dev)->bulk_out)) {
 		usb_debug ("Detaching unresponsive device.\n");
@@ -211,9 +211,8 @@ get_max_luns (usbdev_t *dev)
 	dr.wValue = 0;
 	dr.wIndex = 0;
 	dr.wLength = 1;
-	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 1, &luns)) {
+	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 1, &luns) < 0)
 		luns = 0;	// assume only 1 lun if req fails
-	}
 	return luns;
 }
 
@@ -239,10 +238,10 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 static int
 get_csw (endpoint_t *ep, csw_t *csw)
 {
-	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1)) {
+	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
 		clear_stall (ep);
 		if (ep->dev->controller->bulk
-				(ep, sizeof (csw_t), (u8 *) csw, 1)) {
+				(ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
 			return reset_transport (ep->dev);
 		}
 	}
@@ -265,17 +264,17 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	}
 	wrap_cbw (&cbw, buflen, dir, cb, cblen);
 	if (dev->controller->
-	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0)) {
+	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0) < 0) {
 		return reset_transport (dev);
 	}
 	if (buflen > 0) {
 		if (dir == cbw_direction_data_in) {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0))
+			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0) < 0)
 				clear_stall (MSC_INST (dev)->bulk_in);
 		} else {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0))
+			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0) < 0)
 				clear_stall (MSC_INST (dev)->bulk_out);
 		}
 	}

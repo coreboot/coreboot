@@ -44,7 +44,7 @@ static int ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq
 static void* ohci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
 static void ohci_destroy_intr_queue (endpoint_t *ep, void *queue);
 static u8* ohci_poll_intr_queue (void *queue);
-static void ohci_process_done_queue(ohci_t *ohci, int spew_debug);
+static int ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 
 #ifdef USB_DEBUG
 static void
@@ -321,13 +321,13 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 		usb_debug("Error: ohci: endpoint "
 			"descriptor processing timed out.\n");
 	/* Clear the done queue. */
-	ohci_process_done_queue(OHCI_INST(dev->controller), 1);
+	int result = ohci_process_done_queue(OHCI_INST(dev->controller), 1);
 
 	if (head->head_pointer & 1) {
 		usb_debug("HALTED!\n");
-		return 1;
+		return -1;
 	}
-	return 0;
+	return result;
 }
 
 static void
@@ -355,6 +355,7 @@ static int
 ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 	      unsigned char *data)
 {
+	int remaining = dalen;
 	td_t *cur;
 
 	// pages are specified as 4K in OHCI, so don't use getpagesize()
@@ -392,21 +393,21 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 		cur->current_buffer_pointer = virt_to_phys(data);
 		pages--;
 		int consumed = (4096 - ((unsigned long)data % 4096));
-		if (consumed >= dalen) {
+		if (consumed >= remaining) {
 			// end of data is within same page
-			cur->buffer_end = virt_to_phys(data + dalen - 1);
-			dalen = 0;
+			cur->buffer_end = virt_to_phys(data + remaining - 1);
+			remaining = 0;
 			/* assert(pages == 0); */
 		} else {
-			dalen -= consumed;
+			remaining -= consumed;
 			data += consumed;
 			pages--;
-			int second_page_size = dalen;
-			if (dalen > 4096) {
+			int second_page_size = remaining;
+			if (remaining > 4096) {
 				second_page_size = 4096;
 			}
 			cur->buffer_end = virt_to_phys(data + second_page_size - 1);
-			dalen -= second_page_size;
+			remaining -= second_page_size;
 			data += second_page_size;
 		}
 	}
@@ -454,7 +455,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	OHCI_INST(dev->controller)->opreg->HcControl |= ControlListEnable;
 	OHCI_INST(dev->controller)->opreg->HcCommandStatus = ControlListFilled;
 
-	int failure = wait_for_ed(dev, head,
+	int result = wait_for_ed(dev, head,
 			(dalen==0)?0:(last_page - first_page + 1));
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
@@ -464,7 +465,10 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	/* free memory */
 	ohci_free_ed(head);
 
-	return failure;
+	if (result >= 0)
+		result = dalen - result;
+
+	return result;
 }
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
@@ -472,6 +476,7 @@ static int
 ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 {
 	int i;
+	int remaining = dalen;
 	usb_debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, data, finalize, ep->maxpacketsize);
 
 	td_t *cur, *next;
@@ -501,28 +506,28 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
                         TD_CC_NOACCESS;
 		cur->current_buffer_pointer = virt_to_phys(data);
 		pages--;
-		if (dalen == 0) {
+		if (remaining == 0) {
 			/* magic TD for empty packet transfer */
 			cur->current_buffer_pointer = 0;
 			cur->buffer_end = 0;
 			/* assert((pages == 0) && finalize); */
 		}
 		int consumed = (4096 - ((unsigned long)data % 4096));
-		if (consumed >= dalen) {
+		if (consumed >= remaining) {
 			// end of data is within same page
-			cur->buffer_end = virt_to_phys(data + dalen - 1);
-			dalen = 0;
+			cur->buffer_end = virt_to_phys(data + remaining - 1);
+			remaining = 0;
 			/* assert(pages == finalize); */
 		} else {
-			dalen -= consumed;
+			remaining -= consumed;
 			data += consumed;
 			pages--;
-			int second_page_size = dalen;
-			if (dalen > 4096) {
+			int second_page_size = remaining;
+			if (remaining > 4096) {
 				second_page_size = 4096;
 			}
 			cur->buffer_end = virt_to_phys(data + second_page_size - 1);
-			dalen -= second_page_size;
+			remaining -= second_page_size;
 			data += second_page_size;
 		}
 		/* One more TD. */
@@ -558,7 +563,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	OHCI_INST(ep->dev->controller)->opreg->HcControl |= BulkListEnable;
 	OHCI_INST(ep->dev->controller)->opreg->HcCommandStatus = BulkListFilled;
 
-	int failure = wait_for_ed(ep->dev, head,
+	int result = wait_for_ed(ep->dev, head,
 			(dalen==0)?0:(last_page - first_page + 1));
 	/* Wait some frames before and one after disabling list access. */
 	mdelay(4);
@@ -570,12 +575,12 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	/* free memory */
 	ohci_free_ed(head);
 
-	if (failure) {
-		/* try cleanup */
+	if (result >= 0)
+		result = dalen - result;
+	else
 		clear_stall(ep);
-	}
 
-	return failure;
+	return result;
 }
 
 
@@ -780,9 +785,11 @@ ohci_poll_intr_queue(void *const q_)
 	return data;
 }
 
-static void
+static int
 ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 {
+	/* returns the amount of bytes *not* transmitted for short packets */
+	int result = 0;
 	int i, j;
 
 	/* Temporary queue of interrupt queue TDs (to reverse order). */
@@ -790,7 +797,7 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 
 	/* Check if done head has been written. */
 	if (!(ohci->opreg->HcInterruptStatus & WritebackDoneHead))
-		return;
+		return 0;
 	/* Fetch current done head.
 	   Lsb is only interesting for hw interrupts. */
 	u32 phys_done_queue = ohci->hcca->HccaDoneHead & ~1;
@@ -807,7 +814,11 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 
 		switch (done_td->config & TD_QUEUETYPE_MASK) {
 		case TD_QUEUETYPE_ASYNC:
-			/* Free processed async TDs. */
+			/* Free processed async TDs and count short transfer. */
+			if (done_td->current_buffer_pointer)
+				result += (done_td->buffer_end & 0xfff) -
+						(done_td->current_buffer_pointer
+						& 0xfff) + 1;
 			free((void *)done_td);
 			break;
 		case TD_QUEUETYPE_INTR: {
@@ -864,5 +875,7 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 	}
 	if (spew_debug)
 		usb_debug("processed %d done tds, %d intr tds thereof.\n", i, j);
+
+	return result;
 }
 

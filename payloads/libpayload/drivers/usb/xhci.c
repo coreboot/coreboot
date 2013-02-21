@@ -588,14 +588,14 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	const size_t off = (size_t)data & 0xffff;
 	if ((off + dalen) > ((TRANSFER_RING_SIZE - 4) << 16)) {
 		xhci_debug("Unsupported transfer size\n");
-		return 1;
+		return -1;
 	}
 
 	/* Reset endpoint if it's halted */
 	const unsigned ep_state = EC_GET(STATE, di->devctx.ep0);
 	if (ep_state == 2 || ep_state == 4) {
 		if (xhci_reset_endpoint(dev, NULL, 0))
-			return 1;
+			return -1;
 	}
 
 	/* Fill and enqueue setup TRB */
@@ -631,11 +631,12 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	xhci->dbreg[dev->address] = 1;
 
 	/* Wait for transfer events */
-	int i;
+	int i, transferred = 0;
 	const int n_stages = 2 + !!dalen;
 	for (i = 0; i < n_stages; ++i) {
 		const int ret = xhci_wait_for_transfer(xhci, dev->address, 1);
-		if (ret != CC_SUCCESS) {
+		transferred += ret;
+		if (ret < 0) {
 			if (ret == TIMEOUT) {
 				xhci_debug("Stopping ID %d EP 1\n",
 					   dev->address);
@@ -651,11 +652,11 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 				   tr->ring, setup, status,
 				   ep_state, EC_GET(STATE, di->devctx.ep0),
 				   xhci->opreg->usbsts);
-			return 1;
+			return ret;
 		}
 	}
 
-	return 0;
+	return transferred;
 }
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
@@ -675,14 +676,14 @@ xhci_bulk(endpoint_t *const ep,
 	const size_t off = (size_t)data & 0xffff;
 	if ((off + size) > ((TRANSFER_RING_SIZE - 2) << 16)) {
 		xhci_debug("Unsupported transfer size\n");
-		return 1;
+		return -1;
 	}
 
 	/* Reset endpoint if it's halted */
 	const unsigned ep_state = EC_GET(STATE, di->devctx.eps[ep_id]);
 	if (ep_state == 2 || ep_state == 4) {
 		if (xhci_reset_endpoint(ep->dev, ep, 0))
-			return 1;
+			return -1;
 	}
 
 	/* Enqueue transfer and ring doorbell */
@@ -693,12 +694,12 @@ xhci_bulk(endpoint_t *const ep,
 
 	/* Wait for transfer event */
 	const int ret = xhci_wait_for_transfer(xhci, ep->dev->address, ep_id);
-	if (ret != CC_SUCCESS) {
+	if (ret < 0) {
 		if (ret == TIMEOUT) {
 			xhci_debug("Stopping ID %d EP %d\n",
 				   ep->dev->address, ep_id);
 			xhci_cmd_stop_endpoint(xhci, ep->dev->address, ep_id);
-		} else if (ret == CC_STALL_ERROR) {
+		} else if (ret == -CC_STALL_ERROR) {
 			xhci_reset_endpoint(ep->dev, ep, 1);
 		}
 		xhci_debug("Bulk transfer failed: %d\n"
@@ -707,10 +708,10 @@ xhci_bulk(endpoint_t *const ep,
 			   ret, ep_state,
 			   EC_GET(STATE, di->devctx.eps[ep_id]),
 			   xhci->opreg->usbsts);
-		return 1;
+		return ret;
 	}
 
-	return 0;
+	return ret;
 }
 
 static trb_t *

@@ -58,7 +58,7 @@
 
 /**
  * @def SB_HPET_TIMER
- * @breif
+ * @brief
  *  0 - Disable hpet
  *  1 - Enable  hpet
  */
@@ -81,7 +81,7 @@
 
 /**
  * @def PCI_CLOCK_CTRL
- * @breif bit[0-4] used for PCI Slots Clock Control,
+ * @brief bit[0-4] used for PCI Slots Clock Control,
  *   0 - disable
  *   1 - enable
  *  PCI SLOT 0 define at BIT0
@@ -94,26 +94,26 @@
 
 /**
  * @def SATA_CONTROLLER
- * @breif INCHIP Sata Controller
+ * @brief INCHIP Sata Controller
  */
 #define SATA_CONTROLLER		CIMX_OPTION_ENABLED
 
 /**
  * @def SATA_MODE
- * @breif INCHIP Sata Controller Mode
+ * @brief INCHIP Sata Controller Mode
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
 #define SATA_MODE			CONFIG_SB800_SATA_MODE
 
 /**
- * @breif INCHIP Sata IDE Controller Mode
+ * @brief INCHIP Sata IDE Controller Mode
  */
 #define IDE_LEGACY_MODE			0
 #define IDE_NATIVE_MODE			1
 
 /**
  * @def SATA_IDE_MODE
- * @breif INCHIP Sata IDE Controller Mode
+ * @brief INCHIP Sata IDE Controller Mode
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
 #define SATA_IDE_MODE			IDE_LEGACY_MODE
@@ -157,7 +157,7 @@
 #define AZALIA_ENABLE			2
 
 /**
- * @breif INCHIP HDA controller
+ * @brief INCHIP HDA controller
  */
 #define AZALIA_CONTROLLER		AZALIA_AUTO
 

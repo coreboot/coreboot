@@ -1,5 +1,6 @@
 source src/ec/acpi/Kconfig
 source src/ec/compal/Kconfig
+source src/ec/google/Kconfig
 source src/ec/lenovo/Kconfig
 source src/ec/smsc/Kconfig
 source src/ec/quanta/Kconfig

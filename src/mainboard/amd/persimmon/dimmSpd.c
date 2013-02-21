@@ -152,9 +152,9 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 {
 	int spdAddress, ioBase;
 
-	if (info->SocketId	 >= DIMENSION (spdAddressLookup		)) return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]	)) return AGESA_ERROR;
-	if (info->DimmId		>= DIMENSION (spdAddressLookup[0][0])) return AGESA_ERROR;
+	if (info->SocketId     >= DIMENSION (spdAddressLookup      )) return AGESA_ERROR;
+	if (info->MemChannelId >= DIMENSION (spdAddressLookup[0]   )) return AGESA_ERROR;
+	if (info->DimmId       >= DIMENSION (spdAddressLookup[0][0])) return AGESA_ERROR;
 
 	spdAddress = spdAddressLookup [info->SocketId] [info->MemChannelId] [info->DimmId];
 	if (spdAddress == 0) return AGESA_ERROR;

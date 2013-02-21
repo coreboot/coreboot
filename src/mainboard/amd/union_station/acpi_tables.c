@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <console/console.h>
@@ -86,7 +86,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write SB800 IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
+			CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 			current, 0, 0, 2, 0);
@@ -299,6 +299,9 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "slit\n");
 	dump_mem(slit, ((void *)slit) + slit->header.length);
+
+	printk(BIOS_DEBUG, "alib\n");
+	dump_mem(ssdt, ((void *)alib) + alib->length);
 
 	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);

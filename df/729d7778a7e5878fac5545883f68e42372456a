@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+1: Jens Rottmann <JRottmann@LiPPERTembedded.de>
+Submitted-by: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-at: Thu, 21 Feb 2013 12:01:35 +0100
+Reviewed-on: http://review.coreboot.org/2453
+Project: coreboot
+Branch: refs/heads/master

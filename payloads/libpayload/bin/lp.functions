@@ -49,11 +49,13 @@ fi
 
 if [ -f $BASE/../lib/libpayload.a ]; then
 	_LIBDIR=$BASE/../lib
+elif [ -f $BASE/../build/libpayload.a ]; then
+	_LIBDIR=$BASE/../build
 else
 	_LIBDIR=$LIBPAYLOAD_PREFIX/lib
 fi
 
-if [ -d $BASE/../include/ ]; then
+if [ -d $BASE/../include ]; then
 	_INCDIR=$BASE/../include
 else
 	_INCDIR=$LIBPAYLOAD_PREFIX/include

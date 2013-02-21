@@ -200,19 +200,15 @@ static const mem_range_t mem_ranges[NUM_MEM_RANGES] =
 {0x000f0000, 0x000fffff}
 };
 
-/* This is the number of bytes of physical memory to map, starting at physical
- * address 0.  This value must be large enough to contain all memory ranges
- * specified in mem_ranges above plus the maximum possible size of the
- * coreboot table (since the start of the table could potentially occur at
- * the end of the last memory range).
- */
-static const size_t BYTES_TO_MAP = (1024 * 1024);
-
 /* Pointer to low physical memory that we access by calling mmap() on
  * /dev/mem.
  */
 static const void *low_phys_mem;
-static unsigned long low_phys_base = 0;
+/* impossible value since not page aligned: first map request will happen */
+static unsigned long low_phys_base = 0x1;
+
+/* count of mapped pages */
+static unsigned long mapped_pages = 0;
 
 /* Pointer to coreboot table. */
 static const struct lb_header *lbtable = NULL;
@@ -243,6 +239,37 @@ static const hexdump_format_t format =
                         ((unsigned long) paddr) - low_phys_base)
 
 /****************************************************************************
+ * map_pages
+ *
+ * Maps just enough pages to cover base_address + length
+ * and updates affected variables
+ ****************************************************************************/
+static void map_pages(unsigned long base_address, unsigned long length)
+{
+	unsigned long num_pages = (length +
+			(base_address & (getpagesize() - 1)) +
+			getpagesize() - 1) >> 12;
+	base_address &= ~(getpagesize() - 1);
+
+	/* no need to do anything */
+	if ((low_phys_base == base_address) && (mapped_pages == num_pages)) {
+		return;
+	}
+
+	if (low_phys_mem) {
+		munmap((void *)low_phys_mem, mapped_pages << 12);
+	}
+	if ((low_phys_mem = mmap(NULL, num_pages << 12, PROT_READ, MAP_SHARED, fd,
+		  (off_t) base_address)) == MAP_FAILED) {
+		fprintf(stderr,
+			"%s: Failed to mmap /dev/mem at %lx: %s\n",
+			prog_name, base_address, strerror(errno));
+		exit(1);
+	}
+	low_phys_base = base_address;
+}
+
+/****************************************************************************
  * get_lbtable
  *
  * Find the coreboot table and set global variable lbtable to point to it.
@@ -264,20 +291,11 @@ void get_lbtable(void)
 		exit(1);
 	}
 
-	if ((low_phys_mem =
-	     mmap(NULL, BYTES_TO_MAP, PROT_READ, MAP_SHARED, fd, 0))
-	    == MAP_FAILED) {
-		fprintf(stderr, "%s: Failed to mmap /dev/mem: %s\n", prog_name,
-			strerror(errno));
-		exit(1);
-	}
-
 	bad_header_count = 0;
 	bad_table_count = 0;
 
 	for (i = 0; i < NUM_MEM_RANGES; i++) {
-		lbtable = lbtable_scan(phystov(mem_ranges[i].start),
-				       phystov(mem_ranges[i].end),
+		lbtable = lbtable_scan(mem_ranges[i].start, mem_ranges[i].end,
 				       &bad_headers, &bad_tables);
 
 		if (lbtable != NULL)
@@ -421,8 +439,7 @@ void list_lbtable_item(const char item[])
  * first and last bytes of the chunk of memory to be scanned.  For instance,
  * values of 0x10000000 and 0x1000ffff for 'start' and 'end' specify a 64k
  * chunk of memory starting at address 0x10000000.  'start' and 'end' are
- * virtual addresses in the address space of the current process.  They
- * represent a chunk of memory obtained by calling mmap() on /dev/mem.
+ * physical addresses.
  *
  * If a coreboot table is found, return a pointer to it.  Otherwise return
  * NULL.  On return, *bad_header_count and *bad_table_count are set as
@@ -444,7 +461,7 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 	static const char signature[4] = { 'L', 'B', 'I', 'O' };
 	const struct lb_header *table;
 	const struct lb_forward *forward;
-	const uint32_t *p;
+	unsigned long p;
 	uint32_t sig;
 
 	assert(end >= start);
@@ -459,14 +476,15 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 	 * for 'start' and 'end': even weird boundary cases like 0x00000000 and
 	 * 0xffffffff on a 32-bit architecture.
 	 */
-	for (p = (const uint32_t *)start;
-	     (((unsigned long)p) <= end) &&
-	     ((end - (unsigned long)p) >= (sizeof(uint32_t) - 1)); p += 4) {
-		if (*p != sig)
+	map_pages(start, end - start);
+	for (p = start;
+	     (p <= end) &&
+	     (end - p >= (sizeof(uint32_t) - 1)); p += 4) {
+		if (*(uint32_t*)phystov(p) != sig)
 			continue;
 
 		/* We found a valid signature. */
-		table = (const struct lb_header *)p;
+		table = (const struct lb_header *)phystov(p);
 
 		/* validate header checksum */
 		if (compute_ip_checksum((void *)table, sizeof(*table))) {
@@ -474,6 +492,7 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 			continue;
 		}
 
+		map_pages(p, table->table_bytes + sizeof(*table));
 		/* validate table checksum */
 		if (table->table_checksum !=
 		    compute_ip_checksum(((char *)table) + sizeof(*table),
@@ -490,22 +509,7 @@ static const struct lb_header *lbtable_scan(unsigned long start,
 
 		if (forward) {
 			uint64_t new_phys = forward->forward;
-
-			new_phys &= ~(getpagesize() - 1);
-
-			munmap((void *)low_phys_mem, BYTES_TO_MAP);
-			if ((low_phys_mem =
-			     mmap(NULL, BYTES_TO_MAP, PROT_READ, MAP_SHARED, fd,
-				  (off_t) new_phys)) == MAP_FAILED) {
-				fprintf(stderr,
-					"%s: Failed to mmap /dev/mem: %s\n",
-					prog_name, strerror(errno));
-				exit(1);
-			}
-			low_phys_base = new_phys;
-			table =
-			    lbtable_scan(phystov(low_phys_base),
-					 phystov(low_phys_base + BYTES_TO_MAP),
+			table = lbtable_scan(new_phys, new_phys + getpagesize(),
 					 bad_header_count, bad_table_count);
 		}
 		return table;

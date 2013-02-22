@@ -17,11 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* how many nesting we support */
+/* How much nesting do we support? */
 #define ACPIGEN_LENSTACK_SIZE 10
 
-/* if you need to change this, change the acpigen_write_f and
-   acpigen_patch_len */
+/*
+ * If you need to change this, change acpigen_write_f and
+ * acpigen_patch_len
+ */
 
 #define ACPIGEN_MAXLEN 0xfff
 
@@ -38,7 +40,7 @@ int ltop = 0;
 int acpigen_write_len_f(void)
 {
 	ASSERT(ltop < (ACPIGEN_LENSTACK_SIZE - 1))
-	    len_stack[ltop++] = gencurrent;
+	len_stack[ltop++] = gencurrent;
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);
 	return 2;
@@ -47,7 +49,7 @@ int acpigen_write_len_f(void)
 void acpigen_patch_len(int len)
 {
 	ASSERT(len <= ACPIGEN_MAXLEN)
-	    ASSERT(ltop > 0)
+	ASSERT(ltop > 0)
 	char *p = len_stack[--ltop];
 	/* generate store length for 0xfff max */
 	p[0] = (0x40 | (len & 0xf));
@@ -148,10 +150,14 @@ int acpigen_emit_stream(const char *data, int size)
 	return size;
 }
 
-/* The NameString are bit tricky, each element can be 4 chars, if
-   less its padded with underscore. Check 18.2.2 and 18.4
-   and 5.3 of ACPI specs 3.0 for details
-*/
+/*
+ * The naming conventions for ACPI namespace names are a bit tricky as
+ * each element has to be 4 chars wide (»All names are a fixed 32 bits.«)
+ * and »By convention, when an ASL compiler pads a name shorter than 4
+ * characters, it is done so with trailing underscores (‘_’).«.
+ *
+ * Check sections 5.3, 18.2.2 and 18.4 of ACPI spec 3.0 for details.
+ */
 
 static int acpigen_emit_simple_namestring(const char *name) {
 	int i, len = 0;
@@ -205,13 +211,13 @@ int acpigen_emit_namestring(const char *namepath) {
 	int dotpos = 0;
 	int len = 0;
 
-	/* we can start with a \ */
+	/* We can start with a »\«. */
 	if (namepath[0] == '\\') {
 		len += acpigen_emit_byte('\\');
 		namepath++;
 	}
 
-	/* and there can be any number of ^ */
+	/* And there can be any number of »^«. */
 	while (namepath[0] == '^') {
 		len += acpigen_emit_byte('^');
 		namepath++;
@@ -370,7 +376,9 @@ int acpigen_write_empty_PTC(void)
 	return len + nlen;
 }
 
-/* generates a func with max supported P states */
+/*
+ * Generates a func with max supported P-states.
+ */
 int acpigen_write_PPC(u8 nr)
 {
 /*
@@ -396,7 +404,10 @@ int acpigen_write_PPC(u8 nr)
 	return len;
 }
 
-/* generates a func with max supported P states */
+/*
+ * Generates a func with max supported P-states saved
+ * in the variable PPCM.
+ */
 int acpigen_write_PPC_NVS(void)
 {
 /*
@@ -621,7 +632,7 @@ int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 	 *   Bit2-0: 111 (0x7) => 7 Bytes long
 	 */
 	acpigen_emit_byte(0x47);
-	/* does the device decode all 16 or just 10 bits? */
+	/* Does the device decode all 16 or just 10 bits? */
 	/* bit1-7 are ignored */
 	acpigen_emit_byte(decode16 ? 0x01 : 0x00);
 	/* minimum base address the device may be configured for */
@@ -642,12 +653,12 @@ int acpigen_write_resourcetemplate_header(void)
 	/*
 	 * A ResourceTemplate() is a Buffer() with a
 	 * (Byte|Word|DWord) containing the length, followed by one or more
-	 * resource items, terminated by the end tag
+	 * resource items, terminated by the end tag.
 	 * (small item 0xf, len 1)
 	 */
-	len = acpigen_emit_byte(0x11); /* Buffer opcode */
+	len = acpigen_emit_byte(0x11);	/* Buffer opcode */
 	len += acpigen_write_len_f();
-	len += acpigen_emit_byte(0x0b); /* Word opcode */
+	len += acpigen_emit_byte(0x0b);	/* Word opcode */
 	len_stack[ltop++] = acpigen_get_current();
 	len += acpigen_emit_byte(0x00);
 	len += acpigen_emit_byte(0x00);
@@ -700,13 +711,13 @@ int acpigen_write_mainboard_resource_template(void)
 	len = acpigen_write_resourcetemplate_header();
 	start = acpigen_get_current();
 
-	/* Add reserved memory ranges */
+	/* Add reserved memory ranges. */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_RESERVE,
 		 IORESOURCE_MEM | IORESOURCE_RESERVE,
 		acpigen_add_mainboard_rsvd_mem32, 0);
 
-	/* Add reserved io ranges */
+	/* Add reserved io ranges. */
 	search_global_resources(
 		IORESOURCE_IO | IORESOURCE_RESERVE,
 		 IORESOURCE_IO | IORESOURCE_RESERVE,

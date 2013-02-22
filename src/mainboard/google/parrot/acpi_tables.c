@@ -127,7 +127,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
-#define ALIGN_CURRENT current = ((current + 0x0f) & -0x10)
+#define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;

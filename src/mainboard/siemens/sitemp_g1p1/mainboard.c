@@ -806,7 +806,7 @@ static void smm_lock( void )
  * @param the root device
  */
 
-static void init(device_t dev)
+static void mainboard_init(device_t dev)
 {
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	INT15_function_extensions int15_func;
@@ -845,7 +845,7 @@ static void enable_dev(device_t dev)
 	detect_hw_variant(dev);
 	update_subsystemid(dev);
 
-	dev->ops->init = init;  // rest of mainboard init later
+	dev->ops->init = mainboard_init;  // rest of mainboard init later
 }
 
 struct chip_operations mainboard_ops = {

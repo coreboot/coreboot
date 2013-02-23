@@ -180,7 +180,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in dbm690t board.
 * This function called early than rs690_enable.
 *************************************************/
-static void dbm690t_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard DBM690T Enable. dev=0x%p\n", dev);
 
@@ -190,5 +190,5 @@ static void dbm690t_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = dbm690t_enable,
+	.enable_dev = mainboard_enable,
 };

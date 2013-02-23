@@ -123,7 +123,7 @@ static void get_ide_dma66(void)
 * enable the dedicated function in bimini board.
 * This function called early than rs780_enable.
 *************************************************/
-static void bimini_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard BIMINI Enable. dev=0x%p\n", dev);
 
@@ -133,5 +133,5 @@ static void bimini_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = bimini_enable,
+	.enable_dev = mainboard_enable,
 };

@@ -65,11 +65,11 @@ void set_pcie_dereset(void *nbconfig)
 /*************************************************
  * enable the dedicated function in h8qgi board.
  *************************************************/
-static void h8qgi_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {
-		.enable_dev = h8qgi_enable,
+		.enable_dev = mainboard_enable,
 };

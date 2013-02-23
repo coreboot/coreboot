@@ -832,7 +832,7 @@ static void mainboard_init(device_t dev)
 * enable the dedicated function in sina board.
 * This function called early than rs690_enable.
 *************************************************/
-static void enable_dev(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 
 	printk(BIOS_INFO, "%s %s[%x/%x] %s\n",
@@ -849,5 +849,5 @@ static void enable_dev(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = enable_dev,
+	.enable_dev = mainboard_enable,
 };

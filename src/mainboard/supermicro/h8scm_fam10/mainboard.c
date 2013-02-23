@@ -69,7 +69,7 @@ void set_pcie_dereset(void)
 * enable the dedicated function in h8scm board.
 * This function called early than sr5650_enable.
 *************************************************/
-static void h8scm_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard H8SCM Enable. dev=0x%p\n", dev);
 
@@ -92,5 +92,5 @@ static void h8scm_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = h8scm_enable,
+	.enable_dev = mainboard_enable,
 };

@@ -121,8 +121,4 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default n
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 endif # BOARD_AMD_PERSIMMON

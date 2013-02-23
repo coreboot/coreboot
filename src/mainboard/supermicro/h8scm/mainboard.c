@@ -67,7 +67,7 @@ void set_pcie_dereset(void *nbconfig)
 /*************************************************
  * enable the dedicated function in h8scm board.
  *************************************************/
-static void h8scm_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
@@ -80,5 +80,5 @@ int add_mainboard_resources(struct lb_memory *mem)
 #endif
 
 struct chip_operations mainboard_ops = {
-		.enable_dev = h8scm_enable,
+		.enable_dev = mainboard_enable,
 };

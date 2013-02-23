@@ -68,11 +68,11 @@ void set_pcie_dereset(void *nbconfig)
 /*************************************************
  * enable the dedicated function in dinar board.
  *************************************************/
-static void dinar_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard Dinar Enable. dev=0x%p\n", dev);
 }
 
 struct chip_operations mainboard_ops = {
-		.enable_dev = dinar_enable,
+		.enable_dev = mainboard_enable,
 };

@@ -73,7 +73,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in M5A88-V board.
 * This function called early than rs780_enable.
 *************************************************/
-static void m5a88pm_v_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 
 	printk(BIOS_INFO, "Mainboard ASUS M5A88-V Enable. dev=0x%p\n", dev);
@@ -83,5 +83,5 @@ static void m5a88pm_v_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = m5a88pm_v_enable,
+	.enable_dev = mainboard_enable,
 };

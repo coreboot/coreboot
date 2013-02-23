@@ -140,7 +140,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in tim8690 board.
 * This function called early than rs690_enable.
 *************************************************/
-static void tim8690_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard tim8690 Enable. dev=0x%p\n", dev);
 
@@ -149,5 +149,5 @@ static void tim8690_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = tim8690_enable,
+	.enable_dev = mainboard_enable,
 };

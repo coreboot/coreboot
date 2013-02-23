@@ -98,7 +98,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in mahogany board.
 * This function called early than rs780_enable.
 *************************************************/
-static void mahogany_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MAHOGANY Enable. dev=0x%p\n", dev);
 
@@ -107,5 +107,5 @@ static void mahogany_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = mahogany_enable,
+	.enable_dev = mainboard_enable,
 };

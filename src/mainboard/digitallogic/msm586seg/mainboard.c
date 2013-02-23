@@ -31,7 +31,7 @@ static void irqdump(void)
 /* TODO: finish up mmcr struct in sc520.h, and;
    - set ADDDECTL (now done in raminit.c in cpu/amd/sc520
 */
-static void enable_dev(struct device *dev)
+static void mainboard_enable(struct device *dev)
 {
 	//volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
@@ -129,6 +129,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = enable_dev
+	.enable_dev = mainboard_enable,
 };
 

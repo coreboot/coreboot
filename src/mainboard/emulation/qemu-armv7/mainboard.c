@@ -16,12 +16,12 @@
 #include <console/console.h>
 #include <device/device.h>
 
-static void enable_dev(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Enable qemu/armv7 device...\n");
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = enable_dev,
+	.enable_dev = mainboard_enable,
 };
 

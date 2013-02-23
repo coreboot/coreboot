@@ -33,7 +33,6 @@
  */
 
 #include <libpayload.h>
-// #include <arch/rdtsc.h>
 
 /**
  * @ingroup arch
@@ -48,80 +47,19 @@ u32 cpu_khz;
  */
 unsigned int get_cpu_speed(void)
 {
-#if 0
-	unsigned long long start, end;
-
-	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
-	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
-
-	/* Set the PIT to Mode 0, counter 2, word access. */
-	outb(0xB0, 0x43);
-
-	/* Load the counter with 0xffff. */
-	outb(0xff, 0x42);
-	outb(0xff, 0x42);
-
-	/* Read the number of ticks during the period. */
-	start = rdtsc();
-	while (!(inb(0x61) & 0x20)) ;
-	end = rdtsc();
-
-	/*
-	 * The clock rate is 1193180 Hz, the number of milliseconds for a
-	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
-	 * Multiply that by the number of measured clocks to get the kHz value.
-	 */
-	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
-#else
+	/* FIXME */
 	cpu_khz = 200 * 1024;
-#endif
 	return cpu_khz;
 }
 
-static inline void _delay(unsigned long long delta)
+uint64_t timer_hz(void)
 {
-#if 0
-	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout) ;
-#endif
+	/* FIXME */
+	return 0;
 }
 
-/**
- * Delay for a specified number of nanoseconds.
- *
- * @param n Number of nanoseconds to delay for.
- */
-void ndelay(unsigned int n)
+uint64_t timer_raw_value(void)
 {
-	_delay(n * cpu_khz / 1000000);
-}
-
-/**
- * Delay for a specified number of microseconds.
- *
- * @param n Number of microseconds to delay for.
- */
-void udelay(unsigned int n)
-{
-	_delay(n * cpu_khz / 1000);
-}
-
-/**
- * Delay for a specified number of milliseconds.
- *
- * @param m Number of milliseconds to delay for.
- */
-void mdelay(unsigned int m)
-{
-	_delay(m * cpu_khz);
-}
-
-/**
- * Delay for a specified number of seconds.
- *
- * @param s Number of seconds to delay for.
- */
-void delay(unsigned int s)
-{
-	_delay(s * cpu_khz * 1000);
+	/* FIXME */
+	return 0;
 }

@@ -28,8 +28,8 @@
  */
 
 /**
- * @file i386/timer.c
- * i386 specific timer routines
+ * @file x86/timer.c
+ * x86 specific timer routines
  */
 
 #include <libpayload.h>
@@ -39,7 +39,7 @@
  * @ingroup arch
  * Global variable containing the speed of the processor in KHz.
  */
-u32 cpu_khz;
+uint32_t cpu_khz;
 
 /**
  * Calculate the speed of the processor for use in delays.
@@ -77,50 +77,12 @@ unsigned int get_cpu_speed(void)
 	return cpu_khz;
 }
 
-static inline void _delay(unsigned long long delta)
+uint64_t timer_hz(void)
 {
-	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout) ;
+	return lib_sysinfo.cpu_khz * 1000;
 }
 
-/**
- * Delay for a specified number of nanoseconds.
- *
- * @param n Number of nanoseconds to delay for.
- */
-void ndelay(unsigned int n)
+uint64_t timer_raw_value(void)
 {
-	_delay((unsigned long long)n * cpu_khz / 1000000);
-}
-
-/**
- * Delay for a specified number of microseconds.
- *
- * @param n Number of microseconds to delay for.
- */
-void udelay(unsigned int n)
-{
-	_delay((unsigned long long)n * cpu_khz / 1000);
-}
-
-/**
- * Delay for a specified number of milliseconds.
- *
- * @param m Number of milliseconds to delay for.
- */
-void mdelay(unsigned int m)
-{
-	_delay((unsigned long long)m * cpu_khz);
-}
-
-/**
- * Delay for a specified number of seconds.
- *
- * @param s Number of seconds to delay for.
- */
-void delay(unsigned int s)
-{
-	int i;
-	for (i=0; i<1000; i++)
-		_delay((unsigned long long)s * cpu_khz);
+	return rdtsc();
 }

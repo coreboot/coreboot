@@ -70,6 +70,4 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-#define SB_GPIO_REG50	50
-
 #endif //_BIOS_CALLOUT_H_

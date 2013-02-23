@@ -32,7 +32,7 @@
 /*************************************************
  * enable the dedicated function in thatcher board.
  *************************************************/
-static void thatcher_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	msr_t msr;
 
@@ -64,5 +64,5 @@ static void thatcher_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = thatcher_enable,
+	.enable_dev = mainboard_enable,
 };

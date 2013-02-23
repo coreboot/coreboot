@@ -244,7 +244,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in ma785gmt board.
 * This function called early than rs780_enable.
 *************************************************/
-static void ma785gmt_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MA785GMT-UD2H Enable. dev=0x%p\n", dev);
 
@@ -255,5 +255,5 @@ static void ma785gmt_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = ma785gmt_enable,
+	.enable_dev = mainboard_enable,
 };

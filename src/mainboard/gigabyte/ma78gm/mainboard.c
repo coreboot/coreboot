@@ -71,7 +71,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in board.
 * This function called early than rs780_enable.
 *************************************************/
-static void ma78gm_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MA78GM-US2H Enable. dev=0x%p\n", dev);
 
@@ -80,5 +80,5 @@ static void ma78gm_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = ma78gm_enable,
+	.enable_dev = mainboard_enable,
 };

@@ -250,7 +250,7 @@ static void set_thermal_config(void)
 * enable the dedicated function in pistachio board.
 * This function called early than rs690_enable.
 *************************************************/
-static void pistachio_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard Pistachio Enable. dev=0x%p\n", dev);
 
@@ -259,5 +259,5 @@ static void pistachio_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = pistachio_enable,
+	.enable_dev = mainboard_enable,
 };

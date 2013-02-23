@@ -73,7 +73,7 @@ u8 is_dev3_present(void)
 * enable the dedicated function in A785E-I board.
 * This function called early than rs780_enable.
 *************************************************/
-static void a785e_i_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard A785E-I Enable. dev=0x%p\n", dev);
 
@@ -82,5 +82,5 @@ static void a785e_i_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = a785e_i_enable,
+	.enable_dev = mainboard_enable,
 };

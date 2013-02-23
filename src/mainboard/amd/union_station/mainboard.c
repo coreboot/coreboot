@@ -49,11 +49,11 @@ void set_pcie_dereset(void)
 /*************************************************
 * enable the dedicated function in unionstation board.
 *************************************************/
-static void unionstation_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = unionstation_enable,
+	.enable_dev = mainboard_enable,
 };

@@ -222,7 +222,7 @@ static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 * enable the dedicated function in tim5690 board.
 * This function called early than rs690_enable.
 *************************************************/
-static void tim5690_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
 #if CONFIG_VGA_ROM_RUN
@@ -257,5 +257,5 @@ void mainboard_post(u8 value)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = tim5690_enable,
+	.enable_dev = mainboard_enable,
 };

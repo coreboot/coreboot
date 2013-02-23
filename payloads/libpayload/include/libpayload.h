@@ -407,8 +407,12 @@ int get_multiboot_info(struct sysinfo_t *info);
 
 int lib_get_sysinfo(void);
 
-/* Timer functions - defined by each architecture. */
+/* Timer functions. */
+/* Defined by each architecture. */
 unsigned int get_cpu_speed(void);
+uint64_t timer_hz(void);
+uint64_t timer_raw_value(void);
+/* Generic. */
 void ndelay(unsigned int n);
 void udelay(unsigned int n);
 void mdelay(unsigned int n);

@@ -46,21 +46,23 @@ static struct {
 	suseconds_t usecs;
 } clock;
 
-#define TICKS_PER_SEC (cpu_khz * 1000)
-#define TICKS_PER_USEC (cpu_khz / 1000)
-
-#ifdef CONFIG_ARCH_X86
 static void update_clock(void)
 {
-	u64 delta = rdtsc() - clock.ticks;
+	u64 delta = timer_raw_value() - clock.ticks;
 	int secs;
+	static uint64_t ticks_per_sec = 0;
+	static uint64_t ticks_per_usec = 0;
+	if (!ticks_per_sec) {
+		ticks_per_sec = timer_hz();
+		ticks_per_usec = timer_hz() / 1000000;
+	}
 
 	clock.ticks += delta;
 
-	secs = (int) (delta / TICKS_PER_SEC);
+	secs = (int) (delta / ticks_per_sec);
 	clock.secs += secs;
-	delta -= (secs * TICKS_PER_SEC);
-	clock.usecs += (int) (delta / TICKS_PER_USEC);
+	delta -= (secs * ticks_per_sec);
+	clock.usecs += (int)(delta / ticks_per_usec);
 
 	if (clock.usecs > 1000000) {
 		clock.usecs -= 1000000;
@@ -110,15 +112,11 @@ static void gettimeofday_init(void)
 	clock.secs = (days * 86400) + (tm.tm_hour * 3600) +
 		(tm.tm_min * 60) + tm.tm_sec;
 }
-#endif // CONFIG_NVRAM
-
 #else
-static void update_clock(void)
-{
-}
-
 static void gettimeofday_init(void)
 {
+	/* Record the number of ticks */
+	clock.ticks = timer_raw_value();
 }
 #endif
 
@@ -144,4 +142,50 @@ int gettimeofday(struct timeval *tv, void *tz)
 	tv->tv_usec = clock.usecs;
 
 	return 0;
+}
+
+static inline void _delay(uint64_t delta)
+{
+	uint64_t start = timer_raw_value();
+	while (timer_raw_value() - start < delta) ;
+}
+
+/**
+ * Delay for a specified number of nanoseconds.
+ *
+ * @param n Number of nanoseconds to delay for.
+ */
+void ndelay(unsigned int n)
+{
+	_delay((uint64_t)n * timer_hz() / 1000000000);
+}
+
+/**
+ * Delay for a specified number of microseconds.
+ *
+ * @param n Number of microseconds to delay for.
+ */
+void udelay(unsigned int n)
+{
+	_delay((uint64_t)n * timer_hz() / 1000000);
+}
+
+/**
+ * Delay for a specified number of milliseconds.
+ *
+ * @param m Number of milliseconds to delay for.
+ */
+void mdelay(unsigned int m)
+{
+	_delay((uint64_t)m * timer_hz() / 1000);
+}
+
+/**
+ * Delay for a specified number of seconds.
+ *
+ * @param s Number of seconds to delay for.
+ */
+void delay(unsigned int s)
+{
+	_delay((uint64_t)s * timer_hz());
 }

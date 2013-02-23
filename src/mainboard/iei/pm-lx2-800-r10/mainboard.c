@@ -41,12 +41,12 @@ static void init(struct device *dev)
 	outb(inb(SCH3114_RTR_HWM_DAT) | 0x01, SCH3114_RTR_HWM_DAT);
 }
 
-static void enable_dev(struct device *dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = init;
 }
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("IEI PM-LX2-800-R10 Mainboard")
-	.enable_dev = enable_dev,
+	.enable_dev = mainboard_enable,
 };

@@ -26,11 +26,11 @@ static void init(struct device *dev)
 	printk(BIOS_DEBUG, "AAEON PFM-540I_REVB EXIT %s\n", __func__);
 }
 
-static void enable_dev(struct device *dev)
+static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = init;
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = enable_dev,
+	.enable_dev = mainboard_enable,
 };

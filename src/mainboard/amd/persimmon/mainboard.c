@@ -53,7 +53,7 @@ void set_pcie_dereset(void)
 /*************************************************
 * enable the dedicated function in persimmon board.
 *************************************************/
-static void persimmon_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -76,5 +76,5 @@ static void persimmon_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = persimmon_enable,
+	.enable_dev = mainboard_enable,
 };

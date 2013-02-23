@@ -134,7 +134,7 @@ static void set_gpio40_gfx(void)
 * enable the dedicated function in ma785gm board.
 * This function called early than rs780_enable.
 *************************************************/
-static void ma785gm_enable(device_t dev)
+static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard MA785GM-US2H Enable. dev=0x%p\n", dev);
 
@@ -144,5 +144,5 @@ static void ma785gm_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.enable_dev = ma785gm_enable,
+	.enable_dev = mainboard_enable,
 };

@@ -24,6 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
+#include <delay.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 

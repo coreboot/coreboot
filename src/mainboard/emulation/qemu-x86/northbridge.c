@@ -135,7 +135,7 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
-static void enable_dev(struct device *dev)
+static void northbridge_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
@@ -146,5 +146,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations mainboard_emulation_qemu_x86_ops = {
 	CHIP_NAME("QEMU Northbridge")
-	.enable_dev = enable_dev,
+	.enable_dev = northbridge_enable,
 };

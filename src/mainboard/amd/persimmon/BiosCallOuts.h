@@ -53,9 +53,6 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
-
 /* BIOS DEFAULT RET */
 AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 

@@ -19,10 +19,10 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
-#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "heapManager.h"
 #include "SB800.h"
+#include <northbridge/amd/agesa/family14/dimmSpd.h>
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -42,9 +42,15 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	 BiosLocateBuffer
 	},
 
+#ifdef __PRE_RAM__
 	{AGESA_READ_SPD,
-	 BiosReadSpd
+	 fam14_ReadSPD
 	},
+#else
+	{AGESA_READ_SPD,
+	 BiosDefaultRet
+	},
+#endif
 
 	{AGESA_READ_SPD_RECOVERY,
 	 BiosDefaultRet
@@ -422,14 +428,6 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	}
 
 	Status = 0;
-	return Status;
-}
-
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
-
 	return Status;
 }
 

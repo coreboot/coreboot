@@ -178,21 +178,29 @@ void OemAgesaSaveMtrr(void)
 	/* Fixed MTRRs */
 	msr_data = rdmsr(0x250);
 
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	msr_data = rdmsr(0x258);
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	msr_data = rdmsr(0x259);
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	for (i = 0x268; i < 0x270; i++) {
 		msr_data = rdmsr(i);
-		flash->write(flash, nvram_pos, 8, &msr_data);
-		nvram_pos += 8;
+		flash->write(flash, nvram_pos, 4, &msr_data.lo);
+		nvram_pos += 4;
+		flash->write(flash, nvram_pos, 4, &msr_data.hi);
+		nvram_pos += 4;
 	}
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
@@ -203,24 +211,32 @@ void OemAgesaSaveMtrr(void)
 	/* Variable MTRRs */
 	for (i = 0x200; i < 0x210; i++) {
 		msr_data = rdmsr(i);
-		flash->write(flash, nvram_pos, 8, &msr_data);
-		nvram_pos += 8;
+		flash->write(flash, nvram_pos, 4, &msr_data.lo);
+		nvram_pos += 4;
+		flash->write(flash, nvram_pos, 4, &msr_data.hi);
+		nvram_pos += 4;
 	}
 
 	/* SYS_CFG */
 	msr_data = rdmsr(0xC0010010);
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	/* TOM */
 	msr_data = rdmsr(0xC001001A);
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	/* TOM2 */
 	msr_data = rdmsr(0xC001001D);
-	flash->write(flash, nvram_pos, 8, &msr_data);
-	nvram_pos += 8;
+	flash->write(flash, nvram_pos, 4, &msr_data.lo);
+	nvram_pos += 4;
+	flash->write(flash, nvram_pos, 4, &msr_data.hi);
+	nvram_pos += 4;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);
@@ -274,17 +290,13 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 		flash->erase(flash, S3_DATA_VOLATILE_POS, S3_DATA_VOLATILE_SIZE);
 	}
 
-#ifndef SPI_DATA_PACKET_SIZE
-#define SPI_DATA_PACKET_SIZE 0xF
-#endif
 	nvram_pos = 0;
 	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
 
-	for (nvram_pos = 0; nvram_pos < DataSize - SPI_DATA_PACKET_SIZE; nvram_pos += SPI_DATA_PACKET_SIZE) {
+	for (nvram_pos = 0; nvram_pos < DataSize; nvram_pos += 4) {
 		data = *(u32 *) (Data + nvram_pos);
-		flash->write(flash, nvram_pos + pos + 4, SPI_DATA_PACKET_SIZE, (u8 *)(Data + nvram_pos));
+		flash->write(flash, nvram_pos + pos + 4, sizeof(u32), (u32 *)(Data + nvram_pos));
 	}
-	flash->write(flash, nvram_pos + pos + 4, DataSize % SPI_DATA_PACKET_SIZE, (u8 *)(Data + nvram_pos));
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

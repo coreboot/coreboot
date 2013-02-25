@@ -168,7 +168,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			offset += align - (offset % align);
 	}
 	media->close(media);
-	ERROR("ERROR: Not found.\n");
+	LOG("WARNING: Not found.\n");
 	return NULL;
 }
 

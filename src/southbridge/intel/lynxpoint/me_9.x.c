@@ -804,7 +804,7 @@ static void intel_me_mbp_give_up(device_t dev)
 	struct mei_csr csr;
 
 	reg32 = PCI_ME_MBP_GIVE_UP;
-	pci_write_config32(dev, PCI_ME_H_GS3, reg32);
+	pci_write_config32(dev, PCI_ME_H_GS2, reg32);
 	read_host_csr(&csr);
 	csr.reset = 1;
 	csr.interrupt_generate = 1;

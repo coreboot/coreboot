@@ -101,6 +101,13 @@ static void lpc_init(device_t dev)
 //-	hpetInit(sb_config, &(sb_config->BuildParameters));
 	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
 
+	/* Initialize the real time clock.
+	 * The 0 argument tells rtc_init not to
+	 * update CMOS unless it is invalid.
+	 * 1 tells rtc_init to always initialize the CMOS.
+	 */
+	rtc_init(0);
+
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - End.\n");
 }
 

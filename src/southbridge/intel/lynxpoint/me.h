@@ -201,8 +201,6 @@ struct me_hfs2 {
 #define PCI_ME_H_GS2		0x70
 #define   PCI_ME_MBP_GIVE_UP	0x01
 
-#define PCI_ME_H_GS3		0x74
-
 #define PCI_ME_HERES		0xbc
 #define  PCI_ME_EXT_SHA1	0x00
 #define  PCI_ME_EXT_SHA256	0x02

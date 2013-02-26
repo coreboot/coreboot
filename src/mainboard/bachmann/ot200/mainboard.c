@@ -21,6 +21,7 @@
 #include <device/smbus.h>
 #include <smbios.h>
 #include <console/console.h>
+#include <cpu/x86/msr.h>
 
 /* overwrite a weak function to fill SMBIOS table with a custom value */
 static u8 hw_rev = 0;
@@ -43,6 +44,7 @@ static void init(struct device *dev)
 	unsigned int i;
 	u32 chksum = 0;
 	char block[20];
+	msr_t reset;
 	device_t eeprom_dev = dev_find_slot_on_smbus(1, 0x52);
 
 	if (eeprom_dev == 0) {
@@ -63,6 +65,11 @@ static void init(struct device *dev)
 	hw_rev = block[5];
 
 	printk(BIOS_DEBUG, "hw revision: %u\n", hw_rev);
+
+        /* Reset MFGPT7 (standby power domain) */
+        reset = rdmsr(0x5140002b);
+        reset.lo = 1 << 7;
+        wrmsr(0x5140002b, reset);
 }
 
 static void mainboard_enable(struct device *dev)

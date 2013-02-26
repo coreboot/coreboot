@@ -91,7 +91,7 @@ static void i82801ax_enable_acpi(struct device *dev)
  *
  * @param dev PCI device with I/O APIC control registers
  */
-static void i82801ax_enable_ioapic(struct device *dev)
+static void i82801ax_general_cntl(struct device *dev)
 {
 	u32 reg32;
 
@@ -101,9 +101,7 @@ static void i82801ax_enable_ioapic(struct device *dev)
 	reg32 |= (1 << 2);	/* DMA collection buffer enable (DCB_EN) */
 	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
 	pci_write_config32(dev, GEN_CNTL, reg32);
-	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
-
-	set_ioapic_id(IO_APIC_ADDR, 0x02);
+	printk(BIOS_DEBUG, "Southbridge GEN_CNTL 0x%08x\n", reg32);
 }
 
 static void i82801ax_enable_serial_irqs(struct device *dev)
@@ -222,8 +220,9 @@ static void lpc_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);
 
 	i82801ax_enable_acpi(dev);
+	i82801ax_general_cntl(dev);
 	/* IO APIC initialization. */
-	i82801ax_enable_ioapic(dev);
+	set_ioapic_id(IO_APIC_ADDR, 0x02);
 
 	i82801ax_enable_serial_irqs(dev);
 

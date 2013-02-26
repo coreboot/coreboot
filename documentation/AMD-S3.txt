@@ -13,7 +13,7 @@
  /_/    \_\_|  |_|_____/  |_____/  |____/
 
 
-               S3 in Coreboot (V 1.1)
+               S3 in Coreboot (V 1.2)
 ----------------------------------------
                 Zheng Bao
             <zheng.bao@amd.com>
@@ -22,7 +22,7 @@
 Introduction
 ============
 This document is about how the feature S3 is implemented on coreboot,
-specificly on AMD platform. This topic deals with ACPI spec, hardware,
+specifically on AMD platform. This topic deals with ACPI spec, hardware,
 BIOS, OS. We try to help coreboot users to realize their own S3.
 
 S3 in a nutshell
@@ -103,20 +103,45 @@ Lifecycle of booting, sleeping and waking Coreboot and Ubuntu
 =============================================================
 1. Cold boot.
 For a system with S3 feature, the BIOS needs to save some data to
-non-volitile storage at cold boot stage. What data need to be save are
+non-volatile storage at cold boot stage. What data need to be save are
 provided by AmdS3Save. After the wrapper calls the AmdS3Save, it gets
 the VolatileStorage and NvStorage, which are where the data are
 located. It is the wrappers's responsibility to save the data.[3][4]
-Currently, the wrappers allocate a CBFS modules in BIOS image. Todo
+Currently, the wrappers allocate a CBFS modules in BIOS image. To do
 that, the wrapper needs to have the ability to write flash chips. It
 is not as comprehensive as flashrom. But for the SST chip on Parmer,
 MX chip on Thather, coreboot works well.[5]
 
 2. OS goes in S3.
+For Linux, besides the kernel needs to do some saving, most distributions
+run some scripts. For Ubuntu, scripts are located at /usr/lib/pm-utils/sleep.d.
+  # ls /usr/lib/pm-utils/sleep.d
+   000kernel-change  49bluetooth        90clock       95led
+   00logging         55NetworkManager   94cpufreq     98video-quirk-db-handler
+   00powersave       60_wpa_supplicant  95anacron     99video
+   01PulseAudio      75modules          95hdparm-apm
+The script with lower prefix runs before the one with higher prefix.
+99video is the last one.
+Those scripts have hooks called hibernate, suspend, thaw, resume. For
+each script, suspend is called when system sleeps and wakeup is called
+when system wakeups.
 
-3. BIOS detect S3 wakeup
+3. Firmware detects S3 wakeup
+As we mentioned, Firmware detects the SLP_TYPx to find out if the board
+wakes up. In romstage.c, AmdInitReset and AmdInitEarly are called
+as they are during cold boot. AmdInitResume and AmdS3LateRestore are
+called only during resume. For whole ramstage, Coreboot goes through
+almost the same way as cold boot, other than not calling the AmdInitMid,
+AmdInitLate and AmdS3Save, and restoring all the MTRRs.
+At last step of coreboot stage, coreboot finds out the wakeup vector in FADT,
+written by OS, and jump.
 
 4. OS resumes.
+When Linux resumes, all the sleeping scripts call their resume
+hooks. If we are more lucky, all the scripts can go through. More
+chances that the 99video hangs or fails to get the display
+back. Sometimes it can fixed if CONFIG_S3_VGA_ROM_RUN is unset in
+Coreboot/Kconfig. That needs more troubleshooting.
 
 
 Reference

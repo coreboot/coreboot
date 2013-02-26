@@ -172,7 +172,7 @@ static void lb_console(struct lb_header *header)
 
 static void lb_framebuffer(struct lb_header *header)
 {
-#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE
+#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE || defined(CONFIG_MAINBOARD_DO_NATIVE_INIT)
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 	int vbe_mode_info_valid(void);
 

@@ -191,7 +191,7 @@ static void setup_realmode_idt(void)
 	write_idt_stub((void *)0xffe6e, 0x1a);
 }
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE && !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 vbe_mode_info_t mode_info;
 static int mode_info_valid;
 
@@ -322,7 +322,7 @@ void run_bios(struct device *dev, unsigned long addr)
 	realmode_call(addr + 0x0003, num_dev, 0xffff, 0x0000, 0xffff, 0x0, 0x0);
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE && !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	if ((dev->class >> 8)== PCI_CLASS_DISPLAY_VGA)
 		vbe_set_graphics();
 #endif

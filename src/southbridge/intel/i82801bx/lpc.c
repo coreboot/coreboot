@@ -72,17 +72,29 @@ typedef struct southbridge_intel_i82801bx_config config_t;
  * Use the defined IRQ values above or set mainboard
  * specific IRQ values in your devicetree.cb.
 */
-static void i82801bx_enable_apic(struct device *dev)
-{
-	uint32_t reg32;
-	volatile uint32_t *ioapic_index = (volatile uint32_t *)IO_APIC_ADDR;
-	volatile uint32_t *ioapic_data = (volatile uint32_t *)(IO_APIC_ADDR + 0x10);
 
+/**
+ * Enable ACPI I/O range.
+ *
+ * @param dev PCI device with ACPI and PM BAR's
+ */
+static void i82801bx_enable_acpi(struct device *dev)
+{
 	/* Set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
 
 	/* Enable ACPI I/O range decode and ACPI power management. */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
+}
+
+/**
+ * Set miscellanous static southbridge features.
+ *
+ * @param dev PCI device with I/O APIC control registers
+ */
+static void i82801bx_enable_ioapic(struct device *dev)
+{
+	u32 reg32;
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
 	reg32 |= (1 << 13);	/* Coprocessor error enable (COPR_ERR_EN) */
@@ -92,18 +104,7 @@ static void i82801bx_enable_apic(struct device *dev)
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
-	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
-
-	*ioapic_index = 0;
-	reg32 = *ioapic_data;
-	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", reg32);
-	if (reg32 != (1 << 25))
-		die("APIC Error\n");
-
-	/* TODO: From i82801ca, needed/useful on other ICH? */
-	*ioapic_index = 3; /* Select Boot Configuration register. */
-	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
+	set_ioapic_id(IO_APIC_ADDR, 0x02);
 }
 
 static void i82801bx_enable_serial_irqs(struct device *dev)
@@ -237,8 +238,10 @@ static void lpc_init(struct device *dev)
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);
 
+	i82801bx_enable_acpi(dev);
+
 	/* IO APIC initialization. */
-	i82801bx_enable_apic(dev);
+	i82801bx_enable_ioapic(dev);
 
 	i82801bx_enable_serial_irqs(dev);
 

@@ -82,6 +82,7 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define   PMBASE_ADDR	0x0400
 #define   DEFAULT_PMBASE PMBASE_ADDR
 #define ACPI_CNTL       0x44
+#define   ACPI_EN	(1 << 4)
 #define BIOS_CNTL       0x4E
 #define GPIO_BASE       0x58
 #define GPIO_CNTL       0x5C

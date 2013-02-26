@@ -244,7 +244,7 @@ static const CODECENTRY persimmon_codec_alc269[] =
 	{0xff, 0xffffffff} /* end of table */
 };
 
-static const CODECTBLLIST persimmon_codec_tablelist[] =
+static const CODECTBLLIST codec_tablelist[] =
 {
 	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},
 	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}
@@ -254,7 +254,7 @@ static const CODECTBLLIST persimmon_codec_tablelist[] =
  * @def AZALIA_OEM_VERB_TABLE
  *  Mainboard specific cocec verb table list
  */
-#define AZALIA_OEM_VERB_TABLE		(&persimmon_codec_tablelist[0])
+#define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
 
 /* set up an ACPI prefered power management profile */
 /*  from acpi.h

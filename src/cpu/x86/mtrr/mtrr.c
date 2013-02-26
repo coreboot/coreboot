@@ -83,7 +83,7 @@ static void enable_var_mtrr(void)
 }
 
 /* setting variable mtrr, comes from linux kernel source */
-static void set_var_mtrr(
+void set_var_mtrr(
 	unsigned int reg, unsigned long basek, unsigned long sizek,
 	unsigned char type, unsigned address_bits)
 {

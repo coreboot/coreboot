@@ -20,6 +20,8 @@
 #ifndef S3_RESUME_H
 #define S3_RESUME_H
 
+#if CONFIG_HAVE_ACPI_RESUME
+
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
 #define S3_DATA_VOLATILE_SIZE	0x6000
 #define S3_DATA_MTRR_SIZE	0x1000
@@ -46,5 +48,7 @@ void move_stack_high_mem(void);
 u32 OemAgesaSaveS3Info (S3_DATA_TYPE S3DataType, u32 DataSize, void *Data);
 void OemAgesaGetS3Info (S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data);
 void OemAgesaSaveMtrr (void);
+
+#endif
 
 #endif

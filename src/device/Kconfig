@@ -19,12 +19,26 @@
 ##
 
 menu "Devices"
+
+# Only set this in the mainboard
+config MAINBOARD_HAS_NATIVE_VGA_INIT
+	bool
+	default n
+
+config MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "use Native graphics setup code"
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
+	default n
+	help
+	  Enable mainboard code to turn on graphics, but without needing a video BIOS.
+	  This mode is only supported on some mainboards, such as the Google Link.
+
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
+	depends on (!MAINBOARD_DO_NATIVE_VGA_INIT) && PCI && !PAYLOAD_SEABIOS || EXPERT
 	help
 	  Execute VGA Option ROMs in coreboot if found. This is required
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
@@ -94,7 +108,7 @@ choice
 config PCI_OPTION_ROM_RUN_REALMODE
 	prompt "Native mode"
 	bool
-	depends on ARCH_X86
+	depends on ARCH_X86 && !MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  If you select this option, PCI Option ROMs will be executed
 	  natively on the CPU in real mode. No CPU emulation is involved,
@@ -104,7 +118,7 @@ config PCI_OPTION_ROM_RUN_REALMODE
 config PCI_OPTION_ROM_RUN_YABEL
 	prompt "Secure mode"
 	bool
-	depends on !GEODE_VSA
+	depends on !GEODE_VSA && !MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  If you select this option, the x86emu CPU emulator will be used to
 	  execute PCI Option ROMs.
@@ -282,12 +296,12 @@ config MBI_FILE
 endmenu
 
 menu "Display"
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
 
 config FRAMEBUFFER_SET_VESA_MODE
 	prompt "Set VESA framebuffer mode"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  Set VESA framebuffer mode (needed for bootsplash)
 
@@ -425,7 +439,7 @@ config FRAMEBUFFER_VESA_MODE
 config FRAMEBUFFER_KEEP_VESA_MODE
 	prompt "Keep VESA framebuffer"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a

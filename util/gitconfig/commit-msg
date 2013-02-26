@@ -33,7 +33,8 @@ add_ChangeId() {
 	' "$MSG" | git stripspace`
 	if test -z "$clean_message"
 	then
-		return
+		echo "Aborting commit due to empty commit message."
+		exit 1
 	fi
 
 	# Does Change-Id: already exist? if so, exit (no change).

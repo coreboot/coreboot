@@ -23,6 +23,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 
 #include "chip.h"
 #include "sandybridge.h"
@@ -619,20 +622,44 @@ static void gma_pm_init_post_vbios(struct device *dev)
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
+	u32 graphics_base, graphics_size;
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
+	/* Set up an MTRR to make anything the VBIOS does run fast. */
+	/* We have agreed on MTRR #8. */
+	graphics_base = dev->resource_list[1].base;
+	graphics_size = dev->resource_list[1].size;
+	printk(BIOS_DEBUG, "Set graphics %p size 0x%x\n",
+				(void *)graphics_base, graphics_size);
+	set_var_mtrr(8, graphics_base>>10, graphics_size>>10, MTRR_TYPE_WRCOMB, 0x24);
+
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
 	/* PCI Init, will run VBIOS */
+#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "Run the VBIOS init\n");
 	pci_dev_init(dev);
+#endif
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
+
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
+	u32 iobase, mmiobase, physbase;
+	iobase = dev->resource_list[2].base;
+	mmiobase = dev->resource_list[0].base;
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
+	i915lightup(physbase, iobase, mmiobase, graphics_base);
+#endif
+
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -660,12 +687,13 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci		= &gma_pci_ops,
 };
 
-static const unsigned short gma_ids[] = {
-	0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x0156, 0x166,
-	0,
-};
-static const struct pci_driver gma_gt1_desktop __pci_driver = {
-	.ops	= &gma_func0_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.devices= gma_ids,
+static const unsigned short pci_device_ids[] = { 0x0102, 0x0106, 0x010a, 0x0112,
+						 0x0116, 0x0122, 0x0126, 0x0156,
+						 0x0166,
+						 0 };
+
+static const struct pci_driver pch_lpc __pci_driver = {
+	.ops	 = &gma_func0_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };

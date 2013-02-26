@@ -40,6 +40,13 @@
 
 #if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
 #include <device/device.h>
+/* you should almost NEVER use this. */
+/* N.B. We worked on a lot of ways to make this continue as static,
+ * but just making it available ended up being the simplest solution.
+ */
+void set_var_mtrr(
+	unsigned int reg, unsigned long basek, unsigned long sizek,
+	unsigned char type, unsigned address_bits);
 void enable_fixed_mtrr(void);
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void x86_setup_mtrrs(void);

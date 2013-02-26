@@ -12,8 +12,6 @@
 #include <arch/ioapic.h>
 #include "i82801ex.h"
 
-#define ACPI_BAR 0x40
-#define GPIO_BAR 0x58
 
 #define NMI_OFF 0
 #define MAINBOARD_POWER_OFF 0
@@ -193,7 +191,7 @@ static void i82801ex_gpio_init(device_t dev)
 	/* Get the chip configuration */
 	config = dev->chip_info;
 	/* Find the GPIO bar */
-	res = find_resource(dev, GPIO_BAR);
+	res = find_resource(dev, GPIO_BASE);
 	if (!res) {
 		return;
 	}
@@ -295,10 +293,10 @@ static void i82801ex_lpc_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* Add the ACPI BAR */
-	res = pci_get_resource(dev, ACPI_BAR);
+	res = pci_get_resource(dev, PMBASE);
 
 	/* Add the GPIO BAR */
-	res = pci_get_resource(dev, GPIO_BAR);
+	res = pci_get_resource(dev, GPIO_BASE);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));

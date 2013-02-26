@@ -37,6 +37,12 @@ add_ChangeId() {
 		exit 1
 	fi
 
+	if LANG= grep '[^ -~]' "$MSG" > /dev/null
+	then
+		echo "Aborting commit due to non-ascii characters in commit message."
+		exit 1
+	fi
+
 	# Does Change-Id: already exist? if so, exit (no change).
 	if grep -i '^Change-Id: I[0-9a-f]\{40\}$' "$MSG" >/dev/null
 	then

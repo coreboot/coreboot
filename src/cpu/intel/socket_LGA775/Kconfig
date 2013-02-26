@@ -14,7 +14,6 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select CPU_INTEL_MODEL_1067X
 	select MMX
 	select SSE
-	select UDELAY_TSC
 	select SIPI_VECTOR_IN_ROM
 
 config DCACHE_RAM_SIZE

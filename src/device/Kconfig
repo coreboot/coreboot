@@ -19,12 +19,29 @@
 ##
 
 menu "Devices"
+
+# Only set this in the mainboard
+config MAINBOARD_HAS_NATIVE_VGA_INIT
+	bool
+	default n
+
+config MAINBOARD_DO_NATIVE_VGA_INIT
+	bool "Use native graphics initialization"
+	depends on MAINBOARD_HAS_NATIVE_VGA_INIT
+	default n
+	help
+	  Some mainboards, such as the Google Link, allow initializing the display
+	  without the need of a binary only VGA OPROM. Enabling this option may be
+	  faster, but also lack flexibility in setting modes.
+
+	  If unsure, say N.
+
 # TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
 	default n if PAYLOAD_SEABIOS
 	default y if !PAYLOAD_SEABIOS
-	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
+	depends on PCI && !PAYLOAD_SEABIOS && !MAINBOARD_DO_NATIVE_VGA_INIT || EXPERT
 	help
 	  Execute VGA Option ROMs in coreboot if found. This is required
 	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
@@ -282,19 +299,19 @@ config MBI_FILE
 endmenu
 
 menu "Display"
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_DO_NATIVE_VGA_INIT
 
 config FRAMEBUFFER_SET_VESA_MODE
-	prompt "Set VESA framebuffer mode"
+	prompt "Set framebuffer graphics resolution"
 	bool
 	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
 	help
-	  Set VESA framebuffer mode (needed for bootsplash)
+	  Set VESA/native framebuffer mode (needed for bootsplash and graphical framebuffer console)
 
 choice
-	prompt "VESA framebuffer video mode"
+	prompt "framebuffer graphics resolution"
 	default FRAMEBUFFER_VESA_MODE_117
-	depends on FRAMEBUFFER_SET_VESA_MODE
+	depends on FRAMEBUFFER_SET_VESA_MODE || MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  This option sets the resolution used for the coreboot framebuffer (and
 	  bootsplash screen).
@@ -385,6 +402,7 @@ config FRAMEBUFFER_VESA_MODE_11B
 
 config FRAMEBUFFER_VESA_MODE_USER
 	bool "Manually select VESA mode"
+	depends on !MAINBOARD_DO_NATIVE_VGA_INIT
 
 endchoice
 
@@ -425,7 +443,7 @@ config FRAMEBUFFER_VESA_MODE
 config FRAMEBUFFER_KEEP_VESA_MODE
 	prompt "Keep VESA framebuffer"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || !MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a

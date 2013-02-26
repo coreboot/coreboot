@@ -24,34 +24,24 @@
 #define MAINBOARD_POWER_ON  1
 
 
-static void i82801cx_enable_ioapic( struct device *dev)
+/**
+ * Set miscellanous static southbridge features.
+ *
+ * @param dev PCI device with I/O APIC control registers
+ */
+static void i82801cx_enable_ioapic(struct device *dev)
 {
-	uint32_t dword;
-    volatile uint32_t* ioapic_index = (volatile uint32_t*)IO_APIC_ADDR;
-    volatile uint32_t* ioapic_data = (volatile uint32_t*)(IO_APIC_ADDR + 0x10);
+	u32 reg32;
 
-    dword = pci_read_config32(dev, GEN_CNTL);
-    dword |= (3 << 7); /* enable ioapic & disable SMBus interrupts */
-    dword |= (1 <<13); /* coprocessor error enable */
-    dword |= (1 << 1); /* delay transaction enable */
-    dword |= (1 << 2); /* DMA collection buf enable */
-    pci_write_config32(dev, GEN_CNTL, dword);
-    printk(BIOS_DEBUG, "ioapic southbridge enabled %x\n",dword);
+	reg32 = pci_read_config32(dev, GEN_CNTL);
+	reg32 |= (1 << 13);	/* Coprocessor error enable (COPR_ERR_EN) */
+	reg32 |= (3 << 7);	/* IOAPIC enable (APIC_EN) */
+	reg32 |= (1 << 2);	/* DMA collection buffer enable (DCB_EN) */
+	reg32 |= (1 << 1);	/* Delayed transaction enable (DTE) */
+	pci_write_config32(dev, GEN_CNTL, reg32);
+	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
-    // Must program the APIC's ID before using it
-
-    *ioapic_index = 0;		// Select APIC ID register
-    *ioapic_data = (2<<24);
-
-    // Hang if the ID didn't take (chip not present?)
-    *ioapic_index = 0;
-    dword = *ioapic_data;
-    printk(BIOS_DEBUG, "Southbridge apic id = %x\n", (dword>>24) & 0xF);
-    if(dword != (2<<24))
-		die("");
-
-	*ioapic_index = 3;		// Select Boot Configuration register
-	*ioapic_data = 1;		// Use Processor System Bus to deliver interrupts
+	set_ioapic_id(IO_APIC_ADDR, 0x02);
 }
 
 // This is how interrupts are received from the Super I/O chip

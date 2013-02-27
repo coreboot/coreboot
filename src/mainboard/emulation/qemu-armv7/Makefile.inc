@@ -26,5 +26,3 @@ ramstage-y += timer.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 ramstage-y += uart.c
-
-SRC_ROOT = $(src)/mainboard/emulation/qemu-armv7a

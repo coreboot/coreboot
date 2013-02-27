@@ -27,14 +27,12 @@ ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915io.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 SPD_BIN = $(obj)/spd.bin
 
-SRC_ROOT = $(src)/mainboard/google/link
-
 # Order of names in SPD_SOURCES is important!
 SPD_SOURCES = elpida_4Gb_1600_x16
 SPD_SOURCES += samsung_4Gb_1600_1.35v_x16
 SPD_SOURCES += micron_4Gb_1600_1.35v_x16
 
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), $(SRC_ROOT)/$(f).spd.hex)
+SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
 
 # Include spd rom data
 $(SPD_BIN): $(SPD_DEPS)

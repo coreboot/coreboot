@@ -21,5 +21,3 @@ ramstage-y += ec.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
-
-SRC_ROOT = $(src)/mainboard/google/parrot

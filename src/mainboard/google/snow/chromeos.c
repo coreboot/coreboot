@@ -34,7 +34,7 @@
 #include <boot/coreboot_tables.h>
 #include <arch/coreboot_tables.h>
 
-#define GPIO_COUNT	4
+#define GPIO_COUNT	6
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -55,18 +55,30 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].value = 0;
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Developer: virtual GPIO active high */
+	/* Lid: the "switch" comes from the EC */
 	gpios->gpios[2].port = -1;
 	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = 1;
-	strncpy((char *)gpios->gpios[2].name,"developer",
+	gpios->gpios[2].value = 0;
+	strncpy((char *)gpios->gpios[2].name,"lid", GPIO_MAX_NAME_LENGTH);
+
+	/* Power: hardcoded as not pressed */
+	gpios->gpios[3].port = -1;
+	gpios->gpios[3].polarity = ACTIVE_HIGH;
+	gpios->gpios[3].value = 0;
+	strncpy((char *)gpios->gpios[3].name,"power", GPIO_MAX_NAME_LENGTH);
+
+	/* Developer: virtual GPIO active high */
+	gpios->gpios[4].port = -1;
+	gpios->gpios[4].polarity = ACTIVE_HIGH;
+	gpios->gpios[4].value = 0;
+	strncpy((char *)gpios->gpios[4].name,"developer",
 							GPIO_MAX_NAME_LENGTH);
 
 	/* Was VGA Option ROM loaded? */
-	gpios->gpios[3].port = -1; /* Indicate that this is a pseudo GPIO */
-	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = 0;
-	strncpy((char *)gpios->gpios[3].name,"oprom", GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
+	gpios->gpios[5].polarity = ACTIVE_HIGH;
+	gpios->gpios[5].value = 0;
+	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 
 	printk(BIOS_ERR, "Added %d GPIOS size %d\n", GPIO_COUNT, gpios->size);
 

@@ -11,21 +11,21 @@ subdirs-y += via
 ## Rules for building the microcode blob in CBFS
 ################################################################################
 
-ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE), y)
-
-cbfs-files-y += cpu_microcode_blob.bin
-
-cpu_microcode_blob.bin-type = 0x53
-
 # External microcode file, or are we generating one ?
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL), y)
+cbfs-files-y += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-type = 0x53
 cpu_microcode_blob.bin-file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
-else
+endif
+
+ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
+cbfs-files-y += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-type = 0x53
 cpu_microcode_blob.bin-file = $(obj)/cpu_microcode_blob.bin
 endif
 
 # In case we have more than one "source" (cough) files containing microcode, we
-# Link them together in one large blob, so that we get all the microcode updates
+# link them together in one large blob, so that we get all the microcode updates
 # in one file. This makes it easier for objcopy in the final step.
 # The --entry=0 is just here to suppress the LD warning. It does not affect the
 # final microcode file.
@@ -38,5 +38,3 @@ $(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
 $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
 	@printf "  MICROCODE    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -j .data -O binary $< $@
-
-endif

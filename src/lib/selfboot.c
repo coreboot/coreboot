@@ -346,7 +346,8 @@ static int build_self_segment_list(
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
-			printk(BIOS_DEBUG, "  Entry Point 0x%p\n", (void *) ntohl((u32) segment->load_addr));
+			printk(BIOS_DEBUG, "  Entry Point 0x%p\n",
+			       (void *)(intptr_t)ntohll(segment->load_addr));
 			*entry =  ntohll(segment->load_addr);
 			/* Per definition, a payload always has the entry point
 			 * as last segment. Thus, we use the occurence of the

@@ -28,6 +28,7 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cbmem.h>
 #include <cpu/x86/cache.h>
 #include <cpu/cpu.h>
 
@@ -51,9 +52,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
         .device = 0x3580,
 };
 
-#if CONFIG_WRITE_HIGH_TABLES
-#include <cbmem.h>
-#endif
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
@@ -107,11 +105,9 @@ static void pci_domain_set_resources(device_t dev)
 		/* ram_resource(dev, idx++, 1024, tolmk - 1024); */
 		ram_resource(dev, idx++, 768, tolmk - 768);
 
-#if CONFIG_WRITE_HIGH_TABLES
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;
-#endif
 	}
 	assign_resources(dev->link_list);
 }

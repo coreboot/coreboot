@@ -28,9 +28,6 @@
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#if CONFIG_WRITE_HIGH_TABLES
-#include <cbmem.h>
-#endif
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -114,12 +111,10 @@ static void mc_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-#if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = tolm - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
 	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n", high_tables_base, high_tables_size);
-#endif
 }
 
 static struct pci_operations intel_pci_ops = {

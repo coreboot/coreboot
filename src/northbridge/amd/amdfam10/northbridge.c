@@ -842,9 +842,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 
 #endif
 
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 
 static void setup_uma_memory(void)
 {
@@ -1039,7 +1037,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if CONFIG_WRITE_HIGH_TABLES
+
 					if (high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
@@ -1051,7 +1049,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n",
 							HIGH_MEMORY_SIZE / 1024, high_tables_base);
 					}
-#endif
 				}
 				#if !CONFIG_AMDMCT
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -1077,7 +1074,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
-#if CONFIG_WRITE_HIGH_TABLES
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			     i, mmio_basek, basek, limitk);
 		if (high_tables_base==0) {
@@ -1089,7 +1085,6 @@ static void amdfam10_domain_set_resources(device_t dev)
 #endif
 			high_tables_size = HIGH_MEMORY_SIZE;
 		}
-#endif
 	}
 
 #if CONFIG_GFXUMA

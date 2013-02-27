@@ -396,10 +396,6 @@ config MAX_PIRQ_LINKS
 
 menu "System tables"
 
-config WRITE_HIGH_TABLES
-	bool "Write 'high' tables to avoid being overwritten in F segment"
-	default y
-
 config MULTIBOOT
 	bool "Generate Multiboot tables (for GRUB2)"
 	default y

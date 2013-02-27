@@ -166,11 +166,9 @@ static void mch_domain_read_resources(device_t dev)
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
 
-#if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk << 10) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
-#endif
 }
 
 static void mch_domain_set_resources(device_t dev)

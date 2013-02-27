@@ -722,7 +722,6 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
                     ram_resource(dev, idx, basek, pre_sizek);
                     idx += 0x10;
                     sizek -= pre_sizek;
-#if CONFIG_WRITE_HIGH_TABLES
                     if (high_tables_base==0) {
                     /* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
@@ -735,7 +734,6 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 				 (u32)(high_tables_size / 1024),
                                  high_tables_base);
                     }
-#endif
                 }
 
                 basek = mmio_basek;
@@ -751,7 +749,6 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 
         ram_resource(dev, (idx | 0), basek, sizek);
         idx += 0x10;
-#if CONFIG_WRITE_HIGH_TABLES
         printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
                  0, mmio_basek, basek, limitk);
         if (high_tables_base==0) {
@@ -764,7 +761,6 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 #endif
             high_tables_size = HIGH_MEMORY_SIZE;
         }
-#endif
     }
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 	printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",

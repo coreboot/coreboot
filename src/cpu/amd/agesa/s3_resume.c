@@ -24,9 +24,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 #include <device/device.h>
 #include <device/pci.h>
 #ifndef __PRE_RAM__

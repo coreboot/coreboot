@@ -31,14 +31,21 @@
 	.text
 	.align 4
 
+1:
+.word	_stack
+
 /*
  * Our entry point
  */
 _entry:
 
 	/* TODO: disable interrupts */
+
 	/* TODO: Clear BSS */
-	/* TODO: Setup new stack */
+
+	/* Setup new stack */
+	ldr sp, 1b
+
 	/* TODO: Save old stack pointer */
 
 	/* Let's rock. */

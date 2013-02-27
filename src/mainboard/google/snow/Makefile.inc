@@ -24,9 +24,3 @@ romstage-y += romstage.c
 # ramstage-y += ec.c
 ramstage-y += ramstage.c
 ramstage-y += chromeos.c
-
-# romstage-$(CONFIG_CHROMEOS) += chromeos.c
-
-# FIXME: we should do something similar to x86 platforms for Snow SPDs
-
-SRC_ROOT = $(src)/mainboard/google/snow

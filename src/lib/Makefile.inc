@@ -45,7 +45,7 @@ romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
-romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c cbmem.c
 romstage-y += compute_ip_checksum.c
 romstage-y += memmove.c
 

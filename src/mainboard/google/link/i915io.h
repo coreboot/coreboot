@@ -58,3 +58,14 @@ struct iodef {
 	unsigned long data;
 	unsigned long udelay;
 };
+
+/* i915.c */
+unsigned long io_i915_READ32(unsigned long addr);
+void io_i915_WRITE32(unsigned long val, unsigned long addr);
+
+/* intel_dp.c */
+u32 pack_aux(u8 *src, int src_bytes);
+void unpack_aux(u32 src, u8 *dst, int dst_bytes);
+int intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u8 *send, int send_bytes,
+	u8 *recv, int recv_size);
+

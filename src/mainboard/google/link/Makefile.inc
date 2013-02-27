@@ -23,6 +23,7 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915io.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += intel_dp.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 SPD_BIN = $(obj)/spd.bin

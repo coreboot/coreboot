@@ -62,7 +62,7 @@ extern int oprom_is_loaded;
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
 
-static unsigned long io_i915_READ32(unsigned long addr)
+unsigned long io_i915_READ32(unsigned long addr)
 {
        unsigned long val;
        outl(addr, addrport);
@@ -70,7 +70,7 @@ static unsigned long io_i915_READ32(unsigned long addr)
        return val;
 }
 
-static void io_i915_WRITE32(unsigned long val, unsigned long addr)
+void io_i915_WRITE32(unsigned long val, unsigned long addr)
 {
        outl(addr, addrport);
        outl(val, dataport);

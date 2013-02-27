@@ -22,6 +22,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <pc80/mc146818rtc.h>
 #include "i945.h"
 
@@ -30,6 +33,7 @@
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
+	u32 graphics_base, graphics_size;
 
 	/* Unconditionally reset graphics */
 	pci_write_config8(dev, GDRST, 1);
@@ -42,7 +46,36 @@ static void gma_func0_init(struct device *dev)
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
+	/* Set up an MTRR to make anything the VBIOS does run fast. */
+	/* we have agreed on MTRR #8 */
+	/* the BAR for graphics space is a well known number for
+	 * sandy and ivy. And the resource code renumbers it.
+	 * So it's almost like having two hardcodes.
+	 */
+	graphics_base = dev->resource_list[2].base;
+	graphics_size = dev->resource_list[2].size;
+	printk(BIOS_DEBUG, "gma_func0_init: set graphics %p size 0x%x\n",
+				(void *)graphics_base, graphics_size);
+	/* the consensus is we use this mtrr */
+	set_var_mtrr(8, graphics_base>>10, graphics_size>>10, MTRR_TYPE_WRCOMB, 0x24);
+
+#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "Run the VBIOS init\n");
+#endif
+
 	pci_dev_init(dev);
+
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
+	u32 iobase, mmiobase, physbase;
+	iobase = dev->resource_list[1].base;
+	mmiobase = dev->resource_list[0].base;
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
+	i915lightup(physbase, iobase, mmiobase, graphics_base);
+#endif
+
 }
 
 /* This doesn't reclaim stolen UMA memory, but IGD could still

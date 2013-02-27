@@ -18,10 +18,7 @@
  */
 
 #include <console/console.h>
-
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 
 void hardwaremain(int boot_complete);
 void main(void)
@@ -29,13 +26,11 @@ void main(void)
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
 
-#if CONFIG_WRITE_HIGH_TABLES
 	/* place at top of physical memory */
 	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
 	high_tables_base = CONFIG_SYS_SDRAM_BASE +
 			((CONFIG_DRAM_SIZE_MB << 20UL) * CONFIG_NR_DRAM_BANKS) -
 			CONFIG_COREBOOT_TABLES_SIZE;
-#endif
 
 	hardwaremain(0);
 }

@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cbmem.h>
 #include <cpu/cpu.h>
 #include <pc80/keyboard.h>
 #include "northbridge.h"
@@ -30,10 +31,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x7190,
 };
-
-#if CONFIG_WRITE_HIGH_TABLES
-#include <cbmem.h>
-#endif
 
 static void i440bx_domain_set_resources(device_t dev)
 {
@@ -70,11 +67,9 @@ static void i440bx_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
 
-#if CONFIG_WRITE_HIGH_TABLES
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;
-#endif
 	}
 	assign_resources(dev->link_list);
 }

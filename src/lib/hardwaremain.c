@@ -39,9 +39,7 @@ it with the version available from LANL.
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 #include <coverage.h>
 #include <timestamp.h>
 
@@ -113,11 +111,9 @@ void hardwaremain(int boot_complete)
 
 	timestamp_stash(TS_DEVICE_DONE);
 
-#if CONFIG_WRITE_HIGH_TABLES
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
-#endif
 #endif
 	timestamp_sync();
 
@@ -128,10 +124,8 @@ void hardwaremain(int boot_complete)
 
 	timestamp_add_now(TS_CBMEM_POST);
 
-#if CONFIG_WRITE_HIGH_TABLES
 	if (cbmem_post_handling)
 		cbmem_post_handling();
-#endif
 
 	timestamp_add_now(TS_WRITE_TABLES);
 

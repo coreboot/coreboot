@@ -625,12 +625,10 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		table_start, table_end - table_start);
 
-#if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Adding high table area\n");
 	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 			table_start, table_end - table_start);
-#endif
 
 	/* Add reserved regions */
 	add_lb_reserved(mem);

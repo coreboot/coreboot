@@ -9,10 +9,7 @@
 #include <string.h>
 #include <delay.h>
 #include <smbios.h>
-
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 
 #include "memory.c"
 
@@ -38,11 +35,9 @@ static void cpu_pci_domain_set_resources(device_t dev)
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, tolmk - 768);
 
-#if CONFIG_WRITE_HIGH_TABLES
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
-#endif
 
 	assign_resources(dev->link_list);
 }

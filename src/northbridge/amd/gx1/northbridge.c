@@ -64,9 +64,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_CYRIX_PCI_MASTER,
 };
 
-#if CONFIG_WRITE_HIGH_TABLES
 #include <cbmem.h>
-#endif
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -111,11 +109,9 @@ static void pci_domain_set_resources(device_t dev)
 			tolmk = tomk;
 		}
 
-#if CONFIG_WRITE_HIGH_TABLES
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tolmk * 1024) - HIGH_MEMORY_SIZE;
 		high_tables_size = HIGH_MEMORY_SIZE;
-#endif
 
 		/* Report the memory regions */
 		idx = 10;

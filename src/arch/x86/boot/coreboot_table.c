@@ -329,7 +329,6 @@ static void lb_strings(struct lb_header *header)
 
 }
 
-#if CONFIG_WRITE_HIGH_TABLES
 static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
 {
 	struct lb_record *rec;
@@ -341,7 +340,6 @@ static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header 
 	forward->forward = (uint64_t)(unsigned long)next_header;
 	return forward;
 }
-#endif
 
 static void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
@@ -600,7 +598,6 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-#if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
@@ -614,16 +611,6 @@ unsigned long write_coreboot_table(
 	head = lb_table_init(rom_table_end);
 	rom_table_end = (unsigned long)head;
 	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
-#else
-	if(low_table_end > (0x1000 - sizeof(struct lb_header))) { /* after 4K */
-		/* We need to put lbtable on  to [0xf0000,0x100000) */
-		head = lb_table_init(rom_table_end);
-		rom_table_end = (unsigned long)head;
-	} else {
-		head = lb_table_init(low_table_end);
-		low_table_end = (unsigned long)head;
-	}
-#endif
 
 	printk(BIOS_DEBUG, "Adjust low_table_end from 0x%08lx to ", low_table_end);
 	low_table_end += 0xfff; // 4K aligned
@@ -663,12 +650,10 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		rom_table_start, rom_table_end-rom_table_start);
 
-#if CONFIG_WRITE_HIGH_TABLES
 	printk(BIOS_DEBUG, "Adding high table area\n");
 	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		high_tables_base, high_tables_size);
-#endif
 
 	/* Add reserved regions */
 	add_lb_reserved(mem);

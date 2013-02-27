@@ -107,7 +107,7 @@ stages_o = $(obj)/arch/armv7/stages.o
 
 $(stages_o): $(stages_c)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -I. $(INCLUDES) -c -o $@ $< -marm
+	$(CC) -I. $(INCLUDES) -c -o $@ $< -marm
 
 
 ################################################################################
@@ -126,7 +126,9 @@ $(objgenerated)/coreboot_ram.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --wrap __do_div64 --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
 else
+	echo "HI THERE!"
 	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	echo "BTTE!"
 endif
 
 CFLAGS += \

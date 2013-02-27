@@ -76,7 +76,7 @@ config CPU_MICROCODE_IN_CBFS
 	default n
 
 choice
-	prompt "Include CPU microcode in CBFS"
+	prompt "Include CPU microcode in CBFS" if ARCH_X86
 	default CPU_MICROCODE_CBFS_GENERATE if CPU_MICROCODE_IN_CBFS
 	default CPU_MICROCODE_CBFS_NONE if !CPU_MICROCODE_IN_CBFS
 

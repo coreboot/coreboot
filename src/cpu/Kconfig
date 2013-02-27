@@ -3,6 +3,10 @@
 # (See also src/Kconfig)
 if ARCH_ARMV7
 
+config ARCH_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_MICROCODE_CBFS_NONE
+
 source src/cpu/armltd/Kconfig
 source src/cpu/samsung/Kconfig
 

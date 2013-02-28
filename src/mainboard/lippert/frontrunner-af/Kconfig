@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-if BOARD_AMD_PERSIMMON
+if BOARD_LIPPERT_FRONTRUNNER_AF
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -26,11 +26,14 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select NORTHBRIDGE_AMD_AGESA_FAMILY14_ROOT_COMPLEX
 	select NORTHBRIDGE_AMD_AGESA_FAMILY14
 	select SOUTHBRIDGE_AMD_CIMX_SB800
-	select SUPERIO_FINTEK_F81865F
+	select SUPERIO_SMSC_SMSCSUPERIO
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-	select HAVE_ACPI_RESUME
+	# S3 doesn't work, heapManager.c:576 fails. But s3_resume.c (look for
+	# "spi_flash_probe") erases 28 KB and writes 10 KB register dumps to
+	# SPI flash on _every_ boot, wasting 3 s and causing wear!
+	#select HAVE_ACPI_RESUME
 	select HAVE_HARD_RESET
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select LIFT_BSP_APIC_ID
@@ -42,7 +45,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default amd/persimmon
+	default lippert/frontrunner-af
 
 config APIC_ID_OFFSET
 	hex
@@ -50,7 +53,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Persimmon"
+	default "FrontRunner-AF"
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -58,7 +61,8 @@ config HW_MEM_HOLE_SIZEK
 
 config MAX_CPUS
 	int
-	default 2
+	default 1 if FUSION_G_T40R
+	default 2 if FUSION_G_T56N
 
 config MAX_PHYSICAL_CPUS
 	int
@@ -111,7 +115,8 @@ config VGA_BIOS
 
 config VGA_BIOS_ID
 	string
-	default "1002,9802"
+	default "1002,9804" if FUSION_G_T40R
+	default "1002,9806" if FUSION_G_T56N
 
 config SB800_AHCI_ROM
 	bool
@@ -121,4 +126,4 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default n
 
-endif # BOARD_AMD_PERSIMMON
+endif # BOARD_LIPPERT_FRONTRUNNER_AF

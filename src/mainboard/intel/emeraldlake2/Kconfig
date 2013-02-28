@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select GFXUMA
 	#select CHROMEOS
 	select EXTERNAL_MRC_BLOB
+	select EARLY_CBMEM_INIT
 
 config MAINBOARD_DIR
 	string

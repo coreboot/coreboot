@@ -22,7 +22,6 @@
 #include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "heapManager.h"
-#include "SB800.h"
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -445,9 +444,24 @@ AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPt
 /*	Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
-	// Make sure the right speed settings are selected.
-	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
+	MEM_DATA_STRUCT *MemData = ConfigPtr;
+
+	printk(BIOS_INFO, "Setting VMEM=");
+	FCH_IOMUX(184) = 2; // GPIO184: VMEM_LV_EN# lowers VMEM from 1.5 to 1.35V
+	switch (MemData->ParameterListPtr->DDR3Voltage) {
+	case VOLT1_25: // board is not able to provide this
+		MemData->ParameterListPtr->DDR3Voltage = VOLT1_35; // sorry
+		// fall through
+	default: // AGESA.h says in mixed case 1.5V DIMMs get excluded
+	case VOLT1_35:
+		FCH_GPIO(184) = 0x08; // = output, disable PU, set to 0
+		printk(BIOS_INFO, "1.35V\n");
+		break;
+	case VOLT1_5:
+		FCH_GPIO(184) = 0xC8; // = output, disable PU, set to 1
+		printk(BIOS_INFO, "1.5V\n");
+	}
+
 	return AGESA_SUCCESS;
 }
 
@@ -465,45 +479,6 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS Status;
-	UINTN					FcnData;
-	PCIe_SLOT_RESET_INFO	*ResetInfo;
-
-	UINT32	GpioMmioAddr;
-	UINT32	AcpiMmioAddr;
-	UINT8	 Data8;
-	UINT16	Data16;
-
-	FcnData = Data;
-	ResetInfo = ConfigPtr;
-	// Get SB800 MMIO Base (AcpiMmioAddr)
-	WriteIo8(0xCD6, 0x27);
-	Data8 = ReadIo8(0xCD7);
-	Data16=Data8<<8;
-	WriteIo8(0xCD6, 0x26);
-	Data8 = ReadIo8(0xCD7);
-	Data16|=Data8;
-	AcpiMmioAddr = (UINT32)Data16 << 16;
-	Status = AGESA_UNSUPPORTED;
-	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
-	switch (ResetInfo->ResetId)
-	{
-	case 46:	// GPIO50 = SBGPIO_PCIE_RST# affects LAN0, LAN1, PCIe slot
-		switch (ResetInfo->ResetControl) {
-		case AssertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
-			Data8 &= ~(UINT8)BIT6 ;
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG50, Data8);
-			Status = AGESA_SUCCESS;
-			break;
-		case DeassertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
-			Data8 |= BIT6 ;
-			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG50, Data8);
-			Status = AGESA_SUCCESS;
-			break;
-		}
-		break;
-	}
-	return	Status;
+	// Dedicated reset not needed for the on-board Intel I210 GbE controller.
+	return AGESA_UNSUPPORTED;
 }

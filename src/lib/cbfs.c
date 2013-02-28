@@ -120,41 +120,48 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 #include <rmodule.h>
 #include <romstage_handoff.h>
 /* When CONFIG_RELOCATABLE_RAMSTAGE is enabled and this file is being compiled
- * for the romstage, the rmodule loader is used. The ramstage is placed just
- * below the cbmem location. */
-
+ * for the romstage, the rmodule loader is used.  */
 void __attribute__((weak))
-cache_loaded_ramstage(struct romstage_handoff *handoff, void *ramstage_base,
-                      uint32_t ramstage_size, void *entry_point)
+cache_loaded_ramstage(struct romstage_handoff *handoff,
+                      const struct cbmem_entry *ramstage, void *entry_point)
 {
+	uint32_t ramstage_size;
+	const struct cbmem_entry *entry;
+
 	if (handoff == NULL)
 		return;
 
-	/* Cache the loaded ramstage just below the to-be-run ramstage. Then
-	 * save the base, size, and entry point in the handoff area. */
-	handoff->reserve_base = (uint32_t)ramstage_base - ramstage_size;
-	handoff->reserve_size = ramstage_size;
+	ramstage_size = cbmem_entry_size(ramstage);
+	/* cbmem_entry_add() does a find() before add(). */
+	entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE_CACHE, ramstage_size);
+
+	if (entry == NULL)
+		return;
+
+	/* Keep track of the entry point in the handoff structure. */
 	handoff->ramstage_entry_point = (uint32_t)entry_point;
 
-	memcpy((void *)handoff->reserve_base, ramstage_base, ramstage_size);
-
-	/* Update the reserve region by 2x in order to store the cached copy. */
-	handoff->reserve_size += handoff->reserve_size;
+	memcpy(cbmem_entry_start(entry), cbmem_entry_start(ramstage),
+	       ramstage_size);
 }
 
 void * __attribute__((weak))
-load_cached_ramstage(struct romstage_handoff *handoff)
+load_cached_ramstage(struct romstage_handoff *handoff,
+                     const struct cbmem_entry *ramstage)
 {
-	uint32_t ramstage_size;
+	const struct cbmem_entry *entry_cache;
 
 	if (handoff == NULL)
 		return NULL;
 
-	/* Load the cached ramstage copy into the to-be-run region. It is just
-	 * above the cached copy. */
-	ramstage_size = handoff->reserve_size / 2;
-	memcpy((void *)(handoff->reserve_base + ramstage_size),
-	       (void *)handoff->reserve_base, ramstage_size);
+	entry_cache = cbmem_entry_find(CBMEM_ID_RAMSTAGE_CACHE);
+
+	if (entry_cache == NULL)
+		return NULL;
+
+	/* Load the cached ramstage copy into the to-be-run region. */
+	memcpy(cbmem_entry_start(ramstage), cbmem_entry_start(entry_cache),
+	       cbmem_entry_size(ramstage));
 
 	return (void *)handoff->ramstage_entry_point;
 }
@@ -164,12 +171,12 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 {
 	struct cbfs_stage *stage;
 	struct rmodule ramstage;
-	char *cbmem_base;
-	char *ramstage_base;
-	void *decompression_loc;
-	void *ramstage_loc;
 	void *entry_point;
-	uint32_t ramstage_size;
+	size_t region_size;
+	char *ramstage_region;
+	int rmodule_offset;
+	int load_offset;
+	const struct cbmem_entry *ramstage_entry;
 
 	stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
@@ -177,34 +184,34 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 	if (stage == NULL)
 		return (void *) -1;
 
-	cbmem_base = (void *)get_cbmem_toc();
-	if (cbmem_base == NULL)
+	rmodule_offset =
+		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
+	                            stage->memlen, &region_size, &load_offset);
+
+	ramstage_entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE, region_size);
+
+	if (ramstage_entry == NULL)
 		return (void *) -1;
 
-	ramstage_base =
-		rmodule_find_region_below(cbmem_base, stage->memlen,
-		                          &ramstage_loc,
-                                          &decompression_loc);
+	ramstage_region = cbmem_entry_start(ramstage_entry);
 
 	LOG("Decompressing stage %s @ 0x%p (%d bytes)\n",
-	    name, decompression_loc, stage->memlen);
+	    name, &ramstage_region[rmodule_offset], stage->memlen);
 
 	if (cbfs_decompress(stage->compression, &stage[1],
-	                    decompression_loc, stage->len))
+	                    &ramstage_region[rmodule_offset], stage->len))
 		return (void *) -1;
 
-	if (rmodule_parse(decompression_loc, &ramstage))
+	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))
 		return (void *) -1;
 
 	/* The ramstage is responsible for clearing its own bss. */
-	if (rmodule_load_no_clear_bss(ramstage_loc, &ramstage))
+	if (rmodule_load_no_clear_bss(&ramstage_region[load_offset], &ramstage))
 		return (void *) -1;
 
 	entry_point = rmodule_entry(&ramstage);
 
-	ramstage_size = cbmem_base - ramstage_base;
-	cache_loaded_ramstage(handoff, ramstage_base, ramstage_size,
-	                      entry_point);
+	cache_loaded_ramstage(handoff, ramstage_entry, entry_point);
 
 	return entry_point;
 }
@@ -212,6 +219,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct romstage_handoff *handoff;
+	const struct cbmem_entry *ramstage;
 	void *entry;
 
 	handoff = romstage_handoff_find_or_add();
@@ -222,9 +230,14 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	} else if (!handoff->s3_resume)
 		return load_stage_from_cbfs(media, name, handoff);
 
+	ramstage = cbmem_entry_find(CBMEM_ID_RAMSTAGE);
+
+	if (ramstage == NULL)
+		return load_stage_from_cbfs(name, handoff);
+
 	/* S3 resume path. Load a cached copy of the loaded ramstage. If
 	 * return value is NULL load from cbfs. */
-	entry = load_cached_ramstage(handoff);
+	entry = load_cached_ramstage(handoff, ramstage);
 	if (entry == NULL)
 		return load_stage_from_cbfs(name, handoff);
 

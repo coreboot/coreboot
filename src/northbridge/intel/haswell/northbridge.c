@@ -543,21 +543,6 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-#if CONFIG_EARLY_CBMEM_INIT
-int cbmem_get_table_location(uint64_t *tables_base, uint64_t *tables_size)
-{
-	uint32_t tseg;
-
-	/* Put the CBMEM location just below TSEG. */
-	*tables_size = HIGH_MEMORY_SIZE;
-	tseg = (pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)),
-	                          TSEG) & ~((1 << 20) - 1)) - HIGH_MEMORY_SIZE;
-	*tables_base = tseg;
-
-	return 0;
-}
-#endif
-
 static void northbridge_enable(device_t dev)
 {
 #if CONFIG_HAVE_ACPI_RESUME

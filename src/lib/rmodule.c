@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -265,16 +266,22 @@ int rmodule_load_no_clear_bss(void *base, struct rmodule *module)
 	return __rmodule_load(base, module, 0);
 }
 
-void *rmodule_find_region_below(void *addr, size_t rmodule_size,
-                                void **program_start, void **rmodule_start)
+int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
+                        size_t *region_size, int *load_offset)
 {
-	unsigned long ceiling;
-	unsigned long program_base;
-	unsigned long placement_loc;
-	unsigned long program_begin;
+	/* region_alignment must be a power of 2. */
+	if (region_alignment & (region_alignment - 1))
+		BUG();
 
-	ceiling = (unsigned long)addr;
-	/* Place the rmodule just under the ceiling. The rmodule files
+	if (region_alignment < 4096)
+		region_alignment = 4096;
+
+	/* Sanity check rmodule_header size. The code below assumes it is less
+	 * than the minimum alignment required. */
+	if (region_alignment < sizeof(struct rmodule_header))
+		BUG();
+
+	/* Place the rmodule according to alignment. The rmodule files
 	 * themselves are packed as a header and a payload, however the rmodule
 	 * itself is linked along with the header. The header starts at address
 	 * 0. Immediately following the header in the file is the program,
@@ -284,13 +291,13 @@ void *rmodule_find_region_below(void *addr, size_t rmodule_size,
 	 * to place the rmodule so that the prgoram falls on the aligned
 	 * address with the header just before it. Therefore, we need at least
 	 * a page to account for the size of the header. */
-	program_base = ALIGN((ceiling - (rmodule_size + 4096)), 4096);
+	*region_size = ALIGN(rmodule_size + region_alignment, 4096);
 	/* The program starts immediately after the header. However,
 	 * it needs to be aligned to a 4KiB boundary. Therefore, adjust the
 	 * program location so that the program lands on a page boundary.  The
 	 * layout looks like the following:
 	 *
-	 * +--------------------------------+  ceiling
+	 * +--------------------------------+  region_alignment + region_size
 	 * |  >= 0 bytes from alignment     |
 	 * +--------------------------------+  program end (4KiB aligned)
 	 * |  program size                  |
@@ -298,14 +305,9 @@ void *rmodule_find_region_below(void *addr, size_t rmodule_size,
 	 * |  sizeof(struct rmodule_header) |
 	 * +--------------------------------+  rmodule header start
 	 * |  >= 0 bytes from alignment     |
-	 * +--------------------------------+  program_base (4KiB aligned)
+	 * +--------------------------------+  region_alignment
 	 */
-	placement_loc = ALIGN(program_base + sizeof(struct rmodule_header),
-	                      4096) - sizeof(struct rmodule_header);
-	program_begin = placement_loc + sizeof(struct rmodule_header);
+	*load_offset = region_alignment;
 
-	*program_start = (void *)program_begin;
-	*rmodule_start = (void *)placement_loc;
-
-	return (void *)program_base;
+	return region_alignment - sizeof(struct rmodule_header);
 }

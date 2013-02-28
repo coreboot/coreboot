@@ -49,12 +49,7 @@ void main(unsigned long bist)
 	//print_pci_devices();
 	//dump_pci_devices();
 
-#if CONFIG_EARLY_CBMEM_INIT
 	cbmem_was_initted = !cbmem_initialize();
-#else
-	cbmem_was_initted = cbmem_reinit((uint64_t) (get_top_of_ram()
-						     - HIGH_MEMORY_SIZE));
-#endif
 #if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_init(rdtsc());
 	timestamp_add_now(TS_START_ROMSTAGE);

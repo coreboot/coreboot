@@ -131,11 +131,6 @@ void cbmem_add_lb_mem(struct lb_memory *mem);
 
 #ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
-#if CONFIG_EARLY_CBMEM_INIT
-/* Return 0 on success, < 0 on error. */
-int __attribute__((weak)) cbmem_get_table_location(uint64_t *tables_base,
-                                                   uint64_t *tables_size);
-#endif
 void set_cbmem_toc(struct cbmem_entry *);
 #endif
 

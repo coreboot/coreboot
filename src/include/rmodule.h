@@ -41,13 +41,15 @@ int rmodule_entry_offset(const struct rmodule *m);
 int rmodule_memory_size(const struct rmodule *m);
 int rmodule_load(void *loc, struct rmodule *m);
 int rmodule_load_alignment(const struct rmodule *m);
-/* Returns the an aligned pointer that reflects a region used below addr
- * based on the rmodule_size. i.e. the returned pointer up to addr is memory
- * that may be utilized by the rmodule. program_start and rmodule_start
- * are pointers updated to reflect where the rmodule program starts and where
- * the rmodule (including header) should be placed respectively. */
-void *rmodule_find_region_below(void *addr, size_t rmodule_size,
-                                void **program_start, void **rmodule_start);
+/* rmodule_calc_region() calculates the region size, offset to place an
+ * rmodule in memory, and load address offset based off of a region allocator
+ * with an alignment of region_alignment. This function helps place an rmodule
+ * in the same location in ram it will run from. The offset to place the
+ * rmodule into the region allocated of size region_size is returned. The
+ * load_offset is the address to load and relocate the rmodule.
+ * region_alignment must be a power of 2. */
+int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
+                        size_t *region_size, int *load_offset);
 
 #define FIELD_ENTRY(x_) ((u32)&x_)
 #define RMODULE_HEADER(entry_, type_)					\

@@ -28,9 +28,6 @@
  * using the CBMEM_ID_ROMSTAGE_INFO id it needs to ensure it doesn't clobber
  * fields it doesn't own. */
 struct romstage_handoff {
-	/* This indicates to the ramstage to reserve a chunk of memory. */
-	uint32_t reserve_base;
-	uint32_t reserve_size;
 	/* Inidicate if the current boot is an S3 resume. If
 	 * CONFIG_RELOCTABLE_RAMSTAGE is enabled the chipset code is
 	 * responsible for initializing this variable. Otherwise, ramstage

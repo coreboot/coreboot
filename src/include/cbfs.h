@@ -87,21 +87,24 @@ int init_default_cbfs_media(struct cbfs_media *media);
 /* The cache_loaded_ramstage() and load_cached_ramstage() functions are defined
  * to be weak so that board and chipset code may override them. Their job is to
  * cache and load the ramstage for quick S3 resume. By default a copy of the
- * relocated ramstage is saved just below the running ramstage region. These
+ * relocated ramstage is saved using the cbmem infrastructure. These
  * functions are only valid during romstage. */
 
 struct romstage_handoff;
+struct cbmem_entry;
 
-/* The implementer of cache_loaded_ramstage() needs to ensure that the
- * reserve_* fields in in romstage_handoff reflect the memory footprint of the
- * ramstage (including cached region). Note that the handoff variable can be
- * NULL. */
+/* The implementer of cache_loaded_ramstage() may use the romstage_handoff
+ * structure to store information, but note that the handoff variable can be
+ * NULL. The ramstage cbmem_entry represents the region occupied by the loaded
+ * ramstage. */
 void __attribute__((weak))
-cache_loaded_ramstage(struct romstage_handoff *handoff, void *ramstage_base,
-                      uint32_t ramstage_size, void *entry_point);
-/* Return NULL on error or entry point on success. */
+cache_loaded_ramstage(struct romstage_handoff *handoff,
+                      const struct cbmem_entry *ramstage, void *entry_point);
+/* Return NULL on error or entry point on success. The ramstage cbmem_entry is
+ * the region where to load the cached contents to. */
 void * __attribute__((weak))
-load_cached_ramstage(struct romstage_handoff *handoff);
+load_cached_ramstage(struct romstage_handoff *handoff,
+                     const struct cbmem_entry *ramstage);
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 #endif

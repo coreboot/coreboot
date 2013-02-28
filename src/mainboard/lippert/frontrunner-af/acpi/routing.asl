@@ -390,18 +390,22 @@ Scope(\_SB) {
 	})
 
 	Name(PCIB, Package(){
-		/* PCI slots: slot 0, slot 1, slot 2 behind Dev14, Fun4. */
-		Package(){0x0003FFFF, 0, 0, 0x14 },
-		Package(){0x0003FFFF, 1, 0, 0x15 },
-		Package(){0x0003FFFF, 2, 0, 0x16 },
-		Package(){0x0003FFFF, 3, 0, 0x17 },
-		Package(){0x0004FFFF, 0, 0, 0x15 },
-		Package(){0x0004FFFF, 1, 0, 0x16 },
-		Package(){0x0004FFFF, 2, 0, 0x17 },
-		Package(){0x0004FFFF, 3, 0, 0x14 },
-		Package(){0x0005FFFF, 0, 0, 0x16 },
-		Package(){0x0005FFFF, 1, 0, 0x17 },
-		Package(){0x0005FFFF, 2, 0, 0x14 },
-		Package(){0x0005FFFF, 3, 0, 0x15 },
+		/* PCI slots: slot 0, slot 1, slot 2, slot 3 behind Dev14, Fun4. */
+		Package(){0x0004FFFF, 0, 0, 0x14 },
+		Package(){0x0004FFFF, 1, 0, 0x15 },
+		Package(){0x0004FFFF, 2, 0, 0x16 },
+		Package(){0x0004FFFF, 3, 0, 0x17 },
+		Package(){0x0005FFFF, 0, 0, 0x15 },
+		Package(){0x0005FFFF, 1, 0, 0x16 },
+		Package(){0x0005FFFF, 2, 0, 0x17 },
+		Package(){0x0005FFFF, 3, 0, 0x14 },
+		Package(){0x0006FFFF, 0, 0, 0x16 },
+		Package(){0x0006FFFF, 1, 0, 0x17 },
+		Package(){0x0006FFFF, 2, 0, 0x14 },
+		Package(){0x0006FFFF, 3, 0, 0x15 },
+		Package(){0x0007FFFF, 0, 0, 0x17 },
+		Package(){0x0007FFFF, 1, 0, 0x14 },
+		Package(){0x0007FFFF, 2, 0, 0x15 },
+		Package(){0x0007FFFF, 3, 0, 0x16 },
 	})
 }

@@ -34,7 +34,7 @@
 #define GNB_GPP_PORT4_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
 
 //GNB GPP Port5
-#define GNB_GPP_PORT5_PORT_PRESENT		1	//0:Disable 1:Enable
+#define GNB_GPP_PORT5_PORT_PRESENT		0	//0:Disable 1:Enable
 #define GNB_GPP_PORT5_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
 #define GNB_GPP_PORT5_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
 #define GNB_GPP_PORT5_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)
@@ -42,7 +42,7 @@
 #define GNB_GPP_PORT5_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
 
 //GNB GPP Port6
-#define GNB_GPP_PORT6_PORT_PRESENT		1	//0:Disable 1:Enable
+#define GNB_GPP_PORT6_PORT_PRESENT		0	//0:Disable 1:Enable
 #define GNB_GPP_PORT6_SPEED_MODE		2	//0:Auto 1:GEN1 2:GEN2
 #define GNB_GPP_PORT6_LINK_ASPM			3	//0:Disable 1:L0s 2:L1 3:L0s+L1
 #define GNB_GPP_PORT6_CHANNEL_TYPE		4	//0:LowLoss(-3.5db) 1:HighLoss(-6db) 2:Half-swing(0db)

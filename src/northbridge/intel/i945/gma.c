@@ -34,6 +34,7 @@ static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
 	u32 graphics_base, graphics_size;
+	int tolud;
 
 	/* Unconditionally reset graphics */
 	pci_write_config8(dev, GDRST, 1);
@@ -70,8 +71,12 @@ static void gma_func0_init(struct device *dev)
 	u32 iobase, mmiobase, physbase;
 	iobase = dev->resource_list[1].base;
 	mmiobase = dev->resource_list[0].base;
+#if 0 /* unreliable according to i915_stolen_to_phys in the linux driver */
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-
+#else
+	tolud = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0,0)), TOLUD);
+	physbase = (tolud >> 3 << 27);
+#endif
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
 	i915lightup(physbase, iobase, mmiobase, graphics_base);
 #endif

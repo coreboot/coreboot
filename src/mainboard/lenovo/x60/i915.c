@@ -87,6 +87,7 @@ static void io_i915_WRITE32(unsigned long val, unsigned long addr)
 4250.00
 PTEs
 */
+
 static void
 setgtt(int start, int end, unsigned long base, int inc)
 {
@@ -245,10 +246,11 @@ int i915lightup(unsigned int pphysbase,
 		}
 	}
 
-	setgtt(0, 4520, physbase, 4096);
+	setgtt(0, 8192, physbase, 1024);
 	printk(BIOS_SPEW, "memset %p to 0xff for %d bytes\n",
-				(void *)graphics, 4520*4096);
-	memset((void *)graphics, 0xff, 4520*4096);
+				(void *)graphics, 8192*1024);
+	memset((void *)graphics, 0xff, 8192*1024);
+
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;
 	oprom_is_loaded = 1;

@@ -20,7 +20,7 @@
 #include "i915io.h"
 
 struct iodef iodefs[] = {
-{V,0,},
+{V,7,},
 {M, 1, "Linux agpgart interface v0.103"},
 {M, 1, "agpgart-intel 0000:00:00.0:Intel 945GM Chipset"},
 {M, 1, "agpgart-intel 0000:00:00.0:detected gtt size:262144K total, 262144K mappable"},

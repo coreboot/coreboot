@@ -42,10 +42,15 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
 #include "i915io.h"
+#include "i915_reg.h"
 
 enum {
 	vmsg = 1, vio = 2, vspin = 4,
 };
+
+
+#define BACKLIGHT_REFCLK_DIVISOR     128
+#define DEFAULT_BACKLIGHT_PWM_FREQ   200
 
 static int verbose = 0;
 
@@ -71,6 +76,27 @@ static void io_i915_WRITE32(unsigned long val, unsigned long addr)
 {
        outl(addr, addrport);
        outl(val, dataport);
+}
+u32 get_default_max_backlight(void);
+u32 get_default_max_backlight(void)
+{
+    u32 refclk_freq_mhz = 100; //hardcoded for gen3;
+    u32 max_pwm = refclk_freq_mhz * 1000000 /
+                        (BACKLIGHT_REFCLK_DIVISOR * DEFAULT_BACKLIGHT_PWM_FREQ);
+    return max_pwm;
+}
+
+void intel_panel_actually_set_backlight(unsigned long bar, u32 level);
+void intel_panel_actually_set_backlight(unsigned long bar, u32 level)
+{
+    /* hardcoded for gen3 */
+    u32 tmp;
+    printk(BIOS_SPEW, "[vga:%s], ", __func__);
+    printk(BIOS_SPEW, "set backlight PWM = %d\n", level);
+    tmp = io_i915_READ32(bar + BLC_PWM_CTL);
+    level <<= 1;
+    tmp &= ~BACKLIGHT_DUTY_CYCLE_MASK;
+    io_i915_WRITE32(bar + BLC_PWM_CTL, tmp | level);
 }
 
 
@@ -250,6 +276,8 @@ int i915lightup(unsigned int pphysbase,
 	printk(BIOS_SPEW, "memset %p to 0xff for %d bytes\n",
 				(void *)graphics, 8192*1024);
 	memset((void *)graphics, 0xff, 8192*1024);
+
+	intel_panel_actually_set_backlight((unsigned long)mmio, get_default_max_backlight());
 
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;

@@ -107,7 +107,7 @@ stages_o = $(obj)/arch/armv7/stages.o
 
 $(stages_o): $(stages_c)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -I. $(INCLUDES) -c -o $@ $< -marm
+	$(CC) -I. $(INCLUDES) -c -o $@ $< -marm
 
 
 ################################################################################

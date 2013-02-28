@@ -77,7 +77,7 @@
  *  Usb Ehci3 Contoller (Bus 0 Dev 22 Func2) is define at BIT5
  *  Usb Ohci4 Contoller (Bus 0 Dev 20 Func5) is define at BIT6
  */
-#define USB_CONFIG		0x7F
+#define USB_CONFIG		0x3F
 
 /**
  * @def PCI_CLOCK_CTRL
@@ -90,7 +90,7 @@
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
-#define PCI_CLOCK_CTRL			0x07
+#define PCI_CLOCK_CTRL			0x1F
 
 /**
  * @def SATA_CONTROLLER
@@ -180,13 +180,12 @@
  *  SDIN2 is define at BIT4 & BIT5
  *  SDIN3 is define at BIT6 & BIT7
  */
-//#define AZALIA_SDIN_PIN		0xAA
-#define AZALIA_SDIN_PIN			0x2A
+#define AZALIA_SDIN_PIN			0x02
 
 /**
  * @def GPP_CONTROLLER
  */
-#define GPP_CONTROLLER			CIMX_OPTION_ENABLED
+#define GPP_CONTROLLER			CIMX_OPTION_DISABLED
 
 /**
  * @def GPP_CFGMODE
@@ -225,29 +224,32 @@
  *    0  - Enable
  *    1  - Disable
  */
-#define GEC_CONFIG			0
+#define GEC_CONFIG			1
 
-static const CODECENTRY persimmon_codec_alc269[] =
+static const CODECENTRY frontrunneraf_codec_alc886[] = /* Realtek ALC886/8 */
 {
-	/* NID, PinConfig */
-	{0x12, 0x411111F0},
-	{0x14, 0x99130110},
-	{0x21, 0x0121401F},
-	{0x17, 0x411111F0},
-	{0x18, 0x01A19820},
-	{0x19, 0x411111F0},
-	{0x1A, 0x0181302F},
-	{0x1B, 0x411111F0},
-	{0x1D, 0x40069E05},
-	{0x1E, 0x411111F0},
-	{0x20, 0x0001FFFF},
+	/* NID, PinConfig (Verbs 71F..C) */
+	{0x11, 0x411111F0}, /* NPC */
+	{0x12, 0x411111F0}, /* DMIC */
+	{0x14, 0x01214110}, /* FRONT (Port-D) */
+	{0x15, 0x01011112}, /* SURR (Port-A) */
+	{0x16, 0x01016111}, /* CEN/LFE (Port-G) */
+	{0x17, 0x411111F0}, /* SIDESURR (Port-H) */
+	{0x18, 0x01A19930}, /* MIC1 (Port-B) */
+	{0x19, 0x411111F0}, /* MIC2 (Port-F) */
+	{0x1A, 0x0181313F}, /* LINE1 (Port-C) */
+	{0x1B, 0x411111F0}, /* LINE2 (Port-E) */
+	{0x1C, 0x411111F0}, /* CD-IN */
+	{0x1D, 0x40132601}, /* BEEP-IN */
+	{0x1E, 0x01441120}, /* S/PDIF-OUT */
+	{0x1F, 0x01C46140}, /* S/PDIF-IN */
 	{0xff, 0xffffffff} /* end of table */
 };
 
 static const CODECTBLLIST codec_tablelist[] =
 {
-	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},
-	{0x0FFFFFFFFUL, (CODECENTRY*)0x0FFFFFFFFUL}
+	{0x10ec0888, (CODECENTRY*)&frontrunneraf_codec_alc886[0]},
+	{0xFFFFFFFF, (CODECENTRY*)0xFFFFFFFFL}
 };
 
 /**

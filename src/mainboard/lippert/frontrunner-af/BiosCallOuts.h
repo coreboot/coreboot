@@ -22,6 +22,7 @@
 
 #include "Porting.h"
 #include "AGESA.h"
+#include "SB800.h"
 
 #define BIOS_HEAP_START_ADDRESS			0x10000 /* HEAP during cold boot */
 #define BIOS_HEAP_SIZE				0x20000
@@ -69,5 +70,13 @@ AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *Con
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
+/* FCH GPIO access helpers */
+#define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))
+#define FCH_GPIO(gpio_nr) (*(volatile u8*)(ACPI_MMIO_BASE+GPIO_BASE+(gpio_nr)))
+static inline u8 fch_gpio_state(unsigned int gpio_nr)
+{
+	return FCH_GPIO(gpio_nr) >> 7;
+}
 
 #endif //_BIOS_CALLOUT_H_

@@ -71,3 +71,9 @@ int get_recovery_mode_switch(void)
 {
 	return 0; // force off
 }
+
+int get_write_protect_state(void)
+{
+	return 0;
+}
+

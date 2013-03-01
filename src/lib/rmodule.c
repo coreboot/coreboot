@@ -241,14 +241,18 @@ static int __rmodule_load(void *base, struct rmodule *module, int clear_bss)
 	 * In order to load the module at a given address, the following steps
 	 * take place:
 	 *  1. Copy payload to base address.
-	 *  2. Clear the bss segment.
-	 *  3. Adjust relocations within the module to new base address.
+	 *  2. Adjust relocations within the module to new base address.
+	 *  3. Clear the bss segment last since the relocations live where
+	 *     the bss is. If an rmodule is being loaded from its load
+	 *     address the relocations need to be processed before the bss.
 	 */
 	module->location = base;
 	rmodule_copy_payload(module);
+	if (rmodule_relocate(module))
+		return -1;
 	if (clear_bss)
 		rmodule_clear_bss(module);
-	return rmodule_relocate(module);
+	return 0;
 }
 
 int rmodule_load(void *base, struct rmodule *module)

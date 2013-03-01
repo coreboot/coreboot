@@ -15,10 +15,12 @@ config BOARD_LIPPERT_ROADRUNNER_LX
 	bool "Cool RoadRunner-LX"
 config BOARD_LIPPERT_SPACERUNNER_LX
 	bool "Cool SpaceRunner-LX"
+config BOARD_LIPPERT_TOUCAN_AF
+	bool "Toucan-AF (+W83627DHG SIO)"
 
 endchoice
 
-if BOARD_LIPPERT_FRONTRUNNER_AF
+if BOARD_LIPPERT_FRONTRUNNER_AF || BOARD_LIPPERT_TOUCAN_AF
 # No code, but two Kconfig options need to know this ...
 choice
 	prompt "AMD Fusion CPU model"
@@ -47,7 +49,7 @@ config FUSION_G_T56N
 
 	  If unsure check with "grep model /proc/cpuinfo".
 endchoice
-endif # BOARD_LIPPERT_FRONTRUNNER_AF
+endif # BOARD_LIPPERT_FRONTRUNNER_AF || BOARD_LIPPERT_TOUCAN_AF
 
 source "src/mainboard/lippert/frontrunner/Kconfig"
 source "src/mainboard/lippert/frontrunner-af/Kconfig"
@@ -55,6 +57,7 @@ source "src/mainboard/lippert/hurricane-lx/Kconfig"
 source "src/mainboard/lippert/literunner-lx/Kconfig"
 source "src/mainboard/lippert/roadrunner-lx/Kconfig"
 source "src/mainboard/lippert/spacerunner-lx/Kconfig"
+source "src/mainboard/lippert/toucan-af/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

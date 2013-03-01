@@ -19,6 +19,8 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/samsung/exynos5250/fimd.h>
+#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
 
 void hardwaremain(int boot_complete);
 void main(void)

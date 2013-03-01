@@ -32,5 +32,6 @@
 	.align 4
 
 /* This function puts the system into a halt. */
+	.type halt, function
 halt:
 	b halt

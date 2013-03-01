@@ -428,9 +428,8 @@ static void sb800_enable(device_t dev)
 	case (0x15 << 3) | 0: /* 0:15:0 PCIe PortA */
 		{
 			device_t device;
-			for (device = dev; device; device = device->next) {
-				if (dev->path.type != DEVICE_PATH_PCI) continue;
-				if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
+			for (device = dev; device; device = device->sibling) {
+				if ((device->path.pci.devfn & ~3) != PCI_DEVFN(0x15,0)) break;
 				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
 			}
 

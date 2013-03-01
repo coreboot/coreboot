@@ -32,6 +32,8 @@
 #include "SBPLATFORM.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 
+//#include "broadcom.c" /* only needed for CFR-AF 0v0 prototype */
+
 /* Init SIO GPIOs. */
 #define SIO_RUNTIME_BASE 0x0E00
 static const u16 sio_init_table[] = { // hi=offset, lo=value
@@ -122,6 +124,10 @@ static void init(struct device *dev)
 		u16 val = sio_init_table[i];
 		outb((u8)val, SIO_RUNTIME_BASE + (val >> 8));
 	}
+
+	/* Upload AMD A55E GbE 'NV'RAM contents. Only needed on CFR-AF revision
+	 * 0v0 (prototype), not for any later production versions. */
+	//broadcom_init();
 
 	/* Notify the SMC we're alive and kicking, or after a while it will
 	 * effect a power cycle and switch to the alternate BIOS chip.

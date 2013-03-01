@@ -29,12 +29,15 @@ bootblock-y += memcmp.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 romstage-y += memset.c
+rmodules-y += memset.c
 endif
 romstage-y += memchr.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 romstage-y += memcpy.c
+rmodules-y += memcpy.c
 endif
 romstage-y += memcmp.c
+rmodules-y += memcmp.c
 romstage-y += cbfs.c
 romstage-y += lzma.c
 #romstage-y += lzmadecode.c
@@ -126,3 +129,4 @@ $(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions
 endef
 
 endif
+

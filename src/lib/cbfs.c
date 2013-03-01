@@ -63,6 +63,12 @@
 
 #include "cbfs_core.c"
 
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#include <vendorcode/google/chromeos/chromeos.h>
+#else
+static inline void *vboot_get_payload(int *len) { return NULL; }
+#endif
+
 #ifndef __SMM__
 static inline int tohex4(unsigned int c)
 {
@@ -301,8 +307,15 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 #if !CONFIG_ALT_CBFS_LOAD_PAYLOAD
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
-	return (struct cbfs_payload *)cbfs_get_file_content(
+	struct cbfs_payload *payload;
+
+	payload = vboot_get_payload(NULL);
+	if (payload != NULL)
+		return payload;
+
+	payload = (struct cbfs_payload *)cbfs_get_file_content(
 			media, name, CBFS_TYPE_PAYLOAD);
+	return payload;
 }
 #endif
 

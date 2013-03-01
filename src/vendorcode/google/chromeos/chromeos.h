@@ -20,9 +20,12 @@
 #ifndef __CHROMEOS_H__
 #define __CHROMEOS_H__
 
+#include <stdint.h>
+
 /* functions implemented per mainboard: */
 int get_developer_mode_switch(void);
 int get_recovery_mode_switch(void);
+int get_write_protect_state(void);
 #ifdef __PRE_RAM__
 void save_chromeos_gpios(void);
 #endif
@@ -32,11 +35,20 @@ int get_recovery_mode_from_vbnv(void);
 int vboot_wants_oprom(void);
 extern int oprom_is_loaded;
 
+void read_vbnv(uint8_t *vbnv_copy);
+void save_vbnv(const uint8_t *vbnv_copy);
+
 /* functions implemented in chromeos.c: */
 int developer_mode_enabled(void);
 int recovery_mode_enabled(void);
 
 /* functions implemented in vboot.c */
 void init_chromeos(int bootmode);
+
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+struct romstage_handoff;
+void vboot_verify_firmware(struct romstage_handoff *handoff);
+void *vboot_get_payload(int *len);
+#endif
 
 #endif

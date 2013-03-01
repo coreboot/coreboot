@@ -28,5 +28,19 @@ device domain 0 on
 		device i2c 6 on end # ?
 		device i2c 9 on end # ?
 	end
+	chip cpu/samsung/exynos5-common/displayport
+		register "xres" = "1366"
+		register "yres" = "768"
+		register "bpp" = "16"
+		# complex magic timing!
+		register "clkval_f" = "2"
+		register "upper_margin" = "14"
+		register "lower_margin" = "3"
+		register "vsync" = "5"
+		register "left_margin" = "80"
+		register "right_margin" = "48"
+		register "hsync" = "32"
+		register "lcdbase" = "0x10000000"
+	end
 end
 end

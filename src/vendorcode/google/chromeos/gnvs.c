@@ -19,12 +19,17 @@
 
 #include <types.h>
 #include <string.h>
+#include <stdlib.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
 
 #include "chromeos.h"
 #include "gnvs.h"
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#include "vboot_handoff.h"
+#endif
 
 chromeos_acpi_t *vboot_data = NULL;
 static u32 me_hash_saved[8];
@@ -35,6 +40,19 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 
 	/* Copy saved ME hash into NVS */
 	memcpy(vboot_data->mehh, me_hash_saved, sizeof(vboot_data->mehh));
+
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+	/* Save the vdat from the vboot handoff structure. Downstream software
+	 * consumes the data located in the ACPI table. Ensure it reflects
+	 * the shared data from VbInit() and VbSelectFirmware(). */
+	struct vboot_handoff *vboot_handoff;
+
+	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vboot_handoff != NULL)
+		memcpy(&chromeos->vdat[0], &vboot_handoff->shared_data[0],
+		       ARRAY_SIZE(chromeos->vdat));
+#endif
 
 #if CONFIG_ELOG
 	if (developer_mode_enabled() ||

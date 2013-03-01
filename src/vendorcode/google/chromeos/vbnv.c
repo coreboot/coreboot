@@ -77,25 +77,39 @@ static uint8_t crc8(const uint8_t * data, int len)
 	return (uint8_t) (crc >> 8);
 }
 
-static void vbnv_setup(void)
+void read_vbnv(uint8_t *vbnv_copy)
 {
 	int i;
 
 	for (i = 0; i < CONFIG_VBNV_SIZE; i++)
-		vbnv[i] = cmos_read(CONFIG_VBNV_OFFSET + 14 + i);
+		vbnv_copy[i] = cmos_read(CONFIG_VBNV_OFFSET + 14 + i);
 
 	/* Check data for consistency */
-	if ((HEADER_SIGNATURE != (vbnv[HEADER_OFFSET] & HEADER_MASK))
-	    || (crc8(vbnv, CRC_OFFSET) != vbnv[CRC_OFFSET])) {
+	if ((HEADER_SIGNATURE != (vbnv_copy[HEADER_OFFSET] & HEADER_MASK))
+	    || (crc8(vbnv_copy, CRC_OFFSET) != vbnv_copy[CRC_OFFSET])) {
 
 		/* Data is inconsistent (bad CRC or header),
 		 * so reset to defaults
 		 */
-		memset(vbnv, 0, VBNV_BLOCK_SIZE);
-		vbnv[HEADER_OFFSET] =
+		memset(vbnv_copy, 0, VBNV_BLOCK_SIZE);
+		vbnv_copy[HEADER_OFFSET] =
 		    (HEADER_SIGNATURE | HEADER_FIRMWARE_SETTINGS_RESET |
 		     HEADER_KERNEL_SETTINGS_RESET);
 	}
+}
+
+void save_vbnv(const uint8_t *vbnv_copy)
+{
+	int i;
+
+	for (i = 0; i < CONFIG_VBNV_SIZE; i++)
+		cmos_write(vbnv_copy[i], CONFIG_VBNV_OFFSET + 14 + i);
+}
+
+
+static void vbnv_setup(void)
+{
+	read_vbnv(vbnv);
 	vbnv_initialized = 1;
 }
 

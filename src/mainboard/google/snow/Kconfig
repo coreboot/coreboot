@@ -161,4 +161,16 @@ config VDD_LDO10_MV
 
 ######### smdk5250.h ########
 
+config LCD_XRES
+	int
+	default 1366
+
+config LCD_YRES
+	int
+	default 768
+
+config LCD_BPP
+	int
+	default 16
+
 endif # BOARD_GOOGLE_SNOW

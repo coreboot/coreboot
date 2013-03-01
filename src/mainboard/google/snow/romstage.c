@@ -24,8 +24,10 @@
 #include <cbfs.h>
 #include <common.h>
 
+#include <arch/gpio.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/dmc.h>
+#include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
@@ -34,6 +36,8 @@
 #include <arch/stages.h>
 
 #include "mainboard.h"
+
+#define MMC0_GPIO_PIN	(58)
 
 #if 0
 static int board_wakeup_permitted(void)
@@ -47,6 +51,24 @@ static int board_wakeup_permitted(void)
 	return !is_bad_wake;
 }
 #endif
+
+static void initialize_s5p_mshc(void) {
+	/* MMC0: Fixed, support 8 bit mode, connected with GPIO. */
+	if (clock_set_mshci(PERIPH_ID_SDMMC0))
+		printk(BIOS_CRIT, "Failed to set clock for SDMMC0.\n");
+	if (gpio_direction_output(MMC0_GPIO_PIN, 1)) {
+		printk(BIOS_CRIT, "Unable to power on SDMMC0.\n");
+	}
+	gpio_set_pull(MMC0_GPIO_PIN, EXYNOS_GPIO_PULL_NONE);
+	gpio_set_drv(MMC0_GPIO_PIN, EXYNOS_GPIO_DRV_4X);
+	/* TODO(hungte) Change 0 to PINMUX_FLAG_8BIT_MODE when the s5p_mshc
+	 * driver is ready. */
+	exynos_pinmux_config(PERIPH_ID_SDMMC0, 0);
+
+	/* MMC2: Removable, 4 bit mode, no GPIO. */
+	clock_set_mshci(PERIPH_ID_SDMMC2);
+	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
+}
 
 void main(void)
 {
@@ -83,6 +105,8 @@ void main(void)
 	}
 
 	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+
+	initialize_s5p_mshc();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);

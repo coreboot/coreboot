@@ -20,4 +20,7 @@ smm-y += memset.c
 smm-y += memcpy.c
 smm-y += rom_media.c
 
+rmodules-y += memset.c
+rmodules-y += memcpy.c
+
 $(obj)/arch/x86/lib/console.ramstage.o :: $(obj)/build.h

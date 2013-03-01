@@ -19,6 +19,29 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/samsung/exynos5250/fimd.h>
+#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
+
+vidinfo_t snow_panel_info = {
+	.vl_col		= 1366,
+	.vl_row		= 768,
+	.vl_bpix	= 16,
+
+};
+struct exynos5_fimd_panel snow_panel = {
+	/* Display I/F is eDP */
+	.is_dp = 1,
+	.is_mipi = 0,
+	.fixvclk = 0,
+	.ivclk = 0,
+	.clkval_f = 2,
+	.upper_margin = 14,
+	.lower_margin = 3,
+	.vsync = 5,
+	.left_margin = 80,
+	.right_margin = 48,
+	.hsync = 32,
+};
 
 void hardwaremain(int boot_complete);
 void main(void)

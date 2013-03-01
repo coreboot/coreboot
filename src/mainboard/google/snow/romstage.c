@@ -31,7 +31,6 @@
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-
 #include <console/console.h>
 #include <arch/stages.h>
 
@@ -70,6 +69,11 @@ static void initialize_s5p_mshc(void) {
 	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
 }
 
+static void graphics(void)
+{
+
+	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+}
 void main(void)
 {
 	struct mem_timings *mem;
@@ -107,6 +111,8 @@ void main(void)
 	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
 
 	initialize_s5p_mshc();
+
+	graphics();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);

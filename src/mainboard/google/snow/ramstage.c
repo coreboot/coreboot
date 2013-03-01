@@ -19,10 +19,40 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/samsung/exynos5250/fimd.h>
+#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
+
+static vidinfo_t panel_info = {
+	.vl_col		= 1366,
+	.vl_row		= 768,
+	.vl_bpix	= 16,
+
+};
+static struct exynos5_fimd_panel panel = {
+	/* Display I/F is eDP */
+	.is_dp = 1,
+	.is_mipi = 0,
+	.fixvclk = 0,
+	.ivclk = 0,
+	.clkval_f = 2,
+	.upper_margin = 14,
+	.lower_margin = 3,
+	.vsync = 5,
+	.left_margin = 80,
+	.right_margin = 48,
+	.hsync = 32,
+};
+
+static void graphics(void)
+{
+	panel_info.cmap	= cbmem_add(CBMEM_ID_CONSOLE, 64*1024);
+	fb_init(&panel_info, (void *)0x10000000, &panel);
+}
 
 void hardwaremain(int boot_complete);
 void main(void)
 {
+	graphics();
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage\n");
 

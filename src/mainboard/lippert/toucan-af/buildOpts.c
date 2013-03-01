@@ -385,6 +385,7 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	//			Byte6Seed, Byte7Seed, ByteEccSeed)
 	//			Specifies the write leveling seed for a channel of a socket.
 	//
+	HW_RXEN_SEED (ANY_SOCKET, ANY_CHANNEL, 0x3B, 0x3B, 0x3B, 0x3B, 0x3B, 0x3B, 0x3B, 0x3B, 0x3B),
 	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
 	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
 	PSO_END

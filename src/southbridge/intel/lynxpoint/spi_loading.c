@@ -21,9 +21,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arch/byteorder.h>
+#include <cbmem.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#include <vendorcode/google/chromeos/chromeos.h>
+#else
+static inline void *vboot_get_payload(int *len) { return NULL; }
+#endif
 
 #define CACHELINE_SIZE 64
 #define INTRA_CACHELINE_MASK (CACHELINE_SIZE - 1)
@@ -69,7 +75,14 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
 	int file_len;
 	void *file_start;
-	struct cbfs_file *file = cbfs_get_file(media, name);
+	struct cbfs_file *file;
+
+	file_start = vboot_get_payload(&file_len);
+
+	if (file_start != NULL)
+		return spi_mirror(file_start, file_len);
+
+	file = cbfs_get_file(media, name);
 
 	if (file == NULL)
 		return NULL;

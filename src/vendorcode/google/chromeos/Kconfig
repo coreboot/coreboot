@@ -67,6 +67,46 @@ config FLASHMAP_OFFSET
 
 endmenu
 
+config VBOOT_VERIFY_FIRMWARE
+	bool "Verify firmware with vboot."
+	default n
+	depends on CHROMEOS
+	help
+	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the ramstage
+	  and boot loader.
+
+config EC_SOFTWARE_SYNC
+	bool "Enable EC software sync"
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  EC software sync is a mechanism where the AP helps the EC verify its
+	  firmware similar to how vboot verifies the main system firmware. This
+	  option selects whether depthcharge should support EC software sync.
+
+config VIRTUAL_DEV_SWITCH
+	bool "Virtual developer switch support"
+	default n
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  Whether this platform has a virtual developer switch.
+
+config VBOOT_BOOT_LOADER_INDEX
+	hex "Bootloader component index"
+	default 0
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the bootloader component in the verified
+	  firmware block.
+
+config VBOOT_RAMSTAGE_INDEX
+	hex "Ramstage component index"
+	default 1
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the ramstage component in the verified
+	  firmware block.
+
 config NO_TPM_RESUME
 	bool
 	default n

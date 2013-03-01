@@ -127,3 +127,8 @@ int get_recovery_mode_switch(void)
 	return (gp_lvl3 >> (69-64)) & 1;
 }
 
+int get_write_protect_state(void)
+{
+	return 0;
+}
+

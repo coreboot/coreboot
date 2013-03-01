@@ -19,3 +19,7 @@ ramstage-y += pwm.c	# needed by timer.c
 ramstage-y += timer.c
 ramstage-y += gpio.c
 ramstage-y += i2c.c
+ramstage-y += s5p-dp-reg.c
+ramstage-y += exynos-fb.c
+
+subdirs-y += displayport

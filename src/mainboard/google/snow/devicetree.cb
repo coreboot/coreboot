@@ -28,5 +28,7 @@ device domain 0 on
 		device i2c 6 on end # ?
 		device i2c 9 on end # ?
 	end
+	chip cpu/samsung/exynos5-common/displayport/
+	end
 end
 end

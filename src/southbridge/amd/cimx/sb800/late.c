@@ -451,7 +451,7 @@ static void sb800_enable(device_t dev)
 		{
 			device_t device;
 			for (device = dev; device; device = device->next) {
-				if (dev->path.type != DEVICE_PATH_PCI) continue;
+				if (device->path.type != DEVICE_PATH_PCI) continue;
 				if ((device->path.pci.devfn & ~7) != PCI_DEVFN(0x15,0)) break;
 				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
 			}

@@ -27,6 +27,7 @@
 //#include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
+void broadcom_init(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
@@ -79,6 +80,9 @@ static void mainboard_enable(device_t dev)
 
 	/* Inagua mainboard specific setting */
 	set_pcie_dereset();
+
+	/* Upload AMD A55E GbE 'NV'RAM contents. */
+	broadcom_init();
 }
 
 struct chip_operations mainboard_ops = {

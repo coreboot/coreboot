@@ -37,4 +37,4 @@ ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
 
 ramstage-y += reset.c
-
+ramstage-y += broadcom.c

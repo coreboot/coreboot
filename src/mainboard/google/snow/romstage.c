@@ -31,13 +31,22 @@
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-
+#include <cpu/samsung/exynos5250/fimd.h>
+#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
 #include <console/console.h>
 #include <arch/stages.h>
 
 #include "mainboard.h"
 
 #define MMC0_GPIO_PIN	(58)
+
+static uint16_t cmap_buffer[1 << 16];
+static vidinfo_t panel_info = {
+	.vl_col		= 1366,
+	.vl_row		= 768,
+	.vl_bpix	= 16,
+	.cmap		= cmap_buffer,
+};
 
 #if 0
 static int board_wakeup_permitted(void)
@@ -70,6 +79,13 @@ static void initialize_s5p_mshc(void) {
 	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
 }
 
+static void graphics(void)
+{
+
+	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+	printk(BIOS_SPEW, "Panel_info %p\n", &panel_info);
+	/* not done now: reset graphics. We're not sure we need to on snow */
+}
 void main(void)
 {
 	struct mem_timings *mem;
@@ -107,6 +123,8 @@ void main(void)
 	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
 
 	initialize_s5p_mshc();
+
+	graphics();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);

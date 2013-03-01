@@ -297,13 +297,11 @@ void romstage_common(const struct romstage_params *params)
 #endif
 }
 
-static inline void prepare_for_resume(void)
+static inline void prepare_for_resume(struct romstage_handoff *handoff)
 {
 /* Only need to save memory when ramstage isn't relocatable. */
 #if !CONFIG_RELOCATABLE_RAMSTAGE
 #if CONFIG_HAVE_ACPI_RESUME
-	struct romstage_handoff *handoff = romstage_handoff_find_or_add();
-
 	/* Back up the OS-controlled memory where ramstage will be loaded. */
 	if (handoff != NULL && handoff->s3_resume) {
 		void *src = (void *)CONFIG_RAMBASE;
@@ -317,7 +315,16 @@ static inline void prepare_for_resume(void)
 
 void romstage_after_car(void)
 {
-	prepare_for_resume();
+	struct romstage_handoff *handoff;
+
+	handoff = romstage_handoff_find_or_add();
+
+	prepare_for_resume(handoff);
+
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+	vboot_verify_firmware(handoff);
+#endif
+
 	/* Load the ramstage. */
 	copy_and_run(0);
 }

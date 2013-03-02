@@ -45,11 +45,12 @@ void exception_fiq(uint32_t *);
 
 static void print_regs(uint32_t *regs)
 {
+	int i;
 	/* Don't print the link register and stack pointer since we don't have their
 	 * actual value. They are hidden by the 'shadow' registers provided
 	 * by the trap hardware.
 	 */
-	for (int i = 0; i < 16; i++) {
+	for (i = 0; i < 16; i++) {
 		if (i == 15)
 			printf("PC");
 		else if (i == 14)

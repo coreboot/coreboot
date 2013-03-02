@@ -53,7 +53,7 @@ chip northbridge/amd/agesa/family14/root_complex
                                                         device i2c 51 on end
                                                 end
                                         end # SM
-                                        device pci 14.1 on end # IDE    0x439c
+                                        device pci 14.1 off end # IDE   0x439c
                                         device pci 14.2 on end # HDA    0x4383
                                         device pci 14.3 on # LPC        0x439d
 						chip superio/winbond/w83627hf

@@ -252,7 +252,7 @@ static const CODECTBLLIST codec_tablelist[] =
 
 /**
  * @def AZALIA_OEM_VERB_TABLE
- *  Mainboard specific cocec verb table list
+ *  Mainboard specific codec verb table list
  */
 #define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
 

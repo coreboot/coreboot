@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,47 +27,89 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/exception.h>
-#include <libpayload.h>
+exception_stack:
+	.align 5
+	.skip 0x2000, 0xa5
+exception_stack_end:
+	.word	exception_stack_end
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
+exception_handler:
+	.word 0
 
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
 
-/**
- * This is our C entry function - set up the system
- * and jump into the payload entry point.
- */
-void start_main(void);
-void start_main(void)
-{
-	extern int main(int argc, char **argv);
+	.align 6
+	.arm
+	.global exception_table
+exception_table:
+	b	1f
+	b	2f
+	b	3f
+	b	4f
+	b	5f
+	b	6f
+	b	7f
+	b	8f
 
-	/* Gather system information. */
-	lib_get_sysinfo();
+1:
+	ldr	sp, _not_used
+	b	exception_common
+2:
+	ldr	sp, _undefined_instruction
+	b	exception_common
+3:
+	ldr	sp, _software_interrupt
+	b	exception_common
+4:
+	ldr	sp, _prefetch_abort
+	b	exception_common
+5:
+	ldr	sp, _data_abort
+	b	exception_common
+6:
+	ldr	sp, _not_used
+	b	exception_common
+7:
+	ldr	sp, _irq
+	b	exception_common
+8:
+	ldr	sp, _fiq
+	b	exception_common
 
-	/* Optionally set up the consoles. */
-#ifndef CONFIG_SKIP_CONSOLE_INIT
-	console_init();
-#endif
+exception_common:
+	str	sp, exception_handler
+	ldr	sp, exception_stack_end
+	push	{ lr }
+	sub	sp, sp, $8
+	push	{ r0 - r12 }
+	mov	r0, sp
+	mov	lr, pc
+	ldr	pc, exception_handler
+	pop	{ r0 - r12 }
+	add	sp, sp, $8
+	ldm	sp!, { pc }^
 
-	exception_init();
 
-	/*
-	 * Any other system init that has to happen before the
-	 * user gets control goes here.
-	 */
+_undefined_instruction:	.word exception_undefined_instruction
+_software_interrupt:	.word exception_software_interrupt
+_prefetch_abort:	.word exception_prefetch_abort
+_data_abort:		.word exception_data_abort
+_not_used:		.word exception_not_used
+_irq:			.word exception_irq
+_fiq:			.word exception_fiq
 
-	/*
-	 * Go to the entry point.
-	 * In the future we may care about the return value.
-	 */
+	.thumb
+	.global set_vbar
+	.thumb_func
+set_vbar:
+        mcr     p15, 0, r0, c12, c0, 0
+	bx	lr
 
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
+	.global exception_test
+	.thumb_func
+exception_test:
+	mov	r1, $1
+	mov	r0, pc
+	add	r0, $3
+	ldr	r1, [r1]
+	bx	lr
 
-	/*
-	 * Returning here will go to the _leave function to return
-	 * us to the original context.
-	 */
-}

@@ -32,4 +32,5 @@ libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += virtual.c
 libc-y += memcpy.S memset.S
+libc-y += exception_asm.S exception.c
 

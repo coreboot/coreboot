@@ -20,37 +20,6 @@ config BOARD_LIPPERT_TOUCAN_AF
 
 endchoice
 
-if BOARD_LIPPERT_FRONTRUNNER_AF || BOARD_LIPPERT_TOUCAN_AF
-# No code, but two Kconfig options need to know this ...
-choice
-	prompt "AMD Fusion CPU model"
-	default FUSION_G_T56N
-	help
-	  The actual CPU model the board is fitted with:
-
-	  G-T40R: 1 GHz, single core
-	  G-T56N: 1.65 GHz, dual core
-
-	  If unsure check with "grep model /proc/cpuinfo".
-config FUSION_G_T40R
-	bool "G-T40R"
-	help
-	  The actual CPU model the board is fitted with:
-
-	  G-T40R: 1 GHz, single core
-
-	  If unsure check with "grep model /proc/cpuinfo".
-config FUSION_G_T56N
-	bool "G-T56N"
-	help
-	  The actual CPU model the board is fitted with:
-
-	  G-T56N: 1.65 GHz, dual core
-
-	  If unsure check with "grep model /proc/cpuinfo".
-endchoice
-endif # BOARD_LIPPERT_FRONTRUNNER_AF || BOARD_LIPPERT_TOUCAN_AF
-
 source "src/mainboard/lippert/frontrunner/Kconfig"
 source "src/mainboard/lippert/frontrunner-af/Kconfig"
 source "src/mainboard/lippert/hurricane-lx/Kconfig"

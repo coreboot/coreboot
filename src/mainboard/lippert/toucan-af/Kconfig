@@ -64,8 +64,7 @@ config HW_MEM_HOLE_SIZEK
 
 config MAX_CPUS
 	int
-	default 1 if FUSION_G_T40R
-	default 2 if FUSION_G_T56N
+	default 2
 
 config MAX_PHYSICAL_CPUS
 	int
@@ -118,8 +117,7 @@ config VGA_BIOS
 
 config VGA_BIOS_ID
 	string
-	default "1002,9804" if FUSION_G_T40R
-	default "1002,9806" if FUSION_G_T56N
+	default "1002,9802"
 
 config SB800_AHCI_ROM
 	bool

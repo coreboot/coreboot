@@ -19,6 +19,7 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
+#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "heapManager.h"
 #include "SB800.h"

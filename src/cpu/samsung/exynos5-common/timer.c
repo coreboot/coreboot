@@ -39,7 +39,7 @@ static unsigned long lastinc;
 /* macro to read the 16 bit timer */
 static inline struct s5p_timer *s5p_get_base_timer(void)
 {
-	return (struct s5p_timer *)samsung_get_base_timer();
+	return samsung_get_base_timer();
 }
 
 /**

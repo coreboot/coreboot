@@ -30,7 +30,7 @@
 void wdt_stop(void)
 {
 	struct s5p_watchdog *wdt =
-		(struct s5p_watchdog *)samsung_get_base_watchdog();
+		samsung_get_base_watchdog();
 	unsigned int wtcon;
 
 	wtcon = readl(&wdt->wtcon);
@@ -42,7 +42,7 @@ void wdt_stop(void)
 void wdt_start(unsigned int timeout)
 {
 	struct s5p_watchdog *wdt =
-		(struct s5p_watchdog *)samsung_get_base_watchdog();
+		samsung_get_base_watchdog();
 	unsigned int wtcon;
 
 	wdt_stop();

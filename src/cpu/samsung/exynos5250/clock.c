@@ -180,7 +180,7 @@ static struct st_epll_con_val epll_div[] = {
 unsigned long get_pll_clk(int pllreg)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned long r, m, p, s, k = 0, mask, fout;
 	unsigned int freq;
 
@@ -246,7 +246,7 @@ unsigned long get_pll_clk(int pllreg)
 unsigned long clock_get_periph_rate(enum periph_id peripheral)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	struct clk_bit_info *bit_info = &clk_bit_info[peripheral];
 	unsigned long sclk, sub_clk;
 	unsigned int src, div, sub_div;
@@ -341,7 +341,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 unsigned long get_arm_clk(void)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned long div;
 	unsigned long armclk;
 	unsigned int arm_ratio;
@@ -378,7 +378,7 @@ struct arm_clk_ratios *get_arm_clk_ratios(void)
 void set_mmc_clk(int dev_index, unsigned int div)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned int addr;
 	unsigned int val;
 
@@ -404,7 +404,7 @@ void set_mmc_clk(int dev_index, unsigned int div)
 void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned shift;
 	unsigned mask = 0xff;
 	u32 *reg;
@@ -449,7 +449,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned shift;
 	unsigned mask = 0xff;
 	u32 *reg;
@@ -574,7 +574,7 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 int clock_set_mshci(enum periph_id peripheral)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	u32 *addr;
 	unsigned int clock;
 	unsigned int tmp;
@@ -635,7 +635,7 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int lockcnt;
 	unsigned int start;
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 
 	epll_con = readl(&clk->epll_con0);
 	epll_con &= ~((EPLL_CON0_LOCK_DET_EN_MASK <<
@@ -685,7 +685,7 @@ int clock_epll_set_rate(unsigned long rate)
 void clock_select_i2s_clk_source(void)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 
 	clrsetbits_le32(&clk->src_peric1, AUDIO1_SEL_MASK,
 			(CLK_SRC_SCLK_EPLL));
@@ -694,7 +694,7 @@ void clock_select_i2s_clk_source(void)
 int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 {
 	struct exynos5_clock *clk =
-		(struct exynos5_clock *)samsung_get_base_clock();
+		samsung_get_base_clock();
 	unsigned int div ;
 
 	if ((dst_frq == 0) || (src_frq == 0)) {

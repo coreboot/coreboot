@@ -36,7 +36,7 @@ void s5p_config_sromc(u32 srom_bank, u32 srom_bw_conf, u32 srom_bc_conf)
 {
 	u32 tmp;
 	struct s5p_sromc *srom =
-		(struct s5p_sromc *)samsung_get_base_sromc();
+		samsung_get_base_sromc();
 
 	/* Configure SMC_BW register to handle proper SROMC bank */
 	tmp = srom->bw;

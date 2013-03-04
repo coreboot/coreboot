@@ -79,59 +79,38 @@
 /* Distance between each Trust Zone PC register set */
 #define TZPC_BASE_OFFSET		0x10000
 
-#ifndef __ASSEMBLER__
+#define samsung_get_base_adc() ((struct exynos5_adc *)EXYNOS5_ADC_BASE)
+#define samsung_get_base_clock() ((struct exynos5_clock *)EXYNOS5_CLOCK_BASE)
+#define samsung_get_base_ace_sfr() ((struct exynos5_ace_sfr *)EXYNOS5_ACE_SFR_BASE)
+#define samsung_get_base_dsim() ((struct exynos5_dsim *)EXYNOS5_MIPI_DSI1_BASE)
+#define samsung_get_base_disp_ctrl() ((struct exynos5_disp_ctrl *)EXYNOS5_DISP1_CTRL_BASE)
+#define samsung_get_base_fimd() ((struct exynos5_fimd *)EXYNOS5_FIMD_BASE)
+#define samsung_get_base_gpio_part1() ((struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE)
+#define samsung_get_base_gpio_part2() ((struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE)
+#define samsung_get_base_gpio_part3() ((struct exynos5_gpio_part3 *)EXYNOS5_GPIO_PART3_BASE)
+#define samsung_get_base_gpio_part4() ((struct exynos5_gpio_part4 *)EXYNOS5_GPIO_PART4_BASE)
+#define samsung_get_base_gpio_part5() ((struct exynos5_gpio_part5 *)EXYNOS5_GPIO_PART5_BASE)
+#define samsung_get_base_gpio_part6() ((struct exynos5_gpio_part6 *)EXYNOS5_GPIO_PART6_BASE)
+#define samsung_get_base_pro_id() ((struct exynos5_pro_id *)EXYNOS5_PRO_ID)
 
-/* FIXME(dhendrix): cpu_is_exynos5() seems broken atm... */
-#if 0
-#define SAMSUNG_BASE(device, base)				\
-static inline unsigned int samsung_get_base_##device(void)	\
-{								\
-	return cpu_is_exynos5() ? EXYNOS5_##base : 0;		\
-}
-#endif
-#define SAMSUNG_BASE(device, base)				\
-static inline unsigned int samsung_get_base_##device(void)	\
-{								\
-	return EXYNOS5_##base;					\
-}
+#define samsung_get_base_mmc() ((struct exynos5_mmc *)EXYNOS5_MMC_BASE)
+#define samsung_get_base_mshci() ((struct exynos5_mshci *)EXYNOS5_MSHC_BASE)
 
-SAMSUNG_BASE(adc, ADC_BASE)
-SAMSUNG_BASE(clock, CLOCK_BASE)
-SAMSUNG_BASE(ace_sfr, ACE_SFR_BASE)
-SAMSUNG_BASE(dsim, MIPI_DSI1_BASE)
-SAMSUNG_BASE(disp_ctrl, DISP1_CTRL_BASE)
-SAMSUNG_BASE(fimd, FIMD_BASE)
-SAMSUNG_BASE(gpio_part1, GPIO_PART1_BASE)
-SAMSUNG_BASE(gpio_part2, GPIO_PART2_BASE)
-SAMSUNG_BASE(gpio_part3, GPIO_PART3_BASE)
-SAMSUNG_BASE(gpio_part4, GPIO_PART4_BASE)
-SAMSUNG_BASE(gpio_part5, GPIO_PART5_BASE)
-SAMSUNG_BASE(gpio_part6, GPIO_PART6_BASE)
-SAMSUNG_BASE(pro_id, PRO_ID)
-
-#ifndef CONFIG_OF_CONTROL
-SAMSUNG_BASE(mmc, MMC_BASE)
-SAMSUNG_BASE(mshci, MSHC_BASE)
-#endif
-
-SAMSUNG_BASE(modem, MODEM_BASE)
-SAMSUNG_BASE(sromc, SROMC_BASE)
-SAMSUNG_BASE(swreset, SWRESET)
-SAMSUNG_BASE(sysreg, SYSREG_BASE)
-SAMSUNG_BASE(timer, PWMTIMER_BASE)
-SAMSUNG_BASE(uart, UART_BASE)
-SAMSUNG_BASE(usb_phy, USBPHY_BASE)
-SAMSUNG_BASE(usb_otg, USBOTG_BASE)
-SAMSUNG_BASE(watchdog, WATCHDOG_BASE)
-SAMSUNG_BASE(power, POWER_BASE)
-SAMSUNG_BASE(i2s, I2S_BASE)
-SAMSUNG_BASE(spi1, SPI1_BASE)
-#ifndef CONFIG_OF_CONTROL
-SAMSUNG_BASE(i2c, I2C_BASE)
-SAMSUNG_BASE(spi, SPI_BASE)
-SAMSUNG_BASE(spi_isp, SPI_ISP_BASE)
-#endif
-#endif
+#define samsung_get_base_modem() ((struct exynos5_modem *)EXYNOS5_MODEM_BASE)
+#define samsung_get_base_sromc() ((struct exynos5_sromc *)EXYNOS5_SROMC_BASE)
+#define samsung_get_base_swreset() ((struct exynos5_swreset *)EXYNOS5_SWRESET)
+#define samsung_get_base_sysreg() ((struct exynos5_sysreg *)EXYNOS5_SYSREG_BASE)
+#define samsung_get_base_timer() ((struct s5p_timer *)EXYNOS5_PWMTIMER_BASE)
+#define samsung_get_base_uart() ((struct exynos5_uart *)EXYNOS5_UART_BASE)
+#define samsung_get_base_usb_phy() ((struct exynos5_usb_phy *)EXYNOS5_USBPHY_BASE)
+#define samsung_get_base_usb_otg() ((struct exynos5_usb_otg *)EXYNOS5_USBOTG_BASE)
+#define samsung_get_base_watchdog() ((struct exynos5_watchdog *)EXYNOS5_WATCHDOG_BASE)
+#define samsung_get_base_power() ((struct exynos5_power *)EXYNOS5_POWER_BASE)
+#define samsung_get_base_i2s() ((struct exynos5_i2s *)EXYNOS5_I2S_BASE)
+#define samsung_get_base_spi1() ((struct exynos5_spi1 *)EXYNOS5_SPI1_BASE)
+#define samsung_get_base_i2c() ((struct exynos5_i2c *)EXYNOS5_I2C_BASE)
+#define samsung_get_base_spi() ((struct exynos5_spi *)EXYNOS5_SPI_BASE)
+#define samsung_get_base_spi_isp() ((struct exynos5_spi_isp *)EXYNOS5_SPI_ISP_BASE)
 
 #define EXYNOS5_SPI_NUM_CONTROLLERS	5
 #define EXYNOS_I2C_MAX_CONTROLLERS	8

@@ -100,7 +100,7 @@ static void fimd_bypass(void)
 {
 #if 0
 	struct exynos5_sysreg *sysreg =
-		(struct exynos5_sysreg *)samsung_get_base_sysreg();
+		samsung_get_base_sysreg();
 
 	setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);
 #endif
@@ -129,9 +129,9 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase, struct exynos5_fimd_panel *pd
 	unsigned int val;
 	u32 fbsize;
 	struct exynos5_fimd *fimd =
-		(struct exynos5_fimd *)samsung_get_base_fimd();
+		samsung_get_base_fimd();
 	struct exynos5_disp_ctrl *disp_ctrl =
-		(struct exynos5_disp_ctrl *)samsung_get_base_disp_ctrl();
+		samsung_get_base_disp_ctrl();
 
 	writel(pd->ivclk | pd->fixvclk, &disp_ctrl->vidcon1);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);
@@ -177,7 +177,7 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase, struct exynos5_fimd_panel *pd
 static void exynos_fimd_disable(void)
 {
 	struct exynos5_fimd *fimd =
-		(struct exynos5_fimd *)samsung_get_base_fimd();
+		samsung_get_base_fimd();
 
 	writel(0, &fimd->wincon0);
 	clrbits_le32(&fimd->shadowcon, CHANNEL0_EN);

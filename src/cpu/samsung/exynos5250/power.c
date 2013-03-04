@@ -38,7 +38,7 @@
 static void ps_hold_setup(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	/* Set PS-Hold high */
 	setbits_le32(&power->ps_hold_ctrl, POWER_PS_HOLD_CONTROL_DATA_HIGH);
@@ -47,7 +47,7 @@ static void ps_hold_setup(void)
 void power_reset(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	/* Clear inform1 so there's no change we think we've got a wake reset */
 	power->inform1 = 0;
@@ -59,7 +59,7 @@ void power_reset(void)
 void power_shutdown(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	clrbits_le32(&power->ps_hold_ctrl, POWER_PS_HOLD_CONTROL_DATA_HIGH);
 
@@ -69,7 +69,7 @@ void power_shutdown(void)
 void power_enable_dp_phy(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	setbits_le32(&power->dptx_phy_control, DPTX_PHY_ENABLE);
 }
@@ -77,9 +77,9 @@ void power_enable_dp_phy(void)
 void power_enable_usb_phy(void)
 {
 	struct exynos5_sysreg *sysreg =
-		(struct exynos5_sysreg *)samsung_get_base_sysreg();
+		samsung_get_base_sysreg();
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 	unsigned int phy_cfg;
 
 	/* Setting USB20PHY_CONFIG register to USB 2.0 HOST link */
@@ -98,7 +98,7 @@ void power_enable_usb_phy(void)
 void power_disable_usb_phy(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	/* Disabling USBHost_PHY */
 	clrbits_le32(&power->usb_host_phy_ctrl, POWER_USB_HOST_PHY_CTRL_EN);
@@ -107,7 +107,7 @@ void power_disable_usb_phy(void)
 void power_enable_hw_thermal_trip(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	/* Enable HW thermal trip */
 	setbits_le32(&power->ps_hold_ctrl, POWER_ENABLE_HW_TRIP);
@@ -116,7 +116,7 @@ void power_enable_hw_thermal_trip(void)
 uint32_t power_read_reset_status(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	return power->inform1;
 }
@@ -124,7 +124,7 @@ uint32_t power_read_reset_status(void)
 void power_exit_wakeup(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 	typedef void (*resume_func)(void);
 
 	((resume_func)power->inform0)();
@@ -193,7 +193,7 @@ int power_init(void)
 void power_enable_xclkout(void)
 {
 	struct exynos5_power *power =
-		(struct exynos5_power *)samsung_get_base_power();
+		samsung_get_base_power();
 
 	/* use xxti for xclk out */
 	clrsetbits_le32(&power->pmu_debug, PMU_DEBUG_CLKOUT_SEL_MASK,

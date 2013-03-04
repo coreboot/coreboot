@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,47 +27,12 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/exception.h>
-#include <libpayload.h>
+#ifndef _ARCH_EXCEPTION_H
+#define _ARCH_EXCEPTION_H
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
+#include <stdint.h>
 
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
+void exception_init(void);
+void set_vbar(uint32_t vbar);
 
-/**
- * This is our C entry function - set up the system
- * and jump into the payload entry point.
- */
-void start_main(void);
-void start_main(void)
-{
-	extern int main(int argc, char **argv);
-
-	/* Gather system information. */
-	lib_get_sysinfo();
-
-	/* Optionally set up the consoles. */
-#ifndef CONFIG_SKIP_CONSOLE_INIT
-	console_init();
 #endif
-
-	exception_init();
-
-	/*
-	 * Any other system init that has to happen before the
-	 * user gets control goes here.
-	 */
-
-	/*
-	 * Go to the entry point.
-	 * In the future we may care about the return value.
-	 */
-
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
-
-	/*
-	 * Returning here will go to the _leave function to return
-	 * us to the original context.
-	 */
-}

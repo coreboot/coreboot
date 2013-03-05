@@ -49,6 +49,7 @@
 #define W 3
 #define V 4
 #define I 8
+#define P 16
 
 struct iodef {
 	unsigned char op;

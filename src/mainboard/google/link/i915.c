@@ -128,6 +128,21 @@ extern struct iodef iodefs[];
 
 static int i915_init_done = 0;
 
+/* fill the palette. This runs when the P opcode is hit. */
+static void palette(void)
+{
+	int i;
+	unsigned long color = 0;
+
+	for(i = 0; i < 256; i++, color += 0x010101){
+	  if (verbose & vio)printk(BIOS_SPEW,
+				   "_LGC_PALETTE_A+%08x: outl %08lx\n",
+				   i<<2, color);
+
+		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
+	}
+}
+
 int vbe_mode_info_valid(void);
 int vbe_mode_info_valid(void)
 {
@@ -183,6 +198,9 @@ int i915lightup(unsigned int pphysbase,
 		case M:
 			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
 				globalmicroseconds(), id->msg);
+			break;
+		case P:
+			palette();
 			break;
 		case R:
 			u = READ32(id->addr);

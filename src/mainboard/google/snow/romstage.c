@@ -53,7 +53,7 @@ static int board_wakeup_permitted(void)
 #endif
 
 static void initialize_s5p_mshc(void) {
-	/* MMC0: Fixed, support 8 bit mode, connected with GPIO. */
+	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
 	if (clock_set_mshci(PERIPH_ID_SDMMC0))
 		printk(BIOS_CRIT, "Failed to set clock for SDMMC0.\n");
 	if (gpio_direction_output(MMC0_GPIO_PIN, 1)) {
@@ -61,9 +61,7 @@ static void initialize_s5p_mshc(void) {
 	}
 	gpio_set_pull(MMC0_GPIO_PIN, EXYNOS_GPIO_PULL_NONE);
 	gpio_set_drv(MMC0_GPIO_PIN, EXYNOS_GPIO_DRV_4X);
-	/* TODO(hungte) Change 0 to PINMUX_FLAG_8BIT_MODE when the s5p_mshc
-	 * driver is ready. */
-	exynos_pinmux_config(PERIPH_ID_SDMMC0, 0);
+	exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
 
 	/* MMC2: Removable, 4 bit mode, no GPIO. */
 	clock_set_mshci(PERIPH_ID_SDMMC2);

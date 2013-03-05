@@ -95,7 +95,7 @@ setgtt(int start, int end, unsigned long base, int inc)
 {
         int i;
 
-	for(i = start; i < end; i++){
+	for (i = start; i < end; i++){
                 u32 word = base + i*inc;
                 WRITE32(word|1,(i*4)|1);
         }
@@ -127,6 +127,21 @@ static unsigned long globalmicroseconds(void)
 extern struct iodef iodefs[];
 
 static int i915_init_done = 0;
+
+/* fill the palette. This runs when the P opcode is hit. */
+static void palette(void)
+{
+	int i;
+	unsigned long color = 0;
+
+	for (i = 0; i < 256; i++, color += 0x010101){
+		if (verbose & vio)printk(BIOS_SPEW,
+				"_LGC_PALETTE_A+%08x: outl %08lx\n",
+				i<<2, color);
+
+		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
+	}
+}
 
 int vbe_mode_info_valid(void);
 int vbe_mode_info_valid(void)
@@ -178,11 +193,14 @@ int i915lightup(unsigned int pphysbase,
 	globalstart = rdtscll();
 
 	/* state machine! */
-	for(i = 0, id = iodefs; id->op; i++, id++){
+	for (i = 0, id = iodefs; id->op; i++, id++){
 		switch(id->op){
 		case M:
 			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
 				globalmicroseconds(), id->msg);
+			break;
+		case P:
+			palette();
 			break;
 		case R:
 			u = READ32(id->addr);
@@ -193,7 +211,7 @@ int i915lightup(unsigned int pphysbase,
 				/* they're going to be polling.
 				 * just do it 1000 times
 				 */
-				for(t = 0; t < 1000 && id->data != u; t++){
+				for (t = 0; t < 1000 && id->data != u; t++){
 					u = READ32(id->addr);
 				}
 				if (verbose & vspin) printk(BIOS_SPEW,
@@ -236,7 +254,7 @@ int i915lightup(unsigned int pphysbase,
 	/* optional, we don't even want to take timestamp overhead
 	 * if we can avoid it. */
 	if (0)
-	for(i = 0, id = iodefs; id->op; i++, id++){
+	for (i = 0, id = iodefs; id->op; i++, id++){
 		switch(id->op){
 		case R:
 			printk(BIOS_SPEW, "%ld: R %08lx\n", times[i], id->addr);

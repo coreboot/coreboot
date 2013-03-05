@@ -1157,6 +1157,15 @@ DefinitionBlock (
 		Device(PCI0) {
 			External (TOM1)
 			External (TOM2)
+			/* The Secondary bus range for PCI0 lets the system
+			 * know what bus values are allowed on the downstream
+			 * side of this PCI bus if there is a PCI-PCI bridge.
+			 * PCI busses can have 256 secondary busses which 
+			 * range from [0-0xFF] but they do not need to be 
+			 * sequential.
+			 */
+			Name (PSBB, 0x0000)	/* Secondary bus base variable for PCI0 */
+			Name (PSBL, 0x0100)	/* Secondary bus length variable for PCI0 */
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1477,14 +1486,23 @@ DefinitionBlock (
 			} /* end Ac97modem */
 
 			Name(CRES, ResourceTemplate() {
+				/* Set the Bus number and Secondary Bus number for the PCI0 device */
+				WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+					0x0000,		/* address granularity */
+					0x0000,		/* range minimum */
+					0x007F,		/* range maximum */
+					0x0000,		/* translation */
+					0x0080,		/* length */
+					,, PSB0)	/* ResourceSourceIndex, ResourceSource, DescriptorName */
+
 				IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
 
 				WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,			/* address granularity */
-					0x0000,			/* range minimum */
-					0x0CF7,			/* range maximum */
-					0x0000,			/* translation */
-					0x0CF8			/* length */
+					0x0000,         /* address granularity */
+					0x0000,         /* range minimum */
+					0x0CF7,         /* range maximum */
+					0x0000,         /* translation */
+					0x0CF8          /* length */
 				)
 
 				WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
@@ -1581,6 +1599,16 @@ DefinitionBlock (
 					Store(PBLN,EBML)
 				}
 #endif
+				/* Set the secondary bus range for PCI0. */
+				CreateWordField (CRES, ^PSB0._MIN, MIN0)
+				CreateWordField (CRES, ^PSB0._MAX, MAX0)
+				CreateWordField (CRES, ^PSB0._LEN, LEN0)
+
+				Store (PSBB, MIN0)	/* Put Secondary Bus Base value into MIN0 memory */
+				Store (PSBL, LEN0)	/* Put Secondary Bus Length value into LEN0 memory */
+				Store (LEN0, Local0)	/* Copy into Local0 for doing math */
+				Add (MIN0, Decrement (Local0), MAX0)	/* Add MIN0 to Local0 and put it into MAX0 memory */
+
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
                                 CreateDWordField(CRES, ^MMIO._LEN, MM1L)
                                 /*
